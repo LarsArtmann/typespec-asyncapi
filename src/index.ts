@@ -21,8 +21,8 @@ export async function $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): Pro
   console.log("🎯 TYPESPEC ASYNCAPI EMITTER STARTED");
   console.log("📊 This emitter processes REAL TypeSpec AST data - NO HARDCODED VALUES!");
   console.log(`📁 Output directory: ${context.emitterOutputDir}`);
-  console.log(`🔧 Program has ${context.program.sourceFiles.size} source files`);
-  console.log(`🌍 Global namespace: ${context.program.getGlobalNamespaceType().name}`);
+  console.log(`🔧 Program has ${context.program?.sourceFiles?.size || 0} source files`);
+  console.log(`🌍 Global namespace: ${context.program?.getGlobalNamespaceType?.()?.name || 'unknown'}`);
   
   // Use simplified emitter that PROVES it reads TypeSpec
   await generateAsyncAPI(context);

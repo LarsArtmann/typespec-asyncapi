@@ -16,6 +16,7 @@ export function $channel(context: DecoratorContext, target: Operation, path: any
     return;
   }
 
+  // TODO: Effects.TS Schema here!!
   // Extract string value from TypeSpec value
   let channelPath: string;
   if (typeof path === "string") {

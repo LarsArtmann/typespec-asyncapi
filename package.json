@@ -11,6 +11,10 @@
       "types": "./dist/index.d.ts"
     }
   },
+  "tspMain": "lib/main.tsp",
+  "typespec": {
+    "emitter": true
+  },
   "keywords": [
     "typespec",
     "asyncapi",
@@ -59,7 +63,9 @@
     "vitest": "^3.2.4"
   },
   "dependencies": {
+    "@effect/schema": "^0.75.5",
     "@typespec/asset-emitter": "^0.73.0",
+    "effect": "^3.17.9",
     "yaml": "^2.8.1"
   }
 }

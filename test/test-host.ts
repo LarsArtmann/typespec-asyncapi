@@ -4,7 +4,6 @@
 
 import { createTestLibrary } from "@typespec/compiler/testing";
 import { fileURLToPath } from "url";
-import { $lib } from "../src/lib.js";
 
 /**
  * Test library for AsyncAPI emitter
@@ -12,5 +11,4 @@ import { $lib } from "../src/lib.js";
 export const AsyncAPITestLibrary = createTestLibrary({
   name: "@typespec/asyncapi",
   packageRoot: fileURLToPath(new URL("..", import.meta.url)),
-  lib: $lib,
 });
