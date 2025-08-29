@@ -1,0 +1,91 @@
+{
+  "compilerOptions": {
+    // === MODERN TYPESCRIPT & NODE.JS TARGET ===
+    "target": "ES2022",
+    "lib": ["ES2022", "ES2022.Error"],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext", 
+    "moduleDetection": "force",
+
+    // === ESM MODULE OUTPUT OPTIMIZATION ===
+    "outDir": "dist",
+    "rootDir": "src",
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "inlineSources": false,
+    "noEmit": false,
+    "removeComments": false,
+    "newLine": "lf",
+
+    // === MAXIMUM TYPE SAFETY (STRICTEST SETTINGS) ===
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitReturns": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+
+    // === PERFORMANCE OPTIMIZATIONS ===
+    "incremental": true,
+    "tsBuildInfoFile": ".tsbuildinfo",
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "disableSourceOfProjectReferenceRedirect": true,
+    "disableSolutionSearching": true,
+    "disableReferencedProjectLoad": true,
+
+    // === MODERN IMPORT/EXPORT HANDLING ===
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "allowImportingTsExtensions": false,
+    "forceConsistentCasingInFileNames": true,
+    "verbatimModuleSyntax": false,
+
+    // === ADVANCED TYPE CHECKING ===
+    "useDefineForClassFields": true,
+    "experimentalDecorators": false,
+    "emitDecoratorMetadata": false,
+
+    // === CODE GENERATION ===
+    "preserveConstEnums": false,
+    "preserveValueImports": true,
+    "isolatedModules": true,
+    "importsNotUsedAsValues": "error",
+
+    // === PATH MAPPING FOR CLEAN IMPORTS ===
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@/lib/*": ["src/lib/*"],
+      "@/utils/*": ["src/utils/*"],
+      "@/types/*": ["src/types/*"],
+      "@/emitters/*": ["src/emitters/*"]
+    }
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.json"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "test",
+    "tests",
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "examples",
+    "coverage",
+    ".tsbuildinfo"
+  ],
+  "ts-node": {
+    "esm": true,
+    "experimentalSpecifierResolution": "node"
+  }
+}
