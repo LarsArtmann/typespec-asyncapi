@@ -1,15 +1,27 @@
-# typespec-asyncapi
+# TypeSpec AsyncAPI Emitter
 
-To install dependencies:
+A native TypeSpec emitter for generating AsyncAPI 3.0 specifications from TypeSpec definitions.
+
+## ⚠️ Current Limitations
+
+**VERSIONING NOT SUPPORTED**: This emitter does not currently support TypeSpec.Versioning decorators (`@added`, `@removed`, `@renamedFrom`). It generates a single AsyncAPI document without version-aware processing.
+
+See [GitHub Issue #1](https://github.com/LarsArtmann/typespec-asyncapi/issues/1) for planned versioning support.
+
+## Installation
 
 ```bash
 bun install
 ```
 
-To run:
+## Usage
 
 ```bash
-bun run index.ts
+bun run build
+cd examples/basic-events
+tsp compile .
 ```
 
-This project was created using `bun init` in bun v1.2.20. [Bun](https://bun.com) is a fast all-in-one JavaScript runtime.
+## Development
+
+This project uses Bun as the JavaScript runtime and package manager.

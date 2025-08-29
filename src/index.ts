@@ -12,6 +12,10 @@ export * from "./decorators/index.js";
 /**
  * AsyncAPI emitter entry point
  * Called by TypeSpec compiler to generate AsyncAPI 3.0 specifications
+ * 
+ * ⚠️ VERSIONING LIMITATION: This emitter does NOT currently support TypeSpec.Versioning
+ * decorators (@added, @removed, @renamedFrom). Only generates single AsyncAPI document.
+ * See GitHub issue #1 for planned versioning support.
  */
 export async function $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): Promise<void> {
   console.log("🎯 TYPESPEC ASYNCAPI EMITTER STARTED");

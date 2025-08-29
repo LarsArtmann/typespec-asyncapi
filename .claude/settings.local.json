@@ -2,7 +2,11 @@
   "permissions": {
     "allow": [
       "Read(/Users/larsartmann/Downloads/**)",
-      "WebSearch"
+      "WebSearch",
+      "Read(/tmp/**)",
+      "Read(/tmp/typespec-research/**)",
+      "WebFetch(domain:r.jina.ai)",
+      "WebFetch(domain:www.asyncapi.com)"
     ],
     "deny": [],
     "ask": []
