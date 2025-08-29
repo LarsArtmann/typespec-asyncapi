@@ -54,10 +54,8 @@
     "emitDecoratorMetadata": false,
 
     // === CODE GENERATION ===
-    "preserveConstEnums": false,
-    "preserveValueImports": true,
     "isolatedModules": true,
-    "importsNotUsedAsValues": "error",
+    "verbatimModuleSyntax": true,
 
     // === PATH MAPPING FOR CLEAN IMPORTS ===
     "baseUrl": ".",

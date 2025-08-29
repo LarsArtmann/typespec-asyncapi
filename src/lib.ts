@@ -6,7 +6,7 @@ export const $lib = createTypeSpecLibrary({
     "invalid-asyncapi-version": {
       severity: "error", 
       messages: {
-        default: paramMessage`AsyncAPI version '${{"version"}}' is not supported. Only AsyncAPI 3.0.0 is supported.`,
+        default: paramMessage`AsyncAPI version '${"version"}' is not supported. Only AsyncAPI 3.0.0 is supported.`,
       },
     },
     "missing-channel-path": {
@@ -18,25 +18,25 @@ export const $lib = createTypeSpecLibrary({
     "invalid-channel-path": {
       severity: "error",
       messages: {
-        default: paramMessage`Channel path '${{"path"}}' is not valid. Channel paths must be valid AsyncAPI channel identifiers.`,
+        default: paramMessage`Channel path '${"path"}' is not valid. Channel paths must be valid AsyncAPI channel identifiers.`,
       },
     },
     "missing-message-schema": {
       severity: "error", 
       messages: {
-        default: paramMessage`Message '${{"messageName"}}' must have a defined schema. Use @message decorator with a TypeSpec model.`,
+        default: paramMessage`Message '${"messageName"}' must have a defined schema. Use @message decorator with a TypeSpec model.`,
       },
     },
     "conflicting-operation-type": {
       severity: "error",
       messages: {
-        default: paramMessage`Operation '${{"operationName"}}' cannot be both @publish and @subscribe. Choose one operation type.`,
+        default: paramMessage`Operation '${"operationName"}' cannot be both @publish and @subscribe. Choose one operation type.`,
       },
     },
     "unsupported-protocol": {
       severity: "error",
       messages: {
-        default: paramMessage`Protocol '${{"protocol"}}' is not supported. Supported protocols: kafka, amqp, websocket, http.`,
+        default: paramMessage`Protocol '${"protocol"}' is not supported. Supported protocols: kafka, amqp, websocket, http.`,
       },
     },
     "missing-server-config": {
@@ -48,19 +48,19 @@ export const $lib = createTypeSpecLibrary({
     "invalid-security-scheme": {
       severity: "error",
       messages: {
-        default: paramMessage`Security scheme '${{"scheme"}}' is not valid for AsyncAPI 3.0.`,
+        default: paramMessage`Security scheme '${"scheme"}' is not valid for AsyncAPI 3.0.`,
       },
     },
     "duplicate-channel-id": {
       severity: "error", 
       messages: {
-        default: paramMessage`Channel ID '${{"channelId"}}' is already defined. Channel IDs must be unique within an AsyncAPI specification.`,
+        default: paramMessage`Channel ID '${"channelId"}' is already defined. Channel IDs must be unique within an AsyncAPI specification.`,
       },
     },
     "circular-message-reference": {
       severity: "error",
       messages: {
-        default: paramMessage`Circular reference detected in message schema for '${{"messageName"}}'.`,
+        default: paramMessage`Circular reference detected in message schema for '${"messageName"}'.`,
       },
     },
   },
