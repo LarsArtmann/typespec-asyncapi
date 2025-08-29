@@ -4,7 +4,13 @@ node_modules
 # output
 out
 dist
+build
+lib
 *.tgz
+
+# TypeSpec outputs
+tsp-output/
+**/*tsp-output/
 
 # code coverage
 coverage
@@ -12,7 +18,7 @@ coverage
 
 # logs
 logs
-_.log
+*.log
 report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 
 # dotenv environment variable files
@@ -26,9 +32,22 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 .eslintcache
 .cache
 *.tsbuildinfo
+.turbo
 
-# IntelliJ based IDEs
+# IDEs
 .idea
+.vscode/
+*.swp
+*.swo
 
-# Finder (MacOS) folder config
+# OS
 .DS_Store
+Thumbs.db
+
+# Testing
+coverage
+.nyc_output
+
+# Temporary files
+*.tmp
+*.temp
