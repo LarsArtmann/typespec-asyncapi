@@ -1,9 +1,9 @@
 // Export working decorator functions
 export { $channel } from "./channel.js";
 export { $publish } from "./publish.js";
+export { $subscribe } from "./subscribe.js";
 
-// TODO: Fix and add remaining decorators after TypeScript issues resolved 
-// export { $subscribe } from "./subscribe.js";
+// TODO: Fix and add remaining decorators after TypeScript issues resolved
 // export { $server } from "./server.js";
 // export { $message } from "./message.js";
 // export { $protocol } from "./protocol.js";

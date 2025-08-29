@@ -2,6 +2,7 @@ import type { EmitContext, Operation, Model, Program } from "@typespec/compiler"
 import { emitFile, getDoc } from "@typespec/compiler";
 import { stringify } from "yaml";
 import type { AsyncAPIEmitterOptions } from "./options.js";
+import { stateKeys } from "./lib.js";
 
 // NOTE: @typespec/asset-emitter dependency is now available for future migration
 // to modern asset-based emitter architecture. See: @typespec/openapi3 for reference.
@@ -110,8 +111,22 @@ function createChannelDefinition(op: Operation, program: Program): { name: strin
  * Create operation definition for AsyncAPI
  */
 function createOperationDefinition(op: Operation, channelName: string, program: Program): any {
+  // Get operation type from decorator state
+  const operationTypesMap = program.stateMap(stateKeys.operationTypes);
+  const operationType = operationTypesMap.get(op);
+  
+  // Determine action based on decorator type
+  let action = "send"; // default for @publish or no decorator
+  if (operationType === "subscribe") {
+    action = "receive";
+  } else if (operationType === "publish") {
+    action = "send";
+  }
+  
+  console.log(`📡 Operation ${op.name} type: ${operationType || "none"} -> action: ${action}`);
+  
   return {
-    action: "send",
+    action,
     channel: { $ref: `#/channels/${channelName}` },
     summary: getDoc(program, op) || `Operation ${op.name}`,
     description: `Generated from TypeSpec operation with ${op.parameters.properties.size} parameters`,

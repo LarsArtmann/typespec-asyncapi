@@ -5,6 +5,70 @@
 import { createTestHost, expectDiagnosticEmpty } from "@typespec/compiler/testing";
 import { AsyncAPITestLibrary } from "../test-host.js";
 import type { AsyncAPIEmitterOptions } from "../../src/options.js";
+import type { Diagnostic, Program, CompilerHost } from "@typespec/compiler";
+
+// AsyncAPI Document Type Definitions
+export interface AsyncAPIDocument {
+  asyncapi: string;
+  info: {
+    title: string;
+    version: string;
+    description?: string;
+  };
+  channels: Record<string, AsyncAPIChannel>;
+  operations?: Record<string, AsyncAPIOperation>;
+  components?: {
+    schemas?: Record<string, AsyncAPISchema>;
+  };
+}
+
+export interface AsyncAPIChannel {
+  address?: string;
+  description?: string;
+  messages?: Record<string, AsyncAPIMessage>;
+}
+
+export interface AsyncAPIOperation {
+  action: 'send' | 'receive';
+  channel: {
+    $ref: string;
+  };
+  messages?: Array<{
+    $ref: string;
+  }>;
+  description?: string;
+}
+
+export interface AsyncAPIMessage {
+  name?: string;
+  title?: string;
+  description?: string;
+  payload?: {
+    $ref: string;
+  };
+}
+
+export interface AsyncAPISchema {
+  type?: string;
+  properties?: Record<string, AsyncAPISchema>;
+  required?: string[];
+  description?: string;
+  format?: string;
+  enum?: string[];
+  items?: AsyncAPISchema;
+  additionalProperties?: boolean | AsyncAPISchema;
+}
+
+export interface CompilationResult {
+  diagnostics: readonly Diagnostic[];
+  outputFiles: Map<string, { content: string }>;
+  program: Program;
+}
+
+export interface TestFileSystem {
+  get(path: string): { content: string } | undefined;
+  keys(): string[];
+}
 
 /**
  * Create a test host configured for AsyncAPI testing
@@ -21,7 +85,7 @@ export async function createAsyncAPITestHost() {
 export async function compileAsyncAPISpec(
   source: string, 
   options: AsyncAPIEmitterOptions = {}
-) {
+): Promise<CompilationResult> {
   const host = await createAsyncAPITestHost();
   
   // Wrap source with imports
@@ -43,7 +107,7 @@ export async function compileAsyncAPISpec(
   
   return {
     diagnostics: result.diagnostics,
-    outputFiles: host.fs,
+    outputFiles: host.fs as Map<string, { content: string }>,
     program: result.program,
   };
 }
@@ -54,21 +118,22 @@ export async function compileAsyncAPISpec(
 export async function compileAsyncAPISpecWithoutErrors(
   source: string,
   options: AsyncAPIEmitterOptions = {}
-) {
-  const { diagnostics, outputFiles, program } = await compileAsyncAPISpec(source, options);
+): Promise<{ outputFiles: Map<string, { content: string }>; program: Program; diagnostics: readonly Diagnostic[] }> {
+  const result = await compileAsyncAPISpec(source, options);
   
-  const errors = diagnostics.filter(d => d.severity === "error");
+  const diagnostics = result.diagnostics || [];
+  const errors = diagnostics.filter((d: Diagnostic) => d.severity === "error");
   if (errors.length > 0) {
-    throw new Error(`Compilation failed with errors: ${errors.map(d => d.message).join(", ")}`);
+    throw new Error(`Compilation failed with errors: ${errors.map((d: Diagnostic) => d.message).join(", ")}`);
   }
   
-  return { outputFiles, program, diagnostics };
+  return { outputFiles: result.outputFiles, program: result.program, diagnostics };
 }
 
 /**
  * Parse AsyncAPI output from compilation result
  */
-export function parseAsyncAPIOutput(outputFiles: any, filename: string) {
+export function parseAsyncAPIOutput(outputFiles: Map<string, { content: string }>, filename: string): AsyncAPIDocument | string {
   const filePath = `test-output/${filename}`;
   
   try {
@@ -80,17 +145,17 @@ export function parseAsyncAPIOutput(outputFiles: any, filename: string) {
         const availableFiles = Array.from(outputFiles.keys());
         throw new Error(`Output file ${filename} not found. Available files: ${availableFiles.join(", ")}`);
       }
-      return parseFileContent(alternativeContent, filename);
+      return parseFileContent(alternativeContent.content, filename);
     }
     
-    return parseFileContent(content, filename);
+    return parseFileContent(content.content, filename);
   } catch (error) {
     const availableFiles = Array.from(outputFiles.keys());
     throw new Error(`Failed to parse ${filename}: ${error}. Available files: ${availableFiles.join(", ")}`);
   }
 }
 
-function parseFileContent(content: string, filename: string) {
+function parseFileContent(content: string, filename: string): AsyncAPIDocument | string {
   if (filename.endsWith('.json')) {
     return JSON.parse(content);
   } else if (filename.endsWith('.yaml') || filename.endsWith('.yml')) {
@@ -105,20 +170,25 @@ function parseFileContent(content: string, filename: string) {
 /**
  * Validate basic AsyncAPI 3.0 structure
  */
-export function validateAsyncAPIStructure(asyncapiDoc: any) {
+export function validateAsyncAPIStructure(asyncapiDoc: unknown): boolean {
   if (typeof asyncapiDoc === 'string') {
     throw new Error("Expected parsed AsyncAPI document, got string. Use parseAsyncAPIOutput first.");
   }
   
+  if (!asyncapiDoc || typeof asyncapiDoc !== 'object') {
+    throw new Error("Expected AsyncAPI document to be an object");
+  }
+  
+  const doc = asyncapiDoc as Record<string, unknown>;
   const requiredFields = ['asyncapi', 'info', 'channels'];
-  const missingFields = requiredFields.filter(field => !(field in asyncapiDoc));
+  const missingFields = requiredFields.filter(field => !(field in doc));
   
   if (missingFields.length > 0) {
     throw new Error(`Missing required AsyncAPI fields: ${missingFields.join(", ")}`);
   }
   
-  if (asyncapiDoc.asyncapi !== "3.0.0") {
-    throw new Error(`Expected AsyncAPI version 3.0.0, got ${asyncapiDoc.asyncapi}`);
+  if (doc.asyncapi !== "3.0.0") {
+    throw new Error(`Expected AsyncAPI version 3.0.0, got ${doc.asyncapi}`);
   }
   
   return true;
@@ -218,26 +288,30 @@ export const TestSources = {
  * Common test assertions for AsyncAPI validation
  */
 export const AsyncAPIAssertions = {
-  hasValidStructure: (doc: any) => {
-    validateAsyncAPIStructure(doc);
-    return true;
+  hasValidStructure: (doc: unknown): boolean => {
+    try {
+      validateAsyncAPIStructure(doc);
+      return true;
+    } catch {
+      return false;
+    }
   },
   
-  hasChannel: (doc: any, channelName: string) => {
+  hasChannel: (doc: AsyncAPIDocument, channelName: string): boolean => {
     if (!doc.channels || !(channelName in doc.channels)) {
       throw new Error(`Expected channel '${channelName}' not found. Available channels: ${Object.keys(doc.channels || {}).join(", ")}`);
     }
     return true;
   },
   
-  hasOperation: (doc: any, operationName: string) => {
+  hasOperation: (doc: AsyncAPIDocument, operationName: string): boolean => {
     if (!doc.operations || !(operationName in doc.operations)) {
       throw new Error(`Expected operation '${operationName}' not found. Available operations: ${Object.keys(doc.operations || {}).join(", ")}`);
     }
     return true;
   },
   
-  hasSchema: (doc: any, schemaName: string) => {
+  hasSchema: (doc: AsyncAPIDocument, schemaName: string): boolean => {
     if (!doc.components || !doc.components.schemas || !(schemaName in doc.components.schemas)) {
       const availableSchemas = doc.components?.schemas ? Object.keys(doc.components.schemas) : [];
       throw new Error(`Expected schema '${schemaName}' not found. Available schemas: ${availableSchemas.join(", ")}`);
@@ -245,7 +319,7 @@ export const AsyncAPIAssertions = {
     return true;
   },
   
-  schemaHasProperty: (doc: any, schemaName: string, propertyName: string) => {
+  schemaHasProperty: (doc: AsyncAPIDocument, schemaName: string, propertyName: string): boolean => {
     AsyncAPIAssertions.hasSchema(doc, schemaName);
     const schema = doc.components.schemas[schemaName];
     
@@ -256,7 +330,7 @@ export const AsyncAPIAssertions = {
     return true;
   },
   
-  hasDocumentation: (obj: any, expectedDoc: string) => {
+  hasDocumentation: (obj: { description?: string }, expectedDoc: string): boolean => {
     if (!obj.description || !obj.description.includes(expectedDoc)) {
       throw new Error(`Expected documentation containing '${expectedDoc}', got: ${obj.description || 'no description'}`);
     }
