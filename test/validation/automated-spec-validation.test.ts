@@ -1,0 +1,582 @@
+/**
+ * CRITICAL AUTOMATED ASYNCAPI SPEC VALIDATION TEST
+ * 
+ * This test ensures that ALL generated AsyncAPI specifications are VALID
+ * against the official AsyncAPI 3.0.0 JSON Schema. Any invalid spec will
+ * cause this test to FAIL IMMEDIATELY, preventing deployment of broken specs.
+ * 
+ * REQUIREMENTS:
+ * - Validates ALL generated AsyncAPI specs (JSON and YAML)
+ * - Uses official AsyncAPI 3.0.0 JSON Schema validation
+ * - Performance <100ms per spec validation
+ * - Clear error messages for any validation failures
+ * - Automatic discovery of all generated spec files
+ * - Zero tolerance for invalid specifications
+ */
+
+import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import { AsyncAPIValidator, type ValidationResult } from "../../src/validation/asyncapi-validator.js";
+import { compileAsyncAPISpec, parseAsyncAPIOutput, TestSources } from "../utils/test-helpers.js";
+import { writeFile, mkdir, rm } from "node:fs/promises";
+import { join } from "node:path";
+
+interface TestScenario {
+  name: string;
+  source: string;
+  outputFormats: Array<"json" | "yaml">;
+  description: string;
+}
+
+// Comprehensive test scenarios covering all AsyncAPI features
+const VALIDATION_TEST_SCENARIOS: TestScenario[] = [
+  {
+    name: "basic-event-api",
+    source: TestSources.basicEvent,
+    outputFormats: ["json", "yaml"],
+    description: "Basic event publishing API"
+  },
+  {
+    name: "complex-event-api", 
+    source: TestSources.complexEvent,
+    outputFormats: ["json", "yaml"],
+    description: "Complex event with metadata and status"
+  },
+  {
+    name: "multiple-operations-api",
+    source: TestSources.multipleOperations,
+    outputFormats: ["json", "yaml"],
+    description: "API with multiple channels and operations"
+  },
+  {
+    name: "documented-api",
+    source: TestSources.withDocumentation,
+    outputFormats: ["json", "yaml"],
+    description: "API with comprehensive documentation"
+  },
+  {
+    name: "microservices-event-api",
+    source: `
+      @doc("Microservices Event Architecture")
+      namespace MicroservicesAPI;
+      
+      @doc("Order lifecycle event")
+      model OrderEvent {
+        orderId: string;
+        customerId: string;
+        eventType: "created" | "updated" | "fulfilled" | "cancelled";
+        orderData: {
+          items: Array<{
+            productId: string;
+            quantity: int32;
+            price: float64;
+          }>;
+          total: float64;
+          currency: string;
+        };
+        timestamp: utcDateTime;
+      }
+      
+      @doc("Payment processing event")
+      model PaymentEvent {
+        paymentId: string;
+        orderId: string;
+        status: "pending" | "completed" | "failed" | "refunded";
+        amount: float64;
+        currency: string;
+        method: string;
+        timestamp: utcDateTime;
+      }
+      
+      @channel("orders.events")
+      @doc("Order lifecycle events")
+      op publishOrderEvent(): OrderEvent;
+      
+      @channel("orders.events")
+      @doc("Subscribe to order events for specific customer")
+      op subscribeOrderEvents(customerId?: string): OrderEvent;
+      
+      @channel("payments.events")
+      @doc("Payment processing events")
+      op publishPaymentEvent(): PaymentEvent;
+      
+      @channel("payments.events")
+      @doc("Subscribe to payment events")
+      op subscribePaymentEvents(orderId?: string): PaymentEvent;
+    `,
+    outputFormats: ["json", "yaml"],
+    description: "Microservices event-driven architecture"
+  },
+  {
+    name: "iot-sensor-api",
+    source: `
+      @doc("IoT Sensor Data Streaming API")
+      namespace IoTSensorAPI;
+      
+      @doc("Temperature sensor reading")
+      model TemperatureReading {
+        sensorId: string;
+        deviceId: string;
+        temperature: float64;
+        unit: "celsius" | "fahrenheit";
+        timestamp: utcDateTime;
+        location: {
+          latitude: float64;
+          longitude: float64;
+          altitude?: float64;
+        };
+        metadata: {
+          batteryLevel?: float64;
+          signalStrength?: int32;
+          firmware: string;
+        };
+      }
+      
+      @doc("Motion detection event")
+      model MotionEvent {
+        sensorId: string;
+        deviceId: string;
+        detected: boolean;
+        intensity: float64;
+        timestamp: utcDateTime;
+      }
+      
+      @channel("sensors.temperature.{deviceId}")
+      @doc("Stream temperature data for specific device")
+      op streamTemperatureData(deviceId: string): TemperatureReading;
+      
+      @channel("sensors.motion.{deviceId}")
+      @doc("Stream motion events for specific device")
+      op streamMotionEvents(deviceId: string): MotionEvent;
+      
+      @channel("sensors.health")
+      @doc("Device health monitoring")
+      op monitorDeviceHealth(): {
+        deviceId: string;
+        status: "online" | "offline" | "maintenance";
+        lastSeen: utcDateTime;
+        batteryLevel: float64;
+      };
+    `,
+    outputFormats: ["json", "yaml"],
+    description: "IoT sensor data streaming with parameterized channels"
+  },
+  {
+    name: "real-time-chat-api",
+    source: `
+      @doc("Real-time Chat Application API")
+      namespace ChatAPI;
+      
+      @doc("Chat message")
+      model ChatMessage {
+        messageId: string;
+        channelId: string;
+        userId: string;
+        username: string;
+        content: string;
+        timestamp: utcDateTime;
+        messageType: "text" | "image" | "file" | "system";
+        metadata?: {
+          edited: boolean;
+          replyToMessageId?: string;
+          mentions: string[];
+          attachments: Array<{
+            filename: string;
+            url: string;
+            size: int32;
+            mimeType: string;
+          }>;
+        };
+      }
+      
+      @doc("User presence status")
+      model UserPresence {
+        userId: string;
+        username: string;
+        status: "online" | "away" | "busy" | "offline";
+        lastSeen: utcDateTime;
+        currentChannel?: string;
+      }
+      
+      @channel("chat.{channelId}.messages")
+      @doc("Send messages to specific chat channel")
+      op sendMessage(channelId: string): ChatMessage;
+      
+      @channel("chat.{channelId}.messages")
+      @doc("Receive messages from specific chat channel")
+      op receiveMessages(channelId: string): ChatMessage;
+      
+      @channel("users.presence")
+      @doc("Broadcast user presence updates")
+      op updateUserPresence(): UserPresence;
+      
+      @channel("users.presence")
+      @doc("Subscribe to user presence updates")
+      op subscribeUserPresence(): UserPresence;
+    `,
+    outputFormats: ["json", "yaml"],
+    description: "Real-time chat with presence and parameterized channels"
+  }
+];
+
+describe("🚨 CRITICAL: AUTOMATED ASYNCAPI SPECIFICATION VALIDATION", () => {
+  let validator: AsyncAPIValidator;
+  const testOutputDir = join(process.cwd(), "test-output", "automated-validation");
+  const generatedSpecs: Array<{ filePath: string; scenario: string; format: string }> = [];
+
+  beforeAll(async () => {
+    console.log("🔧 Initializing AsyncAPI 3.0.0 Validator...");
+    
+    // Create test output directory
+    await mkdir(testOutputDir, { recursive: true });
+    
+    // Initialize validator with strict settings
+    validator = new AsyncAPIValidator({
+      strict: true,
+      enableCache: false, // No caching for validation tests
+      benchmarking: true,
+      customRules: [], // Use only official AsyncAPI schema
+    });
+    
+    await validator.initialize();
+    console.log("✅ AsyncAPI 3.0.0 Validator initialized successfully");
+  });
+
+  afterAll(async () => {
+    // Clean up test output directory
+    await rm(testOutputDir, { recursive: true, force: true });
+    
+    // Print validation statistics
+    const stats = validator.getValidationStats();
+    console.log("\n📊 Validation Statistics:");
+    console.log(`  - Total Validations: ${stats.totalValidations}`);
+    console.log(`  - Average Duration: ${stats.averageDuration.toFixed(2)}ms`);
+  });
+
+  describe("🏭 AsyncAPI Spec Generation & Validation Pipeline", () => {
+    it.each(VALIDATION_TEST_SCENARIOS)(
+      "should generate and validate $name ($description)",
+      async (scenario) => {
+        console.log(`\n🔄 Testing: ${scenario.name}`);
+        console.log(`📝 Description: ${scenario.description}`);
+
+        for (const format of scenario.outputFormats) {
+          const testStartTime = performance.now();
+          
+          // Step 1: Generate AsyncAPI specification
+          console.log(`  📄 Generating ${format.toUpperCase()} specification...`);
+          const compilationResult = await compileAsyncAPISpec(scenario.source, {
+            "file-type": format,
+            "output-file": scenario.name,
+          });
+
+          expect(compilationResult.outputFiles).toBeDefined();
+          expect(compilationResult.outputFiles.size).toBeGreaterThan(0);
+
+          // Step 2: Parse generated specification
+          const fileName = `${scenario.name}.${format}`;
+          console.log(`  🔍 Parsing ${fileName}...`);
+          
+          let parsedSpec: any;
+          try {
+            parsedSpec = parseAsyncAPIOutput(compilationResult.outputFiles, fileName);
+            expect(parsedSpec).toBeDefined();
+          } catch (error) {
+            throw new Error(`Failed to parse generated ${fileName}: ${error instanceof Error ? error.message : String(error)}`);
+          }
+
+          // Step 3: Write spec to file system for file validation
+          const filePath = join(testOutputDir, fileName);
+          const fileContent = format === "json" 
+            ? JSON.stringify(parsedSpec, null, 2)
+            : String(parsedSpec);
+          
+          await writeFile(filePath, fileContent);
+          generatedSpecs.push({ filePath, scenario: scenario.name, format });
+
+          // Step 4: CRITICAL VALIDATION - Spec MUST be valid
+          console.log(`  ✅ Validating ${fileName} against AsyncAPI 3.0.0 schema...`);
+          
+          const validationResult = await validator.validateFile(filePath);
+          const validationDuration = performance.now() - testStartTime;
+
+          // HARD REQUIREMENTS - ANY FAILURE STOPS THE BUILD
+          expect(validationResult.valid).toBe(true);
+          expect(validationResult.errors).toHaveLength(0);
+          expect(validationResult.metrics.duration).toBeLessThan(100); // <100ms requirement
+          expect(validationResult.summary).toContain("AsyncAPI document is valid");
+
+          console.log(`    ✅ VALID: ${scenario.name}.${format} (${validationResult.metrics.duration.toFixed(2)}ms)`);
+          console.log(`    📊 Channels: ${validationResult.metrics.channelCount}, Operations: ${validationResult.metrics.operationCount}`);
+
+          // Verify document structure meets AsyncAPI 3.0.0 requirements
+          if (format === "json") {
+            const doc = parsedSpec;
+            expect(doc.asyncapi).toBe("3.0.0");
+            expect(doc.info).toBeDefined();
+            expect(doc.info.title).toBeDefined();
+            expect(doc.info.version).toBeDefined();
+            expect(doc.channels).toBeDefined();
+            expect(Object.keys(doc.channels).length).toBeGreaterThan(0);
+            
+            if (doc.operations) {
+              expect(Object.keys(doc.operations).length).toBeGreaterThan(0);
+              
+              // Validate all operation channel references
+              for (const [opName, operation] of Object.entries(doc.operations)) {
+                expect(operation).toHaveProperty("action");
+                expect(operation).toHaveProperty("channel");
+                expect((operation as any).channel).toHaveProperty("$ref");
+                
+                const channelRef = (operation as any).channel.$ref.replace("#/channels/", "");
+                expect(doc.channels).toHaveProperty(channelRef);
+              }
+            }
+          }
+
+          console.log(`    ⏱️  Total test time: ${validationDuration.toFixed(2)}ms`);
+        }
+
+        console.log(`✅ ${scenario.name} - ALL FORMATS VALID`);
+      },
+      15000 // 15 second timeout per scenario
+    );
+  });
+
+  describe("🔍 Batch Validation of All Generated Specs", () => {
+    it("should validate all generated specifications in a single batch", async () => {
+      console.log("\n🏭 Running batch validation of all generated specifications...");
+      
+      if (generatedSpecs.length === 0) {
+        throw new Error("No specifications were generated for batch validation");
+      }
+
+      const batchStartTime = performance.now();
+      const batchResults: Array<{
+        file: string;
+        scenario: string;
+        format: string;
+        valid: boolean;
+        duration: number;
+        errors: number;
+      }> = [];
+
+      // Validate each generated spec file
+      for (const spec of generatedSpecs) {
+        const result = await validator.validateFile(spec.filePath);
+        
+        batchResults.push({
+          file: spec.filePath,
+          scenario: spec.scenario,
+          format: spec.format,
+          valid: result.valid,
+          duration: result.metrics.duration,
+          errors: result.errors.length,
+        });
+
+        // CRITICAL: Every spec must be valid
+        if (!result.valid) {
+          console.error(`❌ INVALID SPEC: ${spec.scenario}.${spec.format}`);
+          console.error("Validation Errors:");
+          result.errors.forEach(error => {
+            console.error(`  - ${error.message} (${error.keyword}) at ${error.instancePath}`);
+          });
+          
+          throw new Error(
+            `INVALID ASYNCAPI SPECIFICATION DETECTED: ${spec.scenario}.${spec.format}\n` +
+            `Errors: ${result.errors.map(e => e.message).join(", ")}\n` +
+            `This specification would cause runtime failures and MUST be fixed before deployment.`
+          );
+        }
+      }
+
+      const batchDuration = performance.now() - batchStartTime;
+      const totalSpecs = batchResults.length;
+      const validSpecs = batchResults.filter(r => r.valid).length;
+      const avgValidationTime = batchResults.reduce((sum, r) => sum + r.duration, 0) / totalSpecs;
+
+      // Performance requirements
+      expect(batchDuration).toBeLessThan(5000); // Total batch validation <5 seconds
+      expect(avgValidationTime).toBeLessThan(100); // Average validation <100ms
+      expect(validSpecs).toBe(totalSpecs); // 100% valid rate
+
+      console.log("\n📊 BATCH VALIDATION RESULTS:");
+      console.log(`  📄 Total Specifications: ${totalSpecs}`);
+      console.log(`  ✅ Valid Specifications: ${validSpecs}`);
+      console.log(`  ❌ Invalid Specifications: ${totalSpecs - validSpecs}`);
+      console.log(`  ⏱️  Total Validation Time: ${batchDuration.toFixed(2)}ms`);
+      console.log(`  ⚡ Average Validation Time: ${avgValidationTime.toFixed(2)}ms`);
+      console.log(`  📈 Success Rate: ${((validSpecs / totalSpecs) * 100).toFixed(1)}%`);
+
+      // Detailed results
+      console.log("\n📋 Individual Results:");
+      batchResults.forEach(result => {
+        const status = result.valid ? "✅" : "❌";
+        console.log(`  ${status} ${result.scenario}.${result.format} (${result.duration.toFixed(2)}ms)`);
+      });
+
+      console.log("\n🎉 ALL ASYNCAPI SPECIFICATIONS ARE VALID!");
+    });
+  });
+
+  describe("🚨 Validation Error Detection", () => {
+    it("should detect and report validation errors in invalid specifications", async () => {
+      console.log("\n🧪 Testing validation error detection...");
+
+      const invalidSpecs = [
+        {
+          name: "missing-asyncapi-version",
+          document: {
+            info: { title: "Invalid API", version: "1.0.0" },
+            channels: {},
+          },
+          expectedError: "required",
+        },
+        {
+          name: "wrong-asyncapi-version",
+          document: {
+            asyncapi: "2.6.0", // Wrong version
+            info: { title: "Invalid API", version: "1.0.0" },
+            channels: {},
+          },
+          expectedError: "const",
+        },
+        {
+          name: "missing-info",
+          document: {
+            asyncapi: "3.0.0",
+            channels: {},
+          },
+          expectedError: "required",
+        },
+        {
+          name: "invalid-operation-action",
+          document: {
+            asyncapi: "3.0.0",
+            info: { title: "Invalid API", version: "1.0.0" },
+            channels: {
+              "test-channel": { address: "test" },
+            },
+            operations: {
+              testOp: {
+                action: "invalid-action", // Should be "send" or "receive"
+                channel: { $ref: "#/channels/test-channel" },
+              },
+            },
+          },
+          expectedError: "enum",
+        },
+      ];
+
+      for (const invalidSpec of invalidSpecs) {
+        console.log(`  🧪 Testing invalid spec: ${invalidSpec.name}`);
+        
+        const result = await validator.validate(invalidSpec.document);
+        
+        // Should be invalid
+        expect(result.valid).toBe(false);
+        expect(result.errors.length).toBeGreaterThan(0);
+        
+        // Should contain expected error type
+        const errorKeywords = result.errors.map(e => e.keyword);
+        expect(errorKeywords).toContain(invalidSpec.expectedError);
+        
+        console.log(`    ❌ Correctly identified as invalid (${result.errors.length} errors)`);
+        console.log(`    🔍 Error: ${result.errors[0].message}`);
+      }
+
+      console.log("✅ Validation error detection working correctly");
+    });
+  });
+
+  describe("⚡ Performance Requirements", () => {
+    it("should meet performance requirements for validation", async () => {
+      console.log("\n⚡ Testing validation performance requirements...");
+
+      // Test with a medium-complexity document
+      const testDocument = {
+        asyncapi: "3.0.0",
+        info: {
+          title: "Performance Test API",
+          version: "1.0.0",
+          description: "API for performance testing validation",
+        },
+        channels: {
+          "perf-channel-1": {
+            address: "performance/test/1",
+            messages: {
+              perfMessage1: {
+                payload: {
+                  type: "object",
+                  properties: {
+                    id: { type: "string" },
+                    data: { type: "string" },
+                    timestamp: { type: "string", format: "date-time" },
+                  },
+                  required: ["id", "data"],
+                },
+              },
+            },
+          },
+          "perf-channel-2": {
+            address: "performance/test/2",
+            messages: {
+              perfMessage2: {
+                payload: {
+                  type: "object",
+                  properties: {
+                    userId: { type: "string" },
+                    action: { type: "string", enum: ["create", "update", "delete"] },
+                    metadata: {
+                      type: "object",
+                      additionalProperties: true,
+                    },
+                  },
+                  required: ["userId", "action"],
+                },
+              },
+            },
+          },
+        },
+        operations: {
+          publishPerformanceEvent1: {
+            action: "send",
+            channel: { $ref: "#/channels/perf-channel-1" },
+          },
+          subscribePerformanceEvent2: {
+            action: "receive", 
+            channel: { $ref: "#/channels/perf-channel-2" },
+          },
+        },
+      };
+
+      // Run multiple validations to test performance consistency
+      const validationTimes: number[] = [];
+      const iterations = 10;
+
+      for (let i = 0; i < iterations; i++) {
+        const startTime = performance.now();
+        const result = await validator.validate(testDocument, `perf-test-${i}`);
+        const duration = performance.now() - startTime;
+        
+        expect(result.valid).toBe(true);
+        expect(duration).toBeLessThan(100); // <100ms requirement
+        
+        validationTimes.push(duration);
+      }
+
+      const avgTime = validationTimes.reduce((sum, time) => sum + time, 0) / iterations;
+      const maxTime = Math.max(...validationTimes);
+      const minTime = Math.min(...validationTimes);
+
+      console.log(`  ⏱️  Average validation time: ${avgTime.toFixed(2)}ms`);
+      console.log(`  ⚡ Fastest validation: ${minTime.toFixed(2)}ms`);
+      console.log(`  🐌 Slowest validation: ${maxTime.toFixed(2)}ms`);
+
+      // Performance requirements
+      expect(avgTime).toBeLessThan(50); // Average should be well under 100ms
+      expect(maxTime).toBeLessThan(100); // No single validation >100ms
+      
+      console.log("✅ All performance requirements met");
+    });
+  });
+});

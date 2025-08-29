@@ -88,8 +88,13 @@ export async function compileAsyncAPISpec(
 ): Promise<CompilationResult> {
   const host = await createAsyncAPITestHost();
   
-  // Use source without imports for now to avoid library resolution issues
-  const wrappedSource = source;
+  // Wrap source with proper imports to make decorators available
+  const wrappedSource = `
+import "@typespec/asyncapi";
+using TypeSpec.AsyncAPI;
+
+${source}
+  `;
   
   host.addTypeSpecFile("main.tsp", wrappedSource);
   
@@ -205,7 +210,8 @@ function parseFileContent(content: string, filename: string): AsyncAPIDocument |
 }
 
 /**
- * Validate basic AsyncAPI 3.0 structure
+ * Validate basic AsyncAPI 3.0 structure (legacy function)
+ * @deprecated Use AsyncAPIValidator from validation framework instead
  */
 export function validateAsyncAPIStructure(asyncapiDoc: unknown): boolean {
   if (typeof asyncapiDoc === 'string') {
@@ -229,6 +235,45 @@ export function validateAsyncAPIStructure(asyncapiDoc: unknown): boolean {
   }
   
   return true;
+}
+
+/**
+ * Validate AsyncAPI document using comprehensive validation framework
+ */
+export async function validateAsyncAPIDocumentComprehensive(asyncapiDoc: unknown): Promise<{
+  valid: boolean;
+  errors: Array<{ message: string; keyword: string; path: string }>;
+  summary: string;
+}> {
+  try {
+    // Import validation framework dynamically to avoid circular dependencies
+    const { validateAsyncAPIDocument } = await import("../../src/validation/index.js");
+    
+    const result = await validateAsyncAPIDocument(asyncapiDoc, {
+      strict: true,
+      enableCache: false, // Disable cache for testing
+    });
+
+    return {
+      valid: result.valid,
+      errors: result.errors.map(error => ({
+        message: error.message,
+        keyword: error.keyword,
+        path: error.instancePath || error.schemaPath,
+      })),
+      summary: result.summary,
+    };
+  } catch (error) {
+    return {
+      valid: false,
+      errors: [{
+        message: `Validation failed: ${error instanceof Error ? error.message : String(error)}`,
+        keyword: "internal-error",
+        path: "",
+      }],
+      summary: "Validation framework error",
+    };
+  }
 }
 
 /**

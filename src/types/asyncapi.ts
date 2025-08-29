@@ -56,7 +56,7 @@ export interface ServerObject {
   security?: SecurityRequirementObject[];
   tags?: TagObject[];
   externalDocs?: ExternalDocumentationObject;
-  bindings?: Record<string, any>;
+  bindings?: ServerBindings;
 }
 
 export interface ServerVariableObject {
@@ -76,7 +76,7 @@ export interface ChannelObject {
   parameters?: Record<string, ParameterObject | ReferenceObject>;
   tags?: TagObject[];
   externalDocs?: ExternalDocumentationObject;
-  bindings?: Record<string, any>;
+  bindings?: ChannelBindings;
 }
 
 export interface OperationObject {
@@ -88,7 +88,7 @@ export interface OperationObject {
   security?: SecurityRequirementObject[];
   tags?: TagObject[];
   externalDocs?: ExternalDocumentationObject;
-  bindings?: Record<string, any>;
+  bindings?: OperationBindings;
   traits?: (OperationTraitObject | ReferenceObject)[];
   messages?: (MessageObject | ReferenceObject)[];
   reply?: OperationReplyObject;
@@ -101,7 +101,7 @@ export interface OperationTraitObject {
   security?: SecurityRequirementObject[];
   tags?: TagObject[];
   externalDocs?: ExternalDocumentationObject;
-  bindings?: Record<string, any>;
+  bindings?: OperationBindings;
 }
 
 export interface OperationReplyObject {
@@ -121,7 +121,7 @@ export interface MessageObject {
   description?: string;
   tags?: TagObject[];
   externalDocs?: ExternalDocumentationObject;
-  bindings?: Record<string, any>;
+  bindings?: MessageBindings;
   examples?: MessageExampleObject[];
   traits?: (MessageTraitObject | ReferenceObject)[];
 }
@@ -136,15 +136,15 @@ export interface MessageTraitObject {
   description?: string;
   tags?: TagObject[];
   externalDocs?: ExternalDocumentationObject;
-  bindings?: Record<string, any>;
+  bindings?: MessageBindings;
   examples?: MessageExampleObject[];
 }
 
 export interface MessageExampleObject {
   name?: string;
   summary?: string;
-  headers?: Record<string, any>;
-  payload?: any;
+  headers?: Record<string, unknown>;
+  payload?: unknown;
 }
 
 export interface CorrelationIdObject {
@@ -175,10 +175,10 @@ export interface ComponentsObject {
   tags?: Record<string, TagObject>;
   operationTraits?: Record<string, OperationTraitObject>;
   messageTraits?: Record<string, MessageTraitObject>;
-  serverBindings?: Record<string, Record<string, any>>;
-  channelBindings?: Record<string, Record<string, any>>;
-  operationBindings?: Record<string, Record<string, any>>;
-  messageBindings?: Record<string, Record<string, any>>;
+  serverBindings?: Record<string, ServerBindings>;
+  channelBindings?: Record<string, ChannelBindings>;
+  operationBindings?: Record<string, OperationBindings>;
+  messageBindings?: Record<string, MessageBindings>;
 }
 
 export interface OperationReplyAddressObject {
@@ -191,8 +191,8 @@ export interface SchemaObject {
   type?: "null" | "boolean" | "object" | "array" | "number" | "string" | "integer";
   title?: string;
   description?: string;
-  default?: any;
-  examples?: any[];
+  default?: unknown;
+  examples?: unknown[];
   
   // Object properties
   properties?: Record<string, SchemaObject | ReferenceObject>;
@@ -219,8 +219,8 @@ export interface SchemaObject {
   multipleOf?: number;
   
   // Generic properties
-  enum?: any[];
-  const?: any;
+  enum?: unknown[];
+  const?: unknown;
   
   // Composition
   allOf?: (SchemaObject | ReferenceObject)[];
@@ -273,3 +273,116 @@ export interface SecurityRequirementObject {
 }
 
 export type RuntimeExpression = string;
+
+/**
+ * Protocol Binding Types for AsyncAPI 3.0.0
+ */
+
+// Base interface for all protocol bindings
+export interface BindingObject {
+  bindingVersion?: string;
+}
+
+// Kafka Protocol Binding
+export interface KafkaServerBinding extends BindingObject {
+  schemaRegistryUrl?: string;
+  schemaRegistryVendor?: string;
+  clientId?: string;
+  groupId?: string;
+}
+
+export interface KafkaChannelBinding extends BindingObject {
+  topic?: string;
+  partitions?: number;
+  replicas?: number;
+  topicConfiguration?: KafkaTopicConfiguration;
+}
+
+export interface KafkaOperationBinding extends BindingObject {
+  groupId?: KafkaOperationGroupId;
+  clientId?: KafkaOperationClientId;
+}
+
+export interface KafkaMessageBinding extends BindingObject {
+  key?: KafkaMessageKey;
+  schemaIdLocation?: "header" | "payload";
+  schemaIdPayloadEncoding?: string;
+  schemaLookupStrategy?: "TopicIdStrategy" | "RecordIdStrategy" | "TopicRecordIdStrategy";
+}
+
+export interface KafkaTopicConfiguration {
+  "cleanup.policy"?: ("delete" | "compact")[];
+  "retention.ms"?: number;
+  "retention.bytes"?: number;
+  "delete.retention.ms"?: number;
+  "max.message.bytes"?: number;
+  [key: string]: unknown;
+}
+
+export interface KafkaOperationGroupId {
+  type?: "string" | "integer";
+  enum?: string[] | number[];
+  description?: string;
+}
+
+export interface KafkaOperationClientId {
+  type?: "string" | "integer";
+  enum?: string[] | number[];
+  description?: string;
+}
+
+export interface KafkaMessageKey {
+  type?: "string" | "integer";
+  enum?: string[] | number[];
+  description?: string;
+}
+
+// WebSocket Protocol Binding
+export interface WebSocketChannelBinding extends BindingObject {
+  method?: "GET" | "POST";
+  query?: SchemaObject | ReferenceObject;
+  headers?: SchemaObject | ReferenceObject;
+}
+
+export interface WebSocketMessageBinding extends BindingObject {
+  // WebSocket messages don't typically have specific binding properties
+  // but we keep this for consistency and future extensions
+}
+
+// HTTP Protocol Binding  
+export interface HttpOperationBinding extends BindingObject {
+  type?: "request" | "response";
+  method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE" | "HEAD" | "OPTIONS" | "CONNECT" | "TRACE";
+  query?: SchemaObject | ReferenceObject;
+  statusCode?: number;
+}
+
+export interface HttpMessageBinding extends BindingObject {
+  headers?: SchemaObject | ReferenceObject;
+  statusCode?: number;
+}
+
+// Protocol-specific binding collections
+export interface ServerBindings {
+  kafka?: KafkaServerBinding;
+  [protocol: string]: BindingObject | undefined;
+}
+
+export interface ChannelBindings {
+  kafka?: KafkaChannelBinding;
+  ws?: WebSocketChannelBinding;
+  [protocol: string]: BindingObject | undefined;
+}
+
+export interface OperationBindings {
+  kafka?: KafkaOperationBinding;
+  http?: HttpOperationBinding;
+  [protocol: string]: BindingObject | undefined;
+}
+
+export interface MessageBindings {
+  kafka?: KafkaMessageBinding;
+  ws?: WebSocketMessageBinding;
+  http?: HttpMessageBinding;
+  [protocol: string]: BindingObject | undefined;
+}

@@ -203,7 +203,7 @@ describe("Effect.TS Schema AsyncAPI Emitter Options", () => {
     expect(AsyncAPIEmitterOptionsSchema).toHaveProperty("properties");
     
     // Verify key properties are present
-    const properties = AsyncAPIEmitterOptionsSchema.properties as any;
+    const properties = AsyncAPIEmitterOptionsSchema.properties as Record<string, unknown>;
     expect(properties).toHaveProperty("output-file");
     expect(properties).toHaveProperty("file-type");
     expect(properties).toHaveProperty("asyncapi-version");
@@ -216,7 +216,7 @@ describe("Effect.TS Schema AsyncAPI Emitter Options", () => {
     expect(AsyncAPIEmitterOptionsSchema.additionalProperties).toBe(false);
     
     // Ensure enum constraints are preserved
-    const properties = AsyncAPIEmitterOptionsSchema.properties as any;
+    const properties = AsyncAPIEmitterOptionsSchema.properties as Record<string, unknown>;
     expect(properties["file-type"]).toHaveProperty("enum", ["yaml", "json"]);
     expect(properties["asyncapi-version"]).toHaveProperty("enum", ["3.0.0"]);
   });
@@ -303,6 +303,130 @@ describe("Effect.TS Schema AsyncAPI Emitter Options", () => {
       expect(errorMessage).toContain("separate-files");
       expect(errorMessage).toContain("file-naming");
     }
+  });
+});
+
+describe("Path Template Validation Tests", () => {
+  test("should validate path template with supported variables", async () => {
+    const pathTemplateOptions = {
+      "output-file": "{project-root}/generated/{cmd}-asyncapi.yaml"
+    };
+
+    const result = await Effect.runPromise(parseAsyncAPIEmitterOptions(pathTemplateOptions));
+    expect(result).toEqual(pathTemplateOptions);
+  });
+
+  test("should validate multiple template variables", async () => {
+    const complexPathOptions = {
+      "output-file": "{emitter-name}/{cmd}/{project-root}/spec.json"
+    };
+
+    const result = await Effect.runPromise(parseAsyncAPIEmitterOptions(complexPathOptions));
+    expect(result).toEqual(complexPathOptions);
+  });
+
+  test("should validate path without template variables", async () => {
+    const simplePathOptions = {
+      "output-file": "simple-output-file.yaml"
+    };
+
+    const result = await Effect.runPromise(parseAsyncAPIEmitterOptions(simplePathOptions));
+    expect(result).toEqual(simplePathOptions);
+  });
+
+  test("should reject path template with unsupported variables", async () => {
+    const invalidPathOptions = {
+      "output-file": "{project-root}/{unknown-variable}/output.yaml"
+    };
+
+    const result = Effect.runPromise(parseAsyncAPIEmitterOptions(invalidPathOptions));
+    await expect(result).rejects.toThrow();
+  });
+
+  test("should reject path template with multiple unsupported variables", async () => {
+    const invalidPathOptions = {
+      "output-file": "{invalid1}/{invalid2}/{cmd}/output.yaml"
+    };
+
+    const result = Effect.runPromise(parseAsyncAPIEmitterOptions(invalidPathOptions));
+    await expect(result).rejects.toThrow();
+  });
+
+  test("should provide detailed error message for invalid template variables", async () => {
+    const invalidPathOptions = {
+      "output-file": "{unknown-var}/output.yaml"
+    };
+
+    try {
+      await Effect.runPromise(parseAsyncAPIEmitterOptions(invalidPathOptions));
+      expect.unreachable("Should have thrown validation error");
+    } catch (error) {
+      const errorMessage = String(error);
+      expect(errorMessage).toContain("Invalid path template");
+      expect(errorMessage).toContain("unknown-var");
+    }
+  });
+
+  test("should validate all supported template variables", async () => {
+    const allVariablesOptions = {
+      "output-file": "{cmd}/{project-root}/{emitter-name}/{output-dir}/complete.yaml"
+    };
+
+    const result = await Effect.runPromise(parseAsyncAPIEmitterOptions(allVariablesOptions));
+    expect(result).toEqual(allVariablesOptions);
+  });
+
+  test("should handle path templates with createAsyncAPIEmitterOptions", async () => {
+    const pathTemplateOptions = {
+      "output-file": "{project-root}/specs/{cmd}-api.yaml",
+      "file-type": "json" as const
+    };
+
+    const result = await Effect.runPromise(createAsyncAPIEmitterOptions(pathTemplateOptions));
+    
+    expect(result).toMatchObject({
+      "output-file": "{project-root}/specs/{cmd}-api.yaml",
+      "file-type": "json",
+      "asyncapi-version": "3.0.0", // Default should be preserved
+      "validate-spec": true // Default should be preserved
+    });
+  });
+
+  test("should handle malformed template variables gracefully", async () => {
+    const malformedPathOptions = {
+      "output-file": "path-with-no-template-variables.yaml"
+    };
+
+    // Paths without template variables should pass validation
+    const result = await Effect.runPromise(parseAsyncAPIEmitterOptions(malformedPathOptions));
+    expect(result).toEqual(malformedPathOptions);
+  });
+
+  test("should validate complex nested paths with templates", async () => {
+    const nestedPathOptions = {
+      "output-file": "{project-root}/api-specs/{emitter-name}/v1/{cmd}-generated.yaml"
+    };
+
+    const result = await Effect.runPromise(parseAsyncAPIEmitterOptions(nestedPathOptions));
+    expect(result).toEqual(nestedPathOptions);
+  });
+
+  // Type guard tests with path templates
+  test("isAsyncAPIEmitterOptions should return true for valid path templates", () => {
+    const validPathTemplateOptions = {
+      "output-file": "{project-root}/generated/{cmd}.yaml",
+      "file-type": "yaml"
+    };
+
+    expect(isAsyncAPIEmitterOptions(validPathTemplateOptions)).toBe(true);
+  });
+
+  test("isAsyncAPIEmitterOptions should return false for invalid path templates", () => {
+    const invalidPathTemplateOptions = {
+      "output-file": "{invalid-variable}/output.yaml"
+    };
+
+    expect(isAsyncAPIEmitterOptions(invalidPathTemplateOptions)).toBe(false);
   });
 });
 

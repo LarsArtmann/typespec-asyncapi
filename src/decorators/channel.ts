@@ -1,7 +1,7 @@
-import type { DecoratorContext, Operation } from "@typespec/compiler";
+import type { DecoratorContext, Operation, StringValue } from "@typespec/compiler";
 import { reportDiagnostic, stateKeys } from "../lib.js";
 
-export function $channel(context: DecoratorContext, target: Operation, path: any): void {
+export function $channel(context: DecoratorContext, target: Operation, path: StringValue | string): void {
   console.log(`🔍 PROCESSING @channel decorator on operation: ${target.name}`);
   console.log(`📍 Channel path raw value:`, path);
   console.log(`📍 Channel path type:`, typeof path);
@@ -24,7 +24,7 @@ export function $channel(context: DecoratorContext, target: Operation, path: any
   } else if (path && typeof path === "object" && "value" in path) {
     channelPath = String(path.value);
   } else if (path && typeof path === "object" && "kind" in path && path.kind === "String") {
-    channelPath = String((path as any).value || path);
+    channelPath = String((path as StringValue).value || path);
   } else {
     console.log(`⚠️  Could not extract string from path:`, path);
     reportDiagnostic(context.program, {

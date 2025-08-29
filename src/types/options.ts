@@ -1,6 +1,14 @@
 export interface AsyncAPIEmitterOptions {
   /**
-   * Name of the output file
+   * Name of the output file. Supports template variables:
+   * - {cmd}: Current command name (e.g., "typespec", "tsp")
+   * - {project-root}: Project root directory path
+   * - {emitter-name}: Name of the emitter ("asyncapi")
+   * - {output-dir}: Configured output directory
+   * 
+   * @example "{project-root}/generated/{cmd}-asyncapi.yaml"
+   * @example "{project-root}/specs/asyncapi.json"
+   * @example "{emitter-name}/{cmd}/api-spec.yaml"
    * @default "asyncapi"
    */
   "output-file"?: string;

@@ -1,11 +1,13 @@
 import { Schema, JSONSchema } from "@effect/schema";
 import { Effect } from "effect";
 import type { AsyncAPIEmitterOptions } from "./types/options.js";
+import { validatePathTemplate } from "./path-templates.js";
 
 // Export the interface type
 export type { AsyncAPIEmitterOptions };
 
 // EFFECT.TS SCHEMA DEFINITIONS - Type-safe validation with comprehensive error handling
+
 
 /**
  * Variable configuration schema for server variables
@@ -92,8 +94,25 @@ const VersioningConfigSchema = Schema.Struct({
  * TYPE SAFETY: Compile-time and runtime validation with comprehensive error messages
  */
 export const AsyncAPIEmitterOptionsEffectSchema = Schema.Struct({
-  "output-file": Schema.optional(Schema.String.annotations({
-    description: "Name of the output file. Default: 'asyncapi.yaml'"
+  "output-file": Schema.optional(Schema.String.pipe(
+    Schema.filter((value) => {
+      // If it has template variables, validate them
+      if (value.includes("{")) {
+        const validation = validatePathTemplate(value);
+        return validation.isValid;
+      }
+      // If no template variables, it's valid
+      return true;
+    }, {
+      message: (value) => {
+        const validation = validatePathTemplate(value);
+        return validation.errors.length > 0 
+          ? `Invalid path template: ${validation.errors.join("; ")}`
+          : "Invalid path template";
+      }
+    })
+  ).annotations({
+    description: "Name of the output file. Supports template variables: {cmd}, {project-root}, {emitter-name}, {output-dir}. Default: 'asyncapi.yaml'"
   })),
   
   "file-type": Schema.optional(Schema.Literal("yaml", "json").annotations({
@@ -159,10 +178,18 @@ export const parseAsyncAPIEmitterOptions = (input: unknown) =>
 
 // TYPE CONVERSION UTILITIES - Handle readonly/optional property differences
 
-const convertVersioningConfig = (input: any): any => {
+interface VersioningConfigInput {
+  "separate-files"?: boolean;
+  "file-naming"?: "suffix" | "directory" | "prefix";
+  "include-version-info"?: boolean;
+  "version-mappings"?: Record<string, string>;
+  "validate-version-compatibility"?: boolean;
+}
+
+const convertVersioningConfig = (input: VersioningConfigInput | undefined): VersioningConfigInput | undefined => {
   if (!input) return input;
   
-  const result: any = {};
+  const result: VersioningConfigInput = {};
   if (input["separate-files"] !== undefined) result["separate-files"] = input["separate-files"];
   if (input["file-naming"] !== undefined) result["file-naming"] = input["file-naming"];
   if (input["include-version-info"] !== undefined) result["include-version-info"] = input["include-version-info"];
@@ -176,10 +203,24 @@ const convertVersioningConfig = (input: any): any => {
   return result;
 };
 
-const convertServerConfig = (input: any): any => {
+interface ServerConfigInput {
+  host: string;
+  protocol: string;
+  description?: string;
+  variables?: Record<string, {
+    description?: string;
+    default?: string;
+    enum?: string[];
+    examples?: string[];
+  }>;
+  security?: string[];
+  bindings?: Record<string, unknown>;
+}
+
+const convertServerConfig = (input: ServerConfigInput | undefined): ServerConfigInput | undefined => {
   if (!input) return input;
   
-  const result: any = {
+  const result: ServerConfigInput = {
     host: input.host,
     protocol: input.protocol
   };
@@ -187,7 +228,7 @@ const convertServerConfig = (input: any): any => {
   if (input.description !== undefined) result.description = input.description;
   if (input.variables !== undefined) {
     result.variables = Object.fromEntries(
-      Object.entries(input.variables).map(([key, value]: [string, any]) => [
+      Object.entries(input.variables).map(([key, value]) => [
         key,
         {
           ...(value.description !== undefined && { description: value.description }),
@@ -204,10 +245,25 @@ const convertServerConfig = (input: any): any => {
   return result;
 };
 
-const convertSecuritySchemeConfig = (input: any): any => {
+interface SecuritySchemeConfigInput {
+  type: "oauth2" | "apiKey" | "httpApiKey" | "http" | "plain" | "scram-sha-256" | "scram-sha-512" | "gssapi";
+  description?: string;
+  name?: string;
+  in?: "user" | "password" | "query" | "header" | "cookie";
+  scheme?: string;
+  bearerFormat?: string;
+  flows?: Record<string, {
+    authorizationUrl?: string;
+    tokenUrl?: string;
+    refreshUrl?: string;
+    availableScopes?: Record<string, string>;
+  }>;
+}
+
+const convertSecuritySchemeConfig = (input: SecuritySchemeConfigInput | undefined): SecuritySchemeConfigInput | undefined => {
   if (!input) return input;
   
-  const result: any = { type: input.type };
+  const result: SecuritySchemeConfigInput = { type: input.type };
   
   if (input.description !== undefined) result.description = input.description;
   if (input.name !== undefined) result.name = input.name;
@@ -216,7 +272,7 @@ const convertSecuritySchemeConfig = (input: any): any => {
   if (input.bearerFormat !== undefined) result.bearerFormat = input.bearerFormat;
   if (input.flows !== undefined) {
     result.flows = Object.fromEntries(
-      Object.entries(input.flows).map(([flowType, flowConfig]: [string, any]) => [
+      Object.entries(input.flows).map(([flowType, flowConfig]) => [
         flowType,
         {
           ...(flowConfig.authorizationUrl !== undefined && { authorizationUrl: flowConfig.authorizationUrl }),

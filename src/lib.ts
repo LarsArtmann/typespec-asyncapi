@@ -45,6 +45,18 @@ export const $lib = createTypeSpecLibrary({
         default: "No server configuration found. Add @server decorator to define AsyncAPI servers.",
       },
     },
+    "invalid-server-config": {
+      severity: "error",
+      messages: {
+        default: paramMessage`Server configuration '${"config"}' is not valid. Server configurations must include url and protocol.`,
+      },
+    },
+    "duplicate-server-name": {
+      severity: "error",
+      messages: {
+        default: paramMessage`Server name '${"serverName"}' is already defined. Server names must be unique within a namespace.`,
+      },
+    },
     "invalid-security-scheme": {
       severity: "error",
       messages: {

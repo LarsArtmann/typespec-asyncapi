@@ -6,6 +6,7 @@
  */
 
 import { Effect, Console } from "effect";
+import type { EmitContext } from "@typespec/compiler";
 import {
   AsyncAPIEmitterOptionsSchema,
   validateAsyncAPIEmitterOptions,
@@ -19,7 +20,7 @@ import type { AsyncAPIEmitterOptions } from "./types/options.js";
  * TypeSpec emitter function with Effect.TS validation
  * Shows how to integrate Effect validation in a TypeSpec emitter
  */
-export async function onEmit(_context: any, options: unknown): Promise<void> {
+export async function onEmit(_context: EmitContext<unknown>, options: unknown): Promise<void> {
   // EFFECT.TS VALIDATION PATTERN - Comprehensive error handling
   const validationResult = await Effect.runPromise(
     Effect.gen(function* () {
@@ -46,7 +47,7 @@ export async function onEmit(_context: any, options: unknown): Promise<void> {
  * Alternative integration using Promise-based validation
  * For teams preferring Promise-based APIs over Effect
  */
-export async function onEmitWithPromiseAPI(_context: any, options: unknown): Promise<void> {
+export async function onEmitWithPromiseAPI(_context: EmitContext<unknown>, options: unknown): Promise<void> {
   try {
     // Convert Effect to Promise for easier integration
     const validatedOptions = await Effect.runPromise(
@@ -225,7 +226,7 @@ export const processOptionsWithTransformation = (input: unknown) =>
     // Copy existing properties (excluding undefined values)
     Object.entries(validated).forEach(([key, value]) => {
       if (value !== undefined) {
-        (transformed as any)[key] = value;
+        (transformed as Record<string, unknown>)[key] = value;
       }
     });
     
