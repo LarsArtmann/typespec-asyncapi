@@ -4,6 +4,7 @@
     "": {
       "name": "typespec-asyncapi",
       "dependencies": {
+        "@typespec/asset-emitter": "^0.73.0",
         "yaml": "^2.8.1",
       },
       "devDependencies": {
@@ -18,7 +19,11 @@
       },
       "peerDependencies": {
         "@typespec/compiler": "^1.3.0",
+        "@typespec/versioning": "workspace:^",
       },
+      "optionalPeers": [
+        "@typespec/versioning",
+      ],
     },
   },
   "packages": {
@@ -237,6 +242,8 @@
     "@typescript-eslint/utils": ["@typescript-eslint/utils@8.41.0", "", { "dependencies": { "@eslint-community/eslint-utils": "^4.7.0", "@typescript-eslint/scope-manager": "8.41.0", "@typescript-eslint/types": "8.41.0", "@typescript-eslint/typescript-estree": "8.41.0" }, "peerDependencies": { "eslint": "^8.57.0 || ^9.0.0", "typescript": ">=4.8.4 <6.0.0" } }, "sha512-udbCVstxZ5jiPIXrdH+BZWnPatjlYwJuJkDA4Tbo3WyYLh8NvB+h/bKeSZHDOFKfphsZYJQqaFtLeXEqurQn1A=="],
 
     "@typescript-eslint/visitor-keys": ["@typescript-eslint/visitor-keys@8.41.0", "", { "dependencies": { "@typescript-eslint/types": "8.41.0", "eslint-visitor-keys": "^4.2.1" } }, "sha512-+GeGMebMCy0elMNg67LRNoVnUFPIm37iu5CmHESVx56/9Jsfdpsvbv605DQ81Pi/x11IdKUsS5nzgTYbCQU9fg=="],
+
+    "@typespec/asset-emitter": ["@typespec/asset-emitter@0.73.0", "", { "peerDependencies": { "@typespec/compiler": "^1.3.0" } }, "sha512-SigCa9k8gS+AiHE7Ky/kcwyqFM5kuJ0wXT+Dy89Jbd+wwrYu+mKXyXbScrTdc+MBzut+rFltFENgEYXsSvA/mA=="],
 
     "@typespec/compiler": ["@typespec/compiler@1.3.0", "", { "dependencies": { "@babel/code-frame": "~7.27.1", "@inquirer/prompts": "^7.4.0", "ajv": "~8.17.1", "change-case": "~5.4.4", "env-paths": "^3.0.0", "globby": "~14.1.0", "is-unicode-supported": "^2.1.0", "mustache": "~4.2.0", "picocolors": "~1.1.1", "prettier": "~3.6.2", "semver": "^7.7.1", "tar": "^7.4.3", "temporal-polyfill": "^0.3.0", "vscode-languageserver": "~9.0.1", "vscode-languageserver-textdocument": "~1.0.12", "yaml": "~2.8.0", "yargs": "~18.0.0" }, "bin": { "tsp": "cmd/tsp.js", "tsp-server": "cmd/tsp-server.js" } }, "sha512-OqpoNP3C2y8riA6C5RofPMvmj9jNiGyyhde0tM2ZE7IBOv7BBaTDqw4CJD22YnC8JEilRfPmvdVCViNrPHEjrA=="],
 
