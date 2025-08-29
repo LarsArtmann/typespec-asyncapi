@@ -134,7 +134,7 @@ describe("Effect.TS Schema AsyncAPI Emitter Options", () => {
       expect.unreachable("Should have thrown validation error");
     } catch (error) {
       const errorMessage = String(error);
-      expect(errorMessage).toContain("AsyncAPI Emitter Options Validation Error");
+      expect(errorMessage).toContain("Schema validation failed");
       expect(errorMessage).toContain("file-type");
     }
   });

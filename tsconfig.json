@@ -18,19 +18,38 @@
     "removeComments": false,
     "newLine": "lf",
 
-    // === MAXIMUM TYPE SAFETY (STRICTEST SETTINGS) ===
+    // === MAXIMUM TYPE SAFETY (ABSOLUTE STRICTEST SETTINGS) ===
+    // Core strict flag (enables strictNullChecks, strictFunctionTypes, strictBindCallApply, strictPropertyInitialization, noImplicitAny, noImplicitThis)
     "strict": true,
-    "noImplicitAny": true,
-    "noUncheckedIndexedAccess": true,
-    "exactOptionalPropertyTypes": true,
-    "noImplicitReturns": true,
-    "noImplicitOverride": true,
-    "noFallthroughCasesInSwitch": true,
-    "noPropertyAccessFromIndexSignature": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "allowUnreachableCode": false,
-    "allowUnusedLabels": false,
+    
+    // Additional strict checks beyond --strict flag
+    "noImplicitAny": true,                        // Already in strict, but explicit for clarity
+    "strictNullChecks": true,                     // Already in strict, but explicit for clarity  
+    "strictFunctionTypes": true,                  // Already in strict, but explicit for clarity
+    "strictBindCallApply": true,                  // Already in strict, but explicit for clarity
+    "strictPropertyInitialization": true,        // Already in strict, but explicit for clarity
+    "noImplicitThis": true,                       // Already in strict, but explicit for clarity
+    
+    // Maximum strictness - catch ALL possible type issues
+    "noUncheckedIndexedAccess": true,             // Force checking of indexed access
+    "exactOptionalPropertyTypes": true,           // Distinguish undefined from missing properties
+    "noImplicitReturns": true,                    // All code paths must return
+    "noImplicitOverride": true,                   // Explicit override keyword required
+    "noFallthroughCasesInSwitch": true,           // Prevent switch fallthrough bugs
+    "noPropertyAccessFromIndexSignature": true,   // Force bracket notation for indexed access
+    
+    // Unused code detection (zero tolerance)
+    "noUnusedLocals": true,                       // No unused local variables
+    "noUnusedParameters": true,                   // No unused function parameters
+    
+    // Code quality enforcement  
+    "allowUnreachableCode": false,                // No unreachable code allowed
+    "allowUnusedLabels": false,                   // No unused labels allowed
+    "noEmitOnError": true,                        // Don't emit JS if there are errors
+    
+    // Advanced strictness (TypeScript 5.x features)
+    "strictBuiltinIteratorReturn": true,          // Strict checking of built-in iterator return types
+    "noUncheckedSideEffectImports": true,         // Check side effect imports
 
     // === PERFORMANCE OPTIMIZATIONS ===
     "incremental": true,

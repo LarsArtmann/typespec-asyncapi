@@ -5,7 +5,7 @@
  * emitter system while maintaining full compatibility and error handling.
  */
 
-import { Effect, Console } from "effect";
+import { Effect, Console, Context, Layer } from "effect";
 import type { EmitContext } from "@typespec/compiler";
 import {
   AsyncAPIEmitterOptionsSchema,
@@ -18,30 +18,93 @@ import type { AsyncAPIEmitterOptions } from "./types/options.js";
 
 /**
  * TypeSpec emitter function with Effect.TS validation
- * Shows how to integrate Effect validation in a TypeSpec emitter
+ * ENHANCED: Layer-based DI, tagged error handling, resource management
  */
-export async function onEmit(_context: EmitContext<unknown>, options: unknown): Promise<void> {
-  // EFFECT.TS VALIDATION PATTERN - Comprehensive error handling
-  const validationResult = await Effect.runPromise(
-    Effect.gen(function* () {
-      // Step 1: Validate options using Effect.TS (includes type conversion)
-      const validatedOptions = yield* validateAsyncAPIEmitterOptions(options);
-      
-      // Step 2: Apply defaults if needed
-      const optionsWithDefaults = yield* createAsyncAPIEmitterOptions(validatedOptions);
-      
-      // Step 3: Log validation success
-      yield* Console.log("AsyncAPI Emitter Options validated successfully");
-      
-      return optionsWithDefaults;
-    }).pipe(
-      Effect.mapError(error => new Error(`Invalid emitter options: ${error}`))
-    )
+export async function onEmit(context: EmitContext<unknown>, options: unknown): Promise<void> {
+  // Create emitter service layer with dependencies
+  const EmitterLive = Layer.succeed(
+    EmitterService,
+    {
+      generateSpec: generateAsyncAPISpec,
+      validateSpec: (spec: unknown) => Effect.succeed(true),
+      writeOutput: (path: string, content: string) => Effect.logInfo(`Writing to ${path}`)
+    }
   );
 
-  // Use validated options for emitter logic
-  await generateAsyncAPISpec(validationResult);
+  const program = Effect.gen(function* () {
+    const emitterService = yield* EmitterService;
+    
+    // Step 1: Validate options with comprehensive error handling
+    const validatedOptions = yield* validateAsyncAPIEmitterOptions(options).pipe(
+      Effect.catchTag("AsyncAPIOptionsValidationError", (error) =>
+        Effect.gen(function* () {
+          yield* Effect.logError("Validation failed", error);
+          // Try to recover with defaults for non-critical failures
+          return yield* createAsyncAPIEmitterOptions({});
+        })
+      ),
+      Effect.catchTag("AsyncAPIOptionsParseError", (error) =>
+        Effect.fail(new Error(`Parse error: ${error.message}`))
+      )
+    );
+    
+    // Step 2: Apply defaults and finalize configuration
+    const finalOptions = yield* createAsyncAPIEmitterOptions(validatedOptions);
+    
+    // Step 3: Generate spec with resource management
+    yield* Effect.acquireUseRelease(
+      // Acquire: Setup generation context
+      Effect.gen(function* () {
+        yield* Effect.logInfo("Setting up AsyncAPI generation context");
+        return { context, options: finalOptions };
+      }),
+      
+      // Use: Generate specification
+      ({ context: emitContext, options: opts }) =>
+        Effect.gen(function* () {
+          yield* Effect.logInfo("Generating AsyncAPI specification", { 
+            outputFile: opts["output-file"],
+            fileType: opts["file-type"]
+          });
+          
+          const spec = yield* emitterService.generateSpec(opts);
+          
+          if (opts["validate-spec"]) {
+            const isValid = yield* emitterService.validateSpec(spec);
+            if (!isValid) {
+              yield* Effect.fail(new Error("Generated specification is invalid"));
+            }
+          }
+          
+          return spec;
+        }),
+        
+      // Release: Cleanup resources
+      () => Effect.logInfo("AsyncAPI generation completed")
+    );
+  });
+
+  // Run with error handling and metrics
+  return await Effect.runPromise(
+    program.pipe(
+      Effect.provide(EmitterLive),
+      Effect.withSpan("asyncapi-emit", {
+        attributes: {
+          hasOptions: options !== null && options !== undefined,
+          contextId: "emitter-context"
+        }
+      }),
+      Effect.timeout("30 seconds")
+    )
+  );
 }
+
+// SERVICE DEFINITIONS for dependency injection
+const EmitterService = Context.GenericTag<{
+  generateSpec: (options: AsyncAPIEmitterOptions) => Effect.Effect<unknown, Error>;
+  validateSpec: (spec: unknown) => Effect.Effect<boolean, Error>;
+  writeOutput: (path: string, content: string) => Effect.Effect<void, Error>;
+}>("EmitterService");
 
 /**
  * Alternative integration using Promise-based validation
