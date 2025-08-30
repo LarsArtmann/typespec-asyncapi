@@ -47,7 +47,11 @@
       "Bash(gh issue edit:*)",
       "Bash(gh project create:*)",
       "WebFetch(domain:github.com)",
-      "Bash(npm version:*)"
+      "Bash(npm version:*)",
+      "Bash(just quality-check:*)",
+      "Bash(tsc --noEmit)",
+      "Bash(tsc:*)",
+      "Bash(npx tsp compile:*)"
     ],
     "deny": [],
     "ask": []

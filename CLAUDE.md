@@ -1,107 +1,180 @@
----
+# CLAUDE.md
 
-Default to using Bun instead of Node.js.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-- Use `bun <file>` instead of `node <file>` or `ts-node <file>`
-- Use `bun test` instead of `jest` or `vitest`
-- Use `bun build <file.html|file.ts|file.css>` instead of `webpack` or `esbuild`
-- Use `bun install` instead of `npm install` or `yarn install` or `pnpm install`
-- Use `bun run <script>` instead of `npm run <script>` or `yarn run <script>` or `pnpm run <script>`
-- Bun automatically loads .env, so don't use dotenv.
+## Project Overview
 
-## APIs
+This is the **TypeSpec AsyncAPI Emitter** - a production-ready TypeSpec emitter that generates AsyncAPI 3.0 specifications from TypeSpec definitions. It directly addresses Microsoft TypeSpec Issue #2463 and provides enterprise-grade performance with comprehensive validation.
 
-- `Bun.serve()` supports WebSockets, HTTPS, and routes. Don't use `express`.
-- `bun:sqlite` for SQLite. Don't use `better-sqlite3`.
-- `Bun.redis` for Redis. Don't use `ioredis`.
-- `Bun.sql` for Postgres. Don't use `pg` or `postgres.js`.
-- `WebSocket` is built-in. Don't use `ws`.
-- Prefer `Bun.file` over `node:fs`'s readFile/writeFile
-- Bun.$`ls` instead of execa.
+**Key Technologies:**
+- **TypeSpec Compiler Integration** - Uses AssetEmitter architecture for proper TypeSpec integration
+- **Effect.TS** - Modern functional programming patterns with Railway programming
+- **AsyncAPI 3.0** - Latest event-driven API specification standard
+- **Bun Runtime** - Fast JavaScript runtime and package manager
 
-## Testing
+## Essential Commands
 
-Use `bun test` to run tests.
+### Core Development Workflow
+```bash
+# Use justfile commands (preferred)
+just build          # Build TypeScript → JavaScript
+just lint           # Run ESLint with production-ready config  
+just test           # Run all tests (138+ tests)
+just typecheck      # Type check without emitting
+just quality-check  # Full CI pipeline (clean, build, lint, test)
 
-```ts#index.test.ts
-import { test, expect } from "bun:test";
-
-test("hello world", () => {
-  expect(1).toBe(1);
-});
+# Individual operations
+bun run build       # Direct TypeScript compilation
+bun test            # Run tests with Bun
+bun run dev         # Development watch mode
 ```
 
-## Frontend
+### Testing Commands
+```bash
+# Test categories
+just test-validation    # Run critical validation tests
+just test-asyncapi     # Run AsyncAPI specification tests  
+just test-coverage     # Run with coverage reports
+bun test --watch       # Watch mode during development
 
-Use HTML imports with `Bun.serve()`. Don't use `vite`. HTML imports fully support React, CSS, Tailwind.
-
-Server:
-
-```ts#index.ts
-import index from "./index.html"
-
-Bun.serve({
-  routes: {
-    "/": index,
-    "/api/users/:id": {
-      GET: (req) => {
-        return new Response(JSON.stringify({ id: req.params.id }));
-      },
-    },
-  },
-  // optional websocket support
-  websocket: {
-    open: (ws) => {
-      ws.send("Hello, world!");
-    },
-    message: (ws, message) => {
-      ws.send(message);
-    },
-    close: (ws) => {
-      // handle close
-    }
-  },
-  development: {
-    hmr: true,
-    console: true,
-  }
-})
+# Single test file
+bun test test/integration/basic-functionality.test.ts
 ```
 
-HTML files can import .tsx, .jsx or .js files directly and Bun's bundler will transpile & bundle automatically. `<link>` tags can point to stylesheets and Bun's CSS bundler will bundle.
-
-```html#index.html
-<html>
-  <body>
-    <h1>Hello, world!</h1>
-    <script type="module" src="./frontend.tsx"></script>
-  </body>
-</html>
+### Code Quality & Analysis
+```bash
+just find-duplicates   # Code duplication analysis (alias: just fd)
+just lint-fix         # Auto-fix ESLint issues
+just validate-build   # Verify build artifacts
 ```
 
-With the following `frontend.tsx`:
+### TypeSpec Compilation
+```bash
+# Compile TypeSpec files to AsyncAPI
+npx tsp compile example.tsp --emit @typespec/asyncapi
+```
 
-```tsx#frontend.tsx
-import React from "react";
+## Architecture & Code Organization
 
-// import .css files directly and it works
-import './index.css';
+### Core Emitter Architecture
 
-import { createRoot } from "react-dom/client";
+**Entry Point:** `src/index.ts`
+- Exports `$onEmit` function called by TypeSpec compiler
+- Delegates to `generateAsyncAPI` in `asyncapi-emitter.ts`
 
-const root = createRoot(document.body);
+**Main Emitter:** `src/asyncapi-emitter.ts`  
+- Uses TypeSpec AssetEmitter architecture for proper file generation
+- Processes TypeSpec AST → AsyncAPI 3.0 JSON/YAML
+- Supports channels, operations, messages, servers, security
 
-export default function Frontend() {
-  return <h1>Hello, world!</h1>;
+**TypeSpec Library:** `lib/main.tsp`
+- Defines AsyncAPI decorators: `@channel`, `@publish`, `@subscribe`, `@server`
+- Extern declarations implemented in `src/decorators/`
+
+### Decorator System
+
+**Location:** `src/decorators/`
+- `channel.ts` - `@channel` decorator for message routing
+- `publish.ts` - `@publish` decorator for send operations  
+- `subscribe.ts` - `@subscribe` decorator for receive operations
+- `server.ts` - `@server` decorator for server configurations
+- `message.ts`, `protocol.ts`, `security.ts` - Additional AsyncAPI features
+
+### Effect.TS Integration
+
+**Functional Programming Patterns:**
+- Railway programming for error handling
+- Monadic composition with `Effect` types
+- Type-safe schema validation with `@effect/schema`
+- Performance metrics collection in `src/performance/`
+
+### Testing Strategy
+
+**Test Organization:**
+- `test/unit/` - Unit tests for individual components
+- `test/integration/` - Integration tests for complete workflows  
+- `test/validation/` - AsyncAPI specification compliance validation
+- `test/` (root) - Critical validation and emitter tests
+
+**Key Test Patterns:**
+- Uses Bun's built-in test runner  
+- TypeSpec compiler integration tests
+- AsyncAPI specification validation against official schemas
+- Performance benchmarks (>35K operations/second validated)
+
+## Configuration Details
+
+### TypeScript Configuration
+- **Maximum Strictness:** `strict: true` plus additional strict flags
+- **Effect.TS Compatible:** `verbatimModuleSyntax: true`, `downlevelIteration: true`
+- **ESM Modules:** `module: "NodeNext"`, `moduleResolution: "NodeNext"`
+- **Performance Optimized:** Incremental builds with `.tsbuildinfo`
+
+### ESLint Configuration  
+**Production-Ready Balance:** (`eslint.config.js`)
+- **Critical Safety (ERRORS):** `no-explicit-any`, `no-unsafe-*`, `no-floating-promises`
+- **Code Quality (WARNINGS):** `prefer-nullish-coalescing`, `naming-convention`, `explicit-function-return-type`
+- **Result:** 5 critical errors (must fix) + 105 warnings (track improvements)
+
+### Package.json Scripts
+```json
+{
+  "build": "tsc -p tsconfig.json",
+  "test": "vitest", 
+  "lint": "eslint src",
+  "typecheck": "tsc --noEmit"
 }
-
-root.render(<Frontend />);
 ```
 
-Then, run index.ts
+## Development Patterns
 
-```sh
-bun --hot ./index.ts
-```
+### Adding New AsyncAPI Features
 
-For more information, read the Bun API docs in `node_modules/bun-types/docs/**.md`.
+1. **Define TypeSpec decorator** in `lib/main.tsp`
+2. **Implement decorator logic** in `src/decorators/`
+3. **Extend emitter processing** in `src/asyncapi-emitter.ts`
+4. **Add comprehensive tests** in `test/`
+5. **Update documentation** and examples
+
+### Error Handling Patterns
+
+**Use Effect.TS patterns:**
+- `Effect.succeed()` for successful results
+- `Effect.fail()` for expected failures
+- `Effect.die()` for unexpected errors
+- Railway programming for data transformations
+
+### Testing New Features
+
+**Required Test Coverage:**
+- Unit tests for decorator functions
+- Integration tests for emitter processing
+- Validation tests against AsyncAPI schemas
+- Performance benchmarks if applicable
+
+## Key Limitations & Known Issues
+
+**Current Limitations:**
+- **Versioning:** Does NOT support `@typespec/versioning` decorators
+- **ESLint:** 105 code quality warnings (non-blocking)
+- **Advanced AsyncAPI:** Some complex AsyncAPI 3.0 features not implemented
+
+**Architecture Decisions:**
+- Focused on core AsyncAPI features for v1.0
+- Deferred optional decorators (`@correlationId`, `@header`, `@tags`) to maintain focus
+- Prioritized production readiness over feature completeness
+
+## Dependencies & Peer Dependencies
+
+**Critical Dependencies:**
+- `@typespec/compiler` - TypeSpec compiler integration
+- `@typespec/asset-emitter` - Proper emitter architecture
+- `@asyncapi/parser` - AsyncAPI specification validation
+- `effect` + `@effect/schema` - Functional programming patterns
+
+**Development Dependencies:**
+- `vitest` - Testing framework  
+- `eslint` + `typescript-eslint` - Code quality
+- `typescript` - TypeScript compilation
+
+This emitter represents production-ready code solving a real Microsoft TypeSpec community need with comprehensive testing and enterprise-grade performance validation.

@@ -150,6 +150,7 @@ const makeMemoryMonitorService = Effect.gen(function* () {
         return { success: true, memoryBefore, memoryAfter };
       }
     } catch (error) {
+      console.debug("🗑️  Garbage collection not available or failed:", error);
       // GC not available or failed
     }
     

@@ -688,6 +688,7 @@ export const AsyncAPIEmitterOptionsSchema = (() => {
       additionalProperties: false, // SECURITY: prevent arbitrary property injection
     };
   } catch (error) {
+    console.warn("⚠️  Effect.TS Schema conversion failed, falling back to manual JSON Schema:", error);
     // Fallback to manual JSON Schema if conversion fails
     return {
       type: "object",
