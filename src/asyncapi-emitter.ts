@@ -6,7 +6,7 @@ import { dirname } from "node:path";
 import type { AsyncAPIEmitterOptions } from "./options.js";
 import type { SchemaObject, ChannelObject, OperationObject, AsyncAPIDocument } from "./types/index.js";
 import { $lib } from "./lib.js";
-import { KafkaBindings, validateKafkaChannelBinding, createDefaultKafkaChannelBinding } from "./bindings/kafka.js";
+import { validateKafkaChannelBinding, createDefaultKafkaChannelBinding } from "./bindings/kafka.js";
 
 // ChannelObject and OperationObject now imported from centralized types
 import { 

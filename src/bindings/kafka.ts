@@ -14,7 +14,7 @@
  * - Exactly-once semantics
  */
 
-export interface KafkaChannelBinding {
+export type KafkaChannelBinding = {
   /** Kafka topic name */
   topic: string;
   /** Number of partitions (optional, defaults to cluster setting) */
@@ -25,7 +25,7 @@ export interface KafkaChannelBinding {
   configs?: Record<string, string>;
 }
 
-export interface KafkaOperationBinding {
+export type KafkaOperationBinding = {
   /** Consumer group ID for subscribe operations */
   groupId?: string;
   /** Client ID for identification */
@@ -36,7 +36,7 @@ export interface KafkaOperationBinding {
   autoCommitIntervalMs?: number;
 }
 
-export interface KafkaMessageBinding {
+export type KafkaMessageBinding = {
   /** Message key (for partitioning) */
   key?: {
     type: "string" | "avro" | "json";
@@ -51,7 +51,7 @@ export interface KafkaMessageBinding {
   schemaIdLocation?: "payload" | "header";
 }
 
-export interface KafkaServerBinding {
+export type KafkaServerBinding = {
   /** Schema registry URL (if using) */
   schemaRegistryUrl?: string;
   /** Schema registry vendor */

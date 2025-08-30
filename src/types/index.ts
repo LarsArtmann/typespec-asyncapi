@@ -16,7 +16,7 @@
  * Root AsyncAPI 3.0 Document
  * The foundation of all AsyncAPI specifications
  */
-export interface AsyncAPIDocument {
+export type AsyncAPIDocument = {
   /** AsyncAPI specification version (must be 3.0.0) */
   asyncapi: "3.0.0";
   
@@ -45,7 +45,7 @@ export interface AsyncAPIDocument {
 /**
  * General information about the API
  */
-export interface InfoObject {
+export type InfoObject = {
   /** Title of the API */
   title: string;
   
@@ -74,7 +74,7 @@ export interface InfoObject {
 /**
  * Contact information for the API
  */
-export interface ContactObject {
+export type ContactObject = {
   /** Contact name */
   name?: string;
   
@@ -88,7 +88,7 @@ export interface ContactObject {
 /**
  * License information for the API
  */
-export interface LicenseObject {
+export type LicenseObject = {
   /** License name */
   name: string;
   
@@ -102,7 +102,7 @@ export interface LicenseObject {
 /**
  * Tag metadata
  */
-export interface TagObject {
+export type TagObject = {
   /** Tag name */
   name: string;
   
@@ -116,7 +116,7 @@ export interface TagObject {
 /**
  * External documentation reference
  */
-export interface ExternalDocumentationObject {
+export type ExternalDocumentationObject = {
   /** Documentation description */
   description?: string;
   
@@ -131,7 +131,7 @@ export interface ExternalDocumentationObject {
 /**
  * Server configuration
  */
-export interface ServerObject {
+export type ServerObject = {
   /** Server hostname */
   host: string;
   
@@ -172,7 +172,7 @@ export interface ServerObject {
 /**
  * Server variable for URL templating
  */
-export interface ServerVariableObject {
+export type ServerVariableObject = {
   /** Enumeration of possible values */
   enum?: string[];
   
@@ -193,7 +193,7 @@ export interface ServerVariableObject {
 /**
  * Communication channel configuration
  */
-export interface ChannelObject {
+export type ChannelObject = {
   /** Channel address/topic name */
   address?: string;
   
@@ -232,7 +232,7 @@ export interface ChannelObject {
 /**
  * Operation performed on a channel
  */
-export interface OperationObject {
+export type OperationObject = {
   /** Type of operation (send/receive) */
   action: "send" | "receive";
   
@@ -273,7 +273,7 @@ export interface OperationObject {
 /**
  * Operation reply configuration
  */
-export interface OperationReplyObject {
+export type OperationReplyObject = {
   /** Reply address */
   address?: OperationReplyAddressObject | ReferenceObject;
   
@@ -287,7 +287,7 @@ export interface OperationReplyObject {
 /**
  * Operation reply address configuration
  */
-export interface OperationReplyAddressObject {
+export type OperationReplyAddressObject = {
   /** Reply address description */
   description?: string;
   
@@ -298,7 +298,7 @@ export interface OperationReplyAddressObject {
 /**
  * Reusable operation configuration
  */
-export interface OperationTraitObject {
+export type OperationTraitObject = {
   /** Operation title */
   title?: string;
   
@@ -328,7 +328,7 @@ export interface OperationTraitObject {
 /**
  * Message configuration
  */
-export interface MessageObject {
+export type MessageObject = {
   /** Message headers schema */
   headers?: SchemaObject | ReferenceObject;
   
@@ -375,7 +375,7 @@ export interface MessageObject {
 /**
  * Message example
  */
-export interface MessageExampleObject {
+export type MessageExampleObject = {
   /** Example headers */
   headers?: Record<string, unknown>;
   
@@ -392,7 +392,7 @@ export interface MessageExampleObject {
 /**
  * Reusable message configuration
  */
-export interface MessageTraitObject {
+export type MessageTraitObject = {
   /** Message headers schema */
   headers?: SchemaObject | ReferenceObject;
   
@@ -433,7 +433,7 @@ export interface MessageTraitObject {
 /**
  * Correlation ID configuration for message tracking
  */
-export interface CorrelationIdObject {
+export type CorrelationIdObject = {
   /** Runtime expression for correlation ID */
   location: string;
   
@@ -449,7 +449,7 @@ export interface CorrelationIdObject {
  * JSON Schema object for AsyncAPI specifications
  * Based on JSON Schema Draft 7 with AsyncAPI-specific extensions
  */
-export interface SchemaObject {
+export type SchemaObject = {
   // Core JSON Schema properties
   type?: "null" | "boolean" | "object" | "array" | "number" | "string" | "integer";
   properties?: Record<string, SchemaObject>;
@@ -514,7 +514,7 @@ export interface SchemaObject {
 /**
  * Parameter object for channels and operations
  */
-export interface ParameterObject {
+export type ParameterObject = {
   /** Parameter description */
   description?: string;
   
@@ -541,14 +541,14 @@ export interface ParameterObject {
 /**
  * Security requirement for operations
  */
-export interface SecurityRequirementObject {
+export type SecurityRequirementObject = {
   [name: string]: string[];
 }
 
 /**
  * Security scheme definition
  */
-export interface SecuritySchemeObject {
+export type SecuritySchemeObject = {
   /** Security scheme type */
   type: "userPassword" | "apiKey" | "X509" | "symmetricEncryption" | "asymmetricEncryption" | 
         "httpApiKey" | "http" | "oauth2" | "openIdConnect" | "plain" | "scram-sha-256" | 
@@ -561,47 +561,47 @@ export interface SecuritySchemeObject {
 /**
  * API Key security scheme
  */
-export interface ApiKeySecurityScheme extends SecuritySchemeObject {
+export type ApiKeySecurityScheme = {
   type: "apiKey";
   /** Location of the API key */
   in: "user" | "password";
-}
+} & SecuritySchemeObject
 
 /**
  * HTTP API Key security scheme
  */
-export interface HttpApiKeySecurityScheme extends SecuritySchemeObject {
+export type HttpApiKeySecurityScheme = {
   type: "httpApiKey";
   /** HTTP header name */
   name: string;
   /** Location of the key */
   in: "header" | "query" | "cookie";
-}
+} & SecuritySchemeObject
 
 /**
  * HTTP security scheme
  */
-export interface HttpSecurityScheme extends SecuritySchemeObject {
+export type HttpSecurityScheme = {
   type: "http";
   /** HTTP scheme */
   scheme: string;
   /** Bearer format (if scheme is bearer) */
   bearerFormat?: string;
-}
+} & SecuritySchemeObject
 
 /**
  * OAuth2 security scheme
  */
-export interface OAuth2SecurityScheme extends SecuritySchemeObject {
+export type OAuth2SecurityScheme = {
   type: "oauth2";
   /** OAuth2 flows */
   flows: OAuth2FlowsObject;
-}
+} & SecuritySchemeObject
 
 /**
  * OAuth2 flows configuration
  */
-export interface OAuth2FlowsObject {
+export type OAuth2FlowsObject = {
   /** Implicit flow */
   implicit?: OAuth2FlowObject;
   /** Password flow */
@@ -615,7 +615,7 @@ export interface OAuth2FlowsObject {
 /**
  * OAuth2 flow configuration
  */
-export interface OAuth2FlowObject {
+export type OAuth2FlowObject = {
   /** Authorization URL (for implicit and authorizationCode flows) */
   authorizationUrl?: string;
   /** Token URL */
@@ -629,11 +629,11 @@ export interface OAuth2FlowObject {
 /**
  * OpenID Connect security scheme
  */
-export interface OpenIdConnectSecurityScheme extends SecuritySchemeObject {
+export type OpenIdConnectSecurityScheme = {
   type: "openIdConnect";
   /** OpenID Connect URL */
   openIdConnectUrl: string;
-}
+} & SecuritySchemeObject
 
 // ==========================================
 // COMPONENTS OBJECT
@@ -642,7 +642,7 @@ export interface OpenIdConnectSecurityScheme extends SecuritySchemeObject {
 /**
  * Reusable components for the AsyncAPI specification
  */
-export interface ComponentsObject {
+export type ComponentsObject = {
   /** Reusable schemas */
   schemas?: Record<string, SchemaObject | ReferenceObject>;
   
@@ -705,7 +705,7 @@ export interface ComponentsObject {
 /**
  * Reference to another component
  */
-export interface ReferenceObject {
+export type ReferenceObject = {
   /** Reference URI */
   $ref: string;
 }
@@ -717,7 +717,7 @@ export interface ReferenceObject {
 /**
  * Server bindings for different protocols
  */
-export interface ServerBindingsObject {
+export type ServerBindingsObject = {
   /** HTTP server bindings */
   http?: Record<string, unknown>;
   
@@ -761,7 +761,7 @@ export interface ServerBindingsObject {
 /**
  * Channel bindings for different protocols
  */
-export interface ChannelBindingsObject {
+export type ChannelBindingsObject = {
   /** HTTP channel bindings */
   http?: Record<string, unknown>;
   
@@ -805,7 +805,7 @@ export interface ChannelBindingsObject {
 /**
  * Operation bindings for different protocols
  */
-export interface OperationBindingsObject {
+export type OperationBindingsObject = {
   /** HTTP operation bindings */
   http?: Record<string, unknown>;
   
@@ -849,7 +849,7 @@ export interface OperationBindingsObject {
 /**
  * Message bindings for different protocols
  */
-export interface MessageBindingsObject {
+export type MessageBindingsObject = {
   /** HTTP message bindings */
   http?: Record<string, unknown>;
   
@@ -897,7 +897,7 @@ export interface MessageBindingsObject {
 /**
  * Kafka field configuration for protocol bindings
  */
-export interface KafkaFieldConfig {
+export type KafkaFieldConfig = {
   /** Field type */
   type: string;
   
@@ -917,7 +917,7 @@ export interface KafkaFieldConfig {
 /**
  * Kafka channel binding
  */
-export interface KafkaChannelBindingObject {
+export type KafkaChannelBindingObject = {
   /** Kafka topic name */
   topic?: string;
   
@@ -937,7 +937,7 @@ export interface KafkaChannelBindingObject {
 /**
  * Kafka operation binding
  */
-export interface KafkaOperationBindingObject {
+export type KafkaOperationBindingObject = {
   /** Consumer group ID */
   groupId?: KafkaFieldConfig | SchemaObject;
   
@@ -951,7 +951,7 @@ export interface KafkaOperationBindingObject {
 /**
  * Kafka message binding
  */
-export interface KafkaMessageBindingObject {
+export type KafkaMessageBindingObject = {
   /** Message key schema */
   key?: KafkaFieldConfig | SchemaObject | ReferenceObject;
   

@@ -9,54 +9,119 @@
     ".": {
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
+    },
+    "./package.json": "./package.json",
+    "./lib/*": "./lib/*",
+    "./bindings/*": {
+      "import": "./dist/bindings/*.js",
+      "types": "./dist/bindings/*.d.ts"
     }
   },
+  "sideEffects": false,
   "private": false,
   "tspMain": "lib/main.tsp",
   "typespec": {
-    "emitter": true
+    "emitter": true,
+    "language": "asyncapi",
+    "emitter-output-dir": "tsp-output/@larsartmann/typespec-asyncapi",
+    "options": {
+      "output-file": "asyncapi",
+      "file-type": "yaml"
+    }
   },
   "keywords": [
     "typespec",
     "asyncapi",
+    "asyncapi3",
     "emitter",
     "event-driven",
-    "api"
+    "api",
+    "kafka",
+    "websockets",
+    "mqtt",
+    "amqp",
+    "microservices",
+    "event-streaming",
+    "schema-generation",
+    "code-generation",
+    "specification",
+    "openapi"
   ],
-  "author": "TypeSpec AsyncAPI Team",
+  "author": {
+    "name": "Lars Artmann",
+    "url": "https://github.com/LarsArtmann"
+  },
+  "contributors": [
+    {
+      "name": "TypeSpec AsyncAPI Team",
+      "url": "https://github.com/LarsArtmann/typespec-asyncapi/graphs/contributors"
+    }
+  ],
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LarsArtmann/typespec-asyncapi.git"
+  },
+  "homepage": "https://github.com/LarsArtmann/typespec-asyncapi#readme",
+  "bugs": {
+    "url": "https://github.com/LarsArtmann/typespec-asyncapi/issues"
+  },
   "scripts": {
-    "build": "tsc -p tsconfig.json && tsp compile .",
-    "watch": "tsc -p tsconfig.json --watch",
-    "test": "vitest",
-    "test:watch": "vitest --watch",
-    "test:coverage": "vitest --coverage",
+    "prebuild": "bun run clean",
+    "build": "tsc -p tsconfig.json",
+    "build:watch": "tsc -p tsconfig.json --watch", 
+    "compile": "tsp compile .",
+    "clean": "trash dist/",
+    "test": "bun test",
+    "test:watch": "bun test --watch",
+    "test:coverage": "bun test --coverage",
     "test:validation": "bun test test/critical-validation.test.ts test/all-generated-specs-validation.test.ts",
     "test:asyncapi": "bun test test/validation/",
-    "clean": "rm -rf dist/",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
-    "dev": "bun run --watch src/index.ts"
+    "check": "bun run typecheck && bun run lint",
+    "validate": "bun run check && bun run test",
+    "dev": "bun run --watch src/index.ts",
+    "debug": "node --inspect-brk ./dist/index.js",
+    "debug:test": "bun test --inspect-brk",
+    "audit": "bun audit",
+    "audit:fix": "bun audit --fix",
+    "security": "bun run audit && bun test",
+    "outdated": "bun outdated",
+    "deps:update": "bun update",
+    "deps:check": "bun outdated", 
+    "deps:audit": "bun audit",
+    "prepublishOnly": "bun run validate && bun run build",
+    "version": "bun run build && git add .",
+    "postversion": "git push && git push --tags"
   },
   "files": [
     "dist/",
     "lib/",
-    "README.md"
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
   ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "engines": {
     "node": ">=20.0.0"
   },
-  "peerDependencies": {
+  "dependencies": {
     "@typespec/compiler": "^1.3.0",
-    "@typespec/versioning": "^0.73.0",
+    "@typespec/asset-emitter": "^0.73.0",
     "@asyncapi/parser": "^3.4.0",
     "@effect/schema": "^0.75.5",
-    "@typespec/asset-emitter": "^0.73.0",
-    "ajv": "^8.17.1",
-    "ajv-formats": "^3.0.1",
     "effect": "^3.17.9",
-    "yaml": "^2.8.1"
+    "yaml": "^2.8.1",
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1"
+  },
+  "peerDependencies": {
+    "@typespec/versioning": "^0.73.0"
   },
   "peerDependenciesMeta": {
     "@typespec/versioning": {
@@ -67,13 +132,9 @@
     "@types/node": "^24.3.0",
     "@typescript-eslint/eslint-plugin": "^8.41.0",
     "@typescript-eslint/parser": "^8.41.0",
-    "@vitest/coverage-v8": "^3.2.4",
     "asyncapi-validator": "^5.1.1",
     "eslint": "^9.34.0",
     "glob": "^11.0.3",
-    "typescript": "^5.9.2",
-    "typescript-eslint": "^8.41.0",
-    "vite": "^7.1.3",
-    "vitest": "^3.2.4"
+    "typescript": "^5.9.2"
   }
 }
