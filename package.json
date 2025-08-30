@@ -69,7 +69,7 @@
   "scripts": {
     "prebuild": "bun run clean",
     "build": "tsc -p tsconfig.json",
-    "build:watch": "tsc -p tsconfig.json --watch", 
+    "build:watch": "tsc -p tsconfig.json --watch",
     "compile": "tsp compile .",
     "clean": "trash dist/",
     "test": "bun test",
@@ -90,9 +90,9 @@
     "security": "bun run audit && bun test",
     "outdated": "bun outdated",
     "deps:update": "bun update",
-    "deps:check": "bun outdated", 
+    "deps:check": "bun outdated",
     "deps:audit": "bun audit",
-    "prepublishOnly": "bun run validate && bun run build",
+    "prepublishOnly": "bun run check && bun run build",
     "version": "bun run build && git add .",
     "postversion": "git push && git push --tags"
   },

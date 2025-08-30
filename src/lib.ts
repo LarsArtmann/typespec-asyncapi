@@ -1,4 +1,4 @@
-import { createTypeSpecLibrary, paramMessage } from "@typespec/compiler";
+import { createTypeSpecLibrary, paramMessage, type Diagnostic } from "@typespec/compiler";
 
 export const $lib = createTypeSpecLibrary({
   name: "@typespec/asyncapi",
@@ -144,11 +144,13 @@ export const stateKeys = {
   operationTypes: "operationTypes",
 } as const;
 
-// Export diagnostic reporter helper
-export function reportDiagnostic(context: { program: { reportDiagnostic: (diagnostic: unknown) => void } }, target: unknown, code: string, args?: Record<string, unknown>) {
+// Export diagnostic reporter helper  
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function reportDiagnostic(context: any, target: unknown, code: string, args?: Record<string, unknown>) {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
   context.program.reportDiagnostic({
     code: `@typespec/asyncapi.${code}`,
     target,
     ...args
-  });
+  } as Diagnostic);
 }
