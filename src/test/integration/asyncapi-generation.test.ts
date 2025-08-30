@@ -11,8 +11,8 @@
  */
 
 import { test, expect, describe } from "bun:test";
-import { compileAsyncAPISpecWithoutErrors, parseAsyncAPIOutput, type AsyncAPIDocument } from "../../../test/utils/test-helpers.js";
-import { validateAsyncAPIDocumentComprehensive } from "../../../test/utils/test-helpers.js";
+import { compileAsyncAPISpecWithoutErrors, parseAsyncAPIOutput, type AsyncAPIDocument } from "../../../test/utils/test-helpers.ts";
+import { validateAsyncAPIDocumentComprehensive } from "../../../test/utils/test-helpers.ts";
 
 describe("Real AsyncAPI Generation Tests", () => {
   describe("Complete TypeSpec → AsyncAPI Transformation", () => {
