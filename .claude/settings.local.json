@@ -60,7 +60,9 @@
       "WebFetch(domain:context7.com)",
       "Bash(git clone:*)",
       "Bash(git sparse-checkout:*)",
-      "Bash(tree:*)"
+      "Bash(tree:*)",
+      "Bash(git rm:*)",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": []

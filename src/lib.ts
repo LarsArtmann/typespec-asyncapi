@@ -6,19 +6,19 @@ export const $lib = createTypeSpecLibrary({
     "invalid-asyncapi-version": {
       severity: "error", 
       messages: {
-        default: paramMessage`AsyncAPI version '${"version"}' is not supported. Only AsyncAPI 3.0.0 is supported.`,
+        default: paramMessage`AsyncAPI version '${"version"}' is not supported. Only AsyncAPI 3.0.0 is supported. Update your emitter options to use "3.0.0".`,
       },
     },
     "missing-channel-path": {
       severity: "error",
       messages: {
-        default: "Channel operation must specify a channel path using @channel decorator",
+        default: paramMessage`Operation '${"operationName"}' missing @channel decorator. Add @channel("/your-channel-path") to specify the channel path.`,
       },
     },
     "invalid-channel-path": {
       severity: "error",
       messages: {
-        default: paramMessage`Channel path '${"path"}' is not valid. Channel paths must be valid AsyncAPI channel identifiers.`,
+        default: paramMessage`Channel path '${"path"}' is not valid. Use format: /topic-name, /service/event-type, or {variable} syntax.`,
       },
     },
     "missing-message-schema": {
@@ -72,7 +72,7 @@ export const $lib = createTypeSpecLibrary({
     "circular-message-reference": {
       severity: "error",
       messages: {
-        default: paramMessage`Circular reference detected in message schema for '${"messageName"}'.`,
+        default: paramMessage`Circular reference detected in message schema for '${"messageName"}'. Break the circular dependency or use $ref to handle recursion.`,
       },
     },
     "invalid-message-target": {
@@ -130,3 +130,25 @@ export const $lib = createTypeSpecLibrary({
     operationTypes: { description: "Map of operations to publish/subscribe type" },
   },
 } as const);
+
+// Export state keys for use in decorators and emitters
+export const stateKeys = {
+  channelPaths: "channelPaths",
+  messageSchemas: "messageSchemas",
+  messageConfigs: "messageConfigs",
+  serverConfigs: "serverConfigs",
+  protocolBindings: "protocolBindings",
+  protocolConfigs: "protocolConfigs",
+  securitySchemes: "securitySchemes",
+  securityConfigs: "securityConfigs",
+  operationTypes: "operationTypes",
+} as const;
+
+// Export diagnostic reporter helper
+export function reportDiagnostic(context: any, target: any, code: string, args?: Record<string, unknown>) {
+  context.program.reportDiagnostic({
+    code: `@typespec/asyncapi.${code}`,
+    target,
+    ...args
+  });
+}

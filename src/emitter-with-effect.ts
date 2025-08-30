@@ -11,8 +11,7 @@ import { createAssetEmitter, TypeEmitter, type AssetEmitter } from "@typespec/as
 import { emitFile, getDoc } from "@typespec/compiler";
 import { stringify } from "yaml";
 import type { AsyncAPIEmitterOptions } from "./options.js";
-import { validateAsyncAPIEffect, validateAsyncAPIString } from "./validation/asyncapi-validator.js";
-import { emitterService, emitterServiceLive, type EmitterService } from "./integration-example.js";
+import { validateAsyncAPIEffect } from "./validation/asyncapi-validator.js";
 import { stateKeys } from "./lib.js";
 
 /**
@@ -96,7 +95,8 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
    * Process operations using Effect.TS
    */
   private processOperationsEffect(operations: Operation[]): Effect.Effect<void, Error> {
-    return Effect.gen(function* (_) {
+    const self = this; // Capture this context
+    return Effect.gen(function* () {
       console.log(`🏗️ Processing ${operations.length} operations...`);
       
       for (const op of operations) {
@@ -106,15 +106,15 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
           const channelPath = `/${op.name.toLowerCase()}`;
           
           // Get operation type from decorators
-          const program = this.emitter.getProgram();
-          const operationTypesMap = program.stateMap(stateKeys.operationTypes);
+          const program = self.emitter.getProgram();
+          const operationTypesMap = program.stateMap(Symbol.for(stateKeys.operationTypes));
           const operationType = operationTypesMap.get(op) as string | undefined;
           
           // Determine action
           const action = operationType === "subscribe" ? "receive" : "send";
           
           // Add channel
-          this.asyncApiDoc.channels[channelName] = {
+          self.asyncApiDoc.channels[channelName] = {
             address: channelPath,
             description: getDoc(program, op) || `Channel for ${op.name}`,
             messages: {
@@ -125,7 +125,7 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
           };
           
           // Add operation
-          this.asyncApiDoc.operations[op.name] = {
+          self.asyncApiDoc.operations[op.name] = {
             action,
             channel: { $ref: `#/channels/${channelName}` },
             summary: getDoc(program, op) || `Operation ${op.name}`,
@@ -133,7 +133,7 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
           };
           
           // Add message to components
-          this.asyncApiDoc.components.messages[`${op.name}Message`] = {
+          self.asyncApiDoc.components.messages[`${op.name}Message`] = {
             name: `${op.name}Message`,
             title: `${op.name} Message`,
             summary: `Message for ${op.name} operation`,
@@ -143,10 +143,10 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
           // Process return type if it's a model
           if (op.returnType.kind === "Model") {
             const model = op.returnType as Model;
-            this.asyncApiDoc.components.schemas[model.name] = this.convertModelToSchema(model, program);
+            self.asyncApiDoc.components.schemas[model.name] = self.convertModelToSchema(model, program);
             
             // Link message to schema
-            this.asyncApiDoc.components.messages[`${op.name}Message`].payload = {
+            self.asyncApiDoc.components.messages[`${op.name}Message`].payload = {
               $ref: `#/components/schemas/${model.name}`
             };
           }
@@ -156,7 +156,7 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
       }
       
       console.log(`📊 Processed ${operations.length} operations successfully`);
-    }.bind(this));
+    });
   }
 
   /**
