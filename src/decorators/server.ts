@@ -35,7 +35,7 @@ export function $server(
   } else if (name && typeof name === "object" && "value" in name) {
     serverName = String(name.value);
   } else if (name && typeof name === "object" && "valueKind" in name) {
-    const stringValue = name;
+    const stringValue = name as { value: unknown };
     serverName = String(stringValue.value);
   } else {
     console.log(`⚠️  Could not extract string from server name:`, name);

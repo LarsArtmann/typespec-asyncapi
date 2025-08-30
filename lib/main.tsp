@@ -2,7 +2,7 @@ import "@typespec/compiler";
 
 using TypeSpec.Reflection;
 
-namespace TypeSpec.AsyncAPI;
+namespace AsyncAPI;
 
 /**
  * Specify the channel path for a message operation

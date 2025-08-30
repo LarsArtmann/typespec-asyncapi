@@ -44,7 +44,6 @@ export default [
       "@typescript-eslint/prefer-readonly": "warn",
       "@typescript-eslint/no-non-null-assertion": "warn",
       "@typescript-eslint/require-await": "warn",
-      "@typescript-eslint/explicit-function-return-type": "warn",
       "@typescript-eslint/no-unnecessary-condition": "warn",
       "@typescript-eslint/prefer-nullish-coalescing": "warn",
       "@typescript-eslint/restrict-template-expressions": "warn",
@@ -100,6 +99,9 @@ export default [
       
       // === ERROR PREVENTION ===
       "@typescript-eslint/restrict-plus-operands": "error",
+
+      // === WARN: manually approved by Lars; Don't change! ===
+      "@typescript-eslint/explicit-function-return-type": "off", //manually approved by Lars; Don't change!
     },
   },
   // Global ignores

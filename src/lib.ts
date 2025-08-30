@@ -1,8 +1,4 @@
 import { createTypeSpecLibrary, paramMessage } from "@typespec/compiler";
-import { $channel } from "./decorators/channel.js";
-import { $publish } from "./decorators/publish.js"; 
-import { $subscribe } from "./decorators/subscribe.js";
-import { $server } from "./decorators/server.js";
 
 export const $lib = createTypeSpecLibrary({
   name: "@typespec/asyncapi",
@@ -122,14 +118,6 @@ export const $lib = createTypeSpecLibrary({
       },
     },
   },
-  decorators: {
-    "TypeSpec.AsyncAPI": {
-      channel: $channel,
-      publish: $publish,
-      subscribe: $subscribe, 
-      server: $server,
-    },
-  },
   state: {
     channelPaths: { description: "Map of operation to channel path" },
     messageSchemas: { description: "Map of message names to their schemas" },
@@ -142,5 +130,3 @@ export const $lib = createTypeSpecLibrary({
     operationTypes: { description: "Map of operations to publish/subscribe type" },
   },
 } as const);
-
-export const { reportDiagnostic, createDiagnostic, stateKeys } = $lib;

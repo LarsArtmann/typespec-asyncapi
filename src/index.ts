@@ -1,38 +1,39 @@
-import type { EmitContext } from "@typespec/compiler";
-import { $lib } from "./lib.js";
-import type { AsyncAPIEmitterOptions } from "./options.js";
-import { generateAsyncAPI } from "./asyncapi-emitter.js";
+import type {EmitContext} from "@typespec/compiler"
+import {$lib} from "./lib.js"
+import type {AsyncAPIEmitterOptions} from "./options.js"
+import {generateAsyncAPI} from "./asyncapi-emitter.js"
 
-export { $lib } from "./lib.js";
-export type { AsyncAPIEmitterOptions } from "./options.js";
+export {$lib} from "./lib.js" //TODO: Please explain why we re-export!
+export type {AsyncAPIEmitterOptions} from "./options.js" //TODO: Please explain why we re-export!
 
-// Import all decorator functions so they're available
-export * from "./decorators/index.js";
+// Export decorator functions (for TypeSpec compiler)
+export * from "./decorators/index.js"
 
+// noinspection JSUnusedGlobalSymbols
 /**
  * AsyncAPI emitter entry point
  * Called by TypeSpec compiler to generate AsyncAPI 3.0 specifications
- * 
+ *
  * ⚠️ VERSIONING LIMITATION: This emitter does NOT currently support TypeSpec.Versioning
  * decorators (@added, @removed, @renamedFrom). Only generates single AsyncAPI document.
  * See GitHub issue #1 for planned versioning support.
  */
 export async function $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): Promise<void> {
-  console.log("🎯 TYPESPEC ASYNCAPI EMITTER STARTED");
-  console.log("📊 This emitter processes REAL TypeSpec AST data - NO HARDCODED VALUES!");
-  console.log(`📁 Output directory: ${context.emitterOutputDir}`);
-  console.log(`🔧 Program has ${context.program?.sourceFiles?.size || 0} source files`);
-  console.log(`🌍 Global namespace: ${context.program?.getGlobalNamespaceType?.()?.name || 'unknown'}`);
-  
-  // Use simplified emitter that PROVES it reads TypeSpec
-  await generateAsyncAPI(context);
-  
-  console.log("🎉 AsyncAPI generation complete!");
+	console.log("🎯 TYPESPEC ASYNCAPI EMITTER STARTED")
+	console.log("📊 This emitter processes REAL TypeSpec AST data - NO HARDCODED VALUES!")
+	console.log(`📁 Output directory: ${context.emitterOutputDir}`)
+	console.log(`🔧 Program has ${context.program.sourceFiles.size || 0} source files`)
+	console.log(`🌍 Global namespace: ${context.program.getGlobalNamespaceType().name || 'unknown'}`)
+
+	// Use simplified emitter that PROVES it reads TypeSpec
+	await generateAsyncAPI(context)
+
+	console.log("🎉 AsyncAPI generation complete!")
 }
 
 /**
  * Get the library instance
  */
 export function getLibrary() {
-  return $lib;
+	return $lib
 }

@@ -51,7 +51,11 @@
       "Bash(just quality-check:*)",
       "Bash(tsc --noEmit)",
       "Bash(tsc:*)",
-      "Bash(npx tsp compile:*)"
+      "Bash(npx tsp compile:*)",
+      "Bash(git stash:*)",
+      "WebFetch(domain:typespec.io)",
+      "Bash(node:*)",
+      "Bash(npx @asyncapi/parser validate:*)"
     ],
     "deny": [],
     "ask": []

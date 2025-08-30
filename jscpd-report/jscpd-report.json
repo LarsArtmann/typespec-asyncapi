@@ -1,6 +1,6 @@
 {
   "statistics": {
-    "detectionDate": "2025-08-30T18:31:52.798Z",
+    "detectionDate": "2025-08-30T20:10:42.583Z",
     "formats": {
       "typescript": {
         "sources": {
@@ -40,6 +40,18 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
+          "src/types/asyncapi-schema.ts": {
+            "lines": 33,
+            "tokens": 259,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
           "src/test/protocol-bindings.test.ts": {
             "lines": 129,
             "tokens": 1281,
@@ -53,26 +65,38 @@
             "newClones": 0
           },
           "src/performance/metrics.ts": {
-            "lines": 494,
-            "tokens": 4863,
+            "lines": 481,
+            "tokens": 4712,
             "sources": 1,
-            "clones": 3,
-            "duplicatedLines": 30,
-            "duplicatedTokens": 273,
-            "percentage": 6.07,
-            "percentageTokens": 5.61,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
           "src/performance/memory-monitor.ts": {
-            "lines": 639,
-            "tokens": 6370,
+            "lines": 633,
+            "tokens": 6301,
             "sources": 1,
-            "clones": 1,
-            "duplicatedLines": 10,
-            "duplicatedTokens": 91,
-            "percentage": 1.56,
-            "percentageTokens": 1.43,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/performance/errors.ts": {
+            "lines": 12,
+            "tokens": 108,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -90,7 +114,7 @@
           },
           "src/decorators/server.ts": {
             "lines": 176,
-            "tokens": 1726,
+            "tokens": 1715,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -101,8 +125,8 @@
             "newClones": 0
           },
           "src/decorators/security.ts": {
-            "lines": 356,
-            "tokens": 2520,
+            "lines": 348,
+            "tokens": 2440,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -125,8 +149,8 @@
             "newClones": 0
           },
           "src/decorators/protocol.ts": {
-            "lines": 246,
-            "tokens": 1786,
+            "lines": 240,
+            "tokens": 1746,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -173,14 +197,14 @@
             "newClones": 0
           },
           "src/protocol-bindings.ts": {
-            "lines": 649,
-            "tokens": 5143,
+            "lines": 624,
+            "tokens": 4804,
             "sources": 1,
-            "clones": 1,
-            "duplicatedLines": 31,
-            "duplicatedTokens": 260,
-            "percentage": 4.78,
-            "percentageTokens": 5.06,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -233,8 +257,8 @@
             "newClones": 0
           },
           "src/lib.ts": {
-            "lines": 133,
-            "tokens": 938,
+            "lines": 131,
+            "tokens": 916,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -245,8 +269,8 @@
             "newClones": 0
           },
           "src/lib-enhanced.ts": {
-            "lines": 183,
-            "tokens": 1205,
+            "lines": 177,
+            "tokens": 1118,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -257,8 +281,8 @@
             "newClones": 0
           },
           "src/integration-example.ts": {
-            "lines": 667,
-            "tokens": 5485,
+            "lines": 668,
+            "tokens": 5313,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -269,8 +293,8 @@
             "newClones": 0
           },
           "src/index.ts": {
-            "lines": 37,
-            "tokens": 256,
+            "lines": 38,
+            "tokens": 227,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -281,153 +305,44 @@
             "newClones": 0
           },
           "src/asyncapi-emitter.ts": {
-            "lines": 460,
-            "tokens": 4093,
+            "lines": 430,
+            "tokens": 3849,
             "sources": 1,
-            "clones": 1,
-            "duplicatedLines": 31,
-            "duplicatedTokens": 260,
-            "percentage": 6.74,
-            "percentageTokens": 6.35,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
             "newDuplicatedLines": 0,
             "newClones": 0
           }
         },
         "total": {
-          "lines": 8353,
-          "tokens": 62400,
-          "sources": 24,
-          "clones": 3,
-          "duplicatedLines": 51,
-          "duplicatedTokens": 442,
-          "percentage": 0.61,
-          "percentageTokens": 0.71,
+          "lines": 8304,
+          "tokens": 61523,
+          "sources": 26,
+          "clones": 0,
+          "duplicatedLines": 0,
+          "duplicatedTokens": 0,
+          "percentage": 0,
+          "percentageTokens": 0,
           "newDuplicatedLines": 0,
           "newClones": 0
         }
       }
     },
     "total": {
-      "lines": 8353,
-      "tokens": 62400,
-      "sources": 24,
-      "clones": 3,
-      "duplicatedLines": 51,
-      "duplicatedTokens": 442,
-      "percentage": 0.61,
-      "percentageTokens": 0.71,
+      "lines": 8304,
+      "tokens": 61523,
+      "sources": 26,
+      "clones": 0,
+      "duplicatedLines": 0,
+      "duplicatedTokens": 0,
+      "percentage": 0,
+      "percentageTokens": 0,
       "newDuplicatedLines": 0,
       "newClones": 0
     }
   },
-  "duplicates": [
-    {
-      "format": "typescript",
-      "lines": 11,
-      "fragment": ";\n  \n  constructor(public override readonly message: string, public override readonly cause?: unknown) {\n    super(message);\n    if (cause) {\n      (this as Error & { cause?: unknown }).cause = cause;\n    }\n  }\n}\n\nexport class MemoryThresholdExceededError",
-      "tokens": 0,
-      "firstFile": {
-        "name": "src/performance/metrics.ts",
-        "start": 27,
-        "end": 37,
-        "startLoc": {
-          "line": 27,
-          "column": 25,
-          "position": 203
-        },
-        "endLoc": {
-          "line": 37,
-          "column": 29,
-          "position": 294
-        }
-      },
-      "secondFile": {
-        "name": "src/performance/metrics.ts",
-        "start": 15,
-        "end": 25,
-        "startLoc": {
-          "line": 15,
-          "column": 29,
-          "position": 84
-        },
-        "endLoc": {
-          "line": 25,
-          "column": 23,
-          "position": 175
-        }
-      }
-    },
-    {
-      "format": "typescript",
-      "lines": 11,
-      "fragment": ";\n  \n  constructor(public override readonly message: string, public override readonly cause?: unknown) {\n    super(message);\n    if (cause) {\n      (this as Error & { cause?: unknown }).cause = cause;\n    }\n  }\n}\n\nexport class MemoryLeakDetectedError",
-      "tokens": 0,
-      "firstFile": {
-        "name": "src/performance/memory-monitor.ts",
-        "start": 14,
-        "end": 24,
-        "startLoc": {
-          "line": 14,
-          "column": 35,
-          "position": 79
-        },
-        "endLoc": {
-          "line": 24,
-          "column": 24,
-          "position": 170
-        }
-      },
-      "secondFile": {
-        "name": "src/performance/metrics.ts",
-        "start": 15,
-        "end": 25,
-        "startLoc": {
-          "line": 15,
-          "column": 29,
-          "position": 84
-        },
-        "endLoc": {
-          "line": 25,
-          "column": 23,
-          "position": 175
-        }
-      }
-    },
-    {
-      "format": "typescript",
-      "lines": 32,
-      "fragment": "type SchemaObject = {\n  type?: string;\n  properties?: Record<string, SchemaObject>;\n  items?: SchemaObject;\n  required?: string[];\n  description?: string;\n  format?: string;\n  minimum?: number;\n  maximum?: number;\n  minLength?: number;\n  maxLength?: number;\n  pattern?: string;\n  enum?: unknown[];\n  const?: unknown;\n  oneOf?: SchemaObject[];\n  anyOf?: SchemaObject[];\n  allOf?: SchemaObject[];\n  not?: SchemaObject;\n  additionalProperties?: boolean | SchemaObject;\n  default?: unknown;\n  example?: unknown;\n  examples?: unknown[];\n  title?: string;\n  multipleOf?: number;\n  minItems?: number;\n  maxItems?: number;\n  uniqueItems?: boolean;\n  minProperties?: number;\n  maxProperties?: number;\n};\n\ntype ChannelObject",
-      "tokens": 0,
-      "firstFile": {
-        "name": "src/asyncapi-emitter.ts",
-        "start": 9,
-        "end": 40,
-        "startLoc": {
-          "line": 9,
-          "column": 1,
-          "position": 133
-        },
-        "endLoc": {
-          "line": 40,
-          "column": 14,
-          "position": 393
-        }
-      },
-      "secondFile": {
-        "name": "src/protocol-bindings.ts",
-        "start": 11,
-        "end": 42,
-        "startLoc": {
-          "line": 11,
-          "column": 1,
-          "position": 5
-        },
-        "endLoc": {
-          "line": 42,
-          "column": 16,
-          "position": 265
-        }
-      }
-    }
-  ]
+  "duplicates": []
 }
