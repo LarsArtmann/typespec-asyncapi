@@ -55,7 +55,12 @@
       "Bash(git stash:*)",
       "WebFetch(domain:typespec.io)",
       "Bash(node:*)",
-      "Bash(npx @asyncapi/parser validate:*)"
+      "Bash(npx @asyncapi/parser validate:*)",
+      "Bash(tsp compile:*)",
+      "WebFetch(domain:context7.com)",
+      "Bash(git clone:*)",
+      "Bash(git sparse-checkout:*)",
+      "Bash(tree:*)"
     ],
     "deny": [],
     "ask": []

@@ -1,13 +1,16 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { readFileSync } from "fs";
 import { parse } from "yaml";
+import { Parser } from "@asyncapi/parser";
 import { createTestRunner } from "@typespec/compiler/testing";
 
 describe("Real AsyncAPI Validation Tests", () => {
   let runner: any;
+  let parser: Parser;
 
   beforeEach(async () => {
     runner = await createTestRunner();
+    parser = new Parser();
   });
 
   it("should generate valid AsyncAPI 3.0 specification from TypeSpec", async () => {
@@ -43,34 +46,38 @@ describe("Real AsyncAPI Validation Tests", () => {
     expect(asyncApiFile).toBeDefined();
 
     if (asyncApiFile) {
-      // Parse the generated YAML
+      // Use PROPER AsyncAPI parser instead of yaml.parse()
       const content = asyncApiFile.contents;
-      const parsed = parse(content);
+      const { document, diagnostics } = await parser.parse(content);
+      
+      // Validate no errors from official AsyncAPI parser
+      expect(diagnostics.length).toBe(0);
+      expect(document).toBeDefined();
 
-      // Validate AsyncAPI 3.0 structure
-      expect(parsed.asyncapi).toBe("3.0.0");
-      expect(parsed.info).toBeDefined();
-      expect(parsed.info.title).toBe("Generated from REAL TypeSpec AST");
-      expect(parsed.channels).toBeDefined();
-      expect(parsed.operations).toBeDefined();
-      expect(parsed.components).toBeDefined();
+      // Validate AsyncAPI 3.0 structure using proper parser
+      expect(document?.version()).toBe("3.0.0");
+      expect(document?.info()).toBeDefined();
+      expect(document?.info()?.title()).toBe("Generated from REAL TypeSpec AST");
+      expect(document?.channels()).toBeDefined();
+      expect(document?.operations()).toBeDefined();
+      expect(document?.components()).toBeDefined();
 
       // Validate channels
-      const channels = Object.keys(parsed.channels);
+      const channels = Array.from(document?.channels()?.keys() || []);
       expect(channels.length).toBe(2);
       expect(channels).toContain("channel_sendUserEvent");
       expect(channels).toContain("channel_getUserEvents");
 
       // Validate operations
-      const operations = Object.keys(parsed.operations);
+      const operations = Array.from(document?.operations()?.keys() || []);
       expect(operations.length).toBe(2);
       expect(operations).toContain("sendUserEvent");
       expect(operations).toContain("getUserEvents");
 
       // Validate each operation has required fields
-      expect(parsed.operations.sendUserEvent.action).toBeDefined();
-      expect(parsed.operations.sendUserEvent.channel).toBeDefined();
-      expect(parsed.operations.sendUserEvent.channel.$ref).toContain("channel_sendUserEvent");
+      const sendUserEvent = document?.operations()?.get("sendUserEvent");
+      expect(sendUserEvent?.action()).toBeDefined();
+      expect(sendUserEvent?.channels()).toBeDefined();
     }
   });
 
@@ -81,18 +88,19 @@ describe("Real AsyncAPI Validation Tests", () => {
     try {
       const content = readFileSync(testFile, 'utf-8');
       
-      // Test YAML parsing
-      const parsed = parse(content);
-      expect(parsed).toBeDefined();
+      // Use PROPER AsyncAPI parser for validation
+      const { document, diagnostics } = await parser.parse(content);
       
-      // Validate AsyncAPI 3.0 compliance
-      expect(parsed.asyncapi).toBe("3.0.0");
-      expect(parsed.info).toBeDefined();
-      expect(parsed.channels).toBeDefined();
-      expect(parsed.operations).toBeDefined();
+      // Validate AsyncAPI 3.0 compliance with official parser
+      expect(diagnostics.length).toBe(0);
+      expect(document).toBeDefined();
+      expect(document?.version()).toBe("3.0.0");
+      expect(document?.info()).toBeDefined();
+      expect(document?.channels()).toBeDefined();
+      expect(document?.operations()).toBeDefined();
       
-      // This proves our generated spec is structurally valid
-      console.log("✅ Generated AsyncAPI 3.0 spec passes structural validation");
+      // This proves our generated spec is ACTUALLY valid by AsyncAPI standards
+      console.log("✅ Generated AsyncAPI 3.0 spec passes OFFICIAL AsyncAPI parser validation");
     } catch (error) {
       // If file doesn't exist, skip this validation
       console.warn(`Test file ${testFile} not found, skipping YAML validation`);
@@ -105,38 +113,40 @@ describe("Real AsyncAPI Validation Tests", () => {
     
     try {
       const content = readFileSync(testFile, 'utf-8');
-      const parsed = parse(content);
+      const { document, diagnostics } = await parser.parse(content);
 
+      // Validate with OFFICIAL parser - no errors
+      expect(diagnostics.length).toBe(0);
+      
       // Core AsyncAPI 3.0 requirements
-      expect(parsed.asyncapi).toBe("3.0.0");
+      expect(document?.version()).toBe("3.0.0");
       
       // Info object requirements
-      expect(parsed.info.title).toBeDefined();
-      expect(parsed.info.version).toBeDefined();
+      expect(document?.info()?.title()).toBeDefined();
+      expect(document?.info()?.version()).toBeDefined();
       
       // Channel requirements
-      expect(parsed.channels).toBeDefined();
-      expect(typeof parsed.channels).toBe("object");
+      expect(document?.channels()).toBeDefined();
+      expect(document?.channels()?.size).toBeGreaterThan(0);
       
       // Operations requirements  
-      expect(parsed.operations).toBeDefined();
-      expect(typeof parsed.operations).toBe("object");
+      expect(document?.operations()).toBeDefined();
+      expect(document?.operations()?.size).toBeGreaterThan(0);
       
       // Components requirements
-      expect(parsed.components).toBeDefined();
-      expect(parsed.components.schemas).toBeDefined();
+      expect(document?.components()).toBeDefined();
+      expect(document?.components()?.schemas()).toBeDefined();
       
       // Verify each channel has required fields
-      Object.values(parsed.channels).forEach((channel: any) => {
-        expect(channel.address).toBeDefined();
-        expect(channel.messages).toBeDefined();
+      document?.channels()?.forEach((channel) => {
+        expect(channel.address()).toBeDefined();
+        expect(channel.messages()).toBeDefined();
       });
       
       // Verify each operation has required fields
-      Object.values(parsed.operations).forEach((operation: any) => {
-        expect(operation.action).toBeDefined();
-        expect(operation.channel).toBeDefined();
-        expect(operation.channel.$ref).toBeDefined();
+      document?.operations()?.forEach((operation) => {
+        expect(operation.action()).toBeDefined();
+        expect(operation.channels()).toBeDefined();
       });
       
     } catch (error) {
@@ -164,14 +174,19 @@ describe("Real AsyncAPI Validation Tests", () => {
     const asyncApiFile = files.find(f => f.path.includes("asyncapi") || f.path.endsWith(".yaml"));
     
     if (asyncApiFile) {
-      const parsed = parse(asyncApiFile.contents);
+      // Use PROPER AsyncAPI parser
+      const { document, diagnostics } = await parser.parse(asyncApiFile.contents);
+      
+      // No validation errors
+      expect(diagnostics.length).toBe(0);
       
       // Should have generated schemas
-      expect(parsed.components?.schemas).toBeDefined();
+      expect(document?.components()?.schemas()).toBeDefined();
       
       // Should have processed the operation
-      expect(parsed.operations?.publishEvent).toBeDefined();
-      expect(parsed.operations.publishEvent.action).toBe("send");
+      const publishEvent = document?.operations()?.get("publishEvent");
+      expect(publishEvent).toBeDefined();
+      expect(publishEvent?.action()).toBe("send");
     }
   });
 
@@ -204,16 +219,20 @@ describe("Real AsyncAPI Validation Tests", () => {
       
       // Should contain evidence of real TypeSpec processing
       expect(content).toContain("Generated from REAL TypeSpec AST");
-      expect(content).toContain("NOT hardcoded"); //TODO: THIS LOOKS STUPID TO ME!
       expect(content).toContain("sendNotification");
       
-      const parsed = parse(content);
+      // Use PROPER AsyncAPI parser for validation
+      const { document, diagnostics } = await parser.parse(content);
+      
+      // No validation errors from official parser
+      expect(diagnostics.length).toBe(0);
       
       // Should have processed the namespace
-      expect(parsed.operations?.sendNotification).toBeDefined();
+      const sendNotification = document?.operations()?.get("sendNotification");
+      expect(sendNotification).toBeDefined();
       
       // Should have processed documentation (if supported)
-      expect(parsed.info?.description).toContain("operations in TypeSpec source");
+      expect(document?.info()?.description()).toContain("operations in TypeSpec source");
     }
   });
 });

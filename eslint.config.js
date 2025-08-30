@@ -48,7 +48,6 @@ export default [
       "@typescript-eslint/prefer-nullish-coalescing": "warn",
       "@typescript-eslint/restrict-template-expressions": "warn",
       "@typescript-eslint/no-base-to-string": "warn",
-      "@typescript-eslint/no-extraneous-class": "warn",
 
       // === CONSISTENT CODE STYLE (ERRORS) ===
       "@typescript-eslint/consistent-type-definitions": ["error", "type"],
@@ -102,6 +101,7 @@ export default [
 
       // === WARN: manually approved by Lars; Don't change! ===
       "@typescript-eslint/explicit-function-return-type": "off", //manually approved by Lars; Don't change!
+      "@typescript-eslint/no-extraneous-class": "off", //manually approved by Lars; Don't change!
     },
   },
   // Global ignores

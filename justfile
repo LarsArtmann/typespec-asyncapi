@@ -107,7 +107,7 @@ find-duplicates:
         bun install -g jscpd
     fi
     echo "Running code duplication detection..."
-    jscpd src --min-tokens 50 --min-lines 5 --format typescript,javascript --reporters console,json --output ./jscpd-report
+    jscpd src --min-tokens 40 --min-lines 3 --format typescript,javascript --reporters console,json --output ./jscpd-report
 
 # Alias for find-duplicates
 alias fd := find-duplicates
