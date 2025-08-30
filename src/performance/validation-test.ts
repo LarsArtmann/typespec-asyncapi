@@ -6,11 +6,10 @@
  */
 
 import { Effect, Duration } from "effect";
-import { PerformanceMetricsService, PerformanceMetricsServiceLive, MetricsInitializationError, MetricsCollectionError, MemoryThresholdExceededError } from "./metrics.js";
-import { MemoryMonitorService, MemoryMonitorServiceLive, MemoryMonitorInitializationError } from "./memory-monitor.js";
-import { executeBenchmarkSuite, quickPerformanceCheck, DefaultBenchmarkConfig, BenchmarkExecutionError, BenchmarkTimeoutError } from "./benchmarks.js";
+import { PerformanceMetricsService } from "./metrics.js";
+import { MemoryMonitorService } from "./memory-monitor.js";
+import { executeBenchmarkSuite, quickPerformanceCheck, DefaultBenchmarkConfig } from "./benchmarks.js";
 import { validateAsyncAPIEmitterOptions, createAsyncAPIEmitterOptions } from "../options.js";
-import { AsyncAPIOptionsValidationError, AsyncAPIOptionsParseError } from "../options.js";
 
 // TAGGED ERROR TYPES
 export class PerformanceValidationError extends Error {
@@ -28,7 +27,9 @@ export class ValidationTestError extends Error {
   
   constructor(public override readonly message: string, public override readonly cause?: unknown) {
     super(message);
-    this.cause = cause;
+    if (cause) {
+      (this as any).cause = cause;
+    }
   }
 }
 
@@ -64,7 +65,7 @@ export interface PerformanceValidationSummary {
 /**
  * Comprehensive performance validation test suite
  */
-export const validatePerformanceTargets = (): Effect.Effect<PerformanceValidationSummary, ValidationTestError> =>
+export const validatePerformanceTargets = (): Effect.Effect<PerformanceValidationSummary, ValidationTestError, PerformanceMetricsService | MemoryMonitorService> =>
   Effect.gen(function* () {
     yield* Effect.logInfo("Starting comprehensive performance validation suite");
     
@@ -176,8 +177,6 @@ export const validatePerformanceTargets = (): Effect.Effect<PerformanceValidatio
     
     return summary;
   }).pipe(
-    Effect.provide(PerformanceMetricsServiceLive),
-    Effect.provide(MemoryMonitorServiceLive),
     Effect.catchAll(error =>
       Effect.fail(new ValidationTestError(
         `Performance validation suite failed: ${error}`,
@@ -419,7 +418,14 @@ const validateInitializationTarget = (): Effect.Effect<{ initTime: number }, Val
     }
     
     return { initTime: avgInitTime };
-  });
+  }).pipe(
+    Effect.catchAll(error => 
+      Effect.fail(new ValidationTestError(
+        `Initialization validation failed: ${error}`,
+        error
+      ))
+    )
+  );
 
 /**
  * Validate comprehensive benchmark suite
@@ -448,7 +454,14 @@ const validateBenchmarkSuite = (): Effect.Effect<{ overallThroughput: number }, 
     }
     
     return { overallThroughput: benchmarkSuite.summary.overallThroughput };
-  });
+  }).pipe(
+    Effect.catchAll(error => 
+      Effect.fail(new ValidationTestError(
+        `Benchmark suite validation failed: ${error}`,
+        error
+      ))
+    )
+  );
 
 /**
  * Generate performance recommendations based on test results
@@ -511,7 +524,7 @@ const generatePerformanceRecommendations = (results: PerformanceTestResult[]): s
  */
 export const quickValidationCheck = (
   iterations = 1000
-): Effect.Effect<{ passed: boolean; throughput: number; memoryPerOp: number }, ValidationTestError> =>
+): Effect.Effect<{ passed: boolean; throughput: number; memoryPerOp: number }, ValidationTestError, PerformanceMetricsService> =>
   Effect.gen(function* () {
     yield* Effect.logInfo(`Running quick performance validation (${iterations} iterations)`);
     
@@ -531,7 +544,6 @@ export const quickValidationCheck = (
       memoryPerOp: result.memoryPerOp
     };
   }).pipe(
-    Effect.provide(PerformanceMetricsServiceLive),
     Effect.catchAll(error =>
       Effect.fail(new ValidationTestError(
         `Quick validation check failed: ${error}`,

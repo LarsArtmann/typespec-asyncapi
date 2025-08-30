@@ -15,8 +15,8 @@ import {
   AsyncAPIOptionsParseError
 } from "./options.js";
 import type { AsyncAPIEmitterOptions } from "./types/options.js";
-import { PerformanceMetricsService, PerformanceMetricsServiceLive, MetricsInitializationError, MetricsCollectionError } from "./performance/metrics.js";
-import { MemoryMonitorService, MemoryMonitorServiceLive, withMemoryTracking, MemoryMonitorInitializationError, MemoryThresholdExceededError } from "./performance/memory-monitor.js";
+import { PerformanceMetricsService, PerformanceMetricsServiceLive, MetricsInitializationError, MetricsCollectionError, MemoryThresholdExceededError } from "./performance/metrics.js";
+import { MemoryMonitorService, MemoryMonitorServiceLive, withMemoryTracking, MemoryMonitorInitializationError } from "./performance/memory-monitor.js";
 // TAGGED ERROR TYPES for Railway Programming
 export class EmitterInitializationError extends Error {
   readonly _tag = "EmitterInitializationError";
@@ -293,28 +293,24 @@ export const onEmitEffect = (
           "spec-generation"
         ).pipe(
           Effect.catchAll(error => {
-            if (error && typeof error === 'object' && '_tag' in error) {
-              if (error._tag === 'SpecGenerationError') {
-                const specError = error as SpecGenerationError;
-                return Effect.gen(function* () {
-                  yield* Effect.logError("Spec generation failed", {
-                    message: specError.message,
-                    options: JSON.stringify(specError.options)
-                  });
-                  return yield* Effect.fail(specError);
+            if (error instanceof SpecGenerationError) {
+              return Effect.gen(function* () {
+                yield* Effect.logError("Spec generation failed", {
+                  message: error.message,
+                  options: JSON.stringify(error.options)
                 });
-              }
-              if (error._tag === 'MemoryThresholdExceededError') {
-                const memError = error as MemoryThresholdExceededError;
-                return Effect.gen(function* () {
-                  yield* Effect.logError("Memory threshold exceeded during spec generation", {
-                    currentUsage: memError.currentUsage,
-                    threshold: memError.threshold,
-                    operation: memError.operationType
-                  });
-                  return yield* Effect.fail(memError);
+                return yield* Effect.fail(error);
+              });
+            }
+            if (error instanceof MemoryThresholdExceededError) {
+              return Effect.gen(function* () {
+                yield* Effect.logError("Memory threshold exceeded during spec generation", {
+                  currentUsage: error.currentUsage,
+                  threshold: error.threshold,
+                  operation: error.operationType
                 });
-              }
+                return yield* Effect.fail(error);
+              });
             }
             // Re-throw other errors
             return Effect.fail(error);

@@ -16,7 +16,9 @@ export class BenchmarkExecutionError extends Error {
   
   constructor(public override readonly message: string, public override readonly cause?: unknown) {
     super(message);
-    this.cause = cause;
+    if (cause) {
+      (this as any).cause = cause;
+    }
   }
 }
 

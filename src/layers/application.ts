@@ -86,9 +86,9 @@ export const ApplicationConfigServiceLive = Layer.effect(ApplicationConfigServic
 
 // MONITORING SUPERVISOR SERVICE
 export interface MonitoringSupervisorService {
-  startAllMonitoring: () => Effect.Effect<void, Error>;
-  stopAllMonitoring: () => Effect.Effect<void, never>;
-  getMonitoringStatus: () => Effect.Effect<{ performance: boolean; memory: boolean }, never>;
+  startAllMonitoring: () => Effect.Effect<void, Error, PerformanceMetricsService | MemoryMonitorService | ApplicationConfigService>;
+  stopAllMonitoring: () => Effect.Effect<void, never, PerformanceMetricsService | MemoryMonitorService>;
+  getMonitoringStatus: () => Effect.Effect<{ performance: boolean; memory: boolean }, never, never>;
 }
 
 export const MonitoringSupervisorService = Context.GenericTag<MonitoringSupervisorService>("MonitoringSupervisorService");
@@ -98,7 +98,7 @@ const makeMonitoringSupervisorService = Effect.gen(function* () {
   let performanceMonitoringActive = false;
   let memoryMonitoringActive = false;
   
-  const startAllMonitoring = (): Effect.Effect<void, Error> =>
+  const startAllMonitoring = (): Effect.Effect<void, Error, PerformanceMetricsService | MemoryMonitorService | ApplicationConfigService> =>
     Effect.gen(function* () {
       const config = yield* ApplicationConfigService;
       const appConfig = yield* config.getConfig();
@@ -123,7 +123,7 @@ const makeMonitoringSupervisorService = Effect.gen(function* () {
       });
     });
   
-  const stopAllMonitoring = (): Effect.Effect<void, never> =>
+  const stopAllMonitoring = (): Effect.Effect<void, never, PerformanceMetricsService | MemoryMonitorService> =>
     Effect.gen(function* () {
       if (performanceMonitoringActive) {
         const performanceMetrics = yield* PerformanceMetricsService;
@@ -142,7 +142,7 @@ const makeMonitoringSupervisorService = Effect.gen(function* () {
       yield* Effect.logInfo("All monitoring systems stopped");
     });
   
-  const getMonitoringStatus = (): Effect.Effect<{ performance: boolean; memory: boolean }, never> =>
+  const getMonitoringStatus = (): Effect.Effect<{ performance: boolean; memory: boolean }, never, never> =>
     Effect.succeed({
       performance: performanceMonitoringActive,
       memory: memoryMonitoringActive
@@ -159,8 +159,8 @@ export const MonitoringSupervisorServiceLive = Layer.effect(MonitoringSupervisor
 
 // APPLICATION HEALTH SERVICE
 export interface ApplicationHealthService {
-  performHealthCheck: () => Effect.Effect<{ healthy: boolean; checks: Record<string, boolean>; recommendations: string[] }, never>;
-  getSystemStatus: () => Effect.Effect<{ uptime: number; memoryUsage: number; performanceScore: number }, never>;
+  performHealthCheck: () => Effect.Effect<{ healthy: boolean; checks: Record<string, boolean>; recommendations: string[] }, never, PerformanceMetricsService | MemoryMonitorService | MonitoringSupervisorService | EmitterService>;
+  getSystemStatus: () => Effect.Effect<{ uptime: number; memoryUsage: number; performanceScore: number }, never, PerformanceMetricsService | MemoryMonitorService | MonitoringSupervisorService | EmitterService>;
 }
 
 export const ApplicationHealthService = Context.GenericTag<ApplicationHealthService>("ApplicationHealthService");
@@ -169,7 +169,7 @@ export const ApplicationHealthService = Context.GenericTag<ApplicationHealthServ
 const makeApplicationHealthService = Effect.gen(function* () {
   const startTime = Date.now();
   
-  const performHealthCheck = (): Effect.Effect<{ healthy: boolean; checks: Record<string, boolean>; recommendations: string[] }, never> =>
+  const performHealthCheck = (): Effect.Effect<{ healthy: boolean; checks: Record<string, boolean>; recommendations: string[] }, never, PerformanceMetricsService | MemoryMonitorService | MonitoringSupervisorService | EmitterService> =>
     Effect.gen(function* () {
       const checks: Record<string, boolean> = {};
       const recommendations: string[] = [];
@@ -232,7 +232,7 @@ const makeApplicationHealthService = Effect.gen(function* () {
       return { healthy, checks, recommendations };
     });
   
-  const getSystemStatus = (): Effect.Effect<{ uptime: number; memoryUsage: number; performanceScore: number }, never> =>
+  const getSystemStatus = (): Effect.Effect<{ uptime: number; memoryUsage: number; performanceScore: number }, never, PerformanceMetricsService | MemoryMonitorService | MonitoringSupervisorService | EmitterService> =>
     Effect.gen(function* () {
       const uptime = Date.now() - startTime;
       
@@ -349,7 +349,7 @@ export const HighPerformanceApplicationLayerLive = ApplicationLayerLive.pipe(
 /**
  * Initialize application with monitoring
  */
-export const initializeApplication = (): Effect.Effect<void, Error> =>
+export const initializeApplication = (): Effect.Effect<void, Error, MonitoringSupervisorService | ApplicationHealthService | PerformanceMetricsService | MemoryMonitorService | ApplicationConfigService | EmitterService> =>
   Effect.gen(function* () {
     yield* Effect.logInfo("Initializing AsyncAPI application");
     
@@ -374,7 +374,7 @@ export const initializeApplication = (): Effect.Effect<void, Error> =>
 /**
  * Shutdown application gracefully
  */
-export const shutdownApplication = (): Effect.Effect<void, never> =>
+export const shutdownApplication = (): Effect.Effect<void, never, MonitoringSupervisorService | ApplicationHealthService | PerformanceMetricsService | MemoryMonitorService | EmitterService> =>
   Effect.gen(function* () {
     yield* Effect.logInfo("Shutting down AsyncAPI application");
     
