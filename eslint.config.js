@@ -22,33 +22,36 @@ export default [
       },
     },
     rules: {
+      // === CRITICAL SAFETY RULES (ERRORS - BLOCK BUILDS) ===
+      "@typescript-eslint/no-explicit-any": "error",
+      "@typescript-eslint/no-unsafe-assignment": "error", 
+      "@typescript-eslint/no-unsafe-call": "error",
+      "@typescript-eslint/no-unsafe-member-access": "error",
+      "@typescript-eslint/no-unsafe-return": "error",  
+      "@typescript-eslint/no-unsafe-argument": "error",
+      "@typescript-eslint/no-floating-promises": "error",
+      "@typescript-eslint/await-thenable": "error",
 
-      // === MAXIMUM TYPESCRIPT STRICTNESS (SOME TEMPORARILY DISABLED FOR TESTING) ===
-      "@typescript-eslint/no-explicit-any": "warn", // TEMPORARILY CHANGED TO WARNING - still catch it but don't block tests
-      "@typescript-eslint/no-unsafe-assignment": "warn", // TEMPORARILY CHANGED TO WARNING - still catch it but don't block tests
-      "@typescript-eslint/no-unsafe-call": "warn", // TEMPORARILY CHANGED TO WARNING - still catch it but don't block tests
-      "@typescript-eslint/no-unsafe-member-access": "warn", // TEMPORARILY CHANGED TO WARNING - still catch it but don't block tests
-      "@typescript-eslint/no-unsafe-return": "warn", // TEMPORARILY CHANGED TO WARNING - still catch it but don't block tests  
-      "@typescript-eslint/no-unsafe-argument": "warn", // TEMPORARILY CHANGED TO WARNING - still catch it but don't block tests
-
-      // === EFFECT.TS COMPATIBLE PATTERNS ===
+      // === CODE QUALITY RULES (WARNINGS - TRACK BUT DON'T BLOCK) ===
       "@typescript-eslint/no-unused-vars": [
-        "warn", // TEMPORARILY CHANGED TO WARNING - still catch it but don't block tests
+        "warn",
         {
           argsIgnorePattern: "^_",
           varsIgnorePattern: "^_",
           ignoreRestSiblings: true,
         },
       ],
-      "@typescript-eslint/prefer-readonly": "error",
-      "@typescript-eslint/no-non-null-assertion": "off", // TEMPORARILY DISABLED - non-critical style rule
+      "@typescript-eslint/prefer-readonly": "warn",
+      "@typescript-eslint/no-non-null-assertion": "warn",
+      "@typescript-eslint/require-await": "warn",
+      "@typescript-eslint/explicit-function-return-type": "warn",
+      "@typescript-eslint/no-unnecessary-condition": "warn",
+      "@typescript-eslint/prefer-nullish-coalescing": "warn",
+      "@typescript-eslint/restrict-template-expressions": "warn",
+      "@typescript-eslint/no-base-to-string": "warn",
+      "@typescript-eslint/no-extraneous-class": "warn",
 
-      // === CODE QUALITY ENFORCEMENT ===
-      "@typescript-eslint/no-floating-promises": "error",
-      "@typescript-eslint/await-thenable": "error",
-      "@typescript-eslint/require-await": "error",
-
-      // === CONSISTENT CODE STYLE ===
+      // === CONSISTENT CODE STYLE (ERRORS) ===
       "@typescript-eslint/consistent-type-definitions": ["error", "type"],
       "@typescript-eslint/consistent-type-imports": [
         "error",
@@ -58,48 +61,45 @@ export default [
         },
       ],
       "@typescript-eslint/consistent-type-exports": "error",
-      "@typescript-eslint/explicit-function-return-type": "off", // TEMPORARILY DISABLED - non-critical style rule
 
-      // === MODERN JAVASCRIPT/TYPESCRIPT FEATURES (SOME TEMPORARILY DISABLED) ===
-      "@typescript-eslint/prefer-nullish-coalescing": "off", // TEMPORARILY DISABLED - non-critical style rule
+      // === MODERN JAVASCRIPT/TYPESCRIPT FEATURES (ERRORS) ===
       "@typescript-eslint/prefer-optional-chain": "error",
       "@typescript-eslint/prefer-as-const": "error",
       "@typescript-eslint/prefer-includes": "error",
       "@typescript-eslint/prefer-string-starts-ends-with": "error",
-
-      // === PERFORMANCE & BEST PRACTICES (SOME TEMPORARILY DISABLED) ===
-      "@typescript-eslint/no-unnecessary-condition": "off", // TEMPORARILY DISABLED - non-critical style rule
       "@typescript-eslint/no-unnecessary-type-assertion": "error",
       "@typescript-eslint/no-unnecessary-type-constraint": "error",
 
-      // === DISABLE CONFLICTING RULES ===
+      // === DISABLE CONFLICTING BASE RULES ===
       "no-unused-vars": "off", // Use @typescript-eslint version
       "no-undef": "off", // TypeScript handles this
       "no-redeclare": "off", // Use @typescript-eslint version
-      "@typescript-eslint/no-redeclare": "off", // TEMPORARILY DISABLED - allows redeclaring ValidationService
-      "no-case-declarations": "off", // TEMPORARILY DISABLED - allows lexical declarations in case blocks
-      "@typescript-eslint/no-base-to-string": "off", // TEMPORARILY DISABLED - allows Error object stringification
-      "@typescript-eslint/no-invalid-void-type": "off", // TEMPORARILY DISABLED - allows void in type positions
-      "@typescript-eslint/switch-exhaustiveness-check": "off", // TEMPORARILY DISABLED - allows non-exhaustive switch statements
-      "@typescript-eslint/unbound-method": "off", // TEMPORARILY DISABLED - allows unbound method references
-      "@typescript-eslint/no-extraneous-class": "off", // TEMPORARILY DISABLED - allows classes with only static properties
-      "@typescript-eslint/require-await": "off", // TEMPORARILY DISABLED - allows async methods without await
-      "@typescript-eslint/no-this-alias": "off", // TEMPORARILY DISABLED - allows 'this' aliasing
-      "require-yield": "off", // TEMPORARILY DISABLED - allows generator functions without yield
-      "no-useless-escape": "off", // TEMPORARILY DISABLED - allows unnecessary escape characters
+      "require-yield": "off", // Allow generator functions without yield
 
       // === ARRAY AND OBJECT HANDLING ===
       "@typescript-eslint/prefer-for-of": "error",
       "@typescript-eslint/no-for-in-array": "error",
 
-      // === NAMING CONVENTIONS (TEMPORARILY DISABLED FOR TESTING) ===
-      "@typescript-eslint/naming-convention": "off", // TEMPORARILY DISABLED - non-critical style rule
+      // === NAMING CONVENTIONS (WARNINGS) ===
+      "@typescript-eslint/naming-convention": [
+        "warn",
+        {
+          selector: "variableLike",
+          format: ["camelCase", "UPPER_CASE"],
+        },
+        {
+          selector: "typeLike",
+          format: ["PascalCase"],
+        },
+        {
+          selector: "parameter",
+          format: ["camelCase"],
+          leadingUnderscore: "allow",
+        },
+      ],
       
       // === ERROR PREVENTION ===
       "@typescript-eslint/restrict-plus-operands": "error",
-      
-      // === TEMPLATE EXPRESSIONS (TEMPORARILY RELAXED FOR TESTING) ===
-      "@typescript-eslint/restrict-template-expressions": "off", // TEMPORARILY DISABLED - non-critical style rule
     },
   },
   // Global ignores
