@@ -144,7 +144,7 @@ const makeEmitterService = Effect.gen(function* () {
       };
       
       if (options["include-source-info"]) {
-        (spec as Record<string, unknown>).sourceInfo = {
+        (spec as Record<string, unknown>)["sourceInfo"] = {
           generatedAt: new Date().toISOString(),
           generator: "TypeSpec AsyncAPI Emitter",
           options: options
@@ -605,7 +605,7 @@ export const validateWithBusinessRules = (input: unknown): Effect.Effect<AsyncAP
 /**
  * Example: Options transformation pipeline
  */
-export const processOptionsWithTransformation = (input: unknown): Effect.Effect<AsyncAPIEmitterOptions> =>
+export const processOptionsWithTransformation = (input: unknown): Effect.Effect<AsyncAPIEmitterOptions, AsyncAPIOptionsValidationError | AsyncAPIOptionsParseError | Error> =>
   Effect.gen(function* () {
     // Parse and validate
     const validated = yield* validateAsyncAPIEmitterOptions(input);
@@ -640,7 +640,7 @@ export const processOptionsWithTransformation = (input: unknown): Effect.Effect<
 /**
  * Example: Resource management with validated options
  */
-export const processWithManagedResources = (options: unknown): Effect.Effect<string> =>
+export const processWithManagedResources = (options: unknown): Effect.Effect<string, AsyncAPIOptionsValidationError | AsyncAPIOptionsParseError | Error> =>
   Effect.gen(function* () {
     // Validate options first
     const validatedOptions = yield* validateAsyncAPIEmitterOptions(options);

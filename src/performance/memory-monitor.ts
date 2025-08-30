@@ -334,9 +334,13 @@ const makeMemoryMonitorService = Effect.gen(function* () {
       const last = relevantSnapshots[relevantSnapshots.length - 1];
       if (!first || !last) {
         return {
-          compliant: false,
-          summary: "Insufficient snapshot data for analysis",
-          metrics: []
+          averageMemoryPerOperation: 0,
+          peakMemoryUsage: 0,
+          memoryGrowthRate: 0,
+          gcEfficiency: 0,
+          fragmentationRatio: 0,
+          leakSuspicionScore: 0,
+          recommendations: ["Insufficient snapshot data for analysis"]
         };
       }
       const duration = (last.timestamp - first.timestamp) / 1000; // seconds

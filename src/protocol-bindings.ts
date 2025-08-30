@@ -103,11 +103,12 @@ type HttpMessageBinding = {
 
 type KafkaTopicConfiguration = Record<string, unknown>;
 // Define protocol binding types locally
-type ProtocolType = "kafka" | "websocket" | "http" | "mqtt" | "amqp" | "redis" | "nats";
+type ProtocolType = "kafka" | "websocket" | "http" | "mqtt" | "amqp" | "redis" | "nats" | "ws" | "https";
 
 type ProtocolBindingValidationError = {
   protocol: ProtocolType;
   bindingType: "server" | "channel" | "operation" | "message";
+  property?: string;
   message: string;
   severity: "error" | "warning";
 };
@@ -140,11 +141,11 @@ type KafkaProtocolBindingConfig = {
     topicConfiguration?: Record<string, unknown>;
   };
   operation?: {
-    groupId?: SchemaObject | ReferenceObject;
-    clientId?: SchemaObject | ReferenceObject;
+    groupId?: KafkaFieldConfig;
+    clientId?: KafkaFieldConfig;
   };
   message?: {
-    key?: SchemaObject | ReferenceObject;
+    key?: KafkaFieldConfig;
     schemaIdLocation?: "header" | "payload";
     schemaIdPayloadEncoding?: string;
     schemaLookupStrategy?: "TopicIdStrategy" | "RecordIdStrategy" | "TopicRecordIdStrategy";
@@ -186,6 +187,8 @@ const DEFAULT_PROTOCOL_SUPPORT: Record<ProtocolType, { server: boolean; channel:
   amqp: { server: true, channel: true, operation: true, message: true },
   redis: { server: true, channel: true, operation: false, message: false },
   nats: { server: true, channel: true, operation: true, message: true },
+  ws: { server: false, channel: true, operation: false, message: true },
+  https: { server: false, channel: false, operation: true, message: true },
 };
 
 export type ProtocolBindingConfig = {
@@ -292,6 +295,7 @@ export class HttpProtocolBinding {
   }): HttpOperationBinding {
     return {
       bindingVersion: "0.3.0",
+      type: config.type || "request",
       ...config,
     };
   }
@@ -631,11 +635,14 @@ export class ProtocolUtils {
   static getDefaultPort(protocol: ProtocolType): number | undefined {
     const defaultPorts: Record<ProtocolType, number> = {
       kafka: 9092,
+      websocket: 80,
       ws: 80,
       http: 80,
       https: 443,
       amqp: 5672,
       mqtt: 1883,
+      redis: 6379,
+      nats: 4222,
     };
 
     return defaultPorts[protocol];

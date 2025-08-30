@@ -602,7 +602,7 @@ const convertOptionsFormat = (result: Record<string, unknown>): AsyncAPIEmitterO
   copyIfDefined("include-source-info");
   copyIfDefined("validate-spec");
   copyIfDefined("additional-properties", (value) => ({ ...(value as Record<string, unknown>) }));
-  copyIfDefined("protocol-bindings", (value) => [...(value as unknown[])]);
+  copyIfDefined("protocol-bindings", (value) => [...(value as ("kafka" | "amqp" | "websocket" | "http")[])]);
   
   if (result["default-servers"] !== undefined && result["default-servers"] !== null) {
     converted["default-servers"] = Object.fromEntries(
