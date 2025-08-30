@@ -7,31 +7,18 @@
  */
 
 import { Effect, Context, Layer, Metric, MetricBoundaries, Duration, Fiber } from "effect";
+import { PerformanceError } from "./errors.js";
 import type { AsyncAPIEmitterOptions } from "../options.js";
 
 // TAGGED ERROR TYPES for Railway Programming
-export class MetricsInitializationError extends Error {
+export class MetricsInitializationError extends PerformanceError {
   readonly _tag = "MetricsInitializationError";
   override readonly name = "MetricsInitializationError";
-  
-  constructor(public override readonly message: string, public override readonly cause?: unknown) {
-    super(message);
-    if (cause) {
-      (this as Error & { cause?: unknown }).cause = cause;
-    }
-  }
 }
 
-export class MetricsCollectionError extends Error {
+export class MetricsCollectionError extends PerformanceError {
   readonly _tag = "MetricsCollectionError";
   override readonly name = "MetricsCollectionError";
-  
-  constructor(public override readonly message: string, public override readonly cause?: unknown) {
-    super(message);
-    if (cause) {
-      (this as Error & { cause?: unknown }).cause = cause;
-    }
-  }
 }
 
 export class MemoryThresholdExceededError extends Error {

@@ -7,21 +7,15 @@
 
 import { Effect, Context, Layer, Ref, Duration, Fiber } from "effect";
 import { MemoryThresholdExceededError } from "./metrics.js";
+import { PerformanceError } from "./errors.js";
 
 // TAGGED ERROR TYPES
-export class MemoryMonitorInitializationError extends Error {
+export class MemoryMonitorInitializationError extends PerformanceError {
   readonly _tag = "MemoryMonitorInitializationError";
   override readonly name = "MemoryMonitorInitializationError";
-  
-  constructor(public override readonly message: string, public override readonly cause?: unknown) {
-    super(message);
-    if (cause) {
-      (this as Error & { cause?: unknown }).cause = cause;
-    }
-  }
 }
 
-export class MemoryLeakDetectedError extends Error {
+export class MemoryLeakDetectedError extends PerformanceError {
   readonly _tag = "MemoryLeakDetectedError";
   override readonly name = "MemoryLeakDetectedError";
   
