@@ -145,7 +145,7 @@ export const stateKeys = {
 } as const;
 
 // Export diagnostic reporter helper
-export function reportDiagnostic(context: any, target: any, code: string, args?: Record<string, unknown>) {
+export function reportDiagnostic(context: { program: { reportDiagnostic: (diagnostic: unknown) => void } }, target: unknown, code: string, args?: Record<string, unknown>) {
   context.program.reportDiagnostic({
     code: `@typespec/asyncapi.${code}`,
     target,

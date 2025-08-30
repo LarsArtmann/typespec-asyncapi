@@ -187,7 +187,7 @@ export function createDefaultKafkaOperationBinding(groupId: string): KafkaOperat
 /**
  * Utility functions for working with Kafka bindings
  */
-export const KafkaBindingUtils = {
+export const KAFKA_BINDING_UTILS = {
   /**
    * Check if a topic name is valid
    */

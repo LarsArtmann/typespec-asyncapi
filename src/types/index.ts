@@ -991,11 +991,11 @@ export function isAsyncAPIDocument(obj: unknown): obj is AsyncAPIDocument {
     obj !== null &&
     typeof obj === "object" &&
     "asyncapi" in obj &&
-    (obj as any).asyncapi === "3.0.0" &&
+    (obj as { asyncapi: unknown }).asyncapi === "3.0.0" &&
     "info" in obj &&
-    typeof (obj as any).info === "object" &&
-    "title" in (obj as any).info &&
-    "version" in (obj as any).info
+    typeof (obj as { info: unknown }).info === "object" &&
+    "title" in (obj as { info: { title?: unknown } }).info &&
+    "version" in (obj as { info: { version?: unknown } }).info
   );
 }
 
@@ -1007,7 +1007,7 @@ export function isReferenceObject(obj: unknown): obj is ReferenceObject {
     obj !== null &&
     typeof obj === "object" &&
     "$ref" in obj &&
-    typeof (obj as any).$ref === "string"
+    typeof (obj as { $ref: unknown }).$ref === "string"
   );
 }
 

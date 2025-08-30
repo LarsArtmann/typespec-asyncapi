@@ -268,8 +268,8 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
             
             // Link message to schema
             const message = this.asyncApiDoc.components.messages?.[`${op.name}Message`];
-            if (message && typeof message === 'object') {
-              (message as any).payload = {
+            if (message && typeof message === 'object' && 'payload' in message) {
+              (message as { payload?: { $ref?: string } }).payload = {
                 $ref: `#/components/schemas/${model.name}`
               };
             }

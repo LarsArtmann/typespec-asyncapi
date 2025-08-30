@@ -78,7 +78,7 @@ export class AsyncAPIValidator {
   /**
    * Initialize the validator with AsyncAPI parser
    */
-  async initialize(): Promise<void> {
+  initialize(): void {
     if (this.initialized) {
       return;
     }
@@ -93,7 +93,7 @@ export class AsyncAPIValidator {
    */
   async validate(document: unknown, _identifier?: string): Promise<ValidationResult> {
     if (!this.initialized) {
-      await this.initialize();
+      this.initialize();
     }
 
     const startTime = performance.now();
@@ -123,7 +123,7 @@ export class AsyncAPIValidator {
       } else {
         // Convert diagnostics to validation errors
         const errors: ValidationError[] = diagnostics
-          .filter(d => d.severity === 0) // Error level
+          .filter(d => Number(d.severity) === 0) // Error level
           .map(d => ({
             message: d.message,
             keyword: String(d.code || "validation-error"),
@@ -132,7 +132,7 @@ export class AsyncAPIValidator {
           }));
 
         const warnings = diagnostics
-          .filter(d => d.severity === 1) // Warning level
+          .filter(d => Number(d.severity) === 1) // Warning level
           .map(d => d.message);
 
         return {
@@ -202,7 +202,11 @@ export class AsyncAPIValidator {
     let schemaCount = 0;
 
     if (document && typeof document === 'object') {
-      const doc = document as any;
+      const doc = document as { 
+        channels?: Record<string, unknown>;
+        operations?: Record<string, unknown>;
+        components?: { schemas?: Record<string, unknown> };
+      };
       
       // Try to extract metrics from parsed document
       if (doc.channels) {
@@ -248,7 +252,7 @@ export class AsyncAPIValidator {
  */
 export async function validateAsyncAPIFile(filePath: string): Promise<{ valid: boolean; errors: ValidationError[]; warnings: string[] }> {
   const validator = new AsyncAPIValidator({ strict: false });
-  await validator.initialize();
+  validator.initialize();
   const result = await validator.validateFile(filePath);
   
   return {
@@ -263,7 +267,7 @@ export async function validateAsyncAPIFile(filePath: string): Promise<{ valid: b
  */
 export async function validateAsyncAPIString(content: string): Promise<{ valid: boolean; errors: ValidationError[]; warnings: string[] }> {
   const validator = new AsyncAPIValidator({ strict: false });
-  await validator.initialize();
+  validator.initialize();
   const result = await validator.validate(content);
   
   return {
@@ -335,7 +339,7 @@ export async function isValidAsyncAPI(content: string): Promise<boolean> {
  */
 export async function validateAsyncAPIDocument(document: unknown, options: { strict?: boolean; enableCache?: boolean } = {}): Promise<ValidationResult> {
   const validator = new AsyncAPIValidator(options);
-  await validator.initialize();
+  validator.initialize();
   return validator.validate(document);
 }
 
