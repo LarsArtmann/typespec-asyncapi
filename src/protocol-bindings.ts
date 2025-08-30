@@ -173,7 +173,6 @@ type HttpProtocolBindingConfig = {
   };
 };
 
-type ProtocolSpecificConfig = KafkaProtocolBindingConfig | WebSocketProtocolBindingConfig | HttpProtocolBindingConfig;
 
 // Re-export for external use
 export type { KafkaFieldConfig, ProtocolType };

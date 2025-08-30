@@ -604,7 +604,7 @@ const convertOptionsFormat = (result: Record<string, unknown>): AsyncAPIEmitterO
   copyIfDefined("additional-properties", (value) => ({ ...(value as Record<string, unknown>) }));
   copyIfDefined("protocol-bindings", (value) => [...(value as unknown[])]);
   
-  if (result["default-servers"] !== undefined) {
+  if (result["default-servers"] !== undefined && result["default-servers"] !== null) {
     converted["default-servers"] = Object.fromEntries(
       Object.entries(result["default-servers"]).map(([key, value]) => [
         key,
@@ -613,7 +613,7 @@ const convertOptionsFormat = (result: Record<string, unknown>): AsyncAPIEmitterO
     );
   }
   
-  if (result["security-schemes"] !== undefined) {
+  if (result["security-schemes"] !== undefined && result["security-schemes"] !== null) {
     converted["security-schemes"] = Object.fromEntries(
       Object.entries(result["security-schemes"]).map(([key, value]) => [
         key,
