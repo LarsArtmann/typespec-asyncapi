@@ -1,0 +1,27 @@
+{
+  "asyncapi": "3.0.0",
+  "info": {
+    "title": "File Test API",
+    "version": "1.0.0"
+  },
+  "channels": {
+    "file-channel": {
+      "address": "file/events",
+      "messages": {
+        "fileMessage": {
+          "payload": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "operations": {
+    "publishFileEvent": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/file-channel"
+      }
+    }
+  }
+}

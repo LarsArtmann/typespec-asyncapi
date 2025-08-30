@@ -1,5 +1,5 @@
 import type { DecoratorContext, Operation, StringValue } from "@typespec/compiler";
-import { reportDiagnostic, stateKeys } from "../lib.js";
+import { reportDiagnostic, $lib } from "../lib.js";
 
 export function $channel(context: DecoratorContext, target: Operation, path: StringValue | string): void {
   console.log(`🔍 PROCESSING @channel decorator on operation: ${target.name}`);
@@ -23,15 +23,12 @@ export function $channel(context: DecoratorContext, target: Operation, path: Str
 
   // Validate channel path format
   if (!channelPath) {
-    reportDiagnostic(context.program, {
-      code: "missing-channel-path",
-      target: target,
-    });
+    reportDiagnostic(context, target, "missing-channel-path", { operationName: target.name });
     return;
   }
 
   // Store channel path in program state - PROOF we're processing real TypeSpec data
-  const channelMap = context.program.stateMap(stateKeys.channelPaths);
+  const channelMap = context.program.stateMap($lib.stateKeys.channelPaths);
   channelMap.set(target, channelPath);
   
   console.log(`✅ Successfully stored channel path for operation ${target.name}: ${channelPath}`);

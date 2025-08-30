@@ -63,7 +63,9 @@
       "Bash(tree:*)",
       "Bash(git rm:*)",
       "Bash(cat:*)",
-      "Bash(git show:*)"
+      "Bash(git show:*)",
+      "Bash(git restore:*)",
+      "Bash(curl:*)"
     ],
     "deny": [],
     "ask": []

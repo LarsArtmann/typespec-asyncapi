@@ -1,5 +1,5 @@
 import type { DecoratorContext, Model } from "@typespec/compiler";
-import { stateKeys } from "../lib.js";
+import { $lib } from "../lib.js";
 
 export type MessageConfig = {
   /** Unique identifier for the message */
@@ -79,7 +79,7 @@ export function $message(
   }
 
   // Store message configuration in program state
-  const messageMap = context.program.stateMap(stateKeys.messageConfigs);
+  const messageMap = context.program.stateMap($lib.stateKeys.messageConfigs);
   messageMap.set(target, messageConfig);
   
   console.log(` Successfully stored message config for model ${target.name}`);
@@ -90,7 +90,7 @@ export function $message(
  * Get message configuration for a model
  */
 export function getMessageConfig(context: DecoratorContext, target: Model): MessageConfig | undefined {
-  const messageMap = context.program.stateMap(stateKeys.messageConfigs);
+  const messageMap = context.program.stateMap($lib.stateKeys.messageConfigs);
   return messageMap.get(target) as MessageConfig | undefined;
 }
 
@@ -98,6 +98,6 @@ export function getMessageConfig(context: DecoratorContext, target: Model): Mess
  * Check if a model has message configuration
  */
 export function isMessage(context: DecoratorContext, target: Model): boolean {
-  const messageMap = context.program.stateMap(stateKeys.messageConfigs);
+  const messageMap = context.program.stateMap($lib.stateKeys.messageConfigs);
   return messageMap.has(target);
 }

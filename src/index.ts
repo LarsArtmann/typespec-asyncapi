@@ -31,7 +31,7 @@ export async function $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): Pro
 	console.log(`🔧 Program has ${context.program.sourceFiles.size || 0} source files`)
 	console.log(`🌍 Global namespace: ${context.program.getGlobalNamespaceType().name || 'unknown'}`)
 
-	const useEffect = (context.options as any)?.["use-effect"] ?? true; // Default to Effect.TS version
+	const useEffect = context.options["use-effect"] ?? true; // Default to Effect.TS version
 	
 	if (useEffect) {
 		console.log("🚀 Using Effect.TS integrated emitter with validation")

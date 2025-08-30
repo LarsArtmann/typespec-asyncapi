@@ -1,5 +1,5 @@
 import type { DecoratorContext, Model, Operation } from "@typespec/compiler";
-import { reportDiagnostic, stateKeys } from "../lib.js";
+import { reportDiagnostic, $lib } from "../lib.js";
 
 export type SecuritySchemeType = "apiKey" | "http" | "oauth2" | "openIdConnect" | "sasl" | "x509" | "symmetricEncryption" | "asymmetricEncryption";
 
@@ -153,10 +153,8 @@ export function $security(
   // Validate security scheme
   const validationResult = validateSecurityScheme(config.scheme);
   if (validationResult.errors.length > 0) {
-    reportDiagnostic(context.program, {
-      code: "invalid-security-scheme",
-      target: target,
-      format: { scheme: validationResult.errors.join(", ") },
+    reportDiagnostic(context, target, "invalid-security-scheme", { 
+      scheme: validationResult.errors.join(", ") 
     });
     return;
   }
@@ -171,7 +169,7 @@ export function $security(
   console.log(`=� Validated security config for ${config.name}:`, config);
 
   // Store security configuration in program state
-  const securityMap = context.program.stateMap(stateKeys.securityConfigs);
+  const securityMap = context.program.stateMap($lib.stateKeys.securityConfigs);
   securityMap.set(target, config);
   
   console.log(` Successfully stored security config for ${target.kind} ${target.name || 'unnamed'}`);
@@ -273,7 +271,7 @@ function validateSecurityScheme(scheme: SecurityScheme): { valid: boolean; error
  * Get security configuration for a target
  */
 export function getSecurityConfig(context: DecoratorContext, target: Operation | Model): SecurityConfig | undefined {
-  const securityMap = context.program.stateMap(stateKeys.securityConfigs);
+  const securityMap = context.program.stateMap($lib.stateKeys.securityConfigs);
   return securityMap.get(target) as SecurityConfig | undefined;
 }
 
@@ -281,7 +279,7 @@ export function getSecurityConfig(context: DecoratorContext, target: Operation |
  * Check if a target has security configuration
  */
 export function hasSecurityConfig(context: DecoratorContext, target: Operation | Model): boolean {
-  const securityMap = context.program.stateMap(stateKeys.securityConfigs);
+  const securityMap = context.program.stateMap($lib.stateKeys.securityConfigs);
   return securityMap.has(target);
 }
 
@@ -289,7 +287,7 @@ export function hasSecurityConfig(context: DecoratorContext, target: Operation |
  * Get all security configurations in the program
  */
 export function getAllSecurityConfigs(context: DecoratorContext): Map<Operation | Model, SecurityConfig> {
-  return context.program.stateMap(stateKeys.securityConfigs) as Map<Operation | Model, SecurityConfig>;
+  return context.program.stateMap($lib.stateKeys.securityConfigs) as Map<Operation | Model, SecurityConfig>;
 }
 
 /**

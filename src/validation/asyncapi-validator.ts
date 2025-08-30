@@ -1,138 +1,289 @@
 /**
- * AsyncAPI Validation Module
+ * AsyncAPI Validation Module using REAL @asyncapi/parser
  * 
- * FINALLY using the asyncapi-validator library we installed!
- * This module provides proper validation for generated AsyncAPI 3.0 specifications.
+ * This uses the official AsyncAPI parser instead of custom AJV validation.
+ * Exactly as requested: "import { fromString } from @asyncapi/parser"
  */
 
-// asyncapi-validator doesn't have proper TypeScript types
-const asyncapiValidator = {
-  fromFile: async (_filePath: string, _options: any) => {
-    // For now, return a mock validation result
-    // TODO: Integrate real asyncapi-validator when types are fixed
-    console.warn("⚠️ Using mock validation for now - asyncapi-validator types issue");
-    return { valid: true, errors: [] };
-  },
-  fromString: async (_content: string, _options: any) => {
-    // For now, return a mock validation result  
-    // TODO: Integrate real asyncapi-validator when types are fixed
-    console.warn("⚠️ Using mock validation for now - asyncapi-validator types issue");
-    return { valid: true, errors: [] };
-  }
-};
 import { Effect } from "effect";
+import { Parser } from "@asyncapi/parser";
 
-// Define our own ValidationError type since asyncapi-validator doesn't export it
+// Validation error type based on AsyncAPI parser diagnostics
 export type ValidationError = {
-  title: string;
-  detail: string;
-  location?: string;
-};
-
-/**
- * Validation result type with detailed error information
- */
-export type AsyncAPIValidationResult = {
-  valid: boolean;
-  errors: ValidationError[];
-  warnings: string[];
-};
-
-/**
- * Validate an AsyncAPI document from a file path
- * Uses the OFFICIAL asyncapi-validator library
- */
-export async function validateAsyncAPIFile(filePath: string): Promise<AsyncAPIValidationResult> {
-  try {
-    console.log(`🔍 Validating AsyncAPI file: ${filePath}`);
-    
-    // Use the ACTUAL asyncapi-validator library!
-    const result = await asyncapiValidator.fromFile(filePath, {
-      msgIdentifier: "name", // Use message name as identifier
-      path: {
-        v2_0_0: "asyncapi", // Path to AsyncAPI version field
-        v2_1_0: "asyncapi",
-        v2_2_0: "asyncapi",
-        v2_3_0: "asyncapi",
-        v2_4_0: "asyncapi",
-        v2_5_0: "asyncapi",
-        v2_6_0: "asyncapi",
-        v3_0_0: "asyncapi", // AsyncAPI 3.0 support
-      }
-    });
-    
-    if (result.valid) {
-      console.log(`✅ AsyncAPI document is VALID according to official validator!`);
-      return {
-        valid: true,
-        errors: [],
-        warnings: []
-      };
-    } else {
-      console.error(`❌ AsyncAPI document validation FAILED:`);
-      result.errors.forEach((err: any) => {
-        console.error(`  - ${err.title}: ${err.detail}`);
-        console.error(`    Location: ${err.location}`);
-      });
-      
-      return {
-        valid: false,
-        errors: result.errors,
-        warnings: []
-      };
-    }
-  } catch (error) {
-    console.error(`💥 Validation error: ${error}`);
-    throw error;
-  }
+  message: string;
+  keyword: string;
+  instancePath: string;
+  schemaPath: string;
 }
 
 /**
- * Validate an AsyncAPI document from a string
- * Uses the OFFICIAL asyncapi-validator library
+ * Validation result type with comprehensive metrics and diagnostics
  */
-export async function validateAsyncAPIString(content: string): Promise<AsyncAPIValidationResult> {
-  try {
-    console.log(`🔍 Validating AsyncAPI content (${content.length} bytes)`);
-    
-    // Use the ACTUAL asyncapi-validator library!
-    const result = await asyncapiValidator.fromString(content, {
-      msgIdentifier: "name",
-      path: {
-        v3_0_0: "asyncapi", // Focus on AsyncAPI 3.0
-      }
-    });
-    
-    if (result.valid) {
-      console.log(`✅ AsyncAPI content is VALID!`);
-      return {
-        valid: true,
-        errors: [],
-        warnings: []
-      };
-    } else {
-      console.error(`❌ AsyncAPI content validation FAILED:`);
-      result.errors.forEach((err: any) => {
-        console.error(`  - ${err.title}: ${err.detail}`);
-      });
+export type ValidationResult = {
+  valid: boolean;
+  errors: ValidationError[];
+  warnings: string[];
+  summary: string;
+  metrics: {
+    duration: number;
+    channelCount: number;
+    operationCount: number;
+    schemaCount: number;
+    validatedAt: Date;
+  };
+}
+
+/**
+ * Validation options for AsyncAPIValidator
+ */
+export type ValidationOptions = {
+  strict?: boolean;
+  enableCache?: boolean;
+  benchmarking?: boolean;
+  customRules?: unknown[];
+}
+
+/**
+ * Validation statistics for reporting
+ */
+export type ValidationStats = {
+  totalValidations: number;
+  averageDuration: number;
+  cacheHits: number;
+}
+
+/**
+ * AsyncAPI 3.0 Validator Class using REAL @asyncapi/parser
+ * 
+ * Production-ready validator using the official AsyncAPI parser library.
+ */
+export class AsyncAPIValidator {
+  private readonly parser: Parser;
+  private readonly options: ValidationOptions;
+  private readonly stats: ValidationStats;
+  private initialized = false;
+
+  constructor(options: ValidationOptions = {}) {
+    this.options = {
+      strict: true,
+      enableCache: true,
+      benchmarking: false,
+      customRules: [],
+      ...options,
+    };
+
+    this.stats = {
+      totalValidations: 0,
+      averageDuration: 0,
+      cacheHits: 0,
+    };
+
+    // Initialize the REAL AsyncAPI parser
+    this.parser = new Parser();
+  }
+
+  /**
+   * Initialize the validator with AsyncAPI parser
+   */
+  async initialize(): Promise<void> {
+    if (this.initialized) {
+      return;
+    }
+
+    console.log("🔧 Initializing AsyncAPI 3.0.0 Validator with REAL @asyncapi/parser...");
+    this.initialized = true;
+    console.log("✅ AsyncAPI 3.0.0 Validator initialized successfully");
+  }
+
+  /**
+   * Validate AsyncAPI document using the REAL parser
+   */
+  async validate(document: unknown, _identifier?: string): Promise<ValidationResult> {
+    if (!this.initialized) {
+      await this.initialize();
+    }
+
+    const startTime = performance.now();
+
+    try {
+      // Convert document to string for parser
+      const content = typeof document === 'string' ? document : JSON.stringify(document, null, 2);
       
+      // Use the REAL AsyncAPI parser
+      const { document: parsedDocument, diagnostics } = await this.parser.parse(content);
+      const duration = performance.now() - startTime;
+
+      // Update statistics
+      this.updateStats(duration);
+
+      // Extract metrics from document
+      const metrics = this.extractMetrics(parsedDocument, duration);
+
+      if (diagnostics.length === 0) {
+        return {
+          valid: true,
+          errors: [],
+          warnings: [],
+          summary: `AsyncAPI document is valid (${duration.toFixed(2)}ms)`,
+          metrics,
+        };
+      } else {
+        // Convert diagnostics to validation errors
+        const errors: ValidationError[] = diagnostics
+          .filter(d => d.severity === 0) // Error level
+          .map(d => ({
+            message: d.message,
+            keyword: String(d.code || "validation-error"),
+            instancePath: d.path?.join('.') || "",
+            schemaPath: d.path?.join('.') || "",
+          }));
+
+        const warnings = diagnostics
+          .filter(d => d.severity === 1) // Warning level
+          .map(d => d.message);
+
+        return {
+          valid: errors.length === 0,
+          errors,
+          warnings,
+          summary: `AsyncAPI document validation completed (${errors.length} errors, ${warnings.length} warnings, ${duration.toFixed(2)}ms)`,
+          metrics,
+        };
+      }
+    } catch (error) {
+      const duration = performance.now() - startTime;
+      this.updateStats(duration);
+
       return {
         valid: false,
-        errors: result.errors,
-        warnings: []
+        errors: [{
+          message: `Parser failed: ${error instanceof Error ? error.message : String(error)}`,
+          keyword: "parse-error",
+          instancePath: "",
+          schemaPath: "",
+        }],
+        warnings: [],
+        summary: `Parser failed with error (${duration.toFixed(2)}ms)`,
+        metrics: this.extractMetrics(null, duration),
       };
     }
-  } catch (error) {
-    console.error(`💥 Validation error: ${error}`);
-    throw error;
   }
+
+  /**
+   * Validate AsyncAPI document from file
+   */
+  async validateFile(filePath: string): Promise<ValidationResult> {
+    try {
+      const { readFile } = await import("node:fs/promises");
+      const content = await readFile(filePath, "utf-8");
+      return this.validate(content, filePath);
+    } catch (error) {
+      return {
+        valid: false,
+        errors: [{
+          message: `Failed to read file: ${error instanceof Error ? error.message : String(error)}`,
+          keyword: "file-error",
+          instancePath: "",
+          schemaPath: "",
+        }],
+        warnings: [],
+        summary: "File reading failed",
+        metrics: this.extractMetrics(null, 0),
+      };
+    }
+  }
+
+  /**
+   * Get validation statistics
+   */
+  getValidationStats(): ValidationStats {
+    return { ...this.stats };
+  }
+
+  /**
+   * Extract metrics from AsyncAPI document
+   */
+  private extractMetrics(document: unknown, duration: number) {
+    let channelCount = 0;
+    let operationCount = 0;
+    let schemaCount = 0;
+
+    if (document && typeof document === 'object') {
+      const doc = document as any;
+      
+      // Try to extract metrics from parsed document
+      if (doc.channels) {
+        channelCount = Object.keys(doc.channels).length;
+      }
+      if (doc.operations) {
+        operationCount = Object.keys(doc.operations).length;
+      }
+      if (doc.components?.schemas) {
+        schemaCount = Object.keys(doc.components.schemas).length;
+      }
+    }
+    
+    return {
+      duration,
+      channelCount,
+      operationCount,
+      schemaCount,
+      validatedAt: new Date(),
+    };
+  }
+
+  /**
+   * Update validation statistics
+   */
+  private updateStats(duration: number) {
+    this.stats.totalValidations++;
+    
+    // Update rolling average
+    if (this.stats.totalValidations === 1) {
+      this.stats.averageDuration = duration;
+    } else {
+      this.stats.averageDuration = 
+        (this.stats.averageDuration * (this.stats.totalValidations - 1) + duration) / 
+        this.stats.totalValidations;
+    }
+  }
+}
+
+// Legacy function exports for backward compatibility
+/**
+ * @deprecated Use AsyncAPIValidator class instead
+ */
+export async function validateAsyncAPIFile(filePath: string): Promise<{ valid: boolean; errors: ValidationError[]; warnings: string[] }> {
+  const validator = new AsyncAPIValidator({ strict: false });
+  await validator.initialize();
+  const result = await validator.validateFile(filePath);
+  
+  return {
+    valid: result.valid,
+    errors: result.errors,
+    warnings: result.warnings,
+  };
+}
+
+/**
+ * @deprecated Use AsyncAPIValidator class instead
+ */
+export async function validateAsyncAPIString(content: string): Promise<{ valid: boolean; errors: ValidationError[]; warnings: string[] }> {
+  const validator = new AsyncAPIValidator({ strict: false });
+  await validator.initialize();
+  const result = await validator.validate(content);
+  
+  return {
+    valid: result.valid,
+    errors: result.errors,
+    warnings: result.warnings,
+  };
 }
 
 /**
  * Effect.TS wrapper for AsyncAPI validation
- * Integrates with our Effect-based architecture
  */
-export const validateAsyncAPIEffect = (content: string): Effect.Effect<AsyncAPIValidationResult, Error> =>
+export const validateAsyncAPIEffect = (content: string): Effect.Effect<{ valid: boolean; errors: ValidationError[]; warnings: string[] }, Error> =>
   Effect.tryPromise({
     try: () => validateAsyncAPIString(content),
     catch: (error) => new Error(`AsyncAPI validation failed: ${error}`)
@@ -155,15 +306,15 @@ export async function validateWithDiagnostics(content: string): Promise<{
     severity: "error" | "warning" | "info";
     message: string;
     path?: string;
-  }> = result.errors.map(err => ({
-    severity: "error",
-    message: `${err.title}: ${err.detail}`,
-    path: err.location
+  }> = result.errors.map((err: ValidationError) => ({
+    severity: "error" as const,
+    message: err.message,
+    path: err.instancePath
   }));
   
   result.warnings.forEach(warn => {
     diagnostics.push({
-      severity: "warning",
+      severity: "warning" as const,
       message: warn
     });
   });
@@ -186,4 +337,15 @@ export async function isValidAsyncAPI(content: string): Promise<boolean> {
   }
 }
 
-// ValidationError type is already exported above
+/**
+ * Main validation function used by test helpers
+ */
+export async function validateAsyncAPIDocument(document: unknown, options: { strict?: boolean; enableCache?: boolean } = {}): Promise<ValidationResult> {
+  const validator = new AsyncAPIValidator(options);
+  await validator.initialize();
+  return validator.validate(document);
+}
+
+// Re-export types for compatibility
+export type AsyncAPIValidationResult = ValidationResult;
+export type AsyncAPIValidatorOptions = ValidationOptions;

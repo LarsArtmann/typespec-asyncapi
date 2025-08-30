@@ -3,16 +3,60 @@
  * 
  * This is the REAL emitter that connects the ghost Effect.TS system
  * with proper AsyncAPI validation using asyncapi-validator.
+ * 
+ * FIXES APPLIED:
+ * - Fixed stateKeys access: program.stateMap($lib.stateKeys.xxx) instead of Symbol.for()
+ * - $lib.stateKeys provides proper symbols, not strings like the local stateKeys export
+ * - Connected decorator state properly: channel paths and operation types  
+ * - Made validation fail the Effect pipeline when AsyncAPI document is invalid
+ * - Added proper logging to show decorator data being accessed
+ * - Added explicit type annotations for validation error parameters
  */
 
-import { Effect, Console, pipe } from "effect";
-import type { EmitContext, Program, Operation, Model } from "@typespec/compiler";
+import { Effect, Console, pipe, Layer } from "effect";
+import type { EmitContext, Program, Operation, Model, Namespace } from "@typespec/compiler";
 import { createAssetEmitter, TypeEmitter, type AssetEmitter } from "@typespec/asset-emitter";
 import { emitFile, getDoc } from "@typespec/compiler";
 import { stringify } from "yaml";
 import type { AsyncAPIEmitterOptions } from "./options.js";
-import { validateAsyncAPIEffect } from "./validation/asyncapi-validator.js";
-import { stateKeys } from "./lib.js";
+import { validateAsyncAPIEffect, type ValidationError } from "./validation/asyncapi-validator.js";
+import { $lib } from "./lib.js";
+import { 
+  PerformanceMetricsService, 
+  PerformanceMetricsServiceLive,
+  type ThroughputResult 
+} from "./performance/metrics.js";
+import {
+  MemoryMonitorService,
+  MemoryMonitorServiceLive,
+  withMemoryTracking
+} from "./performance/memory-monitor.js";
+
+// AsyncAPI document types
+type AsyncAPISchema = {
+  type?: string;
+  format?: string;
+  description?: string;
+  properties?: Record<string, AsyncAPISchema>;
+  required?: string[];
+  payload?: { $ref: string };
+  [key: string]: unknown;
+}
+
+type AsyncAPIDocument = {
+  asyncapi: string;
+  info: {
+    title: string;
+    version: string;
+    description: string;
+  };
+  channels: Record<string, unknown>;
+  operations: Record<string, unknown>;
+  components: {
+    schemas: Record<string, AsyncAPISchema>;
+    messages: Record<string, unknown>;
+  };
+}
 
 /**
  * Enhanced AsyncAPI TypeEmitter with Effect.TS integration
@@ -20,14 +64,14 @@ import { stateKeys } from "./lib.js";
  */
 export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
   private operations: Operation[] = [];
-  private asyncApiDoc: any;
+  private readonly asyncApiDoc: AsyncAPIDocument;
 
   constructor(emitter: AssetEmitter<string, AsyncAPIEmitterOptions>) {
     super(emitter);
     this.asyncApiDoc = this.createInitialDocument();
   }
 
-  private createInitialDocument() {
+  private createInitialDocument(): AsyncAPIDocument {
     return {
       asyncapi: "3.0.0",
       info: {
@@ -65,58 +109,87 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
   }
 
   /**
-   * Discover operations using Effect.TS
+   * Discover operations using Effect.TS with performance monitoring
    */
-  private discoverOperationsEffect(): Effect.Effect<Operation[], Error> {
-    return Effect.sync(() => {
-      const program = this.emitter.getProgram();
-      const operations: Operation[] = [];
+  private discoverOperationsEffect(): Effect.Effect<Operation[], Error, PerformanceMetricsService | MemoryMonitorService> {
+    return Effect.gen((function* (this: AsyncAPIEffectEmitter) {
+      const metricsService = yield* PerformanceMetricsService;
+      const memoryMonitor = yield* MemoryMonitorService;
       
-      const walkNamespace = (ns: any) => {
-        ns.operations?.forEach((op: Operation, name: string) => {
-          operations.push(op);
-          console.log(`🔍 Found operation: ${name}`);
-        });
+      // Start performance measurement for discovery stage
+      const measurement = yield* metricsService.startMeasurement("operation_discovery");
+      console.log(`🔍 Starting operation discovery with performance monitoring...`);
+      
+      const discoveryOperation = Effect.sync(() => {
+        const program = this.emitter.getProgram();
+        const operations: Operation[] = [];
         
-        ns.namespaces?.forEach((childNs: any) => {
-          walkNamespace(childNs);
-        });
-      };
+        const walkNamespace = (ns: Namespace) => {
+          if (ns.operations) {
+            ns.operations.forEach((op: Operation, name: string) => {
+              operations.push(op);
+              console.log(`🔍 Found operation: ${name}`);
+            });
+          }
+          
+          if (ns.namespaces) {
+            ns.namespaces.forEach((childNs: Namespace) => {
+              walkNamespace(childNs);
+            });
+          }
+        };
+        
+        walkNamespace(program.getGlobalNamespaceType());
+        this.operations = operations;
+        
+        console.log(`📊 Total operations discovered: ${operations.length}`);
+        return operations;
+      });
       
-      walkNamespace(program.getGlobalNamespaceType());
-      this.operations = operations;
+      // Execute discovery with memory tracking
+      const { result: operations } = yield* memoryMonitor.measureOperationMemory(
+        discoveryOperation,
+        "operation_discovery"
+      );
       
-      console.log(`📊 Total operations discovered: ${operations.length}`);
+      // Record throughput metrics for discovery stage
+      const throughputResult = yield* metricsService.recordThroughput(measurement, operations.length);
+      console.log(`📊 Discovery stage completed: ${throughputResult.operationsPerSecond.toFixed(0)} ops/sec, ${throughputResult.averageMemoryPerOperation.toFixed(0)} bytes/op`);
+      
       return operations;
-    });
+    }).bind(this));
   }
 
   /**
    * Process operations using Effect.TS
    */
   private processOperationsEffect(operations: Operation[]): Effect.Effect<void, Error> {
-    const self = this; // Capture this context
-    return Effect.gen(function* () {
+    return Effect.gen((function* (this: AsyncAPIEffectEmitter) {
       console.log(`🏗️ Processing ${operations.length} operations...`);
       
       for (const op of operations) {
         yield* Effect.sync(() => {
-          // Create channel
-          const channelName = `channel_${op.name}`;
-          const channelPath = `/${op.name.toLowerCase()}`;
+          // Get data from decorators
+          const program = this.emitter.getProgram();
+          const operationTypesMap = program.stateMap($lib.stateKeys.operationTypes);
+          const channelPathsMap = program.stateMap($lib.stateKeys.channelPaths);
           
-          // Get operation type from decorators
-          const program = self.emitter.getProgram();
-          const operationTypesMap = program.stateMap(Symbol.for(stateKeys.operationTypes));
           const operationType = operationTypesMap.get(op) as string | undefined;
+          const decoratedChannelPath = channelPathsMap.get(op) as string | undefined;
+          
+          console.log(`🔍 Operation ${op.name}: type=${operationType ?? 'none'}, channel=${decoratedChannelPath ?? 'default'}`);
+          
+          // Create channel - use decorator path or fallback
+          const channelName = `channel_${op.name}`;
+          const channelPath = decoratedChannelPath ?? `/${op.name.toLowerCase()}`;
           
           // Determine action
           const action = operationType === "subscribe" ? "receive" : "send";
           
           // Add channel
-          self.asyncApiDoc.channels[channelName] = {
+          this.asyncApiDoc.channels[channelName] = {
             address: channelPath,
-            description: getDoc(program, op) || `Channel for ${op.name}`,
+            description: getDoc(program, op) ?? `Channel for ${op.name}`,
             messages: {
               [`${op.name}Message`]: {
                 $ref: `#/components/messages/${op.name}Message`
@@ -125,15 +198,15 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
           };
           
           // Add operation
-          self.asyncApiDoc.operations[op.name] = {
+          this.asyncApiDoc.operations[op.name] = {
             action,
             channel: { $ref: `#/channels/${channelName}` },
-            summary: getDoc(program, op) || `Operation ${op.name}`,
+            summary: getDoc(program, op) ?? `Operation ${op.name}`,
             description: `TypeSpec operation with ${op.parameters.properties.size} parameters`
           };
           
           // Add message to components
-          self.asyncApiDoc.components.messages[`${op.name}Message`] = {
+          this.asyncApiDoc.components.messages[`${op.name}Message`] = {
             name: `${op.name}Message`,
             title: `${op.name} Message`,
             summary: `Message for ${op.name} operation`,
@@ -142,13 +215,16 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
           
           // Process return type if it's a model
           if (op.returnType.kind === "Model") {
-            const model = op.returnType as Model;
-            self.asyncApiDoc.components.schemas[model.name] = self.convertModelToSchema(model, program);
+            const model = op.returnType;
+            this.asyncApiDoc.components.schemas[model.name] = this.convertModelToSchema(model, program);
             
             // Link message to schema
-            self.asyncApiDoc.components.messages[`${op.name}Message`].payload = {
-              $ref: `#/components/schemas/${model.name}`
-            };
+            const message = this.asyncApiDoc.components.messages[`${op.name}Message`];
+            if (message && typeof message === 'object') {
+              (message as any).payload = {
+                $ref: `#/components/schemas/${model.name}`
+              };
+            }
           }
           
           console.log(`✅ Processed operation: ${op.name} (${action})`);
@@ -156,7 +232,7 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
       }
       
       console.log(`📊 Processed ${operations.length} operations successfully`);
-    });
+    }).bind(this));
   }
 
   /**
@@ -165,7 +241,7 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
   private generateDocumentEffect(): Effect.Effect<string, Error> {
     return Effect.sync(() => {
       const options = this.emitter.getOptions();
-      const fileType = options["file-type"] || "yaml";
+      const fileType = options["file-type"] ?? "yaml";
       
       // Update info with actual stats
       this.asyncApiDoc.info.description = 
@@ -195,12 +271,12 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
       
       if (!validation.valid) {
         console.error(`❌ AsyncAPI validation FAILED:`);
-        validation.errors.forEach(err => {
-          console.error(`  - ${err.title}: ${err.detail}`);
+        validation.errors.forEach((err: ValidationError) => {
+          console.error(`  - ${err.message}`);
         });
         
-        // Still return content but warn about validation
-        console.warn(`⚠️ Continuing with invalid AsyncAPI document`);
+        // Fail the Effect pipeline if validation fails
+        return yield* Effect.fail(new Error(`AsyncAPI validation failed with ${validation.errors.length} errors`));
       } else {
         console.log(`✅ AsyncAPI document is VALID!`);
       }
@@ -217,8 +293,8 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
       try: async () => {
         const options = this.emitter.getOptions();
         const program = this.emitter.getProgram();
-        const fileType = options["file-type"] || "yaml";
-        const outputFile = options["output-file"] || `asyncapi.${fileType}`;
+        const fileType = options["file-type"] ?? "yaml";
+        const outputFile = options["output-file"] ?? `asyncapi.${fileType}`;
         
         await emitFile(program, {
           path: outputFile,
@@ -239,13 +315,13 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
   /**
    * Convert TypeSpec model to AsyncAPI schema
    */
-  private convertModelToSchema(model: Model, program: Program): any {
-    const properties: Record<string, any> = {};
+  private convertModelToSchema(model: Model, program: Program): AsyncAPISchema {
+    const properties: Record<string, AsyncAPISchema> = {};
     const required: string[] = [];
     
     model.properties.forEach((prop, name) => {
-      const propSchema: any = {
-        description: getDoc(program, prop) || `Property ${name}`
+      const propSchema: AsyncAPISchema = {
+        description: getDoc(program, prop) ?? `Property ${name}`
       };
       
       // Determine type
@@ -256,7 +332,7 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
       } else if (prop.type.kind === "Boolean") {
         propSchema.type = "boolean";
       } else if (prop.type.kind === "Model") {
-        if ((prop.type as Model).name === "utcDateTime") {
+        if ((prop.type).name === "utcDateTime") {
           propSchema.type = "string";
           propSchema.format = "date-time";
         } else {
@@ -275,7 +351,7 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
     
     return {
       type: "object",
-      description: getDoc(program, model) || `Schema ${model.name}`,
+      description: getDoc(program, model) ?? `Schema ${model.name}`,
       properties,
       required: required.length > 0 ? required : undefined
     };

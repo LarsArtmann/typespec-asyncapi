@@ -1,29 +1,21 @@
 import type { DecoratorContext, Operation } from "@typespec/compiler";
-import { reportDiagnostic, stateKeys } from "../lib.js";
+import { reportDiagnostic, $lib } from "../lib.js";
 
 export function $subscribe(context: DecoratorContext, target: Operation): void {
   console.log(`= PROCESSING @subscribe decorator on operation: ${target.name}`);
   console.log(`🔽 Target type: ${target.kind}`);
   
   if (target.kind !== "Operation") {
-    reportDiagnostic(context.program, {
-      code: "invalid-channel-path",
-      target: target,
-      format: { path: "@subscribe can only be applied to operations" },
-    });
+    reportDiagnostic(context, target, "invalid-channel-path", { path: "@subscribe can only be applied to operations" });
     return;
   }
 
   // Get existing operation types to check for conflicts
-  const operationTypesMap = context.program.stateMap(stateKeys.operationTypes);
+  const operationTypesMap = context.program.stateMap($lib.stateKeys.operationTypes);
   const existingType = operationTypesMap.get(target) as string | undefined;
   
   if (existingType === "publish") {
-    reportDiagnostic(context.program, {
-      code: "conflicting-operation-type",
-      target: target,
-      format: { operationName: target.name },
-    });
+    reportDiagnostic(context, target, "conflicting-operation-type", { operationName: target.name });
     return;
   }
 

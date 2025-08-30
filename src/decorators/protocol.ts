@@ -1,5 +1,5 @@
 import type { DecoratorContext, Model, Operation, Type } from "@typespec/compiler";
-import { reportDiagnostic, stateKeys } from "../lib.js";
+import { reportDiagnostic, $lib } from "../lib.js";
 
 export type ProtocolType = "kafka" | "websocket" | "http" | "amqp" | "mqtt" | "redis";
 
@@ -129,10 +129,9 @@ export function $protocol(
   // Validate protocol type
   const validProtocols: ProtocolType[] = ["kafka", "websocket", "http", "amqp", "mqtt", "redis"];
   if (!validProtocols.includes(config.protocol)) {
-    reportDiagnostic(context.program, {
-      code: "invalid-protocol-type",
-      target: target,
-      format: { protocol: config.protocol, validProtocols: validProtocols.join(", ") },
+    reportDiagnostic(context, target, "invalid-protocol-type", { 
+      protocol: config.protocol, 
+      validProtocols: validProtocols.join(", ") 
     });
     return;
   }
@@ -149,7 +148,7 @@ export function $protocol(
   console.log(`=� Validated protocol config for ${config.protocol}:`, config);
 
   // Store protocol configuration in program state
-  const protocolMap = context.program.stateMap(stateKeys.protocolConfigs);
+  const protocolMap = context.program.stateMap($lib.stateKeys.protocolConfigs);
   protocolMap.set(target, config);
   
   console.log(` Successfully stored protocol config for ${target.kind} ${target.name || 'unnamed'}`);
@@ -221,7 +220,7 @@ function validateProtocolBinding(protocol: ProtocolType, binding: unknown): { va
  * Get protocol configuration for a target
  */
 export function getProtocolConfig(context: DecoratorContext, target: Operation | Model): ProtocolConfig | undefined {
-  const protocolMap = context.program.stateMap(stateKeys.protocolConfigs);
+  const protocolMap = context.program.stateMap($lib.stateKeys.protocolConfigs);
   return protocolMap.get(target) as ProtocolConfig | undefined;
 }
 
@@ -229,7 +228,7 @@ export function getProtocolConfig(context: DecoratorContext, target: Operation |
  * Check if a target has protocol configuration
  */
 export function hasProtocolBinding(context: DecoratorContext, target: Operation | Model): boolean {
-  const protocolMap = context.program.stateMap(stateKeys.protocolConfigs);
+  const protocolMap = context.program.stateMap($lib.stateKeys.protocolConfigs);
   return protocolMap.has(target);
 }
 
@@ -237,5 +236,5 @@ export function hasProtocolBinding(context: DecoratorContext, target: Operation 
  * Get all protocol configurations in the program
  */
 export function getAllProtocolConfigs(context: DecoratorContext): Map<Type, ProtocolConfig> {
-  return context.program.stateMap(stateKeys.protocolConfigs) as Map<Type, ProtocolConfig>;
+  return context.program.stateMap($lib.stateKeys.protocolConfigs) as Map<Type, ProtocolConfig>;
 }

@@ -1,5 +1,5 @@
 import type { DecoratorContext, Namespace, StringValue, Model } from "@typespec/compiler";
-import { reportDiagnostic, stateKeys } from "../lib.js";
+import { reportDiagnostic, $lib } from "../lib.js";
 
 export type ServerConfig = {
   name: string;
@@ -20,11 +20,7 @@ export function $server(
   console.log(`🏷️  Target type: ${target.kind}`);
 
   if (target.kind !== "Namespace") {
-    reportDiagnostic(context.program, {
-      code: "invalid-channel-path",
-      target: target,
-      format: { path: "@server can only be applied to namespaces" },
-    });
+    reportDiagnostic(context, target, "invalid-server-config", { serverName: "" });
     return;
   }
 
@@ -39,11 +35,7 @@ export function $server(
     serverName = String(stringValue.value);
   } else {
     console.log(`⚠️  Could not extract string from server name:`, name);
-    reportDiagnostic(context.program, {
-      code: "missing-channel-path",
-      target: target,
-      format: { path: "Server name is required" },
-    });
+    reportDiagnostic(context, target, "invalid-server-config", { serverName: "unknown" });
     return;
   }
 
@@ -53,41 +45,25 @@ export function $server(
     serverConfig = extractServerConfigFromObject(config);
   } else {
     console.log(`⚠️  Could not extract config from server config:`, config);
-    reportDiagnostic(context.program, {
-      code: "missing-channel-path",
-      target: target,
-      format: { path: "Server configuration is required" },
-    });
+    reportDiagnostic(context, target, "invalid-server-config", { serverName: serverName });
     return;
   }
 
   // Validate required server configuration fields
   if (!serverConfig.url) {
-    reportDiagnostic(context.program, {
-      code: "missing-channel-path",
-      target: target,
-      format: { path: "Server URL is required" },
-    });
+    reportDiagnostic(context, target, "invalid-server-config", { serverName: serverName });
     return;
   }
 
   if (!serverConfig.protocol) {
-    reportDiagnostic(context.program, {
-      code: "missing-channel-path",
-      target: target,
-      format: { path: "Server protocol is required" },
-    });
+    reportDiagnostic(context, target, "invalid-server-config", { serverName: serverName });
     return;
   }
 
   // Validate protocol
   const supportedProtocols = ["kafka", "amqp", "websocket", "http", "https", "ws", "wss"];
   if (!supportedProtocols.includes(serverConfig.protocol.toLowerCase())) {
-    reportDiagnostic(context.program, {
-      code: "unsupported-protocol",
-      target: target,
-      format: { protocol: serverConfig.protocol },
-    });
+    reportDiagnostic(context, target, "unsupported-protocol", { protocol: serverConfig.protocol });
     return;
   }
 
@@ -102,7 +78,7 @@ export function $server(
   console.log(`📍 Extracted server config:`, completeConfig);
 
   // Store server configuration in program state
-  const serverConfigsMap = context.program.stateMap(stateKeys.serverConfigs);
+  const serverConfigsMap = context.program.stateMap($lib.stateKeys.serverConfigs);
   const existingConfigs = (serverConfigsMap.get(target) as Map<string, ServerConfig> | undefined) ?? new Map<string, ServerConfig>();
   existingConfigs.set(serverName, completeConfig);
   serverConfigsMap.set(target, existingConfigs);
