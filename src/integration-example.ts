@@ -21,10 +21,11 @@ import { MemoryMonitorService, MemoryMonitorServiceLive, withMemoryTracking, Mem
 export class EmitterInitializationError extends Error {
   readonly _tag = "EmitterInitializationError";
   override readonly name = "EmitterInitializationError";
+  readonly cause?: unknown;
   
   constructor(message: string, cause?: unknown) {
     super(message);
-    Object.defineProperty(this, 'cause', { value: cause, writable: false, enumerable: true });
+    this.cause = cause;
   }
 }
 
@@ -41,7 +42,7 @@ export class SpecValidationError extends Error {
   readonly _tag = "SpecValidationError";
   override readonly name = "SpecValidationError";
   
-  constructor(public override readonly message: string, public readonly spec: unknown) {
+  constructor(message: string, public readonly spec: unknown) {
     super(message);
   }
 }
