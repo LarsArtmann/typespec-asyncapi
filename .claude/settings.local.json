@@ -45,7 +45,9 @@
       "Bash(git checkout:*)",
       "Bash(gh api:*)",
       "Bash(gh issue edit:*)",
-      "Bash(gh project create:*)"
+      "Bash(gh project create:*)",
+      "WebFetch(domain:github.com)",
+      "Bash(npm version:*)"
     ],
     "deny": [],
     "ask": []
