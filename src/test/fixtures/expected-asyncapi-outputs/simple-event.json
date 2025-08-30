@@ -1,0 +1,53 @@
+{
+  "asyncapi": "3.0.0",
+  "info": {
+    "title": "Generated from REAL TypeSpec AST",
+    "version": "1.0.0",
+    "description": "Found 1 operations in TypeSpec source"
+  },
+  "channels": {
+    "channel_publishSimpleEvent": {
+      "address": "/publishsimpleevent",
+      "description": "Channel for publishSimpleEvent",
+      "messages": {
+        "publishSimpleEventMessage": {
+          "$ref": "#/components/messages/publishSimpleEventMessage"
+        }
+      }
+    }
+  },
+  "operations": {
+    "publishSimpleEvent": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/channel_publishSimpleEvent"
+      },
+      "summary": "Channel for simple events",
+      "description": "Generated from TypeSpec operation with 0 parameters"
+    }
+  },
+  "components": {
+    "schemas": {
+      "SimpleEvent": {
+        "type": "object",
+        "description": "Basic event message",
+        "properties": {
+          "eventId": {
+            "type": "string",
+            "description": "Unique event identifier"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Event timestamp"
+          },
+          "payload": {
+            "type": "string",
+            "description": "Event payload"
+          }
+        },
+        "required": ["eventId", "timestamp", "payload"]
+      }
+    }
+  }
+}

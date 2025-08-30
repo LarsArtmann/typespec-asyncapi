@@ -69,6 +69,13 @@ export {
   ConcurrencyLimitError
 } from "./performance.js";
 
+// Export additional performance errors from metrics module
+export {
+  MetricsInitializationError,
+  MetricsCollectionError,
+  MemoryThresholdExceededError
+} from "../performance/metrics.js";
+
 // Export emitter errors
 export {
   EmitterInitializationError,
@@ -118,6 +125,10 @@ export type AsyncAPIError =
   | import("./performance.js").PerformanceThresholdError
   | import("./performance.js").ResourceExhaustionError
   | import("./performance.js").ConcurrencyLimitError
+  // Additional performance errors from metrics
+  | import("../performance/metrics.js").MetricsInitializationError
+  | import("../performance/metrics.js").MetricsCollectionError
+  | import("../performance/metrics.js").MemoryThresholdExceededError
   // Emitter errors
   | import("./emitter.js").EmitterInitializationError
   | import("./emitter.js").EmitterConfigurationError
@@ -303,3 +314,6 @@ export const ErrorHandlingUtils = {
     return `[UNKNOWN] ${String(error)}${operation ? ` (${operation})` : ''}`;
   }
 } as const;
+
+// Export examples for documentation and testing
+export * as Examples from "./examples.js";

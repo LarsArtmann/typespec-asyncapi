@@ -12,9 +12,9 @@ import type { AsyncAPIEmitterOptions } from "../types/options.js";
 // TAGGED ERROR TYPES for Railway Programming
 export class MetricsInitializationError extends Error {
   readonly _tag = "MetricsInitializationError";
-  readonly name = "MetricsInitializationError";
+  override readonly name = "MetricsInitializationError";
   
-  constructor(public readonly message: string, public readonly cause?: unknown) {
+  constructor(public override readonly message: string, public override readonly cause?: unknown) {
     super(message);
     this.cause = cause;
   }
@@ -22,9 +22,9 @@ export class MetricsInitializationError extends Error {
 
 export class MetricsCollectionError extends Error {
   readonly _tag = "MetricsCollectionError";
-  readonly name = "MetricsCollectionError";
+  override readonly name = "MetricsCollectionError";
   
-  constructor(public readonly message: string, public readonly cause?: unknown) {
+  constructor(public override readonly message: string, public override readonly cause?: unknown) {
     super(message);
     this.cause = cause;
   }
@@ -32,7 +32,7 @@ export class MetricsCollectionError extends Error {
 
 export class MemoryThresholdExceededError extends Error {
   readonly _tag = "MemoryThresholdExceededError";
-  readonly name = "MemoryThresholdExceededError";
+  override readonly name = "MemoryThresholdExceededError";
   
   constructor(
     public readonly currentUsage: number,
@@ -50,7 +50,7 @@ export class MemoryThresholdExceededError extends Error {
 
 export class ThroughputBelowTargetError extends Error {
   readonly _tag = "ThroughputBelowTargetError";
-  readonly name = "ThroughputBelowTargetError";
+  override readonly name = "ThroughputBelowTargetError";
   
   constructor(public readonly actualThroughput: number, public readonly targetThroughput: number) {
     super(`Throughput below target: ${actualThroughput} < ${targetThroughput}`);
@@ -343,11 +343,16 @@ const makePerformanceMetricsService = Effect.gen(function* () {
   const getMetricsSummary = (): Effect.Effect<Record<string, number>, MetricsCollectionError> =>
     Effect.gen(function* () {
       // Collect real metrics from Effect.TS metric registry
-      const throughputMetric = yield* Metric.value(PerformanceMetrics.validationThroughput);
-      const memoryMetric = yield* Metric.value(PerformanceMetrics.memoryPerOperation);
-      const latencyMetric = yield* Metric.value(PerformanceMetrics.validationLatency);
+      const throughputHistogram = yield* Metric.value(PerformanceMetrics.validationThroughput);
+      const memoryHistogram = yield* Metric.value(PerformanceMetrics.memoryPerOperation);
+      const latencyHistogram = yield* Metric.value(PerformanceMetrics.validationLatency);
       const successCount = yield* Metric.value(PerformanceMetrics.validationSuccess);
       const failureCount = yield* Metric.value(PerformanceMetrics.validationFailure);
+      
+      // Extract numeric values from histograms (using count as approximation)
+      const throughputMetric = typeof throughputHistogram === 'number' ? throughputHistogram : (throughputHistogram?.count || 0);
+      const memoryMetric = typeof memoryHistogram === 'number' ? memoryHistogram : (memoryHistogram?.count || 0);
+      const latencyMetric = typeof latencyHistogram === 'number' ? latencyHistogram : (latencyHistogram?.count || 0);
       
       const totalValidations = successCount + failureCount;
       const successRate = totalValidations > 0 ? (successCount / totalValidations) * 100 : 100;

@@ -12,9 +12,9 @@ import { validateAsyncAPIEmitterOptions, createAsyncAPIEmitterOptions } from "..
 // TAGGED ERROR TYPES
 export class BenchmarkExecutionError extends Error {
   readonly _tag = "BenchmarkExecutionError";
-  readonly name = "BenchmarkExecutionError";
+  override readonly name = "BenchmarkExecutionError";
   
-  constructor(public readonly message: string, public readonly cause?: unknown) {
+  constructor(public override readonly message: string, public override readonly cause?: unknown) {
     super(message);
     this.cause = cause;
   }
@@ -22,7 +22,7 @@ export class BenchmarkExecutionError extends Error {
 
 export class BenchmarkTimeoutError extends Error {
   readonly _tag = "BenchmarkTimeoutError";
-  readonly name = "BenchmarkTimeoutError";
+  override readonly name = "BenchmarkTimeoutError";
   
   constructor(public readonly timeoutMs: number, public readonly actualDuration: number) {
     super(`Benchmark timed out after ${timeoutMs}ms (actual: ${actualDuration}ms)`);
@@ -31,7 +31,7 @@ export class BenchmarkTimeoutError extends Error {
 
 export class ThroughputRegressionError extends Error {
   readonly _tag = "ThroughputRegressionError";
-  readonly name = "ThroughputRegressionError";
+  override readonly name = "ThroughputRegressionError";
   
   constructor(public readonly currentThroughput: number, public readonly baselineThroughput: number) {
     super(`Throughput regression detected: ${currentThroughput} < ${baselineThroughput}`);

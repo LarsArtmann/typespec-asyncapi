@@ -6,13 +6,14 @@
  */
 
 import { Effect, Context, Layer, Ref, Duration, Fiber } from "effect";
+import { MemoryThresholdExceededError } from "./metrics.js";
 
 // TAGGED ERROR TYPES
 export class MemoryMonitorInitializationError extends Error {
   readonly _tag = "MemoryMonitorInitializationError";
-  readonly name = "MemoryMonitorInitializationError";
+  override readonly name = "MemoryMonitorInitializationError";
   
-  constructor(public readonly message: string, public readonly cause?: unknown) {
+  constructor(public override readonly message: string, public override readonly cause?: unknown) {
     super(message);
     this.cause = cause;
   }
@@ -20,7 +21,7 @@ export class MemoryMonitorInitializationError extends Error {
 
 export class MemoryLeakDetectedError extends Error {
   readonly _tag = "MemoryLeakDetectedError";
-  readonly name = "MemoryLeakDetectedError";
+  override readonly name = "MemoryLeakDetectedError";
   
   constructor(
     public readonly leakRate: number, // bytes/second
@@ -31,14 +32,13 @@ export class MemoryLeakDetectedError extends Error {
   }
 }
 
-// Re-export the MemoryThresholdExceededError from metrics.ts to avoid duplication
-export { MemoryThresholdExceededError } from "./metrics.js";
+// MemoryThresholdExceededError is imported from metrics.js above
 
 export class GarbageCollectionFailureError extends Error {
   readonly _tag = "GarbageCollectionFailureError";
-  readonly name = "GarbageCollectionFailureError";
+  override readonly name = "GarbageCollectionFailureError";
   
-  constructor(public readonly message: string, public readonly memoryBeforeGC: number) {
+  constructor(public override readonly message: string, public readonly memoryBeforeGC: number) {
     super(`Garbage collection failed: ${message} (memory before GC: ${memoryBeforeGC} bytes)`);
   }
 }

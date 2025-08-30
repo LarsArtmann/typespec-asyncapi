@@ -5,17 +5,17 @@
  * using pure Effect.TS Railway Programming patterns.
  */
 
-import { Effect, Duration, TestClock, TestContext, Logger } from "effect";
-import { PerformanceMetricsService, PerformanceMetricsServiceLive } from "./metrics.js";
-import { MemoryMonitorService, MemoryMonitorServiceLive } from "./memory-monitor.js";
-import { executeBenchmarkSuite, quickPerformanceCheck, DefaultBenchmarkConfig } from "./benchmarks.js";
+import { Effect, Duration } from "effect";
+import { PerformanceMetricsService, PerformanceMetricsServiceLive, MetricsInitializationError, MetricsCollectionError, MemoryThresholdExceededError } from "./metrics.js";
+import { MemoryMonitorService, MemoryMonitorServiceLive, MemoryMonitorInitializationError } from "./memory-monitor.js";
+import { executeBenchmarkSuite, quickPerformanceCheck, DefaultBenchmarkConfig, BenchmarkExecutionError, BenchmarkTimeoutError } from "./benchmarks.js";
 import { validateAsyncAPIEmitterOptions, createAsyncAPIEmitterOptions } from "../options.js";
-import type { AsyncAPIEmitterOptions } from "../types/options.js";
+import { AsyncAPIOptionsValidationError, AsyncAPIOptionsParseError } from "../options.js";
 
 // TAGGED ERROR TYPES
 export class PerformanceValidationError extends Error {
   readonly _tag = "PerformanceValidationError";
-  readonly name = "PerformanceValidationError";
+  override readonly name = "PerformanceValidationError";
   
   constructor(public readonly requirement: string, public readonly actual: number, public readonly expected: number) {
     super(`Performance requirement '${requirement}' failed: actual ${actual} vs expected ${expected}`);
@@ -24,9 +24,9 @@ export class PerformanceValidationError extends Error {
 
 export class ValidationTestError extends Error {
   readonly _tag = "ValidationTestError";
-  readonly name = "ValidationTestError";
+  override readonly name = "ValidationTestError";
   
-  constructor(public readonly message: string, public readonly cause?: unknown) {
+  constructor(public override readonly message: string, public override readonly cause?: unknown) {
     super(message);
     this.cause = cause;
   }
@@ -189,7 +189,7 @@ export const validatePerformanceTargets = (): Effect.Effect<PerformanceValidatio
 /**
  * Validate throughput target with realistic workload
  */
-const validateThroughputTarget = (): Effect.Effect<{ throughput: number }, ValidationTestError> =>
+const validateThroughputTarget = (): Effect.Effect<{ throughput: number }, ValidationTestError, PerformanceMetricsService> =>
   Effect.gen(function* () {
     const performanceMetrics = yield* PerformanceMetricsService;
     const measurement = yield* performanceMetrics.startMeasurement("throughput-validation");
@@ -244,12 +244,19 @@ const validateThroughputTarget = (): Effect.Effect<{ throughput: number }, Valid
     }
     
     return { throughput: throughputResult.operationsPerSecond };
-  });
+  }).pipe(
+    Effect.catchAll(error => 
+      Effect.fail(new ValidationTestError(
+        `Throughput validation failed: ${error}`,
+        error
+      ))
+    )
+  );
 
 /**
  * Validate memory usage target
  */
-const validateMemoryTarget = (): Effect.Effect<{ memoryPerOp: number }, ValidationTestError> =>
+const validateMemoryTarget = (): Effect.Effect<{ memoryPerOp: number }, ValidationTestError, MemoryMonitorService> =>
   Effect.gen(function* () {
     const memoryMonitor = yield* MemoryMonitorService;
     
@@ -310,12 +317,19 @@ const validateMemoryTarget = (): Effect.Effect<{ memoryPerOp: number }, Validati
     }
     
     return { memoryPerOp: avgMemoryPerOp };
-  });
+  }).pipe(
+    Effect.catchAll(error => 
+      Effect.fail(new ValidationTestError(
+        `Memory validation failed: ${error}`,
+        error
+      ))
+    )
+  );
 
 /**
  * Validate latency target
  */
-const validateLatencyTarget = (): Effect.Effect<{ latency: number }, ValidationTestError> =>
+const validateLatencyTarget = (): Effect.Effect<{ latency: number }, ValidationTestError, never> =>
   Effect.gen(function* () {
     const iterations = 10000;
     const latencies: number[] = [];
@@ -353,12 +367,19 @@ const validateLatencyTarget = (): Effect.Effect<{ latency: number }, ValidationT
     }
     
     return { latency: avgLatency };
-  });
+  }).pipe(
+    Effect.catchAll(error => 
+      Effect.fail(new ValidationTestError(
+        `Latency validation failed: ${error}`,
+        error
+      ))
+    )
+  );
 
 /**
  * Validate initialization time target
  */
-const validateInitializationTarget = (): Effect.Effect<{ initTime: number }, ValidationTestError> =>
+const validateInitializationTarget = (): Effect.Effect<{ initTime: number }, ValidationTestError, PerformanceMetricsService | MemoryMonitorService> =>
   Effect.gen(function* () {
     const iterations = 100;
     const initTimes: number[] = [];
@@ -403,7 +424,7 @@ const validateInitializationTarget = (): Effect.Effect<{ initTime: number }, Val
 /**
  * Validate comprehensive benchmark suite
  */
-const validateBenchmarkSuite = (): Effect.Effect<{ overallThroughput: number }, ValidationTestError> =>
+const validateBenchmarkSuite = (): Effect.Effect<{ overallThroughput: number }, ValidationTestError, PerformanceMetricsService> =>
   Effect.gen(function* () {
     const config = {
       ...DefaultBenchmarkConfig,
