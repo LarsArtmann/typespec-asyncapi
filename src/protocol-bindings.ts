@@ -7,39 +7,187 @@
  * - HTTP
  */
 
-import type {
-  ServerBindings,
-  ChannelBindings,
-  OperationBindings,
-  MessageBindings,
-  KafkaServerBinding,
-  KafkaChannelBinding,
-  KafkaOperationBinding,
-  KafkaMessageBinding,
-  WebSocketChannelBinding,
-  WebSocketMessageBinding,
-  HttpOperationBinding,
-  HttpMessageBinding,
-  SchemaObject,
-  ReferenceObject,
-  KafkaTopicConfiguration,
-} from "./types/asyncapi.js";
-import type {
-  ProtocolType,
-  ProtocolBindingValidationError,
-  ProtocolBindingValidationResult,
-  KafkaFieldConfig,
-  KafkaProtocolBindingConfig,
-  WebSocketProtocolBindingConfig,
-  HttpProtocolBindingConfig,
-} from "./types/protocol-bindings.js";
+// Define basic schema types locally to fix import issues
+type SchemaObject = {
+  type?: string;
+  properties?: Record<string, SchemaObject>;
+  items?: SchemaObject;
+  required?: string[];
+  description?: string;
+  format?: string;
+  minimum?: number;
+  maximum?: number;
+  minLength?: number;
+  maxLength?: number;
+  pattern?: string;
+  enum?: unknown[];
+  const?: unknown;
+  oneOf?: SchemaObject[];
+  anyOf?: SchemaObject[];
+  allOf?: SchemaObject[];
+  not?: SchemaObject;
+  additionalProperties?: boolean | SchemaObject;
+  default?: unknown;
+  example?: unknown;
+  examples?: unknown[];
+  title?: string;
+  multipleOf?: number;
+  minItems?: number;
+  maxItems?: number;
+  uniqueItems?: boolean;
+  minProperties?: number;
+  maxProperties?: number;
+};
+
+type ReferenceObject = {
+  $ref: string;
+};
+
+// Protocol binding types
+type ServerBindings = Record<string, unknown>;
+type ChannelBindings = Record<string, unknown>;
+type OperationBindings = Record<string, unknown>;
+type MessageBindings = Record<string, unknown>;
+
+type KafkaServerBinding = {
+  bindingVersion?: string;
+  schemaRegistryUrl?: string;
+  schemaRegistryVendor?: string;
+};
+
+type KafkaChannelBinding = {
+  bindingVersion?: string;
+  topic?: string;
+  partitions?: number;
+  replicas?: number;
+  topicConfiguration?: Record<string, unknown>;
+};
+
+type KafkaOperationBinding = {
+  bindingVersion?: string;
+  groupId?: SchemaObject | ReferenceObject;
+  clientId?: SchemaObject | ReferenceObject;
+};
+
+type KafkaMessageBinding = {
+  bindingVersion?: string;
+  key?: SchemaObject | ReferenceObject;
+  schemaIdLocation?: "header" | "payload";
+  schemaIdPayloadEncoding?: string;
+  schemaLookupStrategy?: "TopicIdStrategy" | "RecordIdStrategy" | "TopicRecordIdStrategy";
+};
+
+type WebSocketChannelBinding = {
+  bindingVersion?: string;
+  method?: "GET" | "POST";
+  query?: SchemaObject | ReferenceObject;
+  headers?: SchemaObject | ReferenceObject;
+};
+
+type WebSocketMessageBinding = {
+  bindingVersion?: string;
+};
+
+type HttpOperationBinding = {
+  bindingVersion?: string;
+  type: "request" | "response";
+  method?: string;
+  query?: SchemaObject | ReferenceObject;
+};
+
+type HttpMessageBinding = {
+  bindingVersion?: string;
+  headers?: SchemaObject | ReferenceObject;
+  statusCode?: number;
+};
+
+type KafkaTopicConfiguration = Record<string, unknown>;
+// Define protocol binding types locally
+type ProtocolType = "kafka" | "websocket" | "http" | "mqtt" | "amqp" | "redis" | "nats";
+
+type ProtocolBindingValidationError = {
+  protocol: ProtocolType;
+  bindingType: "server" | "channel" | "operation" | "message";
+  message: string;
+  severity: "error" | "warning";
+};
+
+type ProtocolBindingValidationResult = {
+  isValid: boolean;
+  errors: ProtocolBindingValidationError[];
+  warnings: ProtocolBindingValidationError[];
+};
+
+type KafkaFieldConfig = {
+  type: string;
+  description?: string;
+  default?: unknown;
+  enum?: unknown[];
+  format?: string;
+};
+
+type KafkaProtocolBindingConfig = {
+  server?: {
+    schemaRegistryUrl?: string;
+    schemaRegistryVendor?: string;
+    clientId?: string;
+    groupId?: string;
+  };
+  channel?: {
+    topic?: string;
+    partitions?: number;
+    replicas?: number;
+    topicConfiguration?: Record<string, unknown>;
+  };
+  operation?: {
+    groupId?: SchemaObject | ReferenceObject;
+    clientId?: SchemaObject | ReferenceObject;
+  };
+  message?: {
+    key?: SchemaObject | ReferenceObject;
+    schemaIdLocation?: "header" | "payload";
+    schemaIdPayloadEncoding?: string;
+    schemaLookupStrategy?: "TopicIdStrategy" | "RecordIdStrategy" | "TopicRecordIdStrategy";
+  };
+};
+
+type WebSocketProtocolBindingConfig = {
+  channel?: {
+    method?: "GET" | "POST";
+    query?: SchemaObject | ReferenceObject;
+    headers?: SchemaObject | ReferenceObject;
+  };
+  message?: Record<string, unknown>;
+};
+
+type HttpProtocolBindingConfig = {
+  operation?: {
+    type?: "request" | "response";
+    method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE" | "HEAD" | "OPTIONS" | "CONNECT" | "TRACE";
+    query?: SchemaObject | ReferenceObject;
+    statusCode?: number;
+  };
+  message?: {
+    headers?: SchemaObject | ReferenceObject;
+    statusCode?: number;
+  };
+};
+
+type ProtocolSpecificConfig = KafkaProtocolBindingConfig | WebSocketProtocolBindingConfig | HttpProtocolBindingConfig;
 
 // Re-export for external use
 export type { KafkaFieldConfig, ProtocolType };
 
-import {
-  DEFAULT_PROTOCOL_SUPPORT,
-} from "./types/protocol-bindings.js";
+// Define protocol support locally
+const DEFAULT_PROTOCOL_SUPPORT: Record<ProtocolType, { server: boolean; channel: boolean; operation: boolean; message: boolean }> = {
+  kafka: { server: true, channel: true, operation: true, message: true },
+  websocket: { server: false, channel: true, operation: false, message: true },
+  http: { server: false, channel: false, operation: true, message: true },
+  mqtt: { server: true, channel: true, operation: true, message: true },
+  amqp: { server: true, channel: true, operation: true, message: true },
+  redis: { server: true, channel: true, operation: false, message: false },
+  nats: { server: true, channel: true, operation: true, message: true },
+};
 
 export type ProtocolBindingConfig = {
   protocol: ProtocolType;

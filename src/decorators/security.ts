@@ -192,15 +192,16 @@ function validateSecurityScheme(scheme: SecurityScheme): { valid: boolean; error
   const warnings: string[] = [];
   
   switch (scheme.type) {
-    case "apiKey":
+    case "apiKey": {
       const apiKeyScheme = scheme;
       const validApiKeyLocations = ["user", "password", "query", "header", "cookie"];
       if (!validApiKeyLocations.includes(apiKeyScheme.in)) {
         errors.push(`Invalid API key location: ${apiKeyScheme.in}. Must be one of: ${validApiKeyLocations.join(", ")}`);
       }
       break;
+    }
       
-    case "http":
+    case "http": {
       const httpScheme = scheme;
       const validHttpSchemes = ["basic", "bearer", "digest", "hoba", "mutual", "negotiate", "oauth", "scram-sha-1", "scram-sha-256", "vapid"];
       if (!validHttpSchemes.includes(httpScheme.scheme)) {
@@ -210,8 +211,9 @@ function validateSecurityScheme(scheme: SecurityScheme): { valid: boolean; error
         warnings.push("Bearer scheme should specify bearerFormat for clarity");
       }
       break;
+    }
       
-    case "oauth2":
+    case "oauth2": {
       const oauth2Scheme = scheme;
       const flows = oauth2Scheme.flows;
       if (!flows || Object.keys(flows).length === 0) {
@@ -237,8 +239,9 @@ function validateSecurityScheme(scheme: SecurityScheme): { valid: boolean; error
         }
       });
       break;
+    }
       
-    case "openIdConnect":
+    case "openIdConnect": {
       const oidcScheme = scheme;
       if (!oidcScheme.openIdConnectUrl) {
         errors.push("OpenID Connect scheme must have openIdConnectUrl");
@@ -249,14 +252,16 @@ function validateSecurityScheme(scheme: SecurityScheme): { valid: boolean; error
         errors.push("OpenID Connect URL must be a valid URL");
       }
       break;
+    }
       
-    case "sasl":
+    case "sasl": {
       const saslScheme = scheme;
       const validSaslMechanisms = ["PLAIN", "SCRAM-SHA-256", "SCRAM-SHA-512", "GSSAPI"];
       if (!validSaslMechanisms.includes(saslScheme.mechanism)) {
         errors.push(`Invalid SASL mechanism: ${saslScheme.mechanism}. Must be one of: ${validSaslMechanisms.join(", ")}`);
       }
       break;
+    }
       
     case "x509":
     case "symmetricEncryption":
@@ -276,7 +281,7 @@ function validateSecurityScheme(scheme: SecurityScheme): { valid: boolean; error
  */
 export function getSecurityConfig(context: DecoratorContext, target: Operation | Model): SecurityConfig | undefined {
   const securityMap = context.program.stateMap(stateKeys.securityConfigs);
-  return securityMap.get(target);
+  return securityMap.get(target) as SecurityConfig | undefined;
 }
 
 /**

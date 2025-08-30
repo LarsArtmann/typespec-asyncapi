@@ -7,7 +7,7 @@
  */
 
 import { Effect, Context, Layer, Metric, MetricBoundaries, Duration, Fiber } from "effect";
-import type { AsyncAPIEmitterOptions } from "../types/options.js";
+import type { AsyncAPIEmitterOptions } from "../options.js";
 
 // TAGGED ERROR TYPES for Railway Programming
 export class MetricsInitializationError extends Error {
@@ -17,7 +17,7 @@ export class MetricsInitializationError extends Error {
   constructor(public override readonly message: string, public override readonly cause?: unknown) {
     super(message);
     if (cause) {
-      (this as any).cause = cause;
+      (this as Error & { cause?: unknown }).cause = cause;
     }
   }
 }
@@ -29,7 +29,7 @@ export class MetricsCollectionError extends Error {
   constructor(public override readonly message: string, public override readonly cause?: unknown) {
     super(message);
     if (cause) {
-      (this as any).cause = cause;
+      (this as Error & { cause?: unknown }).cause = cause;
     }
   }
 }

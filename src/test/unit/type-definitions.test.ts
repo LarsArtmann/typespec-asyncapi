@@ -18,15 +18,84 @@ import type {
   EmitterOptionsValidation 
 } from "../../src/options.js";
 
-import type {
-  AsyncAPIDocument,
-  ChannelObject, 
-  OperationObject,
-  MessageObject,
-  SchemaObject,
-  ServerObject,
-  SecurityScheme
-} from "../../src/types/asyncapi.js";
+// Define AsyncAPI types locally for testing
+type SchemaObject = {
+  type?: string;
+  properties?: Record<string, SchemaObject>;
+  items?: SchemaObject;
+  required?: string[];
+  description?: string;
+};
+
+type ChannelObject = {
+  address?: string;
+  messages?: Record<string, unknown>;
+  title?: string;
+  summary?: string;
+  description?: string;
+};
+
+type OperationObject = {
+  action: "send" | "receive";
+  channel?: { $ref: string };
+  title?: string;
+  summary?: string;
+  description?: string;
+};
+
+type MessageObject = {
+  name?: string;
+  title?: string;
+  summary?: string;
+  description?: string;
+  contentType?: string;
+  tags?: Array<{ name: string; description?: string }>;
+  headers?: SchemaObject;
+  payload?: SchemaObject;
+  correlationId?: unknown;
+  schemaFormat?: string;
+  examples?: unknown[];
+};
+
+type ServerObject = {
+  host: string;
+  protocol: string;
+  description?: string;
+  variables?: Record<string, { description?: string; default?: string; enum?: string[] }>;
+  security?: Array<Record<string, string[]>>;
+  tags?: Array<{ name: string; description?: string }>;
+  bindings?: Record<string, unknown>;
+};
+
+type SecurityScheme = {
+  type: string;
+  description?: string;
+};
+
+type AsyncAPIDocument = {
+  asyncapi: string;
+  info: { title: string; version: string; description?: string };
+  servers?: Record<string, ServerObject>;
+  channels?: Record<string, ChannelObject>;
+  operations?: Record<string, OperationObject>;
+  components?: {
+    messages?: Record<string, MessageObject>;
+    schemas?: Record<string, SchemaObject>;
+    securitySchemes?: Record<string, SecurityScheme>;
+    parameters?: Record<string, unknown>;
+    correlationIds?: Record<string, unknown>;
+    replies?: Record<string, unknown>;
+    replyAddresses?: Record<string, unknown>;
+    externalDocs?: Record<string, unknown>;
+    tags?: Record<string, unknown>;
+    operationTraits?: Record<string, unknown>;
+    messageTraits?: Record<string, unknown>;
+    serverBindings?: Record<string, unknown>;
+    channelBindings?: Record<string, unknown>;
+    operationBindings?: Record<string, unknown>;
+    messageBindings?: Record<string, unknown>;
+  };
+};
 
 import type {
   ProtocolType,

@@ -16,7 +16,7 @@ export class MemoryMonitorInitializationError extends Error {
   constructor(public override readonly message: string, public override readonly cause?: unknown) {
     super(message);
     if (cause) {
-      (this as any).cause = cause;
+      (this as Error & { cause?: unknown }).cause = cause;
     }
   }
 }

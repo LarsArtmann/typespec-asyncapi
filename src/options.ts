@@ -1,10 +1,155 @@
 import { Schema, JSONSchema } from "@effect/schema";
 import { Effect } from "effect";
-import type { AsyncAPIEmitterOptions, SecuritySchemeConfig } from "./types/options.js";
 import { validatePathTemplate } from "./path-templates.js";
 
-// Export the interface type
-export type { AsyncAPIEmitterOptions };
+// ==========================================
+// TYPE DEFINITIONS (consolidated from types/options.ts)
+// ==========================================
+
+export type AsyncAPIEmitterOptions = {
+  /**
+   * Name of the output file. Supports template variables:
+   * - {cmd}: Current command name (e.g., "typespec", "tsp")
+   * - {project-root}: Project root directory path
+   * - {emitter-name}: Name of the emitter ("asyncapi")
+   * - {output-dir}: Configured output directory
+   * 
+   * @example "{project-root}/generated/{cmd}-asyncapi.yaml"
+   * @example "{project-root}/specs/asyncapi.json"
+   * @example "{emitter-name}/{cmd}/api-spec.yaml"
+   * @default "asyncapi"
+   */
+  "output-file"?: string;
+
+  /**
+   * Output file type
+   * @default "yaml"
+   */
+  "file-type"?: "yaml" | "json";
+
+  /**
+   * AsyncAPI version to target
+   * @default "3.0.0"
+   */
+  "asyncapi-version"?: "3.0.0";
+
+  /**
+   * Whether to omit unreachable message types
+   * @default false
+   */
+  "omit-unreachable-types"?: boolean;
+
+  /**
+   * Whether to include TypeSpec source information in comments
+   * @default false
+   */
+  "include-source-info"?: boolean;
+
+  /**
+   * Custom servers to include in the output
+   */
+  "default-servers"?: Record<string, ServerConfig>;
+
+  /**
+   * Whether to validate generated AsyncAPI spec
+   * @default true
+   */
+  "validate-spec"?: boolean;
+
+  /**
+   * Additional schema properties to include
+   */
+  "additional-properties"?: Record<string, unknown>;
+
+  /**
+   * Protocol bindings to include
+   */
+  "protocol-bindings"?: ("kafka" | "amqp" | "websocket" | "http")[];
+
+  /**
+   * Security schemes configuration
+   */
+  "security-schemes"?: Record<string, SecuritySchemeConfig>;
+
+  /**
+   * Versioning configuration
+   */
+  "versioning"?: VersioningConfig;
+}
+
+/**
+ * Versioning configuration options
+ */
+export type VersioningConfig = {
+  /**
+   * Whether to generate separate files for each version
+   * @default true
+   */
+  "separate-files"?: boolean;
+
+  /**
+   * Version naming strategy for file output
+   * @default "suffix"
+   */
+  "file-naming"?: "suffix" | "directory" | "prefix";
+
+  /**
+   * Whether to include version metadata in AsyncAPI info
+   * @default true
+   */
+  "include-version-info"?: boolean;
+
+  /**
+   * Custom version mappings
+   */
+  "version-mappings"?: Record<string, string>;
+
+  /**
+   * Whether to validate version compatibility
+   * @default false
+   */
+  "validate-version-compatibility"?: boolean;
+}
+
+export type ServerConfig = {
+  host: string;
+  protocol: string;
+  description?: string;
+  variables?: Record<string, VariableConfig>;
+  security?: string[];
+  bindings?: Record<string, unknown>;
+}
+
+export type VariableConfig = {
+  description?: string;
+  default?: string;
+  enum?: string[];
+  examples?: string[];
+}
+
+export type SecuritySchemeConfig = {
+  type: "oauth2" | "apiKey" | "httpApiKey" | "http" | "plain" | "scram-sha-256" | "scram-sha-512" | "gssapi";
+  description?: string;
+  name?: string;
+  in?: "user" | "password" | "query" | "header" | "cookie";
+  scheme?: string;
+  bearerFormat?: string;
+  flows?: OAuthFlowsConfig;
+}
+
+export type OAuthFlowsConfig = {
+  implicit?: OAuthFlowConfig;
+  password?: OAuthFlowConfig;
+  clientCredentials?: OAuthFlowConfig;
+  authorizationCode?: OAuthFlowConfig;
+}
+
+export type OAuthFlowConfig = {
+  authorizationUrl?: string;
+  tokenUrl?: string;
+  refreshUrl?: string;
+  availableScopes?: Record<string, string>;
+}
 
 // EFFECT.TS SCHEMA DEFINITIONS - Type-safe validation with comprehensive error handling
 
@@ -441,9 +586,12 @@ const convertOptionsFormat = (result: Record<string, unknown>): AsyncAPIEmitterO
   const converted: AsyncAPIEmitterOptions = {};
   
   // Use functional composition for cleaner conversion
-  const copyIfDefined = <K extends keyof AsyncAPIEmitterOptions>(key: K, transform?: (value: unknown) => AsyncAPIEmitterOptions[K]) => {
+  const copyIfDefined = <K extends keyof AsyncAPIEmitterOptions>(
+    key: K, 
+    transform?: (value: unknown) => AsyncAPIEmitterOptions[K]
+  ) => {
     if (result[key] !== undefined) {
-      converted[key] = transform ? transform(result[key]) : result[key];
+      converted[key] = transform ? transform(result[key]) : (result[key] as AsyncAPIEmitterOptions[K]);
     }
   };
 
@@ -453,8 +601,8 @@ const convertOptionsFormat = (result: Record<string, unknown>): AsyncAPIEmitterO
   copyIfDefined("omit-unreachable-types");
   copyIfDefined("include-source-info");
   copyIfDefined("validate-spec");
-  copyIfDefined("additional-properties", (value) => ({ ...value }));
-  copyIfDefined("protocol-bindings", (value) => [...value]);
+  copyIfDefined("additional-properties", (value) => ({ ...(value as Record<string, unknown>) }));
+  copyIfDefined("protocol-bindings", (value) => [...(value as unknown[])]);
   
   if (result["default-servers"] !== undefined) {
     converted["default-servers"] = Object.fromEntries(

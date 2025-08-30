@@ -103,7 +103,7 @@ export function $server(
 
   // Store server configuration in program state
   const serverConfigsMap = context.program.stateMap(stateKeys.serverConfigs);
-  const existingConfigs = serverConfigsMap.get(target) || new Map<string, ServerConfig>();
+  const existingConfigs = (serverConfigsMap.get(target) as Map<string, ServerConfig> | undefined) ?? new Map<string, ServerConfig>();
   existingConfigs.set(serverName, completeConfig);
   serverConfigsMap.set(target, existingConfigs);
 

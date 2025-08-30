@@ -276,7 +276,7 @@ describe("🚨 CRITICAL: AUTOMATED ASYNCAPI SPECIFICATION VALIDATION", () => {
           const fileName = `${scenario.name}.${format}`;
           console.log(`  🔍 Parsing ${fileName}...`);
           
-          let parsedSpec: any;
+          let parsedSpec: Record<string, unknown>;
           try {
             parsedSpec = parseAsyncAPIOutput(compilationResult.outputFiles, fileName);
             expect(parsedSpec).toBeDefined();

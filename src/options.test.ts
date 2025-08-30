@@ -8,7 +8,7 @@ import {
   isAsyncAPIEmitterOptions,
   AsyncAPIEmitterOptionsSchema
 } from "./options.js";
-import type { AsyncAPIEmitterOptions } from "./types/options.js";
+import type { AsyncAPIEmitterOptions } from "./options.js";
 
 describe("Effect.TS Schema AsyncAPI Emitter Options", () => {
   // VALIDATION SUCCESS TESTS - Ensure proper options pass validation

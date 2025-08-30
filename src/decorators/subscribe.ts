@@ -16,7 +16,7 @@ export function $subscribe(context: DecoratorContext, target: Operation): void {
 
   // Get existing operation types to check for conflicts
   const operationTypesMap = context.program.stateMap(stateKeys.operationTypes);
-  const existingType = operationTypesMap.get(target);
+  const existingType = operationTypesMap.get(target) as string | undefined;
   
   if (existingType === "publish") {
     reportDiagnostic(context.program, {

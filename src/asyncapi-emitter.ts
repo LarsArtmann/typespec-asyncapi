@@ -5,7 +5,65 @@ import { stringify } from "yaml";
 import { dirname } from "node:path";
 import type { AsyncAPIEmitterOptions } from "./options.js";
 import { stateKeys } from "./lib.js";
-import type { ChannelObject, OperationObject, SchemaObject } from "./types/asyncapi.js";
+// Define basic AsyncAPI types locally to fix import issues
+type SchemaObject = {
+  type?: string;
+  properties?: Record<string, SchemaObject>;
+  items?: SchemaObject;
+  required?: string[];
+  description?: string;
+  format?: string;
+  minimum?: number;
+  maximum?: number;
+  minLength?: number;
+  maxLength?: number;
+  pattern?: string;
+  enum?: unknown[];
+  const?: unknown;
+  oneOf?: SchemaObject[];
+  anyOf?: SchemaObject[];
+  allOf?: SchemaObject[];
+  not?: SchemaObject;
+  additionalProperties?: boolean | SchemaObject;
+  default?: unknown;
+  example?: unknown;
+  examples?: unknown[];
+  title?: string;
+  multipleOf?: number;
+  minItems?: number;
+  maxItems?: number;
+  uniqueItems?: boolean;
+  minProperties?: number;
+  maxProperties?: number;
+};
+
+type ChannelObject = {
+  address?: string;
+  messages?: Record<string, unknown>;
+  title?: string;
+  summary?: string;
+  description?: string;
+  servers?: string[];
+  parameters?: Record<string, unknown>;
+  tags?: Array<{ name: string; description?: string }>;
+  externalDocs?: { description?: string; url: string };
+  bindings?: Record<string, unknown>;
+};
+
+type OperationObject = {
+  action: "send" | "receive";
+  channel?: { $ref: string };
+  title?: string;
+  summary?: string;
+  description?: string;
+  security?: Array<Record<string, string[]>>;
+  tags?: Array<{ name: string; description?: string }>;
+  externalDocs?: { description?: string; url: string };
+  bindings?: Record<string, unknown>;
+  traits?: unknown[];
+  messages?: Array<{ $ref: string }>;
+  reply?: unknown;
+};
 import { 
   resolvePathTemplateWithValidation, 
   hasTemplateVariables, 

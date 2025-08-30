@@ -41,7 +41,11 @@
       "Bash(timeout:*)",
       "Bash(gh issue close:*)",
       "Bash(gh issue close:*)",
-      "Bash(git tag:*)"
+      "Bash(git tag:*)",
+      "Bash(git checkout:*)",
+      "Bash(gh api:*)",
+      "Bash(gh issue edit:*)",
+      "Bash(gh project create:*)"
     ],
     "deny": [],
     "ask": []

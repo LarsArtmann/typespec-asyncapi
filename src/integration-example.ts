@@ -16,7 +16,7 @@ import {
   validateAsyncAPIEmitterOptions,
   createAsyncAPIEmitterOptions
 } from "./options.js";
-import type { AsyncAPIEmitterOptions } from "./types/options.js";
+import type { AsyncAPIEmitterOptions } from "./options.js";
 import type { MetricsInitializationError, MetricsCollectionError} from "./performance/metrics.js";
 import { PerformanceMetricsService, PerformanceMetricsServiceLive, MemoryThresholdExceededError } from "./performance/metrics.js";
 import type { MemoryMonitorInitializationError } from "./performance/memory-monitor.js";
