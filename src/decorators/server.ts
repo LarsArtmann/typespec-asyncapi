@@ -32,9 +32,9 @@ export function $server(
   let serverName: string;
   if (typeof name === "string") {
     serverName = name;
-  } else if (name && typeof name === "object" && "value" in name && name.value !== undefined) {
+  } else if (name && typeof name === "object" && "value" in name) {
     serverName = String(name.value);
-  } else if (name && typeof name === "object" && "valueKind" in name && (name).valueKind === "StringValue") {
+  } else if (name && typeof name === "object" && "valueKind" in name) {
     const stringValue = name;
     serverName = String(stringValue.value);
   } else {
