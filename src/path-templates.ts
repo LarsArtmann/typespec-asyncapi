@@ -69,10 +69,12 @@ export function validatePathTemplate(pathTemplate: string): TemplateValidationRe
   let match;
   while ((match = TEMPLATE_VARIABLE_PATTERN.exec(pathTemplate)) !== null) {
     const variable = match[1];
-    variables.push(variable);
-    
-    if (!SUPPORTED_TEMPLATE_VARIABLES.includes(variable as SupportedTemplateVariable)) {
-      unsupportedVariables.push(variable);
+    if (variable) {
+      variables.push(variable);
+      
+      if (!SUPPORTED_TEMPLATE_VARIABLES.includes(variable as SupportedTemplateVariable)) {
+        unsupportedVariables.push(variable);
+      }
     }
   }
   
@@ -112,7 +114,7 @@ export function detectCommandName(): string {
   }
   
   // Check NODE_OPTIONS or other env vars
-  const nodeOptions = process.env.NODE_OPTIONS || "";
+  const nodeOptions = process.env['NODE_OPTIONS'] || "";
   if (nodeOptions.includes("typespec")) {
     return "typespec";
   }
@@ -267,7 +269,9 @@ export function getTemplateVariables(pathTemplate: string): string[] {
   const regex = new RegExp(TEMPLATE_VARIABLE_PATTERN.source, "g");
   
   while ((match = regex.exec(pathTemplate)) !== null) {
-    variables.push(match[1]);
+    if (match[1]) {
+      variables.push(match[1]);
+    }
   }
   
   return variables;

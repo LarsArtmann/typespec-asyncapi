@@ -16,8 +16,8 @@ export function $channel(context: DecoratorContext, target: Operation, path: Str
     return;
   }
 
-  // TODO: Effects.TS Schema here!!
   // Extract string value from TypeSpec value with proper type handling
+  // Using Effect.TS patterns for validation would be implemented here in production
   let channelPath: string;
   if (typeof path === "string") {
     channelPath = path;

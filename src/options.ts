@@ -1,6 +1,6 @@
 import { Schema, JSONSchema } from "@effect/schema";
 import { Effect } from "effect";
-import type { AsyncAPIEmitterOptions } from "./types/options.js";
+import type { AsyncAPIEmitterOptions, SecuritySchemeConfig } from "./types/options.js";
 import { validatePathTemplate } from "./path-templates.js";
 
 // Export the interface type
@@ -394,45 +394,13 @@ const convertServerConfig = (input: ServerConfigInput): ServerConfigInput => {
   return result;
 };
 
-interface SecuritySchemeConfigInput {
-  type: "oauth2" | "apiKey" | "httpApiKey" | "http" | "plain" | "scram-sha-256" | "scram-sha-512" | "gssapi";
-  description?: string;
-  name?: string;
-  in?: "user" | "password" | "query" | "header" | "cookie";
-  scheme?: string;
-  bearerFormat?: string;
-  flows?: Record<string, {
-    authorizationUrl?: string;
-    tokenUrl?: string;
-    refreshUrl?: string;
-    availableScopes?: Record<string, string>;
-  }>;
-}
+// Use the shared SecuritySchemeConfig from types/options.ts
+type SecuritySchemeConfigInput = SecuritySchemeConfig;
 
 const convertSecuritySchemeConfig = (input: SecuritySchemeConfigInput): SecuritySchemeConfigInput => {
-  
-  const result: SecuritySchemeConfigInput = { type: input.type };
-  
-  if (input.description !== undefined) result.description = input.description;
-  if (input.name !== undefined) result.name = input.name;
-  if (input.in !== undefined) result.in = input.in;
-  if (input.scheme !== undefined) result.scheme = input.scheme;
-  if (input.bearerFormat !== undefined) result.bearerFormat = input.bearerFormat;
-  if (input.flows !== undefined) {
-    result.flows = Object.fromEntries(
-      Object.entries(input.flows).map(([flowType, flowConfig]) => [
-        flowType,
-        {
-          ...(flowConfig.authorizationUrl !== undefined && { authorizationUrl: flowConfig.authorizationUrl }),
-          ...(flowConfig.tokenUrl !== undefined && { tokenUrl: flowConfig.tokenUrl }),
-          ...(flowConfig.refreshUrl !== undefined && { refreshUrl: flowConfig.refreshUrl }),
-          ...(flowConfig.availableScopes !== undefined && { availableScopes: { ...flowConfig.availableScopes } })
-        }
-      ])
-    );
-  }
-  
-  return result;
+  // Since SecuritySchemeConfigInput is now an alias for SecuritySchemeConfig,
+  // we can simplify this to just pass through the input
+  return input;
 };
 
 /**

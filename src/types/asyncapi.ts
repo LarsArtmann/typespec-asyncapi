@@ -110,9 +110,11 @@ export interface OperationReplyObject {
   messages?: (MessageObject | ReferenceObject)[];
 }
 
-export interface MessageObject {
+/**
+ * Base interface for message common properties
+ */
+export interface MessageBaseObject {
   headers?: SchemaObject | ReferenceObject;
-  payload?: SchemaObject | ReferenceObject;
   correlationId?: CorrelationIdObject | ReferenceObject;
   contentType?: string;
   name?: string;
@@ -123,21 +125,15 @@ export interface MessageObject {
   externalDocs?: ExternalDocumentationObject;
   bindings?: MessageBindings;
   examples?: MessageExampleObject[];
+}
+
+export interface MessageObject extends MessageBaseObject {
+  payload?: SchemaObject | ReferenceObject;
   traits?: (MessageTraitObject | ReferenceObject)[];
 }
 
-export interface MessageTraitObject {
-  headers?: SchemaObject | ReferenceObject;
-  correlationId?: CorrelationIdObject | ReferenceObject;
-  contentType?: string;
-  name?: string;
-  title?: string;
-  summary?: string;
-  description?: string;
-  tags?: TagObject[];
-  externalDocs?: ExternalDocumentationObject;
-  bindings?: MessageBindings;
-  examples?: MessageExampleObject[];
+export interface MessageTraitObject extends MessageBaseObject {
+  // Marker interface for message traits
 }
 
 export interface MessageExampleObject {

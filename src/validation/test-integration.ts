@@ -6,7 +6,6 @@
  */
 
 import { AsyncAPIValidator, type ValidationResult, type AsyncAPIValidatorOptions } from "./asyncapi-validator.js";
-import type { AsyncAPIDocument } from "../types/asyncapi.js";
 
 export interface ValidationTestCase {
   /** Test case name */
@@ -29,7 +28,7 @@ export interface ValidationTestSuite {
   /** Test cases */
   cases: ValidationTestCase[];
   /** Suite-level validator options */
-  validatorOptions?: AsyncAPIValidatorOptions;
+  validatorOptions: AsyncAPIValidatorOptions;
   /** Setup function */
   setup?: () => Promise<void>;
   /** Teardown function */
@@ -44,7 +43,7 @@ export interface ValidationTestResult {
   /** Validation result */
   validationResult: ValidationResult;
   /** Error message if test failed */
-  error?: string;
+  error: string;
   /** Test duration */
   duration: number;
 }
@@ -69,7 +68,7 @@ export class ValidationTestRunner {
   constructor(private options: ValidationTestOptions = {}) {
     this.validator = new AsyncAPIValidator({
       enableCache: true,
-      benchmarking: options.benchmark,
+      benchmarking: options.benchmark ?? false,
       strict: true,
     });
   }
@@ -158,7 +157,7 @@ export class ValidationTestRunner {
         passed,
         validationResult,
         duration,
-        error: passed ? undefined : this.getTestFailureReason(testCase, validationResult),
+        error: passed ? "" : this.getTestFailureReason(testCase, validationResult),
       };
 
     } catch (error) {
@@ -285,7 +284,7 @@ export class ValidationTestRunner {
 export function createValidationTestSuite(name: string, options?: AsyncAPIValidatorOptions): ValidationTestSuite {
   return {
     name,
-    validatorOptions: options,
+    validatorOptions: options ?? {},
     cases: [
       {
         name: "valid-basic-document",
@@ -460,7 +459,7 @@ export function createValidationTestSuite(name: string, options?: AsyncAPIValida
 /**
  * Integration with Vitest/Jest test frameworks
  */
-export function createValidationTest(testCase: ValidationTestCase, validator?: AsyncAPIValidator) {
+export function createValidationTest(testCase: ValidationTestCase, _validator?: AsyncAPIValidator) {
   return async () => {
     const runner = new ValidationTestRunner();
     const result = await runner.runTestCase(testCase);

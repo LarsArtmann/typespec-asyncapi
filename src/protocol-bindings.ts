@@ -24,8 +24,22 @@ import type {
   ReferenceObject,
   KafkaTopicConfiguration,
 } from "./types/asyncapi.js";
+import type {
+  ProtocolType,
+  ProtocolBindingValidationError,
+  ProtocolBindingValidationResult,
+  KafkaFieldConfig,
+  KafkaProtocolBindingConfig,
+  WebSocketProtocolBindingConfig,
+  HttpProtocolBindingConfig,
+} from "./types/protocol-bindings.js";
 
-export type ProtocolType = "kafka" | "ws" | "http" | "https" | "amqp" | "mqtt";
+// Re-export for external use
+export type { KafkaFieldConfig, ProtocolType };
+
+import {
+  DEFAULT_PROTOCOL_SUPPORT,
+} from "./types/protocol-bindings.js";
 
 export interface ProtocolBindingConfig {
   protocol: ProtocolType;
@@ -35,52 +49,14 @@ export interface ProtocolBindingConfig {
   messageBindings?: MessageBindings;
 }
 
-export interface KafkaBindingConfig {
-  server?: {
-    schemaRegistryUrl?: string;
-    schemaRegistryVendor?: string;
-    clientId?: string;
-    groupId?: string;
-  };
-  channel?: {
-    topic?: string;
-    partitions?: number;
-    replicas?: number;
-    topicConfiguration?: KafkaTopicConfiguration;
-  };
-  operation?: {
-    groupId?: { type?: "string" | "integer"; enum?: string[] | number[]; description?: string };
-    clientId?: { type?: "string" | "integer"; enum?: string[] | number[]; description?: string };
-  };
-  message?: {
-    key?: { type?: "string" | "integer"; enum?: string[] | number[]; description?: string };
-    schemaIdLocation?: "header" | "payload";
-    schemaIdPayloadEncoding?: string;
-    schemaLookupStrategy?: "TopicIdStrategy" | "RecordIdStrategy" | "TopicRecordIdStrategy";
-  };
-}
+// Use type alias for Kafka binding configuration from types/protocol-bindings.ts
+export type KafkaBindingConfig = Omit<KafkaProtocolBindingConfig, 'protocol' | 'enabled' | 'version'>;
 
-export interface WebSocketBindingConfig {
-  channel?: {
-    method?: "GET" | "POST";
-    query?: SchemaObject | ReferenceObject;
-    headers?: SchemaObject | ReferenceObject;
-  };
-  message?: Record<string, never>; // WebSocket message bindings are empty
-}
+// Use type alias for WebSocket binding configuration from types/protocol-bindings.ts
+export type WebSocketBindingConfig = Omit<WebSocketProtocolBindingConfig, 'protocol' | 'enabled' | 'version'>;
 
-export interface HttpBindingConfig {
-  operation?: {
-    type?: "request" | "response";
-    method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE" | "HEAD" | "OPTIONS" | "CONNECT" | "TRACE";
-    query?: SchemaObject | ReferenceObject;
-    statusCode?: number;
-  };
-  message?: {
-    headers?: SchemaObject | ReferenceObject;
-    statusCode?: number;
-  };
-}
+// Use type alias for HTTP binding configuration from types/protocol-bindings.ts
+export type HttpBindingConfig = Omit<HttpProtocolBindingConfig, 'protocol' | 'enabled' | 'version'>;
 
 export type ProtocolSpecificConfig = KafkaBindingConfig | WebSocketBindingConfig | HttpBindingConfig;
 
@@ -113,8 +89,8 @@ export class KafkaProtocolBinding {
   }
 
   static createOperationBinding(config: {
-    groupId?: { type?: "string" | "integer"; enum?: string[] | number[]; description?: string };
-    clientId?: { type?: "string" | "integer"; enum?: string[] | number[]; description?: string };
+    groupId?: KafkaFieldConfig;
+    clientId?: KafkaFieldConfig;
   }): KafkaOperationBinding {
     return {
       bindingVersion: "0.5.0",
@@ -123,7 +99,7 @@ export class KafkaProtocolBinding {
   }
 
   static createMessageBinding(config: {
-    key?: { type?: "string" | "integer"; enum?: string[] | number[]; description?: string };
+    key?: KafkaFieldConfig;
     schemaIdLocation?: "header" | "payload";
     schemaIdPayloadEncoding?: string;
     schemaLookupStrategy?: "TopicIdStrategy" | "RecordIdStrategy" | "TopicRecordIdStrategy";
@@ -195,7 +171,7 @@ export class ProtocolBindingFactory {
     switch (protocol) {
       case "kafka":
         return {
-          kafka: KafkaProtocolBinding.createServerBinding(config),
+          kafka: KafkaProtocolBinding.createServerBinding(config ?? {}),
         };
       default:
         return undefined;
@@ -209,11 +185,11 @@ export class ProtocolBindingFactory {
     switch (protocol) {
       case "kafka":
         return {
-          kafka: KafkaProtocolBinding.createChannelBinding(config),
+          kafka: KafkaProtocolBinding.createChannelBinding((config as KafkaBindingConfig["channel"]) ?? {}),
         };
       case "ws":
         return {
-          ws: WebSocketProtocolBinding.createChannelBinding(config),
+          ws: WebSocketProtocolBinding.createChannelBinding((config as WebSocketBindingConfig["channel"]) ?? {}),
         };
       default:
         return undefined;
@@ -227,12 +203,12 @@ export class ProtocolBindingFactory {
     switch (protocol) {
       case "kafka":
         return {
-          kafka: KafkaProtocolBinding.createOperationBinding(config),
+          kafka: KafkaProtocolBinding.createOperationBinding((config as KafkaBindingConfig["operation"]) ?? {}),
         };
       case "http":
       case "https":
         return {
-          http: HttpProtocolBinding.createOperationBinding(config),
+          http: HttpProtocolBinding.createOperationBinding((config as HttpBindingConfig["operation"]) ?? {}),
         };
       default:
         return undefined;
@@ -246,7 +222,7 @@ export class ProtocolBindingFactory {
     switch (protocol) {
       case "kafka":
         return {
-          kafka: KafkaProtocolBinding.createMessageBinding(config),
+          kafka: KafkaProtocolBinding.createMessageBinding((config as KafkaBindingConfig["message"]) ?? {}),
         };
       case "ws":
         return {
@@ -255,7 +231,7 @@ export class ProtocolBindingFactory {
       case "http":
       case "https":
         return {
-          http: HttpProtocolBinding.createMessageBinding(config),
+          http: HttpProtocolBinding.createMessageBinding((config as HttpBindingConfig["message"]) ?? {}),
         };
       default:
         return undefined;
@@ -265,43 +241,83 @@ export class ProtocolBindingFactory {
   /**
    * Validate protocol-specific binding configuration
    */
-  static validateBinding(protocol: ProtocolType, bindingType: "server" | "channel" | "operation" | "message", config: ProtocolSpecificConfig): string[] {
-    const errors: string[] = [];
+  static validateBinding(protocol: ProtocolType, bindingType: "server" | "channel" | "operation" | "message", config: ProtocolSpecificConfig): ProtocolBindingValidationResult {
+    const errors: ProtocolBindingValidationError[] = [];
+    const warnings: ProtocolBindingValidationError[] = [];
+
+    // Check if protocol supports the binding type
+    if (!ProtocolUtils.supportsBinding(protocol, bindingType)) {
+      errors.push({
+        protocol,
+        bindingType,
+        message: `Protocol '${protocol}' does not support '${bindingType}' bindings`,
+        severity: "error",
+      });
+      return { isValid: false, errors, warnings };
+    }
 
     switch (protocol) {
       case "kafka":
-        errors.push(...this.validateKafkaBinding(bindingType, config));
+        errors.push(...this.validateKafkaBinding(bindingType, config as KafkaBindingConfig));
         break;
       case "ws":
-        errors.push(...this.validateWebSocketBinding(bindingType, config));
+        errors.push(...this.validateWebSocketBinding(bindingType, config as WebSocketBindingConfig));
         break;
       case "http":
       case "https":
-        errors.push(...this.validateHttpBinding(bindingType, config));
+        errors.push(...this.validateHttpBinding(bindingType, config as HttpBindingConfig));
         break;
     }
 
-    return errors;
+    return {
+      isValid: errors.length === 0,
+      errors,
+      warnings,
+    };
   }
 
-  private static validateKafkaBinding(bindingType: string, config: KafkaBindingConfig): string[] {
-    const errors: string[] = [];
+  private static validateKafkaBinding(bindingType: string, config: KafkaBindingConfig): ProtocolBindingValidationError[] {
+    const errors: ProtocolBindingValidationError[] = [];
 
     switch (bindingType) {
       case "channel":
         if (config.channel?.partitions && (typeof config.channel.partitions !== "number" || config.channel.partitions < 1)) {
-          errors.push("Kafka channel binding partitions must be a positive integer");
+          errors.push({
+            protocol: "kafka",
+            bindingType: "channel",
+            property: "partitions",
+            message: "Kafka channel binding partitions must be a positive integer",
+            severity: "error",
+          });
         }
         if (config.channel?.replicas && (typeof config.channel.replicas !== "number" || config.channel.replicas < 1)) {
-          errors.push("Kafka channel binding replicas must be a positive integer");
+          errors.push({
+            protocol: "kafka",
+            bindingType: "channel",
+            property: "replicas",
+            message: "Kafka channel binding replicas must be a positive integer",
+            severity: "error",
+          });
         }
         break;
       case "message":
         if (config.message?.schemaIdLocation && !["header", "payload"].includes(config.message.schemaIdLocation)) {
-          errors.push("Kafka message binding schemaIdLocation must be 'header' or 'payload'");
+          errors.push({
+            protocol: "kafka",
+            bindingType: "message",
+            property: "schemaIdLocation",
+            message: "Kafka message binding schemaIdLocation must be 'header' or 'payload'",
+            severity: "error",
+          });
         }
         if (config.message?.schemaLookupStrategy && !["TopicIdStrategy", "RecordIdStrategy", "TopicRecordIdStrategy"].includes(config.message.schemaLookupStrategy)) {
-          errors.push("Kafka message binding schemaLookupStrategy must be valid Kafka strategy");
+          errors.push({
+            protocol: "kafka",
+            bindingType: "message",
+            property: "schemaLookupStrategy",
+            message: "Kafka message binding schemaLookupStrategy must be valid Kafka strategy",
+            severity: "error",
+          });
         }
         break;
     }
@@ -309,13 +325,19 @@ export class ProtocolBindingFactory {
     return errors;
   }
 
-  private static validateWebSocketBinding(bindingType: string, config: WebSocketBindingConfig): string[] {
-    const errors: string[] = [];
+  private static validateWebSocketBinding(bindingType: string, config: WebSocketBindingConfig): ProtocolBindingValidationError[] {
+    const errors: ProtocolBindingValidationError[] = [];
 
     switch (bindingType) {
       case "channel":
         if (config.channel?.method && !["GET", "POST"].includes(config.channel.method)) {
-          errors.push("WebSocket channel binding method must be 'GET' or 'POST'");
+          errors.push({
+            protocol: "ws",
+            bindingType: "channel",
+            property: "method",
+            message: "WebSocket channel binding method must be 'GET' or 'POST'",
+            severity: "error",
+          });
         }
         break;
     }
@@ -323,27 +345,51 @@ export class ProtocolBindingFactory {
     return errors;
   }
 
-  private static validateHttpBinding(bindingType: string, config: HttpBindingConfig): string[] {
-    const errors: string[] = [];
+  private static validateHttpBinding(bindingType: string, config: HttpBindingConfig): ProtocolBindingValidationError[] {
+    const errors: ProtocolBindingValidationError[] = [];
 
     switch (bindingType) {
       case "operation":
         if (config.operation?.type && !["request", "response"].includes(config.operation.type)) {
-          errors.push("HTTP operation binding type must be 'request' or 'response'");
+          errors.push({
+            protocol: "http",
+            bindingType: "operation",
+            property: "type",
+            message: "HTTP operation binding type must be 'request' or 'response'",
+            severity: "error",
+          });
         }
         if (config.operation?.method) {
           const validMethods = ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS", "CONNECT", "TRACE"];
           if (!validMethods.includes(config.operation.method)) {
-            errors.push(`HTTP operation binding method must be one of: ${validMethods.join(", ")}`);
+            errors.push({
+              protocol: "http",
+              bindingType: "operation",
+              property: "method",
+              message: `HTTP operation binding method must be one of: ${validMethods.join(", ")}`,
+              severity: "error",
+            });
           }
         }
         if (config.operation?.statusCode && (typeof config.operation.statusCode !== "number" || config.operation.statusCode < 100 || config.operation.statusCode > 599)) {
-          errors.push("HTTP operation binding statusCode must be a valid HTTP status code (100-599)");
+          errors.push({
+            protocol: "http",
+            bindingType: "operation",
+            property: "statusCode",
+            message: "HTTP operation binding statusCode must be a valid HTTP status code (100-599)",
+            severity: "error",
+          });
         }
         break;
       case "message":
         if (config.message?.statusCode && (typeof config.message.statusCode !== "number" || config.message.statusCode < 100 || config.message.statusCode > 599)) {
-          errors.push("HTTP message binding statusCode must be a valid HTTP status code (100-599)");
+          errors.push({
+            protocol: "http",
+            bindingType: "message",
+            property: "statusCode",
+            message: "HTTP message binding statusCode must be a valid HTTP status code (100-599)",
+            severity: "error",
+          });
         }
         break;
     }
@@ -369,7 +415,7 @@ export class ProtocolBindingFactory {
             clientId: {
               type: "string",
               description: "Kafka client ID",
-            },
+            } as KafkaFieldConfig,
           },
           message: {
             schemaIdLocation: "payload",
@@ -408,16 +454,7 @@ export class ProtocolUtils {
    * Determine if a protocol supports specific binding types
    */
   static supportsBinding(protocol: ProtocolType, bindingType: "server" | "channel" | "operation" | "message"): boolean {
-    const supportMatrix: Record<ProtocolType, Set<string>> = {
-      kafka: new Set(["server", "channel", "operation", "message"]),
-      ws: new Set(["channel", "message"]),
-      http: new Set(["operation", "message"]),
-      https: new Set(["operation", "message"]),
-      amqp: new Set(["server", "channel", "operation", "message"]),
-      mqtt: new Set(["server", "operation", "message"]),
-    };
-
-    return supportMatrix[protocol]?.has(bindingType) || false;
+    return DEFAULT_PROTOCOL_SUPPORT[protocol]?.[bindingType] ?? false;
   }
 
   /**
@@ -425,8 +462,8 @@ export class ProtocolUtils {
    */
   static extractProtocol(protocolOrUrl: string): ProtocolType | null {
     if (protocolOrUrl.includes("://")) {
-      const protocol = protocolOrUrl.split("://")[0].toLowerCase();
-      return this.isValidProtocol(protocol) ? (protocol as ProtocolType) : null;
+      const protocol = protocolOrUrl.split("://")[0]?.toLowerCase();
+      return protocol && this.isValidProtocol(protocol) ? (protocol as ProtocolType) : null;
     }
     
     const protocol = protocolOrUrl.toLowerCase();

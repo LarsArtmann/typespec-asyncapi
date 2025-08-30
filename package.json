@@ -34,7 +34,8 @@
     "test:asyncapi": "bun test test/validation/",
     "clean": "rm -rf dist/",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint src --ext .ts",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
     "dev": "bun run --watch src/index.ts"
   },
   "files": [
@@ -62,10 +63,12 @@
     "eslint": "^9.34.0",
     "glob": "^11.0.3",
     "typescript": "^5.9.2",
+    "typescript-eslint": "^8.41.0",
     "vite": "^7.1.3",
     "vitest": "^3.2.4"
   },
   "dependencies": {
+    "@asyncapi/parser": "^3.4.0",
     "@effect/schema": "^0.75.5",
     "@typespec/asset-emitter": "^0.73.0",
     "ajv": "^8.17.1",

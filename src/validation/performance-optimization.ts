@@ -5,15 +5,15 @@
  * for Effect.TS schema validation in production environments.
  */
 
-import { Effect, Cache, Duration, Metric, Context, Layer } from "effect";
+import { Effect, Cache, Duration, Metric, Context, Layer, MetricBoundaries } from "effect";
 import { Schema } from "@effect/schema";
 import type { AsyncAPIEmitterOptions } from "../options.js";
 
 // PERFORMANCE METRICS COLLECTION
 export const ValidationMetrics = {
-  schemaCompilationTime: Metric.histogram("schema_compilation_ms", [1, 5, 10, 25, 50, 100, 250, 500]),
+  schemaCompilationTime: Metric.histogram("schema_compilation_ms", MetricBoundaries.fromIterable([1, 5, 10, 25, 50, 100, 250, 500])),
   
-  validationTime: Metric.histogram("validation_duration_ms", [0.1, 0.5, 1, 2.5, 5, 10, 25, 50]),
+  validationTime: Metric.histogram("validation_duration_ms", MetricBoundaries.fromIterable([0.1, 0.5, 1, 2.5, 5, 10, 25, 50])),
   
   cacheHitRate: Metric.counter("cache_hits_total"),
   
@@ -110,7 +110,7 @@ export const makeValidationService = Effect.gen(function* () {
       const endTime = yield* Effect.sync(() => performance.now());
       const duration = endTime - startTime;
       
-      yield* Metric.set(ValidationMetrics.validationTime, duration);
+      yield* Metric.update(ValidationMetrics.validationTime, duration);
       
       return result;
     }).pipe(
@@ -160,7 +160,7 @@ export const ValidationServiceLive = Layer.effect(ValidationService, makeValidat
 export const validateBatch = (
   inputs: Array<{ name: string; options: unknown }>,
   concurrency = 5
-): Effect.Effect<Map<string, AsyncAPIEmitterOptions | Error>, never> =>
+): Effect.Effect<Map<string, AsyncAPIEmitterOptions | Error>, never, ValidationService> =>
   Effect.gen(function* () {
     const validationService = yield* ValidationService;
     
@@ -189,15 +189,15 @@ export const validateBatch = (
  * Streaming validation for large datasets
  */
 export const validateStream = (
-  inputs: AsyncIterable<{ name: string; options: unknown }>
+  inputs: Array<{ name: string; options: unknown }>
 ) =>
   Effect.gen(function* () {
     const validationService = yield* ValidationService;
     const results = new Map<string, AsyncAPIEmitterOptions | Error>();
     
-    // Convert async iteration to Effect
+    // Process array items with Effect
     for (const item of inputs) {
-      const { name, options } = yield* Effect.promise(() => Promise.resolve(item));
+      const { name, options } = item;
       const result = yield* validationService.validateOptions(options).pipe(
         Effect.either
       );

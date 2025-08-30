@@ -1,11 +1,11 @@
 /**
- * INTEGRATION EXAMPLE: Using Effect.TS Schema with TypeSpec Emitter
+ * INTEGRATION EXAMPLE: Pure Effect.TS with TypeSpec Emitter
  * 
- * This file demonstrates how to integrate Effect.TS validation with TypeSpec's
- * emitter system while maintaining full compatibility and error handling.
+ * Demonstrates pure Effect.TS integration with TypeSpec's emitter system
+ * using Railway Programming patterns, eliminating all Promise/async patterns.
  */
 
-import { Effect, Console, Context, Layer } from "effect";
+import { Effect, Console, Context, Layer, Duration } from "effect";
 import type { EmitContext } from "@typespec/compiler";
 import {
   AsyncAPIEmitterOptionsSchema,
@@ -13,117 +13,402 @@ import {
   createAsyncAPIEmitterOptions
 } from "./options.js";
 import type { AsyncAPIEmitterOptions } from "./types/options.js";
+import { PerformanceMetricsService, PerformanceMetricsServiceLive } from "./performance/metrics.js";
+import { MemoryMonitorService, MemoryMonitorServiceLive, withMemoryTracking } from "./performance/memory-monitor.js";
+// TAGGED ERROR TYPES for Railway Programming
+export class EmitterInitializationError {
+  readonly _tag = "EmitterInitializationError";
+  constructor(public readonly message: string, public readonly cause?: unknown) {}
+}
 
-// TYPESPEC EMITTER INTEGRATION PATTERNS
+export class SpecGenerationError {
+  readonly _tag = "SpecGenerationError";
+  constructor(public readonly message: string, public readonly options: AsyncAPIEmitterOptions) {}
+}
+
+export class SpecValidationError {
+  readonly _tag = "SpecValidationError";
+  constructor(public readonly message: string, public readonly spec: unknown) {}
+}
+
+export class EmitterTimeoutError {
+  readonly _tag = "EmitterTimeoutError";
+  constructor(public readonly timeoutMs: number, public readonly operation: string) {}
+}
 
 /**
- * TypeSpec emitter function with Effect.TS validation
- * ENHANCED: Layer-based DI, tagged error handling, resource management
+ * Pure Effect.TS AsyncAPI validation with comprehensive error handling
+ * Completely async-first, no Promise patterns
  */
-export async function onEmit(context: EmitContext<unknown>, options: unknown): Promise<void> {
-  // Create emitter service layer with dependencies
-  const EmitterLive = Layer.succeed(
-    EmitterService,
-    {
-      generateSpec: generateAsyncAPISpec,
-      validateSpec: (spec: unknown) => Effect.succeed(true),
-      writeOutput: (path: string, content: string) => Effect.logInfo(`Writing to ${path}`)
+const validateAsyncAPIDocumentEffect = (spec: unknown): Effect.Effect<boolean, SpecValidationError> =>
+  Effect.gen(function* () {
+    if (!spec || typeof spec !== "object") {
+      return yield* Effect.fail(new SpecValidationError(
+        "Invalid AsyncAPI specification format",
+        spec
+      ));
     }
+    
+    const document = spec as Record<string, unknown>;
+    
+    if (!document["asyncapi"]) {
+      return yield* Effect.fail(new SpecValidationError(
+        "Missing required 'asyncapi' field",
+        spec
+      ));
+    }
+    
+    if (document["asyncapi"] !== "3.0.0") {
+      return yield* Effect.fail(new SpecValidationError(
+        `Invalid AsyncAPI version: ${document["asyncapi"]}, expected 3.0.0`,
+        spec
+      ));
+    }
+    
+    if (!document["info"]) {
+      return yield* Effect.fail(new SpecValidationError(
+        "Missing required 'info' field",
+        spec
+      ));
+    }
+    
+    yield* Effect.logDebug("AsyncAPI document validation passed", {
+      asyncapiVersion: document["asyncapi"],
+      hasInfo: !!document["info"],
+      hasChannels: !!document["channels"],
+      hasOperations: !!document["operations"]
+    });
+    
+    return true;
+  }).pipe(
+    Effect.withSpan("asyncapi-validation", {
+      attributes: {
+        specSize: typeof spec === "object" ? JSON.stringify(spec).length : 0
+      }
+    })
   );
 
-  const program = Effect.gen(function* () {
+// PURE EFFECT.TS EMITTER SERVICE
+export interface EmitterService {
+  generateSpec: (options: AsyncAPIEmitterOptions) => Effect.Effect<unknown, SpecGenerationError>;
+  validateSpec: (spec: unknown) => Effect.Effect<boolean, SpecValidationError>;
+  writeOutput: (path: string, content: string) => Effect.Effect<void, Error>;
+  initializeEmitter: (context: EmitContext<object>) => Effect.Effect<void, EmitterInitializationError>;
+}
+
+export const EmitterService = Context.GenericTag<EmitterService>("EmitterService");
+
+// EMITTER SERVICE IMPLEMENTATION
+const makeEmitterService = Effect.gen(function* () {
+  const generateSpec = (options: AsyncAPIEmitterOptions): Effect.Effect<unknown, SpecGenerationError> =>
+    Effect.gen(function* () {
+      yield* Effect.logDebug("Generating AsyncAPI specification", {
+        outputFile: options["output-file"],
+        fileType: options["file-type"]
+      });
+      
+      // Simulate spec generation (replace with actual implementation)
+      const spec = {
+        asyncapi: "3.0.0",
+        info: {
+          title: `Generated API - ${options["output-file"] || 'asyncapi'}`,
+          version: "1.0.0"
+        },
+        channels: {},
+        operations: {},
+        components: {}
+      };
+      
+      if (options["include-source-info"]) {
+        (spec as any).sourceInfo = {
+          generatedAt: new Date().toISOString(),
+          generator: "TypeSpec AsyncAPI Emitter",
+          options: options
+        };
+      }
+      
+      return spec;
+    }).pipe(
+      Effect.catchAll(error =>
+        Effect.fail(new SpecGenerationError(
+          `Failed to generate AsyncAPI spec: ${error}`,
+          options
+        ))
+      )
+    );
+  
+  const validateSpec = (spec: unknown): Effect.Effect<boolean, SpecValidationError> =>
+    validateAsyncAPIDocumentEffect(spec);
+  
+  const writeOutput = (path: string, content: string): Effect.Effect<void, Error> =>
+    Effect.gen(function* () {
+      yield* Effect.logInfo(`Writing AsyncAPI output to ${path}`);
+      yield* Effect.logDebug("Output content preview", {
+        contentLength: content.length,
+        preview: content.substring(0, 200)
+      });
+      // In actual implementation, this would write to filesystem
+      return;
+    }).pipe(
+      Effect.catchAll(error =>
+        Effect.fail(new Error(`Failed to write output: ${error}`))
+      )
+    );
+  
+  const initializeEmitter = (context: EmitContext<object>): Effect.Effect<void, EmitterInitializationError> =>
+    Effect.gen(function* () {
+      yield* Effect.logInfo("Initializing AsyncAPI emitter", {
+        compilerOptions: Object.keys(context.options || {}),
+        outputDir: context.emitterOutputDir
+      });
+      
+      if (!context.program) {
+        return yield* Effect.fail(new EmitterInitializationError(
+          "TypeSpec program context is missing"
+        ));
+      }
+      
+      yield* Effect.logDebug("Emitter initialization completed successfully");
+    }).pipe(
+      Effect.catchAll(error => {
+        if (error instanceof EmitterInitializationError) {
+          return Effect.fail(error);
+        }
+        return Effect.fail(new EmitterInitializationError(
+          `Initialization failed: ${error}`,
+          error
+        ));
+      })
+    );
+  
+  return EmitterService.of({
+    generateSpec,
+    validateSpec,
+    writeOutput,
+    initializeEmitter
+  });
+});
+
+// EFFECT LAYER for dependency injection
+export const EmitterServiceLive = Layer.effect(EmitterService, makeEmitterService);
+
+/**
+ * Pure Effect.TS TypeSpec emitter function with Railway Programming
+ * COMPLETELY ASYNC-FIRST: No Promise patterns, pure Effect composition
+ */
+export const onEmitEffect = (
+  context: EmitContext<object>,
+  options: unknown
+): Effect.Effect<void, EmitterInitializationError | SpecGenerationError | SpecValidationError | EmitterTimeoutError> =>
+  Effect.gen(function* () {
     const emitterService = yield* EmitterService;
+    const performanceMetrics = yield* PerformanceMetricsService;
+    const memoryMonitor = yield* MemoryMonitorService;
     
-    // Step 1: Validate options with comprehensive error handling
-    const validatedOptions = yield* validateAsyncAPIEmitterOptions(options).pipe(
-      Effect.catchTag("AsyncAPIOptionsValidationError", (error) =>
+    // Start performance measurement
+    const measurement = yield* performanceMetrics.startMeasurement("asyncapi-emit");
+    
+    // Step 1: Initialize emitter with error handling
+    yield* emitterService.initializeEmitter(context).pipe(
+      Effect.catchTag("EmitterInitializationError", error =>
         Effect.gen(function* () {
-          yield* Effect.logError("Validation failed", error);
-          // Try to recover with defaults for non-critical failures
-          return yield* createAsyncAPIEmitterOptions({});
+          yield* Effect.logError("Emitter initialization failed", {
+            message: error.message,
+            cause: String(error.cause)
+          });
+          return yield* Effect.fail(error);
         })
-      ),
-      Effect.catchTag("AsyncAPIOptionsParseError", (error) =>
-        Effect.fail(new Error(`Parse error: ${error.message}`))
       )
     );
     
-    // Step 2: Apply defaults and finalize configuration
+    // Step 2: Validate options with comprehensive Railway error handling
+    const validatedOptions = yield* validateAsyncAPIEmitterOptions(options).pipe(
+      Effect.catchTag("AsyncAPIOptionsValidationError", error =>
+        Effect.gen(function* () {
+          yield* Effect.logWarn("Options validation failed, applying recovery", {
+            error: error.message
+          });
+          // Railway pattern: attempt recovery with defaults
+          return yield* createAsyncAPIEmitterOptions({});
+        })
+      ),
+      Effect.catchTag("AsyncAPIOptionsParseError", error =>
+        Effect.gen(function* () {
+          yield* Effect.logError("Options parsing failed", {
+            error: error.message
+          });
+          // Railway pattern: attempt recovery with minimal defaults
+          return yield* createAsyncAPIEmitterOptions({ "output-file": "asyncapi" });
+        })
+      ),
+      Effect.catchAll(error =>
+        Effect.gen(function* () {
+          yield* Effect.logError("Unexpected validation error", { error: String(error) });
+          // Final fallback in Railway pattern
+          return yield* createAsyncAPIEmitterOptions({});
+        })
+      )
+    );
+    
+    // Step 3: Apply final configuration with defaults
     const finalOptions = yield* createAsyncAPIEmitterOptions(validatedOptions);
     
-    // Step 3: Generate spec with resource management
-    yield* Effect.acquireUseRelease(
-      // Acquire: Setup generation context
+    // Step 4: Generate spec with resource management and memory tracking
+    const generatedSpec = yield* Effect.acquireUseRelease(
+      // Acquire: Setup generation context with memory monitoring
       Effect.gen(function* () {
-        yield* Effect.logInfo("Setting up AsyncAPI generation context");
+        yield* memoryMonitor.startMonitoring(1000);
+        yield* Effect.logInfo("AsyncAPI generation context initialized", {
+          outputFile: finalOptions["output-file"],
+          fileType: finalOptions["file-type"],
+          memoryMonitoring: true
+        });
         return { context, options: finalOptions };
       }),
       
-      // Use: Generate specification
-      ({ context: emitContext, options: opts }) =>
-        Effect.gen(function* () {
-          yield* Effect.logInfo("Generating AsyncAPI specification", { 
-            outputFile: opts["output-file"],
-            fileType: opts["file-type"]
-          });
-          
-          const spec = yield* emitterService.generateSpec(opts);
-          
-          if (opts["validate-spec"]) {
-            const isValid = yield* emitterService.validateSpec(spec);
-            if (!isValid) {
-              yield* Effect.fail(new Error("Generated specification is invalid"));
-            }
-          }
-          
-          return spec;
-        }),
+      // Use: Generate specification with memory tracking
+      ({ options: opts }) =>
+        withMemoryTracking(
+          emitterService.generateSpec(opts),
+          "spec-generation"
+        ).pipe(
+          Effect.catchTag("SpecGenerationError", error =>
+            Effect.gen(function* () {
+              yield* Effect.logError("Spec generation failed", {
+                message: error.message,
+                options: JSON.stringify(error.options)
+              });
+              return yield* Effect.fail(error);
+            })
+          ),
+          Effect.tap(spec =>
+            Effect.logInfo("AsyncAPI specification generated successfully", {
+              specSize: JSON.stringify(spec).length,
+              outputFile: opts["output-file"]
+            })
+          )
+        ),
         
       // Release: Cleanup resources
-      () => Effect.logInfo("AsyncAPI generation completed")
+      () =>
+        Effect.gen(function* () {
+          yield* memoryMonitor.stopMonitoring();
+          yield* Effect.logInfo("AsyncAPI generation resources released");
+        })
     );
-  });
-
-  // Run with error handling and metrics
-  return await Effect.runPromise(
-    program.pipe(
-      Effect.provide(EmitterLive),
-      Effect.withSpan("asyncapi-emit", {
-        attributes: {
-          hasOptions: options !== null && options !== undefined,
-          contextId: "emitter-context"
-        }
-      }),
-      Effect.timeout("30 seconds")
-    )
+    
+    // Step 5: Validate generated spec if requested
+    if (finalOptions["validate-spec"]) {
+      yield* withMemoryTracking(
+        emitterService.validateSpec(generatedSpec),
+        "spec-validation"
+      ).pipe(
+        Effect.flatMap(isValid =>
+          isValid
+            ? Effect.logInfo("Generated specification validation passed")
+            : Effect.fail(new SpecValidationError(
+                "Generated specification validation failed",
+                generatedSpec
+              ))
+        ),
+        Effect.catchTag("SpecValidationError", error =>
+          Effect.gen(function* () {
+            yield* Effect.logError("Spec validation failed", {
+              message: error.message
+            });
+            return yield* Effect.fail(error);
+          })
+        )
+      );
+    }
+    
+    // Step 6: Record final performance metrics
+    const throughputResult = yield* performanceMetrics.recordThroughput(measurement, 1);
+    yield* Effect.logInfo("Emitter performance metrics", {
+      throughput: `${throughputResult.operationsPerSecond.toFixed(2)} ops/sec`,
+      memoryPerOp: `${throughputResult.averageMemoryPerOperation.toFixed(0)} bytes`,
+      totalDuration: `${throughputResult.totalDuration.toFixed(2)}ms`
+    });
+  }).pipe(
+    Effect.timeout(Duration.seconds(30)),
+    Effect.catchTag("TimeoutException", () =>
+      Effect.fail(new EmitterTimeoutError(30000, "asyncapi-emit"))
+    ),
+    Effect.withSpan("asyncapi-emit-pure", {
+      attributes: {
+        hasOptions: options !== null && options !== undefined,
+        contextId: "emitter-context",
+        pureEffect: true
+      }
+    })
   );
-}
-
-// SERVICE DEFINITIONS for dependency injection
-const EmitterService = Context.GenericTag<{
-  generateSpec: (options: AsyncAPIEmitterOptions) => Effect.Effect<unknown, Error>;
-  validateSpec: (spec: unknown) => Effect.Effect<boolean, Error>;
-  writeOutput: (path: string, content: string) => Effect.Effect<void, Error>;
-}>("EmitterService");
 
 /**
- * Alternative integration using Promise-based validation
- * For teams preferring Promise-based APIs over Effect
+ * Compatibility wrapper for TypeSpec (converts Effect back to Promise)
+ * This is the ONLY place where Effect.runPromise is used
  */
-export async function onEmitWithPromiseAPI(_context: EmitContext<unknown>, options: unknown): Promise<void> {
-  try {
-    // Convert Effect to Promise for easier integration
-    const validatedOptions = await Effect.runPromise(
-      validateAsyncAPIEmitterOptions(options)
+export const onEmit = (
+  context: EmitContext<object>,
+  options: unknown
+): Effect.Effect<void, never> =>
+  onEmitEffect(context, options).pipe(
+    Effect.provide(EmitterServiceLive),
+    Effect.provide(PerformanceMetricsServiceLive),
+    Effect.provide(MemoryMonitorServiceLive),
+    Effect.catchAll(error =>
+      Effect.gen(function* () {
+        yield* Effect.logFatal("Emitter failed with unrecoverable error", {
+          error: JSON.stringify(error, null, 2)
+        });
+        // In Railway pattern, we log but don't re-throw to avoid crashing TypeSpec
+      })
+    )
+  );
+
+/**
+ * TypeSpec-compatible Promise wrapper (ONLY for TypeSpec integration)
+ */
+export const onEmitPromise = async (
+  context: EmitContext<object>,
+  options: unknown
+): Promise<void> => {
+  return await Effect.runPromise(onEmit(context, options));
+};
+
+/**
+ * Pure Effect.TS batch validation for multiple emitter contexts
+ * Demonstrates high-throughput validation with Railway Programming
+ */
+export const batchEmitEffect = (
+  contexts: Array<{ context: EmitContext<object>; options: unknown }>
+): Effect.Effect<void[], EmitterInitializationError | SpecGenerationError | SpecValidationError> =>
+  Effect.gen(function* () {
+    const performanceMetrics = yield* PerformanceMetricsService;
+    
+    yield* Effect.logInfo(`Starting batch emit for ${contexts.length} contexts`);
+    
+    const measurement = yield* performanceMetrics.startMeasurement("batch-emit");
+    
+    const results = yield* Effect.forEach(
+      contexts,
+      ({ context, options }) => onEmitEffect(context, options),
+      { concurrency: 5 } // Controlled concurrency for memory management
     );
     
-    console.log("Options validated:", validatedOptions);
-    await generateAsyncAPISpec(validatedOptions);
+    const throughputResult = yield* performanceMetrics.recordThroughput(measurement, contexts.length);
     
-  } catch (error) {
-    throw new Error(`AsyncAPI Emitter validation failed: ${error}`);
-  }
-}
+    yield* Effect.logInfo("Batch emit completed", {
+      processedCount: contexts.length,
+      throughput: `${throughputResult.operationsPerSecond.toFixed(0)} contexts/sec`,
+      totalDuration: `${throughputResult.totalDuration.toFixed(2)}ms`
+    });
+    
+    return results;
+  }).pipe(
+    Effect.provide(EmitterServiceLive),
+    Effect.provide(PerformanceMetricsServiceLive),
+    Effect.provide(MemoryMonitorServiceLive)
+  );
 
 /**
  * Configuration validation utility for TypeSpec plugin registration

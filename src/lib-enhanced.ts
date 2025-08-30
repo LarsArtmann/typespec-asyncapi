@@ -41,14 +41,14 @@ export const $libEnhanced = createTypeSpecLibrary({
     },
     
     "schema-generation-skipped": {
-      severity: "info",
+      severity: "warning",
       messages: {
         default: paramMessage`⏭️ Skipping schema for '${"typeName"}'\n🔍 Reason: ${"reason"}\n📄 This type will be documented as unsupported\n🔧 Consider: ${"suggestion"}`,
       },
     },
     
     "operation-recovery-attempted": {
-      severity: "info",
+      severity: "warning",
       messages: {
         default: paramMessage`🔄 Recovery Attempted: ${"operation"}\n📊 Strategy: ${"strategy"}\n📈 Result: ${"successful"} ? "Successful" : "Failed"\n📄 Details: ${"details"}`,
       },

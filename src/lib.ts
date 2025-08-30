@@ -75,13 +75,58 @@ export const $lib = createTypeSpecLibrary({
         default: paramMessage`Circular reference detected in message schema for '${"messageName"}'.`,
       },
     },
+    "invalid-message-target": {
+      severity: "error",
+      messages: {
+        default: paramMessage`@message decorator can only be applied to models, not '${"targetType"}'.`,
+      },
+    },
+    "invalid-protocol-target": {
+      severity: "error",
+      messages: {
+        default: paramMessage`@protocol decorator can only be applied to operations or models, not '${"targetType"}'.`,
+      },
+    },
+    "missing-protocol-type": {
+      severity: "error",
+      messages: {
+        default: "Protocol configuration must specify a protocol type.",
+      },
+    },
+    "invalid-protocol-type": {
+      severity: "error",
+      messages: {
+        default: paramMessage`Protocol type '${"protocol"}' is not supported. Supported types: ${"validProtocols"}.`,
+      },
+    },
+    "invalid-security-target": {
+      severity: "error",
+      messages: {
+        default: paramMessage`@security decorator can only be applied to operations or models, not '${"targetType"}'.`,
+      },
+    },
+    "missing-security-config": {
+      severity: "error",
+      messages: {
+        default: "Security configuration must specify a name and scheme.",
+      },
+    },
+    "security-scheme-validation-failed": {
+      severity: "error",
+      messages: {
+        default: paramMessage`Security scheme validation failed: ${"errors"}.`,
+      },
+    },
   },
   state: {
     channelPaths: { description: "Map of operation to channel path" },
     messageSchemas: { description: "Map of message names to their schemas" },
+    messageConfigs: { description: "Map of models to message configurations" },
     serverConfigs: { description: "Server configurations" },
     protocolBindings: { description: "Protocol-specific bindings" },
+    protocolConfigs: { description: "Map of targets to protocol configurations" },
     securitySchemes: { description: "Security scheme configurations" },
+    securityConfigs: { description: "Map of targets to security configurations" },
     operationTypes: { description: "Map of operations to publish/subscribe type" },
   },
 } as const);

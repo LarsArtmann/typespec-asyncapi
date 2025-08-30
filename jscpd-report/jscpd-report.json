@@ -1,12 +1,12 @@
 {
   "statistics": {
-    "detectionDate": "2025-08-30T04:44:36.848Z",
+    "detectionDate": "2025-08-30T06:51:35.098Z",
     "formats": {
       "typescript": {
         "sources": {
           "src/validation/test-integration.ts": {
-            "lines": 487,
-            "tokens": 3617,
+            "lines": 486,
+            "tokens": 3611,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -18,7 +18,7 @@
           },
           "src/validation/performance-optimization.ts": {
             "lines": 287,
-            "tokens": 2531,
+            "tokens": 2529,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -29,20 +29,20 @@
             "newClones": 0
           },
           "src/validation/performance-benchmark.ts": {
-            "lines": 538,
-            "tokens": 4704,
+            "lines": 557,
+            "tokens": 4813,
             "sources": 1,
-            "clones": 2,
-            "duplicatedLines": 14,
-            "duplicatedTokens": 182,
-            "percentage": 2.6,
-            "percentageTokens": 3.87,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
           "src/validation/index.ts": {
             "lines": 34,
-            "tokens": 138,
+            "tokens": 140,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -65,8 +65,32 @@
             "newClones": 0
           },
           "src/validation/asyncapi-validator.ts": {
-            "lines": 674,
-            "tokens": 5283,
+            "lines": 676,
+            "tokens": 5296,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/utils/formatting.ts": {
+            "lines": 39,
+            "tokens": 245,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/types/protocol-bindings.ts": {
+            "lines": 255,
+            "tokens": 1517,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -80,35 +104,47 @@
             "lines": 143,
             "tokens": 583,
             "sources": 1,
-            "clones": 1,
-            "duplicatedLines": 7,
-            "duplicatedTokens": 98,
-            "percentage": 4.9,
-            "percentageTokens": 16.81,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
           "src/types/asyncapi.ts": {
-            "lines": 387,
-            "tokens": 2960,
+            "lines": 383,
+            "tokens": 2884,
             "sources": 1,
-            "clones": 2,
-            "duplicatedLines": 22,
-            "duplicatedTokens": 196,
-            "percentage": 5.68,
-            "percentageTokens": 6.62,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/test/protocol-bindings.test.ts": {
+            "lines": 120,
+            "tokens": 1224,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
           "src/error-handling/logging.ts": {
-            "lines": 530,
-            "tokens": 4252,
+            "lines": 521,
+            "tokens": 4165,
             "sources": 1,
-            "clones": 1,
-            "duplicatedLines": 10,
-            "duplicatedTokens": 88,
-            "percentage": 1.89,
-            "percentageTokens": 2.07,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -137,14 +173,14 @@
             "newClones": 0
           },
           "src/error-handling/diagnostics.ts": {
-            "lines": 332,
-            "tokens": 2444,
+            "lines": 323,
+            "tokens": 2358,
             "sources": 1,
-            "clones": 1,
-            "duplicatedLines": 10,
-            "duplicatedTokens": 88,
-            "percentage": 3.01,
-            "percentageTokens": 3.6,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -209,20 +245,20 @@
             "newClones": 0
           },
           "src/protocol-bindings.ts": {
-            "lines": 458,
-            "tokens": 3603,
+            "lines": 496,
+            "tokens": 3596,
             "sources": 1,
-            "clones": 2,
-            "duplicatedLines": 10,
-            "duplicatedTokens": 168,
-            "percentage": 2.18,
-            "percentageTokens": 4.66,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
           "src/path-templates.ts": {
-            "lines": 273,
-            "tokens": 1549,
+            "lines": 277,
+            "tokens": 1577,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -245,14 +281,14 @@
             "newClones": 0
           },
           "src/options.ts": {
-            "lines": 624,
-            "tokens": 5291,
+            "lines": 592,
+            "tokens": 4828,
             "sources": 1,
-            "clones": 1,
-            "duplicatedLines": 7,
-            "duplicatedTokens": 98,
-            "percentage": 1.12,
-            "percentageTokens": 1.85,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -294,7 +330,7 @@
           },
           "src/integration-example.ts": {
             "lines": 339,
-            "tokens": 2483,
+            "tokens": 2512,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -330,212 +366,31 @@
           }
         },
         "total": {
-          "lines": 8562,
-          "tokens": 67009,
-          "sources": 27,
-          "clones": 5,
-          "duplicatedLines": 40,
-          "duplicatedTokens": 459,
-          "percentage": 0.47,
-          "percentageTokens": 0.68,
+          "lines": 8984,
+          "tokens": 69449,
+          "sources": 30,
+          "clones": 0,
+          "duplicatedLines": 0,
+          "duplicatedTokens": 0,
+          "percentage": 0,
+          "percentageTokens": 0,
           "newDuplicatedLines": 0,
           "newClones": 0
         }
       }
     },
     "total": {
-      "lines": 8562,
-      "tokens": 67009,
-      "sources": 27,
-      "clones": 5,
-      "duplicatedLines": 40,
-      "duplicatedTokens": 459,
-      "percentage": 0.47,
-      "percentageTokens": 0.68,
+      "lines": 8984,
+      "tokens": 69449,
+      "sources": 30,
+      "clones": 0,
+      "duplicatedLines": 0,
+      "duplicatedTokens": 0,
+      "percentage": 0,
+      "percentageTokens": 0,
       "newDuplicatedLines": 0,
       "newClones": 0
     }
   },
-  "duplicates": [
-    {
-      "format": "typescript",
-      "lines": 8,
-      "fragment": ",\n      operations: totalOperations,\n      totalDuration,\n      avgDuration: durations.reduce((sum, d) => sum + d, 0) / durations.length,\n      minDuration: Math.min(...durations),\n      maxDuration: Math.max(...durations),\n      opsPerSecond: totalOperations / (totalDuration / 1000),\n      documentStats",
-      "tokens": 0,
-      "firstFile": {
-        "name": "src/validation/performance-benchmark.ts",
-        "start": 301,
-        "end": 308,
-        "startLoc": {
-          "line": 301,
-          "column": 28,
-          "position": 2476
-        },
-        "endLoc": {
-          "line": 308,
-          "column": 14,
-          "position": 2567
-        }
-      },
-      "secondFile": {
-        "name": "src/validation/performance-benchmark.ts",
-        "start": 156,
-        "end": 163,
-        "startLoc": {
-          "line": 156,
-          "column": 12,
-          "position": 1170
-        },
-        "endLoc": {
-          "line": 163,
-          "column": 12,
-          "position": 1261
-        }
-      }
-    },
-    {
-      "format": "typescript",
-      "lines": 12,
-      "fragment": "?: SchemaObject | ReferenceObject;\n  correlationId?: CorrelationIdObject | ReferenceObject;\n  contentType?: string;\n  name?: string;\n  title?: string;\n  summary?: string;\n  description?: string;\n  tags?: TagObject[];\n  externalDocs?: ExternalDocumentationObject;\n  bindings?: MessageBindings;\n  examples?: MessageExampleObject[];\n}",
-      "tokens": 0,
-      "firstFile": {
-        "name": "src/types/asyncapi.ts",
-        "start": 130,
-        "end": 141,
-        "startLoc": {
-          "line": 130,
-          "column": 8,
-          "position": 950
-        },
-        "endLoc": {
-          "line": 141,
-          "column": 2,
-          "position": 1048
-        }
-      },
-      "secondFile": {
-        "name": "src/types/asyncapi.ts",
-        "start": 115,
-        "end": 126,
-        "startLoc": {
-          "line": 115,
-          "column": 8,
-          "position": 823
-        },
-        "endLoc": {
-          "line": 126,
-          "column": 7,
-          "position": 922
-        }
-      }
-    },
-    {
-      "format": "typescript",
-      "lines": 11,
-      "fragment": ");\n    analysis.recommendations.forEach((rec, index) => {\n      sections.push(`  ${index + 1}. ${rec}`);\n    });\n  }\n  \n  sections.push(\"\");\n  sections.push(\"=\" .repeat(40));\n  \n  return sections.join(\"\\n\");\n}",
-      "tokens": 0,
-      "firstFile": {
-        "name": "src/error-handling/diagnostics.ts",
-        "start": 214,
-        "end": 224,
-        "startLoc": {
-          "line": 214,
-          "column": 22,
-          "position": 1504
-        },
-        "endLoc": {
-          "line": 224,
-          "column": 2,
-          "position": 1592
-        }
-      },
-      "secondFile": {
-        "name": "src/error-handling/logging.ts",
-        "start": 521,
-        "end": 531,
-        "startLoc": {
-          "line": 521,
-          "column": 22,
-          "position": 4164
-        },
-        "endLoc": {
-          "line": 531,
-          "column": 2,
-          "position": 4252
-        }
-      }
-    },
-    {
-      "format": "typescript",
-      "lines": 6,
-      "fragment": ": {\n    key?: { type?: \"string\" | \"integer\"; enum?: string[] | number[]; description?: string };\n    schemaIdLocation?: \"header\" | \"payload\";\n    schemaIdPayloadEncoding?: string;\n    schemaLookupStrategy?: \"TopicIdStrategy\" | \"RecordIdStrategy\" | \"TopicRecordIdStrategy\";\n  })",
-      "tokens": 0,
-      "firstFile": {
-        "name": "src/protocol-bindings.ts",
-        "start": 125,
-        "end": 130,
-        "startLoc": {
-          "line": 125,
-          "column": 7,
-          "position": 955
-        },
-        "endLoc": {
-          "line": 130,
-          "column": 2,
-          "position": 1039
-        }
-      },
-      "secondFile": {
-        "name": "src/protocol-bindings.ts",
-        "start": 55,
-        "end": 60,
-        "startLoc": {
-          "line": 55,
-          "column": 2,
-          "position": 351
-        },
-        "endLoc": {
-          "line": 60,
-          "column": 2,
-          "position": 435
-        }
-      }
-    },
-    {
-      "format": "typescript",
-      "lines": 8,
-      "fragment": "{\n  type: \"oauth2\" | \"apiKey\" | \"httpApiKey\" | \"http\" | \"plain\" | \"scram-sha-256\" | \"scram-sha-512\" | \"gssapi\";\n  description?: string;\n  name?: string;\n  in?: \"user\" | \"password\" | \"query\" | \"header\" | \"cookie\";\n  scheme?: string;\n  bearerFormat?: string;\n  flows?: Record",
-      "tokens": 0,
-      "firstFile": {
-        "name": "src/options.ts",
-        "start": 397,
-        "end": 404,
-        "startLoc": {
-          "line": 397,
-          "column": 2,
-          "position": 3184
-        },
-        "endLoc": {
-          "line": 404,
-          "column": 7,
-          "position": 3282
-        }
-      },
-      "secondFile": {
-        "name": "src/types/options.ts",
-        "start": 122,
-        "end": 129,
-        "startLoc": {
-          "line": 122,
-          "column": 2,
-          "position": 390
-        },
-        "endLoc": {
-          "line": 129,
-          "column": 17,
-          "position": 488
-        }
-      }
-    }
-  ]
+  "duplicates": []
 }

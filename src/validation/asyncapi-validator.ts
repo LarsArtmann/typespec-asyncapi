@@ -6,7 +6,8 @@
  * and performance optimization for enterprise-scale schemas.
  */
 
-import Ajv, { type ErrorObject, type ValidateFunction } from "ajv";
+import Ajv from "ajv";
+import type { ErrorObject, ValidateFunction } from "ajv";
 import addFormats from "ajv-formats";
 import type { AsyncAPIDocument } from "../types/asyncapi.js";
 import { readFile } from "node:fs/promises";
@@ -89,14 +90,14 @@ export interface ValidationContext {
  * High-performance AsyncAPI 3.0.0 specification validator
  */
 export class AsyncAPIValidator {
-  private ajv: Ajv;
+  private ajv: any;
   private validateFunction: ValidateFunction | null = null;
   private schemaCache = new Map<string, unknown>();
   private validationCache = new Map<string, ValidationResult>();
   private customRules: CustomValidationRule[] = [];
 
   constructor(private options: AsyncAPIValidatorOptions = {}) {
-    this.ajv = new Ajv({
+    this.ajv = new (Ajv as any)({
       allErrors: true,
       verbose: true,
       strict: this.options.strict ?? false,
@@ -105,7 +106,7 @@ export class AsyncAPIValidator {
     });
 
     // Add format validators
-    addFormats(this.ajv);
+    (addFormats as any)(this.ajv);
     
     // Add custom AsyncAPI formats
     this.addAsyncAPIFormats();
@@ -123,7 +124,8 @@ export class AsyncAPIValidator {
     try {
       const schemaPath = join(__dirname, "../../asyncapi-3.0.0-schema.json");
       const schemaContent = await readFile(schemaPath, "utf-8");
-      const schema = JSON.parse(schemaContent);
+      // Parse the full schema for reference but use simplified version for validation
+      JSON.parse(schemaContent);
       
       // Create a simplified schema for validation to avoid reference conflicts
       const simplifiedSchema = {

@@ -21,7 +21,7 @@ export {
 export {
   ValidationTestRunner,
   createValidationTestSuite,
-  ValidationTestCase,
+  type ValidationTestCase,
   type ValidationTestResult,
   type ValidationTestSuite,
   type ValidationTestOptions,

@@ -23,7 +23,20 @@
       "Bash(just build)",
       "Bash(just lint)",
       "Bash(just fd:*)",
-      "Bash(just find-duplicates:*)"
+      "Bash(just find-duplicates:*)",
+      "Bash(bun run:*)",
+      "Bash(bun list:*)",
+      "Bash(bun add:*)",
+      "Bash(rg:*)",
+      "Bash(bun tsc:*)",
+      "Bash(bun test:*)",
+      "Bash(just validate-build:*)",
+      "Bash(bun exec tsc:*)",
+      "Bash(trash:*)",
+      "Bash(just typecheck)",
+      "Bash(just test:*)",
+      "Bash(bun build:*)",
+      "Bash(bun:*)"
     ],
     "deny": [],
     "ask": []

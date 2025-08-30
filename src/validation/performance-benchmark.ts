@@ -6,7 +6,24 @@
  */
 
 import { AsyncAPIValidator } from "./asyncapi-validator.js";
-import type { AsyncAPIDocument } from "../types/asyncapi.js";
+import type { AsyncAPIDocument, SchemaObject, ReferenceObject } from "../types/asyncapi.js";
+
+/**
+ * Calculate performance statistics from durations and operations
+ */
+function calculatePerformanceStats(durations: number[], totalOperations: number, totalDuration: number): {
+  avgDuration: number;
+  minDuration: number;
+  maxDuration: number;
+  opsPerSecond: number;
+} {
+  return {
+    avgDuration: durations.reduce((sum, d) => sum + d, 0) / durations.length,
+    minDuration: Math.min(...durations),
+    maxDuration: Math.max(...durations),
+    opsPerSecond: totalOperations / (totalDuration / 1000),
+  };
+}
 
 export interface BenchmarkResult {
   /** Benchmark name */
@@ -142,7 +159,7 @@ export class PerformanceBenchmark {
     const totalDuration = performance.now() - startTime;
     const totalOperations = iterations * documents.length;
 
-    let memoryUsage: BenchmarkResult["memoryUsage"];
+    let memoryUsage: BenchmarkResult["memoryUsage"] = undefined;
     if (memoryBefore && typeof process !== "undefined") {
       const memoryAfter = process.memoryUsage();
       memoryUsage = {
@@ -152,15 +169,14 @@ export class PerformanceBenchmark {
       };
     }
 
+    const perfStats = calculatePerformanceStats(durations, totalOperations, totalDuration);
+    
     const result: BenchmarkResult = {
       name: `validation-${size}-documents`,
       operations: totalOperations,
       totalDuration,
-      avgDuration: durations.reduce((sum, d) => sum + d, 0) / durations.length,
-      minDuration: Math.min(...durations),
-      maxDuration: Math.max(...durations),
-      opsPerSecond: totalOperations / (totalDuration / 1000),
-      memoryUsage,
+      ...perfStats,
+      ...(memoryUsage ? { memoryUsage } : {}),
       documentStats: {
         avgChannels: stats.totalChannels / totalOperations,
         avgOperations: stats.totalOperations / totalOperations,
@@ -179,7 +195,11 @@ export class PerformanceBenchmark {
   async benchmarkCachePerformance(): Promise<void> {
     console.log("🗄️ Benchmarking cache performance");
 
-    const document = this.generateDocuments("medium")[0].document;
+    const documents = this.generateDocuments("medium");
+    if (documents.length === 0) {
+      throw new Error("Failed to generate test documents");
+    }
+    const document = documents[0]!.document;
     const iterations = this.options.iterations || 1000;
 
     // Without cache
@@ -251,7 +271,7 @@ export class PerformanceBenchmark {
     }));
 
     const batchStart = performance.now();
-    const results = await this.validator.validateBatch(documents);
+    await this.validator.validateBatch(documents);
     const batchDuration = performance.now() - batchStart;
 
     this.results.push({
@@ -297,14 +317,13 @@ export class PerformanceBenchmark {
     const totalDuration = performance.now() - startTime;
     const totalOperations = iterations * invalidDocuments.length;
 
+    const perfStats = calculatePerformanceStats(durations, totalOperations, totalDuration);
+    
     this.results.push({
       name: "validation-error-handling",
       operations: totalOperations,
       totalDuration,
-      avgDuration: durations.reduce((sum, d) => sum + d, 0) / durations.length,
-      minDuration: Math.min(...durations),
-      maxDuration: Math.max(...durations),
-      opsPerSecond: totalOperations / (totalDuration / 1000),
+      ...perfStats,
       documentStats: {
         avgChannels: 0,
         avgOperations: 0,
@@ -378,7 +397,7 @@ export class PerformanceBenchmark {
       // Generate schemas
       for (let i = 0; i < config.schemas; i++) {
         const schemaName = `Schema_${i}`;
-        document.components.schemas![schemaName] = {
+        document.components!.schemas![schemaName] = {
           type: "object",
           description: `Generated schema ${i}`,
           properties: {
@@ -406,12 +425,13 @@ export class PerformanceBenchmark {
   /**
    * Generate properties for schema complexity
    */
-  private generateProperties(count: number): Record<string, unknown> {
-    const properties: Record<string, unknown> = {};
+  private generateProperties(count: number): Record<string, SchemaObject | ReferenceObject> {
+    const properties: Record<string, SchemaObject | ReferenceObject> = {};
     
     for (let i = 0; i < count; i++) {
+      const types = ["string", "number", "boolean"] as const;
       properties[`property_${i}`] = {
-        type: ["string", "number", "boolean"][i % 3],
+        type: types[i % 3]!,
         description: `Generated property ${i}`,
       };
     }
@@ -483,13 +503,17 @@ export class PerformanceBenchmark {
     }
 
     // Performance summary
-    const fastest = sortedResults[0];
-    const slowest = sortedResults[sortedResults.length - 1];
-    
-    console.log(`\n🏆 Performance Summary:`);
-    console.log(`  Fastest: ${fastest.name} (${fastest.opsPerSecond.toFixed(2)} ops/sec)`);
-    console.log(`  Slowest: ${slowest.name} (${slowest.opsPerSecond.toFixed(2)} ops/sec)`);
-    console.log(`  Performance Ratio: ${(fastest.opsPerSecond / slowest.opsPerSecond).toFixed(2)}x`);
+    if (sortedResults.length > 0) {
+      const fastest = sortedResults[0]!;
+      const slowest = sortedResults[sortedResults.length - 1]!;
+      
+      console.log(`\n🏆 Performance Summary:`);
+      console.log(`  Fastest: ${fastest.name} (${fastest.opsPerSecond.toFixed(2)} ops/sec)`);
+      console.log(`  Slowest: ${slowest.name} (${slowest.opsPerSecond.toFixed(2)} ops/sec)`);
+      console.log(`  Performance Ratio: ${(fastest.opsPerSecond / slowest.opsPerSecond).toFixed(2)}x`);
+    } else {
+      console.log(`\n⚠️ No benchmark results available`);
+    }
   }
 }
 

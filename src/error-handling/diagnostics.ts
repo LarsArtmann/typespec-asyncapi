@@ -1,6 +1,7 @@
 import type { Program, Diagnostic, SourceLocation } from "@typespec/compiler";
 import { reportDiagnostic, $lib } from "../lib.js";
 import type { ErrorContext, ErrorSeverity } from "./index.js";
+import { formatRecommendations, formatReportHeader } from "../utils/formatting.js";
 
 /**
  * TYPESPEC DIAGNOSTIC INTEGRATION
@@ -184,8 +185,7 @@ export function analyzeDiagnostics(diagnostics: readonly Diagnostic[]): Diagnost
 export function generateDiagnosticReport(analysis: DiagnosticAnalysis): string {
   const sections = [];
   
-  sections.push("📊 DIAGNOSTIC ANALYSIS REPORT");
-  sections.push("=".repeat(40));
+  sections.push(...formatReportHeader("📊 DIAGNOSTIC ANALYSIS REPORT"));
   
   // Summary statistics
   sections.push(`Total Issues: ${analysis.total}`);
@@ -209,16 +209,7 @@ export function generateDiagnosticReport(analysis: DiagnosticAnalysis): string {
   }
   
   // Recommendations
-  if (analysis.recommendations.length > 0) {
-    sections.push("");
-    sections.push("🔧 RECOMMENDATIONS:");
-    analysis.recommendations.forEach((rec, index) => {
-      sections.push(`  ${index + 1}. ${rec}`);
-    });
-  }
-  
-  sections.push("");
-  sections.push("=" .repeat(40));
+  sections.push(...formatRecommendations(analysis.recommendations));
   
   return sections.join("\n");
 }

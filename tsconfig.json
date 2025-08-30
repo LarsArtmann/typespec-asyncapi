@@ -61,6 +61,9 @@
     "disableSourceOfProjectReferenceRedirect": true,
     "disableSolutionSearching": true,
     "disableReferencedProjectLoad": true,
+    
+    // === ADDITIONAL BUILD OPTIMIZATIONS ===
+    "assumeChangesOnlyAffectDirectDependencies": true,  // Faster incremental builds
 
     // === MODERN IMPORT/EXPORT HANDLING ===
     "allowSyntheticDefaultImports": true,

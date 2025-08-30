@@ -1,5 +1,6 @@
 import type { Program } from "@typespec/compiler";
 import type { ErrorContext, ErrorSeverity } from "./index.js";
+import { formatRecommendations, formatReportHeader } from "../utils/formatting.js";
 
 /**
  * STRUCTURED ERROR LOGGING SYSTEM
@@ -470,8 +471,7 @@ export function analyzeLogEntries(entries: readonly LogEntry[]): LogAnalysis {
 export function generateLogReport(analysis: LogAnalysis): string {
   const sections = [];
   
-  sections.push("📊 LOG ANALYSIS REPORT");
-  sections.push("=" .repeat(40));
+  sections.push(...formatReportHeader("📊 LOG ANALYSIS REPORT"));
   
   // Summary statistics
   sections.push(`Total Log Entries: ${analysis.totalEntries}`);
@@ -516,16 +516,7 @@ export function generateLogReport(analysis: LogAnalysis): string {
   }
   
   // Recommendations
-  if (analysis.recommendations.length > 0) {
-    sections.push("");
-    sections.push("🔧 Recommendations:");
-    analysis.recommendations.forEach((rec, index) => {
-      sections.push(`  ${index + 1}. ${rec}`);
-    });
-  }
-  
-  sections.push("");
-  sections.push("=" .repeat(40));
+  sections.push(...formatRecommendations(analysis.recommendations));
   
   return sections.join("\n");
 }
