@@ -16,7 +16,7 @@ import { fileURLToPath } from "node:url";
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
-export interface ValidationResult {
+export type ValidationResult = {
   /** Whether the AsyncAPI document is valid */
   valid: boolean;
   /** Detailed validation errors with schema paths */
@@ -27,7 +27,7 @@ export interface ValidationResult {
   summary: string;
 }
 
-export interface ValidationError {
+export type ValidationError = {
   /** JSON Schema path where error occurred */
   schemaPath: string;
   /** Instance path in the AsyncAPI document */
@@ -44,7 +44,7 @@ export interface ValidationError {
   severity: "error" | "warning";
 }
 
-export interface ValidationMetrics {
+export type ValidationMetrics = {
   /** Validation duration in milliseconds */
   duration: number;
   /** Size of document being validated */
@@ -57,7 +57,7 @@ export interface ValidationMetrics {
   schemaCount: number;
 }
 
-export interface AsyncAPIValidatorOptions {
+export type AsyncAPIValidatorOptions = {
   /** Enable strict validation (no additional properties) */
   strict?: boolean;
   /** Enable performance benchmarking */
@@ -68,7 +68,7 @@ export interface AsyncAPIValidatorOptions {
   enableCache?: boolean;
 }
 
-export interface CustomValidationRule {
+export type CustomValidationRule = {
   /** Rule name */
   name: string;
   /** JSON path selector */
@@ -77,7 +77,7 @@ export interface CustomValidationRule {
   validator: (value: unknown, context: ValidationContext) => ValidationError | null;
 }
 
-export interface ValidationContext {
+export type ValidationContext = {
   /** Full AsyncAPI document */
   document: AsyncAPIDocument;
   /** Current object being validated */
@@ -90,13 +90,13 @@ export interface ValidationContext {
  * High-performance AsyncAPI 3.0.0 specification validator
  */
 export class AsyncAPIValidator {
-  private ajv: any;
+  private readonly ajv: any;
   private validateFunction: ValidateFunction | null = null;
-  private schemaCache = new Map<string, unknown>();
-  private validationCache = new Map<string, ValidationResult>();
-  private customRules: CustomValidationRule[] = [];
+  private readonly schemaCache = new Map<string, unknown>();
+  private readonly validationCache = new Map<string, ValidationResult>();
+  private readonly customRules: CustomValidationRule[] = [];
 
-  constructor(private options: AsyncAPIValidatorOptions = {}) {
+  constructor(private readonly options: AsyncAPIValidatorOptions = {}) {
     this.ajv = new (Ajv as any)({
       allErrors: true,
       verbose: true,
@@ -556,7 +556,7 @@ export class AsyncAPIValidator {
       type: "string",
       validate: (value: string) => {
         // Basic runtime expression validation
-        return /^\$[a-zA-Z_][a-zA-Z0-9_.]*$/.test(value) || value.indexOf("$") === -1;
+        return /^\$[a-zA-Z_][a-zA-Z0-9_.]*$/.test(value) || !value.includes("$");
       },
     });
 

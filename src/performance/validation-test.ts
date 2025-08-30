@@ -43,7 +43,7 @@ export const PERFORMANCE_TARGETS = {
 } as const;
 
 // PERFORMANCE VALIDATION TEST SUITE
-export interface PerformanceTestResult {
+export type PerformanceTestResult = {
   testName: string;
   passed: boolean;
   actualValue: number;
@@ -53,7 +53,7 @@ export interface PerformanceTestResult {
   errorMessage?: string;
 }
 
-export interface PerformanceValidationSummary {
+export type PerformanceValidationSummary = {
   overallPassed: boolean;
   testsRun: number;
   testsPassed: number;

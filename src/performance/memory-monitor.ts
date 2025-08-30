@@ -46,7 +46,7 @@ export class GarbageCollectionFailureError extends Error {
 }
 
 // MEMORY USAGE TRACKING
-export interface MemorySnapshot {
+export type MemorySnapshot = {
   timestamp: number;
   heapUsed: number;
   heapTotal: number;
@@ -56,7 +56,7 @@ export interface MemorySnapshot {
   operationCount: number;
 }
 
-export interface MemoryAnalysis {
+export type MemoryAnalysis = {
   averageMemoryPerOperation: number;
   peakMemoryUsage: number;
   memoryGrowthRate: number; // bytes per second
@@ -66,7 +66,7 @@ export interface MemoryAnalysis {
   recommendations: string[];
 }
 
-export interface MemoryBudget {
+export type MemoryBudget = {
   maxMemoryPerOperation: number; // bytes
   maxTotalMemory: number; // bytes
   maxGrowthRate: number; // bytes per second
@@ -83,7 +83,7 @@ export const DefaultMemoryBudget: MemoryBudget = {
 };
 
 // MEMORY MONITORING SERVICE
-export interface MemoryMonitorService {
+export type MemoryMonitorService = {
   // Core monitoring functions
   startMonitoring: (intervalMs?: number) => Effect.Effect<void, MemoryMonitorInitializationError>;
   stopMonitoring: () => Effect.Effect<void, never>;

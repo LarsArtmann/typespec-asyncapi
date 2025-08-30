@@ -53,7 +53,7 @@ export type RecoveryStrategy =
 /**
  * Comprehensive error context information
  */
-export interface ErrorContext {
+export type ErrorContext = {
   // Core identification
   readonly errorId: string;
   readonly timestamp: Date;
@@ -87,7 +87,7 @@ export interface ErrorContext {
 /**
  * Error handling result with recovery information
  */
-export interface ErrorHandlingResult<T> {
+export type ErrorHandlingResult<T> = {
   readonly success: boolean;
   readonly result?: T | undefined;
   readonly error?: ErrorContext | undefined;
@@ -102,7 +102,7 @@ export interface ErrorHandlingResult<T> {
 /**
  * Error handling configuration
  */
-export interface ErrorHandlingConfig {
+export type ErrorHandlingConfig = {
   readonly enableRecovery: boolean;
   readonly enableFallbacks: boolean;
   readonly enableCaching: boolean;
@@ -116,7 +116,7 @@ export interface ErrorHandlingConfig {
 /**
  * Generic error handler interface
  */
-export interface ErrorHandler<T> {
+export type ErrorHandler<T> = {
   canHandle(error: Error): boolean;
   handle(error: Error, context: Partial<ErrorContext>): Effect.Effect<ErrorHandlingResult<T>, never>;
 }

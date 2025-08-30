@@ -1,7 +1,7 @@
 import type { DecoratorContext, Model } from "@typespec/compiler";
 import { reportDiagnostic, stateKeys } from "../lib.js";
 
-export interface MessageConfig {
+export type MessageConfig = {
   /** Unique identifier for the message */
   name?: string;
   /** Human readable title for the message */

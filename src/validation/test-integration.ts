@@ -7,7 +7,7 @@
 
 import { AsyncAPIValidator, type ValidationResult, type AsyncAPIValidatorOptions } from "./asyncapi-validator.js";
 
-export interface ValidationTestCase {
+export type ValidationTestCase = {
   /** Test case name */
   name: string;
   /** AsyncAPI document to validate */
@@ -22,7 +22,7 @@ export interface ValidationTestCase {
   tags?: string[];
 }
 
-export interface ValidationTestSuite {
+export type ValidationTestSuite = {
   /** Test suite name */
   name: string;
   /** Test cases */
@@ -35,7 +35,7 @@ export interface ValidationTestSuite {
   teardown?: () => Promise<void>;
 }
 
-export interface ValidationTestResult {
+export type ValidationTestResult = {
   /** Test case name */
   testName: string;
   /** Whether test passed */
@@ -48,7 +48,7 @@ export interface ValidationTestResult {
   duration: number;
 }
 
-export interface ValidationTestOptions {
+export type ValidationTestOptions = {
   /** Enable performance benchmarking */
   benchmark?: boolean;
   /** Enable verbose output */
@@ -65,7 +65,7 @@ export interface ValidationTestOptions {
 export class ValidationTestRunner {
   private validator: AsyncAPIValidator;
 
-  constructor(private options: ValidationTestOptions = {}) {
+  constructor(private readonly options: ValidationTestOptions = {}) {
     this.validator = new AsyncAPIValidator({
       enableCache: true,
       benchmarking: options.benchmark ?? false,

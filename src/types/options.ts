@@ -1,4 +1,4 @@
-export interface AsyncAPIEmitterOptions {
+export type AsyncAPIEmitterOptions = {
   /**
    * Name of the output file. Supports template variables:
    * - {cmd}: Current command name (e.g., "typespec", "tsp")
@@ -72,7 +72,7 @@ export interface AsyncAPIEmitterOptions {
 /**
  * Versioning configuration options
  */
-export interface VersioningConfig {
+export type VersioningConfig = {
   /**
    * Whether to generate separate files for each version
    * @default true
@@ -103,7 +103,7 @@ export interface VersioningConfig {
   "validate-version-compatibility"?: boolean;
 }
 
-export interface ServerConfig {
+export type ServerConfig = {
   host: string;
   protocol: string;
   description?: string;
@@ -112,14 +112,14 @@ export interface ServerConfig {
   bindings?: Record<string, unknown>;
 }
 
-export interface VariableConfig {
+export type VariableConfig = {
   description?: string;
   default?: string;
   enum?: string[];
   examples?: string[];
 }
 
-export interface SecuritySchemeConfig {
+export type SecuritySchemeConfig = {
   type: "oauth2" | "apiKey" | "httpApiKey" | "http" | "plain" | "scram-sha-256" | "scram-sha-512" | "gssapi";
   description?: string;
   name?: string;
@@ -129,14 +129,14 @@ export interface SecuritySchemeConfig {
   flows?: OAuthFlowsConfig;
 }
 
-export interface OAuthFlowsConfig {
+export type OAuthFlowsConfig = {
   implicit?: OAuthFlowConfig;
   password?: OAuthFlowConfig;
   clientCredentials?: OAuthFlowConfig;
   authorizationCode?: OAuthFlowConfig;
 }
 
-export interface OAuthFlowConfig {
+export type OAuthFlowConfig = {
   authorizationUrl?: string;
   tokenUrl?: string;
   refreshUrl?: string;

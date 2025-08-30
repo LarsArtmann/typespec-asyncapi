@@ -98,14 +98,14 @@ export const PerformanceMetrics = {
 };
 
 // PERFORMANCE MEASUREMENT CONTEXT
-export interface PerformanceMeasurement {
+export type PerformanceMeasurement = {
   startTime: number;
   memoryBefore: NodeJS.MemoryUsage;
   operationCount: number;
   operationType: string;
 }
 
-export interface ThroughputResult {
+export type ThroughputResult = {
   operationsPerSecond: number;
   averageMemoryPerOperation: number;
   averageLatencyMicroseconds: number;
@@ -114,7 +114,7 @@ export interface ThroughputResult {
 }
 
 // PERFORMANCE METRICS SERVICE
-export interface PerformanceMetricsService {
+export type PerformanceMetricsService = {
   // Core measurement functions
   startMeasurement: (operationType: string) => Effect.Effect<PerformanceMeasurement, MetricsInitializationError>;
   recordThroughput: (measurement: PerformanceMeasurement, operationCount: number) => Effect.Effect<ThroughputResult, MetricsCollectionError>;

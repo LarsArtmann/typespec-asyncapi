@@ -21,7 +21,7 @@ export const ValidationMetrics = {
 };
 
 // SCHEMA COMPILATION CACHE
-export interface SchemaCache {
+export type SchemaCache = {
   get: <T>(key: string) => Effect.Effect<Schema.Schema<T> | undefined, never>;
   set: <T>(key: string, schema: Schema.Schema<T>) => Effect.Effect<void, never>;
   invalidate: (key: string) => Effect.Effect<void, never>;
@@ -64,7 +64,7 @@ export const createSchemaCache = (options: {
   });
 
 // OPTIMIZED VALIDATION SERVICE
-export interface ValidationService {
+export type ValidationService = {
   validateOptions: (input: unknown) => Effect.Effect<AsyncAPIEmitterOptions, Error>;
   getMetrics: () => Effect.Effect<typeof ValidationMetrics, never>;
   clearCache: () => Effect.Effect<void, never>;

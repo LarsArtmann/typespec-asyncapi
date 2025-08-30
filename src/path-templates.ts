@@ -4,7 +4,7 @@ import { cwd } from "node:process";
 /**
  * Supported template variables for path resolution
  */
-export interface PathTemplateVariables {
+export type PathTemplateVariables = {
   /** Current command name (e.g., "typespec", "tsp") */
   cmd: string;
   /** Project root directory path */
@@ -35,7 +35,7 @@ export type SupportedTemplateVariable = typeof SUPPORTED_TEMPLATE_VARIABLES[numb
 /**
  * Result of template variable validation
  */
-export interface TemplateValidationResult {
+export type TemplateValidationResult = {
   isValid: boolean;
   variables: string[];
   unsupportedVariables: string[];
@@ -45,7 +45,7 @@ export interface TemplateValidationResult {
 /**
  * Context for path template resolution
  */
-export interface PathTemplateContext {
+export type PathTemplateContext = {
   /** Program context from TypeSpec */
   program?: unknown;
   /** Emitter output directory */

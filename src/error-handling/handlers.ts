@@ -84,7 +84,7 @@ export class ValidationErrorHandler implements ErrorHandler<AsyncAPIEmitterOptio
 /**
  * Parse validation error details
  */
-interface ValidationDetails {
+type ValidationDetails = {
   field: string;
   value: unknown;
   expected: string;
@@ -495,7 +495,7 @@ export class CompilationErrorHandler implements ErrorHandler<null> {
  * Registry for error handlers
  */
 export class ErrorHandlerRegistry {
-  private handlers: ErrorHandler<unknown>[] = [];
+  private readonly handlers: ErrorHandler<unknown>[] = [];
   
   constructor() {
     // Register default handlers

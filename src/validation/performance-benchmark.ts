@@ -25,7 +25,7 @@ function calculatePerformanceStats(durations: number[], totalOperations: number,
   };
 }
 
-export interface BenchmarkResult {
+export type BenchmarkResult = {
   /** Benchmark name */
   name: string;
   /** Total operations performed */
@@ -55,7 +55,7 @@ export interface BenchmarkResult {
   };
 }
 
-export interface BenchmarkOptions {
+export type BenchmarkOptions = {
   /** Number of iterations per test */
   iterations?: number;
   /** Number of warmup iterations */
@@ -72,10 +72,10 @@ export interface BenchmarkOptions {
  * Performance benchmark runner for AsyncAPI validation
  */
 export class PerformanceBenchmark {
-  private validator: AsyncAPIValidator;
-  private results: BenchmarkResult[] = [];
+  private readonly validator: AsyncAPIValidator;
+  private readonly results: BenchmarkResult[] = [];
 
-  constructor(private options: BenchmarkOptions = {}) {
+  constructor(private readonly options: BenchmarkOptions = {}) {
     this.validator = new AsyncAPIValidator({
       enableCache: false, // Disable cache for accurate benchmarking
       benchmarking: true,

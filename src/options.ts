@@ -339,7 +339,7 @@ export const parseAsyncAPIEmitterOptions = (input: unknown) =>
 
 // TYPE CONVERSION UTILITIES - Handle readonly/optional property differences
 
-interface VersioningConfigInput {
+type VersioningConfigInput = {
   "separate-files"?: boolean;
   "file-naming"?: "suffix" | "directory" | "prefix";
   "include-version-info"?: boolean;
@@ -363,7 +363,7 @@ const convertVersioningConfig = (input: VersioningConfigInput): VersioningConfig
   return result;
 };
 
-interface ServerConfigInput {
+type ServerConfigInput = {
   host: string;
   protocol: string;
   description?: string;

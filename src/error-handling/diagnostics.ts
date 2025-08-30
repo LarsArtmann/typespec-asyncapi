@@ -1,5 +1,6 @@
 import type { Program, Diagnostic, SourceLocation } from "@typespec/compiler";
-import { reportDiagnostic, $lib } from "../lib.js";
+import type { $lib } from "../lib.js";
+import { reportDiagnostic } from "../lib.js";
 import type { ErrorContext, ErrorSeverity } from "./index.js";
 import { formatRecommendations, formatReportHeader } from "../utils/formatting.js";
 
@@ -117,7 +118,7 @@ export function extractSourceLocation(diagnostic: Diagnostic): SourceLocation | 
 /**
  * Collect and analyze all diagnostics from a program
  */
-export interface DiagnosticAnalysis {
+export type DiagnosticAnalysis = {
   readonly total: number;
   readonly byCategory: Record<ErrorSeverity, number>;
   readonly fatal: boolean; // True if any fatal errors exist
@@ -221,7 +222,7 @@ export function generateDiagnosticReport(analysis: DiagnosticAnalysis): string {
 /**
  * Aggregate multiple error contexts into a summary
  */
-export interface ErrorSummary {
+export type ErrorSummary = {
   readonly totalErrors: number;
   readonly errorsByCategory: Record<string, number>;
   readonly criticalErrors: ErrorContext[];

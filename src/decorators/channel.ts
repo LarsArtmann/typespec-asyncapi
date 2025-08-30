@@ -23,8 +23,8 @@ export function $channel(context: DecoratorContext, target: Operation, path: Str
     channelPath = path;
   } else if (path && typeof path === "object" && "value" in path && path.value !== undefined) {
     channelPath = String(path.value);
-  } else if (path && typeof path === "object" && "valueKind" in path && (path as StringValue).valueKind === "StringValue") {
-    const stringValue = path as StringValue;
+  } else if (path && typeof path === "object" && "valueKind" in path && (path).valueKind === "StringValue") {
+    const stringValue = path;
     channelPath = String(stringValue.value);
   } else {
     console.log(`⚠️  Could not extract string from path:`, path);

@@ -11,7 +11,7 @@ import { MemoryMonitorService, MemoryMonitorServiceLive } from "../performance/m
 import { EmitterService, EmitterServiceLive } from "../integration-example.js";
 
 // APPLICATION CONFIGURATION
-export interface ApplicationConfig {
+export type ApplicationConfig = {
   logLevel: LogLevel.LogLevel;
   enablePerformanceMonitoring: boolean;
   enableMemoryMonitoring: boolean;
@@ -42,7 +42,7 @@ export const DefaultApplicationConfig: ApplicationConfig = {
 };
 
 // APPLICATION CONFIGURATION SERVICE
-export interface ApplicationConfigService {
+export type ApplicationConfigService = {
   getConfig: () => Effect.Effect<ApplicationConfig, never>;
   updateConfig: (config: Partial<ApplicationConfig>) => Effect.Effect<void, never>;
   isPerformanceMonitoringEnabled: () => Effect.Effect<boolean, never>;
@@ -85,7 +85,7 @@ const makeApplicationConfigService = Effect.gen(function* () {
 export const ApplicationConfigServiceLive = Layer.effect(ApplicationConfigService, makeApplicationConfigService);
 
 // MONITORING SUPERVISOR SERVICE
-export interface MonitoringSupervisorService {
+export type MonitoringSupervisorService = {
   startAllMonitoring: () => Effect.Effect<void, Error, PerformanceMetricsService | MemoryMonitorService | ApplicationConfigService>;
   stopAllMonitoring: () => Effect.Effect<void, never, PerformanceMetricsService | MemoryMonitorService>;
   getMonitoringStatus: () => Effect.Effect<{ performance: boolean; memory: boolean }, never, never>;
@@ -158,7 +158,7 @@ const makeMonitoringSupervisorService = Effect.gen(function* () {
 export const MonitoringSupervisorServiceLive = Layer.effect(MonitoringSupervisorService, makeMonitoringSupervisorService);
 
 // APPLICATION HEALTH SERVICE
-export interface ApplicationHealthService {
+export type ApplicationHealthService = {
   performHealthCheck: () => Effect.Effect<{ healthy: boolean; checks: Record<string, boolean>; recommendations: string[] }, never, PerformanceMetricsService | MemoryMonitorService | MonitoringSupervisorService | EmitterService>;
   getSystemStatus: () => Effect.Effect<{ uptime: number; memoryUsage: number; performanceScore: number }, never, PerformanceMetricsService | MemoryMonitorService | MonitoringSupervisorService | EmitterService>;
 }

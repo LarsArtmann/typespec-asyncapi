@@ -222,7 +222,7 @@ export abstract class BaseAsyncAPIError extends Error {
 /**
  * Error context interface for compatibility with existing error handling system
  */
-export interface ErrorContext {
+export type ErrorContext = {
   readonly errorId: string;
   readonly timestamp: Date;
   readonly severity: ErrorSeverity;

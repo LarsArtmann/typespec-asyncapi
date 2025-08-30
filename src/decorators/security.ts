@@ -3,7 +3,7 @@ import { reportDiagnostic, stateKeys } from "../lib.js";
 
 export type SecuritySchemeType = "apiKey" | "http" | "oauth2" | "openIdConnect" | "sasl" | "x509" | "symmetricEncryption" | "asymmetricEncryption";
 
-export interface ApiKeySecurityScheme {
+export type ApiKeySecurityScheme = {
   type: "apiKey";
   /** Location of the API key */
   in: "user" | "password" | "query" | "header" | "cookie";
@@ -11,7 +11,7 @@ export interface ApiKeySecurityScheme {
   description?: string;
 }
 
-export interface HttpSecurityScheme {
+export type HttpSecurityScheme = {
   type: "http";
   /** HTTP authentication scheme */
   scheme: "basic" | "bearer" | "digest" | "hoba" | "mutual" | "negotiate" | "oauth" | "scram-sha-1" | "scram-sha-256" | "vapid";
@@ -21,7 +21,7 @@ export interface HttpSecurityScheme {
   description?: string;
 }
 
-export interface OAuth2SecurityScheme {
+export type OAuth2SecurityScheme = {
   type: "oauth2";
   /** OAuth 2.0 flows */
   flows: {
@@ -50,7 +50,7 @@ export interface OAuth2SecurityScheme {
   description?: string;
 }
 
-export interface OpenIdConnectSecurityScheme {
+export type OpenIdConnectSecurityScheme = {
   type: "openIdConnect";
   /** OpenID Connect URL */
   openIdConnectUrl: string;
@@ -58,7 +58,7 @@ export interface OpenIdConnectSecurityScheme {
   description?: string;
 }
 
-export interface SaslSecurityScheme {
+export type SaslSecurityScheme = {
   type: "sasl";
   /** SASL mechanism */
   mechanism: "PLAIN" | "SCRAM-SHA-256" | "SCRAM-SHA-512" | "GSSAPI";
@@ -66,19 +66,19 @@ export interface SaslSecurityScheme {
   description?: string;
 }
 
-export interface X509SecurityScheme {
+export type X509SecurityScheme = {
   type: "x509";
   /** Description of the security scheme */
   description?: string;
 }
 
-export interface SymmetricEncryptionSecurityScheme {
+export type SymmetricEncryptionSecurityScheme = {
   type: "symmetricEncryption";
   /** Description of the security scheme */
   description?: string;
 }
 
-export interface AsymmetricEncryptionSecurityScheme {
+export type AsymmetricEncryptionSecurityScheme = {
   type: "asymmetricEncryption";
   /** Description of the security scheme */
   description?: string;
@@ -94,7 +94,7 @@ export type SecurityScheme =
   | SymmetricEncryptionSecurityScheme 
   | AsymmetricEncryptionSecurityScheme;
 
-export interface SecurityConfig {
+export type SecurityConfig = {
   /** Security scheme name */
   name: string;
   /** Security scheme configuration */
@@ -155,7 +155,7 @@ export function $security(
   }
 
   // Validate security configuration
-  if (!config || !config.name || !config.scheme) {
+  if (!config?.name || !config.scheme) {
     reportDiagnostic(context.program, {
       code: "missing-security-config",
       target: target,
@@ -200,7 +200,7 @@ function validateSecurityScheme(scheme: SecurityScheme): { valid: boolean; error
   
   switch (scheme.type) {
     case "apiKey":
-      const apiKeyScheme = scheme as ApiKeySecurityScheme;
+      const apiKeyScheme = scheme;
       const validApiKeyLocations = ["user", "password", "query", "header", "cookie"];
       if (!validApiKeyLocations.includes(apiKeyScheme.in)) {
         errors.push(`Invalid API key location: ${apiKeyScheme.in}. Must be one of: ${validApiKeyLocations.join(", ")}`);
@@ -208,7 +208,7 @@ function validateSecurityScheme(scheme: SecurityScheme): { valid: boolean; error
       break;
       
     case "http":
-      const httpScheme = scheme as HttpSecurityScheme;
+      const httpScheme = scheme;
       const validHttpSchemes = ["basic", "bearer", "digest", "hoba", "mutual", "negotiate", "oauth", "scram-sha-1", "scram-sha-256", "vapid"];
       if (!validHttpSchemes.includes(httpScheme.scheme)) {
         errors.push(`Invalid HTTP scheme: ${httpScheme.scheme}. Must be one of: ${validHttpSchemes.join(", ")}`);
@@ -219,7 +219,7 @@ function validateSecurityScheme(scheme: SecurityScheme): { valid: boolean; error
       break;
       
     case "oauth2":
-      const oauth2Scheme = scheme as OAuth2SecurityScheme;
+      const oauth2Scheme = scheme;
       const flows = oauth2Scheme.flows;
       if (!flows || Object.keys(flows).length === 0) {
         errors.push("OAuth2 scheme must define at least one flow");
@@ -246,7 +246,7 @@ function validateSecurityScheme(scheme: SecurityScheme): { valid: boolean; error
       break;
       
     case "openIdConnect":
-      const oidcScheme = scheme as OpenIdConnectSecurityScheme;
+      const oidcScheme = scheme;
       if (!oidcScheme.openIdConnectUrl) {
         errors.push("OpenID Connect scheme must have openIdConnectUrl");
       }
@@ -258,7 +258,7 @@ function validateSecurityScheme(scheme: SecurityScheme): { valid: boolean; error
       break;
       
     case "sasl":
-      const saslScheme = scheme as SaslSecurityScheme;
+      const saslScheme = scheme;
       const validSaslMechanisms = ["PLAIN", "SCRAM-SHA-256", "SCRAM-SHA-512", "GSSAPI"];
       if (!validSaslMechanisms.includes(saslScheme.mechanism)) {
         errors.push(`Invalid SASL mechanism: ${saslScheme.mechanism}. Must be one of: ${validSaslMechanisms.join(", ")}`);

@@ -3,7 +3,7 @@ import { reportDiagnostic, stateKeys } from "../lib.js";
 
 export type ProtocolType = "kafka" | "websocket" | "http" | "amqp" | "mqtt" | "redis";
 
-export interface KafkaBindingConfig {
+export type KafkaBindingConfig = {
   /** Kafka topic name */
   topic?: string;
   /** Partition key field */
@@ -20,7 +20,7 @@ export interface KafkaBindingConfig {
   clientId?: string;
 }
 
-export interface WebSocketBindingConfig {
+export type WebSocketBindingConfig = {
   /** WebSocket method (GET only for WebSocket upgrade) */
   method?: "GET";
   /** Query parameters schema */
@@ -31,7 +31,7 @@ export interface WebSocketBindingConfig {
   subprotocol?: string;
 }
 
-export interface HttpBindingConfig {
+export type HttpBindingConfig = {
   /** HTTP method */
   method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "HEAD" | "OPTIONS";
   /** Query parameters schema */
@@ -42,7 +42,7 @@ export interface HttpBindingConfig {
   statusCode?: number;
 }
 
-export interface AMQPBindingConfig {
+export type AMQPBindingConfig = {
   /** Exchange name */
   exchange?: string;
   /** Queue name */
@@ -57,7 +57,7 @@ export interface AMQPBindingConfig {
   expiration?: number;
 }
 
-export interface MQTTBindingConfig {
+export type MQTTBindingConfig = {
   /** Topic name */
   topic?: string;
   /** Quality of Service level */
@@ -70,7 +70,7 @@ export interface MQTTBindingConfig {
   keepAlive?: number;
 }
 
-export interface RedisBindingConfig {
+export type RedisBindingConfig = {
   /** Redis channel or stream */
   channel?: string;
   /** Redis stream consumer group */
@@ -79,7 +79,7 @@ export interface RedisBindingConfig {
   messageId?: string;
 }
 
-export interface ProtocolConfig {
+export type ProtocolConfig = {
   /** Protocol type */
   protocol: ProtocolType;
   /** Protocol-specific binding configuration */
@@ -131,7 +131,7 @@ export function $protocol(
   }
 
   // Validate protocol configuration
-  if (!config || !config.protocol) {
+  if (!config?.protocol) {
     reportDiagnostic(context.program, {
       code: "missing-protocol-type",
       target: target,

@@ -41,7 +41,7 @@ import {
   DEFAULT_PROTOCOL_SUPPORT,
 } from "./types/protocol-bindings.js";
 
-export interface ProtocolBindingConfig {
+export type ProtocolBindingConfig = {
   protocol: ProtocolType;
   serverBindings?: ServerBindings;
   channelBindings?: ChannelBindings;

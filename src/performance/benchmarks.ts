@@ -41,7 +41,7 @@ export class ThroughputRegressionError extends Error {
 }
 
 // BENCHMARK CONFIGURATION
-export interface BenchmarkConfig {
+export type BenchmarkConfig = {
   targetThroughput: number;
   maxMemoryPerOperation: number;
   timeoutMs: number;
@@ -62,7 +62,7 @@ export const DefaultBenchmarkConfig: BenchmarkConfig = {
 };
 
 // BENCHMARK TEST CASES
-export interface BenchmarkTestCase {
+export type BenchmarkTestCase = {
   name: string;
   description: string;
   category: "basic" | "complex" | "edge-case" | "stress";
@@ -214,7 +214,7 @@ export const generateBenchmarkTestCases = (): BenchmarkTestCase[] => [
 ];
 
 // BENCHMARK EXECUTION ENGINE
-export interface BenchmarkResult {
+export type BenchmarkResult = {
   testCase: string;
   category: string;
   iterations: number;
@@ -227,7 +227,7 @@ export interface BenchmarkResult {
   concurrencyLevel: number;
 }
 
-export interface BenchmarkSuite {
+export type BenchmarkSuite = {
   config: BenchmarkConfig;
   testCases: BenchmarkTestCase[];
   results: BenchmarkResult[];

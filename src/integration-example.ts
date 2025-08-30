@@ -7,16 +7,20 @@
 
 import { Effect, Console, Context, Layer, Duration } from "effect";
 import type { EmitContext } from "@typespec/compiler";
-import {
-  AsyncAPIEmitterOptionsSchema,
-  validateAsyncAPIEmitterOptions,
-  createAsyncAPIEmitterOptions,
+import type {
   AsyncAPIOptionsValidationError,
   AsyncAPIOptionsParseError
 } from "./options.js";
+import {
+  AsyncAPIEmitterOptionsSchema,
+  validateAsyncAPIEmitterOptions,
+  createAsyncAPIEmitterOptions
+} from "./options.js";
 import type { AsyncAPIEmitterOptions } from "./types/options.js";
-import { PerformanceMetricsService, PerformanceMetricsServiceLive, MetricsInitializationError, MetricsCollectionError, MemoryThresholdExceededError } from "./performance/metrics.js";
-import { MemoryMonitorService, MemoryMonitorServiceLive, withMemoryTracking, MemoryMonitorInitializationError } from "./performance/memory-monitor.js";
+import type { MetricsInitializationError, MetricsCollectionError} from "./performance/metrics.js";
+import { PerformanceMetricsService, PerformanceMetricsServiceLive, MemoryThresholdExceededError } from "./performance/metrics.js";
+import type { MemoryMonitorInitializationError } from "./performance/memory-monitor.js";
+import { MemoryMonitorService, MemoryMonitorServiceLive, withMemoryTracking } from "./performance/memory-monitor.js";
 // TAGGED ERROR TYPES for Railway Programming
 export class EmitterInitializationError extends Error {
   readonly _tag = "EmitterInitializationError";
@@ -109,7 +113,7 @@ const validateAsyncAPIDocumentEffect = (spec: unknown): Effect.Effect<boolean, S
   );
 
 // PURE EFFECT.TS EMITTER SERVICE
-export interface EmitterService {
+export type EmitterService = {
   generateSpec: (options: AsyncAPIEmitterOptions) => Effect.Effect<unknown, SpecGenerationError>;
   validateSpec: (spec: unknown) => Effect.Effect<boolean, SpecValidationError>;
   writeOutput: (path: string, content: string) => Effect.Effect<void, Error>;

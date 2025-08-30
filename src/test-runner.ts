@@ -15,7 +15,7 @@ import { getApplicationLayer } from "./layers/application.js";
 import { validateAsyncAPIEmitterOptions } from "./options.js";
 
 // TEST SUITE CONFIGURATION
-export interface TestSuiteConfig {
+export type TestSuiteConfig = {
   runPerformanceValidation: boolean;
   runBenchmarkSuite: boolean;
   runArchitectureValidation: boolean;
@@ -54,7 +54,7 @@ export class ArchitectureValidationError extends Error {
 }
 
 // TEST RESULTS
-export interface TestSuiteResults {
+export type TestSuiteResults = {
   overallPassed: boolean;
   performanceValidation: {
     passed: boolean;

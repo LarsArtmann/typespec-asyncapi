@@ -1,7 +1,7 @@
 import type { DecoratorContext, Namespace, StringValue, Model } from "@typespec/compiler";
 import { reportDiagnostic, stateKeys } from "../lib.js";
 
-export interface ServerConfig {
+export type ServerConfig = {
   name: string;
   url: string;
   protocol: string;
@@ -34,8 +34,8 @@ export function $server(
     serverName = name;
   } else if (name && typeof name === "object" && "value" in name && name.value !== undefined) {
     serverName = String(name.value);
-  } else if (name && typeof name === "object" && "valueKind" in name && (name as StringValue).valueKind === "StringValue") {
-    const stringValue = name as StringValue;
+  } else if (name && typeof name === "object" && "valueKind" in name && (name).valueKind === "StringValue") {
+    const stringValue = name;
     serverName = String(stringValue.value);
   } else {
     console.log(`⚠️  Could not extract string from server name:`, name);
@@ -144,7 +144,7 @@ function extractServerConfigFromObject(obj: Model | Record<string, unknown>): Pa
     });
   } else if (obj && typeof obj === "object" && !("properties" in obj)) {
     // Handle Record<string, unknown> type
-    const recordObj = obj as Record<string, unknown>;
+    const recordObj = obj;
     for (const [key, value] of Object.entries(recordObj)) {
       let valueStr: string | undefined;
       

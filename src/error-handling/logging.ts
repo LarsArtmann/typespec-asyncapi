@@ -16,7 +16,7 @@ import { formatRecommendations, formatReportHeader } from "../utils/formatting.j
 /**
  * Log entry structure
  */
-export interface LogEntry {
+export type LogEntry = {
   readonly timestamp: Date;
   readonly level: ErrorSeverity;
   readonly message: string;
@@ -30,7 +30,7 @@ export interface LogEntry {
 /**
  * Logger interface
  */
-export interface ErrorLogger {
+export type ErrorLogger = {
   log(entry: LogEntry): void;
   logError(error: ErrorContext): void;
   flush(): Promise<void>;
@@ -41,7 +41,7 @@ export interface ErrorLogger {
 /**
  * Logging configuration
  */
-export interface LoggingConfig {
+export type LoggingConfig = {
   readonly level: ErrorSeverity;
   readonly includeStackTrace: boolean;
   readonly includeContext: boolean;
@@ -242,9 +242,9 @@ export class ConsoleErrorLogger implements ErrorLogger {
  * Adapter to use TypeSpec program host logging
  */
 export class TypeSpecHostLogger implements ErrorLogger {
-  private program: Program;
-  private fallbackLogger: ErrorLogger;
-  private entries: LogEntry[] = [];
+  private readonly program: Program;
+  private readonly fallbackLogger: ErrorLogger;
+  private readonly entries: LogEntry[] = [];
   
   constructor(program: Program, fallbackConfig?: Partial<LoggingConfig>) {
     this.program = program;
@@ -372,7 +372,7 @@ export function createLoggerFromProgram(program: Program, config?: Partial<Loggi
 /**
  * Generate log analysis report
  */
-export interface LogAnalysis {
+export type LogAnalysis = {
   readonly totalEntries: number;
   readonly byLevel: Record<ErrorSeverity, number>;
   readonly byCategory: Record<string, number>;

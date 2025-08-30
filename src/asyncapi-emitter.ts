@@ -17,7 +17,7 @@ import {
 /**
  * Internal AsyncAPI document structure for the emitter
  */
-interface EmitterAsyncAPIDocument {
+type EmitterAsyncAPIDocument = {
   asyncapi: "3.0.0";
   info: {
     title: string;
@@ -145,7 +145,7 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
     this.asyncApiDoc.operations[op.name] = this.createOperationDefinition(op, channelName);
     
     if (op.returnType.kind === "Model") {
-      const model = op.returnType as Model;
+      const model = op.returnType;
       this.asyncApiDoc.components.schemas[model.name] = this.convertModelToSchema(model);
     }
   }

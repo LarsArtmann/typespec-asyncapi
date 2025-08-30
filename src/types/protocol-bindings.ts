@@ -23,7 +23,7 @@ export type ProtocolType = "kafka" | "ws" | "http" | "https" | "amqp" | "mqtt";
 /**
  * Common Kafka field configuration for type, enum, and description
  */
-export interface KafkaFieldConfig {
+export type KafkaFieldConfig = {
   type?: "string" | "integer";
   enum?: string[] | number[];
   description?: string;
@@ -32,7 +32,7 @@ export interface KafkaFieldConfig {
 /**
  * Base protocol binding configuration interface
  */
-export interface BaseProtocolBindingConfig {
+export type BaseProtocolBindingConfig = {
   protocol: ProtocolType;
   enabled?: boolean;
   version?: string;
@@ -41,7 +41,7 @@ export interface BaseProtocolBindingConfig {
 /**
  * Kafka-specific binding configuration
  */
-export interface KafkaProtocolBindingConfig extends BaseProtocolBindingConfig {
+export type KafkaProtocolBindingConfig = {
   protocol: "kafka";
   server?: {
     schemaRegistryUrl?: string;
@@ -65,12 +65,12 @@ export interface KafkaProtocolBindingConfig extends BaseProtocolBindingConfig {
     schemaIdPayloadEncoding?: string;
     schemaLookupStrategy?: "TopicIdStrategy" | "RecordIdStrategy" | "TopicRecordIdStrategy";
   };
-}
+} & BaseProtocolBindingConfig
 
 /**
  * WebSocket-specific binding configuration
  */
-export interface WebSocketProtocolBindingConfig extends BaseProtocolBindingConfig {
+export type WebSocketProtocolBindingConfig = {
   protocol: "ws";
   channel?: {
     method?: "GET" | "POST";
@@ -78,12 +78,12 @@ export interface WebSocketProtocolBindingConfig extends BaseProtocolBindingConfi
     headers?: SchemaObject | ReferenceObject;
   };
   message?: Record<string, never>; // WebSocket message bindings are empty
-}
+} & BaseProtocolBindingConfig
 
 /**
  * HTTP-specific binding configuration
  */
-export interface HttpProtocolBindingConfig extends BaseProtocolBindingConfig {
+export type HttpProtocolBindingConfig = {
   protocol: "http" | "https";
   operation?: {
     type?: "request" | "response";
@@ -95,7 +95,7 @@ export interface HttpProtocolBindingConfig extends BaseProtocolBindingConfig {
     headers?: SchemaObject | ReferenceObject;
     statusCode?: number;
   };
-}
+} & BaseProtocolBindingConfig
 
 /**
  * Union type for all protocol-specific configurations
@@ -108,7 +108,7 @@ export type ProtocolBindingConfig =
 /**
  * Protocol binding factory configuration
  */
-export interface ProtocolBindingFactoryConfig {
+export type ProtocolBindingFactoryConfig = {
   defaultProtocol?: ProtocolType;
   strictValidation?: boolean;
   supportedProtocols?: ProtocolType[];
@@ -117,7 +117,7 @@ export interface ProtocolBindingFactoryConfig {
 /**
  * Protocol-specific binding validation error
  */
-export interface ProtocolBindingValidationError {
+export type ProtocolBindingValidationError = {
   protocol: ProtocolType;
   bindingType: "server" | "channel" | "operation" | "message";
   property?: string;
@@ -128,7 +128,7 @@ export interface ProtocolBindingValidationError {
 /**
  * Protocol binding validation result
  */
-export interface ProtocolBindingValidationResult {
+export type ProtocolBindingValidationResult = {
   isValid: boolean;
   errors: ProtocolBindingValidationError[];
   warnings: ProtocolBindingValidationError[];
@@ -137,7 +137,7 @@ export interface ProtocolBindingValidationResult {
 /**
  * Type-safe binding creation parameters for each protocol
  */
-export interface ProtocolBindingParams {
+export type ProtocolBindingParams = {
   kafka: {
     server?: KafkaProtocolBindingConfig["server"];
     channel?: KafkaProtocolBindingConfig["channel"];
@@ -239,7 +239,7 @@ export type ExtractBindingParams<T extends ProtocolType> = T extends keyof Proto
 /**
  * Protocol binding result types
  */
-export interface ProtocolBindingResult {
+export type ProtocolBindingResult = {
   serverBindings?: ServerBindings;
   channelBindings?: ChannelBindings;
   operationBindings?: OperationBindings;
@@ -249,7 +249,7 @@ export interface ProtocolBindingResult {
 /**
  * Runtime protocol binding configuration with validation
  */
-export interface ValidatedProtocolBindingConfig {
+export type ValidatedProtocolBindingConfig = {
   config: ProtocolBindingConfig;
   validationResult: ProtocolBindingValidationResult;
   timestamp: Date;

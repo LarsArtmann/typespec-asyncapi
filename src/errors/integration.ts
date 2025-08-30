@@ -176,7 +176,7 @@ function attemptRecoveryWithNewSystem<T>(error: BaseAsyncAPIError): Effect.Effec
  * Error handler that works with both old and new systems
  */
 export class BridgeErrorHandler<T> implements ErrorHandler<T> {
-  constructor(private logger?: ErrorLogger) {}
+  constructor(private readonly logger?: ErrorLogger) {}
   
   canHandle(_error: Error): boolean {
     return true; // Handle all errors as a fallback

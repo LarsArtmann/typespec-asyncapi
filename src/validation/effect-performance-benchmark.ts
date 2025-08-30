@@ -119,7 +119,7 @@ const generateTestCases = () => {
 };
 
 // BENCHMARK RUNNER
-interface BenchmarkResult {
+type BenchmarkResult = {
   operation: string;
   testCase: string;
   duration: number;
