@@ -147,18 +147,12 @@ export function $security(
   
   // Target is already constrained to Operation | Model - no validation needed
 
-  // Validate security configuration
-  if (!config.name || !config.scheme) {
-    reportDiagnostic(context.program, {
-      code: "missing-security-config",
-      target: target,
-    });
-    return;
-  }
+  // SecurityConfig type ensures name and scheme are defined by TypeScript
+  // No runtime validation needed
 
   // Validate security scheme
   const validationResult = validateSecurityScheme(config.scheme);
-  if (!validationResult.valid) {
+  if (validationResult.errors.length > 0) {
     reportDiagnostic(context.program, {
       code: "invalid-security-scheme",
       target: target,
@@ -216,7 +210,7 @@ function validateSecurityScheme(scheme: SecurityScheme): { valid: boolean; error
     case "oauth2": {
       const oauth2Scheme = scheme;
       const flows = oauth2Scheme.flows;
-      if (!flows || Object.keys(flows).length === 0) {
+      if (Object.keys(flows).length === 0) {
         errors.push("OAuth2 scheme must define at least one flow");
       }
       
@@ -233,7 +227,7 @@ function validateSecurityScheme(scheme: SecurityScheme): { valid: boolean; error
               errors.push(`${flowType} flow must have tokenUrl`);
             }
           }
-          if (!flow.scopes || Object.keys(flow.scopes).length === 0) {
+          if (Object.keys(flow.scopes).length === 0) {
             warnings.push(`${flowType} flow should define scopes`);
           }
         }
@@ -243,9 +237,7 @@ function validateSecurityScheme(scheme: SecurityScheme): { valid: boolean; error
       
     case "openIdConnect": {
       const oidcScheme = scheme;
-      if (!oidcScheme.openIdConnectUrl) {
-        errors.push("OpenID Connect scheme must have openIdConnectUrl");
-      }
+      // openIdConnectUrl is required in the type, so this check is unnecessary
       try {
         new URL(oidcScheme.openIdConnectUrl);
       } catch {

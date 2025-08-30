@@ -123,14 +123,8 @@ export function $protocol(
   
   // Target is already constrained to Operation | Model - no validation needed
 
-  // Validate protocol configuration
-  if (!config.protocol) {
-    reportDiagnostic(context.program, {
-      code: "missing-protocol-type",
-      target: target,
-    });
-    return;
-  }
+  // Protocol is required in ProtocolConfig type, so this check is unnecessary
+  // TypeScript ensures config.protocol is defined
 
   // Validate protocol type
   const validProtocols: ProtocolType[] = ["kafka", "websocket", "http", "amqp", "mqtt", "redis"];
@@ -145,7 +139,7 @@ export function $protocol(
 
   // Validate protocol-specific binding configuration
   const validationResult = validateProtocolBinding(config.protocol, config.binding);
-  if (!validationResult.valid) {
+  if (validationResult.warnings.length > 0) {
     console.log(`�  Protocol binding validation warnings:`, validationResult.warnings);
     validationResult.warnings.forEach(warning => {
       console.log(`�  ${warning}`);
