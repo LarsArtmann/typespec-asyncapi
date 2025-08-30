@@ -61,10 +61,10 @@ export abstract class BaseAsyncAPIError extends Error {
   readonly timestamp: Date;
   
   // Optional context data
-  readonly additionalData?: Record<string, unknown>;
-  readonly recoveryHint?: string;
-  readonly causedBy?: BaseAsyncAPIError;
-  readonly relatedErrors?: BaseAsyncAPIError[];
+  readonly additionalData?: Record<string, unknown> | undefined;
+  readonly recoveryHint?: string | undefined;
+  readonly causedBy?: BaseAsyncAPIError | undefined;
+  readonly relatedErrors?: BaseAsyncAPIError[] | undefined;
   
   constructor({
     what,
@@ -92,10 +92,10 @@ export abstract class BaseAsyncAPIError extends Error {
     operation: string;
     recoveryStrategy?: RecoveryStrategy;
     canRecover?: boolean;
-    additionalData?: Record<string, unknown>;
-    recoveryHint?: string;
-    causedBy?: BaseAsyncAPIError;
-    relatedErrors?: BaseAsyncAPIError[];
+    additionalData?: Record<string, unknown> | undefined;
+    recoveryHint?: string | undefined;
+    causedBy?: BaseAsyncAPIError | undefined;
+    relatedErrors?: BaseAsyncAPIError[] | undefined;
   }) {
     // Call Error constructor with the "what" message for Error base class compatibility
     super(what);
@@ -122,18 +122,18 @@ export abstract class BaseAsyncAPIError extends Error {
     this.errorId = this.generateErrorId();
     this.timestamp = new Date();
     
-    // Set optional context  
+    // Set optional context using Object.defineProperty for readonly fields
     if (additionalData) {
-      this.additionalData = { ...additionalData };
+      Object.defineProperty(this, 'additionalData', { value: { ...additionalData }, writable: false, enumerable: true });
     }
     if (recoveryHint) {
-      this.recoveryHint = recoveryHint;
+      Object.defineProperty(this, 'recoveryHint', { value: recoveryHint, writable: false, enumerable: true });
     }
     if (causedBy) {
-      this.causedBy = causedBy;
+      Object.defineProperty(this, 'causedBy', { value: causedBy, writable: false, enumerable: true });
     }
     if (relatedErrors) {
-      this.relatedErrors = [...relatedErrors];
+      Object.defineProperty(this, 'relatedErrors', { value: [...relatedErrors], writable: false, enumerable: true });
     }
     
     // Capture stack trace if available (V8 specific)
@@ -155,7 +155,7 @@ export abstract class BaseAsyncAPIError extends Error {
    * Get comprehensive error context for logging/debugging
    */
   getErrorContext(): ErrorContext {
-    const context: Partial<ErrorContext> & Pick<ErrorContext, 'errorId' | 'timestamp' | 'severity' | 'category' | 'what' | 'reassure' | 'why' | 'fix' | 'escape' | 'operation' | 'recoveryStrategy' | 'canRecover'> = {
+    return {
       errorId: this.errorId,
       timestamp: this.timestamp,
       severity: this.severity,
@@ -167,27 +167,13 @@ export abstract class BaseAsyncAPIError extends Error {
       escape: this.escape,
       operation: this.operation,
       recoveryStrategy: this.recoveryStrategy,
-      canRecover: this.canRecover
+      canRecover: this.canRecover,
+      ...(this.stack && { stackTrace: this.stack }),
+      ...(this.additionalData && { additionalData: this.additionalData }),
+      ...(this.recoveryHint && { recoveryHint: this.recoveryHint }),
+      ...(this.causedBy && { causedBy: this.causedBy.getErrorContext() }),
+      ...(this.relatedErrors && { relatedErrors: this.relatedErrors.map(e => e.getErrorContext()) })
     };
-    
-    // Add optional fields only if they exist
-    if (this.stack) {
-      context.stackTrace = this.stack;
-    }
-    if (this.additionalData) {
-      context.additionalData = this.additionalData;
-    }
-    if (this.recoveryHint) {
-      context.recoveryHint = this.recoveryHint;
-    }
-    if (this.causedBy) {
-      context.causedBy = this.causedBy.getErrorContext();
-    }
-    if (this.relatedErrors) {
-      context.relatedErrors = this.relatedErrors.map(e => e.getErrorContext());
-    }
-    
-    return context as ErrorContext;
   }
   
   /**
@@ -249,11 +235,11 @@ export interface ErrorContext {
   readonly operation: string;
   readonly recoveryStrategy: RecoveryStrategy;
   readonly canRecover: boolean;
-  readonly stackTrace?: string;
-  readonly additionalData?: Record<string, unknown>;
-  readonly recoveryHint?: string;
-  readonly causedBy?: ErrorContext;
-  readonly relatedErrors?: ErrorContext[];
+  readonly stackTrace?: string | undefined;
+  readonly additionalData?: Record<string, unknown> | undefined;
+  readonly recoveryHint?: string | undefined;
+  readonly causedBy?: ErrorContext | undefined;
+  readonly relatedErrors?: ErrorContext[] | undefined;
 }
 
 /**
@@ -288,6 +274,6 @@ export function errorToContext(error: Error, operation: string, category: ErrorC
     operation,
     recoveryStrategy: "abort" as const,
     canRecover: false,
-    stackTrace: error.stack
+    ...(error.stack ? { stackTrace: error.stack } : {})
   };
 }

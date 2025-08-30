@@ -45,7 +45,7 @@ export class EmitterInitializationError extends BaseAsyncAPIError {
       operation,
       recoveryStrategy: fallbackMode ? "fallback" : "abort",
       canRecover: !!fallbackMode,
-      recoveryHint: fallbackMode,
+      ...(fallbackMode && { recoveryHint: fallbackMode }),
       additionalData: { component, issue, fallbackMode }
     });
   }
@@ -133,7 +133,7 @@ export class OutputGenerationError extends BaseAsyncAPIError {
       operation,
       recoveryStrategy: partialOutput ? "degrade" : "abort",
       canRecover: !!partialOutput,
-      recoveryHint: partialOutput ? "Partial output will be saved" : undefined,
+      ...(partialOutput && { recoveryHint: "Partial output will be saved" }),
       additionalData: { outputType, issue, partialOutput }
     });
   }

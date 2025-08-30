@@ -46,7 +46,7 @@ export class FileSystemError extends BaseAsyncAPIError {
       canRecover: true,
       recoveryHint: fallbackPath ? `Fallback: ${fallbackPath}` : "Memory storage",
       additionalData: { path, originalError: originalError.message, fallbackPath },
-      causedBy: originalError instanceof BaseAsyncAPIError ? originalError : undefined
+      ...(originalError instanceof BaseAsyncAPIError && { causedBy: originalError })
     });
   }
 }

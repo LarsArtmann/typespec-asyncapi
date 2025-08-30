@@ -34,6 +34,7 @@ export type ErrorCategory =
   | "memory"            // Memory/performance issues
   | "network"           // External service failures
   | "security"          // Security-related errors
+  | "emitter"           // Emitter initialization/operation errors
   | "unknown";          // Catch-all for unclassified errors
 
 /**

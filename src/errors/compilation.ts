@@ -23,6 +23,8 @@ export class TypeSpecCompilationError extends BaseAsyncAPIError {
     operation: string;
     severity?: ErrorSeverity;
   }) {
+    const sourceLocation = TypeSpecCompilationError.extractSourceLocationStatic(diagnostic);
+    
     super({
       what: `TypeSpec compilation failed: ${diagnostic.message}`,
       reassure: "Compilation errors indicate syntax or semantic issues in your TypeSpec files that can be fixed.",
@@ -43,12 +45,12 @@ export class TypeSpecCompilationError extends BaseAsyncAPIError {
         diagnosticCode: diagnostic.code,
         diagnosticMessage: diagnostic.message,
         target: diagnostic.target,
-        sourceLocation: this.extractSourceLocation(diagnostic)
+        sourceLocation
       }
     });
   }
   
-  private extractSourceLocation(diagnostic: Diagnostic): SourceLocation | undefined {
+  private static extractSourceLocationStatic(diagnostic: Diagnostic): SourceLocation | undefined {
     if (diagnostic.target && typeof diagnostic.target === 'object' && 'pos' in diagnostic.target && 'end' in diagnostic.target) {
       const target = diagnostic.target as any;
       return {
