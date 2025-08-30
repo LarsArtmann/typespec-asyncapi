@@ -1,5 +1,5 @@
 import type { Program, Diagnostic, SourceLocation } from "@typespec/compiler";
-import { reportDiagnostic } from "../lib.js";
+import { reportDiagnostic, $lib } from "../lib.js";
 import type { ErrorContext, ErrorSeverity } from "./index.js";
 
 /**
@@ -20,11 +20,11 @@ export function reportErrorContext(program: Program, errorContext: ErrorContext)
   const diagnosticCode = mapErrorCategoryToDiagnosticCode(errorContext.category);
   
   // Create comprehensive diagnostic message following What/Reassure/Why/Fix/Escape pattern
-  const message = formatDiagnosticMessage(errorContext);
+  // Note: Message is formatted in the diagnostic format parameter, not used directly
   
   reportDiagnostic(program, {
-    code: diagnosticCode,
-    target: errorContext.target,
+    code: diagnosticCode as keyof typeof $lib.diagnostics,
+    target: errorContext.target || program.getGlobalNamespaceType(),
     format: {
       errorId: errorContext.errorId,
       what: errorContext.what,
@@ -33,13 +33,13 @@ export function reportErrorContext(program: Program, errorContext: ErrorContext)
       escape: errorContext.escape,
       reassure: errorContext.reassure
     },
-    messageId: "comprehensive-error"
+    messageId: "default"
   });
   
   // Log additional debug information if available
   if (errorContext.stackTrace && program.host.logSink) {
     program.host.logSink.log({
-      level: "debug",
+      level: "trace" as const,
       message: `Stack trace for ${errorContext.errorId}: ${errorContext.stackTrace}`
     });
   }
@@ -76,42 +76,7 @@ function mapErrorCategoryToDiagnosticCode(category: string): string {
   }
 }
 
-/**
- * Format error context into user-friendly diagnostic message
- */
-function formatDiagnosticMessage(errorContext: ErrorContext): string {
-  const sections = [];
-  
-  // What happened (primary message)
-  sections.push(`🚨 ${errorContext.what}`);
-  
-  // Reassurance
-  sections.push(`💡 ${errorContext.reassure}`);
-  
-  // Why it happened
-  sections.push(`🔍 Root Cause: ${errorContext.why}`);
-  
-  // How to fix (actionable steps)
-  if (errorContext.fix.length > 0) {
-    sections.push(`🔧 Solutions:`);
-    errorContext.fix.forEach((step, index) => {
-      sections.push(`  ${index + 1}. ${step}`);
-    });
-  }
-  
-  // Escape hatch (workaround)
-  sections.push(`🚪 Workaround: ${errorContext.escape}`);
-  
-  // Recovery information
-  if (errorContext.canRecover && errorContext.recoveryHint) {
-    sections.push(`🔄 Recovery: ${errorContext.recoveryHint}`);
-  }
-  
-  // Error ID for tracking
-  sections.push(`📋 Error ID: ${errorContext.errorId}`);
-  
-  return sections.join("\n");
-}
+// formatDiagnosticMessage function removed as unused
 
 /**
  * Convert TypeSpec diagnostic severity to our error severity
@@ -133,11 +98,12 @@ export function mapDiagnosticSeverity(severity: "error" | "warning" | "info"): E
  * Extract source location information from TypeSpec diagnostic
  */
 export function extractSourceLocation(diagnostic: Diagnostic): SourceLocation | undefined {
-  if (diagnostic.target && 'pos' in diagnostic.target && 'end' in diagnostic.target) {
+  if (diagnostic.target && typeof diagnostic.target === 'object' && 'pos' in diagnostic.target && 'end' in diagnostic.target) {
+    const target = diagnostic.target as any;
     return {
-      file: diagnostic.target.pos?.file || diagnostic.target.end?.file,
-      pos: diagnostic.target.pos?.pos || 0,
-      end: diagnostic.target.end?.pos || 0
+      file: target.pos?.file || target.end?.file,
+      pos: target.pos?.pos || 0,
+      end: target.end?.pos || 0
     };
   }
   return undefined;

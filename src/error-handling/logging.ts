@@ -1,5 +1,5 @@
-import { Program } from "@typespec/compiler";
-import type { ErrorContext, ErrorSeverity, ErrorHandlingConfig } from "./index.js";
+import type { Program } from "@typespec/compiler";
+import type { ErrorContext, ErrorSeverity } from "./index.js";
 
 /**
  * STRUCTURED ERROR LOGGING SYSTEM
@@ -19,11 +19,11 @@ export interface LogEntry {
   readonly timestamp: Date;
   readonly level: ErrorSeverity;
   readonly message: string;
-  readonly errorId?: string;
-  readonly category?: string;
-  readonly operation?: string;
-  readonly context?: Record<string, unknown>;
-  readonly stackTrace?: string;
+  readonly errorId?: string | undefined;
+  readonly category?: string | undefined;
+  readonly operation?: string | undefined;
+  readonly context?: Record<string, unknown> | undefined;
+  readonly stackTrace?: string | undefined;
 }
 
 /**
@@ -109,7 +109,7 @@ export class ConsoleErrorLogger implements ErrorLogger {
         recoveryStrategy: error.recoveryStrategy,
         ...error.additionalData
       } : undefined,
-      stackTrace: this.config.includeStackTrace ? error.stackTrace : undefined
+      stackTrace: (this.config.includeStackTrace && error.stackTrace) ? error.stackTrace : undefined
     };
     
     this.log(entry);
@@ -299,12 +299,11 @@ export class TypeSpecHostLogger implements ErrorLogger {
     return [...this.entries];
   }
   
-  private mapSeverityToHostLevel(severity: ErrorSeverity): "debug" | "info" | "warning" | "error" {
+  private mapSeverityToHostLevel(severity: ErrorSeverity): "trace" | "warning" | "error" {
     switch (severity) {
       case "debug":
-        return "debug";
       case "info":
-        return "info";
+        return "trace";
       case "warning":
         return "warning";
       case "error":
@@ -354,7 +353,11 @@ export function log(level: ErrorSeverity, message: string, context?: Record<stri
     timestamp: new Date(),
     level,
     message,
-    context
+    errorId: undefined,
+    category: undefined,
+    operation: undefined,
+    context: context || undefined,
+    stackTrace: undefined
   });
 }
 

@@ -1,5 +1,4 @@
 import { Effect } from "effect";
-import type { Program, EmitContext } from "@typespec/compiler";
 import type { AsyncAPIEmitterOptions } from "../options.js";
 import type { 
   ErrorHandler, 
@@ -49,7 +48,7 @@ export class ValidationErrorHandler implements ErrorHandler<AsyncAPIEmitterOptio
         value: validationDetails.value,
         expected: validationDetails.expected,
         operation: context.operation || "validation",
-        target: context.target,
+        ...(context.target && { target: context.target }),
         recoveryValue: getDefaultValue(validationDetails.field)
       });
       
@@ -98,8 +97,8 @@ function parseValidationError(error: Error): ValidationDetails {
     if (match) {
       return {
         field: "unknown",
-        value: match[2],
-        expected: match[1]
+        value: match[2] ?? "unknown",
+        expected: match[1] ?? "unknown"
       };
     }
   }
@@ -109,7 +108,7 @@ function parseValidationError(error: Error): ValidationDetails {
   const field = fieldMatch ? fieldMatch[1] : "unknown";
   
   return {
-    field,
+    field: field ?? "unknown",
     value: "invalid",
     expected: "valid value"
   };
@@ -161,8 +160,8 @@ export class FileSystemErrorHandler implements ErrorHandler<string> {
            error.message.includes("EACCES") ||
            error.message.includes("EMFILE") ||
            error.message.includes("ENOSPC") ||
-           error.code === "ENOENT" ||
-           error.code === "EACCES";
+           (error as any).code === "ENOENT" ||
+           (error as any).code === "EACCES";
   }
   
   handle(
@@ -170,11 +169,11 @@ export class FileSystemErrorHandler implements ErrorHandler<string> {
     context: Partial<ErrorContext>
   ): Effect.Effect<ErrorHandlingResult<string>, never> {
     return Effect.gen(function* () {
-      const path = extractPathFromError(error) || context.additionalData?.path as string || "unknown";
+      const path = extractPathFromError(error) || (context.additionalData?.["path"] as string) || "unknown";
       const operation = context.operation || "file-operation";
       
       // Try to generate fallback path
-      const fallbackPath = generateFallbackPath(path, error);
+      const fallbackPath = generateFallbackPath(path, error) || "";
       
       const errorContext = createFileSystemError({
         path,
@@ -231,18 +230,18 @@ function extractPathFromError(error: Error): string | null {
   const match = error.message.match(/path '([^']+)'/) || 
                 error.message.match(/file '([^']+)'/) ||
                 error.message.match(/([^\s]+\/[^\s]+)/);
-  return match ? match[1] : null;
+  return match ? match[1] ?? null : null;
 }
 
 function generateFallbackPath(originalPath: string, error: Error): string | null {
-  if (error.code === "ENOENT") {
+  if ((error as any).code === "ENOENT") {
     // Try parent directory with different name
     const dir = originalPath.split('/').slice(0, -1).join('/');
     const filename = originalPath.split('/').pop();
     return `${dir}/fallback-${filename}`;
   }
   
-  if (error.code === "EACCES") {
+  if ((error as any).code === "EACCES") {
     // Try temp directory
     return `/tmp/${originalPath.split('/').pop()}`;
   }
@@ -285,12 +284,12 @@ export class SchemaGenerationErrorHandler implements ErrorHandler<Record<string,
       const typeName = extractTypeNameFromError(error) || "unknown";
       const issue = error.message;
       
-      const errorContext = createSchemaError({
+      createSchemaError({
         typeName,
         issue,
         operation: context.operation || "schema-generation",
-        target: context.target,
-        source: context.source
+        ...(context.target && { target: context.target }),
+        ...(context.source && { source: context.source })
       });
       
       // Try to generate fallback schema
@@ -327,7 +326,7 @@ function extractTypeNameFromError(error: Error): string | null {
   const match = error.message.match(/type '([^']+)'/) ||
                 error.message.match(/model '([^']+)'/) ||
                 error.message.match(/for ([A-Za-z][A-Za-z0-9_]*)/); 
-  return match ? match[1] : null;
+  return match ? match[1] ?? null : null;
 }
 
 function generateFallbackSchema(typeName: string, error: Error): Record<string, unknown> | null {
@@ -376,7 +375,7 @@ export class PerformanceErrorHandler implements ErrorHandler<boolean> {
     return Effect.gen(function* () {
       const { metric, actual, threshold } = parsePerformanceError(error);
       
-      const errorContext = createPerformanceError({
+      createPerformanceError({
         metric,
         actual,
         threshold,
@@ -413,7 +412,7 @@ function parsePerformanceError(error: Error): { metric: string; actual: number; 
     const match = error.message.match(/(\d+)ms/);
     return {
       metric: "execution time",
-      actual: match ? parseInt(match[1]) : 0,
+      actual: match ? parseInt(match[1] ?? "0") : 0,
       threshold: 30000
     };
   }
@@ -471,7 +470,7 @@ export class CompilationErrorHandler implements ErrorHandler<null> {
           message: error.message,
           severity: "error" as const,
           target: context.target
-        } as ErrorCategory,
+        } as any,
         operation: context.operation || "compilation"
       });
       
@@ -512,15 +511,16 @@ export class ErrorHandlerRegistry {
   }
   
   findHandler<T>(error: Error): ErrorHandler<T> | null {
-    return this.handlers.find(h => h.canHandle(error)) || null;
+    return (this.handlers.find(h => h.canHandle(error)) as ErrorHandler<T>) || null;
   }
   
   handleError<T>(
     error: Error,
     context: Partial<ErrorContext>
   ): Effect.Effect<ErrorHandlingResult<T>, never> {
+    const self = this;
     return Effect.gen(function* () {
-      const handler = this.findHandler<T>(error);
+      const handler = self.findHandler<T>(error);
       
       if (handler) {
         return yield* handler.handle(error, context);

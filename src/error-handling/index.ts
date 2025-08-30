@@ -1,6 +1,5 @@
-import { Diagnostic, Program, DiagnosticTarget, SourceLocation } from "@typespec/compiler";
-import { Effect, Schema } from "effect";
-import type { AsyncAPIEmitterOptions } from "../options.js";
+import type { Diagnostic, DiagnosticTarget, SourceLocation } from "@typespec/compiler";
+import { Effect } from "effect";
 
 /**
  * COMPREHENSIVE ERROR HANDLING FRAMEWORK
@@ -89,14 +88,14 @@ export interface ErrorContext {
  */
 export interface ErrorHandlingResult<T> {
   readonly success: boolean;
-  readonly result?: T;
-  readonly error?: ErrorContext;
+  readonly result?: T | undefined;
+  readonly error?: ErrorContext | undefined;
   readonly recovery?: {
     readonly attempted: boolean;
     readonly successful: boolean;
     readonly strategy: RecoveryStrategy;
-    readonly fallbackResult?: T;
-  };
+    readonly fallbackResult?: T | undefined;
+  } | undefined;
 }
 
 /**
@@ -161,18 +160,18 @@ export function createErrorContext({
   why: string;
   fix: string[];
   escape: string;
-  severity?: ErrorSeverity;
-  category?: ErrorCategory;
+  severity?: ErrorSeverity | undefined;
+  category?: ErrorCategory | undefined;
   operation: string;
-  source?: SourceLocation;
-  target?: DiagnosticTarget;
-  stackTrace?: string;
-  additionalData?: Record<string, unknown>;
-  recoveryStrategy?: RecoveryStrategy;
-  canRecover?: boolean;
-  recoveryHint?: string;
-  causedBy?: ErrorContext;
-  relatedErrors?: ErrorContext[];
+  source?: SourceLocation | undefined;
+  target?: DiagnosticTarget | undefined;
+  stackTrace?: string | undefined;
+  additionalData?: Record<string, unknown> | undefined;
+  recoveryStrategy?: RecoveryStrategy | undefined;
+  canRecover?: boolean | undefined;
+  recoveryHint?: string | undefined;
+  causedBy?: ErrorContext | undefined;
+  relatedErrors?: ErrorContext[] | undefined;
 }): ErrorContext {
   return {
     errorId: generateErrorId(),
@@ -185,15 +184,15 @@ export function createErrorContext({
     fix,
     escape,
     operation,
-    source,
-    target,
-    stackTrace,
-    additionalData,
     recoveryStrategy,
     canRecover,
-    recoveryHint,
-    causedBy,
-    relatedErrors
+    ...(source && { source }),
+    ...(target && { target }),
+    ...(stackTrace && { stackTrace }),
+    ...(additionalData && { additionalData }),
+    ...(recoveryHint && { recoveryHint }),
+    ...(causedBy && { causedBy }),
+    ...(relatedErrors && { relatedErrors })
   };
 }
 
@@ -232,7 +231,7 @@ export function createValidationError({
     severity: "error",
     category: "validation",
     operation,
-    target,
+    ...(target && { target }),
     recoveryStrategy: recoveryValue ? "default" : "prompt",
     canRecover: true,
     recoveryHint: recoveryValue ? `Using default: ${JSON.stringify(recoveryValue)}` : undefined,
@@ -270,7 +269,7 @@ export function createFileSystemError({
     severity: "error",
     category: "file-system",
     operation,
-    stackTrace: originalError.stack,
+    ...(originalError.stack && { stackTrace: originalError.stack }),
     recoveryStrategy: fallbackPath ? "fallback" : "cache",
     canRecover: true,
     recoveryHint: fallbackPath ? `Fallback: ${fallbackPath}` : "Memory storage",
@@ -308,8 +307,8 @@ export function createSchemaError({
     severity: "error",
     category: "schema-generation",
     operation,
-    target,
-    source,
+    ...(target && { target }),
+    ...(source && { source }),
     recoveryStrategy: "skip",
     canRecover: true,
     recoveryHint: "Type will be documented as unsupported",
@@ -341,7 +340,7 @@ export function createCompilationError({
     severity: diagnostic.severity,
     category: "compilation",
     operation,
-    target: diagnostic.target,
+    ...(diagnostic.target && typeof diagnostic.target === 'object' && { target: diagnostic.target }),
     recoveryStrategy: "abort",
     canRecover: false,
     additionalData: { 
@@ -425,12 +424,14 @@ export function withErrorHandling<T>(
         return {
           success: true,
           result,
+          error: undefined,
           recovery: attempt > 0 ? {
             attempted: true,
             successful: true,
-            strategy: "retry" as const
+            strategy: "retry" as const,
+            fallbackResult: undefined
           } : undefined
-        };
+        } as ErrorHandlingResult<T>;
       } catch (error) {
         const errorContext = createErrorFromException(
           error as Error,
@@ -447,13 +448,14 @@ export function withErrorHandling<T>(
             return {
               success: true,
               result: recoveryResult.result!,
+              error: undefined,
               recovery: {
                 attempted: true,
                 successful: true,
                 strategy: errorContext.recoveryStrategy,
                 fallbackResult: recoveryResult.result
               }
-            };
+            } as ErrorHandlingResult<T>;
           }
         }
         
@@ -470,25 +472,29 @@ export function withErrorHandling<T>(
     
     return {
       success: false,
+      result: undefined,
       error: lastError,
       recovery: {
         attempted: true,
         successful: false,
-        strategy: lastError?.recoveryStrategy || "abort"
+        strategy: lastError?.recoveryStrategy || "abort",
+        fallbackResult: undefined
       }
-    };
+    } as ErrorHandlingResult<T>;
   }).pipe(
     Effect.timeout(finalConfig.timeoutMs),
-    Effect.catchAll((timeoutError) => 
+    Effect.catchAll(() => 
       Effect.succeed({
         success: false,
+        result: undefined,
         error: createTimeoutError(context.operation || "unknown-operation", finalConfig.timeoutMs),
         recovery: {
           attempted: false,
           successful: false,
-          strategy: "abort" as const
+          strategy: "abort" as const,
+          fallbackResult: undefined
         }
-      })
+      } as ErrorHandlingResult<T>)
     )
   );
 }
@@ -503,10 +509,10 @@ function attemptRecovery<T>(
   return Effect.gen(function* () {
     switch (errorContext.recoveryStrategy) {
       case "default":
-        if (errorContext.additionalData?.recoveryValue !== undefined) {
+        if (errorContext.additionalData && 'recoveryValue' in errorContext.additionalData && errorContext.additionalData['recoveryValue'] !== undefined) {
           return {
             success: true,
-            result: errorContext.additionalData.recoveryValue as T
+            result: errorContext.additionalData['recoveryValue'] as T
           };
         }
         break;
@@ -549,7 +555,7 @@ function performFallback<T>(errorContext: ErrorContext): Effect.Effect<ErrorHand
   return Effect.gen(function* () {
     switch (errorContext.category) {
       case "file-system":
-        if (errorContext.additionalData?.fallbackPath) {
+        if (errorContext.additionalData && 'fallbackPath' in errorContext.additionalData && errorContext.additionalData['fallbackPath']) {
           // Try fallback path - this would need actual implementation
           return { success: false, error: errorContext };
         }
@@ -592,13 +598,18 @@ function createErrorFromException(
       "Report this issue if it persists"
     ],
     escape: "Operation will be aborted to prevent data corruption",
-    severity: "error",
-    category: "unknown",
+    severity: context.severity || "error",
+    category: context.category || "unknown",
     operation,
-    stackTrace: error.stack,
-    recoveryStrategy: "abort",
-    canRecover: false,
-    ...context
+    ...(error.stack && { stackTrace: error.stack }),
+    recoveryStrategy: context.recoveryStrategy || "abort",
+    canRecover: context.canRecover ?? false,
+    ...(context.target && { target: context.target }),
+    ...(context.source && { source: context.source }),
+    ...(context.additionalData && { additionalData: context.additionalData }),
+    ...(context.recoveryHint && { recoveryHint: context.recoveryHint }),
+    ...(context.causedBy && { causedBy: context.causedBy }),
+    ...(context.relatedErrors && { relatedErrors: context.relatedErrors })
   });
 }
 

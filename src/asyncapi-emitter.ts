@@ -1,5 +1,5 @@
 import type { EmitContext, Operation, Model, Program, Namespace, ModelProperty } from "@typespec/compiler";
-import { createAssetEmitter, TypeEmitter, type AssetEmitter, type SourceFile } from "@typespec/asset-emitter";
+import { createAssetEmitter, TypeEmitter, type AssetEmitter, type SourceFile, type EmittedSourceFile } from "@typespec/asset-emitter";
 import { emitFile, getDoc } from "@typespec/compiler";
 import { stringify } from "yaml";
 import { dirname } from "node:path";
@@ -44,13 +44,13 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
     this.asyncApiDoc = this.createAsyncAPIDocument([]);
   }
 
-  programContext(_program: Program): Record<string, unknown> {
+  override programContext(_program: Program): Record<string, unknown> {
     return {
       program: "AsyncAPI",
     };
   }
 
-  async writeOutput(_sourceFiles: SourceFile<string>[]): Promise<void> {
+  override async writeOutput(_sourceFiles: SourceFile<string>[]): Promise<void> {
     // Discover all operations from the program
     this.operations = this.discoverOperations(this.emitter.getProgram());
     this.asyncApiDoc = this.createAsyncAPIDocument(this.operations);
@@ -64,15 +64,15 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
     await this.generateOutputFile();
   }
 
-  async sourceFile(_sourceFile: SourceFile<string>): Promise<{ path: string; content: string }> {
+  override async sourceFile(_sourceFile: SourceFile<string>): Promise<EmittedSourceFile> {
     // For AssetEmitter compatibility, return the raw content directly
     const options = this.emitter.getOptions();
     const program = this.emitter.getProgram();
     const content = this.generateContent(options["file-type"] || "yaml", program);
     
     return {
-      path: sourceFile.path,
-      content: content,
+      path: _sourceFile.path,
+      contents: content,
     };
   }
 
