@@ -1,7 +1,6 @@
 import type {EmitContext} from "@typespec/compiler"
 import {$lib} from "./lib.js"
 import type {AsyncAPIEmitterOptions} from "./options.js"
-import {generateAsyncAPI} from "./asyncapi-emitter.js"
 import {generateAsyncAPIWithEffect} from "./emitter-with-effect.js"
 
 export {$lib} from "./lib.js" // Re-exported for TypeSpec compiler to access library
@@ -26,22 +25,15 @@ export * from "./decorators/index.js"
  */
 export async function $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): Promise<void> {
 	console.log("🎯 TYPESPEC ASYNCAPI EMITTER STARTED")
-	console.log("✨ INTEGRATED: Effect.TS + asyncapi-validator")
+	console.log("✨ INTEGRATED: Effect.TS + asyncapi-validator + Performance Monitoring")
 	console.log(`📁 Output directory: ${context.emitterOutputDir}`)
 	console.log(`🔧 Program has ${context.program.sourceFiles.size || 0} source files`)
 	console.log(`🌍 Global namespace: ${context.program.getGlobalNamespaceType().name || 'unknown'}`)
 
-	const useEffect = context.options["use-effect"] ?? true; // Default to Effect.TS version
-	
-	if (useEffect) {
-		console.log("🚀 Using Effect.TS integrated emitter with validation")
-		await generateAsyncAPIWithEffect(context)
-	} else {
-		console.log("📦 Using legacy emitter (no validation)")
-		await generateAsyncAPI(context)
-	}
+	console.log("🚀 Using Effect.TS integrated emitter with full performance monitoring")
+	await generateAsyncAPIWithEffect(context)
 
-	console.log("🎉 AsyncAPI generation complete!")
+	console.log("🎉 AsyncAPI generation complete with performance monitoring!")
 }
 
 /**

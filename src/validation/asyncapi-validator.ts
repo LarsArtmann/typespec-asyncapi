@@ -59,18 +59,11 @@ export type ValidationStats = {
  */
 export class AsyncAPIValidator {
   private readonly parser: Parser;
-  private readonly options: ValidationOptions;
   private readonly stats: ValidationStats;
   private initialized = false;
 
-  constructor(options: ValidationOptions = {}) {
-    this.options = {
-      strict: true,
-      enableCache: true,
-      benchmarking: false,
-      customRules: [],
-      ...options,
-    };
+  constructor(_options: ValidationOptions = {}) {
+    // Options parameter is available for future use but not currently needed
 
     this.stats = {
       totalValidations: 0,

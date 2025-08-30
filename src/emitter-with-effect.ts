@@ -23,13 +23,11 @@ import { validateAsyncAPIEffect, type ValidationError } from "./validation/async
 import { $lib } from "./lib.js";
 import { 
   PerformanceMetricsService, 
-  PerformanceMetricsServiceLive,
-  type ThroughputResult 
+  PerformanceMetricsServiceLive
 } from "./performance/metrics.js";
 import {
   MemoryMonitorService,
-  MemoryMonitorServiceLive,
-  withMemoryTracking
+  MemoryMonitorServiceLive
 } from "./performance/memory-monitor.js";
 
 // AsyncAPI document types
@@ -89,23 +87,85 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
   }
 
   override async writeOutput(): Promise<void> {
-    // Use Effect.TS for the entire emission pipeline
+    // Use Effect.TS for the entire emission pipeline with performance monitoring
     const emitProgram = pipe(
-      this.discoverOperationsEffect(),
-      Effect.flatMap(ops => this.processOperationsEffect(ops)),
-      Effect.flatMap(() => this.generateDocumentEffect()),
-      Effect.flatMap(doc => this.validateDocumentEffect(doc)),
-      Effect.flatMap(doc => this.writeDocumentEffect(doc)),
+      Effect.gen((function* (this: AsyncAPIEffectEmitter) {
+        const metricsService = yield* PerformanceMetricsService;
+        const memoryMonitor = yield* MemoryMonitorService;
+        
+        console.log(`🚀 Starting AsyncAPI emission pipeline with comprehensive performance monitoring...`);
+        
+        // Start overall pipeline measurement
+        const overallMeasurement = yield* metricsService.startMeasurement("emission_pipeline");
+        
+        // Start continuous memory monitoring during emission
+        yield* memoryMonitor.startMonitoring(5000); // Monitor every 5 seconds
+        
+        // Execute the emission stages
+        const ops = yield* this.discoverOperationsEffect();
+        yield* this.processOperationsEffect(ops);
+        const doc = yield* this.generateDocumentEffect();
+        const validatedDoc = yield* this.validateDocumentEffect(doc);
+        yield* this.writeDocumentEffect(validatedDoc);
+        
+        // Stop memory monitoring
+        yield* memoryMonitor.stopMonitoring();
+        
+        // Record overall pipeline performance
+        const overallResult = yield* metricsService.recordThroughput(overallMeasurement, this.operations.length);
+        
+        // Generate comprehensive performance reports
+        console.log(`\n🎯 === COMPREHENSIVE PERFORMANCE REPORT ===`);
+        console.log(`📊 Pipeline Performance:`);
+        console.log(`  - Total Operations Processed: ${this.operations.length}`);
+        console.log(`  - Overall Throughput: ${overallResult.operationsPerSecond.toFixed(0)} ops/sec`);
+        console.log(`  - Total Duration: ${overallResult.totalDuration.toFixed(2)} ms`);
+        console.log(`  - Average Memory/Operation: ${overallResult.averageMemoryPerOperation.toFixed(0)} bytes`);
+        console.log(`  - Memory Efficiency: ${(overallResult.memoryEfficiency * 100).toFixed(1)}%`);
+        
+        // Generate detailed performance report
+        const performanceReport = yield* metricsService.generatePerformanceReport();
+        const memoryReport = yield* memoryMonitor.generateMemoryReport();
+        
+        console.log(`\n📋 Detailed Performance Analysis:`);
+        console.log(performanceReport);
+        
+        console.log(`\n🧠 Memory Usage Analysis:`);
+        console.log(memoryReport);
+        
+        // Get final metrics summary
+        const metricsSummary = yield* metricsService.getMetricsSummary();
+        const memoryMetrics = yield* memoryMonitor.getMemoryMetrics();
+        
+        console.log(`\n📈 Final Metrics Summary:`);
+        console.log(`  Performance Metrics:`, metricsSummary);
+        console.log(`  Memory Metrics:`, memoryMetrics);
+        
+        console.log(`\n✅ AsyncAPI emission pipeline completed with full performance monitoring!`);
+      }).bind(this)),
       Effect.catchAll(error => 
         Effect.gen(function* () {
-          yield* Console.error(`❌ Emission failed: ${error}`);
+          yield* Console.error(`❌ Emission pipeline failed: ${error}`);
+          // Try to stop monitoring if it was started
+          yield* MemoryMonitorService.pipe(
+            Effect.flatMap(monitor => monitor.stopMonitoring()),
+            Effect.ignore
+          );
           throw error;
         })
       )
     );
 
-    // Run the Effect pipeline
-    await Effect.runPromise(emitProgram);
+    // Create the performance layers and run the pipeline with them
+    const performanceLayers = Layer.merge(
+      PerformanceMetricsServiceLive,
+      MemoryMonitorServiceLive
+    );
+    
+    // Run the Effect pipeline with performance monitoring
+    await Effect.runPromise(
+      Effect.provide(emitProgram, performanceLayers)
+    );
   }
 
   /**
@@ -161,14 +221,19 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
   }
 
   /**
-   * Process operations using Effect.TS
+   * Process operations using Effect.TS with performance monitoring
    */
-  private processOperationsEffect(operations: Operation[]): Effect.Effect<void, Error> {
+  private processOperationsEffect(operations: Operation[]): Effect.Effect<void, Error, PerformanceMetricsService | MemoryMonitorService> {
     return Effect.gen((function* (this: AsyncAPIEffectEmitter) {
-      console.log(`🏗️ Processing ${operations.length} operations...`);
+      const metricsService = yield* PerformanceMetricsService;
+      const memoryMonitor = yield* MemoryMonitorService;
+      
+      // Start performance measurement for processing stage
+      const measurement = yield* metricsService.startMeasurement("operation_processing");
+      console.log(`🏗️ Processing ${operations.length} operations with performance monitoring...`);
       
       for (const op of operations) {
-        yield* Effect.sync(() => {
+        const singleOpProcessing = Effect.sync(() => {
           // Get data from decorators
           const program = this.emitter.getProgram();
           const operationTypesMap = program.stateMap($lib.stateKeys.operationTypes);
@@ -228,88 +293,159 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
           }
           
           console.log(`✅ Processed operation: ${op.name} (${action})`);
+          return op.name;
         });
+        
+        // Execute each operation processing with memory tracking
+        yield* memoryMonitor.measureOperationMemory(
+          singleOpProcessing,
+          `operation_processing_${op.name}`
+        );
       }
       
+      // Record throughput metrics for processing stage
+      const throughputResult = yield* metricsService.recordThroughput(measurement, operations.length);
+      console.log(`📊 Processing stage completed: ${throughputResult.operationsPerSecond.toFixed(0)} ops/sec, ${throughputResult.averageMemoryPerOperation.toFixed(0)} bytes/op`);
       console.log(`📊 Processed ${operations.length} operations successfully`);
     }).bind(this));
   }
 
   /**
-   * Generate the final document using Effect.TS
+   * Generate the final document using Effect.TS with performance monitoring
    */
-  private generateDocumentEffect(): Effect.Effect<string, Error> {
-    return Effect.sync(() => {
-      const options = this.emitter.getOptions();
-      const fileType = options["file-type"] ?? "yaml";
+  private generateDocumentEffect(): Effect.Effect<string, Error, PerformanceMetricsService | MemoryMonitorService> {
+    return Effect.gen((function* (this: AsyncAPIEffectEmitter) {
+      const metricsService = yield* PerformanceMetricsService;
+      const memoryMonitor = yield* MemoryMonitorService;
       
-      // Update info with actual stats
-      this.asyncApiDoc.info.description = 
-        `Generated from TypeSpec with ${this.operations.length} operations`;
+      // Start performance measurement for document generation stage
+      const measurement = yield* metricsService.startMeasurement("document_generation");
+      console.log(`📄 Generating AsyncAPI document with performance monitoring...`);
       
-      let content: string;
-      if (fileType === "json") {
-        content = JSON.stringify(this.asyncApiDoc, null, 2);
-      } else {
-        content = stringify(this.asyncApiDoc);
-      }
-      
-      console.log(`📄 Generated ${fileType.toUpperCase()} document (${content.length} bytes)`);
-      return content;
-    });
-  }
-
-  /**
-   * Validate the document using asyncapi-validator
-   */
-  private validateDocumentEffect(content: string): Effect.Effect<string, Error> {
-    return Effect.gen(function* () {
-      console.log(`🔍 Validating AsyncAPI document...`);
-      
-      // Use the REAL asyncapi-validator!
-      const validation = yield* validateAsyncAPIEffect(content);
-      
-      if (!validation.valid) {
-        console.error(`❌ AsyncAPI validation FAILED:`);
-        validation.errors.forEach((err: ValidationError) => {
-          console.error(`  - ${err.message}`);
-        });
-        
-        // Fail the Effect pipeline if validation fails
-        return yield* Effect.fail(new Error(`AsyncAPI validation failed with ${validation.errors.length} errors`));
-      } else {
-        console.log(`✅ AsyncAPI document is VALID!`);
-      }
-      
-      return content;
-    });
-  }
-
-  /**
-   * Write the document to file using Effect.TS
-   */
-  private writeDocumentEffect(content: string): Effect.Effect<void, Error> {
-    return Effect.tryPromise({
-      try: async () => {
+      const documentGeneration = Effect.sync(() => {
         const options = this.emitter.getOptions();
-        const program = this.emitter.getProgram();
         const fileType = options["file-type"] ?? "yaml";
-        const outputFile = options["output-file"] ?? `asyncapi.${fileType}`;
         
-        await emitFile(program, {
-          path: outputFile,
-          content
-        });
+        // Update info with actual stats
+        this.asyncApiDoc.info.description = 
+          `Generated from TypeSpec with ${this.operations.length} operations`;
         
-        console.log(`✅ Written AsyncAPI to: ${outputFile}`);
-        console.log(`📊 Final stats:`);
-        console.log(`  - Operations: ${Object.keys(this.asyncApiDoc.operations).length}`);
-        console.log(`  - Channels: ${Object.keys(this.asyncApiDoc.channels).length}`);
-        console.log(`  - Schemas: ${Object.keys(this.asyncApiDoc.components.schemas).length}`);
-        console.log(`  - Messages: ${Object.keys(this.asyncApiDoc.components.messages).length}`);
-      },
-      catch: (error) => new Error(`Failed to write output: ${error}`)
-    });
+        let content: string;
+        if (fileType === "json") {
+          content = JSON.stringify(this.asyncApiDoc, null, 2);
+        } else {
+          content = stringify(this.asyncApiDoc);
+        }
+        
+        console.log(`📄 Generated ${fileType.toUpperCase()} document (${content.length} bytes)`);
+        return content;
+      });
+      
+      // Execute document generation with memory tracking
+      const { result: content } = yield* memoryMonitor.measureOperationMemory(
+        documentGeneration,
+        "document_generation"
+      );
+      
+      // Record throughput metrics for document generation stage
+      const throughputResult = yield* metricsService.recordThroughput(measurement, 1); // 1 document generated
+      console.log(`📊 Document generation completed: ${throughputResult.averageLatencyMicroseconds.toFixed(2)} μs, ${throughputResult.averageMemoryPerOperation.toFixed(0)} bytes`);
+      
+      return content;
+    }).bind(this));
+  }
+
+  /**
+   * Validate the document using asyncapi-validator with performance monitoring
+   */
+  private validateDocumentEffect(content: string): Effect.Effect<string, Error, PerformanceMetricsService | MemoryMonitorService> {
+    return Effect.gen((function* (this: AsyncAPIEffectEmitter) {
+      const metricsService = yield* PerformanceMetricsService;
+      const memoryMonitor = yield* MemoryMonitorService;
+      
+      // Start performance measurement for validation stage
+      const measurement = yield* metricsService.startMeasurement("document_validation");
+      console.log(`🔍 Validating AsyncAPI document with performance monitoring...`);
+      
+      const validationOperation = Effect.gen(function* () {
+        // Use the REAL asyncapi-validator!
+        const validation = yield* validateAsyncAPIEffect(content);
+        
+        if (!validation.valid) {
+          console.error(`❌ AsyncAPI validation FAILED:`);
+          validation.errors.forEach((err: ValidationError) => {
+            console.error(`  - ${err.message}`);
+          });
+          
+          // Fail the Effect pipeline if validation fails
+          return yield* Effect.fail(new Error(`AsyncAPI validation failed with ${validation.errors.length} errors`));
+        } else {
+          console.log(`✅ AsyncAPI document is VALID!`);
+        }
+        
+        return content;
+      });
+      
+      // Execute validation with memory tracking
+      const { result: validatedContent } = yield* memoryMonitor.measureOperationMemory(
+        validationOperation,
+        "document_validation"
+      );
+      
+      // Record throughput metrics for validation stage
+      const throughputResult = yield* metricsService.recordThroughput(measurement, 1); // 1 document validated
+      console.log(`📊 Validation stage completed: ${throughputResult.averageLatencyMicroseconds.toFixed(2)} μs, ${throughputResult.averageMemoryPerOperation.toFixed(0)} bytes`);
+      
+      return validatedContent;
+    }).bind(this));
+  }
+
+  /**
+   * Write the document to file using Effect.TS with performance monitoring
+   */
+  private writeDocumentEffect(content: string): Effect.Effect<void, Error, PerformanceMetricsService | MemoryMonitorService> {
+    return Effect.gen((function* (this: AsyncAPIEffectEmitter) {
+      const metricsService = yield* PerformanceMetricsService;
+      const memoryMonitor = yield* MemoryMonitorService;
+      
+      // Start performance measurement for document writing stage
+      const measurement = yield* metricsService.startMeasurement("document_writing");
+      console.log(`📁 Writing AsyncAPI document with performance monitoring...`);
+      
+      const writeOperation = Effect.tryPromise({
+        try: async () => {
+          const options = this.emitter.getOptions();
+          const program = this.emitter.getProgram();
+          const fileType = options["file-type"] ?? "yaml";
+          const outputFile = options["output-file"] ?? `asyncapi.${fileType}`;
+          
+          await emitFile(program, {
+            path: outputFile,
+            content
+          });
+          
+          console.log(`✅ Written AsyncAPI to: ${outputFile}`);
+          console.log(`📊 Final stats:`);
+          console.log(`  - Operations: ${Object.keys(this.asyncApiDoc.operations).length}`);
+          console.log(`  - Channels: ${Object.keys(this.asyncApiDoc.channels).length}`);
+          console.log(`  - Schemas: ${Object.keys(this.asyncApiDoc.components.schemas).length}`);
+          console.log(`  - Messages: ${Object.keys(this.asyncApiDoc.components.messages).length}`);
+        },
+        catch: (error) => new Error(`Failed to write output: ${error}`)
+      });
+      
+      // Execute document writing with memory tracking
+      const { result } = yield* memoryMonitor.measureOperationMemory(
+        writeOperation,
+        "document_writing"
+      );
+      
+      // Record throughput metrics for document writing stage
+      const throughputResult = yield* metricsService.recordThroughput(measurement, 1); // 1 document written
+      console.log(`📊 Document writing completed: ${throughputResult.averageLatencyMicroseconds.toFixed(2)} μs, ${throughputResult.averageMemoryPerOperation.toFixed(0)} bytes`);
+      
+      return result;
+    }).bind(this));
   }
 
   /**
