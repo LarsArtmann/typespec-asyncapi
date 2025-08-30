@@ -17,7 +17,13 @@
       "Bash(bunx tsc:*)",
       "Bash(gh issue create:*)",
       "Bash(gh issue comment:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(find:*)",
+      "Bash(git mv:*)",
+      "Bash(just build)",
+      "Bash(just lint)",
+      "Bash(just fd:*)",
+      "Bash(just find-duplicates:*)"
     ],
     "deny": [],
     "ask": []
