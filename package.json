@@ -1,5 +1,5 @@
 {
-  "name": "@typespec/asyncapi",
+  "name": "@larsartmann/typespec-asyncapi",
   "version": "0.0.1-alpha.1",
   "description": "TypeSpec emitter for AsyncAPI 3.0 specifications",
   "main": "dist/index.js",
@@ -11,6 +11,7 @@
       "types": "./dist/index.d.ts"
     }
   },
+  "private": false,
   "tspMain": "lib/main.tsp",
   "typespec": {
     "emitter": true
@@ -44,7 +45,7 @@
     "README.md"
   ],
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20.0.0"
   },
   "peerDependencies": {
     "@typespec/compiler": "^1.3.0",
