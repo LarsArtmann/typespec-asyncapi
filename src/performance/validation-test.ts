@@ -13,14 +13,23 @@ import { validateAsyncAPIEmitterOptions, createAsyncAPIEmitterOptions } from "..
 import type { AsyncAPIEmitterOptions } from "../types/options.js";
 
 // TAGGED ERROR TYPES
-export class PerformanceValidationError {
+export class PerformanceValidationError extends Error {
   readonly _tag = "PerformanceValidationError";
-  constructor(public readonly requirement: string, public readonly actual: number, public readonly expected: number) {}
+  readonly name = "PerformanceValidationError";
+  
+  constructor(public readonly requirement: string, public readonly actual: number, public readonly expected: number) {
+    super(`Performance requirement '${requirement}' failed: actual ${actual} vs expected ${expected}`);
+  }
 }
 
-export class ValidationTestError {
+export class ValidationTestError extends Error {
   readonly _tag = "ValidationTestError";
-  constructor(public readonly message: string, public readonly cause?: unknown) {}
+  readonly name = "ValidationTestError";
+  
+  constructor(public readonly message: string, public readonly cause?: unknown) {
+    super(message);
+    this.cause = cause;
+  }
 }
 
 // PERFORMANCE REQUIREMENTS
@@ -218,7 +227,7 @@ const validateThroughputTarget = (): Effect.Effect<{ throughput: number }, Valid
     
     yield* Effect.logInfo(`Executing ${testConfigurations.length} validation operations for throughput test`);
     
-    const batchResult = yield* performanceMetrics.measureValidationBatch(validations);
+    yield* performanceMetrics.measureValidationBatch(validations);
     const throughputResult = yield* performanceMetrics.recordThroughput(measurement, testConfigurations.length);
     
     yield* Effect.logInfo("Throughput validation completed", {

@@ -10,19 +10,32 @@ import { PerformanceMetricsService, processValidationBatch, type ThroughputResul
 import { validateAsyncAPIEmitterOptions, createAsyncAPIEmitterOptions } from "../options.js";
 
 // TAGGED ERROR TYPES
-export class BenchmarkExecutionError {
+export class BenchmarkExecutionError extends Error {
   readonly _tag = "BenchmarkExecutionError";
-  constructor(public readonly message: string, public readonly cause?: unknown) {}
+  readonly name = "BenchmarkExecutionError";
+  
+  constructor(public readonly message: string, public readonly cause?: unknown) {
+    super(message);
+    this.cause = cause;
+  }
 }
 
-export class BenchmarkTimeoutError {
+export class BenchmarkTimeoutError extends Error {
   readonly _tag = "BenchmarkTimeoutError";
-  constructor(public readonly timeoutMs: number, public readonly actualDuration: number) {}
+  readonly name = "BenchmarkTimeoutError";
+  
+  constructor(public readonly timeoutMs: number, public readonly actualDuration: number) {
+    super(`Benchmark timed out after ${timeoutMs}ms (actual: ${actualDuration}ms)`);
+  }
 }
 
-export class ThroughputRegressionError {
+export class ThroughputRegressionError extends Error {
   readonly _tag = "ThroughputRegressionError";
-  constructor(public readonly currentThroughput: number, public readonly baselineThroughput: number) {}
+  readonly name = "ThroughputRegressionError";
+  
+  constructor(public readonly currentThroughput: number, public readonly baselineThroughput: number) {
+    super(`Throughput regression detected: ${currentThroughput} < ${baselineThroughput}`);
+  }
 }
 
 // BENCHMARK CONFIGURATION

@@ -10,30 +10,49 @@ import type { EmitContext } from "@typespec/compiler";
 import {
   AsyncAPIEmitterOptionsSchema,
   validateAsyncAPIEmitterOptions,
-  createAsyncAPIEmitterOptions
+  createAsyncAPIEmitterOptions,
+  AsyncAPIOptionsValidationError,
+  AsyncAPIOptionsParseError
 } from "./options.js";
 import type { AsyncAPIEmitterOptions } from "./types/options.js";
-import { PerformanceMetricsService, PerformanceMetricsServiceLive } from "./performance/metrics.js";
-import { MemoryMonitorService, MemoryMonitorServiceLive, withMemoryTracking } from "./performance/memory-monitor.js";
+import { PerformanceMetricsService, PerformanceMetricsServiceLive, MetricsInitializationError, MetricsCollectionError } from "./performance/metrics.js";
+import { MemoryMonitorService, MemoryMonitorServiceLive, withMemoryTracking, MemoryMonitorInitializationError, MemoryThresholdExceededError } from "./performance/memory-monitor.js";
 // TAGGED ERROR TYPES for Railway Programming
-export class EmitterInitializationError {
+export class EmitterInitializationError extends Error {
   readonly _tag = "EmitterInitializationError";
-  constructor(public readonly message: string, public readonly cause?: unknown) {}
+  override readonly name = "EmitterInitializationError";
+  
+  constructor(message: string, cause?: unknown) {
+    super(message);
+    Object.defineProperty(this, 'cause', { value: cause, writable: false, enumerable: true });
+  }
 }
 
-export class SpecGenerationError {
+export class SpecGenerationError extends Error {
   readonly _tag = "SpecGenerationError";
-  constructor(public readonly message: string, public readonly options: AsyncAPIEmitterOptions) {}
+  override readonly name = "SpecGenerationError";
+  
+  constructor(message: string, public readonly options: AsyncAPIEmitterOptions) {
+    super(message);
+  }
 }
 
-export class SpecValidationError {
+export class SpecValidationError extends Error {
   readonly _tag = "SpecValidationError";
-  constructor(public readonly message: string, public readonly spec: unknown) {}
+  override readonly name = "SpecValidationError";
+  
+  constructor(public override readonly message: string, public readonly spec: unknown) {
+    super(message);
+  }
 }
 
-export class EmitterTimeoutError {
+export class EmitterTimeoutError extends Error {
   readonly _tag = "EmitterTimeoutError";
-  constructor(public readonly timeoutMs: number, public readonly operation: string) {}
+  override readonly name = "EmitterTimeoutError";
+  
+  constructor(public readonly timeoutMs: number, public readonly operation: string) {
+    super(`Operation '${operation}' timed out after ${timeoutMs}ms`);
+  }
 }
 
 /**
@@ -199,7 +218,7 @@ export const EmitterServiceLive = Layer.effect(EmitterService, makeEmitterServic
 export const onEmitEffect = (
   context: EmitContext<object>,
   options: unknown
-): Effect.Effect<void, EmitterInitializationError | SpecGenerationError | SpecValidationError | EmitterTimeoutError> =>
+): Effect.Effect<void, EmitterInitializationError | SpecGenerationError | SpecValidationError | EmitterTimeoutError | MetricsInitializationError | MetricsCollectionError | MemoryThresholdExceededError | MemoryMonitorInitializationError | AsyncAPIOptionsValidationError | AsyncAPIOptionsParseError, PerformanceMetricsService | MemoryMonitorService | EmitterService> =>
   Effect.gen(function* () {
     const emitterService = yield* EmitterService;
     const performanceMetrics = yield* PerformanceMetricsService;
@@ -225,7 +244,7 @@ export const onEmitEffect = (
     const validatedOptions = yield* validateAsyncAPIEmitterOptions(options).pipe(
       Effect.catchTag("AsyncAPIOptionsValidationError", error =>
         Effect.gen(function* () {
-          yield* Effect.logWarn("Options validation failed, applying recovery", {
+          yield* Effect.logWarning("Options validation failed, applying recovery", {
             error: error.message
           });
           // Railway pattern: attempt recovery with defaults
@@ -251,7 +270,7 @@ export const onEmitEffect = (
     );
     
     // Step 3: Apply final configuration with defaults
-    const finalOptions = yield* createAsyncAPIEmitterOptions(validatedOptions);
+    const finalOptions = yield* createAsyncAPIEmitterOptions(validatedOptions as Partial<AsyncAPIEmitterOptions>);
     
     // Step 4: Generate spec with resource management and memory tracking
     const generatedSpec = yield* Effect.acquireUseRelease(
@@ -272,15 +291,33 @@ export const onEmitEffect = (
           emitterService.generateSpec(opts),
           "spec-generation"
         ).pipe(
-          Effect.catchTag("SpecGenerationError", error =>
-            Effect.gen(function* () {
-              yield* Effect.logError("Spec generation failed", {
-                message: error.message,
-                options: JSON.stringify(error.options)
-              });
-              return yield* Effect.fail(error);
-            })
-          ),
+          Effect.catchAll(error => {
+            if (error && typeof error === 'object' && '_tag' in error) {
+              if (error._tag === 'SpecGenerationError') {
+                const specError = error as SpecGenerationError;
+                return Effect.gen(function* () {
+                  yield* Effect.logError("Spec generation failed", {
+                    message: specError.message,
+                    options: JSON.stringify(specError.options)
+                  });
+                  return yield* Effect.fail(specError);
+                });
+              }
+              if (error._tag === 'MemoryThresholdExceededError') {
+                const memError = error as MemoryThresholdExceededError;
+                return Effect.gen(function* () {
+                  yield* Effect.logError("Memory threshold exceeded during spec generation", {
+                    currentUsage: memError.currentUsage,
+                    threshold: memError.threshold,
+                    operation: memError.operationType
+                  });
+                  return yield* Effect.fail(memError);
+                });
+              }
+            }
+            // Re-throw other errors
+            return Effect.fail(error);
+          }),
           Effect.tap(spec =>
             Effect.logInfo("AsyncAPI specification generated successfully", {
               specSize: JSON.stringify(spec).length,
@@ -331,9 +368,14 @@ export const onEmitEffect = (
     });
   }).pipe(
     Effect.timeout(Duration.seconds(30)),
-    Effect.catchTag("TimeoutException", () =>
-      Effect.fail(new EmitterTimeoutError(30000, "asyncapi-emit"))
-    ),
+    Effect.mapError(error => {
+      // Handle timeout errors from Effect.timeout
+      if (error && typeof error === 'object' && '_tag' in error && error._tag === 'TimeoutException') {
+        return new EmitterTimeoutError(30000, "asyncapi-emit");
+      }
+      // Return the error as-is for proper type handling
+      return error as EmitterInitializationError | SpecGenerationError | SpecValidationError | EmitterTimeoutError | MetricsInitializationError | MetricsCollectionError | MemoryThresholdExceededError | MemoryMonitorInitializationError | AsyncAPIOptionsValidationError | AsyncAPIOptionsParseError;
+    }),
     Effect.withSpan("asyncapi-emit-pure", {
       attributes: {
         hasOptions: options !== null && options !== undefined,
@@ -381,7 +423,7 @@ export const onEmitPromise = async (
  */
 export const batchEmitEffect = (
   contexts: Array<{ context: EmitContext<object>; options: unknown }>
-): Effect.Effect<void[], EmitterInitializationError | SpecGenerationError | SpecValidationError> =>
+): Effect.Effect<void[], EmitterInitializationError | SpecGenerationError | SpecValidationError | EmitterTimeoutError | MetricsInitializationError | MetricsCollectionError | MemoryThresholdExceededError | MemoryMonitorInitializationError | AsyncAPIOptionsValidationError | AsyncAPIOptionsParseError, PerformanceMetricsService | MemoryMonitorService | EmitterService> =>
   Effect.gen(function* () {
     const performanceMetrics = yield* PerformanceMetricsService;
     
@@ -516,9 +558,9 @@ export function isValidEmitterOptions(options: unknown): options is AsyncAPIEmit
   }
 }
 
-// MOCK IMPLEMENTATION FOR EXAMPLE
+// MOCK IMPLEMENTATION FOR EXAMPLE - Helper function for testing (used in examples below)
 
-async function generateAsyncAPISpec(options: AsyncAPIEmitterOptions): Promise<void> {
+export function generateAsyncAPISpecMock(options: AsyncAPIEmitterOptions): void {
   console.log("Generating AsyncAPI spec with options:", options);
   
   // Mock implementation - replace with actual emitter logic

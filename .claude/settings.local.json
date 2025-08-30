@@ -36,7 +36,8 @@
       "Bash(just typecheck)",
       "Bash(just test:*)",
       "Bash(bun build:*)",
-      "Bash(bun:*)"
+      "Bash(bun:*)",
+      "Bash(sed:*)"
     ],
     "deny": [],
     "ask": []

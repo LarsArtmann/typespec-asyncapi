@@ -278,22 +278,32 @@ export const AsyncAPIEmitterOptionsEffectSchema = createSchema(
 // VALIDATION FUNCTIONS - Effect.TS powered validation with comprehensive error handling
 
 // TAGGED ERRORS for better error handling and recovery
-export class AsyncAPIOptionsValidationError {
+export class AsyncAPIOptionsValidationError extends Error {
   readonly _tag = "AsyncAPIOptionsValidationError" as const;
+  readonly name = "AsyncAPIOptionsValidationError";
+  
   constructor(
     readonly field: string,
     readonly value: unknown,
-    readonly message: string,
+    public readonly message: string,
     readonly cause?: Error
-  ) {}
+  ) {
+    super(message);
+    this.cause = cause;
+  }
 }
 
-export class AsyncAPIOptionsParseError {
+export class AsyncAPIOptionsParseError extends Error {
   readonly _tag = "AsyncAPIOptionsParseError" as const;
+  readonly name = "AsyncAPIOptionsParseError";
+  
   constructor(
-    readonly message: string,
+    public readonly message: string,
     readonly cause?: Error
-  ) {}
+  ) {
+    super(message);
+    this.cause = cause;
+  }
 }
 
 /**

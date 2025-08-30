@@ -12,7 +12,7 @@ import { EmitterService, EmitterServiceLive } from "../integration-example.js";
 
 // APPLICATION CONFIGURATION
 export interface ApplicationConfig {
-  logLevel: LogLevel;
+  logLevel: LogLevel.LogLevel;
   enablePerformanceMonitoring: boolean;
   enableMemoryMonitoring: boolean;
   performanceTargets: {

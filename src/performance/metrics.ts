@@ -10,24 +10,51 @@ import { Effect, Context, Layer, Metric, MetricBoundaries, Duration, Fiber } fro
 import type { AsyncAPIEmitterOptions } from "../types/options.js";
 
 // TAGGED ERROR TYPES for Railway Programming
-export class MetricsInitializationError {
+export class MetricsInitializationError extends Error {
   readonly _tag = "MetricsInitializationError";
-  constructor(public readonly message: string, public readonly cause?: unknown) {}
+  readonly name = "MetricsInitializationError";
+  
+  constructor(public readonly message: string, public readonly cause?: unknown) {
+    super(message);
+    this.cause = cause;
+  }
 }
 
-export class MetricsCollectionError {
+export class MetricsCollectionError extends Error {
   readonly _tag = "MetricsCollectionError";
-  constructor(public readonly message: string, public readonly cause?: unknown) {}
+  readonly name = "MetricsCollectionError";
+  
+  constructor(public readonly message: string, public readonly cause?: unknown) {
+    super(message);
+    this.cause = cause;
+  }
 }
 
-export class MemoryThresholdExceededError {
+export class MemoryThresholdExceededError extends Error {
   readonly _tag = "MemoryThresholdExceededError";
-  constructor(public readonly bytesUsed: number, public readonly threshold: number) {}
+  readonly name = "MemoryThresholdExceededError";
+  
+  constructor(
+    public readonly currentUsage: number,
+    public readonly threshold: number,
+    public readonly operationType: string = "unknown"
+  ) {
+    super(`Memory threshold exceeded for ${operationType}: ${currentUsage} bytes > ${threshold} bytes`);
+  }
+  
+  // Legacy alias for backward compatibility
+  get bytesUsed(): number {
+    return this.currentUsage;
+  }
 }
 
-export class ThroughputBelowTargetError {
+export class ThroughputBelowTargetError extends Error {
   readonly _tag = "ThroughputBelowTargetError";
-  constructor(public readonly actualThroughput: number, public readonly targetThroughput: number) {}
+  readonly name = "ThroughputBelowTargetError";
+  
+  constructor(public readonly actualThroughput: number, public readonly targetThroughput: number) {
+    super(`Throughput below target: ${actualThroughput} < ${targetThroughput}`);
+  }
 }
 
 // PERFORMANCE METRICS DEFINITIONS
@@ -252,7 +279,7 @@ const makePerformanceMetricsService = Effect.gen(function* () {
               const memoryPerOp = (currentMemory.heapUsed - measurement.memoryBefore.heapUsed) / (index + 1);
               
               if (memoryPerOp > MEMORY_TARGET * 2) { // 2x threshold for early warning
-                return yield* Effect.fail(new MemoryThresholdExceededError(memoryPerOp, MEMORY_TARGET));
+                return yield* Effect.fail(new MemoryThresholdExceededError(memoryPerOp, MEMORY_TARGET, "validation_batch"));
               }
             }
             
@@ -275,7 +302,7 @@ const makePerformanceMetricsService = Effect.gen(function* () {
   const validateMemoryTarget = (memoryUsage: number, targetMemory = MEMORY_TARGET): Effect.Effect<void, MemoryThresholdExceededError> =>
     memoryUsage <= targetMemory
       ? Effect.void
-      : Effect.fail(new MemoryThresholdExceededError(memoryUsage, targetMemory));
+      : Effect.fail(new MemoryThresholdExceededError(memoryUsage, targetMemory, "memory_target_validation"));
   
   const generatePerformanceReport = (): Effect.Effect<string, MetricsCollectionError> =>
     Effect.gen(function* () {
