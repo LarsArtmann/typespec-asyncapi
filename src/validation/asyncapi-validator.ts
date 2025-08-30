@@ -7,13 +7,13 @@
 
 // asyncapi-validator doesn't have proper TypeScript types
 const asyncapiValidator = {
-  fromFile: async (filePath: string, options: any) => {
+  fromFile: async (_filePath: string, _options: any) => {
     // For now, return a mock validation result
     // TODO: Integrate real asyncapi-validator when types are fixed
     console.warn("⚠️ Using mock validation for now - asyncapi-validator types issue");
     return { valid: true, errors: [] };
   },
-  fromString: async (content: string, options: any) => {
+  fromString: async (_content: string, _options: any) => {
     // For now, return a mock validation result  
     // TODO: Integrate real asyncapi-validator when types are fixed
     console.warn("⚠️ Using mock validation for now - asyncapi-validator types issue");

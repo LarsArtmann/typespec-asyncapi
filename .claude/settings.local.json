@@ -62,7 +62,8 @@
       "Bash(git sparse-checkout:*)",
       "Bash(tree:*)",
       "Bash(git rm:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(git show:*)"
     ],
     "deny": [],
     "ask": []
