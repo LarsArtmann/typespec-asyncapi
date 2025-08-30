@@ -160,8 +160,8 @@ export class FileSystemErrorHandler implements ErrorHandler<string> {
            error.message.includes("EACCES") ||
            error.message.includes("EMFILE") ||
            error.message.includes("ENOSPC") ||
-           (error as any).code === "ENOENT" ||
-           (error as any).code === "EACCES";
+           (error as NodeJS.ErrnoException).code === "ENOENT" ||
+           (error as NodeJS.ErrnoException).code === "EACCES";
   }
   
   handle(
@@ -234,14 +234,14 @@ function extractPathFromError(error: Error): string | null {
 }
 
 function generateFallbackPath(originalPath: string, error: Error): string | null {
-  if ((error as any).code === "ENOENT") {
+  if ((error as NodeJS.ErrnoException).code === "ENOENT") {
     // Try parent directory with different name
     const dir = originalPath.split('/').slice(0, -1).join('/');
     const filename = originalPath.split('/').pop();
     return `${dir}/fallback-${filename}`;
   }
   
-  if ((error as any).code === "EACCES") {
+  if ((error as NodeJS.ErrnoException).code === "EACCES") {
     // Try temp directory
     return `/tmp/${originalPath.split('/').pop()}`;
   }
@@ -470,7 +470,7 @@ export class CompilationErrorHandler implements ErrorHandler<null> {
           message: error.message,
           severity: "error" as const,
           target: context.target
-        } as any,
+        },
         operation: context.operation || "compilation"
       });
       

@@ -140,90 +140,90 @@ export type AsyncAPIError =
 /**
  * Error factory functions for convenient error creation
  */
-export const ErrorFactories = {
+export const errorFactories = {
   /**
    * Create a validation error
    */
-  validation: (params: {
+  validation: async (params: {
     field: string;
     value: unknown;
     expected: string;
     operation: string;
     recoveryValue?: unknown;
-  }) => {
-    const { AsyncAPIValidationError } = require("./validation.js");
-    return new AsyncAPIValidationError(params);
+  }): Promise<import("./validation.js").AsyncAPIValidationError> => {
+    const ValidationModule = await import("./validation.js");
+    return new ValidationModule.AsyncAPIValidationError(params);
   },
   
   /**
    * Create a compilation error
    */
-  compilation: (params: {
+  compilation: async (params: {
     diagnostic: import("@typespec/compiler").Diagnostic;
     operation: string;
-  }) => {
-    const { TypeSpecCompilationError } = require("./compilation.js");
-    return new TypeSpecCompilationError(params);
+  }): Promise<import("./compilation.js").TypeSpecCompilationError> => {
+    const CompilationModule = await import("./compilation.js");
+    return new CompilationModule.TypeSpecCompilationError(params);
   },
   
   /**
    * Create a file system error
    */
-  fileSystem: (params: {
+  fileSystem: async (params: {
     path: string;
     operation: string;
     originalError: Error;
     fallbackPath?: string;
-  }) => {
-    const { FileSystemError } = require("./filesystem.js");
-    return new FileSystemError(params);
+  }): Promise<import("./filesystem.js").FileSystemError> => {
+    const FileSystemModule = await import("./filesystem.js");
+    return new FileSystemModule.FileSystemError(params);
   },
   
   /**
    * Create a schema generation error
    */
-  schema: (params: {
+  schema: async (params: {
     typeName: string;
     issue: string;
     operation: string;
     target?: import("@typespec/compiler").DiagnosticTarget;
     source?: import("@typespec/compiler").SourceLocation;
-  }) => {
-    const { SchemaGenerationError } = require("./schema.js");
-    return new SchemaGenerationError(params);
+  }): Promise<import("./schema.js").SchemaGenerationError> => {
+    const SchemaModule = await import("./schema.js");
+    return new SchemaModule.SchemaGenerationError(params);
   },
   
   /**
    * Create a performance error
    */
-  performance: (params: {
+  performance: async (params: {
     metric: string;
     actual: number;
     threshold: number;
     operation: string;
-  }) => {
-    const { PerformanceThresholdError } = require("./performance.js");
-    return new PerformanceThresholdError(params);
+  }): Promise<import("./performance.js").PerformanceThresholdError> => {
+    const PerformanceModule = await import("./performance.js");
+    return new PerformanceModule.PerformanceThresholdError(params);
   },
   
   /**
    * Create an emitter error
    */
-  emitter: (params: {
+  emitter: async (params: {
     component: string;
     issue: string;
     operation: string;
     fallbackMode?: string;
-  }) => {
-    const { EmitterInitializationError } = require("./emitter.js");
-    return new EmitterInitializationError(params);
+  }): Promise<import("./emitter.js").EmitterInitializationError> => {
+    const EmitterModule = await import("./emitter.js");
+    return new EmitterModule.EmitterInitializationError(params);
   }
 } as const;
 
 /**
  * Error handling utilities for integration with existing systems
  */
-export const ErrorHandlingUtils = {
+export const errorHandlingUtils = {
   /**
    * Convert any error to AsyncAPI error context
    */

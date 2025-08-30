@@ -121,17 +121,10 @@ export function $protocol(
   console.log(`=� Protocol config:`, config);
   console.log(`<�  Target type: ${target.kind}`);
   
-  if (target.kind !== "Operation" && target.kind !== "Model") {
-    reportDiagnostic(context.program, {
-      code: "invalid-protocol-target",
-      target: target,
-      format: { targetType: (target as any).kind || 'unknown' },
-    });
-    return;
-  }
+  // Target is already constrained to Operation | Model - no validation needed
 
   // Validate protocol configuration
-  if (!config?.protocol) {
+  if (!config.protocol) {
     reportDiagnostic(context.program, {
       code: "missing-protocol-type",
       target: target,
@@ -176,7 +169,7 @@ function validateProtocolBinding(protocol: ProtocolType, binding: unknown): { va
   const warnings: string[] = [];
   
   switch (protocol) {
-    case "kafka":
+    case "kafka": {
       const kafkaBinding = binding as KafkaBindingConfig;
       if (kafkaBinding.schemaId && !kafkaBinding.schemaIdLocation) {
         warnings.push("schemaId specified without schemaIdLocation - defaulting to 'payload'");
@@ -185,22 +178,25 @@ function validateProtocolBinding(protocol: ProtocolType, binding: unknown): { va
         warnings.push("schemaLookupStrategy specified without schemaId - may not work as expected");
       }
       break;
+    }
       
-    case "websocket":
+    case "websocket": {
       const wsBinding = binding as WebSocketBindingConfig;
-      if (wsBinding.method && wsBinding.method !== "GET") {
+      if (wsBinding.method && wsBinding.method as string !== "GET") {
         warnings.push("WebSocket binding method should be GET for upgrade requests");
       }
       break;
+    }
       
-    case "http":
+    case "http": {
       const httpBinding = binding as HttpBindingConfig;
       if (httpBinding.statusCode && (httpBinding.statusCode < 100 || httpBinding.statusCode > 599)) {
         warnings.push("HTTP status code should be between 100-599");
       }
       break;
+    }
       
-    case "amqp":
+    case "amqp": {
       const amqpBinding = binding as AMQPBindingConfig;
       if (amqpBinding.deliveryMode && ![1, 2].includes(amqpBinding.deliveryMode)) {
         warnings.push("AMQP delivery mode should be 1 (non-persistent) or 2 (persistent)");
@@ -209,13 +205,15 @@ function validateProtocolBinding(protocol: ProtocolType, binding: unknown): { va
         warnings.push("AMQP priority should be between 0-255");
       }
       break;
+    }
       
-    case "mqtt":
+    case "mqtt": {
       const mqttBinding = binding as MQTTBindingConfig;
       if (mqttBinding.qos && ![0, 1, 2].includes(mqttBinding.qos)) {
         warnings.push("MQTT QoS should be 0, 1, or 2");
       }
       break;
+    }
       
     case "redis":
       // Redis validation could check for valid channel patterns, etc.
@@ -230,7 +228,7 @@ function validateProtocolBinding(protocol: ProtocolType, binding: unknown): { va
  */
 export function getProtocolConfig(context: DecoratorContext, target: Operation | Model): ProtocolConfig | undefined {
   const protocolMap = context.program.stateMap(stateKeys.protocolConfigs);
-  return protocolMap.get(target);
+  return protocolMap.get(target) as ProtocolConfig | undefined;
 }
 
 /**
@@ -245,5 +243,5 @@ export function hasProtocolBinding(context: DecoratorContext, target: Operation 
  * Get all protocol configurations in the program
  */
 export function getAllProtocolConfigs(context: DecoratorContext): Map<Type, ProtocolConfig> {
-  return context.program.stateMap(stateKeys.protocolConfigs);
+  return context.program.stateMap(stateKeys.protocolConfigs) as Map<Type, ProtocolConfig>;
 }

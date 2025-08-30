@@ -145,17 +145,10 @@ export function $security(
   console.log(`=� Security config:`, config);
   console.log(`<�  Target type: ${target.kind}`);
   
-  if (target.kind !== "Operation" && target.kind !== "Model") {
-    reportDiagnostic(context.program, {
-      code: "invalid-security-target",
-      target: target,
-      format: { targetType: (target as any).kind || 'unknown' },
-    });
-    return;
-  }
+  // Target is already constrained to Operation | Model - no validation needed
 
   // Validate security configuration
-  if (!config?.name || !config.scheme) {
+  if (!config.name || !config.scheme) {
     reportDiagnostic(context.program, {
       code: "missing-security-config",
       target: target,
@@ -229,12 +222,12 @@ function validateSecurityScheme(scheme: SecurityScheme): { valid: boolean; error
       Object.entries(flows).forEach(([flowType, flow]) => {
         if (flow) {
           if (flowType === "implicit" || flowType === "authorizationCode") {
-            if (!(flow as any).authorizationUrl) {
+            if (!("authorizationUrl" in flow && flow.authorizationUrl)) {
               errors.push(`${flowType} flow must have authorizationUrl`);
             }
           }
           if (flowType === "password" || flowType === "clientCredentials" || flowType === "authorizationCode") {
-            if (!(flow as any).tokenUrl) {
+            if (!("tokenUrl" in flow && flow.tokenUrl)) {
               errors.push(`${flowType} flow must have tokenUrl`);
             }
           }
@@ -272,7 +265,7 @@ function validateSecurityScheme(scheme: SecurityScheme): { valid: boolean; error
       break;
       
     default:
-      errors.push(`Unknown security scheme type: ${(scheme as any).type}`);
+      errors.push(`Unknown security scheme type: ${"type" in scheme ? String(scheme.type) : "unknown"}`);
   }
   
   return { valid: errors.length === 0, errors, warnings };
@@ -304,7 +297,7 @@ export function getAllSecurityConfigs(context: DecoratorContext): Map<Operation 
 /**
  * Common security schemes for quick setup
  */
-export const CommonSecuritySchemes = {
+export const commonSecuritySchemes = {
   /** JWT Bearer token authentication */
   jwtBearer: {
     name: "bearerAuth",

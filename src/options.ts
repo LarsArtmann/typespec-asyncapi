@@ -437,11 +437,11 @@ export const validateAsyncAPIEmitterOptions = (input: unknown): Effect.Effect<As
  * Convert schema result to final options format
  * PERFORMANCE: Functional approach avoiding repeated checks
  */
-const convertOptionsFormat = (result: any): AsyncAPIEmitterOptions => {
+const convertOptionsFormat = (result: Record<string, unknown>): AsyncAPIEmitterOptions => {
   const converted: AsyncAPIEmitterOptions = {};
   
   // Use functional composition for cleaner conversion
-  const copyIfDefined = <K extends keyof AsyncAPIEmitterOptions>(key: K, transform?: (value: any) => AsyncAPIEmitterOptions[K]) => {
+  const copyIfDefined = <K extends keyof AsyncAPIEmitterOptions>(key: K, transform?: (value: unknown) => AsyncAPIEmitterOptions[K]) => {
     if (result[key] !== undefined) {
       converted[key] = transform ? transform(result[key]) : result[key];
     }

@@ -197,7 +197,7 @@ export abstract class BaseAsyncAPIError extends Error {
     return {
       name: this.name,
       message: this.message,
-      _tag: (this as any)._tag,
+      _tag: "_tag" in this ? (this as { _tag: string })._tag : "BaseAsyncAPIError",
       errorId: this.errorId,
       timestamp: this.timestamp.toISOString(),
       severity: this.severity,

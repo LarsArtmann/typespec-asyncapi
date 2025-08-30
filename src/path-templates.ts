@@ -1,5 +1,6 @@
 import { join, resolve, dirname, isAbsolute } from "node:path";
 import { cwd } from "node:process";
+import { existsSync } from "node:fs";
 
 /**
  * Supported template variables for path resolution
@@ -149,8 +150,7 @@ export function detectProjectRoot(startPath?: string): string {
       const configPath = join(currentPath, configFile);
       try {
         // Use basic file system check
-        const fs = require("node:fs");
-        if (fs.existsSync(configPath)) {
+        if (existsSync(configPath)) {
           return currentPath;
         }
       } catch {

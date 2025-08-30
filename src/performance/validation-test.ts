@@ -349,7 +349,12 @@ const validateLatencyTarget = (): Effect.Effect<{ latency: number }, ValidationT
     }
     
     const avgLatency = latencies.reduce((sum, lat) => sum + lat, 0) / latencies.length;
-    const p95Latency = latencies.sort((a, b) => a - b)[Math.floor(latencies.length * 0.95)]!;
+    const sortedLatencies = latencies.sort((a, b) => a - b);
+    const p95Index = Math.floor(latencies.length * 0.95);
+    const p95Latency = sortedLatencies[p95Index];
+    if (p95Latency === undefined) {
+      return yield* Effect.fail(new ValidationTestError("Unable to calculate P95 latency"));
+    }
     
     yield* Effect.logInfo("Latency validation completed", {
       iterations,

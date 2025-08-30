@@ -526,7 +526,11 @@ export const quickPerformanceCheck = (
   Effect.gen(function* () {
     const testCases = generateBenchmarkTestCases().slice(0, 3); // Use first 3 test cases
     const validations = Array(iterations).fill(null).map(() => () => {
-      const randomTestCase = testCases[Math.floor(Math.random() * testCases.length)]!;
+      const randomIndex = Math.floor(Math.random() * testCases.length);
+      const randomTestCase = testCases[randomIndex];
+      if (!randomTestCase) {
+        throw new Error("No test cases available");
+      }
       const options = randomTestCase.generateOptions();
       return validateAsyncAPIEmitterOptions(options).pipe(
         Effect.catchAll(() => createAsyncAPIEmitterOptions({}))

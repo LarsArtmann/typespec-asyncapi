@@ -330,8 +330,15 @@ const makeMemoryMonitorService = Effect.gen(function* () {
         };
       }
       
-      const first = relevantSnapshots[0]!;
-      const last = relevantSnapshots[relevantSnapshots.length - 1]!;
+      const first = relevantSnapshots[0];
+      const last = relevantSnapshots[relevantSnapshots.length - 1];
+      if (!first || !last) {
+        return {
+          compliant: false,
+          summary: "Insufficient snapshot data for analysis",
+          metrics: []
+        };
+      }
       const duration = (last.timestamp - first.timestamp) / 1000; // seconds
       
       // Calculate metrics

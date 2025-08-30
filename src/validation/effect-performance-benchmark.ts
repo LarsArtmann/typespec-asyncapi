@@ -234,7 +234,10 @@ export const runEffectBenchmarkSuite = async (iterations = 1000) => {
     if (!groupedResults.has(result.operation)) {
       groupedResults.set(result.operation, []);
     }
-    groupedResults.get(result.operation)!.push(result);
+    const operationResults = groupedResults.get(result.operation);
+    if (operationResults) {
+      operationResults.push(result);
+    }
   }
   
   for (const [operation, operationResults] of Array.from(groupedResults.entries())) {

@@ -90,14 +90,14 @@ export type ValidationContext = {
  * High-performance AsyncAPI 3.0.0 specification validator
  */
 export class AsyncAPIValidator {
-  private readonly ajv: any;
+  private readonly ajv: Ajv;
   private validateFunction: ValidateFunction | null = null;
   private readonly schemaCache = new Map<string, unknown>();
   private readonly validationCache = new Map<string, ValidationResult>();
   private readonly customRules: CustomValidationRule[] = [];
 
   constructor(private readonly options: AsyncAPIValidatorOptions = {}) {
-    this.ajv = new (Ajv as any)({
+    this.ajv = new Ajv({
       allErrors: true,
       verbose: true,
       strict: this.options.strict ?? false,
@@ -106,7 +106,7 @@ export class AsyncAPIValidator {
     });
 
     // Add format validators
-    (addFormats as any)(this.ajv);
+    addFormats(this.ajv);
     
     // Add custom AsyncAPI formats
     this.addAsyncAPIFormats();

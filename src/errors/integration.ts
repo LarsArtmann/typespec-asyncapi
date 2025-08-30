@@ -234,16 +234,16 @@ export function reportAsyncAPIError(program: Program, error: BaseAsyncAPIError):
 /**
  * Convert TypeSpec diagnostic to AsyncAPI error
  */
-export function diagnosticToAsyncAPIError(diagnostic: Diagnostic, operation: string): BaseAsyncAPIError {
+export async function diagnosticToAsyncAPIError(diagnostic: Diagnostic, operation: string): Promise<BaseAsyncAPIError> {
   // Import the compilation error here to avoid circular dependencies
-  const { TypeSpecCompilationError } = require("./compilation.js");
-  return new TypeSpecCompilationError({ diagnostic, operation });
+  const CompilationModule = await import("./compilation.js");
+  return new CompilationModule.TypeSpecCompilationError({ diagnostic, operation });
 }
 
 /**
  * Utility functions for migration from existing error handling
  */
-export const MigrationUtils = {
+export const migrationUtils = {
   /**
    * Convert existing error context to new AsyncAPI error
    */
@@ -267,9 +267,11 @@ export const MigrationUtils = {
           additionalData: ctx.additionalData
         });
         
-        // Override generated ID with existing one
-        (this as any).errorId = ctx.errorId;
-        (this as any).timestamp = ctx.timestamp;
+        // Override generated ID with existing one for consistency
+        Object.defineProperties(this, {
+          errorId: { value: ctx.errorId, writable: false, enumerable: true },
+          timestamp: { value: ctx.timestamp, writable: false, enumerable: true }
+        });
       }
     }
     
@@ -314,7 +316,7 @@ export const MigrationUtils = {
 /**
  * Type guards for error system migration
  */
-export const TypeGuards = {
+export const typeGuards = {
   isNewAsyncAPIError: isAsyncAPIError,
   isLegacyErrorContext: (error: unknown): error is ErrorContext => {
     return (

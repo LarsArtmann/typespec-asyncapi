@@ -7,32 +7,16 @@ export function $channel(context: DecoratorContext, target: Operation, path: Str
   console.log(`📍 Channel path type:`, typeof path);
   console.log(`🏷️  Target type: ${target.kind}`);
   
-  if (target.kind !== "Operation") {
-    reportDiagnostic(context.program, {
-      code: "invalid-channel-path",
-      target: target,
-      format: { path: String(path) },
-    });
-    return;
-  }
+  // Target is always Operation type - no validation needed
 
   // Extract string value from TypeSpec value with proper type handling
   // Using Effect.TS patterns for validation would be implemented here in production
   let channelPath: string;
   if (typeof path === "string") {
     channelPath = path;
-  } else if (path && typeof path === "object" && "value" in path && path.value !== undefined) {
-    channelPath = String(path.value);
-  } else if (path && typeof path === "object" && "valueKind" in path && (path).valueKind === "StringValue") {
-    const stringValue = path;
-    channelPath = String(stringValue.value);
   } else {
-    console.log(`⚠️  Could not extract string from path:`, path);
-    reportDiagnostic(context.program, {
-      code: "missing-channel-path",
-      target: target,
-    });
-    return;
+    // path is StringValue type
+    channelPath = String(path.value);
   }
 
   console.log(`📍 Extracted channel path: "${channelPath}"`);

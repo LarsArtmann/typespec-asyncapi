@@ -52,7 +52,10 @@ export class TypeSpecCompilationError extends BaseAsyncAPIError {
   
   private static extractSourceLocationStatic(diagnostic: Diagnostic): SourceLocation | undefined {
     if (diagnostic.target && typeof diagnostic.target === 'object' && 'pos' in diagnostic.target && 'end' in diagnostic.target) {
-      const target = diagnostic.target as any;
+      const target = diagnostic.target as { 
+        pos?: { file?: string; pos?: number };
+        end?: { file?: string; pos?: number };
+      };
       return {
         file: target.pos?.file || target.end?.file,
         pos: target.pos?.pos || 0,

@@ -10,7 +10,7 @@ import { Schema } from "@effect/schema";
 import type { AsyncAPIEmitterOptions } from "../options.js";
 
 // PERFORMANCE METRICS COLLECTION
-export const ValidationMetrics = {
+export const validationMetrics = {
   schemaCompilationTime: Metric.histogram("schema_compilation_ms", MetricBoundaries.fromIterable([1, 5, 10, 25, 50, 100, 250, 500])),
   
   validationTime: Metric.histogram("validation_duration_ms", MetricBoundaries.fromIterable([0.1, 0.5, 1, 2.5, 5, 10, 25, 50])),
@@ -39,7 +39,7 @@ export const createSchemaCache = (options: {
     const cache = yield* Cache.make({
       capacity: options.maxSize ?? 1000,
       timeToLive: options.ttl ?? Duration.minutes(30),
-      lookup: (_key: string) => Effect.succeed(undefined as any)
+      lookup: (_key: string) => Effect.succeed(undefined)
     });
 
     return {
@@ -128,7 +128,7 @@ export const makeValidationService = Effect.gen(function* () {
       })
     );
 
-  const getMetrics = (): Effect.Effect<any, never> =>
+  const getMetrics = (): Effect.Effect<{ validationCount: number; cacheHitRate: number; averageValidationTime: number }, never> =>
     Effect.succeed({
       // This would return actual metrics in a real implementation
       validationCount: 0,
@@ -150,7 +150,7 @@ export const makeValidationService = Effect.gen(function* () {
 /**
  * Performance optimization layer for production use
  */
-export const ValidationServiceLive = Layer.effect(ValidationService, makeValidationService);
+export const validationServiceLive = Layer.effect(ValidationService, makeValidationService);
 
 // BATCH VALIDATION UTILITIES
 

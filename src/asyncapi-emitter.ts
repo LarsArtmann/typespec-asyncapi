@@ -64,11 +64,11 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
     await this.generateOutputFile();
   }
 
-  override async sourceFile(_sourceFile: SourceFile<string>): Promise<EmittedSourceFile> {
+  override sourceFile(_sourceFile: SourceFile<string>): EmittedSourceFile {
     // For AssetEmitter compatibility, return the raw content directly
     const options = this.emitter.getOptions();
     const program = this.emitter.getProgram();
-    const content = this.generateContent(options["file-type"] || "yaml", program);
+    const content = this.generateContent(options["file-type"] ?? "yaml", program);
     
     return {
       path: _sourceFile.path,
@@ -95,45 +95,39 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
   private discoverOperations(program: Program): Operation[] {
     const operations: Operation[] = [];
     
-    if (!program || typeof program.getGlobalNamespaceType !== 'function') {
-      console.log("⚠️  Program is missing getGlobalNamespaceType method - creating mock data");
-      return operations;
-    }
+    // No need for condition - getGlobalNamespaceType is always available on Program type
     
     this.walkNamespace(program.getGlobalNamespaceType(), operations, program);
     return operations;
   }
 
   private walkNamespace(ns: Namespace, operations: Operation[], program: Program): void {
-    if (ns.operations) {
-      ns.operations.forEach((operation, name) => {
-        operations.push(operation);
-        console.log(`🔍 FOUND REAL OPERATION: ${name} (kind: ${operation.kind})`);
-        this.logOperationDetails(operation, program);
-      });
-    }
+    // ns.operations is always defined on Namespace type
+    ns.operations.forEach((operation, name) => {
+      operations.push(operation);
+      console.log(`🔍 FOUND REAL OPERATION: ${name} (kind: ${operation.kind})`);
+      this.logOperationDetails(operation, program);
+    });
     
-    if (ns.namespaces) {
-      ns.namespaces.forEach((childNs, _) => {
-        this.walkNamespace(childNs, operations, program);
-      });
-    }
+    // ns.namespaces is always defined on Namespace type
+    ns.namespaces.forEach((childNs, _) => {
+      this.walkNamespace(childNs, operations, program);
+    });
   }
 
   private logOperationDetails(operation: Operation, program: Program): void {
     console.log(`  - Return type: ${operation.returnType.kind}`);
-    console.log(`  - Parameters: ${operation.parameters?.properties?.size || 0}`);
+    console.log(`  - Parameters: ${operation.parameters.properties.size}`);
     
     const doc = getDoc(program, operation);
     if (doc) {
       console.log(`  - Documentation: "${doc}"`);
     }
     
-    if (operation.parameters?.properties) {
-      operation.parameters.properties.forEach((param, paramName) => {
-        console.log(`  - Parameter: ${paramName} (${param.type.kind})`);
-      });
-    }
+    // operation.parameters.properties is always defined
+    operation.parameters.properties.forEach((param, paramName) => {
+      console.log(`  - Parameter: ${paramName} (${param.type.kind})`);
+    });
   }
 
   private processOperation(op: Operation): void {
@@ -155,7 +149,7 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
     const channelName = `channel_${op.name}`;
     const definition: ChannelObject = {
       address: `/${op.name.toLowerCase()}`,
-      description: getDoc(program, op) || `Channel for ${op.name}`,
+      description: getDoc(program, op) ?? `Channel for ${op.name}`,
       messages: {
         [`${op.name}Message`]: {
           $ref: `#/components/messages/${op.name}Message`
@@ -169,7 +163,7 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
     const program = this.emitter.getProgram();
     // Get operation type from decorator state
     const operationTypesMap = program.stateMap(stateKeys.operationTypes);
-    const operationType = operationTypesMap.get(op);
+    const operationType = operationTypesMap.get(op) as string | undefined;
     
     // Determine action based on decorator type
     let action: "send" | "receive" = "send"; // default for @publish or no decorator
@@ -179,12 +173,12 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
       action = "send";
     }
     
-    console.log(`📡 Operation ${op.name} type: ${operationType || "none"} -> action: ${action}`);
+    console.log(`📡 Operation ${op.name} type: ${operationType ?? "none"} -> action: ${action}`);
     
     return {
       action,
       channel: { $ref: `#/channels/${channelName}` },
-      summary: getDoc(program, op) || `Operation ${op.name}`,
+      summary: getDoc(program, op) ?? `Operation ${op.name}`,
       description: `Generated from TypeSpec operation with ${op.parameters.properties.size} parameters`,
     };
   }
@@ -197,7 +191,7 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
     
     const schema: SchemaObject = {
       type: "object",
-      description: getDoc(program, model) || `Model ${model.name}`,
+      description: getDoc(program, model) ?? `Model ${model.name}`,
       properties,
       required,
     };
@@ -211,12 +205,12 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
     const required: string[] = [];
     
     model.properties.forEach((prop, propName) => {
-      console.log(`  - Property: ${propName} (${prop.type.kind}) required: ${!prop.optional}`);
+      console.log(`  - Property: ${propName} (${prop.type.kind}) required: ${String(!prop.optional)}`);
       
       const typeInfo = this.getPropertyType(prop);
       properties[propName] = {
         ...typeInfo,
-        description: getDoc(program, prop) || `Property ${propName}`,
+        description: getDoc(program, prop) ?? `Property ${propName}`,
       };
       
       if (!prop.optional) {
@@ -248,8 +242,8 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
   private resolveOutputFilePath(): string {
     const options = this.emitter.getOptions();
     const program = this.emitter.getProgram();
-    const outputFile = options["output-file"] || "asyncapi";
-    const fileType = options["file-type"] || "yaml";
+    const outputFile = options["output-file"] ?? "asyncapi";
+    const fileType = options["file-type"] ?? "yaml";
     
     // Check if output file contains template variables
     if (hasTemplateVariables(outputFile)) {
@@ -257,7 +251,7 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
       
       const context: PathTemplateContext = {
         program,
-        emitterOutputDir: this.emitter.getContext()?.["emitterOutputDir"],
+        emitterOutputDir: this.emitter.getContext()["emitterOutputDir"] as string | undefined,
       };
       
       try {
@@ -284,17 +278,17 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
     const options = this.emitter.getOptions();
     const program = this.emitter.getProgram();
     const fileName = this.resolveOutputFilePath();
-    const content = this.generateContent(options["file-type"] || "yaml", program);
+    const content = this.generateContent(options["file-type"] ?? "yaml", program);
     
     // Create a source file and write the content using AssetEmitter patterns
     const sourceFile = this.emitter.createSourceFile(fileName);
     
     try {
       // Ensure directory exists for path templates
-      const fs = require("node:fs");
+      const { existsSync, mkdirSync } = await import("node:fs");
       const targetDir = dirname(sourceFile.path);
-      if (!fs.existsSync(targetDir)) {
-        fs.mkdirSync(targetDir, { recursive: true });
+      if (!existsSync(targetDir)) {
+        mkdirSync(targetDir, { recursive: true });
         console.log(`📁 Created directory: ${targetDir}`);
       }
       
@@ -313,8 +307,8 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
   }
 
   private generateContent(fileType: string, program: Program): string {
-    const sourceFiles = program?.sourceFiles ? Array.from(program.sourceFiles.keys()).join(", ") : "none";
-    const operationNames = this.operations.map(op => op.name || 'unknown').join(", ") || "none";
+    const sourceFiles = Array.from(program.sourceFiles.keys()).join(", ") || "none";
+    const operationNames = this.operations.map(op => op.name).join(", ") || "none";
     
     let content: string;
     if (fileType === "json") {
@@ -390,7 +384,7 @@ export async function generateAsyncAPI(context: EmitContext<AsyncAPIEmitterOptio
   console.log("🚀 ASYNCAPI EMITTER (AssetEmitter): Processing REAL TypeSpec AST - NOT HARDCODED!");
   console.log("⚠️  VERSIONING NOT SUPPORTED - See GitHub issue #1");
   console.log(`📁 Output: ${context.emitterOutputDir}`);
-  console.log(`🔧 Source files: ${context.program?.sourceFiles?.size || 0}`);
+  console.log(`🔧 Source files: ${context.program.sourceFiles.size}`);
 
   // Create AssetEmitter instance
   const assetEmitter = createAssetEmitter(

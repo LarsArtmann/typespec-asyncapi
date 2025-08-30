@@ -199,7 +199,11 @@ export class PerformanceBenchmark {
     if (documents.length === 0) {
       throw new Error("Failed to generate test documents");
     }
-    const document = documents[0]!.document;
+    const firstDocument = documents[0];
+    if (!firstDocument) {
+      throw new Error("No documents available for benchmark");
+    }
+    const document = firstDocument.document;
     const iterations = this.options.iterations || 1000;
 
     // Without cache
@@ -370,7 +374,10 @@ export class PerformanceBenchmark {
       // Generate channels
       for (let i = 0; i < config.channels; i++) {
         const channelName = `channel_${variant}_${i}`;
-        document.channels![channelName] = {
+        if (!document.channels) {
+          document.channels = {};
+        }
+        document.channels[channelName] = {
           address: `/${size}/events/${i}`,
           description: `Generated channel ${i}`,
           messages: {
@@ -387,7 +394,10 @@ export class PerformanceBenchmark {
       for (let i = 0; i < config.operations; i++) {
         const operationName = `operation_${variant}_${i}`;
         const channelRef = `channel_${variant}_${i % config.channels}`;
-        document.operations![operationName] = {
+        if (!document.operations) {
+          document.operations = {};
+        }
+        document.operations[operationName] = {
           action: i % 2 === 0 ? "send" : "receive",
           channel: { $ref: `#/channels/${channelRef}` },
           description: `Generated operation ${i}`,
@@ -397,7 +407,13 @@ export class PerformanceBenchmark {
       // Generate schemas
       for (let i = 0; i < config.schemas; i++) {
         const schemaName = `Schema_${i}`;
-        document.components!.schemas![schemaName] = {
+        if (!document.components) {
+          document.components = { schemas: {} };
+        }
+        if (!document.components.schemas) {
+          document.components.schemas = {};
+        }
+        document.components.schemas[schemaName] = {
           type: "object",
           description: `Generated schema ${i}`,
           properties: {
@@ -431,7 +447,7 @@ export class PerformanceBenchmark {
     for (let i = 0; i < count; i++) {
       const types = ["string", "number", "boolean"] as const;
       properties[`property_${i}`] = {
-        type: types[i % 3]!,
+        type: types[i % 3] ?? "string",
         description: `Generated property ${i}`,
       };
     }
@@ -504,8 +520,11 @@ export class PerformanceBenchmark {
 
     // Performance summary
     if (sortedResults.length > 0) {
-      const fastest = sortedResults[0]!;
-      const slowest = sortedResults[sortedResults.length - 1]!;
+      const fastest = sortedResults[0];
+      const slowest = sortedResults[sortedResults.length - 1];
+      if (!fastest || !slowest) {
+        throw new Error("Invalid benchmark results");
+      }
       
       console.log(`\n🏆 Performance Summary:`);
       console.log(`  Fastest: ${fastest.name} (${fastest.opsPerSecond.toFixed(2)} ops/sec)`);
@@ -528,7 +547,7 @@ export async function runValidationBenchmark(options?: BenchmarkOptions): Promis
 /**
  * Performance assertion helpers for tests
  */
-export const PerformanceAssertions = {
+export const performanceAssertions = {
   /**
    * Assert validation performance meets minimum threshold
    */

@@ -84,7 +84,7 @@ const validateAsyncAPIDocumentEffect = (spec: unknown): Effect.Effect<boolean, S
     
     if (document["asyncapi"] !== "3.0.0") {
       return yield* Effect.fail(new SpecValidationError(
-        `Invalid AsyncAPI version: ${document["asyncapi"]}, expected 3.0.0`,
+        `Invalid AsyncAPI version: ${String(document["asyncapi"])}, expected 3.0.0`,
         spec
       ));
     }
@@ -144,7 +144,7 @@ const makeEmitterService = Effect.gen(function* () {
       };
       
       if (options["include-source-info"]) {
-        (spec as any).sourceInfo = {
+        (spec as Record<string, unknown>).sourceInfo = {
           generatedAt: new Date().toISOString(),
           generator: "TypeSpec AsyncAPI Emitter",
           options: options
@@ -214,7 +214,7 @@ const makeEmitterService = Effect.gen(function* () {
 });
 
 // EFFECT LAYER for dependency injection
-export const EmitterServiceLive = Layer.effect(EmitterService, makeEmitterService);
+export const emitterServiceLive = Layer.effect(EmitterService, makeEmitterService);
 
 /**
  * Pure Effect.TS TypeSpec emitter function with Railway Programming
@@ -395,7 +395,7 @@ export const onEmit = (
   options: unknown
 ): Effect.Effect<void, never> =>
   onEmitEffect(context, options).pipe(
-    Effect.provide(EmitterServiceLive),
+    Effect.provide(emitterServiceLive),
     Effect.provide(PerformanceMetricsServiceLive),
     Effect.provide(MemoryMonitorServiceLive),
     Effect.catchAll(error =>
@@ -448,7 +448,7 @@ export const batchEmitEffect = (
     
     return results;
   }).pipe(
-    Effect.provide(EmitterServiceLive),
+    Effect.provide(emitterServiceLive),
     Effect.provide(PerformanceMetricsServiceLive),
     Effect.provide(MemoryMonitorServiceLive)
   );
@@ -477,7 +477,7 @@ export function validateEmitterConfiguration(config: unknown): AsyncAPIEmitterOp
 /**
  * Example: Safe option parsing with comprehensive error handling
  */
-export const parseOptionsExample = async () => {
+export const parseOptionsExample = async (): Promise<AsyncAPIEmitterOptions> => {
   const userInput = {
     "output-file": "my-api",
     "file-type": "json" as const,
@@ -518,7 +518,7 @@ export const parseOptionsExample = async () => {
 /**
  * Example: Batch validation for multiple configurations
  */
-export const validateMultipleConfigs = async (configs: unknown[]) => {
+export const validateMultipleConfigs = async (configs: unknown[]): Promise<Array<{ config: unknown; validated?: unknown; error?: string; valid: boolean }>> => {
   return await Effect.runPromise(
     Effect.forEach(configs, config =>
       Effect.gen(function* () {
@@ -540,7 +540,7 @@ export const validateMultipleConfigs = async (configs: unknown[]) => {
  * Convert Effect.TS validation to TypeSpec-compatible format
  * Maintains the JSONSchemaType interface that TypeSpec expects
  */
-export function getTypeSpecCompatibleSchema() {
+export function getTypeSpecCompatibleSchema(): typeof AsyncAPIEmitterOptionsSchema {
   // The AsyncAPIEmitterOptionsSchema is already compatible with TypeSpec
   // This function shows how to access it programmatically
   return AsyncAPIEmitterOptionsSchema;
@@ -584,7 +584,7 @@ export function generateAsyncAPISpecMock(options: AsyncAPIEmitterOptions): void 
 /**
  * Example: Custom validation with additional business rules
  */
-export const validateWithBusinessRules = (input: unknown) =>
+export const validateWithBusinessRules = (input: unknown): Effect.Effect<AsyncAPIEmitterOptions, Error> =>
   Effect.gen(function* () {
     // Step 1: Standard Effect.TS schema validation
     const options = yield* validateAsyncAPIEmitterOptions(input);
@@ -605,7 +605,7 @@ export const validateWithBusinessRules = (input: unknown) =>
 /**
  * Example: Options transformation pipeline
  */
-export const processOptionsWithTransformation = (input: unknown) =>
+export const processOptionsWithTransformation = (input: unknown): Effect.Effect<AsyncAPIEmitterOptions> =>
   Effect.gen(function* () {
     // Parse and validate
     const validated = yield* validateAsyncAPIEmitterOptions(input);
@@ -640,7 +640,7 @@ export const processOptionsWithTransformation = (input: unknown) =>
 /**
  * Example: Resource management with validated options
  */
-export const processWithManagedResources = (options: unknown) =>
+export const processWithManagedResources = (options: unknown): Effect.Effect<string> =>
   Effect.gen(function* () {
     // Validate options first
     const validatedOptions = yield* validateAsyncAPIEmitterOptions(options);

@@ -26,7 +26,7 @@ export type ApplicationConfig = {
   };
 }
 
-export const DefaultApplicationConfig: ApplicationConfig = {
+export const defaultApplicationConfig: ApplicationConfig = {
   logLevel: LogLevel.Info,
   enablePerformanceMonitoring: true,
   enableMemoryMonitoring: true,
@@ -53,7 +53,7 @@ export const ApplicationConfigService = Context.GenericTag<ApplicationConfigServ
 
 // APPLICATION CONFIG SERVICE IMPLEMENTATION
 const makeApplicationConfigService = Effect.gen(function* () {
-  let currentConfig = DefaultApplicationConfig;
+  let currentConfig = defaultApplicationConfig;
   
   const getConfig = (): Effect.Effect<ApplicationConfig, never> =>
     Effect.succeed(currentConfig);
@@ -82,7 +82,7 @@ const makeApplicationConfigService = Effect.gen(function* () {
   });
 });
 
-export const ApplicationConfigServiceLive = Layer.effect(ApplicationConfigService, makeApplicationConfigService);
+export const applicationConfigServiceLive = Layer.effect(ApplicationConfigService, makeApplicationConfigService);
 
 // MONITORING SUPERVISOR SERVICE
 export type MonitoringSupervisorService = {
@@ -155,7 +155,7 @@ const makeMonitoringSupervisorService = Effect.gen(function* () {
   });
 });
 
-export const MonitoringSupervisorServiceLive = Layer.effect(MonitoringSupervisorService, makeMonitoringSupervisorService);
+export const monitoringSupervisorServiceLive = Layer.effect(MonitoringSupervisorService, makeMonitoringSupervisorService);
 
 // APPLICATION HEALTH SERVICE
 export type ApplicationHealthService = {
@@ -260,32 +260,32 @@ const makeApplicationHealthService = Effect.gen(function* () {
   });
 });
 
-export const ApplicationHealthServiceLive = Layer.effect(ApplicationHealthService, makeApplicationHealthService);
+export const applicationHealthServiceLive = Layer.effect(ApplicationHealthService, makeApplicationHealthService);
 
 // COMPLETE APPLICATION LAYER COMPOSITION
 
 /**
  * Production layer with all services and monitoring
  */
-export const ApplicationLayerLive = Layer.mergeAll(
-  ApplicationConfigServiceLive,
+export const applicationLayerLive = Layer.mergeAll(
+  applicationConfigServiceLive,
   PerformanceMetricsServiceLive,
   MemoryMonitorServiceLive,
   EmitterServiceLive
 ).pipe(
-  Layer.provide(ApplicationConfigServiceLive)
+  Layer.provide(applicationConfigServiceLive)
 ).pipe(
-  Layer.merge(MonitoringSupervisorServiceLive),
-  Layer.merge(ApplicationHealthServiceLive)
+  Layer.merge(monitoringSupervisorServiceLive),
+  Layer.merge(applicationHealthServiceLive)
 );
 
 /**
  * Development layer with enhanced logging and debugging
  */
-export const DevelopmentApplicationLayerLive = ApplicationLayerLive.pipe(
+export const developmentApplicationLayerLive = applicationLayerLive.pipe(
   Layer.provide(Layer.succeed(ApplicationConfigService, {
     getConfig: () => Effect.succeed({
-      ...DefaultApplicationConfig,
+      ...defaultApplicationConfig,
       logLevel: LogLevel.Debug,
       monitoringIntervals: {
         performanceMs: 10000, // More frequent in development
@@ -293,23 +293,23 @@ export const DevelopmentApplicationLayerLive = ApplicationLayerLive.pipe(
       }
     } as ApplicationConfig),
     updateConfig: () => Effect.void,
-    isPerformanceMonitoringEnabled: () => Effect.succeed(DefaultApplicationConfig.enablePerformanceMonitoring),
-    isMemoryMonitoringEnabled: () => Effect.succeed(DefaultApplicationConfig.enableMemoryMonitoring)
+    isPerformanceMonitoringEnabled: () => Effect.succeed(defaultApplicationConfig.enablePerformanceMonitoring),
+    isMemoryMonitoringEnabled: () => Effect.succeed(defaultApplicationConfig.enableMemoryMonitoring)
   }))
 );
 
 /**
  * Test layer with minimal monitoring for fast test execution
  */
-export const TestApplicationLayerLive = Layer.mergeAll(
-  ApplicationConfigServiceLive,
+export const testApplicationLayerLive = Layer.mergeAll(
+  applicationConfigServiceLive,
   PerformanceMetricsServiceLive,
   MemoryMonitorServiceLive,
   EmitterServiceLive
 ).pipe(
   Layer.provide(Layer.succeed(ApplicationConfigService, {
     getConfig: () => Effect.succeed({
-      ...DefaultApplicationConfig,
+      ...defaultApplicationConfig,
       enablePerformanceMonitoring: false,
       enableMemoryMonitoring: false,
       logLevel: LogLevel.Warning
@@ -323,10 +323,10 @@ export const TestApplicationLayerLive = Layer.mergeAll(
 /**
  * High-performance layer optimized for production workloads
  */
-export const HighPerformanceApplicationLayerLive = ApplicationLayerLive.pipe(
+export const highPerformanceApplicationLayerLive = applicationLayerLive.pipe(
   Layer.provide(Layer.succeed(ApplicationConfigService, {
     getConfig: () => Effect.succeed({
-      ...DefaultApplicationConfig,
+      ...defaultApplicationConfig,
       logLevel: LogLevel.Warning, // Minimal logging for performance
       performanceTargets: {
         throughputOpsPerSec: 50000, // Higher target for production
@@ -394,27 +394,27 @@ export const shutdownApplication = (): Effect.Effect<void, never, MonitoringSupe
 /**
  * Get application layer based on environment
  */
-export const getApplicationLayer = (environment: "development" | "test" | "production" | "high-performance" = "production") => {
+export const getApplicationLayer = (environment: "development" | "test" | "production" | "high-performance" = "production"): Layer.Layer<ApplicationConfigService | PerformanceMetricsService | MemoryMonitorService | EmitterService | MonitoringSupervisorService | ApplicationHealthService> => {
   switch (environment) {
     case "development":
-      return DevelopmentApplicationLayerLive;
+      return developmentApplicationLayerLive;
     case "test":
-      return TestApplicationLayerLive;
+      return testApplicationLayerLive;
     case "high-performance":
-      return HighPerformanceApplicationLayerLive;
+      return highPerformanceApplicationLayerLive;
     case "production":
     default:
-      return ApplicationLayerLive;
+      return applicationLayerLive;
   }
 };
 
 /**
  * Create custom application layer with specific configuration
  */
-export const createCustomApplicationLayer = (config: Partial<ApplicationConfig>) =>
-  ApplicationLayerLive.pipe(
+export const createCustomApplicationLayer = (config: Partial<ApplicationConfig>): Layer.Layer<ApplicationConfigService | PerformanceMetricsService | MemoryMonitorService | EmitterService | MonitoringSupervisorService | ApplicationHealthService> =>
+  applicationLayerLive.pipe(
     Layer.provide(Layer.succeed(ApplicationConfigService, {
-      getConfig: () => Effect.succeed({ ...DefaultApplicationConfig, ...config } as ApplicationConfig),
+      getConfig: () => Effect.succeed({ ...defaultApplicationConfig, ...config } as ApplicationConfig),
       updateConfig: () => Effect.void,
       isPerformanceMonitoringEnabled: () => Effect.succeed(config.enablePerformanceMonitoring ?? true),
       isMemoryMonitoringEnabled: () => Effect.succeed(config.enableMemoryMonitoring ?? true)

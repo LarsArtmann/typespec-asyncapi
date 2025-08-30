@@ -38,7 +38,10 @@
       "Bash(bun build:*)",
       "Bash(bun:*)",
       "Bash(sed:*)",
-      "Bash(timeout:*)"
+      "Bash(timeout:*)",
+      "Bash(gh issue close:*)",
+      "Bash(gh issue close:*)",
+      "Bash(git tag:*)"
     ],
     "deny": [],
     "ask": []

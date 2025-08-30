@@ -1,5 +1,5 @@
 import type { DecoratorContext, Model } from "@typespec/compiler";
-import { reportDiagnostic, stateKeys } from "../lib.js";
+import { stateKeys } from "../lib.js";
 
 export type MessageConfig = {
   /** Unique identifier for the message */
@@ -52,22 +52,13 @@ export function $message(
   console.log(`=� Message config:`, config);
   console.log(`<�  Target type: ${target.kind}`);
   
-  if (target.kind !== "Model") {
-    reportDiagnostic(context.program, {
-      code: "invalid-message-target",
-      target: target,
-      format: { targetType: target.kind },
-    });
-    return;
-  }
+  // Target is always Model type - no validation needed
 
   // Validate message configuration
-  const messageConfig = config || {};
+  const messageConfig = config ?? {};
   
   // Extract message name from model name if not provided
-  if (!messageConfig.name) {
-    messageConfig.name = target.name;
-  }
+  messageConfig.name ??= target.name;
 
   console.log(`=� Processed message config:`, messageConfig);
 
@@ -100,7 +91,7 @@ export function $message(
  */
 export function getMessageConfig(context: DecoratorContext, target: Model): MessageConfig | undefined {
   const messageMap = context.program.stateMap(stateKeys.messageConfigs);
-  return messageMap.get(target);
+  return messageMap.get(target) as MessageConfig | undefined;
 }
 
 /**
