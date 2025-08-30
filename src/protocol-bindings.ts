@@ -7,37 +7,7 @@
  * - HTTP
  */
 
-// Define basic schema types locally to fix import issues
-type SchemaObject = {
-  type?: string;
-  properties?: Record<string, SchemaObject>;
-  items?: SchemaObject;
-  required?: string[];
-  description?: string;
-  format?: string;
-  minimum?: number;
-  maximum?: number;
-  minLength?: number;
-  maxLength?: number;
-  pattern?: string;
-  enum?: unknown[];
-  const?: unknown;
-  oneOf?: SchemaObject[];
-  anyOf?: SchemaObject[];
-  allOf?: SchemaObject[];
-  not?: SchemaObject;
-  additionalProperties?: boolean | SchemaObject;
-  default?: unknown;
-  example?: unknown;
-  examples?: unknown[];
-  title?: string;
-  multipleOf?: number;
-  minItems?: number;
-  maxItems?: number;
-  uniqueItems?: boolean;
-  minProperties?: number;
-  maxProperties?: number;
-};
+import type { SchemaObject } from "./types/asyncapi-schema.js";
 
 type ReferenceObject = {
   $ref: string;

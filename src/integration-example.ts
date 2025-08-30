@@ -120,7 +120,7 @@ export type EmitterService = {
   initializeEmitter: (context: EmitContext<object>) => Effect.Effect<void, EmitterInitializationError>;
 }
 
-export const EmitterService = Context.GenericTag<EmitterService>("EmitterService");
+export const emitterService = Context.GenericTag<EmitterService>("EmitterService");
 
 // EMITTER SERVICE IMPLEMENTATION
 const makeEmitterService = Effect.gen(function* () {
@@ -135,7 +135,7 @@ const makeEmitterService = Effect.gen(function* () {
       const spec = {
         asyncapi: "3.0.0",
         info: {
-          title: `Generated API - ${options["output-file"] || 'asyncapi'}`,
+          title: `Generated API - ${options["output-file"] ?? 'asyncapi'}`,
           version: "1.0.0"
         },
         channels: {},
@@ -205,7 +205,7 @@ const makeEmitterService = Effect.gen(function* () {
       })
     );
   
-  return EmitterService.of({
+  return emitterService.of({
     generateSpec,
     validateSpec,
     writeOutput,
@@ -214,7 +214,7 @@ const makeEmitterService = Effect.gen(function* () {
 });
 
 // EFFECT LAYER for dependency injection
-export const emitterServiceLive = Layer.effect(EmitterService, makeEmitterService);
+export const emitterServiceLive = Layer.effect(emitterService, makeEmitterService);
 
 /**
  * Pure Effect.TS TypeSpec emitter function with Railway Programming
@@ -225,7 +225,7 @@ export const onEmitEffect = (
   options: unknown
 ): Effect.Effect<void, EmitterInitializationError | SpecGenerationError | SpecValidationError | EmitterTimeoutError | MetricsInitializationError | MetricsCollectionError | MemoryThresholdExceededError | MemoryMonitorInitializationError | AsyncAPIOptionsValidationError | AsyncAPIOptionsParseError, PerformanceMetricsService | MemoryMonitorService | EmitterService> =>
   Effect.gen(function* () {
-    const emitterService = yield* EmitterService;
+    const emitterSvc = yield* emitterService;
     const performanceMetrics = yield* PerformanceMetricsService;
     const memoryMonitor = yield* MemoryMonitorService;
     
@@ -233,7 +233,7 @@ export const onEmitEffect = (
     const measurement = yield* performanceMetrics.startMeasurement("asyncapi-emit");
     
     // Step 1: Initialize emitter with error handling
-    yield* emitterService.initializeEmitter(context).pipe(
+    yield* emitterSvc.initializeEmitter(context).pipe(
       Effect.catchTag("EmitterInitializationError", error =>
         Effect.gen(function* () {
           yield* Effect.logError("Emitter initialization failed", {
@@ -293,7 +293,7 @@ export const onEmitEffect = (
       // Use: Generate specification with memory tracking
       ({ options: opts }) =>
         withMemoryTracking(
-          emitterService.generateSpec(opts),
+          emitterSvc.generateSpec(opts),
           "spec-generation"
         ).pipe(
           Effect.catchAll(error => {
@@ -338,7 +338,7 @@ export const onEmitEffect = (
     // Step 5: Validate generated spec if requested
     if (finalOptions["validate-spec"]) {
       yield* withMemoryTracking(
-        emitterService.validateSpec(generatedSpec),
+        emitterSvc.validateSpec(generatedSpec),
         "spec-validation"
       ).pipe(
         Effect.flatMap(isValid =>
@@ -565,8 +565,8 @@ export function generateAsyncAPISpecMock(options: AsyncAPIEmitterOptions): void 
   console.log("Generating AsyncAPI spec with options:", options);
   
   // Mock implementation - replace with actual emitter logic
-  const outputFile = options["output-file"] || "asyncapi";
-  const fileType = options["file-type"] || "yaml";
+  const outputFile = options["output-file"] ?? "asyncapi";
+  const fileType = options["file-type"] ?? "yaml";
   
   console.log(`Would generate: ${outputFile}.${fileType}`);
   
@@ -611,7 +611,7 @@ export const processOptionsWithTransformation = (input: unknown): Effect.Effect<
     const validated = yield* validateAsyncAPIEmitterOptions(input);
     
     // Transform based on environment
-    const environment = process.env["NODE_ENV"] || "development";
+    const environment = process.env["NODE_ENV"] ?? "development";
     const transformed: Partial<AsyncAPIEmitterOptions> = {};
     
     // Copy existing properties (excluding undefined values)
