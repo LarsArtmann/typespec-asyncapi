@@ -1,4 +1,4 @@
-import { Program, Diagnostic, DiagnosticTarget, SourceLocation, createDiagnostic } from "@typespec/compiler";
+import type { Program, Diagnostic, SourceLocation } from "@typespec/compiler";
 import { reportDiagnostic } from "../lib.js";
 import type { ErrorContext, ErrorSeverity } from "./index.js";
 

@@ -1,4 +1,4 @@
-import type { DecoratorContext, Namespace, DecoratorArgument, StringValue, Model } from "@typespec/compiler";
+import type { DecoratorContext, Namespace, StringValue, Model } from "@typespec/compiler";
 import { reportDiagnostic, stateKeys } from "../lib.js";
 
 export interface ServerConfig {
@@ -28,14 +28,15 @@ export function $server(
     return;
   }
 
-  // Extract server name from TypeSpec value
+  // Extract server name from TypeSpec value with proper type handling
   let serverName: string;
   if (typeof name === "string") {
     serverName = name;
-  } else if (name && typeof name === "object" && "value" in name) {
+  } else if (name && typeof name === "object" && "value" in name && name.value !== undefined) {
     serverName = String(name.value);
-  } else if (name && typeof name === "object" && "kind" in name && name.kind === "String") {
-    serverName = String((name as StringValue).value || name);
+  } else if (name && typeof name === "object" && "valueKind" in name && (name as StringValue).valueKind === "StringValue") {
+    const stringValue = name as StringValue;
+    serverName = String(stringValue.value);
   } else {
     console.log(`⚠️  Could not extract string from server name:`, name);
     reportDiagnostic(context.program, {
@@ -113,21 +114,51 @@ export function $server(
 function extractServerConfigFromObject(obj: Model | Record<string, unknown>): Partial<ServerConfig> {
   const config: Partial<ServerConfig> = {};
   
-  if ("properties" in obj && obj.properties) {
-    for (const [key, value] of obj.properties) {
-      const keyStr = typeof key === "string" ? key : (key as StringValue).value || String(key);
+  if ("properties" in obj && obj.properties && typeof obj.properties === "object" && "entries" in obj.properties) {
+    // Handle Model type with RekeyableMap
+    const modelObj = obj as Model;
+    modelObj.properties.forEach((modelProperty, key) => {
+      const keyStr = key;
       let valueStr: string | undefined;
       
-      if (typeof value === "string") {
-        valueStr = value;
-      } else if (value && typeof value === "object" && "value" in value) {
-        valueStr = String((value as StringValue).value);
-      } else if (value && typeof value === "object" && "kind" in value && value.kind === "String") {
-        valueStr = String((value as StringValue).value || value);
+      // Extract value from ModelProperty.type or ModelProperty.defaultValue
+      const propertyValue = modelProperty.defaultValue;
+      if (propertyValue && typeof propertyValue === "object" && "valueKind" in propertyValue && (propertyValue as StringValue).valueKind === "StringValue") {
+        const stringValue = propertyValue as StringValue;
+        valueStr = String(stringValue.value);
       }
       
       if (valueStr) {
         switch (keyStr) {
+          case "url":
+            config.url = valueStr;
+            break;
+          case "protocol":
+            config.protocol = valueStr;
+            break;
+          case "description":
+            config.description = valueStr;
+            break;
+        }
+      }
+    });
+  } else if (obj && typeof obj === "object" && !("properties" in obj)) {
+    // Handle Record<string, unknown> type
+    const recordObj = obj as Record<string, unknown>;
+    for (const [key, value] of Object.entries(recordObj)) {
+      let valueStr: string | undefined;
+      
+      if (typeof value === "string") {
+        valueStr = value;
+      } else if (value && typeof value === "object" && "value" in value && value.value !== undefined) {
+        valueStr = String((value as StringValue).value);
+      } else if (value && typeof value === "object" && "valueKind" in value && (value as StringValue).valueKind === "StringValue") {
+        const stringValue = value as StringValue;
+        valueStr = String(stringValue.value);
+      }
+      
+      if (valueStr) {
+        switch (key) {
           case "url":
             config.url = valueStr;
             break;

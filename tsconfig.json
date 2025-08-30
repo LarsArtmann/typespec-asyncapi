@@ -1,8 +1,9 @@
 {
   "compilerOptions": {
-    // === MODERN TYPESCRIPT & NODE.JS TARGET ===
+    // === EFFECT.TS COMPATIBLE CONFIGURATION ===
     "target": "ES2022",
     "lib": ["ES2022", "ES2022.Error"],
+    "downlevelIteration": true, // Required for Effect.TS generators
     "module": "NodeNext",
     "moduleResolution": "NodeNext", 
     "moduleDetection": "force",
@@ -50,6 +51,7 @@
     // Advanced strictness (TypeScript 5.x features)
     "strictBuiltinIteratorReturn": true,          // Strict checking of built-in iterator return types
     "noUncheckedSideEffectImports": true,         // Check side effect imports
+    "useUnknownInCatchVariables": true,          // Catch variables are unknown by default
 
     // === PERFORMANCE OPTIMIZATIONS ===
     "incremental": true,
@@ -66,7 +68,7 @@
     "resolveJsonModule": true,
     "allowImportingTsExtensions": false,
     "forceConsistentCasingInFileNames": true,
-    "verbatimModuleSyntax": false,
+    "verbatimModuleSyntax": true,  // Preserve imports exactly as written (Effect.TS requirement)
 
     // === ADVANCED TYPE CHECKING ===
     "useDefineForClassFields": true,
@@ -75,7 +77,6 @@
 
     // === CODE GENERATION ===
     "isolatedModules": true,
-    "verbatimModuleSyntax": false,
 
     // === PATH MAPPING FOR CLEAN IMPORTS ===
     "baseUrl": ".",

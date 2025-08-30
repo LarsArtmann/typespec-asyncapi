@@ -1,0 +1,191 @@
+<svg width="1000" height="520" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="chart-title chart-subtitle"><defs><style><![CDATA[
+		.project-name { 
+			font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; 
+			font-size: 16.0px; 
+			font-weight: 500; 
+			fill: #4269d0; 
+			letter-spacing: -0.005em;
+			line-height: 1.2;
+		}
+		.chart-title { 
+			font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; 
+			font-size: 18.0px; 
+			font-weight: 600; 
+			fill: #111827; 
+			letter-spacing: -0.02em;
+			line-height: 1.1;
+		}
+		.chart-subtitle { 
+			font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; 
+			font-size: 14.0px; 
+			font-weight: 400; 
+			fill: #6b7280;
+			letter-spacing: -0.005em;
+			line-height: 1.3;
+		}
+		.axis-label { 
+			font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; 
+			font-size: 11.0px; 
+			font-weight: 400; 
+			fill: #9ca3af;
+			letter-spacing: 0em;
+		}
+		.axis-title { 
+			font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; 
+			font-size: 12.0px; 
+			font-weight: 500; 
+			fill: #4b5563;
+			letter-spacing: -0.005em;
+		}
+		.legend-title { 
+			font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; 
+			font-size: 12.0px; 
+			font-weight: 600; 
+			fill: #374151;
+			letter-spacing: -0.01em;
+		}
+		.legend-text { 
+			font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; 
+			font-size: 11.0px; 
+			font-weight: 400; 
+			fill: #4b5563;
+			letter-spacing: 0em;
+		}
+		.legend-count { 
+			font-family: ui-monospace, 'SF Mono', 'Monaco', 'Cascadia Code', monospace; 
+			font-size: 10.0px; 
+			font-weight: 500; 
+			fill: #6b7280;
+			letter-spacing: 0.05em;
+		}
+		.meta-text { 
+			font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; 
+			font-size: 10.0px; 
+			font-weight: 400;
+			fill: #9ca3af;
+			letter-spacing: 0em;
+		}
+		.grid-line { 
+			stroke: #f1f5f9; 
+			stroke-width: 0.5; 
+			opacity: 1;
+		}
+		.grid-line-major { 
+			stroke: #e2e8f0; 
+			stroke-width: 0.75; 
+			opacity: 1;
+		}
+		.chart-area { 
+			fill: #ffffff;
+		}
+		.chart-border { 
+			stroke: none;
+			fill: none;
+		}
+		.trend-line { 
+			fill: none; 
+			stroke-width: 2; 
+			stroke-linecap: round; 
+			stroke-linejoin: round; 
+			opacity: 0.9;
+			transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+			cursor: pointer;
+		}
+		.trend-line:hover { 
+			stroke-width: 3;
+			opacity: 1;
+			filter: drop-shadow(0 0 4px rgba(0,0,0,0.1));
+		}
+		.trend-line:focus { 
+			outline: 2px solid #4269d0;
+			outline-offset: 2px;
+			stroke-width: 3;
+		}
+		.data-point { 
+			fill: #ffffff;
+			stroke-width: 2;
+			transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+			cursor: pointer;
+		}
+		.data-point:hover { 
+			r: 6;
+			stroke: #ffffff;
+			stroke-width: 3;
+			filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+		}
+		.data-point:focus { 
+			outline: 2px solid #4269d0;
+			outline-offset: 2px;
+			r: 6;
+		}
+		.data-point:active {
+			transform: scale(0.95);
+		}
+		.legend-background { 
+			fill: #fafafa; 
+			stroke: #e4e4e7; 
+			stroke-width: 0.5; 
+			rx: 6;
+			transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+		}
+		.legend-background:hover {
+			stroke: #d1d5db;
+			fill: #ffffff;
+		}
+		.legend-item { 
+			cursor: pointer;
+			transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+		}
+		.legend-item:hover {
+			opacity: 1;
+			transform: translateX(2px);
+		}
+		.legend-item:focus {
+			outline: 2px solid #4269d0;
+			outline-offset: 1px;
+			border-radius: 4px;
+		}
+		.legend-color-indicator { 
+			rx: 1;
+			transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+		}
+		.legend-item:hover .legend-color-indicator {
+			rx: 2;
+			transform: scale(1.1);
+			filter: drop-shadow(0 1px 3px rgba(0,0,0,0.1));
+		}
+		.legend-text {
+			transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+		}
+		.legend-item:hover .legend-text {
+			fill: #111827;
+			font-weight: 500;
+		}
+		@media (prefers-reduced-motion: reduce) {
+			* {
+				transition: none !important;
+				animation: none !important;
+			}
+		}
+	]]></style></defs><rect width="1000" height="520" fill="#ffffff"/><text id="chart-title" x="500" y="28" class="project-name" text-anchor="middle">typespec-asyncapi</text><text x="500" y="48" class="chart-title" text-anchor="middle">Language Trends</text><text id="chart-subtitle" x="500" y="65" class="chart-subtitle" text-anchor="middle">Lines of code over time</text><rect x="80" y="90" width="680" height="330" class="chart-area"/><line x1="80" y1="90" x2="760" y2="90" class="grid-line-major"/><line x1="80" y1="156" x2="760" y2="156" class="grid-line"/><line x1="80" y1="222" x2="760" y2="222" class="grid-line"/><line x1="80" y1="288" x2="760" y2="288" class="grid-line"/><line x1="80" y1="354" x2="760" y2="354" class="grid-line"/><line x1="80" y1="420" x2="760" y2="420" class="grid-line-major"/><circle cx="80.0" cy="420.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="TypeScript: 0 lines (Aug 29, 2025)"><title>TypeScript: 0 lines (Aug 29, 2025)</title></circle><circle cx="655.0" cy="379.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="TypeScript: 3.4K lines (Aug 29, 2025)"><title>TypeScript: 3.4K lines (Aug 29, 2025)</title></circle><circle cx="707.0" cy="282.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="TypeScript: 11.5K lines (Aug 30, 2025)"><title>TypeScript: 11.5K lines (Aug 30, 2025)</title></circle><circle cx="760.0" cy="274.0" r="3" fill="#4269d0" class="data-point" tabindex="0" role="img" aria-label="TypeScript: 12.2K lines (Aug 30, 2025)"><title>TypeScript: 12.2K lines (Aug 30, 2025)</title></circle><path d="M 80.00 420.00 L 132.00 420.00 L 184.00 414.00 L 236.00 414.00 L 289.00 413.00 L 341.00 413.00 L 393.00 407.00 L 446.00 409.00 L 498.00 409.00 L 550.00 392.00 L 603.00 390.00 L 655.00 379.00 L 707.00 282.00 L 760.00 274.00" stroke="#4269d0" class="trend-line" tabindex="0" role="img" aria-label="TypeScript trend line"><title>TypeScript: 37.3K lines (optimized from 14 to 14 points)</title></path><circle cx="80.0" cy="419.0" r="3" fill="#3ca951" class="data-point" tabindex="0" role="img" aria-label="JSON: 142 lines (Aug 29, 2025)"><title>JSON: 142 lines (Aug 29, 2025)</title></circle><circle cx="707.0" cy="309.0" r="3" fill="#3ca951" class="data-point" tabindex="0" role="img" aria-label="JSON: 9.3K lines (Aug 30, 2025)"><title>JSON: 9.3K lines (Aug 30, 2025)</title></circle><circle cx="760.0" cy="309.0" r="3" fill="#3ca951" class="data-point" tabindex="0" role="img" aria-label="JSON: 9.3K lines (Aug 30, 2025)"><title>JSON: 9.3K lines (Aug 30, 2025)</title></circle><path d="M 80.00 419.00 L 132.00 419.00 L 184.00 419.00 L 236.00 419.00 L 289.00 419.00 L 341.00 419.00 L 393.00 419.00 L 446.00 419.00 L 498.00 419.00 L 550.00 419.00 L 603.00 419.00 L 655.00 418.00 L 707.00 309.00 L 760.00 309.00" stroke="#3ca951" class="trend-line" tabindex="0" role="img" aria-label="JSON trend line"><title>JSON: 20.4K lines (optimized from 14 to 14 points)</title></path><circle cx="80.0" cy="418.0" r="3" fill="#3ca951" class="data-point" tabindex="0" role="img" aria-label="Markdown: 229 lines (Aug 29, 2025)"><title>Markdown: 229 lines (Aug 29, 2025)</title></circle><circle cx="760.0" cy="383.0" r="3" fill="#3ca951" class="data-point" tabindex="0" role="img" aria-label="Markdown: 3.1K lines (Aug 30, 2025)"><title>Markdown: 3.1K lines (Aug 30, 2025)</title></circle><path d="M 80.00 418.00 L 132.00 414.00 L 184.00 414.00 L 236.00 414.00 L 289.00 414.00 L 341.00 414.00 L 393.00 402.00 L 446.00 402.00 L 498.00 400.00 L 550.00 396.00 L 603.00 396.00 L 655.00 393.00 L 707.00 388.00 L 760.00 383.00" stroke="#3ca951" class="trend-line" tabindex="0" role="img" aria-label="Markdown trend line"><title>Markdown: 20.0K lines (optimized from 14 to 14 points)</title></path><circle cx="80.0" cy="420.0" r="3" fill="#3ca951" class="data-point" tabindex="0" role="img" aria-label="TypeSpec: 0 lines (Aug 29, 2025)"><title>TypeSpec: 0 lines (Aug 29, 2025)</title></circle><circle cx="760.0" cy="418.0" r="3" fill="#3ca951" class="data-point" tabindex="0" role="img" aria-label="TypeSpec: 214 lines (Aug 30, 2025)"><title>TypeSpec: 214 lines (Aug 30, 2025)</title></circle><path d="M 80.00 420.00 L 132.00 420.00 L 184.00 420.00 L 236.00 420.00 L 289.00 420.00 L 341.00 420.00 L 393.00 419.00 L 446.00 419.00 L 498.00 419.00 L 550.00 419.00 L 603.00 418.00 L 655.00 418.00 L 707.00 418.00 L 760.00 418.00" stroke="#3ca951" class="trend-line" tabindex="0" role="img" aria-label="TypeSpec trend line"><title>TypeSpec: 1.5K lines (optimized from 14 to 14 points)</title></path><text x="65" y="420" class="axis-label" text-anchor="end" dominant-baseline="middle">0</text><text x="65" y="338" class="axis-label" text-anchor="end" dominant-baseline="middle">6.9K</text><text x="65" y="255" class="axis-label" text-anchor="end" dominant-baseline="middle">13.8K</text><text x="65" y="173" class="axis-label" text-anchor="end" dominant-baseline="middle">20.6K</text><text x="65" y="90" class="axis-label" text-anchor="end" dominant-baseline="middle">27.5K</text><text x="80" y="440" class="axis-label" text-anchor="middle">Aug 25</text><text x="236" y="440" class="axis-label" text-anchor="middle">Aug 29</text><text x="393" y="440" class="axis-label" text-anchor="middle">Aug 29, 25</text><text x="550" y="440" class="axis-label" text-anchor="middle">Aug 29, 25</text><text x="760" y="440" class="axis-label" text-anchor="middle">Aug 25</text><text x="20" y="255" class="axis-title" text-anchor="middle" transform="rotate(-90 20 255)">Lines</text><rect x="758" y="88" width="180" height="112" class="legend-background"/><text x="770" y="116" class="legend-title">Languages</text><g class="legend-item" tabindex="0" role="button" aria-label="TypeScript: 37.3K lines"><circle cx="775" cy="132" r="5" fill="#efb118" class="legend-color-indicator"/><text x="788" y="132" class="legend-text" dominant-baseline="middle">TypeScript</text><text x="940" y="132" class="legend-count" dominant-baseline="middle" text-anchor="end">37.3K</text><title>TypeScript: 37.3K lines</title></g><g class="legend-item" tabindex="0" role="button" aria-label="JSON: 20.4K lines"><circle cx="775" cy="150" r="5" fill="#efb118" class="legend-color-indicator"/><text x="788" y="150" class="legend-text" dominant-baseline="middle">JSON</text><text x="940" y="150" class="legend-count" dominant-baseline="middle" text-anchor="end">20.4K</text><title>JSON: 20.4K lines</title></g><g class="legend-item" tabindex="0" role="button" aria-label="Markdown: 20.0K lines"><circle cx="775" cy="168" r="5" fill="#9498a0" class="legend-color-indicator"/><text x="788" y="168" class="legend-text" dominant-baseline="middle">Markdown</text><text x="940" y="168" class="legend-count" dominant-baseline="middle" text-anchor="end">20.0K</text><title>Markdown: 20.0K lines</title></g><g class="legend-item" tabindex="0" role="button" aria-label="TypeSpec: 1.5K lines"><circle cx="775" cy="186" r="5" fill="#9498a0" class="legend-color-indicator"/><text x="788" y="186" class="legend-text" dominant-baseline="middle">TypeSpec</text><text x="940" y="186" class="legend-count" dominant-baseline="middle" text-anchor="end">1.5K</text><title>TypeSpec: 1.5K lines</title></g>
+		<style>
+		.insight-annotation {
+			font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+			font-size: 11px;
+			font-weight: 600;
+			pointer-events: none;
+		}
+		.insight-callout {
+			fill: #ffffff;
+			stroke-width: 1;
+			rx: 4;
+			filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+		}
+		.insight-leader-line {
+			stroke: #9ca3af;
+			stroke-width: 1;
+			stroke-dasharray: 2,2;
+			opacity: 0.7;
+		}
+		</style>
+	<rect x="635.0" y="95.0" width="198" height="20" class="insight-callout" stroke="#4269d0"/><text x="640.0" y="110.0" class="insight-annotation" fill="#4269d0">👑 TypeScript dominates (46.8%)</text><rect x="605.0" y="145.0" width="108" height="20" class="insight-callout" stroke="#3ca951"/><text x="610.0" y="160.0" class="insight-annotation" fill="#3ca951">📈 +6425% growth</text><rect x="95.0" y="195.0" width="192" height="20" class="insight-callout" stroke="#ff8ab7"/><text x="100.0" y="210.0" class="insight-annotation" fill="#ff8ab7">✨ TypeScript appeared (15.3%)</text><text x="60" y="505" class="meta-text">Aug 25 to Aug 25 • 14 commits • 24.9K total lines • 6598.7% growth 📈 • 1 contributor: Lars Artmann</text></svg>

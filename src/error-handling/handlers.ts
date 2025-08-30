@@ -4,8 +4,7 @@ import type { AsyncAPIEmitterOptions } from "../options.js";
 import type { 
   ErrorHandler, 
   ErrorContext, 
-  ErrorHandlingResult, 
-  ErrorHandlingConfig 
+  ErrorHandlingResult
 } from "./index.js";
 import {
   createValidationError,

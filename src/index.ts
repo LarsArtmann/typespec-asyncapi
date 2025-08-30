@@ -1,7 +1,7 @@
 import type { EmitContext } from "@typespec/compiler";
 import { $lib } from "./lib.js";
 import type { AsyncAPIEmitterOptions } from "./options.js";
-import { generateAsyncAPI } from "./simple-emitter.js";
+import { generateAsyncAPI } from "./asyncapi-emitter.js";
 
 export { $lib } from "./lib.js";
 export type { AsyncAPIEmitterOptions } from "./options.js";

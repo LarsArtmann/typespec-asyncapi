@@ -1,11 +1,11 @@
-import type { EmitContext, Operation, Model, Program, Namespace, ModelProperty, Type, AssetEmitter } from "@typespec/compiler";
-import { createAssetEmitter, TypeEmitter, type SourceFile } from "@typespec/asset-emitter";
+import type { EmitContext, Operation, Model, Program, Namespace, ModelProperty } from "@typespec/compiler";
+import { createAssetEmitter, TypeEmitter, type AssetEmitter, type SourceFile } from "@typespec/asset-emitter";
 import { emitFile, getDoc } from "@typespec/compiler";
 import { stringify } from "yaml";
 import { dirname } from "node:path";
 import type { AsyncAPIEmitterOptions } from "./options.js";
 import { stateKeys } from "./lib.js";
-import type { AsyncAPIDocument, ChannelObject, OperationObject, SchemaObject } from "./types/asyncapi.js";
+import type { ChannelObject, OperationObject, SchemaObject } from "./types/asyncapi.js";
 import { 
   resolvePathTemplateWithValidation, 
   hasTemplateVariables, 
@@ -44,13 +44,13 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
     this.asyncApiDoc = this.createAsyncAPIDocument([]);
   }
 
-  override programContext(program: Program): Record<string, unknown> {
+  programContext(_program: Program): Record<string, unknown> {
     return {
       program: "AsyncAPI",
     };
   }
 
-  override async writeOutput(sourceFiles: SourceFile<string>[]): Promise<void> {
+  async writeOutput(_sourceFiles: SourceFile<string>[]): Promise<void> {
     // Discover all operations from the program
     this.operations = this.discoverOperations(this.emitter.getProgram());
     this.asyncApiDoc = this.createAsyncAPIDocument(this.operations);
@@ -64,7 +64,7 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
     await this.generateOutputFile();
   }
 
-  override async sourceFile(sourceFile: SourceFile<string>): Promise<{ path: string; content: string }> {
+  async sourceFile(_sourceFile: SourceFile<string>): Promise<{ path: string; content: string }> {
     // For AssetEmitter compatibility, return the raw content directly
     const options = this.emitter.getOptions();
     const program = this.emitter.getProgram();
@@ -106,17 +106,17 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
 
   private walkNamespace(ns: Namespace, operations: Operation[], program: Program): void {
     if (ns.operations) {
-      for (const [name, operation] of ns.operations) {
+      ns.operations.forEach((operation, name) => {
         operations.push(operation);
         console.log(`🔍 FOUND REAL OPERATION: ${name} (kind: ${operation.kind})`);
         this.logOperationDetails(operation, program);
-      }
+      });
     }
     
     if (ns.namespaces) {
-      for (const [_, childNs] of ns.namespaces) {
+      ns.namespaces.forEach((childNs, _) => {
         this.walkNamespace(childNs, operations, program);
-      }
+      });
     }
   }
 
@@ -130,9 +130,9 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
     }
     
     if (operation.parameters?.properties) {
-      for (const [paramName, param] of operation.parameters.properties) {
+      operation.parameters.properties.forEach((param, paramName) => {
         console.log(`  - Parameter: ${paramName} (${param.type.kind})`);
-      }
+      });
     }
   }
 
@@ -172,7 +172,7 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
     const operationType = operationTypesMap.get(op);
     
     // Determine action based on decorator type
-    let action = "send"; // default for @publish or no decorator
+    let action: "send" | "receive" = "send"; // default for @publish or no decorator
     if (operationType === "subscribe") {
       action = "receive";
     } else if (operationType === "publish") {
@@ -210,7 +210,7 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
     const properties: Record<string, SchemaObject> = {};
     const required: string[] = [];
     
-    for (const [propName, prop] of model.properties) {
+    model.properties.forEach((prop, propName) => {
       console.log(`  - Property: ${propName} (${prop.type.kind}) required: ${!prop.optional}`);
       
       const typeInfo = this.getPropertyType(prop);
@@ -222,13 +222,13 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
       if (!prop.optional) {
         required.push(propName);
       }
-    }
+    });
     
     return { properties, required };
   }
 
-  private getPropertyType(prop: ModelProperty): { type: string, format?: string } {
-    let propType = "string"; // Default
+  private getPropertyType(prop: ModelProperty): { type: "string" | "number" | "boolean" | "object" | "array" | "null" | "integer", format?: string } {
+    let propType: "string" | "number" | "boolean" | "object" | "array" | "null" | "integer" = "string"; // Default
     let format: string | undefined;
     
     if (prop.type.kind === "String") propType = "string";
@@ -257,7 +257,7 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
       
       const context: PathTemplateContext = {
         program,
-        emitterOutputDir: this.emitter.getContext()?.emitterOutputDir,
+        emitterOutputDir: this.emitter.getContext()?.["emitterOutputDir"],
       };
       
       try {

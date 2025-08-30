@@ -17,14 +17,15 @@ export function $channel(context: DecoratorContext, target: Operation, path: Str
   }
 
   // TODO: Effects.TS Schema here!!
-  // Extract string value from TypeSpec value
+  // Extract string value from TypeSpec value with proper type handling
   let channelPath: string;
   if (typeof path === "string") {
     channelPath = path;
-  } else if (path && typeof path === "object" && "value" in path) {
+  } else if (path && typeof path === "object" && "value" in path && path.value !== undefined) {
     channelPath = String(path.value);
-  } else if (path && typeof path === "object" && "kind" in path && path.kind === "String") {
-    channelPath = String((path as StringValue).value || path);
+  } else if (path && typeof path === "object" && "valueKind" in path && (path as StringValue).valueKind === "StringValue") {
+    const stringValue = path as StringValue;
+    channelPath = String(stringValue.value);
   } else {
     console.log(`⚠️  Could not extract string from path:`, path);
     reportDiagnostic(context.program, {
