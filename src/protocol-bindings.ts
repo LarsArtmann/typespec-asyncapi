@@ -7,11 +7,7 @@
  * - HTTP
  */
 
-import type {SchemaObject} from "./types/asyncapi-schema.js"
-
-type ReferenceObject = {
-	$ref: string;
-};
+import type { SchemaObject, ReferenceObject, KafkaFieldConfig, KafkaChannelBindingObject, KafkaOperationBindingObject, KafkaMessageBindingObject } from "./types/index.js";
 
 // Protocol binding types
 type ServerBindings = Record<string, unknown>;
@@ -19,33 +15,17 @@ type ChannelBindings = Record<string, unknown>;
 type OperationBindings = Record<string, unknown>;
 type MessageBindings = Record<string, unknown>;
 
+// Server binding type for Kafka (not in centralized types yet)
 type KafkaServerBinding = {
 	bindingVersion?: string;
 	schemaRegistryUrl?: string;
 	schemaRegistryVendor?: string;
 };
 
-type KafkaChannelBinding = {
-	bindingVersion?: string;
-	topic?: string;
-	partitions?: number;
-	replicas?: number;
-	topicConfiguration?: Record<string, unknown>;
-};
-
-type KafkaOperationBinding = {
-	bindingVersion?: string;
-	groupId?: SchemaObject | ReferenceObject;
-	clientId?: SchemaObject | ReferenceObject;
-};
-
-type KafkaMessageBinding = {
-	bindingVersion?: string;
-	key?: SchemaObject | ReferenceObject;
-	schemaIdLocation?: "header" | "payload";
-	schemaIdPayloadEncoding?: string;
-	schemaLookupStrategy?: "TopicIdStrategy" | "RecordIdStrategy" | "TopicRecordIdStrategy";
-};
+// Using imported types from centralized location with binding version extension
+type KafkaChannelBinding = KafkaChannelBindingObject & { bindingVersion?: string };
+type KafkaOperationBinding = KafkaOperationBindingObject;
+type KafkaMessageBinding = KafkaMessageBindingObject;
 
 type WebSocketChannelBinding = {
 	bindingVersion?: string;
@@ -89,13 +69,7 @@ type ProtocolBindingValidationResult = {
 	warnings: ProtocolBindingValidationError[];
 };
 
-type KafkaFieldConfig = {
-	type: string;
-	description?: string;
-	default?: unknown;
-	enum?: unknown[];
-	format?: string;
-};
+// KafkaFieldConfig now imported from centralized types
 
 type KafkaProtocolBindingConfig = {
 	server?: {
@@ -145,8 +119,8 @@ type HttpProtocolBindingConfig = {
 };
 
 
-// Re-export for external use
-export type {KafkaFieldConfig, ProtocolType}
+// Re-export for external use (KafkaFieldConfig now comes from centralized types)
+export type {ProtocolType}
 
 // Define protocol support locally
 const DEFAULT_PROTOCOL_SUPPORT: Record<ProtocolType, {

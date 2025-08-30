@@ -19,6 +19,7 @@ import { createAssetEmitter, TypeEmitter, type AssetEmitter } from "@typespec/as
 import { emitFile, getDoc } from "@typespec/compiler";
 import { stringify } from "yaml";
 import type { AsyncAPIEmitterOptions } from "./options.js";
+import type { AsyncAPIDocument, SchemaObject } from "./types/index.js";
 import { validateAsyncAPIEffect, type ValidationError } from "./validation/asyncapi-validator.js";
 import { $lib } from "./lib.js";
 import { 
@@ -30,31 +31,8 @@ import {
   MemoryMonitorServiceLive
 } from "./performance/memory-monitor.js";
 
-// AsyncAPI document types
-type AsyncAPISchema = {
-  type?: string;
-  format?: string;
-  description?: string;
-  properties?: Record<string, AsyncAPISchema>;
-  required?: string[];
-  payload?: { $ref: string };
-  [key: string]: unknown;
-}
-
-type AsyncAPIDocument = {
-  asyncapi: string;
-  info: {
-    title: string;
-    version: string;
-    description: string;
-  };
-  channels: Record<string, unknown>;
-  operations: Record<string, unknown>;
-  components: {
-    schemas: Record<string, AsyncAPISchema>;
-    messages: Record<string, unknown>;
-  };
-}
+// Using centralized types from types/index.ts
+// AsyncAPIDocument and SchemaObject (as AsyncAPISchema) are now imported
 
 /**
  * Enhanced AsyncAPI TypeEmitter with Effect.TS integration
@@ -251,7 +229,8 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
           // Determine action
           const action = operationType === "subscribe" ? "receive" : "send";
           
-          // Add channel
+          // Add channel (ensure channels object exists)
+          if (!this.asyncApiDoc.channels) this.asyncApiDoc.channels = {};
           this.asyncApiDoc.channels[channelName] = {
             address: channelPath,
             description: getDoc(program, op) ?? `Channel for ${op.name}`,
@@ -262,7 +241,8 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
             }
           };
           
-          // Add operation
+          // Add operation (ensure operations object exists)
+          if (!this.asyncApiDoc.operations) this.asyncApiDoc.operations = {};
           this.asyncApiDoc.operations[op.name] = {
             action,
             channel: { $ref: `#/channels/${channelName}` },
@@ -270,7 +250,9 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
             description: `TypeSpec operation with ${op.parameters.properties.size} parameters`
           };
           
-          // Add message to components
+          // Add message to components (ensure components structure exists)
+          if (!this.asyncApiDoc.components) this.asyncApiDoc.components = {};
+          if (!this.asyncApiDoc.components.messages) this.asyncApiDoc.components.messages = {};
           this.asyncApiDoc.components.messages[`${op.name}Message`] = {
             name: `${op.name}Message`,
             title: `${op.name} Message`,
@@ -281,10 +263,11 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
           // Process return type if it's a model
           if (op.returnType.kind === "Model") {
             const model = op.returnType;
+            if (!this.asyncApiDoc.components.schemas) this.asyncApiDoc.components.schemas = {};
             this.asyncApiDoc.components.schemas[model.name] = this.convertModelToSchema(model, program);
             
             // Link message to schema
-            const message = this.asyncApiDoc.components.messages[`${op.name}Message`];
+            const message = this.asyncApiDoc.components.messages?.[`${op.name}Message`];
             if (message && typeof message === 'object') {
               (message as any).payload = {
                 $ref: `#/components/schemas/${model.name}`
@@ -426,10 +409,10 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
           
           console.log(`✅ Written AsyncAPI to: ${outputFile}`);
           console.log(`📊 Final stats:`);
-          console.log(`  - Operations: ${Object.keys(this.asyncApiDoc.operations).length}`);
-          console.log(`  - Channels: ${Object.keys(this.asyncApiDoc.channels).length}`);
-          console.log(`  - Schemas: ${Object.keys(this.asyncApiDoc.components.schemas).length}`);
-          console.log(`  - Messages: ${Object.keys(this.asyncApiDoc.components.messages).length}`);
+          console.log(`  - Operations: ${Object.keys(this.asyncApiDoc.operations || {}).length}`);
+          console.log(`  - Channels: ${Object.keys(this.asyncApiDoc.channels || {}).length}`);
+          console.log(`  - Schemas: ${Object.keys(this.asyncApiDoc.components?.schemas || {}).length}`);
+          console.log(`  - Messages: ${Object.keys(this.asyncApiDoc.components?.messages || {}).length}`);
         },
         catch: (error) => new Error(`Failed to write output: ${error}`)
       });
@@ -451,12 +434,12 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
   /**
    * Convert TypeSpec model to AsyncAPI schema
    */
-  private convertModelToSchema(model: Model, program: Program): AsyncAPISchema {
-    const properties: Record<string, AsyncAPISchema> = {};
+  private convertModelToSchema(model: Model, program: Program): SchemaObject {
+    const properties: Record<string, SchemaObject> = {};
     const required: string[] = [];
     
     model.properties.forEach((prop, name) => {
-      const propSchema: AsyncAPISchema = {
+      const propSchema: SchemaObject = {
         description: getDoc(program, prop) ?? `Property ${name}`
       };
       

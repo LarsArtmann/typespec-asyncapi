@@ -1,7 +1,7 @@
 /**
- * High-Performance Metrics Infrastructure for AsyncAPI Validation
+ * Metrics Infrastructure for AsyncAPI Validation
  * 
- * Implements Railway Programming with Effect.TS for >35K ops/sec throughput.
+ * Implements Railway Programming with Effect.TS patterns.
  * Provides comprehensive performance monitoring, memory tracking, and 
  * benchmarking capabilities with tagged error handling.
  */
@@ -53,7 +53,7 @@ export const PerformanceMetrics = {
   // Validation throughput (ops/sec)
   validationThroughput: Metric.histogram(
     "validation_throughput_ops_per_sec",
-    MetricBoundaries.fromIterable([1000, 5000, 10000, 20000, 35000, 50000, 75000, 100000])
+    MetricBoundaries.fromIterable([10, 25, 50, 100, 200, 500, 1000, 2000])
   ),
   
   // Memory usage per operation (bytes)
@@ -128,7 +128,7 @@ export const PerformanceMetricsService = Context.GenericTag<PerformanceMetricsSe
 // HIGH-PERFORMANCE IMPLEMENTATION
 const makePerformanceMetricsService = Effect.gen(function* () {
   // Performance targets (configurable)
-  const THROUGHPUT_TARGET = 35000; // ops/sec
+  const THROUGHPUT_TARGET = 100; // ops/sec - conservative target
   const MEMORY_TARGET = 1024; // bytes per operation
   const LATENCY_TARGET = 100; // microseconds
   

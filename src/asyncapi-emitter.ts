@@ -4,36 +4,11 @@ import { emitFile, getDoc } from "@typespec/compiler";
 import { stringify } from "yaml";
 import { dirname } from "node:path";
 import type { AsyncAPIEmitterOptions } from "./options.js";
-import type { SchemaObject } from "./types/asyncapi-schema.js";
-import { stateKeys } from "./lib.js";
+import type { SchemaObject, ChannelObject, OperationObject, AsyncAPIDocument } from "./types/index.js";
+import { $lib } from "./lib.js";
+import { KafkaBindings, validateKafkaChannelBinding, createDefaultKafkaChannelBinding } from "./bindings/kafka.js";
 
-type ChannelObject = {
-  address?: string;
-  messages?: Record<string, unknown>;
-  title?: string;
-  summary?: string;
-  description?: string;
-  servers?: string[];
-  parameters?: Record<string, unknown>;
-  tags?: Array<{ name: string; description?: string }>;
-  externalDocs?: { description?: string; url: string };
-  bindings?: Record<string, unknown>;
-};
-
-type OperationObject = {
-  action: "send" | "receive";
-  channel?: { $ref: string };
-  title?: string;
-  summary?: string;
-  description?: string;
-  security?: Array<Record<string, string[]>>;
-  tags?: Array<{ name: string; description?: string }>;
-  externalDocs?: { description?: string; url: string };
-  bindings?: Record<string, unknown>;
-  traits?: unknown[];
-  messages?: Array<{ $ref: string }>;
-  reply?: unknown;
-};
+// ChannelObject and OperationObject now imported from centralized types
 import { 
   resolvePathTemplateWithValidation, 
   hasTemplateVariables, 
@@ -45,7 +20,8 @@ import {
 /**
  * Internal AsyncAPI document structure for the emitter
  */
-type EmitterAsyncAPIDocument = {
+type EmitterAsyncAPIDocument = AsyncAPIDocument & {
+  // Extend AsyncAPIDocument with required fields for emitter
   asyncapi: "3.0.0";
   info: {
     title: string;
@@ -175,8 +151,13 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
   private createChannelDefinition(op: Operation): { name: string, definition: ChannelObject } {
     const program = this.emitter.getProgram();
     const channelName = `channel_${op.name}`;
+    
+    // Get channel path from @channel decorator
+    const channelPathsMap = program.stateMap($lib.stateKeys.channelPaths);
+    const channelPath = channelPathsMap.get(op) as string | undefined;
+    
     const definition: ChannelObject = {
-      address: `/${op.name.toLowerCase()}`,
+      address: channelPath ?? `/${op.name.toLowerCase()}`,
       description: getDoc(program, op) ?? `Channel for ${op.name}`,
       messages: {
         [`${op.name}Message`]: {
@@ -184,13 +165,39 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
         }
       }
     };
+
+    // Add Kafka bindings if channel path looks like a Kafka topic
+    if (channelPath && this.looksLikeKafkaTopic(channelPath)) {
+      const kafkaBinding = createDefaultKafkaChannelBinding(channelPath);
+      const validation = validateKafkaChannelBinding(kafkaBinding);
+      
+      if (validation.isValid) {
+        definition.bindings = {
+          kafka: kafkaBinding
+        };
+        console.log(`✅ Added Kafka binding for channel ${channelName}: topic="${kafkaBinding.topic}"`);
+      } else {
+        console.warn(`⚠️ Invalid Kafka binding for ${channelName}: ${validation.errors.join(', ')}`);
+      }
+    }
+
     return { name: channelName, definition };
+  }
+
+  private looksLikeKafkaTopic(path: string): boolean {
+    // Simple heuristics for detecting Kafka topics:
+    // - Contains dots (common in Kafka topic names)
+    // - No leading slash (Kafka topics don't start with /)
+    // - Contains underscores or dashes
+    return !path.startsWith('/') && 
+           (path.includes('.') || path.includes('_') || path.includes('-')) &&
+           /^[a-zA-Z0-9._-]+$/.test(path);
   }
 
   private createOperationDefinition(op: Operation, channelName: string): OperationObject {
     const program = this.emitter.getProgram();
     // Get operation type from decorator state
-    const operationTypesMap = program.stateMap(stateKeys.operationTypes);
+    const operationTypesMap = program.stateMap($lib.stateKeys.operationTypes);
     const operationType = operationTypesMap.get(op) as string | undefined;
     
     // Determine action based on decorator type

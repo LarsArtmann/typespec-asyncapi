@@ -142,7 +142,7 @@ graph TD
 - Add runtime validation for protocol bindings
 
 #### Code Duplication Elimination (Tasks 29-35)
-- Extract duplicate performance benchmark logic
+- Extract duplicate test validation logic
 - Consolidate AsyncAPI type interfaces  
 - Extract shared diagnostic formatting
 - Merge authentication type definitions

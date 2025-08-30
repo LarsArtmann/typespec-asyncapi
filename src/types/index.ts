@@ -895,6 +895,26 @@ export interface MessageBindingsObject {
 // ==========================================
 
 /**
+ * Kafka field configuration for protocol bindings
+ */
+export interface KafkaFieldConfig {
+  /** Field type */
+  type: string;
+  
+  /** Field description */
+  description?: string;
+  
+  /** Default value */
+  default?: unknown;
+  
+  /** Enumeration values */
+  enum?: unknown[];
+  
+  /** Field format */
+  format?: string;
+}
+
+/**
  * Kafka channel binding
  */
 export interface KafkaChannelBindingObject {
@@ -909,6 +929,9 @@ export interface KafkaChannelBindingObject {
   
   /** Topic configuration */
   configs?: Record<string, string>;
+  
+  /** Binding version */
+  bindingVersion?: string;
 }
 
 /**
@@ -916,10 +939,13 @@ export interface KafkaChannelBindingObject {
  */
 export interface KafkaOperationBindingObject {
   /** Consumer group ID */
-  groupId?: SchemaObject;
+  groupId?: KafkaFieldConfig | SchemaObject;
   
   /** Client ID */
-  clientId?: SchemaObject;
+  clientId?: KafkaFieldConfig | SchemaObject;
+  
+  /** Binding version */
+  bindingVersion?: string;
 }
 
 /**
@@ -927,16 +953,19 @@ export interface KafkaOperationBindingObject {
  */
 export interface KafkaMessageBindingObject {
   /** Message key schema */
-  key?: SchemaObject | ReferenceObject;
+  key?: KafkaFieldConfig | SchemaObject | ReferenceObject;
   
   /** Schema ID location */
   schemaIdLocation?: "payload" | "header";
   
-  /** Schema ID */
+  /** Schema ID payload encoding */
   schemaIdPayloadEncoding?: string;
   
   /** Schema lookup strategy */
-  schemaLookupStrategy?: "TopicIdStrategy" | "RecordNameStrategy" | "TopicRecordNameStrategy";
+  schemaLookupStrategy?: "TopicIdStrategy" | "RecordIdStrategy" | "TopicRecordIdStrategy";
+  
+  /** Binding version */
+  bindingVersion?: string;
 }
 
 // ==========================================
@@ -993,33 +1022,5 @@ export type { ChannelObject as AsyncAPIChannel };
 export type { OperationObject as AsyncAPIOperation };
 export type { AsyncAPIDocument as AsyncAPIDocumentType };
 
-// Export commonly used interfaces
-export type {
-  InfoObject,
-  ContactObject,
-  LicenseObject,
-  ServerObject,
-  ServerVariableObject,
-  ComponentsObject,
-  TagObject,
-  ExternalDocumentationObject,
-  ParameterObject,
-  SecurityRequirementObject,
-  CorrelationIdObject,
-  MessageExampleObject,
-  MessageTraitObject,
-  OperationTraitObject,
-  OperationReplyObject,
-  OperationReplyAddressObject,
-};
-
-// Export binding types
-export type {
-  ServerBindingsObject,
-  ChannelBindingsObject,
-  OperationBindingsObject,
-  MessageBindingsObject,
-  KafkaChannelBindingObject,
-  KafkaOperationBindingObject,
-  KafkaMessageBindingObject,
-};
+// All interfaces are already exported through their individual declarations above
+// No need for redundant export statements

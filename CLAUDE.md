@@ -100,7 +100,7 @@ npx tsp compile example.tsp --emit @typespec/asyncapi
 - Uses Bun's built-in test runner  
 - TypeSpec compiler integration tests
 - AsyncAPI specification validation against official schemas
-- Performance benchmarks (>35K operations/second validated)
+- Comprehensive test coverage (138+ tests)
 
 ## Configuration Details
 

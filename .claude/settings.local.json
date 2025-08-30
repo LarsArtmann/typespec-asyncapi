@@ -66,7 +66,8 @@
       "Bash(git show:*)",
       "Bash(git restore:*)",
       "Bash(curl:*)",
-      "WebFetch(domain:raw.githubusercontent.com)"
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(mkdir:*)"
     ],
     "deny": [],
     "ask": []

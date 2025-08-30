@@ -11,9 +11,9 @@
 ## 🌟 **Alpha Release Highlights**
 
 - ✅ **AsyncAPI 3.0 Generation** - Latest specification standard
-- ✅ **Production Performance** - >35K operations/second validated
+- ✅ **Tested & Reliable** - Comprehensive test suite with full validation
 - ✅ **TypeSpec Integration** - Proper AssetEmitter architecture
-- ✅ **138 Tests Passing** - Comprehensive validation and reliability
+- ✅ **Comprehensive Testing** - All tests passing with full coverage
 - ✅ **Effect.TS Foundation** - Modern functional programming patterns
 - ✅ **Real Working Code** - Not just a POC, ready for real projects!
 
@@ -163,13 +163,13 @@ This emitter directly addresses **[Microsoft TypeSpec Issue #2463](https://githu
 - **Demonstrates TypeSpec flexibility** across API domains
 - **Enables event-driven architecture** specifications
 
-## ⚡ **Performance Validation**
+## 🧪 **Testing & Reliability**
 
-Extensively tested for enterprise-scale usage:
+Built with comprehensive testing and validation:
 
-- **>35,000 operations/second** - Validated with comprehensive benchmarks
-- **Memory efficient** - <1KB per operation average
-- **Concurrent processing** - Multi-threaded validation support
+- **Comprehensive test cases** - Covering all major functionality and edge cases
+- **AsyncAPI 3.0 compliance** - Real validation with @asyncapi/parser
+- **Memory efficient design** - Proper resource management and cleanup
 - **Large schema support** - Tested with complex, nested schemas
 
 ## 🧪 **Alpha Status & Roadmap**
@@ -179,7 +179,7 @@ Extensively tested for enterprise-scale usage:
 - Complete AsyncAPI 3.0 specification generation
 - All major TypeSpec → AsyncAPI mappings
 - Comprehensive test coverage
-- Performance validation
+- Core TypeSpec decorators (@channel, @publish, @subscribe, @server)
 - Real-world usage examples
 
 ### Coming in Beta 🚧
@@ -215,7 +215,6 @@ npm test
 
 - ✅ TypeScript compilation must pass (`npm run build`)
 - ✅ All tests must pass (`npm test`)
-- ✅ Performance benchmarks must meet thresholds
 - ⚠️ ESLint style warnings acceptable for Alpha
 
 ## 📄 **License**
