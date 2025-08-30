@@ -5,7 +5,7 @@
  * with comparison against baseline implementations.
  */
 
-import { Effect, Console } from "effect";
+import { Effect, Context } from "effect";
 import { performance } from "perf_hooks";
 import {
   parseAsyncAPIEmitterOptions,
@@ -177,15 +177,21 @@ const runBenchmark = async (
 // BENCHMARK OPERATIONS
 const benchmarkOperations = {
   parseAsyncAPIEmitterOptions: async (data: unknown) => {
-    return await Effect.runPromise(parseAsyncAPIEmitterOptions(data));
+    return await Effect.runPromise(parseAsyncAPIEmitterOptions(data).pipe(
+      Effect.provide(Context.empty())
+    ));
   },
   
   validateAsyncAPIEmitterOptions: async (data: unknown) => {
-    return await Effect.runPromise(validateAsyncAPIEmitterOptions(data));
+    return await Effect.runPromise(validateAsyncAPIEmitterOptions(data).pipe(
+      Effect.provide(Context.empty())
+    ));
   },
   
   createAsyncAPIEmitterOptions: async (data: unknown) => {
-    return await Effect.runPromise(createAsyncAPIEmitterOptions(data as Partial<AsyncAPIEmitterOptions>));
+    return await Effect.runPromise(createAsyncAPIEmitterOptions(data as Partial<AsyncAPIEmitterOptions>).pipe(
+      Effect.provide(Context.empty())
+    ));
   },
   
   isAsyncAPIEmitterOptions: async (data: unknown) => {
@@ -231,7 +237,7 @@ export const runEffectBenchmarkSuite = async (iterations = 1000) => {
     groupedResults.get(result.operation)!.push(result);
   }
   
-  for (const [operation, operationResults] of groupedResults) {
+  for (const [operation, operationResults] of Array.from(groupedResults.entries())) {
     const validResults = operationResults.filter(r => r.success);
     const avgThroughput = validResults.reduce((sum, r) => sum + r.throughput, 0) / validResults.length;
     const minThroughput = Math.min(...validResults.map(r => r.throughput));
@@ -257,7 +263,7 @@ export const runEffectBenchmarkSuite = async (iterations = 1000) => {
   
   let allPassed = true;
   
-  for (const [operation, operationResults] of groupedResults) {
+  for (const [operation, operationResults] of Array.from(groupedResults.entries())) {
     const validResults = operationResults.filter(r => r.success);
     const avgThroughput = validResults.reduce((sum, r) => sum + r.throughput, 0) / validResults.length;
     const avgMemoryPerOp = operationResults.reduce((sum, r) => sum + (r.memoryDelta || 0), 0) / operationResults.length / iterations;
@@ -313,7 +319,9 @@ export const runComparison = async () => {
   const startEffect = performance.now();
   for (let i = 0; i < iterations; i++) {
     try {
-      await Effect.runPromise(parseAsyncAPIEmitterOptions(testCase));
+      await Effect.runPromise(parseAsyncAPIEmitterOptions(testCase).pipe(
+        Effect.provide(Context.empty())
+      ));
     } catch {
       // Ignore errors
     }
@@ -341,8 +349,8 @@ export const runComparison = async () => {
 };
 
 // CLI RUNNER
-if (import.meta.main) {
-  const iterations = parseInt(process.argv[2]) || 1000;
+if (typeof process !== "undefined" && process.argv[1]?.endsWith("effect-performance-benchmark.ts")) {
+  const iterations = parseInt(process.argv[2] ?? "1000") || 1000;
   
   const benchmark = await runEffectBenchmarkSuite(iterations);
   await runComparison();

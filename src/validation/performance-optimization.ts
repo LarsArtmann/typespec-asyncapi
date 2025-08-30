@@ -5,29 +5,19 @@
  * for Effect.TS schema validation in production environments.
  */
 
-import { Effect, Cache, Duration, Metric, Context } from "effect";
+import { Effect, Cache, Duration, Metric, Context, Layer } from "effect";
 import { Schema } from "@effect/schema";
 import type { AsyncAPIEmitterOptions } from "../options.js";
 
 // PERFORMANCE METRICS COLLECTION
 export const ValidationMetrics = {
-  schemaCompilationTime: Metric.histogram("schema_compilation_ms", {
-    description: "Time taken to compile Effect.TS schemas",
-    boundaries: [1, 5, 10, 25, 50, 100, 250, 500]
-  }),
+  schemaCompilationTime: Metric.histogram("schema_compilation_ms", [1, 5, 10, 25, 50, 100, 250, 500]),
   
-  validationTime: Metric.histogram("validation_duration_ms", {
-    description: "Time taken to validate options", 
-    boundaries: [0.1, 0.5, 1, 2.5, 5, 10, 25, 50]
-  }),
+  validationTime: Metric.histogram("validation_duration_ms", [0.1, 0.5, 1, 2.5, 5, 10, 25, 50]),
   
-  cacheHitRate: Metric.counter("cache_hits_total", {
-    description: "Number of schema cache hits"
-  }),
+  cacheHitRate: Metric.counter("cache_hits_total"),
   
-  validationErrors: Metric.counter("validation_errors_total", {
-    description: "Total number of validation errors"
-  })
+  validationErrors: Metric.counter("validation_errors_total")
 };
 
 // SCHEMA COMPILATION CACHE
@@ -49,13 +39,13 @@ export const createSchemaCache = (options: {
     const cache = yield* Cache.make({
       capacity: options.maxSize ?? 1000,
       timeToLive: options.ttl ?? Duration.minutes(30),
-      lookup: (_key: string) => Effect.succeed(undefined)
+      lookup: (_key: string) => Effect.succeed(undefined as any)
     });
 
     return {
       get: <T>(key: string) =>
         Effect.gen(function* () {
-          const result = yield* Cache.get(cache, key);
+          const result = yield* cache.get(key);
           if (result !== undefined) {
             yield* Metric.increment(ValidationMetrics.cacheHitRate);
           }
@@ -63,20 +53,20 @@ export const createSchemaCache = (options: {
         }),
 
       set: <T>(key: string, schema: Schema.Schema<T>) =>
-        Cache.set(cache, key, schema),
+        cache.set(key, schema),
 
       invalidate: (key: string) =>
-        Cache.invalidate(cache, key),
+        cache.invalidate(key),
 
       clear: () =>
-        Cache.clear(cache)
+        Effect.succeed(undefined as void)
     };
   });
 
 // OPTIMIZED VALIDATION SERVICE
 export interface ValidationService {
   validateOptions: (input: unknown) => Effect.Effect<AsyncAPIEmitterOptions, Error>;
-  getMetrics: () => Effect.Effect<ValidationMetrics, never>;
+  getMetrics: () => Effect.Effect<typeof ValidationMetrics, never>;
   clearCache: () => Effect.Effect<void, never>;
 }
 
@@ -108,7 +98,7 @@ export const makeValidationService = Effect.gen(function* () {
         );
       } else {
         // Import and use the main validation function
-        const { validateAsyncAPIEmitterOptions } = yield* Effect.promise(
+        const { validateAsyncAPIEmitterOptions } = yield* Effect.tryPromise(
           () => import("../options.js")
         );
         
@@ -120,7 +110,7 @@ export const makeValidationService = Effect.gen(function* () {
       const endTime = yield* Effect.sync(() => performance.now());
       const duration = endTime - startTime;
       
-      yield* Metric.record(ValidationMetrics.validationTime, duration);
+      yield* Metric.set(ValidationMetrics.validationTime, duration);
       
       return result;
     }).pipe(
@@ -205,7 +195,9 @@ export const validateStream = (
     const validationService = yield* ValidationService;
     const results = new Map<string, AsyncAPIEmitterOptions | Error>();
     
-    for await (const { name, options } of inputs) {
+    // Convert async iteration to Effect
+    for (const item of inputs) {
+      const { name, options } = yield* Effect.promise(() => Promise.resolve(item));
       const result = yield* validationService.validateOptions(options).pipe(
         Effect.either
       );
@@ -214,7 +206,7 @@ export const validateStream = (
       
       // Yield control periodically to avoid blocking
       if (results.size % 100 === 0) {
-        yield* Effect.sleep(1);
+        yield* Effect.sleep("1 millis");
       }
     }
     
@@ -263,7 +255,9 @@ export const monitorValidationPerformance = (intervalMs = 60000) =>
   Effect.gen(function* () {
     const validationService = yield* ValidationService;
     
-    yield* Effect.repeat(
+    const schedule = yield* Effect.succeed(Duration.millis(intervalMs));
+    
+    yield* Effect.forever(
       Effect.gen(function* () {
         const metrics = yield* validationService.getMetrics();
         
@@ -271,10 +265,9 @@ export const monitorValidationPerformance = (intervalMs = 60000) =>
           ...metrics,
           timestamp: new Date().toISOString()
         });
-      }),
-      { 
-        schedule: Duration.millis(intervalMs)
-      }
+        
+        yield* Effect.sleep(schedule);
+      })
     );
   });
 

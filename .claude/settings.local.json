@@ -8,7 +8,8 @@
       "WebFetch(domain:r.jina.ai)",
       "WebFetch(domain:www.asyncapi.com)",
       "Bash(./node_modules/.bin/tsc:*)",
-      "Read(//**)"
+      "Read(//**)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []

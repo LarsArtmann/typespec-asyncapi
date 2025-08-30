@@ -5,7 +5,7 @@
  * for AsyncAPI validation operations with enterprise-scale testing.
  */
 
-import { AsyncAPIValidator, type ValidationResult, type AsyncAPIValidatorOptions } from "./asyncapi-validator.js";
+import { AsyncAPIValidator } from "./asyncapi-validator.js";
 import type { AsyncAPIDocument } from "../types/asyncapi.js";
 
 export interface BenchmarkResult {
