@@ -9,7 +9,15 @@
       "WebFetch(domain:www.asyncapi.com)",
       "Bash(./node_modules/.bin/tsc:*)",
       "Read(//**)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(gh issue list:*)",
+      "Bash(gh issue view:*)",
+      "Bash(bunx tsc:*)",
+      "Bash(gh issue create:*)",
+      "Bash(gh issue comment:*)",
+      "Bash(grep:*)"
     ],
     "deny": [],
     "ask": []
