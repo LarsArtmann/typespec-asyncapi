@@ -384,7 +384,10 @@ export interface LogAnalysis {
 /**
  * Analyze log entries for patterns and issues
  */
-export function analyzeLogEntries(entries: readonly LogEntry[]): LogAnalysis {
+/**
+ * Count log entries by severity level
+ */
+function countEntriesByLevel(entries: readonly LogEntry[]): Record<ErrorSeverity, number> {
   const byLevel: Record<ErrorSeverity, number> = {
     fatal: 0,
     error: 0,
@@ -393,22 +396,35 @@ export function analyzeLogEntries(entries: readonly LogEntry[]): LogAnalysis {
     debug: 0
   };
   
-  const byCategory: Record<string, number> = {};
-  const errorCounts = new Map<string, { count: number; lastSeen: Date }>();
+  for (const entry of entries) {
+    byLevel[entry.level]++;
+  }
   
-  let earliestTime: Date | null = null;
-  let latestTime: Date | null = null;
+  return byLevel;
+}
+
+/**
+ * Count log entries by category
+ */
+function countEntriesByCategory(entries: readonly LogEntry[]): Record<string, number> {
+  const byCategory: Record<string, number> = {};
   
   for (const entry of entries) {
-    // Count by level
-    byLevel[entry.level]++;
-    
-    // Count by category
     if (entry.category) {
       byCategory[entry.category] = (byCategory[entry.category] || 0) + 1;
     }
-    
-    // Track error frequency
+  }
+  
+  return byCategory;
+}
+
+/**
+ * Track error frequency and timing
+ */
+function trackErrorFrequency(entries: readonly LogEntry[]): Array<{ errorId: string; count: number; lastSeen: Date }> {
+  const errorCounts = new Map<string, { count: number; lastSeen: Date }>();
+  
+  for (const entry of entries) {
     if (entry.errorId) {
       const existing = errorCounts.get(entry.errorId);
       errorCounts.set(entry.errorId, {
@@ -416,23 +432,40 @@ export function analyzeLogEntries(entries: readonly LogEntry[]): LogAnalysis {
         lastSeen: entry.timestamp
       });
     }
-    
-    // Track time range
-    if (!earliestTime || entry.timestamp < earliestTime) {
-      earliestTime = entry.timestamp;
-    }
-    if (!latestTime || entry.timestamp > latestTime) {
-      latestTime = entry.timestamp;
-    }
   }
   
-  // Get top errors by frequency
-  const topErrors = Array.from(errorCounts.entries())
+  return Array.from(errorCounts.entries())
     .map(([errorId, data]) => ({ errorId, ...data }))
     .sort((a, b) => b.count - a.count)
     .slice(0, 10);
+}
+
+/**
+ * Calculate time range from log entries
+ */
+function calculateTimeRange(entries: readonly LogEntry[]): { start: Date; end: Date } | null {
+  if (entries.length === 0) return null;
   
-  // Generate recommendations
+  let earliest = entries[0]!.timestamp;
+  let latest = entries[0]!.timestamp;
+  
+  for (const entry of entries) {
+    if (entry.timestamp < earliest) earliest = entry.timestamp;
+    if (entry.timestamp > latest) latest = entry.timestamp;
+  }
+  
+  return { start: earliest, end: latest };
+}
+
+/**
+ * Generate analysis recommendations based on log patterns
+ */
+function generateLogRecommendations(
+  byLevel: Record<ErrorSeverity, number>,
+  byCategory: Record<string, number>,
+  topErrors: Array<{ errorId: string; count: number; lastSeen: Date }>,
+  totalEntries: number
+): string[] {
   const recommendations: string[] = [];
   
   if (byLevel.fatal > 0) {
@@ -450,16 +483,26 @@ export function analyzeLogEntries(entries: readonly LogEntry[]): LogAnalysis {
   const categoryEntries = Object.entries(byCategory);
   if (categoryEntries.length > 0) {
     const topCategory = categoryEntries.reduce((a, b) => a[1] > b[1] ? a : b);
-    if (topCategory[1] > entries.length * 0.3) {
+    if (topCategory[1] > totalEntries * 0.3) {
       recommendations.push(`High frequency of '${topCategory[0]}' errors - focus improvement efforts here`);
     }
   }
+  
+  return recommendations;
+}
+
+export function analyzeLogEntries(entries: readonly LogEntry[]): LogAnalysis {
+  const byLevel = countEntriesByLevel(entries);
+  const byCategory = countEntriesByCategory(entries);
+  const topErrors = trackErrorFrequency(entries);
+  const timeRange = calculateTimeRange(entries);
+  const recommendations = generateLogRecommendations(byLevel, byCategory, topErrors, entries.length);
   
   return {
     totalEntries: entries.length,
     byLevel,
     byCategory,
-    timeRange: earliestTime && latestTime ? { start: earliestTime, end: latestTime } : null,
+    timeRange,
     topErrors,
     recommendations
   };

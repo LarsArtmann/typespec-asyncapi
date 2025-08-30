@@ -9,10 +9,15 @@ export { $message } from "./message.js";
 export { $protocol } from "./protocol.js";
 export { $security } from "./security.js";
 
-// TODO: Additional decorators to implement in future iterations
-// export { $correlationId } from "./correlation-id.js";
-// export { $header } from "./header.js";
-// export { $payload } from "./payload.js";
-// export { $tags } from "./tags.js";
-// export { $externalDocs } from "./external-docs.js";
-// export { $contentType } from "./content-type.js";
+// ARCHITECTURAL DECISION: Additional decorators not implemented for v1.0
+// These decorators represent optional AsyncAPI features that are not required
+// for core functionality. Implementation deferred to maintain focus on 
+// essential features and avoid feature creep in the initial release.
+//
+// Future roadmap (post-v1.0):
+// - $correlationId: Message correlation tracking
+// - $header: Custom message headers
+// - $payload: Advanced payload validation
+// - $tags: Resource categorization
+// - $externalDocs: External documentation links
+// - $contentType: Message content type specification

@@ -21,7 +21,7 @@ import { MemoryMonitorService, MemoryMonitorServiceLive, withMemoryTracking, Mem
 export class EmitterInitializationError extends Error {
   readonly _tag = "EmitterInitializationError";
   override readonly name = "EmitterInitializationError";
-  readonly cause?: unknown;
+  override readonly cause?: unknown;
   
   constructor(message: string, cause?: unknown) {
     super(message);

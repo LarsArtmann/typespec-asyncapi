@@ -280,13 +280,13 @@ export const AsyncAPIEmitterOptionsEffectSchema = createSchema(
 // TAGGED ERRORS for better error handling and recovery
 export class AsyncAPIOptionsValidationError extends Error {
   readonly _tag = "AsyncAPIOptionsValidationError" as const;
-  readonly name = "AsyncAPIOptionsValidationError";
+  override readonly name = "AsyncAPIOptionsValidationError";
   
   constructor(
     readonly field: string,
     readonly value: unknown,
-    public readonly message: string,
-    readonly cause?: Error
+    public override readonly message: string,
+    override readonly cause?: Error
   ) {
     super(message);
     this.cause = cause;
@@ -295,11 +295,11 @@ export class AsyncAPIOptionsValidationError extends Error {
 
 export class AsyncAPIOptionsParseError extends Error {
   readonly _tag = "AsyncAPIOptionsParseError" as const;
-  readonly name = "AsyncAPIOptionsParseError";
+  override readonly name = "AsyncAPIOptionsParseError";
   
   constructor(
-    public readonly message: string,
-    readonly cause?: Error
+    public override readonly message: string,
+    override readonly cause?: Error
   ) {
     super(message);
     this.cause = cause;

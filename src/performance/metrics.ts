@@ -342,14 +342,23 @@ const makePerformanceMetricsService = Effect.gen(function* () {
   
   const getMetricsSummary = (): Effect.Effect<Record<string, number>, MetricsCollectionError> =>
     Effect.gen(function* () {
-      // In a real implementation, these would pull from actual metric stores
-      // For now, returning placeholder values that would be replaced with real metrics
+      // Collect real metrics from Effect.TS metric registry
+      const throughputMetric = yield* Metric.value(PerformanceMetrics.validationThroughput);
+      const memoryMetric = yield* Metric.value(PerformanceMetrics.memoryPerOperation);
+      const latencyMetric = yield* Metric.value(PerformanceMetrics.validationLatency);
+      const successCount = yield* Metric.value(PerformanceMetrics.validationSuccess);
+      const failureCount = yield* Metric.value(PerformanceMetrics.validationFailure);
+      
+      const totalValidations = successCount + failureCount;
+      const successRate = totalValidations > 0 ? (successCount / totalValidations) * 100 : 100;
+      const memoryEfficiency = memoryMetric > 0 ? Math.min(100, (MEMORY_TARGET / memoryMetric) * 100) : 100;
+      
       return {
-        throughput: 0,
-        memoryPerOp: 0,
-        latency: 0,
-        successRate: 100,
-        memoryEfficiency: 100
+        throughput: throughputMetric,
+        memoryPerOp: memoryMetric,
+        latency: latencyMetric,
+        successRate,
+        memoryEfficiency
       };
     }).pipe(
       Effect.catchAll(error =>

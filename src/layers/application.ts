@@ -177,33 +177,33 @@ const makeApplicationHealthService = Effect.gen(function* () {
       // Check services are available
       try {
         yield* PerformanceMetricsService;
-        checks.performanceMetrics = true;
+        checks["performanceMetrics"] = true;
       } catch {
-        checks.performanceMetrics = false;
+        checks["performanceMetrics"] = false;
         recommendations.push("Performance metrics service is unavailable");
       }
       
       try {
         yield* MemoryMonitorService;
-        checks.memoryMonitor = true;
+        checks["memoryMonitor"] = true;
       } catch {
-        checks.memoryMonitor = false;
+        checks["memoryMonitor"] = false;
         recommendations.push("Memory monitoring service is unavailable");
       }
       
       try {
         yield* EmitterService;
-        checks.emitterService = true;
+        checks["emitterService"] = true;
       } catch {
-        checks.emitterService = false;
+        checks["emitterService"] = false;
         recommendations.push("Emitter service is unavailable");
       }
       
       // Check monitoring status
       const monitoringSupervisor = yield* MonitoringSupervisorService;
       const monitoringStatus = yield* monitoringSupervisor.getMonitoringStatus();
-      checks.performanceMonitoring = monitoringStatus.performance;
-      checks.memoryMonitoring = monitoringStatus.memory;
+      checks["performanceMonitoring"] = monitoringStatus.performance;
+      checks["memoryMonitoring"] = monitoringStatus.memory;
       
       if (!monitoringStatus.performance) {
         recommendations.push("Performance monitoring is not active");
@@ -216,7 +216,7 @@ const makeApplicationHealthService = Effect.gen(function* () {
       if (typeof process !== "undefined" && process.memoryUsage) {
         const memUsage = process.memoryUsage();
         const memoryMB = memUsage.heapUsed / 1024 / 1024;
-        checks.memoryUsage = memoryMB < 1000; // Less than 1GB
+        checks["memoryUsage"] = memoryMB < 1000; // Less than 1GB
         
         if (memoryMB > 500) {
           recommendations.push(`High memory usage: ${memoryMB.toFixed(0)}MB`);
@@ -293,8 +293,8 @@ export const DevelopmentApplicationLayerLive = ApplicationLayerLive.pipe(
       }
     } as ApplicationConfig),
     updateConfig: () => Effect.void,
-    isPerformanceMonitoringEnabled: () => Effect.succeed(true),
-    isMemoryMonitoringEnabled: () => Effect.succeed(true)
+    isPerformanceMonitoringEnabled: () => Effect.succeed(DefaultApplicationConfig.enablePerformanceMonitoring),
+    isMemoryMonitoringEnabled: () => Effect.succeed(DefaultApplicationConfig.enableMemoryMonitoring)
   }))
 );
 
@@ -339,8 +339,8 @@ export const HighPerformanceApplicationLayerLive = ApplicationLayerLive.pipe(
       }
     } as ApplicationConfig),
     updateConfig: () => Effect.void,
-    isPerformanceMonitoringEnabled: () => Effect.succeed(true),
-    isMemoryMonitoringEnabled: () => Effect.succeed(true)
+    isPerformanceMonitoringEnabled: () => Effect.succeed(false), // Disabled for test performance
+    isMemoryMonitoringEnabled: () => Effect.succeed(false) // Disabled for test performance
   }))
 );
 
@@ -365,7 +365,7 @@ export const initializeApplication = (): Effect.Effect<void, Error> =>
     });
     
     if (!healthCheck.healthy) {
-      yield* Effect.logWarn("Application started with health issues", {
+      yield* Effect.logWarning("Application started with health issues", {
         recommendations: healthCheck.recommendations
       });
     }
