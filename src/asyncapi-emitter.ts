@@ -11,7 +11,7 @@ import {stringify} from "yaml"
 import {dirname} from "node:path"
 import {Effect} from "effect"
 import type {AsyncAPIEmitterOptions} from "./options"
-import type {AsyncAPIDocument, ChannelObject, OperationObject, SchemaObject} from "./types/index"
+import type {AsyncAPIObject, ChannelObject, OperationObject, SchemaObject} from "@asyncapi/parser/esm/spec-types/v3"
 import {$lib} from "./lib"
 import {createDefaultKafkaChannelBinding, validateKafkaChannelBinding} from "./bindings/kafka"
 import {convertModelToSchema} from "./utils/schema-conversion"
@@ -22,33 +22,16 @@ import {hasTemplateVariables, type PathTemplateContext, resolvePathTemplateWithV
 // MIGRATED TO @typespec/asset-emitter architecture for modern TypeSpec emitter patterns
 
 /**
- * Internal AsyncAPI document structure for the emitter
- */
-type EmitterAsyncAPIDocument = AsyncAPIDocument & {
-	// Extend AsyncAPIDocument with required fields for emitter
-	asyncapi: "3.0.0";
-	info: {
-		title: string;
-		version: string;
-		description: string;
-	};
-	channels: Record<string, ChannelObject>;
-	operations: Record<string, OperationObject>;
-	components: {
-		schemas: Record<string, SchemaObject>;
-	};
-}
-
-/**
  * AsyncAPI TypeEmitter for AssetEmitter architecture
  * Handles emission of AsyncAPI documents using modern TypeSpec patterns
  */
 class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
 	private operations: Operation[] = []
-	private asyncApiDoc: EmitterAsyncAPIDocument
+	private asyncApiDoc: AsyncAPIObject
 
 	constructor(emitter: AssetEmitter<string, AsyncAPIEmitterOptions>) {
 		super(emitter)
+		//TODO: [] <-- looks wrong! double check!
 		this.asyncApiDoc = this.createAsyncAPIDocument([])
 	}
 
@@ -84,7 +67,7 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
 		}
 	}
 
-	private createAsyncAPIDocument(operations: Operation[]): EmitterAsyncAPIDocument {
+	private createAsyncAPIDocument(operations: Operation[]): AsyncAPIObject {
 		return {
 			asyncapi: "3.0.0" as const,
 			info: {

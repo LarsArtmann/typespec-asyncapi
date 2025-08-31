@@ -14,7 +14,7 @@
  * - Amazon SNS/SQS bindings
  */
 
-export * from './kafka.js'
+//No re-exports! Use the real thing!
 
 /**
  * Supported protocol binding types
