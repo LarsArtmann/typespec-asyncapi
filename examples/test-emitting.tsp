@@ -1,9 +1,9 @@
 // Test file to verify the emitter actually works
-import "@typespec/asyncapi";
+import "@larsartmann/typespec-asyncapi";
 
 using AsyncAPI;
 
-@asyncapi({
+@AsyncAPI.server({
   info: {
     title: "Test API",
     version: "1.0.0"

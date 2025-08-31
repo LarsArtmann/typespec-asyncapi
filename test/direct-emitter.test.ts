@@ -37,47 +37,22 @@ describe("Direct Emitter Test", () => {
 		}
 
 		try {
+			// Use TypeSpec's compile method properly
 			const result = await host.compile("direct.tsp")
-			Effect.logInfo("Compile result:", {type: typeof result, isArray: Array.isArray(result), length: result?.length})
-
-			const program = Array.isArray(result) ? result[0] : result
+			Effect.logInfo("Compile result type:", typeof result)
+			
+			// The compile method returns a Program directly
+			const program = result
 
 			Effect.logInfo("Program compiled successfully")
 			Effect.logInfo("Program type:", {type: typeof program})
 			Effect.logInfo("Program sourceFiles:", {count: program.sourceFiles?.size || 0})
 
-			// Call our emitter directly
-			Effect.logInfo("=== CALLING EMITTER DIRECTLY ===")
+			// USE THE REAL PROGRAM OBJECT - NO MOCKING!
+			Effect.logInfo("=== USING REAL TYPESPEC PROGRAM ===")
 
 			const emitterContext = {
-				program: {
-					...program,
-					// Add required compilerOptions for AssetEmitter
-					compilerOptions: {
-						...program.compilerOptions,
-						dryRun: false,
-					},
-					// Mock the host.mkdirp functionality for testing
-					host: {
-						mkdirp: async (path: string) => {
-							Effect.logDebug(`Mock mkdirp: ${path}`)
-						},
-						writeFile: async (path: string, content: string) => {
-							Effect.logDebug(`Mock writeFile: ${path} (${content.length} chars)`)
-							// Add to host.fs for test verification
-							host.fs.set(path, {content})
-						},
-					},
-					// Add other missing Program methods for testing
-					getGlobalNamespaceType: () => ({
-						name: "Global",
-						operations: new Map(),
-						namespaces: new Map(),
-					}),
-					sourceFiles: new Map([
-						["direct.tsp", {content: source}],
-					]),
-				},
+				program: program, // REAL PROGRAM from TypeSpec compilation
 				emitterOutputDir: "/direct-test-output",
 				options: {
 					"output-file": "direct-test",
