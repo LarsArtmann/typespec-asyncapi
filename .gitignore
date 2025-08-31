@@ -54,3 +54,6 @@ coverage
 
 # jscpd-report - duplication reports
 /jscpd-report/
+
+# Test outputs
+test-output/
