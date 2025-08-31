@@ -91,19 +91,13 @@ import type {
 	ChannelObject as ImportedChannelObject, 
 	OperationObject as ImportedOperationObject, 
 	MessageObject as ImportedMessageObject, 
-	ComponentsObject as ImportedComponentsObject, 
-	AsyncAPISchemaObject as ImportedAsyncAPISchemaObject 
+	AsyncAPISchemaObject as ImportedAsyncAPISchemaObject
 } from '@asyncapi/parser/esm/spec-types/v3';
 
-// Main alias for document type
-export type AsyncAPIDocument = ImportedAsyncAPIObject;
-
 // Legacy type aliases for backward compatibility
-export type AsyncAPISpec = ImportedAsyncAPIObject;
 export type Channel = ImportedChannelObject;
 export type Operation = ImportedOperationObject;
 export type Message = ImportedMessageObject;
-export type Components = ImportedComponentsObject;
 export type Schema = ImportedAsyncAPISchemaObject;
 
 /**
@@ -112,7 +106,7 @@ export type Schema = ImportedAsyncAPISchemaObject;
  */
 
 // Emitter-specific types (not part of official AsyncAPI spec)
-export interface EmitterAsyncAPIDocument extends AsyncAPIDocument {
+export interface EmitterAsyncAPIObject extends ImportedAsyncAPIObject {
 	// Extend with emitter-specific metadata
 	'x-generated-from-typespec'?: {
 		sourceFiles?: string;

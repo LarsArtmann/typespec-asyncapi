@@ -121,8 +121,7 @@ function extractServerConfigFromObject(obj: Model | Record<string, unknown>): Pa
 		})
 	} else if (obj && typeof obj === "object" && !("properties" in obj)) {
 		// Handle Record<string, unknown> type
-		const recordObj = obj
-		for (const [key, value] of Object.entries(recordObj)) {
+		for (const [key, value] of Object.entries(obj)) {
 			let valueStr: string | undefined
 
 			if (typeof value === "string") {

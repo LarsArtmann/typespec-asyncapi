@@ -11,7 +11,7 @@ import {Effect} from "effect"
 //TODO: this file is getting to big split it up
 
 // AsyncAPI Document Type Definitions
-export interface AsyncAPIDocument {
+export interface AsyncAPIObject {
 	asyncapi: string;
 	info: {
 		title: string;
@@ -181,9 +181,11 @@ export async function compileAsyncAPISpecWithoutErrors(
  */
 export function parseAsyncAPIOutput(outputFiles: Map<string, {
 	content: string
-}>, filename: string): AsyncAPIDocument | string {
+}>, filename: string): AsyncAPIObject | string {
 	const filePath = `test-output/${filename}`
 
+
+	//TODO: refactor to use Effect.TS!
 	try {
 		const content = outputFiles.get(filePath)
 		if (!content) {
@@ -203,7 +205,7 @@ export function parseAsyncAPIOutput(outputFiles: Map<string, {
 	}
 }
 
-function parseFileContent(content: string, filename: string): AsyncAPIDocument | string {
+function parseFileContent(content: string, filename: string): AsyncAPIObject | string {
 	if (filename.endsWith('.json')) {
 		return JSON.parse(content)
 	} else if (filename.endsWith('.yaml') || filename.endsWith('.yml')) {
@@ -248,16 +250,16 @@ export function validateAsyncAPIStructure(asyncapiDoc: unknown): boolean {
 /**
  * Validate AsyncAPI document using comprehensive validation framework
  */
-export async function validateAsyncAPIDocumentComprehensive(asyncapiDoc: unknown): Promise<{
+export async function validateAsyncAPIObjectComprehensive(asyncapiDoc: unknown): Promise<{
 	valid: boolean;
 	errors: Array<{ message: string; keyword: string; path: string }>;
 	summary: string;
 }> {
 	try {
 		// Import validation framework dynamically to avoid circular dependencies
-		const {validateAsyncAPIDocument} = await import("../../src/validation/index")
+		const {validateAsyncAPIObject} = await import("../../src/validation/index")
 
-		const result = await validateAsyncAPIDocument(asyncapiDoc, {
+		const result = await validateAsyncAPIObject(asyncapiDoc, {
 			strict: true,
 			enableCache: false, // Disable cache for testing
 		})
@@ -387,21 +389,21 @@ export const AsyncAPIAssertions = {
 		}
 	},
 
-	hasChannel: (doc: AsyncAPIDocument, channelName: string): boolean => {
+	hasChannel: (doc: AsyncAPIObject, channelName: string): boolean => {
 		if (!doc.channels || !(channelName in doc.channels)) {
 			throw new Error(`Expected channel '${channelName}' not found. Available channels: ${Object.keys(doc.channels || {}).join(", ")}`)
 		}
 		return true
 	},
 
-	hasOperation: (doc: AsyncAPIDocument, operationName: string): boolean => {
+	hasOperation: (doc: AsyncAPIObject, operationName: string): boolean => {
 		if (!doc.operations || !(operationName in doc.operations)) {
 			throw new Error(`Expected operation '${operationName}' not found. Available operations: ${Object.keys(doc.operations || {}).join(", ")}`)
 		}
 		return true
 	},
 
-	hasSchema: (doc: AsyncAPIDocument, schemaName: string): boolean => {
+	hasSchema: (doc: AsyncAPIObject, schemaName: string): boolean => {
 		if (!doc.components || !doc.components.schemas || !(schemaName in doc.components.schemas)) {
 			const availableSchemas = doc.components?.schemas ? Object.keys(doc.components.schemas) : []
 			throw new Error(`Expected schema '${schemaName}' not found. Available schemas: ${availableSchemas.join(", ")}`)
@@ -409,7 +411,7 @@ export const AsyncAPIAssertions = {
 		return true
 	},
 
-	schemaHasProperty: (doc: AsyncAPIDocument, schemaName: string, propertyName: string): boolean => {
+	schemaHasProperty: (doc: AsyncAPIObject, schemaName: string, propertyName: string): boolean => {
 		AsyncAPIAssertions.hasSchema(doc, schemaName)
 		const schema = doc.components?.schemas?.[schemaName]
 

@@ -1,6 +1,6 @@
 {
   "statistics": {
-    "detectionDate": "2025-08-31T03:05:58.739Z",
+    "detectionDate": "2025-08-31T03:20:15.997Z",
     "formats": {
       "typescript": {
         "sources": {
@@ -89,8 +89,8 @@
             "newClones": 0
           },
           "src/utils/schema-conversion.ts": {
-            "lines": 114,
-            "tokens": 907,
+            "lines": 113,
+            "tokens": 898,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -113,20 +113,20 @@
             "newClones": 0
           },
           "src/utils/asyncapi-helpers.ts": {
-            "lines": 156,
-            "tokens": 1340,
+            "lines": 157,
+            "tokens": 1337,
             "sources": 1,
             "clones": 3,
             "duplicatedLines": 29,
             "duplicatedTokens": 252,
-            "percentage": 18.59,
-            "percentageTokens": 18.81,
+            "percentage": 18.47,
+            "percentageTokens": 18.85,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
           "src/types/index.ts": {
-            "lines": 171,
-            "tokens": 673,
+            "lines": 165,
+            "tokens": 627,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -149,8 +149,8 @@
             "newClones": 0
           },
           "src/performance/metrics.ts": {
-            "lines": 419,
-            "tokens": 3952,
+            "lines": 417,
+            "tokens": 3943,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -425,8 +425,8 @@
             "newClones": 0
           },
           "src/decorators/server.ts": {
-            "lines": 153,
-            "tokens": 1523,
+            "lines": 152,
+            "tokens": 1514,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -437,8 +437,8 @@
             "newClones": 0
           },
           "src/decorators/security.ts": {
-            "lines": 359,
-            "tokens": 2383,
+            "lines": 357,
+            "tokens": 2365,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -533,14 +533,14 @@
             "newClones": 0
           },
           "src/protocol-bindings.ts": {
-            "lines": 598,
-            "tokens": 4469,
+            "lines": 600,
+            "tokens": 4462,
             "sources": 1,
             "clones": 2,
             "duplicatedLines": 10,
             "duplicatedTokens": 156,
             "percentage": 1.67,
-            "percentageTokens": 3.49,
+            "percentageTokens": 3.5,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -569,8 +569,8 @@
             "newClones": 0
           },
           "src/options.ts": {
-            "lines": 767,
-            "tokens": 5517,
+            "lines": 755,
+            "tokens": 5445,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -605,14 +605,14 @@
             "newClones": 0
           },
           "src/integration-example.ts": {
-            "lines": 871,
-            "tokens": 7140,
+            "lines": 872,
+            "tokens": 7143,
             "sources": 1,
             "clones": 4,
             "duplicatedLines": 24,
             "duplicatedTokens": 356,
-            "percentage": 2.76,
-            "percentageTokens": 4.99,
+            "percentage": 2.75,
+            "percentageTokens": 4.98,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -654,8 +654,8 @@
           }
         },
         "total": {
-          "lines": 10277,
-          "tokens": 72587,
+          "lines": 10257,
+          "tokens": 72417,
           "sources": 54,
           "clones": 9,
           "duplicatedLines": 60,
@@ -668,8 +668,8 @@
       }
     },
     "total": {
-      "lines": 10277,
-      "tokens": 72587,
+      "lines": 10257,
+      "tokens": 72417,
       "sources": 54,
       "clones": 9,
       "duplicatedLines": 60,
@@ -796,32 +796,32 @@
       "tokens": 0,
       "firstFile": {
         "name": "src/integration-example.ts",
-        "start": 242,
-        "end": 248,
+        "start": 243,
+        "end": 249,
         "startLoc": {
-          "line": 242,
+          "line": 243,
           "column": 2,
-          "position": 2070
+          "position": 2073
         },
         "endLoc": {
-          "line": 248,
+          "line": 249,
           "column": 11,
-          "position": 2159
+          "position": 2162
         }
       },
       "secondFile": {
         "name": "src/integration-example.ts",
-        "start": 181,
-        "end": 187,
+        "start": 182,
+        "end": 188,
         "startLoc": {
-          "line": 181,
+          "line": 182,
           "column": 2,
-          "position": 1517
+          "position": 1520
         },
         "endLoc": {
-          "line": 187,
+          "line": 188,
           "column": 9,
-          "position": 1606
+          "position": 1609
         }
       }
     },
@@ -832,32 +832,32 @@
       "tokens": 0,
       "firstFile": {
         "name": "src/integration-example.ts",
-        "start": 298,
-        "end": 304,
+        "start": 299,
+        "end": 305,
         "startLoc": {
-          "line": 298,
+          "line": 299,
           "column": 2,
-          "position": 2580
+          "position": 2583
         },
         "endLoc": {
-          "line": 304,
+          "line": 305,
           "column": 11,
-          "position": 2669
+          "position": 2672
         }
       },
       "secondFile": {
         "name": "src/integration-example.ts",
-        "start": 181,
-        "end": 187,
+        "start": 182,
+        "end": 188,
         "startLoc": {
-          "line": 181,
+          "line": 182,
           "column": 2,
-          "position": 1517
+          "position": 1520
         },
         "endLoc": {
-          "line": 187,
+          "line": 188,
           "column": 9,
-          "position": 1606
+          "position": 1609
         }
       }
     },
@@ -883,17 +883,17 @@
       },
       "secondFile": {
         "name": "src/utils/asyncapi-helpers.ts",
-        "start": 43,
-        "end": 52,
+        "start": 45,
+        "end": 54,
         "startLoc": {
-          "line": 43,
+          "line": 45,
           "column": 2,
-          "position": 334
+          "position": 345
         },
         "endLoc": {
-          "line": 52,
+          "line": 54,
           "column": 7,
-          "position": 406
+          "position": 417
         }
       }
     },
@@ -955,17 +955,17 @@
       },
       "secondFile": {
         "name": "src/utils/asyncapi-helpers.ts",
-        "start": 42,
-        "end": 52,
+        "start": 44,
+        "end": 54,
         "startLoc": {
-          "line": 42,
+          "line": 44,
           "column": 2,
-          "position": 303
+          "position": 314
         },
         "endLoc": {
-          "line": 52,
+          "line": 54,
           "column": 7,
-          "position": 406
+          "position": 417
         }
       }
     },
@@ -991,17 +991,17 @@
       },
       "secondFile": {
         "name": "src/utils/asyncapi-helpers.ts",
-        "start": 61,
-        "end": 74,
+        "start": 63,
+        "end": 76,
         "startLoc": {
-          "line": 61,
+          "line": 63,
           "column": 14,
-          "position": 477
+          "position": 488
         },
         "endLoc": {
-          "line": 74,
+          "line": 76,
           "column": 4,
-          "position": 552
+          "position": 563
         }
       }
     }

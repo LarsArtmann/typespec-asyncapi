@@ -4,7 +4,7 @@
  */
 
 import {Effect} from "effect"
-import type {AsyncAPIDocument} from "../types/index"
+import type {AsyncAPIObject} from "../types/index"
 
 /**
  * Tagged error for validation failures
@@ -20,9 +20,9 @@ export class ValidationError extends Error {
 
 /**
  * Pure Effect.TS AsyncAPI document validation
- * Extracted from integration-example.ts validateAsyncAPIDocumentEffect
+ * Extracted from integration-example.ts validateAsyncAPIObjectEffect
  */
-export const validateAsyncAPIDocumentEffect = (spec: unknown): Effect.Effect<boolean, ValidationError> =>
+export const validateAsyncAPIObjectEffect = (spec: unknown): Effect.Effect<boolean, ValidationError> =>
 	Effect.gen(function* () {
 		if (!spec || typeof spec !== "object") {
 			return yield* Effect.fail(new ValidationError(
@@ -74,7 +74,7 @@ export const validateAsyncAPIDocumentEffect = (spec: unknown): Effect.Effect<boo
  * Quick validation check for AsyncAPI document structure
  * Centralized basic validation logic
  */
-export function isValidAsyncAPIStructure(document: unknown): document is AsyncAPIDocument {
+export function isValidAsyncAPIStructure(document: unknown): document is AsyncAPIObject {
 	if (!document || typeof document !== "object") return false
 
 	const doc = document as Record<string, unknown>
@@ -89,7 +89,7 @@ export function isValidAsyncAPIStructure(document: unknown): document is AsyncAP
  * Validate AsyncAPI document with basic checks
  * Synchronous validation for simple cases
  */
-export function validateAsyncAPIDocumentSync(document: unknown): { valid: boolean; errors: string[] } {
+export function validateAsyncAPIObjectSync(document: unknown): { valid: boolean; errors: string[] } {
 	const errors: string[] = []
 
 	if (!document || typeof document !== "object") {

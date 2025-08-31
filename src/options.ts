@@ -49,12 +49,6 @@ export type AsyncAPIEmitterOptions = {
 	"include-source-info"?: boolean;
 
 	/**
-	 * Whether to use Effect.TS integrated emitter with validation
-	 * @default true
-	 */
-	"use-effect"?: boolean;
-
-	/**
 	 * Custom servers to include in the output
 	 */
 	"default-servers"?: Record<string, ServerConfig>;
@@ -422,10 +416,6 @@ export const AsyncAPIEmitterOptionsEffectSchema = createSchema(
 		"versioning": Schema.optional(VersioningConfigSchema.annotations({
 			description: "Versioning configuration",
 		})),
-
-		"use-effect": Schema.optional(Schema.Boolean.annotations({
-			description: "Use Effect.TS integrated emitter with validation. Default: true",
-		})),
 	}).pipe(
 		Schema.annotations({
 			identifier: "AsyncAPIEmitterOptions",
@@ -492,7 +482,7 @@ export const parseAsyncAPIEmitterOptions = (input: unknown) =>
 					"options",
 					input,
 					`Schema validation failed: ${error}`,
-					error instanceof Error ? error : new Error(String(error)),
+					error,
 				),
 			),
 		)
@@ -748,9 +738,7 @@ export const createAsyncAPIEmitterOptions = (input: Partial<AsyncAPIEmitterOptio
 		}
 
 		const merged = {...defaults, ...input}
-		const validated = yield* validateAsyncAPIEmitterOptions(merged)
-
-		return validated
+		return yield* validateAsyncAPIEmitterOptions(merged)
 	})
 
 /**

@@ -17,7 +17,7 @@ import {MemoryThresholdExceededError} from "./errors/MemoryThresholdExceededErro
 import {PERFORMANCE_METRICS_SERVICE, PERFORMANCE_METRICS_SERVICE_LIVE} from "./performance/metrics"
 import type {MemoryMonitorInitializationError} from "./errors/MemoryMonitorInitializationError"
 import {MEMORY_MONITOR_SERVICE, MEMORY_MONITOR_SERVICE_LIVE, withMemoryTracking} from "./performance/memory-monitor"
-import {validateAsyncAPIDocumentEffect} from "./utils/validation-helpers"
+import {validateAsyncAPIObjectEffect} from "./utils/validation-helpers"
 import {generateSchemaPropertiesFromModel} from "./utils/schema-conversion"
 import {sanitizeChannelId} from "./utils/typespec-helpers"
 
@@ -116,7 +116,7 @@ const makeEmitterService = Effect.gen(function* () {
 		)
 
 	const validateSpec = (spec: unknown): Effect.Effect<boolean, SpecValidationError> =>
-		validateAsyncAPIDocumentEffect(spec).pipe(
+		validateAsyncAPIObjectEffect(spec).pipe(
 			Effect.mapError((error) => new SpecValidationError(error.message, spec)),
 		)
 
@@ -151,6 +151,7 @@ const makeEmitterService = Effect.gen(function* () {
 			yield* Effect.logDebug("Emitter initialization completed successfully")
 		}).pipe(
 			Effect.catchAll(error => {
+				//TODO: Why is this always true here?? How can we improve this whole catchAll?
 				if (error instanceof EmitterInitializationError) {
 					return Effect.fail(error)
 				}

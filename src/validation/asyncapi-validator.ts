@@ -359,7 +359,7 @@ export async function isValidAsyncAPI(content: string): Promise<boolean> {
 /**
  * Main validation function used by test helpers
  */
-export async function validateAsyncAPIDocument(document: unknown, options: {
+export async function validateAsyncAPIObject(document: unknown, options: {
 	strict?: boolean;
 	enableCache?: boolean
 } = {}): Promise<ValidationResult> {

@@ -19,15 +19,16 @@ import {emitFile, getDoc} from "@typespec/compiler"
 import {type AssetEmitter, createAssetEmitter, TypeEmitter} from "@typespec/asset-emitter"
 import {stringify} from "yaml"
 import type {AsyncAPIEmitterOptions} from "./options"
-import type {AsyncAPIDocument, SchemaObject} from "./types/index"
+import type {SchemaObject} from "./types/index"
 import {validateAsyncAPIEffect, type ValidationError} from "./validation/index"
 import {$lib} from "./lib"
 import {PERFORMANCE_METRICS_SERVICE, PERFORMANCE_METRICS_SERVICE_LIVE} from "./performance/metrics"
 import {MEMORY_MONITOR_SERVICE, MEMORY_MONITOR_SERVICE_LIVE} from "./performance/memory-monitor"
 import {convertModelToSchema} from "./utils/schema-conversion"
+import type {AsyncAPIObject} from "@asyncapi/parser/esm/spec-types/v3"
 
 // Using centralized types from types/index.ts
-// AsyncAPIDocument and SchemaObject (as AsyncAPISchema) are now imported
+// AsyncAPIObject and SchemaObject (as AsyncAPISchema) are now imported
 
 /**
  * Enhanced AsyncAPI TypeEmitter with Effect.TS integration
@@ -35,14 +36,14 @@ import {convertModelToSchema} from "./utils/schema-conversion"
  */
 export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
 	private operations: Operation[] = []
-	private readonly asyncApiDoc: AsyncAPIDocument
+	private readonly asyncApiDoc: AsyncAPIObject
 
 	constructor(emitter: AssetEmitter<string, AsyncAPIEmitterOptions>) {
 		super(emitter)
 		this.asyncApiDoc = this.createInitialDocument()
 	}
 
-	private createInitialDocument(): AsyncAPIDocument {
+	private createInitialDocument(): AsyncAPIObject {
 		return {
 			asyncapi: "3.0.0",
 			info: {

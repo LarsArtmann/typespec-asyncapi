@@ -8,7 +8,7 @@
 
 import { describe, it, expect, beforeAll } from "vitest";
 import { AsyncAPIValidator, validateAsyncAPIFile } from "../../src/validation/index";
-import { compileAsyncAPISpec, parseAsyncAPIOutput, validateAsyncAPIDocumentComprehensive } from "../utils/test-helpers";
+import { compileAsyncAPISpec, parseAsyncAPIOutput, validateAsyncAPIObjectComprehensive } from "../utils/test-helpers";
 import { writeFile, mkdir, rm } from "node:fs/promises";
 import { join } from "node:path";
 

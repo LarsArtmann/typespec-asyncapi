@@ -219,8 +219,7 @@ function validateSecurityScheme(scheme: SecurityScheme): { valid: boolean; error
 		}
 
 		case "oauth2": {
-			const oauth2Scheme = scheme
-			const flows = oauth2Scheme.flows
+			const flows = scheme.flows
 			if (Object.keys(flows).length === 0) {
 				errors.push("OAuth2 scheme must define at least one flow")
 			}
@@ -247,10 +246,9 @@ function validateSecurityScheme(scheme: SecurityScheme): { valid: boolean; error
 		}
 
 		case "openIdConnect": {
-			const oidcScheme = scheme
 			// openIdConnectUrl is required in the type, so this check is unnecessary
 			try {
-				new URL(oidcScheme.openIdConnectUrl)
+				new URL(scheme.openIdConnectUrl)
 			} catch {
 				errors.push("OpenID Connect URL must be a valid URL")
 			}

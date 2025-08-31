@@ -13,7 +13,7 @@ import {describe, expect, test} from "bun:test"
 
 // Import type definitions
 import type {AsyncAPIEmitterOptions, FileType} from "../../src/options"
-import type {AsyncAPIDocument, ChannelObject, OperationObject, SchemaObject} from "../../types"
+import type {AsyncAPIObject, ChannelObject, OperationObject, SchemaObject} from "../../types"
 
 // AsyncAPI types now imported from centralized types/index.ts
 import type {
@@ -41,7 +41,7 @@ import {Effect} from "effect"
 describe("Real Type Definitions Unit Tests", () => {
 	describe("AsyncAPI Document Type Safety", () => {
 		test("should validate AsyncAPI document structure types", () => {
-			const validAsyncAPIDocument: AsyncAPIDocument = {
+			const validAsyncAPIObject: AsyncAPIObject = {
 				asyncapi: "3.0.0",
 				info: {
 					title: "Test API",
@@ -97,16 +97,16 @@ describe("Real Type Definitions Unit Tests", () => {
 			}
 
 			// Type checking - these should not produce TypeScript errors
-			expect(validAsyncAPIDocument.asyncapi).toBe("3.0.0")
-			expect(validAsyncAPIDocument.info.title).toBe("Test API")
-			expect(validAsyncAPIDocument.channels["test-channel"].address).toBe("/test")
-			expect(validAsyncAPIDocument.operations.testOperation.action).toBe("send")
-			expect(validAsyncAPIDocument.components.schemas.TestSchema.type).toBe("object")
+			expect(validAsyncAPIObject.asyncapi).toBe("3.0.0")
+			expect(validAsyncAPIObject.info.title).toBe("Test API")
+			expect(validAsyncAPIObject.channels["test-channel"].address).toBe("/test")
+			expect(validAsyncAPIObject.operations.testOperation.action).toBe("send")
+			expect(validAsyncAPIObject.components.schemas.TestSchema.type).toBe("object")
 
 			Effect.log("✅ AsyncAPI document structure types validated")
-			Effect.log(`📊 Channels: ${Object.keys(validAsyncAPIDocument.channels).length}`)
-			Effect.log(`📊 Operations: ${Object.keys(validAsyncAPIDocument.operations).length}`)
-			Effect.log(`📊 Schemas: ${Object.keys(validAsyncAPIDocument.components.schemas).length}`)
+			Effect.log(`📊 Channels: ${Object.keys(validAsyncAPIObject.channels).length}`)
+			Effect.log(`📊 Operations: ${Object.keys(validAsyncAPIObject.operations).length}`)
+			Effect.log(`📊 Schemas: ${Object.keys(validAsyncAPIObject.components.schemas).length}`)
 		})
 
 		test("should enforce required properties in AsyncAPI types", () => {
@@ -595,9 +595,9 @@ describe("Real Type Definitions Unit Tests", () => {
 	describe("Type Utility Functions", () => {
 		test("should provide type utility functions for common operations", () => {
 			// Utility type for making properties optional
-			type PartialAsyncAPIDocument = Partial<AsyncAPIDocument>;
+			type PartialAsyncAPIObject = Partial<AsyncAPIObject>;
 
-			const partialDoc: PartialAsyncAPIDocument = {
+			const partialDoc: PartialAsyncAPIObject = {
 				asyncapi: "3.0.0",
 				info: {
 					title: "Partial Document",
@@ -610,7 +610,7 @@ describe("Real Type Definitions Unit Tests", () => {
 			expect(partialDoc.channels).toBeUndefined()
 
 			// Utility type for picking specific properties
-			type AsyncAPIInfo = Pick<AsyncAPIDocument, "asyncapi" | "info">;
+			type AsyncAPIInfo = Pick<AsyncAPIObject, "asyncapi" | "info">;
 
 			const infoOnly: AsyncAPIInfo = {
 				asyncapi: "3.0.0",

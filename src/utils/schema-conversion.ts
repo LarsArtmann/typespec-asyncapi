@@ -16,8 +16,7 @@ export function convertModelToSchema(model: Model, program: Program): SchemaObje
 	const required: string[] = []
 
 	model.properties.forEach((prop, name) => {
-		const propSchema = convertPropertyToSchema(prop, program, name)
-		properties[name] = propSchema
+		properties[name] = convertPropertyToSchema(prop, program, name)
 
 		if (!prop.optional) {
 			required.push(name)

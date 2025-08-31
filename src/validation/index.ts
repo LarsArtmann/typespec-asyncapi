@@ -11,7 +11,7 @@ export {
 	// Main validation functions
 	validateAsyncAPIFile,
 	validateAsyncAPIString,
-	validateAsyncAPIDocument,
+	validateAsyncAPIObject,
 	validateWithDiagnostics,
 	validateAsyncAPIEffect,
 	isValidAsyncAPI,

@@ -296,18 +296,20 @@ export class ProtocolBindingFactory {
 		}
 	}
 
+	//TODO: This need a fundamental type fix:
 	/**
 	 * Create channel bindings for a specific protocol
 	 */
 	static createChannelBindings(protocol: ProtocolType, config: KafkaBindingConfig["channel"] | WebSocketBindingConfig["channel"]): ChannelBindings | undefined {
 		switch (protocol) {
 			case "kafka":
-				const kafkaConfig = (config as KafkaBindingConfig["channel"]) ?? { topic: "default-kafka-topic" };
 				return {
-					kafka: KafkaProtocolBinding.createChannelBinding(kafkaConfig),
+					//TODO: This need a fundamental type fix:
+					kafka: KafkaProtocolBinding.createChannelBinding((config as KafkaBindingConfig["operation"]) ?? {}),
 				}
 			case "ws":
 				return {
+					//TODO: This need a fundamental type fix:
 					ws: WebSocketProtocolBinding.createChannelBinding((config as WebSocketBindingConfig["channel"]) ?? {}),
 				}
 			default:

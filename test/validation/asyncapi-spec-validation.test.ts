@@ -9,7 +9,7 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { 
   AsyncAPIValidator,
-  validateAsyncAPIDocument,
+  validateAsyncAPIObject,
   validateAsyncAPIFile,
   AsyncAPICustomRules,
   ValidationTestRunner,
@@ -677,7 +677,7 @@ describe("Convenience Functions", () => {
       operations: { "testOp": { action: "send", channel: { $ref: "#/channels/test" } } },
     };
 
-    const result = await validateAsyncAPIDocument(document);
+    const result = await validateAsyncAPIObject(document);
 
     expect(result.valid).toBe(true);
     expect(result.errors).toHaveLength(0);

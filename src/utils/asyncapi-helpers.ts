@@ -6,15 +6,17 @@
 import type {Operation, Program} from "@typespec/compiler"
 import {getDoc} from "@typespec/compiler"
 import {Effect} from "effect"
-import type {AsyncAPIDocument, ChannelObject, OperationObject} from "../types/index"
+import type {AsyncAPIObject, ChannelObject, OperationObject} from "../types/index"
 import {getAsyncAPIAction, getChannelPath, getOperationType} from "./typespec-helpers"
 import {convertModelToSchema} from "./schema-conversion"
+
+import {stringify} from "yaml"
 
 /**
  * Create initial AsyncAPI document structure
  * Centralized document creation logic
  */
-export function createAsyncAPIDocument(operations: Operation[], title?: string, description?: string): AsyncAPIDocument {
+export function createAsyncAPIObject(operations: Operation[], title?: string, description?: string): AsyncAPIObject {
 	return {
 		asyncapi: "3.0.0" as const,
 		info: {
@@ -28,7 +30,7 @@ export function createAsyncAPIDocument(operations: Operation[], title?: string, 
 			schemas: {},
 			messages: {},
 		},
-	} as AsyncAPIDocument
+	} as AsyncAPIObject
 }
 
 /**
@@ -75,7 +77,7 @@ export function createOperationDefinition(op: Operation, program: Program, chann
 export function processOperationToDocument(
 	operation: Operation,
 	program: Program,
-	document: AsyncAPIDocument,
+	document: AsyncAPIObject,
 ): void {
 	// Create channel
 	const {name: channelName, definition: channelDef} = createChannelDefinition(operation, program)
@@ -113,7 +115,7 @@ export function processOperationToDocument(
  * Generate content string for AsyncAPI document
  * Centralized content generation logic
  */
-export function generateAsyncAPIContent(document: AsyncAPIDocument, fileType: "json" | "yaml", sourceInfo?: {
+export function generateAsyncAPIContent(document: AsyncAPIObject, fileType: "json" | "yaml", sourceInfo?: {
 	sourceFiles?: string;
 	operationsFound?: string
 }): string {
@@ -136,7 +138,6 @@ export function generateAsyncAPIContent(document: AsyncAPIDocument, fileType: "j
 			`# Generated from TypeSpec - NOT hardcoded!\n# Source files: ${sourceInfo.sourceFiles || "none"}\n# Operations found: ${sourceInfo.operationsFound || "none"}\n\n` :
 			""
 
-		const {stringify} = require("yaml")
 		content = header + stringify(document)
 	}
 
@@ -147,7 +148,7 @@ export function generateAsyncAPIContent(document: AsyncAPIDocument, fileType: "j
  * Log processing statistics
  * Centralized stats logging
  */
-export function logProcessingStats(document: AsyncAPIDocument, operations: Operation[]): void {
+export function logProcessingStats(document: AsyncAPIObject, operations: Operation[]): void {
 	Effect.log(`\n📊 PROCESSING STATS:`)
 	Effect.log(`  - Operations processed: ${operations.length}`)
 	Effect.log(`  - Channels created: ${Object.keys(document.channels || {}).length}`)

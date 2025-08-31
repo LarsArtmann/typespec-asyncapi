@@ -174,7 +174,7 @@ export const makeValidationService = Effect.gen(function* () {
 3. **Implement Streaming Validation**
    ```typescript
    export const validateLargeConfigs = (configs: AsyncIterable<Config>) =>
-     Effect.gen(function* () {
+     Effect.gen(async function* () {
        const results = new Map();
        
        for await (const config of configs) {
