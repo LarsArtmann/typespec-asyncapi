@@ -48,7 +48,6 @@
     "newLine": "LF",
     //as in https://github.com/microsoft/typespec/blob/main/tsconfig.base.json
     "skipLibCheck": true,
-
     "moduleDetection": "force",
     // === ESM MODULE OUTPUT OPTIMIZATION ===
     "outDir": "dist",
@@ -69,7 +68,6 @@
     // DISABLED: Effect.TS uses dynamic property access patterns
     // Keep: Prevent switch fallthrough bugs
     "noPropertyAccessFromIndexSignature": false,
-
     // Unused code detection (zero tolerance)
     "noUnusedLocals": true,
     // No unused local variables
@@ -149,7 +147,7 @@
     // Better watch mode output
     "pretty": true,
     // Colorized output
-    "listEmittedFiles": true,
+    "listEmittedFiles": false,
     // Performance: Don't list emitted files
     "listFiles": false
     // Performance: Don't list all files

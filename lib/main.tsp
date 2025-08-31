@@ -1,10 +1,10 @@
 import "@typespec/compiler";
 import "../dist/index.js";
+//import "../dist/decorators/security.js"
 
 using TypeSpec.Reflection;
 
 namespace TypeSpec.AsyncAPI;
-
 
 /**
  * Specify the channel path for a message operation
