@@ -26,7 +26,7 @@ import {$lib} from "./lib.js"
 import {PERFORMANCE_METRICS_SERVICE, PERFORMANCE_METRICS_SERVICE_LIVE} from "./performance/metrics.js"
 import {MEMORY_MONITOR_SERVICE, MEMORY_MONITOR_SERVICE_LIVE} from "./performance/memory-monitor.js"
 import {convertModelToSchema} from "./utils/schema-conversion.js"
-import {buildServersFromNamespaces} from "./utils/typespec-helpers.js"
+import {buildServersFromNamespaces, getMessageConfig} from "./utils/typespec-helpers.js"
 
 // Using centralized types from types/index.ts
 // AsyncAPIObject and SchemaObject (as AsyncAPISchema) are now imported
@@ -39,6 +39,7 @@ import {buildServersFromNamespaces} from "./utils/typespec-helpers.js"
  */
 export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
 	private operations: Operation[] = []
+	private messageModels: Model[] = []
 	private readonly asyncApiDoc: AsyncAPIObject
 
 	constructor(emitter: AssetEmitter<string, AsyncAPIEmitterOptions>) {
@@ -86,7 +87,9 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 
 				// Execute the emission stages
 				const ops = (yield* this.discoverOperationsEffect()) as Operation[]
+				const messageModels = (yield* this.discoverMessageModelsEffect()) as Model[]
 				yield* this.processOperationsEffect(ops)
+				yield* this.processMessageModelsEffect(messageModels)
 				const doc = (yield* this.generateDocumentEffect()) as string
 				const validatedDoc = (yield* this.validateDocumentEffect(doc)) as string
 				// Document processing complete - file writing handled by AssetEmitter
@@ -205,6 +208,63 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 	}
 
 	/**
+	 * Discover message models with @message decorators using Effect.TS
+	 */
+	private discoverMessageModelsEffect() {
+		return Effect.gen(function* (this: AsyncAPIEffectEmitter) {
+			const metricsService = yield* PERFORMANCE_METRICS_SERVICE
+			const memoryMonitor = yield* MEMORY_MONITOR_SERVICE
+
+			// Start performance measurement for message discovery
+			const measurement = yield* metricsService.startMeasurement("message_discovery")
+			Effect.log(`🎯 Starting message model discovery...`)
+
+			const discoveryOperation = Effect.sync(() => {
+				const program = this.emitter.getProgram()
+				const messageModels: Model[] = []
+				const messageConfigsMap = program.stateMap($lib.stateKeys.messageConfigs)
+
+				const walkNamespaceForModels = (ns: Namespace) => {
+					// Check all models in current namespace
+					if (ns.models) {
+						ns.models.forEach((model: Model, name: string) => {
+							if (messageConfigsMap.has(model)) {
+								messageModels.push(model)
+								Effect.log(`🎯 Found message model: ${name}`)
+							}
+						})
+					}
+
+					// Recursively walk child namespaces
+					if (ns.namespaces) {
+						ns.namespaces.forEach((childNs: Namespace) => {
+							walkNamespaceForModels(childNs)
+						})
+					}
+				}
+
+				walkNamespaceForModels(program.getGlobalNamespaceType())
+				this.messageModels = messageModels
+
+				Effect.log(`📊 Total message models discovered: ${messageModels.length}`)
+				return messageModels
+			})
+
+			// Execute discovery with memory tracking
+			const {result: messageModels} = yield* memoryMonitor.measureOperationMemory(
+				discoveryOperation,
+				"message_discovery",
+			)
+
+			// Record throughput metrics for discovery stage
+			const throughputResult = yield* metricsService.recordThroughput(measurement, messageModels.length)
+			Effect.log(`📊 Message discovery completed: ${throughputResult.operationsPerSecond?.toFixed(0) ?? 0} models/sec`)
+
+			return messageModels
+		}.bind(this)).pipe(Effect.mapError(error => new Error(`Message discovery failed: ${error}`)))
+	}
+
+	/**
 	 * Process operations using Effect.TS with performance monitoring
 	 */
 	private processOperationsEffect(operations: Operation[]) {
@@ -233,6 +293,90 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 			Effect.log(`📊 Processing stage completed: ${(throughputResult).operationsPerSecond?.toFixed(0) ?? 0} ops/sec, ${(throughputResult).averageMemoryPerOperation?.toFixed(0) ?? 0} bytes/op`)
 			Effect.log(`📊 Processed ${operations.length} operations successfully`)
 		}.bind(this)).pipe(Effect.mapError(error => new Error(`Operation processing failed: ${error}`)))
+	}
+
+	/**
+	 * Process message models with @message decorators using Effect.TS
+	 */
+	private processMessageModelsEffect(messageModels: Model[]) {
+		return Effect.gen(function* (this: AsyncAPIEffectEmitter) {
+			const metricsService = yield* PERFORMANCE_METRICS_SERVICE
+			const memoryMonitor = yield* MEMORY_MONITOR_SERVICE
+
+			// Start performance measurement for message processing
+			const measurement = yield* metricsService.startMeasurement("message_processing")
+			Effect.log(`🎯 Processing ${messageModels.length} message models...`)
+
+			for (const model of messageModels) {
+				const singleMessageProcessing = Effect.sync(() => {
+					return this.processSingleMessageModel(model)
+				})
+
+				// Execute each message processing with memory tracking
+				yield* memoryMonitor.measureOperationMemory(
+					singleMessageProcessing,
+					`message_processing_${model.name}`,
+				)
+			}
+
+			// Record throughput metrics for message processing stage
+			const throughputResult = yield* metricsService.recordThroughput(measurement, messageModels.length)
+			Effect.log(`📊 Message processing completed: ${throughputResult.operationsPerSecond?.toFixed(0) ?? 0} models/sec`)
+			Effect.log(`📊 Processed ${messageModels.length} message models successfully`)
+		}.bind(this)).pipe(Effect.mapError(error => new Error(`Message processing failed: ${error}`)))
+	}
+
+	/**
+	 * Process a single message model and add it to AsyncAPI components.messages
+	 */
+	private processSingleMessageModel(model: Model): string {
+		const program = this.emitter.getProgram()
+		const messageConfig = getMessageConfig(program, model)
+		
+		if (!messageConfig) {
+			Effect.log(`⚠️  No message config found for model: ${model.name}`)
+			return `No config for ${model.name}`
+		}
+
+		Effect.log(`🎯 Processing message model: ${model.name}`)
+
+		// Ensure components.messages exists
+		if (!this.asyncApiDoc.components?.messages) {
+			if (!this.asyncApiDoc.components) this.asyncApiDoc.components = {}
+			this.asyncApiDoc.components.messages = {}
+		}
+
+		// Create message ID from config or model name
+		const messageId = messageConfig.name ?? model.name
+
+		// Add message to components.messages
+		this.asyncApiDoc.components.messages[messageId] = {
+			name: messageId,
+			title: messageConfig.title ?? messageId,
+			summary: messageConfig.summary,
+			description: messageConfig.description ?? getDoc(program, model),
+			contentType: messageConfig.contentType ?? "application/json",
+			examples: messageConfig.examples,
+			headers: messageConfig.headers ? { $ref: messageConfig.headers } : undefined,
+			correlationId: messageConfig.correlationId ? { $ref: messageConfig.correlationId } : undefined,
+			bindings: messageConfig.bindings,
+			payload: {
+				$ref: `#/components/schemas/${model.name}`
+			}
+		}
+
+		// Also add schema for the model if not already present
+		if (!this.asyncApiDoc.components?.schemas) {
+			if (!this.asyncApiDoc.components) this.asyncApiDoc.components = {}
+			this.asyncApiDoc.components.schemas = {}
+		}
+		
+		if (!this.asyncApiDoc.components.schemas[model.name]) {
+			this.asyncApiDoc.components.schemas[model.name] = convertModelToSchema(model, program)
+		}
+
+		Effect.log(`✅ Added message: ${messageId} with schema reference`)
+		return `Processed message: ${messageId}`
 	}
 
 	/**
