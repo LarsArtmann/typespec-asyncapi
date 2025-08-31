@@ -16,7 +16,7 @@
 import {Console, Effect, Layer, pipe} from "effect"
 import type {EmitContext, Model, Namespace, Operation, Program} from "@typespec/compiler"
 import {getDoc} from "@typespec/compiler"
-import {type AssetEmitter, createAssetEmitter, TypeEmitter} from "@typespec/asset-emitter"
+import {type AssetEmitter, createAssetEmitter, type EmittedSourceFile, type SourceFile, TypeEmitter} from "@typespec/asset-emitter"
 import {stringify} from "yaml"
 import type {AsyncAPIEmitterOptions} from "./options.js"
 import type {AsyncAPIObject, MessageObject, OperationObject, SchemaObject} from "@asyncapi/parser/esm/spec-types/v3.js"
@@ -63,7 +63,7 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 				version: "1.0.0",
 				description: "Generated from TypeSpec with Effect.TS integration",
 			},
-			servers,
+			servers: servers as AsyncAPIObject["servers"],
 			channels: {},
 			operations: {},
 			components: {
@@ -71,6 +71,39 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 				messages: {},
 			},
 		}
+	}
+
+	override sourceFile(sourceFile: SourceFile<string>): EmittedSourceFile {
+		Effect.log(`🎯 SOURCEFIRE: Generating file content for ${sourceFile.path}`)
+		
+		const options = this.emitter.getOptions()
+		const fileType: "yaml" | "json" = options["file-type"] || "yaml"
+		
+		// Serialize the populated AsyncAPI document
+		Effect.log(`📋 Serializing AsyncAPI document as ${fileType}`)
+		Effect.log(`📊 Document state: channels=${Object.keys(this.asyncApiDoc.channels || {}).length}, operations=${Object.keys(this.asyncApiDoc.operations || {}).length}`)
+		const content = this.serializeDocument(fileType)
+		
+		Effect.log(`📄 Generated ${content.length} bytes of ${fileType} content`)
+		
+		// Resolve output file path
+		const outputPath = this.resolveOutputFilePath(fileType)
+		
+		return {
+			path: outputPath,
+			contents: content,
+		}
+	}
+
+
+	private resolveOutputFilePath(fileType: "yaml" | "json"): string {
+		const options = this.emitter.getOptions()
+		const filename = options["output-file"] || "asyncapi"
+		const extension = fileType === "yaml" ? "yaml" : "json"
+		
+		// Use AssetEmitter's output directory
+		const outputDir = this.emitter.getProgram().compilerOptions.outputDir || "."
+		return `${outputDir}/${filename}.${extension}`
 	}
 
 	override async writeOutput(): Promise<void> {
