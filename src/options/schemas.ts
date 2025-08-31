@@ -18,7 +18,7 @@ import {validatePathTemplate} from "../path-templates.js"
  * Variable configuration schema for server variables
  * OPTIMIZED: Using Schema.record with branded types and performance optimizations
  */
-const VariableConfigSchema = Schema.Struct({
+const variableConfigSchema = Schema.Struct({
 	description: Schema.optional(Schema.String.pipe(
 		Schema.maxLength(500),
 		Schema.annotations({description: "Variable description (max 500 chars)"}),
@@ -44,7 +44,7 @@ const VariableConfigSchema = Schema.Struct({
  * OAuth flow configuration schema
  * ENHANCED: URL validation, scope limits, and security constraints
  */
-const OAuthFlowConfigSchema = Schema.Struct({
+const oAuthFlowConfigSchema = Schema.Struct({
 	authorizationUrl: Schema.optional(Schema.String.pipe(
 		Schema.pattern(/^https?:\/\/.+/, {
 			message: () => "Authorization URL must be a valid HTTP/HTTPS URL",
@@ -87,18 +87,18 @@ const OAuthFlowConfigSchema = Schema.Struct({
 /**
  * OAuth flows configuration schema
  */
-const OAuthFlowsConfigSchema = Schema.Struct({
-	implicit: Schema.optional(OAuthFlowConfigSchema),
-	password: Schema.optional(OAuthFlowConfigSchema),
-	clientCredentials: Schema.optional(OAuthFlowConfigSchema),
-	authorizationCode: Schema.optional(OAuthFlowConfigSchema),
+const oAuthFlowsConfigSchema = Schema.Struct({
+	implicit: Schema.optional(oAuthFlowConfigSchema),
+	password: Schema.optional(oAuthFlowConfigSchema),
+	clientCredentials: Schema.optional(oAuthFlowConfigSchema),
+	authorizationCode: Schema.optional(oAuthFlowConfigSchema),
 })
 
 /**
  * Security scheme configuration schema with branded types
  * ENHANCED: Conditional validation, branded types, and security constraints
  */
-const SecuritySchemeConfigSchema = Schema.Struct({
+const securitySchemeConfigSchema = Schema.Struct({
 	type: Schema.Literal("oauth2", "apiKey", "httpApiKey", "http", "plain", "scram-sha-256", "scram-sha-512", "gssapi").pipe(
 		Schema.annotations({description: "Security scheme type - determines available fields"}),
 	),
@@ -127,7 +127,7 @@ const SecuritySchemeConfigSchema = Schema.Struct({
 		Schema.maxLength(50),
 		Schema.annotations({description: "Bearer token format hint (e.g., 'JWT')"}),
 	)),
-	flows: Schema.optional(OAuthFlowsConfigSchema),
+	flows: Schema.optional(oAuthFlowsConfigSchema),
 }).pipe(
 	Schema.annotations({
 		identifier: "SecuritySchemeConfig",
@@ -138,13 +138,13 @@ const SecuritySchemeConfigSchema = Schema.Struct({
 /**
  * Server configuration schema
  */
-const ServerConfigSchema = Schema.Struct({
+const serverConfigSchema = Schema.Struct({
 	host: Schema.String,
 	protocol: Schema.String,
 	description: Schema.optional(Schema.String),
 	variables: Schema.optional(Schema.Record({
 		key: Schema.String,
-		value: VariableConfigSchema,
+		value: variableConfigSchema,
 	})),
 	security: Schema.optional(Schema.Array(Schema.String)),
 	bindings: Schema.optional(Schema.Record({
@@ -156,7 +156,7 @@ const ServerConfigSchema = Schema.Struct({
 /**
  * Versioning configuration schema
  */
-const VersioningConfigSchema = Schema.Struct({
+const versioningConfigSchema = Schema.Struct({
 	"separate-files": Schema.optional(Schema.Boolean),
 	"file-naming": Schema.optional(Schema.Literal("suffix", "directory", "prefix")),
 	"include-version-info": Schema.optional(Schema.Boolean),
@@ -192,7 +192,7 @@ const createSchema = <T>(key: string, schemaFactory: () => Schema.Schema<T>): Sc
  * TYPE SAFETY: Compile-time and runtime validation with comprehensive error messages
  * PERFORMANCE: Schema caching and optimized validation chains
  */
-export const AsyncAPIEmitterOptionsEffectSchema = createSchema(
+export const asyncAPIEmitterOptionsEffectSchema = createSchema(
 	"AsyncAPIEmitterOptionsEffectSchema",
 	() => Schema.Struct({
 		"output-file": Schema.optional(Schema.String.pipe(
@@ -229,7 +229,7 @@ export const AsyncAPIEmitterOptionsEffectSchema = createSchema(
 
 		"default-servers": Schema.optional(Schema.Record({
 			key: Schema.String,
-			value: ServerConfigSchema,
+			value: serverConfigSchema,
 		}).annotations({
 			description: "Custom servers to include in the output",
 		})),
@@ -253,12 +253,12 @@ export const AsyncAPIEmitterOptionsEffectSchema = createSchema(
 
 		"security-schemes": Schema.optional(Schema.Record({
 			key: Schema.String,
-			value: SecuritySchemeConfigSchema,
+			value: securitySchemeConfigSchema,
 		}).annotations({
 			description: "Security schemes configuration",
 		})),
 
-		"versioning": Schema.optional(VersioningConfigSchema.annotations({
+		"versioning": Schema.optional(versioningConfigSchema.annotations({
 			description: "Versioning configuration",
 		})),
 	}).pipe(

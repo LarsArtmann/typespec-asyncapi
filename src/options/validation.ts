@@ -4,7 +4,7 @@
 
 import {Effect} from "effect"
 import {Schema} from "@effect/schema"
-import {AsyncAPIEmitterOptionsEffectSchema} from "./schemas.js"
+import {asyncAPIEmitterOptionsEffectSchema} from "./schemas.js"
 import {AsyncAPIOptionsValidationError} from "../errors/AsyncAPIOptionsValidationError.js"
 import {AsyncAPIOptionsParseError} from "../errors/AsyncAPIOptionsParseError.js"
 import type {
@@ -107,7 +107,7 @@ export const parseAsyncAPIEmitterOptions = (input: unknown) =>
 		}
 
 		// Parse with detailed error mapping using yield*
-		return yield* Schema.decodeUnknown(AsyncAPIEmitterOptionsEffectSchema)(input).pipe(
+		return yield* Schema.decodeUnknown(asyncAPIEmitterOptionsEffectSchema)(input).pipe(
 			Effect.mapError(error =>
 				new AsyncAPIOptionsValidationError(
 					"options",

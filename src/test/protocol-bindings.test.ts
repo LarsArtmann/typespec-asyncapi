@@ -117,7 +117,7 @@ test("Protocol binding factory gets default configurations", () => {
 
 	expect(kafkaDefaults).toBeDefined()
 	// Type assertion is safe here for testing purposes
-	const kafkaConfig = kafkaDefaults as any
+	const kafkaConfig = kafkaDefaults
 	expect(kafkaConfig.server?.schemaRegistryVendor).toBe("confluent")
 	expect(kafkaConfig.channel?.partitions).toBe(1)
 	expect(kafkaConfig.channel?.replicas).toBe(1)

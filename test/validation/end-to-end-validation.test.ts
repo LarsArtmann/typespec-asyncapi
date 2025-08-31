@@ -173,7 +173,7 @@ describe("End-to-End AsyncAPI Validation Pipeline", () => {
 
 			// Step 4: Verify structural completeness
 			Effect.log("🔍 Step 4: Verifying document structure...")
-			const doc = asyncApiDoc as any
+			const doc = asyncApiDoc
 
 			// Check AsyncAPI version
 			expect(doc.asyncapi).toBe("3.0.0")
@@ -203,8 +203,8 @@ describe("End-to-End AsyncAPI Validation Pipeline", () => {
 			for (const [operationName, operation] of Object.entries(doc.operations)) {
 				expect(operation).toHaveProperty("action")
 				expect(operation).toHaveProperty("channel")
-				expect((operation as any).channel).toHaveProperty("$ref")
-				expect((operation as any).channel.$ref).toMatch(/^#\/channels\/.+/)
+				expect(operation.channel).toHaveProperty("$ref")
+				expect(operation.channel.$ref).toMatch(/^#\/channels\/.+/)
 
 				// Verify referenced channel exists
 				const channelRef = (operation as any).channel.$ref.replace("#/channels/", "")
@@ -437,7 +437,7 @@ describe("End-to-End AsyncAPI Validation Pipeline", () => {
 			expect(validationResult.errors).toHaveLength(0)
 
 			// Verify comprehensive microservices structure
-			const doc = asyncApiDoc as any
+			const doc = asyncApiDoc
 			expect(Object.keys(doc.channels).length).toBeGreaterThan(3) // Multiple service channels
 			expect(Object.keys(doc.operations).length).toBeGreaterThan(5) // Multiple operations
 			expect(Object.keys(doc.components.schemas).length).toBeGreaterThan(3) // Multiple data models
@@ -527,7 +527,7 @@ describe("End-to-End AsyncAPI Validation Pipeline", () => {
 			expect(validationResult.errors).toHaveLength(0)
 
 			// Verify IoT-specific patterns
-			const doc = asyncApiDoc as any
+			const doc = asyncApiDoc
 
 			// Should have parameterized channels for device-specific streams
 			const channelNames = Object.keys(doc.channels)

@@ -125,16 +125,28 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
 		Effect.log(`🏗️  Processing operation: ${op.name}`)
 
 		const {name: channelName, definition: channelDef} = this.createChannelDefinition(op)
-		//TODO: @typescript-eslint/no-non-null-assertion
-		this.asyncApiDoc.channels![channelName] = channelDef
+		// Ensure channels object exists before assignment
+		if (!this.asyncApiDoc.channels) {
+			this.asyncApiDoc.channels = {}
+		}
+		this.asyncApiDoc.channels[channelName] = channelDef
 
-		//TODO: @typescript-eslint/no-non-null-assertion
-		this.asyncApiDoc.operations![op.name] = this.createOperationDefinition(op, channelName)
+		// Ensure operations object exists before assignment
+		if (!this.asyncApiDoc.operations) {
+			this.asyncApiDoc.operations = {}
+		}
+		this.asyncApiDoc.operations[op.name] = this.createOperationDefinition(op, channelName)
 
 		if (op.returnType.kind === "Model") {
 			const model = op.returnType
-			//TODO: @typescript-eslint/no-non-null-assertion
-			this.asyncApiDoc.components!.schemas![model.name] = this.convertModelToSchema(model)
+			// Ensure components and schemas objects exist before assignment
+			if (!this.asyncApiDoc.components) {
+				this.asyncApiDoc.components = {}
+			}
+			if (!this.asyncApiDoc.components.schemas) {
+				this.asyncApiDoc.components.schemas = {}
+			}
+			this.asyncApiDoc.components.schemas[model.name] = this.convertModelToSchema(model)
 		}
 	}
 

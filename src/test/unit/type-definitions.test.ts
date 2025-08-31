@@ -386,7 +386,7 @@ describe("Real Type Definitions Unit Tests", () => {
 			}
 
 			const asyncapiError: AsyncAPIError = {
-				code: "SCHEMA_VALIDATION_FAILED" as any,
+				code: "SCHEMA_VALIDATION_FAILED",
 				message: "Schema validation failed",
 				category: "SCHEMA_VALIDATION" as ErrorCategory,
 				severity: "error",
