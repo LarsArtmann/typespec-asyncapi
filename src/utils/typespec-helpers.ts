@@ -10,6 +10,7 @@ import type {ServerConfig} from "../decorators/server.js"
 import type {MessageConfig} from "../decorators/message.js"
 import type {ProtocolConfig} from "../decorators/protocol.js"
 import type {SecurityConfig} from "../decorators/security.js"
+import type {ServersObject} from "@asyncapi/parser/esm/spec-types/v3.js"
 
 /**
  * Discover all operations from TypeSpec program
@@ -151,8 +152,8 @@ export function getSecurityConfig(program: Program, target: Operation | Model): 
  * Build AsyncAPI servers object from namespace-scoped server configurations
  * Implements namespace-qualified naming strategy from architecture decision
  */
-export function buildServersFromNamespaces(program: Program): Record<string, any> {
-	const servers: Record<string, any> = {}
+export function buildServersFromNamespaces(program: Program): ServersObject {
+	const servers: ServersObject = {}
 	const allServerConfigs = getAllServerConfigs(program)
 	
 	for (const [namespace, serverConfigsMap] of allServerConfigs.entries()) {
@@ -167,7 +168,7 @@ export function buildServersFromNamespaces(program: Program): Record<string, any
 				host: extractHostFromUrl(config.url),
 				protocol: config.protocol,
 				description: config.description || `${namespaceName} ${serverName} server`
-			}
+			} as const
 		}
 	}
 	

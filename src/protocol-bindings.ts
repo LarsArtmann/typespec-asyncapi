@@ -13,7 +13,7 @@ import type {GlobalConfig} from "@confluentinc/kafka-javascript/types/config.js"
 import {validateEnumValue, validateHttpStatusCode, validatePositiveInteger} from "./utils/protocol-validation.js"
 import {getDefaultProtocolPort} from "./constants/protocol-defaults.js"
 import type {BaseHttpOperationBinding, BaseHttpMessageBinding, BaseWebSocketChannelBinding, HttpMethod} from "./utils/protocol-binding-helpers.js"
-import {ProtocolBindingHelpers} from "./utils/protocol-binding-helpers.js"
+import {protocolBindingHelpers} from "./utils/protocol-binding-helpers.js"
 
 //TODO: This file is to big. Split it up!
 
@@ -472,7 +472,7 @@ export class ProtocolBindingFactory {
 
 		switch (bindingType) {
 			case "channel":
-				if (config.channel?.method && !ProtocolBindingHelpers.isValidWebSocketMethod(config.channel.method)) {
+				if (config.channel?.method && !protocolBindingHelpers.isValidWebSocketMethod(config.channel.method)) {
 					errors.push({
 						protocol: "ws",
 						bindingType: "channel",
@@ -555,14 +555,14 @@ export class ProtocolBindingFactory {
 				}
 			case "ws":
 				return {
-					channel: ProtocolBindingHelpers.createDefaultWebSocketChannelBinding(),
+					channel: protocolBindingHelpers.createDefaultWebSocketChannelBinding(),
 					message: {},
 				}
 			case "http":
 			case "https":
 				return {
-					operation: ProtocolBindingHelpers.createDefaultHttpOperationBinding(),
-					message: ProtocolBindingHelpers.createDefaultHttpMessageBinding(),
+					operation: protocolBindingHelpers.createDefaultHttpOperationBinding(),
+					message: protocolBindingHelpers.createDefaultHttpMessageBinding(),
 				}
 			default:
 				return {}

@@ -12,7 +12,7 @@ import {SpecGenerationError} from "../errors/SpecGenerationError.js"
  * Common Effect.TS logging patterns
  * Eliminates duplication in Effect.log calls throughout the codebase
  */
-export const EffectLogging = {
+export const effectLogging = {
 	/**
 	 * Log debug information about operation/schema generation
 	 */
@@ -68,7 +68,7 @@ export const EffectLogging = {
  * Common Effect.TS validation patterns
  * Eliminates duplication in validation logic
  */
-export const EffectValidation = {
+export const effectValidation = {
 	/**
 	 * Validate program context exists - common pattern used in multiple generation functions
 	 */
@@ -93,7 +93,7 @@ export const EffectValidation = {
  * Common Effect.TS error handling patterns
  * Eliminates duplication in error handling logic
  */
-export const EffectErrorHandling = {
+export const effectErrorHandling = {
 	/**
 	 * Handle spec generation errors with consistent logging
 	 */

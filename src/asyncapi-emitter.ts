@@ -39,7 +39,7 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
 		}
 	}
 
-	override async writeOutput(_sourceFiles: SourceFile<string>[]): Promise<void> {
+	override writeOutput(_sourceFiles: SourceFile<string>[]): Promise<void> {
 		// Discover all operations from the program
 		this.operations = this.discoverOperations(this.emitter.getProgram())
 		this.asyncApiDoc = this.createAsyncAPIObject(this.operations)
@@ -51,6 +51,8 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
 
 		// Generate AsyncAPI document
 		this.generateAsyncAPIDocument()
+		
+		return Promise.resolve()
 	}
 
 	override sourceFile(sourceFile: SourceFile<string>): EmittedSourceFile {

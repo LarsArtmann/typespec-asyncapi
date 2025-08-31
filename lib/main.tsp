@@ -38,6 +38,28 @@ extern dec message(target: Model, config?: {
 });
 
 /**
+ * Define protocol-specific binding configuration for operations or models
+ * @param config Protocol configuration with type and binding details
+ */
+extern dec protocol(target: Operation | Model, config: {
+  protocol: "kafka" | "websocket" | "http" | "amqp" | "mqtt" | "redis";
+  binding: Record<unknown>;
+  version?: valueof string;
+  description?: valueof string;
+});
+
+/**
+ * Apply security scheme information to operations or models
+ * @param config Security configuration with name and scheme details
+ */
+extern dec security(target: Operation | Model, config: {
+  name: valueof string;
+  scheme: Record<unknown>;
+  scopes?: valueof string[];
+  metadata?: Record<unknown>;
+});
+
+/**
  * Define a server configuration for the AsyncAPI specification
  * @param name The server name/identifier
  * @param config Server configuration with url, protocol, and optional description

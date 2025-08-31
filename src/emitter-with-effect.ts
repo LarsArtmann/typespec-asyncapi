@@ -27,8 +27,9 @@ import {PERFORMANCE_METRICS_SERVICE, PERFORMANCE_METRICS_SERVICE_LIVE} from "./p
 import {MEMORY_MONITOR_SERVICE, MEMORY_MONITOR_SERVICE_LIVE} from "./performance/memory-monitor.js"
 import {convertModelToSchema} from "./utils/schema-conversion.js"
 import {buildServersFromNamespaces, getMessageConfig, getProtocolConfig} from "./utils/typespec-helpers.js"
-import {ProtocolBindingFactory} from "./protocol-bindings.js"
+import {ProtocolBindingFactory, type KafkaChannelBindingConfig, type KafkaOperationBindingConfig, type KafkaMessageBindingConfig, type WebSocketMessageBindingConfig} from "./protocol-bindings.js"
 import type {ProtocolConfig} from "./decorators/protocol.js"
+import type {BaseWebSocketChannelBinding, BaseHttpOperationBinding, BaseHttpMessageBinding} from "./utils/protocol-binding-helpers.js"
 
 // Using centralized types from types/index.ts
 // AsyncAPIObject and SchemaObject (as AsyncAPISchema) are now imported
@@ -533,7 +534,7 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 		switch (config.protocol) {
 			case "kafka":
 			case "websocket":
-				return ProtocolBindingFactory.createChannelBindings(config.protocol, config.binding as any)
+				return ProtocolBindingFactory.createChannelBindings(config.protocol, config.binding as KafkaChannelBindingConfig | BaseWebSocketChannelBinding)
 			default:
 				return undefined
 		}
@@ -547,7 +548,7 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 		switch (config.protocol) {
 			case "kafka":
 			case "http":
-				return ProtocolBindingFactory.createOperationBindings(config.protocol, config.binding as any)
+				return ProtocolBindingFactory.createOperationBindings(config.protocol, config.binding as KafkaOperationBindingConfig | BaseHttpOperationBinding)
 			default:
 				return undefined
 		}
@@ -558,7 +559,7 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 	 */
 	private createProtocolMessageBindings(config: ProtocolConfig): Record<string, unknown> | undefined {
 		// Type-safe delegation to ProtocolBindingFactory based on protocol type
-		return ProtocolBindingFactory.createMessageBindings(config.protocol, config.binding as any)
+		return ProtocolBindingFactory.createMessageBindings(config.protocol, config.binding as KafkaMessageBindingConfig | WebSocketMessageBindingConfig | BaseHttpMessageBinding | undefined)
 	}
 
 	/**

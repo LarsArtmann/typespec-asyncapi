@@ -44,7 +44,7 @@ export type BaseWebSocketChannelBinding = {
  * Protocol binding validation utilities
  * Eliminates duplication in validation patterns
  */
-export const ProtocolBindingHelpers = {
+export const protocolBindingHelpers = {
 	/**
 	 * Validate HTTP method
 	 */
