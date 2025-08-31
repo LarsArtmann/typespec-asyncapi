@@ -164,7 +164,7 @@ export const stateKeys = {
  * @param args - Optional arguments for error message templating
  */
 export function reportDiagnostic(context: DecoratorContext, target: unknown, code: string, args?: Record<string, unknown>) {
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+	 
 	context.program.reportDiagnostic({
 		code: `@typespec/asyncapi.${code}`,
 		target,

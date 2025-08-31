@@ -77,7 +77,7 @@ export const EffectValidation = {
 			if (!context.program) {
 				return yield* Effect.fail(new SpecGenerationError("TypeSpec program context missing", {} as AsyncAPIEmitterOptions))
 			}
-			return undefined as void
+			return Effect.succeed(undefined)
 		})
 	},
 
