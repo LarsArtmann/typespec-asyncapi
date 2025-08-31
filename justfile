@@ -108,9 +108,12 @@ clean:
     #!/bin/bash
     set -euo pipefail
     echo "🧹 Cleaning build artifacts..."
-    # Create dist directory if it doesn't exist, then clean it
-    mkdir -p dist
-    bun run clean
+    if [ -d "dist" ]; then
+        trash dist/
+        echo "✅ Cleaned dist/ directory"
+    else
+        echo "ℹ️  No dist/ directory to clean"
+    fi
     echo "✅ Clean completed"
 
 # Install dependencies
