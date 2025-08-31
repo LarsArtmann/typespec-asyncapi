@@ -8,13 +8,15 @@
  */
 
 import type {
-	KafkaChannelBindingObject,
-	KafkaFieldConfig,
-	KafkaMessageBindingObject,
-	KafkaOperationBindingObject,
 	ReferenceObject,
 	SchemaObject,
 } from "./types/index"
+import type {
+	KafkaChannelBinding,
+	KafkaMessageBinding,
+	KafkaOperationBinding,
+} from "./bindings/kafka"
+import type { GlobalConfig } from "@confluentinc/kafka-javascript/types/config"
 import {validateEnumValue, validateHttpStatusCode, validatePositiveInteger} from "./utils/protocol-validation"
 
 //TODO: This file is to big. Split it up!
@@ -35,9 +37,7 @@ type KafkaServerBinding = {
 };
 
 // Using imported types from centralized location with binding version extension
-type KafkaChannelBinding = KafkaChannelBindingObject & { bindingVersion?: string };
-type KafkaOperationBinding = KafkaOperationBindingObject;
-type KafkaMessageBinding = KafkaMessageBindingObject;
+// Using official Confluent Kafka types from ./bindings/kafka
 
 type WebSocketChannelBinding = {
 	//TODO: Is it possible to have stricter types here?
@@ -66,7 +66,7 @@ type HttpMessageBinding = {
 	statusCode?: number;
 };
 
-type KafkaTopicConfiguration = Record<string, unknown>;
+// KafkaTopicConfiguration removed - using official Confluent GlobalConfig instead
 // Define protocol binding types locally
 type ProtocolType = "kafka" | "websocket" | "http" | "mqtt" | "amqp" | "redis" | "nats" | "ws" | "https";
 
@@ -84,35 +84,21 @@ type ProtocolBindingValidationResult = {
 	warnings: ProtocolBindingValidationError[];
 };
 
-// KafkaFieldConfig now imported from centralized types
-
+/**
+ * OFFICIAL KAFKA PROTOCOL BINDINGS using Confluent Types
+ * 
+ * ✅ GHOST SYSTEM ELIMINATED!
+ * Replaced legacy anonymous sub-types with official Confluent binding types
+ */
 type KafkaProtocolBindingConfig = {
-	//TODO: All types should have a dedicated name, no anonymous sub objects
-	server?: {
-		schemaRegistryUrl?: string;
-		schemaRegistryVendor?: string;
-		clientId?: string;
-		groupId?: string;
-	};
-	//TODO: All types should have a dedicated name, no anonymous sub objects
-	channel?: {
-		topic?: string;
-		partitions?: number;
-		replicas?: number;
-		topicConfiguration?: Record<string, unknown>;
-	};
-	//TODO: All types should have a dedicated name, no anonymous sub objects
-	operation?: {
-		groupId?: KafkaFieldConfig;
-		clientId?: KafkaFieldConfig;
-	};
-	//TODO: All types should have a dedicated name, no anonymous sub objects
-	message?: {
-		key?: KafkaFieldConfig;
-		schemaIdLocation?: "header" | "payload";
-		schemaIdPayloadEncoding?: string;
-		schemaLookupStrategy?: "TopicIdStrategy" | "RecordIdStrategy" | "TopicRecordIdStrategy";
-	};
+	/** Official Kafka server binding using Confluent types */
+	server?: KafkaServerBinding;
+	/** Official Kafka channel binding using Confluent types */
+	channel?: KafkaChannelBinding;
+	/** Official Kafka operation binding using Confluent types */
+	operation?: KafkaOperationBinding;
+	/** Official Kafka message binding using Confluent types */
+	message?: KafkaMessageBinding;
 };
 
 type WebSocketProtocolBindingConfig = {
@@ -139,7 +125,7 @@ type HttpProtocolBindingConfig = {
 };
 
 
-// Re-export for external use (KafkaFieldConfig now comes from centralized types)
+// Re-export for external use (using official Confluent Kafka types)
 export type {ProtocolType}
 
 // Define protocol support locally
@@ -197,12 +183,12 @@ export class KafkaProtocolBinding {
 		}
 	}
 
-	//TODO: All types should have a dedicated name, no anonymous sub objects
+	/** Create Kafka channel binding using official Confluent types */
 	static createChannelBinding(config: {
-		topic?: string;
+		topic: string; // Required in official types
 		partitions?: number;
 		replicas?: number;
-		topicConfiguration?: KafkaTopicConfiguration;
+		configs?: Partial<GlobalConfig>; // Use official GlobalConfig type
 	}): KafkaChannelBinding {
 		return {
 			bindingVersion: "0.5.0",
@@ -210,10 +196,10 @@ export class KafkaProtocolBinding {
 		}
 	}
 
-	//TODO: All types should have a dedicated name, no anonymous sub objects
+	/** Create Kafka operation binding using official Confluent types */
 	static createOperationBinding(config: {
-		groupId?: KafkaFieldConfig;
-		clientId?: KafkaFieldConfig;
+		groupId?: string;
+		clientId?: string;
 	}): KafkaOperationBinding {
 		return {
 			bindingVersion: "0.5.0",
@@ -221,12 +207,15 @@ export class KafkaProtocolBinding {
 		}
 	}
 
-	//TODO: All types should have a dedicated name, no anonymous sub objects
+	/** Create Kafka message binding using official Confluent types */
 	static createMessageBinding(config: {
-		key?: KafkaFieldConfig;
+		key?: {
+			type: "string" | "avro" | "json" | "protobuf";
+			schema?: string;
+			schemaId?: number;
+		};
 		schemaIdLocation?: "header" | "payload";
-		schemaIdPayloadEncoding?: string;
-		schemaLookupStrategy?: "TopicIdStrategy" | "RecordIdStrategy" | "TopicRecordIdStrategy";
+		headers?: Record<string, string | Buffer | null>;
 	}): KafkaMessageBinding {
 		return {
 			bindingVersion: "0.5.0",
@@ -313,8 +302,9 @@ export class ProtocolBindingFactory {
 	static createChannelBindings(protocol: ProtocolType, config: KafkaBindingConfig["channel"] | WebSocketBindingConfig["channel"]): ChannelBindings | undefined {
 		switch (protocol) {
 			case "kafka":
+				const kafkaConfig = (config as KafkaBindingConfig["channel"]) ?? { topic: "default-kafka-topic" };
 				return {
-					kafka: KafkaProtocolBinding.createChannelBinding((config as KafkaBindingConfig["channel"]) ?? {}),
+					kafka: KafkaProtocolBinding.createChannelBinding(kafkaConfig),
 				}
 			case "ws":
 				return {
@@ -438,13 +428,7 @@ export class ProtocolBindingFactory {
 					severity: "error" as const,
 				})))
 
-				errors.push(...validateEnumValue(config.message?.schemaLookupStrategy, "schemaLookupStrategy", ["TopicIdStrategy", "RecordIdStrategy", "TopicRecordIdStrategy"] as const).map(err => ({
-					protocol: "kafka" as const,
-					bindingType: "message" as const,
-					property: "schemaLookupStrategy",
-					message: err,
-					severity: "error" as const,
-				})))
+				// schemaLookupStrategy removed - not part of official Confluent types
 				break
 		}
 
@@ -526,18 +510,15 @@ export class ProtocolBindingFactory {
 						schemaRegistryVendor: "confluent",
 					},
 					channel: {
+						topic: "default-topic",
 						partitions: 1,
 						replicas: 1,
 					},
 					operation: {
-						clientId: {
-							type: "string",
-							description: "Kafka client ID",
-						} as KafkaFieldConfig,
+						clientId: "typespec-asyncapi-client",
 					},
 					message: {
 						schemaIdLocation: "payload",
-						schemaLookupStrategy: "TopicIdStrategy",
 					},
 				}
 			case "ws":

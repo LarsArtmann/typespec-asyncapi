@@ -79,6 +79,8 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
 			operations: {},
 			components: {
 				schemas: {},
+				messages: {},
+				securitySchemes: {},
 			},
 		}
 	}
@@ -125,13 +127,13 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
 		Effect.log(`🏗️  Processing operation: ${op.name}`)
 
 		const {name: channelName, definition: channelDef} = this.createChannelDefinition(op)
-		this.asyncApiDoc.channels[channelName] = channelDef
+		this.asyncApiDoc.channels![channelName] = channelDef
 
-		this.asyncApiDoc.operations[op.name] = this.createOperationDefinition(op, channelName)
+		this.asyncApiDoc.operations![op.name] = this.createOperationDefinition(op, channelName)
 
 		if (op.returnType.kind === "Model") {
 			const model = op.returnType
-			this.asyncApiDoc.components.schemas[model.name] = this.convertModelToSchema(model)
+			this.asyncApiDoc.components!.schemas![model.name] = this.convertModelToSchema(model)
 		}
 	}
 
@@ -349,8 +351,8 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
 	private logProcessingStats(): void {
 		Effect.log(`\n📊 FINAL STATS FROM REAL TYPESPEC (AssetEmitter):`)
 		Effect.log(`  - Operations processed: ${this.operations.length}`)
-		Effect.log(`  - Channels created: ${Object.keys(this.asyncApiDoc.channels).length}`)
-		Effect.log(`  - Schemas generated: ${Object.keys(this.asyncApiDoc.components.schemas).length}`)
+		Effect.log(`  - Channels created: ${Object.keys(this.asyncApiDoc.channels ?? {}).length}`)
+		Effect.log(`  - Schemas generated: ${Object.keys(this.asyncApiDoc.components?.schemas ?? {}).length}`)
 	}
 }
 
