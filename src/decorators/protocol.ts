@@ -1,6 +1,7 @@
 import type {DecoratorContext, Model, Operation, Type} from "@typespec/compiler"
 import {$lib, reportDiagnostic} from "../lib.js"
 import {Effect} from "effect"
+import {SUPPORTED_PROTOCOLS} from "../constants/protocol-defaults.js"
 
 export type ProtocolType = "kafka" | "websocket" | "http" | "amqp" | "mqtt" | "redis";
 
@@ -128,13 +129,11 @@ export function $protocol(
 	// Protocol is required in ProtocolConfig type, so this check is unnecessary
 	// TypeScript ensures config.protocol is defined
 
-	//TODO: This should be a centralized const!
-	// Validate protocol type
-	const validProtocols: ProtocolType[] = ["kafka", "websocket", "http", "amqp", "mqtt", "redis"]
-	if (!validProtocols.includes(config.protocol)) {
+	// Validate protocol type using centralized constant
+	if (!SUPPORTED_PROTOCOLS.includes(config.protocol)) {
 		reportDiagnostic(context, target, "invalid-protocol-type", {
 			protocol: config.protocol,
-			validProtocols: validProtocols.join(", "),
+			validProtocols: SUPPORTED_PROTOCOLS.join(", "),
 		})
 		return
 	}

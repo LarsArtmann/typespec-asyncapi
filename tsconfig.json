@@ -1,34 +1,67 @@
 {
   "compilerOptions": {
     // === TYPESCRIPT 5.9.2 STABLE CONFIGURATION ===
-    "target": "ESNext",
-    "lib": [
-      "ESNext"
+    //as in https://github.com/microsoft/typespec/blob/main/tsconfig.base.json
+    "composite": true,
+    //as in https://github.com/microsoft/typespec/blob/main/tsconfig.base.json
+    "alwaysStrict": true,
+    //as in https://github.com/microsoft/typespec/blob/main/tsconfig.base.json
+    "forceConsistentCasingInFileNames": true,
+    //as in https://github.com/microsoft/typespec/blob/main/tsconfig.base.json
+    "module": "NodeNext",
+    //as in https://github.com/microsoft/typespec/blob/main/tsconfig.base.json
+    "moduleResolution": "NodeNext",
+    //as in https://github.com/microsoft/typespec/blob/main/tsconfig.base.json
+    "esModuleInterop": true,
+    //as in https://github.com/microsoft/typespec/blob/main/tsconfig.base.json
+    "noImplicitAny": true,
+    //as in https://github.com/microsoft/typespec/blob/main/tsconfig.base.json
+    "noImplicitReturns": true,
+    //as in https://github.com/microsoft/typespec/blob/main/tsconfig.base.json
+    "noImplicitThis": true,
+    //as in https://github.com/microsoft/typespec/blob/main/tsconfig.base.json
+    "sourceMap": true,
+    //as in https://github.com/microsoft/typespec/blob/main/tsconfig.base.json
+    "declarationMap": true,
+    //as in https://github.com/microsoft/typespec/blob/main/tsconfig.base.json
+    "strict": true,
+    //as in https://github.com/microsoft/typespec/blob/main/tsconfig.base.json
+    "declaration": true,
+    //as in https://github.com/microsoft/typespec/blob/main/tsconfig.base.json
+    "stripInternal": true,
+    //as in https://github.com/microsoft/typespec/blob/main/tsconfig.base.json
+    "noEmitHelpers": false,
+    //as in https://github.com/microsoft/typespec/blob/main/tsconfig.base.json
+    "target": "es2024",
+    //as in https://github.com/microsoft/typespec/blob/main/tsconfig.base.json
+    "types": [
+      "node"
     ],
+    //as in https://github.com/microsoft/typespec/blob/main/tsconfig.base.json
+    "lib": [
+      "es2024",
+      "DOM"
+    ],
+    //as in https://github.com/microsoft/typespec/blob/main/tsconfig.base.json
+    "experimentalDecorators": true,
+    //as in https://github.com/microsoft/typespec/blob/main/tsconfig.base.json
+    "newLine": "LF",
+    //as in https://github.com/microsoft/typespec/blob/main/tsconfig.base.json
+    "skipLibCheck": true,
     "downlevelIteration": true,
-    "module": "ESNext",
-    "moduleResolution": "bundler",
     "moduleDetection": "force",
     // === ESM MODULE OUTPUT OPTIMIZATION ===
     "outDir": "dist",
     "rootDir": "src",
-    "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true,
     "inlineSources": false,
     "noEmit": false,
     "removeComments": false,
-    "newLine": "lf",
-    // === MAXIMUM TYPE SAFETY (TYPESCRIPT 5.9.2 STRICTNESS) ===
-    "strict": true,
     // Core strict flag bundle
 
     // TypeScript 5.9.2 advanced strictness features (all stable)
     "noUncheckedIndexedAccess": true,
     // Force checking of indexed access (TS 4.1+)
     "exactOptionalPropertyTypes": true,
-    // Exact optional property types (TS 4.4+)
-    "noImplicitReturns": true,
     // All code paths must return
     "noImplicitOverride": true,
     // Explicit override keyword required (TS 4.3+)
@@ -53,8 +86,6 @@
 
     // TypeScript 5.9.2 stable strict features
     "useUnknownInCatchVariables": true,
-    // Catch variables are unknown by default (TS 4.4+)
-    "noImplicitAny": true,
     // Explicit for maximum clarity (included in strict)
     "strictNullChecks": true,
     // Explicit for maximum clarity (included in strict)
@@ -64,13 +95,10 @@
     // Explicit for maximum clarity (included in strict)
     "strictPropertyInitialization": true,
     // Explicit for maximum clarity (included in strict)
-    "noImplicitThis": true,
-    // Explicit for maximum clarity (included in strict)
 
     // === TYPESCRIPT 5.9.2 PERFORMANCE OPTIMIZATIONS ===
     "incremental": true,
     "tsBuildInfoFile": ".tsbuildinfo",
-    "skipLibCheck": true,
     // Performance boost
     "skipDefaultLibCheck": true,
     // Performance boost
@@ -89,9 +117,7 @@
 
     // === MODERN IMPORT/EXPORT HANDLING ===
     "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
     "resolveJsonModule": true,
-    "forceConsistentCasingInFileNames": true,
     "verbatimModuleSyntax": true,
     // Preserve imports exactly as written (Effect.TS requirement, TS 5.0+)
     "allowImportingTsExtensions": false,
@@ -101,8 +127,6 @@
 
     // === ADVANCED TYPE CHECKING ===
     "useDefineForClassFields": true,
-    // Modern class field behavior (ES2022 standard)
-    "experimentalDecorators": false,
     // Using standard decorators (TC39 stage 3)
     "emitDecoratorMetadata": false,
     // No reflection metadata
@@ -118,21 +142,7 @@
     // === PATH MAPPING FOR CLEAN IMPORTS ===
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "src/*"
-      ],
-      "@/lib/*": [
-        "src/lib/*"
-      ],
-      "@/utils/*": [
-        "src/utils/*"
-      ],
-      "@/types/*": [
-        "src/types/*"
-      ],
-      "@/emitters/*": [
-        "src/emitters/*"
-      ]
+      //I don't want a bundler, so leave this empty.
     },
     // === TYPESCRIPT 5.9.2 OUTPUT ENHANCEMENT ===
     "preserveWatchOutput": true,

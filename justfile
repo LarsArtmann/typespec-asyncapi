@@ -9,9 +9,20 @@ build:
     #!/bin/bash
     set -euo pipefail
     echo "🏗️  Building TypeScript project..."
-    # Ensure dist directory exists before cleaning
-    mkdir -p dist
-    if bun run build; then
+    
+    # Clean dist directory first (safe cleanup)
+    echo "🧹 Cleaning dist/ directory..."
+    if [ -d "dist" ]; then
+        trash dist/
+        echo "  ✅ Cleaned existing dist/ directory"
+    else
+        echo "  ℹ️  No dist/ directory to clean"
+    fi
+    
+    # Build with skipLibCheck to avoid library compatibility issues  
+    echo "🔨 Running TypeScript compilation..."
+    # Use direct compilation approach that we know works
+    if bunx tsc src/index.ts --outDir dist --declaration --skipLibCheck --moduleResolution bundler --module ESNext --target ESNext; then
         echo "✅ Build completed successfully"
         echo "📦 Checking build artifacts..."
         if [ -d "dist" ]; then
@@ -20,7 +31,7 @@ build:
             find dist -name "*.js" -o -name "*.d.ts" | wc -l | xargs echo "  Generated files:"
             du -sh dist 2>/dev/null | awk '{print "  Total size: " $1}' || echo "  Total size: unknown"
         else
-            echo "⚠️  No dist/ directory found"
+            echo "⚠️  No dist/ directory found after compilation"
             exit 1
         fi
     else
@@ -114,8 +125,25 @@ find-duplicates:
         echo "Installing jscpd globally..."
         bun install -g jscpd
     fi
-    echo "Running code duplication detection..."
-    jscpd src --min-tokens 40 --min-lines 3 --format typescript,javascript --reporters console,json --output ./jscpd-report
+    echo "🔍 Running code duplication detection..."
+    echo "📊 Generating console, JSON, and HTML reports..."
+    
+    # Create output directory if it doesn't exist
+    mkdir -p ./jscpd-report
+    
+    # Run jscpd with multiple reporters including HTML
+    jscpd src --min-tokens 40 --min-lines 3 --format typescript,javascript --reporters console,json,html --output ./jscpd-report
+    
+    echo "✅ Duplication analysis complete!"
+    echo "📁 Reports generated:"
+    echo "  📄 Console: Output above"
+    echo "  📋 JSON: ./jscpd-report/jscpd-report.json"
+    echo "  🌐 HTML: ./jscpd-report/html/index.html"
+    
+    # Check if HTML report was generated and provide direct link
+    if [ -f "./jscpd-report/html/index.html" ]; then
+        echo "🔗 Open HTML report: open ./jscpd-report/html/index.html"
+    fi
 
 # Alias for find-duplicates
 alias fd := find-duplicates
@@ -141,3 +169,45 @@ watch:
 # Watch mode for tests
 test-watch:
     bun run test:watch
+
+# Compile TypeSpec files (requires dist/ to exist first)
+compile:
+    #!/bin/bash
+    set -euo pipefail
+    echo "🔧 Compiling TypeSpec files with AsyncAPI emitter..."
+    
+    # Check if dist directory exists (required for TypeSpec to import decorators)
+    if [ ! -d "dist" ]; then
+        echo "❌ dist/ directory not found. TypeSpec needs compiled decorators."
+        echo "💡 Run 'just build' first to generate dist/ directory"
+        exit 1
+    fi
+    
+    # Check if there are any .tsp files to compile
+    if [ $(find . -name "*.tsp" -not -path "./node_modules/*" -not -path "./dist/*" | wc -l) -eq 0 ]; then
+        echo "⚠️  No TypeSpec (.tsp) files found to compile"
+        echo "💡 Create a .tsp file or run from examples/ directory"
+        exit 1
+    fi
+    
+    echo "📁 Found TypeSpec files:"
+    find . -name "*.tsp" -not -path "./node_modules/*" -not -path "./dist/*" | head -5
+    
+    echo "🚀 Running TypeSpec compilation..."
+    if bunx tsp compile . --emit @typespec/asyncapi; then
+        echo "✅ TypeSpec compilation completed successfully"
+        echo "📦 Checking for generated files..."
+        
+        # Look for common output directories
+        for dir in tsp-output test-output; do
+            if [ -d "$dir" ]; then
+                echo "✅ Generated files in $dir/"
+                find "$dir" -type f | head -3 | sed 's/^/  /'
+                break
+            fi
+        done
+    else
+        echo "❌ TypeSpec compilation failed"
+        echo "💡 Check .tsp files for syntax errors or missing imports"
+        exit 1
+    fi

@@ -4,7 +4,7 @@
  */
 
 import type {Namespace, Operation, Program} from "@typespec/compiler"
-import {$lib} from "@/lib"
+import {$lib} from "../lib"
 import {Effect} from "effect"
 
 /**

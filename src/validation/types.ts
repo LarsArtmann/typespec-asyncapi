@@ -2,7 +2,7 @@
  * Validation types and interfaces for AsyncAPI validation
  */
 
-import type {ValidationError} from "@/errors/validation-error"
+import type {ValidationError} from "../errors/validation-error"
 
 /**
  * Validation options for AsyncAPIValidator

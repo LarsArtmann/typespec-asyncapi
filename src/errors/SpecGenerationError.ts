@@ -1,4 +1,4 @@
-import type {AsyncAPIEmitterOptions} from "@/options"
+import type {AsyncAPIEmitterOptions} from "../options"
 
 /**
  * Error thrown when specification generation fails

@@ -1,16 +1,16 @@
 // MEMORY MONITORING SERVICE
-import type {MemoryMonitorInitializationError} from "@/errors/MemoryMonitorInitializationError"
+import type {MemoryMonitorInitializationError} from "../errors/MemoryMonitorInitializationError"
 import type {Effect} from "effect"
-import type {GarbageCollectionFailureError} from "@/errors/GarbageCollectionFailureError"
-import type {MemoryLeakDetectedError} from "@/errors/MemoryLeakDetectedError"
-import type {MemoryThresholdExceededError} from "@/errors/MemoryThresholdExceededError"
+import type {GarbageCollectionFailureError} from "../errors/GarbageCollectionFailureError"
+import type {MemoryLeakDetectedError} from "../errors/MemoryLeakDetectedError"
+import type {MemoryThresholdExceededError} from "../errors/MemoryThresholdExceededError"
 import type {MemoryAnalysis} from "./MemoryAnalysis"
 import type {MemoryBudget} from "./MemoryBudget"
 import type {MemorySnapshot} from "./MemorySnapshot"
 import type {CheckBudgetCompliance} from "./CheckBudgetCompliance"
 import type {ForceGarbageCollection} from "./ForceGarbageCollection"
 import type {MeasureOperationMemory} from "./MeasureOperationMemory"
-import type {Milliseconds} from "@/performance/Durations"
+import type {Milliseconds} from "./Durations"
 
 export type MemoryMonitorService = {
 	// Core monitoring functions

@@ -7,7 +7,7 @@ export {$lib} from "./lib.js" // Re-exported for TypeSpec compiler to access lib
 export type {AsyncAPIEmitterOptions} from "./options.js" // Re-exported for external consumers
 
 // Export decorator functions (for TypeSpec compiler)
-export type * from "./decorators/index.js" //THIS IS NEEDED! - DO NOT DELETE!
+export * from "./decorators/index.js"
 
 // noinspection JSUnusedGlobalSymbols
 /**

@@ -28,7 +28,7 @@ import {
 	validateRequiredString,
 	validateStringLength,
 	validateStringPattern,
-} from "@/utils/protocol-validation"
+} from "../utils/protocol-validation.js"
 import type {Binding} from "@asyncapi/parser/esm/spec-types/v3"
 import type {
 	ConsumerGlobalConfig,

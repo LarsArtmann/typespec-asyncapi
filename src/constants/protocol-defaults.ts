@@ -5,7 +5,22 @@
  * used across the AsyncAPI TypeSpec emitter.
  */
 
-import type {ProtocolType} from "@/protocol-bindings"
+import type {ProtocolType} from "../protocol-bindings.js"
+
+/**
+ * All supported protocol types for validation
+ * 
+ * Centralized list of all protocols supported by the AsyncAPI TypeSpec emitter.
+ * Used for validation in decorators and configuration.
+ */
+export const SUPPORTED_PROTOCOLS: readonly ProtocolType[] = [
+	"kafka", 
+	"websocket", 
+	"http", 
+	"amqp", 
+	"mqtt", 
+	"redis"
+] as const
 
 /**
  * Default port numbers for each supported protocol

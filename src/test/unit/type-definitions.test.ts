@@ -12,8 +12,8 @@
 import {describe, expect, test} from "bun:test"
 
 // Import type definitions
-import type {AsyncAPIEmitterOptions, FileType} from "../../src/options"
-import type {AsyncAPIObject, ChannelObject, OperationObject, SchemaObject} from "../../types"
+import type {AsyncAPIEmitterOptions} from "../../options"
+import type {AsyncAPIObject, ChannelObject, OperationObject, SchemaObject} from "@asyncapi/parser/esm/spec-types/v3"
 
 // AsyncAPI types now imported from centralized types/index.ts
 import type {

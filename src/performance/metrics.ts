@@ -7,15 +7,15 @@
  */
 
 import {Context, Duration, Effect, Fiber, Layer, Metric, MetricBoundaries} from "effect"
-import type {AsyncAPIEmitterOptions} from "@/options"
-import {MetricsCollectionError} from "@/errors/MetricsCollectionError"
-import {MetricsInitializationError} from "@/errors/MetricsInitializationError"
-import {ThroughputBelowTargetError} from "@/errors/ThroughputBelowTargetError"
-import {MemoryThresholdExceededError} from "@/errors/MemoryThresholdExceededError"
+import type {AsyncAPIEmitterOptions} from "../options"
+import {MetricsCollectionError} from "../errors/MetricsCollectionError"
+import {MetricsInitializationError} from "../errors/MetricsInitializationError"
+import {ThroughputBelowTargetError} from "../errors/ThroughputBelowTargetError"
+import {MemoryThresholdExceededError} from "../errors/MemoryThresholdExceededError"
 import type {PerformanceMeasurement} from "./PerformanceMeasurement"
 import type {ThroughputResult} from "./ThroughputResult"
 import type {PerformanceMetricsService} from "./PerformanceMetricsService"
-import type {ByteAmount} from "@/performance/ByteAmount"
+import type {ByteAmount} from "./ByteAmount"
 
 
 //TODO: This file is getting too big and should be split into multiple smaller files.
@@ -217,7 +217,7 @@ const makePerformanceMetricsService = Effect.gen(function* () {
 			)
 
 			const successCount = results.filter(r => r._tag === "Right").length
-			return yield * recordThroughput(measurement, successCount)
+			return yield* recordThroughput(measurement, successCount)
 		})
 
 	const validateThroughputTarget = (actualThroughput: number, targetThroughput = THROUGHPUT_TARGET): Effect.Effect<void, ThroughputBelowTargetError> =>
