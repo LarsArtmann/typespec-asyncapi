@@ -19,10 +19,10 @@ build:
         echo "  ℹ️  No dist/ directory to clean"
     fi
     
-    # Build with skipLibCheck to avoid library compatibility issues  
+    # Build using proper tsconfig.json configuration
     echo "🔨 Running TypeScript compilation..."
-    # Use direct compilation approach that we know works
-    if bunx tsc src/index.ts --outDir dist --declaration --skipLibCheck --moduleResolution bundler --module ESNext --target ESNext; then
+    # Use tsconfig.json which includes Effect.TS compatibility fixes
+    if bun run build; then
         echo "✅ Build completed successfully"
         echo "📦 Checking build artifacts..."
         if [ -d "dist" ]; then
