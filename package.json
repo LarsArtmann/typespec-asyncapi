@@ -63,8 +63,7 @@
     "url": "https://github.com/LarsArtmann/typespec-asyncapi/issues"
   },
   "scripts": {
-    "prebuild": "bun run clean",
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.json && tsc -p tsconfig.json --emitDeclarationOnly",
     "build:watch": "tsc -p tsconfig.json --watch",
     "compile": "tsp compile .",
     "clean": "if [ -d \"dist\" ]; then trash dist/; else echo \"ℹ️  No dist/ directory to clean\"; fi",

@@ -9,36 +9,19 @@ build:
     #!/bin/bash
     set -euo pipefail
     echo "🏗️  Building TypeScript project..."
-    
-    # Clean dist directory first (safe cleanup)
     echo "🧹 Cleaning dist/ directory..."
-    if [ -d "dist" ]; then
-        trash dist/
-        echo "  ✅ Cleaned existing dist/ directory"
-    else
-        echo "  ℹ️  No dist/ directory to clean"
-    fi
-    
-    # Build using proper tsconfig.json configuration
+    bun run clean
     echo "🔨 Running TypeScript compilation..."
-    # Use tsconfig.json which includes Effect.TS compatibility fixes
-    if bun run build; then
+    bun run build
+    sleep 1
+    if [ -d "dist" ]; then
         echo "✅ Build completed successfully"
-        echo "📦 Checking build artifacts..."
-        # Give file system a moment to stabilize after compilation
-        sleep 0.5
-        if [ -d "dist" ]; then
-            echo "✅ Build artifacts generated in dist/"
-            echo "📊 Build statistics:"
-            find dist -name "*.js" -o -name "*.d.ts" | wc -l | xargs echo "  Generated files:"
-            du -sh dist 2>/dev/null | awk '{print "  Total size: " $1}' || echo "  Total size: unknown"
-        else
-            echo "⚠️  No dist/ directory found after compilation"
-            exit 1
-        fi
+        echo "📦 Build artifacts generated in dist/"
+        echo "📊 Build statistics:"
+        find dist -name "*.js" -o -name "*.d.ts" | wc -l | xargs echo "  Generated files:"
+        du -sh dist 2>/dev/null | awk '{print "  Total size: " $1}' || echo "  Total size: unknown"
     else
-        echo "❌ Build failed with TypeScript compilation errors"
-        echo "💡 Run 'just typecheck' for detailed error information"
+        echo "❌ Build failed - no dist directory found"
         exit 1
     fi
 

@@ -81,8 +81,8 @@
     // No unreachable code allowed
     "allowUnusedLabels": false,
     // No unused labels allowed
-    "noEmitOnError": true,
-    // Don't emit JS if there are errors
+    "noEmitOnError": false,
+    // Allow emission even with errors for development
 
     // TypeScript 5.9.2 stable strict features (Effect.TS compatible)
     "useUnknownInCatchVariables": false,

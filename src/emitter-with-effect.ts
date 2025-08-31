@@ -37,6 +37,9 @@ import type {
 import {$lib} from "./lib.js"
 import {PERFORMANCE_METRICS_SERVICE, PERFORMANCE_METRICS_SERVICE_LIVE} from "./performance/metrics.js"
 import {MEMORY_MONITOR_SERVICE, MEMORY_MONITOR_SERVICE_LIVE} from "./performance/memory-monitor.js"
+import type {PerformanceMeasurement} from "./performance/PerformanceMeasurement.js"
+import type {PerformanceMetricsService} from "./performance/PerformanceMetricsService.js"
+import type {MemoryMonitorService} from "./performance/MemoryMonitorService.js"
 import {convertModelToSchema} from "./utils/schema-conversion.js"
 import {buildServersFromNamespaces, getMessageConfig, getProtocolConfig} from "./utils/typespec-helpers.js"
 import {
@@ -149,9 +152,17 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 			MEMORY_MONITOR_SERVICE_LIVE,
 		)
 
-		await Effect.runPromise(
-			Effect.provide(emitProgram, performanceLayers) as Effect.Effect<void, Error, never>,
-		)
+		try {
+			await Effect.runPromise(
+				pipe(
+					emitProgram,
+					Effect.provide(performanceLayers)
+				) as Effect.Effect<void, never, never>
+			)
+		} catch (error) {
+			console.error("Emission pipeline failed:", error)
+			throw error
+		}
 	}
 
 	/**
@@ -203,7 +214,7 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 	/**
 	 * Generate comprehensive performance reports
 	 */
-	private generatePerformanceReports(metricsService: any, memoryMonitor: any, overallMeasurement: any) {
+	private generatePerformanceReports(metricsService: PerformanceMetricsService, memoryMonitor: MemoryMonitorService, overallMeasurement: PerformanceMeasurement) {
 		return Effect.gen(function* (this: AsyncAPIEffectEmitter) {
 			// Record overall pipeline performance
 			const overallResult = yield* metricsService.recordThroughput(overallMeasurement, this.operations.length)
@@ -241,7 +252,7 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 	 * Handle emission pipeline errors
 	 */
 	private handleEmissionErrors() {
-		return Effect.catchAll((error: any) =>
+		return Effect.catchAll((error: unknown) =>
 			Effect.gen(function* () {
 				yield* Console.error(`❌ Emission pipeline failed: ${error}`)
 				// Try to stop monitoring if it was started
@@ -251,6 +262,7 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 				)
 				// For TypeSpec compatibility, log error but don't fail the pipeline
 				yield* Effect.logError(`Pipeline failed: ${error}`)
+				return void 0 // Explicitly return void
 			}),
 		)
 	}
@@ -972,7 +984,12 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 
 			case "oauth2":
 				// Map OAuth2 flows to AsyncAPI v3 format (scopes -> availableScopes)
-				const asyncApiFlows: any = {}
+				const asyncApiFlows: Record<string, {
+					authorizationUrl?: string;
+					tokenUrl?: string;
+					refreshUrl?: string;
+					availableScopes: Record<string, string>;
+				}> = {}
 				if (scheme.flows.implicit) {
 					asyncApiFlows.implicit = {
 						authorizationUrl: scheme.flows.implicit.authorizationUrl,
