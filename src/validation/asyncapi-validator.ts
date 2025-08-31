@@ -7,36 +7,12 @@
 
 import {Effect} from "effect"
 import {Parser} from "@asyncapi/parser"
+import type {ValidationError, ValidationResult} from "../errors/validation-error"
 
 //TODO: this file is getting to big split it up
 
 
-//TODO: move to src/errors/
-//Validation error type based on AsyncAPI parser diagnostics
-export type ValidationError = {
-	message: string;
-	keyword: string;
-	instancePath: string;
-	schemaPath: string;
-}
 
-/**
- * Validation result type with comprehensive metrics and diagnostics
- */
-export type ValidationResult = {
-	valid: boolean;
-	errors: ValidationError[];
-	warnings: string[];
-	summary: string;
-	//TODO: All types should have a dedicated name, no anonymous sub objects
-	metrics: {
-		duration: number;
-		channelCount: number;
-		operationCount: number;
-		schemaCount: number;
-		validatedAt: Date;
-	};
-}
 
 /**
  * Validation options for AsyncAPIValidator
@@ -253,6 +229,16 @@ export class AsyncAPIValidator {
 
 // Legacy function exports for backward compatibility
 /**
+ * Common validation helper to reduce duplication
+ * @internal
+ */
+async function createDeprecatedValidator(): Promise<AsyncAPIValidator> {
+	const validator = new AsyncAPIValidator({strict: false})
+	await validator.initialize()
+	return validator
+}
+
+/**
  * @deprecated Use AsyncAPIValidator class instead
  */
 export async function validateAsyncAPIFile(filePath: string): Promise<{
@@ -260,8 +246,7 @@ export async function validateAsyncAPIFile(filePath: string): Promise<{
 	errors: ValidationError[];
 	warnings: string[]
 }> {
-	const validator = new AsyncAPIValidator({strict: false})
-	validator.initialize()
+	const validator = await createDeprecatedValidator()
 	const result = await validator.validateFile(filePath)
 
 	return {
@@ -279,8 +264,7 @@ export async function validateAsyncAPIString(content: string): Promise<{
 	errors: ValidationError[];
 	warnings: string[]
 }> {
-	const validator = new AsyncAPIValidator({strict: false})
-	validator.initialize()
+	const validator = await createDeprecatedValidator()
 	const result = await validator.validate(content)
 
 	return {

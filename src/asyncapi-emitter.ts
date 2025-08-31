@@ -12,9 +12,9 @@ import {dirname} from "node:path"
 import {Effect} from "effect"
 import type {AsyncAPIEmitterOptions} from "./options"
 import type {AsyncAPIObject, ChannelObject, OperationObject, SchemaObject} from "@asyncapi/parser/esm/spec-types/v3"
-import {$lib} from "./lib"
 import {createDefaultKafkaChannelBinding, validateKafkaChannelBinding} from "./bindings/kafka"
 import {convertModelToSchema} from "./utils/schema-conversion"
+import {createChannelDefinition, createOperationDefinition} from "./utils/asyncapi-helpers"
 
 // ChannelObject and OperationObject now imported from centralized types
 import {hasTemplateVariables, type PathTemplateContext, resolvePathTemplateWithValidation} from "./path-templates"
@@ -139,23 +139,11 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
 
 	private createChannelDefinition(op: Operation): { name: string, definition: ChannelObject } {
 		const program = this.emitter.getProgram()
-		const channelName = `channel_${op.name}`
-
-		// Get channel path from @channel decorator
-		const channelPathsMap = program.stateMap($lib.stateKeys.channelPaths)
-		const channelPath = channelPathsMap.get(op) as string | undefined
-
-		const definition: ChannelObject = {
-			address: channelPath ?? `/${op.name.toLowerCase()}`,
-			description: getDoc(program, op) ?? `Channel for ${op.name}`,
-			messages: {
-				[`${op.name}Message`]: {
-					$ref: `#/components/messages/${op.name}Message`,
-				},
-			},
-		}
+		// Use centralized utility function to eliminate duplication
+		const {name: channelName, definition} = createChannelDefinition(op, program)
 
 		// Add Kafka bindings if channel path looks like a Kafka topic
+		const channelPath = definition.address
 		if (channelPath && this.looksLikeKafkaTopic(channelPath)) {
 			const kafkaBinding = createDefaultKafkaChannelBinding(channelPath)
 			const validation = validateKafkaChannelBinding(kafkaBinding)
@@ -185,26 +173,13 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
 
 	private createOperationDefinition(op: Operation, channelName: string): OperationObject {
 		const program = this.emitter.getProgram()
-		// Get operation type from decorator state
-		const operationTypesMap = program.stateMap($lib.stateKeys.operationTypes)
-		const operationType = operationTypesMap.get(op) as string | undefined
+		// Use centralized utility function to eliminate duplication
+		const operationDef = createOperationDefinition(op, program, channelName)
+		
+		// Keep the logging for debugging purposes
+		Effect.log(`📡 Operation ${op.name} -> action: ${operationDef.action}`)
 
-		// Determine action based on decorator type
-		let action: "send" | "receive" = "send" // default for @publish or no decorator
-		if (operationType === "subscribe") {
-			action = "receive"
-		} else if (operationType === "publish") {
-			action = "send"
-		}
-
-		Effect.log(`📡 Operation ${op.name} type: ${operationType ?? "none"} -> action: ${action}`)
-
-		return {
-			action,
-			channel: {$ref: `#/channels/${channelName}`},
-			summary: getDoc(program, op) ?? `Operation ${op.name}`,
-			description: `Generated from TypeSpec operation with ${op.parameters.properties.size} parameters`,
-		}
+		return operationDef
 	}
 
 	private convertModelToSchema(model: Model): SchemaObject {

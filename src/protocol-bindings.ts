@@ -84,6 +84,29 @@ type ProtocolBindingValidationResult = {
 	warnings: ProtocolBindingValidationError[];
 };
 
+// Named types for Kafka binding configurations (avoiding anonymous sub-objects)
+export type KafkaChannelBindingConfig = {
+	topic: string; // Required in official types
+	partitions?: number;
+	replicas?: number;
+	configs?: Partial<GlobalConfig>; // Use official GlobalConfig type
+};
+
+export type KafkaOperationBindingConfig = {
+	groupId?: string;
+	clientId?: string;
+};
+
+export type KafkaMessageBindingConfig = {
+	key?: {
+		type: "string" | "avro" | "json" | "protobuf";
+		schema?: string;
+		schemaId?: number;
+	};
+	schemaIdLocation?: "header" | "payload";
+	headers?: Record<string, string | Buffer | null>;
+};
+
 /**
  * OFFICIAL KAFKA PROTOCOL BINDINGS using Confluent Types
  * 
@@ -94,34 +117,43 @@ type KafkaProtocolBindingConfig = {
 	/** Official Kafka server binding using Confluent types */
 	server?: KafkaServerBinding;
 	/** Official Kafka channel binding using Confluent types */
-	channel?: KafkaChannelBinding;
+	channel?: KafkaChannelBindingConfig;
 	/** Official Kafka operation binding using Confluent types */
-	operation?: KafkaOperationBinding;
+	operation?: KafkaOperationBindingConfig;
 	/** Official Kafka message binding using Confluent types */
-	message?: KafkaMessageBinding;
+	message?: KafkaMessageBindingConfig;
 };
 
+// Named types for WebSocket binding configurations (avoiding anonymous sub-objects)
+export type WebSocketChannelBindingConfig = {
+	method?: "GET" | "POST";
+	query?: SchemaObject | ReferenceObject;
+	headers?: SchemaObject | ReferenceObject;
+};
+
+export type WebSocketMessageBindingConfig = Record<string, unknown>;
+
 type WebSocketProtocolBindingConfig = {
-	//TODO: All types should have a dedicated name, no anonymous sub objects
-	channel?: {
-		method?: "GET" | "POST";
-		query?: SchemaObject | ReferenceObject;
-		headers?: SchemaObject | ReferenceObject;
-	};
-	message?: Record<string, unknown>;
+	channel?: WebSocketChannelBindingConfig;
+	message?: WebSocketMessageBindingConfig;
+};
+
+// Named types for HTTP binding configurations (avoiding anonymous sub-objects)
+export type HttpOperationBindingConfig = {
+	type?: "request" | "response";
+	method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE" | "HEAD" | "OPTIONS" | "CONNECT" | "TRACE";
+	query?: SchemaObject | ReferenceObject;
+	statusCode?: number;
+};
+
+export type HttpMessageBindingConfig = {
+	headers?: SchemaObject | ReferenceObject;
+	statusCode?: number;
 };
 
 type HttpProtocolBindingConfig = {
-	operation?: {
-		type?: "request" | "response";
-		method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE" | "HEAD" | "OPTIONS" | "CONNECT" | "TRACE";
-		query?: SchemaObject | ReferenceObject;
-		statusCode?: number;
-	};
-	message?: {
-		headers?: SchemaObject | ReferenceObject;
-		statusCode?: number;
-	};
+	operation?: HttpOperationBindingConfig;
+	message?: HttpMessageBindingConfig;
 };
 
 
@@ -184,12 +216,7 @@ export class KafkaProtocolBinding {
 	}
 
 	/** Create Kafka channel binding using official Confluent types */
-	static createChannelBinding(config: {
-		topic: string; // Required in official types
-		partitions?: number;
-		replicas?: number;
-		configs?: Partial<GlobalConfig>; // Use official GlobalConfig type
-	}): KafkaChannelBinding {
+	static createChannelBinding(config: KafkaChannelBindingConfig): KafkaChannelBinding {
 		return {
 			bindingVersion: "0.5.0",
 			...config,
@@ -197,10 +224,7 @@ export class KafkaProtocolBinding {
 	}
 
 	/** Create Kafka operation binding using official Confluent types */
-	static createOperationBinding(config: {
-		groupId?: string;
-		clientId?: string;
-	}): KafkaOperationBinding {
+	static createOperationBinding(config: KafkaOperationBindingConfig): KafkaOperationBinding {
 		return {
 			bindingVersion: "0.5.0",
 			...config,
@@ -300,17 +324,17 @@ export class ProtocolBindingFactory {
 	/**
 	 * Create channel bindings for a specific protocol
 	 */
-	static createChannelBindings(protocol: ProtocolType, config: KafkaBindingConfig["channel"] | WebSocketBindingConfig["channel"]): ChannelBindings | undefined {
+	static createChannelBindings(protocol: ProtocolType, config: KafkaChannelBindingConfig | WebSocketChannelBindingConfig): ChannelBindings | undefined {
 		switch (protocol) {
 			case "kafka":
 				return {
 					//TODO: This need a fundamental type fix:
-					kafka: KafkaProtocolBinding.createChannelBinding((config as KafkaBindingConfig["operation"]) ?? {}),
+					kafka: KafkaProtocolBinding.createChannelBinding((config as KafkaChannelBindingConfig) ?? {topic: "default-topic"}),
 				}
 			case "ws":
 				return {
 					//TODO: This need a fundamental type fix:
-					ws: WebSocketProtocolBinding.createChannelBinding((config as WebSocketBindingConfig["channel"]) ?? {}),
+					ws: WebSocketProtocolBinding.createChannelBinding((config as WebSocketChannelBindingConfig) ?? {}),
 				}
 			default:
 				return undefined
@@ -320,16 +344,16 @@ export class ProtocolBindingFactory {
 	/**
 	 * Create operation bindings for a specific protocol
 	 */
-	static createOperationBindings(protocol: ProtocolType, config: KafkaBindingConfig["operation"] | HttpBindingConfig["operation"]): OperationBindings | undefined {
+	static createOperationBindings(protocol: ProtocolType, config: KafkaOperationBindingConfig | HttpOperationBindingConfig): OperationBindings | undefined {
 		switch (protocol) {
 			case "kafka":
 				return {
-					kafka: KafkaProtocolBinding.createOperationBinding((config as KafkaBindingConfig["operation"]) ?? {}),
+					kafka: KafkaProtocolBinding.createOperationBinding((config as KafkaOperationBindingConfig) ?? {}),
 				}
 			case "http":
 			case "https":
 				return {
-					http: HttpProtocolBinding.createOperationBinding((config as HttpBindingConfig["operation"]) ?? {}),
+					http: HttpProtocolBinding.createOperationBinding((config as HttpOperationBindingConfig) ?? {}),
 				}
 			default:
 				return undefined

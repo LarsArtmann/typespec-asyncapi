@@ -7,8 +7,14 @@
 
 import {Console, Context, Duration, Effect, Layer} from "effect"
 import type {EmitContext, Model, Operation} from "@typespec/compiler"
-import type {AsyncAPIEmitterOptions, AsyncAPIOptionsParseError, AsyncAPIOptionsValidationError} from "./options"
+import type {AsyncAPIEmitterOptions} from "./options"
 import {AsyncAPIEmitterOptionsSchema, createAsyncAPIEmitterOptions, validateAsyncAPIEmitterOptions} from "./options"
+import {AsyncAPIOptionsParseError} from "./errors/AsyncAPIOptionsParseError"
+import {AsyncAPIOptionsValidationError} from "./errors/AsyncAPIOptionsValidationError"
+import {EmitterInitializationError} from "./errors/EmitterInitializationError"
+import {SpecGenerationError} from "./errors/SpecGenerationError"
+import {SpecValidationError} from "./errors/SpecValidationError"
+import {EmitterTimeoutError} from "./errors/EmitterTimeoutError"
 import {$lib} from "./lib"
 import type {MessageConfig} from "./decorators/message"
 import type {MetricsCollectionError} from "./errors/MetricsCollectionError"
@@ -21,48 +27,18 @@ import {validateAsyncAPIObjectEffect} from "./utils/validation-helpers"
 import {generateSchemaPropertiesFromModel} from "./utils/schema-conversion"
 import {sanitizeChannelId} from "./utils/typespec-helpers"
 
-//TODO: move to src/errors/
-// TAGGED ERROR TYPES for Railway Programming
-export class EmitterInitializationError extends Error {
-	readonly _tag = "EmitterInitializationError"
-	override readonly name = "EmitterInitializationError"
-	override readonly cause?: unknown
+/**
+ * Helper function to validate program context exists
+ * Eliminates code duplication across generator functions
+ */
+const validateProgramContext = (context: EmitContext<object>): Effect.Effect<void, SpecGenerationError> =>
+	Effect.gen(function* () {
+		if (!context.program) {
+			return yield* Effect.fail(new SpecGenerationError("TypeSpec program context missing", {} as AsyncAPIEmitterOptions))
+		}
+		return undefined as void
+	})
 
-	constructor(message: string, cause?: unknown) {
-		super(message)
-		this.cause = cause
-	}
-}
-
-//TODO: move to src/errors/
-export class SpecGenerationError extends Error {
-	readonly _tag = "SpecGenerationError"
-	override readonly name = "SpecGenerationError"
-
-	constructor(message: string, public readonly options: AsyncAPIEmitterOptions) {
-		super(message)
-	}
-}
-
-//TODO: move to src/errors/
-export class SpecValidationError extends Error {
-	readonly _tag = "SpecValidationError"
-	override readonly name = "SpecValidationError"
-
-	constructor(message: string, public readonly spec: unknown) {
-		super(message)
-	}
-}
-
-//TODO: move to src/errors/
-export class EmitterTimeoutError extends Error {
-	readonly _tag = "EmitterTimeoutError"
-	override readonly name = "EmitterTimeoutError"
-
-	constructor(public readonly timeoutMs: number, public readonly operation: string) {
-		super(`Operation '${operation}' timed out after ${timeoutMs}ms`)
-	}
-}
 
 // Document validation moved to shared utilities
 
@@ -181,9 +157,7 @@ export const emitterServiceLive = Layer.effect(emitterService, makeEmitterServic
  */
 const generateChannels = (context: EmitContext<object>): Effect.Effect<Record<string, unknown>, SpecGenerationError> =>
 	Effect.gen(function* () {
-		if (!context.program) {
-			return yield* Effect.fail(new SpecGenerationError("TypeSpec program context missing", {} as AsyncAPIEmitterOptions))
-		}
+		yield* validateProgramContext(context)
 
 		const channels: Record<string, unknown> = {}
 		const channelMap = context.program.stateMap($lib.stateKeys.channelPaths)
@@ -242,9 +216,7 @@ const generateChannels = (context: EmitContext<object>): Effect.Effect<Record<st
  */
 const generateOperations = (context: EmitContext<object>): Effect.Effect<Record<string, unknown>, SpecGenerationError> =>
 	Effect.gen(function* () {
-		if (!context.program) {
-			return yield* Effect.fail(new SpecGenerationError("TypeSpec program context missing", {} as AsyncAPIEmitterOptions))
-		}
+		yield* validateProgramContext(context)
 
 		const operations: Record<string, unknown> = {}
 		const operationTypesMap = context.program.stateMap($lib.stateKeys.operationTypes)
@@ -298,9 +270,7 @@ const generateOperations = (context: EmitContext<object>): Effect.Effect<Record<
  */
 const generateComponents = (context: EmitContext<object>): Effect.Effect<Record<string, unknown>, SpecGenerationError> =>
 	Effect.gen(function* () {
-		if (!context.program) {
-			return yield* Effect.fail(new SpecGenerationError("TypeSpec program context missing", {} as AsyncAPIEmitterOptions))
-		}
+		yield* validateProgramContext(context)
 
 		const components: Record<string, unknown> = {
 			messages: {},
@@ -550,7 +520,7 @@ export const onEmitEffect = (
 							generatedSpec,
 						)),
 				),
-				Effect.catchTag("SpecValidationError", error =>
+				Effect.catchTag("SpecValidationError", (error: SpecValidationError) =>
 					Effect.gen(function* () {
 						yield* Effect.logError("Spec validation failed", {
 							message: error.message,

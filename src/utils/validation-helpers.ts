@@ -4,19 +4,9 @@
  */
 
 import {Effect} from "effect"
-import type {AsyncAPIObject} from "../types/index"
+import type {AsyncAPIObject} from "@asyncapi/parser/esm/spec-types/v3"
+import {ValidationError} from "@/errors/ValidationError"
 
-/**
- * Tagged error for validation failures
- */
-export class ValidationError extends Error {
-	readonly _tag = "ValidationError"
-	override readonly name = "ValidationError"
-
-	constructor(message: string, public readonly document: unknown) {
-		super(message)
-	}
-}
 
 /**
  * Pure Effect.TS AsyncAPI document validation

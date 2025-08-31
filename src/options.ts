@@ -1,6 +1,8 @@
 import {JSONSchema, Schema} from "@effect/schema"
 import {Effect} from "effect"
 import {validatePathTemplate} from "./path-templates"
+import {AsyncAPIOptionsValidationError} from "./errors/AsyncAPIOptionsValidationError"
+import {AsyncAPIOptionsParseError} from "./errors/AsyncAPIOptionsParseError"
 
 // ==========================================
 // TYPE DEFINITIONS (consolidated from types/options.ts)
@@ -425,37 +427,6 @@ export const AsyncAPIEmitterOptionsEffectSchema = createSchema(
 	))
 
 // VALIDATION FUNCTIONS - Effect.TS powered validation with comprehensive error handling
-
-//TODO: move to src/errors/
-// TAGGED ERRORS for better error handling and recovery
-export class AsyncAPIOptionsValidationError extends Error {
-	readonly _tag = "AsyncAPIOptionsValidationError" as const
-	override readonly name = "AsyncAPIOptionsValidationError"
-
-	constructor(
-		readonly field: string,
-		readonly value: unknown,
-		public override readonly message: string,
-		override readonly cause?: Error,
-	) {
-		super(message)
-		this.cause = cause
-	}
-}
-
-//TODO: move to src/errors/
-export class AsyncAPIOptionsParseError extends Error {
-	readonly _tag = "AsyncAPIOptionsParseError" as const
-	override readonly name = "AsyncAPIOptionsParseError"
-
-	constructor(
-		public override readonly message: string,
-		override readonly cause?: Error,
-	) {
-		super(message)
-		this.cause = cause
-	}
-}
 
 /**
  * Parse and validate AsyncAPI emitter options with Effect.TS generators

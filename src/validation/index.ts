@@ -19,8 +19,11 @@ export {
 
 export type {
 	// Types
-	ValidationResult,
-	ValidationError,
 	ValidationOptions,
 	ValidationStats,
 } from "./asyncapi-validator"
+
+export type {
+	ValidationResult,
+	ValidationError,
+} from "../errors/validation-error"

@@ -3,6 +3,7 @@
  * Extracted from duplicated validation logic in bindings and protocol files
  */
 
+//TODO: Replace with ValidationResult from: src/errors/validation-error.ts:30
 /**
  * Generic validation result structure
  */
