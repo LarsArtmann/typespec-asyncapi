@@ -20,7 +20,7 @@ import { emitFile, getDoc } from "@typespec/compiler";
 import { stringify } from "yaml";
 import type { AsyncAPIEmitterOptions } from "./options.js";
 import type { AsyncAPIDocument, SchemaObject } from "./types/index.js";
-import { validateAsyncAPIEffect, type ValidationError } from "@/validation/index.js";
+import { validateAsyncAPIEffect, type ValidationError } from "./validation/index.js";
 import { $lib } from "./lib.js";
 import { 
   PERFORMANCE_METRICS_SERVICE,
@@ -129,7 +129,7 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
             Effect.flatMap(monitor => monitor.stopMonitoring()),
             Effect.ignore
           );
-          throw error;
+          return yield* Effect.fail(new Error(`Emission pipeline failed: ${error}`));
         })
       )
     );
@@ -149,7 +149,7 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
   /**
    * Discover operations using Effect.TS with performance monitoring
    */
-  private discoverOperationsEffect(): Effect.Effect<Operation[], Error, PERFORMANCE_METRICS_SERVICE | MEMORY_MONITOR_SERVICE> {
+  private discoverOperationsEffect() {
     return Effect.gen((function* (this: AsyncAPIEffectEmitter) {
       const metricsService = yield* PERFORMANCE_METRICS_SERVICE;
       const memoryMonitor = yield* MEMORY_MONITOR_SERVICE;
@@ -195,13 +195,13 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
       console.log(`📊 Discovery stage completed: ${throughputResult.operationsPerSecond.toFixed(0)} ops/sec, ${throughputResult.averageMemoryPerOperation.toFixed(0)} bytes/op`);
       
       return operations;
-    }).bind(this));
+    }).bind(this)).pipe(Effect.mapError(error => new Error(`Operation discovery failed: ${error}`)));
   }
 
   /**
    * Process operations using Effect.TS with performance monitoring
    */
-  private processOperationsEffect(operations: Operation[]): Effect.Effect<void, Error, PERFORMANCE_METRICS_SERVICE | MEMORY_MONITOR_SERVICE> {
+  private processOperationsEffect(operations: Operation[]) {
     return Effect.gen((function* (this: AsyncAPIEffectEmitter) {
       const metricsService = yield* PERFORMANCE_METRICS_SERVICE;
       const memoryMonitor = yield* MEMORY_MONITOR_SERVICE;
@@ -292,13 +292,13 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
       const throughputResult = yield* metricsService.recordThroughput(measurement, operations.length);
       console.log(`📊 Processing stage completed: ${throughputResult.operationsPerSecond.toFixed(0)} ops/sec, ${throughputResult.averageMemoryPerOperation.toFixed(0)} bytes/op`);
       console.log(`📊 Processed ${operations.length} operations successfully`);
-    }).bind(this));
+    }).bind(this)).pipe(Effect.mapError(error => new Error(`Operation processing failed: ${error}`)));
   }
 
   /**
    * Generate the final document using Effect.TS with performance monitoring
    */
-  private generateDocumentEffect(): Effect.Effect<string, Error, PERFORMANCE_METRICS_SERVICE | MEMORY_MONITOR_SERVICE> {
+  private generateDocumentEffect() {
     return Effect.gen((function* (this: AsyncAPIEffectEmitter) {
       const metricsService = yield* PERFORMANCE_METRICS_SERVICE;
       const memoryMonitor = yield* MEMORY_MONITOR_SERVICE;
@@ -344,7 +344,7 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
   /**
    * Validate the document using asyncapi-validator with performance monitoring
    */
-  private validateDocumentEffect(content: string): Effect.Effect<string, Error, PERFORMANCE_METRICS_SERVICE | MEMORY_MONITOR_SERVICE> {
+  private validateDocumentEffect(content: string) {
     return Effect.gen((function* (this: AsyncAPIEffectEmitter) {
       const metricsService = yield* PERFORMANCE_METRICS_SERVICE;
       const memoryMonitor = yield* MEMORY_MONITOR_SERVICE;
@@ -390,7 +390,7 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
   /**
    * Write the document to file using Effect.TS with performance monitoring
    */
-  private writeDocumentEffect(content: string): Effect.Effect<void, Error, PERFORMANCE_METRICS_SERVICE | MEMORY_MONITOR_SERVICE> {
+  private writeDocumentEffect(content: string) {
     return Effect.gen((function* (this: AsyncAPIEffectEmitter) {
       const metricsService = yield* PERFORMANCE_METRICS_SERVICE;
       const memoryMonitor = yield* MEMORY_MONITOR_SERVICE;

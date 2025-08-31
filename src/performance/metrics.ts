@@ -8,12 +8,13 @@
 
 import {Context, Duration, Effect, Fiber, Layer, Metric, MetricBoundaries} from "effect"
 import type {AsyncAPIEmitterOptions} from "../options.js"
-import {MetricsCollectionError} from "@/errors/MetricsCollectionError.js"
-import {MetricsInitializationError} from "@/errors/MetricsInitializationError.js"
-import {ThroughputBelowTargetError} from "@/errors/ThroughputBelowTargetError.js"
-import {MemoryThresholdExceededError} from "@/errors/MemoryThresholdExceededError.js"
-import type {PerformanceMeasurement} from "@/performance/PerformanceMeasurement.js"
-import type {ThroughputResult} from "@/performance/ThroughputResult.js"
+import {MetricsCollectionError} from "../errors/MetricsCollectionError.js"
+import {MetricsInitializationError} from "../errors/MetricsInitializationError.js"
+import {ThroughputBelowTargetError} from "../errors/ThroughputBelowTargetError.js"
+import {MemoryThresholdExceededError} from "../errors/MemoryThresholdExceededError.js"
+import type {PerformanceMeasurement} from "./PerformanceMeasurement.js"
+import type {ThroughputResult} from "./ThroughputResult.js"
+import type {PerformanceMetricsService} from "./PerformanceMetricsService.js"
 
 
 //TODO: This file is getting too big and should be split into multiple smaller files.

@@ -11,13 +11,14 @@ import type {AsyncAPIEmitterOptions, AsyncAPIOptionsParseError, AsyncAPIOptionsV
 import {AsyncAPIEmitterOptionsSchema, createAsyncAPIEmitterOptions, validateAsyncAPIEmitterOptions} from "./options.js"
 import {$lib} from "./lib.js"
 import type {MessageConfig} from "./decorators/message.js"
-import type {MetricsCollectionError, MetricsInitializationError} from "./performance/metrics.js"
+import type {MetricsCollectionError} from "./errors/MetricsCollectionError.js"
+import type {MetricsInitializationError} from "./errors/MetricsInitializationError.js"
+import {MemoryThresholdExceededError} from "./errors/MemoryThresholdExceededError.js"
 import {
-	MemoryThresholdExceededError,
 	PERFORMANCE_METRICS_SERVICE,
 	PERFORMANCE_METRICS_SERVICE_LIVE,
 } from "./performance/metrics.js"
-import type {MemoryMonitorInitializationError} from "./performance/memory-monitor.js"
+import type {MemoryMonitorInitializationError} from "./errors/MemoryMonitorInitializationError.js"
 import {MEMORY_MONITOR_SERVICE, MEMORY_MONITOR_SERVICE_LIVE, withMemoryTracking} from "./performance/memory-monitor.js"
 
 //TODO: move to src/errors/
@@ -505,7 +506,7 @@ const generateSchemaPropertiesFromModel = (_model: Model): Record<string, unknow
 export const onEmitEffect = (
 	context: EmitContext<object>,
 	options: unknown,
-): Effect.Effect<void, EmitterInitializationError | SpecGenerationError | SpecValidationError | EmitterTimeoutError | MetricsInitializationError | MetricsCollectionError | MemoryThresholdExceededError | MemoryMonitorInitializationError | AsyncAPIOptionsValidationError | AsyncAPIOptionsParseError, PERFORMANCE_METRICS_SERVICE | MEMORY_MONITOR_SERVICE | EmitterService> =>
+) =>
 	Effect.gen(function* () {
 		const emitterSvc = yield* emitterService
 		const performanceMetrics = yield* PERFORMANCE_METRICS_SERVICE
@@ -578,29 +579,27 @@ export const onEmitEffect = (
 					emitterSvc.generateSpec(opts, ctx),
 					"spec-generation",
 				).pipe(
-					Effect.catchAll(error => {
-						if (error instanceof SpecGenerationError) {
-							return Effect.gen(function* () {
+					Effect.catchAll(error => 
+						Effect.gen(function* () {
+							if (error instanceof SpecGenerationError) {
 								yield* Effect.logError("Spec generation failed", {
 									message: error.message,
 									options: JSON.stringify(error.options),
 								})
 								return yield* Effect.fail(error)
-							})
-						}
-						if (error instanceof MemoryThresholdExceededError) {
-							return Effect.gen(function* () {
+							}
+							if (error instanceof MemoryThresholdExceededError) {
 								yield* Effect.logError("Memory threshold exceeded during spec generation", {
 									currentUsage: error.currentUsage,
 									threshold: error.threshold,
 									operation: error.operationType,
 								})
 								return yield* Effect.fail(error)
-							})
-						}
-						// Re-throw other errors
-						return Effect.fail(error)
-					}),
+							}
+							// Re-throw other errors
+							return yield* Effect.fail(error)
+						})
+					),
 					Effect.tap(spec =>
 						Effect.logInfo("AsyncAPI specification generated successfully", {
 							specSize: JSON.stringify(spec).length,
@@ -706,7 +705,7 @@ export const onEmitPromise = async (
  */
 export const batchEmitEffect = (
 	contexts: Array<{ context: EmitContext<object>; options: unknown }>,
-): Effect.Effect<unknown[], EmitterInitializationError | SpecGenerationError | SpecValidationError | EmitterTimeoutError | MetricsInitializationError | MetricsCollectionError | MemoryThresholdExceededError | MemoryMonitorInitializationError | AsyncAPIOptionsValidationError | AsyncAPIOptionsParseError, PERFORMANCE_METRICS_SERVICE | MEMORY_MONITOR_SERVICE | EmitterService> =>
+) =>
 	Effect.gen(function* () {
 		const performanceMetrics = yield* PERFORMANCE_METRICS_SERVICE
 

@@ -1,10 +1,11 @@
-import {GarbageCollectionFailureError} from "@/errors/GarbageCollectionFailureError.js"
+import {GarbageCollectionFailureError} from "./GarbageCollectionFailureError.js"
+import type { ByteAmount } from "../performance/ByteAmount.js"
 
 export class GarbageCollectionNotAvailableError extends GarbageCollectionFailureError {
-	readonly _tag = "GarbageCollectionNotAvailableError"
-	override readonly name = "GarbageCollectionNotAvailableError"
+	override readonly _tag: string = "GarbageCollectionNotAvailableError"
+	override readonly name: string = "GarbageCollectionNotAvailableError"
 
-	constructor(public readonly memoryBeforeGC: ByteAmount) {
-		super(`Garbage collection was not available. Is your runtime NodeJS compliant? (memory before GC: ${memoryBeforeGC} bytes)`)
+	constructor(memoryBeforeGC: ByteAmount) {
+		super(`Garbage collection was not available. Is your runtime NodeJS compliant?`, memoryBeforeGC)
 	}
 }

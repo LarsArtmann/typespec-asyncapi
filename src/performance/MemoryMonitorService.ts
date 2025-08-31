@@ -1,17 +1,15 @@
 // MEMORY MONITORING SERVICE
-import type {MemoryMonitorInitializationError} from "@/errors/MemoryMonitorInitializationError.js"
+import type {MemoryMonitorInitializationError} from "../errors/MemoryMonitorInitializationError.js"
 import type {Effect} from "effect"
-import type {
-	GarbageCollectionFailureError,
-	MemoryAnalysis,
-	MemoryBudget,
-	MemoryLeakDetectedError,
-	MemorySnapshot,
-} from "@/performance/memory-monitor.js"
-import type {MemoryThresholdExceededError} from "@/errors/MemoryThresholdExceededError.js"
-import type {CheckBudgetCompliance} from "@/performance/CheckBudgetCompliance.js"
-import type {ForceGarbageCollection} from "@/performance/ForceGarbageCollection.js"
-import type {MeasureOperationMemory} from "@/performance/MeasureOperationMemory.js"
+import type {GarbageCollectionFailureError} from "../errors/GarbageCollectionFailureError.js"
+import type {MemoryLeakDetectedError} from "../errors/MemoryLeakDetectedError.js"
+import type {MemoryThresholdExceededError} from "../errors/MemoryThresholdExceededError.js"
+import type {MemoryAnalysis} from "./MemoryAnalysis.js"
+import type {MemoryBudget} from "./MemoryBudget.js"
+import type {MemorySnapshot} from "./MemorySnapshot.js"
+import type {CheckBudgetCompliance} from "./CheckBudgetCompliance.js"
+import type {ForceGarbageCollection} from "./ForceGarbageCollection.js"
+import type {MeasureOperationMemory} from "./MeasureOperationMemory.js"
 
 export type Milliseconds = number
 

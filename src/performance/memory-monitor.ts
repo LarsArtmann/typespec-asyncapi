@@ -12,11 +12,12 @@ import {MemoryThresholdExceededError} from "../errors/MemoryThresholdExceededErr
 import {MemoryMonitorInitializationError} from "../errors/MemoryMonitorInitializationError.js"
 import {MemoryLeakDetectedError} from "../errors/MemoryLeakDetectedError.js"
 import {GarbageCollectionFailureError} from "../errors/GarbageCollectionFailureError.js"
-import type {MemoryMonitorService} from "@/performance/MemoryMonitorService.js"
-import type {MemoryBudget} from "@/performance/MemoryBudget.js"
-import type {MemorySnapshot} from "@/performance/MemorySnapshot.js"
-import type {ForceGCResult} from "@/performance/ForceGCResult.js"
-import {GarbageCollectionNotAvailableError} from "@/errors/GarbageCollectionNotAvailableError.js"
+import {GarbageCollectionNotAvailableError} from "../errors/GarbageCollectionNotAvailableError.js"
+import type {MemoryMonitorService} from "./MemoryMonitorService.js"
+import type {MemoryBudget} from "./MemoryBudget.js"
+import type {MemorySnapshot} from "./MemorySnapshot.js"
+import type {MemoryAnalysis} from "./MemoryAnalysis.js"
+import type {ForceGCResult} from "./ForceGCResult.js"
 
 /**
  * @deprecated: Each Error should have it s own file in src/errors;
@@ -378,27 +379,26 @@ const makeMemoryMonitorService = Effect.gen(function* () {
 		success: boolean
 	}, GarbageCollectionFailureError> =>
 		Effect.gen(function* () {
-			const gcResult = tryForceGC()
+			const gcResult = yield* tryForceGC()
 
-			if (!gcResult.success) {
-				return yield* Effect.fail(new GarbageCollectionFailureError(
-					"Garbage collection not available or failed",
-					gcResult.memoryBefore,
-				))
+			// Check if gcResult is a successful result (not an error)
+			if ('memoryBefore' in gcResult && 'memoryAfter' in gcResult) {
+				const memoryFreed = Math.max(0, gcResult.memoryBefore - gcResult.memoryAfter)
+
+				yield* Effect.logInfo("Garbage collection completed", {
+					memoryBefore: `${Math.round(gcResult.memoryBefore / 1024 / 1024)}MB`,
+					memoryAfter: `${Math.round(gcResult.memoryAfter / 1024 / 1024)}MB`,
+					memoryFreed: `${Math.round(memoryFreed / 1024 / 1024)}MB`,
+				})
+
+				// Take a snapshot after GC
+				yield* takeSnapshot()
+
+				return {memoryFreed, success: true}
+			} else {
+				// gcResult is an error type
+				return {memoryFreed: 0, success: false}
 			}
-
-			const memoryFreed = Math.max(0, gcResult.memoryBefore - gcResult.memoryAfter)
-
-			yield* Effect.logInfo("Garbage collection completed", {
-				memoryBefore: `${Math.round(gcResult.memoryBefore / 1024 / 1024)}MB`,
-				memoryAfter: `${Math.round(gcResult.memoryAfter / 1024 / 1024)}MB`,
-				memoryFreed: `${Math.round(memoryFreed / 1024 / 1024)}MB`,
-			})
-
-			// Take a snapshot after GC
-			yield* takeSnapshot()
-
-			return {memoryFreed, success: true}
 		})
 
 	const optimizeMemoryUsage = (): Effect.Effect<void, never> =>
