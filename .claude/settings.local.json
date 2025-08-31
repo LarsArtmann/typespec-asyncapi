@@ -79,7 +79,11 @@
       "Bash(just:*)",
       "Bash(then trash dist/)",
       "Bash(else echo \"\"ℹ️ No dist/ directory to clean\"\")",
-      "Bash(npx eslint:*)"
+      "Bash(npx eslint:*)",
+      "Bash(for:*)",
+      "Bash(do echo \"=== ISSUE #$issue ===\")",
+      "Bash(done)",
+      "Bash(gh milestone:*)"
     ],
     "deny": [],
     "ask": []

@@ -48,7 +48,7 @@
     "newLine": "LF",
     //as in https://github.com/microsoft/typespec/blob/main/tsconfig.base.json
     "skipLibCheck": true,
-    "downlevelIteration": true,
+
     "moduleDetection": "force",
     // === ESM MODULE OUTPUT OPTIMIZATION ===
     "outDir": "dist",
@@ -128,7 +128,7 @@
     // === ADVANCED TYPE CHECKING ===
     "useDefineForClassFields": true,
     // Using standard decorators (TC39 stage 3)
-    "emitDecoratorMetadata": false,
+    "emitDecoratorMetadata": true,
     // No reflection metadata
 
     // === CODE GENERATION ===
@@ -136,11 +136,11 @@
     // Each file as separate module (required for bundlers)
     "preserveValueImports": false,
     // Transform value imports
-    "importsNotUsedAsValues": "remove",
+    //TODO: not-supported by typescript-go: "importsNotUsedAsValues": "remove",
     // Remove unused imports
 
     // === PATH MAPPING FOR CLEAN IMPORTS ===
-    "baseUrl": ".",
+    //TODO: not-supported by typescript-go: "baseUrl": ".",
     "paths": {
       //I don't want a bundler, so leave this empty.
     },
@@ -149,7 +149,7 @@
     // Better watch mode output
     "pretty": true,
     // Colorized output
-    "listEmittedFiles": false,
+    "listEmittedFiles": true,
     // Performance: Don't list emitted files
     "listFiles": false
     // Performance: Don't list all files
