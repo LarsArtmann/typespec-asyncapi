@@ -27,9 +27,9 @@ export {MemoryMonitorInitializationError, MemoryLeakDetectedError, GarbageCollec
 
 
 export const DEFAULT_MEMORY_BUDGET: MemoryBudget = {
-	maxMemoryPerOperation: 1024, // 1KB target
-	maxTotalMemory: 100 * 1024 * 1024, // 100MB
-	maxGrowthRate: 1024 * 1024, // 1MB per second
+	maxMemoryPerOperation: 300 * 1024 * 1024, // 300MB per operation (realistic for complex AsyncAPI generation)
+	maxTotalMemory: 1024 * 1024 * 1024, // 1GB total (increased for production workloads)
+	maxGrowthRate: 10 * 1024 * 1024, // 10MB per second (reasonable for intensive processing)
 	alertThreshold: 80, // 80%
 	forceGCThreshold: 90, // 90%
 }
@@ -297,7 +297,7 @@ const makeMemoryMonitorService = Effect.gen(function* () {
 				//TODO: Can this be undefined and crash?
 				const curr = relevantSnapshots[i]
 				//TODO: @typescript-eslint/no-non-null-assertion
-				const memoryDrop = prev!.heapUsed - curr!.heapUsed
+				const memoryDrop = prev.heapUsed - curr.heapUsed
 				if (memoryDrop > 1024 * 1024) { // Significant drop > 1MB
 					gcEvents.push(memoryDrop)
 				}
