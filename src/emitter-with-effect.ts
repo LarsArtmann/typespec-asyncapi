@@ -26,6 +26,7 @@ import {$lib} from "./lib.js"
 import {PERFORMANCE_METRICS_SERVICE, PERFORMANCE_METRICS_SERVICE_LIVE} from "./performance/metrics.js"
 import {MEMORY_MONITOR_SERVICE, MEMORY_MONITOR_SERVICE_LIVE} from "./performance/memory-monitor.js"
 import {convertModelToSchema} from "./utils/schema-conversion.js"
+import {buildServersFromNamespaces} from "./utils/typespec-helpers.js"
 
 // Using centralized types from types/index.ts
 // AsyncAPIObject and SchemaObject (as AsyncAPISchema) are now imported
@@ -46,6 +47,9 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 	}
 
 	private createInitialDocument(): AsyncAPIObject {
+		const program = this.emitter.getProgram()
+		const servers = buildServersFromNamespaces(program)
+		
 		return {
 			asyncapi: "3.0.0",
 			info: {
@@ -53,6 +57,7 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 				version: "1.0.0",
 				description: "Generated from TypeSpec with Effect.TS integration",
 			},
+			servers,
 			channels: {},
 			operations: {},
 			components: {
