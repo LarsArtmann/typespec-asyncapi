@@ -4,7 +4,7 @@
 
 import {describe, expect, it} from "vitest"
 import {createTestHost} from "@typespec/compiler/testing"
-import {$onEmit} from "../dist/index"
+import {$onEmit} from "../dist/index.js"
 import {AsyncAPITestLibrary} from "./test-host"
 import {Effect} from "effect"
 

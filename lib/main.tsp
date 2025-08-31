@@ -22,6 +22,22 @@ extern dec publish(target: Operation);
 extern dec subscribe(target: Operation);
 
 /**
+ * Apply message metadata to a model representing an AsyncAPI message
+ * @param config Message configuration with name, title, contentType, description, etc.
+ */
+extern dec message(target: Model, config?: {
+  name?: valueof string;
+  title?: valueof string;
+  summary?: valueof string;
+  description?: valueof string;
+  contentType?: valueof string;
+  examples?: unknown[];
+  headers?: valueof string;
+  correlationId?: valueof string;
+  bindings?: Record<unknown>;
+});
+
+/**
  * Define a server configuration for the AsyncAPI specification
  * @param name The server name/identifier
  * @param config Server configuration with url, protocol, and optional description
