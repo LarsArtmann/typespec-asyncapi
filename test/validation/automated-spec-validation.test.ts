@@ -16,7 +16,7 @@
 
 import {afterAll, beforeAll, describe, expect, it} from "vitest"
 import { AsyncAPIValidator } from "../../src/validation/asyncapi-validator.js";
-import {compileAsyncAPISpec, parseAsyncAPIOutput, TestSources} from "../../utils/test-helpers.js"
+import {compileAsyncAPISpec, parseAsyncAPIOutput, TestSources} from "../utils/test-helpers.js"
 import {mkdir, rm, writeFile} from "node:fs/promises"
 import {join} from "node:path"
 import {Effect} from "effect"

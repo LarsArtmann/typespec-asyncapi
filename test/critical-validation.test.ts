@@ -9,7 +9,7 @@
  */
 
 import {beforeAll, describe, expect, it} from "vitest"
-import {AsyncAPIValidator} from "../src/validation"
+import {AsyncAPIValidator} from "../src/validation/asyncapi-validator.js"
 import {Effect} from "effect"
 
 describe("🚨 CRITICAL: AsyncAPI Specification Validation", () => {

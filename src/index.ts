@@ -1,5 +1,6 @@
 import type { EmitContext } from "@typespec/compiler";
 import { setTypeSpecNamespace } from "@typespec/compiler";
+import { Effect } from "effect";
 import type { AsyncAPIEmitterOptions } from "./options.js";
 
 // Import decorators
@@ -29,14 +30,14 @@ export async function $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): Pro
     // Import the working Effect.TS emitter
     const { generateAsyncAPIWithEffect } = await import("./emitter-with-effect.js");
     
-    console.log("🎯 TYPESPEC ASYNCAPI EMITTER STARTED - USING REAL PROCESSOR");
-    console.log(`📁 Output directory: ${context.emitterOutputDir}`);
-    console.log(`🔧 Program has ${context.program.sourceFiles.size || 0} source files`);
-    console.log("✨ Processing TypeSpec operations, decorators, and models...");
+    Effect.log("🎯 TYPESPEC ASYNCAPI EMITTER STARTED - USING REAL PROCESSOR");
+    Effect.log(`📁 Output directory: ${context.emitterOutputDir}`);
+    Effect.log(`🔧 Program has ${context.program.sourceFiles.size || 0} source files`);
+    Effect.log("✨ Processing TypeSpec operations, decorators, and models...");
     
     // Use the working Effect.TS integrated emitter that actually processes TypeSpec content
     await generateAsyncAPIWithEffect(context);
     
-    console.log("✅ AsyncAPI document generated with REAL content from TypeSpec processing!");
+    Effect.log("✅ AsyncAPI document generated with REAL content from TypeSpec processing!");
 }
 

@@ -41,8 +41,9 @@ import type {ProtocolConfig} from "./decorators/protocol.js"
  */
 export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
 	private operations: Operation[] = []
-	// @ts-ignore - Used within Effect.TS generators (false positive)
-	private messageModels: Model[] = [] 
+	// @ts-expect-error - Used within Effect.TS generators (false positive)
+	// noinspection JSMismatchedCollectionQueryUpdate
+	private messageModels: Model[] = []
 	private readonly asyncApiDoc: AsyncAPIObject
 
 	constructor(emitter: AssetEmitter<string, AsyncAPIEmitterOptions>) {
@@ -53,7 +54,7 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 	private createInitialDocument(): AsyncAPIObject {
 		const program = this.emitter.getProgram()
 		const servers = buildServersFromNamespaces(program)
-		
+
 		return {
 			asyncapi: "3.0.0",
 			info: {
@@ -89,12 +90,12 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 				yield* memoryMonitor.startMonitoring(5000) // Monitor every 5 seconds
 
 				// Execute the emission stages
-				const ops = (yield* this.discoverOperationsEffect()) as Operation[]
-				const messageModels = (yield* this.discoverMessageModelsEffect()) as Model[]
+				const ops = (yield* this.discoverOperationsEffect())
+				const messageModels = yield* this.discoverMessageModelsEffect()
 				yield* this.processOperationsEffect(ops)
 				yield* this.processMessageModelsEffect(messageModels)
-				const doc = (yield* this.generateDocumentEffect()) as string
-				const validatedDoc = (yield* this.validateDocumentEffect(doc)) as string
+				const doc = yield* this.generateDocumentEffect()
+				const validatedDoc = yield* this.validateDocumentEffect(doc)
 				// Document processing complete - file writing handled by AssetEmitter
 				Effect.log(`✅ Document processing complete: ${validatedDoc.length} bytes`)
 
@@ -154,7 +155,7 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 
 		// Run the Effect pipeline with performance monitoring
 		await Effect.runPromise(
-			Effect.provide(emitProgram, performanceLayers) as Effect.Effect<void, Error, never>,
+			Effect.provide(emitProgram, performanceLayers),
 		)
 	}
 
@@ -335,7 +336,7 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 	private processSingleMessageModel(model: Model): string {
 		const program = this.emitter.getProgram()
 		const messageConfig = getMessageConfig(program, model)
-		
+
 		if (!messageConfig) {
 			Effect.log(`⚠️  No message config found for model: ${model.name}`)
 			return `No config for ${model.name}`
@@ -360,12 +361,12 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 			description: messageConfig.description ?? getDoc(program, model),
 			contentType: messageConfig.contentType ?? "application/json",
 			examples: messageConfig.examples,
-			headers: messageConfig.headers ? { $ref: messageConfig.headers } : undefined,
-			correlationId: messageConfig.correlationId ? { $ref: messageConfig.correlationId } : undefined,
+			headers: messageConfig.headers ? {$ref: messageConfig.headers} : undefined,
+			correlationId: messageConfig.correlationId ? {$ref: messageConfig.correlationId} : undefined,
 			bindings: messageConfig.bindings,
 			payload: {
-				$ref: `#/components/schemas/${model.name}`
-			}
+				$ref: `#/components/schemas/${model.name}`,
+			},
 		}
 
 		// Also add schema for the model if not already present
@@ -373,7 +374,7 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 			if (!this.asyncApiDoc.components) this.asyncApiDoc.components = {}
 			this.asyncApiDoc.components.schemas = {}
 		}
-		
+
 		if (!this.asyncApiDoc.components.schemas[model.name]) {
 			this.asyncApiDoc.components.schemas[model.name] = convertModelToSchema(model, program)
 		}
@@ -429,7 +430,7 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 	 */
 	private addChannelToDocument(op: Operation, channelName: string, channelPath: string, program: Program, protocolConfig?: ProtocolConfig): void {
 		if (!this.asyncApiDoc.channels) this.asyncApiDoc.channels = {}
-		
+
 		const channelDef = {
 			address: channelPath,
 			description: getDoc(program, op) ?? `Channel for ${op.name}`,
@@ -458,7 +459,7 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 	 */
 	private addOperationToDocument(op: Operation, channelName: string, action: string, program: Program, protocolConfig?: any): void {
 		if (!this.asyncApiDoc.operations) this.asyncApiDoc.operations = {}
-		
+
 		const operationDef: any = {
 			action: action as "receive" | "send",
 			channel: {$ref: `#/channels/${channelName}`},
@@ -484,7 +485,7 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 	private addMessageToDocument(op: Operation, protocolConfig?: any): void {
 		if (!this.asyncApiDoc.components) this.asyncApiDoc.components = {}
 		if (!this.asyncApiDoc.components.messages) this.asyncApiDoc.components.messages = {}
-		
+
 		const messageDef: any = {
 			name: `${op.name}Message`,
 			title: `${op.name} Message`,
@@ -539,7 +540,7 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 	}
 
 	/**
-	 * Create protocol-specific operation bindings  
+	 * Create protocol-specific operation bindings
 	 */
 	private createProtocolOperationBindings(config: ProtocolConfig): Record<string, unknown> | undefined {
 		// Type-safe delegation to ProtocolBindingFactory based on protocol type

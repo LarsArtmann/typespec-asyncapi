@@ -3,11 +3,6 @@ import {$lib, reportDiagnostic} from "../lib.js"
 import {Effect} from "effect"
 
 export function $channel(context: DecoratorContext, target: Operation, path: StringValue | string): void {
-	console.log(`🔍 PROCESSING @channel decorator on operation: ${target.name}`)
-	console.log(`📍 Channel path raw value:`, path)
-	console.log(`📍 Channel path type:`, typeof path)
-	console.log(`🏷️  Target type: ${target.kind}`)
-	
 	Effect.log(`🔍 PROCESSING @channel decorator on operation: ${target.name}`)
 	Effect.log(`📍 Channel path raw value:`, path)
 	Effect.log(`📍 Channel path type:`, typeof path)
