@@ -5,6 +5,7 @@
 
 import type {Operation, Program} from "@typespec/compiler"
 import {getDoc} from "@typespec/compiler"
+import {Effect} from "effect"
 import type {AsyncAPIDocument, ChannelObject, OperationObject} from "../types/index"
 import {getAsyncAPIAction, getChannelPath, getOperationType} from "./typespec-helpers"
 import {convertModelToSchema} from "./schema-conversion"
@@ -27,7 +28,7 @@ export function createAsyncAPIDocument(operations: Operation[], title?: string, 
 			schemas: {},
 			messages: {},
 		},
-	}
+	} as AsyncAPIDocument
 }
 
 /**
@@ -78,14 +79,14 @@ export function processOperationToDocument(
 ): void {
 	// Create channel
 	const {name: channelName, definition: channelDef} = createChannelDefinition(operation, program)
-	document.channels[channelName] = channelDef
+	document.channels![channelName] = channelDef
 
 	// Create operation
-	document.operations[operation.name] = createOperationDefinition(operation, program, channelName)
+	document.operations![operation.name] = createOperationDefinition(operation, program, channelName)
 
 	// Create message component
-	if (!document.components.messages) document.components.messages = {}
-	document.components.messages[`${operation.name}Message`] = {
+	if (!document.components?.messages) document.components!.messages = {}
+	document.components!.messages[`${operation.name}Message`] = {
 		name: `${operation.name}Message`,
 		title: `${operation.name} Message`,
 		summary: `Message for ${operation.name} operation`,
@@ -95,11 +96,11 @@ export function processOperationToDocument(
 	// Process return type if it's a model
 	if (operation.returnType.kind === "Model") {
 		const model = operation.returnType
-		if (!document.components.schemas) document.components.schemas = {}
-		document.components.schemas[model.name] = convertModelToSchema(model, program)
+		if (!document.components?.schemas) document.components!.schemas = {}
+		document.components!.schemas[model.name] = convertModelToSchema(model, program)
 
 		// Link message to schema
-		const message = document.components.messages[`${operation.name}Message`]
+		const message = document.components!.messages[`${operation.name}Message`]
 		if (message && typeof message === 'object' && !('$ref' in message)) {
 			(message as { payload?: { $ref?: string } }).payload = {
 				$ref: `#/components/schemas/${model.name}`,

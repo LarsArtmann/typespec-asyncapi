@@ -18,7 +18,8 @@ import {PERFORMANCE_METRICS_SERVICE, PERFORMANCE_METRICS_SERVICE_LIVE} from "./p
 import type {MemoryMonitorInitializationError} from "./errors/MemoryMonitorInitializationError"
 import {MEMORY_MONITOR_SERVICE, MEMORY_MONITOR_SERVICE_LIVE, withMemoryTracking} from "./performance/memory-monitor"
 import {validateAsyncAPIDocumentEffect} from "./utils/validation-helpers"
-import {generateSchemaPropertiesFromModel, sanitizeChannelId} from "./utils/schema-conversion"
+import {generateSchemaPropertiesFromModel} from "./utils/schema-conversion"
+import {sanitizeChannelId} from "./utils/typespec-helpers"
 
 //TODO: move to src/errors/
 // TAGGED ERROR TYPES for Railway Programming
@@ -696,7 +697,7 @@ export const parseOptionsExample = async (): Promise<AsyncAPIEmitterOptions> => 
 			const complete = yield* createAsyncAPIEmitterOptions(parsed)
 
 			// Log success
-			yield* Console.log("Configuration loaded successfully", complete)
+			yield* Effect.log("Configuration loaded successfully", complete)
 
 			return complete
 		}).pipe(
@@ -835,7 +836,7 @@ export const processOptionsWithTransformation = (input: unknown): Effect.Effect<
 		// Re-validate transformed options
 		const finalValidated = yield* createAsyncAPIEmitterOptions(transformed)
 
-		yield* Console.log(`Options processed for ${environment} environment`)
+		yield* Effect.log(`Options processed for ${environment} environment`)
 
 		return finalValidated
 	})
@@ -852,20 +853,20 @@ export const processWithManagedResources = (options: unknown): Effect.Effect<str
 		return yield* Effect.acquireUseRelease(
 			// Acquire: Setup resources based on validated options
 			Effect.gen(function* () {
-				yield* Console.log("Setting up resources with validated options")
+				yield* Effect.log("Setting up resources with validated options")
 				return {connection: "mock-connection", options: validatedOptions}
 			}),
 			// Use: Process with guaranteed valid options
 			({connection, options}) =>
 				Effect.gen(function* () {
-					yield* Console.log("Processing with connection:", connection)
-					yield* Console.log("Using validated options:", options)
+					yield* Effect.log("Processing with connection:", connection)
+					yield* Effect.log("Using validated options:", options)
 					return `Processed with ${options["file-type"]} format`
 				}),
 			// Release: Cleanup resources
 			({connection}) =>
 				Effect.gen(function* () {
-					yield* Console.log("Cleaning up connection:", connection)
+					yield* Effect.log("Cleaning up connection:", connection)
 				}),
 		)
 	})

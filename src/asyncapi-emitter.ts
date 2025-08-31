@@ -1,4 +1,4 @@
-import type {EmitContext, Model, ModelProperty, Namespace, Operation, Program} from "@typespec/compiler"
+import type {EmitContext, Model, Namespace, Operation, Program} from "@typespec/compiler"
 import {emitFile, getDoc} from "@typespec/compiler"
 import {
 	type AssetEmitter,
@@ -9,11 +9,12 @@ import {
 } from "@typespec/asset-emitter"
 import {stringify} from "yaml"
 import {dirname} from "node:path"
+import {Effect} from "effect"
 import type {AsyncAPIEmitterOptions} from "./options"
 import type {AsyncAPIDocument, ChannelObject, OperationObject, SchemaObject} from "./types/index"
 import {$lib} from "./lib"
 import {createDefaultKafkaChannelBinding, validateKafkaChannelBinding} from "./bindings/kafka"
-import {convertModelToSchema, getPropertyType} from "./utils/schema-conversion"
+import {convertModelToSchema} from "./utils/schema-conversion"
 
 // ChannelObject and OperationObject now imported from centralized types
 import {hasTemplateVariables, type PathTemplateContext, resolvePathTemplateWithValidation} from "./path-templates"
@@ -231,6 +232,9 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
 		return schema
 	}
 
+	// These methods are commented out as they're not currently used
+	// but kept for potential future use
+	/*
 	private processModelProperties(model: Model, program: Program): {
 		properties: Record<string, SchemaObject>,
 		required: string[]
@@ -261,6 +265,7 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
 	} {
 		return getPropertyType(prop)
 	}
+	*/
 
 	/**
 	 * Resolve output file path with template variable support

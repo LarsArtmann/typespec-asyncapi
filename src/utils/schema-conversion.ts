@@ -93,7 +93,7 @@ export function getPropertyType(prop: ModelProperty): {
  * Generate basic schema properties from model
  * Simplified version used in integration-example.ts
  */
-export function generateSchemaPropertiesFromModel(model: Model): Record<string, unknown> {
+export function generateSchemaPropertiesFromModel(_model: Model): Record<string, unknown> {
 	const properties: Record<string, unknown> = {}
 
 	//TODO: FUCKING IMPLEMENT THIS!!! ASAP
