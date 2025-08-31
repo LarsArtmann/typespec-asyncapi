@@ -3,9 +3,13 @@
  * Extracted from duplicated operation discovery and state access logic
  */
 
-import type {Namespace, Operation, Program} from "@typespec/compiler"
+import type {Model, Namespace, Operation, Program} from "@typespec/compiler"
 import {$lib} from "../lib.js"
 import {Effect} from "effect"
+import type {ServerConfig} from "../decorators/server.js"
+import type {MessageConfig} from "../decorators/message.js"
+import type {ProtocolConfig} from "../decorators/protocol.js"
+import type {SecurityConfig} from "../decorators/security.js"
 
 /**
  * Discover all operations from TypeSpec program
@@ -96,4 +100,90 @@ export function logOperationDetails(operation: Operation, program: Program): voi
 	operation.parameters.properties.forEach((param, paramName) => {
 		Effect.log(`  - Parameter: ${paramName} (${param.type.kind})`)
 	})
+}
+
+/**
+ * Get server configurations from TypeSpec decorator state
+ * CRITICAL MISSING FUNCTION - Required for AsyncAPI server generation
+ */
+export function getServerConfigs(program: Program, namespace: Namespace): Map<string, ServerConfig> | undefined {
+	const serverConfigsMap = program.stateMap($lib.stateKeys.serverConfigs)
+	return serverConfigsMap.get(namespace) as Map<string, ServerConfig> | undefined
+}
+
+/**
+ * Get all server configurations from all namespaces  
+ * Used for building document-level servers object
+ */
+export function getAllServerConfigs(program: Program): Map<Namespace, Map<string, ServerConfig>> {
+	const serverConfigsMap = program.stateMap($lib.stateKeys.serverConfigs)
+	return serverConfigsMap as Map<Namespace, Map<string, ServerConfig>>
+}
+
+/**
+ * Get message configuration from TypeSpec decorator state
+ * CRITICAL MISSING FUNCTION - Required for AsyncAPI message generation
+ */
+export function getMessageConfig(program: Program, model: Model): MessageConfig | undefined {
+	const messageConfigsMap = program.stateMap($lib.stateKeys.messageConfigs)
+	return messageConfigsMap.get(model) as MessageConfig | undefined
+}
+
+/**
+ * Get protocol configuration from TypeSpec decorator state  
+ * CRITICAL MISSING FUNCTION - Required for AsyncAPI protocol bindings
+ */
+export function getProtocolConfig(program: Program, target: Operation | Model): ProtocolConfig | undefined {
+	const protocolConfigsMap = program.stateMap($lib.stateKeys.protocolConfigs)
+	return protocolConfigsMap.get(target) as ProtocolConfig | undefined
+}
+
+/**
+ * Get security configuration from TypeSpec decorator state
+ * CRITICAL MISSING FUNCTION - Required for AsyncAPI security schemes
+ */
+export function getSecurityConfig(program: Program, target: Operation | Model): SecurityConfig | undefined {
+	const securityConfigsMap = program.stateMap($lib.stateKeys.securityConfigs)
+	return securityConfigsMap.get(target) as SecurityConfig | undefined
+}
+
+/**
+ * Build AsyncAPI servers object from namespace-scoped server configurations
+ * Implements namespace-qualified naming strategy from architecture decision
+ */
+export function buildServersFromNamespaces(program: Program): Record<string, any> {
+	const servers: Record<string, any> = {}
+	const allServerConfigs = getAllServerConfigs(program)
+	
+	for (const [namespace, serverConfigsMap] of allServerConfigs.entries()) {
+		// Get namespace name, handle global namespace
+		const namespaceName = namespace.name === "" || !namespace.name ? "Global" : namespace.name
+		
+		for (const [serverName, config] of serverConfigsMap.entries()) {
+			// Use namespace-qualified naming: "ServiceA.prod", "ServiceB.prod"
+			const qualifiedName = namespaceName === "Global" ? serverName : `${namespaceName}.${serverName}`
+			
+			servers[qualifiedName] = {
+				host: extractHostFromUrl(config.url),
+				protocol: config.protocol,
+				description: config.description || `${namespaceName} ${serverName} server`
+			}
+		}
+	}
+	
+	return servers
+}
+
+/**
+ * Extract host from server URL (remove protocol prefix)
+ * Utility for AsyncAPI server object generation
+ */
+function extractHostFromUrl(url: string): string {
+	try {
+		const urlObj = new URL(url)
+		return urlObj.host
+	} catch {
+		// If URL parsing fails, return as-is
+		return url
+	}
 }
