@@ -28,6 +28,7 @@ import {MEMORY_MONITOR_SERVICE, MEMORY_MONITOR_SERVICE_LIVE} from "./performance
 import {convertModelToSchema} from "./utils/schema-conversion.js"
 import {buildServersFromNamespaces, getMessageConfig, getProtocolConfig} from "./utils/typespec-helpers.js"
 import {ProtocolBindingFactory} from "./protocol-bindings.js"
+import type {ProtocolConfig} from "./decorators/protocol.js"
 
 // Using centralized types from types/index.ts
 // AsyncAPIObject and SchemaObject (as AsyncAPISchema) are now imported
@@ -40,7 +41,8 @@ import {ProtocolBindingFactory} from "./protocol-bindings.js"
  */
 export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
 	private operations: Operation[] = []
-	private messageModels: Model[] = []
+	// @ts-ignore - Used within Effect.TS generators (false positive)
+	private _messageModels: Model[] = [] 
 	private readonly asyncApiDoc: AsyncAPIObject
 
 	constructor(emitter: AssetEmitter<string, AsyncAPIEmitterOptions>) {
@@ -245,7 +247,7 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 				}
 
 				walkNamespaceForModels(program.getGlobalNamespaceType())
-				this.messageModels = messageModels
+				this._messageModels = messageModels
 
 				Effect.log(`📊 Total message models discovered: ${messageModels.length}`)
 				return messageModels
@@ -520,6 +522,42 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 				}
 			}
 		}
+	}
+
+	/**
+	 * Create protocol-specific channel bindings
+	 */
+	private createProtocolChannelBindings(config: ProtocolConfig): Record<string, unknown> | undefined {
+		// Type-safe delegation to ProtocolBindingFactory based on protocol type
+		switch (config.protocol) {
+			case "kafka":
+			case "websocket":
+				return ProtocolBindingFactory.createChannelBindings(config.protocol, config.binding as any)
+			default:
+				return undefined
+		}
+	}
+
+	/**
+	 * Create protocol-specific operation bindings  
+	 */
+	private createProtocolOperationBindings(config: ProtocolConfig): Record<string, unknown> | undefined {
+		// Type-safe delegation to ProtocolBindingFactory based on protocol type
+		switch (config.protocol) {
+			case "kafka":
+			case "http":
+				return ProtocolBindingFactory.createOperationBindings(config.protocol, config.binding as any)
+			default:
+				return undefined
+		}
+	}
+
+	/**
+	 * Create protocol-specific message bindings
+	 */
+	private createProtocolMessageBindings(config: ProtocolConfig): Record<string, unknown> | undefined {
+		// Type-safe delegation to ProtocolBindingFactory based on protocol type
+		return ProtocolBindingFactory.createMessageBindings(config.protocol, config.binding as any)
 	}
 
 	/**
