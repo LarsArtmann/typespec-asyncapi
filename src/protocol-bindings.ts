@@ -15,6 +15,7 @@ import type {
 	ReferenceObject,
 	SchemaObject,
 } from "./types/index.js"
+import { validatePositiveInteger, validateEnumValue, validateStringPattern, validateHttpStatusCode } from "./utils/protocol-validation.js";
 
 //TODO: This file is to big. Split it up!
 
@@ -409,44 +410,41 @@ export class ProtocolBindingFactory {
 
 		switch (bindingType) {
 			case "channel":
-				if (config.channel?.partitions && (typeof config.channel.partitions !== "number" || config.channel.partitions < 1)) {
-					errors.push({
-						protocol: "kafka",
-						bindingType: "channel",
-						property: "partitions",
-						message: "Kafka channel binding partitions must be a positive integer",
-						severity: "error",
-					})
-				}
-				if (config.channel?.replicas && (typeof config.channel.replicas !== "number" || config.channel.replicas < 1)) {
-					errors.push({
-						protocol: "kafka",
-						bindingType: "channel",
-						property: "replicas",
-						message: "Kafka channel binding replicas must be a positive integer",
-						severity: "error",
-					})
-				}
+				const partitionValidation = validatePositiveInteger(config.channel?.partitions, "partitions");
+				const replicaValidation = validatePositiveInteger(config.channel?.replicas, "replicas");
+				
+				errors.push(...partitionValidation.errors.map(err => ({
+					protocol: "kafka" as const,
+					bindingType: "channel" as const,
+					property: "partitions",
+					message: err,
+					severity: "error" as const,
+				})));
+				
+				errors.push(...replicaValidation.errors.map(err => ({
+					protocol: "kafka" as const,
+					bindingType: "channel" as const,
+					property: "replicas",
+					message: err,
+					severity: "error" as const,
+				})));
 				break
 			case "message":
-				if (config.message?.schemaIdLocation && !["header", "payload"].includes(config.message.schemaIdLocation)) {
-					errors.push({
-						protocol: "kafka",
-						bindingType: "message",
-						property: "schemaIdLocation",
-						message: "Kafka message binding schemaIdLocation must be 'header' or 'payload'",
-						severity: "error",
-					})
-				}
-				if (config.message?.schemaLookupStrategy && !["TopicIdStrategy", "RecordIdStrategy", "TopicRecordIdStrategy"].includes(config.message.schemaLookupStrategy)) {
-					errors.push({
-						protocol: "kafka",
-						bindingType: "message",
-						property: "schemaLookupStrategy",
-						message: "Kafka message binding schemaLookupStrategy must be valid Kafka strategy",
-						severity: "error",
-					})
-				}
+				errors.push(...validateEnumValue(config.message?.schemaIdLocation, "schemaIdLocation", ["header", "payload"] as const).map(err => ({
+					protocol: "kafka" as const,
+					bindingType: "message" as const,
+					property: "schemaIdLocation",
+					message: err,
+					severity: "error" as const,
+				})));
+				
+				errors.push(...validateEnumValue(config.message?.schemaLookupStrategy, "schemaLookupStrategy", ["TopicIdStrategy", "RecordIdStrategy", "TopicRecordIdStrategy"] as const).map(err => ({
+					protocol: "kafka" as const,
+					bindingType: "message" as const,
+					property: "schemaLookupStrategy",
+					message: err,
+					severity: "error" as const,
+				})));
 				break
 		}
 
@@ -475,50 +473,42 @@ export class ProtocolBindingFactory {
 
 	private static validateHttpBinding(bindingType: string, config: HttpBindingConfig): ProtocolBindingValidationError[] {
 		const errors: ProtocolBindingValidationError[] = []
+		const validMethods = ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS", "CONNECT", "TRACE"] as const;
 
 		switch (bindingType) {
 			case "operation":
-				if (config.operation?.type && !["request", "response"].includes(config.operation.type)) {
-					errors.push({
-						protocol: "http",
-						bindingType: "operation",
-						property: "type",
-						message: "HTTP operation binding type must be 'request' or 'response'",
-						severity: "error",
-					})
-				}
-				if (config.operation?.method) {
-					const validMethods = ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS", "CONNECT", "TRACE"]
-					if (!validMethods.includes(config.operation.method)) {
-						errors.push({
-							protocol: "http",
-							bindingType: "operation",
-							property: "method",
-							message: `HTTP operation binding method must be one of: ${validMethods.join(", ")}`,
-							severity: "error",
-						})
-					}
-				}
-				if (config.operation?.statusCode && (config.operation.statusCode < 100 || config.operation.statusCode > 599)) {
-					errors.push({
-						protocol: "http",
-						bindingType: "operation",
-						property: "statusCode",
-						message: "HTTP operation binding statusCode must be a valid HTTP status code (100-599)",
-						severity: "error",
-					})
-				}
+				errors.push(...validateEnumValue(config.operation?.type, "type", ["request", "response"] as const).map(err => ({
+					protocol: "http" as const,
+					bindingType: "operation" as const,
+					property: "type",
+					message: err,
+					severity: "error" as const,
+				})));
+				
+				errors.push(...validateEnumValue(config.operation?.method, "method", validMethods).map(err => ({
+					protocol: "http" as const,
+					bindingType: "operation" as const,
+					property: "method",
+					message: err,
+					severity: "error" as const,
+				})));
+				
+				errors.push(...validateHttpStatusCode(config.operation?.statusCode, "statusCode").map(err => ({
+					protocol: "http" as const,
+					bindingType: "operation" as const,
+					property: "statusCode",
+					message: err,
+					severity: "error" as const,
+				})));
 				break
 			case "message":
-				if (config.message?.statusCode && (config.message.statusCode < 100 || config.message.statusCode > 599)) {
-					errors.push({
-						protocol: "http",
-						bindingType: "message",
-						property: "statusCode",
-						message: "HTTP message binding statusCode must be a valid HTTP status code (100-599)",
-						severity: "error",
-					})
-				}
+				errors.push(...validateHttpStatusCode(config.message?.statusCode, "statusCode").map(err => ({
+					protocol: "http" as const,
+					bindingType: "message" as const,
+					property: "statusCode",
+					message: err,
+					severity: "error" as const,
+				})));
 				break
 		}
 

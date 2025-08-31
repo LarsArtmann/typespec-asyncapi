@@ -7,6 +7,7 @@ import type { AsyncAPIEmitterOptions } from "./options.js";
 import type { SchemaObject, ChannelObject, OperationObject, AsyncAPIDocument } from "./types/index.js";
 import { $lib } from "./lib.js";
 import { validateKafkaChannelBinding, createDefaultKafkaChannelBinding } from "./bindings/kafka.js";
+import { convertModelToSchema, getPropertyType } from "./utils/schema-conversion.js";
 
 // ChannelObject and OperationObject now imported from centralized types
 import { 
@@ -222,14 +223,7 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
     const program = this.emitter.getProgram();
     console.log(`🔄 Converting model: ${model.name} with ${model.properties.size} properties`);
     
-    const { properties, required } = this.processModelProperties(model, program);
-    
-    const schema: SchemaObject = {
-      type: "object",
-      description: getDoc(program, model) ?? `Model ${model.name}`,
-      properties,
-      required,
-    };
+    const schema = convertModelToSchema(model, program);
     
     console.log(`✅ Converted model ${model.name} to AsyncAPI schema`);
     return schema;
@@ -242,7 +236,7 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
     model.properties.forEach((prop, propName) => {
       console.log(`  - Property: ${propName} (${prop.type.kind}) required: ${String(!prop.optional)}`);
       
-      const typeInfo = this.getPropertyType(prop);
+      const typeInfo = getPropertyType(prop);
       properties[propName] = {
         ...typeInfo,
         description: getDoc(program, prop) ?? `Property ${propName}`,
@@ -257,18 +251,7 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
   }
 
   private getPropertyType(prop: ModelProperty): { type: "string" | "number" | "boolean" | "object" | "array" | "null" | "integer", format?: string } {
-    let propType: "string" | "number" | "boolean" | "object" | "array" | "null" | "integer" = "string"; // Default
-    let format: string | undefined;
-    
-    if (prop.type.kind === "String") propType = "string";
-    else if (prop.type.kind === "Number") propType = "number";
-    else if (prop.type.kind === "Boolean") propType = "boolean";
-    else if (prop.type.kind === "Model" && prop.type.name === "utcDateTime") {
-      propType = "string";
-      format = "date-time";
-    }
-    
-    return format ? { type: propType, format } : { type: propType };
+    return getPropertyType(prop);
   }
 
   /**

@@ -20,6 +20,8 @@ import {
 } from "./performance/metrics.js"
 import type {MemoryMonitorInitializationError} from "./errors/MemoryMonitorInitializationError.js"
 import {MEMORY_MONITOR_SERVICE, MEMORY_MONITOR_SERVICE_LIVE, withMemoryTracking} from "./performance/memory-monitor.js"
+import { validateAsyncAPIDocumentEffect } from "./utils/validation-helpers.js"
+import { sanitizeChannelId, generateSchemaPropertiesFromModel } from "./utils/schema-conversion.js"
 
 //TODO: move to src/errors/
 // TAGGED ERROR TYPES for Railway Programming
@@ -64,57 +66,7 @@ export class EmitterTimeoutError extends Error {
 	}
 }
 
-/**
- * Pure Effect.TS AsyncAPI validation with comprehensive error handling
- * Completely async-first, no Promise patterns
- */
-const validateAsyncAPIDocumentEffect = (spec: unknown): Effect.Effect<boolean, SpecValidationError> =>
-	Effect.gen(function* () {
-		if (!spec || typeof spec !== "object") {
-			return yield* Effect.fail(new SpecValidationError(
-				"Invalid AsyncAPI specification format",
-				spec,
-			))
-		}
-
-		const document = spec as Record<string, unknown>
-
-		if (!document["asyncapi"]) {
-			return yield* Effect.fail(new SpecValidationError(
-				"Missing required 'asyncapi' field",
-				spec,
-			))
-		}
-
-		if (document["asyncapi"] !== "3.0.0") {
-			return yield* Effect.fail(new SpecValidationError(
-				`Invalid AsyncAPI version: ${String(document["asyncapi"])}, expected 3.0.0`,
-				spec,
-			))
-		}
-
-		if (!document["info"]) {
-			return yield* Effect.fail(new SpecValidationError(
-				"Missing required 'info' field",
-				spec,
-			))
-		}
-
-		yield* Effect.logDebug("AsyncAPI document validation passed", {
-			asyncapiVersion: document["asyncapi"],
-			hasInfo: !!document["info"],
-			hasChannels: !!document["channels"],
-			hasOperations: !!document["operations"],
-		})
-
-		return true
-	}).pipe(
-		Effect.withSpan("asyncapi-validation", {
-			attributes: {
-				specSize: typeof spec === "object" ? JSON.stringify(spec).length : 0,
-			},
-		}),
-	)
+// Document validation moved to shared utilities
 
 // PURE EFFECT.TS EMITTER SERVICE
 export type EmitterService = {
@@ -166,7 +118,9 @@ const makeEmitterService = Effect.gen(function* () {
 		)
 
 	const validateSpec = (spec: unknown): Effect.Effect<boolean, SpecValidationError> =>
-		validateAsyncAPIDocumentEffect(spec)
+		validateAsyncAPIDocumentEffect(spec).pipe(
+			Effect.mapError((error) => new SpecValidationError(error.message, spec))
+		)
 
 	const writeOutput = (path: string, content: string): Effect.Effect<void, Error> =>
 		Effect.gen(function* () {
@@ -464,40 +418,7 @@ const generateComponents = (context: EmitContext<object>): Effect.Effect<Record<
 		)
 	)
 
-/**
- * Sanitize channel path to create valid AsyncAPI channel identifier
- */
-const sanitizeChannelId = (channelPath: string): string => {
-	return channelPath
-		.replace(/^\//, '') // Remove leading slash
-		.replace(/\//g, '_') // Replace slashes with underscores
-		.replace(/[^a-zA-Z0-9_-]/g, '_') // Replace invalid chars with underscores
-		.replace(/_+/g, '_') // Collapse multiple underscores
-		.replace(/^_|_$/g, '') // Remove leading/trailing underscores
-		.toLowerCase()
-}
-
-/**
- * Generate JSON Schema properties from TypeSpec model
- * This is a simplified implementation - in production would use TypeSpec's schema generation
- */
-const generateSchemaPropertiesFromModel = (_model: Model): Record<string, unknown> => {
-	const properties: Record<string, unknown> = {}
-	
-	// In a real implementation, we would iterate through model.properties
-	// For now, generate basic properties as example
-	properties['id'] = {
-		type: "string",
-		description: "Unique identifier"
-	}
-	properties['timestamp'] = {
-		type: "string",
-		format: "date-time",
-		description: "Timestamp"
-	}
-	
-	return properties
-}
+// Utility functions moved to shared modules - see utils/ directory
 
 /**
  * Pure Effect.TS TypeSpec emitter function with Railway Programming

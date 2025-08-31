@@ -15,6 +15,7 @@ import {MemoryThresholdExceededError} from "../errors/MemoryThresholdExceededErr
 import type {PerformanceMeasurement} from "./PerformanceMeasurement.js"
 import type {ThroughputResult} from "./ThroughputResult.js"
 import type {PerformanceMetricsService} from "./PerformanceMetricsService.js"
+import type {ByteAmount} from "@/performance/ByteAmount.js"
 
 
 //TODO: This file is getting too big and should be split into multiple smaller files.
@@ -157,7 +158,7 @@ const makePerformanceMetricsService = Effect.gen(function* () {
 			),
 		)
 
-	const recordMemoryUsage = (bytes: number): Effect.Effect<void, MetricsCollectionError> =>
+	const recordMemoryUsage = (bytes: ByteAmount): Effect.Effect<void, MetricsCollectionError> =>
 		Effect.gen(function* () {
 			yield* Metric.update(PERFORMANCE_METRICS.memoryPerOperation, bytes)
 

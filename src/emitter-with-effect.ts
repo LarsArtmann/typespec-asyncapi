@@ -30,6 +30,7 @@ import {
   MEMORY_MONITOR_SERVICE,
   MEMORY_MONITOR_SERVICE_LIVE
 } from "./performance/memory-monitor.js";
+import { convertModelToSchema } from "./utils/schema-conversion.js";
 
 // Using centralized types from types/index.ts
 // AsyncAPIDocument and SchemaObject (as AsyncAPISchema) are now imported
@@ -437,54 +438,10 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
   }
 
   /**
-   * Convert TypeSpec model to AsyncAPI schema
+   * Convert TypeSpec model to AsyncAPI schema using shared utilities
    */
   private convertModelToSchema(model: Model, program: Program): SchemaObject {
-    const properties: Record<string, SchemaObject> = {};
-    const required: string[] = [];
-
-	  //TODO: this functions is getting to big for my liking
-	  model.properties.forEach((prop, name) => {
-      const propSchema: SchemaObject = {
-        description: getDoc(program, prop) ?? `Property ${name}`
-      };
-      
-      // Determine type
-      if (prop.type.kind === "String") {
-        propSchema.type = "string";
-      } else if (prop.type.kind === "Number") {
-        propSchema.type = "number";
-      } else if (prop.type.kind === "Boolean") {
-        propSchema.type = "boolean";
-      } else if (prop.type.kind === "Model") {
-        if ((prop.type).name === "utcDateTime") {
-          propSchema.type = "string";
-          propSchema.format = "date-time";
-        } else {
-          propSchema.type = "object";
-        }
-      } else {
-        propSchema.type = "object";
-      }
-      
-      properties[name] = propSchema;
-      
-      if (!prop.optional) {
-        required.push(name);
-      }
-    });
-    
-    const schema: SchemaObject = {
-      type: "object",
-      description: getDoc(program, model) ?? `Schema ${model.name}`,
-      properties
-    };
-    
-    if (required.length > 0) {
-      schema.required = required;
-    }
-    
-    return schema;
+    return convertModelToSchema(model, program);
   }
 }
 

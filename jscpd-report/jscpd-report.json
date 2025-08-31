@@ -1,0 +1,997 @@
+{
+  "statistics": {
+    "detectionDate": "2025-08-31T01:53:28.182Z",
+    "formats": {
+      "typescript": {
+        "sources": {
+          "src/test/unit/type-definitions.test.ts": {
+            "lines": 627,
+            "tokens": 4678,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/test/integration/decorator-functionality.test.ts": {
+            "lines": 646,
+            "tokens": 2831,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/test/integration/asyncapi-generation.test.ts": {
+            "lines": 742,
+            "tokens": 2628,
+            "sources": 1,
+            "clones": 2,
+            "duplicatedLines": 6,
+            "duplicatedTokens": 100,
+            "percentage": 0.81,
+            "percentageTokens": 3.81,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/validation/index.ts": {
+            "lines": 26,
+            "tokens": 83,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/validation/asyncapi-validator.ts": {
+            "lines": 372,
+            "tokens": 2506,
+            "sources": 1,
+            "clones": 2,
+            "duplicatedLines": 14,
+            "duplicatedTokens": 152,
+            "percentage": 3.76,
+            "percentageTokens": 6.07,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/utils/validation-helpers.ts": {
+            "lines": 115,
+            "tokens": 862,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/utils/typespec-helpers.ts": {
+            "lines": 97,
+            "tokens": 708,
+            "sources": 1,
+            "clones": 1,
+            "duplicatedLines": 4,
+            "duplicatedTokens": 60,
+            "percentage": 4.12,
+            "percentageTokens": 8.47,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/utils/schema-conversion.ts": {
+            "lines": 109,
+            "tokens": 962,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/utils/protocol-validation.ts": {
+            "lines": 125,
+            "tokens": 942,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/utils/asyncapi-helpers.ts": {
+            "lines": 152,
+            "tokens": 1379,
+            "sources": 1,
+            "clones": 3,
+            "duplicatedLines": 31,
+            "duplicatedTokens": 259,
+            "percentage": 20.39,
+            "percentageTokens": 18.78,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/test/protocol-bindings.test.ts": {
+            "lines": 127,
+            "tokens": 1259,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/performance/metrics.ts": {
+            "lines": 421,
+            "tokens": 3954,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/performance/memory-monitor.ts": {
+            "lines": 585,
+            "tokens": 5434,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/performance/ThroughputResult.ts": {
+            "lines": 7,
+            "tokens": 47,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/performance/PerformanceMetricsService.ts": {
+            "lines": 39,
+            "tokens": 444,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/performance/PerformanceMeasurement.ts": {
+            "lines": 6,
+            "tokens": 42,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/performance/MemorySnapshot.ts": {
+            "lines": 10,
+            "tokens": 63,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/performance/MemoryMonitorService.ts": {
+            "lines": 42,
+            "tokens": 508,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/performance/MemoryBudget.ts": {
+            "lines": 8,
+            "tokens": 64,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/performance/MemoryAnalysis.ts": {
+            "lines": 9,
+            "tokens": 71,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/performance/MeasureOperationMemory.ts": {
+            "lines": 5,
+            "tokens": 39,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/performance/ForceGarbageCollection.ts": {
+            "lines": 5,
+            "tokens": 36,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/performance/ForceGCResult.ts": {
+            "lines": 6,
+            "tokens": 54,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/performance/CheckBudgetCompliance.ts": {
+            "lines": 5,
+            "tokens": 36,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/errors/ThroughputBelowTargetError.ts": {
+            "lines": 7,
+            "tokens": 78,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/errors/PerformanceError.ts": {
+            "lines": 12,
+            "tokens": 105,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/errors/MetricsInitializationError.ts": {
+            "lines": 5,
+            "tokens": 43,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/errors/MetricsCollectionError.ts": {
+            "lines": 5,
+            "tokens": 45,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/errors/MemoryThresholdExceededError.ts": {
+            "lines": 13,
+            "tokens": 113,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/errors/MemoryMonitorInitializationError.ts": {
+            "lines": 5,
+            "tokens": 45,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/errors/MemoryLeakDetectedError.ts": {
+            "lines": 14,
+            "tokens": 121,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/errors/GarbageCollectionNotAvailableError.ts": {
+            "lines": 10,
+            "tokens": 89,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/errors/GarbageCollectionFailureError.ts": {
+            "lines": 9,
+            "tokens": 98,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/decorators/subscribe.ts": {
+            "lines": 26,
+            "tokens": 278,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/decorators/server.ts": {
+            "lines": 152,
+            "tokens": 1597,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/decorators/security.ts": {
+            "lines": 346,
+            "tokens": 2432,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/decorators/publish.ts": {
+            "lines": 23,
+            "tokens": 236,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/decorators/protocol.ts": {
+            "lines": 239,
+            "tokens": 1740,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/decorators/message.ts": {
+            "lines": 102,
+            "tokens": 605,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/decorators/index.ts": {
+            "lines": 24,
+            "tokens": 122,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/decorators/channel.ts": {
+            "lines": 35,
+            "tokens": 330,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/bindings/kafka.ts": {
+            "lines": 213,
+            "tokens": 1217,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/bindings/index.ts": {
+            "lines": 51,
+            "tokens": 147,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/protocol-bindings.ts": {
+            "lines": 617,
+            "tokens": 4718,
+            "sources": 1,
+            "clones": 2,
+            "duplicatedLines": 10,
+            "duplicatedTokens": 156,
+            "percentage": 1.62,
+            "percentageTokens": 3.31,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/path-templates.ts": {
+            "lines": 279,
+            "tokens": 1585,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/path-templates.test.ts": {
+            "lines": 367,
+            "tokens": 3267,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/options.ts": {
+            "lines": 767,
+            "tokens": 5633,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/options.test.ts": {
+            "lines": 478,
+            "tokens": 3573,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/lib.ts": {
+            "lines": 156,
+            "tokens": 1097,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/integration-example.ts": {
+            "lines": 873,
+            "tokens": 7114,
+            "sources": 1,
+            "clones": 4,
+            "duplicatedLines": 24,
+            "duplicatedTokens": 356,
+            "percentage": 2.75,
+            "percentageTokens": 5,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/index.ts": {
+            "lines": 44,
+            "tokens": 234,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/emitter-with-effect.ts": {
+            "lines": 465,
+            "tokens": 4129,
+            "sources": 1,
+            "clones": 1,
+            "duplicatedLines": 9,
+            "duplicatedTokens": 71,
+            "percentage": 1.94,
+            "percentageTokens": 1.72,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/asyncapi-emitter.ts": {
+            "lines": 421,
+            "tokens": 3607,
+            "sources": 1,
+            "clones": 3,
+            "duplicatedLines": 26,
+            "duplicatedTokens": 248,
+            "percentage": 6.18,
+            "percentageTokens": 6.88,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          }
+        },
+        "total": {
+          "lines": 10044,
+          "tokens": 74028,
+          "sources": 53,
+          "clones": 9,
+          "duplicatedLines": 62,
+          "duplicatedTokens": 701,
+          "percentage": 0.62,
+          "percentageTokens": 0.95,
+          "newDuplicatedLines": 0,
+          "newClones": 0
+        }
+      }
+    },
+    "total": {
+      "lines": 10044,
+      "tokens": 74028,
+      "sources": 53,
+      "clones": 9,
+      "duplicatedLines": 62,
+      "duplicatedTokens": 701,
+      "percentage": 0.62,
+      "percentageTokens": 0.95,
+      "newDuplicatedLines": 0,
+      "newClones": 0
+    }
+  },
+  "duplicates": [
+    {
+      "format": "typescript",
+      "lines": 4,
+      "fragment": ");\n      console.log(`📊 Generated ${Object.keys(asyncapiDoc.components.schemas).length} schemas`);\n      console.log(`📊 Generated ${Object.keys(asyncapiDoc.operations).length} operations`);\n    }",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/test/integration/asyncapi-generation.test.ts",
+        "start": 738,
+        "end": 741,
+        "startLoc": {
+          "line": 738,
+          "column": 4,
+          "position": 2567
+        },
+        "endLoc": {
+          "line": 741,
+          "column": 2,
+          "position": 2617
+        }
+      },
+      "secondFile": {
+        "name": "src/test/integration/asyncapi-generation.test.ts",
+        "start": 354,
+        "end": 357,
+        "startLoc": {
+          "line": 354,
+          "column": 70,
+          "position": 777
+        },
+        "endLoc": {
+          "line": 357,
+          "column": 8,
+          "position": 827
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 8,
+      "fragment": ": string): Promise<{\n\tvalid: boolean;\n\terrors: ValidationError[];\n\twarnings: string[]\n}> {\n\tconst validator = new AsyncAPIValidator({strict: false})\n\tvalidator.initialize()\n\tconst result = await validator.validate",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/validation/asyncapi-validator.ts",
+        "start": 277,
+        "end": 284,
+        "startLoc": {
+          "line": 277,
+          "column": 8,
+          "position": 1832
+        },
+        "endLoc": {
+          "line": 284,
+          "column": 9,
+          "position": 1908
+        }
+      },
+      "secondFile": {
+        "name": "src/validation/asyncapi-validator.ts",
+        "start": 258,
+        "end": 265,
+        "startLoc": {
+          "line": 258,
+          "column": 9,
+          "position": 1701
+        },
+        "endLoc": {
+          "line": 265,
+          "column": 13,
+          "position": 1777
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 6,
+      "fragment": ": {\n\t\ttype?: \"request\" | \"response\";\n\t\tmethod?: \"GET\" | \"POST\" | \"PUT\" | \"PATCH\" | \"DELETE\" | \"HEAD\" | \"OPTIONS\" | \"CONNECT\" | \"TRACE\";\n\t\tquery?: SchemaObject | ReferenceObject;\n\t\tstatusCode?: number;\n\t})",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/protocol-bindings.ts",
+        "start": 267,
+        "end": 272,
+        "startLoc": {
+          "line": 267,
+          "column": 7,
+          "position": 1909
+        },
+        "endLoc": {
+          "line": 272,
+          "column": 2,
+          "position": 1987
+        }
+      },
+      "secondFile": {
+        "name": "src/protocol-bindings.ts",
+        "start": 129,
+        "end": 134,
+        "startLoc": {
+          "line": 129,
+          "column": 2,
+          "position": 836
+        },
+        "endLoc": {
+          "line": 134,
+          "column": 2,
+          "position": 914
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 7,
+      "fragment": "= (context: EmitContext<object>): Effect.Effect<Record<string, unknown>, SpecGenerationError> =>\n\tEffect.gen(function* () {\n\t\tif (!context.program) {\n\t\t\treturn yield* Effect.fail(new SpecGenerationError(\"TypeSpec program context missing\", {} as AsyncAPIEmitterOptions))\n\t\t}\n\n\t\tconst operations",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/integration-example.ts",
+        "start": 244,
+        "end": 250,
+        "startLoc": {
+          "line": 244,
+          "column": 2,
+          "position": 2064
+        },
+        "endLoc": {
+          "line": 250,
+          "column": 11,
+          "position": 2153
+        }
+      },
+      "secondFile": {
+        "name": "src/integration-example.ts",
+        "start": 183,
+        "end": 189,
+        "startLoc": {
+          "line": 183,
+          "column": 2,
+          "position": 1518
+        },
+        "endLoc": {
+          "line": 189,
+          "column": 9,
+          "position": 1607
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 7,
+      "fragment": "= (context: EmitContext<object>): Effect.Effect<Record<string, unknown>, SpecGenerationError> =>\n\tEffect.gen(function* () {\n\t\tif (!context.program) {\n\t\t\treturn yield* Effect.fail(new SpecGenerationError(\"TypeSpec program context missing\", {} as AsyncAPIEmitterOptions))\n\t\t}\n\n\t\tconst components",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/integration-example.ts",
+        "start": 300,
+        "end": 306,
+        "startLoc": {
+          "line": 300,
+          "column": 2,
+          "position": 2567
+        },
+        "endLoc": {
+          "line": 306,
+          "column": 11,
+          "position": 2656
+        }
+      },
+      "secondFile": {
+        "name": "src/integration-example.ts",
+        "start": 183,
+        "end": 189,
+        "startLoc": {
+          "line": 183,
+          "column": 2,
+          "position": 1518
+        },
+        "endLoc": {
+          "line": 189,
+          "column": 9,
+          "position": 1607
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 10,
+      "fragment": ",\n            description: getDoc(program, op) ?? `Channel for ${op.name}`,\n            messages: {\n              [`${op.name}Message`]: {\n                $ref: `#/components/messages/${op.name}Message`\n              }\n            }\n          };\n          \n          // Add operation (ensure operations object exists)",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/emitter-with-effect.ts",
+        "start": 238,
+        "end": 247,
+        "startLoc": {
+          "line": 238,
+          "column": 12,
+          "position": 2008
+        },
+        "endLoc": {
+          "line": 247,
+          "column": 51,
+          "position": 2079
+        }
+      },
+      "secondFile": {
+        "name": "src/utils/asyncapi-helpers.ts",
+        "start": 42,
+        "end": 51,
+        "startLoc": {
+          "line": 42,
+          "column": 2,
+          "position": 341
+        },
+        "endLoc": {
+          "line": 51,
+          "column": 7,
+          "position": 411
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 5,
+      "fragment": "logOperationDetails(operation: Operation, program: Program): void {\n    console.log(`  - Return type: ${operation.returnType.kind}`);\n    console.log(`  - Parameters: ${operation.parameters.properties.size}`);\n    \n    const doc",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/asyncapi-emitter.ts",
+        "start": 123,
+        "end": 127,
+        "startLoc": {
+          "line": 123,
+          "column": 2,
+          "position": 1016
+        },
+        "endLoc": {
+          "line": 127,
+          "column": 4,
+          "position": 1076
+        }
+      },
+      "secondFile": {
+        "name": "src/utils/typespec-helpers.ts",
+        "start": 80,
+        "end": 84,
+        "startLoc": {
+          "line": 80,
+          "column": 2,
+          "position": 517
+        },
+        "endLoc": {
+          "line": 84,
+          "column": 14,
+          "position": 577
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 13,
+      "fragment": ";\n    \n    const definition: ChannelObject = {\n      address: channelPath ?? `/${op.name.toLowerCase()}`,\n      description: getDoc(program, op) ?? `Channel for ${op.name}`,\n      messages: {\n        [`${op.name}Message`]: {\n          $ref: `#/components/messages/${op.name}Message`\n        }\n      }\n    };\n\n    // Add Kafka bindings if channel path looks like a Kafka topic",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/asyncapi-emitter.ts",
+        "start": 158,
+        "end": 170,
+        "startLoc": {
+          "line": 158,
+          "column": 10,
+          "position": 1440
+        },
+        "endLoc": {
+          "line": 170,
+          "column": 63,
+          "position": 1546
+        }
+      },
+      "secondFile": {
+        "name": "src/utils/asyncapi-helpers.ts",
+        "start": 39,
+        "end": 51,
+        "startLoc": {
+          "line": 39,
+          "column": 2,
+          "position": 305
+        },
+        "endLoc": {
+          "line": 51,
+          "column": 7,
+          "position": 411
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 11,
+      "fragment": ");\n    \n    return {\n      action,\n      channel: { $ref: `#/channels/${channelName}` },\n      summary: getDoc(program, op) ?? `Operation ${op.name}`,\n      description: `Generated from TypeSpec operation with ${op.parameters.properties.size} parameters`,\n    };\n  }\n\n  private",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/asyncapi-emitter.ts",
+        "start": 212,
+        "end": 222,
+        "startLoc": {
+          "line": 212,
+          "column": 2,
+          "position": 1968
+        },
+        "endLoc": {
+          "line": 222,
+          "column": 8,
+          "position": 2050
+        }
+      },
+      "secondFile": {
+        "name": "src/utils/asyncapi-helpers.ts",
+        "start": 60,
+        "end": 73,
+        "startLoc": {
+          "line": 60,
+          "column": 14,
+          "position": 486
+        },
+        "endLoc": {
+          "line": 73,
+          "column": 4,
+          "position": 566
+        }
+      }
+    }
+  ]
+}

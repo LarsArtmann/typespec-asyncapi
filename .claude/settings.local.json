@@ -70,7 +70,8 @@
       "Bash(mkdir:*)",
       "Bash(npm publish:*)",
       "Bash(/dev/null)",
-      "WebFetch(domain:devblogs.microsoft.com)"
+      "WebFetch(domain:devblogs.microsoft.com)",
+      "Bash(jscpd:*)"
     ],
     "deny": [],
     "ask": []
