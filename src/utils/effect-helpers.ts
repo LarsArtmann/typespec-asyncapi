@@ -116,4 +116,14 @@ export const effectErrorHandling = {
 			return yield* Effect.fail(error)
 		})
 	},
+
+	/**
+	 * Log throughput measurement results in a consistent format
+	 */
+	logThroughputResults: (throughputResult: {operationsPerSecond?: number}, processType: string, count: number) => {
+		return Effect.gen(function* () {
+			yield* Effect.log(`📊 ${processType} completed: ${throughputResult.operationsPerSecond?.toFixed(0) ?? 0} ops/sec`)
+			yield* Effect.log(`📊 Processed ${count} items successfully`)
+		})
+	},
 }

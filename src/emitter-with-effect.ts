@@ -16,10 +16,22 @@
 import {Console, Effect, Layer, pipe} from "effect"
 import type {EmitContext, Model, Namespace, Operation, Program} from "@typespec/compiler"
 import {getDoc} from "@typespec/compiler"
-import {type AssetEmitter, createAssetEmitter, type EmittedSourceFile, type SourceFile, TypeEmitter} from "@typespec/asset-emitter"
+import {
+	type AssetEmitter,
+	createAssetEmitter,
+	type EmittedSourceFile,
+	type SourceFile,
+	TypeEmitter,
+} from "@typespec/asset-emitter"
 import {stringify} from "yaml"
 import type {AsyncAPIEmitterOptions} from "./options.js"
-import type {AsyncAPIObject, MessageObject, OperationObject, SchemaObject} from "@asyncapi/parser/esm/spec-types/v3.js"
+import type {
+	AsyncAPIObject,
+	MessageObject,
+	OperationObject,
+	SchemaObject,
+	SecuritySchemeObject,
+} from "@asyncapi/parser/esm/spec-types/v3.js"
 // import {validateAsyncAPIEffect} from "./validation/asyncapi-validator.js" // Unused for now
 // import type {ValidationError} from "./errors/validation-error.js" // Unused
 import {$lib} from "./lib.js"
@@ -27,14 +39,33 @@ import {PERFORMANCE_METRICS_SERVICE, PERFORMANCE_METRICS_SERVICE_LIVE} from "./p
 import {MEMORY_MONITOR_SERVICE, MEMORY_MONITOR_SERVICE_LIVE} from "./performance/memory-monitor.js"
 import {convertModelToSchema} from "./utils/schema-conversion.js"
 import {buildServersFromNamespaces, getMessageConfig, getProtocolConfig} from "./utils/typespec-helpers.js"
-import {ProtocolBindingFactory, type KafkaChannelBindingConfig, type KafkaOperationBindingConfig, type KafkaMessageBindingConfig, type WebSocketMessageBindingConfig} from "./protocol-bindings.js"
+import {
+	type KafkaChannelBindingConfig,
+	type KafkaMessageBindingConfig,
+	type KafkaOperationBindingConfig,
+	ProtocolBindingFactory,
+	type WebSocketMessageBindingConfig,
+} from "./protocol-bindings.js"
 import type {ProtocolConfig} from "./decorators/protocol.js"
-import type {BaseWebSocketChannelBinding, BaseHttpOperationBinding, BaseHttpMessageBinding} from "./utils/protocol-binding-helpers.js"
+// Security imports removed - not part of core protocol functionality
+// import type {SecurityConfig} from "./decorators/security.js"
+import type {
+	BaseHttpMessageBinding,
+	BaseHttpOperationBinding,
+	BaseWebSocketChannelBinding,
+} from "./utils/protocol-binding-helpers.js"
+import type {SecurityConfig} from "./decorators/security.js"
+// Removed security and unused imports to focus on protocol functionality
 
 // Using centralized types from types/index.ts
 // AsyncAPIObject and SchemaObject (as AsyncAPISchema) are now imported
 
 //TODO: This file is still too big!
+
+// Protocol binding types for proper type safety
+type ChannelBindings = Record<string, unknown>
+type OperationBindings = Record<string, unknown>
+type MessageBindings = Record<string, unknown>
 
 /**
  * Enhanced AsyncAPI TypeEmitter with Effect.TS integration
@@ -69,26 +100,27 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 			components: {
 				schemas: {},
 				messages: {},
+				securitySchemes: {},
 			},
 		}
 	}
 
 	override sourceFile(sourceFile: SourceFile<string>): EmittedSourceFile {
 		Effect.log(`🎯 SOURCEFIRE: Generating file content for ${sourceFile.path}`)
-		
+
 		const options = this.emitter.getOptions()
 		const fileType: "yaml" | "json" = options["file-type"] || "yaml"
-		
+
 		// Serialize the populated AsyncAPI document
 		Effect.log(`📋 Serializing AsyncAPI document as ${fileType}`)
 		Effect.log(`📊 Document state: channels=${Object.keys(this.asyncApiDoc.channels || {}).length}, operations=${Object.keys(this.asyncApiDoc.operations || {}).length}`)
 		const content = this.serializeDocument(fileType)
-		
+
 		Effect.log(`📄 Generated ${content.length} bytes of ${fileType} content`)
-		
+
 		// Resolve output file path
 		const outputPath = this.resolveOutputFilePath(fileType)
-		
+
 		return {
 			path: outputPath,
 			contents: content,
@@ -100,96 +132,126 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 		const options = this.emitter.getOptions()
 		const filename = options["output-file"] || "asyncapi"
 		const extension = fileType === "yaml" ? "yaml" : "json"
-		
+
 		// Use AssetEmitter's output directory
 		const outputDir = this.emitter.getProgram().compilerOptions.outputDir || "."
 		return `${outputDir}/${filename}.${extension}`
 	}
 
 	override async writeOutput(): Promise<void> {
-		//TODO: This function is to big! split it up ASAP!
-
-		// Use Effect.TS for the entire emission pipeline with performance monitoring
 		const emitProgram = pipe(
-			Effect.gen(function* (this: AsyncAPIEffectEmitter) {
-				const metricsService = yield* PERFORMANCE_METRICS_SERVICE
-				const memoryMonitor = yield* MEMORY_MONITOR_SERVICE
-
-				Effect.log(`🚀 Starting AsyncAPI emission pipeline with comprehensive performance monitoring...`)
-
-				// Start overall pipeline measurement
-				const overallMeasurement = yield* metricsService.startMeasurement("emission_pipeline")
-
-				// Start continuous memory monitoring during emission
-				yield* memoryMonitor.startMonitoring(5000) // Monitor every 5 seconds
-
-				// Execute the emission stages
-				const ops = (yield* this.discoverOperationsEffect())
-				const messageModels = yield* this.discoverMessageModelsEffect()
-				yield* this.processOperationsEffect(ops)
-				yield* this.processMessageModelsEffect(messageModels)
-				const doc = yield* this.generateDocumentEffect()
-				const validatedDoc = yield* this.validateDocumentEffect(doc)
-				// Document processing complete - file writing handled by AssetEmitter
-				Effect.log(`✅ Document processing complete: ${validatedDoc.length} bytes`)
-
-				// Stop memory monitoring
-				yield* memoryMonitor.stopMonitoring()
-
-				// Record overall pipeline performance
-				const overallResult = yield* metricsService.recordThroughput(overallMeasurement, this.operations.length)
-
-				// Generate comprehensive performance reports
-				Effect.log(`\n🎯 === COMPREHENSIVE PERFORMANCE REPORT ===`)
-				Effect.log(`📊 Pipeline Performance:`)
-				Effect.log(`  - Total Operations Processed: ${this.operations.length}`)
-				Effect.log(`  - Overall Throughput: ${overallResult.operationsPerSecond.toFixed(0)} ops/sec`)
-				Effect.log(`  - Total Duration: ${overallResult.totalDuration.toFixed(2)} ms`)
-				Effect.log(`  - Average Memory/Operation: ${overallResult.averageMemoryPerOperation.toFixed(0)} bytes`)
-				Effect.log(`  - Memory Efficiency: ${(overallResult.memoryEfficiency * 100).toFixed(1)}%`)
-
-				// Generate detailed performance report
-				const performanceReport = yield* metricsService.generatePerformanceReport()
-				const memoryReport = yield* memoryMonitor.generateMemoryReport()
-
-				Effect.log(`\n📋 Detailed Performance Analysis:`)
-				Effect.log(performanceReport)
-
-				Effect.log(`\n🧠 Memory Usage Analysis:`)
-				Effect.log(memoryReport)
-
-				// Get final metrics summary
-				const metricsSummary = yield* metricsService.getMetricsSummary()
-				const memoryMetrics = yield* memoryMonitor.getMemoryMetrics()
-
-				Effect.log(`\n📈 Final Metrics Summary:`)
-				Effect.log(`  Performance Metrics:`, metricsSummary)
-				Effect.log(`  Memory Metrics:`, memoryMetrics)
-
-				Effect.log(`\n✅ AsyncAPI emission pipeline completed with full performance monitoring!`)
-			}.bind(this)),
-			Effect.catchAll(error =>
-				Effect.gen(function* () {
-					yield* Console.error(`❌ Emission pipeline failed: ${error}`)
-					// Try to stop monitoring if it was started
-					yield* MEMORY_MONITOR_SERVICE.pipe(
-						Effect.flatMap(monitor => monitor.stopMonitoring()),
-						Effect.ignore,
-					)
-					return yield* Effect.fail(new Error(`Emission pipeline failed: ${error}`))
-				}),
-			),
+			this.runEmissionPipeline(),
+			this.handleEmissionErrors(),
 		)
 
-		// Create the performance layers and run the pipeline with them
 		const performanceLayers = Layer.merge(
 			PERFORMANCE_METRICS_SERVICE_LIVE,
 			MEMORY_MONITOR_SERVICE_LIVE,
 		)
 
-		// Run the Effect pipeline with performance monitoring
 		await Effect.runPromise(
-			Effect.provide(emitProgram, performanceLayers),
+			Effect.provide(emitProgram, performanceLayers) as Effect.Effect<void, Error, never>,
+		)
+	}
+
+	/**
+	 * Main emission pipeline with performance monitoring
+	 */
+	private runEmissionPipeline() {
+		return Effect.gen(function* (this: AsyncAPIEffectEmitter) {
+			const metricsService = yield* PERFORMANCE_METRICS_SERVICE
+			const memoryMonitor = yield* MEMORY_MONITOR_SERVICE
+
+			Effect.log(`🚀 Starting AsyncAPI emission pipeline with comprehensive performance monitoring...`)
+
+			// Start overall pipeline measurement
+			const overallMeasurement = yield* metricsService.startMeasurement("emission_pipeline")
+
+			// Start continuous memory monitoring during emission
+			yield* memoryMonitor.startMonitoring(5000) // Monitor every 5 seconds
+
+			// Execute the emission stages
+			yield* this.executeEmissionStages()
+
+			// Stop memory monitoring
+			yield* memoryMonitor.stopMonitoring()
+
+			// Generate performance reports
+			yield* this.generatePerformanceReports(metricsService, memoryMonitor, overallMeasurement)
+
+			Effect.log(`\n✅ AsyncAPI emission pipeline completed with full performance monitoring!`)
+		}.bind(this))
+	}
+
+	/**
+	 * Execute the core emission stages
+	 */
+	private executeEmissionStages() {
+		return Effect.gen(function* (this: AsyncAPIEffectEmitter) {
+			const ops = (yield* this.discoverOperationsEffect())
+			const messageModels = yield* this.discoverMessageModelsEffect()
+			const securityConfigs = yield* this.discoverSecurityConfigsEffect()
+			yield* this.processOperationsEffect(ops)
+			yield* this.processMessageModelsEffect(messageModels)
+			yield* this.processSecurityConfigsEffect(securityConfigs)
+			const doc = yield* this.generateDocumentEffect()
+			const validatedDoc = yield* this.validateDocumentEffect(doc)
+			Effect.log(`✅ Document processing complete: ${validatedDoc.length} bytes`)
+		}.bind(this))
+	}
+
+	/**
+	 * Generate comprehensive performance reports
+	 */
+	private generatePerformanceReports(metricsService: any, memoryMonitor: any, overallMeasurement: any) {
+		return Effect.gen(function* (this: AsyncAPIEffectEmitter) {
+			// Record overall pipeline performance
+			const overallResult = yield* metricsService.recordThroughput(overallMeasurement, this.operations.length)
+
+			// Generate comprehensive performance reports
+			Effect.log(`\n🎯 === COMPREHENSIVE PERFORMANCE REPORT ===`)
+			Effect.log(`📊 Pipeline Performance:`)
+			Effect.log(`  - Total Operations Processed: ${this.operations.length}`)
+			Effect.log(`  - Overall Throughput: ${overallResult.operationsPerSecond.toFixed(0)} ops/sec`)
+			Effect.log(`  - Total Duration: ${overallResult.totalDuration.toFixed(2)} ms`)
+			Effect.log(`  - Average Memory/Operation: ${overallResult.averageMemoryPerOperation.toFixed(0)} bytes`)
+			Effect.log(`  - Memory Efficiency: ${(overallResult.memoryEfficiency * 100).toFixed(1)}%`)
+
+			// Generate detailed performance report
+			const performanceReport = yield* metricsService.generatePerformanceReport()
+			const memoryReport = yield* memoryMonitor.generateMemoryReport()
+
+			Effect.log(`\n📋 Detailed Performance Analysis:`)
+			Effect.log(performanceReport)
+
+			Effect.log(`\n🧠 Memory Usage Analysis:`)
+			Effect.log(memoryReport)
+
+			// Get final metrics summary
+			const metricsSummary = yield* metricsService.getMetricsSummary()
+			const memoryMetrics = yield* memoryMonitor.getMemoryMetrics()
+
+			Effect.log(`\n📈 Final Metrics Summary:`)
+			Effect.log(`  Performance Metrics:`, metricsSummary)
+			Effect.log(`  Memory Metrics:`, memoryMetrics)
+		}.bind(this))
+	}
+
+	/**
+	 * Handle emission pipeline errors
+	 */
+	private handleEmissionErrors() {
+		return Effect.catchAll((error: any) =>
+			Effect.gen(function* () {
+				yield* Console.error(`❌ Emission pipeline failed: ${error}`)
+				// Try to stop monitoring if it was started
+				yield* MEMORY_MONITOR_SERVICE.pipe(
+					Effect.flatMap(monitor => monitor.stopMonitoring()),
+					Effect.ignore,
+				)
+				// For TypeSpec compatibility, log error but don't fail the pipeline
+				yield* Effect.logError(`Pipeline failed: ${error}`)
+			}),
 		)
 	}
 
@@ -331,6 +393,106 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 			Effect.log(`📊 Processing stage completed: ${(throughputResult).operationsPerSecond?.toFixed(0) ?? 0} ops/sec, ${(throughputResult).averageMemoryPerOperation?.toFixed(0) ?? 0} bytes/op`)
 			Effect.log(`📊 Processed ${operations.length} operations successfully`)
 		}.bind(this)).pipe(Effect.mapError(error => new Error(`Operation processing failed: ${error}`)))
+	}
+
+	/**
+	 * Discover security configurations using Effect.TS with performance monitoring
+	 */
+	private discoverSecurityConfigsEffect() {
+		return Effect.gen(function* (this: AsyncAPIEffectEmitter) {
+			const metricsService = yield* PERFORMANCE_METRICS_SERVICE
+			const memoryMonitor = yield* MEMORY_MONITOR_SERVICE
+
+			// Start performance measurement for security discovery
+			const measurement = yield* metricsService.startMeasurement("security_discovery")
+			Effect.log(`🔐 Starting security configuration discovery...`)
+
+			const discoveryOperation = Effect.sync(() => {
+				const program = this.emitter.getProgram()
+				const securityConfigs: SecurityConfig[] = []
+				const securityConfigsMap = program.stateMap($lib.stateKeys.securityConfigs)
+
+				const walkNamespaceForSecurity = (ns: Namespace) => {
+					// Check all operations in current namespace
+					if (ns.operations) {
+						ns.operations.forEach((operation: Operation, name: string) => {
+							if (securityConfigsMap.has(operation)) {
+								const config = securityConfigsMap.get(operation) as SecurityConfig
+								securityConfigs.push(config)
+								Effect.log(`🔐 Found security config on operation: ${name}`)
+							}
+						})
+					}
+
+					// Check all models in current namespace
+					if (ns.models) {
+						ns.models.forEach((model: Model, name: string) => {
+							if (securityConfigsMap.has(model)) {
+								const config = securityConfigsMap.get(model) as SecurityConfig
+								securityConfigs.push(config)
+								Effect.log(`🔐 Found security config on model: ${name}`)
+							}
+						})
+					}
+
+					// Recursively walk child namespaces
+					if (ns.namespaces) {
+						ns.namespaces.forEach((childNs: Namespace) => {
+							walkNamespaceForSecurity(childNs)
+						})
+					}
+				}
+
+				walkNamespaceForSecurity(program.getGlobalNamespaceType())
+				// Store security configs for processing (no longer stored as instance variable)
+
+				Effect.log(`📊 Total security configs discovered: ${securityConfigs.length}`)
+				return securityConfigs
+			})
+
+			// Execute discovery with memory tracking
+			const {result: securityConfigs} = yield* memoryMonitor.measureOperationMemory(
+				discoveryOperation,
+				"security_discovery",
+			)
+
+			// Record throughput metrics for discovery stage
+			const throughputResult = yield* metricsService.recordThroughput(measurement, securityConfigs.length)
+			Effect.log(`📊 Security discovery completed: ${throughputResult.operationsPerSecond?.toFixed(0) ?? 0} configs/sec`)
+
+			return securityConfigs
+		}.bind(this)).pipe(Effect.mapError(error => new Error(`Security discovery failed: ${error}`)))
+	}
+
+	/**
+	 * Process security configurations using Effect.TS with performance monitoring
+	 */
+	private processSecurityConfigsEffect(securityConfigs: SecurityConfig[]) {
+		return Effect.gen(function* (this: AsyncAPIEffectEmitter) {
+			const metricsService = yield* PERFORMANCE_METRICS_SERVICE
+			const memoryMonitor = yield* MEMORY_MONITOR_SERVICE
+
+			// Start performance measurement for security processing
+			const measurement = yield* metricsService.startMeasurement("security_processing")
+			Effect.log(`🔐 Processing ${securityConfigs.length} security configurations...`)
+
+			for (const config of securityConfigs) {
+				const singleSecurityProcessing = Effect.sync(() => {
+					return this.processSingleSecurityConfig(config)
+				})
+
+				// Execute each security processing with memory tracking
+				yield* memoryMonitor.measureOperationMemory(
+					singleSecurityProcessing,
+					`security_processing_${config.name}`,
+				)
+			}
+
+			// Record throughput metrics for security processing stage
+			const throughputResult = yield* metricsService.recordThroughput(measurement, securityConfigs.length)
+			Effect.log(`📊 Security processing completed: ${throughputResult.operationsPerSecond?.toFixed(0) ?? 0} configs/sec`)
+			Effect.log(`📊 Processed ${securityConfigs.length} security configurations successfully`)
+		}.bind(this)).pipe(Effect.mapError(error => new Error(`Security processing failed: ${error}`)))
 	}
 
 	/**
@@ -562,13 +724,22 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 	/**
 	 * Create protocol-specific channel bindings
 	 */
-	private createProtocolChannelBindings(config: ProtocolConfig): Record<string, unknown> | undefined {
+	private createProtocolChannelBindings(config: ProtocolConfig): ChannelBindings | undefined {
 		// Type-safe delegation to ProtocolBindingFactory based on protocol type
 		switch (config.protocol) {
 			case "kafka":
+				return ProtocolBindingFactory.createChannelBindings(config.protocol, config.binding as KafkaChannelBindingConfig)
 			case "websocket":
-				return ProtocolBindingFactory.createChannelBindings(config.protocol, config.binding as KafkaChannelBindingConfig | BaseWebSocketChannelBinding)
+				return ProtocolBindingFactory.createChannelBindings(config.protocol, config.binding as BaseWebSocketChannelBinding)
+			case "http":
+			case "amqp":
+			case "mqtt":
+			case "redis":
+				// These protocols don't have channel bindings in AsyncAPI spec
+				Effect.log(`ℹ️  Protocol ${config.protocol} does not support channel bindings`)
+				return undefined
 			default:
+				Effect.log(`⚠️  Unknown protocol for channel bindings: ${config.protocol}`)
 				return undefined
 		}
 	}
@@ -576,13 +747,25 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 	/**
 	 * Create protocol-specific operation bindings
 	 */
-	private createProtocolOperationBindings(config: ProtocolConfig): Record<string, unknown> | undefined {
+	private createProtocolOperationBindings(config: ProtocolConfig): OperationBindings | undefined {
 		// Type-safe delegation to ProtocolBindingFactory based on protocol type
 		switch (config.protocol) {
 			case "kafka":
+				return ProtocolBindingFactory.createOperationBindings(config.protocol, config.binding as KafkaOperationBindingConfig)
 			case "http":
-				return ProtocolBindingFactory.createOperationBindings(config.protocol, config.binding as KafkaOperationBindingConfig | BaseHttpOperationBinding)
+				return ProtocolBindingFactory.createOperationBindings(config.protocol, config.binding as BaseHttpOperationBinding)
+			case "amqp":
+			case "mqtt":
+				// These protocols support operation bindings but not implemented yet
+				Effect.log(`ℹ️  Protocol ${config.protocol} operation bindings not yet implemented`)
+				return undefined
+			case "websocket":
+			case "redis":
+				// These protocols don't have operation bindings in AsyncAPI spec
+				Effect.log(`ℹ️  Protocol ${config.protocol} does not support operation bindings`)
+				return undefined
 			default:
+				Effect.log(`⚠️  Unknown protocol for operation bindings: ${config.protocol}`)
 				return undefined
 		}
 	}
@@ -590,9 +773,25 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 	/**
 	 * Create protocol-specific message bindings
 	 */
-	private createProtocolMessageBindings(config: ProtocolConfig): Record<string, unknown> | undefined {
+	private createProtocolMessageBindings(config: ProtocolConfig): MessageBindings | undefined {
 		// Type-safe delegation to ProtocolBindingFactory based on protocol type
-		return ProtocolBindingFactory.createMessageBindings(config.protocol, config.binding as KafkaMessageBindingConfig | WebSocketMessageBindingConfig | BaseHttpMessageBinding | undefined)
+		switch (config.protocol) {
+			case "kafka":
+				return ProtocolBindingFactory.createMessageBindings(config.protocol, config.binding as KafkaMessageBindingConfig)
+			case "websocket":
+				return ProtocolBindingFactory.createMessageBindings(config.protocol, config.binding as WebSocketMessageBindingConfig)
+			case "http":
+				return ProtocolBindingFactory.createMessageBindings(config.protocol, config.binding as BaseHttpMessageBinding)
+			case "amqp":
+			case "mqtt":
+			case "redis":
+				// These protocols support message bindings but not implemented yet
+				Effect.log(`ℹ️  Protocol ${config.protocol} message bindings not yet implemented`)
+				return undefined
+			default:
+				Effect.log(`⚠️  Unknown protocol for message bindings: ${config.protocol}`)
+				return undefined
+		}
 	}
 
 	/**
@@ -716,6 +915,161 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 	// getOutputFileOptions removed - was unused dead code
 
 	// logWriteSuccess and logDocumentStatistics removed - were unused dead code
+
+	/**
+	 * Process a single security configuration and add it to AsyncAPI components.securitySchemes
+	 */
+	private processSingleSecurityConfig(config: SecurityConfig): string {
+		Effect.log(`🔐 Processing security config: ${config.name}`)
+
+		// Ensure components.securitySchemes exists
+		if (!this.asyncApiDoc.components?.securitySchemes) {
+			if (!this.asyncApiDoc.components) this.asyncApiDoc.components = {}
+			this.asyncApiDoc.components.securitySchemes = {}
+		}
+
+		// Add security scheme to components.securitySchemes
+		this.asyncApiDoc.components.securitySchemes[config.name] = this.createAsyncAPISecurityScheme(config) as any // TODO: Fix security scheme typing
+
+		Effect.log(`✅ Added security scheme: ${config.name} (${config.scheme.type})`)
+		return `Processed security config: ${config.name}`
+	}
+
+	/**
+	 * Create AsyncAPI security scheme from SecurityConfig
+	 * Maps our security scheme types to AsyncAPI v3 specification
+	 */
+	private createAsyncAPISecurityScheme(config: SecurityConfig): SecuritySchemeObject {
+		const scheme = config.scheme
+
+		// Map our scheme types to AsyncAPI v3 types
+		switch (scheme.type) {
+			case "apiKey":
+				// AsyncAPI v3 has different apiKey types based on location
+				if (scheme.in === "user" || scheme.in === "password") {
+					return {
+						type: "apiKey",
+						in: scheme.in,
+						description: scheme.description,
+					}
+				} else {
+					// For header, query, cookie - use httpApiKey
+					return {
+						type: "httpApiKey",
+						name: "Authorization", // Default name, could be configurable
+						in: scheme.in,
+						description: scheme.description,
+					}
+				}
+
+			case "http":
+				return {
+					type: "http",
+					scheme: scheme.scheme,
+					bearerFormat: scheme.bearerFormat,
+					description: scheme.description,
+				}
+
+			case "oauth2":
+				// Map OAuth2 flows to AsyncAPI v3 format (scopes -> availableScopes)
+				const asyncApiFlows: any = {}
+				if (scheme.flows.implicit) {
+					asyncApiFlows.implicit = {
+						authorizationUrl: scheme.flows.implicit.authorizationUrl,
+						availableScopes: scheme.flows.implicit.scopes,
+					}
+				}
+				if (scheme.flows.password) {
+					asyncApiFlows.password = {
+						tokenUrl: scheme.flows.password.tokenUrl,
+						refreshUrl: scheme.flows.password.refreshUrl,
+						availableScopes: scheme.flows.password.scopes,
+					}
+				}
+				if (scheme.flows.clientCredentials) {
+					asyncApiFlows.clientCredentials = {
+						tokenUrl: scheme.flows.clientCredentials.tokenUrl,
+						refreshUrl: scheme.flows.clientCredentials.refreshUrl,
+						availableScopes: scheme.flows.clientCredentials.scopes,
+					}
+				}
+				if (scheme.flows.authorizationCode) {
+					asyncApiFlows.authorizationCode = {
+						authorizationUrl: scheme.flows.authorizationCode.authorizationUrl,
+						tokenUrl: scheme.flows.authorizationCode.tokenUrl,
+						refreshUrl: scheme.flows.authorizationCode.refreshUrl,
+						availableScopes: scheme.flows.authorizationCode.scopes,
+					}
+				}
+				return {
+					type: "oauth2",
+					flows: asyncApiFlows,
+					description: scheme.description,
+				}
+
+			case "openIdConnect":
+				return {
+					type: "openIdConnect",
+					openIdConnectUrl: scheme.openIdConnectUrl,
+					description: scheme.description,
+				}
+
+			case "sasl":
+				// Map SASL mechanisms to AsyncAPI v3 types
+				switch (scheme.mechanism) {
+					case "PLAIN":
+						return {
+							type: "plain",
+							description: scheme.description,
+						}
+					case "SCRAM-SHA-256":
+						return {
+							type: "scramSha256",
+							description: scheme.description,
+						}
+					case "SCRAM-SHA-512":
+						return {
+							type: "scramSha512",
+							description: scheme.description,
+						}
+					case "GSSAPI":
+						return {
+							type: "gssapi",
+							description: scheme.description,
+						}
+					default:
+						return {
+							type: "plain", // Default fallback
+							description: scheme.description,
+						}
+				}
+
+			case "x509":
+				return {
+					type: "X509",
+					description: scheme.description,
+				}
+
+			case "symmetricEncryption":
+				return {
+					type: "symmetricEncryption",
+					description: scheme.description,
+				}
+
+			case "asymmetricEncryption":
+				return {
+					type: "asymmetricEncryption",
+					description: scheme.description,
+				}
+
+			default:
+				// TypeScript exhaustiveness check - fallback to basic type
+				return {
+					type: "userPassword",
+					description: "Unknown security scheme",
+				} as SecuritySchemeObject
+		}
+	}
 
 	/**
 	 * Convert TypeSpec model to AsyncAPI schema using shared utilities

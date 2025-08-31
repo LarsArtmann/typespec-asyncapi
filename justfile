@@ -25,6 +25,8 @@ build:
     if bun run build; then
         echo "✅ Build completed successfully"
         echo "📦 Checking build artifacts..."
+        # Give file system a moment to stabilize after compilation
+        sleep 0.5
         if [ -d "dist" ]; then
             echo "✅ Build artifacts generated in dist/"
             echo "📊 Build statistics:"

@@ -1,5 +1,5 @@
 import type {EmitContext, Model, Namespace, Operation, Program} from "@typespec/compiler"
-import {getDoc} from "@typespec/compiler"
+// import {getDoc} from "@typespec/compiler" // Unused import
 import {
 	type AssetEmitter,
 	createAssetEmitter,
@@ -13,6 +13,7 @@ import type {AsyncAPIEmitterOptions} from "./options.js"
 import type {AsyncAPIObject, ChannelObject, OperationObject, SchemaObject} from "@asyncapi/parser/esm/spec-types/v3.js"
 import {createDefaultKafkaChannelBinding, validateKafkaChannelBinding} from "./bindings/kafka.js"
 import {convertModelToSchema} from "./utils/schema-conversion.js"
+import {logOperationDetails} from "./utils/typespec-helpers.js"
 import {createChannelDefinition, createOperationDefinition} from "./utils/asyncapi-helpers.js"
 // ChannelObject and OperationObject now imported from centralized types
 import {hasTemplateVariables, type PathTemplateContext, resolvePathTemplateWithValidation} from "./path-templates.js"
@@ -101,7 +102,7 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
 		ns.operations.forEach((operation, name) => {
 			operations.push(operation)
 			Effect.log(`🔍 FOUND REAL OPERATION: ${name} (kind: ${operation.kind})`)
-			this.logOperationDetails(operation, program)
+			logOperationDetails(operation, program)
 		})
 
 		// ns.namespaces is always defined on Namespace type
@@ -110,20 +111,6 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
 		})
 	}
 
-	private logOperationDetails(operation: Operation, program: Program): void {
-		Effect.log(`  - Return type: ${operation.returnType.kind}`)
-		Effect.log(`  - Parameters: ${operation.parameters.properties.size}`)
-
-		const doc = getDoc(program, operation)
-		if (doc) {
-			Effect.log(`  - Documentation: "${doc}"`)
-		}
-
-		// operation.parameters.properties is always defined
-		operation.parameters.properties.forEach((param, paramName) => {
-			Effect.log(`  - Parameter: ${paramName} (${param.type.kind})`)
-		})
-	}
 
 	private processOperation(op: Operation): void {
 		Effect.log(`🏗️  Processing operation: ${op.name}`)
@@ -171,7 +158,7 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
 				}
 				Effect.log(`✅ Added Kafka binding for channel ${channelName}: topic="${kafkaBinding.topic}"`)
 			} else {
-				console.warn(`⚠️ Invalid Kafka binding for ${channelName}: ${validation.errors.join(', ')}`)
+				Effect.logWarning(`⚠️ Invalid Kafka binding for ${channelName}: ${validation.errors.join(', ')}`)
 			}
 		}
 
@@ -273,8 +260,8 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
 				}
 				return resolvedPath
 			} catch (error) {
-				console.warn(`⚠️ Path template resolution failed: ${error instanceof Error ? error.message : String(error)}`)
-				console.warn(`   Falling back to simple concatenation: ${outputFile}.${fileType}`)
+				Effect.logWarning(`⚠️ Path template resolution failed: ${error instanceof Error ? error.message : String(error)}`)
+				Effect.logWarning(`   Falling back to simple concatenation: ${outputFile}.${fileType}`)
 				return `${outputFile}.${fileType}`
 			}
 		}
