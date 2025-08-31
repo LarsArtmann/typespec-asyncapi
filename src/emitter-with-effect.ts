@@ -474,12 +474,17 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
       }
     });
     
-    return {
+    const schema: SchemaObject = {
       type: "object",
       description: getDoc(program, model) ?? `Schema ${model.name}`,
-      properties,
-      required: required.length > 0 ? required : undefined
+      properties
     };
+    
+    if (required.length > 0) {
+      schema.required = required;
+    }
+    
+    return schema;
   }
 }
 

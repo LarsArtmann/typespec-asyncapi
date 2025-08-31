@@ -284,9 +284,10 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
     if (hasTemplateVariables(outputFile)) {
       console.log(`🔧 Resolving path template: ${outputFile}`);
       
+      const emitterOutputDir = this.emitter.getContext()["emitterOutputDir"] as string | undefined;
       const context: PathTemplateContext = {
         program,
-        emitterOutputDir: this.emitter.getContext()["emitterOutputDir"] as string | undefined,
+        emitterOutputDir: emitterOutputDir ?? "",
       };
       
       try {
