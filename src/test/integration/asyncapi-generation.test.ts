@@ -734,8 +734,8 @@ describe("Real AsyncAPI Generation Tests", () => {
 			const asyncapiDoc = parseAsyncAPIOutput(outputFiles, "large-scale-test.json") as AsyncAPIDocument
 
 			// Validate scale - should have 20 schemas and 40 operations
-			expect(Object.keys(asyncapiDoc.components.schemas).length).toBe(20)
-			expect(Object.keys(asyncapiDoc.operations).length).toBe(40)
+			expect(Object.keys(asyncapiDoc?.components?.schemas).length).toBe(20)
+			expect(Object.keys(asyncapiDoc?.operations).length).toBe(40)
 
 			// Performance assertion - should compile large document in reasonable time
 			expect(compilationTime).toBeLessThan(30000) // 30 seconds max

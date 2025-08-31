@@ -186,9 +186,9 @@ describe("Real Decorator Functionality Tests", () => {
 			// Validate message schema with correlation ID
 			expect(asyncapiDoc.components?.schemas?.TrackedMessage).toBeDefined()
 
-			const trackedSchema = asyncapiDoc.components.schemas.TrackedMessage
-			expect(trackedSchema.properties?.correlationId?.type).toBe("string")
-			expect(trackedSchema.properties?.payload?.type).toBe("object")
+			const trackedSchema = asyncapiDoc.components?.schemas?.TrackedMessage
+			expect(trackedSchema?.properties?.correlationId?.type).toBe("string")
+			expect(trackedSchema?.properties?.payload?.type).toBe("object")
 
 			Effect.log("✅ @message decorator with headers and correlation ID processed successfully")
 		})

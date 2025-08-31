@@ -6,6 +6,7 @@ import {createTestHost} from "@typespec/compiler/testing"
 import {AsyncAPITestLibrary} from "../test-host"
 import type {AsyncAPIEmitterOptions} from "../../src"
 import type {Diagnostic, Program} from "@typespec/compiler"
+import {Effect} from "effect"
 
 //TODO: this file is getting to big split it up
 
@@ -63,12 +64,12 @@ export interface AsyncAPISchema {
 
 export interface CompilationResult {
 	diagnostics: readonly Diagnostic[];
-	outputFiles: Map<string, { content: string }>;
+	outputFiles: Map<string, string>;
 	program: Program;
 }
 
 export interface TestFileSystem {
-	get(path: string): { content: string } | undefined;
+	get(path: string): string | undefined;
 
 	keys(): string[];
 }
@@ -118,7 +119,7 @@ ${source}
 			},
 			writeFile: async (path: string, content: string) => {
 				Effect.log(`Mock writeFile for test: ${path} (${content.length} chars)`)
-				host.fs.set(path, {content})
+				host.fs.set(path, content)
 			},
 		},
 		getGlobalNamespaceType: program.getGlobalNamespaceType || (() => ({
@@ -152,7 +153,7 @@ ${source}
 
 	return {
 		diagnostics,
-		outputFiles: host.fs as Map<string, { content: string }>,
+		outputFiles: host.fs,
 		program: enhancedProgram,
 	}
 }
@@ -163,7 +164,7 @@ ${source}
 export async function compileAsyncAPISpecWithoutErrors(
 	source: string,
 	options: AsyncAPIEmitterOptions = {},
-): Promise<{ outputFiles: Map<string, { content: string }>; program: Program; diagnostics: readonly Diagnostic[] }> {
+): Promise<{ outputFiles: Map<string, string>; program: Program; diagnostics: readonly Diagnostic[] }> {
 	const result = await compileAsyncAPISpec(source, options)
 
 	const diagnostics = result.diagnostics || []
@@ -206,6 +207,7 @@ function parseFileContent(content: string, filename: string): AsyncAPIDocument |
 	if (filename.endsWith('.json')) {
 		return JSON.parse(content)
 	} else if (filename.endsWith('.yaml') || filename.endsWith('.yml')) {
+		//TODO: DO we need to do something here??
 		// For YAML, we'll just return the string content for now
 		// In a real implementation, you might want to use a YAML parser
 		return content
@@ -227,6 +229,7 @@ export function validateAsyncAPIStructure(asyncapiDoc: unknown): boolean {
 		throw new Error("Expected AsyncAPI document to be an object")
 	}
 
+	//TODO: Better type?
 	const doc = asyncapiDoc as Record<string, unknown>
 	const requiredFields = ['asyncapi', 'info', 'channels']
 	const missingFields = requiredFields.filter(field => !(field in doc))
@@ -408,10 +411,10 @@ export const AsyncAPIAssertions = {
 
 	schemaHasProperty: (doc: AsyncAPIDocument, schemaName: string, propertyName: string): boolean => {
 		AsyncAPIAssertions.hasSchema(doc, schemaName)
-		const schema = doc.components.schemas[schemaName]
+		const schema = doc.components?.schemas?.[schemaName]
 
-		if (!schema.properties || !(propertyName in schema.properties)) {
-			const availableProperties = schema.properties ? Object.keys(schema.properties) : []
+		if (!schema?.properties || !(propertyName in (schema?.properties ?? []))) {
+			const availableProperties = schema?.properties ? Object.keys(schema.properties) : []
 			throw new Error(`Expected property '${propertyName}' not found in schema '${schemaName}'. Available properties: ${availableProperties.join(", ")}`)
 		}
 		return true
