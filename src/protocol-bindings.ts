@@ -7,17 +7,11 @@
  * - HTTP
  */
 
-import type {
-	ReferenceObject,
-	SchemaObject,
-} from "./types/index"
-import type {
-	KafkaChannelBinding,
-	KafkaMessageBinding,
-	KafkaOperationBinding,
-} from "./bindings/kafka"
-import type { GlobalConfig } from "@confluentinc/kafka-javascript/types/config"
+import type {ReferenceObject, SchemaObject} from "@asyncapi/parser/esm/spec-types/v3"
+import type {KafkaChannelBinding, KafkaMessageBinding, KafkaOperationBinding} from "./bindings/kafka"
+import type {GlobalConfig} from "@confluentinc/kafka-javascript/types/config"
 import {validateEnumValue, validateHttpStatusCode, validatePositiveInteger} from "./utils/protocol-validation"
+import {getDefaultProtocolPort} from "./constants/protocol-defaults"
 
 //TODO: This file is to big. Split it up!
 
@@ -109,7 +103,7 @@ export type KafkaMessageBindingConfig = {
 
 /**
  * OFFICIAL KAFKA PROTOCOL BINDINGS using Confluent Types
- * 
+ *
  * ✅ GHOST SYSTEM ELIMINATED!
  * Replaced legacy anonymous sub-types with official Confluent binding types
  */
@@ -607,19 +601,6 @@ export class ProtocolUtils {
 	 * Get protocol-specific default ports
 	 */
 	static getDefaultPort(protocol: ProtocolType): number | undefined {
-		//TODO: This should probably be a dedicated global const in it's own file
-		const defaultPorts: Record<ProtocolType, number> = {
-			kafka: 9092,
-			websocket: 80,
-			ws: 80,
-			http: 80,
-			https: 443,
-			amqp: 5672,
-			mqtt: 1883,
-			redis: 6379,
-			nats: 4222,
-		}
-
-		return defaultPorts[protocol]
+		return getDefaultProtocolPort(protocol)
 	}
 }

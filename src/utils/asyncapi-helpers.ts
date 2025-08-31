@@ -6,7 +6,7 @@
 import type {Operation, Program} from "@typespec/compiler"
 import {getDoc} from "@typespec/compiler"
 import {Effect} from "effect"
-import type {AsyncAPIObject, ChannelObject, OperationObject} from "../types/index"
+import type {AsyncAPIObject, ChannelObject, OperationObject} from ".@asyncapi/parser/esm/spec-types/v3"
 import {getAsyncAPIAction, getChannelPath, getOperationType} from "./typespec-helpers"
 import {convertModelToSchema} from "./schema-conversion"
 

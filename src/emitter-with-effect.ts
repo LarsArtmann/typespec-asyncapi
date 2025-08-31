@@ -19,14 +19,13 @@ import {emitFile, getDoc} from "@typespec/compiler"
 import {type AssetEmitter, createAssetEmitter, TypeEmitter} from "@typespec/asset-emitter"
 import {stringify} from "yaml"
 import type {AsyncAPIEmitterOptions} from "./options"
-import type {SchemaObject} from "./types/index"
+import type {AsyncAPIObject, SchemaObject} from "@asyncapi/parser/esm/spec-types/v3"
 import {validateAsyncAPIEffect} from "./validation/asyncapi-validator"
 import type {ValidationError} from "./errors/validation-error"
 import {$lib} from "./lib"
 import {PERFORMANCE_METRICS_SERVICE, PERFORMANCE_METRICS_SERVICE_LIVE} from "./performance/metrics"
 import {MEMORY_MONITOR_SERVICE, MEMORY_MONITOR_SERVICE_LIVE} from "./performance/memory-monitor"
 import {convertModelToSchema} from "./utils/schema-conversion"
-import type {AsyncAPIObject} from "@asyncapi/parser/esm/spec-types/v3"
 
 // Using centralized types from types/index.ts
 // AsyncAPIObject and SchemaObject (as AsyncAPISchema) are now imported

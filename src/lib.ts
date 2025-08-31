@@ -144,8 +144,25 @@ export const stateKeys = {
 	operationTypes: "operationTypes",
 } as const
 
-//TODO: if this is a TypeSpec expected function please explain this clearly!
-// Export diagnostic reporter helper  
+/**
+ * TypeSpec Diagnostic Reporter Helper
+ * 
+ * This is a standard TypeSpec emitter utility function that reports validation errors
+ * and diagnostics during TypeSpec compilation. It's used by decorator implementations
+ * to provide meaningful error messages when TypeSpec code doesn't conform to AsyncAPI requirements.
+ * 
+ * TypeSpec emitters are expected to provide diagnostic reporting capabilities,
+ * and this function follows the standard TypeSpec diagnostic pattern by:
+ * 1. Accepting a context (from the TypeSpec compiler)
+ * 2. Taking a target (the TypeSpec AST node being validated)
+ * 3. Using a diagnostic code (prefixed with the emitter namespace)
+ * 4. Including optional arguments for error message templating
+ * 
+ * @param context - TypeSpec emitter context containing the program reference
+ * @param target - The TypeSpec AST node that triggered the diagnostic
+ * @param code - Diagnostic code (will be prefixed with "@typespec/asyncapi.")
+ * @param args - Optional arguments for error message templating
+ */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function reportDiagnostic(context: any, target: unknown, code: string, args?: Record<string, unknown>) {
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access

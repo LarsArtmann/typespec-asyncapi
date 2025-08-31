@@ -20,107 +20,27 @@
 
 //No re-exports! Use the real thing!
 
-// Import and re-export official AsyncAPI 3.0 types in single statement
-/** @deprecated use the real thing re-export will be removed */
-export type {
-	// Core Document Types
-	AsyncAPIObject,
-	InfoObject,
-	ContactObject,
-	LicenseObject,
-
-	// Server Types
-	ServersObject,
-	ServerObject,
-	ServerVariableObject,
-	ServerBindingsObject,
-
-	// Channel Types
-	ChannelsObject,
-	ChannelObject,
-	ChannelBindingsObject,
-
-	// Operation Types
-	OperationsObject,
-	OperationObject,
-	OperationTraitObject,
-	OperationReplyObject,
-	OperationReplyAddressObject,
-	OperationBindingsObject,
-
-	// Message Types
-	MessagesObject,
-	MessageObject,
-	MessageTraitObject,
-	MessageExampleObject,
-	MessageBindingsObject,
-
-	// Component Types
-	ComponentsObject,
-
-	// Schema Types
-	SchemaObject,
-	AsyncAPISchemaObject,
-	AsyncAPISchemaDefinition,
-	MultiFormatSchemaObject,
-	MultiFormatObject,
-
-	// Security Types
-	SecuritySchemeObject,
-
-	// Parameter Types
-	ParameterObject,
-	ParametersObject,
-
-	// Common Types
-	ReferenceObject,
-	TagObject,
-	TagsObject,
-	ExternalDocumentationObject,
-	CorrelationIDObject,
-	Binding,
-	SpecificationExtensions,
-	SpecificationExtension,
-
-	// Utility Types
-	AsyncAPIVersion,
-	Identifier,
-	DefaultContentType,
-} from '@asyncapi/parser/esm/spec-types/v3'
-
+import type {Path} from "effect/ParseResult"
 // Import specific types for aliases (separate import to avoid conflicts)
-import type {
-	AsyncAPIObject as ImportedAsyncAPIObject,
-	AsyncAPISchemaObject as ImportedAsyncAPISchemaObject,
-	ChannelObject as ImportedChannelObject,
-	MessageObject as ImportedMessageObject,
-	OperationObject as ImportedOperationObject,
-} from '@asyncapi/parser/esm/spec-types/v3'
+import type {AsyncAPIObject} from '@asyncapi/parser/esm/spec-types/v3'
 
-//No re-exports! Use the real thing!
-// Legacy type aliases for backward compatibility
-/** @deprecated use the real thing re-export will be removed */
-export type Channel = ImportedChannelObject;
-/** @deprecated use the real thing re-export will be removed */
-export type Operation = ImportedOperationObject;
-/** @deprecated use the real thing re-export will be removed */
-export type Message = ImportedMessageObject;
-/** @deprecated use the real thing re-export will be removed */
-export type Schema = ImportedAsyncAPISchemaObject;
+type XGeneratedFromTypeSpec = {
+	sourceFiles?: Path;
+	//TODO: Can we get a better type here?
+	operationsFound?: string;
+	//TODO: Can we get a better type here?
+	note?: string;
+}
 
+//TODO: Should we use this type somewhere???
+// Emitter-specific types (not part of official AsyncAPI spec)
 /**
  * Custom utility types that extend the official AsyncAPI types
  * These are project-specific types not covered by the official spec
  */
-
-// Emitter-specific types (not part of official AsyncAPI spec)
-export interface EmitterAsyncAPIObject extends ImportedAsyncAPIObject {
+export interface EmitterAsyncAPIObject extends AsyncAPIObject {
 	// Extend with emitter-specific metadata
-	'x-generated-from-typespec'?: {
-		sourceFiles?: string;
-		operationsFound?: string;
-		note?: string;
-	};
+	'x-generated-from-typespec'?: XGeneratedFromTypeSpec;
 }
 
 // Protocol binding type unions for better type safety

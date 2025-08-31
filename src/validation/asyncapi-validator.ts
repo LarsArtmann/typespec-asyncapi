@@ -283,10 +283,18 @@ export const validateAsyncAPIEffect = (content: string): Effect.Effect<{
 	errors: ValidationError[];
 	warnings: string[]
 }, Error> =>
-	Effect.tryPromise({
-		//TODO: validateAsyncAPIString is deprecated!
-		try: () => validateAsyncAPIString(content),
-		catch: (error) => new Error(`AsyncAPI validation failed: ${error}`),
+	Effect.gen(function* () {
+		const validator = new AsyncAPIValidator({strict: false})
+		validator.initialize()
+		const result = yield* Effect.tryPromise({
+			try: () => validator.validate(content),
+			catch: (error) => new Error(`AsyncAPI validation failed: ${error}`),
+		})
+		return {
+			valid: result.valid,
+			errors: result.errors,
+			warnings: result.warnings
+		}
 	})
 
 /**
@@ -302,8 +310,9 @@ export async function validateWithDiagnostics(content: string): Promise<{
 		path?: string;
 	}>;
 }> {
-	//TODO: validateAsyncAPIString is deprecated!
-	const result = await validateAsyncAPIString(content)
+	const validator = new AsyncAPIValidator({strict: false})
+	validator.initialize()
+	const result = await validator.validate(content)
 
 	//TODO: All types should have a dedicated name, no anonymous sub objects
 	const diagnostics: Array<{
@@ -334,8 +343,9 @@ export async function validateWithDiagnostics(content: string): Promise<{
  */
 export async function isValidAsyncAPI(content: string): Promise<boolean> {
 	try {
-		//TODO: validateAsyncAPIString is deprecated!
-		const result = await validateAsyncAPIString(content)
+		const validator = new AsyncAPIValidator({strict: false})
+		validator.initialize()
+		const result = await validator.validate(content)
 		return result.valid
 	} catch {
 		return false

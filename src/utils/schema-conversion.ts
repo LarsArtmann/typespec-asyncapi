@@ -5,7 +5,7 @@
 
 import type {Model, ModelProperty, Program} from "@typespec/compiler"
 import {getDoc} from "@typespec/compiler"
-import type {SchemaObject} from "../types/index"
+import type {SchemaObject} from "@asyncapi/parser/esm/spec-types/v3"
 
 /**
  * Convert TypeSpec model to AsyncAPI schema object
@@ -92,23 +92,34 @@ export function getPropertyType(prop: ModelProperty): {
  * Generate basic schema properties from model
  * Simplified version used in integration-example.ts
  */
-export function generateSchemaPropertiesFromModel(_model: Model): Record<string, unknown> {
+export function generateSchemaPropertiesFromModel(model: Model): Record<string, unknown> {
 	const properties: Record<string, unknown> = {}
 
-	//TODO: FUCKING IMPLEMENT THIS!!! ASAP
+	// ✅ IMPLEMENTED: Iterate through actual model properties from TypeSpec AST
+	model.properties.forEach((prop, name) => {
+		// Convert each property using existing conversion utilities
+		const propType = getPropertyType(prop)
+		
+		properties[name] = {
+			...propType,
+			description: `Property ${name}`,
+			// Add required flag if property is not optional
+			...(prop.optional ? {} : { required: true })
+		}
+	})
 
-	// Basic properties that are commonly needed
-	properties['id'] = {
-		type: "string",
-		description: "Unique identifier",
-	}
-	properties['timestamp'] = {
-		type: "string",
-		format: "date-time",
-		description: "Timestamp",
+	// Fallback: Add basic properties if model has no properties
+	if (model.properties.size === 0) {
+		properties['id'] = {
+			type: "string",
+			description: "Unique identifier",
+		}
+		properties['timestamp'] = {
+			type: "string",
+			format: "date-time",
+			description: "Timestamp",
+		}
 	}
 
-	// In production, would iterate through model.properties
-	// For now, return basic structure
 	return properties
 }

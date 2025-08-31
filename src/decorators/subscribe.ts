@@ -1,5 +1,5 @@
 import type {DecoratorContext, Operation} from "@typespec/compiler"
-import {$lib, reportDiagnostic} from "../lib"
+import {$lib, reportDiagnostic} from "@/lib"
 import {Effect} from "effect"
 
 export function $subscribe(context: DecoratorContext, target: Operation): void {

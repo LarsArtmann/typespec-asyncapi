@@ -3,11 +3,14 @@
  * Extracted from duplicated validation logic in bindings and protocol files
  */
 
-//TODO: Replace with ValidationResult from: src/errors/validation-error.ts:30
 /**
- * Generic validation result structure
+ * Protocol validation result structure
+ * 
+ * Note: This is different from ValidationResult in src/errors/validation-error.ts
+ * which is for AsyncAPI document validation with comprehensive metrics.
+ * This type is for simple protocol binding validation with basic error/warning lists.
  */
-export type ValidationResult = {
+export type ProtocolValidationResult = {
 	isValid: boolean;
 	errors: string[];
 	warnings: string[];
@@ -31,7 +34,7 @@ export function validateRequiredString(value: string | undefined, fieldName: str
  * Validate positive integer field
  * Centralized integer validation logic
  */
-export function validatePositiveInteger(value: number | undefined, fieldName: string, maxValue?: number): ValidationResult {
+export function validatePositiveInteger(value: number | undefined, fieldName: string, maxValue?: number): ProtocolValidationResult {
 	const errors: string[] = []
 	const warnings: string[] = []
 
@@ -110,7 +113,7 @@ export function validateHttpStatusCode(statusCode: number | undefined, fieldName
  * Combine multiple validation results
  * Utility to merge validation results
  */
-export function combineValidationResults(...results: ValidationResult[]): ValidationResult {
+export function combineValidationResults(...results: ProtocolValidationResult[]): ProtocolValidationResult {
 	const allErrors: string[] = []
 	const allWarnings: string[] = []
 
