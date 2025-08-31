@@ -1,5 +1,4 @@
 import type {EmitContext} from "@typespec/compiler"
-import {$lib} from "./lib.js"
 import type {AsyncAPIEmitterOptions} from "./options.js"
 import {generateAsyncAPIWithEffect} from "./emitter-with-effect.js"
 import {Effect} from "effect"
@@ -37,10 +36,3 @@ export async function $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): Pro
 	Effect.log("🎉 AsyncAPI generation complete with performance monitoring!")
 }
 
-//TODO: is this dead code or called by TypeSpec??
-/**
- * Get the library instance
- */
-export function getLibrary() {
-	return $lib
-}

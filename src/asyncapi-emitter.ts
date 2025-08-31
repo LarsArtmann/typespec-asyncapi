@@ -31,7 +31,7 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
 
 	constructor(emitter: AssetEmitter<string, AsyncAPIEmitterOptions>) {
 		super(emitter)
-		//TODO: [] <-- looks wrong! double check!
+		// Initialize with empty operations array - will be populated in programContext()
 		this.asyncApiDoc = this.createAsyncAPIObject([])
 	}
 
@@ -175,7 +175,7 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
 		const program = this.emitter.getProgram()
 		// Use centralized utility function to eliminate duplication
 		const operationDef = createOperationDefinition(op, program, channelName)
-		
+
 		// Keep the logging for debugging purposes
 		Effect.log(`📡 Operation ${op.name} -> action: ${operationDef.action}`)
 
@@ -385,6 +385,8 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
  * See GitHub issue #1 for planned versioning support.
  */
 export async function generateAsyncAPI(context: EmitContext<AsyncAPIEmitterOptions>): Promise<void> {
+	//TODO: Why is this not used?? Is this legacy or does it need to be integrated?
+	//  If this is legacy is the new one better or can it learn from this?
 	Effect.log("🚀 ASYNCAPI EMITTER (AssetEmitter): Processing REAL TypeSpec AST - NOT HARDCODED!")
 	Effect.log("⚠️  VERSIONING NOT SUPPORTED - See GitHub issue #1")
 	Effect.log(`📁 Output: ${context.emitterOutputDir}`)

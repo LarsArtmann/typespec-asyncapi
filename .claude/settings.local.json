@@ -75,7 +75,8 @@
       "WebFetch(domain:www.npmjs.com)",
       "Bash(npm search:*)",
       "Bash(just clean:*)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(just:*)"
     ],
     "deny": [],
     "ask": []
