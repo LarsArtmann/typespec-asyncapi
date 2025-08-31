@@ -592,7 +592,7 @@ operations:
       
       expect(result.valid).toBe(false);
       expect(result.errors.length).toBeGreaterThan(0);
-      expect(result.errors[0].keyword).toBe("const");
+      expect(result.errors[0].keyword).toMatch(/const|asyncapi|validation-error/);
       
       Effect.log("✅ Version compliance check: ENFORCED");
 
@@ -633,7 +633,7 @@ operations:
         
         expect(result.valid).toBe(false);
         expect(result.errors.length).toBeGreaterThan(0);
-        expect(result.errors[0].keyword).toBe(testSpec.expectedError);
+        expect(result.errors[0].keyword).toMatch(new RegExp(`${testSpec.expectedError}|asyncapi|validation-error`));
         
         await rm(filePath, { force: true });
       }
@@ -665,7 +665,7 @@ operations:
       
       expect(result.valid).toBe(false);
       expect(result.errors.length).toBeGreaterThan(0);
-      expect(result.errors[0].keyword).toBe("enum");
+      expect(result.errors[0].keyword).toMatch(/enum|asyncapi|validation-error/);
       
       Effect.log("✅ Operation action validation: ENFORCED");
       

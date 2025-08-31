@@ -32,6 +32,9 @@ export class AsyncAPIValidator {
 
 		// Initialize the REAL AsyncAPI parser
 		this.parser = new Parser()
+		
+		// Eager initialization for performance (avoid check on every validation)
+		this.initialize()
 	}
 
 	/**
@@ -51,15 +54,12 @@ export class AsyncAPIValidator {
 	 * Validate AsyncAPI document using the REAL parser
 	 */
 	async validate(document: unknown, _identifier?: string): Promise<ValidationResult> {
-		if (!this.initialized) {
-			this.initialize()
-		}
-
+		// Initialization now done eagerly in constructor for performance
 		const startTime = performance.now()
 
 		try {
-			// Convert document to string for parser
-			const content = typeof document === 'string' ? document : JSON.stringify(document, null, 2)
+			// Convert document to string for parser (no pretty printing for performance)
+			const content = typeof document === 'string' ? document : JSON.stringify(document)
 
 			// Use the REAL AsyncAPI parser
 			const {document: parsedDocument, diagnostics} = await this.parser.parse(content)

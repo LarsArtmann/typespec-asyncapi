@@ -38,27 +38,32 @@ describe("Direct Emitter Test", () => {
 
 		try {
 			const result = await host.compile("direct.tsp")
-			console.log("Compile result:", typeof result, Array.isArray(result), result?.length)
+			Effect.logInfo("Compile result:", {type: typeof result, isArray: Array.isArray(result), length: result?.length})
 
 			const program = Array.isArray(result) ? result[0] : result
 
-			console.log("Program compiled successfully")
-			console.log("Program type:", typeof program)
-			console.log("Program sourceFiles:", program.sourceFiles?.size || 0)
+			Effect.logInfo("Program compiled successfully")
+			Effect.logInfo("Program type:", {type: typeof program})
+			Effect.logInfo("Program sourceFiles:", {count: program.sourceFiles?.size || 0})
 
 			// Call our emitter directly
-			console.log("=== CALLING EMITTER DIRECTLY ===")
+			Effect.logInfo("=== CALLING EMITTER DIRECTLY ===")
 
 			const emitterContext = {
 				program: {
 					...program,
+					// Add required compilerOptions for AssetEmitter
+					compilerOptions: {
+						...program.compilerOptions,
+						dryRun: false,
+					},
 					// Mock the host.mkdirp functionality for testing
 					host: {
 						mkdirp: async (path: string) => {
-							console.log(`Mock mkdirp: ${path}`)
+							Effect.logDebug(`Mock mkdirp: ${path}`)
 						},
 						writeFile: async (path: string, content: string) => {
-							console.log(`Mock writeFile: ${path} (${content.length} chars)`)
+							Effect.logDebug(`Mock writeFile: ${path} (${content.length} chars)`)
 							// Add to host.fs for test verification
 							host.fs.set(path, {content})
 						},
@@ -80,13 +85,13 @@ describe("Direct Emitter Test", () => {
 				},
 			}
 
-			console.log("Emitter context program:", !!emitterContext.program)
-			console.log("Emitter context program type:", typeof emitterContext.program)
-			console.log("Program has sourceFiles:", !!emitterContext.program?.sourceFiles)
+			Effect.logInfo("Emitter context program:", {hasProgram: !!emitterContext.program})
+			Effect.logInfo("Emitter context program type:", {type: typeof emitterContext.program})
+			Effect.logInfo("Program has sourceFiles:", {hasSourceFiles: !!emitterContext.program?.sourceFiles})
 
 			await $onEmit(emitterContext)
 
-			console.log("=== EMITTER CALL COMPLETE ===")
+			Effect.logInfo("=== EMITTER CALL COMPLETE ===")
 
 			// Check console output
 			const emitterLogs = consoleLogs.filter(log =>
@@ -95,16 +100,16 @@ describe("Direct Emitter Test", () => {
 				log.includes("Processing REAL TypeSpec AST"),
 			)
 
-			console.log(`Found ${emitterLogs.length} emitter-related logs:`)
-			emitterLogs.forEach((log, i) => console.log(`  ${i + 1}. ${log}`))
+			Effect.logInfo(`Found ${emitterLogs.length} emitter-related logs:`)
+			emitterLogs.forEach((log, i) => Effect.logDebug(`  ${i + 1}. ${log}`))
 
 			// Check files in host filesystem
-			console.log("Files in host.fs after direct emitter call:")
+			Effect.logInfo("Files in host.fs after direct emitter call:")
 			for (const [path, file] of host.fs.entries()) {
 				if (path.includes('direct-test') || path.includes('asyncapi')) {
-					console.log(`  🎯 OUTPUT: ${path} (${file.content?.length || 0} chars)`)
+					Effect.logInfo(`  🎯 OUTPUT: ${path} (${file.content?.length || 0} chars)`)
 					if (file.content) {
-						console.log(`     Content preview: ${file.content.substring(0, 100)}...`)
+						Effect.logDebug(`     Content preview: ${file.content.substring(0, 100)}...`)
 					}
 				}
 			}

@@ -28,11 +28,21 @@ import {generateSchemaPropertiesFromModel} from "./utils/schema-conversion.js"
 import {sanitizeChannelId} from "./utils/typespec-helpers.js"
 import {effectLogging, effectValidation, effectErrorHandling} from "./utils/effect-helpers.js"
 
-// Helper function moved to shared utilities - see utils/effect-helpers.ts
-// Use effectValidation.validateProgramContext instead
-
-
-// Document validation moved to shared utilities
+/**
+ * Common pattern for AsyncAPI generation functions
+ * Eliminates duplication of validation and error handling
+ */
+const withAsyncAPIGeneration = <T>(
+	context: EmitContext<object>,
+	options: AsyncAPIEmitterOptions,
+	generatorFn: (context: EmitContext<object>) => Effect.Effect<T, SpecGenerationError>,
+): Effect.Effect<T, SpecGenerationError> =>
+	Effect.gen(function* () {
+		yield* effectValidation.validateProgramContext(context)
+		return yield* generatorFn(context)
+	}).pipe(
+		Effect.catchAll(error => effectErrorHandling.handleSpecGenerationError(error, options)),
+	)
 
 // PURE EFFECT.TS EMITTER SERVICE
 export type EmitterService = {
@@ -149,53 +159,51 @@ export const emitterServiceLive = Layer.effect(emitterService, makeEmitterServic
  * Extracts channel paths and creates AsyncAPI channel objects
  */
 const generateChannels = (context: EmitContext<object>): Effect.Effect<Record<string, unknown>, SpecGenerationError> =>
-	Effect.gen(function* () {
-		yield* effectValidation.validateProgramContext(context)
+	withAsyncAPIGeneration(context, {} as AsyncAPIEmitterOptions, (ctx) =>
+		Effect.gen(function* () {
+			const channels: Record<string, unknown> = {}
+			const channelMap = ctx.program.stateMap($lib.stateKeys.channelPaths)
+			const operationTypesMap = ctx.program.stateMap($lib.stateKeys.operationTypes)
 
-		const channels: Record<string, unknown> = {}
-		const channelMap = context.program.stateMap($lib.stateKeys.channelPaths)
-		const operationTypesMap = context.program.stateMap($lib.stateKeys.operationTypes)
+			yield* effectValidation.logStateMapInfo("channelMap operations", channelMap.size)
 
-		yield* effectValidation.logStateMapInfo("channelMap operations", channelMap.size)
+			for (const [operation, channelPath] of channelMap) {
+				const operationType = operationTypesMap.get(operation) as string | undefined
+				const channelId = sanitizeChannelId(channelPath as string)
 
-		for (const [operation, channelPath] of channelMap) {
-			const operationType = operationTypesMap.get(operation) as string | undefined
-			const channelId = sanitizeChannelId(channelPath as string)
+				// Create or update channel object
+				if (!channels[channelId]) {
+					channels[channelId] = {
+						address: channelPath,
+						description: `Channel for ${channelPath}`,
+						messages: {},
+					}
+				}
 
-			// Create or update channel object
-			if (!channels[channelId]) {
-				channels[channelId] = {
+				const channel = channels[channelId] as Record<string, unknown>
+				const messages = channel['messages'] as Record<string, unknown>
+
+				// Add operation-specific message reference
+				const operationObj = operation as Operation
+				if (operationType === "publish") {
+					messages[`${operationObj.name}Message`] = {
+						"$ref": `#/components/messages/${operationObj.name}Message`,
+					}
+				} else if (operationType === "subscribe") {
+					messages[`${operationObj.name}Message`] = {
+						"$ref": `#/components/messages/${operationObj.name}Message`,
+					}
+				}
+
+				yield* effectLogging.logDebugGeneration("channel", channelId, {
 					address: channelPath,
-					description: `Channel for ${channelPath}`,
-					messages: {},
-				}
+					operationType,
+					operationName: operationObj.name,
+				})
 			}
 
-			const channel = channels[channelId] as Record<string, unknown>
-			const messages = channel['messages'] as Record<string, unknown>
-
-			// Add operation-specific message reference
-			const operationObj = operation as Operation
-			if (operationType === "publish") {
-				messages[`${operationObj.name}Message`] = {
-					"$ref": `#/components/messages/${operationObj.name}Message`,
-				}
-			} else if (operationType === "subscribe") {
-				messages[`${operationObj.name}Message`] = {
-					"$ref": `#/components/messages/${operationObj.name}Message`,
-				}
-			}
-
-			yield* effectLogging.logDebugGeneration("channel", channelId, {
-				address: channelPath,
-				operationType,
-				operationName: operationObj.name,
-			})
-		}
-
-		return channels
-	}).pipe(
-		Effect.catchAll(error => effectErrorHandling.handleSpecGenerationError(error, {} as AsyncAPIEmitterOptions)),
+			return channels
+		}),
 	)
 
 /**
@@ -203,48 +211,46 @@ const generateChannels = (context: EmitContext<object>): Effect.Effect<Record<st
  * Creates operation objects with proper action types and channel references
  */
 const generateOperations = (context: EmitContext<object>): Effect.Effect<Record<string, unknown>, SpecGenerationError> =>
-	Effect.gen(function* () {
-		yield* effectValidation.validateProgramContext(context)
+	withAsyncAPIGeneration(context, {} as AsyncAPIEmitterOptions, (ctx) =>
+		Effect.gen(function* () {
+			const operations: Record<string, unknown> = {}
+			const operationTypesMap = ctx.program.stateMap($lib.stateKeys.operationTypes)
+			const channelMap = ctx.program.stateMap($lib.stateKeys.channelPaths)
 
-		const operations: Record<string, unknown> = {}
-		const operationTypesMap = context.program.stateMap($lib.stateKeys.operationTypes)
-		const channelMap = context.program.stateMap($lib.stateKeys.channelPaths)
+			yield* effectValidation.logStateMapInfo("operationTypesMap operations", operationTypesMap.size)
 
-		yield* effectValidation.logStateMapInfo("operationTypesMap operations", operationTypesMap.size)
+			for (const [operation, operationType] of operationTypesMap) {
+				const operationObj = operation as Operation
+				const channelPath = channelMap.get(operation) as string | undefined
 
-		for (const [operation, operationType] of operationTypesMap) {
-			const operationObj = operation as Operation
-			const channelPath = channelMap.get(operation) as string | undefined
+				if (!channelPath) {
+					yield* Effect.logWarning(`Operation ${operationObj.name} has type ${operationType} but no channel path`)
+					continue
+				}
 
-			if (!channelPath) {
-				yield* Effect.logWarning(`Operation ${operationObj.name} has type ${operationType} but no channel path`)
-				continue
+				const channelId = sanitizeChannelId(channelPath)
+				const operationId = operationObj.name
+
+				operations[operationId] = {
+					action: operationType === "publish" ? "send" : "receive", // AsyncAPI 3.0.0 actions
+					channel: {
+						"$ref": `#/channels/${channelId}`,
+					},
+					title: `${operationType} ${operationObj.name}`,
+					description: `${operationType === "publish" ? "Send" : "Receive"} message on ${channelPath}`,
+					messages: [{
+						"$ref": `#/components/messages/${operationId}Message`,
+					}],
+				}
+
+				yield* effectLogging.logDebugGeneration("operation", operationId, {
+					action: operationType,
+					channel: channelPath,
+				})
 			}
 
-			const channelId = sanitizeChannelId(channelPath)
-			const operationId = operationObj.name
-
-			operations[operationId] = {
-				action: operationType === "publish" ? "send" : "receive", // AsyncAPI 3.0.0 actions
-				channel: {
-					"$ref": `#/channels/${channelId}`,
-				},
-				title: `${operationType} ${operationObj.name}`,
-				description: `${operationType === "publish" ? "Send" : "Receive"} message on ${channelPath}`,
-				messages: [{
-					"$ref": `#/components/messages/${operationId}Message`,
-				}],
-			}
-
-			yield* effectLogging.logDebugGeneration("operation", operationId, {
-				action: operationType,
-				channel: channelPath,
-			})
-		}
-
-		return operations
-	}).pipe(
-		Effect.catchAll(error => effectErrorHandling.handleSpecGenerationError(error, {} as AsyncAPIEmitterOptions)),
+			return operations
+		}),
 	)
 
 /**
@@ -252,18 +258,17 @@ const generateOperations = (context: EmitContext<object>): Effect.Effect<Record<
  * Creates message schemas and security schemes
  */
 const generateComponents = (context: EmitContext<object>): Effect.Effect<Record<string, unknown>, SpecGenerationError> =>
-	Effect.gen(function* () {
-		yield* effectValidation.validateProgramContext(context)
-
-		const components: Record<string, unknown> = {
-			messages: {},
-			schemas: {},
-			securitySchemes: {},
-		}
+	withAsyncAPIGeneration(context, {} as AsyncAPIEmitterOptions, (ctx) =>
+		Effect.gen(function* () {
+			const components: Record<string, unknown> = {
+				messages: {},
+				schemas: {},
+				securitySchemes: {},
+			}
 
 		// Generate message components from @message decorators
-		const messageMap = context.program.stateMap($lib.stateKeys.messageConfigs)
-		const operationTypesMap = context.program.stateMap($lib.stateKeys.operationTypes)
+		const messageMap = ctx.program.stateMap($lib.stateKeys.messageConfigs)
+		const operationTypesMap = ctx.program.stateMap($lib.stateKeys.operationTypes)
 
 		yield* effectValidation.logStateMapInfo("messageMap models", messageMap.size)
 
@@ -347,7 +352,7 @@ const generateComponents = (context: EmitContext<object>): Effect.Effect<Record<
 		}
 
 		// Generate security schemes if configured
-		const securitySchemesMap = context.program.stateMap($lib.stateKeys.securitySchemes)
+		const securitySchemesMap = ctx.program.stateMap($lib.stateKeys.securitySchemes)
 		for (const [_, securityScheme] of securitySchemesMap) {
 			const scheme = securityScheme as Record<string, unknown>
 			const securitySchemes = components['securitySchemes'] as Record<string, unknown>
@@ -361,8 +366,7 @@ const generateComponents = (context: EmitContext<object>): Effect.Effect<Record<
 		}
 
 		return components
-	}).pipe(
-		Effect.catchAll(error => effectErrorHandling.handleSpecGenerationError(error, {} as AsyncAPIEmitterOptions)),
+		}),
 	)
 
 // Utility functions moved to shared modules - see utils/ directory

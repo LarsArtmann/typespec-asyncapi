@@ -77,7 +77,7 @@ const makeMemoryMonitorService = Effect.gen(function* () {
 			} else {
 				return Effect.fail(new GarbageCollectionNotAvailableError(memoryBefore))
 			}
-		} catch (error) {
+		} catch {
 			// Use Effect.logDebug instead of console.debug for consistency
 			return Effect.fail(new GarbageCollectionNotAvailableError(memoryBefore))
 			// GC not available or failed

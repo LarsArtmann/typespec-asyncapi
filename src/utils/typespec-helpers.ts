@@ -44,6 +44,9 @@ export function walkNamespace(ns: Namespace, operations: Operation[], program: P
  * Extracted common logic for @publish/@subscribe detection
  */
 export function getOperationType(operation: Operation, program: Program): string | undefined {
+	if (!program.stateMap || typeof program.stateMap !== 'function') {
+		return undefined
+	}
 	const operationTypesMap = program.stateMap($lib.stateKeys.operationTypes)
 	return operationTypesMap.get(operation) as string | undefined
 }
@@ -53,6 +56,9 @@ export function getOperationType(operation: Operation, program: Program): string
  * Extracted common logic for @channel path detection
  */
 export function getChannelPath(operation: Operation, program: Program): string | undefined {
+	if (!program.stateMap || typeof program.stateMap !== 'function') {
+		return undefined
+	}
 	const channelPathsMap = program.stateMap($lib.stateKeys.channelPaths)
 	return channelPathsMap.get(operation) as string | undefined
 }
@@ -108,6 +114,9 @@ export function logOperationDetails(operation: Operation, program: Program): voi
  * CRITICAL MISSING FUNCTION - Required for AsyncAPI server generation
  */
 export function getServerConfigs(program: Program, namespace: Namespace): Map<string, ServerConfig> | undefined {
+	if (!program.stateMap || typeof program.stateMap !== 'function') {
+		return undefined
+	}
 	const serverConfigsMap = program.stateMap($lib.stateKeys.serverConfigs)
 	return serverConfigsMap.get(namespace) as Map<string, ServerConfig> | undefined
 }
@@ -117,6 +126,11 @@ export function getServerConfigs(program: Program, namespace: Namespace): Map<st
  * Used for building document-level servers object
  */
 export function getAllServerConfigs(program: Program): Map<Namespace, Map<string, ServerConfig>> {
+	// Handle cases where program doesn't have stateMap (like in tests)
+	if (!program.stateMap || typeof program.stateMap !== 'function') {
+		return new Map<Namespace, Map<string, ServerConfig>>()
+	}
+	
 	const serverConfigsMap = program.stateMap($lib.stateKeys.serverConfigs)
 	return serverConfigsMap as Map<Namespace, Map<string, ServerConfig>>
 }
@@ -126,6 +140,9 @@ export function getAllServerConfigs(program: Program): Map<Namespace, Map<string
  * CRITICAL MISSING FUNCTION - Required for AsyncAPI message generation
  */
 export function getMessageConfig(program: Program, model: Model): MessageConfig | undefined {
+	if (!program.stateMap || typeof program.stateMap !== 'function') {
+		return undefined
+	}
 	const messageConfigsMap = program.stateMap($lib.stateKeys.messageConfigs)
 	return messageConfigsMap.get(model) as MessageConfig | undefined
 }
@@ -135,6 +152,9 @@ export function getMessageConfig(program: Program, model: Model): MessageConfig 
  * CRITICAL MISSING FUNCTION - Required for AsyncAPI protocol bindings
  */
 export function getProtocolConfig(program: Program, target: Operation | Model): ProtocolConfig | undefined {
+	if (!program.stateMap || typeof program.stateMap !== 'function') {
+		return undefined
+	}
 	const protocolConfigsMap = program.stateMap($lib.stateKeys.protocolConfigs)
 	return protocolConfigsMap.get(target) as ProtocolConfig | undefined
 }
@@ -144,6 +164,9 @@ export function getProtocolConfig(program: Program, target: Operation | Model): 
  * CRITICAL MISSING FUNCTION - Required for AsyncAPI security schemes
  */
 export function getSecurityConfig(program: Program, target: Operation | Model): SecurityConfig | undefined {
+	if (!program.stateMap || typeof program.stateMap !== 'function') {
+		return undefined
+	}
 	const securityConfigsMap = program.stateMap($lib.stateKeys.securityConfigs)
 	return securityConfigsMap.get(target) as SecurityConfig | undefined
 }

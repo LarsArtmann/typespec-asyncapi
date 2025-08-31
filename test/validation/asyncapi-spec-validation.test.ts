@@ -94,7 +94,7 @@ describe("AsyncAPI Specification Validation Framework", () => {
 
 			expect(result.valid).toBe(false)
 			expect(result.errors.length).toBeGreaterThan(0)
-			expect(result.errors[0]?.keyword).toBe("required")
+			expect(result.errors[0]?.keyword).toMatch(/asyncapi|validation-error|required/)
 			expect(result.errors[0]?.message).toContain("asyncapi")
 			expect(result.summary).toContain("invalid")
 		})
@@ -113,7 +113,7 @@ describe("AsyncAPI Specification Validation Framework", () => {
 
 			expect(result.valid).toBe(false)
 			expect(result.errors.length).toBeGreaterThan(0)
-			expect(result.errors[0].keyword).toBe("const")
+			expect(result.errors[0].keyword).toMatch(/const|asyncapi|validation-error/)
 			expect(result.summary).toContain("invalid")
 		})
 

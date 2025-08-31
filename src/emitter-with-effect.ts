@@ -136,8 +136,9 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 		const filename = options["output-file"] || "asyncapi"
 		const extension = fileType === "yaml" ? "yaml" : "json"
 
-		// Use AssetEmitter's output directory
-		const outputDir = this.emitter.getProgram().compilerOptions.outputDir || "."
+		// Use AssetEmitter's output directory with null safety checks  
+		const program = this.emitter.getProgram()
+		const outputDir = program?.compilerOptions?.outputDir || "."
 		return `${outputDir}/${filename}.${extension}`
 	}
 

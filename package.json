@@ -118,12 +118,16 @@
     "yaml": "^2.8.1"
   },
   "peerDependencies": {
-    "@typespec/versioning": "^0.73.0"
+    "@typespec/versioning": "latest"
   },
   "peerDependenciesMeta": {
     "@typespec/versioning": {
       "optional": true
     }
+  },
+  "overrides": {
+    "form-data": "^4.0.0",
+    "tough-cookie": "^4.1.4"
   },
   "devDependencies": {
     "@confluentinc/schemaregistry": "^1.4.1",
