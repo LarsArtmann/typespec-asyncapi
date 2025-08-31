@@ -2,10 +2,10 @@
  * Official Kafka Protocol Bindings for AsyncAPI using Confluent's Kafka JavaScript Client
  *
  * UPGRADED TO USE OFFICIAL CONFLUENT KAFKA TYPES!
- * 
+ *
  * Based on @confluentinc/kafka-javascript v1.4.1 (2024) - Confluent's official
  * JavaScript client for Apache Kafka with native TypeScript support.
- * 
+ *
  * This replaces custom type definitions with battle-tested official types
  * from Confluent's librdkafka-based JavaScript client.
  *
@@ -28,17 +28,15 @@ import {
 	validateRequiredString,
 	validateStringLength,
 	validateStringPattern,
-} from "../utils/protocol-validation"
-import type { Binding } from "@asyncapi/parser/esm/spec-types/v3"
-import type { 
+} from "@/utils/protocol-validation"
+import type {Binding} from "@asyncapi/parser/esm/spec-types/v3"
+import type {
+	ConsumerGlobalConfig,
+	ConsumerTopicConfig,
 	GlobalConfig,
 	ProducerGlobalConfig,
-	ConsumerGlobalConfig,
-	ConsumerTopicConfig
 } from "@confluentinc/kafka-javascript/types/config"
-import type { 
-	ClientConfig 
-} from "@confluentinc/schemaregistry/dist/rest-service"
+import type {ClientConfig} from "@confluentinc/schemaregistry/dist/rest-service"
 
 /**
  * Official Kafka Channel Binding using Confluent's types
@@ -180,10 +178,10 @@ export function validateKafkaOperationBinding(binding: KafkaOperationBinding): {
 
 	// Validate consumer configuration if provided
 	if (binding.consumerConfig?.["auto.commit.interval.ms"] !== undefined) {
-		const intervalMs = binding.consumerConfig["auto.commit.interval.ms"];
+		const intervalMs = binding.consumerConfig["auto.commit.interval.ms"]
 		const intervalValidation = validatePositiveInteger(intervalMs, "Auto-commit interval", undefined)
 		errors.push(...intervalValidation.errors)
-		
+
 		if (intervalMs < 100) {
 			warnings.push("Very low auto-commit interval may impact performance")
 		}
@@ -202,6 +200,7 @@ export function validateKafkaOperationBinding(binding: KafkaOperationBinding): {
 export function createDefaultKafkaChannelBinding(topicName: string): KafkaChannelBinding {
 	return {
 		topic: topicName,
+		//TODO: Actually implement shit??
 		// Use cluster defaults for partitions and replicas
 		// Most production clusters have sensible defaults
 	}
@@ -217,11 +216,11 @@ export function createDefaultKafkaOperationBinding(groupId: string): KafkaOperat
 		consumerConfig: {
 			"enable.auto.commit": true,
 			"auto.commit.interval.ms": 5000, // 5 seconds - reasonable default
-			"session.timeout.ms": 30000
+			"session.timeout.ms": 30000,
 		},
 		consumerTopicConfig: {
-			"auto.offset.reset": "earliest"
-		}
+			"auto.offset.reset": "earliest",
+		},
 	}
 }
 

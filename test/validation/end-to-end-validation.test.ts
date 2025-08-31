@@ -1,34 +1,36 @@
 /**
  * End-to-End AsyncAPI Validation Pipeline Tests
- * 
+ *
  * Tests the complete pipeline from TypeSpec source compilation
  * to AsyncAPI generation and comprehensive validation against
  * the official AsyncAPI 3.0.0 specification.
  */
 
-import { describe, it, expect, beforeAll } from "vitest";
-import { AsyncAPIValidator, validateAsyncAPIFile } from "../../src/validation/index";
-import { compileAsyncAPISpec, parseAsyncAPIOutput, validateAsyncAPIObjectComprehensive } from "../utils/test-helpers";
-import { writeFile, mkdir, rm } from "node:fs/promises";
-import { join } from "node:path";
+import {afterAll, beforeAll, describe, expect, it} from "vitest"
+//TODO: validateAsyncAPIString is deprecated!
+import {AsyncAPIValidator, validateAsyncAPIFile} from "../../src/validation/asyncapi-validator"
+import {compileAsyncAPISpec, parseAsyncAPIOutput} from "../utils/test-helpers"
+import {mkdir, rm, writeFile} from "node:fs/promises"
+import {join} from "node:path"
+import {Effect} from "effect"
 
 describe("End-to-End AsyncAPI Validation Pipeline", () => {
-  const testOutputDir = join(process.cwd(), "test-output", "e2e-validation");
-  let validator: AsyncAPIValidator;
+	const testOutputDir = join(process.cwd(), "test-output", "e2e-validation")
+	let validator: AsyncAPIValidator
 
-  beforeAll(async () => {
-    await mkdir(testOutputDir, { recursive: true });
-    validator = new AsyncAPIValidator({ strict: true, enableCache: false });
-    await validator.initialize();
-  });
+	beforeAll(async () => {
+		await mkdir(testOutputDir, {recursive: true})
+		validator = new AsyncAPIValidator({strict: true, enableCache: false})
+		await validator.initialize()
+	})
 
-  afterAll(async () => {
-    await rm(testOutputDir, { recursive: true, force: true });
-  });
+	afterAll(async () => {
+		await rm(testOutputDir, {recursive: true, force: true})
+	})
 
-  describe("TypeSpec → AsyncAPI → Validation Pipeline", () => {
-    it("should generate and validate a complete event-driven API specification", async () => {
-      const typeSpecSource = `
+	describe("TypeSpec → AsyncAPI → Validation Pipeline", () => {
+		it("should generate and validate a complete event-driven API specification", async () => {
+			const typeSpecSource = `
         @doc("Comprehensive event-driven API for user management")
         namespace UserManagementAPI;
         
@@ -143,78 +145,78 @@ describe("End-to-End AsyncAPI Validation Pipeline", () => {
           @doc("Message priority")
           priority: "low" | "normal" | "high" | "urgent";
         };
-      `;
+      `
 
-      // Step 1: Compile TypeSpec to AsyncAPI
-      Effect.log("🔄 Step 1: Compiling TypeSpec to AsyncAPI...");
-      const compilationResult = await compileAsyncAPISpec(typeSpecSource, {
-        "file-type": "json",
-        "output-file": "comprehensive-api",
-      });
+			// Step 1: Compile TypeSpec to AsyncAPI
+			Effect.log("🔄 Step 1: Compiling TypeSpec to AsyncAPI...")
+			const compilationResult = await compileAsyncAPISpec(typeSpecSource, {
+				"file-type": "json",
+				"output-file": "comprehensive-api",
+			})
 
-      expect(compilationResult.diagnostics).toBeDefined();
-      expect(compilationResult.outputFiles).toBeDefined();
-      expect(compilationResult.outputFiles.size).toBeGreaterThan(0);
+			expect(compilationResult.diagnostics).toBeDefined()
+			expect(compilationResult.outputFiles).toBeDefined()
+			expect(compilationResult.outputFiles.size).toBeGreaterThan(0)
 
-      // Step 2: Parse generated AsyncAPI document
-      Effect.log("📄 Step 2: Parsing generated AsyncAPI document...");
-      const asyncApiDoc = parseAsyncAPIOutput(compilationResult.outputFiles, "comprehensive-api.json");
-      expect(asyncApiDoc).toBeDefined();
-      expect(typeof asyncApiDoc).toBe("object");
+			// Step 2: Parse generated AsyncAPI document
+			Effect.log("📄 Step 2: Parsing generated AsyncAPI document...")
+			const asyncApiDoc = parseAsyncAPIOutput(compilationResult.outputFiles, "comprehensive-api.json")
+			expect(asyncApiDoc).toBeDefined()
+			expect(typeof asyncApiDoc).toBe("object")
 
-      // Step 3: Comprehensive validation against AsyncAPI 3.0.0 schema
-      Effect.log("✅ Step 3: Validating against AsyncAPI 3.0.0 specification...");
-      const validationResult = await validator.validate(asyncApiDoc);
+			// Step 3: Comprehensive validation against AsyncAPI 3.0.0 schema
+			Effect.log("✅ Step 3: Validating against AsyncAPI 3.0.0 specification...")
+			const validationResult = await validator.validate(asyncApiDoc)
 
-      expect(validationResult.valid).toBe(true);
-      expect(validationResult.errors).toHaveLength(0);
-      expect(validationResult.summary).toContain("AsyncAPI document is valid");
+			expect(validationResult.valid).toBe(true)
+			expect(validationResult.errors).toHaveLength(0)
+			expect(validationResult.summary).toContain("AsyncAPI document is valid")
 
-      // Step 4: Verify structural completeness
-      Effect.log("🔍 Step 4: Verifying document structure...");
-      const doc = asyncApiDoc as any;
-      
-      // Check AsyncAPI version
-      expect(doc.asyncapi).toBe("3.0.0");
-      
-      // Check info object
-      expect(doc.info).toBeDefined();
-      expect(doc.info.title).toBeDefined();
-      expect(doc.info.version).toBeDefined();
-      
-      // Check channels (should have multiple channels from TypeSpec)
-      expect(doc.channels).toBeDefined();
-      expect(Object.keys(doc.channels).length).toBeGreaterThan(0);
-      
-      // Check operations
-      expect(doc.operations).toBeDefined();
-      expect(Object.keys(doc.operations).length).toBeGreaterThan(0);
-      
-      // Check components/schemas
-      expect(doc.components).toBeDefined();
-      expect(doc.components.schemas).toBeDefined();
-      expect(Object.keys(doc.components.schemas).length).toBeGreaterThan(0);
+			// Step 4: Verify structural completeness
+			Effect.log("🔍 Step 4: Verifying document structure...")
+			const doc = asyncApiDoc as any
 
-      // Step 5: Validate specific AsyncAPI patterns
-      Effect.log("🎯 Step 5: Validating AsyncAPI patterns...");
-      
-      // Check for proper channel references in operations
-      for (const [operationName, operation] of Object.entries(doc.operations)) {
-        expect(operation).toHaveProperty("action");
-        expect(operation).toHaveProperty("channel");
-        expect((operation as any).channel).toHaveProperty("$ref");
-        expect((operation as any).channel.$ref).toMatch(/^#\/channels\/.+/);
-        
-        // Verify referenced channel exists
-        const channelRef = (operation as any).channel.$ref.replace("#/channels/", "");
-        expect(doc.channels).toHaveProperty(channelRef);
-      }
+			// Check AsyncAPI version
+			expect(doc.asyncapi).toBe("3.0.0")
 
-      Effect.log("✅ All validation steps completed successfully!");
-    });
+			// Check info object
+			expect(doc.info).toBeDefined()
+			expect(doc.info.title).toBeDefined()
+			expect(doc.info.version).toBeDefined()
 
-    it("should detect and report validation errors in malformed AsyncAPI", async () => {
-      const invalidTypeSpecSource = `
+			// Check channels (should have multiple channels from TypeSpec)
+			expect(doc.channels).toBeDefined()
+			expect(Object.keys(doc.channels).length).toBeGreaterThan(0)
+
+			// Check operations
+			expect(doc.operations).toBeDefined()
+			expect(Object.keys(doc.operations).length).toBeGreaterThan(0)
+
+			// Check components/schemas
+			expect(doc.components).toBeDefined()
+			expect(doc.components.schemas).toBeDefined()
+			expect(Object.keys(doc.components.schemas).length).toBeGreaterThan(0)
+
+			// Step 5: Validate specific AsyncAPI patterns
+			Effect.log("🎯 Step 5: Validating AsyncAPI patterns...")
+
+			// Check for proper channel references in operations
+			for (const [operationName, operation] of Object.entries(doc.operations)) {
+				expect(operation).toHaveProperty("action")
+				expect(operation).toHaveProperty("channel")
+				expect((operation as any).channel).toHaveProperty("$ref")
+				expect((operation as any).channel.$ref).toMatch(/^#\/channels\/.+/)
+
+				// Verify referenced channel exists
+				const channelRef = (operation as any).channel.$ref.replace("#/channels/", "")
+				expect(doc.channels).toHaveProperty(channelRef)
+			}
+
+			Effect.log("✅ All validation steps completed successfully!")
+		})
+
+		it("should detect and report validation errors in malformed AsyncAPI", async () => {
+			const invalidTypeSpecSource = `
         namespace InvalidAPI;
         
         // This should generate an invalid AsyncAPI document
@@ -226,39 +228,39 @@ describe("End-to-End AsyncAPI Validation Pipeline", () => {
         // Invalid operation definition
         @channel("invalid-channel")
         op invalidOperation(): InvalidModel;
-      `;
+      `
 
-      try {
-        const compilationResult = await compileAsyncAPISpec(invalidTypeSpecSource, {
-          "file-type": "json",
-          "output-file": "invalid-api",
-        });
+			try {
+				const compilationResult = await compileAsyncAPISpec(invalidTypeSpecSource, {
+					"file-type": "json",
+					"output-file": "invalid-api",
+				})
 
-        const asyncApiDoc = parseAsyncAPIOutput(compilationResult.outputFiles, "invalid-api.json");
+				const asyncApiDoc = parseAsyncAPIOutput(compilationResult.outputFiles, "invalid-api.json")
 
-        // Attempt validation - might pass basic structure but fail on completeness
-        const validationResult = await validator.validate(asyncApiDoc);
+				// Attempt validation - might pass basic structure but fail on completeness
+				const validationResult = await validator.validate(asyncApiDoc)
 
-        // Document might be structurally valid but incomplete
-        // The test ensures the validation process completes without errors
-        expect(validationResult).toBeDefined();
-        expect(validationResult.valid).toBeDefined();
-        expect(validationResult.errors).toBeDefined();
-        expect(validationResult.summary).toBeDefined();
+				// Document might be structurally valid but incomplete
+				// The test ensures the validation process completes without errors
+				expect(validationResult).toBeDefined()
+				expect(validationResult.valid).toBeDefined()
+				expect(validationResult.errors).toBeDefined()
+				expect(validationResult.summary).toBeDefined()
 
-        Effect.log(`Validation result: ${validationResult.summary}`);
-        if (!validationResult.valid) {
-          Effect.log("Validation errors:", validationResult.errors.map(e => e.message));
-        }
-      } catch (error) {
-        // If compilation fails, that's also a valid test outcome
-        Effect.log(`Compilation failed as expected: ${error instanceof Error ? error.message : String(error)}`);
-        expect(error).toBeDefined();
-      }
-    });
+				Effect.log(`Validation result: ${validationResult.summary}`)
+				if (!validationResult.valid) {
+					Effect.log("Validation errors:", validationResult.errors.map(e => e.message))
+				}
+			} catch (error) {
+				// If compilation fails, that's also a valid test outcome
+				Effect.log(`Compilation failed as expected: ${error instanceof Error ? error.message : String(error)}`)
+				expect(error).toBeDefined()
+			}
+		})
 
-    it("should validate AsyncAPI files generated to disk", async () => {
-      const typeSpecSource = `
+		it("should validate AsyncAPI files generated to disk", async () => {
+			const typeSpecSource = `
         @doc("File-based validation test API")
         namespace FileValidationAPI;
         
@@ -277,30 +279,30 @@ describe("End-to-End AsyncAPI Validation Pipeline", () => {
         @channel("simple.events")
         @doc("Simple events channel")
         op publishSimpleEvent(): SimpleEvent;
-      `;
+      `
 
-      // Compile and get the generated content
-      const compilationResult = await compileAsyncAPISpec(typeSpecSource, {
-        "file-type": "json",
-        "output-file": "file-validation-test",
-      });
+			// Compile and get the generated content
+			const compilationResult = await compileAsyncAPISpec(typeSpecSource, {
+				"file-type": "json",
+				"output-file": "file-validation-test",
+			})
 
-      const asyncApiDoc = parseAsyncAPIOutput(compilationResult.outputFiles, "file-validation-test.json");
+			const asyncApiDoc = parseAsyncAPIOutput(compilationResult.outputFiles, "file-validation-test.json")
 
-      // Write to actual file for file validation test
-      const filePath = join(testOutputDir, "file-validation-test.json");
-      await writeFile(filePath, JSON.stringify(asyncApiDoc, null, 2));
+			// Write to actual file for file validation test
+			const filePath = join(testOutputDir, "file-validation-test.json")
+			await writeFile(filePath, JSON.stringify(asyncApiDoc, null, 2))
 
-      // Validate the file using file validation
-      const fileValidationResult = await validateAsyncAPIFile(filePath);
+			//TODO: validateAsyncAPIString is deprecated!
+			// Validate the file using file validation
+			const fileValidationResult = await validateAsyncAPIFile(filePath)
 
-      expect(fileValidationResult.valid).toBe(true);
-      expect(fileValidationResult.errors).toHaveLength(0);
-      expect(fileValidationResult.summary).toContain("AsyncAPI document is valid");
-    });
+			expect(fileValidationResult.valid).toBe(true)
+			expect(fileValidationResult.errors).toHaveLength(0)
+		})
 
-    it("should validate YAML output from TypeSpec compilation", async () => {
-      const typeSpecSource = `
+		it("should validate YAML output from TypeSpec compilation", async () => {
+			const typeSpecSource = `
         @doc("YAML output validation test")
         namespace YamlValidationAPI;
         
@@ -319,37 +321,38 @@ describe("End-to-End AsyncAPI Validation Pipeline", () => {
         @channel("yaml.events")
         @doc("YAML events channel") 
         op publishYamlEvent(): YamlEvent;
-      `;
+      `
 
-      // Generate YAML output
-      const compilationResult = await compileAsyncAPISpec(typeSpecSource, {
-        "file-type": "yaml",
-        "output-file": "yaml-validation-test",
-      });
+			// Generate YAML output
+			const compilationResult = await compileAsyncAPISpec(typeSpecSource, {
+				"file-type": "yaml",
+				"output-file": "yaml-validation-test",
+			})
 
-      // Get YAML content
-      const yamlContent = compilationResult.outputFiles.get("test-output/yaml-validation-test.yaml")?.content ||
-                         compilationResult.outputFiles.get("yaml-validation-test.yaml")?.content;
+			// Get YAML content
+			const yamlContent = compilationResult.outputFiles.get("test-output/yaml-validation-test.yaml")?.content ||
+				compilationResult.outputFiles.get("yaml-validation-test.yaml")?.content
 
-      expect(yamlContent).toBeDefined();
-      expect(typeof yamlContent).toBe("string");
-      expect(yamlContent).toContain("asyncapi:");
-      expect(yamlContent).toContain("3.0.0");
+			expect(yamlContent).toBeDefined()
+			expect(typeof yamlContent).toBe("string")
+			expect(yamlContent).toContain("asyncapi:")
+			expect(yamlContent).toContain("3.0.0")
 
-      // Write YAML file and validate
-      const yamlFilePath = join(testOutputDir, "yaml-validation-test.yaml");
-      await writeFile(yamlFilePath, yamlContent!);
+			// Write YAML file and validate
+			const yamlFilePath = join(testOutputDir, "yaml-validation-test.yaml")
+			await writeFile(yamlFilePath, yamlContent!)
 
-      const yamlValidationResult = await validateAsyncAPIFile(yamlFilePath);
+			//TODO: validateAsyncAPIString is deprecated!
+			const yamlValidationResult = await validateAsyncAPIFile(yamlFilePath)
 
-      expect(yamlValidationResult.valid).toBe(true);
-      expect(yamlValidationResult.errors).toHaveLength(0);
-    });
-  });
+			expect(yamlValidationResult.valid).toBe(true)
+			expect(yamlValidationResult.errors).toHaveLength(0)
+		})
+	})
 
-  describe("Real-World AsyncAPI Validation Scenarios", () => {
-    it("should validate microservices event architecture", async () => {
-      const microservicesTypeSpec = `
+	describe("Real-World AsyncAPI Validation Scenarios", () => {
+		it("should validate microservices event architecture", async () => {
+			const microservicesTypeSpec = `
         @doc("Microservices Event-Driven Architecture")
         namespace MicroservicesAPI;
         
@@ -419,28 +422,28 @@ describe("End-to-End AsyncAPI Validation Pipeline", () => {
           trackingNumber?: string;
           estimatedDelivery?: utcDateTime;
         };
-      `;
+      `
 
-      const compilationResult = await compileAsyncAPISpec(microservicesTypeSpec, {
-        "file-type": "json",
-        "output-file": "microservices-api",
-      });
+			const compilationResult = await compileAsyncAPISpec(microservicesTypeSpec, {
+				"file-type": "json",
+				"output-file": "microservices-api",
+			})
 
-      const asyncApiDoc = parseAsyncAPIOutput(compilationResult.outputFiles, "microservices-api.json");
-      const validationResult = await validator.validate(asyncApiDoc);
+			const asyncApiDoc = parseAsyncAPIOutput(compilationResult.outputFiles, "microservices-api.json")
+			const validationResult = await validator.validate(asyncApiDoc)
 
-      expect(validationResult.valid).toBe(true);
-      expect(validationResult.errors).toHaveLength(0);
+			expect(validationResult.valid).toBe(true)
+			expect(validationResult.errors).toHaveLength(0)
 
-      // Verify comprehensive microservices structure
-      const doc = asyncApiDoc as any;
-      expect(Object.keys(doc.channels).length).toBeGreaterThan(3); // Multiple service channels
-      expect(Object.keys(doc.operations).length).toBeGreaterThan(5); // Multiple operations
-      expect(Object.keys(doc.components.schemas).length).toBeGreaterThan(3); // Multiple data models
-    });
+			// Verify comprehensive microservices structure
+			const doc = asyncApiDoc as any
+			expect(Object.keys(doc.channels).length).toBeGreaterThan(3) // Multiple service channels
+			expect(Object.keys(doc.operations).length).toBeGreaterThan(5) // Multiple operations
+			expect(Object.keys(doc.components.schemas).length).toBeGreaterThan(3) // Multiple data models
+		})
 
-    it("should validate IoT sensor data streaming API", async () => {
-      const iotTypeSpec = `
+		it("should validate IoT sensor data streaming API", async () => {
+			const iotTypeSpec = `
         @doc("IoT Sensor Data Streaming API")
         namespace IoTSensorAPI;
         
@@ -509,93 +512,93 @@ describe("End-to-End AsyncAPI Validation Pipeline", () => {
           deviceCount: int32;
           timestamp: utcDateTime;
         };
-      `;
+      `
 
-      const compilationResult = await compileAsyncAPISpec(iotTypeSpec, {
-        "file-type": "json",
-        "output-file": "iot-sensor-api",
-      });
+			const compilationResult = await compileAsyncAPISpec(iotTypeSpec, {
+				"file-type": "json",
+				"output-file": "iot-sensor-api",
+			})
 
-      const asyncApiDoc = parseAsyncAPIOutput(compilationResult.outputFiles, "iot-sensor-api.json");
-      const validationResult = await validator.validate(asyncApiDoc);
+			const asyncApiDoc = parseAsyncAPIOutput(compilationResult.outputFiles, "iot-sensor-api.json")
+			const validationResult = await validator.validate(asyncApiDoc)
 
-      expect(validationResult.valid).toBe(true);
-      expect(validationResult.errors).toHaveLength(0);
+			expect(validationResult.valid).toBe(true)
+			expect(validationResult.errors).toHaveLength(0)
 
-      // Verify IoT-specific patterns
-      const doc = asyncApiDoc as any;
-      
-      // Should have parameterized channels for device-specific streams
-      const channelNames = Object.keys(doc.channels);
-      const hasParameterizedChannels = channelNames.some(name => name.includes("{"));
-      expect(hasParameterizedChannels).toBe(true);
+			// Verify IoT-specific patterns
+			const doc = asyncApiDoc as any
 
-      // Should have both streaming and aggregated data patterns
-      expect(Object.keys(doc.operations).length).toBeGreaterThan(4);
-      expect(Object.keys(doc.components.schemas).length).toBeGreaterThan(2);
-    });
-  });
+			// Should have parameterized channels for device-specific streams
+			const channelNames = Object.keys(doc.channels)
+			const hasParameterizedChannels = channelNames.some(name => name.includes("{"))
+			expect(hasParameterizedChannels).toBe(true)
 
-  describe("Validation Performance in Real Pipeline", () => {
-    it("should validate multiple generated APIs efficiently", async () => {
-      const apiSpecs = [
-        {
-          name: "user-api",
-          source: `
+			// Should have both streaming and aggregated data patterns
+			expect(Object.keys(doc.operations).length).toBeGreaterThan(4)
+			expect(Object.keys(doc.components.schemas).length).toBeGreaterThan(2)
+		})
+	})
+
+	describe("Validation Performance in Real Pipeline", () => {
+		it("should validate multiple generated APIs efficiently", async () => {
+			const apiSpecs = [
+				{
+					name: "user-api",
+					source: `
             namespace UserAPI;
             model User { id: string; name: string; }
             @channel("users") op createUser(): User;
           `,
-        },
-        {
-          name: "product-api",
-          source: `
+				},
+				{
+					name: "product-api",
+					source: `
             namespace ProductAPI;
             model Product { id: string; name: string; price: float64; }
             @channel("products") op createProduct(): Product;
           `,
-        },
-        {
-          name: "order-api",
-          source: `
+				},
+				{
+					name: "order-api",
+					source: `
             namespace OrderAPI;
             model Order { id: string; userId: string; total: float64; }
             @channel("orders") op createOrder(): Order;
           `,
-        },
-      ];
+				},
+			]
 
-      const startTime = performance.now();
-      const validationResults: Array<{ name: string; valid: boolean; duration: number }> = [];
+			const startTime = performance.now()
+			const validationResults: Array<{ name: string; valid: boolean; duration: number }> = []
 
-      for (const spec of apiSpecs) {
-        const compilationResult = await compileAsyncAPISpec(spec.source, {
-          "file-type": "json",
-          "output-file": spec.name,
-        });
+			for (const spec of apiSpecs) {
+				const compilationResult = await compileAsyncAPISpec(spec.source, {
+					"file-type": "json",
+					"output-file": spec.name,
+				})
 
-        const asyncApiDoc = parseAsyncAPIOutput(compilationResult.outputFiles, `${spec.name}.json`);
-        const validationResult = await validator.validate(asyncApiDoc);
+				const asyncApiDoc = parseAsyncAPIOutput(compilationResult.outputFiles, `${spec.name}.json`)
+				const validationResult = await validator.validate(asyncApiDoc)
 
-        validationResults.push({
-          name: spec.name,
-          valid: validationResult.valid,
-          duration: validationResult.metrics.duration,
-        });
-      }
+				validationResults.push({
+					name: spec.name,
+					valid: validationResult.valid,
+					duration: validationResult.metrics.duration,
+				})
+			}
 
-      const totalTime = performance.now() - startTime;
+			const totalTime = performance.now() - startTime
 
-      // All APIs should be valid
-      expect(validationResults.every(r => r.valid)).toBe(true);
+			// All APIs should be valid
+			expect(validationResults.every(r => r.valid)).toBe(true)
 
-      // Total validation time should be reasonable
-      expect(totalTime).toBeLessThan(5000); // Less than 5 seconds for 3 APIs
+			// Total validation time should be reasonable
+			expect(totalTime).toBeLessThan(5000) // Less than 5 seconds for 3 APIs
 
-      Effect.log(`Validated ${apiSpecs.length} APIs in ${totalTime.toFixed(2)}ms`);
-      Effect.log("Individual results:", validationResults.map(r => 
-        `${r.name}: ${r.valid ? "✅" : "❌"} (${r.duration.toFixed(2)}ms)`
-      ));
-    });
-  });
-});
+			Effect.log(`Validated ${apiSpecs.length} APIs in ${totalTime.toFixed(2)}ms`)
+			Effect.log("Individual results:", validationResults.map(r =>
+				`${r.name}: ${r.valid ? "✅" : "❌"} (${r.duration.toFixed(2)}ms)`,
+			))
+		})
+	})
+})

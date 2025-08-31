@@ -1,6 +1,6 @@
 {
   "statistics": {
-    "detectionDate": "2025-08-31T03:20:15.997Z",
+    "detectionDate": "2025-08-31T03:32:23.723Z",
     "formats": {
       "typescript": {
         "sources": {
@@ -41,8 +41,8 @@
             "newClones": 0
           },
           "src/validation/index.ts": {
-            "lines": 26,
-            "tokens": 82,
+            "lines": 25,
+            "tokens": 78,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -53,14 +53,14 @@
             "newClones": 0
           },
           "src/validation/asyncapi-validator.ts": {
-            "lines": 372,
-            "tokens": 2506,
+            "lines": 371,
+            "tokens": 2490,
             "sources": 1,
             "clones": 2,
             "duplicatedLines": 14,
             "duplicatedTokens": 152,
-            "percentage": 3.76,
-            "percentageTokens": 6.07,
+            "percentage": 3.77,
+            "percentageTokens": 6.1,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -113,14 +113,14 @@
             "newClones": 0
           },
           "src/utils/asyncapi-helpers.ts": {
-            "lines": 157,
-            "tokens": 1337,
+            "lines": 161,
+            "tokens": 1345,
             "sources": 1,
             "clones": 3,
             "duplicatedLines": 29,
             "duplicatedTokens": 252,
-            "percentage": 18.47,
-            "percentageTokens": 18.85,
+            "percentage": 18.01,
+            "percentageTokens": 18.74,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -509,8 +509,8 @@
             "newClones": 0
           },
           "src/bindings/kafka.ts": {
-            "lines": 256,
-            "tokens": 1397,
+            "lines": 255,
+            "tokens": 1394,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -641,21 +641,21 @@
             "newClones": 0
           },
           "src/asyncapi-emitter.ts": {
-            "lines": 419,
-            "tokens": 3063,
+            "lines": 420,
+            "tokens": 3065,
             "sources": 1,
             "clones": 3,
             "duplicatedLines": 24,
             "duplicatedTokens": 237,
-            "percentage": 5.73,
-            "percentageTokens": 7.74,
+            "percentage": 5.71,
+            "percentageTokens": 7.73,
             "newDuplicatedLines": 0,
             "newClones": 0
           }
         },
         "total": {
-          "lines": 10257,
-          "tokens": 72417,
+          "lines": 10259,
+          "tokens": 72404,
           "sources": 54,
           "clones": 9,
           "duplicatedLines": 60,
@@ -668,8 +668,8 @@
       }
     },
     "total": {
-      "lines": 10257,
-      "tokens": 72417,
+      "lines": 10259,
+      "tokens": 72404,
       "sources": 54,
       "clones": 9,
       "duplicatedLines": 60,
@@ -883,17 +883,17 @@
       },
       "secondFile": {
         "name": "src/utils/asyncapi-helpers.ts",
-        "start": 45,
-        "end": 54,
+        "start": 46,
+        "end": 55,
         "startLoc": {
-          "line": 45,
+          "line": 46,
           "column": 2,
-          "position": 345
+          "position": 347
         },
         "endLoc": {
-          "line": 54,
+          "line": 55,
           "column": 7,
-          "position": 417
+          "position": 419
         }
       }
     },
@@ -955,17 +955,17 @@
       },
       "secondFile": {
         "name": "src/utils/asyncapi-helpers.ts",
-        "start": 44,
-        "end": 54,
+        "start": 45,
+        "end": 55,
         "startLoc": {
-          "line": 44,
+          "line": 45,
           "column": 2,
-          "position": 314
+          "position": 316
         },
         "endLoc": {
-          "line": 54,
+          "line": 55,
           "column": 7,
-          "position": 417
+          "position": 419
         }
       }
     },
@@ -991,17 +991,17 @@
       },
       "secondFile": {
         "name": "src/utils/asyncapi-helpers.ts",
-        "start": 63,
-        "end": 76,
+        "start": 64,
+        "end": 74,
         "startLoc": {
-          "line": 63,
+          "line": 64,
           "column": 14,
-          "position": 488
+          "position": 490
         },
         "endLoc": {
-          "line": 76,
-          "column": 4,
-          "position": 563
+          "line": 74,
+          "column": 66,
+          "position": 565
         }
       }
     }

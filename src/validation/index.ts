@@ -20,7 +20,6 @@ export {
 export type {
 	// Types
 	ValidationResult,
-	AsyncAPIValidationResult,
 	ValidationError,
 	ValidationOptions,
 	ValidationStats,

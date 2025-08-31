@@ -383,6 +383,7 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
  * - Future-proof architecture for TypeSpec ecosystem changes
  */
 
+//TODO: Why is this function never called?? FUCKING IMPLEMENT IT!
 /**
  * Generate AsyncAPI 3.0 specification using AssetEmitter architecture
  *

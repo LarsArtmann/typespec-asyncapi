@@ -12,6 +12,7 @@ import {convertModelToSchema} from "./schema-conversion"
 
 import {stringify} from "yaml"
 
+//TODO: Why is this function never called?? FUCKING IMPLEMENT IT!
 /**
  * Create initial AsyncAPI document structure
  * Centralized document creation logic
@@ -70,6 +71,7 @@ export function createOperationDefinition(op: Operation, program: Program, chann
 	}
 }
 
+//TODO: Why is this function never called?? FUCKING IMPLEMENT IT!
 /**
  * Process operation and add to AsyncAPI document
  * Extracted common operation processing logic
@@ -111,6 +113,7 @@ export function processOperationToDocument(
 	}
 }
 
+//TODO: Why is this function never called?? FUCKING IMPLEMENT IT!
 /**
  * Generate content string for AsyncAPI document
  * Centralized content generation logic
@@ -144,6 +147,7 @@ export function generateAsyncAPIContent(document: AsyncAPIObject, fileType: "jso
 	return content
 }
 
+//TODO: Why is this function never called?? FUCKING IMPLEMENT IT!
 /**
  * Log processing statistics
  * Centralized stats logging

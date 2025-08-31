@@ -257,7 +257,7 @@ export async function validateAsyncAPIObjectComprehensive(asyncapiDoc: unknown):
 }> {
 	try {
 		// Import validation framework dynamically to avoid circular dependencies
-		const {validateAsyncAPIObject} = await import("../../src/validation/index")
+		const {validateAsyncAPIObject} = await import("../../src/validation/asyncapi-validator")
 
 		const result = await validateAsyncAPIObject(asyncapiDoc, {
 			strict: true,

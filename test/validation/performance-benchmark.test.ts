@@ -5,14 +5,14 @@
  * to ensure it meets enterprise-scale requirements with proper benchmarking.
  */
 
-import { describe, it, expect, beforeAll } from "vitest";
+import { describe, it, expect } from "vitest";
 import { 
   PerformanceBenchmark,
   runValidationBenchmark,
   PerformanceAssertions,
   type BenchmarkResult,
   type BenchmarkOptions
-} from "../../src/validation/index";
+} from "../../src/validation/asyncapi-validator";
 
 describe("AsyncAPI Validation Performance Benchmarks", () => {
   describe("Quick Performance Tests", () => {

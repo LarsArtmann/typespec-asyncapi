@@ -20,7 +20,7 @@ import {type AssetEmitter, createAssetEmitter, TypeEmitter} from "@typespec/asse
 import {stringify} from "yaml"
 import type {AsyncAPIEmitterOptions} from "./options"
 import type {SchemaObject} from "./types/index"
-import {validateAsyncAPIEffect, type ValidationError} from "./validation/index"
+import {validateAsyncAPIEffect, type ValidationError} from "./validation/asyncapi-validator"
 import {$lib} from "./lib"
 import {PERFORMANCE_METRICS_SERVICE, PERFORMANCE_METRICS_SERVICE_LIVE} from "./performance/metrics"
 import {MEMORY_MONITOR_SERVICE, MEMORY_MONITOR_SERVICE_LIVE} from "./performance/memory-monitor"

@@ -27,10 +27,11 @@ describe("Debug Emitter Registration", () => {
 		// Capture console output
 		const consoleLogs: string[] = []
 		const originalLog = Effect.log
-		Effect.log = (...args) => {
-			consoleLogs.push(args.join(" "))
-			originalLog(...args)
-		}
+		//TODO: needs to be replaced with something that works, e.g. Effect tests?
+		///Effect.log = (...args) => {
+		///	consoleLogs.push(args.join(" "))
+		///	originalLog(...args)
+		///}
 
 		try {
 			const result = await host.compileAndDiagnose("debug.tsp", {
@@ -103,7 +104,8 @@ describe("Debug Emitter Registration", () => {
 			emitterLogs.forEach((log, i) => Effect.log(`  ${i + 1}. ${log}`))
 
 		} finally {
-			Effect.log = originalLog
+			//TODO: needs to be replaced with something that works, e.g. Effect tests?
+			//Effect.log = originalLog
 		}
 	})
 })

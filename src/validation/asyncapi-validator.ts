@@ -300,6 +300,7 @@ export const validateAsyncAPIEffect = (content: string): Effect.Effect<{
 	warnings: string[]
 }, Error> =>
 	Effect.tryPromise({
+		//TODO: validateAsyncAPIString is deprecated!
 		try: () => validateAsyncAPIString(content),
 		catch: (error) => new Error(`AsyncAPI validation failed: ${error}`),
 	})
@@ -317,6 +318,7 @@ export async function validateWithDiagnostics(content: string): Promise<{
 		path?: string;
 	}>;
 }> {
+	//TODO: validateAsyncAPIString is deprecated!
 	const result = await validateAsyncAPIString(content)
 
 	//TODO: All types should have a dedicated name, no anonymous sub objects
@@ -348,6 +350,7 @@ export async function validateWithDiagnostics(content: string): Promise<{
  */
 export async function isValidAsyncAPI(content: string): Promise<boolean> {
 	try {
+		//TODO: validateAsyncAPIString is deprecated!
 		const result = await validateAsyncAPIString(content)
 		return result.valid
 	} catch {
@@ -367,7 +370,3 @@ export async function validateAsyncAPIObject(document: unknown, options: {
 	validator.initialize()
 	return validator.validate(document)
 }
-
-// Re-export types for compatibility
-export type AsyncAPIValidationResult = ValidationResult;
-export type AsyncAPIValidatorOptions = ValidationOptions;
