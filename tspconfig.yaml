@@ -1,5 +1,5 @@
 emit:
-  - "@typespec/asyncapi"
+  - "@larsartmann/typespec-asyncapi"
 options:
-  "@typespec/asyncapi":
+  "@larsartmann/typespec-asyncapi":
     "output-file": "test-output"

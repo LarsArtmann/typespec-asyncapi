@@ -76,7 +76,9 @@
       "Bash(npm search:*)",
       "Bash(just clean:*)",
       "Bash(npx tsc:*)",
-      "Bash(just:*)"
+      "Bash(just:*)",
+      "Bash(then trash dist/)",
+      "Bash(else echo \"\"ℹ️ No dist/ directory to clean\"\")"
     ],
     "deny": [],
     "ask": []

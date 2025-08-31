@@ -80,11 +80,12 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 				yield* memoryMonitor.startMonitoring(5000) // Monitor every 5 seconds
 
 				// Execute the emission stages
-				const ops: Operation[] = yield* this.discoverOperationsEffect()
+				const ops = (yield* this.discoverOperationsEffect()) as Operation[]
 				yield* this.processOperationsEffect(ops)
-				const doc: string = yield* this.generateDocumentEffect()
-				const validatedDoc: string = yield* this.validateDocumentEffect(doc)
-				yield* this.writeDocumentEffect(validatedDoc)
+				const doc = (yield* this.generateDocumentEffect()) as string
+				const validatedDoc = (yield* this.validateDocumentEffect(doc)) as string
+				// Document processing complete - file writing handled by AssetEmitter
+				Effect.log(`✅ Document processing complete: ${validatedDoc.length} bytes`)
 
 				// Stop memory monitoring
 				yield* memoryMonitor.stopMonitoring()
@@ -142,7 +143,7 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 
 		// Run the Effect pipeline with performance monitoring
 		await Effect.runPromise(
-			Effect.provide(emitProgram, performanceLayers),
+			Effect.provide(emitProgram, performanceLayers) as Effect.Effect<void, Error, never>,
 		)
 	}
 

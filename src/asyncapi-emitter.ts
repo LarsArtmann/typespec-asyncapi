@@ -1,5 +1,5 @@
 import type {EmitContext, Model, Namespace, Operation, Program} from "@typespec/compiler"
-import {emitFile, getDoc} from "@typespec/compiler"
+import {getDoc} from "@typespec/compiler"
 import {
 	type AssetEmitter,
 	createAssetEmitter,
@@ -8,7 +8,6 @@ import {
 	TypeEmitter,
 } from "@typespec/asset-emitter"
 import {stringify} from "yaml"
-import {dirname} from "node:path"
 import {Effect} from "effect"
 import type {AsyncAPIEmitterOptions} from "./options.js"
 import type {AsyncAPIObject, ChannelObject, OperationObject, SchemaObject} from "@asyncapi/parser/esm/spec-types/v3.js"
@@ -50,17 +49,20 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
 			this.processOperation(op)
 		}
 
-		// Generate output file
-		await this.generateOutputFile()
+		// Generate AsyncAPI document
+		this.generateAsyncAPIDocument()
 	}
 
-	override sourceFile(_sourceFile: SourceFile<string>): EmittedSourceFile {
+	override sourceFile(sourceFile: SourceFile<string>): EmittedSourceFile {
 		const options = this.typedOption()
 		const program = this.emitter.getProgram()
 		const content = this.generateContent(options["file-type"] ?? "yaml", program)
 
+		// Use resolved output path if available, otherwise use source file path
+		const outputPath = this.resolveOutputFilePath()
+		
 		return {
-			path: _sourceFile.path,
+			path: sourceFile.path || outputPath,
 			contents: content,
 		}
 	}
@@ -279,36 +281,11 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
 		return `${outputFile}.${fileType}`
 	}
 
-	private async generateOutputFile(): Promise<void> {
-		const options = this.typedOption()
-		const program = this.emitter.getProgram()
-		const fileName = this.resolveOutputFilePath()
-		const content = this.generateContent(options["file-type"] ?? "yaml", program)
-
-		// Create a source file and write the content using AssetEmitter patterns
-		const sourceFile = this.emitter.createSourceFile(fileName)
-
-		try {
-			// Ensure directory exists for path templates
-			const {existsSync, mkdirSync} = await import("node:fs")
-			const targetDir = dirname(sourceFile.path)
-			if (!existsSync(targetDir)) {
-				mkdirSync(targetDir, {recursive: true})
-				Effect.log(`📁 Created directory: ${targetDir}`)
-			}
-
-			// Write the content directly to the output using emitFile
-			await emitFile(program, {
-				path: sourceFile.path,
-				content,
-			})
-			Effect.log(`✅ Generated ${fileName} with REAL TypeSpec data using AssetEmitter architecture!`)
-		} catch (error) {
-			Effect.log(`⚠️ File write failed: ${error instanceof Error ? error.message : String(error)}`)
-			throw error
-		}
-
+	private generateAsyncAPIDocument(): void {
+		// This method just processes the operations and builds the AsyncAPI document
+		// The actual file writing happens in sourceFile() method called by the framework
 		this.logProcessingStats()
+		Effect.log(`✅ AsyncAPI document generated with REAL TypeSpec data using AssetEmitter architecture!`)
 	}
 
 	private generateContent(fileType: string, program: Program): string {
