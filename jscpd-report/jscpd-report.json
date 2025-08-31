@@ -1,6 +1,6 @@
 {
   "statistics": {
-    "detectionDate": "2025-08-31T01:53:28.182Z",
+    "detectionDate": "2025-08-31T01:58:06.951Z",
     "formats": {
       "typescript": {
         "sources": {
@@ -425,8 +425,8 @@
             "newClones": 0
           },
           "src/decorators/security.ts": {
-            "lines": 346,
-            "tokens": 2432,
+            "lines": 350,
+            "tokens": 2436,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -449,8 +449,8 @@
             "newClones": 0
           },
           "src/decorators/protocol.ts": {
-            "lines": 239,
-            "tokens": 1740,
+            "lines": 241,
+            "tokens": 1683,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -642,8 +642,8 @@
           }
         },
         "total": {
-          "lines": 10044,
-          "tokens": 74028,
+          "lines": 10050,
+          "tokens": 73975,
           "sources": 53,
           "clones": 9,
           "duplicatedLines": 62,
@@ -656,8 +656,8 @@
       }
     },
     "total": {
-      "lines": 10044,
-      "tokens": 74028,
+      "lines": 10050,
+      "tokens": 73975,
       "sources": 53,
       "clones": 9,
       "duplicatedLines": 62,

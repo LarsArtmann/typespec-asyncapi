@@ -6,7 +6,7 @@
  * with Railway Programming and Effect.TS architecture validation.
  */
 
-import { runTestSuiteCLI } from "../src/test-runner.js";
+import { runTestSuiteCLI } from "../src/test-runner";
 
 // Configuration for CI/CD performance validation
 const ciConfig = {
@@ -42,7 +42,7 @@ const prodConfig = {
 const args = process.argv.slice(2);
 const mode = args[0] || "ci";
 
-console.log(`🚀 Running AsyncAPI Performance Tests in ${mode} mode`);
+Effect.log(`🚀 Running AsyncAPI Performance Tests in ${mode} mode`);
 
 switch (mode) {
   case "ci":
@@ -65,6 +65,6 @@ switch (mode) {
     });
     break;
   default:
-    console.log("Usage: bun run-performance-tests.ts [ci|dev|prod|quick]");
+    Effect.log("Usage: bun run-performance-tests.ts [ci|dev|prod|quick]");
     process.exit(1);
 }

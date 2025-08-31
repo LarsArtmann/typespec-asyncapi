@@ -13,9 +13,10 @@
  */
 
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { AsyncAPIValidator } from "../src/validation/asyncapi-validator.js";
+import { AsyncAPIValidator } from "../src/validation/asyncapi-validator";
 import { readdir, readFile, mkdir, writeFile, rm } from "node:fs/promises";
 import { join, extname } from "node:path";
+import {Effect} from "effect"
 
 describe("🚨 ALL GENERATED ASYNCAPI SPECS VALIDATION", () => {
   let validator: AsyncAPIValidator;
@@ -28,7 +29,7 @@ describe("🚨 ALL GENERATED ASYNCAPI SPECS VALIDATION", () => {
   }> = [];
 
   beforeAll(async () => {
-    console.log("🔧 Initializing comprehensive AsyncAPI validator...");
+    Effect.log("🔧 Initializing comprehensive AsyncAPI validator...");
     
     validator = new AsyncAPIValidator({
       strict: true,
@@ -39,7 +40,7 @@ describe("🚨 ALL GENERATED ASYNCAPI SPECS VALIDATION", () => {
     await validator.initialize();
     await mkdir(testOutputDir, { recursive: true });
     
-    console.log("✅ Validator ready for comprehensive spec validation");
+    Effect.log("✅ Validator ready for comprehensive spec validation");
   });
 
   afterAll(async () => {
@@ -50,15 +51,15 @@ describe("🚨 ALL GENERATED ASYNCAPI SPECS VALIDATION", () => {
     }
     
     const stats = validator.getValidationStats();
-    console.log("\n📊 FINAL VALIDATION STATISTICS:");
-    console.log(`  📄 Total Validations: ${stats.totalValidations}`);
-    console.log(`  ⚡ Average Duration: ${stats.averageDuration.toFixed(2)}ms`);
-    console.log(`  📈 Cache Hits: ${stats.cacheHits}`);
+    Effect.log("\n📊 FINAL VALIDATION STATISTICS:");
+    Effect.log(`  📄 Total Validations: ${stats.totalValidations}`);
+    Effect.log(`  ⚡ Average Duration: ${stats.averageDuration.toFixed(2)}ms`);
+    Effect.log(`  📈 Cache Hits: ${stats.cacheHits}`);
   });
 
   describe("🔍 Spec Discovery and Validation Pipeline", () => {
     it("should generate sample AsyncAPI specs for validation testing", async () => {
-      console.log("🏭 Generating sample AsyncAPI specifications for testing...");
+      Effect.log("🏭 Generating sample AsyncAPI specifications for testing...");
       
       // Generate various AsyncAPI specs to simulate real project output
       const sampleSpecs = [
@@ -393,13 +394,13 @@ operations:
         generatedCount++;
       }
 
-      console.log(`✅ Generated ${generatedCount} sample AsyncAPI specifications`);
+      Effect.log(`✅ Generated ${generatedCount} sample AsyncAPI specifications`);
       expect(generatedCount).toBe(sampleSpecs.length);
       expect(discoveredSpecs.length).toBeGreaterThan(0);
     });
 
     it("should discover all AsyncAPI specification files", async () => {
-      console.log("🔍 Discovering AsyncAPI specification files...");
+      Effect.log("🔍 Discovering AsyncAPI specification files...");
       
       // Also scan common output directories for real generated specs
       const potentialDirs = [
@@ -436,7 +437,7 @@ operations:
                   }
                 } catch (error) {
                   // Skip files that can't be read
-                  console.log(`⚠️  Skipped unreadable file: ${file.name}`);
+                  Effect.log(`⚠️  Skipped unreadable file: ${file.name}`);
                 }
               }
             }
@@ -446,18 +447,18 @@ operations:
         }
       }
 
-      console.log(`🎯 Discovered ${discoveredSpecs.length} AsyncAPI specification files`);
-      console.log("📋 Files found:");
+      Effect.log(`🎯 Discovered ${discoveredSpecs.length} AsyncAPI specification files`);
+      Effect.log("📋 Files found:");
       discoveredSpecs.forEach(spec => {
-        console.log(`  📄 ${spec.fileName} (${spec.format.toUpperCase()}, ${spec.size} bytes)`);
+        Effect.log(`  📄 ${spec.fileName} (${spec.format.toUpperCase()}, ${spec.size} bytes)`);
       });
 
       expect(discoveredSpecs.length).toBeGreaterThan(0);
     });
 
     it("should validate ALL discovered AsyncAPI specifications", async () => {
-      console.log("\n🚨 VALIDATING ALL DISCOVERED ASYNCAPI SPECIFICATIONS");
-      console.log(`📊 Total specifications to validate: ${discoveredSpecs.length}`);
+      Effect.log("\n🚨 VALIDATING ALL DISCOVERED ASYNCAPI SPECIFICATIONS");
+      Effect.log(`📊 Total specifications to validate: ${discoveredSpecs.length}`);
       
       if (discoveredSpecs.length === 0) {
         throw new Error("❌ NO ASYNCAPI SPECIFICATIONS FOUND - VALIDATION CANNOT PROCEED");
@@ -480,7 +481,7 @@ operations:
       // Validate each discovered specification
       for (let i = 0; i < discoveredSpecs.length; i++) {
         const spec = discoveredSpecs[i];
-        console.log(`\n📄 [${i + 1}/${discoveredSpecs.length}] Validating: ${spec.fileName}`);
+        Effect.log(`\n📄 [${i + 1}/${discoveredSpecs.length}] Validating: ${spec.fileName}`);
         
         const validationStartTime = performance.now();
         const result = await validator.validateFile(spec.filePath);
@@ -502,16 +503,16 @@ operations:
         validationResults.push(resultSummary);
 
         if (result.valid) {
-          console.log(`  ✅ VALID (${result.metrics.duration.toFixed(2)}ms)`);
-          console.log(`  📊 ${result.metrics.channelCount} channels, ${result.metrics.operationCount} operations`);
+          Effect.log(`  ✅ VALID (${result.metrics.duration.toFixed(2)}ms)`);
+          Effect.log(`  📊 ${result.metrics.channelCount} channels, ${result.metrics.operationCount} operations`);
           
           // Performance requirement check
           expect(result.metrics.duration).toBeLessThan(200); // <200ms requirement
         } else {
-          console.log(`  ❌ INVALID (${result.errors.length} errors)`);
-          console.log(`  🔍 Errors:`);
+          Effect.log(`  ❌ INVALID (${result.errors.length} errors)`);
+          Effect.log(`  🔍 Errors:`);
           result.errors.forEach(error => {
-            console.log(`    - ${error.message} (${error.keyword}) at ${error.instancePath}`);
+            Effect.log(`    - ${error.message} (${error.keyword}) at ${error.instancePath}`);
           });
           
           // CRITICAL: Any invalid spec fails the entire build
@@ -534,22 +535,22 @@ operations:
       const avgValidationTime = validationResults.reduce((sum, r) => sum + r.duration, 0) / validationResults.length;
       const maxValidationTime = Math.max(...validationResults.map(r => r.duration));
 
-      console.log("\n" + "=".repeat(80));
-      console.log("🎯 FINAL VALIDATION RESULTS");
-      console.log("=".repeat(80));
-      console.log(`📄 Total Specifications Validated: ${validationResults.length}`);
-      console.log(`✅ Valid Specifications: ${validSpecs}`);
-      console.log(`❌ Invalid Specifications: ${invalidSpecs}`);
-      console.log(`📈 Success Rate: ${((validSpecs / validationResults.length) * 100).toFixed(1)}%`);
-      console.log(`⏱️  Total Validation Time: ${batchDuration.toFixed(2)}ms`);
-      console.log(`⚡ Average Validation Time: ${avgValidationTime.toFixed(2)}ms`);
-      console.log(`🐌 Slowest Validation: ${maxValidationTime.toFixed(2)}ms`);
+      Effect.log("\n" + "=".repeat(80));
+      Effect.log("🎯 FINAL VALIDATION RESULTS");
+      Effect.log("=".repeat(80));
+      Effect.log(`📄 Total Specifications Validated: ${validationResults.length}`);
+      Effect.log(`✅ Valid Specifications: ${validSpecs}`);
+      Effect.log(`❌ Invalid Specifications: ${invalidSpecs}`);
+      Effect.log(`📈 Success Rate: ${((validSpecs / validationResults.length) * 100).toFixed(1)}%`);
+      Effect.log(`⏱️  Total Validation Time: ${batchDuration.toFixed(2)}ms`);
+      Effect.log(`⚡ Average Validation Time: ${avgValidationTime.toFixed(2)}ms`);
+      Effect.log(`🐌 Slowest Validation: ${maxValidationTime.toFixed(2)}ms`);
 
-      console.log("\n📋 Individual Results:");
+      Effect.log("\n📋 Individual Results:");
       validationResults.forEach(result => {
         const status = result.valid ? "✅" : "❌";
         const sizeKB = (result.size / 1024).toFixed(1);
-        console.log(`  ${status} ${result.fileName} (${result.format.toUpperCase()}, ${sizeKB}KB, ${result.duration.toFixed(2)}ms)`);
+        Effect.log(`  ${status} ${result.fileName} (${result.format.toUpperCase()}, ${sizeKB}KB, ${result.duration.toFixed(2)}ms)`);
       });
 
       // CRITICAL SUCCESS CRITERIA
@@ -560,17 +561,17 @@ operations:
       expect(batchDuration).toBeLessThan(10000); // Total batch <10 seconds
 
       if (validSpecs === validationResults.length && invalidSpecs === 0) {
-        console.log("\n🎉 ALL ASYNCAPI SPECIFICATIONS ARE VALID!");
-        console.log("🛡️  No invalid specifications detected - build can proceed safely");
-        console.log("⚡ All performance requirements met");
-        console.log("🚀 Ready for production deployment");
+        Effect.log("\n🎉 ALL ASYNCAPI SPECIFICATIONS ARE VALID!");
+        Effect.log("🛡️  No invalid specifications detected - build can proceed safely");
+        Effect.log("⚡ All performance requirements met");
+        Effect.log("🚀 Ready for production deployment");
       }
     });
   });
 
   describe("🔒 Validation Requirements Enforcement", () => {
     it("should enforce strict AsyncAPI 3.0.0 compliance", async () => {
-      console.log("🔒 Enforcing AsyncAPI 3.0.0 compliance requirements...");
+      Effect.log("🔒 Enforcing AsyncAPI 3.0.0 compliance requirements...");
       
       // Test with a document that has wrong version
       const wrongVersionSpec = {
@@ -593,14 +594,14 @@ operations:
       expect(result.errors.length).toBeGreaterThan(0);
       expect(result.errors[0].keyword).toBe("const");
       
-      console.log("✅ Version compliance check: ENFORCED");
+      Effect.log("✅ Version compliance check: ENFORCED");
 
       // Clean up test file
       await rm(wrongVersionSpec.filePath, { force: true });
     });
 
     it("should enforce required field validation", async () => {
-      console.log("🔒 Enforcing required field validation...");
+      Effect.log("🔒 Enforcing required field validation...");
       
       // Test with missing required fields
       const missingFieldsSpecs = [
@@ -637,11 +638,11 @@ operations:
         await rm(filePath, { force: true });
       }
       
-      console.log("✅ Required field validation: ENFORCED");
+      Effect.log("✅ Required field validation: ENFORCED");
     });
 
     it("should enforce operation action validation", async () => {
-      console.log("🔒 Enforcing operation action validation...");
+      Effect.log("🔒 Enforcing operation action validation...");
       
       const invalidActionSpec = {
         asyncapi: "3.0.0",
@@ -666,7 +667,7 @@ operations:
       expect(result.errors.length).toBeGreaterThan(0);
       expect(result.errors[0].keyword).toBe("enum");
       
-      console.log("✅ Operation action validation: ENFORCED");
+      Effect.log("✅ Operation action validation: ENFORCED");
       
       await rm(filePath, { force: true });
     });

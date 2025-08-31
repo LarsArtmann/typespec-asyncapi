@@ -1,13 +1,14 @@
 {
   "compilerOptions": {
     // === TYPESCRIPT 5.9.2 STABLE CONFIGURATION ===
-    "target": "ES2022",                           // STABLE: ES2022 features (full TypeScript 5.9.2 support)
-    "lib": ["ES2022"],                           // STABLE: Full ES2022 support
-    "downlevelIteration": true,                   // Required for Effect.TS generators
-    "module": "NodeNext",                         // STABLE: NodeNext module system (TypeScript 5.2+)
-    "moduleResolution": "NodeNext",               // STABLE: Most modern stable resolution strategy
-    "moduleDetection": "force",                   // STABLE: Explicit module detection
-
+    "target": "ESNext",
+    "lib": [
+      "ESNext"
+    ],
+    "downlevelIteration": true,
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "moduleDetection": "force",
     // === ESM MODULE OUTPUT OPTIMIZATION ===
     "outDir": "dist",
     "rootDir": "src",
@@ -18,83 +19,130 @@
     "noEmit": false,
     "removeComments": false,
     "newLine": "lf",
-
     // === MAXIMUM TYPE SAFETY (TYPESCRIPT 5.9.2 STRICTNESS) ===
-    "strict": true,                               // Core strict flag bundle
-    
+    "strict": true,
+    // Core strict flag bundle
+
     // TypeScript 5.9.2 advanced strictness features (all stable)
-    "noUncheckedIndexedAccess": true,             // Force checking of indexed access (TS 4.1+)
-    "exactOptionalPropertyTypes": true,           // Exact optional property types (TS 4.4+)
-    "noImplicitReturns": true,                    // All code paths must return
-    "noImplicitOverride": true,                   // Explicit override keyword required (TS 4.3+)
-    "noFallthroughCasesInSwitch": true,           // Prevent switch fallthrough bugs
-    "noPropertyAccessFromIndexSignature": true,   // Force bracket notation for indexed access (TS 4.2+)
-    
+    "noUncheckedIndexedAccess": true,
+    // Force checking of indexed access (TS 4.1+)
+    "exactOptionalPropertyTypes": true,
+    // Exact optional property types (TS 4.4+)
+    "noImplicitReturns": true,
+    // All code paths must return
+    "noImplicitOverride": true,
+    // Explicit override keyword required (TS 4.3+)
+    "noFallthroughCasesInSwitch": true,
+    // Prevent switch fallthrough bugs
+    "noPropertyAccessFromIndexSignature": true,
+    // Force bracket notation for indexed access (TS 4.2+)
+
     // Unused code detection (zero tolerance)
-    "noUnusedLocals": true,                       // No unused local variables
-    "noUnusedParameters": true,                   // No unused function parameters
-    
+    "noUnusedLocals": true,
+    // No unused local variables
+    "noUnusedParameters": true,
+    // No unused function parameters
+
     // Code quality enforcement  
-    "allowUnreachableCode": false,                // No unreachable code allowed
-    "allowUnusedLabels": false,                   // No unused labels allowed
-    "noEmitOnError": true,                        // Don't emit JS if there are errors
-    
+    "allowUnreachableCode": false,
+    // No unreachable code allowed
+    "allowUnusedLabels": false,
+    // No unused labels allowed
+    "noEmitOnError": true,
+    // Don't emit JS if there are errors
+
     // TypeScript 5.9.2 stable strict features
-    "useUnknownInCatchVariables": true,           // Catch variables are unknown by default (TS 4.4+)
-    "noImplicitAny": true,                        // Explicit for maximum clarity (included in strict)
-    "strictNullChecks": true,                     // Explicit for maximum clarity (included in strict)
-    "strictFunctionTypes": true,                  // Explicit for maximum clarity (included in strict)
-    "strictBindCallApply": true,                  // Explicit for maximum clarity (included in strict)
-    "strictPropertyInitialization": true,        // Explicit for maximum clarity (included in strict)
-    "noImplicitThis": true,                       // Explicit for maximum clarity (included in strict)
+    "useUnknownInCatchVariables": true,
+    // Catch variables are unknown by default (TS 4.4+)
+    "noImplicitAny": true,
+    // Explicit for maximum clarity (included in strict)
+    "strictNullChecks": true,
+    // Explicit for maximum clarity (included in strict)
+    "strictFunctionTypes": true,
+    // Explicit for maximum clarity (included in strict)
+    "strictBindCallApply": true,
+    // Explicit for maximum clarity (included in strict)
+    "strictPropertyInitialization": true,
+    // Explicit for maximum clarity (included in strict)
+    "noImplicitThis": true,
+    // Explicit for maximum clarity (included in strict)
 
     // === TYPESCRIPT 5.9.2 PERFORMANCE OPTIMIZATIONS ===
     "incremental": true,
     "tsBuildInfoFile": ".tsbuildinfo",
-    "skipLibCheck": true,                         // Performance boost
-    "skipDefaultLibCheck": true,                  // Performance boost
-    "disableSourceOfProjectReferenceRedirect": true, // Performance boost
-    "disableSolutionSearching": true,             // Performance boost
-    "disableReferencedProjectLoad": true,         // Performance boost
-    "assumeChangesOnlyAffectDirectDependencies": true, // Faster incremental builds (TS 4.8+)
-    
+    "skipLibCheck": true,
+    // Performance boost
+    "skipDefaultLibCheck": true,
+    // Performance boost
+    "disableSourceOfProjectReferenceRedirect": true,
+    // Performance boost
+    "disableSolutionSearching": true,
+    // Performance boost
+    "disableReferencedProjectLoad": true,
+    // Performance boost
+    "assumeChangesOnlyAffectDirectDependencies": true,
+    // Faster incremental builds (TS 4.8+)
+
     // TypeScript 5.9.2 performance optimizations
-    "noErrorTruncation": true,                    // Show complete error messages
+    "noErrorTruncation": true,
+    // Show complete error messages
 
     // === MODERN IMPORT/EXPORT HANDLING ===
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "forceConsistentCasingInFileNames": true,
-    "verbatimModuleSyntax": true,                 // Preserve imports exactly as written (Effect.TS requirement, TS 5.0+)
-    "allowImportingTsExtensions": false,          // Must be false for npm publishing
-    "allowArbitraryExtensions": false,            // Security: Prevent arbitrary file imports
+    "verbatimModuleSyntax": true,
+    // Preserve imports exactly as written (Effect.TS requirement, TS 5.0+)
+    "allowImportingTsExtensions": false,
+    // Must be false for npm publishing
+    "allowArbitraryExtensions": false,
+    // Security: Prevent arbitrary file imports
 
     // === ADVANCED TYPE CHECKING ===
-    "useDefineForClassFields": true,              // Modern class field behavior (ES2022 standard)
-    "experimentalDecorators": false,              // Using standard decorators (TC39 stage 3)
-    "emitDecoratorMetadata": false,               // No reflection metadata
+    "useDefineForClassFields": true,
+    // Modern class field behavior (ES2022 standard)
+    "experimentalDecorators": false,
+    // Using standard decorators (TC39 stage 3)
+    "emitDecoratorMetadata": false,
+    // No reflection metadata
 
     // === CODE GENERATION ===
-    "isolatedModules": true,                      // Each file as separate module (required for bundlers)
-    "preserveValueImports": false,                // Transform value imports
-    "importsNotUsedAsValues": "remove",           // Remove unused imports
+    "isolatedModules": true,
+    // Each file as separate module (required for bundlers)
+    "preserveValueImports": false,
+    // Transform value imports
+    "importsNotUsedAsValues": "remove",
+    // Remove unused imports
 
     // === PATH MAPPING FOR CLEAN IMPORTS ===
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
-      "@/lib/*": ["src/lib/*"],
-      "@/utils/*": ["src/utils/*"],
-      "@/types/*": ["src/types/*"],
-      "@/emitters/*": ["src/emitters/*"]
+      "@/*": [
+        "src/*"
+      ],
+      "@/lib/*": [
+        "src/lib/*"
+      ],
+      "@/utils/*": [
+        "src/utils/*"
+      ],
+      "@/types/*": [
+        "src/types/*"
+      ],
+      "@/emitters/*": [
+        "src/emitters/*"
+      ]
     },
-
     // === TYPESCRIPT 5.9.2 OUTPUT ENHANCEMENT ===
-    "preserveWatchOutput": true,                  // Better watch mode output
-    "pretty": true,                               // Colorized output  
-    "listEmittedFiles": false,                    // Performance: Don't list emitted files
-    "listFiles": false                            // Performance: Don't list all files
+    "preserveWatchOutput": true,
+    // Better watch mode output
+    "pretty": true,
+    // Colorized output
+    "listEmittedFiles": false,
+    // Performance: Don't list emitted files
+    "listFiles": false
+    // Performance: Don't list all files
   },
   "include": [
     "src/**/*.ts",

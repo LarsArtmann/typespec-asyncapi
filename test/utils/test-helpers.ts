@@ -3,7 +3,7 @@
  */
 
 import {createTestHost} from "@typespec/compiler/testing"
-import {AsyncAPITestLibrary} from "../test-host.js"
+import {AsyncAPITestLibrary} from "../test-host"
 import type {AsyncAPIEmitterOptions} from "../../src"
 import type {Diagnostic, Program} from "@typespec/compiler"
 
@@ -114,10 +114,10 @@ ${source}
 		...program,
 		host: {
 			mkdirp: async (path: string) => {
-				console.log(`Mock mkdirp for test: ${path}`)
+				Effect.log(`Mock mkdirp for test: ${path}`)
 			},
 			writeFile: async (path: string, content: string) => {
-				console.log(`Mock writeFile for test: ${path} (${content.length} chars)`)
+				Effect.log(`Mock writeFile for test: ${path} (${content.length} chars)`)
 				host.fs.set(path, {content})
 			},
 		},
@@ -132,7 +132,7 @@ ${source}
 	}
 
 	// Now call the emitter directly with proper context
-	const {$onEmit} = await import("../../dist/index.js")
+	const {$onEmit} = await import("../../dist/index")
 	const emitterContext = {
 		program: enhancedProgram,
 		emitterOutputDir: "test-output",
@@ -252,7 +252,7 @@ export async function validateAsyncAPIDocumentComprehensive(asyncapiDoc: unknown
 }> {
 	try {
 		// Import validation framework dynamically to avoid circular dependencies
-		const {validateAsyncAPIDocument} = await import("../../src/validation/index.js")
+		const {validateAsyncAPIDocument} = await import("../../src/validation/index")
 
 		const result = await validateAsyncAPIDocument(asyncapiDoc, {
 			strict: true,

@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { compileAsyncAPISpecWithoutErrors, parseAsyncAPIOutput, AsyncAPIAssertions } from "../utils/test-helpers.js";
+import { compileAsyncAPISpecWithoutErrors, parseAsyncAPIOutput, AsyncAPIAssertions } from "../utils/test-helpers";
 //TODO: this file is getting to big split it up
 
 describe("Real-World AsyncAPI Scenarios", () => {
@@ -181,7 +181,7 @@ describe("Real-World AsyncAPI Scenarios", () => {
       expect(orderSchema.required).toContain("items");
       expect(orderSchema.required).toContain("status");
       
-      console.log("✅ E-commerce system validation passed");
+      Effect.log("✅ E-commerce system validation passed");
     });
   });
 
@@ -348,7 +348,7 @@ describe("Real-World AsyncAPI Scenarios", () => {
       expect(sensorReadingSchema.properties.value.type).toBe("number");
       expect(sensorReadingSchema.properties.qualityScore.type).toBe("number");
       
-      console.log("✅ IoT system validation passed");
+      Effect.log("✅ IoT system validation passed");
     });
   });
 
@@ -536,7 +536,7 @@ describe("Real-World AsyncAPI Scenarios", () => {
       expect(AsyncAPIAssertions.hasOperation(asyncapiDoc, "publishCriticalRiskAlert")).toBe(true);
       expect(AsyncAPIAssertions.hasOperation(asyncapiDoc, "publishTradeExecuted")).toBe(true);
       
-      console.log("✅ Trading system validation passed");
+      Effect.log("✅ Trading system validation passed");
     });
   });
 
@@ -692,7 +692,7 @@ describe("Real-World AsyncAPI Scenarios", () => {
       expect(usageMetricsSchema.required).toContain("tenantId");
       expect(usageMetricsSchema.required).toContain("metricType");
       
-      console.log("✅ SaaS platform validation passed");
+      Effect.log("✅ SaaS platform validation passed");
     });
   });
 });

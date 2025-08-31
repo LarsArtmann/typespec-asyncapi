@@ -7,21 +7,18 @@
 
 import {Console, Context, Duration, Effect, Layer} from "effect"
 import type {EmitContext, Model, Operation} from "@typespec/compiler"
-import type {AsyncAPIEmitterOptions, AsyncAPIOptionsParseError, AsyncAPIOptionsValidationError} from "./options.js"
-import {AsyncAPIEmitterOptionsSchema, createAsyncAPIEmitterOptions, validateAsyncAPIEmitterOptions} from "./options.js"
-import {$lib} from "./lib.js"
-import type {MessageConfig} from "./decorators/message.js"
-import type {MetricsCollectionError} from "./errors/MetricsCollectionError.js"
-import type {MetricsInitializationError} from "./errors/MetricsInitializationError.js"
-import {MemoryThresholdExceededError} from "./errors/MemoryThresholdExceededError.js"
-import {
-	PERFORMANCE_METRICS_SERVICE,
-	PERFORMANCE_METRICS_SERVICE_LIVE,
-} from "./performance/metrics.js"
-import type {MemoryMonitorInitializationError} from "./errors/MemoryMonitorInitializationError.js"
-import {MEMORY_MONITOR_SERVICE, MEMORY_MONITOR_SERVICE_LIVE, withMemoryTracking} from "./performance/memory-monitor.js"
-import { validateAsyncAPIDocumentEffect } from "./utils/validation-helpers.js"
-import { sanitizeChannelId, generateSchemaPropertiesFromModel } from "./utils/schema-conversion.js"
+import type {AsyncAPIEmitterOptions, AsyncAPIOptionsParseError, AsyncAPIOptionsValidationError} from "./options"
+import {AsyncAPIEmitterOptionsSchema, createAsyncAPIEmitterOptions, validateAsyncAPIEmitterOptions} from "./options"
+import {$lib} from "./lib"
+import type {MessageConfig} from "./decorators/message"
+import type {MetricsCollectionError} from "./errors/MetricsCollectionError"
+import type {MetricsInitializationError} from "./errors/MetricsInitializationError"
+import {MemoryThresholdExceededError} from "./errors/MemoryThresholdExceededError"
+import {PERFORMANCE_METRICS_SERVICE, PERFORMANCE_METRICS_SERVICE_LIVE} from "./performance/metrics"
+import type {MemoryMonitorInitializationError} from "./errors/MemoryMonitorInitializationError"
+import {MEMORY_MONITOR_SERVICE, MEMORY_MONITOR_SERVICE_LIVE, withMemoryTracking} from "./performance/memory-monitor"
+import {validateAsyncAPIDocumentEffect} from "./utils/validation-helpers"
+import {generateSchemaPropertiesFromModel, sanitizeChannelId} from "./utils/schema-conversion"
 
 //TODO: move to src/errors/
 // TAGGED ERROR TYPES for Railway Programming
@@ -119,7 +116,7 @@ const makeEmitterService = Effect.gen(function* () {
 
 	const validateSpec = (spec: unknown): Effect.Effect<boolean, SpecValidationError> =>
 		validateAsyncAPIDocumentEffect(spec).pipe(
-			Effect.mapError((error) => new SpecValidationError(error.message, spec))
+			Effect.mapError((error) => new SpecValidationError(error.message, spec)),
 		)
 
 	const writeOutput = (path: string, content: string): Effect.Effect<void, Error> =>
@@ -201,7 +198,7 @@ const generateChannels = (context: EmitContext<object>): Effect.Effect<Record<st
 				channels[channelId] = {
 					address: channelPath,
 					description: `Channel for ${channelPath}`,
-					messages: {}
+					messages: {},
 				}
 			}
 
@@ -212,18 +209,18 @@ const generateChannels = (context: EmitContext<object>): Effect.Effect<Record<st
 			const operationObj = operation as Operation
 			if (operationType === "publish") {
 				messages[`${operationObj.name}Message`] = {
-					"$ref": `#/components/messages/${operationObj.name}Message`
+					"$ref": `#/components/messages/${operationObj.name}Message`,
 				}
 			} else if (operationType === "subscribe") {
 				messages[`${operationObj.name}Message`] = {
-					"$ref": `#/components/messages/${operationObj.name}Message`
+					"$ref": `#/components/messages/${operationObj.name}Message`,
 				}
 			}
 
 			yield* Effect.logDebug(`Generated channel: ${channelId}`, {
 				address: channelPath,
 				operationType,
-				operationName: operationObj.name
+				operationName: operationObj.name,
 			})
 		}
 
@@ -232,9 +229,9 @@ const generateChannels = (context: EmitContext<object>): Effect.Effect<Record<st
 		Effect.catchAll(error =>
 			Effect.fail(new SpecGenerationError(
 				`Failed to generate channels: ${error}`,
-				{} as AsyncAPIEmitterOptions
-			))
-		)
+				{} as AsyncAPIEmitterOptions,
+			)),
+		),
 	)
 
 /**
@@ -268,18 +265,18 @@ const generateOperations = (context: EmitContext<object>): Effect.Effect<Record<
 			operations[operationId] = {
 				action: operationType === "publish" ? "send" : "receive", // AsyncAPI 3.0.0 actions
 				channel: {
-					"$ref": `#/channels/${channelId}`
+					"$ref": `#/channels/${channelId}`,
 				},
 				title: `${operationType} ${operationObj.name}`,
 				description: `${operationType === "publish" ? "Send" : "Receive"} message on ${channelPath}`,
 				messages: [{
-					"$ref": `#/components/messages/${operationId}Message`
-				}]
+					"$ref": `#/components/messages/${operationId}Message`,
+				}],
 			}
 
 			yield* Effect.logDebug(`Generated operation: ${operationId}`, {
 				action: operationType,
-				channel: channelPath
+				channel: channelPath,
 			})
 		}
 
@@ -288,9 +285,9 @@ const generateOperations = (context: EmitContext<object>): Effect.Effect<Record<
 		Effect.catchAll(error =>
 			Effect.fail(new SpecGenerationError(
 				`Failed to generate operations: ${error}`,
-				{} as AsyncAPIEmitterOptions
-			))
-		)
+				{} as AsyncAPIEmitterOptions,
+			)),
+		),
 	)
 
 /**
@@ -306,7 +303,7 @@ const generateComponents = (context: EmitContext<object>): Effect.Effect<Record<
 		const components: Record<string, unknown> = {
 			messages: {},
 			schemas: {},
-			securitySchemes: {}
+			securitySchemes: {},
 		}
 
 		// Generate message components from @message decorators
@@ -327,8 +324,8 @@ const generateComponents = (context: EmitContext<object>): Effect.Effect<Record<
 				description: `Message for ${operationObj.name} operation`,
 				contentType: "application/json",
 				payload: {
-					"$ref": `#/components/schemas/${operationObj.name}Schema`
-				}
+					"$ref": `#/components/schemas/${operationObj.name}Schema`,
+				},
 			}
 
 			// Generate corresponding schema
@@ -339,20 +336,20 @@ const generateComponents = (context: EmitContext<object>): Effect.Effect<Record<
 				properties: {
 					id: {
 						type: "string",
-						description: "Unique identifier"
+						description: "Unique identifier",
 					},
 					timestamp: {
 						type: "string",
 						format: "date-time",
-						description: "Event timestamp"
+						description: "Event timestamp",
 					},
 					data: {
 						type: "object",
 						description: "Operation-specific data",
-						additionalProperties: true
-					}
+						additionalProperties: true,
+					},
 				},
-				required: ["id", "timestamp"]
+				required: ["id", "timestamp"],
 			}
 
 			yield* Effect.logDebug(`Generated message component: ${messageId}`)
@@ -372,8 +369,8 @@ const generateComponents = (context: EmitContext<object>): Effect.Effect<Record<
 					description: config.description ?? `Message based on ${modelObj.name} model`,
 					contentType: config.contentType ?? "application/json",
 					payload: {
-						"$ref": `#/components/schemas/${modelObj.name}Schema`
-					}
+						"$ref": `#/components/schemas/${modelObj.name}Schema`,
+					},
 				}
 
 				// Add examples if provided
@@ -387,7 +384,7 @@ const generateComponents = (context: EmitContext<object>): Effect.Effect<Record<
 					type: "object",
 					description: `Schema for ${modelObj.name} model`,
 					properties: generateSchemaPropertiesFromModel(modelObj),
-					additionalProperties: false
+					additionalProperties: false,
 				}
 
 				yield* Effect.logDebug(`Generated message from @message decorator: ${messageId}`)
@@ -402,9 +399,9 @@ const generateComponents = (context: EmitContext<object>): Effect.Effect<Record<
 			securitySchemes[scheme['name'] as string] = {
 				type: scheme['type'],
 				description: scheme['description'],
-				...scheme
+				...scheme,
 			}
-			
+
 			yield* Effect.logDebug(`Generated security scheme: ${scheme['name'] as string}`)
 		}
 
@@ -413,9 +410,9 @@ const generateComponents = (context: EmitContext<object>): Effect.Effect<Record<
 		Effect.catchAll(error =>
 			Effect.fail(new SpecGenerationError(
 				`Failed to generate components: ${error}`,
-				{} as AsyncAPIEmitterOptions
-			))
-		)
+				{} as AsyncAPIEmitterOptions,
+			)),
+		),
 	)
 
 // Utility functions moved to shared modules - see utils/ directory
@@ -500,7 +497,7 @@ export const onEmitEffect = (
 					emitterSvc.generateSpec(opts, ctx),
 					"spec-generation",
 				).pipe(
-					Effect.catchAll(error => 
+					Effect.catchAll(error =>
 						Effect.gen(function* () {
 							if (error instanceof SpecGenerationError) {
 								yield* Effect.logError("Spec generation failed", {
@@ -519,7 +516,7 @@ export const onEmitEffect = (
 							}
 							// Re-throw other errors
 							return yield* Effect.fail(error)
-						})
+						}),
 					),
 					Effect.tap(spec =>
 						Effect.logInfo("AsyncAPI specification generated successfully", {
@@ -664,7 +661,7 @@ export function validateEmitterConfiguration(config: unknown): AsyncAPIEmitterOp
 	return Effect.runSync(
 		Effect.gen(function* () {
 			const validated = yield* validateAsyncAPIEmitterOptions(config)
-			return yield * createAsyncAPIEmitterOptions(validated)
+			return yield* createAsyncAPIEmitterOptions(validated)
 		}).pipe(
 			Effect.catchAll(error =>
 				Effect.fail(new Error(`Invalid AsyncAPI emitter configuration: ${error}`)),
@@ -768,20 +765,20 @@ export function isValidEmitterOptions(options: unknown): options is AsyncAPIEmit
 // MOCK IMPLEMENTATION FOR EXAMPLE - Helper function for testing (used in examples below)
 
 export function generateAsyncAPISpecMock(options: AsyncAPIEmitterOptions): void {
-	console.log("Generating AsyncAPI spec with options:", options)
+	Effect.log("Generating AsyncAPI spec with options:", options)
 
 	// Mock implementation - replace with actual emitter logic
 	const outputFile = options["output-file"] ?? "asyncapi"
 	const fileType = options["file-type"] ?? "yaml"
 
-	console.log(`Would generate: ${outputFile}.${fileType}`)
+	Effect.log(`Would generate: ${outputFile}.${fileType}`)
 
 	if (options["validate-spec"]) {
-		console.log("Validating generated specification...")
+		Effect.log("Validating generated specification...")
 	}
 
 	if (options["protocol-bindings"]?.length) {
-		console.log("Including protocol bindings:", options["protocol-bindings"])
+		Effect.log("Including protocol bindings:", options["protocol-bindings"])
 	}
 }
 

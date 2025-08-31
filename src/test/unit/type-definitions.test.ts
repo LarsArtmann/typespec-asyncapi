@@ -12,7 +12,7 @@
 import {describe, expect, test} from "bun:test"
 
 // Import type definitions
-import type {AsyncAPIEmitterOptions, FileType} from "../../src/options.js"
+import type {AsyncAPIEmitterOptions, FileType} from "../../src/options"
 import type {AsyncAPIDocument, ChannelObject, OperationObject, SchemaObject} from "../../types"
 
 // AsyncAPI types now imported from centralized types/index.ts
@@ -23,7 +23,7 @@ import type {
 	ProtocolConfig,
 	ProtocolType,
 	WebSocketBindingConfig,
-} from "../../src/types/protocol-bindings.js"
+} from "../../types/protocol-bindings"
 
 import type {
 	AsyncAPIError,
@@ -31,7 +31,8 @@ import type {
 	ErrorContext,
 	PerformanceMetrics,
 	ValidationResult,
-} from "../../src/error-handling/index.js"
+} from "../../src/error-handling/index"
+import {Effect} from "effect"
 
 
 //TODO: this file is getting to big split it up
@@ -102,10 +103,10 @@ describe("Real Type Definitions Unit Tests", () => {
 			expect(validAsyncAPIDocument.operations.testOperation.action).toBe("send")
 			expect(validAsyncAPIDocument.components.schemas.TestSchema.type).toBe("object")
 
-			console.log("✅ AsyncAPI document structure types validated")
-			console.log(`📊 Channels: ${Object.keys(validAsyncAPIDocument.channels).length}`)
-			console.log(`📊 Operations: ${Object.keys(validAsyncAPIDocument.operations).length}`)
-			console.log(`📊 Schemas: ${Object.keys(validAsyncAPIDocument.components.schemas).length}`)
+			Effect.log("✅ AsyncAPI document structure types validated")
+			Effect.log(`📊 Channels: ${Object.keys(validAsyncAPIDocument.channels).length}`)
+			Effect.log(`📊 Operations: ${Object.keys(validAsyncAPIDocument.operations).length}`)
+			Effect.log(`📊 Schemas: ${Object.keys(validAsyncAPIDocument.components.schemas).length}`)
 		})
 
 		test("should enforce required properties in AsyncAPI types", () => {
@@ -153,7 +154,7 @@ describe("Real Type Definitions Unit Tests", () => {
 			expect(validOperation.action).toMatch(/^(send|receive)$/)
 			expect(operationWithMessages.messages).toHaveLength(1)
 
-			console.log("✅ Required properties in AsyncAPI types validated")
+			Effect.log("✅ Required properties in AsyncAPI types validated")
 		})
 
 		test("should support complex schema object structures", () => {
@@ -209,9 +210,9 @@ describe("Real Type Definitions Unit Tests", () => {
 			expect(complexSchema.required).toContain("id")
 			expect(complexSchema.additionalProperties).toBe(false)
 
-			console.log("✅ Complex schema object structures supported")
-			console.log(`📊 Schema properties: ${Object.keys(complexSchema.properties || {}).length}`)
-			console.log(`📊 Required fields: ${complexSchema.required?.length || 0}`)
+			Effect.log("✅ Complex schema object structures supported")
+			Effect.log(`📊 Schema properties: ${Object.keys(complexSchema.properties || {}).length}`)
+			Effect.log(`📊 Required fields: ${complexSchema.required?.length || 0}`)
 		})
 	})
 
@@ -240,8 +241,8 @@ describe("Real Type Definitions Unit Tests", () => {
 			expect(fileTypes).toContain(validOptions["file-type"])
 			expect(fileTypes).toContain(extendedOptions["file-type"])
 
-			console.log("✅ Emitter options structure validated")
-			console.log(`📊 Valid file types: ${fileTypes.join(", ")}`)
+			Effect.log("✅ Emitter options structure validated")
+			Effect.log(`📊 Valid file types: ${fileTypes.join(", ")}`)
 		})
 
 		test("should enforce emitter options validation rules", () => {
@@ -280,10 +281,10 @@ describe("Real Type Definitions Unit Tests", () => {
 
 				expect(isValid).toBe(shouldBeValid)
 
-				console.log(`${isValid ? "✅" : "❌"} ${description}: ${isValid ? "Valid" : "Invalid"}`)
+				Effect.log(`${isValid ? "✅" : "❌"} ${description}: ${isValid ? "Valid" : "Invalid"}`)
 			}
 
-			console.log("✅ Emitter options validation rules enforced")
+			Effect.log("✅ Emitter options validation rules enforced")
 		})
 	})
 
@@ -326,8 +327,8 @@ describe("Real Type Definitions Unit Tests", () => {
 
 			expect(protocolTypes).toContain(validProtocol)
 
-			console.log("✅ Protocol binding type definitions validated")
-			console.log(`📊 Supported protocols: ${protocolTypes.join(", ")}`)
+			Effect.log("✅ Protocol binding type definitions validated")
+			Effect.log(`📊 Supported protocols: ${protocolTypes.join(", ")}`)
 		})
 
 		test("should support complex protocol configurations", () => {
@@ -365,9 +366,9 @@ describe("Real Type Definitions Unit Tests", () => {
 			expect(complexMqttConfig.protocol).toBe("mqtt")
 			expect((complexMqttConfig.binding as MQTTBindingConfig).qos).toBe(2)
 
-			console.log("✅ Complex protocol configurations supported")
-			console.log(`📊 Kafka binding properties: ${Object.keys(complexKafkaConfig.binding).length}`)
-			console.log(`📊 MQTT binding properties: ${Object.keys(complexMqttConfig.binding).length}`)
+			Effect.log("✅ Complex protocol configurations supported")
+			Effect.log(`📊 Kafka binding properties: ${Object.keys(complexKafkaConfig.binding).length}`)
+			Effect.log(`📊 MQTT binding properties: ${Object.keys(complexMqttConfig.binding).length}`)
 		})
 	})
 
@@ -405,9 +406,9 @@ describe("Real Type Definitions Unit Tests", () => {
 			expect(asyncapiError.context.operation).toBe("test-operation")
 			expect(asyncapiError.what).toContain("Schema validation")
 
-			console.log("✅ Error handling type definitions validated")
-			console.log(`📊 Error code: ${asyncapiError.code}`)
-			console.log(`📊 Error category: ${asyncapiError.category}`)
+			Effect.log("✅ Error handling type definitions validated")
+			Effect.log(`📊 Error code: ${asyncapiError.code}`)
+			Effect.log(`📊 Error category: ${asyncapiError.category}`)
 		})
 
 		test("should support validation result type structures", () => {
@@ -456,10 +457,10 @@ describe("Real Type Definitions Unit Tests", () => {
 			expect(validationResult.performanceMetrics.validationTimeMs).toBe(125.5)
 			expect(validationResult.performanceMetrics.cacheHit).toBe(true)
 
-			console.log("✅ Validation result type structures supported")
-			console.log(`📊 Errors: ${validationResult.errors.length}`)
-			console.log(`📊 Warnings: ${validationResult.warnings.length}`)
-			console.log(`📊 Performance: ${validationResult.performanceMetrics.validationTimeMs}ms`)
+			Effect.log("✅ Validation result type structures supported")
+			Effect.log(`📊 Errors: ${validationResult.errors.length}`)
+			Effect.log(`📊 Warnings: ${validationResult.warnings.length}`)
+			Effect.log(`📊 Performance: ${validationResult.performanceMetrics.validationTimeMs}ms`)
 		})
 	})
 
@@ -485,7 +486,7 @@ describe("Real Type Definitions Unit Tests", () => {
 			expect(isNumber(numberValue)).toBe(true)
 			expect(isSchemaObject(objectValue)).toBe(true)
 
-			console.log("✅ Complex type unions handled correctly")
+			Effect.log("✅ Complex type unions handled correctly")
 		})
 
 		test("should support type intersections for configuration", () => {
@@ -522,8 +523,8 @@ describe("Real Type Definitions Unit Tests", () => {
 			expect(completeConfig.enableCache).toBeDefined()
 			expect(typeof completeConfig.maxCacheSize).toBe("number")
 
-			console.log("✅ Type intersections for configuration supported")
-			console.log(`📊 Config properties: ${Object.keys(completeConfig).length}`)
+			Effect.log("✅ Type intersections for configuration supported")
+			Effect.log(`📊 Config properties: ${Object.keys(completeConfig).length}`)
 		})
 	})
 
@@ -559,9 +560,9 @@ describe("Real Type Definitions Unit Tests", () => {
 			expect(messageComponent.componentType).toBe("message")
 			expect(schemaComponent.specification.type).toBe("object")
 
-			console.log("✅ Generic type constraints enforced correctly")
-			console.log(`📊 Schema component: ${schemaComponent.name}`)
-			console.log(`📊 Message component: ${messageComponent.name}`)
+			Effect.log("✅ Generic type constraints enforced correctly")
+			Effect.log(`📊 Schema component: ${schemaComponent.name}`)
+			Effect.log(`📊 Message component: ${messageComponent.name}`)
 		})
 
 		test("should support conditional types for advanced scenarios", () => {
@@ -587,7 +588,7 @@ describe("Real Type Definitions Unit Tests", () => {
 			expect(kafkaConfig.key).toBe("messageKey")
 			expect(mqttConfig.qos).toBe(1)
 
-			console.log("✅ Conditional types for advanced scenarios supported")
+			Effect.log("✅ Conditional types for advanced scenarios supported")
 		})
 	})
 
@@ -622,7 +623,7 @@ describe("Real Type Definitions Unit Tests", () => {
 			expect(infoOnly.asyncapi).toBeDefined()
 			expect(infoOnly.info).toBeDefined()
 
-			console.log("✅ Type utility functions for common operations provided")
+			Effect.log("✅ Type utility functions for common operations provided")
 		})
 	})
 })

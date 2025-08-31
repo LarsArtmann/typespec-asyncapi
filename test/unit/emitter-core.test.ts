@@ -8,8 +8,8 @@ import {
   parseAsyncAPIOutput, 
   TestSources,
   AsyncAPIAssertions 
-} from "../utils/test-helpers.js";
-import type { AsyncAPIEmitterOptions } from "../../src/options.js";
+} from "../utils/test-helpers";
+import type { AsyncAPIEmitterOptions } from "../../src/options";
 
 describe("AsyncAPI Emitter Core", () => {
   describe("Basic Compilation", () => {

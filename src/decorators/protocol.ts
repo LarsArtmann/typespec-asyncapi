@@ -1,5 +1,6 @@
 import type {DecoratorContext, Model, Operation, Type} from "@typespec/compiler"
-import {$lib, reportDiagnostic} from "../lib.js"
+import {$lib, reportDiagnostic} from "../lib"
+import {Effect} from "effect"
 
 export type ProtocolType = "kafka" | "websocket" | "http" | "amqp" | "mqtt" | "redis";
 
@@ -117,10 +118,10 @@ export function $protocol(
 	target: Operation | Model,
 	config: ProtocolConfig,
 ): void {
-	console.log(`=
+	Effect.log(`=
  PROCESSING @protocol decorator on: ${target.kind} ${target.name || 'unnamed'}`)
-	console.log(`=� Protocol config:`, config)
-	console.log(`<�  Target type: ${target.kind}`)
+	Effect.log(`=� Protocol config:`, config)
+	Effect.log(`<�  Target type: ${target.kind}`)
 
 	// Target is already constrained to Operation | Model - no validation needed
 
@@ -141,20 +142,20 @@ export function $protocol(
 	// Validate protocol-specific binding configuration
 	const validationResult = validateProtocolBinding(config.protocol, config.binding)
 	if (validationResult.warnings.length > 0) {
-		console.log(`�  Protocol binding validation warnings:`, validationResult.warnings)
+		Effect.log(`�  Protocol binding validation warnings:`, validationResult.warnings)
 		validationResult.warnings.forEach(warning => {
-			console.log(`�  ${warning}`)
+			Effect.log(`�  ${warning}`)
 		})
 	}
 
-	console.log(`=� Validated protocol config for ${config.protocol}:`, config)
+	Effect.log(`=� Validated protocol config for ${config.protocol}:`, config)
 
 	// Store protocol configuration in program state
 	const protocolMap = context.program.stateMap($lib.stateKeys.protocolConfigs)
 	protocolMap.set(target, config)
 
-	console.log(` Successfully stored protocol config for ${target.kind} ${target.name || 'unnamed'}`)
-	console.log(`=� Total entities with protocol config: ${protocolMap.size}`)
+	Effect.log(` Successfully stored protocol config for ${target.kind} ${target.name || 'unnamed'}`)
+	Effect.log(`=� Total entities with protocol config: ${protocolMap.size}`)
 }
 
 /**

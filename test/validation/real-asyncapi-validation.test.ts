@@ -100,7 +100,7 @@ describe("Real AsyncAPI Validation Tests", () => {
       expect(document?.operations()).toBeDefined();
       
       // This proves our generated spec is ACTUALLY valid by AsyncAPI standards
-      console.log("✅ Generated AsyncAPI 3.0 spec passes OFFICIAL AsyncAPI parser validation");
+      Effect.log("✅ Generated AsyncAPI 3.0 spec passes OFFICIAL AsyncAPI parser validation");
     } catch (error) {
       // If file doesn't exist, skip this validation
       console.warn(`Test file ${testFile} not found, skipping YAML validation`);

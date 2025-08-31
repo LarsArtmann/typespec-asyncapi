@@ -14,8 +14,8 @@ import type {
 	KafkaOperationBindingObject,
 	ReferenceObject,
 	SchemaObject,
-} from "./types/index.js"
-import { validatePositiveInteger, validateEnumValue, validateStringPattern, validateHttpStatusCode } from "./utils/protocol-validation.js";
+} from "./types/index"
+import {validateEnumValue, validateHttpStatusCode, validatePositiveInteger} from "./utils/protocol-validation"
 
 //TODO: This file is to big. Split it up!
 
@@ -410,24 +410,24 @@ export class ProtocolBindingFactory {
 
 		switch (bindingType) {
 			case "channel":
-				const partitionValidation = validatePositiveInteger(config.channel?.partitions, "partitions");
-				const replicaValidation = validatePositiveInteger(config.channel?.replicas, "replicas");
-				
+				const partitionValidation = validatePositiveInteger(config.channel?.partitions, "partitions")
+				const replicaValidation = validatePositiveInteger(config.channel?.replicas, "replicas")
+
 				errors.push(...partitionValidation.errors.map(err => ({
 					protocol: "kafka" as const,
 					bindingType: "channel" as const,
 					property: "partitions",
 					message: err,
 					severity: "error" as const,
-				})));
-				
+				})))
+
 				errors.push(...replicaValidation.errors.map(err => ({
 					protocol: "kafka" as const,
 					bindingType: "channel" as const,
 					property: "replicas",
 					message: err,
 					severity: "error" as const,
-				})));
+				})))
 				break
 			case "message":
 				errors.push(...validateEnumValue(config.message?.schemaIdLocation, "schemaIdLocation", ["header", "payload"] as const).map(err => ({
@@ -436,15 +436,15 @@ export class ProtocolBindingFactory {
 					property: "schemaIdLocation",
 					message: err,
 					severity: "error" as const,
-				})));
-				
+				})))
+
 				errors.push(...validateEnumValue(config.message?.schemaLookupStrategy, "schemaLookupStrategy", ["TopicIdStrategy", "RecordIdStrategy", "TopicRecordIdStrategy"] as const).map(err => ({
 					protocol: "kafka" as const,
 					bindingType: "message" as const,
 					property: "schemaLookupStrategy",
 					message: err,
 					severity: "error" as const,
-				})));
+				})))
 				break
 		}
 
@@ -473,7 +473,7 @@ export class ProtocolBindingFactory {
 
 	private static validateHttpBinding(bindingType: string, config: HttpBindingConfig): ProtocolBindingValidationError[] {
 		const errors: ProtocolBindingValidationError[] = []
-		const validMethods = ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS", "CONNECT", "TRACE"] as const;
+		const validMethods = ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS", "CONNECT", "TRACE"] as const
 
 		switch (bindingType) {
 			case "operation":
@@ -483,23 +483,23 @@ export class ProtocolBindingFactory {
 					property: "type",
 					message: err,
 					severity: "error" as const,
-				})));
-				
+				})))
+
 				errors.push(...validateEnumValue(config.operation?.method, "method", validMethods).map(err => ({
 					protocol: "http" as const,
 					bindingType: "operation" as const,
 					property: "method",
 					message: err,
 					severity: "error" as const,
-				})));
-				
+				})))
+
 				errors.push(...validateHttpStatusCode(config.operation?.statusCode, "statusCode").map(err => ({
 					protocol: "http" as const,
 					bindingType: "operation" as const,
 					property: "statusCode",
 					message: err,
 					severity: "error" as const,
-				})));
+				})))
 				break
 			case "message":
 				errors.push(...validateHttpStatusCode(config.message?.statusCode, "statusCode").map(err => ({
@@ -508,7 +508,7 @@ export class ProtocolBindingFactory {
 					property: "statusCode",
 					message: err,
 					severity: "error" as const,
-				})));
+				})))
 				break
 		}
 

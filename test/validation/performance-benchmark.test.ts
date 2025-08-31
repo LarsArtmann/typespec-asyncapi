@@ -12,7 +12,7 @@ import {
   PerformanceAssertions,
   type BenchmarkResult,
   type BenchmarkOptions
-} from "../../src/validation/index.js";
+} from "../../src/validation/index";
 
 describe("AsyncAPI Validation Performance Benchmarks", () => {
   describe("Quick Performance Tests", () => {

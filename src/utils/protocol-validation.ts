@@ -7,9 +7,9 @@
  * Generic validation result structure
  */
 export type ValidationResult = {
-  isValid: boolean;
-  errors: string[];
-  warnings: string[];
+	isValid: boolean;
+	errors: string[];
+	warnings: string[];
 };
 
 /**
@@ -17,13 +17,13 @@ export type ValidationResult = {
  * Centralized string validation logic
  */
 export function validateRequiredString(value: string | undefined, fieldName: string): string[] {
-  const errors: string[] = [];
-  
-  if (!value || value.trim() === '') {
-    errors.push(`${fieldName} is required`);
-  }
-  
-  return errors;
+	const errors: string[] = []
+
+	if (!value || value.trim() === '') {
+		errors.push(`${fieldName} is required`)
+	}
+
+	return errors
 }
 
 /**
@@ -31,22 +31,22 @@ export function validateRequiredString(value: string | undefined, fieldName: str
  * Centralized integer validation logic
  */
 export function validatePositiveInteger(value: number | undefined, fieldName: string, maxValue?: number): ValidationResult {
-  const errors: string[] = [];
-  const warnings: string[] = [];
-  
-  if (value !== undefined) {
-    if (!Number.isInteger(value) || value < 1) {
-      errors.push(`${fieldName} must be a positive integer`);
-    } else if (maxValue && value > maxValue) {
-      warnings.push(`High ${fieldName.toLowerCase()} value may impact performance`);
-    }
-  }
-  
-  return {
-    isValid: errors.length === 0,
-    errors,
-    warnings
-  };
+	const errors: string[] = []
+	const warnings: string[] = []
+
+	if (value !== undefined) {
+		if (!Number.isInteger(value) || value < 1) {
+			errors.push(`${fieldName} must be a positive integer`)
+		} else if (maxValue && value > maxValue) {
+			warnings.push(`High ${fieldName.toLowerCase()} value may impact performance`)
+		}
+	}
+
+	return {
+		isValid: errors.length === 0,
+		errors,
+		warnings,
+	}
 }
 
 /**
@@ -54,13 +54,13 @@ export function validatePositiveInteger(value: number | undefined, fieldName: st
  * Centralized pattern validation logic
  */
 export function validateStringPattern(value: string | undefined, fieldName: string, pattern: RegExp, description: string): string[] {
-  const errors: string[] = [];
-  
-  if (value !== undefined && value.trim() !== '' && !pattern.test(value)) {
-    errors.push(`${fieldName} ${description}`);
-  }
-  
-  return errors;
+	const errors: string[] = []
+
+	if (value !== undefined && value.trim() !== '' && !pattern.test(value)) {
+		errors.push(`${fieldName} ${description}`)
+	}
+
+	return errors
 }
 
 /**
@@ -68,13 +68,13 @@ export function validateStringPattern(value: string | undefined, fieldName: stri
  * Centralized length validation logic
  */
 export function validateStringLength(value: string | undefined, fieldName: string, maxLength: number): string[] {
-  const errors: string[] = [];
-  
-  if (value !== undefined && value.length > maxLength) {
-    errors.push(`${fieldName} cannot exceed ${maxLength} characters`);
-  }
-  
-  return errors;
+	const errors: string[] = []
+
+	if (value !== undefined && value.length > maxLength) {
+		errors.push(`${fieldName} cannot exceed ${maxLength} characters`)
+	}
+
+	return errors
 }
 
 /**
@@ -82,13 +82,13 @@ export function validateStringLength(value: string | undefined, fieldName: strin
  * Centralized enum validation logic
  */
 export function validateEnumValue<T extends string>(value: T | undefined, fieldName: string, allowedValues: readonly T[]): string[] {
-  const errors: string[] = [];
-  
-  if (value !== undefined && !allowedValues.includes(value)) {
-    errors.push(`${fieldName} must be one of: ${allowedValues.join(", ")}`);
-  }
-  
-  return errors;
+	const errors: string[] = []
+
+	if (value !== undefined && !allowedValues.includes(value)) {
+		errors.push(`${fieldName} must be one of: ${allowedValues.join(", ")}`)
+	}
+
+	return errors
 }
 
 /**
@@ -96,13 +96,13 @@ export function validateEnumValue<T extends string>(value: T | undefined, fieldN
  * Centralized status code validation logic
  */
 export function validateHttpStatusCode(statusCode: number | undefined, fieldName: string): string[] {
-  const errors: string[] = [];
-  
-  if (statusCode !== undefined && (statusCode < 100 || statusCode > 599)) {
-    errors.push(`${fieldName} must be a valid HTTP status code (100-599)`);
-  }
-  
-  return errors;
+	const errors: string[] = []
+
+	if (statusCode !== undefined && (statusCode < 100 || statusCode > 599)) {
+		errors.push(`${fieldName} must be a valid HTTP status code (100-599)`)
+	}
+
+	return errors
 }
 
 /**
@@ -110,17 +110,17 @@ export function validateHttpStatusCode(statusCode: number | undefined, fieldName
  * Utility to merge validation results
  */
 export function combineValidationResults(...results: ValidationResult[]): ValidationResult {
-  const allErrors: string[] = [];
-  const allWarnings: string[] = [];
-  
-  for (const result of results) {
-    allErrors.push(...result.errors);
-    allWarnings.push(...result.warnings);
-  }
-  
-  return {
-    isValid: allErrors.length === 0,
-    errors: allErrors,
-    warnings: allWarnings
-  };
+	const allErrors: string[] = []
+	const allWarnings: string[] = []
+
+	for (const result of results) {
+		allErrors.push(...result.errors)
+		allWarnings.push(...result.warnings)
+	}
+
+	return {
+		isValid: allErrors.length === 0,
+		errors: allErrors,
+		warnings: allWarnings,
+	}
 }

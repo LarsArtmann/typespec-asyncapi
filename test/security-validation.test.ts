@@ -1,6 +1,5 @@
 import { describe, test, expect } from "bun:test";
-import { AsyncAPIEmitterOptionsSchema } from "../src/options.js";
-import type { AsyncAPIEmitterOptions } from "../src/types/options.js";
+import { AsyncAPIEmitterOptionsSchema } from "../src/options";
 
 describe("Security Validation", () => {
   test("schema prevents arbitrary properties (security vulnerability fix)", () => {

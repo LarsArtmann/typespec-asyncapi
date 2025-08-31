@@ -8,7 +8,7 @@ import {
   compileAsyncAPISpecWithoutErrors, 
   compileAsyncAPISpec,
   parseAsyncAPIOutput 
-} from "../utils/test-helpers.js";
+} from "../utils/test-helpers";
 
 describe("AsyncAPI Basic Functionality", () => {
   it("should compile simple TypeSpec to AsyncAPI using @channel decorator", async () => {
@@ -41,7 +41,7 @@ describe("AsyncAPI Basic Functionality", () => {
     expect(content).toContain("publishSimpleEvent");
     expect(content).toContain("SimpleEvent");
     
-    console.log("✅ Basic TypeSpec to AsyncAPI compilation works");
+    Effect.log("✅ Basic TypeSpec to AsyncAPI compilation works");
   });
 
   it("should generate JSON format output", async () => {
@@ -71,7 +71,7 @@ describe("AsyncAPI Basic Functionality", () => {
     expect(asyncapiDoc.channels).toBeDefined();
     expect(asyncapiDoc.components).toBeDefined();
     
-    console.log("✅ JSON output generation works");
+    Effect.log("✅ JSON output generation works");
   });
 
   it("should handle multiple operations with different channels", async () => {
@@ -114,7 +114,7 @@ describe("AsyncAPI Basic Functionality", () => {
     expect(asyncapiDoc.components.schemas.UserEvent).toBeDefined();
     expect(asyncapiDoc.components.schemas.OrderEvent).toBeDefined();
     
-    console.log("✅ Multiple operations and channels work");
+    Effect.log("✅ Multiple operations and channels work");
   });
 
   it("should handle different TypeSpec data types", async () => {
@@ -156,7 +156,7 @@ describe("AsyncAPI Basic Functionality", () => {
     expect(schema.required).toContain("boolField");
     expect(schema.required).not.toContain("optionalField");
     
-    console.log("✅ TypeSpec data type mapping works");
+    Effect.log("✅ TypeSpec data type mapping works");
   });
 
   it("should preserve @doc annotations", async () => {
@@ -189,7 +189,7 @@ describe("AsyncAPI Basic Functionality", () => {
     expect(schema.properties.id.description).toBe("Unique identifier for the event");
     expect(schema.properties.description.description).toBe("Human-readable description");
     
-    console.log("✅ Documentation preservation works");
+    Effect.log("✅ Documentation preservation works");
   });
 
   it("should handle operations with parameters", async () => {
@@ -221,7 +221,7 @@ describe("AsyncAPI Basic Functionality", () => {
     // Verify operation references the correct schema
     expect(asyncapiDoc.components.schemas.ParameterizedEvent).toBeDefined();
     
-    console.log("✅ Operations with parameters work");
+    Effect.log("✅ Operations with parameters work");
   });
 
   it("should generate unique operation and channel names", async () => {
@@ -260,6 +260,6 @@ describe("AsyncAPI Basic Functionality", () => {
     expect(channelNames.length).toBe(3);
     expect(new Set(channelNames).size).toBe(3); // All unique
     
-    console.log("✅ Unique naming works");
+    Effect.log("✅ Unique naming works");
   });
 });

@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { 
   compileAsyncAPISpecWithoutErrors, 
   parseAsyncAPIOutput
-} from "../utils/test-helpers.js";
+} from "../utils/test-helpers";
 
 describe("AsyncAPI Emitter Integration", () => {
   it("should compile basic-events example and generate AsyncAPI", async () => {
@@ -62,7 +62,7 @@ describe("AsyncAPI Emitter Integration", () => {
     expect(content).toContain("receiveUserMessage");
     expect(content).toContain("UserSignupEvent");
     
-    console.log("✅ Generated AsyncAPI content validated");
+    Effect.log("✅ Generated AsyncAPI content validated");
   });
 
   it("should validate TypeSpec models and generate schemas", async () => {
@@ -125,7 +125,7 @@ describe("AsyncAPI Emitter Integration", () => {
     expect(complexEventSchema.required).toContain("status");
     expect(complexEventSchema.required).not.toContain("description"); // optional field
     
-    console.log("✅ Complex schema validation passed");
+    Effect.log("✅ Complex schema validation passed");
   });
 
   it("should handle multiple operations and channels", async () => {
@@ -175,7 +175,7 @@ describe("AsyncAPI Emitter Integration", () => {
     expect(content).toContain("UserEvent");
     expect(content).toContain("SystemAlert");
     
-    console.log("✅ Multi-operation test passed");
+    Effect.log("✅ Multi-operation test passed");
   });
 
   it("should handle TypeSpec decorators and documentation", async () => {
@@ -217,6 +217,6 @@ describe("AsyncAPI Emitter Integration", () => {
     expect(schema.properties.name.description).toBe("Human-readable event name");
     expect(schema.properties.createdAt.description).toBe("Event creation timestamp in UTC");
     
-    console.log("✅ Documentation preservation test passed");
+    Effect.log("✅ Documentation preservation test passed");
   });
 });

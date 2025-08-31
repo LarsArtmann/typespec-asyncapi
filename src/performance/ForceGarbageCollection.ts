@@ -1,4 +1,4 @@
-import type {ByteAmount} from "@/performance/ByteAmount.js"
+import type {ByteAmount} from "@/performance/ByteAmount"
 
 export type ForceGarbageCollection = {
 	memoryFreed: ByteAmount;

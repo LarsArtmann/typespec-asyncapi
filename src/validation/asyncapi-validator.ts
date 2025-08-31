@@ -88,9 +88,9 @@ export class AsyncAPIValidator {
 			return
 		}
 
-		console.log("🔧 Initializing AsyncAPI 3.0.0 Validator with REAL @asyncapi/parser...")
+		Effect.log("🔧 Initializing AsyncAPI 3.0.0 Validator with REAL @asyncapi/parser...")
 		this.initialized = true
-		console.log("✅ AsyncAPI 3.0.0 Validator initialized successfully")
+		Effect.log("✅ AsyncAPI 3.0.0 Validator initialized successfully")
 	}
 
 	/**

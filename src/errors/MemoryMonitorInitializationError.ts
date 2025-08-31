@@ -1,7 +1,7 @@
-import {PerformanceError} from "@/errors/PerformanceError.js"
+import {PerformanceError} from "@/errors/PerformanceError"
 
 export class MemoryMonitorInitializationError extends PerformanceError {
-	readonly _tag = "MemoryMonitorInitializationError";
-	override readonly name = "MemoryMonitorInitializationError";
+	readonly _tag = "MemoryMonitorInitializationError"
+	override readonly name = "MemoryMonitorInitializationError"
 }
 

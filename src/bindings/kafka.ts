@@ -21,7 +21,7 @@ import {
 	validateRequiredString,
 	validateStringLength,
 	validateStringPattern,
-} from "../utils/protocol-validation.js"
+} from "../utils/protocol-validation"
 
 export type KafkaChannelBinding = {
 	/** Kafka topic name */

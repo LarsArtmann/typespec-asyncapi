@@ -1,5 +1,5 @@
-import {PerformanceError} from "@/errors/PerformanceError.js"
-import type {Seconds} from "@/performance/Durations.js"
+import {PerformanceError} from "@/errors/PerformanceError"
+import type {Seconds} from "@/performance/Durations"
 
 export class MemoryLeakDetectedError extends PerformanceError {
 	readonly _tag = "MemoryLeakDetectedError"

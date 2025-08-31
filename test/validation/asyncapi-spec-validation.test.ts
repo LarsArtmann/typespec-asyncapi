@@ -16,8 +16,8 @@ import {
   createValidationTestSuite,
   type ValidationResult,
   type AsyncAPIValidatorOptions
-} from "../../src/validation/index.js";
-import { compileAsyncAPISpec, parseAsyncAPIOutput } from "../utils/test-helpers.js";
+} from "../../src/validation/index";
+import { compileAsyncAPISpec, parseAsyncAPIOutput } from "../utils/test-helpers";
 import { writeFile, mkdir, rm } from "node:fs/promises";
 import { join } from "node:path";
 

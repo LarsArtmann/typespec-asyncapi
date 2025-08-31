@@ -7,8 +7,8 @@
  */
 
 import { describe, it, expect, beforeAll } from "vitest";
-import { AsyncAPIValidator, validateAsyncAPIFile } from "../../src/validation/index.js";
-import { compileAsyncAPISpec, parseAsyncAPIOutput, validateAsyncAPIDocumentComprehensive } from "../utils/test-helpers.js";
+import { AsyncAPIValidator, validateAsyncAPIFile } from "../../src/validation/index";
+import { compileAsyncAPISpec, parseAsyncAPIOutput, validateAsyncAPIDocumentComprehensive } from "../utils/test-helpers";
 import { writeFile, mkdir, rm } from "node:fs/promises";
 import { join } from "node:path";
 
@@ -146,7 +146,7 @@ describe("End-to-End AsyncAPI Validation Pipeline", () => {
       `;
 
       // Step 1: Compile TypeSpec to AsyncAPI
-      console.log("🔄 Step 1: Compiling TypeSpec to AsyncAPI...");
+      Effect.log("🔄 Step 1: Compiling TypeSpec to AsyncAPI...");
       const compilationResult = await compileAsyncAPISpec(typeSpecSource, {
         "file-type": "json",
         "output-file": "comprehensive-api",
@@ -157,13 +157,13 @@ describe("End-to-End AsyncAPI Validation Pipeline", () => {
       expect(compilationResult.outputFiles.size).toBeGreaterThan(0);
 
       // Step 2: Parse generated AsyncAPI document
-      console.log("📄 Step 2: Parsing generated AsyncAPI document...");
+      Effect.log("📄 Step 2: Parsing generated AsyncAPI document...");
       const asyncApiDoc = parseAsyncAPIOutput(compilationResult.outputFiles, "comprehensive-api.json");
       expect(asyncApiDoc).toBeDefined();
       expect(typeof asyncApiDoc).toBe("object");
 
       // Step 3: Comprehensive validation against AsyncAPI 3.0.0 schema
-      console.log("✅ Step 3: Validating against AsyncAPI 3.0.0 specification...");
+      Effect.log("✅ Step 3: Validating against AsyncAPI 3.0.0 specification...");
       const validationResult = await validator.validate(asyncApiDoc);
 
       expect(validationResult.valid).toBe(true);
@@ -171,7 +171,7 @@ describe("End-to-End AsyncAPI Validation Pipeline", () => {
       expect(validationResult.summary).toContain("AsyncAPI document is valid");
 
       // Step 4: Verify structural completeness
-      console.log("🔍 Step 4: Verifying document structure...");
+      Effect.log("🔍 Step 4: Verifying document structure...");
       const doc = asyncApiDoc as any;
       
       // Check AsyncAPI version
@@ -196,7 +196,7 @@ describe("End-to-End AsyncAPI Validation Pipeline", () => {
       expect(Object.keys(doc.components.schemas).length).toBeGreaterThan(0);
 
       // Step 5: Validate specific AsyncAPI patterns
-      console.log("🎯 Step 5: Validating AsyncAPI patterns...");
+      Effect.log("🎯 Step 5: Validating AsyncAPI patterns...");
       
       // Check for proper channel references in operations
       for (const [operationName, operation] of Object.entries(doc.operations)) {
@@ -210,7 +210,7 @@ describe("End-to-End AsyncAPI Validation Pipeline", () => {
         expect(doc.channels).toHaveProperty(channelRef);
       }
 
-      console.log("✅ All validation steps completed successfully!");
+      Effect.log("✅ All validation steps completed successfully!");
     });
 
     it("should detect and report validation errors in malformed AsyncAPI", async () => {
@@ -246,13 +246,13 @@ describe("End-to-End AsyncAPI Validation Pipeline", () => {
         expect(validationResult.errors).toBeDefined();
         expect(validationResult.summary).toBeDefined();
 
-        console.log(`Validation result: ${validationResult.summary}`);
+        Effect.log(`Validation result: ${validationResult.summary}`);
         if (!validationResult.valid) {
-          console.log("Validation errors:", validationResult.errors.map(e => e.message));
+          Effect.log("Validation errors:", validationResult.errors.map(e => e.message));
         }
       } catch (error) {
         // If compilation fails, that's also a valid test outcome
-        console.log(`Compilation failed as expected: ${error instanceof Error ? error.message : String(error)}`);
+        Effect.log(`Compilation failed as expected: ${error instanceof Error ? error.message : String(error)}`);
         expect(error).toBeDefined();
       }
     });
@@ -592,8 +592,8 @@ describe("End-to-End AsyncAPI Validation Pipeline", () => {
       // Total validation time should be reasonable
       expect(totalTime).toBeLessThan(5000); // Less than 5 seconds for 3 APIs
 
-      console.log(`Validated ${apiSpecs.length} APIs in ${totalTime.toFixed(2)}ms`);
-      console.log("Individual results:", validationResults.map(r => 
+      Effect.log(`Validated ${apiSpecs.length} APIs in ${totalTime.toFixed(2)}ms`);
+      Effect.log("Individual results:", validationResults.map(r => 
         `${r.name}: ${r.valid ? "✅" : "❌"} (${r.duration.toFixed(2)}ms)`
       ));
     });

@@ -7,15 +7,15 @@
  */
 
 import {Context, Duration, Effect, Fiber, Layer, Metric, MetricBoundaries} from "effect"
-import type {AsyncAPIEmitterOptions} from "../options.js"
-import {MetricsCollectionError} from "../errors/MetricsCollectionError.js"
-import {MetricsInitializationError} from "../errors/MetricsInitializationError.js"
-import {ThroughputBelowTargetError} from "../errors/ThroughputBelowTargetError.js"
-import {MemoryThresholdExceededError} from "../errors/MemoryThresholdExceededError.js"
-import type {PerformanceMeasurement} from "./PerformanceMeasurement.js"
-import type {ThroughputResult} from "./ThroughputResult.js"
-import type {PerformanceMetricsService} from "./PerformanceMetricsService.js"
-import type {ByteAmount} from "@/performance/ByteAmount.js"
+import type {AsyncAPIEmitterOptions} from "../options"
+import {MetricsCollectionError} from "../errors/MetricsCollectionError"
+import {MetricsInitializationError} from "../errors/MetricsInitializationError"
+import {ThroughputBelowTargetError} from "../errors/ThroughputBelowTargetError"
+import {MemoryThresholdExceededError} from "../errors/MemoryThresholdExceededError"
+import type {PerformanceMeasurement} from "./PerformanceMeasurement"
+import type {ThroughputResult} from "./ThroughputResult"
+import type {PerformanceMetricsService} from "./PerformanceMetricsService"
+import type {ByteAmount} from "@/performance/ByteAmount"
 
 
 //TODO: This file is getting too big and should be split into multiple smaller files.
@@ -55,8 +55,6 @@ export const PERFORMANCE_METRICS = {
 	throughputTarget: Metric.gauge("throughput_target_ops_per_sec"),
 	memoryTarget: Metric.gauge("memory_target_bytes_per_operation"),
 }
-
-
 
 
 export const PERFORMANCE_METRICS_SERVICE = Context.GenericTag<PerformanceMetricsService>("PerformanceMetricsService")
