@@ -18,8 +18,8 @@
  * Spec: AsyncAPI 3.0.0 specification
  */
 
-// Import and re-export official AsyncAPI 3.0 types
-import type {
+// Import and re-export official AsyncAPI 3.0 types in single statement
+export type {
 	// Core Document Types
 	AsyncAPIObject,
 	InfoObject,
@@ -85,79 +85,26 @@ import type {
 	DefaultContentType,
 } from '@asyncapi/parser/esm/spec-types/v3';
 
-// Re-export with our naming conventions
-export type AsyncAPIDocument = AsyncAPIObject;
-export type {
-	InfoObject,
-	ContactObject,
-	LicenseObject,
-	
-	// Server Types
-	ServersObject,
-	ServerObject,
-	ServerVariableObject,
-	ServerBindingsObject,
-	
-	// Channel Types
-	ChannelsObject,
-	ChannelObject,
-	ChannelBindingsObject,
-	
-	// Operation Types
-	OperationsObject,
-	OperationObject,
-	OperationTraitObject,
-	OperationReplyObject,
-	OperationReplyAddressObject,
-	OperationBindingsObject,
-	
-	// Message Types
-	MessagesObject,
-	MessageObject,
-	MessageTraitObject,
-	MessageExampleObject,
-	MessageBindingsObject,
-	
-	// Component Types
-	ComponentsObject,
-	
-	// Schema Types
-	SchemaObject,
-	AsyncAPISchemaObject,
-	AsyncAPISchemaDefinition,
-	MultiFormatSchemaObject,
-	MultiFormatObject,
-	
-	// Security Types
-	SecuritySchemeObject,
-	
-	// Parameter Types
-	ParameterObject,
-	ParametersObject,
-	
-	// Common Types
-	ReferenceObject,
-	TagObject,
-	TagsObject,
-	ExternalDocumentationObject,
-	CorrelationIDObject,
-	Binding,
-	SpecificationExtensions,
-	SpecificationExtension,
-	
-	// Utility Types
-	AsyncAPIVersion,
-	Identifier,
-	DefaultContentType,
-};
+// Import specific types for aliases (separate import to avoid conflicts)
+import type { 
+	AsyncAPIObject as ImportedAsyncAPIObject, 
+	ChannelObject as ImportedChannelObject, 
+	OperationObject as ImportedOperationObject, 
+	MessageObject as ImportedMessageObject, 
+	ComponentsObject as ImportedComponentsObject, 
+	AsyncAPISchemaObject as ImportedAsyncAPISchemaObject 
+} from '@asyncapi/parser/esm/spec-types/v3';
+
+// Main alias for document type
+export type AsyncAPIDocument = ImportedAsyncAPIObject;
 
 // Legacy type aliases for backward compatibility
-export type AsyncAPISpec = AsyncAPIObject;
-export type Channel = ChannelObject;
-export type Operation = OperationObject;
-export type Message = MessageObject;
-export type Components = ComponentsObject;
-export type Schema = AsyncAPISchemaObject;
+export type AsyncAPISpec = ImportedAsyncAPIObject;
+export type Channel = ImportedChannelObject;
+export type Operation = ImportedOperationObject;
+export type Message = ImportedMessageObject;
+export type Components = ImportedComponentsObject;
+export type Schema = ImportedAsyncAPISchemaObject;
 
 /**
  * Custom utility types that extend the official AsyncAPI types

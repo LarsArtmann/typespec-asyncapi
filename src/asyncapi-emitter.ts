@@ -32,7 +32,7 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
 	constructor(emitter: AssetEmitter<string, AsyncAPIEmitterOptions>) {
 		super(emitter)
 		//TODO: [] <-- looks wrong! double check!
-		this.asyncApiDoc = this.createAsyncAPIDocument([])
+		this.asyncApiDoc = this.createAsyncAPIObject([])
 	}
 
 	override programContext(_program: Program): Record<string, unknown> {
@@ -44,7 +44,7 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
 	override async writeOutput(_sourceFiles: SourceFile<string>[]): Promise<void> {
 		// Discover all operations from the program
 		this.operations = this.discoverOperations(this.emitter.getProgram())
-		this.asyncApiDoc = this.createAsyncAPIDocument(this.operations)
+		this.asyncApiDoc = this.createAsyncAPIObject(this.operations)
 
 		// Process each operation
 		for (const op of this.operations) {
@@ -67,7 +67,7 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
 		}
 	}
 
-	private createAsyncAPIDocument(operations: Operation[]): AsyncAPIObject {
+	private createAsyncAPIObject(operations: Operation[]): AsyncAPIObject {
 		return {
 			asyncapi: "3.0.0" as const,
 			info: {
@@ -364,7 +364,7 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
  * - walkNamespace() -> moved to AsyncAPITypeEmitter.walkNamespace()
  * - logOperationDetails() -> moved to AsyncAPITypeEmitter.logOperationDetails()
  * - discoverOperations() -> moved to AsyncAPITypeEmitter.discoverOperations()
- * - createAsyncAPIDocument() -> moved to AsyncAPITypeEmitter.createAsyncAPIDocument()
+ * - createAsyncAPIObject() -> moved to AsyncAPITypeEmitter.createAsyncAPIObject()
  * - createChannelDefinition() -> moved to AsyncAPITypeEmitter.createChannelDefinition()
  * - createOperationDefinition() -> moved to AsyncAPITypeEmitter.createOperationDefinition()
  * - getPropertyType() -> moved to AsyncAPITypeEmitter.getPropertyType()

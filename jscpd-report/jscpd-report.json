@@ -1,6 +1,6 @@
 {
   "statistics": {
-    "detectionDate": "2025-08-31T02:29:06.439Z",
+    "detectionDate": "2025-08-31T03:05:58.739Z",
     "formats": {
       "typescript": {
         "sources": {
@@ -124,6 +124,18 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
+          "src/types/index.ts": {
+            "lines": 171,
+            "tokens": 673,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
           "src/test/protocol-bindings.test.ts": {
             "lines": 123,
             "tokens": 1178,
@@ -209,8 +221,8 @@
             "newClones": 0
           },
           "src/performance/MemoryMonitorService.ts": {
-            "lines": 42,
-            "tokens": 508,
+            "lines": 41,
+            "tokens": 509,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -473,8 +485,8 @@
             "newClones": 0
           },
           "src/decorators/index.ts": {
-            "lines": 24,
-            "tokens": 101,
+            "lines": 33,
+            "tokens": 118,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -497,8 +509,8 @@
             "newClones": 0
           },
           "src/bindings/kafka.ts": {
-            "lines": 213,
-            "tokens": 1217,
+            "lines": 256,
+            "tokens": 1397,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -510,7 +522,7 @@
           },
           "src/bindings/index.ts": {
             "lines": 51,
-            "tokens": 147,
+            "tokens": 141,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -521,14 +533,14 @@
             "newClones": 0
           },
           "src/protocol-bindings.ts": {
-            "lines": 617,
-            "tokens": 4696,
+            "lines": 598,
+            "tokens": 4469,
             "sources": 1,
             "clones": 2,
             "duplicatedLines": 10,
             "duplicatedTokens": 156,
-            "percentage": 1.62,
-            "percentageTokens": 3.32,
+            "percentage": 1.67,
+            "percentageTokens": 3.49,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -617,53 +629,53 @@
             "newClones": 0
           },
           "src/emitter-with-effect.ts": {
-            "lines": 459,
-            "tokens": 3878,
+            "lines": 460,
+            "tokens": 3887,
             "sources": 1,
             "clones": 1,
             "duplicatedLines": 9,
             "duplicatedTokens": 72,
             "percentage": 1.96,
-            "percentageTokens": 1.86,
+            "percentageTokens": 1.85,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
           "src/asyncapi-emitter.ts": {
-            "lines": 434,
-            "tokens": 3144,
+            "lines": 419,
+            "tokens": 3063,
             "sources": 1,
             "clones": 3,
             "duplicatedLines": 24,
             "duplicatedTokens": 237,
-            "percentage": 5.53,
-            "percentageTokens": 7.54,
+            "percentage": 5.73,
+            "percentageTokens": 7.74,
             "newDuplicatedLines": 0,
             "newClones": 0
           }
         },
         "total": {
-          "lines": 10088,
-          "tokens": 72021,
-          "sources": 53,
+          "lines": 10277,
+          "tokens": 72587,
+          "sources": 54,
           "clones": 9,
           "duplicatedLines": 60,
           "duplicatedTokens": 688,
-          "percentage": 0.59,
-          "percentageTokens": 0.96,
+          "percentage": 0.58,
+          "percentageTokens": 0.95,
           "newDuplicatedLines": 0,
           "newClones": 0
         }
       }
     },
     "total": {
-      "lines": 10088,
-      "tokens": 72021,
-      "sources": 53,
+      "lines": 10277,
+      "tokens": 72587,
+      "sources": 54,
       "clones": 9,
       "duplicatedLines": 60,
       "duplicatedTokens": 688,
-      "percentage": 0.59,
-      "percentageTokens": 0.96,
+      "percentage": 0.58,
+      "percentageTokens": 0.95,
       "newDuplicatedLines": 0,
       "newClones": 0
     }
@@ -748,32 +760,32 @@
       "tokens": 0,
       "firstFile": {
         "name": "src/protocol-bindings.ts",
-        "start": 267,
-        "end": 272,
+        "start": 256,
+        "end": 261,
         "startLoc": {
-          "line": 267,
+          "line": 256,
           "column": 7,
-          "position": 1903
+          "position": 1774
         },
         "endLoc": {
-          "line": 272,
+          "line": 261,
           "column": 2,
-          "position": 1981
+          "position": 1852
         }
       },
       "secondFile": {
         "name": "src/protocol-bindings.ts",
-        "start": 129,
-        "end": 134,
+        "start": 115,
+        "end": 120,
         "startLoc": {
-          "line": 129,
+          "line": 115,
           "column": 2,
-          "position": 830
+          "position": 659
         },
         "endLoc": {
-          "line": 134,
+          "line": 120,
           "column": 2,
-          "position": 908
+          "position": 737
         }
       }
     },
@@ -856,17 +868,17 @@
       "tokens": 0,
       "firstFile": {
         "name": "src/emitter-with-effect.ts",
-        "start": 232,
-        "end": 241,
+        "start": 233,
+        "end": 242,
         "startLoc": {
-          "line": 232,
+          "line": 233,
           "column": 12,
-          "position": 1866
+          "position": 1875
         },
         "endLoc": {
-          "line": 241,
+          "line": 242,
           "column": 51,
-          "position": 1938
+          "position": 1947
         }
       },
       "secondFile": {
@@ -892,17 +904,17 @@
       "tokens": 0,
       "firstFile": {
         "name": "src/asyncapi-emitter.ts",
-        "start": 126,
-        "end": 130,
+        "start": 111,
+        "end": 115,
         "startLoc": {
-          "line": 126,
+          "line": 111,
           "column": 2,
-          "position": 962
+          "position": 874
         },
         "endLoc": {
-          "line": 130,
+          "line": 115,
           "column": 4,
-          "position": 1019
+          "position": 931
         }
       },
       "secondFile": {
@@ -928,17 +940,17 @@
       "tokens": 0,
       "firstFile": {
         "name": "src/asyncapi-emitter.ts",
-        "start": 163,
-        "end": 173,
+        "start": 148,
+        "end": 158,
         "startLoc": {
-          "line": 163,
+          "line": 148,
           "column": 3,
-          "position": 1366
+          "position": 1282
         },
         "endLoc": {
-          "line": 173,
+          "line": 158,
           "column": 63,
-          "position": 1469
+          "position": 1385
         }
       },
       "secondFile": {
@@ -964,17 +976,17 @@
       "tokens": 0,
       "firstFile": {
         "name": "src/asyncapi-emitter.ts",
-        "start": 215,
-        "end": 225,
+        "start": 200,
+        "end": 210,
         "startLoc": {
-          "line": 215,
+          "line": 200,
           "column": 2,
-          "position": 1873
+          "position": 1789
         },
         "endLoc": {
-          "line": 225,
+          "line": 210,
           "column": 8,
-          "position": 1950
+          "position": 1866
         }
       },
       "secondFile": {

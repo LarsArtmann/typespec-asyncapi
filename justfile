@@ -9,6 +9,8 @@ build:
     #!/bin/bash
     set -euo pipefail
     echo "🏗️  Building TypeScript project..."
+    # Ensure dist directory exists before cleaning
+    mkdir -p dist
     if bun run build; then
         echo "✅ Build completed successfully"
         echo "📦 Checking build artifacts..."
@@ -92,7 +94,13 @@ test-coverage:
 
 # Clean build artifacts
 clean:
+    #!/bin/bash
+    set -euo pipefail
+    echo "🧹 Cleaning build artifacts..."
+    # Create dist directory if it doesn't exist, then clean it
+    mkdir -p dist
     bun run clean
+    echo "✅ Clean completed"
 
 # Install dependencies
 install:
