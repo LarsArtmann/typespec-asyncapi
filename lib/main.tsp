@@ -25,19 +25,39 @@ extern dec subscribe(target: Operation);
  * Apply message metadata to a model representing an AsyncAPI message
  * @param config Message configuration with name, title, contentType, description, etc.
  */
-extern dec message(target: Model, config?: Record<unknown>);
+extern dec message(target: Model, config?: {
+  name?: string;
+  title?: string;
+  summary?: string;
+  description?: string;
+  contentType?: string;
+  examples?: unknown[];
+  headers?: string;
+  correlationId?: string;
+  bindings?: Record<unknown>;
+});
 
 /**
  * Define protocol-specific binding configuration for operations or models
  * @param config Protocol configuration with type and binding details
  */
-extern dec protocol(target: Operation | Model, config: Record<unknown>);
+extern dec protocol(target: Operation | Model, config: {
+  protocol: "kafka" | "websocket" | "http" | "amqp" | "mqtt" | "redis";
+  binding: Record<unknown>;
+  version?: string;
+  description?: string;
+});
 
 /**
  * Apply security scheme information to operations or models
  * @param config Security configuration with name and scheme details
  */
-extern dec security(target: Operation | Model, config: Record<unknown>);
+extern dec security(target: Operation | Model, config: {
+  name: string;
+  scheme: Record<unknown>;
+  scopes?: string[];
+  metadata?: Record<unknown>;
+});
 
 /**
  * Define a server configuration for the AsyncAPI specification

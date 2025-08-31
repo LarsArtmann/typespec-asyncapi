@@ -156,8 +156,8 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 			await Effect.runPromise(
 				pipe(
 					emitProgram,
-					Effect.provide(performanceLayers)
-				) as Effect.Effect<void, never, never>
+					Effect.provide(performanceLayers),
+				) as Effect.Effect<void, never, never>,
 			)
 		} catch (error) {
 			console.error("Emission pipeline failed:", error)
@@ -734,76 +734,129 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 	}
 
 	/**
-	 * Create protocol-specific channel bindings
+	 * Create protocol-specific channel bindings using Effect.TS patterns
 	 */
 	private createProtocolChannelBindings(config: ProtocolConfig): ChannelBindings | undefined {
-		// Type-safe delegation to ProtocolBindingFactory based on protocol type
-		switch (config.protocol) {
-			case "kafka":
-				return ProtocolBindingFactory.createChannelBindings(config.protocol, config.binding as KafkaChannelBindingConfig)
-			case "websocket":
-				return ProtocolBindingFactory.createChannelBindings(config.protocol, config.binding as BaseWebSocketChannelBinding)
-			case "http":
-			case "amqp":
-			case "mqtt":
-			case "redis":
-				// These protocols don't have channel bindings in AsyncAPI spec
-				Effect.log(`ℹ️  Protocol ${config.protocol} does not support channel bindings`)
-				return undefined
-			default:
-				Effect.log(`⚠️  Unknown protocol for channel bindings: ${config.protocol}`)
-				return undefined
-		}
+		return Effect.runSync(
+			Effect.gen(function* () {
+				yield* Effect.log(`🔧 Creating channel bindings for protocol: ${config.protocol}`)
+
+				// Type-safe delegation to ProtocolBindingFactory based on protocol type
+				switch (config.protocol) {
+					case "kafka": {
+						const kafkaBinding = config.binding as KafkaChannelBindingConfig
+						const bindings = ProtocolBindingFactory.createChannelBindings(config.protocol, kafkaBinding)
+						yield* Effect.log(`✅ Created Kafka channel bindings with topic: ${kafkaBinding.topic ?? 'default'}`)
+						return yield* Effect.succeed(bindings)
+					}
+					case "websocket": {
+						const wsBinding = config.binding as BaseWebSocketChannelBinding
+						const bindings = ProtocolBindingFactory.createChannelBindings(config.protocol, wsBinding)
+						yield* Effect.log(`✅ Created WebSocket channel bindings with method: ${wsBinding.method ?? 'GET'}`)
+						return yield* Effect.succeed(bindings)
+					}
+					case "http":
+					case "amqp":
+					case "mqtt":
+					case "redis":
+						// These protocols don't have channel bindings in AsyncAPI spec
+						yield* Effect.log(`ℹ️  Protocol ${config.protocol} does not support channel bindings`)
+						return yield* Effect.succeed(undefined)
+					default:
+						yield* Effect.logWarning(`⚠️  Unknown protocol for channel bindings: ${config.protocol}`)
+						return yield* Effect.succeed(undefined)
+				}
+			}),
+		)
 	}
 
 	/**
-	 * Create protocol-specific operation bindings
+	 * Create protocol-specific operation bindings using Effect.TS patterns
 	 */
 	private createProtocolOperationBindings(config: ProtocolConfig): OperationBindings | undefined {
-		// Type-safe delegation to ProtocolBindingFactory based on protocol type
-		switch (config.protocol) {
-			case "kafka":
-				return ProtocolBindingFactory.createOperationBindings(config.protocol, config.binding as KafkaOperationBindingConfig)
-			case "http":
-				return ProtocolBindingFactory.createOperationBindings(config.protocol, config.binding as BaseHttpOperationBinding)
-			case "amqp":
-			case "mqtt":
-				// These protocols support operation bindings but not implemented yet
-				Effect.log(`ℹ️  Protocol ${config.protocol} operation bindings not yet implemented`)
-				return undefined
-			case "websocket":
-			case "redis":
-				// These protocols don't have operation bindings in AsyncAPI spec
-				Effect.log(`ℹ️  Protocol ${config.protocol} does not support operation bindings`)
-				return undefined
-			default:
-				Effect.log(`⚠️  Unknown protocol for operation bindings: ${config.protocol}`)
-				return undefined
-		}
+		return Effect.runSync(
+			Effect.gen(function* () {
+				yield* Effect.log(`🔧 Creating operation bindings for protocol: ${config.protocol}`)
+
+				// Type-safe delegation to ProtocolBindingFactory based on protocol type
+				switch (config.protocol) {
+					case "kafka": {
+						const kafkaBinding = config.binding as KafkaOperationBindingConfig
+						const bindings = ProtocolBindingFactory.createOperationBindings(config.protocol, kafkaBinding)
+						yield* Effect.log(`✅ Created Kafka operation bindings with groupId: ${kafkaBinding.groupId ?? 'none'}, clientId: ${kafkaBinding.clientId ?? 'none'}`)
+						return yield* Effect.succeed(bindings)
+					}
+					case "http": {
+						const httpBinding = config.binding as BaseHttpOperationBinding
+						const bindings = ProtocolBindingFactory.createOperationBindings(config.protocol, httpBinding)
+						yield* Effect.log(`✅ Created HTTP operation bindings with method: ${httpBinding.method ?? 'GET'}, type: ${httpBinding.type ?? 'request'}`)
+						return yield* Effect.succeed(bindings)
+					}
+					case "amqp":
+					case "mqtt": {
+						// These protocols support operation bindings but not implemented yet
+						yield* Effect.log(`ℹ️  Protocol ${config.protocol} operation bindings not yet implemented`)
+						// TODO: Implement AMQP and MQTT operation bindings
+						return yield* Effect.succeed(undefined)
+					}
+					case "websocket":
+					case "redis": {
+						// These protocols don't have operation bindings in AsyncAPI spec
+						yield* Effect.log(`ℹ️  Protocol ${config.protocol} does not support operation bindings`)
+						return yield* Effect.succeed(undefined)
+					}
+					default: {
+						yield* Effect.logWarning(`⚠️  Unknown protocol for operation bindings: ${config.protocol}`)
+						return yield* Effect.succeed(undefined)
+					}
+				}
+			}),
+		)
 	}
 
 	/**
-	 * Create protocol-specific message bindings
+	 * Create protocol-specific message bindings using Effect.TS patterns
 	 */
 	private createProtocolMessageBindings(config: ProtocolConfig): MessageBindings | undefined {
-		// Type-safe delegation to ProtocolBindingFactory based on protocol type
-		switch (config.protocol) {
-			case "kafka":
-				return ProtocolBindingFactory.createMessageBindings(config.protocol, config.binding as KafkaMessageBindingConfig)
-			case "websocket":
-				return ProtocolBindingFactory.createMessageBindings(config.protocol, config.binding as WebSocketMessageBindingConfig)
-			case "http":
-				return ProtocolBindingFactory.createMessageBindings(config.protocol, config.binding as BaseHttpMessageBinding)
-			case "amqp":
-			case "mqtt":
-			case "redis":
-				// These protocols support message bindings but not implemented yet
-				Effect.log(`ℹ️  Protocol ${config.protocol} message bindings not yet implemented`)
-				return undefined
-			default:
-				Effect.log(`⚠️  Unknown protocol for message bindings: ${config.protocol}`)
-				return undefined
-		}
+		return Effect.runSync(
+			Effect.gen(function* () {
+				yield* Effect.log(`🔧 Creating message bindings for protocol: ${config.protocol}`)
+
+				// Type-safe delegation to ProtocolBindingFactory based on protocol type
+				switch (config.protocol) {
+					case "kafka": {
+						const kafkaBinding = config.binding as KafkaMessageBindingConfig
+						const bindings = ProtocolBindingFactory.createMessageBindings(config.protocol, kafkaBinding)
+						yield* Effect.log(`✅ Created Kafka message bindings with key type: ${kafkaBinding.key?.type ?? 'none'}, schemaIdLocation: ${kafkaBinding.schemaIdLocation ?? 'payload'}`)
+						return yield* Effect.succeed(bindings)
+					}
+					case "websocket": {
+						const wsBinding = config.binding as WebSocketMessageBindingConfig
+						const bindings = ProtocolBindingFactory.createMessageBindings(config.protocol, wsBinding)
+						yield* Effect.log(`✅ Created WebSocket message bindings`)
+						return yield* Effect.succeed(bindings)
+					}
+					case "http": {
+						const httpBinding = config.binding as BaseHttpMessageBinding
+						const bindings = ProtocolBindingFactory.createMessageBindings(config.protocol, httpBinding)
+						yield* Effect.log(`✅ Created HTTP message bindings with statusCode: ${httpBinding.statusCode ?? 'none'}`)
+						return yield* Effect.succeed(bindings)
+					}
+					case "amqp":
+					case "mqtt":
+					case "redis": {
+						// These protocols support message bindings but not implemented yet
+						yield* Effect.log(`ℹ️  Protocol ${config.protocol} message bindings not yet implemented`)
+						// TODO: Implement AMQP, MQTT, and Redis message bindings
+						return yield* Effect.succeed(undefined)
+					}
+					default: {
+						yield* Effect.logWarning(`⚠️  Unknown protocol for message bindings: ${config.protocol}`)
+						return yield* Effect.succeed(undefined)
+					}
+				}
+			}),
+		)
 	}
 
 	/**
@@ -941,7 +994,7 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 		}
 
 		// Add security scheme to components.securitySchemes
-		this.asyncApiDoc.components.securitySchemes[config.name] = this.createAsyncAPISecurityScheme(config) as any // TODO: Fix security scheme typing
+		this.asyncApiDoc.components.securitySchemes[config.name] = this.createAsyncAPISecurityScheme(config) // TODO: Fix security scheme typing
 
 		Effect.log(`✅ Added security scheme: ${config.name} (${config.scheme.type})`)
 		return `Processed security config: ${config.name}`
@@ -982,7 +1035,7 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 					description: scheme.description,
 				}
 
-			case "oauth2":
+			case "oauth2": {
 				// Map OAuth2 flows to AsyncAPI v3 format (scopes -> availableScopes)
 				const asyncApiFlows: Record<string, {
 					authorizationUrl?: string;
@@ -1023,6 +1076,7 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 					flows: asyncApiFlows,
 					description: scheme.description,
 				}
+			}
 
 			case "openIdConnect":
 				return {
