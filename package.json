@@ -135,6 +135,6 @@
     "asyncapi-validator": "^5.1.1",
     "eslint": "^9.34.0",
     "glob": "^11.0.3",
-    "typescript": "^5.9.2"
+    "typescript": "^6.0.0-dev.20250830"
   }
 }

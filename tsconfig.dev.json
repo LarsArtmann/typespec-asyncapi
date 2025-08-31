@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    // === DEVELOPMENT-ONLY OVERRIDES ===
+    // Allow importing .ts files directly during development
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    
+    // More permissive for development speed
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true
+  },
+  "ts-node": {
+    "esm": true,
+    "experimentalSpecifierResolution": "node"
+  }
+}

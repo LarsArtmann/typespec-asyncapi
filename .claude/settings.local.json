@@ -69,7 +69,8 @@
       "WebFetch(domain:raw.githubusercontent.com)",
       "Bash(mkdir:*)",
       "Bash(npm publish:*)",
-      "Bash(/dev/null)"
+      "Bash(/dev/null)",
+      "WebFetch(domain:devblogs.microsoft.com)"
     ],
     "deny": [],
     "ask": []

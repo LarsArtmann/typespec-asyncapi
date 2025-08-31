@@ -4,8 +4,8 @@
     "target": "ES2022",
     "lib": ["ES2022", "ES2022.Error"],
     "downlevelIteration": true, // Required for Effect.TS generators
-    "module": "ES2022",
-    "moduleResolution": "Bundler", 
+    "module": "Node16", // CRITICAL: Must match moduleResolution for npm publishing
+    "moduleResolution": "Node16", // CRITICAL: Use Node16 for npm package publishing
     "moduleDetection": "force",
 
     // === ESM MODULE OUTPUT OPTIMIZATION ===
@@ -71,6 +71,7 @@
     "resolveJsonModule": true,
     "forceConsistentCasingInFileNames": true,
     "verbatimModuleSyntax": true,  // Preserve imports exactly as written (Effect.TS requirement)
+    "allowImportingTsExtensions": false, // Must be false for npm publishing - use .js extensions
 
     // === ADVANCED TYPE CHECKING ===
     "useDefineForClassFields": true,
