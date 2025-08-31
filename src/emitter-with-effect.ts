@@ -19,7 +19,7 @@ import {getDoc} from "@typespec/compiler"
 import {type AssetEmitter, createAssetEmitter, TypeEmitter} from "@typespec/asset-emitter"
 import {stringify} from "yaml"
 import type {AsyncAPIEmitterOptions} from "./options.js"
-import type {AsyncAPIObject, SchemaObject} from "@asyncapi/parser/esm/spec-types/v3.js"
+import type {AsyncAPIObject, MessageObject, OperationObject, SchemaObject} from "@asyncapi/parser/esm/spec-types/v3.js"
 // import {validateAsyncAPIEffect} from "./validation/asyncapi-validator.js" // Unused for now
 // import type {ValidationError} from "./errors/validation-error.js" // Unused
 import {$lib} from "./lib.js"
@@ -457,10 +457,10 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 	/**
 	 * Add operation definition to AsyncAPI document with protocol binding support
 	 */
-	private addOperationToDocument(op: Operation, channelName: string, action: string, program: Program, protocolConfig?: any): void {
+	private addOperationToDocument(op: Operation, channelName: string, action: string, program: Program, protocolConfig?: ProtocolConfig): void {
 		if (!this.asyncApiDoc.operations) this.asyncApiDoc.operations = {}
 
-		const operationDef: any = {
+		const operationDef: OperationObject = {
 			action: action as "receive" | "send",
 			channel: {$ref: `#/channels/${channelName}`},
 			summary: getDoc(program, op) ?? `Operation ${op.name}`,
@@ -482,11 +482,11 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 	/**
 	 * Add message definition to AsyncAPI document components with protocol binding support
 	 */
-	private addMessageToDocument(op: Operation, protocolConfig?: any): void {
+	private addMessageToDocument(op: Operation, protocolConfig?: ProtocolConfig): void {
 		if (!this.asyncApiDoc.components) this.asyncApiDoc.components = {}
 		if (!this.asyncApiDoc.components.messages) this.asyncApiDoc.components.messages = {}
 
-		const messageDef: any = {
+		const messageDef: MessageObject = {
 			name: `${op.name}Message`,
 			title: `${op.name} Message`,
 			summary: `Message for ${op.name} operation`,

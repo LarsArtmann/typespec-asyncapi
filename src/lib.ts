@@ -1,4 +1,4 @@
-import {createTypeSpecLibrary, type Diagnostic, paramMessage} from "@typespec/compiler"
+import {createTypeSpecLibrary, type DecoratorContext, type Diagnostic, paramMessage} from "@typespec/compiler"
 
 export const $lib = createTypeSpecLibrary({
 	name: "@typespec/asyncapi",
@@ -163,8 +163,7 @@ export const stateKeys = {
  * @param code - Diagnostic code (will be prefixed with "@typespec/asyncapi.")
  * @param args - Optional arguments for error message templating
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function reportDiagnostic(context: any, target: unknown, code: string, args?: Record<string, unknown>) {
+export function reportDiagnostic(context: DecoratorContext, target: unknown, code: string, args?: Record<string, unknown>) {
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
 	context.program.reportDiagnostic({
 		code: `@typespec/asyncapi.${code}`,

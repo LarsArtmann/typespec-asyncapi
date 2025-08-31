@@ -2,10 +2,10 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { readFileSync } from "fs";
 import { parse } from "yaml";
 import { Parser } from "@asyncapi/parser";
-import { createTestRunner } from "@typespec/compiler/testing";
+import { createTestRunner, type BasicTestRunner } from "@typespec/compiler/testing";
 
 describe("Real AsyncAPI Validation Tests", () => {
-  let runner: any;
+  let runner: BasicTestRunner;
   let parser: Parser;
 
   beforeEach(async () => {
