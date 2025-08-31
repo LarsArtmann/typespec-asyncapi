@@ -6,7 +6,7 @@
  * with Railway Programming and Effect.TS architecture validation.
  */
 
-import {runTestSuiteCLI} from "../src/test-runner"
+import {runTestSuiteCLI} from "../src/test-runner.js"
 import {Effect} from "effect"
 
 // Configuration for CI/CD performance validation

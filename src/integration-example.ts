@@ -7,25 +7,25 @@
 
 import {Console, Context, Duration, Effect, Layer} from "effect"
 import type {EmitContext, Model, Operation} from "@typespec/compiler"
-import type {AsyncAPIEmitterOptions} from "./options"
-import {AsyncAPIEmitterOptionsSchema, createAsyncAPIEmitterOptions, validateAsyncAPIEmitterOptions} from "./options"
-import {AsyncAPIOptionsParseError} from "./errors/AsyncAPIOptionsParseError"
-import {AsyncAPIOptionsValidationError} from "./errors/AsyncAPIOptionsValidationError"
-import {EmitterInitializationError} from "./errors/EmitterInitializationError"
-import {SpecGenerationError} from "./errors/SpecGenerationError"
-import {SpecValidationError} from "./errors/SpecValidationError"
-import {EmitterTimeoutError} from "./errors/EmitterTimeoutError"
-import {$lib} from "./lib"
-import type {MessageConfig} from "./decorators/message"
-import type {MetricsCollectionError} from "./errors/MetricsCollectionError"
-import type {MetricsInitializationError} from "./errors/MetricsInitializationError"
-import {MemoryThresholdExceededError} from "./errors/MemoryThresholdExceededError"
-import {PERFORMANCE_METRICS_SERVICE, PERFORMANCE_METRICS_SERVICE_LIVE} from "./performance/metrics"
-import type {MemoryMonitorInitializationError} from "./errors/MemoryMonitorInitializationError"
-import {MEMORY_MONITOR_SERVICE, MEMORY_MONITOR_SERVICE_LIVE, withMemoryTracking} from "./performance/memory-monitor"
-import {validateAsyncAPIObjectEffect} from "./utils/validation-helpers"
-import {generateSchemaPropertiesFromModel} from "./utils/schema-conversion"
-import {sanitizeChannelId} from "./utils/typespec-helpers"
+import type {AsyncAPIEmitterOptions} from "./options.js"
+import {ASYNC_API_EMITTER_OPTIONS_SCHEMA, createAsyncAPIEmitterOptions, validateAsyncAPIEmitterOptions} from "./options.js"
+import {AsyncAPIOptionsParseError} from "./errors/AsyncAPIOptionsParseError.js"
+import {AsyncAPIOptionsValidationError} from "./errors/AsyncAPIOptionsValidationError.js"
+import {EmitterInitializationError} from "./errors/EmitterInitializationError.js"
+import {SpecGenerationError} from "./errors/SpecGenerationError.js"
+import {SpecValidationError} from "./errors/SpecValidationError.js"
+import {EmitterTimeoutError} from "./errors/EmitterTimeoutError.js"
+import {$lib} from "./lib.js"
+import type {MessageConfig} from "./decorators/message.js"
+import type {MetricsCollectionError} from "./errors/MetricsCollectionError.js"
+import type {MetricsInitializationError} from "./errors/MetricsInitializationError.js"
+import {MemoryThresholdExceededError} from "./errors/MemoryThresholdExceededError.js"
+import {PERFORMANCE_METRICS_SERVICE, PERFORMANCE_METRICS_SERVICE_LIVE} from "./performance/metrics.js"
+import type {MemoryMonitorInitializationError} from "./errors/MemoryMonitorInitializationError.js"
+import {MEMORY_MONITOR_SERVICE, MEMORY_MONITOR_SERVICE_LIVE, withMemoryTracking} from "./performance/memory-monitor.js"
+import {validateAsyncAPIObjectEffect} from "./utils/validation-helpers.js"
+import {generateSchemaPropertiesFromModel} from "./utils/schema-conversion.js"
+import {sanitizeChannelId} from "./utils/typespec-helpers.js"
 
 /**
  * Helper function to validate program context exists
@@ -716,10 +716,10 @@ export const validateMultipleConfigs = async (configs: unknown[]): Promise<Array
  * Convert Effect.TS validation to TypeSpec-compatible format
  * Maintains the JSONSchemaType interface that TypeSpec expects
  */
-export function getTypeSpecCompatibleSchema(): typeof AsyncAPIEmitterOptionsSchema {
+export function getTypeSpecCompatibleSchema(): typeof ASYNC_API_EMITTER_OPTIONS_SCHEMA {
 	// The AsyncAPIEmitterOptionsSchema is already compatible with TypeSpec
 	// This function shows how to access it programmatically
-	return AsyncAPIEmitterOptionsSchema
+	return ASYNC_API_EMITTER_OPTIONS_SCHEMA
 }
 
 /**

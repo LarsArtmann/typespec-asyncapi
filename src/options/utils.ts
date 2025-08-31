@@ -4,9 +4,9 @@
 
 import {Effect} from "effect"
 import {JSONSchema} from "@effect/schema"
-import {AsyncAPIEmitterOptionsEffectSchema} from "./schemas"
-import {validateAsyncAPIEmitterOptions} from "./validation"
-import type {AsyncAPIEmitterOptions} from "./types"
+import {AsyncAPIEmitterOptionsEffectSchema} from "./schemas.js"
+import {validateAsyncAPIEmitterOptions} from "./validation.js"
+import type {AsyncAPIEmitterOptions} from "./types.js"
 
 /**
  * JSON Schema representation for TypeSpec compatibility
@@ -14,7 +14,7 @@ import type {AsyncAPIEmitterOptions} from "./types"
  *
  * CRITICAL: This bridges Effect.TS validation with TypeSpec's expected JSONSchemaType format
  */
-export const AsyncAPIEmitterOptionsSchema = (() => {
+export const ASYNC_API_EMITTER_OPTIONS_SCHEMA = (() => {
 	try {
 		// Convert Effect.TS Schema to JSON Schema format for TypeSpec compatibility
 		const jsonSchema = JSONSchema.make(AsyncAPIEmitterOptionsEffectSchema)

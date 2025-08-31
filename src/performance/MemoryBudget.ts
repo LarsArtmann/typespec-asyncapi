@@ -1,4 +1,4 @@
-import type {ByteAmount} from "./ByteAmount"
+import type {ByteAmount} from "./ByteAmount.js"
 
 export type MemoryBudget = {
 	maxMemoryPerOperation: ByteAmount;

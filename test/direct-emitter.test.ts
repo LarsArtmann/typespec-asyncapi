@@ -6,6 +6,7 @@ import {describe, expect, it} from "vitest"
 import {createTestHost} from "@typespec/compiler/testing"
 import {$onEmit} from "../dist/index"
 import {AsyncAPITestLibrary} from "./test-host"
+import {Effect} from "effect"
 
 describe("Direct Emitter Test", () => {
 	it("should call emitter function directly", async () => {
@@ -83,7 +84,7 @@ describe("Direct Emitter Test", () => {
 			Effect.log("Emitter context program type:", typeof emitterContext.program)
 			Effect.log("Program has sourceFiles:", !!emitterContext.program?.sourceFiles)
 
-			await $onEmit(emitterContext as any)
+			await $onEmit(emitterContext)
 
 			Effect.log("=== EMITTER CALL COMPLETE ===")
 

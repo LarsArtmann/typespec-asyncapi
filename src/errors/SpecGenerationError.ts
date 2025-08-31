@@ -1,4 +1,4 @@
-import type {AsyncAPIEmitterOptions} from "../options"
+import type {AsyncAPIEmitterOptions} from "../options.js"
 
 /**
  * Error thrown when specification generation fails

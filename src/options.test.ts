@@ -1,13 +1,13 @@
 import {describe, expect, test} from "bun:test"
 import {Effect} from "effect"
-import type {AsyncAPIEmitterOptions} from "./options"
+import type {AsyncAPIEmitterOptions} from "./options.js"
 import {
-	AsyncAPIEmitterOptionsSchema,
+	ASYNC_API_EMITTER_OPTIONS_SCHEMA,
 	createAsyncAPIEmitterOptions,
 	isAsyncAPIEmitterOptions,
 	parseAsyncAPIEmitterOptions,
 	validateAsyncAPIEmitterOptions,
-} from "./options"
+} from "./options.js"
 
 //TODO: this file is getting to big split it up
 
@@ -199,12 +199,12 @@ describe("Effect.TS Schema AsyncAPI Emitter Options", () => {
 
 	test("AsyncAPIEmitterOptionsSchema should be compatible with TypeSpec", () => {
 		// Verify the schema has the expected JSONSchema structure
-		expect(AsyncAPIEmitterOptionsSchema).toHaveProperty("type", "object")
-		expect(AsyncAPIEmitterOptionsSchema).toHaveProperty("additionalProperties", false)
-		expect(AsyncAPIEmitterOptionsSchema).toHaveProperty("properties")
+		expect(ASYNC_API_EMITTER_OPTIONS_SCHEMA).toHaveProperty("type", "object")
+		expect(ASYNC_API_EMITTER_OPTIONS_SCHEMA).toHaveProperty("additionalProperties", false)
+		expect(ASYNC_API_EMITTER_OPTIONS_SCHEMA).toHaveProperty("properties")
 
 		// Verify key properties are present
-		const properties = AsyncAPIEmitterOptionsSchema.properties as Record<string, unknown>
+		const properties = ASYNC_API_EMITTER_OPTIONS_SCHEMA.properties as Record<string, unknown>
 		expect(properties).toHaveProperty("output-file")
 		expect(properties).toHaveProperty("file-type")
 		expect(properties).toHaveProperty("asyncapi-version")
@@ -214,10 +214,10 @@ describe("Effect.TS Schema AsyncAPI Emitter Options", () => {
 
 	test("AsyncAPIEmitterOptionsSchema should maintain security properties", () => {
 		// CRITICAL SECURITY: Ensure additionalProperties is false
-		expect(AsyncAPIEmitterOptionsSchema.additionalProperties).toBe(false)
+		expect(ASYNC_API_EMITTER_OPTIONS_SCHEMA.additionalProperties).toBe(false)
 
 		// Ensure enum constraints are preserved
-		const properties = AsyncAPIEmitterOptionsSchema.properties as Record<string, unknown>
+		const properties = ASYNC_API_EMITTER_OPTIONS_SCHEMA.properties as Record<string, unknown>
 		expect(properties["file-type"]).toHaveProperty("enum", ["yaml", "json"])
 		expect(properties["asyncapi-version"]).toHaveProperty("enum", ["3.0.0"])
 	})

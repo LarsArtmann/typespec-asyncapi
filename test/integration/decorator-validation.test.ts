@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { compileAsyncAPISpec } from "../utils/test-helpers";
+import { compileAsyncAPISpec } from "../utils/test-helpers.js";
 
 describe("AsyncAPI Decorator Validation", () => {
   describe("@channel decorator", () => {

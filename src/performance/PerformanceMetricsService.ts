@@ -1,13 +1,13 @@
 // PERFORMANCE METRICS SERVICE
 import type {Effect} from "effect"
-import type {ByteAmount} from "./ByteAmount"
-import type {MemoryThresholdExceededError} from "../errors/MemoryThresholdExceededError"
-import type {MetricsCollectionError} from "../errors/MetricsCollectionError"
-import type {MetricsInitializationError} from "../errors/MetricsInitializationError"
-import type {ThroughputBelowTargetError} from "../errors/ThroughputBelowTargetError"
-import type {PerformanceMeasurement} from "./PerformanceMeasurement"
-import type {ThroughputResult} from "./ThroughputResult"
-import type {AsyncAPIEmitterOptions} from "../options"
+import type {ByteAmount} from "./ByteAmount.js"
+import type {MemoryThresholdExceededError} from "../errors/MemoryThresholdExceededError.js"
+import type {MetricsCollectionError} from "../errors/MetricsCollectionError.js"
+import type {MetricsInitializationError} from "../errors/MetricsInitializationError.js"
+import type {ThroughputBelowTargetError} from "../errors/ThroughputBelowTargetError.js"
+import type {PerformanceMeasurement} from "./PerformanceMeasurement.js"
+import type {ThroughputResult} from "./ThroughputResult.js"
+import type {AsyncAPIEmitterOptions} from "../options.js"
 
 type Milliseconds = number
 

@@ -5,7 +5,7 @@
 
 import type {Model, ModelProperty, Program} from "@typespec/compiler"
 import {getDoc} from "@typespec/compiler"
-import type {SchemaObject} from "@asyncapi/parser/esm/spec-types/v3"
+import type {SchemaObject} from "@asyncapi/parser/esm/spec-types/v3.js"
 
 /**
  * Convert TypeSpec model to AsyncAPI schema object

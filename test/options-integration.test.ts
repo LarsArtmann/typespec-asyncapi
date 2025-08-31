@@ -1,5 +1,5 @@
 import {describe, expect, test} from "bun:test"
-import {AsyncAPIEmitterOptionsSchema} from "../src/options"
+import {ASYNC_API_EMITTER_OPTIONS_SCHEMA} from "../src/options"
 import type {AsyncAPIEmitterOptions} from "../src/types/options"
 
 describe("Options Integration", () => {
@@ -23,32 +23,32 @@ describe("Options Integration", () => {
 		expect(() => {
 			// In a real TypeSpec context, this would be validated by the compiler
 			// Here we're just ensuring the schema structure is sound
-			expect(AsyncAPIEmitterOptionsSchema.type).toBe("object")
-			expect(AsyncAPIEmitterOptionsSchema.additionalProperties).toBe(false)
+			expect(ASYNC_API_EMITTER_OPTIONS_SCHEMA.type).toBe("object")
+			expect(ASYNC_API_EMITTER_OPTIONS_SCHEMA.additionalProperties).toBe(false)
 		}).not.toThrow()
 	})
 
 	test("schema rejects invalid enum values", () => {
 		// Test that our enum constraints would catch invalid values
-		const fileTypeSchema = AsyncAPIEmitterOptionsSchema.properties["file-type"]
+		const fileTypeSchema = ASYNC_API_EMITTER_OPTIONS_SCHEMA.properties["file-type"]
 		expect(fileTypeSchema.enum).toEqual(["yaml", "json"])
 		expect(fileTypeSchema.enum).not.toContain("xml") // Invalid format
 
-		const versionSchema = AsyncAPIEmitterOptionsSchema.properties["asyncapi-version"]
+		const versionSchema = ASYNC_API_EMITTER_OPTIONS_SCHEMA.properties["asyncapi-version"]
 		expect(versionSchema.enum).toEqual(["3.0.0"])
 		expect(versionSchema.enum).not.toContain("2.0.0") // Unsupported version
 	})
 
 	test("security: additionalProperties false prevents injection", () => {
 		// This is the critical security test
-		expect(AsyncAPIEmitterOptionsSchema.additionalProperties).toBe(false)
+		expect(ASYNC_API_EMITTER_OPTIONS_SCHEMA.additionalProperties).toBe(false)
 
 		// Ensure all top-level properties are explicitly defined
-		const allowedProperties = Object.keys(AsyncAPIEmitterOptionsSchema.properties)
+		const allowedProperties = Object.keys(ASYNC_API_EMITTER_OPTIONS_SCHEMA.properties)
 		expect(allowedProperties.length).toBeGreaterThan(5)
 
 		// Ensure no arbitrary properties would be allowed
-		expect(AsyncAPIEmitterOptionsSchema.additionalProperties).not.toBe(true)
-		expect(AsyncAPIEmitterOptionsSchema.additionalProperties).not.toBeUndefined()
+		expect(ASYNC_API_EMITTER_OPTIONS_SCHEMA.additionalProperties).not.toBe(true)
+		expect(ASYNC_API_EMITTER_OPTIONS_SCHEMA.additionalProperties).not.toBeUndefined()
 	})
 })

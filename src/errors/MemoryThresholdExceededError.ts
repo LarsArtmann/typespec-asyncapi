@@ -1,4 +1,4 @@
-import type {ByteAmount} from "../performance/ByteAmount"
+import type {ByteAmount} from "../performance/ByteAmount.js"
 
 export class MemoryThresholdExceededError extends Error {
 	readonly _tag = "MemoryThresholdExceededError"

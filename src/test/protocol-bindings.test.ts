@@ -5,7 +5,7 @@
  */
 //TODO: fix bun:test types!
 import {expect, test} from "bun:test"
-import {KafkaProtocolBinding, ProtocolBindingFactory, ProtocolUtils} from "../protocol-bindings"
+import {KafkaProtocolBinding, ProtocolBindingFactory, ProtocolUtils} from "../protocol-bindings.js"
 
 test("Protocol binding factory creates Kafka server bindings safely", () => {
 	const serverBindings = ProtocolBindingFactory.createServerBindings("kafka", {

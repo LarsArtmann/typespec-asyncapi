@@ -1,6 +1,5 @@
 import {afterEach, beforeEach, describe, expect, test} from "bun:test"
 import {resolve} from "node:path"
-import {cwd} from "node:process"
 import {
 	createTemplateVariables,
 	detectCommandName,
@@ -13,7 +12,7 @@ import {
 	resolvePathTemplateWithValidation,
 	SUPPORTED_TEMPLATE_VARIABLES,
 	validatePathTemplate,
-} from "./path-templates"
+} from "./path-templates.js"
 
 
 //TODO: this file is getting to big split it up

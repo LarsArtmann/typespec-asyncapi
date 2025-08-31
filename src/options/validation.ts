@@ -4,13 +4,13 @@
 
 import {Effect} from "effect"
 import {Schema} from "@effect/schema"
-import {AsyncAPIEmitterOptionsEffectSchema} from "./schemas"
-import {AsyncAPIOptionsValidationError} from "../errors/AsyncAPIOptionsValidationError"
-import {AsyncAPIOptionsParseError} from "../errors/AsyncAPIOptionsParseError"
+import {AsyncAPIEmitterOptionsEffectSchema} from "./schemas.js"
+import {AsyncAPIOptionsValidationError} from "../errors/AsyncAPIOptionsValidationError.js"
+import {AsyncAPIOptionsParseError} from "../errors/AsyncAPIOptionsParseError.js"
 import type {
 	AsyncAPIEmitterOptions,
 	SecuritySchemeConfig
-} from "./types"
+} from "./types.js"
 
 // TYPE CONVERSION UTILITIES - Handle readonly/optional property differences
 
@@ -136,7 +136,7 @@ export const validateAsyncAPIEmitterOptions = (input: unknown): Effect.Effect<As
 
 		return converted
 	}).pipe(
-		Effect.catchAll(error => Effect.fail(error as AsyncAPIOptionsValidationError | AsyncAPIOptionsParseError | Error)),
+		Effect.catchAll(error => Effect.fail(error)),
 	)
 
 /**

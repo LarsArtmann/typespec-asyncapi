@@ -19,7 +19,7 @@ import {emitFile, getDoc} from "@typespec/compiler"
 import {type AssetEmitter, createAssetEmitter, TypeEmitter} from "@typespec/asset-emitter"
 import {stringify} from "yaml"
 import type {AsyncAPIEmitterOptions} from "./options.js"
-import type {AsyncAPIObject, SchemaObject} from "@asyncapi/parser/esm/spec-types/v3"
+import type {AsyncAPIObject, SchemaObject} from "@asyncapi/parser/esm/spec-types/v3.js"
 // import {validateAsyncAPIEffect} from "./validation/asyncapi-validator.js" // Unused for now
 // import type {ValidationError} from "./errors/validation-error.js" // Unused
 import {$lib} from "./lib.js"
@@ -29,6 +29,8 @@ import {convertModelToSchema} from "./utils/schema-conversion.js"
 
 // Using centralized types from types/index.ts
 // AsyncAPIObject and SchemaObject (as AsyncAPISchema) are now imported
+
+//TODO: This file is still too big!
 
 /**
  * Enhanced AsyncAPI TypeEmitter with Effect.TS integration
@@ -61,9 +63,11 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 	}
 
 	override async writeOutput(): Promise<void> {
+		//TODO: This function is to big! split it up ASAP!
+
 		// Use Effect.TS for the entire emission pipeline with performance monitoring
 		const emitProgram = pipe(
-			Effect.gen((function* (this: AsyncAPIEffectEmitter) {
+			Effect.gen(function* (this: AsyncAPIEffectEmitter) {
 				const metricsService = yield* PERFORMANCE_METRICS_SERVICE
 				const memoryMonitor = yield* MEMORY_MONITOR_SERVICE
 
@@ -76,10 +80,10 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 				yield* memoryMonitor.startMonitoring(5000) // Monitor every 5 seconds
 
 				// Execute the emission stages
-				const ops = yield* this.discoverOperationsEffect()
+				const ops: Operation[] = yield* this.discoverOperationsEffect()
 				yield* this.processOperationsEffect(ops)
-				const doc = yield* this.generateDocumentEffect()
-				const validatedDoc = yield* this.validateDocumentEffect(doc)
+				const doc: string = yield* this.generateDocumentEffect()
+				const validatedDoc: string = yield* this.validateDocumentEffect(doc)
 				yield* this.writeDocumentEffect(validatedDoc)
 
 				// Stop memory monitoring
@@ -116,7 +120,7 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 				Effect.log(`  Memory Metrics:`, memoryMetrics)
 
 				Effect.log(`\n✅ AsyncAPI emission pipeline completed with full performance monitoring!`)
-			}).bind(this)),
+			}.bind(this)),
 			Effect.catchAll(error =>
 				Effect.gen(function* () {
 					yield* Console.error(`❌ Emission pipeline failed: ${error}`)
@@ -146,7 +150,7 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 	 * Discover operations using Effect.TS with performance monitoring
 	 */
 	private discoverOperationsEffect() {
-		return Effect.gen((function* (this: AsyncAPIEffectEmitter) {
+		return Effect.gen(function* (this: AsyncAPIEffectEmitter) {
 			const metricsService = yield* PERFORMANCE_METRICS_SERVICE
 			const memoryMonitor = yield* MEMORY_MONITOR_SERVICE
 
@@ -188,17 +192,17 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 
 			// Record throughput metrics for discovery stage
 			const throughputResult = yield* metricsService.recordThroughput(measurement, operations.length)
-			Effect.log(`📊 Discovery stage completed: ${throughputResult.operationsPerSecond.toFixed(0)} ops/sec, ${throughputResult.averageMemoryPerOperation.toFixed(0)} bytes/op`)
+			Effect.log(`📊 Discovery stage completed: ${throughputResult.operationsPerSecond?.toFixed(0) ?? 0} ops/sec, ${throughputResult.averageMemoryPerOperation?.toFixed(0) ?? 0} bytes/op`)
 
 			return operations
-		}).bind(this)).pipe(Effect.mapError(error => new Error(`Operation discovery failed: ${error}`)))
+		}.bind(this)).pipe(Effect.mapError(error => new Error(`Operation discovery failed: ${error}`)))
 	}
 
 	/**
 	 * Process operations using Effect.TS with performance monitoring
 	 */
 	private processOperationsEffect(operations: Operation[]) {
-		return Effect.gen((function* (this: AsyncAPIEffectEmitter) {
+		return Effect.gen(function* (this: AsyncAPIEffectEmitter) {
 			const metricsService = yield* PERFORMANCE_METRICS_SERVICE
 			const memoryMonitor = yield* MEMORY_MONITOR_SERVICE
 
@@ -220,9 +224,9 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 
 			// Record throughput metrics for processing stage
 			const throughputResult = yield* metricsService.recordThroughput(measurement, operations.length)
-			Effect.log(`📊 Processing stage completed: ${throughputResult.operationsPerSecond.toFixed(0)} ops/sec, ${throughputResult.averageMemoryPerOperation.toFixed(0)} bytes/op`)
+			Effect.log(`📊 Processing stage completed: ${(throughputResult).operationsPerSecond?.toFixed(0) ?? 0} ops/sec, ${(throughputResult).averageMemoryPerOperation?.toFixed(0) ?? 0} bytes/op`)
 			Effect.log(`📊 Processed ${operations.length} operations successfully`)
-		}).bind(this)).pipe(Effect.mapError(error => new Error(`Operation processing failed: ${error}`)))
+		}.bind(this)).pipe(Effect.mapError(error => new Error(`Operation processing failed: ${error}`)))
 	}
 
 	/**
@@ -231,7 +235,7 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 	private processSingleOperation(op: Operation): string {
 		const program = this.emitter.getProgram()
 		const {operationType, channelPath} = this.extractOperationMetadata(op, program)
-		
+
 		Effect.log(`🔍 Operation ${op.name}: type=${operationType ?? 'none'}, channel=${channelPath ?? 'default'}`)
 
 		const channelName = `channel_${op.name}`
@@ -249,7 +253,10 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 	/**
 	 * Extract operation metadata from decorators
 	 */
-	private extractOperationMetadata(op: Operation, program: Program): {operationType: string | undefined, channelPath: string} {
+	private extractOperationMetadata(op: Operation, program: Program): {
+		operationType: string | undefined,
+		channelPath: string
+	} {
 		const operationTypesMap = program.stateMap($lib.stateKeys.operationTypes)
 		const channelPathsMap = program.stateMap($lib.stateKeys.channelPaths)
 
@@ -327,7 +334,7 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 	 * Generate the final document using Effect.TS with performance monitoring
 	 */
 	private generateDocumentEffect() {
-		return Effect.gen((function* (this: AsyncAPIEffectEmitter) {
+		return Effect.gen(function* (this: AsyncAPIEffectEmitter) {
 			const metricsService = yield* PERFORMANCE_METRICS_SERVICE
 			const memoryMonitor = yield* MEMORY_MONITOR_SERVICE
 
@@ -347,10 +354,10 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 
 			// Record throughput metrics for document generation stage
 			const throughputResult = yield* metricsService.recordThroughput(measurement, 1) // 1 document generated
-			Effect.log(`📊 Document generation completed: ${throughputResult.averageLatencyMicroseconds.toFixed(2)} μs, ${throughputResult.averageMemoryPerOperation.toFixed(0)} bytes`)
+			Effect.log(`📊 Document generation completed: ${(throughputResult).averageLatencyMicroseconds?.toFixed(2) ?? 0} μs, ${(throughputResult).averageMemoryPerOperation?.toFixed(0) ?? 0} bytes`)
 
 			return content
-		}).bind(this))
+		}.bind(this))
 	}
 
 	/**
@@ -358,7 +365,7 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 	 */
 	private generateDocumentContent(): string {
 		const options = this.emitter.getOptions()
-		const fileType = options["file-type"] ?? "yaml"
+		const fileType: "yaml" | "json" = options["file-type"] || "yaml"
 
 		this.updateDocumentInfo()
 		const content = this.serializeDocument(fileType)
@@ -389,7 +396,7 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 	 * Validate the document using asyncapi-validator with performance monitoring
 	 */
 	private validateDocumentEffect(content: string) {
-		return Effect.gen((function* (this: AsyncAPIEffectEmitter) {
+		return Effect.gen(function* (this: AsyncAPIEffectEmitter) {
 			const metricsService = yield* PERFORMANCE_METRICS_SERVICE
 			const memoryMonitor = yield* MEMORY_MONITOR_SERVICE
 
@@ -409,10 +416,10 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 
 			// Record throughput metrics for validation stage
 			const throughputResult = yield* metricsService.recordThroughput(measurement, 1) // 1 document validated
-			Effect.log(`📊 Validation stage completed: ${throughputResult.averageLatencyMicroseconds.toFixed(2)} μs, ${throughputResult.averageMemoryPerOperation.toFixed(0)} bytes`)
+			Effect.log(`📊 Validation stage completed: ${(throughputResult).averageLatencyMicroseconds?.toFixed(2) ?? 0} μs, ${(throughputResult).averageMemoryPerOperation?.toFixed(0) ?? 0} bytes`)
 
 			return validatedContent
-		}).bind(this))
+		}.bind(this))
 	}
 
 	/**
@@ -441,7 +448,7 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 	 * Write the document to file using Effect.TS with performance monitoring
 	 */
 	private writeDocumentEffect(content: string) {
-		return Effect.gen((function* (this: AsyncAPIEffectEmitter) {
+		return Effect.gen(function* (this: AsyncAPIEffectEmitter) {
 			const metricsService = yield* PERFORMANCE_METRICS_SERVICE
 			const memoryMonitor = yield* MEMORY_MONITOR_SERVICE
 
@@ -464,16 +471,17 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 
 			// Record throughput metrics for document writing stage
 			const throughputResult = yield* metricsService.recordThroughput(measurement, 1) // 1 document written
-			Effect.log(`📊 Document writing completed: ${throughputResult.averageLatencyMicroseconds.toFixed(2)} μs, ${throughputResult.averageMemoryPerOperation.toFixed(0)} bytes`)
+			Effect.log(`📊 Document writing completed: ${(throughputResult).averageLatencyMicroseconds?.toFixed(2) ?? 0} μs, ${(throughputResult).averageMemoryPerOperation?.toFixed(0) ?? 0} bytes`)
 
 			return result
-		}).bind(this))
+		}.bind(this))
 	}
 
 	/**
 	 * Write document content to file and log statistics
 	 */
 	private async writeDocumentToFile(content: string): Promise<void> {
+		//TODO: investigate what went wrong with these types!
 		const options = this.emitter.getOptions()
 		const program = this.emitter.getProgram()
 		const {outputFile} = this.getOutputFileOptions(options)
@@ -487,10 +495,14 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 		this.logDocumentStatistics()
 	}
 
+	//TODO: this needs better and named types!
 	/**
 	 * Get output file options from emitter configuration
 	 */
-	private getOutputFileOptions(options: any): {fileType: string, outputFile: string} {
+	private getOutputFileOptions(options: Pick<AsyncAPIEmitterOptions, "file-type" | "output-file">): {
+		fileType: string,
+		outputFile: string
+	} {
 		const fileType = options["file-type"] ?? "yaml"
 		const outputFile = options["output-file"] ?? `asyncapi.${fileType}`
 		return {fileType, outputFile}

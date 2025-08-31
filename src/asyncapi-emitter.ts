@@ -10,14 +10,13 @@ import {
 import {stringify} from "yaml"
 import {dirname} from "node:path"
 import {Effect} from "effect"
-import type {AsyncAPIEmitterOptions} from "./options"
-import type {AsyncAPIObject, ChannelObject, OperationObject, SchemaObject} from "@asyncapi/parser/esm/spec-types/v3"
-import {createDefaultKafkaChannelBinding, validateKafkaChannelBinding} from "./bindings/kafka"
-import {convertModelToSchema} from "./utils/schema-conversion"
-import {createChannelDefinition, createOperationDefinition} from "./utils/asyncapi-helpers"
-
+import type {AsyncAPIEmitterOptions} from "./options.js"
+import type {AsyncAPIObject, ChannelObject, OperationObject, SchemaObject} from "@asyncapi/parser/esm/spec-types/v3.js"
+import {createDefaultKafkaChannelBinding, validateKafkaChannelBinding} from "./bindings/kafka.js"
+import {convertModelToSchema} from "./utils/schema-conversion.js"
+import {createChannelDefinition, createOperationDefinition} from "./utils/asyncapi-helpers.js"
 // ChannelObject and OperationObject now imported from centralized types
-import {hasTemplateVariables, type PathTemplateContext, resolvePathTemplateWithValidation} from "./path-templates"
+import {hasTemplateVariables, type PathTemplateContext, resolvePathTemplateWithValidation} from "./path-templates.js"
 
 // MIGRATED TO @typespec/asset-emitter architecture for modern TypeSpec emitter patterns
 
@@ -56,8 +55,7 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
 	}
 
 	override sourceFile(_sourceFile: SourceFile<string>): EmittedSourceFile {
-		// For AssetEmitter compatibility, return the raw content directly
-		const options = this.emitter.getOptions()
+		const options = this.typedOption()
 		const program = this.emitter.getProgram()
 		const content = this.generateContent(options["file-type"] ?? "yaml", program)
 
@@ -127,12 +125,15 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
 		Effect.log(`🏗️  Processing operation: ${op.name}`)
 
 		const {name: channelName, definition: channelDef} = this.createChannelDefinition(op)
+		//TODO: @typescript-eslint/no-non-null-assertion
 		this.asyncApiDoc.channels![channelName] = channelDef
 
+		//TODO: @typescript-eslint/no-non-null-assertion
 		this.asyncApiDoc.operations![op.name] = this.createOperationDefinition(op, channelName)
 
 		if (op.returnType.kind === "Model") {
 			const model = op.returnType
+			//TODO: @typescript-eslint/no-non-null-assertion
 			this.asyncApiDoc.components!.schemas![model.name] = this.convertModelToSchema(model)
 		}
 	}
@@ -231,10 +232,10 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
 	 * Resolve output file path with template variable support
 	 */
 	private resolveOutputFilePath(): string {
-		const options = this.emitter.getOptions()
+		const options = this.typedOption()
 		const program = this.emitter.getProgram()
-		const outputFile = options["output-file"] ?? "asyncapi"
-		const fileType = options["file-type"] ?? "yaml"
+		const outputFile: AsyncAPIEmitterOptions["output-file"] = options["output-file"] ?? "asyncapi"
+		const fileType: AsyncAPIEmitterOptions["file-type"] = options["file-type"] ?? "yaml"
 
 		// Check if output file contains template variables
 		if (hasTemplateVariables(outputFile)) {
@@ -267,7 +268,7 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
 	}
 
 	private async generateOutputFile(): Promise<void> {
-		const options = this.emitter.getOptions()
+		const options = this.typedOption()
 		const program = this.emitter.getProgram()
 		const fileName = this.resolveOutputFilePath()
 		const content = this.generateContent(options["file-type"] ?? "yaml", program)
@@ -328,6 +329,10 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
 		Effect.log(`  - Operations processed: ${this.operations.length}`)
 		Effect.log(`  - Channels created: ${Object.keys(this.asyncApiDoc.channels ?? {}).length}`)
 		Effect.log(`  - Schemas generated: ${Object.keys(this.asyncApiDoc.components?.schemas ?? {}).length}`)
+	}
+
+	private typedOption() {
+		return this.emitter.getOptions()
 	}
 }
 

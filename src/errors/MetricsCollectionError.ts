@@ -1,4 +1,4 @@
-import {PerformanceError} from "./PerformanceError"
+import {PerformanceError} from "./PerformanceError.js"
 
 export class MetricsCollectionError extends PerformanceError {
 	readonly _tag = "MetricsCollectionError"

@@ -7,11 +7,11 @@
  * - HTTP
  */
 
-import type {ReferenceObject, SchemaObject} from "@asyncapi/parser/esm/spec-types/v3"
-import type {KafkaChannelBinding, KafkaMessageBinding, KafkaOperationBinding} from "./bindings/kafka"
-import type {GlobalConfig} from "@confluentinc/kafka-javascript/types/config"
-import {validateEnumValue, validateHttpStatusCode, validatePositiveInteger} from "./utils/protocol-validation"
-import {getDefaultProtocolPort} from "./constants/protocol-defaults"
+import type {ReferenceObject, SchemaObject} from "@asyncapi/parser/esm/spec-types/v3.js"
+import type {KafkaChannelBinding, KafkaMessageBinding, KafkaOperationBinding} from "./bindings/kafka.js"
+import type {GlobalConfig} from "@confluentinc/kafka-javascript/types/config.js"
+import {validateEnumValue, validateHttpStatusCode, validatePositiveInteger} from "./utils/protocol-validation.js"
+import {getDefaultProtocolPort} from "./constants/protocol-defaults.js"
 
 //TODO: This file is to big. Split it up!
 
@@ -448,7 +448,7 @@ export class ProtocolBindingFactory {
 		const errors: ProtocolBindingValidationError[] = []
 
 		switch (bindingType) {
-			case "channel":
+			case "channel": {
 				const partitionValidation = validatePositiveInteger(config.channel?.partitions, "partitions")
 				const replicaValidation = validatePositiveInteger(config.channel?.replicas, "replicas")
 
@@ -468,6 +468,7 @@ export class ProtocolBindingFactory {
 					severity: "error" as const,
 				})))
 				break
+			}
 			case "message":
 				errors.push(...validateEnumValue(config.message?.schemaIdLocation, "schemaIdLocation", ["header", "payload"] as const).map(err => ({
 					protocol: "kafka" as const,

@@ -29,14 +29,14 @@ import {
 	validateStringLength,
 	validateStringPattern,
 } from "../utils/protocol-validation.js"
-import type {Binding} from "@asyncapi/parser/esm/spec-types/v3"
+import type {Binding} from "@asyncapi/parser/esm/spec-types/v3.js"
 import type {
 	ConsumerGlobalConfig,
 	ConsumerTopicConfig,
 	GlobalConfig,
 	ProducerGlobalConfig,
-} from "@confluentinc/kafka-javascript/types/config"
-import type {ClientConfig} from "@confluentinc/schemaregistry/dist/rest-service"
+} from "@confluentinc/kafka-javascript/types/config.js"
+import type {ClientConfig} from "@confluentinc/schemaregistry/dist/rest-service.js"
 
 /**
  * Official Kafka Channel Binding using Confluent's types

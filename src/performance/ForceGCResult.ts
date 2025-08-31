@@ -1,5 +1,5 @@
-import type {GarbageCollectionNotAvailableError} from "../errors/GarbageCollectionNotAvailableError"
-import type {ByteAmount} from "./ByteAmount"
+import type {GarbageCollectionNotAvailableError} from "../errors/GarbageCollectionNotAvailableError.js"
+import type {ByteAmount} from "./ByteAmount.js"
 
 export type ForceGCResult = {
 	memoryBefore: ByteAmount;

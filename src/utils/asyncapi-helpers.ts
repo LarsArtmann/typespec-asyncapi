@@ -5,8 +5,8 @@
 
 import type {Operation, Program} from "@typespec/compiler"
 import {getDoc} from "@typespec/compiler"
-import type {ChannelObject, OperationObject} from "@asyncapi/parser/esm/spec-types/v3"
-import {getAsyncAPIAction, getChannelPath, getOperationType} from "./typespec-helpers"
+import type {ChannelObject, OperationObject} from "@asyncapi/parser/esm/spec-types/v3.js"
+import {getAsyncAPIAction, getChannelPath, getOperationType} from "./typespec-helpers.js"
 
 
 /**

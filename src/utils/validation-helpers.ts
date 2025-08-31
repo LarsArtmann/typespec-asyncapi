@@ -4,8 +4,8 @@
  */
 
 import {Effect} from "effect"
-import type {AsyncAPIObject} from "@asyncapi/parser/esm/spec-types/v3"
-import {ValidationError} from "../errors/ValidationError"
+import type {AsyncAPIObject} from "@asyncapi/parser/esm/spec-types/v3.js"
+import {ValidationError} from "../errors/ValidationError.js"
 
 
 /**

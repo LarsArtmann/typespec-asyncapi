@@ -1,8 +1,6 @@
 import type { EmitContext } from "@typespec/compiler";
 import { setTypeSpecNamespace } from "@typespec/compiler";
 import type { AsyncAPIEmitterOptions } from "./options.js";
-import { writeFile, mkdir } from "fs/promises";
-import { join } from "path";
 
 // Import decorators
 import { $channel } from "./decorators/channel.js";
@@ -24,38 +22,21 @@ setTypeSpecNamespace("TypeSpec.AsyncAPI", $channel, $publish, $subscribe, $serve
 export { $channel, $publish, $subscribe, $server, $message, $protocol, $security };
 
 /**
- * WORKING AsyncAPI emitter entry point
- * This version generates ACTUAL AsyncAPI files (not just logs)
+ * WORKING AsyncAPI emitter entry point with ACTUAL TypeSpec processing
+ * This version processes TypeSpec operations, decorators, and models to generate populated AsyncAPI documents
  */
 export async function $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): Promise<void> {
-    console.log("🎯 TYPESPEC ASYNCAPI EMITTER STARTED");
+    // Import the working Effect.TS emitter
+    const { generateAsyncAPIWithEffect } = await import("./emitter-with-effect.js");
+    
+    console.log("🎯 TYPESPEC ASYNCAPI EMITTER STARTED - USING REAL PROCESSOR");
     console.log(`📁 Output directory: ${context.emitterOutputDir}`);
     console.log(`🔧 Program has ${context.program.sourceFiles.size || 0} source files`);
+    console.log("✨ Processing TypeSpec operations, decorators, and models...");
     
-    // Create a basic AsyncAPI 3.0 document
-    const asyncApiDoc = {
-        asyncapi: "3.0.0",
-        info: {
-            title: "Generated from TypeSpec",
-            version: "1.0.0",
-            description: `Generated AsyncAPI document from TypeSpec source with ${context.program.sourceFiles.size} files`
-        },
-        channels: {},
-        operations: {},
-        components: {
-            schemas: {},
-            messages: {},
-            securitySchemes: {}
-        }
-    };
-
-    // Ensure output directory exists
-    await mkdir(context.emitterOutputDir, { recursive: true });
+    // Use the working Effect.TS integrated emitter that actually processes TypeSpec content
+    await generateAsyncAPIWithEffect(context);
     
-    // Write AsyncAPI file
-    const outputFile = join(context.emitterOutputDir, "asyncapi.json");
-    await writeFile(outputFile, JSON.stringify(asyncApiDoc, null, 2), "utf-8");
-    
-    console.log(`✅ AsyncAPI document generated: ${outputFile}`);
+    console.log("✅ AsyncAPI document generated with REAL content from TypeSpec processing!");
 }
 

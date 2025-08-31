@@ -141,7 +141,7 @@ ${source}
 	}
 
 	try {
-		await $onEmit(emitterContext as any)
+		await $onEmit(emitterContext)
 	} catch (error) {
 		console.error("Emitter execution failed:", error)
 	}

@@ -12,8 +12,8 @@
 import {describe, expect, test} from "bun:test"
 
 // Import type definitions
-import type {AsyncAPIEmitterOptions} from "../../options"
-import type {AsyncAPIObject, ChannelObject, OperationObject, SchemaObject} from "@asyncapi/parser/esm/spec-types/v3"
+import type {AsyncAPIEmitterOptions} from "../../options.js"
+import type {AsyncAPIObject, ChannelObject, OperationObject, SchemaObject} from "@asyncapi/parser/esm/spec-types/v3.js"
 
 // AsyncAPI types now imported from centralized types/index.ts
 import type {
@@ -23,7 +23,7 @@ import type {
 	ProtocolConfig,
 	ProtocolType,
 	WebSocketBindingConfig,
-} from "../../types/protocol-bindings"
+} from "../../types/protocol-bindings.js"
 
 import type {
 	AsyncAPIError,
@@ -31,7 +31,7 @@ import type {
 	ErrorContext,
 	PerformanceMetrics,
 	ValidationResult,
-} from "../../src/error-handling/index"
+} from "../../src/error-handling/index.js"
 import {Effect} from "effect"
 
 

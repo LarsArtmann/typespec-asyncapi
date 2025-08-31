@@ -8,16 +8,16 @@
 //TODO: This file is getting too big and should be split into multiple smaller files.
 
 import {Context, Duration, Effect, Fiber, Layer, Ref} from "effect"
-import {MemoryThresholdExceededError} from "../errors/MemoryThresholdExceededError"
-import {MemoryMonitorInitializationError} from "../errors/MemoryMonitorInitializationError"
-import {MemoryLeakDetectedError} from "../errors/MemoryLeakDetectedError"
-import {GarbageCollectionFailureError} from "../errors/GarbageCollectionFailureError"
-import {GarbageCollectionNotAvailableError} from "../errors/GarbageCollectionNotAvailableError"
-import type {MemoryMonitorService} from "./MemoryMonitorService"
-import type {MemoryBudget} from "./MemoryBudget"
-import type {MemorySnapshot} from "./MemorySnapshot"
-import type {MemoryAnalysis} from "./MemoryAnalysis"
-import type {ForceGCResult} from "./ForceGCResult"
+import {MemoryThresholdExceededError} from "../errors/MemoryThresholdExceededError.js"
+import {MemoryMonitorInitializationError} from "../errors/MemoryMonitorInitializationError.js"
+import {MemoryLeakDetectedError} from "../errors/MemoryLeakDetectedError.js"
+import {GarbageCollectionFailureError} from "../errors/GarbageCollectionFailureError.js"
+import {GarbageCollectionNotAvailableError} from "../errors/GarbageCollectionNotAvailableError.js"
+import type {MemoryMonitorService} from "./MemoryMonitorService.js"
+import type {MemoryBudget} from "./MemoryBudget.js"
+import type {MemorySnapshot} from "./MemorySnapshot.js"
+import type {MemoryAnalysis} from "./MemoryAnalysis.js"
+import type {ForceGCResult} from "./ForceGCResult.js"
 
 /**
  * @deprecated: Each Error should have it s own file in src/errors;
@@ -293,10 +293,11 @@ const makeMemoryMonitorService = Effect.gen(function* () {
 			const gcEvents = []
 			for (let i = 1; i < relevantSnapshots.length; i++) {
 				//TODO: Can this be undefined and crash?
-				const prev = relevantSnapshots[i - 1]!
+				const prev = relevantSnapshots[i - 1]
 				//TODO: Can this be undefined and crash?
-				const curr = relevantSnapshots[i]!
-				const memoryDrop = prev.heapUsed - curr.heapUsed
+				const curr = relevantSnapshots[i]
+				//TODO: @typescript-eslint/no-non-null-assertion
+				const memoryDrop = prev!.heapUsed - curr!.heapUsed
 				if (memoryDrop > 1024 * 1024) { // Significant drop > 1MB
 					gcEvents.push(memoryDrop)
 				}

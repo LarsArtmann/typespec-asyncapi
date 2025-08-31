@@ -14,13 +14,13 @@ export type {
 	SecuritySchemeConfig,
 	OAuthFlowsConfig,
 	OAuthFlowConfig
-} from "./options/types"
+} from "./options/types.js"
 
 // Re-export schemas
-export {AsyncAPIEmitterOptionsEffectSchema} from "./options/schemas"
+export {AsyncAPIEmitterOptionsEffectSchema} from "./options/schemas.js"
 
 // Re-export validation functions
-export {parseAsyncAPIEmitterOptions, validateAsyncAPIEmitterOptions} from "./options/validation"
+export {parseAsyncAPIEmitterOptions, validateAsyncAPIEmitterOptions} from "./options/validation.js"
 
 // Re-export utility functions and JSONSchema compatibility
-export {AsyncAPIEmitterOptionsSchema, createAsyncAPIEmitterOptions, isAsyncAPIEmitterOptions} from "./options/utils"
+export {ASYNC_API_EMITTER_OPTIONS_SCHEMA, createAsyncAPIEmitterOptions, isAsyncAPIEmitterOptions} from "./options/utils.js"

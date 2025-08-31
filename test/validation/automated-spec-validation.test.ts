@@ -15,10 +15,11 @@
  */
 
 import {afterAll, beforeAll, describe, expect, it} from "vitest"
-import {AsyncAPIValidator} from "../../src/validation"
-import {compileAsyncAPISpec, parseAsyncAPIOutput, TestSources} from "../utils/test-helpers"
+import { AsyncAPIValidator } from "../../src/validation/asyncapi-validator.js";
+import {compileAsyncAPISpec, parseAsyncAPIOutput, TestSources} from "../../utils/test-helpers.js"
 import {mkdir, rm, writeFile} from "node:fs/promises"
 import {join} from "node:path"
+import {Effect} from "effect"
 
 interface TestScenario {
 	name: string;
@@ -325,9 +326,9 @@ describe("🚨 CRITICAL: AUTOMATED ASYNCAPI SPECIFICATION VALIDATION", () => {
 							for (const [opName, operation] of Object.entries(doc.operations)) {
 								expect(operation).toHaveProperty("action")
 								expect(operation).toHaveProperty("channel")
-								expect((operation as any).channel).toHaveProperty("$ref")
+								expect(operation.channel).toHaveProperty("$ref")
 
-								const channelRef = (operation as any).channel.$ref.replace("#/channels/", "")
+								const channelRef = operation.channel.$ref.replace("#/channels/", "")
 								expect(doc.channels).toHaveProperty(channelRef)
 							}
 						}

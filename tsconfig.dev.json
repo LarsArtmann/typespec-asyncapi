@@ -3,7 +3,7 @@
   "compilerOptions": {
     // === DEVELOPMENT-ONLY OVERRIDES ===
     // Allow importing .ts files directly during development
-    "allowImportingTsExtensions": true,
+    "allowImportingTsExtensions": false,
     "noEmit": true,
     
     // More permissive for development speed

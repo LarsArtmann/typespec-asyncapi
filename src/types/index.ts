@@ -22,7 +22,7 @@
 
 import type {Path} from "effect/ParseResult"
 // Import specific types for aliases (separate import to avoid conflicts)
-import type {AsyncAPIObject} from '@asyncapi/parser/esm/spec-types/v3'
+import type {AsyncAPIObject} from '@asyncapi/parser/esm/spec-types/v3.js'
 
 type XGeneratedFromTypeSpec = {
 	sourceFiles?: Path;
@@ -38,10 +38,10 @@ type XGeneratedFromTypeSpec = {
  * Custom utility types that extend the official AsyncAPI types
  * These are project-specific types not covered by the official spec
  */
-export interface EmitterAsyncAPIObject extends AsyncAPIObject {
+export type EmitterAsyncAPIObject = {
 	// Extend with emitter-specific metadata
 	'x-generated-from-typespec'?: XGeneratedFromTypeSpec;
-}
+} & AsyncAPIObject
 
 // Protocol binding type unions for better type safety
 export type ProtocolType =
