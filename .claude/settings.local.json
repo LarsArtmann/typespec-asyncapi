@@ -73,7 +73,9 @@
       "WebFetch(domain:devblogs.microsoft.com)",
       "Bash(jscpd:*)",
       "WebFetch(domain:www.npmjs.com)",
-      "Bash(npm search:*)"
+      "Bash(npm search:*)",
+      "Bash(just clean:*)",
+      "Bash(npx tsc:*)"
     ],
     "deny": [],
     "ask": []

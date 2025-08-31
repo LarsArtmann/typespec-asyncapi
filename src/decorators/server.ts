@@ -1,5 +1,5 @@
 import type {DecoratorContext, Model, Namespace, StringValue} from "@typespec/compiler"
-import {$lib, reportDiagnostic} from "../lib"
+import {$lib, reportDiagnostic} from "../lib.js"
 import {Effect} from "effect"
 
 export type ServerConfig = {

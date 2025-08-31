@@ -1,46 +1,39 @@
-import type {EmitContext} from "@typespec/compiler"
-import {$lib} from "./lib"
-import type {AsyncAPIEmitterOptions} from "./options"
-import {generateAsyncAPIWithEffect} from "./emitter-with-effect"
-import {Effect} from "effect"
+import type { EmitContext } from "@typespec/compiler";
+import { setTypeSpecNamespace } from "@typespec/compiler";
+import type { AsyncAPIEmitterOptions } from "./options.js";
 
-export {$lib} from "./lib" // Re-exported for TypeSpec compiler to access library
-export type {AsyncAPIEmitterOptions} from "./options" // Re-exported for external consumers
+// Import decorators
+import { $channel } from "./decorators/channel.js";
+import { $publish } from "./decorators/publish.js";
+import { $subscribe } from "./decorators/subscribe.js";
+import { $server } from "./decorators/server.js";
+import { $message } from "./decorators/message.js";
+import { $protocol } from "./decorators/protocol.js";
+import { $security } from "./decorators/security.js";
 
-// Export decorator functions (for TypeSpec compiler)
-export * from "./decorators/index"
+// Export for TypeSpec library
+export { $lib } from "./lib.js";
+export type { AsyncAPIEmitterOptions } from "./options.js";
 
-// noinspection JSUnusedGlobalSymbols
+// Register decorators with TypeSpec.AsyncAPI namespace
+setTypeSpecNamespace("TypeSpec.AsyncAPI", $channel, $publish, $subscribe, $server, $message, $protocol, $security);
+
+// Export decorator functions (for TypeSpec compiler) - THIS IS A MUST!
+export { $channel, $publish, $subscribe, $server, $message, $protocol, $security };
+
 /**
- * AsyncAPI emitter entry point
- * Called by TypeSpec compiler to generate AsyncAPI 3.0 specifications
- *
- * NOW WITH:
- * - Effect.TS integration (ghost system connected!)
- * - REAL asyncapi-validator usage
- * - Proper validation at emit time
- *
- * ⚠️ VERSIONING LIMITATION: This emitter does NOT currently support TypeSpec.Versioning
- * decorators (@added, @removed, @renamedFrom). Only generates single AsyncAPI document.
- * See GitHub issue #1 for planned versioning support.
+ * Minimal AsyncAPI emitter entry point
+ * This version only exports decorators without the full Effect.TS integration
+ * to test if the decorator implementation pattern is correct.
  */
+// noinspection JSUnusedGlobalSymbols - TypeSpec compiler
+// eslint-disable-next-line @typescript-eslint/require-await
 export async function $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): Promise<void> {
-	Effect.log("🎯 TYPESPEC ASYNCAPI EMITTER STARTED")
-	Effect.log("✨ INTEGRATED: Effect.TS + asyncapi-validator + Performance Monitoring")
-	Effect.log(`📁 Output directory: ${context.emitterOutputDir}`)
-	Effect.log(`🔧 Program has ${context.program.sourceFiles.size || 0} source files`)
-	Effect.log(`🌍 Global namespace: ${context.program.getGlobalNamespaceType().name || 'unknown'}`)
-
-	Effect.log("🚀 Using Effect.TS integrated emitter with full performance monitoring")
-	await generateAsyncAPIWithEffect(context)
-
-	Effect.log("🎉 AsyncAPI generation complete with performance monitoring!")
+    console.log("🎯 MINIMAL TYPESPEC ASYNCAPI EMITTER STARTED");
+    console.log(`📁 Output directory: ${context.emitterOutputDir}`);
+    console.log(`🔧 Program has ${context.program.sourceFiles.size || 0} source files`);
+    
+    // Simple test: just log that we're running
+    console.log("✅ Minimal AsyncAPI emitter completed (no actual AsyncAPI generation)");
 }
 
-//TODO: is this dead code or called by TypeSpec??
-/**
- * Get the library instance
- */
-export function getLibrary() {
-	return $lib
-}

@@ -5,7 +5,7 @@
  * used across the AsyncAPI TypeSpec emitter.
  */
 
-import type {ProtocolType} from "../protocol-bindings"
+import type {ProtocolType} from "@/protocol-bindings"
 
 /**
  * Default port numbers for each supported protocol

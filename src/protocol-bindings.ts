@@ -78,6 +78,71 @@ type ProtocolBindingValidationResult = {
 	warnings: ProtocolBindingValidationError[];
 };
 
+/**
+ * Kafka server binding creation parameters
+ */
+export type KafkaServerBindingParams = {
+	schemaRegistryUrl?: string;
+	schemaRegistryVendor?: string;
+	clientId?: string;
+	groupId?: string;
+}
+
+/**
+ * Kafka message binding key configuration
+ */
+export type KafkaMessageBindingKeyConfig = {
+	type: "string" | "avro" | "json" | "protobuf";
+	schema?: string;
+	schemaId?: number;
+}
+
+/**
+ * Kafka message binding creation parameters
+ */
+export type KafkaMessageBindingParams = {
+	key?: KafkaMessageBindingKeyConfig;
+	schemaIdLocation?: "header" | "payload";
+	headers?: Record<string, string | Buffer | null>;
+}
+
+/**
+ * WebSocket channel binding creation parameters
+ */
+export type WebSocketChannelBindingParams = {
+	method?: "GET" | "POST";
+	query?: SchemaObject | ReferenceObject;
+	headers?: SchemaObject | ReferenceObject;
+}
+
+/**
+ * HTTP operation binding creation parameters
+ */
+export type HttpOperationBindingParams = {
+	type?: "request" | "response";
+	method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE" | "HEAD" | "OPTIONS" | "CONNECT" | "TRACE";
+	query?: SchemaObject | ReferenceObject;
+	statusCode?: number;
+}
+
+/**
+ * HTTP message binding creation parameters
+ */
+export type HttpMessageBindingParams = {
+	headers?: SchemaObject | ReferenceObject;
+	statusCode?: number;
+}
+
+/**
+ * Protocol support configuration for each protocol type
+ */
+export type ProtocolSupportConfig = {
+	server: boolean;
+	channel: boolean;
+	operation: boolean;
+	message: boolean;
+}
+
 // Named types for Kafka binding configurations (avoiding anonymous sub-objects)
 export type KafkaChannelBindingConfig = {
 	topic: string; // Required in official types
@@ -155,13 +220,7 @@ type HttpProtocolBindingConfig = {
 export type {ProtocolType}
 
 // Define protocol support locally
-//TODO: All types should have a dedicated name, no anonymous sub objects
-const DEFAULT_PROTOCOL_SUPPORT: Record<ProtocolType, {
-	server: boolean;
-	channel: boolean;
-	operation: boolean;
-	message: boolean
-}> = {
+const DEFAULT_PROTOCOL_SUPPORT: Record<ProtocolType, ProtocolSupportConfig> = {
 	kafka: {server: true, channel: true, operation: true, message: true},
 	websocket: {server: false, channel: true, operation: false, message: true},
 	http: {server: false, channel: false, operation: true, message: true},
@@ -196,13 +255,7 @@ export type ProtocolSpecificConfig = KafkaBindingConfig | WebSocketBindingConfig
  * Kafka Protocol Binding Builder
  */
 export class KafkaProtocolBinding {
-	//TODO: All types should have a dedicated name, no anonymous sub objects
-	static createServerBinding(config: {
-		schemaRegistryUrl?: string;
-		schemaRegistryVendor?: string;
-		clientId?: string;
-		groupId?: string;
-	}): KafkaServerBinding {
+	static createServerBinding(config: KafkaServerBindingParams): KafkaServerBinding {
 		return {
 			bindingVersion: "0.5.0",
 			...config,
@@ -226,15 +279,7 @@ export class KafkaProtocolBinding {
 	}
 
 	/** Create Kafka message binding using official Confluent types */
-	static createMessageBinding(config: {
-		key?: {
-			type: "string" | "avro" | "json" | "protobuf";
-			schema?: string;
-			schemaId?: number;
-		};
-		schemaIdLocation?: "header" | "payload";
-		headers?: Record<string, string | Buffer | null>;
-	}): KafkaMessageBinding {
+	static createMessageBinding(config: KafkaMessageBindingParams): KafkaMessageBinding {
 		return {
 			bindingVersion: "0.5.0",
 			...config,
@@ -246,19 +291,13 @@ export class KafkaProtocolBinding {
  * WebSocket Protocol Binding Builder
  */
 export class WebSocketProtocolBinding {
-	//TODO: All types should have a dedicated name, no anonymous sub objects
-	static createChannelBinding(config: {
-		method?: "GET" | "POST";
-		query?: SchemaObject | ReferenceObject;
-		headers?: SchemaObject | ReferenceObject;
-	}): WebSocketChannelBinding {
+	static createChannelBinding(config: WebSocketChannelBindingParams): WebSocketChannelBinding {
 		return {
 			bindingVersion: "0.1.0",
 			...config,
 		}
 	}
 
-	//TODO: All types should have a dedicated name, no anonymous sub objects
 	static createMessageBinding(): WebSocketMessageBinding {
 		return {
 			bindingVersion: "0.1.0",
@@ -270,13 +309,7 @@ export class WebSocketProtocolBinding {
  * HTTP Protocol Binding Builder
  */
 export class HttpProtocolBinding {
-	//TODO: All types should have a dedicated name, no anonymous sub objects
-	static createOperationBinding(config: {
-		type?: "request" | "response";
-		method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE" | "HEAD" | "OPTIONS" | "CONNECT" | "TRACE";
-		query?: SchemaObject | ReferenceObject;
-		statusCode?: number;
-	}): HttpOperationBinding {
+	static createOperationBinding(config: HttpOperationBindingParams): HttpOperationBinding {
 		return {
 			bindingVersion: "0.3.0",
 			type: config.type ?? "request",
@@ -284,11 +317,7 @@ export class HttpProtocolBinding {
 		}
 	}
 
-	//TODO: All types should have a dedicated name, no anonymous sub objects
-	static createMessageBinding(config: {
-		headers?: SchemaObject | ReferenceObject;
-		statusCode?: number;
-	}): HttpMessageBinding {
+	static createMessageBinding(config: HttpMessageBindingParams): HttpMessageBinding {
 		return {
 			bindingVersion: "0.3.0",
 			...config,

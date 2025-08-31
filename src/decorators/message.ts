@@ -1,5 +1,5 @@
 import type {DecoratorContext, Model} from "@typespec/compiler"
-import {$lib} from "../lib"
+import {$lib} from "../lib.js"
 import {Effect} from "effect"
 
 export type MessageConfig = {

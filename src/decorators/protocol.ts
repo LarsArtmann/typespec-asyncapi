@@ -1,5 +1,5 @@
 import type {DecoratorContext, Model, Operation, Type} from "@typespec/compiler"
-import {$lib, reportDiagnostic} from "../lib"
+import {$lib, reportDiagnostic} from "../lib.js"
 import {Effect} from "effect"
 
 export type ProtocolType = "kafka" | "websocket" | "http" | "amqp" | "mqtt" | "redis";

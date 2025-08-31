@@ -7,15 +7,11 @@
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "typespec": "./lib/main.tsp",
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
     },
-    "./package.json": "./package.json",
-    "./lib/*": "./lib/*",
-    "./bindings/*": {
-      "import": "./dist/bindings/*.js",
-      "types": "./dist/bindings/*.d.ts"
-    }
+    "./package.json": "./package.json"
   },
   "sideEffects": false,
   "private": false,

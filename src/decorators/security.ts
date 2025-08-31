@@ -1,5 +1,5 @@
 import type {DecoratorContext, Model, Operation} from "@typespec/compiler"
-import {$lib, reportDiagnostic} from "../lib"
+import {$lib, reportDiagnostic} from "../lib.js"
 import {Effect} from "effect"
 
 //TODO: Is there no OAuth TypeScript Types library we can use??

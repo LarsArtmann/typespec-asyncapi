@@ -126,15 +126,16 @@ const makeEmitterService = Effect.gen(function* () {
 
 			yield* Effect.logDebug("Emitter initialization completed successfully")
 		}).pipe(
-			Effect.catchAll(error => {
-				//TODO: Why is this always true here?? How can we improve this whole catchAll?
-				if (error instanceof EmitterInitializationError) {
-					return Effect.fail(error)
-				}
-				return Effect.fail(new EmitterInitializationError(
-					`Initialization failed: ${error}`,
-					error,
-				))
+			Effect.mapError(error => {
+				// Wrap any error (including unexpected runtime errors) in EmitterInitializationError
+				// if it's not already one. Since the function signature guarantees only EmitterInitializationError
+				// can be thrown, this handles the edge case of unexpected runtime errors.
+				return error instanceof EmitterInitializationError
+					? error
+					: new EmitterInitializationError(
+						`Initialization failed: ${error}`,
+						error,
+					)
 			}),
 		)
 

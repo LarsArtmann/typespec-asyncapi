@@ -7,8 +7,7 @@
  */
 
 import {afterAll, beforeAll, describe, expect, it} from "vitest"
-//TODO: validateAsyncAPIString is deprecated!
-import {AsyncAPIValidator, validateAsyncAPIFile} from "../../src/validation/asyncapi-validator"
+import {AsyncAPIValidator} from "../../src/validation/asyncapi-validator"
 import {compileAsyncAPISpec, parseAsyncAPIOutput} from "../utils/test-helpers"
 import {mkdir, rm, writeFile} from "node:fs/promises"
 import {join} from "node:path"
@@ -293,9 +292,10 @@ describe("End-to-End AsyncAPI Validation Pipeline", () => {
 			const filePath = join(testOutputDir, "file-validation-test.json")
 			await writeFile(filePath, JSON.stringify(asyncApiDoc, null, 2))
 
-			//TODO: validateAsyncAPIString is deprecated!
 			// Validate the file using file validation
-			const fileValidationResult = await validateAsyncAPIFile(filePath)
+			const fileValidator = new AsyncAPIValidator({strict: false})
+			fileValidator.initialize()
+			const fileValidationResult = await fileValidator.validateFile(filePath)
 
 			expect(fileValidationResult.valid).toBe(true)
 			expect(fileValidationResult.errors).toHaveLength(0)
@@ -342,8 +342,9 @@ describe("End-to-End AsyncAPI Validation Pipeline", () => {
 			const yamlFilePath = join(testOutputDir, "yaml-validation-test.yaml")
 			await writeFile(yamlFilePath, yamlContent!)
 
-			//TODO: validateAsyncAPIString is deprecated!
-			const yamlValidationResult = await validateAsyncAPIFile(yamlFilePath)
+			const yamlValidator = new AsyncAPIValidator({strict: false})
+			yamlValidator.initialize()
+			const yamlValidationResult = await yamlValidator.validateFile(yamlFilePath)
 
 			expect(yamlValidationResult.valid).toBe(true)
 			expect(yamlValidationResult.errors).toHaveLength(0)
