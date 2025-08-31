@@ -66,7 +66,7 @@
     "build": "tsc -p tsconfig.json && tsc -p tsconfig.json --emitDeclarationOnly",
     "build:watch": "tsc -p tsconfig.json --watch",
     "compile": "tsp compile .",
-    "clean": "if [ -d \"dist\" ]; then trash dist/; else echo \"ℹ️  No dist/ directory to clean\"; fi",
+    "clean": "if [ -d \"dist\" ]; then trash dist/*; else echo \"ℹ️  No dist/ directory to clean\"; fi",
     "test": "bun test",
     "test:watch": "bun test --watch",
     "test:coverage": "bun test --coverage",
