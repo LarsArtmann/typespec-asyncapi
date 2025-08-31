@@ -42,7 +42,7 @@ import type {ProtocolConfig} from "./decorators/protocol.js"
 export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
 	private operations: Operation[] = []
 	// @ts-ignore - Used within Effect.TS generators (false positive)
-	private _messageModels: Model[] = [] 
+	private messageModels: Model[] = [] 
 	private readonly asyncApiDoc: AsyncAPIObject
 
 	constructor(emitter: AssetEmitter<string, AsyncAPIEmitterOptions>) {
@@ -247,7 +247,7 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 				}
 
 				walkNamespaceForModels(program.getGlobalNamespaceType())
-				this._messageModels = messageModels
+				this.messageModels = messageModels
 
 				Effect.log(`📊 Total message models discovered: ${messageModels.length}`)
 				return messageModels
