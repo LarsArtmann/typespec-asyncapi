@@ -3,12 +3,6 @@ import "@larsartmann/typespec-asyncapi";
 
 using AsyncAPI;
 
-@AsyncAPI.server({
-  info: {
-    title: "Test API",
-    version: "1.0.0"
-  }
-})
 namespace TestAPI;
 
 model UserEvent {
@@ -18,9 +12,9 @@ model UserEvent {
 
 @channel("user-events")
 model UserEventChannel {
-  @message
+  @AsyncAPI.message
   payload: UserEvent;
 }
 
-@operation("publish", UserEventChannel)
+@AsyncAPI.publish(UserEventChannel)
 op publishUserEvent(): void;
