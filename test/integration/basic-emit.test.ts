@@ -1,9 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { 
   compileAsyncAPISpecWithoutErrors, 
-  compileAsyncAPISpec,
-  parseAsyncAPIOutput, 
-  AsyncAPIAssertions 
+  parseAsyncAPIOutput
 } from "../utils/test-helpers.js";
 
 describe("AsyncAPI Emitter Integration", () => {

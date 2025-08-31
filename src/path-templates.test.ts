@@ -15,6 +15,9 @@ import {
   type PathTemplateContext
 } from "./path-templates.js";
 
+
+//TODO: this file is getting to big split it up
+
 describe("Path Template Validation", () => {
   test("should validate supported template variables", () => {
     const validTemplate = "{project-root}/generated/{cmd}-asyncapi.yaml";

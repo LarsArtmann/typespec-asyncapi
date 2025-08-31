@@ -3,15 +3,13 @@
  * 
  * Tests for the type-safe protocol binding system
  */
+//TODO: fix bun:test types!
 import { test, expect } from "bun:test";
 import { 
   ProtocolBindingFactory, 
   ProtocolUtils, 
-  KafkaProtocolBinding,
-  WebSocketProtocolBinding,
-  HttpProtocolBinding 
+  KafkaProtocolBinding
 } from "../protocol-bindings.js";
-import type { ProtocolType } from "../types/protocol-bindings.js";
 
 test("Protocol binding factory creates Kafka server bindings safely", () => {
   const serverBindings = ProtocolBindingFactory.createServerBindings("kafka", {

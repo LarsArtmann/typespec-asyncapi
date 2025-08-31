@@ -144,6 +144,7 @@ export const stateKeys = {
   operationTypes: "operationTypes",
 } as const;
 
+//TODO: if this is a TypeSpec expected function please explain this clearly!
 // Export diagnostic reporter helper  
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function reportDiagnostic(context: any, target: unknown, code: string, args?: Record<string, unknown>) {

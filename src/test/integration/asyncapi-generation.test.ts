@@ -13,6 +13,7 @@
 import { test, expect, describe } from "bun:test";
 import { compileAsyncAPISpecWithoutErrors, parseAsyncAPIOutput, type AsyncAPIDocument } from "../../../test/utils/test-helpers.ts";
 import { validateAsyncAPIDocumentComprehensive } from "../../../test/utils/test-helpers.ts";
+//TODO: this file is getting to big split it up
 
 describe("Real AsyncAPI Generation Tests", () => {
   describe("Complete TypeSpec → AsyncAPI Transformation", () => {

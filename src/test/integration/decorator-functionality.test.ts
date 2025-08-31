@@ -12,6 +12,7 @@
 import { test, expect, describe, beforeAll } from "bun:test";
 import { compileAsyncAPISpecWithoutErrors, parseAsyncAPIOutput, type AsyncAPIDocument } from "../../../test/utils/test-helpers.ts";
 import { validateAsyncAPIDocumentComprehensive } from "../../../test/utils/test-helpers.ts";
+//TODO: this file is getting to big split it up
 
 describe("Real Decorator Functionality Tests", () => {
   describe("@message Decorator Real Processing", () => {

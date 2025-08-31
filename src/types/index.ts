@@ -12,6 +12,9 @@
 // CORE ASYNCAPI 3.0 DOCUMENT STRUCTURE
 // ==========================================
 
+//TODO: this file is getting to big, it there not TypeScript lib that already has all this for us that we can just use???
+
+
 /**
  * Root AsyncAPI 3.0 Document
  * The foundation of all AsyncAPI specifications

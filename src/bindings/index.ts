@@ -1,12 +1,12 @@
 /**
  * Protocol Bindings Index
- * 
+ *
  * Currently supported bindings:
  * - Kafka (essential features only)
- * 
+ *
  * NOT YET SUPPORTED (planned for future releases):
  * - AMQP bindings
- * - WebSocket bindings  
+ * - WebSocket bindings
  * - HTTP bindings
  * - MQTT bindings
  * - Redis Pub/Sub bindings
@@ -14,7 +14,7 @@
  * - Amazon SNS/SQS bindings
  */
 
-export * from './kafka.js';
+export * from './kafka.js'
 
 /**
  * Supported protocol binding types
@@ -25,28 +25,28 @@ export type SupportedProtocolBindings = 'kafka';
  * Check if a protocol binding is supported
  */
 export function isSupportedProtocolBinding(protocol: string): protocol is SupportedProtocolBindings {
-  return protocol === 'kafka';
+	return protocol in getSupportedProtocolBindings()
 }
 
 /**
  * Get list of supported protocol bindings
  */
 export function getSupportedProtocolBindings(): SupportedProtocolBindings[] {
-  return ['kafka'];
+	return ['kafka']
 }
 
 /**
  * Get list of planned but not yet implemented protocol bindings
  */
 export function getPlannedProtocolBindings(): string[] {
-  return [
-    'amqp',
-    'websocket', 
-    'http',
-    'mqtt',
-    'redis',
-    'googlepubsub',
-    'sns',
-    'sqs'
-  ];
+	return [
+		'amqp',
+		'websocket',
+		'http',
+		'mqtt',
+		'redis',
+		'googlepubsub',
+		'sns',
+		'sqs',
+	]
 }

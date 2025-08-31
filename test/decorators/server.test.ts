@@ -5,6 +5,8 @@
 import { describe, it, expect } from "vitest";
 import { compileAsyncAPISpec } from "../utils/test-helpers.js";
 
+//TODO: this file is getting to big split it up
+
 describe("@server decorator", () => {
   describe("basic functionality", () => {
     it("should accept valid server configuration", async () => {

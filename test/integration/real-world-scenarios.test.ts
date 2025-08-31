@@ -4,6 +4,7 @@
 
 import { describe, it, expect } from "vitest";
 import { compileAsyncAPISpecWithoutErrors, parseAsyncAPIOutput, AsyncAPIAssertions } from "../utils/test-helpers.js";
+//TODO: this file is getting to big split it up
 
 describe("Real-World AsyncAPI Scenarios", () => {
   describe("E-commerce Event System", () => {

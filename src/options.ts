@@ -6,6 +6,9 @@ import { validatePathTemplate } from "./path-templates.js";
 // TYPE DEFINITIONS (consolidated from types/options.ts)
 // ==========================================
 
+//TODO: this file is getting to big split it up
+
+
 export type AsyncAPIEmitterOptions = {
   /**
    * Name of the output file. Supports template variables:
@@ -433,6 +436,7 @@ export const AsyncAPIEmitterOptionsEffectSchema = createSchema(
 
 // VALIDATION FUNCTIONS - Effect.TS powered validation with comprehensive error handling
 
+//TODO: move to src/errors/
 // TAGGED ERRORS for better error handling and recovery
 export class AsyncAPIOptionsValidationError extends Error {
   readonly _tag = "AsyncAPIOptionsValidationError" as const;
@@ -449,6 +453,7 @@ export class AsyncAPIOptionsValidationError extends Error {
   }
 }
 
+//TODO: move to src/errors/
 export class AsyncAPIOptionsParseError extends Error {
   readonly _tag = "AsyncAPIOptionsParseError" as const;
   override readonly name = "AsyncAPIOptionsParseError";

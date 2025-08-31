@@ -7,6 +7,7 @@
 import { describe, it, expect } from "vitest";
 import { compileAsyncAPISpec } from "../utils/test-helpers.js";
 import { ProtocolBindingFactory } from "../../src/protocol-bindings.js";
+//TODO: this file is getting to big split it up
 
 describe("Protocol Binding Integration", () => {
   describe("Kafka Protocol Integration", () => {

@@ -124,6 +124,7 @@ export function detectCommandName(): string {
   return "typespec";
 }
 
+//TODO: MAKE SURE THIS FOLLOWS TypeSpec standards!
 /**
  * Detect project root directory by looking for TypeSpec configuration files
  * 
@@ -132,7 +133,7 @@ export function detectCommandName(): string {
  */
 export function detectProjectRoot(startPath?: string): string {
   const searchPath = startPath || cwd();
-  
+
   // Configuration files that indicate project root
   const configFiles = [
     "tspconfig.yaml",
@@ -155,6 +156,7 @@ export function detectProjectRoot(startPath?: string): string {
         }
       } catch {
         // Continue searching if file check fails
+	      //TODO: how about we have some tracking debug/warning here???
       }
     }
     

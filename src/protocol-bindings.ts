@@ -7,14 +7,25 @@
  * - HTTP
  */
 
-import type { SchemaObject, ReferenceObject, KafkaFieldConfig, KafkaChannelBindingObject, KafkaOperationBindingObject, KafkaMessageBindingObject } from "./types/index.js";
+import type {
+	KafkaChannelBindingObject,
+	KafkaFieldConfig,
+	KafkaMessageBindingObject,
+	KafkaOperationBindingObject,
+	ReferenceObject,
+	SchemaObject,
+} from "./types/index.js"
 
+//TODO: This file is to big. Split it up!
+
+//TODO: Is it possible to have stricter types here?
 // Protocol binding types
 type ServerBindings = Record<string, unknown>;
 type ChannelBindings = Record<string, unknown>;
 type OperationBindings = Record<string, unknown>;
 type MessageBindings = Record<string, unknown>;
 
+//TODO: Is it possible to have stricter types here?
 // Server binding type for Kafka (not in centralized types yet)
 type KafkaServerBinding = {
 	bindingVersion?: string;
@@ -28,6 +39,7 @@ type KafkaOperationBinding = KafkaOperationBindingObject;
 type KafkaMessageBinding = KafkaMessageBindingObject;
 
 type WebSocketChannelBinding = {
+	//TODO: Is it possible to have stricter types here?
 	bindingVersion?: string;
 	method?: "GET" | "POST";
 	query?: SchemaObject | ReferenceObject;
@@ -35,10 +47,12 @@ type WebSocketChannelBinding = {
 };
 
 type WebSocketMessageBinding = {
+	//TODO: Is it possible to have stricter types here?
 	bindingVersion?: string;
 };
 
 type HttpOperationBinding = {
+	//TODO: Is it possible to have stricter types here?
 	bindingVersion?: string;
 	type: "request" | "response";
 	method?: string;
@@ -72,22 +86,26 @@ type ProtocolBindingValidationResult = {
 // KafkaFieldConfig now imported from centralized types
 
 type KafkaProtocolBindingConfig = {
+	//TODO: All types should have a dedicated name, no anonymous sub objects
 	server?: {
 		schemaRegistryUrl?: string;
 		schemaRegistryVendor?: string;
 		clientId?: string;
 		groupId?: string;
 	};
+	//TODO: All types should have a dedicated name, no anonymous sub objects
 	channel?: {
 		topic?: string;
 		partitions?: number;
 		replicas?: number;
 		topicConfiguration?: Record<string, unknown>;
 	};
+	//TODO: All types should have a dedicated name, no anonymous sub objects
 	operation?: {
 		groupId?: KafkaFieldConfig;
 		clientId?: KafkaFieldConfig;
 	};
+	//TODO: All types should have a dedicated name, no anonymous sub objects
 	message?: {
 		key?: KafkaFieldConfig;
 		schemaIdLocation?: "header" | "payload";
@@ -97,6 +115,7 @@ type KafkaProtocolBindingConfig = {
 };
 
 type WebSocketProtocolBindingConfig = {
+	//TODO: All types should have a dedicated name, no anonymous sub objects
 	channel?: {
 		method?: "GET" | "POST";
 		query?: SchemaObject | ReferenceObject;
@@ -123,6 +142,7 @@ type HttpProtocolBindingConfig = {
 export type {ProtocolType}
 
 // Define protocol support locally
+//TODO: All types should have a dedicated name, no anonymous sub objects
 const DEFAULT_PROTOCOL_SUPPORT: Record<ProtocolType, {
 	server: boolean;
 	channel: boolean;
@@ -163,6 +183,7 @@ export type ProtocolSpecificConfig = KafkaBindingConfig | WebSocketBindingConfig
  * Kafka Protocol Binding Builder
  */
 export class KafkaProtocolBinding {
+	//TODO: All types should have a dedicated name, no anonymous sub objects
 	static createServerBinding(config: {
 		schemaRegistryUrl?: string;
 		schemaRegistryVendor?: string;
@@ -175,6 +196,7 @@ export class KafkaProtocolBinding {
 		}
 	}
 
+	//TODO: All types should have a dedicated name, no anonymous sub objects
 	static createChannelBinding(config: {
 		topic?: string;
 		partitions?: number;
@@ -187,6 +209,7 @@ export class KafkaProtocolBinding {
 		}
 	}
 
+	//TODO: All types should have a dedicated name, no anonymous sub objects
 	static createOperationBinding(config: {
 		groupId?: KafkaFieldConfig;
 		clientId?: KafkaFieldConfig;
@@ -197,6 +220,7 @@ export class KafkaProtocolBinding {
 		}
 	}
 
+	//TODO: All types should have a dedicated name, no anonymous sub objects
 	static createMessageBinding(config: {
 		key?: KafkaFieldConfig;
 		schemaIdLocation?: "header" | "payload";
@@ -214,6 +238,7 @@ export class KafkaProtocolBinding {
  * WebSocket Protocol Binding Builder
  */
 export class WebSocketProtocolBinding {
+	//TODO: All types should have a dedicated name, no anonymous sub objects
 	static createChannelBinding(config: {
 		method?: "GET" | "POST";
 		query?: SchemaObject | ReferenceObject;
@@ -225,6 +250,7 @@ export class WebSocketProtocolBinding {
 		}
 	}
 
+	//TODO: All types should have a dedicated name, no anonymous sub objects
 	static createMessageBinding(): WebSocketMessageBinding {
 		return {
 			bindingVersion: "0.1.0",
@@ -236,6 +262,7 @@ export class WebSocketProtocolBinding {
  * HTTP Protocol Binding Builder
  */
 export class HttpProtocolBinding {
+	//TODO: All types should have a dedicated name, no anonymous sub objects
 	static createOperationBinding(config: {
 		type?: "request" | "response";
 		method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE" | "HEAD" | "OPTIONS" | "CONNECT" | "TRACE";
@@ -249,6 +276,7 @@ export class HttpProtocolBinding {
 		}
 	}
 
+	//TODO: All types should have a dedicated name, no anonymous sub objects
 	static createMessageBinding(config: {
 		headers?: SchemaObject | ReferenceObject;
 		statusCode?: number;
@@ -471,7 +499,7 @@ export class ProtocolBindingFactory {
 						})
 					}
 				}
-				if (config.operation?.statusCode && (typeof config.operation.statusCode !== "number" || config.operation.statusCode < 100 || config.operation.statusCode > 599)) {
+				if (config.operation?.statusCode && (config.operation.statusCode < 100 || config.operation.statusCode > 599)) {
 					errors.push({
 						protocol: "http",
 						bindingType: "operation",
@@ -482,7 +510,7 @@ export class ProtocolBindingFactory {
 				}
 				break
 			case "message":
-				if (config.message?.statusCode && (typeof config.message.statusCode !== "number" || config.message.statusCode < 100 || config.message.statusCode > 599)) {
+				if (config.message?.statusCode && (config.message.statusCode < 100 || config.message.statusCode > 599)) {
 					errors.push({
 						protocol: "http",
 						bindingType: "message",
@@ -582,6 +610,7 @@ export class ProtocolUtils {
 	 * Get protocol-specific default ports
 	 */
 	static getDefaultPort(protocol: ProtocolType): number | undefined {
+		//TODO: This should probably be a dedicated global const in it's own file
 		const defaultPorts: Record<ProtocolType, number> = {
 			kafka: 9092,
 			websocket: 80,

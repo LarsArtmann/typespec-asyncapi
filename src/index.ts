@@ -36,6 +36,7 @@ export async function $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): Pro
 	console.log("🎉 AsyncAPI generation complete with performance monitoring!")
 }
 
+//TODO: is this dead code or called by TypeSpec??
 /**
  * Get the library instance
  */
