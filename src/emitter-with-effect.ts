@@ -26,7 +26,8 @@ import {$lib} from "./lib.js"
 import {PERFORMANCE_METRICS_SERVICE, PERFORMANCE_METRICS_SERVICE_LIVE} from "./performance/metrics.js"
 import {MEMORY_MONITOR_SERVICE, MEMORY_MONITOR_SERVICE_LIVE} from "./performance/memory-monitor.js"
 import {convertModelToSchema} from "./utils/schema-conversion.js"
-import {buildServersFromNamespaces, getMessageConfig} from "./utils/typespec-helpers.js"
+import {buildServersFromNamespaces, getMessageConfig, getProtocolConfig} from "./utils/typespec-helpers.js"
+import {ProtocolBindingFactory} from "./protocol-bindings.js"
 
 // Using centralized types from types/index.ts
 // AsyncAPIObject and SchemaObject (as AsyncAPISchema) are now imported
@@ -385,15 +386,19 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 	private processSingleOperation(op: Operation): string {
 		const program = this.emitter.getProgram()
 		const {operationType, channelPath} = this.extractOperationMetadata(op, program)
+		const protocolConfig = getProtocolConfig(program, op)
 
 		Effect.log(`🔍 Operation ${op.name}: type=${operationType ?? 'none'}, channel=${channelPath ?? 'default'}`)
+		if (protocolConfig) {
+			Effect.log(`🔧 Protocol config found: ${protocolConfig.protocol}`)
+		}
 
 		const channelName = `channel_${op.name}`
 		const action = operationType === "subscribe" ? "receive" : "send"
 
-		this.addChannelToDocument(op, channelName, channelPath, program)
-		this.addOperationToDocument(op, channelName, action, program)
-		this.addMessageToDocument(op)
+		this.addChannelToDocument(op, channelName, channelPath, program, protocolConfig)
+		this.addOperationToDocument(op, channelName, action, program, protocolConfig)
+		this.addMessageToDocument(op, protocolConfig)
 		this.processReturnTypeSchema(op, program)
 
 		Effect.log(`✅ Processed operation: ${op.name} (${action})`)
@@ -418,11 +423,12 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 	}
 
 	/**
-	 * Add channel definition to AsyncAPI document
+	 * Add channel definition to AsyncAPI document with protocol binding support
 	 */
-	private addChannelToDocument(op: Operation, channelName: string, channelPath: string, program: Program): void {
+	private addChannelToDocument(op: Operation, channelName: string, channelPath: string, program: Program, protocolConfig?: ProtocolConfig): void {
 		if (!this.asyncApiDoc.channels) this.asyncApiDoc.channels = {}
-		this.asyncApiDoc.channels[channelName] = {
+		
+		const channelDef = {
 			address: channelPath,
 			description: getDoc(program, op) ?? `Channel for ${op.name}`,
 			messages: {
@@ -430,34 +436,70 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 					$ref: `#/components/messages/${op.name}Message`,
 				},
 			},
+			bindings: undefined as Record<string, unknown> | undefined,
 		}
+
+		// Add protocol bindings if protocol config exists
+		if (protocolConfig) {
+			const channelBindings = this.createProtocolChannelBindings(protocolConfig)
+			if (channelBindings) {
+				channelDef.bindings = channelBindings
+				Effect.log(`✅ Added ${protocolConfig.protocol} channel bindings for ${channelName}`)
+			}
+		}
+
+		this.asyncApiDoc.channels[channelName] = channelDef
 	}
 
 	/**
-	 * Add operation definition to AsyncAPI document
+	 * Add operation definition to AsyncAPI document with protocol binding support
 	 */
-	private addOperationToDocument(op: Operation, channelName: string, action: string, program: Program): void {
+	private addOperationToDocument(op: Operation, channelName: string, action: string, program: Program, protocolConfig?: any): void {
 		if (!this.asyncApiDoc.operations) this.asyncApiDoc.operations = {}
-		this.asyncApiDoc.operations[op.name] = {
+		
+		const operationDef: any = {
 			action: action as "receive" | "send",
 			channel: {$ref: `#/channels/${channelName}`},
 			summary: getDoc(program, op) ?? `Operation ${op.name}`,
 			description: `TypeSpec operation with ${op.parameters.properties.size} parameters`,
 		}
+
+		// Add protocol bindings if protocol config exists
+		if (protocolConfig) {
+			const operationBindings = this.createProtocolOperationBindings(protocolConfig)
+			if (operationBindings) {
+				operationDef.bindings = operationBindings
+				Effect.log(`✅ Added ${protocolConfig.protocol} operation bindings for ${op.name}`)
+			}
+		}
+
+		this.asyncApiDoc.operations[op.name] = operationDef
 	}
 
 	/**
-	 * Add message definition to AsyncAPI document components
+	 * Add message definition to AsyncAPI document components with protocol binding support
 	 */
-	private addMessageToDocument(op: Operation): void {
+	private addMessageToDocument(op: Operation, protocolConfig?: any): void {
 		if (!this.asyncApiDoc.components) this.asyncApiDoc.components = {}
 		if (!this.asyncApiDoc.components.messages) this.asyncApiDoc.components.messages = {}
-		this.asyncApiDoc.components.messages[`${op.name}Message`] = {
+		
+		const messageDef: any = {
 			name: `${op.name}Message`,
 			title: `${op.name} Message`,
 			summary: `Message for ${op.name} operation`,
 			contentType: "application/json",
 		}
+
+		// Add protocol bindings if protocol config exists
+		if (protocolConfig) {
+			const messageBindings = this.createProtocolMessageBindings(protocolConfig)
+			if (messageBindings) {
+				messageDef.bindings = messageBindings
+				Effect.log(`✅ Added ${protocolConfig.protocol} message bindings for ${op.name}Message`)
+			}
+		}
+
+		this.asyncApiDoc.components.messages[`${op.name}Message`] = messageDef
 	}
 
 	/**
