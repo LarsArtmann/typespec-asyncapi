@@ -26,18 +26,10 @@ import {MEMORY_MONITOR_SERVICE, MEMORY_MONITOR_SERVICE_LIVE, withMemoryTracking}
 import {validateAsyncAPIObjectEffect} from "./utils/validation-helpers.js"
 import {generateSchemaPropertiesFromModel} from "./utils/schema-conversion.js"
 import {sanitizeChannelId} from "./utils/typespec-helpers.js"
+import {EffectLogging, EffectValidation, EffectErrorHandling} from "./utils/effect-helpers.js"
 
-/**
- * Helper function to validate program context exists
- * Eliminates code duplication across generator functions
- */
-const validateProgramContext = (context: EmitContext<object>): Effect.Effect<void, SpecGenerationError> =>
-	Effect.gen(function* () {
-		if (!context.program) {
-			return yield* Effect.fail(new SpecGenerationError("TypeSpec program context missing", {} as AsyncAPIEmitterOptions))
-		}
-		return undefined as void
-	})
+// Helper function moved to shared utilities - see utils/effect-helpers.ts
+// Use EffectValidation.validateProgramContext instead
 
 
 // Document validation moved to shared utilities
@@ -158,13 +150,13 @@ export const emitterServiceLive = Layer.effect(emitterService, makeEmitterServic
  */
 const generateChannels = (context: EmitContext<object>): Effect.Effect<Record<string, unknown>, SpecGenerationError> =>
 	Effect.gen(function* () {
-		yield* validateProgramContext(context)
+		yield* EffectValidation.validateProgramContext(context)
 
 		const channels: Record<string, unknown> = {}
 		const channelMap = context.program.stateMap($lib.stateKeys.channelPaths)
 		const operationTypesMap = context.program.stateMap($lib.stateKeys.operationTypes)
 
-		yield* Effect.logDebug(`Found ${channelMap.size} operations with channel paths`)
+		yield* EffectValidation.logStateMapInfo("channelMap operations", channelMap.size)
 
 		for (const [operation, channelPath] of channelMap) {
 			const operationType = operationTypesMap.get(operation) as string | undefined
@@ -194,7 +186,7 @@ const generateChannels = (context: EmitContext<object>): Effect.Effect<Record<st
 				}
 			}
 
-			yield* Effect.logDebug(`Generated channel: ${channelId}`, {
+			yield* EffectLogging.logDebugGeneration("channel", channelId, {
 				address: channelPath,
 				operationType,
 				operationName: operationObj.name,
@@ -203,12 +195,7 @@ const generateChannels = (context: EmitContext<object>): Effect.Effect<Record<st
 
 		return channels
 	}).pipe(
-		Effect.catchAll(error =>
-			Effect.fail(new SpecGenerationError(
-				`Failed to generate channels: ${error}`,
-				{} as AsyncAPIEmitterOptions,
-			)),
-		),
+		Effect.catchAll(error => EffectErrorHandling.handleSpecGenerationError(error, {} as AsyncAPIEmitterOptions)),
 	)
 
 /**
@@ -217,13 +204,13 @@ const generateChannels = (context: EmitContext<object>): Effect.Effect<Record<st
  */
 const generateOperations = (context: EmitContext<object>): Effect.Effect<Record<string, unknown>, SpecGenerationError> =>
 	Effect.gen(function* () {
-		yield* validateProgramContext(context)
+		yield* EffectValidation.validateProgramContext(context)
 
 		const operations: Record<string, unknown> = {}
 		const operationTypesMap = context.program.stateMap($lib.stateKeys.operationTypes)
 		const channelMap = context.program.stateMap($lib.stateKeys.channelPaths)
 
-		yield* Effect.logDebug(`Found ${operationTypesMap.size} operations with types`)
+		yield* EffectValidation.logStateMapInfo("operationTypesMap operations", operationTypesMap.size)
 
 		for (const [operation, operationType] of operationTypesMap) {
 			const operationObj = operation as Operation
@@ -249,7 +236,7 @@ const generateOperations = (context: EmitContext<object>): Effect.Effect<Record<
 				}],
 			}
 
-			yield* Effect.logDebug(`Generated operation: ${operationId}`, {
+			yield* EffectLogging.logDebugGeneration("operation", operationId, {
 				action: operationType,
 				channel: channelPath,
 			})
@@ -257,12 +244,7 @@ const generateOperations = (context: EmitContext<object>): Effect.Effect<Record<
 
 		return operations
 	}).pipe(
-		Effect.catchAll(error =>
-			Effect.fail(new SpecGenerationError(
-				`Failed to generate operations: ${error}`,
-				{} as AsyncAPIEmitterOptions,
-			)),
-		),
+		Effect.catchAll(error => EffectErrorHandling.handleSpecGenerationError(error, {} as AsyncAPIEmitterOptions)),
 	)
 
 /**
@@ -271,7 +253,7 @@ const generateOperations = (context: EmitContext<object>): Effect.Effect<Record<
  */
 const generateComponents = (context: EmitContext<object>): Effect.Effect<Record<string, unknown>, SpecGenerationError> =>
 	Effect.gen(function* () {
-		yield* validateProgramContext(context)
+		yield* EffectValidation.validateProgramContext(context)
 
 		const components: Record<string, unknown> = {
 			messages: {},
@@ -283,7 +265,7 @@ const generateComponents = (context: EmitContext<object>): Effect.Effect<Record<
 		const messageMap = context.program.stateMap($lib.stateKeys.messageConfigs)
 		const operationTypesMap = context.program.stateMap($lib.stateKeys.operationTypes)
 
-		yield* Effect.logDebug(`Found ${messageMap.size} models with message configurations`)
+		yield* EffectValidation.logStateMapInfo("messageMap models", messageMap.size)
 
 		// Generate messages from operations
 		for (const [operation] of operationTypesMap) {
@@ -325,7 +307,7 @@ const generateComponents = (context: EmitContext<object>): Effect.Effect<Record<
 				required: ["id", "timestamp"],
 			}
 
-			yield* Effect.logDebug(`Generated message component: ${messageId}`)
+			yield* EffectLogging.logDebugGeneration("message", messageId)
 		}
 
 		// Generate additional message components from @message decorators
@@ -360,7 +342,7 @@ const generateComponents = (context: EmitContext<object>): Effect.Effect<Record<
 					additionalProperties: false,
 				}
 
-				yield* Effect.logDebug(`Generated message from @message decorator: ${messageId}`)
+				yield* EffectLogging.logDebugGeneration("message", messageId + " (from @message decorator)")
 			}
 		}
 
@@ -380,12 +362,7 @@ const generateComponents = (context: EmitContext<object>): Effect.Effect<Record<
 
 		return components
 	}).pipe(
-		Effect.catchAll(error =>
-			Effect.fail(new SpecGenerationError(
-				`Failed to generate components: ${error}`,
-				{} as AsyncAPIEmitterOptions,
-			)),
-		),
+		Effect.catchAll(error => EffectErrorHandling.handleSpecGenerationError(error, {} as AsyncAPIEmitterOptions)),
 	)
 
 // Utility functions moved to shared modules - see utils/ directory
@@ -456,11 +433,11 @@ export const onEmitEffect = (
 			// Acquire: Setup generation context with memory monitoring
 			Effect.gen(function* () {
 				yield* memoryMonitor.startMonitoring(1000)
-				yield* Effect.logInfo("AsyncAPI generation context initialized", {
-					outputFile: finalOptions["output-file"],
-					fileType: finalOptions["file-type"],
-					memoryMonitoring: true,
-				})
+				yield* EffectLogging.logGenerationContext(
+					finalOptions["output-file"] || "asyncapi",
+					finalOptions["file-type"] || "yaml",
+					true
+				)
 				return {context, options: finalOptions}
 			}),
 
@@ -491,12 +468,10 @@ export const onEmitEffect = (
 							return yield* Effect.fail(error)
 						}),
 					),
-					Effect.tap(spec =>
-						Effect.logInfo("AsyncAPI specification generated successfully", {
-							specSize: JSON.stringify(spec).length,
-							outputFile: opts["output-file"],
-						}),
-					),
+					Effect.tap(spec => EffectLogging.logSpecGenerationSuccess(
+						JSON.stringify(spec).length,
+						opts["output-file"] || "asyncapi"
+					)),
 				),
 
 			// Release: Cleanup resources
@@ -534,11 +509,11 @@ export const onEmitEffect = (
 
 		// Step 6: Record final performance metrics
 		const throughputResult = yield* performanceMetrics.recordThroughput(measurement, 1)
-		yield* Effect.logInfo("Emitter performance metrics", {
-			throughput: `${throughputResult.operationsPerSecond.toFixed(2)} ops/sec`,
-			memoryPerOp: `${throughputResult.averageMemoryPerOperation.toFixed(0)} bytes`,
-			totalDuration: `${throughputResult.totalDuration.toFixed(2)}ms`,
-		})
+		yield* EffectLogging.logPerformanceMetrics(
+			throughputResult.operationsPerSecond,
+			throughputResult.averageMemoryPerOperation,
+			throughputResult.totalDuration
+		)
 	}).pipe(
 		Effect.timeout(Duration.seconds(30)),
 		Effect.mapError(error => {
@@ -612,11 +587,11 @@ export const batchEmitEffect = (
 
 		const throughputResult = yield* performanceMetrics.recordThroughput(measurement, contexts.length)
 
-		yield* Effect.logInfo("Batch emit completed", {
-			processedCount: contexts.length,
-			throughput: `${throughputResult.operationsPerSecond.toFixed(0)} contexts/sec`,
-			totalDuration: `${throughputResult.totalDuration.toFixed(2)}ms`,
-		})
+		yield* EffectLogging.logBatchCompletion(
+			contexts.length,
+			throughputResult.operationsPerSecond,
+			throughputResult.totalDuration
+		)
 
 		return results
 	}).pipe(

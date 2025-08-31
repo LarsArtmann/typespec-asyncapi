@@ -16,6 +16,8 @@ import {
 	compileAsyncAPISpecWithoutErrors,
 	parseAsyncAPIOutput,
 	validateAsyncAPIObjectComprehensive,
+	TestValidationPatterns,
+	TestLogging,
 } from "../../utils/test-helpers.js"
 import {Effect} from "effect"
 //TODO: this file is getting to big split it up
@@ -313,10 +315,11 @@ describe("Real AsyncAPI Generation Tests", () => {
 				"InventoryEvent", "InventoryChangeDetails",
 			]
 
+			// Validate all expected schemas using shared utility
 			for (const schemaName of expectedSchemas) {
 				expect(asyncapiDoc.components.schemas[schemaName]).toBeDefined()
-				Effect.log(`✓ Schema generated: ${schemaName}`)
 			}
+			TestValidationPatterns.validateExpectedSchemas(asyncapiDoc, expectedSchemas)
 
 			// Validate inheritance handling (OrderEvent extends BaseEvent)
 			const orderEventSchema = asyncapiDoc.components.schemas.OrderEvent
@@ -339,10 +342,11 @@ describe("Real AsyncAPI Generation Tests", () => {
 				"subscribeWarehouseInventoryChanges", "subscribeOrdersByStatus",
 			]
 
+			// Validate all expected operations using shared utility
 			for (const operationName of expectedOperations) {
 				expect(asyncapiDoc.operations[operationName]).toBeDefined()
-				Effect.log(`✓ Operation generated: ${operationName}`)
 			}
+			TestValidationPatterns.validateExpectedOperations(asyncapiDoc, expectedOperations)
 
 			// Validate publish vs subscribe actions
 			expect(asyncapiDoc.operations.publishOrderCreated.action).toBe("send")
@@ -356,10 +360,8 @@ describe("Real AsyncAPI Generation Tests", () => {
 				throw new Error(`AsyncAPI validation failed: ${validation.summary}`)
 			}
 
-			Effect.log("✅ Complex TypeSpec → AsyncAPI transformation completed successfully")
-			Effect.log(`📊 Generated ${Object.keys(asyncapiDoc.components.schemas).length} schemas`)
-			Effect.log(`📊 Generated ${Object.keys(asyncapiDoc.operations).length} operations`)
-			Effect.log(`📊 Generated ${Object.keys(asyncapiDoc.channels).length} channels`)
+			// Log completion using shared utility
+			TestValidationPatterns.validateAndLogCompletion(asyncapiDoc, "Complex TypeSpec → AsyncAPI transformation completed successfully")
 		})
 
 		test("should handle TypeSpec union types and optional fields correctly", async () => {
@@ -492,24 +494,24 @@ describe("Real AsyncAPI Generation Tests", () => {
 
 			const asyncapiDoc = parseAsyncAPIOutput(outputFiles, "multi-namespace-test.json") as AsyncAPIObject
 
-			// Validate schemas from all namespaces
+			// Validate schemas from all namespaces using shared utility
 			const expectedSchemas = ["User", "UserProfile", "Order", "OrderItem", "Notification"]
 			for (const schemaName of expectedSchemas) {
 				expect(asyncapiDoc.components.schemas[schemaName]).toBeDefined()
-				Effect.log(`✓ Multi-namespace schema: ${schemaName}`)
+				TestLogging.logMultiNamespaceSchema(schemaName)
 			}
 
-			// Validate operations from all namespaces
+			// Validate operations from all namespaces using shared utility
 			const expectedOperations = [
 				"publishUserCreated", "publishOrderProcessed",
 				"subscribeUserOrderStatus", "publishNotification",
 			]
 			for (const operationName of expectedOperations) {
 				expect(asyncapiDoc.operations[operationName]).toBeDefined()
-				Effect.log(`✓ Multi-namespace operation: ${operationName}`)
+				TestLogging.logMultiNamespaceOperation(operationName)
 			}
 
-			Effect.log("✅ Multi-namespace TypeSpec processed successfully")
+			TestLogging.logValidationSuccess("Multi-namespace TypeSpec processed successfully")
 		})
 	})
 

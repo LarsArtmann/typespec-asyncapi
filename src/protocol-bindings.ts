@@ -12,6 +12,8 @@ import type {KafkaChannelBinding, KafkaMessageBinding, KafkaOperationBinding} fr
 import type {GlobalConfig} from "@confluentinc/kafka-javascript/types/config.js"
 import {validateEnumValue, validateHttpStatusCode, validatePositiveInteger} from "./utils/protocol-validation.js"
 import {getDefaultProtocolPort} from "./constants/protocol-defaults.js"
+import type {BaseHttpOperationBinding, BaseHttpMessageBinding, BaseWebSocketChannelBinding, HttpMethod} from "./utils/protocol-binding-helpers.js"
+import {ProtocolBindingHelpers} from "./utils/protocol-binding-helpers.js"
 
 //TODO: This file is to big. Split it up!
 
@@ -108,30 +110,21 @@ export type KafkaMessageBindingParams = {
 
 /**
  * WebSocket channel binding creation parameters
+ * Uses shared base type to eliminate duplication
  */
-export type WebSocketChannelBindingParams = {
-	method?: "GET" | "POST";
-	query?: SchemaObject | ReferenceObject;
-	headers?: SchemaObject | ReferenceObject;
-}
+export type WebSocketChannelBindingParams = BaseWebSocketChannelBinding
 
 /**
  * HTTP operation binding creation parameters
+ * Uses shared base type to eliminate duplication
  */
-export type HttpOperationBindingParams = {
-	type?: "request" | "response";
-	method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE" | "HEAD" | "OPTIONS" | "CONNECT" | "TRACE";
-	query?: SchemaObject | ReferenceObject;
-	statusCode?: number;
-}
+export type HttpOperationBindingParams = BaseHttpOperationBinding
 
 /**
  * HTTP message binding creation parameters
+ * Uses shared base type to eliminate duplication
  */
-export type HttpMessageBindingParams = {
-	headers?: SchemaObject | ReferenceObject;
-	statusCode?: number;
-}
+export type HttpMessageBindingParams = BaseHttpMessageBinding
 
 /**
  * Protocol support configuration for each protocol type
@@ -184,11 +177,8 @@ type KafkaProtocolBindingConfig = {
 };
 
 // Named types for WebSocket binding configurations (avoiding anonymous sub-objects)
-export type WebSocketChannelBindingConfig = {
-	method?: "GET" | "POST";
-	query?: SchemaObject | ReferenceObject;
-	headers?: SchemaObject | ReferenceObject;
-};
+// Uses shared base type to eliminate duplication
+export type WebSocketChannelBindingConfig = BaseWebSocketChannelBinding;
 
 export type WebSocketMessageBindingConfig = Record<string, unknown>;
 
@@ -198,17 +188,9 @@ type WebSocketProtocolBindingConfig = {
 };
 
 // Named types for HTTP binding configurations (avoiding anonymous sub-objects)
-export type HttpOperationBindingConfig = {
-	type?: "request" | "response";
-	method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE" | "HEAD" | "OPTIONS" | "CONNECT" | "TRACE";
-	query?: SchemaObject | ReferenceObject;
-	statusCode?: number;
-};
-
-export type HttpMessageBindingConfig = {
-	headers?: SchemaObject | ReferenceObject;
-	statusCode?: number;
-};
+// Uses shared base types to eliminate duplication
+export type HttpOperationBindingConfig = BaseHttpOperationBinding;
+export type HttpMessageBindingConfig = BaseHttpMessageBinding;
 
 type HttpProtocolBindingConfig = {
 	operation?: HttpOperationBindingConfig;
@@ -490,7 +472,7 @@ export class ProtocolBindingFactory {
 
 		switch (bindingType) {
 			case "channel":
-				if (config.channel?.method && !["GET", "POST"].includes(config.channel.method)) {
+				if (config.channel?.method && !ProtocolBindingHelpers.isValidWebSocketMethod(config.channel.method)) {
 					errors.push({
 						protocol: "ws",
 						bindingType: "channel",
@@ -507,7 +489,7 @@ export class ProtocolBindingFactory {
 
 	private static validateHttpBinding(bindingType: string, config: HttpBindingConfig): ProtocolBindingValidationError[] {
 		const errors: ProtocolBindingValidationError[] = []
-		const validMethods = ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS", "CONNECT", "TRACE"] as const
+		const validMethods: HttpMethod[] = ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS", "CONNECT", "TRACE"]
 
 		switch (bindingType) {
 			case "operation":
@@ -573,21 +555,14 @@ export class ProtocolBindingFactory {
 				}
 			case "ws":
 				return {
-					channel: {
-						method: "GET",
-					},
+					channel: ProtocolBindingHelpers.createDefaultWebSocketChannelBinding(),
 					message: {},
 				}
 			case "http":
 			case "https":
 				return {
-					operation: {
-						type: "request",
-						method: "POST",
-					},
-					message: {
-						statusCode: 200,
-					},
+					operation: ProtocolBindingHelpers.createDefaultHttpOperationBinding(),
+					message: ProtocolBindingHelpers.createDefaultHttpMessageBinding(),
 				}
 			default:
 				return {}

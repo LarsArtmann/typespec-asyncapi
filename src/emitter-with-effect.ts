@@ -15,7 +15,7 @@
 
 import {Console, Effect, Layer, pipe} from "effect"
 import type {EmitContext, Model, Namespace, Operation, Program} from "@typespec/compiler"
-import {emitFile, getDoc} from "@typespec/compiler"
+import {getDoc} from "@typespec/compiler"
 import {type AssetEmitter, createAssetEmitter, TypeEmitter} from "@typespec/asset-emitter"
 import {stringify} from "yaml"
 import type {AsyncAPIEmitterOptions} from "./options.js"
@@ -445,87 +445,13 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 	// 	})
 	// }
 
-	/**
-	 * Write the document to file using Effect.TS with performance monitoring
-	 */
-	private writeDocumentEffect(content: string) {
-		return Effect.gen(function* (this: AsyncAPIEffectEmitter) {
-			const metricsService = yield* PERFORMANCE_METRICS_SERVICE
-			const memoryMonitor = yield* MEMORY_MONITOR_SERVICE
+	// writeDocumentEffect removed - was unused dead code
 
-			// Start performance measurement for document writing stage
-			const measurement = yield* metricsService.startMeasurement("document_writing")
-			Effect.log(`📁 Writing AsyncAPI document with performance monitoring...`)
+	// writeDocumentToFile removed - was unused dead code
 
-			const writeOperation = Effect.tryPromise({
-				try: async () => {
-					return await this.writeDocumentToFile(content)
-				},
-				catch: (error) => new Error(`Failed to write output: ${error}`),
-			})
+	// getOutputFileOptions removed - was unused dead code
 
-			// Execute document writing with memory tracking
-			const {result} = yield* memoryMonitor.measureOperationMemory(
-				writeOperation,
-				"document_writing",
-			)
-
-			// Record throughput metrics for document writing stage
-			const throughputResult = yield* metricsService.recordThroughput(measurement, 1) // 1 document written
-			Effect.log(`📊 Document writing completed: ${(throughputResult).averageLatencyMicroseconds?.toFixed(2) ?? 0} μs, ${(throughputResult).averageMemoryPerOperation?.toFixed(0) ?? 0} bytes`)
-
-			return result
-		}.bind(this))
-	}
-
-	/**
-	 * Write document content to file and log statistics
-	 */
-	private async writeDocumentToFile(content: string): Promise<void> {
-		//TODO: investigate what went wrong with these types!
-		const options = this.emitter.getOptions()
-		const program = this.emitter.getProgram()
-		const {outputFile} = this.getOutputFileOptions(options)
-
-		await emitFile(program, {
-			path: outputFile,
-			content,
-		})
-
-		this.logWriteSuccess(outputFile)
-		this.logDocumentStatistics()
-	}
-
-	//TODO: this needs better and named types!
-	/**
-	 * Get output file options from emitter configuration
-	 */
-	private getOutputFileOptions(options: Pick<AsyncAPIEmitterOptions, "file-type" | "output-file">): {
-		fileType: string,
-		outputFile: string
-	} {
-		const fileType = options["file-type"] ?? "yaml"
-		const outputFile = options["output-file"] ?? `asyncapi.${fileType}`
-		return {fileType, outputFile}
-	}
-
-	/**
-	 * Log successful file write operation
-	 */
-	private logWriteSuccess(outputFile: string): void {
-		Effect.log(`✅ Written AsyncAPI to: ${outputFile}`)
-	}
-
-	/**
-	 * Log final document statistics
-	 */
-	private logDocumentStatistics(): void {
-		Effect.log(`📊 Final stats:`)
-		Effect.log(`  - Operations: ${Object.keys(this.asyncApiDoc.operations || {}).length}`)
-		Effect.log(`  - Channels: ${Object.keys(this.asyncApiDoc.channels || {}).length}`)
-		Effect.log(`  - Schemas: ${Object.keys(this.asyncApiDoc.components?.schemas || {}).length}`)
-		Effect.log(`  - Messages: ${Object.keys(this.asyncApiDoc.components?.messages || {}).length}`)
-	}
+	// logWriteSuccess and logDocumentStatistics removed - were unused dead code
 
 	/**
 	 * Convert TypeSpec model to AsyncAPI schema using shared utilities

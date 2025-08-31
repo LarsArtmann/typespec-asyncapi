@@ -377,6 +377,80 @@ export const TestSources = {
 }
 
 /**
+ * Common logging patterns for integration tests
+ * Eliminates duplication in Effect.log calls
+ */
+export const TestLogging = {
+	logSchemaGenerated: (schemaName: string) => {
+		Effect.log(`✓ Schema generated: ${schemaName}`)
+	},
+
+	logOperationGenerated: (operationName: string) => {
+		Effect.log(`✓ Operation generated: ${operationName}`)
+	},
+
+	logValidationSuccess: (message: string) => {
+		Effect.log(`✅ ${message}`)
+	},
+
+	logGenerationMetrics: (schemasCount: number, operationsCount: number, channelsCount: number) => {
+		Effect.log(`📊 Generated ${schemasCount} schemas`)
+		Effect.log(`📊 Generated ${operationsCount} operations`)
+		Effect.log(`📊 Generated ${channelsCount} channels`)
+	},
+
+	logMultiNamespaceSchema: (schemaName: string) => {
+		Effect.log(`✓ Multi-namespace schema: ${schemaName}`)
+	},
+
+	logMultiNamespaceOperation: (operationName: string) => {
+		Effect.log(`✓ Multi-namespace operation: ${operationName}`)
+	}
+}
+
+/**
+ * Common test validation patterns
+ * Eliminates duplication in test validation logic
+ */
+export const TestValidationPatterns = {
+	/**
+	 * Validate schemas were generated for expected models
+	 */
+	validateExpectedSchemas: (asyncapiDoc: AsyncAPIObject, expectedSchemas: string[]) => {
+		for (const schemaName of expectedSchemas) {
+			if (!asyncapiDoc.components?.schemas?.[schemaName]) {
+				throw new Error(`Expected schema ${schemaName} not found`)
+			}
+			TestLogging.logSchemaGenerated(schemaName)
+		}
+	},
+
+	/**
+	 * Validate operations were generated for expected names
+	 */
+	validateExpectedOperations: (asyncapiDoc: AsyncAPIObject, expectedOperations: string[]) => {
+		for (const operationName of expectedOperations) {
+			if (!asyncapiDoc.operations?.[operationName]) {
+				throw new Error(`Expected operation ${operationName} not found`)
+			}
+			TestLogging.logOperationGenerated(operationName)
+		}
+	},
+
+	/**
+	 * Validate and log AsyncAPI specification generation completion
+	 */
+	validateAndLogCompletion: (asyncapiDoc: AsyncAPIObject, message: string) => {
+		TestLogging.logValidationSuccess(message)
+		TestLogging.logGenerationMetrics(
+			Object.keys(asyncapiDoc.components?.schemas || {}).length,
+			Object.keys(asyncapiDoc.operations || {}).length,
+			Object.keys(asyncapiDoc.channels || {}).length
+		)
+	}
+}
+
+/**
  * Common test assertions for AsyncAPI validation
  */
 export const AsyncAPIAssertions = {
