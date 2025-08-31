@@ -51,3 +51,6 @@ coverage
 # Temporary files
 *.tmp
 *.temp
+
+# jscpd-report - duplication reports
+/jscpd-report/
