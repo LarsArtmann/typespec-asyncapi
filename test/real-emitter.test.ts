@@ -15,7 +15,7 @@ describe("REAL Emitter Test - No Mocks", () => {
 
 		// Add the AsyncAPI library so decorators work
 		host.addTypeSpecFile("main.tsp", `
-			import "../lib/main.tsp";
+			import "@larsartmann/typespec-asyncapi";
 			
 			using TypeSpec.AsyncAPI;
 			
@@ -37,7 +37,7 @@ describe("REAL Emitter Test - No Mocks", () => {
 
 		// Compile with the REAL emitter
 		const diagnostics = await host.diagnose("main.tsp", {
-			emit: ["@typespec/asyncapi"],
+			emit: ["@larsartmann/typespec-asyncapi"],
 		})
 
 		// Should compile without errors
@@ -69,7 +69,7 @@ describe("REAL Emitter Test - No Mocks", () => {
 		})
 
 		host.addTypeSpecFile("test.tsp", `
-			import "../lib/main.tsp";
+			import "@larsartmann/typespec-asyncapi";
 			using TypeSpec.AsyncAPI;
 
 			@server("dev", {url: "localhost:9092", protocol: "kafka"})

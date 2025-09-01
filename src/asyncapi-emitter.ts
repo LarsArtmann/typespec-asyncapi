@@ -373,7 +373,7 @@ export async function generateAsyncAPI(context: EmitContext<AsyncAPIEmitterOptio
 	Effect.log("🚀 ASYNCAPI EMITTER (AssetEmitter): Processing REAL TypeSpec AST - NOT HARDCODED!")
 	Effect.log("⚠️  VERSIONING NOT SUPPORTED - See GitHub issue #1")
 	Effect.log(`📁 Output: ${context.emitterOutputDir}`)
-	Effect.log(`🔧 Source files: ${context.program.sourceFiles.size}`)
+	Effect.log(`🔧 Source files: ${context.program?.sourceFiles?.size || 0}`)
 
 	// Create AssetEmitter instance
 	const assetEmitter = createAssetEmitter(

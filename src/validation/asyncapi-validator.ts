@@ -211,5 +211,17 @@ export class AsyncAPIValidator {
 // Re-export legacy functions for backward compatibility
 //NOTE: use the real thing for: export {validateAsyncAPIFile, validateAsyncAPIString} from "./legacy-functions"
 
-// Re-export utility functions
-//NOTE: use the real thing for: export {validateAsyncAPIEffect, validateWithDiagnostics, isValidAsyncAPI, validateAsyncAPIObject} from "./validator-utils.js"
+// Export utility function for backward compatibility
+export async function validateAsyncAPIObject(document: unknown, options?: ValidationOptions): Promise<ValidationResult> {
+    const validator = new AsyncAPIValidator(options)
+    return await validator.validate(document)
+}
+
+// Export additional utility functions
+export async function validateAsyncAPIEffect(document: unknown, options?: ValidationOptions) {
+    return Effect.promise(() => validateAsyncAPIObject(document, options))
+}
+
+export function isValidAsyncAPI(result: ValidationResult): boolean {
+    return result.valid && result.errors.length === 0
+}

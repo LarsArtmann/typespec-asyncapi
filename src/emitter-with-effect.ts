@@ -1185,6 +1185,14 @@ export async function generateAsyncAPIWithEffect(context: EmitContext<AsyncAPIEm
 	Effect.log("✨ Using REAL asyncapi-validator library!")
 	Effect.log("🔧 Connecting ghost Effect.TS system to main emitter")
 
+	// Ensure program has required compilerOptions for AssetEmitter
+	if (!context.program.compilerOptions) {
+		context.program.compilerOptions = {}
+	}
+	if (context.program.compilerOptions.dryRun === undefined) {
+		context.program.compilerOptions.dryRun = false
+	}
+
 	const assetEmitter = createAssetEmitter(
 		context.program,
 		AsyncAPIEffectEmitter,

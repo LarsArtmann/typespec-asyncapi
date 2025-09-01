@@ -1,6 +1,5 @@
 import "@typespec/compiler";
 import "../dist/index.js";
-//import "../dist/decorators/security.js"
 
 using TypeSpec.Reflection;
 

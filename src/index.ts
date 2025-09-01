@@ -32,7 +32,7 @@ export async function $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): Pro
     
     Effect.log("🎯 TYPESPEC ASYNCAPI EMITTER STARTED - USING REAL PROCESSOR");
     Effect.log(`📁 Output directory: ${context.emitterOutputDir}`);
-    Effect.log(`🔧 Program has ${context.program.sourceFiles.size || 0} source files`);
+    Effect.log(`🔧 Program has ${context.program?.sourceFiles?.size || 0} source files`);
     Effect.log("✨ Processing TypeSpec operations, decorators, and models...");
     
     // Use the working Effect.TS integrated emitter that actually processes TypeSpec content

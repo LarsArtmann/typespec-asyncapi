@@ -1,7 +1,7 @@
 import {createTypeSpecLibrary, type DecoratorContext, type Diagnostic, paramMessage} from "@typespec/compiler"
 
 export const $lib = createTypeSpecLibrary({
-	name: "@typespec/asyncapi",
+	name: "@larsartmann/typespec-asyncapi",
 	diagnostics: {
 		"invalid-asyncapi-version": {
 			severity: "error",
@@ -164,9 +164,8 @@ export const stateKeys = {
  * @param args - Optional arguments for error message templating
  */
 export function reportDiagnostic(context: DecoratorContext, target: unknown, code: string, args?: Record<string, unknown>) {
-	 
 	context.program.reportDiagnostic({
-		code: `@typespec/asyncapi.${code}`,
+		code: `@larsartmann/typespec-asyncapi.${code}`,
 		target,
 		...args,
 	} as Diagnostic)
