@@ -76,14 +76,14 @@ operations:
       $ref: "#/channels/channel_sendChatMessage"
     summary: Operation sendChatMessage
     description: TypeSpec operation with 0 parameters
-    bindings: {}
+    bindings: { }
   subscribeToChatMessages:
     action: receive
     channel:
       $ref: "#/channels/channel_subscribeToChatMessages"
     summary: Operation subscribeToChatMessages
     description: TypeSpec operation with 0 parameters
-    bindings: {}
+    bindings: { }
 components:
   schemas:
     UserEvent:
