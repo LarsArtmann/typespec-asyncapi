@@ -197,9 +197,9 @@ export async function compileTypeSpecWithDecorators(
 /**
  * Parse AsyncAPI output from compilation result
  */
-export function parseAsyncAPIOutput(outputFiles: Map<string, string | {
+export async function parseAsyncAPIOutput(outputFiles: Map<string, string | {
 	content: string
-}>, filename: string): AsyncAPIObject | string {
+}>, filename: string): Promise<AsyncAPIObject | string> {
 	//TODO: refactor to use Effect.TS!
 	try {
 		// SMART SEARCH: Find the actual AsyncAPI file regardless of expected filename
@@ -219,7 +219,7 @@ export function parseAsyncAPIOutput(outputFiles: Map<string, string | {
 			if (content) {
 				console.log(`✅ Found exact match: ${exactMatch}`);
 				const actualContent = typeof content === 'string' ? content : content.content
-				return parseFileContent(actualContent, filename)
+				return await parseFileContent(actualContent, filename)
 			}
 		}
 		
@@ -230,7 +230,7 @@ export function parseAsyncAPIOutput(outputFiles: Map<string, string | {
 			if (content) {
 				console.log(`🎯 Using fallback file: ${fallbackFile} for expected ${filename}`);
 				const actualContent = typeof content === 'string' ? content : content.content
-				return parseFileContent(actualContent, filename)
+				return await parseFileContent(actualContent, filename)
 			}
 		}
 		
@@ -247,7 +247,7 @@ export function parseAsyncAPIOutput(outputFiles: Map<string, string | {
 			const content = outputFiles.get(filePath)
 			if (content) {
 				const actualContent = typeof content === 'string' ? content : content.content
-				return parseFileContent(actualContent, filename)
+				return await parseFileContent(actualContent, filename)
 			}
 		}
 		
@@ -260,7 +260,7 @@ export function parseAsyncAPIOutput(outputFiles: Map<string, string | {
 	}
 }
 
-function parseFileContent(content: string, filename: string): AsyncAPIObject | string {
+async function parseFileContent(content: string, filename: string): Promise<AsyncAPIObject | string> {
 	console.log(`Parsing file: ${filename}`);
 	console.log(`Content length: ${content?.length || 0}`);
 	console.log(`Content preview: ${content?.substring(0, 200) || 'NO CONTENT'}`);
@@ -277,11 +277,10 @@ function parseFileContent(content: string, filename: string): AsyncAPIObject | s
 	if (filename.endsWith('.json')) {
 		return JSON.parse(content)
 	} else if (filename.endsWith('.yaml') || filename.endsWith('.yml')) {
-		//TODO: DO we need to do something here??
-		// For YAML, we'll just return the string content for now
-		// In a real implementation, you might want to use a YAML parser
-		console.log("Returning YAML content as string");
-		return content
+		// Parse YAML content into object for validation
+		const yaml = await import("yaml")
+		console.log("Parsing YAML content to object");
+		return yaml.parse(content)
 	}
 
 	throw new Error(`Unsupported file format: ${filename}`)

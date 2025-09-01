@@ -20,7 +20,7 @@ describe("AsyncAPI Emitter Core", () => {
       );
       
       // Test shows emitter generates asyncapi.yaml by default 
-      const asyncapiDoc = parseAsyncAPIOutput(outputFiles, "asyncapi.yaml");
+      const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "asyncapi.yaml");
       
       // Debug: Let's see what we actually generated
       console.log("Generated AsyncAPI document:", JSON.stringify(asyncapiDoc, null, 2));

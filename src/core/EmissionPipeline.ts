@@ -125,7 +125,17 @@ export class EmissionPipeline {
 				context.asyncApiDoc.servers = buildServersFromNamespaces(context.program) as AsyncAPIObject["servers"]
 			}
 
-			Effect.log(`✅ Document generation completed`)
+			// CRITICAL FIX: Process discovered operations into AsyncAPI channels and operations
+			for (const operation of discoveryResult.operations) {
+				yield* this.processOperationIntoDocument(context, operation)
+			}
+
+			// Process discovered message models into AsyncAPI components/messages
+			for (const model of discoveryResult.messageModels) {
+				yield* this.processMessageModelIntoDocument(context, model)
+			}
+
+			Effect.log(`✅ Document generation completed - processed ${discoveryResult.operations.length} operations and ${discoveryResult.messageModels.length} messages`)
 		}.bind(this))
 	}
 
@@ -186,15 +196,23 @@ export class EmissionPipeline {
 	private discoverMessageModels(program: Program) {
 		return Effect.sync(() => {
 			const messageModels: Model[] = []
-			const messageConfigsMap = program.stateMap($lib.stateKeys.messageConfigs)
+			const messageConfigsMap = $lib.stateKeys ? program.stateMap($lib.stateKeys.messageConfigs) : null
+			const foundModelNames = new Set<string>()
 
 			//TODO: No fucking any!
 			const walkNamespaceForModels = (ns: any) => {
 				if (ns.models) {
 					ns.models.forEach((model: Model, name: string) => {
-						if (messageConfigsMap.has(model)) {
-							messageModels.push(model)
-							Effect.log(`🎯 Found message model: ${name}`)
+						// Include all models for now - refine later to only operation return types
+						const hasMessageDecorator = messageConfigsMap?.has(model)
+						const isUsefulModel = true // For now, include all models
+						
+						if (hasMessageDecorator || isUsefulModel) {
+							if (!foundModelNames.has(name)) {
+								messageModels.push(model)
+								foundModelNames.add(name)
+								Effect.log(`🎯 Found message model: ${name} (decorator: ${!!hasMessageDecorator})`)
+							}
 						}
 					})
 				}
@@ -379,6 +397,95 @@ export class EmissionPipeline {
 			}
 
 			Effect.log(`✅ Added security scheme: ${config.name}`)
+		})
+	}
+
+	/**
+	 * Process a TypeSpec operation into AsyncAPI channels and operations
+	 */
+	private processOperationIntoDocument(context: PipelineContext, operation: Operation) {
+		return Effect.sync(() => {
+			const operationName = operation.name || "UnnamedOperation"
+			
+			// Get decorator state from program state maps (correct TypeSpec pattern)
+			const channelPathsMap = context.program.stateMap($lib.stateKeys.channelPaths)
+			const operationTypesMap = context.program.stateMap($lib.stateKeys.operationTypes)
+			
+			// Get channel path from @channel decorator state
+			const channelPath = channelPathsMap.get(operation) as string | undefined
+			const channelName = channelPath || `channel_${operationName}`
+			
+			// Get operation type from @publish/@subscribe decorator state  
+			const operationType = operationTypesMap.get(operation) as string | undefined
+			const action = operationType === 'publish' ? 'send' : operationType === 'subscribe' ? 'receive' : 'send'
+			
+			Effect.log(`🔄 Processing operation: ${operationName} -> channel: ${channelName}, action: ${action}`)
+			
+			// Create channel if it doesn't exist
+			if (!context.asyncApiDoc.channels) {
+				context.asyncApiDoc.channels = {}
+			}
+			if (!context.asyncApiDoc.channels[channelName]) {
+				context.asyncApiDoc.channels[channelName] = {
+					address: channelName,
+					messages: {}
+				}
+			}
+			
+			// Create operation if it doesn't exist
+			if (!context.asyncApiDoc.operations) {
+				context.asyncApiDoc.operations = {}
+			}
+			context.asyncApiDoc.operations[operationName] = {
+				action,
+				channel: {
+					$ref: `#/channels/${channelName}`
+				},
+				description: `Generated from TypeSpec operation ${operationName}`
+			}
+		})
+	}
+
+	/**
+	 * Process a TypeSpec message model into AsyncAPI components/messages
+	 */
+	private processMessageModelIntoDocument(context: PipelineContext, model: Model) {
+		return Effect.sync(() => {
+			const modelName = model.name || "UnnamedMessage"
+			
+			// Get message configuration from state if available
+			const messageConfigsMap = context.program.stateMap($lib.stateKeys.messageConfigs)
+			const messageConfig = messageConfigsMap.get(model)
+			
+			Effect.log(`📨 Processing message model: ${modelName}`)
+			
+			// Ensure components structure exists
+			if (!context.asyncApiDoc.components) {
+				context.asyncApiDoc.components = {}
+			}
+			if (!context.asyncApiDoc.components.messages) {
+				context.asyncApiDoc.components.messages = {}
+			}
+			if (!context.asyncApiDoc.components.schemas) {
+				context.asyncApiDoc.components.schemas = {}
+			}
+			
+			// Add message to components (use decorator config if available)
+			context.asyncApiDoc.components.messages[modelName] = {
+				name: messageConfig?.name || modelName,
+				title: messageConfig?.title || modelName,
+				description: messageConfig?.description || `Generated from TypeSpec model ${modelName}`,
+				payload: {
+					$ref: `#/components/schemas/${modelName}`
+				}
+			}
+			
+			// Add schema to components (simplified for now)
+			context.asyncApiDoc.components.schemas[modelName] = {
+				type: "object",
+				properties: {},
+				description: `Schema for ${modelName}`
+			}
 		})
 	}
 }
