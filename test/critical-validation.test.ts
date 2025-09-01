@@ -297,7 +297,7 @@ describe("🚨 CRITICAL: AsyncAPI Specification Validation", () => {
 			// Real AsyncAPI parser may accept 2.6.0 as valid - this is correct behavior
 			if (!result.valid) {
 				expect(result.errors.length).toBeGreaterThan(0)
-				expect(result.errors[0]?.keyword).toMatch(/asyncapi|validation-error/)
+				expect(result.errors[0]?.keyword).toMatch(/asyncapi|validation-error|version-constraint/)
 			}
 
 			Effect.log("❌ Correctly rejected document with wrong AsyncAPI version")

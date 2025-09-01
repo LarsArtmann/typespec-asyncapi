@@ -44,6 +44,7 @@ import {convertModelToSchema} from "./utils/schema-conversion.js"
 import {buildServersFromNamespaces, getMessageConfig, getProtocolConfig} from "./utils/typespec-helpers.js"
 import type {AsyncAPIProtocolType} from "./constants/protocol-defaults.js"
 import type {ProtocolConfig} from "./decorators/protocol.js"
+import {registerBuiltInPlugins, generateProtocolBinding} from "./plugins/plugin-system.js"
 
 // Helper function to create AsyncAPI 3.0 standard bindings
 const createAsyncAPIBinding = (protocol: AsyncAPIProtocolType, config: Record<string, unknown> = {}) => {
@@ -827,17 +828,22 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 
 				// Create AsyncAPI 3.0 standard bindings based on protocol type
 				switch (config.protocol) {
-					case "kafka": {
-						const kafkaBinding = config.binding as Record<string, unknown>
-						const bindings = createAsyncAPIBinding(config.protocol, kafkaBinding)
-						yield* Effect.log(`✅ Created Kafka operation bindings with groupId: ${kafkaBinding.groupId ?? 'none'}, clientId: ${kafkaBinding.clientId ?? 'none'}`)
-						return yield* Effect.succeed(bindings)
-					}
-					case "http": {
-						const httpBinding = config.binding as Record<string, unknown>
-						const bindings = createAsyncAPIBinding(config.protocol, httpBinding)
-						yield* Effect.log(`✅ Created HTTP operation bindings with method: ${httpBinding.method ?? 'GET'}, type: ${httpBinding.type ?? 'request'}`)
-						return yield* Effect.succeed(bindings)
+					case "kafka": 
+					case "http": 
+					case "websocket": {
+						// Use plugin system for enhanced binding generation
+						const pluginBinding = yield* generateProtocolBinding(config.protocol, 'operation', config.binding)
+						
+						if (pluginBinding) {
+							yield* Effect.log(`🔌 Generated ${config.protocol} operation bindings using plugin system`)
+							return yield* Effect.succeed(pluginBinding)
+						} else {
+							// Fallback to legacy binding creation
+							const legacyBinding = config.binding as Record<string, unknown>
+							const bindings = createAsyncAPIBinding(config.protocol, legacyBinding)
+							yield* Effect.log(`⚠️  Using legacy ${config.protocol} operation bindings (plugin not available)`)
+							return yield* Effect.succeed(bindings)
+						}
 					}
 					case "amqp":
 					case "mqtt": {
@@ -1204,6 +1210,14 @@ export async function generateAsyncAPIWithEffect(context: EmitContext<AsyncAPIEm
 	Effect.log("🚀 AsyncAPI Emitter with Effect.TS Integration")
 	Effect.log("✨ Using REAL asyncapi-validator library!")
 	Effect.log("🔧 Connecting ghost Effect.TS system to main emitter")
+	
+	// Initialize plugin system
+	try {
+		await Effect.runPromise(registerBuiltInPlugins())
+		Effect.log("🔌 Plugin system initialized successfully")
+	} catch (error) {
+		Effect.log("⚠️  Plugin system initialization failed, continuing without plugins:", error)
+	}
 
 	// Ensure program has required compilerOptions for AssetEmitter
 	if (!context.program.compilerOptions) {
