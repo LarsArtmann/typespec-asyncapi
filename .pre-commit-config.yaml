@@ -1,0 +1,91 @@
+# Pre-commit configuration for TypeSpec AsyncAPI Emitter
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+
+repos:
+  # Built-in hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: '\.md$'
+      - id: end-of-file-fixer
+        exclude: '\.md$'
+      - id: check-yaml
+        args: ['--unsafe']
+      - id: check-json
+      - id: check-toml
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: ['--maxkb=1000']
+      - id: detect-private-key
+      - id: check-case-conflict
+
+  # GitLeaks - Secret detection
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.18.0
+    hooks:
+      - id: gitleaks
+
+  # TypeScript/JavaScript linting
+  - repo: local
+    hooks:
+      - id: eslint
+        name: eslint
+        entry: bunx eslint
+        language: system
+        types: [javascript, jsx, ts, tsx]
+        args: [--fix, --max-warnings=105]
+        require_serial: false
+
+      # TypeScript type checking
+      - id: typescript
+        name: typescript
+        entry: bunx tsc
+        language: system
+        types: [ts, tsx]
+        args: [--noEmit]
+        require_serial: false
+        pass_filenames: false
+
+      # Run tests on staged files
+      - id: test
+        name: test
+        entry: bun test
+        language: system
+        types: [ts, tsx, js, jsx]
+        pass_filenames: false
+        stages: [pre-push]
+
+  # Package.json validation
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.4.0
+    hooks:
+      - id: detect-secrets
+        args: ['--baseline', '.secrets.baseline']
+        exclude: '\.lock$|package-lock\.json$|bun\.lockb$'
+
+  # Markdown linting
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.37.0
+    hooks:
+      - id: markdownlint
+        args: [--fix]
+
+# Global configuration
+default_language_version:
+  node: '18.17.0'
+
+# Exclude patterns
+exclude: |
+  (?x)^(
+    dist/.*|
+    node_modules/.*|
+    \.git/.*|
+    .*\.lock$|
+    bun\.lockb$|
+    coverage/.*|
+    jscpd-report/.*|
+    tsp-output/.*|
+    test-output/.*
+  )$

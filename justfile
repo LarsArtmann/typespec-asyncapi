@@ -105,6 +105,62 @@ clean:
 install:
     bun install
 
+# Install pre-commit hooks
+install-pre-commit:
+    #!/bin/bash
+    set -euo pipefail
+    echo "🔧 Installing pre-commit hooks..."
+    
+    # Check if pre-commit is available
+    if ! command -v pre-commit &> /dev/null; then
+        echo "📦 Installing pre-commit..."
+        if command -v pip &> /dev/null; then
+            pip install pre-commit
+        elif command -v pipx &> /dev/null; then
+            pipx install pre-commit
+        else
+            echo "❌ Neither pip nor pipx found. Please install pre-commit manually:"
+            echo "   pip install pre-commit"
+            echo "   or"
+            echo "   pipx install pre-commit"
+            exit 1
+        fi
+    fi
+    
+    # Install the git hook scripts
+    pre-commit install
+    pre-commit install --hook-type pre-push
+    
+    echo "✅ Pre-commit hooks installed successfully"
+    echo "💡 Hooks will run automatically on git commit and git push"
+
+# Update pre-commit hooks to latest versions
+update-pre-commit:
+    #!/bin/bash
+    set -euo pipefail
+    echo "🔄 Updating pre-commit hooks..."
+    
+    if ! command -v pre-commit &> /dev/null; then
+        echo "❌ pre-commit not found. Run 'just install-pre-commit' first."
+        exit 1
+    fi
+    
+    pre-commit autoupdate
+    echo "✅ Pre-commit hooks updated to latest versions"
+
+# Run pre-commit hooks manually on all files
+pre-commit-all:
+    #!/bin/bash
+    set -euo pipefail
+    echo "🚀 Running pre-commit hooks on all files..."
+    
+    if ! command -v pre-commit &> /dev/null; then
+        echo "❌ pre-commit not found. Run 'just install-pre-commit' first."
+        exit 1
+    fi
+    
+    pre-commit run --all-files
+
 # Install jscpd globally if not present, then find code duplicates
 find-duplicates:
     #!/bin/bash
