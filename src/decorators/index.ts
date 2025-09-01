@@ -65,7 +65,7 @@ export function createAsyncAPIDecorators(program: Program): void {
 		Effect.log("✅ Program integration verified")
 		
 	} catch (error) {
-		console.error("❌ Failed to register AsyncAPI decorators:", error)
+		Effect.log("❌ Failed to register AsyncAPI decorators:", error)
 		// Don't throw - let tests continue, they might work anyway
 		Effect.log("⚠️ Continuing despite decorator registration failure...")
 	}
