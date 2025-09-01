@@ -13,13 +13,14 @@
  */
 
 import {Effect} from "effect"
-import type {AssetEmitter, EmittedSourceFile, SourceFile, TypeEmitter} from "@typespec/asset-emitter"
+import type {AssetEmitter, EmittedSourceFile, SourceFile} from "@typespec/asset-emitter"
+import {TypeEmitter} from "@typespec/asset-emitter"
 import type {Program} from "@typespec/compiler"
 import type {AsyncAPIEmitterOptions} from "../options.js"
 import type {AsyncAPIObject} from "@asyncapi/parser/esm/spec-types/v3.js"
 import {EmissionPipeline} from "./EmissionPipeline.js"
 import {DocumentGenerator} from "./DocumentGenerator.js"
-import {PerformanceMonitor} from "./PerformanceMonitor.js"
+// import {PerformanceMonitor} from "./PerformanceMonitor.js"
 import {PluginRegistry} from "./PluginRegistry.js"
 
 /**
@@ -29,9 +30,10 @@ import {PluginRegistry} from "./PluginRegistry.js"
 export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
 	private readonly pipeline: EmissionPipeline
 	private readonly documentGenerator: DocumentGenerator
-	private readonly performanceMonitor: PerformanceMonitor
+	// TODO: Enable when performance monitoring is integrated
+	// private readonly performanceMonitor: PerformanceMonitor
 	private readonly pluginRegistry: PluginRegistry
-	private asyncApiDoc: AsyncAPIObject
+	private readonly asyncApiDoc: AsyncAPIObject
 
 	constructor(emitter: AssetEmitter<string, AsyncAPIEmitterOptions>) {
 		super(emitter)
@@ -39,7 +41,7 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 		// Initialize micro-kernel components
 		this.pipeline = new EmissionPipeline()
 		this.documentGenerator = new DocumentGenerator()
-		this.performanceMonitor = new PerformanceMonitor()
+		// this.performanceMonitor = new PerformanceMonitor()
 		this.pluginRegistry = new PluginRegistry()
 
 		// Initialize document structure
@@ -58,7 +60,7 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 
 		try {
 			// Execute the emission pipeline using Effect.TS
-			Effect.runSync(this.executeEmissionPipeline(program))
+			this.executeEmissionPipelineSync(program)
 			Effect.log(" Micro-kernel emission pipeline completed successfully")
 		} catch (error) {
 			Effect.log(`L Micro-kernel emission pipeline failed: ${error}`)
@@ -96,9 +98,28 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 	}
 
 	/**
-	 * Execute the emission pipeline with plugin orchestration
+	 * Execute the emission pipeline synchronously (simplified)
 	 */
-	private executeEmissionPipeline(program: Program) {
+	private executeEmissionPipelineSync(program: Program): void {
+		Effect.log(`🚀 Starting micro-kernel emission pipeline...`)
+
+		// Execute pipeline stages through plugins
+		const context = {
+			program,
+			asyncApiDoc: this.asyncApiDoc,
+			emitter: this.emitter
+		}
+
+		// Run pipeline synchronously using Effect.runSync
+		Effect.runSync(this.pipeline.executePipeline(context))
+		
+		Effect.log(`✅ Micro-kernel emission pipeline completed!`)
+	}
+
+	/**
+	 * Execute the emission pipeline with plugin orchestration (with performance monitoring)
+	 */
+	/*private executeEmissionPipeline(program: Program) {
 		return Effect.gen(function* (this: AsyncAPIEmitter) {
 			Effect.log(`=� Starting micro-kernel emission pipeline...`)
 
@@ -119,14 +140,12 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 
 			Effect.log(` Micro-kernel emission pipeline completed!`)
 		}.bind(this))
-	}
+	}*/
 
 	/**
 	 * Create initial AsyncAPI document structure
 	 */
 	private createInitialDocument(): AsyncAPIObject {
-		const program = this.emitter.getProgram()
-
 		return {
 			asyncapi: "3.0.0",
 			info: {

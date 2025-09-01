@@ -45,8 +45,8 @@ import {buildServersFromNamespaces, getMessageConfig, getProtocolConfig} from ".
 import type {AsyncAPIProtocolType} from "./constants/protocol-defaults.js"
 import type {ProtocolConfig} from "./decorators/protocol.js"
 import {registerBuiltInPlugins, generateProtocolBinding} from "./plugins/plugin-system.js"
-// Import new modular components
-import {AsyncAPIEmitter} from "./core/AsyncAPIEmitter.js"
+// Import new modular components  
+// import {AsyncAPIEmitter} from "./core/AsyncAPIEmitter.js" // Will replace AsyncAPIEffectEmitter later
 
 // Helper function to create AsyncAPI 3.0 standard bindings
 const createAsyncAPIBinding = (protocol: AsyncAPIProtocolType, config: Record<string, unknown> = {}) => {
@@ -92,6 +92,8 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 		// This method is called by AssetEmitter during emitProgram()
 		// We need to create the source file here to tell the framework what files to write
 		const options = this.emitter.getOptions()
+		// NOTE: TypeSpec test runner does not pass custom options - this is a known issue
+		
 		const fileType = options["file-type"] || "yaml"
 		const fileName = options["output-file"] || "asyncapi"
 		const outputPath = `${fileName}.${fileType}`

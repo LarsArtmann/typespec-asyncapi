@@ -1,3 +1,4 @@
+//TODO: Why is this not used anymore??
 /**
  * Error thrown when emitter operations exceed time limits
  * Used for performance monitoring and timeout handling

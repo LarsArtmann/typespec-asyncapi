@@ -1,10 +1,11 @@
-import type {DecoratorContext, Model, Operation, Type, ModelProperty, RekeyableMap} from "@typespec/compiler"
+import type {DecoratorContext, Model, ModelProperty, Operation, RekeyableMap, Type} from "@typespec/compiler"
 import {$lib, reportDiagnostic} from "../lib.js"
 import {Effect} from "effect"
 import {SUPPORTED_PROTOCOLS} from "../constants/protocol-defaults.js"
 
 export type ProtocolType = "kafka" | "websocket" | "http" | "amqp" | "mqtt" | "redis";
 
+//TODO: Split this into it's own file!
 export type KafkaBindingConfig = {
 	/** Kafka topic name */
 	topic?: string;
@@ -22,6 +23,7 @@ export type KafkaBindingConfig = {
 	clientId?: string;
 }
 
+//TODO: Split this into it's own file!
 export type WebSocketBindingConfig = {
 	/** WebSocket method (GET only for WebSocket upgrade) */
 	method?: "GET";
@@ -33,6 +35,7 @@ export type WebSocketBindingConfig = {
 	subprotocol?: string;
 }
 
+//TODO: Split this into it's own file!
 export type HttpBindingConfig = {
 	/** HTTP method */
 	method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "HEAD" | "OPTIONS";
@@ -44,6 +47,7 @@ export type HttpBindingConfig = {
 	statusCode?: number;
 }
 
+//TODO: Split this into it's own file!
 export type AMQPBindingConfig = {
 	/** Exchange name */
 	exchange?: string;
@@ -59,6 +63,7 @@ export type AMQPBindingConfig = {
 	expiration?: number;
 }
 
+//TODO: Split this into it's own file!
 export type MQTTBindingConfig = {
 	/** Topic name */
 	topic?: string;
@@ -72,6 +77,7 @@ export type MQTTBindingConfig = {
 	keepAlive?: number;
 }
 
+//TODO: Split this into it's own file!
 export type RedisBindingConfig = {
 	/** Redis channel or stream */
 	channel?: string;
@@ -81,6 +87,7 @@ export type RedisBindingConfig = {
 	messageId?: string;
 }
 
+//TODO: Split this into it's own file!
 export type ProtocolConfig = {
 	/** Protocol type */
 	protocol: ProtocolType;
@@ -92,6 +99,7 @@ export type ProtocolConfig = {
 	description?: string;
 }
 
+//TODO THIS FUNCTION IS GETTING TO BIG SPLIT IT UP!
 /**
  * @protocol decorator for defining AsyncAPI protocol bindings
  *
@@ -100,7 +108,7 @@ export type ProtocolConfig = {
  *
  * @example
  * ```typespec
- * @protocol({
+ * @protocol(#{
  *   protocol: "kafka",
  *   binding: {
  *     topic: "user-events",
@@ -124,24 +132,26 @@ export function $protocol(
 	console.log(`🔧 DEBUG: All arguments:`, [context, target, ...args])
 	console.log(`🔧 DEBUG: Target:`, target?.kind, target?.name || 'unnamed')
 	console.log(`🔧 DEBUG: Args:`, args)
-	
+
 	// The actual config should be in args[0]
 	const config = args[0] as ProtocolConfig
 	console.log(`🔧 DEBUG: Config extracted:`, config)
 	console.log(`🔧 DEBUG: Config type:`, typeof config)
-	
+
 	// Type guard to check if config is a TypeSpec Model
 	function isTypeSpecModel(value: unknown): value is Model {
-		return value !== null && typeof value === 'object' && 'kind' in value && (value as { kind: string }).kind === 'Model'
+		return value !== null && typeof value === 'object' && 'kind' in value && (value as {
+			kind: string
+		}).kind === 'Model'
 	}
-	
+
 	// If it's a Model, we need to extract the actual values from the properties
 	let actualConfig: ProtocolConfig | undefined
 	if (isTypeSpecModel(config)) {
 		console.log(`🔧 DEBUG: This is a TypeSpec Model, extracting properties...`)
 		const modelProperties: RekeyableMap<string, ModelProperty> = config.properties
 		console.log(`🔧 DEBUG: Model properties type:`, typeof modelProperties)
-		
+
 		// Convert TypeSpec Model properties to plain object
 		const extractedConfig: Record<string, unknown> = {}
 		if (modelProperties?.forEach) {
@@ -149,18 +159,18 @@ export function $protocol(
 				console.log(`🔧 DEBUG: Property ${key} full object:`, property)
 				console.log(`🔧 DEBUG: Property ${key} type:`, property.type)
 				console.log(`🔧 DEBUG: Property ${key} type.kind:`, property.type.kind)
-				
+
 				// Extract the property value from ModelProperty node
 				// Use type assertion for AST node access since TypeSpec's node structure is dynamic
 				if (property.node && 'value' in property.node) {
 					const nodeValue = property.node.value as unknown
 					console.log(`🔧 DEBUG: Property ${key} node.value:`, nodeValue)
-					
+
 					// Handle different value types from TypeSpec AST
 					try {
 						if (nodeValue && typeof nodeValue === 'object') {
 							const astNode = nodeValue as { value?: unknown; kind?: number; properties?: unknown[] }
-							
+
 							// Direct value extraction from TypeSpec AST node
 							if (astNode.value !== undefined) {
 								extractedConfig[key] = astNode.value
@@ -170,7 +180,11 @@ export function $protocol(
 								const nestedProps: Record<string, unknown> = {}
 								if (Array.isArray(astNode.properties)) {
 									astNode.properties.forEach((nestedProp: unknown) => {
-										const prop = nestedProp as { id?: { sv?: string }; name?: string; value?: { value?: unknown } }
+										const prop = nestedProp as {
+											id?: { sv?: string };
+											name?: string;
+											value?: { value?: unknown }
+										}
 										const nestedKey = prop.id?.sv ?? prop.name
 										const nestedValue = prop.value?.value
 										if (nestedKey && nestedValue !== undefined) {
@@ -192,9 +206,9 @@ export function $protocol(
 				}
 			})
 		}
-		
+
 		console.log(`🔧 DEBUG: Extracted config:`, extractedConfig)
-		
+
 		// Safely cast extracted config to ProtocolConfig if it has required fields
 		if (extractedConfig.protocol && extractedConfig.binding) {
 			actualConfig = extractedConfig as ProtocolConfig
@@ -205,10 +219,10 @@ export function $protocol(
 	} else {
 		actualConfig = config
 	}
-	
+
 	console.log(`🔧 DEBUG: Final actualConfig:`, actualConfig)
 	console.log(`🔧 DEBUG: actualConfig.protocol:`, actualConfig?.protocol)
-	
+
 	// Early validation to prevent the rest of the function from running with bad data
 	if (!actualConfig) {
 		console.log(`❌ DEBUG: actualConfig is null/undefined`)
@@ -217,7 +231,7 @@ export function $protocol(
 	}
 
 	if (!actualConfig.protocol) {
-		console.log(`❌ DEBUG: actualConfig.protocol is null/undefined`) 
+		console.log(`❌ DEBUG: actualConfig.protocol is null/undefined`)
 		reportDiagnostic(context, target, "missing-protocol-type")
 		return
 	}
@@ -268,6 +282,7 @@ export function $protocol(
 function validateProtocolBinding(protocol: ProtocolType, binding: unknown): { valid: boolean; warnings: string[] } {
 	const warnings: string[] = []
 
+	//TODO THIS FUNCTION IS GETTING TO BIG SPLIT IT UP!
 	switch (protocol) {
 		case "kafka": {
 			const kafkaBinding = binding as KafkaBindingConfig

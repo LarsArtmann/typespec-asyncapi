@@ -14,6 +14,7 @@ export type MessageConfig = {
 	/** Content type of the message payload */
 	contentType?: string;
 	/** Examples of the message */
+	//TODO: named types!
 	examples?: Array<{ name?: string; summary?: string; value: unknown }>;
 	/** Message headers schema reference */
 	headers?: string;
@@ -31,7 +32,7 @@ export type MessageConfig = {
  *
  * @example
  * ```typespec
- * @message({
+ * @message(#{
  *   name: "UserRegistered",
  *   title: "User Registration Event",
  *   contentType: "application/json",

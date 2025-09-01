@@ -24,6 +24,7 @@ import { $server } from "./server.js"
  * @param program - TypeSpec Program instance to register decorators with
  */
 export function createAsyncAPIDecorators(program: Program): void {
+	//TODO: What happened here and why is this function never called??
 	// Register decorators manually in the global TypeSpec namespace
 	// This bypasses the normal TypeSpec library loading mechanism
 	

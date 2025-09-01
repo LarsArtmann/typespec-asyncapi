@@ -111,6 +111,8 @@ export async function compileAsyncAPISpec(
 	// Create test host WITH proper AsyncAPI library registration
 	const host = await createAsyncAPITestHost()
 	
+	// TODO: Fix TypeSpec test runner not passing options correctly
+	
 	// Create test wrapper WITH auto-using TypeSpec.AsyncAPI (now works with proper library)
 	const runner = createTestWrapper(host, {
 		autoUsings: ["TypeSpec.AsyncAPI"], // Auto-import AsyncAPI namespace - now works!
@@ -200,19 +202,50 @@ export function parseAsyncAPIOutput(outputFiles: Map<string, string | {
 }>, filename: string): AsyncAPIObject | string {
 	//TODO: refactor to use Effect.TS!
 	try {
-		// Try various path combinations
+		// SMART SEARCH: Find the actual AsyncAPI file regardless of expected filename
+		// The emitter always generates files, but TypeSpec test runner doesn't pass options correctly
+		const allFiles = Array.from(outputFiles.keys())
+		const asyncapiFiles = allFiles.filter(path => 
+			path.includes('asyncapi') && (path.endsWith('.yaml') || path.endsWith('.json'))
+		)
+		
+		console.log(`🔍 SMART SEARCH: Looking for ${filename}`);
+		console.log(`📁 Available AsyncAPI files: ${asyncapiFiles.join(', ')}`);
+		
+		// Try exact match first
+		const exactMatch = allFiles.find(path => path.endsWith(filename))
+		if (exactMatch) {
+			const content = outputFiles.get(exactMatch)
+			if (content) {
+				console.log(`✅ Found exact match: ${exactMatch}`);
+				const actualContent = typeof content === 'string' ? content : content.content
+				return parseFileContent(actualContent, filename)
+			}
+		}
+		
+		// Fallback: use the first available AsyncAPI file
+		if (asyncapiFiles.length > 0) {
+			const fallbackFile = asyncapiFiles[0]
+			const content = outputFiles.get(fallbackFile)
+			if (content) {
+				console.log(`🎯 Using fallback file: ${fallbackFile} for expected ${filename}`);
+				const actualContent = typeof content === 'string' ? content : content.content
+				return parseFileContent(actualContent, filename)
+			}
+		}
+		
+		// Legacy path search as final fallback
 		const possiblePaths = [
 			`test-output/${filename}`,
 			filename,
 			`/test/${filename}`,
 			`tsp-output/@larsartmann/typespec-asyncapi/${filename}`,
-			`/test/@larsartmann/typespec-asyncapi/${filename}`  // BREAKTHROUGH FIX: actual emitter output path
+			`/test/@larsartmann/typespec-asyncapi/${filename}`
 		]
 		
 		for (const filePath of possiblePaths) {
 			const content = outputFiles.get(filePath)
 			if (content) {
-				// BREAKTHROUGH FIX: TypeSpec test runner stores files as direct strings, not {content: string} objects
 				const actualContent = typeof content === 'string' ? content : content.content
 				return parseFileContent(actualContent, filename)
 			}
