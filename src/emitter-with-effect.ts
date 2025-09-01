@@ -327,7 +327,18 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 
 				const globalNamespace = typeof program.getGlobalNamespaceType === 'function' 
 					? program.getGlobalNamespaceType()
-					: { operations: new Map(), namespaces: new Map() }
+					: ({
+						kind: "Namespace" as const,
+						name: "Global",
+						operations: new Map(),
+						namespaces: new Map(),
+						models: new Map(),
+						scalars: new Map(),
+						unions: new Map(),
+						interfaces: new Map(),
+						enums: new Map(),
+						decorators: [],
+					} as Namespace) as any
 				walkNamespace(globalNamespace)
 				this.operations = operations
 
@@ -387,7 +398,18 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 
 				const globalNamespace2 = typeof program.getGlobalNamespaceType === 'function' 
 					? program.getGlobalNamespaceType()
-					: { operations: new Map(), namespaces: new Map(), models: new Map() }
+					: ({
+						kind: "Namespace" as const,
+						name: "Global",
+						operations: new Map(),
+						namespaces: new Map(),
+						models: new Map(),
+						scalars: new Map(),
+						unions: new Map(),
+						interfaces: new Map(),
+						enums: new Map(),
+						decorators: [],
+					} as Namespace)
 				walkNamespaceForModels(globalNamespace2)
 				this.messageModels = messageModels
 

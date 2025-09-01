@@ -16,6 +16,7 @@ import {convertModelToSchema} from "./utils/schema-conversion.js"
 import {logOperationDetails} from "./utils/typespec-helpers.js"
 import {createChannelDefinition, createOperationDefinition} from "./utils/asyncapi-helpers.js"
 import {getAllSecurityConfigs} from "./decorators/security.js"
+import {$lib} from "./lib.js"
 // ChannelObject and OperationObject now imported from centralized types
 import {hasTemplateVariables, type PathTemplateContext, resolvePathTemplateWithValidation} from "./path-templates.js"
 
@@ -212,6 +213,189 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
 
 		Effect.log(`✅ Converted model ${model.name} to AsyncAPI schema`)
 		return schema
+	}
+
+	/**
+	 * Process security configurations and add them to AsyncAPI components.securitySchemes
+	 */
+	private processSecuritySchemes(): void {
+		const program = this.emitter.getProgram()
+		const securityConfigsMap = program.stateMap($lib.stateKeys.securityConfigs)
+		
+		Effect.log(`🔐 Processing ${securityConfigsMap.size} security configurations...`)
+
+		if (securityConfigsMap.size === 0) {
+			Effect.log(`ℹ️  No security configurations found`)
+			return
+		}
+
+		// Ensure components.securitySchemes exists
+		if (!this.asyncApiDoc.components?.securitySchemes) {
+			if (!this.asyncApiDoc.components) this.asyncApiDoc.components = {}
+			this.asyncApiDoc.components.securitySchemes = {}
+		}
+
+		// Process each security configuration
+		securityConfigsMap.forEach((config, target) => {
+			if (typeof config === 'object' && config && 'name' in config && 'scheme' in config) {
+				const securityConfig = config as any
+				this.processSingleSecurityConfig(securityConfig)
+				Effect.log(`🔐 Processed security for ${target.kind} ${target.name || 'unnamed'}`)
+			}
+		})
+
+		Effect.log(`✅ Completed processing ${securityConfigsMap.size} security configurations`)
+	}
+
+	/**
+	 * Process a single security configuration and add it to AsyncAPI components.securitySchemes
+	 */
+	private processSingleSecurityConfig(config: any): void {
+		Effect.log(`🔐 Processing security config: ${config.name}`)
+
+		// Create AsyncAPI security scheme from our config
+		const asyncApiScheme = this.createAsyncAPISecurityScheme(config)
+		
+		// Add to document
+		this.asyncApiDoc.components!.securitySchemes![config.name] = asyncApiScheme
+
+		Effect.log(`✅ Added security scheme: ${config.name} (${config.scheme.type})`)
+	}
+
+	/**
+	 * Create AsyncAPI security scheme from SecurityConfig
+	 * Maps our security scheme types to AsyncAPI v3 specification
+	 */
+	private createAsyncAPISecurityScheme(config: any): any {
+		const scheme = config.scheme
+
+		// Map our scheme types to AsyncAPI v3 types
+		switch (scheme.type) {
+			case "apiKey":
+				// For AsyncAPI v3, we use different types based on location
+				if (scheme.in === "user" || scheme.in === "password") {
+					return {
+						type: "userPassword",
+						description: scheme.description,
+					}
+				} else {
+					// For header, query, cookie locations
+					return {
+						type: "httpApiKey", 
+						name: "X-API-Key", // Default name, could be configurable
+						in: scheme.in,
+						description: scheme.description,
+					}
+				}
+
+			case "http":
+				return {
+					type: "http",
+					scheme: scheme.scheme,
+					bearerFormat: scheme.bearerFormat,
+					description: scheme.description,
+				}
+
+			case "oauth2": {
+				// Map OAuth2 flows to AsyncAPI v3 format
+				const asyncApiFlows: Record<string, any> = {}
+				if (scheme.flows.implicit) {
+					asyncApiFlows.implicit = {
+						authorizationUrl: scheme.flows.implicit.authorizationUrl,
+						availableScopes: scheme.flows.implicit.scopes,
+					}
+				}
+				if (scheme.flows.password) {
+					asyncApiFlows.password = {
+						tokenUrl: scheme.flows.password.tokenUrl,
+						refreshUrl: scheme.flows.password.refreshUrl,
+						availableScopes: scheme.flows.password.scopes,
+					}
+				}
+				if (scheme.flows.clientCredentials) {
+					asyncApiFlows.clientCredentials = {
+						tokenUrl: scheme.flows.clientCredentials.tokenUrl,
+						refreshUrl: scheme.flows.clientCredentials.refreshUrl,
+						availableScopes: scheme.flows.clientCredentials.scopes,
+					}
+				}
+				if (scheme.flows.authorizationCode) {
+					asyncApiFlows.authorizationCode = {
+						authorizationUrl: scheme.flows.authorizationCode.authorizationUrl,
+						tokenUrl: scheme.flows.authorizationCode.tokenUrl,
+						refreshUrl: scheme.flows.authorizationCode.refreshUrl,
+						availableScopes: scheme.flows.authorizationCode.scopes,
+					}
+				}
+				return {
+					type: "oauth2",
+					flows: asyncApiFlows,
+					description: scheme.description,
+				}
+			}
+
+			case "openIdConnect":
+				return {
+					type: "openIdConnect",
+					openIdConnectUrl: scheme.openIdConnectUrl,
+					description: scheme.description,
+				}
+
+			case "sasl":
+				// Map SASL mechanisms to AsyncAPI v3 types
+				switch (scheme.mechanism) {
+					case "PLAIN":
+						return {
+							type: "plain",
+							description: scheme.description,
+						}
+					case "SCRAM-SHA-256":
+						return {
+							type: "scramSha256", 
+							description: scheme.description,
+						}
+					case "SCRAM-SHA-512":
+						return {
+							type: "scramSha512",
+							description: scheme.description,
+						}
+					case "GSSAPI":
+						return {
+							type: "gssapi",
+							description: scheme.description,
+						}
+					default:
+						return {
+							type: "plain", // Default fallback
+							description: scheme.description,
+						}
+				}
+
+			case "x509":
+				return {
+					type: "X509",
+					description: scheme.description,
+				}
+
+			case "symmetricEncryption":
+				return {
+					type: "symmetricEncryption",
+					description: scheme.description,
+				}
+
+			case "asymmetricEncryption":
+				return {
+					type: "asymmetricEncryption", 
+					description: scheme.description,
+				}
+
+			default:
+				// TypeScript exhaustiveness check - fallback to basic type
+				return {
+					type: "userPassword",
+					description: "Unknown security scheme",
+				}
+		}
 	}
 
 	// These methods are commented out as they're not currently used
