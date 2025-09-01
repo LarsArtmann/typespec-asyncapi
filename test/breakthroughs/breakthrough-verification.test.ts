@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect } from "bun:test"
-import { compileAsyncAPISpec } from "./utils/test-helpers"
+import { compileAsyncAPISpec } from "../utils/test-helpers"
 
 describe("🚀 BREAKTHROUGH: TypeSpec Direct Compilation", () => {
   it("should compile basic TypeSpec without decorators", async () => {

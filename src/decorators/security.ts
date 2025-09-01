@@ -163,7 +163,15 @@ export function $security(
 	// SecurityConfig type ensures name and scheme are defined by TypeScript
 	// No runtime validation needed
 
-	// Validate security scheme
+	// Validate security scheme with null check
+	if (!config || !config.scheme) {
+		Effect.log(`❌ Security config or scheme is missing:`, { config, scheme: config?.scheme })
+		reportDiagnostic(context, target, "invalid-security-scheme", {
+			scheme: "Security configuration is missing scheme property",
+		})
+		return
+	}
+
 	const validationResult = validateSecurityScheme(config.scheme)
 	if (validationResult.errors.length > 0) {
 		reportDiagnostic(context, target, "invalid-security-scheme", {
