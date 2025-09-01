@@ -195,7 +195,7 @@ export async function compileTypeSpecWithDecorators(
 /**
  * Parse AsyncAPI output from compilation result
  */
-export function parseAsyncAPIOutput(outputFiles: Map<string, {
+export function parseAsyncAPIOutput(outputFiles: Map<string, string | {
 	content: string
 }>, filename: string): AsyncAPIObject | string {
 	//TODO: refactor to use Effect.TS!
@@ -212,7 +212,9 @@ export function parseAsyncAPIOutput(outputFiles: Map<string, {
 		for (const filePath of possiblePaths) {
 			const content = outputFiles.get(filePath)
 			if (content) {
-				return parseFileContent(content.content, filename)
+				// BREAKTHROUGH FIX: TypeSpec test runner stores files as direct strings, not {content: string} objects
+				const actualContent = typeof content === 'string' ? content : content.content
+				return parseFileContent(actualContent, filename)
 			}
 		}
 		

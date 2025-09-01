@@ -45,6 +45,8 @@ import {buildServersFromNamespaces, getMessageConfig, getProtocolConfig} from ".
 import type {AsyncAPIProtocolType} from "./constants/protocol-defaults.js"
 import type {ProtocolConfig} from "./decorators/protocol.js"
 import {registerBuiltInPlugins, generateProtocolBinding} from "./plugins/plugin-system.js"
+// Import new modular components
+import {AsyncAPIEmitter} from "./core/AsyncAPIEmitter.js"
 
 // Helper function to create AsyncAPI 3.0 standard bindings
 const createAsyncAPIBinding = (protocol: AsyncAPIProtocolType, config: Record<string, unknown> = {}) => {
@@ -71,8 +73,8 @@ type OperationBindings = Record<string, unknown>
 type MessageBindings = Record<string, unknown>
 
 /**
- * Enhanced AsyncAPI TypeEmitter with Effect.TS integration
- * Combines the best of both worlds: AssetEmitter architecture + Effect.TS
+ * Micro-kernel AsyncAPI TypeEmitter - Core orchestration only
+ * All business logic delegated to plugins for maximum extensibility
  */
 export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
 	private operations: Operation[] = []
