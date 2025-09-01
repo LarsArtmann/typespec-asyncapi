@@ -35,7 +35,11 @@
 ### Installation
 
 ```bash
+# Install the TypeSpec AsyncAPI emitter
 npm install @typespec/asyncapi
+
+# Install TypeSpec compiler (if not already installed)  
+npm install @typespec/compiler
 ```
 
 ### Basic Usage
@@ -51,37 +55,60 @@ using AsyncAPI;
 @asyncapi({
   info: {
     title: "User Events API",
-    version: "1.0.0"
+    version: "1.0.0",
+    description: "Event-driven API for user lifecycle management"
   },
   servers: {
     production: {
-      host: "api.example.com",
-      protocol: "kafka"
+      host: "events.example.com",
+      protocol: "kafka",
+      description: "Production Kafka cluster"
     }
   }
 })
 namespace UserEvents;
 
-@channel("user.created")
-model UserCreatedChannel {
-  @message
-  payload: UserCreatedPayload;
-}
-
+// Define message payload
 model UserCreatedPayload {
   userId: string;
   email: string;
+  firstName: string;
+  lastName: string;
   createdAt: utcDateTime;
+  accountType: "free" | "premium" | "enterprise";
+  metadata?: {
+    source: string;
+    campaign?: string;
+  };
 }
 
-@operation("publish", UserCreatedChannel)
-op publishUserCreated(): void;
+// Define channel and message
+@channel("user.created")
+model UserCreatedChannel {
+  @message({
+    name: "UserCreatedMessage",
+    title: "User Created Event",
+    description: "Triggered when a new user account is created"
+  })
+  payload: UserCreatedPayload;
+}
+
+// Define publish operation
+@publish
+op publishUserCreated(): UserCreatedChannel;
+
+// Define subscribe operation  
+@subscribe
+op subscribeToUserCreated(): UserCreatedChannel;
 ```
 
 ### Generate AsyncAPI Specification
 
 ```bash
+# Compile TypeSpec to AsyncAPI
 npx tsp compile example.tsp --emit @typespec/asyncapi
+
+# Output will be generated in tsp-output/@typespec/asyncapi/
 ```
 
 Generates a complete AsyncAPI 3.0.0 specification:
@@ -91,26 +118,42 @@ Generates a complete AsyncAPI 3.0.0 specification:
   "asyncapi": "3.0.0",
   "info": {
     "title": "User Events API", 
-    "version": "1.0.0"
+    "version": "1.0.0",
+    "description": "Event-driven API for user lifecycle management"
   },
   "servers": {
     "production": {
-      "host": "api.example.com",
-      "protocol": "kafka"
+      "host": "events.example.com",
+      "protocol": "kafka", 
+      "description": "Production Kafka cluster"
     }
   },
   "channels": {
     "user.created": {
       "messages": {
-        "UserCreatedPayload": {
+        "UserCreatedMessage": {
+          "name": "UserCreatedMessage",
+          "title": "User Created Event",
+          "description": "Triggered when a new user account is created",
           "payload": {
             "type": "object",
             "properties": {
               "userId": { "type": "string" },
               "email": { "type": "string" },
-              "createdAt": { "type": "string", "format": "date-time" }
+              "firstName": { "type": "string" },
+              "lastName": { "type": "string" },
+              "createdAt": { "type": "string", "format": "date-time" },
+              "accountType": { "enum": ["free", "premium", "enterprise"] },
+              "metadata": {
+                "type": "object",
+                "properties": {
+                  "source": { "type": "string" },
+                  "campaign": { "type": "string" }
+                },
+                "required": ["source"]
+              }
             },
-            "required": ["userId", "email", "createdAt"]
+            "required": ["userId", "email", "firstName", "lastName", "createdAt", "accountType"]
           }
         }
       }
@@ -119,6 +162,10 @@ Generates a complete AsyncAPI 3.0.0 specification:
   "operations": {
     "publishUserCreated": {
       "action": "send",
+      "channel": { "$ref": "#/channels/user.created" }
+    },
+    "subscribeToUserCreated": {
+      "action": "receive", 
       "channel": { "$ref": "#/channels/user.created" }
     }
   }
@@ -147,8 +194,337 @@ Generates a complete AsyncAPI 3.0.0 specification:
 | `@subscribe` | ✅ Complete | Mark operations as subscribe/receive |
 | `@server(name, config)` | ✅ Complete | Define server configurations |
 | `@message(config)` | ✅ Complete | Apply message metadata |
-| `@protocol(config)` | 🔄 90% | Protocol-specific bindings |
-| `@security(config)` | 📋 Planned | Security scheme definitions |
+| `@protocol(config)` | ✅ Complete | Protocol-specific bindings |
+| `@security(config)` | ✅ Complete | Security scheme definitions |
+
+## 📖 **Decorator Guide**
+
+### @channel - Channel Definition
+
+Define message channels for event routing:
+
+```typespec
+// Simple channel path
+@channel("user.created")
+op publishUserCreated(): UserMessage;
+
+// Parameterized channel paths
+@channel("user.{userId}.notifications")  
+op publishUserNotification(): NotificationMessage;
+
+// Complex channel hierarchies
+@channel("orders.{orderId}.payments.{paymentId}.status")
+op publishPaymentStatus(): PaymentStatusMessage;
+```
+
+### @publish / @subscribe - Operation Types
+
+Mark operations as publishers or subscribers:
+
+```typespec
+// Publisher operation - sends messages TO a channel
+@channel("user.events")
+@publish
+op publishUserEvent(): UserEventMessage;
+
+// Subscriber operation - receives messages FROM a channel  
+@channel("user.events")
+@subscribe
+op subscribeToUserEvents(): UserEventMessage;
+
+// Both operations can share the same channel
+@channel("chat.messages")  
+@publish
+op sendMessage(): ChatMessage;
+
+@channel("chat.messages")
+@subscribe  
+op receiveMessage(): ChatMessage;
+```
+
+### @message - Message Metadata
+
+Apply rich metadata to message models:
+
+```typespec
+@message({
+  name: "UserRegisteredEvent",
+  title: "User Registration Event", 
+  description: "Triggered when a new user completes registration",
+  contentType: "application/json",
+  examples: [{
+    name: "Basic Registration",
+    summary: "A typical user registration",
+    payload: {
+      userId: "user-123",
+      email: "john@example.com"
+    }
+  }]
+})
+model UserRegisteredMessage {
+  userId: string;
+  email: string;
+  registeredAt: utcDateTime;
+}
+```
+
+### @server - Server Configuration
+
+Define AsyncAPI servers with protocol details:
+
+```typespec
+@server("kafka-prod", {
+  url: "kafka://events.example.com:9092",
+  protocol: "kafka",
+  description: "Production Kafka cluster",
+  protocolVersion: "2.8.0",
+  tags: [
+    { name: "production" },
+    { name: "high-availability" }
+  ]
+})
+namespace EventAPI;
+
+@server("websocket-dev", {
+  url: "ws://localhost:8080/events",
+  protocol: "websocket", 
+  description: "Development WebSocket server"
+})
+namespace RealtimeAPI;
+```
+
+### @protocol - Protocol Bindings
+
+Add protocol-specific configurations:
+
+```typespec
+// Kafka protocol binding
+@protocol({
+  protocol: "kafka",
+  binding: {
+    topic: "user-events",
+    key: "userId", 
+    groupId: "user-service",
+    schemaIdLocation: "header",
+    clientId: "user-event-publisher"
+  }
+})
+@channel("user.created")
+@publish
+op publishUserCreated(): UserCreatedMessage;
+
+// WebSocket protocol binding
+@protocol({
+  protocol: "websocket",
+  binding: {
+    method: "GET",
+    query: {
+      token: "string"
+    },
+    headers: {
+      "X-Client-Version": "string"
+    }
+  }
+})
+@channel("live-updates")
+@subscribe
+op subscribeLiveUpdates(): LiveUpdateMessage;
+
+// MQTT protocol binding
+@protocol({
+  protocol: "mqtt", 
+  binding: {
+    qos: 1,
+    retain: false,
+    topic: "sensors/temperature"
+  }
+})
+@channel("sensor.data")
+@publish
+op publishSensorData(): SensorMessage;
+```
+
+### @security - Security Schemes
+
+Define authentication and authorization:
+
+```typespec
+// JWT Bearer authentication
+@security({
+  name: "bearerAuth",
+  scheme: {
+    type: "http",
+    scheme: "bearer", 
+    bearerFormat: "JWT"
+  }
+})
+@channel("secured.events")
+@publish
+op publishSecuredEvent(): SecureMessage;
+
+// API Key authentication
+@security({
+  name: "apiKeyAuth",
+  scheme: {
+    type: "apiKey",
+    in: "header"
+  }
+})
+@channel("api.events") 
+@subscribe
+op subscribeApiEvents(): ApiMessage;
+
+// OAuth2 client credentials
+@security({
+  name: "oauth2Auth",
+  scheme: {
+    type: "oauth2", 
+    flows: {
+      clientCredentials: {
+        tokenUrl: "https://auth.example.com/oauth/token",
+        scopes: {
+          "events:read": "Read event data",
+          "events:write": "Publish events"
+        }
+      }
+    }
+  }
+})
+@channel("protected.events")
+@publish 
+op publishProtectedEvent(): ProtectedMessage;
+
+// Kafka SASL authentication
+@security({
+  name: "kafkaAuth", 
+  scheme: {
+    type: "sasl",
+    mechanism: "SCRAM-SHA-256"
+  }
+})
+@server("kafka-cluster", {
+  url: "kafka://secure.example.com:9093",
+  protocol: "kafka"
+})
+namespace SecureKafkaAPI;
+```
+
+## 🎯 **Best Practices**
+
+### Message Design Patterns
+
+```typespec
+// ✅ Good: Clear message hierarchy
+model UserEventMessage {
+  // Event metadata
+  eventId: string;
+  eventType: "created" | "updated" | "deleted";
+  timestamp: utcDateTime;
+  version: string;
+  
+  // Business payload
+  user: UserData;
+  
+  // Tracing context
+  traceId?: string;
+  correlationId?: string;
+}
+
+// ✅ Good: Versioned messages
+model UserEventV1 {
+  userId: string;
+  email: string;
+}
+
+model UserEventV2 extends UserEventV1 {
+  firstName: string;
+  lastName: string;
+}
+```
+
+### Channel Organization
+
+```typespec
+// ✅ Good: Hierarchical channel structure
+namespace UserEvents {
+  @channel("user.lifecycle.created")
+  @publish op publishUserCreated(): UserCreatedEvent;
+  
+  @channel("user.lifecycle.updated") 
+  @publish op publishUserUpdated(): UserUpdatedEvent;
+  
+  @channel("user.preferences.changed")
+  @publish op publishPreferencesChanged(): PreferencesChangedEvent;
+}
+
+// ✅ Good: Domain separation
+namespace OrderEvents {
+  @channel("order.placed")
+  @publish op publishOrderPlaced(): OrderPlacedEvent;
+  
+  @channel("order.fulfilled")
+  @publish op publishOrderFulfilled(): OrderFulfilledEvent;
+}
+```
+
+### Error Handling Patterns
+
+```typespec
+// ✅ Good: Dead letter queue pattern
+@channel("user.events")
+@publish op publishUserEvent(): UserEvent;
+
+@channel("user.events.dlq")
+@publish op publishFailedUserEvent(): {
+  originalMessage: UserEvent;
+  error: {
+    code: string;
+    message: string;
+    timestamp: utcDateTime;
+    retryCount: int32;
+  };
+};
+```
+
+## 🚨 **Troubleshooting**
+
+### Common Issues
+
+**Build Errors:**
+```bash
+# Problem: TypeScript compilation errors
+npm run build
+# Solution: Check TypeScript strict mode compliance
+
+# Problem: Missing dependencies
+npm install @typespec/compiler @typespec/asyncapi
+```
+
+**Emitter Issues:**
+```bash  
+# Problem: Emitter not found
+npx tsp compile --help | grep asyncapi
+# Solution: Verify installation and registration
+
+# Problem: Invalid AsyncAPI output
+npx tsp compile example.tsp --emit @typespec/asyncapi --debug
+# Solution: Check decorator usage and model structure
+```
+
+**Validation Failures:**
+```bash
+# Problem: AsyncAPI spec validation fails
+npm install -g @asyncapi/cli
+asyncapi validate tsp-output/@typespec/asyncapi/asyncapi.json
+# Solution: Review generated spec against AsyncAPI 3.0 schema
+```
+
+### Performance Tips
+
+- Use `@protocol` bindings for better performance in specific environments
+- Implement proper error handling with dead letter queues
+- Structure channels hierarchically for better organization
+- Use message versioning for backward compatibility
 
 ## 🏗️ **Architecture**
 
