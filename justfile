@@ -199,3 +199,92 @@ compile:
         echo "💡 Check .tsp files for syntax errors or missing imports"
         exit 1
     fi
+
+# AsyncAPI CLI Commands
+
+# Validate AsyncAPI specifications using AsyncAPI CLI
+validate-asyncapi:
+    #!/bin/bash
+    set -euo pipefail
+    echo "🔍 Validating AsyncAPI specifications with AsyncAPI CLI..."
+    
+    # Check if asyncapi command is available
+    if ! command -v asyncapi &> /dev/null; then
+        echo "❌ AsyncAPI CLI not found. Installing..."
+        bun install
+    fi
+    
+    # Find generated AsyncAPI files
+    asyncapi_files=$(find tsp-output test-output examples -name "*.json" -o -name "*.yaml" -o -name "*.yml" 2>/dev/null | grep -E "(asyncapi|tsp-output)" | head -10)
+    
+    if [ -z "$asyncapi_files" ]; then
+        echo "⚠️  No AsyncAPI files found. Generate them first with 'just compile'"
+        exit 1
+    fi
+    
+    validation_success=0
+    validation_total=0
+    
+    echo "📋 Found AsyncAPI files:"
+    for file in $asyncapi_files; do
+        echo "  📄 $file"
+        validation_total=$((validation_total + 1))
+        
+        echo "  🔍 Validating $file..."
+        if bunx asyncapi validate "$file"; then
+            echo "  ✅ $file is valid"
+            validation_success=$((validation_success + 1))
+        else
+            echo "  ❌ $file has validation errors"
+        fi
+        echo ""
+    done
+    
+    echo "📊 Validation Results:"
+    echo "  ✅ Valid: $validation_success/$validation_total"
+    if [ $validation_success -eq $validation_total ]; then
+        echo "🎉 All AsyncAPI specifications are valid!"
+    else
+        echo "❌ Some AsyncAPI specifications have validation errors"
+        exit 1
+    fi
+
+# Generate AsyncAPI specs and validate them
+validate-generated:
+    just compile
+    just validate-asyncapi
+
+# Check AsyncAPI Studio compatibility
+check-studio-compatibility:
+    #!/bin/bash
+    set -euo pipefail
+    echo "🎨 Checking AsyncAPI Studio compatibility..."
+    
+    asyncapi_files=$(find tsp-output test-output examples -name "*.json" -o -name "*.yaml" -o -name "*.yml" 2>/dev/null | head -5)
+    
+    if [ -z "$asyncapi_files" ]; then
+        echo "⚠️  No AsyncAPI files found. Generate them first with 'just compile'"
+        exit 1
+    fi
+    
+    echo "📋 Checking Studio compatibility for files:"
+    for file in $asyncapi_files; do
+        echo "  📄 $file"
+        echo "  🔍 Validating structure for Studio..."
+        
+        # Check if it's valid AsyncAPI first
+        if bunx asyncapi validate "$file"; then
+            echo "  ✅ $file is Studio-compatible (valid AsyncAPI 3.0)"
+            echo "  🌐 View in Studio: https://studio.asyncapi.com/?url=file://$PWD/$file"
+        else
+            echo "  ❌ $file is not Studio-compatible (validation failed)"
+        fi
+        echo ""
+    done
+
+# Validate binding compliance
+validate-bindings:
+    ./scripts/validate-bindings.sh
+
+# Full validation workflow
+validate-all: validate-build test validate-asyncapi validate-bindings

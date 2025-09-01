@@ -6,16 +6,18 @@ import {describe, expect, it} from "vitest"
 import {createTestHost} from "@typespec/compiler/testing"
 import {$onEmit} from "../dist/index.js"
 import {AsyncAPITestLibrary} from "./test-host"
+import {createAsyncAPITestHost} from "./utils/test-helpers"
 import {Effect} from "effect"
 
 describe("Direct Emitter Test", () => {
 	it("should call emitter function directly", async () => {
-		const host = await createTestHost({
-			libraries: [AsyncAPITestLibrary],
-		})
+		const host = await createAsyncAPITestHost()
 
-		// Simple TypeSpec source
+		// Simple TypeSpec source with proper imports
 		const source = `
+      import "@larsartmann/typespec-asyncapi";
+      using TypeSpec.AsyncAPI;
+      
       namespace DirectTest;
       
       model TestEvent {
@@ -26,7 +28,7 @@ describe("Direct Emitter Test", () => {
       op publishTestEvent(): TestEvent;
     `
 
-		host.addTypeSpecFile("direct.tsp", source)
+		host.addTypeSpecFile("main.tsp", source)
 
 		// Capture console output
 		const consoleLogs: string[] = []
@@ -38,7 +40,7 @@ describe("Direct Emitter Test", () => {
 
 		try {
 			// Use TypeSpec's compile method properly
-			const result = await host.compile("direct.tsp")
+			const result = await host.compile("main.tsp")
 			Effect.logInfo("Compile result type:", typeof result)
 			
 			// The compile method returns a Program directly

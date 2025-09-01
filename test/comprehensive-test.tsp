@@ -1,4 +1,4 @@
-import "@typespec/asyncapi";
+import "@larsartmann/typespec-asyncapi";
 
 namespace ComprehensiveTest;
 

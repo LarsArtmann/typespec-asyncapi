@@ -13,7 +13,7 @@ describe("AsyncAPI Protocol Binding Integration", () => {
   describe("Kafka Protocol Integration", () => {
     it("should generate AsyncAPI spec with Kafka server bindings", async () => {
       const source = `
-        import "@typespec/asyncapi";
+        import "@larsartmann/typespec-asyncapi";
         using TypeSpec.AsyncAPI;
 
         @server("kafka-cluster", {
@@ -49,7 +49,7 @@ describe("AsyncAPI Protocol Binding Integration", () => {
 
     it("should validate generated spec follows AsyncAPI 3.0 standard", async () => {
       const source = `
-        import "@typespec/asyncapi";
+        import "@larsartmann/typespec-asyncapi";
         using TypeSpec.AsyncAPI;
 
         @server("kafka-broker", {
@@ -83,7 +83,7 @@ describe("AsyncAPI Protocol Binding Integration", () => {
   describe("WebSocket Protocol Integration", () => {
     it("should generate AsyncAPI spec with WebSocket channel bindings", async () => {
       const source = `
-        import "@typespec/asyncapi";
+        import "@larsartmann/typespec-asyncapi";
         using TypeSpec.AsyncAPI;
 
         @server("websocket-server", {
@@ -122,7 +122,7 @@ describe("AsyncAPI Protocol Binding Integration", () => {
 
     it("should handle bidirectional WebSocket communication", async () => {
       const source = `
-        import "@typespec/asyncapi";
+        import "@larsartmann/typespec-asyncapi";
         using TypeSpec.AsyncAPI;
 
         @server("ws-api", {
@@ -156,7 +156,7 @@ describe("AsyncAPI Protocol Binding Integration", () => {
   describe("HTTP Protocol Integration", () => {
     it("should generate AsyncAPI spec with HTTP operation bindings", async () => {
       const source = `
-        import "@typespec/asyncapi";
+        import "@larsartmann/typespec-asyncapi";
         using TypeSpec.AsyncAPI;
 
         @server("http-api", {
@@ -192,7 +192,7 @@ describe("AsyncAPI Protocol Binding Integration", () => {
 
     it("should support HTTP webhook patterns", async () => {
       const source = `
-        import "@typespec/asyncapi";
+        import "@larsartmann/typespec-asyncapi";
         using TypeSpec.AsyncAPI;
 
         @server("webhook-endpoint", {
@@ -225,7 +225,7 @@ describe("AsyncAPI Protocol Binding Integration", () => {
   describe("Multi-Protocol Integration", () => {
     it("should handle multiple protocols in a single specification", async () => {
       const source = `
-        import "@typespec/asyncapi";
+        import "@larsartmann/typespec-asyncapi";
         using TypeSpec.AsyncAPI;
 
         @server("kafka-broker", {
@@ -290,7 +290,7 @@ describe("AsyncAPI Protocol Binding Integration", () => {
   describe("AsyncAPI Specification Validation", () => {
     it("should generate valid AsyncAPI 3.0 documents", async () => {
       const source = `
-        import "@typespec/asyncapi";
+        import "@larsartmann/typespec-asyncapi";
         using TypeSpec.AsyncAPI;
 
         @server("test-server", {
@@ -325,7 +325,7 @@ describe("AsyncAPI Protocol Binding Integration", () => {
     it("should maintain protocol binding consistency", async () => {
       // Test that protocols in servers match expected formats
       const source = `
-        import "@typespec/asyncapi";
+        import "@larsartmann/typespec-asyncapi";
         using TypeSpec.AsyncAPI;
 
         @server("kafka-srv", {
@@ -357,7 +357,7 @@ describe("AsyncAPI Protocol Binding Integration", () => {
 
     it("should handle complex multi-protocol scenarios", async () => {
       const source = `
-        import "@typespec/asyncapi";
+        import "@larsartmann/typespec-asyncapi";
         using TypeSpec.AsyncAPI;
 
         @server("primary", {

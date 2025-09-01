@@ -12,7 +12,7 @@ async function testSubscribeDecorator() {
 		const host = await createAsyncAPITestHost()
 
 		const testSource = `
-      import "@typespec/asyncapi";
+      import "@larsartmann/typespec-asyncapi";
       using TypeSpec.AsyncAPI;
       
       namespace TestApi;
@@ -32,7 +32,7 @@ async function testSubscribeDecorator() {
 
 		const result = await host.compileAndDiagnose("main.tsp", {
 			emitters: {
-				"@typespec/asyncapi": {
+				"@larsartmann/typespec-asyncapi": {
 					"output-file": "test-subscribe",
 					"file-type": "json",
 				},

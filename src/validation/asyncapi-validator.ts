@@ -61,6 +61,26 @@ export class AsyncAPIValidator {
 			// Convert document to string for parser (no pretty printing for performance)
 			const content = typeof document === 'string' ? document : JSON.stringify(document)
 
+			// Enforce AsyncAPI 3.0.0 strict compliance
+			const docObject = typeof document === 'string' ? JSON.parse(content) : document
+			if (docObject && typeof docObject === 'object' && 'asyncapi' in docObject) {
+				const version = (docObject as any).asyncapi
+				if (version !== '3.0.0') {
+					return {
+						valid: false,
+						errors: [{
+							message: `AsyncAPI version must be 3.0.0, got: ${version}`,
+							keyword: 'version-constraint',
+							instancePath: 'asyncapi',
+							schemaPath: '#/asyncapi'
+						}],
+						warnings: [],
+						summary: `AsyncAPI version validation failed: expected 3.0.0, got ${version}`,
+						metrics: this.extractMetrics(null, performance.now() - startTime)
+					}
+				}
+			}
+
 			// Use the REAL AsyncAPI parser
 			const {document: parsedDocument, diagnostics} = await this.parser.parse(content)
 			const duration = performance.now() - startTime

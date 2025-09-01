@@ -127,6 +127,7 @@
     "tough-cookie": "^4.1.4"
   },
   "devDependencies": {
+    "@asyncapi/cli": "^3.4.2",
     "@eslint/js": "^9.34.0",
     "@types/node": "^24.3.0",
     "@typescript-eslint/eslint-plugin": "^8.41.0",

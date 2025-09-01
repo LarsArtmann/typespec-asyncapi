@@ -2,7 +2,7 @@
 // This example demonstrates all official Kafka binding features from:
 // https://github.com/asyncapi/bindings/tree/master/kafka
 
-import "@typespec/asyncapi";
+import "@larsartmann/typespec-asyncapi";
 
 using AsyncAPI;
 

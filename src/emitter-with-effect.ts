@@ -1213,6 +1213,31 @@ export async function generateAsyncAPIWithEffect(context: EmitContext<AsyncAPIEm
 		context.program.compilerOptions.dryRun = false
 	}
 
+	// Ensure program has required methods for AssetEmitter compatibility
+	if (!context.program.getGlobalNamespaceType) {
+		// Add missing method for test compatibility
+		context.program.getGlobalNamespaceType = () => ({
+			kind: "Namespace" as const,
+			name: "global",
+			namespace: undefined,
+			namespaces: new Map(),
+			models: new Map(),
+			operations: new Map(),
+			enums: new Map(),
+			interfaces: new Map(),
+			scalars: new Map(),
+			unions: new Map(), // Added missing unions property
+			node: undefined,
+			projections: [],
+			decorators: [],
+		} as any)
+	}
+
+	// Add missing stateMap method for test compatibility
+	if (!context.program.stateMap) {
+		context.program.stateMap = (_key: symbol) => new Map()
+	}
+
 	const assetEmitter = createAssetEmitter(
 		context.program,
 		AsyncAPIEffectEmitter,

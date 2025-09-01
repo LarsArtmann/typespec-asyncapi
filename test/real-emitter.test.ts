@@ -3,21 +3,23 @@
  */
 
 import {describe, expect, it} from "vitest"
-import {createTestHost} from "@typespec/compiler/testing"
+import {expectDiagnosticEmpty, formatDiagnostics, createTestHost} from "@typespec/compiler/testing"
 import {AsyncAPITestLibrary} from "./test-host"
+import {createAsyncAPITestHost} from "./utils/test-helpers"
 
 describe("REAL Emitter Test - No Mocks", () => {
 	it("should compile TypeSpec to AsyncAPI using REAL emitter", async () => {
 		// Create a REAL TypeSpec test host with the AsyncAPI library loaded
-		const host = await createTestHost({
-			libraries: [AsyncAPITestLibrary],
-		})
+		const host = await createAsyncAPITestHost()
 		
 		// Load our actual decorator implementations
 		await host.compile("")  // Initialize the host first
 
 		// Test a simple TypeSpec document without decorators first
 		host.addTypeSpecFile("main.tsp", `
+			import "@larsartmann/typespec-asyncapi";
+			using TypeSpec.AsyncAPI;
+			
 			namespace MyService;
 			
 			model UserEvent {
@@ -30,7 +32,16 @@ describe("REAL Emitter Test - No Mocks", () => {
 			op subscribeUserEvent(): UserEvent;
 		`)
 
-		// Compile with the REAL emitter
+		// Debug: Check what files are actually in the host filesystem
+		console.log("Files in host filesystem:", Array.from(host.fs.keys()))
+		
+		// Compile with the REAL emitter - try compiling first, then emitting
+		const program = await host.compile("main.tsp")
+		
+		// Check if there are any compilation diagnostics first
+		expectDiagnosticEmpty(program.diagnostics)
+
+		// Now emit AsyncAPI
 		const diagnostics = await host.diagnose("main.tsp", {
 			emit: ["@larsartmann/typespec-asyncapi"],
 		})
@@ -59,11 +70,12 @@ describe("REAL Emitter Test - No Mocks", () => {
 	})
 
 	it("should handle real decorators without mocking", async () => {
-		const host = await createTestHost({
-			libraries: [AsyncAPITestLibrary],
-		})
+		const host = await createAsyncAPITestHost()
 
 		host.addTypeSpecFile("test.tsp", `
+			import "@larsartmann/typespec-asyncapi";
+			using TypeSpec.AsyncAPI;
+			
 			namespace TestAPI;
 			
 			model Message {

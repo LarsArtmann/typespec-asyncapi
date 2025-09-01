@@ -94,7 +94,7 @@ export async function compileAsyncAPISpec(
 
 	// Wrap source with proper imports to make decorators available
 	const wrappedSource = `
-import "@typespec/asyncapi";
+import "@larsartmann/typespec-asyncapi";
 using TypeSpec.AsyncAPI;
 
 ${source}

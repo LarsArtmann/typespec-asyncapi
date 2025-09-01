@@ -2,7 +2,7 @@
 // This example demonstrates all official WebSocket binding features from:
 // https://github.com/asyncapi/bindings/tree/master/websockets
 
-import "@typespec/asyncapi";
+import "@larsartmann/typespec-asyncapi";
 
 using AsyncAPI;
 

@@ -160,7 +160,7 @@ export const stateKeys = {
  * 
  * @param context - TypeSpec emitter context containing the program reference
  * @param target - The TypeSpec AST node that triggered the diagnostic
- * @param code - Diagnostic code (will be prefixed with "@typespec/asyncapi.")
+ * @param code - Diagnostic code (will be prefixed with "@larsartmann/typespec-asyncapi.")
  * @param args - Optional arguments for error message templating
  */
 export function reportDiagnostic(context: DecoratorContext, target: unknown, code: string, args?: Record<string, unknown>) {
