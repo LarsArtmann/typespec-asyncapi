@@ -1243,10 +1243,19 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 	 * Serialize document to JSON or YAML format
 	 */
 	private serializeDocument(fileType: string): string {
+		console.log(`🔍 DEBUG: serializeDocument called with fileType: ${fileType}`)
+		console.log(`🔍 DEBUG: asyncApiDoc state:`, JSON.stringify(this.asyncApiDoc, null, 2))
+		console.log(`🔍 DEBUG: channels count: ${Object.keys(this.asyncApiDoc.channels || {}).length}`)
+		console.log(`🔍 DEBUG: operations count: ${Object.keys(this.asyncApiDoc.operations || {}).length}`)
+		
 		if (fileType === "json") {
-			return JSON.stringify(this.asyncApiDoc, null, 2)
+			const result = JSON.stringify(this.asyncApiDoc, null, 2)
+			console.log(`🔍 DEBUG: JSON serialization result length: ${result.length}`)
+			return result
 		} else {
-			return stringify(this.asyncApiDoc)
+			const result = stringify(this.asyncApiDoc)
+			console.log(`🔍 DEBUG: YAML serialization result length: ${result.length}`)
+			return result
 		}
 	}
 
