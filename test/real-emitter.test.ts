@@ -35,14 +35,14 @@ describe("REAL Emitter Test - No Mocks", () => {
 		// Debug: Check what files are actually in the host filesystem
 		console.log("Files in host filesystem:", Array.from(host.fs.keys()))
 		
-		// Compile with the REAL emitter - try compiling first, then emitting
-		const program = await host.compile("main.tsp")
+		// Compile with the REAL emitter - specify the correct file path
+		const program = await host.compile("./main.tsp")
 		
 		// Check if there are any compilation diagnostics first
 		expectDiagnosticEmpty(program.diagnostics)
 
 		// Now emit AsyncAPI
-		const diagnostics = await host.diagnose("main.tsp", {
+		const diagnostics = await host.diagnose("./main.tsp", {
 			emit: ["@larsartmann/typespec-asyncapi"],
 		})
 
@@ -88,7 +88,7 @@ describe("REAL Emitter Test - No Mocks", () => {
 			op sendMessage(msg: Message): void;
 		`)
 
-		const program = await host.compile("test.tsp")
+		const program = await host.compile("./test.tsp")
 		
 		// The REAL program has all the methods we need
 		expect(program.stateMap).toBeDefined()

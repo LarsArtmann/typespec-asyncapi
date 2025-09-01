@@ -34,29 +34,29 @@ export type ProtocolType =
  * Based on AsyncAPI Kafka Binding Specification v0.5.0
  */
 
-export interface KafkaServerBinding extends Binding {
+export type KafkaServerBinding = {
 	schemaRegistryUrl?: string;
 	schemaRegistryVendor?: string;
-}
+} & Binding
 
-export interface KafkaChannelBinding extends Binding {
+export type KafkaChannelBinding = {
 	topic?: string;
 	partitions?: number;
 	replicas?: number;
 	topicConfiguration?: Record<string, unknown>;
-}
+} & Binding
 
-export interface KafkaOperationBinding extends Binding {
+export type KafkaOperationBinding = {
 	groupId?: SchemaObject | ReferenceObject | string;
 	clientId?: SchemaObject | ReferenceObject | string;
-}
+} & Binding
 
-export interface KafkaMessageBinding extends Binding {
+export type KafkaMessageBinding = {
 	key?: SchemaObject | ReferenceObject;
 	schemaIdLocation?: "header" | "payload";
 	schemaIdPayloadEncoding?: string;
 	schemaLookupStrategy?: string;
-}
+} & Binding
 
 /**
  * Configuration types for binding creation (backwards compatibility)
@@ -68,15 +68,15 @@ export type KafkaMessageBindingConfig = Omit<KafkaMessageBinding, 'bindingVersio
 /**
  * WebSocket Binding Types (from AsyncAPI WebSocket Binding Specification v0.1.0)
  */
-export interface WebSocketChannelBinding extends Binding {
+export type WebSocketChannelBinding = {
 	method?: "GET" | "POST";
 	query?: SchemaObject | ReferenceObject;
 	headers?: SchemaObject | ReferenceObject;
-}
+} & Binding
 
-export interface WebSocketMessageBinding extends Binding {
+export type WebSocketMessageBinding = {
 	// WebSocket message bindings are minimal in AsyncAPI spec
-}
+} & Binding
 
 export type WebSocketChannelBindingConfig = Omit<WebSocketChannelBinding, 'bindingVersion'>;
 export type WebSocketMessageBindingConfig = Omit<WebSocketMessageBinding, 'bindingVersion'>;
@@ -84,16 +84,16 @@ export type WebSocketMessageBindingConfig = Omit<WebSocketMessageBinding, 'bindi
 /**
  * HTTP Binding Types (from AsyncAPI HTTP Binding Specification v0.3.0)
  */
-export interface HttpOperationBinding extends Binding {
+export type HttpOperationBinding = {
 	type?: "request" | "response";
 	method?: string;
 	query?: SchemaObject;
-}
+} & Binding
 
-export interface HttpMessageBinding extends Binding {
+export type HttpMessageBinding = {
 	headers?: SchemaObject | ReferenceObject;
 	statusCode?: number;
-}
+} & Binding
 
 export type HttpOperationBindingConfig = Omit<HttpOperationBinding, 'bindingVersion'>;
 export type HttpMessageBindingConfig = Omit<HttpMessageBinding, 'bindingVersion'>;

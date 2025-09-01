@@ -11,7 +11,7 @@ import type { AsyncAPIProtocolType } from "../constants/protocol-defaults.js"
 /**
  * Protocol plugin interface - simple and focused
  */
-export interface ProtocolPlugin {
+export type ProtocolPlugin = {
   readonly name: AsyncAPIProtocolType
   readonly version: string
   
@@ -40,21 +40,21 @@ export interface ProtocolPlugin {
  * Simple plugin registry - no complex DI, just a Map
  */
 class SimplePluginRegistry {
-  private plugins = new Map<AsyncAPIProtocolType, ProtocolPlugin>()
+  private readonly plugins = new Map<AsyncAPIProtocolType, ProtocolPlugin>()
   
   /**
    * Register a protocol plugin
    */
   register(plugin: ProtocolPlugin): Effect.Effect<void, Error> {
-    const self = this
+    const plugins = this.plugins
     return Effect.gen(function* () {
       yield* Effect.log(`📦 Registering plugin: ${plugin.name} v${plugin.version}`)
       
-      if (self.plugins.has(plugin.name)) {
+      if (plugins.has(plugin.name)) {
         yield* Effect.log(`⚠️  Plugin ${plugin.name} already registered, replacing`)
       }
       
-      self.plugins.set(plugin.name, plugin)
+      plugins.set(plugin.name, plugin)
       yield* Effect.log(`✅ Plugin ${plugin.name} registered successfully`)
     })
   }

@@ -11,7 +11,7 @@ import { PROTOCOL_DEFAULTS } from "../../constants/protocol-defaults.js"
 /**
  * WebSocket message binding data structure
  */
-interface WebSocketMessageBinding {
+type WebSocketMessageBinding = {
   method?: string
   query?: Record<string, unknown>
   headers?: Record<string, unknown>
@@ -21,7 +21,7 @@ interface WebSocketMessageBinding {
 /**
  * WebSocket server binding data structure
  */
-interface WebSocketServerBinding {
+type WebSocketServerBinding = {
   method?: string
   bindingVersion?: string
 }

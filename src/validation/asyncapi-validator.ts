@@ -64,7 +64,7 @@ export class AsyncAPIValidator {
 			// Enforce AsyncAPI 3.0.0 strict compliance
 			const docObject = typeof document === 'string' ? JSON.parse(content) : document
 			if (docObject && typeof docObject === 'object' && 'asyncapi' in docObject) {
-				const version = (docObject as any).asyncapi
+				const version = (docObject).asyncapi
 				if (version !== '3.0.0') {
 					return {
 						valid: false,

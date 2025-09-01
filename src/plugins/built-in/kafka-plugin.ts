@@ -11,7 +11,7 @@ import { PROTOCOL_DEFAULTS } from "../../constants/protocol-defaults.js"
 /**
  * Kafka operation binding data structure
  */
-interface KafkaOperationBinding {
+type KafkaOperationBinding = {
   groupId?: string
   clientId?: string
   bindingVersion?: string
@@ -20,7 +20,7 @@ interface KafkaOperationBinding {
 /**
  * Kafka message binding data structure  
  */
-interface KafkaMessageBinding {
+type KafkaMessageBinding = {
   key?: {
     type: string
     description?: string
@@ -33,7 +33,7 @@ interface KafkaMessageBinding {
 /**
  * Kafka server binding data structure
  */
-interface KafkaServerBinding {
+type KafkaServerBinding = {
   schemaRegistryUrl?: string
   schemaRegistryVendor?: string
   bindingVersion?: string

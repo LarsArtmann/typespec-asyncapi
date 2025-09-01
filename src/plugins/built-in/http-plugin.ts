@@ -11,7 +11,7 @@ import { PROTOCOL_DEFAULTS } from "../../constants/protocol-defaults.js"
 /**
  * HTTP operation binding data structure
  */
-interface HttpOperationBinding {
+type HttpOperationBinding = {
   method?: string
   query?: Record<string, unknown>
   bindingVersion?: string
@@ -20,7 +20,7 @@ interface HttpOperationBinding {
 /**
  * HTTP message binding data structure
  */
-interface HttpMessageBinding {
+type HttpMessageBinding = {
   headers?: Record<string, unknown>
   statusCode?: number
   bindingVersion?: string

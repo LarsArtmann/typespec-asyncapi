@@ -2,7 +2,7 @@
  * Comprehensive test utilities for AsyncAPI emitter testing
  */
 
-import {createTestHost} from "@typespec/compiler/testing"
+import {createTestHost, createTestWrapper} from "@typespec/compiler/testing"
 import {AsyncAPITestLibrary} from "../test-host"
 import type {AsyncAPIEmitterOptions} from "../../src"
 import type {Diagnostic, Program} from "@typespec/compiler"
@@ -84,58 +84,42 @@ export async function createAsyncAPITestHost() {
 }
 
 /**
+ * Create a test wrapper with auto imports for AsyncAPI testing
+ */
+export async function createAsyncAPITestRunner() {
+	const host = await createAsyncAPITestHost()
+	return createTestWrapper(host, {
+		autoUsings: ["TypeSpec.AsyncAPI"],
+		// Let autoUsings handle the using statement, just add the import
+		wrapper: (code: string) => `
+			import "@larsartmann/typespec-asyncapi";
+			${code}
+		`
+	})
+}
+
+/**
  * Compile TypeSpec source and return both diagnostics and output files
+ * Using REAL TypeSpec testing patterns - no mocks!
  */
 export async function compileAsyncAPISpec(
 	source: string,
 	options: AsyncAPIEmitterOptions = {},
 ): Promise<CompilationResult> {
-	const host = await createAsyncAPITestHost()
+	// Use the proper TypeSpec testing pattern
+	const runner = await createAsyncAPITestRunner()
 
-	// Wrap source with proper imports to make decorators available
-	const wrappedSource = `
-import "@larsartmann/typespec-asyncapi";
-using TypeSpec.AsyncAPI;
-
-${source}
-  `
-
-	host.addTypeSpecFile("main.tsp", wrappedSource)
-
-	// First compile to get the program
-	const compileResult = await host.compile("main.tsp")
-	const program = Array.isArray(compileResult) ? compileResult[0] : compileResult
+	// Compile using the test runner (no need to manually wrap imports)
+	const { program, diagnostics } = await runner.compile(source)
 
 	if (!program) {
 		throw new Error("Failed to compile TypeSpec program")
 	}
 
-	// Create a mock enhanced program for the emitter
-	const enhancedProgram = {
-		...program,
-		host: {
-			mkdirp: async (path: string) => {
-				Effect.log(`Mock mkdirp for test: ${path}`)
-			},
-			writeFile: async (path: string, content: string) => {
-				Effect.log(`Mock writeFile for test: ${path} (${content.length} chars)`)
-				host.fs.set(path, content)
-			},
-		},
-		getGlobalNamespaceType: program.getGlobalNamespaceType || (() => ({
-			name: "Global",
-			operations: new Map(),
-			namespaces: new Map(),
-		})),
-		sourceFiles: program.sourceFiles || new Map([
-			["main.tsp", {content: wrappedSource}],
-		]),
-	}
-
-	// Now call the emitter directly with proper context
+	// Now call the emitter directly with REAL TypeSpec Program
 	const {$onEmit} = await import("../../dist/index")
 	const emitterContext = {
-		program: enhancedProgram,
+		program: program, // Use the REAL program from TypeSpec test runner!
 		emitterOutputDir: "test-output",
 		options,
 	}
@@ -146,15 +130,10 @@ ${source}
 		console.error("Emitter execution failed:", error)
 	}
 
-	// Get diagnostics if available
-	const diagnostics = Array.isArray(compileResult) && compileResult.length > 1
-		? compileResult[1] || []
-		: []
-
 	return {
 		diagnostics,
-		outputFiles: host.fs,
-		program: enhancedProgram,
+		outputFiles: runner.fs, // Use runner filesystem
+		program: program, // Return the REAL program
 	}
 }
 

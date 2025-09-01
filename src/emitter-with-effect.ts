@@ -330,8 +330,18 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 					walkNamespace(program.getGlobalNamespaceType())
 				} else {
 					// Mock namespace for tests
-					const mockNamespace = { operations: new Map(), namespaces: new Map() }
-					walkNamespace(mockNamespace as any)
+					const mockNamespace: Namespace = { 
+						kind: "Namespace",
+						name: "global",
+						operations: new Map(), 
+						namespaces: new Map(),
+						models: new Map(),
+						enums: new Map(),
+						interfaces: new Map(),
+						scalars: new Map(),
+						unions: new Map(),
+					} as Namespace
+					walkNamespace(mockNamespace)
 				}
 				this.operations = operations
 
@@ -394,8 +404,18 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 					walkNamespaceForModels(program.getGlobalNamespaceType())
 				} else {
 					// Mock namespace for tests
-					const mockNamespace = { operations: new Map(), namespaces: new Map(), models: new Map() }
-					walkNamespaceForModels(mockNamespace as any)
+					const mockNamespace: Namespace = { 
+						kind: "Namespace",
+						name: "global",
+						operations: new Map(), 
+						namespaces: new Map(),
+						models: new Map(),
+						enums: new Map(),
+						interfaces: new Map(),
+						scalars: new Map(),
+						unions: new Map(),
+					} as Namespace
+					walkNamespaceForModels(mockNamespace)
 				}
 				this.messageModels = messageModels
 
@@ -501,8 +521,18 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 					walkNamespaceForSecurity(program.getGlobalNamespaceType())
 				} else {
 					// Mock namespace for tests
-					const mockNamespace = { operations: new Map(), namespaces: new Map() }
-					walkNamespaceForSecurity(mockNamespace as any)
+					const mockNamespace: Namespace = { 
+						kind: "Namespace",
+						name: "global",
+						operations: new Map(), 
+						namespaces: new Map(),
+						models: new Map(),
+						enums: new Map(),
+						interfaces: new Map(),
+						scalars: new Map(),
+						unions: new Map(),
+					} as Namespace
+					walkNamespaceForSecurity(mockNamespace)
 				}
 				// Store security configs for processing (no longer stored as instance variable)
 
@@ -700,14 +730,23 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 
 		// Add protocol bindings if protocol config exists
 		if (protocolConfig) {
+			Effect.log(`🔧 DEBUG: Creating channel bindings for ${channelName} with protocol ${protocolConfig.protocol}`)
+			Effect.log(`🔧 DEBUG: Protocol config:`, protocolConfig)
 			const channelBindings = this.createProtocolChannelBindings(protocolConfig)
+			Effect.log(`🔧 DEBUG: Channel bindings result:`, channelBindings)
 			if (channelBindings) {
 				channelDef.bindings = channelBindings
 				Effect.log(`✅ Added ${protocolConfig.protocol} channel bindings for ${channelName}`)
+				Effect.log(`🔧 DEBUG: Final channelDef with bindings:`, channelDef)
+			} else {
+				Effect.log(`❌ DEBUG: Channel bindings returned undefined/null for ${channelName}`)
 			}
+		} else {
+			Effect.log(`⚠️  DEBUG: No protocol config found for ${channelName}`)
 		}
 
 		this.asyncApiDoc.channels[channelName] = channelDef
+		Effect.log(`🔧 DEBUG: Channel added to document. Total channels: ${Object.keys(this.asyncApiDoc.channels).length}`)
 	}
 
 	/**
@@ -725,14 +764,22 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 
 		// Add protocol bindings if protocol config exists
 		if (protocolConfig) {
+			Effect.log(`🔧 DEBUG: Creating operation bindings for ${op.name} with protocol ${protocolConfig.protocol}`)
 			const operationBindings = this.createProtocolOperationBindings(protocolConfig)
+			Effect.log(`🔧 DEBUG: Operation bindings result:`, operationBindings)
 			if (operationBindings) {
 				operationDef.bindings = operationBindings
 				Effect.log(`✅ Added ${protocolConfig.protocol} operation bindings for ${op.name}`)
+				Effect.log(`🔧 DEBUG: Final operationDef with bindings:`, operationDef)
+			} else {
+				Effect.log(`❌ DEBUG: Operation bindings returned undefined/null for ${op.name}`)
 			}
+		} else {
+			Effect.log(`⚠️  DEBUG: No protocol config found for operation ${op.name}`)
 		}
 
 		this.asyncApiDoc.operations[op.name] = operationDef
+		Effect.log(`🔧 DEBUG: Operation added to document. Total operations: ${Object.keys(this.asyncApiDoc.operations).length}`)
 	}
 
 	/**
@@ -852,7 +899,6 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 						// TODO: Implement AMQP and MQTT operation bindings
 						return yield* Effect.succeed(undefined)
 					}
-					case "websocket":
 					case "redis": {
 						// These protocols don't have operation bindings in AsyncAPI spec
 						yield* Effect.log(`ℹ️  Protocol ${config.protocol} does not support operation bindings`)
@@ -1230,8 +1276,9 @@ export async function generateAsyncAPIWithEffect(context: EmitContext<AsyncAPIEm
 	// Ensure program has required methods for AssetEmitter compatibility
 	if (!context.program.getGlobalNamespaceType) {
 		// Add missing method for test compatibility
-		context.program.getGlobalNamespaceType = () => ({
-			kind: "Namespace" as const,
+		// Create a minimal mock namespace that satisfies TypeSpec's interface
+		const mockNamespace: Partial<Namespace> = {
+			kind: "Namespace",
 			name: "global",
 			namespace: undefined,
 			namespaces: new Map(),
@@ -1240,11 +1287,9 @@ export async function generateAsyncAPIWithEffect(context: EmitContext<AsyncAPIEm
 			enums: new Map(),
 			interfaces: new Map(),
 			scalars: new Map(),
-			unions: new Map(), // Added missing unions property
-			node: undefined,
-			projections: [],
-			decorators: [],
-		} as any)
+			unions: new Map(),
+		}
+		context.program.getGlobalNamespaceType = () => mockNamespace as Namespace
 	}
 
 	// Add missing stateMap method for test compatibility

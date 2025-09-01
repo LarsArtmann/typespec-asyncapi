@@ -117,8 +117,91 @@ export type ProtocolConfig = {
 export function $protocol(
 	context: DecoratorContext,
 	target: Operation | Model,
-	config: ProtocolConfig,
+	...args: unknown[]
 ): void {
+	console.log(`🔧 DEBUG: @protocol decorator called`)
+	console.log(`🔧 DEBUG: Number of arguments:`, arguments.length)
+	console.log(`🔧 DEBUG: All arguments:`, [...arguments])
+	console.log(`🔧 DEBUG: Target:`, target?.kind, target?.name || 'unnamed')
+	console.log(`🔧 DEBUG: Args:`, args)
+	
+	// The actual config should be in args[0]
+	const config = args[0] as ProtocolConfig
+	console.log(`🔧 DEBUG: Config extracted:`, config)
+	console.log(`🔧 DEBUG: Config type:`, typeof config)
+	console.log(`🔧 DEBUG: Config.kind:`, (config as any)?.kind)
+	
+	// If it's a Model, we need to extract the actual values from the properties
+	let actualConfig: ProtocolConfig | undefined
+	if (config && typeof config === 'object' && 'kind' in config && (config as any).kind === 'Model') {
+		console.log(`🔧 DEBUG: This is a TypeSpec Model, extracting properties...`)
+		const modelProperties = (config as any).properties
+		console.log(`🔧 DEBUG: Model properties type:`, typeof modelProperties)
+		
+		// Convert TypeSpec Model properties to plain object
+		const extractedConfig: any = {}
+		if (modelProperties && typeof modelProperties.forEach === 'function') {
+			modelProperties.forEach((property: any, key: string) => {
+				console.log(`🔧 DEBUG: Property ${key} full object:`, property)
+				console.log(`🔧 DEBUG: Property ${key} type:`, property?.type)
+				console.log(`🔧 DEBUG: Property ${key} type.kind:`, property?.type?.kind)
+				console.log(`🔧 DEBUG: Property ${key} type.value:`, property?.type?.value)
+				
+				// Extract the property value from ModelProperty
+				if (property && property.node && property.node.value) {
+					const nodeValue = property.node.value
+					console.log(`🔧 DEBUG: Property ${key} node.value:`, nodeValue)
+					
+					// Direct value extraction from TypeSpec AST node
+					if (nodeValue.value !== undefined) {
+						extractedConfig[key] = nodeValue.value
+						console.log(`✅ DEBUG: Extracted ${key} = ${nodeValue.value}`)
+					} else if (nodeValue.kind === 14) { // Model object
+						// This is a nested object - extract its properties
+						const nestedProps: any = {}
+						if (nodeValue.properties && Array.isArray(nodeValue.properties)) {
+							nodeValue.properties.forEach((nestedProp: any) => {
+								const nestedKey = nestedProp.id?.sv || nestedProp.name
+								const nestedValue = nestedProp.value?.value
+								if (nestedKey && nestedValue !== undefined) {
+									nestedProps[nestedKey] = nestedValue
+									console.log(`✅ DEBUG: Extracted nested ${nestedKey} = ${nestedValue}`)
+								}
+							})
+						}
+						extractedConfig[key] = nestedProps
+						console.log(`✅ DEBUG: Extracted nested object for ${key}:`, nestedProps)
+					} else {
+						console.log(`🔧 DEBUG: Unknown node value type for ${key}:`, nodeValue.kind)
+					}
+				}
+			})
+		}
+		
+		console.log(`🔧 DEBUG: Extracted config:`, extractedConfig)
+		actualConfig = extractedConfig as ProtocolConfig
+	} else {
+		actualConfig = config
+	}
+	
+	console.log(`🔧 DEBUG: Final actualConfig:`, actualConfig)
+	console.log(`🔧 DEBUG: actualConfig.protocol:`, actualConfig?.protocol)
+	
+	// Early validation to prevent the rest of the function from running with bad data
+	if (!actualConfig) {
+		console.log(`❌ DEBUG: actualConfig is null/undefined`)
+		reportDiagnostic(context, target, "missing-protocol-type")
+		return
+	}
+
+	if (!actualConfig.protocol) {
+		console.log(`❌ DEBUG: actualConfig.protocol is null/undefined`) 
+		reportDiagnostic(context, target, "missing-protocol-type")
+		return
+	}
+
+	console.log(`🔧 DEBUG: About to validate protocol: ${actualConfig.protocol}`)
+	console.log(`🔧 DEBUG: SUPPORTED_PROTOCOLS:`, SUPPORTED_PROTOCOLS)
 	Effect.log(`=
  PROCESSING @protocol decorator on: ${target.kind} ${target.name || 'unnamed'}`)
 	Effect.log(`=� Protocol config:`, config)
@@ -130,16 +213,16 @@ export function $protocol(
 	// TypeScript ensures config.protocol is defined
 
 	// Validate protocol type using centralized constant
-	if (!SUPPORTED_PROTOCOLS.includes(config.protocol)) {
+	if (!SUPPORTED_PROTOCOLS.includes(actualConfig.protocol)) {
 		reportDiagnostic(context, target, "invalid-protocol-type", {
-			protocol: config.protocol,
+			protocol: actualConfig.protocol,
 			validProtocols: SUPPORTED_PROTOCOLS.join(", "),
 		})
 		return
 	}
 
 	// Validate protocol-specific binding configuration
-	const validationResult = validateProtocolBinding(config.protocol, config.binding)
+	const validationResult = validateProtocolBinding(actualConfig.protocol, actualConfig.binding)
 	if (validationResult.warnings.length > 0) {
 		Effect.log(`�  Protocol binding validation warnings:`, validationResult.warnings)
 		validationResult.warnings.forEach(warning => {
@@ -147,11 +230,11 @@ export function $protocol(
 		})
 	}
 
-	Effect.log(`=� Validated protocol config for ${config.protocol}:`, config)
+	Effect.log(`✅ Validated protocol config for ${actualConfig.protocol}:`, actualConfig)
 
 	// Store protocol configuration in program state
 	const protocolMap = context.program.stateMap($lib.stateKeys.protocolConfigs)
-	protocolMap.set(target, config)
+	protocolMap.set(target, actualConfig)
 
 	Effect.log(` Successfully stored protocol config for ${target.kind} ${target.name || 'unnamed'}`)
 	Effect.log(`=� Total entities with protocol config: ${protocolMap.size}`)
