@@ -6,6 +6,7 @@
 import {Effect} from "effect"
 import type {AsyncAPIObject} from "@asyncapi/parser/esm/spec-types/v3.js"
 import {ValidationError} from "../errors/ValidationError.js"
+import {ASYNCAPI_VERSION} from "../constants/asyncapi-constants.js"
 
 
 /**
@@ -30,9 +31,9 @@ export const validateAsyncAPIObjectEffect = (spec: unknown): Effect.Effect<boole
 			))
 		}
 
-		if (document["asyncapi"] !== "3.0.0") {
+		if (document["asyncapi"] !== ASYNCAPI_VERSION) {
 			return yield* Effect.fail(new ValidationError(
-				`Invalid AsyncAPI version: ${String(document["asyncapi"])}, expected 3.0.0`,
+				`Invalid AsyncAPI version: ${String(document["asyncapi"])}, expected ${ASYNCAPI_VERSION}`,
 				spec,
 			))
 		}
@@ -69,7 +70,7 @@ export function isValidAsyncAPIStructure(document: unknown): document is AsyncAP
 
 	const doc = document as Record<string, unknown>
 	return (
-		doc["asyncapi"] === "3.0.0" &&
+		doc["asyncapi"] === ASYNCAPI_VERSION &&
 		typeof doc["info"] === "object" &&
 		doc["info"] !== null
 	)
@@ -91,8 +92,8 @@ export function validateAsyncAPIObjectSync(document: unknown): { valid: boolean;
 
 	if (!doc["asyncapi"]) {
 		errors.push("Missing required 'asyncapi' field")
-	} else if (doc["asyncapi"] !== "3.0.0") {
-		errors.push(`Invalid AsyncAPI version: ${String(doc["asyncapi"])}, expected 3.0.0`)
+	} else if (doc["asyncapi"] !== ASYNCAPI_VERSION) {
+		errors.push(`Invalid AsyncAPI version: ${String(doc["asyncapi"])}, expected ${ASYNCAPI_VERSION}`)
 	}
 
 	if (!doc["info"]) {

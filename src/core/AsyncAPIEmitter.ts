@@ -18,6 +18,7 @@ import {TypeEmitter} from "@typespec/asset-emitter"
 import type {Program} from "@typespec/compiler"
 import type {AsyncAPIEmitterOptions} from "../options.js"
 import type {AsyncAPIObject} from "@asyncapi/parser/esm/spec-types/v3.js"
+import {ASYNCAPI_VERSION} from "../constants/asyncapi-constants.js"
 import {EmissionPipeline} from "./EmissionPipeline.js"
 import {DocumentGenerator} from "./DocumentGenerator.js"
 // import {PerformanceMonitor} from "./PerformanceMonitor.js"
@@ -147,7 +148,7 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 	 */
 	private createInitialDocument(): AsyncAPIObject {
 		return {
-			asyncapi: "3.0.0",
+			asyncapi: ASYNCAPI_VERSION,
 			info: {
 				title: "AsyncAPI Specification",
 				version: "1.0.0",

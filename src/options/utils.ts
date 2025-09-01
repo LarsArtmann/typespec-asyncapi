@@ -7,6 +7,7 @@ import {JSONSchema} from "@effect/schema"
 import {asyncAPIEmitterOptionsEffectSchema} from "./schemas.js"
 import {validateAsyncAPIEmitterOptions} from "./validation.js"
 import type {AsyncAPIEmitterOptions} from "./types.js"
+import {ASYNCAPI_VERSION} from "../constants/asyncapi-constants.js"
 
 /**
  * JSON Schema representation for TypeSpec compatibility
@@ -34,7 +35,7 @@ export const ASYNC_API_EMITTER_OPTIONS_SCHEMA = (() => {
 			properties: {
 				"output-file": {type: "string", nullable: true},
 				"file-type": {type: "string", enum: ["yaml", "json"], nullable: true},
-				"asyncapi-version": {type: "string", enum: ["3.0.0"], nullable: true},
+				"asyncapi-version": {type: "string", enum: [ASYNCAPI_VERSION], nullable: true},
 				"omit-unreachable-types": {type: "boolean", nullable: true},
 				"include-source-info": {type: "boolean", nullable: true},
 				"default-servers": {type: "object", additionalProperties: true, nullable: true},
@@ -61,7 +62,7 @@ export const createAsyncAPIEmitterOptions = (input: Partial<AsyncAPIEmitterOptio
 		const defaults: AsyncAPIEmitterOptions = {
 			"output-file": "asyncapi",
 			"file-type": "yaml",
-			"asyncapi-version": "3.0.0",
+			"asyncapi-version": ASYNCAPI_VERSION,
 			"omit-unreachable-types": false,
 			"include-source-info": false,
 			"validate-spec": true,
