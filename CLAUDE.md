@@ -102,6 +102,13 @@ npx tsp compile example.tsp --emit @typespec/asyncapi
 - AsyncAPI specification validation against official schemas
 - Comprehensive test coverage (138+ tests)
 
+**CRITICAL TEST INFRASTRUCTURE:**
+- **Build-Before-Test Policy:** All test commands run `bun run build` first to catch TypeScript compilation errors
+- **Fail-Fast on TS Errors:** Tests will NOT run if TypeScript compilation fails - this prevents broken code from passing tests
+- **Package.json Integration:** Uses `pretest` hook and explicit build commands in test scripts
+- **Just Commands:** All justfile test commands also build first before running tests
+- **Purpose:** Ensures tests catch what build catches - no more silent TypeScript failures
+
 ## Configuration Details
 
 ### TypeScript Configuration

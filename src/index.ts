@@ -2,6 +2,7 @@
 // TODO: Consider grouping imports by category (TypeSpec, Effect, local) with separating comments
 // TODO: Add explicit return type annotations to all imported types for better IDE support
 import type { EmitContext } from "@typespec/compiler";
+
 import { setTypeSpecNamespace } from "@typespec/compiler";
 // TODO: Import only specific Effect functions needed instead of entire Effect namespace
 import { Effect } from "effect";
