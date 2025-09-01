@@ -5,7 +5,7 @@
  * Replaces custom ProtocolBindingFactory with AsyncAPI specification compliance.
  */
 import {expect, test, describe} from "bun:test"
-import {SUPPORTED_PROTOCOLS, type AsyncAPIProtocolType} from "../constants/protocol-defaults.js"
+import {SUPPORTED_PROTOCOLS, type AsyncAPIProtocolType} from "../../src/constants/protocol-defaults.js"
 
 // Standard AsyncAPI 3.0 binding format helpers
 const createStandardBinding = (protocol: AsyncAPIProtocolType, config: Record<string, unknown> = {}) => {

@@ -1,5 +1,5 @@
 import "@typespec/compiler";
-import "./index.js";
+import "../dist/index.js";
 
 using TypeSpec.Reflection;
 

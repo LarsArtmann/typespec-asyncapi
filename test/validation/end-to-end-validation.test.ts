@@ -7,7 +7,7 @@
  */
 
 import {afterAll, beforeAll, describe, expect, it} from "vitest"
-import {AsyncAPIValidator} from "../../src/validation/asyncapi-validator"
+import {AsyncAPIValidator} from "../../src/validation/asyncapi-validator.js"
 import {compileAsyncAPISpec, parseAsyncAPIOutput} from "../utils/test-helpers"
 import {mkdir, rm, writeFile} from "node:fs/promises"
 import {join} from "node:path"

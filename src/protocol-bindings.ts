@@ -171,7 +171,7 @@ export class ProtocolBindingFactory {
 	/**
 	 * Create server bindings using standard AsyncAPI format
 	 */
-	static createServerBindings(protocol: ProtocolType, config: any = {}): ServerBindingsObject | undefined {
+	static createServerBindings(protocol: ProtocolType, config: Record<string, unknown> = {}): ServerBindingsObject | undefined {
 		switch (protocol) {
 			case "kafka":
 				return {
@@ -185,12 +185,14 @@ export class ProtocolBindingFactory {
 	/**
 	 * Create channel bindings using standard AsyncAPI format
 	 */
-	static createChannelBindings(protocol: ProtocolType, config: any = {}): ChannelBindingsObject | undefined {
+	static createChannelBindings(protocol: ProtocolType, config: Record<string, unknown> = {}): ChannelBindingsObject | undefined {
 		switch (protocol) {
-			case "kafka":
+			case "kafka": {
+				const kafkaConfig = config.topic ? config as KafkaChannelBindingConfig & { topic: string } : { topic: "default-topic", ...config }
 				return {
-					kafka: KafkaProtocolBinding.createChannelBinding(config.topic ? config : { topic: "default-topic", ...config }),
+					kafka: KafkaProtocolBinding.createChannelBinding(kafkaConfig),
 				}
+			}
 			case "ws":
 			case "websocket":
 				return {
@@ -204,7 +206,7 @@ export class ProtocolBindingFactory {
 	/**
 	 * Create operation bindings using standard AsyncAPI format
 	 */
-	static createOperationBindings(protocol: ProtocolType, config: any = {}): OperationBindingsObject | undefined {
+	static createOperationBindings(protocol: ProtocolType, config: Record<string, unknown> = {}): OperationBindingsObject | undefined {
 		switch (protocol) {
 			case "kafka":
 				return {
@@ -223,7 +225,7 @@ export class ProtocolBindingFactory {
 	/**
 	 * Create message bindings using standard AsyncAPI format
 	 */
-	static createMessageBindings(protocol: ProtocolType, config: any = {}): MessageBindingsObject | undefined {
+	static createMessageBindings(protocol: ProtocolType, config: Record<string, unknown> = {}): MessageBindingsObject | undefined {
 		switch (protocol) {
 			case "kafka":
 				return {
@@ -247,7 +249,7 @@ export class ProtocolBindingFactory {
 	/**
 	 * Validate protocol binding configuration (simplified for now)
 	 */
-	static validateBinding(_protocol: ProtocolType, _bindingType: string, _config: any): { isValid: boolean; errors: any[]; warnings: any[] } {
+	static validateBinding(_protocol: ProtocolType, _bindingType: string, _config: Record<string, unknown>): { isValid: boolean; errors: string[]; warnings: string[] } {
 		// Basic validation - can be enhanced with proper schema validation
 		return {
 			isValid: true,

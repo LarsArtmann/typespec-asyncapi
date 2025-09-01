@@ -2,7 +2,8 @@
  * Comprehensive test utilities for AsyncAPI emitter testing
  */
 
-import {createTestHost, createTestWrapper} from "@typespec/compiler/testing"
+import {createTestHost, createTestWrapper, createTestLibrary} from "@typespec/compiler/testing"
+import {findTestPackageRoot} from "@typespec/compiler/testing"
 import type {AsyncAPIEmitterOptions} from "../../src"
 import type {Diagnostic, Program} from "@typespec/compiler"
 import {Effect} from "effect"
@@ -74,32 +75,47 @@ export interface TestFileSystem {
 }
 
 /**
- * Create a basic test host without library dependencies
+ * Create a test library for our AsyncAPI decorators without package resolution
  */
-async function createBasicTestHost() {
+export async function createAsyncAPITestLibrary() {
+	const packageRoot = await findTestPackageRoot(import.meta.url)
+	
+	return createTestLibrary({
+		name: "@larsartmann/typespec-asyncapi",
+		packageRoot,
+		typespecFileFolder: "lib",
+		jsFileFolder: "dist"
+	})
+}
+
+/**
+ * Create a test host with our AsyncAPI library registered
+ */
+export async function createAsyncAPITestHost() {
+	const asyncAPILib = await createAsyncAPITestLibrary()
+	
 	return createTestHost({
-		libraries: [] // No libraries to avoid package resolution issues
+		libraries: [asyncAPILib] // Include our library to register decorators
 	})
 }
 
 /**
  * Compile TypeSpec source and return both diagnostics and output files
- * Using TypeSpec testing framework but without library loading - bypasses package resolution!
+ * Using TypeSpec testing framework with our AsyncAPI library properly registered
  */
 export async function compileAsyncAPISpec(
 	source: string,
 	options: AsyncAPIEmitterOptions = {},
 ): Promise<CompilationResult> {
-	// Create basic test host without any libraries
-	const host = await createBasicTestHost()
+	// Create test host with our AsyncAPI library
+	const host = await createAsyncAPITestHost()
 	
-	// Create test wrapper without auto-imports or library loading
+	// Create test wrapper with TypeSpec.AsyncAPI auto-using
 	const runner = createTestWrapper(host, {
-		// No autoUsings to avoid library resolution
-		// No wrapper function to avoid import statements
+		autoUsings: ["TypeSpec.AsyncAPI"] // Auto-import our namespace
 	})
 
-	// Compile basic TypeSpec code - let the source define its own namespace  
+	// Compile TypeSpec code with decorators available
 	const result = await runner.compile(source)
 	
 	// Debug logging 
@@ -115,25 +131,7 @@ export async function compileAsyncAPISpec(
 		throw new Error(`Failed to compile TypeSpec program. Available keys: ${Object.keys(result)}`)
 	}
 
-	// Manually register decorators after program creation
-	try {
-		const decorators = await import("../../dist/index.js")
-		
-		// Register decorators directly in the program checker
-		if (program.checker && decorators) {
-			// Create TypeSpec.AsyncAPI namespace manually if needed
-			const globalNs = program.checker.getGlobalNamespaceType()
-			
-			// Try to create a simple namespace for AsyncAPI
-			// This may not work perfectly but should allow basic functionality
-			
-			// For now, just try to run the emitter and see what happens
-		}
-	} catch (error) {
-		console.warn("Could not register decorators:", error)
-	}
-
-	// Try to call emitter with the program we have
+	// Try to call emitter with the program
 	try {
 		const { $onEmit } = await import("../../dist/index.js")
 		await $onEmit({
@@ -142,7 +140,7 @@ export async function compileAsyncAPISpec(
 			options
 		})
 	} catch (error) {
-		console.error("Emitter execution failed (expected without decorators):", error)
+		console.error("Emitter execution error:", error)
 	}
 
 	return {
@@ -168,6 +166,35 @@ export async function compileAsyncAPISpecWithoutErrors(
 	}
 
 	return {outputFiles: result.outputFiles, program: result.program, diagnostics}
+}
+
+/**
+ * Simple decorator testing - compile TypeSpec with decorators registered
+ * This function focuses on just testing that decorators are recognized without running the emitter
+ */
+export async function compileTypeSpecWithDecorators(
+	source: string
+): Promise<{program: Program; diagnostics: readonly Diagnostic[]}> {
+	// Create test host with our AsyncAPI library
+	const host = await createAsyncAPITestHost()
+	
+	// Create test wrapper with TypeSpec.AsyncAPI auto-using
+	const runner = createTestWrapper(host, {
+		autoUsings: ["TypeSpec.AsyncAPI"] // Auto-import our namespace
+	})
+
+	// Compile and return just program and diagnostics
+	const [result, diagnostics] = await runner.compileAndDiagnose(source)
+	
+	console.log("Program created:", !!runner.program)
+	console.log("Diagnostics count:", diagnostics.length)
+	
+	// Log any diagnostics for debugging
+	if (diagnostics.length > 0) {
+		console.log("Diagnostics:", diagnostics.map(d => `${d.severity}: ${d.message}`).join("\n"))
+	}
+
+	return {program: runner.program, diagnostics}
 }
 
 /**

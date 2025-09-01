@@ -1,4 +1,4 @@
-import type {DecoratorContext, Model, Operation, Type} from "@typespec/compiler"
+import type {DecoratorContext, Model, Operation, Type, ModelProperty, RekeyableMap} from "@typespec/compiler"
 import {$lib, reportDiagnostic} from "../lib.js"
 import {Effect} from "effect"
 import {SUPPORTED_PROTOCOLS} from "../constants/protocol-defaults.js"
@@ -120,8 +120,8 @@ export function $protocol(
 	...args: unknown[]
 ): void {
 	console.log(`🔧 DEBUG: @protocol decorator called`)
-	console.log(`🔧 DEBUG: Number of arguments:`, arguments.length)
-	console.log(`🔧 DEBUG: All arguments:`, [...arguments])
+	console.log(`🔧 DEBUG: Number of arguments:`, args.length + 2) // context + target + args
+	console.log(`🔧 DEBUG: All arguments:`, [context, target, ...args])
 	console.log(`🔧 DEBUG: Target:`, target?.kind, target?.name || 'unnamed')
 	console.log(`🔧 DEBUG: Args:`, args)
 	
@@ -129,57 +129,79 @@ export function $protocol(
 	const config = args[0] as ProtocolConfig
 	console.log(`🔧 DEBUG: Config extracted:`, config)
 	console.log(`🔧 DEBUG: Config type:`, typeof config)
-	console.log(`🔧 DEBUG: Config.kind:`, (config as any)?.kind)
+	
+	// Type guard to check if config is a TypeSpec Model
+	function isTypeSpecModel(value: unknown): value is Model {
+		return value !== null && typeof value === 'object' && 'kind' in value && (value as { kind: string }).kind === 'Model'
+	}
 	
 	// If it's a Model, we need to extract the actual values from the properties
 	let actualConfig: ProtocolConfig | undefined
-	if (config && typeof config === 'object' && 'kind' in config && (config as any).kind === 'Model') {
+	if (isTypeSpecModel(config)) {
 		console.log(`🔧 DEBUG: This is a TypeSpec Model, extracting properties...`)
-		const modelProperties = (config as any).properties
+		const modelProperties: RekeyableMap<string, ModelProperty> = config.properties
 		console.log(`🔧 DEBUG: Model properties type:`, typeof modelProperties)
 		
 		// Convert TypeSpec Model properties to plain object
-		const extractedConfig: any = {}
-		if (modelProperties && typeof modelProperties.forEach === 'function') {
-			modelProperties.forEach((property: any, key: string) => {
+		const extractedConfig: Record<string, unknown> = {}
+		if (modelProperties?.forEach) {
+			modelProperties.forEach((property: ModelProperty, key: string) => {
 				console.log(`🔧 DEBUG: Property ${key} full object:`, property)
-				console.log(`🔧 DEBUG: Property ${key} type:`, property?.type)
-				console.log(`🔧 DEBUG: Property ${key} type.kind:`, property?.type?.kind)
-				console.log(`🔧 DEBUG: Property ${key} type.value:`, property?.type?.value)
+				console.log(`🔧 DEBUG: Property ${key} type:`, property.type)
+				console.log(`🔧 DEBUG: Property ${key} type.kind:`, property.type.kind)
 				
-				// Extract the property value from ModelProperty
-				if (property && property.node && property.node.value) {
-					const nodeValue = property.node.value
+				// Extract the property value from ModelProperty node
+				// Use type assertion for AST node access since TypeSpec's node structure is dynamic
+				if (property.node && 'value' in property.node) {
+					const nodeValue = property.node.value as unknown
 					console.log(`🔧 DEBUG: Property ${key} node.value:`, nodeValue)
 					
-					// Direct value extraction from TypeSpec AST node
-					if (nodeValue.value !== undefined) {
-						extractedConfig[key] = nodeValue.value
-						console.log(`✅ DEBUG: Extracted ${key} = ${nodeValue.value}`)
-					} else if (nodeValue.kind === 14) { // Model object
-						// This is a nested object - extract its properties
-						const nestedProps: any = {}
-						if (nodeValue.properties && Array.isArray(nodeValue.properties)) {
-							nodeValue.properties.forEach((nestedProp: any) => {
-								const nestedKey = nestedProp.id?.sv || nestedProp.name
-								const nestedValue = nestedProp.value?.value
-								if (nestedKey && nestedValue !== undefined) {
-									nestedProps[nestedKey] = nestedValue
-									console.log(`✅ DEBUG: Extracted nested ${nestedKey} = ${nestedValue}`)
+					// Handle different value types from TypeSpec AST
+					try {
+						if (nodeValue && typeof nodeValue === 'object') {
+							const astNode = nodeValue as { value?: unknown; kind?: number; properties?: unknown[] }
+							
+							// Direct value extraction from TypeSpec AST node
+							if (astNode.value !== undefined) {
+								extractedConfig[key] = astNode.value
+								console.log(`✅ DEBUG: Extracted ${key} = ${String(astNode.value)}`)
+							} else if (astNode.kind === 14) { // Model object
+								// This is a nested object - extract its properties
+								const nestedProps: Record<string, unknown> = {}
+								if (Array.isArray(astNode.properties)) {
+									astNode.properties.forEach((nestedProp: unknown) => {
+										const prop = nestedProp as { id?: { sv?: string }; name?: string; value?: { value?: unknown } }
+										const nestedKey = prop.id?.sv ?? prop.name
+										const nestedValue = prop.value?.value
+										if (nestedKey && nestedValue !== undefined) {
+											nestedProps[nestedKey] = nestedValue
+											console.log(`✅ DEBUG: Extracted nested ${nestedKey} = ${String(nestedValue)}`)
+										}
+									})
 								}
-							})
+								extractedConfig[key] = nestedProps
+								console.log(`✅ DEBUG: Extracted nested object for ${key}:`, nestedProps)
+							} else {
+								console.log(`🔧 DEBUG: Unknown node value type for ${key}:`, String(astNode.kind))
+							}
 						}
-						extractedConfig[key] = nestedProps
-						console.log(`✅ DEBUG: Extracted nested object for ${key}:`, nestedProps)
-					} else {
-						console.log(`🔧 DEBUG: Unknown node value type for ${key}:`, nodeValue.kind)
+					} catch (error) {
+						console.log(`❌ DEBUG: Error extracting value for ${key}:`, error)
+						// Continue with next property if extraction fails
 					}
 				}
 			})
 		}
 		
 		console.log(`🔧 DEBUG: Extracted config:`, extractedConfig)
-		actualConfig = extractedConfig as ProtocolConfig
+		
+		// Safely cast extracted config to ProtocolConfig if it has required fields
+		if (extractedConfig.protocol && extractedConfig.binding) {
+			actualConfig = extractedConfig as ProtocolConfig
+		} else {
+			console.log(`❌ DEBUG: Extracted config missing required fields (protocol, binding)`)
+			actualConfig = undefined
+		}
 	} else {
 		actualConfig = config
 	}

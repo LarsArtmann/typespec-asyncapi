@@ -23,12 +23,14 @@ export function discoverOperations(program: Program): Operation[] {
 		walkNamespace(program.getGlobalNamespaceType(), operations, program)
 	} else {
 		// For mock programs in tests, create a minimal namespace structure
-		const mockNamespace = {
+		const mockNamespace: Partial<Namespace> = {
 			operations: new Map(),
 			namespaces: new Map(),
 		}
-		// Safe cast for test compatibility
-		walkNamespace(mockNamespace as any, operations, program)
+		// Safe cast for test compatibility - only call if mockNamespace has minimal required structure
+		if (mockNamespace.operations && mockNamespace.namespaces) {
+			walkNamespace(mockNamespace as Namespace, operations, program)
+		}
 	}
 	return operations
 }
