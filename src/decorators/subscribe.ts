@@ -1,6 +1,7 @@
 import type {DecoratorContext, Operation} from "@typespec/compiler"
-import {$lib, reportDiagnostic} from "../lib.js"
+import {reportDiagnostic} from "../lib.js"
 import {Effect} from "effect"
+import {checkOperationTypeConflict} from "./publish.js"
 
 export function $subscribe(context: DecoratorContext, target: Operation): void {
 	Effect.log(`= PROCESSING @subscribe decorator on operation: ${target.name}`)
@@ -11,18 +12,10 @@ export function $subscribe(context: DecoratorContext, target: Operation): void {
 		return
 	}
 
-	// Get existing operation types to check for conflicts
-	const operationTypesMap = context.program.stateMap($lib.stateKeys.operationTypes)
-	const existingType = operationTypesMap.get(target) as string | undefined
-
-	if (existingType === "publish") {
-		reportDiagnostic(context, target, "conflicting-operation-type", {operationName: target.name})
+	// Check for operation type conflicts and set type
+	if (checkOperationTypeConflict(context, target, "subscribe", "publish")) {
 		return
 	}
 
-	// Store operation type as "subscribe" in program state
-	operationTypesMap.set(target, "subscribe")
-
 	Effect.log(`✅ Successfully marked operation ${target.name} as subscribe operation`)
-	Effect.log(`📊 Total operations with types: ${operationTypesMap.size}`)
 }

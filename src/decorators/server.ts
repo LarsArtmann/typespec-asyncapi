@@ -106,17 +106,7 @@ function extractServerConfigFromObject(obj: Model | Record<string, unknown>): Pa
 			}
 
 			if (valueStr) {
-				switch (keyStr) {
-					case "url":
-						config.url = valueStr
-						break
-					case "protocol":
-						config.protocol = valueStr
-						break
-					case "description":
-						config.description = valueStr
-						break
-				}
+				assignServerConfigValue(config, keyStr, valueStr)
 			}
 		})
 	} else if (obj && typeof obj === "object" && !("properties" in obj)) {
@@ -134,20 +124,24 @@ function extractServerConfigFromObject(obj: Model | Record<string, unknown>): Pa
 			}
 
 			if (valueStr) {
-				switch (key) {
-					case "url":
-						config.url = valueStr
-						break
-					case "protocol":
-						config.protocol = valueStr
-						break
-					case "description":
-						config.description = valueStr
-						break
-				}
+				assignServerConfigValue(config, key, valueStr)
 			}
 		}
 	}
 
 	return config
+}
+
+function assignServerConfigValue(config: Partial<ServerConfig>, key: string, value: string): void {
+	switch (key) {
+		case "url":
+			config.url = value
+			break
+		case "protocol":
+			config.protocol = value
+			break
+		case "description":
+			config.description = value
+			break
+	}
 }

@@ -56,11 +56,11 @@ export function walkNamespace(ns: Namespace, operations: Operation[], program: P
  * Safe utility to get state map from TypeSpec program
  * Extracted common state map access pattern
  */
-function getStateMap<T>(program: Program, stateKey: symbol): Map<any, T> | undefined {
+function getStateMap<T>(program: Program, stateKey: symbol): Map<unknown, T> | undefined {
 	if (!program.stateMap || typeof program.stateMap !== 'function') {
 		return undefined
 	}
-	return program.stateMap(stateKey) as Map<any, T> | undefined
+	return program.stateMap(stateKey) as Map<unknown, T> | undefined
 }
 
 /**

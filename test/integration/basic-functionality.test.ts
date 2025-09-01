@@ -9,6 +9,7 @@ import { Effect } from "effect";
 import { existsSync, readFileSync, writeFileSync, mkdirSync } from "fs";
 import { join } from "path";
 import { spawn } from "child_process";
+import { compileAsyncAPISpecWithoutErrors } from "../utils/test-helpers";
 
 describe("AsyncAPI Basic Functionality", () => {
   const testDir = "test-output/integration-basic"
