@@ -84,7 +84,8 @@
       "Bash(do echo \"=== ISSUE #$issue ===\")",
       "Bash(done)",
       "Bash(gh milestone:*)",
-      "Bash(gh label:*)"
+      "Bash(gh label:*)",
+      "Bash(echo:*)"
     ],
     "deny": [],
     "ask": []
