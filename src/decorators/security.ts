@@ -164,7 +164,7 @@ export function $security(
 	// No runtime validation needed
 
 	// Validate security scheme with null check
-	if (!config || !config.scheme) {
+	if (!config?.scheme) {
 		Effect.log(`❌ Security config or scheme is missing:`, { config, scheme: config?.scheme })
 		reportDiagnostic(context, target, "invalid-security-scheme", {
 			scheme: "Security configuration is missing scheme property",

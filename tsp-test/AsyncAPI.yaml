@@ -2,7 +2,7 @@ asyncapi: 3.0.0
 info:
   title: AsyncAPI Specification
   version: 1.0.0
-  description: Generated from TypeSpec with 4 operations
+  description: Generated from TypeSpec with 1 operations
 servers: {}
 channels:
   channel_publishUserEvent:
@@ -11,42 +11,6 @@ channels:
     messages:
       publishUserEventMessage:
         $ref: "#/components/messages/publishUserEventMessage"
-    bindings:
-      kafka:
-        bindingVersion: 0.5.0
-        groupId: user-service
-        clientId: user-publisher
-  channel_subscribeToUserEvents:
-    address: user.events
-    description: Channel for subscribeToUserEvents
-    messages:
-      subscribeToUserEventsMessage:
-        $ref: "#/components/messages/subscribeToUserEventsMessage"
-    bindings:
-      kafka:
-        bindingVersion: 0.5.0
-        groupId: notification-service
-        clientId: user-subscriber
-  channel_sendChatMessage:
-    address: chat.room
-    description: Channel for sendChatMessage
-    messages:
-      sendChatMessageMessage:
-        $ref: "#/components/messages/sendChatMessageMessage"
-    bindings:
-      websocket:
-        bindingVersion: 0.1.0
-        method: GET
-  channel_subscribeToChatMessages:
-    address: chat.room
-    description: Channel for subscribeToChatMessages
-    messages:
-      subscribeToChatMessagesMessage:
-        $ref: "#/components/messages/subscribeToChatMessagesMessage"
-    bindings:
-      websocket:
-        bindingVersion: 0.1.0
-        method: GET
 operations:
   publishUserEvent:
     action: send
@@ -54,36 +18,6 @@ operations:
       $ref: "#/channels/channel_publishUserEvent"
     summary: Operation publishUserEvent
     description: TypeSpec operation with 0 parameters
-    bindings:
-      kafka:
-        groupId: consumer-group
-        clientId: typespec-client
-        bindingVersion: 0.5.0
-  subscribeToUserEvents:
-    action: receive
-    channel:
-      $ref: "#/channels/channel_subscribeToUserEvents"
-    summary: Operation subscribeToUserEvents
-    description: TypeSpec operation with 0 parameters
-    bindings:
-      kafka:
-        groupId: consumer-group
-        clientId: typespec-client
-        bindingVersion: 0.5.0
-  sendChatMessage:
-    action: send
-    channel:
-      $ref: "#/channels/channel_sendChatMessage"
-    summary: Operation sendChatMessage
-    description: TypeSpec operation with 0 parameters
-    bindings: { }
-  subscribeToChatMessages:
-    action: receive
-    channel:
-      $ref: "#/channels/channel_subscribeToChatMessages"
-    summary: Operation subscribeToChatMessages
-    description: TypeSpec operation with 0 parameters
-    bindings: { }
 components:
   schemas:
     UserEvent:
@@ -103,60 +37,10 @@ components:
         - userId
         - action
         - timestamp
-    ChatMessage:
-      type: object
-      description: Schema ChatMessage
-      properties:
-        messageId:
-          description: Property messageId
-          type: object
-        content:
-          description: Property content
-          type: object
-        timestamp:
-          description: Property timestamp
-          type: object
-      required:
-        - messageId
-        - content
-        - timestamp
   messages:
     publishUserEventMessage:
       name: publishUserEventMessage
       title: publishUserEvent Message
       summary: Message for publishUserEvent operation
       contentType: application/json
-      bindings:
-        kafka:
-          bindingVersion: 0.5.0
-          groupId: user-service
-          clientId: user-publisher
-    subscribeToUserEventsMessage:
-      name: subscribeToUserEventsMessage
-      title: subscribeToUserEvents Message
-      summary: Message for subscribeToUserEvents operation
-      contentType: application/json
-      bindings:
-        kafka:
-          bindingVersion: 0.5.0
-          groupId: notification-service
-          clientId: user-subscriber
-    sendChatMessageMessage:
-      name: sendChatMessageMessage
-      title: sendChatMessage Message
-      summary: Message for sendChatMessage operation
-      contentType: application/json
-      bindings:
-        websocket:
-          bindingVersion: 0.1.0
-          method: GET
-    subscribeToChatMessagesMessage:
-      name: subscribeToChatMessagesMessage
-      title: subscribeToChatMessages Message
-      summary: Message for subscribeToChatMessages operation
-      contentType: application/json
-      bindings:
-        websocket:
-          bindingVersion: 0.1.0
-          method: GET
   securitySchemes: {}

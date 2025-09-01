@@ -47,6 +47,25 @@ const makeMemoryMonitorService = Effect.gen(function* () {
 
 	//TODO: ALL THESE 'functions' below should be REAL functions and extracted outside the makeMemoryMonitorService
 
+	// Helper to create default memory analysis with custom recommendation
+	const createDefaultMemoryAnalysis = (recommendation: string): MemoryAnalysis => ({
+		averageMemoryPerOperation: 0,
+		peakMemoryUsage: 0,
+		memoryGrowthRate: 0,
+		gcEfficiency: 0,
+		fragmentationRatio: 0,
+		leakSuspicionScore: 0,
+		recommendations: [recommendation],
+	})
+
+	// Helper to get snapshots and analyze memory usage
+	const getSnapshotsAndAnalyze = (windowMs?: number): Effect.Effect<MemoryAnalysis, never> =>
+		Effect.gen(function* () {
+			const allSnapshots = yield* Ref.get(snapshots)
+			//TODO: Handle the new Effect return type properly!
+			return yield* analyzeMemoryUsage(allSnapshots, windowMs)
+		})
+
 	// Helper to get current memory usage
 	const getCurrentMemoryUsage = (): NodeJS.MemoryUsage => {
 		if (!(typeof process !== "undefined" && process.memoryUsage)) {
@@ -238,15 +257,7 @@ const makeMemoryMonitorService = Effect.gen(function* () {
 		Effect.gen(function* () {
 			if (snapshotWindow.length < 2) {
 				//TODO: Can we get a better return type, e.g a "Insufficient data for analysis" error?
-				return {
-					averageMemoryPerOperation: 0,
-					peakMemoryUsage: 0,
-					memoryGrowthRate: 0,
-					gcEfficiency: 0,
-					fragmentationRatio: 0,
-					leakSuspicionScore: 0,
-					recommendations: ["Insufficient data for analysis"],
-				}
+				return createDefaultMemoryAnalysis("Insufficient data for analysis")
 			}
 
 			const now = performance.now()
@@ -255,30 +266,14 @@ const makeMemoryMonitorService = Effect.gen(function* () {
 
 			if (relevantSnapshots.length < 2) {
 				//TODO: Can we get a better return type, e.g a "Window too narrow for analysis" error?
-				return {
-					averageMemoryPerOperation: 0,
-					peakMemoryUsage: 0,
-					memoryGrowthRate: 0,
-					gcEfficiency: 0,
-					fragmentationRatio: 0,
-					leakSuspicionScore: 0,
-					recommendations: ["Window too narrow for analysis"],
-				}
+				return createDefaultMemoryAnalysis("Window too narrow for analysis")
 			}
 
 			const first = relevantSnapshots[0]
 			const last = relevantSnapshots[relevantSnapshots.length - 1]
 			if (!first || !last) {
 				//TODO: Can we get a better return type, e.g a "Insufficient data for analysis" error?
-				return {
-					averageMemoryPerOperation: 0,
-					peakMemoryUsage: 0,
-					memoryGrowthRate: 0,
-					gcEfficiency: 0,
-					fragmentationRatio: 0,
-					leakSuspicionScore: 0,
-					recommendations: ["Insufficient snapshot data for analysis"],
-				}
+				return createDefaultMemoryAnalysis("Insufficient snapshot data for analysis")
 			}
 			const duration = (last.timestamp - first.timestamp) / 1000 // seconds
 
@@ -358,9 +353,7 @@ const makeMemoryMonitorService = Effect.gen(function* () {
 
 	const detectMemoryLeaks = (windowMs = 60000): Effect.Effect<boolean, MemoryLeakDetectedError> =>
 		Effect.gen(function* () {
-			const allSnapshots = yield* Ref.get(snapshots)
-			//TODO: Handle the new Effect return type properly!
-			const analysis = yield* analyzeMemoryUsage(allSnapshots, windowMs)
+			const analysis = yield* getSnapshotsAndAnalyze(windowMs)
 
 			const currentBudget = yield* Ref.get(budget)
 			const leakThreshold = currentBudget.maxGrowthRate * 0.5 // 50% of max growth rate
@@ -438,10 +431,8 @@ const makeMemoryMonitorService = Effect.gen(function* () {
 			}
 
 			// Check growth rate
-			const allSnapshots = yield* Ref.get(snapshots)
-			if (allSnapshots.length >= 2) {
-				//TODO: Handle the new Effect return type properly!
-				const analysis = yield* analyzeMemoryUsage(allSnapshots, 60000)
+			const analysis = yield* getSnapshotsAndAnalyze(60000)
+			if (analysis.averageMemoryPerOperation > 0) { // Analysis was successful
 				if (analysis.memoryGrowthRate > currentBudget.maxGrowthRate) {
 					violations.push(`Memory growth rate (${analysis.memoryGrowthRate.toFixed(0)} bytes/sec) exceeds budget (${currentBudget.maxGrowthRate} bytes/sec)`)
 				}
@@ -455,10 +446,9 @@ const makeMemoryMonitorService = Effect.gen(function* () {
 
 	const generateMemoryReport = (): Effect.Effect<string, never> =>
 		Effect.gen(function* () {
-			const allSnapshots = yield* Ref.get(snapshots)
+			const analysis = yield* getSnapshotsAndAnalyze()
 			const currentBudget = yield* Ref.get(budget)
-			//TODO: Handle the new Effect return type properly!
-			const analysis = yield* analyzeMemoryUsage(allSnapshots)
+			const allSnapshots = yield* Ref.get(snapshots)
 			const {compliant, violations} = yield* checkBudgetCompliance()
 
 			let report = "# Memory Usage Analysis Report\n\n"
@@ -506,9 +496,8 @@ const makeMemoryMonitorService = Effect.gen(function* () {
 
 	const getMemoryMetrics = (): Effect.Effect<Record<string, number>, never> =>
 		Effect.gen(function* () {
+			const analysis = yield* getSnapshotsAndAnalyze()
 			const allSnapshots = yield* Ref.get(snapshots)
-			//TODO: Handle the new Effect return type properly!
-			const analysis = yield* analyzeMemoryUsage(allSnapshots)
 			const currentMemory = getCurrentMemoryUsage()
 
 			return {

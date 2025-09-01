@@ -53,15 +53,23 @@ export function walkNamespace(ns: Namespace, operations: Operation[], program: P
 }
 
 /**
+ * Safe utility to get state map from TypeSpec program
+ * Extracted common state map access pattern
+ */
+function getStateMap<T>(program: Program, stateKey: symbol): Map<any, T> | undefined {
+	if (!program.stateMap || typeof program.stateMap !== 'function') {
+		return undefined
+	}
+	return program.stateMap(stateKey) as Map<any, T> | undefined
+}
+
+/**
  * Get operation type from TypeSpec decorator state
  * Extracted common logic for @publish/@subscribe detection
  */
 export function getOperationType(operation: Operation, program: Program): string | undefined {
-	if (!program.stateMap || typeof program.stateMap !== 'function') {
-		return undefined
-	}
-	const operationTypesMap = program.stateMap($lib.stateKeys.operationTypes)
-	return operationTypesMap.get(operation) as string | undefined
+	const operationTypesMap = getStateMap<string>(program, $lib.stateKeys.operationTypes)
+	return operationTypesMap?.get(operation)
 }
 
 /**
@@ -69,11 +77,8 @@ export function getOperationType(operation: Operation, program: Program): string
  * Extracted common logic for @channel path detection
  */
 export function getChannelPath(operation: Operation, program: Program): string | undefined {
-	if (!program.stateMap || typeof program.stateMap !== 'function') {
-		return undefined
-	}
-	const channelPathsMap = program.stateMap($lib.stateKeys.channelPaths)
-	return channelPathsMap.get(operation) as string | undefined
+	const channelPathsMap = getStateMap<string>(program, $lib.stateKeys.channelPaths)
+	return channelPathsMap?.get(operation)
 }
 
 /**
@@ -130,8 +135,8 @@ export function getServerConfigs(program: Program, namespace: Namespace): Map<st
 	if (!program.stateMap || typeof program.stateMap !== 'function') {
 		return undefined
 	}
-	const serverConfigsMap = program.stateMap($lib.stateKeys.serverConfigs)
-	return serverConfigsMap.get(namespace) as Map<string, ServerConfig> | undefined
+	const serverConfigsMap = program.stateMap($lib.stateKeys.serverConfigs) as Map<Namespace, Map<string, ServerConfig>>
+	return serverConfigsMap?.get(namespace)
 }
 
 /**
@@ -143,9 +148,8 @@ export function getAllServerConfigs(program: Program): Map<Namespace, Map<string
 	if (!program.stateMap || typeof program.stateMap !== 'function') {
 		return new Map<Namespace, Map<string, ServerConfig>>()
 	}
-	
-	const serverConfigsMap = program.stateMap($lib.stateKeys.serverConfigs)
-	return serverConfigsMap as Map<Namespace, Map<string, ServerConfig>>
+	const serverConfigsMap = program.stateMap($lib.stateKeys.serverConfigs) as Map<Namespace, Map<string, ServerConfig>>
+	return serverConfigsMap ?? new Map<Namespace, Map<string, ServerConfig>>()
 }
 
 /**
@@ -153,11 +157,8 @@ export function getAllServerConfigs(program: Program): Map<Namespace, Map<string
  * CRITICAL MISSING FUNCTION - Required for AsyncAPI message generation
  */
 export function getMessageConfig(program: Program, model: Model): MessageConfig | undefined {
-	if (!program.stateMap || typeof program.stateMap !== 'function') {
-		return undefined
-	}
-	const messageConfigsMap = program.stateMap($lib.stateKeys.messageConfigs)
-	return messageConfigsMap.get(model) as MessageConfig | undefined
+	const messageConfigsMap = getStateMap<MessageConfig>(program, $lib.stateKeys.messageConfigs)
+	return messageConfigsMap?.get(model)
 }
 
 /**
@@ -165,11 +166,8 @@ export function getMessageConfig(program: Program, model: Model): MessageConfig 
  * CRITICAL MISSING FUNCTION - Required for AsyncAPI protocol bindings
  */
 export function getProtocolConfig(program: Program, target: Operation | Model): ProtocolConfig | undefined {
-	if (!program.stateMap || typeof program.stateMap !== 'function') {
-		return undefined
-	}
-	const protocolConfigsMap = program.stateMap($lib.stateKeys.protocolConfigs)
-	return protocolConfigsMap.get(target) as ProtocolConfig | undefined
+	const protocolConfigsMap = getStateMap<ProtocolConfig>(program, $lib.stateKeys.protocolConfigs)
+	return protocolConfigsMap?.get(target)
 }
 
 /**
@@ -177,11 +175,8 @@ export function getProtocolConfig(program: Program, target: Operation | Model): 
  * CRITICAL MISSING FUNCTION - Required for AsyncAPI security schemes
  */
 export function getSecurityConfig(program: Program, target: Operation | Model): SecurityConfig | undefined {
-	if (!program.stateMap || typeof program.stateMap !== 'function') {
-		return undefined
-	}
-	const securityConfigsMap = program.stateMap($lib.stateKeys.securityConfigs)
-	return securityConfigsMap.get(target) as SecurityConfig | undefined
+	const securityConfigsMap = getStateMap<SecurityConfig>(program, $lib.stateKeys.securityConfigs)
+	return securityConfigsMap?.get(target)
 }
 
 /**
