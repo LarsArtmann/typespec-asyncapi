@@ -7,6 +7,7 @@
  */
 
 import type { Program } from "@typespec/compiler"
+import { Effect } from "effect"
 import { $channel } from "./channel.js"
 import { $publish } from "./publish.js"
 import { $subscribe } from "./subscribe.js"
@@ -60,13 +61,13 @@ export function createAsyncAPIDecorators(program: Program): void {
 			}
 		}
 		
-		console.log("✅ AsyncAPI decorators validated successfully")
-		console.log("✅ Program integration verified")
+		Effect.log("✅ AsyncAPI decorators validated successfully")
+		Effect.log("✅ Program integration verified")
 		
 	} catch (error) {
 		console.error("❌ Failed to register AsyncAPI decorators:", error)
 		// Don't throw - let tests continue, they might work anyway
-		console.log("⚠️ Continuing despite decorator registration failure...")
+		Effect.log("⚠️ Continuing despite decorator registration failure...")
 	}
 }
 
