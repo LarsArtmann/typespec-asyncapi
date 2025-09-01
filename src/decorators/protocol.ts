@@ -266,7 +266,7 @@ function validateProtocolBinding(protocol: ProtocolType, binding: unknown): { va
 
 		case "websocket": {
 			const wsBinding = binding as WebSocketBindingConfig
-			if (wsBinding.method && wsBinding.method as string !== "GET") {
+			if (wsBinding.method && String(wsBinding.method) !== "GET") {
 				warnings.push("WebSocket binding method should be GET for upgrade requests")
 			}
 			break

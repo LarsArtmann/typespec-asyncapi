@@ -18,7 +18,8 @@ export function checkOperationTypeConflict(
 ): boolean {
 	// Get existing operation types to check for conflicts
 	const operationTypesMap = context.program.stateMap($lib.stateKeys.operationTypes)
-	const existingType = operationTypesMap.get(target) as string | undefined
+	const rawType = operationTypesMap.get(target)
+	const existingType = typeof rawType === 'string' ? rawType : undefined
 
 	if (existingType === conflictType) {
 		reportDiagnostic(context, target, "conflicting-operation-type", {operationName: target.name})

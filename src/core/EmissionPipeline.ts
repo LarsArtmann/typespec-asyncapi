@@ -278,6 +278,14 @@ export class EmissionPipeline {
 	}
 
 	/**
+	 * Type-safe helper to get string values from TypeSpec state maps
+	 */
+	private getStringFromStateMap(stateMap: Map<any, unknown>, key: any): string | undefined {
+		const value = stateMap.get(key)
+		return typeof value === 'string' ? value : undefined
+	}
+
+	/**
 	 * Process a single operation and add to AsyncAPI document
 	 */
 	private processOperation(context: PipelineContext, operation: Operation) {
@@ -286,8 +294,8 @@ export class EmissionPipeline {
 			const operationTypesMap = program.stateMap($lib.stateKeys.operationTypes)
 			const channelPathsMap = program.stateMap($lib.stateKeys.channelPaths)
 
-			const operationType = operationTypesMap.get(operation) as string | undefined
-			const decoratedChannelPath = channelPathsMap.get(operation) as string | undefined
+			const operationType = this.getStringFromStateMap(operationTypesMap, operation)
+			const decoratedChannelPath = this.getStringFromStateMap(channelPathsMap, operation)
 			const channelPath = decoratedChannelPath ?? `/${operation.name.toLowerCase()}`
 
 			Effect.log(`🔍 Processing operation ${operation.name}: type=${operationType ?? 'none'}, channel=${channelPath}`)
@@ -412,11 +420,11 @@ export class EmissionPipeline {
 			const operationTypesMap = context.program.stateMap($lib.stateKeys.operationTypes)
 			
 			// Get channel path from @channel decorator state
-			const channelPath = channelPathsMap.get(operation) as string | undefined
+			const channelPath = this.getStringFromStateMap(channelPathsMap, operation)
 			const channelName = channelPath || `channel_${operationName}`
 			
 			// Get operation type from @publish/@subscribe decorator state  
-			const operationType = operationTypesMap.get(operation) as string | undefined
+			const operationType = this.getStringFromStateMap(operationTypesMap, operation)
 			const action = operationType === 'publish' ? 'send' : operationType === 'subscribe' ? 'receive' : 'send'
 			
 			Effect.log(`🔄 Processing operation: ${operationName} -> channel: ${channelName}, action: ${action}`)
