@@ -15,7 +15,6 @@ import {createDefaultKafkaChannelBinding, validateKafkaChannelBinding} from "./b
 import {convertModelToSchema} from "./utils/schema-conversion.js"
 import {logOperationDetails} from "./utils/typespec-helpers.js"
 import {createChannelDefinition, createOperationDefinition} from "./utils/asyncapi-helpers.js"
-import {getAllSecurityConfigs} from "./decorators/security.js"
 import {$lib} from "./lib.js"
 // ChannelObject and OperationObject now imported from centralized types
 import {hasTemplateVariables, type PathTemplateContext, resolvePathTemplateWithValidation} from "./path-templates.js"
@@ -43,20 +42,59 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
 	}
 
 	override writeOutput(_sourceFiles: SourceFile<string>[]): Promise<void> {
+		const startTime = performance.now()
+		const startMemory = this.getMemoryUsage()
+
+		Effect.log(`🚀 Starting AsyncAPI emission with performance monitoring...`)
+		Effect.log(`📊 Initial memory usage: ${this.formatBytes(startMemory.used)} / ${this.formatBytes(startMemory.total)}`)
+
 		// Discover all operations from the program
 		this.operations = this.discoverOperations(this.emitter.getProgram())
 		this.asyncApiDoc = this.createAsyncAPIObject(this.operations)
 
-		// Process each operation
+		// Process each operation with performance tracking
+		Effect.log(`🏗️ Processing ${this.operations.length} operations...`)
 		for (const op of this.operations) {
+			const opStartTime = performance.now()
 			this.processOperation(op)
+			const opEndTime = performance.now()
+			Effect.log(`✅ Processed operation '${op.name}' in ${(opEndTime - opStartTime).toFixed(2)}ms`)
 		}
 
 		// Process security configurations
+		const secStartTime = performance.now()
 		this.processSecuritySchemes()
+		const secEndTime = performance.now()
+		Effect.log(`🔐 Security processing completed in ${(secEndTime - secStartTime).toFixed(2)}ms`)
 
 		// Generate AsyncAPI document
+		const genStartTime = performance.now()
 		this.generateAsyncAPIDocument()
+		const genEndTime = performance.now()
+		Effect.log(`📄 Document generation completed in ${(genEndTime - genStartTime).toFixed(2)}ms`)
+
+		// Performance summary
+		const endTime = performance.now()
+		const endMemory = this.getMemoryUsage()
+		const totalTime = endTime - startTime
+		const memoryDelta = endMemory.used - startMemory.used
+
+		Effect.log(`🎯 === EMISSION PERFORMANCE SUMMARY ===`)
+		Effect.log(`📊 Total Operations: ${this.operations.length}`)
+		Effect.log(`⏱️  Total Time: ${totalTime.toFixed(2)}ms`)
+		Effect.log(`⚡ Throughput: ${(this.operations.length / (totalTime / 1000)).toFixed(0)} ops/sec`)
+		Effect.log(`🧠 Memory Delta: ${this.formatBytes(memoryDelta)} (${memoryDelta > 0 ? '+' : ''}${((memoryDelta / startMemory.used) * 100).toFixed(1)}%)`)
+		Effect.log(`📈 Final Memory: ${this.formatBytes(endMemory.used)} / ${this.formatBytes(endMemory.total)}`)
+
+		// Memory efficiency check
+		if (memoryDelta > 10 * 1024 * 1024) { // 10MB threshold
+			Effect.logWarning(`⚠️  High memory usage detected: ${this.formatBytes(memoryDelta)}`)
+		}
+
+		// Performance target validation
+		if (totalTime > 2000) { // 2s threshold
+			Effect.logWarning(`⚠️  Emission took longer than expected: ${totalTime.toFixed(2)}ms`)
+		}
 		
 		return Promise.resolve()
 	}
@@ -97,22 +135,13 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
 		const operations: Operation[] = []
 
 		// Safe access to global namespace - handle both real Program and mock objects
-		const globalNamespace = typeof program.getGlobalNamespaceType === 'function' 
-			? program.getGlobalNamespaceType()
-			: ({
-				kind: "Namespace" as const,
-				name: "Global",
-				operations: new Map(),
-				namespaces: new Map(),
-				models: new Map(),
-				scalars: new Map(),
-				unions: new Map(),
-				interfaces: new Map(),
-				enums: new Map(),
-				decorators: [],
-			} as Namespace)
-
-		this.walkNamespace(globalNamespace, operations, program)
+		if (typeof program.getGlobalNamespaceType === 'function') {
+			this.walkNamespace(program.getGlobalNamespaceType(), operations, program)
+		} else {
+			// Mock namespace for tests  
+			const mockNamespace = { operations: new Map(), namespaces: new Map() }
+			this.walkNamespace(mockNamespace as any, operations, program)
+		}
 		return operations
 	}
 
@@ -240,7 +269,7 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
 			if (typeof config === 'object' && config && 'name' in config && 'scheme' in config) {
 				const securityConfig = config as any
 				this.processSingleSecurityConfig(securityConfig)
-				Effect.log(`🔐 Processed security for ${target.kind} ${target.name || 'unnamed'}`)
+				Effect.log(`🔐 Processed security for ${target.kind} ${(target as any).name || 'unnamed'}`)
 			}
 		})
 
@@ -396,6 +425,32 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
 					description: "Unknown security scheme",
 				}
 		}
+	}
+
+	/**
+	 * Get current memory usage information
+	 */
+	private getMemoryUsage(): { used: number; total: number } {
+		if (typeof process !== 'undefined' && process.memoryUsage) {
+			const usage = process.memoryUsage()
+			return {
+				used: usage.heapUsed,
+				total: usage.heapTotal,
+			}
+		}
+		// Fallback for browser environments
+		return { used: 0, total: 0 }
+	}
+
+	/**
+	 * Format bytes into human-readable format
+	 */
+	private formatBytes(bytes: number): string {
+		if (bytes === 0) return '0 B'
+		const k = 1024
+		const sizes = ['B', 'KB', 'MB', 'GB']
+		const i = Math.floor(Math.log(bytes) / Math.log(k))
+		return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`
 	}
 
 	// These methods are commented out as they're not currently used

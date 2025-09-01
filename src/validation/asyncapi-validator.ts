@@ -146,6 +146,37 @@ export class AsyncAPIValidator {
 	}
 
 	/**
+	 * Validate multiple AsyncAPI documents in batch
+	 * Returns an array of ValidationResult objects with optimized performance
+	 */
+	async validateBatch(documents: Array<{content: unknown, identifier?: string}>): Promise<ValidationResult[]> {
+		const results: ValidationResult[] = []
+		const startTime = performance.now()
+
+		Effect.log(`🔄 Starting batch validation of ${documents.length} documents...`)
+
+		// Process documents in parallel with limited concurrency for memory management
+		const BATCH_SIZE = 5 // Process 5 documents concurrently
+		const batches: Array<Array<{content: unknown, identifier?: string}>> = []
+		
+		for (let i = 0; i < documents.length; i += BATCH_SIZE) {
+			batches.push(documents.slice(i, i + BATCH_SIZE))
+		}
+
+		for (const batch of batches) {
+			const batchPromises = batch.map(doc => this.validate(doc.content, doc.identifier))
+			const batchResults = await Promise.all(batchPromises)
+			results.push(...batchResults)
+		}
+
+		const totalDuration = performance.now() - startTime
+		Effect.log(`✅ Batch validation completed: ${results.length} documents in ${totalDuration.toFixed(2)}ms`)
+		Effect.log(`📊 Valid: ${results.filter(r => r.valid).length}, Invalid: ${results.filter(r => !r.valid).length}`)
+
+		return results
+	}
+
+	/**
 	 * Get validation statistics
 	 */
 	getValidationStats(): ValidationStats {

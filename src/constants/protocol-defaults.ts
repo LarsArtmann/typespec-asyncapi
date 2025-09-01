@@ -28,9 +28,9 @@ export const SUPPORTED_PROTOCOLS: readonly ProtocolType[] = [
  * These are the standard default ports used by each protocol
  * when no explicit port is specified in server configurations.
  */
-export const DEFAULT_PROTOCOL_PORTS: Record<ProtocolType, number> = {
+export const DEFAULT_PROTOCOL_PORTS: Record<string, number> = {
 	kafka: 9092,
-	websocket: 80,
+	websocket: 80, 
 	ws: 80,
 	http: 80,
 	https: 443,
@@ -38,6 +38,46 @@ export const DEFAULT_PROTOCOL_PORTS: Record<ProtocolType, number> = {
 	mqtt: 1883,
 	redis: 6379,
 	nats: 4222,
+} as const
+
+/**
+ * Protocol-specific default configurations
+ */
+export const PROTOCOL_DEFAULTS = {
+	kafka: {
+		port: 9092,
+		defaultTopic: "events",
+		defaultGroupId: "consumer-group",
+		defaultClientId: "typespec-client",
+		schemaIdLocation: "payload",
+	},
+	websocket: {
+		port: 80,
+		method: "GET",
+		subprotocol: undefined,
+	},
+	http: {
+		port: 80,
+		method: "POST",
+		contentType: "application/json",
+	},
+	amqp: {
+		port: 5672,
+		exchange: "events",
+		routingKey: "default",
+		deliveryMode: 2, // Persistent
+	},
+	mqtt: {
+		port: 1883,
+		qos: 1,
+		retain: false,
+		cleanSession: true,
+	},
+	redis: {
+		port: 6379,
+		channel: "events",
+		messageId: "*",
+	},
 } as const
 
 /**

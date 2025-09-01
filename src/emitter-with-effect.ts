@@ -325,21 +325,14 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 					}
 				}
 
-				const globalNamespace = typeof program.getGlobalNamespaceType === 'function' 
-					? program.getGlobalNamespaceType()
-					: ({
-						kind: "Namespace" as const,
-						name: "Global",
-						operations: new Map(),
-						namespaces: new Map(),
-						models: new Map(),
-						scalars: new Map(),
-						unions: new Map(),
-						interfaces: new Map(),
-						enums: new Map(),
-						decorators: [],
-					} as Namespace) as any
-				walkNamespace(globalNamespace)
+				// Safe access to global namespace
+				if (typeof program.getGlobalNamespaceType === 'function') {
+					walkNamespace(program.getGlobalNamespaceType())
+				} else {
+					// Mock namespace for tests
+					const mockNamespace = { operations: new Map(), namespaces: new Map() }
+					walkNamespace(mockNamespace as any)
+				}
 				this.operations = operations
 
 				Effect.log(`📊 Total operations discovered: ${operations.length}`)
@@ -396,21 +389,14 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 					}
 				}
 
-				const globalNamespace2 = typeof program.getGlobalNamespaceType === 'function' 
-					? program.getGlobalNamespaceType()
-					: ({
-						kind: "Namespace" as const,
-						name: "Global",
-						operations: new Map(),
-						namespaces: new Map(),
-						models: new Map(),
-						scalars: new Map(),
-						unions: new Map(),
-						interfaces: new Map(),
-						enums: new Map(),
-						decorators: [],
-					} as Namespace)
-				walkNamespaceForModels(globalNamespace2)
+				// Safe access to global namespace for models
+				if (typeof program.getGlobalNamespaceType === 'function') {
+					walkNamespaceForModels(program.getGlobalNamespaceType())
+				} else {
+					// Mock namespace for tests
+					const mockNamespace = { operations: new Map(), namespaces: new Map(), models: new Map() }
+					walkNamespaceForModels(mockNamespace as any)
+				}
 				this.messageModels = messageModels
 
 				Effect.log(`📊 Total message models discovered: ${messageModels.length}`)
@@ -510,10 +496,14 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 					}
 				}
 
-				const globalNamespace3 = typeof program.getGlobalNamespaceType === 'function' 
-					? program.getGlobalNamespaceType()
-					: { operations: new Map(), namespaces: new Map() }
-				walkNamespaceForSecurity(globalNamespace3)
+				// Safe access to global namespace for security
+				if (typeof program.getGlobalNamespaceType === 'function') {
+					walkNamespaceForSecurity(program.getGlobalNamespaceType())
+				} else {
+					// Mock namespace for tests
+					const mockNamespace = { operations: new Map(), namespaces: new Map() }
+					walkNamespaceForSecurity(mockNamespace as any)
+				}
 				// Store security configs for processing (no longer stored as instance variable)
 
 				Effect.log(`📊 Total security configs discovered: ${securityConfigs.length}`)

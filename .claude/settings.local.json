@@ -86,7 +86,9 @@
       "Bash(gh milestone:*)",
       "Bash(gh label:*)",
       "Bash(echo:*)",
-      "Bash(file:*)"
+      "Bash(file:*)",
+      "Bash(./scripts/prepare-release.sh:*)",
+      "Bash(npm pack:*)"
     ],
     "deny": [],
     "ask": []

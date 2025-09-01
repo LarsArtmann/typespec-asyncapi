@@ -1,48 +1,77 @@
 import "@typespec/asyncapi";
 
+using AsyncAPI;
+
 /**
- * Test service for AsyncAPI emitter validation
- * This PROVES the emitter reads real TypeSpec AST data!
+ * Simple Event-Driven Chat API
+ * Demonstrates basic usage of TypeSpec AsyncAPI decorators
  */
-namespace UserEvents;
 
-@doc("User signup event model - REAL TypeSpec model!")
-model UserSignupEvent {
-  @doc("User's unique identifier")
-  userId: string;
-  
-  @doc("User's email address")  
-  email: string;
-  
-  @doc("Timestamp of signup")
-  timestamp: string;
-  
-  @doc("User's selected plan")
-  plan: "free" | "premium" | "enterprise";
-}
+@asyncapi({
+  info: {
+    title: "Simple Chat Events API",
+    version: "1.0.0",
+    description: "Basic example showing TypeSpec AsyncAPI emitter usage"
+  },
+  servers: {
+    development: {
+      host: "localhost:9092",
+      protocol: "kafka",
+      description: "Local development Kafka"
+    }
+  }
+})
+namespace SimpleChatAPI;
 
-@doc("User message model - Another REAL TypeSpec model!")
-model UserMessage {
-  @doc("Message ID")
+// Basic message payload
+model ChatMessagePayload {
   messageId: string;
-  
-  @doc("Message content")
+  userId: string;
+  username: string;
   content: string;
-  
-  @doc("Message sender")
-  from: string;
-  
-  @doc("Message timestamp")
-  timestamp: string;
+  timestamp: utcDateTime;
+  channelId: string;
 }
 
-@channel("user.signup")
-@doc("Publish user signup events to the system - REAL TypeSpec operation!")
-op publishUserSignup(): UserSignupEvent;
+// Simple channel definition
+@channel("chat.messages")
+model ChatChannel {
+  @message({
+    name: "ChatMessage",
+    title: "Chat Message",
+    description: "A message sent in a chat channel"
+  })
+  payload: ChatMessagePayload;
+}
 
-@channel("user.messages")
-@doc("Subscribe to messages for users - Another REAL TypeSpec operation!")
-op receiveUserMessage(
-  @doc("User ID parameter")
-  userId: string
-): UserMessage;
+// Basic publish operation
+@publish
+op sendChatMessage(): ChatChannel;
+
+// Basic subscribe operation
+@subscribe
+op receiveChatMessages(): ChatChannel;
+
+// User events
+model UserJoinedPayload {
+  userId: string;
+  username: string;
+  channelId: string;
+  joinedAt: utcDateTime;
+}
+
+@channel("chat.user.joined")
+model UserJoinedChannel {
+  @message({
+    name: "UserJoined",
+    title: "User Joined Channel", 
+    description: "Event when user joins a chat channel"
+  })
+  payload: UserJoinedPayload;
+}
+
+@publish
+op publishUserJoined(): UserJoinedChannel;
+
+@subscribe
+op subscribeUserJoined(): UserJoinedChannel;

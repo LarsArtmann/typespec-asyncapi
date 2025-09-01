@@ -18,10 +18,18 @@ import type {ServersObject} from "@asyncapi/parser/esm/spec-types/v3.js"
  */
 export function discoverOperations(program: Program): Operation[] {
 	const operations: Operation[] = []
-	const globalNamespace = typeof program.getGlobalNamespaceType === 'function' 
-		? program.getGlobalNamespaceType()
-		: { operations: new Map(), namespaces: new Map() }
-	walkNamespace(globalNamespace, operations, program)
+	// Safe access with fallback that matches existing test patterns
+	if (typeof program.getGlobalNamespaceType === 'function') {
+		walkNamespace(program.getGlobalNamespaceType(), operations, program)
+	} else {
+		// For mock programs in tests, create a minimal namespace structure
+		const mockNamespace = {
+			operations: new Map(),
+			namespaces: new Map(),
+		}
+		// Safe cast for test compatibility
+		walkNamespace(mockNamespace as any, operations, program)
+	}
 	return operations
 }
 

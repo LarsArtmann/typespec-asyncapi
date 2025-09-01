@@ -1,0 +1,63 @@
+asyncapi: 3.0.0
+info:
+  title: AsyncAPI Specification
+  version: 1.0.0
+  description: Generated from TypeSpec with 2 operations
+servers: {}
+channels:
+  channel_publishUserEvent:
+    address: user.events
+    description: Channel for publishUserEvent
+    messages:
+      publishUserEventMessage:
+        $ref: "#/components/messages/publishUserEventMessage"
+  channel_subscribeNotifications:
+    address: notifications
+    description: Channel for subscribeNotifications
+    messages:
+      subscribeNotificationsMessage:
+        $ref: "#/components/messages/subscribeNotificationsMessage"
+operations:
+  publishUserEvent:
+    action: send
+    channel:
+      $ref: "#/channels/channel_publishUserEvent"
+    summary: Operation publishUserEvent
+    description: TypeSpec operation with 0 parameters
+  subscribeNotifications:
+    action: receive
+    channel:
+      $ref: "#/channels/channel_subscribeNotifications"
+    summary: Operation subscribeNotifications
+    description: TypeSpec operation with 0 parameters
+components:
+  schemas:
+    Event:
+      type: object
+      description: Schema Event
+      properties:
+        id:
+          description: Property id
+          type: object
+        timestamp:
+          description: Property timestamp
+          type: object
+        data:
+          description: Property data
+          type: object
+      required:
+        - id
+        - timestamp
+        - data
+  messages:
+    publishUserEventMessage:
+      name: publishUserEventMessage
+      title: publishUserEvent Message
+      summary: Message for publishUserEvent operation
+      contentType: application/json
+    subscribeNotificationsMessage:
+      name: subscribeNotificationsMessage
+      title: subscribeNotifications Message
+      summary: Message for subscribeNotifications operation
+      contentType: application/json
+  securitySchemes: {}
