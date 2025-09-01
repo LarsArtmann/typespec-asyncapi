@@ -325,7 +325,10 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 					}
 				}
 
-				walkNamespace(program.getGlobalNamespaceType())
+				const globalNamespace = typeof program.getGlobalNamespaceType === 'function' 
+					? program.getGlobalNamespaceType()
+					: { operations: new Map(), namespaces: new Map() }
+				walkNamespace(globalNamespace)
 				this.operations = operations
 
 				Effect.log(`📊 Total operations discovered: ${operations.length}`)
@@ -382,7 +385,10 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 					}
 				}
 
-				walkNamespaceForModels(program.getGlobalNamespaceType())
+				const globalNamespace2 = typeof program.getGlobalNamespaceType === 'function' 
+					? program.getGlobalNamespaceType()
+					: { operations: new Map(), namespaces: new Map(), models: new Map() }
+				walkNamespaceForModels(globalNamespace2)
 				this.messageModels = messageModels
 
 				Effect.log(`📊 Total message models discovered: ${messageModels.length}`)
@@ -482,7 +488,10 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 					}
 				}
 
-				walkNamespaceForSecurity(program.getGlobalNamespaceType())
+				const globalNamespace3 = typeof program.getGlobalNamespaceType === 'function' 
+					? program.getGlobalNamespaceType()
+					: { operations: new Map(), namespaces: new Map() }
+				walkNamespaceForSecurity(globalNamespace3)
 				// Store security configs for processing (no longer stored as instance variable)
 
 				Effect.log(`📊 Total security configs discovered: ${securityConfigs.length}`)

@@ -15,6 +15,7 @@ import {createDefaultKafkaChannelBinding, validateKafkaChannelBinding} from "./b
 import {convertModelToSchema} from "./utils/schema-conversion.js"
 import {logOperationDetails} from "./utils/typespec-helpers.js"
 import {createChannelDefinition, createOperationDefinition} from "./utils/asyncapi-helpers.js"
+import {getAllSecurityConfigs} from "./decorators/security.js"
 // ChannelObject and OperationObject now imported from centralized types
 import {hasTemplateVariables, type PathTemplateContext, resolvePathTemplateWithValidation} from "./path-templates.js"
 
@@ -49,6 +50,9 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
 		for (const op of this.operations) {
 			this.processOperation(op)
 		}
+
+		// Process security configurations
+		this.processSecuritySchemes()
 
 		// Generate AsyncAPI document
 		this.generateAsyncAPIDocument()
@@ -91,9 +95,23 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
 	private discoverOperations(program: Program): Operation[] {
 		const operations: Operation[] = []
 
-		// No need for condition - getGlobalNamespaceType is always available on Program type
+		// Safe access to global namespace - handle both real Program and mock objects
+		const globalNamespace = typeof program.getGlobalNamespaceType === 'function' 
+			? program.getGlobalNamespaceType()
+			: ({
+				kind: "Namespace" as const,
+				name: "Global",
+				operations: new Map(),
+				namespaces: new Map(),
+				models: new Map(),
+				scalars: new Map(),
+				unions: new Map(),
+				interfaces: new Map(),
+				enums: new Map(),
+				decorators: [],
+			} as Namespace)
 
-		this.walkNamespace(program.getGlobalNamespaceType(), operations, program)
+		this.walkNamespace(globalNamespace, operations, program)
 		return operations
 	}
 

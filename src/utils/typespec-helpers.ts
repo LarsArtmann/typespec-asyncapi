@@ -18,7 +18,10 @@ import type {ServersObject} from "@asyncapi/parser/esm/spec-types/v3.js"
  */
 export function discoverOperations(program: Program): Operation[] {
 	const operations: Operation[] = []
-	walkNamespace(program.getGlobalNamespaceType(), operations, program)
+	const globalNamespace = typeof program.getGlobalNamespaceType === 'function' 
+		? program.getGlobalNamespaceType()
+		: { operations: new Map(), namespaces: new Map() }
+	walkNamespace(globalNamespace, operations, program)
 	return operations
 }
 

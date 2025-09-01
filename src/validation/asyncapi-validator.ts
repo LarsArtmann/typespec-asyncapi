@@ -218,7 +218,7 @@ export async function validateAsyncAPIObject(document: unknown, options?: Valida
 }
 
 // Export additional utility functions
-export async function validateAsyncAPIEffect(document: unknown, options?: ValidationOptions) {
+export function validateAsyncAPIEffect(document: unknown, options?: ValidationOptions) {
     return Effect.promise(() => validateAsyncAPIObject(document, options))
 }
 

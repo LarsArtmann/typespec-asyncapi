@@ -85,7 +85,8 @@
       "Bash(done)",
       "Bash(gh milestone:*)",
       "Bash(gh label:*)",
-      "Bash(echo:*)"
+      "Bash(echo:*)",
+      "Bash(file:*)"
     ],
     "deny": [],
     "ask": []
