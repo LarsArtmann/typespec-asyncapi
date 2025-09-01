@@ -8,12 +8,12 @@
 import { Effect } from "effect"
 import type {
     MonitoringPlugin,
-    MonitoringType,
     PrometheusConfig,
     MonitoringDataPoint,
     MetricDefinition,
     MetricType
 } from "./monitoring-plugin-types.js"
+import { MonitoringType } from "./monitoring-plugin-types.js"
 
 /**
  * Prometheus metrics collector and exporter
@@ -35,15 +35,15 @@ class PrometheusCollector {
                 pushGateway: config.pushGateway
             }
             
-            yield* Effect.log(`=Ê Prometheus plugin initialized with namespace: ${this.config.namespace}`)
-            yield* Effect.log(`=ª Metrics endpoint: ${this.config.endpoint}:${this.config.port}${this.config.path}`)
+            yield* Effect.log(`=ï¿½ Prometheus plugin initialized with namespace: ${this.config.namespace}`)
+            yield* Effect.log(`=ï¿½ Metrics endpoint: ${this.config.endpoint}:${this.config.port}${this.config.path}`)
             
             if (this.config.pushGateway) {
-                yield* Effect.log(`=€ Push Gateway configured: ${this.config.pushGateway.url}`)
+                yield* Effect.log(`=ï¿½ Push Gateway configured: ${this.config.pushGateway.url}`)
             }
             
             if (this.config.customMetrics && this.config.customMetrics.length > 0) {
-                yield* Effect.log(`=È Custom metrics defined: ${this.config.customMetrics.length}`)
+                yield* Effect.log(`=ï¿½ Custom metrics defined: ${this.config.customMetrics.length}`)
             }
         }.bind(this))
     }
@@ -71,7 +71,7 @@ class PrometheusCollector {
                 metrics.splice(0, metrics.length - 1000)
             }
             
-            yield* Effect.log(`=Ê Recorded metric: ${metricName} = ${dataPoint.value}`)
+            yield* Effect.log(`=ï¿½ Recorded metric: ${metricName} = ${dataPoint.value}`)
         }.bind(this))
     }
     
@@ -86,7 +86,7 @@ class PrometheusCollector {
                 allMetrics.push(...dataPoints)
             }
             
-            yield* Effect.log(`=Ê Retrieved ${allMetrics.length} metric data points`)
+            yield* Effect.log(`=ï¿½ Retrieved ${allMetrics.length} metric data points`)
             return allMetrics
         }.bind(this))
     }
@@ -151,16 +151,16 @@ export const prometheusPlugin: MonitoringPlugin = {
         }
         
         yield* collector.initialize(config as PrometheusConfig)
-        yield* Effect.log("=€ Prometheus Monitoring Plugin initialized")
+        yield* Effect.log("=ï¿½ Prometheus Monitoring Plugin initialized")
     }),
     
     start: () => Effect.gen(function* () {
-        yield* Effect.log("¶ Prometheus Monitoring Plugin started")
+        yield* Effect.log("ï¿½ Prometheus Monitoring Plugin started")
         // In a real implementation, start HTTP server for metrics endpoint
     }),
     
     stop: () => Effect.gen(function* () {
-        yield* Effect.log("ù Prometheus Monitoring Plugin stopped")
+        yield* Effect.log("ï¿½ Prometheus Monitoring Plugin stopped")
         // In a real implementation, stop HTTP server
     }),
     
@@ -291,7 +291,7 @@ func init() {
 func StartMetricsServer() error {
     http.Handle(promConfig.Path, promhttp.Handler())
     
-    fmt.Printf("=Ê Starting Prometheus metrics server on :%d%s\\n", 
+    fmt.Printf("=ï¿½ Starting Prometheus metrics server on :%d%s\\n", 
         promConfig.Port, promConfig.Path)
     
     // Start push gateway routine if configured
@@ -441,7 +441,7 @@ function startMetricsServer() {
     
     const server = http.createServer(app);
     server.listen(promConfig.port, () => {
-        console.log(\`=Ê Prometheus metrics server listening on port \${promConfig.port}\${promConfig.path}\`);
+        console.log(\`=ï¿½ Prometheus metrics server listening on port \${promConfig.port}\${promConfig.path}\`);
     });
     
     // Setup push gateway if configured
@@ -465,7 +465,7 @@ function setupPushGateway() {
         });
     }, promConfig.pushGateway.interval * 1000);
     
-    console.log(\`=€ Push Gateway configured: \${promConfig.pushGateway.url}\`);
+    console.log(\`=ï¿½ Push Gateway configured: \${promConfig.pushGateway.url}\`);
 }
 
 // Helper functions

@@ -423,7 +423,7 @@ release-alpha:
     echo "🏷️  Creating git tag v0.1.0-alpha..."
     git tag -a v0.1.0-alpha -m 'Alpha v0.1.0 - TypeSpec AsyncAPI Emitter
 
-🎉 SOLVING Microsoft TypeSpec Issue #2463 🎉
+# SOLVING Microsoft TypeSpec Issue #2463
 
 ## Alpha Release Highlights
 

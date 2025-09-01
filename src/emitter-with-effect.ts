@@ -11,8 +11,13 @@
  * - Made validation fail the Effect pipeline when AsyncAPI document is invalid
  * - Added proper logging to show decorator data being accessed
  * - Added explicit type annotations for validation error parameters
+ * 
+ * TODO: Split this massive 1563-line file into smaller, focused modules
+ * TODO: This entire file violates single responsibility principle
  */
 
+// TODO: Organize imports by category (effect, typespec, asyncapi, internal)
+// TODO: Remove unused imports to reduce bundle size
 import {Console, Effect} from "effect"
 import type {EmitContext, Model, Namespace, Operation, Program} from "@typespec/compiler"
 import {getDoc} from "@typespec/compiler"
@@ -32,8 +37,8 @@ import type {
 	SchemaObject,
 	SecuritySchemeObject,
 } from "@asyncapi/parser/esm/spec-types/v3.js"
-// import {validateAsyncAPIEffect} from "./validation/asyncapi-validator.js" // Unused for now
-// import type {ValidationError} from "./errors/validation-error.js" // Unused
+// import {validateAsyncAPIEffect} from "./validation/asyncapi-validator.js" // TODO: Remove commented unused imports
+// import type {ValidationError} from "./errors/validation-error.js" // TODO: Remove commented unused imports
 import {$lib} from "./lib.js"
 import {PERFORMANCE_METRICS_SERVICE} from "./performance/metrics.js"
 import {MEMORY_MONITOR_SERVICE} from "./performance/memory-monitor.js"
@@ -46,10 +51,13 @@ import type {AsyncAPIProtocolType} from "./constants/protocol-defaults.js"
 import type {ProtocolConfig} from "./decorators/protocol.js"
 import {registerBuiltInPlugins, generateProtocolBinding} from "./plugins/plugin-system.js"
 // Import new modular components  
-// import {AsyncAPIEmitter} from "./core/AsyncAPIEmitter.js" // Will replace AsyncAPIEffectEmitter later
+// import {AsyncAPIEmitter} from "./core/AsyncAPIEmitter.js" // TODO: Remove commented future imports
 
+// TODO: Move helper functions to utils/ directory
+// TODO: Add explicit return type annotation
 // Helper function to create AsyncAPI 3.0 standard bindings
-const createAsyncAPIBinding = (protocol: AsyncAPIProtocolType, config: Record<string, unknown> = {}) => {
+const createAsyncAPIBinding = (protocol: AsyncAPIProtocolType, config: Record<string, unknown> = {}): Record<string, unknown> => {
+	// TODO: Extract magic string "0.5.0" to named constant
 	return {
 		[protocol]: {
 			bindingVersion: "0.5.0", // AsyncAPI 3.0 standard
@@ -58,7 +66,7 @@ const createAsyncAPIBinding = (protocol: AsyncAPIProtocolType, config: Record<st
 	}
 }
 // Security imports removed - not part of core protocol functionality
-// import type {SecurityConfig} from "./decorators/security.js"
+// import type {SecurityConfig} from "./decorators/security.js" // TODO: Remove commented duplicate import
 import type {SecurityConfig} from "./decorators/security.js"
 // Removed security and unused imports to focus on protocol functionality
 
@@ -67,7 +75,31 @@ import type {SecurityConfig} from "./decorators/security.js"
 
 //TODO: This file is still too big!
 
+// ========== CRITICAL ARCHITECTURAL ISSUES ==========
+// TODO: MAJOR REFACTORING NEEDED - This 1563-line file violates every SOLID principle
+// TODO: Extract these separate concerns into modules:
+//   - DocumentBuilder: Handle AsyncAPI document construction
+//   - ValidationService: Handle document validation
+//   - SerializationService: Handle JSON/YAML serialization
+//   - DiscoveryService: Handle TypeSpec AST traversal and discovery
+//   - ProcessingService: Handle operation/message/security processing
+//   - BindingFactory: Handle protocol binding creation
+//   - PerformanceMonitor: Handle metrics and monitoring (already exists)
+// TODO: Implement proper dependency injection instead of direct instantiation
+// TODO: Add comprehensive unit testing for each extracted service
+// TODO: Create interfaces for all services to improve testability
+// TODO: Remove all console.log statements - use structured logging throughout
+// TODO: Replace all magic strings and numbers with named constants
+// TODO: Add proper error types instead of generic Error
+// TODO: Implement proper validation schemas for all inputs
+// TODO: Add comprehensive JSDoc documentation for all public methods
+// TODO: Consider using Builder pattern for AsyncAPI document construction
+// TODO: Implement proper state management instead of direct mutation
+// ====================================================
+
 // Protocol binding types for proper type safety
+// TODO: Define more specific binding types instead of generic Record<string, unknown>
+// TODO: Create separate type definitions file for protocol bindings
 type ChannelBindings = Record<string, unknown>
 type OperationBindings = Record<string, unknown>
 type MessageBindings = Record<string, unknown>
@@ -75,25 +107,41 @@ type MessageBindings = Record<string, unknown>
 /**
  * Micro-kernel AsyncAPI TypeEmitter - Core orchestration only
  * All business logic delegated to plugins for maximum extensibility
+ * 
+ * TODO: This class has too many responsibilities - violates SRP
+ * TODO: Split into separate classes for document generation, validation, processing
+ * TODO: Extract performance monitoring concerns to separate decorator/wrapper
+ * TODO: Add proper JSDoc documentation for all public methods
  */
 export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
+	// TODO: Make operations private and add getter/setter for encapsulation
 	private operations: Operation[] = []
 	// @ts-expect-error - Used within Effect.TS generators (false positive)
 	// noinspection JSMismatchedCollectionQueryUpdate
+	// TODO: Remove ts-expect-error by properly typing the usage
 	private messageModels: Model[] = []
+	// TODO: Make asyncApiDoc private and provide controlled access methods
 	private readonly asyncApiDoc: AsyncAPIObject
 
+	// TODO: Add parameter validation for emitter
+	// TODO: Add error handling for document initialization
 	constructor(emitter: AssetEmitter<string, AsyncAPIEmitterOptions>) {
 		super(emitter)
 		this.asyncApiDoc = this.createInitialDocument()
 	}
 
+	// TODO: This method is too long (>30 lines) - split into smaller methods
+	// TODO: Add proper return type annotation
+	// TODO: Parameter _program is unused - either use it or remove underscore prefix
+	// TODO: Extract file path generation to separate method
+	// TODO: Add validation for options values
+	// TODO: Improve error handling with proper error types
 	override programContext(_program: Program): Record<string, unknown> {
 		// This method is called by AssetEmitter during emitProgram()
 		// We need to create the source file here to tell the framework what files to write
 		const options = this.emitter.getOptions()
-		// NOTE: TypeSpec test runner does not pass custom options - this is a known issue
 		
+		// TODO: Extract magic strings "yaml" and "asyncapi" to constants
 		const fileType = options["file-type"] || "yaml"
 		const fileName = options["output-file"] || "asyncapi"
 		const outputPath = `${fileName}.${fileType}`
@@ -105,6 +153,8 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 		// This ensures the AsyncAPI document is populated BEFORE sourceFile() is called
 		Effect.log("🚀 Running Effect.TS emission pipeline in programContext...")
 		
+		// TODO: Replace generic try-catch with specific Effect error handling
+		// TODO: Don't rethrow generic Error - create specific error types
 		try {
 			// Run the emission pipeline synchronously
 			Effect.runSync(this.runEmissionPipelineSync())
@@ -114,23 +164,31 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 			throw error
 		}
 		
+		// TODO: Use more descriptive object property names
+		// TODO: Add type annotation for return value
 		return {
 			program: "AsyncAPI",
 			sourceFile: sourceFile,
 		}
 	}
 
+	// TODO: Add error handling for program.getProgram() call
+	// TODO: Extract magic strings to constants (version numbers, default titles)
+	// TODO: Consider making document structure configurable
 	private createInitialDocument(): AsyncAPIObject {
 		const program = this.emitter.getProgram()
 		const servers = buildServersFromNamespaces(program)
 
+		// TODO: Extract magic string "3.0.0" to named constant
+		// TODO: Extract default info values to configuration object
 		return {
 			asyncapi: "3.0.0",
 			info: {
-				title: "AsyncAPI Specification",
-				version: "1.0.0",
-				description: "Generated from TypeSpec with Effect.TS integration",
+				title: "AsyncAPI Specification", // TODO: Make configurable
+				version: "1.0.0", // TODO: Make configurable
+				description: "Generated from TypeSpec with Effect.TS integration", // TODO: Make configurable
 			},
+			// TODO: Add proper type assertion or validation instead of 'as' cast
 			servers: servers as AsyncAPIObject["servers"],
 			channels: {},
 			operations: {},
@@ -142,16 +200,23 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 		}
 	}
 
+	// TODO: This method is too long (>30 lines) - split into smaller methods
+	// TODO: Extract debug logging to separate method or make conditional
+	// TODO: Magic number 200 should be a named constant
+	// TODO: Consider using structured logging instead of string concatenation
 	override sourceFile(sourceFile: SourceFile<string>): EmittedSourceFile {
 		Effect.log(`🎯 SOURCEFIRE: Generating file content for ${sourceFile.path}`)
 
 		const options = this.emitter.getOptions()
+		// TODO: Extract magic string "yaml" to constant
 		const fileType: "yaml" | "json" = options["file-type"] || "yaml"
 
 		// Serialize the populated AsyncAPI document
 		Effect.log(`📋 Serializing AsyncAPI document as ${fileType}`)
 		Effect.log(`📊 Document state: channels=${Object.keys(this.asyncApiDoc.channels || {}).length}, operations=${Object.keys(this.asyncApiDoc.operations || {}).length}`)
 		
+		// TODO: Extract debug logging to separate method
+		// TODO: Make debug logging conditional based on log level
 		// Debug: Log document structure
 		Effect.log(`🔍 DEBUG: AsyncAPI document structure:`)
 		Effect.log(`  - asyncapi: ${this.asyncApiDoc.asyncapi}`)
@@ -163,8 +228,10 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 
 		Effect.log(`📄 Generated ${content.length} bytes of ${fileType} content`)
 		
+		// TODO: Extract content preview logic to separate method
 		// Debug: Log content preview
 		if (content.length > 0) {
+			// TODO: Extract magic number 200 to named constant PREVIEW_LENGTH
 			const preview = content.substring(0, 200)
 			Effect.log(`📝 Content preview: ${preview}${content.length > 200 ? '...' : ''}`)
 		} else {
@@ -180,11 +247,15 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 
 
 
+	// TODO: Add error handling for file write operations
+	// TODO: Add validation for sourceFiles parameter
+	// TODO: Consider adding file write progress reporting for large files
 	override async writeOutput(sourceFiles: SourceFile<string>[]): Promise<void> {
 		// The Effect.TS emission pipeline now runs in programContext()
 		// This method just needs to write the files to disk
 		Effect.log("📝 Writing output files to disk...")
 		
+		// TODO: Add try-catch around super.writeOutput() for better error handling
 		// Call parent writeOutput to actually write files to disk
 		await super.writeOutput(sourceFiles)
 		
@@ -193,7 +264,12 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 
 	/**
 	 * Synchronous emission pipeline for programContext (CRITICAL FIX)
+	 * 
+	 * TODO: Add proper JSDoc documentation for return type
+	 * TODO: Consider extracting to separate pipeline class
+	 * TODO: Add error recovery mechanisms
 	 */
+	// TODO: Add explicit return type annotation
 	private runEmissionPipelineSync() {
 		return Effect.gen(function* (this: AsyncAPIEffectEmitter) {
 			Effect.log(`🚀 Starting synchronous AsyncAPI emission pipeline...`)
@@ -207,9 +283,16 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 
 	/**
 	 * Execute the core emission stages synchronously
+	 * 
+	 * TODO: This method is too long and complex - break into smaller stages
+	 * TODO: Add error handling between each stage
+	 * TODO: Consider using pipeline pattern with intermediate validation
+	 * TODO: Add stage timing measurements for performance monitoring
 	 */
+	// TODO: Add explicit return type annotation
 	private executeEmissionStagesSync() {
 		return Effect.gen(function* (this: AsyncAPIEffectEmitter) {
+			// TODO: Add error recovery for each stage
 			const ops = (yield* this.discoverOperationsEffectSync())
 			const messageModels = yield* this.discoverMessageModelsEffectSync()
 			const securityConfigs = yield* this.discoverSecurityConfigsEffectSync()
@@ -225,8 +308,11 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 
 	/**
 	 * Main emission pipeline with performance monitoring (LEGACY - now unused)
+	 * 
+	 * TODO: Remove this unused legacy method - dead code
 	 */
 	// @ts-ignore - Legacy method kept for reference
+	// TODO: Remove @ts-ignore and delete this entire method - it's dead code
 	private runEmissionPipelineUNUSED() {
 		return Effect.gen(function* (this: AsyncAPIEffectEmitter) {
 			const metricsService = yield* PERFORMANCE_METRICS_SERVICE
@@ -335,16 +421,26 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 
 	/**
 	 * Discover operations synchronously (CRITICAL FIX)
+	 * 
+	 * TODO: This method is too long (>50 lines) - extract walkNamespace to separate method
+	 * TODO: Add proper JSDoc for parameters and return type
+	 * TODO: Extract mock namespace creation to test utility
+	 * TODO: Add validation for discovered operations
 	 */
+	// TODO: Add explicit return type annotation
 	private discoverOperationsEffectSync() {
 		return Effect.gen(function* (this: AsyncAPIEffectEmitter) {
 			Effect.log(`🔍 Starting synchronous operation discovery...`)
 
+			// TODO: Extract this entire operation to separate method
 			const discoveryOperation = Effect.sync(() => {
 				const program = this.emitter.getProgram()
 				const operations: Operation[] = []
 
+				// TODO: Extract walkNamespace to separate private method
+				// TODO: Add proper type annotations for parameters
 				const walkNamespace = (ns: Namespace) => {
+					// TODO: Add validation for ns parameter
 					if (ns.operations) {
 						ns.operations.forEach((op: Operation, name: string) => {
 							operations.push(op)
@@ -360,9 +456,11 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 				}
 
 				// Safe access to global namespace
+				// TODO: Extract program type checking to separate method
 				if (typeof program.getGlobalNamespaceType === 'function') {
 					walkNamespace(program.getGlobalNamespaceType())
 				} else {
+					// TODO: Move mock namespace to test utilities
 					// Mock namespace for tests
 					const mockNamespace: Namespace = { 
 						kind: "Namespace",
@@ -377,6 +475,7 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 					} as Namespace
 					walkNamespace(mockNamespace)
 				}
+				// TODO: Don't mutate instance state directly - return operations and set in caller
 				this.operations = operations
 
 				Effect.log(`📊 Total operations discovered: ${operations.length}`)
@@ -459,14 +558,24 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 
 	/**
 	 * Discover message models synchronously (CRITICAL FIX)
+	 * 
+	 * TODO: This method is very similar to discoverOperationsEffectSync - extract common namespace walking logic
+	 * TODO: Add proper JSDoc documentation
+	 * TODO: Add error handling for stateMap access
+	 * TODO: Extract walkNamespaceForModels to separate method
 	 */
+	// TODO: Add explicit return type annotation
 	private discoverMessageModelsEffectSync() {
 		return Effect.sync(() => {
 			const program = this.emitter.getProgram()
 			const messageModels: Model[] = []
+			// TODO: Add error handling for missing stateMap
 			const messageConfigsMap = program.stateMap($lib.stateKeys.messageConfigs)
 
+			// TODO: Extract to separate private method for reusability
+			// TODO: Add proper type annotations for parameters
 			const walkNamespaceForModels = (ns: Namespace) => {
+				// TODO: Add validation for ns parameter
 				if (ns.models) {
 					ns.models.forEach((model: Model, name: string) => {
 						if (messageConfigsMap.has(model)) {
@@ -483,9 +592,11 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 				}
 			}
 
+			// TODO: Extract program type checking to common utility
 			if (typeof program.getGlobalNamespaceType === 'function') {
 				walkNamespaceForModels(program.getGlobalNamespaceType())
 			}
+			// TODO: Don't mutate instance state directly - return models and set in caller
 			this.messageModels = messageModels
 
 			Effect.log(`📊 Total message models discovered: ${messageModels.length}`)
@@ -569,16 +680,25 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 
 	/**
 	 * Process operations synchronously (CRITICAL FIX)
+	 * 
+	 * TODO: Add proper JSDoc documentation with parameter and return type
+	 * TODO: Add error handling for processSingleOperation calls
+	 * TODO: Consider using Array.map instead of for...of for functional approach
+	 * TODO: Add validation for operations parameter
 	 */
+	// TODO: Add explicit return type annotation
 	private processOperationsEffectSync(operations: Operation[]) {
 		return Effect.sync(() => {
 			Effect.log(`🏗️ Processing ${operations.length} operations synchronously...`)
 
+			// TODO: Add error handling for individual operation processing
+			// TODO: Consider collecting results instead of just side effects
 			for (const op of operations) {
 				this.processSingleOperation(op)
 			}
 
 			Effect.log(`📊 Processed ${operations.length} operations successfully`)
+			// TODO: Return something more meaningful than just count
 			return operations.length
 		})
 	}
@@ -895,41 +1015,62 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 
 	/**
 	 * Process a single operation and add it to the AsyncAPI document
+	 * 
+	 * TODO: This method has too many responsibilities - split into smaller methods
+	 * TODO: Add proper error handling for each document addition step
+	 * TODO: Extract magic string "channel_" to named constant
+	 * TODO: Add validation for operation parameter
+	 * TODO: Consider using Effect.TS patterns for error handling
 	 */
 	private processSingleOperation(op: Operation): string {
+		// TODO: Add null/undefined validation for op parameter
 		const program = this.emitter.getProgram()
 		const {operationType, channelPath} = this.extractOperationMetadata(op, program)
 		const protocolConfig = getProtocolConfig(program, op)
 
+		// TODO: Extract magic strings 'none' and 'default' to constants
 		Effect.log(`🔍 Operation ${op.name}: type=${operationType ?? 'none'}, channel=${channelPath ?? 'default'}`)
 		if (protocolConfig) {
 			Effect.log(`🔧 Protocol config found: ${protocolConfig.protocol}`)
 		}
 
+		// TODO: Extract magic string "channel_" to named constant
 		const channelName = `channel_${op.name}`
+		// TODO: Add validation for operationType values
 		const action = operationType === "subscribe" ? "receive" : "send"
 
+		// TODO: Add error handling for each of these document addition steps
+		// TODO: Consider making these operations atomic or add rollback mechanism
 		this.addChannelToDocument(op, channelName, channelPath, program, protocolConfig)
 		this.addOperationToDocument(op, channelName, action, program, protocolConfig)
 		this.addMessageToDocument(op, protocolConfig)
 		this.processReturnTypeSchema(op, program)
 
 		Effect.log(`✅ Processed operation: ${op.name} (${action})`)
+		// TODO: Return more meaningful result than just operation name
 		return op.name
 	}
 
 	/**
 	 * Extract operation metadata from decorators
+	 * 
+	 * TODO: Add proper JSDoc documentation for parameters
+	 * TODO: Add validation for op and program parameters
+	 * TODO: Replace 'as' type assertions with proper type guards
+	 * TODO: Extract magic string "/" to named constant
 	 */
 	private extractOperationMetadata(op: Operation, program: Program): {
 		operationType: string | undefined,
 		channelPath: string
 	} {
+		// TODO: Add error handling for stateMap access
 		const operationTypesMap = program.stateMap($lib.stateKeys.operationTypes)
 		const channelPathsMap = program.stateMap($lib.stateKeys.channelPaths)
 
+		// TODO: Replace 'as' assertions with proper type guards
 		const operationType = operationTypesMap.get(op) as string | undefined
 		const decoratedChannelPath = channelPathsMap.get(op) as string | undefined
+		// TODO: Extract magic string "/" to named constant PATH_PREFIX
 		const channelPath = decoratedChannelPath ?? `/${op.name.toLowerCase()}`
 
 		return {operationType, channelPath}
@@ -937,23 +1078,37 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 
 	/**
 	 * Add channel definition to AsyncAPI document with protocol binding support
+	 * 
+	 * TODO: This method is too long (>30 lines) - extract binding logic to separate method
+	 * TODO: Add proper JSDoc documentation for all parameters
+	 * TODO: Extract debug logging to separate method or make conditional
+	 * TODO: Add validation for all parameters
+	 * TODO: Extract magic string "Message" suffix to constant
+	 * TODO: Avoid direct mutation of asyncApiDoc - consider builder pattern
 	 */
 	private addChannelToDocument(op: Operation, channelName: string, channelPath: string, program: Program, protocolConfig?: ProtocolConfig): void {
+		// TODO: Add validation for all parameters
 		if (!this.asyncApiDoc.channels) this.asyncApiDoc.channels = {}
 
+		// TODO: Extract channelDef creation to separate method
 		const channelDef = {
 			address: channelPath,
+			// TODO: Extract magic string "Channel for" to constant
 			description: getDoc(program, op) ?? `Channel for ${op.name}`,
 			messages: {
+				// TODO: Extract magic string "Message" to named constant
 				[`${op.name}Message`]: {
 					$ref: `#/components/messages/${op.name}Message`,
 				},
 			},
+			// TODO: Avoid explicit 'as' type assertion
 			bindings: undefined as Record<string, unknown> | undefined,
 		}
 
+		// TODO: Extract protocol binding logic to separate method
 		// Add protocol bindings if protocol config exists
 		if (protocolConfig) {
+			// TODO: Make debug logging conditional based on log level
 			Effect.log(`🔧 DEBUG: Creating channel bindings for ${channelName} with protocol ${protocolConfig.protocol}`)
 			Effect.log(`🔧 DEBUG: Protocol config:`, protocolConfig)
 			const channelBindings = this.createProtocolChannelBindings(protocolConfig)
@@ -1054,23 +1209,36 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 
 	/**
 	 * Create protocol-specific channel bindings using Effect.TS patterns
+	 * 
+	 * TODO: This method is too long (>30 lines) - extract protocol cases to separate methods
+	 * TODO: Add proper JSDoc documentation for parameter and return type
+	 * TODO: Replace 'as' type assertions with proper type guards
+	 * TODO: Extract magic strings to constants ('default', 'GET')
+	 * TODO: Consider using a registry pattern instead of switch statement
+	 * TODO: Add comprehensive error handling for malformed configs
 	 */
 	private createProtocolChannelBindings(config: ProtocolConfig): ChannelBindings | undefined {
+		// TODO: Add validation for config parameter
 		return Effect.runSync(
 			Effect.gen(function* () {
 				yield* Effect.log(`🔧 Creating channel bindings for protocol: ${config.protocol}`)
 
+				// TODO: Extract each case to separate method for better maintainability
 				// Create AsyncAPI 3.0 standard bindings based on protocol type
 				switch (config.protocol) {
 					case "kafka": {
+						// TODO: Replace 'as' assertion with proper type guard
 						const kafkaBinding = config.binding as Record<string, unknown>
 						const bindings = createAsyncAPIBinding(config.protocol, kafkaBinding)
+						// TODO: Extract magic string 'default' to named constant
 						yield* Effect.log(`✅ Created Kafka channel bindings with topic: ${kafkaBinding.topic ?? 'default'}`)
 						return yield* Effect.succeed(bindings)
 					}
 					case "websocket": {
+						// TODO: Replace 'as' assertion with proper type guard
 						const wsBinding = config.binding as Record<string, unknown>
 						const bindings = createAsyncAPIBinding(config.protocol, wsBinding)
+						// TODO: Extract magic string 'GET' to named constant
 						yield* Effect.log(`✅ Created WebSocket channel bindings with method: ${wsBinding.method ?? 'GET'}`)
 						return yield* Effect.succeed(bindings)
 					}
@@ -1245,18 +1413,31 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 
 	/**
 	 * Serialize document to JSON or YAML format
+	 * 
+	 * TODO: Replace console.log with Effect.log for consistency
+	 * TODO: Add proper parameter validation for fileType
+	 * TODO: Extract magic string "json" to constant
+	 * TODO: Add error handling for JSON.stringify and YAML stringify
+	 * TODO: Make debug logging conditional based on log level
+	 * TODO: Extract magic number 2 (JSON indent) to named constant
 	 */
 	private serializeDocument(fileType: string): string {
+		// TODO: Replace console.log with Effect.log for consistency
 		console.log(`🔍 DEBUG: serializeDocument called with fileType: ${fileType}`)
 		console.log(`🔍 DEBUG: asyncApiDoc state:`, JSON.stringify(this.asyncApiDoc, null, 2))
 		console.log(`🔍 DEBUG: channels count: ${Object.keys(this.asyncApiDoc.channels || {}).length}`)
 		console.log(`🔍 DEBUG: operations count: ${Object.keys(this.asyncApiDoc.operations || {}).length}`)
 		
+		// TODO: Add parameter validation for fileType
+		// TODO: Extract magic string "json" to named constant
 		if (fileType === "json") {
+			// TODO: Add error handling for JSON.stringify
+			// TODO: Extract magic number 2 to named constant JSON_INDENT
 			const result = JSON.stringify(this.asyncApiDoc, null, 2)
 			console.log(`🔍 DEBUG: JSON serialization result length: ${result.length}`)
 			return result
 		} else {
+			// TODO: Add error handling for YAML stringify
 			const result = stringify(this.asyncApiDoc)
 			console.log(`🔍 DEBUG: YAML serialization result length: ${result.length}`)
 			return result
@@ -1357,10 +1538,20 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 	/**
 	 * Create AsyncAPI security scheme from SecurityConfig
 	 * Maps our security scheme types to AsyncAPI v3 specification
+	 * 
+	 * TODO: This method is EXTREMELY long (>100 lines) - needs immediate refactoring
+	 * TODO: Extract each case to separate method (createApiKeyScheme, createHttpScheme, etc.)
+	 * TODO: Add proper JSDoc documentation for parameter and return type
+	 * TODO: Add validation for config parameter
+	 * TODO: Extract magic strings to constants ("Authorization", "user", "password")
+	 * TODO: Consider using a factory pattern or registry for scheme creation
+	 * TODO: Add comprehensive error handling for malformed scheme configs
 	 */
 	private createAsyncAPISecurityScheme(config: SecurityConfig): SecuritySchemeObject {
+		// TODO: Add validation for config parameter
 		const scheme = config.scheme
 
+		// TODO: Extract each case to separate method for maintainability
 		// Map our scheme types to AsyncAPI v3 types
 		switch (scheme.type) {
 			case "apiKey":
@@ -1506,24 +1697,36 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 
 /**
  * Main emission function using Effect.TS integrated emitter
+ * 
+ * TODO: This function is too long (>60 lines) - extract setup methods
+ * TODO: Add proper parameter validation for context
+ * TODO: Extract plugin initialization to separate method
+ * TODO: Extract program patching to separate method
+ * TODO: Add more specific error types instead of generic catch
+ * TODO: Consider using Effect.TS patterns throughout instead of mixing async/await
  */
 export async function generateAsyncAPIWithEffect(context: EmitContext<AsyncAPIEmitterOptions>): Promise<void> {
+	// TODO: Add parameter validation for context
 	Effect.log("🚀 AsyncAPI Emitter with Effect.TS Integration")
 	Effect.log("✨ Using REAL asyncapi-validator library!")
 	Effect.log("🔧 Connecting ghost Effect.TS system to main emitter")
 	
+	// TODO: Extract plugin initialization to separate method
 	// Initialize plugin system
 	try {
 		await Effect.runPromise(registerBuiltInPlugins())
 		Effect.log("🔌 Plugin system initialized successfully")
 	} catch (error) {
+		// TODO: Add more specific error handling instead of generic catch
 		Effect.log("⚠️  Plugin system initialization failed, continuing without plugins:", error)
 	}
 
+	// TODO: Extract program setup to separate method
 	// Ensure program has required compilerOptions for AssetEmitter
 	if (!context.program.compilerOptions) {
 		context.program.compilerOptions = {}
 	}
+	// TODO: Extract magic value false to named constant
 	if (context.program.compilerOptions.dryRun === undefined) {
 		context.program.compilerOptions.dryRun = false
 	}
@@ -1562,4 +1765,25 @@ export async function generateAsyncAPIWithEffect(context: EmitContext<AsyncAPIEm
 	await assetEmitter.writeOutput()
 
 	Effect.log("🎉 AsyncAPI generation complete with Effect.TS + validation!")
+
+	// ========== FILE END SUMMARY ==========
+	// TODO: URGENT - This file needs immediate architectural refactoring
+	// TODO: Current issues found in this review:
+	//   - 1563 lines in single file (should be <300 per file)
+	//   - Multiple violations of Single Responsibility Principle
+	//   - 50+ methods in single class (should be <20)
+	//   - Extensive use of console.log instead of structured logging
+	//   - Multiple dead code sections marked as "UNUSED"
+	//   - Missing error handling in critical sections
+	//   - Heavy use of 'any' types and 'as' assertions
+	//   - Magic strings and numbers throughout
+	//   - Missing parameter validation
+	//   - Direct state mutation instead of immutable patterns
+	//   - Inconsistent naming conventions
+	//   - Missing comprehensive unit tests for individual methods
+	//   - Performance bottlenecks in nested namespace walking
+	//   - Memory leaks potential in large document generation
+	// TODO: Next steps: Create GitHub issues for each architectural concern
+	// TODO: Implement feature flags to gradually replace this monolithic emitter
+	// =====================================
 }

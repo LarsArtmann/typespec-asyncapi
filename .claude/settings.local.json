@@ -93,7 +93,8 @@
       "Bash(asyncapi --version)",
       "Bash(asyncapi validate:*)",
       "Bash(ln:*)",
-      "WebFetch(domain:microsoft.github.io)"
+      "WebFetch(domain:microsoft.github.io)",
+      "Bash(python3:*)"
     ],
     "deny": [],
     "ask": []

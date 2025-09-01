@@ -1,10 +1,17 @@
 {
+  // TODO: Add top-level comment describing the TypeScript configuration purpose and target environment
+  // TODO: Add version information and last updated timestamp
+  // TODO: Consider extracting common configuration to a base tsconfig file
   "compilerOptions": {
     // === TYPESCRIPT 5.9.2 STABLE CONFIGURATION ===
+    // TODO: Update comment to include configuration philosophy and rationale
+    // TODO: Add reference to TypeSpec compatibility requirements
     //as in https://github.com/microsoft/typespec/blob/main/tsconfig.base.json
     "composite": true,
+    // TODO: Add comment explaining why composite builds are needed for this project
     //as in https://github.com/microsoft/typespec/blob/main/tsconfig.base.json
     "alwaysStrict": true,
+    // TODO: Add comment explaining strict mode benefits for this project
     //as in https://github.com/microsoft/typespec/blob/main/tsconfig.base.json
     "forceConsistentCasingInFileNames": true,
     //as in https://github.com/microsoft/typespec/blob/main/tsconfig.base.json
@@ -56,18 +63,27 @@
     "noEmit": false,
     "removeComments": false,
     // Core strict flag bundle
+    // TODO: Add comment explaining the strict configuration strategy
+    // TODO: Consider grouping related strict options with explanatory comments
 
     // TypeScript 5.9.2 advanced strictness features (Effect.TS compatible)
+    // TODO: Document the specific Effect.TS compatibility requirements
+    // TODO: Consider Effect.TS version-specific configuration
     "noUncheckedIndexedAccess": false,
     // DISABLED: Breaks Effect.TS type inference for arrays/objects
+    // TODO: Re-evaluate this setting with newer Effect.TS versions
     "exactOptionalPropertyTypes": false,
     // DISABLED: Too strict for Effect.TS optional property patterns
+    // TODO: Test compatibility with Effect.TS optional property handling
     "noImplicitOverride": false,
     // DISABLED: Can interfere with Effect.TS method binding
+    // TODO: Verify this is still necessary with current Effect.TS version
     "noFallthroughCasesInSwitch": true,
     // DISABLED: Effect.TS uses dynamic property access patterns
     // Keep: Prevent switch fallthrough bugs
+    // TODO: Add switch statement linting rules for consistency
     "noPropertyAccessFromIndexSignature": false,
+    // TODO: Document why this is disabled and provide alternative safety measures
     // Unused code detection (zero tolerance)
     "noUnusedLocals": true,
     // No unused local variables
@@ -95,19 +111,28 @@
     // Keep: Property initialization checking (included in strict)
 
     // === TYPESCRIPT 5.9.2 PERFORMANCE OPTIMIZATIONS ===
+    // TODO: Add performance benchmarking to measure optimization effectiveness
+    // TODO: Consider project-specific performance tuning based on build metrics
     "incremental": true,
+    // TODO: Add comment about incremental build cache management
     "tsBuildInfoFile": ".tsbuildinfo",
     // Performance boost
+    // TODO: Add .tsbuildinfo to .gitignore if not already present
     "skipDefaultLibCheck": true,
     // Performance boost
+    // TODO: Document which libraries are skipped and potential risks
     "disableSourceOfProjectReferenceRedirect": true,
     // Performance boost
+    // TODO: Verify this doesn't break TypeSpec compiler integration
     "disableSolutionSearching": true,
     // Performance boost
+    // TODO: Document impact on monorepo or multi-project setups
     "disableReferencedProjectLoad": true,
     // Performance boost
+    // TODO: Consider impact on IDE IntelliSense performance
     "assumeChangesOnlyAffectDirectDependencies": true,
     // Faster incremental builds (TS 4.8+)
+    // TODO: Add warning about potential edge cases with this assumption
 
     // TypeScript 5.9.2 performance optimizations
     "noErrorTruncation": true,
@@ -138,8 +163,14 @@
     // Remove unused imports
 
     // === PATH MAPPING FOR CLEAN IMPORTS ===
+    // TODO: Remove typescript-go references (should be 'tsc')
+    // TODO: Consider implementing path mapping for cleaner imports
+    // TODO: Add validation that path mapping doesn't break TypeSpec integration
     //TODO: not-supported by typescript-go: "baseUrl": ".",
     "paths": {
+      // TODO: Add common path aliases for frequently imported modules
+      // TODO: Consider adding path mapping for test utilities
+      // TODO: Document the decision to avoid path mapping
       //I don't want a bundler, so leave this empty.
     },
     // === TYPESCRIPT 5.9.2 OUTPUT ENHANCEMENT ===
@@ -152,11 +183,19 @@
     "listFiles": false
     // Performance: Don't list all files
   },
+  // TODO: Add comment explaining include/exclude strategy
   "include": [
+    // TODO: Consider including lib/**/*.ts for TypeSpec library files
+    // TODO: Add specific patterns for configuration files if needed
+    // TODO: Consider adding type definition files (*.d.ts)
     "src/**/*.ts",
     "src/**/*.json"
+    // TODO: Add validation that all necessary files are included
   ],
   "exclude": [
+    // TODO: Add specific exclude patterns for temporary files
+    // TODO: Consider excluding specific build artifacts beyond dist
+    // TODO: Add validation that exclusions don't accidentally exclude important files
     "node_modules",
     "dist",
     "test",
@@ -166,9 +205,19 @@
     "examples",
     "coverage",
     ".tsbuildinfo"
+    // TODO: Add additional artifacts like .nyc_output, tmp directories
   ],
+  // TODO: Add comment explaining ts-node configuration purpose
   "ts-node": {
+    // TODO: Consider if ts-node is actually needed for this project
+    // TODO: Add validation for ts-node compatibility with TypeSpec
+    // TODO: Document the use cases where ts-node is required
     "esm": true,
+    // TODO: Add comment explaining ESM requirement
     "experimentalSpecifierResolution": "node"
+    // TODO: Consider updating to stable specifier resolution when available
+    // TODO: Add warning about experimental nature of this setting
   }
+  // TODO: Add additional configuration sections for testing frameworks
+  // TODO: Consider adding references to related tsconfig files (test, build, etc.)
 }

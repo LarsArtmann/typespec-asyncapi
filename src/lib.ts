@@ -1,23 +1,39 @@
+// TODO: Add file-level JSDoc comment describing this module's purpose and architecture
+// TODO: Consider grouping imports by functionality (core compiler, types, utilities)
+// TODO: Add explicit return type annotations to imported functions for better IDE support
 import {createTypeSpecLibrary, type DecoratorContext, type Diagnostic, paramMessage} from "@typespec/compiler"
 
+// TODO: Add JSDoc comment explaining the purpose and structure of $lib export
+// TODO: Extract library name to a constant to avoid duplication
+// TODO: Add version information to library metadata  
+// TODO: Consider organizing diagnostics by category (validation, protocol, security)
 export const $lib = createTypeSpecLibrary({
 	name: "@larsartmann/typespec-asyncapi",
+	// TODO: Add library description, version, and other metadata fields
 	diagnostics: {
+		// TODO: Group related diagnostics with separating comments (version, channel, message, etc.)
 		"invalid-asyncapi-version": {
 			severity: "error",
+			// TODO: Add multiple message variants for different contexts (CLI, IDE, programmatic)
 			messages: {
+				// TODO: Extract supported versions to a constant for maintainability
 				default: paramMessage`AsyncAPI version '${"version"}' is not supported. Only AsyncAPI 3.0.0 is supported. Update your emitter options to use "3.0.0".`,
 			},
 		},
 		"missing-channel-path": {
 			severity: "error",
 			messages: {
+				// TODO: Add actionable examples in the error message for different channel patterns
+				// TODO: Add link to documentation about channel path requirements
 				default: paramMessage`Operation '${"operationName"}' missing @channel decorator. Add @channel("/your-channel-path") to specify the channel path.`,
 			},
 		},
 		"invalid-channel-path": {
 			severity: "error",
 			messages: {
+				// TODO: Add specific validation rules documentation in the error message
+				// TODO: Provide examples of valid channel path formats
+				// TODO: Add suggestion for fixing common path format mistakes
 				default: paramMessage`Channel path '${"path"}' is not valid. Use format: /topic-name, /service/event-type, or {variable} syntax.`,
 			},
 		},
@@ -117,8 +133,15 @@ export const $lib = createTypeSpecLibrary({
 				default: paramMessage`Security scheme validation failed: ${"errors"}.`,
 			},
 		},
+		// TODO: Add more diagnostic codes for edge cases and advanced validations
+		// TODO: Consider adding info-level diagnostics for best practices
+		// TODO: Add diagnostic codes for performance warnings (large schemas, etc.)
 	},
+	// TODO: Add JSDoc comment explaining state management architecture
 	state: {
+		// TODO: Add more detailed descriptions including data types and usage patterns
+		// TODO: Consider adding validation functions for state data integrity
+		// TODO: Group related state by functionality (channels, messages, servers, etc.)
 		channelPaths: {description: "Map of operation to channel path"},
 		messageSchemas: {description: "Map of message names to their schemas"},
 		messageConfigs: {description: "Map of models to message configurations"},
@@ -129,10 +152,16 @@ export const $lib = createTypeSpecLibrary({
 		securityConfigs: {description: "Map of targets to security configurations"},
 		operationTypes: {description: "Map of operations to publish/subscribe type"},
 	},
+	// TODO: Add additional library metadata (version, author, repository)
 } as const)
 
 // Export state keys for use in decorators and emitters
+// TODO: Add JSDoc comment explaining the purpose and usage of stateKeys
+// TODO: Consider using keyof typeof $lib.state to ensure type safety
+// TODO: Add runtime validation to ensure stateKeys match library state definitions
+// TODO: Consider extracting to a separate constants file for better organization
 export const stateKeys = {
+	// TODO: Add inline comments explaining what each state key stores
 	channelPaths: "channelPaths",
 	messageSchemas: "messageSchemas",
 	messageConfigs: "messageConfigs",
@@ -162,11 +191,28 @@ export const stateKeys = {
  * @param target - The TypeSpec AST node that triggered the diagnostic
  * @param code - Diagnostic code (will be prefixed with "@larsartmann/typespec-asyncapi.")
  * @param args - Optional arguments for error message templating
+ * 
+ * TODO: Add @returns JSDoc explaining the return value (void)
+ * TODO: Add @throws JSDoc for potential error conditions
+ * TODO: Add @example JSDoc showing typical usage in decorators
+ * TODO: Add @since version annotation
  */
-export function reportDiagnostic(context: DecoratorContext, target: unknown, code: string, args?: Record<string, unknown>) {
+// TODO: Add input validation for context, target, and code parameters
+// TODO: Add explicit return type annotation for clarity
+// TODO: Extract library namespace prefix to a constant to avoid duplication
+// TODO: Consider adding severity parameter to override default diagnostic severity
+// TODO: Add logging for diagnostic reporting for debugging purposes
+// TODO: Consider adding diagnostic categories or tags for better organization
+// TODO: Add function overloads for common diagnostic patterns
+export function reportDiagnostic(context: DecoratorContext, target: unknown, code: string, args?: Record<string, unknown>): void {
+	// TODO: Add validation that the diagnostic code exists in the library definition
+	// TODO: Add error handling for reportDiagnostic failures
+	// TODO: Consider caching the prefixed diagnostic code for performance
 	context.program.reportDiagnostic({
 		code: `@larsartmann/typespec-asyncapi.${code}`,
 		target,
+		// TODO: Add validation for args parameter structure
+		// TODO: Consider deep cloning args to prevent mutation
 		...args,
 	} as Diagnostic)
 }
