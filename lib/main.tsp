@@ -1,4 +1,3 @@
-import "@typespec/compiler";
 import "../dist/index.js";
 
 using TypeSpec.Reflection;

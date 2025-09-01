@@ -89,69 +89,53 @@ export async function createAsyncAPITestLibrary() {
 }
 
 /**
- * Create a test host with bypass approach - ALWAYS avoid library resolution issues
- * FINAL SOLUTION: Never try to load lib/main.tsp in tests - it causes import resolution issues
+ * Create a test host with proper AsyncAPI library registration
+ * SOLUTION: Use createAsyncAPITestLibrary() to get proper decorator registration
  */
 export async function createAsyncAPITestHost() {
-	console.log("🚀 Using BYPASS approach - avoiding lib/main.tsp import issues")
+	console.log("🚀 Using PROPER library approach - registering AsyncAPI test library")
+	const asyncAPITestLibrary = await createAsyncAPITestLibrary()
 	return createTestHost({
-		libraries: [] // Bypass package resolution entirely - this WORKS
+		libraries: [asyncAPITestLibrary] // Register our AsyncAPI library properly
 	})
 }
 
 /**
  * Compile TypeSpec source and return both diagnostics and output files
- * BYPASS APPROACH: Use direct compilation without library registration
+ * PROPER LIBRARY APPROACH: Use registered AsyncAPI library with decorators
  */
 export async function compileAsyncAPISpec(
 	source: string,
 	options: AsyncAPIEmitterOptions = {},
 ): Promise<CompilationResult> {
-	// Create test host WITHOUT any library registration
+	// Create test host WITH proper AsyncAPI library registration
 	const host = await createAsyncAPITestHost()
 	
-	// Create test wrapper WITHOUT auto-using TypeSpec.AsyncAPI (this tries to load lib/main.tsp)
+	// Create test wrapper WITH auto-using TypeSpec.AsyncAPI (now works with proper library)
 	const runner = createTestWrapper(host, {
-		// Remove auto-using to avoid lib/main.tsp loading
+		autoUsings: ["TypeSpec.AsyncAPI"], // Auto-import AsyncAPI namespace - now works!
+		emitters: {
+			"@larsartmann/typespec-asyncapi": options // Configure our emitter with options
+		}
 	})
 
-	// Compile TypeSpec code directly
-	const result = await runner.compile(source)
+	// Compile and emit TypeSpec code - this triggers emitters
+	const [result, diagnostics] = await runner.compileAndDiagnose(source, {
+		emit: ["@larsartmann/typespec-asyncapi"] // Explicitly emit with our emitter
+	})
 	
-	// CRITICAL: Register our decorators manually after program creation
-	if (runner.program) {
-		try {
-			const { createAsyncAPIDecorators } = await import("../../dist/decorators/index.js")
-			createAsyncAPIDecorators(runner.program)
-			console.log("✅ AsyncAPI decorators registered manually")
-		} catch (decoratorError) {
-			console.log("⚠️ Could not register decorators:", decoratorError.message)
-		}
-	}
+	// TypeSpec test runner automatically calls emitters - no manual invocation needed
 	
 	// Debug logging 
-	console.log("Compilation result:", typeof result, Object.keys(result))
+	console.log("Compilation result:", typeof result, !!result)
 	
-	const program = result.program || result
-	const diagnostics = result.diagnostics || []
+	const program = result
 	
 	console.log("Program created:", !!program)
 	console.log("Diagnostics count:", diagnostics.length)
 
 	if (!program) {
 		throw new Error(`Failed to compile TypeSpec program. Available keys: ${Object.keys(result)}`)
-	}
-
-	// Try to call emitter with the program
-	try {
-		const { $onEmit } = await import("../../dist/index.js")
-		await $onEmit({
-			program,
-			emitterOutputDir: "test-output",
-			options
-		})
-	} catch (error) {
-		console.error("Emitter execution error:", error)
 	}
 
 	return {
@@ -214,23 +198,26 @@ export async function compileTypeSpecWithDecorators(
 export function parseAsyncAPIOutput(outputFiles: Map<string, {
 	content: string
 }>, filename: string): AsyncAPIObject | string {
-	const filePath = `test-output/${filename}`
-
-
 	//TODO: refactor to use Effect.TS!
 	try {
-		const content = outputFiles.get(filePath)
-		if (!content) {
-			// Try without test-output prefix
-			const alternativeContent = outputFiles.get(filename)
-			if (!alternativeContent) {
-				const availableFiles = Array.from(outputFiles.keys())
-				throw new Error(`Output file ${filename} not found. Available files: ${availableFiles.join(", ")}`)
+		// Try various path combinations
+		const possiblePaths = [
+			`test-output/${filename}`,
+			filename,
+			`/test/${filename}`,
+			`tsp-output/@larsartmann/typespec-asyncapi/${filename}`
+		]
+		
+		for (const filePath of possiblePaths) {
+			const content = outputFiles.get(filePath)
+			if (content) {
+				return parseFileContent(content.content, filename)
 			}
-			return parseFileContent(alternativeContent.content, filename)
 		}
-
-		return parseFileContent(content.content, filename)
+		
+		// If not found, list available files for debugging
+		const availableFiles = Array.from(outputFiles.keys())
+		throw new Error(`Output file ${filename} not found. Available files: ${availableFiles.join(", ")}`)
 	} catch (error) {
 		const availableFiles = Array.from(outputFiles.keys())
 		throw new Error(`Failed to parse ${filename}: ${error}. Available files: ${availableFiles.join(", ")}`)
@@ -238,12 +225,17 @@ export function parseAsyncAPIOutput(outputFiles: Map<string, {
 }
 
 function parseFileContent(content: string, filename: string): AsyncAPIObject | string {
+	console.log(`Parsing file: ${filename}`);
+	console.log(`Content length: ${content?.length || 0}`);
+	console.log(`Content preview: ${content?.substring(0, 200) || 'NO CONTENT'}`);
+	
 	if (filename.endsWith('.json')) {
 		return JSON.parse(content)
 	} else if (filename.endsWith('.yaml') || filename.endsWith('.yml')) {
 		//TODO: DO we need to do something here??
 		// For YAML, we'll just return the string content for now
 		// In a real implementation, you might want to use a YAML parser
+		console.log("Returning YAML content as string");
 		return content
 	}
 

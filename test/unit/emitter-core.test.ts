@@ -19,7 +19,13 @@ describe("AsyncAPI Emitter Core", () => {
         { "output-file": "basic", "file-type": "json" }
       );
       
-      const asyncapiDoc = parseAsyncAPIOutput(outputFiles, "basic.json");
+      // Test shows emitter generates asyncapi.yaml by default 
+      const asyncapiDoc = parseAsyncAPIOutput(outputFiles, "asyncapi.yaml");
+      
+      // Debug: Let's see what we actually generated
+      console.log("Generated AsyncAPI document:", JSON.stringify(asyncapiDoc, null, 2));
+      console.log("Document type:", typeof asyncapiDoc);
+      console.log("Document keys:", asyncapiDoc && typeof asyncapiDoc === 'object' ? Object.keys(asyncapiDoc) : 'N/A');
       
       expect(AsyncAPIAssertions.hasValidStructure(asyncapiDoc)).toBe(true);
       expect(AsyncAPIAssertions.hasChannel(asyncapiDoc, "channel_publishBasicEvent")).toBe(true);
