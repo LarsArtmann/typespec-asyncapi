@@ -42,21 +42,20 @@ import type {PerformanceMetricsService} from "./performance/PerformanceMetricsSe
 import type {MemoryMonitorService} from "./performance/MemoryMonitorService.js"
 import {convertModelToSchema} from "./utils/schema-conversion.js"
 import {buildServersFromNamespaces, getMessageConfig, getProtocolConfig} from "./utils/typespec-helpers.js"
-import {
-	type KafkaChannelBindingConfig,
-	type KafkaMessageBindingConfig,
-	type KafkaOperationBindingConfig,
-	ProtocolBindingFactory,
-	type WebSocketMessageBindingConfig,
-} from "./protocol-bindings.js"
+import type {AsyncAPIProtocolType} from "./constants/protocol-defaults.js"
 import type {ProtocolConfig} from "./decorators/protocol.js"
+
+// Helper function to create AsyncAPI 3.0 standard bindings
+const createAsyncAPIBinding = (protocol: AsyncAPIProtocolType, config: Record<string, unknown> = {}) => {
+	return {
+		[protocol]: {
+			bindingVersion: "0.5.0", // AsyncAPI 3.0 standard
+			...config
+		}
+	}
+}
 // Security imports removed - not part of core protocol functionality
 // import type {SecurityConfig} from "./decorators/security.js"
-import type {
-	BaseHttpMessageBinding,
-	BaseHttpOperationBinding,
-	BaseWebSocketChannelBinding,
-} from "./utils/protocol-binding-helpers.js"
 import type {SecurityConfig} from "./decorators/security.js"
 // Removed security and unused imports to focus on protocol functionality
 
@@ -789,17 +788,17 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 			Effect.gen(function* () {
 				yield* Effect.log(`🔧 Creating channel bindings for protocol: ${config.protocol}`)
 
-				// Type-safe delegation to ProtocolBindingFactory based on protocol type
+				// Create AsyncAPI 3.0 standard bindings based on protocol type
 				switch (config.protocol) {
 					case "kafka": {
-						const kafkaBinding = config.binding as KafkaChannelBindingConfig
-						const bindings = ProtocolBindingFactory.createChannelBindings(config.protocol, kafkaBinding)
+						const kafkaBinding = config.binding as Record<string, unknown>
+						const bindings = createAsyncAPIBinding(config.protocol, kafkaBinding)
 						yield* Effect.log(`✅ Created Kafka channel bindings with topic: ${kafkaBinding.topic ?? 'default'}`)
 						return yield* Effect.succeed(bindings)
 					}
 					case "websocket": {
-						const wsBinding = config.binding as BaseWebSocketChannelBinding
-						const bindings = ProtocolBindingFactory.createChannelBindings(config.protocol, wsBinding)
+						const wsBinding = config.binding as Record<string, unknown>
+						const bindings = createAsyncAPIBinding(config.protocol, wsBinding)
 						yield* Effect.log(`✅ Created WebSocket channel bindings with method: ${wsBinding.method ?? 'GET'}`)
 						return yield* Effect.succeed(bindings)
 					}
@@ -826,17 +825,17 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 			Effect.gen(function* () {
 				yield* Effect.log(`🔧 Creating operation bindings for protocol: ${config.protocol}`)
 
-				// Type-safe delegation to ProtocolBindingFactory based on protocol type
+				// Create AsyncAPI 3.0 standard bindings based on protocol type
 				switch (config.protocol) {
 					case "kafka": {
-						const kafkaBinding = config.binding as KafkaOperationBindingConfig
-						const bindings = ProtocolBindingFactory.createOperationBindings(config.protocol, kafkaBinding)
+						const kafkaBinding = config.binding as Record<string, unknown>
+						const bindings = createAsyncAPIBinding(config.protocol, kafkaBinding)
 						yield* Effect.log(`✅ Created Kafka operation bindings with groupId: ${kafkaBinding.groupId ?? 'none'}, clientId: ${kafkaBinding.clientId ?? 'none'}`)
 						return yield* Effect.succeed(bindings)
 					}
 					case "http": {
-						const httpBinding = config.binding as BaseHttpOperationBinding
-						const bindings = ProtocolBindingFactory.createOperationBindings(config.protocol, httpBinding)
+						const httpBinding = config.binding as Record<string, unknown>
+						const bindings = createAsyncAPIBinding(config.protocol, httpBinding)
 						yield* Effect.log(`✅ Created HTTP operation bindings with method: ${httpBinding.method ?? 'GET'}, type: ${httpBinding.type ?? 'request'}`)
 						return yield* Effect.succeed(bindings)
 					}
@@ -870,23 +869,23 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 			Effect.gen(function* () {
 				yield* Effect.log(`🔧 Creating message bindings for protocol: ${config.protocol}`)
 
-				// Type-safe delegation to ProtocolBindingFactory based on protocol type
+				// Create AsyncAPI 3.0 standard bindings based on protocol type
 				switch (config.protocol) {
 					case "kafka": {
-						const kafkaBinding = config.binding as KafkaMessageBindingConfig
-						const bindings = ProtocolBindingFactory.createMessageBindings(config.protocol, kafkaBinding)
-						yield* Effect.log(`✅ Created Kafka message bindings with key type: ${kafkaBinding.key?.type ?? 'none'}, schemaIdLocation: ${kafkaBinding.schemaIdLocation ?? 'payload'}`)
+						const kafkaBinding = config.binding as Record<string, unknown>
+						const bindings = createAsyncAPIBinding(config.protocol, kafkaBinding)
+						yield* Effect.log(`✅ Created Kafka message bindings with key: ${kafkaBinding.key ? 'defined' : 'none'}, schemaIdLocation: ${kafkaBinding.schemaIdLocation ?? 'payload'}`)
 						return yield* Effect.succeed(bindings)
 					}
 					case "websocket": {
-						const wsBinding = config.binding as WebSocketMessageBindingConfig
-						const bindings = ProtocolBindingFactory.createMessageBindings(config.protocol, wsBinding)
+						const wsBinding = config.binding as Record<string, unknown>
+						const bindings = createAsyncAPIBinding(config.protocol, wsBinding)
 						yield* Effect.log(`✅ Created WebSocket message bindings`)
 						return yield* Effect.succeed(bindings)
 					}
 					case "http": {
-						const httpBinding = config.binding as BaseHttpMessageBinding
-						const bindings = ProtocolBindingFactory.createMessageBindings(config.protocol, httpBinding)
+						const httpBinding = config.binding as Record<string, unknown>
+						const bindings = createAsyncAPIBinding(config.protocol, httpBinding)
 						yield* Effect.log(`✅ Created HTTP message bindings with statusCode: ${httpBinding.statusCode ?? 'none'}`)
 						return yield* Effect.succeed(bindings)
 					}

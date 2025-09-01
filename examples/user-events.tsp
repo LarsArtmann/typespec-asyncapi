@@ -82,7 +82,7 @@ model UserCreatedChannel {
   payload: UserCreatedPayload;
 }
 
-// Kafka protocol binding with authentication
+// Kafka protocol binding with authentication (AsyncAPI Kafka Binding v0.5.0)
 @protocol({
   protocol: "kafka",
   binding: {
@@ -91,7 +91,8 @@ model UserCreatedChannel {
     groupId: "user-service-consumers",
     clientId: "user-event-publisher",
     schemaIdLocation: "header",
-    schemaLookupStrategy: "TopicRecordNameStrategy"
+    schemaLookupStrategy: "TopicRecordNameStrategy",
+    bindingVersion: "0.5.0"
   }
 })
 @security({
@@ -104,13 +105,14 @@ model UserCreatedChannel {
 @publish
 op publishUserCreated(): UserCreatedChannel;
 
-// Consumer operation for user creation events
+// Consumer operation for user creation events (AsyncAPI Kafka Binding v0.5.0)
 @protocol({
   protocol: "kafka",
   binding: {
     topic: "user-lifecycle-events",
     groupId: "notification-service",
-    clientId: "notification-consumer"
+    clientId: "notification-consumer",
+    bindingVersion: "0.5.0"
   }
 })
 @security({
@@ -146,18 +148,26 @@ model LiveNotificationChannel {
   payload: NotificationPayload;
 }
 
-// WebSocket real-time notifications with JWT authentication
+// WebSocket real-time notifications with JWT authentication (AsyncAPI WebSocket Binding v0.1.0)
 @protocol({
   protocol: "websocket",
   binding: {
     method: "GET",
     query: {
-      token: "string"
+      type: "object",
+      properties: {
+        token: { type: "string" }
+      },
+      required: ["token"]
     },
     headers: {
-      "X-Client-Version": "string",
-      "X-Device-Type": "string"
-    }
+      type: "object",
+      properties: {
+        "X-Client-Version": { type: "string" },
+        "X-Device-Type": { type: "string" }
+      }
+    },
+    bindingVersion: "0.1.0"
   }
 })
 @security({
@@ -195,16 +205,21 @@ model PreferencesChannel {
   payload: UserPreferencesPayload;
 }
 
-// HTTP webhook delivery with API key authentication
+// HTTP webhook delivery with API key authentication (AsyncAPI HTTP Binding v0.3.0)
 @protocol({
   protocol: "http",
   binding: {
+    type: "request",
     method: "POST",
     headers: {
-      "Content-Type": "application/json",
-      "X-Event-Type": "user.preferences.changed"
+      type: "object",
+      properties: {
+        "Content-Type": { type: "string", enum: ["application/json"] },
+        "X-Event-Type": { type: "string", enum: ["user.preferences.changed"] }
+      }
     },
-    statusCode: 200
+    statusCode: 200,
+    bindingVersion: "0.3.0"
   }
 })
 @security({
@@ -242,14 +257,14 @@ model DeviceStatusChannel {
   payload: DeviceStatusPayload;
 }
 
-// MQTT protocol for IoT devices
+// MQTT protocol for IoT devices (AsyncAPI MQTT Binding v0.2.0)
 @protocol({
   protocol: "mqtt",
   binding: {
-    topic: "devices/+/status",
     qos: 1,
     retain: true,
-    cleanSession: false
+    messageExpiryInterval: 60,
+    bindingVersion: "0.2.0"
   }
 })
 @publish
@@ -316,35 +331,6 @@ op publishAnalyticsEvent(): AnalyticsChannel;
 @subscribe
 op subscribeAnalyticsEvents(): AnalyticsChannel;
 
-// === REDIS CACHING EVENTS ===
-
-model CacheInvalidationPayload {
-  cacheKey: string;
-  userId?: string;
-  namespace: string;
-  reason: "user_update" | "data_change" | "expiration" | "manual";
-  timestamp: utcDateTime;
-}
-
-@channel("cache.invalidation")
-model CacheChannel {
-  @message({
-    name: "CacheInvalidation",
-    title: "Cache Invalidation Event",
-    description: "Events for coordinating cache invalidation across services"
-  })
-  payload: CacheInvalidationPayload;
-}
-
-@protocol({
-  protocol: "redis",
-  binding: {
-    channel: "cache_invalidation",
-    messageId: "*"
-  }
-})
-@publish
-op publishCacheInvalidation(): CacheChannel;
-
-@subscribe
-op subscribeCacheInvalidation(): CacheChannel;
+// === ADDITIONAL EXAMPLES ===
+// Note: Redis bindings are not part of official AsyncAPI bindings specification
+// but can be implemented as custom bindings following AsyncAPI extension patterns

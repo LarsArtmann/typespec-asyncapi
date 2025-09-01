@@ -5,7 +5,23 @@
  * used across the AsyncAPI TypeSpec emitter.
  */
 
-import type {ProtocolType} from "../protocol-bindings.js"
+/**
+ * Standard AsyncAPI protocol types
+ * 
+ * Based on AsyncAPI 3.0 specification protocol values
+ * Used for validation in decorators and configuration.
+ */
+export type AsyncAPIProtocolType = 
+	| "kafka" 
+	| "websocket" 
+	| "http" 
+	| "amqp" 
+	| "mqtt" 
+	| "redis" 
+	| "ws"
+	| "https"
+	| "amqps"
+	| "nats"
 
 /**
  * All supported protocol types for validation
@@ -13,7 +29,7 @@ import type {ProtocolType} from "../protocol-bindings.js"
  * Centralized list of all protocols supported by the AsyncAPI TypeSpec emitter.
  * Used for validation in decorators and configuration.
  */
-export const SUPPORTED_PROTOCOLS: readonly ProtocolType[] = [
+export const SUPPORTED_PROTOCOLS: readonly AsyncAPIProtocolType[] = [
 	"kafka", 
 	"websocket", 
 	"http", 
@@ -86,6 +102,6 @@ export const PROTOCOL_DEFAULTS = {
  * @param protocol The protocol type
  * @returns The default port number for the protocol, or undefined if not found
  */
-export function getDefaultProtocolPort(protocol: ProtocolType): number | undefined {
+export function getDefaultProtocolPort(protocol: AsyncAPIProtocolType): number | undefined {
 	return DEFAULT_PROTOCOL_PORTS[protocol]
 }

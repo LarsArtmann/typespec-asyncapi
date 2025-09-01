@@ -1,15 +1,15 @@
 /**
- * Integration tests for Protocol Bindings with AsyncAPI Emitter
+ * Integration tests for AsyncAPI Standard Protocol Bindings with Emitter
  * 
- * Tests the integration of protocol bindings with the TypeSpec AsyncAPI emitter
+ * Tests the integration of AsyncAPI 3.0 standard protocol bindings with the TypeSpec emitter.
+ * Focuses on emitter functionality rather than custom binding factories.
  */
 
 import { describe, it, expect } from "vitest";
 import { compileAsyncAPISpec } from "../utils/test-helpers";
-import { ProtocolBindingFactory } from "../../src/protocol-bindings";
-//TODO: this file is getting to big split it up
+import { SUPPORTED_PROTOCOLS } from "../../src/constants/protocol-defaults.js";
 
-describe("Protocol Binding Integration", () => {
+describe("AsyncAPI Protocol Binding Integration", () => {
   describe("Kafka Protocol Integration", () => {
     it("should generate AsyncAPI spec with Kafka server bindings", async () => {
       const source = `
@@ -47,60 +47,36 @@ describe("Protocol Binding Integration", () => {
       expect(spec.channels!["user-events"]).toBeDefined();
     });
 
-    it("should create Kafka bindings programmatically", () => {
-      // Test that we can generate Kafka bindings for a typical use case
-      const serverBindings = ProtocolBindingFactory.createServerBindings("kafka", {
-        schemaRegistryUrl: "http://schema-registry.example.com:8081",
-        schemaRegistryVendor: "confluent",
-        clientId: "user-service",
-      });
+    it("should validate generated spec follows AsyncAPI 3.0 standard", async () => {
+      const source = `
+        import "@typespec/asyncapi";
+        using TypeSpec.AsyncAPI;
 
-      const channelBindings = ProtocolBindingFactory.createChannelBindings("kafka", {
-        topic: "user-events",
-        partitions: 3,
-        replicas: 2,
-        topicConfiguration: {
-          "cleanup.policy": ["delete", "compact"],
-          "retention.ms": 604800000, // 7 days
-          "max.message.bytes": 1048576, // 1MB
-        },
-      });
+        @server("kafka-broker", {
+          url: "kafka://localhost:9092",
+          protocol: "kafka"
+        })
+        namespace AsyncAPITest;
 
-      const operationBindings = ProtocolBindingFactory.createOperationBindings("kafka", {
-        groupId: {
-          type: "string",
-          enum: ["user-service-consumer", "analytics-consumer"],
-          description: "Consumer group for user events",
-        },
-        clientId: {
-          type: "string",
-          description: "Kafka client identifier",
-        },
-      });
+        model TestEvent {
+          id: string;
+          data: string;
+        }
 
-      const messageBindings = ProtocolBindingFactory.createMessageBindings("kafka", {
-        key: {
-          type: "string",
-          description: "User ID for partitioning",
-        },
-        schemaIdLocation: "payload",
-        schemaLookupStrategy: "TopicIdStrategy",
-      });
+        @channel("test-topic")
+        model TestChannel {
+          @subscribe 
+          received: TestEvent;
+        }
+      `;
 
-      // Verify all bindings are created correctly
-      expect(serverBindings?.kafka).toBeDefined();
-      expect(serverBindings?.kafka?.bindingVersion).toBe("0.5.0");
-      expect(serverBindings?.kafka?.schemaRegistryUrl).toBe("http://schema-registry.example.com:8081");
+      const spec = await compileAsyncAPISpec(source);
 
-      expect(channelBindings?.kafka).toBeDefined();
-      expect(channelBindings?.kafka?.topic).toBe("user-events");
-      expect(channelBindings?.kafka?.partitions).toBe(3);
-
-      expect(operationBindings?.kafka).toBeDefined();
-      expect(operationBindings?.kafka?.groupId).toBeDefined();
-
-      expect(messageBindings?.kafka).toBeDefined();
-      expect(messageBindings?.kafka?.key).toBeDefined();
+      // Verify AsyncAPI 3.0 compliance
+      expect(spec.asyncapi).toBe("3.0.0");
+      expect(spec.info).toBeDefined();
+      expect(spec.servers).toBeDefined();
+      expect(spec.channels).toBeDefined();
     });
   });
 
@@ -144,34 +120,36 @@ describe("Protocol Binding Integration", () => {
       expect(spec.channels!["chat-room"]).toBeDefined();
     });
 
-    it("should create WebSocket bindings programmatically", () => {
-      const channelBindings = ProtocolBindingFactory.createChannelBindings("ws", {
-        method: "GET",
-        query: {
-          type: "object",
-          properties: {
-            token: { type: "string", description: "Authentication token" },
-            room: { type: "string", description: "Chat room ID" },
-          },
-          required: ["token"],
-        },
-        headers: {
-          type: "object",
-          properties: {
-            "Authorization": { type: "string" },
-            "Sec-WebSocket-Protocol": { type: "string" },
-          },
-        },
-      });
+    it("should handle bidirectional WebSocket communication", async () => {
+      const source = `
+        import "@typespec/asyncapi";
+        using TypeSpec.AsyncAPI;
 
-      const messageBindings = ProtocolBindingFactory.createMessageBindings("ws", {});
+        @server("ws-api", {
+          url: "wss://api.example.com/ws",
+          protocol: "wss"
+        })
+        namespace WSTest;
 
-      expect(channelBindings?.ws).toBeDefined();
-      expect(channelBindings?.ws?.bindingVersion).toBe("0.1.0");
-      expect(channelBindings?.ws?.method).toBe("GET");
+        model Message {
+          type: "ping" | "pong" | "data";
+          payload: string;
+        }
 
-      expect(messageBindings?.ws).toBeDefined();
-      expect(messageBindings?.ws?.bindingVersion).toBe("0.1.0");
+        @channel("messages")
+        model MessageChannel {
+          @subscribe
+          incoming: Message;
+          
+          @publish
+          outgoing: Message;
+        }
+      `;
+
+      const spec = await compileAsyncAPISpec(source);
+
+      expect(spec.servers!["ws-api"].protocol).toBe("wss");
+      expect(spec.channels!["messages"]).toBeDefined();
     });
   });
 
@@ -212,40 +190,35 @@ describe("Protocol Binding Integration", () => {
       expect(spec.channels!["webhook-notifications"]).toBeDefined();
     });
 
-    it("should create HTTP bindings programmatically", () => {
-      const operationBindings = ProtocolBindingFactory.createOperationBindings("http", {
-        type: "request",
-        method: "POST",
-        query: {
-          type: "object",
-          properties: {
-            version: { type: "string", enum: ["v1", "v2"] },
-            format: { type: "string", enum: ["json", "xml"] },
-          },
-        },
-      });
+    it("should support HTTP webhook patterns", async () => {
+      const source = `
+        import "@typespec/asyncapi";
+        using TypeSpec.AsyncAPI;
 
-      const messageBindings = ProtocolBindingFactory.createMessageBindings("http", {
-        headers: {
-          type: "object",
-          properties: {
-            "Content-Type": { type: "string", enum: ["application/json"] },
-            "X-Webhook-Signature": { type: "string" },
-            "X-Event-Type": { type: "string" },
-          },
-          required: ["Content-Type", "X-Event-Type"],
-        },
-        statusCode: 200,
-      });
+        @server("webhook-endpoint", {
+          url: "https://webhooks.api.example.com",
+          protocol: "https"
+        })
+        namespace WebhookTest;
 
-      expect(operationBindings?.http).toBeDefined();
-      expect(operationBindings?.http?.bindingVersion).toBe("0.3.0");
-      expect(operationBindings?.http?.type).toBe("request");
-      expect(operationBindings?.http?.method).toBe("POST");
+        model PaymentEvent {
+          eventId: string;
+          eventType: "payment.created" | "payment.completed" | "payment.failed";
+          amount: number;
+          currency: string;
+        }
 
-      expect(messageBindings?.http).toBeDefined();
-      expect(messageBindings?.http?.bindingVersion).toBe("0.3.0");
-      expect(messageBindings?.http?.statusCode).toBe(200);
+        @channel("payment-events")
+        model PaymentChannel {
+          @publish
+          paymentNotification: PaymentEvent;
+        }
+      `;
+
+      const spec = await compileAsyncAPISpec(source);
+
+      expect(spec.servers!["webhook-endpoint"].protocol).toBe("https");
+      expect(spec.channels!["payment-events"]).toBeDefined();
     });
   });
 
@@ -304,92 +277,121 @@ describe("Protocol Binding Integration", () => {
       expect(spec.channels!["external-notifications"]).toBeDefined();
     });
 
-    it("should create bindings for different protocols correctly", () => {
-      // Kafka bindings for internal messaging
-      const kafkaServerBindings = ProtocolBindingFactory.createServerBindings("kafka", {
-        schemaRegistryUrl: "http://schema-registry:8081",
-        clientId: "event-processor",
-      });
-
-      const kafkaChannelBindings = ProtocolBindingFactory.createChannelBindings("kafka", {
-        topic: "internal-events",
-        partitions: 6,
-        replicas: 3,
-      });
-
-      // HTTP bindings for external webhooks
-      const httpOperationBindings = ProtocolBindingFactory.createOperationBindings("https", {
-        type: "request", 
-        method: "POST",
-      });
-
-      const httpMessageBindings = ProtocolBindingFactory.createMessageBindings("https", {
-        headers: {
-          type: "object",
-          properties: {
-            "Content-Type": { type: "string" },
-            "X-Signature": { type: "string" },
-          },
-        },
-        statusCode: 202,
-      });
-
-      // Verify Kafka bindings
-      expect(kafkaServerBindings?.kafka).toBeDefined();
-      expect(kafkaChannelBindings?.kafka?.topic).toBe("internal-events");
-
-      // Verify HTTP bindings (https maps to http)
-      expect(httpOperationBindings?.http).toBeDefined();
-      expect(httpOperationBindings?.http?.method).toBe("POST");
-      expect(httpMessageBindings?.http?.statusCode).toBe(202);
+    it("should validate supported protocols are properly handled", () => {
+      // Test that supported protocols are defined correctly
+      expect(SUPPORTED_PROTOCOLS).toBeDefined();
+      expect(SUPPORTED_PROTOCOLS.length).toBeGreaterThan(0);
+      expect(SUPPORTED_PROTOCOLS).toContain("kafka");
+      expect(SUPPORTED_PROTOCOLS).toContain("http");
+      expect(SUPPORTED_PROTOCOLS).toContain("websocket");
     });
   });
 
-  describe("Protocol Binding Validation Integration", () => {
-    it("should validate Kafka binding configuration", () => {
-      // Valid configuration should pass
-      const validErrors = ProtocolBindingFactory.validateBinding("kafka", "channel", {
-        topic: "valid-topic",
-        partitions: 3,
-        replicas: 2,
-      });
-      expect(validErrors).toEqual([]);
+  describe("AsyncAPI Specification Validation", () => {
+    it("should generate valid AsyncAPI 3.0 documents", async () => {
+      const source = `
+        import "@typespec/asyncapi";
+        using TypeSpec.AsyncAPI;
 
-      // Invalid configuration should fail
-      const invalidErrors = ProtocolBindingFactory.validateBinding("kafka", "channel", {
-        partitions: -1,
-        replicas: 0,
-      });
-      expect(invalidErrors.length).toBeGreaterThan(0);
-      expect(invalidErrors.some(e => e.includes("positive integer"))).toBe(true);
+        @server("test-server", {
+          url: "kafka://localhost:9092",
+          protocol: "kafka"
+        })
+        namespace ValidationTest;
+
+        model TestMessage {
+          id: string;
+          data: string;
+        }
+
+        @channel("test-channel")
+        model TestChannel {
+          @subscribe
+          testEvent: TestMessage;
+        }
+      `;
+
+      const spec = await compileAsyncAPISpec(source);
+
+      // Verify AsyncAPI 3.0 specification compliance
+      expect(spec.asyncapi).toBe("3.0.0");
+      expect(spec.info).toBeDefined();
+      expect(spec.info.title).toBeDefined();
+      expect(spec.info.version).toBeDefined();
+      expect(spec.servers).toBeDefined();
+      expect(spec.channels).toBeDefined();
     });
 
-    it("should validate WebSocket binding configuration", () => {
-      const validErrors = ProtocolBindingFactory.validateBinding("ws", "channel", {
-        method: "GET",
-      });
-      expect(validErrors).toEqual([]);
+    it("should maintain protocol binding consistency", async () => {
+      // Test that protocols in servers match expected formats
+      const source = `
+        import "@typespec/asyncapi";
+        using TypeSpec.AsyncAPI;
 
-      const invalidErrors = ProtocolBindingFactory.validateBinding("ws", "channel", {
-        method: "PUT",
-      });
-      expect(invalidErrors).toContain("WebSocket channel binding method must be 'GET' or 'POST'");
+        @server("kafka-srv", {
+          url: "kafka://localhost:9092",
+          protocol: "kafka"
+        })
+        @server("ws-srv", {
+          url: "ws://localhost:8080",
+          protocol: "ws"
+        })
+        namespace ProtocolTest;
+
+        model Event {
+          id: string;
+        }
+
+        @channel("events")
+        model EventChannel {
+          @subscribe
+          event: Event;
+        }
+      `;
+
+      const spec = await compileAsyncAPISpec(source);
+
+      expect(spec.servers!["kafka-srv"].protocol).toBe("kafka");
+      expect(spec.servers!["ws-srv"].protocol).toBe("ws");
     });
 
-    it("should validate HTTP binding configuration", () => {
-      const validErrors = ProtocolBindingFactory.validateBinding("http", "operation", {
-        type: "request",
-        method: "POST",
-        statusCode: 201,
-      });
-      expect(validErrors).toEqual([]);
+    it("should handle complex multi-protocol scenarios", async () => {
+      const source = `
+        import "@typespec/asyncapi";
+        using TypeSpec.AsyncAPI;
 
-      const invalidErrors = ProtocolBindingFactory.validateBinding("http", "operation", {
-        type: "invalid",
-        method: "INVALID",
-        statusCode: 999,
-      });
-      expect(invalidErrors.length).toBe(3);
+        @server("primary", {
+          url: "kafka://broker:9092",
+          protocol: "kafka"
+        })
+        @server("secondary", {
+          url: "https://api.example.com/webhooks",
+          protocol: "https"
+        })
+        namespace ComplexTest;
+
+        model BusinessEvent {
+          eventId: string;
+          eventType: string;
+          timestamp: int64;
+          payload: Record<unknown>;
+        }
+
+        @channel("business-events")
+        model BusinessChannel {
+          @subscribe
+          eventProcessed: BusinessEvent;
+          
+          @publish 
+          eventGenerated: BusinessEvent;
+        }
+      `;
+
+      const spec = await compileAsyncAPISpec(source);
+
+      // Verify complex scenario handling
+      expect(Object.keys(spec.servers!)).toHaveLength(2);
+      expect(spec.channels!["business-events"]).toBeDefined();
     });
   });
 });

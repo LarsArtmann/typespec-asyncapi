@@ -11,7 +11,7 @@ import {stringify} from "yaml"
 import {Effect} from "effect"
 import type {AsyncAPIEmitterOptions} from "./options.js"
 import type {AsyncAPIObject, ChannelObject, OperationObject, SchemaObject} from "@asyncapi/parser/esm/spec-types/v3.js"
-import {createDefaultKafkaChannelBinding, validateKafkaChannelBinding} from "./bindings/kafka.js"
+// Kafka bindings now handled by AsyncAPI standard format
 import {convertModelToSchema} from "./utils/schema-conversion.js"
 import {logOperationDetails} from "./utils/typespec-helpers.js"
 import {createChannelDefinition, createOperationDefinition} from "./utils/asyncapi-helpers.js"
@@ -194,20 +194,21 @@ class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
 		// Use centralized utility function to eliminate duplication
 		const {name: channelName, definition} = createChannelDefinition(op, program)
 
-		// Add Kafka bindings if channel path looks like a Kafka topic
+		// Add standard AsyncAPI Kafka bindings if channel path looks like a Kafka topic
 		const channelPath = definition.address
 		if (channelPath && this.looksLikeKafkaTopic(channelPath)) {
-			const kafkaBinding = createDefaultKafkaChannelBinding(channelPath)
-			const validation = validateKafkaChannelBinding(kafkaBinding)
-
-			if (validation.isValid) {
-				definition.bindings = {
-					kafka: kafkaBinding,
-				}
-				Effect.log(`✅ Added Kafka binding for channel ${channelName}: topic="${kafkaBinding.topic}"`)
-			} else {
-				Effect.logWarning(`⚠️ Invalid Kafka binding for ${channelName}: ${validation.errors.join(', ')}`)
+			// Create standard AsyncAPI 3.0 Kafka binding format
+			const kafkaBinding = {
+				bindingVersion: "0.5.0",
+				topic: channelPath,
+				partitions: 1, // Default partitions
+				replicas: 1   // Default replicas
 			}
+
+			definition.bindings = {
+				kafka: kafkaBinding,
+			}
+			Effect.log(`✅ Added standard AsyncAPI Kafka binding for channel ${channelName}: topic="${kafkaBinding.topic}"`)
 		}
 
 		return {name: channelName, definition}

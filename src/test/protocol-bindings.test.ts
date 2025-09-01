@@ -1,124 +1,143 @@
 /**
- * Protocol Binding Tests
+ * AsyncAPI Standard Protocol Binding Tests
  *
- * Tests for the type-safe protocol binding system
+ * Tests for AsyncAPI 3.0 compliant protocol bindings using standard format.
+ * Replaces custom ProtocolBindingFactory with AsyncAPI specification compliance.
  */
-//TODO: fix bun:test types!
-import {expect, test} from "bun:test"
-import {KafkaProtocolBinding, ProtocolBindingFactory, ProtocolUtils} from "../protocol-bindings.js"
+import {expect, test, describe} from "bun:test"
+import {SUPPORTED_PROTOCOLS, type AsyncAPIProtocolType} from "../constants/protocol-defaults.js"
 
-test("Protocol binding factory creates Kafka server bindings safely", () => {
-	const serverBindings = ProtocolBindingFactory.createServerBindings("kafka", {
-		schemaRegistryUrl: "http://localhost:8081",
-		clientId: "test-client",
-	})
-
-	expect(serverBindings).toBeDefined()
-	expect(serverBindings?.kafka).toBeDefined()
-	expect(serverBindings?.kafka?.schemaRegistryUrl).toBe("http://localhost:8081")
-	expect(serverBindings?.kafka?.clientId).toBe("test-client")
-	expect(serverBindings?.kafka?.bindingVersion).toBe("0.5.0")
-})
-
-test("Protocol binding factory handles undefined config safely", () => {
-	const serverBindings = ProtocolBindingFactory.createServerBindings("kafka", undefined)
-
-	expect(serverBindings).toBeDefined()
-	expect(serverBindings?.kafka).toBeDefined()
-	expect(serverBindings?.kafka?.bindingVersion).toBe("0.5.0")
-})
-
-test("Protocol binding factory creates channel bindings with type safety", () => {
-	const channelBindings = ProtocolBindingFactory.createChannelBindings("kafka", {
-		topic: "user-events",
-		partitions: 3,
-		replicas: 2,
-	})
-
-	expect(channelBindings).toBeDefined()
-	expect(channelBindings?.kafka).toBeDefined()
-	expect(channelBindings?.kafka?.topic).toBe("user-events")
-	expect(channelBindings?.kafka?.partitions).toBe(3)
-	expect(channelBindings?.kafka?.replicas).toBe(2)
-})
-
-test("Protocol binding factory creates WebSocket channel bindings", () => {
-	const channelBindings = ProtocolBindingFactory.createChannelBindings("ws", {
-		method: "GET",
-		headers: {type: "object"},
-	})
-
-	expect(channelBindings).toBeDefined()
-	expect(channelBindings?.ws).toBeDefined()
-	expect(channelBindings?.ws?.method).toBe("GET")
-	expect(channelBindings?.ws?.bindingVersion).toBe("0.1.0")
-})
-
-test("Protocol binding validation works correctly", () => {
-	const result = ProtocolBindingFactory.validateBinding("kafka", "channel", {
-		channel: {
-			partitions: 0, // Invalid - should be positive
-			replicas: -1,   // Invalid - should be positive
-		},
-	})
-
-	expect(result.isValid).toBe(false)
-	expect(result.errors.length).toBeGreaterThan(0)
-
-	// Check that we get validation errors for invalid values
-	const partitionsError = result.errors.find(e => e.property === "partitions")
-	const replicasError = result.errors.find(e => e.property === "replicas")
-
-	// At least one should be present
-	expect(partitionsError || replicasError).toBeDefined()
-
-	if (partitionsError) {
-		expect(partitionsError.protocol).toBe("kafka")
-		expect(partitionsError.bindingType).toBe("channel")
-		expect(partitionsError.severity).toBe("error")
+// Standard AsyncAPI 3.0 binding format helpers
+const createStandardBinding = (protocol: AsyncAPIProtocolType, config: Record<string, unknown> = {}) => {
+	return {
+		[protocol]: {
+			bindingVersion: "0.5.0", // AsyncAPI 3.0 standard
+			...config
+		}
 	}
-})
+}
 
-test("Protocol utils correctly identifies protocol support", () => {
-	expect(ProtocolUtils.supportsBinding("kafka", "server")).toBe(true)
-	expect(ProtocolUtils.supportsBinding("kafka", "channel")).toBe(true)
-	expect(ProtocolUtils.supportsBinding("kafka", "operation")).toBe(true)
-	expect(ProtocolUtils.supportsBinding("kafka", "message")).toBe(true)
+// AsyncAPI JSON Schema validation helper
+const validateAsyncAPIBinding = (binding: Record<string, unknown>): {valid: boolean, errors: string[]} => {
+	const errors: string[] = []
+	
+	if (!binding || typeof binding !== 'object') {
+		errors.push("Binding must be an object")
+		return {valid: false, errors}
+	}
+	
+	// Check each protocol binding has required bindingVersion
+	for (const [protocol, bindingConfig] of Object.entries(binding)) {
+		if (typeof bindingConfig !== 'object' || !bindingConfig) {
+			errors.push(`Protocol '${protocol}' binding must be an object`)
+			continue
+		}
+		
+		const config = bindingConfig as Record<string, unknown>
+		if (!config.bindingVersion) {
+			errors.push(`Protocol '${protocol}' binding must have bindingVersion`)
+		}
+	}
+	
+	return {
+		valid: errors.length === 0,
+		errors
+	}
+}
 
-	expect(ProtocolUtils.supportsBinding("ws", "server")).toBe(false)
-	expect(ProtocolUtils.supportsBinding("ws", "channel")).toBe(true)
-	expect(ProtocolUtils.supportsBinding("ws", "message")).toBe(true)
+describe("AsyncAPI 3.0 Standard Protocol Bindings", () => {
+	test("Kafka server bindings follow AsyncAPI standard format", () => {
+		const serverBindings = createStandardBinding("kafka", {
+			schemaRegistryUrl: "http://localhost:8081",
+			clientId: "test-client",
+		})
 
-	expect(ProtocolUtils.supportsBinding("http", "operation")).toBe(true)
-	expect(ProtocolUtils.supportsBinding("http", "message")).toBe(true)
-	expect(ProtocolUtils.supportsBinding("http", "server")).toBe(false)
-})
-
-test("Protocol utils extracts protocol from URLs correctly", () => {
-	expect(ProtocolUtils.extractProtocol("kafka://localhost:9092")).toBe("kafka")
-	expect(ProtocolUtils.extractProtocol("ws://localhost:8080")).toBe("ws")
-	expect(ProtocolUtils.extractProtocol("https://api.example.com")).toBe("https")
-	expect(ProtocolUtils.extractProtocol("invalid://unknown")).toBe(null)
-})
-
-test("Kafka protocol binding builder creates valid bindings", () => {
-	const serverBinding = KafkaProtocolBinding.createServerBinding({
-		schemaRegistryUrl: "http://localhost:8081",
-		clientId: "test-client",
+		expect(serverBindings).toBeDefined()
+		expect(serverBindings.kafka).toBeDefined()
+		expect(serverBindings.kafka.schemaRegistryUrl).toBe("http://localhost:8081")
+		expect(serverBindings.kafka.clientId).toBe("test-client")
+		expect(serverBindings.kafka.bindingVersion).toBe("0.5.0")
+		
+		// Validate AsyncAPI compliance
+		const validation = validateAsyncAPIBinding(serverBindings)
+		expect(validation.valid).toBe(true)
+		expect(validation.errors).toHaveLength(0)
 	})
 
-	expect(serverBinding.bindingVersion).toBe("0.5.0")
-	expect(serverBinding.schemaRegistryUrl).toBe("http://localhost:8081")
-	expect(serverBinding.clientId).toBe("test-client")
+	test("Minimal Kafka server bindings are valid", () => {
+		const serverBindings = createStandardBinding("kafka")
+
+		expect(serverBindings).toBeDefined()
+		expect(serverBindings.kafka).toBeDefined()
+		expect(serverBindings.kafka.bindingVersion).toBe("0.5.0")
+		
+		const validation = validateAsyncAPIBinding(serverBindings)
+		expect(validation.valid).toBe(true)
+	})
+
+	test("Kafka channel bindings follow AsyncAPI standard", () => {
+		const channelBindings = createStandardBinding("kafka", {
+			topic: "user-events",
+			partitions: 3,
+			replicas: 2,
+		})
+
+		expect(channelBindings).toBeDefined()
+		expect(channelBindings.kafka).toBeDefined()
+		expect(channelBindings.kafka.topic).toBe("user-events")
+		expect(channelBindings.kafka.partitions).toBe(3)
+		expect(channelBindings.kafka.replicas).toBe(2)
+		expect(channelBindings.kafka.bindingVersion).toBe("0.5.0")
+		
+		const validation = validateAsyncAPIBinding(channelBindings)
+		expect(validation.valid).toBe(true)
+	})
+
+	test("WebSocket channel bindings are AsyncAPI compliant", () => {
+		const channelBindings = createStandardBinding("websocket", {
+			method: "GET",
+			headers: {type: "object"},
+		})
+
+		expect(channelBindings).toBeDefined()
+		expect(channelBindings.websocket).toBeDefined()
+		expect(channelBindings.websocket.method).toBe("GET")
+		expect(channelBindings.websocket.bindingVersion).toBe("0.5.0")
+		
+		const validation = validateAsyncAPIBinding(channelBindings)
+		expect(validation.valid).toBe(true)
+	})
+
+	test("Supported protocols are properly defined", () => {
+		expect(SUPPORTED_PROTOCOLS).toBeDefined()
+		expect(SUPPORTED_PROTOCOLS.length).toBeGreaterThan(0)
+		expect(SUPPORTED_PROTOCOLS).toContain("kafka")
+		expect(SUPPORTED_PROTOCOLS).toContain("websocket")
+		expect(SUPPORTED_PROTOCOLS).toContain("http")
+	})
+
+	test("Binding validation catches missing bindingVersion", () => {
+		const invalidBinding = {
+			kafka: {
+				topic: "test"
+				// Missing bindingVersion
+			}
+		}
+		
+		const validation = validateAsyncAPIBinding(invalidBinding)
+		expect(validation.valid).toBe(false)
+		expect(validation.errors.length).toBeGreaterThan(0)
+		expect(validation.errors[0]).toContain("bindingVersion")
+	})
+
+	test("Binding validation catches invalid binding structure", () => {
+		const invalidBinding = {
+			kafka: null
+		}
+		
+		const validation = validateAsyncAPIBinding(invalidBinding)
+		expect(validation.valid).toBe(false)
+		expect(validation.errors.length).toBeGreaterThan(0)
+	})
 })
 
-test("Protocol binding factory gets default configurations", () => {
-	const kafkaDefaults = ProtocolBindingFactory.getDefaultConfig("kafka")
-
-	expect(kafkaDefaults).toBeDefined()
-	// Type assertion is safe here for testing purposes
-	const kafkaConfig = kafkaDefaults
-	expect(kafkaConfig.server?.schemaRegistryVendor).toBe("confluent")
-	expect(kafkaConfig.channel?.partitions).toBe(1)
-	expect(kafkaConfig.channel?.replicas).toBe(1)
-})

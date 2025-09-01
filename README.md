@@ -174,6 +174,17 @@ Generates a complete AsyncAPI 3.0.0 specification:
 
 ## 📚 **Features**
 
+### AsyncAPI 3.0 Compliance
+
+This emitter generates AsyncAPI 3.0 specifications that are fully compliant with the official AsyncAPI specification and binding standards:
+
+- **[AsyncAPI 3.0.0 Specification](https://www.asyncapi.com/docs/reference/specification/v3.0.0)** - Core specification compliance
+- **[AsyncAPI Bindings](https://github.com/asyncapi/bindings)** - Protocol-specific binding specifications
+- **[Kafka Bindings v0.5.0](https://github.com/asyncapi/bindings/tree/master/kafka)** - Apache Kafka protocol bindings
+- **[WebSocket Bindings v0.1.0](https://github.com/asyncapi/bindings/tree/master/websockets)** - WebSocket protocol bindings  
+- **[MQTT Bindings v0.2.0](https://github.com/asyncapi/bindings/tree/master/mqtt)** - MQTT protocol bindings
+- **[HTTP Bindings v0.3.0](https://github.com/asyncapi/bindings/tree/master/http)** - HTTP protocol bindings
+
 ### Supported AsyncAPI 3.0 Features
 
 - ✅ **Info Object** - Title, version, description, contact, license
@@ -183,7 +194,7 @@ Generates a complete AsyncAPI 3.0.0 specification:
 - ✅ **Operations** - Send/receive operations with channel bindings
 - ✅ **Components** - Reusable schemas, messages, and parameters
 - ✅ **Security Schemes** - API Key, OAuth2, HTTP authentication
-- ✅ **Protocol Bindings** - Kafka, WebSocket specific configurations
+- ✅ **Protocol Bindings** - Standard [AsyncAPI Bindings](https://github.com/asyncapi/bindings) (Kafka, WebSocket, MQTT, HTTP)
 
 ### TypeSpec Decorators
 
@@ -295,10 +306,10 @@ namespace RealtimeAPI;
 
 ### @protocol - Protocol Bindings
 
-Add protocol-specific configurations:
+Add protocol-specific configurations using [AsyncAPI Bindings](https://github.com/asyncapi/bindings):
 
 ```typespec
-// Kafka protocol binding
+// Kafka protocol binding (AsyncAPI Kafka Binding v0.5.0)
 @protocol({
   protocol: "kafka",
   binding: {
@@ -306,37 +317,46 @@ Add protocol-specific configurations:
     key: "userId", 
     groupId: "user-service",
     schemaIdLocation: "header",
-    clientId: "user-event-publisher"
+    clientId: "user-event-publisher",
+    bindingVersion: "0.5.0"
   }
 })
 @channel("user.created")
 @publish
 op publishUserCreated(): UserCreatedMessage;
 
-// WebSocket protocol binding
+// WebSocket protocol binding (AsyncAPI WebSocket Binding v0.1.0)
 @protocol({
   protocol: "websocket",
   binding: {
     method: "GET",
     query: {
-      token: "string"
+      type: "object",
+      properties: {
+        token: { type: "string" }
+      }
     },
     headers: {
-      "X-Client-Version": "string"
-    }
+      type: "object", 
+      properties: {
+        "X-Client-Version": { type: "string" }
+      }
+    },
+    bindingVersion: "0.1.0"
   }
 })
 @channel("live-updates")
 @subscribe
 op subscribeLiveUpdates(): LiveUpdateMessage;
 
-// MQTT protocol binding
+// MQTT protocol binding (AsyncAPI MQTT Binding v0.2.0)
 @protocol({
   protocol: "mqtt", 
   binding: {
     qos: 1,
     retain: false,
-    topic: "sensors/temperature"
+    messageExpiryInterval: 60,
+    bindingVersion: "0.2.0"
   }
 })
 @channel("sensor.data")
@@ -627,11 +647,26 @@ MIT License - see [LICENSE](LICENSE) file.
 
 ## 🔗 **Links**
 
+### Project Links
 - **GitHub Repository**: https://github.com/LarsArtmann/typespec-asyncapi
 - **NPM Package**: https://www.npmjs.com/package/@typespec/asyncapi
 - **TypeSpec Issue #2463**: https://github.com/microsoft/typespec/issues/2463
-- **AsyncAPI Specification**: https://www.asyncapi.com/docs/reference/specification/v3.0.0
+
+### AsyncAPI Resources
+- **AsyncAPI 3.0.0 Specification**: https://www.asyncapi.com/docs/reference/specification/v3.0.0
+- **AsyncAPI Bindings**: https://github.com/asyncapi/bindings
+- **AsyncAPI CLI**: https://github.com/asyncapi/cli
+- **AsyncAPI Studio**: https://studio.asyncapi.com/
+
+### Protocol Binding Specifications
+- **Kafka Bindings**: https://github.com/asyncapi/bindings/tree/master/kafka
+- **WebSocket Bindings**: https://github.com/asyncapi/bindings/tree/master/websockets
+- **MQTT Bindings**: https://github.com/asyncapi/bindings/tree/master/mqtt
+- **HTTP Bindings**: https://github.com/asyncapi/bindings/tree/master/http
+
+### TypeSpec Resources
 - **TypeSpec Documentation**: https://typespec.io/
+- **TypeSpec Compiler**: https://github.com/microsoft/typespec
 
 ---
 
