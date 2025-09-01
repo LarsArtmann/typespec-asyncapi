@@ -2,4 +2,4 @@ emit:
   - "@larsartmann/typespec-asyncapi"
 options:
   "@larsartmann/typespec-asyncapi":
-    "output-file": "test-output"
+    "output-file": "AsyncAPI"

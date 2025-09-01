@@ -86,6 +86,23 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 		this.asyncApiDoc = this.createInitialDocument()
 	}
 
+	override programContext(_program: Program): Record<string, unknown> {
+		// This method is called by AssetEmitter during emitProgram()
+		// We need to create the source file here to tell the framework what files to write
+		const options = this.emitter.getOptions()
+		const fileType = options["file-type"] || "yaml"
+		const fileName = options["output-file"] || "asyncapi"
+		const outputPath = `${fileName}.${fileType}`
+		
+		// Create the source file - this tells AssetEmitter to write this file
+		const sourceFile = this.emitter.createSourceFile(outputPath)
+		
+		return {
+			program: "AsyncAPI",
+			sourceFile: sourceFile,
+		}
+	}
+
 	private createInitialDocument(): AsyncAPIObject {
 		const program = this.emitter.getProgram()
 		const servers = buildServersFromNamespaces(program)
@@ -142,7 +159,7 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 		return `${outputDir}/${filename}.${extension}`
 	}
 
-	override async writeOutput(): Promise<void> {
+	override async writeOutput(sourceFiles: SourceFile<string>[]): Promise<void> {
 		const emitProgram = pipe(
 			this.runEmissionPipeline(),
 			this.handleEmissionErrors(),
@@ -164,6 +181,9 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 			console.error("Emission pipeline failed:", error)
 			throw error
 		}
+
+		// Call parent writeOutput to actually write files to disk
+		await super.writeOutput(sourceFiles)
 	}
 
 	/**
@@ -208,9 +228,15 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 			yield* this.processSecurityConfigsEffect(securityConfigs)
 			const doc = yield* this.generateDocumentEffect()
 			const validatedDoc = yield* this.validateDocumentEffect(doc)
-			Effect.log(`✅ Document processing complete: ${validatedDoc.length} bytes`)
+			
+			// The asyncApiDoc is already populated during processing
+			// The sourceFile method will serialize it when needed
+			// No need to parse the string back to object
+			
+			Effect.log(`✅ Document processing complete: ${validatedDoc.length} bytes ready for emission`)
 		}.bind(this))
 	}
+
 
 	/**
 	 * Generate comprehensive performance reports
