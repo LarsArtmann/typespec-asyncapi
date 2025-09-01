@@ -89,12 +89,8 @@ export async function createAsyncAPITestHost() {
 export async function createAsyncAPITestRunner() {
 	const host = await createAsyncAPITestHost()
 	return createTestWrapper(host, {
-		autoUsings: ["TypeSpec.AsyncAPI"],
-		// Let autoUsings handle the using statement, just add the import
-		wrapper: (code: string) => `
-			import "@larsartmann/typespec-asyncapi";
-			${code}
-		`
+		autoUsings: ["TypeSpec.AsyncAPI"]
+		// Library is already loaded via AsyncAPITestLibrary in test host
 	})
 }
 

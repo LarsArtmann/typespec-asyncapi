@@ -5,7 +5,6 @@ node_modules
 out
 dist
 build
-lib
 *.tgz
 
 # TypeSpec outputs
