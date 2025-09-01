@@ -92,7 +92,8 @@
       "Bash(chmod:*)",
       "Bash(asyncapi --version)",
       "Bash(asyncapi validate:*)",
-      "Bash(ln:*)"
+      "Bash(ln:*)",
+      "WebFetch(domain:microsoft.github.io)"
     ],
     "deny": [],
     "ask": []
