@@ -89,7 +89,9 @@
       "Bash(file:*)",
       "Bash(./scripts/prepare-release.sh:*)",
       "Bash(npm pack:*)",
-      "Bash(chmod:*)"
+      "Bash(chmod:*)",
+      "Bash(asyncapi --version)",
+      "Bash(asyncapi validate:*)"
     ],
     "deny": [],
     "ask": []
