@@ -24,12 +24,13 @@ import type {Path} from "effect/ParseResult"
 // Import specific types for aliases (separate import to avoid conflicts)
 import type {AsyncAPIObject} from '@asyncapi/parser/esm/spec-types/v3.js'
 
+type OperationsFoundCount = string & { readonly brand: 'OperationsFoundCount' };
+type GenerationNote = string & { readonly brand: 'GenerationNote' };
+
 type XGeneratedFromTypeSpec = {
 	sourceFiles?: Path;
-	//TODO: Can we get a better type here?
-	operationsFound?: string;
-	//TODO: Can we get a better type here?
-	note?: string;
+	operationsFound?: OperationsFoundCount;
+	note?: GenerationNote;
 }
 
 //TODO: Should we use this type somewhere???

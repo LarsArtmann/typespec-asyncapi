@@ -11,6 +11,7 @@ import type {CheckBudgetCompliance} from "./CheckBudgetCompliance.js"
 import type {ForceGarbageCollection} from "./ForceGarbageCollection.js"
 import type {MeasureOperationMemory} from "./MeasureOperationMemory.js"
 import type {Milliseconds} from "./Durations.js"
+import type {OperationType, MemoryReportJson, MetricsSummary} from "./PerformanceTypes.js"
 
 export type MemoryMonitorService = {
 	// Core monitoring functions
@@ -19,8 +20,7 @@ export type MemoryMonitorService = {
 
 	// Memory measurement
 	takeSnapshot: (operationCount?: number) => Effect.Effect<MemorySnapshot, never>;
-	//TODO: replace nothing saying strings with named types!
-	measureOperationMemory: <R, E extends Error>(operation: Effect.Effect<R, MemoryThresholdExceededError | E>, operationType: string) => Effect.Effect<MeasureOperationMemory<R>, MemoryThresholdExceededError | E>;
+	measureOperationMemory: <R, E extends Error>(operation: Effect.Effect<R, MemoryThresholdExceededError | E>, operationType: OperationType) => Effect.Effect<MeasureOperationMemory<R>, MemoryThresholdExceededError | E>;
 
 	// Analysis and reporting
 	analyzeMemoryUsage: (snapshots: MemorySnapshot[], windowMs?: Milliseconds) => Effect.Effect<MemoryAnalysis, never>;
@@ -34,9 +34,7 @@ export type MemoryMonitorService = {
 	setBudget: (budget: Partial<MemoryBudget>) => Effect.Effect<void, never>;
 	checkBudgetCompliance: () => Effect.Effect<CheckBudgetCompliance, never>;
 
-	//TODO: replace nothing saying strings with named types!
 	// Reporting
-	generateMemoryReport: () => Effect.Effect<string, never>;
-	//TODO: replace nothing saying strings with named types!
-	getMemoryMetrics: () => Effect.Effect<Record<string, number>, never>;
+	generateMemoryReport: () => Effect.Effect<MemoryReportJson, never>;
+	getMemoryMetrics: () => Effect.Effect<MetricsSummary, never>;
 }

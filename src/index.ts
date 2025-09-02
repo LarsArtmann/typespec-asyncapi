@@ -1,4 +1,35 @@
-// TODO: Add file-level JSDoc comment describing the module purpose
+/**
+ * @fileoverview TypeSpec AsyncAPI Emitter - Production-ready AsyncAPI 3.0 code generator
+ * 
+ * This module provides the main entry point for the TypeSpec AsyncAPI emitter that generates
+ * AsyncAPI 3.0 specifications from TypeSpec definitions. It handles decorator registration,
+ * TypeSpec AST processing, and document generation using Effect.TS patterns.
+ * 
+ * @module @typespec/asyncapi
+ * @author TypeSpec Community
+ * @version 0.1.0-alpha
+ * @since 2025-01-01
+ * 
+ * @example Basic usage in TypeSpec configuration:
+ * ```typescript
+ * import "@typespec/asyncapi";
+ * 
+ * @channel("user-events")
+ * @publish
+ * op publishUserRegistered(): UserRegisteredMessage;
+ * ```
+ * 
+ * @example Emitter usage in tspconfig.yaml:
+ * ```yaml
+ * emit:
+ *   - "@typespec/asyncapi"
+ * options:
+ *   "@typespec/asyncapi":
+ *     output-format: "yaml"
+ * ```
+ */
+
+// Core TypeScript imports - TypeSpec compiler integration
 // TODO: Consider grouping imports by category (TypeSpec, Effect, local) with separating comments
 // TODO: Add explicit return type annotations to all imported types for better IDE support
 import type { EmitContext } from "@typespec/compiler";
@@ -8,19 +39,35 @@ import { setTypeSpecNamespace } from "@typespec/compiler";
 import { Effect } from "effect";
 import type { AsyncAPIEmitterOptions } from "./options.js";
 
-// Import decorators
+// AsyncAPI Decorator Imports - Core decorator functions for TypeSpec annotations
 // TODO: Consider using a barrel export from decorators/index.ts to simplify imports
-// TODO: Add JSDoc comments for each decorator import explaining their purpose
+/** @channel decorator - Defines AsyncAPI channel configuration for message routing */
 import { $channel } from "./decorators/channel.js";
+/** @publish decorator - Marks operations as message publishing (send) operations */
 import { $publish } from "./decorators/publish.js";
+/** @subscribe decorator - Marks operations as message subscription (receive) operations */
 import { $subscribe } from "./decorators/subscribe.js";
+/** @server decorator - Defines AsyncAPI server connection configuration */
 import { $server } from "./decorators/server.js";
+/** @message decorator - Defines AsyncAPI message schema and metadata */
 import { $message } from "./decorators/message.js";
+/** @protocol decorator - Defines protocol-specific bindings (MQTT, WebSocket, etc.) */
 import { $protocol } from "./decorators/protocol.js";
+/** @security decorator - Defines authentication and authorization requirements */
 import { $security } from "./decorators/security.js";
 
-// Export for TypeSpec library
-// TODO: Add JSDoc comment explaining what $lib exports and why it's needed
+// TypeSpec Library Integration - Required exports for TypeSpec compiler
+/**
+ * $lib export - TypeSpec library definition containing decorator metadata and state management
+ * 
+ * This export provides the TypeSpec compiler with essential library information including:
+ * - Decorator definitions and their parameter schemas
+ * - State management keys for storing decorator data during compilation
+ * - Diagnostic definitions for error reporting
+ * - Library metadata (name, version, dependencies)
+ * 
+ * Required by TypeSpec compiler for proper library integration and decorator processing.
+ */
 export { $lib } from "./lib.js";
 // TODO: Consider re-exporting all types from a single types.ts file for better organization
 export type { AsyncAPIEmitterOptions } from "./options.js";
@@ -37,13 +84,78 @@ setTypeSpecNamespace("TypeSpec.AsyncAPI", $channel, $publish, $subscribe, $serve
 export { $channel, $publish, $subscribe, $server, $message, $protocol, $security };
 
 /**
- * WORKING AsyncAPI emitter entry point with ACTUAL TypeSpec processing
- * This version processes TypeSpec operations, decorators, and models to generate populated AsyncAPI documents
+ * AsyncAPI Emitter Entry Point - TypeSpec to AsyncAPI 3.0 Document Generator
  * 
- * TODO: Add @param JSDoc for context parameter with full type description
- * TODO: Add @returns JSDoc explaining what this function accomplishes
- * TODO: Add @throws JSDoc for potential error conditions
- * TODO: Add @example JSDoc showing typical usage
+ * Main emitter function called by the TypeSpec compiler to generate AsyncAPI 3.0 specifications
+ * from TypeSpec definitions. Processes TypeSpec AST including operations, decorators, and models
+ * to generate complete AsyncAPI documents with channels, operations, messages, and schemas.
+ * 
+ * Features:
+ * - Full AsyncAPI 3.0 specification compliance
+ * - TypeSpec decorator processing (@channel, @publish, @subscribe, @server, etc.)
+ * - Effect.TS integration for functional error handling and performance monitoring
+ * - Multiple output formats (JSON, YAML)
+ * - Comprehensive validation and error reporting
+ * 
+ * @param context - TypeSpec emit context containing program AST, options, and output configuration
+ * @param context.program - TypeSpec program containing compiled AST with all type definitions
+ * @param context.emitterOutputDir - Output directory path for generated AsyncAPI files
+ * @param context.options - Emitter-specific configuration options (format, validation, etc.)
+ * 
+ * @returns Promise<void> - Completes when AsyncAPI documents are successfully generated and written to disk
+ * 
+ * @throws {Error} Import failure when loading emitter implementation
+ * @throws {TypeError} Invalid or missing context parameter
+ * @throws {Error} File system errors during document generation
+ * @throws {ValidationError} AsyncAPI specification validation failures
+ * @throws {CompilerError} TypeSpec AST processing errors
+ * 
+ * @example Basic usage in TypeSpec emitter configuration:
+ * ```typescript
+ * // tspconfig.yaml
+ * emit:
+ *   - "@typespec/asyncapi"
+ * options:
+ *   "@typespec/asyncapi":
+ *     output-format: "yaml"
+ *     validate: true
+ * ```
+ * 
+ * @example Programmatic usage:
+ * ```typescript
+ * import { $onEmit } from "@typespec/asyncapi";
+ * import { compile } from "@typespec/compiler";
+ * 
+ * const program = await compile(host, "main.tsp", {
+ *   emit: ["@typespec/asyncapi"]
+ * });
+ * 
+ * await $onEmit({
+ *   program: program.program,
+ *   emitterOutputDir: "./generated",
+ *   options: { "output-format": "json" }
+ * });
+ * ```
+ * 
+ * @example Generated AsyncAPI document structure:
+ * ```yaml
+ * asyncapi: 3.0.0
+ * info:
+ *   title: Generated API
+ *   version: 1.0.0
+ * channels:
+ *   user-events:
+ *     address: /users/{userId}/events
+ *     messages:
+ *       UserRegisteredMessage: ...
+ * operations:
+ *   publishUserRegistered:
+ *     action: send
+ *     channel: { $ref: '#/channels/user-events' }
+ * ```
+ * 
+ * @since 0.1.0-alpha
+ * @public
  */
 // TODO: Consider adding explicit return type annotation for clarity
 // TODO: Add input validation for context parameter

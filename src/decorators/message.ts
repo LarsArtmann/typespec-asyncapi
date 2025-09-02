@@ -2,6 +2,15 @@ import type {DecoratorContext, Model} from "@typespec/compiler"
 import {$lib} from "../lib.js"
 import {Effect} from "effect"
 
+type ExampleName = string & { readonly brand: 'ExampleName' };
+type ExampleSummary = string & { readonly brand: 'ExampleSummary' };
+
+export type MessageExample = {
+	name?: ExampleName;
+	summary?: ExampleSummary;
+	value: unknown;
+};
+
 export type MessageConfig = {
 	/** Unique identifier for the message */
 	name?: string;
@@ -14,8 +23,7 @@ export type MessageConfig = {
 	/** Content type of the message payload */
 	contentType?: string;
 	/** Examples of the message */
-	//TODO: named types!
-	examples?: Array<{ name?: string; summary?: string; value: unknown }>;
+	examples?: Array<MessageExample>;
 	/** Message headers schema reference */
 	headers?: string;
 	/** Correlation ID reference for message tracking */

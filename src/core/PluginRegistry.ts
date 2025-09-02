@@ -16,6 +16,12 @@
 
 import { Effect } from "effect"
 import type {Milliseconds} from "../performance/Durations.js"
+import type {ByteAmount} from "../performance/ByteAmount.js"
+import {createMegabyteAmount} from "../performance/ByteAmount.js"
+
+// Additional branded types for plugin configuration
+type CpuPercentage = number & { readonly brand: 'CpuPercentage' };
+export const createCpuPercentage = (value: number): CpuPercentage => value as CpuPercentage;
 
 export enum PluginState {
     DISCOVERED = "discovered",
@@ -53,23 +59,35 @@ export type PluginMetadata = {
     loadedAt: Date
     lastActivity: Date
     resourceUsage?: {
-        memory: number
-        cpu: number
+        memory: ByteAmount
+        cpu: CpuPercentage
     }
     errorCount: number
     restartCount: number
 }
 
-//TODO: I do not like boolean's use Enums smartly instead!
+export enum PluginConfigFlags {
+    HOT_RELOAD_ENABLED = 'enabled',
+    HOT_RELOAD_DISABLED = 'disabled'
+}
+
+export enum ResourceMonitoringFlags {
+    MONITORING_ENABLED = 'enabled',
+    MONITORING_DISABLED = 'disabled'
+}
+
+export enum CircularDependencyDetectionFlags {
+    DETECTION_ENABLED = 'enabled',
+    DETECTION_DISABLED = 'disabled'
+}
+
 export type PluginConfig = {
-    enableHotReload: boolean
-    enableResourceMonitoring: boolean
-	//TODO: Have a Better type! e.g. ByteAmount
-    maxMemoryUsage: number // in MB
-	//TODO: Have a Better type!
-    maxCpuUsage: number // percentage
-    enableCircularDependencyDetection: boolean
-    gracefulShutdownTimeout: Milliseconds // in ms
+    enableHotReload: PluginConfigFlags
+    enableResourceMonitoring: ResourceMonitoringFlags
+    maxMemoryUsage: ByteAmount
+    maxCpuUsage: CpuPercentage
+    enableCircularDependencyDetection: CircularDependencyDetectionFlags
+    gracefulShutdownTimeout: Milliseconds
 }
 
 /**
@@ -83,12 +101,12 @@ export class PluginRegistry {
 
     constructor(config?: Partial<PluginConfig>) {
         this.config = {
-            enableHotReload: true,
-            enableResourceMonitoring: true,
-            maxMemoryUsage: 100, // 100MB per plugin
-            maxCpuUsage: 10, // 10% CPU per plugin
-            enableCircularDependencyDetection: true,
-            gracefulShutdownTimeout: 5000, // 5 seconds
+            enableHotReload: PluginConfigFlags.HOT_RELOAD_ENABLED,
+            enableResourceMonitoring: ResourceMonitoringFlags.MONITORING_ENABLED,
+            maxMemoryUsage: createMegabyteAmount(100), // 100MB per plugin
+            maxCpuUsage: createCpuPercentage(10), // 10% CPU per plugin
+            enableCircularDependencyDetection: CircularDependencyDetectionFlags.DETECTION_ENABLED,
+            gracefulShutdownTimeout: 5000 as Milliseconds, // 5 seconds
             ...config
         }
 

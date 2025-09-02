@@ -1,11 +1,18 @@
-//TODO: Can we get better stricter/types???
 // MEMORY USAGE TRACKING
+import type { ByteAmount } from "./ByteAmount.js";
+import type { OperationCount } from "./PerformanceTypes.js";
+
+type Timestamp = number & { readonly brand: 'Timestamp' };
+
 export type MemorySnapshot = {
-	timestamp: number;
-	heapUsed: number;
-	heapTotal: number;
-	external: number;
-	arrayBuffers: number;
-	rss: number;
-	operationCount: number;
+	timestamp: Timestamp;
+	heapUsed: ByteAmount;
+	heapTotal: ByteAmount;
+	external: ByteAmount;
+	arrayBuffers: ByteAmount;
+	rss: ByteAmount;
+	operationCount: OperationCount;
 }
+
+// Helper function to create timestamp safely
+export const createTimestamp = (value: number): Timestamp => value as Timestamp;

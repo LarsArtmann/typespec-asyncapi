@@ -16,6 +16,20 @@ import type {PerformanceMeasurement} from "./PerformanceMeasurement.js"
 import type {ThroughputResult} from "./ThroughputResult.js"
 import type {PerformanceMetricsService} from "./PerformanceMetricsService.js"
 import type {ByteAmount} from "./ByteAmount.js"
+import type {Milliseconds} from "./Durations.js"
+import { 
+	createOperationsPerSecond, 
+	createLatencyMicroseconds, 
+	createMemoryEfficiencyRatio,
+	createPerformanceReportJson,
+	createMetricName,
+	createMetricValue,
+	operationsPerSecondToThroughputValue,
+	numberToThroughputValue,
+	type MetricsSummary,
+	type ThroughputValue,
+	type PerformanceReportJson
+} from "./PerformanceTypes.js"
 
 
 //TODO: This file is getting too big and should be split into multiple smaller files.
@@ -130,11 +144,11 @@ const makePerformanceMetricsService = Effect.gen(function* () {
 			yield* Metric.set(PERFORMANCE_METRICS.memoryTarget, MEMORY_TARGET)
 
 			const result: ThroughputResult = {
-				operationsPerSecond,
-				averageMemoryPerOperation: Math.max(0, averageMemoryPerOperation),
-				averageLatencyMicroseconds,
-				totalDuration: duration,
-				memoryEfficiency,
+				operationsPerSecond: createOperationsPerSecond(operationsPerSecond),
+				averageMemoryPerOperation: Math.max(0, averageMemoryPerOperation) as ByteAmount,
+				averageLatencyMicroseconds: createLatencyMicroseconds(averageLatencyMicroseconds),
+				totalDuration: duration as Milliseconds,
+				memoryEfficiency: createMemoryEfficiencyRatio(memoryEfficiency),
 			}
 
 			yield* Effect.logInfo(`Performance measurement completed`, {
@@ -220,17 +234,17 @@ const makePerformanceMetricsService = Effect.gen(function* () {
 			return yield* recordThroughput(measurement, successCount)
 		})
 
-	const validateThroughputTarget = (actualThroughput: number, targetThroughput = THROUGHPUT_TARGET): Effect.Effect<void, ThroughputBelowTargetError> =>
+	const validateThroughputTarget = (actualThroughput: ThroughputValue, targetThroughput = THROUGHPUT_TARGET): Effect.Effect<void, ThroughputBelowTargetError> =>
 		actualThroughput >= targetThroughput
 			? Effect.void
 			: Effect.fail(new ThroughputBelowTargetError(actualThroughput, targetThroughput))
 
-	const validateMemoryTarget = (memoryUsage: number, targetMemory = MEMORY_TARGET): Effect.Effect<void, MemoryThresholdExceededError> =>
+	const validateMemoryTarget = (memoryUsage: ByteAmount, targetMemory = MEMORY_TARGET): Effect.Effect<void, MemoryThresholdExceededError> =>
 		memoryUsage <= targetMemory
 			? Effect.void
 			: Effect.fail(new MemoryThresholdExceededError(memoryUsage, targetMemory, "memory_target_validation"))
 
-	const generatePerformanceReport = (): Effect.Effect<string, MetricsCollectionError> =>
+	const generatePerformanceReport = (): Effect.Effect<PerformanceReportJson, MetricsCollectionError> =>
 		Effect.gen(function* () {
 			const summary = yield* getMetricsSummary()
 
@@ -256,7 +270,7 @@ const makePerformanceMetricsService = Effect.gen(function* () {
 			report += `- **Memory:** ${memoryStatus}\n`
 			report += `- **Latency:** ${latencyStatus}\n`
 
-			return report
+			return createPerformanceReportJson(report)
 		}).pipe(
 			Effect.catchAll(error =>
 				Effect.fail(new MetricsCollectionError(
@@ -266,7 +280,7 @@ const makePerformanceMetricsService = Effect.gen(function* () {
 			),
 		)
 
-	const getMetricsSummary = (): Effect.Effect<Record<string, number>, MetricsCollectionError> =>
+	const getMetricsSummary = (): Effect.Effect<MetricsSummary, MetricsCollectionError> =>
 		Effect.gen(function* () {
 			// Collect real metrics from Effect.TS metric registry
 			const throughputHistogram = yield* Metric.value(PERFORMANCE_METRICS.validationThroughput)
@@ -289,12 +303,12 @@ const makePerformanceMetricsService = Effect.gen(function* () {
 			const memoryEfficiency = memoryMetric > 0 ? Math.min(100, (MEMORY_TARGET / memoryMetric) * 100) : 100
 
 			return {
-				throughput: throughputMetric,
-				memoryPerOp: memoryMetric,
-				latency: latencyMetric,
-				successRate,
-				memoryEfficiency,
-			}
+				[createMetricName("throughput")]: createMetricValue(throughputMetric),
+				[createMetricName("memoryPerOp")]: createMetricValue(memoryMetric),
+				[createMetricName("latency")]: createMetricValue(latencyMetric),
+				[createMetricName("successRate")]: createMetricValue(successRate),
+				[createMetricName("memoryEfficiency")]: createMetricValue(memoryEfficiency),
+			} as MetricsSummary
 		}).pipe(
 			Effect.catchAll(error =>
 				Effect.fail(new MetricsCollectionError(
@@ -379,8 +393,8 @@ export const processValidationBatch = <E>(
 
 		// Validate against targets
 		yield* metricsService.validateThroughputTarget(
-			result.operationsPerSecond,
-			options.targetThroughput,
+			operationsPerSecondToThroughputValue(result.operationsPerSecond),
+			options.targetThroughput ? numberToThroughputValue(options.targetThroughput) : undefined,
 		)
 
 		yield* metricsService.validateMemoryTarget(
