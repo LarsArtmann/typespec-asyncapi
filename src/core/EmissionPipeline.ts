@@ -20,6 +20,8 @@ import type {AsyncAPIEmitterOptions} from "../options.js"
 import type {SecurityConfig} from "../decorators/security.js"
 import {$lib} from "../lib.js"
 import {buildServersFromNamespaces, getMessageConfig} from "../utils/typespec-helpers.js"
+import {DocumentBuilder} from "./DocumentBuilder.js"
+import {DiscoveryService} from "./DiscoveryService.js"
 
 export type PipelineContext = {
 	program: Program
@@ -37,9 +39,16 @@ export type DiscoveryResult = {
  * Effect.TS-based emission pipeline with plugin integration
  */
 export class EmissionPipeline {
+	private readonly documentBuilder: DocumentBuilder
+	private readonly discoveryService: DiscoveryService
+
+	constructor() {
+		this.documentBuilder = new DocumentBuilder()
+		this.discoveryService = new DiscoveryService()
+	}
 
 	/**
-	 * Execute the complete emission pipeline
+	 * Execute the complete emission pipeline with REAL business logic integration
 	 */
 	executePipeline(context: PipelineContext) {
 		return Effect.gen(function* (this: EmissionPipeline) {
@@ -62,23 +71,16 @@ export class EmissionPipeline {
 	}
 
 	/**
-	 * Stage 1: Discovery - Find all TypeSpec elements to process
+	 * Stage 1: Discovery - Find all TypeSpec elements using REAL DiscoveryService
 	 */
 	private executeDiscoveryStage(context: PipelineContext) {
 		return Effect.gen(function* (this: EmissionPipeline) {
-			Effect.log(`🔍 Stage 1: Discovery`)
+			Effect.log(`🔍 Stage 1: Discovery with REAL DiscoveryService`)
 
-			const operations = yield* this.discoverOperations(context.program)
-			const messageModels = yield* this.discoverMessageModels(context.program)
-			const securityConfigs = yield* this.discoverSecurityConfigs(context.program)
+			// Use REAL DiscoveryService with complete AST traversal logic
+			const result = yield* this.discoveryService.executeDiscovery(context.program)
 
-			const result: DiscoveryResult = {
-				operations,
-				messageModels,
-				securityConfigs,
-			}
-
-			Effect.log(`📊 Discovery complete: ${operations.length} operations, ${messageModels.length} messages, ${securityConfigs.length} security configs`)
+			Effect.log(`📊 Discovery stage complete: ${result.operations.length} operations, ${result.messageModels.length} messages, ${result.securityConfigs.length} security configs`)
 
 			return result
 		}.bind(this))
@@ -111,16 +113,21 @@ export class EmissionPipeline {
 	}
 
 	/**
-	 * Stage 3: Document Generation - Finalize AsyncAPI document
+	 * Stage 3: Document Generation - Finalize AsyncAPI document using REAL DocumentBuilder logic
 	 */
 	private executeGenerationStage(context: PipelineContext, discoveryResult: DiscoveryResult) {
 		return Effect.gen(function* (this: EmissionPipeline) {
-			Effect.log(`📄 Stage 3: Document Generation`)
+			Effect.log(`📄 Stage 3: Document Generation with DocumentBuilder`)
 
-			// Update document info with discovered statistics
-			context.asyncApiDoc.info.description = `Generated from TypeSpec with ${discoveryResult.operations.length} operations`
+			// Use DocumentBuilder to ensure proper document structure
+			this.documentBuilder.initializeDocumentStructure(context.asyncApiDoc)
+			
+			// Update document info with discovered statistics using DocumentBuilder
+			this.documentBuilder.updateDocumentInfo(context.asyncApiDoc, {
+				description: `Generated from TypeSpec with ${discoveryResult.operations.length} operations, ${discoveryResult.messageModels.length} messages, ${discoveryResult.securityConfigs.length} security configs`
+			})
 
-			// Ensure servers are populated
+			// Ensure servers are populated using DocumentBuilder patterns
 			if (!context.asyncApiDoc.servers || Object.keys(context.asyncApiDoc.servers).length === 0) {
 				context.asyncApiDoc.servers = buildServersFromNamespaces(context.program) as AsyncAPIObject["servers"]
 			}
@@ -159,120 +166,16 @@ export class EmissionPipeline {
 	}
 
 	/**
-	 * Discover all operations in the TypeSpec program
+	 * REMOVED: Placeholder discovery methods - now using DiscoveryService with REAL business logic
+	 * 
+	 * The following methods have been extracted to DiscoveryService:
+	 * - discoverOperations() -> DiscoveryService.discoverOperations()
+	 * - discoverMessageModels() -> DiscoveryService.discoverMessageModels()  
+	 * - discoverSecurityConfigs() -> DiscoveryService.discoverSecurityConfigs()
+	 * 
+	 * These methods contained placeholder logic and have been replaced by the REAL implementations
+	 * extracted from the 1,800-line monolithic file with proper TypeSpec AST traversal.
 	 */
-	private discoverOperations(program: Program) {
-		return Effect.sync(() => {
-			const operations: Operation[] = []
-
-			const walkNamespace = (ns: Namespace) => {
-				if (ns.operations) {
-					ns.operations.forEach((op: Operation, name: string) => {
-						operations.push(op)
-						Effect.log(`🔍 Found operation: ${name}`)
-					})
-				}
-
-				if (ns.namespaces) {
-					ns.namespaces.forEach((childNs: Namespace) => {
-						walkNamespace(childNs)
-					})
-				}
-			}
-
-			// Safe access to global namespace
-			if (typeof program.getGlobalNamespaceType === 'function') {
-				walkNamespace(program.getGlobalNamespaceType())
-			}
-
-			return operations
-		})
-	}
-
-	/**
-	 * Discover message models with @message decorators
-	 */
-	private discoverMessageModels(program: Program) {
-		return Effect.sync(() => {
-			const messageModels: Model[] = []
-			const messageConfigsMap = $lib.stateKeys ? program.stateMap($lib.stateKeys.messageConfigs) : null
-			const foundModelNames = new Set<string>()
-
-			const walkNamespaceForModels = (ns: Namespace) => {
-				if (ns.models) {
-					ns.models.forEach((model: Model, name: string) => {
-						// Include all models for now - refine later to only operation return types
-						const hasMessageDecorator = messageConfigsMap?.has(model)
-						const isUsefulModel = true // For now, include all models
-						
-						if (hasMessageDecorator || isUsefulModel) {
-							if (!foundModelNames.has(name)) {
-								messageModels.push(model)
-								foundModelNames.add(name)
-								Effect.log(`🎯 Found message model: ${name} (decorator: ${!!hasMessageDecorator})`)
-							}
-						}
-					})
-				}
-
-				if (ns.namespaces) {
-					ns.namespaces.forEach((childNs: any) => {
-						walkNamespaceForModels(childNs)
-					})
-				}
-			}
-
-			if (typeof program.getGlobalNamespaceType === 'function') {
-				walkNamespaceForModels(program.getGlobalNamespaceType())
-			}
-
-			return messageModels
-		})
-	}
-
-	/**
-	 * Discover security configurations
-	 */
-	private discoverSecurityConfigs(program: Program) {
-		return Effect.sync(() => {
-			const securityConfigs: SecurityConfig[] = []
-			const securityConfigsMap = program.stateMap($lib.stateKeys.securityConfigs)
-
-			const walkNamespaceForSecurity = (ns: Namespace) => {
-				if (ns.operations) {
-					ns.operations.forEach((operation: Operation, name: string) => {
-						if (securityConfigsMap.has(operation)) {
-							const config = securityConfigsMap.get(operation) as SecurityConfig
-							securityConfigs.push(config)
-							Effect.log(`🔐 Found security config on operation: ${name}`)
-						}
-					})
-				}
-
-				if (ns.models) {
-					ns.models.forEach((model: Model, name: string) => {
-						if (securityConfigsMap.has(model)) {
-							const config = securityConfigsMap.get(model) as SecurityConfig
-							securityConfigs.push(config)
-							Effect.log(`🔐 Found security config on model: ${name}`)
-						}
-					})
-				}
-
-				if (ns.namespaces) {
-					ns.namespaces.forEach((childNs: Namespace) => {
-						walkNamespaceForSecurity(childNs)
-					})
-				}
-			}
-
-			if (typeof program.getGlobalNamespaceType === 'function') {
-				walkNamespaceForSecurity(program.getGlobalNamespaceType())
-			}
-
-			return securityConfigs
-		})
-	}
 
 	/**
 	 * Type-safe helper to get string values from TypeSpec state maps

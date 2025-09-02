@@ -21,6 +21,7 @@ import type {AsyncAPIObject} from "@asyncapi/parser/esm/spec-types/v3.js"
 import {ASYNCAPI_VERSION} from "../constants/asyncapi-constants.js"
 import {EmissionPipeline} from "./EmissionPipeline.js"
 import {DocumentGenerator} from "./DocumentGenerator.js"
+import {DocumentBuilder} from "./DocumentBuilder.js"
 // import {PerformanceMonitor} from "./PerformanceMonitor.js"
 import {PluginRegistry} from "./PluginRegistry.js"
 import {DEFAULT_SERIALIZATION_FORMAT} from "./serialization-format-options.js"
@@ -32,6 +33,7 @@ import {DEFAULT_SERIALIZATION_FORMAT} from "./serialization-format-options.js"
 export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
 	private readonly pipeline: EmissionPipeline
 	private readonly documentGenerator: DocumentGenerator
+	private readonly documentBuilder: DocumentBuilder
 	// TODO: Enable when performance monitoring is integrated
 	// private readonly performanceMonitor: PerformanceMonitor
 	private readonly pluginRegistry: PluginRegistry
@@ -40,14 +42,15 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 	constructor(emitter: AssetEmitter<string, AsyncAPIEmitterOptions>) {
 		super(emitter)
 
-		// Initialize micro-kernel components
+		// Initialize micro-kernel components with REAL business logic
 		this.pipeline = new EmissionPipeline()
 		this.documentGenerator = new DocumentGenerator()
+		this.documentBuilder = new DocumentBuilder()
 		// this.performanceMonitor = new PerformanceMonitor()
 		this.pluginRegistry = new PluginRegistry()
 
-		// Initialize document structure
-		this.asyncApiDoc = this.createInitialDocument()
+		// Initialize document structure using REAL DocumentBuilder logic
+		this.asyncApiDoc = this.documentBuilder.createInitialDocument(emitter.getProgram())
 	}
 
 	override programContext(program: Program): Record<string, unknown> {
@@ -145,26 +148,9 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 	}*/
 
 	/**
-	 * Create initial AsyncAPI document structure
+	 * REMOVED: createInitialDocument method - now using DocumentBuilder.createInitialDocument()
+	 * This was placeholder logic replaced by REAL business logic from 1,800-line monolithic file
 	 */
-	private createInitialDocument(): AsyncAPIObject {
-		return {
-			asyncapi: ASYNCAPI_VERSION,
-			info: {
-				title: "AsyncAPI Specification",
-				version: "1.0.0",
-				description: "Generated from TypeSpec with micro-kernel architecture",
-			},
-			servers: {},
-			channels: {},
-			operations: {},
-			components: {
-				schemas: {},
-				messages: {},
-				securitySchemes: {},
-			},
-		}
-	}
 
 	/**
 	 * Get current document state (for plugin access)
