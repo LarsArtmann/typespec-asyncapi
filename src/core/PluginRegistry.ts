@@ -37,6 +37,13 @@ export type Plugin = {
     reload?(): Promise<void>
 }
 
+export type PluginEvent = {
+	type: string
+	target: string
+	data?: unknown
+	timestamp: Date
+}
+
 export type PluginMetadata = {
     name: string
     version: string
@@ -72,8 +79,7 @@ export class PluginRegistry {
     private readonly plugins = new Map<string, Plugin>()
     private readonly pluginMetadata = new Map<string, PluginMetadata>()
     private readonly config: PluginConfig
-	//TODO: No fucking any!
-	private readonly eventBus = new Map<string, Array<(event: any) => void>>()
+	private readonly eventBus = new Map<string, Array<(event: PluginEvent) => void>>()
 
     constructor(config?: Partial<PluginConfig>) {
         this.config = {
@@ -369,22 +375,20 @@ export class PluginRegistry {
             .filter(metadata => metadata.state === state)
     }
 
-	//TODO: No fucking any!
 	/**
      * Subscribe to plugin events
      */
-    on(eventType: string, handler: (event: any) => void): void {
+    on(eventType: string, handler: (event: PluginEvent) => void): void {
         if (!this.eventBus.has(eventType)) {
             this.eventBus.set(eventType, [])
         }
         this.eventBus.get(eventType)!.push(handler)
     }
 
-	//TODO: No fucking any!
 	/**
      * Emit plugin event
      */
-    emit(eventType: string, event: any): void {
+    emit(eventType: string, event: PluginEvent): void {
         const handlers = this.eventBus.get(eventType) || []
         handlers.forEach(handler => {
             try {

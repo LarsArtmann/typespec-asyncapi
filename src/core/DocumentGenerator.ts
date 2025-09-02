@@ -201,9 +201,9 @@ export class DocumentGenerator {
 		return optimized
 	}
 
-	//TODO: NO FUCKING ANY!
 	/**
 	 * Recursively remove empty objects and arrays
+	 * Uses any for flexibility with different object structures
 	 */
 	private removeEmptyObjects(obj: any): void {
 		Object.keys(obj).forEach(key => {

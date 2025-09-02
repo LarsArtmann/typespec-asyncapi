@@ -13,9 +13,10 @@
  */
 
 import {Effect} from "effect"
-import type {Model, Operation, Program} from "@typespec/compiler"
+import type {Model, Namespace, Operation, Program} from "@typespec/compiler"
 import type {AssetEmitter} from "@typespec/asset-emitter"
 import type {AsyncAPIObject} from "@asyncapi/parser/esm/spec-types/v3.js"
+import type {AsyncAPIEmitterOptions} from "../options.js"
 import type {SecurityConfig} from "../decorators/security.js"
 import {$lib} from "../lib.js"
 import {buildServersFromNamespaces, getMessageConfig} from "../utils/typespec-helpers.js"
@@ -23,8 +24,7 @@ import {buildServersFromNamespaces, getMessageConfig} from "../utils/typespec-he
 export type PipelineContext = {
 	program: Program
 	asyncApiDoc: AsyncAPIObject
-	//TODO: No fucking any!
-	emitter: AssetEmitter<string, any>
+	emitter: AssetEmitter<string, AsyncAPIEmitterOptions>
 }
 
 export type DiscoveryResult = {
@@ -165,8 +165,7 @@ export class EmissionPipeline {
 		return Effect.sync(() => {
 			const operations: Operation[] = []
 
-			//TODO: No fucking any!
-			const walkNamespace = (ns: any) => {
+			const walkNamespace = (ns: Namespace) => {
 				if (ns.operations) {
 					ns.operations.forEach((op: Operation, name: string) => {
 						operations.push(op)
@@ -175,7 +174,7 @@ export class EmissionPipeline {
 				}
 
 				if (ns.namespaces) {
-					ns.namespaces.forEach((childNs: any) => {
+					ns.namespaces.forEach((childNs: Namespace) => {
 						walkNamespace(childNs)
 					})
 				}
@@ -199,8 +198,7 @@ export class EmissionPipeline {
 			const messageConfigsMap = $lib.stateKeys ? program.stateMap($lib.stateKeys.messageConfigs) : null
 			const foundModelNames = new Set<string>()
 
-			//TODO: No fucking any!
-			const walkNamespaceForModels = (ns: any) => {
+			const walkNamespaceForModels = (ns: Namespace) => {
 				if (ns.models) {
 					ns.models.forEach((model: Model, name: string) => {
 						// Include all models for now - refine later to only operation return types
@@ -240,8 +238,7 @@ export class EmissionPipeline {
 			const securityConfigs: SecurityConfig[] = []
 			const securityConfigsMap = program.stateMap($lib.stateKeys.securityConfigs)
 
-			//TODO: No fucking any!
-			const walkNamespaceForSecurity = (ns: any) => {
+			const walkNamespaceForSecurity = (ns: Namespace) => {
 				if (ns.operations) {
 					ns.operations.forEach((operation: Operation, name: string) => {
 						if (securityConfigsMap.has(operation)) {
@@ -263,7 +260,7 @@ export class EmissionPipeline {
 				}
 
 				if (ns.namespaces) {
-					ns.namespaces.forEach((childNs: any) => {
+					ns.namespaces.forEach((childNs: Namespace) => {
 						walkNamespaceForSecurity(childNs)
 					})
 				}
@@ -277,11 +274,10 @@ export class EmissionPipeline {
 		})
 	}
 
-	//TODO: NO FUCKING any!!!
 	/**
 	 * Type-safe helper to get string values from TypeSpec state maps
 	 */
-	private getStringFromStateMap(stateMap: Map<any, unknown>, key: any): string | undefined {
+	private getStringFromStateMap(stateMap: Map<unknown, unknown>, key: unknown): string | undefined {
 		const value = stateMap.get(key)
 		return typeof value === 'string' ? value : undefined
 	}
