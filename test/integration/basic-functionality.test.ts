@@ -4,6 +4,11 @@
  * Using CLI compilation approach that bypasses test framework issues
  */
 
+//TODO: TEST INFRASTRUCTURE ANTI-PATTERN HELL - THIS FILE REPRESENTS EVERYTHING WRONG WITH TEST ARCHITECTURE!
+//TODO: CLI DEPENDENCY DISASTER - Tests depend on external TypeSpec CLI instead of programmatic API!
+//TODO: FILE SYSTEM CHAOS - Raw fs operations scattered everywhere without abstraction!
+//TODO: CHILD PROCESS SPAWNING ANTI-PATTERN - Using raw spawn() instead of proper test utilities!
+//TODO: IMPORT CHAOS - 6 different imports mixing testing, Effect, fs, and child_process!
 import { describe, it, expect, beforeEach } from "vitest";
 import { Effect } from "effect";
 import { existsSync, readFileSync, writeFileSync, mkdirSync } from "fs";
@@ -12,10 +17,16 @@ import { spawn } from "child_process";
 import { compileAsyncAPISpecWithoutErrors, parseAsyncAPIOutput } from "../utils/test-helpers";
 
 describe("AsyncAPI Basic Functionality", () => {
+  //TODO: HARDCODED PATH DISASTER! "test-output/integration-basic" should be TEST_PATHS.INTEGRATION_BASIC!
+  //TODO: PATH COUPLING NIGHTMARE - Hardcoded paths scattered across 53 test files!
+  //TODO: TEST ISOLATION VIOLATION - Shared test-output directory creates test interference!
   const testDir = "test-output/integration-basic"
   const outputDir = join(testDir, "output")
   
   beforeEach(() => {
+    //TODO: FILE SYSTEM OPERATIONS IN TEST SETUP - Tests should use proper test filesystem abstraction!
+    //TODO: SETUP COUPLING - Every test file has similar mkdirSync setup scattered everywhere!
+    //TODO: TEST CLEANUP MISSING - No afterEach() cleanup creates test pollution!
     // Create test directories
     mkdirSync(testDir, { recursive: true })
     mkdirSync(outputDir, { recursive: true })
@@ -25,6 +36,9 @@ describe("AsyncAPI Basic Functionality", () => {
     const testFile = join(testDir, `${filename}.tsp`)
     
     // Create TypeSpec file with proper imports
+    //TODO: HARDCODED IMPORT TEMPLATE! Template string should be TYPESPEC_TEMPLATES.BASIC constant!
+    //TODO: LIBRARY NAME HARDCODED AGAIN! "@larsartmann/typespec-asyncapi" scattered across 53 test files!
+    //TODO: NAMESPACE HARDCODED! "TypeSpec.AsyncAPI" should be TYPESPEC_NAMESPACES.ASYNCAPI!
     const fullSource = `
 import "@larsartmann/typespec-asyncapi";
 
@@ -33,9 +47,15 @@ using TypeSpec.AsyncAPI;
 ${source}
 `
     
+    //TODO: RAW FILE SYSTEM WRITE! writeFileSync should be wrapped in test file utilities!
+    //TODO: FILE CREATION CHAOS - Same file creation pattern duplicated across test files!
     writeFileSync(testFile, fullSource)
     
     // Compile using TypeSpec CLI
+    //TODO: CHILD PROCESS SPAWNING DISASTER! Raw spawn() is HORRIBLE for testing!
+    //TODO: CLI DEPENDENCY ANTI-PATTERN - Tests should use programmatic TypeSpec API!
+    //TODO: EXTERNAL DEPENDENCY COUPLING - Tests break if npx/tsp CLI is unavailable!
+    //TODO: HARDCODED CLI ARGUMENTS - spawn args should be CLI_ARGS.COMPILE_ASYNCAPI constants!
     const compilation = spawn("npx", ["tsp", "compile", testFile, "--emit", "@larsartmann/typespec-asyncapi", "--output-dir", outputDir], {
       stdio: ["inherit", "pipe", "pipe"],
       cwd: process.cwd()
