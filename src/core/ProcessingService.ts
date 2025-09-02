@@ -270,6 +270,11 @@ export class ProcessingService {
 
 		const messageId = messageConfig.name ?? model.name
 
+		// CRITICAL FIX: Add schema to components.schemas first!
+		if (!asyncApiDoc.components.schemas) asyncApiDoc.components.schemas = {}
+		asyncApiDoc.components.schemas[model.name] = convertModelToSchema(model, program)
+		Effect.log(`✅ Added schema for message model: ${model.name}`)
+
 		// Add message to components.messages with REAL configuration
 		asyncApiDoc.components.messages[messageId] = {
 			name: messageId,
