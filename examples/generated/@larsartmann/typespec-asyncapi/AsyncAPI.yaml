@@ -1,0 +1,309 @@
+asyncapi: 3.0.0
+info:
+  title: AsyncAPI Specification
+  version: 1.0.0
+  description: Generated from TypeSpec with 12 operations, 7 messages, 0 security configs
+servers: {}
+channels:
+  channel_publishUserCreated:
+    address: user.lifecycle.created
+    description: Channel for publishUserCreated
+    messages:
+      publishUserCreatedMessage:
+        $ref: "#/components/messages/publishUserCreatedMessage"
+    bindings:
+      kafka:
+        bindingVersion: 0.5.0
+        topic: user-lifecycle-events
+  channel_subscribeToUserCreated:
+    address: user.lifecycle.created
+    description: Channel for subscribeToUserCreated
+    messages:
+      subscribeToUserCreatedMessage:
+        $ref: "#/components/messages/subscribeToUserCreatedMessage"
+    bindings:
+      kafka:
+        bindingVersion: 0.5.0
+        topic: user-lifecycle-events
+  channel_publishOrderStatusChanged:
+    address: order.status.changed
+    description: Channel for publishOrderStatusChanged
+    messages:
+      publishOrderStatusChangedMessage:
+        $ref: "#/components/messages/publishOrderStatusChangedMessage"
+    bindings:
+      kafka:
+        bindingVersion: 0.5.0
+        topic: order-events
+  channel_subscribeOrderStatusChanged:
+    address: /subscribeorderstatuschanged
+    description: Channel for subscribeOrderStatusChanged
+    messages:
+      subscribeOrderStatusChangedMessage:
+        $ref: "#/components/messages/subscribeOrderStatusChangedMessage"
+  channel_subscribeToLiveNotifications:
+    address: notifications.{userId}.live
+    description: Channel for subscribeToLiveNotifications
+    messages:
+      subscribeToLiveNotificationsMessage:
+        $ref: "#/components/messages/subscribeToLiveNotificationsMessage"
+    bindings:
+      ws:
+        bindingVersion: 0.1.0
+        method: GET
+  channel_sendChatMessage:
+    address: chat.{channelId}.messages
+    description: Channel for sendChatMessage
+    messages:
+      sendChatMessageMessage:
+        $ref: "#/components/messages/sendChatMessageMessage"
+    bindings:
+      ws:
+        bindingVersion: 0.1.0
+        method: GET
+  channel_receiveChatMessages:
+    address: /receivechatmessages
+    description: Channel for receiveChatMessages
+    messages:
+      receiveChatMessagesMessage:
+        $ref: "#/components/messages/receiveChatMessagesMessage"
+  channel_receiveWebhookEvents:
+    address: webhooks.external.events
+    description: Channel for receiveWebhookEvents
+    messages:
+      receiveWebhookEventsMessage:
+        $ref: "#/components/messages/receiveWebhookEventsMessage"
+  channel_publishDeviceStatus:
+    address: devices.{deviceId}.status
+    description: Channel for publishDeviceStatus
+    messages:
+      publishDeviceStatusMessage:
+        $ref: "#/components/messages/publishDeviceStatusMessage"
+  channel_subscribeToDeviceStatus:
+    address: /subscribetodevicestatus
+    description: Channel for subscribeToDeviceStatus
+    messages:
+      subscribeToDeviceStatusMessage:
+        $ref: "#/components/messages/subscribeToDeviceStatusMessage"
+  channel_publishAnalyticsEvent:
+    address: analytics.events.raw
+    description: Channel for publishAnalyticsEvent
+    messages:
+      publishAnalyticsEventMessage:
+        $ref: "#/components/messages/publishAnalyticsEventMessage"
+  channel_subscribeToAnalyticsEvents:
+    address: /subscribetoanalyticsevents
+    description: Channel for subscribeToAnalyticsEvents
+    messages:
+      subscribeToAnalyticsEventsMessage:
+        $ref: "#/components/messages/subscribeToAnalyticsEventsMessage"
+operations:
+  publishUserCreated:
+    action: send
+    channel:
+      $ref: "#/channels/channel_publishUserCreated"
+    summary: Operation publishUserCreated
+    description: TypeSpec operation with 0 parameters
+    bindings:
+      kafka:
+        bindingVersion: 0.5.0
+        groupId: user-service-publishers
+        clientId: typespec-client
+        topic: user-lifecycle-events
+        key: user.id
+  subscribeToUserCreated:
+    action: receive
+    channel:
+      $ref: "#/channels/channel_subscribeToUserCreated"
+    summary: Operation subscribeToUserCreated
+    description: TypeSpec operation with 0 parameters
+    bindings:
+      kafka:
+        bindingVersion: 0.5.0
+        groupId: notification-service
+        clientId: typespec-client
+        topic: user-lifecycle-events
+  publishOrderStatusChanged:
+    action: send
+    channel:
+      $ref: "#/channels/channel_publishOrderStatusChanged"
+    summary: Operation publishOrderStatusChanged
+    description: TypeSpec operation with 0 parameters
+    bindings:
+      kafka:
+        bindingVersion: 0.5.0
+        groupId: consumer-group
+        clientId: typespec-client
+        topic: order-events
+        key: order.id
+  subscribeOrderStatusChanged:
+    action: receive
+    channel:
+      $ref: "#/channels/channel_subscribeOrderStatusChanged"
+    summary: Operation subscribeOrderStatusChanged
+    description: TypeSpec operation with 0 parameters
+  subscribeToLiveNotifications:
+    action: receive
+    channel:
+      $ref: "#/channels/channel_subscribeToLiveNotifications"
+    summary: Operation subscribeToLiveNotifications
+    description: TypeSpec operation with 0 parameters
+    bindings: {}
+  sendChatMessage:
+    action: send
+    channel:
+      $ref: "#/channels/channel_sendChatMessage"
+    summary: Operation sendChatMessage
+    description: TypeSpec operation with 0 parameters
+    bindings: {}
+  receiveChatMessages:
+    action: receive
+    channel:
+      $ref: "#/channels/channel_receiveChatMessages"
+    summary: Operation receiveChatMessages
+    description: TypeSpec operation with 0 parameters
+  receiveWebhookEvents:
+    action: receive
+    channel:
+      $ref: "#/channels/channel_receiveWebhookEvents"
+    summary: Operation receiveWebhookEvents
+    description: TypeSpec operation with 0 parameters
+    bindings:
+      http:
+        bindingVersion: 0.3.0
+        type: request
+        method: POST
+  publishDeviceStatus:
+    action: send
+    channel:
+      $ref: "#/channels/channel_publishDeviceStatus"
+    summary: Operation publishDeviceStatus
+    description: TypeSpec operation with 0 parameters
+  subscribeToDeviceStatus:
+    action: receive
+    channel:
+      $ref: "#/channels/channel_subscribeToDeviceStatus"
+    summary: Operation subscribeToDeviceStatus
+    description: TypeSpec operation with 0 parameters
+  publishAnalyticsEvent:
+    action: send
+    channel:
+      $ref: "#/channels/channel_publishAnalyticsEvent"
+    summary: Operation publishAnalyticsEvent
+    description: TypeSpec operation with 0 parameters
+  subscribeToAnalyticsEvents:
+    action: receive
+    channel:
+      $ref: "#/channels/channel_subscribeToAnalyticsEvents"
+    summary: Operation subscribeToAnalyticsEvents
+    description: TypeSpec operation with 0 parameters
+components:
+  schemas: {}
+  messages:
+    publishUserCreatedMessage:
+      name: publishUserCreatedMessage
+      title: publishUserCreated Message
+      summary: Message for publishUserCreated operation
+      contentType: application/json
+      bindings:
+        kafka:
+          bindingVersion: 0.5.0
+          key: user.id
+          schemaIdLocation: payload
+          schemaIdPayloadEncoding: apicurio-new
+          topic: user-lifecycle-events
+          groupId: user-service-publishers
+    subscribeToUserCreatedMessage:
+      name: subscribeToUserCreatedMessage
+      title: subscribeToUserCreated Message
+      summary: Message for subscribeToUserCreated operation
+      contentType: application/json
+      bindings:
+        kafka:
+          bindingVersion: 0.5.0
+          key:
+            type: string
+            description: Message key for partitioning
+          schemaIdLocation: payload
+          schemaIdPayloadEncoding: apicurio-new
+          topic: user-lifecycle-events
+          groupId: notification-service
+    publishOrderStatusChangedMessage:
+      name: publishOrderStatusChangedMessage
+      title: publishOrderStatusChanged Message
+      summary: Message for publishOrderStatusChanged operation
+      contentType: application/json
+      bindings:
+        kafka:
+          bindingVersion: 0.5.0
+          key: order.id
+          schemaIdLocation: payload
+          schemaIdPayloadEncoding: apicurio-new
+          topic: order-events
+    subscribeOrderStatusChangedMessage:
+      name: subscribeOrderStatusChangedMessage
+      title: subscribeOrderStatusChanged Message
+      summary: Message for subscribeOrderStatusChanged operation
+      contentType: application/json
+    subscribeToLiveNotificationsMessage:
+      name: subscribeToLiveNotificationsMessage
+      title: subscribeToLiveNotifications Message
+      summary: Message for subscribeToLiveNotifications operation
+      contentType: application/json
+      bindings:
+        ws:
+          method: GET
+          bindingVersion: 0.1.0
+    sendChatMessageMessage:
+      name: sendChatMessageMessage
+      title: sendChatMessage Message
+      summary: Message for sendChatMessage operation
+      contentType: application/json
+      bindings:
+        ws:
+          method: GET
+          bindingVersion: 0.1.0
+    receiveChatMessagesMessage:
+      name: receiveChatMessagesMessage
+      title: receiveChatMessages Message
+      summary: Message for receiveChatMessages operation
+      contentType: application/json
+    receiveWebhookEventsMessage:
+      name: receiveWebhookEventsMessage
+      title: receiveWebhookEvents Message
+      summary: Message for receiveWebhookEvents operation
+      contentType: application/json
+      bindings:
+        http:
+          bindingVersion: 0.3.0
+          headers:
+            Content-Type: application/json
+          type: request
+          method: POST
+    publishDeviceStatusMessage:
+      name: publishDeviceStatusMessage
+      title: publishDeviceStatus Message
+      summary: Message for publishDeviceStatus operation
+      contentType: application/json
+    subscribeToDeviceStatusMessage:
+      name: subscribeToDeviceStatusMessage
+      title: subscribeToDeviceStatus Message
+      summary: Message for subscribeToDeviceStatus operation
+      contentType: application/json
+    publishAnalyticsEventMessage:
+      name: publishAnalyticsEventMessage
+      title: publishAnalyticsEvent Message
+      summary: Message for publishAnalyticsEvent operation
+      contentType: application/json
+    subscribeToAnalyticsEventsMessage:
+      name: subscribeToAnalyticsEventsMessage
+      title: subscribeToAnalyticsEvents Message
+      summary: Message for subscribeToAnalyticsEvents operation
+      contentType: application/json
+    "":
+      name: ""
+      title: ""
+      contentType: application/json
+      payload:
+        $ref: "#/components/schemas/AnalyticsMessage"
+  securitySchemes: {}
