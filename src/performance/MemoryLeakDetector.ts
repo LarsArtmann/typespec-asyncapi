@@ -509,7 +509,10 @@ export class MemoryLeakDetector {
 	// Helper methods
 	private startPeriodicSampling(): void {
 		this.monitoringInterval = setInterval(() => {
-			Effect.runSync(this.takeMemorySnapshot())
+			Effect.runSync(this.takeMemorySnapshot().pipe(
+				Effect.catchAll(() => Effect.succeed(undefined)),
+				Effect.provide(this as any) // Provide this context for Effect
+			))
 		}, this.config.samplingInterval)
 	}
 

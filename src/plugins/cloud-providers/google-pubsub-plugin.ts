@@ -1,7 +1,8 @@
 import { Effect } from "effect"
 import type { DecoratorContext, Operation, Model } from "@typespec/compiler"
 import type { AsyncAPIObject } from "../../types/asyncapi.js"
-import { BaseCloudBindingPlugin, CloudBindingConfig, CloudBindingResult, CloudBindingValidationError } from "../interfaces/cloud-binding-plugin.js"
+import type { CloudBindingConfig, CloudBindingResult } from "../interfaces/cloud-binding-plugin.js"
+import { BaseCloudBindingPlugin, CloudBindingValidationError } from "../interfaces/cloud-binding-plugin.js"
 import { getCloudBindingsByType } from "../../decorators/cloud-bindings.js"
 
 /**
@@ -175,25 +176,26 @@ export class GooglePubSubPlugin extends BaseCloudBindingPlugin {
   processBindings(
     context: DecoratorContext,
     target: Operation | Model,
-    asyncApiDoc: AsyncAPIObject
+    _asyncApiDoc: AsyncAPIObject
   ): Effect.Effect<CloudBindingResult, Error> {
+    const self = this
     return Effect.gen(function* () {
       const pubsubBindings = getCloudBindingsByType(context, target, 'google-pubsub')
       
       if (pubsubBindings.length === 0) {
-        return this.createEmptyResult()
+        return self.createEmptyResult()
       }
       
       Effect.log(`🔗 Processing ${pubsubBindings.length} Google Pub/Sub bindings for ${target.name}`)
       
-      const result = this.createEmptyResult()
+      const result = self.createEmptyResult()
       
       for (const binding of pubsubBindings) {
-        const pubsubConfig = yield* this.validateGooglePubSubConfig(binding.config as GooglePubSubBindingConfig)
+        const pubsubConfig = yield* self.validateGooglePubSubConfig(binding.config as GooglePubSubBindingConfig)
         
         // Generate channel binding
-        const channelBinding = yield* this.generateChannelBinding(pubsubConfig)
-        const channelId = this.extractChannelId(pubsubConfig.topic)
+        const channelBinding = yield* self.generateChannelBinding(pubsubConfig)
+        const channelId = self.extractChannelId(pubsubConfig.topic)
         
         result.channels[channelId] = {
           address: pubsubConfig.topic,
@@ -205,8 +207,8 @@ export class GooglePubSubPlugin extends BaseCloudBindingPlugin {
         
         // Generate operation binding if target is Operation
         if (target.kind === 'Operation') {
-          const operationBinding = yield* this.generateOperationBinding(pubsubConfig)
-          const action = this.inferOperationAction(target.name)
+          const operationBinding = yield* self.generateOperationBinding(pubsubConfig)
+          const action = self.inferOperationAction(target.name)
           
           result.operations[target.name] = {
             action,
@@ -221,7 +223,7 @@ export class GooglePubSubPlugin extends BaseCloudBindingPlugin {
         if (pubsubConfig.authentication) {
           result.components = {
             ...result.components,
-            ...yield* this.generateServiceAccountComponents(pubsubConfig)
+            ...yield* self.generateServiceAccountComponents(pubsubConfig)
           }
         }
         
@@ -229,17 +231,18 @@ export class GooglePubSubPlugin extends BaseCloudBindingPlugin {
       }
       
       return result
-    }.bind(this))
+    })
   }
   
   /**
    * Validate plugin configuration
    */
   validateConfiguration(config: Record<string, unknown>): Effect.Effect<boolean, Error> {
+    const self = this
     return Effect.gen(function* () {
-      yield* this.validateGoogleCloudCredentials(config)
-      yield* this.validateGoogleCloudProject(config)
-      yield* this.validatePubSubPermissions(config)
+      yield* self.validateGoogleCloudCredentials(config)
+      yield* self.validateGoogleCloudProject(config)
+      yield* self.validatePubSubPermissions(config)
       return true
     })
   }
@@ -299,11 +302,12 @@ export class GooglePubSubPlugin extends BaseCloudBindingPlugin {
    * Validate Google Cloud Pub/Sub configuration structure
    */
   private validateGooglePubSubConfig(config: GooglePubSubBindingConfig): Effect.Effect<GooglePubSubBindingConfig, CloudBindingValidationError> {
+    const self = this
     return Effect.gen(function* () {
       if (!config.topic || typeof config.topic !== 'string') {
         return yield* Effect.fail(new CloudBindingValidationError(
           'Topic name or resource path is required',
-          this.bindingType,
+          self.bindingType,
           'topic'
         ))
       }
@@ -315,7 +319,7 @@ export class GooglePubSubPlugin extends BaseCloudBindingPlugin {
         if (!resourcePattern.test(config.topic)) {
           return yield* Effect.fail(new CloudBindingValidationError(
             'Invalid Pub/Sub topic resource path format',
-            this.bindingType,
+            self.bindingType,
             'topic'
           ))
         }
@@ -325,7 +329,7 @@ export class GooglePubSubPlugin extends BaseCloudBindingPlugin {
         if (!namePattern.test(config.topic)) {
           return yield* Effect.fail(new CloudBindingValidationError(
             'Invalid Pub/Sub topic name format',
-            this.bindingType,
+            self.bindingType,
             'topic'
           ))
         }
@@ -333,22 +337,22 @@ export class GooglePubSubPlugin extends BaseCloudBindingPlugin {
       
       // Validate subscription configuration
       if (config.subscriptionConfig) {
-        yield* this.validateSubscriptionConfig(config.subscriptionConfig)
+        yield* self.validateSubscriptionConfig(config.subscriptionConfig)
       }
       
       // Validate publish configuration
       if (config.publishConfig) {
-        yield* this.validatePublishConfig(config.publishConfig)
+        yield* self.validatePublishConfig(config.publishConfig)
       }
       
       // Validate schema settings
       if (config.schemaSettings) {
-        yield* this.validateSchemaSettings(config.schemaSettings)
+        yield* self.validateSchemaSettings(config.schemaSettings)
       }
       
       // Validate push configuration
       if (config.pushConfig) {
-        yield* this.validatePushConfig(config.pushConfig)
+        yield* self.validatePushConfig(config.pushConfig)
       }
       
       return config

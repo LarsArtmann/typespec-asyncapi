@@ -134,8 +134,8 @@ export class PerformanceRegressionTester {
 			// Start performance monitoring
 			yield* this.performanceMonitor.startMonitoring()
 
-			const startTime = performance.now()
-			const _startMemory = process.memoryUsage().heapUsed / 1024 / 1024
+			const startTime = performance.now(); void startTime
+			const _startMemory = process.memoryUsage().heapUsed / 1024 / 1024; void _startMemory
 
 			try {
 				// Execute the test function  
@@ -481,13 +481,13 @@ export const createTypeSpecCompilationRegressionTest = (_program: Program) => {
 		tester,
 		runTest: (testName: string) => tester.runRegressionTest(testName, async () => {
 			// Simulate TypeSpec compilation performance test
-			const startTime = performance.now()
+			const startTime = performance.now(); void startTime
 			
 			// This would normally trigger actual TypeSpec compilation
 			// For now, we'll simulate with a lightweight operation
 			await new Promise(resolve => setTimeout(resolve, Math.random() * 100 + 50))
 			
-			const _endTime = performance.now()
+			const _endTime = performance.now(); void _endTime
 			// Note: performance measurement would be handled internally by runRegressionTest
 		})
 	}

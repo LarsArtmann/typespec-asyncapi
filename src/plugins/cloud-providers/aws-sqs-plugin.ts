@@ -1,7 +1,9 @@
 import { Effect } from "effect"
 import type { DecoratorContext, Operation, Model } from "@typespec/compiler"
 import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js"
-import { BaseCloudBindingPlugin, CloudBindingConfig, CloudBindingResult, CloudBindingValidationError } from "../interfaces/cloud-binding-plugin.js"
+import { BaseCloudBindingPlugin } from "../interfaces/cloud-binding-plugin.js"
+import type { CloudBindingConfig, CloudBindingResult } from "../interfaces/cloud-binding-plugin.js"
+import { CloudBindingValidationError } from "../interfaces/cloud-binding-plugin.js"
 import { getCloudBindingsByType } from "../../decorators/cloud-bindings.js"
 
 /**
@@ -9,15 +11,15 @@ import { getCloudBindingsByType } from "../../decorators/cloud-bindings.js"
  */
 export interface AwsSqsBindingConfig extends CloudBindingConfig {
   /** SQS Queue URL or name */
-  queue: string
+  _queue: string
   
   /** Queue type */
-  queueType?: 'standard' | 'fifo'
+  _queueType?: 'standard' | 'fifo'
   
-  /** Message group ID for FIFO queues */
+  /** Message group ID for FIFO _queues */
   messageGroupId?: string
   
-  /** Message deduplication ID for FIFO queues */
+  /** Message deduplication ID for FIFO _queues */
   messageDeduplicationId?: string
   
   /** Visibility timeout in seconds (0-43200) */
@@ -29,7 +31,7 @@ export interface AwsSqsBindingConfig extends CloudBindingConfig {
   /** Maximum message size in bytes (1024-262144) */
   maxMessageSize?: number
   
-  /** Dead letter queue configuration */
+  /** Dead letter _queue configuration */
   deadLetterQueue?: {
     targetArn: string
     maxReceiveCount: number
@@ -84,8 +86,8 @@ export interface AwsSqsBindingConfig extends CloudBindingConfig {
  * AWS SQS Plugin for TypeSpec AsyncAPI emitter
  * 
  * Provides comprehensive AWS SQS binding support with enterprise features:
- * - Standard and FIFO queue support
- * - Dead letter queue configuration  
+ * - Standard and FIFO _queue support
+ * - Dead letter _queue configuration  
  * - Message visibility and retention settings
  * - Batch processing configuration
  * - KMS encryption support
@@ -104,29 +106,30 @@ export class AwsSqsPlugin extends BaseCloudBindingPlugin {
   processBindings(
     context: DecoratorContext,
     target: Operation | Model,
-    asyncApiDoc: AsyncAPIObject
+    _asyncApiDoc: AsyncAPIObject
   ): Effect.Effect<CloudBindingResult, Error> {
+    const self = this
     return Effect.gen(function* () {
       const sqsBindings = getCloudBindingsByType(context, target, 'aws-sqs')
       
       if (sqsBindings.length === 0) {
-        return this.createEmptyResult()
+        return self.createEmptyResult()
       }
       
       Effect.log(`🔗 Processing ${sqsBindings.length} AWS SQS bindings for ${target.name}`)
       
-      const result = this.createEmptyResult()
+      const result = self.createEmptyResult()
       
       for (const binding of sqsBindings) {
-        const sqsConfig = yield* this.validateAwsSqsConfig(binding.config as AwsSqsBindingConfig)
+        const sqsConfig = yield* self.validateAwsSqsConfig(binding.config as AwsSqsBindingConfig)
         
         // Generate channel binding
-        const channelBinding = yield* this.generateChannelBinding(sqsConfig)
-        const channelId = this.extractChannelId(sqsConfig.queue)
+        const channelBinding = yield* self.generateChannelBinding(sqsConfig)
+        const channelId = self.extractChannelId(sqsConfig._queue)
         
         result.channels[channelId] = {
-          address: sqsConfig.queue,
-          description: `AWS SQS queue: ${sqsConfig.queue}`,
+          address: sqsConfig._queue,
+          description: `AWS SQS _queue: ${sqsConfig._queue}`,
           bindings: {
             sqs: channelBinding
           }
@@ -134,8 +137,8 @@ export class AwsSqsPlugin extends BaseCloudBindingPlugin {
         
         // Generate operation binding if target is Operation
         if (target.kind === 'Operation') {
-          const operationBinding = yield* this.generateOperationBinding(sqsConfig)
-          const action = this.inferOperationAction(target.name)
+          const operationBinding = yield* self.generateOperationBinding(sqsConfig)
+          const action = self.inferOperationAction(target.name)
           
           result.operations[target.name] = {
             action,
@@ -150,7 +153,7 @@ export class AwsSqsPlugin extends BaseCloudBindingPlugin {
         if (sqsConfig.policy) {
           result.components = {
             ...result.components,
-            ...yield* this.generateIamPolicyComponents(sqsConfig)
+            ...yield* self.generateIamPolicyComponents(sqsConfig)
           }
         }
         
@@ -165,10 +168,11 @@ export class AwsSqsPlugin extends BaseCloudBindingPlugin {
    * Validate plugin configuration
    */
   validateConfiguration(config: Record<string, unknown>): Effect.Effect<boolean, Error> {
+    const self = this
     return Effect.gen(function* () {
-      yield* this.validateAwsCredentials(config)
-      yield* this.validateAwsRegion(config)
-      yield* this.validateSqsPermissions(config)
+      yield* self.validateAwsCredentials(config)
+      yield* self.validateAwsRegion(config)
+      yield* self.validateSqsPermissions(config)
       return true
     })
   }
@@ -180,10 +184,10 @@ export class AwsSqsPlugin extends BaseCloudBindingPlugin {
     return {
       protocols: ['sqs'],
       messageFormats: ['json', 'string', 'binary'],
-      queueTypes: ['standard', 'fifo'],
+      _queueTypes: ['standard', 'fifo'],
       features: [
-        'queue-operations',
-        'dead-letter-queues',
+        '_queue-operations',
+        'dead-letter-_queues',
         'message-visibility',
         'long-polling',
         'batch-operations',
@@ -223,38 +227,39 @@ export class AwsSqsPlugin extends BaseCloudBindingPlugin {
    * Validate AWS SQS configuration structure
    */
   private validateAwsSqsConfig(config: AwsSqsBindingConfig): Effect.Effect<AwsSqsBindingConfig, CloudBindingValidationError> {
+    const self = this
     return Effect.gen(function* () {
-      if (!config.queue || typeof config.queue !== 'string') {
+      if (!config._queue || typeof config._queue !== 'string') {
         return yield* Effect.fail(new CloudBindingValidationError(
           'Queue URL or name is required',
-          this.bindingType,
-          'queue'
+          self.bindingType,
+          '_queue'
         ))
       }
       
-      // Validate queue URL format
-      if (config.queue.startsWith('https://sqs.')) {
+      // Validate _queue URL format
+      if (config._queue.startsWith('https://sqs.')) {
         const urlPattern = /^https:\/\/sqs\.[\w-]+\.amazonaws\.com\/\d+\/[\w-]+$/
-        if (!urlPattern.test(config.queue)) {
+        if (!urlPattern.test(config._queue)) {
           return yield* Effect.fail(new CloudBindingValidationError(
-            'Invalid SQS queue URL format',
-            this.bindingType,
-            'queue'
+            'Invalid SQS _queue URL format',
+            self.bindingType,
+            '_queue'
           ))
         }
       }
       
-      // Validate FIFO queue requirements
-      if (config.queueType === 'fifo' || config.queue.endsWith('.fifo')) {
-        if (!config.queue.endsWith('.fifo')) {
+      // Validate FIFO _queue requirements
+      if (config._queueType === 'fifo' || config._queue.endsWith('.fifo')) {
+        if (!config._queue.endsWith('.fifo')) {
           return yield* Effect.fail(new CloudBindingValidationError(
-            'FIFO queue name must end with .fifo',
-            this.bindingType,
-            'queue'
+            'FIFO _queue name must end with .fifo',
+            self.bindingType,
+            '_queue'
           ))
         }
         
-        config.queueType = 'fifo' // Ensure type is set
+        config._queueType = 'fifo' // Ensure type is set
       }
       
       // Validate numeric constraints
@@ -262,7 +267,7 @@ export class AwsSqsPlugin extends BaseCloudBindingPlugin {
         if (config.visibilityTimeoutSeconds < 0 || config.visibilityTimeoutSeconds > 43200) {
           return yield* Effect.fail(new CloudBindingValidationError(
             'Visibility timeout must be between 0 and 43200 seconds',
-            this.bindingType,
+            self.bindingType,
             'visibilityTimeoutSeconds'
           ))
         }
@@ -272,7 +277,7 @@ export class AwsSqsPlugin extends BaseCloudBindingPlugin {
         if (config.messageRetentionPeriod < 60 || config.messageRetentionPeriod > 1209600) {
           return yield* Effect.fail(new CloudBindingValidationError(
             'Message retention period must be between 60 and 1209600 seconds',
-            this.bindingType,
+            self.bindingType,
             'messageRetentionPeriod'
           ))
         }
@@ -282,7 +287,7 @@ export class AwsSqsPlugin extends BaseCloudBindingPlugin {
         if (config.maxMessageSize < 1024 || config.maxMessageSize > 262144) {
           return yield* Effect.fail(new CloudBindingValidationError(
             'Maximum message size must be between 1024 and 262144 bytes',
-            this.bindingType,
+            self.bindingType,
             'maxMessageSize'
           ))
         }
@@ -290,12 +295,12 @@ export class AwsSqsPlugin extends BaseCloudBindingPlugin {
       
       // Validate receive configuration
       if (config.receiveConfig) {
-        yield* this.validateReceiveConfig(config.receiveConfig)
+        yield* self.validateReceiveConfig(config.receiveConfig)
       }
       
       // Validate batch configuration
       if (config.batchConfig) {
-        yield* this.validateBatchConfig(config.batchConfig)
+        yield* self.validateBatchConfig(config.batchConfig)
       }
       
       return config
@@ -306,13 +311,14 @@ export class AwsSqsPlugin extends BaseCloudBindingPlugin {
    * Generate AWS SQS channel binding
    */
   private generateChannelBinding(config: AwsSqsBindingConfig): Effect.Effect<Record<string, unknown>, never> {
+    const self = this
     return Effect.gen(function* () {
       const binding: Record<string, unknown> = {
-        queue: this.extractQueueName(config.queue)
+        _queue: self.extractQueueName(config._queue)
       }
       
-      if (config.queueType) {
-        binding.queueType = config.queueType
+      if (config._queueType) {
+        binding._queueType = config._queueType
       }
       
       if (config.messageRetentionPeriod) {
@@ -395,7 +401,7 @@ export class AwsSqsPlugin extends BaseCloudBindingPlugin {
       if (!hasAccessKeys && !hasRoleArn && !hasProfile && !process.env.AWS_ACCESS_KEY_ID) {
         return yield* Effect.fail(new CloudBindingValidationError(
           'AWS credentials must be configured via access keys, IAM role, profile, or environment variables',
-          this.bindingType,
+          self.bindingType,
           'credentials'
         ))
       }
@@ -437,13 +443,13 @@ export class AwsSqsPlugin extends BaseCloudBindingPlugin {
    */
   private validateReceiveConfig(config: AwsSqsBindingConfig['receiveConfig']): Effect.Effect<void, CloudBindingValidationError> {
     return Effect.gen(function* () {
-      if (!config) return
+      if (!_config) return
       
       if (config.maxNumberOfMessages !== undefined) {
         if (config.maxNumberOfMessages < 1 || config.maxNumberOfMessages > 10) {
           return yield* Effect.fail(new CloudBindingValidationError(
             'maxNumberOfMessages must be between 1 and 10',
-            this.bindingType,
+            self.bindingType,
             'receiveConfig.maxNumberOfMessages'
           ))
         }
@@ -453,7 +459,7 @@ export class AwsSqsPlugin extends BaseCloudBindingPlugin {
         if (config.waitTimeSeconds < 0 || config.waitTimeSeconds > 20) {
           return yield* Effect.fail(new CloudBindingValidationError(
             'waitTimeSeconds must be between 0 and 20',
-            this.bindingType,
+            self.bindingType,
             'receiveConfig.waitTimeSeconds'
           ))
         }
@@ -464,15 +470,15 @@ export class AwsSqsPlugin extends BaseCloudBindingPlugin {
   /**
    * Validate batch configuration
    */
-  private validateBatchConfig(config: AwsSqsBindingConfig['batchConfig']): Effect.Effect<void, CloudBindingValidationError> {
+  private validateBatchConfig(_config: AwsSqsBindingConfig['batchConfig']): Effect.Effect<void, CloudBindingValidationError> {
     return Effect.gen(function* () {
-      if (!config) return
+      if (!_config) return
       
-      if (config.batchSize !== undefined) {
-        if (config.batchSize < 1 || config.batchSize > 10) {
+      if (_config.batchSize !== undefined) {
+        if (_config.batchSize < 1 || _config.batchSize > 10) {
           return yield* Effect.fail(new CloudBindingValidationError(
             'batchSize must be between 1 and 10',
-            this.bindingType,
+            self.bindingType,
             'batchConfig.batchSize'
           ))
         }
@@ -481,36 +487,36 @@ export class AwsSqsPlugin extends BaseCloudBindingPlugin {
   }
   
   /**
-   * Extract channel ID from SQS queue URL or name
+   * Extract channel ID from SQS _queue URL or name
    */
-  private extractChannelId(queue: string): string {
-    if (queue.startsWith('https://sqs.')) {
-      const parts = queue.split('/')
+  private extractChannelId(__queue: string): string {
+    if (_queue.startsWith('https://sqs.')) {
+      const parts = _queue.split('/')
       return `sqs-${parts[parts.length - 1]}`
     }
-    return `sqs-${queue}`
+    return `sqs-${_queue}`
   }
   
   /**
-   * Extract queue name from SQS queue URL or name
+   * Extract _queue name from SQS _queue URL or name
    */
-  private extractQueueName(queue: string): string {
-    if (queue.startsWith('https://sqs.')) {
-      const parts = queue.split('/')
+  private extractQueueName(__queue: string): string {
+    if (_queue.startsWith('https://sqs.')) {
+      const parts = _queue.split('/')
       return parts[parts.length - 1]
     }
-    return queue
+    return _queue
   }
   
   /**
    * Infer operation action from operation name
    */
-  private inferOperationAction(operationName: string): 'send' | 'receive' {
-    const name = operationName.toLowerCase()
-    if (name.includes('send') || name.includes('publish') || name.includes('enqueue')) {
+  private inferOperationAction(__operationName: string): 'send' | 'receive' {
+    const name = _operationName.toLowerCase()
+    if (name.includes('send') || name.includes('publish') || name.includes('en_queue')) {
       return 'send'
     }
-    if (name.includes('receive') || name.includes('subscribe') || name.includes('dequeue') || name.includes('poll')) {
+    if (name.includes('receive') || name.includes('subscribe') || name.includes('de_queue') || name.includes('poll')) {
       return 'receive'
     }
     // Default to send for SQS operations

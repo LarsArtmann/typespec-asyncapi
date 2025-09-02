@@ -1,7 +1,7 @@
 import { Effect } from "effect"
 import type { DecoratorContext, Operation, Model } from "@typespec/compiler"
 import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js"
-import { CloudBindingPlugin, CloudBindingConfig, CloudBindingResult } from "../interfaces/cloud-binding-plugin.js"
+import type { CloudBindingPlugin, CloudBindingConfig, CloudBindingResult } from "../interfaces/cloud-binding-plugin.js"
 import { getCloudBindingsByType } from "../../decorators/cloud-bindings.js"
 
 /**
@@ -100,7 +100,7 @@ export class AwsSnsPlugin implements CloudBindingPlugin {
   processBindings(
     context: DecoratorContext,
     target: Operation | Model,
-    asyncApiDoc: AsyncAPIObject
+    _asyncApiDoc: AsyncAPIObject
   ): Effect.Effect<CloudBindingResult, Error> {
     return Effect.gen(function* () {
       const snsBindings = getCloudBindingsByType(context, target, 'aws-sns')
@@ -208,7 +208,7 @@ function validateAwsSnsConfig(config: AwsSnsBindingConfig): Effect.Effect<AwsSns
         return yield* Effect.fail(new AwsSnsValidationError('Invalid SNS topic ARN format', 'topic'))
       }
       
-      const [arn, aws, service, region, account, topicName] = arnParts
+      const [_arn, _aws, service, region, account, topicName] = arnParts
       if (service !== 'sns' || !region || !account || !topicName) {
         return yield* Effect.fail(new AwsSnsValidationError('Invalid SNS topic ARN components', 'topic'))
       }
@@ -329,7 +329,7 @@ function validateAwsRegion(config: Record<string, unknown>): Effect.Effect<void,
 /**
  * Validate AWS permissions
  */
-function validateAwsPermissions(config: Record<string, unknown>): Effect.Effect<void, Error> {
+function validateAwsPermissions(_config: Record<string, unknown>): Effect.Effect<void, Error> {
   return Effect.gen(function* () {
     // Basic permission validation - would be expanded in production
     const requiredPermissions = [
