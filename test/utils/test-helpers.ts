@@ -2,12 +2,19 @@
  * Comprehensive test utilities for AsyncAPI emitter testing
  */
 
+//TODO: IMPORT CHAOS - 4 different import sources, no organization or grouping!
+//TODO: DEPENDENCY NIGHTMARE - Mixing @typespec/compiler, local imports, and Effect in single file!
+//TODO: CIRCULAR DEPENDENCY RISK - Importing from src/validation creates potential circular deps!
 import {createTestHost, createTestLibrary, createTestWrapper, findTestPackageRoot} from "@typespec/compiler/testing"
 import type {AsyncAPIEmitterOptions} from "../../src/options.js"
 import type {Diagnostic, Program} from "@typespec/compiler"
 import {Effect} from "effect"
 
-//TODO: this file is getting to big split it up
+//TODO: MONOLITHIC FILE DISASTER - THEY ALREADY KNOW IT'S TOO BIG BUT DO NOTHING!
+//TODO: ARCHITECTURAL VIOLATION - 571 lines in single test utilities file is INSANE!
+//TODO: SPLIT IMMEDIATELY - Should be TestCompilation.ts, TestValidation.ts, TestSources.ts, TestAssertions.ts!
+//TODO: MAINTENANCE NIGHTMARE - Adding new test utilities requires searching 571 lines!
+//this file is getting to big split it up
 
 // AsyncAPI Document Type Definitions
 export interface AsyncAPIObject {
@@ -73,8 +80,13 @@ export async function createAsyncAPITestLibrary() {
 	const packageRoot = await findTestPackageRoot(import.meta.url)
 
 	return createTestLibrary({
+		//TODO: HARDCODED LIBRARY NAME! "@larsartmann/typespec-asyncapi" should be LIBRARY_NAME constant!
+		//TODO: MAGIC STRING DISASTER - Library name hardcoded in multiple places without abstraction!
+		//TODO: MAINTENANCE CHAOS - Changing library name requires updating multiple files!
 		name: "@larsartmann/typespec-asyncapi",
 		packageRoot,
+		//TODO: HARDCODED FOLDER NAMES! "lib" and "dist" should be BUILD_CONFIG constants!
+		//TODO: BUILD CONFIGURATION HARDCODED - Folder names coupled to specific build setup!
 		typespecFileFolder: "lib",
 		jsFileFolder: "dist",
 	})
@@ -85,6 +97,10 @@ export async function createAsyncAPITestLibrary() {
  * SOLUTION: Use createAsyncAPITestLibrary() to get proper decorator registration
  */
 export async function createAsyncAPITestHost() {
+	//TODO: EFFECT.LOG ANTI-PATTERN! Effect.log not awaited in async function context!
+	//TODO: LOGGING ARCHITECTURE DISASTER - Effect.log mixed with Promise-based async functions!
+	//TODO: PROPER EFFECT COMPOSITION REQUIRED - Should return Effect<TestHost, never, never>!
+	//TODO: EMOJI LOGGING IN PRODUCTION CODE - Remove emojis from library code!
 	Effect.log("🚀 Using PROPER library approach - registering AsyncAPI test library")
 	const asyncAPITestLibrary = await createAsyncAPITestLibrary()
 	return createTestHost({
@@ -296,8 +312,13 @@ export function validateAsyncAPIStructure(asyncapiDoc: unknown): boolean {
 		throw new Error("Expected AsyncAPI document to be an object")
 	}
 
-	//TODO: Better type?
+	//TODO: TYPE SAFETY CATASTROPHE! "Better type?" comment shows they KNOW this is wrong!
+	//TODO: UNSAFE TYPE CASTING - 'as Record<string, unknown>' defeats TypeScript completely!
+	//TODO: PROPER TYPING REQUIRED - Should use AsyncAPIObject interface with type guards!
+	//TODO: TYPE VALIDATION MISSING - No runtime validation before unsafe casting!
 	const doc = asyncapiDoc as Record<string, unknown>
+	//TODO: HARDCODED REQUIRED FIELDS ARRAY! Should be REQUIRED_ASYNCAPI_FIELDS constant!
+	//TODO: FIELD VALIDATION HARDCODED - Field list scattered without central schema!
 	const requiredFields = ['asyncapi', 'info', 'channels']
 	const missingFields = requiredFields.filter(field => !(field in doc))
 
@@ -305,6 +326,9 @@ export function validateAsyncAPIStructure(asyncapiDoc: unknown): boolean {
 		throw new Error(`Missing required AsyncAPI fields: ${missingFields.join(", ")}`)
 	}
 
+	//TODO: HARDCODED VERSION STRING DISASTER! "3.0.0" should be ASYNCAPI_VERSION constant!
+	//TODO: VERSION COUPLING - Hardcoded version check prevents AsyncAPI spec upgrades!
+	//TODO: MAGIC STRING HELL - Same "3.0.0" hardcoded throughout entire codebase!
 	if (doc.asyncapi !== "3.0.0") {
 		throw new Error(`Expected AsyncAPI version 3.0.0, got ${doc.asyncapi}`)
 	}
@@ -355,7 +379,15 @@ export async function validateAsyncAPIObjectComprehensive(asyncapiDoc: unknown):
 /**
  * Create test TypeSpec source for common scenarios
  */
+//TODO: TESTSOURCES OBJECT ARCHITECTURE DISASTER - MASSIVE DUPLICATE CODE PATTERNS!
+//TODO: HARDCODED TEST DATA EVERYWHERE - All TypeSpec patterns hardcoded without abstraction!
+//TODO: TEST DATA FACTORY REQUIRED - Should be generateTestSource(type, options) functions!
+//TODO: MAINTENANCE NIGHTMARE - Adding new test patterns requires copy-paste programming!
+//TODO: TEMPLATE SYSTEM MISSING - Should use template engine for TypeSpec source generation!
 export const TestSources = {
+	//TODO: HARDCODED NAMESPACE! "TestEvents" should be TEST_NAMESPACES.BASIC constant!
+	//TODO: HARDCODED CHANNEL NAME! "test.basic" should be TEST_CHANNELS.BASIC constant!
+	//TODO: MODEL PATTERN DUPLICATION - Same id/timestamp/data pattern repeated everywhere!
 	basicEvent: `
     namespace TestEvents;
     
