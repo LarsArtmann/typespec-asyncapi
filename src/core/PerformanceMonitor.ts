@@ -126,17 +126,7 @@ export class PerformanceMonitor {
 				throughput: 0,
 			}
 
-			this.snapshots.push(snapshot)
-
-			// Keep only last 100 snapshots to prevent memory growth
-			if (this.snapshots.length > 100) {
-				this.snapshots = this.snapshots.slice(-100)
-			}
-
-			// Check for memory threshold violations
-			if (this.config.enableLeakDetection && snapshot.memoryUsage > this.config.memoryThreshold) {
-				Effect.logWarning(`⚠️ Memory usage ${snapshot.memoryUsage.toFixed(1)}MB exceeds threshold ${this.config.memoryThreshold}MB`)
-			}
+			this.addSnapshotWithMemoryManagement(snapshot, snapshot.memoryUsage)
 
 			Effect.log(`📊 Performance snapshot taken: ${snapshot.memoryUsage.toFixed(1)}MB memory, ${snapshot.operationCount} operations`)
 		} catch (error) {
@@ -172,17 +162,7 @@ export class PerformanceMonitor {
 					throughput: metricsSummary[createMetricName("throughput")] || 0,
 				}
 
-				this.snapshots.push(snapshot)
-
-				// Keep only last 100 snapshots to prevent memory growth
-				if (this.snapshots.length > 100) {
-					this.snapshots = this.snapshots.slice(-100)
-				}
-
-				// Check for memory threshold violations
-				if (this.config.enableLeakDetection && currentMemory > this.config.memoryThreshold) {
-					Effect.logWarning(`⚠️ Memory usage ${currentMemory}MB exceeds threshold ${this.config.memoryThreshold}MB`)
-				}
+				this.addSnapshotWithMemoryManagement(snapshot, currentMemory)
 
 				Effect.log(`📊 Performance snapshot taken: ${currentMemory}MB memory, ${snapshot.operationCount} operations`)
 			} catch (error) {
@@ -321,5 +301,23 @@ export class PerformanceMonitor {
 				return null
 			}
 		})
+	}
+
+	/**
+	 * Add snapshot and manage memory - eliminates duplication
+	 * Used by takeSnapshot and background monitoring
+	 */
+	private addSnapshotWithMemoryManagement(snapshot: PerformanceSnapshot, memoryUsage: number): void {
+		this.snapshots.push(snapshot)
+
+		// Keep only last 100 snapshots to prevent memory growth
+		if (this.snapshots.length > 100) {
+			this.snapshots = this.snapshots.slice(-100)
+		}
+
+		// Check for memory threshold violations
+		if (this.config.enableLeakDetection && memoryUsage > this.config.memoryThreshold) {
+			Effect.logWarning(`⚠️ Memory usage ${memoryUsage.toFixed(1)}MB exceeds threshold ${this.config.memoryThreshold}MB`)
+		}
 	}
 }

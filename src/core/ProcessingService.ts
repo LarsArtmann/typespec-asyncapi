@@ -14,6 +14,7 @@ import type { AsyncAPIObject, SecuritySchemeObject } from "@asyncapi/parser/esm/
 import type { SecurityConfig } from "../decorators/security.js"
 import { $lib } from "../lib.js"
 import { getMessageConfig, getProtocolConfig } from "../utils/typespec-helpers.js"
+import { createChannelDefinition } from "../utils/asyncapi-helpers.js"
 
 /**
  * ProcessingService - Core TypeSpec to AsyncAPI Transformation
@@ -124,17 +125,10 @@ export class ProcessingService {
 		const channelName = `channel_${op.name}`
 		const action = operationType === "subscribe" ? "receive" : "send"
 
-		// Add channel to document
+		// Add channel to document - use shared helper to eliminate duplication
 		if (!asyncApiDoc.channels) asyncApiDoc.channels = {}
-		asyncApiDoc.channels[channelName] = {
-			address: channelPath,
-			description: `Channel for ${op.name}`,
-			messages: {
-				[`${op.name}Message`]: {
-					$ref: `#/components/messages/${op.name}Message`,
-				},
-			},
-		}
+		const { definition } = createChannelDefinition(op, program)
+		asyncApiDoc.channels[channelName] = definition
 
 		// Add operation to document
 		if (!asyncApiDoc.operations) asyncApiDoc.operations = {}

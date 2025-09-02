@@ -87,6 +87,21 @@ export const effectValidation = {
 	logStateMapInfo: (mapName: string, mapSize: number) => {
 		return Effect.logDebug(`Found ${mapSize} items in ${mapName}`)
 	},
+
+	/**
+	 * Log validation warnings in consistent format - eliminates duplication
+	 * Used by protocol.ts and security.ts decorators
+	 */
+	logValidationWarnings: (warningType: string, warnings: string[]) => {
+		return Effect.gen(function* () {
+			if (warnings.length > 0) {
+				yield* Effect.log(`⚠  ${warningType} validation warnings:`, warnings)
+				for (const warning of warnings) {
+					yield* Effect.log(`⚠  ${warning}`)
+				}
+			}
+		})
+	},
 }
 
 /**

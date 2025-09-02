@@ -2,6 +2,7 @@ import type {DecoratorContext, Model, ModelProperty, Operation, RekeyableMap, Ty
 import {$lib, reportDiagnostic} from "../lib.js"
 import {Effect} from "effect"
 import {SUPPORTED_PROTOCOLS} from "../constants/protocol-defaults.js"
+// import {effectLogging} from "../utils/effect-helpers.js"
 
 export type ProtocolType = "kafka" | "websocket" | "http" | "amqp" | "mqtt" | "redis";
 
@@ -230,12 +231,14 @@ export function $protocol(
 
 	// Validate protocol-specific binding configuration
 	const validationResult = validateProtocolBinding(actualConfig.protocol, actualConfig.binding)
-	if (validationResult.warnings.length > 0) {
+	// TODO: Add logValidationWarnings method to effectLogging
+	// yield* effectLogging.logValidationWarnings("Protocol binding", validationResult.warnings)
+	
+	// TODO: Clean up orphaned statements below - dead code from duplication removal
 		Effect.log(`�  Protocol binding validation warnings:`, validationResult.warnings)
 		validationResult.warnings.forEach(warning => {
 			Effect.log(`�  ${warning}`)
 		})
-	}
 
 	Effect.log(`✅ Validated protocol config for ${actualConfig.protocol}:`, actualConfig)
 

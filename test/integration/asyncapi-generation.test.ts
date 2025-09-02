@@ -8,6 +8,17 @@
  * - Channel and operation creation from TypeSpec operations
  * - AsyncAPI 3.0.0 specification compliance validation
  * - Multi-namespace and inheritance handling
+ * 
+ * TODO: MASSIVE TEST FILE - 749 lines violates maintainability
+ * TODO: Split into focused test suites: schema-generation.test.ts, channel-operations.test.ts
+ * TODO: Extract test data to dedicated fixtures (avoid massive inline TypeSpec strings)
+ * TODO: Add test categories: @group unit, @group integration, @group performance
+ * TODO: Implement proper test cleanup and resource management
+ * TODO: Add timeouts for long-running compilation tests
+ * TODO: Use test.each() to reduce code duplication in similar test cases
+ * TODO: Extract common test setup logic into beforeEach hooks
+ * TODO: Add performance benchmarking for large document generation
+ * TODO: Implement test isolation - each test should be completely independent
  */
 
 import {describe, expect, test} from "bun:test"

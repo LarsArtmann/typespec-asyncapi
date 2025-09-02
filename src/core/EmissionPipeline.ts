@@ -19,6 +19,7 @@ import type {AsyncAPIObject} from "@asyncapi/parser/esm/spec-types/v3.js"
 import type {AsyncAPIEmitterOptions} from "../options.js"
 import type {SecurityConfig} from "../decorators/security.js"
 import {buildServersFromNamespaces} from "../utils/typespec-helpers.js"
+// import {effectLogging} from "../utils/effect-helpers.js"
 import {DocumentBuilder} from "./DocumentBuilder.js"
 import {DiscoveryService} from "./DiscoveryService.js"
 import {ProcessingService} from "./ProcessingService.js"
@@ -154,19 +155,15 @@ export class EmissionPipeline {
 				Effect.log(`❌ Validation failed with ${validationResult.errors.length} errors:`)
 				validationResult.errors.forEach((error: string) => Effect.log(`  - ${error}`))
 				
-				if (validationResult.warnings.length > 0) {
-					Effect.log(`⚠️ Validation warnings (${validationResult.warnings.length}):`)
-					validationResult.warnings.forEach((warning: string) => Effect.log(`  - ${warning}`))
-				}
+				// TODO: Add logValidationWarnings method to effectLogging
+			// yield* effectLogging.logValidationWarnings("AsyncAPI document", validationResult.warnings)
 				
 				yield* Effect.fail(new Error(`AsyncAPI document validation failed with ${validationResult.errors.length} errors`))
 			} else {
 				Effect.log(`✅ Validation completed successfully - ${validationResult.channelsCount} channels, ${validationResult.operationsCount} operations, ${validationResult.messagesCount} messages`)
 				
-				if (validationResult.warnings.length > 0) {
-					Effect.log(`⚠️ Validation warnings (${validationResult.warnings.length}):`)
-					validationResult.warnings.forEach((warning: string) => Effect.log(`  - ${warning}`))
-				}
+				// TODO: Add logValidationWarnings method to effectLogging
+			// yield* effectLogging.logValidationWarnings("AsyncAPI document", validationResult.warnings)
 			}
 		}.bind(this))
 	}

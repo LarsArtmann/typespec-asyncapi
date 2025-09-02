@@ -12,8 +12,17 @@
  * - Added proper logging to show decorator data being accessed
  * - Added explicit type annotations for validation error parameters
  *
- * TODO: Split this massive 1789-line file into smaller, focused modules
- * TODO: This entire file violates single responsibility principle
+ * TODO: MONOLITHIC FILE EXTINCTION - This 1250-line beast should be DELETED!
+ * TODO: CRITICAL ARCHITECTURAL VIOLATION - Single file handling 10+ responsibilities
+ * TODO: Extract SerializationService for JSON/YAML output generation
+ * TODO: Extract BindingFactory for protocol-specific binding generation  
+ * TODO: Extract ConstantsService for all magic strings ("3.0.0", etc.)
+ * TODO: Extract EmitterConfigService for options processing and validation
+ * TODO: Extract TypeSpecASTWalkerService for program traversal logic
+ * TODO: Extract ComponentsBuilderService for AsyncAPI components generation
+ * TODO: Remove after all business logic is extracted to modular services
+ * TODO: Add deprecation warnings to discourage direct usage
+ * TODO: Create migration guide for moving from monolithic to modular architecture
  */
 
 // TODO: Organize imports by category (effect, typespec, asyncapi, internal)

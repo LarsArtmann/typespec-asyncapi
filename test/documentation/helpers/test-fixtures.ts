@@ -3,6 +3,17 @@
  * 
  * Provides comprehensive test data generators, mock TypeSpec code snippets,
  * expected AsyncAPI outputs, and edge case scenarios for BDD testing.
+ * 
+ * TODO: CRITICAL FILE SIZE ISSUE - 1717 lines is MASSIVE for a test fixtures file
+ * TODO: Split into separate files: coreFixtures.ts, edgeCaseFixtures.ts, validationFixtures.ts
+ * TODO: Extract TypeSpecFixtures, AsyncAPIFixtures, EdgeCaseFixtures into separate modules
+ * TODO: Remove ALL 'any' types - use proper AsyncAPI type definitions
+ * TODO: Extract magic strings to constants (e.g., "3.0.0", "1.0.0", channel names)
+ * TODO: Add proper type safety for test data structures
+ * TODO: Implement fixture factories using builder pattern instead of massive objects
+ * TODO: Add JSDoc documentation for all exported fixtures
+ * TODO: Consider using faker.js for more realistic test data generation
+ * TODO: Add validation for generated fixtures to ensure they're valid AsyncAPI
  */
 
 import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js"

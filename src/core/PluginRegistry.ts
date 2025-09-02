@@ -160,12 +160,7 @@ export class PluginRegistry {
     async unloadPlugin(name: string): Promise<void> {
         Effect.log(`🔌 Unloading plugin: ${name}`)
 
-        const plugin = this.plugins.get(name)
-        const metadata = this.pluginMetadata.get(name)
-
-        if (!plugin || !metadata) {
-            throw new Error(`Plugin ${name} not found`)
-        }
+        const { metadata } = this.getPluginAndMetadata(name)
 
         // Stop plugin if running
         if (metadata.state === PluginState.STARTED) {
@@ -189,12 +184,7 @@ export class PluginRegistry {
 
         Effect.log(`🔄 Hot-reloading plugin: ${name}`)
 
-        const plugin = this.plugins.get(name)
-        const metadata = this.pluginMetadata.get(name)
-
-        if (!plugin || !metadata) {
-            throw new Error(`Plugin ${name} not found`)
-        }
+        const { plugin, metadata } = this.getPluginAndMetadata(name)
 
         const wasRunning = metadata.state === PluginState.STARTED
 
@@ -234,12 +224,7 @@ export class PluginRegistry {
      * Initialize a plugin
      */
     private async initializePlugin(name: string): Promise<void> {
-        const plugin = this.plugins.get(name)
-        const metadata = this.pluginMetadata.get(name)
-
-        if (!plugin || !metadata) {
-            throw new Error(`Plugin ${name} not found`)
-        }
+        const { plugin, metadata } = this.getPluginAndMetadata(name)
 
         try {
             await plugin.initialize()
@@ -258,12 +243,7 @@ export class PluginRegistry {
      * Start a plugin
      */
     async startPlugin(name: string): Promise<void> {
-        const plugin = this.plugins.get(name)
-        const metadata = this.pluginMetadata.get(name)
-
-        if (!plugin || !metadata) {
-            throw new Error(`Plugin ${name} not found`)
-        }
+        const { plugin, metadata } = this.getPluginAndMetadata(name)
 
         if (metadata.state !== PluginState.INITIALIZED && metadata.state !== PluginState.STOPPED) {
             throw new Error(`Plugin ${name} is not in a startable state (current: ${metadata.state})`)
@@ -286,12 +266,7 @@ export class PluginRegistry {
      * Stop a plugin
      */
     async stopPlugin(name: string): Promise<void> {
-        const plugin = this.plugins.get(name)
-        const metadata = this.pluginMetadata.get(name)
-
-        if (!plugin || !metadata) {
-            throw new Error(`Plugin ${name} not found`)
-        }
+        const { plugin, metadata } = this.getPluginAndMetadata(name)
 
         if (metadata.state !== PluginState.STARTED) {
             Effect.logWarning(`⚠️ Plugin ${name} is not running (current state: ${metadata.state})`)
@@ -440,5 +415,15 @@ export class PluginRegistry {
         }
 
         return report
+    }
+
+    /**
+     * Helper method to get plugin and metadata with validation - eliminates duplication
+     * Used by unloadPlugin, hotReloadPlugin, initializePlugin, startPlugin, stopPlugin
+     */
+    private getPluginAndMetadata(name: string): { plugin: any; metadata: PluginMetadata } {
+        const { plugin, metadata } = this.getPluginAndMetadata(name)
+
+        return { plugin, metadata }
     }
 }

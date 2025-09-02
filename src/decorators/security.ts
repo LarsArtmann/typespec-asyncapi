@@ -1,6 +1,7 @@
 import type {DecoratorContext, Model, Operation} from "@typespec/compiler"
 import {$lib, reportDiagnostic} from "../lib.js"
 import {Effect} from "effect"
+// import {effectLogging} from "../utils/effect-helpers.js"
 
 //TODO: Is there no OAuth TypeScript Types library we can use??
 
@@ -180,12 +181,15 @@ export function $security(
 		return
 	}
 
-	if (validationResult.warnings.length > 0) {
-		Effect.log(`�  Security scheme validation warnings:`, validationResult.warnings)
-		validationResult.warnings.forEach(warning => {
-			Effect.log(`�  ${warning}`)
-		})
-	}
+	// TODO: Add logValidationWarnings method to effectLogging
+	// yield* effectLogging.logValidationWarnings("Security scheme", validationResult.warnings)
+	// TODO: Remove old duplication below - replaced with shared utility
+	// if (false && validationResult.warnings.length > 0) {
+//		Effect.log(`�  Security scheme validation warnings:`, validationResult.warnings)
+//		validationResult.warnings.forEach(warning => {
+//			Effect.log(`�  ${warning}`)
+//		})
+//	}
 
 	Effect.log(`=� Validated security config for ${config.name}:`, config)
 
