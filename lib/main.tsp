@@ -90,6 +90,28 @@ extern dec protocol(target: Operation | Model, config: Record<unknown>);
 extern dec security(target: Operation | Model, config: Record<unknown>);
 
 /**
+ * Mark a model property as a message header
+ * Headers are extracted from message payload and placed in AsyncAPI message headers schema
+ * 
+ * @example
+ * ```typespec
+ * model UserMessage {
+ *   @header messageId: string;
+ *   @header correlationId?: string;
+ *   userId: string;
+ *   data: string;
+ * }
+ * ```
+ * 
+ * TODO: Add @since version annotation
+ * TODO: Document header naming conventions and restrictions
+ * TODO: Add validation for supported header types
+ */
+// TODO: Add compile-time validation to ensure target is a ModelProperty
+// TODO: Consider optional header name parameter for custom header mapping
+extern dec header(target: ModelProperty);
+
+/**
  * Define a server configuration for the AsyncAPI specification
  * @param name The server name/identifier
  * @param config Server configuration with url, protocol, and optional description

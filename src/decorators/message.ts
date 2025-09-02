@@ -1,4 +1,4 @@
-import type {DecoratorContext, Model} from "@typespec/compiler"
+import type {DecoratorContext, Model, ModelProperty} from "@typespec/compiler"
 import {$lib} from "../lib.js"
 import {Effect} from "effect"
 
@@ -137,4 +137,46 @@ export function getMessageConfig(context: DecoratorContext, target: Model): Mess
 export function isMessage(context: DecoratorContext, target: Model): boolean {
 	const messageMap = context.program.stateMap($lib.stateKeys.messageConfigs)
 	return messageMap.has(target)
+}
+
+/**
+ * @header decorator for marking model properties as message headers
+ * 
+ * Properties marked with @header are extracted from the message payload
+ * and placed in the AsyncAPI message headers schema. This is useful for
+ * protocol-level metadata that should be accessible without parsing the payload.
+ * 
+ * @example
+ * ```typespec
+ * @message("UserEvent")
+ * model UserEventMessage {
+ *   @header messageId: string;
+ *   @header correlationId?: string;
+ *   userId: string;
+ *   eventData: string;
+ * }
+ * ```
+ */
+export function $header(
+	context: DecoratorContext,
+	target: ModelProperty
+): void {
+	Effect.log(`🏷️ PROCESSING @header decorator on property: ${target.name}`)
+	Effect.log(`🏷️ Property type: ${target.type.kind}`)
+
+	// Store header property in program state for later processing
+	const headerMap = context.program.stateMap($lib.stateKeys.messageHeaders)
+	
+	// Create header metadata
+	const headerInfo = {
+		propertyName: target.name,
+		type: target.type,
+		optional: target.optional,
+		model: target.model // Reference to the containing model
+	}
+	
+	headerMap.set(target, headerInfo)
+
+	Effect.log(`✅ Successfully stored header property ${target.name}`)
+	Effect.log(`🏷️ Total header properties: ${headerMap.size}`)
 }
