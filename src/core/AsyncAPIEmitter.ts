@@ -18,7 +18,7 @@ import {TypeEmitter} from "@typespec/asset-emitter"
 import type {Program} from "@typespec/compiler"
 import type {AsyncAPIEmitterOptions} from "../options.js"
 import type {AsyncAPIObject} from "@asyncapi/parser/esm/spec-types/v3.js"
-import {ASYNCAPI_VERSION} from "../constants/asyncapi-constants.js"
+// ASYNCAPI_VERSION import removed - now using DocumentBuilder.createInitialDocument()
 import {EmissionPipeline} from "./EmissionPipeline.js"
 import {DocumentGenerator} from "./DocumentGenerator.js"
 import {DocumentBuilder} from "./DocumentBuilder.js"

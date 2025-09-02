@@ -13,15 +13,15 @@
  */
 
 import {Effect} from "effect"
-import type {Model, Namespace, Operation, Program} from "@typespec/compiler"
+import type {Model, Operation, Program} from "@typespec/compiler"
 import type {AssetEmitter} from "@typespec/asset-emitter"
 import type {AsyncAPIObject} from "@asyncapi/parser/esm/spec-types/v3.js"
 import type {AsyncAPIEmitterOptions} from "../options.js"
 import type {SecurityConfig} from "../decorators/security.js"
-import {$lib} from "../lib.js"
-import {buildServersFromNamespaces, getMessageConfig} from "../utils/typespec-helpers.js"
+import {buildServersFromNamespaces} from "../utils/typespec-helpers.js"
 import {DocumentBuilder} from "./DocumentBuilder.js"
 import {DiscoveryService} from "./DiscoveryService.js"
+import {ProcessingService} from "./ProcessingService.js"
 
 export type PipelineContext = {
 	program: Program
@@ -41,10 +41,12 @@ export type DiscoveryResult = {
 export class EmissionPipeline {
 	private readonly documentBuilder: DocumentBuilder
 	private readonly discoveryService: DiscoveryService
+	private readonly processingService: ProcessingService
 
 	constructor() {
 		this.documentBuilder = new DocumentBuilder()
 		this.discoveryService = new DiscoveryService()
+		this.processingService = new ProcessingService()
 	}
 
 	/**
@@ -87,26 +89,22 @@ export class EmissionPipeline {
 	}
 
 	/**
-	 * Stage 2: Processing - Transform TypeSpec elements
+	 * Stage 2: Processing - Transform TypeSpec elements using REAL ProcessingService
 	 */
 	private executeProcessingStage(context: PipelineContext, discoveryResult: DiscoveryResult) {
 		return Effect.gen(function* (this: EmissionPipeline) {
-			Effect.log(`🏗️ Stage 2: Processing ${discoveryResult.operations.length} operations...`)
+			Effect.log(`🏗️ Stage 2: Processing with REAL ProcessingService`)
 
-			// Process each operation to build AsyncAPI structures
-			for (const operation of discoveryResult.operations) {
-				yield* this.processOperation(context, operation)
-			}
+			// Use REAL ProcessingService with complete transformation logic
+			const processingResult = yield* this.processingService.executeProcessing(
+				discoveryResult.operations,
+				discoveryResult.messageModels,
+				discoveryResult.securityConfigs,
+				context.asyncApiDoc,
+				context.program
+			)
 
-			// Process message models
-			for (const messageModel of discoveryResult.messageModels) {
-				yield* this.processMessageModel(context, messageModel)
-			}
-
-			// Process security configurations
-			for (const securityConfig of discoveryResult.securityConfigs) {
-				yield* this.processSecurityConfig(context, securityConfig)
-			}
+			Effect.log(`📊 Processing stage complete: ${processingResult.totalProcessed} elements transformed`)
 
 			Effect.log(`✅ Processing stage completed`)
 		}.bind(this))
@@ -132,15 +130,8 @@ export class EmissionPipeline {
 				context.asyncApiDoc.servers = buildServersFromNamespaces(context.program) as AsyncAPIObject["servers"]
 			}
 
-			// CRITICAL FIX: Process discovered operations into AsyncAPI channels and operations
-			for (const operation of discoveryResult.operations) {
-				yield* this.processOperationIntoDocument(context, operation)
-			}
-
-			// Process discovered message models into AsyncAPI components/messages
-			for (const model of discoveryResult.messageModels) {
-				yield* this.processMessageModelIntoDocument(context, model)
-			}
+			// Note: Processing is now handled by ProcessingService in Stage 2
+			// Generation stage focuses on document finalization only
 
 			Effect.log(`✅ Document generation completed - processed ${discoveryResult.operations.length} operations and ${discoveryResult.messageModels.length} messages`)
 		}.bind(this))
@@ -180,220 +171,19 @@ export class EmissionPipeline {
 	/**
 	 * Type-safe helper to get string values from TypeSpec state maps
 	 */
-	private getStringFromStateMap(stateMap: Map<unknown, unknown>, key: unknown): string | undefined {
-		const value = stateMap.get(key)
-		return typeof value === 'string' ? value : undefined
-	}
-
 	/**
-	 * Process a single operation and add to AsyncAPI document
+	 * REMOVED: All placeholder processing methods - now using ProcessingService with REAL business logic
+	 * 
+	 * The following methods have been extracted to ProcessingService:
+	 * - processOperation() -> ProcessingService.processOperations()
+	 * - processMessageModel() -> ProcessingService.processMessageModels()
+	 * - processSecurityConfig() -> ProcessingService.processSecurityConfigs()
+	 * - processOperationIntoDocument() -> ProcessingService.processSingleOperation()
+	 * - processMessageModelIntoDocument() -> ProcessingService.processSingleMessageModel()
+	 * - getStringFromStateMap() -> ProcessingService.extractOperationMetadata()
+	 * 
+	 * These methods contained placeholder/duplicate logic and have been replaced by the REAL
+	 * implementations extracted from the 1,800-line monolithic file with complete TypeSpec integration.
 	 */
-	private processOperation(context: PipelineContext, operation: Operation) {
-		return Effect.sync(() => {
-			const {program, asyncApiDoc} = context
-			const operationTypesMap = program.stateMap($lib.stateKeys.operationTypes)
-			const channelPathsMap = program.stateMap($lib.stateKeys.channelPaths)
-
-			const operationType = this.getStringFromStateMap(operationTypesMap, operation)
-			const decoratedChannelPath = this.getStringFromStateMap(channelPathsMap, operation)
-			const channelPath = decoratedChannelPath ?? `/${operation.name.toLowerCase()}`
-
-			Effect.log(`🔍 Processing operation ${operation.name}: type=${operationType ?? 'none'}, channel=${channelPath}`)
-
-			const channelName = `channel_${operation.name}`
-			const action = operationType === "subscribe" ? "receive" : "send"
-
-			// Add channel
-			if (!asyncApiDoc.channels) asyncApiDoc.channels = {}
-			asyncApiDoc.channels[channelName] = {
-				address: channelPath,
-				description: `Channel for ${operation.name}`,
-				messages: {
-					[`${operation.name}Message`]: {
-						$ref: `#/components/messages/${operation.name}Message`,
-					},
-				},
-			}
-
-			// Add operation
-			if (!asyncApiDoc.operations) asyncApiDoc.operations = {}
-			asyncApiDoc.operations[operation.name] = {
-				action: action,
-				channel: {$ref: `#/channels/${channelName}`},
-				summary: `Operation ${operation.name}`,
-				description: `TypeSpec operation with ${operation.parameters.properties.size} parameters`,
-			}
-
-			// Add message
-			if (!asyncApiDoc.components) asyncApiDoc.components = {}
-			if (!asyncApiDoc.components.messages) asyncApiDoc.components.messages = {}
-			asyncApiDoc.components.messages[`${operation.name}Message`] = {
-				name: `${operation.name}Message`,
-				title: `${operation.name} Message`,
-				summary: `Message for ${operation.name} operation`,
-				contentType: "application/json",
-			}
-
-			Effect.log(`✅ Processed operation: ${operation.name} (${action})`)
-		})
-	}
-
-	/**
-	 * Process a message model
-	 */
-	private processMessageModel(context: PipelineContext, model: Model) {
-		return Effect.sync(() => {
-			const {program, asyncApiDoc} = context
-			const messageConfig = getMessageConfig(program, model)
-
-			if (!messageConfig) {
-				Effect.log(`⚠️ No message config found for model: ${model.name}`)
-				return
-			}
-
-			Effect.log(`🎯 Processing message model: ${model.name}`)
-
-			// Ensure components.messages exists
-			if (!asyncApiDoc.components?.messages) {
-				if (!asyncApiDoc.components) asyncApiDoc.components = {}
-				asyncApiDoc.components.messages = {}
-			}
-
-			const messageId = messageConfig.name ?? model.name
-
-			// Add message to components.messages
-			asyncApiDoc.components.messages[messageId] = {
-				name: messageId,
-				title: messageConfig.title ?? messageId,
-				summary: messageConfig.summary,
-				description: messageConfig.description,
-				contentType: messageConfig.contentType ?? "application/json",
-				examples: messageConfig.examples,
-				headers: messageConfig.headers ? {$ref: messageConfig.headers} : undefined,
-				correlationId: messageConfig.correlationId ? {$ref: messageConfig.correlationId} : undefined,
-				bindings: messageConfig.bindings,
-				payload: {
-					$ref: `#/components/schemas/${model.name}`,
-				},
-			}
-
-			Effect.log(`✅ Added message: ${messageId}`)
-		})
-	}
-
-	/**
-	 * Process a security configuration
-	 */
-	private processSecurityConfig(context: PipelineContext, config: SecurityConfig) {
-		return Effect.sync(() => {
-			const {asyncApiDoc} = context
-
-			Effect.log(`🔐 Processing security config: ${config.name}`)
-
-			// Ensure components.securitySchemes exists
-			if (!asyncApiDoc.components?.securitySchemes) {
-				if (!asyncApiDoc.components) asyncApiDoc.components = {}
-				asyncApiDoc.components.securitySchemes = {}
-			}
-
-			// Convert security config to AsyncAPI security scheme
-			// This is a simplified implementation - the full conversion logic
-			// should be extracted to a separate security plugin
-			asyncApiDoc.components.securitySchemes[config.name] = {
-				type: "apiKey", // Simplified for now
-				description: config.scheme.description,
-			}
-
-			Effect.log(`✅ Added security scheme: ${config.name}`)
-		})
-	}
-
-	/**
-	 * Process a TypeSpec operation into AsyncAPI channels and operations
-	 */
-	private processOperationIntoDocument(context: PipelineContext, operation: Operation) {
-		return Effect.sync(() => {
-			const operationName = operation.name || "UnnamedOperation"
-			
-			// Get decorator state from program state maps (correct TypeSpec pattern)
-			const channelPathsMap = context.program.stateMap($lib.stateKeys.channelPaths)
-			const operationTypesMap = context.program.stateMap($lib.stateKeys.operationTypes)
-			
-			// Get channel path from @channel decorator state
-			const channelPath = this.getStringFromStateMap(channelPathsMap, operation)
-			const channelName = channelPath || `channel_${operationName}`
-			
-			// Get operation type from @publish/@subscribe decorator state  
-			const operationType = this.getStringFromStateMap(operationTypesMap, operation)
-			const action = operationType === 'publish' ? 'send' : operationType === 'subscribe' ? 'receive' : 'send'
-			
-			Effect.log(`🔄 Processing operation: ${operationName} -> channel: ${channelName}, action: ${action}`)
-			
-			// Create channel if it doesn't exist
-			if (!context.asyncApiDoc.channels) {
-				context.asyncApiDoc.channels = {}
-			}
-			if (!context.asyncApiDoc.channels[channelName]) {
-				context.asyncApiDoc.channels[channelName] = {
-					address: channelName,
-					messages: {}
-				}
-			}
-			
-			// Create operation if it doesn't exist
-			if (!context.asyncApiDoc.operations) {
-				context.asyncApiDoc.operations = {}
-			}
-			context.asyncApiDoc.operations[operationName] = {
-				action,
-				channel: {
-					$ref: `#/channels/${channelName}`
-				},
-				description: `Generated from TypeSpec operation ${operationName}`
-			}
-		})
-	}
-
-	/**
-	 * Process a TypeSpec message model into AsyncAPI components/messages
-	 */
-	private processMessageModelIntoDocument(context: PipelineContext, model: Model) {
-		return Effect.sync(() => {
-			const modelName = model.name || "UnnamedMessage"
-			
-			// Get message configuration from state if available
-			const messageConfigsMap = context.program.stateMap($lib.stateKeys.messageConfigs)
-			const messageConfig = messageConfigsMap.get(model)
-			
-			Effect.log(`📨 Processing message model: ${modelName}`)
-			
-			// Ensure components structure exists
-			if (!context.asyncApiDoc.components) {
-				context.asyncApiDoc.components = {}
-			}
-			if (!context.asyncApiDoc.components.messages) {
-				context.asyncApiDoc.components.messages = {}
-			}
-			if (!context.asyncApiDoc.components.schemas) {
-				context.asyncApiDoc.components.schemas = {}
-			}
-			
-			// Add message to components (use decorator config if available)
-			context.asyncApiDoc.components.messages[modelName] = {
-				name: messageConfig?.name || modelName,
-				title: messageConfig?.title || modelName,
-				description: messageConfig?.description || `Generated from TypeSpec model ${modelName}`,
-				payload: {
-					$ref: `#/components/schemas/${modelName}`
-				}
-			}
-			
-			// Add schema to components (simplified for now)
-			context.asyncApiDoc.components.schemas[modelName] = {
-				type: "object",
-				properties: {},
-				description: `Schema for ${modelName}`
-			}
-		})
-	}
 }
+
