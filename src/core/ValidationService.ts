@@ -44,8 +44,8 @@ export class ValidationService {
 	/**
 	 * Type guard to check if object is a reference
 	 */
-	private isReference(obj: any): obj is ReferenceObject {
-		return obj && typeof obj === 'object' && '$ref' in obj
+	private isReference(obj: unknown): obj is ReferenceObject {
+		return obj != null && typeof obj === 'object' && '$ref' in obj
 	}
 
 
@@ -166,7 +166,7 @@ export class ValidationService {
 	 * Validate info section compliance
 	 */
 	private validateInfoSection(doc: AsyncAPIObject, errors: string[], warnings: string[]): void {
-		if (!doc || !doc.info) return
+		if (!doc?.info) return
 
 		// Required fields
 		if (!doc.info.title) {
@@ -187,7 +187,7 @@ export class ValidationService {
 	 * Validate channels section
 	 */
 	private validateChannels(doc: AsyncAPIObject, errors: string[], warnings: string[]): number {
-		if (!doc || !doc.channels || Object.keys(doc.channels).length === 0) {
+		if (!doc?.channels || Object.keys(doc.channels).length === 0) {
 			warnings.push("No channels defined - document may be incomplete")
 			return 0
 		}
@@ -222,7 +222,7 @@ export class ValidationService {
 	 * Validate operations section
 	 */
 	private validateOperations(doc: AsyncAPIObject, errors: string[], warnings: string[]): number {
-		if (!doc || !doc.operations || Object.keys(doc.operations).length === 0) {
+		if (!doc?.operations || Object.keys(doc.operations).length === 0) {
 			warnings.push("No operations defined - document may be incomplete")
 			return 0
 		}
@@ -261,7 +261,7 @@ export class ValidationService {
 		let messagesCount = 0
 		let schemasCount = 0
 
-		if (!doc || !doc.components) {
+		if (!doc?.components) {
 			warnings.push("No components section defined")
 			return { messagesCount, schemasCount }
 		}

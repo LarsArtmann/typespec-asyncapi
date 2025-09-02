@@ -20,7 +20,7 @@ import type {MemoryAnalysis} from "./MemoryAnalysis.js"
 import type {ForceGCResult} from "./ForceGCResult.js"
 import {createByteAmount, createMegabyteAmount, createGigabyteAmount} from "./ByteAmount.js"
 import {createTimestamp} from "./MemorySnapshot.js"
-import type {OperationType} from "./PerformanceTypes.js"
+import type {OperationType, MemoryReportJson} from "./PerformanceTypes.js"
 import {createOperationCount, createOperationType, createMemoryReportJson} from "./PerformanceTypes.js"
 import type {ByteAmount} from "./ByteAmount.js"
 
@@ -240,7 +240,7 @@ const makeMemoryMonitorService = Effect.gen(function* () {
 			const currentBudget = yield* Ref.get(budget)
 			if (memoryUsed > currentBudget.maxMemoryPerOperation) {
 				return yield* Effect.fail(new MemoryThresholdExceededError(
-					memoryUsed,
+					createByteAmount(memoryUsed),
 					currentBudget.maxMemoryPerOperation,
 					operationType,
 				))
@@ -252,7 +252,7 @@ const makeMemoryMonitorService = Effect.gen(function* () {
 				withinBudget: memoryUsed <= currentBudget.maxMemoryPerOperation,
 			})
 
-			return {result, memoryUsed}
+			return {result, memoryUsed: createByteAmount(memoryUsed)}
 		})
 
 	const analyzeMemoryUsage = (
@@ -375,7 +375,7 @@ const makeMemoryMonitorService = Effect.gen(function* () {
 		})
 
 	const forceGarbageCollection = (): Effect.Effect<{
-		memoryFreed: number;
+		memoryFreed: ByteAmount;
 		success: boolean
 	}, GarbageCollectionFailureError> =>
 		Effect.gen(function* () {
@@ -394,10 +394,10 @@ const makeMemoryMonitorService = Effect.gen(function* () {
 				// Take a snapshot after GC
 				yield* takeSnapshot()
 
-				return {memoryFreed, success: true}
+				return {memoryFreed: createByteAmount(memoryFreed), success: true}
 			} else {
 				// gcResult is an error type
-				return {memoryFreed: 0, success: false}
+				return {memoryFreed: createByteAmount(0), success: false}
 			}
 		})
 
@@ -449,7 +449,7 @@ const makeMemoryMonitorService = Effect.gen(function* () {
 			}
 		})
 
-	const generateMemoryReport = (): Effect.Effect<string, never> =>
+	const generateMemoryReport = (): Effect.Effect<MemoryReportJson, never> =>
 		Effect.gen(function* () {
 			const analysis = yield* getSnapshotsAndAnalyze()
 			const currentBudget = yield* Ref.get(budget)
@@ -496,7 +496,7 @@ const makeMemoryMonitorService = Effect.gen(function* () {
 				report += `- ${recommendation}\n`
 			}
 
-			return report
+			return createMemoryReportJson(report)
 		})
 
 	const getMemoryMetrics = (): Effect.Effect<Record<string, number>, never> =>
@@ -546,7 +546,7 @@ export const withMemoryTracking = <T, E extends Error>(
 ): Effect.Effect<T, MemoryThresholdExceededError | E, MemoryMonitorService> =>
 	Effect.gen(function* () {
 		const memoryMonitor = yield* MEMORY_MONITOR_SERVICE
-		const {result} = yield* memoryMonitor.measureOperationMemory(operation, operationType)
+		const {result} = yield* memoryMonitor.measureOperationMemory(operation, createOperationType(operationType))
 		return result
 	})
 
