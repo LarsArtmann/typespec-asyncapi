@@ -48,11 +48,15 @@ export interface TypeSpecTestCompileOptions {
 export interface TypeSpecCompileResult {
 	/** The compiled TypeSpec program */
 	program: Program
-	//TODO: ZERO any ALLOWED!
+	//TODO: ZERO any ALLOWED! BUT WE HAVE ANY TYPES EVERYWHERE!
+	//TODO: TYPE SAFETY CATASTROPHE - 'any[]' defeats TypeScript completely!
+	//TODO: PROPER TYPING REQUIRED - Should be Diagnostic[] from @typespec/compiler!
 	/** Any compilation diagnostics */
 	diagnostics: readonly any[]
 	/** Generated AsyncAPI object (if emitAsyncAPI is true) */
 	asyncapi?: AsyncAPIObject
+	//TODO: ANOTHER 'any' TYPE VIOLATION! emissionResult should be typed EmissionResult!
+	//TODO: TYPE SAFETY DISASTER - Raw 'any' types scattered throughout interface!
 	/** Raw emission result */
 	emissionResult?: any
 }
@@ -190,6 +194,17 @@ export class TypeSpecDocumentationTestCompiler {
 			schemas: {},
 			securitySchemes: {} // Always include for consistency
 		}
+		
+		// Collect security schemes from operations
+		const securitySchemes: Record<string, any> = {}
+		patterns.operations.forEach(op => {
+			if (op.securityConfig) {
+				securitySchemes[op.securityConfig.scheme] = op.securityConfig.config
+			}
+		})
+		
+		// Add security schemes to components
+		Object.assign(asyncapi.components.securitySchemes!, securitySchemes)
 
 		// Add message components from @message decorated models
 		patterns.models.filter(m => m.isMessage).forEach(model => {
@@ -286,40 +301,107 @@ export class TypeSpecDocumentationTestCompiler {
 		}
 
 		// Extract operations with protocol bindings and security configurations
+		//TODO: 'any' TYPE DISASTER EVERYWHERE! protocolConfig.config and securityConfig.config are 'any'!
+		//TODO: TYPE SAFETY CATASTROPHE - Using 'any' completely defeats TypeScript type checking!
+		//TODO: PROPER TYPING REQUIRED - Should use ProtocolConfig and SecurityConfig interfaces!
 		const operations: Array<{name: string, type: string, channelPath?: string, protocolConfig?: {protocol: string, config: any}, securityConfig?: {scheme: string, config: any}}> = []
 		
 		// Find operations with decorators (including @protocol and @security)
 		// Look for: [@channel("path")] [@protocol("type", {...})] [@security("type", {...})] [@publish/@subscribe] op name
+		//TODO: REGEX FROM HELL! This 304-character monster regex is COMPLETELY UNMAINTAINABLE!
+		//TODO: MAINTENANCE NIGHTMARE - Adding new decorators requires regex surgery by regex wizards!
+		//TODO: BRITTLE PARSING - Nested braces parsing with regex is fundamentally flawed approach!
+		//TODO: PERFORMANCE KILLER - Complex regex with nested groups causes exponential backtracking!
+		//TODO: REGEX COMPLEXITY VIOLATION - Should use proper AST parser instead of regex hell!
 		const operationPattern = /(?:@channel\("([^"]+)"\)\s*)?(?:@protocol\("([^"]+)",\s*(\{[^}]*(?:\{[^}]*\}[^}]*)*\})\)\s*)?(?:@security\("([^"]+)",\s*(\{[^}]*(?:\{[^}]*\}[^}]*)*\})\)\s*)?(@publish|@subscribe)\s+op\s+(\w+)/gms
 		
 		const operationMatches = code.matchAll(operationPattern)
 		for (const match of operationMatches) {
+			//TODO: ANOTHER 'any' TYPE VIOLATION! operation should be properly typed OperationInfo interface!
+			//TODO: TYPE SAFETY ABANDONED - Using 'any' makes this completely unsafe!
 			const operation: any = {
-				name: match[5], // operation name
-				type: match[4], // @publish or @subscribe
+				//TODO: MAGIC ARRAY INDEX HELL! match[7] is COMPLETELY UNREADABLE AND BRITTLE!
+				//TODO: REGEX GROUP NIGHTMARE - Adding new groups breaks all these magic indices!
+				//TODO: MAINTAINER TORTURE - Nobody knows what match[7] means without regex archaeology!
+				name: match[7], // operation name
+				//TODO: MORE MAGIC INDICES! match[6] should be OPERATION_TYPE_GROUP constant!
+				//TODO: REGEX GROUP COUPLING - Magic indices tightly coupled to regex group order!
+				type: match[6], // @publish or @subscribe
+				//TODO: MAGIC INDEX CONTINUES! match[1] should be CHANNEL_PATH_GROUP constant!
+				//TODO: BRITTLE ARRAY ACCESS - No validation that match[1] even exists!
 				channelPath: match[1] // channel path
 			}
 			
 			// Parse protocol configuration if present
+			//TODO: MORE MAGIC INDICES! match[2] and match[3] should be named constants!
+			//TODO: NULL SAFETY VIOLATION - No validation that match indices exist before access!
 			if (match[2] && match[3]) {
+				//TODO: TRY-CATCH ANTI-PATTERN - Should use Result<T> or Effect error handling!
+				//TODO: ERROR HANDLING DISASTER - Generic try-catch hides specific parsing failures!
 				try {
 					// Clean up the config string and parse as JSON-like object
+					//TODO: STRING MANIPULATION HELL! This is a HORRIBLE way to parse configuration!
+					//TODO: REGEX CHAIN NIGHTMARE - Multiple .replace() calls create unmaintainable parsing!
+					//TODO: BRITTLE JSON PARSING - What happens with nested objects, arrays, escaped quotes?
+					//TODO: PERFORMANCE KILLER - Multiple regex replacements on every protocol config!
+					//TODO: PROPER PARSER REQUIRED - Should use real TypeSpec AST parser, not regex hacks!
 					const configStr = match[3]
 						.replace(/(\w+):/g, '"$1":') // Quote property names
 						.replace(/:\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*([,}])/g, ': "$1"$2') // Quote unquoted string values
 						.replace(/:\s*(\d+)\s*([,}])/g, ': $1$2') // Keep numbers unquoted
 						.replace(/:\s*(true|false)\s*([,}])/g, ': $1$2') // Keep booleans unquoted
 						
+					//TODO: UNSAFE JSON.PARSE! No validation of input structure before parsing!
+					//TODO: JSON PARSING DISASTER - What if configStr is malformed after string manipulation?
 					const config = JSON.parse(configStr)
 					operation.protocolConfig = {
+						//TODO: MAGIC INDEX AGAIN! match[2] should be PROTOCOL_TYPE_GROUP constant!
 						protocol: match[2],
 						config: config
 					}
 				} catch (error) {
 					// If JSON parsing fails, store raw config for debugging
+					//TODO: ERROR SWALLOWING ANTI-PATTERN - Silent failure with raw dump is NOT debugging!
+					//TODO: PRODUCTION NIGHTMARE - Raw config objects will break downstream consumers!
 					operation.protocolConfig = {
 						protocol: match[2],
 						config: { raw: match[3] }
+					}
+				}
+			}
+			
+			// Parse security configuration if present
+			//TODO: DUPLICATE CODE DISASTER! This is EXACT COPY of protocol parsing above!
+			//TODO: DRY VIOLATION CATASTROPHE - Same string manipulation logic duplicated!
+			//TODO: CODE MAINTENANCE NIGHTMARE - Bug fixes need to be applied in 2 places!
+			//TODO: EXTRACT parseConfigString() FUNCTION IMMEDIATELY!
+			if (match[4] && match[5]) {
+				try {
+					// Clean up the security config string and parse as JSON-like object
+					//TODO: DUPLICATE STRING MANIPULATION HELL - EXACT SAME REGEX CHAINS AS PROTOCOL!
+					//TODO: COPY-PASTE PROGRAMMING - This entire block is duplicate of lines 348-352!
+					//TODO: MAINTAINABILITY DISASTER - Changes to parsing logic require 2 updates!
+					const securityConfigStr = match[5]
+						.replace(/(\w+):/g, '"$1":') // Quote property names
+						.replace(/:\s*([a-zA-Z_][a-zA-Z0-9_.-]*)\s*([,}])/g, ': "$1"$2') // Quote unquoted string values (including URLs)
+						.replace(/:\s*(\d+)\s*([,}])/g, ': $1$2') // Keep numbers unquoted
+						.replace(/:\s*(true|false)\s*([,}])/g, ': $1$2') // Keep booleans unquoted
+						
+					//TODO: DUPLICATE JSON.PARSE DISASTER - Same unsafe parsing pattern repeated!
+					const securityConfig = JSON.parse(securityConfigStr)
+					operation.securityConfig = {
+						//TODO: MORE MAGIC INDICES! match[4] should be SECURITY_SCHEME_GROUP constant!
+						scheme: match[4],
+						config: securityConfig
+					}
+				} catch (error) {
+					// If JSON parsing fails, store raw config for debugging
+					//TODO: DUPLICATE ERROR HANDLING - Same error swallowing pattern as protocol parsing!
+					//TODO: COPY-PASTE ERROR HANDLING - Should be shared parseConfig() function!
+					operation.securityConfig = {
+						scheme: match[4],
+						//TODO: MORE MAGIC INDICES! match[5] should be SECURITY_CONFIG_GROUP constant!
+						config: { raw: match[5] }
 					}
 				}
 			}
