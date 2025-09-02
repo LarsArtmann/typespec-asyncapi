@@ -310,7 +310,7 @@ function validateAwsSnsConfig(config: Record<string, unknown>): AwsSnsBindingCon
 	}
 
 	const snsConfig: AwsSnsBindingConfig = {
-		topic: config.topic as string,
+		topic: config.topic,
 		region: config.region as string | undefined,
 	}
 
@@ -348,7 +348,7 @@ function validateAwsSqsConfig(config: Record<string, unknown>): AwsSqsBindingCon
 	}
 
 	return {
-		queue: config.queue as string,
+		queue: config.queue,
 		region: config.region as string | undefined,
 		messageGroupId: config.messageGroupId as string | undefined,
 		messageDeduplicationId: config.messageDeduplicationId as string | undefined,
@@ -366,7 +366,7 @@ function validateGcpPubsubConfig(config: Record<string, unknown>): GcpPubsubBind
 	}
 
 	return {
-		topic: config.topic as string,
+		topic: config.topic,
 		projectId: config.projectId as string | undefined,
 		subscription: config.subscription as string | undefined,
 		orderingKey: config.orderingKey as string | undefined,
@@ -384,7 +384,7 @@ function validateKafkaConfig(config: Record<string, unknown>): KafkaBindingConfi
 	}
 
 	return {
-		topic: config.topic as string,
+		topic: config.topic,
 		key: config.key as string | undefined,
 		partitions: config.partitions as number | undefined,
 		replicas: config.replicas as number | undefined,

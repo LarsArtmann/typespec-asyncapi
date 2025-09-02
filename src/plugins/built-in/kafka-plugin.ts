@@ -98,9 +98,9 @@ export const kafkaPlugin: ProtocolPlugin = {
 		const binding: KafkaChannelBinding = {
 			bindingVersion: "0.5.0",
 			topic: (config.topic as string) || "default-topic",
-			partitions: config.partitions as number | undefined,
-			replicas: config.replicas as number | undefined,
-			topicConfiguration: config.topicConfiguration as Record<string, unknown> | undefined,
+			partitions: config.partitions,
+			replicas: config.replicas,
+			topicConfiguration: config.topicConfiguration,
 		}
 
 		return {kafka: binding}

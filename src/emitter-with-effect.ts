@@ -72,7 +72,7 @@ export function generateAsyncAPIWithEffect(context: EmitContext<AsyncAPIEmitterO
 		
 		// Validate that the global namespace is available
 		const globalNamespace = yield* Effect.try({
-			try: () => context.program.getGlobalNamespaceType!(),
+			try: () => context.program.getGlobalNamespaceType(),
 			catch: (error) => createGlobalNamespaceAccessError(error, context.program)
 		})
 		

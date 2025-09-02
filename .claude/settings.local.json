@@ -1,7 +1,31 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(just build)",
+      "Bash(npx tsp compile:*)",
+      "Bash(node:*)",
+      "Bash(just test:*)",
+      "Bash(just compile)",
+      "Bash(just lint)",
+      "Bash(just quality-check:*)",
+      "Bash(gh issue list:*)",
+      "Bash(just lint build compile fd test)",
+      "Bash(gh issue view:*)",
+      "Bash(bun run lint:*)",
+      "Bash(bun run:*)",
+      "Bash(bun run:*)",
+      "Bash(just validate-all:*)",
+      "Bash(./scripts/validate-bindings.sh:*)",
+      "Bash(npx tsc:*)",
+      "Bash(just install)",
+      "Bash(bunx tsp:*)",
+      "Bash(sed:*)",
+      "Bash(gh issue create:*)",
+      "Bash(gh issue comment:*)",
+      "Bash(just find-duplicates:*)"
     ],
     "deny": [],
     "ask": []

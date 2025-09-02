@@ -212,7 +212,7 @@ export class DocumentGenerator {
 		}
 
 		// Handle objects
-		const objRecord = obj as Record<string, unknown>
+		const objRecord = obj
 		Object.keys(objRecord).forEach(key => {
 			const value = objRecord[key]
 

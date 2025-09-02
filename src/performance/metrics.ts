@@ -17,7 +17,7 @@ import type {ThroughputResult} from "./ThroughputResult.js"
 import type {PerformanceMetricsService} from "./PerformanceMetricsService.js"
 import type {ByteAmount} from "./ByteAmount.js"
 import {createByteAmount} from "./ByteAmount.js"
-import type {Milliseconds} from "./Durations.js"
+// import type {Milliseconds} from "./Durations.js"
 import { 
 	createOperationsPerSecond, 
 	createLatencyMicroseconds, 
@@ -168,7 +168,7 @@ const makePerformanceMetricsService = Effect.gen(function* () {
 				operationsPerSecond: createOperationsPerSecond(operationsPerSecond),
 				averageMemoryPerOperation: Math.max(0, averageMemoryPerOperation) as ByteAmount,
 				averageLatencyMicroseconds: createLatencyMicroseconds(averageLatencyMicroseconds),
-				totalDuration: duration as Milliseconds,
+				totalDuration: duration,
 				memoryEfficiency: createMemoryEfficiencyRatio(memoryEfficiency),
 			}
 

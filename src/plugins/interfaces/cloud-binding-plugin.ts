@@ -5,7 +5,7 @@ import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js"
 /**
  * Base configuration for cloud provider bindings
  */
-export interface CloudBindingConfig {
+export type CloudBindingConfig = {
   /** Cloud provider identifier */
   provider?: string
   
@@ -28,7 +28,7 @@ export interface CloudBindingConfig {
 /**
  * Result of cloud binding processing
  */
-export interface CloudBindingResult {
+export type CloudBindingResult = {
   /** AsyncAPI channel bindings */
   bindings: Record<string, Record<string, unknown>>
   
@@ -58,7 +58,7 @@ export interface CloudBindingResult {
  * Defines the contract for cloud provider-specific binding plugins
  * that extend AsyncAPI specifications with cloud-native features.
  */
-export interface CloudBindingPlugin {
+export type CloudBindingPlugin = {
   /** Unique identifier for the binding type */
   readonly bindingType: string
   
@@ -129,7 +129,7 @@ export interface CloudBindingPlugin {
  * Cloud binding plugin registry
  */
 export class CloudBindingPluginRegistry {
-  private plugins = new Map<string, CloudBindingPlugin>()
+  private readonly plugins = new Map<string, CloudBindingPlugin>()
   
   /**
    * Register a cloud binding plugin

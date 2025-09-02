@@ -68,7 +68,7 @@ export function $correlationId(
 	}
 
 	// Validate JSONPointer format
-	const location = config.location as string
+	const location = config.location
 	if (!isValidJSONPointer(location)) {
 		Effect.log(`❌ Invalid JSONPointer location: ${location}`)
 		return
