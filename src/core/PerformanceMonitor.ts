@@ -15,6 +15,7 @@
 import {Effect} from "effect"
 import {PERFORMANCE_METRICS_SERVICE} from "../performance/metrics.js"
 import {MEMORY_MONITOR_SERVICE} from "../performance/memory-monitor.js"
+import {createMetricName} from "../performance/PerformanceTypes.js"
 
 export type PerformanceConfig = {
 	enableMetrics: boolean
@@ -158,7 +159,7 @@ export class PerformanceMonitor {
 
 				// Get current memory metrics
 				const memoryMetrics = yield* memoryMonitor.getMemoryMetrics()
-				const currentMemory = memoryMetrics.currentUsage
+				const currentMemory = memoryMetrics.currentMemoryUsage || 0
 
 				// Get performance metrics summary
 				const metricsSummary = yield* metricsService.getMetricsSummary()
@@ -166,9 +167,9 @@ export class PerformanceMonitor {
 				const snapshot: PerformanceSnapshot = {
 					timestamp: new Date(),
 					memoryUsage: currentMemory,
-					operationCount: metricsSummary.totalOperations || 0,
-					averageLatency: metricsSummary.averageLatency || 0,
-					throughput: metricsSummary.throughput || 0,
+					operationCount: metricsSummary[createMetricName("throughput")] || 0, // Using throughput as operation count approximation
+					averageLatency: metricsSummary[createMetricName("latency")] || 0,
+					throughput: metricsSummary[createMetricName("throughput")] || 0,
 				}
 
 				this.snapshots.push(snapshot)

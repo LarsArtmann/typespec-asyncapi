@@ -18,7 +18,7 @@
 
 // TODO: Organize imports by category (effect, typespec, asyncapi, internal)
 // TODO: Remove unused imports to reduce bundle size
-import {Console, Effect} from "effect"
+import {Effect} from "effect"
 import type {EmitContext, Model, Namespace, Operation, Program} from "@typespec/compiler"
 import {getDoc} from "@typespec/compiler"
 import {
@@ -40,11 +40,7 @@ import type {
 // import {validateAsyncAPIEffect} from "./validation/asyncapi-validator.js" // TODO: Remove commented unused imports
 // import type {ValidationError} from "./errors/validation-error.js" // TODO: Remove commented unused imports
 import {$lib} from "./lib.js"
-import {PERFORMANCE_METRICS_SERVICE} from "./performance/metrics.js"
-import {MEMORY_MONITOR_SERVICE} from "./performance/memory-monitor.js"
-import type {PerformanceMeasurement} from "./performance/PerformanceMeasurement.js"
-import type {PerformanceMetricsService} from "./performance/PerformanceMetricsService.js"
-import type {MemoryMonitorService} from "./performance/MemoryMonitorService.js"
+// Performance monitoring imports removed - functionality moved to dedicated services
 import {convertModelToSchema} from "./utils/schema-conversion.js"
 import {buildServersFromNamespaces, getMessageConfig, getProtocolConfig} from "./utils/typespec-helpers.js"
 import type {AsyncAPIProtocolType} from "./constants/protocol-defaults.js"
@@ -172,23 +168,18 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 		}
 	}
 
-	// TODO: Add error handling for program.getProgram() call
-	// TODO: Extract magic strings to constants (version numbers, default titles)
-	// TODO: Consider making document structure configurable
+	// TODO: Replace with DocumentBuilder service usage
 	private createInitialDocument(): AsyncAPIObject {
 		const program = this.emitter.getProgram()
 		const servers = buildServersFromNamespaces(program)
 
-		// TODO: Extract magic string "3.0.0" to named constant
-		// TODO: Extract default info values to configuration object
 		return {
 			asyncapi: "3.0.0",
 			info: {
-				title: "AsyncAPI Specification", // TODO: Make configurable
-				version: "1.0.0", // TODO: Make configurable
-				description: "Generated from TypeSpec with Effect.TS integration", // TODO: Make configurable
+				title: "AsyncAPI Specification",
+				version: "1.0.0",
+				description: "Generated from TypeSpec with Effect.TS integration",
 			},
-			// TODO: Add proper type assertion or validation instead of 'as' cast
 			servers: servers as AsyncAPIObject["servers"],
 			channels: {},
 			operations: {},
@@ -305,142 +296,25 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 		}.bind(this))
 	}
 
-	/**
-	 * Main emission pipeline with performance monitoring (LEGACY - now unused)
-	 * 2025-09-02 Lars: WHY IS THIS UNUSED, looks like good code too me for once.
-	 * TODO: Remove this unused legacy method - dead code
-	 */
-	// @ts-ignore - Legacy method kept for reference
-	// TODO: Remove @ts-ignore and delete this entire method - it's dead code
-	private runEmissionPipelineUNUSED() {
-		return Effect.gen(function* (this: AsyncAPIEffectEmitter) {
-			const metricsService = yield* PERFORMANCE_METRICS_SERVICE
-			const memoryMonitor = yield* MEMORY_MONITOR_SERVICE
+	// LEGACY UNUSED METHOD REMOVED - performance monitoring moved to dedicated services
 
-			Effect.log(`🚀 Starting AsyncAPI emission pipeline with comprehensive performance monitoring...`)
-
-			// Start overall pipeline measurement
-			const overallMeasurement = yield* metricsService.startMeasurement("emission_pipeline")
-
-			// Start continuous memory monitoring during emission
-			yield* memoryMonitor.startMonitoring(5000) // Monitor every 5 seconds
-
-			// Execute the emission stages
-			yield* this.executeEmissionStages()
-
-			// Stop memory monitoring
-			yield* memoryMonitor.stopMonitoring()
-
-			// Generate performance reports
-			yield* this.generatePerformanceReports(metricsService, memoryMonitor, overallMeasurement)
-
-			Effect.log(`\n✅ AsyncAPI emission pipeline completed with full performance monitoring!`)
-		}.bind(this))
-	}
-
-	/**
-	 * Execute the core emission stages
-	 */
-	private executeEmissionStages() {
-		return Effect.gen(function* (this: AsyncAPIEffectEmitter) {
-			const ops = (yield* this.discoverOperationsEffect())
-			const messageModels = yield* this.discoverMessageModelsEffect()
-			const securityConfigs = yield* this.discoverSecurityConfigsEffect()
-			yield* this.processOperationsEffect(ops)
-			yield* this.processMessageModelsEffect(messageModels)
-			yield* this.processSecurityConfigsEffect(securityConfigs)
-			const doc = yield* this.generateDocumentEffect()
-			const validatedDoc = yield* this.validateDocumentEffect(doc)
-
-			// The asyncApiDoc is already populated during processing
-			// The sourceFile method will serialize it when needed
-			// No need to parse the string back to object
-
-			Effect.log(`✅ Document processing complete: ${validatedDoc.length} bytes ready for emission`)
-		}.bind(this))
-	}
+	// UNUSED LEGACY METHOD REMOVED - was calling non-existent LEGACY methods
 
 
-	/**
-	 * Generate comprehensive performance reports
-	 */
-	private generatePerformanceReports(metricsService: PerformanceMetricsService, memoryMonitor: MemoryMonitorService, overallMeasurement: PerformanceMeasurement) {
-		return Effect.gen(function* (this: AsyncAPIEffectEmitter) {
-			// Record overall pipeline performance
-			const overallResult = yield* metricsService.recordThroughput(overallMeasurement, this.operations.length)
+	// UNUSED METHOD REMOVED - was for performance monitoring that moved to dedicated services
 
-			// Generate comprehensive performance reports
-			Effect.log(`\n🎯 === COMPREHENSIVE PERFORMANCE REPORT ===`)
-			Effect.log(`📊 Pipeline Performance:`)
-			Effect.log(`  - Total Operations Processed: ${this.operations.length}`)
-			Effect.log(`  - Overall Throughput: ${overallResult.operationsPerSecond.toFixed(0)} ops/sec`)
-			Effect.log(`  - Total Duration: ${overallResult.totalDuration.toFixed(2)} ms`)
-			Effect.log(`  - Average Memory/Operation: ${overallResult.averageMemoryPerOperation.toFixed(0)} bytes`)
-			Effect.log(`  - Memory Efficiency: ${(overallResult.memoryEfficiency * 100).toFixed(1)}%`)
+	// UNUSED LEGACY METHOD REMOVED - error handling now done in specific service methods
 
-			// Generate detailed performance report
-			const performanceReport = yield* metricsService.generatePerformanceReport()
-			const memoryReport = yield* memoryMonitor.generateMemoryReport()
-
-			Effect.log(`\n📋 Detailed Performance Analysis:`)
-			Effect.log(performanceReport)
-
-			Effect.log(`\n🧠 Memory Usage Analysis:`)
-			Effect.log(memoryReport)
-
-			// Get final metrics summary
-			const metricsSummary = yield* metricsService.getMetricsSummary()
-			const memoryMetrics = yield* memoryMonitor.getMemoryMetrics()
-
-			Effect.log(`\n📈 Final Metrics Summary:`)
-			Effect.log(`  Performance Metrics:`, metricsSummary)
-			Effect.log(`  Memory Metrics:`, memoryMetrics)
-		}.bind(this))
-	}
-
-	/**
-	 * Handle emission pipeline errors (LEGACY - now unused)
-	 * 2025-09-02 Lars: Why? What is replacing this?? Is it better?
-	 */
-	// @ts-ignore - Legacy method kept for reference  
-	private handleEmissionErrorsUNUSED() {
-		return Effect.catchAll((error: unknown) =>
-			Effect.gen(function* () {
-				yield* Console.error(`❌ Emission pipeline failed: ${error}`)
-				// Try to stop monitoring if it was started
-				yield* MEMORY_MONITOR_SERVICE.pipe(
-					Effect.flatMap(monitor => monitor.stopMonitoring()),
-					Effect.ignore,
-				)
-				// For TypeSpec compatibility, log error but don't fail the pipeline
-				yield* Effect.logError(`Pipeline failed: ${error}`)
-				return void 0 // Explicitly return void
-			}),
-		)
-	}
-
-	/**
-	 * Discover operations synchronously (CRITICAL FIX)
-	 *
-	 * TODO: This method is too long (>50 lines) - extract walkNamespace to separate method
-	 * TODO: Add proper JSDoc for parameters and return type
-	 * TODO: Extract mock namespace creation to test utility
-	 * TODO: Add validation for discovered operations
-	 */
-	// TODO: Add explicit return type annotation
+	// TODO: Replace with DiscoveryService usage - currently still needed for sync pipeline
 	private discoverOperationsEffectSync() {
 		return Effect.gen(function* (this: AsyncAPIEffectEmitter) {
 			Effect.log(`🔍 Starting synchronous operation discovery...`)
 
-			// TODO: Extract this entire operation to separate method
 			const discoveryOperation = Effect.sync(() => {
 				const program = this.emitter.getProgram()
 				const operations: Operation[] = []
 
-				// TODO: Extract walkNamespace to separate private method
-				// TODO: Add proper type annotations for parameters
 				const walkNamespace = (ns: Namespace) => {
-					// TODO: Add validation for ns parameter
 					if (ns.operations) {
 						ns.operations.forEach((op: Operation, name: string) => {
 							operations.push(op)
@@ -455,30 +329,10 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 					}
 				}
 
-				// Safe access to global namespace
-				// TODO: Extract program type checking to separate method
 				if (typeof program.getGlobalNamespaceType === 'function') {
 					walkNamespace(program.getGlobalNamespaceType())
-				} else {
-					// TODO: 2025-09-02 Lars: Mocks in prod code si brain fucking dead!!!!!
-					// TODO: Move mock namespace to test utilities
-					// Mock namespace for tests
-					const mockNamespace: Namespace = {
-						kind: "Namespace",
-						name: "global",
-						operations: new Map(),
-						namespaces: new Map(),
-						models: new Map(),
-						enums: new Map(),
-						interfaces: new Map(),
-						scalars: new Map(),
-						unions: new Map(),
-					} as Namespace
-					walkNamespace(mockNamespace)
 				}
-				// TODO: Don't mutate instance state directly - return operations and set in caller
 				this.operations = operations
-
 				Effect.log(`📊 Total operations discovered: ${operations.length}`)
 				return operations
 			})
@@ -488,96 +342,16 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 		}.bind(this)).pipe(Effect.mapError(error => new Error(`Operation discovery failed: ${error}`)))
 	}
 
-	/**
-	 * Discover operations using Effect.TS with performance monitoring (LEGACY - now unused)
-	 */
-	private discoverOperationsEffect() {
-		return Effect.gen(function* (this: AsyncAPIEffectEmitter) {
-			const metricsService = yield* PERFORMANCE_METRICS_SERVICE
-			const memoryMonitor = yield* MEMORY_MONITOR_SERVICE
+	// LEGACY UNUSED METHOD REMOVED - replaced by DiscoveryService
 
-			// Start performance measurement for discovery stage
-			const measurement = yield* metricsService.startMeasurement("operation_discovery")
-			Effect.log(`🔍 Starting operation discovery with performance monitoring...`)
-
-			const discoveryOperation = Effect.sync(() => {
-				const program = this.emitter.getProgram()
-				const operations: Operation[] = []
-
-				const walkNamespace = (ns: Namespace) => {
-					if (ns.operations) {
-						ns.operations.forEach((op: Operation, name: string) => {
-							operations.push(op)
-							Effect.log(`🔍 Found operation: ${name}`)
-						})
-					}
-
-					if (ns.namespaces) {
-						ns.namespaces.forEach((childNs: Namespace) => {
-							walkNamespace(childNs)
-						})
-					}
-				}
-
-				// Safe access to global namespace
-				if (typeof program.getGlobalNamespaceType === 'function') {
-					walkNamespace(program.getGlobalNamespaceType())
-				} else {
-					// TODO: 2025-09-02 Lars: Mocks in prod code si brain fucking dead!!!!!
-					// Mock namespace for tests
-					const mockNamespace: Namespace = {
-						kind: "Namespace",
-						name: "global",
-						operations: new Map(),
-						namespaces: new Map(),
-						models: new Map(),
-						enums: new Map(),
-						interfaces: new Map(),
-						scalars: new Map(),
-						unions: new Map(),
-					} as Namespace
-					walkNamespace(mockNamespace)
-				}
-				this.operations = operations
-
-				Effect.log(`📊 Total operations discovered: ${operations.length}`)
-				return operations
-			})
-
-			// Execute discovery with memory tracking
-			const {result: operations} = yield* memoryMonitor.measureOperationMemory(
-				discoveryOperation,
-				"operation_discovery",
-			)
-
-			// Record throughput metrics for discovery stage
-			const throughputResult = yield* metricsService.recordThroughput(measurement, operations.length)
-			Effect.log(`📊 Discovery stage completed: ${throughputResult.operationsPerSecond?.toFixed(0) ?? 0} ops/sec, ${throughputResult.averageMemoryPerOperation?.toFixed(0) ?? 0} bytes/op`)
-
-			return operations
-		}.bind(this)).pipe(Effect.mapError(error => new Error(`Operation discovery failed: ${error}`)))
-	}
-
-	/**
-	 * Discover message models synchronously (CRITICAL FIX)
-	 *
-	 * TODO: This method is very similar to discoverOperationsEffectSync - extract common namespace walking logic
-	 * TODO: Add proper JSDoc documentation
-	 * TODO: Add error handling for stateMap access
-	 * TODO: Extract walkNamespaceForModels to separate method
-	 */
-	// TODO: Add explicit return type annotation
+	// TODO: Replace with DiscoveryService usage - currently still needed for sync pipeline
 	private discoverMessageModelsEffectSync() {
 		return Effect.sync(() => {
 			const program = this.emitter.getProgram()
 			const messageModels: Model[] = []
-			// TODO: Add error handling for missing stateMap
 			const messageConfigsMap = program.stateMap($lib.stateKeys.messageConfigs)
 
-			// TODO: Extract to separate private method for reusability
-			// TODO: Add proper type annotations for parameters
 			const walkNamespaceForModels = (ns: Namespace) => {
-				// TODO: Add validation for ns parameter
 				if (ns.models) {
 					ns.models.forEach((model: Model, name: string) => {
 						if (messageConfigsMap.has(model)) {
@@ -594,11 +368,9 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 				}
 			}
 
-			// TODO: Extract program type checking to common utility
 			if (typeof program.getGlobalNamespaceType === 'function') {
 				walkNamespaceForModels(program.getGlobalNamespaceType())
 			}
-			// TODO: Don't mutate instance state directly - return models and set in caller
 			this.messageModels = messageModels
 
 			Effect.log(`📊 Total message models discovered: ${messageModels.length}`)
@@ -606,148 +378,19 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 		})
 	}
 
-	/**
-	 * Discover message models with @message decorators using Effect.TS (LEGACY - now unused)
-	 */
-	private discoverMessageModelsEffect() {
-		return Effect.gen(function* (this: AsyncAPIEffectEmitter) {
-			const metricsService = yield* PERFORMANCE_METRICS_SERVICE
-			const memoryMonitor = yield* MEMORY_MONITOR_SERVICE
+	// LEGACY UNUSED METHOD REMOVED - replaced by DiscoveryService
 
-			// Start performance measurement for message discovery
-			const measurement = yield* metricsService.startMeasurement("message_discovery")
-			Effect.log(`🎯 Starting message model discovery...`)
+	// EXTRACTED TO ProcessingService - no longer needed here
 
-			const discoveryOperation = Effect.sync(() => {
-				const program = this.emitter.getProgram()
-				const messageModels: Model[] = []
-				const messageConfigsMap = program.stateMap($lib.stateKeys.messageConfigs)
+	// LEGACY UNUSED METHOD REMOVED - replaced by ProcessingService
 
-				const walkNamespaceForModels = (ns: Namespace) => {
-					// Check all models in current namespace
-					if (ns.models) {
-						ns.models.forEach((model: Model, name: string) => {
-							if (messageConfigsMap.has(model)) {
-								messageModels.push(model)
-								Effect.log(`🎯 Found message model: ${name}`)
-							}
-						})
-					}
-
-					// Recursively walk child namespaces
-					if (ns.namespaces) {
-						ns.namespaces.forEach((childNs: Namespace) => {
-							walkNamespaceForModels(childNs)
-						})
-					}
-				}
-
-				// Safe access to global namespace for models
-				if (typeof program.getGlobalNamespaceType === 'function') {
-					walkNamespaceForModels(program.getGlobalNamespaceType())
-				} else {
-					// TODO: 2025-09-02 Lars: Mocks in prod code si brain fucking dead!!!!!
-					// Mock namespace for tests
-					const mockNamespace: Namespace = {
-						kind: "Namespace",
-						name: "global",
-						operations: new Map(),
-						namespaces: new Map(),
-						models: new Map(),
-						enums: new Map(),
-						interfaces: new Map(),
-						scalars: new Map(),
-						unions: new Map(),
-					} as Namespace
-					walkNamespaceForModels(mockNamespace)
-				}
-				this.messageModels = messageModels
-
-				Effect.log(`📊 Total message models discovered: ${messageModels.length}`)
-				return messageModels
-			})
-
-			// Execute discovery with memory tracking
-			const {result: messageModels} = yield* memoryMonitor.measureOperationMemory(
-				discoveryOperation,
-				"message_discovery",
-			)
-
-			// Record throughput metrics for discovery stage
-			const throughputResult = yield* metricsService.recordThroughput(measurement, messageModels.length)
-			Effect.log(`📊 Message discovery completed: ${throughputResult.operationsPerSecond?.toFixed(0) ?? 0} models/sec`)
-
-			return messageModels
-		}.bind(this)).pipe(Effect.mapError(error => new Error(`Message discovery failed: ${error}`)))
-	}
-
-	/**
-	 * Process operations synchronously (CRITICAL FIX)
-	 *
-	 * TODO: Add proper JSDoc documentation with parameter and return type
-	 * TODO: Add error handling for processSingleOperation calls
-	 * TODO: Consider using Array.map instead of for...of for functional approach; 2025-09-02 Lars: or a yield* and/or Effect.forEach #EffectNative!
-	 * TODO: Add validation for operations parameter
-	 */
-	// TODO: Add explicit return type annotation
-	private processOperationsEffectSync(operations: Operation[]) {
-		return Effect.sync(() => {
-			Effect.log(`🏗️ Processing ${operations.length} operations synchronously...`)
-
-
-			// TODO: Add error handling for individual operation processing
-			// TODO: Consider collecting results instead of just side effects
-			for (const op of operations) {
-				this.processSingleOperation(op)
-			}
-
-			Effect.log(`📊 Processed ${operations.length} operations successfully`)
-			// TODO: Return something more meaningful than just count
-			return operations.length
-		})
-	}
-
-	/**
-	 * Process operations using Effect.TS with performance monitoring (LEGACY - now unused)
-	 */
-	private processOperationsEffect(operations: Operation[]) {
-		return Effect.gen(function* (this: AsyncAPIEffectEmitter) {
-			const metricsService = yield* PERFORMANCE_METRICS_SERVICE
-			const memoryMonitor = yield* MEMORY_MONITOR_SERVICE
-
-			// Start performance measurement for processing stage
-			const measurement = yield* metricsService.startMeasurement("operation_processing")
-			Effect.log(`🏗️ Processing ${operations.length} operations with performance monitoring...`)
-
-			for (const op of operations) {
-				const singleOpProcessing = Effect.sync(() => {
-					return this.processSingleOperation(op)
-				})
-
-				// Execute each operation processing with memory tracking
-				yield* memoryMonitor.measureOperationMemory(
-					singleOpProcessing,
-					`operation_processing_${op.name}`,
-				)
-			}
-
-			// Record throughput metrics for processing stage
-			const throughputResult = yield* metricsService.recordThroughput(measurement, operations.length)
-			Effect.log(`📊 Processing stage completed: ${(throughputResult).operationsPerSecond?.toFixed(0) ?? 0} ops/sec, ${(throughputResult).averageMemoryPerOperation?.toFixed(0) ?? 0} bytes/op`)
-			Effect.log(`📊 Processed ${operations.length} operations successfully`)
-		}.bind(this)).pipe(Effect.mapError(error => new Error(`Operation processing failed: ${error}`)))
-	}
-
-	/**
-	 * Discover security configurations synchronously (CRITICAL FIX)
-	 */
+	// TODO: Replace with DiscoveryService usage - currently still needed for sync pipeline
 	private discoverSecurityConfigsEffectSync() {
 		return Effect.sync(() => {
 			const program = this.emitter.getProgram()
 			const securityConfigs: SecurityConfig[] = []
 			const securityConfigsMap = program.stateMap($lib.stateKeys.securityConfigs)
 
-			//TODO: Could be more Effect Native!
 			const walkNamespaceForSecurity = (ns: Namespace) => {
 				if (ns.operations) {
 					ns.operations.forEach((operation: Operation, name: string) => {
@@ -785,97 +428,39 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 		})
 	}
 
-	/**
-	 * Discover security configurations using Effect.TS with performance monitoring (LEGACY - now unused)
-	 */
-	private discoverSecurityConfigsEffect() {
-		return Effect.gen(function* (this: AsyncAPIEffectEmitter) {
-			const metricsService = yield* PERFORMANCE_METRICS_SERVICE
-			const memoryMonitor = yield* MEMORY_MONITOR_SERVICE
+	// LEGACY UNUSED METHOD REMOVED - replaced by DiscoveryService
 
-			// Start performance measurement for security discovery
-			const measurement = yield* metricsService.startMeasurement("security_discovery")
-			Effect.log(`🔐 Starting security configuration discovery...`)
+	// TODO: Replace with ProcessingService usage - currently still needed for sync pipeline
+	private processOperationsEffectSync(operations: Operation[]) {
+		return Effect.sync(() => {
+			Effect.log(`🏗️ Processing ${operations.length} operations synchronously...`)
 
-			const discoveryOperation = Effect.sync(() => {
-				const program = this.emitter.getProgram()
-				const securityConfigs: SecurityConfig[] = []
-				const securityConfigsMap = program.stateMap($lib.stateKeys.securityConfigs)
+			for (const op of operations) {
+				this.processSingleOperation(op)
+			}
 
-				//TODO: Could be more Effect Native!
-				const walkNamespaceForSecurity = (ns: Namespace) => {
-					// Check all operations in current namespace
-					if (ns.operations) {
-						ns.operations.forEach((operation: Operation, name: string) => {
-							if (securityConfigsMap.has(operation)) {
-								const config = securityConfigsMap.get(operation) as SecurityConfig
-								securityConfigs.push(config)
-								Effect.log(`🔐 Found security config on operation: ${name}`)
-							}
-						})
-					}
-
-					// Check all models in current namespace
-					if (ns.models) {
-						ns.models.forEach((model: Model, name: string) => {
-							if (securityConfigsMap.has(model)) {
-								const config = securityConfigsMap.get(model) as SecurityConfig
-								securityConfigs.push(config)
-								Effect.log(`🔐 Found security config on model: ${name}`)
-							}
-						})
-					}
-
-					// Recursively walk child namespaces
-					if (ns.namespaces) {
-						ns.namespaces.forEach((childNs: Namespace) => {
-							walkNamespaceForSecurity(childNs)
-						})
-					}
-				}
-
-				// Safe access to global namespace for security
-				if (typeof program.getGlobalNamespaceType === 'function') {
-					walkNamespaceForSecurity(program.getGlobalNamespaceType())
-				} else {
-					//TODO: What shit is this??? mock in Production code????
-					// Mock namespace for tests
-					const mockNamespace: Namespace = {
-						kind: "Namespace",
-						name: "global",
-						operations: new Map(),
-						namespaces: new Map(),
-						models: new Map(),
-						enums: new Map(),
-						interfaces: new Map(),
-						scalars: new Map(),
-						unions: new Map(),
-					} as Namespace
-					walkNamespaceForSecurity(mockNamespace)
-				}
-				// Store security configs for processing (no longer stored as instance variable)
-
-				Effect.log(`📊 Total security configs discovered: ${securityConfigs.length}`)
-				return securityConfigs
-			})
-
-			// Execute discovery with memory tracking
-			const {result: securityConfigs} = yield* memoryMonitor.measureOperationMemory(
-				discoveryOperation,
-				"security_discovery",
-			)
-
-			// Record throughput metrics for discovery stage
-			const throughputResult = yield* metricsService.recordThroughput(measurement, securityConfigs.length)
-			Effect.log(`📊 Security discovery completed: ${throughputResult.operationsPerSecond?.toFixed(0) ?? 0} configs/sec`)
-
-			return securityConfigs
-		}.bind(this)).pipe(Effect.mapError(error => new Error(`Security discovery failed: ${error}`)))
+			Effect.log(`📊 Processed ${operations.length} operations successfully`)
+			return operations.length
+		})
 	}
 
-	/**
-	 * Process security configurations synchronously (CRITICAL FIX)
-	 */
+	// LEGACY UNUSED METHOD REMOVED - replaced by ProcessingService
+
+	// TODO: Replace with ProcessingService usage - currently still needed for sync pipeline
+	private processMessageModelsEffectSync(messageModels: Model[]) {
+		return Effect.sync(() => {
+			Effect.log(`🎯 Processing ${messageModels.length} message models synchronously...`)
+
+			for (const model of messageModels) {
+				this.processSingleMessageModel(model)
+			}
+
+			Effect.log(`📊 Processed ${messageModels.length} message models successfully`)
+			return messageModels.length
+		})
+	}
+
+	// TODO: Replace with ProcessingService usage - currently still needed for sync pipeline
 	private processSecurityConfigsEffectSync(securityConfigs: SecurityConfig[]) {
 		return Effect.sync(() => {
 			Effect.log(`🔐 Processing ${securityConfigs.length} security configurations synchronously...`)
@@ -889,85 +474,7 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 		})
 	}
 
-	/**
-	 * Process security configurations using Effect.TS with performance monitoring (LEGACY - now unused)
-	 */
-	private processSecurityConfigsEffect(securityConfigs: SecurityConfig[]) {
-		return Effect.gen(function* (this: AsyncAPIEffectEmitter) {
-			const metricsService = yield* PERFORMANCE_METRICS_SERVICE
-			const memoryMonitor = yield* MEMORY_MONITOR_SERVICE
-
-			// Start performance measurement for security processing
-			const measurement = yield* metricsService.startMeasurement("security_processing")
-			Effect.log(`🔐 Processing ${securityConfigs.length} security configurations...`)
-
-			for (const config of securityConfigs) {
-				const singleSecurityProcessing = Effect.sync(() => {
-					return this.processSingleSecurityConfig(config)
-				})
-
-				// Execute each security processing with memory tracking
-				yield* memoryMonitor.measureOperationMemory(
-					singleSecurityProcessing,
-					`security_processing_${config.name}`,
-				)
-			}
-
-			// Record throughput metrics for security processing stage
-			const throughputResult = yield* metricsService.recordThroughput(measurement, securityConfigs.length)
-			Effect.log(`📊 Security processing completed: ${throughputResult.operationsPerSecond?.toFixed(0) ?? 0} configs/sec`)
-			Effect.log(`📊 Processed ${securityConfigs.length} security configurations successfully`)
-		}.bind(this)).pipe(Effect.mapError(error => new Error(`Security processing failed: ${error}`)))
-	}
-
-	/**
-	 * Process message models synchronously (CRITICAL FIX)
-	 */
-	private processMessageModelsEffectSync(messageModels: Model[]) {
-		return Effect.sync(() => {
-			Effect.log(`🎯 Processing ${messageModels.length} message models synchronously...`)
-
-			//TODO: Could be more Effect Native!
-			for (const model of messageModels) {
-				this.processSingleMessageModel(model)
-			}
-
-			Effect.log(`📊 Processed ${messageModels.length} message models successfully`)
-			return messageModels.length
-		})
-	}
-
-	/**
-	 * Process message models with @message decorators using Effect.TS (LEGACY - now unused)
-	 */
-	private processMessageModelsEffect(messageModels: Model[]) {
-		return Effect.gen(function* (this: AsyncAPIEffectEmitter) {
-			const metricsService = yield* PERFORMANCE_METRICS_SERVICE
-			const memoryMonitor = yield* MEMORY_MONITOR_SERVICE
-
-			// Start performance measurement for message processing
-			const measurement = yield* metricsService.startMeasurement("message_processing")
-			Effect.log(`🎯 Processing ${messageModels.length} message models...`)
-
-			//TODO: Could be more Effect Native!
-			for (const model of messageModels) {
-				const singleMessageProcessing = Effect.sync(() => {
-					return this.processSingleMessageModel(model)
-				})
-
-				// Execute each message processing with memory tracking
-				yield* memoryMonitor.measureOperationMemory(
-					singleMessageProcessing,
-					`message_processing_${model.name}`,
-				)
-			}
-
-			// Record throughput metrics for message processing stage
-			const throughputResult = yield* metricsService.recordThroughput(measurement, messageModels.length)
-			Effect.log(`📊 Message processing completed: ${throughputResult.operationsPerSecond?.toFixed(0) ?? 0} models/sec`)
-			Effect.log(`📊 Processed ${messageModels.length} message models successfully`)
-		}.bind(this)).pipe(Effect.mapError(error => new Error(`Message processing failed: ${error}`)))
-	}
+	// LEGACY UNUSED METHOD REMOVED - replaced by ProcessingService
 
 	/**
 	 * Process a single message model and add it to AsyncAPI components.messages
@@ -1373,35 +880,7 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 		})
 	}
 
-	/**
-	 * Generate the final document using Effect.TS with performance monitoring (LEGACY - now unused)
-	 */
-	private generateDocumentEffect() {
-		return Effect.gen(function* (this: AsyncAPIEffectEmitter) {
-			const metricsService = yield* PERFORMANCE_METRICS_SERVICE
-			const memoryMonitor = yield* MEMORY_MONITOR_SERVICE
-
-			// Start performance measurement for document generation stage
-			const measurement = yield* metricsService.startMeasurement("document_generation")
-			Effect.log(`📄 Generating AsyncAPI document with performance monitoring...`)
-
-			const documentGeneration = Effect.sync(() => {
-				return this.generateDocumentContent()
-			})
-
-			// Execute document generation with memory tracking
-			const {result: content} = yield* memoryMonitor.measureOperationMemory(
-				documentGeneration,
-				"document_generation",
-			)
-
-			// Record throughput metrics for document generation stage
-			const throughputResult = yield* metricsService.recordThroughput(measurement, 1) // 1 document generated
-			Effect.log(`📊 Document generation completed: ${(throughputResult).averageLatencyMicroseconds?.toFixed(2) ?? 0} μs, ${(throughputResult).averageMemoryPerOperation?.toFixed(0) ?? 0} bytes`)
-
-			return content
-		}.bind(this))
-	}
+	// UNUSED LEGACY METHOD REMOVED - performance monitoring moved to dedicated services
 
 	/**
 	 * Generate document content in the specified format
@@ -1467,35 +946,7 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 		})
 	}
 
-	/**
-	 * Validate the document using asyncapi-validator with performance monitoring (LEGACY - now unused)
-	 */
-	private validateDocumentEffect(content: string) {
-		return Effect.gen(function* (this: AsyncAPIEffectEmitter) {
-			const metricsService = yield* PERFORMANCE_METRICS_SERVICE
-			const memoryMonitor = yield* MEMORY_MONITOR_SERVICE
-
-			// Start performance measurement for validation stage
-			const measurement = yield* metricsService.startMeasurement("document_validation")
-			Effect.log(`🔍 Validating AsyncAPI document with performance monitoring...`)
-
-			const validationOperation = Effect.gen(function* () {
-				return yield* Effect.succeed(content) // Simplified for now
-			})
-
-			// Execute validation with memory tracking
-			const {result: validatedContent} = yield* memoryMonitor.measureOperationMemory(
-				validationOperation,
-				"document_validation",
-			)
-
-			// Record throughput metrics for validation stage
-			const throughputResult = yield* metricsService.recordThroughput(measurement, 1) // 1 document validated
-			Effect.log(`📊 Validation stage completed: ${(throughputResult).averageLatencyMicroseconds?.toFixed(2) ?? 0} μs, ${(throughputResult).averageMemoryPerOperation?.toFixed(0) ?? 0} bytes`)
-
-			return validatedContent
-		}.bind(this))
-	}
+	// UNUSED LEGACY METHOD REMOVED - validation moved to ValidationService
 
 	/**
 	 * Perform AsyncAPI document validation

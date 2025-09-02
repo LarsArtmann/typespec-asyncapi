@@ -18,6 +18,9 @@ import type {MemoryBudget} from "./MemoryBudget.js"
 import type {MemorySnapshot} from "./MemorySnapshot.js"
 import type {MemoryAnalysis} from "./MemoryAnalysis.js"
 import type {ForceGCResult} from "./ForceGCResult.js"
+import {createByteAmount, createMegabyteAmount, createGigabyteAmount} from "./ByteAmount.js"
+import {createTimestamp} from "./MemorySnapshot.js"
+import {createOperationType, createOperationCount} from "./PerformanceTypes.js"
 
 /**
  * @deprecated: Each Error should have it s own file in src/errors;
@@ -27,8 +30,8 @@ export {MemoryMonitorInitializationError, MemoryLeakDetectedError, GarbageCollec
 
 
 export const DEFAULT_MEMORY_BUDGET: MemoryBudget = {
-	maxMemoryPerOperation: 300 * 1024 * 1024, // 300MB per operation (realistic for complex AsyncAPI generation)
-	maxTotalMemory: 1024 * 1024 * 1024, // 1GB total (increased for production workloads)
+	maxMemoryPerOperation: createMegabyteAmount(300), // 300MB per operation (realistic for complex AsyncAPI generation)
+	maxTotalMemory: createGigabyteAmount(1), // 1GB total (increased for production workloads)
 	maxGrowthRate: 10 * 1024 * 1024, // 10MB per second (reasonable for intensive processing)
 	alertThreshold: 80, // 80%
 	forceGCThreshold: 90, // 90%
@@ -92,13 +95,13 @@ const makeMemoryMonitorService = Effect.gen(function* () {
 			if (typeof global !== "undefined" && global.gc) {
 				global.gc()
 				const memoryAfter = getCurrentMemoryUsage().heapUsed
-				return Effect.succeed({memoryBefore, memoryAfter})
+				return Effect.succeed({memoryBefore: createByteAmount(memoryBefore), memoryAfter: createByteAmount(memoryAfter)})
 			} else {
-				return Effect.fail(new GarbageCollectionNotAvailableError(memoryBefore))
+				return Effect.fail(new GarbageCollectionNotAvailableError(createByteAmount(memoryBefore)))
 			}
 		} catch {
 			// Use Effect.logDebug instead of console.debug for consistency
-			return Effect.fail(new GarbageCollectionNotAvailableError(memoryBefore))
+			return Effect.fail(new GarbageCollectionNotAvailableError(createByteAmount(memoryBefore)))
 			// GC not available or failed
 
 			//TODO: can we do better here??
@@ -110,13 +113,13 @@ const makeMemoryMonitorService = Effect.gen(function* () {
 		Effect.gen(function* () {
 			const memory = getCurrentMemoryUsage()
 			const snapshot: MemorySnapshot = {
-				timestamp: performance.now(),
-				heapUsed: memory.heapUsed,
-				heapTotal: memory.heapTotal,
-				external: memory.external,
-				arrayBuffers: memory.arrayBuffers || 0,
-				rss: memory.rss,
-				operationCount,
+				timestamp: createTimestamp(performance.now()),
+				heapUsed: createByteAmount(memory.heapUsed),
+				heapTotal: createByteAmount(memory.heapTotal),
+				external: createByteAmount(memory.external),
+				arrayBuffers: createByteAmount(memory.arrayBuffers || 0),
+				rss: createByteAmount(memory.rss),
+				operationCount: createOperationCount(operationCount),
 			}
 
 			// Update snapshots (keep last 1000 snapshots)

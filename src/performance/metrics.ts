@@ -16,6 +16,7 @@ import type {PerformanceMeasurement} from "./PerformanceMeasurement.js"
 import type {ThroughputResult} from "./ThroughputResult.js"
 import type {PerformanceMetricsService} from "./PerformanceMetricsService.js"
 import type {ByteAmount} from "./ByteAmount.js"
+import {createByteAmount} from "./ByteAmount.js"
 import type {Milliseconds} from "./Durations.js"
 import { 
 	createOperationsPerSecond, 
@@ -255,16 +256,16 @@ const makePerformanceMetricsService = Effect.gen(function* () {
 			report += `- **Latency Target:** ${LATENCY_TARGET} μs\n\n`
 
 			report += `## Current Metrics\n`
-			report += `- **Average Throughput:** ${summary["throughput"]?.toLocaleString() || 'N/A'} ops/sec\n`
-			report += `- **Average Memory/Op:** ${summary["memoryPerOp"]?.toFixed(0) || 'N/A'} bytes\n`
-			report += `- **Average Latency:** ${summary["latency"]?.toFixed(2) || 'N/A'} μs\n`
-			report += `- **Success Rate:** ${summary["successRate"]?.toFixed(2) || 'N/A'}%\n`
-			report += `- **Memory Efficiency:** ${summary["memoryEfficiency"]?.toFixed(1) || 'N/A'}%\n\n`
+			report += `- **Average Throughput:** ${summary[createMetricName("throughput")]?.toLocaleString() || 'N/A'} ops/sec\n`
+			report += `- **Average Memory/Op:** ${summary[createMetricName("memoryPerOp")]?.toFixed(0) || 'N/A'} bytes\n`
+			report += `- **Average Latency:** ${summary[createMetricName("latency")]?.toFixed(2) || 'N/A'} μs\n`
+			report += `- **Success Rate:** ${summary[createMetricName("successRate")]?.toFixed(2) || 'N/A'}%\n`
+			report += `- **Memory Efficiency:** ${summary[createMetricName("memoryEfficiency")]?.toFixed(1) || 'N/A'}%\n\n`
 
 			report += `## Status\n`
-			const throughputStatus = (summary["throughput"] || 0) >= THROUGHPUT_TARGET ? "✅ PASS" : "❌ FAIL"
-			const memoryStatus = (summary["memoryPerOp"] || 0) <= MEMORY_TARGET ? "✅ PASS" : "❌ FAIL"
-			const latencyStatus = (summary["latency"] || 0) <= LATENCY_TARGET ? "✅ PASS" : "❌ FAIL"
+			const throughputStatus = (summary[createMetricName("throughput")] || 0) >= THROUGHPUT_TARGET ? "✅ PASS" : "❌ FAIL"
+			const memoryStatus = (summary[createMetricName("memoryPerOp")] || 0) <= MEMORY_TARGET ? "✅ PASS" : "❌ FAIL"
+			const latencyStatus = (summary[createMetricName("latency")] || 0) <= LATENCY_TARGET ? "✅ PASS" : "❌ FAIL"
 
 			report += `- **Throughput:** ${throughputStatus}\n`
 			report += `- **Memory:** ${memoryStatus}\n`
@@ -399,7 +400,7 @@ export const processValidationBatch = <E>(
 
 		yield* metricsService.validateMemoryTarget(
 			result.averageMemoryPerOperation,
-			options.maxMemoryPerOp,
+			options.maxMemoryPerOp ? createByteAmount(options.maxMemoryPerOp) : undefined,
 		)
 
 		return result

@@ -22,6 +22,7 @@ import {buildServersFromNamespaces} from "../utils/typespec-helpers.js"
 import {DocumentBuilder} from "./DocumentBuilder.js"
 import {DiscoveryService} from "./DiscoveryService.js"
 import {ProcessingService} from "./ProcessingService.js"
+import {ValidationService} from "./ValidationService.js"
 
 export type PipelineContext = {
 	program: Program
@@ -42,11 +43,13 @@ export class EmissionPipeline {
 	private readonly documentBuilder: DocumentBuilder
 	private readonly discoveryService: DiscoveryService
 	private readonly processingService: ProcessingService
+	private readonly validationService: ValidationService
 
 	constructor() {
 		this.documentBuilder = new DocumentBuilder()
 		this.discoveryService = new DiscoveryService()
 		this.processingService = new ProcessingService()
+		this.validationService = new ValidationService()
 	}
 
 	/**
@@ -138,21 +141,33 @@ export class EmissionPipeline {
 	}
 
 	/**
-	 * Stage 4: Validation - Verify AsyncAPI compliance
+	 * Stage 4: Validation - Verify AsyncAPI compliance using REAL ValidationService
 	 */
 	private executeValidationStage(context: PipelineContext) {
 		return Effect.gen(function* (this: EmissionPipeline) {
-			Effect.log(`🔍 Stage 4: Validation`)
+			Effect.log(`🔍 Stage 4: Validation with REAL ValidationService`)
 
-			// Basic structural validation
-			const channelsCount = Object.keys(context.asyncApiDoc.channels || {}).length
-			const operationsCount = Object.keys(context.asyncApiDoc.operations || {}).length
+			// Use REAL ValidationService with comprehensive AsyncAPI 3.0 compliance checking
+			const validationResult = yield* this.validationService.validateDocument(context.asyncApiDoc)
 
-			if (channelsCount === 0 && operationsCount === 0) {
-				yield* Effect.logWarning("⚠️ Document has no channels or operations")
+			if (!validationResult.isValid) {
+				Effect.log(`❌ Validation failed with ${validationResult.errors.length} errors:`)
+				validationResult.errors.forEach((error: string) => Effect.log(`  - ${error}`))
+				
+				if (validationResult.warnings.length > 0) {
+					Effect.log(`⚠️ Validation warnings (${validationResult.warnings.length}):`)
+					validationResult.warnings.forEach((warning: string) => Effect.log(`  - ${warning}`))
+				}
+				
+				yield* Effect.fail(new Error(`AsyncAPI document validation failed with ${validationResult.errors.length} errors`))
+			} else {
+				Effect.log(`✅ Validation completed successfully - ${validationResult.channelsCount} channels, ${validationResult.operationsCount} operations, ${validationResult.messagesCount} messages`)
+				
+				if (validationResult.warnings.length > 0) {
+					Effect.log(`⚠️ Validation warnings (${validationResult.warnings.length}):`)
+					validationResult.warnings.forEach((warning: string) => Effect.log(`  - ${warning}`))
+				}
 			}
-
-			Effect.log(`✅ Validation completed - ${channelsCount} channels, ${operationsCount} operations`)
 		}.bind(this))
 	}
 
