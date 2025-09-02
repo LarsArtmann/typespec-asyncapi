@@ -195,7 +195,7 @@ export class DocumentGenerator {
 		const optimized = JSON.parse(JSON.stringify(document)) as AsyncAPIObject
 
 		// Remove empty objects
-		this.removeEmptyObjects(optimized)
+		this.removeEmptyObjects(optimized as unknown as Record<string, unknown>)
 
 		Effect.log(`✅ Document optimization complete`)
 		return optimized
@@ -203,30 +203,37 @@ export class DocumentGenerator {
 
 	/**
 	 * Recursively remove empty objects and arrays
-	 * Uses any for flexibility with different object structures
+	 * Uses union type for safe object manipulation
 	 */
-	private removeEmptyObjects(obj: any): void {
-		Object.keys(obj).forEach(key => {
-			const value = obj[key]
+	private removeEmptyObjects(obj: Record<string, unknown> | unknown[]): void {
+		// Handle arrays
+		if (Array.isArray(obj)) {
+			return // Arrays are handled by parent object
+		}
+
+		// Handle objects
+		const objRecord = obj as Record<string, unknown>
+		Object.keys(objRecord).forEach(key => {
+			const value = objRecord[key]
 
 			if (value && typeof value === 'object') {
 				if (Array.isArray(value)) {
 					// Remove empty arrays
 					if (value.length === 0) {
-						delete obj[key]
+						delete objRecord[key]
 					}
 				} else {
 					// Recursively process nested objects
-					this.removeEmptyObjects(value)
+					this.removeEmptyObjects(value as Record<string, unknown>)
 
 					// Remove empty objects
-					if (Object.keys(value).length === 0) {
-						delete obj[key]
+					if (Object.keys(value as Record<string, unknown>).length === 0) {
+						delete objRecord[key]
 					}
 				}
 			} else if (value === null || value === undefined || value === '') {
 				// Remove null, undefined, or empty string values
-				delete obj[key]
+				delete objRecord[key]
 			}
 		})
 	}
