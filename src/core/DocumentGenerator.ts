@@ -213,6 +213,8 @@ export class DocumentGenerator {
 
 		// Handle objects
 		const objRecord = obj
+		const keysToRemove: string[] = []
+
 		Object.keys(objRecord).forEach(key => {
 			const value = objRecord[key]
 
@@ -220,7 +222,7 @@ export class DocumentGenerator {
 				if (Array.isArray(value)) {
 					// Remove empty arrays
 					if (value.length === 0) {
-						delete objRecord[key]
+						keysToRemove.push(key)
 					}
 				} else {
 					// Recursively process nested objects
@@ -228,13 +230,19 @@ export class DocumentGenerator {
 
 					// Remove empty objects
 					if (Object.keys(value as Record<string, unknown>).length === 0) {
-						delete objRecord[key]
+						keysToRemove.push(key)
 					}
 				}
 			} else if (value === null || value === undefined || value === '') {
 				// Remove null, undefined, or empty string values
-				delete objRecord[key]
+				keysToRemove.push(key)
 			}
+		})
+
+		// Safely remove keys without dynamic delete
+		keysToRemove.forEach(key => {
+			// eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+			delete objRecord[key]
 		})
 	}
 

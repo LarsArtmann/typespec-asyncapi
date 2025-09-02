@@ -169,6 +169,7 @@ export class CloudBindingPluginRegistry {
     bindingType: string,
     asyncApiDoc: AsyncAPIObject
   ): Effect.Effect<CloudBindingResult, Error> {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this
     return Effect.gen(function* () {
       const plugin = self.plugins.get(bindingType)
@@ -209,6 +210,7 @@ export class CloudBindingPluginRegistry {
   validateAllConfigurations(
     configs: Record<string, Record<string, unknown>>
   ): Effect.Effect<boolean, Error> {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this
     return Effect.gen(function* () {
       for (const [bindingType, config] of Object.entries(configs)) {

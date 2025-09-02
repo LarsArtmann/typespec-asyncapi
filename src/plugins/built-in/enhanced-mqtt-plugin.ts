@@ -516,8 +516,8 @@ export const MQTTTestingUtils = {
       typeof binding === 'object' &&
       binding !== null &&
       'mqtt' in binding &&
-      typeof (binding as any).mqtt === 'object' &&
-      'bindingVersion' in (binding as any).mqtt
+      typeof (binding as Record<string, unknown>).mqtt === 'object' &&
+      'bindingVersion' in ((binding as Record<string, unknown>).mqtt as Record<string, unknown>)
     )
   },
 

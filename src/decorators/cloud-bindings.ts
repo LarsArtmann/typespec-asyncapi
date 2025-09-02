@@ -107,7 +107,7 @@ export type KafkaBindingConfig = {
 	schemaRegistry?: {
 		url: string;
 		subjectName: string;
-		version?: string | 'latest';
+		version?: string;
 	};
 }
 

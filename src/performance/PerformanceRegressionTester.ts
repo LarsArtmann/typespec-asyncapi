@@ -434,6 +434,7 @@ export class PerformanceRegressionTester {
 	 * CI/CD integration - fail build on critical regressions
 	 */
 	validateForCi(results: RegressionTestResult[]) {
+		// eslint-disable-next-line @typescript-eslint/no-this-alias
 		const self = this
 		return Effect.gen(function* () {
 			if (!self.config.enableCiValidation) {

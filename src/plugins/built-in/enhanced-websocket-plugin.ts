@@ -280,8 +280,8 @@ export const WebSocketTestingUtils = {
       typeof binding === 'object' &&
       binding !== null &&
       'ws' in binding &&
-      typeof (binding as any).ws === 'object' &&
-      'bindingVersion' in (binding as any).ws
+      typeof (binding as Record<string, unknown>).ws === 'object' &&
+      'bindingVersion' in ((binding as Record<string, unknown>).ws as Record<string, unknown>)
     )
   }
 }

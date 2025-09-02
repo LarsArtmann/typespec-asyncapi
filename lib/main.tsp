@@ -1,7 +1,7 @@
 // TODO: Add file header comment explaining the purpose of this TypeSpec library file
 // TODO: Consider adding version information in the header comment
 // TODO: Add import validation to ensure "../dist/index.js" exists before TypeSpec compilation
-import "../index.js";
+import "../dist/index.js";
 
 // TODO: Add comment explaining why TypeSpec.Reflection is needed
 using TypeSpec.Reflection;

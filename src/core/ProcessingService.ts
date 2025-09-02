@@ -10,7 +10,7 @@
 
 import { Effect } from "effect"
 import type { Model, Operation, Program } from "@typespec/compiler"
-import type { AsyncAPIObject, SecuritySchemeObject } from "@asyncapi/parser/esm/spec-types/v3.js"
+import type { AsyncAPIObject, SecuritySchemeObject, OperationObject, MessageObject } from "@asyncapi/parser/esm/spec-types/v3.js"
 import type { SecurityConfig } from "../decorators/security.js"
 import { $lib } from "../lib.js"
 import { ProtocolBindingFactory, type ProtocolType } from "../protocol-bindings.js"
@@ -42,6 +42,7 @@ export class ProcessingService {
 	 * @returns Effect containing processing count
 	 */
 	processOperations(operations: Operation[], asyncApiDoc: AsyncAPIObject, program: Program) {
+		// eslint-disable-next-line @typescript-eslint/no-this-alias
 		const self = this
 		return Effect.gen(function* () {
 			yield* Effect.log(`🏗️ Processing ${operations.length} operations with plugin system...`)
@@ -181,7 +182,7 @@ export class ProcessingService {
 		//TODO: CRITICAL DUPLICATION - Template strings scattered throughout codebase!
 		//TODO: I18N VIOLATION - Hardcoded English messages won't work for international teams!
 		//TODO: CONFIGURATION FAILURE - Message templates should be configurable!
-		const operationDef: any = {
+		const operationDef: OperationObject = {
 			action: action,
 			channel: { $ref: `#/channels/${channelName}` },
 			summary: `Operation ${op.name}`,
@@ -198,7 +199,7 @@ export class ProcessingService {
 		// Add message to components
 		if (!asyncApiDoc.components) asyncApiDoc.components = {}
 		if (!asyncApiDoc.components.messages) asyncApiDoc.components.messages = {}
-		const messageDef: any = {
+		const messageDef: Partial<MessageObject> = {
 			name: `${op.name}Message`,
 			title: `${op.name} Message`,
 			summary: `Message for ${op.name} operation`,

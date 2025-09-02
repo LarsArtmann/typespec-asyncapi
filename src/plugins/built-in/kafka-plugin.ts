@@ -89,7 +89,7 @@ export const kafkaPlugin: ProtocolPlugin = {
 		yield* Effect.log("📡 Generating Kafka channel binding")
 		
 		// Extract config from channel or use defaults with proper typing
-		const channelData = channel as {config?: KafkaChannelBindingConfig & {topic: string}} | {}
+		const channelData = channel as {config?: KafkaChannelBindingConfig & {topic: string}} | Record<string, unknown>
 		const rawConfig = ('config' in channelData ? channelData.config : {}) || {}
 		
 		// Type-safe extraction with proper casting

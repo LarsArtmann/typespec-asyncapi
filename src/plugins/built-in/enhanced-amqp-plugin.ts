@@ -448,8 +448,8 @@ export const AMQPTestingUtils = {
       typeof binding === 'object' &&
       binding !== null &&
       'amqp' in binding &&
-      typeof (binding as any).amqp === 'object' &&
-      'bindingVersion' in (binding as any).amqp
+      typeof (binding as Record<string, unknown>).amqp === 'object' &&
+      'bindingVersion' in ((binding as Record<string, unknown>).amqp as Record<string, unknown>)
     )
   },
 

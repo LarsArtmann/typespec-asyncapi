@@ -28,7 +28,11 @@
       "Bash(just find-duplicates:*)",
       "Bash(gh issue close:*)",
       "Bash(npm view:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(git reset:*)",
+      "Bash(rm:*)",
+      "Bash(just fd:*)",
+      "Bash(bun test:*)"
     ],
     "deny": [],
     "ask": []

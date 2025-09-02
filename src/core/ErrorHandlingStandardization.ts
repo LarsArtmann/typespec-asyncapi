@@ -347,6 +347,7 @@ export class ErrorHandlingStandardization {
    * Generate comprehensive error report
    */
   generateErrorReport() {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this
     return Effect.gen(function* () {
       const totalErrors = self.errorHistory.length
@@ -369,7 +370,7 @@ export class ErrorHandlingStandardization {
         }
       }
 
-      const recoverableCount = self.errorHistory.filter((e: any) => e.recoverable).length
+      const recoverableCount = self.errorHistory.filter((e: StandardizedError) => e.recoverable).length
       const recoveryRate = totalErrors > 0 ? (recoverableCount / totalErrors * 100) : 0
 
       report += `\n🔄 Recovery Statistics:\n`
@@ -422,6 +423,7 @@ export class ErrorHandlingStandardization {
   }
 
   private logError(error: StandardizedError) {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this
     return Effect.gen(function* () {
       const logLevel = error.recoverable ? Effect.logWarning : Effect.logError
