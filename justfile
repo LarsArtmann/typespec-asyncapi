@@ -252,7 +252,7 @@ compile:
     find . -name "*.tsp" -not -path "./node_modules/*" -not -path "./dist/*" | head -5
 
     echo "🚀 Running TypeSpec compilation..."
-    if bunx tsp compile . --emit @larsartmann/typespec-asyncapi; then
+    if bunx tsp compile . --emit @lars-artmann/typespec-asyncapi; then
         echo "✅ TypeSpec compilation completed successfully"
         echo "📦 Checking for generated files..."
 
@@ -670,3 +670,141 @@ release-alpha:
 
 # Full validation workflow
 validate-all: validate-build test validate-asyncapi validate-bindings
+
+# NPM Publishing Commands
+
+# Setup npm authentication securely (call this once)
+setup-npm-auth:
+    #!/bin/bash
+    set -euo pipefail
+    echo "🔐 Setting up secure npm authentication..."
+    
+    # Check if NPM_TOKEN environment variable is set
+    if [ -z "${NPM_TOKEN:-}" ]; then
+        echo "❌ NPM_TOKEN environment variable not set!"
+        echo ""
+        echo "🔧 To set up npm authentication:"
+        echo "   export NPM_TOKEN='your_npm_token_here'"
+        echo ""
+        echo "🔒 For permanent setup, add to your shell profile:"
+        echo "   echo 'export NPM_TOKEN=\"your_token\"' >> ~/.bashrc"
+        echo "   echo 'export NPM_TOKEN=\"your_token\"' >> ~/.zshrc"
+        echo ""
+        echo "⚠️  NEVER commit the token to git or hardcode it!"
+        exit 1
+    fi
+    
+    # Create .npmrc with token from environment variable
+    echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
+    echo "registry=https://registry.npmjs.org/" >> .npmrc
+    echo "access=public" >> .npmrc
+    
+    # Set secure permissions on .npmrc
+    chmod 600 .npmrc
+    
+    # Ensure .npmrc is in .gitignore to prevent accidental commits
+    if [ ! -f .gitignore ]; then
+        echo ".npmrc" > .gitignore
+    elif ! grep -q "^\.npmrc$" .gitignore; then
+        echo ".npmrc" >> .gitignore
+    fi
+    
+    echo "✅ npm authentication configured securely"
+    echo "🔒 .npmrc created with secure permissions (600)"
+    echo "🛡️  .npmrc added to .gitignore to prevent token leaks"
+
+# Publish to npm with full pre-publish validation
+publish-npm:
+    #!/bin/bash
+    set -euo pipefail
+    echo "🚀 Publishing @lars-artmann/typespec-asyncapi to npm..."
+    
+    # Verify npm authentication is set up
+    if [ ! -f .npmrc ]; then
+        echo "❌ npm authentication not configured!"
+        echo "💡 Run 'just setup-npm-auth' first"
+        exit 1
+    fi
+    
+    # Verify we're in a clean git state
+    if ! git diff-index --quiet HEAD --; then
+        echo "❌ Working directory has uncommitted changes!"
+        echo "💡 Commit or stash changes before publishing"
+        git status
+        exit 1
+    fi
+    
+    # Run comprehensive pre-publish validation
+    echo "🔍 Running pre-publish validation..."
+    just clean
+    just build
+    just validate-build
+    just typecheck
+    just lint
+    just test
+    just compile
+    
+    # Verify package.json has correct name and version
+    PACKAGE_NAME=$(node -p "require('./package.json').name")
+    PACKAGE_VERSION=$(node -p "require('./package.json').version")
+    
+    echo "📦 Publishing package details:"
+    echo "  Name: $PACKAGE_NAME"
+    echo "  Version: $PACKAGE_VERSION"
+    
+    # Check if this version already exists on npm
+    if npm view "$PACKAGE_NAME@$PACKAGE_VERSION" version &>/dev/null; then
+        echo "❌ Version $PACKAGE_VERSION already exists on npm!"
+        echo "💡 Update package.json version before publishing"
+        exit 1
+    fi
+    
+    # Final confirmation
+    echo ""
+    read -p "🤔 Publish $PACKAGE_NAME@$PACKAGE_VERSION to npm? (y/N): " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        echo "❌ Publish cancelled by user"
+        exit 1
+    fi
+    
+    # Perform the actual publish
+    echo "📤 Publishing to npm..."
+    if npm publish; then
+        echo "✅ Successfully published $PACKAGE_NAME@$PACKAGE_VERSION!"
+        echo "🌐 View on npm: https://www.npmjs.com/package/$PACKAGE_NAME"
+        echo "📦 Install with: npm install $PACKAGE_NAME"
+        
+        # Clean up .npmrc after successful publish for security
+        echo "🧹 Cleaning up .npmrc for security..."
+        rm -f .npmrc
+        echo "🔒 .npmrc removed (run setup-npm-auth again before next publish)"
+    else
+        echo "❌ npm publish failed!"
+        echo "💡 Check npm authentication and try again"
+        exit 1
+    fi
+
+# Quick publish (skips some validations - use with caution)
+publish-npm-quick:
+    #!/bin/bash
+    set -euo pipefail
+    echo "⚡ Quick npm publish (minimal validation)..."
+    
+    # Verify npm authentication
+    if [ ! -f .npmrc ]; then
+        echo "❌ npm authentication not configured!"
+        echo "💡 Run 'just setup-npm-auth' first"
+        exit 1
+    fi
+    
+    # Minimal validation
+    just build
+    just test
+    
+    # Publish
+    npm publish
+    
+    # Clean up
+    rm -f .npmrc
+    echo "🔒 .npmrc cleaned up for security"

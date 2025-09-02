@@ -1,5 +1,5 @@
 
 {
   "$schema": "https://raw.githubusercontent.com/microsoft/typespec/main/packages/compiler/schemas/tspconfig.schema.json",
-  "emit": ["@larsartmann/typespec-asyncapi"]
+  "emit": ["@lars-artmann/typespec-asyncapi"]
 }

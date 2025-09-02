@@ -1,0 +1,85 @@
+# TypeSpec AsyncAPI Emitter - NPM Package Exclusions
+# This file explicitly excludes development and documentation files from npm package
+
+# Development and Testing
+test/
+*.test.ts
+*.test.js
+coverage/
+.nyc_output/
+vitest.config.ts
+jest.config.js
+
+# Documentation and Guides  
+docs/
+*.md
+!README.md
+!CHANGELOG.md
+
+# Examples and Scripts
+examples/
+scripts/
+test-*.tsp
+test-*.ts
+test-*.js
+
+# Build and Development Tools
+src/
+tsconfig*.json
+eslint.config.js
+.eslintrc*
+.eslintcache
+justfile
+Justfile
+
+# TypeSpec Development Files
+tspconfig*.json
+tspconfig*.yaml
+tsp-output/
+test-output/
+tsp-test/
+
+# Development Dependencies and Configs
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Git and CI/CD
+.git/
+.github/
+.gitignore
+.gitattributes
+
+# Package Management
+node_modules/
+*.tgz
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+bun.lockb
+
+# Environment and Local Config
+.env*
+.npmrc
+*.log
+.cache/
+
+# Code Quality Reports
+jscpd-report/
+*.lcov
+
+# Temporary Files  
+*.tmp
+*.temp
+.turbo/
+*.tsbuildinfo
+
+# Claude AI Assistant
+.claude/
+CLAUDE.md
+
+# Specific Large Documentation
+DECORATOR_REGISTRATION_BREAKTHROUGH.md
