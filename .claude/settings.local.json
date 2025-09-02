@@ -25,7 +25,10 @@
       "Bash(sed:*)",
       "Bash(gh issue create:*)",
       "Bash(gh issue comment:*)",
-      "Bash(just find-duplicates:*)"
+      "Bash(just find-duplicates:*)",
+      "Bash(gh issue close:*)",
+      "Bash(npm view:*)",
+      "Bash(find:*)"
     ],
     "deny": [],
     "ask": []
