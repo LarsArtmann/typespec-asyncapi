@@ -34,7 +34,11 @@ export class DocumentBuilder {
 		// Safe handling of null/undefined program for testing
 		const servers = program ? buildServersFromNamespaces(program) : {}
 
-		// TODO: Extract magic string "3.0.0" to named constant
+		// TODO: HARDCODED MAGIC STRING! USE THE FUCKING CONSTANTS FILE!
+		// TODO: CRITICAL FAILURE - ASYNCAPI_VERSION constant exists in src/constants/asyncapi-constants.ts but THIS FILE IGNORES IT!
+		// TODO: IMPORT VIOLATION - Replace hardcoded "3.0.0" with imported ASYNCAPI_VERSION constant IMMEDIATELY!
+		// TODO: MAINTAINABILITY DISASTER - When AsyncAPI 3.1.0 releases, we have to find/replace EVERYWHERE instead of ONE PLACE!
+		// TODO: CODE DUPLICATION SIN - This "3.0.0" appears in 50+ files when it should be ONE CONSTANT!
 		// TODO: Extract default info values to configuration object
 		return {
 			asyncapi: "3.0.0",

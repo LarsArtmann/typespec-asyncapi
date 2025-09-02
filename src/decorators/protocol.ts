@@ -4,8 +4,17 @@ import {Effect} from "effect"
 import {SUPPORTED_PROTOCOLS} from "../constants/protocol-defaults.js"
 // import {effectLogging} from "../utils/effect-helpers.js"
 
+//TODO: HARDCODED PROTOCOL UNION! VIOLATES ASYNCAPI EXTENSIBILITY PRINCIPLES!
+//TODO: CRITICAL ASYNCAPI VIOLATION - AsyncAPI spec supports custom protocols, this hardcoded union prevents them!
+//TODO: MACHINE-READABLE INTERFACE FAILURE - Protocol types should be discoverable, not hardcoded literals!
+//TODO: BUSINESS LOGIC LIMITATION - Custom enterprise protocols cannot be added without code changes!
+//TODO: PROPER ASYNCAPI SOLUTION - Use protocol registry or enum from AsyncAPI specification!
 export type ProtocolType = "kafka" | "websocket" | "http" | "amqp" | "mqtt" | "redis";
 
+//TODO: ASYNCAPI STANDARDS VIOLATION! PROTOCOL BINDINGS SCATTERED IN ONE MASSIVE FILE!
+//TODO: CRITICAL ARCHITECTURAL FAILURE - Each protocol binding should be separate module per AsyncAPI best practices!
+//TODO: MACHINE-READABLE INTERFACE VIOLATION - Hardcoded binding types prevent dynamic protocol discovery!
+//TODO: MAINTAINABILITY DISASTER - Adding new protocols requires modifying this monolithic file!
 //TODO: Split this into it's own file!
 export type KafkaBindingConfig = {
 	/** Kafka topic name */
@@ -56,6 +65,10 @@ export type AMQPBindingConfig = {
 	queue?: string;
 	/** Routing key */
 	routingKey?: string;
+	//TODO: HARDCODED AMQP CONSTANTS! VIOLATE ASYNCAPI MACHINE-READABLE PRINCIPLES!
+	//TODO: CRITICAL ASYNCAPI VIOLATION - Delivery modes should reference AMQP specification constants!
+	//TODO: MAGIC NUMBER ANTI-PATTERN - 1, 2 literals should be named constants from AMQP spec!
+	//TODO: STANDARDS COMPLIANCE FAILURE - AsyncAPI spec requires proper AMQP binding references!
 	/** Message delivery mode */
 	deliveryMode?: 1 | 2; // 1 = non-persistent, 2 = persistent
 	/** Message priority */
@@ -68,6 +81,10 @@ export type AMQPBindingConfig = {
 export type MQTTBindingConfig = {
 	/** Topic name */
 	topic?: string;
+	//TODO: HARDCODED MQTT QOS LEVELS! ANOTHER ASYNCAPI STANDARDS VIOLATION!
+	//TODO: CRITICAL MQTT SPEC VIOLATION - QoS levels should reference MQTT specification constants!
+	//TODO: MAGIC NUMBER DISASTER - 0, 1, 2 literals should be named MQTT_QOS constants!
+	//TODO: ASYNCAPI COMPLIANCE FAILURE - Machine-readable interfaces require proper MQTT binding references!
 	/** Quality of Service level */
 	qos?: 0 | 1 | 2;
 	/** Retain flag */
@@ -128,6 +145,10 @@ export function $protocol(
 	target: Operation | Model,
 	...args: unknown[]
 ): void {
+	//TODO: UNSAFE TYPE CASTING! VIOLATES TYPESCRIPT TYPE SAFETY PRINCIPLES!
+	//TODO: CRITICAL RUNTIME SAFETY FAILURE - args[0] could be undefined, null, or wrong type!
+	//TODO: ASYNCAPI VALIDATION MISSING - No validation that config conforms to AsyncAPI protocol binding spec!
+	//TODO: PROPER SOLUTION - Use type guards and runtime validation before casting!
 	// The actual config should be in args[0]
 	const config = args[0] as ProtocolConfig
 

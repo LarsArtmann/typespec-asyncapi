@@ -37,18 +37,31 @@ import {
 
 // PERFORMANCE METRICS DEFINITIONS
 export const PERFORMANCE_METRICS = {
+	//TODO: HARDCODED MAGIC NUMBERS! EXTRACT ALL METRIC BOUNDARIES TO CONSTANTS!
+	//TODO: CRITICAL - [10, 25, 50, 100, 200, 500, 1000, 2000] throughput boundaries are COMPLETELY ARBITRARY!
+	//TODO: BUSINESS LOGIC FAILURE - Different deployment environments need different throughput boundaries!
+	//TODO: CONFIGURATION DISASTER - These should be configurable based on hardware capabilities!
+	//TODO: MAINTAINABILITY VIOLATION - When performance requirements change, we have to modify CODE instead of CONFIG!
 	// Validation throughput (ops/sec)
 	validationThroughput: Metric.histogram(
 		"validation_throughput_ops_per_sec",
 		MetricBoundaries.fromIterable([10, 25, 50, 100, 200, 500, 1000, 2000]),
 	),
 
+	//TODO: MORE HARDCODED BULLSHIT! MEMORY BOUNDARIES ARE ARBITRARY GARBAGE!
+	//TODO: CRITICAL - [256, 512, 1024, 2048, 4096, 8192] memory boundaries PULLED OUT OF THIN AIR!
+	//TODO: ARCHITECTURAL FAILURE - Memory usage varies by TypeSpec model complexity - STOP HARDCODING!
+	//TODO: PLATFORM VIOLATION - Different platforms have different memory characteristics!
 	// Memory usage per operation (bytes)
 	memoryPerOperation: Metric.histogram(
 		"memory_per_operation_bytes",
 		MetricBoundaries.fromIterable([256, 512, 1024, 2048, 4096, 8192]),
 	),
 
+	//TODO: LATENCY BOUNDARIES ARE HARDCODED LIES! WHO DECIDED ON THESE VALUES?!
+	//TODO: CRITICAL - [10, 25, 50, 100, 250, 500, 1000, 2500] microsecond boundaries are COMPLETELY MADE UP!
+	//TODO: PERFORMANCE VIOLATION - Network latency varies by geographic location and connection!
+	//TODO: BUSINESS LOGIC MISSING - Different AsyncAPI complexities have different latency profiles!
 	// Validation latency (microseconds)
 	validationLatency: Metric.histogram(
 		"validation_latency_microseconds",
@@ -76,6 +89,13 @@ export const PERFORMANCE_METRICS_SERVICE = Context.GenericTag<PerformanceMetrics
 
 // HIGH-PERFORMANCE IMPLEMENTATION
 const makePerformanceMetricsService = Effect.gen(function* () {
+	//TODO: "CONFIGURABLE" IS A LIE! THESE ARE HARDCODED IN SOURCE CODE!
+	//TODO: CRITICAL FAILURE - THROUGHPUT_TARGET = 100 is ARBITRARY CONSERVATIVE BULLSHIT!
+	//TODO: CRITICAL FAILURE - MEMORY_TARGET = 1024 bytes is RANDOM POWER-OF-2 GARBAGE!
+	//TODO: CRITICAL FAILURE - LATENCY_TARGET = 100 microseconds is MADE UP THRESHOLD!
+	//TODO: ARCHITECTURAL DISASTER - "Conservative target" means NOTHING without business requirements!
+	//TODO: CONFIGURATION VIOLATION - These should come from environment variables or config files!
+	//TODO: BUSINESS LOGIC MISSING - Different AsyncAPI specs have different performance characteristics!
 	// Performance targets (configurable)
 	const THROUGHPUT_TARGET = 100 // ops/sec - conservative target
 	const MEMORY_TARGET = 1024 // bytes per operation

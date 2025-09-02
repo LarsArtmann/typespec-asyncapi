@@ -1,9 +1,15 @@
 import type {DecoratorContext, Model, Operation} from "@typespec/compiler"
 import {$lib, reportDiagnostic} from "../lib.js"
 import {Effect} from "effect"
+// TODO: DEAD IMPORT! COMMENTED IMPORT INDICATES INCOMPLETE REFACTORING!
+// TODO: CRITICAL FAILURE - Either import and use effectLogging or remove the comment!
 // import {effectLogging} from "../utils/effect-helpers.js"
 
-//TODO: Is there no OAuth TypeScript Types library we can use??
+//TODO: LIBRARY REINVENTION VIOLATION! "Is there no OAuth TypeScript Types library we can use??" 
+//TODO: CRITICAL ARCHITECTURAL FAILURE - We're reinventing OAuth/SASL/OpenID standards instead of using existing libraries!
+//TODO: BUSINESS LOGIC DISASTER - Custom security type definitions will diverge from standards and cause interoperability issues!
+//TODO: MAINTAINABILITY NIGHTMARE - When OAuth 2.1 or new SASL mechanisms are added, we have to update THIS FILE instead of upgrading a library!
+//TODO: RESEARCH IMMEDIATELY - Use @types/oauth2, @types/sasl, or standard security libraries!
 
 
 export type SecuritySchemeType =
@@ -211,6 +217,10 @@ function validateSecurityScheme(scheme: SecurityScheme): { valid: boolean; error
 	switch (scheme.type) {
 		case "apiKey": {
 			const apiKeyScheme = scheme
+			//TODO: HARDCODED ARRAY! EXTRACT TO CONSTANT!
+			//TODO: CRITICAL FAILURE - validApiKeyLocations array is defined inline instead of using constants!
+			//TODO: BUSINESS LOGIC VIOLATION - API key locations should be configurable by AsyncAPI spec version!
+			//TODO: MAINTAINABILITY DISASTER - When AsyncAPI adds new locations, we modify code instead of config!
 			const validApiKeyLocations = ["user", "password", "query", "header", "cookie"]
 			if (!validApiKeyLocations.includes(apiKeyScheme.in)) {
 				errors.push(`Invalid API key location: ${apiKeyScheme.in}. Must be one of: ${validApiKeyLocations.join(", ")}`)
@@ -220,6 +230,10 @@ function validateSecurityScheme(scheme: SecurityScheme): { valid: boolean; error
 
 		case "http": {
 			const httpScheme = scheme
+			//TODO: MORE HARDCODED BULLSHIT! HTTP SCHEMES ARRAY IS INLINE GARBAGE!
+			//TODO: CRITICAL STANDARDS VIOLATION - HTTP auth schemes should come from IANA HTTP Authentication Scheme Registry!
+			//TODO: MAINTAINABILITY FAILURE - When new HTTP auth schemes are standardized, we modify SOURCE CODE!
+			//TODO: PROPER SOLUTION - Import from standards-compliant library or fetch from IANA registry!
 			const validHttpSchemes = ["basic", "bearer", "digest", "hoba", "mutual", "negotiate", "oauth", "scram-sha-1", "scram-sha-256", "vapid"]
 			if (!validHttpSchemes.includes(httpScheme.scheme)) {
 				errors.push(`Invalid HTTP scheme: ${httpScheme.scheme}. Must be one of: ${validHttpSchemes.join(", ")}`)
@@ -269,6 +283,10 @@ function validateSecurityScheme(scheme: SecurityScheme): { valid: boolean; error
 
 		case "sasl": {
 			const saslScheme = scheme
+			//TODO: YET ANOTHER HARDCODED ARRAY! SASL MECHANISMS ARE STANDARDIZED BY IANA!
+			//TODO: CRITICAL STANDARDS VIOLATION - SASL mechanisms should come from IANA SASL Mechanism Registry!
+			//TODO: INCOMPLETE MECHANISM LIST - Missing EXTERNAL, ANONYMOUS, OTP, DIGEST-MD5, and others!
+			//TODO: SECURITY RISK - Hardcoded list may exclude newer, more secure mechanisms!
 			const validSaslMechanisms = ["PLAIN", "SCRAM-SHA-256", "SCRAM-SHA-512", "GSSAPI"]
 			if (!validSaslMechanisms.includes(saslScheme.mechanism)) {
 				errors.push(`Invalid SASL mechanism: ${saslScheme.mechanism}. Must be one of: ${validSaslMechanisms.join(", ")}`)
@@ -313,6 +331,11 @@ export function getAllSecurityConfigs(context: DecoratorContext): Map<Operation 
 	return context.program.stateMap($lib.stateKeys.securityConfigs) as Map<Operation | Model, SecurityConfig>
 }
 
+//TODO: "COMMON" SECURITY SCHEMES ARE HARDCODED OPINIONATED GARBAGE!
+//TODO: CRITICAL ARCHITECTURAL FAILURE - What's "common" for one application is wrong for another!
+//TODO: NAMING VIOLATION - "bearerAuth" name is generic and will cause conflicts in real applications!
+//TODO: BUSINESS LOGIC ASSUMPTION - JWT format assumption may not apply to all bearer tokens!
+//TODO: CONFIGURATION DISASTER - These should be user-configurable templates, not hardcoded presets!
 /**
  * Common security schemes for quick setup
  */

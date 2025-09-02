@@ -22,7 +22,12 @@ export class AsyncAPIValidator {
 	private initialized = false
 
 	constructor(_options: ValidationOptions = {}) {
-		//TODO: needs to be implemented one day
+		//TODO: BULLSHIT PLACEHOLDER CODE! "needs to be implemented one day" IS NOT ACCEPTABLE!
+		//TODO: CRITICAL FAILURE - ValidationOptions parameter exists but is COMPLETELY IGNORED! 
+		//TODO: ARCHITECTURAL LIE - Constructor accepts options but does NOTHING with them - PURE DECEPTION!
+		//TODO: IMPLEMENT IMMEDIATELY - Options should configure validation behavior, parser settings, cache options!
+		//TODO: BUSINESS LOGIC MISSING - No validation timeouts, no custom schema paths, no validation level configuration!
+		//TODO: REMOVE THE FUCKING UNDERSCORE PREFIX - Either use the parameter or make constructor parameterless!
 		// Options parameter is available for future use but not currently needed
 
 		this.stats = {

@@ -43,7 +43,12 @@ export class PerformanceMonitor {
 	private monitoringTimer?: NodeJS.Timeout
 
 	constructor(config?: Partial<PerformanceConfig>) {
-		//TODO: Magic Numbers!
+		//TODO: HARDCODED MAGIC NUMBERS ARE EVERYWHERE! THIS IS GARBAGE CONFIGURATION!
+		//TODO: CRITICAL - Extract 5000 to MONITORING_INTERVAL_MS constant - WHY 5 SECONDS? COMPLETELY ARBITRARY!
+		//TODO: CRITICAL - Extract 500 to MEMORY_THRESHOLD_MB constant - 500MB threshold is BULLSHIT HARDCODED VALUE!
+		//TODO: ARCHITECTURAL FAILURE - These should be environment-specific defaults, not hardcoded in source!
+		//TODO: BUSINESS LOGIC VIOLATION - Different deployment environments need different monitoring intervals!
+		//TODO: CONFIGURATION DISASTER - Production vs development vs testing should have different thresholds!
 		this.config = {
 			enableMetrics: true,
 			enableMemoryMonitoring: true,

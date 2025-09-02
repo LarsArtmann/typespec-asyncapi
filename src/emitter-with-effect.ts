@@ -41,7 +41,13 @@ export async function generateAsyncAPIWithEffect(context: EmitContext<AsyncAPIEm
 		context.program.compilerOptions.dryRun = false
 	}
 
-	// Ensure program has required methods for AssetEmitter compatibility
+	// TODO: PRODUCTION CODE CREATING MOCK OBJECTS! WHAT THE FUCK?!
+	// TODO: CRITICAL ARCHITECTURE VIOLATION - Production emitter should NEVER create mock objects!
+	// TODO: BUSINESS LOGIC FAILURE - If program.getGlobalNamespaceType is missing, the PROGRAM IS BROKEN!
+	// TODO: HACK ALERT - "test compatibility" comment means TEST CODE is leaking into PRODUCTION!
+	// TODO: TYPE SAFETY VIOLATION - Partial<Namespace> cast to Namespace is DANGEROUS TYPE LIE!
+	// TODO: PROPER SOLUTION - Validate program structure or fail with meaningful error message!
+	// TODO: REMOVE THIS MOCK BULLSHIT - Either fix the program input or fail gracefully!
 	if (!context.program.getGlobalNamespaceType) {
 		// Add missing method for test compatibility
 		const mockNamespace: Partial<Namespace> = {

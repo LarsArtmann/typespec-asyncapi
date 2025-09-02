@@ -41,6 +41,11 @@ export class ProcessingService {
 	 */
 	processOperations(operations: Operation[], asyncApiDoc: AsyncAPIObject, program: Program) {
 		return Effect.sync(() => {
+			//TODO: EFFECT.LOG ANTI-PATTERN! EFFECT.LOG INSIDE EFFECT.SYNC DOESN'T WORK!
+			//TODO: CRITICAL RUNTIME FAILURE - Effect.log must be yielded with yield* or called in Effect.gen()!
+			//TODO: THESE LOG STATEMENTS DO NOTHING - They are not properly executed in Effect context!
+			//TODO: EMOJI HARDCODING - Stop using hardcoded emoji characters in production logs!
+			//TODO: FIX IMMEDIATELY - Either use console.log for immediate logging or wrap in Effect.gen()!
 			Effect.log(`🏗️ Processing ${operations.length} operations synchronously...`)
 
 			// Process each operation with REAL business logic
@@ -122,6 +127,10 @@ export class ProcessingService {
 			Effect.log(`🔧 Protocol config found: ${protocolConfig.protocol}`)
 		}
 
+		//TODO: HARDCODED PREFIX "channel_" IS GARBAGE NAMING!
+		//TODO: CRITICAL NAMING FAILURE - Channel names should be descriptive, not generic prefixes!
+		//TODO: BUSINESS LOGIC VIOLATION - Channel naming should follow AsyncAPI best practices!
+		//TODO: MAINTAINABILITY DISASTER - When channel naming strategy changes, we modify code!
 		const channelName = `channel_${op.name}`
 		const action = operationType === "subscribe" ? "receive" : "send"
 
@@ -132,6 +141,10 @@ export class ProcessingService {
 
 		// Add operation to document
 		if (!asyncApiDoc.operations) asyncApiDoc.operations = {}
+		//TODO: HARDCODED MESSAGE TEMPLATES! EXTRACT TO CONSTANTS!
+		//TODO: CRITICAL DUPLICATION - Template strings scattered throughout codebase!
+		//TODO: I18N VIOLATION - Hardcoded English messages won't work for international teams!
+		//TODO: CONFIGURATION FAILURE - Message templates should be configurable!
 		asyncApiDoc.operations[op.name] = {
 			action: action,
 			channel: { $ref: `#/channels/${channelName}` },
@@ -146,6 +159,10 @@ export class ProcessingService {
 			name: `${op.name}Message`,
 			title: `${op.name} Message`,
 			summary: `Message for ${op.name} operation`,
+			//TODO: HARDCODED CONTENT TYPE! NOT ALL ASYNCAPI MESSAGES ARE JSON!
+			//TODO: CRITICAL ASSUMPTION FAILURE - Assumes all messages are JSON without validation!
+			//TODO: BUSINESS LOGIC VIOLATION - Different protocols use different content types!
+			//TODO: CONFIGURATION MISSING - Content type should be configurable per message/protocol!
 			contentType: "application/json",
 		}
 
@@ -187,6 +204,10 @@ export class ProcessingService {
 			title: messageConfig.title ?? messageId,
 			summary: messageConfig.summary,
 			description: messageConfig.description,
+			//TODO: FALLBACK CONTENT TYPE IS HARDCODED GARBAGE! "application/json" ISN'T ALWAYS RIGHT!
+			//TODO: CRITICAL DEFAULT FAILURE - Default should be determined by protocol binding or message context!
+			//TODO: BUSINESS LOGIC ASSUMPTION - GraphQL, AVRO, Protobuf messages aren't JSON!
+			//TODO: PROPER SOLUTION - Infer content type from schema or make it required configuration!
 			contentType: messageConfig.contentType ?? "application/json",
 			examples: messageConfig.examples,
 			headers: messageConfig.headers ? { $ref: messageConfig.headers } : undefined,

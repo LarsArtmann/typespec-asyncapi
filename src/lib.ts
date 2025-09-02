@@ -64,6 +64,10 @@ import {createTypeSpecLibrary, type DecoratorContext, type Diagnostic, paramMess
 // TODO: Add version information to library metadata  
 // TODO: Consider organizing diagnostics by category (validation, protocol, security)
 export const $lib = createTypeSpecLibrary({
+	//TODO: HARDCODED LIBRARY NAME! EXTRACT TO CONSTANT FOR REUSE!
+	//TODO: CRITICAL FAILURE - Library name "@larsartmann/typespec-asyncapi" is repeated in multiple places!
+	//TODO: MAINTAINABILITY DISASTER - When changing package name, we have to find/replace everywhere!
+	//TODO: EXTRACT LIBRARY_NAME constant at top of file and reuse throughout!
 	name: "@larsartmann/typespec-asyncapi",
 	// TODO: Add library description, version, and other metadata fields
 	diagnostics: {
@@ -72,7 +76,11 @@ export const $lib = createTypeSpecLibrary({
 			severity: "error",
 			// TODO: Add multiple message variants for different contexts (CLI, IDE, programmatic)
 			messages: {
-				// TODO: Extract supported versions to a constant for maintainability
+				// TODO: HARDCODED VERSION AGAIN! USE THE ASYNCAPI_VERSION CONSTANT!
+			// TODO: CRITICAL DUPLICATION - "3.0.0" appears TWICE in this single line - PURE GARBAGE!
+			// TODO: IMPORT VIOLATION - src/constants/asyncapi-constants.ts exists but this file ignores it!
+			// TODO: MAINTAINABILITY DISASTER - Version updates require changes in DOZENS of files!
+			// TODO: Extract supported versions to a constant for maintainability
 				default: paramMessage`AsyncAPI version '${"version"}' is not supported. Only AsyncAPI 3.0.0 is supported. Update your emitter options to use "3.0.0".`,
 			},
 		},

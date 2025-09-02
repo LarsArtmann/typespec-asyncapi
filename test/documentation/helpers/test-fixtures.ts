@@ -1178,8 +1178,14 @@ export const TypeSpecFixtures = {
 export const AsyncAPIFixtures = {
   
   coreConceptsExpected: {
+    //TODO: HARDCODED VERSION STRINGS EVERYWHERE! "3.0.0" is DUPLICATED throughout this MASSIVE file!
+    //TODO: MAGIC STRING DISASTER - AsyncAPI version should be ASYNCAPI_VERSION constant!
+    //TODO: MAINTENANCE NIGHTMARE - Version updates require changing 10+ locations in this file!
+    //TODO: COPY-PASTE PROGRAMMING - Same version strings pasted everywhere without abstraction!
     asyncapi: "3.0.0",
     info: {
+      //TODO: MORE HARDCODED BULLSHIT - "1.0.0" repeated ad nauseam throughout test fixtures!
+      //TODO: DRY VIOLATION - Service version should be SERVICE_VERSION constant!
       title: "Order Service",
       version: "1.0.0"
     },

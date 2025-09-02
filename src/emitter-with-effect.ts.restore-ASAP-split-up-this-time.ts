@@ -546,6 +546,12 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 	 * TODO: Extract magic string "channel_" to named constant
 	 * TODO: Add validation for operation parameter
 	 * TODO: Consider using Effect.TS patterns for error handling
+	 * TODO: HARDCODED LIES - "application/json" is HARDCODED GARBAGE defaulting assumption!
+	 * TODO: ARCHITECTURAL NIGHTMARE - Direct document mutation violates immutability principles!
+	 * TODO: DUPLICATION HELL - Same null-checking pattern repeated everywhere in this file!
+	 * TODO: MAGIC STRING DISASTER - "$ref" template strings scattered throughout without constants!
+	 * TODO: ERROR HANDLING FAILURE - No validation that model conversion actually succeeds!
+	 * TODO: BUSINESS LOGIC VIOLATION - Message ID generation logic is ARBITRARY and INCONSISTENT!
 	 */
 	private processSingleOperation(op: Operation): string {
 		// TODO: Add null/undefined validation for op parameter
@@ -1035,6 +1041,11 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 					}
 				} else {
 					// For header, query, cookie - use httpApiKey
+					//TODO: HARDCODED LIES EVERYWHERE! "Authorization" is COMPLETE BULLSHIT assumption!
+					//TODO: CRITICAL SECURITY FAILURE - Hardcoded "Authorization" header name is DANGEROUS!
+					//TODO: BUSINESS LOGIC VIOLATION - Different APIs use different header names (X-API-Key, X-Auth-Token)!
+					//TODO: CONFIGURATION DISASTER - "could be configurable" comment shows KNOWN TECHNICAL DEBT!
+					//TODO: TYPE SAFETY FAILURE - No validation that scheme.in is valid for httpApiKey type!
 					return {
 						type: "httpApiKey",
 						name: "Authorization", // Default name, could be configurable

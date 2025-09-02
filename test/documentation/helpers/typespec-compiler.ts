@@ -142,8 +142,11 @@ export class TypeSpecDocumentationTestCompiler {
 					const paramMatches = op.channelPath.matchAll(/\{(\w+)\}/g)
 					const parameters: Record<string, any> = {}
 					for (const paramMatch of paramMatches) {
-						parameters[paramMatch[1]] = {
-							schema: { type: "string" }
+						const paramName = paramMatch[1]
+						// Try to extract parameter type from operation definition
+						const paramType = this.extractParameterType(op.name, paramName, code)
+						parameters[paramName] = {
+							schema: paramType
 						}
 					}
 					if (Object.keys(parameters).length > 0) {
@@ -156,15 +159,18 @@ export class TypeSpecDocumentationTestCompiler {
 			asyncapi.channels = {}
 		}
 
-		// Add operations
+		// Add operations (always initialize to prevent undefined)
+		asyncapi.operations = {}
 		if (patterns.operations.length > 0) {
-			asyncapi.operations = {}
 			patterns.operations.forEach(op => {
-				const channelName = op.channelPath?.replace(/\//g, '_').replace(/[{}]/g, '') || `${op.name}_channel`
+				// Use the same channelKey format as channels for consistency
+				const channelKey = op.channelPath || `${op.name}_channel`
+				// For $ref, use the exact same key as in channels (no encoding for now)
+				const encodedChannelKey = channelKey
 				asyncapi.operations![op.name] = {
 					action: op.type === '@publish' ? 'send' : 'receive',
 					channel: {
-						$ref: `#/channels/${channelName}`
+						$ref: `#/channels/${encodedChannelKey}`
 					}
 				}
 			})
@@ -180,12 +186,15 @@ export class TypeSpecDocumentationTestCompiler {
 		// Add message components from @message decorated models
 		patterns.models.filter(m => m.isMessage).forEach(model => {
 			const messageName = model.messageName || model.name
+			// Generate model properties for payload (simplified for tests)
+			const properties = this.generateModelProperties(model.name, code)
 			asyncapi.components!.messages![messageName] = {
 				name: messageName,
 				title: `${messageName} Message`,
 				contentType: "application/json",
 				payload: {
-					$ref: `#/components/schemas/${model.name}`
+					type: "object",
+					properties: properties
 				}
 			}
 		})
@@ -210,17 +219,63 @@ export class TypeSpecDocumentationTestCompiler {
 			}
 		})
 
+		// Ensure AsyncAPI 3.0 compliance
+		this.ensureAsyncAPICompliance(asyncapi)
+
 		return asyncapi
+	}
+
+	/**
+	 * Ensure AsyncAPI 3.0 compliance by adding required fields
+	 */
+	private ensureAsyncAPICompliance(asyncapi: AsyncAPIObject): void {
+		// Ensure info object is complete
+		if (!asyncapi.info.description) {
+			asyncapi.info.description = `Generated from TypeSpec service definition`
+		}
+		
+		// Ensure defaultContentType for AsyncAPI 3.0
+		if (!asyncapi.defaultContentType) {
+			asyncapi.defaultContentType = "application/json"
+		}
+		
+		// Ensure servers exist (optional but helps with validation)
+		if (!asyncapi.servers) {
+			asyncapi.servers = {
+				"development": {
+					host: "localhost:3000",
+					protocol: "http"
+				}
+			}
+		}
+		
+		// Ensure channels have proper structure
+		if (asyncapi.channels) {
+			Object.values(asyncapi.channels).forEach(channel => {
+				// Ensure each channel has required properties
+				if (!channel.address && typeof channel.address !== 'string') {
+					// Fix any channels missing address
+					channel.address = channel.address || "/"
+				}
+			})
+		}
 	}
 
 	/**
 	 * Parse TypeSpec patterns from source code
 	 */
 	private parseTypeSpecPatterns(code: string) {
-		// Extract service info
-		const serviceMatch = code.match(/@service\(\s*\{\s*title:\s*"([^"]+)"[^}]*version:\s*"([^"]+)"/m)
-		const serviceTitle = serviceMatch?.[1]
-		const serviceVersion = serviceMatch?.[2]
+		// Extract service info (handle multi-line declarations)
+		const serviceMatch = code.match(/@service\s*\(\s*\{([^}]+)\}/ms)
+		let serviceTitle, serviceVersion
+		
+		if (serviceMatch) {
+			const serviceBody = serviceMatch[1]
+			const titleMatch = serviceBody.match(/title:\s*"([^"]+)"/m)
+			const versionMatch = serviceBody.match(/version:\s*"([^"]+)"/m)
+			serviceTitle = titleMatch?.[1]
+			serviceVersion = versionMatch?.[1]
+		}
 
 		// Extract operations
 		const operations: Array<{name: string, type: string, channelPath?: string}> = []
@@ -269,6 +324,76 @@ export class TypeSpecDocumentationTestCompiler {
 			operations,
 			models
 		}
+	}
+
+	/**
+	 * Generate model properties from TypeSpec code (simplified for tests)
+	 */
+	private generateModelProperties(modelName: string, code: string): Record<string, any> {
+		// Find the model definition
+		const modelRegex = new RegExp(`model\\s+${modelName}\\s*\\{([^}]+)\\}`, 'm')
+		const modelMatch = code.match(modelRegex)
+		
+		if (!modelMatch) {
+			return {}
+		}
+		
+		const modelBody = modelMatch[1]
+		const properties: Record<string, any> = {}
+		
+		// Parse property lines (simplified pattern matching)
+		const propertyLines = modelBody.split('\n').map(line => line.trim()).filter(line => line && !line.startsWith('//'))
+		
+		for (const line of propertyLines) {
+			// Match: propertyName: type;
+			const propMatch = line.match(/^\s*(\w+):\s*([^;]+);?\s*$/)
+			if (propMatch) {
+				const [, propName, propType] = propMatch
+				properties[propName] = this.mapTypeSpecTypeToJsonSchema(propType.trim())
+			}
+		}
+		
+		return properties
+	}
+
+	/**
+	 * Map TypeSpec types to JSON Schema types (simplified for tests)
+	 */
+	private mapTypeSpecTypeToJsonSchema(typeSpec: string): any {
+		// Handle basic types
+		if (typeSpec === 'string') return { type: 'string' }
+		if (typeSpec === 'int32') return { type: 'integer', format: 'int32' }
+		if (typeSpec === 'int64') return { type: 'integer', format: 'int64' }
+		if (typeSpec === 'float32') return { type: 'number', format: 'float' }
+		if (typeSpec === 'float64') return { type: 'number', format: 'double' }
+		if (typeSpec === 'boolean') return { type: 'boolean' }
+		if (typeSpec === 'utcDateTime') return { type: 'string', format: 'date-time' }
+		
+		// Handle union types (simplified)
+		if (typeSpec.includes('|')) {
+			const unionValues = typeSpec.split('|').map(v => v.trim().replace(/"/g, ''))
+			return { type: 'string', enum: unionValues }
+		}
+		
+		// Default to string for unknown types
+		return { type: 'string' }
+	}
+
+	/**
+	 * Extract parameter type from operation definition
+	 */
+	private extractParameterType(operationName: string, paramName: string, code: string): any {
+		// Find the operation definition
+		const opRegex = new RegExp(`op\\s+${operationName}\\s*\\([^)]*@path\\s+${paramName}:\\s*([^,)]+)`, 'm')
+		const opMatch = code.match(opRegex)
+		
+		if (opMatch) {
+			const paramType = opMatch[1].trim()
+			return this.mapTypeSpecTypeToJsonSchema(paramType)
+		}
+		
+		// Default to string if not found
+		return { type: 'string' }
 	}
 
 	/**
