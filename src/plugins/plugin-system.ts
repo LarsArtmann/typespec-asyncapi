@@ -8,33 +8,37 @@
 import {Effect} from "effect"
 import type {AsyncAPIProtocolType} from "../constants/protocol-defaults.js"
 
-//TODO: FUCKING LOSING GENERICS FOR WHAT, FOR YOU LAZINESS??
+// Re-export AsyncAPIProtocolType for convenience
+export type {AsyncAPIProtocolType} from "../constants/protocol-defaults.js"
+
 /**
- * Protocol plugin interface - simple and focused
+ * Protocol plugin interface - comprehensive AsyncAPI 3.0 support
+ * Enhanced to support all binding types (server, channel, operation, message)
  */
 export type ProtocolPlugin = {
 	readonly name: AsyncAPIProtocolType
 	readonly version: string
 
-	//TODO: FUCKING LOSING GENERICS FOR WHAT, FOR YOU LAZINESS??
 	/**
 	 * Generate protocol-specific bindings for operations
 	 */
 	generateOperationBinding?: (operation: unknown) => Effect.Effect<Record<string, unknown>, Error>
 
-	//TODO: FUCKING LOSING GENERICS FOR WHAT, FOR YOU LAZINESS??
 	/**
 	 * Generate protocol-specific bindings for messages
 	 */
 	generateMessageBinding?: (message: unknown) => Effect.Effect<Record<string, unknown>, Error>
 
-	//TODO: FUCKING LOSING GENERICS FOR WHAT, FOR YOU LAZINESS??
 	/**
 	 * Generate protocol-specific server configuration
 	 */
 	generateServerBinding?: (server: unknown) => Effect.Effect<Record<string, unknown>, Error>
 
-	//TODO: FUCKING LOSING GENERICS FOR WHAT, FOR YOU LAZINESS??
+	/**
+	 * Generate protocol-specific channel configuration (for Kafka topics, etc.)
+	 */
+	generateChannelBinding?: (channel: unknown) => Effect.Effect<Record<string, unknown>, Error>
+
 	/**
 	 * Validate protocol-specific configuration
 	 */
@@ -113,13 +117,13 @@ export const registerBuiltInPlugins = (): Effect.Effect<void, Error> =>
 		yield* Effect.log("✅ Built-in plugins loaded successfully")
 	})
 
-//TODO: FUCKING LOSING GENERICS FOR WHAT, FOR YOU LAZINESS??
 /**
  * Helper to generate protocol bindings using registered plugins
+ * Enhanced to support all AsyncAPI 3.0 binding types
  */
 export const generateProtocolBinding = (
 	protocolName: AsyncAPIProtocolType,
-	bindingType: 'operation' | 'message' | 'server',
+	bindingType: 'operation' | 'message' | 'server' | 'channel',
 	data: unknown,
 ): Effect.Effect<Record<string, unknown> | null, Error> =>
 	Effect.gen(function* () {
@@ -146,7 +150,13 @@ export const generateProtocolBinding = (
 					return yield* plugin.generateServerBinding(data)
 				}
 				break
+			case 'channel':
+				if (plugin.generateChannelBinding) {
+					return yield* plugin.generateChannelBinding(data)
+				}
+				break
 		}
 
+		yield* Effect.log(`⚠️  Plugin ${protocolName} does not support ${bindingType} bindings`)
 		return null
 	})

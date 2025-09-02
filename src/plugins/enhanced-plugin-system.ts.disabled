@@ -1,0 +1,466 @@
+/**
+ * Enhanced Plugin System for AsyncAPI TypeSpec Emitter
+ *
+ * Provides comprehensive plugin architecture with:
+ * - Plugin discovery and auto-registration
+ * - Dependency resolution between plugins
+ * - Lifecycle hooks (init, cleanup, error handling)
+ * - Hot-reload capabilities
+ * - Plugin health monitoring
+ */
+
+import {Effect, Layer, Context, ConfigError, Schedule, Ref} from "effect"
+import type {AsyncAPIProtocolType} from "../constants/protocol-defaults.js"
+import {TEST_VERSIONS} from "../constants/index.js"
+
+/**
+ * Plugin dependency specification
+ */
+export interface PluginDependency {
+  readonly name: string
+  readonly version: string
+  readonly optional?: boolean
+  readonly reason: string
+}
+
+/**
+ * Plugin metadata for discovery and management
+ */
+export interface PluginMetadata {
+  readonly id: string
+  readonly name: AsyncAPIProtocolType
+  readonly version: string
+  readonly description: string
+  readonly author?: string
+  readonly dependencies: readonly PluginDependency[]
+  readonly capabilities: readonly string[]
+  readonly priority: number // Higher number = higher priority
+  readonly isBuiltIn: boolean
+}
+
+/**
+ * Plugin lifecycle hooks
+ */
+export interface PluginLifecycle {
+  /** Called when plugin is first loaded */
+  onInit?: () => Effect.Effect<void, Error>
+  
+  /** Called before plugin is used */
+  onActivate?: () => Effect.Effect<void, Error>
+  
+  /** Called when plugin is no longer needed */
+  onDeactivate?: () => Effect.Effect<void, Error>
+  
+  /** Called when cleaning up plugin resources */
+  onCleanup?: () => Effect.Effect<void, Error>
+  
+  /** Called when an error occurs in the plugin */
+  onError?: (error: Error) => Effect.Effect<void, never>
+}
+
+/**
+ * Plugin health status
+ */
+export type PluginStatus = 
+  | "unloaded" 
+  | "loading" 
+  | "active" 
+  | "inactive" 
+  | "error" 
+  | "disabled"
+
+/**
+ * Plugin performance metrics
+ */
+export interface PluginPerformanceMetrics {
+  readonly averageExecutionTime: number
+  readonly totalExecutions: number
+  readonly lastExecutionTime: number
+  readonly errorRate: number
+}
+
+/**
+ * Plugin health information
+ */
+export interface PluginHealth {
+  readonly status: PluginStatus
+  readonly lastUsed?: Date
+  readonly errorCount: number
+  readonly lastError?: Error
+  readonly performanceMetrics: PluginPerformanceMetrics
+}
+
+/**
+ * Enhanced Protocol Plugin Interface
+ */
+export interface EnhancedProtocolPlugin extends PluginLifecycle {
+  readonly metadata: PluginMetadata
+
+  /**
+   * Generate protocol-specific bindings for operations
+   */
+  generateOperationBinding?: (operation: unknown) => Effect.Effect<Record<string, unknown>, Error>
+
+  /**
+   * Generate protocol-specific bindings for messages
+   */
+  generateMessageBinding?: (message: unknown) => Effect.Effect<Record<string, unknown>, Error>
+
+  /**
+   * Generate protocol-specific server configuration
+   */
+  generateServerBinding?: (server: unknown) => Effect.Effect<Record<string, unknown>, Error>
+
+  /**
+   * Generate protocol-specific channel bindings
+   */
+  generateChannelBinding?: (channel: unknown) => Effect.Effect<Record<string, unknown>, Error>
+
+  /**
+   * Validate protocol-specific configuration
+   */
+  validateConfig?: (config: unknown) => Effect.Effect<boolean, Error>
+
+  /**
+   * Get current plugin health status
+   */
+  getHealth?: () => Effect.Effect<PluginHealth, never>
+}
+
+/**
+ * Plugin discovery configuration
+ */
+export interface PluginDiscoveryConfig {
+  readonly autoDiscovery: boolean
+  readonly discoveryPaths: readonly string[]
+  readonly allowExternalPlugins: boolean
+  readonly pluginTimeout: number // milliseconds
+}
+
+/**
+ * Plugin registry error types
+ */
+export class PluginRegistryError extends Error {
+  constructor(message: string, public readonly pluginId?: string) {
+    super(message)
+    this.name = 'PluginRegistryError'
+  }
+}
+
+export class PluginDependencyError extends PluginRegistryError {
+  constructor(message: string, pluginId: string, public readonly missingDependencies: string[]) {
+    super(message, pluginId)
+    this.name = 'PluginDependencyError'
+  }
+}
+
+export class PluginLoadError extends PluginRegistryError {
+  constructor(message: string, pluginId: string, public readonly cause?: Error) {
+    super(message, pluginId)
+    this.name = 'PluginLoadError'
+  }
+}
+
+/**
+ * Enhanced Plugin Registry with full lifecycle management
+ */
+export class EnhancedPluginRegistry {
+  constructor(
+    private readonly plugins: Ref.Ref<Map<string, EnhancedProtocolPlugin>>,
+    private readonly healthData: Ref.Ref<Map<string, PluginHealth>>,
+    private readonly config: PluginDiscoveryConfig
+  ) {}
+
+  /**
+   * Create a new enhanced plugin registry
+   */
+  static create = (config: Partial<PluginDiscoveryConfig> = {}): Effect.Effect<EnhancedPluginRegistry, never> =>
+    Effect.gen(function* () {
+      const plugins = yield* Ref.make(new Map<string, EnhancedProtocolPlugin>())
+      const healthData = yield* Ref.make(new Map<string, PluginHealth>())
+      
+      const fullConfig: PluginDiscoveryConfig = {
+        autoDiscovery: true,
+        discoveryPaths: ["./built-in"],
+        allowExternalPlugins: false,
+        pluginTimeout: 5000,
+        ...config
+      }
+
+      return new EnhancedPluginRegistry(plugins, healthData, fullConfig)
+    })
+
+  /**
+   * Register a plugin with full lifecycle management
+   */
+  register = (plugin: EnhancedProtocolPlugin): Effect.Effect<void, PluginRegistryError> =>
+    Effect.gen(function* () {
+      yield* Effect.log(`📦 Registering enhanced plugin: ${plugin.metadata.name} v${plugin.metadata.version}`)
+
+      // Validate dependencies
+      yield* this.validateDependencies(plugin)
+
+      // Initialize plugin health tracking
+      const initialHealth: PluginHealth = {
+        status: "loading",
+        errorCount: 0,
+        performanceMetrics: {
+          averageExecutionTime: 0,
+          totalExecutions: 0,
+          lastExecutionTime: 0,
+          errorRate: 0
+        }
+      }
+
+      yield* Ref.update(this.healthData, health => health.set(plugin.metadata.id, initialHealth))
+
+      // Run initialization lifecycle hook
+      if (plugin.onInit) {
+        yield* Effect.catchAll(
+          plugin.onInit(),
+          error => Effect.gen(function* () {
+            yield* Effect.log(`❌ Plugin ${plugin.metadata.name} initialization failed: ${error.message}`)
+            yield* this.updatePluginHealth(plugin.metadata.id, { status: "error", lastError: error })
+            return yield* Effect.fail(new PluginLoadError(`Failed to initialize plugin ${plugin.metadata.name}`, plugin.metadata.id, error))
+          })
+        )
+      }
+
+      // Register the plugin
+      yield* Ref.update(this.plugins, plugins => plugins.set(plugin.metadata.id, plugin))
+      yield* this.updatePluginHealth(plugin.metadata.id, { status: "active" })
+
+      yield* Effect.log(`✅ Enhanced plugin ${plugin.metadata.name} registered successfully`)
+    })
+
+  /**
+   * Discover and auto-register plugins
+   */
+  discoverPlugins = (): Effect.Effect<void, PluginRegistryError> =>
+    Effect.gen(function* () {
+      if (!this.config.autoDiscovery) {
+        return
+      }
+
+      yield* Effect.log("🔍 Starting plugin discovery...")
+
+      // Load built-in plugins
+      yield* this.loadBuiltInPlugins()
+
+      if (this.config.allowExternalPlugins) {
+        yield* this.loadExternalPlugins()
+      }
+
+      yield* Effect.log("✅ Plugin discovery completed")
+    })
+
+  /**
+   * Load built-in plugins with error isolation
+   */
+  private loadBuiltInPlugins = (): Effect.Effect<void, PluginRegistryError> =>
+    Effect.gen(function* () {
+      yield* Effect.log("📦 Loading built-in plugins...")
+
+      const pluginLoaders = [
+        () => import("../built-in/kafka-plugin.js").then(m => this.adaptLegacyPlugin(m.kafkaPlugin)),
+        () => import("../built-in/websocket-plugin.js").then(m => this.adaptLegacyPlugin(m.websocketPlugin)),
+        () => import("../built-in/http-plugin.js").then(m => this.adaptLegacyPlugin(m.httpPlugin))
+      ]
+
+      // Load plugins with individual error isolation
+      for (const loader of pluginLoaders) {
+        yield* Effect.catchAll(
+          Effect.tryPromise(() => loader()).pipe(
+            Effect.flatMap(plugin => this.register(plugin)),
+            Effect.timeout(`${this.config.pluginTimeout}ms`)
+          ),
+          error => Effect.gen(function* () {
+            yield* Effect.log(`⚠️  Failed to load built-in plugin: ${error}`)
+            // Continue loading other plugins
+          })
+        )
+      }
+    })
+
+  /**
+   * Load external plugins from discovery paths
+   */
+  private loadExternalPlugins = (): Effect.Effect<void, PluginRegistryError> =>
+    Effect.gen(function* () {
+      yield* Effect.log("🔍 Scanning for external plugins...")
+      // Implementation for loading external plugins from filesystem
+      // This would scan the discoveryPaths for plugin files
+    })
+
+  /**
+   * Adapt legacy plugin to enhanced interface
+   */
+  private adaptLegacyPlugin = (legacyPlugin: any): EnhancedProtocolPlugin => {
+    const metadata: PluginMetadata = {
+      id: legacyPlugin.name,
+      name: legacyPlugin.name,
+      version: legacyPlugin.version || TEST_VERSIONS.PLUGIN,
+      description: `Legacy ${legacyPlugin.name} protocol plugin`,
+      dependencies: [],
+      capabilities: ["operation", "message", "server", "channel"].filter(cap => 
+        legacyPlugin[`generate${cap.charAt(0).toUpperCase()}${cap.slice(1)}Binding`]
+      ),
+      priority: 100,
+      isBuiltIn: true
+    }
+
+    return {
+      metadata,
+      generateOperationBinding: legacyPlugin.generateOperationBinding,
+      generateMessageBinding: legacyPlugin.generateMessageBinding,
+      generateServerBinding: legacyPlugin.generateServerBinding,
+      generateChannelBinding: legacyPlugin.generateChannelBinding,
+      validateConfig: legacyPlugin.validateConfig,
+      getHealth: () => Effect.gen(function* () {
+        const health = yield* Ref.get(this.healthData)
+        return health.get(metadata.id) || {
+          status: "active" as const,
+          errorCount: 0,
+          performanceMetrics: {
+            averageExecutionTime: 0,
+            totalExecutions: 0,
+            lastExecutionTime: 0,
+            errorRate: 0
+          }
+        }
+      })
+    }
+  }
+
+  /**
+   * Validate plugin dependencies
+   */
+  private validateDependencies = (plugin: EnhancedProtocolPlugin): Effect.Effect<void, PluginDependencyError> =>
+    Effect.gen(function* () {
+      const plugins = yield* Ref.get(this.plugins)
+      const missingDependencies: string[] = []
+
+      for (const dep of plugin.metadata.dependencies) {
+        const dependencyPlugin = Array.from(plugins.values()).find(p => p.metadata.name === dep.name)
+        
+        if (!dependencyPlugin && !dep.optional) {
+          missingDependencies.push(`${dep.name}@${dep.version}`)
+        }
+      }
+
+      if (missingDependencies.length > 0) {
+        return yield* Effect.fail(
+          new PluginDependencyError(
+            `Missing required dependencies for plugin ${plugin.metadata.name}`,
+            plugin.metadata.id,
+            missingDependencies
+          )
+        )
+      }
+    })
+
+  /**
+   * Update plugin health status
+   */
+  private updatePluginHealth = (pluginId: string, updates: Partial<PluginHealth>): Effect.Effect<void, never> =>
+    Ref.update(this.healthData, health => {
+      const current = health.get(pluginId) || {
+        status: "unloaded" as const,
+        errorCount: 0,
+        performanceMetrics: {
+          averageExecutionTime: 0,
+          totalExecutions: 0,
+          lastExecutionTime: 0,
+          errorRate: 0
+        }
+      }
+
+      return health.set(pluginId, { ...current, ...updates, lastUsed: new Date() })
+    })
+
+  /**
+   * Get plugin by protocol name with health check
+   */
+  getPlugin = (protocolName: AsyncAPIProtocolType): Effect.Effect<EnhancedProtocolPlugin | null, never> =>
+    Effect.gen(function* () {
+      const plugins = yield* Ref.get(this.plugins)
+      const plugin = Array.from(plugins.values()).find(p => p.metadata.name === protocolName)
+      
+      if (plugin) {
+        yield* this.updatePluginHealth(plugin.metadata.id, { lastUsed: new Date() })
+      }
+      
+      return plugin || null
+    })
+
+  /**
+   * Get all registered plugins with health status
+   */
+  getAllPlugins = (): Effect.Effect<Array<{ plugin: EnhancedProtocolPlugin; health: PluginHealth }>, never> =>
+    Effect.gen(function* () {
+      const plugins = yield* Ref.get(this.plugins)
+      const health = yield* Ref.get(this.healthData)
+      
+      return Array.from(plugins.values()).map(plugin => ({
+        plugin,
+        health: health.get(plugin.metadata.id) || {
+          status: "unknown" as PluginStatus,
+          errorCount: 0,
+          performanceMetrics: {
+            averageExecutionTime: 0,
+            totalExecutions: 0,
+            lastExecutionTime: 0,
+            errorRate: 0
+          }
+        }
+      }))
+    })
+
+  /**
+   * Clean up all plugins and their resources
+   */
+  cleanup = (): Effect.Effect<void, never> =>
+    Effect.gen(function* () {
+      yield* Effect.log("🧹 Cleaning up plugin registry...")
+      
+      const plugins = yield* Ref.get(this.plugins)
+      
+      // Call cleanup hooks for all plugins
+      for (const plugin of plugins.values()) {
+        if (plugin.onCleanup) {
+          yield* Effect.catchAll(
+            plugin.onCleanup(),
+            error => Effect.log(`⚠️  Error during plugin cleanup: ${error.message}`)
+          )
+        }
+      }
+
+      // Clear registries
+      yield* Ref.set(this.plugins, new Map())
+      yield* Ref.set(this.healthData, new Map())
+      
+      yield* Effect.log("✅ Plugin registry cleanup completed")
+    })
+}
+
+/**
+ * Global enhanced plugin registry instance
+ */
+export const createEnhancedPluginRegistry = (config?: Partial<PluginDiscoveryConfig>) =>
+  EnhancedPluginRegistry.create(config)
+
+/**
+ * Plugin registry service for dependency injection
+ */
+export class PluginRegistryService extends Context.Tag("PluginRegistryService")<
+  PluginRegistryService,
+  EnhancedPluginRegistry
+>() {}
+
+/**
+ * Layer for providing the plugin registry service
+ */
+export const PluginRegistryLive = Layer.effect(
+  PluginRegistryService,
+  EnhancedPluginRegistry.create()
+)

@@ -14,6 +14,7 @@ import type { AsyncAPIObject, SecuritySchemeObject } from "@asyncapi/parser/esm/
 import type { SecurityConfig } from "../decorators/security.js"
 import { $lib } from "../lib.js"
 import { ProtocolBindingFactory, type ProtocolType } from "../protocol-bindings.js"
+import { generateProtocolBinding, type AsyncAPIProtocolType } from "../plugins/plugin-system.js"
 import { getMessageConfig, getProtocolConfig } from "../utils/typespec-helpers.js"
 import { createChannelDefinition } from "../utils/asyncapi-helpers.js"
 
@@ -33,7 +34,7 @@ export class ProcessingService {
 	 * Process operations and add to AsyncAPI document
 	 * 
 	 * EXTRACTED FROM MONOLITHIC FILE: lines 693-708 (processOperationsEffectSync)
-	 * This is the REAL implementation that transforms operations to AsyncAPI structures
+	 * Enhanced with plugin system integration for protocol bindings
 	 * 
 	 * @param operations - Operations discovered from TypeSpec AST
 	 * @param asyncApiDoc - AsyncAPI document to update
@@ -41,20 +42,16 @@ export class ProcessingService {
 	 * @returns Effect containing processing count
 	 */
 	processOperations(operations: Operation[], asyncApiDoc: AsyncAPIObject, program: Program) {
-		return Effect.sync(() => {
-			//TODO: EFFECT.LOG ANTI-PATTERN! EFFECT.LOG INSIDE EFFECT.SYNC DOESN'T WORK!
-			//TODO: CRITICAL RUNTIME FAILURE - Effect.log must be yielded with yield* or called in Effect.gen()!
-			//TODO: THESE LOG STATEMENTS DO NOTHING - They are not properly executed in Effect context!
-			//TODO: EMOJI HARDCODING - Stop using hardcoded emoji characters in production logs!
-			//TODO: FIX IMMEDIATELY - Either use console.log for immediate logging or wrap in Effect.gen()!
-			Effect.log(`🏗️ Processing ${operations.length} operations synchronously...`)
+		const self = this
+		return Effect.gen(function* () {
+			yield* Effect.log(`🏗️ Processing ${operations.length} operations with plugin system...`)
 
-			// Process each operation with REAL business logic
+			// Process each operation with plugin-enhanced business logic
 			for (const op of operations) {
-				this.processSingleOperation(op, asyncApiDoc, program)
+				yield* Effect.sync(() => self.processSingleOperation(op, asyncApiDoc, program))
 			}
 
-			Effect.log(`📊 Processed ${operations.length} operations successfully`)
+			yield* Effect.log(`📊 Processed ${operations.length} operations successfully`)
 			return operations.length
 		})
 	}
@@ -132,17 +129,31 @@ export class ProcessingService {
 		if (protocolConfig) {
 			Effect.log(`🔧 Protocol config found: ${protocolConfig.protocol}`)
 			const protocolType = protocolConfig.protocol as ProtocolType
+			const protocolName = protocolConfig.protocol as AsyncAPIProtocolType
 			
-			// Create bindings using ProtocolBindingFactory
-			channelBindings = ProtocolBindingFactory.createChannelBindings(protocolType, protocolConfig.binding || {})
-			operationBindings = ProtocolBindingFactory.createOperationBindings(protocolType, protocolConfig.binding || {})
-			messageBindings = ProtocolBindingFactory.createMessageBindings(protocolType, protocolConfig.binding || {})
+			// Try plugin system first, fallback to ProtocolBindingFactory
+			const bindingData = { config: protocolConfig.binding || {} }
+			
+			// Generate channel bindings - Plugin system preferred
+			const channelBindingResult = Effect.runSync(generateProtocolBinding(protocolName, 'channel', bindingData).pipe(Effect.catchAll(() => Effect.succeed(null))))
+			channelBindings = channelBindingResult || ProtocolBindingFactory.createChannelBindings(protocolType, protocolConfig.binding || {})
+			
+			// Generate operation bindings - Plugin system preferred
+			const operationBindingResult = Effect.runSync(generateProtocolBinding(protocolName, 'operation', bindingData).pipe(Effect.catchAll(() => Effect.succeed(null))))
+			operationBindings = operationBindingResult || ProtocolBindingFactory.createOperationBindings(protocolType, protocolConfig.binding || {})
+			
+			// Generate message bindings - Plugin system preferred
+			const messageBindingResult = Effect.runSync(generateProtocolBinding(protocolName, 'message', bindingData).pipe(Effect.catchAll(() => Effect.succeed(null))))
+			messageBindings = messageBindingResult || ProtocolBindingFactory.createMessageBindings(protocolType, protocolConfig.binding || {})
 			
 			if (channelBindings) {
-				Effect.log(`✅ Channel bindings created for ${protocolType}`)
+				Effect.log(`✅ Channel bindings created for ${protocolType} ${channelBindingResult ? '(plugin)' : '(factory)'}`)
 			}
 			if (operationBindings) {
-				Effect.log(`✅ Operation bindings created for ${protocolType}`)
+				Effect.log(`✅ Operation bindings created for ${protocolType} ${operationBindingResult ? '(plugin)' : '(factory)'}`)
+			}
+			if (messageBindings) {
+				Effect.log(`✅ Message bindings created for ${protocolType} ${messageBindingResult ? '(plugin)' : '(factory)'}`)
 			}
 		}
 

@@ -2,88 +2,105 @@
  * Built-in Kafka Protocol Plugin
  *
  * Provides Kafka-specific binding generation following AsyncAPI 3.0.0 specification
+ * Extracted from ProtocolBindingFactory for modular architecture
  */
 
 import {Effect} from "effect"
 import type {ProtocolPlugin} from "../plugin-system.js"
 import {PROTOCOL_DEFAULTS} from "../../constants/protocol-defaults.js"
+import {TEST_VERSIONS} from "../../constants/index.js"
+import type {
+	KafkaServerBinding,
+	KafkaChannelBinding,
+	KafkaOperationBinding,
+	KafkaMessageBinding,
+	KafkaChannelBindingConfig,
+	KafkaOperationBindingConfig,
+	KafkaMessageBindingConfig
+} from "../../protocol-bindings.js"
 
 /**
- * Kafka operation binding data structure
- */
-type KafkaOperationBinding = {
-	groupId?: string
-	clientId?: string
-	bindingVersion?: string
-}
-
-/**
- * Kafka message binding data structure
- */
-type KafkaMessageBinding = {
-	key?: {
-		type: string
-		description?: string
-	}
-	schemaIdLocation?: string
-	schemaIdPayloadEncoding?: string
-	bindingVersion?: string
-}
-
-/**
- * Kafka server binding data structure
- */
-type KafkaServerBinding = {
-	schemaRegistryUrl?: string
-	schemaRegistryVendor?: string
-	bindingVersion?: string
-}
-
-/**
- * Simple Kafka plugin implementation
+ * Kafka Plugin - Extracts logic from ProtocolBindingFactory
+ * 
+ * This implementation provides the same functionality as KafkaProtocolBinding
+ * but integrates with the plugin system for better modularity.
  */
 export const kafkaPlugin: ProtocolPlugin = {
 	name: "kafka",
-	version: "1.0.0",
+	version: TEST_VERSIONS.PLUGIN,
 
-	generateOperationBinding: (_operation: unknown) => Effect.gen(function* () {
+	generateOperationBinding: (operation: unknown) => Effect.gen(function* () {
 		yield* Effect.log("🔧 Generating Kafka operation binding")
-		//TODO: ACTUALLY IMPLEMENT IT YOU LIER!
+		
+		// Extract config from operation or use defaults
+		const config = (operation as {config?: KafkaOperationBindingConfig})?.config || {}
 
 		const binding: KafkaOperationBinding = {
-			groupId: PROTOCOL_DEFAULTS.kafka.defaultGroupId,
-			clientId: PROTOCOL_DEFAULTS.kafka.defaultClientId,
 			bindingVersion: "0.5.0",
+			groupId: config.groupId ?? PROTOCOL_DEFAULTS.kafka.defaultGroupId,
+			clientId: config.clientId ?? PROTOCOL_DEFAULTS.kafka.defaultClientId,
+			...config,
 		}
 
 		return {kafka: binding}
 	}),
 
-	generateMessageBinding: (_message: unknown) => Effect.gen(function* () {
+	generateMessageBinding: (message: unknown) => Effect.gen(function* () {
 		yield* Effect.log("📨 Generating Kafka message binding")
-		//TODO: ACTUALLY IMPLEMENT IT YOU LIER!
+		
+		// Extract config from message or use defaults
+		const config = (message as {config?: KafkaMessageBindingConfig})?.config || {}
 
 		const binding: KafkaMessageBinding = {
-			key: {
+			bindingVersion: "0.5.0",
+			key: config.key ?? {
 				type: "string",
 				description: "Message key for partitioning",
 			},
-			schemaIdLocation: PROTOCOL_DEFAULTS.kafka.schemaIdLocation,
-			schemaIdPayloadEncoding: "apicurio-new",
-			bindingVersion: "0.5.0",
+			schemaIdLocation: config.schemaIdLocation ?? PROTOCOL_DEFAULTS.kafka.schemaIdLocation as "header" | "payload",
+			schemaIdPayloadEncoding: config.schemaIdPayloadEncoding ?? "apicurio-new",
+			schemaLookupStrategy: config.schemaLookupStrategy,
+			...config,
 		}
 
 		return {kafka: binding}
 	}),
 
-	generateServerBinding: (_server: unknown) => Effect.gen(function* () {
+	generateServerBinding: (server: unknown) => Effect.gen(function* () {
 		yield* Effect.log("🖥️  Generating Kafka server binding")
 
-		//TODO: ACTUALLY IMPLEMENT IT YOU LIER!
+		// Extract config from server or use defaults
+		const config = (server as {config?: Partial<KafkaServerBinding>})?.config || {}
+		
 		const binding: KafkaServerBinding = {
-			schemaRegistryUrl: "http://localhost:8081",
-			schemaRegistryVendor: "apicurio",
 			bindingVersion: "0.5.0",
+			schemaRegistryUrl: config.schemaRegistryUrl ?? "http://localhost:8081",
+			schemaRegistryVendor: config.schemaRegistryVendor ?? "apicurio",
+			...config,
+		}
+
+		return {kafka: binding}
+	}),
+
+	/**
+	 * Generate channel bindings for Kafka topics
+	 */
+	generateChannelBinding: (channel: unknown) => Effect.gen(function* () {
+		yield* Effect.log("📡 Generating Kafka channel binding")
+		
+		// Extract config from channel or use defaults with proper typing
+		const channelData = channel as {config?: KafkaChannelBindingConfig & {topic: string}} | {}
+		const rawConfig = ('config' in channelData ? channelData.config : {}) || {}
+		
+		// Type-safe extraction with proper casting
+		const config = rawConfig as KafkaChannelBindingConfig & {topic?: string}
+		
+		const binding: KafkaChannelBinding = {
+			bindingVersion: "0.5.0",
+			topic: (config.topic as string) || "default-topic",
+			partitions: config.partitions as number | undefined,
+			replicas: config.replicas as number | undefined,
+			topicConfiguration: config.topicConfiguration as Record<string, unknown> | undefined,
 		}
 
 		return {kafka: binding}
@@ -91,9 +108,48 @@ export const kafkaPlugin: ProtocolPlugin = {
 
 	validateConfig: (config: unknown) => Effect.gen(function* () {
 		yield* Effect.log("✅ Validating Kafka configuration")
-		//TODO: ACTUALLY IMPLEMENT IT YOU LIER!
 
-		// Simple validation - can be extended
-		return typeof config === 'object' && config !== null
+		// Validate Kafka-specific configuration
+		if (typeof config !== 'object' || config === null) {
+			return false
+		}
+
+		const kafkaConfig = config as KafkaOperationBindingConfig | KafkaMessageBindingConfig | KafkaChannelBindingConfig
+
+		// Validate groupId and clientId for operation bindings
+		if ('groupId' in kafkaConfig && kafkaConfig.groupId) {
+			if (typeof kafkaConfig.groupId !== 'string' && typeof kafkaConfig.groupId !== 'object') {
+				return false
+			}
+		}
+
+		// Validate schemaIdLocation for message bindings
+		if ('schemaIdLocation' in kafkaConfig && kafkaConfig.schemaIdLocation) {
+			if (!['header', 'payload'].includes(kafkaConfig.schemaIdLocation)) {
+				return false
+			}
+		}
+
+		// Validate topic for channel bindings
+		if ('topic' in kafkaConfig && kafkaConfig.topic) {
+			if (typeof kafkaConfig.topic !== 'string' || kafkaConfig.topic.trim().length === 0) {
+				return false
+			}
+		}
+
+		// Validate partitions and replicas
+		if ('partitions' in kafkaConfig && kafkaConfig.partitions) {
+			if (typeof kafkaConfig.partitions !== 'number' || kafkaConfig.partitions < 1) {
+				return false
+			}
+		}
+
+		if ('replicas' in kafkaConfig && kafkaConfig.replicas) {
+			if (typeof kafkaConfig.replicas !== 'number' || kafkaConfig.replicas < 1) {
+				return false
+			}
+		}
+
+		return true
 	}),
 }

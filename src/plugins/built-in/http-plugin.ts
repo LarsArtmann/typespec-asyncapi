@@ -2,58 +2,58 @@
  * Built-in HTTP Protocol Plugin
  *
  * Provides HTTP-specific binding generation following AsyncAPI 3.0.0 specification
+ * Extracted from ProtocolBindingFactory for modular architecture
  */
 
 import {Effect} from "effect"
 import type {ProtocolPlugin} from "../plugin-system.js"
 import {PROTOCOL_DEFAULTS} from "../../constants/protocol-defaults.js"
+import type {
+	HttpOperationBinding,
+	HttpMessageBinding,
+	HttpOperationBindingConfig,
+	HttpMessageBindingConfig
+} from "../../protocol-bindings.js"
 
 /**
- * HTTP operation binding data structure
- */
-type HttpOperationBinding = {
-	method?: string
-	query?: Record<string, unknown>
-	bindingVersion?: string
-}
-
-/**
- * HTTP message binding data structure
- */
-type HttpMessageBinding = {
-	headers?: Record<string, unknown>
-	statusCode?: number
-	bindingVersion?: string
-}
-
-/**
- * Simple HTTP plugin implementation
+ * HTTP Plugin - Extracts logic from ProtocolBindingFactory
+ * 
+ * This implementation provides the same functionality as HttpProtocolBinding
+ * but integrates with the plugin system for better modularity.
  */
 export const httpPlugin: ProtocolPlugin = {
 	name: "http",
 	version: "1.0.0",
 
-	generateOperationBinding: (_operation: unknown) => Effect.gen(function* () {
+	generateOperationBinding: (operation: unknown) => Effect.gen(function* () {
 		yield* Effect.log("🔧 Generating HTTP operation binding")
-		//TODO: ACTUALLY IMPLEMENT IT YOU LIER!
-
+		
+		// Extract config from operation or use defaults
+		const config = (operation as {config?: HttpOperationBindingConfig})?.config || {}
+		
 		const binding: HttpOperationBinding = {
-			method: PROTOCOL_DEFAULTS.http.method,
 			bindingVersion: "0.3.0",
+			type: config.type ?? "request",
+			method: config.method ?? PROTOCOL_DEFAULTS.http.method,
+			...config,
 		}
 
 		return {http: binding}
 	}),
 
-	generateMessageBinding: (_message: unknown) => Effect.gen(function* () {
+	generateMessageBinding: (message: unknown) => Effect.gen(function* () {
 		yield* Effect.log("📨 Generating HTTP message binding")
-		//TODO: ACTUALLY IMPLEMENT IT YOU LIER!
+		
+		// Extract config from message or use defaults
+		const config = (message as {config?: HttpMessageBindingConfig})?.config || {}
 
 		const binding: HttpMessageBinding = {
-			headers: {
+			bindingVersion: "0.3.0",
+			headers: config.headers ?? {
 				"Content-Type": PROTOCOL_DEFAULTS.http.contentType,
 			},
-			bindingVersion: "0.3.0",
+			statusCode: config.statusCode,
+			...config,
 		}
 
 		return {http: binding}
@@ -61,7 +61,6 @@ export const httpPlugin: ProtocolPlugin = {
 
 	generateServerBinding: (_server: unknown) => Effect.gen(function* () {
 		yield* Effect.log("🖥️  Generating HTTP server binding")
-		//TODO: ACTUALLY IMPLEMENT IT YOU LIER!
 
 		// HTTP server binding is minimal in AsyncAPI 3.0
 		return {http: {bindingVersion: "0.3.0"}}
@@ -69,9 +68,29 @@ export const httpPlugin: ProtocolPlugin = {
 
 	validateConfig: (config: unknown) => Effect.gen(function* () {
 		yield* Effect.log("✅ Validating HTTP configuration")
-		//TODO: ACTUALLY IMPLEMENT IT YOU LIER!
 
-		// Simple validation for HTTP configs
-		return typeof config === 'object' && config !== null
+		// Validate HTTP-specific configuration
+		if (typeof config !== 'object' || config === null) {
+			return false
+		}
+
+		const httpConfig = config as HttpOperationBindingConfig | HttpMessageBindingConfig
+		
+		// Validate operation binding config
+		if ('method' in httpConfig && httpConfig.method) {
+			const validMethods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS']
+			if (typeof httpConfig.method === 'string' && !validMethods.includes(httpConfig.method.toUpperCase())) {
+				return false
+			}
+		}
+
+		// Validate message binding config
+		if ('statusCode' in httpConfig && httpConfig.statusCode) {
+			if (typeof httpConfig.statusCode !== 'number' || httpConfig.statusCode < 100 || httpConfig.statusCode > 599) {
+				return false
+			}
+		}
+
+		return true
 	}),
 }

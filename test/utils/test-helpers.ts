@@ -11,7 +11,7 @@ import type {Diagnostic, Program} from "@typespec/compiler"
 import {Effect} from "effect"
 
 // Constants - Import centralized constants to eliminate hardcoded values
-import { DEFAULT_CONFIG, LIBRARY_PATHS } from "../../src/constants/index.js"
+import { DEFAULT_CONFIG, LIBRARY_PATHS, ASYNCAPI_VERSIONS, TEST_VERSIONS } from "../../src/constants/index.js"
 
 //TODO: MONOLITHIC FILE DISASTER - THEY ALREADY KNOW IT'S TOO BIG BUT DO NOTHING!
 //TODO: ARCHITECTURAL VIOLATION - 571 lines in single test utilities file is INSANE!
@@ -326,11 +326,9 @@ export function validateAsyncAPIStructure(asyncapiDoc: unknown): boolean {
 		throw new Error(`Missing required AsyncAPI fields: ${missingFields.join(", ")}`)
 	}
 
-	//TODO: HARDCODED VERSION STRING DISASTER! "3.0.0" should be ASYNCAPI_VERSION constant!
-	//TODO: VERSION COUPLING - Hardcoded version check prevents AsyncAPI spec upgrades!
-	//TODO: MAGIC STRING HELL - Same "3.0.0" hardcoded throughout entire codebase!
-	if (doc.asyncapi !== "3.0.0") {
-		throw new Error(`Expected AsyncAPI version 3.0.0, got ${doc.asyncapi}`)
+	// Version validation using centralized constants
+	if (doc.asyncapi !== ASYNCAPI_VERSIONS.CURRENT) {
+		throw new Error(`Expected AsyncAPI version ${ASYNCAPI_VERSIONS.CURRENT}, got ${doc.asyncapi}`)
 	}
 
 	return true

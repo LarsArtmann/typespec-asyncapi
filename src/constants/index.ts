@@ -6,15 +6,30 @@
  * version management, path configuration, and default settings.
  */
 
-// AsyncAPI Version Constants
+// Version Constants (Enhanced)
 export {
   ASYNCAPI_VERSIONS,
+  PACKAGE_VERSIONS,
+  API_VERSIONS,
+  TEST_VERSIONS,
+  VERSION_DESCRIPTIONS,
+  VERSION_PATTERNS,
   ASYNCAPI_VERSION, // @deprecated - use ASYNCAPI_VERSIONS.CURRENT
   ASYNCAPI_VERSION_FIELD,
-  ASYNCAPI_VERSION_OBJECT,
-  ASYNCAPI_VERSION_DESCRIPTION,
-  PACKAGE_VERSION
+  ASYNCAPI_VERSION_OBJECT
 } from './asyncapi-constants.js'
+
+// Channel Template Constants
+export {
+  CHANNEL_TEMPLATES,
+  ORDER_CHANNELS,
+  SYSTEM_CHANNELS,
+  TEST_CHANNELS,
+  ECOMMERCE_CHANNELS,
+  CHANNEL_PARAMETERS,
+  CHANNEL_PATTERNS,
+  CHANNEL_PREFIXES
+} from './channel-templates.js'
 
 // Path Constants
 export {
@@ -45,10 +60,9 @@ export {
 } from './protocol-defaults.js'
 
 // Import for internal use in this file
-import { ASYNCAPI_VERSIONS } from './asyncapi-constants.js'
+import { ASYNCAPI_VERSIONS, PACKAGE_VERSIONS } from './asyncapi-constants.js'
 import { DEFAULT_CONFIG } from './defaults.js'
 import { EMITTER_PATHS, LIBRARY_PATHS } from './paths.js'
-import { PACKAGE_VERSION } from './asyncapi-constants.js'
 
 /**
  * Commonly used constant combinations for convenience
@@ -65,7 +79,7 @@ export const COMMON_CONSTANTS = {
   /** Library identification */
   LIBRARY: {
     name: DEFAULT_CONFIG.LIBRARY_NAME,
-    version: PACKAGE_VERSION,
+    version: PACKAGE_VERSIONS.CURRENT,
     tspMain: LIBRARY_PATHS.MAIN_TSP
   }
 } as const
