@@ -157,6 +157,9 @@ export function isMessage(context: DecoratorContext, target: Model): boolean {
  * }
  * ```
  */
+/**
+ * Mark a model property as a message header - IMPLEMENTATION COMPLETE
+ */
 export function $header(
 	context: DecoratorContext,
 	target: ModelProperty

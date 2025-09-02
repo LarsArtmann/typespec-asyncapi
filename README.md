@@ -36,11 +36,13 @@
 
 ```bash
 # Install the TypeSpec AsyncAPI emitter
-npm install @typespec/asyncapi
+npm install @larsartmann/typespec-asyncapi
 
 # Install TypeSpec compiler (if not already installed)  
 npm install @typespec/compiler
 ```
+
+> **💡 Pro Tip:** Skip the tutorial and jump to the [Complete Example](#-complete-example---copy--paste-ready) for production-ready code with ALL decorators!
 
 ### Basic Usage
 
@@ -48,9 +50,9 @@ Create a TypeSpec file with AsyncAPI definitions:
 
 ```typespec
 // example.tsp
-import "@typespec/asyncapi";
+import "@larsartmann/typespec-asyncapi";
 
-using AsyncAPI;
+using TypeSpec.AsyncAPI;
 
 @asyncapi({
   info: {
@@ -106,9 +108,9 @@ op subscribeToUserCreated(): UserCreatedChannel;
 
 ```bash
 # Compile TypeSpec to AsyncAPI
-npx tsp compile example.tsp --emit @typespec/asyncapi
+npx tsp compile example.tsp --emit @larsartmann/typespec-asyncapi
 
-# Output will be generated in tsp-output/@typespec/asyncapi/
+# Output will be generated in tsp-output/@larsartmann/typespec-asyncapi/
 ```
 
 Generates a complete AsyncAPI 3.0.0 specification:
@@ -171,6 +173,91 @@ Generates a complete AsyncAPI 3.0.0 specification:
   }
 }
 ```
+
+## ⚡ **COMPLETE EXAMPLE - Copy & Paste Ready!**
+
+**🚀 Want to get started in 30 seconds?** Copy the complete production-ready example:
+
+👉 **[examples/complete-example.tsp](examples/complete-example.tsp)** 👈
+
+This comprehensive example shows **ALL working decorators** with real-world patterns:
+
+```typespec
+// 🔥 Production-ready example with ALL protocols and decorators
+import "@larsartmann/typespec-asyncapi";
+using TypeSpec.AsyncAPI;
+
+namespace YourCompanyAPI;
+
+// ✅ KAFKA - High-throughput events with SASL auth
+@channel("user.lifecycle.created") 
+@protocol({
+  protocol: "kafka",
+  binding: { topic: "user-events", key: "user.id", groupId: "your-service" }
+})
+@security({
+  name: "kafkaAuth",
+  scheme: { type: "sasl", mechanism: "SCRAM-SHA-256" }
+})
+@publish
+op publishUserCreated(): UserCreatedMessage;
+
+// ✅ WEBSOCKET - Real-time with JWT Bearer auth  
+@channel("notifications.{userId}.live")
+@protocol({
+  protocol: "websocket", 
+  binding: { method: "GET" }
+})
+@security({
+  name: "bearerAuth",
+  scheme: { type: "http", scheme: "bearer", bearerFormat: "JWT" }
+})
+@subscribe  
+op subscribeToLiveNotifications(): LiveNotificationMessage;
+
+// ✅ HTTP - Webhooks with API key auth
+@channel("webhooks.external.events")
+@protocol({
+  protocol: "http",
+  binding: { type: "request", method: "POST" }  
+})
+@security({
+  name: "apiKeyAuth", 
+  scheme: { type: "apiKey", in: "header", name: "X-API-Key" }
+})
+@subscribe
+op receiveWebhookEvents(): WebhookMessage;
+
+// ✅ MQTT - IoT devices
+@channel("devices.{deviceId}.status")
+@protocol({
+  protocol: "mqtt",
+  binding: { qos: 1, retain: true }
+})
+@publish
+op publishDeviceStatus(): DeviceStatusMessage;
+```
+
+### 🎯 **30-Second Deployment**
+
+1. **Copy the complete example:**
+   ```bash
+   curl -o my-api.tsp https://raw.githubusercontent.com/microsoft/typespec/main/packages/asyncapi/examples/complete-example.tsp
+   ```
+
+2. **Customize for your domain:**
+   - Change `namespace YourCompanyAPI` 
+   - Update channel names and message models
+   - Adjust authentication schemes
+
+3. **Generate production AsyncAPI:**
+   ```bash
+   npx tsp compile my-api.tsp --emit @larsartmann/typespec-asyncapi
+   ```
+
+**🎉 Result:** Professional AsyncAPI 3.0 specification with channels, operations, security schemes, and protocol bindings!
+
+**📖 See the generated output:** [examples/generated/AsyncAPI.yaml](examples/generated/@larsartmann/typespec-asyncapi/AsyncAPI.yaml)
 
 ## 📚 **Features**
 

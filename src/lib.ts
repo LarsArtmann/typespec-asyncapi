@@ -192,6 +192,12 @@ export const $lib = createTypeSpecLibrary({
 				default: paramMessage`Security scheme validation failed: ${"errors"}.`,
 			},
 		},
+		"invalid-asyncapi-target": {
+			severity: "error",
+			messages: {
+				default: paramMessage`@asyncapi decorator can only be applied to namespaces, not '${"targetType"}'.`,
+			},
+		},
 		// TODO: Add more diagnostic codes for edge cases and advanced validations
 		// TODO: Consider adding info-level diagnostics for best practices
 		// TODO: Add diagnostic codes for performance warnings (large schemas, etc.)
@@ -233,6 +239,9 @@ export const $lib = createTypeSpecLibrary({
 		securitySchemes: {description: "Security scheme configurations"},
 		securityConfigs: {description: "Map of targets to security configurations"},
 		operationTypes: {description: "Map of operations to publish/subscribe type"},
+		tags: {description: "Map of targets to tag arrays for categorization"},
+		correlationIds: {description: "Map of models to correlation ID configurations"},
+		cloudBindings: {description: "Map of targets to cloud provider specific bindings"},
 	},
 	// TODO: Add additional library metadata (version, author, repository)
 } as const)
@@ -305,6 +314,9 @@ export const stateKeys = {
 	securitySchemes: "securitySchemes",
 	securityConfigs: "securityConfigs",
 	operationTypes: "operationTypes",
+	tags: "tags",
+	correlationIds: "correlationIds",
+	cloudBindings: "cloudBindings",
 } as const
 
 /**

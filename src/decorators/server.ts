@@ -1,6 +1,69 @@
-import type {DecoratorContext, Model, Namespace, StringValue} from "@typespec/compiler"
+import type {DecoratorContext, Model, Namespace, StringValue, Operation} from "@typespec/compiler"
 import {$lib, reportDiagnostic} from "../lib.js"
 import {Effect} from "effect"
+import {$tags as $tagsImpl} from "./tags.js"
+import {$correlationId as $correlationIdImpl} from "./correlation-id.js"
+import {$bindings as $bindingsImpl} from "./cloud-bindings.js"
+
+/**
+ * AsyncAPI root document decorator - defines top-level AsyncAPI specification metadata
+ */
+export function $asyncapi(
+	context: DecoratorContext,
+	target: Namespace,
+	config: Record<string, unknown>
+): void {
+	Effect.log(`🔍 PROCESSING @asyncapi decorator on namespace: ${target.name}`)
+	Effect.log(`📋 Config:`, config)
+
+	// Validate target is Namespace
+	if (target.kind !== "Namespace") {
+		reportDiagnostic(context, target, "invalid-asyncapi-target", {
+			targetType: target.kind
+		})
+		return
+	}
+
+	// Store asyncapi configuration in program state
+	const asyncApiMap = context.program.stateMap($lib.stateKeys.asyncApiConfigs)
+	asyncApiMap.set(target, config)
+
+	Effect.log(`✅ Successfully stored AsyncAPI config for namespace ${target.name}`)
+}
+
+/**
+ * Tags decorator - apply categorization tags to operations, models, or namespaces
+ */
+export function $tags(
+	context: DecoratorContext,
+	target: Operation | Model | Namespace,
+	tags: string[]
+): void {
+	return $tagsImpl(context, target, tags)
+}
+
+/**
+ * Correlation ID decorator - define message correlation tracking
+ */
+export function $correlationId(
+	context: DecoratorContext,
+	target: Model,
+	config: Record<string, unknown>
+): void {
+	return $correlationIdImpl(context, target, config)
+}
+
+/**
+ * Bindings decorator - define protocol-specific bindings
+ */
+export function $bindings(
+	context: DecoratorContext,
+	target: Operation | Model,
+	bindingType: string,
+	config: Record<string, unknown>
+): void {
+	return $bindingsImpl(context, target, bindingType, config)
+}
 
 //TODO: CRITICAL - Add AsyncAPI 3.0.0 Server Object compliance validation
 //TODO: CRITICAL - Missing required AsyncAPI Server fields (host, pathname, protocol version)

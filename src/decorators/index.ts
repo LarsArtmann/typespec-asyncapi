@@ -20,6 +20,9 @@ import { $message } from "./message.js"
 import { $protocol } from "./protocol.js"
 import { $security } from "./security.js"
 import { $server } from "./server.js"
+// TODO: Enable when implemented: import { $tags } from "./tags.js"
+// TODO: Enable when implemented: import { $correlationId } from "./correlation-id.js"
+// TODO: Enable when implemented: import { $bindings } from "./cloud-bindings.js"
 
 /**
  * Manually register all AsyncAPI decorators with a TypeSpec program
@@ -66,6 +69,10 @@ export function createAsyncAPIDecorators(program: Program): void {
 			{ name: "protocol", fn: $protocol },
 			{ name: "security", fn: $security },
 			{ name: "server", fn: $server }
+			// TODO: Add when implemented: { name: "header", fn: $header },
+			// TODO: Add when implemented: { name: "tags", fn: $tags },
+			// TODO: Add when implemented: { name: "correlationId", fn: $correlationId },
+			// TODO: Add when implemented: { name: "bindings", fn: $bindings }
 		]
 		
 		// Verify all decorator functions are available

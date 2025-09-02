@@ -97,7 +97,8 @@
       "Bash(python3:*)",
       "WebFetch(domain:effect.website)",
       "WebFetch(domain:context7.com)",
-      "Bash(gh issue close:*)"
+      "Bash(gh issue close:*)",
+      "Bash(DEBUG=*)"
     ],
     "deny": [],
     "ask": []

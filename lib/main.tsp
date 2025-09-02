@@ -10,6 +10,9 @@ using TypeSpec.Reflection;
 // TODO: Consider adding namespace-level metadata like version, description
 namespace TypeSpec.AsyncAPI;
 
+// TODO: Implement @asyncapi decorator for complete AsyncAPI document configuration
+// extern dec asyncapi(target: Namespace, config: Record<unknown>);
+
 /**
  * Specify the channel path for a message operation
  * @param path The channel path (e.g., "/user/{userId}/messages" or "user.signup")
@@ -109,7 +112,8 @@ extern dec security(target: Operation | Model, config: Record<unknown>);
  */
 // TODO: Add compile-time validation to ensure target is a ModelProperty
 // TODO: Consider optional header name parameter for custom header mapping
-extern dec header(target: ModelProperty);
+// TODO: Implement @header decorator for message header extraction
+// extern dec header(target: ModelProperty);
 
 /**
  * Define a server configuration for the AsyncAPI specification
@@ -126,3 +130,66 @@ extern dec header(target: ModelProperty);
 // TODO: Add validation for URL format and protocol support
 // TODO: Consider making config parameter more strongly typed with required fields
 extern dec server(target: Namespace, name: valueof string, config: Record<unknown>);
+
+/**
+ * Apply tags metadata to operations, models, or namespaces
+ * @param tags Array of tag names for categorization and organization
+ * 
+ * @example
+ * ```typespec
+ * @tags(["user", "authentication", "v1"])
+ * @channel("/auth/user-login")
+ * @publish
+ * op publishUserLogin(): UserLoginEvent;
+ * ```
+ * 
+ * @since 1.0.0
+ */
+// TODO: Implement @tags decorator for resource categorization
+// extern dec tags(target: Operation | Model | Namespace, tags: valueof string[]);
+
+/**
+ * Define correlation ID configuration for message tracking
+ * @param config Correlation ID configuration with location and description
+ * 
+ * @example
+ * ```typespec
+ * @correlationId(#{
+ *   location: "$message.header#/correlationId",
+ *   description: "Unique identifier for correlating request-response pairs"
+ * })
+ * @message("UserRequest")
+ * model UserRequestMessage {
+ *   correlationId: string;
+ *   userId: string;
+ *   action: string;
+ * }
+ * ```
+ * 
+ * @since 1.0.0
+ */
+// TODO: Implement @correlationId decorator for message correlation tracking  
+// extern dec correlationId(target: Model, config: Record<unknown>);
+
+/**
+ * Define bindings for specific protocols and cloud providers
+ * @param bindingType The type of binding (kafka, amqp, websocket, aws-sns, aws-sqs, gcp-pubsub)
+ * @param config Protocol-specific binding configuration
+ * 
+ * @example
+ * ```typespec
+ * @bindings("kafka", #{
+ *   key: "userId",
+ *   partitions: 3,
+ *   replicas: 2,
+ *   cleanup: "delete"
+ * })
+ * @channel("/user-events")
+ * @publish
+ * op publishUserEvent(): UserEvent;
+ * ```
+ * 
+ * @since 1.0.0
+ */
+// TODO: Implement @bindings decorator for cloud provider specific bindings
+// extern dec bindings(target: Operation | Model, bindingType: valueof string, config: Record<unknown>);

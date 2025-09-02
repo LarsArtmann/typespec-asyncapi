@@ -101,13 +101,12 @@ export const enhancedWebSocketPlugin: ProtocolPlugin = {
   /**
    * Generate WebSocket message binding with real extraction logic
    */
-  generateMessageBinding: (message: unknown) =>
+  generateMessageBinding: (_message: unknown) =>
     Effect.gen(function* () {
       yield* Effect.log("📨 Enhanced WebSocket message binding generation")
       
       try {
-        const messageData = message as { config?: WebSocketConfig }
-        const config = messageData?.config || {}
+        // Note: message could be cast to { config?: WebSocketConfig } for future configuration
 
         // Create WebSocket message binding with extracted configuration  
         const bindingConfig: WebSocketMessageBindingConfig = {}

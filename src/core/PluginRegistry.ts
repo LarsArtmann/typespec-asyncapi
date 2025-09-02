@@ -421,8 +421,13 @@ export class PluginRegistry {
      * Helper method to get plugin and metadata with validation - eliminates duplication
      * Used by unloadPlugin, hotReloadPlugin, initializePlugin, startPlugin, stopPlugin
      */
-    private getPluginAndMetadata(name: string): { plugin: any; metadata: PluginMetadata } {
-        const { plugin, metadata } = this.getPluginAndMetadata(name)
+    private getPluginAndMetadata(name: string): { plugin: Plugin; metadata: PluginMetadata } {
+        const plugin = this.plugins.get(name)
+        const metadata = this.pluginMetadata.get(name)
+
+        if (!plugin || !metadata) {
+            throw new Error(`Plugin ${name} not found in registry`)
+        }
 
         return { plugin, metadata }
     }
