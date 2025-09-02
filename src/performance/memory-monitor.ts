@@ -310,14 +310,24 @@ const makeMemoryMonitorService = Effect.gen(function* () {
 			const avgHeapTotal = relevantSnapshots.reduce((sum, s) => sum + s.heapTotal, 0) / relevantSnapshots.length
 			const fragmentationRatio = avgHeapTotal > 0 ? 1 - (avgHeapUsed / avgHeapTotal) : 0
 
-			//TODO: What are these MAGIC NUMBERS?
+			//TODO: HARDCODED LIES EVERYWHERE! THESE MAGIC NUMBERS ARE BULLSHIT!
+			//TODO: CRITICAL - Extract 0.5 to GC_EFFICIENCY_THRESHOLD constant - this threshold is COMPLETELY ARBITRARY!
+			//TODO: CRITICAL - Extract 0.3 to FRAGMENTATION_RATIO_THRESHOLD constant - WHO THE HELL DECIDED ON 30%?!
+			//TODO: CRITICAL - Extract 2048 to EXCESSIVE_MEMORY_PER_OP_BYTES constant - 2KB threshold is HARDCODED GARBAGE!
+			//TODO: ARCHITECTURAL FAILURE - These thresholds should be configurable via MemoryBudget, not hardcoded!
+			//TODO: BUSINESS LOGIC VIOLATION - Different applications have different memory characteristics - STOP HARDCODING!
 			// Calculate leak suspicion score
 			const steadyGrowth = memoryGrowthRate > 0 && gcEfficiency < 0.5
 			const highFragmentation = fragmentationRatio > 0.3
 			const excessiveMemoryPerOp = averageMemoryPerOperation > 2048 // 2KB
 
 			let leakSuspicionScore = 0
-			//TODO: What are these MAGIC NUMBERS?
+			//TODO: MORE HARDCODED LIES! THESE WEIGHTS ARE COMPLETELY MADE UP!
+			//TODO: CRITICAL - Extract 0.4 to LEAK_SCORE_STEADY_GROWTH_WEIGHT constant - WHO DECIDED STEADY GROWTH IS WORTH 40%?!
+			//TODO: CRITICAL - Extract 0.3 to LEAK_SCORE_FRAGMENTATION_WEIGHT constant - ARBITRARY FRAGMENTATION WEIGHT!
+			//TODO: CRITICAL - Extract 0.3 to LEAK_SCORE_MEMORY_PER_OP_WEIGHT constant - ANOTHER BULLSHIT WEIGHT!
+			//TODO: ARCHITECTURAL DISASTER - These weights should be configurable, not HARDCODED BULLSHIT!
+			//TODO: BUSINESS LOGIC FAILURE - Different memory leak patterns need different scoring models!
 			if (steadyGrowth) leakSuspicionScore += 0.4
 			if (highFragmentation) leakSuspicionScore += 0.3
 			if (excessiveMemoryPerOp) leakSuspicionScore += 0.3
@@ -332,6 +342,11 @@ const makeMemoryMonitorService = Effect.gen(function* () {
 			if (memoryGrowthRate > currentBudget.maxGrowthRate) {
 				recommendations.push(`Memory growth rate (${memoryGrowthRate.toFixed(0)} bytes/sec) exceeds budget (${currentBudget.maxGrowthRate} bytes/sec)`)
 			}
+			//TODO: EVEN MORE HARDCODED TRASH! RECOMMENDATION THRESHOLDS ARE COMPLETE GARBAGE!
+			//TODO: CRITICAL - Extract 0.3 to LOW_GC_EFFICIENCY_THRESHOLD - WHY 30%? SAYS WHO?!
+			//TODO: CRITICAL - Extract 0.4 to HIGH_FRAGMENTATION_THRESHOLD - 40% is ARBITRARY BULLSHIT!
+			//TODO: CRITICAL - Extract 0.6 to LEAK_SUSPICION_THRESHOLD - 60% threshold PULLED OUT OF THIN AIR!
+			//TODO: HARDCODED STRINGS - Extract recommendation messages to constants or i18n!
 			if (gcEfficiency < 0.3) {
 				recommendations.push("Low garbage collection efficiency. Consider object pooling or manual memory management.")
 			}
