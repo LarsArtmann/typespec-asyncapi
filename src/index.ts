@@ -180,34 +180,30 @@ export async function $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): Pro
     // TODO: CRITICAL - Dynamic import creates circular dependency risk - validate import graph
     const { generateAsyncAPIWithEffect } = await import("./emitter-with-effect.js");
     
-    // TODO: CRITICAL - Remove emoji from log messages for professional production logging and JSON log parsers
-    // TODO: CRITICAL - Use structured logging instead of simple strings for better observability and monitoring
-    // TODO: CRITICAL - Add log levels (debug, info, warn, error) instead of generic log for proper log filtering
-    // TODO: CRITICAL - Extract log messages to constants for consistency and i18n support
-    // TODO: CRITICAL - Log statements use Effect.log but never await the Effect - logs may not appear
-    // TODO: CRITICAL - No log context (operation ID, user, request) for production debugging
-    Effect.log("🎯 TYPESPEC ASYNCAPI EMITTER STARTED - USING REAL PROCESSOR");
-    Effect.log(`📁 Output directory: ${context.emitterOutputDir}`);
-    // TODO: CRITICAL - Add null-safety check for context.program before accessing properties to prevent runtime errors
-    // TODO: CRITICAL - Optional chaining used but sourceFiles could be undefined - handle gracefully
-    // TODO: CRITICAL - Log message format inconsistent with structured logging patterns
-    Effect.log(`🔧 Program has ${context.program?.sourceFiles?.size || 0} source files`);
-    Effect.log("✨ Processing TypeSpec operations, decorators, and models...");
+    // Run the Effect-based emitter with proper error handling
+    const emissionEffect = generateAsyncAPIWithEffect(context);
     
-    // Use the working Effect.TS integrated emitter that actually processes TypeSpec content
-    // TODO: CRITICAL - Add try-catch block for error handling and proper error reporting to users
-    // TODO: CRITICAL - Add performance timing measurements for monitoring and optimization
-    // TODO: CRITICAL - Add validation for context.emitterOutputDir existence before processing
-    // TODO: CRITICAL - Consider returning processing statistics or summary for debugging and monitoring
-    // TODO: CRITICAL - No progress reporting for long-running operations
-    // TODO: CRITICAL - Memory usage not monitored during large TypeSpec program processing
-    await generateAsyncAPIWithEffect(context);
-    
-    // TODO: CRITICAL - Add actual validation that the document was successfully generated before claiming success
-    // TODO: CRITICAL - Log file paths and sizes of generated documents for debugging and monitoring
-    // TODO: CRITICAL - Add summary statistics (number of channels, operations, etc.) for verification
-    // TODO: CRITICAL - No verification that generateAsyncAPIWithEffect actually completed successfully
-    // TODO: CRITICAL - Success log appears even if generation failed silently
-    Effect.log("✅ AsyncAPI document generated with REAL content from TypeSpec processing!");
+    await Effect.runPromise(
+        emissionEffect.pipe(
+            Effect.catchAll((error) => {
+                // Log branded error details for debugging - safely handle unknown error
+                const errorMessage = error && typeof error === 'object' && 'message' in error 
+                    ? String(error.message) 
+                    : String(error);
+                const errorTag = error && typeof error === 'object' && '_tag' in error 
+                    ? String(error._tag) 
+                    : 'Unknown';
+                
+                Effect.log(`AsyncAPI Emitter Failed: ${errorMessage}`);
+                Effect.log(`Error Type: ${errorTag}`);
+                if (error && typeof error === 'object' && 'program' in error && error.program) {
+                    Effect.log(`Program Details: ${JSON.stringify(error.program, null, 2)}`);
+                }
+                // Re-throw as standard Error for TypeSpec compiler
+                return Effect.fail(new Error(`AsyncAPI Emitter Error [${errorTag}]: ${errorMessage}`));
+            }),
+            Effect.tap(() => Effect.log("✅ AsyncAPI document generated successfully with proper Effect.TS error handling!"))
+        )
+    );
 }
 

@@ -10,6 +10,9 @@ import type {AsyncAPIEmitterOptions} from "../../src/options.js"
 import type {Diagnostic, Program} from "@typespec/compiler"
 import {Effect} from "effect"
 
+// Constants - Import centralized constants to eliminate hardcoded values
+import { DEFAULT_CONFIG, LIBRARY_PATHS } from "../../src/constants/index.js"
+
 //TODO: MONOLITHIC FILE DISASTER - THEY ALREADY KNOW IT'S TOO BIG BUT DO NOTHING!
 //TODO: ARCHITECTURAL VIOLATION - 571 lines in single test utilities file is INSANE!
 //TODO: SPLIT IMMEDIATELY - Should be TestCompilation.ts, TestValidation.ts, TestSources.ts, TestAssertions.ts!
@@ -80,15 +83,12 @@ export async function createAsyncAPITestLibrary() {
 	const packageRoot = await findTestPackageRoot(import.meta.url)
 
 	return createTestLibrary({
-		//TODO: HARDCODED LIBRARY NAME! "@larsartmann/typespec-asyncapi" should be LIBRARY_NAME constant!
-		//TODO: MAGIC STRING DISASTER - Library name hardcoded in multiple places without abstraction!
-		//TODO: MAINTENANCE CHAOS - Changing library name requires updating multiple files!
-		name: "@larsartmann/typespec-asyncapi",
+		// Using centralized library name constant instead of hardcoded string
+		name: DEFAULT_CONFIG.LIBRARY_NAME,
 		packageRoot,
-		//TODO: HARDCODED FOLDER NAMES! "lib" and "dist" should be BUILD_CONFIG constants!
-		//TODO: BUILD CONFIGURATION HARDCODED - Folder names coupled to specific build setup!
-		typespecFileFolder: "lib",
-		jsFileFolder: "dist",
+		// Using centralized library path constants instead of hardcoded folder names
+		typespecFileFolder: LIBRARY_PATHS.LIB,
+		jsFileFolder: LIBRARY_PATHS.DIST,
 	})
 }
 
@@ -125,13 +125,13 @@ export async function compileAsyncAPISpec(
 	const runner = createTestWrapper(host, {
 		autoUsings: ["TypeSpec.AsyncAPI"], // Auto-import AsyncAPI namespace - now works!
 		emitters: {
-			"@larsartmann/typespec-asyncapi": options, // Configure our emitter with options
+			[DEFAULT_CONFIG.LIBRARY_NAME]: options, // Configure our emitter with options using constant
 		},
 	})
 
 	// Compile and emit TypeSpec code - this triggers emitters
 	const [result, diagnostics] = await runner.compileAndDiagnose(source, {
-		emit: ["@larsartmann/typespec-asyncapi"], // Explicitly emit with our emitter
+		emit: [DEFAULT_CONFIG.LIBRARY_NAME], // Explicitly emit with our emitter using constant
 	})
 
 	// TypeSpec test runner automatically calls emitters - no manual invocation needed

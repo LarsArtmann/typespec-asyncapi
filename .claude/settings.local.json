@@ -94,7 +94,9 @@
       "Bash(asyncapi validate:*)",
       "Bash(ln:*)",
       "WebFetch(domain:microsoft.github.io)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "WebFetch(domain:effect.website)",
+      "WebFetch(domain:context7.com)"
     ],
     "deny": [],
     "ask": []

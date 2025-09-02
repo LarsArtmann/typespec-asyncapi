@@ -309,14 +309,14 @@ export class TypeSpecDocumentationTestCompiler {
 		// SIMPLIFIED APPROACH: Parse decorators separately to avoid regex hell
 		// First find all security schemes used in the code
 		const securitySchemes = new Set<string>()
-		const securityMatches = code.matchAll(/@security\("([^"]+)"/g)
+		const securityMatches = code.matchAll(/@security\("([^"]+)"\)/g)
 		for (const match of securityMatches) {
 			securitySchemes.add(match[1])
 		}
 		
 		// Find operations with decorators (simplified - no complex nested parsing)
 		// Look for: [@channel("path")] [@protocol("type", {...})] [@publish/@subscribe] op name
-		const operationPattern = /(?:@channel\("([^"]+)"\)\s*)?(?:@protocol\("([^"]+)",\s*(\{[^}]*(?:\{[^}]*\}[^}]*)*\})\)\s*)?(?:@security\("([^"]+)")[^@]*)?(@publish|@subscribe)\s+op\s+(\w+)/gms
+		const operationPattern = /(?:@channel\("([^"]+)"\)\s*)?(?:@protocol\("([^"]+)",\s*(\{[^}]*(?:\{[^}]*\}[^}]*)*\})\)\s*)?(?:@security\("([^"]+)"\)[^@]*)?(@publish|@subscribe)\s+op\s+(\w+)/gms
 		
 		const operationMatches = code.matchAll(operationPattern)
 		for (const match of operationMatches) {
@@ -326,10 +326,10 @@ export class TypeSpecDocumentationTestCompiler {
 				//TODO: MAGIC ARRAY INDEX HELL! match[7] is COMPLETELY UNREADABLE AND BRITTLE!
 				//TODO: REGEX GROUP NIGHTMARE - Adding new groups breaks all these magic indices!
 				//TODO: MAINTAINER TORTURE - Nobody knows what match[7] means without regex archaeology!
-				name: match[7], // operation name
+				name: match[6], // operation name
 				//TODO: MORE MAGIC INDICES! match[6] should be OPERATION_TYPE_GROUP constant!
 				//TODO: REGEX GROUP COUPLING - Magic indices tightly coupled to regex group order!
-				type: match[6], // @publish or @subscribe
+				type: match[5], // @publish or @subscribe
 				//TODO: MAGIC INDEX CONTINUES! match[1] should be CHANNEL_PATH_GROUP constant!
 				//TODO: BRITTLE ARRAY ACCESS - No validation that match[1] even exists!
 				channelPath: match[1] // channel path

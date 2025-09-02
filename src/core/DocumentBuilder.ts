@@ -11,6 +11,9 @@ import type { Program } from "@typespec/compiler"
 import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js"
 import { buildServersFromNamespaces } from "../utils/typespec-helpers.js"
 
+// Constants - Import centralized constants to eliminate hardcoded values
+import { ASYNCAPI_VERSIONS } from "../constants/index.js"
+
 /**
  * DocumentBuilder Service - Core AsyncAPI Document Construction
  * 
@@ -34,14 +37,10 @@ export class DocumentBuilder {
 		// Safe handling of null/undefined program for testing
 		const servers = program ? buildServersFromNamespaces(program) : {}
 
-		// TODO: HARDCODED MAGIC STRING! USE THE FUCKING CONSTANTS FILE!
-		// TODO: CRITICAL FAILURE - ASYNCAPI_VERSION constant exists in src/constants/asyncapi-constants.ts but THIS FILE IGNORES IT!
-		// TODO: IMPORT VIOLATION - Replace hardcoded "3.0.0" with imported ASYNCAPI_VERSION constant IMMEDIATELY!
-		// TODO: MAINTAINABILITY DISASTER - When AsyncAPI 3.1.0 releases, we have to find/replace EVERYWHERE instead of ONE PLACE!
-		// TODO: CODE DUPLICATION SIN - This "3.0.0" appears in 50+ files when it should be ONE CONSTANT!
+		// Using centralized AsyncAPI version constant instead of hardcoded string
 		// TODO: Extract default info values to configuration object
 		return {
-			asyncapi: "3.0.0",
+			asyncapi: ASYNCAPI_VERSIONS.CURRENT,
 			info: {
 				title: "AsyncAPI Specification", // TODO: Make configurable
 				version: "1.0.0", // TODO: Make configurable

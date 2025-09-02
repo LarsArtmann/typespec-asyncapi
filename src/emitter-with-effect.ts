@@ -13,89 +13,90 @@
 // TODO: CRITICAL - Import organization is inconsistent - group by TypeSpec, Effect, local imports
 // TODO: CRITICAL - Missing type-only imports where appropriate for better tree shaking
 import {Effect} from "effect"
-import type {EmitContext, Namespace} from "@typespec/compiler"
+import type {EmitContext} from "@typespec/compiler"
 import {createAssetEmitter} from "@typespec/asset-emitter"
 import type {AsyncAPIEmitterOptions} from "./options.js"
 import {AsyncAPIEmitter} from "./core/AsyncAPIEmitter.js"
 import {registerBuiltInPlugins} from "./plugins/plugin-system.js"
+import {
+	createCompilerOptionsError,
+	createGlobalNamespaceMissingError,
+	createGlobalNamespaceInvalidError,
+	createGlobalNamespaceAccessError,
+	createStateMapMissingError,
+	createPluginSystemError,
+	type AsyncAPIEmitterError
+} from "./errors/index.js"
 
 /**
- * Main emission function using modular architecture
+ * Main emission function using modular architecture with Effect.TS error handling
+ * 
+ * @returns Effect that succeeds with void or fails with branded AsyncAPIEmitterError
  */
-// TODO: CRITICAL - Add explicit return type annotation for consistency with $onEmit
-// TODO: CRITICAL - Function name suggests Effect.TS integration but mostly calls TypeSpec AssetEmitter
-export async function generateAsyncAPIWithEffect(context: EmitContext<AsyncAPIEmitterOptions>): Promise<void> {
-	// TODO: CRITICAL - Remove emoji from production logs - breaks JSON log parsers
-	// TODO: CRITICAL - Log statements not awaited - may not appear in production
-	// TODO: CRITICAL - Use structured logging with context instead of simple strings
-	Effect.log("🚀 AsyncAPI Emitter with Modular Architecture")
-	Effect.log("✨ Using new micro-kernel architecture!")
-	Effect.log("🔧 Connecting Effect.TS system to modular emitter")
-	
-	// Initialize plugin system
-	// TODO: CRITICAL - Plugin system error handling should not silently continue - plugins may be required
-	// TODO: CRITICAL - Error object logging breaks structured logging - use error.message or serialize properly
-	// TODO: CRITICAL - No fallback mechanism when plugins fail to load
-	try {
-		await Effect.runPromise(registerBuiltInPlugins())
-		// TODO: CRITICAL - Success log uses emoji - breaks JSON parsers
-		Effect.log("🔌 Plugin system initialized successfully")
-	} catch (error) {
-		// TODO: CRITICAL - Warning log uses emoji and logs full error object improperly
-		Effect.log("⚠️  Plugin system initialization failed, continuing without plugins:", error)
-	}
+export function generateAsyncAPIWithEffect(context: EmitContext<AsyncAPIEmitterOptions>): Effect.Effect<void, AsyncAPIEmitterError> {
+	return Effect.gen(function* () {
+		yield* Effect.log("AsyncAPI Emitter with Modular Architecture")
+		yield* Effect.log("Using new micro-kernel architecture!")
+		yield* Effect.log("Connecting Effect.TS system to modular emitter")
+		
+		// Initialize plugin system with proper Effect error handling
+		yield* Effect.tryPromise(() => Effect.runPromise(registerBuiltInPlugins())).pipe(
+			Effect.mapError((error) => createPluginSystemError(error)),
+			Effect.catchAll((pluginError) => Effect.gen(function* () {
+				yield* Effect.log(`Plugin system initialization failed, continuing without plugins: ${pluginError.message}`)
+				return undefined
+			}))
+		)
+		
+		yield* Effect.log("Plugin system initialized successfully")
 
-	// Ensure program has required compilerOptions for AssetEmitter
-	// TODO: CRITICAL - Mutating input context.program is dangerous - creates side effects
-	// TODO: CRITICAL - No validation that compilerOptions mutation is safe or expected
-	// TODO: CRITICAL - Magic boolean default should be documented or extracted to constant
-	if (!context.program.compilerOptions) {
-		// TODO: CRITICAL - Creating empty object without type safety - should use proper interface
-		context.program.compilerOptions = {}
-	}
-	if (context.program.compilerOptions.dryRun === undefined) {
-		// TODO: CRITICAL - Direct property mutation without validation - could break other emitters
-		context.program.compilerOptions.dryRun = false
-	}
-
-	// TODO: PRODUCTION CODE CREATING MOCK OBJECTS! WHAT THE FUCK?!
-	// TODO: CRITICAL ARCHITECTURE VIOLATION - Production emitter should NEVER create mock objects!
-	// TODO: BUSINESS LOGIC FAILURE - If program.getGlobalNamespaceType is missing, the PROGRAM IS BROKEN!
-	// TODO: HACK ALERT - "test compatibility" comment means TEST CODE is leaking into PRODUCTION!
-	// TODO: TYPE SAFETY VIOLATION - Partial<Namespace> cast to Namespace is DANGEROUS TYPE LIE!
-	// TODO: PROPER SOLUTION - Validate program structure or fail with meaningful error message!
-	// TODO: REMOVE THIS MOCK BULLSHIT - Either fix the program input or fail gracefully!
-	if (!context.program.getGlobalNamespaceType) {
-		// Add missing method for test compatibility
-		const mockNamespace: Partial<Namespace> = {
-			kind: "Namespace",
-			name: "global",
-			namespace: undefined,
-			namespaces: new Map(),
-			models: new Map(),
-			operations: new Map(),
-			enums: new Map(),
-			interfaces: new Map(),
-			scalars: new Map(),
-			unions: new Map(),
+		// Validate program has required structure for AssetEmitter
+		if (!context.program.compilerOptions) {
+			return yield* Effect.fail(createCompilerOptionsError({ program: context.program }))
 		}
-		context.program.getGlobalNamespaceType = () => mockNamespace as Namespace
-	}
+		
+		// Use safe defaults without mutation
+		const DEFAULT_DRY_RUN = false
+		const effectiveDryRun = context.program.compilerOptions.dryRun ?? DEFAULT_DRY_RUN
+		
+		yield* Effect.log(`Compiler options validated - dryRun: ${effectiveDryRun}`)
 
-	// Add missing stateMap method for test compatibility
-	if (!context.program.stateMap) {
-		context.program.stateMap = (_key: symbol) => new Map()
-	}
+		// Validate program has required TypeSpec compiler methods
+		if (!context.program.getGlobalNamespaceType) {
+			return yield* Effect.fail(createGlobalNamespaceMissingError({ program: context.program }))
+		}
+		
+		// Validate that the global namespace is available
+		const globalNamespace = yield* Effect.try({
+			try: () => context.program.getGlobalNamespaceType!(),
+			catch: (error) => createGlobalNamespaceAccessError(error, context.program)
+		})
+		
+		if (!globalNamespace || globalNamespace.kind !== "Namespace") {
+			return yield* Effect.fail(createGlobalNamespaceInvalidError(globalNamespace?.kind))
+		}
+		
+		yield* Effect.log(`Global namespace validated - contains ${globalNamespace.models?.size || 0} models, ${globalNamespace.operations?.size || 0} operations`)
 
-	// Create emitter using the new modular architecture
-	const assetEmitter = createAssetEmitter(
-		context.program,
-		AsyncAPIEmitter,
-		context,
-	)
+		// Validate program has required state management capabilities
+		if (!context.program.stateMap) {
+			return yield* Effect.fail(createStateMapMissingError({ program: context.program }))
+		}
+		
+		yield* Effect.log("Program structure validated - ready for AsyncAPI generation")
 
-	assetEmitter.emitProgram()
-	await assetEmitter.writeOutput()
+		// Create emitter using the new modular architecture
+		const assetEmitter = createAssetEmitter(
+			context.program,
+			AsyncAPIEmitter,
+			context,
+		)
 
-	Effect.log("🎉 AsyncAPI generation complete with modular architecture!")
+		assetEmitter.emitProgram()
+		yield* Effect.tryPromise(() => assetEmitter.writeOutput()).pipe(
+			Effect.mapError((error) => createPluginSystemError(error, 'AssetEmitter.writeOutput'))
+		)
+
+		yield* Effect.log("AsyncAPI generation complete with modular architecture!")
+	})
 }

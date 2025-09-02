@@ -57,6 +57,7 @@ import type {ProtocolConfig} from "./decorators/protocol.js"
 import {generateProtocolBinding, registerBuiltInPlugins} from "./plugins/plugin-system.js"
 // Import new modular components
 import {AsyncAPIEmitter} from "./core/AsyncAPIEmitter.js"
+import {DiscoveryService} from "./core/DiscoveryService.js"
 // Security imports removed - not part of core protocol functionality
 // import type {SecurityConfig} from "./decorators/security.js" // TODO: Remove commented duplicate import
 import type {SecurityConfig} from "./decorators/security.js"
@@ -127,12 +128,15 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 	private messageModels: Model[] = []
 	// TODO: Make asyncApiDoc private and provide controlled access methods
 	private readonly asyncApiDoc: AsyncAPIObject
+	// Discovery service for AST traversal and element discovery
+	private readonly discoveryService: DiscoveryService
 
 	// TODO: Add parameter validation for emitter
 	// TODO: Add error handling for document initialization
 	constructor(emitter: AssetEmitter<string, AsyncAPIEmitterOptions>) {
 		super(emitter)
 		this.asyncApiDoc = this.createInitialDocument()
+		this.discoveryService = new DiscoveryService()
 	}
 
 	// TODO: This method is too long (>30 lines) - split into smaller methods
@@ -292,12 +296,18 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 	private executeEmissionStagesSync() {
 		return Effect.gen(function* (this: AsyncAPIEffectEmitter) {
 			// TODO: Add error recovery for each stage
-			const ops = (yield* this.discoverOperationsEffectSync())
-			const messageModels = yield* this.discoverMessageModelsEffectSync()
-			const securityConfigs = yield* this.discoverSecurityConfigsEffectSync()
-			yield* this.processOperationsEffectSync(ops)
-			yield* this.processMessageModelsEffectSync(messageModels)
-			yield* this.processSecurityConfigsEffectSync(securityConfigs)
+			const program = this.emitter.getProgram()
+			
+			// Use DiscoveryService instead of old individual methods
+			const discoveryResult = yield* this.discoveryService.executeDiscovery(program)
+			
+			// Update instance properties for backward compatibility with processing methods
+			this.operations = discoveryResult.operations
+			this.messageModels = discoveryResult.messageModels
+			
+			yield* this.processOperationsEffectSync(discoveryResult.operations)
+			yield* this.processMessageModelsEffectSync(discoveryResult.messageModels)
+			yield* this.processSecurityConfigsEffectSync(discoveryResult.securityConfigs)
 			const doc = yield* this.generateDocumentEffectSync()
 			const validatedDoc = yield* this.validateDocumentEffectSync(doc)
 
@@ -314,78 +324,11 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 
 	// UNUSED LEGACY METHOD REMOVED - error handling now done in specific service methods
 
-	// TODO: Replace with DiscoveryService usage - currently still needed for sync pipeline
-	private discoverOperationsEffectSync() {
-		return Effect.gen(function* (this: AsyncAPIEffectEmitter) {
-			Effect.log(`🔍 Starting synchronous operation discovery...`)
-
-			const discoveryOperation = Effect.sync(() => {
-				const program = this.emitter.getProgram()
-				const operations: Operation[] = []
-
-				const walkNamespace = (ns: Namespace) => {
-					if (ns.operations) {
-						ns.operations.forEach((op: Operation, name: string) => {
-							operations.push(op)
-							Effect.log(`🔍 Found operation: ${name}`)
-						})
-					}
-
-					if (ns.namespaces) {
-						ns.namespaces.forEach((childNs: Namespace) => {
-							walkNamespace(childNs)
-						})
-					}
-				}
-
-				if (typeof program.getGlobalNamespaceType === 'function') {
-					walkNamespace(program.getGlobalNamespaceType())
-				}
-				this.operations = operations
-				Effect.log(`📊 Total operations discovered: ${operations.length}`)
-				return operations
-			})
-
-			const operations = yield* discoveryOperation
-			return operations
-		}.bind(this)).pipe(Effect.mapError(error => new Error(`Operation discovery failed: ${error}`)))
-	}
+	// REMOVED: discoverOperationsEffectSync - replaced by DiscoveryService.discoverOperations
 
 	// LEGACY UNUSED METHOD REMOVED - replaced by DiscoveryService
 
-	// TODO: Replace with DiscoveryService usage - currently still needed for sync pipeline
-	private discoverMessageModelsEffectSync() {
-		return Effect.sync(() => {
-			const program = this.emitter.getProgram()
-			const messageModels: Model[] = []
-			const messageConfigsMap = program.stateMap($lib.stateKeys.messageConfigs)
-
-			const walkNamespaceForModels = (ns: Namespace) => {
-				if (ns.models) {
-					ns.models.forEach((model: Model, name: string) => {
-						if (messageConfigsMap.has(model)) {
-							messageModels.push(model)
-							Effect.log(`🎯 Found message model: ${name}`)
-						}
-					})
-				}
-
-				if (ns.namespaces) {
-					ns.namespaces.forEach((childNs: Namespace) => {
-						walkNamespaceForModels(childNs)
-					})
-				}
-			}
-
-			if (typeof program.getGlobalNamespaceType === 'function') {
-				walkNamespaceForModels(program.getGlobalNamespaceType())
-			}
-			this.messageModels = messageModels
-
-			Effect.log(`📊 Total message models discovered: ${messageModels.length}`)
-			return messageModels
-		})
-	}
+	// REMOVED: discoverMessageModelsEffectSync - replaced by DiscoveryService.discoverMessageModels
 
 	// LEGACY UNUSED METHOD REMOVED - replaced by DiscoveryService
 
@@ -393,49 +336,7 @@ export class AsyncAPIEffectEmitter extends TypeEmitter<string, AsyncAPIEmitterOp
 
 	// LEGACY UNUSED METHOD REMOVED - replaced by ProcessingService
 
-	// TODO: Replace with DiscoveryService usage - currently still needed for sync pipeline
-	private discoverSecurityConfigsEffectSync() {
-		return Effect.sync(() => {
-			const program = this.emitter.getProgram()
-			const securityConfigs: SecurityConfig[] = []
-			const securityConfigsMap = program.stateMap($lib.stateKeys.securityConfigs)
-
-			const walkNamespaceForSecurity = (ns: Namespace) => {
-				if (ns.operations) {
-					ns.operations.forEach((operation: Operation, name: string) => {
-						if (securityConfigsMap.has(operation)) {
-							const config = securityConfigsMap.get(operation) as SecurityConfig
-							securityConfigs.push(config)
-							Effect.log(`🔐 Found security config on operation: ${name}`)
-						}
-					})
-				}
-
-				if (ns.models) {
-					ns.models.forEach((model: Model, name: string) => {
-						if (securityConfigsMap.has(model)) {
-							const config = securityConfigsMap.get(model) as SecurityConfig
-							securityConfigs.push(config)
-							Effect.log(`🔐 Found security config on model: ${name}`)
-						}
-					})
-				}
-
-				if (ns.namespaces) {
-					ns.namespaces.forEach((childNs: Namespace) => {
-						walkNamespaceForSecurity(childNs)
-					})
-				}
-			}
-
-			if (typeof program.getGlobalNamespaceType === 'function') {
-				walkNamespaceForSecurity(program.getGlobalNamespaceType())
-			}
-
-			Effect.log(`📊 Total security configs discovered: ${securityConfigs.length}`)
-			return securityConfigs
-		})
-	}
+	// REMOVED: discoverSecurityConfigsEffectSync - replaced by DiscoveryService.discoverSecurityConfigs
 
 	// LEGACY UNUSED METHOD REMOVED - replaced by DiscoveryService
 

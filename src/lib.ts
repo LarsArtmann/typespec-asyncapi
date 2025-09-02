@@ -27,6 +27,9 @@
 // TODO: Add explicit return type annotations to imported functions for better IDE support
 import {createTypeSpecLibrary, type DecoratorContext, type Diagnostic, paramMessage} from "@typespec/compiler"
 
+// Constants - Import centralized constants to eliminate hardcoded values
+import { ASYNCAPI_VERSIONS, DEFAULT_CONFIG } from "./constants/index.js"
+
 /**
  * TypeSpec AsyncAPI Library Definition - Core library configuration and metadata
  * 
@@ -60,15 +63,11 @@ import {createTypeSpecLibrary, type DecoratorContext, type Diagnostic, paramMess
  * 
  * @see {@link createTypeSpecLibrary} TypeSpec library creation function
  */
-// TODO: Extract library name to a constant to avoid duplication
 // TODO: Add version information to library metadata  
 // TODO: Consider organizing diagnostics by category (validation, protocol, security)
 export const $lib = createTypeSpecLibrary({
-	//TODO: HARDCODED LIBRARY NAME! EXTRACT TO CONSTANT FOR REUSE!
-	//TODO: CRITICAL FAILURE - Library name "@larsartmann/typespec-asyncapi" is repeated in multiple places!
-	//TODO: MAINTAINABILITY DISASTER - When changing package name, we have to find/replace everywhere!
-	//TODO: EXTRACT LIBRARY_NAME constant at top of file and reuse throughout!
-	name: "@larsartmann/typespec-asyncapi",
+	// Using centralized constant instead of hardcoded library name
+	name: DEFAULT_CONFIG.LIBRARY_NAME,
 	// TODO: Add library description, version, and other metadata fields
 	diagnostics: {
 		// TODO: Group related diagnostics with separating comments (version, channel, message, etc.)
@@ -76,12 +75,8 @@ export const $lib = createTypeSpecLibrary({
 			severity: "error",
 			// TODO: Add multiple message variants for different contexts (CLI, IDE, programmatic)
 			messages: {
-				// TODO: HARDCODED VERSION AGAIN! USE THE ASYNCAPI_VERSION CONSTANT!
-			// TODO: CRITICAL DUPLICATION - "3.0.0" appears TWICE in this single line - PURE GARBAGE!
-			// TODO: IMPORT VIOLATION - src/constants/asyncapi-constants.ts exists but this file ignores it!
-			// TODO: MAINTAINABILITY DISASTER - Version updates require changes in DOZENS of files!
-			// TODO: Extract supported versions to a constant for maintainability
-				default: paramMessage`AsyncAPI version '${"version"}' is not supported. Only AsyncAPI 3.0.0 is supported. Update your emitter options to use "3.0.0".`,
+				// Using centralized AsyncAPI version constant instead of hardcoded version
+				default: paramMessage`AsyncAPI version '${"version"}' is not supported. Only AsyncAPI ${ASYNCAPI_VERSIONS.CURRENT} is supported. Update your emitter options to use "${ASYNCAPI_VERSIONS.CURRENT}".`,
 			},
 		},
 		"missing-channel-path": {
@@ -385,7 +380,7 @@ export function reportDiagnostic(context: DecoratorContext, target: unknown, cod
 	// TODO: Add error handling for reportDiagnostic failures
 	// TODO: Consider caching the prefixed diagnostic code for performance
 	context.program.reportDiagnostic({
-		code: `@larsartmann/typespec-asyncapi.${code}`,
+		code: `${DEFAULT_CONFIG.LIBRARY_NAME}.${code}`,
 		target,
 		// TODO: Add validation for args parameter structure
 		// TODO: Consider deep cloning args to prevent mutation
