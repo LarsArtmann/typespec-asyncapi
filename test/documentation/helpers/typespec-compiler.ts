@@ -177,20 +177,36 @@ export class TypeSpecDocumentationTestCompiler {
 			securitySchemes: {} // Always include for consistency
 		}
 
-		// Add message components
-		patterns.operations.forEach(op => {
-			asyncapi.components!.messages![`${op.name}Message`] = {
-				name: `${op.name}Message`,
-				title: `${op.name} Message`,
-				contentType: "application/json"
+		// Add message components from @message decorated models
+		patterns.models.filter(m => m.isMessage).forEach(model => {
+			const messageName = model.messageName || model.name
+			asyncapi.components!.messages![messageName] = {
+				name: messageName,
+				title: `${messageName} Message`,
+				contentType: "application/json",
+				payload: {
+					$ref: `#/components/schemas/${model.name}`
+				}
 			}
 		})
 
-		// Add schema components
+		// Add operation-based message components (fallback)
+		patterns.operations.forEach(op => {
+			const messageName = `${op.name}Message`
+			if (!asyncapi.components!.messages![messageName]) {
+				asyncapi.components!.messages![messageName] = {
+					name: messageName,
+					title: `${op.name} Message`,
+					contentType: "application/json"
+				}
+			}
+		})
+
+		// Add schema components for all models
 		patterns.models.forEach(model => {
 			asyncapi.components!.schemas![model.name] = {
 				type: "object",
-				properties: model.properties
+				properties: model.properties || {}
 			}
 		})
 
@@ -219,14 +235,32 @@ export class TypeSpecDocumentationTestCompiler {
 			})
 		}
 
-		// Extract models
-		const models: Array<{name: string, properties: Record<string, any>}> = []
-		const modelMatches = code.matchAll(/model\s+(\w+)\s*\{[^}]*\}/gm)
-		for (const match of modelMatches) {
+		// Extract models and messages
+		const models: Array<{name: string, properties: Record<string, any>, isMessage?: boolean, messageName?: string}> = []
+		
+		// Find models with @message decorator
+		const messageModelMatches = code.matchAll(/@message\("([^"]+)"\)\s*model\s+(\w+)\s*\{[^}]*\}/gm)
+		for (const match of messageModelMatches) {
 			models.push({
-				name: match[1],
+				name: match[2],
+				messageName: match[1],
+				isMessage: true,
 				properties: {} // Simplified for documentation tests
 			})
+		}
+		
+		// Find regular models (without @message decorator)
+		const regularModelMatches = code.matchAll(/(?<!@message\([^)]*\)\s*)model\s+(\w+)\s*\{[^}]*\}/gm)
+		for (const match of regularModelMatches) {
+			// Skip if already captured as message model
+			const modelName = match[1]
+			if (!models.some(m => m.name === modelName)) {
+				models.push({
+					name: modelName,
+					isMessage: false,
+					properties: {} // Simplified for documentation tests
+				})
+			}
 		}
 
 		return {
