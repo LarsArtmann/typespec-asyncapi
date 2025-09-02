@@ -13,11 +13,11 @@
  */
 
 // Effect.TS imports
-import { Effect, Console } from "effect"
+import { Effect } from "effect"
 
 // Node.js built-ins
-import { performance } from "perf_hooks"
-import { writeFileSync, existsSync } from "fs"
+// performance from perf_hooks removed as unused
+import { writeFileSync } from "fs"
 import { join } from "path"
 
 // Local imports  
@@ -83,7 +83,7 @@ export class MemoryLeakDetector {
 	private detectedLeaks: MemoryLeakPattern[] = []
 	private isMonitoring: boolean = false
 	private monitoringInterval?: NodeJS.Timeout
-	private lastGcStats?: { count: number; duration: number }
+	// _lastGcStats removed as unused
 
 	constructor(config?: Partial<LeakDetectionConfig>) {
 		this.config = {
@@ -168,7 +168,7 @@ export class MemoryLeakDetector {
 				let gcStats: { count: number; duration: number } | undefined
 				try {
 					// This requires --expose-gc flag or gc-stats package
-					const gcModule = await import('gc-stats')
+					// const gcModule = await import('gc-stats') // Removed as unused
 					// Implementation would depend on gc-stats availability
 				} catch {
 					// GC stats not available, continue without them
@@ -615,10 +615,11 @@ export class MemoryLeakDetector {
 	}
 
 	private saveLeakReport(report: MemoryLeakReport) {
+		const self = this
 		return Effect.gen(function* () {
 			try {
 				const filename = `memory-leak-report-${report.timestamp.toISOString().slice(0, 19).replace(/:/g, '-')}.json`
-				const filepath = join(this.config.reportingPath, filename)
+				const filepath = join(self.config.reportingPath, filename)
 				writeFileSync(filepath, JSON.stringify(report, null, 2))
 				yield* Effect.log(`📄 Memory leak report saved: ${filepath}`)
 			} catch (error) {

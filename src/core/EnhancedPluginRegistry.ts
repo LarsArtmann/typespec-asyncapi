@@ -11,27 +11,22 @@
  */
 
 // TypeSpec imports
-import { Program } from "@typespec/compiler"
+// Program type removed as unused
 
 // Effect.TS imports
-import { Effect, Console } from "effect"
+import { Effect } from "effect"
 
 // Node.js built-ins
 import { readdir, stat, readFile } from "fs/promises"
-import { join, extname } from "path"
-import { existsSync, watch, FSWatcher } from "fs"
+import { join } from "path"
+import { existsSync, watch } from "fs"
+import type { FSWatcher } from "fs"
 
 // Local imports
-import { 
-    PluginRegistry, 
-    Plugin, 
-    PluginState, 
-    PluginMetadata, 
-    PluginEvent,
-    PluginConfig
-} from "./PluginRegistry.js"
+import { PluginRegistry } from "./PluginRegistry.js"
+import type { Plugin, PluginConfig } from "./PluginRegistry.js"
 import { MemoryLeakDetector } from "../performance/MemoryLeakDetector.js"
-import { PerformanceRegressionTester } from "../performance/PerformanceRegressionTester.js"
+// PerformanceRegressionTester import removed as unused
 
 export type PluginManifest = {
     name: string
@@ -96,9 +91,7 @@ export type HotReloadEvent = {
  */
 export class EnhancedPluginRegistry extends PluginRegistry {
     private readonly discoveryConfig: PluginDiscoveryConfig
-    private readonly conflictResolution: ConflictResolution
     private readonly memoryLeakDetector: MemoryLeakDetector
-    private readonly performanceTester: PerformanceRegressionTester
     
     private discoveredPlugins = new Map<string, PluginManifest>()
     private fileWatchers = new Map<string, FSWatcher>()
@@ -110,7 +103,7 @@ export class EnhancedPluginRegistry extends PluginRegistry {
     constructor(
         pluginConfig?: Partial<PluginConfig>,
         discoveryConfig?: Partial<PluginDiscoveryConfig>,
-        conflictResolution?: Partial<ConflictResolution>
+        _conflictResolution?: Partial<ConflictResolution>
     ) {
         super(pluginConfig)
 
@@ -125,11 +118,7 @@ export class EnhancedPluginRegistry extends PluginRegistry {
             ...discoveryConfig
         }
 
-        this.conflictResolution = {
-            strategy: "version_priority",
-            priorityOrder: [],
-            ...conflictResolution
-        }
+        // conflictResolution configuration removed as unused
 
         this.memoryLeakDetector = new MemoryLeakDetector({
             enableDetection: true,
@@ -138,11 +127,7 @@ export class EnhancedPluginRegistry extends PluginRegistry {
             reportingPath: "plugin-memory-reports"
         })
 
-        this.performanceTester = new PerformanceRegressionTester({
-            baselinesFilePath: "plugin-performance-baselines.json",
-            enableBaselines: true,
-            enableCiValidation: false // Don't fail builds for plugin perf
-        })
+        // performanceTester initialization removed as unused
 
         Effect.log(`🔌 EnhancedPluginRegistry initialized`)
         Effect.log(`📂 Plugin directories: ${this.discoveryConfig.pluginDirectories.join(', ')}`)
@@ -430,7 +415,7 @@ export class EnhancedPluginRegistry extends PluginRegistry {
         }
 
         // Detect conflicts
-        for (const [name, manifests] of pluginsByName) {
+        for (const [_name, manifests] of pluginsByName) {
             if (manifests.length > 1) {
                 for (let i = 0; i < manifests.length; i++) {
                     for (let j = i + 1; j < manifests.length; j++) {
@@ -633,20 +618,21 @@ export class EnhancedPluginRegistry extends PluginRegistry {
      * Generate comprehensive plugin report
      */
     generateEnhancedReport() {
+        const self = this
         return Effect.gen(function* () {
-            const baseReport = this.generateHealthReport()
-            const memoryReport = yield* this.memoryLeakDetector.generateLeakReport()
+            const baseReport = self.generateHealthReport()
+            const memoryReport = yield* self.memoryLeakDetector.generateLeakReport()
             
             let report = baseReport + `\n`
             report += `🔍 Plugin Discovery:\n`
-            report += `  - Discovered plugins: ${this.discoveredPlugins.size}\n`
-            report += `  - Conflicts detected: ${this.detectedConflicts.length}\n`
-            report += `  - Dependency cycles: ${this.dependencyGraph?.cycles.length || 0}\n`
-            report += `  - Hot-reload events: ${this.hotReloadHistory.length}\n`
+            report += `  - Discovered plugins: ${self.discoveredPlugins.size}\n`
+            report += `  - Conflicts detected: ${self.detectedConflicts.length}\n`
+            report += `  - Dependency cycles: ${self.dependencyGraph?.cycles.length || 0}\n`
+            report += `  - Hot-reload events: ${self.hotReloadHistory.length}\n`
 
-            if (this.detectedConflicts.length > 0) {
+            if (self.detectedConflicts.length > 0) {
                 report += `\n⚠️ Plugin Conflicts:\n`
-                for (const conflict of this.detectedConflicts) {
+                for (const conflict of self.detectedConflicts) {
                     report += `  - ${conflict.plugin1} ↔ ${conflict.plugin2}: ${conflict.description}\n`
                 }
             }
@@ -666,13 +652,13 @@ export class EnhancedPluginRegistry extends PluginRegistry {
                filename.endsWith(this.discoveryConfig.manifestFileName)
     }
 
-    private findPluginByFile(filePath: string): string | null {
+    private findPluginByFile(_filePath: string): string | null {
         // This would need more sophisticated logic to map files to plugins
         // For now, return null - would be implemented based on plugin structure
         return null
     }
 
-    private async instantiatePlugin(manifest: PluginManifest): Promise<Plugin> {
+    private async instantiatePlugin(_manifest: PluginManifest): Promise<Plugin> {
         // This would dynamically load and instantiate the plugin
         // Implementation depends on plugin loading strategy
         throw new Error("Plugin instantiation not implemented")

@@ -53,7 +53,7 @@ import { $publish } from "./decorators/publish.js";
 /** @subscribe decorator - Marks operations as message subscription (receive) operations */
 import { $subscribe } from "./decorators/subscribe.js";
 /** @server decorator - Defines AsyncAPI server connection configuration */
-import { $server } from "./decorators/server.js";
+import { $server, $tags, $correlationId, $bindings } from "./decorators/server.js";
 /** @message decorator - Defines AsyncAPI message schema and metadata */
 import { $message, $header } from "./decorators/message.js";
 /** @protocol decorator - Defines protocol-specific bindings (MQTT, WebSocket, etc.) */

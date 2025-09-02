@@ -13,14 +13,14 @@
  */
 
 // Effect.TS imports
-import { Effect, Console, Context, Layer } from "effect"
+import { Effect, Context, Layer } from "effect"
 
 // Node.js built-ins
 import { readFile } from "fs/promises"
-import { join } from "path"
+// join from path removed as unused
 
 // Local imports - organized by source
-import { PERFORMANCE_METRICS_SERVICE } from "../performance/metrics.js"
+// PERFORMANCE_METRICS_SERVICE removed as unused
 
 export type ErrorCategory = 
   | "validation_error"
@@ -347,10 +347,11 @@ export class ErrorHandlingStandardization {
    * Generate comprehensive error report
    */
   generateErrorReport() {
+    const self = this
     return Effect.gen(function* () {
-      const totalErrors = this.errorHistory.length
-      const errorsByCategory = this.groupErrorsByCategory()
-      const recentErrors = this.errorHistory.slice(-10)
+      const totalErrors = self.errorHistory.length
+      const errorsByCategory = self._groupErrorsByCategory()
+      const recentErrors = self.errorHistory.slice(-10)
 
       let report = `\n🚨 Error Handling Report\n`
       report += `========================\n\n`
@@ -368,7 +369,7 @@ export class ErrorHandlingStandardization {
         }
       }
 
-      const recoverableCount = this.errorHistory.filter(e => e.recoverable).length
+      const recoverableCount = self.errorHistory.filter((e: any) => e.recoverable).length
       const recoveryRate = totalErrors > 0 ? (recoverableCount / totalErrors * 100) : 0
 
       report += `\n🔄 Recovery Statistics:\n`
@@ -421,6 +422,7 @@ export class ErrorHandlingStandardization {
   }
 
   private logError(error: StandardizedError) {
+    const self = this
     return Effect.gen(function* () {
       const logLevel = error.recoverable ? Effect.logWarning : Effect.logError
       
@@ -434,7 +436,7 @@ export class ErrorHandlingStandardization {
         message += `\n   Context: ${JSON.stringify(error.context)}`
       }
       
-      if (this.config.enableStackTraces && error.stack) {
+      if (self.config.enableStackTraces && error.stack) {
         message += `\n   Stack: ${error.stack}`
       }
       
@@ -442,7 +444,7 @@ export class ErrorHandlingStandardization {
     })
   }
 
-  private recoverFromValidationError(error: StandardizedError) {
+  private recoverFromValidationError(_error: StandardizedError) {
     return Effect.gen(function* () {
       yield* Effect.log(`🔄 Attempting validation error recovery...`)
       
@@ -469,7 +471,7 @@ export class ErrorHandlingStandardization {
     })
   }
 
-  private groupErrorsByCategory(): Record<string, number> {
+  private _groupErrorsByCategory(): Record<string, number> {
     const groups: Record<string, number> = {}
     
     for (const error of this.errorHistory) {

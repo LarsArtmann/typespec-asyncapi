@@ -1,0 +1,85 @@
+{
+  "name": "my-asyncapi-plugin",
+  "version": "1.0.0",
+  "description": "Custom TypeSpec AsyncAPI plugin template",
+  "type": "module",
+  "main": "dist/plugin.js",
+  "types": "dist/plugin.d.ts",
+  "files": [
+    "dist/**/*",
+    "plugin.json",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest",
+    "test:coverage": "vitest --coverage",
+    "test:watch": "vitest --watch",
+    "lint": "eslint src test --ext .ts",
+    "lint:fix": "eslint src test --ext .ts --fix",
+    "typecheck": "tsc --noEmit",
+    "clean": "rimraf dist",
+    "prepublishOnly": "npm run clean && npm run build",
+    "dev": "tsc --watch",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "format:check": "prettier --check \"src/**/*.ts\" \"test/**/*.ts\"",
+    "validate": "npm run typecheck && npm run lint && npm run test",
+    "docs:build": "typedoc src/plugin.ts --out docs/api",
+    "docs:serve": "http-server docs/api -p 8080"
+  },
+  "keywords": [
+    "typespec",
+    "asyncapi",
+    "plugin",
+    "messaging",
+    "event-driven",
+    "code-generation"
+  ],
+  "author": {
+    "name": "Your Name",
+    "email": "you@example.com",
+    "url": "https://yourwebsite.com"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/my-asyncapi-plugin.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/my-asyncapi-plugin/issues"
+  },
+  "homepage": "https://github.com/yourusername/my-asyncapi-plugin#readme",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "peerDependencies": {
+    "@typespec/compiler": ">=0.50.0",
+    "@typespec/asyncapi": ">=0.1.0",
+    "effect": ">=2.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "@vitest/coverage-v8": "^1.0.0",
+    "eslint": "^8.0.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "http-server": "^14.0.0",
+    "prettier": "^3.0.0",
+    "rimraf": "^5.0.0",
+    "typedoc": "^0.25.0",
+    "typescript": "^5.2.0",
+    "vitest": "^1.0.0"
+  },
+  "dependencies": {
+    "effect": "^2.0.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "typescript": {
+    "definition": "dist/plugin.d.ts"
+  }
+}

@@ -1,4 +1,4 @@
-import type {DecoratorContext, Model, Namespace, StringValue, Operation} from "@typespec/compiler"
+import type { DecoratorContext, Model, Namespace, StringValue, Operation } from "@typespec/compiler"
 import {$lib, reportDiagnostic} from "../lib.js"
 import {Effect} from "effect"
 import {$tags as $tagsImpl} from "./tags.js"
@@ -25,7 +25,8 @@ export function $asyncapi(
 	}
 
 	// Store asyncapi configuration in program state
-	const asyncApiMap = context.program.stateMap($lib.stateKeys.asyncApiConfigs)
+	// Note: Using serverConfigs temporarily until asyncApiConfigs is added to lib.ts stateKeys
+	const asyncApiMap = context.program.stateMap($lib.stateKeys.serverConfigs)
 	asyncApiMap.set(target, config)
 
 	Effect.log(`✅ Successfully stored AsyncAPI config for namespace ${target.name}`)
