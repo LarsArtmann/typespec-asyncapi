@@ -230,11 +230,11 @@ describe('🎯 USER ACCEPTANCE TESTING - Real Workflows', () => {
       `
 
       // VALIDATE: Complex microservices architecture compiles
-      const result = await compileTypeSpecSource(microservicesTypeSpec)
-      expect(result.emitResults).toBeDefined()
-      expect(result.diagnostics.length).toBe(0)
+      const result = await compileAsyncAPISpecWithoutErrors(microservicesTypeSpec)
+      expect(result.asyncapi).toBeDefined()
+      expect(result.emitResult).toBeDefined()
 
-      const asyncapiDoc = result.emitResults![0].contents as any
+      const asyncapiDoc = result.asyncapi as any
 
       // VALIDATE: All service channels are present
       const channels = asyncapiDoc.channels
@@ -372,12 +372,12 @@ describe('🎯 USER ACCEPTANCE TESTING - Real Workflows', () => {
 
       // STEP 2: Compilation
       console.log('  Step 2: Compiling TypeSpec...')
-      const compileResult = await compileTypeSpecSource(developerTypeSpec)
-      expect(compileResult.diagnostics.length).toBe(0)
+      const compileResult = await compileAsyncAPISpecWithoutErrors(developerTypeSpec)
+      expect(compileResult.asyncapi).toBeDefined()
 
       // STEP 3: Validation  
       console.log('  Step 3: Validating generated AsyncAPI...')
-      const asyncapiDoc = compileResult.emitResults![0].contents as any
+      const asyncapiDoc = compileResult.asyncapi as any
       expect(validateAsyncAPIStructure(asyncapiDoc)).toBe(true)
 
       // STEP 4: Plugin Integration
