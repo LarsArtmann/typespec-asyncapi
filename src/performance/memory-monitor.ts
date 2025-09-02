@@ -20,7 +20,9 @@ import type {MemoryAnalysis} from "./MemoryAnalysis.js"
 import type {ForceGCResult} from "./ForceGCResult.js"
 import {createByteAmount, createMegabyteAmount, createGigabyteAmount} from "./ByteAmount.js"
 import {createTimestamp} from "./MemorySnapshot.js"
-import {createOperationType, createOperationCount} from "./PerformanceTypes.js"
+import type {OperationType} from "./PerformanceTypes.js"
+import {createOperationCount, createOperationType, createMemoryReportJson} from "./PerformanceTypes.js"
+import type {ByteAmount} from "./ByteAmount.js"
 
 /**
  * @deprecated: Each Error should have it s own file in src/errors;
@@ -212,13 +214,13 @@ const makeMemoryMonitorService = Effect.gen(function* () {
 			}
 		})
 
-	const measureOperationMemory: <T, E extends Error>(operation: Effect.Effect<T, MemoryThresholdExceededError | E>, operationType: string) => Effect.Effect<{
+	const measureOperationMemory: <T, E extends Error>(operation: Effect.Effect<T, MemoryThresholdExceededError | E>, operationType: OperationType) => Effect.Effect<{
 		result: T;
-		memoryUsed: number
+		memoryUsed: ByteAmount
 	}, MemoryThresholdExceededError | E> = <T, E extends Error>(
 		operation: Effect.Effect<T, MemoryThresholdExceededError | E>,
-		operationType: string,
-	): Effect.Effect<{ result: T; memoryUsed: number }, MemoryThresholdExceededError | E> =>
+		operationType: OperationType,
+	): Effect.Effect<{ result: T; memoryUsed: ByteAmount }, MemoryThresholdExceededError | E> =>
 		Effect.gen(function* () {
 			const beforeSnapshot = yield* takeSnapshot()
 

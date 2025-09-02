@@ -11,7 +11,7 @@ import type {CheckBudgetCompliance} from "./CheckBudgetCompliance.js"
 import type {ForceGarbageCollection} from "./ForceGarbageCollection.js"
 import type {MeasureOperationMemory} from "./MeasureOperationMemory.js"
 import type {Milliseconds} from "./Durations.js"
-import type {OperationType, MemoryReportJson, MetricsSummary} from "./PerformanceTypes.js"
+import type {OperationType, MemoryReportJson} from "./PerformanceTypes.js"
 
 export type MemoryMonitorService = {
 	// Core monitoring functions
