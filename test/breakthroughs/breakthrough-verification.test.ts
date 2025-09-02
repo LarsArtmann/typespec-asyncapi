@@ -31,8 +31,8 @@ describe("🚀 BREAKTHROUGH: TypeSpec Direct Compilation", () => {
     // The diagnostics should be empty (no errors)
     expect(result.diagnostics.length).toBe(0)
     
-    console.log("🎉 BREAKTHROUGH SUCCESS: Direct TypeSpec compilation works!")
-    console.log("🎉 NO MORE PACKAGE RESOLUTION ERRORS!")
-    console.log("✅ Real TypeSpec Program created successfully")
+    Effect.log("🎉 BREAKTHROUGH SUCCESS: Direct TypeSpec compilation works!")
+    Effect.log("🎉 NO MORE PACKAGE RESOLUTION ERRORS!")
+    Effect.log("✅ Real TypeSpec Program created successfully")
   })
 })

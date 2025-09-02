@@ -1,9 +1,9 @@
 /**
  * DocumentGenerator - AsyncAPI Document Serialization
- * 
+ *
  * Handles the final generation and serialization of AsyncAPI documents.
  * Supports multiple output formats (JSON/YAML) and provides formatting options.
- * 
+ *
  * Key Responsibilities:
  * - Document structure validation
  * - JSON/YAML serialization
@@ -12,24 +12,24 @@
  * - Content compression (future)
  */
 
-import { Effect } from "effect"
-import { stringify } from "yaml"
-import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js"
-
-export type SerializationOptions = {
-    format: "json" | "yaml"
-    indent?: number
-    compact?: boolean
-    preserveOrder?: boolean
-}
+import {Effect} from "effect"
+import {stringify} from "yaml"
+import type {AsyncAPIObject} from "@asyncapi/parser/esm/spec-types/v3.js"
+import {
+	DEFAULT_SERIALIZATION_FORMAT,
+	SERIALIZATION_FORMAT_OPTION_JSON,
+	SERIALIZATION_FORMAT_OPTION_YAML,
+	type SerializationFormatOptions,
+	type SerializationOptions,
+} from "./serialization-format-options.js"
 
 export type DocumentStats = {
-    channels: number
-    operations: number  
-    messages: number
-    schemas: number
-    securitySchemes: number
-    contentLength: number
+	channels: number
+	operations: number
+	messages: number
+	schemas: number
+	securitySchemes: number
+	contentLength: number
 }
 
 /**
@@ -37,256 +37,257 @@ export type DocumentStats = {
  */
 export class DocumentGenerator {
 
-    /**
-     * Serialize AsyncAPI document to string format
-     */
-    serializeDocument(document: AsyncAPIObject, format: "json" | "yaml" = "yaml"): string {
-        Effect.log(`📄 DocumentGenerator: Serializing to ${format.toUpperCase()}`)
-        
-        const options: SerializationOptions = {
-            format,
-            indent: 2,
-            compact: false,
-            preserveOrder: true
-        }
+	/**
+	 * Serialize AsyncAPI document to string format
+	 */
+	serializeDocument(document: AsyncAPIObject, format: SerializationFormatOptions = DEFAULT_SERIALIZATION_FORMAT): string {
+		Effect.log(`📄 DocumentGenerator: Serializing to ${format.toUpperCase()}`)
 
-        return this.serializeWithOptions(document, options)
-    }
+		const options: SerializationOptions = {
+			format,
+			indent: 2,
+			compact: false,
+			preserveOrder: true,
+		}
 
-    /**
-     * Serialize with detailed options
-     */
-    serializeWithOptions(document: AsyncAPIObject, options: SerializationOptions): string {
-        Effect.log(`📄 Serializing AsyncAPI document with options: ${JSON.stringify(options)}`)
+		return this.serializeWithOptions(document, options)
+	}
 
-        // Validate document structure before serialization
-        this.validateDocumentStructure(document)
+	/**
+	 * Serialize with detailed options
+	 */
+	serializeWithOptions(document: AsyncAPIObject, options: SerializationOptions): string {
+		Effect.log(`📄 Serializing AsyncAPI document with options: ${JSON.stringify(options)}`)
 
-        // Generate statistics
-        const stats = this.generateDocumentStats(document)
-        this.logDocumentStats(stats)
+		// Validate document structure before serialization
+		this.validateDocumentStructure(document)
 
-        // Serialize based on format
-        switch (options.format) {
-            case "json":
-                return this.serializeToJSON(document, options)
-            case "yaml":
-                return this.serializeToYAML(document, options)
-            default:
-                throw new Error(`Unsupported format: ${options.format}`)
-        }
-    }
+		// Generate statistics
+		const stats = this.generateDocumentStats(document)
+		this.logDocumentStats(stats)
 
-    /**
-     * Serialize to JSON format
-     */
-    private serializeToJSON(document: AsyncAPIObject, options: SerializationOptions): string {
-        Effect.log(`📄 Generating JSON format`)
-        
-        const indent = options.compact ? 0 : (options.indent || 2)
-        const result = JSON.stringify(document, null, indent)
-        
-        Effect.log(`✅ JSON serialization complete: ${result.length} characters`)
-        return result
-    }
+		// Serialize based on format
+		switch (options.format) {
+			case SERIALIZATION_FORMAT_OPTION_JSON:
+				return this.serializeToJSON(document, options)
+			case SERIALIZATION_FORMAT_OPTION_YAML:
+				return this.serializeToYAML(document, options)
+			default:
+				throw new Error(`Unsupported format: ${options.format}`)
+		}
+	}
 
-    /**
-     * Serialize to YAML format
-     */
-    private serializeToYAML(document: AsyncAPIObject, options: SerializationOptions): string {
-        Effect.log(`📄 Generating YAML format`)
-        
-        const yamlOptions = {
-            indent: options.indent || 2,
-            lineWidth: options.compact ? -1 : 120,
-            minContentWidth: 0,
-            sortKeys: options.preserveOrder ? false : true
-        }
-        
-        const result = stringify(document, yamlOptions)
-        
-        Effect.log(`✅ YAML serialization complete: ${result.length} characters`)
-        return result
-    }
+	/**
+	 * Serialize to JSON format
+	 */
+	private serializeToJSON(document: AsyncAPIObject, options: SerializationOptions): string {
+		Effect.log(`📄 Generating JSON format`)
 
-    /**
-     * Validate document structure before serialization
-     */
-    private validateDocumentStructure(document: AsyncAPIObject): void {
-        Effect.log(`🔍 Validating document structure...`)
+		const indent = options.compact ? 0 : (options.indent || 2)
+		const result = JSON.stringify(document, null, indent)
 
-        // Check required fields
-        if (!document.asyncapi) {
-            throw new Error("Missing required field: asyncapi")
-        }
+		Effect.log(`✅ JSON serialization complete: ${result.length} characters`)
+		return result
+	}
 
-        if (!document.info) {
-            throw new Error("Missing required field: info")
-        }
+	/**
+	 * Serialize to YAML format
+	 */
+	private serializeToYAML(document: AsyncAPIObject, options: SerializationOptions): string {
+		Effect.log(`📄 Generating YAML format`)
 
-        if (!document.info.title) {
-            throw new Error("Missing required field: info.title")
-        }
+		const yamlOptions = {
+			indent: options.indent || 2,
+			lineWidth: options.compact ? -1 : 120,
+			minContentWidth: 0,
+			sortKeys: !options.preserveOrder,
+		}
 
-        if (!document.info.version) {
-            throw new Error("Missing required field: info.version")
-        }
+		const result = stringify(document, yamlOptions)
 
-        // Validate AsyncAPI version format
-        const versionPattern = /^\d+\.\d+\.\d+$/
-        if (!versionPattern.test(document.asyncapi)) {
-            Effect.logWarning(`⚠️ AsyncAPI version '${document.asyncapi}' may not be valid semantic version`)
-        }
+		Effect.log(`✅ YAML serialization complete: ${result.length} characters`)
+		return result
+	}
 
-        // Check for common structural issues
-        if (document.channels && Object.keys(document.channels).length === 0) {
-            Effect.logWarning(`⚠️ Document has empty channels object`)
-        }
+	/**
+	 * Validate document structure before serialization
+	 */
+	private validateDocumentStructure(document: AsyncAPIObject): void {
+		Effect.log(`🔍 Validating document structure...`)
 
-        if (document.operations && Object.keys(document.operations).length === 0) {
-            Effect.logWarning(`⚠️ Document has empty operations object`)
-        }
+		// Check required fields
+		if (!document.asyncapi) {
+			throw new Error("Missing required field: asyncapi")
+		}
 
-        Effect.log(`✅ Document structure validation passed`)
-    }
+		if (!document.info) {
+			throw new Error("Missing required field: info")
+		}
 
-    /**
-     * Generate document statistics
-     */
-    private generateDocumentStats(document: AsyncAPIObject): DocumentStats {
-        const stats: DocumentStats = {
-            channels: Object.keys(document.channels || {}).length,
-            operations: Object.keys(document.operations || {}).length,
-            messages: Object.keys(document.components?.messages || {}).length,
-            schemas: Object.keys(document.components?.schemas || {}).length,
-            securitySchemes: Object.keys(document.components?.securitySchemes || {}).length,
-            contentLength: 0 // Will be set after serialization
-        }
+		if (!document.info.title) {
+			throw new Error("Missing required field: info.title")
+		}
 
-        return stats
-    }
+		if (!document.info.version) {
+			throw new Error("Missing required field: info.version")
+		}
 
-    /**
-     * Log document statistics
-     */
-    private logDocumentStats(stats: DocumentStats): void {
-        Effect.log(`📊 Document Statistics:`)
-        Effect.log(`  - Channels: ${stats.channels}`)
-        Effect.log(`  - Operations: ${stats.operations}`)
-        Effect.log(`  - Messages: ${stats.messages}`)
-        Effect.log(`  - Schemas: ${stats.schemas}`)
-        Effect.log(`  - Security Schemes: ${stats.securitySchemes}`)
-    }
+		// Validate AsyncAPI version format
+		const versionPattern = /^\d+\.\d+\.\d+$/
+		if (!versionPattern.test(document.asyncapi)) {
+			Effect.logWarning(`⚠️ AsyncAPI version '${document.asyncapi}' may not be valid semantic version`)
+		}
 
-    /**
-     * Get document statistics (for external monitoring)
-     */
-    getDocumentStats(document: AsyncAPIObject): DocumentStats {
-        return this.generateDocumentStats(document)
-    }
+		// Check for common structural issues
+		if (document.channels && Object.keys(document.channels).length === 0) {
+			Effect.logWarning(`⚠️ Document has empty channels object`)
+		}
 
-    /**
-     * Optimize document for size (remove empty objects, compress whitespace)
-     */
-    optimizeDocument(document: AsyncAPIObject): AsyncAPIObject {
-        Effect.log(`🔧 Optimizing document structure...`)
+		if (document.operations && Object.keys(document.operations).length === 0) {
+			Effect.logWarning(`⚠️ Document has empty operations object`)
+		}
 
-        // Deep clone to avoid modifying original
-        const optimized = JSON.parse(JSON.stringify(document)) as AsyncAPIObject
+		Effect.log(`✅ Document structure validation passed`)
+	}
 
-        // Remove empty objects
-        this.removeEmptyObjects(optimized)
+	/**
+	 * Generate document statistics
+	 */
+	private generateDocumentStats(document: AsyncAPIObject): DocumentStats {
+		const stats: DocumentStats = {
+			channels: Object.keys(document.channels || {}).length,
+			operations: Object.keys(document.operations || {}).length,
+			messages: Object.keys(document.components?.messages || {}).length,
+			schemas: Object.keys(document.components?.schemas || {}).length,
+			securitySchemes: Object.keys(document.components?.securitySchemes || {}).length,
+			contentLength: 0, // Will be set after serialization
+		}
 
-        Effect.log(`✅ Document optimization complete`)
-        return optimized
-    }
+		return stats
+	}
+
+	/**
+	 * Log document statistics
+	 */
+	private logDocumentStats(stats: DocumentStats): void {
+		Effect.log(`📊 Document Statistics:`)
+		Effect.log(`  - Channels: ${stats.channels}`)
+		Effect.log(`  - Operations: ${stats.operations}`)
+		Effect.log(`  - Messages: ${stats.messages}`)
+		Effect.log(`  - Schemas: ${stats.schemas}`)
+		Effect.log(`  - Security Schemes: ${stats.securitySchemes}`)
+	}
+
+	/**
+	 * Get document statistics (for external monitoring)
+	 */
+	getDocumentStats(document: AsyncAPIObject): DocumentStats {
+		return this.generateDocumentStats(document)
+	}
+
+	/**
+	 * Optimize document for size (remove empty objects, compress whitespace)
+	 */
+	optimizeDocument(document: AsyncAPIObject): AsyncAPIObject {
+		Effect.log(`🔧 Optimizing document structure...`)
+
+		// Deep clone to avoid modifying original
+		const optimized = JSON.parse(JSON.stringify(document)) as AsyncAPIObject
+
+		// Remove empty objects
+		this.removeEmptyObjects(optimized)
+
+		Effect.log(`✅ Document optimization complete`)
+		return optimized
+	}
 
 	//TODO: NO FUCKING ANY!
-    /**
-     * Recursively remove empty objects and arrays
-     */
-    private removeEmptyObjects(obj: any): void {
-        Object.keys(obj).forEach(key => {
-            const value = obj[key]
-            
-            if (value && typeof value === 'object') {
-                if (Array.isArray(value)) {
-                    // Remove empty arrays
-                    if (value.length === 0) {
-                        delete obj[key]
-                    }
-                } else {
-                    // Recursively process nested objects
-                    this.removeEmptyObjects(value)
-                    
-                    // Remove empty objects
-                    if (Object.keys(value).length === 0) {
-                        delete obj[key]
-                    }
-                }
-            } else if (value === null || value === undefined || value === '') {
-                // Remove null, undefined, or empty string values
-                delete obj[key]
-            }
-        })
-    }
+	/**
+	 * Recursively remove empty objects and arrays
+	 */
+	private removeEmptyObjects(obj: any): void {
+		Object.keys(obj).forEach(key => {
+			const value = obj[key]
 
-    /**
-     * Validate serialized content (basic checks)
-     */
-    validateSerializedContent(content: string, format: "json" | "yaml"): boolean {
-        Effect.log(`🔍 Validating serialized ${format} content...`)
+			if (value && typeof value === 'object') {
+				if (Array.isArray(value)) {
+					// Remove empty arrays
+					if (value.length === 0) {
+						delete obj[key]
+					}
+				} else {
+					// Recursively process nested objects
+					this.removeEmptyObjects(value)
 
-        if (!content || content.trim().length === 0) {
-            Effect.logError(`❌ Empty ${format} content`)
-            return false
-        }
+					// Remove empty objects
+					if (Object.keys(value).length === 0) {
+						delete obj[key]
+					}
+				}
+			} else if (value === null || value === undefined || value === '') {
+				// Remove null, undefined, or empty string values
+				delete obj[key]
+			}
+		})
+	}
 
-        if (format === "json") {
-            try {
-                JSON.parse(content)
-                Effect.log(`✅ Valid JSON format`)
-                return true
-            } catch (error) {
-                Effect.logError(`❌ Invalid JSON format: ${error}`)
-                return false
-            }
-        }
+	//TODO: This my should return a proper Effect with all it's Named/TypedErrors!
+	/**
+	 * Validate serialized content (basic checks)
+	 */
+	validateSerializedContent(content: string, format: SerializationFormatOptions): boolean {
+		Effect.log(`🔍 Validating serialized ${format} content...`)
 
-        if (format === "yaml") {
-            // Basic YAML validation - check for common syntax issues
-            if (content.includes("\t")) {
-                Effect.logWarning(`⚠️ YAML contains tabs - may cause parsing issues`)
-            }
+		if (!content || content.trim().length === 0) {
+			Effect.logError(`❌ Empty ${format} content`)
+			return false
+		}
 
-            // Check for balanced quotes
-            const singleQuotes = (content.match(/'/g) || []).length
-            const doubleQuotes = (content.match(/"/g) || []).length
-            
-            if (singleQuotes % 2 !== 0) {
-                Effect.logWarning(`⚠️ Unbalanced single quotes in YAML`)
-            }
+		if (format === "json") {
+			try {
+				JSON.parse(content)
+				Effect.log(`✅ Valid JSON format`)
+				return true
+			} catch (error) {
+				Effect.logError(`❌ Invalid JSON format: ${error}`)
+				return false
+			}
+		}
 
-            if (doubleQuotes % 2 !== 0) {
-                Effect.logWarning(`⚠️ Unbalanced double quotes in YAML`)
-            }
+		if (format === "yaml") {
+			// Basic YAML validation - check for common syntax issues
+			if (content.includes("\t")) {
+				Effect.logWarning(`⚠️ YAML contains tabs - may cause parsing issues`)
+			}
 
-            Effect.log(`✅ Basic YAML validation passed`)
-            return true
-        }
+			// Check for balanced quotes
+			const singleQuotes = (content.match(/'/g) || []).length
+			const doubleQuotes = (content.match(/"/g) || []).length
 
-        return false
-    }
+			if (singleQuotes % 2 !== 0) {
+				Effect.logWarning(`⚠️ Unbalanced single quotes in YAML`)
+			}
 
-    /**
-     * Generate content preview for debugging
-     */
-    generateContentPreview(content: string, maxLength: number = 200): string {
-        if (content.length <= maxLength) {
-            return content
-        }
+			if (doubleQuotes % 2 !== 0) {
+				Effect.logWarning(`⚠️ Unbalanced double quotes in YAML`)
+			}
 
-        const preview = content.substring(0, maxLength)
-        return `${preview}...\n[Content truncated - showing first ${maxLength} characters of ${content.length} total]`
-    }
+			Effect.log(`✅ Basic YAML validation passed`)
+			return true
+		}
+
+		return false
+	}
+
+	/**
+	 * Generate content preview for debugging
+	 */
+	generateContentPreview(content: string, maxLength: number = 200): string {
+		if (content.length <= maxLength) {
+			return content
+		}
+
+		const preview = content.substring(0, maxLength)
+		return `${preview}...\n[Content truncated - showing first ${maxLength} characters of ${content.length} total]`
+	}
 }

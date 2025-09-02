@@ -8,6 +8,7 @@ import {asyncAPIEmitterOptionsEffectSchema} from "./schemas.js"
 import {validateAsyncAPIEmitterOptions} from "./validation.js"
 import type {AsyncAPIEmitterOptions} from "./types.js"
 import {ASYNCAPI_VERSION} from "../constants/asyncapi-constants.js"
+import {SERIALIZATION_FORMAT_OPTION_YAML, SERIALIZATION_FORMAT_OPTIONS} from "../core/serialization-format-options.js"
 
 /**
  * JSON Schema representation for TypeSpec compatibility
@@ -34,7 +35,7 @@ export const ASYNC_API_EMITTER_OPTIONS_SCHEMA = (() => {
 			additionalProperties: false,
 			properties: {
 				"output-file": {type: "string", nullable: true},
-				"file-type": {type: "string", enum: ["yaml", "json"], nullable: true},
+				"file-type": {type: "string", enum: SERIALIZATION_FORMAT_OPTIONS, nullable: true},
 				"asyncapi-version": {type: "string", enum: [ASYNCAPI_VERSION], nullable: true},
 				"omit-unreachable-types": {type: "boolean", nullable: true},
 				"include-source-info": {type: "boolean", nullable: true},
@@ -43,6 +44,7 @@ export const ASYNC_API_EMITTER_OPTIONS_SCHEMA = (() => {
 				"additional-properties": {type: "object", additionalProperties: true, nullable: true},
 				"protocol-bindings": {
 					type: "array",
+					//TODO: copy how SERIALIZATION_FORMAT_OPTIONS does it!
 					items: {type: "string", enum: ["kafka", "amqp", "websocket", "http"]},
 					nullable: true,
 				},
@@ -59,9 +61,10 @@ export const ASYNC_API_EMITTER_OPTIONS_SCHEMA = (() => {
  */
 export const createAsyncAPIEmitterOptions = (input: Partial<AsyncAPIEmitterOptions> = {}) =>
 	Effect.gen(function* () {
+		//TODO: Should be all constants!
 		const defaults: AsyncAPIEmitterOptions = {
 			"output-file": "asyncapi",
-			"file-type": "yaml",
+			"file-type": SERIALIZATION_FORMAT_OPTION_YAML,
 			"asyncapi-version": ASYNCAPI_VERSION,
 			"omit-unreachable-types": false,
 			"include-source-info": false,
@@ -77,6 +80,7 @@ export const createAsyncAPIEmitterOptions = (input: Partial<AsyncAPIEmitterOptio
  * Uses Effect.TS validation for type safety
  */
 export const isAsyncAPIEmitterOptions = (input: unknown): input is AsyncAPIEmitterOptions => {
+	//TODO: does this need to be this completed? Is This logic even correct??
 	try {
 		return Effect.runSync(
 			Effect.gen(function* () {
@@ -84,7 +88,7 @@ export const isAsyncAPIEmitterOptions = (input: unknown): input is AsyncAPIEmitt
 				return true
 			}).pipe(
 				Effect.catchAll(() => Effect.succeed(false)),
-			)
+			),
 		)
 	} catch {
 		return false

@@ -23,6 +23,7 @@ import {EmissionPipeline} from "./EmissionPipeline.js"
 import {DocumentGenerator} from "./DocumentGenerator.js"
 // import {PerformanceMonitor} from "./PerformanceMonitor.js"
 import {PluginRegistry} from "./PluginRegistry.js"
+import {DEFAULT_SERIALIZATION_FORMAT} from "./serialization-format-options.js"
 
 /**
  * Micro-kernel AsyncAPI emitter with plugin architecture
@@ -51,7 +52,7 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 
 	override programContext(program: Program): Record<string, unknown> {
 		const options = this.emitter.getOptions()
-		const fileType = options["file-type"] || "yaml"
+		const fileType = options["file-type"] || DEFAULT_SERIALIZATION_FORMAT
 		const fileName = options["output-file"] || "asyncapi"
 		const outputPath = `${fileName}.${fileType}`
 

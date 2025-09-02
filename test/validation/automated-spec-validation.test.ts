@@ -15,16 +15,17 @@
  */
 
 import {afterAll, beforeAll, describe, expect, it} from "vitest"
-import { AsyncAPIValidator } from "../../src/validation/asyncapi-validator.js";
+import {AsyncAPIValidator} from "../../src/validation/asyncapi-validator.js"
 import {compileAsyncAPISpec, parseAsyncAPIOutput, TestSources} from "../utils/test-helpers.js"
 import {mkdir, rm, writeFile} from "node:fs/promises"
 import {join} from "node:path"
 import {Effect} from "effect"
+import {SERIALIZATION_FORMAT_OPTIONS, SERIALIZATION_FORMAT_OPTION_YAML} from "../../src/core/serialization-format-options"
 
 interface TestScenario {
 	name: string;
 	source: string;
-	outputFormats: Array<"json" | "yaml">;
+	readonly outputFormats: readonly SERIALIZATION_FORMAT_OPTION_YAML[];
 	description: string;
 }
 
@@ -33,25 +34,25 @@ const VALIDATION_TEST_SCENARIOS: TestScenario[] = [
 	{
 		name: "basic-event-api",
 		source: TestSources.basicEvent,
-		outputFormats: ["json", "yaml"],
+		outputFormats: SERIALIZATION_FORMAT_OPTIONS,
 		description: "Basic event publishing API",
 	},
 	{
 		name: "complex-event-api",
 		source: TestSources.complexEvent,
-		outputFormats: ["json", "yaml"],
+		outputFormats: SERIALIZATION_FORMAT_OPTIONS,
 		description: "Complex event with metadata and status",
 	},
 	{
 		name: "multiple-operations-api",
 		source: TestSources.multipleOperations,
-		outputFormats: ["json", "yaml"],
+		outputFormats: SERIALIZATION_FORMAT_OPTIONS,
 		description: "API with multiple channels and operations",
 	},
 	{
 		name: "documented-api",
 		source: TestSources.withDocumentation,
-		outputFormats: ["json", "yaml"],
+		outputFormats: SERIALIZATION_FORMAT_OPTIONS,
 		description: "API with comprehensive documentation",
 	},
 	{
@@ -104,7 +105,7 @@ const VALIDATION_TEST_SCENARIOS: TestScenario[] = [
       @doc("Subscribe to payment events")
       op subscribePaymentEvents(orderId?: string): PaymentEvent;
     `,
-		outputFormats: ["json", "yaml"],
+		outputFormats: SERIALIZATION_FORMAT_OPTIONS,
 		description: "Microservices event-driven architecture",
 	},
 	{
@@ -158,7 +159,7 @@ const VALIDATION_TEST_SCENARIOS: TestScenario[] = [
         batteryLevel: float64;
       };
     `,
-		outputFormats: ["json", "yaml"],
+		outputFormats: SERIALIZATION_FORMAT_OPTIONS,
 		description: "IoT sensor data streaming with parameterized channels",
 	},
 	{
@@ -214,7 +215,7 @@ const VALIDATION_TEST_SCENARIOS: TestScenario[] = [
       @doc("Subscribe to user presence updates")
       op subscribeUserPresence(): UserPresence;
     `,
-		outputFormats: ["json", "yaml"],
+		outputFormats: SERIALIZATION_FORMAT_OPTIONS,
 		description: "Real-time chat with presence and parameterized channels",
 	},
 ]
@@ -480,7 +481,7 @@ describe("🚨 CRITICAL: AUTOMATED ASYNCAPI SPECIFICATION VALIDATION", () => {
 				// Should contain meaningful error information - real AsyncAPI parser provides different keywords
 				const errorKeywords = result.errors.map(e => e.keyword)
 				const errorMessages = result.errors.map(e => e.message)
-				
+
 				// Validate that we get meaningful error information (exact keyword varies by real parser)
 				expect(errorKeywords.length).toBeGreaterThan(0)
 				expect(errorMessages.some(msg => msg.includes("asyncapi") || msg.includes("invalid") || msg.includes("required") || msg.includes("missing"))).toBe(true)

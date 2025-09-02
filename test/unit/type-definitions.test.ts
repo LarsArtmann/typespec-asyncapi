@@ -237,7 +237,7 @@ describe("Real Type Definitions Unit Tests", () => {
 			expect(extendedOptions["validate-output"]).toBe(true)
 
 			// File type validation
-			const fileTypes: FileType[] = ["json", "yaml"]
+			const fileTypes: FileType[] = SERIALIZATION_FORMAT_OPTIONS
 			expect(fileTypes).toContain(validOptions["file-type"])
 			expect(fileTypes).toContain(extendedOptions["file-type"])
 
@@ -276,7 +276,7 @@ describe("Real Type Definitions Unit Tests", () => {
 			for (const {options, shouldBeValid, description} of validationCases) {
 				// Simulate options validation
 				const hasOutputFile = options["output-file"] && options["output-file"].length > 0
-				const hasValidFileType = options["file-type"] && ["json", "yaml"].includes(options["file-type"])
+				const hasValidFileType = options["file-type"] && SERIALIZATION_FORMAT_OPTIONS.includes(options["file-type"])
 				const isValid = hasOutputFile && hasValidFileType
 
 				expect(isValid).toBe(shouldBeValid)

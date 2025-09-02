@@ -124,13 +124,13 @@
     "disableSourceOfProjectReferenceRedirect": true,
     // Performance boost
     // TODO: Verify this doesn't break TypeSpec compiler integration
-    "disableSolutionSearching": true,
+    "disableSolutionSearching": false,
     // Performance boost
     // TODO: Document impact on monorepo or multi-project setups
     "disableReferencedProjectLoad": true,
     // Performance boost
     // TODO: Consider impact on IDE IntelliSense performance
-    "assumeChangesOnlyAffectDirectDependencies": true,
+    "assumeChangesOnlyAffectDirectDependencies": false,
     // Faster incremental builds (TS 4.8+)
     // TODO: Add warning about potential edge cases with this assumption
 

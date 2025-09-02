@@ -130,6 +130,7 @@ export function $protocol(
 	// The actual config should be in args[0]
 	const config = args[0] as ProtocolConfig
 
+	//TODO: extract to helper file!
 	// Type guard to check if config is a TypeSpec Model
 	function isTypeSpecModel(value: unknown): value is Model {
 		return value !== null && typeof value === 'object' && 'kind' in value && (value as {
@@ -182,6 +183,7 @@ export function $protocol(
 						}
 					} catch (error) {
 						// Continue with next property if extraction fails
+						//TODO: I HATE SILENT ERRORS!!! AT LEAST A DEBUG MESSAGE!
 					}
 				}
 			})
@@ -300,6 +302,7 @@ function validateProtocolBinding(protocol: ProtocolType, binding: unknown): { va
 		}
 
 		case "redis":
+			//TODO: ACTUALLY IMPLEMENT IT!
 			// Redis validation could check for valid channel patterns, etc.
 			break
 	}

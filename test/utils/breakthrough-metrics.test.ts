@@ -10,8 +10,8 @@ import { compileTypeSpecWithDecorators } from "./utils/test-helpers.js"
 
 describe("📊 BREAKTHROUGH METRICS", () => {
   it("🎯 P0 Mission Success: 51% Impact Achieved", async () => {
-    console.log("🚀 MISSION VALIDATION: Decorator Registration System")
-    console.log("=" .repeat(60))
+    Effect.log("🚀 MISSION VALIDATION: Decorator Registration System")
+    Effect.log("=" .repeat(60))
     
     // Test multiple TypeSpec programs with different decorator combinations
     const testCases = [
@@ -70,36 +70,36 @@ describe("📊 BREAKTHROUGH METRICS", () => {
         successfulCompilations++
       }
       
-      console.log(`✅ ${testCase.name}:`)
-      console.log(`   Unknown decorator errors: ${unknownDecoratorErrors.length}`)
-      console.log(`   Compilation time: ${compilationTime}ms`)
-      console.log(`   Program created: ${!!program}`)
+      Effect.log(`✅ ${testCase.name}:`)
+      Effect.log(`   Unknown decorator errors: ${unknownDecoratorErrors.length}`)
+      Effect.log(`   Compilation time: ${compilationTime}ms`)
+      Effect.log(`   Program created: ${!!program}`)
     }
     
     // Calculate impact metrics
     const averageCompilationTime = totalCompilationTime / testCases.length
     const successRate = (successfulCompilations / testCases.length) * 100
     
-    console.log("=" .repeat(60))
-    console.log("📊 BREAKTHROUGH IMPACT SUMMARY:")
-    console.log(`   BEFORE: 371+ tests failed due to "Unknown decorator" errors`)
-    console.log(`   AFTER:  ${totalUnknownDecoratorErrors} unknown decorator errors (FIXED!)`)
-    console.log(`   SUCCESS RATE: ${successRate}% of compilations successful`)
-    console.log(`   AVERAGE COMPILATION: ${averageCompilationTime}ms`)
-    console.log(`   DECORATOR SYSTEM: OPERATIONAL ✅`)
-    console.log("=" .repeat(60))
+    Effect.log("=" .repeat(60))
+    Effect.log("📊 BREAKTHROUGH IMPACT SUMMARY:")
+    Effect.log(`   BEFORE: 371+ tests failed due to "Unknown decorator" errors`)
+    Effect.log(`   AFTER:  ${totalUnknownDecoratorErrors} unknown decorator errors (FIXED!)`)
+    Effect.log(`   SUCCESS RATE: ${successRate}% of compilations successful`)
+    Effect.log(`   AVERAGE COMPILATION: ${averageCompilationTime}ms`)
+    Effect.log(`   DECORATOR SYSTEM: OPERATIONAL ✅`)
+    Effect.log("=" .repeat(60))
     
     // Core success metrics
     expect(totalUnknownDecoratorErrors).toBe(0)
     expect(successfulCompilations).toBe(testCases.length)
     expect(successRate).toBe(100)
     
-    console.log("🚀 P0 MISSION SUCCESS: 51% IMPACT ACHIEVED")
-    console.log("🚀 DECORATOR REGISTRATION SYSTEM: FULLY OPERATIONAL")
+    Effect.log("🚀 P0 MISSION SUCCESS: 51% IMPACT ACHIEVED")
+    Effect.log("🚀 DECORATOR REGISTRATION SYSTEM: FULLY OPERATIONAL")
     
     // Additional quality metrics
     expect(averageCompilationTime).toBeLessThan(1000)
-    console.log("✅ PERFORMANCE: Fast compilation times maintained")
+    Effect.log("✅ PERFORMANCE: Fast compilation times maintained")
   })
 
   it("🎯 System Readiness: Ready for emitter processing", async () => {
@@ -127,10 +127,10 @@ describe("📊 BREAKTHROUGH METRICS", () => {
     expect(typeof testStateMap.set).toBe("function")
     expect(typeof testStateMap.get).toBe("function")
     
-    console.log("✅ SYSTEM READY: Program structure validated")
-    console.log("✅ SYSTEM READY: State management operational")
-    console.log("✅ SYSTEM READY: Decorator data storage available")
-    console.log("🚀 READY FOR: Full emitter processing with real decorators")
+    Effect.log("✅ SYSTEM READY: Program structure validated")
+    Effect.log("✅ SYSTEM READY: State management operational")
+    Effect.log("✅ SYSTEM READY: Decorator data storage available")
+    Effect.log("🚀 READY FOR: Full emitter processing with real decorators")
   })
 
   it("📈 Quality Metrics: System robustness", async () => {
@@ -150,15 +150,15 @@ describe("📊 BREAKTHROUGH METRICS", () => {
           robustCompilations++
         }
       } catch (error) {
-        console.log(`⚠️  ${edgeCase.name}: ${error.message}`)
+        Effect.log(`⚠️  ${edgeCase.name}: ${error.message}`)
       }
     }
     
     const robustnessRate = (robustCompilations / edgeCases.length) * 100
     
-    console.log(`📈 ROBUSTNESS: ${robustnessRate}% of edge cases handled`)
+    Effect.log(`📈 ROBUSTNESS: ${robustnessRate}% of edge cases handled`)
     expect(robustnessRate).toBeGreaterThanOrEqual(80)
     
-    console.log("✅ QUALITY CONFIRMED: System handles edge cases well")
+    Effect.log("✅ QUALITY CONFIRMED: System handles edge cases well")
   })
 })

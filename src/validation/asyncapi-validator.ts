@@ -50,6 +50,7 @@ export class AsyncAPIValidator {
 		Effect.log("✅ AsyncAPI 3.0.0 Validator initialized successfully")
 	}
 
+	//TODO: REPLACE Promise with Effect!
 	/**
 	 * Validate AsyncAPI document using the REAL parser
 	 */
@@ -141,11 +142,13 @@ export class AsyncAPIValidator {
 		}
 	}
 
+	//TODO: REPLACE Promise with Effect!
 	/**
 	 * Validate AsyncAPI document from file
 	 */
 	async validateFile(filePath: string): Promise<ValidationResult> {
 		try {
+			//TODO: Effect should have a readFile too.
 			const {readFile} = await import("node:fs/promises")
 			const content = await readFile(filePath, "utf-8")
 			return this.validate(content, filePath)
@@ -165,6 +168,7 @@ export class AsyncAPIValidator {
 		}
 	}
 
+	//TODO: REPLACE Promise with Effect!
 	/**
 	 * Validate multiple AsyncAPI documents in batch
 	 * Returns an array of ValidationResult objects with optimized performance

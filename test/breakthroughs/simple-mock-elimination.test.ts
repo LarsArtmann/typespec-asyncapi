@@ -50,16 +50,16 @@ describe("✅ Simple Mock Infrastructure Elimination", () => {
     expect(program.getGlobalNamespaceType).toBeDefined()
     expect(typeof program.getGlobalNamespaceType).toBe("function")
     
-    console.log("✅ SUCCESS: Created REAL TypeSpec Program!")
-    console.log("✅ SUCCESS: No more mock Program objects!")
-    console.log("Program has real methods:", Object.keys(program).filter(k => typeof program[k] === 'function').slice(0, 10))
+    Effect.log("✅ SUCCESS: Created REAL TypeSpec Program!")
+    Effect.log("✅ SUCCESS: No more mock Program objects!")
+    Effect.log("Program has real methods:", Object.keys(program).filter(k => typeof program[k] === 'function').slice(0, 10))
     
     // Test that we can call real Program methods
     const globalNamespace = program.getGlobalNamespaceType()
     expect(globalNamespace).toBeDefined()
     expect(globalNamespace.kind).toBe("Namespace")
     
-    console.log("✅ SUCCESS: Real Program methods work correctly!")
+    Effect.log("✅ SUCCESS: Real Program methods work correctly!")
     
     // Test calling our emitter with this REAL program (should work even without decorators)
     const { generateAsyncAPIWithEffect } = await import("../dist/emitter-with-effect.js")
@@ -72,9 +72,9 @@ describe("✅ Simple Mock Infrastructure Elimination", () => {
     
     try {
       await generateAsyncAPIWithEffect(emitterContext)
-      console.log("✅ SUCCESS: Emitter accepts REAL Program object!")
+      Effect.log("✅ SUCCESS: Emitter accepts REAL Program object!")
     } catch (error) {
-      console.log("⚠️  Emitter ran with real Program (error expected without decorators):", error.message)
+      Effect.log("⚠️  Emitter ran with real Program (error expected without decorators):", error.message)
       expect(error.message).toBeDefined()
       // Error is expected since we have no AsyncAPI decorators
     }

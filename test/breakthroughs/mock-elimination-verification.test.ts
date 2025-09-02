@@ -32,8 +32,8 @@ describe("🚨 Mock Infrastructure Elimination", () => {
     // Most importantly - no more mock objects!
     expect(result.program.host).toBeDefined() // Real host should be available
     
-    console.log("✅ SUCCESS: Using real TypeSpec Program instead of mock!")
-    console.log("Program has real methods:", Object.keys(result.program))
+    Effect.log("✅ SUCCESS: Using real TypeSpec Program instead of mock!")
+    Effect.log("Program has real methods:", Object.keys(result.program))
   })
   
   it("should generate AsyncAPI output using real emitter", async () => {
@@ -57,12 +57,12 @@ describe("🚨 Mock Infrastructure Elimination", () => {
     
     // List all output files to verify generation
     const files = Array.from(result.outputFiles.keys())
-    console.log("Generated files:", files)
+    Effect.log("Generated files:", files)
     
     // Should have AsyncAPI specification file
     const hasAsyncAPIFile = files.some(f => f.includes("asyncapi") || f.includes("AsyncAPI"))
     expect(hasAsyncAPIFile).toBe(true)
     
-    console.log("✅ SUCCESS: Real emitter generated actual output files!")
+    Effect.log("✅ SUCCESS: Real emitter generated actual output files!")
   })
 })

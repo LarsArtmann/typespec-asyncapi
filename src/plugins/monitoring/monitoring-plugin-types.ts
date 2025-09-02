@@ -5,7 +5,7 @@
  * Supports Prometheus metrics, Grafana dashboards, structured logging, and health checks.
  */
 
-import { Effect } from "effect"
+import type { Effect } from "effect"
 
 export const MonitoringType = {
     PROMETHEUS: "prometheus",

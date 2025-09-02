@@ -43,45 +43,6 @@ export type EmitterAsyncAPIObject = {
 	'x-generated-from-typespec'?: XGeneratedFromTypeSpec;
 } & AsyncAPIObject
 
-// Protocol binding type unions for better type safety
-export type ProtocolType =
-	| 'http'
-	| 'ws'
-	| 'kafka'
-	| 'anypointmq'
-	| 'amqp'
-	| 'amqp1'
-	| 'mqtt'
-	| 'mqtt5'
-	| 'nats'
-	| 'jms'
-	| 'sns'
-	| 'sqs'
-	| 'stomp'
-	| 'redis'
-	| 'mercure'
-	| 'ibmmq'
-	| 'googlepubsub';
-
-// File format types for emitter options
-export type FileFormat = 'json' | 'yaml';
-
-// Security scheme type enum
-export type SecuritySchemeType =
-	| 'userPassword'
-	| 'apiKey'
-	| 'X509'
-	| 'symmetricEncryption'
-	| 'asymmetricEncryption'
-	| 'httpApiKey'
-	| 'http'
-	| 'oauth2'
-	| 'openIdConnect'
-	| 'plain'
-	| 'scram-sha-256'
-	| 'scram-sha-512'
-	| 'gssapi';
-
 /**
  * MIGRATION NOTES:
  *

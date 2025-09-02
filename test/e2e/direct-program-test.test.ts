@@ -36,8 +36,8 @@ describe("🔥 Direct Program Test", () => {
     expect(program.getGlobalNamespaceType).toBeDefined()
     expect(typeof program.getGlobalNamespaceType).toBe("function")
     
-    console.log("✅ SUCCESS: Created REAL TypeSpec Program with all required methods!")
-    console.log("Program methods:", Object.keys(program).filter(k => typeof program[k] === 'function'))
+    Effect.log("✅ SUCCESS: Created REAL TypeSpec Program with all required methods!")
+    Effect.log("Program methods:", Object.keys(program).filter(k => typeof program[k] === 'function'))
     
     // Test calling the emitter directly with this REAL program
     const emitterContext = {
@@ -51,9 +51,9 @@ describe("🔥 Direct Program Test", () => {
     
     try {
       await generateAsyncAPIWithEffect(emitterContext)
-      console.log("✅ SUCCESS: Emitter ran with REAL Program without errors!")
+      Effect.log("✅ SUCCESS: Emitter ran with REAL Program without errors!")
     } catch (error) {
-      console.log("⚠️  Emitter error (expected without decorators):", error.message)
+      Effect.log("⚠️  Emitter error (expected without decorators):", error.message)
       // This is expected since we don't have decorator data
     }
   })

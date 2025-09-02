@@ -59,7 +59,7 @@ describe("REAL TypeSpec → AsyncAPI Compilation", () => {
 		} catch (error) {
 			// For now, we know this will fail because the emitter isn't registered
 			// But this is how we SHOULD test - with real compilation!
-			console.log("Real compilation test would work if emitter was properly registered")
+			Effect.log("Real compilation test would work if emitter was properly registered")
 		}
 	})
 

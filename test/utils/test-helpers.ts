@@ -2,9 +2,8 @@
  * Comprehensive test utilities for AsyncAPI emitter testing
  */
 
-import {createTestHost, createTestWrapper, createTestLibrary} from "@typespec/compiler/testing"
-import {findTestPackageRoot} from "@typespec/compiler/testing"
-import type {AsyncAPIEmitterOptions} from "../../src"
+import {createTestHost, createTestLibrary, createTestWrapper, findTestPackageRoot} from "@typespec/compiler/testing"
+import type {AsyncAPIEmitterOptions} from "../../src/options.js"
 import type {Diagnostic, Program} from "@typespec/compiler"
 import {Effect} from "effect"
 
@@ -67,24 +66,17 @@ export interface CompilationResult {
 	outputFiles: Map<string, string>;
 	program: Program;
 }
-
-export interface TestFileSystem {
-	get(path: string): string | undefined;
-
-	keys(): string[];
-}
-
 /**
  * Create a test library for our AsyncAPI decorators with proper dependency resolution
  */
 export async function createAsyncAPITestLibrary() {
 	const packageRoot = await findTestPackageRoot(import.meta.url)
-	
+
 	return createTestLibrary({
 		name: "@larsartmann/typespec-asyncapi",
 		packageRoot,
 		typespecFileFolder: "lib",
-		jsFileFolder: "dist"
+		jsFileFolder: "dist",
 	})
 }
 
@@ -93,10 +85,10 @@ export async function createAsyncAPITestLibrary() {
  * SOLUTION: Use createAsyncAPITestLibrary() to get proper decorator registration
  */
 export async function createAsyncAPITestHost() {
-	console.log("🚀 Using PROPER library approach - registering AsyncAPI test library")
+	Effect.log("🚀 Using PROPER library approach - registering AsyncAPI test library")
 	const asyncAPITestLibrary = await createAsyncAPITestLibrary()
 	return createTestHost({
-		libraries: [asyncAPITestLibrary] // Register our AsyncAPI library properly
+		libraries: [asyncAPITestLibrary], // Register our AsyncAPI library properly
 	})
 }
 
@@ -110,31 +102,31 @@ export async function compileAsyncAPISpec(
 ): Promise<CompilationResult> {
 	// Create test host WITH proper AsyncAPI library registration
 	const host = await createAsyncAPITestHost()
-	
+
 	// TODO: Fix TypeSpec test runner not passing options correctly
-	
+
 	// Create test wrapper WITH auto-using TypeSpec.AsyncAPI (now works with proper library)
 	const runner = createTestWrapper(host, {
 		autoUsings: ["TypeSpec.AsyncAPI"], // Auto-import AsyncAPI namespace - now works!
 		emitters: {
-			"@larsartmann/typespec-asyncapi": options // Configure our emitter with options
-		}
+			"@larsartmann/typespec-asyncapi": options, // Configure our emitter with options
+		},
 	})
 
 	// Compile and emit TypeSpec code - this triggers emitters
 	const [result, diagnostics] = await runner.compileAndDiagnose(source, {
-		emit: ["@larsartmann/typespec-asyncapi"] // Explicitly emit with our emitter
+		emit: ["@larsartmann/typespec-asyncapi"], // Explicitly emit with our emitter
 	})
-	
+
 	// TypeSpec test runner automatically calls emitters - no manual invocation needed
-	
+
 	// Debug logging 
-	console.log("Compilation result:", typeof result, !!result)
-	
+	Effect.log("Compilation result:", typeof result, !!result)
+
 	const program = result
-	
-	console.log("Program created:", !!program)
-	console.log("Diagnostics count:", diagnostics.length)
+
+	Effect.log("Program created:", !!program)
+	Effect.log("Diagnostics count:", diagnostics.length)
 
 	if (!program) {
 		throw new Error(`Failed to compile TypeSpec program. Available keys: ${Object.keys(result)}`)
@@ -143,7 +135,7 @@ export async function compileAsyncAPISpec(
 	return {
 		diagnostics,
 		outputFiles: runner.fs,
-		program
+		program,
 	}
 }
 
@@ -170,30 +162,33 @@ export async function compileAsyncAPISpecWithoutErrors(
  * This function focuses on just testing that decorators are recognized without running the emitter
  */
 export async function compileTypeSpecWithDecorators(
-	source: string
-): Promise<{program: Program; diagnostics: readonly Diagnostic[]}> {
+	source: string,
+): Promise<{ program: Program; diagnostics: readonly Diagnostic[] }> {
 	// Create test host with our AsyncAPI library
 	const host = await createAsyncAPITestHost()
-	
+
 	// Create test wrapper with TypeSpec.AsyncAPI auto-using
 	const runner = createTestWrapper(host, {
-		autoUsings: ["TypeSpec.AsyncAPI"] // Auto-import our namespace
+		autoUsings: ["TypeSpec.AsyncAPI"], // Auto-import our namespace
 	})
 
 	// Compile and return just program and diagnostics
 	const [result, diagnostics] = await runner.compileAndDiagnose(source)
-	
-	console.log("Program created:", !!runner.program)
-	console.log("Diagnostics count:", diagnostics.length)
-	
+
+	result //<--- TODO: use it!!!???
+
+	Effect.log("Program created:", !!runner.program)
+	Effect.log("Diagnostics count:", diagnostics.length)
+
 	// Log any diagnostics for debugging
 	if (diagnostics.length > 0) {
-		console.log("Diagnostics:", diagnostics.map(d => `${d.severity}: ${d.message}`).join("\n"))
+		Effect.log("Diagnostics:", diagnostics.map(d => `${d.severity}: ${d.message}`).join("\n"))
 	}
 
 	return {program: runner.program, diagnostics}
 }
 
+//TODO: refactor from Promise to Effect!
 /**
  * Parse AsyncAPI output from compilation result
  */
@@ -205,44 +200,45 @@ export async function parseAsyncAPIOutput(outputFiles: Map<string, string | {
 		// SMART SEARCH: Find the actual AsyncAPI file regardless of expected filename
 		// The emitter always generates files, but TypeSpec test runner doesn't pass options correctly
 		const allFiles = Array.from(outputFiles.keys())
-		const asyncapiFiles = allFiles.filter(path => 
-			path.includes('asyncapi') && (path.endsWith('.yaml') || path.endsWith('.json'))
+		const asyncapiFiles = allFiles.filter(path =>
+			path.includes('asyncapi') && (path.endsWith('.yaml') || path.endsWith('.json')),
 		)
-		
-		console.log(`🔍 SMART SEARCH: Looking for ${filename}`);
-		console.log(`📁 Available AsyncAPI files: ${asyncapiFiles.join(', ')}`);
-		
+
+		Effect.log(`🔍 SMART SEARCH: Looking for ${filename}`)
+		Effect.log(`📁 Available AsyncAPI files: ${asyncapiFiles.join(', ')}`)
+
 		// Try exact match first
 		const exactMatch = allFiles.find(path => path.endsWith(filename))
 		if (exactMatch) {
 			const content = outputFiles.get(exactMatch)
 			if (content) {
-				console.log(`✅ Found exact match: ${exactMatch}`);
+				Effect.log(`✅ Found exact match: ${exactMatch}`)
 				const actualContent = typeof content === 'string' ? content : content.content
 				return await parseFileContent(actualContent, filename)
 			}
 		}
-		
+
 		// Fallback: use the first available AsyncAPI file
 		if (asyncapiFiles.length > 0) {
 			const fallbackFile = asyncapiFiles[0]
 			const content = outputFiles.get(fallbackFile)
 			if (content) {
-				console.log(`🎯 Using fallback file: ${fallbackFile} for expected ${filename}`);
+				Effect.log(`🎯 Using fallback file: ${fallbackFile} for expected ${filename}`)
 				const actualContent = typeof content === 'string' ? content : content.content
 				return await parseFileContent(actualContent, filename)
 			}
 		}
-		
+
+		//TODO: needs deprecation!
 		// Legacy path search as final fallback
 		const possiblePaths = [
 			`test-output/${filename}`,
 			filename,
 			`/test/${filename}`,
 			`tsp-output/@larsartmann/typespec-asyncapi/${filename}`,
-			`/test/@larsartmann/typespec-asyncapi/${filename}`
+			`/test/@larsartmann/typespec-asyncapi/${filename}`,
 		]
-		
+
 		for (const filePath of possiblePaths) {
 			const content = outputFiles.get(filePath)
 			if (content) {
@@ -250,7 +246,7 @@ export async function parseAsyncAPIOutput(outputFiles: Map<string, string | {
 				return await parseFileContent(actualContent, filename)
 			}
 		}
-		
+
 		// If not found, list available files for debugging
 		const availableFiles = Array.from(outputFiles.keys())
 		throw new Error(`Output file ${filename} not found. Available files: ${availableFiles.join(", ")}`)
@@ -260,26 +256,27 @@ export async function parseAsyncAPIOutput(outputFiles: Map<string, string | {
 	}
 }
 
+//TODO: refactor from Promise to Effect!
 async function parseFileContent(content: string, filename: string): Promise<AsyncAPIObject | string> {
-	console.log(`Parsing file: ${filename}`);
-	console.log(`Content length: ${content?.length || 0}`);
-	console.log(`Content preview: ${content?.substring(0, 200) || 'NO CONTENT'}`);
-	
+	Effect.log(`Parsing file: ${filename}`)
+	Effect.log(`Content length: ${content?.length || 0}`)
+	Effect.log(`Content preview: ${content?.substring(0, 200) || 'NO CONTENT'}`)
+
 	// DEBUG: Empty content analysis - emitter generates content but test framework doesn't extract it
 	if (!content || content.length === 0) {
-		console.log("🚨 CRITICAL: Empty content detected in test framework");
-		console.log("📊 EMITTER STATUS: Debug logs confirm 1200+ bytes generated by serializeDocument()");
-		console.log("🔍 DIAGNOSIS: Test framework file extraction timing/path issue, NOT emitter failure");
-		console.log("💡 SOLUTION NEEDED: Fix test framework to properly extract generated AsyncAPI content");
+		Effect.log("🚨 CRITICAL: Empty content detected in test framework")
+		Effect.log("📊 EMITTER STATUS: Debug logs confirm 1200+ bytes generated by serializeDocument()")
+		Effect.log("🔍 DIAGNOSIS: Test framework file extraction timing/path issue, NOT emitter failure")
+		Effect.log("💡 SOLUTION NEEDED: Fix test framework to properly extract generated AsyncAPI content")
 		// Note: This is a test infrastructure issue, not a core emitter problem
 	}
-	
+
 	if (filename.endsWith('.json')) {
 		return JSON.parse(content)
 	} else if (filename.endsWith('.yaml') || filename.endsWith('.yml')) {
 		// Parse YAML content into object for validation
 		const yaml = await import("yaml")
-		console.log("Parsing YAML content to object");
+		Effect.log("Parsing YAML content to object")
 		return yaml.parse(content)
 	}
 
@@ -315,6 +312,7 @@ export function validateAsyncAPIStructure(asyncapiDoc: unknown): boolean {
 	return true
 }
 
+//TODO: refactor from Promise to Effect!
 /**
  * Validate AsyncAPI document using comprehensive validation framework
  */
@@ -325,7 +323,7 @@ export async function validateAsyncAPIObjectComprehensive(asyncapiDoc: unknown):
 }> {
 	try {
 		// Import validation framework dynamically to avoid circular dependencies
-		const {validateAsyncAPIObject} = await import("../../src/validation/asyncapi-validator")
+		const {validateAsyncAPIObject} = await import("../../src/validation/asyncapi-validator.js")
 
 		const result = await validateAsyncAPIObject(asyncapiDoc, {
 			strict: true,
@@ -473,7 +471,7 @@ export const TestLogging = {
 
 	logMultiNamespaceOperation: (operationName: string) => {
 		Effect.log(`✓ Multi-namespace operation: ${operationName}`)
-	}
+	},
 }
 
 /**
@@ -513,9 +511,9 @@ export const TestValidationPatterns = {
 		TestLogging.logGenerationMetrics(
 			Object.keys(asyncapiDoc.components?.schemas || {}).length,
 			Object.keys(asyncapiDoc.operations || {}).length,
-			Object.keys(asyncapiDoc.channels || {}).length
+			Object.keys(asyncapiDoc.channels || {}).length,
 		)
-	}
+	},
 }
 
 /**

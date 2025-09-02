@@ -1,6 +1,10 @@
 import {describe, expect, it} from "vitest"
 import {compileAsyncAPISpecWithoutErrors, parseAsyncAPIOutput} from "../utils/test-helpers"
 import {Effect} from "effect"
+import {
+	DEFAULT_SERIALIZATION_FORMAT,
+	SERIALIZATION_FORMAT_OPTION_JSON,
+} from "../../src/core/serialization-format-options"
 
 describe("AsyncAPI Emitter Integration", () => {
 	it("should compile basic-events example and generate AsyncAPI", async () => {
@@ -36,7 +40,7 @@ describe("AsyncAPI Emitter Integration", () => {
 
 		const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source, {
 			"output-file": "test-asyncapi",
-			"file-type": "yaml",
+			"file-type": DEFAULT_SERIALIZATION_FORMAT,
 		})
 
 		// Find the generated AsyncAPI file
@@ -95,7 +99,7 @@ describe("AsyncAPI Emitter Integration", () => {
 
 		const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source, {
 			"output-file": "complex-test",
-			"file-type": "json",
+			"file-type": SERIALIZATION_FORMAT_OPTION_JSON,
 		})
 
 		const asyncapiDoc = parseAsyncAPIOutput(outputFiles, "complex-test.json")
@@ -151,7 +155,7 @@ describe("AsyncAPI Emitter Integration", () => {
 
 		const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source, {
 			"output-file": "multi-op-test",
-			"file-type": "yaml",
+			"file-type": DEFAULT_SERIALIZATION_FORMAT,
 		})
 
 		const content = parseAsyncAPIOutput(outputFiles, "multi-op-test.yaml")
@@ -197,7 +201,7 @@ describe("AsyncAPI Emitter Integration", () => {
 
 		const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source, {
 			"output-file": "doc-test",
-			"file-type": "json",
+			"file-type": SERIALIZATION_FORMAT_OPTION_JSON,
 		})
 
 		const asyncapiDoc = parseAsyncAPIOutput(outputFiles, "doc-test.json")

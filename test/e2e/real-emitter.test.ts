@@ -33,7 +33,7 @@ describe("REAL Emitter Test - No Mocks", () => {
 		`)
 
 		// Debug: Check what files are actually in the host filesystem
-		console.log("Files in host filesystem:", Array.from(host.fs.keys()))
+		Effect.log("Files in host filesystem:", Array.from(host.fs.keys()))
 		
 		// Compile with the REAL emitter - specify the correct file path
 		const program = await host.compile("./main.tsp")

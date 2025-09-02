@@ -70,8 +70,8 @@ op publishTestMessage(): TestMessage;
       })
     })
     
-    console.log("✅ CLI Compilation successful!")
-    console.log("Stdout:", stdout)
+    Effect.log("✅ CLI Compilation successful!")
+    Effect.log("Stdout:", stdout)
     
     // Verify AsyncAPI output was generated
     const asyncapiFiles = []
@@ -81,11 +81,11 @@ op publishTestMessage(): TestMessage;
         const filepath = join(outputDir, file)
         if (existsSync(filepath)) {
           asyncapiFiles.push(filepath)
-          console.log(`✅ Found output file: ${filepath}`)
+          Effect.log(`✅ Found output file: ${filepath}`)
         }
       }
     } catch (error) {
-      console.log("Directory listing error:", error)
+      Effect.log("Directory listing error:", error)
     }
     
     expect(asyncapiFiles.length).toBeGreaterThan(0)
@@ -96,8 +96,8 @@ op publishTestMessage(): TestMessage;
     expect(asyncapiContent).toContain("test.messages")
     expect(asyncapiContent).toContain("publishTestMessage")
     
-    console.log("✅ SUCCESS: Real TypeSpec compilation works!")
-    console.log("✅ SUCCESS: No mock infrastructure needed!")
-    console.log("✅ SUCCESS: Emitter generates valid AsyncAPI!")
+    Effect.log("✅ SUCCESS: Real TypeSpec compilation works!")
+    Effect.log("✅ SUCCESS: No mock infrastructure needed!")
+    Effect.log("✅ SUCCESS: Emitter generates valid AsyncAPI!")
   }, 30000) // 30 second timeout for compilation
 })

@@ -25,19 +25,19 @@ describe("🔧 M6: Decorator Registration Integration", () => {
     
     const program: Program = result.program || result
     expect(program).toBeDefined()
-    console.log("✅ TypeSpec program created successfully")
+    Effect.log("✅ TypeSpec program created successfully")
     
     // Import and test the decorator registration function
     const { createAsyncAPIDecorators } = await import("../../dist/decorators/index.js")
     expect(createAsyncAPIDecorators).toBeDefined()
     expect(typeof createAsyncAPIDecorators).toBe("function")
-    console.log("✅ createAsyncAPIDecorators function imported successfully")
+    Effect.log("✅ createAsyncAPIDecorators function imported successfully")
     
     // Call the decorator registration function
     let registrationError: Error | null = null
     try {
       createAsyncAPIDecorators(program)
-      console.log("✅ createAsyncAPIDecorators called without throwing")
+      Effect.log("✅ createAsyncAPIDecorators called without throwing")
     } catch (error) {
       registrationError = error as Error
     }
@@ -45,7 +45,7 @@ describe("🔧 M6: Decorator Registration Integration", () => {
     // The function should not throw errors
     expect(registrationError).toBeNull()
     
-    console.log("🎉 M6 SUCCESS: Decorator registration function works correctly!")
+    Effect.log("🎉 M6 SUCCESS: Decorator registration function works correctly!")
   })
 
   it("should verify TypeSpec.AsyncAPI namespace creation", async () => {
@@ -68,10 +68,10 @@ describe("🔧 M6: Decorator Registration Integration", () => {
     const globalNs = program.getGlobalNamespaceType()
     expect(globalNs).toBeDefined()
     
-    console.log("✅ Global namespace verified")
-    console.log("✅ TypeSpec.AsyncAPI namespace creation verified")
+    Effect.log("✅ Global namespace verified")
+    Effect.log("✅ TypeSpec.AsyncAPI namespace creation verified")
     
-    console.log("🎉 M6 SUCCESS: TypeSpec program integration works correctly!")
+    Effect.log("🎉 M6 SUCCESS: TypeSpec program integration works correctly!")
   })
 
   it("should test decorator function availability", async () => {
@@ -95,9 +95,9 @@ describe("🔧 M6: Decorator Registration Integration", () => {
       expect(decoratorModule[decoratorName]).toBeDefined()
       expect(typeof decoratorModule[decoratorName]).toBe("function")
       
-      console.log(`✅ ${decoratorName} decorator function available`)
+      Effect.log(`✅ ${decoratorName} decorator function available`)
     }
     
-    console.log("🎉 M6 SUCCESS: All decorator functions are available and callable!")
+    Effect.log("🎉 M6 SUCCESS: All decorator functions are available and callable!")
   })
 })

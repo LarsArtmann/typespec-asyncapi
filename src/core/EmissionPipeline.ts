@@ -277,6 +277,7 @@ export class EmissionPipeline {
 		})
 	}
 
+	//TODO: NO FUCKING any!!!
 	/**
 	 * Type-safe helper to get string values from TypeSpec state maps
 	 */

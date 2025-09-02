@@ -32,8 +32,8 @@ describe("Direct Emitter Test", () => {
 
 		// Capture console output
 		const consoleLogs: string[] = []
-		const originalLog = console.log
-		console.log = (...args) => {
+		const originalLog = Effect.log
+		Effect.log = (...args) => {
 			consoleLogs.push(args.join(" "))
 			originalLog(...args)
 		}
@@ -95,7 +95,7 @@ describe("Direct Emitter Test", () => {
 			expect(emitterLogs.length).toBeGreaterThan(0)
 
 		} finally {
-			console.log = originalLog
+			Effect.log = originalLog
 		}
 	})
 })

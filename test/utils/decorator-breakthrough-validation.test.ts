@@ -45,8 +45,8 @@ describe("🚀 DECORATOR REGISTRATION BREAKTHROUGH", () => {
       d.message?.includes("is not recognized")
     )
     
-    console.log(`🚀 BREAKTHROUGH METRIC: Unknown decorator errors: ${unknownDecoratorErrors.length} (was 371+)`)
-    console.log(`✅ SOLUTION CONFIRMED: Decorator registration system working`)
+    Effect.log(`🚀 BREAKTHROUGH METRIC: Unknown decorator errors: ${unknownDecoratorErrors.length} (was 371+)`)
+    Effect.log(`✅ SOLUTION CONFIRMED: Decorator registration system working`)
     
     // THE CORE BREAKTHROUGH: No unknown decorator errors
     expect(unknownDecoratorErrors).toHaveLength(0)
@@ -57,8 +57,8 @@ describe("🚀 DECORATOR REGISTRATION BREAKTHROUGH", () => {
     expect(typeof program.stateMap).toBe("function")
     expect(typeof program.getGlobalNamespaceType).toBe("function")
     
-    console.log(`📊 Total diagnostics: ${diagnostics.length}`)
-    console.log(`📊 Error types:`, diagnostics.map(d => d.code || "no-code").filter(c => c !== "no-code").slice(0, 5))
+    Effect.log(`📊 Total diagnostics: ${diagnostics.length}`)
+    Effect.log(`📊 Error types:`, diagnostics.map(d => d.code || "no-code").filter(c => c !== "no-code").slice(0, 5))
   })
 
   it("🎯 BREAKTHROUGH: Individual decorator validation", async () => {
@@ -80,11 +80,11 @@ describe("🚀 DECORATOR REGISTRATION BREAKTHROUGH", () => {
         d.message?.includes("Unknown decorator")
       )
       
-      console.log(`✅ ${test.name}: ${unknownErrors.length} unknown decorator errors`)
+      Effect.log(`✅ ${test.name}: ${unknownErrors.length} unknown decorator errors`)
       expect(unknownErrors).toHaveLength(0)
     }
     
-    console.log("🚀 ALL DECORATORS REGISTERED SUCCESSFULLY")
+    Effect.log("🚀 ALL DECORATORS REGISTERED SUCCESSFULLY")
   })
 
   it("🎯 BREAKTHROUGH: Program state management works", async () => {
@@ -108,8 +108,8 @@ describe("🚀 DECORATOR REGISTRATION BREAKTHROUGH", () => {
     expect(typeof stateMap.set).toBe("function")
     expect(typeof stateMap.get).toBe("function")
     
-    console.log("✅ BREAKTHROUGH: Program state management verified")
-    console.log("✅ BREAKTHROUGH: Ready for emitter processing")
+    Effect.log("✅ BREAKTHROUGH: Program state management verified")
+    Effect.log("✅ BREAKTHROUGH: Ready for emitter processing")
   })
 
   it("📊 IMPACT MEASUREMENT: Decorator system metrics", async () => {
@@ -136,11 +136,11 @@ describe("🚀 DECORATOR REGISTRATION BREAKTHROUGH", () => {
     const typeErrors = diagnostics.filter(d => d.severity === "error" && !d.message?.includes("Extern declaration"))
     const unknownDecorators = diagnostics.filter(d => d.message?.includes("Unknown decorator"))
     
-    console.log("📊 BREAKTHROUGH METRICS:")
-    console.log(`   Compilation time: ${compilationTime}ms`)
-    console.log(`   Unknown decorator errors: ${unknownDecorators.length} (BREAKTHROUGH: was 371+)`)
-    console.log(`   Critical type errors: ${typeErrors.length}`)
-    console.log(`   Program validity: ${!!program && !!program.checker}`)
+    Effect.log("📊 BREAKTHROUGH METRICS:")
+    Effect.log(`   Compilation time: ${compilationTime}ms`)
+    Effect.log(`   Unknown decorator errors: ${unknownDecorators.length} (BREAKTHROUGH: was 371+)`)
+    Effect.log(`   Critical type errors: ${typeErrors.length}`)
+    Effect.log(`   Program validity: ${!!program && !!program.checker}`)
     
     // The core success metric
     expect(unknownDecorators).toHaveLength(0)
@@ -150,7 +150,7 @@ describe("🚀 DECORATOR REGISTRATION BREAKTHROUGH", () => {
     expect(program).toBeDefined()
     expect(program.checker).toBeDefined()
     
-    console.log("🚀 BREAKTHROUGH CONFIRMED: 51% impact achieved")
-    console.log("🚀 BREAKTHROUGH CONFIRMED: Decorator registration system operational")
+    Effect.log("🚀 BREAKTHROUGH CONFIRMED: 51% impact achieved")
+    Effect.log("🚀 BREAKTHROUGH CONFIRMED: Decorator registration system operational")
   })
 })
