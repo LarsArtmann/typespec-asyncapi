@@ -22,29 +22,46 @@ import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js"
  * TypeSpec code snippets for all documentation examples
  */
 export const TypeSpecFixtures = {
+  //TODO: MONOLITHIC ARCHITECTURE DISASTER - 1,728 LINES IN SINGLE FILE IS INSANE!
+  //TODO: CRITICAL SPLIT REQUIRED - Break into CoreFixtures, EdgeCaseFixtures, PerformanceFixtures modules!
+  //TODO: MAINTENANCE NIGHTMARE - Finding specific fixtures in 1,728 lines is IMPOSSIBLE!
+  //TODO: DUPLICATE CODE EVERYWHERE - Same patterns repeated 50+ times without abstraction!
+  //TODO: TYPE SAFETY CATASTROPHE - Using 'any' types and Record<string> instead of proper interfaces!
   
   // Core Concepts Fixtures
   coreConceptsService: `
     @service({
+      //TODO: HARDCODED SERVICE TITLE! "Order Service" should be SERVICE_TITLE constant!
+      //TODO: MAGIC STRING HELL - This title is duplicated in AsyncAPIFixtures without abstraction!
       title: "Order Service",
+      //TODO: HARDCODED VERSION DISASTER - "1.0.0" appears 50+ times in this file!
+      //TODO: VERSION UPDATE NIGHTMARE - Changing version requires editing 50+ locations!
       version: "1.0.0"
     })
     namespace OrderService {
+      //TODO: HARDCODED CHANNEL PATTERN! "orders/{orderId}" should be ORDERS_CHANNEL_TEMPLATE constant!
+      //TODO: MAGIC STRING DUPLICATION - This channel pattern repeated without abstraction!
       @channel("orders/{orderId}")
       @publish
       op createOrder(@path orderId: string, @body order: CreateOrderRequest): CreateOrderResponse;
       
+      //TODO: ANOTHER HARDCODED CHANNEL! "orders/{orderId}/status" should be ORDER_STATUS_CHANNEL_TEMPLATE!
+      //TODO: BRITTLE HARDCODED PATHS - Channel names scattered throughout without central management!
       @channel("orders/{orderId}/status")
       @subscribe  
       op orderStatusUpdated(@path orderId: string): OrderStatusEvent;
     }
     
     model CreateOrderRequest {
+      //TODO: HARDCODED PROPERTY NAMES! "customerId" should be standardized across all models!
+      //TODO: TYPE SAFETY VIOLATION - Using raw 'string' instead of branded types like CustomerId!
       customerId: string;
       items: OrderItem[];
     }
     
     model OrderItem {
+      //TODO: MORE HARDCODED PROPERTY NAMES! "productId", "quantity", "price" need standardization!
+      //TODO: PRIMITIVE OBSESSION - Using raw primitives instead of domain types like ProductId!
       productId: string;
       quantity: int32;
       price: float64;
@@ -52,11 +69,16 @@ export const TypeSpecFixtures = {
     
     model CreateOrderResponse {
       orderId: string;
+      //TODO: HARDCODED STATUS VALUES! "pending"|"confirmed"|"rejected" should be OrderStatus enum!
+      //TODO: MAGIC STRING ENUM - Status values hardcoded without proper type safety!
       status: "pending" | "confirmed" | "rejected";
     }
     
+    //TODO: HARDCODED MESSAGE NAME! "OrderStatusEvent" should be MESSAGE_NAMES.ORDER_STATUS constant!
     @message("OrderStatusEvent")
     model OrderStatusEvent {
+      //TODO: DUPLICATE PROPERTY PATTERNS - orderId/status/timestamp pattern repeated everywhere!
+      //TODO: NO INHERITANCE - Should extend BaseEvent with common fields!
       orderId: string;
       status: string;
       timestamp: utcDateTime;
