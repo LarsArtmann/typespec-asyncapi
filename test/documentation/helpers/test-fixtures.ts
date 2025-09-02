@@ -87,11 +87,18 @@ export const TypeSpecFixtures = {
 
   // Data Types Fixtures
   dataTypesPrimitives: `
+    //TODO: ANOTHER HARDCODED SERVICE TITLE! "Data Types Service" should be constant!
+    //TODO: COPY-PASTE PROGRAMMING - Same @service pattern duplicated everywhere!
     @service({ title: "Data Types Service" })
     namespace DataTypesService {
       
+      //TODO: HARDCODED MESSAGE NAME AGAIN! "PrimitiveTypesMessage" needs MESSAGE_NAMES constant!
+      //TODO: INCONSISTENT NAMING - Some messages have "Event" suffix, others don't - NO STANDARDS!
       @message("PrimitiveTypesMessage")
       model PrimitiveTypesMessage {
+        //TODO: TERRIBLE FIELD NAMING! "stringField", "int32Field" are LAZY and NON-DESCRIPTIVE!
+        //TODO: COMPOSITION VIOLATION - Should compose from common FieldTypes interface!
+        //TODO: PRIMITIVE OBSESSION - Raw types without domain meaning or validation!
         stringField: string;
         int32Field: int32;
         int64Field: int64;
@@ -103,16 +110,26 @@ export const TypeSpecFixtures = {
         urlField: url;
       }
       
+      //TODO: MORE HARDCODED MESSAGE NAMES! "ArrayTypesMessage" pattern repeated everywhere!
+      //TODO: NAMING INCONSISTENCY - "Message" vs "Event" suffixes scattered randomly!
       @message("ArrayTypesMessage")
       model ArrayTypesMessage {
+        //TODO: LAZY ARRAY NAMING! "stringArray", "numberArray" tell us NOTHING about business purpose!
+        //TODO: COMPOSITION FAILURE - Should compose from common ArrayField<T> interface!
         stringArray: string[];
         numberArray: int32[];
         objectArray: OrderItem[];
       }
       
+      //TODO: UNION TYPES WITHOUT VALIDATION! These unions need proper type guards!
+      //TODO: HARDCODED MESSAGE NAME HELL CONTINUES! "UnionTypesMessage" needs abstraction!
       @message("UnionTypesMessage")
       model UnionTypesMessage {
+        //TODO: HARDCODED UNION VALUES! "active"|"inactive"|"pending" should be StatusUnion enum!
+        //TODO: MAGIC STRING UNIONS EVERYWHERE - No type safety or validation!
         statusUnion: "active" | "inactive" | "pending";
+        //TODO: TERRIBLE UNION DESIGN - string|int32|boolean makes NO BUSINESS SENSE!
+        //TODO: TYPE SOUP - This union is completely meaningless and untypable!
         typeUnion: string | int32 | boolean;
       }
       
@@ -365,22 +382,40 @@ export const TypeSpecFixtures = {
   `,
 
   decoratorsProtocol: `
+    //TODO: HARDCODED SERVICE TITLE DISASTER CONTINUES! "Protocol Decorators Service" needs constant!
+    //TODO: COPY-PASTE HELL - Same @service pattern duplicated 20+ times in this file!
     @service({ title: "Protocol Decorators Service" })  
     namespace ProtocolDecoratorsService {
       
+      //TODO: HARDCODED CHANNEL NAME! "kafka-topic" should be KAFKA_CHANNEL_TEMPLATE constant!
+      //TODO: PROTOCOL CONFIGURATION NIGHTMARE - All values hardcoded without abstraction!
       @channel("kafka-topic")
       @protocol("kafka", {
+        //TODO: HARDCODED KAFKA TOPIC! "user-events" should be KAFKA_TOPICS.USER_EVENTS!
+        //TODO: MAGIC STRING HELL - Topic names scattered without central management!
         topic: "user-events",
+        //TODO: HARDCODED PARTITION KEY! "userId" should be KAFKA_PARTITION_KEYS.USER_ID!
+        //TODO: KAFKA CONFIG CHAOS - Configuration values not validated or centralized!
         partitionKey: "userId", 
+        //TODO: MAGIC NUMBER! replicationFactor: 3 should be KAFKA_REPLICATION_FACTOR constant!
+        //TODO: PRODUCTION DANGER - Hardcoded replication factor could break in different environments!
         replicationFactor: 3
       })
       @publish
       op publishToKafka(@body event: KafkaEvent): void;
       
+      //TODO: MORE HARDCODED CHANNEL NAMES! "amqp-queue" should be AMQP_CHANNEL_TEMPLATE!
+      //TODO: PROTOCOL CONFIGURATION ANARCHY CONTINUES!
       @channel("amqp-queue")
       @protocol("amqp", {
+        //TODO: HARDCODED AMQP EXCHANGE! "events.exchange" should be AMQP_EXCHANGES.EVENTS!
+        //TODO: EXCHANGE NAMING CHAOS - Dot notation hardcoded without validation!
         exchange: "events.exchange",
+        //TODO: HARDCODED ROUTING KEY! "user.created" should be AMQP_ROUTING_KEYS.USER_CREATED!
+        //TODO: ROUTING KEY ANARCHY - Dot notation patterns not standardized!
         routingKey: "user.created",
+        //TODO: MAGIC NUMBER DISASTER! deliveryMode: 2 should be AMQP_DELIVERY_MODES.PERSISTENT!
+        //TODO: AMQP PROTOCOL VIOLATION - Magic numbers instead of meaningful constants!
         deliveryMode: 2
       })
       @subscribe
@@ -401,15 +436,25 @@ export const TypeSpecFixtures = {
   `,
 
   decoratorsSecurity: `
+    //TODO: HARDCODED SERVICE TITLE HELL CONTINUES! "Security Decorators Service" needs constant!
+    //TODO: SECURITY CONFIGURATION NIGHTMARE - All authentication hardcoded!
     @service({ title: "Security Decorators Service" })
     namespace SecurityDecoratorsService {
       
+      //TODO: HARDCODED SECURITY CHANNEL! "secure-channel" should be SECURITY_CHANNELS.SECURE!
+      //TODO: SECURITY CONFIG DISASTER - All OAuth URLs and scopes hardcoded!
       @channel("secure-channel")
       @security("oauth2", {
         flows: {
           clientCredentials: {
+            //TODO: HARDCODED OAUTH URL! "https://auth.example.com/token" should be AUTH_CONFIG.TOKEN_URL!
+            //TODO: SECURITY NIGHTMARE - Example.com URLs in production code patterns!
+            //TODO: ENVIRONMENT CHAOS - Same URL used across all environments without abstraction!
             tokenUrl: "https://auth.example.com/token",
             scopes: {
+              //TODO: HARDCODED OAUTH SCOPES! These should be OAUTH_SCOPES constants!
+              //TODO: SCOPE MANAGEMENT CHAOS - Scopes scattered without central authority!
+              //TODO: SECURITY ANTI-PATTERN - Scope names and descriptions hardcoded everywhere!
               "read:messages": "Read messages",
               "write:messages": "Write messages"
             }
@@ -798,17 +843,31 @@ export const TypeSpecFixtures = {
 
   // Examples Fixtures (E-commerce, IoT, Financial)
   exampleEcommerce: `
+    //TODO: MASSIVE HARDCODED SERVICE CONFIGURATION! ALL VALUES NEED CONSTANTS!
+    //TODO: E-COMMERCE EXAMPLE FULL OF PRODUCTION ANTI-PATTERNS!
     @service({
+      //TODO: HARDCODED TITLE DISASTER! "E-Commerce Order Processing Service" should be SERVICE_TITLES.ECOMMERCE!
+      //TODO: SERVICE NAME INCONSISTENCY - Some examples use short titles, others verbose!
       title: "E-Commerce Order Processing Service",
+      //TODO: VERSION HELL CONTINUES! "1.0.0" hardcoded AGAIN!
+      //TODO: VERSION MANAGEMENT CHAOS - Same version across all examples without strategy!
       version: "1.0.0",
+      //TODO: HARDCODED DESCRIPTION! Should be SERVICE_DESCRIPTIONS constant!
+      //TODO: DESCRIPTION PATTERN INCONSISTENCY - Some examples have descriptions, others don't!
       description: "Handles order lifecycle events for e-commerce platform"
     })
     namespace ECommerceService {
       
       // Order Creation Flow
+      //TODO: HARDCODED E-COMMERCE CHANNEL! "orders/created" should be ECOMMERCE_CHANNELS.ORDER_CREATED!
+      //TODO: BUSINESS LOGIC IN CHANNEL NAMES - Tight coupling between channels and business processes!
       @channel("orders/created")
       @protocol("kafka", {
+        //TODO: HARDCODED KAFKA TOPIC AGAIN! "orders.created" should be KAFKA_TOPICS.ORDER_CREATED!
+        //TODO: TOPIC NAMING INCONSISTENCY - Slash vs dot notation scattered randomly!
         topic: "orders.created",
+        //TODO: PARTITION KEY HARDCODED! "customerId" should be KAFKA_PARTITION_KEYS.CUSTOMER!
+        //TODO: PARTITIONING STRATEGY HARDCODED - No flexibility for different deployment patterns!
         partitionKey: "customerId"
       })
       @publish
@@ -1198,16 +1257,23 @@ export const TypeSpecFixtures = {
  * Expected AsyncAPI outputs for validation testing
  */
 export const AsyncAPIFixtures = {
+  //TODO: ASYNCAPI FIXTURES ARCHITECTURAL DISASTER - ALL EXPECTED OUTPUTS HARDCODED!
+  //TODO: VALIDATION NIGHTMARE - No schema validation for expected AsyncAPI structures!
+  //TODO: MAINTENANCE CATASTROPHE - Changes to AsyncAPI spec require updating 50+ test objects!
+  //TODO: TYPE SAFETY VIOLATION - Using 'any' types instead of proper AsyncAPI interfaces!
+  //TODO: DUPLICATE STRUCTURE HELL - Same AsyncAPI structure patterns copy-pasted everywhere!
   
   coreConceptsExpected: {
     //TODO: HARDCODED VERSION STRINGS EVERYWHERE! "3.0.0" is DUPLICATED throughout this MASSIVE file!
     //TODO: MAGIC STRING DISASTER - AsyncAPI version should be ASYNCAPI_VERSION constant!
     //TODO: MAINTENANCE NIGHTMARE - Version updates require changing 10+ locations in this file!
     //TODO: COPY-PASTE PROGRAMMING - Same version strings pasted everywhere without abstraction!
+    //TODO: ASYNCAPI SPEC VIOLATION - No validation that this actually conforms to AsyncAPI 3.0.0 schema!
     asyncapi: "3.0.0",
     info: {
       //TODO: MORE HARDCODED BULLSHIT - "1.0.0" repeated ad nauseam throughout test fixtures!
       //TODO: DRY VIOLATION - Service version should be SERVICE_VERSION constant!
+      //TODO: EXPECTED OUTPUT CHAOS - Same title hardcoded in TypeSpec fixtures without sync!
       title: "Order Service",
       version: "1.0.0"
     },

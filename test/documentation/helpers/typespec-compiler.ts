@@ -128,7 +128,7 @@ export class TypeSpecDocumentationTestCompiler {
 			patterns.operations.forEach(op => {
 				// Use original channel path as key when available, otherwise generate one
 				const channelKey = op.channelPath || `${op.name}_channel`
-				asyncapi.channels![channelKey] = {
+				const channel: any = {
 					address: op.channelPath || `/${op.name}`,
 					messages: {
 						[`${op.name}Message`]: {
@@ -136,6 +136,14 @@ export class TypeSpecDocumentationTestCompiler {
 						}
 					}
 				}
+				
+				// Add protocol bindings if protocol configuration exists
+				if (op.protocolConfig) {
+					channel.bindings = {}
+					channel.bindings[op.protocolConfig.protocol] = op.protocolConfig.config
+				}
+				
+				asyncapi.channels![channelKey] = channel
 
 				// Add parameters for parameterized channels
 				if (op.channelPath?.includes('{')) {
@@ -277,17 +285,46 @@ export class TypeSpecDocumentationTestCompiler {
 			serviceVersion = versionMatch?.[1]
 		}
 
-		// Extract operations
-		const operations: Array<{name: string, type: string, channelPath?: string}> = []
+		// Extract operations with protocol bindings and security configurations
+		const operations: Array<{name: string, type: string, channelPath?: string, protocolConfig?: {protocol: string, config: any}, securityConfig?: {scheme: string, config: any}}> = []
 		
-		// Find operations with decorators
-		const operationMatches = code.matchAll(/(?:@channel\("([^"]+)"\)\s*)?(@publish|@subscribe)\s+op\s+(\w+)/gm)
+		// Find operations with decorators (including @protocol and @security)
+		// Look for: [@channel("path")] [@protocol("type", {...})] [@security("type", {...})] [@publish/@subscribe] op name
+		const operationPattern = /(?:@channel\("([^"]+)"\)\s*)?(?:@protocol\("([^"]+)",\s*(\{[^}]*(?:\{[^}]*\}[^}]*)*\})\)\s*)?(?:@security\("([^"]+)",\s*(\{[^}]*(?:\{[^}]*\}[^}]*)*\})\)\s*)?(@publish|@subscribe)\s+op\s+(\w+)/gms
+		
+		const operationMatches = code.matchAll(operationPattern)
 		for (const match of operationMatches) {
-			operations.push({
-				name: match[3],
-				type: match[2],
-				channelPath: match[1]
-			})
+			const operation: any = {
+				name: match[5], // operation name
+				type: match[4], // @publish or @subscribe
+				channelPath: match[1] // channel path
+			}
+			
+			// Parse protocol configuration if present
+			if (match[2] && match[3]) {
+				try {
+					// Clean up the config string and parse as JSON-like object
+					const configStr = match[3]
+						.replace(/(\w+):/g, '"$1":') // Quote property names
+						.replace(/:\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*([,}])/g, ': "$1"$2') // Quote unquoted string values
+						.replace(/:\s*(\d+)\s*([,}])/g, ': $1$2') // Keep numbers unquoted
+						.replace(/:\s*(true|false)\s*([,}])/g, ': $1$2') // Keep booleans unquoted
+						
+					const config = JSON.parse(configStr)
+					operation.protocolConfig = {
+						protocol: match[2],
+						config: config
+					}
+				} catch (error) {
+					// If JSON parsing fails, store raw config for debugging
+					operation.protocolConfig = {
+						protocol: match[2],
+						config: { raw: match[3] }
+					}
+				}
+			}
+			
+			operations.push(operation)
 		}
 
 		// Extract models and messages
