@@ -2,15 +2,28 @@ import type {DecoratorContext, Model} from "@typespec/compiler"
 import {$lib} from "../lib.js"
 import {Effect} from "effect"
 
+//TODO: CRITICAL - Add AsyncAPI 3.0.0 Message Object compliance validation
+//TODO: CRITICAL - Implement proper Effect.TS schema validation using @effect/schema
+//TODO: CRITICAL - Add Message Trait support for reusable message configurations
+//TODO: CRITICAL - Validate message payload schema structure against AsyncAPI spec
+//TODO: CRITICAL - Add support for AsyncAPI Message Object fields (schemaFormat, messageId)
+//TODO: CRITICAL - Implement proper validation for message bindings (protocol-specific)
+
+//TODO: CRITICAL - Use proper branded types with schema validation instead of simple branding
 type ExampleName = string & { readonly brand: 'ExampleName' };
 type ExampleSummary = string & { readonly brand: 'ExampleSummary' };
 
 export type MessageExample = {
 	name?: ExampleName;
 	summary?: ExampleSummary;
+	//TODO: CRITICAL - 'unknown' type defeats type safety - should use proper schema validation
 	value: unknown;
 };
 
+//TODO: CRITICAL - Missing required AsyncAPI Message Object fields (payload, schemaFormat, messageId)
+//TODO: CRITICAL - Add validation for message name format (AsyncAPI naming conventions)
+//TODO: CRITICAL - Add support for message traits inheritance
+//TODO: CRITICAL - Validate contentType against RFC 2046 media type specifications
 export type MessageConfig = {
 	/** Unique identifier for the message */
 	name?: string;
@@ -29,6 +42,7 @@ export type MessageConfig = {
 	/** Correlation ID reference for message tracking */
 	correlationId?: string;
 	/** Message bindings for protocol-specific information */
+	//TODO: CRITICAL - Should validate bindings structure per AsyncAPI protocol specifications
 	bindings?: Record<string, unknown>;
 }
 
@@ -53,6 +67,10 @@ export type MessageConfig = {
  * }
  * ```
  */
+//TODO: CRITICAL - Add validation for AsyncAPI Message Object required fields
+//TODO: CRITICAL - Implement proper Effect.TS monadic error handling
+//TODO: CRITICAL - Add message schema validation against target Model structure
+//TODO: CRITICAL - Validate message examples against actual message payload schema
 export function $message(
 	context: DecoratorContext,
 	target: Model,
@@ -63,16 +81,20 @@ export function $message(
 	Effect.log(`=� Message config:`, config)
 	Effect.log(`<�  Target type: ${target.kind}`)
 
+	//TODO: CRITICAL - This comment is misleading - should validate Model type constraints
 	// Target is always Model type - no validation needed
 
+	//TODO: CRITICAL - No validation for config structure - should use Effect.TS schema validation
 	// Validate message configuration
 	const messageConfig = config ?? {}
 
+	//TODO: CRITICAL - Potential mutation of readonly config object
 	// Extract message name from model name if not provided
 	messageConfig.name ??= target.name
 
 	Effect.log(`=� Processed message config:`, messageConfig)
 
+	//TODO: CRITICAL - Hardcoded array should be extracted to constants with proper validation
 	// Validate content type if provided
 	if (messageConfig.contentType) {
 		const validContentTypes = [
@@ -89,6 +111,7 @@ export function $message(
 		}
 	}
 
+	//TODO: CRITICAL - No validation that messageMap exists or handles potential undefined
 	// Store message configuration in program state
 	const messageMap = context.program.stateMap($lib.stateKeys.messageConfigs)
 	messageMap.set(target, messageConfig)
@@ -100,6 +123,8 @@ export function $message(
 /**
  * Get message configuration for a model
  */
+//TODO: CRITICAL - Unsafe type assertion 'as MessageConfig' defeats type safety
+//TODO: CRITICAL - No validation that messageMap exists or handles potential undefined
 export function getMessageConfig(context: DecoratorContext, target: Model): MessageConfig | undefined {
 	const messageMap = context.program.stateMap($lib.stateKeys.messageConfigs)
 	return messageMap.get(target) as MessageConfig | undefined
@@ -108,6 +133,7 @@ export function getMessageConfig(context: DecoratorContext, target: Model): Mess
 /**
  * Check if a model has message configuration
  */
+//TODO: CRITICAL - No validation that messageMap exists or handles potential undefined
 export function isMessage(context: DecoratorContext, target: Model): boolean {
 	const messageMap = context.program.stateMap($lib.stateKeys.messageConfigs)
 	return messageMap.has(target)

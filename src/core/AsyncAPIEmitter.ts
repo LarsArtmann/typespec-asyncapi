@@ -12,6 +12,9 @@
  * - Hot reload coordination
  */
 
+// TODO: CRITICAL - Import organization inconsistent - group by source and add separating comments
+// TODO: CRITICAL - Effect is imported but only used for logging - consider importing specific functions
+// TODO: CRITICAL - AsyncAPI parser types imported but not validated for version compatibility
 import {Effect} from "effect"
 import type {AssetEmitter, EmittedSourceFile, SourceFile} from "@typespec/asset-emitter"
 import {TypeEmitter} from "@typespec/asset-emitter"
@@ -39,28 +42,45 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 	private readonly pluginRegistry: PluginRegistry
 	private readonly asyncApiDoc: AsyncAPIObject
 
+	// TODO: CRITICAL - Constructor parameter validation missing - emitter could be null/undefined
+	// TODO: CRITICAL - No error handling for component initialization failures
 	constructor(emitter: AssetEmitter<string, AsyncAPIEmitterOptions>) {
 		super(emitter)
 
 		// Initialize micro-kernel components with REAL business logic
+		// TODO: CRITICAL - Component initialization could fail but no error handling
+		// TODO: CRITICAL - No dependency injection - hard to test and mock components
+		// TODO: CRITICAL - Components created without configuration - should pass options
 		this.pipeline = new EmissionPipeline()
 		this.documentGenerator = new DocumentGenerator()
 		this.documentBuilder = new DocumentBuilder()
+		// TODO: CRITICAL - Performance monitor commented out but no alternative metrics collection
 		// this.performanceMonitor = new PerformanceMonitor()
 		this.pluginRegistry = new PluginRegistry()
 
 		// Initialize document structure using REAL DocumentBuilder logic
+		// TODO: CRITICAL - Document initialization could fail but no error handling
+		// TODO: CRITICAL - emitter.getProgram() called without null safety check
 		this.asyncApiDoc = this.documentBuilder.createInitialDocument(emitter.getProgram())
 	}
 
+	// TODO: CRITICAL - Override method lacks explicit return type annotation
+	// TODO: CRITICAL - Method parameter 'program' not used but not marked as unused with underscore
 	override programContext(program: Program): Record<string, unknown> {
+		// TODO: CRITICAL - No error handling if getOptions() returns null/undefined
+		// TODO: CRITICAL - Bracket notation for options access is fragile - consider type-safe property access
 		const options = this.emitter.getOptions()
 		const fileType = options["file-type"] || DEFAULT_SERIALIZATION_FORMAT
 		const fileName = options["output-file"] || "asyncapi"
+		// TODO: CRITICAL - String interpolation without validation - fileType could contain invalid characters
+		// TODO: CRITICAL - No validation that fileName is safe for filesystem
 		const outputPath = `${fileName}.${fileType}`
 
+		// TODO: CRITICAL - createSourceFile could fail but no error handling
 		const sourceFile = this.emitter.createSourceFile(outputPath)
 
+		// TODO: CRITICAL - Log uses special characters that may break JSON parsers or terminals
+		// TODO: CRITICAL - Effect.log not awaited - logs may not appear in production
 		Effect.log("=� AsyncAPI Micro-kernel: Running emission pipeline...")
 
 		try {

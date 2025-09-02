@@ -12,6 +12,9 @@
  * 5. Serialization - Convert to JSON/YAML format
  */
 
+// TODO: CRITICAL - Import organization inconsistent - group by source (TypeScript, @typespec, @asyncapi, local)
+// TODO: CRITICAL - Effect import could be more specific - only Effect.gen and Effect.log are used
+// TODO: CRITICAL - Missing validation that AsyncAPI parser version matches expected v3 types
 import {Effect} from "effect"
 import type {Model, Operation, Program} from "@typespec/compiler"
 import type {AssetEmitter} from "@typespec/asset-emitter"
@@ -25,12 +28,16 @@ import {DiscoveryService} from "./DiscoveryService.js"
 import {ProcessingService} from "./ProcessingService.js"
 import {ValidationService} from "./ValidationService.js"
 
+// TODO: CRITICAL - PipelineContext lacks validation or constraints - any values could be passed
+// TODO: CRITICAL - Consider making PipelineContext immutable with readonly properties
 export type PipelineContext = {
 	program: Program
 	asyncApiDoc: AsyncAPIObject
 	emitter: AssetEmitter<string, AsyncAPIEmitterOptions>
 }
 
+// TODO: CRITICAL - DiscoveryResult arrays could be empty but no validation for minimum required elements
+// TODO: CRITICAL - Consider adding metadata fields (discovery timestamp, source locations) for debugging
 export type DiscoveryResult = {
 	operations: Operation[]
 	messageModels: Model[]
@@ -46,7 +53,12 @@ export class EmissionPipeline {
 	private readonly processingService: ProcessingService
 	private readonly validationService: ValidationService
 
+	// TODO: CRITICAL - Constructor lacks error handling for service initialization failures  
+	// TODO: CRITICAL - No dependency injection - services hardcoded making testing difficult
+	// TODO: CRITICAL - Services created without configuration - should pass pipeline options
 	constructor() {
+		// TODO: CRITICAL - Service instantiation could throw but no try-catch wrapper
+		// TODO: CRITICAL - No validation that services implement required interfaces
 		this.documentBuilder = new DocumentBuilder()
 		this.discoveryService = new DiscoveryService()
 		this.processingService = new ProcessingService()
@@ -56,8 +68,14 @@ export class EmissionPipeline {
 	/**
 	 * Execute the complete emission pipeline with REAL business logic integration
 	 */
+	// TODO: CRITICAL - Method lacks explicit return type annotation
+	// TODO: CRITICAL - No input validation for context parameter
+	// TODO: CRITICAL - Pipeline execution not configurable - stages always run in same order
 	executePipeline(context: PipelineContext) {
+		// TODO: CRITICAL - Effect.gen pattern used but no error recovery between stages
+		// TODO: CRITICAL - Pipeline failure in any stage stops entire process - no partial recovery
 		return Effect.gen(function* (this: EmissionPipeline) {
+			// TODO: CRITICAL - Log uses emoji and not awaited - may not appear in production
 			Effect.log(`🚀 Starting emission pipeline stages...`)
 
 			// Stage 1: Discovery

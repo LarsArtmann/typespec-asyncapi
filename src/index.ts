@@ -30,17 +30,22 @@
  */
 
 // Core TypeScript imports - TypeSpec compiler integration
-// TODO: Consider grouping imports by category (TypeSpec, Effect, local) with separating comments
-// TODO: Add explicit return type annotations to all imported types for better IDE support
+// TODO: CRITICAL - Group imports by category (TypeSpec, Effect, local) with separating comments for better maintainability
+// TODO: CRITICAL - Add explicit return type annotations to all imported types for better IDE support and type safety
+// TODO: CRITICAL - Consider using import maps or path aliases to simplify complex import paths
+// TODO: CRITICAL - Add validation for required TypeSpec compiler version compatibility
 import type { EmitContext } from "@typespec/compiler";
 
 import { setTypeSpecNamespace } from "@typespec/compiler";
-// TODO: Import only specific Effect functions needed instead of entire Effect namespace
+// TODO: CRITICAL - Import only specific Effect functions needed instead of entire Effect namespace for better tree shaking
+// TODO: CRITICAL - Effect is imported but only Effect.log is used - consider importing { log } from "effect/Effect" specifically
 import { Effect } from "effect";
 import type { AsyncAPIEmitterOptions } from "./options.js";
 
 // AsyncAPI Decorator Imports - Core decorator functions for TypeSpec annotations
-// TODO: Consider using a barrel export from decorators/index.ts to simplify imports
+// TODO: CRITICAL - Consider using a barrel export from decorators/index.ts to simplify imports and reduce coupling
+// TODO: CRITICAL - 7 individual decorator imports create high maintenance overhead - use barrel export pattern
+// TODO: CRITICAL - Decorator import order should match registration order for consistency
 /** @channel decorator - Defines AsyncAPI channel configuration for message routing */
 import { $channel } from "./decorators/channel.js";
 /** @publish decorator - Marks operations as message publishing (send) operations */
@@ -73,14 +78,18 @@ export { $lib } from "./lib.js";
 export type { AsyncAPIEmitterOptions } from "./options.js";
 
 // Register decorators with TypeSpec.AsyncAPI namespace
-// TODO: Extract namespace string to a constant to avoid duplication and typos
-// TODO: Add error handling for setTypeSpecNamespace failure
-// TODO: Consider organizing decorators by category (core, message, server, security)
+// TODO: CRITICAL - Extract namespace string to a constant to avoid duplication and typos across codebase
+// TODO: CRITICAL - Add error handling for setTypeSpecNamespace failure - what happens if namespace registration fails?
+// TODO: CRITICAL - Consider organizing decorators by category (core, message, server, security) for better maintainability
+// TODO: CRITICAL - Magic string "TypeSpec.AsyncAPI" should be exported as NAMESPACE_NAME constant
+// TODO: CRITICAL - No validation that decorator functions are valid before namespace registration
 setTypeSpecNamespace("TypeSpec.AsyncAPI", $channel, $publish, $subscribe, $server, $message, $protocol, $security);
 
 // Export decorator functions (for TypeSpec compiler) - THIS IS A MUST!
-// TODO: Remove redundant comment and make it more descriptive
-// TODO: Consider using a more functional approach with array spreading for exports
+// TODO: CRITICAL - Remove redundant comment and make it more descriptive about WHY these exports are required
+// TODO: CRITICAL - Consider using a more functional approach with array spreading for exports for maintainability
+// TODO: CRITICAL - Export array matches setTypeSpecNamespace arguments but order could diverge - add validation
+// TODO: CRITICAL - Missing documentation about which decorators are optional vs required for basic functionality
 export { $channel, $publish, $subscribe, $server, $message, $protocol, $security };
 
 /**
@@ -157,36 +166,48 @@ export { $channel, $publish, $subscribe, $server, $message, $protocol, $security
  * @since 0.1.0-alpha
  * @public
  */
-// TODO: Consider adding explicit return type annotation for clarity
-// TODO: Add input validation for context parameter
-// TODO: Consider extracting string literals to constants for maintainability
+// TODO: CRITICAL - Add explicit return type annotation Promise<void> for clarity and better TypeScript errors
+// TODO: CRITICAL - Add input validation for context parameter - what happens with null/undefined context?
+// TODO: CRITICAL - Consider extracting string literals to constants for maintainability and i18n support
+// TODO: CRITICAL - Function is async but uses dynamic import - should handle import failures gracefully
+// TODO: CRITICAL - No error boundary for unhandled exceptions from generateAsyncAPIWithEffect
+// TODO: CRITICAL - Missing timeout handling for potentially long-running emit operations
 export async function $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): Promise<void> {
     // Import the working Effect.TS emitter
-    // TODO: Consider pre-importing at module level instead of dynamic import for better performance
-    // TODO: Add error handling for import failure
-    // TODO: Add type assertion for imported function
+    // TODO: CRITICAL - Pre-import at module level instead of dynamic import for better performance and early error detection
+    // TODO: CRITICAL - Add error handling for import failure with meaningful error message for users
+    // TODO: CRITICAL - Add type assertion for imported function to ensure generateAsyncAPIWithEffect matches expected signature
+    // TODO: CRITICAL - Dynamic import creates circular dependency risk - validate import graph
     const { generateAsyncAPIWithEffect } = await import("./emitter-with-effect.js");
     
-    // TODO: Remove emoji from log messages for professional production logging
-    // TODO: Use structured logging instead of simple strings
-    // TODO: Add log levels (debug, info, warn, error) instead of generic log
-    // TODO: Extract log messages to constants for consistency and i18n support
+    // TODO: CRITICAL - Remove emoji from log messages for professional production logging and JSON log parsers
+    // TODO: CRITICAL - Use structured logging instead of simple strings for better observability and monitoring
+    // TODO: CRITICAL - Add log levels (debug, info, warn, error) instead of generic log for proper log filtering
+    // TODO: CRITICAL - Extract log messages to constants for consistency and i18n support
+    // TODO: CRITICAL - Log statements use Effect.log but never await the Effect - logs may not appear
+    // TODO: CRITICAL - No log context (operation ID, user, request) for production debugging
     Effect.log("🎯 TYPESPEC ASYNCAPI EMITTER STARTED - USING REAL PROCESSOR");
     Effect.log(`📁 Output directory: ${context.emitterOutputDir}`);
-    // TODO: Add null-safety check for context.program before accessing properties
+    // TODO: CRITICAL - Add null-safety check for context.program before accessing properties to prevent runtime errors
+    // TODO: CRITICAL - Optional chaining used but sourceFiles could be undefined - handle gracefully
+    // TODO: CRITICAL - Log message format inconsistent with structured logging patterns
     Effect.log(`🔧 Program has ${context.program?.sourceFiles?.size || 0} source files`);
     Effect.log("✨ Processing TypeSpec operations, decorators, and models...");
     
     // Use the working Effect.TS integrated emitter that actually processes TypeSpec content
-    // TODO: Add try-catch block for error handling and proper error reporting
-    // TODO: Add performance timing measurements
-    // TODO: Add validation for context.emitterOutputDir existence
-    // TODO: Consider returning processing statistics or summary
+    // TODO: CRITICAL - Add try-catch block for error handling and proper error reporting to users
+    // TODO: CRITICAL - Add performance timing measurements for monitoring and optimization
+    // TODO: CRITICAL - Add validation for context.emitterOutputDir existence before processing
+    // TODO: CRITICAL - Consider returning processing statistics or summary for debugging and monitoring
+    // TODO: CRITICAL - No progress reporting for long-running operations
+    // TODO: CRITICAL - Memory usage not monitored during large TypeSpec program processing
     await generateAsyncAPIWithEffect(context);
     
-    // TODO: Add actual validation that the document was successfully generated
-    // TODO: Log file paths and sizes of generated documents
-    // TODO: Add summary statistics (number of channels, operations, etc.)
+    // TODO: CRITICAL - Add actual validation that the document was successfully generated before claiming success
+    // TODO: CRITICAL - Log file paths and sizes of generated documents for debugging and monitoring
+    // TODO: CRITICAL - Add summary statistics (number of channels, operations, etc.) for verification
+    // TODO: CRITICAL - No verification that generateAsyncAPIWithEffect actually completed successfully
+    // TODO: CRITICAL - Success log appears even if generation failed silently
     Effect.log("✅ AsyncAPI document generated with REAL content from TypeSpec processing!");
 }
 
