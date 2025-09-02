@@ -51,7 +51,9 @@ export class DiscoveryService {
 				const operations: Operation[] = []
 
 				// Recursive namespace walker - REAL business logic
-				const walkNamespace = (ns: Namespace) => {
+				const walkNamespace = (ns: Namespace | null) => {
+					if (!ns) return
+					
 					if (ns.operations) {
 						ns.operations.forEach((op: Operation, name: string) => {
 							operations.push(op)
@@ -96,7 +98,8 @@ export class DiscoveryService {
 			const messageConfigsMap = program.stateMap($lib.stateKeys.messageConfigs)
 
 			// Recursive walker for models - specialized for message discovery
-			const walkNamespaceForModels = (ns: Namespace) => {
+			const walkNamespaceForModels = (ns: Namespace | null) => {
+				if (!ns) return
 				if (ns.models) {
 					ns.models.forEach((model: Model, name: string) => {
 						// Check if model has @message decorator via stateMap
@@ -140,7 +143,8 @@ export class DiscoveryService {
 			const securityConfigsMap = program.stateMap($lib.stateKeys.securityConfigs)
 
 			// Recursive walker for security configs
-			const walkNamespaceForSecurity = (ns: Namespace) => {
+			const walkNamespaceForSecurity = (ns: Namespace | null) => {
+				if (!ns) return
 				// Check operations for security decorators
 				if (ns.operations) {
 					ns.operations.forEach((operation: Operation, name: string) => {

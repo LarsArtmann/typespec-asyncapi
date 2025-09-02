@@ -36,5 +36,5 @@ export type MemoryMonitorService = {
 
 	// Reporting
 	generateMemoryReport: () => Effect.Effect<MemoryReportJson, never>;
-	getMemoryMetrics: () => Effect.Effect<MetricsSummary, never>;
+	getMemoryMetrics: () => Effect.Effect<Record<string, number>, never>;
 }

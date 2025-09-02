@@ -31,7 +31,8 @@ export class DocumentBuilder {
 	 * @returns Complete AsyncAPI document foundation
 	 */
 	createInitialDocument(program: Program): AsyncAPIObject {
-		const servers = buildServersFromNamespaces(program)
+		// Safe handling of null/undefined program for testing
+		const servers = program ? buildServersFromNamespaces(program) : {}
 
 		// TODO: Extract magic string "3.0.0" to named constant
 		// TODO: Extract default info values to configuration object
