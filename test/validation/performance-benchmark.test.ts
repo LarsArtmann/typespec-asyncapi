@@ -5,7 +5,7 @@
  * These tests are temporarily disabled while we establish core test coverage.
  */
 
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "bun:test";
 
 // TODO: T16 - Implement performance benchmark tests - temporarily disabled
 describe.skip("Performance Benchmark Tests - DISABLED", () => {

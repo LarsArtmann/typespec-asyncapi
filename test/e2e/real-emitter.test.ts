@@ -2,7 +2,7 @@
  * REAL emitter test - no mocks, just real TypeSpec compilation
  */
 
-import {describe, expect, it} from "vitest"
+import {describe, expect, it} from "bun:test"
 import {expectDiagnosticEmpty, formatDiagnostics, createTestHost} from "@typespec/compiler/testing"
 import {AsyncAPITestLibrary} from "./test-host"
 import {createAsyncAPITestHost} from "./utils/test-helpers"

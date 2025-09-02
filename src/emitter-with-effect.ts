@@ -18,6 +18,7 @@ import {createAssetEmitter} from "@typespec/asset-emitter"
 import type {AsyncAPIEmitterOptions} from "./options.js"
 import {AsyncAPIEmitter} from "./core/AsyncAPIEmitter.js"
 import {registerBuiltInPlugins} from "./plugins/plugin-system.js"
+import { RailwayLogging, RailwayPipeline } from "./utils/effect-helpers.js"
 import {
 	createCompilerOptionsError,
 	createGlobalNamespaceMissingError,
@@ -35,20 +36,23 @@ import {
  */
 export function generateAsyncAPIWithEffect(context: EmitContext<AsyncAPIEmitterOptions>): Effect.Effect<void, AsyncAPIEmitterError> {
 	return Effect.gen(function* () {
-		yield* Effect.log("AsyncAPI Emitter with Modular Architecture")
-		yield* Effect.log("Using new micro-kernel architecture!")
-		yield* Effect.log("Connecting Effect.TS system to modular emitter")
+		yield* RailwayLogging.logInitialization("AsyncAPI Emitter with Modular Architecture")
+		yield* Effect.logInfo("Using new micro-kernel architecture!")
+		yield* Effect.logInfo("Connecting Effect.TS system to modular emitter")
 		
-		// Initialize plugin system with proper Effect error handling
-		yield* Effect.tryPromise(() => Effect.runPromise(registerBuiltInPlugins())).pipe(
+		// Initialize plugin system with proper Railway programming
+		yield* RailwayPipeline.executeAsync(
+			() => Effect.runPromise(registerBuiltInPlugins()),
+			"Plugin system initialization"
+		).pipe(
 			Effect.mapError((error) => createPluginSystemError(error)),
 			Effect.catchAll((pluginError) => Effect.gen(function* () {
-				yield* Effect.log(`Plugin system initialization failed, continuing without plugins: ${pluginError.message}`)
+				yield* Effect.logWarning(`Plugin system initialization failed, continuing without plugins: ${pluginError.message}`)
 				return undefined
 			}))
 		)
 		
-		yield* Effect.log("Plugin system initialized successfully")
+		yield* RailwayLogging.logInitializationSuccess("Plugin system")
 
 		// Validate program has required structure for AssetEmitter
 		if (!context.program.compilerOptions) {
@@ -59,7 +63,7 @@ export function generateAsyncAPIWithEffect(context: EmitContext<AsyncAPIEmitterO
 		const DEFAULT_DRY_RUN = false
 		const effectiveDryRun = context.program.compilerOptions.dryRun ?? DEFAULT_DRY_RUN
 		
-		yield* Effect.log(`Compiler options validated - dryRun: ${effectiveDryRun}`)
+		yield* Effect.logInfo(`Compiler options validated - dryRun: ${effectiveDryRun}`)
 
 		// Validate program has required TypeSpec compiler methods
 		if (!context.program.getGlobalNamespaceType) {
@@ -76,14 +80,14 @@ export function generateAsyncAPIWithEffect(context: EmitContext<AsyncAPIEmitterO
 			return yield* Effect.fail(createGlobalNamespaceInvalidError(globalNamespace?.kind))
 		}
 		
-		yield* Effect.log(`Global namespace validated - contains ${globalNamespace.models?.size || 0} models, ${globalNamespace.operations?.size || 0} operations`)
+		yield* Effect.logInfo(`Global namespace validated - contains ${globalNamespace.models?.size || 0} models, ${globalNamespace.operations?.size || 0} operations`)
 
 		// Validate program has required state management capabilities
 		if (!context.program.stateMap) {
 			return yield* Effect.fail(createStateMapMissingError({ program: context.program }))
 		}
 		
-		yield* Effect.log("Program structure validated - ready for AsyncAPI generation")
+		yield* Effect.logInfo("Program structure validated - ready for AsyncAPI generation")
 
 		// Create emitter using the new modular architecture
 		const assetEmitter = createAssetEmitter(
@@ -97,6 +101,6 @@ export function generateAsyncAPIWithEffect(context: EmitContext<AsyncAPIEmitterO
 			Effect.mapError((error) => createPluginSystemError(error, 'AssetEmitter.writeOutput'))
 		)
 
-		yield* Effect.log("AsyncAPI generation complete with modular architecture!")
+		yield* RailwayLogging.logInitializationSuccess("AsyncAPI generation")
 	})
 }

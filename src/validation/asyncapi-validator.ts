@@ -10,6 +10,7 @@ import {Parser} from "@asyncapi/parser"
 import type { ValidationStats } from "./ValidationStats.js"
 import type { ValidationOptions } from "./ValidationOptions.js"
 import * as NodeFS from "node:fs/promises"
+import { RailwayLogging } from "../utils/effect-helpers.js"
 
 /**
  * AsyncAPI 3.0 Validator Class using REAL @asyncapi/parser
@@ -39,21 +40,35 @@ export class AsyncAPIValidator {
 		// Initialize the REAL AsyncAPI parser
 		this.parser = new Parser()
 		
-		// Eager initialization for performance (avoid check on every validation)
+		// Eager initialization for performance (avoid check on every validation)  
 		this.initialize()
 	}
 
 	/**
-	 * Initialize the validator with AsyncAPI parser
+	 * Initialize the validator with AsyncAPI parser - Railway programming style
+	 */
+	initializeEffect(): Effect.Effect<void, never> {
+		return Effect.gen(this, function* () {
+			if (this.initialized) {
+				return
+			}
+
+			yield* RailwayLogging.logInitialization("AsyncAPI 3.0.0 Validator with REAL @asyncapi/parser")
+			this.initialized = true
+			yield* RailwayLogging.logInitializationSuccess("AsyncAPI 3.0.0 Validator")
+		})
+	}
+
+	/**
+	 * Legacy synchronous initialize for backward compatibility
+	 * @deprecated Use initializeEffect() for proper Railway programming
 	 */
 	initialize(): void {
 		if (this.initialized) {
 			return
 		}
-
-		Effect.log("🔧 Initializing AsyncAPI 3.0.0 Validator with REAL @asyncapi/parser...")
-		this.initialized = true
-		Effect.log("✅ AsyncAPI 3.0.0 Validator initialized successfully")
+		// Run Effect synchronously for legacy compatibility
+		Effect.runSync(this.initializeEffect())
 	}
 
 	/**
@@ -61,7 +76,8 @@ export class AsyncAPIValidator {
 	 */
 	validateEffect(document: unknown, _identifier?: string): Effect.Effect<ValidationResult, never> {
 		return Effect.gen(this, function*() {
-			// Initialization now done eagerly in constructor for performance
+			// Ensure initialization in Effect context
+			yield* this.initializeEffect()
 			const startTime = performance.now()
 
 			try {
@@ -196,7 +212,7 @@ export class AsyncAPIValidator {
 	validateBatchEffect(documents: Array<{content: unknown, identifier?: string}>): Effect.Effect<ValidationResult[], never> {
 		return Effect.gen(this, function*() {
 			const startTime = performance.now()
-			yield* Effect.log(`🔄 Starting batch validation of ${documents.length} documents...`)
+			yield* RailwayLogging.logInitialization(`batch validation of ${documents.length} documents`)
 
 			// Process documents in parallel using Effect.all with controlled concurrency
 			const validationEffects = documents.map(doc => 
@@ -207,8 +223,11 @@ export class AsyncAPIValidator {
 			const results = yield* Effect.all(validationEffects, { concurrency: 5 })
 
 			const totalDuration = performance.now() - startTime
-			yield* Effect.log(`✅ Batch validation completed: ${results.length} documents in ${totalDuration.toFixed(2)}ms`)
-			yield* Effect.log(`📊 Valid: ${results.filter(r => r.valid).length}, Invalid: ${results.filter(r => !r.valid).length}`)
+			const validCount = results.filter(r => r.valid).length
+			const invalidCount = results.length - validCount
+
+			yield* Effect.logInfo(`✅ Batch validation completed: ${results.length} documents in ${totalDuration.toFixed(2)}ms`)
+			yield* Effect.logInfo(`📊 Valid: ${validCount}, Invalid: ${invalidCount}`)
 
 			return results
 		})

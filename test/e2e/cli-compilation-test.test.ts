@@ -4,7 +4,7 @@
  * This bypasses TypeSpec testing framework and uses CLI compilation
  */
 
-import { describe, it, expect, beforeEach } from "vitest"
+import { describe, it, expect, beforeEach } from "bun:test"
 import { existsSync, readFileSync, writeFileSync, mkdirSync } from "fs"
 import { join } from "path"
 import { spawn } from "child_process"

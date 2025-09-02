@@ -1,4 +1,4 @@
-import {describe, expect, it} from "vitest"
+import {describe, expect, it} from "bun:test"
 import {compileAsyncAPISpecWithoutErrors, parseAsyncAPIOutput} from "../utils/test-helpers"
 import {Effect} from "effect"
 import {

@@ -4,7 +4,7 @@
  * Tests the simple plugin architecture for protocol bindings
  */
 
-import { describe, expect, it } from "vitest"
+import { describe, expect, it } from "bun:test"
 import { Effect } from "effect"
 import { 
   pluginRegistry, 

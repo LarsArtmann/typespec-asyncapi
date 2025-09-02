@@ -127,7 +127,7 @@ npx tsp compile example.tsp --emit @typespec/asyncapi
 ```json
 {
   "build": "tsc -p tsconfig.json",
-  "test": "vitest", 
+  "test": "bun test", 
   "lint": "eslint src",
   "typecheck": "tsc --noEmit"
 }
@@ -180,7 +180,7 @@ npx tsp compile example.tsp --emit @typespec/asyncapi
 - `effect` + `@effect/schema` - Functional programming patterns
 
 **Development Dependencies:**
-- `vitest` - Testing framework  
+- `bun:test` - Built-in Bun testing framework  
 - `eslint` + `typescript-eslint` - Code quality
 - `typescript` - TypeScript compilation
 

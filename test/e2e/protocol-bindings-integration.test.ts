@@ -5,7 +5,7 @@
  * Validates Kafka, WebSocket, HTTP, AMQP, MQTT integrations in full compilation
  */
 
-import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import { describe, it, expect, beforeAll, afterAll } from "bun:test";
 import { compileAsyncAPISpec, parseAsyncAPIOutput } from "../utils/test-helpers";
 import { AsyncAPIValidator } from "../../src/validation/asyncapi-validator";
 import { mkdir, rm } from "node:fs/promises";

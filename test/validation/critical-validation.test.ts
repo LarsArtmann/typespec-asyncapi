@@ -8,15 +8,17 @@
  * ZERO TOLERANCE FOR INVALID SPECS!
  */
 
-import {beforeAll, describe, expect, it} from "vitest"
+import {beforeAll, describe, expect, it} from "bun:test"
 import {AsyncAPIValidator} from "../../src/validation/asyncapi-validator.js"
 import {Effect} from "effect"
+import { RailwayLogging } from "../../src/utils/effect-helpers.js"
 
 describe("🚨 CRITICAL: AsyncAPI Specification Validation", () => {
 	let validator: AsyncAPIValidator
 
 	beforeAll(async () => {
-		Effect.log("🔧 Initializing AsyncAPI 3.0.0 Validator...")
+		// Execute initialization logging in proper Effect context
+		await Effect.runPromise(RailwayLogging.logInitialization("AsyncAPI 3.0.0 Validator"))
 		validator = new AsyncAPIValidator({
 			strict: true,
 			enableCache: false,

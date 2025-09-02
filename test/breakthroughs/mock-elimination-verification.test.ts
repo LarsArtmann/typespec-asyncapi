@@ -4,7 +4,7 @@
  * This test verifies that we can use REAL TypeSpec objects instead of mocks
  */
 
-import { describe, it, expect } from "vitest"
+import { describe, it, expect } from "bun:test"
 import { compileAsyncAPISpec } from "./utils/test-helpers"
 
 describe("🚨 Mock Infrastructure Elimination", () => {

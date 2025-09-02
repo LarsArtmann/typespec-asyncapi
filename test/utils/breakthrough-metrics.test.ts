@@ -5,7 +5,7 @@
  * It demonstrates the exact improvement achieved by fixing the decorator system.
  */
 
-import { describe, it, expect } from "vitest"
+import { describe, it, expect } from "bun:test"
 import { compileTypeSpecWithDecorators } from "./utils/test-helpers.js"
 
 describe("📊 BREAKTHROUGH METRICS", () => {

@@ -2,7 +2,7 @@
  * Debug test to check if emitter is being called at all
  */
 
-import {describe, it} from "vitest"
+import {describe, it} from "bun:test"
 import {createAsyncAPITestHost} from "./utils/test-helpers"
 import {Effect} from "effect"
 

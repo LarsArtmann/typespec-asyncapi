@@ -5,7 +5,7 @@
  * by testing basic TypeSpec compilation without our decorators
  */
 
-import { describe, it, expect } from "vitest"
+import { describe, it, expect } from "bun:test"
 import { createTestHost, createTestWrapper } from "@typespec/compiler/testing"
 
 describe("✅ Simple Mock Infrastructure Elimination", () => {

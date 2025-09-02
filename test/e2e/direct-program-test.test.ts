@@ -4,7 +4,7 @@
  * This bypasses decorator loading and tests the emitter directly
  */
 
-import { describe, it, expect } from "vitest"
+import { describe, it, expect } from "bun:test"
 import { createTestHost, createTestWrapper } from "@typespec/compiler/testing"
 
 describe("🔥 Direct Program Test", () => {

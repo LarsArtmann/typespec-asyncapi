@@ -8,6 +8,7 @@
 
 import {runTestSuiteCLI} from "../src/test-runner.js"
 import {Effect} from "effect"
+import { RailwayLogging } from "../src/utils/effect-helpers.js"
 
 // Configuration for CI/CD performance validation
 const ciConfig = {
@@ -43,7 +44,8 @@ const prodConfig = {
 const args = process.argv.slice(2)
 const mode = args[0] || "ci"
 
-Effect.log(`🚀 Running AsyncAPI Performance Tests in ${mode} mode`)
+// Execute performance test logging in proper Effect context
+Effect.runSync(RailwayLogging.logPerformanceTest(mode))
 
 switch (mode) {
 	case "ci":
@@ -66,6 +68,7 @@ switch (mode) {
 		})
 		break
 	default:
-		Effect.log("Usage: bun run-performance-tests.ts [ci|dev|prod|quick]")
+		// Execute usage logging in proper Effect context
+		Effect.runSync(Effect.logInfo("Usage: bun run-performance-tests.ts [ci|dev|prod|quick]"))
 		process.exit(1)
 }

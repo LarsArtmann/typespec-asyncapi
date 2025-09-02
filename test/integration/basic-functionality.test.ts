@@ -9,7 +9,7 @@
 //TODO: FILE SYSTEM CHAOS - Raw fs operations scattered everywhere without abstraction!
 //TODO: CHILD PROCESS SPAWNING ANTI-PATTERN - Using raw spawn() instead of proper test utilities!
 //TODO: IMPORT CHAOS - 6 different imports mixing testing, Effect, fs, and child_process!
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach } from "bun:test";
 import { Effect } from "effect";
 import { existsSync, readFileSync, writeFileSync, mkdirSync } from "fs";
 import { join } from "path";

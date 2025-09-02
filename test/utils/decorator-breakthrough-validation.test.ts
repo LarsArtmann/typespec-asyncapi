@@ -10,7 +10,7 @@
  * This represents a 51% impact improvement as specified in the mission brief.
  */
 
-import { describe, it, expect } from "vitest"
+import { describe, it, expect } from "bun:test"
 import { compileTypeSpecWithDecorators } from "./utils/test-helpers.js"
 
 describe("🚀 DECORATOR REGISTRATION BREAKTHROUGH", () => {

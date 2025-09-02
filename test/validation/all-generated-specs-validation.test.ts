@@ -12,7 +12,7 @@
  * - Comprehensive error reporting for failures
  */
 
-import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import { describe, it, expect, beforeAll, afterAll } from "bun:test";
 import { AsyncAPIValidator } from "../../src/validation/asyncapi-validator.js";
 import { readdir, readFile, mkdir, writeFile, rm } from "node:fs/promises";
 import { join, extname } from "node:path";

@@ -6,7 +6,7 @@
  * of all AsyncAPI components and validation scenarios.
  */
 
-import {afterAll, beforeAll, describe, expect, it} from "vitest"
+import {afterAll, beforeAll, describe, expect, it} from "bun:test"
 import {
 	AsyncAPIValidator,
 	validateAsyncAPIObject,

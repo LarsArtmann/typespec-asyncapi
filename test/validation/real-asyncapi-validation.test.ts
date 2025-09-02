@@ -1,8 +1,10 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach } from "bun:test";
 import { readFileSync } from "fs";
 import { parse } from "yaml";
 import { Parser } from "@asyncapi/parser";
 import { createTestRunner, type BasicTestRunner } from "@typespec/compiler/testing";
+import { Effect } from "effect"
+import { RailwayLogging } from "../../src/utils/effect-helpers.js";
 
 describe("Real AsyncAPI Validation Tests", () => {
   let runner: BasicTestRunner;
@@ -100,7 +102,10 @@ describe("Real AsyncAPI Validation Tests", () => {
       expect(document?.operations()).toBeDefined();
       
       // This proves our generated spec is ACTUALLY valid by AsyncAPI standards
-      Effect.log("✅ Generated AsyncAPI 3.0 spec passes OFFICIAL AsyncAPI parser validation");
+      // Execute success logging in proper Effect context
+      await Effect.runPromise(
+        Effect.logInfo("✅ Generated AsyncAPI 3.0 spec passes OFFICIAL AsyncAPI parser validation")
+      );
     } catch (error) {
       // If file doesn't exist, skip this validation
       console.warn(`Test file ${testFile} not found, skipping YAML validation`);

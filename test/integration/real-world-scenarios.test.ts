@@ -2,7 +2,7 @@
  * Real-world scenario integration tests for AsyncAPI emitter
  */
 
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "bun:test";
 import { compileAsyncAPISpecWithoutErrors, parseAsyncAPIOutput, AsyncAPIAssertions } from "../utils/test-helpers";
 //TODO: this file is getting to big split it up
 

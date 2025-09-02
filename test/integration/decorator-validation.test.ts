@@ -2,7 +2,7 @@
  * Integration tests for TypeSpec decorator validation in AsyncAPI emitter
  */
 
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "bun:test";
 import { compileAsyncAPISpec } from "../utils/test-helpers.js";
 
 describe("AsyncAPI Decorator Validation", () => {

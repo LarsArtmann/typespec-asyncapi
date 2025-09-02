@@ -3,7 +3,7 @@
  * No mocks, no fake programs, just real end-to-end testing
  */
 
-import {describe, expect, it} from "vitest"
+import {describe, expect, it} from "bun:test"
 import {exec} from "child_process"
 import {promisify} from "util"
 import {readFile, writeFile, mkdir, rm} from "fs/promises"

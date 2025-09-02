@@ -2,7 +2,7 @@
  * Direct test of emitter function bypass TypeSpec test framework
  */
 
-import {describe, expect, it} from "vitest"
+import {describe, expect, it} from "bun:test"
 import {createTestHost} from "@typespec/compiler/testing"
 import {$onEmit} from "../dist/index.js"
 import {AsyncAPITestLibrary} from "./test-host"
