@@ -184,7 +184,7 @@ export const RailwayPipeline = {
 	/**
 	 * Execute async operation with proper Effect wrapping and error handling
 	 */
-	executeAsync: <T, E>(operation: () => Promise<T>, errorMessage: string) =>
+	executeAsync: <T>(operation: () => Promise<T>, errorMessage: string) =>
 		Effect.tryPromise({
 			try: operation,
 			catch: (error) => new Error(`${errorMessage}: ${String(error)}`)

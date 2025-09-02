@@ -13,6 +13,7 @@ import type { Model, Operation, Program } from "@typespec/compiler"
 import type { AsyncAPIObject, SecuritySchemeObject } from "@asyncapi/parser/esm/spec-types/v3.js"
 import type { SecurityConfig } from "../decorators/security.js"
 import { $lib } from "../lib.js"
+import { ProtocolBindingFactory, type ProtocolType } from "../protocol-bindings.js"
 import { getMessageConfig, getProtocolConfig } from "../utils/typespec-helpers.js"
 import { createChannelDefinition } from "../utils/asyncapi-helpers.js"
 
@@ -123,8 +124,26 @@ export class ProcessingService {
 
 		Effect.log(`🔍 Operation ${op.name}: type=${operationType ?? 'none'}, channel=${channelPath ?? 'default'}`)
 		
+		// Generate protocol bindings if protocol config exists
+		let channelBindings = undefined
+		let operationBindings = undefined
+		let messageBindings = undefined
+		
 		if (protocolConfig) {
 			Effect.log(`🔧 Protocol config found: ${protocolConfig.protocol}`)
+			const protocolType = protocolConfig.protocol as ProtocolType
+			
+			// Create bindings using ProtocolBindingFactory
+			channelBindings = ProtocolBindingFactory.createChannelBindings(protocolType, protocolConfig.binding || {})
+			operationBindings = ProtocolBindingFactory.createOperationBindings(protocolType, protocolConfig.binding || {})
+			messageBindings = ProtocolBindingFactory.createMessageBindings(protocolType, protocolConfig.binding || {})
+			
+			if (channelBindings) {
+				Effect.log(`✅ Channel bindings created for ${protocolType}`)
+			}
+			if (operationBindings) {
+				Effect.log(`✅ Operation bindings created for ${protocolType}`)
+			}
 		}
 
 		//TODO: HARDCODED PREFIX "channel_" IS GARBAGE NAMING!
@@ -132,11 +151,17 @@ export class ProcessingService {
 		//TODO: BUSINESS LOGIC VIOLATION - Channel naming should follow AsyncAPI best practices!
 		//TODO: MAINTAINABILITY DISASTER - When channel naming strategy changes, we modify code!
 		const channelName = `channel_${op.name}`
-		const action = operationType === "subscribe" ? "receive" : "send"
+		const action: "send" | "receive" = operationType === "subscribe" ? "receive" : "send"
 
 		// Add channel to document - use shared helper to eliminate duplication
 		if (!asyncApiDoc.channels) asyncApiDoc.channels = {}
 		const { definition } = createChannelDefinition(op, program)
+		
+		// CRITICAL FIX: Add protocol bindings to channel definition
+		if (channelBindings) {
+			definition.bindings = channelBindings
+		}
+		
 		asyncApiDoc.channels[channelName] = definition
 
 		// Add operation to document
@@ -145,17 +170,24 @@ export class ProcessingService {
 		//TODO: CRITICAL DUPLICATION - Template strings scattered throughout codebase!
 		//TODO: I18N VIOLATION - Hardcoded English messages won't work for international teams!
 		//TODO: CONFIGURATION FAILURE - Message templates should be configurable!
-		asyncApiDoc.operations[op.name] = {
+		const operationDef: any = {
 			action: action,
 			channel: { $ref: `#/channels/${channelName}` },
 			summary: `Operation ${op.name}`,
 			description: `TypeSpec operation with ${op.parameters.properties.size} parameters`,
 		}
+		
+		// CRITICAL FIX: Add protocol bindings to operation definition
+		if (operationBindings) {
+			operationDef.bindings = operationBindings
+		}
+		
+		asyncApiDoc.operations[op.name] = operationDef
 
 		// Add message to components
 		if (!asyncApiDoc.components) asyncApiDoc.components = {}
 		if (!asyncApiDoc.components.messages) asyncApiDoc.components.messages = {}
-		asyncApiDoc.components.messages[`${op.name}Message`] = {
+		const messageDef: any = {
 			name: `${op.name}Message`,
 			title: `${op.name} Message`,
 			summary: `Message for ${op.name} operation`,
@@ -165,6 +197,13 @@ export class ProcessingService {
 			//TODO: CONFIGURATION MISSING - Content type should be configurable per message/protocol!
 			contentType: "application/json",
 		}
+		
+		// CRITICAL FIX: Add protocol bindings to message definition
+		if (messageBindings) {
+			messageDef.bindings = messageBindings
+		}
+		
+		asyncApiDoc.components.messages[`${op.name}Message`] = messageDef
 
 		Effect.log(`✅ Processed operation: ${op.name} (${action})`)
 		return `Processed operation: ${op.name}`
