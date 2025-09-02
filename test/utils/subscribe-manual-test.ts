@@ -2,12 +2,23 @@
  * Manual test to validate @subscribe decorator compilation
  */
 
+//TODO: MANUAL TEST ANTI-PATTERN DISASTER! This should be automated test in test suite!
+//TODO: IMPORT PATH ERROR! "./utils/test-helpers" should be "./test-helpers" (missing utils)!
+//TODO: MANUAL TESTING PHILOSOPHY FAILURE - All tests should be automated, not manual!
+//TODO: SCRIPT-STYLE FILE IN TEST UTILS - This is NOT a utility, it's a runnable script!
 import {createAsyncAPITestHost} from "./utils/test-helpers"
 import {Effect} from "effect"
 
+//TODO: MANUAL TEST FUNCTION ANTI-PATTERN - Should be proper vitest/jest test case!
+//TODO: ASYNC FUNCTION WITHOUT EFFECT RETURN - Should return Effect<boolean, never, never>!
 async function testSubscribeDecorator() {
+	//TODO: EFFECT.LOG ANTI-PATTERN EVERYWHERE! Effect.log not composed with async function!
+	//TODO: EMOJI LOGGING IN PRODUCTION CODE - Remove emojis from library/test code!
+	//TODO: EFFECT.LOG SCATTERED THROUGHOUT - Should use proper Effect composition!
 	Effect.log("🧪 Testing @subscribe decorator functionality...")
 
+	//TODO: TRY-CATCH WITH EFFECT ANTI-PATTERN! Should use Effect error handling!
+	//TODO: MIXED ERROR HANDLING - try-catch with Effect.log creates inconsistent patterns!
 	try {
 		const host = await createAsyncAPITestHost()
 

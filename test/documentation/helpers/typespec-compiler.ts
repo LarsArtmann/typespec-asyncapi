@@ -300,20 +300,23 @@ export class TypeSpecDocumentationTestCompiler {
 			serviceVersion = versionMatch?.[1]
 		}
 
-		// Extract operations with protocol bindings and security configurations
+		// Extract operations with protocol bindings and security configurations  
 		//TODO: 'any' TYPE DISASTER EVERYWHERE! protocolConfig.config and securityConfig.config are 'any'!
 		//TODO: TYPE SAFETY CATASTROPHE - Using 'any' completely defeats TypeScript type checking!
 		//TODO: PROPER TYPING REQUIRED - Should use ProtocolConfig and SecurityConfig interfaces!
 		const operations: Array<{name: string, type: string, channelPath?: string, protocolConfig?: {protocol: string, config: any}, securityConfig?: {scheme: string, config: any}}> = []
 		
-		// Find operations with decorators (including @protocol and @security)
-		// Look for: [@channel("path")] [@protocol("type", {...})] [@security("type", {...})] [@publish/@subscribe] op name
-		//TODO: REGEX FROM HELL! This 304-character monster regex is COMPLETELY UNMAINTAINABLE!
-		//TODO: MAINTENANCE NIGHTMARE - Adding new decorators requires regex surgery by regex wizards!
-		//TODO: BRITTLE PARSING - Nested braces parsing with regex is fundamentally flawed approach!
-		//TODO: PERFORMANCE KILLER - Complex regex with nested groups causes exponential backtracking!
-		//TODO: REGEX COMPLEXITY VIOLATION - Should use proper AST parser instead of regex hell!
-		const operationPattern = /(?:@channel\("([^"]+)"\)\s*)?(?:@protocol\("([^"]+)",\s*(\{[^}]*(?:\{[^}]*\}[^}]*)*\})\)\s*)?(?:@security\("([^"]+)",\s*(\{[^}]*(?:\{[^}]*\}[^}]*)*\})\)\s*)?(@publish|@subscribe)\s+op\s+(\w+)/gms
+		// SIMPLIFIED APPROACH: Parse decorators separately to avoid regex hell
+		// First find all security schemes used in the code
+		const securitySchemes = new Set<string>()
+		const securityMatches = code.matchAll(/@security\("([^"]+)"/g)
+		for (const match of securityMatches) {
+			securitySchemes.add(match[1])
+		}
+		
+		// Find operations with decorators (simplified - no complex nested parsing)
+		// Look for: [@channel("path")] [@protocol("type", {...})] [@publish/@subscribe] op name
+		const operationPattern = /(?:@channel\("([^"]+)"\)\s*)?(?:@protocol\("([^"]+)",\s*(\{[^}]*(?:\{[^}]*\}[^}]*)*\})\)\s*)?(?:@security\("([^"]+)")[^@]*)?(@publish|@subscribe)\s+op\s+(\w+)/gms
 		
 		const operationMatches = code.matchAll(operationPattern)
 		for (const match of operationMatches) {
