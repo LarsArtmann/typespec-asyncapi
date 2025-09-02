@@ -96,18 +96,25 @@ export class DiscoveryService {
 			const messageModels: Model[] = []
 			// Access decorator state - this is HOW decorators work in TypeSpec
 			const messageConfigsMap = program.stateMap($lib.stateKeys.messageConfigs)
+			
+			Effect.log(`🔍 DiscoveryService: messageConfigsMap size = ${messageConfigsMap.size}`)
+			Effect.log(`🔍 DiscoveryService: stateKeys.messageConfigs = ${String($lib.stateKeys.messageConfigs)}`)
 
 			// Recursive walker for models - specialized for message discovery
 			const walkNamespaceForModels = (ns: Namespace | null) => {
 				if (!ns) return
 				if (ns.models) {
+					Effect.log(`🔍 DiscoveryService: Checking namespace with ${ns.models.size} models`)
 					ns.models.forEach((model: Model, name: string) => {
+						Effect.log(`🔍 DiscoveryService: Checking model ${name}, has @message: ${messageConfigsMap.has(model)}`)
 						// Check if model has @message decorator via stateMap
 						if (messageConfigsMap.has(model)) {
 							messageModels.push(model)
 							Effect.log(`🎯 Found message model: ${name}`)
 						}
 					})
+				} else {
+					Effect.log(`🔍 DiscoveryService: Namespace has no models`)
 				}
 
 				if (ns.namespaces) {
