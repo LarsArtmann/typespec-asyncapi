@@ -142,7 +142,7 @@ export function generateAsyncAPIWithEffect(context: EmitContext<AsyncAPIEmitterO
 		// TODO: PERFORMANCE - Consider caching emitter instance for repeated calls
 		// TODO: LOGGING - Debug logs should be conditional based on log level to avoid performance impact
 		// Create emitter using the new modular architecture
-		Effect.log(`🔧 About to create AsyncAPIEmitter with createAssetEmitter`)
+		yield* Effect.logInfo(`🔧 About to create AsyncAPIEmitter with createAssetEmitter`)
 		const assetEmitter = createAssetEmitter(
 			context.program,
 			AsyncAPIEmitter,
@@ -152,9 +152,14 @@ export function generateAsyncAPIWithEffect(context: EmitContext<AsyncAPIEmitterO
 		// TODO: TYPE_SAFETY - emitProgram() return value should be typed and potentially awaited
 		// TODO: ERROR_HANDLING - emitProgram() call should be wrapped in Effect.try for proper error handling
 		// TODO: PERFORMANCE - Consider async/await pattern instead of synchronous call for better performance
-		Effect.log(`🔧 About to call assetEmitter.emitProgram()`)
+		yield* Effect.logInfo(`🔧 About to call assetEmitter.emitProgram()`)
 		assetEmitter.emitProgram()
-		Effect.log(`🔧 Completed assetEmitter.emitProgram()`)
+		yield* Effect.logInfo(`🔧 Completed assetEmitter.emitProgram()`)
+		
+		// Force emit the global namespace to trigger file generation
+		yield* Effect.logInfo(`🔧 About to emit global namespace`)
+		assetEmitter.emitType(context.program.globalNamespace)
+		yield* Effect.logInfo(`🔧 Completed emitting global namespace`)
 		
 		// TODO: TYPE_SAFETY - writeOutput() return type should be explicitly handled
 		// TODO: TYPE_SAFETY - Error parameter in mapError needs proper type annotation  
