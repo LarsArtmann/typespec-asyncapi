@@ -1,28 +1,31 @@
 /**
  * TypeSpec AsyncAPI Emitter with Effect.TS Integration
  *
- * This is the REAL emitter that connects the ghost Effect.TS system
- * with proper AsyncAPI validation using asyncapi-validator.
+ * ⚠️  DEPRECATED BACKUP FILE - SCHEDULED FOR IMMEDIATE DELETION ⚠️
  *
- * FIXES APPLIED:
- * - Fixed stateKeys access: program.stateMap($lib.stateKeys.xxx) instead of Symbol.for()
- * - $lib.stateKeys provides proper symbols, not strings like the local stateKeys export
- * - Connected decorator state properly: channel paths and operation types
- * - Made validation fail the Effect pipeline when AsyncAPI document is invalid
- * - Added proper logging to show decorator data being accessed
- * - Added explicit type annotations for validation error parameters
+ * This is a 1,171-line backup file that should be IMMEDIATELY DELETED.
+ * The modular implementation in src/emitter-with-effect.ts is the current working version.
  *
- * TODO: MONOLITHIC FILE EXTINCTION - This 1250-line beast should be DELETED!
- * TODO: CRITICAL ARCHITECTURAL VIOLATION - Single file handling 10+ responsibilities
- * TODO: Extract SerializationService for JSON/YAML output generation
- * TODO: Extract BindingFactory for protocol-specific binding generation  
- * TODO: Extract ConstantsService for all magic strings ("3.0.0", etc.)
- * TODO: Extract EmitterConfigService for options processing and validation
- * TODO: Extract TypeSpecASTWalkerService for program traversal logic
- * TODO: Extract ComponentsBuilderService for AsyncAPI components generation
- * TODO: Remove after all business logic is extracted to modular services
- * TODO: Add deprecation warnings to discourage direct usage
- * TODO: Create migration guide for moving from monolithic to modular architecture
+ * CRITICAL TECHNICAL DEBT:
+ * - 1,171 lines of DEAD CODE consuming 47KB disk space
+ * - ARCHITECTURAL VIOLATION: Monolithic design violates modular architecture principles
+ * - TYPE SAFETY DISASTER: No proper type annotations throughout massive codebase
+ * - MAINTENANCE NIGHTMARE: Single file handling 15+ distinct responsibilities
+ * - SECURITY RISK: Contains outdated authentication/validation code
+ * - PERFORMANCE IMPACT: Massive file slows IDE performance and compilation
+ * - CONFUSION FACTOR: Misleading filename suggests this is the "restore" version
+ * 
+ * TODO: URGENT - DELETE THIS ENTIRE FILE IMMEDIATELY AFTER VERIFICATION
+ * TODO: CRITICAL - Verify no code depends on this backup file before deletion
+ * TODO: CRITICAL - Extract any missing functionality to proper modular services if needed
+ * TODO: CRITICAL - Add file deletion to cleanup automation scripts
+ * TODO: CRITICAL - Document why this backup existed and prevent similar accumulation
+ * TODO: CRITICAL - Add ESLint rule to prevent files exceeding 500 lines
+ * TODO: CRITICAL - Add git pre-commit hook to flag large backup files
+ * TODO: CRITICAL - Create proper backup strategy that doesn't pollute src/ directory
+ * TODO: CRITICAL - Type safety audit of entire file shows 50+ type safety violations
+ * TODO: CRITICAL - Function signature analysis shows 20+ functions without return types
+ * TODO: CRITICAL - Variable declaration audit shows 30+ implicit 'any' type usages
  */
 
 // TODO: Organize imports by category (effect, typespec, asyncapi, internal)

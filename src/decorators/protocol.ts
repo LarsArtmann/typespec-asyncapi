@@ -203,7 +203,7 @@ export function $protocol(
 								extractedConfig[key] = nestedProps
 							}
 						}
-					} catch (error) {
+					} catch {
 						// Continue with next property if extraction fails
 						//TODO: I HATE SILENT ERRORS!!! AT LEAST A DEBUG MESSAGE!
 					}

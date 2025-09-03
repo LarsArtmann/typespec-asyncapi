@@ -130,7 +130,7 @@ export class PluginRegistry {
         }
 
         // Validate dependencies
-        await this.validateDependencies(plugin)
+        this.validateDependencies(plugin)
 
         // Create metadata
         const metadata: PluginMetadata = {
@@ -297,7 +297,7 @@ export class PluginRegistry {
     /**
      * Validate plugin dependencies
      */
-    private async validateDependencies(plugin: Plugin): Promise<void> {
+    private validateDependencies(plugin: Plugin): void {
         for (const dependency of plugin.dependencies) {
             const depMetadata = this.pluginMetadata.get(dependency)
             
@@ -375,7 +375,10 @@ export class PluginRegistry {
         if (!this.eventBus.has(eventType)) {
             this.eventBus.set(eventType, [])
         }
-        this.eventBus.get(eventType)!.push(handler)
+        const handlers = this.eventBus.get(eventType);
+        if (handlers) {
+            handlers.push(handler);
+        }
     }
 
 	/**

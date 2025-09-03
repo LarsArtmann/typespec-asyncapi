@@ -376,7 +376,7 @@ export const enhancedMQTTPlugin: ProtocolPlugin = {
  * TASK M30: MQTT Topic Hierarchy Utilities
  * Implement MQTT topic hierarchies and pattern matching
  */
-export const MQTTTopicUtils = {
+export const mqttTopicUtils = {
   /**
    * Parse MQTT topic template into hierarchy levels
    */
@@ -458,7 +458,7 @@ export const MQTTTopicUtils = {
 /**
  * TASK M31: MQTT Plugin Testing Support
  */
-export const MQTTTestingUtils = {
+export const mqttTestingUtils = {
   /**
    * Create test MQTT operation data
    */

@@ -391,7 +391,7 @@ export const createAMQPChannelBinding = (config: AMQPConfig = {}): AMQPChannelBi
 /**
  * TASK M27: AMQP Plugin Testing Support 
  */
-export const AMQPTestingUtils = {
+export const amqpTestingUtils = {
   /**
    * Create test AMQP operation data
    */

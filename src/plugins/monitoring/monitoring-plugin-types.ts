@@ -7,7 +7,7 @@
 
 import type { Effect } from "effect"
 
-export const MonitoringType = {
+export const MONITORING_TYPE = {
     PROMETHEUS: "prometheus",
     GRAFANA: "grafana", 
     LOGGING: "logging",
@@ -16,9 +16,9 @@ export const MonitoringType = {
     CUSTOM: "custom"
 } as const
 
-export type MonitoringType = typeof MonitoringType[keyof typeof MonitoringType]
+export type MonitoringType = typeof MONITORING_TYPE[keyof typeof MONITORING_TYPE]
 
-export const LogLevel = {
+export const LOG_LEVEL = {
     TRACE: "trace",
     DEBUG: "debug",
     INFO: "info",
@@ -27,16 +27,16 @@ export const LogLevel = {
     FATAL: "fatal"
 } as const
 
-export type LogLevel = typeof LogLevel[keyof typeof LogLevel]
+export type LogLevel = typeof LOG_LEVEL[keyof typeof LOG_LEVEL]
 
-export const MetricType = {
+export const METRIC_TYPE = {
     COUNTER: "counter",
     GAUGE: "gauge",
     HISTOGRAM: "histogram",
     SUMMARY: "summary"
 } as const
 
-export type MetricType = typeof MetricType[keyof typeof MetricType]
+export type MetricType = typeof METRIC_TYPE[keyof typeof METRIC_TYPE]
 
 /**
  * Prometheus monitoring configuration

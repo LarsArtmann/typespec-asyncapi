@@ -188,7 +188,7 @@ function validateCorrelationSchema(
 			try {
 				new RegExp(schema.pattern) // Test if valid regex
 				validatedSchema.pattern = schema.pattern
-			} catch (error) {
+			} catch {
 				Effect.log(`⚠️ Invalid regex pattern: ${schema.pattern}`)
 			}
 		}

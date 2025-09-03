@@ -135,7 +135,7 @@ export class PerformanceRegressionTester {
 			yield* this.performanceMonitor.startMonitoring()
 
 			const startTime = performance.now(); void startTime
-			const _startMemory = process.memoryUsage().heapUsed / 1024 / 1024; void _startMemory
+			const startMemory = process.memoryUsage().heapUsed / 1024 / 1024; void startMemory
 
 			try {
 				// Execute the test function  
@@ -261,7 +261,7 @@ export class PerformanceRegressionTester {
 
 			try {
 				const baselinesData = readFileSync(this.baselinePath, 'utf-8')
-				const baselines: Record<string, PerformanceBaseline[]> = JSON.parse(baselinesData)
+				const baselines: Record<string, PerformanceBaseline[]> = JSON.parse(baselinesData) as Record<string, PerformanceBaseline[]>
 				const testBaselines = baselines[testCaseName]
 				
 				if (!testBaselines || testBaselines.length === 0) {
@@ -308,7 +308,7 @@ export class PerformanceRegressionTester {
 				
 				if (existsSync(this.baselinePath)) {
 					const baselinesData = readFileSync(this.baselinePath, 'utf-8')
-					baselines = JSON.parse(baselinesData)
+					baselines = JSON.parse(baselinesData) as Record<string, PerformanceBaseline[]>
 				}
 
 				if (!baselines[testCaseName]) {
@@ -488,7 +488,7 @@ export const createTypeSpecCompilationRegressionTest = (_program: Program) => {
 			// For now, we'll simulate with a lightweight operation
 			await new Promise(resolve => setTimeout(resolve, Math.random() * 100 + 50))
 			
-			const _endTime = performance.now(); void _endTime
+			const endTime = performance.now(); void endTime
 			// Note: performance measurement would be handled internally by runRegressionTest
 		})
 	}

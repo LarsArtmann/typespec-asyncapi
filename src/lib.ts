@@ -23,8 +23,11 @@
  */
 
 // TypeSpec Core Imports - Library infrastructure and diagnostic system
-// TODO: Consider grouping imports by functionality (core compiler, types, utilities)
-// TODO: Add explicit return type annotations to imported functions for better IDE support
+// TODO: CRITICAL - Group imports by category with separating comments for maintainability
+// TODO: TYPE_SAFETY - Import specific types needed: type TypeSpecLibrary from "@typespec/compiler"
+// TODO: TYPE_SAFETY - Add explicit return type annotations to imported functions for better IDE support
+// TODO: TYPE_SAFETY - Consider importing { type } for createTypeSpecLibrary if only used in type position
+// TODO: PERFORMANCE - Verify all imported functions are actually used to avoid dead imports
 import {createTypeSpecLibrary, type DecoratorContext, type Diagnostic, paramMessage} from "@typespec/compiler"
 
 // Constants - Import centralized constants to eliminate hardcoded values
@@ -63,36 +66,59 @@ import { ASYNCAPI_VERSIONS, DEFAULT_CONFIG } from "./constants/index.js"
  * 
  * @see {@link createTypeSpecLibrary} TypeSpec library creation function
  */
-// TODO: Add version information to library metadata  
-// TODO: Consider organizing diagnostics by category (validation, protocol, security)
+// TODO: TYPE_SAFETY - Add explicit TypeSpecLibrary type import and annotation: const $lib: TypeSpecLibrary
+// TODO: TYPE_SAFETY - Consider extracting diagnostics object to separate const with explicit type for reusability
+// TODO: TYPE_SAFETY - State schema could use more specific types instead of generic description strings
+// TODO: ARCHITECTURE - Add version information to library metadata for better debugging and compatibility
+// TODO: ARCHITECTURE - Consider organizing diagnostics by category (validation, protocol, security, performance)
+// TODO: MAINTENANCE - Extract diagnostic messages to separate localization file for i18n support
+// TODO: VALIDATION - Add JSON Schema validation for library definition structure at build time
 export const $lib = createTypeSpecLibrary({
 	// Using centralized constant instead of hardcoded library name
 	name: DEFAULT_CONFIG.LIBRARY_NAME,
 	// TODO: Add library description, version, and other metadata fields
 	diagnostics: {
-		// TODO: Group related diagnostics with separating comments (version, channel, message, etc.)
+		// TODO: TYPE_SAFETY - Extract diagnostics to typed const with DiagnosticMap<string, DiagnosticDefinition> for reusability
+		// TODO: TYPE_SAFETY - Each diagnostic should have explicit severity type: "error" | "warning" | "info"
+		// TODO: TYPE_SAFETY - Add template parameter types for paramMessage template arguments
+		// TODO: ARCHITECTURE - Group related diagnostics with separating comments (version, channel, message, protocol, security)
+		// TODO: MAINTENANCE - Consider using enum for diagnostic codes to prevent typos and enable refactoring
+		// TODO: VALIDATION - Add runtime validation that all referenced template parameters exist in messages
+		
+		// === VERSION VALIDATION DIAGNOSTICS ===
 		"invalid-asyncapi-version": {
+			// TODO: TYPE_SAFETY - severity should use const assertion: "error" as const
 			severity: "error",
-			// TODO: Add multiple message variants for different contexts (CLI, IDE, programmatic)
+			// TODO: TYPE_SAFETY - Add multiple message variants for different contexts (CLI, IDE, programmatic)
+			// TODO: TYPE_SAFETY - Template parameters should be explicitly typed: version: string
 			messages: {
 				// Using centralized AsyncAPI version constant instead of hardcoded version
+				// TODO: TYPE_SAFETY - paramMessage template should specify parameter types
 				default: paramMessage`AsyncAPI version '${"version"}' is not supported. Only AsyncAPI ${ASYNCAPI_VERSIONS.CURRENT} is supported. Update your emitter options to use "${ASYNCAPI_VERSIONS.CURRENT}".`,
 			},
 		},
+		
+		// === CHANNEL VALIDATION DIAGNOSTICS ===
 		"missing-channel-path": {
+			// TODO: TYPE_SAFETY - severity: "error" as const for better type inference
 			severity: "error",
 			messages: {
-				// TODO: Add actionable examples in the error message for different channel patterns
-				// TODO: Add link to documentation about channel path requirements
+				// TODO: TYPE_SAFETY - Template parameters should be typed: operationName: string
+				// TODO: UX - Add actionable examples in the error message for different channel patterns
+				// TODO: UX - Add link to documentation about channel path requirements
+				// TODO: UX - Include common channel patterns in the error message for immediate help
 				default: paramMessage`Operation '${"operationName"}' missing @channel decorator. Add @channel("/your-channel-path") to specify the channel path.`,
 			},
 		},
 		"invalid-channel-path": {
+			// TODO: TYPE_SAFETY - severity: "error" as const
 			severity: "error",
 			messages: {
-				// TODO: Add specific validation rules documentation in the error message
-				// TODO: Provide examples of valid channel path formats
-				// TODO: Add suggestion for fixing common path format mistakes
+				// TODO: TYPE_SAFETY - Template parameters should be typed: path: string
+				// TODO: UX - Add specific validation rules documentation in the error message
+				// TODO: UX - Provide examples of valid channel path formats
+				// TODO: UX - Add suggestion for fixing common path format mistakes
+				// TODO: UX - Include regex pattern or validation function reference for developers
 				default: paramMessage`Channel path '${"path"}' is not valid. Use format: /topic-name, /service/event-type, or {variable} syntax.`,
 			},
 		},

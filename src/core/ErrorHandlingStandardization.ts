@@ -197,7 +197,7 @@ export class ErrorHandlingMigration {
           category: "io_error" as const,
           code: "FILE_READ_FAILED",
           message: `Failed to read file: ${filePath}`,
-          details: { filePath, error },
+          details: { filePath, error: error as Error },
           timestamp: new Date(),
           recoverable: false
         } satisfies StandardizedError)
@@ -492,14 +492,14 @@ export const ERROR_HANDLING_SERVICE = Context.GenericTag<ErrorHandlingStandardiz
 /**
  * Create error handling service layer
  */
-export const ErrorHandlingServiceLive = Layer.sync(ERROR_HANDLING_SERVICE, () => 
+export const errorHandlingServiceLive = Layer.sync(ERROR_HANDLING_SERVICE, () => 
   new ErrorHandlingStandardization()
 )
 
 /**
  * Utility functions for common error handling patterns
  */
-export const ErrorHandlingUtils = {
+export const errorHandlingUtils = {
   /**
    * Wrap a function call with standardized error handling
    */
@@ -562,7 +562,7 @@ export const ErrorHandlingUtils = {
         }
       }
       
-      return yield* Effect.fail(lastError!)
+      return yield* Effect.fail(lastError ?? { category: 'system_error' as const, code: 'RETRY_FAILED', message: 'All retry attempts failed', timestamp: new Date(), recoverable: false })
     })
   }
 }

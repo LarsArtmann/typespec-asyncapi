@@ -12,7 +12,7 @@ import {SpecGenerationError} from "../errors/SpecGenerationError.js"
  * Railway Programming Logging - All logging properly composed within Effect contexts
  * FIXES: Scattered Effect.log anti-patterns throughout codebase
  */
-export const RailwayLogging = {
+export const railwayLogging = {
 	/**
 	 * Log debug information about operation/schema generation - Railway style
 	 */
@@ -104,7 +104,7 @@ export const RailwayLogging = {
  * Railway Programming Validation - Pure Effect composition with proper error handling
  * FIXES: Mixed async/Effect patterns and improper error chaining
  */
-export const RailwayValidation = {
+export const railwayValidation = {
 	/**
 	 * Validate program context exists - common pattern used in multiple generation functions
 	 */
@@ -142,7 +142,7 @@ export const RailwayValidation = {
  * Railway Programming Error Handling - Comprehensive error chaining and composition
  * FIXES: Poor error propagation and inconsistent error handling patterns
  */
-export const RailwayErrorHandling = {
+export const railwayErrorHandling = {
 	/**
 	 * Handle spec generation errors with consistent logging
 	 */
@@ -180,7 +180,7 @@ export const RailwayErrorHandling = {
  * Railway Programming Pipeline - Async-first operations with proper Effect composition
  * FIXES: Blocking operations and mixed Promise/Effect patterns
  */
-export const RailwayPipeline = {
+export const railwayPipeline = {
 	/**
 	 * Execute async operation with proper Effect wrapping and error handling
 	 */
@@ -269,7 +269,7 @@ export const RailwayPipeline = {
 		}),
 }
 
-// Legacy exports for backward compatibility - prefer Railway* versions
-export const effectLogging = RailwayLogging
-export const effectValidation = RailwayValidation
-export const effectErrorHandling = RailwayErrorHandling
+// Legacy exports for backward compatibility - prefer railway* versions
+export const effectLogging = railwayLogging
+export const effectValidation = railwayValidation
+export const effectErrorHandling = railwayErrorHandling

@@ -31,7 +31,7 @@ export function checkOperationTypeConflict(
 	//TODO: CRITICAL - Handle potential undefined state map gracefully
 	// Get existing operation types to check for conflicts
 	const operationTypesMap = context.program.stateMap($lib.stateKeys.operationTypes)
-	const rawType = operationTypesMap.get(target)
+	const rawType = operationTypesMap.get(target) as string | undefined
 	//TODO: CRITICAL - This type guard is insufficient - need proper schema validation
 	const existingType = typeof rawType === 'string' ? rawType : undefined
 

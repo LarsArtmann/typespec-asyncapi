@@ -233,7 +233,7 @@ export const createWebSocketMessageBinding = (config: WebSocketMessageBindingCon
  * TASK M23: WebSocket Plugin Testing Support
  * Utility functions for real compilation testing
  */
-export const WebSocketTestingUtils = {
+export const webSocketTestingUtils = {
   /**
    * Create test WebSocket operation data
    */

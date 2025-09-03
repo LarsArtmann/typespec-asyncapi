@@ -10,7 +10,7 @@ import {Parser} from "@asyncapi/parser"
 import type { ValidationStats } from "./ValidationStats.js"
 import type { ValidationOptions } from "./ValidationOptions.js"
 import * as NodeFS from "node:fs/promises"
-import { RailwayLogging } from "../utils/effect-helpers.js"
+import { railwayLogging } from "../utils/effect-helpers.js"
 
 /**
  * AsyncAPI 3.0 Validator Class using REAL @asyncapi/parser
@@ -53,9 +53,9 @@ export class AsyncAPIValidator {
 				return
 			}
 
-			yield* RailwayLogging.logInitialization("AsyncAPI 3.0.0 Validator with REAL @asyncapi/parser")
+			yield* railwayLogging.logInitialization("AsyncAPI 3.0.0 Validator with REAL @asyncapi/parser")
 			this.initialized = true
-			yield* RailwayLogging.logInitializationSuccess("AsyncAPI 3.0.0 Validator")
+			yield* railwayLogging.logInitializationSuccess("AsyncAPI 3.0.0 Validator")
 		})
 	}
 
@@ -212,7 +212,7 @@ export class AsyncAPIValidator {
 	validateBatchEffect(documents: Array<{content: unknown, identifier?: string}>): Effect.Effect<ValidationResult[], never> {
 		return Effect.gen(this, function*() {
 			const startTime = performance.now()
-			yield* RailwayLogging.logInitialization(`batch validation of ${documents.length} documents`)
+			yield* railwayLogging.logInitialization(`batch validation of ${documents.length} documents`)
 
 			// Process documents in parallel using Effect.all with controlled concurrency
 			const validationEffects = documents.map(doc => 
