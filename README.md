@@ -1,17 +1,35 @@
 # 🚀 TypeSpec AsyncAPI Emitter
 
-[![npm version](https://img.shields.io/npm/v/@typespec/asyncapi)](https://www.npmjs.com/package/@typespec/asyncapi)
+[![npm version](https://img.shields.io/npm/v/@lars-artmann/typespec-asyncapi)](https://www.npmjs.com/package/@lars-artmann/typespec-asyncapi)
+[![Alpha Release](https://img.shields.io/badge/Release-Alpha%20v0.0.1-orange)](https://github.com/LarsArtmann/typespec-asyncapi)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Strict-blue)](https://www.typescriptlang.org/)
 [![AsyncAPI 3.0](https://img.shields.io/badge/AsyncAPI-3.0-green)](https://www.asyncapi.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 **🎉 SOLVING [Microsoft TypeSpec Issue #2463](https://github.com/microsoft/typespec/issues/2463) 🎉**
 
-> Production-ready TypeSpec emitter generating AsyncAPI 3.0 specifications with comprehensive decorator support, Effect.TS architecture, and enterprise-grade performance.
+> **🚨 ALPHA RELEASE v0.0.1** - Core TypeSpec to AsyncAPI 3.0 generation with basic decorators (@channel, @publish, @subscribe). [See Alpha Documentation](docs/alpha-v0.0.1.md) for limitations and roadmap.
+
+## 🚨 **Alpha Release Status**
+
+### ✅ **ALPHA v0.0.1 - INCLUDED Features**
+- **Core Decorators**: `@channel`, `@publish`, `@subscribe` (fully functional)
+- **Basic Message Generation**: TypeSpec models → AsyncAPI message schemas
+- **Protocol Bindings**: Basic Kafka, WebSocket, HTTP, MQTT support
+- **JSON/YAML Output**: AsyncAPI 3.0.0 compliant specifications
+- **Build System**: TypeScript compilation and basic testing
+
+### ❌ **EXCLUDED (Beta/v1.0 Features)**
+- **Advanced Decorators**: `@server`, `@security`, `@message`, `@protocol`, `@correlationId`, `@header`, `@tags`
+- **Complex TypeSpec Features**: Versioning, advanced unions, custom scalars
+- **Performance Optimizations**: Memory management, large schema support
+- **Comprehensive Error Handling**: Advanced validation and diagnostics
+
+### 📖 **[📋 Complete Alpha Documentation](docs/alpha-v0.0.1.md)**
 
 ## 📊 **Project Status & Metrics**
 
-### 🎯 **Production Readiness: 85% Value Delivered**
+### 🎯 **Alpha Release: Core Value Delivered**
 
 | Feature | Status | Coverage | Performance |
 |---------|--------|----------|-------------|
@@ -52,14 +70,14 @@ Memory Performance:
 ### Installation
 
 ```bash
-# Install the TypeSpec AsyncAPI emitter
-bun add @larsartmann/typespec-asyncapi
+# 🚨 ALPHA RELEASE - Install with caution, not production-ready
+bun add @lars-artmann/typespec-asyncapi@alpha
 
 # Install TypeSpec compiler (if not already installed)  
 bun add @typespec/compiler
 
 # For npm users (bun is recommended for better performance)
-npm install @larsartmann/typespec-asyncapi
+npm install @lars-artmann/typespec-asyncapi@alpha
 npm install @typespec/compiler
 ```
 

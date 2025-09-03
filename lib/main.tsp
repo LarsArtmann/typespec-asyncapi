@@ -62,7 +62,7 @@ extern dec subscribe(target: Operation);
 // TODO: Replace Record<unknown> with strongly typed interface for config
 // TODO: Add compile-time validation to ensure target is a Model
 // TODO: Consider making config parameter required instead of optional
-extern dec message(target: Model, config?: Record<unknown>);
+extern dec message(target: Model, config?: valueof Record<unknown>);
 
 /**
  * Define protocol-specific binding configuration for operations or models
@@ -76,7 +76,7 @@ extern dec message(target: Model, config?: Record<unknown>);
 // TODO: Replace Record<unknown> with strongly typed union of protocol config interfaces
 // TODO: Add compile-time validation for supported protocol types
 // TODO: Consider separate decorators for each protocol type (@kafka, @amqp, etc.)
-extern dec protocol(target: Operation | Model, config: Record<unknown>);
+extern dec protocol(target: Operation | Model, config: valueof Record<unknown>);
 
 /**
  * Apply security scheme information to operations or models
@@ -90,7 +90,7 @@ extern dec protocol(target: Operation | Model, config: Record<unknown>);
 // TODO: Replace Record<unknown> with strongly typed security config interface
 // TODO: Add compile-time validation for AsyncAPI 3.0 security scheme types
 // TODO: Consider validation for security scheme name uniqueness
-extern dec security(target: Operation | Model, config: Record<unknown>);
+extern dec security(target: Operation | Model, config: valueof Record<unknown>);
 
 /**
  * Mark a model property as a message header
@@ -113,7 +113,7 @@ extern dec security(target: Operation | Model, config: Record<unknown>);
 // TODO: Add compile-time validation to ensure target is a ModelProperty
 // TODO: Consider optional header name parameter for custom header mapping
 // TODO: Implement @header decorator for message header extraction
-// extern dec header(target: ModelProperty);
+extern dec header(target: ModelProperty);
 
 /**
  * Define a server configuration for the AsyncAPI specification
@@ -129,7 +129,7 @@ extern dec security(target: Operation | Model, config: Record<unknown>);
 // TODO: Add compile-time validation for server name uniqueness within namespace
 // TODO: Add validation for URL format and protocol support
 // TODO: Consider making config parameter more strongly typed with required fields
-extern dec server(target: Namespace, name: valueof string, config: Record<unknown>);
+extern dec server(target: Namespace, name: valueof string, config: valueof Record<unknown>);
 
 /**
  * Apply tags metadata to operations, models, or namespaces
@@ -146,7 +146,7 @@ extern dec server(target: Namespace, name: valueof string, config: Record<unknow
  * @since 1.0.0
  */
 // TODO: Implement @tags decorator for resource categorization
-// extern dec tags(target: Operation | Model | Namespace, tags: valueof string[]);
+extern dec tags(target: Operation | Model | Namespace, tags: valueof string[]);
 
 /**
  * Define correlation ID configuration for message tracking
@@ -169,7 +169,7 @@ extern dec server(target: Namespace, name: valueof string, config: Record<unknow
  * @since 1.0.0
  */
 // TODO: Implement @correlationId decorator for message correlation tracking  
-// extern dec correlationId(target: Model, config: Record<unknown>);
+extern dec correlationId(target: Model, config: valueof Record<unknown>);
 
 /**
  * Define bindings for specific protocols and cloud providers
@@ -192,4 +192,4 @@ extern dec server(target: Namespace, name: valueof string, config: Record<unknow
  * @since 1.0.0
  */
 // TODO: Implement @bindings decorator for cloud provider specific bindings
-// extern dec bindings(target: Operation | Model, bindingType: valueof string, config: Record<unknown>);
+extern dec bindings(target: Operation | Model, bindingType: valueof string, config: valueof Record<unknown>);

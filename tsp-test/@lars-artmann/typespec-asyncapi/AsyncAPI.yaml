@@ -1,0 +1,242 @@
+asyncapi: 3.0.0
+info:
+  title: AsyncAPI Specification
+  version: 1.0.0
+  description: Generated from TypeSpec with 8 operations, 0 messages, 0 security configs
+servers: {}
+channels:
+  channel_publishUserCreated:
+    address: user.created
+    description: Channel for publishUserCreated
+    messages:
+      publishUserCreatedMessage:
+        $ref: "#/components/messages/publishUserCreatedMessage"
+  channel_publishUserUpdated:
+    address: user.updated
+    description: Channel for publishUserUpdated
+    messages:
+      publishUserUpdatedMessage:
+        $ref: "#/components/messages/publishUserUpdatedMessage"
+  channel_publishUserNotification:
+    address: user.{userId}.notifications
+    description: Channel for publishUserNotification
+    messages:
+      publishUserNotificationMessage:
+        $ref: "#/components/messages/publishUserNotificationMessage"
+  channel_subscribeToUserCreated:
+    address: user.created
+    description: Channel for subscribeToUserCreated
+    messages:
+      subscribeToUserCreatedMessage:
+        $ref: "#/components/messages/subscribeToUserCreatedMessage"
+  channel_subscribeToUserUpdated:
+    address: user.updated
+    description: Channel for subscribeToUserUpdated
+    messages:
+      subscribeToUserUpdatedMessage:
+        $ref: "#/components/messages/subscribeToUserUpdatedMessage"
+  channel_subscribeToUserNotifications:
+    address: user.{userId}.notifications
+    description: Channel for subscribeToUserNotifications
+    messages:
+      subscribeToUserNotificationsMessage:
+        $ref: "#/components/messages/subscribeToUserNotificationsMessage"
+  channel_sendChatMessage:
+    address: chat.messages
+    description: Channel for sendChatMessage
+    messages:
+      sendChatMessageMessage:
+        $ref: "#/components/messages/sendChatMessageMessage"
+  channel_receiveChatMessage:
+    address: chat.messages
+    description: Channel for receiveChatMessage
+    messages:
+      receiveChatMessageMessage:
+        $ref: "#/components/messages/receiveChatMessageMessage"
+operations:
+  publishUserCreated:
+    action: send
+    channel:
+      $ref: "#/channels/channel_publishUserCreated"
+    summary: Operation publishUserCreated
+    description: TypeSpec operation with 0 parameters
+  publishUserUpdated:
+    action: send
+    channel:
+      $ref: "#/channels/channel_publishUserUpdated"
+    summary: Operation publishUserUpdated
+    description: TypeSpec operation with 0 parameters
+  publishUserNotification:
+    action: send
+    channel:
+      $ref: "#/channels/channel_publishUserNotification"
+    summary: Operation publishUserNotification
+    description: TypeSpec operation with 0 parameters
+  subscribeToUserCreated:
+    action: receive
+    channel:
+      $ref: "#/channels/channel_subscribeToUserCreated"
+    summary: Operation subscribeToUserCreated
+    description: TypeSpec operation with 0 parameters
+  subscribeToUserUpdated:
+    action: receive
+    channel:
+      $ref: "#/channels/channel_subscribeToUserUpdated"
+    summary: Operation subscribeToUserUpdated
+    description: TypeSpec operation with 0 parameters
+  subscribeToUserNotifications:
+    action: receive
+    channel:
+      $ref: "#/channels/channel_subscribeToUserNotifications"
+    summary: Operation subscribeToUserNotifications
+    description: TypeSpec operation with 0 parameters
+  sendChatMessage:
+    action: send
+    channel:
+      $ref: "#/channels/channel_sendChatMessage"
+    summary: Operation sendChatMessage
+    description: TypeSpec operation with 0 parameters
+  receiveChatMessage:
+    action: receive
+    channel:
+      $ref: "#/channels/channel_receiveChatMessage"
+    summary: Operation receiveChatMessage
+    description: TypeSpec operation with 0 parameters
+components:
+  schemas:
+    UserCreatedChannel:
+      type: object
+      description: Schema for UserCreatedChannel
+      properties:
+        payload:
+          description: Property payload
+          $ref: "#/components/schemas/UserCreatedPayload"
+      required:
+        - payload
+    UserUpdatedChannel:
+      type: object
+      description: Schema for UserUpdatedChannel
+      properties:
+        payload:
+          description: Property payload
+          $ref: "#/components/schemas/UserUpdatedPayload"
+      required:
+        - payload
+    UserNotificationChannel:
+      type: object
+      description: Schema for UserNotificationChannel
+      properties:
+        payload:
+          description: Property payload
+          type: object
+          properties:
+            message:
+              description: Property message
+              type: string
+            priority:
+              description: Property priority
+              type: string
+              enum:
+                - low
+                - medium
+                - high
+            timestamp:
+              description: Property timestamp
+              type: string
+              format: date-time
+          required:
+            - message
+            - priority
+            - timestamp
+      required:
+        - payload
+    ChatMessageChannel:
+      type: object
+      description: Schema for ChatMessageChannel
+      properties:
+        payload:
+          description: Property payload
+          type: object
+          properties:
+            messageId:
+              description: Property messageId
+              type: string
+            userId:
+              description: Property userId
+              type: string
+            content:
+              description: Property content
+              type: string
+            timestamp:
+              description: Property timestamp
+              type: string
+              format: date-time
+            roomId:
+              description: Property roomId
+              type: string
+          required:
+            - messageId
+            - userId
+            - content
+            - timestamp
+            - roomId
+      required:
+        - payload
+  messages:
+    publishUserCreatedMessage:
+      name: publishUserCreatedMessage
+      title: publishUserCreated Message
+      summary: Message for publishUserCreated operation
+      contentType: application/json
+      payload:
+        $ref: "#/components/schemas/UserCreatedChannel"
+    publishUserUpdatedMessage:
+      name: publishUserUpdatedMessage
+      title: publishUserUpdated Message
+      summary: Message for publishUserUpdated operation
+      contentType: application/json
+      payload:
+        $ref: "#/components/schemas/UserUpdatedChannel"
+    publishUserNotificationMessage:
+      name: publishUserNotificationMessage
+      title: publishUserNotification Message
+      summary: Message for publishUserNotification operation
+      contentType: application/json
+      payload:
+        $ref: "#/components/schemas/UserNotificationChannel"
+    subscribeToUserCreatedMessage:
+      name: subscribeToUserCreatedMessage
+      title: subscribeToUserCreated Message
+      summary: Message for subscribeToUserCreated operation
+      contentType: application/json
+      payload:
+        $ref: "#/components/schemas/UserCreatedChannel"
+    subscribeToUserUpdatedMessage:
+      name: subscribeToUserUpdatedMessage
+      title: subscribeToUserUpdated Message
+      summary: Message for subscribeToUserUpdated operation
+      contentType: application/json
+      payload:
+        $ref: "#/components/schemas/UserUpdatedChannel"
+    subscribeToUserNotificationsMessage:
+      name: subscribeToUserNotificationsMessage
+      title: subscribeToUserNotifications Message
+      summary: Message for subscribeToUserNotifications operation
+      contentType: application/json
+      payload:
+        $ref: "#/components/schemas/UserNotificationChannel"
+    sendChatMessageMessage:
+      name: sendChatMessageMessage
+      title: sendChatMessage Message
+      summary: Message for sendChatMessage operation
+      contentType: application/json
+      payload:
+        $ref: "#/components/schemas/ChatMessageChannel"
+    receiveChatMessageMessage:
+      name: receiveChatMessageMessage
+      title: receiveChatMessage Message
+      summary: Message for receiveChatMessage operation
+      contentType: application/json
+      payload:
+        $ref: "#/components/schemas/ChatMessageChannel"
+  securitySchemes: {}

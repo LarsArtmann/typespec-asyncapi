@@ -17,7 +17,7 @@ import { ProtocolBindingFactory, type ProtocolType } from "../protocol-bindings.
 import { generateProtocolBinding, type AsyncAPIProtocolType } from "../plugins/plugin-system.js"
 import { getMessageConfig, getProtocolConfig } from "../utils/typespec-helpers.js"
 import { createChannelDefinition } from "../utils/asyncapi-helpers.js"
-import { convertModelToSchema } from "../utils/schema-conversion.js"
+import { convertModelToSchema, convertTypeToSchemaType } from "../utils/schema-conversion.js"
 
 /**
  * ProcessingService - Core TypeSpec to AsyncAPI Transformation
@@ -212,23 +212,35 @@ export class ProcessingService {
 		}
 		
 		// CRITICAL FIX: Process return type and add payload schema
-		Effect.log(`🔍 Operation ${op.name} return type: ${op.returnType.kind}`)
-		if (op.returnType.kind === "Model") {
-			const model = op.returnType
-			Effect.log(`📋 Processing Model return type: ${model.name}`)
-			
-			// Add schema to components.schemas
-			if (!asyncApiDoc.components.schemas) asyncApiDoc.components.schemas = {}
-			asyncApiDoc.components.schemas[model.name] = convertModelToSchema(model, program)
-			
-			// Add payload reference to message
-			messageDef.payload = {
-				$ref: `#/components/schemas/${model.name}`
+		if (op.returnType) {
+			Effect.log(`🔍 Operation ${op.name} return type: ${op.returnType.kind}`)
+			if (op.returnType.kind === "Model") {
+				const model = op.returnType
+				Effect.log(`📋 Processing Model return type: ${model.name}`)
+				
+				// Add schema to components.schemas
+				if (!asyncApiDoc.components.schemas) asyncApiDoc.components.schemas = {}
+				asyncApiDoc.components.schemas[model.name] = convertModelToSchema(model, program)
+				
+				// Add payload reference to message
+				messageDef.payload = {
+					$ref: `#/components/schemas/${model.name}`
+				}
+				
+				Effect.log(`✅ Added schema and payload for model: ${model.name}`)
+			} else {
+				Effect.log(`🔍 Non-model return type (${op.returnType.kind}) - generating inline schema`)
+				// Handle non-model return types by converting to schema
+				const schema = Effect.runSync(convertTypeToSchemaType(op.returnType, program))
+				messageDef.payload = schema
 			}
-			
-			Effect.log(`✅ Added schema and payload for model: ${model.name}`)
 		} else {
-			Effect.log(`⚠️ Return type is not Model: ${op.returnType.kind}`)
+			Effect.log(`⚠️ Operation ${op.name} has no return type - creating default payload`)
+			// Default payload for operations without return type
+			messageDef.payload = {
+				type: "object" as const,
+				description: `Payload for ${op.name} operation`
+			}
 		}
 		
 		// CRITICAL FIX: Add protocol bindings to message definition

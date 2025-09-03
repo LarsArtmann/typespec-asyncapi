@@ -13,10 +13,7 @@ describe("AsyncAPI Protocol Binding Integration", () => {
   describe("Kafka Protocol Integration", () => {
     it("should generate AsyncAPI spec with Kafka server bindings", async () => {
       const source = `
-        import "@larsartmann/typespec-asyncapi";
-        using TypeSpec.AsyncAPI;
-
-        @server("kafka-cluster", {
+        @server("kafka-cluster", #{
           url: "kafka://broker.example.com:9092", 
           protocol: "kafka",
           description: "Kafka cluster with schema registry"
@@ -30,11 +27,9 @@ describe("AsyncAPI Protocol Binding Integration", () => {
           timestamp: int64;
         }
 
-        @channel("user-events") 
-        model UserChannel {
-          @subscribe
-          userCreated: UserEvent;
-        }
+        @channel("user-events")
+        @subscribe
+        op handleUserEvent(): UserEvent;
       `;
 
       const spec = await compileAsyncAPISpec(source);
@@ -49,10 +44,7 @@ describe("AsyncAPI Protocol Binding Integration", () => {
 
     it("should validate generated spec follows AsyncAPI 3.0 standard", async () => {
       const source = `
-        import "@larsartmann/typespec-asyncapi";
-        using TypeSpec.AsyncAPI;
-
-        @server("kafka-broker", {
+        @server("kafka-broker", #{
           url: "kafka://localhost:9092",
           protocol: "kafka"
         })
@@ -64,10 +56,8 @@ describe("AsyncAPI Protocol Binding Integration", () => {
         }
 
         @channel("test-topic")
-        model TestChannel {
-          @subscribe 
-          received: TestEvent;
-        }
+        @subscribe
+        op handleTestEvent(): TestEvent;
       `;
 
       const spec = await compileAsyncAPISpec(source);
@@ -83,10 +73,7 @@ describe("AsyncAPI Protocol Binding Integration", () => {
   describe("WebSocket Protocol Integration", () => {
     it("should generate AsyncAPI spec with WebSocket channel bindings", async () => {
       const source = `
-        import "@larsartmann/typespec-asyncapi";
-        using TypeSpec.AsyncAPI;
-
-        @server("websocket-server", {
+        @server("websocket-server", #{
           url: "ws://websocket.example.com:8080",
           protocol: "ws", 
           description: "WebSocket server for real-time communication"
@@ -101,13 +88,12 @@ describe("AsyncAPI Protocol Binding Integration", () => {
         }
 
         @channel("chat-room")
-        model ChatChannel {
-          @subscribe
-          messageReceived: ChatMessage;
-          
-          @publish
-          messageSent: ChatMessage;
-        }
+        @subscribe
+        op receiveMessage(): ChatMessage;
+        
+        @channel("chat-room")
+        @publish
+        op sendMessage(): ChatMessage;
       `;
 
       const spec = await compileAsyncAPISpec(source);
@@ -122,10 +108,7 @@ describe("AsyncAPI Protocol Binding Integration", () => {
 
     it("should handle bidirectional WebSocket communication", async () => {
       const source = `
-        import "@larsartmann/typespec-asyncapi";
-        using TypeSpec.AsyncAPI;
-
-        @server("ws-api", {
+        @server("ws-api", #{
           url: "wss://api.example.com/ws",
           protocol: "wss"
         })
@@ -137,13 +120,12 @@ describe("AsyncAPI Protocol Binding Integration", () => {
         }
 
         @channel("messages")
-        model MessageChannel {
-          @subscribe
-          incoming: Message;
-          
-          @publish
-          outgoing: Message;
-        }
+        @subscribe
+        op receiveMessage(): Message;
+        
+        @channel("messages")
+        @publish
+        op sendMessage(): Message;
       `;
 
       const spec = await compileAsyncAPISpec(source);
@@ -156,10 +138,7 @@ describe("AsyncAPI Protocol Binding Integration", () => {
   describe("HTTP Protocol Integration", () => {
     it("should generate AsyncAPI spec with HTTP operation bindings", async () => {
       const source = `
-        import "@larsartmann/typespec-asyncapi";
-        using TypeSpec.AsyncAPI;
-
-        @server("http-api", {
+        @server("http-api", #{
           url: "https://api.example.com",
           protocol: "https",
           description: "REST API for async operations"
@@ -174,10 +153,8 @@ describe("AsyncAPI Protocol Binding Integration", () => {
         }
 
         @channel("webhook-notifications")
-        model WebhookChannel {
-          @publish
-          webhookSent: WebhookEvent;
-        }
+        @publish
+        op sendWebhookEvent(): WebhookEvent;
       `;
 
       const spec = await compileAsyncAPISpec(source);
@@ -192,10 +169,7 @@ describe("AsyncAPI Protocol Binding Integration", () => {
 
     it("should support HTTP webhook patterns", async () => {
       const source = `
-        import "@larsartmann/typespec-asyncapi";
-        using TypeSpec.AsyncAPI;
-
-        @server("webhook-endpoint", {
+        @server("webhook-endpoint", #{
           url: "https://webhooks.api.example.com",
           protocol: "https"
         })
@@ -209,10 +183,8 @@ describe("AsyncAPI Protocol Binding Integration", () => {
         }
 
         @channel("payment-events")
-        model PaymentChannel {
-          @publish
-          paymentNotification: PaymentEvent;
-        }
+        @publish
+        op sendPaymentNotification(): PaymentEvent;
       `;
 
       const spec = await compileAsyncAPISpec(source);
@@ -225,15 +197,12 @@ describe("AsyncAPI Protocol Binding Integration", () => {
   describe("Multi-Protocol Integration", () => {
     it("should handle multiple protocols in a single specification", async () => {
       const source = `
-        import "@larsartmann/typespec-asyncapi";
-        using TypeSpec.AsyncAPI;
-
-        @server("kafka-broker", {
+        @server("kafka-broker", #{
           url: "kafka://broker.example.com:9092",
           protocol: "kafka",
           description: "Kafka message broker"
         })
-        @server("webhook-endpoint", {
+        @server("webhook-endpoint", #{
           url: "https://webhooks.example.com",
           protocol: "https", 
           description: "HTTP webhook endpoint"
@@ -248,16 +217,12 @@ describe("AsyncAPI Protocol Binding Integration", () => {
         }
 
         @channel("internal-events")
-        model KafkaChannel {
-          @subscribe
-          eventReceived: Event;
-        }
+        @subscribe
+        op receiveEvent(): Event;
 
         @channel("external-notifications") 
-        model WebhookChannel {
-          @publish
-          notificationSent: Event;
-        }
+        @publish
+        op sendNotification(): Event;
       `;
 
       const spec = await compileAsyncAPISpec(source);
@@ -290,10 +255,7 @@ describe("AsyncAPI Protocol Binding Integration", () => {
   describe("AsyncAPI Specification Validation", () => {
     it("should generate valid AsyncAPI 3.0 documents", async () => {
       const source = `
-        import "@larsartmann/typespec-asyncapi";
-        using TypeSpec.AsyncAPI;
-
-        @server("test-server", {
+        @server("test-server", #{
           url: "kafka://localhost:9092",
           protocol: "kafka"
         })
@@ -305,10 +267,8 @@ describe("AsyncAPI Protocol Binding Integration", () => {
         }
 
         @channel("test-channel")
-        model TestChannel {
-          @subscribe
-          testEvent: TestMessage;
-        }
+        @subscribe
+        op handleTestEvent(): TestMessage;
       `;
 
       const spec = await compileAsyncAPISpec(source);
@@ -325,14 +285,11 @@ describe("AsyncAPI Protocol Binding Integration", () => {
     it("should maintain protocol binding consistency", async () => {
       // Test that protocols in servers match expected formats
       const source = `
-        import "@larsartmann/typespec-asyncapi";
-        using TypeSpec.AsyncAPI;
-
-        @server("kafka-srv", {
+        @server("kafka-srv", #{
           url: "kafka://localhost:9092",
           protocol: "kafka"
         })
-        @server("ws-srv", {
+        @server("ws-srv", #{
           url: "ws://localhost:8080",
           protocol: "ws"
         })
@@ -343,10 +300,8 @@ describe("AsyncAPI Protocol Binding Integration", () => {
         }
 
         @channel("events")
-        model EventChannel {
-          @subscribe
-          event: Event;
-        }
+        @subscribe
+        op handleEvent(): Event;
       `;
 
       const spec = await compileAsyncAPISpec(source);
@@ -357,14 +312,11 @@ describe("AsyncAPI Protocol Binding Integration", () => {
 
     it("should handle complex multi-protocol scenarios", async () => {
       const source = `
-        import "@larsartmann/typespec-asyncapi";
-        using TypeSpec.AsyncAPI;
-
-        @server("primary", {
+        @server("primary", #{
           url: "kafka://broker:9092",
           protocol: "kafka"
         })
-        @server("secondary", {
+        @server("secondary", #{
           url: "https://api.example.com/webhooks",
           protocol: "https"
         })
@@ -378,13 +330,12 @@ describe("AsyncAPI Protocol Binding Integration", () => {
         }
 
         @channel("business-events")
-        model BusinessChannel {
-          @subscribe
-          eventProcessed: BusinessEvent;
-          
-          @publish 
-          eventGenerated: BusinessEvent;
-        }
+        @subscribe
+        op processBusinessEvent(): BusinessEvent;
+        
+        @channel("business-events")
+        @publish
+        op generateBusinessEvent(): BusinessEvent;
       `;
 
       const spec = await compileAsyncAPISpec(source);

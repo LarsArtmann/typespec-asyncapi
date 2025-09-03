@@ -5,16 +5,22 @@ describe('Advanced AsyncAPI Decorators', () => {
 
   it('should compile TypeSpec with @tags decorator without errors', async () => {
     const testCode = `
-      import "@typespec/asyncapi";
+      import "@lars-artmann/typespec-asyncapi";
       using TypeSpec.AsyncAPI;
       
-      @tags(["user", "auth"])
+      @tags(#["user", "auth"])
       model SimpleModel {
         id: string;
       }
     `
 
     const { program, diagnostics } = await compileTypeSpecWithDecorators(testCode)
+    
+    // Debug: Log all diagnostics
+    if (diagnostics.length > 0) {
+      console.log('DIAGNOSTICS for @tags test:')
+      diagnostics.forEach(d => console.log(`  ${d.severity}: ${d.message}`))
+    }
     
     // Check compilation succeeded
     expect(program).toBeDefined()
@@ -30,7 +36,7 @@ describe('Advanced AsyncAPI Decorators', () => {
 
   it('should compile TypeSpec with @correlationId decorator without errors', async () => {
     const testCode = `
-      import "@typespec/asyncapi";
+      import "@lars-artmann/typespec-asyncapi";
       using TypeSpec.AsyncAPI;
       
       @correlationId(#{
@@ -43,6 +49,7 @@ describe('Advanced AsyncAPI Decorators', () => {
 
     const { program, diagnostics } = await compileTypeSpecWithDecorators(testCode)
     
+    
     expect(program).toBeDefined()
     const errors = diagnostics.filter(d => d.severity === 'error')
     expect(errors.length).toBe(0)
@@ -53,7 +60,7 @@ describe('Advanced AsyncAPI Decorators', () => {
 
   it('should compile TypeSpec with @bindings decorator without errors', async () => {
     const testCode = `
-      import "@typespec/asyncapi";
+      import "@lars-artmann/typespec-asyncapi";
       using TypeSpec.AsyncAPI;
       
       @bindings("kafka", #{
@@ -80,7 +87,7 @@ describe('Advanced AsyncAPI Decorators', () => {
 
   it('should compile TypeSpec with @header decorator without errors', async () => {
     const testCode = `
-      import "@typespec/asyncapi";
+      import "@lars-artmann/typespec-asyncapi";
       using TypeSpec.AsyncAPI;
       
       model MessageWithHeaders {
