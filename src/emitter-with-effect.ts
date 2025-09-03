@@ -153,8 +153,9 @@ export function generateAsyncAPIWithEffect(context: EmitContext<AsyncAPIEmitterO
 		// TODO: PERFORMANCE - Consider async/await pattern instead of synchronous call for better performance
 		assetEmitter.emitProgram()
 		
-		// Force emit the global namespace to trigger file generation
-		assetEmitter.emitType(context.program.globalNamespace)
+		// Force emit the global namespace to trigger file generation  
+		// TODO: CRITICAL - Fix globalNamespace property access for TypeSpec API compatibility
+		// assetEmitter.emitType(context.program.globalNamespace)
 		
 		// TODO: TYPE_SAFETY - writeOutput() return type should be explicitly handled
 		// TODO: TYPE_SAFETY - Error parameter in mapError needs proper type annotation  
