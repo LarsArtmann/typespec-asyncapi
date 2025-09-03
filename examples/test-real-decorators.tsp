@@ -1,4 +1,4 @@
-import "@larsartmann/typespec-asyncapi";
+import "@lars-artmann/typespec-asyncapi";
 
 using AsyncAPI;
 

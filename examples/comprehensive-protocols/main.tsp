@@ -11,7 +11,7 @@
  * Each protocol showcases its unique features and binding configurations.
  */
 
-import "@larsartmann/typespec-asyncapi";
+import "@lars-artmann/typespec-asyncapi";
 
 using TypeSpec.AsyncAPI;
 

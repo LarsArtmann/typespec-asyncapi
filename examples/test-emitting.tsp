@@ -1,5 +1,5 @@
 // Test file to verify the emitter actually works
-import "@larsartmann/typespec-asyncapi";
+import "@lars-artmann/typespec-asyncapi";
 
 using AsyncAPI;
 

@@ -1,7 +1,7 @@
 // Test Standard AsyncAPI Binding Generation
 // This tests the migration from custom bindings to official AsyncAPI bindings
 
-import "@larsartmann/typespec-asyncapi";
+import "@lars-artmann/typespec-asyncapi";
 
 using AsyncAPI;
 

@@ -1,7 +1,7 @@
 emit:
-  - "@typespec/asyncapi"
+  - "@lars-artmann/typespec-asyncapi"
 options:
-  "@typespec/asyncapi":
+  "@lars-artmann/typespec-asyncapi":
     output-file: "user-events"
     file-type: "yaml"
     include-source-info: true

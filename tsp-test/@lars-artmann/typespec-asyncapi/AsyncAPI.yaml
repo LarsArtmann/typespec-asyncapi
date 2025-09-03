@@ -5,92 +5,64 @@ info:
   description: Generated from TypeSpec with 2 operations, 0 messages, 0 security configs
 servers: {}
 channels:
-  channel_publishUserCreated:
-    address: user.created
-    description: Channel for publishUserCreated
+  channel_sendUserMessage:
+    address: user.messages
+    description: Channel for sendUserMessage
     messages:
-      publishUserCreatedMessage:
-        $ref: "#/components/messages/publishUserCreatedMessage"
-  channel_subscribeToUserCreated:
-    address: user.created
-    description: Channel for subscribeToUserCreated
+      sendUserMessageMessage:
+        $ref: "#/components/messages/sendUserMessageMessage"
+  channel_receiveUserMessage:
+    address: user.messages
+    description: Channel for receiveUserMessage
     messages:
-      subscribeToUserCreatedMessage:
-        $ref: "#/components/messages/subscribeToUserCreatedMessage"
+      receiveUserMessageMessage:
+        $ref: "#/components/messages/receiveUserMessageMessage"
 operations:
-  publishUserCreated:
+  sendUserMessage:
     action: send
     channel:
-      $ref: "#/channels/channel_publishUserCreated"
-    summary: Operation publishUserCreated
-    description: TypeSpec operation with 1 parameters
-  subscribeToUserCreated:
+      $ref: "#/channels/channel_sendUserMessage"
+    summary: Operation sendUserMessage
+    description: TypeSpec operation with 0 parameters
+  receiveUserMessage:
     action: receive
     channel:
-      $ref: "#/channels/channel_subscribeToUserCreated"
-    summary: Operation subscribeToUserCreated
+      $ref: "#/channels/channel_receiveUserMessage"
+    summary: Operation receiveUserMessage
     description: TypeSpec operation with 0 parameters
 components:
   schemas:
-    UserCreatedPayload:
+    UserMessage:
       type: object
-      description: Schema for UserCreatedPayload
+      description: Schema for UserMessage
       properties:
         userId:
           description: Property userId
           type: string
-        email:
-          description: Property email
+        message:
+          description: Property message
           type: string
-        firstName:
-          description: Property firstName
-          type: string
-        lastName:
-          description: Property lastName
-          type: string
-        createdAt:
-          description: Property createdAt
+        timestamp:
+          description: Property timestamp
           type: string
           format: date-time
-        accountType:
-          description: Property accountType
-          type: string
-          enum:
-            - free
-            - premium
-            - enterprise
-        metadata:
-          description: Property metadata
-          type: object
-          properties:
-            source:
-              description: Property source
-              type: string
-            campaign:
-              description: Property campaign
-              type: string
-          required:
-            - source
       required:
         - userId
-        - email
-        - firstName
-        - lastName
-        - createdAt
-        - accountType
+        - message
+        - timestamp
   messages:
-    publishUserCreatedMessage:
-      name: publishUserCreatedMessage
-      title: publishUserCreated Message
-      summary: Message for publishUserCreated operation
+    sendUserMessageMessage:
+      name: sendUserMessageMessage
+      title: sendUserMessage Message
+      summary: Message for sendUserMessage operation
       contentType: application/json
       payload:
-        type: object
-    subscribeToUserCreatedMessage:
-      name: subscribeToUserCreatedMessage
-      title: subscribeToUserCreated Message
-      summary: Message for subscribeToUserCreated operation
+        $ref: "#/components/schemas/UserMessage"
+    receiveUserMessageMessage:
+      name: receiveUserMessageMessage
+      title: receiveUserMessage Message
+      summary: Message for receiveUserMessage operation
       contentType: application/json
       payload:
-        $ref: "#/components/schemas/UserCreatedPayload"
+        $ref: "#/components/schemas/UserMessage"
   securitySchemes: {}

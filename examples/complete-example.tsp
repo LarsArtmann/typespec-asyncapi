@@ -23,7 +23,7 @@
  * 📡 MQTT - IoT device communication
  */
 
-import "@larsartmann/typespec-asyncapi";
+import "@lars-artmann/typespec-asyncapi";
 
 using TypeSpec.AsyncAPI;
 
