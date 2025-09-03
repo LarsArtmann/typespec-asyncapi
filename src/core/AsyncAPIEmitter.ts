@@ -91,6 +91,12 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 			Effect.log(" Micro-kernel emission pipeline completed successfully")
 			
 			Effect.log(`✅ AsyncAPI document generation pipeline completed successfully`)
+			
+			// CRITICAL FIX: Emit the source file to trigger sourceFile() method and write to outputFiles
+			Effect.log(`🔥 ASSETEMITTER FIX: About to emit sourceFile to trigger content generation`)
+			this.emitter.emitSourceFile(sourceFile)
+			Effect.log(`🔥 ASSETEMITTER FIX: Completed emitSourceFile - should have triggered sourceFile() method`)
+			
 		} catch (error) {
 			Effect.log(`L Micro-kernel emission pipeline failed: ${error}`)
 			throw error
