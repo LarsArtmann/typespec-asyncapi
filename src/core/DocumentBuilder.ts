@@ -10,6 +10,7 @@
 import type { Program } from "@typespec/compiler"
 import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js"
 import { buildServersFromNamespaces } from "../utils/typespec-helpers.js"
+import { Effect } from "effect"
 
 // Constants - Import centralized constants to eliminate hardcoded values
 import { ASYNCAPI_VERSIONS } from "../constants/index.js"
@@ -35,7 +36,9 @@ export class DocumentBuilder {
 	 */
 	createInitialDocument(program: Program): AsyncAPIObject {
 		// Safe handling of null/undefined program for testing
+		Effect.log(`🏗️  DocumentBuilder.createInitialDocument called with program: ${!!program}`)
 		const servers = program ? buildServersFromNamespaces(program) : {}
+		Effect.log(`🏗️  Generated servers: ${JSON.stringify(servers, null, 2)}`)
 
 		// Using centralized AsyncAPI version constant instead of hardcoded string
 		// TODO: Extract default info values to configuration object

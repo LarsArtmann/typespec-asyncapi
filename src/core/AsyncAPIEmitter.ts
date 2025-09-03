@@ -47,6 +47,8 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 	constructor(emitter: AssetEmitter<string, AsyncAPIEmitterOptions>) {
 		super(emitter)
 
+		Effect.log(`🔧 AsyncAPIEmitter constructor called`)
+
 		// Initialize micro-kernel components with REAL business logic
 		// TODO: CRITICAL - Component initialization could fail but no error handling
 		// TODO: CRITICAL - No dependency injection - hard to test and mock components
@@ -58,10 +60,12 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 		// this.performanceMonitor = new PerformanceMonitor()
 		this.pluginRegistry = new PluginRegistry()
 
+		Effect.log(`🏗️  About to call createInitialDocument`)
 		// Initialize document structure using REAL DocumentBuilder logic
 		// TODO: CRITICAL - Document initialization could fail but no error handling
 		// TODO: CRITICAL - emitter.getProgram() called without null safety check
 		this.asyncApiDoc = this.documentBuilder.createInitialDocument(emitter.getProgram())
+		Effect.log(`🏗️  Finished createInitialDocument`)
 	}
 
 	// TODO: CRITICAL - Override method lacks explicit return type annotation

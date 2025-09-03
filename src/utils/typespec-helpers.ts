@@ -187,13 +187,17 @@ export function buildServersFromNamespaces(program: Program): ServersObject {
 	const servers: ServersObject = {}
 	const allServerConfigs = getAllServerConfigs(program)
 	
+	Effect.log(`🔍 Building servers: found ${allServerConfigs.size} namespace(s) with server configs`)
+	
 	for (const [namespace, serverConfigsMap] of allServerConfigs.entries()) {
 		// Get namespace name, handle global namespace
 		const namespaceName = namespace.name === "" || !namespace.name ? "Global" : namespace.name
+		Effect.log(`📡 Processing namespace: ${namespaceName} with ${serverConfigsMap.size} server(s)`)
 		
 		for (const [serverName, config] of serverConfigsMap.entries()) {
 			// Use namespace-qualified naming: "ServiceA.prod", "ServiceB.prod"
 			const qualifiedName = namespaceName === "Global" ? serverName : `${namespaceName}.${serverName}`
+			Effect.log(`🖥️  Adding server: ${qualifiedName} (url: ${config.url}, protocol: ${config.protocol})`)
 			
 			servers[qualifiedName] = {
 				host: extractHostFromUrl(config.url),
