@@ -481,8 +481,8 @@ export async function parseAsyncAPIOutput(outputFiles: Map<string, string | {
 		}
 
 		// Fallback: use the first available AsyncAPI file
-		if (asyncapiFiles.length > 0) {
-			const fallbackFile = asyncapiFiles[0]
+		if (legacyAsyncapiFiles.length > 0) {
+			const fallbackFile = legacyAsyncapiFiles[0]
 			const content = outputFiles.get(fallbackFile)
 			if (content) {
 				Effect.log(`🎯 Using fallback file: ${fallbackFile} for expected ${filename}`)

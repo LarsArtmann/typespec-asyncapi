@@ -60,3 +60,5 @@ test-output/
 # Claude
 /.claude/settings.local.json
 .npmrc
+pipeline-test/
+pipeline-test/
