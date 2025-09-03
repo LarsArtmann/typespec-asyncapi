@@ -18,6 +18,7 @@
 import {Effect} from "effect"
 import type {AssetEmitter, EmittedSourceFile, SourceFile} from "@typespec/asset-emitter"
 import {TypeEmitter} from "@typespec/asset-emitter"
+import {DocumentGenerator} from "./DocumentGenerator.js"
 import type {Program, Namespace} from "@typespec/compiler"
 import type {AsyncAPIEmitterOptions} from "../options.js"
 import type {AsyncAPIObject} from "@asyncapi/parser/esm/spec-types/v3.js"
@@ -89,6 +90,13 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 			// Execute the emission pipeline using Effect.TS
 			this.executeEmissionPipelineSync(program)
 			Effect.log(" Micro-kernel emission pipeline completed successfully")
+			
+			// CRITICAL FIX: Serialize and write the AsyncAPI document to the source file
+			const documentGenerator = new DocumentGenerator()
+			const serializedContent = documentGenerator.serializeDocument(this.asyncApiDoc, fileType)
+			sourceFile.path.content = serializedContent
+			
+			Effect.log(`✅ AsyncAPI document serialized and written to ${outputPath} (${serializedContent.length} chars)`)
 		} catch (error) {
 			Effect.log(`L Micro-kernel emission pipeline failed: ${error}`)
 			throw error
