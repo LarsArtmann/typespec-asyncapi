@@ -293,11 +293,12 @@ const makeMemoryMonitorService = Effect.gen(function* () {
 			// Calculate GC efficiency (looking for memory drops)
 			const gcEvents = []
 			for (let i = 1; i < relevantSnapshots.length; i++) {
-				//TODO: Can this be undefined and crash?
 				const prev = relevantSnapshots[i - 1]
-				//TODO: Can this be undefined and crash?
 				const curr = relevantSnapshots[i]
-				//TODO: @typescript-eslint/no-non-null-assertion
+				
+				// Skip if either snapshot is undefined
+				if (!prev || !curr) continue
+				
 				const memoryDrop = prev.heapUsed - curr.heapUsed
 				if (memoryDrop > 1024 * 1024) { // Significant drop > 1MB
 					gcEvents.push(memoryDrop)

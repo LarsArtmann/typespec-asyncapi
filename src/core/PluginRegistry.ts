@@ -18,6 +18,7 @@ import { Effect } from "effect"
 import type {Milliseconds} from "../performance/Durations.js"
 import type {ByteAmount} from "../performance/ByteAmount.js"
 import {createMegabyteAmount} from "../performance/ByteAmount.js"
+import { EmitterErrors, Railway, type StandardizedError } from "../utils/standardized-errors.js"
 
 // Additional branded types for plugin configuration
 type CpuPercentage = number & { readonly brand: 'CpuPercentage' };
@@ -116,42 +117,47 @@ export class PluginRegistry {
     /**
      * Register and load a plugin
      */
-    async loadPlugin(plugin: Plugin): Promise<void> {
-        Effect.log(`🔌 Loading plugin: ${plugin.name} v${plugin.version}`)
+    loadPlugin(plugin: Plugin): Effect.Effect<void, StandardizedError> {
+        return Effect.gen(function* () {
+            yield* Effect.log(`🔌 Loading plugin: ${plugin.name} v${plugin.version}`)
 
-        // Check for circular dependencies
-        if (this.config.enableCircularDependencyDetection) {
-            this.checkCircularDependencies(plugin)
-        }
+            // Check for circular dependencies
+            if (this.config.enableCircularDependencyDetection) {
+                yield* this.checkCircularDependencies(plugin)
+            }
 
-        // Check if plugin already exists
-        if (this.plugins.has(plugin.name)) {
-            throw new Error(`Plugin ${plugin.name} is already loaded`)
-        }
+            // Check if plugin already exists
+            if (this.plugins.has(plugin.name)) {
+                return yield* Effect.fail(EmitterErrors.pluginInitializationFailed(
+                    plugin.name, 
+                    `Plugin ${plugin.name} is already loaded`
+                ))
+            }
 
-        // Validate dependencies
-        this.validateDependencies(plugin)
+            // Validate dependencies
+            yield* this.validateDependencies(plugin)
 
-        // Create metadata
-        const metadata: PluginMetadata = {
-            name: plugin.name,
-            version: plugin.version,
-            state: PluginState.LOADED,
-            dependencies: plugin.dependencies,
-            loadedAt: new Date(),
-            lastActivity: new Date(),
-            errorCount: 0,
-            restartCount: 0
-        }
+            // Create metadata
+            const metadata: PluginMetadata = {
+                name: plugin.name,
+                version: plugin.version,
+                state: PluginState.LOADED,
+                dependencies: plugin.dependencies,
+                loadedAt: new Date(),
+                lastActivity: new Date(),
+                errorCount: 0,
+                restartCount: 0
+            }
 
-        // Store plugin and metadata
-        this.plugins.set(plugin.name, plugin)
-        this.pluginMetadata.set(plugin.name, metadata)
+            // Store plugin and metadata
+            this.plugins.set(plugin.name, plugin)
+            this.pluginMetadata.set(plugin.name, metadata)
 
-        // Initialize plugin
-        await this.initializePlugin(plugin.name)
+            // Initialize plugin
+            yield* this.initializePlugin(plugin.name)
 
-        Effect.log(`✅ Plugin ${plugin.name} loaded successfully`)
+            yield* Effect.log(`✅ Plugin ${plugin.name} loaded successfully`)
+        }.bind(this))
     }
 
     /**

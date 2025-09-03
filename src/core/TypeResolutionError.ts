@@ -17,7 +17,7 @@ export class TypeResolutionError {
 			message: this.message,
 			details: {typeName: this.typeName},
 			timestamp: new Date(),
-			context: this.context,
+			...(this.context ? { context: this.context } : { context: {} }),
 			recoverable: false,
 		}
 	}

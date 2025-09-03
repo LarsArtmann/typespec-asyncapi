@@ -11,7 +11,7 @@ export type EnvironmentType = 'development' | 'staging' | 'production'
 /**
  * Core performance metric boundaries configuration
  */
-export interface IMetricBoundaries {
+export type IMetricBoundaries = {
   /** Throughput histogram boundaries (operations per second) */
   throughputBoundaries: readonly number[]
   
@@ -28,7 +28,7 @@ export interface IMetricBoundaries {
 /**
  * Performance target thresholds for validation
  */
-export interface IPerformanceTargets {
+export type IPerformanceTargets = {
   /** Target throughput (operations per second) */
   throughputTarget: number
   
@@ -45,7 +45,7 @@ export interface IPerformanceTargets {
 /**
  * Monitoring and reporting configuration
  */
-export interface IMonitoringConfig {
+export type IMonitoringConfig = {
   /** Continuous monitoring interval (milliseconds) */
   monitoringIntervalMs: number
   
@@ -62,7 +62,7 @@ export interface IMonitoringConfig {
 /**
  * Complete performance configuration interface
  */
-export interface IPerformanceConfig {
+export type IPerformanceConfig = {
   /** Current deployment environment */
   environment: EnvironmentType
   
@@ -85,7 +85,7 @@ export interface IPerformanceConfig {
 /**
  * Default configurations for different environments
  */
-export interface IEnvironmentConfigs {
+export type IEnvironmentConfigs = {
   development: IPerformanceConfig
   staging: IPerformanceConfig
   production: IPerformanceConfig
@@ -94,7 +94,7 @@ export interface IEnvironmentConfigs {
 /**
  * Configuration validation result
  */
-export interface IConfigValidationResult {
+export type IConfigValidationResult = {
   /** Whether configuration is valid */
   isValid: boolean
   
@@ -108,7 +108,7 @@ export interface IConfigValidationResult {
 /**
  * Configuration update options
  */
-export interface IConfigUpdateOptions {
+export type IConfigUpdateOptions = {
   /** Whether to validate before applying */
   validate?: boolean
   

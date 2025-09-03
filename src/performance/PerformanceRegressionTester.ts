@@ -116,7 +116,7 @@ export class PerformanceRegressionTester {
 
 				// Load baseline and compare  
 				const baseline = yield* this.loadBaseline(testCaseName)
-				const result = yield* this.analyzeRegression(testCaseName, metrics, baseline)
+				const result = yield* this.analyzeRegression(testCaseName, metrics, baseline ?? null)
 
 				// Update baseline if this is a new test or performance improved
 				if (!baseline || this.shouldUpdateBaseline(metrics, baseline)) {

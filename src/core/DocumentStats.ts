@@ -1,7 +1,7 @@
 /**
  * Document statistics interface for AsyncAPI document analysis
  */
-export interface DocumentStats {
+export type DocumentStats = {
 	/** Total number of channels defined */
 	readonly channelCount: number
 	

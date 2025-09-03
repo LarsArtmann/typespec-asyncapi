@@ -40,7 +40,7 @@ export class PerformanceMonitor {
 	private readonly config: PerformanceConfig
 	private isMonitoring: boolean = false
 	private snapshots: PerformanceSnapshot[] = []
-	private monitoringTimer?: NodeJS.Timeout
+	private monitoringTimer?: NodeJS.Timeout | undefined
 
 	constructor(config?: Partial<PerformanceConfig>) {
 		//TODO: HARDCODED MAGIC NUMBERS ARE EVERYWHERE! THIS IS GARBAGE CONFIGURATION!
@@ -214,6 +214,11 @@ export class PerformanceMonitor {
 
 		const latest = this.snapshots[this.snapshots.length - 1]
 		const earliest = this.snapshots[0]
+		
+		if (!latest || !earliest) {
+			return "Insufficient performance data available"
+		}
+		
 		const duration = latest.timestamp.getTime() - earliest.timestamp.getTime()
 
 		// Calculate averages and peaks
@@ -268,10 +273,11 @@ export class PerformanceMonitor {
 		snapshotCount: number
 		latestSnapshot?: PerformanceSnapshot
 	} {
+		const latestSnapshot = this.snapshots.length > 0 ? this.snapshots[this.snapshots.length - 1] : undefined
 		return {
 			isMonitoring: this.isMonitoring,
 			snapshotCount: this.snapshots.length,
-			latestSnapshot: this.snapshots.length > 0 ? this.snapshots[this.snapshots.length - 1] : undefined,
+			...(latestSnapshot ? { latestSnapshot } : {})
 		}
 	}
 

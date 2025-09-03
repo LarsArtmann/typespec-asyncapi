@@ -16,7 +16,7 @@ import type { PluginRegistry } from "./PluginRegistry.js"
 /**
  * Core AsyncAPI emitter interface defining emission contract
  */
-export interface IAsyncAPIEmitter {
+export type IAsyncAPIEmitter = {
 	/**
 	 * Executes the complete AsyncAPI emission pipeline for a TypeSpec program
 	 * TODO: Promise WHY??!?!?!

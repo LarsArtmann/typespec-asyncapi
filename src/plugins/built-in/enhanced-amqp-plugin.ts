@@ -361,13 +361,13 @@ export const createAMQPChannelBinding = (config: AMQPConfig = {}): AMQPChannelBi
       durable: config.queue.durable ?? true,
       exclusive: config.queue.exclusive ?? false,
       autoDelete: config.queue.autoDelete ?? false,
-      arguments: config.queue.arguments
+      ...(config.queue.arguments ? { arguments: config.queue.arguments } : {})
     }
 
     // Add dead letter exchange support
-    if (config.dlx) {
+    if (config.dlx && binding.queue) {
       binding.queue.arguments = {
-        ...binding.queue.arguments,
+        ...(binding.queue.arguments || {}),
         "x-dead-letter-exchange": config.dlx.exchange,
         ...(config.dlx.routingKey && { "x-dead-letter-routing-key": config.dlx.routingKey }),
         ...config.dlx.arguments
@@ -382,7 +382,7 @@ export const createAMQPChannelBinding = (config: AMQPConfig = {}): AMQPChannelBi
       type: config.exchange.type,
       durable: config.exchange.durable ?? true,
       autoDelete: config.exchange.autoDelete ?? false,
-      arguments: config.exchange.arguments
+      ...(config.exchange.arguments ? { arguments: config.exchange.arguments } : {})
     }
   }
 
@@ -459,10 +459,10 @@ export const amqpTestingUtils = {
    */
   createDLXConfig: (exchangeName: string, routingKey?: string): AMQPConfig['dlx'] => ({
     exchange: exchangeName,
-    routingKey,
     arguments: {
       "x-message-ttl": 86400000, // 24 hours
       "x-max-retries": 3
-    }
+    },
+    ...(routingKey ? { routingKey } : {})
   })
 }

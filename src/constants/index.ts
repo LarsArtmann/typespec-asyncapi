@@ -11,6 +11,7 @@
 
 // Version Constants (Enhanced)
 export {
+	ASYNCAPI_VERSIONS,
 	PACKAGE_VERSIONS,
 	API_VERSIONS,
 	TEST_VERSIONS,

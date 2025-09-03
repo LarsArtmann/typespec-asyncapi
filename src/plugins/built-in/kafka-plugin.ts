@@ -59,7 +59,7 @@ export const kafkaPlugin: ProtocolPlugin = {
 			},
 			schemaIdLocation: config.schemaIdLocation ?? PROTOCOL_DEFAULTS.kafka.schemaIdLocation as "header" | "payload",
 			schemaIdPayloadEncoding: config.schemaIdPayloadEncoding ?? "apicurio-new",
-			schemaLookupStrategy: config.schemaLookupStrategy,
+			...(config.schemaLookupStrategy ? { schemaLookupStrategy: config.schemaLookupStrategy } : {}),
 			...config,
 		}
 
@@ -98,9 +98,9 @@ export const kafkaPlugin: ProtocolPlugin = {
 		const binding: KafkaChannelBinding = {
 			bindingVersion: "0.5.0",
 			topic: (config.topic as string) || "default-topic",
-			partitions: config.partitions,
-			replicas: config.replicas,
-			topicConfiguration: config.topicConfiguration,
+			...(config.partitions ? { partitions: config.partitions } : {}),
+			...(config.replicas ? { replicas: config.replicas } : {}),
+			...(config.topicConfiguration ? { topicConfiguration: config.topicConfiguration } : {}),
 		}
 
 		return {kafka: binding}

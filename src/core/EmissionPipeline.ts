@@ -142,7 +142,11 @@ export class EmissionPipeline implements IPipelineService {
 
 			// Ensure servers are populated using DocumentBuilder patterns
 			if (!context.asyncApiDoc.servers || Object.keys(context.asyncApiDoc.servers).length === 0) {
-				context.asyncApiDoc.servers = buildServersFromNamespaces(context.program) as AsyncAPIObject["servers"]
+				const servers = buildServersFromNamespaces(context.program)
+				if (servers && Object.keys(servers).length > 0) {
+					// Use Object.assign to properly merge servers
+					Object.assign(context.asyncApiDoc, { servers: servers as AsyncAPIObject["servers"] })
+				}
 			}
 
 			// Note: Processing is now handled by ProcessingService in Stage 2

@@ -47,12 +47,13 @@ export function $header(
 		return
 	}
 
-	// Build header configuration
+	// Build header configuration with conditional properties
+	const headerType = inferHeaderType(target)
 	const headerConfig: HeaderConfig = {
 		name: headerName,
 		description: `Header extracted from property: ${propertyName}`,
 		required: !target.optional,
-		type: inferHeaderType(target)
+		...(headerType ? { type: headerType } : {}),
 	}
 
 	// Store header configuration in program state

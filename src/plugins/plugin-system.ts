@@ -12,6 +12,9 @@ import {kafkaPlugin} from "./built-in/kafka-plugin.js"
 import {websocketPlugin} from "./built-in/websocket-plugin.js"
 import {httpPlugin} from "./built-in/http-plugin.js"
 
+// Export types needed by other modules
+export type {AsyncAPIProtocolType} from "../constants/protocol-defaults.js"
+
 // Re-exports are not cool!
 
 /**

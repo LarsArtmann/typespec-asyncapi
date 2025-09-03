@@ -13,6 +13,7 @@ import type {
 	AsyncAPIObject, 
 	ReferenceObject
 } from "@asyncapi/parser/esm/spec-types/v3.js"
+import { EmitterErrors, Railway, type StandardizedError } from "../utils/standardized-errors.js"
 
 /**
  * Validation result with details about compliance and any issues found
@@ -112,29 +113,31 @@ export class ValidationService {
 	 * @param content - Serialized AsyncAPI document content
 	 * @returns Effect containing validation result and content length
 	 */
-	validateDocumentContent(content: string) {
-		return Effect.sync(() => {
-			Effect.log(`🔍 Validating AsyncAPI document content (${content.length} bytes)...`)
+	validateDocumentContent(content: string): Effect.Effect<string, StandardizedError> {
+		return Effect.gen(function* () {
+			yield* Effect.log(`🔍 Validating AsyncAPI document content (${content.length} bytes)...`)
 
-			try {
-				// Parse the content to validate JSON/YAML structure
-				const parsedDoc = JSON.parse(content) as AsyncAPIObject
-				
-				// Run comprehensive validation
-				const validationOperation = this.validateDocument(parsedDoc)
-				const result = Effect.runSync(validationOperation)
-				
-				if (result.isValid) {
-					Effect.log(`✅ Document content validation passed!`)
-					return content
-				} else {
-					Effect.log(`❌ Document content validation failed:`)
-					result.errors.forEach(error => Effect.log(`  - ${error}`))
-					throw new Error(`AsyncAPI validation failed with ${result.errors.length} errors`)
-				}
-			} catch (parseError) {
-				Effect.log(`❌ Document parsing failed: ${parseError}`)
-				throw new Error(`Invalid AsyncAPI document format: ${parseError}`)
+			// Parse the content with proper error handling
+			const parsedDoc = yield* Railway.trySync(
+				() => JSON.parse(content) as AsyncAPIObject,
+				{ operation: "parseDocument", contentLength: content.length }
+			).pipe(
+				Effect.mapError(error => EmitterErrors.invalidAsyncAPI(
+					["Failed to parse JSON/YAML content"],
+					{ originalError: error.why, content: content.substring(0, 200) + "..." }
+				))
+			)
+
+			// Run comprehensive validation
+			const result = yield* this.validateDocument(parsedDoc)
+			
+			if (result.isValid) {
+				yield* Effect.log(`✅ Document content validation passed!`)
+				return content
+			} else {
+				yield* Effect.log(`❌ Document content validation failed:`)
+				result.errors.forEach(error => Effect.runSync(Effect.log(`  - ${error}`)))
+				return yield* Effect.fail(EmitterErrors.invalidAsyncAPI(result.errors, parsedDoc))
 			}
 		})
 	}

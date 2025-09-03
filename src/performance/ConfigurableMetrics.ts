@@ -12,31 +12,31 @@ import type {IPerformanceConfig, IMetricBoundaries} from "./IPerformanceConfig.j
 /**
  * Configurable performance metrics that adapt to environment settings
  */
-export interface IConfigurableMetrics {
+export type IConfigurableMetrics = {
   /** Validation throughput histogram (ops/sec) */
-  validationThroughput: Metric.Metric.Histogram
+  validationThroughput: Metric.Metric.Histogram<number>
   
   /** Memory usage per operation histogram (bytes) */
-  memoryPerOperation: Metric.Metric.Histogram
+  memoryPerOperation: Metric.Metric.Histogram<number>
   
   /** Validation latency histogram (microseconds) */
-  validationLatency: Metric.Metric.Histogram
+  validationLatency: Metric.Metric.Histogram<number>
   
   /** Emitter initialization time histogram (milliseconds) */
-  initializationTime: Metric.Metric.Histogram
+  initializationTime: Metric.Metric.Histogram<number>
   
   /** Success counter */
-  validationSuccess: Metric.Metric.Counter
+  validationSuccess: Metric.Metric.Counter<number>
   
   /** Failure counter */
-  validationFailure: Metric.Metric.Counter
+  validationFailure: Metric.Metric.Counter<number>
   
   /** Memory leak detection counter */
-  memoryLeaks: Metric.Metric.Counter
+  memoryLeaks: Metric.Metric.Counter<number>
   
   /** Performance target gauges */
-  throughputTarget: Metric.Metric.Gauge
-  memoryTarget: Metric.Metric.Gauge
+  throughputTarget: Metric.Metric.Gauge<number>
+  memoryTarget: Metric.Metric.Gauge<number>
 }
 
 /**
@@ -189,7 +189,9 @@ export class ConfigurableMetricsFactory {
 
   private isAscending(values: readonly number[]): boolean {
     for (let i = 1; i < values.length; i++) {
-      if (values[i] <= values[i - 1]) {
+      const current = values[i]
+      const previous = values[i - 1]
+      if (current === undefined || previous === undefined || current <= previous) {
         return false
       }
     }

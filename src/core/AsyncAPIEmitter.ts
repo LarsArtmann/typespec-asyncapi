@@ -353,7 +353,7 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 	override async writeOutput(sourceFiles: SourceFile<string>[]): Promise<void> {
 		Effect.log(`🔥 WRITEOUTPUT DEBUG: sourceFiles count = ${sourceFiles.length}`)
 		for (let i = 0; i < sourceFiles.length; i++) {
-			Effect.log(`🔥 WRITEOUTPUT DEBUG: sourceFile[${i}] = ${sourceFiles[i].path}`)
+			Effect.log(`🔥 WRITEOUTPUT DEBUG: sourceFile[${i}] = ${sourceFiles[i]?.path ?? 'undefined'}`)
 		}
 		Effect.log("=� Micro-kernel: Writing output files...")
 

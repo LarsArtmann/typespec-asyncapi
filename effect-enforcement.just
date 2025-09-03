@@ -162,10 +162,10 @@ railway-validation:
     @echo "\033[0;36mValidating proper Effect.TS composition patterns...\033[0m"
     @echo "Checking for Effect.gen() usage in async operations..."
     @rg --type ts "yield\*" {{SRC_DIR}} --count-matches > {{REPORT_DIR}}/effect-gen-usage.txt
-    @echo "Effect.gen() usage count: $(cat {{REPORT_DIR}}/effect-gen-usage.txt | paste -sd+ | bc || echo 0)"
+    @echo "Effect.gen() usage count: $(cat {{REPORT_DIR}}/effect-gen-usage.txt | cut -d: -f2 | awk '{sum += $$1} END {print sum+0}')"
     @echo "Checking for proper Effect composition..."
     @rg --type ts "Effect\.(map|flatMap|catchAll|orElse)" {{SRC_DIR}} --count-matches > {{REPORT_DIR}}/effect-composition.txt
-    @echo "Effect composition usage count: $(cat {{REPORT_DIR}}/effect-composition.txt | paste -sd+ | bc || echo 0)"
+    @echo "Effect composition usage count: $(cat {{REPORT_DIR}}/effect-composition.txt | cut -d: -f2 | awk '{sum += $$1} END {print sum+0}')"
 
 # 🧪 Pure functions validation
 pure-functions-check:
@@ -194,17 +194,17 @@ effect-report:
     @echo "Generated: $(date)" >> {{REPORT_DIR}}/compliance-report.md
     @echo "" >> {{REPORT_DIR}}/compliance-report.md
     @echo "## Effect Usage Statistics" >> {{REPORT_DIR}}/compliance-report.md
-    @echo "- Effect imports: $(rg --type ts 'import.*effect' {{SRC_DIR}} --count-matches | paste -sd+ | bc || echo 0)" >> {{REPORT_DIR}}/compliance-report.md
-    @echo "- Effect.gen() usage: $(rg --type ts 'Effect\.gen' {{SRC_DIR}} --count-matches | paste -sd+ | bc || echo 0)" >> {{REPORT_DIR}}/compliance-report.md
-    @echo "- Effect.log() usage: $(rg --type ts 'Effect\.log' {{SRC_DIR}} --count-matches | paste -sd+ | bc || echo 0)" >> {{REPORT_DIR}}/compliance-report.md
-    @echo "- Effect.fail() usage: $(rg --type ts 'Effect\.fail' {{SRC_DIR}} --count-matches | paste -sd+ | bc || echo 0)" >> {{REPORT_DIR}}/compliance-report.md
+    @echo "- Effect imports: $(rg --type ts 'import.*effect' {{SRC_DIR}} --count-matches | cut -d: -f2 | awk '{sum += $$1} END {print sum+0}')" >> {{REPORT_DIR}}/compliance-report.md
+    @echo "- Effect.gen() usage: $(rg --type ts 'Effect\.gen' {{SRC_DIR}} --count-matches | cut -d: -f2 | awk '{sum += $$1} END {print sum+0}')" >> {{REPORT_DIR}}/compliance-report.md
+    @echo "- Effect.log() usage: $(rg --type ts 'Effect\.log' {{SRC_DIR}} --count-matches | cut -d: -f2 | awk '{sum += $$1} END {print sum+0}')" >> {{REPORT_DIR}}/compliance-report.md
+    @echo "- Effect.fail() usage: $(rg --type ts 'Effect\.fail' {{SRC_DIR}} --count-matches | cut -d: -f2 | awk '{sum += $$1} END {print sum+0}')" >> {{REPORT_DIR}}/compliance-report.md
     @echo "" >> {{REPORT_DIR}}/compliance-report.md
     @echo "## Anti-Pattern Detection" >> {{REPORT_DIR}}/compliance-report.md
-    @echo "- Promise usage: $(rg --type ts 'Promise<|new Promise' {{SRC_DIR}} --count-matches | paste -sd+ | bc || echo 0)" >> {{REPORT_DIR}}/compliance-report.md
-    @echo "- async/await usage: $(rg --type ts 'async |await ' {{SRC_DIR}} --count-matches | paste -sd+ | bc || echo 0)" >> {{REPORT_DIR}}/compliance-report.md
-    @echo "- try/catch blocks: $(rg --type ts 'try\s*\{|catch' {{SRC_DIR}} --count-matches | paste -sd+ | bc || echo 0)" >> {{REPORT_DIR}}/compliance-report.md
-    @echo "- throw statements: $(rg --type ts 'throw ' {{SRC_DIR}} --count-matches | paste -sd+ | bc || echo 0)" >> {{REPORT_DIR}}/compliance-report.md
-    @echo "- console usage: $(rg --type ts 'console\.' {{SRC_DIR}} --count-matches | paste -sd+ | bc || echo 0)" >> {{REPORT_DIR}}/compliance-report.md
+    @echo "- Promise usage: $(rg --type ts 'Promise<|new Promise' {{SRC_DIR}} --count-matches | cut -d: -f2 | awk '{sum += $$1} END {print sum+0}')" >> {{REPORT_DIR}}/compliance-report.md
+    @echo "- async/await usage: $(rg --type ts 'async |await ' {{SRC_DIR}} --count-matches | cut -d: -f2 | awk '{sum += $$1} END {print sum+0}')" >> {{REPORT_DIR}}/compliance-report.md
+    @echo "- try/catch blocks: $(rg --type ts 'try\s*\{|catch' {{SRC_DIR}} --count-matches | cut -d: -f2 | awk '{sum += $$1} END {print sum+0}')" >> {{REPORT_DIR}}/compliance-report.md
+    @echo "- throw statements: $(rg --type ts 'throw ' {{SRC_DIR}} --count-matches | cut -d: -f2 | awk '{sum += $$1} END {print sum+0}')" >> {{REPORT_DIR}}/compliance-report.md
+    @echo "- console usage: $(rg --type ts 'console\.' {{SRC_DIR}} --count-matches | cut -d: -f2 | awk '{sum += $$1} END {print sum+0}')" >> {{REPORT_DIR}}/compliance-report.md
     @echo "\033[0;32m✅ Compliance report generated: {{REPORT_DIR}}/compliance-report.md\033[0m"
     @cat {{REPORT_DIR}}/compliance-report.md
 

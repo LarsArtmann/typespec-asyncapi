@@ -37,5 +37,5 @@ export const createPluginSystemError = (cause: unknown, pluginName?: string) =>
   new PluginSystemError({
     message: `AsyncAPI Emitter Error: Plugin system initialization failed${pluginName ? ` for plugin: ${pluginName}` : ''}. Continuing without plugins.`,
     cause,
-    pluginName
+    ...(pluginName ? { pluginName } : {})
   })

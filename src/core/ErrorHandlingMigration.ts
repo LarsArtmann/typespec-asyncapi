@@ -77,7 +77,7 @@ export class ErrorHandlingMigration {
 				code: "UNKNOWN_ERROR",
 				message: error.message,
 				timestamp: new Date(),
-				stack: error.stack,
+				...(error.stack ? { stack: error.stack } : { stack: "" }),
 				recoverable: false,
 			}
 		}

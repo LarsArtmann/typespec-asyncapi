@@ -81,8 +81,8 @@ export const createGlobalNamespaceMissingError = (details?: { program?: unknown 
 export const createGlobalNamespaceInvalidError = (receivedKind?: string) =>
   new GlobalNamespaceInvalidError({
     message: `AsyncAPI Emitter Error: Invalid global namespace structure. Expected Namespace but got: ${receivedKind || "undefined"}`,
-    receivedKind,
-    expectedKind: "Namespace"
+    expectedKind: "Namespace",
+    ...(receivedKind ? { receivedKind } : {})
   })
 
 export const createGlobalNamespaceAccessError = (cause: unknown, program?: unknown) =>

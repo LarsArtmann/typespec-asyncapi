@@ -55,12 +55,13 @@ export function $correlationId(
 		return
 	}
 
-	// Build correlation ID configuration
+	// Build correlation ID configuration with conditional properties
+	const schemaConfig = validateCorrelationSchema(config.schema as Record<string, unknown> | undefined)
 	const correlationConfig: CorrelationIdConfig = {
 		location,
-		description: config.description as string | undefined,
 		required: Boolean(config.required),
-		schema: validateCorrelationSchema(config.schema as Record<string, unknown> | undefined)
+		...(config.description ? { description: config.description as string } : {}),
+		...(schemaConfig ? { schema: schemaConfig } : {}),
 	}
 
 	// Store correlation configuration in program state

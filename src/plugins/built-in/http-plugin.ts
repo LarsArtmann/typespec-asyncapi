@@ -52,7 +52,7 @@ export const httpPlugin: ProtocolPlugin = {
 			headers: config.headers ?? {
 				"Content-Type": PROTOCOL_DEFAULTS.http.contentType,
 			},
-			statusCode: config.statusCode,
+			...(config.statusCode ? { statusCode: config.statusCode } : {}),
 			...config,
 		}
 

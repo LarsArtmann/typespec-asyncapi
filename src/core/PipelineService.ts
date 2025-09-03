@@ -2,19 +2,19 @@
  * Pipeline service interface for dependency injection and testing
  * 
  * Defines the contract for emission pipeline execution with:
- * - Stage-based processing (Discovery ’ Processing ’ Generation ’ Validation)
+ * - Stage-based processing (Discovery ï¿½ Processing ï¿½ Generation ï¿½ Validation)
  * - Effect.TS error handling patterns
  * - Plugin integration points
  * - Performance monitoring support
  */
 
-import { Effect } from "effect"
+import type { Effect } from "effect"
 import type { PipelineContext } from "./PipelineContext.js"
 
 /**
  * Core pipeline service interface defining emission pipeline contract
  */
-export interface IPipelineService {
+export type IPipelineService = {
 	/**
 	 * Execute the complete emission pipeline with REAL business logic integration
 	 * 

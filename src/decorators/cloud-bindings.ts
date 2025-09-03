@@ -69,10 +69,12 @@ export function $bindings(
 	}
 
 	// Create complete binding configuration
+	const extractedMetadata = extractMetadata(config)
 	const binding: CloudBinding = {
 		bindingType: bindingType,
 		config: validatedConfig,
-		metadata: extractMetadata(config),
+		// Use conditional spread to avoid exactOptionalPropertyTypes violations
+		...(extractedMetadata && Object.keys(extractedMetadata).length > 0 ? { metadata: extractedMetadata } : {}),
 	}
 
 	// Store binding in program state
@@ -165,7 +167,7 @@ function validateAwsSnsConfig(config: Record<string, unknown>): AwsSnsBindingCon
 
 	const snsConfig: AwsSnsBindingConfig = {
 		topic: config.topic,
-		region: config.region as string | undefined,
+		...(config.region ? { region: config.region as string } : {}),
 	}
 
 	// Validate attributes
@@ -207,10 +209,10 @@ function validateAwsSqsConfig(config: Record<string, unknown>): AwsSqsBindingCon
 
 	return {
 		queue: config.queue,
-		region: config.region as string | undefined,
-		messageGroupId: config.messageGroupId as string | undefined,
-		messageDeduplicationId: config.messageDeduplicationId as string | undefined,
-		visibilityTimeoutSeconds: config.visibilityTimeoutSeconds as number | undefined,
+		...(config.region ? { region: config.region as string } : {}),
+		...(config.messageGroupId ? { messageGroupId: config.messageGroupId as string } : {}),
+		...(config.messageDeduplicationId ? { messageDeduplicationId: config.messageDeduplicationId as string } : {}),
+		...(config.visibilityTimeoutSeconds ? { visibilityTimeoutSeconds: config.visibilityTimeoutSeconds as number } : {}),
 	}
 }
 
@@ -226,10 +228,10 @@ function validateGcpPubsubConfig(config: Record<string, unknown>): GoogleCloudPu
 
 	return {
 		topic: config.topic,
-		projectId: config.projectId as string | undefined,
-		subscription: config.subscription as string | undefined,
-		orderingKey: config.orderingKey as string | undefined,
-		attributes: config.attributes as Record<string, string> | undefined,
+		...(config.projectId ? { projectId: config.projectId as string } : {}),
+		...(config.subscription ? { subscription: config.subscription as string } : {}),
+		...(config.orderingKey ? { orderingKey: config.orderingKey as string } : {}),
+		...(config.attributes ? { attributes: config.attributes as Record<string, string> } : {}),
 	}
 }
 
@@ -245,12 +247,12 @@ function validateKafkaConfig(config: Record<string, unknown>): KafkaBindingConfi
 
 	return {
 		topic: config.topic,
-		key: config.key as string | undefined,
-		partitions: config.partitions as number | undefined,
-		replicas: config.replicas as number | undefined,
-		cleanup: config.cleanup as 'delete' | 'compact' | 'compact,delete' | undefined,
-		retentionMs: config.retentionMs as number | undefined,
-		groupId: config.groupId as string | undefined,
+		...(config.key ? { key: config.key as string } : {}),
+		...(config.partitions ? { partitions: config.partitions as number } : {}),
+		...(config.replicas ? { replicas: config.replicas as number } : {}),
+		...(config.cleanup ? { cleanup: config.cleanup as 'delete' | 'compact' | 'compact,delete' } : {}),
+		...(config.retentionMs ? { retentionMs: config.retentionMs as number } : {}),
+		...(config.groupId ? { groupId: config.groupId as string } : {}),
 	}
 }
 
@@ -260,9 +262,9 @@ function validateKafkaConfig(config: Record<string, unknown>): KafkaBindingConfi
  */
 function extractMetadata(config: Record<string, unknown>): CloudBinding['metadata'] {
 	return {
-		environment: config.environment as string | undefined,
-		region: config.region as string | undefined,
-		version: config.version as string | undefined,
-		tags: config.tags as string[] | undefined,
+		...(config.environment ? { environment: config.environment as string } : {}),
+		...(config.region ? { region: config.region as string } : {}),
+		...(config.version ? { version: config.version as string } : {}),
+		...(config.tags ? { tags: config.tags as string[] } : {}),
 	}
 }

@@ -403,6 +403,8 @@ export const mqttTopicUtils = {
     // Check for invalid # placement
     for (let i = 0; i < levels.length; i++) {
       const level = levels[i]
+      if (!level) continue  // Skip undefined levels
+      
       if (level === '#' && i !== levels.length - 1) {
         return false  // # can only be at the end
       }

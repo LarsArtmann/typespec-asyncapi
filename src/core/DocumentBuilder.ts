@@ -42,15 +42,14 @@ export class DocumentBuilder {
 
 		// Using centralized AsyncAPI version constant instead of hardcoded string
 		// TODO: Extract default info values to configuration object
-		return {
+		// Build document with proper conditional properties
+		const baseDocument = {
 			asyncapi: ASYNCAPI_VERSIONS.CURRENT,
 			info: {
 				title: "AsyncAPI Specification", // TODO: Make configurable
 				version: "1.0.0", // TODO: Make configurable
 				description: "Generated from TypeSpec with Effect.TS integration", // TODO: Make configurable
 			},
-			// TODO: Add proper type assertion or validation instead of 'as' cast
-			servers: servers as AsyncAPIObject["servers"],
 			channels: {},
 			operations: {},
 			components: {
@@ -59,6 +58,16 @@ export class DocumentBuilder {
 				securitySchemes: {},
 			},
 		}
+
+		// Create document with explicit typing
+		const document = { ...baseDocument }
+		
+		// Only add servers if they exist and are not empty
+		if (servers && Object.keys(servers).length > 0) {
+			(document as any).servers = servers as AsyncAPIObject["servers"]
+		}
+		
+		return document as AsyncAPIObject
 	}
 
 	/**

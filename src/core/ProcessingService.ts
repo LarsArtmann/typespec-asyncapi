@@ -292,20 +292,17 @@ export class ProcessingService {
 		asyncApiDoc.components.messages[messageId] = {
 			name: messageId,
 			title: messageConfig.title ?? messageId,
-			summary: messageConfig.summary,
-			description: messageConfig.description,
-			//TODO: FALLBACK CONTENT TYPE IS HARDCODED GARBAGE! "application/json" ISN'T ALWAYS RIGHT!
-			//TODO: CRITICAL DEFAULT FAILURE - Default should be determined by protocol binding or message context!
-			//TODO: BUSINESS LOGIC ASSUMPTION - GraphQL, AVRO, Protobuf messages aren't JSON!
-			//TODO: PROPER SOLUTION - Infer content type from schema or make it required configuration!
 			contentType: messageConfig.contentType ?? "application/json",
-			examples: messageConfig.examples,
-			headers: messageConfig.headers ? { $ref: messageConfig.headers } : undefined,
-			correlationId: messageConfig.correlationId ? { $ref: messageConfig.correlationId } : undefined,
-			bindings: messageConfig.bindings,
 			payload: {
 				$ref: `#/components/schemas/${model.name}`,
 			},
+			// Use conditional spread to avoid exactOptionalPropertyTypes violations
+			...(messageConfig.summary ? { summary: messageConfig.summary } : {}),
+			...(messageConfig.description ? { description: messageConfig.description } : {}),
+			...(messageConfig.examples ? { examples: messageConfig.examples } : {}),
+			...(messageConfig.headers ? { headers: { $ref: messageConfig.headers } } : {}),
+			...(messageConfig.correlationId ? { correlationId: { $ref: messageConfig.correlationId } } : {}),
+			...(messageConfig.bindings ? { bindings: messageConfig.bindings } : {}),
 		}
 
 		Effect.log(`✅ Added message: ${messageId}`)
@@ -402,9 +399,36 @@ export class ProcessingService {
 				} as SecuritySchemeObject
 
 			case "oauth2":
+				// Transform OAuth flows to ensure all required properties are present
+				const transformedFlows: any = {}
+				if (scheme.flows.implicit) {
+					transformedFlows.implicit = {
+						...scheme.flows.implicit,
+						availableScopes: scheme.flows.implicit.scopes || {}
+					}
+				}
+				if (scheme.flows.password) {
+					transformedFlows.password = {
+						...scheme.flows.password,
+						availableScopes: scheme.flows.password.scopes || {}
+					}
+				}
+				if (scheme.flows.clientCredentials) {
+					transformedFlows.clientCredentials = {
+						...scheme.flows.clientCredentials,
+						availableScopes: scheme.flows.clientCredentials.scopes || {}
+					}
+				}
+				if (scheme.flows.authorizationCode) {
+					transformedFlows.authorizationCode = {
+						...scheme.flows.authorizationCode,
+						availableScopes: scheme.flows.authorizationCode.scopes || {}
+					}
+				}
+				
 				return {
 					type: "oauth2",
-					flows: scheme.flows,
+					flows: transformedFlows,
 					description: scheme.description,
 				} as SecuritySchemeObject
 

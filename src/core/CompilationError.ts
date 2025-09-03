@@ -18,7 +18,7 @@ export class CompilationError {
 			message: this.message,
 			details: {filePath: this.filePath, lineNumber: this.lineNumber},
 			timestamp: new Date(),
-			context: this.context,
+			...(this.context ? { context: this.context } : { context: {} }),
 			recoverable: false,
 		}
 	}

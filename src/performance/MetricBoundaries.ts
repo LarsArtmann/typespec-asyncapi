@@ -106,7 +106,9 @@ export const validateBoundaries = (boundaries: IMetricBoundaries): {isValid: boo
     }
     
     for (let i = 1; i < arr.length; i++) {
-      if (arr[i] <= arr[i - 1]) {
+      const current = arr[i]
+      const previous = arr[i - 1]
+      if (current === undefined || previous === undefined || current <= previous) {
         errors.push(`${name} boundaries must be in ascending order`)
         break
       }

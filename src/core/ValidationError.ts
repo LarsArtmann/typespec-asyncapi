@@ -18,7 +18,7 @@ export class ValidationError {
 			message: this.message,
 			details: this.details,
 			timestamp: new Date(),
-			context: this.context,
+			...(this.context ? { context: this.context } : { context: {} }),
 			recoverable: true
 		}
 	}
