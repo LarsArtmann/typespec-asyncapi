@@ -128,35 +128,44 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 	}
 
 	/**
-	 * Execute the emission pipeline synchronously (simplified)
+	 * Execute the emission pipeline synchronously with performance monitoring
 	 */
 	private executeEmissionPipelineSync(program: Program): void {
 		Effect.log(`🚀 Starting micro-kernel emission pipeline...`)
 
-		// Start performance monitoring (simplified integration)
+		// Start performance monitoring - simplified synchronous approach
+		const startTime = performance.now()
+		const initialStatus = this.performanceMonitor.getPerformanceStatus()
+		Effect.log(`📊 Performance monitoring initialized: ${initialStatus.snapshotCount} snapshots, monitoring: ${initialStatus.isMonitoring}`)
+
 		try {
-			// Performance monitoring initialization - requires service context
-			Effect.log(`📊 Performance monitoring enabled (${this.performanceMonitor ? 'ready' : 'unavailable'})`)
+			// Execute pipeline stages through plugins
+			const context = {
+				program,
+				asyncApiDoc: this.asyncApiDoc,
+				emitter: this.emitter,
+				performanceMonitor: this.performanceMonitor
+			}
+
+			// Run pipeline synchronously using Effect.runSync
+			Effect.runSync(this.pipeline.executePipeline(context))
+
+			// Calculate execution metrics
+			const endTime = performance.now()
+			const executionTime = endTime - startTime
+			
+			// Generate performance report
+			const finalStatus = this.performanceMonitor.getPerformanceStatus()
+			const report = this.performanceMonitor.generatePerformanceReport()
+			
+			Effect.log(`📊 Performance metrics - Execution: ${executionTime.toFixed(2)}ms, Snapshots: ${finalStatus.snapshotCount}`)
+			Effect.log(`📊 Performance Report:\n${report}`)
+			
 		} catch (error) {
-			Effect.log(`⚠️  Performance monitoring failed to start: ${error}`)
-		}
-
-		// Execute pipeline stages through plugins
-		const context = {
-			program,
-			asyncApiDoc: this.asyncApiDoc,
-			emitter: this.emitter
-		}
-
-		// Run pipeline synchronously using Effect.runSync
-		Effect.runSync(this.pipeline.executePipeline(context))
-
-		// Stop performance monitoring (simplified integration)
-		try {
-			// Performance monitoring cleanup - requires service context
-			Effect.log(`📊 Performance monitoring completed`)
-		} catch (error) {
-			Effect.log(`⚠️  Performance monitoring failed to stop: ${error}`)
+			const endTime = performance.now()
+			const executionTime = endTime - startTime
+			Effect.log(`❌ Pipeline execution failed after ${executionTime.toFixed(2)}ms: ${error}`)
+			throw error
 		}
 		
 		Effect.log(`✅ Micro-kernel emission pipeline completed!`)

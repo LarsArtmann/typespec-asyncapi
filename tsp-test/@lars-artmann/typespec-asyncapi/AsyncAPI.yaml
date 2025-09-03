@@ -2,67 +2,11 @@ asyncapi: 3.0.0
 info:
   title: AsyncAPI Specification
   version: 1.0.0
-  description: Generated from TypeSpec with 2 operations, 0 messages, 0 security configs
+  description: Generated from TypeSpec with 0 operations, 0 messages, 0 security configs
 servers: {}
-channels:
-  channel_sendUserMessage:
-    address: user.messages
-    description: Channel for sendUserMessage
-    messages:
-      sendUserMessageMessage:
-        $ref: "#/components/messages/sendUserMessageMessage"
-  channel_receiveUserMessage:
-    address: user.messages
-    description: Channel for receiveUserMessage
-    messages:
-      receiveUserMessageMessage:
-        $ref: "#/components/messages/receiveUserMessageMessage"
-operations:
-  sendUserMessage:
-    action: send
-    channel:
-      $ref: "#/channels/channel_sendUserMessage"
-    summary: Operation sendUserMessage
-    description: TypeSpec operation with 0 parameters
-  receiveUserMessage:
-    action: receive
-    channel:
-      $ref: "#/channels/channel_receiveUserMessage"
-    summary: Operation receiveUserMessage
-    description: TypeSpec operation with 0 parameters
+channels: {}
+operations: {}
 components:
-  schemas:
-    UserMessage:
-      type: object
-      description: Schema for UserMessage
-      properties:
-        userId:
-          description: Property userId
-          type: string
-        message:
-          description: Property message
-          type: string
-        timestamp:
-          description: Property timestamp
-          type: string
-          format: date-time
-      required:
-        - userId
-        - message
-        - timestamp
-  messages:
-    sendUserMessageMessage:
-      name: sendUserMessageMessage
-      title: sendUserMessage Message
-      summary: Message for sendUserMessage operation
-      contentType: application/json
-      payload:
-        $ref: "#/components/schemas/UserMessage"
-    receiveUserMessageMessage:
-      name: receiveUserMessageMessage
-      title: receiveUserMessage Message
-      summary: Message for receiveUserMessage operation
-      contentType: application/json
-      payload:
-        $ref: "#/components/schemas/UserMessage"
+  schemas: {}
+  messages: {}
   securitySchemes: {}
