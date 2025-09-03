@@ -24,7 +24,6 @@ import type {AsyncAPIEmitterOptions} from "../options.js"
 import type {AsyncAPIObject} from "@asyncapi/parser/esm/spec-types/v3.js"
 // ASYNCAPI_VERSION import removed - now using DocumentBuilder.createInitialDocument()
 import {EmissionPipeline} from "./EmissionPipeline.js"
-import {DocumentGenerator} from "./DocumentGenerator.js"
 import {DocumentBuilder} from "./DocumentBuilder.js"
 import {PerformanceMonitor} from "./PerformanceMonitor.js"
 import {PluginRegistry} from "./PluginRegistry.js"
