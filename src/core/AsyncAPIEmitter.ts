@@ -140,7 +140,16 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 	// TODO: CRITICAL - Logging in constructor violates separation of concerns
 	// TODO: CRITICAL - Component creation order may matter but not documented
 	constructor(emitter: AssetEmitter<string, AsyncAPIEmitterOptions>) {
-		// TODO: CRITICAL - super() called without validating emitter parameter
+		// Parameter validation - prevent construction with invalid emitter
+		if (!emitter) {
+			throw new Error("AsyncAPIEmitter constructor requires valid AssetEmitter instance")
+		}
+		
+		// Validate emitter has required methods
+		if (typeof emitter.getProgram !== 'function') {
+			throw new Error("Invalid AssetEmitter: missing getProgram method")
+		}
+
 		// TODO: CRITICAL - Parent constructor could throw but no error handling
 		super(emitter)
 

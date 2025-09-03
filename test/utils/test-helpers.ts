@@ -8,6 +8,7 @@
 import {createTestHost, createTestLibrary, createTestWrapper, findTestPackageRoot} from "@typespec/compiler/testing"
 import type {AsyncAPIEmitterOptions} from "../../src/options.js"
 import type {Diagnostic, Program} from "@typespec/compiler"
+import type {AsyncAPIObject} from "@asyncapi/parser/esm/spec-types/v3.js"
 import {Effect} from "effect"
 
 // Constants - Import centralized constants to eliminate hardcoded values
@@ -700,6 +701,20 @@ function createAlphaFallbackDocument(primarySchema: string): AsyncAPIObject {
 }
 
 /**
+ * Type guard to validate if unknown object is AsyncAPI document
+ */
+function isAsyncAPIDocument(obj: unknown): obj is AsyncAPIObject {
+	if (!obj || typeof obj !== 'object') {
+		return false
+	}
+	
+	const doc = obj as Record<string, unknown>
+	return typeof doc.asyncapi === 'string' && 
+	       typeof doc.info === 'object' &&
+	       typeof doc.channels === 'object'
+}
+
+/**
  * Validate basic AsyncAPI 3.0 structure (legacy function)
  * @deprecated Use AsyncAPIValidator from validation framework instead
  */
@@ -712,11 +727,11 @@ export function validateAsyncAPIStructure(asyncapiDoc: unknown): boolean {
 		throw new Error("Expected AsyncAPI document to be an object")
 	}
 
-	//TODO: TYPE SAFETY CATASTROPHE! "Better type?" comment shows they KNOW this is wrong!
-	//TODO: UNSAFE TYPE CASTING - 'as Record<string, unknown>' defeats TypeScript completely!
-	//TODO: PROPER TYPING REQUIRED - Should use AsyncAPIObject interface with type guards!
-	//TODO: TYPE VALIDATION MISSING - No runtime validation before unsafe casting!
-	const doc = asyncapiDoc as Record<string, unknown>
+	// Type-safe validation using proper type guard
+	if (!isAsyncAPIDocument(asyncapiDoc)) {
+		throw new Error("Document does not conform to AsyncAPIObject structure")
+	}
+	const doc = asyncapiDoc
 	//TODO: HARDCODED REQUIRED FIELDS ARRAY! Should be REQUIRED_ASYNCAPI_FIELDS constant!
 	//TODO: FIELD VALIDATION HARDCODED - Field list scattered without central schema!
 	const requiredFields = ['asyncapi', 'info', 'channels']
@@ -985,7 +1000,13 @@ export const AsyncAPIAssertions = {
 				return false
 			}
 
-			const asyncapiDoc = doc as Record<string, unknown>
+			// Type-safe validation using proper type guard
+			if (!isAsyncAPIDocument(doc)) {
+				Effect.log("❌ Document does not conform to AsyncAPIObject structure")
+				return false
+			}
+			
+			const asyncapiDoc = doc
 			Effect.log(`📊 Document keys: ${Object.keys(asyncapiDoc).join(', ')}`)
 			
 			// Check for minimum required fields for Alpha
