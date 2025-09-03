@@ -1,0 +1,58 @@
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/utils/validation-helpers.ts[0m:[0m[32m75[0m:		doc["info"] [0m[1m[31m!== null[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/utils/schema-conversion.ts[0m:[0m[32m155[0m:					if (variantType.kind === "String" && variantType.value ![0m[1m[31m== undefined[0m) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/utils/protocol-validation.ts[0m:[0m[32m41[0m:	if (value ![0m[1m[31m== undefined[0m) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/utils/protocol-validation.ts[0m:[0m[32m63[0m:	if (value ![0m[1m[31m== undefined[0m && value.trim() !== '' && !pattern.test(value)) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/utils/protocol-validation.ts[0m:[0m[32m77[0m:	if (value ![0m[1m[31m== undefined[0m && value.length > maxLength) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/utils/protocol-validation.ts[0m:[0m[32m91[0m:	if (value ![0m[1m[31m== undefined[0m && !allowedValues.includes(value)) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/utils/protocol-validation.ts[0m:[0m[32m105[0m:	if (statusCode ![0m[1m[31m== undefined[0m && (statusCode < 100 || statusCode > 599)) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/decorators/tags.ts[0m:[0m[32m182[0m:		if (priority ![0m[1m[31m== undefined[0m) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/plugins/built-in/enhanced-amqp-plugin.ts[0m:[0m[32m185[0m:        if (config.priority ![0m[1m[31m== undefined[0m) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/plugins/built-in/enhanced-amqp-plugin.ts[0m:[0m[32m201[0m:        if (config.timestamp ![0m[1m[31m== undefined[0m) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/plugins/built-in/enhanced-amqp-plugin.ts[0m:[0m[32m206[0m:        if (config.consumer?.noAck ![0m[1m[31m== undefined[0m) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/plugins/built-in/enhanced-amqp-plugin.ts[0m:[0m[32m319[0m:        if (amqpConfig.priority ![0m[1m[31m== undefined[0m && (amqpConfig.priority < 0 || amqpConfig.priority > 255)) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/plugins/built-in/enhanced-amqp-plugin.ts[0m:[0m[32m328[0m:          if (consumer.prefetchCount ![0m[1m[31m== undefined[0m && consumer.prefetchCount < 0) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/plugins/built-in/enhanced-amqp-plugin.ts[0m:[0m[32m333[0m:          if (consumer.prefetchSize ![0m[1m[31m== undefined[0m && consumer.prefetchSize < 0) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/plugins/built-in/enhanced-amqp-plugin.ts[0m:[0m[32m450[0m:      binding [0m[1m[31m!== null[0m &&
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/decorators/server.ts[0m:[0m[32m214[0m:			} else if (value && typeof value === "object" && "value" in value && value.value ![0m[1m[31m== undefined[0m) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/plugins/built-in/enhanced-websocket-plugin.ts[0m:[0m[32m281[0m:      binding [0m[1m[31m!== null[0m &&
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/options/validation.ts[0m:[0m[32m20[0m:	if (input["separate-files"] ![0m[1m[31m== undefined[0m) result["separate-files"] = input["separate-files"]
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/options/validation.ts[0m:[0m[32m21[0m:	if (input["file-naming"] ![0m[1m[31m== undefined[0m) result["file-naming"] = input["file-naming"]
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/options/validation.ts[0m:[0m[32m22[0m:	if (input["include-version-info"] ![0m[1m[31m== undefined[0m) result["include-version-info"] = input["include-version-info"]
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/options/validation.ts[0m:[0m[32m23[0m:	if (input["version-mappings"] ![0m[1m[31m== undefined[0m) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/options/validation.ts[0m:[0m[32m26[0m:	if (input["validate-version-compatibility"] ![0m[1m[31m== undefined[0m) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/options/validation.ts[0m:[0m[32m40[0m:	if (input.description ![0m[1m[31m== undefined[0m) result.description = input.description
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/options/validation.ts[0m:[0m[32m41[0m:	if (input.variables ![0m[1m[31m== undefined[0m) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/options/validation.ts[0m:[0m[32m46[0m:					...(value.description ![0m[1m[31m== undefined[0m && {description: value.description}),
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/options/validation.ts[0m:[0m[32m47[0m:					...(value.default ![0m[1m[31m== undefined[0m && {default: value.default}),
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/options/validation.ts[0m:[0m[32m48[0m:					...(value.enum ![0m[1m[31m== undefined[0m && {enum: [...value.enum]}),
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/options/validation.ts[0m:[0m[32m49[0m:					...(value.examples ![0m[1m[31m== undefined[0m && {examples: [...value.examples]}),
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/options/validation.ts[0m:[0m[32m54[0m:	if (input.security ![0m[1m[31m== undefined[0m) result.security = [...input.security]
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/options/validation.ts[0m:[0m[32m55[0m:	if (input.bindings ![0m[1m[31m== undefined[0m) result.bindings = {...input.bindings}
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/options/validation.ts[0m:[0m[32m79[0m:		if (input [0m[1m[31m=== null[0m || input =[0m[1m[31m== undefined[0m) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/options/validation.ts[0m:[0m[32m134[0m:		if (result[key] ![0m[1m[31m== undefined[0m) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/options/validation.ts[0m:[0m[32m148[0m:	if (result["default-servers"] ![0m[1m[31m== undefined[0m && result["default-servers"] [0m[1m[31m!== null[0m) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/options/validation.ts[0m:[0m[32m158[0m:	if (result["security-schemes"] ![0m[1m[31m== undefined[0m && result["security-schemes"] [0m[1m[31m!== null[0m) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/options/validation.ts[0m:[0m[32m168[0m:	if (result["versioning"] ![0m[1m[31m== undefined[0m) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/plugins/built-in/http-plugin.ts[0m:[0m[32m73[0m:		if (typeof config !== 'object' || config [0m[1m[31m=== null[0m) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/plugins/built-in/enhanced-mqtt-plugin.ts[0m:[0m[32m166[0m:        if (config.qos ![0m[1m[31m== undefined[0m) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/plugins/built-in/enhanced-mqtt-plugin.ts[0m:[0m[32m172[0m:        if (config.retain ![0m[1m[31m== undefined[0m) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/plugins/built-in/enhanced-mqtt-plugin.ts[0m:[0m[32m178[0m:        if (config.mqtt5?.messageExpiryInterval ![0m[1m[31m== undefined[0m) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/plugins/built-in/enhanced-mqtt-plugin.ts[0m:[0m[32m246[0m:        if (config.sessionExpiryInterval ![0m[1m[31m== undefined[0m) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/plugins/built-in/enhanced-mqtt-plugin.ts[0m:[0m[32m278[0m:        if (mqttConfig.qos ![0m[1m[31m== undefined[0m && ![0, 1, 2].includes(mqttConfig.qos)) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/plugins/built-in/enhanced-mqtt-plugin.ts[0m:[0m[32m321[0m:          if (lwt.qos ![0m[1m[31m== undefined[0m && ![0, 1, 2].includes(lwt.qos)) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/plugins/built-in/enhanced-mqtt-plugin.ts[0m:[0m[32m331[0m:          if (conn.keepAlive ![0m[1m[31m== undefined[0m && (conn.keepAlive < 0 || conn.keepAlive > 65535)) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/plugins/built-in/enhanced-mqtt-plugin.ts[0m:[0m[32m346[0m:          if (mqtt5.topicAlias ![0m[1m[31m== undefined[0m && (mqtt5.topicAlias < 1 || mqtt5.topicAlias > 65535)) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/plugins/built-in/enhanced-mqtt-plugin.ts[0m:[0m[32m351[0m:          if (mqtt5.messageExpiryInterval ![0m[1m[31m== undefined[0m && mqtt5.messageExpiryInterval < 0) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/plugins/built-in/enhanced-mqtt-plugin.ts[0m:[0m[32m356[0m:          if (mqtt5.receiveMaximum ![0m[1m[31m== undefined[0m && (mqtt5.receiveMaximum < 1 || mqtt5.receiveMaximum > 65535)) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/plugins/built-in/enhanced-mqtt-plugin.ts[0m:[0m[32m361[0m:          if (mqtt5.maximumPacketSize ![0m[1m[31m== undefined[0m && (mqtt5.maximumPacketSize < 1 || mqtt5.maximumPacketSize > 268435455)) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/plugins/built-in/enhanced-mqtt-plugin.ts[0m:[0m[32m518[0m:      binding [0m[1m[31m!== null[0m &&
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/plugins/built-in/kafka-plugin.ts[0m:[0m[32m113[0m:		if (typeof config !== 'object' || config [0m[1m[31m=== null[0m) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/decorators/protocol.ts[0m:[0m[32m52[0m:		return value [0m[1m[31m!== null[0m && typeof value === 'object' && 'kind' in value && (value as {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/decorators/protocol.ts[0m:[0m[32m79[0m:							if (astNode.value ![0m[1m[31m== undefined[0m) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/decorators/protocol.ts[0m:[0m[32m93[0m:										if (nestedKey && nestedValue ![0m[1m[31m== undefined[0m) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/path-templates.ts[0m:[0m[32m38[0m:	while ((match = TEMPLATE_VARIABLE_PATTERN.exec(pathTemplate)) [0m[1m[31m!== null[0m) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/path-templates.ts[0m:[0m[32m240[0m:	while ((match = regex.exec(pathTemplate)) [0m[1m[31m!== null[0m) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/plugins/built-in/websocket-plugin.ts[0m:[0m[32m62[0m:			return typeof config === 'object' && config [0m[1m[31m!== null[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/decorators/header.ts[0m:[0m[32m113[0m:	return getHeaderConfig(context, modelProperty) ![0m[1m[31m== undefined[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/DocumentGenerator.ts[0m:[0m[32m236[0m:			} else if (value [0m[1m[31m=== null[0m || value =[0m[1m[31m== undefined[0m || value === '') {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/ValidationService.ts[0m:[0m[32m48[0m:		return obj [0m[1m[31m!= null[0m && typeof obj === 'object' && '$ref' in obj

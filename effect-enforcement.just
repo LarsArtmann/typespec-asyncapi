@@ -53,22 +53,22 @@ effect-setup:
     @mkdir -p {{REPORT_DIR}}
     @echo "\033[0;32m✅ Created reports directory\033[0m"
     @echo "\033[0;33m⚠️  Verifying Effect.TS dependencies...\033[0m"
-    @bun list | grep -E "effect|@effect" || echo "\033[0;31m❌ Effect.TS not found - run: bun add effect @effect/schema\033[0m"
+    @bun pm ls | grep -E "effect|@effect" || echo "\033[0;31m❌ Effect.TS not found - run: bun add effect @effect/schema\033[0m"
     @echo "\033[0;32m✅ Effect.TS enforcement setup complete\033[0m"
 
 # 🔥 Master Effect.TS linting command - runs ALL enforcement
 effect-lint:
     @echo "\033[1m🔥 MAXIMUM EFFECT.TS PATTERN ENFORCEMENT\033[0m"
     @echo "\033[0;36mRunning comprehensive Effect.TS compliance checks...\033[0m"
-    just ban-promises
-    just ban-async-await  
-    just ban-try-catch
-    just ban-throw
-    just ban-console
-    just ban-null-checks
-    just effect-arch-lint
-    just railway-validation
-    just pure-functions-check
+    @just -f {{justfile()}} ban-promises
+    @just -f {{justfile()}} ban-async-await  
+    @just -f {{justfile()}} ban-try-catch
+    @just -f {{justfile()}} ban-throw
+    @just -f {{justfile()}} ban-console
+    @just -f {{justfile()}} ban-null-checks
+    @just -f {{justfile()}} effect-arch-lint
+    @just -f {{justfile()}} railway-validation
+    @just -f {{justfile()}} pure-functions-check
     @echo "\033[0;32m✅ Effect.TS enforcement complete - check reports in {{REPORT_DIR}}\033[0m"
 
 # 🚨 Ban Promise<T> usage - enforce Effect<T, E, R>
@@ -218,7 +218,7 @@ clean-reports:
 effect-validate:
     @echo "\033[1m🔬 EFFECT.TS COMPLIANCE VALIDATION\033[0m"
     @echo "\033[0;36mRunning quick compliance check...\033[0m"
-    just effect-setup
-    just effect-lint
-    just effect-report
+    @just -f {{justfile()}} effect-setup
+    @just -f {{justfile()}} effect-lint
+    @just -f {{justfile()}} effect-report
     @echo "\033[0;32m✅ Effect.TS validation complete\033[0m"

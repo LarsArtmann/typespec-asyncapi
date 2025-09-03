@@ -1,0 +1,21 @@
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/validation/asyncapi-validator.ts[0m:[0m[32m313[0m:export [0m[1m[31masync function[0m validateAsyncAPIObject(document: unknown, options?: ValidationOptions): Promise<ValidationResult> {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/validation/asyncapi-validator.ts[0m:[0m[32m315[0m:	return [0m[1m[31mawait [0mvalidator.validate(document)
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/performance/PerformanceRegressionTester.ts[0m:[0m[32m441[0m:		runTest: (testName: string) => tester.runRegressionTest(testName, [0m[1m[31masync ([0m) => {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/performance/PerformanceRegressionTester.ts[0m:[0m[32m448[0m:			[0m[1m[31mawait [0mnew Promise(resolve => setTimeout(resolve, Math.random() * 100 + 50))
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/index.ts[0m:[0m[32m150[0m: * const program = [0m[1m[31mawait [0mcompile(host, "main.tsp", {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/index.ts[0m:[0m[32m154[0m: * [0m[1m[31mawait [0m$onEmit({
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/index.ts[0m:[0m[32m187[0m:export [0m[1m[31masync function[0m $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): Promise<void> {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/index.ts[0m:[0m[32m193[0m:    const { generateAsyncAPIWithEffect } = [0m[1m[31mawait [0mimport("./emitter-with-effect.js");
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/index.ts[0m:[0m[32m198[0m:    [0m[1m[31mawait [0mEffect.runPromise(
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/emitter-with-effect.ts[0m:[0m[32m155[0m:		// TODO: PERFORMANCE - Consider async/[0m[1m[31mawait [0mpattern instead of synchronous call for better performance
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/AsyncAPIEmitter.ts[0m:[0m[32m263[0m:			[0m[1m[31mawait [0mthis.emitter.emitSourceFile(sourceFile)
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/AsyncAPIEmitter.ts[0m:[0m[32m360[0m:		[0m[1m[31mawait [0msuper.writeOutput(sourceFiles)
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/PluginRegistry.ts[0m:[0m[32m152[0m:        [0m[1m[31mawait [0mthis.initializePlugin(plugin.name)
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/PluginRegistry.ts[0m:[0m[32m167[0m:            [0m[1m[31mawait [0mthis.stopPlugin(name)
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/PluginRegistry.ts[0m:[0m[32m194[0m:                [0m[1m[31mawait [0mthis.stopPlugin(name)
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/PluginRegistry.ts[0m:[0m[32m199[0m:                [0m[1m[31mawait [0mplugin.reload()
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/PluginRegistry.ts[0m:[0m[32m205[0m:                [0m[1m[31mawait [0mthis.initializePlugin(name)
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/PluginRegistry.ts[0m:[0m[32m211[0m:                [0m[1m[31mawait [0mthis.startPlugin(name)
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/PluginRegistry.ts[0m:[0m[32m230[0m:            [0m[1m[31mawait [0mplugin.initialize()
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/PluginRegistry.ts[0m:[0m[32m253[0m:            [0m[1m[31mawait [0mplugin.start()
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/PluginRegistry.ts[0m:[0m[32m284[0m:            [0m[1m[31mawait [0mPromise.race([plugin.stop(), timeoutPromise])

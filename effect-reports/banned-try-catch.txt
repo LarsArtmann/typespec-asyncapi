@@ -1,0 +1,90 @@
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/validation/asyncapi-validator.ts[0m:[0m[32m83[0m:			[0m[1m[31mtry {[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/validation/asyncapi-validator.ts[0m:[0m[32m148[0m:			} [0m[1m[31mcatch ([0merror) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/validation/asyncapi-validator.ts[0m:[0m[32m180[0m:			[0m[1m[31mtry {[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/validation/asyncapi-validator.ts[0m:[0m[32m184[0m:			} [0m[1m[31mcatch ([0merror) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/performance/PerformanceRegressionTester.ts[0m:[0m[32m96[0m:			[0m[1m[31mtry {[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/performance/PerformanceRegressionTester.ts[0m:[0m[32m128[0m:			} [0m[1m[31mcatch ([0merror) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/performance/PerformanceRegressionTester.ts[0m:[0m[32m219[0m:			[0m[1m[31mtry {[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/performance/PerformanceRegressionTester.ts[0m:[0m[32m231[0m:			} [0m[1m[31mcatch ([0merror) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/performance/PerformanceRegressionTester.ts[0m:[0m[32m263[0m:			[0m[1m[31mtry {[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/performance/PerformanceRegressionTester.ts[0m:[0m[32m286[0m:			} [0m[1m[31mcatch ([0merror) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/performance/memory-monitor.ts[0m:[0m[32m94[0m:		[0m[1m[31mtry {[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/path-templates.ts[0m:[0m[32m119[0m:			[0m[1m[31mtry {[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/plugins/interfaces/cloud-binding-plugin-registry.ts[0m:[0m[32m10[0m:export class CloudBindingPluginRegis[0m[1m[31mtry {[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/plugins/simple-plugin-registry.ts[0m:[0m[32m8[0m:export class SimplePluginRegis[0m[1m[31mtry {[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/AsyncAPIEmitter.ts[0m:[0m[32m166[0m:		[0m[1m[31mtry {[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/AsyncAPIEmitter.ts[0m:[0m[32m172[0m:		} [0m[1m[31mcatch ([0merror) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/AsyncAPIEmitter.ts[0m:[0m[32m186[0m:		[0m[1m[31mtry {[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/AsyncAPIEmitter.ts[0m:[0m[32m194[0m:		} [0m[1m[31mcatch ([0merror) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/AsyncAPIEmitter.ts[0m:[0m[32m254[0m:		[0m[1m[31mtry {[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/AsyncAPIEmitter.ts[0m:[0m[32m266[0m:		} [0m[1m[31mcatch ([0merror) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/AsyncAPIEmitter.ts[0m:[0m[32m406[0m:		[0m[1m[31mtry {[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/AsyncAPIEmitter.ts[0m:[0m[32m429[0m:		} [0m[1m[31mcatch ([0merror) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/AsyncAPIEmitter.ts[0m:[0m[32m553[0m:	public getPluginRegistry(): PluginRegis[0m[1m[31mtry {[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/ValidationService.ts[0m:[0m[32m119[0m:			[0m[1m[31mtry {[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/ValidationService.ts[0m:[0m[32m135[0m:			} [0m[1m[31mcatch ([0mparseError) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/PluginRegistry.ts[0m:[0m[32m96[0m:export class PluginRegis[0m[1m[31mtry {[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/PluginRegistry.ts[0m:[0m[32m191[0m:        [0m[1m[31mtry {[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/PluginRegistry.ts[0m:[0m[32m215[0m:        } [0m[1m[31mcatch ([0merror) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/PluginRegistry.ts[0m:[0m[32m229[0m:        [0m[1m[31mtry {[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/PluginRegistry.ts[0m:[0m[32m234[0m:        } [0m[1m[31mcatch ([0merror) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/PluginRegistry.ts[0m:[0m[32m252[0m:        [0m[1m[31mtry {[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/PluginRegistry.ts[0m:[0m[32m257[0m:        } [0m[1m[31mcatch ([0merror) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/PluginRegistry.ts[0m:[0m[32m276[0m:        [0m[1m[31mtry {[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/PluginRegistry.ts[0m:[0m[32m289[0m:        } [0m[1m[31mcatch ([0merror) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/PluginRegistry.ts[0m:[0m[32m390[0m:            [0m[1m[31mtry {[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/PluginRegistry.ts[0m:[0m[32m392[0m:            } [0m[1m[31mcatch ([0merror) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/ErrorHandlingStandardization.ts[0m:[0m[32m311[0m:			[0m[1m[31mtry {[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/ErrorHandlingStandardization.ts[0m:[0m[32m313[0m:			} [0m[1m[31mcatch ([0merror) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/ErrorHandlingStandardization.ts[0m:[0m[32m328[0m:			[0m[1m[31mtry {[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/ErrorHandlingStandardization.ts[0m:[0m[32m330[0m:			} [0m[1m[31mcatch ([0merror) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/ErrorHandlingStandardization.ts[0m:[0m[32m348[0m:				[0m[1m[31mtry {[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/ErrorHandlingStandardization.ts[0m:[0m[32m350[0m:				} [0m[1m[31mcatch ([0merror) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/options/utils.ts[0m:[0m[32m20[0m:	[0m[1m[31mtry {[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/options/utils.ts[0m:[0m[32m30[0m:	} [0m[1m[31mcatch ([0merror) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/options/utils.ts[0m:[0m[32m84[0m:	[0m[1m[31mtry {[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/plugins/built-in/enhanced-amqp-plugin.ts[0m:[0m[32m172[0m:      [0m[1m[31mtry {[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/plugins/built-in/enhanced-amqp-plugin.ts[0m:[0m[32m212[0m:      } [0m[1m[31mcatch ([0merror) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/plugins/built-in/enhanced-amqp-plugin.ts[0m:[0m[32m225[0m:      [0m[1m[31mtry {[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/plugins/built-in/enhanced-amqp-plugin.ts[0m:[0m[32m243[0m:      } [0m[1m[31mcatch ([0merror) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/plugins/built-in/enhanced-amqp-plugin.ts[0m:[0m[32m257[0m:      [0m[1m[31mtry {[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/plugins/built-in/enhanced-amqp-plugin.ts[0m:[0m[32m266[0m:      } [0m[1m[31mcatch ([0merror) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/plugins/built-in/enhanced-amqp-plugin.ts[0m:[0m[32m279[0m:      [0m[1m[31mtry {[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/plugins/built-in/enhanced-amqp-plugin.ts[0m:[0m[32m341[0m:      } [0m[1m[31mcatch ([0merror) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/DocumentGenerator.ts[0m:[0m[32m262[0m:			[0m[1m[31mtry {[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/DocumentGenerator.ts[0m:[0m[32m266[0m:			} [0m[1m[31mcatch ([0merror) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/ErrorHandlingMigration.ts[0m:[0m[32m17[0m:			[0m[1m[31mtry {[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/ErrorHandlingMigration.ts[0m:[0m[32m19[0m:			} [0m[1m[31mcatch ([0merror) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/ErrorHandlingMigration.ts[0m:[0m[32m37[0m:			[0m[1m[31mtry {[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/ErrorHandlingMigration.ts[0m:[0m[32m39[0m:			} [0m[1m[31mcatch ([0merror) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/ErrorHandlingMigration.ts[0m:[0m[32m54[0m:			[0m[1m[31mtry {[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/ErrorHandlingMigration.ts[0m:[0m[32m57[0m:			} [0m[1m[31mcatch ([0merror) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/utils/typespec-helpers.ts[0m:[0m[32m233[0m:	[0m[1m[31mtry {[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/plugins/built-in/enhanced-websocket-plugin.ts[0m:[0m[32m82[0m:      [0m[1m[31mtry {[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/plugins/built-in/enhanced-websocket-plugin.ts[0m:[0m[32m95[0m:      } [0m[1m[31mcatch ([0merror) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/plugins/built-in/enhanced-websocket-plugin.ts[0m:[0m[32m108[0m:      [0m[1m[31mtry {[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/plugins/built-in/enhanced-websocket-plugin.ts[0m:[0m[32m121[0m:      } [0m[1m[31mcatch ([0merror) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/plugins/built-in/enhanced-websocket-plugin.ts[0m:[0m[32m135[0m:      [0m[1m[31mtry {[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/plugins/built-in/enhanced-websocket-plugin.ts[0m:[0m[32m146[0m:      } [0m[1m[31mcatch ([0merror) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/plugins/built-in/enhanced-websocket-plugin.ts[0m:[0m[32m159[0m:      [0m[1m[31mtry {[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/plugins/built-in/enhanced-websocket-plugin.ts[0m:[0m[32m203[0m:      } [0m[1m[31mcatch ([0merror) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/PerformanceMonitor.ts[0m:[0m[32m124[0m:		[0m[1m[31mtry {[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/PerformanceMonitor.ts[0m:[0m[32m137[0m:		} [0m[1m[31mcatch ([0merror) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/PerformanceMonitor.ts[0m:[0m[32m151[0m:			[0m[1m[31mtry {[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/PerformanceMonitor.ts[0m:[0m[32m173[0m:			} [0m[1m[31mcatch ([0merror) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/PerformanceMonitor.ts[0m:[0m[32m298[0m:			[0m[1m[31mtry {[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/PerformanceMonitor.ts[0m:[0m[32m304[0m:			} [0m[1m[31mcatch ([0merror) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/decorators/security.ts[0m:[0m[32m166[0m:			[0m[1m[31mtry {[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/decorators/index.ts[0m:[0m[32m47[0m:	[0m[1m[31mtry {[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/decorators/index.ts[0m:[0m[32m89[0m:	} [0m[1m[31mcatch ([0merror) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/plugins/built-in/enhanced-mqtt-plugin.ts[0m:[0m[32m157[0m:      [0m[1m[31mtry {[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/plugins/built-in/enhanced-mqtt-plugin.ts[0m:[0m[32m185[0m:      } [0m[1m[31mcatch ([0merror) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/plugins/built-in/enhanced-mqtt-plugin.ts[0m:[0m[32m198[0m:      [0m[1m[31mtry {[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/plugins/built-in/enhanced-mqtt-plugin.ts[0m:[0m[32m224[0m:      } [0m[1m[31mcatch ([0merror) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/plugins/built-in/enhanced-mqtt-plugin.ts[0m:[0m[32m237[0m:      [0m[1m[31mtry {[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/plugins/built-in/enhanced-mqtt-plugin.ts[0m:[0m[32m256[0m:      } [0m[1m[31mcatch ([0merror) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/plugins/built-in/enhanced-mqtt-plugin.ts[0m:[0m[32m269[0m:      [0m[1m[31mtry {[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/plugins/built-in/enhanced-mqtt-plugin.ts[0m:[0m[32m369[0m:      } [0m[1m[31mcatch ([0merror) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/decorators/correlation-id.ts[0m:[0m[32m169[0m:			[0m[1m[31mtry {[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/decorators/correlation-id.ts[0m:[0m[32m249[0m:			[0m[1m[31mtry {[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/decorators/protocol.ts[0m:[0m[32m74[0m:					[0m[1m[31mtry {[0m

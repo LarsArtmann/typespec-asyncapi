@@ -1,0 +1,3 @@
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/decorators/channel.ts[0m:[0m[32m14[0m://TODO: CRITICAL - Remove [0m[1m[31mconsole.log[0m style Effect.log calls - use proper structured logging
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/performance/memory-monitor.ts[0m:[0m[32m105[0m:			// Use Effect.logDebug instead of [0m[1m[31mconsole.debug[0m for consistency
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/AsyncAPIEmitter.ts[0m:[0m[32m484[0m:	 *     [0m[1m[31mconsole.log[0m(`Processing ${Object.keys(document.channels || {}).length} channels`);
