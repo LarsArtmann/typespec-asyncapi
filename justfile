@@ -213,8 +213,79 @@ find-duplicates:
 
 alias fd := find-duplicates
 
-# Full quality check pipeline
-quality-check: clean build validate-build typecheck lint-fix test find-duplicates compile validate-all
+# === EFFECT.TS ENFORCEMENT INTEGRATION ===
+
+# Quick Effect.TS validation (integrated ESLint approach)
+effect-lint-quick:
+    #!/bin/bash
+    set -euo pipefail
+    echo "⚡ Running quick Effect.TS pattern validation..."
+    echo "🔍 Using integrated ESLint rules for fast feedback..."
+    bun run lint
+    echo "✅ Quick Effect.TS validation complete"
+
+# Comprehensive Effect.TS enforcement (specialized tools approach)
+effect-lint-comprehensive:
+    #!/bin/bash
+    set -euo pipefail
+    echo "🔥 Running comprehensive Effect.TS enforcement..."
+    echo "🧪 Using specialized pattern detection tools..."
+    just -f effect-enforcement.just effect-setup
+    just -f effect-enforcement.just effect-lint
+    echo "✅ Comprehensive Effect.TS enforcement complete"
+
+# Dual Effect.TS validation - BEST OF BOTH WORLDS
+effect-lint-dual:
+    #!/bin/bash
+    set -euo pipefail
+    echo "🚀 DUAL EFFECT.TS VALIDATION - MAXIMUM COVERAGE"
+    echo ""
+    echo "📋 Phase 1: Quick integrated validation (ESLint)..."
+    just effect-lint-quick
+    echo ""
+    echo "📋 Phase 2: Comprehensive specialized validation..."
+    just effect-lint-comprehensive
+    echo ""
+    echo "📊 Phase 3: Generating consolidated compliance report..."
+    just -f effect-enforcement.just effect-report
+    echo ""
+    echo "🎉 DUAL VALIDATION COMPLETE - Maximum Effect.TS compliance achieved!"
+
+# Effect.TS enforcement shortcuts (delegated to specialized justfile)
+effect-ban-promises:
+    just -f effect-enforcement.just ban-promises
+
+effect-ban-async-await:
+    just -f effect-enforcement.just ban-async-await
+
+effect-ban-try-catch:
+    just -f effect-enforcement.just ban-try-catch
+
+effect-ban-throw:
+    just -f effect-enforcement.just ban-throw
+
+effect-ban-console:
+    just -f effect-enforcement.just ban-console
+
+effect-architecture-validation:
+    just -f effect-enforcement.just effect-arch-lint
+    just -f effect-enforcement.just railway-validation
+
+effect-compliance-report:
+    just -f effect-enforcement.just effect-report
+
+# Development workflow with Effect.TS awareness
+dev-effect-aware:
+    #!/bin/bash
+    set -euo pipefail
+    echo "🔥 Starting Effect.TS-aware development mode..."
+    echo "🔍 Running initial Effect.TS validation..."
+    just effect-lint-quick || echo "⚠️  Effect.TS violations detected - fix them as you develop"
+    echo "🚀 Starting development server with Effect.TS monitoring..."
+    bun run dev
+
+# Full quality check pipeline with Effect.TS enforcement
+quality-check: clean build validate-build typecheck effect-lint-dual test find-duplicates compile validate-all
 
 # Development workflow
 dev:

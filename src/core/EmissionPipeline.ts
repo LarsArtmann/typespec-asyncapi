@@ -26,10 +26,15 @@ import {ValidationService} from "./ValidationService.js"
 import type {DiscoveryResult} from "./DiscoveryResult.js"
 import type {PipelineContext} from "./PipelineContext.js"
 
+import type { IPipelineService } from "./PipelineService.js"
+
 /**
  * Effect.TS-based emission pipeline with plugin integration
+ * 
+ * REFACTORED: Now implements IPipelineService interface for dependency injection
+ * REFACTORED: Services will be injected instead of hard-coded instantiation
  */
-export class EmissionPipeline {
+export class EmissionPipeline implements IPipelineService {
 	private readonly documentBuilder: DocumentBuilder
 	private readonly discoveryService: DiscoveryService
 	private readonly processingService: ProcessingService
