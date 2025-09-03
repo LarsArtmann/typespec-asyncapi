@@ -1,0 +1,268 @@
+# 🔥 ENTERPRISE-GRADE EFFECT.TS ARCHITECTURE ENFORCEMENT
+# MAXIMUM STRICTNESS - Functional Programming & Effect.TS Boundaries
+#
+# This configuration enforces strict Effect.TS architectural patterns
+# Inspired by go-arch-lint but specifically for TypeScript Effect.TS projects
+#
+# Features:
+# - ✅ Effect.TS pattern isolation (no native async/promises/exceptions)
+# - ✅ Railway Oriented Programming enforcement 
+# - ✅ Functional layer boundaries
+# - ✅ Clear dependency flow: Pure Domain → Effect Services → Infrastructure Effects
+
+version: 1
+workdir: .
+
+# 🚨 EFFECT.TS PATTERN CONFIGURATION
+allow:
+  nativePromises: false     # BANNED: Use Effect<T, E, R> instead of Promise<T>
+  throwStatements: false    # BANNED: Use Effect.fail() instead of throw
+  tryCatchBlocks: false     # BANNED: Use Effect.gen() with proper error handling
+  consoleLogging: false     # BANNED: Use Effect.log() for structured logging
+  nullUndefinedChecks: false # BANNED: Use Option<T> for nullable values
+
+# 📦 EFFECT.TS ARCHITECTURAL COMPONENTS
+# Define your project's functional programming layers and boundaries
+components:
+  # ========================================
+  # PURE DOMAIN LAYER - No Effects, Pure Functions Only
+  # ========================================
+  domain-types:
+    in: src/types/**
+    patterns:
+      - no-effects     # Pure types only, no Effect<> usage
+      - no-io         # No I/O operations
+      - no-mutations  # Immutable only
+      
+  domain-schemas:
+    in: src/schemas/**
+    patterns:
+      - effect-schema-only  # Must use @effect/schema
+      - no-zod             # BANNED: Use @effect/schema instead
+      - no-joi             # BANNED: Use @effect/schema instead
+
+  # ========================================
+  # EFFECT SERVICES LAYER - Core Business Effects
+  # ========================================
+  effect-services:
+    in: src/core/**
+    patterns:
+      - effect-gen-required    # Must use Effect.gen() for async operations
+      - railway-programming    # Must use Effect.flatMap/map chains
+      - no-promise-constructors # BANNED: Use Effect.async() instead
+      
+  effect-utils:
+    in: src/utils/**
+    patterns:
+      - pure-effect-functions  # Functions must return Effect<T, E, R>
+      - no-side-effects       # No console.log, mutations, etc.
+
+  # ========================================
+  # INFRASTRUCTURE EFFECTS - External I/O
+  # ========================================
+  infrastructure-effects:
+    in: src/infrastructure/**
+    patterns:
+      - effect-resource-management  # Must use Effect.acquireUseRelease
+      - no-raw-promises           # All promises must be wrapped with Effect.promise()
+      - effect-error-tagging      # Errors must be tagged with Data.TaggedError
+
+  # ========================================
+  # VALIDATION & PARSING - Type-Safe Boundaries  
+  # ========================================
+  effect-validation:
+    in: src/validation/**
+    patterns:
+      - schema-validation-only    # Must use @effect/schema validation
+      - no-manual-parsing        # BANNED: Use Schema.decodeUnknown()
+      - effect-parse-errors      # Parse errors must be Effect errors
+
+  # ========================================
+  # PERFORMANCE & MONITORING - Observability Effects
+  # ========================================
+  effect-performance:
+    in: src/performance/**
+    patterns:
+      - effect-metrics-only      # Must use Effect.Metric for metrics
+      - effect-tracing-only      # Must use Effect.withSpan() for tracing
+      - no-manual-timers        # BANNED: Use Effect.timed() instead
+
+# 🔒 EFFECT.TS DEPENDENCY RULES - Enforce Functional Architecture
+deps:
+  # PURE DOMAIN LAYER - Zero effects, pure functions only
+  domain-types:
+    allowedPatterns:
+      - readonly-properties    # Properties must be readonly
+      - branded-types         # Use branded types for domain concepts
+      - no-classes           # BANNED: Use type/interface for domain models
+    mayDependOn: []           # Completely isolated pure layer
+
+  domain-schemas:  
+    allowedPatterns:
+      - effect-schema-exports  # Must export Schema<A, I, R> types
+    mayDependOn:
+      - domain-types
+
+  # EFFECT SERVICES - Business logic with controlled effects
+  effect-services:
+    allowedPatterns:
+      - effect-return-types    # Functions must return Effect<T, E, R>
+      - effect-gen-usage      # Async operations must use Effect.gen()
+      - tagged-errors         # Errors must extend Data.TaggedError
+    bannedPatterns:
+      - promise-constructors   # BANNED: new Promise()
+      - async-functions       # BANNED: async/await syntax
+      - throw-statements      # BANNED: throw keyword
+    mayDependOn:
+      - domain-types
+      - domain-schemas
+      - effect-utils
+
+  effect-utils:
+    allowedPatterns:
+      - pure-functions        # Functions have no side effects
+      - effect-combinators    # Use Effect.map, flatMap, etc.
+    bannedPatterns:
+      - console-logging       # BANNED: console.log/warn/error
+      - mutations            # BANNED: Mutating operations
+    mayDependOn:
+      - domain-types
+      - domain-schemas
+
+  # INFRASTRUCTURE - External integrations with proper resource management
+  infrastructure-effects:
+    allowedPatterns:
+      - resource-acquisition  # Must use Effect.acquireUseRelease
+      - effect-async-wrapping # Raw promises wrapped with Effect.async()
+      - service-context      # Use Effect.Context for dependency injection
+    bannedPatterns:
+      - raw-promise-usage    # BANNED: Direct promise usage
+      - synchronous-io      # BANNED: Sync I/O operations
+    mayDependOn:
+      - domain-types
+      - domain-schemas  
+      - effect-services
+      - effect-utils
+
+  effect-validation:
+    allowedPatterns:
+      - schema-decode-usage   # Must use Schema.decodeUnknown()
+      - parse-error-effects  # Parse errors wrapped as effects
+    bannedPatterns:
+      - json-parse-usage     # BANNED: JSON.parse()
+      - manual-validation    # BANNED: Manual object validation
+    mayDependOn:
+      - domain-types
+      - domain-schemas
+      - effect-utils
+
+  effect-performance:
+    allowedPatterns:
+      - effect-metrics       # Use Effect.Metric.* for metrics
+      - effect-tracing      # Use Effect.withSpan() for tracing
+    bannedPatterns:
+      - manual-timing       # BANNED: Date.now(), performance.now()
+      - console-time        # BANNED: console.time()
+    mayDependOn:
+      - domain-types
+      - effect-services
+      - effect-utils
+
+# 🌍 COMMON EFFECT COMPONENTS - Available everywhere
+commonComponents:
+  - domain-types     # Pure domain types available to all layers
+  - effect-utils     # Shared utilities available to effect layers
+
+# 🚫 EXCLUSION PATTERNS (Effect.TS specific)
+exclude:
+  # Generated and build files
+  - "**/*.d.ts"
+  - "**/*_generated.ts" 
+  - "**/dist/**"
+  - "**/build/**"
+  - "**/coverage/**"
+  
+  # Test files (different rules for tests)
+  - "**/*.test.ts"
+  - "**/*.spec.ts"
+  - "**/test/**"
+  - "**/tests/**"
+
+  # Configuration files
+  - "**/*.config.ts"
+  - "**/*.config.js"
+
+# 🚫 EFFECT.TS ANTI-PATTERN DETECTION
+antiPatterns:
+  # Native JavaScript/TypeScript patterns that should use Effect.TS
+  promiseConstructors:
+    pattern: "new Promise"
+    message: "🚨 BANNED: new Promise(). Use Effect.async() for async operations with proper resource management"
+    replacement: "Effect.async"
+
+  asyncAwaitFunctions:
+    pattern: "async function|async \\("
+    message: "🚨 BANNED: async/await functions. Use Effect.gen() for composable async operations"  
+    replacement: "Effect.gen(function*"
+
+  throwStatements:
+    pattern: "throw new|throw [A-Za-z]"
+    message: "🚨 BANNED: throw statements. Use Effect.fail() for expected errors or Effect.die() for unexpected errors"
+    replacement: "Effect.fail"
+
+  tryCatchBlocks:
+    pattern: "try\\s*\\{[\\s\\S]*?catch"
+    message: "🚨 BANNED: try/catch blocks. Use Effect.catchAll() or Effect.orElse() for proper error handling"
+    replacement: "Effect.gen function with catchAll"
+
+  promiseMethods:
+    pattern: "\\.then\\(|\\.catch\\("
+    message: "🚨 BANNED: Promise .then()/.catch(). Use Effect.flatMap() and Effect.catchAll()"
+    replacement: "Effect.flatMap"
+
+  consoleLogging:
+    pattern: "console\\.(log|warn|error|info)"
+    message: "🚨 BANNED: console logging. Use Effect.log() for structured logging with proper levels"
+    replacement: "Effect.log"
+
+  nullChecks:
+    pattern: "== null|!= null"
+    message: "🚨 BANNED: null checks. Use Option.fromNullable() and Option.isSome() for null-safe operations"
+    replacement: "Option.fromNullable"
+
+  jsonParse:
+    pattern: "JSON\\.parse"
+    message: "🚨 BANNED: JSON.parse() without validation. Use @effect/schema Schema.decodeUnknown() for type-safe parsing"
+    replacement: "Schema.decodeUnknown"
+
+# 📋 EFFECT.TS ARCHITECTURE VALIDATION RULES
+#
+# This configuration implements Railway Oriented Programming with Effect.TS:
+#
+# FUNCTIONAL LAYERS (pure to effectful):
+# 1. PURE DOMAIN LAYER (Zero Effects)
+#    - types/         : Pure domain types and branded types
+#    - schemas/       : @effect/schema definitions (pure)
+#
+# 2. EFFECT SERVICES LAYER (Business Effects)
+#    - core/          : Business logic as composable effects
+#    - utils/         : Pure utility functions returning effects
+#
+# 3. INFRASTRUCTURE LAYER (External Effects)  
+#    - infrastructure/ : External service integrations
+#    - validation/    : Type-safe parsing with schemas
+#    - performance/   : Observability and metrics
+#
+# EFFECT.TS RULES ENFORCED:
+# ✅ All async operations use Effect.gen() instead of async/await
+# ✅ Error handling via Effect.fail()/catchAll() instead of try/catch
+# ✅ Resource management via Effect.acquireUseRelease
+# ✅ Type-safe JSON parsing via @effect/schema
+# ✅ Structured logging via Effect.log() instead of console.*
+# ✅ Null safety via Option<T> instead of null checks
+# ✅ No raw Promise usage - all wrapped with Effect.async()
+# ✅ Tagged errors extending Data.TaggedError
+# ✅ Immutable data structures throughout
+#
+# This enforces functional programming excellence with zero tolerance
+# for imperative/object-oriented anti-patterns in TypeScript.

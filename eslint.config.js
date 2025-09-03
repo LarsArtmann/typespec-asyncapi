@@ -1,5 +1,6 @@
-// ESLint v9.0+ Flat Configuration
-// TypeSpec AsyncAPI Project - Maximum TypeScript Strictness Configuration
+// ESLint v9.0+ Flat Configuration  
+// TypeSpec AsyncAPI Project - MAXIMUM EFFECT.TS ENFORCEMENT
+// 🚨 ZERO TOLERANCE for native TypeScript patterns that should use Effect.TS
 import js from "@eslint/js"
 import tseslint from "typescript-eslint"
 
@@ -24,13 +25,21 @@ export default [
 		rules: {
 			// === CRITICAL SAFETY RULES (ERRORS - BLOCK BUILDS) ===
 			"@typescript-eslint/no-explicit-any": "error",
-			"@typescript-eslint/no-unsafe-assignment": "warn",//TODO: I do not get what this does.
+			"@typescript-eslint/no-unsafe-assignment": "error", // Effect.TS requires type safety - no unsafe assignments
 			"@typescript-eslint/no-unsafe-call": "error",
 			"@typescript-eslint/no-unsafe-member-access": "error",
 			"@typescript-eslint/no-unsafe-return": "error",
 			"@typescript-eslint/no-unsafe-argument": "error",
 			"@typescript-eslint/no-floating-promises": "error",
 			"@typescript-eslint/await-thenable": "error",
+
+			// === EFFECT.TS ENFORCEMENT RULES (MAXIMUM STRICTNESS) ===
+			"no-throw-literal": "error", // Use Effect.fail() instead of throw
+			"@typescript-eslint/only-throw-error": "error", // TypeScript version - only throw Error objects
+			"@typescript-eslint/prefer-promise-reject-errors": "error", // Use Effect.fail() instead
+			"@typescript-eslint/no-misused-promises": "error", // Use Effect patterns instead of raw promises
+			"@typescript-eslint/require-await": "error", // If using async, it must await - prefer Effect.gen()
+			"@typescript-eslint/no-unnecessary-type-assertion": "error", // Effect.TS provides better type inference
 
 			// === CODE QUALITY RULES (WARNINGS - TRACK BUT DON'T BLOCK) ===
 			"@typescript-eslint/no-unused-vars": [
@@ -98,6 +107,78 @@ export default [
 
 			// === ERROR PREVENTION ===
 			"@typescript-eslint/restrict-plus-operands": "error",
+
+			// === EFFECT.TS PATTERN ENFORCEMENT ===
+			"no-console": "error", // Use Effect.log() instead of console.log
+			"@typescript-eslint/ban-types": [
+				"error",
+				{
+					types: {
+						"Promise": {
+							"message": "🚨 BANNED: Use Effect<T, E, R> instead of Promise<T>. Effect.TS provides better error handling, composability, and testability.",
+							"fixWith": "Effect<T, never, never>"
+						},
+						"{}": {
+							"message": "🚨 BANNED: {} type is too loose. Use specific record types or Effect.TS branded types.",
+							"fixWith": "Record<string, unknown>"
+						}
+					},
+					extendDefaults: true
+				}
+			],
+
+			// === CUSTOM EFFECT.TS ENFORCEMENT (FORBIDDEN PATTERNS) ===
+			"no-restricted-syntax": [
+				"error",
+				{
+					"selector": "ThrowStatement",
+					"message": "🚨 BANNED: throw statements. Use Effect.fail() or Effect.die() instead for proper error handling in Effect.TS pipelines."
+				},
+				{
+					"selector": "TryStatement", 
+					"message": "🚨 BANNED: try/catch blocks. Use Effect.gen() with proper error handling via Effect.catchAll() or Effect.orElse()."
+				},
+				{
+					"selector": "CallExpression[callee.type='MemberExpression'][callee.property.name='then']",
+					"message": "🚨 BANNED: .then() method. Use Effect.flatMap() or Effect.gen() for composable async operations."
+				},
+				{
+					"selector": "CallExpression[callee.type='MemberExpression'][callee.property.name='catch']",
+					"message": "🚨 BANNED: .catch() method. Use Effect.catchAll() or Effect.orElse() for proper error handling."
+				},
+				{
+					"selector": "NewExpression[callee.name='Promise']",
+					"message": "🚨 BANNED: new Promise(). Use Effect.async() or Effect.promise() for async operations with proper resource management."
+				},
+				{
+					"selector": "CallExpression[callee.object.name='Promise'][callee.property.name='resolve']",
+					"message": "🚨 BANNED: Promise.resolve(). Use Effect.succeed() for immediate success values."
+				},
+				{
+					"selector": "CallExpression[callee.object.name='Promise'][callee.property.name='reject']", 
+					"message": "🚨 BANNED: Promise.reject(). Use Effect.fail() for expected errors or Effect.die() for unexpected errors."
+				},
+				{
+					"selector": "CallExpression[callee.object.name='Promise'][callee.property.name='all']",
+					"message": "🚨 BANNED: Promise.all(). Use Effect.all() for concurrent execution with proper error handling."
+				},
+				{
+					"selector": "CallExpression[callee.object.name='Promise'][callee.property.name='race']",
+					"message": "🚨 BANNED: Promise.race(). Use Effect.race() for racing effects with resource cleanup."
+				},
+				{
+					"selector": "AwaitExpression > CallExpression[callee.type='MemberExpression'][callee.property.name='json']",
+					"message": "🚨 BANNED: await response.json() without validation. Use @effect/schema for type-safe JSON parsing."
+				},
+				{
+					"selector": "ConditionalExpression[test.type='BinaryExpression'][test.operator='=='][test.right.type='Literal'][test.right.raw='null']",
+					"message": "🚨 BANNED: value == null checks. Use Option.fromNullable() for null-safe operations."
+				},
+				{
+					"selector": "ConditionalExpression[test.type='BinaryExpression'][test.operator='!='][test.right.type='Literal'][test.right.raw='null']", 
+					"message": "🚨 BANNED: value != null checks. Use Option.isSome() for type-safe null checks."
+				}
+			],
 
 			// === WARN: manually approved by Lars; Don't change! ===
 			"@typescript-eslint/explicit-function-return-type": "off", //manually approved by Lars; Don't change!

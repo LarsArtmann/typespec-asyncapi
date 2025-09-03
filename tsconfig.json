@@ -66,18 +66,16 @@
     // TODO: Add comment explaining the strict configuration strategy
     // TODO: Consider grouping related strict options with explanatory comments
 
-    // TypeScript 5.9.2 advanced strictness features (Effect.TS compatible)
-    // TODO: Document the specific Effect.TS compatibility requirements
-    // TODO: Consider Effect.TS version-specific configuration
-    "noUncheckedIndexedAccess": false,
-    // DISABLED: Breaks Effect.TS type inference for arrays/objects
-    // TODO: Re-evaluate this setting with newer Effect.TS versions
-    "exactOptionalPropertyTypes": false,
-    // DISABLED: Too strict for Effect.TS optional property patterns
-    // TODO: Test compatibility with Effect.TS optional property handling
-    "noImplicitOverride": false,
-    // DISABLED: Can interfere with Effect.TS method binding
-    // TODO: Verify this is still necessary with current Effect.TS version
+    // === EFFECT.TS MAXIMUM OPTIMIZATION SETTINGS ===
+    // TypeScript 5.9.2 configured for maximum Effect.TS performance and safety
+    "noUncheckedIndexedAccess": true,
+    // ENABLED: Effect.TS encourages type-safe array/object access via Option<T>
+    // Use Option.fromNullable() for safe property access
+    "exactOptionalPropertyTypes": true, 
+    // ENABLED: Effect.TS benefits from exact optional property type checking
+    // Enforces proper Option<T> usage instead of T | undefined
+    "noImplicitOverride": true,
+    // ENABLED: Effect.TS classes should explicitly declare overrides
     "noFallthroughCasesInSwitch": true,
     // DISABLED: Effect.TS uses dynamic property access patterns
     // Keep: Prevent switch fallthrough bugs
@@ -98,17 +96,17 @@
     "noEmitOnError": false,
     // Allow emission even with errors for development
 
-    // TypeScript 5.9.2 stable strict features (Effect.TS compatible)
-    "useUnknownInCatchVariables": false,
-    // DISABLED: Effect.TS expects 'any' in catch variables for error handling
+    // === EFFECT.TS FUNCTIONAL PROGRAMMING OPTIMIZATION ===
+    "useUnknownInCatchVariables": true,
+    // ENABLED: Effect.TS doesn't use catch blocks - unknown forces proper Effect error handling
     "strictNullChecks": true,
-    // Keep: Essential for null safety (included in strict)
+    // CRITICAL: Essential for Option<T> patterns instead of null/undefined
     "strictFunctionTypes": true,
-    // Keep: Function type checking (included in strict)
+    // CRITICAL: Essential for Effect.TS function composition and higher-order effects
     "strictBindCallApply": true,
-    // Keep: Proper this binding (included in strict)
+    // CRITICAL: Essential for proper Effect.TS method binding and currying
     "strictPropertyInitialization": true,
-    // Keep: Property initialization checking (included in strict)
+    // ENABLED: Forces explicit initialization - good for Effect.TS immutable patterns
 
     // === TYPESCRIPT 5.9.2 PERFORMANCE OPTIMIZATIONS ===
     // TODO: Add performance benchmarking to measure optimization effectiveness
