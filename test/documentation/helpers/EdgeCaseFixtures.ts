@@ -12,24 +12,22 @@ import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js"
  */
 export const EdgeCaseFixtures = {
   emptyService: `
-    @service({ title: "Empty Service" })
     namespace EmptyService {
       // No operations or models
     }
   `,
   
   invalidTypeSpecSyntax: `
-    @service({ title: "Invalid Service" })
     namespace InvalidService {
       @channel("invalid-channel"
       @publish
-      op invalidOp(@body data: NonExistentModel): void;
+      op invalidOp(data: NonExistentModel): void;
     }
   `,
   
   missingDecorators: `
     namespace NoServiceDecorator {
-      op operationWithoutChannel(@body data: SimpleModel): void;
+      op operationWithoutChannel(data: SimpleModel): void;
     }
     
     model SimpleModel {
@@ -38,11 +36,10 @@ export const EdgeCaseFixtures = {
   `,
 
   circularReferences: `
-    @service({ title: "Circular References Service" })
     namespace CircularReferencesService {
       @channel("circular")
       @publish
-      op publishCircular(@body data: ModelA): void;
+      op publishCircular(data: ModelA): void;
     }
     
     model ModelA {
@@ -55,11 +52,10 @@ export const EdgeCaseFixtures = {
   `,
 
   deeplyNestedModels: `
-    @service({ title: "Deeply Nested Service" })
     namespace DeeplyNestedService {
       @channel("nested")
       @publish
-      op publishNested(@body data: Level1): void;
+      op publishNested(data: Level1): void;
     }
     
     model Level1 {
@@ -84,11 +80,10 @@ export const EdgeCaseFixtures = {
   `,
 
   largeNumberOfFields: `
-    @service({ title: "Large Model Service" })
     namespace LargeModelService {
       @channel("large")
       @publish
-      op publishLarge(@body data: LargeModel): void;
+      op publishLarge(data: LargeModel): void;
     }
     
     model LargeModel {
@@ -101,14 +96,12 @@ export const EdgeCaseFixtures = {
   `,
 
   conflictingNames: `
-    @service({ title: "Name Conflicts Service" })
     namespace NameConflictsService {
       @channel("conflict")
       @publish
-      op publishConflict(@body data: Message): void;
+      op publishConflict(data: Message): void;
     }
     
-    @message("Message")
     model Message {
       message: string;
       Message: string;
@@ -116,37 +109,24 @@ export const EdgeCaseFixtures = {
     }
   `,
 
-  // Protocol-specific edge cases
+  // Alpha-compatible protocol tests (without @protocol decorators)
   decoratorsProtocol: `
-    @service({ title: "Protocol Decorators Service" })  
     namespace ProtocolDecoratorsService {
       
       @channel("kafka-topic")
-      @protocol("kafka", {
-        topic: "user-events",
-        partitionKey: "userId", 
-        replicationFactor: 3
-      })
       @publish
-      op publishToKafka(@body event: KafkaEvent): void;
+      op publishToKafka(event: KafkaEvent): void;
       
       @channel("amqp-queue")
-      @protocol("amqp", {
-        exchange: "events.exchange",
-        routingKey: "user.created",
-        deliveryMode: 2
-      })
       @subscribe
       op subscribeFromAMQP(): AMQPEvent;
     }
     
-    @message("KafkaEvent")
     model KafkaEvent {
       userId: string;
       eventData: Record<string>;
     }
     
-    @message("AMQPEvent")
     model AMQPEvent {
       eventType: string;
       payload: Record<string>;
@@ -154,35 +134,17 @@ export const EdgeCaseFixtures = {
   `,
 
   decoratorsSecurity: `
-    @service({ title: "Security Decorators Service" })
     namespace SecurityDecoratorsService {
       
       @channel("secure-channel")
-      @security("oauth2", {
-        flows: {
-          clientCredentials: {
-            tokenUrl: "https://auth.example.com/token",
-            scopes: {
-              "read:messages": "Read messages",
-              "write:messages": "Write messages"
-            }
-          }
-        }
-      })
       @publish
-      op publishSecure(@body msg: SecureMessage): void;
+      op publishSecure(msg: SecureMessage): void;
       
       @channel("api-key-channel")
-      @security("apiKey", {
-        type: "apiKey",
-        in: "header",
-        name: "X-API-Key"
-      })
       @subscribe
       op subscribeSecure(): SecureMessage;
     }
     
-    @message("SecureMessage")
     model SecureMessage {
       content: string;
       sensitive: boolean;
@@ -190,25 +152,13 @@ export const EdgeCaseFixtures = {
   `,
 
   decoratorsServer: `
-    @service({ title: "Server Decorators Service" })
     namespace ServerDecoratorsService {
       
-      @server("production", {
-        url: "kafka://prod-cluster.example.com:9092",
-        protocol: "kafka",
-        description: "Production Kafka cluster"
-      })
-      @server("staging", {
-        url: "kafka://staging-cluster.example.com:9092", 
-        protocol: "kafka",
-        description: "Staging Kafka cluster"
-      })
       @channel("multi-server-channel")
       @publish
-      op publishMultiServer(@body msg: MultiServerMessage): void;
+      op publishMultiServer(msg: MultiServerMessage): void;
     }
     
-    @message("MultiServerMessage")
     model MultiServerMessage {
       environment: "production" | "staging";
       data: Record<string>;
@@ -224,11 +174,10 @@ export const ErrorFixtures = {
     {
       name: "Missing closing brace",
       code: `
-        @service({ title: "Broken Service" })
         namespace BrokenService {
           @channel("test")
           @publish
-          op testOp(@body data: TestModel): void;
+          op testOp(data: TestModel): void;
         
         model TestModel {
           field: string;
@@ -238,11 +187,10 @@ export const ErrorFixtures = {
     {
       name: "Invalid decorator syntax",
       code: `
-        @service({ title: "Invalid Decorator Service" })
         namespace InvalidDecoratorService {
           @channel(
           @publish
-          op testOp(@body data: TestModel): void;
+          op testOp(data: TestModel): void;
         }
         
         model TestModel {
@@ -253,11 +201,10 @@ export const ErrorFixtures = {
     {
       name: "Undefined model reference",
       code: `
-        @service({ title: "Undefined Reference Service" })
         namespace UndefinedReferenceService {
           @channel("test")
           @publish
-          op testOp(@body data: NonExistentModel): void;
+          op testOp(data: NonExistentModel): void;
         }
       `
     }
@@ -312,94 +259,41 @@ export const ErrorFixtures = {
  */
 export const ProtocolEdgeCases = {
   protocolKafka: `
-    @service({ title: "Kafka Protocol Service" })
     namespace KafkaProtocolService {
       
       @channel("user-events")
-      @protocol("kafka", {
-        topic: "user-events",
-        partitions: 12,
-        replicationFactor: 3,
-        retentionMs: 604800000,
-        cleanupPolicy: "delete"
-      })
       @publish
-      op publishUserEvent(@body event: UserEvent): void;
+      op publishUserEvent(event: UserEvent): void;
       
       @channel("order-events")
-      @protocol("kafka", {
-        topic: "order-events", 
-        partitionKey: "customerId",
-        headers: {
-          "Content-Type": "application/json",
-          "Schema-Version": "1.0"
-        }
-      })
       @subscribe
       op subscribeOrderEvents(): OrderEvent;
     }
   `,
 
   protocolAMQP: `
-    @service({ title: "AMQP Protocol Service" })
     namespace AMQPProtocolService {
       
       @channel("notifications")
-      @protocol("amqp", {
-        exchange: "notifications.topic",
-        exchangeType: "topic",
-        routingKey: "user.notification",
-        queue: "user-notifications",
-        durable: true,
-        autoDelete: false,
-        exclusive: false
-      })
       @publish
-      op publishNotification(@body notification: Notification): void;
+      op publishNotification(notification: Notification): void;
       
       @channel("dead-letter")
-      @protocol("amqp", {
-        exchange: "dlx.exchange",
-        routingKey: "failed.message",
-        ttl: 86400000,
-        maxRetries: 3
-      })
       @subscribe
       op processDeadLetter(): FailedMessage;
     }
   `,
 
   protocolWebSocket: `
-    @service({ title: "WebSocket Protocol Service" })
     namespace WebSocketProtocolService {
       
       @channel("live-updates/{userId}")
-      @protocol("ws", {
-        method: "GET",
-        query: {
-          token: "string",
-          version: "string"
-        },
-        headers: {
-          "Sec-WebSocket-Protocol": "chat"
-        }
-      })
       @subscribe
-      op subscribeLiveUpdates(@path userId: string): LiveUpdate;
+      op subscribeLiveUpdates(userId: string): LiveUpdate;
       
       @channel("chat/{roomId}")
-      @protocol("ws", {
-        bindings: {
-          query: {
-            type: "object", 
-            properties: {
-              auth: { type: "string" }
-            }
-          }
-        }
-      })
       @publish
-      op sendChatMessage(@path roomId: string, @body message: ChatMessage): void;
+      op sendChatMessage(roomId: string, message: ChatMessage): void;
     }
   `
 }

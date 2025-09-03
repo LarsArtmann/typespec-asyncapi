@@ -12,17 +12,15 @@ import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js"
  */
 export const PerformanceFixtures = {
   largeServiceDefinition: (operationCount: number, modelCount: number) => `
-    @service({ title: "Large Performance Service" })
     namespace LargePerformanceService {
       ${Array.from({ length: operationCount }, (_, i) => `
         @channel("channel-${i}")
         @publish
-        op operation${i}(@body data: Model${i % modelCount}): void;
+        op operation${i}(data: Model${i % modelCount}): void;
       `).join('\n')}
     }
     
     ${Array.from({ length: modelCount }, (_, i) => `
-      @message("Model${i}")
       model Model${i} {
         field1: string;
         field2: int32;
@@ -34,54 +32,13 @@ export const PerformanceFixtures = {
   `,
 
   complexProtocolBindings: `
-    @service({ title: "Complex Protocol Service" })
     namespace ComplexProtocolService {
       
       @channel("multi-protocol-channel")
-      @protocol("kafka", {
-        topic: "complex-topic",
-        partitions: 100,
-        replicationFactor: 5,
-        config: {
-          "retention.ms": "604800000",
-          "cleanup.policy": "compact,delete", 
-          "compression.type": "lz4",
-          "max.message.bytes": "10485760"
-        }
-      })
-      @protocol("amqp", {
-        exchange: "complex-exchange",
-        exchangeType: "topic", 
-        routingKey: "complex.routing.key",
-        queue: "complex-queue",
-        arguments: {
-          "x-message-ttl": 3600000,
-          "x-max-length": 100000,
-          "x-dead-letter-exchange": "dlx",
-          "x-dead-letter-routing-key": "failed"
-        }
-      })
-      @security("oauth2", {
-        flows: {
-          clientCredentials: {
-            tokenUrl: "https://auth.complex.example.com/oauth/token",
-            scopes: {
-              "read": "Read access",
-              "write": "Write access",
-              "admin": "Admin access"
-            }
-          },
-          authorizationCode: {
-            authorizationUrl: "https://auth.complex.example.com/oauth/authorize",
-            tokenUrl: "https://auth.complex.example.com/oauth/token"
-          }
-        }
-      })
       @publish
-      op publishComplexMessage(@body msg: ComplexMessage): void;
+      op publishComplexMessage(msg: ComplexMessage): void;
     }
     
-    @message("ComplexMessage")
     model ComplexMessage {
       metadata: ComplexMetadata;
       payload: Record<Record<string>>;
@@ -113,23 +70,21 @@ export const PerformanceFixtures = {
  */
 export const AdvancedPatternFixtures = {
   advancedEventSourcing: `
-    @service({ title: "Advanced Event Sourcing Service" })
     namespace AdvancedEventSourcingService {
       
       @channel("event-store/{aggregateId}")
       @publish
-      op appendEvent(@path aggregateId: string, @body event: DomainEvent): void;
+      op appendEvent(aggregateId: string, event: DomainEvent): void;
       
       @channel("projections/{viewName}")
       @subscribe
-      op subscribeProjection(@path viewName: string): ProjectionUpdate;
+      op subscribeProjection(viewName: string): ProjectionUpdate;
       
       @channel("snapshots/{aggregateId}")
       @publish
-      op saveSnapshot(@path aggregateId: string, @body snapshot: AggregateSnapshot): void;
+      op saveSnapshot(aggregateId: string, snapshot: AggregateSnapshot): void;
     }
     
-    @message("DomainEvent")
     model DomainEvent {
       eventId: string;
       aggregateId: string; 
@@ -151,14 +106,12 @@ export const AdvancedPatternFixtures = {
       source: string;
     }
     
-    @message("ProjectionUpdate")
     model ProjectionUpdate {
       projectionName: string;
       lastProcessedEvent: int64;
       updatedData: Record<string>;
     }
     
-    @message("AggregateSnapshot")
     model AggregateSnapshot {
       aggregateId: string;
       aggregateType: string;
@@ -169,27 +122,25 @@ export const AdvancedPatternFixtures = {
   `,
 
   advancedCQRS: `
-    @service({ title: "CQRS Service" })
     namespace CQRSService {
       
       @channel("commands/{commandType}")
       @publish
-      op sendCommand(@path commandType: string, @body command: Command): void;
+      op sendCommand(commandType: string, command: Command): void;
       
       @channel("queries/{queryType}")
       @publish  
-      op sendQuery(@path queryType: string, @body query: Query): void;
+      op sendQuery(queryType: string, query: Query): void;
       
       @channel("events/{eventType}")
       @subscribe
-      op handleEvent(@path eventType: string): DomainEvent;
+      op handleEvent(eventType: string): DomainEvent;
       
       @channel("query-results/{correlationId}")
       @subscribe
-      op receiveQueryResult(@path correlationId: string): QueryResult;
+      op receiveQueryResult(correlationId: string): QueryResult;
     }
     
-    @message("Command")
     model Command {
       commandId: string;
       commandType: string;
@@ -205,7 +156,6 @@ export const AdvancedPatternFixtures = {
       expectedVersion?: int64;
     }
     
-    @message("Query")
     model Query {
       queryId: string;
       queryType: string;
@@ -213,7 +163,6 @@ export const AdvancedPatternFixtures = {
       correlationId: string;
     }
     
-    @message("QueryResult")
     model QueryResult {
       queryId: string;
       data: Record<string>;
@@ -223,31 +172,29 @@ export const AdvancedPatternFixtures = {
   `,
 
   advancedSaga: `
-    @service({ title: "Saga Orchestration Service" })
     namespace SagaOrchestrationService {
       
       @channel("saga/{sagaId}/start")
       @publish
-      op startSaga(@path sagaId: string, @body saga: SagaDefinition): void;
+      op startSaga(sagaId: string, saga: SagaDefinition): void;
       
       @channel("saga/{sagaId}/step/{stepId}")
       @publish
-      op executeStep(@path sagaId: string, @path stepId: string, @body step: SagaStep): void;
+      op executeStep(sagaId: string, stepId: string, step: SagaStep): void;
       
       @channel("saga/{sagaId}/compensate/{stepId}")
       @publish
-      op compensateStep(@path sagaId: string, @path stepId: string, @body compensation: Compensation): void;
+      op compensateStep(sagaId: string, stepId: string, compensation: Compensation): void;
       
       @channel("saga/{sagaId}/complete")
       @subscribe
-      op sagaCompleted(@path sagaId: string): SagaCompleted;
+      op sagaCompleted(sagaId: string): SagaCompleted;
       
       @channel("saga/{sagaId}/failed")
       @subscribe  
-      op sagaFailed(@path sagaId: string): SagaFailed;
+      op sagaFailed(sagaId: string): SagaFailed;
     }
     
-    @message("SagaDefinition")
     model SagaDefinition {
       sagaId: string;
       sagaType: string;
@@ -270,21 +217,18 @@ export const AdvancedPatternFixtures = {
       maxBackoffMs: int64;
     }
     
-    @message("Compensation")
     model Compensation {
       stepId: string;
       reason: string;
       compensationData: Record<string>;
     }
     
-    @message("SagaCompleted")
     model SagaCompleted {
       sagaId: string;
       completedAt: utcDateTime;
       finalState: Record<string>;
     }
     
-    @message("SagaFailed")
     model SagaFailed {
       sagaId: string;
       failedAt: utcDateTime;
@@ -352,37 +296,21 @@ export const RealWorldExamples = {
     
     // Order Creation Flow
     @channel("orders/created")
-    @protocol("kafka", {
-      topic: "orders.created",
-      partitionKey: "customerId"
-    })
     @publish
     op publishOrderCreated(event: OrderCreatedEvent): void;
     
     // Inventory Updates
     @channel("inventory/reserved")
-    @protocol("kafka", {
-      topic: "inventory.reserved",
-      partitionKey: "warehouseId"
-    })
     @subscribe
     op handleInventoryReserved(): InventoryReservedEvent;
     
     // Payment Processing
     @channel("payments/processed") 
-    @protocol("kafka", {
-      topic: "payments.processed",
-      partitionKey: "orderId"
-    })
     @subscribe
     op handlePaymentProcessed(): PaymentProcessedEvent;
     
     // Shipping Updates
     @channel("orders/{orderId}/shipping")
-    @protocol("amqp", {
-      exchange: "shipping.exchange",
-      routingKey: "order.shipped"
-    })
     @publish
     op publishOrderShipped(orderId: string, event: OrderShippedEvent): void;
   `,
@@ -418,42 +346,21 @@ export const RealWorldExamples = {
     
     // Device Telemetry
     @channel("devices/{deviceId}/telemetry")
-    @protocol("mqtt", {
-      qos: 1,
-      retain: false,
-      topicTemplate: "devices/{deviceId}/telemetry"
-    })
     @publish
     op publishTelemetry(deviceId: string, telemetry: TelemetryData): void;
     
     // Device Commands
     @channel("devices/{deviceId}/commands")
-    @protocol("mqtt", {
-      qos: 2,
-      retain: true
-    })
     @subscribe
     op receiveDeviceCommand(deviceId: string): DeviceCommand;
     
     // Device Status Updates
     @channel("devices/{deviceId}/status")
-    @protocol("mqtt", {
-      qos: 1,
-      retain: true,
-      lastWill: {
-        topic: "devices/{deviceId}/status",
-        message: '{"status": "offline", "timestamp": "{{timestamp}}"}'
-      }
-    })
     @publish
     op publishDeviceStatus(deviceId: string, status: DeviceStatus): void;
     
     // Aggregated Analytics
     @channel("analytics/device-metrics")
-    @protocol("kafka", {
-      topic: "device.metrics.aggregated",
-      partitionKey: "deviceType"
-    })
     @subscribe
     op handleAggregatedMetrics(): AggregatedDeviceMetrics;
   `,
@@ -487,35 +394,18 @@ export const RealWorldExamples = {
     
     // Market Data Feed
     @channel("market-data/{symbol}/quotes")
-    @protocol("ws", {
-      method: "GET",
-      query: {
-        symbols: "string",
-        depth: "number"
-      }
-    })
     @subscribe
     op subscribeMarketData(symbol: string): MarketDataUpdate;
     
     // Order Management
     @channel("orders/new")
-    @protocol("kafka", {
-        topic: "orders.new",
-        partitionKey: "accountId",
-        acks: "all",
-        retries: 0
-      })
-      @publish
-      op submitOrder(order: NewOrder): void;
+    @publish
+    op submitOrder(order: NewOrder): void;
       
-      // Trade Executions
-      @channel("trades/executed")
-      @protocol("kafka", {
-        topic: "trades.executed",
-        partitionKey: "symbol"
-      })
-      @subscribe
-      op handleTradeExecution(): TradeExecution;
+    // Trade Executions
+    @channel("trades/executed")
+    @subscribe
+    op handleTradeExecution(): TradeExecution;
   `
 }
 

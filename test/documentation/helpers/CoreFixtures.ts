@@ -4,7 +4,7 @@
  * Essential TypeSpec code snippets and expected AsyncAPI outputs for core functionality.
  * Split from massive 1822-line test-fixtures.ts for maintainability.
  * 
- * ALPHA VERSION - Uses only supported decorators: @channel, @publish, @subscribe, @message
+ * ALPHA VERSION - Uses only supported decorators: @channel, @publish, @subscribe
  */
 
 import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js"
