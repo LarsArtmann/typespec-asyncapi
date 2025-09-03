@@ -71,7 +71,7 @@ describe("Documentation: Core Concepts Mapping", () => {
         expect(asyncapi.operations).toBeDefined()
         expect(asyncapi.components).toBeDefined()
         expect(asyncapi.components.schemas).toBeDefined()
-        expect(asyncapi.components.messages).toBeDefined()
+        expect(asyncapi.components.schemas).toBeDefined()
         expect(asyncapi.components.securitySchemes).toBeDefined()
       })
 
@@ -234,9 +234,9 @@ describe("Documentation: Core Concepts Mapping", () => {
         })
 
         // Assert
-        const messages = result.asyncapi!.components!.messages!
-        expect(messages["OrderStatusEvent"]).toBeDefined()
-        expect(messages["OrderStatusEvent"].payload).toBeDefined()
+        const schemas = result.asyncapi!.components!.schemas!
+        expect(schemas["OrderStatusEvent"]).toBeDefined()
+        expect(schemas["OrderStatusEvent"].type).toBe("object")
       })
 
       it("THEN should maintain type structure in schema mapping", async () => {
@@ -247,13 +247,13 @@ describe("Documentation: Core Concepts Mapping", () => {
         })
 
         // Assert
-        const messages = result.asyncapi!.components!.messages!
-        const orderStatusMessage = messages["OrderStatusEvent"]
+        const schemas = result.asyncapi!.components!.schemas!
+        const orderStatusSchema = schemas["OrderStatusEvent"]
         
-        expect(orderStatusMessage.payload.type).toBe("object")
-        expect(orderStatusMessage.payload.properties).toBeDefined()
-        expect(orderStatusMessage.payload.properties!.orderId).toEqual({ type: "string" })
-        expect(orderStatusMessage.payload.properties!.timestamp).toEqual({ 
+        expect(orderStatusSchema.type).toBe("object")
+        expect(orderStatusSchema.properties).toBeDefined()
+        expect(orderStatusSchema.properties!.orderId).toEqual({ type: "string" })
+        expect(orderStatusSchema.properties!.timestamp).toEqual({ 
           type: "string", 
           format: "date-time" 
         })
@@ -359,7 +359,7 @@ describe("Documentation: Core Concepts Mapping", () => {
                 }
                 
                 // Must have component structure
-                if (!asyncapi.components || !asyncapi.components.schemas || !asyncapi.components.messages) {
+                if (!asyncapi.components || !asyncapi.components.schemas) {
                   errors.push("Must have complete components structure")
                 }
                 
@@ -412,9 +412,9 @@ describe("Documentation: Core Concepts Mapping", () => {
         expect(asyncapi.operations!.orderStatusUpdated.action).toBe("receive")
         
         // Model structures preserved with proper types
-        const orderStatusMessage = asyncapi.components!.messages!.OrderStatusEvent
-        expect(orderStatusMessage.payload.properties!.status).toEqual({ type: "string" })
-        expect(orderStatusMessage.payload.properties!.timestamp).toEqual({ 
+        const orderStatusSchema = asyncapi.components!.schemas!.OrderStatusEvent
+        expect(orderStatusSchema.properties!.status).toEqual({ type: "string" })
+        expect(orderStatusSchema.properties!.timestamp).toEqual({ 
           type: "string", 
           format: "date-time" 
         })

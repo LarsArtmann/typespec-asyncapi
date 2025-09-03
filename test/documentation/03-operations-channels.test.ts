@@ -83,9 +83,9 @@ describe("Documentation: Operations and Channels Mapping", () => {
           emitAsyncAPI: true
         })
 
-        const messages = result.asyncapi!.components!.messages!
-        expect(messages.OrderValidationRequest.payload.properties!.correlationId).toBeDefined()
-        expect(messages.OrderValidationResponse.payload.properties!.correlationId).toBeDefined()
+        const schemas = result.asyncapi!.components!.schemas!
+        expect(schemas.OrderValidationRequest.properties!.correlationId).toBeDefined()
+        expect(schemas.OrderValidationResponse.properties!.correlationId).toBeDefined()
       })
     })
   })
