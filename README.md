@@ -156,7 +156,7 @@ op subscribeToUserCreated(): UserCreatedPayload;
 # Compile TypeSpec to AsyncAPI
 npx tsp compile example.tsp --emit @lars-artmann/typespec-asyncapi
 
-# Output will be generated in tsp-test/@lars-artmann/typespec-asyncapi/AsyncAPI.yaml
+# Output will be generated in tsp-output/@lars-artmann/typespec-asyncapi/AsyncAPI.yaml
 ```
 
 Generates a complete AsyncAPI 3.0.0 specification (actual Alpha v0.0.1 output):
@@ -276,7 +276,7 @@ This comprehensive example shows **ALL working decorators** with real-world patt
 
 ```typespec
 // 🔥 Production-ready example with ALL protocols and decorators
-import "@larsartmann/typespec-asyncapi";
+import "@lars-artmann/typespec-asyncapi";
 using TypeSpec.AsyncAPI;
 
 namespace YourCompanyAPI;
@@ -334,7 +334,7 @@ op publishDeviceStatus(): DeviceStatusMessage;
 
 1. **Copy the complete example:**
    ```bash
-   curl -o my-api.tsp https://raw.githubusercontent.com/microsoft/typespec/main/packages/asyncapi/examples/complete-example.tsp
+   curl -o my-api.tsp https://raw.githubusercontent.com/LarsArtmann/typespec-asyncapi/main/examples/complete-example.tsp
    ```
 
 2. **Customize for your domain:**
@@ -344,12 +344,12 @@ op publishDeviceStatus(): DeviceStatusMessage;
 
 3. **Generate production AsyncAPI:**
    ```bash
-   npx tsp compile my-api.tsp --emit @larsartmann/typespec-asyncapi
+   npx tsp compile my-api.tsp --emit @lars-artmann/typespec-asyncapi
    ```
 
 **🎉 Result:** Professional AsyncAPI 3.0 specification with channels, operations, security schemes, and protocol bindings!
 
-**📖 See the generated output:** [examples/generated/AsyncAPI.yaml](examples/generated/@larsartmann/typespec-asyncapi/AsyncAPI.yaml)
+**📖 See the generated output:** [examples/generated/AsyncAPI.yaml](examples/generated/@lars-artmann/typespec-asyncapi/AsyncAPI.yaml)
 
 ## 📚 **Features**
 
