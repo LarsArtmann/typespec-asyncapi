@@ -30,10 +30,10 @@ describe("Documentation: Advanced Patterns Mapping", () => {
         expect(channels["projections/{viewName}"]).toBeDefined()
         expect(channels["snapshots/{aggregateId}"]).toBeDefined()
 
-        const messages = result.asyncapi!.components!.messages!
-        expect(messages.DomainEvent.payload.properties!.aggregateId).toBeDefined()
-        expect(messages.DomainEvent.payload.properties!.aggregateVersion).toBeDefined()
-        expect(messages.DomainEvent.payload.properties!.eventType).toBeDefined()
+        const messages = result.asyncapi!.components!.schemas!
+        expect(messages.DomainEvent.properties!.aggregateId).toBeDefined()
+        expect(messages.DomainEvent.properties!.aggregateVersion).toBeDefined()
+        expect(messages.DomainEvent.properties!.eventType).toBeDefined()
       })
     })
 
@@ -44,10 +44,10 @@ describe("Documentation: Advanced Patterns Mapping", () => {
           emitAsyncAPI: true
         })
 
-        const projectionMessage = result.asyncapi!.components!.messages!.ProjectionUpdate
-        expect(projectionMessage.payload.properties!.projectionName).toBeDefined()
-        expect(projectionMessage.payload.properties!.lastProcessedEvent).toBeDefined()
-        expect(projectionMessage.payload.properties!.updatedData).toBeDefined()
+        const projectionMessage = result.asyncapi!.components!.schemas!.ProjectionUpdate
+        expect(projectionMessage.properties!.projectionName).toBeDefined()
+        expect(projectionMessage.properties!.lastProcessedEvent).toBeDefined()
+        expect(projectionMessage.properties!.updatedData).toBeDefined()
       })
     })
 
@@ -58,10 +58,10 @@ describe("Documentation: Advanced Patterns Mapping", () => {
           emitAsyncAPI: true
         })
 
-        const snapshotMessage = result.asyncapi!.components!.messages!.AggregateSnapshot
-        expect(snapshotMessage.payload.properties!.aggregateId).toBeDefined()
-        expect(snapshotMessage.payload.properties!.version).toBeDefined()
-        expect(snapshotMessage.payload.properties!.snapshotData).toBeDefined()
+        const snapshotMessage = result.asyncapi!.components!.schemas!.AggregateSnapshot
+        expect(snapshotMessage.properties!.aggregateId).toBeDefined()
+        expect(snapshotMessage.properties!.version).toBeDefined()
+        expect(snapshotMessage.properties!.snapshotData).toBeDefined()
       })
     })
   })
@@ -89,8 +89,8 @@ describe("Documentation: Advanced Patterns Mapping", () => {
           emitAsyncAPI: true
         })
 
-        const commandMessage = result.asyncapi!.components!.messages!.Command
-        const metadata = commandMessage.payload.properties!.metadata
+        const commandMessage = result.asyncapi!.components!.schemas!.Command
+        const metadata = commandMessage.properties!.metadata
         expect(metadata).toBeDefined()
         
         const metadataSchema = result.asyncapi!.components!.schemas!.CommandMetadata
@@ -114,7 +114,7 @@ describe("Documentation: Advanced Patterns Mapping", () => {
         expect(channels["saga/{sagaId}/step/{stepId}"]).toBeDefined()
         expect(channels["saga/{sagaId}/compensate/{stepId}"]).toBeDefined()
 
-        const sagaDefinition = result.asyncapi!.components!.messages!.SagaDefinition
+        const sagaDefinition = result.asyncapi!.components!.schemas!.SagaDefinition
         expect(sagaDefinition.payload.properties!.steps).toBeDefined()
         expect(sagaDefinition.payload.properties!.timeoutMs).toBeDefined()
       })
@@ -131,7 +131,7 @@ describe("Documentation: Advanced Patterns Mapping", () => {
         expect(channels["saga/{sagaId}/complete"]).toBeDefined()
         expect(channels["saga/{sagaId}/failed"]).toBeDefined()
 
-        const messages = result.asyncapi!.components!.messages!
+        const messages = result.asyncapi!.components!.schemas!
         expect(messages.SagaCompleted).toBeDefined()
         expect(messages.SagaFailed).toBeDefined()
       })
@@ -144,7 +144,7 @@ describe("Documentation: Advanced Patterns Mapping", () => {
           emitAsyncAPI: true
         })
 
-        const compensation = result.asyncapi!.components!.messages!.Compensation
+        const compensation = result.asyncapi!.components!.schemas!.Compensation
         expect(compensation.payload.properties!.stepId).toBeDefined()
         expect(compensation.payload.properties!.reason).toBeDefined()
         expect(compensation.payload.properties!.compensationData).toBeDefined()
@@ -257,10 +257,10 @@ describe("Documentation: Advanced Patterns Mapping", () => {
           emitAsyncAPI: true
         })
 
-        const message = result.asyncapi!.components!.messages!.CircuitBreakerEvent
-        expect(message.payload.properties!.circuitName).toBeDefined()
-        expect(message.payload.properties!.previousState).toBeDefined()
-        expect(message.payload.properties!.currentState).toBeDefined()
+        const message = result.asyncapi!.components!.schemas!.CircuitBreakerEvent
+        expect(message.properties!.circuitName).toBeDefined()
+        expect(message.properties!.previousState).toBeDefined()
+        expect(message.properties!.currentState).toBeDefined()
 
         const stateEnum = result.asyncapi!.components!.schemas!.CircuitState
         expect(stateEnum.enum).toEqual(["closed", "open", "half-open"])

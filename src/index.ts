@@ -30,22 +30,31 @@
  */
 
 // Core TypeScript imports - TypeSpec compiler integration
-// TODO: CRITICAL - Group imports by category (TypeSpec, Effect, local) with separating comments for better maintainability
-// TODO: CRITICAL - Add explicit return type annotations to all imported types for better IDE support and type safety
-// TODO: CRITICAL - Consider using import maps or path aliases to simplify complex import paths
-// TODO: CRITICAL - Add validation for required TypeSpec compiler version compatibility
+// TODO: CRITICAL TYPE_SAFETY - Group imports by category (TypeSpec Core, Effect Framework, Internal Types) with separating comments
+// TODO: TYPE_SAFETY - Add explicit return type annotations to all imported types for better IDE support and type safety
+// TODO: ARCHITECTURE - Consider using import maps or path aliases to simplify complex import paths and improve maintainability
+// TODO: VALIDATION - Add validation for required TypeSpec compiler version compatibility at runtime
+// TODO: TYPE_SAFETY - Import specific types: import type { EmitContext, Program, TypeSpecLibrary } from "@typespec/compiler"
 import type { EmitContext } from "@typespec/compiler";
 
 import { setTypeSpecNamespace } from "@typespec/compiler";
-// TODO: CRITICAL - Import only specific Effect functions needed instead of entire Effect namespace for better tree shaking
-// TODO: CRITICAL - Effect is imported but only Effect.log is used - consider importing { log } from "effect/Effect" specifically
+
+// Effect.TS Framework Imports - Functional programming and error handling
+// TODO: CRITICAL TYPE_SAFETY - Import only specific Effect functions needed instead of entire Effect namespace for better tree shaking
+// TODO: TYPE_SAFETY - Effect is imported but only Effect.log/runPromise are used - import { Effect, log, runPromise } specifically
+// TODO: PERFORMANCE - Selective imports reduce bundle size and improve compilation performance
 import { Effect } from "effect";
+
+// Internal Type Definitions
+// TODO: TYPE_SAFETY - Consider creating a types barrel export from ./types/index.js for better organization
 import type { AsyncAPIEmitterOptions } from "./options.js";
 
 // AsyncAPI Decorator Imports - Core decorator functions for TypeSpec annotations
-// TODO: CRITICAL - Consider using a barrel export from decorators/index.ts to simplify imports and reduce coupling
-// TODO: CRITICAL - 7 individual decorator imports create high maintenance overhead - use barrel export pattern
-// TODO: CRITICAL - Decorator import order should match registration order for consistency
+// TODO: CRITICAL ARCHITECTURE - Consider using a barrel export from decorators/index.ts to simplify imports and reduce coupling
+// TODO: CRITICAL MAINTENANCE - 11 individual decorator imports create high maintenance overhead - use barrel export pattern
+// TODO: TYPE_SAFETY - Decorator import order should match registration order for consistency and validation
+// TODO: TYPE_SAFETY - Add type annotations for all imported decorator functions to ensure proper signatures
+// TODO: VALIDATION - Add runtime validation that all decorator functions are properly exported and functional
 /** @channel decorator - Defines AsyncAPI channel configuration for message routing */
 import { $channel } from "./decorators/channel.js";
 /** @publish decorator - Marks operations as message publishing (send) operations */
@@ -78,11 +87,14 @@ export { $lib } from "./lib.js";
 export type { AsyncAPIEmitterOptions } from "./options.js";
 
 // Register decorators with TypeSpec.AsyncAPI namespace
-// TODO: CRITICAL - Extract namespace string to a constant to avoid duplication and typos across codebase
-// TODO: CRITICAL - Add error handling for setTypeSpecNamespace failure - what happens if namespace registration fails?
-// TODO: CRITICAL - Consider organizing decorators by category (core, message, server, security) for better maintainability
-// TODO: CRITICAL - Magic string "TypeSpec.AsyncAPI" should be exported as NAMESPACE_NAME constant
-// TODO: CRITICAL - No validation that decorator functions are valid before namespace registration
+// TODO: CRITICAL TYPE_SAFETY - Extract namespace string to a constant to avoid duplication and typos across codebase
+// TODO: CRITICAL ERROR_HANDLING - Add error handling for setTypeSpecNamespace failure - what happens if namespace registration fails?
+// TODO: ARCHITECTURE - Consider organizing decorators by category (core, message, server, security) for better maintainability
+// TODO: TYPE_SAFETY - Magic string "TypeSpec.AsyncAPI" should be exported as NAMESPACE_NAME constant from constants
+// TODO: VALIDATION - Add runtime validation that decorator functions are valid before namespace registration
+// TODO: TYPE_SAFETY - Add type assertion to ensure all decorator functions match expected TypeSpec decorator signature
+// TODO: TESTING - Add unit test to verify all decorators are properly registered in namespace
+// TODO: ERROR_HANDLING - Wrap namespace registration in try-catch with meaningful error messages
 setTypeSpecNamespace("TypeSpec.AsyncAPI", $channel, $publish, $subscribe, $server, $asyncapi, $message, $header, $protocol, $security, $tags, $correlationId, $bindings);
 
 // Export decorator functions (for TypeSpec compiler) - THIS IS A MUST!

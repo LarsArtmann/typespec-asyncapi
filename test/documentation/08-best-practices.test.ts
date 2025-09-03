@@ -30,7 +30,7 @@ describe("Documentation: Best Practices Validation", () => {
         expect(channels["order-fulfillment-requests"]).toBeDefined() // descriptive
         expect(channels["inventory-level-changes"]).toBeDefined() // clear purpose
 
-        const messages = result.asyncapi!.components!.messages!
+        const messages = result.asyncapi!.components!.schemas!
         expect(messages.UserProfileUpdatedEvent).toBeDefined() // Event suffix
         expect(messages.OrderFulfillmentRequestedEvent).toBeDefined() // Descriptive
       })
@@ -43,8 +43,8 @@ describe("Documentation: Best Practices Validation", () => {
           emitAsyncAPI: true
         })
 
-        const userEvent = result.asyncapi!.components!.messages!.UserProfileUpdatedEvent
-        const props = userEvent.payload.properties!
+        const userEvent = result.asyncapi!.components!.schemas!.UserProfileUpdatedEvent
+        const props = userEvent.properties!
 
         expect(props.userId).toBeDefined()
         expect(props.updatedAt).toBeDefined()
@@ -109,8 +109,8 @@ describe("Documentation: Best Practices Validation", () => {
           emitAsyncAPI: true
         })
 
-        const errorMessage = result.asyncapi!.components!.messages!.ProcessingError
-        const errorProps = errorMessage.payload.properties!
+        const errorMessage = result.asyncapi!.components!.schemas!.ProcessingError
+        const errorProps = errorMessage.properties!
 
         expect(errorProps.errorId).toBeDefined()
         expect(errorProps.errorCode).toBeDefined()
@@ -169,7 +169,7 @@ describe("Documentation: Best Practices Validation", () => {
         expect(channel.bindings?.kafka?.batchSize).toBe(1000)
         expect(channel.bindings?.kafka?.compressionType).toBe("lz4")
 
-        const message = result.asyncapi!.components!.messages!.OptimizedEvent
+        const message = result.asyncapi!.components!.schemas!.OptimizedEvent
         const compactData = result.asyncapi!.components!.schemas!.CompactData
         expect(compactData.properties!.type).toEqual({ type: "integer", format: "int8" })
         expect(compactData.properties!.value).toEqual({ type: "number", format: "float" })
@@ -292,7 +292,7 @@ describe("Documentation: Best Practices Validation", () => {
         const channel = result.asyncapi!.channels!["user-profile-changes"]
         expect(channel.description).toBeDefined()
         
-        const message = result.asyncapi!.components!.messages!.UserProfileChangeEvent
+        const message = result.asyncapi!.components!.schemas!.UserProfileChangeEvent
         expect(message.description).toBeDefined()
         expect(message.examples).toBeDefined()
       })
