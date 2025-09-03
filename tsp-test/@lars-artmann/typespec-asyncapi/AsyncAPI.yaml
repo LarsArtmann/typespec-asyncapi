@@ -2,30 +2,95 @@ asyncapi: 3.0.0
 info:
   title: AsyncAPI Specification
   version: 1.0.0
-  description: Generated from TypeSpec with 1 operations, 0 messages, 0 security configs
+  description: Generated from TypeSpec with 2 operations, 0 messages, 0 security configs
 servers: {}
 channels:
-  channel_testMessage:
-    address: test.simple
-    description: Channel for testMessage
+  channel_publishUserCreated:
+    address: user.created
+    description: Channel for publishUserCreated
     messages:
-      testMessageMessage:
-        $ref: "#/components/messages/testMessageMessage"
+      publishUserCreatedMessage:
+        $ref: "#/components/messages/publishUserCreatedMessage"
+  channel_subscribeToUserCreated:
+    address: user.created
+    description: Channel for subscribeToUserCreated
+    messages:
+      subscribeToUserCreatedMessage:
+        $ref: "#/components/messages/subscribeToUserCreatedMessage"
 operations:
-  testMessage:
+  publishUserCreated:
     action: send
     channel:
-      $ref: "#/channels/channel_testMessage"
-    summary: Operation testMessage
+      $ref: "#/channels/channel_publishUserCreated"
+    summary: Operation publishUserCreated
+    description: TypeSpec operation with 1 parameters
+  subscribeToUserCreated:
+    action: receive
+    channel:
+      $ref: "#/channels/channel_subscribeToUserCreated"
+    summary: Operation subscribeToUserCreated
     description: TypeSpec operation with 0 parameters
 components:
-  schemas: {}
+  schemas:
+    UserCreatedPayload:
+      type: object
+      description: Schema for UserCreatedPayload
+      properties:
+        userId:
+          description: Property userId
+          type: string
+        email:
+          description: Property email
+          type: string
+        firstName:
+          description: Property firstName
+          type: string
+        lastName:
+          description: Property lastName
+          type: string
+        createdAt:
+          description: Property createdAt
+          type: string
+          format: date-time
+        accountType:
+          description: Property accountType
+          type: string
+          enum:
+            - free
+            - premium
+            - enterprise
+        metadata:
+          description: Property metadata
+          type: object
+          properties:
+            source:
+              description: Property source
+              type: string
+            campaign:
+              description: Property campaign
+              type: string
+          required:
+            - source
+      required:
+        - userId
+        - email
+        - firstName
+        - lastName
+        - createdAt
+        - accountType
   messages:
-    testMessageMessage:
-      name: testMessageMessage
-      title: testMessage Message
-      summary: Message for testMessage operation
+    publishUserCreatedMessage:
+      name: publishUserCreatedMessage
+      title: publishUserCreated Message
+      summary: Message for publishUserCreated operation
       contentType: application/json
       payload:
-        type: string
+        type: object
+    subscribeToUserCreatedMessage:
+      name: subscribeToUserCreatedMessage
+      title: subscribeToUserCreated Message
+      summary: Message for subscribeToUserCreated operation
+      contentType: application/json
+      payload:
+        $ref: "#/components/schemas/UserCreatedPayload"
   securitySchemes: {}
