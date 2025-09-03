@@ -97,20 +97,23 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 		}
 
 		return {
-			program: "AsyncAPI",
-			sourceFile: sourceFile,
+			scope: sourceFile.globalScope,
 		}
 	}
 
+	// Add namespace method to handle global namespace emission
+	override namespace(namespace: any) {
+		Effect.log(`🔍 namespace() called for: ${namespace.name}`)
+		return "namespace emitted"
+	}
+
 	override sourceFile(sourceFile: SourceFile<string>): EmittedSourceFile {
-		Effect.log(`<� Micro-kernel: Generating file content for ${sourceFile.path}`)
+		Effect.log(`🔍 Micro-kernel: Generating file content for ${sourceFile.path}`)
 
 		const options = this.emitter.getOptions()
 		const fileType: "yaml" | "json" = options["file-type"] || "yaml"
 
 		const content = this.documentGenerator.serializeDocument(this.asyncApiDoc, fileType)
-
-		Effect.log(`=� Generated ${content.length} bytes of ${fileType} content`)
 
 		return {
 			path: sourceFile.path,
