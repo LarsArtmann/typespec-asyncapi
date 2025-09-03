@@ -19,9 +19,9 @@ import {
 	DEFAULT_SERIALIZATION_FORMAT,
 	SERIALIZATION_FORMAT_OPTION_JSON,
 	SERIALIZATION_FORMAT_OPTION_YAML,
-	type SerializationFormatOptions,
+	type SerializationFormatOption,
 	type SerializationOptions,
-} from "./serialization-format-options.js"
+} from "./serialization-format-option.js"
 
 export type DocumentStats = {
 	channels: number
@@ -40,7 +40,7 @@ export class DocumentGenerator {
 	/**
 	 * Serialize AsyncAPI document to string format
 	 */
-	serializeDocument(document: AsyncAPIObject, format: SerializationFormatOptions = DEFAULT_SERIALIZATION_FORMAT): string {
+	serializeDocument(document: AsyncAPIObject, format: SerializationFormatOption = DEFAULT_SERIALIZATION_FORMAT): string {
 		Effect.log(`📄 DocumentGenerator: Serializing to ${format.toUpperCase()}`)
 
 		const options: SerializationOptions = {
@@ -250,7 +250,7 @@ export class DocumentGenerator {
 	/**
 	 * Validate serialized content (basic checks)
 	 */
-	validateSerializedContent(content: string, format: SerializationFormatOptions): boolean {
+	validateSerializedContent(content: string, format: SerializationFormatOption): boolean {
 		Effect.log(`🔍 Validating serialized ${format} content...`)
 
 		if (!content || content.trim().length === 0) {

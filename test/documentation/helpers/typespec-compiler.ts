@@ -26,7 +26,7 @@ import type {Tester} from "@typespec/compiler/testing"
 import type {Model, Namespace, Operation, Program, Type} from "@typespec/compiler"
 import {resolvePath} from "@typespec/compiler"
 import type {AsyncAPIObject} from "@asyncapi/parser/esm/spec-types/v3.js"
-import {SERIALIZATION_FORMAT_OPTION_JSON} from "../../../src/core/serialization-format-options.js"
+import {SERIALIZATION_FORMAT_OPTION_JSON} from "../../../src/core/serialization-format-option.js"
 
 /**
  * Configuration for TypeSpec compilation in tests

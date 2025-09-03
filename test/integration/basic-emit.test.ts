@@ -4,7 +4,7 @@ import {Effect} from "effect"
 import {
 	DEFAULT_SERIALIZATION_FORMAT,
 	SERIALIZATION_FORMAT_OPTION_JSON,
-} from "../../src/core/serialization-format-options.js"
+} from "../../src/core/serialization-format-option.js"
 
 describe("AsyncAPI Emitter Integration", () => {
 	it("should compile basic-events example and generate AsyncAPI", async () => {

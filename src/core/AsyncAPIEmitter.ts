@@ -27,7 +27,7 @@ import {DocumentGenerator} from "./DocumentGenerator.js"
 import {DocumentBuilder} from "./DocumentBuilder.js"
 import {PerformanceMonitor} from "./PerformanceMonitor.js"
 import {PluginRegistry} from "./PluginRegistry.js"
-import {DEFAULT_SERIALIZATION_FORMAT} from "./serialization-format-options.js"
+import {DEFAULT_SERIALIZATION_FORMAT} from "./serialization-format-option.js"
 
 /**
  * Micro-kernel AsyncAPI emitter with plugin architecture

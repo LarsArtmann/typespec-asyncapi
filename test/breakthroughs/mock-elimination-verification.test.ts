@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect } from "bun:test"
-import { compileAsyncAPISpec } from "./utils/test-helpers"
+import { compileAsyncAPISpec } from "../utils/test-helpers"
 
 describe("🚨 Mock Infrastructure Elimination", () => {
   it("should use REAL TypeSpec Program instead of mock objects", async () => {

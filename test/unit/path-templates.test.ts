@@ -12,7 +12,7 @@ import {
 	resolvePathTemplateWithValidation,
 	SUPPORTED_TEMPLATE_VARIABLES,
 	validatePathTemplate,
-} from "./path-templates.js"
+} from "../../src/path-templates.js"
 
 
 //TODO: this file is getting to big split it up

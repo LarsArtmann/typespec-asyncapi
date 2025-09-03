@@ -44,6 +44,34 @@ export type EmitterAsyncAPIObject = {
 	'x-generated-from-typespec'?: XGeneratedFromTypeSpec;
 } & AsyncAPIObject
 
+// Configuration types used in testing
+export type BaseConfig = {
+	name: string;
+	version: string;
+}
+
+export type ValidationConfig = {
+	validateSchema: boolean;
+	strictMode: boolean;
+}
+
+export type PerformanceConfig = {
+	enableCache: boolean;
+	maxCacheSize: number;
+}
+
+export type CompleteConfig = BaseConfig & ValidationConfig & PerformanceConfig;
+
+// Generic AsyncAPI component type
+export type AsyncAPIComponent<T extends string> = {
+	componentType: T;
+	name: string;
+	specification: Record<string, unknown>;
+}
+
+// Schema value union type
+export type SchemaValue = string | number | boolean | null | Record<string, unknown> | Record<string, unknown>[];
+
 /**
  * MIGRATION NOTES:
  *

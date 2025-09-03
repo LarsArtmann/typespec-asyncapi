@@ -8,7 +8,7 @@ import {asyncAPIEmitterOptionsEffectSchema} from "./schemas.js"
 import {validateAsyncAPIEmitterOptions} from "./validation.js"
 import type {AsyncAPIEmitterOptions} from "./types.js"
 import {ASYNCAPI_VERSION} from "../constants/asyncapi-constants.js"
-import {SERIALIZATION_FORMAT_OPTION_YAML, SERIALIZATION_FORMAT_OPTIONS} from "../core/serialization-format-options.js"
+import {SERIALIZATION_FORMAT_OPTION_YAML, SERIALIZATION_FORMAT_OPTIONS} from "../core/serialization-format-option.js"
 
 /**
  * JSON Schema representation for TypeSpec compatibility

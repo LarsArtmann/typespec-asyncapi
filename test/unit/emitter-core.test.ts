@@ -13,7 +13,7 @@ import {
 import {
 	SERIALIZATION_FORMAT_OPTION_JSON,
 	SERIALIZATION_FORMAT_OPTION_YAML,
-} from "../../src/core/serialization-format-options.js"
+} from "../../src/core/serialization-format-option.js"
 
 describe("AsyncAPI Emitter Core", () => {
 	describe("Basic Compilation", () => {

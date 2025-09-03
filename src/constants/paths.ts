@@ -24,7 +24,7 @@ export const TEST_PATHS = {
  */
 export const EMITTER_PATHS = {
   /** Default TypeSpec output directory for this emitter */
-  OUTPUT_DIR: 'tsp-output/@larsartmann/typespec-asyncapi',
+  OUTPUT_DIR: 'tsp-output/@lars-artmann/typespec-asyncapi',
   /** Temporary directory for emitter operations */
   TEMP_DIR: 'temp',
   /** Base tsp-output directory */

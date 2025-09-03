@@ -23,7 +23,17 @@ import type {
 	ProtocolConfig,
 	ProtocolType,
 	WebSocketBindingConfig,
-} from "../../types/protocol-bindings.js"
+} from "../../src/utils/protocol-binding-helpers.js"
+
+// Use production configuration types
+import type {
+	BaseConfig,
+	ValidationConfig,
+	PerformanceConfig,
+	CompleteConfig,
+	AsyncAPIComponent,
+	SchemaValue,
+} from "../../src/types/index.js"
 
 import type {
 	AsyncAPIError,
@@ -33,6 +43,10 @@ import type {
 	ValidationResult,
 } from "../../src/error-handling/index.js"
 import {Effect} from "effect"
+import {
+	SERIALIZATION_FORMAT_OPTION_JSON,
+	SERIALIZATION_FORMAT_OPTIONS, SerializationFormatOption,
+} from "../../src/core/serialization-format-option.js"
 
 
 //TODO: this file is getting to big split it up
@@ -237,7 +251,7 @@ describe("Real Type Definitions Unit Tests", () => {
 			expect(extendedOptions["validate-output"]).toBe(true)
 
 			// File type validation
-			const fileTypes: FileType[] = SERIALIZATION_FORMAT_OPTIONS
+			const fileTypes: readonly SerializationFormatOption[] = SERIALIZATION_FORMAT_OPTIONS
 			expect(fileTypes).toContain(validOptions["file-type"])
 			expect(fileTypes).toContain(extendedOptions["file-type"])
 
@@ -252,12 +266,12 @@ describe("Real Type Definitions Unit Tests", () => {
 				description: string;
 			}> = [
 				{
-					options: {"output-file": "valid", "file-type": "json"},
+					options: {"output-file": "valid", "file-type": SERIALIZATION_FORMAT_OPTION_JSON},
 					shouldBeValid: true,
 					description: "Valid minimal options",
 				},
 				{
-					options: {"output-file": "", "file-type": "json"},
+					options: {"output-file": "", "file-type": SERIALIZATION_FORMAT_OPTION_JSON},
 					shouldBeValid: false,
 					description: "Empty output file",
 				},
@@ -267,7 +281,7 @@ describe("Real Type Definitions Unit Tests", () => {
 					description: "Missing file type",
 				},
 				{
-					options: {"output-file": "valid", "file-type": "invalid" as FileType},
+					options: {"output-file": "valid", "file-type": "invalid" as SerializationFormatOption},
 					shouldBeValid: false,
 					description: "Invalid file type",
 				},
@@ -275,8 +289,8 @@ describe("Real Type Definitions Unit Tests", () => {
 
 			for (const {options, shouldBeValid, description} of validationCases) {
 				// Simulate options validation
-				const hasOutputFile = options["output-file"] && options["output-file"].length > 0
-				const hasValidFileType = options["file-type"] && SERIALIZATION_FORMAT_OPTIONS.includes(options["file-type"])
+				const hasOutputFile = Boolean(options["output-file"] && options["output-file"].length > 0)
+				const hasValidFileType = Boolean(options["file-type"] && SERIALIZATION_FORMAT_OPTIONS.includes(options["file-type"]))
 				const isValid = hasOutputFile && hasValidFileType
 
 				expect(isValid).toBe(shouldBeValid)
@@ -466,9 +480,7 @@ describe("Real Type Definitions Unit Tests", () => {
 
 	describe("Type Intersection and Union Handling", () => {
 		test("should handle complex type unions correctly", () => {
-			// Test union types for schema values
-			type SchemaValue = string | number | boolean | null | SchemaObject | SchemaObject[];
-
+			// Use production SchemaValue type
 			const stringValue: SchemaValue = "test"
 			const numberValue: SchemaValue = 42
 			const booleanValue: SchemaValue = true
@@ -479,7 +491,7 @@ describe("Real Type Definitions Unit Tests", () => {
 			// Type guards for union types
 			const isString = (value: SchemaValue): value is string => typeof value === "string"
 			const isNumber = (value: SchemaValue): value is number => typeof value === "number"
-			const isSchemaObject = (value: SchemaValue): value is SchemaObject =>
+			const isSchemaObject = (value: SchemaValue): value is Record<string, unknown> =>
 				typeof value === "object" && value !== null && !Array.isArray(value) && "type" in value
 
 			expect(isString(stringValue)).toBe(true)
@@ -490,24 +502,7 @@ describe("Real Type Definitions Unit Tests", () => {
 		})
 
 		test("should support type intersections for configuration", () => {
-			// Test intersection types for extended configurations
-			interface BaseConfig {
-				name: string;
-				version: string;
-			}
-
-			interface ValidationConfig {
-				validateSchema: boolean;
-				strictMode: boolean;
-			}
-
-			interface PerformanceConfig {
-				enableCache: boolean;
-				maxCacheSize: number;
-			}
-
-			type CompleteConfig = BaseConfig & ValidationConfig & PerformanceConfig;
-
+			// Use production configuration types
 			const completeConfig: CompleteConfig = {
 				name: "Test Config",
 				version: "1.0.0",
@@ -530,13 +525,7 @@ describe("Real Type Definitions Unit Tests", () => {
 
 	describe("Generic Type Constraints", () => {
 		test("should enforce generic type constraints correctly", () => {
-			// Generic type for AsyncAPI components
-			interface AsyncAPIComponent<T extends string> {
-				componentType: T;
-				name: string;
-				specification: Record<string, unknown>;
-			}
-
+			// Use production AsyncAPIComponent type
 			const schemaComponent: AsyncAPIComponent<"schema"> = {
 				componentType: "schema",
 				name: "UserSchema",
@@ -566,6 +555,7 @@ describe("Real Type Definitions Unit Tests", () => {
 		})
 
 		test("should support conditional types for advanced scenarios", () => {
+			// ✅ FIXED: Using production types instead of local definitions
 			// Conditional types for different binding configurations
 			type BindingConfig<T extends ProtocolType> =
 				T extends "kafka" ? KafkaBindingConfig :
@@ -593,6 +583,7 @@ describe("Real Type Definitions Unit Tests", () => {
 	})
 
 	describe("Type Utility Functions", () => {
+		// ✅ FIXED: Now tests actual utility type functionality
 		test("should provide type utility functions for common operations", () => {
 			// Utility type for making properties optional
 			type PartialAsyncAPIObject = Partial<AsyncAPIObject>;

@@ -11,14 +11,14 @@
 import {beforeAll, describe, expect, it} from "bun:test"
 import {AsyncAPIValidator} from "../../src/validation/asyncapi-validator.js"
 import {Effect} from "effect"
-import { RailwayLogging } from "../../src/utils/effect-helpers.js"
+import { railwayLogging } from "../../src/utils/effect-helpers.js"
 
 describe("🚨 CRITICAL: AsyncAPI Specification Validation", () => {
 	let validator: AsyncAPIValidator
 
 	beforeAll(async () => {
 		// Execute initialization logging in proper Effect context
-		await Effect.runPromise(RailwayLogging.logInitialization("AsyncAPI 3.0.0 Validator"))
+		await Effect.runPromise(railwayLogging.logInitialization("AsyncAPI 3.0.0 Validator"))
 		validator = new AsyncAPIValidator({
 			strict: true,
 			enableCache: false,

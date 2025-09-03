@@ -139,26 +139,26 @@ export async function compileAsyncAPISpecRaw(
 	// Debug logging 
 	Effect.log("Compilation result:", typeof result, !!result)
 
-	const program = result
+	const program = result.program || result
 
 	Effect.log("Program created:", !!program)
 	Effect.log("Diagnostics count:", diagnostics.length)
 	
-	// Debug outputFiles structure
-	Effect.log("OutputFiles type:", typeof runner.fs, !!runner.fs)
-	if (runner.fs && typeof runner.fs === 'object' && runner.fs.fs) {
-		const outputFiles = runner.fs.fs as Map<string, any>
-		Effect.log("OutputFiles size:", outputFiles.size)
-		const allKeys = Array.from(outputFiles.keys())
-		Effect.log("All outputFiles keys:", allKeys.slice(0, 20).join(", ") + (allKeys.length > 20 ? "..." : ""))
-		
-		// Debug: Print first few files with their values
-		let count = 0
-		for (const [key, value] of outputFiles) {
-			if (count < 5) {
-				Effect.log(`  File ${count}: ${key} = ${typeof value} (${value?.content?.length || value?.length || 0} chars)`)
-				count++
-			}
+	// Access outputFiles correctly from TestCompileResult structure
+	// TestCompileResult has: { program: Program, fs: TestFileSystem }
+	// TestFileSystem has: { fs: Map<string, string>, compilerHost: CompilerHost }
+	const outputFiles = result.fs?.fs || new Map<string, string>()
+	
+	Effect.log("OutputFiles size:", outputFiles.size)
+	const allKeys = Array.from(outputFiles.keys())
+	Effect.log("All outputFiles keys:", allKeys.slice(0, 10).join(", ") + (allKeys.length > 10 ? "..." : ""))
+	
+	// Debug: Print first few files with their values
+	let count = 0
+	for (const [key, value] of outputFiles) {
+		if (count < 3) {
+			Effect.log(`  File ${count}: ${key} = ${typeof value} (${value?.length || 0} chars)`)
+			count++
 		}
 	}
 
@@ -166,20 +166,9 @@ export async function compileAsyncAPISpecRaw(
 		throw new Error(`Failed to compile TypeSpec program. Available keys: ${Object.keys(result)}`)
 	}
 
-	// Debug the runner structure to understand what's available
-	Effect.log("Runner structure:", typeof runner, !!runner)
-	Effect.log("Runner.fs:", typeof runner.fs, !!runner.fs)
-	Effect.log("Runner.fs.fs:", typeof runner.fs?.fs, !!runner.fs?.fs)
-	
-	// Try different paths to find the output files
-	if (runner.fs && typeof runner.fs === 'object') {
-		const fsKeys = Object.keys(runner.fs)
-		Effect.log("Runner.fs keys:", fsKeys.join(', '))
-	}
-
 	return {
 		diagnostics,
-		outputFiles: runner.fs?.fs || runner.fs || new Map(), // Try different paths
+		outputFiles,
 		program,
 	}
 }
@@ -508,8 +497,8 @@ export async function parseAsyncAPIOutput(outputFiles: Map<string, string | {
 			`test-output/${filename}`,
 			filename,
 			`/test/${filename}`,
-			`tsp-output/@larsartmann/typespec-asyncapi/${filename}`,
-			`/test/@larsartmann/typespec-asyncapi/${filename}`,
+			`tsp-output/@lars-artmann/typespec-asyncapi/${filename}`,
+			`/test/@lars-artmann/typespec-asyncapi/${filename}`,
 		]
 
 		for (const filePath of possiblePaths) {

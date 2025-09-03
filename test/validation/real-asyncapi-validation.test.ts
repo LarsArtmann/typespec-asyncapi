@@ -4,7 +4,7 @@ import { parse } from "yaml";
 import { Parser } from "@asyncapi/parser";
 import { createTestRunner, type BasicTestRunner } from "@typespec/compiler/testing";
 import { Effect } from "effect"
-import { RailwayLogging } from "../../src/utils/effect-helpers.js";
+import { railwayLogging } from "../../src/utils/effect-helpers.js";
 
 describe("Real AsyncAPI Validation Tests", () => {
   let runner: BasicTestRunner;
