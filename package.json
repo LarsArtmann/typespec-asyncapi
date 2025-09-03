@@ -1,6 +1,6 @@
 {
   "name": "@lars-artmann/typespec-asyncapi",
-  "version": "0.0.1-alpha.2",
+  "version": "0.0.1",
   "description": "TypeSpec emitter for AsyncAPI 3.0 specifications",
   "main": "dist/index.js",
   "type": "module",
