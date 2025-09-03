@@ -29,8 +29,6 @@ We're solving **[Microsoft TypeSpec Issue #2463](https://github.com/microsoft/ty
 - **Testing** - Test Alpha releases and provide feedback
 
 ### 4. Ecosystem Development
-- **Tool integration** - Integrate with AsyncAPI CLI, Studio, and other tools
-- **IDE support** - Improve TypeSpec language server integration
 - **CI/CD templates** - Create deployment and automation templates
 - **Cloud bindings** - Add support for AWS, GCP, Azure services
 
@@ -272,28 +270,28 @@ All public APIs must include JSDoc comments:
 ```typescript
 /**
  * Generates AsyncAPI 3.0 channel object from TypeSpec operation
- * 
+ *
  * Processes TypeSpec operations decorated with @channel to create
  * AsyncAPI channel definitions with proper message routing.
- * 
+ *
  * @param operation - TypeSpec operation with @channel decorator
  * @param channelPath - Channel path string (may include parameters)
  * @returns Effect containing AsyncAPI channel object or validation error
- * 
+ *
  * @example
  * ```typescript
  * const channel = await Effect.runPromise(
  *   generateChannel(operation, "user.{userId}.events")
  * );
  * // { path: "user.{userId}.events", parameters: { userId: {...} } }
- * ```
- * 
+ *
+ *
  * @public
  */
 export const generateChannel = (
-  operation: Operation, 
-  channelPath: string
-): Effect.Effect<AsyncAPIChannel, ValidationError>
+		operation: Operation,
+		channelPath: string,
+    ): Effect.Effect<AsyncAPIChannel, ValidationError>
 ```
 
 ### User Documentation

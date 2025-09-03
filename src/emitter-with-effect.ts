@@ -142,20 +142,57 @@ export function generateAsyncAPIWithEffect(context: EmitContext<AsyncAPIEmitterO
 		// TODO: PERFORMANCE - Consider caching emitter instance for repeated calls
 		// TODO: LOGGING - Debug logs should be conditional based on log level to avoid performance impact
 		// Create emitter using the new modular architecture
+		yield* Effect.logInfo("Creating AssetEmitter with AsyncAPIEmitter class")
 		const assetEmitter = createAssetEmitter(
 			context.program,
 			AsyncAPIEmitter,
 			context,
 		)
+		yield* Effect.logInfo("AssetEmitter created successfully")
 
 		// TODO: TYPE_SAFETY - emitProgram() return value should be typed and potentially awaited
 		// TODO: ERROR_HANDLING - emitProgram() call should be wrapped in Effect.try for proper error handling
 		// TODO: PERFORMANCE - Consider async/await pattern instead of synchronous call for better performance
+		yield* Effect.logInfo("About to call assetEmitter.emitProgram()")
 		assetEmitter.emitProgram()
+		yield* Effect.logInfo("Completed assetEmitter.emitProgram()")
 		
 		// Force emit the global namespace to trigger file generation  
-		// TODO: CRITICAL - Fix globalNamespace property access for TypeSpec API compatibility
-		// assetEmitter.emitType(context.program.globalNamespace)
+		// Fix: Use getGlobalNamespaceType() method instead of direct property access
+		const globalNamespaceForEmit = context.program.getGlobalNamespaceType()
+		if (globalNamespaceForEmit) {
+			// Debug what's in the global namespace
+			yield* Effect.logInfo(`Global namespace operations count: ${globalNamespaceForEmit.operations?.size || 0}`)
+			yield* Effect.logInfo(`Global namespace namespaces count: ${globalNamespaceForEmit.namespaces?.size || 0}`)
+			
+			// Emit the global namespace itself
+			assetEmitter.emitType(globalNamespaceForEmit)
+			yield* Effect.logInfo(`Emitted global namespace type: ${globalNamespaceForEmit.name}`)
+			
+			// Also try emitting all operations in the global namespace
+			if (globalNamespaceForEmit.operations) {
+				for (const [operationName, operation] of globalNamespaceForEmit.operations) {
+					yield* Effect.logInfo(`Emitting operation: ${operationName}`)
+					assetEmitter.emitType(operation)
+				}
+			}
+			
+			// Emit all child namespaces
+			if (globalNamespaceForEmit.namespaces) {
+				for (const [namespaceName, namespace] of globalNamespaceForEmit.namespaces) {
+					yield* Effect.logInfo(`Emitting namespace: ${namespaceName}`)
+					assetEmitter.emitType(namespace)
+					
+					// Emit operations in child namespaces
+					if (namespace.operations) {
+						for (const [operationName, operation] of namespace.operations) {
+							yield* Effect.logInfo(`Emitting operation ${operationName} from namespace ${namespaceName}`)
+							assetEmitter.emitType(operation)
+						}
+					}
+				}
+			}
+		}
 		
 		// TODO: TYPE_SAFETY - writeOutput() return type should be explicitly handled
 		// TODO: TYPE_SAFETY - Error parameter in mapError needs proper type annotation  
