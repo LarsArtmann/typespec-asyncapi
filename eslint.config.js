@@ -110,22 +110,8 @@ export default [
 
 			// === EFFECT.TS PATTERN ENFORCEMENT ===
 			"no-console": "error", // Use Effect.log() instead of console.log
-			"@typescript-eslint/ban-types": [
-				"error",
-				{
-					types: {
-						"Promise": {
-							"message": "🚨 BANNED: Use Effect<T, E, R> instead of Promise<T>. Effect.TS provides better error handling, composability, and testability.",
-							"fixWith": "Effect<T, never, never>"
-						},
-						"{}": {
-							"message": "🚨 BANNED: {} type is too loose. Use specific record types or Effect.TS branded types.",
-							"fixWith": "Record<string, unknown>"
-						}
-					},
-					extendDefaults: true
-				}
-			],
+			// Note: @typescript-eslint/ban-types rule not available in current version
+			// Promise type banning is handled via no-restricted-syntax rules below
 
 			// === CUSTOM EFFECT.TS ENFORCEMENT (FORBIDDEN PATTERNS) ===
 			"no-restricted-syntax": [
