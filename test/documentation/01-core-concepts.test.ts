@@ -311,9 +311,9 @@ describe("Documentation: Core Concepts Mapping", () => {
     describe("WHEN validating complete transformation", () => {
 
       it("THEN should match expected AsyncAPI structure for core concepts", async () => {
-        // Arrange & Act
+        // Arrange & Act - Use fixture with @service decorator for title validation
         const result = await compiler.compileTypeSpec({
-          code: TypeSpecFixtures.coreConceptsService,
+          code: TypeSpecFixtures.coreConceptsServiceWithTitle,
           emitAsyncAPI: true
         })
 
@@ -394,9 +394,9 @@ describe("Documentation: Core Concepts Mapping", () => {
       })
 
       it("THEN should preserve TypeSpec semantic meaning in AsyncAPI output", async () => {
-        // Arrange & Act
+        // Arrange & Act - Use fixture with @service decorator for title validation
         const result = await compiler.compileTypeSpec({
-          code: TypeSpecFixtures.coreConceptsService,
+          code: TypeSpecFixtures.coreConceptsServiceWithTitle,
           emitAsyncAPI: true
         })
 

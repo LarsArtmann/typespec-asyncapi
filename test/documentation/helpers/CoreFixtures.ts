@@ -13,8 +13,44 @@ import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js"
  * Core TypeSpec code snippets for fundamental concepts
  */
 export const CoreTypeSpecFixtures = {
-  // Core Concepts Fixtures - Alpha Compatible
+  // Core Concepts Fixtures - Alpha Compatible (no @service decorator for backward compatibility)
   coreConceptsService: `
+    namespace OrderService;
+    
+    model CreateOrderRequest {
+      customerId: string;
+      items: OrderItem[];
+    }
+    
+    model OrderItem {
+      productId: string;
+      quantity: int32;
+      price: float64;
+    }
+    
+    model CreateOrderResponse {
+      orderId: string;
+      status: "pending" | "confirmed" | "rejected";
+    }
+    
+    model OrderStatusEvent {
+      orderId: string;
+      status: string;
+      timestamp: utcDateTime;
+    }
+    
+    @channel("orders/{orderId}")
+    @publish
+    op createOrder(orderId: string, order: CreateOrderRequest): CreateOrderResponse;
+    
+    @channel("orders/{orderId}/status")
+    @subscribe  
+    op orderStatusUpdated(orderId: string): OrderStatusEvent;
+  `,
+
+  // Core Concepts with Service decorator for tests expecting "Order Service" title
+  coreConceptsServiceWithTitle: `
+    @service({ title: "Order Service", version: "1.0.0" })
     namespace OrderService;
     
     model CreateOrderRequest {
