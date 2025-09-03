@@ -53,7 +53,7 @@ import { $publish } from "./decorators/publish.js";
 /** @subscribe decorator - Marks operations as message subscription (receive) operations */
 import { $subscribe } from "./decorators/subscribe.js";
 /** @server decorator - Defines AsyncAPI server connection configuration */
-import { $server, $tags, $correlationId, $bindings } from "./decorators/server.js";
+import { $server, $asyncapi, $tags, $correlationId, $bindings } from "./decorators/server.js";
 /** @message decorator - Defines AsyncAPI message schema and metadata */
 import { $message, $header } from "./decorators/message.js";
 /** @protocol decorator - Defines protocol-specific bindings (MQTT, WebSocket, etc.) */
@@ -83,14 +83,14 @@ export type { AsyncAPIEmitterOptions } from "./options.js";
 // TODO: CRITICAL - Consider organizing decorators by category (core, message, server, security) for better maintainability
 // TODO: CRITICAL - Magic string "TypeSpec.AsyncAPI" should be exported as NAMESPACE_NAME constant
 // TODO: CRITICAL - No validation that decorator functions are valid before namespace registration
-setTypeSpecNamespace("TypeSpec.AsyncAPI", $channel, $publish, $subscribe, $server, $message, $header, $protocol, $security, $tags, $correlationId, $bindings);
+setTypeSpecNamespace("TypeSpec.AsyncAPI", $channel, $publish, $subscribe, $server, $asyncapi, $message, $header, $protocol, $security, $tags, $correlationId, $bindings);
 
 // Export decorator functions (for TypeSpec compiler) - THIS IS A MUST!
 // TODO: CRITICAL - Remove redundant comment and make it more descriptive about WHY these exports are required
 // TODO: CRITICAL - Consider using a more functional approach with array spreading for exports for maintainability
 // TODO: CRITICAL - Export array matches setTypeSpecNamespace arguments but order could diverge - add validation
 // TODO: CRITICAL - Missing documentation about which decorators are optional vs required for basic functionality
-export { $channel, $publish, $subscribe, $server, $message, $header, $protocol, $security, $tags, $correlationId, $bindings };
+export { $channel, $publish, $subscribe, $server, $asyncapi, $message, $header, $protocol, $security, $tags, $correlationId, $bindings };
 
 /**
  * AsyncAPI Emitter Entry Point - TypeSpec to AsyncAPI 3.0 Document Generator
