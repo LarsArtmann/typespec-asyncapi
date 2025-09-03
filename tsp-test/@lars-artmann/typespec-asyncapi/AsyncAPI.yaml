@@ -5,49 +5,27 @@ info:
   description: Generated from TypeSpec with 1 operations, 0 messages, 0 security configs
 servers: {}
 channels:
-  channel_publishTestUser:
-    address: debug.test
-    description: Channel for publishTestUser
+  channel_testMessage:
+    address: test.simple
+    description: Channel for testMessage
     messages:
-      publishTestUserMessage:
-        $ref: "#/components/messages/publishTestUserMessage"
+      testMessageMessage:
+        $ref: "#/components/messages/testMessageMessage"
 operations:
-  publishTestUser:
+  testMessage:
     action: send
     channel:
-      $ref: "#/channels/channel_publishTestUser"
-    summary: Operation publishTestUser
+      $ref: "#/channels/channel_testMessage"
+    summary: Operation testMessage
     description: TypeSpec operation with 0 parameters
 components:
-  schemas:
-    TestUser:
-      type: object
-      description: Schema for TestUser
-      properties:
-        id:
-          description: Property id
-          type: string
-        name:
-          description: Property name
-          type: string
-        age:
-          description: Property age
-          type: integer
-          format: int32
-        isActive:
-          description: Property isActive
-          type: boolean
-      required:
-        - id
-        - name
-        - age
-        - isActive
+  schemas: {}
   messages:
-    publishTestUserMessage:
-      name: publishTestUserMessage
-      title: publishTestUser Message
-      summary: Message for publishTestUser operation
+    testMessageMessage:
+      name: testMessageMessage
+      title: testMessage Message
+      summary: Message for testMessage operation
       contentType: application/json
       payload:
-        $ref: "#/components/schemas/TestUser"
+        type: string
   securitySchemes: {}

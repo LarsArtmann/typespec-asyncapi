@@ -149,8 +149,15 @@ export function getAllServerConfigs(program: Program): Map<Namespace, Map<string
 	if (!program.stateMap || typeof program.stateMap !== 'function') {
 		return new Map<Namespace, Map<string, ServerConfig>>()
 	}
-	const serverConfigsMap = program.stateMap($lib.stateKeys.serverConfigs) as Map<Namespace, Map<string, ServerConfig>>
-	return serverConfigsMap ?? new Map<Namespace, Map<string, ServerConfig>>()
+	
+	const stateMap = program.stateMap($lib.stateKeys.serverConfigs)
+	
+	// Handle case where state map doesn't exist or is not iterable
+	if (!stateMap || typeof stateMap.entries !== 'function') {
+		return new Map<Namespace, Map<string, ServerConfig>>()
+	}
+	
+	return stateMap as Map<Namespace, Map<string, ServerConfig>>
 }
 
 /**
@@ -193,6 +200,13 @@ export function buildServersFromNamespaces(program: Program): ServersObject {
 	for (const [namespace, serverConfigsMap] of allServerConfigs.entries()) {
 		// Get namespace name, handle global namespace
 		const namespaceName = namespace.name === "" || !namespace.name ? "Global" : namespace.name
+		
+		// Defensive check: ensure serverConfigsMap is iterable
+		if (!serverConfigsMap || typeof serverConfigsMap.entries !== 'function') {
+			Effect.log(`⚠️ Skipping namespace ${namespaceName}: serverConfigsMap is not iterable`)
+			continue
+		}
+		
 		Effect.log(`📡 Processing namespace: ${namespaceName} with ${serverConfigsMap.size} server(s)`)
 		
 		for (const [serverName, config] of serverConfigsMap.entries()) {
