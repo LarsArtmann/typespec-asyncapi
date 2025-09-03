@@ -90,12 +90,7 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 			this.executeEmissionPipelineSync(program)
 			Effect.log(" Micro-kernel emission pipeline completed successfully")
 			
-			// CRITICAL FIX: Serialize and write the AsyncAPI document to the source file
-			const documentGenerator = new DocumentGenerator()
-			const serializedContent = documentGenerator.serializeDocument(this.asyncApiDoc, fileType)
-			sourceFile.path.content = serializedContent
-			
-			Effect.log(`✅ AsyncAPI document serialized and written to ${outputPath} (${serializedContent.length} chars)`)
+			Effect.log(`✅ AsyncAPI document generation pipeline completed successfully`)
 		} catch (error) {
 			Effect.log(`L Micro-kernel emission pipeline failed: ${error}`)
 			throw error
