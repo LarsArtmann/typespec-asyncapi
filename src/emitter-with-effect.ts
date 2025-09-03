@@ -90,13 +90,16 @@ export function generateAsyncAPIWithEffect(context: EmitContext<AsyncAPIEmitterO
 		yield* Effect.logInfo("Program structure validated - ready for AsyncAPI generation")
 
 		// Create emitter using the new modular architecture
+		Effect.log(`🔧 About to create AsyncAPIEmitter with createAssetEmitter`)
 		const assetEmitter = createAssetEmitter(
 			context.program,
 			AsyncAPIEmitter,
 			context,
 		)
 
+		Effect.log(`🔧 About to call assetEmitter.emitProgram()`)
 		assetEmitter.emitProgram()
+		Effect.log(`🔧 Completed assetEmitter.emitProgram()`)
 		yield* Effect.tryPromise(() => assetEmitter.writeOutput()).pipe(
 			Effect.mapError((error) => createPluginSystemError(error, 'AssetEmitter.writeOutput'))
 		)

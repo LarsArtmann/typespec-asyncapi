@@ -22,6 +22,7 @@ export function discoverOperations(program: Program): Operation[] {
 	if (typeof program.getGlobalNamespaceType === 'function') {
 		walkNamespace(program.getGlobalNamespaceType(), operations, program)
 	} else {
+		//TODO: mocks in fucking prod code!!!!!!
 		// For mock programs in tests, create a minimal namespace structure
 		const mockNamespace: Partial<Namespace> = {
 			operations: new Map(),

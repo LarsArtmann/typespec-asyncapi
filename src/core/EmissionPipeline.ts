@@ -79,13 +79,19 @@ export class EmissionPipeline {
 			Effect.log(`🚀 Starting emission pipeline stages...`)
 
 			// Stage 1: Discovery
+			Effect.log(`🚀 About to start Stage 1: Discovery`)
 			const discoveryResult = yield* this.executeDiscoveryStage(context)
+			Effect.log(`✅ Completed Stage 1: Discovery`)
 
 			// Stage 2: Processing
+			Effect.log(`🚀 About to start Stage 2: Processing`)
 			yield* this.executeProcessingStage(context, discoveryResult)
+			Effect.log(`✅ Completed Stage 2: Processing`)
 
 			// Stage 3: Document Generation (updates context.asyncApiDoc in-place)
+			Effect.log(`🚀 About to start Stage 3: Generation`)
 			yield* this.executeGenerationStage(context, discoveryResult)
+			Effect.log(`✅ Completed Stage 3: Generation`)
 
 			// Stage 4: Validation
 			yield* this.executeValidationStage(context)

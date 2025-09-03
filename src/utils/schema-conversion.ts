@@ -22,15 +22,26 @@ export function convertModelToSchema(model: Model, program: Program): SchemaObje
 			const properties: Record<string, SchemaObject> = {}
 			const required: string[] = []
 
+			// CRITICAL DEBUG: Check model.properties structure
+			yield* Effect.log(`🔍 DEBUG model.properties type: ${typeof model.properties}`)
+			yield* Effect.log(`🔍 DEBUG model.properties constructor: ${model.properties?.constructor?.name}`)
+			yield* Effect.log(`🔍 DEBUG model.properties size: ${model.properties?.size ?? 'undefined'}`)
+			yield* Effect.log(`🔍 DEBUG model.properties keys: ${Array.from(model.properties?.keys?.() ?? []).join(', ')}`)
+			
 			// Process each model property using Effect.TS patterns
-			for (const [name, prop] of model.properties.entries()) {
-				yield* Effect.log(`📋 Processing property: ${name} (type: ${prop.type.kind})`)
-				
-				properties[name] = yield* convertPropertyToSchemaEffect(prop, program, name)
+			if (model.properties && typeof model.properties.entries === 'function') {
+				for (const [name, prop] of model.properties.entries()) {
+					yield* Effect.log(`📋 Processing property: ${name} (type: ${prop.type.kind})`)
+					
+					properties[name] = yield* convertPropertyToSchemaEffect(prop, program, name)
 
-				if (!prop.optional) {
-					required.push(name)
+					if (!prop.optional) {
+						required.push(name)
+					}
 				}
+			} else {
+				yield* Effect.log(`❌ CRITICAL: model.properties is not iterable or undefined`)
+				yield* Effect.log(`❌ model.properties value: ${JSON.stringify(model.properties, null, 2)}`)
 			}
 
 			const schema: SchemaObject = {

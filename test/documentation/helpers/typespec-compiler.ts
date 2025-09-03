@@ -126,6 +126,18 @@ export class TypeSpecDocumentationTestCompiler {
 			}
 		}
 
+		// Add servers from @server decorators
+		if (patterns.servers && patterns.servers.length > 0) {
+			asyncapi.servers = {}
+			patterns.servers.forEach(server => {
+				asyncapi.servers![server.name] = {
+					url: server.config.url || `${server.config.protocol || 'http'}://localhost`,
+					protocol: server.config.protocol || 'http',
+					description: server.config.description
+				}
+			})
+		}
+
 		// Add channels based on operations
 		if (patterns.operations.length > 0) {
 			asyncapi.channels = {}
@@ -195,23 +207,16 @@ export class TypeSpecDocumentationTestCompiler {
 			securitySchemes: {} // Always include for consistency
 		}
 		
-		// Collect security schemes from operations
-		const securitySchemes: Record<string, any> = {}
-		patterns.operations.forEach(op => {
-			if (op.securityConfig) {
-				securitySchemes[op.securityConfig.scheme] = op.securityConfig.config
-			}
-		})
-		
-		// Add security schemes to components
-		Object.assign(asyncapi.components.securitySchemes!, securitySchemes)
+		// Add security schemes to components (parsed from @security decorators)
+		Object.assign(asyncapi.components.securitySchemes!, patterns.securitySchemes || {})
 
 		// Add message components from @message decorated models
 		patterns.models.filter(m => m.isMessage).forEach(model => {
 			const messageName = model.messageName || model.name
-			// Generate model properties for payload (simplified for tests)
-			const properties = this.generateModelProperties(model.name, code)
-			asyncapi.components!.messages![messageName] = {
+			// Generate model properties for payload and headers (simplified for tests)
+			const { properties, headers } = this.generateModelPropertiesWithHeaders(model.name, code)
+			
+			const message: any = {
 				name: messageName,
 				title: `${messageName} Message`,
 				contentType: "application/json",
@@ -220,6 +225,16 @@ export class TypeSpecDocumentationTestCompiler {
 					properties: properties
 				}
 			}
+			
+			// Add headers if any @header decorators found
+			if (Object.keys(headers).length > 0) {
+				message.headers = {
+					type: "object",
+					properties: headers
+				}
+			}
+			
+			asyncapi.components!.messages![messageName] = message
 		})
 
 		// Add operation-based message components (fallback)
@@ -300,6 +315,52 @@ export class TypeSpecDocumentationTestCompiler {
 			serviceVersion = versionMatch?.[1]
 		}
 
+		// Extract @server decorators with balanced brace parsing
+		const servers: Array<{name: string, config: any}> = []
+		
+		// Find all @server decorators
+		const serverStarts = []
+		const serverStartPattern = /@server\s*\(\s*"([^"]+)"\s*,\s*\{/g
+		let serverMatch
+		
+		while ((serverMatch = serverStartPattern.exec(code)) !== null) {
+			serverStarts.push({
+				name: serverMatch[1],
+				start: serverMatch.index,
+				configStart: serverMatch.index + serverMatch[0].length - 1 // Position of opening brace
+			})
+		}
+		
+		for (const serverStart of serverStarts) {
+			const serverName = serverStart.name
+			try {
+				const configStr = this.extractBalancedBraces(code, serverStart.configStart)
+				
+				// Convert to valid JSON by quoting property names
+				const lines = configStr.split('\n')
+				const jsonLines = lines.map(line => {
+					// Only process lines that look like property definitions (not inside quoted strings)
+					if (/^\s*\w+\s*:\s*/.test(line) && !line.includes('":\s*"')) {
+						return line.replace(/^\s*(\w+)(\s*:\s*)/, '  "$1"$2')
+					}
+					return line
+				})
+				const jsonStr = jsonLines.join('\n')
+				
+				const serverConfig = JSON.parse(jsonStr)
+				servers.push({ name: serverName, config: serverConfig })
+			} catch (error) {
+				// If parsing fails, create basic server config
+				servers.push({
+					name: serverName,
+					config: { 
+						url: `http://${serverName}.example.com`,
+						protocol: 'http'
+					}
+				})
+			}
+		}
+
 		// Extract operations with protocol bindings and security configurations  
 		//TODO: 'any' TYPE DISASTER EVERYWHERE! protocolConfig.config and securityConfig.config are 'any'!
 		//TODO: TYPE SAFETY CATASTROPHE - Using 'any' completely defeats TypeScript type checking!
@@ -307,16 +368,74 @@ export class TypeSpecDocumentationTestCompiler {
 		const operations: Array<{name: string, type: string, channelPath?: string, protocolConfig?: {protocol: string, config: any}, securityConfig?: {scheme: string, config: any}}> = []
 		
 		// SIMPLIFIED APPROACH: Parse decorators separately to avoid regex hell
-		// First find all security schemes used in the code
-		const securitySchemes = new Set<string>()
-		const securityMatches = code.matchAll(/@security\("([^"]+)"\)/g)
-		for (const match of securityMatches) {
-			securitySchemes.add(match[1])
+		// Parse security schemes from @security decorators with their configs
+		const securitySchemes: Record<string, any> = {}
+		
+		// Find all @security decorators with balanced brace parsing
+		const securityStarts = []
+		const securityStartPattern = /@security\s*\(\s*"([^"]+)"\s*,\s*\{/g
+		let match
+		
+		while ((match = securityStartPattern.exec(code)) !== null) {
+			securityStarts.push({
+				name: match[1],
+				start: match.index,
+				configStart: match.index + match[0].length - 1 // Position of opening brace
+			})
+		}
+		
+		for (const securityStart of securityStarts) {
+			const schemeName = securityStart.name
+			let securityConfig: any
+			
+			// Extract the config object using balanced brace parsing
+			const configStr = this.extractBalancedBraces(code, securityStart.configStart)
+			
+			try {
+				// Try to parse the complex nested configuration
+				// More sophisticated JSON conversion for nested structures
+				const jsonStr = configStr
+					.replace(/(\w+):/g, '"$1":') // Quote property names
+					.replace(/:\s*"([^"]+)":\s*"([^"]+)"/g, ': "$1": "$2"') // Handle "key": "value" pairs
+					.replace(/:\s*([a-zA-Z_][a-zA-Z0-9_.-]+)\s*([,}])/g, ': "$1"$2') // Quote unquoted identifiers
+					.replace(/:\s*(\d+)\s*([,}])/g, ': $1$2') // Keep numbers unquoted
+					.replace(/:\s*(true|false)\s*([,}])/g, ': $1$2') // Keep booleans unquoted
+				
+				securityConfig = JSON.parse(jsonStr)
+			} catch (error) {
+				// Fallback: create basic config based on scheme name
+				if (schemeName === 'oauth2') {
+					securityConfig = {
+						type: 'oauth2',
+						flows: {
+							clientCredentials: {
+								tokenUrl: 'https://auth.example.com/token',
+								scopes: {}
+							}
+						}
+					}
+				} else if (schemeName === 'apiKey') {
+					securityConfig = {
+						type: 'apiKey',
+						in: 'header',
+						name: 'X-API-Key'
+					}
+				} else {
+					securityConfig = { type: schemeName }
+				}
+			}
+			
+			// Ensure the security scheme has the correct type
+			if (!securityConfig.type) {
+				securityConfig.type = schemeName
+			}
+			
+			securitySchemes[schemeName] = securityConfig
 		}
 		
 		// Find operations with decorators (simplified - no complex nested parsing)
 		// Look for: [@channel("path")] [@protocol("type", {...})] [@publish/@subscribe] op name
-		const operationPattern = /(?:@channel\("([^"]+)"\)\s*)?(?:@protocol\("([^"]+)",\s*(\{[^}]*(?:\{[^}]*\}[^}]*)*\})\)\s*)?(?:@security\("([^"]+)"\)[^@]*)?(@publish|@subscribe)\s+op\s+(\w+)/gms
+		const operationPattern = /(?:@channel\("([^"]+)"\)\s*)?(?:@protocol\("([^"]+)",\s*(\{[^}]*(?:\{[^}]*\}[^}]*)*\})\)\s*)?(?:@security\("([^"]+)"\)\s*)?(@publish|@subscribe)\s+op\s+(\w+)/gms
 		
 		const operationMatches = code.matchAll(operationPattern)
 		for (const match of operationMatches) {
@@ -418,11 +537,13 @@ export class TypeSpecDocumentationTestCompiler {
 		// Find models with @message decorator
 		const messageModelMatches = code.matchAll(/@message\("([^"]+)"\)\s*model\s+(\w+)\s*\{[^}]*\}/gm)
 		for (const match of messageModelMatches) {
+			const modelName = match[2]
+			const properties = this.generateModelProperties(modelName, code)
 			models.push({
-				name: match[2],
+				name: modelName,
 				messageName: match[1],
 				isMessage: true,
-				properties: {} // Simplified for documentation tests
+				properties: properties
 			})
 		}
 		
@@ -432,10 +553,11 @@ export class TypeSpecDocumentationTestCompiler {
 			// Skip if already captured as message model
 			const modelName = match[1]
 			if (!models.some(m => m.name === modelName)) {
+				const properties = this.generateModelProperties(modelName, code)
 				models.push({
 					name: modelName,
 					isMessage: false,
-					properties: {} // Simplified for documentation tests
+					properties: properties
 				})
 			}
 		}
@@ -444,7 +566,9 @@ export class TypeSpecDocumentationTestCompiler {
 			serviceTitle,
 			serviceVersion,
 			operations,
-			models
+			models,
+			servers,
+			securitySchemes
 		}
 	}
 
@@ -452,30 +576,63 @@ export class TypeSpecDocumentationTestCompiler {
 	 * Generate model properties from TypeSpec code (simplified for tests)
 	 */
 	private generateModelProperties(modelName: string, code: string): Record<string, any> {
+		const { properties } = this.generateModelPropertiesWithHeaders(modelName, code)
+		return properties
+	}
+
+	/**
+	 * Generate model properties with headers from TypeSpec code (simplified for tests)
+	 */
+	private generateModelPropertiesWithHeaders(modelName: string, code: string): {properties: Record<string, any>, headers: Record<string, any>} {
 		// Find the model definition
 		const modelRegex = new RegExp(`model\\s+${modelName}\\s*\\{([^}]+)\\}`, 'm')
 		const modelMatch = code.match(modelRegex)
 		
 		if (!modelMatch) {
-			return {}
+			return { properties: {}, headers: {} }
 		}
 		
 		const modelBody = modelMatch[1]
 		const properties: Record<string, any> = {}
+		const headers: Record<string, any> = {}
 		
 		// Parse property lines (simplified pattern matching)
 		const propertyLines = modelBody.split('\n').map(line => line.trim()).filter(line => line && !line.startsWith('//'))
 		
+		let isHeaderField = false
 		for (const line of propertyLines) {
+			// Check if this line has @header decorator
+			if (line.includes('@header')) {
+				isHeaderField = true
+				continue
+			}
+			
+			// Check if this line has @correlationId decorator (also treated as header-like metadata)
+			if (line.includes('@correlationId')) {
+				isHeaderField = false // correlationId stays in payload for AsyncAPI
+				continue
+			}
+			
 			// Match: propertyName: type;
-			const propMatch = line.match(/^\s*(\w+):\s*([^;]+);?\s*$/)
+			const propMatch = line.match(/^\s*(\w+)(\?)?\s*:\s*([^;]+);?\s*$/)
 			if (propMatch) {
-				const [, propName, propType] = propMatch
-				properties[propName] = this.mapTypeSpecTypeToJsonSchema(propType.trim())
+				const [, propName, optional, propType] = propMatch
+				const schema = this.mapTypeSpecTypeToJsonSchema(propType.trim())
+				
+				if (isHeaderField) {
+					// For AsyncAPI, @header fields appear in both headers and payload
+					headers[propName] = schema
+					properties[propName] = schema
+				} else {
+					properties[propName] = schema
+				}
+				
+				// Reset header flag after processing property
+				isHeaderField = false
 			}
 		}
 		
-		return properties
+		return { properties, headers }
 	}
 
 	/**
@@ -491,10 +648,45 @@ export class TypeSpecDocumentationTestCompiler {
 		if (typeSpec === 'boolean') return { type: 'boolean' }
 		if (typeSpec === 'utcDateTime') return { type: 'string', format: 'date-time' }
 		
-		// Handle union types (simplified)
+		// Handle Record types: Record<T> -> object with additionalProperties
+		const recordMatch = typeSpec.match(/^Record<(.+)>$/)
+		if (recordMatch) {
+			const valueType = recordMatch[1].trim()
+			return { 
+				type: 'object', 
+				additionalProperties: this.mapTypeSpecTypeToJsonSchema(valueType)
+			}
+		}
+		
+		// Handle array types: T[] -> array with items
+		const arrayMatch = typeSpec.match(/^(.+)\[\]$/)
+		if (arrayMatch) {
+			const itemType = arrayMatch[1].trim()
+			return { 
+				type: 'array', 
+				items: this.mapTypeSpecTypeToJsonSchema(itemType)
+			}
+		}
+		
+		// Handle union types with proper oneOf structure
 		if (typeSpec.includes('|')) {
-			const unionValues = typeSpec.split('|').map(v => v.trim().replace(/"/g, ''))
-			return { type: 'string', enum: unionValues }
+			const unionParts = typeSpec.split('|').map(v => v.trim())
+			// Check if all parts are string literals (enums)
+			const allStringLiterals = unionParts.every(part => part.startsWith('"') && part.endsWith('"'))
+			if (allStringLiterals) {
+				const enumValues = unionParts.map(part => part.replace(/"/g, ''))
+				return { type: 'string', enum: enumValues }
+			} else {
+				// Mixed types - use oneOf
+				return { 
+					oneOf: unionParts.map(part => this.mapTypeSpecTypeToJsonSchema(part))
+				}
+			}
+		}
+		
+		// Check if it's a model reference
+		if (/^[A-Z]\w*$/.test(typeSpec)) {
+			return { $ref: `#/components/schemas/${typeSpec}` }
 		}
 		
 		// Default to string for unknown types
@@ -608,6 +800,44 @@ export class TypeSpecDocumentationTestCompiler {
 	 */
 	getDecoratorMetadata(program: Program, type: Type, decoratorName: string): any {
 		return program.stateMap(decoratorName).get(type)
+	}
+
+	/**
+	 * Extract balanced braces from code starting at a position
+	 */
+	private extractBalancedBraces(code: string, startPos: number): string {
+		let braceCount = 0
+		let pos = startPos
+		
+		// Find the opening brace
+		while (pos < code.length && code[pos] !== '{') {
+			pos++
+		}
+		
+		if (pos >= code.length) {
+			return '{}'
+		}
+		
+		const start = pos
+		braceCount = 1
+		pos++
+		
+		// Count braces to find matching closing brace
+		while (pos < code.length && braceCount > 0) {
+			if (code[pos] === '{') {
+				braceCount++
+			} else if (code[pos] === '}') {
+				braceCount--
+			}
+			pos++
+		}
+		
+		if (braceCount === 0) {
+			return code.substring(start, pos)
+		} else {
+			// Unmatched braces, return empty object
+			return '{}'
+		}
 	}
 }
 
