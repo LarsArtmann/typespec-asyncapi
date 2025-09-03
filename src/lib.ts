@@ -325,24 +325,30 @@ export const $lib = createTypeSpecLibrary({
  * 
  * @see {@link $lib.state} State schema definitions
  */
-// TODO: Consider using keyof typeof $lib.state to ensure type safety
-// TODO: Add runtime validation to ensure stateKeys match library state definitions
-// TODO: Consider extracting to a separate constants file for better organization
+// TODO: CRITICAL TYPE_SAFETY - Use keyof typeof $lib.state to ensure stateKeys match state schema exactly
+// TODO: TYPE_SAFETY - Add explicit type annotation: const stateKeys: StateKeyMap = {...}
+// TODO: TYPE_SAFETY - Create StateKeyMap interface to define the expected structure
+// TODO: VALIDATION - Add runtime validation to ensure stateKeys match library state definitions at build time
+// TODO: ARCHITECTURE - Consider extracting to a separate constants file for better organization and reusability
+// TODO: MAINTENANCE - Add unit tests to verify stateKeys sync with $lib.state schema
+// TODO: TYPE_SAFETY - Consider using template literal types for better IntelliSense support
+// TODO: PERFORMANCE - Evaluate if stateKeys should be frozen with Object.freeze() for immutability
 export const stateKeys = {
-	// TODO: Add inline comments explaining what each state key stores
-	channelPaths: "channelPaths",
-	messageSchemas: "messageSchemas",
-	messageConfigs: "messageConfigs",
-	messageHeaders: "messageHeaders",
-	serverConfigs: "serverConfigs",
-	protocolBindings: "protocolBindings",
-	protocolConfigs: "protocolConfigs",
-	securitySchemes: "securitySchemes",
-	securityConfigs: "securityConfigs",
-	operationTypes: "operationTypes",
-	tags: "tags",
-	correlationIds: "correlationIds",
-	cloudBindings: "cloudBindings",
+	// TODO: TYPE_SAFETY - Each key should have explicit type annotation and inline comment
+	// TODO: VALIDATION - Add static assertion that these keys exist in $lib.state schema
+	channelPaths: "channelPaths", // Maps TypeSpec operations to AsyncAPI channel path strings
+	messageSchemas: "messageSchemas", // Maps message names to their TypeSpec model schema definitions
+	messageConfigs: "messageConfigs", // Maps TypeSpec models to @message decorator configuration objects
+	messageHeaders: "messageHeaders", // Maps model properties marked as headers with @header decorator
+	serverConfigs: "serverConfigs", // Stores @server decorator configuration data for AsyncAPI servers
+	protocolBindings: "protocolBindings", // Maps protocol names to their binding configuration objects
+	protocolConfigs: "protocolConfigs", // Maps TypeSpec targets to @protocol decorator settings
+	securitySchemes: "securitySchemes", // Stores security scheme definitions for authentication
+	securityConfigs: "securityConfigs", // Maps TypeSpec targets to @security decorator settings
+	operationTypes: "operationTypes", // Maps operations to publish/subscribe classifications
+	tags: "tags", // Maps targets to tag arrays for categorization and organization
+	correlationIds: "correlationIds", // Maps models to correlation ID configurations for message tracking
+	cloudBindings: "cloudBindings", // Maps targets to cloud provider specific binding configurations
 } as const
 
 /**
@@ -408,22 +414,31 @@ export const stateKeys = {
  * @since 0.1.0-alpha
  * @public
  */
-// TODO: Add input validation for context, target, and code parameters
-// TODO: Add explicit return type annotation for clarity
-// TODO: Extract library namespace prefix to a constant to avoid duplication
-// TODO: Consider adding severity parameter to override default diagnostic severity
-// TODO: Add logging for diagnostic reporting for debugging purposes
-// TODO: Consider adding diagnostic categories or tags for better organization
-// TODO: Add function overloads for common diagnostic patterns
+// TODO: CRITICAL TYPE_SAFETY - Add input validation for context, target, and code parameters with proper type guards
+// TODO: TYPE_SAFETY - Add explicit return type annotation: ): void for clarity and consistency
+// TODO: TYPE_SAFETY - Target parameter should be more specific: target: Node | Type instead of unknown
+// TODO: TYPE_SAFETY - Code parameter should use union type of valid diagnostic codes for type safety
+// TODO: TYPE_SAFETY - Args parameter should be typed as specific interfaces per diagnostic code
+// TODO: ARCHITECTURE - Extract library namespace prefix to a constant to avoid duplication and centralize config
+// TODO: FEATURE - Consider adding severity parameter to override default diagnostic severity (error/warning/info)
+// TODO: LOGGING - Add structured logging for diagnostic reporting for debugging and monitoring purposes
+// TODO: ARCHITECTURE - Consider adding diagnostic categories or tags for better organization and filtering
+// TODO: TYPE_SAFETY - Add function overloads for common diagnostic patterns to improve developer experience
+// TODO: PERFORMANCE - Consider caching the prefixed diagnostic code for performance in hot paths
+// TODO: VALIDATION - Add validation that the diagnostic code exists in the library definition before reporting
 export function reportDiagnostic(context: DecoratorContext, target: unknown, code: string, args?: Record<string, unknown>): void {
-	// TODO: Add validation that the diagnostic code exists in the library definition
-	// TODO: Add error handling for reportDiagnostic failures
-	// TODO: Consider caching the prefixed diagnostic code for performance
+	// TODO: TYPE_SAFETY - Add runtime validation that context is valid DecoratorContext
+	// TODO: TYPE_SAFETY - Add validation that target is valid TypeSpec AST node
+	// TODO: TYPE_SAFETY - Add validation that code is non-empty string and exists in diagnostic definitions
+	// TODO: ERROR_HANDLING - Add error handling for reportDiagnostic failures with try-catch
+	// TODO: PERFORMANCE - Consider caching the prefixed diagnostic code for performance optimization
+	// TODO: TYPE_SAFETY - Cast to Diagnostic should be more specific about the shape of the diagnostic object
 	context.program.reportDiagnostic({
 		code: `${DEFAULT_CONFIG.LIBRARY_NAME}.${code}`,
 		target,
-		// TODO: Add validation for args parameter structure
-		// TODO: Consider deep cloning args to prevent mutation
+		// TODO: TYPE_SAFETY - Add validation for args parameter structure to ensure required template params exist
+		// TODO: SECURITY - Consider deep cloning args to prevent mutation and potential security issues
+		// TODO: TYPE_SAFETY - Spread operator should be typed to ensure args matches expected diagnostic parameters
 		...args,
 	} as Diagnostic)
 }
