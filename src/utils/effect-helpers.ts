@@ -82,8 +82,8 @@ export const railwayLogging = {
 	 */
 	logValidationResult: (fileName: string, isValid: boolean, duration: number, details?: string) =>
 		isValid
-			? Effect.logInfo(`  ✅ VALID: ${fileName} (${duration.toFixed(2)}ms)`, { details })
-			: Effect.logError(`  ❌ INVALID: ${fileName} (${duration.toFixed(2)}ms)`, { details }),
+			? Effect.logInfo(`  ✅ VALID: ${fileName} (${duration.toFixed(2)}ms)`, {details})
+			: Effect.logError(`  ❌ INVALID: ${fileName} (${duration.toFixed(2)}ms)`, {details}),
 
 	/**
 	 * Log performance testing with proper Railway composition
@@ -169,7 +169,7 @@ export const railwayErrorHandling = {
 	/**
 	 * Log throughput measurement results in a consistent format - Railway style
 	 */
-	logThroughputResults: (throughputResult: {operationsPerSecond?: number}, processType: string, count: number) =>
+	logThroughputResults: (throughputResult: { operationsPerSecond?: number }, processType: string, count: number) =>
 		Effect.gen(function* () {
 			yield* Effect.logInfo(`📊 ${processType} completed: ${throughputResult.operationsPerSecond?.toFixed(0) ?? 0} ops/sec`)
 			yield* Effect.logInfo(`📊 Processed ${count} items successfully`)
@@ -187,7 +187,7 @@ export const railwayPipeline = {
 	executeAsync: <T>(operation: () => Promise<T>, errorMessage: string) =>
 		Effect.tryPromise({
 			try: operation,
-			catch: (error) => new Error(`${errorMessage}: ${String(error)}`)
+			catch: (error) => new Error(`${errorMessage}: ${String(error)}`),
 		}),
 
 	/**
@@ -196,10 +196,10 @@ export const railwayPipeline = {
 	chainOperations: <A, B, C, E1, E2>(
 		first: Effect.Effect<A, E1>,
 		second: (a: A) => Effect.Effect<B, E2>,
-		third: (b: B) => Effect.Effect<C, E2>
+		third: (b: B) => Effect.Effect<C, E2>,
 	): Effect.Effect<C, E1 | E2> =>
 		Effect.flatMap(first, (a) =>
-			Effect.flatMap(second(a), third)
+			Effect.flatMap(second(a), third),
 		),
 
 	/**
@@ -208,7 +208,7 @@ export const railwayPipeline = {
 	executeWithLogging: <T, E>(
 		operation: Effect.Effect<T, E>,
 		operationName: string,
-		recovery?: (error: E) => Effect.Effect<T, never>
+		recovery?: (error: E) => Effect.Effect<T, never>,
 	): Effect.Effect<T, E> =>
 		Effect.gen(function* () {
 			yield* Effect.logDebug(`Starting ${operationName}...`)
@@ -225,7 +225,7 @@ export const railwayPipeline = {
 	validateAndTransform: <T, U, E>(
 		data: T,
 		validator: (data: T) => Effect.Effect<T, E>,
-		transformer: (data: T) => Effect.Effect<U, E>
+		transformer: (data: T) => Effect.Effect<U, E>,
 	): Effect.Effect<U, E> =>
 		Effect.flatMap(validator(data), transformer),
 
@@ -234,7 +234,7 @@ export const railwayPipeline = {
 	 */
 	executeBatch: <T, U, E>(
 		items: T[],
-		processor: (item: T, index: number) => Effect.Effect<U, E>
+		processor: (item: T, index: number) => Effect.Effect<U, E>,
 	): Effect.Effect<U[], E> =>
 		Effect.all(items.map((item, index) => processor(item, index))),
 
@@ -243,14 +243,14 @@ export const railwayPipeline = {
 	 */
 	measurePerformance: <T, E>(
 		operation: Effect.Effect<T, E>,
-		operationName: string
+		operationName: string,
 	): Effect.Effect<{ result: T; duration: number }, E> =>
 		Effect.gen(function* () {
 			const startTime = performance.now()
 			const result = yield* operation
 			const duration = performance.now() - startTime
 			yield* Effect.logDebug(`${operationName} completed in ${duration.toFixed(2)}ms`)
-			return { result, duration }
+			return {result, duration}
 		}),
 
 	/**
@@ -259,17 +259,13 @@ export const railwayPipeline = {
 	executeWithTimeout: <T, E>(
 		operation: Effect.Effect<T, E>,
 		timeoutMs: number,
-		timeoutMessage: string
+		timeoutMessage: string,
 	): Effect.Effect<T, E | Error> =>
 		Effect.gen(function* () {
 			const timeoutEffect = Effect.sleep(`${timeoutMs} millis`).pipe(
-				Effect.flatMap(() => Effect.fail(new Error(timeoutMessage)))
+				Effect.flatMap(() => Effect.fail(new Error(timeoutMessage))),
 			)
 			return yield* Effect.race(operation, timeoutEffect)
 		}),
 }
 
-// Legacy exports for backward compatibility - prefer railway* versions
-export const effectLogging = railwayLogging
-export const effectValidation = railwayValidation
-export const effectErrorHandling = railwayErrorHandling

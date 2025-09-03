@@ -6,9 +6,9 @@ import {Effect} from "effect"
 import {JSONSchema} from "@effect/schema"
 import {asyncAPIEmitterOptionsEffectSchema} from "./schemas.js"
 import {validateAsyncAPIEmitterOptions} from "./validation.js"
-import type {AsyncAPIEmitterOptions} from "./types.js"
-import {ASYNCAPI_VERSION} from "../constants/asyncapi-constants.js"
 import {SERIALIZATION_FORMAT_OPTION_YAML, SERIALIZATION_FORMAT_OPTIONS} from "../core/serialization-format-option.js"
+import {ASYNCAPI_VERSIONS} from "../constants/asyncapi-constants.js"
+import type {AsyncAPIEmitterOptions} from "./asyncAPIEmitterOptions.js"
 
 /**
  * JSON Schema representation for TypeSpec compatibility
@@ -36,7 +36,7 @@ export const ASYNC_API_EMITTER_OPTIONS_SCHEMA = (() => {
 			properties: {
 				"output-file": {type: "string", nullable: true},
 				"file-type": {type: "string", enum: SERIALIZATION_FORMAT_OPTIONS, nullable: true},
-				"asyncapi-version": {type: "string", enum: [ASYNCAPI_VERSION], nullable: true},
+				"asyncapi-version": {type: "string", enum: [ASYNCAPI_VERSIONS.CURRENT], nullable: true},
 				"omit-unreachable-types": {type: "boolean", nullable: true},
 				"include-source-info": {type: "boolean", nullable: true},
 				"default-servers": {type: "object", additionalProperties: true, nullable: true},
@@ -65,7 +65,7 @@ export const createAsyncAPIEmitterOptions = (input: Partial<AsyncAPIEmitterOptio
 		const defaults: AsyncAPIEmitterOptions = {
 			"output-file": "asyncapi",
 			"file-type": SERIALIZATION_FORMAT_OPTION_YAML,
-			"asyncapi-version": ASYNCAPI_VERSION,
+			"asyncapi-version": ASYNCAPI_VERSIONS.CURRENT,
 			"omit-unreachable-types": false,
 			"include-source-info": false,
 			"validate-spec": true,

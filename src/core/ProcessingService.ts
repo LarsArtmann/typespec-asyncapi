@@ -11,13 +11,14 @@
 import { Effect } from "effect"
 import type { Model, Operation, Program } from "@typespec/compiler"
 import type { AsyncAPIObject, SecuritySchemeObject, OperationObject, MessageObject } from "@asyncapi/parser/esm/spec-types/v3.js"
-import type { SecurityConfig } from "../decorators/security.js"
 import { $lib } from "../lib.js"
-import { ProtocolBindingFactory, type ProtocolType } from "../protocol-bindings.js"
 import { generateProtocolBinding, type AsyncAPIProtocolType } from "../plugins/plugin-system.js"
 import { getMessageConfig, getProtocolConfig } from "../utils/typespec-helpers.js"
 import { createChannelDefinition } from "../utils/asyncapi-helpers.js"
 import { convertModelToSchema, convertTypeToSchemaType } from "../utils/schema-conversion.js"
+import type {SecurityConfig} from "../decorators/securityConfig.js"
+import type {ProtocolType} from "../protocol-type.js"
+import {ProtocolBindingFactory} from "../protocol-binding-factory.js"
 
 /**
  * ProcessingService - Core TypeSpec to AsyncAPI Transformation

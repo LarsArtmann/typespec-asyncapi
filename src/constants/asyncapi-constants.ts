@@ -68,12 +68,6 @@ export const TEST_VERSIONS = {
 } as const
 
 /**
- * AsyncAPI specification version supported by this emitter
- * @deprecated Use ASYNCAPI_VERSIONS.CURRENT instead
- */
-export const ASYNCAPI_VERSION = ASYNCAPI_VERSIONS.CURRENT
-
-/**
  * AsyncAPI document field name for the version specification
  */
 export const ASYNCAPI_VERSION_FIELD = "asyncapi" as const

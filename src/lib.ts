@@ -1,23 +1,23 @@
 /**
  * @fileoverview TypeSpec AsyncAPI Library Definition - Core library infrastructure
- * 
+ *
  * This module provides the foundational library definition for the TypeSpec AsyncAPI emitter,
  * including decorator definitions, diagnostic messages, state management, and utility functions.
- * 
+ *
  * Architecture Components:
  * - Library Definition: Metadata, diagnostics, and state schema for TypeSpec integration
  * - State Management: Centralized state keys for decorator data persistence during compilation
  * - Diagnostic Reporting: Standardized error/warning reporting for TypeSpec validation
  * - Type Safety: Strongly-typed constants and helper functions for reliable emitter operation
- * 
+ *
  * This follows TypeSpec library conventions and integrates with the TypeSpec compiler's
  * plugin system for seamless decorator processing and code generation.
- * 
+ *
  * @module @typespec/asyncapi/lib
  * @author TypeSpec AsyncAPI Team
  * @version 0.1.0-alpha
  * @since 2025-01-01
- * 
+ *
  * @see {@link https://typespec.io/docs/extending-typespec/emitters} TypeSpec Emitter Documentation
  * @see {@link https://www.asyncapi.com/docs/reference/specification/v3.0.0} AsyncAPI 3.0.0 Specification
  */
@@ -31,39 +31,40 @@
 import {createTypeSpecLibrary, type DecoratorContext, type Diagnostic, paramMessage} from "@typespec/compiler"
 
 // Constants - Import centralized constants to eliminate hardcoded values
-import { ASYNCAPI_VERSIONS, DEFAULT_CONFIG } from "./constants/index.js"
+import {DEFAULT_CONFIG} from "./constants/index.js"
+import {ASYNCAPI_VERSIONS} from "./constants/asyncapi-constants.js"
 
 /**
  * TypeSpec AsyncAPI Library Definition - Core library configuration and metadata
- * 
+ *
  * This constant defines the complete library configuration required by TypeSpec for proper
  * integration with the compiler. It includes diagnostic definitions, state management schema,
  * and library metadata that enables decorator processing and error reporting.
- * 
+ *
  * Structure:
  * - name: Library identifier used by TypeSpec compiler for namespacing
  * - diagnostics: Error and warning message definitions with parameterized templates
  * - state: Schema definition for persistent data storage during compilation
- * 
+ *
  * The TypeSpec compiler uses this definition to:
  * - Register diagnostic codes with appropriate severity levels
  * - Initialize state storage for decorator data persistence
  * - Provide IntelliSense and validation in TypeSpec files
  * - Generate comprehensive error messages during compilation
- * 
+ *
  * @constant {TypeSpecLibrary} $lib - Complete library definition for TypeSpec integration
  * @readonly
  * @public
- * 
+ *
  * @example Library usage in TypeSpec files:
  * ```typescript
  * import "@typespec/asyncapi";
- * 
+ *
  * @channel("/users/{userId}/events")
  * @publish
  * op publishUserEvent(): UserEvent;
  * ```
- * 
+ *
  * @see {@link createTypeSpecLibrary} TypeSpec library creation function
  */
 // TODO: TYPE_SAFETY - Add explicit TypeSpecLibrary type import and annotation: const $lib: TypeSpecLibrary
@@ -84,7 +85,7 @@ export const $lib = createTypeSpecLibrary({
 		// TODO: ARCHITECTURE - Group related diagnostics with separating comments (version, channel, message, protocol, security)
 		// TODO: MAINTENANCE - Consider using enum for diagnostic codes to prevent typos and enable refactoring
 		// TODO: VALIDATION - Add runtime validation that all referenced template parameters exist in messages
-		
+
 		// === VERSION VALIDATION DIAGNOSTICS ===
 		"invalid-asyncapi-version": {
 			// TODO: TYPE_SAFETY - severity should use const assertion: "error" as const
@@ -97,7 +98,7 @@ export const $lib = createTypeSpecLibrary({
 				default: paramMessage`AsyncAPI version '${"version"}' is not supported. Only AsyncAPI ${ASYNCAPI_VERSIONS.CURRENT} is supported. Update your emitter options to use "${ASYNCAPI_VERSIONS.CURRENT}".`,
 			},
 		},
-		
+
 		// === CHANNEL VALIDATION DIAGNOSTICS ===
 		"missing-channel-path": {
 			// TODO: TYPE_SAFETY - severity: "error" as const for better type inference
@@ -230,11 +231,11 @@ export const $lib = createTypeSpecLibrary({
 	},
 	/**
 	 * State Management Schema - Decorator data persistence during TypeSpec compilation
-	 * 
+	 *
 	 * This section defines the state storage schema used by decorators to persist data
 	 * throughout the TypeSpec compilation process. Each state key represents a different
 	 * category of data that decorators collect and the emitter later processes.
-	 * 
+	 *
 	 * State Categories:
 	 * - Channel Configuration: Path mappings and channel-specific settings
 	 * - Message Definitions: Schema references and message metadata
@@ -242,13 +243,13 @@ export const $lib = createTypeSpecLibrary({
 	 * - Protocol Settings: Transport-specific configuration (MQTT, WebSocket, etc.)
 	 * - Security Configuration: Authentication and authorization schemes
 	 * - Operation Metadata: Publish/subscribe classifications and routing information
-	 * 
+	 *
 	 * The TypeSpec compiler automatically manages state lifecycle:
 	 * 1. Decorators store data using context.program.stateMap()
 	 * 2. State persists throughout compilation phases
 	 * 3. Emitter retrieves consolidated state for document generation
 	 * 4. State is cleaned up automatically after compilation completion
-	 * 
+	 *
 	 * @see {@link stateKeys} Strongly-typed state key constants
 	 */
 	state: {
@@ -274,22 +275,22 @@ export const $lib = createTypeSpecLibrary({
 
 /**
  * State Keys Constants - Strongly-typed keys for decorator state management
- * 
+ *
  * This constant object provides strongly-typed string literals for accessing state data
  * stored by decorators during TypeSpec compilation. Using these constants instead of
  * raw strings ensures type safety and prevents runtime errors from typos.
- * 
+ *
  * Usage Pattern:
  * ```typescript
  * // In decorators - storing data:
  * const stateMap = context.program.stateMap($lib.stateKeys.channelPaths);
  * stateMap.set(operation, "/users/{userId}/events");
- * 
+ *
  * // In emitters - retrieving data:
  * const channelPaths = context.program.stateMap($lib.stateKeys.channelPaths);
  * const path = channelPaths.get(operation);
  * ```
- * 
+ *
  * State Key Categories:
  * - channelPaths: Maps TypeSpec operations to AsyncAPI channel paths
  * - messageSchemas: Maps message names to their TypeSpec model schemas
@@ -300,11 +301,11 @@ export const $lib = createTypeSpecLibrary({
  * - securitySchemes: Stores security scheme definitions
  * - securityConfigs: Maps TypeSpec targets to @security decorator settings
  * - operationTypes: Maps operations to publish/subscribe classifications
- * 
+ *
  * @constant {StateKeyMap} stateKeys - Type-safe state key constants
  * @readonly
  * @public
- * 
+ *
  * @example Accessing state in decorators:
  * ```typescript
  * export function $channel(context: DecoratorContext, target: Operation, path: string) {
@@ -312,7 +313,7 @@ export const $lib = createTypeSpecLibrary({
  *   stateMap.set(target, path);
  * }
  * ```
- * 
+ *
  * @example Retrieving state in emitters:
  * ```typescript
  * function generateChannels(context: EmitContext) {
@@ -322,7 +323,7 @@ export const $lib = createTypeSpecLibrary({
  *   }
  * }
  * ```
- * 
+ *
  * @see {@link $lib.state} State schema definitions
  */
 // TODO: CRITICAL TYPE_SAFETY - Use keyof typeof $lib.state to ensure stateKeys match state schema exactly
@@ -353,31 +354,31 @@ export const stateKeys = {
 
 /**
  * TypeSpec Diagnostic Reporter Helper
- * 
+ *
  * This is a standard TypeSpec emitter utility function that reports validation errors
  * and diagnostics during TypeSpec compilation. It's used by decorator implementations
  * to provide meaningful error messages when TypeSpec code doesn't conform to AsyncAPI requirements.
- * 
+ *
  * TypeSpec emitters are expected to provide diagnostic reporting capabilities,
  * and this function follows the standard TypeSpec diagnostic pattern by:
  * 1. Accepting a context (from the TypeSpec compiler)
  * 2. Taking a target (the TypeSpec AST node being validated)
  * 3. Using a diagnostic code (prefixed with the emitter namespace)
  * 4. Including optional arguments for error message templating
- * 
+ *
  * @param context - TypeSpec emitter context containing the program reference
  * @param target - The TypeSpec AST node that triggered the diagnostic
  * @param code - Diagnostic code (will be prefixed with "@larsartmann/typespec-asyncapi.")
  * @param args - Optional arguments for error message templating
- * 
- * 
+ *
+ *
  * @returns {void} No return value - diagnostics are reported directly to TypeSpec compiler
- * 
+ *
  * @throws {TypeError} When context parameter is null or undefined
  * @throws {Error} When target parameter is not a valid TypeSpec AST node
  * @throws {Error} When diagnostic code is empty or contains invalid characters
  * @throws {Error} When TypeSpec compiler fails to process the diagnostic
- * 
+ *
  * @example Basic error reporting in decorator:
  * ```typescript
  * export function $channel(context: DecoratorContext, target: Operation, path?: string) {
@@ -390,7 +391,7 @@ export const stateKeys = {
  *   // Process valid channel path...
  * }
  * ```
- * 
+ *
  * @example Validation error with parameters:
  * ```typescript
  * if (!isValidAsyncAPIVersion(version)) {
@@ -399,7 +400,7 @@ export const stateKeys = {
  *   });
  * }
  * ```
- * 
+ *
  * @example Complex validation with multiple parameters:
  * ```typescript
  * if (!isValidChannelPath(path)) {
@@ -410,7 +411,7 @@ export const stateKeys = {
  *   });
  * }
  * ```
- * 
+ *
  * @since 0.1.0-alpha
  * @public
  */

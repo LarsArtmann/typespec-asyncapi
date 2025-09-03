@@ -5,7 +5,7 @@
 
 /**
  * Protocol validation result structure
- * 
+ *
  * Note: This is different from ValidationResult in src/errors/validation-error.ts
  * which is for AsyncAPI document validation with comprehensive metrics.
  * This type is for simple protocol binding validation with basic error/warning lists.

@@ -1,27 +1,7 @@
 import type {DecoratorContext, Model, ModelProperty} from "@typespec/compiler"
 import {$lib} from "../lib.js"
 import {Effect} from "effect"
-
-/**
- * Configuration for @header decorator
- */
-export type HeaderConfig = {
-	/** Header name in the message (defaults to property name) */
-	name?: string;
-	/** Human-readable description of the header */
-	description?: string;
-	/** Whether header is required or optional */
-	required?: boolean;
-	/** Header type information */
-	type?: {
-		/** JSON Schema type */
-		type: 'string' | 'number' | 'boolean';
-		/** Format specification */
-		format?: string;
-		/** Pattern for string validation */
-		pattern?: string;
-	};
-}
+import type {HeaderConfig} from "./headerConfig.js"
 
 /**
  * @header decorator for marking model properties as message headers
@@ -144,6 +124,7 @@ function isValidHeaderName(name: string): boolean {
 
 /**
  * Infer header type from TypeSpec model property type
+ * TODO: Improve!
  */
 function inferHeaderType(property: ModelProperty): HeaderConfig['type'] {
 	// Get the property type

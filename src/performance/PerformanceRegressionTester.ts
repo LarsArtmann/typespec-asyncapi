@@ -6,87 +6,37 @@
  *
  * Key Responsibilities:
  * - Performance baseline establishment and storage
- * - Automated regression detection with configurable thresholds  
+ * - Automated regression detection with configurable thresholds
  * - Performance trend analysis and reporting
  * - Integration with CI/CD pipeline for automated validation
  * - Memory and compilation time regression tracking
  */
 
 // TypeSpec imports
-import type { Program } from "@typespec/compiler"
+import type {Program} from "@typespec/compiler"
 
-// Effect.TS imports  
-import { Effect } from "effect"
+// Effect.TS imports
+import {Effect} from "effect"
 
 // Node.js built-ins
-import { performance } from "perf_hooks"
-import { writeFileSync, readFileSync, existsSync } from "fs"
-import { join } from "path"
+import {performance} from "perf_hooks"
+import {existsSync, readFileSync, writeFileSync} from "fs"
+import {join} from "path"
 
 // Local imports
-import { PerformanceMonitor } from "../core/PerformanceMonitor.js"
+import {PerformanceMonitor} from "../core/PerformanceMonitor.js"
+import type {PerformanceBaseline} from "./PerformanceBaseline.js"
+import type {RegressionTestResult} from "./RegressionTestResult.js"
+import type {PerformanceMetrics} from "./PerformanceMetrics.js"
+import type {RegressionDetection} from "./RegressionDetection.js"
+import type {RegressionTestConfig} from "./RegressionTestConfig.js"
 // PerformanceSnapshot import removed as unused
 // PERFORMANCE_METRICS_SERVICE import removed as unused
 // MEMORY_MONITOR_SERVICE import removed as unused
 
-export type PerformanceBaseline = {
-	version: string
-	timestamp: Date
-	compilationTimeMs: number
-	memoryUsageMB: number
-	throughputOpsPerSec: number
-	averageLatencyMs: number
-	testCaseName: string
-	metadata: {
-		nodeVersion: string
-		platform: string
-		totalOperations: number
-		schemaComplexity: "simple" | "moderate" | "complex" | "enterprise"
-	}
-}
-
-export type RegressionTestResult = {
-	testName: string
-	current: PerformanceMetrics
-	baseline: PerformanceBaseline
-	regressions: RegressionDetection[]
-	passed: boolean
-	timestamp: Date
-}
-
-export type PerformanceMetrics = {
-	compilationTimeMs: number
-	memoryUsageMB: number
-	throughputOpsPerSec: number
-	averageLatencyMs: number
-}
-
-export type RegressionDetection = {
-	metric: keyof PerformanceMetrics
-	currentValue: number
-	baselineValue: number
-	percentageChange: number
-	threshold: number
-	severity: "minor" | "moderate" | "major" | "critical"
-	description: string
-}
-
-export type RegressionTestConfig = {
-	enableBaselines: boolean
-	baselinesFilePath: string
-	regressionThresholds: {
-		compilationTime: number    // % degradation threshold
-		memoryUsage: number       // % degradation threshold  
-		throughput: number        // % degradation threshold
-		latency: number          // % degradation threshold
-	}
-	enableTrendAnalysis: boolean
-	maxBaselinesHistory: number
-	enableCiValidation: boolean
-}
-
 /**
  * Performance regression testing with automated CI/CD integration
+ * TODO: Can we do better with our Types?
  */
 export class PerformanceRegressionTester {
 	private readonly config: RegressionTestConfig
@@ -97,24 +47,28 @@ export class PerformanceRegressionTester {
 		this.config = {
 			enableBaselines: true,
 			baselinesFilePath: "performance-baselines.json",
+			//TODO: MAGIC NUMBERS!
 			regressionThresholds: {
 				compilationTime: 15.0,  // 15% degradation
 				memoryUsage: 20.0,      // 20% degradation  
 				throughput: 10.0,       // 10% degradation
-				latency: 25.0           // 25% degradation
+				latency: 25.0,           // 25% degradation
 			},
 			enableTrendAnalysis: true,
+			//TODO: MAGIC NUMBERS!
 			maxBaselinesHistory: 50,
 			enableCiValidation: true,
-			...config
+			...config,
 		}
 
 		this.performanceMonitor = new PerformanceMonitor({
 			enableMetrics: true,
 			enableMemoryMonitoring: true,
+			//TODO: MAGIC NUMBERS!
 			monitoringInterval: 1000, // 1 second for regression testing
+			//TODO: MAGIC NUMBERS!
 			memoryThreshold: 1000,    // 1GB threshold for regression testing
-			enableLeakDetection: true
+			enableLeakDetection: true,
 		})
 
 		this.baselinePath = join(process.cwd(), this.config.baselinesFilePath)
@@ -130,12 +84,14 @@ export class PerformanceRegressionTester {
 	runRegressionTest(testCaseName: string, testFunction: () => Promise<void>) {
 		return Effect.gen(function* (this: PerformanceRegressionTester) {
 			yield* Effect.log(`🔍 Starting performance regression test: ${testCaseName}`)
-			
+
 			// Start performance monitoring
 			yield* this.performanceMonitor.startMonitoring()
 
-			const startTime = performance.now(); void startTime
-			const startMemory = process.memoryUsage().heapUsed / 1024 / 1024; void startMemory
+			const startTime = performance.now()
+			void startTime
+			const startMemory = process.memoryUsage().heapUsed / 1024 / 1024
+			void startMemory
 
 			try {
 				// Execute the test function  
@@ -148,8 +104,9 @@ export class PerformanceRegressionTester {
 				const metrics: PerformanceMetrics = {
 					compilationTimeMs: endTime - startTime,
 					memoryUsageMB: endMemory,
+					//TODO: MAGIC NUMBERS!
 					throughputOpsPerSec: 1000 / (endTime - startTime), // Approximate
-					averageLatencyMs: endTime - startTime
+					averageLatencyMs: endTime - startTime,
 				}
 
 				yield* Effect.log(`📊 Test completed in ${metrics.compilationTimeMs.toFixed(2)}ms, memory: ${metrics.memoryUsageMB.toFixed(1)}MB`)
@@ -189,7 +146,7 @@ export class PerformanceRegressionTester {
 					baseline: null,
 					regressions: [],
 					passed: true,
-					timestamp: new Date()
+					timestamp: new Date(),
 				} as unknown as RegressionTestResult
 			}
 
@@ -197,19 +154,19 @@ export class PerformanceRegressionTester {
 
 			// Check each metric for regression
 			const metrics: Array<keyof PerformanceMetrics> = ['compilationTimeMs', 'memoryUsageMB', 'throughputOpsPerSec', 'averageLatencyMs']
-			
+
 			for (const metric of metrics) {
 				const currentValue = current[metric]
 				const baselineValue = baseline[metric]
 				const percentageChange = ((currentValue - baselineValue) / baselineValue) * 100
 				const threshold = this.config.regressionThresholds[metric === 'compilationTimeMs' ? 'compilationTime' :
 					metric === 'memoryUsageMB' ? 'memoryUsage' :
-					metric === 'throughputOpsPerSec' ? 'throughput' : 'latency']
+						metric === 'throughputOpsPerSec' ? 'throughput' : 'latency']
 
 				// For throughput, negative change is bad (lower throughput)
 				// For other metrics, positive change is bad (higher time/memory/latency)
-				const isRegression = metric === 'throughputOpsPerSec' ? 
-					percentageChange < -threshold : 
+				const isRegression = metric === 'throughputOpsPerSec' ?
+					percentageChange < -threshold :
 					percentageChange > threshold
 
 				if (isRegression) {
@@ -221,7 +178,7 @@ export class PerformanceRegressionTester {
 						percentageChange,
 						threshold,
 						severity,
-						description: this.generateRegressionDescription(metric, currentValue, baselineValue, percentageChange)
+						description: this.generateRegressionDescription(metric, currentValue, baselineValue, percentageChange),
 					})
 				}
 			}
@@ -233,7 +190,7 @@ export class PerformanceRegressionTester {
 				baseline,
 				regressions,
 				passed,
-				timestamp: new Date()
+				timestamp: new Date(),
 			}
 
 			if (passed) {
@@ -263,7 +220,7 @@ export class PerformanceRegressionTester {
 				const baselinesData = readFileSync(this.baselinePath, 'utf-8')
 				const baselines: Record<string, PerformanceBaseline[]> = JSON.parse(baselinesData) as Record<string, PerformanceBaseline[]>
 				const testBaselines = baselines[testCaseName]
-				
+
 				if (!testBaselines || testBaselines.length === 0) {
 					return null
 				}
@@ -299,13 +256,13 @@ export class PerformanceRegressionTester {
 					nodeVersion: process.version,
 					platform: process.platform,
 					totalOperations: 1,
-					schemaComplexity: "moderate" // Default complexity
-				}
+					schemaComplexity: "moderate", // Default complexity
+				},
 			}
 
 			try {
 				let baselines: Record<string, PerformanceBaseline[]> = {}
-				
+
 				if (existsSync(this.baselinePath)) {
 					const baselinesData = readFileSync(this.baselinePath, 'utf-8')
 					baselines = JSON.parse(baselinesData) as Record<string, PerformanceBaseline[]>
@@ -323,7 +280,7 @@ export class PerformanceRegressionTester {
 				}
 
 				writeFileSync(this.baselinePath, JSON.stringify(baselines, null, 2))
-				
+
 				yield* Effect.log(`📊 Updated baseline for ${testCaseName}`)
 
 			} catch (error) {
@@ -336,6 +293,7 @@ export class PerformanceRegressionTester {
 	 * Check if baseline should be updated (performance improved or first time)
 	 */
 	private shouldUpdateBaseline(current: PerformanceMetrics, baseline: PerformanceBaseline): boolean {
+		//TODO: MAGIC NUMBERS!
 		// Update if performance improved significantly (>5% improvement in any metric)
 		const improvementThreshold = 5.0
 
@@ -367,20 +325,20 @@ export class PerformanceRegressionTester {
 		metric: keyof PerformanceMetrics,
 		currentValue: number,
 		baselineValue: number,
-		percentageChange: number
+		percentageChange: number,
 	): string {
 		const metricName = {
 			compilationTimeMs: "Compilation time",
-			memoryUsageMB: "Memory usage", 
+			memoryUsageMB: "Memory usage",
 			throughputOpsPerSec: "Throughput",
-			averageLatencyMs: "Average latency"
+			averageLatencyMs: "Average latency",
 		}[metric]
 
 		const unit = {
 			compilationTimeMs: "ms",
 			memoryUsageMB: "MB",
 			throughputOpsPerSec: "ops/sec",
-			averageLatencyMs: "ms"
+			averageLatencyMs: "ms",
 		}[metric]
 
 		const direction = percentageChange > 0 ? "increased" : "decreased"
@@ -439,7 +397,7 @@ export class PerformanceRegressionTester {
 		return Effect.gen(function* () {
 			if (!self.config.enableCiValidation) {
 				yield* Effect.log(`⚠️ CI validation disabled`)
-				return { shouldFailBuild: false, reason: "CI validation disabled" }
+				return {shouldFailBuild: false, reason: "CI validation disabled"}
 			}
 
 			const criticalRegressions = results.flatMap(r => r.regressions.filter(reg => reg.severity === "critical"))
@@ -448,18 +406,18 @@ export class PerformanceRegressionTester {
 			if (criticalRegressions.length > 0) {
 				return {
 					shouldFailBuild: true,
-					reason: `${criticalRegressions.length} critical performance regressions detected`
+					reason: `${criticalRegressions.length} critical performance regressions detected`,
 				}
 			}
 
 			if (majorRegressions.length >= 3) {
 				return {
 					shouldFailBuild: true,
-					reason: `${majorRegressions.length} major performance regressions detected (threshold: 3)`
+					reason: `${majorRegressions.length} major performance regressions detected (threshold: 3)`,
 				}
 			}
 
-			return { shouldFailBuild: false, reason: "Performance within acceptable bounds" }
+			return {shouldFailBuild: false, reason: "Performance within acceptable bounds"}
 		})
 	}
 }
@@ -474,22 +432,24 @@ export const createTypeSpecCompilationRegressionTest = (_program: Program) => {
 			compilationTime: 10.0,  // 10% compilation time regression
 			memoryUsage: 15.0,      // 15% memory usage regression
 			throughput: 8.0,        // 8% throughput regression  
-			latency: 12.0           // 12% latency regression
-		}
+			latency: 12.0,           // 12% latency regression
+		},
 	})
 
 	return {
 		tester,
 		runTest: (testName: string) => tester.runRegressionTest(testName, async () => {
 			// Simulate TypeSpec compilation performance test
-			const startTime = performance.now(); void startTime
-			
+			const startTime = performance.now()
+			void startTime
+
 			// This would normally trigger actual TypeSpec compilation
 			// For now, we'll simulate with a lightweight operation
 			await new Promise(resolve => setTimeout(resolve, Math.random() * 100 + 50))
-			
-			const endTime = performance.now(); void endTime
+
+			const endTime = performance.now()
+			void endTime
 			// Note: performance measurement would be handled internally by runRegressionTest
-		})
+		}),
 	}
 }

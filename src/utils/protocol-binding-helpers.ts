@@ -49,15 +49,15 @@ export const protocolBindingHelpers = {
 	 * Validate HTTP method
 	 */
 	isValidHttpMethod: (method: string): method is HttpMethod => {
-		const validMethods: HttpMethod[] = ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS", "CONNECT", "TRACE"];
-		return validMethods.includes(method as HttpMethod);
+		const validMethods: HttpMethod[] = ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS", "CONNECT", "TRACE"]
+		return validMethods.includes(method as HttpMethod)
 	},
 
 	/**
 	 * Validate WebSocket method
 	 */
 	isValidWebSocketMethod: (method: string): method is "GET" | "POST" => {
-		return method === "GET" || method === "POST";
+		return method === "GET" || method === "POST"
 	},
 
 	/**
@@ -81,4 +81,4 @@ export const protocolBindingHelpers = {
 	createDefaultWebSocketChannelBinding: (): BaseWebSocketChannelBinding => ({
 		method: "GET",
 	}),
-};
+}

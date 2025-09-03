@@ -6,13 +6,13 @@ import {
 	detectProjectRoot,
 	getTemplateVariables,
 	hasTemplateVariables,
-	type PathTemplateContext,
-	type PathTemplateVariables,
 	resolvePathTemplate,
 	resolvePathTemplateWithValidation,
 	SUPPORTED_TEMPLATE_VARIABLES,
 	validatePathTemplate,
 } from "../../src/path-templates.js"
+import {PathTemplateContext} from "../../src/path-template-context"
+import {PathTemplateVariables} from "../../src/path-template-variables"
 
 
 //TODO: this file is getting to big split it up

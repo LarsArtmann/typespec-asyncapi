@@ -7,20 +7,12 @@ import {Schema} from "@effect/schema"
 import {asyncAPIEmitterOptionsEffectSchema} from "./schemas.js"
 import {AsyncAPIOptionsValidationError} from "../errors/AsyncAPIOptionsValidationError.js"
 import {AsyncAPIOptionsParseError} from "../errors/AsyncAPIOptionsParseError.js"
-import type {
-	AsyncAPIEmitterOptions,
-	SecuritySchemeConfig
-} from "./types.js"
+import type {SecuritySchemeConfig} from "./securitySchemeConfig.js"
+import type {AsyncAPIEmitterOptions} from "./asyncAPIEmitterOptions.js"
+import type {VersioningConfigInput} from "./versioningConfigInput.js"
+import type {ServerConfigInput} from "./serverConfigInput.js"
 
 // TYPE CONVERSION UTILITIES - Handle readonly/optional property differences
-
-type VersioningConfigInput = {
-	"separate-files"?: boolean;
-	"file-naming"?: "suffix" | "directory" | "prefix";
-	"include-version-info"?: boolean;
-	"version-mappings"?: Record<string, string>;
-	"validate-version-compatibility"?: boolean;
-}
 
 const convertVersioningConfig = (input: VersioningConfigInput): VersioningConfigInput => {
 
@@ -36,20 +28,6 @@ const convertVersioningConfig = (input: VersioningConfigInput): VersioningConfig
 	}
 
 	return result
-}
-
-type ServerConfigInput = {
-	host: string;
-	protocol: string;
-	description?: string;
-	variables?: Record<string, {
-		description?: string;
-		default?: string;
-		enum?: string[];
-		examples?: string[];
-	}>;
-	security?: string[];
-	bindings?: Record<string, unknown>;
 }
 
 const convertServerConfig = (input: ServerConfigInput): ServerConfigInput => {
@@ -85,6 +63,8 @@ type SecuritySchemeConfigInput = SecuritySchemeConfig;
 const convertSecuritySchemeConfig = (input: SecuritySchemeConfigInput): SecuritySchemeConfigInput => {
 	// Since SecuritySchemeConfigInput is now an alias for SecuritySchemeConfig,
 	// we can simplify this to just pass through the input
+
+	//TODO: WHAT THE FUCKING IS GOING ON HERE!!!!
 	return input
 }
 
@@ -163,12 +143,13 @@ const convertOptionsFormat = (result: Record<string, unknown>): AsyncAPIEmitterO
 	copyIfDefined("include-source-info")
 	copyIfDefined("validate-spec")
 	copyIfDefined("additional-properties", (value) => ({...(value as Record<string, unknown>)}))
-	copyIfDefined("protocol-bindings", (value) => [...(value as ("kafka" | "amqp" | "websocket" | "http")[])]) 
+	copyIfDefined("protocol-bindings", (value) => [...(value as ("kafka" | "amqp" | "websocket" | "http")[])])
 
 	if (result["default-servers"] !== undefined && result["default-servers"] !== null) {
 		converted["default-servers"] = Object.fromEntries(
 			Object.entries(result["default-servers"]).map(([key, value]) => [
 				key,
+				//TODO: LIES!!!
 				convertServerConfig(value as ServerConfigInput), // Safe cast - schema validation ensures correct type
 			]),
 		)
@@ -178,7 +159,8 @@ const convertOptionsFormat = (result: Record<string, unknown>): AsyncAPIEmitterO
 		converted["security-schemes"] = Object.fromEntries(
 			Object.entries(result["security-schemes"]).map(([key, value]) => [
 				key,
-				convertSecuritySchemeConfig(value as SecuritySchemeConfigInput), // Safe cast - schema validation ensures correct type
+				//TODO: LIES!!!
+				convertSecuritySchemeConfig(value), // Safe cast - schema validation ensures correct type
 			]),
 		)
 	}

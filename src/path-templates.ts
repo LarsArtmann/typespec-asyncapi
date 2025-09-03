@@ -1,20 +1,9 @@
 import {dirname, isAbsolute, join, resolve} from "node:path"
 import {cwd} from "node:process"
 import {existsSync} from "node:fs"
-
-/**
- * Supported template variables for path resolution
- */
-export type PathTemplateVariables = {
-	/** Current command name (e.g., "typespec", "tsp") */
-	cmd: string;
-	/** Project root directory path */
-	"project-root": string;
-	/** Name of the emitter ("asyncapi") */
-	"emitter-name": string;
-	/** Configured output directory */
-	"output-dir": string;
-}
+import type {TemplateValidationResult} from "./template-validation-result.js"
+import type {PathTemplateContext} from "./path-template-context.js"
+import type {PathTemplateVariables} from "./path-template-variables.js"
 
 /**
  * Template variable patterns for validation and replacement
@@ -32,28 +21,6 @@ export const SUPPORTED_TEMPLATE_VARIABLES = [
 ] as const
 
 export type SupportedTemplateVariable = typeof SUPPORTED_TEMPLATE_VARIABLES[number];
-
-/**
- * Result of template variable validation
- */
-export type TemplateValidationResult = {
-	isValid: boolean;
-	variables: string[];
-	unsupportedVariables: string[];
-	errors: string[];
-}
-
-/**
- * Context for path template resolution
- */
-export type PathTemplateContext = {
-	/** Program context from TypeSpec */
-	program?: unknown;
-	/** Emitter output directory */
-	emitterOutputDir?: string;
-	/** Current working directory override */
-	cwd?: string;
-}
 
 /**
  * Validate template variables in a path string

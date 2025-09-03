@@ -2,120 +2,14 @@ import type {DecoratorContext, Model, ModelProperty, Operation, RekeyableMap, Ty
 import {$lib, reportDiagnostic} from "../lib.js"
 import {Effect} from "effect"
 import {SUPPORTED_PROTOCOLS} from "../constants/protocol-defaults.js"
+import type {KafkaBindingConfig} from "./kafkaBindingConfig.js"
+import type {HttpBindingConfig} from "./httpBindingConfig.js"
+import type {AMQPBindingConfig} from "./AMQPBindingConfig.js"
+import type {MQTTBindingConfig} from "./MQTTBindingConfig.js"
+import type {ProtocolConfig} from "./protocolConfig.js"
+import type {WebSocketBindingConfig} from "./webSocketBindingConfig.js"
+import type {ProtocolType} from "./protocolType.js"
 // import {effectLogging} from "../utils/effect-helpers.js"
-
-//TODO: HARDCODED PROTOCOL UNION! VIOLATES ASYNCAPI EXTENSIBILITY PRINCIPLES!
-//TODO: CRITICAL ASYNCAPI VIOLATION - AsyncAPI spec supports custom protocols, this hardcoded union prevents them!
-//TODO: MACHINE-READABLE INTERFACE FAILURE - Protocol types should be discoverable, not hardcoded literals!
-//TODO: BUSINESS LOGIC LIMITATION - Custom enterprise protocols cannot be added without code changes!
-//TODO: PROPER ASYNCAPI SOLUTION - Use protocol registry or enum from AsyncAPI specification!
-export type ProtocolType = "kafka" | "websocket" | "http" | "amqp" | "mqtt" | "redis";
-
-//TODO: ASYNCAPI STANDARDS VIOLATION! PROTOCOL BINDINGS SCATTERED IN ONE MASSIVE FILE!
-//TODO: CRITICAL ARCHITECTURAL FAILURE - Each protocol binding should be separate module per AsyncAPI best practices!
-//TODO: MACHINE-READABLE INTERFACE VIOLATION - Hardcoded binding types prevent dynamic protocol discovery!
-//TODO: MAINTAINABILITY DISASTER - Adding new protocols requires modifying this monolithic file!
-//TODO: Split this into it's own file!
-export type KafkaBindingConfig = {
-	/** Kafka topic name */
-	topic?: string;
-	/** Partition key field */
-	key?: string;
-	/** Schema registry configuration */
-	schemaIdLocation?: "payload" | "header";
-	/** Schema registry ID */
-	schemaId?: number;
-	/** Schema lookup strategy */
-	schemaLookupStrategy?: "TopicIdStrategy" | "RecordNameStrategy" | "TopicRecordNameStrategy";
-	/** Consumer group ID */
-	groupId?: string;
-	/** Client ID */
-	clientId?: string;
-}
-
-//TODO: Split this into it's own file!
-export type WebSocketBindingConfig = {
-	/** WebSocket method (GET only for WebSocket upgrade) */
-	method?: "GET";
-	/** Query parameters schema */
-	query?: Record<string, unknown>;
-	/** Headers schema */
-	headers?: Record<string, unknown>;
-	/** Subprotocol */
-	subprotocol?: string;
-}
-
-//TODO: Split this into it's own file!
-export type HttpBindingConfig = {
-	/** HTTP method */
-	method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "HEAD" | "OPTIONS";
-	/** Query parameters schema */
-	query?: Record<string, unknown>;
-	/** Headers schema */
-	headers?: Record<string, unknown>;
-	/** Request/response status codes */
-	statusCode?: number;
-}
-
-//TODO: Split this into it's own file!
-export type AMQPBindingConfig = {
-	/** Exchange name */
-	exchange?: string;
-	/** Queue name */
-	queue?: string;
-	/** Routing key */
-	routingKey?: string;
-	//TODO: HARDCODED AMQP CONSTANTS! VIOLATE ASYNCAPI MACHINE-READABLE PRINCIPLES!
-	//TODO: CRITICAL ASYNCAPI VIOLATION - Delivery modes should reference AMQP specification constants!
-	//TODO: MAGIC NUMBER ANTI-PATTERN - 1, 2 literals should be named constants from AMQP spec!
-	//TODO: STANDARDS COMPLIANCE FAILURE - AsyncAPI spec requires proper AMQP binding references!
-	/** Message delivery mode */
-	deliveryMode?: 1 | 2; // 1 = non-persistent, 2 = persistent
-	/** Message priority */
-	priority?: number;
-	/** Message TTL in milliseconds */
-	expiration?: number;
-}
-
-//TODO: Split this into it's own file!
-export type MQTTBindingConfig = {
-	/** Topic name */
-	topic?: string;
-	//TODO: HARDCODED MQTT QOS LEVELS! ANOTHER ASYNCAPI STANDARDS VIOLATION!
-	//TODO: CRITICAL MQTT SPEC VIOLATION - QoS levels should reference MQTT specification constants!
-	//TODO: MAGIC NUMBER DISASTER - 0, 1, 2 literals should be named MQTT_QOS constants!
-	//TODO: ASYNCAPI COMPLIANCE FAILURE - Machine-readable interfaces require proper MQTT binding references!
-	/** Quality of Service level */
-	qos?: 0 | 1 | 2;
-	/** Retain flag */
-	retain?: boolean;
-	/** Clean session flag */
-	cleanSession?: boolean;
-	/** Keep alive interval */
-	keepAlive?: number;
-}
-
-//TODO: Split this into it's own file!
-export type RedisBindingConfig = {
-	/** Redis channel or stream */
-	channel?: string;
-	/** Redis stream consumer group */
-	consumerGroup?: string;
-	/** Redis message ID */
-	messageId?: string;
-}
-
-//TODO: Split this into it's own file!
-export type ProtocolConfig = {
-	/** Protocol type */
-	protocol: ProtocolType;
-	/** Protocol-specific binding configuration */
-	binding: KafkaBindingConfig | WebSocketBindingConfig | HttpBindingConfig | AMQPBindingConfig | MQTTBindingConfig | RedisBindingConfig;
-	/** Additional protocol metadata */
-	version?: string;
-	/** Protocol description */
-	description?: string;
-}
 
 //TODO THIS FUNCTION IS GETTING TO BIG SPLIT IT UP!
 /**
@@ -160,6 +54,7 @@ export function $protocol(
 		}).kind === 'Model'
 	}
 
+	//TODO: GETTING WAY TOO NESTED HERE! SPLIT IT UP!
 	// If it's a Model, we need to extract the actual values from the properties
 	let actualConfig: ProtocolConfig | undefined
 	if (isTypeSpecModel(config)) {
@@ -254,12 +149,12 @@ export function $protocol(
 	const validationResult = validateProtocolBinding(actualConfig.protocol, actualConfig.binding)
 	// TODO: Add logValidationWarnings method to effectLogging
 	// yield* effectLogging.logValidationWarnings("Protocol binding", validationResult.warnings)
-	
+
 	// TODO: Clean up orphaned statements below - dead code from duplication removal
-		Effect.log(`�  Protocol binding validation warnings:`, validationResult.warnings)
-		validationResult.warnings.forEach(warning => {
-			Effect.log(`�  ${warning}`)
-		})
+	Effect.log(`�  Protocol binding validation warnings:`, validationResult.warnings)
+	validationResult.warnings.forEach(warning => {
+		Effect.log(`�  ${warning}`)
+	})
 
 	Effect.log(`✅ Validated protocol config for ${actualConfig.protocol}:`, actualConfig)
 

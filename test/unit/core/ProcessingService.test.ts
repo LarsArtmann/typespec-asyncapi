@@ -10,8 +10,8 @@ import { Effect } from "effect"
 import type { Model, Operation, Program } from "@typespec/compiler"
 import { ProcessingService } from "../../../src/core/ProcessingService.js"
 import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js"
-import type { SecurityConfig } from "../../../src/decorators/security.js"
 import { $lib } from "../../../src/lib.js"
+import {SecurityConfig} from "../../../src/decorators/securityConfig"
 
 describe("ProcessingService", () => {
 	let processingService: ProcessingService

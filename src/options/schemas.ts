@@ -14,6 +14,8 @@ import {validatePathTemplate} from "../path-templates.js"
 // 	SecuritySchemeConfig
 // } from "./types" // Unused for now
 
+//TODO: WE SHOULD USE Effect Schema a LOT MORE!
+
 /**
  * Variable configuration schema for server variables
  * OPTIMIZED: Using Schema.record with branded types and performance optimizations

@@ -1,26 +1,7 @@
 import type {DecoratorContext, Model} from "@typespec/compiler"
 import {$lib} from "../lib.js"
 import {Effect} from "effect"
-
-/**
- * Configuration for @correlationId decorator
- */
-export type CorrelationIdConfig = {
-	/** JSONPointer location of correlation ID in message (e.g., "$message.header#/correlationId") */
-	location: string;
-	/** Human-readable description of the correlation ID */
-	description?: string;
-	/** Whether correlation ID is required or optional */
-	required?: boolean;
-	/** JSON Schema validation for correlation ID format */
-	schema?: {
-		type: 'string' | 'number';
-		pattern?: string;
-		format?: 'uuid' | 'int32' | 'int64' | 'custom';
-		minLength?: number;
-		maxLength?: number;
-	};
-}
+import type {CorrelationIdConfig} from "./correlation-id-config.js"
 
 /**
  * @correlationId decorator for message correlation tracking

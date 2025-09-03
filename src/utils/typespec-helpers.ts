@@ -8,9 +8,9 @@ import {$lib} from "../lib.js"
 import {Effect} from "effect"
 import type {ServerConfig} from "../decorators/server.js"
 import type {MessageConfig} from "../decorators/message.js"
-import type {ProtocolConfig} from "../decorators/protocol.js"
-import type {SecurityConfig} from "../decorators/security.js"
 import type {ServersObject} from "@asyncapi/parser/esm/spec-types/v3.js"
+import type {ProtocolConfig} from "../decorators/protocolConfig.js"
+import type {SecurityConfig} from "../decorators/securityConfig.js"
 
 /**
  * Discover all operations from TypeSpec program
@@ -141,7 +141,7 @@ export function getServerConfigs(program: Program, namespace: Namespace): Map<st
 }
 
 /**
- * Get all server configurations from all namespaces  
+ * Get all server configurations from all namespaces
  * Used for building document-level servers object
  */
 export function getAllServerConfigs(program: Program): Map<Namespace, Map<string, ServerConfig>> {
@@ -149,14 +149,14 @@ export function getAllServerConfigs(program: Program): Map<Namespace, Map<string
 	if (!program.stateMap || typeof program.stateMap !== 'function') {
 		return new Map<Namespace, Map<string, ServerConfig>>()
 	}
-	
+
 	const stateMap = program.stateMap($lib.stateKeys.serverConfigs)
-	
+
 	// Handle case where state map doesn't exist or is not iterable
 	if (!stateMap || typeof stateMap.entries !== 'function') {
 		return new Map<Namespace, Map<string, ServerConfig>>()
 	}
-	
+
 	return stateMap as Map<Namespace, Map<string, ServerConfig>>
 }
 
@@ -170,7 +170,7 @@ export function getMessageConfig(program: Program, model: Model): MessageConfig 
 }
 
 /**
- * Get protocol configuration from TypeSpec decorator state  
+ * Get protocol configuration from TypeSpec decorator state
  * CRITICAL MISSING FUNCTION - Required for AsyncAPI protocol bindings
  */
 export function getProtocolConfig(program: Program, target: Operation | Model): ProtocolConfig | undefined {
@@ -194,34 +194,34 @@ export function getSecurityConfig(program: Program, target: Operation | Model): 
 export function buildServersFromNamespaces(program: Program): ServersObject {
 	const servers: ServersObject = {}
 	const allServerConfigs = getAllServerConfigs(program)
-	
+
 	Effect.log(`🔍 Building servers: found ${allServerConfigs.size} namespace(s) with server configs`)
-	
+
 	for (const [namespace, serverConfigsMap] of allServerConfigs.entries()) {
 		// Get namespace name, handle global namespace
 		const namespaceName = namespace.name === "" || !namespace.name ? "Global" : namespace.name
-		
+
 		// Defensive check: ensure serverConfigsMap is iterable
 		if (!serverConfigsMap || typeof serverConfigsMap.entries !== 'function') {
 			Effect.log(`⚠️ Skipping namespace ${namespaceName}: serverConfigsMap is not iterable`)
 			continue
 		}
-		
+
 		Effect.log(`📡 Processing namespace: ${namespaceName} with ${serverConfigsMap.size} server(s)`)
-		
+
 		for (const [serverName, config] of serverConfigsMap.entries()) {
 			// Use namespace-qualified naming: "ServiceA.prod", "ServiceB.prod"
 			const qualifiedName = namespaceName === "Global" ? serverName : `${namespaceName}.${serverName}`
 			Effect.log(`🖥️  Adding server: ${qualifiedName} (url: ${config.url}, protocol: ${config.protocol})`)
-			
+
 			servers[qualifiedName] = {
 				host: extractHostFromUrl(config.url),
 				protocol: config.protocol,
-				description: config.description || `${namespaceName} ${serverName} server`
+				description: config.description || `${namespaceName} ${serverName} server`,
 			} as const
 		}
 	}
-	
+
 	return servers
 }
 

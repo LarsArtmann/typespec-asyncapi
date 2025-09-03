@@ -1,146 +1,14 @@
 import type {DecoratorContext, Model, Operation} from "@typespec/compiler"
 import {$lib} from "../lib.js"
 import {Effect} from "effect"
-
-/**
- * Supported cloud binding types
- */
-export type CloudBindingType = 
-	| 'kafka'
-	| 'amqp'
-	| 'websocket'
-	| 'aws-sns'
-	| 'aws-sqs'
-	| 'gcp-pubsub'
-	| 'azure-servicebus'
-	| 'redis'
-	| 'pulsar'
-
-/**
- * AWS SNS binding configuration
- */
-export type AwsSnsBindingConfig = {
-	/** Topic ARN or name */
-	topic: string;
-	/** AWS region */
-	region?: string;
-	/** Message attributes configuration */
-	attributes?: Record<string, {
-		type: 'String' | 'Number' | 'Binary';
-		value?: string;
-	}>;
-	/** Filter policy for subscription filtering */
-	filterPolicy?: Record<string, string | string[]>;
-	/** Dead letter queue configuration */
-	deadLetterQueue?: {
-		targetArn: string;
-		maxReceiveCount: number;
-	};
-}
-
-/**
- * AWS SQS binding configuration  
- */
-export type AwsSqsBindingConfig = {
-	/** Queue name or URL */
-	queue: string;
-	/** AWS region */
-	region?: string;
-	/** Message group ID for FIFO queues */
-	messageGroupId?: string;
-	/** Message deduplication ID */
-	messageDeduplicationId?: string;
-	/** Visibility timeout in seconds */
-	visibilityTimeoutSeconds?: number;
-	/** Dead letter queue configuration */
-	deadLetterQueue?: {
-		targetArn: string;
-		maxReceiveCount: number;
-	};
-}
-
-/**
- * Google Cloud Pub/Sub binding configuration
- */
-export type GcpPubsubBindingConfig = {
-	/** Topic name */
-	topic: string;
-	/** Project ID */
-	projectId?: string;
-	/** Subscription name for subscribers */
-	subscription?: string;
-	/** Message ordering key */
-	orderingKey?: string;
-	/** Message attributes */
-	attributes?: Record<string, string>;
-	/** Dead letter policy */
-	deadLetterPolicy?: {
-		deadLetterTopic: string;
-		maxDeliveryAttempts: number;
-	};
-	/** Retry policy */
-	retryPolicy?: {
-		minimumBackoff: string;
-		maximumBackoff: string;
-	};
-}
-
-/**
- * Kafka binding configuration (enhanced)
- */
-export type KafkaBindingConfig = {
-	/** Topic name */
-	topic: string;
-	/** Partition key */
-	key?: string;
-	/** Number of partitions */
-	partitions?: number;
-	/** Replication factor */
-	replicas?: number;
-	/** Cleanup policy */
-	cleanup?: 'delete' | 'compact' | 'compact,delete';
-	/** Retention time in milliseconds */
-	retentionMs?: number;
-	/** Consumer group ID */
-	groupId?: string;
-	/** Schema registry configuration */
-	schemaRegistry?: {
-		url: string;
-		subjectName: string;
-		version?: string;
-	};
-}
-
-/**
- * Union type for all binding configurations
- */
-export type CloudBindingConfig = 
-	| AwsSnsBindingConfig
-	| AwsSqsBindingConfig  
-	| GcpPubsubBindingConfig
-	| KafkaBindingConfig
-	| Record<string, unknown> // For other binding types
-
-/**
- * Complete binding configuration with metadata
- */
-export type CloudBinding = {
-	/** Binding type identifier */
-	bindingType: CloudBindingType;
-	/** Type-specific configuration */
-	config: CloudBindingConfig;
-	/** Binding metadata */
-	metadata?: {
-		/** Environment (dev, staging, prod) */
-		environment?: string;
-		/** Region or availability zone */
-		region?: string;
-		/** Version of binding specification */
-		version?: string;
-		/** Additional tags for organization */
-		tags?: string[];
-	};
-}
+import type {CloudBindingType} from "../constants/cloud-binding-type.js"
+import {getSupportedBindingTypes} from "../constants/cloud-binding-type.js"
+import type {AwsSnsBindingConfig} from "./aws-sns-binding-config.js"
+import type {GoogleCloudPubSubBindingConfig} from "./google-cloud-pub-sub-binding-config.js"
+import type {KafkaBindingConfig} from "./kafka-binding-config.js"
+import type {CloudBindingConfig} from "./cloud-binding-config.js"
+import type {CloudBinding} from "./cloud-binding.js"
+import type {AwsSqsBindingConfig} from "./aws-sqs-binding-config.js"
 
 /**
  * @bindings decorator for cloud provider specific configurations
@@ -194,7 +62,7 @@ export function $bindings(
 	}
 
 	// Validate and normalize configuration
-	const validatedConfig = validateBindingConfig(bindingType as CloudBindingType, config)
+	const validatedConfig = validateBindingConfig(bindingType, config)
 	if (!validatedConfig) {
 		Effect.log(`❌ Invalid binding configuration for ${bindingType}`)
 		return
@@ -202,18 +70,18 @@ export function $bindings(
 
 	// Create complete binding configuration
 	const binding: CloudBinding = {
-		bindingType: bindingType as CloudBindingType,
+		bindingType: bindingType,
 		config: validatedConfig,
-		metadata: extractMetadata(config)
+		metadata: extractMetadata(config),
 	}
 
 	// Store binding in program state
 	const bindingsMap = context.program.stateMap($lib.stateKeys.cloudBindings)
-	
+
 	// Get existing bindings for this target or create new array
 	const existingBindings = (bindingsMap.get(target) as CloudBinding[]) || []
 	existingBindings.push(binding)
-	
+
 	bindingsMap.set(target, existingBindings)
 
 	Effect.log(`✅ Successfully stored ${bindingType} binding for ${target.name}`)
@@ -257,29 +125,14 @@ export function hasCloudBindings(
 /**
  * Validate binding type against supported types
  */
-function isValidBindingType(bindingType: string): boolean {
-	return getSupportedBindingTypes().includes(bindingType as CloudBindingType)
+function isValidBindingType(bindingType: string): bindingType is CloudBindingType {
+	return bindingType in getSupportedBindingTypes()
 }
 
-/**
- * Get all supported binding types
- */
-function getSupportedBindingTypes(): CloudBindingType[] {
-	return [
-		'kafka',
-		'amqp', 
-		'websocket',
-		'aws-sns',
-		'aws-sqs',
-		'gcp-pubsub',
-		'azure-servicebus',
-		'redis',
-		'pulsar'
-	]
-}
 
 /**
  * Validate and normalize binding configuration based on type
+ * TODO: Use Effect.TS!
  */
 function validateBindingConfig(
 	bindingType: CloudBindingType,
@@ -302,6 +155,7 @@ function validateBindingConfig(
 
 /**
  * Validate AWS SNS configuration
+ * TODO: Use Effect.TS!
  */
 function validateAwsSnsConfig(config: Record<string, unknown>): AwsSnsBindingConfig | null {
 	if (!config.topic || typeof config.topic !== 'string') {
@@ -316,7 +170,10 @@ function validateAwsSnsConfig(config: Record<string, unknown>): AwsSnsBindingCon
 
 	// Validate attributes
 	if (config.attributes && typeof config.attributes === 'object') {
-		snsConfig.attributes = config.attributes as Record<string, { type: 'String' | 'Number' | 'Binary', value?: string }>
+		snsConfig.attributes = config.attributes as Record<string, {
+			type: 'String' | 'Number' | 'Binary',
+			value?: string
+		}>
 	}
 
 	// Validate filter policy
@@ -330,7 +187,7 @@ function validateAwsSnsConfig(config: Record<string, unknown>): AwsSnsBindingCon
 		if (dlq.targetArn && dlq.maxReceiveCount) {
 			snsConfig.deadLetterQueue = {
 				targetArn: dlq.targetArn as string,
-				maxReceiveCount: dlq.maxReceiveCount as number
+				maxReceiveCount: dlq.maxReceiveCount as number,
 			}
 		}
 	}
@@ -340,6 +197,7 @@ function validateAwsSnsConfig(config: Record<string, unknown>): AwsSnsBindingCon
 
 /**
  * Validate AWS SQS configuration
+ * TODO: Use Effect.TS!
  */
 function validateAwsSqsConfig(config: Record<string, unknown>): AwsSqsBindingConfig | null {
 	if (!config.queue || typeof config.queue !== 'string') {
@@ -358,8 +216,9 @@ function validateAwsSqsConfig(config: Record<string, unknown>): AwsSqsBindingCon
 
 /**
  * Validate Google Pub/Sub configuration
+ * TODO: Use Effect.TS!
  */
-function validateGcpPubsubConfig(config: Record<string, unknown>): GcpPubsubBindingConfig | null {
+function validateGcpPubsubConfig(config: Record<string, unknown>): GoogleCloudPubSubBindingConfig | null {
 	if (!config.topic || typeof config.topic !== 'string') {
 		Effect.log(`❌ Google Pub/Sub binding requires topic field`)
 		return null
@@ -376,6 +235,7 @@ function validateGcpPubsubConfig(config: Record<string, unknown>): GcpPubsubBind
 
 /**
  * Validate Kafka configuration (enhanced)
+ * TODO: Use Effect.TS!
  */
 function validateKafkaConfig(config: Record<string, unknown>): KafkaBindingConfig | null {
 	if (!config.topic || typeof config.topic !== 'string') {
@@ -396,6 +256,7 @@ function validateKafkaConfig(config: Record<string, unknown>): KafkaBindingConfi
 
 /**
  * Extract metadata from configuration
+ * TODO: improve!
  */
 function extractMetadata(config: Record<string, unknown>): CloudBinding['metadata'] {
 	return {

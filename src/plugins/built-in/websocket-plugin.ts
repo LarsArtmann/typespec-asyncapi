@@ -5,26 +5,10 @@
  */
 
 import {Effect} from "effect"
-import type {ProtocolPlugin} from "../plugin-system.js"
 import {PROTOCOL_DEFAULTS} from "../../constants/protocol-defaults.js"
-
-/**
- * WebSocket message binding data structure
- */
-type WebSocketMessageBinding = {
-	method?: string
-	query?: Record<string, unknown>
-	headers?: Record<string, unknown>
-	bindingVersion?: string
-}
-
-/**
- * WebSocket server binding data structure
- */
-type WebSocketServerBinding = {
-	method?: string
-	bindingVersion?: string
-}
+import type {ProtocolPlugin} from "../protocol-plugin.js"
+import type {WebSocketServerBinding} from "./web-socket-server-binding.js"
+import type {WebSocketMessageBinding} from "./web-socket-message-binding.js"
 
 /**
  * Simple WebSocket plugin implementation
@@ -75,6 +59,6 @@ export const websocketPlugin: ProtocolPlugin = {
 			//TODO: ACTUALLY IMPLEMENT IT YOU LIER!
 
 			// Simple validation for WebSocket configs
-			return typeof config === 'object' && config !== null;
+			return typeof config === 'object' && config !== null
 		}),
 }

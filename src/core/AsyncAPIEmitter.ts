@@ -58,8 +58,13 @@
  */
 
 // TODO: CRITICAL - Import organization inconsistent - group by source and add separating comments
-// TODO: CRITICAL - Effect is imported but only used for logging - consider importing specific functions
+// TODO: CRITICAL - Effect is imported but only used for logging - consider importing specific functions  
 // TODO: CRITICAL - AsyncAPI parser types imported but not validated for version compatibility
+// TODO: CRITICAL - Missing branded types for better type safety - file paths, document IDs should be branded
+// TODO: CRITICAL - No proper interfaces defined - makes testing and mocking impossible
+// TODO: CRITICAL - Should import Result/Either types from Effect for better error handling
+// TODO: CRITICAL - Missing validation imports for input sanitization
+// TODO: CRITICAL - No dependency injection container imports - tight coupling to concrete types
 import {Effect} from "effect"
 import type {AssetEmitter, EmittedSourceFile, SourceFile} from "@typespec/asset-emitter"
 import {TypeEmitter} from "@typespec/asset-emitter"
@@ -77,13 +82,30 @@ import {DEFAULT_SERIALIZATION_FORMAT} from "./serialization-format-option.js"
 /**
  * Micro-kernel AsyncAPI emitter with plugin architecture
  * Enforces separation of concerns and enables hot reload
+ * 
+ * TODO: CRITICAL - Class is too large (491 lines) - should be split into smaller focused classes
+ * TODO: CRITICAL - Extends TypeEmitter but doesn't follow Liskov Substitution Principle properly
+ * TODO: CRITICAL - Missing interfaces - should implement IAsyncAPIEmitter for better testability
+ * TODO: CRITICAL - No factory pattern - constructor does too much initialization work
+ * TODO: CRITICAL - Missing error state management - could be partially initialized after constructor failure
+ * TODO: CRITICAL - No lifecycle management - should support proper shutdown/cleanup
+ * TODO: CRITICAL - Hard-coded string generics - should use branded types for better type safety
+ * TODO: CRITICAL - Missing readonly modifiers on methods that don't mutate state
+ * TODO: CRITICAL - Class mixes infrastructure concerns (logging) with business logic
  */
 export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
+	// TODO: CRITICAL - Dependencies injected as concrete types - should use interfaces/abstract classes
+	// TODO: CRITICAL - No null safety - these could be undefined if constructor fails partially
+	// TODO: CRITICAL - Missing validation that components are properly initialized
+	// TODO: CRITICAL - Components hold mutable state but no thread safety considerations
 	private readonly pipeline: EmissionPipeline
 	private readonly documentGenerator: DocumentGenerator
 	private readonly documentBuilder: DocumentBuilder
 	private readonly performanceMonitor: PerformanceMonitor
 	private readonly pluginRegistry: PluginRegistry
+	// TODO: CRITICAL - AsyncAPIObject is mutable - should be immutable with copy-on-write updates
+	// TODO: CRITICAL - No validation that asyncApiDoc conforms to AsyncAPI 3.0 schema
+	// TODO: CRITICAL - Document state not protected from concurrent access in plugin system
 	private readonly asyncApiDoc: AsyncAPIObject
 
 	/**
@@ -112,26 +134,62 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 	 *
 	 * @internal
 	 */
+	// TODO: CRITICAL - Constructor parameter not validated - could be null/undefined
+	// TODO: CRITICAL - Constructor does too much work - violates SRP, should use factory pattern
+	// TODO: CRITICAL - No error handling - partially constructed objects possible
+	// TODO: CRITICAL - Logging in constructor violates separation of concerns
+	// TODO: CRITICAL - Component creation order may matter but not documented
 	constructor(emitter: AssetEmitter<string, AsyncAPIEmitterOptions>) {
+		// TODO: CRITICAL - super() called without validating emitter parameter
+		// TODO: CRITICAL - Parent constructor could throw but no error handling
 		super(emitter)
 
+		// TODO: CRITICAL - Effect.log not awaited - may not appear in logs
+		// TODO: CRITICAL - Emoji characters could break terminal/log parsers
+		// TODO: CRITICAL - Logging should be injected as dependency, not hard-coded
 		Effect.log(`🔧 AsyncAPIEmitter constructor called`)
 
 		// Initialize micro-kernel components with REAL business logic
 		// TODO: CRITICAL - Component initialization could fail but no error handling
-		// TODO: CRITICAL - No dependency injection - hard to test and mock components
+		// TODO: CRITICAL - No dependency injection - hard to test and mock components  
 		// TODO: CRITICAL - Components created without configuration - should pass options
-		this.pipeline = new EmissionPipeline()
-		this.documentGenerator = new DocumentGenerator()
-		this.documentBuilder = new DocumentBuilder()
-		this.performanceMonitor = new PerformanceMonitor()
-		this.pluginRegistry = new PluginRegistry()
+		// TODO: CRITICAL - No validation that components are compatible with each other
+		// TODO: CRITICAL - Memory allocation without cleanup strategy
+		// TODO: CRITICAL - Components may have interdependencies not expressed
+		// TODO: CRITICAL - Should use Effect.gen for proper error handling and composability
+		try {
+			this.pipeline = new EmissionPipeline()
+			this.documentGenerator = new DocumentGenerator()
+			this.documentBuilder = new DocumentBuilder()
+			this.performanceMonitor = new PerformanceMonitor()
+			this.pluginRegistry = new PluginRegistry()
+		} catch (error) {
+			// TODO: CRITICAL - Partial initialization cleanup not implemented
+			// TODO: CRITICAL - Should dispose any successfully created components
+			Effect.log(`❌ Component initialization failed: ${error}`)
+			throw new Error(`AsyncAPIEmitter initialization failed: ${error}`)
+		}
 
 		Effect.log(`🏗️  About to call createInitialDocument`)
 		// Initialize document structure using REAL DocumentBuilder logic
 		// TODO: CRITICAL - Document initialization could fail but no error handling
 		// TODO: CRITICAL - emitter.getProgram() called without null safety check
-		this.asyncApiDoc = this.documentBuilder.createInitialDocument(emitter.getProgram())
+		// TODO: CRITICAL - createInitialDocument could return invalid/partial document
+		// TODO: CRITICAL - No validation that document conforms to AsyncAPI 3.0 schema
+		// TODO: CRITICAL - Document initialization order may affect plugin system
+		try {
+			const program = emitter.getProgram()
+			if (!program) {
+				throw new Error("Program is null or undefined - cannot create AsyncAPI document")
+			}
+			this.asyncApiDoc = this.documentBuilder.createInitialDocument(program)
+			// TODO: CRITICAL - Should validate document structure after creation
+			// TODO: CRITICAL - No type guard to ensure asyncApiDoc is properly structured
+		} catch (error) {
+			// TODO: CRITICAL - Should clean up already-created components on document init failure
+			Effect.log(`❌ Document initialization failed: ${error}`)
+			throw new Error(`AsyncAPI document initialization failed: ${error}`)
+		}
 		Effect.log(`🏗️  Finished createInitialDocument`)
 	}
 

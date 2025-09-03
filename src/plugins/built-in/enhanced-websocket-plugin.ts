@@ -13,13 +13,13 @@
  */
 
 import { Effect } from "effect"
-import type { ProtocolPlugin } from "../plugin-system.js"
-import type { 
-  WebSocketChannelBinding,
+import type {
   WebSocketMessageBinding,
   WebSocketChannelBindingConfig,
   WebSocketMessageBindingConfig 
 } from "../../protocol-bindings.js"
+import type {ProtocolPlugin} from "../protocol-plugin.js"
+import type {WebSocketChannelBinding} from "../../web-socket-channel-binding.js"
 
 /**
  * TASK M21: WebSocket Plugin Interface Definition  

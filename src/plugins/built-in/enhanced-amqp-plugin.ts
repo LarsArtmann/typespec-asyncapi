@@ -16,7 +16,8 @@
  */
 
 import { Effect } from "effect"
-import type { ProtocolPlugin } from "../plugin-system.js"
+
+import type {ProtocolPlugin} from "../protocol-plugin.js"
 
 /**
  * TASK M24: AMQP Plugin Interface Definition

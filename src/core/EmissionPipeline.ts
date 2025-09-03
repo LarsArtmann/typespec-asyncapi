@@ -16,33 +16,15 @@
 // TODO: CRITICAL - Effect import could be more specific - only Effect.gen and Effect.log are used
 // TODO: CRITICAL - Missing validation that AsyncAPI parser version matches expected v3 types
 import {Effect} from "effect"
-import type {Model, Operation, Program} from "@typespec/compiler"
-import type {AssetEmitter} from "@typespec/asset-emitter"
 import type {AsyncAPIObject} from "@asyncapi/parser/esm/spec-types/v3.js"
-import type {AsyncAPIEmitterOptions} from "../options.js"
-import type {SecurityConfig} from "../decorators/security.js"
 import {buildServersFromNamespaces} from "../utils/typespec-helpers.js"
 // import {effectLogging} from "../utils/effect-helpers.js"
 import {DocumentBuilder} from "./DocumentBuilder.js"
 import {DiscoveryService} from "./DiscoveryService.js"
 import {ProcessingService} from "./ProcessingService.js"
 import {ValidationService} from "./ValidationService.js"
-
-// TODO: CRITICAL - PipelineContext lacks validation or constraints - any values could be passed
-// TODO: CRITICAL - Consider making PipelineContext immutable with readonly properties
-export type PipelineContext = {
-	program: Program
-	asyncApiDoc: AsyncAPIObject
-	emitter: AssetEmitter<string, AsyncAPIEmitterOptions>
-}
-
-// TODO: CRITICAL - DiscoveryResult arrays could be empty but no validation for minimum required elements
-// TODO: CRITICAL - Consider adding metadata fields (discovery timestamp, source locations) for debugging
-export type DiscoveryResult = {
-	operations: Operation[]
-	messageModels: Model[]
-	securityConfigs: SecurityConfig[]
-}
+import type {DiscoveryResult} from "./DiscoveryResult.js"
+import type {PipelineContext} from "./PipelineContext.js"
 
 /**
  * Effect.TS-based emission pipeline with plugin integration

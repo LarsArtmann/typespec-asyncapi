@@ -6,18 +6,18 @@
  */
 
 import {Effect} from "effect"
-import type {ProtocolPlugin} from "../plugin-system.js"
 import {PROTOCOL_DEFAULTS} from "../../constants/protocol-defaults.js"
 import {TEST_VERSIONS} from "../../constants/index.js"
 import type {
-	KafkaServerBinding,
-	KafkaChannelBinding,
-	KafkaOperationBinding,
-	KafkaMessageBinding,
 	KafkaChannelBindingConfig,
 	KafkaOperationBindingConfig,
 	KafkaMessageBindingConfig
 } from "../../protocol-bindings.js"
+import type {ProtocolPlugin} from "../protocol-plugin.js"
+import type {KafkaServerBinding} from "../../kafka-server-binding.js"
+import type {KafkaChannelBinding} from "../../kafka-channel-binding.js"
+import type {KafkaOperationBinding} from "../../kafka-operation-binding.js"
+import type {KafkaMessageBinding} from "../../kafka-message-binding.js"
 
 /**
  * Kafka Plugin - Extracts logic from ProtocolBindingFactory

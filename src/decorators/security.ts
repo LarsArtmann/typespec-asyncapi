@@ -1,6 +1,8 @@
 import type {DecoratorContext, Model, Operation} from "@typespec/compiler"
 import {$lib, reportDiagnostic} from "../lib.js"
 import {Effect} from "effect"
+import type {SecurityConfig} from "./securityConfig.js"
+import type {SecurityScheme} from "./securityScheme.js"
 // TODO: DEAD IMPORT! COMMENTED IMPORT INDICATES INCOMPLETE REFACTORING!
 // TODO: CRITICAL FAILURE - Either import and use effectLogging or remove the comment!
 // import {effectLogging} from "../utils/effect-helpers.js"
@@ -11,118 +13,6 @@ import {Effect} from "effect"
 //TODO: MAINTAINABILITY NIGHTMARE - When OAuth 2.1 or new SASL mechanisms are added, we have to update THIS FILE instead of upgrading a library!
 //TODO: RESEARCH IMMEDIATELY - Use @types/oauth2, @types/sasl, or standard security libraries!
 
-
-export type SecuritySchemeType =
-	"apiKey"
-	| "http"
-	| "oauth2"
-	| "openIdConnect"
-	| "sasl"
-	| "x509"
-	| "symmetricEncryption"
-	| "asymmetricEncryption";
-
-export type ApiKeySecurityScheme = {
-	type: "apiKey";
-	/** Location of the API key */
-	in: "user" | "password" | "query" | "header" | "cookie";
-	/** Description of the security scheme */
-	description?: string;
-}
-
-export type HttpSecurityScheme = {
-	type: "http";
-	/** HTTP authentication scheme */
-	scheme: "basic" | "bearer" | "digest" | "hoba" | "mutual" | "negotiate" | "oauth" | "scram-sha-1" | "scram-sha-256" | "vapid";
-	/** Bearer format (for bearer scheme) */
-	bearerFormat?: string;
-	/** Description of the security scheme */
-	description?: string;
-}
-
-export type OAuth2SecurityScheme = {
-	type: "oauth2";
-	/** OAuth 2.0 flows */
-	flows: {
-		implicit?: {
-			authorizationUrl: string;
-			scopes: Record<string, string>;
-		};
-		password?: {
-			tokenUrl: string;
-			refreshUrl?: string;
-			scopes: Record<string, string>;
-		};
-		clientCredentials?: {
-			tokenUrl: string;
-			refreshUrl?: string;
-			scopes: Record<string, string>;
-		};
-		authorizationCode?: {
-			authorizationUrl: string;
-			tokenUrl: string;
-			refreshUrl?: string;
-			scopes: Record<string, string>;
-		};
-	};
-	/** Description of the security scheme */
-	description?: string;
-}
-
-export type OpenIdConnectSecurityScheme = {
-	type: "openIdConnect";
-	/** OpenID Connect URL */
-	openIdConnectUrl: string;
-	/** Description of the security scheme */
-	description?: string;
-}
-
-export type SaslSecurityScheme = {
-	type: "sasl";
-	/** SASL mechanism */
-	mechanism: "PLAIN" | "SCRAM-SHA-256" | "SCRAM-SHA-512" | "GSSAPI";
-	/** Description of the security scheme */
-	description?: string;
-}
-
-export type X509SecurityScheme = {
-	type: "x509";
-	/** Description of the security scheme */
-	description?: string;
-}
-
-export type SymmetricEncryptionSecurityScheme = {
-	type: "symmetricEncryption";
-	/** Description of the security scheme */
-	description?: string;
-}
-
-export type AsymmetricEncryptionSecurityScheme = {
-	type: "asymmetricEncryption";
-	/** Description of the security scheme */
-	description?: string;
-}
-
-export type SecurityScheme =
-	| ApiKeySecurityScheme
-	| HttpSecurityScheme
-	| OAuth2SecurityScheme
-	| OpenIdConnectSecurityScheme
-	| SaslSecurityScheme
-	| X509SecurityScheme
-	| SymmetricEncryptionSecurityScheme
-	| AsymmetricEncryptionSecurityScheme;
-
-export type SecurityConfig = {
-	/** Security scheme name */
-	name: string;
-	/** Security scheme configuration */
-	scheme: SecurityScheme;
-	/** Required scopes (for OAuth2 and OpenID Connect) */
-	scopes?: string[];
-	/** Additional security metadata */
-	metadata?: Record<string, unknown>;
-}
 
 /**
  * @security decorator for defining AsyncAPI security schemes

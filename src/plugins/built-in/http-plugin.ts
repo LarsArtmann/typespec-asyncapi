@@ -6,14 +6,14 @@
  */
 
 import {Effect} from "effect"
-import type {ProtocolPlugin} from "../plugin-system.js"
 import {PROTOCOL_DEFAULTS} from "../../constants/protocol-defaults.js"
 import type {
-	HttpOperationBinding,
-	HttpMessageBinding,
 	HttpOperationBindingConfig,
 	HttpMessageBindingConfig
 } from "../../protocol-bindings.js"
+import type {ProtocolPlugin} from "../protocol-plugin.js"
+import type {HttpOperationBinding} from "../../http-operation-binding.js"
+import type {HttpMessageBinding} from "../../http-message-binding.js"
 
 /**
  * HTTP Plugin - Extracts logic from ProtocolBindingFactory

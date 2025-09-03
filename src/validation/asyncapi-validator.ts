@@ -7,10 +7,10 @@
 import type {ValidationError, ValidationResult} from "../errors/validation-error.js"
 import {Effect} from "effect"
 import {Parser} from "@asyncapi/parser"
-import type { ValidationStats } from "./ValidationStats.js"
-import type { ValidationOptions } from "./ValidationOptions.js"
+import type {ValidationStats} from "./ValidationStats.js"
+import type {ValidationOptions} from "./ValidationOptions.js"
 import * as NodeFS from "node:fs/promises"
-import { railwayLogging } from "../utils/effect-helpers.js"
+import {railwayLogging} from "../utils/effect-helpers.js"
 
 /**
  * AsyncAPI 3.0 Validator Class using REAL @asyncapi/parser
@@ -39,9 +39,9 @@ export class AsyncAPIValidator {
 
 		// Initialize the REAL AsyncAPI parser
 		this.parser = new Parser()
-		
+
 		// Eager initialization for performance (avoid check on every validation)  
-		this.initialize()
+		this.initializeEffect()
 	}
 
 	/**
@@ -75,7 +75,7 @@ export class AsyncAPIValidator {
 	 * Validate AsyncAPI document using the REAL parser - Effect version
 	 */
 	validateEffect(document: unknown, _identifier?: string): Effect.Effect<ValidationResult, never> {
-		return Effect.gen(this, function*() {
+		return Effect.gen(this, function* () {
 			// Ensure initialization in Effect context
 			yield* this.initializeEffect()
 			const startTime = performance.now()
@@ -95,11 +95,11 @@ export class AsyncAPIValidator {
 								message: `AsyncAPI version must be 3.0.0, got: ${version}`,
 								keyword: 'version-constraint',
 								instancePath: 'asyncapi',
-								schemaPath: '#/asyncapi'
+								schemaPath: '#/asyncapi',
 							}],
 							warnings: [],
 							summary: `AsyncAPI version validation failed: expected 3.0.0, got ${version}`,
-							metrics: this.extractMetrics(null, performance.now() - startTime)
+							metrics: this.extractMetrics(null, performance.now() - startTime),
 						}
 					}
 				}
@@ -176,7 +176,7 @@ export class AsyncAPIValidator {
 	 * Validate AsyncAPI document from file - Effect version
 	 */
 	validateFileEffect(filePath: string): Effect.Effect<ValidationResult, never> {
-		return Effect.gen(this, function*() {
+		return Effect.gen(this, function* () {
 			try {
 				// Use Effect.promise to wrap Node.js file reading
 				const content = yield* Effect.promise(() => NodeFS.readFile(filePath, "utf-8"))
@@ -209,18 +209,21 @@ export class AsyncAPIValidator {
 	 * Validate multiple AsyncAPI documents in batch - Effect version
 	 * Returns an array of ValidationResult objects with optimized performance
 	 */
-	validateBatchEffect(documents: Array<{content: unknown, identifier?: string}>): Effect.Effect<ValidationResult[], never> {
-		return Effect.gen(this, function*() {
+	validateBatchEffect(documents: Array<{
+		content: unknown,
+		identifier?: string
+	}>): Effect.Effect<ValidationResult[], never> {
+		return Effect.gen(this, function* () {
 			const startTime = performance.now()
 			yield* railwayLogging.logInitialization(`batch validation of ${documents.length} documents`)
 
 			// Process documents in parallel using Effect.all with controlled concurrency
-			const validationEffects = documents.map(doc => 
-				this.validateEffect(doc.content, doc.identifier)
+			const validationEffects = documents.map(doc =>
+				this.validateEffect(doc.content, doc.identifier),
 			)
 
 			// Use Effect.all to run validations in parallel with limited concurrency
-			const results = yield* Effect.all(validationEffects, { concurrency: 5 })
+			const results = yield* Effect.all(validationEffects, {concurrency: 5})
 
 			const totalDuration = performance.now() - startTime
 			const validCount = results.filter(r => r.valid).length
@@ -236,7 +239,7 @@ export class AsyncAPIValidator {
 	/**
 	 * Legacy Promise-based validateBatch method for backward compatibility
 	 */
-	async validateBatch(documents: Array<{content: unknown, identifier?: string}>): Promise<ValidationResult[]> {
+	async validateBatch(documents: Array<{ content: unknown, identifier?: string }>): Promise<ValidationResult[]> {
 		return Effect.runPromise(this.validateBatchEffect(documents))
 	}
 
@@ -308,16 +311,16 @@ export class AsyncAPIValidator {
 
 // Export utility function for backward compatibility
 export async function validateAsyncAPIObject(document: unknown, options?: ValidationOptions): Promise<ValidationResult> {
-    const validator = new AsyncAPIValidator(options)
-    return await validator.validate(document)
+	const validator = new AsyncAPIValidator(options)
+	return await validator.validate(document)
 }
 
 // Export Effect-based utility functions
 export function validateAsyncAPIEffect(document: unknown, options?: ValidationOptions): Effect.Effect<ValidationResult, never> {
-    const validator = new AsyncAPIValidator(options)
-    return validator.validateEffect(document)
+	const validator = new AsyncAPIValidator(options)
+	return validator.validateEffect(document)
 }
 
 export function isValidAsyncAPI(result: ValidationResult): boolean {
-    return result.valid && result.errors.length === 0
+	return result.valid && result.errors.length === 0
 }
