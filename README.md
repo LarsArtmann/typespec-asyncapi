@@ -725,7 +725,7 @@ just build                # Ensure decorators are compiled first
 bunx tsp compile --help | grep asyncapi  # Verify emitter registration
 
 # Problem: Invalid AsyncAPI output
-bunx tsp compile example.tsp --emit @larsartmann/typespec-asyncapi --debug
+bunx tsp compile example.tsp --emit @lars-artmann/typespec-asyncapi --debug
 # Solution: Check decorator usage and model structure
 
 # Problem: Memory issues during compilation
@@ -760,7 +760,7 @@ just test-coverage        # Run performance analysis with coverage
 #### **Debug Mode**
 ```bash
 # Enable detailed logging during compilation
-bunx tsp compile example.tsp --emit @larsartmann/typespec-asyncapi --debug
+bunx tsp compile example.tsp --emit @lars-artmann/typespec-asyncapi --debug
 
 # Check build artifacts
 just validate-build       # Comprehensive build validation

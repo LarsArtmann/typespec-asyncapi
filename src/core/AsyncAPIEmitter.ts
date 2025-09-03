@@ -47,7 +47,7 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 	constructor(emitter: AssetEmitter<string, AsyncAPIEmitterOptions>) {
 		super(emitter)
 
-		Effect.log(`🔧 AsyncAPIEmitter constructor called`)
+		log(`🔧 AsyncAPIEmitter constructor called`)
 
 		// Initialize micro-kernel components with REAL business logic
 		// TODO: CRITICAL - Component initialization could fail but no error handling
@@ -60,12 +60,12 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 		// this.performanceMonitor = new PerformanceMonitor()
 		this.pluginRegistry = new PluginRegistry()
 
-		Effect.log(`🏗️  About to call createInitialDocument`)
+		log(`🏗️  About to call createInitialDocument`)
 		// Initialize document structure using REAL DocumentBuilder logic
 		// TODO: CRITICAL - Document initialization could fail but no error handling
 		// TODO: CRITICAL - emitter.getProgram() called without null safety check
 		this.asyncApiDoc = this.documentBuilder.createInitialDocument(emitter.getProgram())
-		Effect.log(`🏗️  Finished createInitialDocument`)
+		log(`🏗️  Finished createInitialDocument`)
 	}
 
 	// TODO: CRITICAL - Override method lacks explicit return type annotation
@@ -85,14 +85,14 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 
 		// TODO: CRITICAL - Log uses special characters that may break JSON parsers or terminals
 		// TODO: CRITICAL - Effect.log not awaited - logs may not appear in production
-		Effect.log("=� AsyncAPI Micro-kernel: Running emission pipeline...")
+		log("=� AsyncAPI Micro-kernel: Running emission pipeline...")
 
 		try {
 			// Execute the emission pipeline using Effect.TS
 			this.executeEmissionPipelineSync(program)
-			Effect.log(" Micro-kernel emission pipeline completed successfully")
+			log(" Micro-kernel emission pipeline completed successfully")
 		} catch (error) {
-			Effect.log(`L Micro-kernel emission pipeline failed: ${error}`)
+			log(`L Micro-kernel emission pipeline failed: ${error}`)
 			throw error
 		}
 
@@ -103,12 +103,12 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 
 	// Add namespace method to handle global namespace emission
 	override namespace(namespace: any) {
-		Effect.log(`🔍 namespace() called for: ${namespace.name}`)
+		log(`🔍 namespace() called for: ${namespace.name}`)
 		return "namespace emitted"
 	}
 
 	override sourceFile(sourceFile: SourceFile<string>): EmittedSourceFile {
-		Effect.log(`🔍 Micro-kernel: Generating file content for ${sourceFile.path}`)
+		log(`🔍 Micro-kernel: Generating file content for ${sourceFile.path}`)
 
 		const options = this.emitter.getOptions()
 		const fileType: "yaml" | "json" = options["file-type"] || "yaml"
@@ -122,18 +122,18 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 	}
 
 	override async writeOutput(sourceFiles: SourceFile<string>[]): Promise<void> {
-		Effect.log("=� Micro-kernel: Writing output files...")
+		log("=� Micro-kernel: Writing output files...")
 
 		await super.writeOutput(sourceFiles)
 
-		Effect.log(" Output files written successfully")
+		log(" Output files written successfully")
 	}
 
 	/**
 	 * Execute the emission pipeline synchronously (simplified)
 	 */
 	private executeEmissionPipelineSync(program: Program): void {
-		Effect.log(`🚀 Starting micro-kernel emission pipeline...`)
+		log(`🚀 Starting micro-kernel emission pipeline...`)
 
 		// Execute pipeline stages through plugins
 		const context = {
@@ -143,9 +143,9 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 		}
 
 		// Run pipeline synchronously using Effect.runSync
-		Effect.runSync(this.pipeline.executePipeline(context))
+		runSync(this.pipeline.executePipeline(context))
 		
-		Effect.log(`✅ Micro-kernel emission pipeline completed!`)
+		log(`✅ Micro-kernel emission pipeline completed!`)
 	}
 
 	/**
@@ -153,7 +153,7 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 	 */
 	/*private executeEmissionPipeline(program: Program) {
 		return Effect.gen(function* (this: AsyncAPIEmitter) {
-			Effect.log(`=� Starting micro-kernel emission pipeline...`)
+			log(`=� Starting micro-kernel emission pipeline...`)
 
 			// Start performance monitoring
 			yield* this.performanceMonitor.startMonitoring()
@@ -170,7 +170,7 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 			// Stop performance monitoring
 			yield* this.performanceMonitor.stopMonitoring()
 
-			Effect.log(` Micro-kernel emission pipeline completed!`)
+			log(` Micro-kernel emission pipeline completed!`)
 		}.bind(this))
 	}*/
 

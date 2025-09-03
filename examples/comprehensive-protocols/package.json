@@ -4,25 +4,25 @@
   "description": "Comprehensive example showing all 5 supported protocols in TypeSpec AsyncAPI",
   "private": true,
   "scripts": {
-    "build": "tsp compile . --emit @larsartmann/typespec-asyncapi",
-    "validate": "asyncapi validate tsp-output/@larsartmann/typespec-asyncapi/asyncapi.json",
+    "build": "tsp compile . --emit @lars-artmann/typespec-asyncapi",
+    "validate": "asyncapi validate tsp-output/@lars-artmann/typespec-asyncapi/asyncapi.json",
     "studio": "asyncapi start studio",
     "clean": "rm -rf tsp-output",
-    "example:kafka": "tsp compile kafka-example.tsp --emit @larsartmann/typespec-asyncapi --output-dir kafka-output",
-    "example:websocket": "tsp compile websocket-example.tsp --emit @larsartmann/typespec-asyncapi --output-dir websocket-output",
-    "example:mqtt": "tsp compile mqtt-example.tsp --emit @larsartmann/typespec-asyncapi --output-dir mqtt-output",
-    "example:amqp": "tsp compile amqp-example.tsp --emit @larsartmann/typespec-asyncapi --output-dir amqp-output",
-    "example:http": "tsp compile http-example.tsp --emit @larsartmann/typespec-asyncapi --output-dir http-output",
+    "example:kafka": "tsp compile kafka-example.tsp --emit @lars-artmann/typespec-asyncapi --output-dir kafka-output",
+    "example:websocket": "tsp compile websocket-example.tsp --emit @lars-artmann/typespec-asyncapi --output-dir websocket-output",
+    "example:mqtt": "tsp compile mqtt-example.tsp --emit @lars-artmann/typespec-asyncapi --output-dir mqtt-output",
+    "example:amqp": "tsp compile amqp-example.tsp --emit @lars-artmann/typespec-asyncapi --output-dir amqp-output",
+    "example:http": "tsp compile http-example.tsp --emit @lars-artmann/typespec-asyncapi --output-dir http-output",
     "validate:all": "npm run validate:kafka && npm run validate:websocket && npm run validate:mqtt && npm run validate:amqp && npm run validate:http",
-    "validate:kafka": "asyncapi validate kafka-output/@larsartmann/typespec-asyncapi/asyncapi.json",
-    "validate:websocket": "asyncapi validate websocket-output/@larsartmann/typespec-asyncapi/asyncapi.json",
-    "validate:mqtt": "asyncapi validate mqtt-output/@larsartmann/typespec-asyncapi/asyncapi.json",
-    "validate:amqp": "asyncapi validate amqp-output/@larsartmann/typespec-asyncapi/asyncapi.json",
-    "validate:http": "asyncapi validate http-output/@larsartmann/typespec-asyncapi/asyncapi.json"
+    "validate:kafka": "asyncapi validate kafka-output/@lars-artmann/typespec-asyncapi/asyncapi.json",
+    "validate:websocket": "asyncapi validate websocket-output/@lars-artmann/typespec-asyncapi/asyncapi.json",
+    "validate:mqtt": "asyncapi validate mqtt-output/@lars-artmann/typespec-asyncapi/asyncapi.json",
+    "validate:amqp": "asyncapi validate amqp-output/@lars-artmann/typespec-asyncapi/asyncapi.json",
+    "validate:http": "asyncapi validate http-output/@lars-artmann/typespec-asyncapi/asyncapi.json"
   },
   "devDependencies": {
     "@asyncapi/cli": "^3.4.2",
-    "@larsartmann/typespec-asyncapi": "file:../..",
+    "@lars-artmann/typespec-asyncapi": "file:../..",
     "@typespec/compiler": "^1.3.0"
   },
   "keywords": [

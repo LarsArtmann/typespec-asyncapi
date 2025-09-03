@@ -1,7 +1,7 @@
 // Example: Comprehensive User Events AsyncAPI specification
 // This demonstrates ALL decorators working together in a real-world scenario
 
-import "@larsartmann/typespec-asyncapi";
+import "@lars-artmann/typespec-asyncapi";
 
 using AsyncAPI;
 
