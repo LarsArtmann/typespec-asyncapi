@@ -20,7 +20,7 @@ import type {StandardizedError} from "./StandardizedError.js"
 import type {ErrorHandlingConfig} from "./ErrorHandlingConfig.js"
 import {TypeResolutionError} from "./TypeResolutionError.js"
 import {CompilationError} from "./CompilationError.js"
-import {PluginError} from "./PluginError.js"
+import {PluginError} from "../../infrastructure/adapters/PluginError.js"
 import {ErrorHandlingMigration} from "./ErrorHandlingMigration.js"
 import {ValidationError} from "./ValidationError.js"
 // join from path removed as unused

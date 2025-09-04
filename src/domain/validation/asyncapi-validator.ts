@@ -4,7 +4,7 @@
  * This file provides backward compatibility exports and aggregates all validation functionality.
  */
 
-import type {ValidationError, ValidationResult} from "../errors/validation-error.js"
+import type {ValidationError, ValidationResult} from "../models/errors/validation-error.js"
 import {Effect} from "effect"
 import {Parser} from "@asyncapi/parser"
 import type {ValidationStats} from "./ValidationStats.js"

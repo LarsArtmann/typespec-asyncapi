@@ -8,10 +8,10 @@
 // Re-export types
 
 // Re-export schemas
-export {asyncAPIEmitterOptionsEffectSchema} from "./options/schemas.js"
+export {asyncAPIEmitterOptionsEffectSchema} from "./schemas.js"
 
 // Re-export validation functions
-export {parseAsyncAPIEmitterOptions, validateAsyncAPIEmitterOptions} from "./options/validation.js"
+export {parseAsyncAPIEmitterOptions, validateAsyncAPIEmitterOptions} from "./validation.js"
 
 // Re-export utility functions and JSONSchema compatibility
 export {

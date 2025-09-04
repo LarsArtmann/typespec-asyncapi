@@ -18,7 +18,7 @@
 
 import { Effect } from "effect"
 
-import type {ProtocolPlugin} from "../protocol-plugin.js"
+import type {ProtocolPlugin} from "./protocol-plugin.js"
 
 /**
  * TASK M28: MQTT Plugin Interface Definition

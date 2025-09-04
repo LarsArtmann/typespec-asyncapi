@@ -17,16 +17,16 @@
 // TODO: CRITICAL - Missing validation that AsyncAPI parser version matches expected v3 types
 import {Effect} from "effect"
 import type {AsyncAPIObject} from "@asyncapi/parser/esm/spec-types/v3.js"
-import {buildServersFromNamespaces} from "../utils/typespec-helpers.js"
+import {buildServersFromNamespaces} from "../../utils/typespec-helpers.js"
 // import {effectLogging} from "../../utils/effect-helpers.js"
 import {DocumentBuilder} from "./DocumentBuilder.js"
 import {DiscoveryService} from "./DiscoveryService.js"
 import {ProcessingService} from "./ProcessingService.js"
-import {ValidationService} from "./ValidationService.js"
+import {ValidationService} from "../validation/ValidationService.js"
 import type {DiscoveryResult} from "./DiscoveryResult.js"
-import type {PipelineContext} from "./PipelineContext.js"
+import type {PipelineContext} from "../../application/services/PipelineContext.js"
 
-import type { IPipelineService } from "./PipelineService.js"
+import type { IPipelineService } from "../../application/services/PipelineService.js"
 
 /**
  * Effect.TS-based emission pipeline with plugin integration

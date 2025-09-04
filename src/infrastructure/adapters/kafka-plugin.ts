@@ -12,12 +12,12 @@ import type {
 	KafkaChannelBindingConfig,
 	KafkaOperationBindingConfig,
 	KafkaMessageBindingConfig
-} from "../../protocol-bindings.js"
-import type {ProtocolPlugin} from "../protocol-plugin.js"
-import type {KafkaServerBinding} from "../../kafka-server-binding.js"
-import type {KafkaChannelBinding} from "../../kafka-channel-binding.js"
-import type {KafkaOperationBinding} from "../../kafka-operation-binding.js"
-import type {KafkaMessageBinding} from "../../kafka-message-binding.js"
+} from "./protocol-bindings.js"
+import type {ProtocolPlugin} from "./protocol-plugin.js"
+import type {KafkaServerBinding} from "./kafka-server-binding.js"
+import type {KafkaChannelBinding} from "./kafka-channel-binding.js"
+import type {KafkaOperationBinding} from "./kafka-operation-binding.js"
+import type {KafkaMessageBinding} from "./kafka-message-binding.js"
 
 /**
  * Kafka Plugin - Extracts logic from ProtocolBindingFactory
@@ -93,7 +93,7 @@ export const kafkaPlugin: ProtocolPlugin = {
 		const rawConfig = ('config' in channelData ? channelData.config : {}) || {}
 		
 		// Type-safe extraction with proper casting
-		const config = rawConfig as KafkaChannelBindingConfig & {topic?: string}
+		const config = rawConfig
 		
 		const binding: KafkaChannelBinding = {
 			bindingVersion: "0.5.0",

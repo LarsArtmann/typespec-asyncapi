@@ -3,35 +3,35 @@
 
 // Memory monitoring
 export * from './memory-monitor.js';
-export * from './MemoryMonitorService.js';
-export * from './MemoryAnalysis.js';
-export * from './MemoryBudget.js';
+export type * from './MemoryMonitorService.js';
+export type * from './MemoryAnalysis.js';
+export type * from './MemoryBudget.js';
 export * from './MemorySnapshot.js';
 export * from './ByteAmount.js';
 
 // Performance metrics
 export * from './metrics.js';
-export * from './PerformanceMetrics.js';
-export * from './PerformanceMetricsService.js';
-export * from './PerformanceMeasurement.js';
-export * from './PerformanceBaseline.js';
+export type * from './PerformanceMetrics.js';
+export type * from './PerformanceMetricsService.js';
+export type * from './PerformanceMeasurement.js';
+export type * from './PerformanceBaseline.js';
 export * from './ConfigurableMetrics.js';
 
 // Performance testing
 export * from './PerformanceRegressionTester.js';
-export * from './RegressionDetection.js';
-export * from './RegressionTestConfig.js';
-export * from './RegressionTestResult.js';
+export type * from './RegressionDetection.js';
+export type * from './RegressionTestConfig.js';
+export type * from './RegressionTestResult.js';
 
 // Utility types and functions
 export * from './PerformanceTypes.js';
-export * from './Durations.js';
+export type * from './Durations.js';
 export * from './MetricBoundaries.js';
-export * from './ThroughputResult.js';
-export * from './ForceGCResult.js';
-export * from './IPerformanceConfig.js';
+export type * from './ThroughputResult.js';
+export type * from './ForceGCResult.js';
+export type * from './IPerformanceConfig.js';
 
 // Performance operations
-export * from './CheckBudgetCompliance.js';
-export * from './ForceGarbageCollection.js';
-export * from './MeasureOperationMemory.js';
+export type * from './CheckBudgetCompliance.js';
+export type * from './ForceGarbageCollection.js';
+export type * from './MeasureOperationMemory.js';

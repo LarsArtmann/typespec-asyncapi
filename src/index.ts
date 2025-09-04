@@ -78,7 +78,7 @@ import { $asyncapi } from "./domain/decorators/server.js";
  * 
  * Required by TypeSpec compiler for proper library integration and decorator processing.
  */
-export { $lib } from "../lib.js";
+export { $lib } from "./lib.js";
 export type { AsyncAPIEmitterOptions } from "./infrastructure/configuration/options.js";
 
 // Register decorators with TypeSpec.AsyncAPI namespace

@@ -13,7 +13,7 @@ import type {
 	AsyncAPIObject, 
 	ReferenceObject
 } from "@asyncapi/parser/esm/spec-types/v3.js"
-import { EmitterErrors, Railway, type StandardizedError } from "../utils/standardized-errors.js"
+import { EmitterErrors, Railway, type StandardizedError } from "../../utils/standardized-errors.js"
 
 /**
  * Validation result with details about compliance and any issues found

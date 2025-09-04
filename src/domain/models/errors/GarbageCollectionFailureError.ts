@@ -1,4 +1,4 @@
-import type {ByteAmount} from "../performance/ByteAmount.js"
+import type {ByteAmount} from "../../../infrastructure/performance/ByteAmount.js"
 
 export class GarbageCollectionFailureError extends Error {
 	readonly _tag: string = "GarbageCollectionFailureError"

@@ -1,4 +1,4 @@
-import type {StandardizedError} from "./StandardizedError.js"
+import type {StandardizedError} from "../../domain/models/StandardizedError.js"
 
 export class PluginError extends Error {
 	readonly _tag = "PluginError"
