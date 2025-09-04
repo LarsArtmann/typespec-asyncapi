@@ -33,8 +33,7 @@ import {
 	type StandardizedError, 
 	createError, 
 	failWith, 
-	Railway,
-	EmitterErrors 
+	Railway 
 } from "../../utils/standardized-errors.js"
 
 export type DocumentStats = {

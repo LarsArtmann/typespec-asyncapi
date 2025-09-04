@@ -212,9 +212,7 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 				)
 				
 				// Create initial document with error handling
-				const document = yield* Effect.try(() => self.documentBuilder.createInitialDocument(program)).pipe(
-					Effect.mapError(error => `AsyncAPI document creation failed: ${error}`)
-				)
+				const document = yield* self.documentBuilder.createInitialDocument(program)
 				
 				// TODO: Add document structure validation here
 				yield* Effect.log(`🏗️  Document structure created successfully`)
@@ -281,22 +279,23 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 		Effect.log("=� AsyncAPI Micro-kernel: Running emission pipeline...")
 
 		// EFFECT.TS CONVERTED: Replaced try/catch with Effect-based pipeline execution
+		const self = this;
 		await Effect.runPromise(
 			Effect.gen(function* () {
 			// Execute the emission pipeline using Effect.TS
-				yield* Effect.try(() => this.executeEmissionPipelineSync(program)).pipe(
+				yield* Effect.sync(() => self.executeEmissionPipelineSync(program)).pipe(
 					Effect.mapError(error => `Emission pipeline execution failed: ${error}`)
 				)
 			Effect.log(" Micro-kernel emission pipeline completed successfully")
 			
-			Effect.log(`✅ AsyncAPI document generation pipeline completed successfully`)
+				yield* Effect.log(`✅ AsyncAPI document generation pipeline completed successfully`)
 			
 			// CRITICAL FIX: Emit the source file to trigger sourceFile() method and write to outputFiles
-			Effect.log(`🔥 ASSETEMITTER FIX: About to emit sourceFile to trigger content generation`)
-			await this.emitter.emitSourceFile(sourceFile)
-			Effect.log(`🔥 ASSETEMITTER FIX: Completed emitSourceFile - should have triggered sourceFile() method`)
+				yield* Effect.log(`🔥 ASSETEMITTER FIX: About to emit sourceFile to trigger content generation`)
+				yield* Effect.tryPromise(() => self.emitter.emitSourceFile(sourceFile))
+				yield* Effect.log(`🔥 ASSETEMITTER FIX: Completed emitSourceFile - should have triggered sourceFile() method`)
 			
-			}.bind(this)).pipe(
+			}).pipe(
 				Effect.tapError(error => Effect.log(`❌ Micro-kernel emission pipeline failed: ${error}`))
 			)
 		)
@@ -356,7 +355,7 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 		const options = this.emitter.getOptions()
 		const fileType: "yaml" | "json" = options["file-type"] || "yaml"
 
-		const content = this.documentGenerator.serializeDocument(this.asyncApiDoc, fileType)
+		const content = Effect.runSync(this.documentGenerator.serializeDocument(this.asyncApiDoc, fileType))
 
 		return {
 			path: sourceFile.path,
@@ -445,8 +444,12 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 				performanceMonitor: this.performanceMonitor
 			}
 
-			// Run pipeline synchronously using Effect.runSync
-			Effect.runSync(this.pipeline.executePipeline(context))
+			// Run pipeline synchronously using Effect.runSync with error handling
+			Effect.runSync(
+				this.pipeline.executePipeline(context).pipe(
+					Effect.mapError(() => new Error("Pipeline execution failed"))
+				)
+			)
 
 			// Calculate execution metrics
 			const endTime = performance.now()

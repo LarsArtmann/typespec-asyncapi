@@ -11,7 +11,7 @@
 import { Effect } from "effect"
 import type { Model, Namespace, Operation, Program } from "@typespec/compiler"
 import { $lib } from "../../lib.js"
-import type {SecurityConfig} from "../domain/decorators/securityConfig.js"
+import type {SecurityConfig} from "../decorators/securityConfig.js"
 
 /**
  * Discovery results containing all discovered TypeSpec elements

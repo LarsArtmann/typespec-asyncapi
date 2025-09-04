@@ -502,7 +502,7 @@ export const railwayErrorRecovery = {
 					Effect.tapError(error => 
 						Effect.logError("Resource cleanup failed", { error: String(error) })
 					),
-					Effect.orElse(() => Effect.unit)
+					Effect.orElse(() => Effect.void)
 				)
 		)
 	}

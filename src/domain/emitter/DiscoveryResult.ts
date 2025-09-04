@@ -2,7 +2,7 @@
 // TODO: CRITICAL - Consider adding metadata fields (discovery timestamp, source locations) for debugging
 import type {Model, Operation} from "@typespec/compiler"
 
-import type {SecurityConfig} from "../domain/decorators/securityConfig.js"
+import type {SecurityConfig} from "../decorators/securityConfig.js"
 
 export type DiscoveryResult = {
 	operations: Operation[]
