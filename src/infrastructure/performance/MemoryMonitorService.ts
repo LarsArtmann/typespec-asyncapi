@@ -1,9 +1,9 @@
 // MEMORY MONITORING SERVICE
-import type {MemoryMonitorInitializationError} from "../errors/MemoryMonitorInitializationError.js"
+import type {MemoryMonitorInitializationError} from "../../domain/models/errors/MemoryMonitorInitializationError.js"
 import type {Effect} from "effect"
-import type {GarbageCollectionFailureError} from "../errors/GarbageCollectionFailureError.js"
-import type {MemoryLeakDetectedError} from "../errors/MemoryLeakDetectedError.js"
-import type {MemoryThresholdExceededError} from "../errors/MemoryThresholdExceededError.js"
+import type {GarbageCollectionFailureError} from "../../domain/models/errors/GarbageCollectionFailureError.js"
+import type {MemoryLeakDetectedError} from "../../domain/models/errors/MemoryLeakDetectedError.js"
+import type {MemoryThresholdExceededError} from "../../domain/models/errors/MemoryThresholdExceededError.js"
 import type {MemoryAnalysis} from "./MemoryAnalysis.js"
 import type {MemoryBudget} from "./MemoryBudget.js"
 import type {MemorySnapshot} from "./MemorySnapshot.js"

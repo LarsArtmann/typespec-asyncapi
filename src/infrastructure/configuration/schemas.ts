@@ -3,7 +3,7 @@
  */
 
 import {Schema} from "@effect/schema"
-import {validatePathTemplate} from "../path-templates.js"
+import {validatePathTemplate} from "../../domain/models/path-templates.js"
 // import type {
 // 	AsyncAPIEmitterOptions,
 // 	VersioningConfig,

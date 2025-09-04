@@ -6,8 +6,8 @@ import {Effect} from "effect"
 import {JSONSchema} from "@effect/schema"
 import {asyncAPIEmitterOptionsEffectSchema} from "./schemas.js"
 import {validateAsyncAPIEmitterOptions} from "./validation.js"
-import {SERIALIZATION_FORMAT_OPTION_YAML, SERIALIZATION_FORMAT_OPTIONS} from "../core/serialization-format-option.js"
-import {ASYNCAPI_VERSIONS} from "../constants/asyncapi-constants.js"
+import {SERIALIZATION_FORMAT_OPTION_YAML, SERIALIZATION_FORMAT_OPTIONS} from "../../domain/models/serialization-format-option.js"
+import {ASYNCAPI_VERSIONS} from "../../constants/asyncapi-constants.js"
 import type {AsyncAPIEmitterOptions} from "./asyncAPIEmitterOptions.js"
 
 /**
