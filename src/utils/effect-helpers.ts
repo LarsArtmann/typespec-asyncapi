@@ -5,8 +5,8 @@
 
 import {Effect} from "effect"
 import type {EmitContext} from "@typespec/compiler"
-import type {AsyncAPIEmitterOptions} from "../options.js"
-import {SpecGenerationError} from "../errors/SpecGenerationError.js"
+import type {AsyncAPIEmitterOptions} from "../infrastructure/configuration/options.js"
+import {SpecGenerationError} from "../domain/models/errors/SpecGenerationError.js"
 
 /**
  * Railway Programming Logging - All logging properly composed within Effect contexts
@@ -267,5 +267,244 @@ export const railwayPipeline = {
 			)
 			return yield* Effect.race(operation, timeoutEffect)
 		}),
+}
+
+/**
+ * ERROR RECOVERY MECHANISMS (M020) - Comprehensive Error Recovery Patterns
+ * 
+ * Implements graceful degradation, automatic retry, circuit breaker patterns,
+ * and comprehensive fallback strategies for all failure modes.
+ */
+export const railwayErrorRecovery = {
+	/**
+	 * Retry operations with exponential backoff
+	 */
+	retryWithBackoff: <T, E>(
+		operation: Effect.Effect<T, E>,
+		maxRetries: number = 3,
+		baseDelayMs: number = 100,
+		maxDelayMs: number = 5000
+	): Effect.Effect<T, E> => {
+		const retrySchedule = Effect.Schedule.exponential(`${baseDelayMs} millis`, 2.0)
+			.pipe(
+				Effect.Schedule.upTo(`${maxDelayMs} millis`),
+				Effect.Schedule.compose(Effect.Schedule.recurs(maxRetries))
+			)
+
+		return operation.pipe(
+			Effect.retry(retrySchedule),
+			Effect.tapError(error => 
+				Effect.logWarning(`Operation failed after ${maxRetries} retries`, { error: String(error) })
+			)
+		)
+	},
+
+	/**
+	 * Circuit breaker pattern for external dependencies
+	 */
+	circuitBreaker: <T, E>(
+		operation: Effect.Effect<T, E>,
+		failureThreshold: number = 5,
+		timeoutMs: number = 10000
+	): Effect.Effect<T, E | Error> => {
+		// Simple circuit breaker implementation
+		let failureCount = 0
+		let lastFailureTime = 0
+		
+		return Effect.gen(function* () {
+			const now = Date.now()
+			
+			// Check if circuit is open (too many failures recently)
+			if (failureCount >= failureThreshold && (now - lastFailureTime) < timeoutMs) {
+				return yield* Effect.fail(new Error("Circuit breaker is OPEN - too many recent failures"))
+			}
+			
+			// Reset failure count after timeout period
+			if ((now - lastFailureTime) >= timeoutMs) {
+				failureCount = 0
+			}
+			
+			// Execute operation with failure tracking
+			return yield* operation.pipe(
+				Effect.tapError(() => Effect.sync(() => {
+					failureCount++
+					lastFailureTime = now
+				})),
+				Effect.tap(() => Effect.sync(() => {
+					// Reset on success
+					failureCount = 0
+				}))
+			)
+		})
+	},
+
+	/**
+	 * Graceful degradation with fallback values
+	 */
+	gracefulDegrade: <T, E>(
+		primaryOperation: Effect.Effect<T, E>,
+		fallbackValue: T,
+		degradedModeMessage?: string
+	): Effect.Effect<T, never> => {
+		return primaryOperation.pipe(
+			Effect.orElse(() => 
+				Effect.gen(function* () {
+					if (degradedModeMessage) {
+						yield* Effect.logWarning(degradedModeMessage)
+					}
+					yield* Effect.logInfo("Switching to degraded mode with fallback value")
+					return fallbackValue
+				})
+			)
+		)
+	},
+
+	/**
+	 * Multi-level fallback chain
+	 */
+	fallbackChain: <T, E>(
+		operations: Effect.Effect<T, E>[],
+		finalFallback: T
+	): Effect.Effect<T, never> => {
+		if (operations.length === 0) {
+			return Effect.succeed(finalFallback)
+		}
+
+		const [primary, ...alternatives] = operations
+		
+		return primary.pipe(
+			Effect.orElse(() => {
+				if (alternatives.length > 0) {
+					return railwayErrorRecovery.fallbackChain(alternatives, finalFallback)
+				} else {
+					return Effect.succeed(finalFallback)
+				}
+			})
+		)
+	},
+
+	/**
+	 * Partial failure handling - collect successes and report failures
+	 */
+	partialFailureHandling: <T, E>(
+		operations: Effect.Effect<T, E>[],
+		minSuccessCount: number = 1
+	): Effect.Effect<{ successes: T[]; failures: E[] }, Error> => {
+		return Effect.gen(function* () {
+			const results = yield* Effect.allWith(
+				operations.map(op => 
+					op.pipe(
+						Effect.either
+					)
+				),
+				{ concurrency: "inherit" }
+			)
+
+			const successes: T[] = []
+			const failures: E[] = []
+
+			for (const result of results) {
+				if (result._tag === "Right") {
+					successes.push(result.right)
+				} else {
+					failures.push(result.left)
+				}
+			}
+
+			if (successes.length < minSuccessCount) {
+				return yield* Effect.fail(new Error(
+					`Insufficient successes: ${successes.length}/${minSuccessCount} required`
+				))
+			}
+
+			return { successes, failures }
+		})
+	},
+
+	/**
+	 * Timeout with graceful recovery
+	 */
+	timeoutWithRecovery: <T, E>(
+		operation: Effect.Effect<T, E>,
+		timeoutMs: number,
+		recoveryOperation: Effect.Effect<T, never>
+	): Effect.Effect<T, E> => {
+		const timeoutEffect = Effect.sleep(`${timeoutMs} millis`).pipe(
+			Effect.flatMap(() => 
+				Effect.gen(function* () {
+					yield* Effect.logWarning(`Operation timed out after ${timeoutMs}ms, switching to recovery`)
+					return yield* recoveryOperation
+				})
+			)
+		)
+
+		return Effect.race(operation, timeoutEffect)
+	},
+
+	/**
+	 * Bulkhead pattern - isolate failures
+	 */
+	bulkheadIsolation: <T, E>(
+		operation: Effect.Effect<T, E>,
+		maxConcurrent: number = 10
+	): Effect.Effect<T, E | Error> => {
+		// Simplified bulkhead using semaphore
+		return Effect.gen(function* () {
+			const semaphore = yield* Effect.Semaphore.make(maxConcurrent)
+			return yield* semaphore.withPermit(operation)
+		})
+	},
+
+	/**
+	 * Health check with automatic recovery
+	 */
+	healthCheckWithRecovery: <T, E>(
+		healthCheck: Effect.Effect<boolean, E>,
+		operation: Effect.Effect<T, E>,
+		recoveryAction: Effect.Effect<void, never>
+	): Effect.Effect<T, E | Error> => {
+		return Effect.gen(function* () {
+			const isHealthy = yield* healthCheck.pipe(
+				Effect.orElse(() => Effect.succeed(false))
+			)
+
+			if (!isHealthy) {
+				yield* Effect.logWarning("Health check failed, attempting recovery")
+				yield* recoveryAction
+				
+				// Re-check health after recovery
+				const isHealthyAfterRecovery = yield* healthCheck.pipe(
+					Effect.orElse(() => Effect.succeed(false))
+				)
+				
+				if (!isHealthyAfterRecovery) {
+					return yield* Effect.fail(new Error("System unhealthy and recovery failed"))
+				}
+			}
+
+			return yield* operation
+		})
+	},
+
+	/**
+	 * Resource cleanup with error recovery
+	 */
+	withResourceCleanup: <T, R, E>(
+		acquire: Effect.Effect<R, E>,
+		use: (resource: R) => Effect.Effect<T, E>,
+		release: (resource: R) => Effect.Effect<void, never>
+	): Effect.Effect<T, E> => {
+		return Effect.acquireUseRelease(
+			acquire,
+			use,
+			(resource, exit) => 
+				release(resource).pipe(
+					Effect.tapError(error => 
+						Effect.logError("Resource cleanup failed", { error: String(error) })
+					),
+					Effect.orElse(() => Effect.unit)
+				)
+		)
+	}
 }
 

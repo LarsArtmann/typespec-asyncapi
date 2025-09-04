@@ -45,30 +45,26 @@ import { setTypeSpecNamespace } from "@typespec/compiler";
 // TODO: PERFORMANCE - Selective imports reduce bundle size and improve compilation performance
 import { Effect } from "effect";
 
-// Internal Type Definitions
-// TODO: TYPE_SAFETY - Consider creating a types barrel export from ./types/index.js for better organization
-import type { AsyncAPIEmitterOptions } from "./options.js";
+// Internal Type Definitions  
+import type { AsyncAPIEmitterOptions } from "./infrastructure/configuration/options.js";
 
-// AsyncAPI Decorator Imports - Core decorator functions for TypeSpec annotations
-// TODO: CRITICAL ARCHITECTURE - Consider using a barrel export from decorators/index.ts to simplify imports and reduce coupling
-// TODO: CRITICAL MAINTENANCE - 11 individual decorator imports create high maintenance overhead - use barrel export pattern
-// TODO: TYPE_SAFETY - Decorator import order should match registration order for consistency and validation
-// TODO: TYPE_SAFETY - Add type annotations for all imported decorator functions to ensure proper signatures
-// TODO: VALIDATION - Add runtime validation that all decorator functions are properly exported and functional
-/** @channel decorator - Defines AsyncAPI channel configuration for message routing */
-import { $channel } from "./decorators/channel.js";
-/** @publish decorator - Marks operations as message publishing (send) operations */
-import { $publish } from "./decorators/publish.js";
-/** @subscribe decorator - Marks operations as message subscription (receive) operations */
-import { $subscribe } from "./decorators/subscribe.js";
-/** @server decorator - Defines AsyncAPI server connection configuration */
-import { $server, $asyncapi, $tags, $correlationId, $bindings } from "./decorators/server.js";
-/** @message decorator - Defines AsyncAPI message schema and metadata */
-import { $message, $header } from "./decorators/message.js";
-/** @protocol decorator - Defines protocol-specific bindings (MQTT, WebSocket, etc.) */
-import { $protocol } from "./decorators/protocol.js";
-/** @security decorator - Defines authentication and authorization requirements */
-import { $security } from "./decorators/security.js";
+// AsyncAPI Decorator Imports - Using new domain-driven architecture
+import { 
+    $channel,
+    $publish,
+    $subscribe,
+    $server,
+    $message,
+    $protocol,
+    $security,
+    $header,
+    $correlationId,
+    $tags,
+    $bindings
+} from "./domain/decorators/index.js";
+
+// Handle missing decorators from server.js (need to be imported separately)
+import { $asyncapi } from "./domain/decorators/server.js";
 
 // TypeSpec Library Integration - Required exports for TypeSpec compiler
 /**
@@ -83,8 +79,7 @@ import { $security } from "./decorators/security.js";
  * Required by TypeSpec compiler for proper library integration and decorator processing.
  */
 export { $lib } from "./lib.js";
-// TODO: Consider re-exporting all types from a single types.ts file for better organization
-export type { AsyncAPIEmitterOptions } from "./options.js";
+export type { AsyncAPIEmitterOptions } from "./infrastructure/configuration/options.js";
 
 // Register decorators with TypeSpec.AsyncAPI namespace
 // TODO: CRITICAL TYPE_SAFETY - Extract namespace string to a constant to avoid duplication and typos across codebase
@@ -186,11 +181,7 @@ export { $channel, $publish, $subscribe, $server, $asyncapi, $message, $header, 
 // TODO: CRITICAL - Missing timeout handling for potentially long-running emit operations
 export async function $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): Promise<void> {
     // Import the working Effect.TS emitter
-    // TODO: CRITICAL - Pre-import at module level instead of dynamic import for better performance and early error detection
-    // TODO: CRITICAL - Add error handling for import failure with meaningful error message for users
-    // TODO: CRITICAL - Add type assertion for imported function to ensure generateAsyncAPIWithEffect matches expected signature
-    // TODO: CRITICAL - Dynamic import creates circular dependency risk - validate import graph
-    const { generateAsyncAPIWithEffect } = await import("./emitter-with-effect.js");
+    const { generateAsyncAPIWithEffect } = await import("./application/services/emitter-with-effect.js");
     
     // Run the Effect-based emitter with proper error handling
     const emissionEffect = generateAsyncAPIWithEffect(context);

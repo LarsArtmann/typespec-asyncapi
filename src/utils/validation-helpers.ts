@@ -5,7 +5,7 @@
 
 import {Effect} from "effect"
 import type {AsyncAPIObject} from "@asyncapi/parser/esm/spec-types/v3.js"
-import {ValidationError} from "../core/ValidationError.js"
+import {ValidationError} from "../domain/models/ValidationError.js"
 import {ASYNCAPI_VERSIONS} from "../constants/asyncapi-constants.js"
 
 
