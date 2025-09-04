@@ -7,9 +7,9 @@ import type {IPlugin} from "./IPlugin.js"
 export class PluginLoadingError extends PluginError {
 	constructor(
 		public readonly plugin: IPlugin,
-		public readonly operation: string,
+		public override readonly operation: string,
 		public readonly reason: string,
-		public readonly cause?: Error,
+		public override readonly cause?: Error,
 	) {
 		super("PluginLoadingError", plugin, operation, reason, cause)
 	}
