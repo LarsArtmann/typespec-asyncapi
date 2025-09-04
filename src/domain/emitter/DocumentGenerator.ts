@@ -33,7 +33,7 @@ import {
 	type StandardizedError, 
 	createError, 
 	failWith, 
-	Railway 
+	railway 
 } from "../../utils/standardized-errors.js"
 
 export type DocumentStats = {
@@ -241,7 +241,7 @@ export class DocumentGenerator {
 	private generateDocumentStats(document: AsyncAPIObject): Effect.Effect<DocumentStats, StandardizedError> {
 		return Effect.gen(function* () {
 			// Safe statistics generation with error handling
-			return yield* Railway.trySync(() => {
+			return yield* railway.trySync(() => {
 				const stats: DocumentStats = {
 					channels: Object.keys(document.channels || {}).length,
 					operations: Object.keys(document.operations || {}).length,
@@ -285,7 +285,7 @@ export class DocumentGenerator {
 			yield* Effect.log(`🔧 Optimizing document structure...`)
 
 			// Safe document optimization with error handling
-			const optimized = yield* Railway.trySync(() => {
+			const optimized = yield* railway.trySync(() => {
 				// Deep clone to avoid modifying original
 				const cloned = JSON.parse(JSON.stringify(document)) as AsyncAPIObject
 				
@@ -371,7 +371,7 @@ export class DocumentGenerator {
 
 			if (format === "json") {
 				// Safe JSON parsing with Railway programming
-				const isValidJson = yield* Railway.trySync(() => {
+				const isValidJson = yield* railway.trySync(() => {
 					JSON.parse(content)
 					return true
 				}, { context: { operation: "JSON validation", format, contentLength: content.length } })

@@ -5,7 +5,7 @@
  */
 
 import type {ValidationError, ValidationResult} from "../models/errors/validation-error.js"
-import {Effect} from "effect"
+import {Effect, Schedule} from "effect"
 import {Parser} from "@asyncapi/parser"
 import type {ValidationStats} from "./ValidationStats.js"
 import type {ValidationOptions} from "./ValidationOptions.js"
@@ -48,7 +48,7 @@ export class AsyncAPIValidator {
 	 * Initialize the validator with AsyncAPI parser - Railway programming style
 	 */
 	initializeEffect(): Effect.Effect<void, never> {
-		return Effect.gen(this, function* () {
+		return Effect.gen(function* () {
 			if (this.initialized) {
 				return
 			}
@@ -56,7 +56,7 @@ export class AsyncAPIValidator {
 			yield* railwayLogging.logInitialization("AsyncAPI 3.0.0 Validator with REAL @asyncapi/parser")
 			this.initialized = true
 			yield* railwayLogging.logInitializationSuccess("AsyncAPI 3.0.0 Validator")
-		})
+		}.bind(this))
 	}
 
 	/**
@@ -75,7 +75,7 @@ export class AsyncAPIValidator {
 	 * Validate AsyncAPI document using the REAL parser - Effect version
 	 */
 	validateEffect(document: unknown, _identifier?: string): Effect.Effect<ValidationResult, never> {
-		return Effect.gen(this, function* () {
+		return Effect.gen(function* () {
 			// Ensure initialization in Effect context
 			yield* this.initializeEffect()
 			const startTime = performance.now()
@@ -121,28 +121,56 @@ export class AsyncAPIValidator {
 				return docObjectResult as ValidationResult
 			}
 
-			// Use the REAL AsyncAPI parser with Effect tryPromise wrapper
+			// Use the REAL AsyncAPI parser with Effect tryPromise wrapper, retry patterns, and timeout
 			const parseResult = yield* Effect.tryPromise({
 				try: () => this.parser.parse(content),
 				catch: (error) => new Error(`Parser failed: ${error instanceof Error ? error.message : String(error)}`)
 			}).pipe(
-				Effect.catchAll((error) => Effect.sync(() => {
-					const duration = performance.now() - startTime
-					this.updateStats(duration)
-					Effect.runSync(Effect.logError(`AsyncAPI parser failed: ${error.message}`))
-					return {
-						valid: false,
-						errors: [{
-							message: error.message,
-							keyword: "parse-error",
-							instancePath: "",
-							schemaPath: "",
-						}],
-						warnings: [],
-						summary: `Parser failed with error (${duration.toFixed(2)}ms)`,
-						metrics: this.extractMetrics(null, duration),
+				// Add timeout for long-running parsing operations (30 seconds)
+				Effect.timeout("30 seconds"),
+				// Add retry pattern with exponential backoff for transient parser failures
+				Effect.retry(Schedule.exponential("100 millis").pipe(
+					Schedule.compose(Schedule.recurs(3)),
+					Schedule.either(Schedule.spaced("500 millis").pipe(Schedule.recurs(2)))
+				)),
+				Effect.tapError(attempt => Effect.log(`⚠️  Parser attempt failed, retrying: ${attempt}`)),
+				Effect.catchAll((error) => {
+					if (error.message?.includes("timeout")) {
+						return Effect.sync(() => {
+							const duration = performance.now() - startTime
+							this.updateStats(duration)
+							Effect.runSync(Effect.logError(`AsyncAPI parser timed out after 30 seconds`))
+							return {
+								valid: false,
+								errors: [{
+									message: "Parser operation timed out - document may be too large or complex",
+									keyword: "timeout-error",
+									instancePath: "",
+									schemaPath: ""
+								}] as ValidationError[],
+								warnings: [],
+								metrics: { duration, validatedAt: new Date() }
+							}
+						})
 					}
-				}))
+					// Handle non-timeout errors
+					return Effect.sync(() => {
+						const duration = performance.now() - startTime
+						this.updateStats(duration)
+						Effect.runSync(Effect.logError(`AsyncAPI parser failed after retries: ${error.message}`))
+						return {
+							valid: false,
+							errors: [{
+								message: error.message,
+								keyword: "parse-error",
+								instancePath: "",
+								schemaPath: "",
+							}] as ValidationError[],
+							warnings: [],
+							metrics: { duration, validatedAt: new Date() }
+						}
+					})
+				})
 			)
 
 			// Return early if parsing failed
@@ -191,7 +219,7 @@ export class AsyncAPIValidator {
 					metrics,
 				}
 			}
-		})
+		}.bind(this))
 	}
 
 	/**
@@ -205,7 +233,7 @@ export class AsyncAPIValidator {
 	 * Validate AsyncAPI document from file - Effect version
 	 */
 	validateFileEffect(filePath: string): Effect.Effect<ValidationResult, never> {
-		return Effect.gen(this, function* () {
+		return Effect.gen(function* () {
 			// Use Effect.tryPromise to wrap Node.js file reading with proper error handling
 			const content = yield* Effect.tryPromise({
 				try: () => NodeFS.readFile(filePath, "utf-8"),
@@ -234,7 +262,7 @@ export class AsyncAPIValidator {
 			}
 
 			return yield* this.validateEffect(content as string, filePath)
-		})
+		}.bind(this))
 	}
 
 	/**
@@ -252,7 +280,7 @@ export class AsyncAPIValidator {
 		content: unknown,
 		identifier?: string
 	}>): Effect.Effect<ValidationResult[], never> {
-		return Effect.gen(this, function* () {
+		return Effect.gen(function* () {
 			const startTime = performance.now()
 			yield* railwayLogging.logInitialization(`batch validation of ${documents.length} documents`)
 
@@ -272,7 +300,7 @@ export class AsyncAPIValidator {
 			yield* Effect.logInfo(`📊 Valid: ${validCount}, Invalid: ${invalidCount}`)
 
 			return results
-		})
+		}.bind(this))
 	}
 
 	/**

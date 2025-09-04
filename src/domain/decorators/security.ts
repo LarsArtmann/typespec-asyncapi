@@ -163,10 +163,15 @@ function validateSecurityScheme(scheme: SecurityScheme): { valid: boolean; error
 
 		case "openIdConnect": {
 			// openIdConnectUrl is required in the type, so this check is unnecessary
-			try {
-				new URL(scheme.openIdConnectUrl)
-			} catch {
-				errors.push("OpenID Connect URL must be a valid URL")
+			const urlValidation = Effect.runSync(
+				Effect.sync(() => new URL(scheme.openIdConnectUrl)).pipe(
+					Effect.mapError(() => "OpenID Connect URL must be a valid URL"),
+					Effect.either
+				)
+			)
+			
+			if (urlValidation._tag === "Left") {
+				errors.push(urlValidation.left)
 			}
 			break
 		}

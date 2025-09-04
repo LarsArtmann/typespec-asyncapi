@@ -93,7 +93,7 @@ export class PerformanceRegressionTester {
 			const startMemory = process.memoryUsage().heapUsed / 1024 / 1024
 			void startMemory
 
-			try {
+			const testResult = yield* Effect.gen(function* () {
 				// Execute the test function  
 				yield* Effect.tryPromise(() => testFunction())
 
@@ -124,12 +124,15 @@ export class PerformanceRegressionTester {
 				}
 
 				return result
-
-			} catch (error) {
-				yield* Effect.logError(`❌ Performance test failed: ${error}`)
-				yield* this.performanceMonitor.stopMonitoring()
-				throw error
-			}
+			}.bind(this)).pipe(
+				Effect.tapError(error => Effect.gen(function* () {
+					yield* Effect.logError(`❌ Performance test failed: ${error}`)
+					yield* this.performanceMonitor.stopMonitoring()
+				}.bind(this))),
+				Effect.mapError(error => new Error(`Performance test failed: ${error}`))
+			)
+			
+			return testResult
 		}.bind(this))
 	}
 
@@ -216,22 +219,33 @@ export class PerformanceRegressionTester {
 				return null
 			}
 
-			try {
-				const baselinesData = readFileSync(this.baselinePath, 'utf-8')
-				const baselines: Record<string, PerformanceBaseline[]> = JSON.parse(baselinesData) as Record<string, PerformanceBaseline[]>
-				const testBaselines = baselines[testCaseName]
-
-				if (!testBaselines || testBaselines.length === 0) {
-					return null
-				}
-
-				// Return the most recent baseline
-				return testBaselines[testBaselines.length - 1]
-
-			} catch (error) {
-				yield* Effect.logWarning(`⚠️ Failed to load baselines: ${error}`)
-				return null
-			}
+			const baselineResult = yield* Effect.tryPromise({
+				try: () => Promise.resolve(readFileSync(this.baselinePath, 'utf-8')),
+				catch: (error) => new Error(`Failed to read baseline file: ${error}`)
+			}).pipe(
+				Effect.flatMap(baselinesData => 
+					Effect.tryPromise({
+						try: () => Promise.resolve(JSON.parse(baselinesData) as Record<string, PerformanceBaseline[]>),
+						catch: (error) => new Error(`Failed to parse baseline JSON: ${error}`)
+					})
+				),
+				Effect.map(baselines => {
+					const testBaselines = baselines[testCaseName]
+					if (!testBaselines || testBaselines.length === 0) {
+						return null
+					}
+					// Return the most recent baseline
+					return testBaselines[testBaselines.length - 1]
+				}),
+				Effect.catchAll(error => 
+					Effect.gen(function* () {
+						yield* Effect.logWarning(`⚠️ Failed to load baselines: ${error.message}`)
+						return null
+					})
+				)
+			)
+			
+			return baselineResult
 		}.bind(this))
 	}
 
@@ -260,12 +274,19 @@ export class PerformanceRegressionTester {
 				},
 			}
 
-			try {
+			yield* Effect.gen(function* () {
 				let baselines: Record<string, PerformanceBaseline[]> = {}
 
 				if (existsSync(this.baselinePath)) {
-					const baselinesData = readFileSync(this.baselinePath, 'utf-8')
-					baselines = JSON.parse(baselinesData) as Record<string, PerformanceBaseline[]>
+					const baselinesData = yield* Effect.tryPromise({
+						try: () => Promise.resolve(readFileSync(this.baselinePath, 'utf-8')),
+						catch: (error) => new Error(`Failed to read baseline file: ${error}`)
+					})
+					
+					baselines = yield* Effect.tryPromise({
+						try: () => Promise.resolve(JSON.parse(baselinesData) as Record<string, PerformanceBaseline[]>),
+						catch: (error) => new Error(`Failed to parse baseline JSON: ${error}`)
+					})
 				}
 
 				if (!baselines[testCaseName]) {
@@ -279,13 +300,15 @@ export class PerformanceRegressionTester {
 					baselines[testCaseName] = baselines[testCaseName].slice(-this.config.maxBaselinesHistory)
 				}
 
-				writeFileSync(this.baselinePath, JSON.stringify(baselines, null, 2))
+				yield* Effect.tryPromise({
+					try: () => Promise.resolve(writeFileSync(this.baselinePath, JSON.stringify(baselines, null, 2))),
+					catch: (error) => new Error(`Failed to write baseline file: ${error}`)
+				})
 
 				yield* Effect.log(`📊 Updated baseline for ${testCaseName}`)
-
-			} catch (error) {
-				yield* Effect.logError(`❌ Failed to update baseline: ${error}`)
-			}
+			}).pipe(
+				Effect.catchAll(error => Effect.logError(`❌ Failed to update baseline: ${error.message}`))
+			)
 		}.bind(this))
 	}
 

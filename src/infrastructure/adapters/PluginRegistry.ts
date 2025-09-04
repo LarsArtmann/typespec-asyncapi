@@ -18,7 +18,7 @@ import { Effect } from "effect"
 import type {Milliseconds} from "../performance/Durations.js"
 import type {ByteAmount} from "../performance/ByteAmount.js"
 import {createMegabyteAmount} from "../performance/ByteAmount.js"
-import { EmitterErrors, type StandardizedError } from "../../utils/standardized-errors.js"
+import { emitterErrors, type StandardizedError } from "../../utils/standardized-errors.js"
 
 // Additional branded types for plugin configuration
 type CpuPercentage = number & { readonly brand: 'CpuPercentage' };
@@ -118,25 +118,24 @@ export class PluginRegistry {
      * Register and load a plugin
      */
     loadPlugin(plugin: Plugin): Effect.Effect<void, StandardizedError, never> {
-        const self = this
-        return Effect.gen(function* () {
+        return Effect.gen((function* (this: PluginRegistry) {
             yield* Effect.log(`🔌 Loading plugin: ${plugin.name} v${plugin.version}`)
 
             // Check for circular dependencies
-            if (self.config.enableCircularDependencyDetection === CircularDependencyDetectionFlags.DETECTION_ENABLED) {
-                yield* self.checkCircularDependencies(plugin)
+            if (this.config.enableCircularDependencyDetection === CircularDependencyDetectionFlags.DETECTION_ENABLED) {
+                yield* this.checkCircularDependencies(plugin)
             }
 
             // Check if plugin already exists
-            if (self.plugins.has(plugin.name)) {
-                return yield* Effect.fail(EmitterErrors.pluginInitializationFailed(
+            if (this.plugins.has(plugin.name)) {
+                return yield* Effect.fail(emitterErrors.pluginInitializationFailed(
                     plugin.name, 
                     `Plugin ${plugin.name} is already loaded`
                 ))
             }
 
             // Validate dependencies
-            yield* self.validateDependencies(plugin)
+            yield* this.validateDependencies(plugin)
 
             // Create metadata
             const metadata: PluginMetadata = {
@@ -151,49 +150,47 @@ export class PluginRegistry {
             }
 
             // Store plugin and metadata
-            self.plugins.set(plugin.name, plugin)
-            self.pluginMetadata.set(plugin.name, metadata)
+            this.plugins.set(plugin.name, plugin)
+            this.pluginMetadata.set(plugin.name, metadata)
 
             // Initialize plugin
-            yield* self.initializePlugin(plugin.name)
+            yield* this.initializePlugin(plugin.name)
 
             yield* Effect.log(`✅ Plugin ${plugin.name} loaded successfully`)
-        })
+        }).bind(this))
     }
 
     /**
      * Unload a plugin
      */
     unloadPlugin(name: string): Effect.Effect<void, StandardizedError, never> {
-        const self = this
-        return Effect.gen(function* () {
+        return Effect.gen((function* (this: PluginRegistry) {
             yield* Effect.log(`🔌 Unloading plugin: ${name}`)
 
-            const { metadata } = yield* self.getPluginAndMetadata(name)
+            const { metadata } = yield* this.getPluginAndMetadata(name)
 
             // Stop plugin if running
             if (metadata.state === PluginState.STARTED) {
-                yield* self.stopPlugin(name)
+                yield* this.stopPlugin(name)
             }
 
             // Remove from registry
             yield* Effect.sync(() => {
-                self.plugins.delete(name)
-                self.pluginMetadata.delete(name)
+                this.plugins.delete(name)
+                this.pluginMetadata.delete(name)
             })
 
             yield* Effect.log(`✅ Plugin ${name} unloaded successfully`)
-        })
+        }).bind(this))
     }
 
     /**
      * Reload a plugin (hot-reload)
      */
     reloadPlugin(name: string): Effect.Effect<void, StandardizedError, never> {
-        const self = this
-        return Effect.gen(function* () {
-            if (self.config.enableHotReload === PluginConfigFlags.HOT_RELOAD_DISABLED) {
-                return yield* Effect.fail(EmitterErrors.pluginInitializationFailed(
+        return Effect.gen((function* (this: PluginRegistry) {
+            if (this.config.enableHotReload === PluginConfigFlags.HOT_RELOAD_DISABLED) {
+                return yield* Effect.fail(emitterErrors.pluginInitializationFailed(
                     name,
                     "Hot reload is disabled"
                 ))
@@ -201,14 +198,14 @@ export class PluginRegistry {
 
             yield* Effect.log(`🔄 Hot-reloading plugin: ${name}`)
 
-            const { plugin, metadata } = yield* self.getPluginAndMetadata(name)
+            const { plugin, metadata } = yield* this.getPluginAndMetadata(name)
 
             const wasRunning = metadata.state === PluginState.STARTED
 
-            const reloadEffect = Effect.gen(function* () {
+            const reloadEffect = Effect.gen((function* (this: PluginRegistry) {
                 // Stop plugin if running
                 if (wasRunning) {
-                    yield* self.stopPlugin(name)
+                    yield* this.stopPlugin(name)
                 }
 
                 // Call reload if supported
@@ -221,31 +218,31 @@ export class PluginRegistry {
                     yield* Effect.log(`🔄 Plugin ${name} reloaded using custom reload method`)
                 } else {
                     // Fallback: reinitialize
-                    yield* self.initializePlugin(name)
+                    yield* this.initializePlugin(name)
                     yield* Effect.log(`🔄 Plugin ${name} reloaded using reinitialization`)
                 }
 
                 // Restart if it was running
                 if (wasRunning) {
-                    yield* self.startPlugin(name)
+                    yield* this.startPlugin(name)
                 }
 
                 yield* Effect.log(`✅ Plugin ${name} hot-reload completed`)
-            })
+            }).bind(this))
 
             const result = yield* reloadEffect.pipe(
                 Effect.tapError(() => Effect.sync(() => {
                     metadata.state = PluginState.ERROR
                     metadata.errorCount++
                 })),
-                Effect.mapError(error => EmitterErrors.pluginInitializationFailed(
+                Effect.mapError(error => emitterErrors.pluginInitializationFailed(
                     name,
                     `Plugin ${name} hot-reload failed: ${error}`
                 ))
             )
 
             return result
-        })
+        }).bind(this))
     }
 
     /**
@@ -266,7 +263,7 @@ export class PluginRegistry {
                     metadata.lastActivity = new Date()
                 })),
                 Effect.tap(() => Effect.log(`✅ Plugin ${name} initialized`)),
-                Effect.mapError(error => EmitterErrors.pluginInitializationFailed(
+                Effect.mapError(error => emitterErrors.pluginInitializationFailed(
                     name,
                     `Plugin ${name} initialization failed: ${error}`
                 ))
@@ -285,7 +282,7 @@ export class PluginRegistry {
             const { plugin, metadata } = yield* self.getPluginAndMetadata(name)
 
             if (metadata.state !== PluginState.INITIALIZED && metadata.state !== PluginState.STOPPED) {
-                return yield* Effect.fail(EmitterErrors.pluginInitializationFailed(
+                return yield* Effect.fail(emitterErrors.pluginInitializationFailed(
                     name,
                     `Plugin ${name} is not in a startable state (current: ${metadata.state})`
                 ))
@@ -301,7 +298,7 @@ export class PluginRegistry {
                     metadata.lastActivity = new Date()
                 })),
                 Effect.tap(() => Effect.log(`✅ Plugin ${name} started`)),
-                Effect.mapError(error => EmitterErrors.pluginInitializationFailed(
+                Effect.mapError(error => emitterErrors.pluginInitializationFailed(
                     name,
                     `Plugin ${name} start failed: ${error}`
                 ))
@@ -343,7 +340,7 @@ export class PluginRegistry {
                     metadata.lastActivity = new Date()
                 })),
                 Effect.tap(() => Effect.log(`✅ Plugin ${name} stopped`)),
-                Effect.mapError(error => EmitterErrors.pluginInitializationFailed(
+                Effect.mapError(error => emitterErrors.pluginInitializationFailed(
                     name,
                     `Plugin ${name} stop failed: ${error}`
                 ))
@@ -363,14 +360,14 @@ export class PluginRegistry {
                 const depMetadata = self.pluginMetadata.get(dependency)
                 
                 if (!depMetadata) {
-                    return yield* Effect.fail(EmitterErrors.pluginInitializationFailed(
+                    return yield* Effect.fail(emitterErrors.pluginInitializationFailed(
                         plugin.name,
                         `Plugin ${plugin.name} requires dependency ${dependency} which is not loaded`
                     ))
                 }
 
                 if (depMetadata.state === PluginState.ERROR) {
-                    return yield* Effect.fail(EmitterErrors.pluginInitializationFailed(
+                    return yield* Effect.fail(emitterErrors.pluginInitializationFailed(
                         plugin.name,
                         `Plugin ${plugin.name} dependency ${dependency} is in error state`
                     ))
@@ -412,7 +409,7 @@ export class PluginRegistry {
             }
 
             if (checkCircular(plugin.name, plugin.dependencies)) {
-                return yield* Effect.fail(EmitterErrors.pluginInitializationFailed(
+                return yield* Effect.fail(emitterErrors.pluginInitializationFailed(
                     plugin.name,
                     `Circular dependency detected for plugin ${plugin.name}`
                 ))
@@ -461,11 +458,14 @@ export class PluginRegistry {
     emit(eventType: string, event: PluginEvent): void {
         const handlers = this.eventBus.get(eventType) || []
         handlers.forEach(handler => {
-            try {
-                handler(event)
-            } catch (error) {
-                Effect.logError(`❌ Event handler error for ${eventType}: ${error}`)
-            }
+            Effect.runSync(
+                Effect.tryPromise({
+                    try: () => Promise.resolve(handler(event)),
+                    catch: (error) => new Error(`Event handler error for ${eventType}: ${error}`)
+                }).pipe(
+                    Effect.catchAll(error => Effect.logError(`❌ ${error.message}`))
+                )
+            )
         })
     }
 
@@ -505,7 +505,7 @@ export class PluginRegistry {
             const metadata = self.pluginMetadata.get(name)
 
             if (!plugin || !metadata) {
-                return yield* Effect.fail(EmitterErrors.pluginInitializationFailed(
+                return yield* Effect.fail(emitterErrors.pluginInitializationFailed(
                     name,
                     `Plugin ${name} not found in registry`
                 ))
