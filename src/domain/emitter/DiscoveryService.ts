@@ -13,6 +13,12 @@ import type { Model, Namespace, Operation, Program } from "@typespec/compiler"
 import { $lib } from "../../lib.js"
 import type {SecurityConfig} from "../decorators/securityConfig.js"
 
+// Standardized error handling
+import {
+	type StandardizedError,
+	createError
+} from "../../utils/standardized-errors.js"
+
 /**
  * Discovery results containing all discovered TypeSpec elements
  */
@@ -79,7 +85,16 @@ export class DiscoveryService {
 
 			const operations = yield* discoveryOperation
 			return operations
-		}).pipe(Effect.mapError(error => new Error(`Operation discovery failed: ${error}`)))
+		}).pipe(Effect.mapError(error => createError({
+			what: "Operation discovery failed during TypeSpec AST traversal",
+			reassure: "This is usually a temporary issue with TypeSpec compilation",
+			why: `Operation discovery failed: ${error}`,
+			fix: "Check your TypeSpec syntax and ensure all operations are properly defined",
+			escape: "Try using simpler operation definitions to isolate the issue",
+			severity: "error" as const,
+			code: "OPERATION_DISCOVERY_FAILED",
+			context: { originalError: error }
+		})))
 	}
 
 	/**
@@ -193,7 +208,7 @@ export class DiscoveryService {
 	 * @param program - TypeSpec program to traverse
 	 * @returns Effect containing complete discovery results
 	 */
-	executeDiscovery(program: Program) {
+	executeDiscovery(program: Program): Effect.Effect<DiscoveryResult, StandardizedError> {
 		return Effect.gen(function* (this: DiscoveryService) {
 			Effect.log(`🚀 Starting complete TypeSpec discovery process...`)
 

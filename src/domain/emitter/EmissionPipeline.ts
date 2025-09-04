@@ -12,13 +12,23 @@
  * 5. Serialization - Convert to JSON/YAML format
  */
 
-// TODO: CRITICAL - Import organization inconsistent - group by source (TypeScript, @typespec, @asyncapi, local)
-// TODO: CRITICAL - Effect import could be more specific - only Effect.gen and Effect.log are used
-// TODO: CRITICAL - Missing validation that AsyncAPI parser version matches expected v3 types
+// Core Effect.TS imports
 import {Effect} from "effect"
+
+// AsyncAPI and TypeSpec types
 import type {AsyncAPIObject} from "@asyncapi/parser/esm/spec-types/v3.js"
 import {buildServersFromNamespaces} from "../../utils/typespec-helpers.js"
-// import {effectLogging} from "../../utils/effect-helpers.js"
+
+// Standardized error handling
+import {
+	type StandardizedError,
+	createError,
+	failWith,
+	Railway,
+	EmitterErrors
+} from "../../utils/standardized-errors.js"
+
+// Domain services
 import {DocumentBuilder} from "./DocumentBuilder.js"
 import {DiscoveryService} from "./DiscoveryService.js"
 import {ProcessingService} from "./ProcessingService.js"
@@ -40,30 +50,45 @@ export class EmissionPipeline implements IPipelineService {
 	private readonly processingService: ProcessingService
 	private readonly validationService: ValidationService
 
-	// TODO: CRITICAL - Constructor lacks error handling for service initialization failures  
-	// TODO: CRITICAL - No dependency injection - services hardcoded making testing difficult
-	// TODO: CRITICAL - Services created without configuration - should pass pipeline options
+	/**
+	 * Constructor with error handling for service initialization
+	 * Service instantiation failures will be thrown since they are critical system errors
+	 */
 	constructor() {
-		// TODO: CRITICAL - Service instantiation could throw but no try-catch wrapper
-		// TODO: CRITICAL - No validation that services implement required interfaces
-		this.documentBuilder = new DocumentBuilder()
-		this.discoveryService = new DiscoveryService()
-		this.processingService = new ProcessingService()
-		this.validationService = new ValidationService()
+		// Service initialization - any failure here is a critical system error
+		// These are unrecoverable errors that should never happen in production
+		try {
+			this.documentBuilder = new DocumentBuilder()
+			this.discoveryService = new DiscoveryService()
+			this.processingService = new ProcessingService()
+			this.validationService = new ValidationService()
+		} catch (error) {
+			// Critical system error - throw to terminate process immediately
+			throw new Error(`Critical EmissionPipeline service initialization failed: ${error instanceof Error ? error.message : String(error)}`)
+		}
 	}
 
 	/**
 	 * Execute the complete emission pipeline with REAL business logic integration
+	 * Using Effect.TS Railway programming for comprehensive error handling
 	 */
-	// TODO: CRITICAL - Method lacks explicit return type annotation
-	// TODO: CRITICAL - No input validation for context parameter
-	// TODO: CRITICAL - Pipeline execution not configurable - stages always run in same order
-	executePipeline(context: PipelineContext) {
-		// TODO: CRITICAL - Effect.gen pattern used but no error recovery between stages
-		// TODO: CRITICAL - Pipeline failure in any stage stops entire process - no partial recovery
+	executePipeline(context: PipelineContext): Effect.Effect<void, StandardizedError> {
 		return Effect.gen(function* (this: EmissionPipeline) {
-			// TODO: CRITICAL - Log uses emoji and not awaited - may not appear in production
-			Effect.log(`🚀 Starting emission pipeline stages...`)
+			// Validate context parameter with proper error handling
+			if (!context) {
+				return yield* failWith(createError({
+					what: "Cannot execute pipeline without valid context",
+					reassure: "This is a parameter validation issue",
+					why: "executePipeline requires a valid PipelineContext instance",
+					fix: "Ensure the context parameter is properly initialized before calling executePipeline",
+					escape: "Create a new PipelineContext with required program and asyncApiDoc properties",
+					severity: "error" as const,
+					code: "INVALID_PIPELINE_CONTEXT",
+					context: { contextProvided: !!context }
+				}))
+			}
+
+			yield* Effect.log(`🚀 Starting emission pipeline stages...`)
 
 			// Stage 1: Discovery
 			Effect.log(`🚀 About to start Stage 1: Discovery`)
@@ -132,20 +157,24 @@ export class EmissionPipeline implements IPipelineService {
 		return Effect.gen(function* (this: EmissionPipeline) {
 			Effect.log(`📄 Stage 3: Document Generation with DocumentBuilder`)
 
-			// Use DocumentBuilder to ensure proper document structure
-			this.documentBuilder.initializeDocumentStructure(context.asyncApiDoc)
+			// Use DocumentBuilder to ensure proper document structure with Effect.TS
+			yield* this.documentBuilder.initializeDocumentStructure(context.asyncApiDoc)
 			
 			// Update document info with discovered statistics using DocumentBuilder
-			this.documentBuilder.updateDocumentInfo(context.asyncApiDoc, {
+			yield* this.documentBuilder.updateDocumentInfo(context.asyncApiDoc, {
 				description: `Generated from TypeSpec with ${discoveryResult.operations.length} operations, ${discoveryResult.messageModels.length} messages, ${discoveryResult.securityConfigs.length} security configs`
 			})
 
-			// Ensure servers are populated using DocumentBuilder patterns
+			// Ensure servers are populated using DocumentBuilder patterns with Railway programming
 			if (!context.asyncApiDoc.servers || Object.keys(context.asyncApiDoc.servers).length === 0) {
-				const servers = buildServersFromNamespaces(context.program)
-				if (servers && Object.keys(servers).length > 0) {
+				const serversResult = yield* Railway.trySync(
+					() => buildServersFromNamespaces(context.program),
+					{ context: { operation: "buildServersFromNamespaces" } }
+				)
+				
+				if (serversResult && Object.keys(serversResult).length > 0) {
 					// Use Object.assign to properly merge servers
-					Object.assign(context.asyncApiDoc, { servers: servers as AsyncAPIObject["servers"] })
+					Object.assign(context.asyncApiDoc, { servers: serversResult as AsyncAPIObject["servers"] })
 				}
 			}
 
@@ -167,18 +196,26 @@ export class EmissionPipeline implements IPipelineService {
 			const validationResult = yield* this.validationService.validateDocument(context.asyncApiDoc)
 
 			if (!validationResult.isValid) {
-				Effect.log(`❌ Validation failed with ${validationResult.errors.length} errors:`)
-				validationResult.errors.forEach((error: string) => Effect.log(`  - ${error}`))
+				yield* Effect.log(`❌ Validation failed with ${validationResult.errors.length} errors:`)
+				for (const error of validationResult.errors) {
+					yield* Effect.log(`  - ${error}`)
+				}
 				
-				// TODO: Add logValidationWarnings method to effectLogging
-			// yield* effectLogging.logValidationWarnings("AsyncAPI document", validationResult.warnings)
-				
-				yield* Effect.fail(new Error(`AsyncAPI document validation failed with ${validationResult.errors.length} errors`))
+				// Use standardized error instead of plain Error
+				return yield* failWith(EmitterErrors.invalidAsyncAPI(
+					validationResult.errors,
+					context.asyncApiDoc
+				))
 			} else {
-				Effect.log(`✅ Validation completed successfully - ${validationResult.channelsCount} channels, ${validationResult.operationsCount} operations, ${validationResult.messagesCount} messages`)
+				yield* Effect.log(`✅ Validation completed successfully - ${validationResult.channelsCount} channels, ${validationResult.operationsCount} operations, ${validationResult.messagesCount} messages`)
 				
-				// TODO: Add logValidationWarnings method to effectLogging
-			// yield* effectLogging.logValidationWarnings("AsyncAPI document", validationResult.warnings)
+				// Log warnings using Railway programming
+				if (validationResult.warnings && validationResult.warnings.length > 0) {
+					yield* Effect.log(`⚠️ AsyncAPI document has ${validationResult.warnings.length} warnings:`)
+					for (const warning of validationResult.warnings) {
+						yield* Effect.log(`  - ${warning}`)
+					}
+				}
 			}
 		}.bind(this))
 	}

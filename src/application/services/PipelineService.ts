@@ -10,6 +10,7 @@
 
 import type { Effect } from "effect"
 import type { PipelineContext } from "./PipelineContext.js"
+import type { StandardizedError } from "../../utils/standardized-errors.js"
 
 /**
  * Core pipeline service interface defining emission pipeline contract
@@ -27,5 +28,5 @@ export type IPipelineService = {
 	 * @param context Pipeline execution context with program and document state
 	 * @returns Effect that succeeds on completion or fails with error details
 	 */
-	executePipeline(context: PipelineContext): Effect.Effect<void, Error>
+	executePipeline(context: PipelineContext): Effect.Effect<void, StandardizedError>
 }

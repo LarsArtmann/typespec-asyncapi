@@ -71,15 +71,16 @@ export function $protocol(
 					const nodeValue = property.node.value as unknown
 
 					// Handle different value types from TypeSpec AST
-					const extractionResult = Effect.runSync(
-						Effect.sync(() => {
-							if (nodeValue && typeof nodeValue === 'object') {
-								const astNode = nodeValue as { value?: unknown; kind?: number; properties?: unknown[] }
+					type ExtractionResult = { success: boolean; key: string; value?: unknown }
+					let extractionResult: ExtractionResult
+					try {
+						if (nodeValue && typeof nodeValue === 'object') {
+							const astNode = nodeValue as { value?: unknown; kind?: number; properties?: unknown[] }
 
-								// Direct value extraction from TypeSpec AST node
-								if (astNode.value !== undefined) {
-									return { success: true, key, value: astNode.value }
-								} else if (astNode.kind === 14) { // Model object
+							// Direct value extraction from TypeSpec AST node
+							if (astNode.value !== undefined) {
+								extractionResult = { success: true, key, value: astNode.value }
+							} else if (astNode.kind === 14) { // Model object
 									// This is a nested object - extract its properties
 									const nestedProps: Record<string, unknown> = {}
 									if (Array.isArray(astNode.properties)) {
@@ -96,19 +97,15 @@ export function $protocol(
 											}
 										})
 									}
-									return { success: true, key, value: nestedProps }
+									extractionResult = { success: true, key, value: nestedProps }
 								}
 							}
-							return { success: false, key }
-						}).pipe(
-							Effect.orElse((error) =>
-								Effect.gen(function* () {
-									yield* Effect.log(`⚠️ Failed to extract property ${key} from TypeSpec AST: ${error}`)
-									return { success: false, key }
-								})
-							)
-						)
-					)
+							extractionResult = { success: false, key }
+						} catch (error) {
+							// Continue with next property if extraction fails  
+							Effect.log(`⚠️ Failed to extract property ${key} from TypeSpec AST: ${error}`)
+							extractionResult = { success: false, key }
+						}
 
 					// Apply extraction result if successful
 					if (extractionResult.success) {

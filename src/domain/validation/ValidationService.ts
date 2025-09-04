@@ -59,9 +59,9 @@ export class ValidationService {
 	 * @param asyncApiDoc - AsyncAPI document to validate
 	 * @returns Effect containing detailed validation results
 	 */
-	validateDocument(asyncApiDoc: AsyncAPIObject) {
-		return Effect.sync(() => {
-			Effect.log(`🔍 Starting comprehensive AsyncAPI document validation...`)
+	validateDocument(asyncApiDoc: AsyncAPIObject): Effect.Effect<ValidationResult, never> {
+		return Effect.gen(function* (this: ValidationService) {
+			yield* Effect.log(`🔍 Starting comprehensive AsyncAPI document validation...`)
 
 			const errors: string[] = []
 			const warnings: string[] = []
@@ -96,13 +96,13 @@ export class ValidationService {
 			}
 
 			if (isValid) {
-				Effect.log(`✅ AsyncAPI document validation passed! ${channelsCount} channels, ${operationsCount} operations`)
+				yield* Effect.log(`✅ AsyncAPI document validation passed! ${channelsCount} channels, ${operationsCount} operations`)
 			} else {
-				Effect.log(`❌ AsyncAPI document validation failed with ${errors.length} errors, ${warnings.length} warnings`)
+				yield* Effect.log(`❌ AsyncAPI document validation failed with ${errors.length} errors, ${warnings.length} warnings`)
 			}
 
 			return result
-		})
+		}.bind(this))
 	}
 
 	/**
@@ -358,8 +358,8 @@ export class ValidationService {
 	 * @param asyncApiDoc - Document to validate
 	 * @returns Boolean indicating basic validity
 	 */
-	quickValidation(asyncApiDoc: AsyncAPIObject) {
-		return Effect.sync(() => {
+	quickValidation(asyncApiDoc: AsyncAPIObject): Effect.Effect<boolean, never> {
+		return Effect.gen(function* () {
 			const hasAsyncAPI = !!asyncApiDoc.asyncapi
 			const hasInfo = !!asyncApiDoc.info
 			const hasChannelsOrOps = !!(asyncApiDoc.channels && Object.keys(asyncApiDoc.channels).length > 0) ||
@@ -367,7 +367,7 @@ export class ValidationService {
 
 			const isValid = hasAsyncAPI && hasInfo && hasChannelsOrOps
 			
-			Effect.log(`⚡ Quick validation: ${isValid ? 'PASS' : 'FAIL'}`)
+			yield* Effect.log(`⚡ Quick validation: ${isValid ? 'PASS' : 'FAIL'}`)
 			
 			return isValid
 		})

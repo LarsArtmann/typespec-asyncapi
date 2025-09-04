@@ -80,86 +80,115 @@ export class AsyncAPIValidator {
 			yield* this.initializeEffect()
 			const startTime = performance.now()
 
-			try {
-				// Convert document to string for parser (no pretty printing for performance)
-				const content = typeof document === 'string' ? document : JSON.stringify(document)
+			// Convert document to string for parser (no pretty printing for performance)
+			const content = typeof document === 'string' ? document : JSON.stringify(document)
 
-				// Enforce AsyncAPI 3.0.0 strict compliance
-				const docObject: Record<string, unknown> = typeof document === 'string' ? JSON.parse(content) as Record<string, unknown> : document as Record<string, unknown>
-				if (docObject && typeof docObject === 'object' && 'asyncapi' in docObject) {
-					const version = String(docObject.asyncapi)
-					if (version !== '3.0.0') {
-						return {
-							valid: false,
-							errors: [{
-								message: `AsyncAPI version must be 3.0.0, got: ${version}`,
-								keyword: 'version-constraint',
-								instancePath: 'asyncapi',
-								schemaPath: '#/asyncapi',
-							}],
-							warnings: [],
-							summary: `AsyncAPI version validation failed: expected 3.0.0, got ${version}`,
-							metrics: this.extractMetrics(null, performance.now() - startTime),
+			// Enforce AsyncAPI 3.0.0 strict compliance using Effect.try
+			const docObjectResult = yield* Effect.try({
+				try: () => {
+					const docObject: Record<string, unknown> = typeof document === 'string' ? JSON.parse(content) as Record<string, unknown> : document as Record<string, unknown>
+					if (docObject && typeof docObject === 'object' && 'asyncapi' in docObject) {
+						const version = String(docObject.asyncapi)
+						if (version !== '3.0.0') {
+							throw new Error(`AsyncAPI version must be 3.0.0, got: ${version}`)
 						}
 					}
-				}
-
-				// Use the REAL AsyncAPI parser with Effect promise wrapper
-				const parseResult = yield* Effect.promise(() => this.parser.parse(content))
-				const duration = performance.now() - startTime
-
-				// Update statistics
-				this.updateStats(duration)
-
-				// Extract metrics from document
-				const metrics = this.extractMetrics(parseResult.document, duration)
-
-				if (parseResult.diagnostics.length === 0) {
+					return docObject
+				},
+				catch: (error) => new Error(`Version validation failed: ${error instanceof Error ? error.message : String(error)}`)
+			}).pipe(
+				Effect.catchAll((error) => Effect.sync(() => {
+					const duration = performance.now() - startTime
+					this.updateStats(duration)
+					Effect.runSync(Effect.logError(`AsyncAPI version validation failed: ${error.message}`))
 					return {
-						valid: true,
-						errors: [],
+						valid: false,
+						errors: [{
+							message: error.message,
+							keyword: 'version-constraint',
+							instancePath: 'asyncapi',
+							schemaPath: '#/asyncapi',
+						}],
 						warnings: [],
-						summary: `AsyncAPI document is valid (${duration.toFixed(2)}ms)`,
-						metrics,
+						summary: error.message,
+						metrics: this.extractMetrics(null, duration),
 					}
-				} else {
-					// Convert diagnostics to validation errors
-					const errors: ValidationError[] = parseResult.diagnostics
-						.filter(d => Number(d.severity) === 0) // Error level
-						.map(d => ({
-							message: d.message,
-							keyword: String(d.code || "validation-error"),
-							instancePath: d.path?.join('.') || "",
-							schemaPath: d.path?.join('.') || "",
-						}))
+				}))
+			)
 
-					const warnings = parseResult.diagnostics
-						.filter(d => Number(d.severity) === 1) // Warning level
-						.map(d => d.message)
+			// Return early if version validation failed
+			if (typeof docObjectResult === 'object' && docObjectResult !== null && 'valid' in docObjectResult) {
+				return docObjectResult as ValidationResult
+			}
 
+			// Use the REAL AsyncAPI parser with Effect tryPromise wrapper
+			const parseResult = yield* Effect.tryPromise({
+				try: () => this.parser.parse(content),
+				catch: (error) => new Error(`Parser failed: ${error instanceof Error ? error.message : String(error)}`)
+			}).pipe(
+				Effect.catchAll((error) => Effect.sync(() => {
+					const duration = performance.now() - startTime
+					this.updateStats(duration)
+					Effect.runSync(Effect.logError(`AsyncAPI parser failed: ${error.message}`))
 					return {
-						valid: errors.length === 0,
-						errors,
-						warnings,
-						summary: `AsyncAPI document validation completed (${errors.length} errors, ${warnings.length} warnings, ${duration.toFixed(2)}ms)`,
-						metrics,
+						valid: false,
+						errors: [{
+							message: error.message,
+							keyword: "parse-error",
+							instancePath: "",
+							schemaPath: "",
+						}],
+						warnings: [],
+						summary: `Parser failed with error (${duration.toFixed(2)}ms)`,
+						metrics: this.extractMetrics(null, duration),
 					}
+				}))
+			)
+
+			// Return early if parsing failed
+			if (typeof parseResult === 'object' && parseResult !== null && 'valid' in parseResult) {
+				return parseResult as ValidationResult
+			}
+
+			const duration = performance.now() - startTime
+
+			// Update statistics
+			this.updateStats(duration)
+
+			// Extract metrics from document
+			const metrics = this.extractMetrics(parseResult.document, duration)
+
+			yield* Effect.logInfo(`AsyncAPI validation completed in ${duration.toFixed(2)}ms`)
+
+			if (parseResult.diagnostics.length === 0) {
+				return {
+					valid: true,
+					errors: [],
+					warnings: [],
+					summary: `AsyncAPI document is valid (${duration.toFixed(2)}ms)`,
+					metrics,
 				}
-			} catch (error) {
-				const duration = performance.now() - startTime
-				this.updateStats(duration)
+			} else {
+				// Convert diagnostics to validation errors
+				const errors: ValidationError[] = parseResult.diagnostics
+					.filter(d => Number(d.severity) === 0) // Error level
+					.map(d => ({
+						message: d.message,
+						keyword: String(d.code || "validation-error"),
+						instancePath: d.path?.join('.') || "",
+						schemaPath: d.path?.join('.') || "",
+					}))
+
+				const warnings = parseResult.diagnostics
+					.filter(d => Number(d.severity) === 1) // Warning level
+					.map(d => d.message)
 
 				return {
-					valid: false,
-					errors: [{
-						message: `Parser failed: ${error instanceof Error ? error.message : String(error)}`,
-						keyword: "parse-error",
-						instancePath: "",
-						schemaPath: "",
-					}],
-					warnings: [],
-					summary: `Parser failed with error (${duration.toFixed(2)}ms)`,
-					metrics: this.extractMetrics(null, duration),
+					valid: errors.length === 0,
+					errors,
+					warnings,
+					summary: `AsyncAPI document validation completed (${errors.length} errors, ${warnings.length} warnings, ${duration.toFixed(2)}ms)`,
+					metrics,
 				}
 			}
 		})
@@ -177,24 +206,34 @@ export class AsyncAPIValidator {
 	 */
 	validateFileEffect(filePath: string): Effect.Effect<ValidationResult, never> {
 		return Effect.gen(this, function* () {
-			try {
-				// Use Effect.promise to wrap Node.js file reading
-				const content = yield* Effect.promise(() => NodeFS.readFile(filePath, "utf-8"))
-				return yield* this.validateEffect(content, filePath)
-			} catch (error) {
-				return {
-					valid: false,
-					errors: [{
-						message: `Failed to read file: ${error instanceof Error ? error.message : String(error)}`,
-						keyword: "file-error",
-						instancePath: "",
-						schemaPath: "",
-					}],
-					warnings: [],
-					summary: "File reading failed",
-					metrics: this.extractMetrics(null, 0),
-				}
+			// Use Effect.tryPromise to wrap Node.js file reading with proper error handling
+			const content = yield* Effect.tryPromise({
+				try: () => NodeFS.readFile(filePath, "utf-8"),
+				catch: (error) => new Error(`Failed to read file: ${error instanceof Error ? error.message : String(error)}`)
+			}).pipe(
+				Effect.catchAll((error) => Effect.sync(() => {
+					Effect.runSync(Effect.logError(`File reading failed: ${error.message}`))
+					return {
+						valid: false,
+						errors: [{
+							message: error.message,
+							keyword: "file-error",
+							instancePath: "",
+							schemaPath: "",
+						}],
+						warnings: [],
+						summary: "File reading failed",
+						metrics: this.extractMetrics(null, 0),
+					}
+				}))
+			)
+
+			// Return early if file reading failed
+			if (typeof content === 'object' && content !== null && 'valid' in content) {
+				return content as ValidationResult
 			}
+
+			return yield* this.validateEffect(content as string, filePath)
 		})
 	}
 

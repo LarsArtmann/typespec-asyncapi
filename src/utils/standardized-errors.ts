@@ -159,6 +159,20 @@ export const EmitterErrors = {
 		code: "VALIDATION_FAILURE",
 		context: {errors, additionalContext: context},
 	}),
+
+	/**
+	 * Emitter initialization errors
+	 */
+	emitterInitializationFailed: (reason: string, emitter?: unknown) => createError({
+		what: "AsyncAPI emitter failed to initialize",
+		reassure: "This is a configuration issue, not a problem with your TypeSpec code",
+		why: `Emitter initialization failed because: ${reason}`,
+		fix: "Check your TypeSpec emitter configuration and ensure AssetEmitter is properly configured",
+		escape: "Try using the default emitter configuration or report this issue",
+		severity: "critical" as const,
+		code: "EMITTER_INITIALIZATION_FAILED",
+		context: {reason, emitter},
+	}),
 }
 
 /**

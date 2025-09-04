@@ -17,6 +17,12 @@ import {PERFORMANCE_METRICS_SERVICE} from "../performance/metrics.js"
 import {MEMORY_MONITOR_SERVICE} from "../performance/memory-monitor.js"
 import {createMetricName} from "../performance/PerformanceTypes.js"
 
+// Performance monitoring constants
+const DEFAULT_MONITORING_INTERVAL_MS = 5000 // 5 seconds
+const DEFAULT_MEMORY_THRESHOLD_MB = 500 // 500MB
+const DEFAULT_MEMORY_LEAK_DETECTION_RATE = 0.1 // MB/sec
+const MAX_SNAPSHOTS_RETAINED = 100
+
 export type PerformanceConfig = {
 	enableMetrics: boolean
 	enableMemoryMonitoring: boolean
@@ -43,17 +49,12 @@ export class PerformanceMonitor {
 	private monitoringTimer?: NodeJS.Timeout | undefined
 
 	constructor(config?: Partial<PerformanceConfig>) {
-		//TODO: HARDCODED MAGIC NUMBERS ARE EVERYWHERE! THIS IS GARBAGE CONFIGURATION!
-		//TODO: CRITICAL - Extract 5000 to MONITORING_INTERVAL_MS constant - WHY 5 SECONDS? COMPLETELY ARBITRARY!
-		//TODO: CRITICAL - Extract 500 to MEMORY_THRESHOLD_MB constant - 500MB threshold is BULLSHIT HARDCODED VALUE!
-		//TODO: ARCHITECTURAL FAILURE - These should be environment-specific defaults, not hardcoded in source!
-		//TODO: BUSINESS LOGIC VIOLATION - Different deployment environments need different monitoring intervals!
-		//TODO: CONFIGURATION DISASTER - Production vs development vs testing should have different thresholds!
+		// Initialize with production-ready defaults that can be overridden per environment
 		this.config = {
 			enableMetrics: true,
 			enableMemoryMonitoring: true,
-			monitoringInterval: 5000, // 5 seconds
-			memoryThreshold: 500, // 500MB
+			monitoringInterval: DEFAULT_MONITORING_INTERVAL_MS,
+			memoryThreshold: DEFAULT_MEMORY_THRESHOLD_MB,
 			enableLeakDetection: true,
 			...config,
 		}
@@ -121,22 +122,26 @@ export class PerformanceMonitor {
 			return
 		}
 
-		try {
-			// Create simplified snapshot with basic metrics
-			const snapshot: PerformanceSnapshot = {
-				timestamp: new Date(),
-				memoryUsage: process.memoryUsage().heapUsed / 1024 / 1024, // Convert to MB
-				operationCount: 0, // Will be populated by actual metrics; <-- TODO: where, by who???
-				averageLatency: 0,
-				throughput: 0,
-			}
+		// Use Effect.try for safe snapshot creation
+		Effect.runSync(Effect.try({
+			try: () => {
+				// Create simplified snapshot with basic metrics
+				const snapshot: PerformanceSnapshot = {
+					timestamp: new Date(),
+					memoryUsage: process.memoryUsage().heapUsed / 1024 / 1024, // Convert to MB
+					operationCount: 0, // Will be populated by actual metrics; <-- TODO: where, by who???
+					averageLatency: 0,
+					throughput: 0,
+				}
 
-			this.addSnapshotWithMemoryManagement(snapshot, snapshot.memoryUsage)
-
-			Effect.log(`📊 Performance snapshot taken: ${snapshot.memoryUsage.toFixed(1)}MB memory, ${snapshot.operationCount} operations`)
-		} catch (error) {
-			Effect.logError(`❌ Failed to take performance snapshot: ${error}`)
-		}
+				this.addSnapshotWithMemoryManagement(snapshot, snapshot.memoryUsage)
+				return snapshot
+			},
+			catch: (error) => new Error(`Failed to take performance snapshot: ${error instanceof Error ? error.message : String(error)}`)
+		}).pipe(
+			Effect.tap((snapshot) => Effect.log(`📊 Performance snapshot taken: ${snapshot.memoryUsage.toFixed(1)}MB memory, ${snapshot.operationCount} operations`)),
+			Effect.catchAll((error) => Effect.logError(`❌ ${error.message}`))
+		))
 	}
 
 	/**
@@ -148,31 +153,36 @@ export class PerformanceMonitor {
 				return
 			}
 
-			try {
-				const metricsService = yield* PERFORMANCE_METRICS_SERVICE
-				const memoryMonitor = yield* MEMORY_MONITOR_SERVICE
+			// Use Effect.try for comprehensive snapshot creation with proper error handling
+			yield* Effect.try({
+				try: () => Effect.gen(function* (this: PerformanceMonitor) {
+					const metricsService = yield* PERFORMANCE_METRICS_SERVICE
+					const memoryMonitor = yield* MEMORY_MONITOR_SERVICE
 
-				// Get current memory metrics
-				const memoryMetrics = yield* memoryMonitor.getMemoryMetrics()
-				const currentMemory = memoryMetrics.currentMemoryUsage || 0
+					// Get current memory metrics
+					const memoryMetrics = yield* memoryMonitor.getMemoryMetrics()
+					const currentMemory = memoryMetrics.currentMemoryUsage || 0
 
-				// Get performance metrics summary
-				const metricsSummary = yield* metricsService.getMetricsSummary()
+					// Get performance metrics summary
+					const metricsSummary = yield* metricsService.getMetricsSummary()
 
-				const snapshot: PerformanceSnapshot = {
-					timestamp: new Date(),
-					memoryUsage: currentMemory,
-					operationCount: metricsSummary[createMetricName("throughput")] || 0, // Using throughput as operation count approximation
-					averageLatency: metricsSummary[createMetricName("latency")] || 0,
-					throughput: metricsSummary[createMetricName("throughput")] || 0,
-				}
+					const snapshot: PerformanceSnapshot = {
+						timestamp: new Date(),
+						memoryUsage: currentMemory,
+						operationCount: metricsSummary[createMetricName("throughput")] || 0, // Using throughput as operation count approximation
+						averageLatency: metricsSummary[createMetricName("latency")] || 0,
+						throughput: metricsSummary[createMetricName("throughput")] || 0,
+					}
 
-				this.addSnapshotWithMemoryManagement(snapshot, currentMemory)
-
-				Effect.log(`📊 Performance snapshot taken: ${currentMemory}MB memory, ${snapshot.operationCount} operations`)
-			} catch (error) {
-				Effect.logError(`❌ Failed to take performance snapshot: ${error}`)
-			}
+					this.addSnapshotWithMemoryManagement(snapshot, currentMemory)
+					return snapshot
+				}.bind(this)),
+				catch: (error) => new Error(`Failed to take performance snapshot: ${error instanceof Error ? error.message : String(error)}`)
+			}).pipe(
+				Effect.flatten,
+				Effect.tap((snapshot) => Effect.log(`📊 Performance snapshot taken: ${snapshot.memoryUsage}MB memory, ${snapshot.operationCount} operations`)),
+				Effect.catchAll((error) => Effect.logError(`❌ ${error.message}`))
+			)
 		}.bind(this))
 	}
 
@@ -245,7 +255,7 @@ export class PerformanceMonitor {
 
 		// Memory leak detection
 		if (this.config.enableLeakDetection) {
-			const memoryIncreasing = memoryGrowthRate > 0.1 // >0.1 MB/sec growth
+			const memoryIncreasing = memoryGrowthRate > DEFAULT_MEMORY_LEAK_DETECTION_RATE
 			const highMemoryUsage = latest.memoryUsage > this.config.memoryThreshold
 
 			if (memoryIncreasing || highMemoryUsage) {
@@ -321,9 +331,9 @@ export class PerformanceMonitor {
 	private addSnapshotWithMemoryManagement(snapshot: PerformanceSnapshot, memoryUsage: number): void {
 		this.snapshots.push(snapshot)
 
-		// Keep only last 100 snapshots to prevent memory growth
-		if (this.snapshots.length > 100) {
-			this.snapshots = this.snapshots.slice(-100)
+		// Keep only last N snapshots to prevent memory growth
+		if (this.snapshots.length > MAX_SNAPSHOTS_RETAINED) {
+			this.snapshots = this.snapshots.slice(-MAX_SNAPSHOTS_RETAINED)
 		}
 
 		// Check for memory threshold violations

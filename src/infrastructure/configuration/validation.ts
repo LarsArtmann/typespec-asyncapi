@@ -160,7 +160,7 @@ const convertOptionsFormat = (result: Record<string, unknown>): AsyncAPIEmitterO
 			Object.entries(result["security-schemes"]).map(([key, value]) => [
 				key,
 				//TODO: LIES!!!
-				convertSecuritySchemeConfig(value), // Safe cast - schema validation ensures correct type
+				convertSecuritySchemeConfig(value as SecuritySchemeConfig), // Safe cast - schema validation ensures correct type
 			]),
 		)
 	}
