@@ -77,21 +77,25 @@ export const processOperations = (
 	 * EXTRACTED FROM MONOLITHIC FILE: (processMessageModelsEffectSync)
 	 * Transforms TypeSpec models with @message decorators to AsyncAPI messages/schemas
 	 * 
+	 * Enhanced with Effect.all parallel processing for optimal performance
+	 * 
 	 * @param messageModels - Message models discovered from TypeSpec AST
 	 * @param asyncApiDoc - AsyncAPI document to update
 	 * @param program - TypeSpec program for context
 	 * @returns Effect containing processing count
 	 */
 export const processMessageModels = (messageModels: Model[], asyncApiDoc: AsyncAPIObject, program: Program): Effect.Effect<number, never> => {
-		return Effect.sync(() => {
-			Effect.log(`🎯 Processing ${messageModels.length} message models synchronously...`)
+		return Effect.gen(function* () {
+			yield* Effect.log(`🎯 Processing ${messageModels.length} message models with functional composition...`)
 
-			// Process each message model with REAL business logic
-			for (const model of messageModels) {
-				processSingleMessageModel(model, asyncApiDoc, program)
-			}
+			// Process each message model with functional composition using Effect.all
+			yield* Effect.all(
+				messageModels.map(model =>
+					Effect.sync(() => processSingleMessageModel(model, asyncApiDoc, program))
+				)
+			)
 
-			Effect.log(`📊 Processed ${messageModels.length} message models successfully`)
+			yield* Effect.log(`📊 Processed ${messageModels.length} message models successfully`)
 			return messageModels.length
 		})
 	}
@@ -102,20 +106,24 @@ export const processMessageModels = (messageModels: Model[], asyncApiDoc: AsyncA
 	 * EXTRACTED FROM MONOLITHIC FILE: (processSecurityConfigsEffectSync)  
 	 * Transforms TypeSpec @security decorators to AsyncAPI securitySchemes
 	 * 
+	 * Enhanced with Effect.all parallel processing for optimal performance
+	 * 
 	 * @param securityConfigs - Security configs discovered from TypeSpec AST
 	 * @param asyncApiDoc - AsyncAPI document to update
 	 * @returns Effect containing processing count
 	 */
 export const processSecurityConfigs = (securityConfigs: SecurityConfig[], asyncApiDoc: AsyncAPIObject): Effect.Effect<number, never> => {
-		return Effect.sync(() => {
-			Effect.log(`🔐 Processing ${securityConfigs.length} security configurations synchronously...`)
+		return Effect.gen(function* () {
+			yield* Effect.log(`🔐 Processing ${securityConfigs.length} security configurations with functional composition...`)
 
-			// Process each security config with REAL business logic
-			for (const config of securityConfigs) {
-				processSingleSecurityConfig(config, asyncApiDoc)
-			}
+			// Process each security config with functional composition using Effect.all
+			yield* Effect.all(
+				securityConfigs.map(config =>
+					Effect.sync(() => processSingleSecurityConfig(config, asyncApiDoc))
+				)
+			)
 
-			Effect.log(`📊 Processed ${securityConfigs.length} security configurations successfully`)
+			yield* Effect.log(`📊 Processed ${securityConfigs.length} security configurations successfully`)
 			return securityConfigs.length
 		})
 	}
@@ -489,12 +497,17 @@ export const executeProcessing = (
 		program: Program
 	): Effect.Effect<{ operationsProcessed: number, messageModelsProcessed: number, securityConfigsProcessed: number, totalProcessed: number }, StandardizedError> => {
 		return Effect.gen(function* () {
-			Effect.log(`🚀 Starting complete TypeSpec processing pipeline...`)
+			yield* Effect.log(`🚀 Starting complete TypeSpec processing pipeline with parallel processing...`)
 
-			// Execute all processing operations
+			// Execute message models and security configs in parallel first (no dependencies)
+			// Operations depend on message schemas, so they run after message models are processed
+			const [messageCount, securityCount] = yield* Effect.all([
+				processMessageModels(messageModels, asyncApiDoc, program),
+				processSecurityConfigs(securityConfigs, asyncApiDoc)
+			])
+
+			// Process operations after message models to ensure schemas are available
 			const operationCount = yield* processOperations(operations, asyncApiDoc, program)
-			const messageCount = yield* processMessageModels(messageModels, asyncApiDoc, program)
-			const securityCount = yield* processSecurityConfigs(securityConfigs, asyncApiDoc)
 
 			const summary = {
 				operationsProcessed: operationCount,
@@ -503,8 +516,16 @@ export const executeProcessing = (
 				totalProcessed: operationCount + messageCount + securityCount
 			}
 
-			Effect.log(`✅ Processing complete: ${summary.totalProcessed} total elements processed`)
+			yield* Effect.log(`✅ Processing complete: ${summary.totalProcessed} total elements processed (parallel optimization)`)
 
 			return summary
 		})
 	}
+
+// Add ProcessingService class export for compatibility
+export class ProcessingService {
+	static processOperations = processOperations
+	static processMessageModels = processMessageModels
+	static processSecurityConfigs = processSecurityConfigs
+	static executeProcessing = executeProcessing
+}

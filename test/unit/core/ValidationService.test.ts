@@ -7,7 +7,7 @@
 
 import { describe, expect, it, beforeEach } from "bun:test"
 import { Effect } from "effect"
-import { ValidationService, type ValidationResult } from "../../../src/core/ValidationService.js"
+import { ValidationService, type ValidationResult } from "../../../src/domain/validation/ValidationService.js"
 import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js"
 
 describe("ValidationService", () => {

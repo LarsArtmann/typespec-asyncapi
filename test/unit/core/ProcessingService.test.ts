@@ -8,7 +8,7 @@
 import { describe, expect, it, beforeEach } from "bun:test"
 import { Effect } from "effect"
 import type { Model, Operation, Program } from "@typespec/compiler"
-import { ProcessingService } from "../../../src/core/ProcessingService.js"
+import { ProcessingService } from "../../../src/domain/emitter/ProcessingService.js"
 import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js"
 import { $lib } from "../../../src/lib.js"
 import {SecurityConfig} from "../../../src/decorators/securityConfig"
