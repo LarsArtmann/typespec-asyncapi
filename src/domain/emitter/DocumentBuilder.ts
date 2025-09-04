@@ -215,8 +215,7 @@ export class DocumentBuilder {
 	 * @returns Effect containing initialized document or StandardizedError
 	 */
 	initializeDocumentStructure(document: AsyncAPIObject): Effect.Effect<AsyncAPIObject, StandardizedError> {
-		const self = this;
-		return Effect.gen(function* () {
+		return Effect.gen(function* (this: DocumentBuilder) {
 			// Validate document parameter
 			if (!document) {
 				return yield* failWith(createError({
@@ -245,7 +244,7 @@ export class DocumentBuilder {
 			}, { context: { operation: "document structure initialization" } })
 
 			// Chain component initialization
-			return yield* self.initializeComponents(structureInitResult)
+			return yield* this.initializeComponents(structureInitResult)
 		})
 	}
 }

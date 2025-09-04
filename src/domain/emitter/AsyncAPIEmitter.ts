@@ -203,16 +203,15 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 		Effect.log(`🏗️  About to call createInitialDocument`)
 		// Initialize document structure using Effect.TS patterns
 		// EFFECT.TS CONVERTED: Replaced try/catch with Effect-based document initialization
-		const self = this;
 		this.asyncApiDoc = Effect.runSync(
-			Effect.gen(function* () {
+			Effect.gen(function* (this: AsyncAPIEmitter) {
 				// Get program with null safety
 				const program = yield* Effect.fromNullable(emitter.getProgram()).pipe(
 					Effect.mapError(() => "Program is null or undefined - cannot create AsyncAPI document")
 				)
 				
 				// Create initial document with error handling
-				const document = yield* self.documentBuilder.createInitialDocument(program)
+				const document = yield* this.documentBuilder.createInitialDocument(program)
 				
 				// TODO: Add document structure validation here
 				yield* Effect.log(`🏗️  Document structure created successfully`)
@@ -279,11 +278,10 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 		Effect.log("=� AsyncAPI Micro-kernel: Running emission pipeline...")
 
 		// EFFECT.TS CONVERTED: Replaced try/catch with Effect-based pipeline execution
-		const self = this;
 		await Effect.runPromise(
-			Effect.gen(function* () {
+			Effect.gen(function* (this: AsyncAPIEmitter) {
 			// Execute the emission pipeline using Effect.TS
-				yield* Effect.sync(() => self.executeEmissionPipelineSync(program)).pipe(
+				yield* Effect.sync(() => this.executeEmissionPipelineSync(program)).pipe(
 					Effect.mapError(error => `Emission pipeline execution failed: ${error}`)
 				)
 			Effect.log(" Micro-kernel emission pipeline completed successfully")
@@ -292,7 +290,7 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 			
 			// CRITICAL FIX: Emit the source file to trigger sourceFile() method and write to outputFiles
 				yield* Effect.log(`🔥 ASSETEMITTER FIX: About to emit sourceFile to trigger content generation`)
-				yield* Effect.tryPromise(() => self.emitter.emitSourceFile(sourceFile))
+				yield* Effect.tryPromise(() => this.emitter.emitSourceFile(sourceFile))
 				yield* Effect.log(`🔥 ASSETEMITTER FIX: Completed emitSourceFile - should have triggered sourceFile() method`)
 			
 			}).pipe(

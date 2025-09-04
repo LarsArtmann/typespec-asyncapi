@@ -114,7 +114,7 @@ export class ValidationService {
 	 * @returns Effect containing validation result and content length
 	 */
 	validateDocumentContent(content: string): Effect.Effect<string, StandardizedError> {
-		return Effect.gen(function* () {
+		return Effect.gen(function* (this: ValidationService) {
 			yield* Effect.log(`🔍 Validating AsyncAPI document content (${content.length} bytes)...`)
 
 			// Parse the content with proper error handling
@@ -136,7 +136,7 @@ export class ValidationService {
 				return content
 			} else {
 				yield* Effect.log(`❌ Document content validation failed:`)
-				result.errors.forEach(error => Effect.runSync(Effect.log(`  - ${error}`)))
+				result.errors.forEach((error: string) => Effect.runSync(Effect.log(`  - ${error}`)))
 				return yield* Effect.fail(EmitterErrors.invalidAsyncAPI(result.errors, parsedDoc))
 			}
 		}).pipe(

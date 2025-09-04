@@ -6,7 +6,7 @@ export class PluginError extends Error {
 		public readonly plugin: IPlugin,
 		public readonly operation: string,
 		public readonly reason: string,
-		public override readonly cause?: Error,
+		public override readonly cause: Error | undefined = undefined,
 	) {
 		super(`Plugin '${plugin.name}' failed during '${operation}': ${reason}`)
 	}
