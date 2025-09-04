@@ -6,11 +6,11 @@
 import type {Model, Namespace, Operation, Program} from "@typespec/compiler"
 import {$lib} from "../lib.js"
 import {Effect} from "effect"
-import type {ServerConfig} from "../decorators/server.js"
-import type {MessageConfig} from "../decorators/message.js"
+import type {ServerConfig} from "../domain/decorators/server.js"
+import type {MessageConfig} from "../domain/decorators/message.js"
 import type {ServersObject} from "@asyncapi/parser/esm/spec-types/v3.js"
-import type {ProtocolConfig} from "../decorators/protocolConfig.js"
-import type {SecurityConfig} from "../decorators/securityConfig.js"
+import type {ProtocolConfig} from "../domain/decorators/protocolConfig.js"
+import type {SecurityConfig} from "../domain/decorators/securityConfig.js"
 
 /**
  * Discover all operations from TypeSpec program

@@ -1,27 +1,17 @@
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/index.ts[0m:[0m[32m126[0m: * @returns [0m[1m[31mPromise<[0mvoid> - Completes when AsyncAPI documents are successfully generated and written to disk
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/index.ts[0m:[0m[32m181[0m:// TODO: CRITICAL - Add explicit return type annotation [0m[1m[31mPromise<[0mvoid> for clarity and better TypeScript errors
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/index.ts[0m:[0m[32m187[0m:export async function $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): [0m[1m[31mPromise<[0mvoid> {
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/validation/asyncapi-validator.ts[0m:[0m[32m171[0m:	async validate(document: unknown, _identifier?: string): [0m[1m[31mPromise<[0mValidationResult> {
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/validation/asyncapi-validator.ts[0m:[0m[32m204[0m:	async validateFile(filePath: string): [0m[1m[31mPromise<[0mValidationResult> {
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/validation/asyncapi-validator.ts[0m:[0m[32m242[0m:	async validateBatch(documents: Array<{ content: unknown, identifier?: string }>): [0m[1m[31mPromise<[0mValidationResult[]> {
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/validation/asyncapi-validator.ts[0m:[0m[32m313[0m:export async function validateAsyncAPIObject(document: unknown, options?: ValidationOptions): [0m[1m[31mPromise<[0mValidationResult> {
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/ErrorHandlingMigration.ts[0m:[0m[32m13[0m:		promiseFn: () => [0m[1m[31mPromise<[0mT>,
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/PluginRegistry.ts[0m:[0m[32m40[0m:    initialize(): [0m[1m[31mPromise<[0mvoid>
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/PluginRegistry.ts[0m:[0m[32m41[0m:    start(): [0m[1m[31mPromise<[0mvoid>
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/PluginRegistry.ts[0m:[0m[32m42[0m:    stop(): [0m[1m[31mPromise<[0mvoid>
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/PluginRegistry.ts[0m:[0m[32m43[0m:    reload?(): [0m[1m[31mPromise<[0mvoid>
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/PluginRegistry.ts[0m:[0m[32m119[0m:    async loadPlugin(plugin: Plugin): [0m[1m[31mPromise<[0mvoid> {
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/PluginRegistry.ts[0m:[0m[32m160[0m:    async unloadPlugin(name: string): [0m[1m[31mPromise<[0mvoid> {
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/PluginRegistry.ts[0m:[0m[32m180[0m:    async reloadPlugin(name: string): [0m[1m[31mPromise<[0mvoid> {
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/PluginRegistry.ts[0m:[0m[32m226[0m:    private async initializePlugin(name: string): [0m[1m[31mPromise<[0mvoid> {
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/PluginRegistry.ts[0m:[0m[32m245[0m:    async startPlugin(name: string): [0m[1m[31mPromise<[0mvoid> {
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/PluginRegistry.ts[0m:[0m[32m268[0m:    async stopPlugin(name: string): [0m[1m[31mPromise<[0mvoid> {
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/PluginRegistry.ts[0m:[0m[32m280[0m:            const timeoutPromise = [0m[1m[31mnew Promise([0m(_, reject) => 
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/AsyncAPIEmitter.ts[0m:[0m[32m222[0m:	 * @returns [0m[1m[31mPromise<[0mRecord<string, unknown>> Context object containing the global scope for the generated source file
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/AsyncAPIEmitter.ts[0m:[0m[32m237[0m:	override async programContext(program: Program): [0m[1m[31mPromise<[0mRecord<string, unknown>> {
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/AsyncAPIEmitter.ts[0m:[0m[32m353[0m:	override async writeOutput(sourceFiles: SourceFile<string>[]): [0m[1m[31mPromise<[0mvoid> {
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/IAsyncAPIEmitter.ts[0m:[0m[32m24[0m:	programContext(program: Program): [0m[1m[31mPromise<[0mRecord<string, unknown>>
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/core/IAsyncAPIEmitter.ts[0m:[0m[32m39[0m:	writeOutput(sourceFiles: SourceFile<string>[]): [0m[1m[31mPromise<[0mvoid>
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/validation/asyncapi-validator.ts[0m:[0m[32m171[0m:	async validate(document: unknown, _identifier?: string): [0m[1m[31mPromise<[0mValidationResult> {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/validation/asyncapi-validator.ts[0m:[0m[32m204[0m:	async validateFile(filePath: string): [0m[1m[31mPromise<[0mValidationResult> {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/validation/asyncapi-validator.ts[0m:[0m[32m242[0m:	async validateBatch(documents: Array<{ content: unknown, identifier?: string }>): [0m[1m[31mPromise<[0mValidationResult[]> {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/validation/asyncapi-validator.ts[0m:[0m[32m313[0m:export async function validateAsyncAPIObject(document: unknown, options?: ValidationOptions): [0m[1m[31mPromise<[0mValidationResult> {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/models/ErrorHandlingMigration.ts[0m:[0m[32m13[0m:		promiseFn: () => [0m[1m[31mPromise<[0mT>,
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/index.ts[0m:[0m[32m121[0m: * @returns [0m[1m[31mPromise<[0mvoid> - Completes when AsyncAPI documents are successfully generated and written to disk
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/index.ts[0m:[0m[32m176[0m:// TODO: CRITICAL - Add explicit return type annotation [0m[1m[31mPromise<[0mvoid> for clarity and better TypeScript errors
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/index.ts[0m:[0m[32m182[0m:export async function $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): [0m[1m[31mPromise<[0mvoid> {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/utils/standardized-errors.ts[0m:[0m[32m196[0m:  tryAsync: <T>(fn: () => [0m[1m[31mPromise<[0mT>, context?: Record<string, unknown>) =>
 [0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/utils/effect-helpers.ts[0m:[0m[32m187[0m:	executeAsync: <T>(operation: () => [0m[1m[31mPromise<[0mT>, errorMessage: string) =>
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/performance/PerformanceRegressionTester.ts[0m:[0m[32m84[0m:	runRegressionTest(testCaseName: string, testFunction: () => [0m[1m[31mPromise<[0mvoid>) {
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/performance/PerformanceRegressionTester.ts[0m:[0m[32m448[0m:			await [0m[1m[31mnew Promise([0mresolve => setTimeout(resolve, Math.random() * 100 + 50))
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/emitter/IAsyncAPIEmitter.ts[0m:[0m[32m24[0m:	programContext(program: Program): [0m[1m[31mPromise<[0mRecord<string, unknown>>
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/emitter/IAsyncAPIEmitter.ts[0m:[0m[32m39[0m:	writeOutput(sourceFiles: SourceFile<string>[]): [0m[1m[31mPromise<[0mvoid>
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/emitter/AsyncAPIEmitter.ts[0m:[0m[32m251[0m:	 * @returns [0m[1m[31mPromise<[0mRecord<string, unknown>> Context object containing the global scope for the generated source file
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/emitter/AsyncAPIEmitter.ts[0m:[0m[32m266[0m:	override async programContext(program: Program): [0m[1m[31mPromise<[0mRecord<string, unknown>> {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/emitter/AsyncAPIEmitter.ts[0m:[0m[32m386[0m:	override async writeOutput(sourceFiles: SourceFile<string>[]): [0m[1m[31mPromise<[0mvoid> {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/infrastructure/performance/PerformanceRegressionTester.ts[0m:[0m[32m84[0m:	runRegressionTest(testCaseName: string, testFunction: () => [0m[1m[31mPromise<[0mvoid>) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/infrastructure/performance/PerformanceRegressionTester.ts[0m:[0m[32m448[0m:			await [0m[1m[31mnew Promise([0mresolve => setTimeout(resolve, Math.random() * 100 + 50))
