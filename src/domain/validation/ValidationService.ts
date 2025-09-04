@@ -139,7 +139,17 @@ export class ValidationService {
 				result.errors.forEach(error => Effect.runSync(Effect.log(`  - ${error}`)))
 				return yield* Effect.fail(EmitterErrors.invalidAsyncAPI(result.errors, parsedDoc))
 			}
-		})
+		}).pipe(
+			Effect.mapError((error: unknown): StandardizedError => {
+				if (typeof error === 'object' && error !== null && 'what' in error) {
+					return error as StandardizedError
+				}
+				return EmitterErrors.validationFailure(
+					[`Unexpected validation error: ${String(error)}`],
+					{ content: content.substring(0, 100) + "..." }
+				)
+			})
+		)
 	}
 
 	/**

@@ -391,7 +391,7 @@ export const railwayErrorRecovery = {
 		minSuccessCount: number = 1
 	): Effect.Effect<{ successes: T[]; failures: E[] }, Error> => {
 		return Effect.gen(function* () {
-			const results = yield* Effect.allWith(
+			const results = yield* Effect.all(
 				operations.map(op => 
 					op.pipe(
 						Effect.either
@@ -418,7 +418,14 @@ export const railwayErrorRecovery = {
 			}
 
 			return { successes, failures }
-		})
+		}).pipe(
+			Effect.mapError((error: unknown): Error => {
+				if (error instanceof Error) {
+					return error
+				}
+				return new Error(`Partial failure handling error: ${String(error)}`)
+			})
+		)
 	},
 
 	/**
@@ -452,7 +459,15 @@ export const railwayErrorRecovery = {
 		return Effect.gen(function* () {
 			const semaphore = yield* Semaphore.make(maxConcurrent)
 			return yield* semaphore.withPermit(operation)
-		})
+		}).pipe(
+			Effect.mapError((error: unknown): E | Error => {
+				if (error instanceof Error) {
+					return error
+				}
+				// Try to cast to E type first, then fallback to Error
+				return new Error(`Bulkhead operation failed: ${String(error)}`)
+			})
+		)
 	},
 
 	/**

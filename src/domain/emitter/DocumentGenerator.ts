@@ -93,9 +93,9 @@ export class DocumentGenerator {
 			// Serialize based on format
 			switch (options.format) {
 				case SERIALIZATION_FORMAT_OPTION_JSON:
-					return yield* self.serializeToJSON(document, options)
+					return self.serializeToJSON(document, options)
 				case SERIALIZATION_FORMAT_OPTION_YAML:
-					return yield* self.serializeToYAML(document, options)
+					return self.serializeToYAML(document, options)
 				default:
 					return yield* failWith(createError({
 						what: `Unsupported serialization format: ${options.format}`,
@@ -108,7 +108,22 @@ export class DocumentGenerator {
 						context: { requestedFormat: options.format, supportedFormats: ['json', 'yaml'] }
 					}))
 			}
-		})
+		}).pipe(
+			Effect.mapError((error: unknown): StandardizedError => {
+				if (typeof error === 'object' && error !== null && 'what' in error) {
+					return error as StandardizedError
+				}
+				return createError({
+					what: 'Document serialization failed',
+					reassure: 'This is a recoverable error that can be fixed',
+					why: `Unexpected error during serialization: ${String(error)}`,
+					fix: 'Check document structure and serialization options',
+					escape: 'Try with different serialization format',
+					severity: 'error' as const,
+					code: 'SERIALIZATION_ERROR'
+				})
+			})
+		)
 	}
 
 	/**
