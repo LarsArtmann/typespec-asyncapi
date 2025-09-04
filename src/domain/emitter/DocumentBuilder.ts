@@ -25,8 +25,7 @@ import {
 	type StandardizedError, 
 	createError, 
 	failWith, 
-	Railway,
-	EmitterErrors 
+	Railway 
 } from "../../utils/standardized-errors.js"
 
 /**
@@ -216,6 +215,7 @@ export class DocumentBuilder {
 	 * @returns Effect containing initialized document or StandardizedError
 	 */
 	initializeDocumentStructure(document: AsyncAPIObject): Effect.Effect<AsyncAPIObject, StandardizedError> {
+		const self = this;
 		return Effect.gen(function* () {
 			// Validate document parameter
 			if (!document) {
@@ -245,7 +245,7 @@ export class DocumentBuilder {
 			}, { context: { operation: "document structure initialization" } })
 
 			// Chain component initialization
-			return yield* this.initializeComponents(structureInitResult)
+			return yield* self.initializeComponents(structureInitResult)
 		})
 	}
 }
