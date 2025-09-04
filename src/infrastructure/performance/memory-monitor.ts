@@ -8,11 +8,11 @@
 //TODO: This file is getting too big and should be split into multiple smaller files.
 
 import {Context, Duration, Effect, Fiber, Layer, Ref} from "effect"
-import {MemoryThresholdExceededError} from "../errors/MemoryThresholdExceededError.js"
-import {MemoryMonitorInitializationError} from "../errors/MemoryMonitorInitializationError.js"
-import {MemoryLeakDetectedError} from "../errors/MemoryLeakDetectedError.js"
-import {GarbageCollectionFailureError} from "../errors/GarbageCollectionFailureError.js"
-import {GarbageCollectionNotAvailableError} from "../errors/GarbageCollectionNotAvailableError.js"
+import {MemoryThresholdExceededError} from "../../domain/models/errors/MemoryThresholdExceededError.js"
+import {MemoryMonitorInitializationError} from "../../domain/models/errors/MemoryMonitorInitializationError.js"
+import {MemoryLeakDetectedError} from "../../domain/models/errors/MemoryLeakDetectedError.js"
+import {GarbageCollectionFailureError} from "../../domain/models/errors/GarbageCollectionFailureError.js"
+import {GarbageCollectionNotAvailableError} from "../../domain/models/errors/GarbageCollectionNotAvailableError.js"
 import type {MemoryMonitorService} from "./MemoryMonitorService.js"
 import type {MemoryBudget} from "./MemoryBudget.js"
 import type {MemorySnapshot} from "./MemorySnapshot.js"

@@ -99,6 +99,7 @@ setTypeSpecNamespace("TypeSpec.AsyncAPI", $channel, $publish, $subscribe, $serve
 // TODO: CRITICAL - Missing documentation about which decorators are optional vs required for basic functionality
 export { $channel, $publish, $subscribe, $server, $asyncapi, $message, $header, $protocol, $security, $tags, $correlationId, $bindings };
 
+// noinspection JSUnusedGlobalSymbols
 /**
  * AsyncAPI Emitter Entry Point - TypeSpec to AsyncAPI 3.0 Document Generator
  * 
