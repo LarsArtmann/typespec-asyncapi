@@ -71,36 +71,48 @@ export function $protocol(
 					const nodeValue = property.node.value as unknown
 
 					// Handle different value types from TypeSpec AST
-					try {
-						if (nodeValue && typeof nodeValue === 'object') {
-							const astNode = nodeValue as { value?: unknown; kind?: number; properties?: unknown[] }
+					const extractionResult = Effect.runSync(
+						Effect.sync(() => {
+							if (nodeValue && typeof nodeValue === 'object') {
+								const astNode = nodeValue as { value?: unknown; kind?: number; properties?: unknown[] }
 
-							// Direct value extraction from TypeSpec AST node
-							if (astNode.value !== undefined) {
-								extractedConfig[key] = astNode.value
-							} else if (astNode.kind === 14) { // Model object
-								// This is a nested object - extract its properties
-								const nestedProps: Record<string, unknown> = {}
-								if (Array.isArray(astNode.properties)) {
-									astNode.properties.forEach((nestedProp: unknown) => {
-										const prop = nestedProp as {
-											id?: { sv?: string };
-											name?: string;
-											value?: { value?: unknown }
-										}
-										const nestedKey = prop.id?.sv ?? prop.name
-										const nestedValue = prop.value?.value
-										if (nestedKey && nestedValue !== undefined) {
-											nestedProps[nestedKey] = nestedValue
-										}
-									})
+								// Direct value extraction from TypeSpec AST node
+								if (astNode.value !== undefined) {
+									return { success: true, key, value: astNode.value }
+								} else if (astNode.kind === 14) { // Model object
+									// This is a nested object - extract its properties
+									const nestedProps: Record<string, unknown> = {}
+									if (Array.isArray(astNode.properties)) {
+										astNode.properties.forEach((nestedProp: unknown) => {
+											const prop = nestedProp as {
+												id?: { sv?: string };
+												name?: string;
+												value?: { value?: unknown }
+											}
+											const nestedKey = prop.id?.sv ?? prop.name
+											const nestedValue = prop.value?.value
+											if (nestedKey && nestedValue !== undefined) {
+												nestedProps[nestedKey] = nestedValue
+											}
+										})
+									}
+									return { success: true, key, value: nestedProps }
 								}
-								extractedConfig[key] = nestedProps
 							}
-						}
-					} catch {
-						// Continue with next property if extraction fails
-						//TODO: I HATE SILENT ERRORS!!! AT LEAST A DEBUG MESSAGE!
+							return { success: false, key }
+						}).pipe(
+							Effect.orElse((error) =>
+								Effect.gen(function* () {
+									yield* Effect.log(`⚠️ Failed to extract property ${key} from TypeSpec AST: ${error}`)
+									return { success: false, key }
+								})
+							)
+						)
+					)
+
+					// Apply extraction result if successful
+					if (extractionResult.success) {
+						extractedConfig[extractionResult.key] = extractionResult.value
 					}
 				}
 			})

@@ -167,12 +167,16 @@ function validateCorrelationSchema(
 
 		// Add pattern validation
 		if (schema.pattern && typeof schema.pattern === 'string') {
-			try {
-				new RegExp(schema.pattern) // Test if valid regex
-				validatedSchema.pattern = schema.pattern
-			} catch {
-				Effect.log(`⚠️ Invalid regex pattern: ${schema.pattern}`)
-			}
+			Effect.runSync(
+				Effect.sync(() => {
+					new RegExp(schema.pattern) // Test if valid regex
+					validatedSchema.pattern = schema.pattern
+				}).pipe(
+					Effect.orElse(() => 
+						Effect.log(`⚠️ Invalid regex pattern: ${schema.pattern}`)
+					)
+				)
+			)
 		}
 
 		// Add length validation
@@ -247,12 +251,15 @@ export function validateCorrelationIdValue(
 		if (schema.maxLength && value.length > schema.maxLength) return false
 		
 		if (schema.pattern) {
-			try {
-				const regex = new RegExp(schema.pattern)
-				if (!regex.test(value)) return false
-			} catch {
-				return false
-			}
+			const isValid = Effect.runSync(
+				Effect.sync(() => {
+					const regex = new RegExp(schema.pattern)
+					return regex.test(value)
+				}).pipe(
+					Effect.orElse(() => Effect.succeed(false))
+				)
+			)
+			if (!isValid) return false
 		}
 		
 		if (schema.format === 'uuid') {

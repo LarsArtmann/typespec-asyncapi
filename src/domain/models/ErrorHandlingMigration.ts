@@ -13,17 +13,14 @@ export class ErrorHandlingMigration {
 		promiseFn: () => Promise<T>,
 		errorMapper?: (error: unknown) => StandardizedError,
 	) {
-		return Effect.gen(function* () {
-			try {
-				return yield* Effect.tryPromise(promiseFn)
-			} catch (error) {
+		return Effect.tryPromise(promiseFn).pipe(
+			Effect.catchAll(error => {
 				const standardError = errorMapper
 					? errorMapper(error)
 					: ErrorHandlingMigration.mapUnknownError(error)
-
-				return yield* Effect.fail(standardError)
-			}
-		})
+				return Effect.fail(standardError)
+			})
+		)
 	}
 
 	/**
@@ -33,38 +30,32 @@ export class ErrorHandlingMigration {
 		tryFn: () => T,
 		errorMapper?: (error: unknown) => StandardizedError,
 	) {
-		return Effect.gen(function* () {
-			try {
-				return tryFn()
-			} catch (error) {
+		return Effect.sync(tryFn).pipe(
+			Effect.catchAll(error => {
 				const standardError = errorMapper
 					? errorMapper(error)
 					: ErrorHandlingMigration.mapUnknownError(error)
-
-				return yield* Effect.fail(standardError)
-			}
-		})
+				return Effect.fail(standardError)
+			})
+		)
 	}
 
 	/**
 	 * Convert filesystem operations to Effect.TS
 	 */
 	static fileOperationToEffect(filePath: string) {
-		return Effect.gen(function* () {
-			try {
-				const content = yield* Effect.promise(() => readFile(filePath, 'utf-8'))
-				return content
-			} catch (error) {
-				return yield* Effect.fail({
+		return Effect.promise(() => readFile(filePath, 'utf-8')).pipe(
+			Effect.catchAll(error => 
+				Effect.fail({
 					category: "io_error" as const,
-					code: "FILE_READ_FAILED",
+					code: "FILE_READ_FAILED", 
 					message: `Failed to read file: ${filePath}`,
 					details: {filePath, error: error as Error},
 					timestamp: new Date(),
 					recoverable: false,
 				} satisfies StandardizedError)
-			}
-		})
+			)
+		)
 	}
 
 	/**

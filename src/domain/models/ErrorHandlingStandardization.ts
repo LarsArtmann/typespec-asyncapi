@@ -13,7 +13,7 @@
  */
 
 // Effect.TS imports
-import {Context, Effect, Layer} from "effect"
+import {Context, Effect, Layer, Schedule} from "effect"
 
 // Node.js built-ins
 import type {StandardizedError} from "./StandardizedError.js"
@@ -307,13 +307,14 @@ export const errorHandlingUtils = {
 	) => {
 		return Effect.gen(function* () {
 			const errorHandler = yield* ERROR_HANDLING_SERVICE
-
-			try {
-				return yield* fn()
-			} catch (error) {
-				const standardizedError = yield* errorHandler.processError(error, context)
-				return yield* errorHandler.attemptErrorRecovery(standardizedError)
-			}
+			return yield* fn().pipe(
+				Effect.catchAll(error =>
+					Effect.gen(function* () {
+						const standardizedError = yield* errorHandler.processError(error, context)
+						return yield* errorHandler.attemptErrorRecovery(standardizedError)
+					})
+				)
+			)
 		})
 	},
 
@@ -324,14 +325,14 @@ export const errorHandlingUtils = {
 		effect: Effect.Effect<T, unknown, never>,
 		fallback: T,
 	) => {
-		return Effect.gen(function* () {
-			try {
-				return yield* effect
-			} catch (error) {
-				yield* Effect.logError(`🚨 Safe operation failed, using fallback: ${error}`)
-				return fallback
-			}
-		})
+		return effect.pipe(
+			Effect.catchAll(error =>
+				Effect.gen(function* () {
+					yield* Effect.logError(`🚨 Safe operation failed, using fallback: ${error}`)
+					return fallback
+				})
+			)
+		)
 	},
 
 	/**
@@ -341,29 +342,24 @@ export const errorHandlingUtils = {
 		effect: Effect.Effect<T, StandardizedError, never>,
 		maxRetries: number = 3,
 	) => {
-		return Effect.gen(function* () {
-			let lastError: StandardizedError | null = null
-
-			for (let attempt = 1; attempt <= maxRetries; attempt++) {
-				try {
-					return yield* effect
-				} catch (error) {
-					lastError = error as StandardizedError
-
-					if (attempt === maxRetries) {
-						break
-					}
-
-					const delayMs = Math.pow(2, attempt - 1) * 1000 // Exponential backoff
-					yield* Effect.log(`🔄 Retry attempt ${attempt}/${maxRetries} after ${delayMs}ms delay`)
-					yield* Effect.sleep(delayMs)
-				}
-			}
-
-			return yield* Effect.fail(lastError ?? {
-				category: 'system_error' as const, code: 'RETRY_FAILED', message: 'All retry attempts failed',
-				timestamp: new Date(), recoverable: false,
-			})
-		})
+		return effect.pipe(
+			Effect.retry(
+				Schedule.exponential("1 second").pipe(
+					Schedule.compose(Schedule.recurs(maxRetries)),
+					Schedule.tapOutput((attempt) =>
+						Effect.log(`🔄 Retry attempt ${attempt}/${maxRetries} with exponential backoff`)
+					)
+				)
+			),
+			Effect.catchAll(lastError =>
+				Effect.fail(lastError ?? {
+					category: 'system_error' as const,
+					code: 'RETRY_FAILED', 
+					message: 'All retry attempts failed',
+					timestamp: new Date(), 
+					recoverable: false,
+				} satisfies StandardizedError)
+			)
+		)
 	},
 }
