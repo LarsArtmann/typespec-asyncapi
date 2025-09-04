@@ -104,18 +104,9 @@ export function $protocol(
 								}
 								return { success: false, key }
 						}).pipe(
-							Effect.mapError(() => `Property extraction failed for ${key}`),
-							Effect.either
+							Effect.catchAll(() => Effect.succeed({ success: false, key }))
 						)
 					)
-					
-					if (extractionResult._tag === "Left") {
-						// Continue with next property if extraction fails  
-						Effect.runSync(Effect.log(`⚠️ Failed to extract property ${key} from TypeSpec AST: ${extractionResult.left}`))
-						extractionResult = { success: false, key }
-					} else {
-						extractionResult = extractionResult.right
-					}
 
 					// Apply extraction result if successful
 					if (extractionResult.success) {

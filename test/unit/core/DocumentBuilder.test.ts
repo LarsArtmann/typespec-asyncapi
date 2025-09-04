@@ -7,7 +7,7 @@
 
 import { describe, expect, it, beforeEach } from "bun:test"
 import type { Program } from "@typespec/compiler"
-import { DocumentBuilder } from "../../../src/core/DocumentBuilder.js"
+import { DocumentBuilder } from "../../../src/domain/emitter/DocumentBuilder.js"
 import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js"
 
 describe("DocumentBuilder", () => {

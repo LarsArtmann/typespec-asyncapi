@@ -8,7 +8,7 @@
 import { describe, expect, it, beforeEach } from "bun:test"
 import { Effect } from "effect"
 import type { Model, Namespace, Operation, Program } from "@typespec/compiler"
-import { DiscoveryService, type DiscoveryResult } from "../../../src/core/DiscoveryService.js"
+import { DiscoveryService, type DiscoveryResult } from "../../../src/domain/emitter/DiscoveryService.js"
 import { $lib } from "../../../src/lib.js"
 
 describe("DiscoveryService", () => {
