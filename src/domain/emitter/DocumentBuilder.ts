@@ -243,6 +243,6 @@ export class DocumentBuilder {
 
 			// Chain component initialization
 			return yield* this.initializeComponents(structureInitResult)
-		})
+		}.bind(this))
 	}
 }

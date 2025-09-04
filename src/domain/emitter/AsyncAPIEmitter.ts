@@ -228,7 +228,7 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 				yield* Effect.log(`🏗️  Document structure created successfully`)
 				
 				return document
-			}).pipe(
+			}.bind(this)).pipe(
 				Effect.tapError(error => Effect.log(`❌ Document initialization failed: ${error}`)),
 				Effect.mapError(error => new Error(`AsyncAPI document initialization failed: ${error}`))
 			)
@@ -324,7 +324,7 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 				)
 				yield* Effect.log(`🔥 ASSETEMITTER FIX: Completed emitSourceFile - should have triggered sourceFile() method`)
 			
-			}).pipe(
+			}.bind(this)).pipe(
 				Effect.tapError(error => Effect.log(`❌ Micro-kernel emission pipeline failed: ${error}`)),
 				Effect.catchAll(error => 
 					Effect.gen(function* () {
@@ -504,7 +504,7 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 				yield* Effect.log(`📊 Performance Report:\n${report}`)
 				
 				yield* Effect.log(`✅ Micro-kernel emission pipeline completed!`)
-			}).pipe(
+			}.bind(this)).pipe(
 				Effect.catchAll(error => {
 					const endTime = performance.now()
 					const executionTime = endTime - startTime
