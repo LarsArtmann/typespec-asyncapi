@@ -145,6 +145,20 @@ export const EmitterErrors = {
 		code: "FILE_SYSTEM_ERROR",
 		context: {operation, path, error},
 	}),
+
+	/**
+	 * General validation failure errors
+	 */
+	validationFailure: (errors: string[], context?: unknown) => createError({
+		what: "Validation failed",
+		reassure: "This indicates an issue with the data being validated",
+		why: `Validation failed with errors: ${errors.join(", ")}`,
+		fix: "Check the input data and ensure it meets validation requirements",
+		escape: "Try using simpler or default values",
+		severity: "error" as const,
+		code: "VALIDATION_FAILURE",
+		context: {errors, additionalContext: context},
+	}),
 }
 
 /**

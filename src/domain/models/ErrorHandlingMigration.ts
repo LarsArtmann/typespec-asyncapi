@@ -15,7 +15,7 @@ export class ErrorHandlingMigration {
 	) {
 		return Effect.gen(function* () {
 			try {
-				return yield* Effect.runPromise(() => promiseFn())
+				return yield* Effect.tryPromise(promiseFn)
 			} catch (error) {
 				const standardError = errorMapper
 					? errorMapper(error)

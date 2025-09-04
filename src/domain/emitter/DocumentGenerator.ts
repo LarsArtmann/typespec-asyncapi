@@ -57,8 +57,7 @@ export class DocumentGenerator {
 		document: AsyncAPIObject, 
 		format: SerializationFormatOption = DEFAULT_SERIALIZATION_FORMAT
 	): Effect.Effect<string, StandardizedError> {
-		const self = this;
-		return Effect.gen(function* () {
+		return Effect.gen(function* (this: DocumentGenerator) {
 			yield* Effect.log(`📄 DocumentGenerator: Serializing to ${format.toUpperCase()}`)
 
 			const options: SerializationOptions = {
@@ -68,7 +67,7 @@ export class DocumentGenerator {
 				preserveOrder: true,
 			}
 
-			return yield* self.serializeWithOptions(document, options)
+			return yield* this.serializeWithOptions(document, options)
 		})
 	}
 
@@ -79,23 +78,22 @@ export class DocumentGenerator {
 		document: AsyncAPIObject, 
 		options: SerializationOptions
 	): Effect.Effect<string, StandardizedError> {
-		const self = this;
-		return Effect.gen(function* () {
+		return Effect.gen(function* (this: DocumentGenerator) {
 			yield* Effect.log(`📄 Serializing AsyncAPI document with options: ${JSON.stringify(options)}`)
 
 			// Validate document structure before serialization
-			yield* self.validateDocumentStructure(document)
+			yield* this.validateDocumentStructure(document)
 
 			// Generate statistics
-			const stats = yield* self.generateDocumentStats(document)
-			yield* self.logDocumentStats(stats)
+			const stats = yield* this.generateDocumentStats(document)
+			yield* this.logDocumentStats(stats)
 
 			// Serialize based on format
 			switch (options.format) {
 				case SERIALIZATION_FORMAT_OPTION_JSON:
-					return self.serializeToJSON(document, options)
+					return this.serializeToJSON(document, options)
 				case SERIALIZATION_FORMAT_OPTION_YAML:
-					return self.serializeToYAML(document, options)
+					return this.serializeToYAML(document, options)
 				default:
 					return yield* failWith(createError({
 						what: `Unsupported serialization format: ${options.format}`,
@@ -283,8 +281,7 @@ export class DocumentGenerator {
 	 * Optimize document for size (remove empty objects, compress whitespace) using Railway programming
 	 */
 	optimizeDocument(document: AsyncAPIObject): Effect.Effect<AsyncAPIObject, StandardizedError> {
-		const self = this;
-		return Effect.gen(function* () {
+		return Effect.gen(function* (this: DocumentGenerator) {
 			yield* Effect.log(`🔧 Optimizing document structure...`)
 
 			// Safe document optimization with error handling
@@ -293,7 +290,7 @@ export class DocumentGenerator {
 				const cloned = JSON.parse(JSON.stringify(document)) as AsyncAPIObject
 				
 				// Remove empty objects
-				self.removeEmptyObjects(cloned as unknown as Record<string, unknown>)
+				this.removeEmptyObjects(cloned as unknown as Record<string, unknown>)
 				
 				return cloned
 			}, { context: { operation: "document optimization" } })

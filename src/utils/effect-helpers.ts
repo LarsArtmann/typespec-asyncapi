@@ -3,7 +3,7 @@
  * Eliminates Effect.TS anti-patterns and provides comprehensive Railway programming patterns
  */
 
-import {Effect, Schedule, Semaphore} from "effect"
+import {Effect, Schedule, TSemaphore} from "effect"
 import type {EmitContext} from "@typespec/compiler"
 import type {AsyncAPIEmitterOptions} from "../infrastructure/configuration/options.js"
 import {SpecGenerationError} from "../domain/models/errors/SpecGenerationError.js"
@@ -372,6 +372,10 @@ export const railwayErrorRecovery = {
 
 		const [primary, ...alternatives] = operations
 		
+		if (!primary) {
+			return Effect.succeed(finalFallback)
+		}
+		
 		return primary.pipe(
 			Effect.orElse(() => {
 				if (alternatives.length > 0) {
@@ -457,8 +461,11 @@ export const railwayErrorRecovery = {
 	): Effect.Effect<T, E | Error> => {
 		// Simplified bulkhead using semaphore
 		return Effect.gen(function* () {
-			const semaphore = yield* Semaphore.make(maxConcurrent)
-			return yield* semaphore.withPermit(operation)
+			const semaphore = yield* TSemaphore.make(maxConcurrent)
+			yield* TSemaphore.acquire(semaphore)
+			const result = yield* operation
+			yield* TSemaphore.release(semaphore)
+			return result
 		}).pipe(
 			Effect.mapError((error: unknown): E | Error => {
 				if (error instanceof Error) {
