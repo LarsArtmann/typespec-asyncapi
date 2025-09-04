@@ -73,39 +73,49 @@ export function $protocol(
 					// Handle different value types from TypeSpec AST
 					type ExtractionResult = { success: boolean; key: string; value?: unknown }
 					let extractionResult: ExtractionResult
-					try {
-						if (nodeValue && typeof nodeValue === 'object') {
-							const astNode = nodeValue as { value?: unknown; kind?: number; properties?: unknown[] }
+					// Use Effect.TS for safe property extraction
+					extractionResult = Effect.runSync(
+						Effect.sync(() => {
+							if (nodeValue && typeof nodeValue === 'object') {
+								const astNode = nodeValue as { value?: unknown; kind?: number; properties?: unknown[] }
 
-							// Direct value extraction from TypeSpec AST node
-							if (astNode.value !== undefined) {
-								extractionResult = { success: true, key, value: astNode.value }
-							} else if (astNode.kind === 14) { // Model object
-									// This is a nested object - extract its properties
-									const nestedProps: Record<string, unknown> = {}
-									if (Array.isArray(astNode.properties)) {
-										astNode.properties.forEach((nestedProp: unknown) => {
-											const prop = nestedProp as {
-												id?: { sv?: string };
-												name?: string;
-												value?: { value?: unknown }
-											}
-											const nestedKey = prop.id?.sv ?? prop.name
-											const nestedValue = prop.value?.value
-											if (nestedKey && nestedValue !== undefined) {
-												nestedProps[nestedKey] = nestedValue
-											}
-										})
+								// Direct value extraction from TypeSpec AST node
+								if (astNode.value !== undefined) {
+									return { success: true, key, value: astNode.value }
+								} else if (astNode.kind === 14) { // Model object
+										// This is a nested object - extract its properties
+										const nestedProps: Record<string, unknown> = {}
+										if (Array.isArray(astNode.properties)) {
+											astNode.properties.forEach((nestedProp: unknown) => {
+												const prop = nestedProp as {
+													id?: { sv?: string };
+													name?: string;
+													value?: { value?: unknown }
+												}
+												const nestedKey = prop.id?.sv ?? prop.name
+												const nestedValue = prop.value?.value
+												if (nestedKey && nestedValue !== undefined) {
+													nestedProps[nestedKey] = nestedValue
+												}
+											})
+										}
+										return { success: true, key, value: nestedProps }
 									}
-									extractionResult = { success: true, key, value: nestedProps }
 								}
-							}
-							extractionResult = { success: false, key }
-						} catch (error) {
-							// Continue with next property if extraction fails  
-							Effect.log(`⚠️ Failed to extract property ${key} from TypeSpec AST: ${error}`)
-							extractionResult = { success: false, key }
-						}
+								return { success: false, key }
+						}).pipe(
+							Effect.mapError(() => `Property extraction failed for ${key}`),
+							Effect.either
+						)
+					)
+					
+					if (extractionResult._tag === "Left") {
+						// Continue with next property if extraction fails  
+						Effect.runSync(Effect.log(`⚠️ Failed to extract property ${key} from TypeSpec AST: ${extractionResult.left}`))
+						extractionResult = { success: false, key }
+					} else {
+						extractionResult = extractionResult.right
+					}
 
 					// Apply extraction result if successful
 					if (extractionResult.success) {

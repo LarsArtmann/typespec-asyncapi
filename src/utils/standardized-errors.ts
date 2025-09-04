@@ -61,7 +61,7 @@ export const dieWith = (message: string, _context?: Record<string, unknown>) =>
 /**
  * Common error patterns for TypeSpec AsyncAPI Emitter
  */
-export const EmitterErrors = {
+export const emitterErrors = {
 	/**
 	 * TypeSpec compilation errors
 	 */
@@ -178,7 +178,7 @@ export const EmitterErrors = {
 /**
  * Railway programming utilities for Effect.TS
  */
-export const Railway = {
+export const railway = {
 	/**
 	 * Transform standard JavaScript Error to StandardizedError
 	 */
@@ -214,8 +214,8 @@ export const Railway = {
 		Effect.try({
 			try: fn,
 			catch: (error) => error instanceof Error
-				? Railway.fromError(error, context)
-				: Railway.fromUnknown(error, context),
+				? railway.fromError(error, context)
+				: railway.fromUnknown(error, context),
 		}),
 
 	/**
@@ -225,8 +225,8 @@ export const Railway = {
 		Effect.tryPromise({
 			try: fn,
 			catch: (error) => error instanceof Error
-				? Railway.fromError(error, context)
-				: Railway.fromUnknown(error, context),
+				? railway.fromError(error, context)
+				: railway.fromUnknown(error, context),
 		}),
 
 	/**
@@ -266,7 +266,7 @@ export const Railway = {
 /**
  * Error formatting utilities
  */
-export const ErrorFormatters = {
+export const errorFormatters = {
 	/**
 	 * Format error for user display (What/Reassure pattern)
 	 */
@@ -304,7 +304,7 @@ export const ErrorFormatters = {
 /**
  * Validation utilities that return standardized errors
  */
-export const Validators = {
+export const validators = {
 	/**
 	 * Validate required string field
 	 */

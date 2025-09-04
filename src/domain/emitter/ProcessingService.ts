@@ -32,30 +32,39 @@ import {ProtocolBindingFactory} from "../../infrastructure/adapters/protocol-bin
  * - Security configs -> AsyncAPI components/securitySchemes
  * 
  * Uses Effect.TS for functional error handling and comprehensive logging
+ * 
+ * MODERN FUNCTIONAL ARCHITECTURE - Domain-Driven Design Patterns
+ * - Pure functional composition with Effect.TS
+ * - Railway programming for error handling
+ * - Immutable data transformations
+ * - Clean separation of concerns
  */
-export class ProcessingService {
 
-	/**
-	 * Process operations and add to AsyncAPI document
-	 * 
-	 * EXTRACTED FROM MONOLITHIC FILE: lines 693-708 (processOperationsEffectSync)
-	 * Enhanced with plugin system integration for protocol bindings
-	 * 
-	 * @param operations - Operations discovered from TypeSpec AST
-	 * @param asyncApiDoc - AsyncAPI document to update
-	 * @param program - TypeSpec program for context
-	 * @returns Effect containing processing count
-	 */
-	processOperations(operations: Operation[], asyncApiDoc: AsyncAPIObject, program: Program) {
-		// eslint-disable-next-line @typescript-eslint/no-this-alias
-		const self = this
+/**
+ * Process operations and add to AsyncAPI document
+ * 
+ * EXTRACTED FROM MONOLITHIC FILE: lines 693-708 (processOperationsEffectSync)
+ * Enhanced with plugin system integration for protocol bindings
+ * 
+ * @param operations - Operations discovered from TypeSpec AST
+ * @param asyncApiDoc - AsyncAPI document to update
+ * @param program - TypeSpec program for context
+ * @returns Effect containing processing count
+ */
+export const processOperations = (
+	operations: Operation[], 
+	asyncApiDoc: AsyncAPIObject, 
+	program: Program
+): Effect.Effect<number, StandardizedError> => {
 		return Effect.gen(function* () {
 			yield* Effect.log(`🏗️ Processing ${operations.length} operations with plugin system...`)
 
-			// Process each operation with plugin-enhanced business logic
-			for (const op of operations) {
-				yield* Effect.sync(() => self.processSingleOperation(op, asyncApiDoc, program))
-			}
+			// Process each operation with functional composition using Effect.all
+			yield* Effect.all(
+				operations.map(op => 
+					Effect.sync(() => processSingleOperation(op, asyncApiDoc, program))
+				)
+			)
 
 			yield* Effect.log(`📊 Processed ${operations.length} operations successfully`)
 			return operations.length
@@ -73,13 +82,13 @@ export class ProcessingService {
 	 * @param program - TypeSpec program for context
 	 * @returns Effect containing processing count
 	 */
-	processMessageModels(messageModels: Model[], asyncApiDoc: AsyncAPIObject, program: Program) {
+export const processMessageModels = (messageModels: Model[], asyncApiDoc: AsyncAPIObject, program: Program): Effect.Effect<number, never> => {
 		return Effect.sync(() => {
 			Effect.log(`🎯 Processing ${messageModels.length} message models synchronously...`)
 
 			// Process each message model with REAL business logic
 			for (const model of messageModels) {
-				this.processSingleMessageModel(model, asyncApiDoc, program)
+				processSingleMessageModel(model, asyncApiDoc, program)
 			}
 
 			Effect.log(`📊 Processed ${messageModels.length} message models successfully`)
@@ -97,13 +106,13 @@ export class ProcessingService {
 	 * @param asyncApiDoc - AsyncAPI document to update
 	 * @returns Effect containing processing count
 	 */
-	processSecurityConfigs(securityConfigs: SecurityConfig[], asyncApiDoc: AsyncAPIObject) {
+export const processSecurityConfigs = (securityConfigs: SecurityConfig[], asyncApiDoc: AsyncAPIObject): Effect.Effect<number, never> => {
 		return Effect.sync(() => {
 			Effect.log(`🔐 Processing ${securityConfigs.length} security configurations synchronously...`)
 
 			// Process each security config with REAL business logic
 			for (const config of securityConfigs) {
-				this.processSingleSecurityConfig(config, asyncApiDoc)
+				processSingleSecurityConfig(config, asyncApiDoc)
 			}
 
 			Effect.log(`📊 Processed ${securityConfigs.length} security configurations successfully`)
@@ -121,8 +130,8 @@ export class ProcessingService {
 	 * @param asyncApiDoc - AsyncAPI document to update
 	 * @param program - TypeSpec program for decorator access
 	 */
-	private processSingleOperation(op: Operation, asyncApiDoc: AsyncAPIObject, program: Program): string {
-		const { operationType, channelPath } = this.extractOperationMetadata(op, program)
+const processSingleOperation = (op: Operation, asyncApiDoc: AsyncAPIObject, program: Program): string => {
+		const { operationType, channelPath } = extractOperationMetadata(op, program)
 		const protocolConfig = getProtocolConfig(program, op)
 
 		Effect.log(`🔍 Operation ${op.name}: type=${operationType ?? 'none'}, channel=${channelPath ?? 'default'}`)
@@ -268,7 +277,7 @@ export class ProcessingService {
 	 * @param asyncApiDoc - AsyncAPI document to update
 	 * @param program - TypeSpec program for decorator access
 	 */
-	private processSingleMessageModel(model: Model, asyncApiDoc: AsyncAPIObject, program: Program): string {
+const processSingleMessageModel = (model: Model, asyncApiDoc: AsyncAPIObject, program: Program): string => {
 		const messageConfig = getMessageConfig(program, model)
 		
 		if (!messageConfig) {
@@ -321,7 +330,7 @@ export class ProcessingService {
 	 * @param config - Security configuration to process
 	 * @param asyncApiDoc - AsyncAPI document to update
 	 */
-	private processSingleSecurityConfig(config: SecurityConfig, asyncApiDoc: AsyncAPIObject): string {
+const processSingleSecurityConfig = (config: SecurityConfig, asyncApiDoc: AsyncAPIObject): string => {
 		Effect.log(`🔐 Processing security config: ${config.name}`)
 
 		// Ensure components.securitySchemes exists
@@ -331,7 +340,7 @@ export class ProcessingService {
 		}
 
 		// Add security scheme to components.securitySchemes
-		asyncApiDoc.components.securitySchemes[config.name] = this.createAsyncAPISecurityScheme(config)
+		asyncApiDoc.components.securitySchemes[config.name] = createAsyncAPISecurityScheme(config)
 
 		Effect.log(`✅ Added security scheme: ${config.name} (${config.scheme.type})`)
 		return `Processed security config: ${config.name}`
@@ -347,10 +356,10 @@ export class ProcessingService {
 	 * @param program - TypeSpec program for stateMap access
 	 * @returns Operation type and channel path from decorators
 	 */
-	private extractOperationMetadata(op: Operation, program: Program): {
+const extractOperationMetadata = (op: Operation, program: Program): {
 		operationType: string | undefined,
 		channelPath: string
-	} {
+	} => {
 		// Access decorator state via TypeSpec stateMap - CRITICAL for decorator processing
 		const operationTypesMap = program.stateMap($lib.stateKeys.operationTypes)
 		const channelPathsMap = program.stateMap($lib.stateKeys.channelPaths)
@@ -373,7 +382,7 @@ export class ProcessingService {
 	 * @param config - Security configuration with scheme details
 	 * @returns AsyncAPI SecuritySchemeObject
 	 */
-	private createAsyncAPISecurityScheme(config: SecurityConfig): SecuritySchemeObject {
+const createAsyncAPISecurityScheme = (config: SecurityConfig): SecuritySchemeObject => {
 		const scheme = config.scheme
 
 		// Map TypeSpec scheme types to AsyncAPI v3 types
@@ -472,20 +481,20 @@ export class ProcessingService {
 	 * @param program - TypeSpec program for context
 	 * @returns Effect with processing summary
 	 */
-	executeProcessing(
+export const executeProcessing = (
 		operations: Operation[], 
 		messageModels: Model[], 
 		securityConfigs: SecurityConfig[],
 		asyncApiDoc: AsyncAPIObject, 
 		program: Program
-	): Effect.Effect<{ operationsProcessed: number, messageModelsProcessed: number, securityConfigsProcessed: number, totalProcessed: number }, StandardizedError> {
-		return Effect.gen(function* (this: ProcessingService) {
+	): Effect.Effect<{ operationsProcessed: number, messageModelsProcessed: number, securityConfigsProcessed: number, totalProcessed: number }, StandardizedError> => {
+		return Effect.gen(function* () {
 			Effect.log(`🚀 Starting complete TypeSpec processing pipeline...`)
 
 			// Execute all processing operations
-			const operationCount = yield* this.processOperations(operations, asyncApiDoc, program)
-			const messageCount = yield* this.processMessageModels(messageModels, asyncApiDoc, program)
-			const securityCount = yield* this.processSecurityConfigs(securityConfigs, asyncApiDoc)
+			const operationCount = yield* processOperations(operations, asyncApiDoc, program)
+			const messageCount = yield* processMessageModels(messageModels, asyncApiDoc, program)
+			const securityCount = yield* processSecurityConfigs(securityConfigs, asyncApiDoc)
 
 			const summary = {
 				operationsProcessed: operationCount,
@@ -497,6 +506,5 @@ export class ProcessingService {
 			Effect.log(`✅ Processing complete: ${summary.totalProcessed} total elements processed`)
 
 			return summary
-		}.bind(this))
+		})
 	}
-}

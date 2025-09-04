@@ -311,16 +311,19 @@ export class PerformanceMonitor {
 	 */
 	forceGarbageCollection() {
 		return Effect.gen(function* () {
-			try {
+			const gcResult = yield* Effect.gen(function* () {
 				const memoryMonitor = yield* MEMORY_MONITOR_SERVICE
-				const result = yield* memoryMonitor.forceGarbageCollection()
-
-				Effect.log(`🗑️ Garbage collection completed: freed ${result.memoryFreed} MB`)
-				return result
-			} catch (error) {
-				Effect.logWarning(`⚠️ Garbage collection not available: ${error}`)
-				return null
-			}
+				return yield* memoryMonitor.forceGarbageCollection()
+			}).pipe(
+				Effect.tap(result => Effect.log(`🗑️ Garbage collection completed: freed ${result.memoryFreed} MB`)),
+				Effect.catchAll(error => 
+					Effect.sync(() => {
+						Effect.runSync(Effect.logWarning(`⚠️ Garbage collection not available: ${error}`))
+						return null
+					})
+				)
+			)
+			return gcResult
 		})
 	}
 

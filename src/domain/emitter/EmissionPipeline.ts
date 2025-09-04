@@ -24,8 +24,8 @@ import {
 	type StandardizedError,
 	createError,
 	failWith,
-	Railway,
-	EmitterErrors
+	railway,
+	emitterErrors
 } from "../../utils/standardized-errors.js"
 
 // Domain services
@@ -167,7 +167,7 @@ export class EmissionPipeline implements IPipelineService {
 
 			// Ensure servers are populated using DocumentBuilder patterns with Railway programming
 			if (!context.asyncApiDoc.servers || Object.keys(context.asyncApiDoc.servers).length === 0) {
-				const serversResult = yield* Railway.trySync(
+				const serversResult = yield* railway.trySync(
 					() => buildServersFromNamespaces(context.program),
 					{ context: { operation: "buildServersFromNamespaces" } }
 				)
@@ -202,7 +202,7 @@ export class EmissionPipeline implements IPipelineService {
 				}
 				
 				// Use standardized error instead of plain Error
-				return yield* failWith(EmitterErrors.invalidAsyncAPI(
+				return yield* failWith(emitterErrors.invalidAsyncAPI(
 					validationResult.errors,
 					context.asyncApiDoc
 				))

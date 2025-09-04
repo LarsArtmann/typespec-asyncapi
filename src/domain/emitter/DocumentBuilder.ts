@@ -25,7 +25,7 @@ import {
 	type StandardizedError, 
 	createError, 
 	failWith, 
-	Railway 
+	railway 
 } from "../../utils/standardized-errors.js"
 
 /**
@@ -69,7 +69,7 @@ export class DocumentBuilder {
 			yield* Effect.log(`🏗️  DocumentBuilder.createInitialDocument called with valid program`)
 
 			// Safe server processing with error handling
-			const serversResult = yield* Railway.trySync(
+			const serversResult = yield* railway.trySync(
 				() => buildServersFromNamespaces(program),
 				{ context: { operation: "buildServersFromNamespaces" } }
 			)
@@ -78,7 +78,7 @@ export class DocumentBuilder {
 			yield* Effect.log(`🏗️  Generated servers: ${JSON.stringify(servers, null, 2)}`)
 
 			// Build document with Railway programming
-			const documentResult = yield* Railway.trySync(() => {
+			const documentResult = yield* railway.trySync(() => {
 				// Using centralized AsyncAPI version constant instead of hardcoded string
 				// TODO: Extract default info values to configuration object
 				const baseDocument = {
@@ -151,7 +151,7 @@ export class DocumentBuilder {
 			}
 
 			// Safe info update with Railway programming
-			return yield* Railway.trySync(() => {
+			return yield* railway.trySync(() => {
 				document.info = {
 					...document.info,
 					...info,
@@ -184,7 +184,7 @@ export class DocumentBuilder {
 			}
 
 			// Safe component initialization with Railway programming
-			return yield* Railway.trySync(() => {
+			return yield* railway.trySync(() => {
 				if (!document.components) {
 					document.components = {}
 				}
@@ -229,7 +229,7 @@ export class DocumentBuilder {
 			}
 
 			// Safe structure initialization with Railway programming
-			const structureInitResult = yield* Railway.trySync(() => {
+			const structureInitResult = yield* railway.trySync(() => {
 				if (!document.channels) {
 					document.channels = {}
 				}

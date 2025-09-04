@@ -24,7 +24,7 @@ import {
 	type StandardizedError, 
 	createError, 
 	failWith, 
-	Railway 
+	railway 
 } from "../../utils/standardized-errors.js"
 import { $channel } from "./channel.js"
 import { $publish } from "./publish.js"
@@ -71,7 +71,7 @@ export function createAsyncAPIDecorators(program: Program): Effect.Effect<void, 
 		}
 
 		// Safe method validation with Railway programming
-		yield* Railway.trySync(() => {
+		yield* railway.trySync(() => {
 			// Verify the program has the required methods
 			if (!program.getGlobalNamespaceType) {
 				throw new Error("Program does not have getGlobalNamespaceType method")
@@ -89,7 +89,7 @@ export function createAsyncAPIDecorators(program: Program): Effect.Effect<void, 
 		})))
 		
 		// Safe namespace retrieval with Railway programming
-		yield* Railway.trySync(() => {
+		yield* railway.trySync(() => {
 			const ns = program.getGlobalNamespaceType()
 			if (!ns) {
 				throw new Error("getGlobalNamespaceType returned null/undefined")
@@ -128,7 +128,7 @@ export function createAsyncAPIDecorators(program: Program): Effect.Effect<void, 
 		
 		// Safe decorator function validation with Railway programming
 		for (const { name, fn } of decoratorFunctions) {
-			yield* Railway.trySync(() => {
+			yield* railway.trySync(() => {
 				if (typeof fn !== "function") {
 					throw new Error(`Decorator function ${name} is not a function`)
 				}
