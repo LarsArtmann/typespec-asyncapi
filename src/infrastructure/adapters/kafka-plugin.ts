@@ -93,7 +93,7 @@ export const kafkaPlugin: ProtocolPlugin = {
 		const rawConfig = ('config' in channelData ? channelData.config : {}) || {}
 		
 		// Type-safe extraction with proper casting
-		const config = rawConfig
+		const config = rawConfig as KafkaChannelBindingConfig
 		
 		const binding: KafkaChannelBinding = {
 			bindingVersion: "0.5.0",
