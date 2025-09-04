@@ -24,7 +24,7 @@ import {existsSync, readFileSync, writeFileSync} from "fs"
 import {join} from "path"
 
 // Local imports
-import {PerformanceMonitor} from "../core/PerformanceMonitor.js"
+import {PerformanceMonitor} from "./PerformanceMonitor.js"
 import type {PerformanceBaseline} from "./PerformanceBaseline.js"
 import type {RegressionTestResult} from "./RegressionTestResult.js"
 import type {PerformanceMetrics} from "./PerformanceMetrics.js"

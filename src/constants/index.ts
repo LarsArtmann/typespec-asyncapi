@@ -12,16 +12,10 @@
 //TODO: REMOVE RE_EXPORTS I HATE THEM!
 
 // Version Constants (Enhanced)
-//export {
-//	ASYNCAPI_VERSIONS,
-//	PACKAGE_VERSIONS,
-//	API_VERSIONS,
-//	TEST_VERSIONS,
-//	VERSION_DESCRIPTIONS,
-//	VERSION_PATTERNS,
-//	ASYNCAPI_VERSION_FIELD,
-//	ASYNCAPI_VERSION_OBJECT,
-//} from './asyncapi-constants.js'
+export {
+	ASYNCAPI_VERSIONS,
+	TEST_VERSIONS,
+} from './asyncapi-constants.js'
 
 // Channel Template Constants
 //export {
@@ -35,19 +29,13 @@
 //	CHANNEL_PREFIXES,
 //} from './channel-templates.js'
 //
-//// Default Configuration Constants
-//export {
-//	DEFAULT_CONFIG,
-//	DEFAULT_EMITTER_OPTIONS,
-//	DEFAULT_SERVER_CONFIG,
-//	DEFAULT_MESSAGE_CONFIG,
-//	DEFAULT_VALIDATION_CONFIG,
-//	FILE_EXTENSIONS,
-//	DEFAULT_FILE_TYPES,
-//} from './defaults.js'
+// Default Configuration Constants
+export {
+	DEFAULT_CONFIG,
+} from './defaults.js'
 //
-//// Protocol Constants (from existing files)
-//export type {AsyncAPIProtocolType} from './protocol-defaults.js'
+// Protocol Constants (from existing files)
+export type {AsyncAPIProtocolType} from './protocol-defaults.js'
 //export {
 //	SUPPORTED_PROTOCOLS,
 //	DEFAULT_PROTOCOL_PORTS,

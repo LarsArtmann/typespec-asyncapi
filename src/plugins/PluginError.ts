@@ -1,4 +1,4 @@
-import type {IPlugin} from "./IPlugin.js"
+import type {IPlugin} from "../infrastructure/adapters/IPlugin.js"
 
 export class PluginError extends Error {
 	constructor(
