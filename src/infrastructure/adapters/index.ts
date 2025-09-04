@@ -3,16 +3,16 @@
 
 export * from "../../infrastructure/adapters/PluginRegistry.js";
 export * from './PluginError.js';
-export * from './IPlugin.js';
-export * from './IPluginCapabilities.js';
-export * from './IPluginContext.js';
-export * from './IPluginRegistry.js';
-export * from './IPluginResult.js';
+export type * from './IPlugin.js';
+export type * from './IPluginCapabilities.js';
+export type * from './IPluginContext.js';
+export type * from './IPluginRegistry.js';
+export type * from './IPluginResult.js';
 
 // Plugin system implementation
 export * from './plugin-system.js';
 export * from './simple-plugin-registry.js';
-export * from './protocol-plugin.js';
+export type * from './protocol-plugin.js';
 
 // Built-in plugins
 export * from './enhanced-amqp-plugin.js';

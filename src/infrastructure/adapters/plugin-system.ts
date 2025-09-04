@@ -8,9 +8,9 @@
 import {Effect} from "effect"
 import type {AsyncAPIProtocolType} from "../../constants/protocol-defaults.js"
 import {SimplePluginRegistry} from "./simple-plugin-registry.js"
-import {kafkaPlugin} from "./built-in/kafka-plugin.js"
-import {websocketPlugin} from "./built-in/websocket-plugin.js"
-import {httpPlugin} from "./built-in/http-plugin.js"
+import {kafkaPlugin} from "./kafka-plugin.js"
+import {websocketPlugin} from "./websocket-plugin.js"
+import {httpPlugin} from "./http-plugin.js"
 
 // Export types needed by other modules
 export type {AsyncAPIProtocolType} from "../../constants/protocol-defaults.js"

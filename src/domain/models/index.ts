@@ -3,11 +3,11 @@
 
 // Error domain models
 export * from './CompilationError.js';
-export * from './StandardizedError.js';
+export type * from './StandardizedError.js';
 export * from './TypeResolutionError.js';
 export * from './ValidationError.js';
-export * from './ErrorCategory.js';
-export * from './ErrorHandlingConfig.js';
+export type * from './ErrorCategory.js';
+export type * from './ErrorHandlingConfig.js';
 export * from './ErrorHandlingMigration.js';
 export * from './ErrorHandlingStandardization.js';
 

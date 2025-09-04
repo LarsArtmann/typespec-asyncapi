@@ -4,7 +4,7 @@
  */
 
 import type {Model, Namespace, Operation, Program} from "@typespec/compiler"
-import {$lib} from "../lib.js"
+import {$lib} from "../../lib.js"
 import {Effect} from "effect"
 import type {ServerConfig} from "../domain/decorators/server.js"
 import type {MessageConfig} from "../domain/decorators/message.js"

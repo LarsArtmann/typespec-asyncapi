@@ -17,17 +17,17 @@ export { $tags } from './tags.js';
 
 // Binding decorators
 export { $bindings } from './cloud-bindings.js';
-export * from './cloud-binding.js';
+export type * from './cloud-binding.js';
 
 // Security scheme decorators
-export * from './apiKeySecurityScheme.js';
-export * from './httpSecurityScheme.js';
-export * from './OAuth2SecurityScheme.js';
-export * from './openIdConnectSecurityScheme.js';
-export * from './saslSecurityScheme.js';
-export * from './asymmetricEncryptionSecurityScheme.js';
-export * from './symmetricEncryptionSecurityScheme.js';
-export * from './x509SecurityScheme.js';
+export type * from './apiKeySecurityScheme.js';
+export type * from './httpSecurityScheme.js';
+export type * from './OAuth2SecurityScheme.js';
+export type * from './openIdConnectSecurityScheme.js';
+export type * from './saslSecurityScheme.js';
+export type * from './asymmetricEncryptionSecurityScheme.js';
+export type * from './symmetricEncryptionSecurityScheme.js';
+export type * from './x509SecurityScheme.js';
 
 // Legacy decorator registration (to be refactored)
 export { createAsyncAPIDecorators } from './legacy-index.js';

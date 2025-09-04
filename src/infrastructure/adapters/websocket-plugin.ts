@@ -6,7 +6,7 @@
 
 import {Effect} from "effect"
 import {PROTOCOL_DEFAULTS} from "../../constants/protocol-defaults.js"
-import type {ProtocolPlugin} from "../protocol-plugin.js"
+import type {ProtocolPlugin} from "./protocol-plugin.js"
 import type {WebSocketServerBinding} from "./web-socket-server-binding.js"
 import type {WebSocketMessageBinding} from "./web-socket-message-binding.js"
 

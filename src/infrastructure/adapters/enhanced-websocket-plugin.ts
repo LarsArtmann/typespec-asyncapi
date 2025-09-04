@@ -17,9 +17,9 @@ import type {
   WebSocketMessageBinding,
   WebSocketChannelBindingConfig,
   WebSocketMessageBindingConfig 
-} from "../../protocol-bindings.js"
-import type {ProtocolPlugin} from "../protocol-plugin.js"
-import type {WebSocketChannelBinding} from "../../web-socket-channel-binding.js"
+} from "./protocol-bindings.js"
+import type {ProtocolPlugin} from "./protocol-plugin.js"
+import type {WebSocketChannelBinding} from "./web-socket-channel-binding.js"
 
 /**
  * TASK M21: WebSocket Plugin Interface Definition  

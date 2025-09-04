@@ -1,4 +1,4 @@
-import type {AsyncAPIProtocolType} from "../constants/index.js"
+import type {AsyncAPIProtocolType} from "../../constants/index.js"
 import type {Effect} from "effect"
 
 /**

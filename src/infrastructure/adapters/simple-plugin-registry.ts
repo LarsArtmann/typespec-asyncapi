@@ -1,4 +1,4 @@
-import type {AsyncAPIProtocolType} from "../constants/index.js"
+import type {AsyncAPIProtocolType} from "../../constants/index.js"
 import type {ProtocolPlugin} from "./protocol-plugin.js"
 import {Effect} from "effect"
 

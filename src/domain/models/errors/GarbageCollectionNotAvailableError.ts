@@ -1,5 +1,5 @@
 import {GarbageCollectionFailureError} from "./GarbageCollectionFailureError.js"
-import type {ByteAmount} from "../performance/ByteAmount.js"
+import type {ByteAmount} from "../../../infrastructure/performance/ByteAmount.js"
 
 export class GarbageCollectionNotAvailableError extends GarbageCollectionFailureError {
 	override readonly _tag: string = "GarbageCollectionNotAvailableError"

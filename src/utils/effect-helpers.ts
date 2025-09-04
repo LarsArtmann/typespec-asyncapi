@@ -497,7 +497,7 @@ export const railwayErrorRecovery = {
 		return Effect.acquireUseRelease(
 			acquire,
 			use,
-			(resource, exit) => 
+			(resource, _exit) => 
 				release(resource).pipe(
 					Effect.tapError(error => 
 						Effect.logError("Resource cleanup failed", { error: String(error) })
