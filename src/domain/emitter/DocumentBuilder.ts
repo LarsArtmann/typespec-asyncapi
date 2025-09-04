@@ -98,14 +98,12 @@ export class DocumentBuilder {
 				}
 
 				// Create document with explicit typing
-				const document = { ...baseDocument }
-				
-				// Only add servers if they exist and are not empty
-				if (servers && Object.keys(servers).length > 0) {
-					(document as any).servers = servers as AsyncAPIObject["servers"]
+				const document: AsyncAPIObject = { 
+					...baseDocument,
+					...(servers && Object.keys(servers).length > 0 ? { servers } : {})
 				}
 				
-				return document as AsyncAPIObject
+				return document
 			}, { context: { operation: "document creation" } })
 
 			return documentResult

@@ -66,6 +66,7 @@
 // TODO: CRITICAL - Missing validation imports for input sanitization
 // TODO: CRITICAL - No dependency injection container imports - tight coupling to concrete types
 import {Effect} from "effect"
+import {EmitterErrors} from "../../utils/standardized-errors.js"
 import type {AssetEmitter, EmittedSourceFile, SourceFile} from "@typespec/asset-emitter"
 import {TypeEmitter} from "@typespec/asset-emitter"
 import {DocumentGenerator} from "./DocumentGenerator.js"
@@ -121,7 +122,7 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 	 * 6. Create initial AsyncAPI document structure
 	 *
 	 * @param emitter - TypeSpec AssetEmitter providing compiler integration and file output capabilities
-	 * @throws {Error} If component initialization fails or emitter is invalid
+	 * @throws {StandardizedError} If component initialization fails or emitter is invalid
 	 *
 	 * @example Internal Usage (called by TypeSpec compiler):
 	 * ```typescript
@@ -139,12 +140,22 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 	constructor(emitter: AssetEmitter<string, AsyncAPIEmitterOptions>) {
 		// Parameter validation - prevent construction with invalid emitter
 		if (!emitter) {
-			throw new Error("AsyncAPIEmitter constructor requires valid AssetEmitter instance")
+			Effect.runSync(Effect.die(
+				EmitterErrors.emitterInitializationFailed(
+					"AssetEmitter instance is required for initialization",
+					emitter
+				)
+			))
 		}
 		
 		// Validate emitter has required methods
 		if (typeof emitter.getProgram !== 'function') {
-			throw new Error("Invalid AssetEmitter: missing getProgram method")
+			Effect.runSync(Effect.die(
+				EmitterErrors.emitterInitializationFailed(
+					"AssetEmitter missing required getProgram method",
+					emitter
+				)
+			))
 		}
 
 		// TODO: CRITICAL - Parent constructor could throw but no error handling
@@ -246,7 +257,7 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 	 *
 	 * @param program - TypeSpec program containing compiled AST with all type definitions and decorators
 	 * @returns Promise<Record<string, unknown>> Context object containing the global scope for the generated source file
-	 * @throws {Error} If pipeline execution fails or configuration is invalid
+	 * @throws {StandardizedError} If pipeline execution fails or configuration is invalid
 	 *
 	 * @example Generated Files:
 	 * ```
@@ -375,7 +386,7 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 	 *
 	 * @param sourceFiles - Array of source files to write to the file system
 	 * @returns Promise that resolves when all files are successfully written
-	 * @throws {Error} If file system write operations fail
+	 * @throws {StandardizedError} If file system write operations fail
 	 *
 	 * @override
 	 * @public
@@ -411,7 +422,7 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 	 * - **Resource Usage** - CPU and memory consumption during each stage
 	 *
 	 * @param program - TypeSpec program containing the compiled AST to process
-	 * @throws {Error} If any pipeline stage fails or performance monitoring encounters issues
+	 * @throws {StandardizedError} If any pipeline stage fails or performance monitoring encounters issues
 	 *
 	 * @example Performance Output:
 	 * ```
@@ -433,41 +444,50 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 		const initialStatus = this.performanceMonitor.getPerformanceStatus()
 		Effect.log(`📊 Performance monitoring initialized: ${initialStatus.snapshotCount} snapshots, monitoring: ${initialStatus.isMonitoring}`)
 
-		try {
-			// Execute pipeline stages through plugins
-			const context = {
-				program,
-				asyncApiDoc: this.asyncApiDoc,
-				emitter: this.emitter,
-				performanceMonitor: this.performanceMonitor
-			}
+		// EFFECT.TS CONVERTED: Replaced try/catch with Effect-based pipeline execution
+		Effect.runSync(
+			Effect.gen(function* (this: AsyncAPIEmitter) {
+				// Execute pipeline stages through plugins
+				const context = {
+					program,
+					asyncApiDoc: this.asyncApiDoc,
+					emitter: this.emitter,
+					performanceMonitor: this.performanceMonitor
+				}
 
-			// Run pipeline synchronously using Effect.runSync with error handling
-			Effect.runSync(
-				this.pipeline.executePipeline(context).pipe(
-					Effect.mapError(() => new Error("Pipeline execution failed"))
+				// Run pipeline with proper error handling
+				yield* this.pipeline.executePipeline(context).pipe(
+					Effect.mapError(error => `Pipeline execution failed: ${error}`)
 				)
-			)
 
-			// Calculate execution metrics
-			const endTime = performance.now()
-			const executionTime = endTime - startTime
-			
-			// Generate performance report
-			const finalStatus = this.performanceMonitor.getPerformanceStatus()
-			const report = this.performanceMonitor.generatePerformanceReport()
-			
-			Effect.log(`📊 Performance metrics - Execution: ${executionTime.toFixed(2)}ms, Snapshots: ${finalStatus.snapshotCount}`)
-			Effect.log(`📊 Performance Report:\n${report}`)
-			
-		} catch (error) {
-			const endTime = performance.now()
-			const executionTime = endTime - startTime
-			Effect.log(`❌ Pipeline execution failed after ${executionTime.toFixed(2)}ms: ${error}`)
-			throw error
-		}
-		
-		Effect.log(`✅ Micro-kernel emission pipeline completed!`)
+				// Calculate execution metrics
+				const endTime = performance.now()
+				const executionTime = endTime - startTime
+				
+				// Generate performance report with error handling
+				const finalStatus = yield* Effect.sync(() => this.performanceMonitor.getPerformanceStatus()).pipe(
+					Effect.mapError(error => `Performance status retrieval failed: ${error}`)
+				)
+				
+				const report = yield* Effect.sync(() => this.performanceMonitor.generatePerformanceReport()).pipe(
+					Effect.mapError(error => `Performance report generation failed: ${error}`)
+				)
+				
+				yield* Effect.log(`📊 Performance metrics - Execution: ${executionTime.toFixed(2)}ms, Snapshots: ${finalStatus.snapshotCount}`)
+				yield* Effect.log(`📊 Performance Report:\n${report}`)
+				
+				yield* Effect.log(`✅ Micro-kernel emission pipeline completed!`)
+			}).pipe(
+				Effect.catchAll(error => {
+					const endTime = performance.now()
+					const executionTime = endTime - startTime
+					return Effect.gen(function* () {
+						yield* Effect.log(`❌ Pipeline execution failed after ${executionTime.toFixed(2)}ms: ${error}`)
+						yield* Effect.fail(new Error(`Pipeline execution failed: ${error}`))
+					})
+				})
+			)
+		)
 	}
 
 	/**

@@ -18,6 +18,9 @@ import { createChannelDefinition } from "../../utils/asyncapi-helpers.js"
 import { convertModelToSchema, convertTypeToSchemaType } from "../../utils/schema-conversion.js"
 import type {SecurityConfig} from "../decorators/securityConfig.js"
 import type {ProtocolType} from "../../infrastructure/adapters/protocol-type.js"
+
+// Standardized error handling
+import type { StandardizedError } from "../../utils/standardized-errors.js"
 import {ProtocolBindingFactory} from "../../infrastructure/adapters/protocol-binding-factory.js"
 
 /**
@@ -398,9 +401,22 @@ export class ProcessingService {
 					description: scheme.description,
 				} as SecuritySchemeObject
 
-			case "oauth2":
+			case "oauth2": {
 				// Transform OAuth flows to ensure all required properties are present
-				const transformedFlows: any = {}
+				type OAuthFlowTransformed = {
+					authorizationUrl?: string;
+					tokenUrl?: string;
+					refreshUrl?: string;
+					availableScopes: Record<string, string>;
+				};
+				
+				const transformedFlows: {
+					implicit?: OAuthFlowTransformed;
+					password?: OAuthFlowTransformed;
+					clientCredentials?: OAuthFlowTransformed;
+					authorizationCode?: OAuthFlowTransformed;
+				} = {}
+				
 				if (scheme.flows.implicit) {
 					transformedFlows.implicit = {
 						...scheme.flows.implicit,
@@ -431,6 +447,7 @@ export class ProcessingService {
 					flows: transformedFlows,
 					description: scheme.description,
 				} as SecuritySchemeObject
+			}
 
 			default:
 				// Fallback for unknown scheme types
@@ -461,7 +478,7 @@ export class ProcessingService {
 		securityConfigs: SecurityConfig[],
 		asyncApiDoc: AsyncAPIObject, 
 		program: Program
-	) {
+	): Effect.Effect<{ operationsProcessed: number, messageModelsProcessed: number, securityConfigsProcessed: number, totalProcessed: number }, StandardizedError> {
 		return Effect.gen(function* (this: ProcessingService) {
 			Effect.log(`🚀 Starting complete TypeSpec processing pipeline...`)
 

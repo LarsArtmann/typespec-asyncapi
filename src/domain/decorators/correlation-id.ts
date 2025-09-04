@@ -167,13 +167,14 @@ function validateCorrelationSchema(
 
 		// Add pattern validation
 		if (schema.pattern && typeof schema.pattern === 'string') {
+			const pattern = schema.pattern as string
 			Effect.runSync(
 				Effect.sync(() => {
-					new RegExp(schema.pattern) // Test if valid regex
-					validatedSchema.pattern = schema.pattern
+					new RegExp(pattern) // Test if valid regex
+					validatedSchema.pattern = pattern
 				}).pipe(
 					Effect.orElse(() => 
-						Effect.log(`⚠️ Invalid regex pattern: ${schema.pattern}`)
+						Effect.log(`⚠️ Invalid regex pattern: ${pattern}`)
 					)
 				)
 			)
@@ -251,9 +252,10 @@ export function validateCorrelationIdValue(
 		if (schema.maxLength && value.length > schema.maxLength) return false
 		
 		if (schema.pattern) {
+			const pattern = schema.pattern
 			const isValid = Effect.runSync(
 				Effect.sync(() => {
-					const regex = new RegExp(schema.pattern)
+					const regex = new RegExp(pattern)
 					return regex.test(value)
 				}).pipe(
 					Effect.orElse(() => Effect.succeed(false))
