@@ -87,7 +87,7 @@ export class EmissionPipeline implements IPipelineService {
 	 * Execute the complete emission pipeline with REAL business logic integration
 	 * Using Effect.TS Railway programming for comprehensive error handling
 	 */
-	executePipeline = (context: PipelineContext): Effect.Effect<void, StandardizedError> => {
+	executePipeline(context: PipelineContext): Effect.Effect<void, StandardizedError> {
 		return Effect.gen((function* () {
 			// Validate context parameter with proper error handling
 			if (!context) {
@@ -124,13 +124,13 @@ export class EmissionPipeline implements IPipelineService {
 			yield* this.executeValidationStage(context)
 
 			yield* Effect.log(`✅ All emission pipeline stages completed successfully`)
-		})
+		}).bind(this)
 	}
 
 	/**
 	 * Stage 1: Discovery - Find all TypeSpec elements using REAL DiscoveryService
 	 */
-	private executeDiscoveryStage = (context: PipelineContext) => {
+	private executeDiscoveryStage(context: PipelineContext) {
 		return Effect.gen((function* () {
 			yield* Effect.log(`🔍 Stage 1: Discovery with REAL DiscoveryService`)
 
@@ -140,7 +140,7 @@ export class EmissionPipeline implements IPipelineService {
 			yield* Effect.log(`📊 Discovery stage complete: ${result.operations.length} operations, ${result.messageModels.length} messages, ${result.securityConfigs.length} security configs`)
 
 			return result
-		})
+		}).bind(this)
 	}
 
 	/**
