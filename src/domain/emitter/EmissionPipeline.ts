@@ -88,6 +88,7 @@ export class EmissionPipeline implements IPipelineService {
 	 * Using Effect.TS Railway programming for comprehensive error handling
 	 */
 	executePipeline = (context: PipelineContext): Effect.Effect<void, StandardizedError> => {
+		const self = this
 		return Effect.gen(function* () {
 			// Validate context parameter with proper error handling
 			if (!context) {
@@ -130,7 +131,7 @@ export class EmissionPipeline implements IPipelineService {
 	/**
 	 * Stage 1: Discovery - Find all TypeSpec elements using REAL DiscoveryService
 	 */
-	private executeDiscoveryStage = (context: PipelineContext) => {
+	private executeDiscoveryStage = (context: PipelineContext): Effect.Effect<DiscoveryResult, StandardizedError> => {
 		const self = this
 		return Effect.gen(function* () {
 			yield* Effect.log(`🔍 Stage 1: Discovery with REAL DiscoveryService`)
@@ -147,7 +148,7 @@ export class EmissionPipeline implements IPipelineService {
 	/**
 	 * Stage 2: Processing - Transform TypeSpec elements using REAL ProcessingService
 	 */
-	private executeProcessingStage(context: PipelineContext, discoveryResult: DiscoveryResult) {
+	private executeProcessingStage = (context: PipelineContext, discoveryResult: DiscoveryResult): Effect.Effect<any, StandardizedError> => {
 		return Effect.gen(function* () {
 			yield* Effect.log(`🏗️ Stage 2: Processing with REAL ProcessingService`)
 
@@ -170,7 +171,7 @@ export class EmissionPipeline implements IPipelineService {
 	/**
 	 * Stage 3: Document Generation - Finalize AsyncAPI document using REAL DocumentBuilder logic
 	 */
-	private executeGenerationStage(context: PipelineContext, discoveryResult: DiscoveryResult) {
+	private executeGenerationStage = (context: PipelineContext, discoveryResult: DiscoveryResult): Effect.Effect<void, StandardizedError> => {
 		const pipeline = this
 		return Effect.gen(function* () {
 			yield* Effect.log(`📄 Stage 3: Document Generation with DocumentBuilder`)
@@ -206,7 +207,7 @@ export class EmissionPipeline implements IPipelineService {
 	/**
 	 * Stage 4: Validation - Verify AsyncAPI compliance using REAL ValidationService
 	 */
-	private executeValidationStage(context: PipelineContext) {
+	private executeValidationStage = (context: PipelineContext): Effect.Effect<void, StandardizedError> => {
 		const pipeline = this
 		return Effect.gen(function* () {
 			yield* Effect.log(`🔍 Stage 4: Validation with REAL ValidationService`)
