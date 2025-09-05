@@ -458,7 +458,7 @@ export class PluginRegistry {
                     try: () => handler(event),
                     catch: (error) => new Error(`Event handler error for ${eventType}: ${error instanceof Error ? error.message : String(error)}`)
                 }).pipe(
-                    Effect.catchAll(error => Effect.logError(`❌ ${(error as Error).message}`))
+                    Effect.catchAll(error => Effect.logError(`❌ ${error instanceof Error ? error.message : String(error)}`))
                 )
             )
         })

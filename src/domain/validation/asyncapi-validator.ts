@@ -262,7 +262,7 @@ export class AsyncAPIValidator {
 				return content as ValidationResult
 			}
 
-			return yield* this.validateEffect(content as string, filePath)
+			return yield* this.validateEffect(content, filePath)
 		})
 	}
 
