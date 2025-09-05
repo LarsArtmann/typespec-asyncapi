@@ -1,6 +1,7 @@
 import {dirname, isAbsolute, join, resolve} from "node:path"
 import {cwd} from "node:process"
 import {existsSync} from "node:fs"
+import {Effect} from "effect"
 import type {TemplateValidationResult} from "./template-validation-result.js"
 import type {PathTemplateContext} from "./path-template-context.js"
 import type {PathTemplateVariables} from "./path-template-variables.js"
@@ -116,14 +117,25 @@ export function detectProjectRoot(startPath?: string): string {
 		// Check if any config files exist in current directory
 		for (const configFile of configFiles) {
 			const configPath = join(currentPath, configFile)
-			try {
-				// Use basic file system check
-				if (existsSync(configPath)) {
-					return currentPath
-				}
-			} catch {
-				// Continue searching if file check fails
-				//TODO: how about we have some tracking debug/warning here???
+			const fileCheckResult = Effect.runSync(
+				Effect.gen(function* () {
+					// Use basic file system check with Effect.TS Railway programming
+					if (existsSync(configPath)) {
+						return true
+					}
+					return false
+				}).pipe(
+					Effect.catchAll((error) =>
+						Effect.gen(function* () {
+							yield* Effect.logWarning(`⚠️  File check failed for ${configPath}: ${error}`)
+							return false
+						})
+					)
+				)
+			)
+
+			if (fileCheckResult) {
+				return currentPath
 			}
 		}
 

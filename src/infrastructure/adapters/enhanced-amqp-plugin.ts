@@ -169,7 +169,7 @@ export const enhancedAMQPPlugin: ProtocolPlugin = {
     Effect.gen(function* () {
       yield* Effect.log("🔧 Enhanced AMQP operation binding generation")
       
-      try {
+      return yield* Effect.gen(function* () {
         const opData = operation as AMQPOperationData
         const config = opData.channel?.config || {}
 
@@ -209,10 +209,14 @@ export const enhancedAMQPPlugin: ProtocolPlugin = {
 
         yield* Effect.log("✅ AMQP operation binding created successfully")
         return { amqp: binding }
-      } catch (error) {
-        yield* Effect.logError(`❌ AMQP operation binding error: ${error}`)
-        return { amqp: { bindingVersion: "0.3.0" } }
-      }
+      }).pipe(
+        Effect.catchAll((error) =>
+          Effect.gen(function* () {
+            yield* Effect.logError(`❌ AMQP operation binding error: ${error}`)
+            return { amqp: { bindingVersion: "0.3.0" } }
+          })
+        )
+      )
     }),
 
   /**
@@ -222,7 +226,7 @@ export const enhancedAMQPPlugin: ProtocolPlugin = {
     Effect.gen(function* () {
       yield* Effect.log("📨 Enhanced AMQP message binding generation")
       
-      try {
+      return yield* Effect.gen(function* () {
         const messageData = message as { config?: AMQPConfig }
         const config = messageData?.config || {}
 
@@ -240,10 +244,14 @@ export const enhancedAMQPPlugin: ProtocolPlugin = {
 
         yield* Effect.log("✅ AMQP message binding created successfully")
         return { amqp: binding }
-      } catch (error) {
-        yield* Effect.logError(`❌ AMQP message binding error: ${error}`)
-        return { amqp: { bindingVersion: "0.3.0" } }
-      }
+      }).pipe(
+        Effect.catchAll((error) =>
+          Effect.gen(function* () {
+            yield* Effect.logError(`❌ AMQP message binding error: ${error}`)
+            return { amqp: { bindingVersion: "0.3.0" } }
+          })
+        )
+      )
     }),
 
   /**
@@ -254,7 +262,7 @@ export const enhancedAMQPPlugin: ProtocolPlugin = {
     Effect.gen(function* () {
       yield* Effect.log("🖥️ AMQP server binding generation (not supported)")
       
-      try {
+      return yield* Effect.gen(function* () {
         const serverData = server as AMQPServerData
         
         if (serverData?.protocol && !["amqp", "amqps"].includes(serverData.protocol)) {
@@ -263,10 +271,14 @@ export const enhancedAMQPPlugin: ProtocolPlugin = {
 
         yield* Effect.log("✅ AMQP server validation completed (no binding required)")
         return {}
-      } catch (error) {
-        yield* Effect.logError(`❌ AMQP server binding error: ${error}`)
-        return {}
-      }
+      }).pipe(
+        Effect.catchAll((error) =>
+          Effect.gen(function* () {
+            yield* Effect.logError(`❌ AMQP server binding error: ${error}`)
+            return {}
+          })
+        )
+      )
     }),
 
   /**
@@ -276,7 +288,7 @@ export const enhancedAMQPPlugin: ProtocolPlugin = {
     Effect.gen(function* () {
       yield* Effect.log("🔍 Enhanced AMQP configuration validation")
       
-      try {
+      return yield* Effect.gen(function* () {
         if (!config || typeof config !== 'object') {
           yield* Effect.logWarning("⚠️ AMQP config is not an object")
           return false
@@ -338,10 +350,14 @@ export const enhancedAMQPPlugin: ProtocolPlugin = {
 
         yield* Effect.log("✅ AMQP configuration validation passed")
         return true
-      } catch (error) {
-        yield* Effect.logError(`❌ AMQP validation error: ${error}`)
-        return false
-      }
+      }).pipe(
+        Effect.catchAll((error) =>
+          Effect.gen(function* () {
+            yield* Effect.logError(`❌ AMQP validation error: ${error}`)
+            return false
+          })
+        )
+      )
     })
 }
 

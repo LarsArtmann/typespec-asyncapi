@@ -154,7 +154,7 @@ export const enhancedMQTTPlugin: ProtocolPlugin = {
     Effect.gen(function* () {
       yield* Effect.log("🔧 Enhanced MQTT operation binding generation")
       
-      try {
+      return yield* Effect.gen(function* () {
         const opData = operation as MQTTOperationData
         const config = opData.channel?.config || {}
 
@@ -182,10 +182,14 @@ export const enhancedMQTTPlugin: ProtocolPlugin = {
 
         yield* Effect.log("✅ MQTT operation binding created successfully")
         return { mqtt: binding }
-      } catch (error) {
-        yield* Effect.logError(`❌ MQTT operation binding error: ${error}`)
-        return { mqtt: { bindingVersion: "0.2.0" } }
-      }
+      }).pipe(
+        Effect.catchAll((error) =>
+          Effect.gen(function* () {
+            yield* Effect.logError(`❌ MQTT operation binding error: ${error}`)
+            return { mqtt: { bindingVersion: "0.2.0" } }
+          })
+        )
+      )
     }),
 
   /**
@@ -195,7 +199,7 @@ export const enhancedMQTTPlugin: ProtocolPlugin = {
     Effect.gen(function* () {
       yield* Effect.log("📨 Enhanced MQTT message binding generation")
       
-      try {
+      return yield* Effect.gen(function* () {
         const messageData = message as { config?: MQTTConfig }
         const config = messageData?.config || {}
 
@@ -221,10 +225,14 @@ export const enhancedMQTTPlugin: ProtocolPlugin = {
 
         yield* Effect.log("✅ MQTT message binding created successfully")
         return { mqtt: binding }
-      } catch (error) {
-        yield* Effect.logError(`❌ MQTT message binding error: ${error}`)
-        return { mqtt: { bindingVersion: "0.2.0" } }
-      }
+      }).pipe(
+        Effect.catchAll((error) =>
+          Effect.gen(function* () {
+            yield* Effect.logError(`❌ MQTT message binding error: ${error}`)
+            return { mqtt: { bindingVersion: "0.2.0" } }
+          })
+        )
+      )
     }),
 
   /**
@@ -234,7 +242,7 @@ export const enhancedMQTTPlugin: ProtocolPlugin = {
     Effect.gen(function* () {
       yield* Effect.log("🖥️ Enhanced MQTT server binding generation")
       
-      try {
+      return yield* Effect.gen(function* () {
         const serverData = server as MQTTServerData
         const config = serverData?.config || {}
 
@@ -253,10 +261,14 @@ export const enhancedMQTTPlugin: ProtocolPlugin = {
 
         yield* Effect.log("✅ MQTT server binding created successfully")
         return { mqtt: binding }
-      } catch (error) {
-        yield* Effect.logError(`❌ MQTT server binding error: ${error}`)
-        return { mqtt: { bindingVersion: "0.2.0" } }
-      }
+      }).pipe(
+        Effect.catchAll((error) =>
+          Effect.gen(function* () {
+            yield* Effect.logError(`❌ MQTT server binding error: ${error}`)
+            return { mqtt: { bindingVersion: "0.2.0" } }
+          })
+        )
+      )
     }),
 
   /**
@@ -266,7 +278,7 @@ export const enhancedMQTTPlugin: ProtocolPlugin = {
     Effect.gen(function* () {
       yield* Effect.log("🔍 Enhanced MQTT configuration validation")
       
-      try {
+      return yield* Effect.gen(function* () {
         if (!config || typeof config !== 'object') {
           yield* Effect.logWarning("⚠️ MQTT config is not an object")
           return false
@@ -366,10 +378,14 @@ export const enhancedMQTTPlugin: ProtocolPlugin = {
 
         yield* Effect.log("✅ MQTT configuration validation passed")
         return true
-      } catch (error) {
-        yield* Effect.logError(`❌ MQTT validation error: ${error}`)
-        return false
-      }
+      }).pipe(
+        Effect.catchAll((error) =>
+          Effect.gen(function* () {
+            yield* Effect.logError(`❌ MQTT validation error: ${error}`)
+            return false
+          })
+        )
+      )
     })
 }
 

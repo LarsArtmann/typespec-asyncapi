@@ -50,22 +50,37 @@ export class EmissionPipeline implements IPipelineService {
 	private readonly validationService: ValidationService
 
 	/**
-	 * Constructor with error handling for service initialization
-	 * Service instantiation failures will be thrown since they are critical system errors
+	 * Constructor with Effect.TS error handling for service initialization
+	 * Service instantiation failures are critical system errors handled via Railway programming
 	 * 
 	 * ProcessingService is now functional with static methods - no instance needed
 	 */
 	constructor() {
-		// Service initialization - any failure here is a critical system error
-		// These are unrecoverable errors that should never happen in production
-		try {
-			this.documentBuilder = new DocumentBuilder()
-			this.discoveryService = new DiscoveryService()
-			this.validationService = new ValidationService()
-		} catch (error) {
-			// Critical system error - throw to terminate process immediately
-			throw new Error(`Critical EmissionPipeline service initialization failed: ${error instanceof Error ? error.message : String(error)}`)
-		}
+		// Service initialization with Effect.TS Railway programming
+		const initializationResult = Effect.runSync(
+			Effect.gen(function* () {
+				yield* Effect.log("🚀 Initializing EmissionPipeline services...")
+
+				return {
+					documentBuilder: new DocumentBuilder(),
+					discoveryService: new DiscoveryService(),
+					validationService: new ValidationService(),
+				}
+			}).pipe(
+				Effect.catchAll((error) =>
+					Effect.gen(function* () {
+						yield* Effect.logError(`❌ Critical EmissionPipeline service initialization failed: ${error}`)
+						return yield* Effect.die(new Error(
+							`Critical EmissionPipeline service initialization failed: ${error instanceof Error ? error.message : String(error)}`
+						))
+					})
+				)
+			)
+		)
+
+		this.documentBuilder = initializationResult.documentBuilder
+		this.discoveryService = initializationResult.discoveryService
+		this.validationService = initializationResult.validationService
 	}
 
 	/**

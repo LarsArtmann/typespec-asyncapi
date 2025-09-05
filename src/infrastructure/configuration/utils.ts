@@ -16,8 +16,8 @@ import type {AsyncAPIEmitterOptions} from "./asyncAPIEmitterOptions.js"
  *
  * CRITICAL: This bridges Effect.TS validation with TypeSpec's expected JSONSchemaType format
  */
-export const ASYNC_API_EMITTER_OPTIONS_SCHEMA = (() => {
-	try {
+export const ASYNC_API_EMITTER_OPTIONS_SCHEMA = Effect.runSync(
+	Effect.gen(function* () {
 		// Convert Effect.TS Schema to JSON Schema format for TypeSpec compatibility
 		const jsonSchema = JSONSchema.make(asyncAPIEmitterOptionsEffectSchema)
 
@@ -27,33 +27,37 @@ export const ASYNC_API_EMITTER_OPTIONS_SCHEMA = (() => {
 			type: "object",
 			additionalProperties: false, // SECURITY: prevent arbitrary property injection
 		}
-	} catch (error) {
-		Effect.logWarning("⚠️  Effect.TS Schema conversion failed, falling back to manual JSON Schema:", error)
-		// Fallback to manual JSON Schema if conversion fails
-		return {
-			type: "object",
-			additionalProperties: false,
-			properties: {
-				"output-file": {type: "string", nullable: true},
-				"file-type": {type: "string", enum: SERIALIZATION_FORMAT_OPTIONS, nullable: true},
-				"asyncapi-version": {type: "string", enum: [ASYNCAPI_VERSIONS.CURRENT], nullable: true},
-				"omit-unreachable-types": {type: "boolean", nullable: true},
-				"include-source-info": {type: "boolean", nullable: true},
-				"default-servers": {type: "object", additionalProperties: true, nullable: true},
-				"validate-spec": {type: "boolean", nullable: true},
-				"additional-properties": {type: "object", additionalProperties: true, nullable: true},
-				"protocol-bindings": {
-					type: "array",
-					//TODO: copy how SERIALIZATION_FORMAT_OPTIONS does it!
-					items: {type: "string", enum: ["kafka", "amqp", "websocket", "http"]},
-					nullable: true,
-				},
-				"security-schemes": {type: "object", additionalProperties: true, nullable: true},
-				"versioning": {type: "object", additionalProperties: false, nullable: true},
-			},
-		}
-	}
-})()
+	}).pipe(
+		Effect.catchAll((error) =>
+			Effect.gen(function* () {
+				yield* Effect.logWarning("⚠️  Effect.TS Schema conversion failed, falling back to manual JSON Schema:", error)
+				// Fallback to manual JSON Schema if conversion fails
+				return {
+					type: "object",
+					additionalProperties: false,
+					properties: {
+						"output-file": {type: "string", nullable: true},
+						"file-type": {type: "string", enum: SERIALIZATION_FORMAT_OPTIONS, nullable: true},
+						"asyncapi-version": {type: "string", enum: [ASYNCAPI_VERSIONS.CURRENT], nullable: true},
+						"omit-unreachable-types": {type: "boolean", nullable: true},
+						"include-source-info": {type: "boolean", nullable: true},
+						"default-servers": {type: "object", additionalProperties: true, nullable: true},
+						"validate-spec": {type: "boolean", nullable: true},
+						"additional-properties": {type: "object", additionalProperties: true, nullable: true},
+						"protocol-bindings": {
+							type: "array",
+							//TODO: copy how SERIALIZATION_FORMAT_OPTIONS does it!
+							items: {type: "string", enum: ["kafka", "amqp", "websocket", "http"]},
+							nullable: true,
+						},
+						"security-schemes": {type: "object", additionalProperties: true, nullable: true},
+						"versioning": {type: "object", additionalProperties: false, nullable: true},
+					},
+				}
+			})
+		)
+	)
+)
 
 /**
  * Create validated AsyncAPI emitter options with defaults
@@ -77,20 +81,23 @@ export const createAsyncAPIEmitterOptions = (input: Partial<AsyncAPIEmitterOptio
 
 /**
  * Runtime type guard for AsyncAPI emitter options
- * Uses Effect.TS validation for type safety
+ * Uses Effect.TS validation for type safety with Railway programming
  */
 export const isAsyncAPIEmitterOptions = (input: unknown): input is AsyncAPIEmitterOptions => {
 	//TODO: does this need to be this completed? Is This logic even correct??
-	try {
-		return Effect.runSync(
-			Effect.gen(function* () {
-				yield* validateAsyncAPIEmitterOptions(input)
-				return true
-			}).pipe(
-				Effect.catchAll(() => Effect.succeed(false)),
-			),
+	return Effect.runSync(
+		Effect.gen(function* () {
+			yield* validateAsyncAPIEmitterOptions(input)
+			return true
+		}).pipe(
+			Effect.catchAll((error) =>
+				Effect.gen(function* () {
+					yield* Effect.logWarning(`⚠️  AsyncAPI options validation failed: ${error}`)
+					return false
+				})
+			)
+		).pipe(
+			Effect.catchAll(() => Effect.succeed(false))
 		)
-	} catch {
-		return false
-	}
+	)
 }
