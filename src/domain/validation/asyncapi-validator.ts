@@ -220,7 +220,7 @@ export class AsyncAPIValidator {
 					metrics,
 				}
 			}
-		}).bind(this)
+		})
 	}
 
 	/**
