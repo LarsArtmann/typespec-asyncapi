@@ -48,14 +48,13 @@ export class AsyncAPIValidator {
 	 * Initialize the validator with AsyncAPI parser - Railway programming style
 	 */
 	initializeEffect(): Effect.Effect<void, never> {
-		const self = this
-		return Effect.gen(function* () {
-			if (self.initialized) {
+		return Effect.gen(this, function* () {
+			if (this.initialized) {
 				return
 			}
 
 			yield* railwayLogging.logInitialization("AsyncAPI 3.0.0 Validator with REAL @asyncapi/parser")
-			self.initialized = true
+			this.initialized = true
 			yield* railwayLogging.logInitializationSuccess("AsyncAPI 3.0.0 Validator")
 		})
 	}
@@ -76,10 +75,9 @@ export class AsyncAPIValidator {
 	 * Validate AsyncAPI document using the REAL parser - Effect version
 	 */
 	validateEffect(document: unknown, _identifier?: string): Effect.Effect<ValidationResult, never, never> {
-		const self = this
-		return Effect.gen(function* () {
+		return Effect.gen(this, function* () {
 			// Ensure initialization in Effect context
-			yield* self.initializeEffect()
+			yield* this.initializeEffect()
 			const startTime = performance.now()
 
 			// Convert document to string for parser (no pretty printing for performance)
@@ -101,7 +99,7 @@ export class AsyncAPIValidator {
 			}).pipe(
 				Effect.catchAll((error) => Effect.sync(() => {
 					const duration = performance.now() - startTime
-					self.updateStats(duration)
+					this.updateStats(duration)
 					Effect.runSync(Effect.logError(`AsyncAPI version validation failed: ${error.message}`))
 					return {
 						valid: false,
@@ -113,7 +111,7 @@ export class AsyncAPIValidator {
 						}],
 						warnings: [],
 						summary: error.message,
-						metrics: self.extractMetrics(null, duration),
+						metrics: this.extractMetrics(null, duration),
 					}
 				}))
 			)
@@ -125,7 +123,7 @@ export class AsyncAPIValidator {
 
 			// Use the REAL AsyncAPI parser with Effect tryPromise wrapper, retry patterns, and timeout
 			const parseResult = yield* Effect.tryPromise({
-				try: () => self.parser.parse(content),
+				try: () => this.parser.parse(content),
 				catch: (error) => new Error(`Parser failed: ${error instanceof Error ? error.message : String(error)}`)
 			}).pipe(
 				// Add timeout for long-running parsing operations (30 seconds)
@@ -139,7 +137,7 @@ export class AsyncAPIValidator {
 					if (error.message?.includes("timeout")) {
 						return Effect.sync(() => {
 							const duration = performance.now() - startTime
-							self.updateStats(duration)
+							this.updateStats(duration)
 							Effect.runSync(Effect.logError(`AsyncAPI parser timed out after 30 seconds`))
 							return {
 								valid: false,
@@ -158,7 +156,7 @@ export class AsyncAPIValidator {
 					// Handle non-timeout errors
 					return Effect.sync(() => {
 						const duration = performance.now() - startTime
-						self.updateStats(duration)
+						this.updateStats(duration)
 						Effect.runSync(Effect.logError(`AsyncAPI parser failed after retries: ${error.message}`))
 						return {
 							valid: false,
@@ -236,7 +234,7 @@ export class AsyncAPIValidator {
 	 * Validate AsyncAPI document from file - Effect version
 	 */
 	validateFileEffect(filePath: string): Effect.Effect<ValidationResult, never> {
-		return Effect.gen(function* () {
+		return Effect.gen(this, function* () {
 			// Use Effect.tryPromise to wrap Node.js file reading with proper error handling
 			const content = yield* Effect.tryPromise({
 				try: () => NodeFS.readFile(filePath, "utf-8"),
@@ -265,7 +263,7 @@ export class AsyncAPIValidator {
 			}
 
 			return yield* this.validateEffect(content as string, filePath)
-		}).bind(this)
+		})
 	}
 
 	/**
@@ -283,7 +281,7 @@ export class AsyncAPIValidator {
 		content: unknown,
 		identifier?: string
 	}>): Effect.Effect<ValidationResult[], never> {
-		return Effect.gen(function* () {
+		return Effect.gen(this, function* () {
 			const startTime = performance.now()
 			yield* railwayLogging.logInitialization(`batch validation of ${documents.length} documents`)
 
@@ -303,7 +301,7 @@ export class AsyncAPIValidator {
 			yield* Effect.logInfo(`📊 Valid: ${validCount}, Invalid: ${invalidCount}`)
 
 			return results
-		}).bind(this)
+		})
 	}
 
 	/**

@@ -249,7 +249,7 @@ export class PluginRegistry {
      * Initialize a plugin
      */
     private initializePlugin(name: string): Effect.Effect<void, StandardizedError, never> {
-        return Effect.gen(function* () {
+        return Effect.gen(this, function* () {
             const { plugin, metadata } = yield* this.getPluginAndMetadata(name)
 
             const result = yield* plugin.initialize().pipe(
@@ -269,14 +269,14 @@ export class PluginRegistry {
             )
 
             return result
-        }).bind(this)
+        })
     }
 
     /**
      * Start a plugin
      */
     startPlugin(name: string): Effect.Effect<void, StandardizedError, never> {
-        return Effect.gen(function* () {
+        return Effect.gen(this, function* () {
             const { plugin, metadata } = yield* this.getPluginAndMetadata(name)
 
             if (metadata.state !== PluginState.INITIALIZED && metadata.state !== PluginState.STOPPED) {
@@ -303,14 +303,14 @@ export class PluginRegistry {
             )
 
             return result
-        }).bind(this)
+        })
     }
 
     /**
      * Stop a plugin
      */
     stopPlugin(name: string): Effect.Effect<void, StandardizedError, never> {
-        return Effect.gen(function* () {
+        return Effect.gen(this, function* () {
             const { plugin, metadata } = yield* this.getPluginAndMetadata(name)
 
             if (metadata.state !== PluginState.STARTED) {
@@ -344,14 +344,14 @@ export class PluginRegistry {
             )
 
             return result
-        }).bind(this)
+        })
     }
 
     /**
      * Validate plugin dependencies
      */
     private validateDependencies(plugin: Plugin): Effect.Effect<void, StandardizedError, never> {
-        return Effect.gen(function* () {
+        return Effect.gen(this, function* () {
             for (const dependency of plugin.dependencies) {
                 const depMetadata = this.pluginMetadata.get(dependency)
                 
@@ -376,8 +376,7 @@ export class PluginRegistry {
      * Check for circular dependencies
      */
     private checkCircularDependencies(plugin: Plugin): Effect.Effect<void, StandardizedError, never> {
-        const self = this
-        return Effect.gen(function* () {
+        return Effect.gen(this, function* () {
             const visited = new Set<string>()
             const visiting = new Set<string>()
 
@@ -393,7 +392,7 @@ export class PluginRegistry {
                 visiting.add(pluginName)
 
                 for (const dep of dependencies) {
-                    const depPlugin = self.plugins.get(dep)
+                    const depPlugin = this.plugins.get(dep)
                     if (depPlugin && checkCircular(dep, depPlugin.dependencies)) {
                         return true
                     }
@@ -455,11 +454,11 @@ export class PluginRegistry {
         const handlers = this.eventBus.get(eventType) || []
         handlers.forEach(handler => {
             Effect.runSync(
-                Effect.tryPromise({
-                    try: () => Effect.runSync(Effect.succeed(handler(event))),
-                    catch: (error) => new Error(`Event handler error for ${eventType}: ${error}`)
+                Effect.try({
+                    try: () => handler(event),
+                    catch: (error) => new Error(`Event handler error for ${eventType}: ${error instanceof Error ? error.message : String(error)}`)
                 }).pipe(
-                    Effect.catchAll(error => Effect.logError(`❌ ${error.message}`))
+                    Effect.catchAll(error => Effect.logError(`❌ ${(error as Error).message}`))
                 )
             )
         })
@@ -495,10 +494,9 @@ export class PluginRegistry {
      * Used by unloadPlugin, hotReloadPlugin, initializePlugin, startPlugin, stopPlugin
      */
     private getPluginAndMetadata(name: string): Effect.Effect<{ plugin: Plugin; metadata: PluginMetadata }, StandardizedError, never> {
-        const self = this
-        return Effect.gen(function* () {
-            const plugin = self.plugins.get(name)
-            const metadata = self.pluginMetadata.get(name)
+        return Effect.gen(this, function* () {
+            const plugin = this.plugins.get(name)
+            const metadata = this.pluginMetadata.get(name)
 
             if (!plugin || !metadata) {
                 return yield* Effect.fail(emitterErrors.pluginInitializationFailed(
