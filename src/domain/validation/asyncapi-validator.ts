@@ -85,19 +85,20 @@ export class AsyncAPIValidator {
 			// Convert document to string for parser (no pretty printing for performance)
 			const content = typeof document === 'string' ? document : JSON.stringify(document)
 
-			// Enforce AsyncAPI 3.0.0 strict compliance using Effect.try
-			const docObjectResult = yield* Effect.try({
-				try: () => {
+			// Enforce AsyncAPI 3.0.0 strict compliance using Effect patterns
+			const docObjectResult = yield* Effect.gen(function* () {
+				try {
 					const docObject: Record<string, unknown> = typeof document === 'string' ? JSON.parse(content) as Record<string, unknown> : document as Record<string, unknown>
 					if (docObject && typeof docObject === 'object' && 'asyncapi' in docObject) {
 						const version = String(docObject.asyncapi)
 						if (version !== '3.0.0') {
-							throw new Error(`AsyncAPI version must be 3.0.0, got: ${version}`)
+							return yield* Effect.fail(new Error(`AsyncAPI version must be 3.0.0, got: ${version}`))
 						}
 					}
-					return docObject
-				},
-				catch: (error) => new Error(`Version validation failed: ${error instanceof Error ? error.message : String(error)}`)
+					return yield* Effect.succeed(docObject)
+				} catch (error) {
+					return yield* Effect.fail(new Error(`Version validation failed: ${error instanceof Error ? error.message : String(error)}`))
+				}
 			}).pipe(
 				Effect.catchAll((error) => Effect.sync(() => {
 					const duration = performance.now() - startTime

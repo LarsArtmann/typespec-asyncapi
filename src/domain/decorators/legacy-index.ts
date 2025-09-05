@@ -74,8 +74,9 @@ export function createAsyncAPIDecorators(program: Program): Effect.Effect<void, 
 		yield* railway.trySync(() => {
 			// Verify the program has the required methods
 			if (!program.getGlobalNamespaceType) {
-				throw new Error("Program does not have getGlobalNamespaceType method")
+				return Effect.fail(new Error("Program does not have getGlobalNamespaceType method"))
 			}
+			return Effect.succeed(undefined)
 		}, { context: { operation: "program method validation" } })
 		.pipe(Effect.mapError(error => createError({
 			what: "TypeSpec program is missing required getGlobalNamespaceType method",
@@ -92,9 +93,9 @@ export function createAsyncAPIDecorators(program: Program): Effect.Effect<void, 
 		yield* railway.trySync(() => {
 			const ns = program.getGlobalNamespaceType()
 			if (!ns) {
-				throw new Error("getGlobalNamespaceType returned null/undefined")
+				return Effect.fail(new Error("getGlobalNamespaceType returned null/undefined"))
 			}
-			return ns
+			return Effect.succeed(ns)
 		}, { context: { operation: "global namespace retrieval" } })
 		.pipe(Effect.mapError(error => createError({
 			what: "Could not get global namespace from TypeSpec program",
@@ -130,8 +131,9 @@ export function createAsyncAPIDecorators(program: Program): Effect.Effect<void, 
 		for (const { name, fn } of decoratorFunctions) {
 			yield* railway.trySync(() => {
 				if (typeof fn !== "function") {
-					throw new Error(`Decorator function ${name} is not a function`)
+					return Effect.fail(new Error(`Decorator function ${name} is not a function`))
 				}
+				return Effect.succeed(undefined)
 			}, { context: { decoratorName: name, functionType: typeof fn } })
 			.pipe(Effect.mapError(error => createError({
 				what: `AsyncAPI decorator function '${name}' is invalid`,
