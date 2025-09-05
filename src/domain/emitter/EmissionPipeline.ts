@@ -124,7 +124,7 @@ export class EmissionPipeline implements IPipelineService {
 			yield* this.executeValidationStage(context)
 
 			yield* Effect.log(`✅ All emission pipeline stages completed successfully`)
-		}).bind(this)
+		}).bind(this))
 	}
 
 	/**
@@ -140,7 +140,7 @@ export class EmissionPipeline implements IPipelineService {
 			yield* Effect.log(`📊 Discovery stage complete: ${result.operations.length} operations, ${result.messageModels.length} messages, ${result.securityConfigs.length} security configs`)
 
 			return result
-		}).bind(this)
+		}).bind(this))
 	}
 
 	/**
