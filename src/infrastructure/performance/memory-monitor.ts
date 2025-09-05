@@ -89,28 +89,30 @@ const makeMemoryMonitorService = Effect.gen(function* () {
 
 	// Helper to force garbage collection if available
 	const tryForceGC = (): Effect.Effect<ForceGCResult, GarbageCollectionFailureError> => {
-		const memoryBefore = getCurrentMemoryUsage().heapUsed
+		return Effect.gen(function* () {
+			const memoryBefore = getCurrentMemoryUsage().heapUsed
 
-		// Use Effect.try for safe garbage collection with proper error handling
-		return Effect.try({
-			try: () => {
-				if (typeof global !== "undefined" && global.gc) {
-					global.gc()
+			if (!(typeof global !== "undefined" && global.gc)) {
+				return yield* Effect.fail(new GarbageCollectionNotAvailableError(createByteAmount(memoryBefore)))
+			}
+
+			// Perform garbage collection with error handling
+			const result = yield* Effect.try({
+				try: () => {
+					if (global.gc) {
+						global.gc()
+					}
 					const memoryAfter = getCurrentMemoryUsage().heapUsed
 					return {memoryBefore: createByteAmount(memoryBefore), memoryAfter: createByteAmount(memoryAfter)}
-				} else {
-					return Effect.fail(new GarbageCollectionNotAvailableError(createByteAmount(memoryBefore)))
-				}
-			},
-			catch: (error) => {
-				const failureError = error instanceof GarbageCollectionNotAvailableError 
-					? error 
-					: new GarbageCollectionFailureError(`Garbage collection failed: ${error instanceof Error ? error.message : String(error)}`, createByteAmount(memoryBefore))
-				return failureError
-			}
-		}).pipe(
-			Effect.catchAll((error) => Effect.fail(error))
-		)
+				},
+				catch: (error) => new GarbageCollectionFailureError(
+					`Garbage collection failed: ${error instanceof Error ? error.message : String(error)}`,
+					createByteAmount(memoryBefore)
+				)
+			})
+
+			return result
+		})
 	}
 
 	const takeSnapshot = (operationCount = 0): Effect.Effect<MemorySnapshot, never> =>
