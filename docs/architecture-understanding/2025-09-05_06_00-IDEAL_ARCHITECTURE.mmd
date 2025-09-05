@@ -1,0 +1,127 @@
+graph TB
+    subgraph "TypeSpec Compiler Integration"
+        TypeSpecProgram[TypeSpec Program]
+        CompilerHost[Compiler Host]
+        AssetEmitter[Asset Emitter Framework]
+    end
+
+    subgraph "Ideal Effect.TS Architecture (Complete Functional Design)"
+        subgraph "Entry Point Layer (Effect.TS Native)"
+            MainEmitter[AsyncAPIEmitter<br/>- Pure Effect.TS composition<br/>- No Promise/async patterns]
+            OnEmitFunction[$onEmit Function<br/>- Effect.runPromise wrapper<br/>- Single Effect composition]
+        end
+
+        subgraph "Application Services Layer (Pure Functional)"
+            PipelineOrchestrator[Pipeline Orchestrator<br/>- Pure Effect composition<br/>- No class methods]
+            ContextProvider[Context Provider<br/>- Effect.TS Context service<br/>- Dependency injection]
+            ConfigurationService[Configuration Service<br/>- Effect.TS Context<br/>- Environment management]
+        end
+
+        subgraph "Domain Services (Functional Composition)"
+            EmissionPipeline[Emission Pipeline<br/>- Pure function composition<br/>- Railway programming complete]
+            DocumentBuilder[Document Builder<br/>- Stateless transformations<br/>- Pure Effect functions]
+            DiscoveryService[Discovery Service<br/>- Functional TypeSpec processing<br/>- Effect.TS generators]
+            ProcessingService[Processing Service<br/>- Pure data transformations<br/>- Composable effects]
+            ValidationService[Validation Service<br/>- Effect.TS Schema integration<br/>- Type-safe validation]
+        end
+
+        subgraph "Infrastructure Layer (Effect.TS Native)"
+            PluginSystem[Plugin System<br/>- Effect.TS Context based<br/>- Dynamic loading with Effects]
+            PerformanceService[Performance Service<br/>- Effect.TS telemetry<br/>- Metrics collection]
+            FileSystemService[File System Service<br/>- Effect.TS wrapped Node APIs<br/>- Async operations]
+        end
+
+        subgraph "Cross-Cutting Services (Complete Effect.TS)"
+            ErrorHandling[Error Handling<br/>- Complete Railway programming<br/>- Standardized error types]
+            LoggingService[Logging Service<br/>- Effect.TS native logging<br/>- Context propagation]
+            MetricsService[Metrics Service<br/>- Performance telemetry<br/>- Resource monitoring]
+            TracingService[Tracing Service<br/>- Operation tracing<br/>- Debug capabilities]
+        end
+
+        subgraph "TypeSpec Integration (Effect.TS Wrapped)"
+            DecoratorEngine[Decorator Engine<br/>- Effect.TS decorator processing<br/>- Type-safe metadata]
+            ASTProcessor[AST Processor<br/>- Functional AST traversal<br/>- Effect.TS transformations]
+            SchemaGenerator[Schema Generator<br/>- Pure schema generation<br/>- Composable transformations]
+        end
+    end
+
+    subgraph "Key Architectural Benefits"
+        RailwayProgramming[Railway Programming<br/>- Automatic error propagation<br/>- No manual error handling]
+        TypeSafety[Complete Type Safety<br/>- Effect.TS branded types<br/>- Compile-time guarantees]
+        Composability[Perfect Composability<br/>- Small effects → complex operations<br/>- Reusable components]
+        Performance[Optimized Performance<br/>- Lazy evaluation<br/>- Parallel processing]
+        Testability[Enhanced Testability<br/>- Pure functions<br/>- Effect.TS test utilities]
+        Maintainability[High Maintainability<br/>- Predictable behavior<br/>- Clear error flows]
+    end
+
+    subgraph "Effect.TS Context Services"
+        ProgramContext[Program Context<br/>- TypeSpec Program access<br/>- Context injection]
+        ConfigContext[Configuration Context<br/>- Settings and options<br/>- Environment config]
+        LoggerContext[Logger Context<br/>- Structured logging<br/>- Context-aware logging]
+        MetricsContext[Metrics Context<br/>- Performance data<br/>- Telemetry collection]
+        PluginContext[Plugin Context<br/>- Plugin dependencies<br/>- Dynamic composition]
+    end
+
+    %% Primary flow connections
+    TypeSpecProgram --> OnEmitFunction
+    OnEmitFunction --> MainEmitter
+    MainEmitter --> PipelineOrchestrator
+    
+    PipelineOrchestrator --> EmissionPipeline
+    EmissionPipeline --> DocumentBuilder
+    EmissionPipeline --> DiscoveryService
+    EmissionPipeline --> ProcessingService
+    EmissionPipeline --> ValidationService
+    
+    %% Infrastructure connections
+    PluginSystem --> EmissionPipeline
+    PerformanceService --> EmissionPipeline
+    FileSystemService --> MainEmitter
+    
+    %% Cross-cutting service connections
+    ErrorHandling --> EmissionPipeline
+    ErrorHandling --> ValidationService
+    ErrorHandling --> PluginSystem
+    
+    LoggingService --> PipelineOrchestrator
+    MetricsService --> PerformanceService
+    TracingService --> EmissionPipeline
+    
+    %% TypeSpec integration
+    DecoratorEngine --> DiscoveryService
+    ASTProcessor --> ProcessingService
+    SchemaGenerator --> DocumentBuilder
+    
+    %% Context service injection
+    ContextProvider --> ProgramContext
+    ContextProvider --> ConfigContext
+    ContextProvider --> LoggerContext
+    ContextProvider --> MetricsContext
+    ContextProvider --> PluginContext
+    
+    ProgramContext --> DiscoveryService
+    ConfigContext --> ValidationService
+    LoggerContext --> ErrorHandling
+    MetricsContext --> PerformanceService
+    PluginContext --> PluginSystem
+
+    %% Benefit connections
+    RailwayProgramming --> ErrorHandling
+    TypeSafety --> ValidationService
+    Composability --> PipelineOrchestrator
+    Performance --> PerformanceService
+    Testability --> EmissionPipeline
+    Maintainability --> DocumentBuilder
+
+    %% Styling for ideal architecture
+    classDef effectComplete fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px
+    classDef functionalPure fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
+    classDef contextService fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef benefit fill:#e1f5fe,stroke:#0277bd,stroke-width:2px
+    
+    class MainEmitter,OnEmitFunction,PipelineOrchestrator,ContextProvider,ConfigurationService effectComplete
+    class EmissionPipeline,DocumentBuilder,DiscoveryService,ProcessingService,ValidationService functionalPure
+    class PluginSystem,PerformanceService,FileSystemService,ErrorHandling,LoggingService,MetricsService,TracingService effectComplete
+    class DecoratorEngine,ASTProcessor,SchemaGenerator functionalPure
+    class ProgramContext,ConfigContext,LoggerContext,MetricsContext,PluginContext contextService
+    class RailwayProgramming,TypeSafety,Composability,Performance,Testability,Maintainability benefit

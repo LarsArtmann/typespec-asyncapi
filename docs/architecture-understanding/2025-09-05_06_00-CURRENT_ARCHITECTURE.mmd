@@ -1,0 +1,96 @@
+graph TB
+    subgraph "TypeSpec Compiler Integration"
+        TypeSpecProgram[TypeSpec Program]
+        CompilerHost[Compiler Host]
+        AssetEmitter[Asset Emitter]
+    end
+
+    subgraph "Current Effect.TS Architecture (Partial Migration)"
+        subgraph "Entry Point Layer"
+            MainEmitter[AsyncAPIEmitter<br/>- Uses AssetEmitter<br/>- Effect.TS partially integrated]
+            OnEmitFunction[$onEmit Function<br/>- Entry point from TypeSpec<br/>- Traditional Promise handling]
+        end
+
+        subgraph "Application Services Layer (Mixed Patterns)"
+            PipelineService[PipelineService<br/>- Effect.TS interface<br/>- Coordination logic]
+            PipelineContext[PipelineContext<br/>- Traditional TypeScript<br/>- Context data holder]
+        end
+
+        subgraph "Domain Services (Effect.TS Migrated)"
+            EmissionPipeline[EmissionPipeline<br/>- Effect.TS with .bind issues<br/>- Railway programming partial]
+            DocumentBuilder[DocumentBuilder<br/>- Effect.TS converted<br/>- AsyncAPI document generation]
+            DiscoveryService[DiscoveryService<br/>- Effect.TS patterns<br/>- TypeSpec AST discovery]
+            ProcessingService[ProcessingService<br/>- Functional static methods<br/>- Data transformation]
+            ValidationService[ValidationService<br/>- Effect.TS with context issues<br/>- AsyncAPI validation]
+        end
+
+        subgraph "Infrastructure Layer (Mixed Migration)"
+            PluginRegistry[PluginRegistry<br/>- Effect.TS with .bind issues<br/>- Dynamic plugin loading]
+            PerformanceMonitor[PerformanceRegressionTester<br/>- Effect.TS partial<br/>- Performance tracking]
+            AsyncAPIValidator[AsyncAPIValidator<br/>- Effect.TS with context issues<br/>- Schema validation]
+        end
+
+        subgraph "Cross-Cutting Concerns (Effect.TS Complete)"
+            StandardizedErrors[Standardized Error System<br/>- Railway programming<br/>- Type-safe error handling]
+            PerformanceMetrics[Performance Metrics<br/>- Effect.TS telemetry<br/>- System monitoring]
+            LoggingSystem[Effect.TS Logging<br/>- Structured logging<br/>- Context propagation]
+        end
+
+        subgraph "TypeSpec Decorators (Traditional)"
+            ChannelDecorator[@channel decorator]
+            PublishDecorator[@publish decorator]  
+            SubscribeDecorator[@subscribe decorator]
+            ServerDecorator[@server decorator]
+        end
+    end
+
+    subgraph "Critical Issues (50 TypeScript Errors)"
+        ContextBinding[Context Binding Issues<br/>- this.method() in Effect.gen<br/>- Requires .bind(this) or refactor]
+        ErrorTypeNarrowing[Error Type Narrowing<br/>- instanceof checks failing<br/>- unknown error parameters]
+        EffectReturnTypes[Effect Return Type Mismatches<br/>- Generic Effect types<br/>- Need precise parameters]
+        UnusedMethods[Unused Private Methods<br/>- Development artifacts<br/>- Need cleanup or usage]
+    end
+
+    %% Flow connections
+    TypeSpecProgram --> OnEmitFunction
+    OnEmitFunction --> MainEmitter
+    MainEmitter --> PipelineService
+    PipelineService --> EmissionPipeline
+    
+    EmissionPipeline --> DocumentBuilder
+    EmissionPipeline --> DiscoveryService
+    EmissionPipeline --> ProcessingService
+    EmissionPipeline --> ValidationService
+    
+    PluginRegistry --> EmissionPipeline
+    AsyncAPIValidator --> ValidationService
+    PerformanceMonitor --> EmissionPipeline
+    
+    StandardizedErrors --> EmissionPipeline
+    StandardizedErrors --> ValidationService
+    StandardizedErrors --> PluginRegistry
+    
+    ChannelDecorator --> DiscoveryService
+    PublishDecorator --> DiscoveryService
+    SubscribeDecorator --> DiscoveryService
+    ServerDecorator --> DiscoveryService
+
+    %% Issue connections (dashed red lines)
+    EmissionPipeline -.->|Context Issues| ContextBinding
+    ValidationService -.->|Context Issues| ContextBinding
+    PluginRegistry -.->|Context Issues| ContextBinding
+    
+    EmissionPipeline -.->|Error Types| ErrorTypeNarrowing
+    ValidationService -.->|Return Types| EffectReturnTypes
+    PluginRegistry -.->|Unused Code| UnusedMethods
+
+    %% Styling
+    classDef effectMigrated fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef partialMigration fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef traditional fill:#fce4ec,stroke:#880e4f,stroke-width:2px
+    classDef issues fill:#ffebee,stroke:#c62828,stroke-width:3px
+    
+    class DocumentBuilder,DiscoveryService,ProcessingService,StandardizedErrors,PerformanceMetrics,LoggingSystem effectMigrated
+    class EmissionPipeline,ValidationService,PluginRegistry,PerformanceMonitor,MainEmitter partialMigration
+    class OnEmitFunction,PipelineContext,ChannelDecorator,PublishDecorator,SubscribeDecorator,ServerDecorator traditional
+    class ContextBinding,ErrorTypeNarrowing,EffectReturnTypes,UnusedMethods issues
