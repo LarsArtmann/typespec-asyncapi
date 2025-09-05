@@ -79,7 +79,7 @@ export const enhancedWebSocketPlugin: ProtocolPlugin = {
     Effect.gen(function* () {
       yield* Effect.log("🔧 Enhanced WebSocket operation binding generation")
       
-      try {
+      return yield* Effect.gen(function* () {
         const opData = operation as WebSocketOperationData
         
         // Validate WebSocket operation structure
@@ -92,10 +92,14 @@ export const enhancedWebSocketPlugin: ProtocolPlugin = {
         yield* Effect.log(`✅ WebSocket operation ${opData.operation?.name || 'unknown'} validated`)
         
         return {}
-      } catch (error) {
-        yield* Effect.logError(`❌ WebSocket operation binding error: ${error}`)
-        return {}
-      }
+      }).pipe(
+        Effect.catchAll((error) =>
+          Effect.gen(function* () {
+            yield* Effect.logError(`❌ WebSocket operation binding error: ${error}`)
+            return {}
+          })
+        )
+      )
     }),
 
   /**
@@ -105,7 +109,7 @@ export const enhancedWebSocketPlugin: ProtocolPlugin = {
     Effect.gen(function* () {
       yield* Effect.log("📨 Enhanced WebSocket message binding generation")
       
-      try {
+      return yield* Effect.gen(function* () {
         // Note: message could be cast to { config?: WebSocketConfig } for future configuration
 
         // Create WebSocket message binding with extracted configuration  
@@ -118,10 +122,14 @@ export const enhancedWebSocketPlugin: ProtocolPlugin = {
 
         yield* Effect.log("✅ WebSocket message binding created successfully")
         return { ws: binding }
-      } catch (error) {
-        yield* Effect.logError(`❌ WebSocket message binding error: ${error}`)
-        return { ws: { bindingVersion: "0.1.0" } }
-      }
+      }).pipe(
+        Effect.catchAll((error) =>
+          Effect.gen(function* () {
+            yield* Effect.logError(`❌ WebSocket message binding error: ${error}`)
+            return { ws: { bindingVersion: "0.1.0" } }
+          })
+        )
+      )
     }),
 
   /**
@@ -132,7 +140,7 @@ export const enhancedWebSocketPlugin: ProtocolPlugin = {
     Effect.gen(function* () {
       yield* Effect.log("🖥️ WebSocket server binding generation (not supported)")
       
-      try {
+      return yield* Effect.gen(function* () {
         const serverData = server as WebSocketServerData
         
         if (serverData?.protocol && !["ws", "wss"].includes(serverData.protocol)) {
@@ -143,10 +151,14 @@ export const enhancedWebSocketPlugin: ProtocolPlugin = {
         
         // WebSocket doesn't have server bindings in AsyncAPI 3.0
         return {}
-      } catch (error) {
-        yield* Effect.logError(`❌ WebSocket server binding error: ${error}`)
-        return {}
-      }
+      }).pipe(
+        Effect.catchAll((error) =>
+          Effect.gen(function* () {
+            yield* Effect.logError(`❌ WebSocket server binding error: ${error}`)
+            return {}
+          })
+        )
+      )
     }),
 
   /**
@@ -156,7 +168,7 @@ export const enhancedWebSocketPlugin: ProtocolPlugin = {
     Effect.gen(function* () {
       yield* Effect.log("🔍 Enhanced WebSocket configuration validation")
       
-      try {
+      return yield* Effect.gen(function* () {
         if (!config || typeof config !== 'object') {
           yield* Effect.logWarning("⚠️ WebSocket config is not an object")
           return false
@@ -200,10 +212,14 @@ export const enhancedWebSocketPlugin: ProtocolPlugin = {
 
         yield* Effect.log("✅ WebSocket configuration validation passed")
         return true
-      } catch (error) {
-        yield* Effect.logError(`❌ WebSocket validation error: ${error}`)
-        return false
-      }
+      }).pipe(
+        Effect.catchAll((error) =>
+          Effect.gen(function* () {
+            yield* Effect.logError(`❌ WebSocket validation error: ${error}`)
+            return false
+          })
+        )
+      )
     })
 }
 
