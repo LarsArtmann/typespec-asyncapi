@@ -223,12 +223,12 @@ export class PerformanceRegressionTester {
 			}
 
 			const baselineResult = yield* Effect.tryPromise({
-				try: () => Promise.resolve(readFileSync(self.baselinePath, 'utf-8')),
+				try: () => Effect.runSync(Effect.succeed(readFileSync(self.baselinePath, 'utf-8'))),
 				catch: (error) => new Error(`Failed to read baseline file: ${error}`)
 			}).pipe(
 				Effect.flatMap(baselinesData => 
 					Effect.tryPromise({
-						try: () => Promise.resolve(JSON.parse(baselinesData) as Record<string, PerformanceBaseline[]>),
+						try: () => Effect.runSync(Effect.succeed(JSON.parse(baselinesData) as Record<string, PerformanceBaseline[]>)),
 						catch: (error) => new Error(`Failed to parse baseline JSON: ${error}`)
 					})
 				),
@@ -283,12 +283,12 @@ export class PerformanceRegressionTester {
 
 				if (existsSync(self.baselinePath)) {
 					const baselinesData = yield* Effect.tryPromise({
-						try: () => Promise.resolve(readFileSync(self.baselinePath, 'utf-8')),
+						try: () => Effect.runSync(Effect.succeed(readFileSync(self.baselinePath, 'utf-8'))),
 						catch: (error) => new Error(`Failed to read baseline file: ${error}`)
 					})
 					
 					baselines = yield* Effect.tryPromise({
-						try: () => Promise.resolve(JSON.parse(baselinesData) as Record<string, PerformanceBaseline[]>),
+						try: () => Effect.runSync(Effect.succeed(JSON.parse(baselinesData) as Record<string, PerformanceBaseline[]>)),
 						catch: (error) => new Error(`Failed to parse baseline JSON: ${error}`)
 					})
 				}
@@ -305,7 +305,7 @@ export class PerformanceRegressionTester {
 				}
 
 				yield* Effect.tryPromise({
-					try: () => Promise.resolve(writeFileSync(self.baselinePath, JSON.stringify(baselines, null, 2))),
+					try: () => Effect.runSync(Effect.succeed(writeFileSync(self.baselinePath, JSON.stringify(baselines, null, 2)))),
 					catch: (error) => new Error(`Failed to write baseline file: ${error}`)
 				})
 
@@ -472,7 +472,7 @@ export const createTypeSpecCompilationRegressionTest = (_program: Program) => {
 
 			// This would normally trigger actual TypeSpec compilation
 			// For now, we'll simulate with a lightweight operation
-			await new Promise(resolve => setTimeout(resolve, Math.random() * 100 + 50))
+			await Effect.runPromise(Effect.sleep(Math.random() * 100 + 50))
 
 			const endTime = performance.now()
 			void endTime

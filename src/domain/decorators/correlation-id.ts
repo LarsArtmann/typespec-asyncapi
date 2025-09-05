@@ -167,7 +167,7 @@ function validateCorrelationSchema(
 
 		// Add pattern validation
 		if (schema.pattern && typeof schema.pattern === 'string') {
-			const pattern = schema.pattern as string
+			const pattern = schema.pattern
 			Effect.runSync(
 				Effect.sync(() => {
 					new RegExp(pattern) // Test if valid regex

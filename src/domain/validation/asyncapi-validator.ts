@@ -48,15 +48,16 @@ export class AsyncAPIValidator {
 	 * Initialize the validator with AsyncAPI parser - Railway programming style
 	 */
 	initializeEffect(): Effect.Effect<void, never> {
+		const self = this
 		return Effect.gen(function* () {
-			if (this.initialized) {
+			if (self.initialized) {
 				return
 			}
 
 			yield* railwayLogging.logInitialization("AsyncAPI 3.0.0 Validator with REAL @asyncapi/parser")
-			this.initialized = true
+			self.initialized = true
 			yield* railwayLogging.logInitializationSuccess("AsyncAPI 3.0.0 Validator")
-		}).bind(this)
+		})
 	}
 
 	/**
@@ -75,9 +76,10 @@ export class AsyncAPIValidator {
 	 * Validate AsyncAPI document using the REAL parser - Effect version
 	 */
 	validateEffect(document: unknown, _identifier?: string): Effect.Effect<ValidationResult, never, never> {
+		const self = this
 		return Effect.gen(function* () {
 			// Ensure initialization in Effect context
-			yield* this.initializeEffect()
+			yield* self.initializeEffect()
 			const startTime = performance.now()
 
 			// Convert document to string for parser (no pretty printing for performance)
@@ -90,7 +92,7 @@ export class AsyncAPIValidator {
 					if (docObject && typeof docObject === 'object' && 'asyncapi' in docObject) {
 						const version = String(docObject.asyncapi)
 						if (version !== '3.0.0') {
-							throw new Error(`AsyncAPI version must be 3.0.0, got: ${version}`)
+							return Effect.fail(new Error(`AsyncAPI version must be 3.0.0, got: ${version}`))
 						}
 					}
 					return docObject
@@ -99,7 +101,7 @@ export class AsyncAPIValidator {
 			}).pipe(
 				Effect.catchAll((error) => Effect.sync(() => {
 					const duration = performance.now() - startTime
-					this.updateStats(duration)
+					self.updateStats(duration)
 					Effect.runSync(Effect.logError(`AsyncAPI version validation failed: ${error.message}`))
 					return {
 						valid: false,
@@ -111,7 +113,7 @@ export class AsyncAPIValidator {
 						}],
 						warnings: [],
 						summary: error.message,
-						metrics: this.extractMetrics(null, duration),
+						metrics: self.extractMetrics(null, duration),
 					}
 				}))
 			)
@@ -123,7 +125,7 @@ export class AsyncAPIValidator {
 
 			// Use the REAL AsyncAPI parser with Effect tryPromise wrapper, retry patterns, and timeout
 			const parseResult = yield* Effect.tryPromise({
-				try: () => this.parser.parse(content),
+				try: () => self.parser.parse(content),
 				catch: (error) => new Error(`Parser failed: ${error instanceof Error ? error.message : String(error)}`)
 			}).pipe(
 				// Add timeout for long-running parsing operations (30 seconds)
@@ -137,7 +139,7 @@ export class AsyncAPIValidator {
 					if (error.message?.includes("timeout")) {
 						return Effect.sync(() => {
 							const duration = performance.now() - startTime
-							this.updateStats(duration)
+							self.updateStats(duration)
 							Effect.runSync(Effect.logError(`AsyncAPI parser timed out after 30 seconds`))
 							return {
 								valid: false,
@@ -156,7 +158,7 @@ export class AsyncAPIValidator {
 					// Handle non-timeout errors
 					return Effect.sync(() => {
 						const duration = performance.now() - startTime
-						this.updateStats(duration)
+						self.updateStats(duration)
 						Effect.runSync(Effect.logError(`AsyncAPI parser failed after retries: ${error.message}`))
 						return {
 							valid: false,

@@ -72,9 +72,8 @@ export function $protocol(
 
 					// Handle different value types from TypeSpec AST
 					type ExtractionResult = { success: boolean; key: string; value?: unknown }
-					let extractionResult: ExtractionResult
 					// Use Effect.TS for safe property extraction
-					extractionResult = Effect.runSync(
+					const extractionResult: ExtractionResult = Effect.runSync(
 						Effect.sync(() => {
 							if (nodeValue && typeof nodeValue === 'object') {
 								const astNode = nodeValue as { value?: unknown; kind?: number; properties?: unknown[] }

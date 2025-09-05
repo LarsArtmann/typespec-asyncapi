@@ -67,11 +67,11 @@ export class EmissionPipeline implements IPipelineService {
 					validationService: new ValidationService(),
 				}
 			}).pipe(
-				Effect.catchAll((error) =>
+				Effect.catchAll((error: unknown) =>
 					Effect.gen(function* () {
-						yield* Effect.logError(`❌ Critical EmissionPipeline service initialization failed: ${error}`)
+						yield* Effect.logError(`❌ Critical EmissionPipeline service initialization failed: ${String(error)}`)
 						return yield* Effect.die(new Error(
-							`Critical EmissionPipeline service initialization failed: ${error instanceof Error ? error.message : String(error)}`
+							`Critical EmissionPipeline service initialization failed: ${String(error)}`
 						))
 					})
 				)
@@ -87,8 +87,8 @@ export class EmissionPipeline implements IPipelineService {
 	 * Execute the complete emission pipeline with REAL business logic integration
 	 * Using Effect.TS Railway programming for comprehensive error handling
 	 */
-	executePipeline(context: PipelineContext): Effect.Effect<void, StandardizedError> {
-		return Effect.gen((function* () {
+	executePipeline = (context: PipelineContext): Effect.Effect<void, StandardizedError> => {
+		return Effect.gen(function* () {
 			// Validate context parameter with proper error handling
 			if (!context) {
 				return yield* failWith(createError({
@@ -107,40 +107,41 @@ export class EmissionPipeline implements IPipelineService {
 
 			// Stage 1: Discovery
 			yield* Effect.log(`🚀 About to start Stage 1: Discovery`)
-			const discoveryResult = yield* this.executeDiscoveryStage(context)
+			const discoveryResult = yield* self.executeDiscoveryStage(context)
 			yield* Effect.log(`✅ Completed Stage 1: Discovery`)
 
 			// Stage 2: Processing
 			yield* Effect.log(`🚀 About to start Stage 2: Processing`)
-			yield* this.executeProcessingStage(context, discoveryResult)
+			yield* self.executeProcessingStage(context, discoveryResult)
 			yield* Effect.log(`✅ Completed Stage 2: Processing`)
 
 			// Stage 3: Document Generation (updates context.asyncApiDoc in-place)
 			yield* Effect.log(`🚀 About to start Stage 3: Generation`)
-			yield* this.executeGenerationStage(context, discoveryResult)
+			yield* self.executeGenerationStage(context, discoveryResult)
 			yield* Effect.log(`✅ Completed Stage 3: Generation`)
 
 			// Stage 4: Validation
-			yield* this.executeValidationStage(context)
+			yield* self.executeValidationStage(context)
 
 			yield* Effect.log(`✅ All emission pipeline stages completed successfully`)
-		}).bind(this))
+		})
 	}
 
 	/**
 	 * Stage 1: Discovery - Find all TypeSpec elements using REAL DiscoveryService
 	 */
-	private executeDiscoveryStage(context: PipelineContext) {
-		return Effect.gen((function* () {
+	private executeDiscoveryStage = (context: PipelineContext) => {
+		const self = this
+		return Effect.gen(function* () {
 			yield* Effect.log(`🔍 Stage 1: Discovery with REAL DiscoveryService`)
 
 			// Use REAL DiscoveryService with complete AST traversal logic
-			const result = yield* this.discoveryService.executeDiscovery(context.program)
+			const result = yield* self.discoveryService.executeDiscovery(context.program)
 
 			yield* Effect.log(`📊 Discovery stage complete: ${result.operations.length} operations, ${result.messageModels.length} messages, ${result.securityConfigs.length} security configs`)
 
 			return result
-		}).bind(this))
+		})
 	}
 
 	/**

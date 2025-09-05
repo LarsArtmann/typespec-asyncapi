@@ -456,7 +456,7 @@ export class PluginRegistry {
         handlers.forEach(handler => {
             Effect.runSync(
                 Effect.tryPromise({
-                    try: () => Promise.resolve(handler(event)),
+                    try: () => Effect.runSync(Effect.succeed(handler(event))),
                     catch: (error) => new Error(`Event handler error for ${eventType}: ${error}`)
                 }).pipe(
                     Effect.catchAll(error => Effect.logError(`❌ ${error.message}`))

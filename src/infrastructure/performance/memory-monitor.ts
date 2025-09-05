@@ -99,7 +99,7 @@ const makeMemoryMonitorService = Effect.gen(function* () {
 					const memoryAfter = getCurrentMemoryUsage().heapUsed
 					return {memoryBefore: createByteAmount(memoryBefore), memoryAfter: createByteAmount(memoryAfter)}
 				} else {
-					throw new GarbageCollectionNotAvailableError(createByteAmount(memoryBefore))
+					return Effect.fail(new GarbageCollectionNotAvailableError(createByteAmount(memoryBefore)))
 				}
 			},
 			catch: (error) => {
