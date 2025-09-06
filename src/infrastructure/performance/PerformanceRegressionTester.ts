@@ -20,11 +20,12 @@ import {Effect} from "effect"
 
 // Node.js built-ins
 import {performance} from "perf_hooks"
-import {existsSync, readFileSync, writeFileSync} from "fs"
+import {existsSync} from "fs"
 import {join} from "path"
 
 // Local imports
 import {PerformanceMonitor} from "./PerformanceMonitor.js"
+import {railwayFileSystem} from "../../utils/effect-helpers.js"
 import type {PerformanceBaseline} from "./PerformanceBaseline.js"
 import type {RegressionTestResult} from "./RegressionTestResult.js"
 import type {PerformanceMetrics} from "./PerformanceMetrics.js"
@@ -222,16 +223,10 @@ export class PerformanceRegressionTester {
 				return null
 			}
 
-			const baselineResult = yield* Effect.try({
-				try: () => readFileSync(this.baselinePath, 'utf-8'),
-				catch: (error) => new Error(`Failed to read baseline file: ${error}`)
-			}).pipe(
-				Effect.flatMap(baselinesData => 
-					Effect.try({
-						try: () => JSON.parse(baselinesData) as Record<string, PerformanceBaseline[]>,
-						catch: (error) => new Error(`Failed to parse baseline JSON: ${error}`)
-					})
-				),
+			const baselineResult = yield* railwayFileSystem.readJsonFileEffect<Record<string, PerformanceBaseline[]>>(
+				this.baselinePath,
+				"baseline file"
+			).pipe(
 				Effect.map(baselines => {
 					const testBaselines = baselines[testCaseName]
 					if (!testBaselines || testBaselines.length === 0) {
@@ -280,17 +275,11 @@ export class PerformanceRegressionTester {
 			yield* Effect.gen(this, function* () {
 				let baselines: Record<string, PerformanceBaseline[]> = {}
 
-				if (existsSync(this.baselinePath)) {
-					const baselinesData = yield* Effect.try({
-						try: () => readFileSync(this.baselinePath, 'utf-8'),
-						catch: (error) => new Error(`Failed to read baseline file: ${error}`)
-					})
-					
-					baselines = yield* Effect.try({
-						try: () => JSON.parse(baselinesData) as Record<string, PerformanceBaseline[]>,
-						catch: (error) => new Error(`Failed to parse baseline JSON: ${error}`)
-					})
-				}
+				baselines = yield* railwayFileSystem.readJsonFileWithDefault<Record<string, PerformanceBaseline[]>>(
+					this.baselinePath, 
+					{},
+					"baseline file"
+				)
 
 				if (!baselines[testCaseName]) {
 					baselines[testCaseName] = []
@@ -303,10 +292,7 @@ export class PerformanceRegressionTester {
 					baselines[testCaseName] = baselines[testCaseName].slice(-this.config.maxBaselinesHistory)
 				}
 
-				yield* Effect.try({
-					try: () => writeFileSync(this.baselinePath, JSON.stringify(baselines, null, 2)),
-					catch: (error) => new Error(`Failed to write baseline file: ${error}`)
-				})
+				yield* railwayFileSystem.writeJsonFileEffect(this.baselinePath, baselines, "baseline file")
 
 				yield* Effect.log(`📊 Updated baseline for ${testCaseName}`)
 			}).pipe(

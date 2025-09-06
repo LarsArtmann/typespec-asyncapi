@@ -4,6 +4,7 @@
  */
 
 import {Effect, Schedule, TSemaphore} from "effect"
+import {existsSync, readFileSync, writeFileSync} from "fs"
 import type {EmitContext} from "@typespec/compiler"
 import type {AsyncAPIEmitterOptions} from "../infrastructure/configuration/options.js"
 import {SpecGenerationError} from "../domain/models/errors/SpecGenerationError.js"
@@ -527,6 +528,247 @@ export const railwayErrorRecovery = {
 					Effect.orElse(() => Effect.void)
 				)
 		)
+	}
+}
+
+/**
+ * Railway Programming File System Operations - Extract common Effect.try patterns
+ * FIXES: Duplicated Effect.try patterns in PerformanceRegressionTester and other files
+ */
+export const railwayFileSystem = {
+	/**
+	 * Read file with proper Effect.try error handling - extracted common pattern
+	 */
+	readFileEffect: (filePath: string, context?: string) =>
+		Effect.try({
+			try: () => readFileSync(filePath, 'utf-8'),
+			catch: (error) => new Error(`Failed to read ${context || 'file'} (${filePath}): ${error}`)
+		}),
+
+	/**
+	 * Parse JSON with proper Effect.try error handling - extracted common pattern
+	 */
+	parseJsonEffect: <T>(jsonString: string, context?: string) =>
+		Effect.try({
+			try: () => JSON.parse(jsonString) as T,
+			catch: (error) => new Error(`Failed to parse ${context || 'JSON'}: ${error}`)
+		}),
+
+	/**
+	 * Write file with proper Effect.try error handling - extracted common pattern
+	 */
+	writeFileEffect: (filePath: string, data: string, context?: string) =>
+		Effect.try({
+			try: () => writeFileSync(filePath, data),
+			catch: (error) => new Error(`Failed to write ${context || 'file'} (${filePath}): ${error}`)
+		}),
+
+	/**
+	 * Read and parse JSON file - combines common read + parse pattern
+	 */
+	readJsonFileEffect: <T>(filePath: string, context?: string) =>
+		Effect.flatMap(
+			railwayFileSystem.readFileEffect(filePath, context),
+			(content) => railwayFileSystem.parseJsonEffect<T>(content, context)
+		),
+
+	/**
+	 * Write JSON file with proper formatting - combines stringify + write pattern
+	 */
+	writeJsonFileEffect: <T>(filePath: string, data: T, context?: string) =>
+		Effect.try({
+			try: () => writeFileSync(filePath, JSON.stringify(data, null, 2)),
+			catch: (error) => new Error(`Failed to write ${context || 'JSON file'} (${filePath}): ${error}`)
+		}),
+
+	/**
+	 * Safe file existence check - no exceptions
+	 */
+	fileExistsEffect: (filePath: string) =>
+		Effect.sync(() => existsSync(filePath)),
+
+	/**
+	 * Read file with default value if it doesn't exist - common pattern
+	 */
+	readFileWithDefault: (filePath: string, defaultValue: string, context?: string) =>
+		Effect.gen(function* () {
+			const exists = yield* railwayFileSystem.fileExistsEffect(filePath)
+			if (!exists) {
+				return defaultValue
+			}
+			return yield* railwayFileSystem.readFileEffect(filePath, context)
+		}),
+
+	/**
+	 * Read JSON file with default value - common pattern for config files
+	 */
+	readJsonFileWithDefault: <T>(filePath: string, defaultValue: T, context?: string) =>
+		Effect.gen(function* () {
+			const exists = yield* railwayFileSystem.fileExistsEffect(filePath)
+			if (!exists) {
+				return defaultValue
+			}
+			return yield* railwayFileSystem.readJsonFileEffect<T>(filePath, context)
+		})
+}
+
+/**
+ * Railway Programming Validation Helpers - Extract common AsyncAPI validation patterns
+ * FIXES: Duplicated validation logic across AsyncAPIValidator and other validation files
+ */
+export const railwayValidationHelpers = {
+	/**
+	 * Validate AsyncAPI version with configurable strictness - extracted pattern
+	 */
+	validateAsyncAPIVersion: (document: unknown, strict: boolean = true) =>
+		Effect.try({
+			try: () => {
+				const docObject: Record<string, unknown> = typeof document === 'string' 
+					? JSON.parse(document as string) as Record<string, unknown> 
+					: document as Record<string, unknown>
+					
+				if (strict && docObject && typeof docObject === 'object' && 'asyncapi' in docObject) {
+					const version = String(docObject.asyncapi)
+					if (version !== '3.0.0') {
+						throw new Error(`AsyncAPI version must be 3.0.0 (strict mode), got: ${version}`)
+					}
+				}
+				return docObject
+			},
+			catch: (error) => new Error(`Version validation failed: ${error instanceof Error ? error.message : String(error)}`)
+		}),
+
+	/**
+	 * Create validation result with standard format - extracted pattern
+	 */
+	createValidationResult: (
+		valid: boolean, 
+		errors: Array<{message: string, keyword: string, instancePath: string, schemaPath: string}> = [],
+		warnings: string[] = [],
+		duration: number = 0,
+		context?: string
+	) => Effect.succeed({
+		valid,
+		errors,
+		warnings,
+		summary: context 
+			? `${context}: ${valid ? 'Valid' : 'Invalid'} (${errors.length} errors, ${warnings.length} warnings, ${duration.toFixed(2)}ms)`
+			: `Validation ${valid ? 'passed' : 'failed'} (${duration.toFixed(2)}ms)`,
+		metrics: {
+			duration,
+			errors: errors.length,
+			warnings: warnings.length,
+			validatedAt: new Date()
+		}
+	}),
+
+	/**
+	 * Validate required fields with proper Effect error handling - common pattern
+	 */
+	validateRequiredFields: <T extends Record<string, unknown>>(
+		obj: T, 
+		requiredFields: Array<keyof T>,
+		context?: string
+	) => Effect.try({
+		try: () => {
+			const missingFields = requiredFields.filter(field => !(field in obj) || obj[field] == null)
+			if (missingFields.length > 0) {
+				throw new Error(`Missing required fields: ${missingFields.join(', ')}`)
+			}
+			return obj
+		},
+		catch: (error) => new Error(`${context ? `${context}: ` : ''}${error instanceof Error ? error.message : String(error)}`)
+	}),
+
+	/**
+	 * Validate object against schema with proper error transformation - extracted pattern  
+	 */
+	validateWithRetry: <T>(
+		validationFn: () => Promise<T>,
+		retries: number = 3,
+		context?: string
+	) => Effect.tryPromise({
+		try: validationFn,
+		catch: (error) => new Error(`${context ? `${context}: ` : ''}Validation failed: ${error instanceof Error ? error.message : String(error)}`)
+	}).pipe(
+		Effect.retry(Schedule.exponential("100 millis").pipe(
+			Schedule.compose(Schedule.recurs(retries))
+		)),
+		Effect.tapError(error => Effect.logWarning(`Validation retry failed: ${error.message}`))
+	),
+
+	/**
+	 * Cache validation results with TTL - common pattern for expensive validations
+	 */
+	createValidationCache: <V>(maxSize: number = 1000) => {
+		const cache = new Map<string, { value: V; timestamp: number }>()
+		const ttlMs = 5 * 60 * 1000 // 5 minutes
+		
+		return {
+			get: (key: string): Effect.Effect<V | null, never> => Effect.sync(() => {
+				const entry = cache.get(key)
+				if (!entry) return null
+				
+				// Check TTL
+				if (Date.now() - entry.timestamp > ttlMs) {
+					cache.delete(key)
+					return null
+				}
+				
+				return entry.value
+			}),
+			
+			set: (key: string, value: V): Effect.Effect<void, never> => Effect.sync(() => {
+				// Limit cache size
+				if (cache.size >= maxSize) {
+					const firstKey = cache.keys().next().value
+					if (firstKey) cache.delete(firstKey)
+				}
+				
+				cache.set(key, { value, timestamp: Date.now() })
+			}),
+			
+			clear: (): Effect.Effect<void, never> => Effect.sync(() => {
+				cache.clear()
+			}),
+			
+			size: (): Effect.Effect<number, never> => Effect.sync(() => cache.size)
+		}
+	},
+
+	/**
+	 * Batch validation with concurrent processing - extracted pattern
+	 */
+	validateBatch: <T, R>(
+		items: T[],
+		validator: (item: T, index: number) => Effect.Effect<R, Error>,
+		maxConcurrency: number = 10
+	): Effect.Effect<R[], Error> => 
+		Effect.all(
+			items.map((item, index) => validator(item, index)),
+			{ concurrency: maxConcurrency }
+		),
+
+	/**
+	 * Validation with timeout and graceful degradation - common pattern
+	 */
+	validateWithTimeout: <T>(
+		validation: Effect.Effect<T, Error>,
+		timeoutMs: number = 30000,
+		fallbackValue?: T,
+		context?: string
+	): Effect.Effect<T, Error> => {
+		const timeoutEffect = Effect.sleep(`${timeoutMs} millis`).pipe(
+			Effect.flatMap(() => Effect.fail(new Error(`${context ? `${context}: ` : ''}Validation timed out after ${timeoutMs}ms`)))
+		)
+		
+		const mainEffect = fallbackValue 
+			? Effect.race(validation, timeoutEffect).pipe(
+				Effect.orElse(() => Effect.succeed(fallbackValue))
+			)
+			: Effect.race(validation, timeoutEffect)
+			
+		return mainEffect
 	}
 }
 

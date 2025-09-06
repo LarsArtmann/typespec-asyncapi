@@ -1,9 +1,8 @@
 /**
- * Enhanced AMQP Protocol Plugin  
+ * Enhanced AMQP Protocol Plugin (Refactored)
  * 
- * TASK M25: Extract AMQP binding logic from core emitter
- * TASK M26: Implement AMQP queue declarations and exchanges
- * Provides comprehensive AMQP protocol support for AsyncAPI 3.0.0
+ * TASK M24: Extract protocol plugin base class to reduce duplication
+ * Refactored to use EnhancedProtocolPluginBase for common functionality
  * 
  * Features:
  * - AMQP channel bindings with queue/exchange declarations
@@ -16,19 +15,22 @@
  */
 
 import { Effect } from "effect"
-
-import type {ProtocolPlugin} from "./protocol-plugin.js"
-import { EnhancedProtocolPluginBase } from "./enhanced-protocol-plugin-base.js"
+import type { ProtocolPlugin } from "./protocol-plugin.js"
+import { 
+  EnhancedProtocolPluginBase, 
+  type BaseOperationData, 
+  type BaseServerData,
+  type BaseTestingUtils 
+} from "./enhanced-protocol-plugin-base.js"
 
 /**
- * TASK M24: AMQP Plugin Interface Definition
- * Enhanced AMQP configuration types based on RabbitMQ standards
+ * AMQP Exchange Types
  */
-
-// AMQP Exchange Types
 export type AMQPExchangeType = "direct" | "topic" | "fanout" | "headers"
 
-// Enhanced AMQP Configuration
+/**
+ * Enhanced AMQP Configuration
+ */
 export type AMQPConfig = {
   exchange?: {
     name: string
@@ -50,9 +52,6 @@ export type AMQPConfig = {
   priority?: number     // 0-255
   timestamp?: boolean
   userId?: string
-  appId?: string
-  clusterId?: string
-  messageType?: string
   contentType?: string
   contentEncoding?: string
   headers?: Record<string, unknown>
@@ -60,12 +59,7 @@ export type AMQPConfig = {
   replyTo?: string
   expiration?: string   // TTL in milliseconds as string
   messageId?: string
-  // Dead Letter Exchange support
-  dlx?: {
-    exchange: string
-    routingKey?: string
-    arguments?: Record<string, unknown>
-  }
+  messageType?: string
   // Consumer configuration
   consumer?: {
     prefetchCount?: number
@@ -78,27 +72,21 @@ export type AMQPConfig = {
   }
 }
 
-// AMQP Operation data extracted from TypeSpec
-export type AMQPOperationData = {
+/**
+ * AMQP Operation data extending base structure
+ */
+export interface AMQPOperationData extends BaseOperationData {
   channel: {
     name: string
     parameters?: Record<string, unknown>
     config?: AMQPConfig
   }
-  operation: {
-    name: string
-    action: "send" | "receive" 
-    parameters?: Record<string, unknown>
-  }
-  message?: {
-    name: string
-    payload?: unknown
-  }
 }
 
-// AMQP Server configuration
-export type AMQPServerData = {
-  url: string
+/**
+ * AMQP Server configuration extending base structure
+ */
+export interface AMQPServerData extends BaseServerData {
   protocol: "amqp" | "amqps"
   config?: {
     vhost?: string
@@ -112,10 +100,9 @@ export type AMQPServerData = {
 }
 
 /**
- * TASK M25: Extract AMQP binding logic from core emitter
  * AsyncAPI AMQP Binding Types (v0.3.0)
  */
-export type AMQPChannelBinding = {
+export interface AMQPChannelBinding {
   is?: "queue" | "routingKey"
   exchange?: {
     name: string
@@ -136,7 +123,7 @@ export type AMQPChannelBinding = {
   bindingVersion?: string
 }
 
-export type AMQPOperationBinding = {
+export interface AMQPOperationBinding {
   expiration?: number
   userId?: string
   cc?: string[]
@@ -150,14 +137,14 @@ export type AMQPOperationBinding = {
   bindingVersion?: string
 }
 
-export type AMQPMessageBinding = {
+export interface AMQPMessageBinding {
   contentEncoding?: string
   messageType?: string
   bindingVersion?: string
 }
 
 /**
- * TASK M25: Enhanced AMQP Protocol Plugin Implementation
+ * Enhanced AMQP Protocol Plugin Implementation using Base Class
  */
 class EnhancedAMQPPlugin extends EnhancedProtocolPluginBase {
   public readonly name = "amqp" as const
@@ -216,17 +203,14 @@ class EnhancedAMQPPlugin extends EnhancedProtocolPluginBase {
   /**
    * Generate AMQP message binding
    */
-  generateMessageBinding: (message: unknown) =>
-    Effect.gen(function* () {
-      yield* Effect.log("📨 Enhanced AMQP message binding generation")
-      
-      return yield* Effect.gen(function* () {
+  public generateMessageBinding(message: unknown): Effect.Effect<Record<string, unknown>, Error> {
+    return this.wrapMessageBinding(
+      "Enhanced AMQP",
+      () => Effect.gen(this, function* () {
         const messageData = message as { config?: AMQPConfig }
         const config = messageData?.config || {}
 
-        const binding: AMQPMessageBinding = {
-          bindingVersion: "0.3.0"
-        }
+        const binding = this.createBaseBinding<AMQPMessageBinding>({})
 
         if (config.contentEncoding) {
           binding.contentEncoding = config.contentEncoding
@@ -238,25 +222,19 @@ class EnhancedAMQPPlugin extends EnhancedProtocolPluginBase {
 
         yield* Effect.log("✅ AMQP message binding created successfully")
         return { amqp: binding }
-      }).pipe(
-        Effect.catchAll((error) =>
-          Effect.gen(function* () {
-            yield* Effect.logError(`❌ AMQP message binding error: ${error}`)
-            return { amqp: { bindingVersion: "0.3.0" } }
-          })
-        )
-      )
-    }),
+      }),
+      { amqp: this.createBaseBinding() }
+    )
+  }
 
   /**
-   * TASK M26: Generate AMQP server binding - NOT SUPPORTED
+   * Generate AMQP server binding - NOT SUPPORTED
    * AMQP doesn't have server bindings in AsyncAPI 3.0
    */
-  generateServerBinding: (server: unknown) =>
-    Effect.gen(function* () {
-      yield* Effect.log("🖥️ AMQP server binding generation (not supported)")
-      
-      return yield* Effect.gen(function* () {
+  public generateServerBinding(server: unknown): Effect.Effect<Record<string, unknown>, Error> {
+    return this.wrapServerBinding(
+      "AMQP",
+      () => Effect.gen(function* () {
         const serverData = server as AMQPServerData
         
         if (serverData?.protocol && !["amqp", "amqps"].includes(serverData.protocol)) {
@@ -265,28 +243,20 @@ class EnhancedAMQPPlugin extends EnhancedProtocolPluginBase {
 
         yield* Effect.log("✅ AMQP server validation completed (no binding required)")
         return {}
-      }).pipe(
-        Effect.catchAll((error) =>
-          Effect.gen(function* () {
-            yield* Effect.logError(`❌ AMQP server binding error: ${error}`)
-            return {}
-          })
-        )
-      )
-    }),
+      }),
+      {}
+    )
+  }
 
   /**
-   * Enhanced AMQP configuration validation
+   * Enhanced AMQP configuration validation using base class helpers
    */
-  validateConfig: (config: unknown) =>
-    Effect.gen(function* () {
-      yield* Effect.log("🔍 Enhanced AMQP configuration validation")
-      
-      return yield* Effect.gen(function* () {
-        if (!config || typeof config !== 'object') {
-          yield* Effect.logWarning("⚠️ AMQP config is not an object")
-          return false
-        }
+  public validateConfig(config: unknown): Effect.Effect<boolean, Error> {
+    return this.wrapConfigValidation(
+      "Enhanced AMQP",
+      () => Effect.gen(this, function* () {
+        const isObjectValid = yield* this.validateConfigIsObject(config, "AMQP")
+        if (!isObjectValid) return false
 
         const amqpConfig = config as AMQPConfig
 
@@ -299,10 +269,9 @@ class EnhancedAMQPPlugin extends EnhancedProtocolPluginBase {
             return false
           }
 
-          if (!["direct", "topic", "fanout", "headers"].includes(exchange.type)) {
-            yield* Effect.logError(`❌ Invalid AMQP exchange type: ${exchange.type}`)
-            return false
-          }
+          const validExchangeTypes = ["direct", "topic", "fanout", "headers"] as const
+          const isValidType = yield* this.validateEnum(exchange.type, validExchangeTypes, "exchange type", "AMQP")
+          if (!isValidType) return false
         }
 
         // Validate queue configuration
@@ -315,48 +284,112 @@ class EnhancedAMQPPlugin extends EnhancedProtocolPluginBase {
           }
         }
 
-        // Validate delivery mode
-        if (amqpConfig.deliveryMode && ![1, 2].includes(amqpConfig.deliveryMode)) {
-          yield* Effect.logError(`❌ Invalid AMQP delivery mode: ${amqpConfig.deliveryMode}`)
-          return false
+        // Validate delivery mode using base class helper
+        if (amqpConfig.deliveryMode !== undefined) {
+          const validModes = ["1", "2"] as const
+          const isValidMode = yield* this.validateEnum(amqpConfig.deliveryMode.toString(), validModes, "delivery mode", "AMQP")
+          if (!isValidMode) return false
         }
 
-        // Validate priority
-        if (amqpConfig.priority !== undefined && (amqpConfig.priority < 0 || amqpConfig.priority > 255)) {
-          yield* Effect.logError(`❌ Invalid AMQP priority: ${amqpConfig.priority} (must be 0-255)`)
-          return false
+        // Validate priority using base class helper
+        if (amqpConfig.priority !== undefined) {
+          const isValidPriority = yield* this.validateNumericRange(amqpConfig.priority, "priority", 0, 255, "AMQP")
+          if (!isValidPriority) return false
         }
 
-        // Validate consumer configuration
+        // Validate consumer configuration using base class helpers
         if (amqpConfig.consumer) {
           const consumer = amqpConfig.consumer
           
-          if (consumer.prefetchCount !== undefined && consumer.prefetchCount < 0) {
-            yield* Effect.logError(`❌ Invalid prefetchCount: ${consumer.prefetchCount}`)
-            return false
+          if (consumer.prefetchCount !== undefined) {
+            const isValidPrefetchCount = yield* this.validateNumericRange(consumer.prefetchCount, "prefetchCount", 0, Number.MAX_SAFE_INTEGER, "AMQP")
+            if (!isValidPrefetchCount) return false
           }
 
-          if (consumer.prefetchSize !== undefined && consumer.prefetchSize < 0) {
-            yield* Effect.logError(`❌ Invalid prefetchSize: ${consumer.prefetchSize}`)
-            return false
+          if (consumer.prefetchSize !== undefined) {
+            const isValidPrefetchSize = yield* this.validateNumericRange(consumer.prefetchSize, "prefetchSize", 0, Number.MAX_SAFE_INTEGER, "AMQP")
+            if (!isValidPrefetchSize) return false
           }
         }
 
         yield* Effect.log("✅ AMQP configuration validation passed")
         return true
-      }).pipe(
-        Effect.catchAll((error) =>
-          Effect.gen(function* () {
-            yield* Effect.logError(`❌ AMQP validation error: ${error}`)
-            return false
-          })
+      })
+    )
+  }
+
+  /**
+   * Create AMQP testing utilities using base class pattern
+   */
+  public createTestingUtils(): BaseTestingUtils<AMQPOperationData, AMQPServerData> & {
+    createDLXConfig: (exchangeName: string, routingKey?: string) => AMQPConfig['consumer']
+    validateBindingOutput: (binding: unknown) => binding is { amqp: AMQPChannelBinding | AMQPOperationBinding | AMQPMessageBinding }
+  } {
+    const baseUtils = this.createBaseTestingUtils<AMQPOperationData, AMQPServerData>(
+      "amqp",
+      {
+        channel: {
+          name: "test-amqp-channel",
+          config: {
+            exchange: {
+              name: "test.exchange",
+              type: "topic",
+              durable: true
+            },
+            queue: {
+              name: "test.queue",
+              durable: true,
+              exclusive: false
+            },
+            routingKey: "test.routing.key",
+            deliveryMode: 2
+          }
+        },
+        operation: {
+          name: "testAMQPOperation",
+          action: "receive"
+        },
+        message: {
+          name: "TestAMQPMessage",
+          payload: { data: "string" }
+        }
+      },
+      {
+        url: "amqp://localhost:5672",
+        protocol: "amqp",
+        config: {
+          vhost: "/",
+          heartbeat: 60,
+          connectionTimeout: 30000
+        }
+      }
+    )
+
+    return {
+      ...baseUtils,
+      createDLXConfig: (exchangeName: string, routingKey?: string) => ({
+        exchange: exchangeName,
+        arguments: {
+          "x-message-ttl": 86400000, // 24 hours
+          "x-max-retries": 3
+        },
+        ...(routingKey ? { routingKey } : {})
+      }),
+      validateBindingOutput: (binding: unknown): binding is { amqp: AMQPChannelBinding | AMQPOperationBinding | AMQPMessageBinding } => {
+        return (
+          typeof binding === 'object' &&
+          binding !== null &&
+          'amqp' in binding &&
+          typeof (binding as Record<string, unknown>).amqp === 'object' &&
+          'bindingVersion' in ((binding as Record<string, unknown>).amqp as Record<string, unknown>)
         )
-      )
-    })
+      }
+    }
+  }
 }
 
 /**
- * TASK M26: AMQP Channel Binding Factory with Queue/Exchange Declarations
+ * AMQP Channel Binding Factory
  */
 export const createAMQPChannelBinding = (config: AMQPConfig = {}): AMQPChannelBinding => {
   const binding: AMQPChannelBinding = {
@@ -372,16 +405,6 @@ export const createAMQPChannelBinding = (config: AMQPConfig = {}): AMQPChannelBi
       exclusive: config.queue.exclusive ?? false,
       autoDelete: config.queue.autoDelete ?? false,
       ...(config.queue.arguments ? { arguments: config.queue.arguments } : {})
-    }
-
-    // Add dead letter exchange support
-    if (config.dlx && binding.queue) {
-      binding.queue.arguments = {
-        ...(binding.queue.arguments || {}),
-        "x-dead-letter-exchange": config.dlx.exchange,
-        ...(config.dlx.routingKey && { "x-dead-letter-routing-key": config.dlx.routingKey }),
-        ...config.dlx.arguments
-      }
     }
   }
 
@@ -399,80 +422,8 @@ export const createAMQPChannelBinding = (config: AMQPConfig = {}): AMQPChannelBi
   return binding
 }
 
-/**
- * TASK M27: AMQP Plugin Testing Support 
- */
-export const amqpTestingUtils = {
-  /**
-   * Create test AMQP operation data
-   */
-  createTestOperationData: (overrides: Partial<AMQPOperationData> = {}): AMQPOperationData => ({
-    channel: {
-      name: "test-amqp-channel", 
-      config: {
-        exchange: {
-          name: "test.exchange",
-          type: "topic",
-          durable: true
-        },
-        queue: {
-          name: "test.queue",
-          durable: true,
-          exclusive: false
-        },
-        routingKey: "test.routing.key",
-        deliveryMode: 2
-      },
-      ...overrides.channel
-    },
-    operation: {
-      name: "testAMQPOperation",
-      action: "receive",
-      ...overrides.operation
-    },
-    message: {
-      name: "TestAMQPMessage",
-      payload: { data: "string" },
-      ...overrides.message
-    }
-  }),
+// Export the singleton instance
+export const enhancedAMQPPlugin: ProtocolPlugin = new EnhancedAMQPPlugin()
 
-  /**
-   * Create test AMQP server data
-   */
-  createTestServerData: (overrides: Partial<AMQPServerData> = {}): AMQPServerData => ({
-    url: "amqp://localhost:5672",
-    protocol: "amqp",
-    config: {
-      vhost: "/",
-      heartbeat: 60,
-      connectionTimeout: 30000
-    },
-    ...overrides
-  }),
-
-  /**
-   * Validate AMQP binding output  
-   */
-  validateBindingOutput: (binding: unknown): binding is { amqp: AMQPChannelBinding | AMQPOperationBinding | AMQPMessageBinding } => {
-    return (
-      typeof binding === 'object' &&
-      binding !== null &&
-      'amqp' in binding &&
-      typeof (binding as Record<string, unknown>).amqp === 'object' &&
-      'bindingVersion' in ((binding as Record<string, unknown>).amqp as Record<string, unknown>)
-    )
-  },
-
-  /**
-   * Create DLX (Dead Letter Exchange) configuration
-   */
-  createDLXConfig: (exchangeName: string, routingKey?: string): AMQPConfig['dlx'] => ({
-    exchange: exchangeName,
-    arguments: {
-      "x-message-ttl": 86400000, // 24 hours
-      "x-max-retries": 3
-    },
-    ...(routingKey ? { routingKey } : {})
-  })
-}
+// Export testing utilities
+export const amqpTestingUtils = new EnhancedAMQPPlugin().createTestingUtils()

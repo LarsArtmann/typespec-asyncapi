@@ -20,16 +20,18 @@ import {railwayLogging} from "../../utils/effect-helpers.js"
 export class AsyncAPIValidator {
 	private readonly parser: Parser
 	private readonly stats: ValidationStats
+	private readonly options: Required<ValidationOptions>
 	private initialized = false
+	private readonly validationCache = new Map<string, ValidationResult>()
 
-	constructor(_options: ValidationOptions = {}) {
-		//TODO: BULLSHIT PLACEHOLDER CODE! "needs to be implemented one day" IS NOT ACCEPTABLE!
-		//TODO: CRITICAL FAILURE - ValidationOptions parameter exists but is COMPLETELY IGNORED! 
-		//TODO: ARCHITECTURAL LIE - Constructor accepts options but does NOTHING with them - PURE DECEPTION!
-		//TODO: IMPLEMENT IMMEDIATELY - Options should configure validation behavior, parser settings, cache options!
-		//TODO: BUSINESS LOGIC MISSING - No validation timeouts, no custom schema paths, no validation level configuration!
-		//TODO: REMOVE THE FUCKING UNDERSCORE PREFIX - Either use the parameter or make constructor parameterless!
-		// Options parameter is available for future use but not currently needed
+	constructor(options: ValidationOptions = {}) {
+		// Implement ValidationOptions parameter with proper defaults
+		this.options = {
+			strict: options.strict ?? true,
+			enableCache: options.enableCache ?? true,
+			benchmarking: options.benchmarking ?? false,
+			customRules: options.customRules ?? [],
+		}
 
 		this.stats = {
 			totalValidations: 0,
@@ -74,7 +76,7 @@ export class AsyncAPIValidator {
 	/**
 	 * Validate AsyncAPI document using the REAL parser - Effect version
 	 */
-	validateEffect(document: unknown, _identifier?: string): Effect.Effect<ValidationResult, never, never> {
+	validateEffect(document: unknown, identifier?: string): Effect.Effect<ValidationResult, never, never> {
 		return Effect.gen(this, function* () {
 			// Ensure initialization in Effect context
 			yield* this.initializeEffect()
@@ -82,15 +84,26 @@ export class AsyncAPIValidator {
 
 			// Convert document to string for parser (no pretty printing for performance)
 			const content = typeof document === 'string' ? document : JSON.stringify(document)
+			
+			// Check cache if enabled
+			if (this.options.enableCache && identifier) {
+				const cacheKey = `${identifier}-${this.hashContent(content)}`
+				const cachedResult = this.validationCache.get(cacheKey)
+				if (cachedResult) {
+					this.stats.cacheHits++
+					yield* railwayLogging.logValidationResult(identifier, true, 0, "cache hit")
+					return cachedResult
+				}
+			}
 
-			// Enforce AsyncAPI 3.0.0 strict compliance using Effect.try
+			// Enforce AsyncAPI version validation based on strict mode setting
 			const docObjectResult = yield* Effect.try({
 				try: () => {
 					const docObject: Record<string, unknown> = typeof document === 'string' ? JSON.parse(content) as Record<string, unknown> : document as Record<string, unknown>
-					if (docObject && typeof docObject === 'object' && 'asyncapi' in docObject) {
+					if (this.options.strict && docObject && typeof docObject === 'object' && 'asyncapi' in docObject) {
 						const version = String(docObject.asyncapi)
 						if (version !== '3.0.0') {
-							return Effect.fail(new Error(`AsyncAPI version must be 3.0.0, got: ${version}`))
+							return Effect.fail(new Error(`AsyncAPI version must be 3.0.0 (strict mode), got: ${version}`))
 						}
 					}
 					return docObject
@@ -189,37 +202,42 @@ export class AsyncAPIValidator {
 
 			yield* Effect.logInfo(`AsyncAPI validation completed in ${duration.toFixed(2)}ms`)
 
-			if (parseResult.diagnostics.length === 0) {
-				return {
+			const validationResult = parseResult.diagnostics.length === 0 
+				? {
 					valid: true,
 					errors: [],
 					warnings: [],
 					summary: `AsyncAPI document is valid (${duration.toFixed(2)}ms)`,
 					metrics,
-				}
-			} else {
-				// Convert diagnostics to validation errors
-				const errors: ValidationError[] = parseResult.diagnostics
-					.filter(d => Number(d.severity) === 0) // Error level
-					.map(d => ({
-						message: d.message,
-						keyword: String(d.code || "validation-error"),
-						instancePath: d.path?.join('.') || "",
-						schemaPath: d.path?.join('.') || "",
-					}))
+				} as ValidationResult
+				: (() => {
+					// Convert diagnostics to validation errors
+					const errors: ValidationError[] = parseResult.diagnostics
+						.filter(d => Number(d.severity) === 0) // Error level
+						.map(d => ({
+							message: d.message,
+							keyword: String(d.code || "validation-error"),
+							instancePath: d.path?.join('.') || "",
+							schemaPath: d.path?.join('.') || "",
+						}))
 
-				const warnings = parseResult.diagnostics
-					.filter(d => Number(d.severity) === 1) // Warning level
-					.map(d => d.message)
+					const warnings = parseResult.diagnostics
+						.filter(d => Number(d.severity) === 1) // Warning level
+						.map(d => d.message)
 
-				return {
-					valid: errors.length === 0,
-					errors,
-					warnings,
-					summary: `AsyncAPI document validation completed (${errors.length} errors, ${warnings.length} warnings, ${duration.toFixed(2)}ms)`,
-					metrics,
-				}
-			}
+					return {
+						valid: errors.length === 0,
+						errors,
+						warnings,
+						summary: `AsyncAPI document validation completed (${errors.length} errors, ${warnings.length} warnings, ${duration.toFixed(2)}ms)`,
+						metrics,
+					} as ValidationResult
+				})()
+
+			// Cache the result if enabled
+			this.cacheResult(identifier, content, validationResult)
+			
+			return validationResult
 		})
 	}
 
@@ -351,6 +369,37 @@ export class AsyncAPIValidator {
 			operationCount,
 			schemaCount,
 			validatedAt: new Date(),
+		}
+	}
+
+	/**
+	 * Generate a simple hash for caching purposes
+	 */
+	private hashContent(content: string): string {
+		let hash = 0
+		for (let i = 0; i < content.length; i++) {
+			const char = content.charCodeAt(i)
+			hash = ((hash << 5) - hash) + char
+			hash = hash & hash // Convert to 32-bit integer
+		}
+		return hash.toString(36)
+	}
+
+	/**
+	 * Store validation result in cache if enabled
+	 */
+	private cacheResult(identifier: string | undefined, content: string, result: ValidationResult): void {
+		if (this.options.enableCache && identifier) {
+			const cacheKey = `${identifier}-${this.hashContent(content)}`
+			this.validationCache.set(cacheKey, result)
+			
+			// Limit cache size to prevent memory leaks (keep most recent 1000 results)
+			if (this.validationCache.size > 1000) {
+				const firstKey = this.validationCache.keys().next().value
+				if (firstKey) {
+					this.validationCache.delete(firstKey)
+				}
+			}
 		}
 	}
 
