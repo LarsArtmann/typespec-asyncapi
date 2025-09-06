@@ -216,11 +216,11 @@ class EnhancedAMQPPlugin extends EnhancedProtocolPluginBase {
   /**
    * Generate AMQP message binding
    */
-  generateMessageBinding: (message: unknown) =>
-    Effect.gen(function* () {
+  public generateMessageBinding(message: unknown): Effect.Effect<Record<string, unknown>, Error> {
+    return Effect.gen(this, function* () {
       yield* Effect.log("📨 Enhanced AMQP message binding generation")
       
-      return yield* Effect.gen(function* () {
+      return yield* Effect.gen(this, function* () {
         const messageData = message as { config?: AMQPConfig }
         const config = messageData?.config || {}
 
@@ -240,23 +240,24 @@ class EnhancedAMQPPlugin extends EnhancedProtocolPluginBase {
         return { amqp: binding }
       }).pipe(
         Effect.catchAll((error) =>
-          Effect.gen(function* () {
+          Effect.gen(this, function* () {
             yield* Effect.logError(`❌ AMQP message binding error: ${error}`)
             return { amqp: { bindingVersion: "0.3.0" } }
           })
         )
       )
-    }),
+    })
+  }
 
   /**
    * TASK M26: Generate AMQP server binding - NOT SUPPORTED
    * AMQP doesn't have server bindings in AsyncAPI 3.0
    */
-  generateServerBinding: (server: unknown) =>
-    Effect.gen(function* () {
+  public generateServerBinding(server: unknown): Effect.Effect<Record<string, unknown>, Error> {
+    return Effect.gen(this, function* () {
       yield* Effect.log("🖥️ AMQP server binding generation (not supported)")
       
-      return yield* Effect.gen(function* () {
+      return yield* Effect.gen(this, function* () {
         const serverData = server as AMQPServerData
         
         if (serverData?.protocol && !["amqp", "amqps"].includes(serverData.protocol)) {
@@ -267,22 +268,23 @@ class EnhancedAMQPPlugin extends EnhancedProtocolPluginBase {
         return {}
       }).pipe(
         Effect.catchAll((error) =>
-          Effect.gen(function* () {
+          Effect.gen(this, function* () {
             yield* Effect.logError(`❌ AMQP server binding error: ${error}`)
             return {}
           })
         )
       )
-    }),
+    })
+  }
 
   /**
    * Enhanced AMQP configuration validation
    */
-  validateConfig: (config: unknown) =>
-    Effect.gen(function* () {
+  public validateConfig(config: unknown): Effect.Effect<boolean, Error> {
+    return Effect.gen(this, function* () {
       yield* Effect.log("🔍 Enhanced AMQP configuration validation")
       
-      return yield* Effect.gen(function* () {
+      return yield* Effect.gen(this, function* () {
         if (!config || typeof config !== 'object') {
           yield* Effect.logWarning("⚠️ AMQP config is not an object")
           return false
@@ -346,13 +348,14 @@ class EnhancedAMQPPlugin extends EnhancedProtocolPluginBase {
         return true
       }).pipe(
         Effect.catchAll((error) =>
-          Effect.gen(function* () {
+          Effect.gen(this, function* () {
             yield* Effect.logError(`❌ AMQP validation error: ${error}`)
             return false
           })
         )
       )
     })
+  }
 }
 
 /**
