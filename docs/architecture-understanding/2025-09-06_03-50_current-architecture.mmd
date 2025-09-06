@@ -1,0 +1,100 @@
+```mermaid
+graph TB
+    %% Entry Points
+    TSC[TypeSpec Compiler] -->|$onEmit| INDEX[src/index.ts]
+    INDEX -->|generateAsyncAPI| EMITTER[src/emitter-with-effect.ts]
+    
+    %% Core Emitter Architecture
+    EMITTER -->|creates| ASYNCAPI_EMITTER[AsyncAPIEmitter]
+    ASYNCAPI_EMITTER -->|has| PIPELINE[EmissionPipeline]
+    ASYNCAPI_EMITTER -->|has| DOC_GEN[DocumentGenerator] 
+    ASYNCAPI_EMITTER -->|has| DOC_BUILDER[DocumentBuilder]
+    ASYNCAPI_EMITTER -->|has| PLUGIN_REG[PluginRegistry]
+    
+    %% Ghost System: Dual Execution Paths
+    ASYNCAPI_EMITTER -.->|intended path| PIPELINE
+    ASYNCAPI_EMITTER -->|actual working path| PROCESSING[ProcessingService]
+    
+    %% Pipeline Stages (Not Working)
+    PIPELINE -.->|Stage 1| DISCOVERY[DiscoveryService]
+    PIPELINE -.->|Stage 2| PROCESSING
+    PIPELINE -.->|Stage 3| GENERATION[GenerationService] 
+    PIPELINE -.->|Stage 4| VALIDATION[ValidationService]
+    
+    %% Working Path
+    PROCESSING -->|uses| DISCOVERY
+    PROCESSING -->|uses| VALIDATION
+    PROCESSING -->|outputs to| DOC_BUILDER
+    DOC_BUILDER -->|creates| ASYNCAPI_DOC[AsyncAPI Document]
+    
+    %% Plugin System
+    PLUGIN_REG -->|manages| AMQP[Enhanced AMQP Plugin]
+    PLUGIN_REG -->|manages| WEBSOCKET[WebSocket Plugin]
+    PLUGIN_REG -->|manages| HTTP[HTTP Plugin]
+    PLUGIN_REG -->|manages| KAFKA[Kafka Plugin]
+    
+    %% Performance & Monitoring (Commented Out)
+    ASYNCAPI_EMITTER -.->|commented| PERF_MON[PerformanceMonitor]
+    PERF_MON -.->|would monitor| MEM_LEAK[MemoryLeakDetector]
+    PERF_MON -.->|would track| METRICS[Performance Metrics]
+    
+    %% Decorator System
+    LIB[lib/main.tsp] -->|defines| DECORATORS[Decorator Definitions]
+    DECORATORS -->|@channel| CHANNEL_DEC[ChannelDecorator]
+    DECORATORS -->|@publish| PUBLISH_DEC[PublishDecorator]
+    DECORATORS -->|@subscribe| SUBSCRIBE_DEC[SubscribeDecorator]
+    DECORATORS -->|@server| SERVER_DEC[ServerDecorator]
+    
+    %% TypeSpec Integration
+    DISCOVERY -->|reads| TS_PROGRAM[TypeSpec Program]
+    TS_PROGRAM -->|contains| MODELS[TypeSpec Models]
+    TS_PROGRAM -->|contains| OPERATIONS[TypeSpec Operations]
+    TS_PROGRAM -->|has| DECORATORS
+    
+    %% Effect.TS Integration (Anti-patterns present)
+    subgraph "Effect.TS Layer (Anti-patterns)"
+        PROCESSING -->|uses| EFFECT_GEN[Effect.gen contexts]
+        VALIDATION -->|uses| EFFECT_TRY[Effect.tryPromise]
+        DOC_BUILDER -->|uses| EFFECT_LOG[Effect.log]
+        EFFECT_GEN -.->|has| PROMISE_USAGE[3 Promise usages]
+        EFFECT_TRY -.->|has| TRY_CATCH[7 try/catch blocks]
+        EFFECT_LOG -.->|has| THROW_STMT[5 throw statements]
+    end
+    
+    %% Split Brain: Task Tracking
+    subgraph "Split Brain Systems"
+        TODO_WRITE[TodoWrite Tool]
+        GH_ISSUES[GitHub Issues]
+        TODO_WRITE -.->|duplicates| GH_ISSUES
+    end
+    
+    %% Documentation Monster
+    subgraph "Documentation Bloat (89+ files)"
+        PLANNING[docs/planning/ (33+ files)]
+        ARCHITECTURE_DOCS[docs/architecture/ (7 files)]
+        REPORTS[docs/reports/ (6 files)]
+        GUIDES[docs/guides/ (multiple)]
+        API_DOCS[docs/api/ (1 file)]
+        TESTING_DOCS[docs/testing/ (1 file)]
+        COMPLAINTS[docs/complaints/ (2 files)]
+        LEARNINGS[docs/learnings/ (2 files)]
+        PROMPTS[docs/prompts/ (2 files)]
+    end
+    
+    %% Output Generation
+    ASYNCAPI_DOC -->|serializes to| YAML_OUT[asyncapi.yaml]
+    ASYNCAPI_DOC -->|can serialize to| JSON_OUT[asyncapi.json]
+    
+    %% Validation Chain
+    ASYNCAPI_DOC -->|validates against| ASYNCAPI_SCHEMA[AsyncAPI 3.0 Schema]
+    VALIDATION -->|uses| ASYNCAPI_PARSER[@asyncapi/parser]
+    
+    %% Legend
+    classDef working fill:#90EE90
+    classDef broken fill:#FFB6C1
+    classDef ghost fill:#D3D3D3,stroke-dasharray: 5 5
+    
+    class EMITTER,PROCESSING,DOC_BUILDER,DISCOVERY,VALIDATION,ASYNCAPI_DOC,YAML_OUT working
+    class PIPELINE,GENERATION,PERF_MON,MEM_LEAK ghost
+    class PROMISE_USAGE,TRY_CATCH,THROW_STMT,TODO_WRITE broken
+```

@@ -1,0 +1,123 @@
+```mermaid
+graph TB
+    %% Entry Points (Unchanged - Working)
+    TSC[TypeSpec Compiler] -->|$onEmit| INDEX[src/index.ts]
+    INDEX -->|generateAsyncAPI| EMITTER[src/emitter-with-effect.ts]
+    
+    %% Core Emitter Architecture (Simplified)
+    EMITTER -->|creates| ASYNCAPI_EMITTER[AsyncAPIEmitter]
+    ASYNCAPI_EMITTER -->|single path| PROCESSING[ProcessingService]
+    ASYNCAPI_EMITTER -->|uses| DOC_BUILDER[DocumentBuilder]
+    ASYNCAPI_EMITTER -->|uses| PLUGIN_REG[PluginRegistry]
+    
+    %% Simplified Processing Chain (No Ghost Pipeline)
+    PROCESSING -->|orchestrates| DISCOVERY[DiscoveryService]
+    PROCESSING -->|orchestrates| VALIDATION[ValidationService]
+    PROCESSING -->|outputs to| DOC_BUILDER
+    DOC_BUILDER -->|creates| ASYNCAPI_DOC[AsyncAPI Document]
+    
+    %% Integrated Performance Monitoring (No Ghost)
+    ASYNCAPI_EMITTER -->|integrates| PERF_MON[PerformanceMonitor]
+    PERF_MON -->|tracks| METRICS[Performance Metrics Collection]
+    PERF_MON -->|monitors| MEMORY[Memory Usage Tracking]
+    
+    %% Plugin System (Unchanged - Working)
+    PLUGIN_REG -->|manages| AMQP[Enhanced AMQP Plugin]
+    PLUGIN_REG -->|manages| WEBSOCKET[WebSocket Plugin] 
+    PLUGIN_REG -->|manages| HTTP[HTTP Plugin]
+    PLUGIN_REG -->|manages| KAFKA[Kafka Plugin]
+    
+    %% Decorator System (Unchanged - Working)
+    LIB[lib/main.tsp] -->|defines| DECORATORS[Decorator Definitions]
+    DECORATORS -->|@channel| CHANNEL_DEC[ChannelDecorator]
+    DECORATORS -->|@publish| PUBLISH_DEC[PublishDecorator] 
+    DECORATORS -->|@subscribe| SUBSCRIBE_DEC[SubscribeDecorator]
+    DECORATORS -->|@server| SERVER_DEC[ServerDecorator]
+    
+    %% TypeSpec Integration (Unchanged - Working)
+    DISCOVERY -->|reads| TS_PROGRAM[TypeSpec Program]
+    TS_PROGRAM -->|contains| MODELS[TypeSpec Models]
+    TS_PROGRAM -->|contains| OPERATIONS[TypeSpec Operations]
+    TS_PROGRAM -->|has| DECORATORS
+    
+    %% Pure Effect.TS Integration (Anti-patterns Fixed)
+    subgraph "Clean Effect.TS Layer"
+        PROCESSING -->|pure| EFFECT_GEN[Effect.gen with proper context]
+        VALIDATION -->|pure| EFFECT_SUCCESS[Effect.succeed/Effect.fail]
+        DOC_BUILDER -->|pure| EFFECT_LOG[Effect.log only]
+        ASYNCAPI_EMITTER -->|pure| EFFECT_COMPOSE[Effect composition patterns]
+    end
+    
+    %% Unified Task Tracking (Split Brain Eliminated)  
+    subgraph "Unified Project Management"
+        GH_ISSUES[GitHub Issues ONLY]
+        GH_ISSUES -->|tracks| MILESTONES[Milestones & Labels]
+        GH_ISSUES -->|integrates| CI_CD[CI/CD Pipeline Status]
+    end
+    
+    %% Consolidated Documentation (Monster Eliminated)
+    subgraph "Essential Documentation (15 files max)"
+        README[README.md - Main docs]
+        CLAUDE_MD[CLAUDE.md - Dev instructions]
+        GUIDES_ESSENTIAL[docs/guides/ (3-4 essential)]
+        ARCH_CORE[docs/architecture/ (2-3 core)]
+        API_REFERENCE[docs/api/ (generated)]
+    end
+    
+    %% Automated File Management
+    subgraph "Automation Layer"
+        FILE_SCRIPT[File Organization Script]
+        DUPLICATION_MONITOR[Code Duplication Monitor]
+        EFFECT_COMPLIANCE[Effect.TS Compliance Check]
+        FILE_SCRIPT -->|manages| DOCS_CONSOLIDATION[Documentation Consolidation]
+        DUPLICATION_MONITOR -->|enforces| ZERO_DUPLICATION[0% Code Duplication]
+        EFFECT_COMPLIANCE -->|validates| PURE_FP[Pure Functional Patterns]
+    end
+    
+    %% CI/CD Integration
+    subgraph "Continuous Integration"
+        GH_ACTIONS[GitHub Actions]
+        GH_ACTIONS -->|runs| BUILD_TEST[Build & Test]
+        GH_ACTIONS -->|runs| LINT_CHECK[ESLint & Type Check] 
+        GH_ACTIONS -->|runs| DUPLICATION_MONITOR
+        GH_ACTIONS -->|runs| EFFECT_COMPLIANCE
+        GH_ACTIONS -->|deploys| NPM_PUBLISH[NPM Package]
+    end
+    
+    %% Output Generation (Unchanged - Working)
+    ASYNCAPI_DOC -->|serializes to| YAML_OUT[asyncapi.yaml]
+    ASYNCAPI_DOC -->|can serialize to| JSON_OUT[asyncapi.json]
+    
+    %% Validation Chain (Enhanced)
+    ASYNCAPI_DOC -->|validates against| ASYNCAPI_SCHEMA[AsyncAPI 3.0 Schema]
+    VALIDATION -->|uses| ASYNCAPI_PARSER[@asyncapi/parser]
+    VALIDATION -->|integrates| COMPREHENSIVE_VALIDATION[Comprehensive Validation Suite]
+    
+    %% Type Safety Integration
+    subgraph "Enhanced Type Safety"
+        VALIDATION_OPTIONS[ValidationOptions with caching]
+        STRICT_TYPES[Strict TypeScript Config]
+        RUNTIME_VALIDATION[Runtime Type Validation]
+        VALIDATION_OPTIONS -->|powers| VALIDATION
+        STRICT_TYPES -->|enforces| TYPE_SAFETY[Compile-time Safety]
+        RUNTIME_VALIDATION -->|ensures| PRODUCTION_SAFETY[Production Reliability]
+    end
+    
+    %% Business Value Chain
+    subgraph "Customer Value Delivery"
+        ASYNCAPI_DOC -->|enables| ASYNCAPI_STUDIO[AsyncAPI Studio Integration]
+        ASYNCAPI_DOC -->|enables| CODE_GEN[Code Generation Tools]
+        ASYNCAPI_DOC -->|enables| API_DOCS_GEN[API Documentation]
+        ASYNCAPI_DOC -->|enables| VALIDATION_TOOLS[Third-party Validation]
+    end
+    
+    %% Legend
+    classDef working fill:#90EE90
+    classDef improved fill:#87CEEB  
+    classDef eliminated fill:#FFB6C1,stroke-dasharray: 5 5
+    classDef automated fill:#DDA0DD
+    
+    class EMITTER,PROCESSING,DOC_BUILDER,DISCOVERY,VALIDATION,ASYNCAPI_DOC,YAML_OUT working
+    class PERF_MON,METRICS,MEMORY,EFFECT_COMPOSE,GH_ISSUES,README,GUIDES_ESSENTIAL improved
+    class FILE_SCRIPT,DUPLICATION_MONITOR,EFFECT_COMPLIANCE,GH_ACTIONS automated
+```
