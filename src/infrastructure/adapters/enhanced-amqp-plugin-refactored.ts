@@ -134,13 +134,13 @@ export interface AMQPOperationBinding {
   replyTo?: string
   timestamp?: boolean
   ack?: boolean
-  bindingVersion?: string
+  bindingVersion: string
 }
 
 export interface AMQPMessageBinding {
   contentEncoding?: string
   messageType?: string
-  bindingVersion?: string
+  bindingVersion: string
 }
 
 /**

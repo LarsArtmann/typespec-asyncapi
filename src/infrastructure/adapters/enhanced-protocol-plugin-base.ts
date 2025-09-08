@@ -145,12 +145,12 @@ export abstract class EnhancedProtocolPluginBase implements ProtocolPlugin {
    */
   protected wrapConfigValidation(
     logPrefix: string,
-    validator: (config: unknown) => Effect.Effect<boolean, never>
+    validator: () => Effect.Effect<boolean, never>
   ): Effect.Effect<boolean, Error> {
     return Effect.gen(this, function* () {
       yield* Effect.log(`🔍 ${logPrefix} configuration validation`)
       
-      return yield* validator.pipe(
+      return yield* validator().pipe(
         Effect.catchAll((error) =>
           Effect.gen(function* () {
             yield* Effect.logError(`❌ ${logPrefix} validation error: ${error}`)
