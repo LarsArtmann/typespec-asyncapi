@@ -1,0 +1,19 @@
+{
+  "regression-test": [
+    {
+      "version": "unknown",
+      "timestamp": "2025-09-08T15:55:01.019Z",
+      "compilationTimeMs": 52.47337500000003,
+      "memoryUsageMB": 12.18210506439209,
+      "throughputOpsPerSec": 19.057283812981332,
+      "averageLatencyMs": 52.47337500000003,
+      "testCaseName": "regression-test",
+      "metadata": {
+        "nodeVersion": "v24.3.0",
+        "platform": "darwin",
+        "totalOperations": 1,
+        "schemaComplexity": "moderate"
+      }
+    }
+  ]
+}

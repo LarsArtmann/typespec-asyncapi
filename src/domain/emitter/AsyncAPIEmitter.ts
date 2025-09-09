@@ -283,6 +283,8 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 
 		// TODO: CRITICAL - createSourceFile could fail but no error handling
 		const sourceFile = this.emitter.createSourceFile(outputPath)
+		
+		Effect.log(`🔥 ASSETEMITTER DEBUG: Created source file: ${sourceFile.path}`)
 
 		// TODO: CRITICAL - Log uses special characters that may break JSON parsers or terminals
 		// TODO: CRITICAL - Effect.log not awaited - logs may not appear in production
@@ -311,18 +313,39 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 			
 				yield* Effect.log(`✅ AsyncAPI document generation pipeline completed successfully`)
 			
-			// CRITICAL FIX: Emit the source file to trigger sourceFile() method and write to outputFiles
-				yield* Effect.log(`🔥 ASSETEMITTER FIX: About to emit sourceFile to trigger content generation`)
-				yield* Effect.tryPromise(() => this.emitter.emitSourceFile(sourceFile)).pipe(
-					Effect.catchAll(error =>
-						Effect.gen(function* () {
-							yield* Effect.log(`⚠️  Source file emission failed, creating fallback: ${error}`)
-							// Create fallback empty source file emission
-							return Effect.succeed(undefined)
-						})
-					)
-				)
-				yield* Effect.log(`🔥 ASSETEMITTER FIX: Completed emitSourceFile - should have triggered sourceFile() method`)
+			// CRITICAL FIX: Write files directly using file system approach
+			// AssetEmitter patterns are too complex - use direct file writing
+			yield* Effect.log(`🔥 DIRECT FILE WRITE: Writing AsyncAPI file directly to disk`)
+			
+			// Generate the AsyncAPI content
+			const fileType: "yaml" | "json" = this.emitter.getOptions()["file-type"] || "yaml"
+			const content = yield* this.documentGenerator.serializeDocument(this.asyncApiDoc, fileType)
+			
+			yield* Effect.log(`🔥 DIRECT FILE WRITE: Generated content length: ${content.length}`)
+			
+			// Write directly to the emitter's output directory
+			const outputDir = this.emitter.getOptions().emitterOutputDir
+			const fullPath = `${outputDir}/${sourceFile.path}`
+			
+			yield* Effect.log(`🔥 DIRECT FILE WRITE: Writing to ${fullPath}`)
+			
+			// Use Node.js fs to write the file directly
+			yield* Effect.tryPromise(async () => {
+				const fs = await import('fs/promises')
+				const path = await import('path')
+				
+				// Ensure directory exists
+				await fs.mkdir(path.dirname(fullPath), { recursive: true })
+				
+				// Write the file
+				await fs.writeFile(fullPath, content, 'utf8')
+				
+				return fullPath
+			}).pipe(
+				Effect.mapError(error => `File write failed: ${error}`)
+			)
+			
+			yield* Effect.log(`🔥 DIRECT FILE WRITE: Successfully wrote file: ${fullPath}`)
 			
 			}.bind(this)).pipe(
 				Effect.tapError(error => Effect.log(`❌ Micro-kernel emission pipeline failed: ${error}`)),
@@ -336,7 +359,10 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 			)
 		)
 
+		// CRITICAL FIX: Return the sourceFile globalScope as the scope context for the AssetEmitter
+		// This ensures that the emitter framework calls sourceFile() method for content generation
 		return {
+			sourceFile,
 			scope: sourceFile.globalScope,
 		}
 	}
@@ -386,12 +412,17 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 	 * @public
 	 */
 	override sourceFile(sourceFile: SourceFile<string>): EmittedSourceFile {
-		Effect.log(`🔍 Micro-kernel: Generating file content for ${sourceFile.path}`)
+		Effect.log(`🔍 SOURCEFILEMETHOD: Generating file content for ${sourceFile.path}`)
 
 		const options = this.emitter.getOptions()
 		const fileType: "yaml" | "json" = options["file-type"] || "yaml"
+		
+		Effect.log(`🔍 SOURCEFILEMETHOD: Using file type: ${fileType}`)
+		Effect.log(`🔍 SOURCEFILEMETHOD: AsyncAPI doc has ${Object.keys(this.asyncApiDoc.channels || {}).length} channels`)
 
 		const content = Effect.runSync(this.documentGenerator.serializeDocument(this.asyncApiDoc, fileType))
+		
+		Effect.log(`🔍 SOURCEFILEMETHOD: Generated content length: ${content.length}`)
 
 		return {
 			path: sourceFile.path,

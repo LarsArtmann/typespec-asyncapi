@@ -1,0 +1,64 @@
+{
+  "baseline-test": [
+    {
+      "version": "unknown",
+      "timestamp": "2025-09-08T15:55:00.950Z",
+      "compilationTimeMs": 101.95624999999995,
+      "memoryUsageMB": 11.910513877868652,
+      "throughputOpsPerSec": 9.808128486483177,
+      "averageLatencyMs": 101.95624999999995,
+      "testCaseName": "baseline-test",
+      "metadata": {
+        "nodeVersion": "v24.3.0",
+        "platform": "darwin",
+        "totalOperations": 1,
+        "schemaComplexity": "moderate"
+      }
+    },
+    {
+      "version": "unknown",
+      "timestamp": "2025-09-08T15:55:18.556Z",
+      "compilationTimeMs": 107.77762499999994,
+      "memoryUsageMB": 11.297955513000488,
+      "throughputOpsPerSec": 9.278363667783555,
+      "averageLatencyMs": 107.77762499999994,
+      "testCaseName": "baseline-test",
+      "metadata": {
+        "nodeVersion": "v24.3.0",
+        "platform": "darwin",
+        "totalOperations": 1,
+        "schemaComplexity": "moderate"
+      }
+    },
+    {
+      "version": "unknown",
+      "timestamp": "2025-09-08T15:56:02.514Z",
+      "compilationTimeMs": 101.61045800000011,
+      "memoryUsageMB": 13.088521957397461,
+      "throughputOpsPerSec": 9.841506668536018,
+      "averageLatencyMs": 101.61045800000011,
+      "testCaseName": "baseline-test",
+      "metadata": {
+        "nodeVersion": "v24.3.0",
+        "platform": "darwin",
+        "totalOperations": 1,
+        "schemaComplexity": "moderate"
+      }
+    },
+    {
+      "version": "unknown",
+      "timestamp": "2025-09-08T15:57:08.887Z",
+      "compilationTimeMs": 102.03308300000003,
+      "memoryUsageMB": 11.57142162322998,
+      "throughputOpsPerSec": 9.800742764971629,
+      "averageLatencyMs": 102.03308300000003,
+      "testCaseName": "baseline-test",
+      "metadata": {
+        "nodeVersion": "v24.3.0",
+        "platform": "darwin",
+        "totalOperations": 1,
+        "schemaComplexity": "moderate"
+      }
+    }
+  ]
+}

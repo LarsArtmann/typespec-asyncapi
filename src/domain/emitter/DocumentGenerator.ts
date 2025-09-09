@@ -68,7 +68,7 @@ export class DocumentGenerator {
 			}
 
 			return yield* this.serializeWithOptions(document, options)
-		})
+		}.bind(this))
 	}
 
 	/**
@@ -106,7 +106,7 @@ export class DocumentGenerator {
 						context: { requestedFormat: options.format, supportedFormats: ['json', 'yaml'] }
 					}))
 			}
-		}).pipe(
+		}.bind(this)).pipe(
 			Effect.mapError((error: unknown): StandardizedError => {
 				if (typeof error === 'object' && error !== null && 'what' in error) {
 					return error as StandardizedError
@@ -297,7 +297,7 @@ export class DocumentGenerator {
 
 			yield* Effect.log(`✅ Document optimization complete`)
 			return optimized
-		})
+		}.bind(this))
 	}
 
 	/**
