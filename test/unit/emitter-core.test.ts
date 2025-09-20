@@ -2,7 +2,7 @@
  * Unit tests for AsyncAPI emitter core functionality
  */
 
-import {describe, expect, it} from "bun:test"
+import {describe, expect, it} from "vitest"
 import {Effect} from "effect"
 import {
 	AsyncAPIAssertions,
@@ -13,7 +13,7 @@ import {
 import {
 	SERIALIZATION_FORMAT_OPTION_JSON,
 	SERIALIZATION_FORMAT_OPTION_YAML,
-} from "../../src/core/serialization-format-option.js"
+} from "../../src/domain/models/serialization-format-option.js"
 
 describe("AsyncAPI Emitter Core", () => {
 	describe("Basic Compilation", () => {

@@ -3,7 +3,7 @@
  * Direct unit test to verify decorator functionality
  */
 
-import { describe, it, expect } from "bun:test"
+import { describe, it, expect } from "vitest"
 import { $server } from "../src/domain/decorators/server.js"
 import { $lib } from "../src/lib.js"
 

@@ -380,7 +380,7 @@ export async function compileTypeSpecWithDecorators(
  */
 export async function parseAsyncAPIOutput(outputFiles: Map<string, string | {
 	content: string
-}>, filename: string): Promise<AsyncAPIObject | string> {
+}>, filename: string): Promise<AsyncAPIObject> {
 	//TODO: refactor to use Effect.TS!
 
 	// Check if outputFiles is undefined or null
@@ -524,7 +524,7 @@ export async function parseAsyncAPIOutput(outputFiles: Map<string, string | {
 }
 
 //TODO: refactor from Promise to Effect!
-async function parseFileContent(content: string, filename: string): Promise<AsyncAPIObject | string> {
+async function parseFileContent(content: string, filename: string): Promise<AsyncAPIObject> {
 	Effect.log(`Parsing file: ${filename}`)
 	Effect.log(`Content length: ${content?.length || 0}`)
 	Effect.log(`Content preview: ${content?.substring(0, 200) || 'NO CONTENT'}`)
@@ -543,14 +543,14 @@ async function parseFileContent(content: string, filename: string): Promise<Asyn
 		if (content.trim().startsWith('asyncapi:')) {
 			Effect.log("⚠️  Alpha emitter generated YAML content for JSON request - auto-converting")
 			const yaml = await import("yaml")
-			return yaml.parse(content)
+			return yaml.parse(content) as AsyncAPIObject
 		}
-		return JSON.parse(content)
+		return JSON.parse(content) as AsyncAPIObject
 	} else if (filename.endsWith('.yaml') || filename.endsWith('.yml')) {
 		// Parse YAML content into object for validation
 		const yaml = await import("yaml")
 		Effect.log("Parsing YAML content to object")
-		return yaml.parse(content)
+		return yaml.parse(content) as AsyncAPIObject
 	}
 
 	throw new Error(`Unsupported file format: ${filename}`)
@@ -753,7 +753,7 @@ export async function validateAsyncAPIObjectComprehensive(asyncapiDoc: unknown):
 }> {
 	try {
 		// Import validation framework dynamically to avoid circular dependencies
-		const {validateAsyncAPIObject} = await import("../../src/validation/asyncapi-validator.js")
+		const {validateAsyncAPIObject} = await import("../../src/domain/validation/asyncapi-validator.js")
 
 		const result = await validateAsyncAPIObject(asyncapiDoc, {
 			strict: true,

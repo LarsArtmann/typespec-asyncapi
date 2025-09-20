@@ -19,14 +19,14 @@ import type { AsyncAPIProtocolType } from "../../constants/index.js"
 /**
  * Base configuration for enhanced protocol plugins
  */
-export interface EnhancedProtocolConfig {
+export type EnhancedProtocolConfig = {
   bindingVersion: string
 }
 
 /**
  * Base operation data structure
  */
-export interface BaseOperationData {
+export type BaseOperationData = {
   channel: {
     name: string
     parameters?: Record<string, unknown>
@@ -46,7 +46,7 @@ export interface BaseOperationData {
 /**
  * Base server data structure
  */
-export interface BaseServerData {
+export type BaseServerData = {
   url: string
   protocol: string
   config?: Record<string, unknown>
@@ -55,7 +55,7 @@ export interface BaseServerData {
 /**
  * Testing utilities base structure
  */
-export interface BaseTestingUtils<TOperation, TServer> {
+export type BaseTestingUtils<TOperation, TServer> = {
   createTestOperationData: (overrides?: Partial<TOperation>) => TOperation
   createTestServerData: (overrides?: Partial<TServer>) => TServer
   validateBindingOutput: (binding: unknown) => boolean

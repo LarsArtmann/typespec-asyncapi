@@ -75,7 +75,7 @@ export type AMQPConfig = {
 /**
  * AMQP Operation data extending base structure
  */
-export interface AMQPOperationData extends BaseOperationData {
+export type AMQPOperationData = BaseOperationData & {
   channel: {
     name: string
     parameters?: Record<string, unknown>
@@ -86,7 +86,7 @@ export interface AMQPOperationData extends BaseOperationData {
 /**
  * AMQP Server configuration extending base structure
  */
-export interface AMQPServerData extends BaseServerData {
+export type AMQPServerData = BaseServerData & {
   protocol: "amqp" | "amqps"
   config?: {
     vhost?: string
@@ -102,7 +102,7 @@ export interface AMQPServerData extends BaseServerData {
 /**
  * AsyncAPI AMQP Binding Types (v0.3.0)
  */
-export interface AMQPChannelBinding {
+export type AMQPChannelBinding = {
   is?: "queue" | "routingKey"
   exchange?: {
     name: string
@@ -123,7 +123,7 @@ export interface AMQPChannelBinding {
   bindingVersion?: string
 }
 
-export interface AMQPOperationBinding {
+export type AMQPOperationBinding = {
   expiration?: number
   userId?: string
   cc?: string[]
@@ -137,7 +137,7 @@ export interface AMQPOperationBinding {
   bindingVersion: string
 }
 
-export interface AMQPMessageBinding {
+export type AMQPMessageBinding = {
   contentEncoding?: string
   messageType?: string
   bindingVersion: string
