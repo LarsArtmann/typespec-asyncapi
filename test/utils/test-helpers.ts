@@ -9,31 +9,12 @@ import {createTestHost, createTestLibrary, createTestWrapper, findTestPackageRoo
 import type {AsyncAPIEmitterOptions} from "../../src/infrastructure/configuration/asyncAPIEmitterOptions.ts"
 import type {Diagnostic, Program} from "@typespec/compiler"
 import type {AsyncAPIObject} from "@asyncapi/parser/esm/spec-types/v3.js"
-import {Effect, Schema} from "effect"
+import {Effect} from "effect"
 
 // Constants - Import centralized constants to eliminate hardcoded values
 import {ASYNCAPI_VERSIONS, DEFAULT_CONFIG} from "../../src/constants/index.js"
 
 import {LIBRARY_PATHS} from '../../src/constants/paths.js'
-
-// Schema validation using Effect.Schema for type-safe validation
-const AsyncAPISchemaPropertyCheck = Schema.Struct({
-	schemaName: Schema.String,
-	propertyName: Schema.String
-})
-
-const AsyncAPISchemaValidation = Schema.Struct({
-	doc: Schema.Any,
-	schemaName: Schema.String,
-	propertyName: Schema.String
-})
-
-const AsyncAPIDocumentationValidation = Schema.Struct({
-	obj: Schema.Struct({
-		description: Schema.String
-	}),
-	expectedDoc: Schema.String
-})
 
 
 //TODO: MONOLITHIC FILE DISASTER - THEY ALREADY KNOW IT'S TOO BIG BUT DO NOTHING!
@@ -133,9 +114,8 @@ export async function compileAsyncAPISpecRaw(
 	// Create test wrapper WITH auto-using since tests removed manual imports
 	const runner = createTestWrapper(host, {
 		autoUsings: ["TypeSpec.AsyncAPI"], // Auto-use TypeSpec.AsyncAPI namespace
-		compilerOptions: {
-			noEmit: false,
-			emit: [DEFAULT_CONFIG.LIBRARY_NAME], // Configure our emitter with options using constant
+		emitters: {
+			[DEFAULT_CONFIG.LIBRARY_NAME]: options, // Configure our emitter with options using constant
 		},
 	})
 
@@ -333,7 +313,7 @@ export async function compileAsyncAPISpec(
 			},
 		}
 
-		Effect.log(`✅ Alpha fallback document created with ${Object.keys(alphaFallbackDoc.components?.schemas || {}).length} schemas`)
+		Effect.log(`✅ Alpha fallback document created with ${Object.keys(alphaFallbackDoc.components.schemas).length} schemas`)
 		return alphaFallbackDoc
 
 	} catch (error) {
@@ -1098,8 +1078,8 @@ export const AsyncAPIAssertions = {
 
 		const schema = doc.components?.schemas?.[schemaName]
 
-		if (!schema || typeof schema !== 'object' || !('properties' in schema) || !(propertyName in (schema.properties ?? {}))) {
-			const availableProperties = schema && typeof schema === 'object' && 'properties' in schema ? Object.keys((schema as any).properties) : []
+		if (!schema?.properties || !(propertyName in (schema?.properties ?? {}))) {
+			const availableProperties = schema?.properties ? Object.keys(schema.properties) : []
 			Effect.log(`⚠️  Property '${propertyName}' not found in schema '${schemaName}'. Available properties: ${availableProperties.join(", ")}`)
 			return false
 		}
