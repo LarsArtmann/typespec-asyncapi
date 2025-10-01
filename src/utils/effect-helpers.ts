@@ -3,7 +3,7 @@
  * Eliminates Effect.TS anti-patterns and provides comprehensive Railway programming patterns
  */
 
-import {Effect, Schedule, TSemaphore} from "effect"
+import {Effect, Schedule, TSemaphore, Schema} from "effect"
 import {existsSync, readFileSync, writeFileSync} from "fs"
 import type {EmitContext} from "@typespec/compiler"
 import type {AsyncAPIEmitterOptions} from "../infrastructure/configuration/options.js"
@@ -618,25 +618,15 @@ export const railwayFileSystem = {
  */
 export const railwayValidationHelpers = {
 	/**
-	 * Validate AsyncAPI version with configurable strictness - extracted pattern
+	 * Validate AsyncAPI version with configurable strictness - using Effect.Schema
 	 */
-	validateAsyncAPIVersion: (document: unknown, strict: boolean = true) =>
-		Effect.try({
-			try: () => {
-				const docObject: Record<string, unknown> = typeof document === 'string' 
-					? JSON.parse(document as string) as Record<string, unknown> 
-					: document as Record<string, unknown>
-					
-				if (strict && docObject && typeof docObject === 'object' && 'asyncapi' in docObject) {
-					const version = String(docObject.asyncapi)
-					if (version !== '3.0.0') {
-						throw new Error(`AsyncAPI version must be 3.0.0 (strict mode), got: ${version}`)
-					}
-				}
-				return docObject
-			},
-			catch: (error) => new Error(`Version validation failed: ${error instanceof Error ? error.message : String(error)}`)
-		}),
+	validateAsyncAPIVersion: (document: unknown, strict: boolean = true) => {
+		const asyncApiVersionSchema = Schema.Struct({
+			asyncapi: strict ? Schema.Literal("3.0.0") : Schema.String
+		})
+		
+		return Schema.decodeUnknown(asyncApiVersionSchema)(document)
+	},
 
 	/**
 	 * Create validation result with standard format - extracted pattern
@@ -663,22 +653,19 @@ export const railwayValidationHelpers = {
 	}),
 
 	/**
-	 * Validate required fields with proper Effect error handling - common pattern
+	 * Validate required fields using Effect.Schema - type-safe approach
 	 */
 	validateRequiredFields: <T extends Record<string, unknown>>(
 		obj: T, 
 		requiredFields: Array<keyof T>,
 		context?: string
-	) => Effect.try({
-		try: () => {
-			const missingFields = requiredFields.filter(field => !(field in obj) || obj[field] == null)
-			if (missingFields.length > 0) {
-				throw new Error(`Missing required fields: ${missingFields.join(', ')}`)
-			}
-			return obj
-		},
-		catch: (error) => new Error(`${context ? `${context}: ` : ''}${error instanceof Error ? error.message : String(error)}`)
-	}),
+	) => {
+		const missingFields = requiredFields.filter(field => !(field in obj) || obj[field] == null)
+		if (missingFields.length > 0) {
+			return Effect.fail(new Error(`${context ? `${context}: ` : ''}Missing required fields: ${missingFields.join(', ')}`))
+		}
+		return Effect.succeed(obj)
+	},
 
 	/**
 	 * Validate object against schema with proper error transformation - extracted pattern  

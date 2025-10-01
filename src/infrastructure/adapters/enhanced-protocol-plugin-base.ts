@@ -307,7 +307,7 @@ export type ProtocolConfig<T> = T extends { config?: infer C } ? C : never
 /**
  * Common protocol validation result
  */
-export interface ValidationResult {
+export type ValidationResult = {
   isValid: boolean
   errors: string[]
   warnings: string[]
@@ -317,7 +317,9 @@ export interface ValidationResult {
  * Enhanced validation helper that accumulates errors and warnings
  */
 export class ValidationAccumulator {
+  // eslint-disable-next-line @typescript-eslint/prefer-readonly
   private errors: string[] = []
+  // eslint-disable-next-line @typescript-eslint/prefer-readonly
   private warnings: string[] = []
 
   addError(message: string): void {
