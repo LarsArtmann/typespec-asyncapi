@@ -68,27 +68,30 @@ describe("DocumentBuilder", () => {
 		})
 
 		it("should include servers from namespace processing", () => {
+			const mockServerConfig = {
+				url: "kafka://localhost:9092",
+				protocol: "kafka",
+				description: "Test Kafka server"
+			}
+			
 			const mockProgramWithServers = {
 				getGlobalNamespaceType: () => ({
 					name: "TestNamespace",
 					operations: new Map(),
 					models: new Map(),
-					namespaces: new Map([
-						["servers", {
-							name: "servers",
-							operations: new Map(),
-							models: new Map(),
-							namespaces: new Map()
-						}]
-					]),
+					namespaces: new Map()
 				}),
+				stateMap: () => new Map([
+					["TestNamespace", new Map([["testServer", mockServerConfig]])]
+				])
 			} as unknown as Program
 
 			const documentEffect = documentBuilder.createInitialDocument(mockProgramWithServers)
 			const document = Effect.runSync(documentEffect)
 			
-			// Servers should be processed (even if empty)
+			// Servers should be processed
 			expect(document.servers).toBeDefined()
+			expect(document.servers).toHaveProperty("testServer")
 		})
 	})
 
@@ -333,12 +336,11 @@ describe("DocumentBuilder", () => {
 				info: { title: "Test", version: "1.0.0" }
 			} as AsyncAPIObject
 
-			expect(() => {
-				documentBuilder.initializeDocumentStructure(partialDocument)
-			}).not.toThrow()
+			const structureEffect = documentBuilder.initializeDocumentStructure(partialDocument)
+			const result = Effect.runSync(structureEffect)
 
-			expect(partialDocument.channels).toEqual({})
-			expect(partialDocument.operations).toEqual({})
+			expect(result.channels).toEqual({})
+			expect(result.operations).toEqual({})
 		})
 	})
 })
