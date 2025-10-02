@@ -33,13 +33,13 @@ export function $header(
 
 	// Validate target is a ModelProperty
 	if (target.kind !== 'ModelProperty') {
-		Effect.log(`❌ @header can only be applied to model properties, not ${target.kind}`)
+		Effect.log(`❌ @header can only be applied to model properties, not ${target.kind as string}`)
 		return
 	}
 
 	// Get property information
 	const propertyName = target.name
-	const headerName = name || propertyName
+	const headerName = name ?? propertyName
 
 	// Validate header name
 	if (!isValidHeaderName(headerName)) {
