@@ -4,52 +4,45 @@ info:
   version: 1.0.0
   description: Generated from TypeSpec with 1 operations, 0 messages, 0 security configs
 channels:
-  channel_subscribeUserNotifications:
-    address: user.notifications.{userId}
-    description: Channel for subscribeUserNotifications
+  channel_publishBasicEvent:
+    address: test.basic
+    description: Channel for publishBasicEvent
     messages:
-      subscribeUserNotificationsMessage:
-        $ref: "#/components/messages/subscribeUserNotificationsMessage"
+      publishBasicEventMessage:
+        $ref: "#/components/messages/publishBasicEventMessage"
 operations:
-  subscribeUserNotifications:
-    action: receive
+  publishBasicEvent:
+    action: send
     channel:
-      $ref: "#/channels/channel_subscribeUserNotifications"
-    summary: Operation subscribeUserNotifications
-    description: TypeSpec operation with 1 parameters
+      $ref: "#/channels/channel_publishBasicEvent"
+    summary: Operation publishBasicEvent
+    description: TypeSpec operation with 0 parameters
 components:
   schemas:
-    UserNotification:
+    BasicEvent:
       type: object
-      description: Schema for UserNotification
+      description: Schema for BasicEvent
       properties:
-        notificationId:
-          description: Property notificationId
+        id:
+          description: Property id
           type: string
-        userId:
-          description: Property userId
+        timestamp:
+          description: Property timestamp
           type: string
-        message:
-          description: Property message
+          format: date-time
+        data:
+          description: Property data
           type: string
-        priority:
-          description: Property priority
-          type: string
-          enum:
-            - low
-            - medium
-            - high
       required:
-        - notificationId
-        - userId
-        - message
-        - priority
+        - id
+        - timestamp
+        - data
   messages:
-    subscribeUserNotificationsMessage:
-      name: subscribeUserNotificationsMessage
-      title: subscribeUserNotifications Message
-      summary: Message for subscribeUserNotifications operation
+    publishBasicEventMessage:
+      name: publishBasicEventMessage
+      title: publishBasicEvent Message
+      summary: Message for publishBasicEvent operation
       contentType: application/json
       payload:
-        $ref: "#/components/schemas/UserNotification"
+        $ref: "#/components/schemas/BasicEvent"
   securitySchemes: {}
