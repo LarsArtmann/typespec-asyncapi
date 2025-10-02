@@ -147,7 +147,9 @@ export class ValidationService {
 			)
 
 			// Run comprehensive validation with fallback strategy
-			const result = yield* this.validateDocument(parsedDoc).pipe(
+			// WORKAROUND: Capture `this` context before nested Effect.gen to avoid binding issues
+			const self = this
+			const result = yield* self.validateDocument(parsedDoc).pipe(
 				Effect.catchAll(error => 
 					Effect.gen(function* () {
 						yield* Effect.log(`⚠️  Document validation failed, using graceful degradation: ${error}`)
