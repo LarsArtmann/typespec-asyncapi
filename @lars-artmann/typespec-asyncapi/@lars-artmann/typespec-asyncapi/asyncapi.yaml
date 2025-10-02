@@ -2,305 +2,54 @@ asyncapi: 3.0.0
 info:
   title: AsyncAPI Specification
   version: 1.0.0
-  description: Generated from TypeSpec with 8 operations, 0 messages, 0 security configs
+  description: Generated from TypeSpec with 1 operations, 0 messages, 0 security configs
 channels:
-  channel_publishTenantCreated:
-    address: tenants.created
-    description: Published when new tenant is created
+  channel_subscribeUserNotifications:
+    address: user.notifications.{userId}
+    description: Channel for subscribeUserNotifications
     messages:
-      publishTenantCreatedMessage:
-        $ref: "#/components/messages/publishTenantCreatedMessage"
-  channel_publishTenantUserAdded:
-    address: tenants.{tenantId}.users.added
-    description: Published when user is added to tenant
-    messages:
-      publishTenantUserAddedMessage:
-        $ref: "#/components/messages/publishTenantUserAddedMessage"
-  channel_publishTenantPlanChanged:
-    address: tenants.{tenantId}.plan.changed
-    description: Published when tenant changes subscription plan
-    messages:
-      publishTenantPlanChangedMessage:
-        $ref: "#/components/messages/publishTenantPlanChangedMessage"
-  channel_publishUsageMetrics:
-    address: usage.metrics
-    description: Published usage metrics for all tenants
-    messages:
-      publishUsageMetricsMessage:
-        $ref: "#/components/messages/publishUsageMetricsMessage"
-  channel_publishFeatureUsed:
-    address: tenants.{tenantId}.feature.used
-    description: Published when tenant uses a feature
-    messages:
-      publishFeatureUsedMessage:
-        $ref: "#/components/messages/publishFeatureUsedMessage"
-  channel_subscribeTenantEvents:
-    address: tenant.{tenantId}.events
-    description: Subscribe to all events for specific tenant
-    messages:
-      subscribeTenantEventsMessage:
-        $ref: "#/components/messages/subscribeTenantEventsMessage"
-  channel_subscribeUserActivity:
-    address: tenant.{tenantId}.users.{userId}.activity
-    description: Subscribe to specific user activity within tenant
-    messages:
-      subscribeUserActivityMessage:
-        $ref: "#/components/messages/subscribeUserActivityMessage"
-  channel_subscribeTenantUsage:
-    address: billing.{tenantId}.usage
-    description: Subscribe to tenant usage for billing
-    messages:
-      subscribeTenantUsageMessage:
-        $ref: "#/components/messages/subscribeTenantUsageMessage"
+      subscribeUserNotificationsMessage:
+        $ref: "#/components/messages/subscribeUserNotificationsMessage"
 operations:
-  publishTenantCreated:
-    action: send
+  subscribeUserNotifications:
+    action: receive
     channel:
-      $ref: "#/channels/channel_publishTenantCreated"
-    summary: Operation publishTenantCreated
-    description: TypeSpec operation with 0 parameters
-  publishTenantUserAdded:
-    action: send
-    channel:
-      $ref: "#/channels/channel_publishTenantUserAdded"
-    summary: Operation publishTenantUserAdded
-    description: TypeSpec operation with 0 parameters
-  publishTenantPlanChanged:
-    action: send
-    channel:
-      $ref: "#/channels/channel_publishTenantPlanChanged"
-    summary: Operation publishTenantPlanChanged
-    description: TypeSpec operation with 0 parameters
-  publishUsageMetrics:
-    action: send
-    channel:
-      $ref: "#/channels/channel_publishUsageMetrics"
-    summary: Operation publishUsageMetrics
-    description: TypeSpec operation with 0 parameters
-  publishFeatureUsed:
-    action: send
-    channel:
-      $ref: "#/channels/channel_publishFeatureUsed"
-    summary: Operation publishFeatureUsed
-    description: TypeSpec operation with 0 parameters
-  subscribeTenantEvents:
-    action: send
-    channel:
-      $ref: "#/channels/channel_subscribeTenantEvents"
-    summary: Operation subscribeTenantEvents
-    description: TypeSpec operation with 1 parameters
-  subscribeUserActivity:
-    action: send
-    channel:
-      $ref: "#/channels/channel_subscribeUserActivity"
-    summary: Operation subscribeUserActivity
-    description: TypeSpec operation with 2 parameters
-  subscribeTenantUsage:
-    action: send
-    channel:
-      $ref: "#/channels/channel_subscribeTenantUsage"
-    summary: Operation subscribeTenantUsage
+      $ref: "#/channels/channel_subscribeUserNotifications"
+    summary: Operation subscribeUserNotifications
     description: TypeSpec operation with 1 parameters
 components:
   schemas:
-    Tenant:
+    UserNotification:
       type: object
-      description: Tenant organization
+      description: Schema for UserNotification
       properties:
-        tenantId:
-          description: Tenant identifier
-          type: string
-        name:
-          description: Tenant name
-          type: string
-        plan:
-          description: Subscription plan
-          type: string
-          enum:
-            - starter
-            - professional
-            - enterprise
-        status:
-          description: Tenant status
-          type: string
-          enum:
-            - active
-            - suspended
-            - cancelled
-        createdAt:
-          description: Creation timestamp
-          type: string
-          format: date-time
-      required:
-        - tenantId
-        - name
-        - plan
-        - status
-        - createdAt
-    TenantUser:
-      type: object
-      description: Tenant user account
-      properties:
-        userId:
-          description: User identifier
-          type: string
-        tenantId:
-          description: Tenant identifier
-          type: string
-        email:
-          description: User email
-          type: string
-        role:
-          description: User role
-          type: string
-          enum:
-            - owner
-            - admin
-            - member
-            - viewer
-        status:
-          description: User status
-          type: string
-          enum:
-            - active
-            - invited
-            - suspended
-      required:
-        - userId
-        - tenantId
-        - email
-        - role
-        - status
-    UsageMetrics:
-      type: object
-      description: Application usage metrics
-      properties:
-        tenantId:
-          description: Tenant identifier
-          type: string
-        metricType:
-          description: Metric type
-          type: string
-          enum:
-            - api_calls
-            - storage_usage
-            - active_users
-            - feature_usage
-        value:
-          description: Metric value
-          type: number
-          format: double
-        timestamp:
-          description: Measurement timestamp
-          type: string
-          format: date-time
-        period:
-          description: Measurement period
-          type: string
-          enum:
-            - hourly
-            - daily
-            - monthly
-      required:
-        - tenantId
-        - metricType
-        - value
-        - timestamp
-        - period
-    FeatureUsage:
-      type: object
-      description: Feature usage event
-      properties:
-        tenantId:
-          description: Tenant identifier
+        notificationId:
+          description: Property notificationId
           type: string
         userId:
-          description: User identifier
+          description: Property userId
           type: string
-        featureName:
-          description: Feature name
+        message:
+          description: Property message
           type: string
-        timestamp:
-          description: Usage timestamp
+        priority:
+          description: Property priority
           type: string
-          format: date-time
-        sessionId:
-          description: Session identifier
-          type: string
-        context:
-          description: Additional context
-          type: object
-          properties:
-            ip:
-              description: Property ip
-              type: string
-            userAgent:
-              description: Property userAgent
-              type: string
-            referrer:
-              description: Property referrer
-              type: string
+          enum:
+            - low
+            - medium
+            - high
       required:
-        - tenantId
+        - notificationId
         - userId
-        - featureName
-        - timestamp
-        - sessionId
+        - message
+        - priority
   messages:
-    publishTenantCreatedMessage:
-      name: publishTenantCreatedMessage
-      title: publishTenantCreated Message
-      summary: Message for publishTenantCreated operation
+    subscribeUserNotificationsMessage:
+      name: subscribeUserNotificationsMessage
+      title: subscribeUserNotifications Message
+      summary: Message for subscribeUserNotifications operation
       contentType: application/json
       payload:
-        $ref: "#/components/schemas/Tenant"
-    publishTenantUserAddedMessage:
-      name: publishTenantUserAddedMessage
-      title: publishTenantUserAdded Message
-      summary: Message for publishTenantUserAdded operation
-      contentType: application/json
-      payload:
-        $ref: "#/components/schemas/TenantUser"
-    publishTenantPlanChangedMessage:
-      name: publishTenantPlanChangedMessage
-      title: publishTenantPlanChanged Message
-      summary: Message for publishTenantPlanChanged operation
-      contentType: application/json
-      payload:
-        $ref: "#/components/schemas/Tenant"
-    publishUsageMetricsMessage:
-      name: publishUsageMetricsMessage
-      title: publishUsageMetrics Message
-      summary: Message for publishUsageMetrics operation
-      contentType: application/json
-      payload:
-        $ref: "#/components/schemas/UsageMetrics"
-    publishFeatureUsedMessage:
-      name: publishFeatureUsedMessage
-      title: publishFeatureUsed Message
-      summary: Message for publishFeatureUsed operation
-      contentType: application/json
-      payload:
-        $ref: "#/components/schemas/FeatureUsage"
-    subscribeTenantEventsMessage:
-      name: subscribeTenantEventsMessage
-      title: subscribeTenantEvents Message
-      summary: Message for subscribeTenantEvents operation
-      contentType: application/json
-      payload:
-        $ref: "#/components/schemas/FeatureUsage"
-    subscribeUserActivityMessage:
-      name: subscribeUserActivityMessage
-      title: subscribeUserActivity Message
-      summary: Message for subscribeUserActivity operation
-      contentType: application/json
-      payload:
-        $ref: "#/components/schemas/FeatureUsage"
-    subscribeTenantUsageMessage:
-      name: subscribeTenantUsageMessage
-      title: subscribeTenantUsage Message
-      summary: Message for subscribeTenantUsage operation
-      contentType: application/json
-      payload:
-        $ref: "#/components/schemas/UsageMetrics"
+        $ref: "#/components/schemas/UserNotification"
   securitySchemes: {}

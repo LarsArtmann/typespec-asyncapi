@@ -11,7 +11,6 @@
 import type { Program, Namespace } from "@typespec/compiler"
 import type { SourceFile, EmittedSourceFile } from "@typespec/asset-emitter"
 import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js"
-import type { PluginRegistry } from "../../infrastructure/adapters/PluginRegistry.js"
 
 /**
  * Core AsyncAPI emitter interface defining emission contract
@@ -50,6 +49,14 @@ export type IAsyncAPIEmitter = {
 	
 	/**
 	 * Retrieves the plugin registry for external plugin management
+	 * @deprecated Use simple plugin system from infrastructure/adapters/plugin-system.js
 	 */
-	getPluginRegistry(): PluginRegistry
+	// getPluginRegistry(): PluginRegistry
+
+	/**
+	 * Retrieves the simple plugin registry for protocol bindings
+	 * @deprecated Use simple plugin system from infrastructure/adapters/plugin-system.js
+	 * @returns Record<string, unknown> Simple plugin registry interface
+	 */
+	getSimplePluginRegistry(): Record<string, unknown>
 }

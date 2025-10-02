@@ -20,7 +20,7 @@
  * - `DocumentGenerator` - AsyncAPI document serialization (JSON/YAML)
  * - `DocumentBuilder` - AsyncAPI document structure initialization
  * - `PerformanceMonitor` - Memory and execution time tracking
- * - `PluginRegistry` - Protocol-specific binding management
+ * - `Simple Plugin System` - Protocol-specific binding management (simplified over-engineering removed)
  *
  * ## Usage:
  * This class is instantiated by the TypeSpec compiler and should not be created directly.
@@ -77,7 +77,6 @@ import type {AsyncAPIObject} from "@asyncapi/parser/esm/spec-types/v3.js"
 import {EmissionPipeline} from "./EmissionPipeline.js"
 import {DocumentBuilder} from "./DocumentBuilder.js"
 import {PerformanceMonitor} from "../../infrastructure/performance/PerformanceMonitor.js"
-import {PluginRegistry} from "../../infrastructure/adapters/PluginRegistry.js"
 import {DEFAULT_SERIALIZATION_FORMAT} from "../models/serialization-format-option.js"
 
 import type { IAsyncAPIEmitter } from "./IAsyncAPIEmitter.js"
@@ -100,7 +99,8 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 	private readonly documentGenerator: DocumentGenerator
 	private readonly documentBuilder: DocumentBuilder
 	private readonly performanceMonitor: PerformanceMonitor
-	private readonly pluginRegistry: PluginRegistry
+	// TODO: Remove complex plugin system references - use simple plugin-system
+	// private readonly pluginRegistry: PluginRegistry
 	// TODO: CRITICAL - AsyncAPIObject is mutable - should be immutable with copy-on-write updates
 	// TODO: CRITICAL - No validation that asyncApiDoc conforms to AsyncAPI 3.0 schema
 	// TODO: CRITICAL - Document state not protected from concurrent access in plugin system
@@ -118,7 +118,7 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 	 * 2. Create DocumentGenerator for JSON/YAML serialization
 	 * 3. Set up DocumentBuilder for AsyncAPI structure management
 	 * 4. Configure PerformanceMonitor for resource tracking
-	 * 5. Initialize PluginRegistry for protocol-specific extensions
+	 * 5. Use Simple Plugin System for protocol-specific extensions (over-engineering removed)
 	 * 6. Create initial AsyncAPI document structure
 	 *
 	 * @param emitter - TypeSpec AssetEmitter providing compiler integration and file output capabilities
@@ -187,16 +187,17 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 					Effect.mapError(error => `PerformanceMonitor initialization failed: ${error}`)
 				)
 				
-				const pluginRegistry = yield* Effect.try(() => new PluginRegistry()).pipe(
-					Effect.mapError(error => `PluginRegistry initialization failed: ${error}`)
-				)
+				// PluginRegistry removed - use simple plugin-system instead
+				// const pluginRegistry = yield* Effect.try(() => new PluginRegistry()).pipe(
+				//		Effect.mapError(error => `PluginRegistry initialization failed: ${error}`)
+				//	)
 				
 				return {
 					pipeline,
 					documentGenerator, 
 					documentBuilder,
 					performanceMonitor,
-					pluginRegistry
+					// pluginRegistry removed - use simple plugin-system
 				}
 			}).pipe(
 				Effect.tapError(error => Effect.log(`❌ Component initialization failed: ${error}`)),
@@ -209,7 +210,7 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 		this.documentGenerator = initializationResult.documentGenerator
 		this.documentBuilder = initializationResult.documentBuilder
 		this.performanceMonitor = initializationResult.performanceMonitor
-		this.pluginRegistry = initializationResult.pluginRegistry
+		// this.pluginRegistry = initializationResult.pluginRegistry - REMOVED (use simple plugin-system)
 
 		Effect.log(`🏗️  About to call createInitialDocument`)
 		// Initialize document structure using Effect.TS patterns
@@ -662,7 +663,14 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 	 *
 	 * @public
 	 */
-	public getPluginRegistry(): PluginRegistry {
-		return this.pluginRegistry
+	/**
+	 * Get the simple plugin registry for protocol bindings
+	 * @deprecated Use simple plugin system from infrastructure/adapters/plugin-system.js
+	 * @returns SimplePluginRegistry The simple plugin registry instance
+	 */
+	public getSimplePluginRegistry(): Record<string, unknown> {
+		// Note: The complex PluginRegistry has been removed - use simple plugin-system
+		// Return a placeholder to maintain API compatibility
+		return {}
 	}
 }

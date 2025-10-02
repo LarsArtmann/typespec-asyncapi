@@ -211,6 +211,7 @@ export const asyncAPIEmitterOptionsEffectSchema = createSchema(
 			}),
 		).annotations({
 			description: "Name of the output file. Supports template variables: {cmd}, {project-root}, {emitter-name}, {output-dir}. Default: 'asyncapi.yaml'",
+			jsonSchema: { type: "string", description: "Output file name" }
 		})),
 
 		"file-type": Schema.optional(Schema.Literal("yaml", "json").annotations({
