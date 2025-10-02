@@ -9,7 +9,7 @@ import {Effect, Schedule} from "effect"
 import {Parser} from "@asyncapi/parser"
 import type {ValidationStats} from "./ValidationStats.js"
 import type {ValidationOptions} from "./ValidationOptions.js"
-import * as NodeFS from "node:fs/promises"
+import { readFile } from "node:fs/promises"
 import {railwayLogging} from "../../utils/effect-helpers.js"
 
 /**
@@ -255,7 +255,7 @@ export class AsyncAPIValidator {
 		return Effect.gen(this, function* () {
 			// Use Effect.tryPromise to wrap Node.js file reading with proper error handling
 			const content = yield* Effect.tryPromise({
-				try: () => NodeFS.readFile(filePath, "utf-8"),
+				try: () => readFile(filePath, "utf-8"),
 				catch: (error) => new Error(`Failed to read file: ${error instanceof Error ? error.message : String(error)}`)
 			}).pipe(
 				Effect.catchAll((error) => Effect.sync(() => {
