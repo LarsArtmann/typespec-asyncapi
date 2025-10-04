@@ -155,7 +155,7 @@ const processSingleOperation = (op: Operation, asyncApiDoc: AsyncAPIObject, prog
 			const protocolName = protocolConfig.protocol as AsyncAPIProtocolType
 			
 			// Try plugin system first, fallback to ProtocolBindingFactory
-			const bindingData = { config: protocolConfig.binding || {} }
+			const bindingData = { config: protocolConfig.binding ?? {} }
 			
 			// Generate channel bindings - Plugin system preferred
 			const channelBindingResult = Effect.runSync(generateProtocolBinding(protocolName, 'channel', bindingData).pipe(Effect.catchAll(() => Effect.succeed(null))))
@@ -397,7 +397,7 @@ const createAsyncAPISecurityScheme = (config: SecurityConfig): SecuritySchemeObj
 		switch (scheme.type) {
 			case "apiKey":
 				// AsyncAPI v3 has different apiKey types based on location
-				if (scheme.in === "user" || scheme.in === "password") {
+				if (scheme.in === "user" ?? scheme.in === "password") {
 					return {
 						type: "userPassword",
 						description: scheme.description,
@@ -437,25 +437,25 @@ const createAsyncAPISecurityScheme = (config: SecurityConfig): SecuritySchemeObj
 				if (scheme.flows.implicit) {
 					transformedFlows.implicit = {
 						...scheme.flows.implicit,
-						availableScopes: scheme.flows.implicit.scopes || {}
+						availableScopes: scheme.flows.implicit.scopes ?? {}
 					}
 				}
 				if (scheme.flows.password) {
 					transformedFlows.password = {
 						...scheme.flows.password,
-						availableScopes: scheme.flows.password.scopes || {}
+						availableScopes: scheme.flows.password.scopes ?? {}
 					}
 				}
 				if (scheme.flows.clientCredentials) {
 					transformedFlows.clientCredentials = {
 						...scheme.flows.clientCredentials,
-						availableScopes: scheme.flows.clientCredentials.scopes || {}
+						availableScopes: scheme.flows.clientCredentials.scopes ?? {}
 					}
 				}
 				if (scheme.flows.authorizationCode) {
 					transformedFlows.authorizationCode = {
 						...scheme.flows.authorizationCode,
-						availableScopes: scheme.flows.authorizationCode.scopes || {}
+						availableScopes: scheme.flows.authorizationCode.scopes ?? {}
 					}
 				}
 				

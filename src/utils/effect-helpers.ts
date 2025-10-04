@@ -19,14 +19,14 @@ export const railwayLogging = {
 	 * Log debug information about operation/schema generation - Railway style
 	 */
 	logDebugGeneration: (type: "channel" | "operation" | "message" | "security-scheme", id: string, details?: Record<string, unknown>) => {
-		return Effect.logDebug(`Generated ${type}: ${id}`, details || {})
+		return Effect.logDebug(`Generated ${type}: ${id}`, details ?? {})
 	},
 
 	/**
 	 * Log initialization messages with proper Effect composition
 	 */
 	logInitialization: (component: string, details?: Record<string, unknown>) =>
-		Effect.logInfo(`🔧 Initializing ${component}...`, details || {}),
+		Effect.logInfo(`🔧 Initializing ${component}...`, details ?? {}),
 
 	/**
 	 * Log successful initialization with proper Effect composition
@@ -543,7 +543,7 @@ export const railwayFileSystem = {
 	readFileEffect: (filePath: string, context?: string) =>
 		Effect.try({
 			try: () => readFileSync(filePath, 'utf-8'),
-			catch: (error) => new Error(`Failed to read ${context || 'file'} (${filePath}): ${safeStringify(error)}`)
+			catch: (error) => new Error(`Failed to read ${context ?? 'file'} (${filePath}): ${safeStringify(error)}`)
 		}),
 
 	/**
@@ -552,7 +552,7 @@ export const railwayFileSystem = {
 	parseJsonEffect: <T>(jsonString: string, context?: string) =>
 		Effect.try({
 			try: () => JSON.parse(jsonString) as T,
-			catch: (error) => new Error(`Failed to parse ${context || 'JSON'}: ${safeStringify(error)}`)
+			catch: (error) => new Error(`Failed to parse ${context ?? 'JSON'}: ${safeStringify(error)}`)
 		}),
 
 	/**
@@ -561,7 +561,7 @@ export const railwayFileSystem = {
 	writeFileEffect: (filePath: string, data: string, context?: string) =>
 		Effect.try({
 			try: () => writeFileSync(filePath, data),
-			catch: (error) => new Error(`Failed to write ${context || 'file'} (${filePath}): ${safeStringify(error)}`)
+			catch: (error) => new Error(`Failed to write ${context ?? 'file'} (${filePath}): ${safeStringify(error)}`)
 		}),
 
 	/**
@@ -579,7 +579,7 @@ export const railwayFileSystem = {
 	writeJsonFileEffect: <T>(filePath: string, data: T, context?: string) =>
 		Effect.try({
 			try: () => writeFileSync(filePath, JSON.stringify(data, null, 2)),
-			catch: (error) => new Error(`Failed to write ${context || 'JSON file'} (${filePath}): ${safeStringify(error)}`)
+			catch: (error) => new Error(`Failed to write ${context ?? 'JSON file'} (${filePath}): ${safeStringify(error)}`)
 		}),
 
 	/**
@@ -661,7 +661,7 @@ export const railwayValidationHelpers = {
 		requiredFields: Array<keyof T>,
 		context?: string
 	) => {
-		const missingFields = requiredFields.filter(field => !(field in obj) || obj[field] == null)
+		const missingFields = requiredFields.filter(field => !(field in obj) ?? obj[field] == null)
 		if (missingFields.length > 0) {
 			return Effect.fail(new Error(`${context ? `${context}: ` : ''}Missing required fields: ${missingFields.join(', ')}`))
 		}

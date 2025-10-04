@@ -302,9 +302,9 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 							yield* Effect.log(`⚠️  Pipeline failed, attempting graceful degradation: ${safeStringify(error)}`)
 							// Create minimal AsyncAPI document as fallback
 							yield* Effect.sync(() => {
-								this.asyncApiDoc.info = this.asyncApiDoc.info || { title: "Generated API (Partial)", version: "1.0.0" }
-								this.asyncApiDoc.channels = this.asyncApiDoc.channels || {}
-								this.asyncApiDoc.operations = this.asyncApiDoc.operations || {}
+								this.asyncApiDoc.info = this.asyncApiDoc.info ?? { title: "Generated API (Partial)", version: "1.0.0" }
+								this.asyncApiDoc.channels = this.asyncApiDoc.channels ?? {}
+								this.asyncApiDoc.operations = this.asyncApiDoc.operations ?? {}
 							})
 							yield* Effect.log(`🔧 Created minimal AsyncAPI document as fallback`)
 						}.bind(this))
@@ -314,39 +314,9 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 			
 				yield* Effect.log(`✅ AsyncAPI document generation pipeline completed successfully`)
 			
-			// CRITICAL FIX: Write files directly using file system approach
-			// AssetEmitter patterns are too complex - use direct file writing
-			yield* Effect.log(`🔥 DIRECT FILE WRITE: Writing AsyncAPI file directly to disk`)
-			
-			// Generate the AsyncAPI content
-			const fileType: "yaml" | "json" = this.emitter.getOptions()["file-type"] ?? "yaml"
-			const content = yield* this.documentGenerator.serializeDocument(this.asyncApiDoc, fileType)
-			
-			yield* Effect.log(`🔥 DIRECT FILE WRITE: Generated content length: ${content.length}`)
-			
-			// Write directly to the emitter's output directory
-			const outputDir = this.emitter.getOptions().emitterOutputDir
-			const fullPath = `${outputDir}/${sourceFile.path}`
-			
-			yield* Effect.log(`🔥 DIRECT FILE WRITE: Writing to ${fullPath}`)
-			
-			// Use Node.js fs to write the file directly
-			yield* Effect.tryPromise(async () => {
-				const fs = await import('fs/promises')
-				const path = await import('path')
-				
-				// Ensure directory exists
-				await fs.mkdir(path.dirname(fullPath), { recursive: true })
-				
-				// Write the file
-				await fs.writeFile(fullPath, content, 'utf8')
-				
-				return fullPath
-			}).pipe(
-				Effect.mapError(error => `File write failed: ${safeStringify(error)}`)
-			)
-			
-			yield* Effect.log(`🔥 DIRECT FILE WRITE: Successfully wrote file: ${fullPath}`)
+			// File writing is handled by AssetEmitter framework via sourceFile() method (lines 415-432)
+			// Removed manual fs.writeFile() to fix dual file writing anti-pattern
+			yield* Effect.log(`📝 AsyncAPI document prepared - file writing delegated to AssetEmitter`)
 			
 			}.bind(this)).pipe(
 				Effect.tapError(error => Effect.log(`❌ Micro-kernel emission pipeline failed: ${safeStringify(error)}`)),
@@ -594,7 +564,7 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 	 * class CustomPlugin {
 	 *   process(emitter: AsyncAPIEmitter) {
 	 *     const document = emitter.getDocument();
-	 *     console.log(`Processing ${Object.keys(document.channels || {}).length} channels`);
+	 *     console.log(`Processing ${Object.keys(document.channels ?? {}).length} channels`);
 	 *   }
 	 * }
 	 * ```
@@ -622,10 +592,10 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 	 * @example Plugin Document Modification:
 	 * ```typescript
 	 * emitter.updateDocument((doc) => {
-	 *   doc.info = doc.info || {};
+	 *   doc.info = doc.info ?? {};
 	 *   doc.info.description = "Enhanced with custom plugin";
 	 *   
-	 *   doc.channels = doc.channels || {};
+	 *   doc.channels = doc.channels ?? {};
 	 *   doc.channels["plugin-channel"] = {
 	 *     address: "/plugin/events",
 	 *     messages: {}

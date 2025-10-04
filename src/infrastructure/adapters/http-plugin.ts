@@ -29,7 +29,7 @@ export const httpPlugin: ProtocolPlugin = {
 		yield* Effect.log("🔧 Generating HTTP operation binding")
 		
 		// Extract config from operation or use defaults
-		const config = (operation as {config?: HttpOperationBindingConfig})?.config || {}
+		const config = (operation as {config?: HttpOperationBindingConfig})?.config ?? {}
 		
 		const binding: HttpOperationBinding = {
 			bindingVersion: "0.3.0",
@@ -45,7 +45,7 @@ export const httpPlugin: ProtocolPlugin = {
 		yield* Effect.log("📨 Generating HTTP message binding")
 		
 		// Extract config from message or use defaults
-		const config = (message as {config?: HttpMessageBindingConfig})?.config || {}
+		const config = (message as {config?: HttpMessageBindingConfig})?.config ?? {}
 
 		const binding: HttpMessageBinding = {
 			bindingVersion: "0.3.0",
@@ -70,7 +70,7 @@ export const httpPlugin: ProtocolPlugin = {
 		yield* Effect.log("✅ Validating HTTP configuration")
 
 		// Validate HTTP-specific configuration
-		if (typeof config !== 'object' || config === null) {
+		if (typeof config !== 'object' ?? config === null) {
 			return false
 		}
 
@@ -86,7 +86,7 @@ export const httpPlugin: ProtocolPlugin = {
 
 		// Validate message binding config
 		if ('statusCode' in httpConfig && httpConfig.statusCode) {
-			if (typeof httpConfig.statusCode !== 'number' || httpConfig.statusCode < 100 || httpConfig.statusCode > 599) {
+			if (typeof httpConfig.statusCode !== 'number' ?? httpConfig.statusCode < 100 ?? httpConfig.statusCode > 599) {
 				return false
 			}
 		}

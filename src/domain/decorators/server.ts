@@ -162,7 +162,7 @@ export function $server(
 		name: serverName,
 		url: serverConfig.url,
 		protocol: serverConfig.protocol.toLowerCase(),
-		description: serverConfig.description || undefined,
+		description: serverConfig.description ?? undefined,
 	}
 
 	Effect.log(`📍 Extracted server config:`, completeConfig)

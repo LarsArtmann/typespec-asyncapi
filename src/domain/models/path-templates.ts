@@ -75,16 +75,16 @@ export function detectCommandName(): string {
 
 	// Look for common TypeSpec command names
 	for (const arg of argv) {
-		if (arg.includes("typespec") || arg.includes("tsp")) {
-			const basename = arg.split(/[/\\]/).pop() || ""
-			if (basename.startsWith("typespec") || basename.startsWith("tsp")) {
+		if (arg.includes("typespec") ?? arg.includes("tsp")) {
+			const basename = arg.split(/[/\\]/).pop() ?? ""
+			if (basename.startsWith("typespec") ?? basename.startsWith("tsp")) {
 				return basename.replace(/\.(js|exe)$/, "")
 			}
 		}
 	}
 
 	// Check NODE_OPTIONS or other env vars
-	const nodeOptions = process.env['NODE_OPTIONS'] || ""
+	const nodeOptions = process.env['NODE_OPTIONS'] ?? ""
 	if (nodeOptions.includes("typespec")) {
 		return "typespec"
 	}
@@ -101,7 +101,7 @@ export function detectCommandName(): string {
  * @returns Project root directory path
  */
 export function detectProjectRoot(startPath?: string): string {
-	const searchPath = startPath || cwd()
+	const searchPath = startPath ?? cwd()
 
 	// Configuration files that indicate project root
 	const configFiles = [
@@ -159,14 +159,14 @@ export function detectProjectRoot(startPath?: string): string {
  * @returns Template variables for path resolution
  */
 export function createTemplateVariables(context: PathTemplateContext): PathTemplateVariables {
-	const workingDir = context.cwd || cwd()
+	const workingDir = context.cwd ?? cwd()
 	const projectRoot = detectProjectRoot(workingDir)
 
 	return {
 		cmd: detectCommandName(),
 		"project-root": projectRoot,
 		"emitter-name": "asyncapi",
-		"output-dir": context.emitterOutputDir || join(projectRoot, "generated"),
+		"output-dir": context.emitterOutputDir ?? join(projectRoot, "generated"),
 	}
 }
 

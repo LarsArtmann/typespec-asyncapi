@@ -74,7 +74,7 @@ export class DocumentBuilder {
 				{ context: { operation: "buildServersFromNamespaces" } }
 			)
 
-			const servers = serversResult || {}
+			const servers = serversResult ?? {}
 			yield* Effect.log(`🏗️  Generated servers: ${JSON.stringify(servers, null, 2)}`)
 
 			// Build document with Railway programming
@@ -157,7 +157,7 @@ export class DocumentBuilder {
 					...info,
 				}
 				return document
-			}, { context: { operation: "document info update", infoKeys: Object.keys(info || {}) } })
+			}, { context: { operation: "document info update", infoKeys: Object.keys(info ?? {}) } })
 		})
 	}
 

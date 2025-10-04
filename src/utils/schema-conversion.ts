@@ -17,7 +17,7 @@ import type {SchemaObject} from "@asyncapi/parser/esm/spec-types/v3.js"
 export function convertModelToSchema(model: Model, program: Program): SchemaObject {
 	return Effect.runSync(
 		Effect.gen(function* () {
-			yield* Effect.log(`🔍 Converting model to schema: ${model.name || 'Anonymous'}`)
+			yield* Effect.log(`🔍 Converting model to schema: ${model.name ?? 'Anonymous'}`)
 
 			const properties: Record<string, SchemaObject> = {}
 			const required: string[] = []
@@ -46,7 +46,7 @@ export function convertModelToSchema(model: Model, program: Program): SchemaObje
 
 			const schema: SchemaObject = {
 				type: "object",
-				description: getDoc(program, model) ?? `Schema for ${model.name || 'Anonymous'}`,
+				description: getDoc(program, model) ?? `Schema for ${model.name ?? 'Anonymous'}`,
 				properties,
 			}
 
@@ -120,7 +120,7 @@ export function convertTypeToSchemaType(type: Type, program: Program): Effect.Ef
 					case "utcDateTime":
 						return {type: "string" as const, format: "date-time"}
 					default:
-						yield* Effect.log(`⚠️ Unknown scalar type: ${(scalarType as { name?: string }).name || 'unknown'}, defaulting to string`)
+						yield* Effect.log(`⚠️ Unknown scalar type: ${(scalarType as { name?: string }).name ?? 'unknown'}, defaulting to string`)
 						return {type: "string" as const}
 				}
 			}
@@ -198,7 +198,7 @@ export function convertTypeToSchemaType(type: Type, program: Program): Effect.Ef
 				}
 
 				// For other models, create a reference or inline schema
-				yield* Effect.log(`🏗️ Processing model: ${modelType.name || 'Anonymous'}`)
+				yield* Effect.log(`🏗️ Processing model: ${modelType.name ?? 'Anonymous'}`)
 
 				if (modelType.name) {
 					// Create reference to schema that should be in components

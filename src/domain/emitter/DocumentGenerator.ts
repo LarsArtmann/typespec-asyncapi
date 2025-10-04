@@ -200,7 +200,7 @@ export class DocumentGenerator {
 					escape: "Use a generic title like 'AsyncAPI Specification' as placeholder",
 					severity: "error" as const,
 					code: "MISSING_INFO_TITLE",
-					context: { hasInfo: !!document.info, infoKeys: Object.keys(document.info || {}) }
+					context: { hasInfo: !!document.info, infoKeys: Object.keys(document.info ?? {}) }
 				}))
 			}
 
@@ -213,7 +213,7 @@ export class DocumentGenerator {
 					escape: "Use '1.0.0' as a default API version",
 					severity: "error" as const,
 					code: "MISSING_INFO_VERSION",
-					context: { hasInfo: !!document.info, infoKeys: Object.keys(document.info || {}) }
+					context: { hasInfo: !!document.info, infoKeys: Object.keys(document.info ?? {}) }
 				}))
 			}
 
@@ -244,11 +244,11 @@ export class DocumentGenerator {
 			// Safe statistics generation with error handling
 			return yield* railway.trySync(() => {
 				const stats: DocumentStats = {
-					channels: Object.keys(document.channels || {}).length,
-					operations: Object.keys(document.operations || {}).length,
-					messages: Object.keys(document.components?.messages || {}).length,
-					schemas: Object.keys(document.components?.schemas || {}).length,
-					securitySchemes: Object.keys(document.components?.securitySchemes || {}).length,
+					channels: Object.keys(document.channels ?? {}).length,
+					operations: Object.keys(document.operations ?? {}).length,
+					messages: Object.keys(document.components?.messages ?? {}).length,
+					schemas: Object.keys(document.components?.schemas ?? {}).length,
+					securitySchemes: Object.keys(document.components?.securitySchemes ?? {}).length,
 					contentLength: 0, // Will be set after serialization
 				}
 
@@ -333,7 +333,7 @@ export class DocumentGenerator {
 						keysToRemove.push(key)
 					}
 				}
-			} else if (value === null || value === undefined || value === '') {
+			} else if (value === null ?? value === undefined ?? value === '') {
 				// Remove null, undefined, or empty string values
 				keysToRemove.push(key)
 			}
@@ -357,7 +357,7 @@ export class DocumentGenerator {
 		return Effect.gen(function* () {
 			yield* Effect.log(`🔍 Validating serialized ${format} content...`)
 
-			if (!content || content.trim().length === 0) {
+			if (!content ?? content.trim().length === 0) {
 				return yield* failWith(createError({
 					what: `Empty ${format} content detected`,
 					reassure: "This is usually a serialization issue that can be debugged",
@@ -366,7 +366,7 @@ export class DocumentGenerator {
 					escape: "Use a simple test document to verify serialization works",
 					severity: "error" as const,
 					code: "EMPTY_SERIALIZED_CONTENT",
-					context: { format, contentLength: content?.length || 0 }
+					context: { format, contentLength: content?.length ?? 0 }
 				}))
 			}
 
@@ -394,8 +394,8 @@ export class DocumentGenerator {
 				}
 
 				// Check for balanced quotes
-				const singleQuotes = (content.match(/'/g) || []).length
-				const doubleQuotes = (content.match(/"/g) || []).length
+				const singleQuotes = (content.match(/'/g) ?? []).length
+				const doubleQuotes = (content.match(/"/g) ?? []).length
 
 				if (singleQuotes % 2 !== 0) {
 					yield* Effect.logWarning(`⚠️ Unbalanced single quotes in YAML`)

@@ -162,7 +162,7 @@ export class PerformanceMonitor {
 
 					// Get current memory metrics
 					const memoryMetrics = yield* memoryMonitor.getMemoryMetrics()
-					const currentMemory = memoryMetrics.currentMemoryUsage || 0
+					const currentMemory = memoryMetrics.currentMemoryUsage ?? 0
 
 					// Get performance metrics summary
 					const metricsSummary = yield* metricsService.getMetricsSummary()
@@ -170,9 +170,9 @@ export class PerformanceMonitor {
 					const snapshot: PerformanceSnapshot = {
 						timestamp: new Date(),
 						memoryUsage: currentMemory,
-						operationCount: metricsSummary[createMetricName("throughput")] || 0, // Using throughput as operation count approximation
-						averageLatency: metricsSummary[createMetricName("latency")] || 0,
-						throughput: metricsSummary[createMetricName("throughput")] || 0,
+						operationCount: metricsSummary[createMetricName("throughput")] ?? 0, // Using throughput as operation count approximation
+						averageLatency: metricsSummary[createMetricName("latency")] ?? 0,
+						throughput: metricsSummary[createMetricName("throughput")] ?? 0,
 					}
 
 					this.addSnapshotWithMemoryManagement(snapshot, currentMemory)
@@ -226,7 +226,7 @@ export class PerformanceMonitor {
 		const latest = this.snapshots[this.snapshots.length - 1]
 		const earliest = this.snapshots[0]
 		
-		if (!latest || !earliest) {
+		if (!latest ?? !earliest) {
 			return "Insufficient performance data available"
 		}
 		
@@ -259,7 +259,7 @@ export class PerformanceMonitor {
 			const memoryIncreasing = memoryGrowthRate > DEFAULT_MEMORY_LEAK_DETECTION_RATE
 			const highMemoryUsage = latest.memoryUsage > this.config.memoryThreshold
 
-			if (memoryIncreasing || highMemoryUsage) {
+			if (memoryIncreasing ?? highMemoryUsage) {
 				report += `\n⚠️ Memory Concerns:\n`
 				if (memoryIncreasing) {
 					report += `  - Continuous memory growth detected (${memoryGrowthRate.toFixed(2)} MB/sec)\n`

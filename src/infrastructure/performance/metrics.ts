@@ -277,7 +277,7 @@ const makePerformanceMetricsService = Effect.gen(function* () {
 			report += `- **Latency Target:** ${LATENCY_TARGET} μs\n\n`
 
 			report += `## Current Metrics\n`
-			report += `- **Average Throughput:** ${summary[createMetricName("throughput")]?.toLocaleString() || 'N/A'} ops/sec\n`
+			report += `- **Average Throughput:** ${summary[createMetricName("throughput")]?.toLocaleString() ?? 'N/A'} ops/sec\n`
 			report += `- **Average Memory/Op:** ${summary[createMetricName("memoryPerOp")]?.toFixed(0) ?? 'N/A'} bytes\n`
 			report += `- **Average Latency:** ${summary[createMetricName("latency")]?.toFixed(2) ?? 'N/A'} μs\n`
 			report += `- **Success Rate:** ${summary[createMetricName("successRate")]?.toFixed(2) ?? 'N/A'}%\n`

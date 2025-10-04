@@ -33,7 +33,7 @@ export const kafkaPlugin: ProtocolPlugin = {
 		yield* Effect.log("🔧 Generating Kafka operation binding")
 		
 		// Extract config from operation or use defaults
-		const config = (operation as {config?: KafkaOperationBindingConfig})?.config || {}
+		const config = (operation as {config?: KafkaOperationBindingConfig})?.config ?? {}
 
 		const binding: KafkaOperationBinding = {
 			bindingVersion: "0.5.0",
@@ -49,7 +49,7 @@ export const kafkaPlugin: ProtocolPlugin = {
 		yield* Effect.log("📨 Generating Kafka message binding")
 		
 		// Extract config from message or use defaults
-		const config = (message as {config?: KafkaMessageBindingConfig})?.config || {}
+		const config = (message as {config?: KafkaMessageBindingConfig})?.config ?? {}
 
 		const binding: KafkaMessageBinding = {
 			bindingVersion: "0.5.0",
@@ -70,7 +70,7 @@ export const kafkaPlugin: ProtocolPlugin = {
 		yield* Effect.log("🖥️  Generating Kafka server binding")
 
 		// Extract config from server or use defaults
-		const config = (server as {config?: Partial<KafkaServerBinding>})?.config || {}
+		const config = (server as {config?: Partial<KafkaServerBinding>})?.config ?? {}
 		
 		const binding: KafkaServerBinding = {
 			bindingVersion: "0.5.0",
@@ -90,14 +90,14 @@ export const kafkaPlugin: ProtocolPlugin = {
 		
 		// Extract config from channel or use defaults with proper typing
 		const channelData = channel as {config?: KafkaChannelBindingConfig & {topic: string}} | Record<string, unknown>
-		const rawConfig = ('config' in channelData ? channelData.config : {}) || {}
+		const rawConfig = ('config' in channelData ? channelData.config : {}) ?? {}
 		
 		// Type-safe extraction with proper casting
 		const config = rawConfig as KafkaChannelBindingConfig
 		
 		const binding: KafkaChannelBinding = {
 			bindingVersion: "0.5.0",
-			topic: (config.topic as string) || "default-topic",
+			topic: (config.topic as string) ?? "default-topic",
 			...(config.partitions ? { partitions: config.partitions } : {}),
 			...(config.replicas ? { replicas: config.replicas } : {}),
 			...(config.topicConfiguration ? { topicConfiguration: config.topicConfiguration } : {}),
@@ -110,7 +110,7 @@ export const kafkaPlugin: ProtocolPlugin = {
 		yield* Effect.log("✅ Validating Kafka configuration")
 
 		// Validate Kafka-specific configuration
-		if (typeof config !== 'object' || config === null) {
+		if (typeof config !== 'object' ?? config === null) {
 			return false
 		}
 
@@ -132,20 +132,20 @@ export const kafkaPlugin: ProtocolPlugin = {
 
 		// Validate topic for channel bindings
 		if ('topic' in kafkaConfig && kafkaConfig.topic) {
-			if (typeof kafkaConfig.topic !== 'string' || kafkaConfig.topic.trim().length === 0) {
+			if (typeof kafkaConfig.topic !== 'string' ?? kafkaConfig.topic.trim().length === 0) {
 				return false
 			}
 		}
 
 		// Validate partitions and replicas
 		if ('partitions' in kafkaConfig && kafkaConfig.partitions) {
-			if (typeof kafkaConfig.partitions !== 'number' || kafkaConfig.partitions < 1) {
+			if (typeof kafkaConfig.partitions !== 'number' ?? kafkaConfig.partitions < 1) {
 				return false
 			}
 		}
 
 		if ('replicas' in kafkaConfig && kafkaConfig.replicas) {
-			if (typeof kafkaConfig.replicas !== 'number' || kafkaConfig.replicas < 1) {
+			if (typeof kafkaConfig.replicas !== 'number' ?? kafkaConfig.replicas < 1) {
 				return false
 			}
 		}
