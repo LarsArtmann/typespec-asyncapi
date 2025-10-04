@@ -189,17 +189,9 @@ export class DocumentBuilder {
 					document.components = {}
 				}
 				
-				if (!document.components.schemas) {
-					document.components.schemas = {}
-				}
-				
-				if (!document.components.messages) {
-					document.components.messages = {}
-				}
-				
-				if (!document.components.securitySchemes) {
-					document.components.securitySchemes = {}
-				}
+				document.components.schemas ??= {}
+				document.components.messages ??= {}
+				document.components.securitySchemes ??= {}
 
 				return document
 			}, { context: { operation: "components initialization" } })
@@ -230,13 +222,8 @@ export class DocumentBuilder {
 
 			// Safe structure initialization with Railway programming
 			const structureInitResult = yield* railway.trySync(() => {
-				if (!document.channels) {
-					document.channels = {}
-				}
-				
-				if (!document.operations) {
-					document.operations = {}
-				}
+				document.channels ??= {}
+				document.operations ??= {}
 				
 				return document
 			}, { context: { operation: "document structure initialization" } })

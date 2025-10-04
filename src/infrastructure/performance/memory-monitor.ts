@@ -18,6 +18,7 @@ import type {MemoryBudget} from "./MemoryBudget.js"
 import type {MemorySnapshot} from "./MemorySnapshot.js"
 import type {MemoryAnalysis} from "./MemoryAnalysis.js"
 import type {ForceGCResult} from "./ForceGCResult.js"
+import {safeStringify} from "../../utils/standardized-errors.js"
 import {createByteAmount, createMegabyteAmount, createGigabyteAmount} from "./ByteAmount.js"
 import {createTimestamp} from "./MemorySnapshot.js"
 import type {OperationType, MemoryReportJson} from "./PerformanceTypes.js"
@@ -202,7 +203,7 @@ const makeMemoryMonitorService = Effect.gen(function* () {
 		}).pipe(
 			Effect.catchAll(error =>
 				Effect.fail(new MemoryMonitorInitializationError(
-					`Failed to start memory monitoring: ${error}`,
+					`Failed to start memory monitoring: ${safeStringify(error)}`,
 					error,
 				)),
 			),

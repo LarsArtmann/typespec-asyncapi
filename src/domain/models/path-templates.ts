@@ -5,6 +5,7 @@ import {Effect} from "effect"
 import type {TemplateValidationResult} from "./template-validation-result.js"
 import type {PathTemplateContext} from "./path-template-context.js"
 import type {PathTemplateVariables} from "./path-template-variables.js"
+import {safeStringify} from "../../utils/standardized-errors.js"
 
 /**
  * Template variable patterns for validation and replacement
@@ -127,7 +128,7 @@ export function detectProjectRoot(startPath?: string): string {
 				}).pipe(
 					Effect.catchAll((error) =>
 						Effect.gen(function* () {
-							yield* Effect.logWarning(`⚠️  File check failed for ${configPath}: ${error}`)
+							yield* Effect.logWarning(`⚠️  File check failed for ${configPath}: ${safeStringify(error)}`)
 							return false
 						})
 					)

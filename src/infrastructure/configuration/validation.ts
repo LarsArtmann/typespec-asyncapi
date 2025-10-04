@@ -11,6 +11,7 @@ import type {SecuritySchemeConfig} from "./securitySchemeConfig.js"
 import type {AsyncAPIEmitterOptions} from "./asyncAPIEmitterOptions.js"
 import type {VersioningConfigInput} from "./versioningConfigInput.js"
 import type {ServerConfigInput} from "./serverConfigInput.js"
+import {safeStringify} from "../../utils/standardized-errors.js"
 
 // TYPE CONVERSION UTILITIES - Handle readonly/optional property differences
 
@@ -92,7 +93,7 @@ export const parseAsyncAPIEmitterOptions = (input: unknown) =>
 				new AsyncAPIOptionsValidationError(
 					"options",
 					input,
-					`Schema validation failed: ${error}`,
+					`Schema validation failed: ${safeStringify(error)}`,
 					error,
 				),
 			),

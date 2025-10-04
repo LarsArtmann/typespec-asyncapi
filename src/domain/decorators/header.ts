@@ -164,8 +164,8 @@ export function generateHeadersSchema(
 	const schema: Record<string, unknown> = {}
 	
 	for (const [propertyName, config] of headers) {
-		schema[config.name || propertyName] = {
-			type: config.type?.type || 'string',
+		schema[config.name ?? propertyName] = {
+			type: config.type?.type ?? 'string',
 			description: config.description,
 			...(config.type?.format && { format: config.type.format }),
 			...(config.type?.pattern && { pattern: config.type.pattern })

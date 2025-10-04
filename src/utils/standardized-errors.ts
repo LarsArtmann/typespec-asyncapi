@@ -367,3 +367,98 @@ export const validators = {
 		)
 	},
 }
+
+/**
+ * Safe string conversion utilities for template literals
+ * 
+ * Addresses @typescript-eslint/restrict-template-expressions errors
+ * by providing type-safe string conversion for Effect.TS errors and unknown values
+ */
+
+/**
+ * Safely convert any value to string for template literals
+ * 
+ * @param value - The value to convert (can be anything including Effect errors)
+ * @param fallback - Optional fallback string if conversion fails
+ * @returns Safe string representation
+ */
+export const safeStringify = (value: unknown, fallback = "unknown"): string => {
+	// Handle null/undefined
+	if (value === null) return "null"
+	if (value === undefined) return "undefined"
+	
+	// Handle primitives
+	if (typeof value === "string") return value
+	if (typeof value === "number") return String(value)
+	if (typeof value === "boolean") return String(value)
+	if (typeof value === "bigint") return `${value}n`
+	if (typeof value === "symbol") return value.toString()
+	
+	// Handle StandardizedError
+	if (isStandardizedError(value)) {
+		return `${value.what} (${value.code})`
+	}
+	
+	// Handle Error objects
+	if (value instanceof Error) {
+		return `${value.name}: ${value.message}`
+	}
+	
+	// Handle objects with toString
+	if (typeof value.toString === "function" && value.toString !== Object.prototype.toString) {
+		try {
+			const result = value.toString()
+			if (typeof result === "string" && result.length > 0 && result !== "[object Object]") {
+				return result
+			}
+		} catch {
+			// Fall through to JSON.stringify
+		}
+	}
+	
+	// Handle objects
+	if (typeof value === "object") {
+		try {
+			const json = JSON.stringify(value)
+			if (json.length > 200) {
+				return `${json.substring(0, 200)}...`
+			}
+			return json
+		} catch {
+			return fallback
+		}
+	}
+	
+	// Fallback for functions or other types
+	return fallback
+}
+
+/**
+ * Type guard for StandardizedError
+ */
+export const isStandardizedError = (value: unknown): value is StandardizedError => {
+	return typeof value === "object" && 
+		   value !== null && 
+		   "what" in value && 
+		   "why" in value && 
+		   "fix" in value &&
+		   typeof value.what === "string"
+}
+
+/**
+ * Safe template literal helper for common error patterns
+ * 
+ * @param template - Template string with ${value} placeholders
+ * @param values - Values to safely interpolate
+ * @returns Safe string with all values converted safely
+ */
+export const safeTemplate = (template: string, ...values: unknown[]): string => {
+	let result = template
+	
+	values.forEach((value, index) => {
+		const safeValue = safeStringify(value)
+		result = result.replace(new RegExp(`\\$\\{${index}\\}`, "g"), safeValue)
+	})
+	
+	return result
+}

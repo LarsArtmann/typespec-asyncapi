@@ -11,6 +11,7 @@ import type {ValidationStats} from "./ValidationStats.js"
 import type {ValidationOptions} from "./ValidationOptions.js"
 import { readFile } from "node:fs/promises"
 import {railwayLogging} from "../../utils/effect-helpers.js"
+import {safeStringify} from "../../utils/standardized-errors.js"
 
 /**
  * AsyncAPI 3.0 Validator Class using REAL @asyncapi/parser
@@ -145,7 +146,7 @@ export class AsyncAPIValidator {
 				Effect.retry(Schedule.exponential("100 millis").pipe(
 					Schedule.compose(Schedule.recurs(3))
 				)),
-				Effect.tapError(attempt => Effect.log(`⚠️  Parser attempt failed, retrying: ${attempt}`)),
+				Effect.tapError(attempt => Effect.log(`⚠️  Parser attempt failed, retrying: ${safeStringify(attempt)}`)),
 				Effect.catchAll((error) => {
 					if (error.message?.includes("timeout")) {
 						return Effect.sync(() => {

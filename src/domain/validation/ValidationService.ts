@@ -13,7 +13,7 @@ import type {
 	AsyncAPIObject, 
 	ReferenceObject
 } from "@asyncapi/parser/esm/spec-types/v3.js"
-import { emitterErrors, railway, type StandardizedError } from "../../utils/standardized-errors.js"
+import { emitterErrors, railway, type StandardizedError, safeStringify } from "../../utils/standardized-errors.js"
 
 /**
  * Validation result with details about compliance and any issues found
@@ -48,7 +48,6 @@ export class ValidationService {
 	private isReference(obj: unknown): obj is ReferenceObject {
 		return obj != null && typeof obj === 'object' && '$ref' in obj
 	}
-
 
 	/**
 	 * Validate AsyncAPI document structure and compliance
@@ -126,14 +125,14 @@ export class ValidationService {
 				Effect.retry(Schedule.exponential("50 millis").pipe(
 					Schedule.compose(Schedule.recurs(2))
 				)),
-				Effect.tapError(attempt => Effect.log(`⚠️  JSON parsing attempt failed, retrying: ${attempt}`)),
+				Effect.tapError(attempt => Effect.log(`⚠️  JSON parsing attempt failed, retrying: ${safeStringify(attempt)}`)),
 				Effect.mapError(error => emitterErrors.invalidAsyncAPI(
 					["Failed to parse JSON/YAML content after retries"],
 					{ originalError: error.why, content: content.substring(0, 200) + "..." }
 				)),
 				Effect.catchAll(error => 
 					Effect.gen(function* () {
-						yield* Effect.log(`⚠️  Document parsing failed, providing minimal structure: ${error}`)
+						yield* Effect.log(`⚠️  Document parsing failed, providing minimal structure: ${safeStringify(error)}`)
 						// Create fallback minimal AsyncAPI structure
 						const fallbackDoc: AsyncAPIObject = {
 							asyncapi: "3.0.0",
@@ -147,16 +146,14 @@ export class ValidationService {
 			)
 
 			// Run comprehensive validation with fallback strategy
-			// WORKAROUND: Capture `this` context before nested Effect.gen to avoid binding issues
-			const self = this
-			const result = yield* self.validateDocument(parsedDoc).pipe(
+			const result = yield* this.validateDocument(parsedDoc).pipe(
 				Effect.catchAll(error => 
 					Effect.gen(function* () {
-						yield* Effect.log(`⚠️  Document validation failed, using graceful degradation: ${error}`)
+						yield* Effect.log(`⚠️  Document validation failed, using graceful degradation: ${safeStringify(error)}`)
 						// Return partial validation result as fallback
 						return Effect.succeed({
 							isValid: false,
-							errors: [`Validation service failed: ${error}`],
+							errors: [`Validation service failed: ${safeStringify(error)}`],
 							warnings: ["Document may be partially valid but validation service encountered errors"]
 						})
 					}).pipe(Effect.flatten)
@@ -175,8 +172,8 @@ export class ValidationService {
 				const sanitizedContent = JSON.stringify({
 					asyncapi: "3.0.0",
 					info: { title: "Generated API (Validation Issues)", version: "1.0.0" },
-					channels: parsedDoc.channels || {},
-					operations: parsedDoc.operations || {}
+					channels: parsedDoc.channels ?? {},
+					operations: parsedDoc.operations ?? {}
 				}, null, 2)
 				
 				return sanitizedContent
@@ -187,7 +184,7 @@ export class ValidationService {
 					return error as StandardizedError
 				}
 				return emitterErrors.validationFailure(
-					[`Unexpected validation error: ${String(error)}`],
+					[`Unexpected validation error: ${safeStringify(error)}`],
 					{ content: content.substring(0, 100) + "..." }
 				)
 			})
@@ -270,99 +267,12 @@ export class ValidationService {
 			}
 		})
 
-	return channelNames.length
+		return channelNames.length
 	}
-}
 
-/**
- * WORKAROUND: Standalone validation function to avoid Effect.TS binding issues
- * This solves the "this.validateDocument is undefined" problem by extracting to a standalone function
- */
-function validateDocumentForContent(doc: AsyncAPIObject): Effect.Effect<ValidationResult, never> {
-	return Effect.gen(function* () {
-		yield* Effect.log(`🔍 Validating parsed document with DocumentBuilder patterns`)
-
-		// Use the same validation logic as validateDocument but as standalone function
-		const errors: string[] = []
-		const warnings: string[] = []
-
-		// Create a temporary ValidationService instance for method access
-		const tempService = new ValidationService()
-
-		// Apply the same validation logic as validateDocument
-		tempService.validateBasicStructure(doc, errors, warnings)
-		tempService.validateInfoSection(doc, errors, warnings)
-		const channelsCount = tempService.validateChannels(doc, errors, warnings)
-		const operationsCount = tempService.validateOperations(doc, errors, warnings)
-		const { messagesCount, schemasCount } = tempService.validateComponents(doc, errors, warnings)
-		tempService.validateCrossReferences(doc, errors, warnings)
-
-		const isValid = errors.length === 0
-		const result: ValidationResult = {
-			isValid,
-			errors,
-			warnings,
-			channelsCount,
-			operationsCount,
-			messagesCount,
-			schemasCount
-		}
-
-		if (isValid) {
-			yield* Effect.log(`✅ Document validation passed! ${channelsCount} channels, ${operationsCount} operations`)
-		} else {
-			yield* Effect.log(`❌ Document validation failed with ${errors.length} errors, ${warnings.length} warnings`)
-		}
-
-		return result
-	})
-}
-
-/**
- * WORKAROUND: Standalone validation function to avoid Effect.TS binding issues
- * This solves the "this.validateDocument is undefined" problem by extracting to a standalone function
- */
-function validateDocumentForContent(doc: AsyncAPIObject): Effect.Effect<ValidationResult, never> {
-	return Effect.gen(function* () {
-		yield* Effect.log(`🔍 Validating parsed document with DocumentBuilder patterns`)
-
-		// Use the same validation logic as validateDocument but as standalone function
-		const errors: string[] = []
-		const warnings: string[] = []
-
-		// Apply the same validation logic as validateDocument
-		const tempService = new ValidationService()
-
-		// Apply the same validation logic as validateDocument
-		tempService.validateBasicStructure(doc, errors, warnings)
-		tempService.validateInfoSection(doc, errors, warnings)
-		const channelsCount = tempService.validateChannels(doc, errors, warnings)
-		const operationsCount = tempService.validateOperations(doc, errors, warnings)
-		const { messagesCount, schemasCount } = tempService.validateComponents(doc, errors, warnings)
-		tempService.validateCrossReferences(doc, errors, warnings)
-
-		const isValid = errors.length === 0
-		const result: ValidationResult = {
-			isValid,
-			errors,
-			warnings,
-			channelsCount,
-			operationsCount,
-			messagesCount,
-			schemasCount
-		}
-
-		if (isValid) {
-			yield* Effect.log(`✅ Document validation passed! ${channelsCount} channels, ${operationsCount} operations`)
-		} else {
-			yield* Effect.log(`❌ Document validation failed with ${errors.length} errors, ${warnings.length} warnings`)
-		}
-
-		return result
-	})
-}
-
-/**
+	/**
+	 * Validate operations section
+	 */
 	private validateOperations(doc: AsyncAPIObject, errors: string[], warnings: string[]): number {
 		if (!doc?.operations || Object.keys(doc.operations).length === 0) {
 			warnings.push("No operations defined - document may be incomplete")
@@ -439,6 +349,7 @@ function validateDocumentForContent(doc: AsyncAPIObject): Effect.Effect<Validati
 	 */
 	private validateCrossReferences(doc: AsyncAPIObject, errors: string[], _warnings: string[]): void {
 		if (!doc) return
+		
 		// Validate operation channel references
 		if (doc.operations && doc.channels) {
 			Object.entries(doc.operations).forEach(([operationName, operation]) => {

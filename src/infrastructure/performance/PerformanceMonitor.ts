@@ -16,6 +16,7 @@ import {Effect} from "effect"
 import {PERFORMANCE_METRICS_SERVICE} from "../performance/metrics.js"
 import {MEMORY_MONITOR_SERVICE} from "../performance/memory-monitor.js"
 import {createMetricName} from "../performance/PerformanceTypes.js"
+import {safeStringify} from "../../utils/standardized-errors.js"
 
 // Performance monitoring constants
 const DEFAULT_MONITORING_INTERVAL_MS = 5000 // 5 seconds
@@ -177,7 +178,7 @@ export class PerformanceMonitor {
 					this.addSnapshotWithMemoryManagement(snapshot, currentMemory)
 					return snapshot
 				}.bind(this)),
-				catch: (error) => new Error(`Failed to take performance snapshot: ${error instanceof Error ? error.message : String(error)}`)
+				catch: (error) => new Error(`Failed to take performance snapshot: ${safeStringify(error)}`)
 			}).pipe(
 				Effect.flatten,
 				Effect.tap((snapshot) => Effect.log(`📊 Performance snapshot taken: ${snapshot.memoryUsage}MB memory, ${snapshot.operationCount} operations`)),
@@ -318,7 +319,7 @@ export class PerformanceMonitor {
 				Effect.tap(result => Effect.log(`🗑️ Garbage collection completed: freed ${result.memoryFreed} MB`)),
 				Effect.catchAll(error => 
 					Effect.sync(() => {
-						Effect.runSync(Effect.logWarning(`⚠️ Garbage collection not available: ${error}`))
+						Effect.runSync(Effect.logWarning(`⚠️ Garbage collection not available: ${safeStringify(error)}`))
 						return null
 					})
 				)

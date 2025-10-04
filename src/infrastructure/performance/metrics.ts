@@ -17,6 +17,7 @@ import type {ThroughputResult} from "./ThroughputResult.js"
 import type {PerformanceMetricsService} from "./PerformanceMetricsService.js"
 import type {ByteAmount} from "./ByteAmount.js"
 import {createByteAmount} from "./ByteAmount.js"
+import {safeStringify} from "../../utils/standardized-errors.js"
 // import type {Milliseconds} from "./Durations.js"
 import { 
 	createOperationsPerSecond, 
@@ -132,7 +133,7 @@ const makePerformanceMetricsService = Effect.gen(function* () {
 		}).pipe(
 			Effect.catchAll(error =>
 				Effect.fail(new MetricsInitializationError(
-					`Failed to start performance measurement: ${error}`,
+					`Failed to start performance measurement: ${safeStringify(error)}`,
 					error,
 				)),
 			),
@@ -185,7 +186,7 @@ const makePerformanceMetricsService = Effect.gen(function* () {
 		}).pipe(
 			Effect.catchAll(error =>
 				Effect.fail(new MetricsCollectionError(
-					`Failed to record throughput metrics: ${error}`,
+					`Failed to record throughput metrics: ${safeStringify(error)}`,
 					error,
 				)),
 			),
@@ -206,7 +207,7 @@ const makePerformanceMetricsService = Effect.gen(function* () {
 		}).pipe(
 			Effect.catchAll(error =>
 				Effect.fail(new MetricsCollectionError(
-					`Failed to record memory usage: ${error}`,
+					`Failed to record memory usage: ${safeStringify(error)}`,
 					error,
 				)),
 			),
@@ -277,15 +278,15 @@ const makePerformanceMetricsService = Effect.gen(function* () {
 
 			report += `## Current Metrics\n`
 			report += `- **Average Throughput:** ${summary[createMetricName("throughput")]?.toLocaleString() || 'N/A'} ops/sec\n`
-			report += `- **Average Memory/Op:** ${summary[createMetricName("memoryPerOp")]?.toFixed(0) || 'N/A'} bytes\n`
-			report += `- **Average Latency:** ${summary[createMetricName("latency")]?.toFixed(2) || 'N/A'} μs\n`
-			report += `- **Success Rate:** ${summary[createMetricName("successRate")]?.toFixed(2) || 'N/A'}%\n`
-			report += `- **Memory Efficiency:** ${summary[createMetricName("memoryEfficiency")]?.toFixed(1) || 'N/A'}%\n\n`
+			report += `- **Average Memory/Op:** ${summary[createMetricName("memoryPerOp")]?.toFixed(0) ?? 'N/A'} bytes\n`
+			report += `- **Average Latency:** ${summary[createMetricName("latency")]?.toFixed(2) ?? 'N/A'} μs\n`
+			report += `- **Success Rate:** ${summary[createMetricName("successRate")]?.toFixed(2) ?? 'N/A'}%\n`
+			report += `- **Memory Efficiency:** ${summary[createMetricName("memoryEfficiency")]?.toFixed(1) ?? 'N/A'}%\n\n`
 
 			report += `## Status\n`
-			const throughputStatus = (summary[createMetricName("throughput")] || 0) >= THROUGHPUT_TARGET ? "✅ PASS" : "❌ FAIL"
-			const memoryStatus = (summary[createMetricName("memoryPerOp")] || 0) <= MEMORY_TARGET ? "✅ PASS" : "❌ FAIL"
-			const latencyStatus = (summary[createMetricName("latency")] || 0) <= LATENCY_TARGET ? "✅ PASS" : "❌ FAIL"
+			const throughputStatus = (summary[createMetricName("throughput")] ?? 0) >= THROUGHPUT_TARGET ? "✅ PASS" : "❌ FAIL"
+			const memoryStatus = (summary[createMetricName("memoryPerOp")] ?? 0) <= MEMORY_TARGET ? "✅ PASS" : "❌ FAIL"
+			const latencyStatus = (summary[createMetricName("latency")] ?? 0) <= LATENCY_TARGET ? "✅ PASS" : "❌ FAIL"
 
 			report += `- **Throughput:** ${throughputStatus}\n`
 			report += `- **Memory:** ${memoryStatus}\n`
@@ -295,7 +296,7 @@ const makePerformanceMetricsService = Effect.gen(function* () {
 		}).pipe(
 			Effect.catchAll(error =>
 				Effect.fail(new MetricsCollectionError(
-					`Failed to generate performance report: ${error}`,
+					`Failed to generate performance report: ${safeStringify(error)}`,
 					error,
 				)),
 			),
@@ -311,13 +312,13 @@ const makePerformanceMetricsService = Effect.gen(function* () {
 			const failureCount = yield* Metric.value(PERFORMANCE_METRICS.validationFailure)
 
 			// Extract numeric values from histograms (using count as approximation)
-			const throughputMetric = typeof throughputHistogram === 'number' ? throughputHistogram : (throughputHistogram?.count || 0)
-			const memoryMetric = typeof memoryHistogram === 'number' ? memoryHistogram : (memoryHistogram?.count || 0)
-			const latencyMetric = typeof latencyHistogram === 'number' ? latencyHistogram : (latencyHistogram?.count || 0)
+			const throughputMetric = typeof throughputHistogram === 'number' ? throughputHistogram : (throughputHistogram?.count ?? 0)
+			const memoryMetric = typeof memoryHistogram === 'number' ? memoryHistogram : (memoryHistogram?.count ?? 0)
+			const latencyMetric = typeof latencyHistogram === 'number' ? latencyHistogram : (latencyHistogram?.count ?? 0)
 
 			// Extract numeric values from counters
-			const successCountValue = typeof successCount === 'number' ? successCount : (successCount?.count || 0)
-			const failureCountValue = typeof failureCount === 'number' ? failureCount : (failureCount?.count || 0)
+			const successCountValue = typeof successCount === 'number' ? successCount : (successCount?.count ?? 0)
+			const failureCountValue = typeof failureCount === 'number' ? failureCount : (failureCount?.count ?? 0)
 
 			const totalValidations = successCountValue + failureCountValue
 			const successRate = totalValidations > 0 ? (successCountValue / totalValidations) * 100 : 100
@@ -333,7 +334,7 @@ const makePerformanceMetricsService = Effect.gen(function* () {
 		}).pipe(
 			Effect.catchAll(error =>
 				Effect.fail(new MetricsCollectionError(
-					`Failed to get metrics summary: ${error}`,
+					`Failed to get metrics summary: ${safeStringify(error)}`,
 					error,
 				)),
 			),
@@ -364,7 +365,7 @@ const makePerformanceMetricsService = Effect.gen(function* () {
 		}).pipe(
 			Effect.catchAll(error =>
 				Effect.fail(new MetricsCollectionError(
-					`Failed to start continuous monitoring: ${error}`,
+					`Failed to start continuous monitoring: ${safeStringify(error)}`,
 					error,
 				)),
 			),

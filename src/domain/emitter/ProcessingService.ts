@@ -159,15 +159,15 @@ const processSingleOperation = (op: Operation, asyncApiDoc: AsyncAPIObject, prog
 			
 			// Generate channel bindings - Plugin system preferred
 			const channelBindingResult = Effect.runSync(generateProtocolBinding(protocolName, 'channel', bindingData).pipe(Effect.catchAll(() => Effect.succeed(null))))
-			channelBindings = channelBindingResult || ProtocolBindingFactory.createChannelBindings(protocolType, protocolConfig.binding || {})
+			channelBindings = channelBindingResult ?? ProtocolBindingFactory.createChannelBindings(protocolType, protocolConfig.binding ?? {})
 			
 			// Generate operation bindings - Plugin system preferred
 			const operationBindingResult = Effect.runSync(generateProtocolBinding(protocolName, 'operation', bindingData).pipe(Effect.catchAll(() => Effect.succeed(null))))
-			operationBindings = operationBindingResult || ProtocolBindingFactory.createOperationBindings(protocolType, protocolConfig.binding || {})
+			operationBindings = operationBindingResult ?? ProtocolBindingFactory.createOperationBindings(protocolType, protocolConfig.binding ?? {})
 			
 			// Generate message bindings - Plugin system preferred
 			const messageBindingResult = Effect.runSync(generateProtocolBinding(protocolName, 'message', bindingData).pipe(Effect.catchAll(() => Effect.succeed(null))))
-			messageBindings = messageBindingResult || ProtocolBindingFactory.createMessageBindings(protocolType, protocolConfig.binding || {})
+			messageBindings = messageBindingResult ?? ProtocolBindingFactory.createMessageBindings(protocolType, protocolConfig.binding ?? {})
 			
 			if (channelBindings) {
 				Effect.log(`✅ Channel bindings created for ${protocolType} ${channelBindingResult ? '(plugin)' : '(factory)'}`)
@@ -199,7 +199,7 @@ const processSingleOperation = (op: Operation, asyncApiDoc: AsyncAPIObject, prog
 		asyncApiDoc.channels[channelName] = definition
 
 		// Add operation to document
-		if (!asyncApiDoc.operations) asyncApiDoc.operations = {}
+		asyncApiDoc.operations ??= {}
 		//TODO: HARDCODED MESSAGE TEMPLATES! EXTRACT TO CONSTANTS!
 		//TODO: CRITICAL DUPLICATION - Template strings scattered throughout codebase!
 		//TODO: I18N VIOLATION - Hardcoded English messages won't work for international teams!
@@ -219,8 +219,8 @@ const processSingleOperation = (op: Operation, asyncApiDoc: AsyncAPIObject, prog
 		asyncApiDoc.operations[op.name] = operationDef
 
 		// Add message to components
-		if (!asyncApiDoc.components) asyncApiDoc.components = {}
-		if (!asyncApiDoc.components.messages) asyncApiDoc.components.messages = {}
+		asyncApiDoc.components ??= {}
+		asyncApiDoc.components.messages ??= {}
 		const messageDef: Partial<MessageObject> = {
 			name: `${op.name}Message`,
 			title: `${op.name} Message`,
@@ -240,7 +240,7 @@ const processSingleOperation = (op: Operation, asyncApiDoc: AsyncAPIObject, prog
 				Effect.log(`📋 Processing Model return type: ${model.name}`)
 				
 				// Add schema to components.schemas
-				if (!asyncApiDoc.components.schemas) asyncApiDoc.components.schemas = {}
+				asyncApiDoc.components.schemas ??= {}
 				asyncApiDoc.components.schemas[model.name] = convertModelToSchema(model, program)
 				
 				// Add payload reference to message
@@ -297,14 +297,14 @@ const processSingleMessageModel = (model: Model, asyncApiDoc: AsyncAPIObject, pr
 
 		// Ensure components.messages exists
 		if (!asyncApiDoc.components?.messages) {
-			if (!asyncApiDoc.components) asyncApiDoc.components = {}
+			asyncApiDoc.components ??= {}
 			asyncApiDoc.components.messages = {}
 		}
 
 		const messageId = messageConfig.name ?? model.name
 
 		// CRITICAL FIX: Add schema to components.schemas first!
-		if (!asyncApiDoc.components.schemas) asyncApiDoc.components.schemas = {}
+		asyncApiDoc.components.schemas ??= {}
 		asyncApiDoc.components.schemas[model.name] = convertModelToSchema(model, program)
 		Effect.log(`✅ Added schema for message model: ${model.name}`)
 
@@ -343,7 +343,7 @@ const processSingleSecurityConfig = (config: SecurityConfig, asyncApiDoc: AsyncA
 
 		// Ensure components.securitySchemes exists
 		if (!asyncApiDoc.components?.securitySchemes) {
-			if (!asyncApiDoc.components) asyncApiDoc.components = {}
+			asyncApiDoc.components ??= {}
 			asyncApiDoc.components.securitySchemes = {}
 		}
 
@@ -472,7 +472,7 @@ const createAsyncAPISecurityScheme = (config: SecurityConfig): SecuritySchemeObj
 				return {
 					type: "apiKey",
 					in: "user",
-					description: scheme.description || `Security scheme ${config.name}`,
+					description: scheme.description ?? `Security scheme ${config.name}`,
 				} as SecuritySchemeObject
 		}
 	}

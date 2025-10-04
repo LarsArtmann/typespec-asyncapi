@@ -18,6 +18,7 @@ import {Context, Effect, Layer, Schedule} from "effect"
 // Node.js built-ins
 import type {StandardizedError} from "./StandardizedError.js"
 import type {ErrorHandlingConfig} from "./ErrorHandlingConfig.js"
+import {safeStringify} from "../../utils/standardized-errors.js"
 import {TypeResolutionError} from "./TypeResolutionError.js"
 import {CompilationError} from "./CompilationError.js"
 import {PluginError} from "../../infrastructure/adapters/PluginError.js"
@@ -264,7 +265,7 @@ export class ErrorHandlingStandardization {
 			const pluginName = error.details && typeof error.details === "object" &&
 			"pluginName" in error.details ? error.details.pluginName : "unknown"
 
-			yield* Effect.log(`🔌 Isolated plugin: ${pluginName}`)
+			yield* Effect.log(`🔌 Isolated plugin: ${safeStringify(pluginName)}`)
 			yield* Effect.log(`✅ Plugin error recovery completed`)
 
 			return "plugin_isolated"
@@ -328,7 +329,7 @@ export const errorHandlingUtils = {
 		return effect.pipe(
 			Effect.catchAll(error =>
 				Effect.gen(function* () {
-					yield* Effect.logError(`🚨 Safe operation failed, using fallback: ${error}`)
+					yield* Effect.logError(`🚨 Safe operation failed, using fallback: ${safeStringify(error)}`)
 					return fallback
 				})
 			)

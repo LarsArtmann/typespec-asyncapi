@@ -18,6 +18,7 @@
  */
 
 import {Effect} from "effect"
+import {safeStringify} from "../../utils/standardized-errors.js"
 import {stringify} from "yaml"
 import type {AsyncAPIObject} from "@asyncapi/parser/esm/spec-types/v3.js"
 import {
@@ -96,9 +97,9 @@ export class DocumentGenerator {
 					return this.serializeToYAML(document, options)
 				default:
 					return yield* failWith(createError({
-						what: `Unsupported serialization format: ${options.format}`,
+						what: `Unsupported serialization format: ${safeStringify(options.format)}`,
 						reassure: "Only JSON and YAML formats are currently supported",
-						why: `Format '${options.format}' is not in the supported list: [json, yaml]`,
+						why: `Format '${safeStringify(options.format)}' is not in the supported list: [json, yaml]`,
 						fix: "Use 'json' or 'yaml' as the serialization format",
 						escape: "Default to JSON format if format detection fails",
 						severity: "error" as const,
@@ -130,7 +131,7 @@ export class DocumentGenerator {
 	private serializeToJSON(document: AsyncAPIObject, options: SerializationOptions): string {
 		Effect.log(`📄 Generating JSON format`)
 
-		const indent = options.compact ? 0 : (options.indent || 2)
+		const indent = options.compact ? 0 : (options.indent ?? 2)
 		const result = JSON.stringify(document, null, indent)
 
 		Effect.log(`✅ JSON serialization complete: ${result.length} characters`)
@@ -144,7 +145,7 @@ export class DocumentGenerator {
 		Effect.log(`📄 Generating YAML format`)
 
 		const yamlOptions = {
-			indent: options.indent || 2,
+			indent: options.indent ?? 2,
 			lineWidth: options.compact ? -1 : 120,
 			minContentWidth: 0,
 			sortKeys: !options.preserveOrder,

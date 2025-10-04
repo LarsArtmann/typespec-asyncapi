@@ -66,7 +66,7 @@
 // TODO: CRITICAL - Missing validation imports for input sanitization
 // TODO: CRITICAL - No dependency injection container imports - tight coupling to concrete types
 import {Effect} from "effect"
-import {emitterErrors} from "../../utils/standardized-errors.js"
+import {emitterErrors, safeStringify} from "../../utils/standardized-errors.js"
 import type {AssetEmitter, EmittedSourceFile, SourceFile} from "@typespec/asset-emitter"
 import {TypeEmitter} from "@typespec/asset-emitter"
 import {DocumentGenerator} from "./DocumentGenerator.js"
@@ -172,19 +172,19 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 			Effect.gen(function* () {
 				// Component creation with proper error handling
 				const pipeline = yield* Effect.try(() => new EmissionPipeline()).pipe(
-					Effect.mapError(error => `EmissionPipeline initialization failed: ${error}`)
+					Effect.mapError(error => `EmissionPipeline initialization failed: ${safeStringify(error)}`)
 				)
 				
 				const documentGenerator = yield* Effect.try(() => new DocumentGenerator()).pipe(
-					Effect.mapError(error => `DocumentGenerator initialization failed: ${error}`)
+					Effect.mapError(error => `DocumentGenerator initialization failed: ${safeStringify(error)}`)
 				)
 				
 				const documentBuilder = yield* Effect.try(() => new DocumentBuilder()).pipe(
-					Effect.mapError(error => `DocumentBuilder initialization failed: ${error}`)
+					Effect.mapError(error => `DocumentBuilder initialization failed: ${safeStringify(error)}`)
 				)
 				
 				const performanceMonitor = yield* Effect.try(() => new PerformanceMonitor()).pipe(
-					Effect.mapError(error => `PerformanceMonitor initialization failed: ${error}`)
+					Effect.mapError(error => `PerformanceMonitor initialization failed: ${safeStringify(error)}`)
 				)
 				
 				// PluginRegistry removed - use simple plugin-system instead
@@ -200,8 +200,8 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 					// pluginRegistry removed - use simple plugin-system
 				}
 			}).pipe(
-				Effect.tapError(error => Effect.log(`❌ Component initialization failed: ${error}`)),
-				Effect.mapError(error => new Error(`AsyncAPIEmitter initialization failed: ${error}`))
+				Effect.tapError(error => Effect.log(`❌ Component initialization failed: ${safeStringify(error)}`)),
+				Effect.mapError(error => new Error(`AsyncAPIEmitter initialization failed: ${safeStringify(error)}`))
 			)
 		)
 
@@ -230,8 +230,8 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 				
 				return document
 			}.bind(this)).pipe(
-				Effect.tapError(error => Effect.log(`❌ Document initialization failed: ${error}`)),
-				Effect.mapError(error => new Error(`AsyncAPI document initialization failed: ${error}`))
+				Effect.tapError(error => Effect.log(`❌ Document initialization failed: ${safeStringify(error)}`)),
+				Effect.mapError(error => new Error(`AsyncAPI document initialization failed: ${safeStringify(error)}`))
 			)
 		)
 		Effect.log(`🏗️  Finished createInitialDocument`)
@@ -276,8 +276,8 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 		// TODO: CRITICAL - No error handling if getOptions() returns null/undefined
 		// TODO: CRITICAL - Bracket notation for options access is fragile - consider type-safe property access
 		const options = this.emitter.getOptions()
-		const fileType = options["file-type"] || DEFAULT_SERIALIZATION_FORMAT
-		const fileName = options["output-file"] || "asyncapi"
+		const fileType = options["file-type"] ?? DEFAULT_SERIALIZATION_FORMAT
+		const fileName = options["output-file"] ?? "asyncapi"
 		// TODO: CRITICAL - String interpolation without validation - fileType could contain invalid characters
 		// TODO: CRITICAL - No validation that fileName is safe for filesystem
 		const outputPath = `${fileName}.${fileType}`
@@ -296,10 +296,10 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 			Effect.gen(function* (this: AsyncAPIEmitter) {
 			// Execute the emission pipeline using Effect.TS
 				yield* Effect.sync(() => this.executeEmissionPipelineSync(program)).pipe(
-					Effect.mapError(error => `Emission pipeline execution failed: ${error}`),
+					Effect.mapError(error => `Emission pipeline execution failed: ${safeStringify(error)}`),
 					Effect.catchAll(error => 
 						Effect.gen(function* (this: AsyncAPIEmitter) {
-							yield* Effect.log(`⚠️  Pipeline failed, attempting graceful degradation: ${error}`)
+							yield* Effect.log(`⚠️  Pipeline failed, attempting graceful degradation: ${safeStringify(error)}`)
 							// Create minimal AsyncAPI document as fallback
 							yield* Effect.sync(() => {
 								this.asyncApiDoc.info = this.asyncApiDoc.info || { title: "Generated API (Partial)", version: "1.0.0" }
@@ -319,7 +319,7 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 			yield* Effect.log(`🔥 DIRECT FILE WRITE: Writing AsyncAPI file directly to disk`)
 			
 			// Generate the AsyncAPI content
-			const fileType: "yaml" | "json" = this.emitter.getOptions()["file-type"] || "yaml"
+			const fileType: "yaml" | "json" = this.emitter.getOptions()["file-type"] ?? "yaml"
 			const content = yield* this.documentGenerator.serializeDocument(this.asyncApiDoc, fileType)
 			
 			yield* Effect.log(`🔥 DIRECT FILE WRITE: Generated content length: ${content.length}`)
@@ -343,16 +343,16 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 				
 				return fullPath
 			}).pipe(
-				Effect.mapError(error => `File write failed: ${error}`)
+				Effect.mapError(error => `File write failed: ${safeStringify(error)}`)
 			)
 			
 			yield* Effect.log(`🔥 DIRECT FILE WRITE: Successfully wrote file: ${fullPath}`)
 			
 			}.bind(this)).pipe(
-				Effect.tapError(error => Effect.log(`❌ Micro-kernel emission pipeline failed: ${error}`)),
+				Effect.tapError(error => Effect.log(`❌ Micro-kernel emission pipeline failed: ${safeStringify(error)}`)),
 				Effect.catchAll(error => 
 					Effect.gen(function* () {
-						yield* Effect.log(`🚨 Complete pipeline failure, providing minimal output: ${error}`)
+						yield* Effect.log(`🚨 Complete pipeline failure, providing minimal output: ${safeStringify(error)}`)
 						// Last resort: ensure basic document structure exists
 						return Effect.succeed({})
 					})
@@ -416,10 +416,10 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 		Effect.log(`🔍 SOURCEFILEMETHOD: Generating file content for ${sourceFile.path}`)
 
 		const options = this.emitter.getOptions()
-		const fileType: "yaml" | "json" = options["file-type"] || "yaml"
+		const fileType: "yaml" | "json" = options["file-type"] ?? "yaml"
 		
 		Effect.log(`🔍 SOURCEFILEMETHOD: Using file type: ${fileType}`)
-		Effect.log(`🔍 SOURCEFILEMETHOD: AsyncAPI doc has ${Object.keys(this.asyncApiDoc.channels || {}).length} channels`)
+		Effect.log(`🔍 SOURCEFILEMETHOD: AsyncAPI doc has ${Object.keys(this.asyncApiDoc.channels ?? {}).length} channels`)
 
 		const content = Effect.runSync(this.documentGenerator.serializeDocument(this.asyncApiDoc, fileType))
 		
@@ -516,7 +516,7 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 
 				// Run pipeline with proper error handling
 				yield* this.pipeline.executePipeline(context).pipe(
-					Effect.mapError(error => `Pipeline execution failed: ${error}`)
+					Effect.mapError(error => `Pipeline execution failed: ${safeStringify(error)}`)
 				)
 
 				// Calculate execution metrics
@@ -525,11 +525,11 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 				
 				// Generate performance report with error handling
 				const finalStatus = yield* Effect.sync(() => this.performanceMonitor.getPerformanceStatus()).pipe(
-					Effect.mapError(error => `Performance status retrieval failed: ${error}`)
+					Effect.mapError(error => `Performance status retrieval failed: ${safeStringify(error)}`)
 				)
 				
 				const report = yield* Effect.sync(() => this.performanceMonitor.generatePerformanceReport()).pipe(
-					Effect.mapError(error => `Performance report generation failed: ${error}`)
+					Effect.mapError(error => `Performance report generation failed: ${safeStringify(error)}`)
 				)
 				
 				yield* Effect.log(`📊 Performance metrics - Execution: ${executionTime.toFixed(2)}ms, Snapshots: ${finalStatus.snapshotCount}`)
@@ -541,8 +541,8 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 					const endTime = performance.now()
 					const executionTime = endTime - startTime
 					return Effect.gen(function* () {
-						yield* Effect.log(`❌ Pipeline execution failed after ${executionTime.toFixed(2)}ms: ${error}`)
-						yield* Effect.fail(new Error(`Pipeline execution failed: ${error}`))
+						yield* Effect.log(`❌ Pipeline execution failed after ${executionTime.toFixed(2)}ms: ${safeStringify(error)}`)
+						yield* Effect.fail(new Error(`Pipeline execution failed: ${safeStringify(error)}`))
 					})
 				})
 			)

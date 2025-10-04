@@ -17,6 +17,7 @@ import type {Program} from "@typespec/compiler"
 
 // Effect.TS imports
 import {Effect} from "effect"
+import {safeStringify} from "../../utils/standardized-errors.js"
 
 // Node.js built-ins
 import {performance} from "perf_hooks"
@@ -98,7 +99,7 @@ export class PerformanceRegressionTester {
 				// Execute the test function  
 				yield* Effect.tryPromise({
 					try: () => testFunction(),
-					catch: (error) => new Error(`Test function failed: ${error}`)
+					catch: (error) => new Error(`Test function failed: ${safeStringify(error)}`)
 				})
 
 				const endTime = performance.now()

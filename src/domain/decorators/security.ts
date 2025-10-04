@@ -197,7 +197,7 @@ function validateSecurityScheme(scheme: SecurityScheme): { valid: boolean; error
 
 		default:
 			// TypeScript exhaustiveness check - this should never be reached
-			errors.push(`Unknown security scheme type: ${(scheme as { type?: string }).type || "unknown"}`)
+			errors.push(`Unknown security scheme type: ${(scheme as { type?: string }).type ?? "unknown"}`)
 	}
 
 	return {valid: errors.length === 0, errors, warnings}
