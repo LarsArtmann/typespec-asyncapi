@@ -110,7 +110,7 @@ export const kafkaPlugin: ProtocolPlugin = {
 		yield* Effect.log("✅ Validating Kafka configuration")
 
 		// Validate Kafka-specific configuration
-		if (typeof config !== 'object' ?? config === null) {
+		if (typeof config !== 'object' || config === null) {
 			return false
 		}
 
@@ -132,20 +132,20 @@ export const kafkaPlugin: ProtocolPlugin = {
 
 		// Validate topic for channel bindings
 		if ('topic' in kafkaConfig && kafkaConfig.topic) {
-			if (typeof kafkaConfig.topic !== 'string' ?? kafkaConfig.topic.trim().length === 0) {
+			if (typeof kafkaConfig.topic !== 'string' || kafkaConfig.topic.trim().length === 0) {
 				return false
 			}
 		}
 
 		// Validate partitions and replicas
 		if ('partitions' in kafkaConfig && kafkaConfig.partitions) {
-			if (typeof kafkaConfig.partitions !== 'number' ?? kafkaConfig.partitions < 1) {
+			if (typeof kafkaConfig.partitions !== 'number' || kafkaConfig.partitions < 1) {
 				return false
 			}
 		}
 
 		if ('replicas' in kafkaConfig && kafkaConfig.replicas) {
-			if (typeof kafkaConfig.replicas !== 'number' ?? kafkaConfig.replicas < 1) {
+			if (typeof kafkaConfig.replicas !== 'number' || kafkaConfig.replicas < 1) {
 				return false
 			}
 		}

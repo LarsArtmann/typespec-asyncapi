@@ -188,7 +188,7 @@ const processSingleOperation = (op: Operation, asyncApiDoc: AsyncAPIObject, prog
 		const action: "send" | "receive" = operationType === "subscribe" ? "receive" : "send"
 
 		// Add channel to document - use shared helper to eliminate duplication
-		if (!asyncApiDoc.channels) asyncApiDoc.channels = {}
+		asyncApiDoc.channels ??= {}
 		const { definition } = createChannelDefinition(op, program)
 		
 		// CRITICAL FIX: Add protocol bindings to channel definition
@@ -397,7 +397,7 @@ const createAsyncAPISecurityScheme = (config: SecurityConfig): SecuritySchemeObj
 		switch (scheme.type) {
 			case "apiKey":
 				// AsyncAPI v3 has different apiKey types based on location
-				if (scheme.in === "user" ?? scheme.in === "password") {
+				if (scheme.in === "user" || scheme.in === "password") {
 					return {
 						type: "userPassword",
 						description: scheme.description,

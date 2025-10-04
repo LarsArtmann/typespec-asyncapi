@@ -661,7 +661,7 @@ export const railwayValidationHelpers = {
 		requiredFields: Array<keyof T>,
 		context?: string
 	) => {
-		const missingFields = requiredFields.filter(field => !(field in obj) ?? obj[field] == null)
+		const missingFields = requiredFields.filter(field => !(field in obj) || obj[field] == null)
 		if (missingFields.length > 0) {
 			return Effect.fail(new Error(`${context ? `${context}: ` : ''}Missing required fields: ${missingFields.join(', ')}`))
 		}

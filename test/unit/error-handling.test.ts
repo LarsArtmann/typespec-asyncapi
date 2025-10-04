@@ -16,10 +16,10 @@ import { Effect } from "effect"
 import {
 	createError,
 	failWith,
-	Railway,
-	EmitterErrors,
-	ErrorFormatters,
-	Validators,
+	railway,
+	emitterErrors,
+	errorFormatters,
+	validators,
 	type StandardizedError
 } from "../../src/utils/standardized-errors.js"
 import { railwayErrorRecovery } from "../../src/utils/effect-helpers.js"
@@ -55,7 +55,7 @@ describe("Error Handling Migration (M016-M021)", () => {
 		})
 
 		it("should create EmitterErrors with proper structure", () => {
-			const error = EmitterErrors.compilationFailed("Type error", "test.tsp")
+			const error = emitterErrors.compilationFailed("Type error", "test.tsp")
 			
 			expect(error.what).toBe("TypeSpec compilation failed")
 			expect(error.code).toBe("TYPESPEC_COMPILATION_FAILED")
@@ -81,24 +81,24 @@ describe("Error Handling Migration (M016-M021)", () => {
 		})
 
 		it("should format error for user display", () => {
-			const formatted = ErrorFormatters.forUser(testError)
+			const formatted = errorFormatters.forUser(testError)
 			expect(formatted).toBe("Database connection failed. This is a temporary network issue")
 		})
 
 		it("should format error for developer display", () => {
-			const formatted = ErrorFormatters.forDeveloper(testError)
+			const formatted = errorFormatters.forDeveloper(testError)
 			expect(formatted).toBe("Connection timeout after 5000ms. Check database server status and network connectivity")
 		})
 
 		it("should format error for logging", () => {
-			const formatted = ErrorFormatters.forLogging(testError)
+			const formatted = errorFormatters.forLogging(testError)
 			expect(formatted).toContain("[DATABASE_CONNECTION_FAILED]")
 			expect(formatted).toContain("Database connection failed")
 			expect(formatted).toContain('"timeout":5000')
 		})
 
 		it("should create structured log entry", () => {
-			const logEntry = ErrorFormatters.toLogEntry(testError)
+			const logEntry = errorFormatters.toLogEntry(testError)
 			
 			expect(logEntry.level).toBe("error")
 			expect(logEntry.code).toBe("DATABASE_CONNECTION_FAILED")
@@ -112,14 +112,14 @@ describe("Error Handling Migration (M016-M021)", () => {
 		it("should safely execute synchronous operations", async () => {
 			// Test successful operation
 			const successResult = await Effect.runPromise(
-				Railway.trySync(() => "success", { context: { test: "sync" } })
+				railway.trySync(() => "success", { context: { test: "sync" } })
 			)
 			expect(successResult).toBe("success")
 		})
 
 		it("should handle synchronous operation failures", async () => {
 			const failureResult = Effect.runPromise(
-				Railway.trySync(() => {
+				railway.trySync(() => {
 					throw new Error("Test error")
 				}, { context: { test: "sync-error" } })
 					.pipe(Effect.either)
@@ -128,14 +128,14 @@ describe("Error Handling Migration (M016-M021)", () => {
 			const result = await failureResult
 			expect(result._tag).toBe("Left")
 			if (result._tag === "Left") {
-				expect(result.left.what).toBe("An unexpect error occurred")
+				expect(result.left.what).toBe("An unexpected error occurred")
 				expect(result.left.code).toBe("UNEXPECTED_ERROR")
 			}
 		})
 
 		it("should chain operations properly", async () => {
 			const chainedResult = await Effect.runPromise(
-				Railway.chain(
+				railway.chain(
 					Effect.succeed(5),
 					(n) => Effect.succeed(n * 2)
 				)
@@ -145,7 +145,7 @@ describe("Error Handling Migration (M016-M021)", () => {
 
 		it("should provide fallback for failed operations", async () => {
 			const fallbackResult = await Effect.runPromise(
-				Railway.fallback(
+				railway.fallback(
 					Effect.fail(createError({
 						what: "Test failure",
 						reassure: "Expected",
@@ -165,14 +165,14 @@ describe("Error Handling Migration (M016-M021)", () => {
 	describe("Validator Utilities", () => {
 		it("should validate required strings", async () => {
 			const validResult = await Effect.runPromise(
-				Validators.requiredString("valid-string", "testField")
+				validators.requiredString("valid-string", "testField")
 			)
 			expect(validResult).toBe("valid-string")
 		})
 
 		it("should fail on empty required string", async () => {
 			const invalidResult = await Effect.runPromise(
-				Validators.requiredString("", "testField")
+				validators.requiredString("", "testField")
 					.pipe(Effect.either)
 			)
 
@@ -185,19 +185,19 @@ describe("Error Handling Migration (M016-M021)", () => {
 
 		it("should validate optional strings", async () => {
 			const undefinedResult = await Effect.runPromise(
-				Validators.optionalString(undefined, "testField")
+				validators.optionalString(undefined, "testField")
 			)
 			expect(undefinedResult).toBe(undefined)
 
 			const validResult = await Effect.runPromise(
-				Validators.optionalString("valid", "testField")
+				validators.optionalString("valid", "testField")
 			)
 			expect(validResult).toBe("valid")
 		})
 
 		it("should validate arrays with element validation", async () => {
 			const arrayResult = await Effect.runPromise(
-				Validators.arrayOf(
+				validators.arrayOf(
 					["item1", "item2"],
 					"testArray",
 					(item, index) => Effect.succeed(`validated-${item}-${index}`)
@@ -437,8 +437,8 @@ describe("Error Handling Migration (M016-M021)", () => {
 
 			expect(result._tag).toBe("Left")
 			if (result._tag === "Left") {
-				expect(result.left.code).toBe("MISSING_PROGRAM_METHOD")
-				expect(result.left.what).toContain("getGlobalNamespaceType")
+				expect(result.left.code).toBe("MISSING_GLOBAL_NAMESPACE")
+				expect(result.left.what).toContain("Could not get global namespace")
 			}
 		})
 	})
@@ -476,8 +476,8 @@ describe("Error Handling Migration (M016-M021)", () => {
 			// Test error recovery across multiple components
 			const operations = [
 				// Simulate different failure modes
-				Effect.fail(EmitterErrors.compilationFailed("Syntax error", "test.tsp")),
-				Effect.fail(EmitterErrors.invalidAsyncAPI(["Missing title"], {})),
+				Effect.fail(emitterErrors.compilationFailed("Syntax error", "test.tsp")),
+				Effect.fail(emitterErrors.invalidAsyncAPI(["Missing title"], {})),
 				Effect.succeed("recovered-successfully")
 			]
 

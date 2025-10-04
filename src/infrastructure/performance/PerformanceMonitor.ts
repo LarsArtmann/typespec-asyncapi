@@ -226,7 +226,7 @@ export class PerformanceMonitor {
 		const latest = this.snapshots[this.snapshots.length - 1]
 		const earliest = this.snapshots[0]
 		
-		if (!latest ?? !earliest) {
+		if (!latest || !earliest) {
 			return "Insufficient performance data available"
 		}
 		

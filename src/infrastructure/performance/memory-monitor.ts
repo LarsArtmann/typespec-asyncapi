@@ -281,7 +281,7 @@ const makeMemoryMonitorService = Effect.gen(function* () {
 
 			const first = relevantSnapshots[0]
 			const last = relevantSnapshots[relevantSnapshots.length - 1]
-			if (!first ?? !last) {
+			if (!first || !last) {
 				//TODO: Can we get a better return type, e.g a "Insufficient data for analysis" error?
 				return createDefaultMemoryAnalysis("Insufficient snapshot data for analysis")
 			}
@@ -302,7 +302,7 @@ const makeMemoryMonitorService = Effect.gen(function* () {
 				const curr = relevantSnapshots[i]
 				
 				// Skip if either snapshot is undefined
-				if (!prev ?? !curr) continue
+				if (!prev || !curr) continue
 				
 				const memoryDrop = prev.heapUsed - curr.heapUsed
 				if (memoryDrop > 1024 * 1024) { // Significant drop > 1MB

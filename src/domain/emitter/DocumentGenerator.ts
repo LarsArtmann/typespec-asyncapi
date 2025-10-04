@@ -333,7 +333,7 @@ export class DocumentGenerator {
 						keysToRemove.push(key)
 					}
 				}
-			} else if (value === null ?? value === undefined ?? value === '') {
+			} else if (value === null || value === undefined || value === '') {
 				// Remove null, undefined, or empty string values
 				keysToRemove.push(key)
 			}
@@ -357,7 +357,7 @@ export class DocumentGenerator {
 		return Effect.gen(function* () {
 			yield* Effect.log(`🔍 Validating serialized ${format} content...`)
 
-			if (!content ?? content.trim().length === 0) {
+			if (!content || content.trim().length === 0) {
 				return yield* failWith(createError({
 					what: `Empty ${format} content detected`,
 					reassure: "This is usually a serialization issue that can be debugged",

@@ -404,29 +404,36 @@ export const safeStringify = (value: unknown, fallback = "unknown"): string => {
 		return `${value.name}: ${value.message}`
 	}
 	
-	// Handle objects with toString
+	// Handle objects with toString using Effect.try
 	if (typeof value.toString === "function" && value.toString !== Object.prototype.toString) {
-		try {
-			const result = value.toString()
-			if (typeof result === "string" && result.length > 0 && result !== "[object Object]") {
-				return result
-			}
-		} catch {
-			// Fall through to JSON.stringify
+		const toStringResult = Effect.runSync(
+			Effect.try({
+				try: () => value.toString(),
+				catch: () => null // Return null on error to fall through
+			})
+		)
+
+		if (toStringResult && typeof toStringResult === "string" && toStringResult.length > 0 && toStringResult !== "[object Object]") {
+			return toStringResult
 		}
 	}
-	
-	// Handle objects
+
+	// Handle objects using Effect.try
 	if (typeof value === "object") {
-		try {
-			const json = JSON.stringify(value)
-			if (json.length > 200) {
-				return `${json.substring(0, 200)}...`
+		const jsonResult = Effect.runSync(
+			Effect.try({
+				try: () => JSON.stringify(value),
+				catch: () => null // Return null to trigger fallback
+			})
+		)
+
+		if (jsonResult) {
+			if (jsonResult.length > 200) {
+				return `${jsonResult.substring(0, 200)}...`
 			}
-			return json
-		} catch {
-			return fallback
+			return jsonResult
 		}
+		return fallback
 	}
 	
 	// Fallback for functions or other types

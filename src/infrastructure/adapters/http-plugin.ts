@@ -70,7 +70,7 @@ export const httpPlugin: ProtocolPlugin = {
 		yield* Effect.log("✅ Validating HTTP configuration")
 
 		// Validate HTTP-specific configuration
-		if (typeof config !== 'object' ?? config === null) {
+		if (typeof config !== 'object' || config === null) {
 			return false
 		}
 
@@ -86,7 +86,7 @@ export const httpPlugin: ProtocolPlugin = {
 
 		// Validate message binding config
 		if ('statusCode' in httpConfig && httpConfig.statusCode) {
-			if (typeof httpConfig.statusCode !== 'number' ?? httpConfig.statusCode < 100 ?? httpConfig.statusCode > 599) {
+			if (typeof httpConfig.statusCode !== 'number' || httpConfig.statusCode < 100 || httpConfig.statusCode > 599) {
 				return false
 			}
 		}

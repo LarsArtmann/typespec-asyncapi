@@ -124,7 +124,7 @@ export class PerformanceRegressionTester {
 				const result = yield* this.analyzeRegression(testCaseName, metrics, baseline ?? null)
 
 				// Update baseline if this is a new test or performance improved
-				if (!baseline ?? this.shouldUpdateBaseline(metrics, baseline)) {
+				if (!baseline || this.shouldUpdateBaseline(metrics, baseline)) {
 					yield* this.updateBaseline(testCaseName, metrics)
 				}
 
@@ -220,7 +220,7 @@ export class PerformanceRegressionTester {
 	 */
 	private loadBaseline(testCaseName: string) {
 		return Effect.gen(this, function* () {
-			if (!this.config.enableBaselines ?? !existsSync(this.baselinePath)) {
+			if (!this.config.enableBaselines || !existsSync(this.baselinePath)) {
 				return null
 			}
 
@@ -230,7 +230,7 @@ export class PerformanceRegressionTester {
 			).pipe(
 				Effect.map(baselines => {
 					const testBaselines = baselines[testCaseName]
-					if (!testBaselines ?? testBaselines.length === 0) {
+					if (!testBaselines || testBaselines.length === 0) {
 						return null
 					}
 					// Return the most recent baseline
@@ -282,9 +282,7 @@ export class PerformanceRegressionTester {
 					"baseline file"
 				)
 
-				if (!baselines[testCaseName]) {
-					baselines[testCaseName] = []
-				}
+		baselines[testCaseName] ??= []
 
 				baselines[testCaseName].push(newBaseline)
 

@@ -185,9 +185,7 @@ export class DocumentBuilder {
 
 			// Safe component initialization with Railway programming
 			return yield* railway.trySync(() => {
-				if (!document.components) {
-					document.components = {}
-				}
+				document.components ??= {}
 				
 				document.components.schemas ??= {}
 				document.components.messages ??= {}

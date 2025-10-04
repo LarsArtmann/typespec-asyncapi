@@ -121,7 +121,7 @@ export class ErrorHandlingStandardization {
 	 */
 	attemptErrorRecovery(error: StandardizedError) {
 		return Effect.gen(function* (this: ErrorHandlingStandardization) {
-			if (!this.config.enableErrorRecovery ?? !error.recoverable) {
+			if (!this.config.enableErrorRecovery || !error.recoverable) {
 				yield* Effect.log(`🚨 Error not recoverable: ${error.message}`)
 				return yield* Effect.fail(error)
 			}

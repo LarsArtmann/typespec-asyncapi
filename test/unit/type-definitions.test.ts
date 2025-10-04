@@ -46,7 +46,7 @@ import {Effect} from "effect"
 import {
 	SERIALIZATION_FORMAT_OPTION_JSON,
 	SERIALIZATION_FORMAT_OPTIONS, SerializationFormatOption,
-} from "../../src/core/serialization-format-option.js"
+} from "../../src/domain/models/serialization-format-option.js"
 
 
 //TODO: this file is getting to big split it up

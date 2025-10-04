@@ -59,7 +59,7 @@ export function walkNamespace(ns: Namespace, operations: Operation[], program: P
  * Extracted common state map access pattern
  */
 function getStateMap<T>(program: Program, stateKey: symbol): Map<unknown, T> | undefined {
-	if (!program.stateMap ?? typeof program.stateMap !== 'function') {
+	if (!program.stateMap || typeof program.stateMap !== 'function') {
 		return undefined
 	}
 	return program.stateMap(stateKey) as Map<unknown, T> | undefined
@@ -134,7 +134,7 @@ export function logOperationDetails(operation: Operation, program: Program): voi
  * CRITICAL MISSING FUNCTION - Required for AsyncAPI server generation
  */
 export function getServerConfigs(program: Program, namespace: Namespace): Map<string, ServerConfig> | undefined {
-	if (!program.stateMap ?? typeof program.stateMap !== 'function') {
+	if (!program.stateMap || typeof program.stateMap !== 'function') {
 		return undefined
 	}
 	const serverConfigsMap = program.stateMap($lib.stateKeys.serverConfigs) as Map<Namespace, Map<string, ServerConfig>>
@@ -147,14 +147,14 @@ export function getServerConfigs(program: Program, namespace: Namespace): Map<st
  */
 export function getAllServerConfigs(program: Program): Map<Namespace, Map<string, ServerConfig>> {
 	// Handle cases where program doesn't have stateMap (like in tests)
-	if (!program.stateMap ?? typeof program.stateMap !== 'function') {
+	if (!program.stateMap || typeof program.stateMap !== 'function') {
 		return new Map<Namespace, Map<string, ServerConfig>>()
 	}
 
 	const stateMap = program.stateMap($lib.stateKeys.serverConfigs)
 
 	// Handle case where state map doesn't exist or is not iterable
-	if (!stateMap ?? typeof stateMap.entries !== 'function') {
+	if (!stateMap || typeof stateMap.entries !== 'function') {
 		return new Map<Namespace, Map<string, ServerConfig>>()
 	}
 
@@ -200,10 +200,10 @@ export function buildServersFromNamespaces(program: Program): ServersObject {
 
 	for (const [namespace, serverConfigsMap] of allServerConfigs.entries()) {
 		// Get namespace name, handle global namespace
-		const namespaceName = namespace.name === "" ?? !namespace.name ? "Global" : namespace.name
+		const namespaceName = namespace.name === "" || !namespace.name ? "Global" : namespace.name
 
 		// Defensive check: ensure serverConfigsMap is iterable
-		if (!serverConfigsMap ?? typeof serverConfigsMap.entries !== 'function') {
+		if (!serverConfigsMap || typeof serverConfigsMap.entries !== 'function') {
 			Effect.log(`⚠️ Skipping namespace ${namespaceName}: serverConfigsMap is not iterable`)
 			continue
 		}
