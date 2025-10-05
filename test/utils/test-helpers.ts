@@ -102,44 +102,13 @@ export async function createAsyncAPITestHost() {
  * Compile TypeSpec source and return both diagnostics and output files
  * PROPER LIBRARY APPROACH: Use registered AsyncAPI library with decorators
  */
-// Generate unique test directory based on source code hash
-function generateTestHash(source: string): string {
-	let hash = 0
-	for (let i = 0; i < source.length; i++) {
-		const char = source.charCodeAt(i)
-		hash = ((hash << 5) - hash) + char
-		hash = hash & hash // Convert to 32-bit integer
-	}
-	return Math.abs(hash).toString(36)
-}
-
 export async function compileAsyncAPISpecRaw(
 	source: string,
 	options: AsyncAPIEmitterOptions = {},
 ): Promise<CompilationResult> {
-	// SOLUTION: Delete only AsyncAPI output files, not entire directory
-	// This prevents parallel test interference while ensuring fresh files
+	// File system utilities for output file discovery
 	const fs = await import("node:fs/promises")
 	const path = await import("node:path")
-	const asyncapiOutputDir = path.join(process.cwd(), "tsp-test", "@lars-artmann", "typespec-asyncapi")
-
-	// Delete only YAML and JSON files in the output directory
-	try {
-		const files = await fs.readdir(asyncapiOutputDir)
-		for (const file of files) {
-			if (file.endsWith('.yaml') || file.endsWith('.json')) {
-				await fs.unlink(path.join(asyncapiOutputDir, file))
-			}
-		}
-		// Small delay to ensure deletion completes
-		await new Promise(resolve => setTimeout(resolve, 10))
-	} catch (error) {
-		// Ignore errors - directory may not exist yet
-	}
-
-	// Generate unique directory (for future use when outputDir works)
-	const testHash = generateTestHash(source)
-	const uniqueOutputDir = path.join(process.cwd(), "tsp-test", `test-${testHash}`)
 
 	// Create test host WITH proper AsyncAPI library registration
 	const host = await createAsyncAPITestHost()
@@ -155,17 +124,11 @@ export async function compileAsyncAPISpecRaw(
 	})
 
 	// Compile and emit TypeSpec code - this triggers emitters
-	// CRITICAL: Pass unique output directory to compiler to ensure test isolation
 	const [result, diagnostics] = await runner.compileAndDiagnose(source, {
 		emit: [DEFAULT_CONFIG.LIBRARY_NAME], // Explicitly emit with our emitter using constant
-		outputDir: uniqueOutputDir, // Use unique directory per test
 	})
 
 	// TypeSpec test runner automatically calls emitters - no manual invocation needed
-
-	// CRITICAL: Add small delay to ensure file writing completes
-	// AssetEmitter may write files asynchronously after compilation
-	await new Promise(resolve => setTimeout(resolve, 20))
 
 	// Debug logging
 	Effect.log("Compilation result:", typeof result, !!result)
@@ -191,15 +154,11 @@ export async function compileAsyncAPISpecRaw(
 
 	Effect.log(`📂 Program output dir: ${programOutputDir}`)
 
-	// CRITICAL: Search in unique test directory AND fallback locations
-	// Priority: unique test dir > standard locations
+	// Search in standard output locations
+	// Note: uniqueOutputDir parameter doesn't work with TypeSpec test infrastructure
 	const possibleDirs = [
-		// First try unique test directory (highest priority)
-		path.join(uniqueOutputDir, "@lars-artmann", "typespec-asyncapi"),
-		uniqueOutputDir,
-		// Then try standard locations (fallback)
-		path.join(programOutputDir, "@lars-artmann", "typespec-asyncapi"),
 		path.join(process.cwd(), "tsp-test", "@lars-artmann", "typespec-asyncapi"),
+		path.join(programOutputDir, "@lars-artmann", "typespec-asyncapi"),
 		path.join(process.cwd(), "tsp-output", "@lars-artmann", "typespec-asyncapi"),
 	]
 
