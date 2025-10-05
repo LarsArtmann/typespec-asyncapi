@@ -25,9 +25,9 @@ describe("E2E: Security Schemes Comprehensive", () => {
 
 			// === HTTP Bearer (JWT) ===
 			@channel("secure.bearer")
-			@security({
+			@security(#{
 				name: "jwtAuth",
-				scheme: {
+				scheme: #{
 					type: "http",
 					scheme: "bearer",
 					bearerFormat: "JWT"
@@ -38,9 +38,9 @@ describe("E2E: Security Schemes Comprehensive", () => {
 
 			// === API Key (Header) ===
 			@channel("secure.apikey.header")
-			@security({
+			@security(#{
 				name: "apiKeyHeader",
-				scheme: {
+				scheme: #{
 					type: "apiKey",
 					in: "header",
 					name: "X-API-Key"
@@ -51,9 +51,9 @@ describe("E2E: Security Schemes Comprehensive", () => {
 
 			// === API Key (Query) ===
 			@channel("secure.apikey.query")
-			@security({
+			@security(#{
 				name: "apiKeyQuery",
-				scheme: {
+				scheme: #{
 					type: "apiKey",
 					in: "query",
 					name: "api_key"
@@ -64,14 +64,14 @@ describe("E2E: Security Schemes Comprehensive", () => {
 
 			// === OAuth2 Client Credentials ===
 			@channel("secure.oauth2.client")
-			@security({
+			@security(#{
 				name: "oauth2ClientCreds",
-				scheme: {
+				scheme: #{
 					type: "oauth2",
-					flows: {
-						clientCredentials: {
+					flows: #{
+						clientCredentials: #{
 							tokenUrl: "https://auth.example.com/oauth/token",
-							scopes: {
+							scopes: #{
 								"read:messages": "Read messages",
 								"write:messages": "Write messages"
 							}
@@ -84,15 +84,15 @@ describe("E2E: Security Schemes Comprehensive", () => {
 
 			// === OAuth2 Authorization Code ===
 			@channel("secure.oauth2.authcode")
-			@security({
+			@security(#{
 				name: "oauth2AuthCode",
-				scheme: {
+				scheme: #{
 					type: "oauth2",
-					flows: {
-						authorizationCode: {
+					flows: #{
+						authorizationCode: #{
 							authorizationUrl: "https://auth.example.com/authorize",
 							tokenUrl: "https://auth.example.com/token",
-							scopes: {
+							scopes: #{
 								"admin": "Admin access"
 							}
 						}
@@ -104,9 +104,9 @@ describe("E2E: Security Schemes Comprehensive", () => {
 
 			// === Kafka SASL ===
 			@channel("secure.kafka.sasl")
-			@security({
+			@security(#{
 				name: "kafkaSASL256",
-				scheme: {
+				scheme: #{
 					type: "sasl",
 					mechanism: "SCRAM-SHA-256"
 				}
@@ -116,9 +116,9 @@ describe("E2E: Security Schemes Comprehensive", () => {
 
 			// === Kafka SASL 512 ===
 			@channel("secure.kafka.sasl512")
-			@security({
+			@security(#{
 				name: "kafkaSASL512",
-				scheme: {
+				scheme: #{
 					type: "sasl",
 					mechanism: "SCRAM-SHA-512"
 				}
@@ -128,9 +128,9 @@ describe("E2E: Security Schemes Comprehensive", () => {
 
 			// === HTTP Basic Auth ===
 			@channel("secure.basic")
-			@security({
+			@security(#{
 				name: "basicAuth",
-				scheme: {
+				scheme: #{
 					type: "http",
 					scheme: "basic"
 				}

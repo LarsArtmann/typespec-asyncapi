@@ -42,9 +42,9 @@ describe("E2E: Real-World E-Commerce System", () => {
 			}
 
 			@channel("catalog.product.created")
-			@protocol({
+			@protocol(#{
 				protocol: "kafka",
-				binding: {
+				binding: #{
 					topic: "product-events",
 					key: "productId",
 					groupId: "catalog-service"
@@ -54,9 +54,9 @@ describe("E2E: Real-World E-Commerce System", () => {
 			op publishProductCreated(): Product;
 
 			@channel("catalog.product.updated")
-			@protocol({
+			@protocol(#{
 				protocol: "kafka",
-				binding: { topic: "product-events", key: "productId" }
+				binding: #{ topic: "product-events", key: "productId" }
 			})
 			@publish
 			op publishProductUpdated(): Product;
@@ -73,9 +73,9 @@ describe("E2E: Real-World E-Commerce System", () => {
 			}
 
 			@channel("inventory.quantity.changed")
-			@protocol({
+			@protocol(#{
 				protocol: "kafka",
-				binding: {
+				binding: #{
 					topic: "inventory-events",
 					key: "productId",
 					groupId: "inventory-service"
@@ -85,9 +85,9 @@ describe("E2E: Real-World E-Commerce System", () => {
 			op publishInventoryUpdate(): InventoryUpdate;
 
 			@channel("inventory.low-stock.alert")
-			@protocol({
+			@protocol(#{
 				protocol: "websocket",
-				binding: { method: "GET" }
+				binding: #{ method: "GET" }
 			})
 			@subscribe
 			op subscribeLowStockAlerts(): {
@@ -120,17 +120,17 @@ describe("E2E: Real-World E-Commerce System", () => {
 			}
 
 			@channel("orders.placed")
-			@protocol({
+			@protocol(#{
 				protocol: "kafka",
-				binding: {
+				binding: #{
 					topic: "order-events",
 					key: "orderId",
 					groupId: "order-service"
 				}
 			})
-			@security({
+			@security(#{
 				name: "orderAuth",
-				scheme: {
+				scheme: #{
 					type: "http",
 					scheme: "bearer",
 					bearerFormat: "JWT"
@@ -152,22 +152,22 @@ describe("E2E: Real-World E-Commerce System", () => {
 			}
 
 			@channel("payments.processed")
-			@protocol({
+			@protocol(#{
 				protocol: "kafka",
-				binding: {
+				binding: #{
 					topic: "payment-events",
 					key: "orderId",
 					groupId: "payment-service"
 				}
 			})
-			@security({
+			@security(#{
 				name: "paymentAuth",
-				scheme: {
+				scheme: #{
 					type: "oauth2",
-					flows: {
-						clientCredentials: {
+					flows: #{
+						clientCredentials: #{
 							tokenUrl: "https://auth.ecommerce.com/oauth/token",
-							scopes: {
+							scopes: #{
 								"payments:read": "Read payment data",
 								"payments:write": "Process payments"
 							}
@@ -194,9 +194,9 @@ describe("E2E: Real-World E-Commerce System", () => {
 			}
 
 			@channel("shipping.shipment.created")
-			@protocol({
+			@protocol(#{
 				protocol: "kafka",
-				binding: {
+				binding: #{
 					topic: "shipment-events",
 					key: "orderId"
 				}
@@ -213,9 +213,9 @@ describe("E2E: Real-World E-Commerce System", () => {
 			}
 
 			@channel("shipping.status.updated")
-			@protocol({
+			@protocol(#{
 				protocol: "websocket",
-				binding: { method: "GET" }
+				binding: #{ method: "GET" }
 			})
 			@subscribe
 			op subscribeShipmentStatus(): ShipmentStatusUpdate;
@@ -232,16 +232,16 @@ describe("E2E: Real-World E-Commerce System", () => {
 			}
 
 			@channel("webhooks.customer.notifications")
-			@protocol({
+			@protocol(#{
 				protocol: "http",
-				binding: {
+				binding: #{
 					type: "request",
 					method: "POST"
 				}
 			})
-			@security({
+			@security(#{
 				name: "webhookAuth",
-				scheme: {
+				scheme: #{
 					type: "apiKey",
 					in: "header",
 					name: "X-Webhook-Secret"

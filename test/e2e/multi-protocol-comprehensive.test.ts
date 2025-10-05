@@ -29,18 +29,18 @@ describe("E2E: Multi-Protocol Comprehensive Test", () => {
 			}
 
 			@channel("user.lifecycle.created")
-			@protocol({
+			@protocol(#{
 				protocol: "kafka",
-				binding: {
+				binding: #{
 					topic: "user-events",
 					key: "userId",
 					groupId: "user-service",
 					bindingVersion: "0.5.0"
 				}
 			})
-			@security({
+			@security(#{
 				name: "kafkaAuth",
-				scheme: {
+				scheme: #{
 					type: "sasl",
 					mechanism: "SCRAM-SHA-256"
 				}
@@ -58,22 +58,22 @@ describe("E2E: Multi-Protocol Comprehensive Test", () => {
 			}
 
 			@channel("notifications.{userId}.live")
-			@protocol({
+			@protocol(#{
 				protocol: "websocket",
-				binding: {
+				binding: #{
 					method: "GET",
-					query: {
+					query: #{
 						type: "object",
-						properties: {
-							token: { type: "string" }
+						properties: #{
+							token: #{ type: "string" }
 						}
 					},
 					bindingVersion: "0.1.0"
 				}
 			})
-			@security({
+			@security(#{
 				name: "bearerAuth",
-				scheme: {
+				scheme: #{
 					type: "http",
 					scheme: "bearer",
 					bearerFormat: "JWT"
@@ -94,17 +94,17 @@ describe("E2E: Multi-Protocol Comprehensive Test", () => {
 			}
 
 			@channel("webhooks.external.events")
-			@protocol({
+			@protocol(#{
 				protocol: "http",
-				binding: {
+				binding: #{
 					type: "request",
 					method: "POST",
 					bindingVersion: "0.3.0"
 				}
 			})
-			@security({
+			@security(#{
 				name: "apiKeyAuth",
-				scheme: {
+				scheme: #{
 					type: "apiKey",
 					in: "header",
 					name: "X-API-Key"
@@ -127,9 +127,9 @@ describe("E2E: Multi-Protocol Comprehensive Test", () => {
 			}
 
 			@channel("devices.{deviceId}.status")
-			@protocol({
+			@protocol(#{
 				protocol: "mqtt",
-				binding: {
+				binding: #{
 					qos: 1,
 					retain: true,
 					bindingVersion: "0.2.0"
