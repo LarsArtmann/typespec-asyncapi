@@ -330,10 +330,10 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 			)
 		)
 
-		// CRITICAL FIX: Return the sourceFile globalScope as the scope context for the AssetEmitter
-		// This ensures that the emitter framework calls sourceFile() method for content generation
+		// CRITICAL FIX: Return ONLY scope, not sourceFile
+		// TypeSpec AssetEmitter documentation shows programContext should return { scope }
+		// The sourceFile is tracked internally by the framework
 		return {
-			sourceFile,
 			scope: sourceFile.globalScope,
 		}
 	}
