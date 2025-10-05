@@ -1,0 +1,73 @@
+graph TD
+    subgraph "Test Infrastructure (CURRENT STATE)"
+        TH[Test Helpers]
+        TH --> CATH[createAsyncAPITestHost]
+        TH --> CAS[compileAsyncAPISpec]
+        TH --> CASWR[compileAsyncAPISpecRaw]
+        TH --> AA[AsyncAPIAssertions]
+    end
+
+    subgraph "Test Categories"
+        UT[Unit Tests<br/>136 tests]
+        IT[Integration Tests<br/>89 tests]
+        ET[E2E Tests<br/>127 tests]
+        DT[Domain Tests<br/>200 tests 🚨]
+        VT[Validation Tests<br/>223 tests]
+    end
+
+    subgraph "Test Helper Usage (SPLIT BRAIN)"
+        CATH --> |Used by| DT
+        CATH --> |Used by| UT
+        CAS --> |Used by| IT
+        CAS --> |Used by| ET
+        CAS --> |Used by| VT
+    end
+
+    subgraph "Return Types"
+        CATH --> |Returns| TSH[TypeSpec TestHost<br/>Compilation Only]
+        CAS --> |Returns| AAO[AsyncAPIObject<br/>Full Emitter Output]
+        CASWR --> |Returns| CR[CompilationResult<br/>Diagnostics + Files]
+    end
+
+    subgraph "Test Assertions (CURRENT)"
+        DT --> GA[Ghost Assertions 🚨<br/>expect-true.toBe-true]
+        UT --> MA[Mixed Assertions<br/>Some Good Some Bad]
+        IT --> RA[Real Assertions ✅<br/>AsyncAPI Output Validation]
+        ET --> RA
+        VT --> RA
+    end
+
+    subgraph "Problems (RED FLAGS)"
+        P1[200 Domain Tests Use Wrong Helper]
+        P2[Ghost Assertions Don't Validate Behavior]
+        P3[Pass Rate Dropped 72% → 67%]
+        P4[No Code Coverage Visibility]
+        P5[Conflicting Test Patterns]
+        P6[No Quality Gates in CI/CD]
+    end
+
+    DT -.-> P1
+    GA -.-> P2
+    DT -.-> P3
+    TH -.-> P4
+    CATH -.-> P5
+    CAS -.-> P5
+    IT -.-> P6
+
+    style DT fill:#ff6b6b,stroke:#c92a2a,stroke-width:3px
+    style GA fill:#ff6b6b,stroke:#c92a2a,stroke-width:3px
+    style P1 fill:#ff8787,stroke:#fa5252
+    style P2 fill:#ff8787,stroke:#fa5252
+    style P3 fill:#ff8787,stroke:#fa5252
+    style P4 fill:#ffd43b,stroke:#fab005
+    style P5 fill:#ffd43b,stroke:#fab005
+    style P6 fill:#ffd43b,stroke:#fab005
+    style IT fill:#51cf66,stroke:#2f9e44
+    style ET fill:#51cf66,stroke:#2f9e44
+    style VT fill:#51cf66,stroke:#2f9e44
+    style RA fill:#51cf66,stroke:#2f9e44
+
+    classDef ghostTest fill:#ff6b6b,stroke:#c92a2a,stroke-width:3px
+    classDef goodTest fill:#51cf66,stroke:#2f9e44
+    classDef problem fill:#ff8787,stroke:#fa5252
+    classDef warning fill:#ffd43b,stroke:#fab005
