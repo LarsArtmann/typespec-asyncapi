@@ -29,7 +29,7 @@ import {
 	validateAsyncAPIObjectComprehensive,
 	TestValidationPatterns,
 	TestLogging,
-} from "../../../test/utils/test-helpers.js"
+} from "../utils/test-helpers.js"
 import {Effect} from "effect"
 //TODO: this file is getting to big split it up
 

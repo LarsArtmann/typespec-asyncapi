@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect } from "bun:test"
-import { compileTypeSpecWithDecorators } from "./utils/test-helpers.js"
+import { compileTypeSpecWithDecorators } from "../utils/test-helpers.js"
 
 describe("📊 BREAKTHROUGH METRICS", () => {
   it("🎯 P0 Mission Success: 51% Impact Achieved", async () => {

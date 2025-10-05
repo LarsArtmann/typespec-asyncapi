@@ -4,9 +4,9 @@
 
 import {describe, expect, it} from "bun:test"
 import {createTestHost} from "@typespec/compiler/testing"
-import {$onEmit} from "../dist/index.js"
+import {$onEmit} from "../../src/index.js"
 import {AsyncAPITestLibrary} from "./test-host"
-import {createAsyncAPITestHost} from "./utils/test-helpers"
+import {createAsyncAPITestHost} from "../utils/test-helpers.js"
 import {Effect} from "effect"
 
 describe("Direct Emitter Test", () => {

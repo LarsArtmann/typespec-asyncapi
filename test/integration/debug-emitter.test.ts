@@ -3,7 +3,7 @@
  */
 
 import {describe, it} from "bun:test"
-import {createAsyncAPITestHost} from "./utils/test-helpers"
+import {createAsyncAPITestHost} from "../utils/test-helpers.js"
 import {Effect} from "effect"
 
 describe("Debug Emitter Registration", () => {

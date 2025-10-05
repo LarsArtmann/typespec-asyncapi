@@ -1,5 +1,5 @@
 import {describe, expect, test} from "bun:test"
-import {ASYNC_API_EMITTER_OPTIONS_SCHEMA} from "../src/options"
+import {ASYNC_API_EMITTER_OPTIONS_SCHEMA} from "../../src/infrastructure/configuration/options.js"
 import type {AsyncAPIEmitterOptions} from "../src/types/options"
 
 describe("Options Integration", () => {

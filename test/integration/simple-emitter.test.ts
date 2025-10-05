@@ -3,7 +3,7 @@
  */
 
 import {describe, expect, it} from "bun:test"
-import {compileAsyncAPISpecWithoutErrors, parseAsyncAPIOutput} from "./utils/test-helpers"
+import {compileAsyncAPISpecWithoutErrors, parseAsyncAPIOutput} from "../utils/test-helpers.js"
 import {Effect} from "effect"
 
 describe("Simple AsyncAPI Emitter (No Decorators)", () => {

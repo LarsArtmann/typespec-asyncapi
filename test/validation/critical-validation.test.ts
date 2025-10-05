@@ -9,7 +9,7 @@
  */
 
 import {beforeAll, describe, expect, it} from "bun:test"
-import {AsyncAPIValidator} from "../../src/validation/asyncapi-validator.js"
+import {AsyncAPIValidator} from "../../src/domain/validation/asyncapi-validator.js"
 import {Effect} from "effect"
 import { railwayLogging } from "../../src/utils/effect-helpers.js"
 

@@ -1,5 +1,5 @@
 import { describe, test, expect } from "bun:test";
-import { ASYNC_API_EMITTER_OPTIONS_SCHEMA } from "../../src/options.js";
+import { ASYNC_API_EMITTER_OPTIONS_SCHEMA } from "../../src/infrastructure/configuration/options.js";
 
 describe("Security Validation", () => {
   test("schema prevents arbitrary properties (security vulnerability fix)", () => {

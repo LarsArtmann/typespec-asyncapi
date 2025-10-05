@@ -5,7 +5,7 @@
 import {describe, expect, it} from "bun:test"
 import {expectDiagnosticEmpty, formatDiagnostics, createTestHost} from "@typespec/compiler/testing"
 import {AsyncAPITestLibrary} from "./test-host"
-import {createAsyncAPITestHost} from "./utils/test-helpers"
+import {createAsyncAPITestHost} from "../utils/test-helpers.js"
 
 describe("REAL Emitter Test - No Mocks", () => {
 	it("should compile TypeSpec to AsyncAPI using REAL emitter", async () => {

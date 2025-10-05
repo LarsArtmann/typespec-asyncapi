@@ -7,7 +7,7 @@
 
 import { describe, it, expect, beforeAll, afterAll } from "bun:test";
 import { compileAsyncAPISpec, parseAsyncAPIOutput } from "../utils/test-helpers";
-import { AsyncAPIValidator } from "../../src/validation/asyncapi-validator";
+import { AsyncAPIValidator } from "../../src/domain/validation/asyncapi-validator.js";
 import { mkdir, rm } from "node:fs/promises";
 import { join } from "node:path";
 import { Effect } from "effect";

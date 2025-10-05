@@ -10,7 +10,7 @@ import {
   pluginRegistry, 
   registerBuiltInPlugins, 
   generateProtocolBinding 
-} from "../../src/plugins/plugin-system.js"
+} from "../../src/infrastructure/adapters/plugin-system.js"
 
 describe("Plugin System", () => {
   it("should initialize built-in plugins without errors", async () => {

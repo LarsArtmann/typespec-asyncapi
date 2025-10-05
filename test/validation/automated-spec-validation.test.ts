@@ -20,7 +20,7 @@ import {compileAsyncAPISpec, parseAsyncAPIOutput, TestSources} from "../utils/te
 import {mkdir, rm, writeFile} from "node:fs/promises"
 import {join} from "node:path"
 import {Effect} from "effect"
-import {SERIALIZATION_FORMAT_OPTIONS, SERIALIZATION_FORMAT_OPTION_YAML} from "../../src/core/serialization-format-option.js"
+import {SERIALIZATION_FORMAT_OPTIONS, SERIALIZATION_FORMAT_OPTION_YAML} from "../../src/domain/models/serialization-format-option.js"
 
 interface TestScenario {
 	name: string;

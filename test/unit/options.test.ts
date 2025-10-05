@@ -1,13 +1,13 @@
 import {describe, expect, test} from "bun:test"
 import {Effect} from "effect"
-import type {AsyncAPIEmitterOptions} from "../../src/options.js"
+import type {AsyncAPIEmitterOptions} from "../../src/infrastructure/configuration/options.js"
 import {
 	ASYNC_API_EMITTER_OPTIONS_SCHEMA,
 	createAsyncAPIEmitterOptions,
 	isAsyncAPIEmitterOptions,
 	parseAsyncAPIEmitterOptions,
 	validateAsyncAPIEmitterOptions,
-} from "../../src/options.js"
+} from "../../src/infrastructure/configuration/options.js"
 
 //TODO: this file is getting to big split it up
 

@@ -29,7 +29,7 @@ describe("🔧 M6: Decorator Registration Integration", () => {
     Effect.log("✅ TypeSpec program created successfully")
     
     // Import and test the decorator registration function
-    const { createAsyncAPIDecorators } = await import("../../dist/decorators/index.js")
+    const { createAsyncAPIDecorators } = await import("../../dist/domain/decorators/index.js")
     expect(createAsyncAPIDecorators).toBeDefined()
     expect(typeof createAsyncAPIDecorators).toBe("function")
     Effect.log("✅ createAsyncAPIDecorators function imported successfully")
@@ -62,7 +62,7 @@ describe("🔧 M6: Decorator Registration Integration", () => {
     const program: Program = result.program || result
     
     // Register decorators manually
-    const { createAsyncAPIDecorators } = await import("../../dist/decorators/index.js")
+    const { createAsyncAPIDecorators } = await import("../../dist/domain/decorators/index.js")
     createAsyncAPIDecorators(program)
     
     // Verify global namespace exists - check if program has checker first
@@ -90,13 +90,13 @@ describe("🔧 M6: Decorator Registration Integration", () => {
   it("should test decorator function availability", async () => {
     // Test that we can import all the individual decorator functions
     const decoratorModules = [
-      "../../dist/decorators/channel.js",
-      "../../dist/decorators/publish.js", 
-      "../../dist/decorators/subscribe.js",
-      "../../dist/decorators/message.js",
-      "../../dist/decorators/protocol.js",
-      "../../dist/decorators/security.js",
-      "../../dist/decorators/server.js"
+      "../../dist/domain/decorators/channel.js",
+      "../../dist/domain/decorators/publish.js",
+      "../../dist/domain/decorators/subscribe.js",
+      "../../dist/domain/decorators/message.js",
+      "../../dist/domain/decorators/protocol.js",
+      "../../dist/domain/decorators/security.js",
+      "../../dist/domain/decorators/server.js"
     ]
     
     const decoratorNames = ["$channel", "$publish", "$subscribe", "$message", "$protocol", "$security", "$server"]

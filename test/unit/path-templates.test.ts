@@ -10,7 +10,7 @@ import {
 	resolvePathTemplateWithValidation,
 	SUPPORTED_TEMPLATE_VARIABLES,
 	validatePathTemplate,
-} from "../../src/path-templates.js"
+} from "../../src/domain/models/path-templates.js"
 import {PathTemplateContext} from "../../src/path-template-context"
 import {PathTemplateVariables} from "../../src/path-template-variables"
 
