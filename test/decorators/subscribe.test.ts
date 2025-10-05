@@ -16,7 +16,7 @@ import {
 describe("@subscribe Decorator Tests", () => {
 	test("should compile @subscribe decorator successfully", async () => {
 		const testSource = `
-			import "@larsartmann/typespec-asyncapi";
+			import "@lars-artmann/typespec-asyncapi";
 			using TypeSpec.AsyncAPI;
 			
 			namespace TestApi;

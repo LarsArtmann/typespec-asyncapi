@@ -36,7 +36,7 @@ describe("Debug Emitter Registration", () => {
 		try {
 			const result = await host.compileAndDiagnose("debug.tsp", {
 				emitters: {
-					"@larsartmann/typespec-asyncapi": {
+					"@lars-artmann/typespec-asyncapi": {
 						"output-file": "debug-output",
 						"file-type": "json",
 					},

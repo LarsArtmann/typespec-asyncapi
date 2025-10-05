@@ -24,7 +24,7 @@ describe("🚀 CLI Compilation Test", () => {
   it("should compile TypeSpec via CLI and verify mock elimination", async () => {
     // Create a test TypeSpec file
     const testSource = `
-import "@larsartmann/typespec-asyncapi";
+import "@lars-artmann/typespec-asyncapi";
 
 using TypeSpec.AsyncAPI;
 
@@ -44,7 +44,7 @@ op publishTestMessage(): TestMessage;
     writeFileSync(testFile, testSource)
     
     // Compile using TypeSpec CLI
-    const compilation = spawn("npx", ["tsp", "compile", testFile, "--emit", "@larsartmann/typespec-asyncapi", "--output-dir", outputDir], {
+    const compilation = spawn("npx", ["tsp", "compile", testFile, "--emit", "@lars-artmann/typespec-asyncapi", "--output-dir", outputDir], {
       stdio: ["inherit", "pipe", "pipe"],
       cwd: process.cwd()
     })

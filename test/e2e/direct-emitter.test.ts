@@ -15,7 +15,7 @@ describe("Direct Emitter Test", () => {
 
 		// Simple TypeSpec source with proper imports
 		const source = `
-      import "@larsartmann/typespec-asyncapi";
+      import "@lars-artmann/typespec-asyncapi";
       using TypeSpec.AsyncAPI;
       
       namespace DirectTest;

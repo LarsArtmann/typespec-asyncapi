@@ -181,7 +181,7 @@ describe("@server decorator", () => {
       
       // Should have error for unsupported protocol
       const protocolErrors = diagnostics.filter(d => 
-        d.code === "@larsartmann/typespec-asyncapi/unsupported-protocol"
+        d.code === "@lars-artmann/typespec-asyncapi/unsupported-protocol"
       );
       expect(protocolErrors.length).toBeGreaterThan(0);
     });

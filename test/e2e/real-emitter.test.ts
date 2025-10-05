@@ -17,7 +17,7 @@ describe("REAL Emitter Test - No Mocks", () => {
 
 		// Test a simple TypeSpec document without decorators first
 		host.addTypeSpecFile("main.tsp", `
-			import "@larsartmann/typespec-asyncapi";
+			import "@lars-artmann/typespec-asyncapi";
 			using TypeSpec.AsyncAPI;
 			
 			namespace MyService;
@@ -43,7 +43,7 @@ describe("REAL Emitter Test - No Mocks", () => {
 
 		// Now emit AsyncAPI
 		const diagnostics = await host.diagnose("./main.tsp", {
-			emit: ["@larsartmann/typespec-asyncapi"],
+			emit: ["@lars-artmann/typespec-asyncapi"],
 		})
 
 		// Should compile without errors
@@ -73,7 +73,7 @@ describe("REAL Emitter Test - No Mocks", () => {
 		const host = await createAsyncAPITestHost()
 
 		host.addTypeSpecFile("test.tsp", `
-			import "@larsartmann/typespec-asyncapi";
+			import "@lars-artmann/typespec-asyncapi";
 			using TypeSpec.AsyncAPI;
 			
 			namespace TestAPI;

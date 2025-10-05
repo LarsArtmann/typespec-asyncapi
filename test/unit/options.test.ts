@@ -201,10 +201,15 @@ describe("Effect.TS Schema AsyncAPI Emitter Options", () => {
 		// Verify the schema has the expected JSONSchema structure
 		expect(ASYNC_API_EMITTER_OPTIONS_SCHEMA).toHaveProperty("type", "object")
 		expect(ASYNC_API_EMITTER_OPTIONS_SCHEMA).toHaveProperty("additionalProperties", false)
-		expect(ASYNC_API_EMITTER_OPTIONS_SCHEMA).toHaveProperty("properties")
 
-		// Verify key properties are present
-		const properties = ASYNC_API_EMITTER_OPTIONS_SCHEMA.properties as Record<string, unknown>
+		// Effect.TS JSONSchema uses $defs structure with $ref
+		expect(ASYNC_API_EMITTER_OPTIONS_SCHEMA).toHaveProperty("$defs")
+		expect(ASYNC_API_EMITTER_OPTIONS_SCHEMA).toHaveProperty("$ref")
+
+		// Verify key properties are present in $defs.AsyncAPIEmitterOptions
+		const defs = ASYNC_API_EMITTER_OPTIONS_SCHEMA.$defs as Record<string, any>
+		expect(defs).toHaveProperty("AsyncAPIEmitterOptions")
+		const properties = defs.AsyncAPIEmitterOptions.properties as Record<string, unknown>
 		expect(properties).toHaveProperty("output-file")
 		expect(properties).toHaveProperty("file-type")
 		expect(properties).toHaveProperty("asyncapi-version")

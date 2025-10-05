@@ -37,10 +37,10 @@ describe("AsyncAPI Basic Functionality", () => {
     
     // Create TypeSpec file with proper imports
     //TODO: HARDCODED IMPORT TEMPLATE! Template string should be TYPESPEC_TEMPLATES.BASIC constant!
-    //TODO: LIBRARY NAME HARDCODED AGAIN! "@larsartmann/typespec-asyncapi" scattered across 53 test files!
+    //TODO: LIBRARY NAME HARDCODED AGAIN! "@lars-artmann/typespec-asyncapi" scattered across 53 test files!
     //TODO: NAMESPACE HARDCODED! "TypeSpec.AsyncAPI" should be TYPESPEC_NAMESPACES.ASYNCAPI!
     const fullSource = `
-import "@larsartmann/typespec-asyncapi";
+import "@lars-artmann/typespec-asyncapi";
 
 using TypeSpec.AsyncAPI;
 
@@ -56,7 +56,7 @@ ${source}
     //TODO: CLI DEPENDENCY ANTI-PATTERN - Tests should use programmatic TypeSpec API!
     //TODO: EXTERNAL DEPENDENCY COUPLING - Tests break if npx/tsp CLI is unavailable!
     //TODO: HARDCODED CLI ARGUMENTS - spawn args should be CLI_ARGS.COMPILE_ASYNCAPI constants!
-    const compilation = spawn("npx", ["tsp", "compile", testFile, "--emit", "@larsartmann/typespec-asyncapi", "--output-dir", outputDir], {
+    const compilation = spawn("npx", ["tsp", "compile", testFile, "--emit", "@lars-artmann/typespec-asyncapi", "--output-dir", outputDir], {
       stdio: ["inherit", "pipe", "pipe"],
       cwd: process.cwd()
     })
