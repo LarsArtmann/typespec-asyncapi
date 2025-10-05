@@ -14,6 +14,21 @@
         "totalOperations": 1,
         "schemaComplexity": "moderate"
       }
+    },
+    {
+      "version": "unknown",
+      "timestamp": "2025-10-05T00:55:07.199Z",
+      "compilationTimeMs": 51.499874999999975,
+      "memoryUsageMB": 11.538678169250488,
+      "throughputOpsPerSec": 19.417522858065198,
+      "averageLatencyMs": 51.499874999999975,
+      "testCaseName": "regression-test",
+      "metadata": {
+        "nodeVersion": "v24.3.0",
+        "platform": "darwin",
+        "totalOperations": 1,
+        "schemaComplexity": "moderate"
+      }
     }
   ]
 }

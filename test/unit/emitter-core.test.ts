@@ -103,15 +103,16 @@ describe("AsyncAPI Emitter Core", () => {
 				{"output-file": "json-test", "file-type": "json"},
 			)
 
-			// Alpha emitter generates YAML at fixed path regardless of options
-			const alphaFile = outputFiles.get("/test/@lars-artmann/typespec-asyncapi/asyncapi.yaml")
-			expect(alphaFile).toBeDefined()
-			
-			// For Alpha, parse YAML content and verify it's valid JSON-serializable
-			const yaml = await import("yaml")
-			const content = typeof alphaFile === 'string' ? alphaFile : alphaFile!.content
-			const parsedContent = yaml.parse(content)
-			expect(() => JSON.stringify(parsedContent)).not.toThrow()
+			// Beta emitter uses options to determine output path
+			// DEBUG: Log all keys to find actual output location
+			console.log("🔍 Available output files:", Array.from(outputFiles.keys()))
+
+			const jsonFile = outputFiles.get("json-test.json")
+			expect(jsonFile).toBeDefined()
+
+			// Verify JSON is valid
+			const content = typeof jsonFile === 'string' ? jsonFile : jsonFile!.content
+			expect(() => JSON.parse(content)).not.toThrow()
 		})
 
 		it("should generate valid YAML output", async () => {
@@ -120,11 +121,11 @@ describe("AsyncAPI Emitter Core", () => {
 				{"output-file": "yaml-test", "file-type": SERIALIZATION_FORMAT_OPTION_YAML},
 			)
 
-			// Alpha emitter generates YAML at fixed path regardless of options
-			const alphaFile = outputFiles.get("/test/@lars-artmann/typespec-asyncapi/asyncapi.yaml")
-			expect(alphaFile).toBeDefined()
-			
-			const content = typeof alphaFile === 'string' ? alphaFile : alphaFile!.content
+			// Beta emitter uses options to determine output path
+			const yamlFile = outputFiles.get("yaml-test.yaml")
+			expect(yamlFile).toBeDefined()
+
+			const content = typeof yamlFile === 'string' ? yamlFile : yamlFile!.content
 			expect(content).toContain("asyncapi: 3.0.0")
 			expect(content).toContain("channels:")
 			expect(content).toContain("operations:")
@@ -136,9 +137,9 @@ describe("AsyncAPI Emitter Core", () => {
 				{"output-file": "default-format"},
 			)
 
-			// Alpha emitter always generates YAML at fixed path
-			const alphaFile = outputFiles.get("/test/@lars-artmann/typespec-asyncapi/asyncapi.yaml")
-			expect(alphaFile).toBeDefined()
+			// Beta emitter defaults to YAML when no file-type specified
+			const yamlFile = outputFiles.get("default-format.yaml")
+			expect(yamlFile).toBeDefined()
 		})
 
 		it("should default filename when no output-file specified", async () => {
@@ -147,9 +148,9 @@ describe("AsyncAPI Emitter Core", () => {
 				{"file-type": SERIALIZATION_FORMAT_OPTION_JSON},
 			)
 
-			// Alpha emitter always uses fixed filename/path regardless of options
-			const alphaFile = outputFiles.get("/test/@lars-artmann/typespec-asyncapi/asyncapi.yaml")
-			expect(alphaFile).toBeDefined()
+			// Beta emitter defaults to "asyncapi" filename when no output-file specified
+			const jsonFile = outputFiles.get("asyncapi.json")
+			expect(jsonFile).toBeDefined()
 		})
 	})
 
