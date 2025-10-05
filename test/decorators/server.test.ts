@@ -11,7 +11,7 @@ describe("@server decorator", () => {
   describe("basic functionality", () => {
     it("should accept valid server configuration", async () => {
       const source = `
-        @server("production", {
+        @server("production", #{
           url: "kafka://broker.example.com:9092",
           protocol: "kafka",
           description: "Production Kafka cluster"
@@ -35,17 +35,17 @@ describe("@server decorator", () => {
 
     it("should handle multiple server configurations", async () => {
       const source = `
-        @server("production", {
+        @server("production", #{
           url: "kafka://prod-broker:9092",
           protocol: "kafka",
           description: "Production environment"
         })
-        @server("development", {
+        @server("development", #{
           url: "ws://localhost:3000",
           protocol: "websocket",
           description: "Development WebSocket server"
         })
-        @server("staging", {
+        @server("staging", #{
           url: "amqp://staging-rabbit:5672",
           protocol: "amqp"
         })
@@ -71,7 +71,7 @@ describe("@server decorator", () => {
 
     it("should validate required server configuration fields", async () => {
       const source = `
-        @server("invalid-missing-url", {
+        @server("invalid-missing-url", #{
           protocol: "kafka",
           description: "Missing URL"
         })
@@ -97,7 +97,7 @@ describe("@server decorator", () => {
 
     it("should validate protocol field is required", async () => {
       const source = `
-        @server("invalid-missing-protocol", {
+        @server("invalid-missing-protocol", #{
           url: "kafka://broker:9092",
           description: "Missing protocol"
         })
@@ -136,7 +136,7 @@ describe("@server decorator", () => {
       
       for (const protocol of supportedProtocols) {
         const source = `
-          @server("test-${protocol.name}", {
+          @server("test-${protocol.name}", #{
             url: "${protocol.url}",
             protocol: "${protocol.name}",
             description: "Test ${protocol.name} server"
@@ -161,7 +161,7 @@ describe("@server decorator", () => {
 
     it("should reject unsupported protocols", async () => {
       const source = `
-        @server("invalid-protocol", {
+        @server("invalid-protocol", #{
           url: "ftp://files.example.com",
           protocol: "ftp",
           description: "Unsupported FTP server"
@@ -194,7 +194,7 @@ describe("@server decorator", () => {
         
         model Event { id: string; }
         
-        @server("invalid", {
+        @server("invalid", #{
           url: "kafka://broker:9092",
           protocol: "kafka"
         })
@@ -218,7 +218,7 @@ describe("@server decorator", () => {
   describe("configuration extraction", () => {
     it("should handle minimal server configuration", async () => {
       const source = `
-        @server("minimal", {
+        @server("minimal", #{
           url: "kafka://broker:9092",
           protocol: "kafka"
         })
@@ -253,7 +253,7 @@ describe("@server decorator", () => {
 
     it("should preserve server descriptions", async () => {
       const source = `
-        @server("documented", {
+        @server("documented", #{
           url: "kafka://broker:9092",
           protocol: "kafka",
           description: "Main production Kafka cluster with high availability"
@@ -286,7 +286,7 @@ describe("@server decorator", () => {
   describe("integration with other decorators", () => {
     it("should work with @channel and @publish/@subscribe decorators", async () => {
       const source = `
-        @server("integration", {
+        @server("integration", #{
           url: "kafka://broker:9092",
           protocol: "kafka",
           description: "Integration test server"

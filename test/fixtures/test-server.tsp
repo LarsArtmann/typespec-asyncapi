@@ -2,7 +2,7 @@ import "@larsartmann/typespec-asyncapi";
 
 using AsyncAPI;
 
-@server("production", {
+@server("production", #{
   url: "kafka://broker.example.com:9092",
   protocol: "kafka",
   description: "Production Kafka cluster"

@@ -34,7 +34,7 @@ describe("📊 BREAKTHROUGH METRICS", () => {
       {
         name: "Complex AsyncAPI Features",
         code: `
-          @server("prod", {url: "amqp://prod"})
+          @server("prod", #{url: "amqp://prod"})
           namespace API {
             @message model Event { id: string; }
             @channel("events") @publish 
