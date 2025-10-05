@@ -134,23 +134,96 @@ export async function compileAsyncAPISpecRaw(
 	Effect.log("Program created:", !!program)
 	Effect.log("Diagnostics count:", diagnostics.length)
 
-	// Access outputFiles correctly from TestCompileResult structure
-	// TestCompileResult has: { program: Program, fs: TestFileSystem }
-	// TestFileSystem has: { fs: Map<string, string>, compilerHost: CompilerHost }
-	const outputFiles = result.fs?.fs || new Map<string, string>()
+	// CRITICAL FIX: AssetEmitter writes to real file system, not virtual FS
+	// Virtual FS (result.fs.fs) is empty because AssetEmitter bypasses it
+	// Real files are written to: tsp-test/@lars-artmann/typespec-asyncapi/
+	const virtualFS = result.fs?.fs || new Map<string, string>()
+
+	Effect.log("Virtual FS size:", virtualFS.size)
+
+	// Check real file system for AssetEmitter output
+	const fs = await import("node:fs/promises")
+	const path = await import("node:path")
+
+	const outputFiles = new Map<string, string>()
+
+	// Get the actual output directory from the program's compiler options
+	const programOutputDir = program.compilerOptions?.outputDir || "tsp-output"
+
+	// COMPREHENSIVE FILESYSTEM DEBUG
+	console.log("🔍 FILESYSTEM DEBUG:")
+	console.log("  process.cwd():", process.cwd())
+	console.log("  programOutputDir:", programOutputDir)
+	console.log("  program.compilerOptions:", JSON.stringify(program.compilerOptions, null, 2))
+	Effect.log(`📂 Program output dir: ${programOutputDir}`)
+
+	// Try multiple possible output locations
+	const possibleDirs = [
+		path.join(programOutputDir, "@lars-artmann", "typespec-asyncapi"),
+		path.join(process.cwd(), "tsp-test", "@lars-artmann", "typespec-asyncapi"),
+		path.join(process.cwd(), "tsp-output", "@lars-artmann", "typespec-asyncapi"),
+		path.join(process.cwd(), "test-output", "@lars-artmann", "typespec-asyncapi"),
+	]
+
+	console.log("📂 Will search these directories:", possibleDirs)
+
+	// Recursively find all AsyncAPI files
+	const findFiles = async (dir: string, basePath = ""): Promise<void> => {
+		const entries = await fs.readdir(dir, { withFileTypes: true })
+
+		for (const entry of entries) {
+			const fullPath = path.join(dir, entry.name)
+			const relativePath = basePath ? path.join(basePath, entry.name) : entry.name
+
+			if (entry.isDirectory()) {
+				await findFiles(fullPath, relativePath)
+			} else if (entry.name.endsWith(".yaml") || entry.name.endsWith(".json")) {
+				const content = await fs.readFile(fullPath, "utf-8")
+				// Store with multiple keys for compatibility (case-insensitive, various formats)
+				outputFiles.set(entry.name, content)  // Original case: "AsyncAPI.yaml"
+				outputFiles.set(entry.name.toLowerCase(), content)  // Lowercase: "asyncapi.yaml"
+				outputFiles.set(relativePath, content)
+				Effect.log(`  ✅ Loaded: ${entry.name} from ${dir} (${content.length} chars)`)
+			}
+		}
+	}
+
+	// Try each possible directory
+	for (const dir of possibleDirs) {
+		console.log(`📂 Searching: ${dir}`)
+		try {
+			// First check if directory exists
+			const entries = await fs.readdir(dir, { withFileTypes: true })
+			console.log(`  ✅ Directory exists, ${entries.length} entries:`)
+			// List all entries
+			for (const entry of entries) {
+				console.log(`    - ${entry.name} (${entry.isDirectory() ? 'dir' : 'file'})`)
+			}
+
+			// Now find files
+			await findFiles(dir)
+			if (outputFiles.size > 0) {
+				Effect.log(`📁 Real FS: Found ${outputFiles.size} file entries from ${dir}`)
+				break  // Found files, stop searching
+			}
+		} catch (error) {
+			console.log(`  ❌ Error: ${error}`)
+			Effect.log(`⚠️  Tried ${dir}: ${error}`)
+		}
+	}
+
+	if (outputFiles.size === 0) {
+		Effect.log(`⚠️  No files found in any output directory, falling back to virtual FS`)
+		return {
+			diagnostics,
+			outputFiles: virtualFS,
+			program,
+		}
+	}
 
 	Effect.log("OutputFiles size:", outputFiles.size)
 	const allKeys = Array.from(outputFiles.keys())
 	Effect.log("All outputFiles keys:", allKeys.slice(0, 10).join(", ") + (allKeys.length > 10 ? "..." : ""))
-
-	// Debug: Print first few files with their values
-	let count = 0
-	for (const [key, value] of outputFiles) {
-		if (count < 3) {
-			Effect.log(`  File ${count}: ${key} = ${typeof value} (${value?.length || 0} chars)`)
-			count++
-		}
-	}
 
 	if (!program) {
 		throw new Error(`Failed to compile TypeSpec program. Available keys: ${Object.keys(result)}`)
