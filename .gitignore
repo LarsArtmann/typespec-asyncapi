@@ -62,3 +62,4 @@ test-output/
 .npmrc
 pipeline-test/
 pipeline-test/
+tsp-test/
