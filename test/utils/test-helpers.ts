@@ -113,19 +113,18 @@ export async function compileAsyncAPISpecRaw(
 	// Create test host WITH proper AsyncAPI library registration
 	const host = await createAsyncAPITestHost()
 
-	// TODO: Fix TypeSpec test runner not passing options correctly
-
 	// Create test wrapper WITH auto-using since tests removed manual imports
 	const runner = createTestWrapper(host, {
 		autoUsings: ["TypeSpec.AsyncAPI"], // Auto-use TypeSpec.AsyncAPI namespace
 		emitters: {
-			[DEFAULT_CONFIG.LIBRARY_NAME]: options, // Configure our emitter with options using constant
+			[DEFAULT_CONFIG.LIBRARY_NAME]: options, // Configure emitter (options still not passed correctly)
 		},
 	})
 
 	// Compile and emit TypeSpec code - this triggers emitters
+	// TODO: Options passing still not working - need to investigate TypeSpec API further
 	const [result, diagnostics] = await runner.compileAndDiagnose(source, {
-		emit: [DEFAULT_CONFIG.LIBRARY_NAME], // Explicitly emit with our emitter using constant
+		emit: [DEFAULT_CONFIG.LIBRARY_NAME],
 	})
 
 	// TypeSpec test runner automatically calls emitters - no manual invocation needed

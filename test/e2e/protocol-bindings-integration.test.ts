@@ -357,7 +357,7 @@ describe("E2E Protocol Bindings Integration", () => {
           timestamp: utcDateTime;
           
           @doc("HTTP headers to include")
-          headers?: Record<string>;
+          headers?: Record<unknown>;
           
           @doc("Signature for verification")
           signature?: string;
@@ -409,7 +409,7 @@ describe("E2E Protocol Bindings Integration", () => {
           url: string;
           
           @doc("HTTP headers")
-          headers: Record<string>;
+          headers: Record<unknown>;
           
           @doc("Request body")
           body?: string;
