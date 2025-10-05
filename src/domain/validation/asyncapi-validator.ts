@@ -14,6 +14,13 @@ import {railwayLogging} from "../../utils/effect-helpers.js"
 import {safeStringify} from "../../utils/standardized-errors.js"
 
 /**
+ * Helper to log error synchronously - eliminates duplication
+ */
+function logErrorSync(message: string): void {
+	Effect.runSync(Effect.logError(message))
+}
+
+/**
  * Helper to create validation error result - eliminates duplication
  */
 function createValidationErrorResult(
@@ -138,7 +145,7 @@ export class AsyncAPIValidator {
 				Effect.catchAll((error) => {
 					const duration = performance.now() - startTime
 					this.updateStats(duration)
-					Effect.runSync(Effect.logError(`AsyncAPI version validation failed: ${error.message}`))
+					logErrorSync(`AsyncAPI version validation failed: ${error.message}`)
 					return Effect.succeed(createValidationErrorResult(error.message, duration, 'version-constraint', 'asyncapi', '#/asyncapi'))
 				})
 			)
@@ -165,7 +172,7 @@ export class AsyncAPIValidator {
 					this.updateStats(duration)
 
 					if (error.message?.includes("timeout")) {
-						Effect.runSync(Effect.logError(`AsyncAPI parser timed out after 30 seconds`))
+						logErrorSync(`AsyncAPI parser timed out after 30 seconds`)
 						return Effect.succeed(createValidationErrorResult(
 							"Parser operation timed out - document may be too large or complex",
 							duration,
@@ -173,7 +180,7 @@ export class AsyncAPIValidator {
 						))
 					}
 					// Handle non-timeout errors
-					Effect.runSync(Effect.logError(`AsyncAPI parser failed after retries: ${error.message}`))
+					logErrorSync(`AsyncAPI parser failed after retries: ${error.message}`)
 					return Effect.succeed(createValidationErrorResult(
 						error.message,
 						duration,
@@ -254,7 +261,7 @@ export class AsyncAPIValidator {
 				catch: (error) => new Error(`Failed to read file: ${error instanceof Error ? error.message : String(error)}`)
 			}).pipe(
 				Effect.catchAll((error) => {
-					Effect.runSync(Effect.logError(`File reading failed: ${error.message}`))
+					logErrorSync(`File reading failed: ${error.message}`)
 					return Effect.succeed(createValidationErrorResult(
 						error.message,
 						0,

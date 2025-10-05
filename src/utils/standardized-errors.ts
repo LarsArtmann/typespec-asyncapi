@@ -176,27 +176,23 @@ export const emitterErrors = {
 }
 
 /**
- * Railway programming utilities for Effect.TS
+ * Transform any error to StandardizedError - eliminates duplication
  */
-export const railway = {
-	/**
-	 * Transform standard JavaScript Error to StandardizedError
-	 */
-	fromError: (error: Error, context?: Record<string, unknown>) => createError({
-		what: "An unexpected error occurred",
-		reassure: "This is likely a temporary issue",
-		why: error.message,
-		fix: "Try the operation again, or report this issue if it persists",
-		escape: "Check your input and try with simpler data OR report this error at https://github.com/LarsArtmann/typespec-asyncapi/",
-		severity: "error" as const,
-		code: "UNEXPECTED_ERROR",
-		context: {originalError: error.message, stack: error.stack, ...context},
-	}),
+const transformError = (error: unknown, context?: Record<string, unknown>): StandardizedError => {
+	if (error instanceof Error) {
+		return createError({
+			what: "An unexpected error occurred",
+			reassure: "This is likely a temporary issue",
+			why: error.message,
+			fix: "Try the operation again, or report this issue if it persists",
+			escape: "Check your input and try with simpler data OR report this error at https://github.com/LarsArtmann/typespec-asyncapi/",
+			severity: "error" as const,
+			code: "UNEXPECTED_ERROR",
+			context: {originalError: error.message, stack: error.stack, ...context},
+		})
+	}
 
-	/**
-	 * Transform unknown error to StandardizedError
-	 */
-	fromUnknown: (error: unknown, context?: Record<string, unknown>) => createError({
+	return createError({
 		what: "An unknown error occurred",
 		reassure: "The system is designed to handle unexpected situations",
 		why: `Unknown error type: ${typeof error} - ${String(error)}`,
@@ -205,7 +201,22 @@ export const railway = {
 		severity: "error" as const,
 		code: "UNKNOWN_ERROR",
 		context: {originalError: error, ...context},
-	}),
+	})
+}
+
+/**
+ * Railway programming utilities for Effect.TS
+ */
+export const railway = {
+	/**
+	 * Transform standard JavaScript Error to StandardizedError
+	 */
+	fromError: (error: Error, context?: Record<string, unknown>) => transformError(error, context),
+
+	/**
+	 * Transform unknown error to StandardizedError
+	 */
+	fromUnknown: (error: unknown, context?: Record<string, unknown>) => transformError(error, context),
 
 	/**
 	 * Safe execution with automatic error transformation
@@ -213,9 +224,7 @@ export const railway = {
 	trySync: <T>(fn: () => T, context?: Record<string, unknown>) =>
 		Effect.try({
 			try: fn,
-			catch: (error) => error instanceof Error
-				? railway.fromError(error, context)
-				: railway.fromUnknown(error, context),
+			catch: (error) => transformError(error, context),
 		}),
 
 	/**
@@ -224,9 +233,7 @@ export const railway = {
 	tryAsync: <T>(fn: () => Promise<T>, context?: Record<string, unknown>) =>
 		Effect.tryPromise({
 			try: fn,
-			catch: (error) => error instanceof Error
-				? railway.fromError(error, context)
-				: railway.fromUnknown(error, context),
+			catch: (error) => transformError(error, context),
 		}),
 
 	/**

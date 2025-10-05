@@ -2,13 +2,8 @@ import type {DecoratorContext, Model, ModelProperty, Operation, RekeyableMap, Ty
 import {$lib, reportDiagnostic} from "../../lib.js"
 import {Effect} from "effect"
 import {SUPPORTED_PROTOCOLS} from "../../constants/protocol-defaults.js"
-import type {KafkaBindingConfig} from "./kafkaBindingConfig.js"
-import type {HttpBindingConfig} from "./httpBindingConfig.js"
-import type {AMQPBindingConfig} from "./AMQPBindingConfig.js"
-import type {MQTTBindingConfig} from "./MQTTBindingConfig.js"
+import type {KafkaBindingConfig, HttpBindingConfig, AMQPBindingConfig, MQTTBindingConfig, WebSocketBindingConfig, ProtocolType} from "./protocol-shared-types.js"
 import type {ProtocolConfig} from "./protocolConfig.js"
-import type {WebSocketBindingConfig} from "./webSocketBindingConfig.js"
-import type {ProtocolType} from "./protocolType.js"
 // import {effectLogging} from "../../utils/effect-helpers.js"
 
 //TODO THIS FUNCTION IS GETTING TO BIG SPLIT IT UP!
