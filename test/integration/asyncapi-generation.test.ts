@@ -383,9 +383,9 @@ describe("Real AsyncAPI Generation Tests", () => {
         model FlexibleEvent {
           @doc("Event ID")
           eventId: string;
-          
+
           @doc("Flexible data payload")
-          data: string | int32 | boolean | object;
+          data: string | int32 | boolean | Record<unknown>;
           
           @doc("Optional status with union type")
           status?: "active" | "inactive" | "pending" | "archived";
