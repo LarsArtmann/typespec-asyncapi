@@ -106,6 +106,17 @@ export async function compileAsyncAPISpecRaw(
 	source: string,
 	options: AsyncAPIEmitterOptions = {},
 ): Promise<CompilationResult> {
+	// CRITICAL: Clean output directory before each test to prevent file caching issues
+	// Since options aren't passed, all tests write to same file (asyncapi.yaml)
+	const fs = await import("node:fs/promises")
+	const path = await import("node:path")
+	const outputDir = path.join(process.cwd(), "tsp-test", "@lars-artmann", "typespec-asyncapi")
+	try {
+		await fs.rm(outputDir, { recursive: true, force: true })
+	} catch (error) {
+		// Ignore errors - directory may not exist yet
+	}
+
 	// Create test host WITH proper AsyncAPI library registration
 	const host = await createAsyncAPITestHost()
 

@@ -18,6 +18,9 @@ import {
 describe("AsyncAPI Emitter Core", () => {
 	describe("Basic Compilation", () => {
 		it("should compile simple TypeSpec model to AsyncAPI", async () => {
+			console.log("🧪 TEST SOURCE:")
+			console.log(TestSources.basicEvent)
+
 			const {outputFiles} = await compileAsyncAPISpecWithoutErrors(
 				TestSources.basicEvent,
 				{"output-file": "basic", "file-type": "json"},
@@ -26,8 +29,13 @@ describe("AsyncAPI Emitter Core", () => {
 			// Test should generate basic.json file but emitter creates asyncapi.yaml by default
 			const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "asyncapi.yaml")
 
+			// DEBUG: See what's in the document
+			console.log("🔍 AsyncAPI Doc keys:", Object.keys(asyncapiDoc))
+			console.log("🔍 Components:", asyncapiDoc.components ? Object.keys(asyncapiDoc.components) : "NONE")
+			console.log("🔍 Schemas:", asyncapiDoc.components?.schemas ? Object.keys(asyncapiDoc.components.schemas) : "NONE")
+
 			expect(AsyncAPIAssertions.hasValidStructure(asyncapiDoc)).toBe(true)
-			
+
 			// Alpha-compatible expectations: test what's actually implemented
 			// Schemas should work as they're core functionality
 			expect(AsyncAPIAssertions.hasSchema(asyncapiDoc, "BasicEvent")).toBe(true)
