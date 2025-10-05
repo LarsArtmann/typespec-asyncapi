@@ -150,11 +150,11 @@ export async function compileAsyncAPISpecRaw(
 	// Get the actual output directory from the program's compiler options
 	const programOutputDir = program.compilerOptions?.outputDir || "tsp-output"
 
-	// COMPREHENSIVE FILESYSTEM DEBUG
-	console.log("🔍 FILESYSTEM DEBUG:")
-	console.log("  process.cwd():", process.cwd())
-	console.log("  programOutputDir:", programOutputDir)
-	console.log("  program.compilerOptions:", JSON.stringify(program.compilerOptions, null, 2))
+	// FILESYSTEM DEBUG (disabled for cleaner output - enable if needed)
+	// console.log("🔍 FILESYSTEM DEBUG:")
+	// console.log("  process.cwd():", process.cwd())
+	// console.log("  programOutputDir:", programOutputDir)
+	// console.log("  program.compilerOptions:", JSON.stringify(program.compilerOptions, null, 2))
 	Effect.log(`📂 Program output dir: ${programOutputDir}`)
 
 	// Try multiple possible output locations
@@ -165,7 +165,7 @@ export async function compileAsyncAPISpecRaw(
 		path.join(process.cwd(), "test-output", "@lars-artmann", "typespec-asyncapi"),
 	]
 
-	console.log("📂 Will search these directories:", possibleDirs)
+	// console.log("📂 Will search these directories:", possibleDirs)
 
 	// Recursively find all AsyncAPI files
 	const findFiles = async (dir: string, basePath = ""): Promise<void> => {
@@ -190,24 +190,16 @@ export async function compileAsyncAPISpecRaw(
 
 	// Try each possible directory
 	for (const dir of possibleDirs) {
-		console.log(`📂 Searching: ${dir}`)
+		// console.log(`📂 Searching: ${dir}`)  // Debug disabled for cleaner output
 		try {
-			// First check if directory exists
-			const entries = await fs.readdir(dir, { withFileTypes: true })
-			console.log(`  ✅ Directory exists, ${entries.length} entries:`)
-			// List all entries
-			for (const entry of entries) {
-				console.log(`    - ${entry.name} (${entry.isDirectory() ? 'dir' : 'file'})`)
-			}
-
-			// Now find files
+			// Find files in this directory
 			await findFiles(dir)
 			if (outputFiles.size > 0) {
 				Effect.log(`📁 Real FS: Found ${outputFiles.size} file entries from ${dir}`)
 				break  // Found files, stop searching
 			}
 		} catch (error) {
-			console.log(`  ❌ Error: ${error}`)
+			// console.log(`  ❌ Error: ${error}`)  // Debug disabled
 			Effect.log(`⚠️  Tried ${dir}: ${error}`)
 		}
 	}
