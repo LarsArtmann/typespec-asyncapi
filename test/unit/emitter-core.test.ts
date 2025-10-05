@@ -103,11 +103,11 @@ describe("AsyncAPI Emitter Core", () => {
 				{"output-file": "json-test", "file-type": "json"},
 			)
 
-			// Beta emitter uses options to determine output path
-			// DEBUG: Log all keys to find actual output location
+			// Beta emitter prefixes output files with library name
+			// Files are at: @lars-artmann/typespec-asyncapi/{filename}
 			console.log("🔍 Available output files:", Array.from(outputFiles.keys()))
 
-			const jsonFile = outputFiles.get("json-test.json")
+			const jsonFile = outputFiles.get("@lars-artmann/typespec-asyncapi/json-test.json")
 			expect(jsonFile).toBeDefined()
 
 			// Verify JSON is valid
