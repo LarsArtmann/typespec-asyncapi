@@ -273,14 +273,14 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 	 * @public
 	 */
 	override async programContext(program: Program): Promise<Record<string, unknown>> {
-		console.log("🔥🔥🔥 PROGRAMCONTEXT CALLED 🔥🔥🔥")
+		Effect.log("🔥🔥🔥 PROGRAMCONTEXT CALLED 🔥🔥🔥")
 		// TODO: CRITICAL - No error handling if getOptions() returns null/undefined
 		// TODO: CRITICAL - Bracket notation for options access is fragile - consider type-safe property access
 		const options = this.emitter.getOptions()
-		console.log("🔥 Options:", JSON.stringify(options, null, 2))
+		Effect.log("🔥 Options:", JSON.stringify(options, null, 2))
 		const fileType = options["file-type"] ?? DEFAULT_SERIALIZATION_FORMAT
 		const fileName = options["output-file"] ?? "asyncapi"
-		console.log(`🔥 File will be: ${fileName}.${fileType}`)
+		Effect.log(`🔥 File will be: ${fileName}.${fileType}`)
 		// TODO: CRITICAL - String interpolation without validation - fileType could contain invalid characters
 		// TODO: CRITICAL - No validation that fileName is safe for filesystem
 		const outputPath = `${fileName}.${fileType}`
@@ -386,7 +386,7 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 	 * @public
 	 */
 	override sourceFile(sourceFile: SourceFile<string>): EmittedSourceFile {
-		console.log(`🔥🔥🔥 SOURCEFILEMETHOD CALLED for ${sourceFile.path} 🔥🔥🔥`)
+		Effect.log(`🔥🔥🔥 SOURCEFILEMETHOD CALLED for ${sourceFile.path} 🔥🔥🔥`)
 		Effect.log(`🔍 SOURCEFILEMETHOD: Generating file content for ${sourceFile.path}`)
 
 		const options = this.emitter.getOptions()
