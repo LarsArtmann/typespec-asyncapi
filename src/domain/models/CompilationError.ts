@@ -1,25 +1,19 @@
 import type {StandardizedError} from "./StandardizedError.js"
+import {BaseError} from "./BaseError.js"
 
-export class CompilationError {
+export class CompilationError extends BaseError {
 	readonly _tag = "CompilationError"
 
 	constructor(
-		readonly message: string,
+		message: string,
 		readonly filePath?: string,
 		readonly lineNumber?: number,
-		readonly context?: Record<string, unknown>,
+		context?: Record<string, unknown>,
 	) {
+		super(message, context)
 	}
 
 	toStandardizedError(): StandardizedError {
-		return {
-			category: "compilation_error",
-			code: "COMPILATION_FAILED",
-			message: this.message,
-			details: {filePath: this.filePath, lineNumber: this.lineNumber},
-			timestamp: new Date(),
-			...(this.context ? { context: this.context } : { context: {} }),
-			recoverable: false,
-		}
+		return super.toStandardizedError("compilation_error", "COMPILATION_FAILED", {filePath: this.filePath, lineNumber: this.lineNumber}, false)
 	}
 }

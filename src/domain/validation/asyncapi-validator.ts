@@ -14,6 +14,30 @@ import {railwayLogging} from "../../utils/effect-helpers.js"
 import {safeStringify} from "../../utils/standardized-errors.js"
 
 /**
+ * Helper to create validation error result - eliminates duplication
+ */
+function createValidationErrorResult(
+	errorMessage: string,
+	duration: number,
+	keyword: string = 'validation-error',
+	instancePath: string = '',
+	schemaPath: string = ''
+): ValidationResult {
+	return {
+		valid: false,
+		errors: [{
+			message: errorMessage,
+			keyword,
+			instancePath,
+			schemaPath,
+		}],
+		warnings: [],
+		summary: errorMessage,
+		metrics: { duration, channelCount: 0, operationCount: 0, schemaCount: 0, validatedAt: new Date() },
+	}
+}
+
+/**
  * AsyncAPI 3.0 Validator Class using REAL @asyncapi/parser
  *
  * Production-ready validator using the official AsyncAPI parser library.
@@ -115,18 +139,7 @@ export class AsyncAPIValidator {
 					const duration = performance.now() - startTime
 					this.updateStats(duration)
 					Effect.runSync(Effect.logError(`AsyncAPI version validation failed: ${error.message}`))
-					return {
-						valid: false,
-						errors: [{
-							message: error.message,
-							keyword: 'version-constraint',
-							instancePath: 'asyncapi',
-							schemaPath: '#/asyncapi',
-						}],
-						warnings: [],
-						summary: error.message,
-						metrics: this.extractMetrics(null, duration),
-					}
+					return createValidationErrorResult(error.message, duration, 'version-constraint', 'asyncapi', '#/asyncapi')
 				}))
 			)
 
@@ -153,18 +166,11 @@ export class AsyncAPIValidator {
 							const duration = performance.now() - startTime
 							this.updateStats(duration)
 							Effect.runSync(Effect.logError(`AsyncAPI parser timed out after 30 seconds`))
-							return {
-								valid: false,
-								errors: [{
-									message: "Parser operation timed out - document may be too large or complex",
-									keyword: "timeout-error",
-									instancePath: "",
-									schemaPath: ""
-								}] as ValidationError[],
-								warnings: [],
-								summary: "Parser operation timed out",
-								metrics: { duration, channelCount: 0, operationCount: 0, schemaCount: 0, validatedAt: new Date() }
-							}
+							return createValidationErrorResult(
+								"Parser operation timed out - document may be too large or complex",
+								duration,
+								"timeout-error"
+							)
 						})
 					}
 					// Handle non-timeout errors
@@ -172,18 +178,11 @@ export class AsyncAPIValidator {
 						const duration = performance.now() - startTime
 						this.updateStats(duration)
 						Effect.runSync(Effect.logError(`AsyncAPI parser failed after retries: ${error.message}`))
-						return {
-							valid: false,
-							errors: [{
-								message: error.message,
-								keyword: "parse-error",
-								instancePath: "",
-								schemaPath: "",
-							}] as ValidationError[],
-							warnings: [],
-							summary: "AsyncAPI parser failed after retries",
-							metrics: { duration, channelCount: 0, operationCount: 0, schemaCount: 0, validatedAt: new Date() }
-						}
+						return createValidationErrorResult(
+							error.message,
+							duration,
+							"parse-error"
+						)
 					})
 				})
 			)
@@ -261,18 +260,11 @@ export class AsyncAPIValidator {
 			}).pipe(
 				Effect.catchAll((error) => Effect.sync(() => {
 					Effect.runSync(Effect.logError(`File reading failed: ${error.message}`))
-					return {
-						valid: false,
-						errors: [{
-							message: error.message,
-							keyword: "file-error",
-							instancePath: "",
-							schemaPath: "",
-						}],
-						warnings: [],
-						summary: "File reading failed",
-						metrics: this.extractMetrics(null, 0),
-					}
+					return createValidationErrorResult(
+						error.message,
+						0,
+						"file-error"
+					)
 				}))
 			)
 

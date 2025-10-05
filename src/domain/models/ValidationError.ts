@@ -1,25 +1,20 @@
 import type {StandardizedError} from "./StandardizedError.js"
+import {BaseError} from "./BaseError.js"
 
 /**
  * Standardized error classes following Effect.TS patterns
  */
-export class ValidationError {
+export class ValidationError extends BaseError {
 	readonly _tag = "ValidationError"
 	constructor(
-		readonly message: string,
+		message: string,
 		readonly details?: unknown,
-		readonly context?: Record<string, unknown>
-	) {}
+		context?: Record<string, unknown>
+	) {
+		super(message, context)
+	}
 
 	toStandardizedError(): StandardizedError {
-		return {
-			category: "validation_error",
-			code: "VALIDATION_FAILED",
-			message: this.message,
-			details: this.details,
-			timestamp: new Date(),
-			...(this.context ? { context: this.context } : { context: {} }),
-			recoverable: true
-		}
+		return super.toStandardizedError("validation_error", "VALIDATION_FAILED", this.details, true)
 	}
 }

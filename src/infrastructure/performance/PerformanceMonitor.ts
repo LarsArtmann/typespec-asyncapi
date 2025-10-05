@@ -116,6 +116,20 @@ export class PerformanceMonitor {
 	}
 
 	/**
+	 * Log snapshot metrics - extracted to eliminate duplication
+	 */
+	private logSnapshotMetrics(snapshot: PerformanceSnapshot) {
+		return Effect.tap((s: PerformanceSnapshot) => Effect.log(`📊 Performance snapshot taken: ${s.memoryUsage.toFixed(1)}MB memory, ${s.operationCount} operations`))
+	}
+
+	/**
+	 * Handle snapshot error - extracted to eliminate duplication
+	 */
+	private logSnapshotError(error: Error) {
+		return Effect.logError(`❌ ${error.message}`)
+	}
+
+	/**
 	 * Take a performance snapshot synchronously (simplified)
 	 */
 	private takeSnapshotSync(): void {
@@ -140,8 +154,8 @@ export class PerformanceMonitor {
 			},
 			catch: (error) => new Error(`Failed to take performance snapshot: ${error instanceof Error ? error.message : String(error)}`)
 		}).pipe(
-			Effect.tap((snapshot) => Effect.log(`📊 Performance snapshot taken: ${snapshot.memoryUsage.toFixed(1)}MB memory, ${snapshot.operationCount} operations`)),
-			Effect.catchAll((error) => Effect.logError(`❌ ${error.message}`))
+			this.logSnapshotMetrics.bind(this),
+			Effect.catchAll(this.logSnapshotError.bind(this))
 		))
 	}
 
@@ -181,8 +195,8 @@ export class PerformanceMonitor {
 				catch: (error) => new Error(`Failed to take performance snapshot: ${safeStringify(error)}`)
 			}).pipe(
 				Effect.flatten,
-				Effect.tap((snapshot) => Effect.log(`📊 Performance snapshot taken: ${snapshot.memoryUsage}MB memory, ${snapshot.operationCount} operations`)),
-				Effect.catchAll((error) => Effect.logError(`❌ ${error.message}`))
+				this.logSnapshotMetrics.bind(this),
+				Effect.catchAll(this.logSnapshotError.bind(this))
 			)
 		}.bind(this))
 	}

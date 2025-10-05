@@ -7,6 +7,18 @@ import {readFile} from "fs/promises"
  */
 export class ErrorHandlingMigration {
 	/**
+	 * Map error to standardized format - extracted to eliminate duplication
+	 */
+	private static mapErrorToStandardized(
+		error: unknown,
+		errorMapper?: (error: unknown) => StandardizedError
+	): StandardizedError {
+		return errorMapper
+			? errorMapper(error)
+			: ErrorHandlingMigration.mapUnknownError(error)
+	}
+
+	/**
 	 * Convert Promise-based function to Effect.TS
 	 */
 	static promiseToEffect<T>(
@@ -14,12 +26,9 @@ export class ErrorHandlingMigration {
 		errorMapper?: (error: unknown) => StandardizedError,
 	) {
 		return Effect.tryPromise(promiseFn).pipe(
-			Effect.catchAll(error => {
-				const standardError = errorMapper
-					? errorMapper(error)
-					: ErrorHandlingMigration.mapUnknownError(error)
-				return Effect.fail(standardError)
-			})
+			Effect.catchAll(error =>
+				Effect.fail(ErrorHandlingMigration.mapErrorToStandardized(error, errorMapper))
+			)
 		)
 	}
 
@@ -31,12 +40,9 @@ export class ErrorHandlingMigration {
 		errorMapper?: (error: unknown) => StandardizedError,
 	) {
 		return Effect.sync(tryFn).pipe(
-			Effect.catchAll(error => {
-				const standardError = errorMapper
-					? errorMapper(error)
-					: ErrorHandlingMigration.mapUnknownError(error)
-				return Effect.fail(standardError)
-			})
+			Effect.catchAll(error =>
+				Effect.fail(ErrorHandlingMigration.mapErrorToStandardized(error, errorMapper))
+			)
 		)
 	}
 
