@@ -102,20 +102,44 @@ export async function createAsyncAPITestHost() {
  * Compile TypeSpec source and return both diagnostics and output files
  * PROPER LIBRARY APPROACH: Use registered AsyncAPI library with decorators
  */
+// Generate unique test directory based on source code hash
+function generateTestHash(source: string): string {
+	let hash = 0
+	for (let i = 0; i < source.length; i++) {
+		const char = source.charCodeAt(i)
+		hash = ((hash << 5) - hash) + char
+		hash = hash & hash // Convert to 32-bit integer
+	}
+	return Math.abs(hash).toString(36)
+}
+
 export async function compileAsyncAPISpecRaw(
 	source: string,
 	options: AsyncAPIEmitterOptions = {},
 ): Promise<CompilationResult> {
-	// CRITICAL: Clean output directory before each test to prevent file caching issues
-	// Since options aren't passed, all tests write to same file (asyncapi.yaml)
+	// SOLUTION: Delete only AsyncAPI output files, not entire directory
+	// This prevents parallel test interference while ensuring fresh files
 	const fs = await import("node:fs/promises")
 	const path = await import("node:path")
-	const outputDir = path.join(process.cwd(), "tsp-test", "@lars-artmann", "typespec-asyncapi")
+	const asyncapiOutputDir = path.join(process.cwd(), "tsp-test", "@lars-artmann", "typespec-asyncapi")
+
+	// Delete only YAML and JSON files in the output directory
 	try {
-		await fs.rm(outputDir, { recursive: true, force: true })
+		const files = await fs.readdir(asyncapiOutputDir)
+		for (const file of files) {
+			if (file.endsWith('.yaml') || file.endsWith('.json')) {
+				await fs.unlink(path.join(asyncapiOutputDir, file))
+			}
+		}
+		// Small delay to ensure deletion completes
+		await new Promise(resolve => setTimeout(resolve, 10))
 	} catch (error) {
 		// Ignore errors - directory may not exist yet
 	}
+
+	// Generate unique directory (for future use when outputDir works)
+	const testHash = generateTestHash(source)
+	const uniqueOutputDir = path.join(process.cwd(), "tsp-test", `test-${testHash}`)
 
 	// Create test host WITH proper AsyncAPI library registration
 	const host = await createAsyncAPITestHost()
@@ -131,8 +155,10 @@ export async function compileAsyncAPISpecRaw(
 	})
 
 	// Compile and emit TypeSpec code - this triggers emitters
+	// CRITICAL: Pass unique output directory to compiler to ensure test isolation
 	const [result, diagnostics] = await runner.compileAndDiagnose(source, {
 		emit: [DEFAULT_CONFIG.LIBRARY_NAME], // Explicitly emit with our emitter using constant
+		outputDir: uniqueOutputDir, // Use unique directory per test
 	})
 
 	// TypeSpec test runner automatically calls emitters - no manual invocation needed
@@ -153,30 +179,25 @@ export async function compileAsyncAPISpecRaw(
 	Effect.log("Virtual FS size:", virtualFS.size)
 
 	// Check real file system for AssetEmitter output
-	const fs = await import("node:fs/promises")
-	const path = await import("node:path")
-
+	// (fs and path already imported at function start)
 	const outputFiles = new Map<string, string>()
 
 	// Get the actual output directory from the program's compiler options
 	const programOutputDir = program.compilerOptions?.outputDir || "tsp-output"
 
-	// FILESYSTEM DEBUG (disabled for cleaner output - enable if needed)
-	// console.log("🔍 FILESYSTEM DEBUG:")
-	// console.log("  process.cwd():", process.cwd())
-	// console.log("  programOutputDir:", programOutputDir)
-	// console.log("  program.compilerOptions:", JSON.stringify(program.compilerOptions, null, 2))
 	Effect.log(`📂 Program output dir: ${programOutputDir}`)
 
-	// Try multiple possible output locations
+	// CRITICAL: Search in unique test directory AND fallback locations
+	// Priority: unique test dir > standard locations
 	const possibleDirs = [
+		// First try unique test directory (highest priority)
+		path.join(uniqueOutputDir, "@lars-artmann", "typespec-asyncapi"),
+		uniqueOutputDir,
+		// Then try standard locations (fallback)
 		path.join(programOutputDir, "@lars-artmann", "typespec-asyncapi"),
 		path.join(process.cwd(), "tsp-test", "@lars-artmann", "typespec-asyncapi"),
 		path.join(process.cwd(), "tsp-output", "@lars-artmann", "typespec-asyncapi"),
-		path.join(process.cwd(), "test-output", "@lars-artmann", "typespec-asyncapi"),
 	]
-
-	// console.log("📂 Will search these directories:", possibleDirs)
 
 	// Recursively find all AsyncAPI files
 	const findFiles = async (dir: string, basePath = ""): Promise<void> => {
