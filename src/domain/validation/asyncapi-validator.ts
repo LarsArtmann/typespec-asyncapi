@@ -135,12 +135,12 @@ export class AsyncAPIValidator {
 				},
 				catch: (error) => new Error(`Version validation failed: ${error instanceof Error ? error.message : String(error)}`)
 			}).pipe(
-				Effect.catchAll((error) => Effect.sync(() => {
+				Effect.catchAll((error) => {
 					const duration = performance.now() - startTime
 					this.updateStats(duration)
 					Effect.runSync(Effect.logError(`AsyncAPI version validation failed: ${error.message}`))
-					return createValidationErrorResult(error.message, duration, 'version-constraint', 'asyncapi', '#/asyncapi')
-				}))
+					return Effect.succeed(createValidationErrorResult(error.message, duration, 'version-constraint', 'asyncapi', '#/asyncapi'))
+				})
 			)
 
 			// Return early if version validation failed
@@ -161,35 +161,30 @@ export class AsyncAPIValidator {
 				)),
 				Effect.tapError(attempt => Effect.log(`⚠️  Parser attempt failed, retrying: ${safeStringify(attempt)}`)),
 				Effect.catchAll((error) => {
+					const duration = performance.now() - startTime
+					this.updateStats(duration)
+
 					if (error.message?.includes("timeout")) {
-						return Effect.sync(() => {
-							const duration = performance.now() - startTime
-							this.updateStats(duration)
-							Effect.runSync(Effect.logError(`AsyncAPI parser timed out after 30 seconds`))
-							return createValidationErrorResult(
-								"Parser operation timed out - document may be too large or complex",
-								duration,
-								"timeout-error"
-							)
-						})
+						Effect.runSync(Effect.logError(`AsyncAPI parser timed out after 30 seconds`))
+						return Effect.succeed(createValidationErrorResult(
+							"Parser operation timed out - document may be too large or complex",
+							duration,
+							"timeout-error"
+						))
 					}
 					// Handle non-timeout errors
-					return Effect.sync(() => {
-						const duration = performance.now() - startTime
-						this.updateStats(duration)
-						Effect.runSync(Effect.logError(`AsyncAPI parser failed after retries: ${error.message}`))
-						return createValidationErrorResult(
-							error.message,
-							duration,
-							"parse-error"
-						)
-					})
+					Effect.runSync(Effect.logError(`AsyncAPI parser failed after retries: ${error.message}`))
+					return Effect.succeed(createValidationErrorResult(
+						error.message,
+						duration,
+						"parse-error"
+					))
 				})
 			)
 
 			// Return early if parsing failed
 			if (typeof parseResult === 'object' && parseResult !== null && 'valid' in parseResult) {
-				return parseResult as ValidationResult
+				return parseResult
 			}
 
 			const duration = performance.now() - startTime
@@ -258,19 +253,19 @@ export class AsyncAPIValidator {
 				try: () => readFile(filePath, "utf-8"),
 				catch: (error) => new Error(`Failed to read file: ${error instanceof Error ? error.message : String(error)}`)
 			}).pipe(
-				Effect.catchAll((error) => Effect.sync(() => {
+				Effect.catchAll((error) => {
 					Effect.runSync(Effect.logError(`File reading failed: ${error.message}`))
-					return createValidationErrorResult(
+					return Effect.succeed(createValidationErrorResult(
 						error.message,
 						0,
 						"file-error"
-					)
-				}))
+					))
+				})
 			)
 
 			// Return early if file reading failed
 			if (typeof content === 'object' && content !== null && 'valid' in content) {
-				return content as ValidationResult
+				return content
 			}
 
 			return yield* this.validateEffect(content, filePath)

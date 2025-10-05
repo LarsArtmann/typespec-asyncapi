@@ -13,7 +13,7 @@ export class CompilationError extends BaseError {
 		super(message, context)
 	}
 
-	toStandardizedError(): StandardizedError {
+	override toStandardizedError(): StandardizedError {
 		return super.toStandardizedError("compilation_error", "COMPILATION_FAILED", {filePath: this.filePath, lineNumber: this.lineNumber}, false)
 	}
 }

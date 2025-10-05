@@ -7,12 +7,12 @@ import type {ErrorCategory} from "./ErrorCategory.js"
  */
 export abstract class BaseError {
 	abstract readonly _tag: string
-	abstract readonly message: string
-	readonly context?: Record<string, unknown>
+	readonly message: string
+	readonly context: Record<string, unknown>
 
 	constructor(message: string, context?: Record<string, unknown>) {
 		this.message = message
-		this.context = context
+		this.context = context ?? {}
 	}
 
 	/**
@@ -26,7 +26,7 @@ export abstract class BaseError {
 			message: this.message,
 			details,
 			timestamp: new Date(),
-			...(this.context ? { context: this.context } : { context: {} }),
+			context: this.context,
 			recoverable,
 		}
 	}

@@ -12,7 +12,7 @@ export class TypeResolutionError extends BaseError {
 		super(message, context)
 	}
 
-	toStandardizedError(): StandardizedError {
+	override toStandardizedError(): StandardizedError {
 		return super.toStandardizedError("type_error", "TYPE_RESOLUTION_FAILED", {typeName: this.typeName}, false)
 	}
 }

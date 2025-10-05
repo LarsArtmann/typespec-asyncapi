@@ -116,20 +116,6 @@ export class PerformanceMonitor {
 	}
 
 	/**
-	 * Log snapshot metrics - extracted to eliminate duplication
-	 */
-	private logSnapshotMetrics(snapshot: PerformanceSnapshot) {
-		return Effect.tap((s: PerformanceSnapshot) => Effect.log(`📊 Performance snapshot taken: ${s.memoryUsage.toFixed(1)}MB memory, ${s.operationCount} operations`))
-	}
-
-	/**
-	 * Handle snapshot error - extracted to eliminate duplication
-	 */
-	private logSnapshotError(error: Error) {
-		return Effect.logError(`❌ ${error.message}`)
-	}
-
-	/**
 	 * Take a performance snapshot synchronously (simplified)
 	 */
 	private takeSnapshotSync(): void {
@@ -154,8 +140,8 @@ export class PerformanceMonitor {
 			},
 			catch: (error) => new Error(`Failed to take performance snapshot: ${error instanceof Error ? error.message : String(error)}`)
 		}).pipe(
-			this.logSnapshotMetrics.bind(this),
-			Effect.catchAll(this.logSnapshotError.bind(this))
+			Effect.tap((snapshot) => Effect.log(`📊 Performance snapshot taken: ${snapshot.memoryUsage.toFixed(1)}MB memory, ${snapshot.operationCount} operations`)),
+			Effect.catchAll((error) => Effect.logError(`❌ ${error.message}`))
 		))
 	}
 
@@ -168,36 +154,30 @@ export class PerformanceMonitor {
 				return
 			}
 
-			// Use Effect.try for comprehensive snapshot creation with proper error handling
-			yield* Effect.try({
-				try: () => Effect.gen(function* (this: PerformanceMonitor) {
-					const metricsService = yield* PERFORMANCE_METRICS_SERVICE
-					const memoryMonitor = yield* MEMORY_MONITOR_SERVICE
+			// Use Effect.gen for comprehensive snapshot creation with proper error handling
+			const metricsService = yield* PERFORMANCE_METRICS_SERVICE
+			const memoryMonitor = yield* MEMORY_MONITOR_SERVICE
 
-					// Get current memory metrics
-					const memoryMetrics = yield* memoryMonitor.getMemoryMetrics()
-					const currentMemory = memoryMetrics.currentMemoryUsage ?? 0
+			// Get current memory metrics
+			const memoryMetrics = yield* memoryMonitor.getMemoryMetrics()
+			const currentMemory = memoryMetrics.currentMemoryUsage ?? 0
 
-					// Get performance metrics summary
-					const metricsSummary = yield* metricsService.getMetricsSummary()
+			// Get performance metrics summary
+			const metricsSummary = yield* metricsService.getMetricsSummary()
 
-					const snapshot: PerformanceSnapshot = {
-						timestamp: new Date(),
-						memoryUsage: currentMemory,
-						operationCount: metricsSummary[createMetricName("throughput")] ?? 0, // Using throughput as operation count approximation
-						averageLatency: metricsSummary[createMetricName("latency")] ?? 0,
-						throughput: metricsSummary[createMetricName("throughput")] ?? 0,
-					}
+			const snapshot: PerformanceSnapshot = {
+				timestamp: new Date(),
+				memoryUsage: currentMemory,
+				operationCount: metricsSummary[createMetricName("throughput")] ?? 0, // Using throughput as operation count approximation
+				averageLatency: metricsSummary[createMetricName("latency")] ?? 0,
+				throughput: metricsSummary[createMetricName("throughput")] ?? 0,
+			}
 
-					this.addSnapshotWithMemoryManagement(snapshot, currentMemory)
-					return snapshot
-				}.bind(this)),
-				catch: (error) => new Error(`Failed to take performance snapshot: ${safeStringify(error)}`)
-			}).pipe(
-				Effect.flatten,
-				this.logSnapshotMetrics.bind(this),
-				Effect.catchAll(this.logSnapshotError.bind(this))
-			)
+			this.addSnapshotWithMemoryManagement(snapshot, currentMemory)
+
+			yield* Effect.log(`📊 Performance snapshot taken: ${snapshot.memoryUsage}MB memory, ${snapshot.operationCount} operations`)
+
+			return snapshot
 		}.bind(this))
 	}
 

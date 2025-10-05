@@ -1,0 +1,5 @@
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/index.ts[0m:[0m[32m206[0m:                // Re-[0m[1m[31mthrow a[0ms standard Error for TypeSpec compiler
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/emitter/DocumentBuilder.ts[0m:[0m[32m10[0m: * - Eliminates [0m[1m[31mthrow s[0mtatements and try/catch blocks
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/emitter/AsyncAPIEmitter.ts[0m:[0m[32m161[0m:		// TODO: CRITICAL - Parent constructor could [0m[1m[31mthrow b[0mut no error handling
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/decorators/legacy-index.ts[0m:[0m[32m9[0m: * - Eliminates [0m[1m[31mthrow s[0mtatements and try/catch blocks
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/emitter/DocumentGenerator.ts[0m:[0m[32m15[0m: * - Eliminates [0m[1m[31mthrow s[0mtatements and try/catch blocks

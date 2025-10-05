@@ -14,7 +14,7 @@ export class ValidationError extends BaseError {
 		super(message, context)
 	}
 
-	toStandardizedError(): StandardizedError {
+	override toStandardizedError(): StandardizedError {
 		return super.toStandardizedError("validation_error", "VALIDATION_FAILED", this.details, true)
 	}
 }
