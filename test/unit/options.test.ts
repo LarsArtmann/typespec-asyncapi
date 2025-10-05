@@ -221,8 +221,9 @@ describe("Effect.TS Schema AsyncAPI Emitter Options", () => {
 		// CRITICAL SECURITY: Ensure additionalProperties is false
 		expect(ASYNC_API_EMITTER_OPTIONS_SCHEMA.additionalProperties).toBe(false)
 
-		// Ensure enum constraints are preserved
-		const properties = ASYNC_API_EMITTER_OPTIONS_SCHEMA.properties as Record<string, unknown>
+		// Ensure enum constraints are preserved in $defs structure
+		const defs = ASYNC_API_EMITTER_OPTIONS_SCHEMA.$defs as Record<string, any>
+		const properties = defs.AsyncAPIEmitterOptions.properties as Record<string, unknown>
 		expect(properties["file-type"]).toHaveProperty("enum", ["yaml", "json"])
 		expect(properties["asyncapi-version"]).toHaveProperty("enum", ["3.0.0"])
 	})
