@@ -194,15 +194,15 @@ export function generateAsyncAPIWithEffect(context: EmitContext<AsyncAPIEmitterO
 			}
 		}
 		
-		// TODO: TYPE_SAFETY - writeOutput() return type should be explicitly handled
-		// TODO: TYPE_SAFETY - Error parameter in mapError needs proper type annotation  
-		// TODO: ERROR_HANDLING - Should catch specific error types instead of generic Error
-		// TODO: PERFORMANCE - writeOutput operation should have timeout handling
-		// CRITICAL FIX: Don't manually call writeOutput() - let AssetEmitter framework handle it
-		// The AssetEmitter framework automatically calls writeOutput() when source files are created properly
-		yield* Effect.logInfo("🔥 ASSETEMITTER FIX: Skipping manual writeOutput() - letting framework handle it")
+		// Call writeOutput to trigger file generation
+		// Note: AssetEmitter should have collected source files during emitProgram/emitType calls
+		yield* Effect.logInfo("Calling writeOutput to generate files...")
+		yield* Effect.tryPromise({
+			try: () => assetEmitter.writeOutput(),
+			catch: (error) => createPluginSystemError(error)
+		})
+		yield* Effect.logInfo("✅ writeOutput completed")
 
-		// TODO: LOGGING - Success logging should include performance metrics and output statistics
 		yield* railwayLogging.logInitializationSuccess("AsyncAPI generation")
 	})
 }
