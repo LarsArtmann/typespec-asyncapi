@@ -198,8 +198,8 @@ ${source}
     expect(doc.operations.publishOrderEvent).toBeDefined();
     
     // Should have both channels
-    expect(doc.channels.channel_publishUserEvent).toBeDefined();
-    expect(doc.channels.channel_publishOrderEvent).toBeDefined();
+    expect(doc.channels["users.events"]).toBeDefined();
+    expect(doc.channels["orders.events"]).toBeDefined();
     
     // Should have both schemas
     expect(doc.components.schemas.UserEvent).toBeDefined();

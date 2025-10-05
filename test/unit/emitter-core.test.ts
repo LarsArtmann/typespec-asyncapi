@@ -31,7 +31,7 @@ describe("AsyncAPI Emitter Core (NEW API)", () => {
 
 			expect(AsyncAPIAssertions.hasValidStructure(asyncapiDoc)).toBe(true)
 			expect(AsyncAPIAssertions.hasSchema(asyncapiDoc, "BasicEvent")).toBe(true)
-			expect(AsyncAPIAssertions.hasChannel(asyncapiDoc, "channel_publishBasicEvent")).toBe(true)
+			expect(AsyncAPIAssertions.hasChannel(asyncapiDoc, "test.basic")).toBe(true)
 			expect(AsyncAPIAssertions.hasOperation(asyncapiDoc, "publishBasicEvent")).toBe(true)
 		})
 
@@ -156,9 +156,9 @@ describe("AsyncAPI Emitter Core (NEW API)", () => {
 
 			const asyncapiDoc = result.asyncApiDoc
 
-			expect(AsyncAPIAssertions.hasChannel(asyncapiDoc, "channel_publishUserEvent")).toBe(true)
-			expect(AsyncAPIAssertions.hasChannel(asyncapiDoc, "channel_publishSystemEvent")).toBe(true)
-			expect(AsyncAPIAssertions.hasChannel(asyncapiDoc, "channel_subscribeUserNotifications")).toBe(true)
+			expect(AsyncAPIAssertions.hasChannel(asyncapiDoc, "user.events")).toBe(true)
+			expect(AsyncAPIAssertions.hasChannel(asyncapiDoc, "system.events")).toBe(true)
+			expect(AsyncAPIAssertions.hasChannel(asyncapiDoc, "user.notifications")).toBe(true)
 
 			// Test channel uniqueness
 			const channelKeys = Object.keys(asyncapiDoc.channels)

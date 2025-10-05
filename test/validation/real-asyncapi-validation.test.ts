@@ -67,8 +67,8 @@ describe("Real AsyncAPI Validation Tests", () => {
       // Validate channels
       const channels = Array.from(document?.channels()?.keys() || []);
       expect(channels.length).toBe(2);
-      expect(channels).toContain("channel_sendUserEvent");
-      expect(channels).toContain("channel_getUserEvents");
+      expect(channels).toContain("/senduserevent");
+      expect(channels).toContain("/getuserevents");
 
       // Validate operations
       const operations = Array.from(document?.operations()?.keys() || []);

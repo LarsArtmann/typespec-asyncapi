@@ -12,10 +12,12 @@ import {getAsyncAPIAction, getChannelPath, getOperationType} from "./typespec-he
 /**
  * Create channel definition from operation
  * Extracted from asyncapi-emitter.ts and emitter-with-effect.ts
+ * FIXED: Use @channel decorator value instead of hardcoded prefix
  */
 export function createChannelDefinition(op: Operation, program: Program): { name: string, definition: ChannelObject } {
-	const channelName = `channel_${op.name}`
 	const channelPath = getChannelPath(op, program)
+	// FIXED: Use the actual channel path from @channel decorator as the channel name
+	const channelName = channelPath ?? `/${op.name.toLowerCase()}`
 
 	const definition: ChannelObject = {
 		address: channelPath ?? `/${op.name.toLowerCase()}`,

@@ -180,11 +180,9 @@ const processSingleOperation = (op: Operation, asyncApiDoc: AsyncAPIObject, prog
 			}
 		}
 
-		//TODO: HARDCODED PREFIX "channel_" IS GARBAGE NAMING!
-		//TODO: CRITICAL NAMING FAILURE - Channel names should be descriptive, not generic prefixes!
-		//TODO: BUSINESS LOGIC VIOLATION - Channel naming should follow AsyncAPI best practices!
-		//TODO: MAINTAINABILITY DISASTER - When channel naming strategy changes, we modify code!
-		const channelName = `channel_${op.name}`
+		// FIXED: Use channel path from @channel decorator instead of hardcoded prefix
+		// channelPath comes from extractOperationMetadata which reads the @channel decorator state
+		const channelName = channelPath
 		const action: "send" | "receive" = operationType === "subscribe" ? "receive" : "send"
 
 		// Add channel to document - use shared helper to eliminate duplication

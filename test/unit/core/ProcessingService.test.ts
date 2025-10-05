@@ -34,10 +34,10 @@ describe("ProcessingService", () => {
 
 			expect(result).toBe(2) // Should return count of processed operations
 
-			// Verify channels were created
+			// Verify channels were created (using default channel paths since no @channel decorator)
 			expect(baseAsyncApiDoc.channels).toBeDefined()
-			expect(baseAsyncApiDoc.channels["channel_publishUserEvent"]).toBeDefined()
-			expect(baseAsyncApiDoc.channels["channel_subscribeNotifications"]).toBeDefined()
+			expect(baseAsyncApiDoc.channels["/publishuserevent"]).toBeDefined()
+			expect(baseAsyncApiDoc.channels["/subscribenotifications"]).toBeDefined()
 
 			// Verify operations were created
 			expect(baseAsyncApiDoc.operations).toBeDefined()
@@ -68,7 +68,7 @@ describe("ProcessingService", () => {
 				ProcessingService.processOperations([testOp], baseAsyncApiDoc, mockProgram)
 			)
 
-			const channel = baseAsyncApiDoc.channels["channel_testOperation"]
+			const channel = baseAsyncApiDoc.channels["/testoperation"]
 			expect(channel).toBeDefined()
 			expect(channel.address).toBe("/test/channel")
 			expect(channel.description).toBe("Channel for testOperation")
@@ -92,11 +92,11 @@ describe("ProcessingService", () => {
 
 			const publishOperation = baseAsyncApiDoc.operations["publishEvent"]
 			expect(publishOperation.action).toBe("send")
-			expect(publishOperation.channel).toEqual({ $ref: "#/channels/channel_publishEvent" })
+			expect(publishOperation.channel).toEqual({ $ref: "#/channels//publishevent" })
 
 			const subscribeOperation = baseAsyncApiDoc.operations["subscribeEvent"]
 			expect(subscribeOperation.action).toBe("receive")
-			expect(subscribeOperation.channel).toEqual({ $ref: "#/channels/channel_subscribeEvent" })
+			expect(subscribeOperation.channel).toEqual({ $ref: "#/channels//subscribeevent" })
 		})
 
 		it("should create proper message structure", async () => {
@@ -407,7 +407,7 @@ describe("ProcessingService", () => {
 			expect(result).toBe(1) // Should still process
 			
 			// Should create default channel path
-			const channel = baseAsyncApiDoc.channels["channel_missingMetadataOp"]
+			const channel = baseAsyncApiDoc.channels["/missingmetadataop"]
 			expect(channel).toBeDefined()
 			expect(channel.address).toBe("/missingmetadataop") // Default path
 		})

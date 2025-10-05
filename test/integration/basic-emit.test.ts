@@ -166,9 +166,9 @@ describe("AsyncAPI Emitter Integration", () => {
 		expect(content).toContain("subscribeUserNotifications")
 
 		// Should contain all channels
-		expect(content).toContain("channel_publishUserEvent")
-		expect(content).toContain("channel_publishSystemAlert")
-		expect(content).toContain("channel_subscribeUserNotifications")
+		expect(content).toContain("user.events")
+		expect(content).toContain("system.alerts")
+		expect(content).toContain("user.notifications")
 
 		// Should contain all schemas
 		expect(content).toContain("UserEvent")
@@ -207,7 +207,7 @@ describe("AsyncAPI Emitter Integration", () => {
 		const asyncapiDoc = parseAsyncAPIOutput(outputFiles, "doc-test.json")
 
 		// Validate documentation is preserved
-		const channel = asyncapiDoc.channels.channel_publishDocumentedEvent
+		const channel = asyncapiDoc.channels.documented.events
 		expect(channel.description).toContain("Channel for publishing documented events")
 
 		const schema = asyncapiDoc.components.schemas.DocumentedEvent
