@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect } from "bun:test"
-import { createAsyncAPITestHost } from "../utils/test-helpers.js"
+import { createAsyncAPITestHost, compileAndGetAsyncAPI } from "../utils/test-helpers.js"
 
 describe("Security Schemes - Comprehensive Domain Tests", () => {
 	// HTTP Authentication (20 tests)

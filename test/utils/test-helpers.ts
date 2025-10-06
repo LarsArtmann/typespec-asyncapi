@@ -916,3 +916,51 @@ export const AsyncAPIAssertions = {
 		return true
 	},
 }
+
+/**
+ * Compile TypeSpec with TestHost and return parsed AsyncAPI object
+ * This is the helper function used by converted ghost tests
+ */
+export async function compileAndGetAsyncAPI(
+	host: any, // TestHost type
+	mainPath: string
+): Promise<AsyncAPIObject | null> {
+	try {
+		// Compile and emit AsyncAPI
+		await host.compile(mainPath)
+		await host.diagnose(mainPath, {
+			emit: ["@lars-artmann/typespec-asyncapi"]
+		})
+
+		// Get the output files from the host's virtual filesystem
+		const outputFiles = Array.from(host.fs.keys())
+
+		// Look for AsyncAPI output files (check filename, not full path)
+		const asyncapiFiles = outputFiles.filter(f => {
+			const filename = f.split('/').pop() || ''
+			return (
+				(filename.includes("asyncapi") || filename.includes("AsyncAPI")) &&
+				(filename.endsWith(".json") || filename.endsWith(".yaml") || filename.endsWith(".yml"))
+			)
+		})
+
+		const asyncApiFile = asyncapiFiles[0]
+
+		if (!asyncApiFile) {
+			return null
+		}
+
+		// Read the file content
+		const content = host.fs.get(asyncApiFile) as string
+
+		// Parse YAML or JSON
+		const spec = content.startsWith('{')
+			? JSON.parse(content)
+			: require('yaml').parse(content)
+
+		return spec as AsyncAPIObject
+	} catch (error) {
+		// Silently return null on error - tests will check for null
+		return null
+	}
+}
