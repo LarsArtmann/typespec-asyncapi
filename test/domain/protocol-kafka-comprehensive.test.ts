@@ -61,8 +61,9 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				op publishEvent(): Event;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true) // Compilation success
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0") // Compilation success
 		})
 
 		it("should handle Kafka consumer group configuration", async () => {
@@ -87,8 +88,9 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				op consumeMessages(): Message;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support Kafka key-based routing", async () => {
@@ -113,8 +115,9 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				op publishUserEvent(): UserEvent;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should handle Kafka compression settings", async () => {
@@ -139,8 +142,9 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				op publishCompressed(): LargeMessage;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support Kafka retention policies", async () => {
@@ -165,8 +169,9 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				op publishTimedEvent(): TimedEvent;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should handle Kafka idempotent producers", async () => {
@@ -191,8 +196,9 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				op publishTransaction(): Transaction;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support Kafka exactly-once semantics", async () => {
@@ -217,8 +223,9 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				op publishPayment(): Payment;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should handle Kafka topic cleanup policies", async () => {
@@ -243,8 +250,9 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				op publishSnapshot(): Snapshot;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support Kafka batch configurations", async () => {
@@ -270,8 +278,9 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				op publishBatch(): BatchEvent;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 	})
 
@@ -303,8 +312,9 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				op publishSecure(): SecureMessage;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support SASL/SCRAM-SHA-512 authentication", async () => {
@@ -329,8 +339,9 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				op publish(): Message;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support SASL/PLAIN authentication", async () => {
@@ -352,11 +363,12 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support SASL/GSSAPI (Kerberos) authentication", async () => {
@@ -381,8 +393,9 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				op publishKerberos(): KerberosMsg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support SASL/OAUTHBEARER authentication", async () => {
@@ -407,8 +420,9 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				op publishOAuth(): OAuthMsg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support SSL/TLS encryption", async () => {
@@ -432,8 +446,9 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				op publishEncrypted(): EncryptedMsg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support Kafka ACLs configuration", async () => {
@@ -458,8 +473,9 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				op publishACL(): ACLMessage;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support mTLS (mutual TLS) authentication", async () => {
@@ -484,8 +500,9 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				op publishMTLS(): MutualAuthMsg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support Schema Registry authentication", async () => {
@@ -511,8 +528,9 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				op publishRegistered(): RegisteredMsg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support delegation tokens", async () => {
@@ -538,8 +556,9 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				op publishToken(): TokenMsg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 	})
 
@@ -571,8 +590,9 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				op publishAvro(): AvroMsg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support Protobuf serialization", async () => {
@@ -600,8 +620,9 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				op publishProto(): ProtoMsg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support JSON serialization", async () => {
@@ -629,8 +650,9 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				op publishJSON(): JSONMsg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support binary/raw serialization", async () => {
@@ -658,8 +680,9 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				op publishBinary(): BinaryMsg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support message headers", async () => {
@@ -688,8 +711,9 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				op publishHeadered(): HeaderedMsg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support CloudEvents format", async () => {
@@ -720,8 +744,9 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				op publishCloudEvent(): CloudEvent;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support message timestamps", async () => {
@@ -750,8 +775,9 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				op publishTimestamped(): TimestampedMsg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support Schema Registry with versioning", async () => {
@@ -780,8 +806,9 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				op publishVersioned(): VersionedMsg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support custom serializers", async () => {
@@ -809,8 +836,9 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				op publishCustom(): CustomMsg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support message compression per message", async () => {
@@ -837,8 +865,9 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				op publishCompressed(): CompressedMsg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 	})
 
@@ -863,8 +892,9 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				op publishStream(): StreamEvent;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support compacted topics for state stores", async () => {
@@ -889,8 +919,9 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				op publishState(): State;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support changelog topics", async () => {
@@ -915,8 +946,9 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				op publishChange(): Change;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support windowed aggregations", async () => {
@@ -938,8 +970,9 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				op publishWindowedResult(): WindowedResult;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support join operations", async () => {
@@ -961,8 +994,9 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				op publishJoined(): JoinedEvent;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support dead letter queues", async () => {
@@ -991,8 +1025,9 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				op publishDLQ(): FailedMessage;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support exactly-once processing", async () => {
@@ -1018,8 +1053,9 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				op publishTransaction(): Transaction;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support Kafka Connect integration", async () => {
@@ -1047,8 +1083,9 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				op publishConnectorEvent(): ConnectorEvent;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support CDC (Change Data Capture) patterns", async () => {
@@ -1071,8 +1108,9 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				op publishCDC(): CDCEvent;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support event sourcing patterns", async () => {
@@ -1095,8 +1133,9 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				op publishEvent(): Event;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support CQRS patterns", async () => {
@@ -1127,8 +1166,9 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				op publishQueryResult(): QueryResult;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support saga patterns", async () => {
@@ -1151,8 +1191,9 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				op publishSagaStep(): SagaStep;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support request-reply patterns", async () => {
@@ -1183,8 +1224,9 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				op consumeResponse(): Response;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support priority queues", async () => {
@@ -1212,8 +1254,9 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				op publishPriority(): PriorityMessage;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support scheduled messages", async () => {
@@ -1234,8 +1277,9 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				op publishScheduled(): ScheduledMessage;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support batch processing", async () => {
@@ -1257,8 +1301,9 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				op publishBatch(): BatchJob;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support rate limiting", async () => {
@@ -1288,8 +1333,9 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				op publishRateLimited(): RateLimitedMsg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support circuit breaker patterns", async () => {
@@ -1311,8 +1357,9 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				op publishCircuitState(): CircuitState;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support distributed tracing", async () => {
@@ -1335,8 +1382,9 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				op publishTraced(): TracedMessage;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support multi-region replication", async () => {
@@ -1366,8 +1414,9 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				op publishReplicated(): ReplicatedMsg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 	})
 })

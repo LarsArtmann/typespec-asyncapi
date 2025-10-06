@@ -29,11 +29,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support HTTP Bearer JWT", async () => {
@@ -56,11 +57,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support HTTP Bearer with custom format", async () => {
@@ -83,11 +85,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support HTTP Digest Auth", async () => {
@@ -109,11 +112,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support HTTP Mutual TLS", async () => {
@@ -135,11 +139,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support HTTP HOBA (HTTP Origin-Bound Auth)", async () => {
@@ -161,11 +166,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support HTTP Negotiate (SPNEGO)", async () => {
@@ -187,11 +193,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support HTTP SCRAM-SHA-1", async () => {
@@ -213,11 +220,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support HTTP SCRAM-SHA-256", async () => {
@@ -239,11 +247,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support HTTP AWS Signature V4", async () => {
@@ -265,11 +274,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support HTTP MAC (Message Authentication Code)", async () => {
@@ -291,11 +301,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support HTTP VAPID (Web Push)", async () => {
@@ -317,11 +328,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): PushMsg;
+				op publishMessage(): PushMsg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support HTTP DPoP (Demonstrating Proof-of-Possession)", async () => {
@@ -343,11 +355,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support HTTP PrivateToken", async () => {
@@ -369,11 +382,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support HTTP GNAP (Grant Negotiation and Authorization Protocol)", async () => {
@@ -395,11 +409,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support multiple HTTP auth schemes (OR)", async () => {
@@ -436,8 +451,9 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				op pub2(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support HTTP auth with realm", async () => {
@@ -460,11 +476,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support HTTP auth with charset", async () => {
@@ -487,11 +504,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support HTTP auth with nonce", async () => {
@@ -514,11 +532,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support HTTP Hawk authentication", async () => {
@@ -540,11 +559,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 	})
 
@@ -570,11 +590,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support API Key in query parameter", async () => {
@@ -597,11 +618,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support API Key in cookie", async () => {
@@ -624,11 +646,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support multiple API keys", async () => {
@@ -666,8 +689,9 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				op pub2(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support API Key with prefix", async () => {
@@ -691,11 +715,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support API Key rotation", async () => {
@@ -722,11 +747,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support API Key scopes", async () => {
@@ -750,11 +776,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support API Key rate limiting", async () => {
@@ -781,11 +808,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support API Key expiration", async () => {
@@ -812,11 +840,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support API Key IP whitelisting", async () => {
@@ -843,11 +872,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support API Key usage tracking", async () => {
@@ -874,11 +904,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support API Key with CORS", async () => {
@@ -902,11 +933,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support API Key with environment (dev/staging/prod)", async () => {
@@ -933,11 +965,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support API Key with request signing", async () => {
@@ -965,11 +998,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support API Key with custom validation", async () => {
@@ -993,11 +1027,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support API Key with webhook verification", async () => {
@@ -1028,8 +1063,9 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				op receiveWebhook(): WebhookMsg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support API Key with tenant isolation", async () => {
@@ -1056,11 +1092,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support API Key with fallback authentication", async () => {
@@ -1084,11 +1121,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support API Key with conditional requirements", async () => {
@@ -1115,11 +1153,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support API Key with audit logging", async () => {
@@ -1146,11 +1185,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 	})
 
@@ -1184,11 +1224,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support OAuth2 Client Credentials flow", async () => {
@@ -1218,11 +1259,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support OAuth2 Implicit flow", async () => {
@@ -1252,11 +1294,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support OAuth2 Password flow (Resource Owner)", async () => {
@@ -1285,11 +1328,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support OAuth2 with multiple flows", async () => {
@@ -1321,11 +1365,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support OAuth2 with PKCE", async () => {
@@ -1354,11 +1399,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support OAuth2 with refresh tokens", async () => {
@@ -1390,11 +1436,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support OAuth2 with OpenID Connect", async () => {
@@ -1426,11 +1473,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support OAuth2 with dynamic scopes", async () => {
@@ -1462,11 +1510,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support OAuth2 with audience restriction", async () => {
@@ -1497,11 +1546,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support OAuth2 Device Authorization Grant", async () => {
@@ -1532,11 +1582,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support OAuth2 Token Exchange (RFC 8693)", async () => {
@@ -1566,11 +1617,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support OAuth2 JWT Bearer Grant (RFC 7523)", async () => {
@@ -1600,11 +1652,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support OAuth2 SAML Bearer Grant (RFC 7522)", async () => {
@@ -1634,11 +1687,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support OAuth2 with token introspection", async () => {
@@ -1669,11 +1723,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support OAuth2 with token revocation", async () => {
@@ -1705,11 +1760,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support OAuth2 with scope negotiation", async () => {
@@ -1744,11 +1800,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support OAuth2 with consent management", async () => {
@@ -1780,11 +1837,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support OAuth2 with session management", async () => {
@@ -1816,11 +1874,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 	})
 
@@ -1845,11 +1904,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support SASL SCRAM-SHA-1", async () => {
@@ -1871,11 +1931,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support SASL SCRAM-SHA-256", async () => {
@@ -1897,11 +1958,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support SASL SCRAM-SHA-512", async () => {
@@ -1923,11 +1985,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support SASL GSSAPI (Kerberos)", async () => {
@@ -1949,11 +2012,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support SASL EXTERNAL", async () => {
@@ -1975,11 +2039,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support SASL OAUTHBEARER", async () => {
@@ -2001,11 +2066,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support SASL CRAM-MD5", async () => {
@@ -2027,11 +2093,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support SASL DIGEST-MD5", async () => {
@@ -2053,11 +2120,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support SASL ANONYMOUS", async () => {
@@ -2079,11 +2147,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support X.509 Client Certificates", async () => {
@@ -2105,11 +2174,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support Asymmetric Key Pairs", async () => {
@@ -2134,11 +2204,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support Symmetric Keys", async () => {
@@ -2163,11 +2234,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support User Context Token", async () => {
@@ -2192,11 +2264,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support Open Authenticator", async () => {
@@ -2217,11 +2290,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support Plain Text (No Authentication)", async () => {
@@ -2242,11 +2316,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support Scrambled Username/Password", async () => {
@@ -2267,11 +2342,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support HTTP Signature", async () => {
@@ -2296,11 +2372,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support PASETO (Platform-Agnostic Security Tokens)", async () => {
@@ -2325,11 +2402,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support Macaroons", async () => {
@@ -2353,11 +2431,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 	})
 
@@ -2398,8 +2477,9 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				op pub2(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support security with rate limiting", async () => {
@@ -2427,11 +2507,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support security with IP restrictions", async () => {
@@ -2458,11 +2539,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support security with geographic restrictions", async () => {
@@ -2489,11 +2571,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support security with time-based access", async () => {
@@ -2520,11 +2603,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support security with MFA requirements", async () => {
@@ -2551,11 +2635,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support security with device fingerprinting", async () => {
@@ -2582,11 +2667,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support security with biometric authentication", async () => {
@@ -2611,11 +2697,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support security with hardware token", async () => {
@@ -2640,11 +2727,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support security with risk-based authentication", async () => {
@@ -2672,11 +2760,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support security with behavioral analytics", async () => {
@@ -2701,11 +2790,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support security with zero-trust architecture", async () => {
@@ -2730,11 +2820,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support security with blockchain-based identity", async () => {
@@ -2759,11 +2850,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support security with quantum-resistant cryptography", async () => {
@@ -2788,11 +2880,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support security with homomorphic encryption", async () => {
@@ -2817,11 +2910,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support security with secure multi-party computation", async () => {
@@ -2846,11 +2940,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support security with confidential computing", async () => {
@@ -2875,11 +2970,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support security with privacy-preserving protocols", async () => {
@@ -2904,11 +3000,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support security with federated learning", async () => {
@@ -2933,11 +3030,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 
 		it("should support security with verifiable credentials", async () => {
@@ -2963,11 +3061,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					}
 				})
 				@publish
-				op pub(): Msg;
+				op publishMessage(): Msg;
 			`)
 
-			await host.compile("./main.tsp")
-			expect(true).toBe(true)
+			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
+		expect(spec).toBeDefined()
+		expect(spec?.asyncapi).toBe("3.0.0")
 		})
 	})
 })
