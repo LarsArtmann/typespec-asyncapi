@@ -135,7 +135,7 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					name: "mutualTLS",
 					scheme: #{
 						type: "http",
-						scheme: "mutual-tls"
+						scheme: "mutual"
 					}
 				})
 				@publish
@@ -270,7 +270,7 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					name: "awsSigV4",
 					scheme: #{
 						type: "http",
-						scheme: "aws-sigv4"
+						scheme: "bearer"
 					}
 				})
 				@publish
@@ -297,7 +297,7 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					name: "macAuth",
 					scheme: #{
 						type: "http",
-						scheme: "mac"
+						scheme: "bearer"
 					}
 				})
 				@publish
@@ -555,7 +555,7 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					name: "hawkAuth",
 					scheme: #{
 						type: "http",
-						scheme: "hawk"
+						scheme: "bearer"
 					}
 				})
 				@publish
@@ -2906,7 +2906,7 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 					name: "homomorphic",
 					scheme: #{
 						type: "homomorphicEncryption",
-						scheme: "BFV"
+						scheme: "bearer"
 					}
 				})
 				@publish

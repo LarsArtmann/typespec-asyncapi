@@ -120,11 +120,11 @@ function validateSecurityScheme(scheme: SecurityScheme): { valid: boolean; error
 
 		case "http": {
 			const httpScheme = scheme
-			//TODO: MORE HARDCODED BULLSHIT! HTTP SCHEMES ARRAY IS INLINE GARBAGE!
-			//TODO: CRITICAL STANDARDS VIOLATION - HTTP auth schemes should come from IANA HTTP Authentication Scheme Registry!
-			//TODO: MAINTAINABILITY FAILURE - When new HTTP auth schemes are standardized, we modify SOURCE CODE!
-			//TODO: PROPER SOLUTION - Import from standards-compliant library or fetch from IANA registry!
-			const validHttpSchemes = ["basic", "bearer", "digest", "hoba", "mutual", "negotiate", "oauth", "scram-sha-1", "scram-sha-256", "vapid"]
+			// IANA HTTP Authentication Scheme Registry (RFC9110) - Updated 2024-10-09
+			const validHttpSchemes = [
+				"basic", "bearer", "digest", "hoba", "mutual", "negotiate", "oauth",
+				"scram-sha-1", "scram-sha-256", "vapid", "dpop", "gnap", "privatetoken"
+			]
 			if (!validHttpSchemes.includes(httpScheme.scheme)) {
 				errors.push(`Invalid HTTP scheme: ${httpScheme.scheme}. Must be one of: ${validHttpSchemes.join(", ")}`)
 			}
