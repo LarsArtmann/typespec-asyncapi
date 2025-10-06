@@ -75,9 +75,9 @@ export function detectCommandName(): string {
 
 	// Look for common TypeSpec command names
 	for (const arg of argv) {
-		if (arg.includes("typespec") ?? arg.includes("tsp")) {
+		if (arg.includes("typespec") || arg.includes("tsp")) {
 			const basename = arg.split(/[/\\]/).pop() ?? ""
-			if (basename.startsWith("typespec") ?? basename.startsWith("tsp")) {
+			if (basename.startsWith("typespec") || basename.startsWith("tsp")) {
 				return basename.replace(/\.(js|exe)$/, "")
 			}
 		}

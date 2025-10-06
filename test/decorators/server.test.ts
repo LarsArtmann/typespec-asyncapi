@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect } from "bun:test";
-import { compileAsyncAPISpec } from "../utils/test-helpers";
+import { compileAsyncAPISpecRawRaw } from "../utils/test-helpers";
 
 //TODO: this file is getting to big split it up
 
@@ -24,7 +24,7 @@ describe("@server decorator", () => {
         op publishEvent(): Event;
       `;
       
-      const { diagnostics } = await compileAsyncAPISpec(source, {
+      const { diagnostics } = await compileAsyncAPISpecRawRaw(source, {
         "output-file": "server-valid",
         "file-type": "json"
       });
@@ -57,7 +57,7 @@ describe("@server decorator", () => {
         op publishEvent(): Event;
       `;
       
-      const { diagnostics, outputFiles } = await compileAsyncAPISpec(source, {
+      const { diagnostics, outputFiles } = await compileAsyncAPISpecRaw(source, {
         "output-file": "multi-server",
         "file-type": "json"
       });
@@ -83,7 +83,7 @@ describe("@server decorator", () => {
         op publishEvent(): Event;
       `;
       
-      const { diagnostics } = await compileAsyncAPISpec(source, {
+      const { diagnostics } = await compileAsyncAPISpecRaw(source, {
         "output-file": "missing-url",
         "file-type": "json"
       });
@@ -109,7 +109,7 @@ describe("@server decorator", () => {
         op publishEvent(): Event;
       `;
       
-      const { diagnostics } = await compileAsyncAPISpec(source, {
+      const { diagnostics } = await compileAsyncAPISpecRaw(source, {
         "output-file": "missing-protocol",
         "file-type": "json"
       });
@@ -149,7 +149,7 @@ describe("@server decorator", () => {
           op publishEvent(): Event;
         `;
         
-        const { diagnostics } = await compileAsyncAPISpec(source, {
+        const { diagnostics } = await compileAsyncAPISpecRaw(source, {
           "output-file": `protocol-${protocol.name}`,
           "file-type": "json"
         });
@@ -174,7 +174,7 @@ describe("@server decorator", () => {
         op publishEvent(): Event;
       `;
       
-      const { diagnostics } = await compileAsyncAPISpec(source, {
+      const { diagnostics } = await compileAsyncAPISpecRaw(source, {
         "output-file": "unsupported-protocol",
         "file-type": "json"
       });
@@ -202,7 +202,7 @@ describe("@server decorator", () => {
         op publishEvent(): Event;
       `;
       
-      const { diagnostics } = await compileAsyncAPISpec(source, {
+      const { diagnostics } = await compileAsyncAPISpecRaw(source, {
         "output-file": "invalid-target",
         "file-type": "json"
       });
@@ -230,7 +230,7 @@ describe("@server decorator", () => {
         op publishEvent(): Event;
       `;
       
-      const { diagnostics, outputFiles } = await compileAsyncAPISpec(source, {
+      const { diagnostics, outputFiles } = await compileAsyncAPISpecRaw(source, {
         "output-file": "minimal-server",
         "file-type": "json"
       });
@@ -266,7 +266,7 @@ describe("@server decorator", () => {
         op publishEvent(): Event;
       `;
       
-      const { diagnostics, outputFiles } = await compileAsyncAPISpec(source, {
+      const { diagnostics, outputFiles } = await compileAsyncAPISpecRaw(source, {
         "output-file": "documented-server",
         "file-type": "json"
       });
@@ -311,7 +311,7 @@ describe("@server decorator", () => {
         op handleSystemAlert(): UserEvent;
       `;
       
-      const { diagnostics, outputFiles } = await compileAsyncAPISpec(source, {
+      const { diagnostics, outputFiles } = await compileAsyncAPISpecRaw(source, {
         "output-file": "integration-test",
         "file-type": "json"
       });
