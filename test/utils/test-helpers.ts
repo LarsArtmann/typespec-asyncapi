@@ -958,6 +958,19 @@ export async function compileAndGetAsyncAPI(
 			? JSON.parse(content)
 			: require('yaml').parse(content)
 
+		// Debug: Check if spec is valid
+		if (!spec || typeof spec !== 'object') {
+			console.log(`⚠️  Parsed spec is invalid:`, spec)
+			return null
+		}
+
+		if (!spec.asyncapi) {
+			console.log(`⚠️  Spec missing asyncapi field!`)
+			console.log(`⚠️  Keys found:`, Object.keys(spec))
+			console.log(`⚠️  File:`, asyncApiFile)
+			console.log(`⚠️  Content (first 300 chars):`, content.substring(0, 300))
+		}
+
 		return spec as AsyncAPIObject
 	} catch (error) {
 		// Silently return null on error - tests will check for null

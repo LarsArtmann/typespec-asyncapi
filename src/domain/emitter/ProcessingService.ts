@@ -464,13 +464,44 @@ const createAsyncAPISecurityScheme = (config: SecurityConfig): SecuritySchemeObj
 				} as SecuritySchemeObject
 			}
 
+			case "openIdConnect":
+				return {
+					type: "openIdConnect",
+					openIdConnectUrl: scheme.openIdConnectUrl,
+					description: scheme.description,
+				} as SecuritySchemeObject
+
+			case "sasl":
+				return {
+					type: "plain",
+					description: scheme.description,
+				} as SecuritySchemeObject
+
+			case "x509":
+				return {
+					type: "X509",
+					description: scheme.description,
+				} as SecuritySchemeObject
+
+			case "symmetricEncryption":
+				return {
+					type: "symmetricEncryption",
+					description: scheme.description,
+				} as SecuritySchemeObject
+
+			case "asymmetricEncryption":
+				return {
+					type: "asymmetricEncryption",
+					description: scheme.description,
+				} as SecuritySchemeObject
+
 			default:
-				// Fallback for unknown scheme types
-				Effect.log(`⚠️ Unknown security scheme type: ${scheme.type}, using apiKey fallback`)
+				// This should never be reached due to TypeScript exhaustiveness checking
+				Effect.log(`⚠️ Unknown security scheme type, using apiKey fallback`)
 				return {
 					type: "apiKey",
 					in: "user",
-					description: scheme.description ?? `Security scheme ${config.name}`,
+					description: `Security scheme ${config.name}`,
 				} as SecuritySchemeObject
 		}
 	}
