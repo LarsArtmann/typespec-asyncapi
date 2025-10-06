@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect } from "bun:test";
-import { compileAsyncAPISpecRawRaw } from "../utils/test-helpers";
+import { compileAsyncAPISpecRaw } from "../utils/test-helpers";
 
 //TODO: this file is getting to big split it up
 
@@ -24,7 +24,7 @@ describe("@server decorator", () => {
         op publishEvent(): Event;
       `;
       
-      const { diagnostics } = await compileAsyncAPISpecRawRaw(source, {
+      const { diagnostics } = await compileAsyncAPISpecRaw(source, {
         "output-file": "server-valid",
         "file-type": "json"
       });

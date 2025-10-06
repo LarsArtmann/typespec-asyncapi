@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect } from "bun:test"
-import { compileAsyncAPISpecRawRaw } from "../utils/test-helpers"
+import { compileAsyncAPISpecRaw } from "../utils/test-helpers"
 import { Effect } from "effect"
 
 describe("🚨 Mock Infrastructure Elimination", () => {
