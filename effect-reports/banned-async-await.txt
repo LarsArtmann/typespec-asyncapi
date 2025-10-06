@@ -1,5 +1,5 @@
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/validation/asyncapi-validator.ts[0m:[0m[32m418[0m:export [0m[1m[31masync function[0m validateAsyncAPIObject(document: unknown, options?: ValidationOptions): Promise<ValidationResult> {
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/validation/asyncapi-validator.ts[0m:[0m[32m420[0m:	return [0m[1m[31mawait [0mvalidator.validate(document)
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/validation/asyncapi-validator.ts[0m:[0m[32m425[0m:export [0m[1m[31masync function[0m validateAsyncAPIObject(document: unknown, options?: ValidationOptions): Promise<ValidationResult> {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/validation/asyncapi-validator.ts[0m:[0m[32m427[0m:	return [0m[1m[31mawait [0mvalidator.validate(document)
 [0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/application/services/emitter-with-effect.ts[0m:[0m[32m155[0m:		// TODO: PERFORMANCE - Consider async/[0m[1m[31mawait [0mpattern instead of synchronous call for better performance
 [0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/index.ts[0m:[0m[32m146[0m: * const program = [0m[1m[31mawait [0mcompile(host, "main.tsp", {
 [0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/index.ts[0m:[0m[32m150[0m: * [0m[1m[31mawait [0m$onEmit({
