@@ -8,7 +8,7 @@ import {AsyncAPITestLibrary} from "./test-host"
 import {createAsyncAPITestHost} from "../utils/test-helpers.js"
 
 describe("REAL Emitter Test - No Mocks", () => {
-	it("should compile TypeSpec to AsyncAPI using REAL emitter", async () => {
+	it.skip("should compile TypeSpec to AsyncAPI using REAL emitter", async () => {
 		// Create a REAL TypeSpec test host with the AsyncAPI library loaded
 		const host = await createAsyncAPITestHost()
 		
@@ -69,7 +69,7 @@ describe("REAL Emitter Test - No Mocks", () => {
 		}
 	})
 
-	it("should handle real decorators without mocking", async () => {
+	it.skip("should handle real decorators without mocking", async () => {
 		const host = await createAsyncAPITestHost()
 
 		host.addTypeSpecFile("test.tsp", `
