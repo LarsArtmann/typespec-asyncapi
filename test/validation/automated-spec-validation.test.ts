@@ -280,7 +280,7 @@ describe("🚨 CRITICAL: AUTOMATED ASYNCAPI SPECIFICATION VALIDATION", () => {
 
 					let parsedSpec: Record<string, unknown>
 					try {
-						parsedSpec = parseAsyncAPIOutput(compilationResult.outputFiles, fileName)
+						parsedSpec = await parseAsyncAPIOutput(compilationResult.outputFiles, fileName)
 						expect(parsedSpec).toBeDefined()
 					} catch (error) {
 						throw new Error(`Failed to parse generated ${fileName}: ${error instanceof Error ? error.message : String(error)}`)
