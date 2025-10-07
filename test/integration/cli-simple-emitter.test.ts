@@ -1,11 +1,18 @@
 /**
  * CLI-Based Test: AsyncAPI emitter basic functionality
  * Converted from simple-emitter.test.ts to use CLI compilation
+ * Uses type guards for type-safe assertions
  */
 
 import { describe, test, expect, afterEach } from 'bun:test'
 import { compileWithCLI, cleanupTestDir } from '../utils/cli-test-helpers.js'
 import type { CLITestResult } from '../utils/cli-test-helpers.js'
+import {
+	assertAsyncAPIDoc,
+	assertCompilationSuccess,
+	getPropertyKeys,
+	assertContainsKeys,
+} from '../utils/type-guards.js'
 
 describe('CLI Tests: Simple AsyncAPI Emitter', () => {
 	let testResult: CLITestResult | undefined
@@ -38,28 +45,15 @@ describe('CLI Tests: Simple AsyncAPI Emitter', () => {
 		// Act: Compile with CLI
 		testResult = await compileWithCLI(source)
 
-		// Debug: Show errors if compilation failed
-		if (testResult.exitCode !== 0) {
-			console.error('Compilation failed!')
-			console.error('stderr:', testResult.stderr)
-			console.error('stdout:', testResult.stdout)
-			console.error('errors:', testResult.errors)
-		}
+		// Assert: Compilation succeeded with type safety
+		assertCompilationSuccess(testResult)
+		// Now TypeScript knows testResult.asyncapiDoc is AsyncAPIObject
 
-		// Assert: Compilation succeeded
-		expect(testResult.exitCode).toBe(0)
-		expect(testResult.errors).toHaveLength(0)
+		// Assert: Valid AsyncAPI document (type guard removes optional chaining)
+		assertAsyncAPIDoc(testResult.asyncapiDoc)
 
-		// Assert: Valid AsyncAPI document structure
-		expect(testResult.asyncapiDoc).toBeDefined()
-		expect(testResult.asyncapiDoc?.asyncapi).toBe('3.0.0')
-		expect(testResult.asyncapiDoc?.info).toBeDefined()
-		expect(testResult.asyncapiDoc?.channels).toBeDefined()
-		expect(testResult.asyncapiDoc?.operations).toBeDefined()
-		expect(testResult.asyncapiDoc?.components).toBeDefined()
-
-		// Assert: Channel created
-		const channelKeys = Object.keys(testResult.asyncapiDoc?.channels || {})
+		// Assert: Channel created (clean, no ?. operators)
+		const channelKeys = getPropertyKeys(testResult.asyncapiDoc.channels)
 		expect(channelKeys).toContain('simple.event')
 
 		console.log('✅ Basic AsyncAPI generation works')
