@@ -273,8 +273,7 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 	 * @public
 	 */
 	override programContext(program: Program): Record<string, unknown> {
-		console.log("🔥🔥🔥🔥🔥 PROGRAMCONTEXT CALLED 🔥🔥🔥🔥🔥")
-		Effect.log("🔥🔥🔥 PROGRAMCONTEXT CALLED 🔥🔥🔥")
+		Effect.log("🔧 AsyncAPIEmitter.programContext() called - setting up source file and scope")
 		// TODO: CRITICAL - No error handling if getOptions() returns null/undefined
 		// TODO: CRITICAL - Bracket notation for options access is fragile - consider type-safe property access
 		const options = this.emitter.getOptions()
@@ -336,12 +335,9 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 
 		// Add the AsyncAPI document as a declaration to the scope
 		// This triggers the framework to call sourceFile() for content generation
-		console.log("🔧 About to serialize AsyncAPI document...")
 		const asyncApiContent = Effect.runSync(
 			this.documentGenerator.serializeDocument(this.asyncApiDoc, fileType)
 		)
-
-		console.log(`🔧 Serialized! Content length: ${asyncApiContent.length} bytes`)
 
 		// Create a declaration with the serialized content
 		sourceFile.globalScope.declarations.push({
@@ -352,7 +348,6 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 			meta: {}
 		} as any)
 
-		console.log(`📝 Added AsyncAPI declaration to scope (${asyncApiContent.length} bytes)`)
 		Effect.log(`📝 Added AsyncAPI declaration to scope (${asyncApiContent.length} bytes)`)
 
 		// CRITICAL FIX: Return ONLY scope, not sourceFile
@@ -434,9 +429,7 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 	 * @public
 	 */
 	override sourceFile(sourceFile: SourceFile<string>): EmittedSourceFile {
-		console.log(`🔥🔥🔥 SOURCEFILEMETHOD CALLED for ${sourceFile.path} 🔥🔥🔥`)
-		Effect.log(`🔥🔥🔥 SOURCEFILEMETHOD CALLED for ${sourceFile.path} 🔥🔥🔥`)
-		Effect.log(`🔍 SOURCEFILEMETHOD: Generating file content for ${sourceFile.path}`)
+		Effect.log(`🔍 AsyncAPIEmitter.sourceFile() called for: ${sourceFile.path}`)
 
 		// The content was already generated and added as a declaration in programContext
 		// Extract it from the scope declarations
