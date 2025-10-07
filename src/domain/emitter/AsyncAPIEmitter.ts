@@ -238,6 +238,36 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 	}
 
 	/**
+	 * Establishes the program-wide context for AsyncAPI emission using AssetEmitter pattern.
+	 *
+	 * ## AssetEmitter Integration Pattern
+	 *
+	 * This method is called ONCE by the TypeSpec AssetEmitter framework at the start of emission.
+	 * It must:
+	 * 1. Create a source file using `this.emitter.createSourceFile(outputPath)`
+	 * 2. Run the emission pipeline to populate the AsyncAPI document
+	 * 3. Serialize the document and add it as a declaration to the source file's scope
+	 * 4. Return the scope for the framework to use
+	 *
+	 * ## Critical Requirements
+	 * - **MUST be synchronous** - TypeEmitter base class requires sync return (not Promise)
+	 * - **MUST return scope** - Framework needs this to track declarations
+	 * - **MUST add declarations** - Without declarations, sourceFile() won't be called
+	 *
+	 * ## Emission Flow
+	 * ```
+	 * programContext() →  creates source file + adds declaration
+	 *      ↓
+	 * [Framework calls emitSourceFile() for each source file with declarations]
+	 *      ↓
+	 * sourceFile() →  extracts declaration content and returns EmittedSourceFile
+	 *      ↓
+	 * writeOutput() →  writes files to disk
+	 * ```
+	 *
+	 * @see {@link sourceFile} for content generation from declarations
+	 * @see {@link writeOutput} for file system writing
+	 *
 	 * Executes the complete AsyncAPI emission pipeline for a TypeSpec program.
 	 *
 	 * This method is called by the TypeSpec compiler during the emission phase and serves as the main
@@ -404,6 +434,21 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 
 	/**
 	 * Generates the final AsyncAPI document content for a source file.
+	 *
+	 * ## AssetEmitter Callback
+	 *
+	 * This method is called by AssetEmitter's `emitSourceFile()` for each source file that has declarations.
+	 * It MUST:
+	 * 1. Extract the serialized content from the source file's scope declarations
+	 * 2. Return an EmittedSourceFile with path and contents
+	 *
+	 * ## Key Points
+	 * - Called by: `assetEmitter.emitSourceFile(sourceFile)` in emitter-with-effect.ts
+	 * - Input: SourceFile<string> with globalScope containing our declaration
+	 * - Output: EmittedSourceFile with {path, contents} for framework to write
+	 * - Content was already serialized in programContext() and stored as a declaration
+	 *
+	 * @see {@link programContext} where content is serialized and added as declaration
 	 *
 	 * This method is called by the TypeSpec compiler's AssetEmitter after the pipeline has completed
 	 * execution. It uses the DocumentGenerator service to serialize the processed AsyncAPI document
