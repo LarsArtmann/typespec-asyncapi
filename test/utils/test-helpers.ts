@@ -129,7 +129,11 @@ export async function compileAsyncAPISpecRaw(
 
 	// Debug logging
 	Effect.log("Compilation result:", typeof result, !!result)
+	console.log("🔍 DEBUG: compileAsyncAPISpecRaw reached, result type:", typeof result);
 
+	console.log("🔍 DEBUG: result keys:", Object.keys(result));
+	console.log("🔍 DEBUG: result.program exists?:", !!result.program);
+	console.log("🔍 DEBUG: result.fs exists?:", !!result.fs);
 	const program = result.program || result
 
 	Effect.log("Program created:", !!program)
@@ -155,12 +159,12 @@ export async function compileAsyncAPISpecRaw(
 	// Note: uniqueOutputDir parameter doesn't work with TypeSpec test infrastructure
 	const possibleDirs = [
 		// Current directory (where emitter actually writes in test mode)
-		path.join(process.cwd(), "@lars-artmann", "typespec-asyncapi", "@lars-artmann", "typespec-asyncapi"),
 		path.join(process.cwd(), "@lars-artmann", "typespec-asyncapi"),
-		// Standard test output directories
 		path.join(process.cwd(), "tsp-test", "@lars-artmann", "typespec-asyncapi"),
 		path.join(programOutputDir, "@lars-artmann", "typespec-asyncapi"),
 		path.join(process.cwd(), "tsp-output", "@lars-artmann", "typespec-asyncapi"),
+		// Flat structure - emitter might write directly to current dir
+		process.cwd(),
 	]
 
 	// Recursively find all AsyncAPI files
@@ -187,6 +191,7 @@ export async function compileAsyncAPISpecRaw(
 	// Try each possible directory
 	for (const dir of possibleDirs) {
 		Effect.log(`📂 Searching directory: ${dir}`)
+		console.log("🔍 DEBUG: Checking directory:", dir);
 		try {
 			// Find files in this directory
 			await findFiles(dir)

@@ -12,6 +12,7 @@ import type {ValidationOptions} from "./ValidationOptions.js"
 import { readFile } from "node:fs/promises"
 import {railwayLogging} from "../../utils/effect-helpers.js"
 import {safeStringify} from "../../utils/standardized-errors.js"
+import { PERFORMANCE_CONSTANTS } from "../../constants/defaults.js"
 
 /**
  * Helper to log error synchronously - eliminates duplication
@@ -161,10 +162,10 @@ export class AsyncAPIValidator {
 				catch: (error) => new Error(`Parser failed: ${error instanceof Error ? error.message : String(error)}`)
 			}).pipe(
 				// Add timeout for long-running parsing operations (30 seconds)
-				Effect.timeout("30 seconds"),
+				Effect.timeout(`${PERFORMANCE_CONSTANTS.VALIDATION_TIMEOUT_MS / 1000} seconds`),
 				// Add retry pattern with exponential backoff for transient parser failures
-				Effect.retry(Schedule.exponential("100 millis").pipe(
-					Schedule.compose(Schedule.recurs(3))
+				Effect.retry(Schedule.exponential(`${PERFORMANCE_CONSTANTS.RETRY_BASE_DELAY_MS} millis`).pipe(
+					Schedule.compose(Schedule.recurs(PERFORMANCE_CONSTANTS.MAX_RETRY_ATTEMPTS))
 				)),
 				Effect.tapError(attempt => Effect.log(`⚠️  Parser attempt failed, retrying: ${safeStringify(attempt)}`)),
 				Effect.catchAll((error) => {

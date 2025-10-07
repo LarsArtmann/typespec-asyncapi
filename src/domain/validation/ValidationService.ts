@@ -14,6 +14,7 @@ import type {
 	ReferenceObject
 } from "@asyncapi/parser/esm/spec-types/v3.js"
 import { emitterErrors, railway, type StandardizedError, safeStringify } from "../../utils/standardized-errors.js"
+import { PERFORMANCE_CONSTANTS } from "../../constants/defaults.js"
 
 /**
  * Validation result with details about compliance and any issues found
@@ -122,8 +123,8 @@ export class ValidationService {
 				{ operation: "parseDocument", contentLength: content.length }
 			).pipe(
 				// Add retry pattern for JSON parsing with exponential backoff
-				Effect.retry(Schedule.exponential("50 millis").pipe(
-					Schedule.compose(Schedule.recurs(2))
+				Effect.retry(Schedule.exponential(`${PERFORMANCE_CONSTANTS.RETRY_BASE_DELAY_MS / 2} millis`).pipe(
+					Schedule.compose(Schedule.recurs(PERFORMANCE_CONSTANTS.MAX_RETRY_ATTEMPTS - 1))
 				)),
 				Effect.tapError(attempt => Effect.log(`⚠️  JSON parsing attempt failed, retrying: ${safeStringify(attempt)}`)),
 				Effect.mapError(error => emitterErrors.invalidAsyncAPI(
