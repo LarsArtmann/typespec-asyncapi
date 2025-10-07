@@ -68,7 +68,7 @@
 import {Effect} from "effect"
 import {emitterErrors, safeStringify} from "../../utils/standardized-errors.js"
 import type {AssetEmitter, EmittedSourceFile, SourceFile} from "@typespec/asset-emitter"
-import {TypeEmitter} from "@typespec/asset-emitter"
+import {TypeEmitter, type EmitterOutput} from "@typespec/asset-emitter"
 import {DocumentGenerator} from "./DocumentGenerator.js"
 import type {Program, Namespace} from "@typespec/compiler"
 import type {AsyncAPIEmitterOptions} from "../../infrastructure/configuration/options.js"
@@ -272,7 +272,8 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 	 * @override
 	 * @public
 	 */
-	override async programContext(program: Program): Promise<Record<string, unknown>> {
+	override programContext(program: Program): Record<string, unknown> {
+		console.log("🔥🔥🔥🔥🔥 PROGRAMCONTEXT CALLED 🔥🔥🔥🔥🔥")
 		Effect.log("🔥🔥🔥 PROGRAMCONTEXT CALLED 🔥🔥🔥")
 		// TODO: CRITICAL - No error handling if getOptions() returns null/undefined
 		// TODO: CRITICAL - Bracket notation for options access is fragile - consider type-safe property access
@@ -295,7 +296,7 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 		Effect.log("=� AsyncAPI Micro-kernel: Running emission pipeline...")
 
 		// EFFECT.TS CONVERTED: Replaced try/catch with Effect-based pipeline execution
-		await Effect.runPromise(
+		Effect.runSync(
 			Effect.gen(function* (this: AsyncAPIEmitter) {
 			// Execute the emission pipeline using Effect.TS
 				yield* Effect.sync(() => this.executeEmissionPipelineSync(program)).pipe(
@@ -323,7 +324,7 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 			
 			}.bind(this)).pipe(
 				Effect.tapError(error => Effect.log(`❌ Micro-kernel emission pipeline failed: ${safeStringify(error)}`)),
-				Effect.catchAll(error => 
+				Effect.catchAll(error =>
 					Effect.gen(function* () {
 						yield* Effect.log(`🚨 Complete pipeline failure, providing minimal output: ${safeStringify(error)}`)
 						// Last resort: ensure basic document structure exists
@@ -332,6 +333,27 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 				)
 			)
 		)
+
+		// Add the AsyncAPI document as a declaration to the scope
+		// This triggers the framework to call sourceFile() for content generation
+		console.log("🔧 About to serialize AsyncAPI document...")
+		const asyncApiContent = Effect.runSync(
+			this.documentGenerator.serializeDocument(this.asyncApiDoc, fileType)
+		)
+
+		console.log(`🔧 Serialized! Content length: ${asyncApiContent.length} bytes`)
+
+		// Create a declaration with the serialized content
+		sourceFile.globalScope.declarations.push({
+			kind: "declaration",
+			name: "asyncapi",
+			scope: sourceFile.globalScope,
+			value: asyncApiContent,
+			meta: {}
+		} as any)
+
+		console.log(`📝 Added AsyncAPI declaration to scope (${asyncApiContent.length} bytes)`)
+		Effect.log(`📝 Added AsyncAPI declaration to scope (${asyncApiContent.length} bytes)`)
 
 		// CRITICAL FIX: Return ONLY scope, not sourceFile
 		// TypeSpec AssetEmitter documentation shows programContext should return { scope }
@@ -354,9 +376,35 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 	 * @override
 	 * @internal
 	 */
-	override namespace(namespace: Namespace): string {
+	override namespace(namespace: Namespace): EmitterOutput<string> {
 		Effect.log(`🔍 namespace() called for: ${namespace.name}`)
-		return "namespace emitted"
+
+		// For the global namespace or our target namespace, return a declaration with the AsyncAPI document
+		// For other namespaces, return none
+		if (!namespace.name || namespace.name === "") {
+			// This is the global namespace - emit the AsyncAPI document here
+			Effect.log(`🎯 Global namespace detected - emitting AsyncAPI document`)
+
+			// Get the current context to access the scope
+			const context = this.emitter.getContext()
+			if (context.scope) {
+				const options = this.emitter.getOptions()
+				const fileType: "yaml" | "json" = options["file-type"] ?? "yaml"
+
+				// Serialize the AsyncAPI document
+				const asyncApiContent = Effect.runSync(
+					this.documentGenerator.serializeDocument(this.asyncApiDoc, fileType)
+				)
+
+				Effect.log(`📝 Creating declaration with AsyncAPI content (${asyncApiContent.length} bytes)`)
+
+				// Return a declaration that will be added to the scope
+				return this.emitter.result.declaration("asyncapi", asyncApiContent)
+			}
+		}
+
+		// For other namespaces, don't emit anything
+		return this.emitter.result.none()
 	}
 
 	/**
@@ -386,17 +434,26 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 	 * @public
 	 */
 	override sourceFile(sourceFile: SourceFile<string>): EmittedSourceFile {
+		console.log(`🔥🔥🔥 SOURCEFILEMETHOD CALLED for ${sourceFile.path} 🔥🔥🔥`)
 		Effect.log(`🔥🔥🔥 SOURCEFILEMETHOD CALLED for ${sourceFile.path} 🔥🔥🔥`)
 		Effect.log(`🔍 SOURCEFILEMETHOD: Generating file content for ${sourceFile.path}`)
 
-		const options = this.emitter.getOptions()
-		const fileType: "yaml" | "json" = options["file-type"] ?? "yaml"
-		
-		Effect.log(`🔍 SOURCEFILEMETHOD: Using file type: ${fileType}`)
-		Effect.log(`🔍 SOURCEFILEMETHOD: AsyncAPI doc has ${Object.keys(this.asyncApiDoc.channels ?? {}).length} channels`)
+		// The content was already generated and added as a declaration in programContext
+		// Extract it from the scope declarations
+		const declarations = sourceFile.globalScope.declarations
+		Effect.log(`🔍 SOURCEFILEMETHOD: Found ${declarations.length} declarations in scope`)
 
-		const content = Effect.runSync(this.documentGenerator.serializeDocument(this.asyncApiDoc, fileType))
-		
+		if (declarations.length === 0) {
+			Effect.log(`⚠️ SOURCEFILEMETHOD: No declarations found - generating empty document`)
+			return {
+				path: sourceFile.path,
+				contents: "",
+			}
+		}
+
+		// Get the first declaration's value (our AsyncAPI document content)
+		const content = (declarations[0]?.value as string) || ""
+
 		Effect.log(`🔍 SOURCEFILEMETHOD: Generated content length: ${content.length}`)
 
 		return {

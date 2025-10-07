@@ -18,14 +18,15 @@ import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js"
 export type IAsyncAPIEmitter = {
 	/**
 	 * Executes the complete AsyncAPI emission pipeline for a TypeSpec program
-	 * TODO: Promise WHY??!?!?!
+	 * Must be synchronous to match TypeEmitter base class contract
 	 */
-	programContext(program: Program): Promise<Record<string, unknown>>
+	programContext(program: Program): Record<string, unknown>
 	
 	/**
 	 * Handles TypeSpec namespace processing during emission
+	 * Returns EmitterOutput for proper AssetEmitter integration
 	 */
-	namespace(namespace: Namespace): string
+	namespace(namespace: Namespace): import("@typespec/asset-emitter").EmitterOutput<string>
 	
 	/**
 	 * Generates the final AsyncAPI document content for a source file
