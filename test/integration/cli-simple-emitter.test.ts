@@ -58,6 +58,10 @@ describe('CLI Tests: Simple AsyncAPI Emitter', () => {
 		expect(testResult.asyncapiDoc?.operations).toBeDefined()
 		expect(testResult.asyncapiDoc?.components).toBeDefined()
 
+		// Debug: Show actual channel structure
+		console.log('DEBUG channels:', JSON.stringify(testResult.asyncapiDoc?.channels, null, 2))
+		console.log('DEBUG operations:', JSON.stringify(testResult.asyncapiDoc?.operations, null, 2))
+
 		// Assert: Channel created
 		expect(testResult.asyncapiDoc?.channels).toHaveProperty('simple.event')
 

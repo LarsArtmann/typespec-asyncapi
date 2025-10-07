@@ -126,9 +126,9 @@ No breaking changes from 0.0.1-alpha.1. Direct upgrade recommended.
 
 ---
 
-## [0.9.0-beta.1] - 2025-10-07
+## [0.0.2-alpha.1] - 2025-10-07
 
-### 🎉 Beta Release - Production Ready
+### 🎉 Alpha Release - Enhanced Test Infrastructure
 
 This beta release marks a significant milestone with enhanced test infrastructure, comprehensive examples, and critical bug fixes. The emitter is production-ready and fully operational for AsyncAPI 3.0 generation from TypeSpec definitions.
 
