@@ -1140,36 +1140,7 @@ export class ProductionReadinessChecker {
         })
       }
       
-      // Plugin templates
-      try {
-        const templatesPath = join(this.rootPath, 'templates')
-        await access(templatesPath)
-        
-        const templateFiles = await this.findFiles(templatesPath, '.ts')
-        
-        if (templateFiles.length >= 1) {
-          checks.push({
-            name: 'Plugin Templates',
-            status: 'PASS',
-            message: 'Community plugin templates available',
-            severity: 'MEDIUM'
-          })
-        } else {
-          checks.push({
-            name: 'Plugin Templates',
-            status: 'WARN',
-            message: 'Plugin templates directory empty',
-            severity: 'LOW'
-          })
-        }
-      } catch {
-        checks.push({
-          name: 'Plugin Templates',
-          status: 'WARN',
-          message: 'Plugin templates not found',
-          severity: 'LOW'
-        })
-      }
+
       
       // Plugin CLI tool
       try {
