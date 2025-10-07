@@ -6,7 +6,7 @@
 //TODO: DEPENDENCY NIGHTMARE - Mixing @typespec/compiler, local imports, and Effect in single file!
 //TODO: CIRCULAR DEPENDENCY RISK - Importing from src/validation creates potential circular deps!
 import {createTestHost, createTestLibrary, createTestWrapper, findTestPackageRoot} from "@typespec/compiler/testing"
-import type {AsyncAPIEmitterOptions} from "../../src/infrastructure/configuration/asyncAPIEmitterOptions.ts"
+import type {AsyncAPIEmitterOptions} from "../../src/infrastructure/configuration/options.js"
 import type {Diagnostic, Program} from "@typespec/compiler"
 import type {AsyncAPIObject} from "@asyncapi/parser/esm/spec-types/v3.js"
 import {Effect} from "effect"

@@ -7,7 +7,7 @@
  * 3. Output files are generated with correct names
  */
 
-import { describe, expect, it } from "vitest"
+import { describe, expect, it } from "bun:test"
 import {
 	compileAsyncAPI,
 	compileAsyncAPIWithoutErrors,

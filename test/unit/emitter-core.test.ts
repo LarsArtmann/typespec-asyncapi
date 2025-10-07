@@ -5,7 +5,7 @@
  * EmitterTester API that properly passes options.
  */
 
-import { describe, expect, it } from "vitest"
+import { describe, expect, it } from "bun:test"
 import {
 	compileAsyncAPIWithoutErrors,
 } from "../utils/emitter-test-helpers.js"
