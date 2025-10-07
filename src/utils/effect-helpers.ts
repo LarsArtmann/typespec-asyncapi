@@ -9,6 +9,7 @@ import type {EmitContext} from "@typespec/compiler"
 import type {AsyncAPIEmitterOptions} from "../infrastructure/configuration/options.js"
 import {SpecGenerationError} from "../domain/models/errors/SpecGenerationError.js"
 import {safeStringify} from "./standardized-errors.js"
+import { PERFORMANCE_CONSTANTS } from "../constants/defaults.js"
 
 /**
  * Railway Programming Logging - All logging properly composed within Effect contexts
@@ -307,7 +308,7 @@ export const railwayErrorRecovery = {
 	circuitBreaker: <T, E>(
 		operation: Effect.Effect<T, E>,
 		failureThreshold: number = 5,
-		timeoutMs: number = 10000
+		timeoutMs: number = PERFORMANCE_CONSTANTS.DEFAULT_TIMEOUT_MS
 	): Effect.Effect<T, E | Error> => {
 		// Simple circuit breaker implementation
 		let failureCount = 0
@@ -679,7 +680,7 @@ export const railwayValidationHelpers = {
 		try: validationFn,
 		catch: (error) => new Error(`${context ? `${context}: ` : ''}Validation failed: ${error instanceof Error ? error.message : String(error)}`)
 	}).pipe(
-		Effect.retry(Schedule.exponential("100 millis").pipe(
+		Effect.retry(Schedule.exponential(`${PERFORMANCE_CONSTANTS.RETRY_BASE_DELAY_MS} millis`).pipe(
 			Schedule.compose(Schedule.recurs(retries))
 		)),
 		Effect.tapError(error => Effect.logWarning(`Validation retry failed: ${error.message}`))
@@ -742,7 +743,7 @@ export const railwayValidationHelpers = {
 	 */
 	validateWithTimeout: <T>(
 		validation: Effect.Effect<T, Error>,
-		timeoutMs: number = 30000,
+		timeoutMs: number = PERFORMANCE_CONSTANTS.VALIDATION_TIMEOUT_MS,
 		fallbackValue?: T,
 		context?: string
 	): Effect.Effect<T, Error> => {

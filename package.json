@@ -69,7 +69,7 @@
     "build:watch": "tsc -p tsconfig.json --watch",
     "compile": "tsp compile .",
     "clean": "trash dist .tsbuildinfo 2>/dev/null || true",
-    "clean:test": "rm -rf tsp-test tsp-output test-output",
+    "clean:test": "rm -rf tsp-test tsp-output test-output @lars-artmann",
     "pretest": "bun run clean:test && bun run build",
     "test": "bun test",
     "test:watch": "bun test --watch",

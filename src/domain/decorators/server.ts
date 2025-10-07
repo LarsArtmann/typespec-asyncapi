@@ -128,7 +128,7 @@ export function $server(
 
 	// Extract server configuration from TypeSpec Record/Object
 	let serverConfig: Partial<ServerConfig>
-	if (config && typeof config === "object" && "properties" in config) {
+	if (config && typeof config === "object") {
 		serverConfig = extractServerConfigFromObject(config)
 	} else {
 		Effect.log(`⚠️  Could not extract config from server config:`, config)

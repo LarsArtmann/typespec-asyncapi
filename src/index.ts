@@ -41,7 +41,7 @@ import { setTypeSpecNamespace } from "@typespec/compiler";
 
 // Effect.TS Framework Imports - Functional programming and error handling
 // OPTIMIZED: Import only specific Effect functions for better tree shaking
-import { Effect, runPromise } from "effect";
+import { Effect } from "effect";
 
 // Internal Type Definitions  
 import type { AsyncAPIEmitterOptions } from "./infrastructure/configuration/options.js";
@@ -185,7 +185,7 @@ export async function $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): Pro
     // Run the Effect-based emitter with proper error handling
     const emissionEffect = generateAsyncAPIWithEffect(context);
     
-    await runPromise(
+    await Effect.runPromise(
         emissionEffect.pipe(
             Effect.catchAll((error) => {
                 // Log branded error details for debugging - safely handle unknown error

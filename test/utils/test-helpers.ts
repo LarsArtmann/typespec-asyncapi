@@ -154,6 +154,10 @@ export async function compileAsyncAPISpecRaw(
 	// Search in standard output locations
 	// Note: uniqueOutputDir parameter doesn't work with TypeSpec test infrastructure
 	const possibleDirs = [
+		// Current directory (where emitter actually writes in test mode)
+		path.join(process.cwd(), "@lars-artmann", "typespec-asyncapi", "@lars-artmann", "typespec-asyncapi"),
+		path.join(process.cwd(), "@lars-artmann", "typespec-asyncapi"),
+		// Standard test output directories
 		path.join(process.cwd(), "tsp-test", "@lars-artmann", "typespec-asyncapi"),
 		path.join(programOutputDir, "@lars-artmann", "typespec-asyncapi"),
 		path.join(process.cwd(), "tsp-output", "@lars-artmann", "typespec-asyncapi"),
@@ -182,17 +186,18 @@ export async function compileAsyncAPISpecRaw(
 
 	// Try each possible directory
 	for (const dir of possibleDirs) {
-		// console.log(`📂 Searching: ${dir}`)  // Debug disabled for cleaner output
+		Effect.log(`📂 Searching directory: ${dir}`)
 		try {
 			// Find files in this directory
 			await findFiles(dir)
 			if (outputFiles.size > 0) {
 				Effect.log(`📁 Real FS: Found ${outputFiles.size} file entries from ${dir}`)
 				break  // Found files, stop searching
+			} else {
+				Effect.log(`  ❌ No files found in ${dir}`)
 			}
 		} catch (error) {
-			// console.log(`  ❌ Error: ${error}`)  // Debug disabled
-			Effect.log(`⚠️  Tried ${dir}: ${error}`)
+			Effect.log(`⚠️  Directory ${dir} error: ${error}`)
 		}
 	}
 
