@@ -74,11 +74,13 @@ op publishTestMessage(): TestMessage;
     Effect.log("Stdout:", stdout)
     
     // Verify AsyncAPI output was generated
+    // TypeSpec emitters output to {output-dir}/{emitter-package-name}/
+    const emitterOutputDir = join(outputDir, "@lars-artmann", "typespec-asyncapi")
     const asyncapiFiles = []
     try {
       const files = ["AsyncAPI.yaml", "AsyncAPI.json", "asyncapi.yaml", "asyncapi.json"]
       for (const file of files) {
-        const filepath = join(outputDir, file)
+        const filepath = join(emitterOutputDir, file)
         if (existsSync(filepath)) {
           asyncapiFiles.push(filepath)
           Effect.log(`✅ Found output file: ${filepath}`)
