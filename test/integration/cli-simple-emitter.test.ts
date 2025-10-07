@@ -58,12 +58,9 @@ describe('CLI Tests: Simple AsyncAPI Emitter', () => {
 		expect(testResult.asyncapiDoc?.operations).toBeDefined()
 		expect(testResult.asyncapiDoc?.components).toBeDefined()
 
-		// Debug: Show actual channel structure
-		console.log('DEBUG channels:', JSON.stringify(testResult.asyncapiDoc?.channels, null, 2))
-		console.log('DEBUG operations:', JSON.stringify(testResult.asyncapiDoc?.operations, null, 2))
-
 		// Assert: Channel created
-		expect(testResult.asyncapiDoc?.channels).toHaveProperty('simple.event')
+		const channelKeys = Object.keys(testResult.asyncapiDoc?.channels || {})
+		expect(channelKeys).toContain('simple.event')
 
 		console.log('✅ Basic AsyncAPI generation works')
 	})
@@ -104,12 +101,14 @@ describe('CLI Tests: Simple AsyncAPI Emitter', () => {
 		expect(testResult.asyncapiDoc?.asyncapi).toBe('3.0.0')
 
 		// Assert: Multiple channels created
-		expect(testResult.asyncapiDoc?.channels).toHaveProperty('user.events')
-		expect(testResult.asyncapiDoc?.channels).toHaveProperty('system.events')
+		const channelKeys = Object.keys(testResult.asyncapiDoc?.channels || {})
+		expect(channelKeys).toContain('user.events')
+		expect(channelKeys).toContain('system.events')
 
 		// Assert: Multiple operations
-		expect(testResult.asyncapiDoc?.operations).toHaveProperty('publishUserEvent')
-		expect(testResult.asyncapiDoc?.operations).toHaveProperty('publishSystemEvent')
+		const operationKeys = Object.keys(testResult.asyncapiDoc?.operations || {})
+		expect(operationKeys).toContain('publishUserEvent')
+		expect(operationKeys).toContain('publishSystemEvent')
 
 		// Assert: Info section
 		expect(testResult.asyncapiDoc?.info.title).toBeDefined()
@@ -145,7 +144,8 @@ describe('CLI Tests: Simple AsyncAPI Emitter', () => {
 		expect(testResult.asyncapiDoc?.info).toBeDefined()
 
 		// Assert: Channel created
-		expect(testResult.asyncapiDoc?.channels).toHaveProperty('test.events')
+		const channelKeys = Object.keys(testResult.asyncapiDoc?.channels || {})
+		expect(channelKeys).toContain('test.events')
 
 		console.log('✅ YAML generation works')
 	})
@@ -212,7 +212,8 @@ describe('CLI Tests: Simple AsyncAPI Emitter', () => {
 		expect(testResult.asyncapiDoc).toBeDefined()
 
 		// Assert: Channel created regardless of namespace nesting
-		expect(testResult.asyncapiDoc?.channels).toHaveProperty('notifications.sent')
+		const channelKeys = Object.keys(testResult.asyncapiDoc?.channels || {})
+		expect(channelKeys).toContain('notifications.sent')
 
 		console.log('✅ Namespace handling works correctly')
 	})
