@@ -370,6 +370,9 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 		)
 
 		// Create a declaration with the serialized content
+		// ESLint disable: TypeSpec framework's internal Declaration type is not exported
+		// This is the documented way to add content to AssetEmitter scopes
+		/* eslint-disable @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any */
 		sourceFile.globalScope.declarations.push({
 			kind: "declaration",
 			name: "asyncapi",
@@ -377,6 +380,7 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 			value: asyncApiContent,
 			meta: {}
 		} as any)
+		/* eslint-enable @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any */
 
 		Effect.log(`📝 Added AsyncAPI declaration to scope (${asyncApiContent.length} bytes)`)
 

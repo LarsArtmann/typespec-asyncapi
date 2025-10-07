@@ -13,8 +13,12 @@ This is the **minimal** TypeSpec AsyncAPI example. If this doesn't work, the emi
 ## How to run
 
 ```bash
+# From project root
+tsp compile examples/smoke --emit @lars-artmann/typespec-asyncapi
+
+# OR from examples/smoke directory
 cd examples/smoke
-npx tsp compile main.tsp --emit @lars-artmann/typespec-asyncapi
+tsp compile . --emit @lars-artmann/typespec-asyncapi
 ```
 
 ## Expected output
