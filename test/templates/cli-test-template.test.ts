@@ -15,6 +15,7 @@
 import { describe, test, expect, afterEach } from 'bun:test'
 import { compileWithCLI, cleanupTestDir } from '../utils/cli-test-helpers.js'
 import type { CLITestResult } from '../utils/cli-test-helpers.js'
+import { assertCompilationSuccess, getPropertyKeys } from '../utils/type-guards.js'
 
 describe('CLI Tests: FEATURE_NAME', () => {
 	let testResult: CLITestResult | undefined
@@ -58,26 +59,25 @@ describe('CLI Tests: FEATURE_NAME', () => {
 		expect(testResult.exitCode).toBe(0)
 		expect(testResult.errors).toHaveLength(0)
 
-		// Assert: AsyncAPI document generated
-		expect(testResult.asyncapiDoc).toBeDefined()
-		expect(testResult.asyncapiDoc?.asyncapi).toBe('3.0.0')
+		// Assert: Compilation succeeded with type safety
+		assertCompilationSuccess(testResult)
 
 		// Assert: Expected AsyncAPI structure
-		expect(testResult.asyncapiDoc?.channels).toBeDefined()
-		expect(testResult.asyncapiDoc?.channels).toHaveProperty('example.channel')
+		const channelKeys = getPropertyKeys(testResult.asyncapiDoc.channels)
+		expect(channelKeys).toContain('example.channel')
 
 		// Assert: Channel details
-		const channel = testResult.asyncapiDoc?.channels?.['example.channel']
+		const channel = testResult.asyncapiDoc.channels?.['example.channel']
 		expect(channel?.address).toBe('example.channel')
 
 		// Assert: Operations
-		expect(testResult.asyncapiDoc?.operations).toBeDefined()
-		expect(testResult.asyncapiDoc?.operations).toHaveProperty('publishExample')
+		const operationKeys = getPropertyKeys(testResult.asyncapiDoc.operations)
+		expect(operationKeys).toContain('publishExample')
 
 		// Assert: Operation details
-		const operation = testResult.asyncapiDoc?.operations?.['publishExample']
+		const operation = testResult.asyncapiDoc.operations?.['publishExample']
 		expect(operation?.action).toBe('send')
-		expect(operation?.channel).toHaveProperty('$ref', '#/channels/example.channel')
+		expect(operation?.channel?.$ref).toBe('#/channels/example.channel')
 	})
 
 	/**
