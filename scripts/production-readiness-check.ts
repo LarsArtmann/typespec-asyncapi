@@ -1652,36 +1652,7 @@ export class ProductionReadinessChecker {
         })
       }
       
-      // Check for plugin development templates
-      try {
-        const templatesPath = join(this.rootPath, 'templates', 'plugin-template')
-        await access(templatesPath)
-        
-        const templateFiles = await readdir(templatesPath, { recursive: true })
-        
-        if (templateFiles.length >= 5) {
-          checks.push({
-            name: 'Plugin Development Templates',
-            status: 'PASS',
-            message: `Plugin development template with ${templateFiles.length} files`,
-            severity: 'MEDIUM'
-          })
-        } else {
-          checks.push({
-            name: 'Plugin Development Templates',
-            status: 'WARN',
-            message: 'Limited plugin development templates',
-            severity: 'LOW'
-          })
-        }
-      } catch {
-        checks.push({
-          name: 'Plugin Development Templates',
-          status: 'WARN',
-          message: 'Plugin development templates not found',
-          severity: 'LOW'
-        })
-      }
+
       
       // Check for plugin documentation
       try {

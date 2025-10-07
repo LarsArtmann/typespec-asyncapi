@@ -218,6 +218,9 @@ export function generateAsyncAPIWithEffect(context: EmitContext<AsyncAPIEmitterO
 		})
 		yield* Effect.logInfo("✅ writeOutput completed")
 
+		// TODO: Implement type cache clearing through proper AssetEmitter API
+		// This is a placeholder for future cache cleanup implementation
+
 		yield* railwayLogging.logInitializationSuccess("AsyncAPI generation")
 	})
 }

@@ -357,20 +357,28 @@ export async function parseAsyncAPIOutput(
 		throw new Error(`Invalid outputFiles parameter`)
 	}
 
-	// Emitter outputs files as "AsyncAPI.yaml" or "asyncapi.yaml" (both stored in Map)
-	const possibleKeys = ['AsyncAPI.yaml', 'asyncapi.yaml', 'AsyncAPI.json', 'asyncapi.json']
+	// Find all YAML files and filter by AsyncAPI content
+	const yamlFiles = Array.from(outputFiles.keys()).filter(key =>
+		key.endsWith('.yaml') || key.endsWith('.yml')
+	)
 
-	for (const key of possibleKeys) {
+	// Filter AsyncAPI files by content (more reliable than filename)
+	const asyncapiFiles = yamlFiles.filter(key => {
 		const content = outputFiles.get(key)
-		if (content) {
-			const actualContent = typeof content === 'string' ? content : content.content
-			return await parseFileContent(actualContent, key)
-		}
+		const actualContent = typeof content === 'string' ? content : content.content
+		const isAsyncAPI = actualContent && actualContent.includes('asyncapi: 3.0.0')
+		return isAsyncAPI
+	})
+
+	if (asyncapiFiles.length === 0) {
+		const available = Array.from(outputFiles.keys())
+		throw new Error(`AsyncAPI file not found. Available: ${available.join(', ')}`)
 	}
 
-	// Not found - show what's available for debugging
-	const available = Array.from(outputFiles.keys())
-	throw new Error(`AsyncAPI file not found. Available: ${available.join(', ')}`)
+	const targetFile = asyncapiFiles[0]
+	const content = outputFiles.get(targetFile)
+	const actualContent = typeof content === 'string' ? content : content.content
+	return await parseFileContent(actualContent, targetFile)
 }
 
 //TODO: refactor from Promise to Effect!
