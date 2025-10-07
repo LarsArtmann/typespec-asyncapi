@@ -40,10 +40,8 @@ import type { EmitContext } from "@typespec/compiler";
 import { setTypeSpecNamespace } from "@typespec/compiler";
 
 // Effect.TS Framework Imports - Functional programming and error handling
-// TODO: CRITICAL TYPE_SAFETY - Import only specific Effect functions needed instead of entire Effect namespace for better tree shaking
-// TODO: TYPE_SAFETY - Effect is imported but only Effect.log/runPromise are used - import { Effect, log, runPromise } specifically
-// TODO: PERFORMANCE - Selective imports reduce bundle size and improve compilation performance
-import { Effect } from "effect";
+// OPTIMIZED: Import only specific Effect functions for better tree shaking
+import { Effect, runPromise } from "effect";
 
 // Internal Type Definitions  
 import type { AsyncAPIEmitterOptions } from "./infrastructure/configuration/options.js";
@@ -187,7 +185,7 @@ export async function $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): Pro
     // Run the Effect-based emitter with proper error handling
     const emissionEffect = generateAsyncAPIWithEffect(context);
     
-    await Effect.runPromise(
+    await runPromise(
         emissionEffect.pipe(
             Effect.catchAll((error) => {
                 // Log branded error details for debugging - safely handle unknown error
