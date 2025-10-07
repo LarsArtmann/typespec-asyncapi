@@ -301,10 +301,7 @@ describe("Real AsyncAPI Generation Tests", () => {
         op subscribeOrdersByStatus(status: string): OrderEvent;
       `
 
-			const {outputFiles, program} = await compileAsyncAPISpecWithoutErrors(source, {
-				"output-file": "enterprise-events",
-				"file-type": "json",
-			})
+			const {outputFiles, program} = await compileAsyncAPISpecWithoutErrors(source)
 
 			// Verify comprehensive compilation
 			expect(program).toBeDefined()
@@ -409,10 +406,7 @@ describe("Real AsyncAPI Generation Tests", () => {
         op publishFlexibleEvent(): FlexibleEvent;
       `
 
-			const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source, {
-				"output-file": "union-type-test",
-				"file-type": "json",
-			})
+			const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source)
 
 			const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "union-type-test.json") as AsyncAPIObject
 
@@ -498,10 +492,7 @@ describe("Real AsyncAPI Generation Tests", () => {
         }
       `
 
-			const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source, {
-				"output-file": "multi-namespace-test",
-				"file-type": "json",
-			})
+			const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source)
 
 			const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "multi-namespace-test.json") as AsyncAPIObject
 
@@ -561,10 +552,7 @@ describe("Real AsyncAPI Generation Tests", () => {
         op subscribeComplianceMessages(): ComplianceMessage;
       `
 
-			const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source, {
-				"output-file": "compliance-test",
-				"file-type": "json",
-			})
+			const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source)
 
 			const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "compliance-test.json") as AsyncAPIObject
 
@@ -655,10 +643,7 @@ describe("Real AsyncAPI Generation Tests", () => {
         op publishReferenceTest(): ModelWithReferences;
       `
 
-			const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source, {
-				"output-file": "reference-test",
-				"file-type": "json",
-			})
+			const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source)
 
 			const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "reference-test.json") as AsyncAPIObject
 

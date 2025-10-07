@@ -58,10 +58,7 @@ describe("Real Decorator Functionality Tests", () => {
         op publishUserRegistered(): UserRegisteredMessage;
       `
 
-			const {outputFiles, program} = await compileAsyncAPISpecWithoutErrors(source, {
-				"output-file": "message-decorator-test",
-				"file-type": "json",
-			})
+			const {outputFiles, program} = await compileAsyncAPISpecWithoutErrors(source)
 
 			// Verify the compilation actually processed the decorator
 			expect(program).toBeDefined()
@@ -132,10 +129,7 @@ describe("Real Decorator Functionality Tests", () => {
         op publishProtobufMessage(): ProtobufMessage;
       `
 
-			const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source, {
-				"output-file": "content-type-test",
-				"file-type": "json",
-			})
+			const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source)
 
 			const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "content-type-test.json") as AsyncAPIObject
 
@@ -176,10 +170,7 @@ describe("Real Decorator Functionality Tests", () => {
         op publishTrackedMessage(): TrackedMessage;
       `
 
-			const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source, {
-				"output-file": "headers-test",
-				"file-type": "json",
-			})
+			const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source)
 
 			const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "headers-test.json") as AsyncAPIObject
 
@@ -221,10 +212,7 @@ describe("Real Decorator Functionality Tests", () => {
         op publishKafkaUserEvent(): KafkaMessage;
       `
 
-			const {outputFiles, program} = await compileAsyncAPISpecWithoutErrors(source, {
-				"output-file": "kafka-protocol-test",
-				"file-type": "json",
-			})
+			const {outputFiles, program} = await compileAsyncAPISpecWithoutErrors(source)
 
 			// Verify real compilation occurred
 			expect(program).toBeDefined()
@@ -273,10 +261,7 @@ describe("Real Decorator Functionality Tests", () => {
         op subscribeWebSocketChat(): WebSocketMessage;
       `
 
-			const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source, {
-				"output-file": "websocket-protocol-test",
-				"file-type": "json",
-			})
+			const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source)
 
 			const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "websocket-protocol-test.json") as AsyncAPIObject
 
@@ -333,10 +318,7 @@ describe("Real Decorator Functionality Tests", () => {
         op publishMQTTSensorData(): EventMessage;
       `
 
-			const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source, {
-				"output-file": "multi-protocol-test",
-				"file-type": "json",
-			})
+			const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source)
 
 			const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "multi-protocol-test.json") as AsyncAPIObject
 
@@ -375,10 +357,7 @@ describe("Real Decorator Functionality Tests", () => {
         op publishSecureMessage(): SecureMessage;
       `
 
-			const {outputFiles, program} = await compileAsyncAPISpecWithoutErrors(source, {
-				"output-file": "jwt-security-test",
-				"file-type": "json",
-			})
+			const {outputFiles, program} = await compileAsyncAPISpecWithoutErrors(source)
 
 			// Verify compilation occurred
 			expect(program).toBeDefined()
@@ -438,10 +417,7 @@ describe("Real Decorator Functionality Tests", () => {
         op publishOAuth2SecuredMessage(): OAuth2SecuredMessage;
       `
 
-			const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source, {
-				"output-file": "oauth2-security-test",
-				"file-type": "json",
-			})
+			const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source)
 
 			const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "oauth2-security-test.json") as AsyncAPIObject
 
@@ -487,10 +463,7 @@ describe("Real Decorator Functionality Tests", () => {
         op publishSASLSecuredMessage(): SASLSecuredMessage;
       `
 
-			const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source, {
-				"output-file": "sasl-security-test",
-				"file-type": "json",
-			})
+			const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source)
 
 			const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "sasl-security-test.json") as AsyncAPIObject
 
@@ -601,10 +574,7 @@ describe("Real Decorator Functionality Tests", () => {
         op subscribeUserAuditEvents(userId: string): SecureKafkaEvent;
       `
 
-			const {outputFiles, program} = await compileAsyncAPISpecWithoutErrors(source, {
-				"output-file": "combined-decorators-test",
-				"file-type": "json",
-			})
+			const {outputFiles, program} = await compileAsyncAPISpecWithoutErrors(source)
 
 			// Verify comprehensive compilation
 			expect(program).toBeDefined()

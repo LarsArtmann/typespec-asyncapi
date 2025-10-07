@@ -187,10 +187,7 @@ ${source}
       op publishOrderEvent(): OrderEvent;
     `;
 
-    const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source, {
-      "output-file": "multi-channel",
-      "file-type": "json",
-    });
+    const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
 
     const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "multi-channel.json");
     const doc = asyncapiDoc as any;
@@ -228,10 +225,7 @@ ${source}
       op publishTypedEvent(): TypedEvent;
     `;
 
-    const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source, {
-      "output-file": "typed-test",
-      "file-type": "json",
-    });
+    const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
 
     const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "typed-test.json");
     const doc = asyncapiDoc as any;
@@ -270,10 +264,7 @@ ${source}
       op publishDocumentedEvent(): DocumentedEvent;
     `;
 
-    const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source, {
-      "output-file": "doc-test",
-      "file-type": "json",
-    });
+    const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
 
     const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "doc-test.json");
     const doc = asyncapiDoc as any;
@@ -303,10 +294,7 @@ ${source}
       ): ParameterizedEvent;
     `;
 
-    const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source, {
-      "output-file": "param-test",
-      "file-type": "json",
-    });
+    const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
 
     const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "param-test.json");
     const doc = asyncapiDoc as any;
@@ -337,10 +325,7 @@ ${source}
       op publishEvent3(): Event1; // Same model, different operation
     `;
 
-    const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source, {
-      "output-file": "unique-names",
-      "file-type": "json",
-    });
+    const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
 
     const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "unique-names.json");
     const doc = asyncapiDoc as any;

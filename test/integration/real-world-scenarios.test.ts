@@ -146,10 +146,7 @@ describe("Real-World AsyncAPI Scenarios", () => {
         op subscribeInventoryUpdates(): Product;
       `;
       
-      const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source, {
-        "output-file": "ecommerce-system",
-        "file-type": "json"
-      });
+      const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
       
       const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "ecommerce-system.json");
       
@@ -318,10 +315,7 @@ describe("Real-World AsyncAPI Scenarios", () => {
         op subscribeAlertsBySeverity(severity: string): SystemAlert;
       `;
       
-      const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source, {
-        "output-file": "iot-system",
-        "file-type": "json"
-      });
+      const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
       
       const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "iot-system.json");
       
@@ -504,10 +498,7 @@ describe("Real-World AsyncAPI Scenarios", () => {
         op subscribeUserRiskAlerts(userId: string): RiskAlert;
       `;
       
-      const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source, {
-        "output-file": "trading-system",
-        "file-type": "json"
-      });
+      const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
       
       const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "trading-system.json");
       
@@ -661,10 +652,7 @@ describe("Real-World AsyncAPI Scenarios", () => {
         op subscribeTenantUsage(tenantId: string): UsageMetrics;
       `;
       
-      const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source, {
-        "output-file": "saas-platform",
-        "file-type": "json"
-      });
+      const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
       
       const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "saas-platform.json");
       

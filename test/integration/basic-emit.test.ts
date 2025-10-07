@@ -38,10 +38,7 @@ describe("AsyncAPI Emitter Integration", () => {
       ): UserSignupEvent;
     `
 
-		const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source, {
-			"output-file": "test-asyncapi",
-			"file-type": DEFAULT_SERIALIZATION_FORMAT,
-		})
+		const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source)
 
 	// Find the generated AsyncAPI file - read raw content from Map
 	const availableFiles = Array.from(outputFiles.keys())
@@ -90,10 +87,7 @@ describe("AsyncAPI Emitter Integration", () => {
       op publishComplexEvent(): ComplexEvent;
     `
 
-		const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source, {
-			"output-file": "complex-test",
-			"file-type": SERIALIZATION_FORMAT_OPTION_JSON,
-		})
+		const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source)
 
 		const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "complex-test.json")
 
@@ -146,10 +140,7 @@ describe("AsyncAPI Emitter Integration", () => {
       op subscribeUserNotifications(userId: string): UserEvent;
     `
 
-		const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source, {
-			"output-file": "multi-op-test",
-			"file-type": DEFAULT_SERIALIZATION_FORMAT,
-		})
+		const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source)
 
 		// Read raw YAML content from outputFiles Map
 	const availableFiles = Array.from(outputFiles.keys())
@@ -199,10 +190,7 @@ describe("AsyncAPI Emitter Integration", () => {
       op publishDocumentedEvent(): DocumentedEvent;
     `
 
-		const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source, {
-			"output-file": "doc-test",
-			"file-type": SERIALIZATION_FORMAT_OPTION_JSON,
-		})
+		const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source)
 
 		const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "doc-test.json")
 

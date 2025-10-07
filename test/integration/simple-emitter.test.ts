@@ -20,10 +20,7 @@ describe("Simple AsyncAPI Emitter (No Decorators)", () => {
       op publishSimpleEvent(): SimpleEvent;
     `
 
-		const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source, {
-			"output-file": "simple-test",
-			"file-type": "json",
-		})
+		const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source)
 
 		Effect.log("Available output files:")
 		for (const [path, file] of outputFiles.entries()) {
@@ -67,10 +64,7 @@ describe("Simple AsyncAPI Emitter (No Decorators)", () => {
       op publishSystemEvent(): SystemEvent;
     `
 
-		const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source, {
-			"output-file": "multi-op",
-			"file-type": "json",
-		})
+		const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source)
 
 		const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "multi-op.json")
 
