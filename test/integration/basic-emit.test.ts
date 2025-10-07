@@ -42,11 +42,18 @@ describe("AsyncAPI Emitter Integration", () => {
 
 	// Find the generated AsyncAPI file - read raw content from Map
 	const availableFiles = Array.from(outputFiles.keys())
-	const yamlFiles = availableFiles.filter(f => f.toLowerCase().includes('asyncapi') && f.endsWith('.yaml'))
-	if (yamlFiles.length === 0) {
-		throw new Error(`No AsyncAPI YAML files found. Available: ${availableFiles.join(', ')}`)
+	const yamlFiles = availableFiles.filter(f => f.endsWith('.yaml'))
+	
+	// Filter AsyncAPI files by content (more reliable than filename)
+	const asyncapiFiles = yamlFiles.filter(f => {
+		const content = outputFiles.get(f) as string
+		return content && content.includes('asyncapi: 3.0.0')
+	})
+	
+	if (asyncapiFiles.length === 0) {
+		throw new Error(`No AsyncAPI YAML files found. Available files: ${availableFiles.join(', ')}`)
 	}
-	const content = outputFiles.get(yamlFiles[0]) as string
+	const content = outputFiles.get(asyncapiFiles[0]) as string
 
 		// Validate AsyncAPI structure
 		expect(content).toContain("asyncapi: 3.0.0")
@@ -144,11 +151,19 @@ describe("AsyncAPI Emitter Integration", () => {
 
 		// Read raw YAML content from outputFiles Map
 	const availableFiles = Array.from(outputFiles.keys())
-	const yamlFiles = availableFiles.filter(f => f.toLowerCase().includes('asyncapi') && f.endsWith('.yaml'))
-	if (yamlFiles.length === 0) {
-		throw new Error(`No AsyncAPI YAML files found. Available: ${availableFiles.join(', ')}`)
+	const yamlFiles = availableFiles.filter(f => f.endsWith('.yaml'))
+	
+	// Filter AsyncAPI files by content (more reliable than filename)
+	const asyncapiFiles = yamlFiles.filter(f => {
+		const rawContent = outputFiles.get(f)
+		const content = typeof rawContent === 'string' ? rawContent : (rawContent as any).content
+		return content && content.includes('asyncapi: 3.0.0')
+	})
+	
+	if (asyncapiFiles.length === 0) {
+		throw new Error(`No AsyncAPI YAML files found. Available files: ${availableFiles.join(', ')}`)
 	}
-	const rawContent = outputFiles.get(yamlFiles[0])
+	const rawContent = outputFiles.get(asyncapiFiles[0])
 	const content = typeof rawContent === 'string' ? rawContent : (rawContent as any).content
 
 		// Should contain all operations
