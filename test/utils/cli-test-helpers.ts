@@ -78,27 +78,6 @@ export async function compileWithCLI(
 	const tspFile = join(workdir, 'main.tsp')
 
 	try {
-		// Create package.json for TypeSpec to resolve dependencies
-		const packageJson = {
-			name: 'test-project',
-			version: '1.0.0',
-			type: 'module',
-			dependencies: {
-				'@typespec/compiler': '*',
-				'@lars-artmann/typespec-asyncapi': '*'
-			}
-		}
-		await fs.writeFile(join(workdir, 'package.json'), JSON.stringify(packageJson, null, 2), 'utf-8')
-
-		// Create symlink to parent project's node_modules so TypeSpec can find our emitter
-		const parentNodeModules = join(process.cwd(), 'node_modules')
-		const testNodeModules = join(workdir, 'node_modules')
-		try {
-			await fs.symlink(parentNodeModules, testNodeModules, 'dir')
-		} catch (err) {
-			// Symlink might already exist or fail on Windows - not critical
-		}
-
 		// Write TypeSpec source to disk
 		if (sourceFileOrContent.includes('import') || sourceFileOrContent.includes('model')) {
 			// Inline source code
@@ -108,28 +87,20 @@ export async function compileWithCLI(
 			await fs.copyFile(sourceFileOrContent, tspFile)
 		}
 
-		// Create tspconfig.yaml to configure emitter
-		const tspconfig = `
-emit:
-  - "@lars-artmann/typespec-asyncapi"
-`
-		await fs.writeFile(join(workdir, 'tspconfig.yaml'), tspconfig, 'utf-8')
-
-		// Run tsp compile via CLI (TypeSpec's built-in CLI)
+		// Run tsp compile via CLI from project root (so it can find our emitter package)
+		// Pass the test file path explicitly
 		const { exitCode, stdout, stderr } = await runCommand(
-			'tsp',
-			['compile', '.'],
+			'npx',
+			['tsp', 'compile', tspFile, '--emit', '@lars-artmann/typespec-asyncapi', '--output-dir', workdir],
 			{
-				cwd: workdir,
+				cwd: process.cwd(), // Run from project root, not temp dir!
 				timeout: options.timeout || 30000,
 			}
 		)
 
 		// Read AsyncAPI output from disk
-		const outputPath = join(
-			workdir,
-			'tsp-output/@lars-artmann/typespec-asyncapi/AsyncAPI.yaml'
-		)
+		// Output goes to {output-dir}/@lars-artmann/typespec-asyncapi/AsyncAPI.yaml
+		const outputPath = join(workdir, '@lars-artmann', 'typespec-asyncapi', 'AsyncAPI.yaml')
 		let asyncapiDoc: AsyncAPIObject | undefined
 
 		try {
