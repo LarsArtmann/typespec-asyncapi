@@ -43,20 +43,13 @@ describe("AsyncAPI Emitter Integration", () => {
 			"file-type": DEFAULT_SERIALIZATION_FORMAT,
 		})
 
-		// Find the generated AsyncAPI file
-		let content: string
-		try {
-			content = parseAsyncAPIOutput(outputFiles, "test-asyncapi.yaml")
-		} catch (error) {
-			// Try to get any YAML file if exact name doesn't work
-			const availableFiles = Array.from(outputFiles.keys())
-			const yamlFiles = availableFiles.filter(f => f.endsWith('.yaml'))
-			if (yamlFiles.length > 0) {
-				content = parseAsyncAPIOutput(outputFiles, yamlFiles[0].replace(/^.*\//, ''))
-			} else {
-				throw error
-			}
-		}
+	// Find the generated AsyncAPI file - read raw content from Map
+	const availableFiles = Array.from(outputFiles.keys())
+	const yamlFiles = availableFiles.filter(f => f.toLowerCase().includes('asyncapi') && f.endsWith('.yaml'))
+	if (yamlFiles.length === 0) {
+		throw new Error(`No AsyncAPI YAML files found. Available: ${availableFiles.join(', ')}`)
+	}
+	const content = outputFiles.get(yamlFiles[0]) as string
 
 		// Validate AsyncAPI structure
 		expect(content).toContain("asyncapi: 3.0.0")
@@ -102,7 +95,7 @@ describe("AsyncAPI Emitter Integration", () => {
 			"file-type": SERIALIZATION_FORMAT_OPTION_JSON,
 		})
 
-		const asyncapiDoc = parseAsyncAPIOutput(outputFiles, "complex-test.json")
+		const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "complex-test.json")
 
 		// Validate AsyncAPI 3.0 structure
 		expect(asyncapiDoc.asyncapi).toBe("3.0.0")
@@ -158,7 +151,14 @@ describe("AsyncAPI Emitter Integration", () => {
 			"file-type": DEFAULT_SERIALIZATION_FORMAT,
 		})
 
-		const content = parseAsyncAPIOutput(outputFiles, "multi-op-test.yaml")
+		// Read raw YAML content from outputFiles Map
+	const availableFiles = Array.from(outputFiles.keys())
+	const yamlFiles = availableFiles.filter(f => f.toLowerCase().includes('asyncapi') && f.endsWith('.yaml'))
+	if (yamlFiles.length === 0) {
+		throw new Error(`No AsyncAPI YAML files found. Available: ${availableFiles.join(', ')}`)
+	}
+	const rawContent = outputFiles.get(yamlFiles[0])
+	const content = typeof rawContent === 'string' ? rawContent : (rawContent as any).content
 
 		// Should contain all operations
 		expect(content).toContain("publishUserEvent")
@@ -204,7 +204,7 @@ describe("AsyncAPI Emitter Integration", () => {
 			"file-type": SERIALIZATION_FORMAT_OPTION_JSON,
 		})
 
-		const asyncapiDoc = parseAsyncAPIOutput(outputFiles, "doc-test.json")
+		const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "doc-test.json")
 
 		// Validate documentation is preserved
 		const channel = asyncapiDoc.channels.documented.events

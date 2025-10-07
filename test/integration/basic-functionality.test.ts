@@ -192,7 +192,7 @@ ${source}
       "file-type": "json",
     });
 
-    const asyncapiDoc = parseAsyncAPIOutput(outputFiles, "multi-channel.json");
+    const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "multi-channel.json");
     const doc = asyncapiDoc as any;
     
     // Should have both operations
@@ -233,7 +233,7 @@ ${source}
       "file-type": "json",
     });
 
-    const asyncapiDoc = parseAsyncAPIOutput(outputFiles, "typed-test.json");
+    const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "typed-test.json");
     const doc = asyncapiDoc as any;
     const schema = doc.components.schemas.TypedEvent;
     
@@ -275,7 +275,7 @@ ${source}
       "file-type": "json",
     });
 
-    const asyncapiDoc = parseAsyncAPIOutput(outputFiles, "doc-test.json");
+    const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "doc-test.json");
     const doc = asyncapiDoc as any;
     const schema = doc.components.schemas.DocumentedEvent;
     
@@ -308,7 +308,7 @@ ${source}
       "file-type": "json",
     });
 
-    const asyncapiDoc = parseAsyncAPIOutput(outputFiles, "param-test.json");
+    const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "param-test.json");
     const doc = asyncapiDoc as any;
     
     // Should have operation with parameters
@@ -342,7 +342,7 @@ ${source}
       "file-type": "json",
     });
 
-    const asyncapiDoc = parseAsyncAPIOutput(outputFiles, "unique-names.json");
+    const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "unique-names.json");
     const doc = asyncapiDoc as any;
     
     // Should have unique operation names

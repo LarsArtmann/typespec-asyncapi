@@ -151,7 +151,7 @@ describe("Real-World AsyncAPI Scenarios", () => {
         "file-type": "json"
       });
       
-      const asyncapiDoc = parseAsyncAPIOutput(outputFiles, "ecommerce-system.json");
+      const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "ecommerce-system.json");
       
       // Validate overall structure
       expect(AsyncAPIAssertions.hasValidStructure(asyncapiDoc)).toBe(true);
@@ -323,7 +323,7 @@ describe("Real-World AsyncAPI Scenarios", () => {
         "file-type": "json"
       });
       
-      const asyncapiDoc = parseAsyncAPIOutput(outputFiles, "iot-system.json");
+      const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "iot-system.json");
       
       // Validate IoT-specific structures
       expect(AsyncAPIAssertions.hasValidStructure(asyncapiDoc)).toBe(true);
@@ -509,7 +509,7 @@ describe("Real-World AsyncAPI Scenarios", () => {
         "file-type": "json"
       });
       
-      const asyncapiDoc = parseAsyncAPIOutput(outputFiles, "trading-system.json");
+      const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "trading-system.json");
       
       // Validate trading system structure
       expect(AsyncAPIAssertions.hasValidStructure(asyncapiDoc)).toBe(true);
@@ -666,7 +666,7 @@ describe("Real-World AsyncAPI Scenarios", () => {
         "file-type": "json"
       });
       
-      const asyncapiDoc = parseAsyncAPIOutput(outputFiles, "saas-platform.json");
+      const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "saas-platform.json");
       
       // Validate SaaS platform structure
       expect(AsyncAPIAssertions.hasValidStructure(asyncapiDoc)).toBe(true);

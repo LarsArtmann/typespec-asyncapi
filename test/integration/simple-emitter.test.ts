@@ -36,7 +36,7 @@ describe("Simple AsyncAPI Emitter (No Decorators)", () => {
 		}
 
 		// Should have generated an output file
-		const asyncapiDoc = parseAsyncAPIOutput(outputFiles, "simple-test.json")
+		const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "simple-test.json")
 
 		// Should be a valid AsyncAPI document structure
 		expect(typeof asyncapiDoc).toBe("object")
@@ -72,7 +72,7 @@ describe("Simple AsyncAPI Emitter (No Decorators)", () => {
 			"file-type": "json",
 		})
 
-		const asyncapiDoc = parseAsyncAPIOutput(outputFiles, "multi-op.json")
+		const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "multi-op.json")
 
 		expect(asyncapiDoc.asyncapi).toBe("3.0.0")
 		// Should have processed the operations and models
@@ -99,8 +99,13 @@ describe("Simple AsyncAPI Emitter (No Decorators)", () => {
 			"file-type": "yaml",
 		})
 
-		// Should be YAML content (string)
-		const yamlContent = parseAsyncAPIOutput(outputFiles, "yaml-test.yaml")
+	// Should be YAML content (string) - read raw from Map
+	const availableFiles = Array.from(outputFiles.keys())
+	const yamlFiles = availableFiles.filter(f => f.toLowerCase().includes('asyncapi') && f.endsWith('.yaml'))
+	if (yamlFiles.length === 0) {
+		throw new Error(`No AsyncAPI YAML files found. Available: ${availableFiles.join(', ')}`)
+	}
+	const yamlContent = outputFiles.get(yamlFiles[0]) as string
 		expect(typeof yamlContent).toBe("string")
 		expect(yamlContent).toContain("asyncapi: 3.0.0")
 		expect(yamlContent).toContain("Generated from TypeSpec")

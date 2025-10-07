@@ -67,7 +67,7 @@ describe("Real Decorator Functionality Tests", () => {
 			expect(program).toBeDefined()
 			expect(outputFiles.size).toBeGreaterThan(0)
 
-			const asyncapiDoc = parseAsyncAPIOutput(outputFiles, "message-decorator-test.json") as AsyncAPIObject
+			const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "message-decorator-test.json") as AsyncAPIObject
 			expect(asyncapiDoc).toBeDefined()
 
 			// Validate the message decorator was processed correctly
@@ -137,7 +137,7 @@ describe("Real Decorator Functionality Tests", () => {
 				"file-type": "json",
 			})
 
-			const asyncapiDoc = parseAsyncAPIOutput(outputFiles, "content-type-test.json") as AsyncAPIObject
+			const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "content-type-test.json") as AsyncAPIObject
 
 			// Validate both message schemas were created
 			expect(asyncapiDoc.components?.schemas?.AvroMessage).toBeDefined()
@@ -181,7 +181,7 @@ describe("Real Decorator Functionality Tests", () => {
 				"file-type": "json",
 			})
 
-			const asyncapiDoc = parseAsyncAPIOutput(outputFiles, "headers-test.json") as AsyncAPIObject
+			const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "headers-test.json") as AsyncAPIObject
 
 			// Validate message schema with correlation ID
 			expect(asyncapiDoc.components?.schemas?.TrackedMessage).toBeDefined()
@@ -229,7 +229,7 @@ describe("Real Decorator Functionality Tests", () => {
 			// Verify real compilation occurred
 			expect(program).toBeDefined()
 
-			const asyncapiDoc = parseAsyncAPIOutput(outputFiles, "kafka-protocol-test.json") as AsyncAPIObject
+			const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "kafka-protocol-test.json") as AsyncAPIObject
 
 			// Validate schema was created
 			expect(asyncapiDoc.components?.schemas?.KafkaMessage).toBeDefined()
@@ -278,7 +278,7 @@ describe("Real Decorator Functionality Tests", () => {
 				"file-type": "json",
 			})
 
-			const asyncapiDoc = parseAsyncAPIOutput(outputFiles, "websocket-protocol-test.json") as AsyncAPIObject
+			const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "websocket-protocol-test.json") as AsyncAPIObject
 
 			// Validate WebSocket message schema
 			expect(asyncapiDoc.components?.schemas?.WebSocketMessage).toBeDefined()
@@ -338,7 +338,7 @@ describe("Real Decorator Functionality Tests", () => {
 				"file-type": "json",
 			})
 
-			const asyncapiDoc = parseAsyncAPIOutput(outputFiles, "multi-protocol-test.json") as AsyncAPIObject
+			const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "multi-protocol-test.json") as AsyncAPIObject
 
 			// Validate both operations were created
 			expect(asyncapiDoc.operations?.publishAMQPEvent).toBeDefined()
@@ -383,7 +383,7 @@ describe("Real Decorator Functionality Tests", () => {
 			// Verify compilation occurred
 			expect(program).toBeDefined()
 
-			const asyncapiDoc = parseAsyncAPIOutput(outputFiles, "jwt-security-test.json") as AsyncAPIObject
+			const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "jwt-security-test.json") as AsyncAPIObject
 
 			// Validate secure message schema
 			expect(asyncapiDoc.components?.schemas?.SecureMessage).toBeDefined()
@@ -443,7 +443,7 @@ describe("Real Decorator Functionality Tests", () => {
 				"file-type": "json",
 			})
 
-			const asyncapiDoc = parseAsyncAPIOutput(outputFiles, "oauth2-security-test.json") as AsyncAPIObject
+			const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "oauth2-security-test.json") as AsyncAPIObject
 
 			// Validate OAuth2 secured message schema
 			expect(asyncapiDoc.components?.schemas?.OAuth2SecuredMessage).toBeDefined()
@@ -492,7 +492,7 @@ describe("Real Decorator Functionality Tests", () => {
 				"file-type": "json",
 			})
 
-			const asyncapiDoc = parseAsyncAPIOutput(outputFiles, "sasl-security-test.json") as AsyncAPIObject
+			const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "sasl-security-test.json") as AsyncAPIObject
 
 			// Validate SASL secured message
 			expect(asyncapiDoc.components?.schemas?.SASLSecuredMessage).toBeDefined()
@@ -609,7 +609,7 @@ describe("Real Decorator Functionality Tests", () => {
 			// Verify comprehensive compilation
 			expect(program).toBeDefined()
 
-			const asyncapiDoc = parseAsyncAPIOutput(outputFiles, "combined-decorators-test.json") as AsyncAPIObject
+			const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "combined-decorators-test.json") as AsyncAPIObject
 
 			// Validate complex message schema
 			expect(asyncapiDoc.components?.schemas?.SecureKafkaEvent).toBeDefined()
