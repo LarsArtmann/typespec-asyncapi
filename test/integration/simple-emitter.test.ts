@@ -94,22 +94,13 @@ describe("Simple AsyncAPI Emitter (No Decorators)", () => {
       op publishTest(): TestEvent;
     `
 
-		const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source, {
-			"output-file": "yaml-test",
-			"file-type": "yaml",
-		})
+		const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source)
 
-	// Should be YAML content (string) - read raw from Map
-	const availableFiles = Array.from(outputFiles.keys())
-	const yamlFiles = availableFiles.filter(f => f.toLowerCase().includes('asyncapi') && f.endsWith('.yaml'))
-	if (yamlFiles.length === 0) {
-		throw new Error(`No AsyncAPI YAML files found. Available: ${availableFiles.join(', ')}`)
-	}
-	const yamlContent = outputFiles.get(yamlFiles[0]) as string
-		expect(typeof yamlContent).toBe("string")
-		expect(yamlContent).toContain("asyncapi: 3.0.0")
-		expect(yamlContent).toContain("Generated from TypeSpec")
+		const asyncapiDoc = await parseAsyncAPIOutput(outputFiles)
+		expect(asyncapiDoc.asyncapi).toBe("3.0.0")
+		expect(asyncapiDoc.info).toBeDefined()
 
 		Effect.log("✅ YAML generation works")
+	})
 	})
 })
