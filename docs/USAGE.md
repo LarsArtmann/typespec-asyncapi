@@ -39,7 +39,7 @@ op userSignedUp(): void;
 
 Generate AsyncAPI:
 ```bash
-npx tsp compile minimal.tsp --emit @typespec/asyncapi
+tsp compile minimal.tsp --emit @typespec/asyncapi
 ```
 
 Output: `tsp-output/@lars-artmann/typespec-asyncapi/AsyncAPI.yaml`
@@ -73,7 +73,7 @@ op userCreated(...UserCreatedEvent): void;
 
 **Generate AsyncAPI:**
 ```bash
-npx tsp compile simple-event.tsp --emit @typespec/asyncapi
+tsp compile simple-event.tsp --emit @typespec/asyncapi
 ```
 
 **Output Structure:**
@@ -128,7 +128,7 @@ op orderEvent(...OrderEvent): void;
 
 **Generate AsyncAPI:**
 ```bash
-npx tsp compile kafka-events.tsp --emit @typespec/asyncapi
+tsp compile kafka-events.tsp --emit @typespec/asyncapi
 
 # Output location
 ls tsp-output/@lars-artmann/typespec-asyncapi/AsyncAPI.yaml
@@ -188,7 +188,7 @@ namespace ChatAPI {
 
 **Generate AsyncAPI:**
 ```bash
-npx tsp compile websocket-chat.tsp --emit @typespec/asyncapi
+tsp compile websocket-chat.tsp --emit @typespec/asyncapi
 ```
 
 **Key Features:**
@@ -229,7 +229,7 @@ op receiveWebhook(): WebhookPayload;
 
 **Generate AsyncAPI:**
 ```bash
-npx tsp compile webhooks.tsp --emit @typespec/asyncapi
+tsp compile webhooks.tsp --emit @typespec/asyncapi
 ```
 
 **Output Features:**
@@ -283,7 +283,7 @@ namespace IoTEvents {
 
 **Generate AsyncAPI:**
 ```bash
-npx tsp compile iot-telemetry.tsp --emit @typespec/asyncapi
+tsp compile iot-telemetry.tsp --emit @typespec/asyncapi
 ```
 
 **Key Features:**
@@ -350,7 +350,7 @@ op subscribePayments(): PaymentProcessed;
 
 **Generate AsyncAPI:**
 ```bash
-npx tsp compile microservices.tsp --emit @typespec/asyncapi
+tsp compile microservices.tsp --emit @typespec/asyncapi
 ```
 
 **Key Features:**
@@ -393,7 +393,7 @@ jobs:
 
       - name: Generate AsyncAPI spec
         run: |
-          npx tsp compile api.tsp --emit @typespec/asyncapi
+          tsp compile api.tsp --emit @typespec/asyncapi
 
       - name: Upload AsyncAPI artifact
         uses: actions/upload-artifact@v3
@@ -415,7 +415,7 @@ generate-asyncapi:
   image: node:20
   script:
     - npm install @typespec/compiler @lars-artmann/typespec-asyncapi@alpha
-    - npx tsp compile api.tsp --emit @typespec/asyncapi
+    - tsp compile api.tsp --emit @typespec/asyncapi
     - npx @asyncapi/cli validate tsp-output/@lars-artmann/typespec-asyncapi/AsyncAPI.yaml
   artifacts:
     paths:
@@ -430,7 +430,7 @@ generate-asyncapi:
 
 **Problem:**
 ```bash
-$ npx tsp compile api.tsp --emit @typespec/asyncapi
+$ tsp compile api.tsp --emit @typespec/asyncapi
 # No output file generated
 ```
 
@@ -568,7 +568,7 @@ Location: `tsp-output/@lars-artmann/typespec-asyncapi/AsyncAPI.yaml`
 
 Use `--output-format json` flag (if supported by your TypeSpec version):
 ```bash
-npx tsp compile api.tsp --emit @typespec/asyncapi --output-format json
+tsp compile api.tsp --emit @typespec/asyncapi --output-format json
 ```
 
 ---

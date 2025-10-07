@@ -37,7 +37,7 @@ jobs:
       run: |
         echo "🧪 Running smoke test to verify emitter generates AsyncAPI 3.0..."
         cd examples/smoke
-        npx tsp compile . --emit @typespec/asyncapi
+        tsp compile . --emit @typespec/asyncapi
 
         # Verify output file exists
         if [ ! -f "tsp-output/@lars-artmann/typespec-asyncapi/AsyncAPI.yaml" ]; then

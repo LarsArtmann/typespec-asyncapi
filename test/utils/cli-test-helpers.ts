@@ -49,7 +49,7 @@ export interface CLICompileOptions {
  * Compile TypeSpec using CLI and return AsyncAPI output
  *
  * This is the core test helper that replaces the broken createTestWrapper() approach.
- * It compiles TypeSpec via actual CLI (`npx tsp compile`) and reads output from disk.
+ * It compiles TypeSpec via actual TypeSpec CLI (`tsp compile`) and reads output from disk.
  *
  * @example
  * ```typescript
@@ -87,10 +87,10 @@ export async function compileWithCLI(
 			await fs.copyFile(sourceFileOrContent, tspFile)
 		}
 
-		// Run tsp compile via CLI
+		// Run tsp compile via CLI (TypeSpec's built-in CLI)
 		const { exitCode, stdout, stderr } = await runCommand(
-			'npx',
-			['tsp', 'compile', '.', '--emit', '@typespec/asyncapi'],
+			'tsp',
+			['compile', '.', '--emit', '@typespec/asyncapi'],
 			{
 				cwd: workdir,
 				timeout: options.timeout || 30000,

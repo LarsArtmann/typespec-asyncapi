@@ -44,10 +44,10 @@ Object.keys(result) = []    // ❌
 
 ### Core Principle
 
-**Test the emitter exactly how users will use it: via CLI**
+**Test the emitter exactly how users will use it: via TypeSpec CLI**
 
 ```bash
-npx tsp compile example.tsp --emit @typespec/asyncapi
+tsp compile example.tsp --emit @typespec/asyncapi
 ```
 
 ### Benefits
@@ -139,10 +139,10 @@ export async function compileWithCLI(
     await fs.copyFile(sourceFile, tspFile)
   }
 
-  // Run tsp compile
+  // Run tsp compile (TypeSpec's built-in CLI)
   const { exitCode, stdout, stderr } = await runCommand(
-    'npx',
-    ['tsp', 'compile', '.', '--emit', '@typespec/asyncapi'],
+    'tsp',
+    ['compile', '.', '--emit', '@typespec/asyncapi'],
     { cwd: workdir, timeout: options.timeout || 30000 }
   )
 
