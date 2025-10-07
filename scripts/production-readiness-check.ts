@@ -1142,25 +1142,7 @@ export class ProductionReadinessChecker {
       
 
       
-      // Plugin CLI tool
-      try {
-        const cliPath = join(this.rootPath, 'src', 'plugins', 'marketplace', 'plugin-cli.ts')
-        await access(cliPath)
-        
-        checks.push({
-          name: 'Plugin CLI Tool',
-          status: 'PASS',
-          message: 'Plugin marketplace CLI tool available',
-          severity: 'MEDIUM'
-        })
-      } catch {
-        checks.push({
-          name: 'Plugin CLI Tool',
-          status: 'WARN',
-          message: 'Plugin CLI tool not found',
-          severity: 'MEDIUM'
-        })
-      }
+
       
       this.results.push({
         category: 'Community & Support Infrastructure',
@@ -1589,41 +1571,8 @@ export class ProductionReadinessChecker {
         })
       }
       
-      // Check for plugin marketplace infrastructure
-      try {
-        const marketplacePath = join(this.rootPath, 'src', 'plugins', 'marketplace')
-        const marketplaceFiles = await this.findFiles(marketplacePath, '.ts')
-        
-        const requiredMarketplaceFiles = ['plugin-registry.ts', 'plugin-cli.ts']
-        const foundFiles = requiredMarketplaceFiles.filter(file =>
-          marketplaceFiles.some(f => f.endsWith(file))
-        )
-        
-        if (foundFiles.length === requiredMarketplaceFiles.length) {
-          checks.push({
-            name: 'Plugin Marketplace Infrastructure',
-            status: 'PASS',
-            message: 'Complete plugin marketplace infrastructure implemented',
-            severity: 'HIGH'
-          })
-        } else {
-          checks.push({
-            name: 'Plugin Marketplace Infrastructure',
-            status: 'WARN',
-            message: `Missing marketplace files: ${requiredMarketplaceFiles.filter(f => !foundFiles.includes(f)).join(', ')}`,
-            severity: 'MEDIUM'
-          })
-        }
-      } catch {
-        checks.push({
-          name: 'Plugin Marketplace Infrastructure',
-          status: 'WARN',
-          message: 'Plugin marketplace not found',
-          severity: 'MEDIUM'
-        })
-      }
+      // TypeSpec emitters ARE plugins - no separate plugin marketplace needed
       
-
       
       // Check for plugin documentation
       try {
