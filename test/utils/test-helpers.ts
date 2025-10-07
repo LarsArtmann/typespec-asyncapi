@@ -391,7 +391,7 @@ export async function parseAsyncAPIOutput(outputFiles: Map<string, string | {
 
 		// Fallback 1: Try any asyncapi files (legacy support)
 		const legacyAsyncapiFiles = allFiles.filter(path =>
-			path.includes('asyncapi') &&
+			path.toLowerCase().includes('asyncapi') &&
 			!path.includes('package.json') &&
 			!path.includes('node_modules') &&
 			(path.endsWith('.yaml') || path.endsWith('.json')),
