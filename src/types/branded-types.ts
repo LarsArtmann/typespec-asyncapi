@@ -24,6 +24,8 @@
  * ```
  */
 
+/* eslint-disable no-restricted-syntax */
+
 /**
  * Branded type for AsyncAPI channel names
  *

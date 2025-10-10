@@ -11,7 +11,7 @@ import type { Type } from "@typespec/compiler"
 /**
  * Type cache entry with metadata for performance monitoring
  */
-interface TypeCacheEntry<T = any> {
+type TypeCacheEntry<T = unknown> = {
 	/** The cached AsyncAPI schema or processed result */
 	result: T
 	/** Timestamp when cached (for potential LRU eviction) */
@@ -30,8 +30,8 @@ interface TypeCacheEntry<T = any> {
  * - Automatic cleanup to prevent memory leaks
  * - Cache statistics for optimization insights
  */
-export class TypeCache<T = any> {
-	private storage = new Map<any, TypeCacheEntry<T>>()
+export class TypeCache<T = unknown> {
+	private readonly storage = new Map<unknown, TypeCacheEntry<T>>()
 	private hits = 0
 	private misses = 0
 
@@ -128,7 +128,7 @@ export class TypeCache<T = any> {
 	 * @param limit - Maximum number of hot types to return
 	 * @returns Array of hottest types with access counts
 	 */
-	public getHotTypes(limit = 10): Array<{ type: Type; accessCount: number }> {
+	public getHotTypes(limit = 10): Array<{ type: unknown; accessCount: number }> {
 		const entries = Array.from(this.storage.entries())
 			.map(([type, entry]) => ({ type, accessCount: entry.accessCount }))
 			.sort((a, b) => b.accessCount - a.accessCount)
@@ -144,7 +144,7 @@ export class TypeCache<T = any> {
 	 */
 	public cleanup(maxAgeMs = 5 * 60 * 1000): number {
 		const now = Date.now()
-		const toDelete: Type[] = []
+		const toDelete: unknown[] = []
 
 		for (const [type, entry] of this.storage.entries()) {
 			if (now - entry.timestamp > maxAgeMs) {
@@ -152,12 +152,11 @@ export class TypeCache<T = any> {
 			}
 		}
 
-		toDelete.forEach(type => this.storage.delete(type))
+		toDelete.forEach(type => this.storage.delete(type as Type))
 		return toDelete.length
 	}
 
-	// NOTE: Generic processWithCache/processWithCacheEffect methods removed due to TypeScript
-	// generic type constraints issues. Use get() and cache() directly for type-safe caching.
+
 }
 
 /**
@@ -169,7 +168,7 @@ export const globalTypeCache = new TypeCache()
 /**
  * Type cache utilities for common operations
  */
-export const TypeCacheUtils = {
+export const typeCacheUtils = {
 	/**
 	 * Get cache statistics for logging
 	 */
