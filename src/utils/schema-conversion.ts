@@ -19,7 +19,7 @@ import { globalTypeCache } from "./type-cache.js"
  */
 export function convertModelToSchema(model: Model, program: Program): SchemaObject {
 	// Check cache first for performance optimization
-	const cached = globalTypeCache.get(model)
+	const cached = globalTypeCache.get(model) as SchemaObject | undefined
 	if (cached) {
 		return cached
 	}
@@ -70,9 +70,9 @@ export function convertModelToSchema(model: Model, program: Program): SchemaObje
 	)
 
 	// Cache the result for future use
-	globalTypeCache.cache(model, result)
+	globalTypeCache.cache(model, result as SchemaObject)
 	
-	return result
+	return result as SchemaObject
 }
 
 /**
