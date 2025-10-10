@@ -13,6 +13,12 @@ namespace Collaboration;
 /**
  * User joined a collaboration session
  */
+@message(#{
+  name: "UserJoined",
+  title: "User Joined Session",
+  contentType: "application/json",
+  description: "Emitted when a user joins a WebSocket collaboration session"
+})
 model UserJoined {
   sessionId: string;
   userId: string;
@@ -24,6 +30,12 @@ model UserJoined {
 /**
  * User left a collaboration session
  */
+@message(#{
+  name: "UserLeft",
+  title: "User Left Session", 
+  contentType: "application/json",
+  description: "Emitted when a user leaves a WebSocket collaboration session"
+})
 model UserLeft {
   sessionId: string;
   userId: string;
@@ -33,6 +45,12 @@ model UserLeft {
 /**
  * Real-time cursor position update
  */
+@message(#{
+  name: "CursorUpdate",
+  title: "Cursor Position Update",
+  contentType: "application/json",
+  description: "Emitted when a user moves their cursor in the document"
+})
 model CursorUpdate {
   sessionId: string;
   userId: string;
