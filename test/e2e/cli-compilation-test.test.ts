@@ -9,6 +9,7 @@ import { existsSync, readFileSync, writeFileSync, mkdirSync } from "fs"
 import { join } from "path"
 import { spawn } from "child_process"
 import { promisify } from "util"
+import { Effect } from "effect"
 
 describe("🚀 CLI Compilation Test", () => {
   const testDir = "test-output/cli-test"

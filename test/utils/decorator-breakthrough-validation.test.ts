@@ -12,6 +12,7 @@
 
 import { describe, it, expect } from "bun:test"
 import { compileTypeSpecWithDecorators } from "../utils/test-helpers.js"
+import { Effect } from "effect"
 
 describe("🚀 DECORATOR REGISTRATION BREAKTHROUGH", () => {
   it("🎯 BREAKTHROUGH: No more 'Unknown decorator' errors", async () => {

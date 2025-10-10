@@ -4,6 +4,7 @@
 
 import { describe, it, expect } from "bun:test";
 import { compileAsyncAPISpecWithoutErrors, parseAsyncAPIOutput, AsyncAPIAssertions } from "../utils/test-helpers";
+import { Effect } from "effect";
 //TODO: this file is getting to big split it up
 
 describe("Real-World AsyncAPI Scenarios", () => {
