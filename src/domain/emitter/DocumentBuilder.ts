@@ -90,11 +90,11 @@ export class DocumentBuilder {
 			// Safe logging with program validation
 			yield* Effect.log(`🏗️  DocumentBuilder.createInitialDocument called with valid program`)
 
-			// Safe server processing with error handling
-			const serversResult = yield* railway.trySync(
-				() => buildServersFromNamespaces(program),
-				{ context: { operation: "buildServersFromNamespaces" } }
-			)
+			// Safe server processing with error handling - TEMPORARILY DISABLED
+			const serversResult = {} // yield* railway.trySync(
+			// 	() => buildServersFromNamespaces(program),
+			// 	{ context: { operation: "buildServersFromNamespaces" } }
+			// )
 
 			const servers = serversResult ?? {}
 			yield* Effect.log(`🏗️  Generated servers: ${JSON.stringify(servers, null, 2)}`)
