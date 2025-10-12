@@ -166,36 +166,48 @@ export class ValidationService {
 	validateDocumentContent(content: string): Effect.Effect<string, StandardizedError> {
 		return Effect.gen(function* () {
 			const self = this // Store this reference for Effect.TS context
-			yield* Effect.log(`🔍 Validating AsyncAPI document content (${content.length} bytes)...`)
+			yield* Effect.log(`🔍 Validating AsyncAPI document content (${content.length} bytes)`)
+			yield* Effect.log(`🔍 Content preview: ${content.substring(0, 100)}...`)
 
 			// Parse the content with proper error handling, retry patterns, and fallback
+			console.log("🔧 About to parse JSON...")
 			const parsedDoc = yield* railway.trySync(
-				() => JSON.parse(content) as AsyncAPIObject,
+				() => {
+					console.log("🔧 Attempting JSON.parse...")
+					return JSON.parse(content) as AsyncAPIObject
+				},
 				{ operation: "parseDocument", contentLength: content.length }
 			).pipe(
 				// Add retry pattern for JSON parsing with exponential backoff
 				Effect.retry(Schedule.exponential(`${PERFORMANCE_CONSTANTS.RETRY_BASE_DELAY_MS / 2} millis`).pipe(
 					Schedule.compose(Schedule.recurs(PERFORMANCE_CONSTANTS.MAX_RETRY_ATTEMPTS - 1))
 				)),
-				Effect.tapError(attempt => Effect.log(`⚠️  JSON parsing attempt failed, retrying: ${safeStringify(attempt)}`)),
-				Effect.mapError(error => emitterErrors.invalidAsyncAPI(
-					["Failed to parse JSON/YAML content after retries"],
-					{ originalError: error.why, content: content.substring(0, 200) + "..." }
-				)),
-				Effect.catchAll(error => 
-					Effect.gen(function* () {
-						yield* Effect.log(`⚠️  Document parsing failed, providing minimal structure: ${safeStringify(error)}`)
-						// Create fallback minimal AsyncAPI structure
-						const fallbackDoc: AsyncAPIObject = {
-							asyncapi: "3.0.0",
-							info: { title: "Generated API (Validation Failed)", version: "1.0.0" },
-							channels: {},
-							operations: {}
-						}
-						return Effect.succeed(fallbackDoc)
-					}).pipe(Effect.flatten)
-				)
+				Effect.tapError(attempt => {
+					console.log(`⚠️  JSON parsing attempt failed, retrying: ${safeStringify(attempt)}`)
+					return Effect.log(`⚠️  JSON parsing attempt failed, retrying: ${safeStringify(attempt)}`)
+				}),
+				Effect.mapError(error => {
+					console.log(`🔧 JSON parse error: ${safeStringify(error)}`)
+					return emitterErrors.invalidAsyncAPI(
+						["Failed to parse JSON/YAML content after retries"],
+						{ originalError: error.why, content: content.substring(0, 200) + "..." }
+					)
+				}),
+				Effect.catchAll(error => {
+					console.log(`🔧 Entering JSON parsing catchAll: ${safeStringify(error)}`)
+					yield* Effect.log(`⚠️  Document parsing failed, providing minimal structure: ${safeStringify(error)}`)
+					// Create fallback minimal AsyncAPI structure
+					const fallbackDoc: AsyncAPIObject = {
+						asyncapi: "3.0.0",
+						info: { title: "Generated API (Validation Failed)", version: "1.0.0" },
+						channels: {},
+						operations: {}
+					}
+					console.log(`🔧 Created fallback doc: ${JSON.stringify(fallbackDoc)}`)
+					return Effect.succeed(fallbackDoc)
+				}).pipe(Effect.flatten)
 			)
+			console.log(`🔧 Parsed doc type: ${typeof parsedDoc}, keys: ${parsedDoc ? Object.keys(parsedDoc).join(', ') : 'null'}`)
 
 			// Use static validation to avoid this binding issues
 			const result = yield* ValidationService.validateDocumentStatic(parsedDoc).pipe(
