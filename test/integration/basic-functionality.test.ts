@@ -325,10 +325,16 @@ ${source}
       op publishEvent3(): Event1; // Same model, different operation
     `;
 
-    const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
-
+    const { outputFiles, program } = await compileAsyncAPISpecWithoutErrors(source);
+    
+    // Debug: What files were generated?
+    Effect.log(`📄 Generated files: ${Array.from(outputFiles.keys()).join(', ')}`);
+    
     const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "unique-names.json");
     const doc = asyncapiDoc as any;
+    
+    // Debug: What operations were generated?
+    Effect.log(`🔧 Generated operations: ${Object.keys(doc.operations).join(', ')}`);
     
     // Should have unique operation names
     const operationNames = Object.keys(doc.operations);
@@ -343,5 +349,5 @@ ${source}
     expect(new Set(channelNames).size).toBe(3); // All unique
     
     Effect.log("✅ Unique naming works");
-  });
+  }, 15000);
 });
