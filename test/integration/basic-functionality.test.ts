@@ -330,7 +330,18 @@ ${source}
     // Debug: What files were generated?
     Effect.log(`📄 Generated files: ${Array.from(outputFiles.keys()).join(', ')}`);
     
-    // Debug: Check the actual file content
+    // Debug: Check what file is actually being parsed
+    const allFiles = Array.from(outputFiles.keys());
+    console.log(`📄 All available files: ${allFiles.join(', ')}`);
+    console.log(`📄 Selected file: ${allFiles[0]}`);
+    
+    // Check if the right file is selected
+    const expectedFile = allFiles.find(f => f.includes('unique-names'));
+    if (!expectedFile) {
+      console.log(`❌ ERROR: unique-names.json not found in output files!`);
+      console.log(`🔍 Available files: ${allFiles.join(', ')}`);
+    }
+    
     const fileName = Array.from(outputFiles.keys())[0];
     const fileContent = outputFiles.get(fileName);
     if (typeof fileContent === 'string') {
