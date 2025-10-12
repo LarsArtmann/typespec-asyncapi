@@ -64,7 +64,7 @@ export class ValidationService {
 	 * @param asyncApiDoc - AsyncAPI document to validate
 	 * @returns Effect containing detailed validation results
 	 */
-	validateDocument(asyncApiDoc: AsyncAPIObject): Effect.Effect<ValidationResult, never> {
+	validateDocument(asyncApiDoc: AsyncAPIObject): Effect.Effect<ValidationResult> {
 		return Effect.gen(function* (this: ValidationService) {
 			yield* Effect.log(`🔍 Starting comprehensive AsyncAPI document validation...`)
 
