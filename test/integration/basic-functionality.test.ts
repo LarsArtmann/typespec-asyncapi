@@ -330,6 +330,15 @@ ${source}
     // Debug: What files were generated?
     Effect.log(`📄 Generated files: ${Array.from(outputFiles.keys()).join(', ')}`);
     
+    // Debug: Check the actual file content
+    const fileName = Array.from(outputFiles.keys())[0];
+    const fileContent = outputFiles.get(fileName);
+    if (typeof fileContent === 'string') {
+      console.log(`📄 File content preview:\n${fileContent.substring(0, 500)}...`);
+    } else if (fileContent && 'content' in fileContent) {
+      console.log(`📄 File content preview:\n${fileContent.content.substring(0, 500)}...`);
+    }
+    
     const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "unique-names.json");
     const doc = asyncapiDoc as any;
     
