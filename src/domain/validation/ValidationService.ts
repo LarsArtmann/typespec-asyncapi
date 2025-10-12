@@ -45,6 +45,8 @@ export class ValidationService {
 
 	constructor() {
 		// Initialize validation service
+		console.log("🔧 ValidationService constructor called")
+		console.log("🔧 this methods:", Object.getOwnPropertyNames(Object.getPrototypeOf(this)))
 		Effect.log("🔧 ValidationService initialized")
 	}
 
