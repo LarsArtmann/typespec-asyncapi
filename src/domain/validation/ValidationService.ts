@@ -154,6 +154,9 @@ export class ValidationService {
 			)
 
 			// Run comprehensive validation with fallback strategy
+			console.log("🔧 About to call this.validateDocument")
+			console.log("🔧 this type:", typeof this)
+			console.log("🔧 validateDocument type:", typeof this.validateDocument)
 			const result = yield* this.validateDocument(parsedDoc).pipe(
 				Effect.catchAll(error => 
 					Effect.gen(function* () {
