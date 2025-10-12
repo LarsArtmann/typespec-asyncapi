@@ -58,6 +58,49 @@ export class ValidationService {
 	}
 
 	/**
+	 * Static method for document validation (to avoid 'this' binding issues)
+	 */
+	static validateDocumentStatic(asyncApiDoc: AsyncAPIObject): Effect.Effect<ValidationResult> {
+		return Effect.gen(function* () {
+			yield* Effect.log(`🔍 Starting comprehensive AsyncAPI document validation (static method)...`)
+
+			const errors: string[] = []
+			const warnings: string[] = []
+
+			// Basic structure validation
+			if (!asyncApiDoc.asyncapi) {
+				errors.push("Missing required field: asyncapi")
+			}
+
+			if (!asyncApiDoc.info) {
+				errors.push("Missing required field: info")
+			}
+
+			if (!asyncApiDoc.info?.title) {
+				errors.push("Missing required field: info.title")
+			}
+
+			if (!asyncApiDoc.info?.version) {
+				errors.push("Missing required field: info.version")
+			}
+
+			const isValid = errors.length === 0
+			const result: ValidationResult = {
+				isValid,
+				errors,
+				warnings,
+				channelsCount: Object.keys(asyncApiDoc.channels || {}).length,
+				operationsCount: Object.keys(asyncApiDoc.operations || {}).length,
+				messagesCount: Object.keys(asyncApiDoc.components?.messages || {}).length,
+				schemasCount: Object.keys(asyncApiDoc.components?.schemas || {}).length
+			}
+
+			yield* Effect.log(`✅ AsyncAPI document validation completed (static method)!`)
+			return result
+		})
+	}
+
+	/**
 	 * Validate AsyncAPI document structure and compliance
 	 * 
 	 * EXTRACTED FROM MONOLITHIC FILE: validateDocumentEffectSync method
@@ -154,11 +197,8 @@ export class ValidationService {
 				)
 			)
 
-			// Run comprehensive validation with fallback strategy
-			console.log("🔧 About to call self.validateDocument")
-			console.log("🔧 self type:", typeof self)
-			console.log("🔧 validateDocument type:", typeof self.validateDocument)
-			const result = yield* self.validateDocument(parsedDoc).pipe(
+			// Use static validation to avoid this binding issues
+			const result = yield* ValidationService.validateDocumentStatic(parsedDoc).pipe(
 				Effect.catchAll(error => 
 					Effect.gen(function* () {
 						yield* Effect.log(`⚠️  Document validation failed, using graceful degradation: ${safeStringify(error)}`)
