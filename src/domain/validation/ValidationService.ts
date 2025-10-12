@@ -121,7 +121,8 @@ export class ValidationService {
 	 * @returns Effect containing validation result and content length
 	 */
 	validateDocumentContent(content: string): Effect.Effect<string, StandardizedError> {
-		return Effect.gen(function* (this: ValidationService) {
+		return Effect.gen(function* () {
+			const self = this // Store this reference for Effect.TS context
 			yield* Effect.log(`🔍 Validating AsyncAPI document content (${content.length} bytes)...`)
 
 			// Parse the content with proper error handling, retry patterns, and fallback
@@ -154,10 +155,10 @@ export class ValidationService {
 			)
 
 			// Run comprehensive validation with fallback strategy
-			console.log("🔧 About to call this.validateDocument")
-			console.log("🔧 this type:", typeof this)
-			console.log("🔧 validateDocument type:", typeof this.validateDocument)
-			const result = yield* this.validateDocument(parsedDoc).pipe(
+			console.log("🔧 About to call self.validateDocument")
+			console.log("🔧 self type:", typeof self)
+			console.log("🔧 validateDocument type:", typeof self.validateDocument)
+			const result = yield* self.validateDocument(parsedDoc).pipe(
 				Effect.catchAll(error => 
 					Effect.gen(function* () {
 						yield* Effect.log(`⚠️  Document validation failed, using graceful degradation: ${safeStringify(error)}`)
