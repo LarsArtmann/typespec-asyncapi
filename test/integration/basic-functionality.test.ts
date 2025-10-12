@@ -334,10 +334,14 @@ ${source}
     const doc = asyncapiDoc as any;
     
     // Debug: What operations were generated?
+    console.log(`🔧 Generated operations: ${Object.keys(doc.operations).join(', ')}`);
     Effect.log(`🔧 Generated operations: ${Object.keys(doc.operations).join(', ')}`);
     
     // Should have unique operation names
     const operationNames = Object.keys(doc.operations);
+    console.log(`🔧 Expected: publishEvent1, publishEvent2, publishEvent3`);
+    console.log(`🔧 Actual: ${operationNames.join(', ')}`);
+    
     expect(operationNames).toContain("publishEvent1");
     expect(operationNames).toContain("publishEvent2");
     expect(operationNames).toContain("publishEvent3");
