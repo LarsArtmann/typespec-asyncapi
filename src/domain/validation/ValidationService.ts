@@ -43,6 +43,11 @@ export type ValidationResult = {
  */
 export class ValidationService {
 
+	constructor() {
+		// Initialize validation service
+		Effect.log("🔧 ValidationService initialized")
+	}
+
 	/**
 	 * Type guard to check if object is a reference
 	 */
