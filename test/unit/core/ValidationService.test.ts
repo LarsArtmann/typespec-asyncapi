@@ -272,7 +272,7 @@ describe("ValidationService", () => {
 				await Effect.runPromise(
 					validationService.validateDocumentContent(invalidDocContent)
 				)
-				console.log(`❌ ERROR: Expected rejection but got success`)
+				
 				await expect(Effect.runPromise(
 				validationService.validateDocumentContent(invalidDocContent)
 			)).rejects.toThrow(/AsyncAPI validation failed/)
