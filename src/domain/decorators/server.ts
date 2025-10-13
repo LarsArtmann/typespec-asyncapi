@@ -167,16 +167,40 @@ export function $server(
 
 	Effect.log(`📍 Extracted server config:`, completeConfig)
 
-	//TODO: CRITICAL - No validation that serverConfigsMap exists or handles potential undefined
-	//TODO: CRITICAL - Unsafe type assertion defeats type safety
-	// Store server configuration in program state
-	const serverConfigsMap = context.program.stateMap($lib.stateKeys.serverConfigs)
-	const existingConfigs = (serverConfigsMap.get(target) as Map<string, ServerConfig> | undefined) ?? new Map<string, ServerConfig>()
-	existingConfigs.set(serverName, completeConfig)
-	serverConfigsMap.set(target, existingConfigs)
+	// Store server configuration in program state with proper error handling
+	// TODO: ENHANCE - Add proper TypeScript typing for server configuration state
+	// TODO: ENHANCE - Add runtime validation for server configuration
+	try {
+		const serverConfigsMap = context.program.stateMap($lib.stateKeys.serverConfigs)
+		
+		// Handle potential undefined stateMap gracefully
+		if (!serverConfigsMap) {
+			Effect.log(`⚠️ ServerConfigs map not available for ${target.name}`)
+			reportDiagnostic(context, target, "server-config-unavailable", {serverName})
+			return
+		}
 
-	Effect.log(`✅ Successfully stored server config for ${target.name}: ${serverName}`)
-	Effect.log(`📊 Total server configs: ${existingConfigs.size}`)
+		// Ensure we have a proper Map for this namespace
+		let existingConfigs = serverConfigsMap.get(target)
+		if (!existingConfigs) {
+			existingConfigs = new Map<string, ServerConfig>()
+		}
+
+		// Safely add the new server configuration
+		if (existingConfigs instanceof Map) {
+			existingConfigs.set(serverName, completeConfig)
+			serverConfigsMap.set(target, existingConfigs)
+		} else {
+			Effect.log(`⚠️ Invalid serverConfigs type for ${target.name}: ${typeof existingConfigs}`)
+			reportDiagnostic(context, target, "invalid-server-config-map", {serverName})
+		}
+
+		Effect.log(`✅ Successfully stored server config for ${target.name}: ${serverName}`)
+		Effect.log(`📊 Total server configs: ${existingConfigs.size}`)
+	} catch (error) {
+		Effect.log(`❌ Error storing server config for ${target.name}: ${error}`)
+		reportDiagnostic(context, target, "server-config-storage-error", {serverName, error: String(error)})
+	}
 }
 
 //TODO: CRITICAL - Complex extraction logic should use Effect.TS schema validation
