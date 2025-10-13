@@ -44,10 +44,7 @@ export type ValidationResult = {
 export class ValidationService {
 
 	constructor() {
-		// Initialize validation service
-		console.log("🔧 ValidationService constructor called")
-		console.log("🔧 this methods:", Object.getOwnPropertyNames(Object.getPrototypeOf(this)))
-		Effect.log("🔧 ValidationService initialized")
+		Effect.log("🔧 ValidationService initialized with robust type safety")
 	}
 
 	/**
@@ -59,6 +56,9 @@ export class ValidationService {
 
 	/**
 	 * Static method for document validation (to avoid 'this' binding issues)
+	 * TODO: ENHANCE - Add comprehensive validation rules and error messages
+	 * TODO: ENHANCE - Implement cross-reference validation and consistency checks
+	 * TODO: ENHANCE - Add performance optimization for large documents
 	 */
 	static validateDocumentStatic(asyncApiDoc: AsyncAPIObject): Effect.Effect<ValidationResult> {
 		return Effect.gen(function* () {
