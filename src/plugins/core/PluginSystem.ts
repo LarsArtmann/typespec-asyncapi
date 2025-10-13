@@ -9,27 +9,27 @@
  */
 
 import { Effect } from "effect"
-import { z } from "@effect/schema"
-import { AsyncAPIObject } from "../types/branded-types.js"
-import { ValidationResult } from "./RuntimeValidator.js"
+import { Schema as Z } from "@effect/schema"
+import { AsyncAPIObject } from "../../types/branded-types.js"
+import { ValidationResult, RuntimeValidator, ValidatorFactory } from "../../validation/RuntimeValidator.js"
 
 /**
  * Plugin metadata schema
  * Defines plugin information and capabilities
  */
-export const PluginMetadataSchema = z.object({
-  name: z.string().min(1, "Plugin name is required"),
-  version: z.string().min(1, "Plugin version is required"),
-  description: z.string().optional(),
-  author: z.string().optional(),
-  license: z.string().optional(),
-  repository: z.string().url().optional(),
-  homepage: z.string().url().optional(),
-  keywords: z.array(z.string()).optional(),
-  type: z.enum(["protocol", "decorator", "validator", "processor", "transformer"]),
-  capabilities: z.array(z.string()).optional(),
-  dependencies: z.array(z.string()).optional(),
-  compatibility: z.array(z.string()).optional()
+export const PluginMetadataSchema = Z.object({
+  name: Z.string().min(1, "Plugin name is required"),
+  version: Z.string().min(1, "Plugin version is required"),
+  description: Z.string().optional(),
+  author: Z.string().optional(),
+  license: Z.string().optional(),
+  repository: Z.string().url().optional(),
+  homepage: Z.string().url().optional(),
+  keywords: Z.array(Z.string()).optional(),
+  type: Z.enum(["protocol", "decorator", "validator", "processor", "transformer"]),
+  capabilities: Z.array(Z.string()).optional(),
+  dependencies: Z.array(Z.string()).optional(),
+  compatibility: Z.array(Z.string()).optional()
 }).strict()
 
 /**
@@ -43,7 +43,7 @@ export type PluginType = "protocol" | "decorator" | "validator" | "processor" | 
  * Defines the contract that all plugins must implement
  */
 export interface Plugin {
-  readonly metadata: z.infer<typeof PluginMetadataSchema>
+  readonly metadata: Z.infer<typeof PluginMetadataSchema>
   readonly config?: Record<string, unknown>
   readonly initialize: (config?: Record<string, unknown>) => Effect.Effect<void, Error>
   readonly execute: (input: PluginInput) => Effect.Effect<PluginOutput, Error>
@@ -148,12 +148,12 @@ export interface PluginSystemConfiguration {
  * Provides common functionality for all plugins
  */
 export abstract class BasePlugin implements Plugin {
-  protected metadata: z.infer<typeof PluginMetadataSchema>
+  protected metadata: Z.infer<typeof PluginMetadataSchema>
   protected config?: Record<string, unknown>
   protected isInitialized: boolean = false
   protected isShutdown: boolean = false
 
-  constructor(metadata: z.infer<typeof PluginMetadataSchema>, config?: Record<string, unknown>) {
+  constructor(metadata: Z.infer<typeof PluginMetadataSchema>, config?: Record<string, unknown>) {
     this.metadata = metadata
     this.config = config
   }
@@ -161,7 +161,7 @@ export abstract class BasePlugin implements Plugin {
   /**
    * Get plugin metadata
    */
-  getMetadata(): z.infer<typeof PluginMetadataSchema> {
+  getMetadata(): Z.infer<typeof PluginMetadataSchema> {
     return this.metadata
   }
 

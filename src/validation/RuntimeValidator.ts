@@ -16,7 +16,7 @@ import type { AsyncAPIObject, ServerObject, ChannelObject, OperationObject, Mess
  * Schema for AsyncAPI version validation
  * Ensures version follows semantic versioning
  */
-export const AsyncAPIVersionSchema = z.string().refine(
+export const AsyncAPIVersionSchema = Z.string().refine(
   (version) => {
     const versionRegex = /^(\d+)\.(\d+)\.(\d+)(-.+)?$/
     return versionRegex.test(version)
@@ -30,20 +30,20 @@ export const AsyncAPIVersionSchema = z.string().refine(
  * Schema for info section validation
  * Validates required fields and formats
  */
-export const InfoSectionSchema = z.object({
-  title: z.string().min(1, "Title is required and cannot be empty"),
-  version: z.string().min(1, "Version is required and cannot be empty"),
-  description: z.string().optional(),
-  termsOfService: z.string().url().optional(),
-  contact: z.object({
-    name: z.string().min(1, "Contact name is required"),
-    url: z.string().url().optional(),
-    email: z.string().email().optional()
+export const InfoSectionSchema = Z.object({
+  title: Z.string().min(1, "Title is required and cannot be empty"),
+  version: Z.string().min(1, "Version is required and cannot be empty"),
+  description: Z.string().optional(),
+  termsOfService: Z.string().url().optional(),
+  contact: Z.object({
+    name: Z.string().min(1, "Contact name is required"),
+    url: Z.string().url().optional(),
+    email: Z.string().email().optional()
   }).optional(),
-  license: z.object({
-    name: z.string().min(1, "License name is required"),
-    url: z.string().url().optional(),
-    identifier: z.string().optional()
+  license: Z.object({
+    name: Z.string().min(1, "License name is required"),
+    url: Z.string().url().optional(),
+    identifier: Z.string().optional()
   }).optional()
 }).strict()
 
@@ -51,7 +51,7 @@ export const InfoSectionSchema = z.object({
  * Schema for server URL validation
  * Validates URL format and accessibility
  */
-export const ServerURLSchema = z.string().refine(
+export const ServerURLSchema = Z.string().refine(
   (url) => {
     try {
       new URL(url)
@@ -69,27 +69,27 @@ export const ServerURLSchema = z.string().refine(
  * Schema for server protocol validation
  * Validates against supported AsyncAPI protocols
  */
-export const ServerProtocolSchema = z.enum(["amqp", "amqps", "http", "https", "kafka", "mqtt", "secure-mqtt", "mqtt5", "redis", "nats", "stomp", "stomps", "ws", "wss", "wssecures"])
+export const ServerProtocolSchema = Z.enum(["amqp", "amqps", "http", "https", "kafka", "mqtt", "secure-mqtt", "mqtt5", "redis", "nats", "stomp", "stomps", "ws", "wss", "wssecures"])
 
 /**
  * Schema for server object validation
  * Validates server configuration with type safety
  */
-export const ServerObjectSchema: z.ZodType<ServerObject> = z.object({
-  name: z.string().min(1, "Server name is required and cannot be empty"),
+export const ServerObjectSchema: Z.ZodType<ServerObject> = Z.object({
+  name: Z.string().min(1, "Server name is required and cannot be empty"),
   url: ServerURLSchema,
   protocol: ServerProtocolSchema,
-  description: z.string().optional(),
-  variables: z.record(z.string(), z.string()).optional(),
-  security: z.array(z.string()).optional(),
-  bindings: z.record(z.string(), z.any()).optional()
+  description: Z.string().optional(),
+  variables: Z.record(Z.string(), Z.string()).optional(),
+  security: Z.array(Z.string()).optional(),
+  bindings: Z.record(Z.string(), Z.any()).optional()
 }).strict()
 
 /**
  * Schema for channel address validation
  * Validates channel address patterns and formats
  */
-export const ChannelAddressSchema = z.string().refine(
+export const ChannelAddressSchema = Z.string().refine(
   (address) => {
     // Validate channel address doesn't contain invalid characters
     const invalidChars = /[<>{}[\]\\'"`]/g
@@ -104,41 +104,41 @@ export const ChannelAddressSchema = z.string().refine(
  * Schema for channel object validation
  * Validates channel configuration with type safety
  */
-export const ChannelObjectSchema: z.ZodType<ChannelObject> = z.object({
+export const ChannelObjectSchema: Z.ZodType<ChannelObject> = Z.object({
   address: ChannelAddressSchema,
-  title: z.string().optional(),
-  description: z.string().optional(),
-  summary: z.string().optional(),
-  tags: z.array(z.string()).optional(),
-  parameters: z.record(z.string(), z.any()).optional(),
-  messages: z.record(z.string(), z.any()).optional(),
-  bindings: z.record(z.string(), z.any()).optional()
+  title: Z.string().optional(),
+  description: Z.string().optional(),
+  summary: Z.string().optional(),
+  tags: Z.array(Z.string()).optional(),
+  parameters: Z.record(Z.string(), Z.any()).optional(),
+  messages: Z.record(Z.string(), Z.any()).optional(),
+  bindings: Z.record(Z.string(), Z.any()).optional()
 }).strict()
 
 /**
  * Schema for operation action validation
  * Validates against AsyncAPI operation actions
  */
-export const OperationActionSchema = z.enum(["send", "receive", "reply"])
+export const OperationActionSchema = Z.enum(["send", "receive", "reply"])
 
 /**
  * Schema for operation object validation
  * Validates operation configuration with type safety
  */
-export const OperationObjectSchema: z.ZodType<OperationObject> = z.object({
+export const OperationObjectSchema: Z.ZodType<OperationObject> = Z.object({
   action: OperationActionSchema,
-  title: z.string().optional(),
-  description: z.string().optional(),
-  summary: z.string().optional(),
-  tags: z.array(z.string()).optional(),
-  bindings: z.record(z.string(), z.any()).optional()
+  title: Z.string().optional(),
+  description: Z.string().optional(),
+  summary: Z.string().optional(),
+  tags: Z.array(Z.string()).optional(),
+  bindings: Z.record(Z.string(), Z.any()).optional()
 }).strict()
 
 /**
  * Schema for message content-type validation
  * Validates MIME type formats
  */
-export const MessageContentTypeSchema = z.string().refine(
+export const MessageContentTypeSchema = Z.string().refine(
   (contentType) => {
     const contentTypeRegex = /^[a-zA-Z0-9][a-zA-Z0-9!#$&\']*\/[a-zA-Z0-9][a-zA-Z0-9!#$&\'*\.-]*$/
     return contentTypeRegex.test(contentType)
@@ -152,23 +152,23 @@ export const MessageContentTypeSchema = z.string().refine(
  * Schema for message object validation
  * Validates message configuration with type safety
  */
-export const MessageObjectSchema: z.ZodType<MessageObject> = z.object({
-  title: z.string().optional(),
-  summary: z.string().optional(),
-  description: z.string().optional(),
+export const MessageObjectSchema: Z.ZodType<MessageObject> = Z.object({
+  title: Z.string().optional(),
+  summary: Z.string().optional(),
+  description: Z.string().optional(),
   contentType: MessageContentTypeSchema,
-  payload: z.string().optional(),
-  headers: z.record(z.string(), z.string()).optional(),
-  tags: z.array(z.string()).optional(),
-  bindings: z.record(z.string(), z.any()).optional(),
-  examples: z.array(z.any()).optional()
+  payload: Z.string().optional(),
+  headers: Z.record(Z.string(), Z.string()).optional(),
+  tags: Z.array(Z.string()).optional(),
+  bindings: Z.record(Z.string(), Z.any()).optional(),
+  examples: Z.array(Z.any()).optional()
 }).strict()
 
 /**
  * Schema for property type validation
  * Validates against AsyncAPI property types
  */
-export const PropertyTypeSchema = z.enum([
+export const PropertyTypeSchema = Z.enum([
   "string", "number", "integer", "boolean", "array", "object", "null"
 ])
 
@@ -176,56 +176,56 @@ export const PropertyTypeSchema = z.enum([
  * Schema for schema object property validation
  * Validates schema property configuration
  */
-export const SchemaPropertySchema = z.object({
+export const SchemaPropertySchema = Z.object({
   type: PropertyTypeSchema,
-  description: z.string().optional(),
-  title: z.string().optional(),
-  format: z.string().optional(),
-  default: z.any().optional(),
-  enum: z.array(z.string()).optional(),
-  items: z.any().optional(),
-  properties: z.record(z.string(), z.any()).optional(),
-  required: z.array(z.string()).optional(),
-  nullable: z.boolean().optional(),
-  writeOnly: z.boolean().optional(),
-  readOnly: z.boolean().optional(),
-  deprecated: z.boolean().optional(),
-  allOf: z.array(z.any()).optional(),
-  oneOf: z.array(z.any()).optional(),
-  anyOf: z.array(z.any()).optional(),
-  not: z.any().optional()
+  description: Z.string().optional(),
+  title: Z.string().optional(),
+  format: Z.string().optional(),
+  default: Z.any().optional(),
+  enum: Z.array(Z.string()).optional(),
+  items: Z.any().optional(),
+  properties: Z.record(Z.string(), Z.any()).optional(),
+  required: Z.array(Z.string()).optional(),
+  nullable: Z.boolean().optional(),
+  writeOnly: Z.boolean().optional(),
+  readOnly: Z.boolean().optional(),
+  deprecated: Z.boolean().optional(),
+  allOf: Z.array(Z.any()).optional(),
+  oneOf: Z.array(Z.any()).optional(),
+  anyOf: Z.array(Z.any()).optional(),
+  not: Z.any().optional()
 }).optional()
 
 /**
  * Schema for schema object validation
  * Validates schema configuration with type safety
  */
-export const SchemaObjectSchema: z.ZodType<SchemaObject> = z.object({
+export const SchemaObjectSchema: Z.ZodType<SchemaObject> = Z.object({
   type: PropertyTypeSchema,
-  title: z.string().optional(),
-  description: z.string().optional(),
-  default: z.any().optional(),
-  enum: z.array(z.string()).optional(),
-  items: z.any().optional(),
-  properties: z.record(z.string(), SchemaPropertySchema).optional(),
-  required: z.array(z.string()).optional(),
-  nullable: z.boolean().optional(),
-  writeOnly: z.boolean().optional(),
-  readOnly: z.boolean().optional(),
-  deprecated: z.boolean().optional(),
-  allOf: z.array(z.any()).optional(),
-  oneOf: z.array(z.any()).optional(),
-  anyOf: z.array(z.any()).optional(),
-  not: z.any().optional(),
-  example: z.any().optional(),
-  components: z.record(z.string(), z.any()).optional()
+  title: Z.string().optional(),
+  description: Z.string().optional(),
+  default: Z.any().optional(),
+  enum: Z.array(Z.string()).optional(),
+  items: Z.any().optional(),
+  properties: Z.record(Z.string(), SchemaPropertySchema).optional(),
+  required: Z.array(Z.string()).optional(),
+  nullable: Z.boolean().optional(),
+  writeOnly: Z.boolean().optional(),
+  readOnly: Z.boolean().optional(),
+  deprecated: Z.boolean().optional(),
+  allOf: Z.array(Z.any()).optional(),
+  oneOf: Z.array(Z.any()).optional(),
+  anyOf: Z.array(Z.any()).optional(),
+  not: Z.any().optional(),
+  example: Z.any().optional(),
+  components: Z.record(Z.string(), Z.any()).optional()
 }).strict()
 
 /**
  * Schema for security scheme type validation
  * Validates against AsyncAPI security scheme types
  */
-export const SecuritySchemeTypeSchema = z.enum([
+export const SecuritySchemeTypeSchema = Z.enum([
   "apiKey",
   "oauth2",
   "openIdConnect",
@@ -238,46 +238,46 @@ export const SecuritySchemeTypeSchema = z.enum([
 /**
  * Schema for API key security scheme validation
  */
-export const ApiKeySecuritySchemeSchema = z.object({
-  type: z.literal("apiKey"),
-  description: z.string().optional(),
-  name: z.string().min(1, "Security scheme name is required"),
-  in: z.enum(["header", "query"]),
-  scheme: z.string().optional(),
-  bearerFormat: z.string().optional(),
-  apiKeyLocation: z.string().optional(),
-  "x-api-key-location": z.string().optional()
+export const ApiKeySecuritySchemeSchema = Z.object({
+  type: Z.literal("apiKey"),
+  description: Z.string().optional(),
+  name: Z.string().min(1, "Security scheme name is required"),
+  in: Z.enum(["header", "query"]),
+  scheme: Z.string().optional(),
+  bearerFormat: Z.string().optional(),
+  apiKeyLocation: Z.string().optional(),
+  "x-api-key-location": Z.string().optional()
 }).strict()
 
 /**
  * Schema for OAuth2 security scheme validation
  */
-export const OAuth2SecuritySchemeSchema = z.object({
-  type: z.literal("oauth2"),
-  description: z.string().optional(),
-  name: z.string().min(1, "OAuth2 scheme name is required"),
-  in: z.enum(["header", "query"]).optional(),
-  flows: z.object({
-    implicit: z.object({
-      authorizationUrl: z.string().url("Invalid authorization URL").optional(),
-      tokenUrl: z.string().url("Invalid token URL").optional(),
-      refreshUrl: z.string().url("Invalid refresh URL").optional(),
-      scopes: z.array(z.string()).optional()
+export const OAuth2SecuritySchemeSchema = Z.object({
+  type: Z.literal("oauth2"),
+  description: Z.string().optional(),
+  name: Z.string().min(1, "OAuth2 scheme name is required"),
+  in: Z.enum(["header", "query"]).optional(),
+  flows: Z.object({
+    implicit: Z.object({
+      authorizationUrl: Z.string().url("Invalid authorization URL").optional(),
+      tokenUrl: Z.string().url("Invalid token URL").optional(),
+      refreshUrl: Z.string().url("Invalid refresh URL").optional(),
+      scopes: Z.array(Z.string()).optional()
     }).optional(),
-    password: z.object({
-      tokenUrl: z.string().url("Invalid token URL").optional(),
-      refreshUrl: z.string().url("Invalid refresh URL").optional(),
-      scopes: z.array(z.string()).optional()
+    password: Z.object({
+      tokenUrl: Z.string().url("Invalid token URL").optional(),
+      refreshUrl: Z.string().url("Invalid refresh URL").optional(),
+      scopes: Z.array(Z.string()).optional()
     }).optional(),
-    authorizationCode: z.object({
-      authorizationUrl: z.string().url("Invalid authorization URL").optional(),
-      tokenUrl: z.string().url("Invalid token URL").optional(),
-      refreshUrl: z.string().url("Invalid refresh URL").optional(),
-      scopes: z.array(z.string()).optional()
+    authorizationCode: Z.object({
+      authorizationUrl: Z.string().url("Invalid authorization URL").optional(),
+      tokenUrl: Z.string().url("Invalid token URL").optional(),
+      refreshUrl: Z.string().url("Invalid refresh URL").optional(),
+      scopes: Z.array(Z.string()).optional()
     }).optional(),
-    clientCredentials: z.object({
-      tokenUrl: z.string().url("Invalid token URL").optional(),
-      scopes: z.array(z.string()).optional()
+    clientCredentials: Z.object({
+      tokenUrl: Z.string().url("Invalid token URL").optional(),
+      scopes: Z.array(Z.string()).optional()
     }).optional()
   }).optional()
 }).strict()
@@ -285,19 +285,19 @@ export const OAuth2SecuritySchemeSchema = z.object({
 /**
  * Schema for HTTP security scheme validation
  */
-export const HttpSecuritySchemeSchema = z.object({
-  type: z.literal("http"),
-  description: z.string().optional(),
-  name: z.string().min(1, "HTTP security scheme name is required"),
-  scheme: z.string().optional(),
-  bearerFormat: z.string().optional()
+export const HttpSecuritySchemeSchema = Z.object({
+  type: Z.literal("http"),
+  description: Z.string().optional(),
+  name: Z.string().min(1, "HTTP security scheme name is required"),
+  scheme: Z.string().optional(),
+  bearerFormat: Z.string().optional()
 }).strict()
 
 /**
  * Schema for security scheme object validation
  * Validates security scheme configuration with type safety
  */
-export const SecuritySchemeObjectSchema: z.ZodType<SecuritySchemeObject> = z.discriminatedUnion("type", [
+export const SecuritySchemeObjectSchema: Z.ZodType<SecuritySchemeObject> = Z.discriminatedUnion("type", [
   ApiKeySecuritySchemeSchema,
   OAuth2SecuritySchemeSchema,
   HttpSecuritySchemeSchema
@@ -307,29 +307,29 @@ export const SecuritySchemeObjectSchema: z.ZodType<SecuritySchemeObject> = z.dis
  * Schema for security schemes validation
  * Validates all security scheme configurations
  */
-export const SecuritySchemesSchema = z.record(z.string(), SecuritySchemeObjectSchema).optional()
+export const SecuritySchemesSchema = Z.record(Z.string(), SecuritySchemeObjectSchema).optional()
 
 /**
  * Complete AsyncAPI object schema validation
  * Validates complete AsyncAPI specification with type safety
  */
-export const AsyncAPIObjectSchema: z.ZodType<AsyncAPIObject> = z.object({
+export const AsyncAPIObjectSchema: Z.ZodType<AsyncAPIObject> = Z.object({
   asyncapi: AsyncAPIVersionSchema,
   info: InfoSectionSchema,
-  servers: z.record(z.string(), ServerObjectSchema).optional(),
-  channels: z.record(z.string(), ChannelObjectSchema),
-  components: z.object({
-    messages: z.record(z.string(), MessageObjectSchema).optional(),
-    schemas: z.record(z.string(), SchemaObjectSchema).optional(),
+  servers: Z.record(Z.string(), ServerObjectSchema).optional(),
+  channels: Z.record(Z.string(), ChannelObjectSchema),
+  components: Z.object({
+    messages: Z.record(Z.string(), MessageObjectSchema).optional(),
+    schemas: Z.record(Z.string(), SchemaObjectSchema).optional(),
     securitySchemes: SecuritySchemesSchema,
-    parameters: z.record(z.string(), z.any()).optional()
+    parameters: Z.record(Z.string(), Z.any()).optional()
   }).optional(),
-  tags: z.array(z.object({
-    name: z.string().min(1, "Tag name is required"),
-    description: z.string().optional(),
-    externalDocs: z.object({
-      url: z.string().url().optional(),
-      description: z.string().optional()
+  tags: Z.array(Z.object({
+    name: Z.string().min(1, "Tag name is required"),
+    description: Z.string().optional(),
+    externalDocs: Z.object({
+      url: Z.string().url().optional(),
+      description: Z.string().optional()
     }).optional()
   })).optional()
 }).strict()
@@ -428,7 +428,7 @@ export class RuntimeValidator {
   /**
    * Validate specific schema with detailed error reporting
    */
-  static validateSchema<T>(schema: z.ZodType<T>, data: unknown, path: string = ""): ValidationResult {
+  static validateSchema<T>(schema: Z.ZodType<T>, data: unknown, path: string = ""): ValidationResult {
     const errors: Array<{path: string; message: string; code: string; severity: "error" | "warning" | "info"}> = []
     const warnings: Array<{path: string; message: string; code: string; severity: "error" | "warning" | "info"}> = []
 
