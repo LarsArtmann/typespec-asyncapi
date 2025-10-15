@@ -74,14 +74,9 @@ export function createAsyncAPIDecorators(program: Program): Effect.Effect<void, 
 		yield* railway.trySync(() => {
 			// Verify the program has the required methods
 			if (!program.getGlobalNamespaceType) {
-<<<<<<< HEAD
-				return Effect.fail(new Error("Program does not have getGlobalNamespaceType method"))
-			}
-			return Effect.succeed(undefined)
-=======
-				throw new Error("Program does not have getGlobalNamespaceType method")
-			}
->>>>>>> master
+			return Effect.fail(new Error("Program does not have getGlobalNamespaceType method"))
+		}
+		return Effect.succeed(undefined)
 		}, { context: { operation: "program method validation" } })
 		.pipe(Effect.mapError(error => createError({
 			what: "TypeSpec program is missing required getGlobalNamespaceType method",
@@ -98,15 +93,9 @@ export function createAsyncAPIDecorators(program: Program): Effect.Effect<void, 
 		yield* railway.trySync(() => {
 			const ns = program.getGlobalNamespaceType()
 			if (!ns) {
-<<<<<<< HEAD
-				return Effect.fail(new Error("getGlobalNamespaceType returned null/undefined"))
-			}
-			return Effect.succeed(ns)
-=======
-				throw new Error("getGlobalNamespaceType returned null/undefined")
-			}
-			return ns
->>>>>>> master
+			return Effect.fail(new Error("getGlobalNamespaceType returned null/undefined"))
+		}
+		return Effect.succeed(ns)
 		}, { context: { operation: "global namespace retrieval" } })
 		.pipe(Effect.mapError(error => createError({
 			what: "Could not get global namespace from TypeSpec program",
@@ -142,12 +131,7 @@ export function createAsyncAPIDecorators(program: Program): Effect.Effect<void, 
 		for (const { name, fn } of decoratorFunctions) {
 			yield* railway.trySync(() => {
 				if (typeof fn !== "function") {
-<<<<<<< HEAD
-					return Effect.fail(new Error(`Decorator function ${name} is not a function`))
-				}
-				return Effect.succeed(undefined)
-=======
-					throw new Error(`Decorator function ${name} is not a function`)
+				return Effect.fail(new Error(`Decorator function ${name} is not a function`))
 				}
 >>>>>>> master
 			}, { context: { decoratorName: name, functionType: typeof fn } })
