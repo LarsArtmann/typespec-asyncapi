@@ -13,12 +13,8 @@ import type {
 	AsyncAPIObject, 
 	ReferenceObject
 } from "@asyncapi/parser/esm/spec-types/v3.js"
-<<<<<<< HEAD
 import { emitterErrors, railway, type StandardizedError, safeStringify } from "../../utils/standardized-errors.js"
 import { PERFORMANCE_CONSTANTS } from "../../constants/defaults.js"
-=======
-import { emitterErrors, railway, type StandardizedError } from "../../utils/standardized-errors.js"
->>>>>>> master
 
 /**
  * Validation result with details about compliance and any issues found
@@ -113,11 +109,7 @@ export class ValidationService {
 	 * @param asyncApiDoc - AsyncAPI document to validate
 	 * @returns Effect containing detailed validation results
 	 */
-<<<<<<< HEAD
 	validateDocument(asyncApiDoc: AsyncAPIObject): Effect.Effect<ValidationResult> {
-=======
-	validateDocument(asyncApiDoc: AsyncAPIObject): Effect.Effect<ValidationResult, never> {
->>>>>>> master
 		return Effect.gen(function* (this: ValidationService) {
 			yield* Effect.log(`🔍 Starting comprehensive AsyncAPI document validation...`)
 
@@ -172,7 +164,6 @@ export class ValidationService {
 	 * @returns Effect containing validation result and content length
 	 */
 	validateDocumentContent(content: string): Effect.Effect<string, StandardizedError> {
-<<<<<<< HEAD
 		return Effect.gen(function* () {
 			const self = this // Store this reference for Effect.TS context
 			yield* Effect.log(`🔍 Validating AsyncAPI document content (${content.length} bytes)`)
@@ -215,42 +206,9 @@ export class ValidationService {
 					console.log(`🔧 Created fallback doc: ${JSON.stringify(fallbackDoc)}`)
 					return Effect.succeed(fallbackDoc)
 				}).pipe(Effect.flatten)
-=======
-		return Effect.gen(function* (this: ValidationService) {
-			yield* Effect.log(`🔍 Validating AsyncAPI document content (${content.length} bytes)...`)
-
-			// Parse the content with proper error handling, retry patterns, and fallback
-			const parsedDoc = yield* railway.trySync(
-				() => JSON.parse(content) as AsyncAPIObject,
-				{ operation: "parseDocument", contentLength: content.length }
-			).pipe(
-				// Add retry pattern for JSON parsing with exponential backoff
-				Effect.retry(Schedule.exponential("50 millis").pipe(
-					Schedule.compose(Schedule.recurs(2))
-				)),
-				Effect.tapError(attempt => Effect.log(`⚠️  JSON parsing attempt failed, retrying: ${attempt}`)),
-				Effect.mapError(error => emitterErrors.invalidAsyncAPI(
-					["Failed to parse JSON/YAML content after retries"],
-					{ originalError: error.why, content: content.substring(0, 200) + "..." }
-				)),
-				Effect.catchAll(error => 
-					Effect.gen(function* () {
-						yield* Effect.log(`⚠️  Document parsing failed, providing minimal structure: ${error}`)
-						// Create fallback minimal AsyncAPI structure
-						const fallbackDoc: AsyncAPIObject = {
-							asyncapi: "3.0.0",
-							info: { title: "Generated API (Validation Failed)", version: "1.0.0" },
-							channels: {},
-							operations: {}
-						}
-						return Effect.succeed(fallbackDoc)
-					}).pipe(Effect.flatten)
-				)
->>>>>>> master
 			)
 			console.log(`🔧 Parsed doc type: ${typeof parsedDoc}, keys: ${parsedDoc ? Object.keys(parsedDoc).join(', ') : 'null'}`)
 
-<<<<<<< HEAD
 			// Use static validation to avoid this binding issues
 			const result = yield* ValidationService.validateDocumentStatic(parsedDoc).pipe(
 				Effect.catchAll(error => 
@@ -260,17 +218,6 @@ export class ValidationService {
 						return Effect.succeed({
 							isValid: false,
 							errors: [`Validation service failed: ${safeStringify(error)}`],
-=======
-			// Run comprehensive validation with fallback strategy
-			const result = yield* this.validateDocument(parsedDoc).pipe(
-				Effect.catchAll(error => 
-					Effect.gen(function* () {
-						yield* Effect.log(`⚠️  Document validation failed, using graceful degradation: ${error}`)
-						// Return partial validation result as fallback
-						return Effect.succeed({
-							isValid: false,
-							errors: [`Validation service failed: ${error}`],
->>>>>>> master
 							warnings: ["Document may be partially valid but validation service encountered errors"]
 						})
 					}).pipe(Effect.flatten)
@@ -289,13 +236,8 @@ export class ValidationService {
 				const sanitizedContent = JSON.stringify({
 					asyncapi: "3.0.0",
 					info: { title: "Generated API (Validation Issues)", version: "1.0.0" },
-<<<<<<< HEAD
 					channels: parsedDoc.channels ?? {},
 					operations: parsedDoc.operations ?? {}
-=======
-					channels: parsedDoc.channels || {},
-					operations: parsedDoc.operations || {}
->>>>>>> master
 				}, null, 2)
 				
 				return sanitizedContent
@@ -306,11 +248,7 @@ export class ValidationService {
 					return error as StandardizedError
 				}
 				return emitterErrors.validationFailure(
-<<<<<<< HEAD
 					[`Unexpected validation error: ${safeStringify(error)}`],
-=======
-					[`Unexpected validation error: ${String(error)}`],
->>>>>>> master
 					{ content: content.substring(0, 100) + "..." }
 				)
 			})
