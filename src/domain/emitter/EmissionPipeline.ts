@@ -66,32 +66,13 @@ export class EmissionPipeline implements IPipelineService {
 					discoveryService: new DiscoveryService(),
 					validationService: new ValidationService(),
 				}
-			}).pipe(
-<<<<<<< HEAD
-				Effect.catchAll((error: unknown) =>
-					Effect.gen(function* () {
-						yield* Effect.logError(`❌ Critical EmissionPipeline service initialization failed: ${safeStringify(error)}`)
-						return yield* Effect.die(new Error(
-							`Critical EmissionPipeline service initialization failed: ${safeStringify(error)}`
->>>>>>> master
-						))
-					})
-				)
-			)
-		)
-
-		this.documentBuilder = initializationResult.documentBuilder
-		this.discoveryService = initializationResult.discoveryService
-		this.validationService = initializationResult.validationService
+		}
 	}
 
 	/**
 	 * Execute the complete emission pipeline with REAL business logic integration
 	 * Using Effect.TS Railway programming for comprehensive error handling
 	 */
-	executePipeline = (context: PipelineContext): Effect.Effect<void, StandardizedError> => {
-		return Effect.gen(this, function* () {
-=======
 	executePipeline(context: PipelineContext): Effect.Effect<void, StandardizedError> {
 		const pipeline = this
 		return Effect.gen(function* () {
@@ -113,37 +94,21 @@ export class EmissionPipeline implements IPipelineService {
 
 			// Stage 1: Discovery
 			yield* Effect.log(`🚀 About to start Stage 1: Discovery`)
-<<<<<<< HEAD
-			const discoveryResult = yield* this.executeDiscoveryStage(context)
-=======
 			const discoveryResult = yield* pipeline.executeDiscoveryStage(context)
->>>>>>> master
 			yield* Effect.log(`✅ Completed Stage 1: Discovery`)
 
 			// Stage 2: Processing
 			yield* Effect.log(`🚀 About to start Stage 2: Processing`)
-<<<<<<< HEAD
-			yield* this.executeProcessingStage(context, discoveryResult)
-=======
 			yield* pipeline.executeProcessingStage(context, discoveryResult)
->>>>>>> master
 			yield* Effect.log(`✅ Completed Stage 2: Processing`)
 
 			// Stage 3: Document Generation (updates context.asyncApiDoc in-place)
 			yield* Effect.log(`🚀 About to start Stage 3: Generation`)
-<<<<<<< HEAD
-			yield* this.executeGenerationStage(context, discoveryResult)
-			yield* Effect.log(`✅ Completed Stage 3: Generation`)
-
-			// Stage 4: Validation
-			yield* this.executeValidationStage(context)
-=======
 			yield* pipeline.executeGenerationStage(context, discoveryResult)
 			yield* Effect.log(`✅ Completed Stage 3: Generation`)
 
 			// Stage 4: Validation
 			yield* pipeline.executeValidationStage(context)
->>>>>>> master
 
 			yield* Effect.log(`✅ All emission pipeline stages completed successfully`)
 		})
@@ -152,14 +117,6 @@ export class EmissionPipeline implements IPipelineService {
 	/**
 	 * Stage 1: Discovery - Find all TypeSpec elements using REAL DiscoveryService
 	 */
-<<<<<<< HEAD
-	private readonly executeDiscoveryStage = (context: PipelineContext): Effect.Effect<DiscoveryResult, StandardizedError> => {
-		return Effect.gen(this, function* () {
-			yield* Effect.log(`🔍 Stage 1: Discovery with REAL DiscoveryService`)
-
-			// Use REAL DiscoveryService with complete AST traversal logic
-			const result = yield* this.discoveryService.executeDiscovery(context.program)
-=======
 	private executeDiscoveryStage(context: PipelineContext) {
 		const pipeline = this
 		return Effect.gen(function* () {
@@ -167,7 +124,6 @@ export class EmissionPipeline implements IPipelineService {
 
 			// Use REAL DiscoveryService with complete AST traversal logic
 			const result = yield* pipeline.discoveryService.executeDiscovery(context.program)
->>>>>>> master
 
 			yield* Effect.log(`📊 Discovery stage complete: ${result.operations.length} operations, ${result.messageModels.length} messages, ${result.securityConfigs.length} security configs`)
 
@@ -178,11 +134,7 @@ export class EmissionPipeline implements IPipelineService {
 	/**
 	 * Stage 2: Processing - Transform TypeSpec elements using REAL ProcessingService
 	 */
-<<<<<<< HEAD
-	private readonly executeProcessingStage = (context: PipelineContext, discoveryResult: DiscoveryResult): Effect.Effect<{ operationsProcessed: number, messageModelsProcessed: number, securityConfigsProcessed: number, totalProcessed: number }, StandardizedError> => {
-=======
 	private executeProcessingStage(context: PipelineContext, discoveryResult: DiscoveryResult) {
->>>>>>> master
 		return Effect.gen(function* () {
 			yield* Effect.log(`🏗️ Stage 2: Processing with REAL ProcessingService`)
 
@@ -205,17 +157,6 @@ export class EmissionPipeline implements IPipelineService {
 	/**
 	 * Stage 3: Document Generation - Finalize AsyncAPI document using REAL DocumentBuilder logic
 	 */
-<<<<<<< HEAD
-	private readonly executeGenerationStage = (context: PipelineContext, discoveryResult: DiscoveryResult): Effect.Effect<void, StandardizedError> => {
-		return Effect.gen(this, function* () {
-			yield* Effect.log(`📄 Stage 3: Document Generation with DocumentBuilder`)
-
-			// Use DocumentBuilder to ensure proper document structure with Effect.TS
-			yield* this.documentBuilder.initializeDocumentStructure(context.asyncApiDoc)
-			
-			// Update document info with discovered statistics using DocumentBuilder
-			yield* this.documentBuilder.updateDocumentInfo(context.asyncApiDoc, {
-=======
 	private executeGenerationStage(context: PipelineContext, discoveryResult: DiscoveryResult) {
 		const pipeline = this
 		return Effect.gen(function* () {
@@ -226,7 +167,6 @@ export class EmissionPipeline implements IPipelineService {
 			
 			// Update document info with discovered statistics using DocumentBuilder
 			yield* pipeline.documentBuilder.updateDocumentInfo(context.asyncApiDoc, {
->>>>>>> master
 				description: `Generated from TypeSpec with ${discoveryResult.operations.length} operations, ${discoveryResult.messageModels.length} messages, ${discoveryResult.securityConfigs.length} security configs`
 			})
 
@@ -253,14 +193,6 @@ export class EmissionPipeline implements IPipelineService {
 	/**
 	 * Stage 4: Validation - Verify AsyncAPI compliance using REAL ValidationService
 	 */
-<<<<<<< HEAD
-	private readonly executeValidationStage = (context: PipelineContext): Effect.Effect<void, StandardizedError> => {
-		return Effect.gen(this, function* () {
-			yield* Effect.log(`🔍 Stage 4: Validation with REAL ValidationService`)
-
-			// Use REAL ValidationService with comprehensive AsyncAPI 3.0 compliance checking
-			const validationResult = yield* this.validationService.validateDocument(context.asyncApiDoc)
-=======
 	private executeValidationStage(context: PipelineContext) {
 		const pipeline = this
 		return Effect.gen(function* () {
@@ -268,7 +200,6 @@ export class EmissionPipeline implements IPipelineService {
 
 			// Use REAL ValidationService with comprehensive AsyncAPI 3.0 compliance checking
 			const validationResult = yield* pipeline.validationService.validateDocument(context.asyncApiDoc)
->>>>>>> master
 
 			if (!validationResult.isValid) {
 				yield* Effect.log(`❌ Validation failed with ${validationResult.errors.length} errors:`)
