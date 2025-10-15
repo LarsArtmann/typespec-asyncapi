@@ -29,7 +29,7 @@ import {
 } from "../../utils/standardized-errors.js"
 
 /**
-<<<<<<< HEAD
+/**
  * Validate document parameter - extracted to eliminate duplication
  */
 function validateDocumentParameter(
@@ -54,10 +54,8 @@ function validateDocumentParameter(
 /**
  * DocumentBuilder Service - Core AsyncAPI Document Construction
  *
-=======
  * DocumentBuilder Service - Core AsyncAPI Document Construction
  * 
->>>>>>> master
  * Handles the creation and initialization of AsyncAPI 3.0 documents with:
  * - Proper AsyncAPI 3.0.0 specification compliance
  * - Server configuration from TypeSpec namespaces
@@ -95,19 +93,14 @@ export class DocumentBuilder {
 			// Safe logging with program validation
 			yield* Effect.log(`🏗️  DocumentBuilder.createInitialDocument called with valid program`)
 
-<<<<<<< HEAD
 			// Process servers from namespaces with error handling
-=======
-			// Safe server processing with error handling
->>>>>>> master
+
 			const serversResult = yield* railway.trySync(
 				() => buildServersFromNamespaces(program),
 				{ context: { operation: "buildServersFromNamespaces" } }
 			)
 
-<<<<<<< HEAD
 			const servers = serversResult ?? {}
-=======
 			const servers = serversResult || {}
 >>>>>>> master
 			yield* Effect.log(`🏗️  Generated servers: ${JSON.stringify(servers, null, 2)}`)
