@@ -66,11 +66,7 @@
 // TODO: CRITICAL - Missing validation imports for input sanitization
 // TODO: CRITICAL - No dependency injection container imports - tight coupling to concrete types
 import {Effect} from "effect"
-<<<<<<< HEAD
 import {emitterErrors, safeStringify} from "../../utils/standardized-errors.js"
-=======
-import {emitterErrors} from "../../utils/standardized-errors.js"
->>>>>>> master
 import type {AssetEmitter, EmittedSourceFile, SourceFile} from "@typespec/asset-emitter"
 import {TypeEmitter, type EmitterOutput} from "@typespec/asset-emitter"
 import {DocumentGenerator} from "./DocumentGenerator.js"
@@ -81,10 +77,7 @@ import type {AsyncAPIObject} from "@asyncapi/parser/esm/spec-types/v3.js"
 import {EmissionPipeline} from "./EmissionPipeline.js"
 import {DocumentBuilder} from "./DocumentBuilder.js"
 import {PerformanceMonitor} from "../../infrastructure/performance/PerformanceMonitor.js"
-<<<<<<< HEAD
-=======
 import {PluginRegistry} from "../../infrastructure/adapters/PluginRegistry.js"
->>>>>>> master
 import {DEFAULT_SERIALIZATION_FORMAT} from "../models/serialization-format-option.js"
 
 import type { IAsyncAPIEmitter } from "./IAsyncAPIEmitter.js"
@@ -180,7 +173,6 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 			Effect.gen(function* () {
 				// Component creation with proper error handling
 				const pipeline = yield* Effect.try(() => new EmissionPipeline()).pipe(
-<<<<<<< HEAD
 					Effect.mapError(error => `EmissionPipeline initialization failed: ${safeStringify(error)}`)
 				)
 				
@@ -200,45 +192,17 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 				// const pluginRegistry = yield* Effect.try(() => new PluginRegistry()).pipe(
 				//		Effect.mapError(error => `PluginRegistry initialization failed: ${error}`)
 				//	)
-=======
-					Effect.mapError(error => `EmissionPipeline initialization failed: ${error}`)
-				)
-				
-				const documentGenerator = yield* Effect.try(() => new DocumentGenerator()).pipe(
-					Effect.mapError(error => `DocumentGenerator initialization failed: ${error}`)
-				)
-				
-				const documentBuilder = yield* Effect.try(() => new DocumentBuilder()).pipe(
-					Effect.mapError(error => `DocumentBuilder initialization failed: ${error}`)
-				)
-				
-				const performanceMonitor = yield* Effect.try(() => new PerformanceMonitor()).pipe(
-					Effect.mapError(error => `PerformanceMonitor initialization failed: ${error}`)
-				)
-				
-				const pluginRegistry = yield* Effect.try(() => new PluginRegistry()).pipe(
-					Effect.mapError(error => `PluginRegistry initialization failed: ${error}`)
-				)
->>>>>>> master
 				
 				return {
 					pipeline,
 					documentGenerator, 
 					documentBuilder,
 					performanceMonitor,
-<<<<<<< HEAD
 					// pluginRegistry removed - use simple plugin-system
 				}
 			}).pipe(
 				Effect.tapError(error => Effect.log(`❌ Component initialization failed: ${safeStringify(error)}`)),
 				Effect.mapError(error => new Error(`AsyncAPIEmitter initialization failed: ${safeStringify(error)}`))
-=======
-					pluginRegistry
-				}
-			}).pipe(
-				Effect.tapError(error => Effect.log(`❌ Component initialization failed: ${error}`)),
-				Effect.mapError(error => new Error(`AsyncAPIEmitter initialization failed: ${error}`))
->>>>>>> master
 			)
 		)
 
@@ -247,11 +211,7 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 		this.documentGenerator = initializationResult.documentGenerator
 		this.documentBuilder = initializationResult.documentBuilder
 		this.performanceMonitor = initializationResult.performanceMonitor
-<<<<<<< HEAD
 		// this.pluginRegistry = initializationResult.pluginRegistry - REMOVED (use simple plugin-system)
-=======
-		this.pluginRegistry = initializationResult.pluginRegistry
->>>>>>> master
 
 		Effect.log(`🏗️  About to call createInitialDocument`)
 		// Initialize document structure using Effect.TS patterns
@@ -271,13 +231,8 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 				
 				return document
 			}.bind(this)).pipe(
-<<<<<<< HEAD
 				Effect.tapError(error => Effect.log(`❌ Document initialization failed: ${safeStringify(error)}`)),
 				Effect.mapError(error => new Error(`AsyncAPI document initialization failed: ${safeStringify(error)}`))
-=======
-				Effect.tapError(error => Effect.log(`❌ Document initialization failed: ${error}`)),
-				Effect.mapError(error => new Error(`AsyncAPI document initialization failed: ${error}`))
->>>>>>> master
 			)
 		)
 		Effect.log(`🏗️  Finished createInitialDocument`)
@@ -371,7 +326,6 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 		Effect.log("=� AsyncAPI Micro-kernel: Running emission pipeline...")
 
 		// EFFECT.TS CONVERTED: Replaced try/catch with Effect-based pipeline execution
-<<<<<<< HEAD
 		Effect.runSync(
 			Effect.gen(function* (this: AsyncAPIEmitter) {
 			// Execute the emission pipeline using Effect.TS
@@ -385,21 +339,6 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 								this.asyncApiDoc.info = this.asyncApiDoc.info ?? { title: "Generated API (Partial)", version: "1.0.0" }
 								this.asyncApiDoc.channels = this.asyncApiDoc.channels ?? {}
 								this.asyncApiDoc.operations = this.asyncApiDoc.operations ?? {}
-=======
-		await Effect.runPromise(
-			Effect.gen(function* (this: AsyncAPIEmitter) {
-			// Execute the emission pipeline using Effect.TS
-				yield* Effect.sync(() => this.executeEmissionPipelineSync(program)).pipe(
-					Effect.mapError(error => `Emission pipeline execution failed: ${error}`),
-					Effect.catchAll(error => 
-						Effect.gen(function* (this: AsyncAPIEmitter) {
-							yield* Effect.log(`⚠️  Pipeline failed, attempting graceful degradation: ${error}`)
-							// Create minimal AsyncAPI document as fallback
-							yield* Effect.sync(() => {
-								this.asyncApiDoc.info = this.asyncApiDoc.info || { title: "Generated API (Partial)", version: "1.0.0" }
-								this.asyncApiDoc.channels = this.asyncApiDoc.channels || {}
-								this.asyncApiDoc.operations = this.asyncApiDoc.operations || {}
->>>>>>> master
 							})
 							yield* Effect.log(`🔧 Created minimal AsyncAPI document as fallback`)
 						}.bind(this))
@@ -409,36 +348,28 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 			
 				yield* Effect.log(`✅ AsyncAPI document generation pipeline completed successfully`)
 			
-<<<<<<< HEAD
 			// File writing is handled by AssetEmitter framework via sourceFile() method (lines 415-432)
 			// Removed manual fs.writeFile() to fix dual file writing anti-pattern
 			yield* Effect.log(`📝 AsyncAPI document prepared - file writing delegated to AssetEmitter`)
 			
-			}.bind(this)).pipe(
-				Effect.tapError(error => Effect.log(`❌ Micro-kernel emission pipeline failed: ${safeStringify(error)}`)),
+			// CRITICAL FIX: Emit the source file to trigger sourceFile() method and write to outputFiles
+			yield* Effect.log(`🔥 ASSETEMITTER FIX: About to emit sourceFile to trigger content generation`)
+			yield* Effect.tryPromise(() => this.emitter.emitSourceFile(sourceFile)).pipe(
 				Effect.catchAll(error =>
 					Effect.gen(function* () {
-						yield* Effect.log(`🚨 Complete pipeline failure, providing minimal output: ${safeStringify(error)}`)
-=======
-			// CRITICAL FIX: Emit the source file to trigger sourceFile() method and write to outputFiles
-				yield* Effect.log(`🔥 ASSETEMITTER FIX: About to emit sourceFile to trigger content generation`)
-				yield* Effect.tryPromise(() => this.emitter.emitSourceFile(sourceFile)).pipe(
-					Effect.catchAll(error =>
-						Effect.gen(function* () {
-							yield* Effect.log(`⚠️  Source file emission failed, creating fallback: ${error}`)
-							// Create fallback empty source file emission
-							return Effect.succeed(undefined)
-						})
-					)
+						yield* Effect.log(`⚠️  Source file emission failed, creating fallback: ${safeStringify(error)}`)
+						// Create fallback empty source file emission
+						return Effect.succeed(undefined)
+					})
 				)
-				yield* Effect.log(`🔥 ASSETEMITTER FIX: Completed emitSourceFile - should have triggered sourceFile() method`)
+			)
+			yield* Effect.log(`🔥 ASSETEMITTER FIX: Completed emitSourceFile - should have triggered sourceFile() method`)
 			
 			}.bind(this)).pipe(
-				Effect.tapError(error => Effect.log(`❌ Micro-kernel emission pipeline failed: ${error}`)),
+				Effect.tapError(error => Effect.log(`❌ Micro-kernel emission pipeline failed: ${safeStringify(error)}`)),
 				Effect.catchAll(error => 
 					Effect.gen(function* () {
-						yield* Effect.log(`🚨 Complete pipeline failure, providing minimal output: ${error}`)
->>>>>>> master
+						yield* Effect.log(`🚨 Complete pipeline failure, providing minimal output: ${safeStringify(error)}`)
 						// Last resort: ensure basic document structure exists
 						return Effect.succeed({})
 					})
@@ -568,22 +499,19 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 		const declarations = sourceFile.globalScope.declarations
 		Effect.log(`🔍 SOURCEFILEMETHOD: Found ${declarations.length} declarations in scope`)
 
-<<<<<<< HEAD
 		if (declarations.length === 0) {
-			Effect.log(`⚠️ SOURCEFILEMETHOD: No declarations found - generating empty document`)
+			Effect.log(`⚠️ SOURCEFILEMETHOD: No declarations found - using documentGenerator serialization`)
+			const content = Effect.runSync(this.documentGenerator.serializeDocument(this.asyncApiDoc, fileType))
 			return {
 				path: sourceFile.path,
-				contents: "",
+				contents: content,
 			}
 		}
 
 		// Get the first declaration's value (our AsyncAPI document content)
-		const content = (declarations[0]?.value as string) || ""
+		const content = (declarations[0]?.value as string) || Effect.runSync(this.documentGenerator.serializeDocument(this.asyncApiDoc, fileType))
 
 		Effect.log(`🔍 SOURCEFILEMETHOD: Generated content length: ${content.length}`)
-=======
-		const content = Effect.runSync(this.documentGenerator.serializeDocument(this.asyncApiDoc, fileType))
->>>>>>> master
 
 		return {
 			path: sourceFile.path,
@@ -676,11 +604,9 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 
 				// Run pipeline with proper error handling
 				yield* this.pipeline.executePipeline(context).pipe(
-<<<<<<< HEAD
+				yield* this.pipeline.executePipeline(context).pipe(
 					Effect.mapError(error => `Pipeline execution failed: ${safeStringify(error)}`)
-=======
-					Effect.mapError(error => `Pipeline execution failed: ${error}`)
->>>>>>> master
+				)
 				)
 
 				// Calculate execution metrics
@@ -689,19 +615,13 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 				
 				// Generate performance report with error handling
 				const finalStatus = yield* Effect.sync(() => this.performanceMonitor.getPerformanceStatus()).pipe(
-<<<<<<< HEAD
+				// Generate performance report with error handling
+				const finalStatus = yield* Effect.sync(() => this.performanceMonitor.getPerformanceStatus()).pipe(
 					Effect.mapError(error => `Performance status retrieval failed: ${safeStringify(error)}`)
 				)
 				
 				const report = yield* Effect.sync(() => this.performanceMonitor.generatePerformanceReport()).pipe(
 					Effect.mapError(error => `Performance report generation failed: ${safeStringify(error)}`)
-=======
-					Effect.mapError(error => `Performance status retrieval failed: ${error}`)
-				)
-				
-				const report = yield* Effect.sync(() => this.performanceMonitor.generatePerformanceReport()).pipe(
-					Effect.mapError(error => `Performance report generation failed: ${error}`)
->>>>>>> master
 				)
 				
 				yield* Effect.log(`📊 Performance metrics - Execution: ${executionTime.toFixed(2)}ms, Snapshots: ${finalStatus.snapshotCount}`)
@@ -713,13 +633,8 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 					const endTime = performance.now()
 					const executionTime = endTime - startTime
 					return Effect.gen(function* () {
-<<<<<<< HEAD
 						yield* Effect.log(`❌ Pipeline execution failed after ${executionTime.toFixed(2)}ms: ${safeStringify(error)}`)
 						yield* Effect.fail(new Error(`Pipeline execution failed: ${safeStringify(error)}`))
-=======
-						yield* Effect.log(`❌ Pipeline execution failed after ${executionTime.toFixed(2)}ms: ${error}`)
-						yield* Effect.fail(new Error(`Pipeline execution failed: ${error}`))
->>>>>>> master
 					})
 				})
 			)
