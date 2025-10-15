@@ -3,7 +3,6 @@
  * Eliminates Effect.TS anti-patterns and provides comprehensive Railway programming patterns
  */
 
-<<<<<<< HEAD
 import {Effect, Schedule, TSemaphore, Schema} from "effect"
 import {existsSync, readFileSync, writeFileSync} from "fs"
 import type {EmitContext} from "@typespec/compiler"
@@ -11,12 +10,6 @@ import type {AsyncAPIEmitterOptions} from "../infrastructure/configuration/optio
 import {SpecGenerationError} from "../domain/models/errors/SpecGenerationError.js"
 import {safeStringify} from "./standardized-errors.js"
 import { PERFORMANCE_CONSTANTS } from "../constants/defaults.js"
-=======
-import {Effect, Schedule, TSemaphore} from "effect"
-import type {EmitContext} from "@typespec/compiler"
-import type {AsyncAPIEmitterOptions} from "../infrastructure/configuration/options.js"
-import {SpecGenerationError} from "../domain/models/errors/SpecGenerationError.js"
->>>>>>> master
 
 /**
  * Railway Programming Logging - All logging properly composed within Effect contexts
