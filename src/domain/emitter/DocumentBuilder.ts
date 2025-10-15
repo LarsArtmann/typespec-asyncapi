@@ -29,6 +29,7 @@ import {
 } from "../../utils/standardized-errors.js"
 
 /**
+<<<<<<< HEAD
  * Validate document parameter - extracted to eliminate duplication
  */
 function validateDocumentParameter(
@@ -53,6 +54,10 @@ function validateDocumentParameter(
 /**
  * DocumentBuilder Service - Core AsyncAPI Document Construction
  *
+=======
+ * DocumentBuilder Service - Core AsyncAPI Document Construction
+ * 
+>>>>>>> master
  * Handles the creation and initialization of AsyncAPI 3.0 documents with:
  * - Proper AsyncAPI 3.0.0 specification compliance
  * - Server configuration from TypeSpec namespaces
@@ -90,13 +95,21 @@ export class DocumentBuilder {
 			// Safe logging with program validation
 			yield* Effect.log(`🏗️  DocumentBuilder.createInitialDocument called with valid program`)
 
+<<<<<<< HEAD
 			// Process servers from namespaces with error handling
+=======
+			// Safe server processing with error handling
+>>>>>>> master
 			const serversResult = yield* railway.trySync(
 				() => buildServersFromNamespaces(program),
 				{ context: { operation: "buildServersFromNamespaces" } }
 			)
 
+<<<<<<< HEAD
 			const servers = serversResult ?? {}
+=======
+			const servers = serversResult || {}
+>>>>>>> master
 			yield* Effect.log(`🏗️  Generated servers: ${JSON.stringify(servers, null, 2)}`)
 
 			// Build document with Railway programming
@@ -140,12 +153,32 @@ export class DocumentBuilder {
 	 * @returns Effect containing updated document or StandardizedError
 	 */
 	updateDocumentInfo(
+<<<<<<< HEAD
 		document: AsyncAPIObject,
 		info: Partial<AsyncAPIObject["info"]>
 	): Effect.Effect<AsyncAPIObject, StandardizedError> {
 		return Effect.gen(function* () {
 			// Validate document parameter using extracted helper
 			yield* validateDocumentParameter(document, "update document info")
+=======
+		document: AsyncAPIObject, 
+		info: Partial<AsyncAPIObject["info"]>
+	): Effect.Effect<AsyncAPIObject, StandardizedError> {
+		return Effect.gen(function* () {
+			// Validate document parameter
+			if (!document) {
+				return yield* failWith(createError({
+					what: "Cannot update document info on null/undefined document",
+					reassure: "This is a parameter validation issue",
+					why: "updateDocumentInfo requires a valid AsyncAPIObject instance",
+					fix: "Ensure the document parameter is properly initialized before calling updateDocumentInfo",
+					escape: "Create a new document using createInitialDocument first",
+					severity: "error" as const,
+					code: "INVALID_DOCUMENT_INSTANCE",
+					context: { documentProvided: !!document, infoProvided: !!info }
+				}))
+			}
+>>>>>>> master
 
 			// Validate document.info exists
 			if (!document.info) {
@@ -168,7 +201,11 @@ export class DocumentBuilder {
 					...info,
 				}
 				return document
+<<<<<<< HEAD
 			}, { context: { operation: "document info update", infoKeys: Object.keys(info ?? {}) } })
+=======
+			}, { context: { operation: "document info update", infoKeys: Object.keys(info || {}) } })
+>>>>>>> master
 		})
 	}
 
@@ -180,6 +217,7 @@ export class DocumentBuilder {
 	 */
 	initializeComponents(document: AsyncAPIObject): Effect.Effect<AsyncAPIObject, StandardizedError> {
 		return Effect.gen(function* () {
+<<<<<<< HEAD
 			// Validate document parameter using extracted helper
 			yield* validateDocumentParameter(document, "initialize components")
 
@@ -190,6 +228,39 @@ export class DocumentBuilder {
 				document.components.schemas ??= {}
 				document.components.messages ??= {}
 				document.components.securitySchemes ??= {}
+=======
+			// Validate document parameter
+			if (!document) {
+				return yield* failWith(createError({
+					what: "Cannot initialize components on null/undefined document",
+					reassure: "This is a parameter validation issue",
+					why: "initializeComponents requires a valid AsyncAPIObject instance",
+					fix: "Ensure the document parameter is properly initialized before calling initializeComponents",
+					escape: "Create a new document using createInitialDocument first",
+					severity: "error" as const,
+					code: "INVALID_DOCUMENT_INSTANCE",
+					context: { documentProvided: !!document }
+				}))
+			}
+
+			// Safe component initialization with Railway programming
+			return yield* railway.trySync(() => {
+				if (!document.components) {
+					document.components = {}
+				}
+				
+				if (!document.components.schemas) {
+					document.components.schemas = {}
+				}
+				
+				if (!document.components.messages) {
+					document.components.messages = {}
+				}
+				
+				if (!document.components.securitySchemes) {
+					document.components.securitySchemes = {}
+				}
+>>>>>>> master
 
 				return document
 			}, { context: { operation: "components initialization" } })
@@ -204,6 +275,7 @@ export class DocumentBuilder {
 	 */
 	initializeDocumentStructure(document: AsyncAPIObject): Effect.Effect<AsyncAPIObject, StandardizedError> {
 		return Effect.gen(function* (this: DocumentBuilder) {
+<<<<<<< HEAD
 			// Validate document parameter using extracted helper
 			yield* validateDocumentParameter(document, "initialize document structure")
 
@@ -211,6 +283,31 @@ export class DocumentBuilder {
 			const structureInitResult = yield* railway.trySync(() => {
 				document.channels ??= {}
 				document.operations ??= {}
+=======
+			// Validate document parameter
+			if (!document) {
+				return yield* failWith(createError({
+					what: "Cannot initialize document structure on null/undefined document",
+					reassure: "This is a parameter validation issue",
+					why: "initializeDocumentStructure requires a valid AsyncAPIObject instance",
+					fix: "Ensure the document parameter is properly initialized before calling initializeDocumentStructure",
+					escape: "Create a new document using createInitialDocument first",
+					severity: "error" as const,
+					code: "INVALID_DOCUMENT_INSTANCE",
+					context: { documentProvided: !!document }
+				}))
+			}
+
+			// Safe structure initialization with Railway programming
+			const structureInitResult = yield* railway.trySync(() => {
+				if (!document.channels) {
+					document.channels = {}
+				}
+				
+				if (!document.operations) {
+					document.operations = {}
+				}
+>>>>>>> master
 				
 				return document
 			}, { context: { operation: "document structure initialization" } })

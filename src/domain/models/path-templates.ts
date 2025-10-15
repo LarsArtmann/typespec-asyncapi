@@ -128,7 +128,11 @@ export function detectProjectRoot(startPath?: string): string {
 				}).pipe(
 					Effect.catchAll((error) =>
 						Effect.gen(function* () {
+<<<<<<< HEAD
 							yield* Effect.logWarning(`⚠️  File check failed for ${configPath}: ${safeStringify(error)}`)
+=======
+							yield* Effect.logWarning(`⚠️  File check failed for ${configPath}: ${error}`)
+>>>>>>> master
 							return false
 						})
 					)

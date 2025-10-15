@@ -26,9 +26,18 @@ export class ErrorHandlingMigration {
 		errorMapper?: (error: unknown) => StandardizedError,
 	) {
 		return Effect.tryPromise(promiseFn).pipe(
+<<<<<<< HEAD
 			Effect.catchAll(error =>
 				Effect.fail(ErrorHandlingMigration.mapErrorToStandardized(error, errorMapper))
 			)
+=======
+			Effect.catchAll(error => {
+				const standardError = errorMapper
+					? errorMapper(error)
+					: ErrorHandlingMigration.mapUnknownError(error)
+				return Effect.fail(standardError)
+			})
+>>>>>>> master
 		)
 	}
 
@@ -40,9 +49,18 @@ export class ErrorHandlingMigration {
 		errorMapper?: (error: unknown) => StandardizedError,
 	) {
 		return Effect.sync(tryFn).pipe(
+<<<<<<< HEAD
 			Effect.catchAll(error =>
 				Effect.fail(ErrorHandlingMigration.mapErrorToStandardized(error, errorMapper))
 			)
+=======
+			Effect.catchAll(error => {
+				const standardError = errorMapper
+					? errorMapper(error)
+					: ErrorHandlingMigration.mapUnknownError(error)
+				return Effect.fail(standardError)
+			})
+>>>>>>> master
 		)
 	}
 

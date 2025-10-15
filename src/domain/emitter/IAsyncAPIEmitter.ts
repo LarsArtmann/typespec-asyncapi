@@ -11,6 +11,10 @@
 import type { Program, Namespace } from "@typespec/compiler"
 import type { SourceFile, EmittedSourceFile } from "@typespec/asset-emitter"
 import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js"
+<<<<<<< HEAD
+=======
+import type { PluginRegistry } from "../../infrastructure/adapters/PluginRegistry.js"
+>>>>>>> master
 
 /**
  * Core AsyncAPI emitter interface defining emission contract

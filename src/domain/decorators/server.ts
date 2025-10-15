@@ -1,14 +1,4 @@
-/**
- * @server Decorator Implementation
- * 
- * Implements the @server decorator for TypeSpec AsyncAPI emitter with proper type safety
- * and validation. This decorator allows users to define server configurations that
- * will be included in the generated AsyncAPI specification.
- * 
- * @author TypeSpec AsyncAPI Emitter Team
- * @since v1.1.0
- */
-
+import type { DecoratorContext, Model, Namespace, StringValue, Operation } from "@typespec/compiler"
 import {$lib, reportDiagnostic} from "../../lib.js"
 import {Effect} from "effect"
 import {$tags as $tagsImpl} from "./tags.js"
@@ -16,23 +6,86 @@ import {$correlationId as $correlationIdImpl} from "./correlation-id.js"
 import {$bindings as $bindingsImpl} from "./cloud-bindings.js"
 
 /**
- * Server Configuration Interface
- * Defines the structure for server configuration with strong typing
+ * AsyncAPI root document decorator - defines top-level AsyncAPI specification metadata
  */
-export interface ServerConfig {
-  name: string
-  url: string
-  protocol: string
-  description?: string
+export function $asyncapi(
+	context: DecoratorContext,
+	target: Namespace,
+	config: Record<string, unknown>
+): void {
+	Effect.log(`🔍 PROCESSING @asyncapi decorator on namespace: ${target.name}`)
+	Effect.log(`📋 Config:`, config)
+
+	// Validate target is Namespace
+	if (target.kind !== "Namespace") {
+		reportDiagnostic(context, target, "invalid-asyncapi-target", {
+			targetType: target.kind
+		})
+		return
+	}
+
+	// Store asyncapi configuration in program state
+	// Note: Using serverConfigs temporarily until asyncApiConfigs is added to lib.ts stateKeys
+	const asyncApiMap = context.program.stateMap($lib.stateKeys.serverConfigs)
+	asyncApiMap.set(target, config)
+
+	Effect.log(`✅ Successfully stored AsyncAPI config for namespace ${target.name}`)
 }
 
 /**
- * @server Decorator Implementation
- * 
- * Defines server configuration for AsyncAPI specifications with proper validation
- * and type safety. Supports multiple protocol configurations and comprehensive
- * error handling.
+ * Tags decorator - apply categorization tags to operations, models, or namespaces
  */
+export function $tags(
+	context: DecoratorContext,
+	target: Operation | Model | Namespace,
+	tags: string[]
+): void {
+	return $tagsImpl(context, target, tags)
+}
+
+/**
+ * Correlation ID decorator - define message correlation tracking
+ */
+export function $correlationId(
+	context: DecoratorContext,
+	target: Model,
+	config: Record<string, unknown>
+): void {
+	return $correlationIdImpl(context, target, config)
+}
+
+/**
+ * Bindings decorator - define protocol-specific bindings
+ */
+export function $bindings(
+	context: DecoratorContext,
+	target: Operation | Model,
+	bindingType: string,
+	config: Record<string, unknown>
+): void {
+	return $bindingsImpl(context, target, bindingType, config)
+}
+
+//TODO: CRITICAL - Add AsyncAPI 3.0.0 Server Object compliance validation
+//TODO: CRITICAL - Missing required AsyncAPI Server fields (host, pathname, protocol version)
+//TODO: CRITICAL - Add server variable support for URL templating
+//TODO: CRITICAL - Implement server security scheme validation
+//TODO: CRITICAL - Add server binding support (protocol-specific configurations)
+//TODO: CRITICAL - Validate server tags and external documentation fields
+
+//TODO: CRITICAL - Missing AsyncAPI Server Object fields: host, pathname, protocolVersion, security, bindings, tags
+export type ServerConfig = {
+	name: string;
+	url: string;
+	protocol: string;
+	//TODO: CRITICAL - Should be required string, not optional undefined
+	description?: string | undefined;
+}
+
+//TODO: CRITICAL - Add proper Effect.TS monadic error handling instead of void returns
+//TODO: CRITICAL - Validate AsyncAPI Server Object structure compliance
+//TODO: CRITICAL - Add server URL format validation (RFC 3986)
+//TODO: CRITICAL - Implement protocol-specific server configuration validation
 export function $server(
 	context: DecoratorContext,
 	target: Namespace,
@@ -44,223 +97,127 @@ export function $server(
 	Effect.log(`📍 Server config raw value:`, config)
 	Effect.log(`🏷️  Target type: ${target.kind}`)
 
-	// Validate target is Namespace with proper error handling
-	// TODO: ENHANCE - Use Effect.TS schema validation instead of manual checks
+	//TODO: CRITICAL - Redundant validation - TypeScript ensures target is Namespace
 	if (target.kind !== "Namespace") {
-		const errorMessage = `@server decorator must be applied to a Namespace, got ${target.kind}`
-		Effect.log(`❌ ${errorMessage}`)
-		reportDiagnostic(context, target, "invalid-server-target", {
-			targetType: target.kind,
-			expected: "Namespace"
-		})
+		//TODO: CRITICAL - Empty serverName string defeats error reporting
+		reportDiagnostic(context, target, "invalid-server-config", {serverName: ""})
 		return
 	}
 
-	// Extract server name from TypeSpec value with proper type safety
-	// TODO: ENHANCE - Use @effect/schema for runtime validation instead of manual checks
-	// TODO: ENHANCE - Create TypeScript union type for all valid name types
+	//TODO: CRITICAL - Complex type guard logic should use Effect.TS schema validation
+	//TODO: CRITICAL - Unsafe String() coercion without validation
+	// Extract server name from TypeSpec value with proper type handling
 	let serverName: string
 	if (typeof name === "string") {
 		serverName = name
 	} else if (name && typeof name === "object" && "value" in name) {
-		// Validate value exists and is string-like
-		const value = name.value
-		if (typeof value === "string") {
-			serverName = value
-		} else if (value && typeof value === "object" && "valueKind" in value) {
-			const stringValue = value as { valueKind: unknown; value: unknown }
-			if (stringValue.valueKind === "StringValue") {
-				serverName = String(stringValue.value)
-			} else {
-				const errorMessage = `Invalid server name valueKind: ${stringValue.valueKind}`
-				Effect.log(`❌ ${errorMessage}`)
-				reportDiagnostic(context, target, "invalid-server-name", {serverName: "unknown", valueKind: stringValue.valueKind})
-				return
-			}
-		} else {
-			const errorMessage = `Invalid server name value type: ${typeof value}`
-			Effect.log(`❌ ${errorMessage}`)
-			reportDiagnostic(context, target, "invalid-server-name", {serverName: "unknown", valueType: typeof value})
-			return
-		}
+		//TODO: CRITICAL - No validation that name.value exists or is string
+		serverName = String(name.value)
+	} else if (name && typeof name === "object" && "valueKind" in name) {
+		//TODO: CRITICAL - Unsafe type assertion defeats type safety
+		const stringValue = name as { value: unknown }
+		//TODO: CRITICAL - String() coercion of unknown type is unsafe
+		serverName = String(stringValue.value)
 	} else {
-		const errorMessage = `Could not extract string from server name: ${JSON.stringify(name)}`
-		Effect.log(`❌ ${errorMessage}`)
-		reportDiagnostic(context, target, "invalid-server-name", {serverName: "unknown", nameType: typeof name})
+		//TODO: CRITICAL - Remove emoji logging from production code
+		Effect.log(`Could not extract string from server name:`, name)
+		//TODO: CRITICAL - "unknown" hardcoded string should be extracted to constant
+		reportDiagnostic(context, target, "invalid-server-config", {serverName: "unknown"})
 		return
 	}
 
-	// Validate server name is not empty
-	if (!serverName || serverName.trim() === "") {
-		const errorMessage = `Server name cannot be empty: ${serverName}`
-		Effect.log(`❌ ${errorMessage}`)
-		reportDiagnostic(context, target, "invalid-server-name", {serverName, isEmpty: true})
-		return
-	}
-
-	Effect.log(`✅ Server name validated: ${serverName}`)
-
-	// Extract server configuration from TypeSpec Record/Object with proper validation
-	// TODO: ENHANCE - Use @effect/schema for runtime validation
-	// TODO: ENHANCE - Create TypeScript union type for all valid config types
+	// Extract server configuration from TypeSpec Record/Object
 	let serverConfig: Partial<ServerConfig>
-	if (config && typeof config === "object") {
+	if (config && typeof config === "object" && "properties" in config) {
 		serverConfig = extractServerConfigFromObject(config)
 	} else {
-		const errorMessage = `Server config must be an object, got ${typeof config}`
-		Effect.log(`❌ ${errorMessage}`)
-		reportDiagnostic(context, target, "invalid-server-config", {serverName, configType: typeof config})
+		Effect.log(`⚠️  Could not extract config from server config:`, config)
+		reportDiagnostic(context, target, "invalid-server-config", {serverName: serverName})
 		return
 	}
 
-	// Validate required server configuration fields with proper error reporting
+	// Validate required server configuration fields
 	if (!serverConfig.url) {
-		const errorMessage = `Server URL is required for ${serverName}`
-		Effect.log(`❌ ${errorMessage}`)
-		reportDiagnostic(context, target, "invalid-server-config", {serverName, missingField: "url"})
+		reportDiagnostic(context, target, "invalid-server-config", {serverName: serverName})
 		return
 	}
 
 	if (!serverConfig.protocol) {
-		const errorMessage = `Server protocol is required for ${serverName}`
-		Effect.log(`❌ ${errorMessage}`)
-		reportDiagnostic(context, target, "invalid-server-config", {serverName, missingField: "protocol"})
+		reportDiagnostic(context, target, "invalid-server-config", {serverName: serverName})
 		return
 	}
 
-	// Validate protocol is supported with proper error reporting
-	const supportedProtocols = ["kafka", "amqp", "websocket", "http", "https", "ws", "wss", "mqtt", "redis", "nats"]
+	//TODO: CRITICAL - Hardcoded protocol array should be extracted to constants
+	//TODO: CRITICAL - Missing AsyncAPI 3.0.0 protocol specifications (mqtt, mqtt5, nats, redis, etc.)
+	// Validate protocol
+	const supportedProtocols = ["kafka", "amqp", "websocket", "http", "https", "ws", "wss"]
+	//TODO: CRITICAL - Should validate against official AsyncAPI protocol specifications
 	if (!supportedProtocols.includes(serverConfig.protocol.toLowerCase())) {
-		const errorMessage = `Unsupported protocol: ${serverConfig.protocol} for ${serverName}. Supported: ${supportedProtocols.join(", ")}`
-		Effect.log(`❌ ${errorMessage}`)
-		reportDiagnostic(context, target, "unsupported-protocol", {serverName, protocol: serverConfig.protocol, supported: supportedProtocols})
+		reportDiagnostic(context, target, "unsupported-protocol", {protocol: serverConfig.protocol})
 		return
 	}
 
-	// Validate URL format with proper error reporting
-	try {
-		new URL(serverConfig.url)
-	} catch (error) {
-		const errorMessage = `Invalid server URL: ${serverConfig.url} for ${serverName} - ${(error as Error).message}`
-		Effect.log(`❌ ${errorMessage}`)
-		reportDiagnostic(context, target, "invalid-server-url", {serverName, url: serverConfig.url, error: (error as Error).message})
-		return
-	}
-
-	// Create complete server configuration with type safety
+	// Create complete server configuration
 	const completeConfig: ServerConfig = {
 		name: serverName,
 		url: serverConfig.url,
 		protocol: serverConfig.protocol.toLowerCase(),
-		description: serverConfig.description ?? undefined
+		description: serverConfig.description || undefined,
 	}
 
-	Effect.log(`✅ Server config validated: ${JSON.stringify(completeConfig, null, 2)}`)
+	Effect.log(`📍 Extracted server config:`, completeConfig)
 
-	// Store server configuration in program state with proper error handling
-	// TODO: ENHANCE - Add proper TypeScript typing for server configuration state
-	// TODO: ENHANCE - Add runtime validation for server configuration
-	try {
-		const serverConfigsMap = context.program.stateMap($lib.stateKeys.serverConfigs)
-		
-		// Handle potential undefined stateMap gracefully
-		if (!serverConfigsMap) {
-			const errorMessage = `ServerConfigs state map not available for ${target.name}`
-			Effect.log(`⚠️ ${errorMessage}`)
-			reportDiagnostic(context, target, "server-config-unavailable", {serverName})
-			return
-		}
+	//TODO: CRITICAL - No validation that serverConfigsMap exists or handles potential undefined
+	//TODO: CRITICAL - Unsafe type assertion defeats type safety
+	// Store server configuration in program state
+	const serverConfigsMap = context.program.stateMap($lib.stateKeys.serverConfigs)
+	const existingConfigs = (serverConfigsMap.get(target) as Map<string, ServerConfig> | undefined) ?? new Map<string, ServerConfig>()
+	existingConfigs.set(serverName, completeConfig)
+	serverConfigsMap.set(target, existingConfigs)
 
-		// Ensure we have a proper Map for this namespace with type safety
-		let existingConfigs = serverConfigsMap.get(target)
-		if (!existingConfigs) {
-			existingConfigs = new Map<string, ServerConfig>()
-		}
-
-		// Validate the type of existingConfigs with proper error handling
-		if (!(existingConfigs instanceof Map)) {
-			const errorMessage = `Invalid serverConfigs type for ${target.name}: ${typeof existingConfigs}`
-			Effect.log(`❌ ${errorMessage}`)
-			reportDiagnostic(context, target, "invalid-server-config-map", {serverName, existingConfigsType: typeof existingConfigs})
-			return
-		}
-
-		// Safely add the new server configuration with type safety
-		existingConfigs.set(serverName, completeConfig)
-		serverConfigsMap.set(target, existingConfigs)
-
-		Effect.log(`✅ Successfully stored server config for ${target.name}: ${serverName}`)
-		Effect.log(`📊 Total server configs: ${existingConfigs.size}`)
-	} catch (error) {
-		const errorMessage = `Error storing server config for ${target.name}: ${(error as Error).message}`
-		Effect.log(`❌ ${errorMessage}`)
-		reportDiagnostic(context, target, "server-config-storage-error", {serverName, error: (error as Error).message})
-	}
+	Effect.log(`✅ Successfully stored server config for ${target.name}: ${serverName}`)
+	Effect.log(`📊 Total server configs: ${existingConfigs.size}`)
 }
 
-/**
- * Extract server configuration from TypeSpec Model or Record with proper validation
- * TODO: ENHANCE - Use @effect/schema for runtime validation
- * TODO: ENHANCE - Split into separate functions for different types
- * TODO: ENHANCE - Add comprehensive error handling and validation
- * TODO: ENHANCE - Create TypeScript union types for all valid server configuration options
- */
+//TODO: CRITICAL - Complex extraction logic should use Effect.TS schema validation
+//TODO: CRITICAL - Function handles two completely different type structures - violates single responsibility
+//TODO: CRITICAL - Missing error handling for malformed object structures
+//TODO: CRITICAL - Should validate extracted values match ServerConfig schema
 function extractServerConfigFromObject(obj: Model | Record<string, unknown>): Partial<ServerConfig> {
 	const config: Partial<ServerConfig> = {}
 
-	// Handle Model type with RekeyableMap (TypeSpec internal structure)
 	if ("properties" in obj && obj.properties && typeof obj.properties === "object" && "entries" in obj.properties) {
+		// Handle Model type with RekeyableMap
 		const modelObj = obj as Model
 		modelObj.properties.forEach((modelProperty, key) => {
 			const keyStr = key
 			let valueStr: string | undefined
 
-			// Extract value from ModelProperty with proper validation
+			// Extract value from ModelProperty.type or ModelProperty.defaultValue
 			const propertyValue = modelProperty.defaultValue
 			if (propertyValue && typeof propertyValue === "object" && "valueKind" in propertyValue && (propertyValue as StringValue).valueKind === "StringValue") {
 				const stringValue = propertyValue as StringValue
 				valueStr = String(stringValue.value)
-			} else if (propertyValue && typeof propertyValue === "object" && "value" in propertyValue && propertyValue.value !== undefined) {
-				const value = propertyValue.value
-				if (typeof value === "string") {
-					valueStr = value
-				} else if (value && typeof value === "object" && "valueKind" in value) {
-					const stringValue = value as { valueKind: unknown; value: unknown }
-					if (stringValue.valueKind === "StringValue") {
-						valueStr = String(stringValue.value)
-					}
-				}
 			}
 
-			// Store validated value in config
 			if (valueStr) {
 				assignServerConfigValue(config, keyStr, valueStr)
 			}
 		})
-	} 
-	// Handle Record<string, unknown> type with proper validation
-	else if (obj && typeof obj === "object" && !("properties" in obj)) {
+	} else if (obj && typeof obj === "object" && !("properties" in obj)) {
+		// Handle Record<string, unknown> type
 		for (const [key, value] of Object.entries(obj)) {
 			let valueStr: string | undefined
 
-			// Validate and convert value with proper type checking
 			if (typeof value === "string") {
 				valueStr = value
 			} else if (value && typeof value === "object" && "value" in value && value.value !== undefined) {
-				const val = value as StringValue
-				if (typeof val.value === "string") {
-					valueStr = val.value
-				} else if (val && typeof val === "object" && "valueKind" in val) {
-					if (val.valueKind === "StringValue") {
-						valueStr = String(val.value)
-					}
-				}
+				valueStr = String((value as StringValue).value)
 			} else if (value && typeof value === "object" && "valueKind" in value && (value as StringValue).valueKind === "StringValue") {
-				const val = value as StringValue
-				valueStr = String(val.value)
+				const stringValue = value as StringValue
+				valueStr = String(stringValue.value)
 			}
 
-			// Store validated value in config
 			if (valueStr) {
 				assignServerConfigValue(config, key, valueStr)
 			}
@@ -270,47 +227,23 @@ function extractServerConfigFromObject(obj: Model | Record<string, unknown>): Pa
 	return config
 }
 
-/**
- * Assign server configuration value with proper validation
- * TODO: ENHANCE - Use @effect/schema for runtime validation
- * TODO: ENHANCE - Create TypeScript union types for all valid config keys
- * TODO: ENHANCE - Add comprehensive validation for each field type
- */
+//TODO: CRITICAL - Should validate value format for each field type (URL format, protocol format, etc.)
+//TODO: CRITICAL - Missing validation for unknown/unsupported server configuration keys
+//TODO: CRITICAL - Should use enum/union types instead of hardcoded strings
+//TODO: CRITICAL - No error handling for invalid values
 function assignServerConfigValue(config: Partial<ServerConfig>, key: string, value: string): void {
 	switch (key) {
 		case "url":
-			// TODO: ENHANCE - Validate URL format (RFC 3986)
-			// TODO: ENHANCE - Add protocol-specific URL validation
-			// TODO: ENHANCE - Add environment variable expansion support
+			//TODO: CRITICAL - Should validate URL format (RFC 3986)
 			config.url = value
 			break
 		case "protocol":
-			// TODO: ENHANCE - Validate protocol against AsyncAPI specifications
-			// TODO: ENHANCE - Add protocol version validation
-			// TODO: ENHANCE - Add protocol-specific configuration validation
+			//TODO: CRITICAL - Should validate protocol against AsyncAPI specifications
 			config.protocol = value
 			break
 		case "description":
-			// TODO: ENHANCE - Validate description format and length
-			// TODO: ENHANCE - Add markdown support in descriptions
-			// TODO: ENHANCE - Add internationalization support
 			config.description = value
 			break
-		default:
-			// TODO: ENHANCE - Log warning for unknown configuration keys
-			// TODO: ENHANCE - Create configurable strict mode for unknown keys
-			// TODO: ENHANCE - Add validation for custom server configuration keys
-			Effect.log(`⚠️ Unknown server config key: ${key} - adding to metadata`)
-			if (!config.description) {
-				config.description = `Server configuration with ${key}: ${value}`
-			}
-			break
+		//TODO: CRITICAL - Missing default case to handle unknown keys
 	}
 }
-
-/**
- * Server decorator for TypeSpec usage
- * Provides a convenient decorator syntax for defining server configurations
- * with compile-time validation and runtime type safety.
- */
-export const server = $server

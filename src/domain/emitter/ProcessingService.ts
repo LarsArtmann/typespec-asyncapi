@@ -463,6 +463,7 @@ const createAsyncAPISecurityScheme = (config: SecurityConfig): SecuritySchemeObj
 					description: scheme.description,
 				} as SecuritySchemeObject
 			}
+<<<<<<< HEAD
 
 			case "openIdConnect":
 				return {
@@ -494,6 +495,8 @@ const createAsyncAPISecurityScheme = (config: SecurityConfig): SecuritySchemeObj
 					type: "asymmetricEncryption",
 					description: scheme.description,
 				} as SecuritySchemeObject
+=======
+>>>>>>> master
 
 			default:
 				// This should never be reached due to TypeScript exhaustiveness checking

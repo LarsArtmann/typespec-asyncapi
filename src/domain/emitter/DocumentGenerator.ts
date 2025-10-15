@@ -18,7 +18,10 @@
  */
 
 import {Effect} from "effect"
+<<<<<<< HEAD
 import {safeStringify} from "../../utils/standardized-errors.js"
+=======
+>>>>>>> master
 import {stringify} from "yaml"
 import type {AsyncAPIObject} from "@asyncapi/parser/esm/spec-types/v3.js"
 import {
@@ -69,7 +72,11 @@ export class DocumentGenerator {
 			}
 
 			return yield* this.serializeWithOptions(document, options)
+<<<<<<< HEAD
 		}.bind(this))
+=======
+		})
+>>>>>>> master
 	}
 
 	/**
@@ -97,9 +104,15 @@ export class DocumentGenerator {
 					return this.serializeToYAML(document, options)
 				default:
 					return yield* failWith(createError({
+<<<<<<< HEAD
 						what: `Unsupported serialization format: ${safeStringify(options.format)}`,
 						reassure: "Only JSON and YAML formats are currently supported",
 						why: `Format '${safeStringify(options.format)}' is not in the supported list: [json, yaml]`,
+=======
+						what: `Unsupported serialization format: ${options.format}`,
+						reassure: "Only JSON and YAML formats are currently supported",
+						why: `Format '${options.format}' is not in the supported list: [json, yaml]`,
+>>>>>>> master
 						fix: "Use 'json' or 'yaml' as the serialization format",
 						escape: "Default to JSON format if format detection fails",
 						severity: "error" as const,
@@ -107,7 +120,11 @@ export class DocumentGenerator {
 						context: { requestedFormat: options.format, supportedFormats: ['json', 'yaml'] }
 					}))
 			}
+<<<<<<< HEAD
 		}.bind(this)).pipe(
+=======
+		}).pipe(
+>>>>>>> master
 			Effect.mapError((error: unknown): StandardizedError => {
 				if (typeof error === 'object' && error !== null && 'what' in error) {
 					return error as StandardizedError
@@ -131,7 +148,11 @@ export class DocumentGenerator {
 	private serializeToJSON(document: AsyncAPIObject, options: SerializationOptions): string {
 		Effect.log(`📄 Generating JSON format`)
 
+<<<<<<< HEAD
 		const indent = options.compact ? 0 : (options.indent ?? 2)
+=======
+		const indent = options.compact ? 0 : (options.indent || 2)
+>>>>>>> master
 		const result = JSON.stringify(document, null, indent)
 
 		Effect.log(`✅ JSON serialization complete: ${result.length} characters`)
@@ -145,7 +166,11 @@ export class DocumentGenerator {
 		Effect.log(`📄 Generating YAML format`)
 
 		const yamlOptions = {
+<<<<<<< HEAD
 			indent: options.indent ?? 2,
+=======
+			indent: options.indent || 2,
+>>>>>>> master
 			lineWidth: options.compact ? -1 : 120,
 			minContentWidth: 0,
 			sortKeys: !options.preserveOrder,
@@ -200,7 +225,11 @@ export class DocumentGenerator {
 					escape: "Use a generic title like 'AsyncAPI Specification' as placeholder",
 					severity: "error" as const,
 					code: "MISSING_INFO_TITLE",
+<<<<<<< HEAD
 					context: { hasInfo: !!document.info, infoKeys: Object.keys(document.info ?? {}) }
+=======
+					context: { hasInfo: !!document.info, infoKeys: Object.keys(document.info || {}) }
+>>>>>>> master
 				}))
 			}
 
@@ -213,7 +242,11 @@ export class DocumentGenerator {
 					escape: "Use '1.0.0' as a default API version",
 					severity: "error" as const,
 					code: "MISSING_INFO_VERSION",
+<<<<<<< HEAD
 					context: { hasInfo: !!document.info, infoKeys: Object.keys(document.info ?? {}) }
+=======
+					context: { hasInfo: !!document.info, infoKeys: Object.keys(document.info || {}) }
+>>>>>>> master
 				}))
 			}
 
@@ -244,11 +277,19 @@ export class DocumentGenerator {
 			// Safe statistics generation with error handling
 			return yield* railway.trySync(() => {
 				const stats: DocumentStats = {
+<<<<<<< HEAD
 					channels: Object.keys(document.channels ?? {}).length,
 					operations: Object.keys(document.operations ?? {}).length,
 					messages: Object.keys(document.components?.messages ?? {}).length,
 					schemas: Object.keys(document.components?.schemas ?? {}).length,
 					securitySchemes: Object.keys(document.components?.securitySchemes ?? {}).length,
+=======
+					channels: Object.keys(document.channels || {}).length,
+					operations: Object.keys(document.operations || {}).length,
+					messages: Object.keys(document.components?.messages || {}).length,
+					schemas: Object.keys(document.components?.schemas || {}).length,
+					securitySchemes: Object.keys(document.components?.securitySchemes || {}).length,
+>>>>>>> master
 					contentLength: 0, // Will be set after serialization
 				}
 
@@ -298,7 +339,11 @@ export class DocumentGenerator {
 
 			yield* Effect.log(`✅ Document optimization complete`)
 			return optimized
+<<<<<<< HEAD
 		}.bind(this))
+=======
+		})
+>>>>>>> master
 	}
 
 	/**
@@ -366,7 +411,11 @@ export class DocumentGenerator {
 					escape: "Use a simple test document to verify serialization works",
 					severity: "error" as const,
 					code: "EMPTY_SERIALIZED_CONTENT",
+<<<<<<< HEAD
 					context: { format, contentLength: content?.length ?? 0 }
+=======
+					context: { format, contentLength: content?.length || 0 }
+>>>>>>> master
 				}))
 			}
 
@@ -394,8 +443,13 @@ export class DocumentGenerator {
 				}
 
 				// Check for balanced quotes
+<<<<<<< HEAD
 				const singleQuotes = (content.match(/'/g) ?? []).length
 				const doubleQuotes = (content.match(/"/g) ?? []).length
+=======
+				const singleQuotes = (content.match(/'/g) || []).length
+				const doubleQuotes = (content.match(/"/g) || []).length
+>>>>>>> master
 
 				if (singleQuotes % 2 !== 0) {
 					yield* Effect.logWarning(`⚠️ Unbalanced single quotes in YAML`)

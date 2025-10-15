@@ -11,7 +11,10 @@ import type {MessageConfig} from "../domain/decorators/message.js"
 import type {ServersObject} from "@asyncapi/parser/esm/spec-types/v3.js"
 import type {ProtocolConfig} from "../domain/decorators/protocolConfig.js"
 import type {SecurityConfig} from "../domain/decorators/securityConfig.js"
+<<<<<<< HEAD
 import {safeStringify} from "./standardized-errors.js"
+=======
+>>>>>>> master
 
 /**
  * Discover all operations from TypeSpec program
@@ -238,7 +241,11 @@ function extractHostFromUrl(url: string): string {
 		}).pipe(
 			Effect.catchAll((error) =>
 				Effect.gen(function* () {
+<<<<<<< HEAD
 					yield* Effect.logWarning(`⚠️  URL parsing failed for ${url}: ${safeStringify(error)}`)
+=======
+					yield* Effect.logWarning(`⚠️  URL parsing failed for ${url}: ${error}`)
+>>>>>>> master
 					// If URL parsing fails, return as-is
 					return url
 				})

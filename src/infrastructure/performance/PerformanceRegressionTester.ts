@@ -26,7 +26,10 @@ import {join} from "path"
 
 // Local imports
 import {PerformanceMonitor} from "./PerformanceMonitor.js"
+<<<<<<< HEAD
 import {railwayFileSystem} from "../../utils/effect-helpers.js"
+=======
+>>>>>>> master
 import type {PerformanceBaseline} from "./PerformanceBaseline.js"
 import type {RegressionTestResult} from "./RegressionTestResult.js"
 import type {PerformanceMetrics} from "./PerformanceMetrics.js"
@@ -84,18 +87,27 @@ export class PerformanceRegressionTester {
 	 * Run comprehensive performance regression test
 	 */
 	runRegressionTest(testCaseName: string, testFunction: () => Promise<void>) {
+<<<<<<< HEAD
 		return Effect.gen(this, function* () {
+=======
+		const self = this
+		return Effect.gen(function* () {
+>>>>>>> master
 			yield* Effect.log(`🔍 Starting performance regression test: ${testCaseName}`)
 
 			// Start performance monitoring
-			yield* this.performanceMonitor.startMonitoring()
+			yield* self.performanceMonitor.startMonitoring()
 
 			const startTime = performance.now()
 			void startTime
 			const startMemory = process.memoryUsage().heapUsed / 1024 / 1024
 			void startMemory
 
+<<<<<<< HEAD
 			const testResult = yield* Effect.gen(this, function* () {
+=======
+			const testResult = yield* Effect.gen(function* () {
+>>>>>>> master
 				// Execute the test function  
 				yield* Effect.tryPromise({
 					try: () => testFunction(),
@@ -117,22 +129,28 @@ export class PerformanceRegressionTester {
 				yield* Effect.log(`📊 Test completed in ${metrics.compilationTimeMs.toFixed(2)}ms, memory: ${metrics.memoryUsageMB.toFixed(1)}MB`)
 
 				// Stop monitoring and get final snapshot
-				yield* this.performanceMonitor.stopMonitoring()
+				yield* self.performanceMonitor.stopMonitoring()
 
 				// Load baseline and compare  
-				const baseline = yield* this.loadBaseline(testCaseName)
-				const result = yield* this.analyzeRegression(testCaseName, metrics, baseline ?? null)
+				const baseline = yield* self.loadBaseline(testCaseName)
+				const result = yield* self.analyzeRegression(testCaseName, metrics, baseline ?? null)
 
 				// Update baseline if this is a new test or performance improved
-				if (!baseline || this.shouldUpdateBaseline(metrics, baseline)) {
-					yield* this.updateBaseline(testCaseName, metrics)
+				if (!baseline || self.shouldUpdateBaseline(metrics, baseline)) {
+					yield* self.updateBaseline(testCaseName, metrics)
 				}
 
 				return result
 			}).pipe(
+<<<<<<< HEAD
 				Effect.tapError(error => Effect.gen(this, function* () {
 					yield* Effect.logError(`❌ Performance test failed: ${error}`)
 					yield* this.performanceMonitor.stopMonitoring()
+=======
+				Effect.tapError(error => Effect.gen(function* () {
+					yield* Effect.logError(`❌ Performance test failed: ${error}`)
+					yield* self.performanceMonitor.stopMonitoring()
+>>>>>>> master
 				})),
 				Effect.mapError(error => new Error(`Performance test failed: ${error}`))
 			)
@@ -145,7 +163,12 @@ export class PerformanceRegressionTester {
 	 * Analyze performance regression against baseline
 	 */
 	private analyzeRegression(testName: string, current: PerformanceMetrics, baseline: PerformanceBaseline | null) {
+<<<<<<< HEAD
 		return Effect.gen(this, function* () {
+=======
+		const self = this
+		return Effect.gen(function* () {
+>>>>>>> master
 			if (!baseline) {
 				yield* Effect.log(`📊 No baseline found for ${testName} - establishing new baseline`)
 				return {
@@ -167,7 +190,7 @@ export class PerformanceRegressionTester {
 				const currentValue = current[metric]
 				const baselineValue = baseline[metric]
 				const percentageChange = ((currentValue - baselineValue) / baselineValue) * 100
-				const threshold = this.config.regressionThresholds[metric === 'compilationTimeMs' ? 'compilationTime' :
+				const threshold = self.config.regressionThresholds[metric === 'compilationTimeMs' ? 'compilationTime' :
 					metric === 'memoryUsageMB' ? 'memoryUsage' :
 						metric === 'throughputOpsPerSec' ? 'throughput' : 'latency']
 
@@ -178,7 +201,7 @@ export class PerformanceRegressionTester {
 					percentageChange > threshold
 
 				if (isRegression) {
-					const severity = this.calculateSeverity(Math.abs(percentageChange), threshold)
+					const severity = self.calculateSeverity(Math.abs(percentageChange), threshold)
 					regressions.push({
 						metric,
 						currentValue,
@@ -186,7 +209,7 @@ export class PerformanceRegressionTester {
 						percentageChange,
 						threshold,
 						severity,
-						description: this.generateRegressionDescription(metric, currentValue, baselineValue, percentageChange),
+						description: self.generateRegressionDescription(metric, currentValue, baselineValue, percentageChange),
 					})
 				}
 			}
@@ -219,6 +242,7 @@ export class PerformanceRegressionTester {
 	 * Load baseline from storage
 	 */
 	private loadBaseline(testCaseName: string) {
+<<<<<<< HEAD
 		return Effect.gen(this, function* () {
 			if (!this.config.enableBaselines || !existsSync(this.baselinePath)) {
 				return null
@@ -228,6 +252,24 @@ export class PerformanceRegressionTester {
 				this.baselinePath,
 				"baseline file"
 			).pipe(
+=======
+		const self = this
+		return Effect.gen(function* () {
+			if (!self.config.enableBaselines || !existsSync(self.baselinePath)) {
+				return null
+			}
+
+			const baselineResult = yield* Effect.tryPromise({
+				try: () => Promise.resolve(readFileSync(self.baselinePath, 'utf-8')),
+				catch: (error) => new Error(`Failed to read baseline file: ${error}`)
+			}).pipe(
+				Effect.flatMap(baselinesData => 
+					Effect.tryPromise({
+						try: () => Promise.resolve(JSON.parse(baselinesData) as Record<string, PerformanceBaseline[]>),
+						catch: (error) => new Error(`Failed to parse baseline JSON: ${error}`)
+					})
+				),
+>>>>>>> master
 				Effect.map(baselines => {
 					const testBaselines = baselines[testCaseName]
 					if (!testBaselines || testBaselines.length === 0) {
@@ -252,8 +294,14 @@ export class PerformanceRegressionTester {
 	 * Update baseline with new performance metrics
 	 */
 	private updateBaseline(testCaseName: string, metrics: PerformanceMetrics) {
+<<<<<<< HEAD
 		return Effect.gen(this, function* () {
 			if (!this.config.enableBaselines) {
+=======
+		const self = this
+		return Effect.gen(function* () {
+			if (!self.config.enableBaselines) {
+>>>>>>> master
 				return
 			}
 
@@ -273,6 +321,7 @@ export class PerformanceRegressionTester {
 				},
 			}
 
+<<<<<<< HEAD
 			yield* Effect.gen(this, function* () {
 				let baselines: Record<string, PerformanceBaseline[]> = {}
 
@@ -281,17 +330,40 @@ export class PerformanceRegressionTester {
 					{},
 					"baseline file"
 				)
+=======
+			yield* Effect.gen(function* () {
+				let baselines: Record<string, PerformanceBaseline[]> = {}
+
+				if (existsSync(self.baselinePath)) {
+					const baselinesData = yield* Effect.tryPromise({
+						try: () => Promise.resolve(readFileSync(self.baselinePath, 'utf-8')),
+						catch: (error) => new Error(`Failed to read baseline file: ${error}`)
+					})
+					
+					baselines = yield* Effect.tryPromise({
+						try: () => Promise.resolve(JSON.parse(baselinesData) as Record<string, PerformanceBaseline[]>),
+						catch: (error) => new Error(`Failed to parse baseline JSON: ${error}`)
+					})
+				}
+>>>>>>> master
 
 		baselines[testCaseName] ??= []
 
 				baselines[testCaseName].push(newBaseline)
 
 				// Keep only recent baselines to prevent file growth
-				if (baselines[testCaseName].length > this.config.maxBaselinesHistory) {
-					baselines[testCaseName] = baselines[testCaseName].slice(-this.config.maxBaselinesHistory)
+				if (baselines[testCaseName].length > self.config.maxBaselinesHistory) {
+					baselines[testCaseName] = baselines[testCaseName].slice(-self.config.maxBaselinesHistory)
 				}
 
+<<<<<<< HEAD
 				yield* railwayFileSystem.writeJsonFileEffect(this.baselinePath, baselines, "baseline file")
+=======
+				yield* Effect.tryPromise({
+					try: () => Promise.resolve(writeFileSync(self.baselinePath, JSON.stringify(baselines, null, 2))),
+					catch: (error) => new Error(`Failed to write baseline file: ${error}`)
+				})
+>>>>>>> master
 
 				yield* Effect.log(`📊 Updated baseline for ${testCaseName}`)
 			}).pipe(

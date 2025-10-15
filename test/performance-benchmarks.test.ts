@@ -6,6 +6,7 @@
  */
 
 import { test, expect } from "bun:test"
+<<<<<<< HEAD
 import { Effect, Layer } from "effect"
 import { PerformanceRegressionTester } from "../src/infrastructure/performance/PerformanceRegressionTester.js"
 import { PerformanceMonitor } from "../src/infrastructure/performance/PerformanceMonitor.js"
@@ -17,6 +18,11 @@ const PERFORMANCE_SERVICES_LAYER = Layer.merge(
 	MEMORY_MONITOR_SERVICE_LIVE,
 	PERFORMANCE_METRICS_SERVICE_LIVE
 )
+=======
+import { Effect } from "effect"
+import { PerformanceRegressionTester, type PerformanceConfig } from "../src/infrastructure/performance/PerformanceRegressionTester.js"
+import { PerformanceMonitor } from "../src/infrastructure/performance/PerformanceMonitor.js"
+>>>>>>> master
 
 // Performance thresholds for CI/CD validation
 const PERFORMANCE_THRESHOLDS = {
@@ -123,6 +129,7 @@ test("Performance Benchmark - Throughput validation", async () => {
  * PHASE 2: Regression Testing Infrastructure
  */
 test("Performance Regression - baseline establishment", async () => {
+<<<<<<< HEAD
 	const regressionTester = new PerformanceRegressionTester({
 		enableBaselines: true,
 		baselinesFilePath: "test-baselines.json",
@@ -135,11 +142,27 @@ test("Performance Regression - baseline establishment", async () => {
 		maxBaselinesHistory: 5,
 		enableCiValidation: false, // Disable for test
 	})
+=======
+	const config: PerformanceConfig = {
+		enableBaselines: true,
+		enableRegressionDetection: true,
+		maxBaselinesHistory: 5,
+		regressionThresholds: {
+			compilationTimeMs: 1.2,    // 20% degradation threshold
+			memoryUsageMB: 1.3,        // 30% memory increase threshold
+			throughputOpsPerSec: 0.8,  // 20% throughput decrease threshold  
+		}
+	}
+	
+	const performanceMonitor = new PerformanceMonitor()
+	const regressionTester = new PerformanceRegressionTester(config, performanceMonitor)
+>>>>>>> master
 	
 	// Test baseline establishment
 	const baselineTest = async () => {
 		// Simulate consistent workload for baseline
 		await Effect.runPromise(Effect.sleep("100 millis"))
+<<<<<<< HEAD
 	}
 	
 	const testResult = await Effect.runPromise(
@@ -167,10 +190,39 @@ test("Performance Regression - detection validation", async () => {
 		maxBaselinesHistory: 5,
 		enableCiValidation: false, // Disable for test
 	})
+=======
+		return "baseline complete"
+	}
+	
+	const testResult = await Effect.runPromise(
+		regressionTester.runPerformanceTest("baseline-test", baselineTest)
+	)
+	
+	expect(testResult.testName).toBe("baseline-test")
+	expect(testResult.metrics).toBeDefined()
+	expect(testResult.metrics.compilationTimeMs).toBeGreaterThan(0)
+})
+
+test("Performance Regression - detection validation", async () => {
+	const config: PerformanceConfig = {
+		enableBaselines: true,
+		enableRegressionDetection: true,
+		maxBaselinesHistory: 5,
+		regressionThresholds: {
+			compilationTimeMs: 1.1,    // Tight 10% threshold for testing
+			memoryUsageMB: 1.1,        
+			throughputOpsPerSec: 0.9,  
+		}
+	}
+	
+	const performanceMonitor = new PerformanceMonitor()
+	const regressionTester = new PerformanceRegressionTester(config, performanceMonitor)
+>>>>>>> master
 	
 	// First run - establish baseline
 	const baselineTest = async () => {
 		await Effect.runPromise(Effect.sleep("50 millis"))
+<<<<<<< HEAD
 	}
 	
 	await Effect.runPromise(
@@ -178,11 +230,19 @@ test("Performance Regression - detection validation", async () => {
 			regressionTester.runRegressionTest("regression-test", baselineTest),
 			PERFORMANCE_SERVICES_LAYER
 		)
+=======
+		return "baseline"
+	}
+	
+	await Effect.runPromise(
+		regressionTester.runPerformanceTest("regression-test", baselineTest)
+>>>>>>> master
 	)
 	
 	// Second run - simulate regression
 	const regressionTest = async () => {
 		await Effect.runPromise(Effect.sleep("200 millis")) // Much slower
+<<<<<<< HEAD
 	}
 	
 	const regressionResult = await Effect.runPromise(
@@ -196,6 +256,18 @@ test("Performance Regression - detection validation", async () => {
 	expect(regressionResult.passed).toBe(false) // Using actual property name
 	expect(regressionResult.regressions).toBeDefined()
 	expect(regressionResult.regressions.length).toBeGreaterThan(0)
+=======
+		return "regression"
+	}
+	
+	const regressionResult = await Effect.runPromise(
+		regressionTester.runPerformanceTest("regression-test", regressionTest)
+	)
+	
+	// Should detect performance regression
+	expect(regressionResult.hasRegression).toBe(true)
+	expect(regressionResult.regressionDetails).toBeDefined()
+>>>>>>> master
 })
 
 /**
@@ -285,7 +357,11 @@ test("Performance Scenario - Concurrent AsyncAPI generation", async () => {
 	const result = await Effect.runPromise(concurrentGeneration)
 	
 	// Validate concurrent performance
+<<<<<<< HEAD
 	expect(result.totalTime).toBeLessThan(1200)  // Should be faster than sequential (10 * 100ms = 1000ms), allowing overhead
+=======
+	expect(result.totalTime).toBeLessThan(500)  // Should be much faster than sequential (10 * 100ms)
+>>>>>>> master
 	expect(result.documentsGenerated).toBe(10)
 	expect(result.generationRate).toBeGreaterThan(5) // At least 5 docs/sec
 })
@@ -303,12 +379,18 @@ test("Performance Monitoring - metrics collection", async () => {
 		// Simulate workload
 		yield* Effect.sleep("200 millis")
 		
+<<<<<<< HEAD
 		// Take a snapshot (using correct method name)
 		yield* performanceMonitor.takeSnapshot()
+=======
+		// Collect metrics
+		const snapshot = yield* performanceMonitor.collectMetrics()
+>>>>>>> master
 		
 		// Stop monitoring  
 		yield* performanceMonitor.stopMonitoring()
 		
+<<<<<<< HEAD
 		// Get performance status
 		const status = performanceMonitor.getPerformanceStatus()
 		return status
@@ -325,6 +407,17 @@ test("Performance Monitoring - metrics collection", async () => {
 		expect(status.latestSnapshot.timestamp).toBeDefined()
 		expect(status.latestSnapshot.memoryUsage).toBeGreaterThan(0)
 	}
+=======
+		return snapshot
+	})
+	
+	const metrics = await Effect.runPromise(monitoringTest)
+	
+	// Validate metrics collection
+	expect(metrics).toBeDefined()
+	expect(metrics.timestamp).toBeDefined()
+	expect(metrics.memoryUsage).toBeGreaterThan(0)
+>>>>>>> master
 })
 
 /**

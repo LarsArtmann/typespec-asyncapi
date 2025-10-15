@@ -329,7 +329,11 @@ export const errorHandlingUtils = {
 		return effect.pipe(
 			Effect.catchAll(error =>
 				Effect.gen(function* () {
+<<<<<<< HEAD
 					yield* Effect.logError(`🚨 Safe operation failed, using fallback: ${safeStringify(error)}`)
+=======
+					yield* Effect.logError(`🚨 Safe operation failed, using fallback: ${error}`)
+>>>>>>> master
 					return fallback
 				})
 			)

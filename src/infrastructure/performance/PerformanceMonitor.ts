@@ -24,6 +24,12 @@ const DEFAULT_MEMORY_THRESHOLD_MB = 500 // 500MB
 const DEFAULT_MEMORY_LEAK_DETECTION_RATE = 0.1 // MB/sec
 const MAX_SNAPSHOTS_RETAINED = 100
 
+// Performance monitoring constants
+const DEFAULT_MONITORING_INTERVAL_MS = 5000 // 5 seconds
+const DEFAULT_MEMORY_THRESHOLD_MB = 500 // 500MB
+const DEFAULT_MEMORY_LEAK_DETECTION_RATE = 0.1 // MB/sec
+const MAX_SNAPSHOTS_RETAINED = 100
+
 export type PerformanceConfig = {
 	enableMetrics: boolean
 	enableMemoryMonitoring: boolean
@@ -154,6 +160,7 @@ export class PerformanceMonitor {
 				return
 			}
 
+<<<<<<< HEAD
 			// Use Effect.gen for comprehensive snapshot creation with proper error handling
 			const metricsService = yield* PERFORMANCE_METRICS_SERVICE
 			const memoryMonitor = yield* MEMORY_MONITOR_SERVICE
@@ -178,6 +185,38 @@ export class PerformanceMonitor {
 			yield* Effect.log(`📊 Performance snapshot taken: ${snapshot.memoryUsage}MB memory, ${snapshot.operationCount} operations`)
 
 			return snapshot
+=======
+			// Use Effect.try for comprehensive snapshot creation with proper error handling
+			yield* Effect.try({
+				try: () => Effect.gen(function* (this: PerformanceMonitor) {
+					const metricsService = yield* PERFORMANCE_METRICS_SERVICE
+					const memoryMonitor = yield* MEMORY_MONITOR_SERVICE
+
+					// Get current memory metrics
+					const memoryMetrics = yield* memoryMonitor.getMemoryMetrics()
+					const currentMemory = memoryMetrics.currentMemoryUsage || 0
+
+					// Get performance metrics summary
+					const metricsSummary = yield* metricsService.getMetricsSummary()
+
+					const snapshot: PerformanceSnapshot = {
+						timestamp: new Date(),
+						memoryUsage: currentMemory,
+						operationCount: metricsSummary[createMetricName("throughput")] || 0, // Using throughput as operation count approximation
+						averageLatency: metricsSummary[createMetricName("latency")] || 0,
+						throughput: metricsSummary[createMetricName("throughput")] || 0,
+					}
+
+					this.addSnapshotWithMemoryManagement(snapshot, currentMemory)
+					return snapshot
+				}.bind(this)),
+				catch: (error) => new Error(`Failed to take performance snapshot: ${error instanceof Error ? error.message : String(error)}`)
+			}).pipe(
+				Effect.flatten,
+				Effect.tap((snapshot) => Effect.log(`📊 Performance snapshot taken: ${snapshot.memoryUsage}MB memory, ${snapshot.operationCount} operations`)),
+				Effect.catchAll((error) => Effect.logError(`❌ ${error.message}`))
+			)
+>>>>>>> master
 		}.bind(this))
 	}
 
@@ -313,7 +352,11 @@ export class PerformanceMonitor {
 				Effect.tap(result => Effect.log(`🗑️ Garbage collection completed: freed ${result.memoryFreed} MB`)),
 				Effect.catchAll(error => 
 					Effect.sync(() => {
+<<<<<<< HEAD
 						Effect.runSync(Effect.logWarning(`⚠️ Garbage collection not available: ${safeStringify(error)}`))
+=======
+						Effect.runSync(Effect.logWarning(`⚠️ Garbage collection not available: ${error}`))
+>>>>>>> master
 						return null
 					})
 				)

@@ -16,8 +16,12 @@ import type {SecurityConfig} from "../decorators/securityConfig.js"
 // Standardized error handling
 import {
 	type StandardizedError,
+<<<<<<< HEAD
 	createError,
 	safeStringify
+=======
+	createError
+>>>>>>> master
 } from "../../utils/standardized-errors.js"
 
 /**
@@ -89,7 +93,11 @@ export class DiscoveryService {
 		}).pipe(Effect.mapError(error => createError({
 			what: "Operation discovery failed during TypeSpec AST traversal",
 			reassure: "This is usually a temporary issue with TypeSpec compilation",
+<<<<<<< HEAD
 			why: `Operation discovery failed: ${safeStringify(error)}`,
+=======
+			why: `Operation discovery failed: ${error}`,
+>>>>>>> master
 			fix: "Check your TypeSpec syntax and ensure all operations are properly defined",
 			escape: "Try using simpler operation definitions to isolate the issue",
 			severity: "error" as const,
