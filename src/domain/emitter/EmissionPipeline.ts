@@ -70,15 +70,9 @@ export class EmissionPipeline implements IPipelineService {
 <<<<<<< HEAD
 				Effect.catchAll((error: unknown) =>
 					Effect.gen(function* () {
-						yield* Effect.logError(`❌ Critical EmissionPipeline service initialization failed: ${String(error)}`)
+						yield* Effect.logError(`❌ Critical EmissionPipeline service initialization failed: ${safeStringify(error)}`)
 						return yield* Effect.die(new Error(
-							`Critical EmissionPipeline service initialization failed: ${String(error)}`
-=======
-				Effect.catchAll((error) =>
-					Effect.gen(function* () {
-						yield* Effect.logError(`❌ Critical EmissionPipeline service initialization failed: ${error}`)
-						return yield* Effect.die(new Error(
-							`Critical EmissionPipeline service initialization failed: ${error instanceof Error ? error.message : String(error)}`
+							`Critical EmissionPipeline service initialization failed: ${safeStringify(error)}`
 >>>>>>> master
 						))
 					})
@@ -95,14 +89,12 @@ export class EmissionPipeline implements IPipelineService {
 	 * Execute the complete emission pipeline with REAL business logic integration
 	 * Using Effect.TS Railway programming for comprehensive error handling
 	 */
-<<<<<<< HEAD
 	executePipeline = (context: PipelineContext): Effect.Effect<void, StandardizedError> => {
 		return Effect.gen(this, function* () {
 =======
 	executePipeline(context: PipelineContext): Effect.Effect<void, StandardizedError> {
 		const pipeline = this
 		return Effect.gen(function* () {
->>>>>>> master
 			// Validate context parameter with proper error handling
 			if (!context) {
 				return yield* failWith(createError({
