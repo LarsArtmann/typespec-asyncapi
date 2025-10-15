@@ -9,10 +9,6 @@ import {validateAsyncAPIEmitterOptions} from "./validation.js"
 import {SERIALIZATION_FORMAT_OPTION_YAML, SERIALIZATION_FORMAT_OPTIONS} from "../../domain/models/serialization-format-option.js"
 import {ASYNCAPI_VERSIONS} from "../../constants/asyncapi-constants.js"
 import type {AsyncAPIEmitterOptions} from "./asyncAPIEmitterOptions.js"
-<<<<<<< HEAD
-import {safeStringify} from "../../utils/standardized-errors.js"
-=======
->>>>>>> master
 
 /**
  * JSON Schema representation for TypeSpec compatibility
@@ -96,11 +92,7 @@ export const isAsyncAPIEmitterOptions = (input: unknown): input is AsyncAPIEmitt
 		}).pipe(
 			Effect.catchAll((error) =>
 				Effect.gen(function* () {
-<<<<<<< HEAD
-					yield* Effect.logWarning(`⚠️  AsyncAPI options validation failed: ${safeStringify(error)}`)
-=======
 					yield* Effect.logWarning(`⚠️  AsyncAPI options validation failed: ${error}`)
->>>>>>> master
 					return false
 				})
 			)
