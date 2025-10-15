@@ -19,6 +19,7 @@ import { Effect } from "effect"
 
 // Constants - Import centralized constants to eliminate hardcoded values
 import { ASYNCAPI_VERSIONS } from "../../constants/index.js"
+import { DEFAULT_CONFIG } from "../../constants/defaults.js"
 
 // Standardized error handling
 import { 
@@ -106,13 +107,13 @@ export class DocumentBuilder {
 			// Build document with Railway programming
 			const documentResult = yield* railway.trySync(() => {
 				// Using centralized AsyncAPI version constant instead of hardcoded string
-				// TODO: Extract default info values to configuration object
+				// Using centralized default configuration values
 				const baseDocument = {
 					asyncapi: ASYNCAPI_VERSIONS.CURRENT,
 					info: {
-						title: "AsyncAPI Specification", // TODO: Make configurable
-						version: "1.0.0", // TODO: Make configurable
-						description: "Generated from TypeSpec with Effect.TS integration", // TODO: Make configurable
+						title: DEFAULT_CONFIG.OUTPUT_FILE.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+						version: "1.0.0",
+						description: `Generated from TypeSpec with ${DEFAULT_CONFIG.LIBRARY_NAME}`,
 					},
 					channels: {},
 					operations: {},
@@ -150,9 +151,6 @@ export class DocumentBuilder {
 		return Effect.gen(function* () {
 			// Validate document parameter using extracted helper
 			yield* validateDocumentParameter(document, "update document info")
-					context: { documentProvided: !!document, infoProvided: !!info }
-				}))
-			}
 
 			// Validate document.info exists
 			if (!document.info) {
@@ -187,7 +185,6 @@ export class DocumentBuilder {
 	 */
 	initializeComponents(document: AsyncAPIObject): Effect.Effect<AsyncAPIObject, StandardizedError> {
 		return Effect.gen(function* () {
-<<<<<<< HEAD
 			// Validate document parameter using extracted helper
 			yield* validateDocumentParameter(document, "initialize components")
 
@@ -210,7 +207,6 @@ export class DocumentBuilder {
 				if (!document.components.securitySchemes) {
 					document.components.securitySchemes = {}
 				}
->>>>>>> master
 
 				return document
 			}, { context: { operation: "components initialization" } })
@@ -225,7 +221,6 @@ export class DocumentBuilder {
 	 */
 	initializeDocumentStructure(document: AsyncAPIObject): Effect.Effect<AsyncAPIObject, StandardizedError> {
 		return Effect.gen(function* (this: DocumentBuilder) {
-<<<<<<< HEAD
 			// Validate document parameter using extracted helper
 			yield* validateDocumentParameter(document, "initialize document structure")
 
@@ -233,32 +228,7 @@ export class DocumentBuilder {
 			const structureInitResult = yield* railway.trySync(() => {
 				document.channels ??= {}
 				document.operations ??= {}
-=======
-			// Validate document parameter
-			if (!document) {
-				return yield* failWith(createError({
-					what: "Cannot initialize document structure on null/undefined document",
-					reassure: "This is a parameter validation issue",
-					why: "initializeDocumentStructure requires a valid AsyncAPIObject instance",
-					fix: "Ensure the document parameter is properly initialized before calling initializeDocumentStructure",
-					escape: "Create a new document using createInitialDocument first",
-					severity: "error" as const,
-					code: "INVALID_DOCUMENT_INSTANCE",
-					context: { documentProvided: !!document }
-				}))
-			}
 
-			// Safe structure initialization with Railway programming
-			const structureInitResult = yield* railway.trySync(() => {
-				if (!document.channels) {
-					document.channels = {}
-				}
-				
-				if (!document.operations) {
-					document.operations = {}
-				}
->>>>>>> master
-				
 				return document
 			}, { context: { operation: "document structure initialization" } })
 
