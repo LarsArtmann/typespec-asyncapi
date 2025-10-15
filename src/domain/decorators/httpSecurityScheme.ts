@@ -1,6 +1,5 @@
 export type HttpSecurityScheme = {
 	type: "http";
-<<<<<<< HEAD
 	/** HTTP authentication scheme - IANA registered schemes per RFC9110 */
 	scheme:
 		| "basic"           // RFC7617
@@ -11,15 +10,11 @@ export type HttpSecurityScheme = {
 		| "negotiate"       // RFC4559
 		| "oauth"           // RFC5849
 		| "scram-sha-1"     // RFC7804
-		| "scram-sha-256"   // RFC7804
+		| "scram-sha-256"   // RF7804
 		| "vapid"           // RFC8292
 		| "dpop"            // RFC9449 - Demonstrating Proof-of-Possession
 		| "gnap"            // RFC9635 - Grant Negotiation and Authorization Protocol
 		| "privatetoken";   // RFC Private Token - Privacy-preserving tokens
-=======
-	/** HTTP authentication scheme */
-	scheme: "basic" | "bearer" | "digest" | "hoba" | "mutual" | "negotiate" | "oauth" | "scram-sha-1" | "scram-sha-256" | "vapid";
->>>>>>> master
 	/** Bearer format (for bearer scheme) */
 	bearerFormat?: string;
 	/** Description of the security scheme */
