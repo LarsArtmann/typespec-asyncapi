@@ -173,7 +173,6 @@ export const emitterErrors = {
 		code: "EMITTER_INITIALIZATION_FAILED",
 		context: {reason, emitter},
 	}),
-<<<<<<< HEAD
 }
 
 /**
@@ -203,8 +202,6 @@ const transformError = (error: unknown, context?: Record<string, unknown>): Stan
 		code: "UNKNOWN_ERROR",
 		context: {originalError: error, ...context},
 	})
-=======
->>>>>>> master
 }
 
 /**
@@ -214,38 +211,12 @@ export const railway = {
 	/**
 	 * Transform standard JavaScript Error to StandardizedError
 	 */
-<<<<<<< HEAD
 	fromError: (error: Error, context?: Record<string, unknown>) => transformError(error, context),
-=======
-	fromError: (error: Error, context?: Record<string, unknown>) => createError({
-		what: "An unexpected error occurred",
-		reassure: "This is likely a temporary issue",
-		why: error.message,
-		fix: "Try the operation again, or report this issue if it persists",
-		escape: "Check your input and try with simpler data OR report this error at https://github.com/LarsArtmann/typespec-asyncapi/",
-		severity: "error" as const,
-		code: "UNEXPECTED_ERROR",
-		context: {originalError: error.message, stack: error.stack, ...context},
-	}),
->>>>>>> master
 
 	/**
 	 * Transform unknown error to StandardizedError
 	 */
-<<<<<<< HEAD
 	fromUnknown: (error: unknown, context?: Record<string, unknown>) => transformError(error, context),
-=======
-	fromUnknown: (error: unknown, context?: Record<string, unknown>) => createError({
-		what: "An unknown error occurred",
-		reassure: "The system is designed to handle unexpected situations",
-		why: `Unknown error type: ${typeof error} - ${String(error)}`,
-		fix: "Please report this error with the context information",
-		escape: "Try restarting the operation or using different input",
-		severity: "error" as const,
-		code: "UNKNOWN_ERROR",
-		context: {originalError: error, ...context},
-	}),
->>>>>>> master
 
 	/**
 	 * Safe execution with automatic error transformation
@@ -253,13 +224,7 @@ export const railway = {
 	trySync: <T>(fn: () => T, context?: Record<string, unknown>) =>
 		Effect.try({
 			try: fn,
-<<<<<<< HEAD
 			catch: (error) => transformError(error, context),
-=======
-			catch: (error) => error instanceof Error
-				? railway.fromError(error, context)
-				: railway.fromUnknown(error, context),
->>>>>>> master
 		}),
 
 	/**
@@ -268,13 +233,7 @@ export const railway = {
 	tryAsync: <T>(fn: () => Promise<T>, context?: Record<string, unknown>) =>
 		Effect.tryPromise({
 			try: fn,
-<<<<<<< HEAD
 			catch: (error) => transformError(error, context),
-=======
-			catch: (error) => error instanceof Error
-				? railway.fromError(error, context)
-				: railway.fromUnknown(error, context),
->>>>>>> master
 		}),
 
 	/**
@@ -414,7 +373,6 @@ export const validators = {
 			value.map((item, index) => elementValidator(item, index)),
 		)
 	},
-<<<<<<< HEAD
 }
 
 /**
@@ -517,6 +475,4 @@ export const safeTemplate = (template: string, ...values: unknown[]): string => 
 	})
 	
 	return result
-=======
->>>>>>> master
 }
