@@ -429,17 +429,23 @@ export class StateTransitionCoordinator {
     }
   }
 
-  /**
-   * Analyze transition patterns
-   */
-  analyzePatterns(history: readonly StateContext[]): {
-    const patterns = {
-      commonTransitions: {} as Record<string, number>,
-      errorPatterns: [] as Array<{ from: SystemState; to: SystemState; count: number }>,
-      recoveryPatterns: [] as Array<{ from: SystemState; to: SystemState; count: number }>,
-      cyclicPatterns: [] as Array<Array<SystemState>>,
-      deadEndStates: [] as SystemState[]
-    }
+	/**
+	 * Analyze transition patterns
+	 */
+	analyzePatterns(history: readonly StateContext[]): {
+		commonTransitions: Record<string, number>
+		errorPatterns: Array<{ from: SystemState; to: SystemState; count: number }>
+		recoveryPatterns: Array<{ from: SystemState; to: SystemState; count: number }>
+		cyclicPatterns: Array<Array<SystemState>>
+		deadEndStates: SystemState[]
+	} {
+		const patterns = {
+			commonTransitions: {} as Record<string, number>,
+			errorPatterns: [] as Array<{ from: SystemState; to: SystemState; count: number }>,
+			recoveryPatterns: [] as Array<{ from: SystemState; to: SystemState; count: number }>,
+			cyclicPatterns: [] as Array<Array<SystemState>>,
+			deadEndStates: [] as SystemState[]
+		}
 
     // Count transitions
     const transitionCounts = history.reduce((counts, context) => {
