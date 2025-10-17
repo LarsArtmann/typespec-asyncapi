@@ -19,7 +19,7 @@ export interface CacheEntry {
   readonly key: string;
   readonly value: TypeSpecFileInfo;
   readonly timestamp: number;
-  readonly ttl: number;
+  readonly TTL: number; // Uppercase for consistency
   readonly size: number;
 }
 
@@ -193,22 +193,22 @@ export class LRUCache {
 	/**
 	 * Check if cache contains key
 	 * @param key - Cache key to check
-	 * @returns Effect<boolean, never> - Success boolean, never fails
+	 * @returns boolean - True if key exists and is not expired
 	 */
-	has(key: string): Effect.Effect<boolean, never> {
-		return Effect.gen(this, function* () {
-			const entry = this.cache.get(key);
-			
-			if (!entry) {
-				return false;
-			}
+	has(key: string): boolean {
+		const entry = this.cache.get(key);
+		
+		if (!entry) {
+			return false;
+		}
 
-			// Check TTL
-			if (Date.now() - entry.timestamp > entry.ttl) {
-				return false;
-			}
+		// Check TTL
+		if (Date.now() - entry.timestamp > entry.TTL) {
+			return false;
+		}
 
-      yield* Effect.log(`✅ Cache has: ${key}`);
+		return true;
+	}
       return true;
     });
   }
