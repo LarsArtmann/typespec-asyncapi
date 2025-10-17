@@ -615,8 +615,6 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 				
 				// Generate performance report with error handling
 				const finalStatus = yield* Effect.sync(() => this.performanceMonitor.getPerformanceStatus()).pipe(
-				// Generate performance report with error handling
-				const finalStatus = yield* Effect.sync(() => this.performanceMonitor.getPerformanceStatus()).pipe(
 					Effect.mapError(error => `Performance status retrieval failed: ${safeStringify(error)}`)
 				)
 				

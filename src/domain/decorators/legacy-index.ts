@@ -133,7 +133,6 @@ export function createAsyncAPIDecorators(program: Program): Effect.Effect<void, 
 				if (typeof fn !== "function") {
 				return Effect.fail(new Error(`Decorator function ${name} is not a function`))
 				}
->>>>>>> master
 			}, { context: { decoratorName: name, functionType: typeof fn } })
 			.pipe(Effect.mapError(error => createError({
 				what: `AsyncAPI decorator function '${name}' is invalid`,

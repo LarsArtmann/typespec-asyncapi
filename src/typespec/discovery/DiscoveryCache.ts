@@ -190,23 +190,23 @@ export class LRUCache {
       return entry.value;
     });
 
-  /**
-   * Check if cache contains key
-   * @param key - Cache key to check
-   * @returns Promise resolving to boolean
-   */
-  has(key: string): Effect.Effect<boolean, Error> {
-    return Effect.gen(function* () {
-      const entry = this.cache.get(key);
-      
-      if (!entry) {
-        return false;
-      }
+	/**
+	 * Check if cache contains key
+	 * @param key - Cache key to check
+	 * @returns Effect<boolean, never> - Success boolean, never fails
+	 */
+	has(key: string): Effect.Effect<boolean, never> {
+		return Effect.gen(this, function* () {
+			const entry = this.cache.get(key);
+			
+			if (!entry) {
+				return false;
+			}
 
-      // Check TTL
-      if (Date.now() - entry.timestamp > entry.tTL) {
-        return false;
-      }
+			// Check TTL
+			if (Date.now() - entry.timestamp > entry.ttl) {
+				return false;
+			}
 
       yield* Effect.log(`✅ Cache has: ${key}`);
       return true;

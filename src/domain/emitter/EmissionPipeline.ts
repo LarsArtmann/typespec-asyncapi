@@ -61,12 +61,13 @@ export class EmissionPipeline implements IPipelineService {
 			Effect.gen(function* () {
 				yield* Effect.log("🚀 Initializing EmissionPipeline services...")
 
-				return {
-					documentBuilder: new DocumentBuilder(),
-					discoveryService: new DiscoveryService(),
-					validationService: new ValidationService(),
-				}
+		return {
+			documentBuilder: new DocumentBuilder(),
+			discoveryService: new DiscoveryService(),
+			validationService: new ValidationService(),
 		}
+			})
+		)
 	}
 
 	/**
