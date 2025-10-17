@@ -624,11 +624,18 @@ export class TransitionStateUtils {
     }
   }
 
-  /**
-   * Analyze state transition history
-   */
-  static analyzeHistory(history: readonly StateContext[]): {
-    return {
+	/**
+	 * Analyze state transition history
+	 */
+	static analyzeHistory(history: readonly StateContext[]): {
+		totalTransitions: number
+		uniqueStates: SystemState[]
+		terminalTransitions: number
+		errorTransitions: number
+		averageTransitionTime: number
+		stateTransitions: SystemState[]
+	} {
+		return {
       totalTransitions: history.length,
       uniqueStates: [...new Set(history.map(ctx => ctx.state))],
       terminalTransitions: history.filter(ctx => ctx.state === SystemState.TERMINATED).length,
