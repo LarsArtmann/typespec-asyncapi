@@ -1,3 +1,5 @@
+import type { StandardizedError } from "./StandardizedError.js"
+
 /**
  * Standardized error classes following Effect.TS patterns
  */

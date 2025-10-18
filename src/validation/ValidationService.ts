@@ -8,7 +8,7 @@
  * @since v1.1.0
  */
 
-import { Effect } from "effect"
+import { Effect, Schedule } from "effect"
 import { RuntimeValidator, ValidationResult, ValidatorFactory } from "./RuntimeValidator.js"
 import { AsyncAPIObject, ServerConfig } from "../types/branded-types.js"
 import { PERFORMANC_CONSTANTS } from "../constants/defaults.js"
@@ -197,7 +197,15 @@ export class ValidationService {
 					Schedule.compose(Schedule.recurs(PERFORMANC_CONSTANTS.MAX_RETRY_ATTEMPTS - 1))
 				)),
 				Effect.tapError(attempt => Effect.log(`⚠️ JSON parsing attempt failed, retrying: ${attempt}`)),
-				Effect.mapError(error => StandardizedError.invalidAsyncAPI(
+				Effect.mapError(error => createError({
+					what: "AsyncAPI document validation failed",
+					reassure: "This is a validation error that can be fixed by correcting the AsyncAPI specification",
+					why: `Validation failed: ${error instanceof Error ? error.message : JSON.stringify(error)}`,
+					fix: "Check the AsyncAPI specification for syntax errors and missing required fields",
+					escape: "Use an online AsyncAPI validator to identify issues",
+					severity: "error" as const,
+					code: "VALIDATION_FAILED"
+				}))
 					["Failed to parse JSON/YAML content after retries"],
 					{ originalError: error.why, content: content.substring(0, 200) + "..." }
 				)),
@@ -238,14 +246,16 @@ export class ValidationService {
 				yield* Effect.log(`❌ Document content validation failed:`)
 				result.errors.forEach((error: string) => Effect.runSync(Effect.log(`  - ${error}`)))
 				
-				throw StandardizedError.invalidAsyncAPI([
-					`Document validation failed with ${result.errors.length} errors`,
-					{ 
-						originalError: result.errors.join("; "), 
-						content: content.substring(0, 200) + "...",
-						warnings: result.warnings
-					}
-				])
+				const validationError = createError({
+					what: "Document validation failed",
+					reassure: "This is a validation error that can be fixed by correcting the AsyncAPI specification",
+					why: `Document validation failed with ${result.errors.length} errors: ${result.errors.join(", ")}`,
+					fix: "Check the AsyncAPI specification for syntax errors and missing required fields",
+					escape: "Use an online AsyncAPI validator to identify issues",
+					severity: "error" as const,
+					code: "DOCUMENT_VALIDATION_FAILED"
+				})
+				throw new Error(validationError.what + ": " + validationError.why)
 			}
 		})
 	}
