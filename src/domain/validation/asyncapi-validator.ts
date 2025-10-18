@@ -97,7 +97,7 @@ export class AsyncAPIValidator {
 					}
 					return docObject
 				},
-				catch: (error) => new Error(`Version validation failed: ${error instanceof Error ? error.message : safeStringify(error)}`)
+				catch: (error) => new Error(`Version validation failed: ${error instanceof Error ? error.message : JSON.stringify(error)}`)
 			}).pipe(
 				Effect.catchAll((error) => Effect.sync(() => {
 					const duration = performance.now() - startTime
@@ -126,7 +126,7 @@ export class AsyncAPIValidator {
 			// Use the REAL AsyncAPI parser with Effect tryPromise wrapper, retry patterns, and timeout
 			const parseResult = yield* Effect.tryPromise({
 				try: () => self.parser.parse(content),
-				catch: (error) => new Error(`Parser failed: ${error instanceof Error ? error.message : safeStringify(error)}`)
+				catch: (error) => new Error(`Parser failed: ${error instanceof Error ? error.message : JSON.stringify(error)}`)
 			}).pipe(
 				// Add timeout for long-running parsing operations (30 seconds)
 				Effect.timeout("30 seconds"),
@@ -241,7 +241,7 @@ export class AsyncAPIValidator {
 			// Use Effect.tryPromise to wrap Node.js file reading with proper error handling
 			const content = yield* Effect.tryPromise({
 				try: () => NodeFS.readFile(filePath, "utf-8"),
-				catch: (error) => new Error(`Failed to read file: ${error instanceof Error ? error.message : safeStringify(error)}`)
+				catch: (error) => new Error(`Failed to read file: ${error instanceof Error ? error.message : JSON.stringify(error)}`)
 			}).pipe(
 				Effect.catchAll((error) => Effect.sync(() => {
 					Effect.runSync(Effect.logError(`File reading failed: ${error.message}`))

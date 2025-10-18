@@ -98,11 +98,16 @@ export function $security(
 }
 
 /**
- * Validate security scheme configuration
+ * Enhanced security scheme validation with @secret decorator support for TypeSpec 1.5.0
+ * 
+ * This validation identifies fields that should use @secret decorator in TypeSpec 1.5.0:
+ * - API key values, bearer tokens, OAuth credentials, SASL mechanisms
+ * - X.509 certificates, encryption keys, OpenID Connect URLs
  */
-function validateSecurityScheme(scheme: SecurityScheme): { valid: boolean; errors: string[]; warnings: string[] } {
+function validateSecurityScheme(scheme: SecurityScheme): { valid: boolean; errors: string[]; warnings: string[]; secretFields: string[] } {
 	const errors: string[] = []
 	const warnings: string[] = []
+	const secretFields: string[] = []
 
 	switch (scheme.type) {
 		case "apiKey": {
@@ -115,6 +120,8 @@ function validateSecurityScheme(scheme: SecurityScheme): { valid: boolean; error
 			if (!validApiKeyLocations.includes(apiKeyScheme.in)) {
 				errors.push(`Invalid API key location: ${apiKeyScheme.in}. Must be one of: ${validApiKeyLocations.join(", ")}`)
 			}
+			// TypeSpec 1.5.0: API key name should use @secret decorator
+			secretFields.push("name")
 			break
 		}
 
@@ -128,8 +135,12 @@ function validateSecurityScheme(scheme: SecurityScheme): { valid: boolean; error
 			if (!validHttpSchemes.includes(httpScheme.scheme)) {
 				errors.push(`Invalid HTTP scheme: ${httpScheme.scheme}. Must be one of: ${validHttpSchemes.join(", ")}`)
 			}
-			if (httpScheme.scheme === "bearer" && !httpScheme.bearerFormat) {
-				warnings.push("Bearer scheme should specify bearerFormat for clarity")
+			if (httpScheme.scheme === "bearer") {
+				if (!httpScheme.bearerFormat) {
+					warnings.push("Bearer scheme should specify bearerFormat for clarity")
+				}
+				// TypeSpec 1.5.0: Bearer format and tokens should use @secret decorator
+				secretFields.push("bearerFormat")
 			}
 			break
 		}
@@ -200,7 +211,7 @@ function validateSecurityScheme(scheme: SecurityScheme): { valid: boolean; error
 			errors.push(`Unknown security scheme type: ${(scheme as { type?: string }).type ?? "unknown"}`)
 	}
 
-	return {valid: errors.length === 0, errors, warnings}
+	return {valid: errors.length === 0, errors, warnings, secretFields: []}
 }
 
 /**

@@ -77,7 +77,7 @@ import type {AsyncAPIObject} from "@asyncapi/parser/esm/spec-types/v3.js"
 import {EmissionPipeline} from "./EmissionPipeline.js"
 import {DocumentBuilder} from "./DocumentBuilder.js"
 import {PerformanceMonitor} from "../../infrastructure/performance/PerformanceMonitor.js"
-import {PluginRegistry} from "../../infrastructure/adapters/PluginRegistry.js"
+
 import {DEFAULT_SERIALIZATION_FORMAT} from "../models/serialization-format-option.js"
 
 import type { IAsyncAPIEmitter } from "./IAsyncAPIEmitter.js"
@@ -501,7 +501,7 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 
 		if (declarations.length === 0) {
 			Effect.log(`⚠️ SOURCEFILEMETHOD: No declarations found - using documentGenerator serialization`)
-			const content = Effect.runSync(this.documentGenerator.serializeDocument(this.asyncApiDoc, fileType))
+			const content = Effect.runSync(this.documentGenerator.serializeDocument(this.asyncApiDoc, "yaml"))
 			return {
 				path: sourceFile.path,
 				contents: content,
@@ -509,7 +509,7 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 		}
 
 		// Get the first declaration's value (our AsyncAPI document content)
-		const content = (declarations[0]?.value as string) || Effect.runSync(this.documentGenerator.serializeDocument(this.asyncApiDoc, fileType))
+		const content = (declarations[0]?.value as string) || Effect.runSync(this.documentGenerator.serializeDocument(this.asyncApiDoc, "yaml"))
 
 		Effect.log(`🔍 SOURCEFILEMETHOD: Generated content length: ${content.length}`)
 
@@ -604,9 +604,7 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 
 				// Run pipeline with proper error handling
 				yield* this.pipeline.executePipeline(context).pipe(
-				yield* this.pipeline.executePipeline(context).pipe(
-					Effect.mapError(error => `Pipeline execution failed: ${safeStringify(error)}`)
-				)
+					Effect.mapError(error => new Error(`Pipeline execution failed: ${error instanceof Error ? error.message : JSON.stringify(error)}`))
 				)
 
 				// Calculate execution metrics

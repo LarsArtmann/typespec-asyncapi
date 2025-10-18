@@ -57,7 +57,7 @@ export class EmissionPipeline implements IPipelineService {
 	 */
 	constructor() {
 		// Service initialization with Effect.TS Railway programming
-		const initializationResult = Effect.runSync(
+		void Effect.runSync(
 			Effect.gen(function* () {
 				yield* Effect.log("🚀 Initializing EmissionPipeline services...")
 
@@ -68,6 +68,11 @@ export class EmissionPipeline implements IPipelineService {
 		}
 			})
 		)
+		
+		// Initialize private properties
+		this.documentBuilder = new DocumentBuilder()
+		this.discoveryService = new DiscoveryService()
+		this.validationService = new ValidationService()
 	}
 
 	/**

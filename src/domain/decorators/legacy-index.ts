@@ -131,8 +131,9 @@ export function createAsyncAPIDecorators(program: Program): Effect.Effect<void, 
 		for (const { name, fn } of decoratorFunctions) {
 			yield* railway.trySync(() => {
 				if (typeof fn !== "function") {
-				return Effect.fail(new Error(`Decorator function ${name} is not a function`))
+					return Effect.fail(new Error(`Decorator function ${name} is not a function`))
 				}
+				return; // Explicit return to satisfy all code paths
 			}, { context: { decoratorName: name, functionType: typeof fn } })
 			.pipe(Effect.mapError(error => createError({
 				what: `AsyncAPI decorator function '${name}' is invalid`,

@@ -7,6 +7,17 @@ import type {SymmetricEncryptionSecurityScheme} from "./symmetricEncryptionSecur
 import type {X509SecurityScheme} from "./x509SecurityScheme.js"
 import type {SaslSecurityScheme} from "./saslSecurityScheme.js"
 
+/**
+ * Enhanced security scheme with @secret decorator support for TypeSpec 1.5.0
+ * 
+ * Secret fields that should use @secret decorator:
+ * - apiKeys: The actual key value
+ * - bearerFormat: Token format strings  
+ * - oauth2Flows: Client secrets and tokens
+ * - openIdConnectUrl: URL tokens
+ * - saslMechanism: Authentication credentials
+ * - encryptionKeys: Private keys and secrets
+ */
 export type SecurityScheme =
 	| ApiKeySecurityScheme
 	| HttpSecurityScheme
