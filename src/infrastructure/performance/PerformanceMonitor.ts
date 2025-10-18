@@ -24,12 +24,6 @@ const DEFAULT_MEMORY_THRESHOLD_MB = 500 // 500MB
 const DEFAULT_MEMORY_LEAK_DETECTION_RATE = 0.1 // MB/sec
 const MAX_SNAPSHOTS_RETAINED = 100
 
-// Performance monitoring constants
-const DEFAULT_MONITORING_INTERVAL_MS = 5000 // 5 seconds
-const DEFAULT_MEMORY_THRESHOLD_MB = 500 // 500MB
-const DEFAULT_MEMORY_LEAK_DETECTION_RATE = 0.1 // MB/sec
-const MAX_SNAPSHOTS_RETAINED = 100
-
 export type PerformanceConfig = {
 	enableMetrics: boolean
 	enableMemoryMonitoring: boolean

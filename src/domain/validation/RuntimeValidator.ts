@@ -79,14 +79,20 @@ export const SecuritySchemeObjectSchema: Schema.Schema<SecuritySchemeObject> = S
   type: Schema.String.pipe(Schema.minLength(1))
 })
 
-export const AsyncAPIObjectSchema: Schema.Schema<AsyncAPIObject> = Schema.Struct({
+export const AsyncAPIObjectSchema = Schema.Struct({
   asyncapi: AsyncAPIVersionSchema,
   info: InfoSectionSchema,
-  servers: Schema.record(Schema.String, ServerObjectSchema).pipe(
-    Schema.optionalWith({ defaultValue: undefined })
+  servers: Schema.optional(
+    Schema.Record({
+      key: Schema.String,
+      value: ServerObjectSchema
+    })
   ),
-  channels: Schema.record(Schema.String, ChannelObjectSchema).pipe(
-    Schema.optionalWith({ defaultValue: undefined })
+  channels: Schema.optional(
+    Schema.Record({
+      key: Schema.String,
+      value: ChannelObjectSchema
+    })
   )
 })
 

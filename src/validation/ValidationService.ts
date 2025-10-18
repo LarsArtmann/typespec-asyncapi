@@ -110,49 +110,22 @@ export class ValidationService {
 			Effect.gen(function* () {
 				yield* Effect.log(`🔍 Validating AsyncAPI document content...`)
 				
-				// Add retry pattern for transient validation failures
-				const result = yield* Effect.tryPromise({
-					try: async () => {
-						// Basic validation simulation
-						if (!content.includes('asyncapi')) {
-							throw new Error('Missing asyncapi field')
-						}
-						return {
-							isValid: true,
-							errors: [] as string[],
-							warnings: [] as string[]
-						}
-					},
-					catch: (error) => createError({
+				// Basic validation
+				if (!content.includes('asyncapi')) {
+					const validationError = createError({
 						what: "AsyncAPI document validation failed",
 						reassure: "This is a validation error that can be fixed by correcting the AsyncAPI specification",
-						why: `Validation failed: ${error instanceof Error ? error.message : JSON.stringify(error)}`,
+						why: "Missing asyncapi field",
 						fix: "Check the AsyncAPI specification for syntax errors and missing required fields",
 						escape: "Use an online AsyncAPI validator to identify issues",
 						severity: "error" as const,
 						code: "VALIDATION_FAILED"
 					})
-				}).pipe(
-					Effect.retry(Schedule.exponential("100 millis").pipe(
-						Schedule.compose(Schedule.recurs(3))
-					))
-				)
-				
-				if (result.isValid) {
-					yield* Effect.log(`✅ Document content validation passed!`)
-					return content
-				} else {
-					const validationError = createError({
-						what: "Document validation failed",
-						reassure: "This is a validation error that can be fixed by correcting the AsyncAPI specification",
-						why: `Document validation failed with ${result.errors.length} errors: ${result.errors.join(", ")}`,
-						fix: "Check the AsyncAPI specification for syntax errors and missing required fields",
-						escape: "Use an online AsyncAPI validator to identify issues",
-						severity: "error" as const,
-						code: "DOCUMENT_VALIDATION_FAILED"
-					})
 					throw new Error(validationError.what + ": " + validationError.why)
 				}
+				
+				yield* Effect.log(`✅ Document content validation passed!`)
+				return content
 			})
 		)
 	}
