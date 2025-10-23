@@ -32,7 +32,34 @@ jobs:
       
     - name: TypeScript build check
       run: bun run build
-      
+
+    - name: Smoke Test - Validate Emitter Works
+      run: |
+        echo "🧪 Running smoke test to verify emitter generates AsyncAPI 3.0..."
+        cd examples/smoke
+        tsp compile . --emit @typespec/asyncapi
+
+        # Verify output file exists
+        if [ ! -f "tsp-output/@lars-artmann/typespec-asyncapi/AsyncAPI.yaml" ]; then
+          echo "❌ FAIL: AsyncAPI output file not generated"
+          exit 1
+        fi
+
+        # Verify it's valid AsyncAPI 3.0
+        if ! grep -q "asyncapi: 3.0.0" "tsp-output/@lars-artmann/typespec-asyncapi/AsyncAPI.yaml"; then
+          echo "❌ FAIL: Output is not AsyncAPI 3.0.0"
+          exit 1
+        fi
+
+        # Verify it contains expected channels
+        if ! grep -q "user.signup" "tsp-output/@lars-artmann/typespec-asyncapi/AsyncAPI.yaml"; then
+          echo "❌ FAIL: Expected channel 'user.signup' not found"
+          exit 1
+        fi
+
+        echo "✅ PASS: Smoke test successful - emitter generates valid AsyncAPI 3.0"
+        cat tsp-output/@lars-artmann/typespec-asyncapi/AsyncAPI.yaml
+
     - name: Type checking
       run: bun run typecheck
       

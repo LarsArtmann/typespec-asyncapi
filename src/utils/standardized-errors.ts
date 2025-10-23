@@ -176,27 +176,23 @@ export const emitterErrors = {
 }
 
 /**
- * Railway programming utilities for Effect.TS
+ * Transform any error to StandardizedError - eliminates duplication
  */
-export const railway = {
-	/**
-	 * Transform standard JavaScript Error to StandardizedError
-	 */
-	fromError: (error: Error, context?: Record<string, unknown>) => createError({
-		what: "An unexpected error occurred",
-		reassure: "This is likely a temporary issue",
-		why: error.message,
-		fix: "Try the operation again, or report this issue if it persists",
-		escape: "Check your input and try with simpler data OR report this error at https://github.com/LarsArtmann/typespec-asyncapi/",
-		severity: "error" as const,
-		code: "UNEXPECTED_ERROR",
-		context: {originalError: error.message, stack: error.stack, ...context},
-	}),
+const transformError = (error: unknown, context?: Record<string, unknown>): StandardizedError => {
+	if (error instanceof Error) {
+		return createError({
+			what: "An unexpected error occurred",
+			reassure: "This is likely a temporary issue",
+			why: error.message,
+			fix: "Try the operation again, or report this issue if it persists",
+			escape: "Check your input and try with simpler data OR report this error at https://github.com/LarsArtmann/typespec-asyncapi/",
+			severity: "error" as const,
+			code: "UNEXPECTED_ERROR",
+			context: {originalError: error.message, stack: error.stack, ...context},
+		})
+	}
 
-	/**
-	 * Transform unknown error to StandardizedError
-	 */
-	fromUnknown: (error: unknown, context?: Record<string, unknown>) => createError({
+	return createError({
 		what: "An unknown error occurred",
 		reassure: "The system is designed to handle unexpected situations",
 		why: `Unknown error type: ${typeof error} - ${String(error)}`,
@@ -205,7 +201,22 @@ export const railway = {
 		severity: "error" as const,
 		code: "UNKNOWN_ERROR",
 		context: {originalError: error, ...context},
-	}),
+	})
+}
+
+/**
+ * Railway programming utilities for Effect.TS
+ */
+export const railway = {
+	/**
+	 * Transform standard JavaScript Error to StandardizedError
+	 */
+	fromError: (error: Error, context?: Record<string, unknown>) => transformError(error, context),
+
+	/**
+	 * Transform unknown error to StandardizedError
+	 */
+	fromUnknown: (error: unknown, context?: Record<string, unknown>) => transformError(error, context),
 
 	/**
 	 * Safe execution with automatic error transformation
@@ -213,9 +224,7 @@ export const railway = {
 	trySync: <T>(fn: () => T, context?: Record<string, unknown>) =>
 		Effect.try({
 			try: fn,
-			catch: (error) => error instanceof Error
-				? railway.fromError(error, context)
-				: railway.fromUnknown(error, context),
+			catch: (error) => transformError(error, context),
 		}),
 
 	/**
@@ -224,9 +233,7 @@ export const railway = {
 	tryAsync: <T>(fn: () => Promise<T>, context?: Record<string, unknown>) =>
 		Effect.tryPromise({
 			try: fn,
-			catch: (error) => error instanceof Error
-				? railway.fromError(error, context)
-				: railway.fromUnknown(error, context),
+			catch: (error) => transformError(error, context),
 		}),
 
 	/**
@@ -366,4 +373,106 @@ export const validators = {
 			value.map((item, index) => elementValidator(item, index)),
 		)
 	},
+}
+
+/**
+ * Safe string conversion utilities for template literals
+ * 
+ * Addresses @typescript-eslint/restrict-template-expressions errors
+ * by providing type-safe string conversion for Effect.TS errors and unknown values
+ */
+
+/**
+ * Safely convert any value to string for template literals
+ * 
+ * @param value - The value to convert (can be anything including Effect errors)
+ * @param fallback - Optional fallback string if conversion fails
+ * @returns Safe string representation
+ */
+export const safeStringify = (value: unknown, fallback = "unknown"): string => {
+	// Handle null/undefined
+	if (value === null) return "null"
+	if (value === undefined) return "undefined"
+	
+	// Handle primitives
+	if (typeof value === "string") return value
+	if (typeof value === "number") return String(value)
+	if (typeof value === "boolean") return String(value)
+	if (typeof value === "bigint") return `${value}n`
+	if (typeof value === "symbol") return value.toString()
+	
+	// Handle StandardizedError
+	if (isStandardizedError(value)) {
+		return `${value.what} (${value.code})`
+	}
+	
+	// Handle Error objects
+	if (value instanceof Error) {
+		return `${value.name}: ${value.message}`
+	}
+	
+	// Handle objects with toString using Effect.try
+	if (typeof value.toString === "function" && value.toString !== Object.prototype.toString) {
+		const toStringResult = Effect.runSync(
+			Effect.try({
+				try: () => value.toString(),
+				catch: () => null // Return null on error to fall through
+			})
+		)
+
+		if (toStringResult && typeof toStringResult === "string" && toStringResult.length > 0 && toStringResult !== "[object Object]") {
+			return toStringResult
+		}
+	}
+
+	// Handle objects using Effect.try
+	if (typeof value === "object") {
+		const jsonResult = Effect.runSync(
+			Effect.try({
+				try: () => JSON.stringify(value),
+				catch: () => null // Return null to trigger fallback
+			})
+		)
+
+		if (jsonResult) {
+			if (jsonResult.length > 200) {
+				return `${jsonResult.substring(0, 200)}...`
+			}
+			return jsonResult
+		}
+		return fallback
+	}
+	
+	// Fallback for functions or other types
+	return fallback
+}
+
+/**
+ * Type guard for StandardizedError
+ */
+export const isStandardizedError = (value: unknown): value is StandardizedError => {
+	return typeof value === "object" && 
+		   value !== null && 
+		   "what" in value && 
+		   "why" in value && 
+		   "fix" in value &&
+		   typeof value.what === "string"
+}
+
+/**
+ * Safe template literal helper for common error patterns
+ * 
+ * @param template - Template string with ${value} placeholders
+ * @param values - Values to safely interpolate
+ * @returns Safe string with all values converted safely
+ */
+export const safeTemplate = (template: string, ...values: unknown[]): string => {
+	let result = template
+	
+	values.forEach((value, index) => {
+		const safeValue = safeStringify(value)
+		result = result.replace(new RegExp(`\\$\\{${index}\\}`, "g"), safeValue)
+	})
+	
+	return result
 }

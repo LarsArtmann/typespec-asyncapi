@@ -33,7 +33,7 @@ export const kafkaPlugin: ProtocolPlugin = {
 		yield* Effect.log("🔧 Generating Kafka operation binding")
 		
 		// Extract config from operation or use defaults
-		const config = (operation as {config?: KafkaOperationBindingConfig})?.config || {}
+		const config = (operation as {config?: KafkaOperationBindingConfig})?.config ?? {}
 
 		const binding: KafkaOperationBinding = {
 			bindingVersion: "0.5.0",
@@ -49,7 +49,7 @@ export const kafkaPlugin: ProtocolPlugin = {
 		yield* Effect.log("📨 Generating Kafka message binding")
 		
 		// Extract config from message or use defaults
-		const config = (message as {config?: KafkaMessageBindingConfig})?.config || {}
+		const config = (message as {config?: KafkaMessageBindingConfig})?.config ?? {}
 
 		const binding: KafkaMessageBinding = {
 			bindingVersion: "0.5.0",
@@ -70,7 +70,7 @@ export const kafkaPlugin: ProtocolPlugin = {
 		yield* Effect.log("🖥️  Generating Kafka server binding")
 
 		// Extract config from server or use defaults
-		const config = (server as {config?: Partial<KafkaServerBinding>})?.config || {}
+		const config = (server as {config?: Partial<KafkaServerBinding>})?.config ?? {}
 		
 		const binding: KafkaServerBinding = {
 			bindingVersion: "0.5.0",
@@ -90,14 +90,14 @@ export const kafkaPlugin: ProtocolPlugin = {
 		
 		// Extract config from channel or use defaults with proper typing
 		const channelData = channel as {config?: KafkaChannelBindingConfig & {topic: string}} | Record<string, unknown>
-		const rawConfig = ('config' in channelData ? channelData.config : {}) || {}
+		const rawConfig = ('config' in channelData ? channelData.config : {}) ?? {}
 		
 		// Type-safe extraction with proper casting
 		const config = rawConfig as KafkaChannelBindingConfig
 		
 		const binding: KafkaChannelBinding = {
 			bindingVersion: "0.5.0",
-			topic: (config.topic as string) || "default-topic",
+			topic: (config.topic as string) ?? "default-topic",
 			...(config.partitions ? { partitions: config.partitions } : {}),
 			...(config.replicas ? { replicas: config.replicas } : {}),
 			...(config.topicConfiguration ? { topicConfiguration: config.topicConfiguration } : {}),

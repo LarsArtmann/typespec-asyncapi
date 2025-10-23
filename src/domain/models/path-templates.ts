@@ -5,6 +5,7 @@ import {Effect} from "effect"
 import type {TemplateValidationResult} from "./template-validation-result.js"
 import type {PathTemplateContext} from "./path-template-context.js"
 import type {PathTemplateVariables} from "./path-template-variables.js"
+import {safeStringify} from "../../utils/standardized-errors.js"
 
 /**
  * Template variable patterns for validation and replacement
@@ -75,7 +76,7 @@ export function detectCommandName(): string {
 	// Look for common TypeSpec command names
 	for (const arg of argv) {
 		if (arg.includes("typespec") || arg.includes("tsp")) {
-			const basename = arg.split(/[/\\]/).pop() || ""
+			const basename = arg.split(/[/\\]/).pop() ?? ""
 			if (basename.startsWith("typespec") || basename.startsWith("tsp")) {
 				return basename.replace(/\.(js|exe)$/, "")
 			}
@@ -83,7 +84,7 @@ export function detectCommandName(): string {
 	}
 
 	// Check NODE_OPTIONS or other env vars
-	const nodeOptions = process.env['NODE_OPTIONS'] || ""
+	const nodeOptions = process.env['NODE_OPTIONS'] ?? ""
 	if (nodeOptions.includes("typespec")) {
 		return "typespec"
 	}
@@ -100,7 +101,7 @@ export function detectCommandName(): string {
  * @returns Project root directory path
  */
 export function detectProjectRoot(startPath?: string): string {
-	const searchPath = startPath || cwd()
+	const searchPath = startPath ?? cwd()
 
 	// Configuration files that indicate project root
 	const configFiles = [
@@ -127,7 +128,7 @@ export function detectProjectRoot(startPath?: string): string {
 				}).pipe(
 					Effect.catchAll((error) =>
 						Effect.gen(function* () {
-							yield* Effect.logWarning(`⚠️  File check failed for ${configPath}: ${error}`)
+							yield* Effect.logWarning(`⚠️  File check failed for ${configPath}: ${safeStringify(error)}`)
 							return false
 						})
 					)
@@ -158,14 +159,14 @@ export function detectProjectRoot(startPath?: string): string {
  * @returns Template variables for path resolution
  */
 export function createTemplateVariables(context: PathTemplateContext): PathTemplateVariables {
-	const workingDir = context.cwd || cwd()
+	const workingDir = context.cwd ?? cwd()
 	const projectRoot = detectProjectRoot(workingDir)
 
 	return {
 		cmd: detectCommandName(),
 		"project-root": projectRoot,
 		"emitter-name": "asyncapi",
-		"output-dir": context.emitterOutputDir || join(projectRoot, "generated"),
+		"output-dir": context.emitterOutputDir ?? join(projectRoot, "generated"),
 	}
 }
 
@@ -216,9 +217,9 @@ export function resolvePathTemplateWithValidation(
 	const validation = validatePathTemplate(pathTemplate)
 
 	if (!validation.isValid) {
-		throw new Error(
+		Effect.runSync(Effect.die(new Error(
 			`Path template validation failed: ${validation.errors.join("; ")}`,
-		)
+		)))
 	}
 
 	// Create template variables from context

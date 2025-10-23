@@ -21,7 +21,7 @@
 // export { createTester } from "./tester.js";
 // export type { BasicTestRunner, EmitterTester, EmitterTesterInstance, JsFile, MockFile, TestCompileOptions, TestCompileResult, TestEmitterCompileResult, TestFileSystem as TestFileSystem, TestFiles, TestHost, TestHostConfig, TestHostError, Tester, TesterInstance, TypeSpecTestLibrary, TypeSpecTestLibraryInit, } from "./types.js";
 // //# sourceMappingURL=index.d.ts.map
-import {createTester} from "@typespec/compiler/testing"
+import {createTestHost, createTester} from "@typespec/compiler/testing"
 import type {Tester} from "@typespec/compiler/testing"
 import type {Model, Namespace, Operation, Program, Type} from "@typespec/compiler"
 import {resolvePath} from "@typespec/compiler"

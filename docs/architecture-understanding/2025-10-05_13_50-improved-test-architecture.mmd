@@ -1,0 +1,108 @@
+graph TD
+    subgraph "Test Infrastructure (IMPROVED)"
+        TH[Test Helpers - DOCUMENTED]
+        TH --> CATH[createAsyncAPITestHost<br/>📝 For: Decorator Registration Only]
+        TH --> CAS[compileAsyncAPISpec<br/>📝 For: Domain/Integration/E2E Tests]
+        TH --> CASWR[compileAsyncAPISpecRaw<br/>📝 For: Advanced Use Cases]
+        TH --> AA[AsyncAPIAssertions<br/>📝 Reusable Validation Patterns]
+        TH --> ST[Snapshot Testing<br/>📝 AsyncAPI Output Comparison]
+    end
+
+    subgraph "Test Categories (STANDARDIZED)"
+        UT[Unit Tests<br/>✅ Proper Helper Usage]
+        IT[Integration Tests<br/>✅ AsyncAPI Validation]
+        ET[E2E Tests<br/>✅ Real-World Scenarios]
+        DT[Domain Tests<br/>✅ RETROFITTED with AsyncAPI Assertions]
+        VT[Validation Tests<br/>✅ AsyncAPI Spec Compliance]
+    end
+
+    subgraph "Standardized Helper Usage"
+        CATH --> |ONLY Used by| UT
+        CAS --> |Primary for| IT
+        CAS --> |Primary for| ET
+        CAS --> |Primary for| DT
+        CAS --> |Primary for| VT
+    end
+
+    subgraph "Return Types (CLEAR PURPOSE)"
+        CATH --> |Returns| TSH[TypeSpec TestHost<br/>Use: Verify decorators recognized]
+        CAS --> |Returns| AAO[AsyncAPIObject<br/>Use: Validate emitter output ✅]
+        CASWR --> |Returns| CR[CompilationResult<br/>Use: Advanced diagnostics]
+    end
+
+    subgraph "Test Assertions (STANDARDIZED)"
+        DT --> VAL[Value Assertions ✅<br/>AsyncAPI Structure Validation]
+        UT --> SPE[Specific Assertions ✅<br/>Decorator Behavior]
+        IT --> VAL
+        ET --> VAL
+        VT --> VAL
+        VAL --> AA
+        ST --> VAL
+    end
+
+    subgraph "Quality Gates (ENFORCED)"
+        QG1[✅ Lint: No expect-true.toBe-true]
+        QG2[✅ CI: Pass Rate Trend Monitoring]
+        QG3[✅ CI: Code Coverage Increase Required]
+        QG4[✅ PR Review: >50 Tests Needs Approval]
+        QG5[✅ Pre-Commit: Test Quality Check]
+        QG6[✅ Mutation Testing: Verify Tests Catch Bugs]
+    end
+
+    subgraph "Test Template (ENFORCED)"
+        TEMPLATE[Reference Test Template]
+        TEMPLATE --> TMP1[Use compileAsyncAPISpec]
+        TEMPLATE --> TMP2[Assert on AsyncAPI Structure]
+        TEMPLATE --> TMP3[Specific Expectations]
+        TEMPLATE --> TMP4[No Trivial Assertions]
+        TEMPLATE --> TMP5[Would Catch Regressions]
+    end
+
+    subgraph "Development Workflow (TDD)"
+        TDD1[1. Create 1 Test with Full Validation]
+        TDD2[2. Run Test - Verify Pass]
+        TDD3[3. Break Code - Verify Test Fails]
+        TDD4[4. Fix Code - Verify Test Passes]
+        TDD5[5. ONLY THEN Scale to N Tests]
+        TDD6[6. Verify Every 10-20 Tests]
+
+        TDD1 --> TDD2 --> TDD3 --> TDD4 --> TDD5 --> TDD6
+    end
+
+    subgraph "Monitoring & Metrics"
+        M1[📊 Code Coverage Trend]
+        M2[📊 Pass Rate Trend 90%+ Target]
+        M3[📊 Regressions Caught]
+        M4[📊 Test Execution Time]
+        M5[📊 Mutation Test Score]
+    end
+
+    TEMPLATE -.-> DT
+    TEMPLATE -.-> IT
+    TEMPLATE -.-> ET
+    QG1 -.-> DT
+    QG2 -.-> M2
+    QG3 -.-> M1
+    QG6 -.-> M5
+
+    style DT fill:#51cf66,stroke:#2f9e44,stroke-width:3px
+    style IT fill:#51cf66,stroke:#2f9e44
+    style ET fill:#51cf66,stroke:#2f9e44
+    style VT fill:#51cf66,stroke:#2f9e44
+    style VAL fill:#51cf66,stroke:#2f9e44
+    style QG1 fill:#4dabf7,stroke:#1971c2
+    style QG2 fill:#4dabf7,stroke:#1971c2
+    style QG3 fill:#4dabf7,stroke:#1971c2
+    style QG4 fill:#4dabf7,stroke:#1971c2
+    style QG5 fill:#4dabf7,stroke:#1971c2
+    style QG6 fill:#4dabf7,stroke:#1971c2
+    style TEMPLATE fill:#9775fa,stroke:#5f3dc4
+    style TDD3 fill:#ffd43b,stroke:#fab005
+    style M2 fill:#51cf66,stroke:#2f9e44
+    style M3 fill:#51cf66,stroke:#2f9e44
+    style M5 fill:#51cf66,stroke:#2f9e44
+
+    classDef goodTest fill:#51cf66,stroke:#2f9e44
+    classDef qualityGate fill:#4dabf7,stroke:#1971c2
+    classDef template fill:#9775fa,stroke:#5f3dc4
+    classDef warning fill:#ffd43b,stroke:#fab005

@@ -9,6 +9,7 @@ import { describe, expect, it, beforeEach } from "bun:test"
 import type { Program } from "@typespec/compiler"
 import { DocumentBuilder } from "../../../src/domain/emitter/DocumentBuilder.js"
 import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js"
+import { Effect } from "effect"
 
 describe("DocumentBuilder", () => {
 	let documentBuilder: DocumentBuilder
@@ -31,7 +32,8 @@ describe("DocumentBuilder", () => {
 
 	describe("createInitialDocument", () => {
 		it("should create valid AsyncAPI 3.0 document structure", () => {
-			const document = documentBuilder.createInitialDocument(mockProgram)
+			const documentEffect = documentBuilder.createInitialDocument(mockProgram)
+			const document = Effect.runSync(documentEffect)
 
 			// Verify AsyncAPI version
 			expect(document.asyncapi).toBe("3.0.0")
@@ -56,7 +58,8 @@ describe("DocumentBuilder", () => {
 		it("should handle program without getGlobalNamespaceType", () => {
 			const programWithoutMethod = {} as Program
 
-			const document = documentBuilder.createInitialDocument(programWithoutMethod)
+			const documentEffect = documentBuilder.createInitialDocument(programWithoutMethod)
+			const document = Effect.runSync(documentEffect)
 
 			// Should still create valid document structure
 			expect(document.asyncapi).toBe("3.0.0")
@@ -65,26 +68,30 @@ describe("DocumentBuilder", () => {
 		})
 
 		it("should include servers from namespace processing", () => {
+			const mockServerConfig = {
+				url: "kafka://localhost:9092",
+				protocol: "kafka",
+				description: "Test Kafka server"
+			}
+			
 			const mockProgramWithServers = {
 				getGlobalNamespaceType: () => ({
 					name: "TestNamespace",
 					operations: new Map(),
 					models: new Map(),
-					namespaces: new Map([
-						["servers", {
-							name: "servers",
-							operations: new Map(),
-							models: new Map(),
-							namespaces: new Map()
-						}]
-					]),
+					namespaces: new Map()
 				}),
+				stateMap: () => new Map([
+					["TestNamespace", new Map([["testServer", mockServerConfig]])]
+				])
 			} as unknown as Program
 
-			const document = documentBuilder.createInitialDocument(mockProgramWithServers)
+			const documentEffect = documentBuilder.createInitialDocument(mockProgramWithServers)
+			const document = Effect.runSync(documentEffect)
 			
-			// Servers should be processed (even if empty)
+			// Servers should be processed
 			expect(document.servers).toBeDefined()
+			expect(document.servers).toHaveProperty("testServer")
 		})
 	})
 
@@ -92,7 +99,8 @@ describe("DocumentBuilder", () => {
 		let baseDocument: AsyncAPIObject
 
 		beforeEach(() => {
-			baseDocument = documentBuilder.createInitialDocument(mockProgram)
+			const baseDocumentEffect = documentBuilder.createInitialDocument(mockProgram)
+			baseDocument = Effect.runSync(baseDocumentEffect)
 		})
 
 		it("should update document info with partial configuration", () => {
@@ -101,7 +109,8 @@ describe("DocumentBuilder", () => {
 				description: "Custom description"
 			}
 
-			documentBuilder.updateDocumentInfo(baseDocument, customInfo)
+			const updateEffect = documentBuilder.updateDocumentInfo(baseDocument, customInfo)
+			Effect.runSync(updateEffect)
 
 			expect(baseDocument.info.title).toBe("Custom API Title")
 			expect(baseDocument.info.version).toBe("1.0.0") // Should preserve original
@@ -113,7 +122,8 @@ describe("DocumentBuilder", () => {
 				version: "2.1.0"
 			}
 
-			documentBuilder.updateDocumentInfo(baseDocument, customInfo)
+			const updateEffect = documentBuilder.updateDocumentInfo(baseDocument, customInfo)
+			Effect.runSync(updateEffect)
 
 			expect(baseDocument.info.title).toBe("AsyncAPI Specification") // Should preserve
 			expect(baseDocument.info.version).toBe("2.1.0")
@@ -123,7 +133,8 @@ describe("DocumentBuilder", () => {
 		it("should handle empty info updates", () => {
 			const originalInfo = { ...baseDocument.info }
 
-			documentBuilder.updateDocumentInfo(baseDocument, {})
+			const updateEffect = documentBuilder.updateDocumentInfo(baseDocument, {})
+			Effect.runSync(updateEffect)
 
 			expect(baseDocument.info).toEqual(originalInfo)
 		})
@@ -139,7 +150,8 @@ describe("DocumentBuilder", () => {
 				}
 			}
 
-			documentBuilder.updateDocumentInfo(baseDocument, completeInfo)
+			const updateEffect = documentBuilder.updateDocumentInfo(baseDocument, completeInfo)
+			Effect.runSync(updateEffect)
 
 			expect(baseDocument.info.title).toBe("New Title")
 			expect(baseDocument.info.version).toBe("3.0.0")
@@ -152,7 +164,8 @@ describe("DocumentBuilder", () => {
 		it("should initialize empty components section", () => {
 			const document = { asyncapi: "3.0.0", info: { title: "Test", version: "1.0.0" } } as AsyncAPIObject
 
-			documentBuilder.initializeComponents(document)
+			const effect = documentBuilder.initializeComponents(document)
+			Effect.runSync(effect)
 
 			expect(document.components).toBeDefined()
 			expect(document.components.schemas).toEqual({})
@@ -170,7 +183,8 @@ describe("DocumentBuilder", () => {
 				}
 			} as AsyncAPIObject
 
-			documentBuilder.initializeComponents(document)
+			const effect = documentBuilder.initializeComponents(document)
+			Effect.runSync(effect)
 
 			expect(document.components.schemas).toEqual({ "ExistingSchema": { type: "string" } })
 			expect(document.components.messages).toEqual({ "ExistingMessage": { name: "test" } })
@@ -187,7 +201,8 @@ describe("DocumentBuilder", () => {
 				}
 			} as AsyncAPIObject
 
-			documentBuilder.initializeComponents(document)
+			const effect = documentBuilder.initializeComponents(document)
+			Effect.runSync(effect)
 
 			expect(document.components.schemas).toEqual({ "ExistingSchema": { type: "string" } })
 			expect(document.components.messages).toEqual({})
@@ -200,7 +215,8 @@ describe("DocumentBuilder", () => {
 				info: { title: "Test", version: "1.0.0" }
 			} as AsyncAPIObject
 
-			documentBuilder.initializeComponents(document)
+			const effect = documentBuilder.initializeComponents(document)
+			Effect.runSync(effect)
 
 			expect(document.components).toBeDefined()
 			expect(document.components.schemas).toEqual({})
@@ -213,7 +229,8 @@ describe("DocumentBuilder", () => {
 		it("should initialize complete document structure", () => {
 			const document = { asyncapi: "3.0.0", info: { title: "Test", version: "1.0.0" } } as AsyncAPIObject
 
-			documentBuilder.initializeDocumentStructure(document)
+			const effect = documentBuilder.initializeDocumentStructure(document)
+			Effect.runSync(effect)
 
 			expect(document.channels).toEqual({})
 			expect(document.operations).toEqual({})
@@ -231,7 +248,8 @@ describe("DocumentBuilder", () => {
 				operations: { "existingOp": { action: "send", channel: { $ref: "#/channels/test" } } }
 			} as AsyncAPIObject
 
-			documentBuilder.initializeDocumentStructure(document)
+			const effect = documentBuilder.initializeDocumentStructure(document)
+			Effect.runSync(effect)
 
 			expect(document.channels).toEqual({ "existingChannel": { address: "/existing" } })
 			expect(document.operations).toEqual({ "existingOp": { action: "send", channel: { $ref: "#/channels/test" } } })
@@ -241,7 +259,8 @@ describe("DocumentBuilder", () => {
 		it("should call initializeComponents internally", () => {
 			const document = { asyncapi: "3.0.0", info: { title: "Test", version: "1.0.0" } } as AsyncAPIObject
 
-			documentBuilder.initializeDocumentStructure(document)
+			const effect = documentBuilder.initializeDocumentStructure(document)
+			Effect.runSync(effect)
 
 			// Verify components were initialized (tested in initializeComponents tests)
 			expect(document.components).toBeDefined()
@@ -254,17 +273,20 @@ describe("DocumentBuilder", () => {
 	describe("integration scenarios", () => {
 		it("should support complete document lifecycle", () => {
 			// Step 1: Create initial document
-			const document = documentBuilder.createInitialDocument(mockProgram)
+			const documentEffect = documentBuilder.createInitialDocument(mockProgram)
+			let document = Effect.runSync(documentEffect)
 
 			// Step 2: Update info
-			documentBuilder.updateDocumentInfo(document, {
+			const updateEffect = documentBuilder.updateDocumentInfo(document, {
 				title: "Production API",
 				version: "1.0.0",
 				description: "Production-ready AsyncAPI specification"
 			})
+			document = Effect.runSync(updateEffect)
 
 			// Step 3: Initialize full structure
-			documentBuilder.initializeDocumentStructure(document)
+			const structureEffect = documentBuilder.initializeDocumentStructure(document)
+			document = Effect.runSync(structureEffect)
 
 			// Verify complete document
 			expect(document.asyncapi).toBe("3.0.0")
@@ -277,13 +299,18 @@ describe("DocumentBuilder", () => {
 		})
 
 		it("should handle multiple initialization calls safely", () => {
-			const document = documentBuilder.createInitialDocument(mockProgram)
+			const documentEffect = documentBuilder.createInitialDocument(mockProgram)
+			let document = Effect.runSync(documentEffect)
 
 			// Multiple calls should be safe
-			documentBuilder.initializeComponents(document)
-			documentBuilder.initializeComponents(document)
-			documentBuilder.initializeDocumentStructure(document)
-			documentBuilder.initializeDocumentStructure(document)
+			let effect = documentBuilder.initializeComponents(document)
+			Effect.runSync(effect)
+			effect = documentBuilder.initializeComponents(document)
+			Effect.runSync(effect)
+			effect = documentBuilder.initializeDocumentStructure(document)
+			document = Effect.runSync(effect)
+			effect = documentBuilder.initializeDocumentStructure(document)
+			document = Effect.runSync(effect)
 
 			// Should still have valid structure
 			expect(document.channels).toEqual({})
@@ -309,12 +336,11 @@ describe("DocumentBuilder", () => {
 				info: { title: "Test", version: "1.0.0" }
 			} as AsyncAPIObject
 
-			expect(() => {
-				documentBuilder.initializeDocumentStructure(partialDocument)
-			}).not.toThrow()
+			const structureEffect = documentBuilder.initializeDocumentStructure(partialDocument)
+			const result = Effect.runSync(structureEffect)
 
-			expect(partialDocument.channels).toEqual({})
-			expect(partialDocument.operations).toEqual({})
+			expect(result.channels).toEqual({})
+			expect(result.operations).toEqual({})
 		})
 	})
 })

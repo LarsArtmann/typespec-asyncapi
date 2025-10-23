@@ -29,7 +29,7 @@ import {
 	validateAsyncAPIObjectComprehensive,
 	TestValidationPatterns,
 	TestLogging,
-} from "../../../test/utils/test-helpers.js"
+} from "../utils/test-helpers.js"
 import {Effect} from "effect"
 //TODO: this file is getting to big split it up
 
@@ -301,16 +301,13 @@ describe("Real AsyncAPI Generation Tests", () => {
         op subscribeOrdersByStatus(status: string): OrderEvent;
       `
 
-			const {outputFiles, program} = await compileAsyncAPISpecWithoutErrors(source, {
-				"output-file": "enterprise-events",
-				"file-type": "json",
-			})
+			const {outputFiles, program} = await compileAsyncAPISpecWithoutErrors(source)
 
 			// Verify comprehensive compilation
 			expect(program).toBeDefined()
 			expect(outputFiles.size).toBeGreaterThan(0)
 
-			const asyncapiDoc = parseAsyncAPIOutput(outputFiles, "enterprise-events.json") as AsyncAPIObject
+			const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "enterprise-events.json") as AsyncAPIObject
 
 			// Validate AsyncAPI document structure
 			expect(asyncapiDoc.asyncapi).toBe("3.0.0")
@@ -383,9 +380,9 @@ describe("Real AsyncAPI Generation Tests", () => {
         model FlexibleEvent {
           @doc("Event ID")
           eventId: string;
-          
+
           @doc("Flexible data payload")
-          data: string | int32 | boolean | object;
+          data: string | int32 | boolean | Record<unknown>;
           
           @doc("Optional status with union type")
           status?: "active" | "inactive" | "pending" | "archived";
@@ -409,12 +406,9 @@ describe("Real AsyncAPI Generation Tests", () => {
         op publishFlexibleEvent(): FlexibleEvent;
       `
 
-			const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source, {
-				"output-file": "union-type-test",
-				"file-type": "json",
-			})
+			const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source)
 
-			const asyncapiDoc = parseAsyncAPIOutput(outputFiles, "union-type-test.json") as AsyncAPIObject
+			const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "union-type-test.json") as AsyncAPIObject
 
 			// Validate union type handling in schema
 			const flexibleEventSchema = asyncapiDoc.components.schemas.FlexibleEvent
@@ -498,12 +492,9 @@ describe("Real AsyncAPI Generation Tests", () => {
         }
       `
 
-			const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source, {
-				"output-file": "multi-namespace-test",
-				"file-type": "json",
-			})
+			const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source)
 
-			const asyncapiDoc = parseAsyncAPIOutput(outputFiles, "multi-namespace-test.json") as AsyncAPIObject
+			const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "multi-namespace-test.json") as AsyncAPIObject
 
 			// Validate schemas from all namespaces using shared utility
 			const expectedSchemas = ["User", "UserProfile", "Order", "OrderItem", "Notification"]
@@ -561,12 +552,9 @@ describe("Real AsyncAPI Generation Tests", () => {
         op subscribeComplianceMessages(): ComplianceMessage;
       `
 
-			const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source, {
-				"output-file": "compliance-test",
-				"file-type": "json",
-			})
+			const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source)
 
-			const asyncapiDoc = parseAsyncAPIOutput(outputFiles, "compliance-test.json") as AsyncAPIObject
+			const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "compliance-test.json") as AsyncAPIObject
 
 			// Validate AsyncAPI 3.0.0 specification compliance
 			expect(asyncapiDoc.asyncapi).toBe("3.0.0")
@@ -655,12 +643,9 @@ describe("Real AsyncAPI Generation Tests", () => {
         op publishReferenceTest(): ModelWithReferences;
       `
 
-			const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source, {
-				"output-file": "reference-test",
-				"file-type": "json",
-			})
+			const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source)
 
-			const asyncapiDoc = parseAsyncAPIOutput(outputFiles, "reference-test.json") as AsyncAPIObject
+			const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "reference-test.json") as AsyncAPIObject
 
 			// Validate all referenced schemas are generated
 			expect(asyncapiDoc.components.schemas.BaseReference).toBeDefined()
@@ -744,7 +729,7 @@ describe("Real AsyncAPI Generation Tests", () => {
 			const endTime = Date.now()
 			const compilationTime = endTime - startTime
 
-			const asyncapiDoc = parseAsyncAPIOutput(outputFiles, "large-scale-test.json") as AsyncAPIObject
+			const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "large-scale-test.json") as AsyncAPIObject
 
 			// Validate scale - should have 20 schemas and 40 operations
 			expect(Object.keys(asyncapiDoc?.components?.schemas).length).toBe(20)

@@ -1,5 +1,4 @@
 import type {StandardizedError} from "./StandardizedError.js"
-
 export class CompilationError {
 	readonly _tag = "CompilationError"
 

@@ -14,12 +14,10 @@ import { $lib } from "../../../src/lib.js"
 import {SecurityConfig} from "../../../src/decorators/securityConfig"
 
 describe("ProcessingService", () => {
-	let processingService: ProcessingService
 	let mockProgram: Program
 	let baseAsyncApiDoc: AsyncAPIObject
 
 	beforeEach(() => {
-		processingService = new ProcessingService()
 		mockProgram = createMockProgram()
 		baseAsyncApiDoc = createBaseAsyncApiDoc()
 	})
@@ -31,15 +29,15 @@ describe("ProcessingService", () => {
 			const operations = [testOp1, testOp2]
 
 			const result = await Effect.runPromise(
-				processingService.processOperations(operations, baseAsyncApiDoc, mockProgram)
+				ProcessingService.processOperations(operations, baseAsyncApiDoc, mockProgram)
 			)
 
 			expect(result).toBe(2) // Should return count of processed operations
 
-			// Verify channels were created
+			// Verify channels were created (using default channel paths since no @channel decorator)
 			expect(baseAsyncApiDoc.channels).toBeDefined()
-			expect(baseAsyncApiDoc.channels["channel_publishUserEvent"]).toBeDefined()
-			expect(baseAsyncApiDoc.channels["channel_subscribeNotifications"]).toBeDefined()
+			expect(baseAsyncApiDoc.channels["/publishuserevent"]).toBeDefined()
+			expect(baseAsyncApiDoc.channels["/subscribenotifications"]).toBeDefined()
 
 			// Verify operations were created
 			expect(baseAsyncApiDoc.operations).toBeDefined()
@@ -54,7 +52,7 @@ describe("ProcessingService", () => {
 
 		it("should handle empty operations array", async () => {
 			const result = await Effect.runPromise(
-				processingService.processOperations([], baseAsyncApiDoc, mockProgram)
+				ProcessingService.processOperations([], baseAsyncApiDoc, mockProgram)
 			)
 
 			expect(result).toBe(0)
@@ -67,10 +65,10 @@ describe("ProcessingService", () => {
 			setupMockProgramWithChannelPath(mockProgram, testOp, "/test/channel")
 
 			await Effect.runPromise(
-				processingService.processOperations([testOp], baseAsyncApiDoc, mockProgram)
+				ProcessingService.processOperations([testOp], baseAsyncApiDoc, mockProgram)
 			)
 
-			const channel = baseAsyncApiDoc.channels["channel_testOperation"]
+			const channel = baseAsyncApiDoc.channels["/testoperation"]
 			expect(channel).toBeDefined()
 			expect(channel.address).toBe("/test/channel")
 			expect(channel.description).toBe("Channel for testOperation")
@@ -89,16 +87,16 @@ describe("ProcessingService", () => {
 			setupMockProgramWithOperationType(mockProgram, subscribeOp, "subscribe")
 
 			await Effect.runPromise(
-				processingService.processOperations([publishOp, subscribeOp], baseAsyncApiDoc, mockProgram)
+				ProcessingService.processOperations([publishOp, subscribeOp], baseAsyncApiDoc, mockProgram)
 			)
 
 			const publishOperation = baseAsyncApiDoc.operations["publishEvent"]
 			expect(publishOperation.action).toBe("send")
-			expect(publishOperation.channel).toEqual({ $ref: "#/channels/channel_publishEvent" })
+			expect(publishOperation.channel).toEqual({ $ref: "#/channels//publishevent" })
 
 			const subscribeOperation = baseAsyncApiDoc.operations["subscribeEvent"]
 			expect(subscribeOperation.action).toBe("receive")
-			expect(subscribeOperation.channel).toEqual({ $ref: "#/channels/channel_subscribeEvent" })
+			expect(subscribeOperation.channel).toEqual({ $ref: "#/channels//subscribeevent" })
 		})
 
 		it("should create proper message structure", async () => {
@@ -106,7 +104,7 @@ describe("ProcessingService", () => {
 			testOp.parameters = { properties: new Map([["param1", {}], ["param2", {}]]) }
 
 			await Effect.runPromise(
-				processingService.processOperations([testOp], baseAsyncApiDoc, mockProgram)
+				ProcessingService.processOperations([testOp], baseAsyncApiDoc, mockProgram)
 			)
 
 			const message = baseAsyncApiDoc.components?.messages?.["testOpMessage"]
@@ -140,7 +138,7 @@ describe("ProcessingService", () => {
 			setupMockProgramWithMessageConfig(mockProgram, messageModel2, messageConfig2)
 
 			const result = await Effect.runPromise(
-				processingService.processMessageModels([messageModel1, messageModel2], baseAsyncApiDoc, mockProgram)
+				ProcessingService.processMessageModels([messageModel1, messageModel2], baseAsyncApiDoc, mockProgram)
 			)
 
 			expect(result).toBe(2)
@@ -165,7 +163,7 @@ describe("ProcessingService", () => {
 			const modelWithoutConfig = createMockModel("PlainModel")
 
 			const result = await Effect.runPromise(
-				processingService.processMessageModels([modelWithoutConfig], baseAsyncApiDoc, mockProgram)
+				ProcessingService.processMessageModels([modelWithoutConfig], baseAsyncApiDoc, mockProgram)
 			)
 
 			expect(result).toBe(1) // Still counts as processed
@@ -175,7 +173,7 @@ describe("ProcessingService", () => {
 
 		it("should handle empty message models array", async () => {
 			const result = await Effect.runPromise(
-				processingService.processMessageModels([], baseAsyncApiDoc, mockProgram)
+				ProcessingService.processMessageModels([], baseAsyncApiDoc, mockProgram)
 			)
 
 			expect(result).toBe(0)
@@ -194,7 +192,7 @@ describe("ProcessingService", () => {
 			}
 
 			await Effect.runPromise(
-				processingService.processMessageModels([messageModel], docWithoutMessages, mockProgram)
+				ProcessingService.processMessageModels([messageModel], docWithoutMessages, mockProgram)
 			)
 
 			expect(docWithoutMessages.components.messages).toBeDefined()
@@ -229,7 +227,7 @@ describe("ProcessingService", () => {
 			]
 
 			const result = await Effect.runPromise(
-				processingService.processSecurityConfigs(securityConfigs, baseAsyncApiDoc)
+				ProcessingService.processSecurityConfigs(securityConfigs, baseAsyncApiDoc)
 			)
 
 			expect(result).toBe(2)
@@ -258,7 +256,7 @@ describe("ProcessingService", () => {
 			}
 
 			await Effect.runPromise(
-				processingService.processSecurityConfigs([httpSecurityConfig], baseAsyncApiDoc)
+				ProcessingService.processSecurityConfigs([httpSecurityConfig], baseAsyncApiDoc)
 			)
 
 			const bearerScheme = baseAsyncApiDoc.components?.securitySchemes?.["bearerAuth"]
@@ -278,7 +276,7 @@ describe("ProcessingService", () => {
 			}
 
 			await Effect.runPromise(
-				processingService.processSecurityConfigs([unknownSecurityConfig], baseAsyncApiDoc)
+				ProcessingService.processSecurityConfigs([unknownSecurityConfig], baseAsyncApiDoc)
 			)
 
 			// Should fallback to apiKey
@@ -301,7 +299,7 @@ describe("ProcessingService", () => {
 			}
 
 			await Effect.runPromise(
-				processingService.processSecurityConfigs([securityConfig], docWithoutSecurity)
+				ProcessingService.processSecurityConfigs([securityConfig], docWithoutSecurity)
 			)
 
 			expect(docWithoutSecurity.components.securitySchemes).toBeDefined()
@@ -310,7 +308,7 @@ describe("ProcessingService", () => {
 
 		it("should handle empty security configs array", async () => {
 			const result = await Effect.runPromise(
-				processingService.processSecurityConfigs([], baseAsyncApiDoc)
+				ProcessingService.processSecurityConfigs([], baseAsyncApiDoc)
 			)
 
 			expect(result).toBe(0)
@@ -334,7 +332,7 @@ describe("ProcessingService", () => {
 			})
 
 			const result = await Effect.runPromise(
-				processingService.executeProcessing(
+				ProcessingService.executeProcessing(
 					[operation],
 					[messageModel],
 					[securityConfig],
@@ -356,7 +354,7 @@ describe("ProcessingService", () => {
 
 		it("should handle empty processing inputs", async () => {
 			const result = await Effect.runPromise(
-				processingService.executeProcessing([], [], [], baseAsyncApiDoc, mockProgram)
+				ProcessingService.executeProcessing([], [], [], baseAsyncApiDoc, mockProgram)
 			)
 
 			expect(result.operationsProcessed).toBe(0)
@@ -382,7 +380,7 @@ describe("ProcessingService", () => {
 			})
 
 			const result = await Effect.runPromise(
-				processingService.executeProcessing(
+				ProcessingService.executeProcessing(
 					operations,
 					messageModels,
 					securityConfigs,
@@ -403,13 +401,13 @@ describe("ProcessingService", () => {
 			const operationWithoutMetadata = createMockOperation("missingMetadataOp")
 
 			const result = await Effect.runPromise(
-				processingService.processOperations([operationWithoutMetadata], baseAsyncApiDoc, mockProgram)
+				ProcessingService.processOperations([operationWithoutMetadata], baseAsyncApiDoc, mockProgram)
 			)
 
 			expect(result).toBe(1) // Should still process
 			
 			// Should create default channel path
-			const channel = baseAsyncApiDoc.channels["channel_missingMetadataOp"]
+			const channel = baseAsyncApiDoc.channels["/missingmetadataop"]
 			expect(channel).toBeDefined()
 			expect(channel.address).toBe("/missingmetadataop") // Default path
 		})
@@ -418,7 +416,7 @@ describe("ProcessingService", () => {
 			const modelWithoutConfig = createMockModel("NoConfigModel")
 
 			const result = await Effect.runPromise(
-				processingService.processMessageModels([modelWithoutConfig], baseAsyncApiDoc, mockProgram)
+				ProcessingService.processMessageModels([modelWithoutConfig], baseAsyncApiDoc, mockProgram)
 			)
 
 			expect(result).toBe(1) // Still counts as processed
@@ -439,7 +437,7 @@ describe("ProcessingService", () => {
 			}
 
 			await Effect.runPromise(
-				processingService.processSecurityConfigs([securityConfig], docWithoutComponents)
+				ProcessingService.processSecurityConfigs([securityConfig], docWithoutComponents)
 			)
 
 			expect(docWithoutComponents.components).toBeDefined()

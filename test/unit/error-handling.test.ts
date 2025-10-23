@@ -16,10 +16,17 @@ import { Effect } from "effect"
 import {
 	createError,
 	failWith,
+<<<<<<< HEAD
+	railway,
+	emitterErrors,
+	errorFormatters,
+	validators,
+=======
 	Railway,
 	EmitterErrors,
 	ErrorFormatters,
 	Validators,
+>>>>>>> master
 	type StandardizedError
 } from "../../src/utils/standardized-errors.js"
 import { railwayErrorRecovery } from "../../src/utils/effect-helpers.js"
@@ -55,7 +62,11 @@ describe("Error Handling Migration (M016-M021)", () => {
 		})
 
 		it("should create EmitterErrors with proper structure", () => {
+<<<<<<< HEAD
+			const error = emitterErrors.compilationFailed("Type error", "test.tsp")
+=======
 			const error = EmitterErrors.compilationFailed("Type error", "test.tsp")
+>>>>>>> master
 			
 			expect(error.what).toBe("TypeSpec compilation failed")
 			expect(error.code).toBe("TYPESPEC_COMPILATION_FAILED")
@@ -81,24 +92,40 @@ describe("Error Handling Migration (M016-M021)", () => {
 		})
 
 		it("should format error for user display", () => {
+<<<<<<< HEAD
+			const formatted = errorFormatters.forUser(testError)
+=======
 			const formatted = ErrorFormatters.forUser(testError)
+>>>>>>> master
 			expect(formatted).toBe("Database connection failed. This is a temporary network issue")
 		})
 
 		it("should format error for developer display", () => {
+<<<<<<< HEAD
+			const formatted = errorFormatters.forDeveloper(testError)
+=======
 			const formatted = ErrorFormatters.forDeveloper(testError)
+>>>>>>> master
 			expect(formatted).toBe("Connection timeout after 5000ms. Check database server status and network connectivity")
 		})
 
 		it("should format error for logging", () => {
+<<<<<<< HEAD
+			const formatted = errorFormatters.forLogging(testError)
+=======
 			const formatted = ErrorFormatters.forLogging(testError)
+>>>>>>> master
 			expect(formatted).toContain("[DATABASE_CONNECTION_FAILED]")
 			expect(formatted).toContain("Database connection failed")
 			expect(formatted).toContain('"timeout":5000')
 		})
 
 		it("should create structured log entry", () => {
+<<<<<<< HEAD
+			const logEntry = errorFormatters.toLogEntry(testError)
+=======
 			const logEntry = ErrorFormatters.toLogEntry(testError)
+>>>>>>> master
 			
 			expect(logEntry.level).toBe("error")
 			expect(logEntry.code).toBe("DATABASE_CONNECTION_FAILED")
@@ -112,14 +139,22 @@ describe("Error Handling Migration (M016-M021)", () => {
 		it("should safely execute synchronous operations", async () => {
 			// Test successful operation
 			const successResult = await Effect.runPromise(
+<<<<<<< HEAD
+				railway.trySync(() => "success", { context: { test: "sync" } })
+=======
 				Railway.trySync(() => "success", { context: { test: "sync" } })
+>>>>>>> master
 			)
 			expect(successResult).toBe("success")
 		})
 
 		it("should handle synchronous operation failures", async () => {
 			const failureResult = Effect.runPromise(
+<<<<<<< HEAD
+				railway.trySync(() => {
+=======
 				Railway.trySync(() => {
+>>>>>>> master
 					throw new Error("Test error")
 				}, { context: { test: "sync-error" } })
 					.pipe(Effect.either)
@@ -128,14 +163,22 @@ describe("Error Handling Migration (M016-M021)", () => {
 			const result = await failureResult
 			expect(result._tag).toBe("Left")
 			if (result._tag === "Left") {
+<<<<<<< HEAD
+				expect(result.left.what).toBe("An unexpected error occurred")
+=======
 				expect(result.left.what).toBe("An unexpect error occurred")
+>>>>>>> master
 				expect(result.left.code).toBe("UNEXPECTED_ERROR")
 			}
 		})
 
 		it("should chain operations properly", async () => {
 			const chainedResult = await Effect.runPromise(
+<<<<<<< HEAD
+				railway.chain(
+=======
 				Railway.chain(
+>>>>>>> master
 					Effect.succeed(5),
 					(n) => Effect.succeed(n * 2)
 				)
@@ -145,7 +188,11 @@ describe("Error Handling Migration (M016-M021)", () => {
 
 		it("should provide fallback for failed operations", async () => {
 			const fallbackResult = await Effect.runPromise(
+<<<<<<< HEAD
+				railway.fallback(
+=======
 				Railway.fallback(
+>>>>>>> master
 					Effect.fail(createError({
 						what: "Test failure",
 						reassure: "Expected",
@@ -165,14 +212,22 @@ describe("Error Handling Migration (M016-M021)", () => {
 	describe("Validator Utilities", () => {
 		it("should validate required strings", async () => {
 			const validResult = await Effect.runPromise(
+<<<<<<< HEAD
+				validators.requiredString("valid-string", "testField")
+=======
 				Validators.requiredString("valid-string", "testField")
+>>>>>>> master
 			)
 			expect(validResult).toBe("valid-string")
 		})
 
 		it("should fail on empty required string", async () => {
 			const invalidResult = await Effect.runPromise(
+<<<<<<< HEAD
+				validators.requiredString("", "testField")
+=======
 				Validators.requiredString("", "testField")
+>>>>>>> master
 					.pipe(Effect.either)
 			)
 
@@ -185,19 +240,31 @@ describe("Error Handling Migration (M016-M021)", () => {
 
 		it("should validate optional strings", async () => {
 			const undefinedResult = await Effect.runPromise(
+<<<<<<< HEAD
+				validators.optionalString(undefined, "testField")
+=======
 				Validators.optionalString(undefined, "testField")
+>>>>>>> master
 			)
 			expect(undefinedResult).toBe(undefined)
 
 			const validResult = await Effect.runPromise(
+<<<<<<< HEAD
+				validators.optionalString("valid", "testField")
+=======
 				Validators.optionalString("valid", "testField")
+>>>>>>> master
 			)
 			expect(validResult).toBe("valid")
 		})
 
 		it("should validate arrays with element validation", async () => {
 			const arrayResult = await Effect.runPromise(
+<<<<<<< HEAD
+				validators.arrayOf(
+=======
 				Validators.arrayOf(
+>>>>>>> master
 					["item1", "item2"],
 					"testArray",
 					(item, index) => Effect.succeed(`validated-${item}-${index}`)
@@ -437,8 +504,13 @@ describe("Error Handling Migration (M016-M021)", () => {
 
 			expect(result._tag).toBe("Left")
 			if (result._tag === "Left") {
+<<<<<<< HEAD
+				expect(result.left.code).toBe("MISSING_GLOBAL_NAMESPACE")
+				expect(result.left.what).toContain("Could not get global namespace")
+=======
 				expect(result.left.code).toBe("MISSING_PROGRAM_METHOD")
 				expect(result.left.what).toContain("getGlobalNamespaceType")
+>>>>>>> master
 			}
 		})
 	})
@@ -476,8 +548,13 @@ describe("Error Handling Migration (M016-M021)", () => {
 			// Test error recovery across multiple components
 			const operations = [
 				// Simulate different failure modes
+<<<<<<< HEAD
+				Effect.fail(emitterErrors.compilationFailed("Syntax error", "test.tsp")),
+				Effect.fail(emitterErrors.invalidAsyncAPI(["Missing title"], {})),
+=======
 				Effect.fail(EmitterErrors.compilationFailed("Syntax error", "test.tsp")),
 				Effect.fail(EmitterErrors.invalidAsyncAPI(["Missing title"], {})),
+>>>>>>> master
 				Effect.succeed("recovered-successfully")
 			]
 

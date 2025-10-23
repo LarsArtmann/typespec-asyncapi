@@ -58,46 +58,24 @@ export class ConfigurableMetricsFactory {
    * Create performance metrics using configured boundaries
    */
   createMetrics(): IConfigurableMetrics {
-    const {boundaries} = this.config
-
-    return {
-      validationThroughput: Metric.histogram(
-        "validation_throughput_ops_per_sec",
-        MetricBoundaries.fromIterable(boundaries.throughputBoundaries),
-      ),
-
-      memoryPerOperation: Metric.histogram(
-        "memory_per_operation_bytes",
-        MetricBoundaries.fromIterable(boundaries.memoryBoundaries),
-      ),
-
-      validationLatency: Metric.histogram(
-        "validation_latency_microseconds",
-        MetricBoundaries.fromIterable(boundaries.latencyBoundaries),
-      ),
-
-      initializationTime: Metric.histogram(
-        "initialization_time_ms",
-        MetricBoundaries.fromIterable(boundaries.initializationBoundaries),
-      ),
-
-      validationSuccess: Metric.counter("validation_success_total"),
-      validationFailure: Metric.counter("validation_failure_total"),
-      memoryLeaks: Metric.counter("memory_leaks_detected_total"),
-      throughputTarget: Metric.gauge("throughput_target_ops_per_sec"),
-      memoryTarget: Metric.gauge("memory_target_bytes_per_operation"),
-    }
+    return this.buildMetricsWithBoundaries(this.config.boundaries)
   }
 
   /**
    * Create metrics with custom boundaries (for testing)
    */
   createCustomMetrics(customBoundaries: Partial<IMetricBoundaries>): IConfigurableMetrics {
-    const boundaries = {
+    const mergedBoundaries = {
       ...this.config.boundaries,
       ...customBoundaries,
     }
+    return this.buildMetricsWithBoundaries(mergedBoundaries)
+  }
 
+  /**
+   * Build metrics object with the given boundaries
+   */
+  private buildMetricsWithBoundaries(boundaries: IMetricBoundaries): IConfigurableMetrics {
     return {
       validationThroughput: Metric.histogram(
         "validation_throughput_ops_per_sec",

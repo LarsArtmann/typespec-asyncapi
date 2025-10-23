@@ -1,6 +1,7 @@
 import type {DecoratorContext, Model, Operation, Namespace} from "@typespec/compiler"
 import {$lib} from "../../lib.js"
 import {Effect} from "effect"
+import {safeStringify} from "../../utils/standardized-errors.js"
 
 /**
  * Configuration for @tags decorator
@@ -66,7 +67,7 @@ export function $tags(
 	// Validate individual tag names
 	const validTags = tags.filter(tag => {
 		if (typeof tag !== 'string') {
-			Effect.log(`⚠️ Skipping non-string tag: ${tag}`)
+			Effect.log(`⚠️ Skipping non-string tag: ${safeStringify(tag)}`)
 			return false
 		}
 		if (tag.trim().length === 0) {

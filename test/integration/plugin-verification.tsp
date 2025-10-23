@@ -2,7 +2,7 @@ import "@typespec/asyncapi";
 
 using TypeSpec.AsyncAPI;
 
-@server("kafka-server", {url: "kafka://localhost:9092", protocol: "kafka", description: "Kafka message broker"})
+@server("kafka-server", #{url: "kafka://localhost:9092", protocol: "kafka", description: "Kafka message broker"})
 namespace TestService {
   
   @message

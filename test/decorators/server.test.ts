@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect } from "bun:test";
-import { compileAsyncAPISpec } from "../utils/test-helpers";
+import { compileAsyncAPISpecRaw } from "../utils/test-helpers";
 
 //TODO: this file is getting to big split it up
 
@@ -11,7 +11,7 @@ describe("@server decorator", () => {
   describe("basic functionality", () => {
     it("should accept valid server configuration", async () => {
       const source = `
-        @server("production", {
+        @server("production", #{
           url: "kafka://broker.example.com:9092",
           protocol: "kafka",
           description: "Production Kafka cluster"
@@ -24,7 +24,7 @@ describe("@server decorator", () => {
         op publishEvent(): Event;
       `;
       
-      const { diagnostics } = await compileAsyncAPISpec(source, {
+      const { diagnostics } = await compileAsyncAPISpecRaw(source, {
         "output-file": "server-valid",
         "file-type": "json"
       });
@@ -35,17 +35,17 @@ describe("@server decorator", () => {
 
     it("should handle multiple server configurations", async () => {
       const source = `
-        @server("production", {
+        @server("production", #{
           url: "kafka://prod-broker:9092",
           protocol: "kafka",
           description: "Production environment"
         })
-        @server("development", {
+        @server("development", #{
           url: "ws://localhost:3000",
           protocol: "websocket",
           description: "Development WebSocket server"
         })
-        @server("staging", {
+        @server("staging", #{
           url: "amqp://staging-rabbit:5672",
           protocol: "amqp"
         })
@@ -57,7 +57,7 @@ describe("@server decorator", () => {
         op publishEvent(): Event;
       `;
       
-      const { diagnostics, outputFiles } = await compileAsyncAPISpec(source, {
+      const { diagnostics, outputFiles } = await compileAsyncAPISpecRaw(source, {
         "output-file": "multi-server",
         "file-type": "json"
       });
@@ -71,7 +71,7 @@ describe("@server decorator", () => {
 
     it("should validate required server configuration fields", async () => {
       const source = `
-        @server("invalid-missing-url", {
+        @server("invalid-missing-url", #{
           protocol: "kafka",
           description: "Missing URL"
         })
@@ -83,7 +83,7 @@ describe("@server decorator", () => {
         op publishEvent(): Event;
       `;
       
-      const { diagnostics } = await compileAsyncAPISpec(source, {
+      const { diagnostics } = await compileAsyncAPISpecRaw(source, {
         "output-file": "missing-url",
         "file-type": "json"
       });
@@ -97,7 +97,7 @@ describe("@server decorator", () => {
 
     it("should validate protocol field is required", async () => {
       const source = `
-        @server("invalid-missing-protocol", {
+        @server("invalid-missing-protocol", #{
           url: "kafka://broker:9092",
           description: "Missing protocol"
         })
@@ -109,7 +109,7 @@ describe("@server decorator", () => {
         op publishEvent(): Event;
       `;
       
-      const { diagnostics } = await compileAsyncAPISpec(source, {
+      const { diagnostics } = await compileAsyncAPISpecRaw(source, {
         "output-file": "missing-protocol",
         "file-type": "json"
       });
@@ -136,7 +136,7 @@ describe("@server decorator", () => {
       
       for (const protocol of supportedProtocols) {
         const source = `
-          @server("test-${protocol.name}", {
+          @server("test-${protocol.name}", #{
             url: "${protocol.url}",
             protocol: "${protocol.name}",
             description: "Test ${protocol.name} server"
@@ -149,7 +149,7 @@ describe("@server decorator", () => {
           op publishEvent(): Event;
         `;
         
-        const { diagnostics } = await compileAsyncAPISpec(source, {
+        const { diagnostics } = await compileAsyncAPISpecRaw(source, {
           "output-file": `protocol-${protocol.name}`,
           "file-type": "json"
         });
@@ -161,7 +161,7 @@ describe("@server decorator", () => {
 
     it("should reject unsupported protocols", async () => {
       const source = `
-        @server("invalid-protocol", {
+        @server("invalid-protocol", #{
           url: "ftp://files.example.com",
           protocol: "ftp",
           description: "Unsupported FTP server"
@@ -174,14 +174,14 @@ describe("@server decorator", () => {
         op publishEvent(): Event;
       `;
       
-      const { diagnostics } = await compileAsyncAPISpec(source, {
+      const { diagnostics } = await compileAsyncAPISpecRaw(source, {
         "output-file": "unsupported-protocol",
         "file-type": "json"
       });
       
       // Should have error for unsupported protocol
       const protocolErrors = diagnostics.filter(d => 
-        d.code === "@larsartmann/typespec-asyncapi/unsupported-protocol"
+        d.code === "@lars-artmann/typespec-asyncapi/unsupported-protocol"
       );
       expect(protocolErrors.length).toBeGreaterThan(0);
     });
@@ -194,7 +194,7 @@ describe("@server decorator", () => {
         
         model Event { id: string; }
         
-        @server("invalid", {
+        @server("invalid", #{
           url: "kafka://broker:9092",
           protocol: "kafka"
         })
@@ -202,7 +202,7 @@ describe("@server decorator", () => {
         op publishEvent(): Event;
       `;
       
-      const { diagnostics } = await compileAsyncAPISpec(source, {
+      const { diagnostics } = await compileAsyncAPISpecRaw(source, {
         "output-file": "invalid-target",
         "file-type": "json"
       });
@@ -218,7 +218,7 @@ describe("@server decorator", () => {
   describe("configuration extraction", () => {
     it("should handle minimal server configuration", async () => {
       const source = `
-        @server("minimal", {
+        @server("minimal", #{
           url: "kafka://broker:9092",
           protocol: "kafka"
         })
@@ -230,7 +230,7 @@ describe("@server decorator", () => {
         op publishEvent(): Event;
       `;
       
-      const { diagnostics, outputFiles } = await compileAsyncAPISpec(source, {
+      const { diagnostics, outputFiles } = await compileAsyncAPISpecRaw(source, {
         "output-file": "minimal-server",
         "file-type": "json"
       });
@@ -253,7 +253,7 @@ describe("@server decorator", () => {
 
     it("should preserve server descriptions", async () => {
       const source = `
-        @server("documented", {
+        @server("documented", #{
           url: "kafka://broker:9092",
           protocol: "kafka",
           description: "Main production Kafka cluster with high availability"
@@ -266,7 +266,7 @@ describe("@server decorator", () => {
         op publishEvent(): Event;
       `;
       
-      const { diagnostics, outputFiles } = await compileAsyncAPISpec(source, {
+      const { diagnostics, outputFiles } = await compileAsyncAPISpecRaw(source, {
         "output-file": "documented-server",
         "file-type": "json"
       });
@@ -286,7 +286,7 @@ describe("@server decorator", () => {
   describe("integration with other decorators", () => {
     it("should work with @channel and @publish/@subscribe decorators", async () => {
       const source = `
-        @server("integration", {
+        @server("integration", #{
           url: "kafka://broker:9092",
           protocol: "kafka",
           description: "Integration test server"
@@ -311,7 +311,7 @@ describe("@server decorator", () => {
         op handleSystemAlert(): UserEvent;
       `;
       
-      const { diagnostics, outputFiles } = await compileAsyncAPISpec(source, {
+      const { diagnostics, outputFiles } = await compileAsyncAPISpecRaw(source, {
         "output-file": "integration-test",
         "file-type": "json"
       });

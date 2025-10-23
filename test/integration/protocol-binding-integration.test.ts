@@ -178,7 +178,7 @@ describe("AsyncAPI Protocol Binding Integration", () => {
         model PaymentEvent {
           eventId: string;
           eventType: "payment.created" | "payment.completed" | "payment.failed";
-          amount: number;
+          amount: float64;
           currency: string;
         }
 

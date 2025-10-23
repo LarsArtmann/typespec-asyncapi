@@ -19,6 +19,7 @@ import { Effect } from "effect"
 
 // Constants - Import centralized constants to eliminate hardcoded values
 import { ASYNCAPI_VERSIONS } from "../../constants/index.js"
+import { DEFAULT_CONFIG } from "../../constants/defaults.js"
 
 // Standardized error handling
 import { 
@@ -29,6 +30,31 @@ import {
 } from "../../utils/standardized-errors.js"
 
 /**
+/**
+ * Validate document parameter - extracted to eliminate duplication
+ */
+function validateDocumentParameter(
+	document: AsyncAPIObject | null | undefined,
+	operationContext: string
+): Effect.Effect<void, StandardizedError> {
+	if (!document) {
+		return failWith(createError({
+			what: `Cannot ${operationContext} on null/undefined document`,
+			reassure: "This is a parameter validation issue",
+			why: `${operationContext} requires a valid AsyncAPIObject instance`,
+			fix: `Ensure the document parameter is properly initialized before calling ${operationContext}`,
+			escape: "Create a new document using createInitialDocument first",
+			severity: "error" as const,
+			code: "INVALID_DOCUMENT_INSTANCE",
+			context: { documentProvided: !!document, operation: operationContext }
+		}))
+	}
+	return Effect.succeed(undefined)
+}
+
+/**
+ * DocumentBuilder Service - Core AsyncAPI Document Construction
+ *
  * DocumentBuilder Service - Core AsyncAPI Document Construction
  * 
  * Handles the creation and initialization of AsyncAPI 3.0 documents with:
@@ -68,25 +94,26 @@ export class DocumentBuilder {
 			// Safe logging with program validation
 			yield* Effect.log(`🏗️  DocumentBuilder.createInitialDocument called with valid program`)
 
-			// Safe server processing with error handling
+			// Process servers from namespaces with error handling
+
 			const serversResult = yield* railway.trySync(
 				() => buildServersFromNamespaces(program),
 				{ context: { operation: "buildServersFromNamespaces" } }
 			)
 
-			const servers = serversResult || {}
+			const servers = serversResult ?? {}
 			yield* Effect.log(`🏗️  Generated servers: ${JSON.stringify(servers, null, 2)}`)
 
 			// Build document with Railway programming
 			const documentResult = yield* railway.trySync(() => {
 				// Using centralized AsyncAPI version constant instead of hardcoded string
-				// TODO: Extract default info values to configuration object
+				// Using centralized default configuration values
 				const baseDocument = {
 					asyncapi: ASYNCAPI_VERSIONS.CURRENT,
 					info: {
-						title: "AsyncAPI Specification", // TODO: Make configurable
-						version: "1.0.0", // TODO: Make configurable
-						description: "Generated from TypeSpec with Effect.TS integration", // TODO: Make configurable
+						title: DEFAULT_CONFIG.OUTPUT_FILE.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+						version: "1.0.0",
+						description: `Generated from TypeSpec with ${DEFAULT_CONFIG.LIBRARY_NAME}`,
 					},
 					channels: {},
 					operations: {},
@@ -118,23 +145,12 @@ export class DocumentBuilder {
 	 * @returns Effect containing updated document or StandardizedError
 	 */
 	updateDocumentInfo(
-		document: AsyncAPIObject, 
+		document: AsyncAPIObject,
 		info: Partial<AsyncAPIObject["info"]>
 	): Effect.Effect<AsyncAPIObject, StandardizedError> {
 		return Effect.gen(function* () {
-			// Validate document parameter
-			if (!document) {
-				return yield* failWith(createError({
-					what: "Cannot update document info on null/undefined document",
-					reassure: "This is a parameter validation issue",
-					why: "updateDocumentInfo requires a valid AsyncAPIObject instance",
-					fix: "Ensure the document parameter is properly initialized before calling updateDocumentInfo",
-					escape: "Create a new document using createInitialDocument first",
-					severity: "error" as const,
-					code: "INVALID_DOCUMENT_INSTANCE",
-					context: { documentProvided: !!document, infoProvided: !!info }
-				}))
-			}
+			// Validate document parameter using extracted helper
+			yield* validateDocumentParameter(document, "update document info")
 
 			// Validate document.info exists
 			if (!document.info) {
@@ -157,7 +173,7 @@ export class DocumentBuilder {
 					...info,
 				}
 				return document
-			}, { context: { operation: "document info update", infoKeys: Object.keys(info || {}) } })
+			}, { context: { operation: "document info update", infoKeys: Object.keys(info ?? {}) } })
 		})
 	}
 
@@ -169,25 +185,16 @@ export class DocumentBuilder {
 	 */
 	initializeComponents(document: AsyncAPIObject): Effect.Effect<AsyncAPIObject, StandardizedError> {
 		return Effect.gen(function* () {
-			// Validate document parameter
-			if (!document) {
-				return yield* failWith(createError({
-					what: "Cannot initialize components on null/undefined document",
-					reassure: "This is a parameter validation issue",
-					why: "initializeComponents requires a valid AsyncAPIObject instance",
-					fix: "Ensure the document parameter is properly initialized before calling initializeComponents",
-					escape: "Create a new document using createInitialDocument first",
-					severity: "error" as const,
-					code: "INVALID_DOCUMENT_INSTANCE",
-					context: { documentProvided: !!document }
-				}))
-			}
+			// Validate document parameter using extracted helper
+			yield* validateDocumentParameter(document, "initialize components")
 
 			// Safe component initialization with Railway programming
 			return yield* railway.trySync(() => {
-				if (!document.components) {
-					document.components = {}
-				}
+				document.components ??= {}
+				
+				document.components.schemas ??= {}
+				document.components.messages ??= {}
+				document.components.securitySchemes ??= {}
 				
 				if (!document.components.schemas) {
 					document.components.schemas = {}
@@ -214,30 +221,14 @@ export class DocumentBuilder {
 	 */
 	initializeDocumentStructure(document: AsyncAPIObject): Effect.Effect<AsyncAPIObject, StandardizedError> {
 		return Effect.gen(function* (this: DocumentBuilder) {
-			// Validate document parameter
-			if (!document) {
-				return yield* failWith(createError({
-					what: "Cannot initialize document structure on null/undefined document",
-					reassure: "This is a parameter validation issue",
-					why: "initializeDocumentStructure requires a valid AsyncAPIObject instance",
-					fix: "Ensure the document parameter is properly initialized before calling initializeDocumentStructure",
-					escape: "Create a new document using createInitialDocument first",
-					severity: "error" as const,
-					code: "INVALID_DOCUMENT_INSTANCE",
-					context: { documentProvided: !!document }
-				}))
-			}
+			// Validate document parameter using extracted helper
+			yield* validateDocumentParameter(document, "initialize document structure")
 
 			// Safe structure initialization with Railway programming
 			const structureInitResult = yield* railway.trySync(() => {
-				if (!document.channels) {
-					document.channels = {}
-				}
-				
-				if (!document.operations) {
-					document.operations = {}
-				}
-				
+				document.channels ??= {}
+				document.operations ??= {}
+
 				return document
 			}, { context: { operation: "document structure initialization" } })
 

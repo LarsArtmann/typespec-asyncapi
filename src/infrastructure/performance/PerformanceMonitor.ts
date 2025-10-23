@@ -16,6 +16,7 @@ import {Effect} from "effect"
 import {PERFORMANCE_METRICS_SERVICE} from "../performance/metrics.js"
 import {MEMORY_MONITOR_SERVICE} from "../performance/memory-monitor.js"
 import {createMetricName} from "../performance/PerformanceTypes.js"
+import {safeStringify} from "../../utils/standardized-errors.js"
 
 // Performance monitoring constants
 const DEFAULT_MONITORING_INTERVAL_MS = 5000 // 5 seconds
@@ -137,7 +138,7 @@ export class PerformanceMonitor {
 				this.addSnapshotWithMemoryManagement(snapshot, snapshot.memoryUsage)
 				return snapshot
 			},
-			catch: (error) => new Error(`Failed to take performance snapshot: ${error instanceof Error ? error.message : String(error)}`)
+			catch: (error) => new Error(`Failed to take performance snapshot: ${error instanceof Error ? error.message : safeStringify(error)}`)
 		}).pipe(
 			Effect.tap((snapshot) => Effect.log(`📊 Performance snapshot taken: ${snapshot.memoryUsage.toFixed(1)}MB memory, ${snapshot.operationCount} operations`)),
 			Effect.catchAll((error) => Effect.logError(`❌ ${error.message}`))
@@ -177,7 +178,7 @@ export class PerformanceMonitor {
 					this.addSnapshotWithMemoryManagement(snapshot, currentMemory)
 					return snapshot
 				}.bind(this)),
-				catch: (error) => new Error(`Failed to take performance snapshot: ${error instanceof Error ? error.message : String(error)}`)
+				catch: (error) => new Error(`Failed to take performance snapshot: ${error instanceof Error ? error.message : safeStringify(error)}`)
 			}).pipe(
 				Effect.flatten,
 				Effect.tap((snapshot) => Effect.log(`📊 Performance snapshot taken: ${snapshot.memoryUsage}MB memory, ${snapshot.operationCount} operations`)),
@@ -258,7 +259,7 @@ export class PerformanceMonitor {
 			const memoryIncreasing = memoryGrowthRate > DEFAULT_MEMORY_LEAK_DETECTION_RATE
 			const highMemoryUsage = latest.memoryUsage > this.config.memoryThreshold
 
-			if (memoryIncreasing || highMemoryUsage) {
+			if (memoryIncreasing ?? highMemoryUsage) {
 				report += `\n⚠️ Memory Concerns:\n`
 				if (memoryIncreasing) {
 					report += `  - Continuous memory growth detected (${memoryGrowthRate.toFixed(2)} MB/sec)\n`

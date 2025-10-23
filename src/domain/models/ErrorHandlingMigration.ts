@@ -6,6 +6,9 @@ import {readFile} from "fs/promises"
  * Migration utilities for converting Promise/try-catch patterns to Effect.TS
  */
 export class ErrorHandlingMigration {
+	// Unused method removed - was causing TypeScript error
+	// private static mapErrorToStandardized(...)
+
 	/**
 	 * Convert Promise-based function to Effect.TS
 	 */

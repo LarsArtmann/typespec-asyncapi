@@ -150,11 +150,13 @@ export function generateAsyncAPIWithEffect(context: EmitContext<AsyncAPIEmitterO
 		)
 		yield* Effect.logInfo("AssetEmitter created successfully")
 
-		// TODO: TYPE_SAFETY - emitProgram() return value should be typed and potentially awaited
-		// TODO: ERROR_HANDLING - emitProgram() call should be wrapped in Effect.try for proper error handling
-		// TODO: PERFORMANCE - Consider async/await pattern instead of synchronous call for better performance
+		// Call emitProgram with options to trigger programContext and emit all types
+		// This will call AsyncAPIEmitter.programContext() which sets up the scope and adds declarations
 		yield* Effect.logInfo("About to call assetEmitter.emitProgram()")
-		assetEmitter.emitProgram()
+		assetEmitter.emitProgram({
+			emitGlobalNamespace: true,
+			emitTypeSpecNamespace: false
+		})
 		yield* Effect.logInfo("Completed assetEmitter.emitProgram()")
 		
 		// Force emit the global namespace to trigger file generation  
@@ -194,15 +196,31 @@ export function generateAsyncAPIWithEffect(context: EmitContext<AsyncAPIEmitterO
 			}
 		}
 		
-		// TODO: TYPE_SAFETY - writeOutput() return type should be explicitly handled
-		// TODO: TYPE_SAFETY - Error parameter in mapError needs proper type annotation  
-		// TODO: ERROR_HANDLING - Should catch specific error types instead of generic Error
-		// TODO: PERFORMANCE - writeOutput operation should have timeout handling
-		// CRITICAL FIX: Don't manually call writeOutput() - let AssetEmitter framework handle it
-		// The AssetEmitter framework automatically calls writeOutput() when source files are created properly
-		yield* Effect.logInfo("🔥 ASSETEMITTER FIX: Skipping manual writeOutput() - letting framework handle it")
+		// Manually emit source files to trigger content generation
+		// The AssetEmitter has source files from programContext, but we need to emit them explicitly
+		yield* Effect.logInfo("Getting source files for emission...")
+		const sourceFiles = assetEmitter.getSourceFiles()
+		yield* Effect.logInfo(`Found ${sourceFiles.length} source files to emit`)
 
-		// TODO: LOGGING - Success logging should include performance metrics and output statistics
+		for (const sourceFile of sourceFiles) {
+			yield* Effect.logInfo(`Emitting source file: ${sourceFile.path}`)
+			yield* Effect.tryPromise({
+				try: () => assetEmitter.emitSourceFile(sourceFile),
+				catch: (error) => createPluginSystemError(error)
+			})
+		}
+
+		// Call writeOutput to write the emitted files to disk
+		yield* Effect.logInfo("Calling writeOutput to write files to disk...")
+		yield* Effect.tryPromise({
+			try: () => assetEmitter.writeOutput(),
+			catch: (error) => createPluginSystemError(error)
+		})
+		yield* Effect.logInfo("✅ writeOutput completed")
+
+		// TODO: Implement type cache clearing through proper AssetEmitter API
+		// This is a placeholder for future cache cleanup implementation
+
 		yield* railwayLogging.logInitializationSuccess("AsyncAPI generation")
 	})
 }

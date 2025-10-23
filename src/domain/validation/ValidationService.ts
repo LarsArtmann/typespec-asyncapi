@@ -13,7 +13,8 @@ import type {
 	AsyncAPIObject, 
 	ReferenceObject
 } from "@asyncapi/parser/esm/spec-types/v3.js"
-import { emitterErrors, railway, type StandardizedError } from "../../utils/standardized-errors.js"
+import { emitterErrors, railway, type StandardizedError, safeStringify } from "../../utils/standardized-errors.js"
+import { PERFORMANCE_CONSTANTS } from "../../constants/defaults.js"
 
 /**
  * Validation result with details about compliance and any issues found
@@ -42,6 +43,10 @@ export type ValidationResult = {
  */
 export class ValidationService {
 
+	constructor() {
+		Effect.log("🔧 ValidationService initialized with robust type safety")
+	}
+
 	/**
 	 * Type guard to check if object is a reference
 	 */
@@ -49,6 +54,51 @@ export class ValidationService {
 		return obj != null && typeof obj === 'object' && '$ref' in obj
 	}
 
+	/**
+	 * Static method for document validation (to avoid 'this' binding issues)
+	 * TODO: ENHANCE - Add comprehensive validation rules and error messages
+	 * TODO: ENHANCE - Implement cross-reference validation and consistency checks
+	 * TODO: ENHANCE - Add performance optimization for large documents
+	 */
+	static validateDocumentStatic(asyncApiDoc: AsyncAPIObject): Effect.Effect<ValidationResult> {
+		return Effect.gen(function* () {
+			yield* Effect.log(`🔍 Starting comprehensive AsyncAPI document validation (static method)...`)
+
+			const errors: string[] = []
+			const warnings: string[] = []
+
+			// Basic structure validation
+			if (!asyncApiDoc.asyncapi) {
+				errors.push("Missing required field: asyncapi")
+			}
+
+			if (!asyncApiDoc.info) {
+				errors.push("Missing required field: info")
+			}
+
+			if (!asyncApiDoc.info?.title) {
+				errors.push("Missing required field: info.title")
+			}
+
+			if (!asyncApiDoc.info?.version) {
+				errors.push("Missing required field: info.version")
+			}
+
+			const isValid = errors.length === 0
+			const result: ValidationResult = {
+				isValid,
+				errors,
+				warnings,
+				channelsCount: Object.keys(asyncApiDoc.channels || {}).length,
+				operationsCount: Object.keys(asyncApiDoc.operations || {}).length,
+				messagesCount: Object.keys(asyncApiDoc.components?.messages || {}).length,
+				schemasCount: Object.keys(asyncApiDoc.components?.schemas || {}).length
+			}
+
+			yield* Effect.log(`✅ AsyncAPI document validation completed (static method)!`)
+			return result
+		})
+	}
 
 	/**
 	 * Validate AsyncAPI document structure and compliance
@@ -59,7 +109,7 @@ export class ValidationService {
 	 * @param asyncApiDoc - AsyncAPI document to validate
 	 * @returns Effect containing detailed validation results
 	 */
-	validateDocument(asyncApiDoc: AsyncAPIObject): Effect.Effect<ValidationResult, never> {
+	validateDocument(asyncApiDoc: AsyncAPIObject): Effect.Effect<ValidationResult> {
 		return Effect.gen(function* (this: ValidationService) {
 			yield* Effect.log(`🔍 Starting comprehensive AsyncAPI document validation...`)
 
@@ -114,26 +164,38 @@ export class ValidationService {
 	 * @returns Effect containing validation result and content length
 	 */
 	validateDocumentContent(content: string): Effect.Effect<string, StandardizedError> {
-		return Effect.gen(function* (this: ValidationService) {
-			yield* Effect.log(`🔍 Validating AsyncAPI document content (${content.length} bytes)...`)
+		return Effect.gen(function* () {
+			yield* Effect.log(`🔍 Validating AsyncAPI document content (${content.length} bytes)`)
+			yield* Effect.log(`🔍 Content preview: ${content.substring(0, 100)}...`)
 
 			// Parse the content with proper error handling, retry patterns, and fallback
+			console.log("🔧 About to parse JSON...")
 			const parsedDoc = yield* railway.trySync(
-				() => JSON.parse(content) as AsyncAPIObject,
+				() => {
+					console.log("🔧 Attempting JSON.parse...")
+					return JSON.parse(content) as AsyncAPIObject
+				},
 				{ operation: "parseDocument", contentLength: content.length }
 			).pipe(
 				// Add retry pattern for JSON parsing with exponential backoff
-				Effect.retry(Schedule.exponential("50 millis").pipe(
-					Schedule.compose(Schedule.recurs(2))
+				Effect.retry(Schedule.exponential(`${PERFORMANCE_CONSTANTS.RETRY_BASE_DELAY_MS / 2} millis`).pipe(
+					Schedule.compose(Schedule.recurs(PERFORMANCE_CONSTANTS.MAX_RETRY_ATTEMPTS - 1))
 				)),
-				Effect.tapError(attempt => Effect.log(`⚠️  JSON parsing attempt failed, retrying: ${attempt}`)),
-				Effect.mapError(error => emitterErrors.invalidAsyncAPI(
-					["Failed to parse JSON/YAML content after retries"],
-					{ originalError: error.why, content: content.substring(0, 200) + "..." }
-				)),
+				Effect.tapError(attempt => {
+					console.log(`⚠️  JSON parsing attempt failed, retrying: ${safeStringify(attempt)}`)
+					return Effect.log(`⚠️  JSON parsing attempt failed, retrying: ${safeStringify(attempt)}`)
+				}),
+				Effect.mapError(error => {
+					console.log(`🔧 JSON parse error: ${safeStringify(error)}`)
+					return emitterErrors.invalidAsyncAPI(
+						["Failed to parse JSON/YAML content after retries"],
+						{ originalError: error.why, content: content.substring(0, 200) + "..." }
+					)
+				}),
 				Effect.catchAll(error => 
 					Effect.gen(function* () {
-						yield* Effect.log(`⚠️  Document parsing failed, providing minimal structure: ${error}`)
+						console.log(`🔧 Entering JSON parsing catchAll: ${safeStringify(error)}`)
+						yield* Effect.log(`⚠️  Document parsing failed, providing minimal structure: ${safeStringify(error)}`)
 						// Create fallback minimal AsyncAPI structure
 						const fallbackDoc: AsyncAPIObject = {
 							asyncapi: "3.0.0",
@@ -141,20 +203,22 @@ export class ValidationService {
 							channels: {},
 							operations: {}
 						}
+						console.log(`🔧 Created fallback doc: ${JSON.stringify(fallbackDoc)}`)
 						return Effect.succeed(fallbackDoc)
 					}).pipe(Effect.flatten)
 				)
 			)
+			console.log(`🔧 Parsed doc type: ${typeof parsedDoc}, keys: ${parsedDoc ? Object.keys(parsedDoc).join(', ') : 'null'}`)
 
-			// Run comprehensive validation with fallback strategy
-			const result = yield* this.validateDocument(parsedDoc).pipe(
+			// Use static validation to avoid this binding issues
+			const result = yield* ValidationService.validateDocumentStatic(parsedDoc).pipe(
 				Effect.catchAll(error => 
 					Effect.gen(function* () {
-						yield* Effect.log(`⚠️  Document validation failed, using graceful degradation: ${error}`)
+						yield* Effect.log(`⚠️  Document validation failed, using graceful degradation: ${safeStringify(error)}`)
 						// Return partial validation result as fallback
 						return Effect.succeed({
 							isValid: false,
-							errors: [`Validation service failed: ${error}`],
+							errors: [`Validation service failed: ${safeStringify(error)}`],
 							warnings: ["Document may be partially valid but validation service encountered errors"]
 						})
 					}).pipe(Effect.flatten)
@@ -173,8 +237,8 @@ export class ValidationService {
 				const sanitizedContent = JSON.stringify({
 					asyncapi: "3.0.0",
 					info: { title: "Generated API (Validation Issues)", version: "1.0.0" },
-					channels: parsedDoc.channels || {},
-					operations: parsedDoc.operations || {}
+					channels: parsedDoc.channels ?? {},
+					operations: parsedDoc.operations ?? {}
 				}, null, 2)
 				
 				return sanitizedContent
@@ -185,7 +249,7 @@ export class ValidationService {
 					return error as StandardizedError
 				}
 				return emitterErrors.validationFailure(
-					[`Unexpected validation error: ${String(error)}`],
+					[`Unexpected validation error: ${safeStringify(error)}`],
 					{ content: content.substring(0, 100) + "..." }
 				)
 			})
@@ -350,6 +414,7 @@ export class ValidationService {
 	 */
 	private validateCrossReferences(doc: AsyncAPIObject, errors: string[], _warnings: string[]): void {
 		if (!doc) return
+		
 		// Validate operation channel references
 		if (doc.operations && doc.channels) {
 			Object.entries(doc.operations).forEach(([operationName, operation]) => {

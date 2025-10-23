@@ -6,7 +6,8 @@
  */
 
 import { describe, it, expect } from "bun:test"
-import { compileTypeSpecWithDecorators } from "./utils/test-helpers.js"
+import { compileTypeSpecWithDecorators } from "../utils/test-helpers.js"
+import { Effect } from "effect"
 
 describe("📊 BREAKTHROUGH METRICS", () => {
   it("🎯 P0 Mission Success: 51% Impact Achieved", async () => {
@@ -34,7 +35,7 @@ describe("📊 BREAKTHROUGH METRICS", () => {
       {
         name: "Complex AsyncAPI Features",
         code: `
-          @server("prod", {url: "amqp://prod"})
+          @server("prod", #{url: "amqp://prod"})
           namespace API {
             @message model Event { id: string; }
             @channel("events") @publish 

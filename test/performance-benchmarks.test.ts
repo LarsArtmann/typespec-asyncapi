@@ -6,9 +6,23 @@
  */
 
 import { test, expect } from "bun:test"
+<<<<<<< HEAD
+import { Effect, Layer } from "effect"
+import { PerformanceRegressionTester } from "../src/infrastructure/performance/PerformanceRegressionTester.js"
+import { PerformanceMonitor } from "../src/infrastructure/performance/PerformanceMonitor.js"
+import { MEMORY_MONITOR_SERVICE_LIVE } from "../src/infrastructure/performance/memory-monitor.js"
+import { PERFORMANCE_METRICS_SERVICE_LIVE } from "../src/infrastructure/performance/metrics.js"
+
+// Combined Effect.TS Layer providing all performance services
+const PERFORMANCE_SERVICES_LAYER = Layer.merge(
+	MEMORY_MONITOR_SERVICE_LIVE,
+	PERFORMANCE_METRICS_SERVICE_LIVE
+)
+=======
 import { Effect } from "effect"
 import { PerformanceRegressionTester, type PerformanceConfig } from "../src/infrastructure/performance/PerformanceRegressionTester.js"
 import { PerformanceMonitor } from "../src/infrastructure/performance/PerformanceMonitor.js"
+>>>>>>> master
 
 // Performance thresholds for CI/CD validation
 const PERFORMANCE_THRESHOLDS = {
@@ -115,6 +129,20 @@ test("Performance Benchmark - Throughput validation", async () => {
  * PHASE 2: Regression Testing Infrastructure
  */
 test("Performance Regression - baseline establishment", async () => {
+<<<<<<< HEAD
+	const regressionTester = new PerformanceRegressionTester({
+		enableBaselines: true,
+		baselinesFilePath: "test-baselines.json",
+		regressionThresholds: {
+			compilationTime: 20.0,    // 20% degradation threshold
+			memoryUsage: 30.0,        // 30% memory increase threshold
+			throughput: 20.0,         // 20% throughput decrease threshold
+			latency: 25.0,            // 25% latency degradation threshold  
+		},
+		maxBaselinesHistory: 5,
+		enableCiValidation: false, // Disable for test
+	})
+=======
 	const config: PerformanceConfig = {
 		enableBaselines: true,
 		enableRegressionDetection: true,
@@ -128,11 +156,41 @@ test("Performance Regression - baseline establishment", async () => {
 	
 	const performanceMonitor = new PerformanceMonitor()
 	const regressionTester = new PerformanceRegressionTester(config, performanceMonitor)
+>>>>>>> master
 	
 	// Test baseline establishment
 	const baselineTest = async () => {
 		// Simulate consistent workload for baseline
 		await Effect.runPromise(Effect.sleep("100 millis"))
+<<<<<<< HEAD
+	}
+	
+	const testResult = await Effect.runPromise(
+		Effect.provide(
+			regressionTester.runRegressionTest("baseline-test", baselineTest),
+			PERFORMANCE_SERVICES_LAYER
+		)
+	)
+	
+	expect(testResult.testName).toBe("baseline-test")
+	expect(testResult.current).toBeDefined()
+	expect(testResult.current.compilationTimeMs).toBeGreaterThan(0)
+})
+
+test("Performance Regression - detection validation", async () => {
+	const regressionTester = new PerformanceRegressionTester({
+		enableBaselines: true,
+		baselinesFilePath: "test-regression-baselines.json",
+		regressionThresholds: {
+			compilationTime: 10.0,    // Tight 10% threshold for testing
+			memoryUsage: 10.0,        
+			throughput: 10.0,
+			latency: 10.0,  
+		},
+		maxBaselinesHistory: 5,
+		enableCiValidation: false, // Disable for test
+	})
+=======
 		return "baseline complete"
 	}
 	
@@ -159,20 +217,46 @@ test("Performance Regression - detection validation", async () => {
 	
 	const performanceMonitor = new PerformanceMonitor()
 	const regressionTester = new PerformanceRegressionTester(config, performanceMonitor)
+>>>>>>> master
 	
 	// First run - establish baseline
 	const baselineTest = async () => {
 		await Effect.runPromise(Effect.sleep("50 millis"))
+<<<<<<< HEAD
+	}
+	
+	await Effect.runPromise(
+		Effect.provide(
+			regressionTester.runRegressionTest("regression-test", baselineTest),
+			PERFORMANCE_SERVICES_LAYER
+		)
+=======
 		return "baseline"
 	}
 	
 	await Effect.runPromise(
 		regressionTester.runPerformanceTest("regression-test", baselineTest)
+>>>>>>> master
 	)
 	
 	// Second run - simulate regression
 	const regressionTest = async () => {
 		await Effect.runPromise(Effect.sleep("200 millis")) // Much slower
+<<<<<<< HEAD
+	}
+	
+	const regressionResult = await Effect.runPromise(
+		Effect.provide(
+			regressionTester.runRegressionTest("regression-test", regressionTest),
+			PERFORMANCE_SERVICES_LAYER
+		)
+	)
+	
+	// Should detect performance regression
+	expect(regressionResult.passed).toBe(false) // Using actual property name
+	expect(regressionResult.regressions).toBeDefined()
+	expect(regressionResult.regressions.length).toBeGreaterThan(0)
+=======
 		return "regression"
 	}
 	
@@ -183,6 +267,7 @@ test("Performance Regression - detection validation", async () => {
 	// Should detect performance regression
 	expect(regressionResult.hasRegression).toBe(true)
 	expect(regressionResult.regressionDetails).toBeDefined()
+>>>>>>> master
 })
 
 /**
@@ -272,7 +357,11 @@ test("Performance Scenario - Concurrent AsyncAPI generation", async () => {
 	const result = await Effect.runPromise(concurrentGeneration)
 	
 	// Validate concurrent performance
+<<<<<<< HEAD
+	expect(result.totalTime).toBeLessThan(1200)  // Should be faster than sequential (10 * 100ms = 1000ms), allowing overhead
+=======
 	expect(result.totalTime).toBeLessThan(500)  // Should be much faster than sequential (10 * 100ms)
+>>>>>>> master
 	expect(result.documentsGenerated).toBe(10)
 	expect(result.generationRate).toBeGreaterThan(5) // At least 5 docs/sec
 })
@@ -290,12 +379,35 @@ test("Performance Monitoring - metrics collection", async () => {
 		// Simulate workload
 		yield* Effect.sleep("200 millis")
 		
+<<<<<<< HEAD
+		// Take a snapshot (using correct method name)
+		yield* performanceMonitor.takeSnapshot()
+=======
 		// Collect metrics
 		const snapshot = yield* performanceMonitor.collectMetrics()
+>>>>>>> master
 		
 		// Stop monitoring  
 		yield* performanceMonitor.stopMonitoring()
 		
+<<<<<<< HEAD
+		// Get performance status
+		const status = performanceMonitor.getPerformanceStatus()
+		return status
+	})
+	
+	const status = await Effect.runPromise(
+		Effect.provide(monitoringTest, PERFORMANCE_SERVICES_LAYER)
+	)
+	
+	// Validate metrics collection
+	expect(status).toBeDefined()
+	expect(status.snapshotCount).toBeGreaterThan(0)
+	if (status.latestSnapshot) {
+		expect(status.latestSnapshot.timestamp).toBeDefined()
+		expect(status.latestSnapshot.memoryUsage).toBeGreaterThan(0)
+	}
+=======
 		return snapshot
 	})
 	
@@ -305,6 +417,7 @@ test("Performance Monitoring - metrics collection", async () => {
 	expect(metrics).toBeDefined()
 	expect(metrics.timestamp).toBeDefined()
 	expect(metrics.memoryUsage).toBeGreaterThan(0)
+>>>>>>> master
 })
 
 /**

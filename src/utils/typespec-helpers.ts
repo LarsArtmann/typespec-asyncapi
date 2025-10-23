@@ -217,7 +217,7 @@ export function buildServersFromNamespaces(program: Program): ServersObject {
 			servers[qualifiedName] = {
 				host: extractHostFromUrl(config.url),
 				protocol: config.protocol,
-				description: config.description || `${namespaceName} ${serverName} server`,
+				description: config.description ?? `${namespaceName} ${serverName} server`,
 			} as const
 		}
 	}

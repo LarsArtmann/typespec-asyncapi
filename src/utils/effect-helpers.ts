@@ -3,10 +3,13 @@
  * Eliminates Effect.TS anti-patterns and provides comprehensive Railway programming patterns
  */
 
-import {Effect, Schedule, TSemaphore} from "effect"
+import {Effect, Schedule} from "effect"
+// import {existsSync, readFileSync, writeFileSync} from "fs" // TODO: Use when needed
 import type {EmitContext} from "@typespec/compiler"
 import type {AsyncAPIEmitterOptions} from "../infrastructure/configuration/options.js"
 import {SpecGenerationError} from "../domain/models/errors/SpecGenerationError.js"
+import {safeStringify} from "./standardized-errors.js"
+import { PERFORMANCE_CONSTANTS } from "../constants/defaults.js"
 
 /**
  * Railway Programming Logging - All logging properly composed within Effect contexts
@@ -17,14 +20,14 @@ export const railwayLogging = {
 	 * Log debug information about operation/schema generation - Railway style
 	 */
 	logDebugGeneration: (type: "channel" | "operation" | "message" | "security-scheme", id: string, details?: Record<string, unknown>) => {
-		return Effect.logDebug(`Generated ${type}: ${id}`, details || {})
+		return Effect.logDebug(`Generated ${type}: ${id}`, details ?? {})
 	},
 
 	/**
 	 * Log initialization messages with proper Effect composition
 	 */
 	logInitialization: (component: string, details?: Record<string, unknown>) =>
-		Effect.logInfo(`🔧 Initializing ${component}...`, details || {}),
+		Effect.logInfo(`🔧 Initializing ${component}...`, details ?? {}),
 
 	/**
 	 * Log successful initialization with proper Effect composition
@@ -148,7 +151,7 @@ export const railwayErrorHandling = {
 	 */
 	handleSpecGenerationError: (error: unknown, options: AsyncAPIEmitterOptions) => {
 		return Effect.fail(new SpecGenerationError(
-			`Failed to generate AsyncAPI spec: ${error}`,
+			`Failed to generate AsyncAPI spec: ${safeStringify(error)}`,
 			options,
 		))
 	},
@@ -159,7 +162,7 @@ export const railwayErrorHandling = {
 	logAndRethrow: <E>(error: E, context: string, details?: Record<string, unknown>) => {
 		return Effect.gen(function* () {
 			yield* Effect.logError(`${context}`, {
-				error: String(error),
+				error: safeStringify(error),
 				...details,
 			})
 			return yield* Effect.fail(error)
@@ -305,7 +308,7 @@ export const railwayErrorRecovery = {
 	circuitBreaker: <T, E>(
 		operation: Effect.Effect<T, E>,
 		failureThreshold: number = 5,
-		timeoutMs: number = 10000
+		timeoutMs: number = PERFORMANCE_CONSTANTS.DEFAULT_TIMEOUT_MS
 	): Effect.Effect<T, E | Error> => {
 		// Simple circuit breaker implementation
 		let failureCount = 0
@@ -529,4 +532,5 @@ export const railwayErrorRecovery = {
 		)
 	}
 }
+
 

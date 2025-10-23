@@ -11,13 +11,14 @@
  */
 
 import { describe, it, expect } from "bun:test"
-import { compileTypeSpecWithDecorators } from "./utils/test-helpers.js"
+import { compileTypeSpecWithDecorators } from "../utils/test-helpers.js"
+import { Effect } from "effect"
 
 describe("🚀 DECORATOR REGISTRATION BREAKTHROUGH", () => {
   it("🎯 BREAKTHROUGH: No more 'Unknown decorator' errors", async () => {
     const { program, diagnostics } = await compileTypeSpecWithDecorators(`
       // Test ALL AsyncAPI decorators together
-      @server("production", { url: "amqp://prod.example.com", protocol: "amqp" })
+      @server("production", #{ url: "amqp://prod.example.com", protocol: "amqp" })
       namespace MyAPI {
         @message({ name: "UserEvent", contentType: "application/json" })
         model UserMessage {
@@ -70,7 +71,7 @@ describe("🚀 DECORATOR REGISTRATION BREAKTHROUGH", () => {
       { name: "@message", code: `@message model Test { id: string; }` },
       { name: "@protocol", code: `@protocol({type:"kafka"}) model Test { id: string; }` },
       { name: "@security", code: `@security({type:"apiKey"}) model Test { id: string; }` },
-      { name: "@server", code: `@server("test", {url:"amqp://test"}) namespace Test {}` }
+      { name: "@server", code: `@server("test", #{url:"amqp://test"}) namespace Test {}` }
     ]
     
     for (const test of decoratorTests) {
@@ -116,7 +117,7 @@ describe("🚀 DECORATOR REGISTRATION BREAKTHROUGH", () => {
     const startTime = Date.now()
     
     const { program, diagnostics } = await compileTypeSpecWithDecorators(`
-      @server("dev", {url: "amqp://localhost"})
+      @server("dev", #{url: "amqp://localhost"})
       namespace TestMetrics {
         @message
         model Event { id: string; data: string; }

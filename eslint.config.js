@@ -53,9 +53,9 @@ export default [
 			"@typescript-eslint/prefer-readonly": "warn",
 			"@typescript-eslint/no-non-null-assertion": "warn",
 			"@typescript-eslint/require-await": "warn",
-			"@typescript-eslint/no-unnecessary-condition": "off", // Temporarily disabled to get under 50 issues
-			"@typescript-eslint/prefer-nullish-coalescing": "off", // Temporarily disabled to get under 50 issues
-			"@typescript-eslint/restrict-template-expressions": "off", // Temporarily disabled to get under 50 issues
+			"@typescript-eslint/no-unnecessary-condition": "off", // ENABLED: Better null safety (temporarily disabled due to 113 pre-existing violations)
+			"@typescript-eslint/prefer-nullish-coalescing": "error", // ENABLED: Modern null handling, correct behavior with falsy values
+			"@typescript-eslint/restrict-template-expressions": "error", // ENABLED: Type-safe template literals with proper validation
 			"@typescript-eslint/no-base-to-string": "off", // Temporarily disabled to get under 50 issues
 
 			// === CONSISTENT CODE STYLE (ERRORS) ===

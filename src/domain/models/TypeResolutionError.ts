@@ -1,5 +1,4 @@
 import type {StandardizedError} from "./StandardizedError.js"
-
 export class TypeResolutionError {
 	readonly _tag = "TypeResolutionError"
 

@@ -13,7 +13,7 @@
  */
 
 import { describe, it, expect, beforeAll, afterAll } from "bun:test";
-import { AsyncAPIValidator } from "../../src/validation/asyncapi-validator.js";
+import { AsyncAPIValidator } from "../../src/domain/validation/asyncapi-validator.js";
 import { readdir, readFile, mkdir, writeFile, rm } from "node:fs/promises";
 import { join, extname } from "node:path";
 import {Effect} from "effect"

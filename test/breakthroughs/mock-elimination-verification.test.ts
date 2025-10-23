@@ -5,7 +5,8 @@
  */
 
 import { describe, it, expect } from "bun:test"
-import { compileAsyncAPISpec } from "../utils/test-helpers"
+import { compileAsyncAPISpecRaw } from "../utils/test-helpers"
+import { Effect } from "effect"
 
 describe("🚨 Mock Infrastructure Elimination", () => {
   it("should use REAL TypeSpec Program instead of mock objects", async () => {
@@ -22,7 +23,7 @@ describe("🚨 Mock Infrastructure Elimination", () => {
     `
     
     // This should use REAL TypeSpec compilation now, not mocks
-    const result = await compileAsyncAPISpec(source)
+    const result = await compileAsyncAPISpecRaw(source)
     
     // The program should be a REAL TypeSpec Program with real methods
     expect(result.program).toBeDefined()
@@ -49,7 +50,7 @@ describe("🚨 Mock Infrastructure Elimination", () => {
       op handleUserEvent(): UserEvent;
     `
     
-    const result = await compileAsyncAPISpec(source)
+    const result = await compileAsyncAPISpecRaw(source)
     
     // Should have actual output files
     expect(result.outputFiles).toBeDefined()

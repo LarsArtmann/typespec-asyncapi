@@ -4,7 +4,7 @@ import {Effect} from "effect"
 import {
 	DEFAULT_SERIALIZATION_FORMAT,
 	SERIALIZATION_FORMAT_OPTION_JSON,
-} from "../../src/core/serialization-format-option.js"
+} from "../../src/domain/models/serialization-format-option.js"
 
 describe("AsyncAPI Emitter Integration", () => {
 	it("should compile basic-events example and generate AsyncAPI", async () => {
@@ -38,25 +38,22 @@ describe("AsyncAPI Emitter Integration", () => {
       ): UserSignupEvent;
     `
 
-		const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source, {
-			"output-file": "test-asyncapi",
-			"file-type": DEFAULT_SERIALIZATION_FORMAT,
-		})
+		const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source)
 
-		// Find the generated AsyncAPI file
-		let content: string
-		try {
-			content = parseAsyncAPIOutput(outputFiles, "test-asyncapi.yaml")
-		} catch (error) {
-			// Try to get any YAML file if exact name doesn't work
-			const availableFiles = Array.from(outputFiles.keys())
-			const yamlFiles = availableFiles.filter(f => f.endsWith('.yaml'))
-			if (yamlFiles.length > 0) {
-				content = parseAsyncAPIOutput(outputFiles, yamlFiles[0].replace(/^.*\//, ''))
-			} else {
-				throw error
-			}
-		}
+	// Find the generated AsyncAPI file - read raw content from Map
+	const availableFiles = Array.from(outputFiles.keys())
+	const yamlFiles = availableFiles.filter(f => f.endsWith('.yaml'))
+	
+	// Filter AsyncAPI files by content (more reliable than filename)
+	const asyncapiFiles = yamlFiles.filter(f => {
+		const content = outputFiles.get(f) as string
+		return content && content.includes('asyncapi: 3.0.0')
+	})
+	
+	if (asyncapiFiles.length === 0) {
+		throw new Error(`No AsyncAPI YAML files found. Available files: ${availableFiles.join(', ')}`)
+	}
+	const content = outputFiles.get(asyncapiFiles[0]) as string
 
 		// Validate AsyncAPI structure
 		expect(content).toContain("asyncapi: 3.0.0")
@@ -97,12 +94,9 @@ describe("AsyncAPI Emitter Integration", () => {
       op publishComplexEvent(): ComplexEvent;
     `
 
-		const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source, {
-			"output-file": "complex-test",
-			"file-type": SERIALIZATION_FORMAT_OPTION_JSON,
-		})
+		const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source)
 
-		const asyncapiDoc = parseAsyncAPIOutput(outputFiles, "complex-test.json")
+		const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "complex-test.json")
 
 		// Validate AsyncAPI 3.0 structure
 		expect(asyncapiDoc.asyncapi).toBe("3.0.0")
@@ -153,12 +147,24 @@ describe("AsyncAPI Emitter Integration", () => {
       op subscribeUserNotifications(userId: string): UserEvent;
     `
 
-		const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source, {
-			"output-file": "multi-op-test",
-			"file-type": DEFAULT_SERIALIZATION_FORMAT,
-		})
+		const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source)
 
-		const content = parseAsyncAPIOutput(outputFiles, "multi-op-test.yaml")
+		// Read raw YAML content from outputFiles Map
+	const availableFiles = Array.from(outputFiles.keys())
+	const yamlFiles = availableFiles.filter(f => f.endsWith('.yaml'))
+	
+	// Filter AsyncAPI files by content (more reliable than filename)
+	const asyncapiFiles = yamlFiles.filter(f => {
+		const rawContent = outputFiles.get(f)
+		const content = typeof rawContent === 'string' ? rawContent : (rawContent as any).content
+		return content && content.includes('asyncapi: 3.0.0')
+	})
+	
+	if (asyncapiFiles.length === 0) {
+		throw new Error(`No AsyncAPI YAML files found. Available files: ${availableFiles.join(', ')}`)
+	}
+	const rawContent = outputFiles.get(asyncapiFiles[0])
+	const content = typeof rawContent === 'string' ? rawContent : (rawContent as any).content
 
 		// Should contain all operations
 		expect(content).toContain("publishUserEvent")
@@ -166,9 +172,9 @@ describe("AsyncAPI Emitter Integration", () => {
 		expect(content).toContain("subscribeUserNotifications")
 
 		// Should contain all channels
-		expect(content).toContain("channel_publishUserEvent")
-		expect(content).toContain("channel_publishSystemAlert")
-		expect(content).toContain("channel_subscribeUserNotifications")
+		expect(content).toContain("user.events")
+		expect(content).toContain("system.alerts")
+		expect(content).toContain("user.notifications")
 
 		// Should contain all schemas
 		expect(content).toContain("UserEvent")
@@ -199,15 +205,12 @@ describe("AsyncAPI Emitter Integration", () => {
       op publishDocumentedEvent(): DocumentedEvent;
     `
 
-		const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source, {
-			"output-file": "doc-test",
-			"file-type": SERIALIZATION_FORMAT_OPTION_JSON,
-		})
+		const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source)
 
-		const asyncapiDoc = parseAsyncAPIOutput(outputFiles, "doc-test.json")
+		const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "doc-test.json")
 
 		// Validate documentation is preserved
-		const channel = asyncapiDoc.channels.channel_publishDocumentedEvent
+		const channel = asyncapiDoc.channels.documented.events
 		expect(channel.description).toContain("Channel for publishing documented events")
 
 		const schema = asyncapiDoc.components.schemas.DocumentedEvent

@@ -3,7 +3,7 @@
  */
 
 import {describe, it} from "bun:test"
-import {createAsyncAPITestHost} from "./utils/test-helpers"
+import {createAsyncAPITestHost} from "../utils/test-helpers.js"
 import {Effect} from "effect"
 
 describe("Debug Emitter Registration", () => {
@@ -36,7 +36,7 @@ describe("Debug Emitter Registration", () => {
 		try {
 			const result = await host.compileAndDiagnose("debug.tsp", {
 				emitters: {
-					"@larsartmann/typespec-asyncapi": {
+					"@lars-artmann/typespec-asyncapi": {
 						"output-file": "debug-output",
 						"file-type": "json",
 					},

@@ -6,6 +6,7 @@
 
 import { describe, it, expect } from "bun:test"
 import { createTestHost, createTestWrapper } from "@typespec/compiler/testing"
+import { Effect } from "effect"
 
 describe("🔥 Direct Program Test", () => {
   it("should create a REAL TypeSpec Program without decorators", async () => {

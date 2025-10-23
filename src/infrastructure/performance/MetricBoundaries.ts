@@ -6,6 +6,7 @@
  * and can be overridden by environment-specific configurations.
  */
 
+import {Effect} from "effect"
 import type {IMetricBoundaries, EnvironmentType} from "./IPerformanceConfig.js"
 
 /**
@@ -144,7 +145,7 @@ export const createCustomBoundaries = (
   
   const validation = validateBoundaries(boundaries)
   if (!validation.isValid) {
-    throw new Error(`Invalid metric boundaries: ${validation.errors.join(', ')}`)
+    Effect.runSync(Effect.die(new Error(`Invalid metric boundaries: ${validation.errors.join(', ')}`)))
   }
   
   return boundaries

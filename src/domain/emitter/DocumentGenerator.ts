@@ -18,6 +18,7 @@
  */
 
 import {Effect} from "effect"
+import {safeStringify} from "../../utils/standardized-errors.js"
 import {stringify} from "yaml"
 import type {AsyncAPIObject} from "@asyncapi/parser/esm/spec-types/v3.js"
 import {
@@ -114,7 +115,7 @@ export class DocumentGenerator {
 				return createError({
 					what: 'Document serialization failed',
 					reassure: 'This is a recoverable error that can be fixed',
-					why: `Unexpected error during serialization: ${String(error)}`,
+					why: `Unexpected error during serialization: ${safeStringify(error)}`,
 					fix: 'Check document structure and serialization options',
 					escape: 'Try with different serialization format',
 					severity: 'error' as const,

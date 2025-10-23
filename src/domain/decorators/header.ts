@@ -33,13 +33,13 @@ export function $header(
 
 	// Validate target is a ModelProperty
 	if (target.kind !== 'ModelProperty') {
-		Effect.log(`❌ @header can only be applied to model properties, not ${target.kind}`)
+		Effect.log(`❌ @header can only be applied to model properties, not ${target.kind as string}`)
 		return
 	}
 
 	// Get property information
 	const propertyName = target.name
-	const headerName = name || propertyName
+	const headerName = name ?? propertyName
 
 	// Validate header name
 	if (!isValidHeaderName(headerName)) {
@@ -164,8 +164,8 @@ export function generateHeadersSchema(
 	const schema: Record<string, unknown> = {}
 	
 	for (const [propertyName, config] of headers) {
-		schema[config.name || propertyName] = {
-			type: config.type?.type || 'string',
+		schema[config.name ?? propertyName] = {
+			type: config.type?.type ?? 'string',
 			description: config.description,
 			...(config.type?.format && { format: config.type.format }),
 			...(config.type?.pattern && { pattern: config.type.pattern })

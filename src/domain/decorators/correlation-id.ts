@@ -38,7 +38,7 @@ export function $correlationId(
 
 	// Validate target is a Model
 	if (target.kind !== 'Model') {
-		Effect.log(`❌ @correlationId can only be applied to models, not ${target.kind}`)
+		Effect.log(`❌ @correlationId can only be applied to models, not ${target.kind as string}`)
 		return
 	}
 
@@ -206,7 +206,7 @@ function validateCorrelationSchema(
 export function generateCorrelationIdExamples(
 	config: CorrelationIdConfig,
 ): string[] {
-	const schema = config.schema || { type: 'string', format: 'uuid' }
+	const schema = config.schema ?? { type: 'string', format: 'uuid' }
 	
 	if (schema.type === 'string') {
 		switch (schema.format) {
@@ -243,7 +243,7 @@ export function validateCorrelationIdValue(
 	value: string | number,
 	config: CorrelationIdConfig,
 ): boolean {
-	const schema = config.schema || { type: 'string', format: 'uuid' }
+	const schema = config.schema ?? { type: 'string', format: 'uuid' }
 	
 	if (schema.type === 'string') {
 		if (typeof value !== 'string') return false

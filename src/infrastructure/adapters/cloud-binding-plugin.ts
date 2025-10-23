@@ -1,7 +1,4 @@
-import type {Effect} from "effect"
-import type {DecoratorContext, Model, Operation} from "@typespec/compiler"
-import type {AsyncAPIObject} from "@asyncapi/parser/esm/spec-types/v3.js"
-import type {CloudBindingResult} from "./cloud-binding-result.js"
+import type {Effect, DecoratorContext, Model, Operation, AsyncAPIObject, CloudBindingResult} from "./cloud-binding-shared-types.js"
 import {CloudBindingPluginRegistry} from "./cloud-binding-plugin-registry.js"
 
 /**

@@ -11,7 +11,7 @@
 import type { Program, Namespace } from "@typespec/compiler"
 import type { SourceFile, EmittedSourceFile } from "@typespec/asset-emitter"
 import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js"
-import type { PluginRegistry } from "../../infrastructure/adapters/PluginRegistry.js"
+// import type { PluginRegistry } from "../../infrastructure/adapters/PluginRegistry.js"
 
 /**
  * Core AsyncAPI emitter interface defining emission contract
@@ -19,14 +19,15 @@ import type { PluginRegistry } from "../../infrastructure/adapters/PluginRegistr
 export type IAsyncAPIEmitter = {
 	/**
 	 * Executes the complete AsyncAPI emission pipeline for a TypeSpec program
-	 * TODO: Promise WHY??!?!?!
+	 * Must be synchronous to match TypeEmitter base class contract
 	 */
-	programContext(program: Program): Promise<Record<string, unknown>>
+	programContext(program: Program): Record<string, unknown>
 	
 	/**
 	 * Handles TypeSpec namespace processing during emission
+	 * Returns EmitterOutput for proper AssetEmitter integration
 	 */
-	namespace(namespace: Namespace): string
+	namespace(namespace: Namespace): import("@typespec/asset-emitter").EmitterOutput<string>
 	
 	/**
 	 * Generates the final AsyncAPI document content for a source file
@@ -50,6 +51,14 @@ export type IAsyncAPIEmitter = {
 	
 	/**
 	 * Retrieves the plugin registry for external plugin management
+	 * @deprecated Use simple plugin system from infrastructure/adapters/plugin-system.js
 	 */
-	getPluginRegistry(): PluginRegistry
+	// getPluginRegistry(): PluginRegistry
+
+	/**
+	 * Retrieves the simple plugin registry for protocol bindings
+	 * @deprecated Use simple plugin system from infrastructure/adapters/plugin-system.js
+	 * @returns Record<string, unknown> Simple plugin registry interface
+	 */
+	getSimplePluginRegistry(): Record<string, unknown>
 }

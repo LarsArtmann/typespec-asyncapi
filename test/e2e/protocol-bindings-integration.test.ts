@@ -7,7 +7,7 @@
 
 import { describe, it, expect, beforeAll, afterAll } from "bun:test";
 import { compileAsyncAPISpec, parseAsyncAPIOutput } from "../utils/test-helpers";
-import { AsyncAPIValidator } from "../../src/validation/asyncapi-validator";
+import { AsyncAPIValidator } from "../../src/domain/validation/asyncapi-validator.js";
 import { mkdir, rm } from "node:fs/promises";
 import { join } from "node:path";
 import { Effect } from "effect";
@@ -357,7 +357,7 @@ describe("E2E Protocol Bindings Integration", () => {
           timestamp: utcDateTime;
           
           @doc("HTTP headers to include")
-          headers?: Record<string>;
+          headers?: Record<unknown>;
           
           @doc("Signature for verification")
           signature?: string;
@@ -409,7 +409,7 @@ describe("E2E Protocol Bindings Integration", () => {
           url: string;
           
           @doc("HTTP headers")
-          headers: Record<string>;
+          headers: Record<unknown>;
           
           @doc("Request body")
           body?: string;

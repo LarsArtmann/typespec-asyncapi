@@ -10,7 +10,7 @@ import {
   pluginRegistry, 
   registerBuiltInPlugins, 
   generateProtocolBinding 
-} from "../../src/plugins/plugin-system.js"
+} from "../../src/infrastructure/adapters/plugin-system.js"
 
 describe("Plugin System", () => {
   it("should initialize built-in plugins without errors", async () => {
@@ -64,14 +64,15 @@ describe("Plugin System", () => {
     expect(unknownBinding).toBeNull()
   })
   
-  it("should handle plugin errors gracefully", async () => {
-    // Test with uninitialized registry
-    const uninitializedBinding = await Effect.runPromise(
+  it("should auto-register plugins on first use", async () => {
+    // Plugins auto-register on first use, no manual initialization needed
+    const autoRegisteredBinding = await Effect.runPromise(
       generateProtocolBinding("kafka", "operation", {})
     )
-    
-    // Should handle gracefully when no plugins are registered
-    expect(uninitializedBinding).toBeNull()
+
+    // Should return valid binding from auto-registered plugin
+    expect(autoRegisteredBinding).toBeTruthy()
+    expect(autoRegisteredBinding).toHaveProperty("kafka")
   })
   
   it("should list all registered plugins", async () => {

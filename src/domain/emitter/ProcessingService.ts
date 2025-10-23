@@ -155,19 +155,19 @@ const processSingleOperation = (op: Operation, asyncApiDoc: AsyncAPIObject, prog
 			const protocolName = protocolConfig.protocol as AsyncAPIProtocolType
 			
 			// Try plugin system first, fallback to ProtocolBindingFactory
-			const bindingData = { config: protocolConfig.binding || {} }
+			const bindingData = { config: protocolConfig.binding ?? {} }
 			
 			// Generate channel bindings - Plugin system preferred
 			const channelBindingResult = Effect.runSync(generateProtocolBinding(protocolName, 'channel', bindingData).pipe(Effect.catchAll(() => Effect.succeed(null))))
-			channelBindings = channelBindingResult || ProtocolBindingFactory.createChannelBindings(protocolType, protocolConfig.binding || {})
+			channelBindings = channelBindingResult ?? ProtocolBindingFactory.createChannelBindings(protocolType, protocolConfig.binding ?? {})
 			
 			// Generate operation bindings - Plugin system preferred
 			const operationBindingResult = Effect.runSync(generateProtocolBinding(protocolName, 'operation', bindingData).pipe(Effect.catchAll(() => Effect.succeed(null))))
-			operationBindings = operationBindingResult || ProtocolBindingFactory.createOperationBindings(protocolType, protocolConfig.binding || {})
+			operationBindings = operationBindingResult ?? ProtocolBindingFactory.createOperationBindings(protocolType, protocolConfig.binding ?? {})
 			
 			// Generate message bindings - Plugin system preferred
 			const messageBindingResult = Effect.runSync(generateProtocolBinding(protocolName, 'message', bindingData).pipe(Effect.catchAll(() => Effect.succeed(null))))
-			messageBindings = messageBindingResult || ProtocolBindingFactory.createMessageBindings(protocolType, protocolConfig.binding || {})
+			messageBindings = messageBindingResult ?? ProtocolBindingFactory.createMessageBindings(protocolType, protocolConfig.binding ?? {})
 			
 			if (channelBindings) {
 				Effect.log(`✅ Channel bindings created for ${protocolType} ${channelBindingResult ? '(plugin)' : '(factory)'}`)
@@ -180,15 +180,13 @@ const processSingleOperation = (op: Operation, asyncApiDoc: AsyncAPIObject, prog
 			}
 		}
 
-		//TODO: HARDCODED PREFIX "channel_" IS GARBAGE NAMING!
-		//TODO: CRITICAL NAMING FAILURE - Channel names should be descriptive, not generic prefixes!
-		//TODO: BUSINESS LOGIC VIOLATION - Channel naming should follow AsyncAPI best practices!
-		//TODO: MAINTAINABILITY DISASTER - When channel naming strategy changes, we modify code!
-		const channelName = `channel_${op.name}`
+		// FIXED: Use channel path from @channel decorator instead of hardcoded prefix
+		// channelPath comes from extractOperationMetadata which reads the @channel decorator state
+		const channelName = channelPath
 		const action: "send" | "receive" = operationType === "subscribe" ? "receive" : "send"
 
 		// Add channel to document - use shared helper to eliminate duplication
-		if (!asyncApiDoc.channels) asyncApiDoc.channels = {}
+		asyncApiDoc.channels ??= {}
 		const { definition } = createChannelDefinition(op, program)
 		
 		// CRITICAL FIX: Add protocol bindings to channel definition
@@ -199,7 +197,7 @@ const processSingleOperation = (op: Operation, asyncApiDoc: AsyncAPIObject, prog
 		asyncApiDoc.channels[channelName] = definition
 
 		// Add operation to document
-		if (!asyncApiDoc.operations) asyncApiDoc.operations = {}
+		asyncApiDoc.operations ??= {}
 		//TODO: HARDCODED MESSAGE TEMPLATES! EXTRACT TO CONSTANTS!
 		//TODO: CRITICAL DUPLICATION - Template strings scattered throughout codebase!
 		//TODO: I18N VIOLATION - Hardcoded English messages won't work for international teams!
@@ -219,8 +217,8 @@ const processSingleOperation = (op: Operation, asyncApiDoc: AsyncAPIObject, prog
 		asyncApiDoc.operations[op.name] = operationDef
 
 		// Add message to components
-		if (!asyncApiDoc.components) asyncApiDoc.components = {}
-		if (!asyncApiDoc.components.messages) asyncApiDoc.components.messages = {}
+		asyncApiDoc.components ??= {}
+		asyncApiDoc.components.messages ??= {}
 		const messageDef: Partial<MessageObject> = {
 			name: `${op.name}Message`,
 			title: `${op.name} Message`,
@@ -240,7 +238,7 @@ const processSingleOperation = (op: Operation, asyncApiDoc: AsyncAPIObject, prog
 				Effect.log(`📋 Processing Model return type: ${model.name}`)
 				
 				// Add schema to components.schemas
-				if (!asyncApiDoc.components.schemas) asyncApiDoc.components.schemas = {}
+				asyncApiDoc.components.schemas ??= {}
 				asyncApiDoc.components.schemas[model.name] = convertModelToSchema(model, program)
 				
 				// Add payload reference to message
@@ -297,14 +295,14 @@ const processSingleMessageModel = (model: Model, asyncApiDoc: AsyncAPIObject, pr
 
 		// Ensure components.messages exists
 		if (!asyncApiDoc.components?.messages) {
-			if (!asyncApiDoc.components) asyncApiDoc.components = {}
+			asyncApiDoc.components ??= {}
 			asyncApiDoc.components.messages = {}
 		}
 
 		const messageId = messageConfig.name ?? model.name
 
 		// CRITICAL FIX: Add schema to components.schemas first!
-		if (!asyncApiDoc.components.schemas) asyncApiDoc.components.schemas = {}
+		asyncApiDoc.components.schemas ??= {}
 		asyncApiDoc.components.schemas[model.name] = convertModelToSchema(model, program)
 		Effect.log(`✅ Added schema for message model: ${model.name}`)
 
@@ -343,7 +341,7 @@ const processSingleSecurityConfig = (config: SecurityConfig, asyncApiDoc: AsyncA
 
 		// Ensure components.securitySchemes exists
 		if (!asyncApiDoc.components?.securitySchemes) {
-			if (!asyncApiDoc.components) asyncApiDoc.components = {}
+			asyncApiDoc.components ??= {}
 			asyncApiDoc.components.securitySchemes = {}
 		}
 
@@ -437,25 +435,25 @@ const createAsyncAPISecurityScheme = (config: SecurityConfig): SecuritySchemeObj
 				if (scheme.flows.implicit) {
 					transformedFlows.implicit = {
 						...scheme.flows.implicit,
-						availableScopes: scheme.flows.implicit.scopes || {}
+						availableScopes: scheme.flows.implicit.scopes ?? {}
 					}
 				}
 				if (scheme.flows.password) {
 					transformedFlows.password = {
 						...scheme.flows.password,
-						availableScopes: scheme.flows.password.scopes || {}
+						availableScopes: scheme.flows.password.scopes ?? {}
 					}
 				}
 				if (scheme.flows.clientCredentials) {
 					transformedFlows.clientCredentials = {
 						...scheme.flows.clientCredentials,
-						availableScopes: scheme.flows.clientCredentials.scopes || {}
+						availableScopes: scheme.flows.clientCredentials.scopes ?? {}
 					}
 				}
 				if (scheme.flows.authorizationCode) {
 					transformedFlows.authorizationCode = {
 						...scheme.flows.authorizationCode,
-						availableScopes: scheme.flows.authorizationCode.scopes || {}
+						availableScopes: scheme.flows.authorizationCode.scopes ?? {}
 					}
 				}
 				
@@ -465,14 +463,44 @@ const createAsyncAPISecurityScheme = (config: SecurityConfig): SecuritySchemeObj
 					description: scheme.description,
 				} as SecuritySchemeObject
 			}
+			case "openIdConnect":
+				return {
+					type: "openIdConnect",
+					openIdConnectUrl: scheme.openIdConnectUrl,
+					description: scheme.description,
+				} as SecuritySchemeObject
+
+			case "sasl":
+				return {
+					type: "plain",
+					description: scheme.description,
+				} as SecuritySchemeObject
+
+			case "x509":
+				return {
+					type: "X509",
+					description: scheme.description,
+				} as SecuritySchemeObject
+
+			case "symmetricEncryption":
+				return {
+					type: "symmetricEncryption",
+					description: scheme.description,
+				} as SecuritySchemeObject
+
+			case "asymmetricEncryption":
+				return {
+					type: "asymmetricEncryption",
+					description: scheme.description,
+				} as SecuritySchemeObject
 
 			default:
-				// Fallback for unknown scheme types
-				Effect.log(`⚠️ Unknown security scheme type: ${scheme.type}, using apiKey fallback`)
+				// This should never be reached due to TypeScript exhaustiveness checking
+				Effect.log(`⚠️ Unknown security scheme type, using apiKey fallback`)
 				return {
 					type: "apiKey",
 					in: "user",
-					description: scheme.description || `Security scheme ${config.name}`,
+					description: `Security scheme ${config.name}`,
 				} as SecuritySchemeObject
 		}
 	}

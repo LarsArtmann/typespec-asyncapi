@@ -6,7 +6,8 @@
  */
 
 import { describe, it, expect } from "bun:test"
-import { compileAsyncAPISpec } from "../utils/test-helpers"
+import { compileAsyncAPISpecRaw } from "../utils/test-helpers"
+import { Effect } from "effect"
 
 describe("🚀 BREAKTHROUGH: TypeSpec Direct Compilation", () => {
   it("should compile basic TypeSpec without decorators", async () => {
@@ -22,7 +23,7 @@ describe("🚀 BREAKTHROUGH: TypeSpec Direct Compilation", () => {
     `
     
     // This should compile successfully now - no package resolution issues!
-    const result = await compileAsyncAPISpec(source)
+    const result = await compileAsyncAPISpecRaw(source)
     
     // We know the compilation succeeded based on the logs
     // This is a BREAKTHROUGH - TypeSpec compilation works without package resolution!

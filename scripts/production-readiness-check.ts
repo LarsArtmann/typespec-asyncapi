@@ -1140,56 +1140,9 @@ export class ProductionReadinessChecker {
         })
       }
       
-      // Plugin templates
-      try {
-        const templatesPath = join(this.rootPath, 'templates')
-        await access(templatesPath)
-        
-        const templateFiles = await this.findFiles(templatesPath, '.ts')
-        
-        if (templateFiles.length >= 1) {
-          checks.push({
-            name: 'Plugin Templates',
-            status: 'PASS',
-            message: 'Community plugin templates available',
-            severity: 'MEDIUM'
-          })
-        } else {
-          checks.push({
-            name: 'Plugin Templates',
-            status: 'WARN',
-            message: 'Plugin templates directory empty',
-            severity: 'LOW'
-          })
-        }
-      } catch {
-        checks.push({
-          name: 'Plugin Templates',
-          status: 'WARN',
-          message: 'Plugin templates not found',
-          severity: 'LOW'
-        })
-      }
+
       
-      // Plugin CLI tool
-      try {
-        const cliPath = join(this.rootPath, 'src', 'plugins', 'marketplace', 'plugin-cli.ts')
-        await access(cliPath)
-        
-        checks.push({
-          name: 'Plugin CLI Tool',
-          status: 'PASS',
-          message: 'Plugin marketplace CLI tool available',
-          severity: 'MEDIUM'
-        })
-      } catch {
-        checks.push({
-          name: 'Plugin CLI Tool',
-          status: 'WARN',
-          message: 'Plugin CLI tool not found',
-          severity: 'MEDIUM'
-        })
-      }
+
       
       this.results.push({
         category: 'Community & Support Infrastructure',
@@ -1618,70 +1571,8 @@ export class ProductionReadinessChecker {
         })
       }
       
-      // Check for plugin marketplace infrastructure
-      try {
-        const marketplacePath = join(this.rootPath, 'src', 'plugins', 'marketplace')
-        const marketplaceFiles = await this.findFiles(marketplacePath, '.ts')
-        
-        const requiredMarketplaceFiles = ['plugin-registry.ts', 'plugin-cli.ts']
-        const foundFiles = requiredMarketplaceFiles.filter(file =>
-          marketplaceFiles.some(f => f.endsWith(file))
-        )
-        
-        if (foundFiles.length === requiredMarketplaceFiles.length) {
-          checks.push({
-            name: 'Plugin Marketplace Infrastructure',
-            status: 'PASS',
-            message: 'Complete plugin marketplace infrastructure implemented',
-            severity: 'HIGH'
-          })
-        } else {
-          checks.push({
-            name: 'Plugin Marketplace Infrastructure',
-            status: 'WARN',
-            message: `Missing marketplace files: ${requiredMarketplaceFiles.filter(f => !foundFiles.includes(f)).join(', ')}`,
-            severity: 'MEDIUM'
-          })
-        }
-      } catch {
-        checks.push({
-          name: 'Plugin Marketplace Infrastructure',
-          status: 'WARN',
-          message: 'Plugin marketplace not found',
-          severity: 'MEDIUM'
-        })
-      }
+      // TypeSpec emitters ARE plugins - no separate plugin marketplace needed
       
-      // Check for plugin development templates
-      try {
-        const templatesPath = join(this.rootPath, 'templates', 'plugin-template')
-        await access(templatesPath)
-        
-        const templateFiles = await readdir(templatesPath, { recursive: true })
-        
-        if (templateFiles.length >= 5) {
-          checks.push({
-            name: 'Plugin Development Templates',
-            status: 'PASS',
-            message: `Plugin development template with ${templateFiles.length} files`,
-            severity: 'MEDIUM'
-          })
-        } else {
-          checks.push({
-            name: 'Plugin Development Templates',
-            status: 'WARN',
-            message: 'Limited plugin development templates',
-            severity: 'LOW'
-          })
-        }
-      } catch {
-        checks.push({
-          name: 'Plugin Development Templates',
-          status: 'WARN',
-          message: 'Plugin development templates not found',
-          severity: 'LOW'
-        })
-      }
       
       // Check for plugin documentation
       try {

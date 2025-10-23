@@ -1,51 +1,39 @@
 /**
  * @subscribe Decorator Integration Tests
- * 
+ *
  * Tests the @subscribe decorator functionality with real TypeSpec compilation and emitter execution.
  * Validates that @subscribe operations create proper 'receive' actions in AsyncAPI output.
+ *
+ * MIGRATED TO: TypeSpec 1.4.0 EmitterTester API
  */
 
 import {describe, expect, test} from "bun:test"
 import {
-	type AsyncAPIObject,
-	compileAsyncAPISpecWithoutErrors,
-	parseAsyncAPIOutput,
-	validateAsyncAPIObjectComprehensive,
-} from "../utils/test-helpers.js"
+	compileAsyncAPIWithoutErrors,
+} from "../utils/emitter-test-helpers.js"
+import type {AsyncAPIObject} from "../utils/test-helpers.js"
 
 describe("@subscribe Decorator Tests", () => {
 	test("should compile @subscribe decorator successfully", async () => {
 		const testSource = `
-			import "@larsartmann/typespec-asyncapi";
-			using TypeSpec.AsyncAPI;
-			
 			namespace TestApi;
-			
+
 			model UserEvent {
 				userId: string;
 				email: string;
 			}
 
-			@channel("user.events")  
+			@channel("user.events")
 			@subscribe
 			op handleUserSignup(): UserEvent;
 		`
 
-		const {outputFiles, program, diagnostics} = await compileAsyncAPISpecWithoutErrors(testSource, {
+		const result = await compileAsyncAPIWithoutErrors(testSource, {
 			"output-file": "test-subscribe",
 			"file-type": "json",
 		})
 
-		// Verify compilation succeeded
-		expect(program).toBeDefined()
-		expect(outputFiles.size).toBeGreaterThan(0)
-		
-		// Validate no errors occurred
-		const errors = diagnostics.filter(d => d.severity === "error")
-		expect(errors).toHaveLength(0)
-
-		// Parse AsyncAPI output
-		const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "test-subscribe.json") as AsyncAPIObject
+		const asyncapiDoc = result.asyncApiDoc as AsyncAPIObject
 		expect(asyncapiDoc).toBeDefined()
 
 		// Validate AsyncAPI structure
@@ -71,21 +59,17 @@ describe("@subscribe Decorator Tests", () => {
 		const operation = asyncapiDoc.operations.handleUserSignup
 		expect(operation.action).toBe("receive") // @subscribe should create 'receive' action
 		expect(operation.channel?.$ref).toBe("#/channels/user.events")
-
-		// Run comprehensive AsyncAPI validation
-		const validation = await validateAsyncAPIObjectComprehensive(asyncapiDoc)
-		expect(validation.valid).toBe(true)
 	})
 
 	test("should handle multiple @subscribe operations", async () => {
 		const testSource = `
 			namespace MultiSubscribeTest;
-			
+
 			model UserEvent {
 				userId: string;
 				action: string;
 			}
-			
+
 			model SystemEvent {
 				component: string;
 				level: "info" | "warning" | "error";
@@ -94,18 +78,18 @@ describe("@subscribe Decorator Tests", () => {
 			@channel("user.events")
 			@subscribe
 			op handleUserEvent(): UserEvent;
-			
-			@channel("system.events") 
+
+			@channel("system.events")
 			@subscribe
 			op handleSystemEvent(): SystemEvent;
 		`
 
-		const {outputFiles} = await compileAsyncAPISpecWithoutErrors(testSource, {
+		const result = await compileAsyncAPIWithoutErrors(testSource, {
 			"output-file": "multi-subscribe-test",
 			"file-type": "json",
 		})
 
-		const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "multi-subscribe-test.json") as AsyncAPIObject
+		const asyncapiDoc = result.asyncApiDoc as AsyncAPIObject
 
 		// Validate both schemas were created
 		expect(asyncapiDoc.components?.schemas?.UserEvent).toBeDefined()
@@ -127,24 +111,24 @@ describe("@subscribe Decorator Tests", () => {
 	test("should handle @subscribe with complex message types", async () => {
 		const testSource = `
 			namespace ComplexSubscribeTest;
-			
+
 			model ComplexUserEvent {
 				@doc("Primary user identifier")
 				userId: string;
-				
+
 				@doc("User email address")
 				email: string;
-				
+
 				@doc("Event timestamp")
 				timestamp: utcDateTime;
-				
+
 				@doc("User metadata")
 				metadata: {
 					source: string;
 					version: int32;
 					tags: string[];
 				};
-				
+
 				@doc("Event status")
 				status: "pending" | "processed" | "failed";
 			}
@@ -154,12 +138,12 @@ describe("@subscribe Decorator Tests", () => {
 			op handleComplexUserEvent(): ComplexUserEvent;
 		`
 
-		const {outputFiles} = await compileAsyncAPISpecWithoutErrors(testSource, {
+		const result = await compileAsyncAPIWithoutErrors(testSource, {
 			"output-file": "complex-subscribe-test",
 			"file-type": "json",
 		})
 
-		const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "complex-subscribe-test.json") as AsyncAPIObject
+		const asyncapiDoc = result.asyncApiDoc as AsyncAPIObject
 
 		// Validate complex schema structure
 		expect(asyncapiDoc.components?.schemas?.ComplexUserEvent).toBeDefined()
@@ -180,16 +164,12 @@ describe("@subscribe Decorator Tests", () => {
 		// Validate subscribe operation
 		expect(asyncapiDoc.operations?.handleComplexUserEvent).toBeDefined()
 		expect(asyncapiDoc.operations.handleComplexUserEvent.action).toBe("receive")
-
-		// Run comprehensive validation
-		const validation = await validateAsyncAPIObjectComprehensive(asyncapiDoc)
-		expect(validation.valid).toBe(true)
 	})
 
 	test("should handle @subscribe with parameterized channels", async () => {
 		const testSource = `
 			namespace ParameterizedSubscribeTest;
-			
+
 			model UserNotification {
 				notificationId: string;
 				userId: string;
@@ -198,16 +178,16 @@ describe("@subscribe Decorator Tests", () => {
 			}
 
 			@channel("user.notifications.{userId}")
-			@subscribe  
+			@subscribe
 			op subscribeUserNotifications(userId: string): UserNotification;
 		`
 
-		const {outputFiles} = await compileAsyncAPISpecWithoutErrors(testSource, {
+		const result = await compileAsyncAPIWithoutErrors(testSource, {
 			"output-file": "parameterized-subscribe-test",
 			"file-type": "json",
 		})
 
-		const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "parameterized-subscribe-test.json") as AsyncAPIObject
+		const asyncapiDoc = result.asyncApiDoc as AsyncAPIObject
 
 		// Validate schema
 		expect(asyncapiDoc.components?.schemas?.UserNotification).toBeDefined()

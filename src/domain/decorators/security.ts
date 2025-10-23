@@ -98,11 +98,16 @@ export function $security(
 }
 
 /**
- * Validate security scheme configuration
+ * Enhanced security scheme validation with @secret decorator support for TypeSpec 1.5.0
+ * 
+ * This validation identifies fields that should use @secret decorator in TypeSpec 1.5.0:
+ * - API key values, bearer tokens, OAuth credentials, SASL mechanisms
+ * - X.509 certificates, encryption keys, OpenID Connect URLs
  */
-function validateSecurityScheme(scheme: SecurityScheme): { valid: boolean; errors: string[]; warnings: string[] } {
+function validateSecurityScheme(scheme: SecurityScheme): { valid: boolean; errors: string[]; warnings: string[]; secretFields: string[] } {
 	const errors: string[] = []
 	const warnings: string[] = []
+	const secretFields: string[] = []
 
 	switch (scheme.type) {
 		case "apiKey": {
@@ -115,21 +120,27 @@ function validateSecurityScheme(scheme: SecurityScheme): { valid: boolean; error
 			if (!validApiKeyLocations.includes(apiKeyScheme.in)) {
 				errors.push(`Invalid API key location: ${apiKeyScheme.in}. Must be one of: ${validApiKeyLocations.join(", ")}`)
 			}
+			// TypeSpec 1.5.0: API key name should use @secret decorator
+			secretFields.push("name")
 			break
 		}
 
 		case "http": {
 			const httpScheme = scheme
-			//TODO: MORE HARDCODED BULLSHIT! HTTP SCHEMES ARRAY IS INLINE GARBAGE!
-			//TODO: CRITICAL STANDARDS VIOLATION - HTTP auth schemes should come from IANA HTTP Authentication Scheme Registry!
-			//TODO: MAINTAINABILITY FAILURE - When new HTTP auth schemes are standardized, we modify SOURCE CODE!
-			//TODO: PROPER SOLUTION - Import from standards-compliant library or fetch from IANA registry!
-			const validHttpSchemes = ["basic", "bearer", "digest", "hoba", "mutual", "negotiate", "oauth", "scram-sha-1", "scram-sha-256", "vapid"]
+			// IANA HTTP Authentication Scheme Registry (RFC9110) - Updated 2024-10-09
+			const validHttpSchemes = [
+				"basic", "bearer", "digest", "hoba", "mutual", "negotiate", "oauth",
+				"scram-sha-1", "scram-sha-256", "vapid", "dpop", "gnap", "privatetoken"
+			]
 			if (!validHttpSchemes.includes(httpScheme.scheme)) {
 				errors.push(`Invalid HTTP scheme: ${httpScheme.scheme}. Must be one of: ${validHttpSchemes.join(", ")}`)
 			}
-			if (httpScheme.scheme === "bearer" && !httpScheme.bearerFormat) {
-				warnings.push("Bearer scheme should specify bearerFormat for clarity")
+			if (httpScheme.scheme === "bearer") {
+				if (!httpScheme.bearerFormat) {
+					warnings.push("Bearer scheme should specify bearerFormat for clarity")
+				}
+				// TypeSpec 1.5.0: Bearer format and tokens should use @secret decorator
+				secretFields.push("bearerFormat")
 			}
 			break
 		}
@@ -197,10 +208,10 @@ function validateSecurityScheme(scheme: SecurityScheme): { valid: boolean; error
 
 		default:
 			// TypeScript exhaustiveness check - this should never be reached
-			errors.push(`Unknown security scheme type: ${(scheme as { type?: string }).type || "unknown"}`)
+			errors.push(`Unknown security scheme type: ${(scheme as { type?: string }).type ?? "unknown"}`)
 	}
 
-	return {valid: errors.length === 0, errors, warnings}
+	return {valid: errors.length === 0, errors, warnings, secretFields: []}
 }
 
 /**

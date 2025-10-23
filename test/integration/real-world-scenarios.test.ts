@@ -4,6 +4,7 @@
 
 import { describe, it, expect } from "bun:test";
 import { compileAsyncAPISpecWithoutErrors, parseAsyncAPIOutput, AsyncAPIAssertions } from "../utils/test-helpers";
+import { Effect } from "effect";
 //TODO: this file is getting to big split it up
 
 describe("Real-World AsyncAPI Scenarios", () => {
@@ -146,12 +147,9 @@ describe("Real-World AsyncAPI Scenarios", () => {
         op subscribeInventoryUpdates(): Product;
       `;
       
-      const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source, {
-        "output-file": "ecommerce-system",
-        "file-type": "json"
-      });
+      const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
       
-      const asyncapiDoc = parseAsyncAPIOutput(outputFiles, "ecommerce-system.json");
+      const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "ecommerce-system.json");
       
       // Validate overall structure
       expect(AsyncAPIAssertions.hasValidStructure(asyncapiDoc)).toBe(true);
@@ -318,12 +316,9 @@ describe("Real-World AsyncAPI Scenarios", () => {
         op subscribeAlertsBySeverity(severity: string): SystemAlert;
       `;
       
-      const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source, {
-        "output-file": "iot-system",
-        "file-type": "json"
-      });
+      const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
       
-      const asyncapiDoc = parseAsyncAPIOutput(outputFiles, "iot-system.json");
+      const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "iot-system.json");
       
       // Validate IoT-specific structures
       expect(AsyncAPIAssertions.hasValidStructure(asyncapiDoc)).toBe(true);
@@ -504,12 +499,9 @@ describe("Real-World AsyncAPI Scenarios", () => {
         op subscribeUserRiskAlerts(userId: string): RiskAlert;
       `;
       
-      const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source, {
-        "output-file": "trading-system",
-        "file-type": "json"
-      });
+      const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
       
-      const asyncapiDoc = parseAsyncAPIOutput(outputFiles, "trading-system.json");
+      const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "trading-system.json");
       
       // Validate trading system structure
       expect(AsyncAPIAssertions.hasValidStructure(asyncapiDoc)).toBe(true);
@@ -661,12 +653,9 @@ describe("Real-World AsyncAPI Scenarios", () => {
         op subscribeTenantUsage(tenantId: string): UsageMetrics;
       `;
       
-      const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source, {
-        "output-file": "saas-platform",
-        "file-type": "json"
-      });
+      const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
       
-      const asyncapiDoc = parseAsyncAPIOutput(outputFiles, "saas-platform.json");
+      const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "saas-platform.json");
       
       // Validate SaaS platform structure
       expect(AsyncAPIAssertions.hasValidStructure(asyncapiDoc)).toBe(true);

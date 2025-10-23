@@ -18,10 +18,10 @@ const packageRoot = fileURLToPath(new URL("..", import.meta.url));
  * Test library for AsyncAPI emitter - simplified approach
  */
 //TODO: "SIMPLIFIED APPROACH" IS DUPLICATE COMPLEXITY! We have 2 test library creation patterns!
-//TODO: LIBRARY NAME HARDCODED AGAIN! "@larsartmann/typespec-asyncapi" duplicated without abstraction!
+//TODO: LIBRARY NAME HARDCODED AGAIN! "@lars-artmann/typespec-asyncapi" duplicated without abstraction!
 //TODO: CONFIGURATION INCONSISTENCY - Missing typespecFileFolder and jsFileFolder from test-helpers.ts!
 //TODO: TEST LIBRARY FRAGMENTATION - Which one should tests use? This creates confusion!
 export const AsyncAPITestLibrary = createTestLibrary({
-  name: "@larsartmann/typespec-asyncapi",
+  name: "@lars-artmann/typespec-asyncapi",
   packageRoot,
 });

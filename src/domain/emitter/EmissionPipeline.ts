@@ -57,30 +57,22 @@ export class EmissionPipeline implements IPipelineService {
 	 */
 	constructor() {
 		// Service initialization with Effect.TS Railway programming
-		const initializationResult = Effect.runSync(
+		void Effect.runSync(
 			Effect.gen(function* () {
 				yield* Effect.log("🚀 Initializing EmissionPipeline services...")
 
-				return {
-					documentBuilder: new DocumentBuilder(),
-					discoveryService: new DiscoveryService(),
-					validationService: new ValidationService(),
-				}
-			}).pipe(
-				Effect.catchAll((error) =>
-					Effect.gen(function* () {
-						yield* Effect.logError(`❌ Critical EmissionPipeline service initialization failed: ${error}`)
-						return yield* Effect.die(new Error(
-							`Critical EmissionPipeline service initialization failed: ${error instanceof Error ? error.message : String(error)}`
-						))
-					})
-				)
-			)
+		return {
+			documentBuilder: new DocumentBuilder(),
+			discoveryService: new DiscoveryService(),
+			validationService: new ValidationService(),
+		}
+			})
 		)
-
-		this.documentBuilder = initializationResult.documentBuilder
-		this.discoveryService = initializationResult.discoveryService
-		this.validationService = initializationResult.validationService
+		
+		// Initialize private properties
+		this.documentBuilder = new DocumentBuilder()
+		this.discoveryService = new DiscoveryService()
+		this.validationService = new ValidationService()
 	}
 
 	/**

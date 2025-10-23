@@ -18,6 +18,7 @@ import type {MemoryBudget} from "./MemoryBudget.js"
 import type {MemorySnapshot} from "./MemorySnapshot.js"
 import type {MemoryAnalysis} from "./MemoryAnalysis.js"
 import type {ForceGCResult} from "./ForceGCResult.js"
+import {safeStringify} from "../../utils/standardized-errors.js"
 import {createByteAmount, createMegabyteAmount, createGigabyteAmount} from "./ByteAmount.js"
 import {createTimestamp} from "./MemorySnapshot.js"
 import type {OperationType, MemoryReportJson} from "./PerformanceTypes.js"
@@ -89,25 +90,26 @@ const makeMemoryMonitorService = Effect.gen(function* () {
 
 	// Helper to force garbage collection if available
 	const tryForceGC = (): Effect.Effect<ForceGCResult, GarbageCollectionFailureError> => {
-		const memoryBefore = getCurrentMemoryUsage().heapUsed
+		return Effect.gen(function* () {
+			const memoryBefore = getCurrentMemoryUsage().heapUsed
 
-		// Use Effect.try for safe garbage collection with proper error handling
-		return Effect.try({
-			try: () => {
-				if (typeof global !== "undefined" && global.gc) {
-					global.gc()
-					const memoryAfter = getCurrentMemoryUsage().heapUsed
-					return {memoryBefore: createByteAmount(memoryBefore), memoryAfter: createByteAmount(memoryAfter)}
-				} else {
-					throw new GarbageCollectionNotAvailableError(createByteAmount(memoryBefore))
-				}
-			},
-			catch: (error) => error instanceof GarbageCollectionNotAvailableError 
-				? error 
-				: new GarbageCollectionFailureError(`Garbage collection failed: ${error instanceof Error ? error.message : String(error)}`, createByteAmount(memoryBefore))
-		}).pipe(
-			Effect.catchAll((error) => Effect.fail(error))
-		)
+			// Use Effect.try for safe garbage collection with proper error handling
+			const result = yield* Effect.try({
+				try: () => {
+					if (typeof global !== "undefined" && global.gc) {
+						global.gc()
+						const memoryAfter = getCurrentMemoryUsage().heapUsed
+						return {memoryBefore: createByteAmount(memoryBefore), memoryAfter: createByteAmount(memoryAfter)}
+					} else {
+						throw new GarbageCollectionNotAvailableError(createByteAmount(memoryBefore))
+					}
+				},
+				catch: (error) => error instanceof GarbageCollectionNotAvailableError 
+					? error 
+					: new GarbageCollectionFailureError(`Garbage collection failed: ${error instanceof Error ? error.message : safeStringify(error)}`, createByteAmount(memoryBefore))
+			})
+			return result
+		})
 	}
 
 	const takeSnapshot = (operationCount = 0): Effect.Effect<MemorySnapshot, never> =>
@@ -118,7 +120,7 @@ const makeMemoryMonitorService = Effect.gen(function* () {
 				heapUsed: createByteAmount(memory.heapUsed),
 				heapTotal: createByteAmount(memory.heapTotal),
 				external: createByteAmount(memory.external),
-				arrayBuffers: createByteAmount(memory.arrayBuffers || 0),
+				arrayBuffers: createByteAmount(memory.arrayBuffers ?? 0),
 				rss: createByteAmount(memory.rss),
 				operationCount: createOperationCount(operationCount),
 			}
@@ -197,7 +199,7 @@ const makeMemoryMonitorService = Effect.gen(function* () {
 		}).pipe(
 			Effect.catchAll(error =>
 				Effect.fail(new MemoryMonitorInitializationError(
-					`Failed to start memory monitoring: ${error}`,
+					`Failed to start memory monitoring: ${safeStringify(error)}`,
 					error,
 				)),
 			),
@@ -231,7 +233,7 @@ const makeMemoryMonitorService = Effect.gen(function* () {
 
 			// Update operation counts
 			yield* Ref.update(operationCounts, counts => {
-				const current = counts.get(operationType) || 0
+				const current = counts.get(operationType) ?? 0
 				return new Map(counts).set(operationType, current + 1)
 			})
 

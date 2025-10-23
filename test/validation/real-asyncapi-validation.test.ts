@@ -34,7 +34,7 @@ describe("Real AsyncAPI Validation Tests", () => {
 
       op sendUserEvent(user: User, event: Event): void;
       op getUserEvents(userId: string): Event[];
-    `, { emit: ["@larsartmann/typespec-asyncapi"] });
+    `, { emit: ["@lars-artmann/typespec-asyncapi"] });
 
     // Check compilation succeeded
     expect(result.diagnostics.length).toBe(0);
@@ -67,8 +67,8 @@ describe("Real AsyncAPI Validation Tests", () => {
       // Validate channels
       const channels = Array.from(document?.channels()?.keys() || []);
       expect(channels.length).toBe(2);
-      expect(channels).toContain("channel_sendUserEvent");
-      expect(channels).toContain("channel_getUserEvents");
+      expect(channels).toContain("/senduserevent");
+      expect(channels).toContain("/getuserevents");
 
       // Validate operations
       const operations = Array.from(document?.operations()?.keys() || []);
@@ -85,7 +85,7 @@ describe("Real AsyncAPI Validation Tests", () => {
 
   it("should validate YAML structure and AsyncAPI compliance", async () => {
     // Read the generated file from our working test
-    const testFile = "test-output-basic/@larsartmann/typespec-asyncapi/test-output.yaml";
+    const testFile = "test-output-basic/@lars-artmann/typespec-asyncapi/test-output.yaml";
     
     try {
       const content = readFileSync(testFile, 'utf-8');
@@ -114,7 +114,7 @@ describe("Real AsyncAPI Validation Tests", () => {
 
   it("should generate spec with proper AsyncAPI 3.0 metadata", async () => {
     // Test the generated content structure
-    const testFile = "test-output-basic/@larsartmann/typespec-asyncapi/test-output.yaml";
+    const testFile = "test-output-basic/@lars-artmann/typespec-asyncapi/test-output.yaml";
     
     try {
       const content = readFileSync(testFile, 'utf-8');
@@ -171,7 +171,7 @@ describe("Real AsyncAPI Validation Tests", () => {
       }
 
       op publishEvent(event: UserEvent): void;
-    `, { emit: ["@larsartmann/typespec-asyncapi"] });
+    `, { emit: ["@lars-artmann/typespec-asyncapi"] });
 
     expect(result.diagnostics.length).toBe(0);
     
@@ -212,7 +212,7 @@ describe("Real AsyncAPI Validation Tests", () => {
         @doc("Send user notification")
         op sendNotification(user: User, message: string): void;
       }
-    `, { emit: ["@larsartmann/typespec-asyncapi"] });
+    `, { emit: ["@lars-artmann/typespec-asyncapi"] });
 
     expect(result.diagnostics.length).toBe(0);
     

@@ -9,6 +9,7 @@ import { existsSync, readFileSync, writeFileSync, mkdirSync } from "fs"
 import { join } from "path"
 import { spawn } from "child_process"
 import { promisify } from "util"
+import { Effect } from "effect"
 
 describe("🚀 CLI Compilation Test", () => {
   const testDir = "test-output/cli-test"
@@ -24,7 +25,7 @@ describe("🚀 CLI Compilation Test", () => {
   it("should compile TypeSpec via CLI and verify mock elimination", async () => {
     // Create a test TypeSpec file
     const testSource = `
-import "@larsartmann/typespec-asyncapi";
+import "@lars-artmann/typespec-asyncapi";
 
 using TypeSpec.AsyncAPI;
 
@@ -44,7 +45,7 @@ op publishTestMessage(): TestMessage;
     writeFileSync(testFile, testSource)
     
     // Compile using TypeSpec CLI
-    const compilation = spawn("npx", ["tsp", "compile", testFile, "--emit", "@larsartmann/typespec-asyncapi", "--output-dir", outputDir], {
+    const compilation = spawn("npx", ["tsp", "compile", testFile, "--emit", "@lars-artmann/typespec-asyncapi", "--output-dir", outputDir], {
       stdio: ["inherit", "pipe", "pipe"],
       cwd: process.cwd()
     })
@@ -74,11 +75,13 @@ op publishTestMessage(): TestMessage;
     Effect.log("Stdout:", stdout)
     
     // Verify AsyncAPI output was generated
+    // TypeSpec emitters output to {output-dir}/{emitter-package-name}/
+    const emitterOutputDir = join(outputDir, "@lars-artmann", "typespec-asyncapi")
     const asyncapiFiles = []
     try {
       const files = ["AsyncAPI.yaml", "AsyncAPI.json", "asyncapi.yaml", "asyncapi.json"]
       for (const file of files) {
-        const filepath = join(outputDir, file)
+        const filepath = join(emitterOutputDir, file)
         if (existsSync(filepath)) {
           asyncapiFiles.push(filepath)
           Effect.log(`✅ Found output file: ${filepath}`)
