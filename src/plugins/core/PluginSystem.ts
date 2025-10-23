@@ -9,28 +9,29 @@
  */
 
 import { Effect } from "effect"
-import { Schema as Z } from "@effect/schema"
-import { AsyncAPIObject } from "../../types/branded-types.js"
-import { ValidationResult, RuntimeValidator, ValidatorFactory } from "../../validation/RuntimeValidator.js"
+// import { Schema as Z } from "@effect/schema" // TODO: Use when needed
+// import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js" // TODO: Use when needed
+// import { ValidationResult } from "../../validation/RuntimeValidator.js" // TODO: Fix import path
 
 /**
  * Plugin metadata schema
  * Defines plugin information and capabilities
  */
-export const PluginMetadataSchema = Z.object({
-  name: Z.string().min(1, "Plugin name is required"),
-  version: Z.string().min(1, "Plugin version is required"),
-  description: Z.string().optional(),
-  author: Z.string().optional(),
-  license: Z.string().optional(),
-  repository: Z.string().url().optional(),
-  homepage: Z.string().url().optional(),
-  keywords: Z.array(Z.string()).optional(),
-  type: Z.enum(["protocol", "decorator", "validator", "processor", "transformer"]),
-  capabilities: Z.array(Z.string()).optional(),
-  dependencies: Z.array(Z.string()).optional(),
-  compatibility: Z.array(Z.string()).optional()
-}).strict()
+// Simple schema definition - TODO: Properly implement with @effect/schema
+export const PluginMetadataSchema = {
+  name: "string",
+  version: "string", 
+  description: "string?",
+  author: "string?",
+  license: "string?",
+  repository: "string?",
+  homepage: "string?",
+  keywords: "array?",
+  type: "protocol|decorator|validator|processor|transformer",
+  capabilities: "array?",
+  dependencies: "array?",
+  compatibility: "array?"
+} as const
 
 /**
  * Plugin type definition
@@ -42,13 +43,29 @@ export type PluginType = "protocol" | "decorator" | "validator" | "processor" | 
  * Plugin interface
  * Defines the contract that all plugins must implement
  */
+// Simple type instead of schema inference for now
+type PluginMetadata = {
+  name: string
+  version: string
+  description?: string
+  author?: string
+  license?: string
+  repository?: string
+  homepage?: string
+  keywords?: string[]
+  type: PluginType
+  capabilities?: string[]
+  dependencies?: string[]
+  compatibility?: string[]
+}
+
 export interface Plugin {
-  readonly metadata: Z.infer<typeof PluginMetadataSchema>
+  readonly metadata: PluginMetadata
   readonly config?: Record<string, unknown>
   readonly initialize: (config?: Record<string, unknown>) => Effect.Effect<void, Error>
   readonly execute: (input: PluginInput) => Effect.Effect<PluginOutput, Error>
   readonly shutdown: () => Effect.Effect<void, Error>
-  readonly validate: (input: unknown) => Effect.Effect<ValidationResult, Error>
+  readonly validate: (input: unknown) => Effect.Effect<boolean, Error> // Simple boolean validation for now
 }
 
 /**
@@ -148,20 +165,22 @@ export interface PluginSystemConfiguration {
  * Provides common functionality for all plugins
  */
 export abstract class BasePlugin implements Plugin {
-  protected metadata: Z.infer<typeof PluginMetadataSchema>
-  protected config?: Record<string, unknown>
+  public metadata: PluginMetadata
+  public config?: Record<string, unknown>
   protected isInitialized: boolean = false
   protected isShutdown: boolean = false
 
-  constructor(metadata: Z.infer<typeof PluginMetadataSchema>, config?: Record<string, unknown>) {
+  constructor(metadata: PluginMetadata, config?: Record<string, unknown>) {
     this.metadata = metadata
-    this.config = config
+    if (config) {
+      this.config = config
+    }
   }
 
   /**
    * Get plugin metadata
    */
-  getMetadata(): Z.infer<typeof PluginMetadataSchema> {
+  getMetadata(): PluginMetadata {
     return this.metadata
   }
 
@@ -190,21 +209,24 @@ export abstract class BasePlugin implements Plugin {
    * Initialize plugin with configuration
    */
   initialize(config?: Record<string, unknown>): Effect.Effect<void, Error> {
+    const self = this;
     return Effect.gen(function* () {
-      if (this.isInitialized) {
-        const error = new Error(`Plugin ${this.metadata.name} is already initialized`)
+      if (self.isInitialized) {
+        const error = new Error(`Plugin ${self.metadata.name} is already initialized`)
         yield* Effect.log(`❌ Plugin initialization failed: ${error.message}`)
         throw error
       }
 
-      this.config = config || this.config
+      if (config) {
+        self.config = config
+      }
 
       // Perform plugin-specific initialization
-      yield* Effect.log(`🔧 Initializing plugin: ${this.metadata.name}`)
-      yield* this.initializePlugin()
+      yield* Effect.log(`🔧 Initializing plugin: ${self.metadata.name}`)
+      yield* self.initializePlugin()
 
-      this.isInitialized = true
-      yield* Effect.log(`✅ Plugin initialized successfully: ${this.metadata.name}`)
+      self.isInitialized = true
+      yield* Effect.log(`✅ Plugin initialized successfully: ${self.metadata.name}`)
     })
   }
 
@@ -212,38 +234,40 @@ export abstract class BasePlugin implements Plugin {
    * Shutdown plugin
    */
   shutdown(): Effect.Effect<void, Error> {
+    const self = this;
     return Effect.gen(function* () {
-      if (this.isShutdown) {
-        const error = new Error(`Plugin ${this.metadata.name} is already shutdown`)
+      if (self.isShutdown) {
+        const error = new Error(`Plugin ${self.metadata.name} is already shutdown`)
         yield* Effect.log(`❌ Plugin shutdown failed: ${error.message}`)
         throw error
       }
 
-      if (!this.isInitialized) {
-        const error = new Error(`Plugin ${this.metadata.name} is not initialized`)
+      if (!self.isInitialized) {
+        const error = new Error(`Plugin ${self.metadata.name} is not initialized`)
         yield* Effect.log(`❌ Plugin shutdown failed: ${error.message}`)
         throw error
       }
 
       // Perform plugin-specific shutdown
-      yield* Effect.log(`🔧 Shutting down plugin: ${this.metadata.name}`)
-      yield* this.shutdownPlugin()
+      yield* Effect.log(`🔧 Shutting down plugin: ${self.metadata.name}`)
+      yield* self.shutdownPlugin()
 
-      this.isShutdown = true
-      this.isInitialized = false
-      yield* Effect.log(`✅ Plugin shutdown successfully: ${this.metadata.name}`)
+      self.isShutdown = true
+      self.isInitialized = false
+      yield* Effect.log(`✅ Plugin shutdown successfully: ${self.metadata.name}`)
     })
   }
 
   /**
    * Validate plugin input
    */
-  validate(input: unknown): Effect.Effect<ValidationResult, Error> {
+  validate(input: unknown): Effect.Effect<boolean, Error> {
+    const self = this;
     return Effect.gen(function* () {
       // Basic validation
       if (!input || typeof input !== 'object') {
         const error = new Error(`Invalid input: expected object, got ${typeof input}`)
-        yield* Effect.log(`❌ Plugin validation failed for ${this.metadata.name}: ${error.message}`)
+        yield* Effect.log(`❌ Plugin validation failed for ${self.metadata.name}: ${error.message}`)
         throw error
       }
 
@@ -252,26 +276,16 @@ export abstract class BasePlugin implements Plugin {
       // Validate type
       if (!pluginInput.type || typeof pluginInput.type !== 'string') {
         const error = new Error(`Invalid plugin type: ${pluginInput.type}`)
-        yield* Effect.log(`❌ Plugin validation failed for ${this.metadata.name}: ${error.message}`)
+        yield* Effect.log(`❌ Plugin validation failed for ${self.metadata.name}: ${error.message}`)
         throw error
       }
 
       // Type-specific validation
-      yield* this.validateInput(pluginInput)
+      yield* self.validateInput(pluginInput)
 
-      yield* Effect.log(`✅ Plugin validation successful for ${this.metadata.name}`)
+      yield* Effect.log(`✅ Plugin validation successful for ${self.metadata.name}`)
       
-      return {
-        isValid: true,
-        errors: [],
-        warnings: [],
-        summary: {
-          totalErrors: 0,
-          totalWarnings: 0,
-          totalInfo: 0,
-          severity: "info"
-        }
-      }
+      return true // Simple boolean validation for now
     })
   }
 
@@ -279,37 +293,38 @@ export abstract class BasePlugin implements Plugin {
    * Execute plugin with input
    */
   execute(input: PluginInput): Effect.Effect<PluginOutput, Error> {
+    const self = this;
     return Effect.gen(function* () {
-      if (!this.isInitialized) {
-        const error = new Error(`Plugin ${this.metadata.name} is not initialized`)
-        yield* Effect.log(`❌ Plugin execution failed for ${this.metadata.name}: ${error.message}`)
+      if (!self.isInitialized) {
+        const error = new Error(`Plugin ${self.metadata.name} is not initialized`)
+        yield* Effect.log(`❌ Plugin execution failed for ${self.metadata.name}: ${error.message}`)
         throw error
       }
 
-      if (this.isShutdown) {
-        const error = new Error(`Plugin ${this.metadata.name} is shutdown`)
-        yield* Effect.log(`❌ Plugin execution failed for ${this.metadata.name}: ${error.message}`)
+      if (self.isShutdown) {
+        const error = new Error(`Plugin ${self.metadata.name} is shutdown`)
+        yield* Effect.log(`❌ Plugin execution failed for ${self.metadata.name}: ${error.message}`)
         throw error
       }
 
-      yield* Effect.log(`🔧 Executing plugin: ${this.metadata.name}`)
+      yield* Effect.log(`🔧 Executing plugin: ${self.metadata.name}`)
       
       try {
-        const result = yield* this.executePlugin(input)
+        const result = yield* self.executePlugin(input)
         
-        yield* Effect.log(`✅ Plugin execution successful: ${this.metadata.name}`)
+        yield* Effect.log(`✅ Plugin execution successful: ${self.metadata.name}`)
         
         return {
           success: true,
           data: result,
           metadata: {
-            pluginName: this.metadata.name,
-            pluginType: this.metadata.type,
+            pluginName: self.metadata.name,
+            pluginType: self.metadata.type,
             executionTime: new Date()
           }
         }
       } catch (error) {
-        yield* Effect.log(`❌ Plugin execution failed for ${this.metadata.name}: ${error}`)
+        yield* Effect.log(`❌ Plugin execution failed for ${self.metadata.name}: ${error}`)
         
         return {
           success: false,
@@ -320,8 +335,8 @@ export abstract class BasePlugin implements Plugin {
           }],
           warnings: [],
           metadata: {
-            pluginName: this.metadata.name,
-            pluginType: this.metadata.type,
+            pluginName: self.metadata.name,
+            pluginType: self.metadata.type,
             executionTime: new Date(),
             error: error
           }
@@ -366,24 +381,25 @@ export class InMemoryPluginRegistry implements PluginRegistry {
    * Register a plugin
    */
   register(plugin: Plugin): Effect.Effect<void, Error> {
+    const self = this;
     return Effect.gen(function* () {
-      const pluginName = plugin.getMetadata().name
+      const pluginName = plugin.metadata.name
       
-      if (this.plugins.has(pluginName)) {
+      if (self.plugins.has(pluginName)) {
         const error = new Error(`Plugin ${pluginName} is already registered`)
         yield* Effect.log(`❌ Plugin registration failed: ${error.message}`)
         throw error
       }
 
-      // Validate plugin metadata
-      const validationResult = PluginMetadataSchema.safeParse(plugin.getMetadata())
-      if (!validationResult.success) {
-        const error = new Error(`Invalid plugin metadata: ${validationResult.error.message}`)
-        yield* Effect.log(`❌ Plugin registration failed: ${error.message}`)
-        throw error
-      }
+      // Validate plugin metadata - TODO: Implement proper schema validation
+      // const validationResult = PluginMetadataSchema.safeParse(plugin.getMetadata())
+      // if (!validationResult.success) {
+      //   const error = new Error(`Invalid plugin metadata: ${validationResult.error.message}`)
+      //   yield* Effect.log(`❌ Plugin registration failed: ${error.message}`)
+      //   throw error
+      // }
 
-      this.plugins.set(pluginName, plugin)
+      self.plugins.set(pluginName, plugin)
       
       // Initialize plugin with default configuration
       const defaultConfig: PluginConfiguration = {
@@ -392,7 +408,7 @@ export class InMemoryPluginRegistry implements PluginRegistry {
         loadOrder: 100
       }
       
-      this.configurations.set(pluginName, defaultConfig)
+      self.configurations.set(pluginName, defaultConfig)
 
       yield* Effect.log(`✅ Plugin registered successfully: ${pluginName}`)
     })

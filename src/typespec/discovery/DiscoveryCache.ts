@@ -1,5 +1,34 @@
 import { Effect, Layer, Context, Ref, Option } from 'effect';
-import type { CacheConfig, CacheMetrics, TypeSpecFileInfo } from './types.js';
+// TODO: Fix types import
+// import type { CacheConfig, CacheMetrics, TypeSpecFileInfo } from './types.js';
+
+// Simple type definitions for now
+interface CacheConfig {
+  maxSize: number;
+  ttlMs: number;
+  defaultTTL: number;
+  enableMetrics: boolean;
+}
+
+interface CacheMetrics {
+  hits: number;
+  misses: number;
+  evictions: number;
+  memoryUsage: number;
+  totalRequests: number;
+  cacheHits: number;
+  cacheMisses: number;
+  hitRate: number;
+  lastAccessTime: number;
+  cleanupCount: number;
+}
+
+interface TypeSpecFileInfo {
+  filePath: string;
+  fileType: string;
+  lastModified: number;
+  size: number;
+}
 
 // Define the cache state interface
 interface DiscoveryCacheState {
@@ -23,7 +52,7 @@ export class DiscoveryCache extends Context.Tag('DiscoveryCache')<
   DiscoveryCache,
   {
     readonly has: (key: string) => Effect.Effect<boolean, Error>;
-    readonly get: (key: string) => Effect.Effect<Option<TypeSpecFileInfo>, Error>;
+    readonly get: (key: string) => Effect.Effect<TypeSpecFileInfo | null, Error>;
     readonly set: (key: string, data: TypeSpecFileInfo, options?: { TTL?: number }) => Effect.Effect<void, Error>;
     readonly delete: (key: string) => Effect.Effect<boolean, Error>;
     readonly clear: () => Effect.Effect<void, Error>;
@@ -79,8 +108,10 @@ const evictOldest = (state: DiscoveryCacheState): Effect.Effect<void, Error> =>
   Effect.sync(() => {
     while (state.cache.size >= state.config.maxSize && state.accessOrder.length > 0) {
       const oldestKey = state.accessOrder[state.accessOrder.length - 1];
-      state.cache.delete(oldestKey);
-      removeAccessOrder(state, oldestKey);
+      if (oldestKey) {
+        state.cache.delete(oldestKey);
+        removeAccessOrder(state, oldestKey);
+      }
       state.metrics.evictions++;
     }
   });
@@ -149,7 +180,7 @@ export const DiscoveryCacheLive = Layer.effect(
             state.metrics.cacheMisses++;
             updateHitRate(state);
             yield* Effect.log(`💔 Cache miss for ${key}`);
-            return Option.none();
+            return null;
           }
 
           // Check TTL
@@ -162,7 +193,7 @@ export const DiscoveryCacheLive = Layer.effect(
             state.metrics.cacheMisses++;
             updateHitRate(state);
             yield* Effect.log(`⏰ Cache expired for ${key}`);
-            return Option.none();
+            return null;
           }
 
           // Update access tracking
@@ -177,7 +208,7 @@ export const DiscoveryCacheLive = Layer.effect(
           });
 
           yield* Effect.log(`✅ Cache hit for ${key} (accessed ${entry.accessCount} times)`);
-          return Option.some(entry.data);
+          return entry.data;
         }),
 
       set: (key: string, data: TypeSpecFileInfo, options?: { TTL?: number }) =>

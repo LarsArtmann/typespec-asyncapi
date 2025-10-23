@@ -9,7 +9,7 @@
  * @since v1.1.0
  */
 
-import { z } from "@effect/schema"
+// import { z } from "@effect/schema" // TODO: Use when needed
 
 /**
  * System State Enumeration
@@ -79,14 +79,15 @@ export interface StateManager {
 
 /**
  * Schema for validating State Context
+ * TODO: Implement with @effect/schema
  */
-export const StateContextSchema = z.object({
-  state: z.nativeEnum(SystemState),
-  timestamp: z.date(),
-  previousState: z.nativeEnum(SystemState).optional(),
-  error: z.instanceof(Error).optional(),
-  metadata: z.record(z.string(), z.unknown()).optional()
-})
+export const StateContextSchema = {
+  state: "SystemState",
+  timestamp: "Date", 
+  previousState: "SystemState?",
+  error: "Error?",
+  metadata: "Record<string, unknown>?"
+} as const
 
 /**
  * Type-safe State Event System

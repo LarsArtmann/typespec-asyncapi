@@ -94,7 +94,7 @@ const makeMemoryMonitorService = Effect.gen(function* () {
 			const memoryBefore = getCurrentMemoryUsage().heapUsed
 
 			// Use Effect.try for safe garbage collection with proper error handling
-			return Effect.try({
+			const result = yield* Effect.try({
 				try: () => {
 					if (typeof global !== "undefined" && global.gc) {
 						global.gc()
@@ -107,9 +107,8 @@ const makeMemoryMonitorService = Effect.gen(function* () {
 				catch: (error) => error instanceof GarbageCollectionNotAvailableError 
 					? error 
 					: new GarbageCollectionFailureError(`Garbage collection failed: ${error instanceof Error ? error.message : safeStringify(error)}`, createByteAmount(memoryBefore))
-			}).pipe(
-				Effect.catchAll((error) => Effect.fail(error))
-			)
+			})
+			return result
 		})
 	}
 

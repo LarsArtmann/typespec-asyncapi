@@ -165,7 +165,6 @@ export class ValidationService {
 	 */
 	validateDocumentContent(content: string): Effect.Effect<string, StandardizedError> {
 		return Effect.gen(function* () {
-			const self = this // Store this reference for Effect.TS context
 			yield* Effect.log(`🔍 Validating AsyncAPI document content (${content.length} bytes)`)
 			yield* Effect.log(`🔍 Content preview: ${content.substring(0, 100)}...`)
 
@@ -193,19 +192,21 @@ export class ValidationService {
 						{ originalError: error.why, content: content.substring(0, 200) + "..." }
 					)
 				}),
-				Effect.catchAll(error => {
-					console.log(`🔧 Entering JSON parsing catchAll: ${safeStringify(error)}`)
-					yield* Effect.log(`⚠️  Document parsing failed, providing minimal structure: ${safeStringify(error)}`)
-					// Create fallback minimal AsyncAPI structure
-					const fallbackDoc: AsyncAPIObject = {
-						asyncapi: "3.0.0",
-						info: { title: "Generated API (Validation Failed)", version: "1.0.0" },
-						channels: {},
-						operations: {}
-					}
-					console.log(`🔧 Created fallback doc: ${JSON.stringify(fallbackDoc)}`)
-					return Effect.succeed(fallbackDoc)
-				}).pipe(Effect.flatten)
+				Effect.catchAll(error => 
+					Effect.gen(function* () {
+						console.log(`🔧 Entering JSON parsing catchAll: ${safeStringify(error)}`)
+						yield* Effect.log(`⚠️  Document parsing failed, providing minimal structure: ${safeStringify(error)}`)
+						// Create fallback minimal AsyncAPI structure
+						const fallbackDoc: AsyncAPIObject = {
+							asyncapi: "3.0.0",
+							info: { title: "Generated API (Validation Failed)", version: "1.0.0" },
+							channels: {},
+							operations: {}
+						}
+						console.log(`🔧 Created fallback doc: ${JSON.stringify(fallbackDoc)}`)
+						return Effect.succeed(fallbackDoc)
+					}).pipe(Effect.flatten)
+				)
 			)
 			console.log(`🔧 Parsed doc type: ${typeof parsedDoc}, keys: ${parsedDoc ? Object.keys(parsedDoc).join(', ') : 'null'}`)
 

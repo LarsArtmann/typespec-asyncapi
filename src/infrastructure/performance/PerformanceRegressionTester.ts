@@ -21,12 +21,12 @@ import {safeStringify} from "../../utils/standardized-errors.js"
 
 // Node.js built-ins
 import {performance} from "perf_hooks"
-import {existsSync} from "fs"
+import {existsSync, readFileSync, writeFileSync} from "fs"
 import {join} from "path"
 
 // Local imports
 import {PerformanceMonitor} from "./PerformanceMonitor.js"
-import {railwayFileSystem} from "../../utils/effect-helpers.js"
+// import {railwayFileSystem} from "../../utils/effect-helpers.js" // TODO: Implement when needed
 import type {PerformanceBaseline} from "./PerformanceBaseline.js"
 import type {RegressionTestResult} from "./RegressionTestResult.js"
 import type {PerformanceMetrics} from "./PerformanceMetrics.js"
@@ -84,7 +84,8 @@ export class PerformanceRegressionTester {
 	 * Run comprehensive performance regression test
 	 */
 	runRegressionTest(testCaseName: string, testFunction: () => Promise<void>) {
-		return Effect.gen(this, function* () {
+		const self = this;
+		return Effect.gen(function* () {
 			yield* Effect.log(`🔍 Starting performance regression test: ${testCaseName}`)
 
 			// Start performance monitoring
@@ -95,7 +96,7 @@ export class PerformanceRegressionTester {
 			const startMemory = process.memoryUsage().heapUsed / 1024 / 1024
 			void startMemory
 
-			const testResult = yield* Effect.gen(this, function* () {
+			const testResult = yield* Effect.gen(function* () {
 				// Execute the test function  
 				yield* Effect.tryPromise({
 					try: () => testFunction(),
@@ -117,22 +118,22 @@ export class PerformanceRegressionTester {
 				yield* Effect.log(`📊 Test completed in ${metrics.compilationTimeMs.toFixed(2)}ms, memory: ${metrics.memoryUsageMB.toFixed(1)}MB`)
 
 				// Stop monitoring and get final snapshot
-				yield* this.performanceMonitor.stopMonitoring()
+				yield* self.performanceMonitor.stopMonitoring()
 
 				// Load baseline and compare  
-				const baseline = yield* this.loadBaseline(testCaseName)
-				const result = yield* this.analyzeRegression(testCaseName, metrics, baseline ?? null)
+				const baseline = yield* self.loadBaseline(testCaseName)
+				const result = yield* self.analyzeRegression(testCaseName, metrics, baseline ?? null)
 
 				// Update baseline if this is a new test or performance improved
-				if (!baseline || this.shouldUpdateBaseline(metrics, baseline)) {
-					yield* this.updateBaseline(testCaseName, metrics)
+				if (!baseline || self.shouldUpdateBaseline(metrics, baseline)) {
+					yield* self.updateBaseline(testCaseName, metrics)
 				}
 
 				return result
 			}).pipe(
-				Effect.tapError(error => Effect.gen(this, function* () {
+				Effect.tapError(error => Effect.gen(function* () {
 					yield* Effect.logError(`❌ Performance test failed: ${error}`)
-					yield* this.performanceMonitor.stopMonitoring()
+					yield* self.performanceMonitor.stopMonitoring()
 				})),
 				Effect.mapError(error => new Error(`Performance test failed: ${error}`))
 			)
@@ -145,7 +146,8 @@ export class PerformanceRegressionTester {
 	 * Analyze performance regression against baseline
 	 */
 	private analyzeRegression(testName: string, current: PerformanceMetrics, baseline: PerformanceBaseline | null) {
-		return Effect.gen(this, function* () {
+		const self = this;
+		return Effect.gen(function* () {
 			if (!baseline) {
 				yield* Effect.log(`📊 No baseline found for ${testName} - establishing new baseline`)
 				return {
@@ -219,32 +221,26 @@ export class PerformanceRegressionTester {
 	 * Load baseline from storage
 	 */
 	private loadBaseline(testCaseName: string) {
-		return Effect.gen(this, function* () {
-			if (!this.config.enableBaselines || !existsSync(this.baselinePath)) {
+		const self = this;
+		return Effect.gen(function* () {
+			if (!self.config.enableBaselines || !existsSync(self.baselinePath)) {
 				return null
 			}
 
-			const baselineResult = yield* railwayFileSystem.readJsonFileEffect<Record<string, PerformanceBaseline[]>>(
-				this.baselinePath,
-				"baseline file"
-			).pipe(
-				Effect.map(baselines => {
-					const testBaselines = baselines[testCaseName]
-					if (!testBaselines || testBaselines.length === 0) {
-						return null
-					}
-					// Return the most recent baseline
-					return testBaselines[testBaselines.length - 1]
-				}),
-				Effect.catchAll(error => 
-					Effect.gen(function* () {
-						yield* Effect.logWarning(`⚠️ Failed to load baselines: ${error.message}`)
-						return null
-					})
-				)
-			)
-			
-			return baselineResult
+			// TODO: Implement railwayFileSystem or use alternative
+			// TODO: Implement railwayFileSystem or use alternative
+			try {
+				const baselines = JSON.parse(readFileSync(self.baselinePath, 'utf-8')) as Record<string, PerformanceBaseline[]>
+				const testBaselines = baselines[testCaseName]
+				if (!testBaselines || testBaselines.length === 0) {
+					return null
+				}
+				// Return the most recent baseline
+				return testBaselines[testBaselines.length - 1]
+			} catch (error) {
+				yield* Effect.logWarning(`⚠️ Failed to load baselines: ${error instanceof Error ? error.message : String(error)}`)
+				return null
+			}
 		})
 	}
 
@@ -252,8 +248,9 @@ export class PerformanceRegressionTester {
 	 * Update baseline with new performance metrics
 	 */
 	private updateBaseline(testCaseName: string, metrics: PerformanceMetrics) {
-		return Effect.gen(this, function* () {
-			if (!this.config.enableBaselines) {
+		const self = this;
+		return Effect.gen(function* () {
+			if (!self.config.enableBaselines) {
 				return
 			}
 
@@ -273,29 +270,34 @@ export class PerformanceRegressionTester {
 				},
 			}
 
-			yield* Effect.gen(this, function* () {
-				let baselines: Record<string, PerformanceBaseline[]> = {}
+			let baselines: Record<string, PerformanceBaseline[]> = {}
 
-				baselines = yield* railwayFileSystem.readJsonFileWithDefault<Record<string, PerformanceBaseline[]>>(
-					this.baselinePath, 
-					{},
-					"baseline file"
-				)
-
-				baselines[testCaseName] ??= []
-				baselines[testCaseName].push(newBaseline)
-
-				// Keep only recent baselines to prevent file growth
-				if (baselines[testCaseName].length > self.config.maxBaselinesHistory) {
-					baselines[testCaseName] = baselines[testCaseName].slice(-self.config.maxBaselinesHistory)
+			// Load existing baselines
+			if (existsSync(self.baselinePath)) {
+				try {
+					baselines = JSON.parse(readFileSync(self.baselinePath, 'utf-8')) as Record<string, PerformanceBaseline[]>
+				} catch (error) {
+					yield* Effect.logWarning(`⚠️ Failed to load existing baselines: ${error instanceof Error ? error.message : String(error)}`)
+					baselines = {}
 				}
+			}
 
-				yield* railwayFileSystem.writeJsonFileEffect(this.baselinePath, baselines, "baseline file")
+			// Add new baseline
+			baselines[testCaseName] ??= []
+			baselines[testCaseName].push(newBaseline)
 
+			// Keep only recent baselines to prevent file growth
+			if (baselines[testCaseName].length > self.config.maxBaselinesHistory) {
+				baselines[testCaseName] = baselines[testCaseName].slice(-self.config.maxBaselinesHistory)
+			}
+
+			// Write back to file
+			try {
+				writeFileSync(self.baselinePath, JSON.stringify(baselines, null, 2), 'utf-8')
 				yield* Effect.log(`📊 Updated baseline for ${testCaseName}`)
-			}).pipe(
-				Effect.catchAll(error => Effect.logError(`❌ Failed to update baseline: ${error.message}`))
-			)
+			} catch (error) {
+				yield* Effect.logError(`❌ Failed to write baselines: ${error instanceof Error ? error.message : String(error)}`)
+			}
 		})
 	}
 

@@ -4,95 +4,15 @@
  * Basic validation operations for AsyncAPI documents
  */
 
-import { Effect, Schedule } from "effect"
-import { AsyncAPIObject } from "../types/branded-types.js"
-import { PERFORMANC_CONSTANTS } from "../constants/defaults.js"
+import { Effect } from "effect"
+// import { AsyncAPIObject } from "../types/branded-types.js" // TODO: Fix import
+import { PERFORMANCE_CONSTANTS } from "../constants/defaults.js"
 import { createError } from "../utils/standardized-errors.js"
 
-// Basic validators
-class AsyncAPIValidator {
-	validate(content: unknown) {
-		return Effect.succeed({
-			isValid: true,
-			errors: [] as string[],
-			warnings: [] as string[]
-		})
-	}
-}
-
-class ServerValidator {
-	validate(config: unknown, name?: string) {
-		return Effect.succeed({
-			isValid: true,
-			errors: [] as string[],
-			warnings: [] as string[]
-		})
-	}
-}
-
-class ChannelValidator {
-	validate(config: unknown, name?: string) {
-		return Effect.succeed({
-			isValid: true,
-			errors: [] as string[],
-			warnings: [] as string[]
-		})
-	}
-}
-
-class OperationValidator {
-	validate(config: unknown, name?: string) {
-		return Effect.succeed({
-			isValid: true,
-			errors: [] as string[],
-			warnings: [] as string[]
-		})
-	}
-}
-
-class MessageValidator {
-	validate(config: unknown, name?: string) {
-		return Effect.succeed({
-			isValid: true,
-			errors: [] as string[],
-			warnings: [] as string[]
-		})
-	}
-}
-
-class SchemaValidator {
-	validate(config: unknown, name?: string) {
-		return Effect.succeed({
-			isValid: true,
-			errors: [] as string[],
-			warnings: [] as string[]
-		})
-	}
-}
-
-class SecuritySchemeValidator {
-	validate(config: unknown, name?: string) {
-		return Effect.succeed({
-			isValid: true,
-			errors: [] as string[],
-			warnings: [] as string[]
-		})
-	}
-}
-
 /**
- * Main ValidationService class
- * Coordinates all validation operations with comprehensive error handling
+ * Simple Validation Service with basic AsyncAPI validation
  */
 export class ValidationService {
-	private readonly asyncAPIValidator = new AsyncAPIValidator()
-	private readonly serverValidator = new ServerValidator()
-	private readonly channelValidator = new ChannelValidator()
-	private readonly operationValidator = new OperationValidator()
-	private readonly messageValidator = new MessageValidator()
-	private readonly schemaValidator = new SchemaValidator()
-	private readonly securitySchemeValidator = new SecuritySchemeValidator()
-
 	// Performance metrics
 	private readonly metrics = {
 		totalValidations: 0,
@@ -112,72 +32,84 @@ export class ValidationService {
 				
 				// Basic validation
 				if (!content.includes('asyncapi')) {
-					const validationError = createError({
-						what: "AsyncAPI document validation failed",
-						reassure: "This is a validation error that can be fixed by correcting the AsyncAPI specification",
-						why: "Missing asyncapi field",
-						fix: "Check the AsyncAPI specification for syntax errors and missing required fields",
-						escape: "Use an online AsyncAPI validator to identify issues",
-						severity: "error" as const,
-						code: "VALIDATION_FAILED"
-					})
-					throw new Error(validationError.what + ": " + validationError.why)
+					const validationError = createError(
+						"Document does not contain 'asyncapi' field",
+						{ contentLength: content.length }
+					)
+					yield* Effect.log(`❌ Basic validation failed: ${validationError.message}`)
+					throw validationError
 				}
-				
-				yield* Effect.log(`✅ Document content validation passed!`)
+
+				// Try to parse as JSON
+				let parsedDoc
+				try {
+					parsedDoc = JSON.parse(content)
+				} catch (parseError) {
+					const validationError = createError(
+						`Invalid JSON: ${parseError instanceof Error ? parseError.message : String(parseError)}`,
+						{ originalError: parseError }
+					)
+					yield* Effect.log(`❌ JSON parsing failed: ${validationError.message}`)
+					throw validationError
+				}
+
+				// Basic structure validation
+				if (!parsedDoc.asyncapi) {
+					const validationError = createError(
+						"Missing 'asyncapi' version field",
+						{ document: parsedDoc }
+					)
+					yield* Effect.log(`❌ Structure validation failed: ${validationError.message}`)
+					throw validationError
+				}
+
+				if (!parsedDoc.info) {
+					const validationError = createError(
+						"Missing 'info' field",
+						{ document: parsedDoc }
+					)
+					yield* Effect.log(`❌ Structure validation failed: ${validationError.message}`)
+					throw validationError
+				}
+
+				this.metrics.totalValidations++
+				this.metrics.successfulValidations++
+				this.metrics.lastValidationTime = new Date()
+
+				yield* Effect.log(`✅ Document validation successful`)
 				return content
 			})
 		)
 	}
 
 	/**
-	 * Quick validation for common issues
+	 * Generate validation report for a document
 	 */
-	quickValidate(asyncApiDoc: AsyncAPIObject) {
-		return Effect.gen(function* () {
-			yield* Effect.log(`🔍 Quick validating AsyncAPI document...`)
-			
-			const issues: Array<{type: string; message: string; severity: "error" | "warning"}> = []
-
-			// Quick validation for common issues
-			if (!asyncApiDoc.asyncapi) {
-				issues.push({
-					type: "missing-field",
-					message: "Missing asyncapi field",
-					severity: "error"
-				})
-			}
-
-			return {
-				isValid: issues.length === 0,
-				issues
-			}
-		})
+	generateValidationReport(_asyncApiDoc: any) {
+		return Effect.runPromise(
+			Effect.gen(function* () {
+				yield* Effect.log(`📊 Generating validation report...`)
+				
+				// TODO: Implement comprehensive validation report
+				return {
+					isValid: true,
+					errors: [],
+					warnings: [],
+					timestamp: new Date(),
+					metrics: {
+						totalValidations: 0,
+						successfulValidations: 0,
+						failedValidations: 0
+					}
+				}
+			})
+		)
 	}
 
 	/**
-	 * Generate comprehensive validation report
+	 * Get validation metrics
 	 */
-	generateValidationReport(asyncApiDoc: AsyncAPIObject) {
-		return Effect.gen(function* () {
-			yield* Effect.log(`📊 Generating validation report...`)
-			
-			return {
-				summary: {
-					totalIssues: 0,
-					criticalIssues: 0,
-					warnings: 0,
-					overallHealth: "excellent" as const
-				},
-				details: {
-					servers: { isValid: true, errors: [], warnings: [] },
-					channels: { isValid: true, errors: [], warnings: [] },
-					operations: { isValid: true, errors: [], warnings: [] },
-					messages: { isValid: true, errors: [], warnings: [] },
-					schemas: { isValid: true, errors: [], warnings: [] }
-				},
-				recommendations: [] as Array<{type: string; message: string; priority: "high" | "medium" | "low"}>
-			}
-		})
+	getMetrics() {
+		return { ...this.metrics }
 	}
 }

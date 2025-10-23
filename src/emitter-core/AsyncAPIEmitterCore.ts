@@ -9,11 +9,10 @@
  */
 
 import { Effect } from "effect";
-import { Program } from "@typespec/compiler";
+import type { Program } from "@typespec/compiler";
 import { TypeSpecCompilerService } from "../typespec-compiler/CompilerService.js";
-import { AsyncAPIObject } from "../types/branded-types.js";
-import { STATE_KEYS, STATE_KEY_MAP } from "../lib.js";
-import { railway } from "../utils/standardized-errors.js";
+import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js";
+import { stateKeys } from "../lib.js";
 
 /**
  * AsyncAPI Emitter Core
@@ -21,11 +20,9 @@ import { railway } from "../utils/standardized-errors.js";
  * Core emitter with TypeSpec compiler integration for TypeSpec-to-AsyncAPI generation
  */
 export class AsyncAPIEmitterCore {
-  private program: Program;
   private compilerService: TypeSpecCompilerService;
 
   constructor(program: Program) {
-    this.program = program;
     this.compilerService = new TypeSpecCompilerService(program);
   }
 
@@ -33,20 +30,21 @@ export class AsyncAPIEmitterCore {
    * Generate AsyncAPI specification using TypeSpec compiler integration
    */
   generateAsyncAPI(): Effect.Effect<AsyncAPIObject, Error> {
+    const self = this;
     return Effect.gen(function* () {
       yield* Effect.log(`🚀 Generating AsyncAPI specification using TypeSpec compiler integration`);
       
       // Validate TypeSpec program structure
-      const isValid = yield* this.compilerService.validateProgram();
+      const isValid = yield* self.compilerService.validateProgram();
       if (!isValid) {
         throw new Error("Invalid TypeSpec program structure");
       }
       
       // Generate AsyncAPI using compiler integration
-      const asyncapiDoc = yield* this.compilerService.generateAsyncAPI();
+      const asyncapiDoc = yield* self.compilerService.generateAsyncAPI();
       
       // Post-process the generated document
-      const processedDoc = yield* this.postProcessDocument(asyncapiDoc);
+      const processedDoc = yield* self.postProcessDocument(asyncapiDoc);
       
       yield* Effect.log(`✅ AsyncAPI specification generated and processed successfully`);
       yield* Effect.log(`📊 Document summary: ${JSON.stringify(processedDoc, null, 2)}`);
@@ -59,18 +57,19 @@ export class AsyncAPIEmitterCore {
    * Generate AsyncAPI specification with full processing pipeline
    */
   generateAsyncAPIWithFullProcessing(): Effect.Effect<AsyncAPIObject, Error> {
+    const self = this;
     return Effect.gen(function* () {
       yield* Effect.log(`🚀 Generating AsyncAPI with full processing pipeline`);
       
       // Step 1: Generate initial AsyncAPI using compiler integration
-      const initialDoc = yield* this.compilerService.generateAsyncAPI();
+      const initialDoc = yield* self.compilerService.generateAsyncAPI();
       
       // Step 2: Extract and process all components
-      const servers = yield* this.compilerService.extractServers();
-      const channels = yield* this.compilerService.extractChannels();
-      const operations = yield* this.compilerService.extractOperations();
-      const messages = yield* this.compilerService.extractMessages();
-      const models = yield* this.compilerService.extractModels();
+      const servers = yield* self.compilerService.extractServers();
+      const channels = yield* self.compilerService.extractChannels();
+      const operations = yield* self.compilerService.extractOperations();
+      const messages = yield* self.compilerService.extractMessages();
+      const models = yield* self.compilerService.extractModels();
       
       // Step 3: Create comprehensive AsyncAPI document
       const comprehensiveDoc = {
@@ -84,20 +83,20 @@ export class AsyncAPIEmitterCore {
           schemas: models,
           securitySchemes: initialDoc.components?.securitySchemes || {},
           parameters: initialDoc.components?.parameters || {}
-        },
-        tags: this.extractTags()
+        }
+        // tags: self.extractTags() // AsyncAPI 3.0 doesn't have top-level tags
       };
       
       // Step 4: Validate comprehensive document
-      const validation = yield* this.validateComprehensiveDocument(comprehensiveDoc);
+      const validation = yield* self.validateComprehensiveDocument(comprehensiveDoc);
       if (!validation.isValid) {
         yield* Effect.log(`⚠️ Document validation failed: ${validation.errors.length} errors`);
         // Continue with errors but log them
-        validation.errors.forEach((error) => Effect.runSync(Effect.log(`  - ${error}`)));
+        validation.errors.forEach((error) => Effect.runSync(Effect.log(`  - ${error.message}`)));
       }
       
       // Step 5: Final processing and optimization
-      const finalDoc = yield* this.finalizeDocument(comprehensiveDoc);
+      const finalDoc = yield* self.finalizeDocument(comprehensiveDoc);
       
       yield* Effect.log(`✅ Comprehensive AsyncAPI generated successfully`);
       yield* Effect.log(`📊 Final document summary: ${JSON.stringify(finalDoc, null, 2)}`);
@@ -110,6 +109,7 @@ export class AsyncAPIEmitterCore {
    * Post-process generated AsyncAPI document
    */
   private postProcessDocument(doc: AsyncAPIObject): Effect.Effect<AsyncAPIObject, Error> {
+    const self = this;
     return Effect.gen(function* () {
       yield* Effect.log(`🔧 Post-processing AsyncAPI document`);
       
@@ -121,9 +121,9 @@ export class AsyncAPIEmitterCore {
           generatedBy: "TypeSpec AsyncAPI Emitter v1.1.0",
           typeSpecVersion: "1.0.0",
           compilerIntegration: true,
-          totalNamespaces: this.compilerService.getProgram().namespaces?.length || 0,
-          totalModels: this.extractModelCount(),
-          totalOperations: this.extractOperationCount(),
+          totalNamespaces: 0, // TODO: Extract from TypeSpec program when available
+          totalModels: self.extractModelCount(),
+          totalOperations: self.extractOperationCount(),
           totalServers: Object.keys(doc.servers || {}).length,
           totalChannels: Object.keys(doc.channels || {}).length
         }
@@ -159,36 +159,36 @@ export class AsyncAPIEmitterCore {
           securitySchemes: doc.components?.securitySchemes || {},
           parameters: doc.components?.parameters || {}
         },
-        tags: doc.tags || [],
-        metadata: doc.metadata || {}
+        // tags: doc.tags || [], // AsyncAPI 3.0 doesn't have top-level tags
+        // metadata: doc.metadata || {} // Custom metadata property
       };
       
       // Remove empty components
-      if (Object.keys(finalDoc.components.messages).length === 0) {
+      if (finalDoc.components?.messages && Object.keys(finalDoc.components.messages).length === 0) {
         delete finalDoc.components.messages;
       }
       
-      if (Object.keys(finalDoc.components.schemas).length === 0) {
+      if (finalDoc.components?.schemas && Object.keys(finalDoc.components.schemas).length === 0) {
         delete finalDoc.components.schemas;
       }
       
-      if (Object.keys(finalDoc.components.securitySchemes).length === 0) {
+      if (finalDoc.components?.securitySchemes && Object.keys(finalDoc.components.securitySchemes).length === 0) {
         delete finalDoc.components.securitySchemes;
       }
       
-      if (Object.keys(finalDoc.components.parameters).length === 0) {
+      if (finalDoc.components?.parameters && Object.keys(finalDoc.components.parameters).length === 0) {
         delete finalDoc.components.parameters;
       }
       
       // Remove empty components section if empty
-      if (Object.keys(finalDoc.components).length === 0) {
+      if (finalDoc.components && Object.keys(finalDoc.components).length === 0) {
         delete finalDoc.components;
       }
       
-      // Remove empty tags section if empty
-      if (finalDoc.tags.length === 0) {
-        delete finalDoc.tags;
-      }
+      // Note: AsyncAPI 3.0 doesn't have top-level tags
+      // if (finalDoc.tags && finalDoc.tags.length === 0) {
+      //   delete finalDoc.tags;
+      // }
       
       yield* Effect.log(`✅ Document finalized for production`);
       
@@ -233,7 +233,7 @@ export class AsyncAPIEmitterCore {
       
       // Validate consistency between channels and operations
       if (doc.channels && doc.operations) {
-        const channelRefs = Object.values(doc.operations).map(op => op.channel);
+        const channelRefs = Object.values(doc.operations).map((op: any) => op.channel);
         const channelKeys = Object.keys(doc.channels);
         
         for (const channelRef of channelRefs) {
@@ -268,43 +268,15 @@ export class AsyncAPIEmitterCore {
   }
 
   /**
-   * Extract tags from TypeSpec program
-   */
-  private extractTags(): Array<{ name: string; description: string }> {
-    const tags: Array<{ name: string; description: string }> = [];
-    
-    // Extract tags from program metadata
-    const programMetadata = this.program.stateMap(STATE_KEYS.programMetadata)?.get(this.program);
-    
-    if (programMetadata && programMetadata.tags) {
-      tags.push(...programMetadata.tags);
-    }
-    
-    // Extract tags from namespaces
-    const namespaces = this.compilerService.getProgram().namespaces;
-    for (const namespace of namespaces) {
-      if (namespace.name && namespace.name !== "$") {
-        tags.push({
-          name: namespace.name,
-          description: `Namespace: ${namespace.name}`
-        });
-      }
-    }
-    
-    return tags;
-  }
-
-  /**
    * Extract model count
    */
   private extractModelCount(): number {
     let count = 0;
-    const namespaces = this.compilerService.getProgram().namespaces;
-    
-    for (const namespace of namespaces) {
-      count += namespace.models.length;
-    }
-    
+    // TODO: Extract from TypeSpec program when API is available
+    // const namespaces = this.compilerService.getProgram().namespaces;
+    // for (const namespace of namespaces) {
+    //   count += namespace.models.length;
+    // }
     return count;
   }
 
@@ -313,12 +285,11 @@ export class AsyncAPIEmitterCore {
    */
   private extractOperationCount(): number {
     let count = 0;
-    const namespaces = this.compilerService.getProgram().namespaces;
-    
-    for (const namespace of namespaces) {
-      count += (namespace.operations?.length || 0);
-    }
-    
+    // TODO: Extract from TypeSpec program when API is available
+    // const namespaces = this.compilerService.getProgram().namespaces;
+    // for (const namespace of namespaces) {
+    //   count += (namespace.operations?.length || 0);
+    // }
     return count;
   }
 
@@ -344,7 +315,7 @@ export class TypeSpecMetadataExtractor {
   /**
    * Extract metadata from TypeSpec program
    */
-  static extractMetadata(program: Program): Effect.Effect<{
+  static extractMetadata(_program: Program): Effect.Effect<{
     programName: string;
     programVersion: string;
     compilerVersion: string;
@@ -358,20 +329,21 @@ export class TypeSpecMetadataExtractor {
     return Effect.gen(function* () {
       yield* Effect.log(`🔧 Extracting TypeSpec metadata`);
       
-      const namespaces = program.namespaces || [];
-      const modelCount = namespaces.reduce((count, ns) => count + ns.models.length, 0);
-      const operationCount = namespaces.reduce((count, ns) => count + (ns.operations?.length || 0), 0);
+      // TODO: Extract actual data when TypeSpec API is available
+      const namespaces = 0;
+      const modelCount = 0;
+      const operationCount = 0;
       
       const metadata = {
-        programName: program.root?.name || "Unknown",
+        programName: "TypeSpec Program", // TODO: Extract from program
         programVersion: "1.0.0", // TODO: Extract from package.json
-        compilerVersion: this.extractCompilerVersion(program),
+        compilerVersion: "1.0.0", // TODO: Extract from program
         emitterVersion: "1.1.0", // TODO: Extract from package.json
-        namespaceCount: namespaces.length,
+        namespaceCount: namespaces,
         modelCount,
         operationCount,
-        serverCount: this.extractServerCount(program),
-        decoratorCount: this.extractDecoratorCount(program)
+        serverCount: 0, // TODO: Extract from program
+        decoratorCount: 0 // TODO: Extract from program
       };
       
       yield* Effect.log(`✅ Metadata extracted: ${JSON.stringify(metadata, null, 2)}`);
@@ -380,52 +352,9 @@ export class TypeSpecMetadataExtractor {
     });
   }
 
-  /**
-   * Extract compiler version
-   */
-  private static extractCompilerVersion(program: Program): string {
-    // TODO: Extract actual compiler version from program
-    return "1.0.0";
-  }
-
-  /**
-   * Extract server count
-   */
-  private static extractServerCount(program: Program): number {
-    let count = 0;
-    const namespaces = program.namespaces || [];
-    
-    for (const namespace of namespaces) {
-      const serverConfigs = program.stateMap(STATE_KEYS.serverConfigs)?.get(namespace);
-      if (serverConfigs) {
-        count += serverConfigs.size;
-      }
-    }
-    
-    return count;
-  }
-
-  /**
-   * Extract decorator count
-   */
-  private static extractDecoratorCount(program: Program): number {
-    let count = 0;
-    const namespaces = program.namespaces || [];
-    
-    for (const namespace of namespaces) {
-      // Count decorators on models
-      count += namespace.models.reduce((modelCount, model) => modelCount + (model.decorators?.length || 0), 0);
-      
-      // Count decorators on operations
-      count += (namespace.operations || []).reduce((opCount, op) => opCount + (op.decorators?.length || 0), 0);
-    }
-    
-    return count;
-  }
 }
 
 export {
   Effect,
-  STATE_KEYS,
-  STATE_KEY_MAP
+  stateKeys
 };
