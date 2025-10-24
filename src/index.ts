@@ -13,7 +13,7 @@ export async function $onEmit(context: EmitContext) {
   // Basic output file from package.json options
   const outputFile = context.options["output-file"] || "asyncapi";
   const fileType = context.options["file-type"] || "yaml";
-  const extension = fileType === "json" ? "json" : "yaml";
+  const extension = (fileType as string) === "json" ? "json" : "yaml";
   
   // Generate minimal AsyncAPI 3.0 specification
   const asyncapiSpec = {

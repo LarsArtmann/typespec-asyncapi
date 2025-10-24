@@ -3,7 +3,7 @@
  * Eliminates Effect.TS anti-patterns and provides comprehensive Railway programming patterns
  */
 
-import {Effect, Schedule} from "effect"
+import {Effect, Schedule, TSemaphore} from "effect"
 // import {existsSync, readFileSync, writeFileSync} from "fs" // TODO: Use when needed
 import type {EmitContext} from "@typespec/compiler"
 import type {AsyncAPIEmitterOptions} from "../infrastructure/configuration/options.js"

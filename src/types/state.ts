@@ -212,6 +212,19 @@ export interface StateInitialization {
 }
 
 /**
+ * State Transition Rule Interface
+ * Enforces which transitions are allowed with validation logic
+ */
+export interface StateTransitionRule {
+  readonly from: SystemState
+  readonly to: readonly SystemState[]
+  readonly condition: (context: StateContext) => boolean
+  readonly validator: (context: StateContext, targetState: SystemState) => boolean
+  readonly action: (context: StateContext, targetState: SystemState) => Record<string, unknown>
+  readonly recovery: (context: StateContext) => SystemState
+}
+
+/**
  * Type-safe State Termination Interface
  */
 export interface StateTermination {
