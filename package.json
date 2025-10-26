@@ -131,18 +131,18 @@
     "tough-cookie": "^4.1.4"
   },
   "devDependencies": {
-    "@asyncapi/cli": "^3.5.2",
+    "@asyncapi/cli": "^4.0.0",
     "@effect/eslint-plugin": "^0.3.2",
-    "@eslint/js": "^9.37.0",
-    "@types/node": "^24.8.1",
-    "@typescript-eslint/eslint-plugin": "^8.46.1",
-    "@typescript-eslint/parser": "^8.46.1",
-    "@vitest/coverage-v8": "^3.2.4",
+    "@eslint/js": "^9.38.0",
+    "@types/node": "^24.9.1",
+    "@typescript-eslint/eslint-plugin": "^8.46.2",
+    "@typescript-eslint/parser": "^8.46.2",
+    "@vitest/coverage-v8": "^4.0.3",
     "asyncapi-validator": "^5.1.1",
-    "eslint": "^9.37.0",
+    "eslint": "^9.38.0",
     "glob": "^11.0.3",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.46.1",
-    "vitest": "^3.2.4"
+    "typescript-eslint": "^8.46.2",
+    "vitest": "^4.0.3"
   }
 }
