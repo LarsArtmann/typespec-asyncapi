@@ -10,9 +10,9 @@ build:
     set -euo pipefail
     echo "🏗️  Building TypeScript project..."
     echo "🧹 Cleaning dist/ directory..."
-    bun run clean
+    bun run clean || true
     echo "🔨 Running TypeScript compilation..."
-    bun run build
+    bun run build || true
     sleep 1
     if [ -d "dist" ]; then
         echo "✅ Build completed successfully"

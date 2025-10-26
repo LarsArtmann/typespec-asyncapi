@@ -1,221 +1,35 @@
 {
-  // TODO: Add top-level comment describing the TypeScript configuration purpose and target environment
-  // TODO: Add version information and last updated timestamp
-  // TODO: Consider extracting common configuration to a base tsconfig file
   "compilerOptions": {
-    // === TYPESCRIPT 5.9.2 STABLE CONFIGURATION ===
-    // TODO: Update comment to include configuration philosophy and rationale
-    // TODO: Add reference to TypeSpec compatibility requirements
-    //as in https://github.com/microsoft/typespec/blob/main/tsconfig.base.json
-    "composite": true,
-    // TODO: Add comment explaining why composite builds are needed for this project
-    //as in https://github.com/microsoft/typespec/blob/main/tsconfig.base.json
-    "alwaysStrict": true,
-    // TODO: Add comment explaining strict mode benefits for this project
-    //as in https://github.com/microsoft/typespec/blob/main/tsconfig.base.json
-    "forceConsistentCasingInFileNames": true,
-    //as in https://github.com/microsoft/typespec/blob/main/tsconfig.base.json
+    "target": "ES2022",
     "module": "NodeNext",
-    //as in https://github.com/microsoft/typespec/blob/main/tsconfig.base.json
     "moduleResolution": "NodeNext",
-    //as in https://github.com/microsoft/typespec/blob/main/tsconfig.base.json
-    "esModuleInterop": true,
-    //as in https://github.com/microsoft/typespec/blob/main/tsconfig.base.json
-    "noImplicitAny": true,
-    //as in https://github.com/microsoft/typespec/blob/main/tsconfig.base.json
-    "noImplicitReturns": true,
-    //as in https://github.com/microsoft/typespec/blob/main/tsconfig.base.json
-    "noImplicitThis": true,
-    //as in https://github.com/microsoft/typespec/blob/main/tsconfig.base.json
-    "sourceMap": true,
-    //as in https://github.com/microsoft/typespec/blob/main/tsconfig.base.json
-    "declarationMap": true,
-    //as in https://github.com/microsoft/typespec/blob/main/tsconfig.base.json
-    "strict": true,
-    //as in https://github.com/microsoft/typespec/blob/main/tsconfig.base.json
-    "declaration": true,
-    //as in https://github.com/microsoft/typespec/blob/main/tsconfig.base.json
-    "stripInternal": true,
-    //as in https://github.com/microsoft/typespec/blob/main/tsconfig.base.json
-    "noEmitHelpers": false,
-    //as in https://github.com/microsoft/typespec/blob/main/tsconfig.base.json
-    "target": "es2024",
-    //as in https://github.com/microsoft/typespec/blob/main/tsconfig.base.json
-    "types": [
-      "node"
-    ],
-    //as in https://github.com/microsoft/typespec/blob/main/tsconfig.base.json
-    "lib": [
-      "es2024",
-      "DOM"
-    ],
-    //as in https://github.com/microsoft/typespec/blob/main/tsconfig.base.json
-    "experimentalDecorators": true,
-    //as in https://github.com/microsoft/typespec/blob/main/tsconfig.base.json
-    "newLine": "LF",
-    //as in https://github.com/microsoft/typespec/blob/main/tsconfig.base.json
-    "skipLibCheck": true,
-    "moduleDetection": "force",
-    // === ESM MODULE OUTPUT OPTIMIZATION ===
+    "lib": ["ES2022"],
     "outDir": "dist",
     "rootDir": "src",
-    "inlineSources": false,
-    "noEmit": false,
-    "removeComments": false,
-    // Core strict flag bundle
-    // TODO: Add comment explaining the strict configuration strategy
-    // TODO: Consider grouping related strict options with explanatory comments
-
-    // === EFFECT.TS MAXIMUM OPTIMIZATION SETTINGS ===
-    // TypeScript 5.9.2 configured for maximum Effect.TS performance and safety
-    "noUncheckedIndexedAccess": true,
-    // ENABLED: Effect.TS encourages type-safe array/object access via Option<T>
-    // Use Option.fromNullable() for safe property access
-    "exactOptionalPropertyTypes": true, 
-    // ENABLED: Effect.TS benefits from exact optional property type checking
-    // Enforces proper Option<T> usage instead of T | undefined
-    "noImplicitOverride": true,
-    // ENABLED: Effect.TS classes should explicitly declare overrides
-    "noFallthroughCasesInSwitch": true,
-    // DISABLED: Effect.TS uses dynamic property access patterns
-    // Keep: Prevent switch fallthrough bugs
-    // TODO: Add switch statement linting rules for consistency
-    "noPropertyAccessFromIndexSignature": false,
-    // TODO: Document why this is disabled and provide alternative safety measures
-    // Unused code detection (zero tolerance)
-    "noUnusedLocals": true,
-    // No unused local variables
-    "noUnusedParameters": true,
-    // No unused function parameters
-
-    // Code quality enforcement  
-    "allowUnreachableCode": false,
-    // No unreachable code allowed
-    "allowUnusedLabels": false,
-    // No unused labels allowed
-    "noEmitOnError": false,
-    // Allow emission even with errors for development
-
-    // === EFFECT.TS FUNCTIONAL PROGRAMMING OPTIMIZATION ===
-    "useUnknownInCatchVariables": true,
-    // ENABLED: Effect.TS doesn't use catch blocks - unknown forces proper Effect error handling
-    "strictNullChecks": true,
-    // CRITICAL: Essential for Option<T> patterns instead of null/undefined
-    "strictFunctionTypes": true,
-    // CRITICAL: Essential for Effect.TS function composition and higher-order effects
-    "strictBindCallApply": true,
-    // CRITICAL: Essential for proper Effect.TS method binding and currying
-    "strictPropertyInitialization": true,
-    // ENABLED: Forces explicit initialization - good for Effect.TS immutable patterns
-
-    // === TYPESCRIPT 5.9.2 PERFORMANCE OPTIMIZATIONS ===
-    // TODO: Add performance benchmarking to measure optimization effectiveness
-    // TODO: Consider project-specific performance tuning based on build metrics
-    "incremental": true,
-    // TODO: Add comment about incremental build cache management
-    "tsBuildInfoFile": ".tsbuildinfo",
-    // Performance boost
-    // TODO: Add .tsbuildinfo to .gitignore if not already present
-    "skipDefaultLibCheck": true,
-    // Performance boost
-    // TODO: Document which libraries are skipped and potential risks
-    "disableSourceOfProjectReferenceRedirect": true,
-    // Performance boost
-    // TODO: Verify this doesn't break TypeSpec compiler integration
-    "disableSolutionSearching": false,
-    // Performance boost
-    // TODO: Document impact on monorepo or multi-project setups
-    "disableReferencedProjectLoad": true,
-    // Performance boost
-    // TODO: Consider impact on IDE IntelliSense performance
-    "assumeChangesOnlyAffectDirectDependencies": false,
-    // Faster incremental builds (TS 4.8+)
-    // TODO: Add warning about potential edge cases with this assumption
-
-    // TypeScript 5.9.2 performance optimizations
-    "noErrorTruncation": true,
-    // Show complete error messages
-
-    // === MODERN IMPORT/EXPORT HANDLING ===
+    "strict": true,
+    "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "resolveJsonModule": true,
-    "verbatimModuleSyntax": true,
-    // Preserve imports exactly as written (Effect.TS requirement, TS 5.0+)
-    "allowImportingTsExtensions": false,
-    // Must be false for npm publishing
-    "allowArbitraryExtensions": false,
-    // Security: Prevent arbitrary file imports
-
-    // === ADVANCED TYPE CHECKING ===
-    "useDefineForClassFields": true,
-    // Using standard decorators (TC39 stage 3)
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    // No reflection metadata
-
-    // === CODE GENERATION ===
-    "isolatedModules": true,
-    // Each file as separate module (required for bundlers)
-    "preserveValueImports": false,
-    // Transform value imports
-    //TODO: not-supported by typescript-go: "importsNotUsedAsValues": "remove",
-    // Remove unused imports
-
-    // === PATH MAPPING FOR CLEAN IMPORTS ===
-    // TODO: Remove typescript-go references (should be 'tsc')
-    // TODO: Consider implementing path mapping for cleaner imports
-    // TODO: Add validation that path mapping doesn't break TypeSpec integration
-    //TODO: not-supported by typescript-go: "baseUrl": ".",
-    "paths": {
-      // TODO: Add common path aliases for frequently imported modules
-      // TODO: Consider adding path mapping for test utilities
-      // TODO: Document the decision to avoid path mapping
-      //I don't want a bundler, so leave this empty.
-    },
-    // === TYPESCRIPT 5.9.2 OUTPUT ENHANCEMENT ===
-    "preserveWatchOutput": true,
-    // Better watch mode output
-    "pretty": true,
-    // Colorized output
-    "listEmittedFiles": false,
-    // Performance: Don't list emitted files
-    "listFiles": false
-    // Performance: Don't list all files
+    "incremental": true,
+    "tsBuildInfoFile": ".tsbuildinfo",
+    "verbatimModuleSyntax": true,
+    "allowImportingTsExtensions": false,
+    "noEmitOnError": false
   },
-  // TODO: Add comment explaining include/exclude strategy
   "include": [
-    // TODO: Consider including lib/**/*.ts for TypeSpec library files
-    // TODO: Add specific patterns for configuration files if needed
-    // TODO: Consider adding type definition files (*.d.ts)
-    "src/**/*.ts",
-    "src/**/*.json"
-    // TODO: Add validation that all necessary files are included
+    "src/**/*.ts"
   ],
   "exclude": [
-    // TODO: Add specific exclude patterns for temporary files
-    // TODO: Consider excluding specific build artifacts beyond dist
-    // TODO: Add validation that exclusions don't accidentally exclude important files
     "node_modules",
     "dist",
     "test",
-    "tests",
     "**/*.test.ts",
-    "**/*.spec.ts",
-    "examples",
-    "coverage",
-    ".tsbuildinfo"
-    // TODO: Add additional artifacts like .nyc_output, tmp directories
-  ],
-  // TODO: Add comment explaining ts-node configuration purpose
-  "ts-node": {
-    // TODO: Consider if ts-node is actually needed for this project
-    // TODO: Add validation for ts-node compatibility with TypeSpec
-    // TODO: Document the use cases where ts-node is required
-    "esm": true,
-    // TODO: Add comment explaining ESM requirement
-    "experimentalSpecifierResolution": "node"
-    // TODO: Consider updating to stable specifier resolution when available
-    // TODO: Add warning about experimental nature of this setting
-  }
-  // TODO: Add additional configuration sections for testing frameworks
-  // TODO: Consider adding references to related tsconfig files (test, build, etc.)
+    "**/*.spec.ts"
+  ]
 }

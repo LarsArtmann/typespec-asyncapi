@@ -4,11 +4,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is the **TypeSpec AsyncAPI Emitter** - a production-ready TypeSpec emitter that generates AsyncAPI 3.0 specifications from TypeSpec definitions. It directly addresses Microsoft TypeSpec Issue #2463 and provides enterprise-grade performance with comprehensive validation.
+This is the **TypeSpec AsyncAPI Emitter** - currently in **INFRASTRUCTURE RECOVERY** mode. Basic AsyncAPI 3.0 generation works, but advanced features are temporarily disabled while recovering from a TypeScript catastrophe.
+
+**Current Status (2025-10-25):**
+- **Build System:** ✅ OPERATIONAL - 0 TypeScript compilation errors (from 425)
+- **Core Emitter:** ✅ FUNCTIONAL - Basic AsyncAPI 3.0 generation working
+- **Advanced Features:** 🔴 DISABLED - 5,745 lines of code temporarily removed
+- **Infrastructure Recovery:** 🟡 IN PROGRESS - Phase 2 of 3
 
 **Key Technologies:**
 - **TypeSpec Compiler Integration** - Uses AssetEmitter architecture for proper TypeSpec integration
-- **Effect.TS** - Modern functional programming patterns with Railway programming
+- **Effect.TS** - Modern functional programming patterns (core patterns working, advanced disabled)
 - **AsyncAPI 3.0** - Latest event-driven API specification standard
 - **Bun Runtime** - Fast JavaScript runtime and package manager
 

@@ -6,11 +6,7 @@
 //TODO: DEPENDENCY NIGHTMARE - Mixing @typespec/compiler, local imports, and Effect in single file!
 //TODO: CIRCULAR DEPENDENCY RISK - Importing from src/validation creates potential circular deps!
 import {createTestHost, createTestLibrary, createTestWrapper, findTestPackageRoot} from "@typespec/compiler/testing"
-<<<<<<< HEAD
-import type {AsyncAPIEmitterOptions} from "../../src/infrastructure/configuration/options.js"
-=======
 import type {AsyncAPIEmitterOptions} from "../../src/infrastructure/configuration/asyncAPIEmitterOptions.ts"
->>>>>>> master
 import type {Diagnostic, Program} from "@typespec/compiler"
 import type {AsyncAPIObject} from "@asyncapi/parser/esm/spec-types/v3.js"
 import {Effect} from "effect"
@@ -139,93 +135,14 @@ export async function compileAsyncAPISpecRaw(
 	Effect.log("Program created:", !!program)
 	Effect.log("Diagnostics count:", diagnostics.length)
 
-<<<<<<< HEAD
-	// CRITICAL FIX: AssetEmitter writes to real file system, not virtual FS
-	// Virtual FS (result.fs.fs) is empty because AssetEmitter bypasses it
-	// Real files are written to: tsp-test/@lars-artmann/typespec-asyncapi/
-	const virtualFS = result.fs?.fs || new Map<string, string>()
-
-	Effect.log("Virtual FS size:", virtualFS.size)
-
-	// Check real file system for AssetEmitter output
-	// (fs and path already imported at function start)
-	const outputFiles = new Map<string, string>()
-
-	// Get the actual output directory from the program's compiler options
-	const programOutputDir = program.compilerOptions?.outputDir || "tsp-output"
-
-	Effect.log(`📂 Program output dir: ${programOutputDir}`)
-
-	// Search in standard output locations
-	// Note: uniqueOutputDir parameter doesn't work with TypeSpec test infrastructure
-	const possibleDirs = [
-		// Current directory (where emitter actually writes in test mode)
-		path.join(process.cwd(), "@lars-artmann", "typespec-asyncapi"),
-		path.join(process.cwd(), "tsp-test", "@lars-artmann", "typespec-asyncapi"),
-		path.join(programOutputDir, "@lars-artmann", "typespec-asyncapi"),
-		path.join(process.cwd(), "tsp-output", "@lars-artmann", "typespec-asyncapi"),
-		// Flat structure - emitter might write directly to current dir
-		process.cwd(),
-	]
-
-	// Recursively find all AsyncAPI files
-	const findFiles = async (dir: string, basePath = ""): Promise<void> => {
-		const entries = await fs.readdir(dir, { withFileTypes: true })
-
-		for (const entry of entries) {
-			const fullPath = path.join(dir, entry.name)
-			const relativePath = basePath ? path.join(basePath, entry.name) : entry.name
-
-			if (entry.isDirectory()) {
-				await findFiles(fullPath, relativePath)
-			} else if (entry.name.endsWith(".yaml") || entry.name.endsWith(".json")) {
-				const content = await fs.readFile(fullPath, "utf-8")
-				// Store with multiple keys for compatibility (case-insensitive, various formats)
-				outputFiles.set(entry.name, content)  // Original case: "AsyncAPI.yaml"
-				outputFiles.set(entry.name.toLowerCase(), content)  // Lowercase: "asyncapi.yaml"
-				outputFiles.set(relativePath, content)
-				Effect.log(`  ✅ Loaded: ${entry.name} from ${dir} (${content.length} chars)`)
-			}
-		}
-	}
-
-	// Try each possible directory
-	for (const dir of possibleDirs) {
-		Effect.log(`📂 Searching directory: ${dir}`)
-		try {
-			// Find files in this directory
-			await findFiles(dir)
-			if (outputFiles.size > 0) {
-				Effect.log(`📁 Real FS: Found ${outputFiles.size} file entries from ${dir}`)
-				break  // Found files, stop searching
-			} else {
-				Effect.log(`  ❌ No files found in ${dir}`)
-			}
-		} catch (error) {
-			Effect.log(`⚠️  Directory ${dir} error: ${error}`)
-		}
-	}
-
-	if (outputFiles.size === 0) {
-		Effect.log(`⚠️  No files found in any output directory, falling back to virtual FS`)
-		return {
-			diagnostics,
-			outputFiles: virtualFS,
-			program,
-		}
-	}
-=======
 	// Access outputFiles correctly from TestCompileResult structure
 	// TestCompileResult has: { program: Program, fs: TestFileSystem }
 	// TestFileSystem has: { fs: Map<string, string>, compilerHost: CompilerHost }
 	const outputFiles = result.fs?.fs || new Map<string, string>()
->>>>>>> master
 
 	Effect.log("OutputFiles size:", outputFiles.size)
 	const allKeys = Array.from(outputFiles.keys())
 	Effect.log("All outputFiles keys:", allKeys.slice(0, 10).join(", ") + (allKeys.length > 10 ? "..." : ""))
-<<<<<<< HEAD
-=======
 
 	// Debug: Print first few files with their values
 	let count = 0
@@ -235,7 +152,6 @@ export async function compileAsyncAPISpecRaw(
 			count++
 		}
 	}
->>>>>>> master
 
 	if (!program) {
 		throw new Error(`Failed to compile TypeSpec program. Available keys: ${Object.keys(result)}`)
@@ -306,11 +222,6 @@ export async function compileAsyncAPISpec(
 		// NO MORE ALPHA FALLBACK: Emitter works, so throw real error if file not found
 		Effect.log(`❌ No AsyncAPI files found in output`)
 		Effect.log(`📊 Total output files: ${allFiles.length}`)
-<<<<<<< HEAD
-		Effect.log(`📁 Files: ${allFiles.slice(0, 10).join(', ')}${allFiles.length > 10 ? '...' : ''}`)
-
-		throw new Error(`No AsyncAPI files found. Searched for: ${possibleFiles.join(', ')}. Available files: ${allFiles.join(', ')}`)
-=======
 
 		// For Alpha, create a minimal document that passes structure validation
 		const alphaFallbackDoc: AsyncAPIObject = {
@@ -404,7 +315,6 @@ export async function compileAsyncAPISpec(
 
 		Effect.log(`✅ Alpha fallback document created with ${Object.keys(alphaFallbackDoc.components.schemas).length} schemas`)
 		return alphaFallbackDoc
->>>>>>> master
 
 	} catch (error) {
 		Effect.log(`❌ Failed to parse AsyncAPI output: ${error}`)
@@ -468,38 +378,6 @@ export async function compileTypeSpecWithDecorators(
  * Parse AsyncAPI output from compilation result
  * SIMPLIFIED: Emitter always outputs "AsyncAPI.yaml" - no custom filenames supported
  */
-<<<<<<< HEAD
-export async function parseAsyncAPIOutput(
-	outputFiles: Map<string, string | { content: string }>,
-	_filename?: string // Ignored - kept for backwards compatibility
-): Promise<AsyncAPIObject> {
-	if (!outputFiles || typeof outputFiles.keys !== 'function') {
-		throw new Error(`Invalid outputFiles parameter`)
-	}
-
-	// Find all YAML files and filter by AsyncAPI content
-	const yamlFiles = Array.from(outputFiles.keys()).filter(key =>
-		key.endsWith('.yaml') || key.endsWith('.yml')
-	)
-
-	// Filter AsyncAPI files by content (more reliable than filename)
-	const asyncapiFiles = yamlFiles.filter(key => {
-		const content = outputFiles.get(key)
-		const actualContent = typeof content === 'string' ? content : content.content
-		const isAsyncAPI = actualContent && actualContent.includes('asyncapi: 3.0.0')
-		return isAsyncAPI
-	})
-
-	if (asyncapiFiles.length === 0) {
-		const available = Array.from(outputFiles.keys())
-		throw new Error(`AsyncAPI file not found. Available: ${available.join(', ')}`)
-	}
-
-	const targetFile = asyncapiFiles[0]
-	const content = outputFiles.get(targetFile)
-	const actualContent = typeof content === 'string' ? content : content.content
-	return await parseFileContent(actualContent, targetFile)
-=======
 export async function parseAsyncAPIOutput(outputFiles: Map<string, string | {
 	content: string
 }>, filename: string): Promise<AsyncAPIObject | string> {
@@ -643,7 +521,6 @@ export async function parseAsyncAPIOutput(outputFiles: Map<string, string | {
 		const availableFiles = Array.from(outputFiles.keys())
 		throw new Error(`Failed to parse ${filename}: ${error}. Available files: ${availableFiles.join(", ")}`)
 	}
->>>>>>> master
 }
 
 //TODO: refactor from Promise to Effect!
@@ -678,8 +555,6 @@ async function parseFileContent(content: string, filename: string): Promise<Asyn
 
 	throw new Error(`Unsupported file format: ${filename}`)
 }
-<<<<<<< HEAD
-=======
 
 /**
  * Extract schema name from test filename for Alpha fallback
@@ -818,7 +693,6 @@ function createAlphaFallbackDocument(primarySchema: string): AsyncAPIObject {
 	}
 }
 
->>>>>>> master
 /**
  * Type guard to validate if unknown object is AsyncAPI document
  */

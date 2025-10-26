@@ -65,8 +65,8 @@
     "url": "https://github.com/LarsArtmann/typespec-asyncapi/issues"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "build:watch": "tsc -p tsconfig.json --watch",
+    "build": "bunx tsc -p tsconfig.json",
+    "build:watch": "bunx tsc -p tsconfig.json --watch",
     "compile": "tsp compile .",
     "clean": "trash dist .tsbuildinfo 2>/dev/null || true",
     "clean:test": "rm -rf tsp-test tsp-output test-output @lars-artmann",
@@ -76,7 +76,7 @@
     "test:coverage": "bun run build && bun test --coverage",
     "test:validation": "bun run build && bun test test/critical-validation.test.ts test/all-generated-specs-validation.test.ts",
     "test:asyncapi": "bun run build && bun test test/validation/",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "bunx tsc --noEmit",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "check": "bun run typecheck && bun run lint",
