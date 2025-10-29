@@ -11,14 +11,14 @@ import { Effect } from "effect"
 export interface Plugin {
   readonly name: string
   readonly version: string
-  readonly initialize: () => Effect<void, never>
+  readonly initialize: () => Effect.Effect<void, never>
 }
 
 // Simple plugin registry
 export class PluginRegistry {
   private plugins = new Map<string, Plugin>()
 
-  register(plugin: Plugin): Effect<void, never> {
+  register(plugin: Plugin): Effect.Effect<void, never> {
     return Effect.sync(() => {
       this.plugins.set(plugin.name, plugin)
     })
@@ -32,7 +32,7 @@ export class PluginRegistry {
     return Array.from(this.plugins.values())
   }
 
-  clear(): Effect<void, never> {
+  clear(): Effect.Effect<void, never> {
     return Effect.sync(() => {
       this.plugins.clear()
     })

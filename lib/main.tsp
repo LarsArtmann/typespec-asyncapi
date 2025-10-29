@@ -52,11 +52,33 @@ namespace TypeSpec.AsyncAPI {
     /** Server configuration object */
     config: object;
   }
+
+  // Tags decorator for metadata
+  extern dec tags(value: string[]);
+
+  // Correlation ID decorator
+  extern dec correlationId(value: {
+    location: string;
+    property?: string;
+  });
+
+  // Bindings decorator for protocol bindings
+  extern dec bindings(value: object);
+
+  // Header decorator for message headers
+  extern dec header(value: {
+    name: string;
+    value: string | object;
+  });
 }
 
 // Export decorator types for external usage
-export alias channel = TypeSpec.AsyncAPI.channel;
-export alias message = TypeSpec.AsyncAPI.message;
-export alias protocol = TypeSpec.AsyncAPI.protocol;
-export alias security = TypeSpec.AsyncAPI.security;
-export alias server = TypeSpec.AsyncAPI.server;
+export namespace TypeSpec {
+  namespace AsyncAPI {
+    alias channel = TypeSpec.AsyncAPI.channel;
+    alias message = TypeSpec.AsyncAPI.message;
+    alias protocol = TypeSpec.AsyncAPI.protocol;
+    alias security = TypeSpec.AsyncAPI.security;
+    alias server = TypeSpec.AsyncAPI.server;
+  }
+}
