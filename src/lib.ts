@@ -271,6 +271,7 @@ export const $lib = createTypeSpecLibrary({
 		cloudBindings: {description: "Map of targets to cloud provider specific bindings"},
 	},
 	// TODO: Add additional library metadata (version, author, repository)
+	// NOTE: Decorators are auto-discovered through module exports, not registered in createTypeSpecLibrary
 } as const)
 
 /**
