@@ -7,7 +7,7 @@
 
 import {Effect} from "effect"
 import type {Model, ModelProperty, Program, Type} from "@typespec/compiler"
-import {getDoc} from "@typespec/compiler"
+import {getDoc, walkPropertiesInherited} from "@typespec/compiler"
 import type {SchemaObject} from "@asyncapi/parser/esm/spec-types/v3.js"
 import { globalTypeCache } from "./type-cache.js"
 
@@ -31,26 +31,17 @@ export function convertModelToSchema(model: Model, program: Program): SchemaObje
 			const properties: Record<string, SchemaObject> = {}
 			const required: string[] = []
 
-			// CRITICAL DEBUG: Check model.properties structure
-			yield* Effect.log(`🔍 DEBUG model.properties type: ${typeof model.properties}`)
-			yield* Effect.log(`🔍 DEBUG model.properties constructor: ${model.properties?.constructor?.name}`)
-			yield* Effect.log(`🔍 DEBUG model.properties size: ${model.properties?.size ?? 'undefined'}`)
-			yield* Effect.log(`🔍 DEBUG model.properties keys: ${Array.from(model.properties?.keys?.() ?? []).join(', ')}`)
+			// Process each model property using TypeSpec's walkPropertiesInherited
+			// This properly handles inherited properties and all property sources
+			for (const prop of walkPropertiesInherited(model)) {
+				const name = prop.name
+				yield* Effect.log(`📋 Processing property: ${name} (type: ${prop.type.kind})`)
 
-			// Process each model property using Effect.TS patterns
-			if (model.properties && typeof model.properties.entries === 'function') {
-				for (const [name, prop] of model.properties.entries()) {
-					yield* Effect.log(`📋 Processing property: ${name} (type: ${prop.type.kind})`)
+				properties[name] = yield* convertPropertyToSchemaEffect(prop, program, name)
 
-					properties[name] = yield* convertPropertyToSchemaEffect(prop, program, name)
-
-					if (!prop.optional) {
-						required.push(name)
-					}
+				if (!prop.optional) {
+					required.push(name)
 				}
-			} else {
-				yield* Effect.log(`❌ CRITICAL: model.properties is not iterable or undefined`)
-				yield* Effect.log(`❌ model.properties value: ${JSON.stringify(model.properties, null, 2)}`)
 			}
 
 			const schema: SchemaObject = {
