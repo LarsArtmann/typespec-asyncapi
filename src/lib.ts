@@ -446,12 +446,10 @@ export function reportDiagnostic(context: DecoratorContext, target: unknown, cod
 }
 
 /**
- * Export all decorators for TypeSpec compiler integration
+ * NOTE: Decorators do NOT need to be exported from lib.ts
  *
- * CRITICAL: TypeSpec requires decorators to be exported from the library definition file
- * (this file compiles to dist/lib.js) so the compiler can link extern dec declarations
- * in lib/main.tsp to their JavaScript implementations.
+ * TypeSpec auto-discovers decorators through the namespace export in decorators.ts.
+ * The critical fix was adding: export const namespace = "TypeSpec.AsyncAPI"
  *
- * Without this export, TypeSpec will report "missing implementation" errors for all decorators.
+ * Lib.ts is only for library definition, diagnostics, and state management.
  */
-export * from "./decorators.js"
