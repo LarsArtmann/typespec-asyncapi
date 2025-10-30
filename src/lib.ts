@@ -440,7 +440,18 @@ export function reportDiagnostic(context: DecoratorContext, target: unknown, cod
 		target,
 		// TODO: TYPE_SAFETY - Add validation for args parameter structure to ensure required template params exist
 		// TODO: SECURITY - Consider deep cloning args to prevent mutation and potential security issues
-		// TODO: TYPE_SAFETY - Spread operator should be typed to ensure args matches expected diagnostic parameters
+		// TODO: TYPE_SAFETY - Spread operator should be typed to ensure args matches expected diagnostic parameter
 		...args,
 	} as Diagnostic)
 }
+
+/**
+ * Export all decorators for TypeSpec compiler integration
+ *
+ * CRITICAL: TypeSpec requires decorators to be exported from the library definition file
+ * (this file compiles to dist/lib.js) so the compiler can link extern dec declarations
+ * in lib/main.tsp to their JavaScript implementations.
+ *
+ * Without this export, TypeSpec will report "missing implementation" errors for all decorators.
+ */
+export * from "./decorators.js"
