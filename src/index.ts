@@ -1,10 +1,13 @@
 /**
- * TypeSpec AsyncAPI Emitter - Minimal Working Entry Point
+ * TypeSpec AsyncAPI Emitter - Complete Entry Point with Decorator Support
  */
 
 import type { EmitContext } from "@typespec/compiler";
 import { writeFileSync, mkdirSync } from "node:fs";
 import { join, dirname } from "node:path";
+
+// Export all decorators for TypeSpec integration
+export * from "./decorators.js";
 
 /**
  * Minimal AsyncAPI 3.0 emitter - generates basic specification
