@@ -101,7 +101,9 @@ const makeMemoryMonitorService = Effect.gen(function* () {
 			// Perform garbage collection safely
 			const memoryAfter = yield* Effect.try({
 				try: () => {
-					global.gc()
+					if (global.gc) {
+						global.gc()
+					}
 					return getCurrentMemoryUsage().heapUsed
 				},
 				catch: (error) => new GarbageCollectionFailureError(

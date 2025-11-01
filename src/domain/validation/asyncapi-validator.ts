@@ -74,7 +74,7 @@ export class AsyncAPIValidator {
 	/**
 	 * Validate AsyncAPI document using the REAL parser - Effect version
 	 */
-	validateEffect(document: unknown, _identifier?: string): Effect.Effect<ValidationResult, never, never> {
+	validateEffect(document: unknown, _identifier?: string): Effect.Effect<ValidationResult, Error, never> {
 		return Effect.gen(function* (this: AsyncAPIValidator) {
 			// Ensure initialization in Effect context
 			yield* this.initializeEffect()
@@ -83,43 +83,21 @@ export class AsyncAPIValidator {
 			// Convert document to string for parser (no pretty printing for performance)
 			const content = typeof document === 'string' ? document : JSON.stringify(document)
 
-			// Enforce AsyncAPI 3.0.0 strict compliance using Effect.try
-			const docObjectResult = yield* Effect.try({
-				try: () => {
-					const docObject: Record<string, unknown> = typeof document === 'string' ? JSON.parse(content) as Record<string, unknown> : document as Record<string, unknown>
-					if (docObject && typeof docObject === 'object' && 'asyncapi' in docObject) {
-						const version = String(docObject.asyncapi)
-						if (version !== '3.0.0') {
-							return yield* Effect.fail(new Error(`AsyncAPI version must be 3.0.0, got: ${version}`))
-						}
+			// Enforce AsyncAPI 3.0.0 strict compliance using Effect.gen
+			const docObject = yield* Effect.gen(function*() {
+				const docObject: Record<string, unknown> = typeof document === 'string' ? JSON.parse(content) as Record<string, unknown> : document as Record<string, unknown>
+				if (docObject && typeof docObject === 'object' && 'asyncapi' in docObject) {
+					const version = String(docObject.asyncapi)
+					if (version !== '3.0.0') {
+						yield* Effect.fail(new Error(`AsyncAPI version must be 3.0.0, got: ${version}`))
 					}
-					return docObject
-				},
-				catch: (error) => new Error(`Version validation failed: ${error instanceof Error ? error.message : JSON.stringify(error)}`)
-			}).pipe(
-				Effect.catchAll((error) => Effect.sync(() => {
-					const duration = performance.now() - startTime
-					this.updateStats(duration)
-					Effect.runSync(Effect.logError(`AsyncAPI version validation failed: ${error.message}`))
-					return {
-						valid: false,
-						errors: [{
-							message: error.message,
-							keyword: 'version-constraint',
-							instancePath: 'asyncapi',
-							schemaPath: '#/asyncapi',
-						}],
-						warnings: [],
-						summary: error.message,
-						metrics: this.extractMetrics(null, duration),
-					}
-				}))
-			)
+				}
+				return docObject
+			})
 
-			// Return early if version validation failed
-			if (typeof docObjectResult === 'object' && docObjectResult !== null && 'valid' in docObjectResult) {
-				return docObjectResult as ValidationResult
-			}
+			// Calculate duration and update statistics
+			const duration = performance.now() - startTime
+			this.updateStats(duration)
 
 			// Use the REAL AsyncAPI parser with Effect tryPromise wrapper, retry patterns, and timeout
 			const parseResult = yield* Effect.tryPromise({
@@ -179,9 +157,7 @@ export class AsyncAPIValidator {
 				return parseResult as ValidationResult
 			}
 
-			const duration = performance.now() - startTime
-
-			// Update statistics
+			// Update statistics (duration already calculated above)
 			this.updateStats(duration)
 
 			// Extract metrics from document
@@ -233,7 +209,7 @@ export class AsyncAPIValidator {
 	/**
 	 * Validate AsyncAPI document from file - Effect version
 	 */
-	validateFileEffect(filePath: string): Effect.Effect<ValidationResult, never> {
+	validateFileEffect(filePath: string): Effect.Effect<ValidationResult, Error> {
 		return Effect.gen(function* (this: AsyncAPIValidator) {
 			// Use Effect.tryPromise to wrap Node.js file reading with proper error handling
 			const content = yield* Effect.tryPromise({
@@ -280,14 +256,14 @@ export class AsyncAPIValidator {
 	validateBatchEffect(documents: Array<{
 		content: unknown,
 		identifier?: string
-	}>): Effect.Effect<ValidationResult[], never> {
+	}>): Effect.Effect<ValidationResult[], Error> {
 		return Effect.gen(function* (this: AsyncAPIValidator) {
 			const startTime = performance.now()
 			yield* railwayLogging.logInitialization(`batch validation of ${documents.length} documents`)
 
 			// Process documents in parallel using Effect.all with controlled concurrency
 			const validationEffects = documents.map(doc =>
-				self.validateEffect(doc.content, doc.identifier),
+				this.validateEffect(doc.content, doc.identifier),
 			)
 
 			// Use Effect.all to run validations in parallel with limited concurrency
@@ -384,7 +360,7 @@ export async function validateAsyncAPIObject(document: unknown, options?: Valida
 }
 
 // Export Effect-based utility functions
-export function validateAsyncAPIEffect(document: unknown, options?: ValidationOptions): Effect.Effect<ValidationResult, never> {
+export function validateAsyncAPIEffect(document: unknown, options?: ValidationOptions): Effect.Effect<ValidationResult, Error> {
 	const validator = new AsyncAPIValidator(options)
 	return validator.validateEffect(document)
 }

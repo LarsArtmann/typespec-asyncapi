@@ -52,7 +52,7 @@ export function isValidTransition(from: SystemState, to: SystemState): boolean {
  */
 export type StateMachineConfig = {
   readonly initialState: SystemState
-  readonly allowedTransitions: typeof StateTransitions
+  readonly allowedTransitions: typeof STATE_TRANSITIONS
   readonly onStateChange?: (from: SystemState, to: SystemState) => void
 }
 

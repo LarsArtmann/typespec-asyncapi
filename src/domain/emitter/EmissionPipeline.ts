@@ -116,8 +116,7 @@ export class EmissionPipeline implements IPipelineService {
 			yield* this.executeValidationStage(context)
 
 			yield* Effect.log(`✅ All emission pipeline stages completed successfully`)
-		})
-		.bind(this))
+		}.bind(this))
 	}
 
 	/**

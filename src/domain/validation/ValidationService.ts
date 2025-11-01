@@ -170,41 +170,13 @@ export class ValidationService {
 
 			// Parse the content with proper error handling, retry patterns, and fallback
 			yield* Effect.logInfo("🔧 About to parse JSON...")
-			const parsedDoc = yield* railway.trySync(
-				() => {
-					yield* Effect.logInfo("🔧 Starting JSON parsing attempt...")
-					return JSON.parse(content) as AsyncAPIObject
-				},
-				{ operation: "parseDocument", contentLength: content.length }
-			).pipe(
-				// Add retry pattern for JSON parsing with exponential backoff
+			const parsedDoc = yield* Effect.gen(function*() {
+				yield* Effect.logInfo("🔧 Starting JSON parsing attempt...")
+				return JSON.parse(content) as AsyncAPIObject
+			}).pipe(
 				Effect.retry(Schedule.exponential(`${PERFORMANCE_CONSTANTS.RETRY_BASE_DELAY_MS / 2} millis`).pipe(
 					Schedule.compose(Schedule.recurs(PERFORMANCE_CONSTANTS.MAX_RETRY_ATTEMPTS - 1))
-				)),
-				Effect.tapError(attempt => {
-					return Effect.logWarning(`⚠️  JSON parsing attempt failed, retrying: ${safeStringify(attempt)}`)
-				}),
-				Effect.mapError(error => {
-					return emitterErrors.invalidAsyncAPI(
-						["Failed to parse JSON/YAML content after retries"],
-						{ originalError: error.why, content: content.substring(0, 200) + "..." }
-					)
-				}),
-				Effect.catchAll(error => 
-					Effect.gen(function* () {
-						yield* Effect.logInfo(`🔧 Entering JSON parsing catchAll: ${safeStringify(error)}`)
-						yield* Effect.log(`⚠️  Document parsing failed, providing minimal structure: ${safeStringify(error)}`)
-						// Create fallback minimal AsyncAPI structure
-						const fallbackDoc: AsyncAPIObject = {
-							asyncapi: "3.0.0",
-							info: { title: "Generated API (Validation Failed)", version: "1.0.0" },
-							channels: {},
-							operations: {}
-						}
-						yield* Effect.logInfo(`🔧 Created fallback doc: ${JSON.stringify(fallbackDoc)}`)
-						return Effect.succeed(fallbackDoc)
-					}).pipe(Effect.flatten)
-				)
+				))
 			)
 			yield* Effect.logInfo(`🔧 Parsed doc type: ${typeof parsedDoc}, keys: ${parsedDoc ? Object.keys(parsedDoc).join(', ') : 'null'}`)
 

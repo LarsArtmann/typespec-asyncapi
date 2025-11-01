@@ -458,11 +458,10 @@ export class PluginRegistry {
         const handlers = this.eventBus.get(eventType) ?? []
         handlers.forEach(handler => {
             Effect.runSync(
-                Effect.tryPromise({
-                    try: () => Effect.succeed(handler(event)),
-                    catch: (error) => new Error(`Event handler error for ${eventType}: ${String(error)}`)
+                Effect.gen(function*() {
+                    yield* Effect.succeed(handler(event))
                 }).pipe(
-                    Effect.catchAll(error => Effect.logError(`❌ ${error.message}`))
+                    Effect.catchAll((error: unknown) => Effect.logError(`❌ ${error instanceof Error ? error.message : String(error)}`))
                 )
             )
         })
