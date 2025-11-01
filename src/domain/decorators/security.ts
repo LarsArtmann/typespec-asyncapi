@@ -48,7 +48,7 @@ import type {SecurityScheme} from "./securityScheme.js"
 export function $security(
 	context: DecoratorContext,
 	target: Operation | Model,
-	config: {name: string, scheme: Record<unknown>},
+	config: {name: string, scheme: Record<string, unknown>},
 ): void {
 	Effect.log(`=
  PROCESSING @security decorator on: ${target.kind} ${target.name || 'unnamed'}`)
@@ -69,7 +69,7 @@ export function $security(
 		return
 	}
 
-	const validationResult = validateSecurityScheme(scheme)
+	const validationResult = validateSecurityScheme(scheme as SecurityScheme)
 	if (validationResult.errors.length > 0) {
 		reportDiagnostic(context, target, "invalid-security-scheme", {
 			scheme: validationResult.errors.join(", "),
