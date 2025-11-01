@@ -172,7 +172,7 @@ export class ValidationService {
 			yield* Effect.logInfo("🔧 About to parse JSON...")
 			const parsedDoc = yield* railway.trySync(
 				() => {
-					yield* Effect.logInfo("🔧 Attempting JSON.parse...")
+					yield* Effect.logInfo("🔧 Starting JSON parsing attempt...")
 					return JSON.parse(content) as AsyncAPIObject
 				},
 				{ operation: "parseDocument", contentLength: content.length }

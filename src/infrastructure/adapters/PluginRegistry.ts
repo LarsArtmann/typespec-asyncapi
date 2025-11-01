@@ -249,7 +249,7 @@ export class PluginRegistry {
      * Initialize a plugin
      */
     private initializePlugin(name: string): Effect.Effect<void, StandardizedError, never> {
-        return Effect.gen(function* () {
+        return Effect.gen(function* (this: PluginRegistry) {
             const { plugin, metadata } = yield* this.getPluginAndMetadata(name)
 
             const result = yield* plugin.initialize().pipe(
@@ -269,15 +269,16 @@ export class PluginRegistry {
             )
 
             return result
-        }.bind(this))
+        })
     }
 
     /**
      * Start a plugin
      */
     startPlugin(name: string): Effect.Effect<void, StandardizedError, never> {
+        const self = this
         return Effect.gen(function* () {
-            const { plugin, metadata } = yield* this.getPluginAndMetadata(name)
+            const { plugin, metadata } = yield* self.getPluginAndMetadata(name)
 
             if (metadata.state !== PluginState.INITIALIZED && metadata.state !== PluginState.STOPPED) {
                 return yield* Effect.fail(emitterErrors.pluginInitializationFailed(
@@ -310,8 +311,9 @@ export class PluginRegistry {
      * Stop a plugin
      */
     stopPlugin(name: string): Effect.Effect<void, StandardizedError, never> {
+        const self = this
         return Effect.gen(function* () {
-            const { plugin, metadata } = yield* this.getPluginAndMetadata(name)
+            const { plugin, metadata } = yield* self.getPluginAndMetadata(name)
 
             if (metadata.state !== PluginState.STARTED) {
                 yield* Effect.logWarning(`⚠️ Plugin ${name} is not running (current state: ${metadata.state})`)
@@ -323,7 +325,7 @@ export class PluginRegistry {
             })
 
             // Create timeout effect
-            const timeoutEffect = Effect.sleep(this.config.gracefulShutdownTimeout).pipe(
+            const timeoutEffect = Effect.sleep(self.config.gracefulShutdownTimeout).pipe(
                 Effect.flatMap(() => Effect.fail(new Error(`Plugin ${name} shutdown timeout`)))
             )
 
@@ -344,16 +346,17 @@ export class PluginRegistry {
             )
 
             return result
-        }.bind(this))
+        })
     }
 
     /**
      * Validate plugin dependencies
      */
     private validateDependencies(plugin: Plugin): Effect.Effect<void, StandardizedError, never> {
+        const self = this
         return Effect.gen(function* () {
             for (const dependency of plugin.dependencies) {
-                const depMetadata = this.pluginMetadata.get(dependency)
+                const depMetadata = self.pluginMetadata.get(dependency)
                 
                 if (!depMetadata) {
                     return yield* Effect.fail(emitterErrors.pluginInitializationFailed(
@@ -369,7 +372,7 @@ export class PluginRegistry {
                     ))
                 }
             }
-        }.bind(this))
+        })
     }
 
     /**
@@ -495,9 +498,10 @@ export class PluginRegistry {
      * Used by unloadPlugin, hotReloadPlugin, initializePlugin, startPlugin, stopPlugin
      */
     private getPluginAndMetadata(name: string): Effect.Effect<{ plugin: Plugin; metadata: PluginMetadata }, StandardizedError, never> {
+        const self = this
         return Effect.gen(function* () {
-            const plugin = this.plugins.get(name)
-            const metadata = this.pluginMetadata.get(name)
+            const plugin = self.plugins.get(name)
+            const metadata = self.pluginMetadata.get(name)
 
             if (!plugin || !metadata) {
                 return yield* Effect.fail(emitterErrors.pluginInitializationFailed(
@@ -507,6 +511,6 @@ export class PluginRegistry {
             }
 
             return { plugin, metadata }
-        }.bind(this))
+        })
     }
 }
