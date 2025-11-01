@@ -18,12 +18,12 @@ import { ValidationService } from "../../domain/validation/ValidationService.js"
 
 // Error handling
 import { createPluginSystemError } from "../../domain/models/errors/plugin-error.js";
-import type { _StandardizedError } from "../../utils/standardized-errors.js";
-import type { _PluginSystemError } from "../../domain/models/errors/plugin-error.js";
+import type { StandardizedError } from "../../utils/standardized-errors.js";
+import type { PluginSystemError } from "../../domain/models/errors/plugin-error.js";
 import { DocumentBuilder } from "../../domain/emitter/DocumentBuilder.js";
 
 // Plugin system - FIX "No plugin found" warnings
-import { _registerBuiltInPlugins, _pluginRegistry } from "../../infrastructure/adapters/plugin-system.js";
+import { registerBuiltInPlugins, pluginRegistry } from "../../infrastructure/adapters/plugin-system.js";
 
 /**
  * 🎯 SIMPLE ISSUE #180 FIX - Bypass complex serialization
@@ -35,7 +35,7 @@ import { _registerBuiltInPlugins, _pluginRegistry } from "../../infrastructure/a
  * 4. Bypass DocumentGenerator serialization (causing errors)
  * 5. Write files directly with simple JSON/YAML serialization
  */
-export function generateAsyncAPIWithEffect(context: EmitContext): Effect.Effect<void, unknown> {
+export function generateAsyncAPIWithEffect(context: EmitContext): Effect.Effect<void, StandardizedError | PluginSystemError> {
 	return Effect.gen(function* () {
 		yield* Effect.logInfo("🎯 SIMPLE ISSUE #180 FIX: Direct pipeline execution")
 		

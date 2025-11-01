@@ -13,8 +13,8 @@ export type AsyncAPIObject = {
     title: string
     version: string
   }
-  servers?: Record<string, any>
-  channels?: Record<string, any>
+  servers?: Record<string, unknown>
+  channels?: Record<string, unknown>
 }
 
 export type ServerObject = {
@@ -53,45 +53,45 @@ export type SecuritySchemeObject = {
 /**
  * Basic validation schemas
  */
-export const AsyncAPIVersionSchema = Schema.String.pipe(
+export const ASYNC_API_VERSION_SCHEMA = Schema.String.pipe(
   Schema.pattern(/^[0-9]+\.[0-9]+\.[0-9]+$/)
 )
 
-export const InfoSectionSchema = Schema.Struct({
+export const INFO_SECTION_SCHEMA = Schema.Struct({
   title: Schema.String.pipe(Schema.minLength(1)),
   version: Schema.String.pipe(Schema.minLength(1))
 })
 
-export const ServerObjectSchema: Schema.Schema<ServerObject> = Schema.Struct({
+export const SERVER_OBJECT_SCHEMA: Schema.Schema<ServerObject> = Schema.Struct({
   name: Schema.String.pipe(Schema.minLength(1)),
   url: Schema.String.pipe(Schema.minLength(1)),
   protocol: Schema.String.pipe(Schema.minLength(1))
 })
 
-export const ChannelObjectSchema: Schema.Schema<ChannelObject> = Schema.Struct({
+export const CHANNEL_OBJECT_SCHEMA: Schema.Schema<ChannelObject> = Schema.Struct({
   name: Schema.String.pipe(Schema.minLength(1))
 })
 
-export const OperationObjectSchema: Schema.Schema<OperationObject> = Schema.Struct({})
-export const MessageObjectSchema: Schema.Schema<MessageObject> = Schema.Struct({})
-export const SchemaObjectSchema: Schema.Schema<SchemaObject> = Schema.Struct({})
-export const SecuritySchemeObjectSchema: Schema.Schema<SecuritySchemeObject> = Schema.Struct({
+export const OPERATION_OBJECT_SCHEMA: Schema.Schema<OperationObject> = Schema.Struct({})
+export const MESSAGE_OBJECT_SCHEMA: Schema.Schema<MessageObject> = Schema.Struct({})
+export const SCHEMA_OBJECT_SCHEMA: Schema.Schema<SchemaObject> = Schema.Struct({})
+export const SECURITY_SCHEME_OBJECT_SCHEMA: Schema.Schema<SecuritySchemeObject> = Schema.Struct({
   type: Schema.String.pipe(Schema.minLength(1))
 })
 
-export const AsyncAPIObjectSchema = Schema.Struct({
-  asyncapi: AsyncAPIVersionSchema,
-  info: InfoSectionSchema,
+export const ASYNC_API_OBJECT_SCHEMA = Schema.Struct({
+  asyncapi: ASYNC_API_VERSION_SCHEMA,
+  info: INFO_SECTION_SCHEMA,
   servers: Schema.optional(
     Schema.Record({
       key: Schema.String,
-      value: ServerObjectSchema
+      value: SERVER_OBJECT_SCHEMA
     })
   ),
   channels: Schema.optional(
     Schema.Record({
       key: Schema.String,
-      value: ChannelObjectSchema
+      value: CHANNEL_OBJECT_SCHEMA
     })
   )
 })
@@ -100,22 +100,22 @@ export const AsyncAPIObjectSchema = Schema.Struct({
  * Runtime validator functions
  */
 export const validateAsyncAPIObject = (data: unknown) => 
-  Schema.decodeUnknown(AsyncAPIObjectSchema)(data)
+  Schema.decodeUnknown(ASYNC_API_OBJECT_SCHEMA)(data)
 
 export const validateServerObject = (data: unknown) => 
-  Schema.decodeUnknown(ServerObjectSchema)(data)
+  Schema.decodeUnknown(SERVER_OBJECT_SCHEMA)(data)
 
 export const validateChannelObject = (data: unknown) => 
-  Schema.decodeUnknown(ChannelObjectSchema)(data)
+  Schema.decodeUnknown(CHANNEL_OBJECT_SCHEMA)(data)
 
 export const validateOperationObject = (data: unknown) => 
-  Schema.decodeUnknown(OperationObjectSchema)(data)
+  Schema.decodeUnknown(OPERATION_OBJECT_SCHEMA)(data)
 
 export const validateMessageObject = (data: unknown) => 
-  Schema.decodeUnknown(MessageObjectSchema)(data)
+  Schema.decodeUnknown(MESSAGE_OBJECT_SCHEMA)(data)
 
 export const validateSchemaObject = (data: unknown) => 
-  Schema.decodeUnknown(SchemaObjectSchema)(data)
+  Schema.decodeUnknown(SCHEMA_OBJECT_SCHEMA)(data)
 
 export const validateSecuritySchemeObject = (data: unknown) => 
-  Schema.decodeUnknown(SecuritySchemeObjectSchema)(data)
+  Schema.decodeUnknown(SECURITY_SCHEME_OBJECT_SCHEMA)(data)
