@@ -28,8 +28,27 @@ export function convertModelToSchema(model: Model, program: Program): SchemaObje
 		Effect.gen(function* () {
 			yield* Effect.log(`🔍 Converting model to schema: ${model.name ?? 'Anonymous'} (cache miss)`)
 
+			// === COMPREHENSIVE MODEL DEBUGGING (Issue #180) ===
+			console.log("=== MODEL DEBUG START ===")
+			console.log("Model name:", model.name)
+			console.log("Model kind:", model.kind)
+			console.log("Has properties field?:", "properties" in model)
+			console.log("Properties type:", model.properties?.constructor?.name)
+			console.log("Properties size:", model.properties?.size)
+			console.log("Has node?:", !!model.node)
+			console.log("Has sourceModel?:", !!(model as any).sourceModel)
+			console.log("Is template?:", !!(model as any).templateMapper)
+			console.log("Model keys:", Object.keys(model))
+			console.log("Properties entries:", Array.from(model.properties?.entries() || []))
+			
 			const properties: Record<string, SchemaObject> = {}
 			const required: string[] = []
+
+			// Try to iterate with walkPropertiesInherited
+			const props = Array.from(walkPropertiesInherited(model))
+			console.log("walkPropertiesInherited count:", props.length)
+			console.log("Property names:", props.map(p => p.name))
+			console.log("=== MODEL DEBUG END ===")
 
 			// Process each model property using TypeSpec's walkPropertiesInherited
 			// This properly handles inherited properties and all property sources

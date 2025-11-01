@@ -48,28 +48,28 @@ import type {SecurityScheme} from "./securityScheme.js"
 export function $security(
 	context: DecoratorContext,
 	target: Operation | Model,
-	config: SecurityConfig,
+	config: {name: string, scheme: Record<unknown>},
 ): void {
 	Effect.log(`=
  PROCESSING @security decorator on: ${target.kind} ${target.name || 'unnamed'}`)
 	Effect.log(`=� Security config:`, config)
 	Effect.log(`<�  Target type: ${target.kind}`)
 
+	// Extract name and scheme from config object
+	const {name, scheme} = config
+
 	// Target is already constrained to Operation | Model - no validation needed
 
-	// SecurityConfig type ensures name and scheme are defined by TypeScript
-	// No runtime validation needed
-
-	// Validate security scheme with null check
-	if (!config?.scheme) {
-		Effect.log(`❌ Security config or scheme is missing:`, { config, scheme: config?.scheme })
+	// Validate security config with null check
+	if (!name || !scheme) {
+		Effect.log(`❌ Security config is missing name or scheme:`, { config })
 		reportDiagnostic(context, target, "invalid-security-scheme", {
-			scheme: "Security configuration is missing scheme property",
+			scheme: "Security configuration must include name and scheme properties",
 		})
 		return
 	}
 
-	const validationResult = validateSecurityScheme(config.scheme)
+	const validationResult = validateSecurityScheme(scheme)
 	if (validationResult.errors.length > 0) {
 		reportDiagnostic(context, target, "invalid-security-scheme", {
 			scheme: validationResult.errors.join(", "),
@@ -87,7 +87,7 @@ export function $security(
 //		})
 //	}
 
-	Effect.log(`=� Validated security config for ${config.name}:`, config)
+	Effect.log(`=✅ Validated security config for ${name}:`, config)
 
 	// Store security configuration in program state
 	const securityMap = context.program.stateMap($lib.stateKeys.securityConfigs)

@@ -74,23 +74,25 @@ export type MessageConfig = {
 export function $message(
 	context: DecoratorContext,
 	target: Model,
-	config?: MessageConfig,
+	config: {name?: string, title?: string, contentType?: string, description?: string, [key: string]: unknown},
 ): void {
-	Effect.log(`=
- PROCESSING @message decorator on model: ${target.name}`)
-	Effect.log(`=� Message config:`, config)
-	Effect.log(`<�  Target type: ${target.kind}`)
+	Effect.log(`=📝 PROCESSING @message decorator on model: ${target.name}`)
+	Effect.log(`=📝 Message config:`, config)
+	Effect.log(`=📝 Target type: ${target.kind}`)
 
-	//TODO: CRITICAL - This comment is misleading - should validate Model type constraints
 	// Target is always Model type - no validation needed
 
-	//TODO: CRITICAL - No validation for config structure - should use Effect.TS schema validation
+	//TODO: CRITICAL - Use Effect.TS schema validation for config
 	// Validate message configuration
-	const messageConfig = config ?? {}
-
-	//TODO: CRITICAL - Potential mutation of readonly config object
-	// Extract message name from model name if not provided
-	messageConfig.name ??= target.name
+	const messageConfig: MessageConfig = {
+		name: config.name ?? target.name,
+		title: config.title,
+		contentType: config.contentType,
+		description: config.description,
+		headers: config.headers as string | undefined,
+		correlationId: config.correlationId as string | undefined,
+		bindings: config.bindings as Record<string, unknown> | undefined,
+	}
 
 	Effect.log(`=� Processed message config:`, messageConfig)
 
@@ -106,7 +108,7 @@ export function $message(
 			"application/octet-stream",
 		]
 
-		if (!validContentTypes.includes(messageConfig.contentType)) {
+		if (!validContentTypes.includes(messageConfig.contentType!)) {
 			Effect.log(`�  Potentially unsupported content type: ${messageConfig.contentType}`)
 		}
 	}

@@ -16,32 +16,27 @@ extern dec channel(target: Operation, address: valueof string, description?: val
 
 /**
  * Apply message metadata to a model representing an AsyncAPI message
- * @param name Optional message name
- * @param title Optional message title
- * @param contentType Optional content type (e.g., "application/json")
+ * @param config Message configuration object
  */
-extern dec message(target: Model, name?: valueof string, title?: valueof string, contentType?: valueof string);
+extern dec message(target: Model, config: Record<unknown>);
 
 /**
  * Define protocol-specific binding configuration
- * @param protocol Protocol name (e.g., "kafka", "amqp", "http")
- * @param binding Protocol-specific binding configuration
+ * @param config Protocol binding configuration object
  */
-extern dec protocol(target: Operation | Model, protocol: valueof string, binding?: Record<unknown>);
+extern dec protocol(target: Operation | Model, config: Record<unknown>);
 
 /**
  * Apply security scheme information
- * @param name Security scheme name
- * @param scheme Security scheme configuration
+ * @param config Security configuration object containing name and scheme
  */
-extern dec security(target: Operation | Namespace, name: valueof string, scheme: Record<unknown>);
+extern dec security(target: Operation | Namespace, config: Record<unknown>);
 
 /**
  * Define server configuration
- * @param name Server name (e.g., "production", "development")
- * @param config Server configuration (url, protocol, etc.)
+ * @param config Server configuration object containing name and config
  */
-extern dec server(target: Namespace, name: valueof string, config: Record<unknown>);
+extern dec server(target: Namespace, config: Record<unknown>);
 
 /**
  * Mark an operation as a publish operation (sends messages to the channel)

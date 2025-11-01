@@ -89,30 +89,26 @@ export type ServerConfig = {
 export function $server(
 	context: DecoratorContext,
 	target: Namespace,
-	name: StringValue | string,
-	config: Model | Record<string, unknown>,
+	config: {name: string, url: string, protocol: string, [key: string]: unknown},
 ): void {
 	Effect.log(`🌐 PROCESSING @server decorator on target: ${target.name}`)
-	Effect.log(`📍 Server name raw value:`, name)
-	Effect.log(`📍 Server config raw value:`, config)
+	Effect.log(`📍 Server config:`, config)
 	Effect.log(`🏷️  Target type: ${target.kind}`)
+
+	// Extract name and config from config object
+	const {name, ...serverConfig} = config
 
 	//TODO: CRITICAL - Redundant validation - TypeScript ensures target is Namespace
 	if (target.kind !== "Namespace") {
-		//TODO: CRITICAL - Empty serverName string defeats error reporting
-		reportDiagnostic(context, target, "invalid-server-config", {serverName: ""})
+		reportDiagnostic(context, target, "invalid-server-config", {serverName: name})
 		return
 	}
 
-	//TODO: CRITICAL - Complex type guard logic should use Effect.TS schema validation
-	//TODO: CRITICAL - Unsafe String() coercion without validation
-	// Extract server name from TypeSpec value with proper type handling
-	let serverName: string
-	if (typeof name === "string") {
-		serverName = name
-	} else if (name && typeof name === "object" && "value" in name) {
-		//TODO: CRITICAL - No validation that name.value exists or is string
-		serverName = String(name.value)
+	//TODO: CRITICAL - Use Effect.TS schema validation for server config
+	if (!name || !serverConfig.url || !serverConfig.protocol) {
+		reportDiagnostic(context, target, "invalid-server-config", {serverName: name || ""})
+		return
+	}
 	} else if (name && typeof name === "object" && "valueKind" in name) {
 		//TODO: CRITICAL - Unsafe type assertion defeats type safety
 		const stringValue = name as { value: unknown }
@@ -159,7 +155,7 @@ export function $server(
 
 	// Create complete server configuration
 	const completeConfig: ServerConfig = {
-		name: serverName,
+		name,
 		url: serverConfig.url,
 		protocol: serverConfig.protocol.toLowerCase(),
 		description: serverConfig.description || undefined,
@@ -172,10 +168,10 @@ export function $server(
 	// Store server configuration in program state
 	const serverConfigsMap = context.program.stateMap($lib.stateKeys.serverConfigs)
 	const existingConfigs = (serverConfigsMap.get(target) as Map<string, ServerConfig> | undefined) ?? new Map<string, ServerConfig>()
-	existingConfigs.set(serverName, completeConfig)
+	existingConfigs.set(name, completeConfig)
 	serverConfigsMap.set(target, existingConfigs)
 
-	Effect.log(`✅ Successfully stored server config for ${target.name}: ${serverName}`)
+	Effect.log(`✅ Successfully stored server config for ${target.name}: ${name}`)
 	Effect.log(`📊 Total server configs: ${existingConfigs.size}`)
 }
 
