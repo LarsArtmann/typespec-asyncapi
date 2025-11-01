@@ -131,7 +131,7 @@ export class DocumentGenerator {
 	private serializeToJSON(document: AsyncAPIObject, options: SerializationOptions): string {
 		Effect.log(`📄 Generating JSON format`)
 
-		const indent = options.compact ? 0 : (options.indent || 2)
+		const indent = options.compact ? 0 : (options.indent ?? 2)
 		const result = JSON.stringify(document, null, indent)
 
 		Effect.log(`✅ JSON serialization complete: ${result.length} characters`)
@@ -145,7 +145,7 @@ export class DocumentGenerator {
 		Effect.log(`📄 Generating YAML format`)
 
 		const yamlOptions = {
-			indent: options.indent || 2,
+			indent: options.indent ?? 2,
 			lineWidth: options.compact ? -1 : 120,
 			minContentWidth: 0,
 			sortKeys: !options.preserveOrder,
