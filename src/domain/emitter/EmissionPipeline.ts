@@ -80,7 +80,6 @@ export class EmissionPipeline implements IPipelineService {
 	 * Using Effect.TS Railway programming for comprehensive error handling
 	 */
 	executePipeline(context: PipelineContext): Effect.Effect<void, StandardizedError> {
-		const pipeline = this
 		return Effect.gen(function* () {
 			// Validate context parameter with proper error handling
 			if (!context) {
@@ -100,21 +99,21 @@ export class EmissionPipeline implements IPipelineService {
 
 			// Stage 1: Discovery
 			yield* Effect.log(`🚀 About to start Stage 1: Discovery`)
-			const discoveryResult = yield* pipeline.executeDiscoveryStage(context)
+			const discoveryResult = yield* this.executeDiscoveryStage(context)
 			yield* Effect.log(`✅ Completed Stage 1: Discovery`)
 
 			// Stage 2: Processing
 			yield* Effect.log(`🚀 About to start Stage 2: Processing`)
-			yield* pipeline.executeProcessingStage(context, discoveryResult)
+			yield* this.executeProcessingStage(context, discoveryResult)
 			yield* Effect.log(`✅ Completed Stage 2: Processing`)
 
 			// Stage 3: Document Generation (updates context.asyncApiDoc in-place)
 			yield* Effect.log(`🚀 About to start Stage 3: Generation`)
-			yield* pipeline.executeGenerationStage(context, discoveryResult)
+			yield* this.executeGenerationStage(context, discoveryResult)
 			yield* Effect.log(`✅ Completed Stage 3: Generation`)
 
 			// Stage 4: Validation
-			yield* pipeline.executeValidationStage(context)
+			yield* this.executeValidationStage(context)
 
 			yield* Effect.log(`✅ All emission pipeline stages completed successfully`)
 		})
@@ -124,12 +123,11 @@ export class EmissionPipeline implements IPipelineService {
 	 * Stage 1: Discovery - Find all TypeSpec elements using REAL DiscoveryService
 	 */
 	private executeDiscoveryStage(context: PipelineContext) {
-		const pipeline = this
 		return Effect.gen(function* () {
 			yield* Effect.log(`🔍 Stage 1: Discovery with REAL DiscoveryService`)
 
 			// Use REAL DiscoveryService with complete AST traversal logic
-			const result = yield* pipeline.discoveryService.executeDiscovery(context.program)
+			const result = yield* this.discoveryService.executeDiscovery(context.program)
 
 			yield* Effect.log(`📊 Discovery stage complete: ${result.operations.length} operations, ${result.messageModels.length} messages, ${result.securityConfigs.length} security configs`)
 
@@ -164,15 +162,14 @@ export class EmissionPipeline implements IPipelineService {
 	 * Stage 3: Document Generation - Finalize AsyncAPI document using REAL DocumentBuilder logic
 	 */
 	private executeGenerationStage(context: PipelineContext, discoveryResult: DiscoveryResult) {
-		const pipeline = this
 		return Effect.gen(function* () {
 			yield* Effect.log(`📄 Stage 3: Document Generation with DocumentBuilder`)
 
 			// Use DocumentBuilder to ensure proper document structure with Effect.TS
-			yield* pipeline.documentBuilder.initializeDocumentStructure(context.asyncApiDoc)
+			yield* this.documentBuilder.initializeDocumentStructure(context.asyncApiDoc)
 			
 			// Update document info with discovered statistics using DocumentBuilder
-			yield* pipeline.documentBuilder.updateDocumentInfo(context.asyncApiDoc, {
+			yield* this.documentBuilder.updateDocumentInfo(context.asyncApiDoc, {
 				description: `Generated from TypeSpec with ${discoveryResult.operations.length} operations, ${discoveryResult.messageModels.length} messages, ${discoveryResult.securityConfigs.length} security configs`
 			})
 
@@ -200,12 +197,11 @@ export class EmissionPipeline implements IPipelineService {
 	 * Stage 4: Validation - Verify AsyncAPI compliance using REAL ValidationService
 	 */
 	private executeValidationStage(context: PipelineContext) {
-		const pipeline = this
 		return Effect.gen(function* () {
 			yield* Effect.log(`🔍 Stage 4: Validation with REAL ValidationService`)
 
 			// Use REAL ValidationService with comprehensive AsyncAPI 3.0 compliance checking
-			const validationResult = yield* pipeline.validationService.validateDocument(context.asyncApiDoc)
+			const validationResult = yield* this.validationService.validateDocument(context.asyncApiDoc)
 
 			if (!validationResult.isValid) {
 				yield* Effect.log(`❌ Validation failed with ${validationResult.errors.length} errors:`)
