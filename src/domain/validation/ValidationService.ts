@@ -169,10 +169,10 @@ export class ValidationService {
 			yield* Effect.log(`🔍 Content preview: ${content.substring(0, 100)}...`)
 
 			// Parse the content with proper error handling, retry patterns, and fallback
-			console.log("🔧 About to parse JSON...")
+			yield* Effect.logInfo("🔧 About to parse JSON...")
 			const parsedDoc = yield* railway.trySync(
 				() => {
-					console.log("🔧 Attempting JSON.parse...")
+					yield* Effect.logInfo("🔧 Attempting JSON.parse...")
 					return JSON.parse(content) as AsyncAPIObject
 				},
 				{ operation: "parseDocument", contentLength: content.length }
@@ -182,11 +182,9 @@ export class ValidationService {
 					Schedule.compose(Schedule.recurs(PERFORMANCE_CONSTANTS.MAX_RETRY_ATTEMPTS - 1))
 				)),
 				Effect.tapError(attempt => {
-					console.log(`⚠️  JSON parsing attempt failed, retrying: ${safeStringify(attempt)}`)
-					return Effect.log(`⚠️  JSON parsing attempt failed, retrying: ${safeStringify(attempt)}`)
+					return Effect.logWarning(`⚠️  JSON parsing attempt failed, retrying: ${safeStringify(attempt)}`)
 				}),
 				Effect.mapError(error => {
-					console.log(`🔧 JSON parse error: ${safeStringify(error)}`)
 					return emitterErrors.invalidAsyncAPI(
 						["Failed to parse JSON/YAML content after retries"],
 						{ originalError: error.why, content: content.substring(0, 200) + "..." }
@@ -194,7 +192,7 @@ export class ValidationService {
 				}),
 				Effect.catchAll(error => 
 					Effect.gen(function* () {
-						console.log(`🔧 Entering JSON parsing catchAll: ${safeStringify(error)}`)
+						yield* Effect.logInfo(`🔧 Entering JSON parsing catchAll: ${safeStringify(error)}`)
 						yield* Effect.log(`⚠️  Document parsing failed, providing minimal structure: ${safeStringify(error)}`)
 						// Create fallback minimal AsyncAPI structure
 						const fallbackDoc: AsyncAPIObject = {
@@ -203,12 +201,12 @@ export class ValidationService {
 							channels: {},
 							operations: {}
 						}
-						console.log(`🔧 Created fallback doc: ${JSON.stringify(fallbackDoc)}`)
+						yield* Effect.logInfo(`🔧 Created fallback doc: ${JSON.stringify(fallbackDoc)}`)
 						return Effect.succeed(fallbackDoc)
 					}).pipe(Effect.flatten)
 				)
 			)
-			console.log(`🔧 Parsed doc type: ${typeof parsedDoc}, keys: ${parsedDoc ? Object.keys(parsedDoc).join(', ') : 'null'}`)
+			yield* Effect.logInfo(`🔧 Parsed doc type: ${typeof parsedDoc}, keys: ${parsedDoc ? Object.keys(parsedDoc).join(', ') : 'null'}`)
 
 			// Use static validation to avoid this binding issues
 			const result = yield* ValidationService.validateDocumentStatic(parsedDoc).pipe(

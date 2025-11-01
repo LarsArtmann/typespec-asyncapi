@@ -44,7 +44,7 @@ export const STATE_TRANSITIONS: Record<SystemState, readonly SystemState[]> = {
  * Ensures transitions are valid at compile time
  */
 export function isValidTransition(from: SystemState, to: SystemState): boolean {
-  return StateTransitions[from].includes(to)
+  return STATE_TRANSITIONS[from].includes(to)
 }
 
 /**
