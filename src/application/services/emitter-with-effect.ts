@@ -123,7 +123,7 @@ export function generateAsyncAPIWithEffect(context: EmitContext<AsyncAPIEmitterO
 			catch: (error) => createGlobalNamespaceAccessError(error, context.program)
 		})
 		
-		if (!globalNamespace || globalNamespace.kind !== "Namespace") {
+		if (globalNamespace?.kind !== "Namespace") {
 			return yield* Effect.fail(createGlobalNamespaceInvalidError(globalNamespace?.kind))
 		}
 		

@@ -50,7 +50,7 @@ export function isValidTransition(from: SystemState, to: SystemState): boolean {
 /**
  * Strong-typed State Machine Configuration
  */
-export interface StateMachineConfig {
+export type StateMachineConfig = {
   readonly initialState: SystemState
   readonly allowedTransitions: typeof StateTransitions
   readonly onStateChange?: (from: SystemState, to: SystemState) => void
@@ -71,7 +71,7 @@ export type StateContext = {
 /**
  * Type-safe State Manager Interface
  */
-export interface StateManager {
+export type StateManager = {
   readonly getCurrentState: () => StateContext
   readonly transitionTo: (targetState: SystemState, metadata?: Record<string, unknown>) => void
   readonly isTerminalState: (state: SystemState) => boolean
@@ -100,7 +100,7 @@ export type StateEvent =
 /**
  * Strong-typed Event Bus Interface
  */
-export interface StateEventBus {
+export type StateEventBus = {
   readonly emit: (event: StateEvent) => void
   readonly on: (eventType: string, handler: (event: StateEvent) => void) => void
   readonly off: (eventType: string, handler: (event: StateEvent) => void) => void
@@ -109,7 +109,7 @@ export interface StateEventBus {
 /**
  * Type-safe State Persistence Interface
  */
-export interface StatePersistence {
+export type StatePersistence = {
   readonly save: (context: StateContext) => Promise<void>
   readonly load: () => Promise<StateContext | null>
   readonly clear: () => Promise<void>
@@ -118,7 +118,7 @@ export interface StatePersistence {
 /**
  * Type-safe Configuration Interface
  */
-export interface StateConfiguration {
+export type StateConfiguration = {
   readonly enablePersistence: boolean
   readonly enableEventBus: boolean
   readonly enableMetrics: boolean
@@ -129,7 +129,7 @@ export interface StateConfiguration {
 /**
  * Type-safe State Metrics Interface
  */
-export interface StateMetrics {
+export type StateMetrics = {
   readonly totalTransitions: number
   readonly transitionCounts: Partial<Record<SystemState, number>>
   readonly averageStateTime: Partial<Record<SystemState, number>>
@@ -140,7 +140,7 @@ export interface StateMetrics {
 /**
  * State Validation Result Interface
  */
-export interface StateValidationResult {
+export type StateValidationResult = {
   readonly isValid: boolean
   readonly errors: string[]
   readonly warnings: string[]
@@ -150,7 +150,7 @@ export interface StateValidationResult {
 /**
  * Type-safe State History Interface
  */
-export interface StateHistory {
+export type StateHistory = {
   readonly entries: readonly StateContext[]
   readonly totalCount: number
   readonly maxEntries: number
@@ -162,7 +162,7 @@ export interface StateHistory {
 /**
  * Type-safe State Configuration Interface
  */
-export interface StateSystemConfig {
+export type StateSystemConfig = {
   readonly stateMachine: StateMachineConfig
   readonly eventBus: StateEventBus
   readonly persistence: StatePersistence
@@ -185,7 +185,7 @@ export type StateChangeResult = {
 /**
  * Type-safe State Listener Interface
  */
-export interface StateListener {
+export type StateListener = {
   readonly id: string
   readonly type: readonly string[]
   readonly handler: (event: StateEvent) => void
@@ -195,7 +195,7 @@ export interface StateListener {
 /**
  * Type-safe State Recovery Interface
  */
-export interface StateRecovery {
+export type StateRecovery = {
   readonly canRecover: (from: SystemState) => boolean
   readonly recover: (from: SystemState, error: Error) => Promise<StateContext>
   readonly maxRetries: number
@@ -205,7 +205,7 @@ export interface StateRecovery {
 /**
  * Type-safe State Initialization Interface
  */
-export interface StateInitialization {
+export type StateInitialization = {
   readonly initialize: () => Promise<StateContext>
   readonly validate: (context: StateContext) => StateValidationResult
   readonly onInitialized: (context: StateContext) => void
@@ -215,7 +215,7 @@ export interface StateInitialization {
  * State Transition Rule Interface
  * Enforces which transitions are allowed with validation logic
  */
-export interface StateTransitionRule {
+export type StateTransitionRule = {
   readonly from: SystemState
   readonly to: readonly SystemState[]
   readonly condition: (context: StateContext) => boolean
@@ -227,7 +227,7 @@ export interface StateTransitionRule {
 /**
  * Type-safe State Termination Interface
  */
-export interface StateTermination {
+export type StateTermination = {
   readonly canTerminate: (state: SystemState) => boolean
   readonly terminate: (state: SystemState) => Promise<void>
   readonly onTerminated: (finalState: StateContext) => void

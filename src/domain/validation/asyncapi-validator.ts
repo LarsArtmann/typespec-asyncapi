@@ -265,7 +265,7 @@ export class AsyncAPIValidator {
 				return content as ValidationResult
 			}
 
-			return yield* self.validateEffect(content as string, filePath)
+			return yield* self.validateEffect(content, filePath)
 		})
 	}
 

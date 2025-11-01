@@ -7,7 +7,7 @@
 import { Schema } from "@effect/schema"
 
 // Basic types for validation
-export interface AsyncAPIObject {
+export type AsyncAPIObject = {
   asyncapi: string
   info: {
     title: string
@@ -17,35 +17,35 @@ export interface AsyncAPIObject {
   channels?: Record<string, any>
 }
 
-export interface ServerObject {
+export type ServerObject = {
   name: string
   url: string
   protocol: string
 }
 
-export interface ChannelObject {
+export type ChannelObject = {
   name: string
   description?: string
 }
 
-export interface OperationObject {
+export type OperationObject = {
   operationId?: string
   summary?: string
 }
 
-export interface MessageObject {
+export type MessageObject = {
   messageId?: string
   name?: string
   contentType?: string
 }
 
-export interface SchemaObject {
+export type SchemaObject = {
   type?: string
   format?: string
   title?: string
 }
 
-export interface SecuritySchemeObject {
+export type SecuritySchemeObject = {
   type: string
   description?: string
 }

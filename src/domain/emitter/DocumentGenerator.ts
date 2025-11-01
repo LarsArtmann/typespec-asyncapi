@@ -58,7 +58,7 @@ export class DocumentGenerator {
 		document: AsyncAPIObject, 
 		format: SerializationFormatOption = DEFAULT_SERIALIZATION_FORMAT
 	): Effect.Effect<string, StandardizedError> {
-		return Effect.gen(function* (this: DocumentGenerator) {
+		return Effect.gen(function* () {
 			yield* Effect.log(`📄 DocumentGenerator: Serializing to ${format.toUpperCase()}`)
 
 			const options: SerializationOptions = {
@@ -68,8 +68,25 @@ export class DocumentGenerator {
 				preserveOrder: true,
 			}
 
-			return yield* this.serializeWithOptions(document, options)
-		})
+			// Directly use existing serializeWithOptions method
+			const documentGenerator = new DocumentGenerator()
+			return yield* documentGenerator.serializeWithOptions(document, options)
+		}).pipe(
+			Effect.mapError((error: unknown): StandardizedError => {
+				if (typeof error === 'object' && error !== null && 'what' in error) {
+					return error as StandardizedError
+				}
+				return createError({
+					what: 'Document serialization failed',
+					reassure: 'This is a recoverable error that can be fixed',
+					why: `Unexpected error during serialization: ${safeStringify(error)}`,
+					fix: 'Check document structure and serialization options',
+					escape: 'Try with different serialization format',
+					severity: 'error' as const,
+					code: 'SERIALIZATION_ERROR'
+				})
+			})
+		)
 	}
 
 	/**
@@ -79,24 +96,25 @@ export class DocumentGenerator {
 		document: AsyncAPIObject, 
 		options: SerializationOptions
 	): Effect.Effect<string, StandardizedError> {
-		return Effect.gen(function* (this: DocumentGenerator) {
+		return Effect.gen(function* () {
 			yield* Effect.log(`📄 Serializing AsyncAPI document with options: ${JSON.stringify(options)}`)
 
 			// Validate document structure before serialization
-			yield* this.validateDocumentStructure(document)
+			yield* Effect.succeed(yield* new DocumentGenerator().validateDocumentStructure(document))
 
 			// Generate statistics
-			const stats = yield* this.generateDocumentStats(document)
-			yield* this.logDocumentStats(stats)
+			const stats = yield* new DocumentGenerator().generateDocumentStats(document)
+			yield* new DocumentGenerator().logDocumentStats(stats)
 
 			// Serialize based on format
+			const documentGenerator = new DocumentGenerator()
 			switch (options.format) {
 				case SERIALIZATION_FORMAT_OPTION_JSON:
-					return this.serializeToJSON(document, options)
+					return documentGenerator.serializeToJSON(document, options)
 				case SERIALIZATION_FORMAT_OPTION_YAML:
-					return this.serializeToYAML(document, options)
+					return documentGenerator.serializeToYAML(document, options)
 				default:
-					return yield* failWith(createError({
+					return yield* Effect.fail(createError({
 						what: `Unsupported serialization format: ${options.format}`,
 						reassure: "Only JSON and YAML formats are currently supported",
 						why: `Format '${options.format}' is not in the supported list: [json, yaml]`,
@@ -166,7 +184,7 @@ export class DocumentGenerator {
 
 			// Check required fields with comprehensive error messages
 			if (!document.asyncapi) {
-				return yield* failWith(createError({
+				yield* Effect.fail(createError({
 					what: "AsyncAPI document is missing required 'asyncapi' field",
 					reassure: "This is a document structure issue that can be easily fixed",
 					why: "AsyncAPI specification requires the 'asyncapi' field to specify the version",
@@ -179,7 +197,7 @@ export class DocumentGenerator {
 			}
 
 			if (!document.info) {
-				return yield* failWith(createError({
+				yield* Effect.fail(createError({
 					what: "AsyncAPI document is missing required 'info' section",
 					reassure: "This is a document structure issue that can be easily fixed",
 					why: "AsyncAPI specification requires an 'info' section with metadata",
@@ -192,7 +210,7 @@ export class DocumentGenerator {
 			}
 
 			if (!document.info.title) {
-				return yield* failWith(createError({
+				yield* Effect.fail(createError({
 					what: "AsyncAPI document info section is missing required 'title' field",
 					reassure: "This is a metadata validation issue",
 					why: "AsyncAPI specification requires 'info.title' to describe the API",
@@ -205,7 +223,7 @@ export class DocumentGenerator {
 			}
 
 			if (!document.info.version) {
-				return yield* failWith(createError({
+				yield* Effect.fail(createError({
 					what: "AsyncAPI document info section is missing required 'version' field",
 					reassure: "This is a metadata validation issue",
 					why: "AsyncAPI specification requires 'info.version' to specify the API version",
@@ -268,6 +286,7 @@ export class DocumentGenerator {
 			yield* Effect.log(`  - Messages: ${stats.messages}`)
 			yield* Effect.log(`  - Schemas: ${stats.schemas}`)
 			yield* Effect.log(`  - Security Schemes: ${stats.securitySchemes}`)
+			return undefined
 		})
 	}
 
@@ -282,7 +301,7 @@ export class DocumentGenerator {
 	 * Optimize document for size (remove empty objects, compress whitespace) using Railway programming
 	 */
 	optimizeDocument(document: AsyncAPIObject): Effect.Effect<AsyncAPIObject, StandardizedError> {
-		return Effect.gen(function* (this: DocumentGenerator) {
+		return Effect.gen(function* () {
 			yield* Effect.log(`🔧 Optimizing document structure...`)
 
 			// Safe document optimization with error handling
@@ -291,7 +310,8 @@ export class DocumentGenerator {
 				const cloned = JSON.parse(JSON.stringify(document)) as AsyncAPIObject
 				
 				// Remove empty objects
-				this.removeEmptyObjects(cloned as unknown as Record<string, unknown>)
+				const documentGenerator = new DocumentGenerator()
+				documentGenerator.removeEmptyObjects(cloned as unknown as Record<string, unknown>)
 				
 				return cloned
 			}, { context: { operation: "document optimization" } })
@@ -358,7 +378,7 @@ export class DocumentGenerator {
 			yield* Effect.log(`🔍 Validating serialized ${format} content...`)
 
 			if (!content || content.trim().length === 0) {
-				return yield* failWith(createError({
+				yield* Effect.fail(createError({
 					what: `Empty ${format} content detected`,
 					reassure: "This is usually a serialization issue that can be debugged",
 					why: `Serialized content is null, undefined, or empty string`,
@@ -380,11 +400,10 @@ export class DocumentGenerator {
 
 				if (isValidJson) {
 					yield* Effect.log(`✅ Valid JSON format`)
-					return true
 				} else {
-					yield* Effect.logError(`❌ Invalid JSON format`)
-					return false
+					yield* Effect.log(`❌ Invalid JSON format`)
 				}
+				return isValidJson
 			}
 
 			if (format === "yaml") {

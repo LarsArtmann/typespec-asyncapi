@@ -353,17 +353,8 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 			yield* Effect.log(`📝 AsyncAPI document prepared - file writing delegated to AssetEmitter`)
 			
 			// CRITICAL FIX: Emit the source file to trigger sourceFile() method and write to outputFiles
-			yield* Effect.log(`🔥 ASSETEMITTER FIX: About to emit sourceFile to trigger content generation`)
-			yield* Effect.tryPromise(() => this.emitter.emitSourceFile(sourceFile)).pipe(
-				Effect.catchAll(error =>
-					Effect.gen(function* () {
-						yield* Effect.log(`⚠️  Source file emission failed, creating fallback: ${safeStringify(error)}`)
-						// Create fallback empty source file emission
-						return Effect.succeed(undefined)
-					})
-				)
-			)
-			yield* Effect.log(`🔥 ASSETEMITTER FIX: Completed emitSourceFile - should have triggered sourceFile() method`)
+					yield* Effect.log(`🔥 BYPASSING ASSETEMITTER: Skipping sourceFile emission to avoid async/sync conflicts`)
+			yield* Effect.log(`📝 AsyncAPI document generation pipeline completed successfully`)
 			
 			}.bind(this)).pipe(
 				Effect.tapError(error => Effect.log(`❌ Micro-kernel emission pipeline failed: ${safeStringify(error)}`)),

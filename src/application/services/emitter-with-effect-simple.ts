@@ -83,7 +83,7 @@ export function generateAsyncAPIWithEffect(context: EmitContext): Effect.Effect<
 		
 		// Simple configuration
 		const outputFile = context.options["output-file"] || "asyncapi";
-		const fileType = context.options["file-type"] || "yaml";
+		const fileType = (context.options["file-type"] as string) ?? "yaml";
 		const extension = fileType === "json" ? "json" : "yaml";
 		const outputPath = path.join(context.emitterOutputDir, `${outputFile}.${extension}`);
 		
@@ -104,8 +104,8 @@ export function generateAsyncAPIWithEffect(context: EmitContext): Effect.Effect<
 		});
 		
 		// 🎉 ISSUE #180 RESOLUTION SUCCESS
-		const channelsCount = Object.keys(initialDoc.channels || {}).length;
-		const operationsCount = Object.keys(initialDoc.operations || {}).length;
+		const channelsCount = Object.keys(initialDoc.channels ?? {}).length;
+		const operationsCount = Object.keys(initialDoc.operations ?? {}).length;
 		
 		yield* Effect.logInfo(`🎉 ISSUE #180 RESOLVED: ${channelsCount} channels, ${operationsCount} operations`)
 		yield* Effect.logInfo(`✅ File written: ${outputPath}`)

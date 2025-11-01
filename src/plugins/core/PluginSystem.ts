@@ -8,7 +8,7 @@
 import { Effect } from "effect"
 
 // Basic plugin interface
-export interface Plugin {
+export type Plugin = {
   readonly name: string
   readonly version: string
   readonly initialize: () => Effect.Effect<void, never>
@@ -16,7 +16,7 @@ export interface Plugin {
 
 // Simple plugin registry
 export class PluginRegistry {
-  private plugins = new Map<string, Plugin>()
+  private readonly plugins = new Map<string, Plugin>()
 
   register(plugin: Plugin): Effect.Effect<void, never> {
     return Effect.sync(() => {

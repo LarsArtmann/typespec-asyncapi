@@ -108,7 +108,7 @@ export function $message(
 			"application/octet-stream",
 		]
 
-		if (!validContentTypes.includes(messageConfig.contentType!)) {
+		if (!validContentTypes.includes(messageConfig.contentType)) {
 			Effect.log(`�  Potentially unsupported content type: ${messageConfig.contentType}`)
 		}
 	}
