@@ -52,19 +52,28 @@ export class DiscoveryService {
 	 */
 	discoverOperations(program: Program) {
 		return Effect.gen(function* () {
-			Effect.log(`🔍 Starting synchronous operation discovery...`)
+			Effect.log(`🔍 CRITICAL DEBUG: Starting synchronous operation discovery...`)
 
 			const discoveryOperation = Effect.sync(() => {
 				const operations: Operation[] = []
+
+				// Safe access to global namespace - handles both real and test scenarios
+				if (typeof program.getGlobalNamespaceType === 'function') {
+					const globalNamespace = program.getGlobalNamespaceType()
+					Effect.log(`🔍 CRITICAL DEBUG: Global namespace: ${globalNamespace?.name}`)
+					Effect.log(`🔍 CRITICAL DEBUG: Global namespace operations: ${globalNamespace?.operations?.size || 0}`)
 
 				// Recursive namespace walker - REAL business logic
 				const walkNamespace = (ns: Namespace | null) => {
 					if (!ns) return
 					
+					Effect.log(`🔍 CRITICAL DEBUG: Walking namespace: ${ns.name}`)
+					
 					if (ns.operations) {
 						ns.operations.forEach((op: Operation, name: string) => {
 							operations.push(op)
-							Effect.log(`🔍 Found operation: ${name}`)
+							Effect.log(`🔍 CRITICAL DEBUG: Found operation: ${name}`)
+							Effect.log(`🔍 CRITICAL DEBUG: Operation kind: ${op.kind}, name: ${op.name}`)
 						})
 					}
 
@@ -75,9 +84,9 @@ export class DiscoveryService {
 					}
 				}
 
-				// Safe access to global namespace - handles both real and test scenarios
-				if (typeof program.getGlobalNamespaceType === 'function') {
-					walkNamespace(program.getGlobalNamespaceType())
+				walkNamespace(globalNamespace)
+				} else {
+					Effect.log(`🔍 CRITICAL DEBUG: No getGlobalNamespaceType function available`)
 				}
 
 				Effect.log(`📊 Total operations discovered: ${operations.length}`)

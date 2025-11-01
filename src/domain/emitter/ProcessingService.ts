@@ -142,7 +142,8 @@ const processSingleOperation = (op: Operation, asyncApiDoc: AsyncAPIObject, prog
 		const { operationType, channelPath } = extractOperationMetadata(op, program)
 		const protocolConfig = getProtocolConfig(program, op)
 
-		Effect.log(`🔍 Operation ${op.name}: type=${operationType ?? 'none'}, channel=${channelPath ?? 'default'}`)
+		Effect.log(`🔍 CRITICAL DEBUG: Processing operation ${op.name}`)
+		Effect.log(`🔍 CRITICAL DEBUG: operationType=${operationType}, channelPath=${channelPath}`)
 		
 		// Generate protocol bindings if protocol config exists
 		let channelBindings = undefined
@@ -187,14 +188,19 @@ const processSingleOperation = (op: Operation, asyncApiDoc: AsyncAPIObject, prog
 
 		// Add channel to document - use shared helper to eliminate duplication
 		asyncApiDoc.channels ??= {}
-		const { definition } = createChannelDefinition(op, program)
+		const channelDefinitionResult = createChannelDefinition(op, program)
+		
+		// CRITICAL FIX: Use channel name from helper function to ensure consistency
+		const actualChannelName = channelDefinitionResult.name
+		const actualChannelDefinition = channelDefinitionResult.definition
 		
 		// CRITICAL FIX: Add protocol bindings to channel definition
 		if (channelBindings) {
-			definition.bindings = channelBindings
+			actualChannelDefinition.bindings = channelBindings
 		}
 		
-		asyncApiDoc.channels[channelName] = definition
+		// CRITICAL FIX: Use correct channel name from helper
+		asyncApiDoc.channels[actualChannelName] = actualChannelDefinition
 
 		// Add operation to document
 		asyncApiDoc.operations ??= {}
@@ -204,7 +210,8 @@ const processSingleOperation = (op: Operation, asyncApiDoc: AsyncAPIObject, prog
 		//TODO: CONFIGURATION FAILURE - Message templates should be configurable!
 		const operationDef: OperationObject = {
 			action: action,
-			channel: { $ref: `#/channels/${channelName}` },
+			// CRITICAL FIX: Use consistent channel reference for operation linkage
+			channel: { $ref: `#/channels/${actualChannelName}` },
 			summary: `Operation ${op.name}`,
 			description: `TypeSpec operation with ${op.parameters.properties.size} parameters`,
 		}

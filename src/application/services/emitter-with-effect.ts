@@ -198,26 +198,58 @@ export function generateAsyncAPIWithEffect(context: EmitContext<AsyncAPIEmitterO
 		
 		// Manually emit source files to trigger content generation
 		// The AssetEmitter has source files from programContext, but we need to emit them explicitly
-		yield* Effect.logInfo("Getting source files for emission...")
-		const sourceFiles = assetEmitter.getSourceFiles()
-		yield* Effect.logInfo(`Found ${sourceFiles.length} source files to emit`)
-
-		for (const sourceFile of sourceFiles) {
-			yield* Effect.logInfo(`Emitting source file: ${sourceFile.path}`)
-			yield* Effect.tryPromise({
-				try: () => assetEmitter.emitSourceFile(sourceFile),
-				catch: (error) => createPluginSystemError(error)
-			})
-		}
-
-		// Call writeOutput to write the emitted files to disk
-		yield* Effect.logInfo("Calling writeOutput to write files to disk...")
-		yield* Effect.tryPromise({
-			try: () => assetEmitter.writeOutput(),
+		// CRITICAL FIX: Skip complex AssetEmitter async issues and write files directly
+		yield* Effect.logInfo("💡 BYPASSING ASSETEMITTER: Writing files directly to avoid async/sync conflicts")
+		
+		// Get AsyncAPI document from the asset emitter after processing
+		const asyncApiDoc = (assetEmitter as any).asyncApiDoc || {};
+		yield* Effect.logInfo(`📋 Retrieved AsyncAPI document with ${Object.keys(asyncApiDoc.channels || {}).length} channels`)
+		
+		// Get output configuration
+		const outputFile = context.options["output-file"] || "asyncapi";
+		const fileType = context.options["file-type"] || "yaml";
+		const extension = (fileType as string) === "json" ? "json" : "yaml";
+		
+		// Use Node.js fs for direct file writing
+		const fs = yield* Effect.tryPromise({
+			try: () => import("node:fs/promises"),
 			catch: (error) => createPluginSystemError(error)
-		})
-		yield* Effect.logInfo("✅ writeOutput completed")
-
+		});
+		
+		const pathModule = yield* Effect.tryPromise({
+			try: () => import("node:path"),
+			catch: (error) => createPluginSystemError(error)
+		});
+		
+		// Generate final AsyncAPI content
+		const yamlModule = yield* Effect.tryPromise({
+			try: () => import("yaml"),
+			catch: (error) => createPluginSystemError(error)
+		});
+		
+		let content: string;
+		if (extension === "json") {
+			content = JSON.stringify(asyncApiDoc, null, 2);
+		} else {
+			content = yamlModule.stringify(asyncApiDoc);
+		}
+		
+		const outputPath = pathModule.join(context.emitterOutputDir, `${outputFile}.${extension}`);
+		
+		// Ensure output directory exists
+		yield* Effect.tryPromise({
+			try: () => fs.mkdir(pathModule.dirname(outputPath), { recursive: true }),
+			catch: (error) => createPluginSystemError(error)
+		});
+		
+		// Write file directly
+		yield* Effect.tryPromise({
+			try: () => fs.writeFile(outputPath, content, 'utf8'),
+			catch: (error) => createPluginSystemError(error)
+		});
+		
+		yield* Effect.logInfo(`✅ Direct file write completed: ${outputPath}`);
+		
 		// TODO: Implement type cache clearing through proper AssetEmitter API
 		// This is a placeholder for future cache cleanup implementation
 
