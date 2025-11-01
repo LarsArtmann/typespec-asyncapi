@@ -4,83 +4,64 @@ info:
   version: 1.0.0
   description: Generated from TypeSpec with @lars-artmann/typespec-asyncapi
 channels:
-  events.type1:
-    address: events.type1
-    description: Channel for publishEvent1
+  test-http:
+    address: test-http
+    description: Channel for httpOperation
     messages:
-      publishEvent1Message:
-        $ref: "#/components/messages/publishEvent1Message"
-  events.type2:
-    address: events.type2
-    description: Channel for publishEvent2
+      httpOperationMessage:
+        $ref: "#/components/messages/httpOperationMessage"
+  test-kafka:
+    address: test-kafka
+    description: Channel for kafkaOperation
     messages:
-      publishEvent2Message:
-        $ref: "#/components/messages/publishEvent2Message"
-  events.type3:
-    address: events.type3
-    description: Channel for publishEvent3
-    messages:
-      publishEvent3Message:
-        $ref: "#/components/messages/publishEvent3Message"
+      kafkaOperationMessage:
+        $ref: "#/components/messages/kafkaOperationMessage"
 operations:
-  publishEvent1:
+  httpOperation:
     action: send
     channel:
-      $ref: "#/channels/events.type1"
-    summary: Operation publishEvent1
+      $ref: "#/channels/test-http"
+    summary: Operation httpOperation
     description: TypeSpec operation with 0 parameters
-  publishEvent2:
+  kafkaOperation:
     action: send
     channel:
-      $ref: "#/channels/events.type2"
-    summary: Operation publishEvent2
-    description: TypeSpec operation with 0 parameters
-  publishEvent3:
-    action: send
-    channel:
-      $ref: "#/channels/events.type3"
-    summary: Operation publishEvent3
+      $ref: "#/channels/test-kafka"
+    summary: Operation kafkaOperation
     description: TypeSpec operation with 0 parameters
 components:
   schemas:
-    Event1:
+    TestEvent:
       type: object
-      description: Schema for Event1
+      description: Schema for TestEvent
       properties:
         id:
           description: Property id
           type: string
-      required:
-        - id
-    Event2:
-      type: object
-      description: Schema for Event2
-      properties:
-        id:
-          description: Property id
+        data:
+          description: Property data
           type: string
+        timestamp:
+          description: Property timestamp
+          type: string
+          format: date-time
       required:
         - id
+        - data
+        - timestamp
   messages:
-    publishEvent1Message:
-      name: publishEvent1Message
-      title: publishEvent1 Message
-      summary: Message for publishEvent1 operation
+    httpOperationMessage:
+      name: httpOperationMessage
+      title: httpOperation Message
+      summary: Message for httpOperation operation
       contentType: application/json
       payload:
-        $ref: "#/components/schemas/Event1"
-    publishEvent2Message:
-      name: publishEvent2Message
-      title: publishEvent2 Message
-      summary: Message for publishEvent2 operation
+        $ref: "#/components/schemas/TestEvent"
+    kafkaOperationMessage:
+      name: kafkaOperationMessage
+      title: kafkaOperation Message
+      summary: Message for kafkaOperation operation
       contentType: application/json
       payload:
-        $ref: "#/components/schemas/Event2"
-    publishEvent3Message:
-      name: publishEvent3Message
-      title: publishEvent3 Message
-      summary: Message for publishEvent3 operation
-      contentType: application/json
-      payload:
-        $ref: "#/components/schemas/Event1"
+        $ref: "#/components/schemas/TestEvent"
   securitySchemes: {}

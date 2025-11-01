@@ -237,7 +237,7 @@ export class PluginRegistry {
                 })),
                 Effect.mapError(error => emitterErrors.pluginInitializationFailed(
                     name,
-                    `Plugin ${name} hot-reload failed: ${error}`
+                    `Plugin ${name} hot-reload failed: ${String(error)}`
                 ))
             )
 
@@ -265,7 +265,7 @@ export class PluginRegistry {
                 Effect.tap(() => Effect.log(`✅ Plugin ${name} initialized`)),
                 Effect.mapError(error => emitterErrors.pluginInitializationFailed(
                     name,
-                    `Plugin ${name} initialization failed: ${error}`
+                    `Plugin ${name} initialization failed: ${String(error)}`
                 ))
             )
 
@@ -300,7 +300,7 @@ export class PluginRegistry {
                 Effect.tap(() => Effect.log(`✅ Plugin ${name} started`)),
                 Effect.mapError(error => emitterErrors.pluginInitializationFailed(
                     name,
-                    `Plugin ${name} start failed: ${error}`
+                    `Plugin ${name} start failed: ${String(error)}`
                 ))
             )
 
@@ -456,7 +456,7 @@ export class PluginRegistry {
      * Emit plugin event
      */
     emit(eventType: string, event: PluginEvent): void {
-        const handlers = this.eventBus.get(eventType) || []
+        const handlers = this.eventBus.get(eventType) ?? []
         handlers.forEach(handler => {
             Effect.runSync(
                 Effect.tryPromise({

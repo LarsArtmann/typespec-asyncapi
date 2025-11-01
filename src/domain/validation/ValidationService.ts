@@ -89,10 +89,10 @@ export class ValidationService {
 				isValid,
 				errors,
 				warnings,
-				channelsCount: Object.keys(asyncApiDoc.channels || {}).length,
-				operationsCount: Object.keys(asyncApiDoc.operations || {}).length,
-				messagesCount: Object.keys(asyncApiDoc.components?.messages || {}).length,
-				schemasCount: Object.keys(asyncApiDoc.components?.schemas || {}).length
+				channelsCount: Object.keys(asyncApiDoc.channels ?? {}).length,
+				operationsCount: Object.keys(asyncApiDoc.operations ?? {}).length,
+				messagesCount: Object.keys(asyncApiDoc.components?.messages ?? {}).length,
+				schemasCount: Object.keys(asyncApiDoc.components?.schemas ?? {}).length
 			}
 
 			yield* Effect.log(`✅ AsyncAPI document validation completed (static method)!`)

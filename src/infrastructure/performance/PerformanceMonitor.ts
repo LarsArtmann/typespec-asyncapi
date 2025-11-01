@@ -319,7 +319,7 @@ export class PerformanceMonitor {
 				Effect.tap(result => Effect.log(`🗑️ Garbage collection completed: freed ${result.memoryFreed} MB`)),
 				Effect.catchAll(error => 
 					Effect.sync(() => {
-						Effect.runSync(Effect.logWarning(`⚠️ Garbage collection not available: ${error}`))
+						Effect.runSync(Effect.logWarning(`⚠️ Garbage collection not available: ${String(error)}`))
 						return null
 					})
 				)

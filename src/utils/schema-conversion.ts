@@ -152,7 +152,7 @@ export function convertTypeToSchemaType(type: Type, program: Program): Effect.Ef
 					case "utcDateTime":
 						return {type: "string" as const, format: "date-time"}
 					default:
-						yield* Effect.log(`⚠️ Unknown scalar type: ${(scalarType as { name?: string }).name || 'unknown'}, defaulting to string`)
+						yield* Effect.log(`⚠️ Unknown scalar type: ${(scalarType as { name?: string }).name ?? 'unknown'}, defaulting to string`)
 						return {type: "string" as const}
 				}
 			}

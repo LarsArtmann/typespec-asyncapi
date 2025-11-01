@@ -29,7 +29,7 @@ export enum SystemState {
  * State Transition Rules
  * Enforces which transitions are allowed
  */
-export const StateTransitions: Record<SystemState, readonly SystemState[]> = {
+export const STATE_TRANSITIONS: Record<SystemState, readonly SystemState[]> = {
   [SystemState.INITIALIZING]: [SystemState.READY, SystemState.ERROR, SystemState.TERMINATED],
   [SystemState.READY]: [SystemState.COMPILING, SystemState.ERROR, SystemState.TERMINATED],
   [SystemState.COMPILING]: [SystemState.EMITTING, SystemState.ERROR],
@@ -81,7 +81,7 @@ export type StateManager = {
  * Schema for validating State Context
  * TODO: Implement with @effect/schema
  */
-export const StateContextSchema = {
+export const STATE_CONTEXT_SCHEMA = {
   state: "SystemState",
   timestamp: "Date", 
   previousState: "SystemState?",

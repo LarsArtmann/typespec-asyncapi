@@ -22,7 +22,7 @@ import type { StandardizedError } from "../../utils/standardized-errors.js";
 import { DocumentBuilder } from "../../domain/emitter/DocumentBuilder.js";
 
 // Plugin system - FIX "No plugin found" warnings
-import { registerBuiltInPlugins, pluginRegistry } from "../../infrastructure/adapters/plugin-system.js";
+import { registerBuiltInPlugins, pluginRegistry as _pluginRegistry } from "../../infrastructure/adapters/plugin-system.js";
 
 /**
  * 🎯 SIMPLE ISSUE #180 FIX - Bypass complex serialization

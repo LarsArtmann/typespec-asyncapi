@@ -92,7 +92,7 @@ export const isAsyncAPIEmitterOptions = (input: unknown): input is AsyncAPIEmitt
 		}).pipe(
 			Effect.catchAll((error) =>
 				Effect.gen(function* () {
-					yield* Effect.logWarning(`⚠️  AsyncAPI options validation failed: ${error}`)
+					yield* Effect.logWarning(`⚠️  AsyncAPI options validation failed: ${String(error)}`)
 					return false
 				})
 			)

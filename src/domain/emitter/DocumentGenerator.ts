@@ -33,7 +33,7 @@ import {
 import { 
 	type StandardizedError, 
 	createError, 
-	failWith, 
+	failWith as _failWith, 
 	railway 
 } from "../../utils/standardized-errors.js"
 

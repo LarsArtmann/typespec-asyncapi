@@ -237,7 +237,7 @@ function extractHostFromUrl(url: string): string {
 		}).pipe(
 			Effect.catchAll((error) =>
 				Effect.gen(function* () {
-					yield* Effect.logWarning(`⚠️  URL parsing failed for ${url}: ${error}`)
+					yield* Effect.logWarning(`⚠️  URL parsing failed for ${String(url)}: ${String(error)}`)
 					// If URL parsing fails, return as-is
 					return url
 				})

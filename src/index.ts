@@ -22,7 +22,7 @@ export async function $onEmit(context: EmitContext) {
   
   // CRITICAL FIX: Use REAL generation pipeline that processes operations and channels
   // This uses ProcessingService, DiscoveryService, and all the decorator state handling
-  const _generationResult = await Effect.runPromise(
+  await Effect.runPromise(
     generateAsyncAPIWithEffect(context).pipe(
       Effect.catchAll((error) => {
         Effect.logError(`❌ AsyncAPI generation failed: ${String(error)}`);
