@@ -60,7 +60,7 @@ export class ValidationService {
 	 * TODO: ENHANCE - Implement cross-reference validation and consistency checks
 	 * TODO: ENHANCE - Add performance optimization for large documents
 	 */
-	static validateDocumentStatic(asyncApiDoc: AsyncAPIObject): Effect.Effect<ValidationResult> {
+	static validateDocumentStatic(asyncApiDoc: AsyncAPIObject): Effect.Effect<ValidationResult, StandardizedError> {
 		return Effect.gen(function* () {
 			yield* Effect.log(`🔍 Starting comprehensive AsyncAPI document validation (static method)...`)
 
@@ -109,7 +109,7 @@ export class ValidationService {
 	 * @param asyncApiDoc - AsyncAPI document to validate
 	 * @returns Effect containing detailed validation results
 	 */
-	validateDocument(asyncApiDoc: AsyncAPIObject): Effect.Effect<ValidationResult> {
+	validateDocument(asyncApiDoc: AsyncAPIObject): Effect.Effect<ValidationResult, StandardizedError> {
 		return Effect.gen(function* (this: ValidationService) {
 			yield* Effect.log(`🔍 Starting comprehensive AsyncAPI document validation...`)
 

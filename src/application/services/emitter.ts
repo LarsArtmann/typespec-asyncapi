@@ -17,9 +17,8 @@ import { ProcessingService } from "../../domain/emitter/ProcessingService.js";
 import { ValidationService } from "../../domain/validation/ValidationService.js";
 
 // Error handling
-import { createPluginSystemError } from "../../domain/models/errors/plugin-error.js";
+import { createError } from "../../utils/standardized-errors.js";
 import type { StandardizedError } from "../../utils/standardized-errors.js";
-import type { PluginSystemError } from "../../domain/models/errors/plugin-error.js";
 import { DocumentBuilder } from "../../domain/emitter/DocumentBuilder.js";
 
 // Plugin system - FIX "No plugin found" warnings
@@ -35,7 +34,7 @@ import { registerBuiltInPlugins, pluginRegistry } from "../../infrastructure/ada
  * 4. Bypass DocumentGenerator serialization (causing errors)
  * 5. Write files directly with simple JSON/YAML serialization
  */
-export function generateAsyncAPIWithEffect(context: EmitContext): Effect.Effect<void, StandardizedError | PluginSystemError> {
+export function generateAsyncAPIWithEffect(context: EmitContext): Effect.Effect<void, StandardizedError> {
 	return Effect.gen(function* () {
 		yield* Effect.logInfo("🎯 SIMPLE ISSUE #180 FIX: Direct pipeline execution")
 		
@@ -74,17 +73,44 @@ export function generateAsyncAPIWithEffect(context: EmitContext): Effect.Effect<
 		
 		const fs = yield* Effect.tryPromise({
 			try: () => import("node:fs/promises"),
-			catch: (error) => createPluginSystemError(error)
+			catch: (error) => createError({
+				what: "Failed to import node:fs/promises",
+				reassure: "This is a system-level error, but recovery is possible",
+				why: "The file system module could not be loaded",
+				fix: "Check Node.js installation and permissions",
+				escape: "Use alternative file system approach",
+				severity: "error",
+				code: "FS_IMPORT_ERROR",
+				context: { error }
+			})
 		});
 		
 		const path = yield* Effect.tryPromise({
 			try: () => import("node:path"),
-			catch: (error) => createPluginSystemError(error)
+			catch: (error) => createError({
+				what: "Failed to import node:path",
+				reassure: "This is a system-level error, but recovery is possible",
+				why: "The path module could not be loaded",
+				fix: "Check Node.js installation and permissions", 
+				escape: "Use alternative path handling",
+				severity: "error",
+				code: "PATH_IMPORT_ERROR",
+				context: { error }
+			})
 		});
 		
 		const yaml = yield* Effect.tryPromise({
 			try: () => import("yaml"),
-			catch: (error) => createPluginSystemError(error)
+			catch: (error) => createError({
+				what: "Failed to import yaml module",
+				reassure: "This error does not affect JSON output option",
+				why: "The YAML parser module could not be loaded",
+				fix: "Install yaml package with 'bun add yaml'",
+				escape: "Use JSON output format instead",
+				severity: "error",
+				code: "YAML_IMPORT_ERROR",
+				context: { error }
+			})
 		});
 		
 		// Simple configuration
@@ -101,12 +127,30 @@ export function generateAsyncAPIWithEffect(context: EmitContext): Effect.Effect<
 		// Simple file writing
 		yield* Effect.tryPromise({
 			try: () => fs.mkdir(path.dirname(outputPath), { recursive: true }),
-			catch: (error) => createPluginSystemError(error)
+			catch: (error) => createError({
+				what: "Failed to create output directory",
+				reassure: "This error does not corrupt existing files",
+				why: "Directory creation failed due to permissions or disk issues",
+				fix: "Check write permissions and disk space",
+				escape: "Write to a different directory",
+				severity: "error",
+				code: "DIRECTORY_CREATE_ERROR",
+				context: { outputPath, error }
+			})
 		});
 		
 		yield* Effect.tryPromise({
 			try: () => fs.writeFile(outputPath, content, 'utf8'),
-			catch: (error) => createPluginSystemError(error)
+			catch: (error) => createError({
+				what: "Failed to write AsyncAPI file",
+				reassure: "This error does not affect the generated AsyncAPI structure",
+				why: "File writing failed due to permissions or disk issues",
+				fix: "Check write permissions and disk space",
+				escape: "Write to a different location",
+				severity: "error", 
+				code: "FILE_WRITE_ERROR",
+				context: { outputPath, error }
+			})
 		});
 		
 		// 🎉 ISSUE #180 RESOLUTION SUCCESS

@@ -1,5 +1,6 @@
 import type {AsyncAPIProtocolType} from "../../constants/index.js"
 import type {ProtocolPlugin} from "./protocol-plugin.js"
+import type {StandardizedError} from "../../utils/standardized-errors.js"
 import {Effect} from "effect"
 
 /**
@@ -12,7 +13,7 @@ export class SimplePluginRegistry {
 	/**
 	 * Register a protocol plugin
 	 */
-	register(plugin: ProtocolPlugin): Effect.Effect<void, Error> {
+	register(plugin: ProtocolPlugin): Effect.Effect<void, StandardizedError> {
 		const plugins = this.plugins
 		return Effect.gen(function* () {
 			yield* Effect.log(`📦 Registering plugin: ${plugin.name} v${plugin.version}`)

@@ -7,6 +7,8 @@
 
 import {Effect} from "effect"
 import type {AsyncAPIProtocolType} from "../../constants/protocol-defaults.js"
+import type {StandardizedError} from "../../utils/standardized-errors.js"
+import {createError} from "../../utils/standardized-errors.js"
 import {SimplePluginRegistry} from "./simple-plugin-registry.js"
 import {kafkaPlugin} from "./kafka-plugin.js"
 import {websocketPlugin} from "./websocket-plugin.js"
@@ -26,13 +28,48 @@ export const pluginRegistry = new SimplePluginRegistry()
 /**
  * Helper function to register built-in plugins
  */
-export const registerBuiltInPlugins = (): Effect.Effect<void, Error> =>
+export const registerBuiltInPlugins = (): Effect.Effect<void, StandardizedError> =>
 	Effect.gen(function* () {
 		yield* Effect.log("🚀 Loading built-in protocol plugins...")
 
-		yield* pluginRegistry.register(kafkaPlugin)
-		yield* pluginRegistry.register(websocketPlugin)
-		yield* pluginRegistry.register(httpPlugin)
+		yield* pluginRegistry.register(kafkaPlugin).pipe(
+			Effect.catchAll((error) => Effect.fail(createError({
+				what: "Failed to register Kafka plugin",
+				reassure: "The emitter will continue without Kafka protocol support",
+				why: "Plugin registration failed due to configuration or dependency issues",
+				fix: "Check Kafka plugin configuration and dependencies",
+				escape: "Use other protocol plugins or manual binding configuration",
+				severity: "warning",
+				code: "KAFKA_PLUGIN_REGISTRATION_ERROR",
+				context: { error }
+			})))
+		)
+
+		yield* pluginRegistry.register(websocketPlugin).pipe(
+			Effect.catchAll((error) => Effect.fail(createError({
+				what: "Failed to register WebSocket plugin",
+				reassure: "The emitter will continue without WebSocket protocol support",
+				why: "Plugin registration failed due to configuration or dependency issues",
+				fix: "Check WebSocket plugin configuration and dependencies",
+				escape: "Use other protocol plugins or manual binding configuration",
+				severity: "warning",
+				code: "WEBSOCKET_PLUGIN_REGISTRATION_ERROR",
+				context: { error }
+			})))
+		)
+
+		yield* pluginRegistry.register(httpPlugin).pipe(
+			Effect.catchAll((error) => Effect.fail(createError({
+				what: "Failed to register HTTP plugin",
+				reassure: "The emitter will continue without HTTP protocol support",
+				why: "Plugin registration failed due to configuration or dependency issues",
+				fix: "Check HTTP plugin configuration and dependencies",
+				escape: "Use other protocol plugins or manual binding configuration",
+				severity: "warning",
+				code: "HTTP_PLUGIN_REGISTRATION_ERROR",
+				context: { error }
+			})))
+		)
 
 		yield* Effect.log("✅ Built-in plugins loaded successfully")
 	})
@@ -46,7 +83,7 @@ export const generateProtocolBinding = (
 	protocolName: AsyncAPIProtocolType,
 	bindingType: 'operation' | 'message' | 'server' | 'channel',
 	data: unknown,
-): Effect.Effect<Record<string, unknown> | null, Error> =>
+): Effect.Effect<Record<string, unknown> | null, StandardizedError> =>
 	Effect.gen(function* () {
 		const plugin = yield* pluginRegistry.getPlugin(protocolName)
 

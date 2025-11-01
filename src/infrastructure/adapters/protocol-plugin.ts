@@ -1,5 +1,6 @@
 import type {AsyncAPIProtocolType} from "../../constants/index.js"
 import type {Effect} from "effect"
+import type {StandardizedError} from "../../utils/standardized-errors.js"
 
 /**
  * Protocol plugin interface - comprehensive AsyncAPI 3.0 support
@@ -14,25 +15,25 @@ export type ProtocolPlugin = {
 	/**
 	 * Generate protocol-specific bindings for operations
 	 */
-	generateOperationBinding?: (operation: unknown) => Effect.Effect<Record<string, unknown>, Error>
+	generateOperationBinding?: (operation: unknown) => Effect.Effect<Record<string, unknown>, StandardizedError>
 
 	/**
 	 * Generate protocol-specific bindings for messages
 	 */
-	generateMessageBinding?: (message: unknown) => Effect.Effect<Record<string, unknown>, Error>
+	generateMessageBinding?: (message: unknown) => Effect.Effect<Record<string, unknown>, StandardizedError>
 
 	/**
 	 * Generate protocol-specific server configuration
 	 */
-	generateServerBinding?: (server: unknown) => Effect.Effect<Record<string, unknown>, Error>
+	generateServerBinding?: (server: unknown) => Effect.Effect<Record<string, unknown>, StandardizedError>
 
 	/**
 	 * Generate protocol-specific channel configuration (for Kafka topics, etc.)
 	 */
-	generateChannelBinding?: (channel: unknown) => Effect.Effect<Record<string, unknown>, Error>
+	generateChannelBinding?: (channel: unknown) => Effect.Effect<Record<string, unknown>, StandardizedError>
 
 	/**
 	 * Validate protocol-specific configuration
 	 */
-	validateConfig?: (config: unknown) => Effect.Effect<boolean, Error>
+	validateConfig?: (config: unknown) => Effect.Effect<boolean, StandardizedError>
 }
