@@ -224,20 +224,25 @@ export class PerformanceRegressionTester {
 				return null
 			}
 
-			// TODO: Implement railwayFileSystem or use alternative
-			// TODO: Implement railwayFileSystem or use alternative
-			try {
-				const baselines = JSON.parse(readFileSync(this.baselinePath, 'utf-8')) as Record<string, PerformanceBaseline[]>
+			// Load existing baselines using Effect.try
+			yield* Effect.gen(function* (this: PerformanceRegressionTester) {
+				const baselines = yield* Effect.try({
+					try: () => JSON.parse(readFileSync(this.baselinePath, 'utf-8')) as Record<string, PerformanceBaseline[]>,
+					catch: (error) => new Error(`Failed to load baselines: ${error instanceof Error ? error.message : String(error)}`)
+				})
+
 				const testBaselines = baselines[testCaseName]
 				if (!testBaselines || testBaselines.length === 0) {
 					return null
 				}
 				// Return the most recent baseline
 				return testBaselines[testBaselines.length - 1]
-			} catch (error) {
-				yield* Effect.logWarning(`⚠️ Failed to load baselines: ${error instanceof Error ? error.message : String(error)}`)
-				return null
-			}
+			}).pipe(
+				Effect.catchAll((error: unknown) => Effect.gen(function* (this: PerformanceRegressionTester) {
+					yield* Effect.logWarning(`⚠️ Failed to load baselines: ${error instanceof Error ? error.message : String(error)}`)
+					return null
+				}))
+			)
 		})
 	}
 
@@ -270,12 +275,17 @@ export class PerformanceRegressionTester {
 
 			// Load existing baselines
 			if (existsSync(this.baselinePath)) {
-				try {
-					baselines = JSON.parse(readFileSync(this.baselinePath, 'utf-8')) as Record<string, PerformanceBaseline[]>
-				} catch (error) {
-					yield* Effect.logWarning(`⚠️ Failed to load existing baselines: ${error instanceof Error ? error.message : String(error)}`)
-					baselines = {}
-				}
+				yield* Effect.gen(function* (this: PerformanceRegressionTester) {
+					baselines = yield* Effect.try({
+						try: () => JSON.parse(readFileSync(this.baselinePath, 'utf-8')) as Record<string, PerformanceBaseline[]>,
+						catch: (error) => new Error(`Failed to load existing baselines: ${error instanceof Error ? error.message : String(error)}`)
+					})
+				}).pipe(
+					Effect.catchAll((error: unknown) => Effect.gen(function*() {
+						yield* Effect.logWarning(`⚠️ Failed to load existing baselines: ${error instanceof Error ? error.message : String(error)}`)
+						baselines = {}
+					}))
+				)
 			}
 
 			// Add new baseline
@@ -288,12 +298,15 @@ export class PerformanceRegressionTester {
 			}
 
 			// Write back to file
-			try {
-				writeFileSync(this.baselinePath, JSON.stringify(baselines, null, 2), 'utf-8')
-				yield* Effect.log(`📊 Updated baseline for ${testCaseName}`)
-			} catch (error) {
-				yield* Effect.logError(`❌ Failed to write baselines: ${error instanceof Error ? error.message : String(error)}`)
-			}
+			yield* Effect.gen(function* (this: PerformanceRegressionTester) {
+				yield* Effect.try({
+					try: () => writeFileSync(this.baselinePath, JSON.stringify(baselines, null, 2), 'utf-8'),
+					catch: (error) => new Error(`Failed to write baselines: ${error instanceof Error ? error.message : String(error)}`)
+				}).pipe(
+					Effect.tap(() => Effect.log(`📊 Updated baseline for ${testCaseName}`)),
+					Effect.catchAll((error: unknown) => Effect.logError(`❌ Failed to write baselines: ${error instanceof Error ? error.message : String(error)}`))
+				)
+			})
 		})
 	}
 

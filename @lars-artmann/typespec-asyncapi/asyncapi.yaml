@@ -4,64 +4,49 @@ info:
   version: 1.0.0
   description: Generated from TypeSpec with @lars-artmann/typespec-asyncapi
 channels:
-  test-http:
-    address: test-http
-    description: Channel for httpOperation
+  traced.messages:
+    address: traced.messages
+    description: Channel for publishTraced
     messages:
-      httpOperationMessage:
-        $ref: "#/components/messages/httpOperationMessage"
-  test-kafka:
-    address: test-kafka
-    description: Channel for kafkaOperation
-    messages:
-      kafkaOperationMessage:
-        $ref: "#/components/messages/kafkaOperationMessage"
+      publishTracedMessage:
+        $ref: "#/components/messages/publishTracedMessage"
 operations:
-  httpOperation:
+  publishTraced:
     action: send
     channel:
-      $ref: "#/channels/test-http"
-    summary: Operation httpOperation
-    description: TypeSpec operation with 0 parameters
-  kafkaOperation:
-    action: send
-    channel:
-      $ref: "#/channels/test-kafka"
-    summary: Operation kafkaOperation
+      $ref: "#/channels/traced.messages"
+    summary: Operation publishTraced
     description: TypeSpec operation with 0 parameters
 components:
   schemas:
-    TestEvent:
+    TracedMessage:
       type: object
-      description: Schema for TestEvent
+      description: Schema for TracedMessage
       properties:
-        id:
-          description: Property id
+        traceId:
+          description: Property traceId
           type: string
-        data:
-          description: Property data
+        spanId:
+          description: Property spanId
           type: string
-        timestamp:
-          description: Property timestamp
+        parentSpanId:
+          description: Property parentSpanId
           type: string
-          format: date-time
+        payload:
+          description: Property payload
+          type: object
+          additionalProperties:
+            type: string
       required:
-        - id
-        - data
-        - timestamp
+        - traceId
+        - spanId
+        - payload
   messages:
-    httpOperationMessage:
-      name: httpOperationMessage
-      title: httpOperation Message
-      summary: Message for httpOperation operation
+    publishTracedMessage:
+      name: publishTracedMessage
+      title: publishTraced Message
+      summary: Message for publishTraced operation
       contentType: application/json
       payload:
-        $ref: "#/components/schemas/TestEvent"
-    kafkaOperationMessage:
-      name: kafkaOperationMessage
-      title: kafkaOperation Message
-      summary: Message for kafkaOperation operation
-      contentType: application/json
-      payload:
-        $ref: "#/components/schemas/TestEvent"
+        $ref: "#/components/schemas/TracedMessage"
   securitySchemes: {}

@@ -84,7 +84,7 @@ export class AsyncAPIValidator {
 			const content = typeof document === 'string' ? document : JSON.stringify(document)
 
 			// Enforce AsyncAPI 3.0.0 strict compliance using Effect.gen
-			const docObject = yield* Effect.gen(function*() {
+			yield* Effect.gen(function*() {
 				const docObject: Record<string, unknown> = typeof document === 'string' ? JSON.parse(content) as Record<string, unknown> : document as Record<string, unknown>
 				if (docObject && typeof docObject === 'object' && 'asyncapi' in docObject) {
 					const version = String(docObject.asyncapi)

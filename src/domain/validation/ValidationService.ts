@@ -13,7 +13,7 @@ import type {
 	AsyncAPIObject, 
 	ReferenceObject
 } from "@asyncapi/parser/esm/spec-types/v3.js"
-import { emitterErrors, railway, type StandardizedError, safeStringify } from "../../utils/standardized-errors.js"
+import { emitterErrors, type StandardizedError, safeStringify } from "../../utils/standardized-errors.js"
 import { PERFORMANCE_CONSTANTS } from "../../constants/defaults.js"
 
 /**
