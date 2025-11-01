@@ -8,8 +8,8 @@ import { Effect } from "effect";
 // Export all decorators for TypeSpec integration
 export * from "./decorators.js";
 
-// Import REAL generation function that uses ProcessingService and DiscoveryService
-import { generateAsyncAPIWithEffect } from "./application/services/emitter-with-effect.js";
+// Import SIMPLE Issue #180 fix with working pipeline
+import { generateAsyncAPIWithEffect } from "./application/services/emitter-with-effect-simple.js";
 
 /**
  * CRITICAL FIX: Use real generation pipeline instead of hardcoded empty objects
