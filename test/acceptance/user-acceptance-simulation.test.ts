@@ -16,7 +16,7 @@ import {
   CHANNEL_TEMPLATES,
   TEST_VERSIONS
 } from '../../src/constants/index.js'
-import { pluginRegistry, registerBuiltInPlugins, generateProtocolBinding } from '../../src/infrastructure/adapters/plugin-system.js'
+import { pluginRegistry, registerBuiltInPlugins, generateProtocolBinding } from '../../dist/infrastructure/adapters/plugin-system.js'
 import { compileAsyncAPISpecWithoutErrors, validateAsyncAPIStructure } from '../utils/test-helpers.js'
 
 describe('🎯 USER ACCEPTANCE TESTING - Real Workflows', () => {
