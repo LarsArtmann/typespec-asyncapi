@@ -196,7 +196,7 @@ find-duplicates:
     mkdir -p ./jscpd-report
 
     # Run jscpd with multiple reporters including HTML
-    jscpd src --min-tokens 30 --min-lines 3 --format typescript,javascript --reporters console,json,html --output ./jscpd-report
+    bunx jscpd src --min-tokens 30 --min-lines 3 --format typescript,javascript --reporters console,json,html --output ./jscpd-report
 
     echo "✅ Duplication analysis complete!"
     echo "📁 Reports generated:"
