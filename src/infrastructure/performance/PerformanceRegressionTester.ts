@@ -84,12 +84,11 @@ export class PerformanceRegressionTester {
 	 * Run comprehensive performance regression test
 	 */
 	runRegressionTest(testCaseName: string, testFunction: () => Promise<void>) {
-		const self = this;
 		return Effect.gen(function* () {
 			yield* Effect.log(`🔍 Starting performance regression test: ${testCaseName}`)
 
 			// Start performance monitoring
-			yield* self.performanceMonitor.startMonitoring()
+			yield* this.performanceMonitor.startMonitoring()
 
 			const startTime = performance.now()
 			void startTime
@@ -139,14 +138,13 @@ export class PerformanceRegressionTester {
 			)
 			
 			return testResult
-		})
+		}.bind(this))
 	}
 
 	/**
 	 * Analyze performance regression against baseline
 	 */
 	private analyzeRegression(testName: string, current: PerformanceMetrics, baseline: PerformanceBaseline | null) {
-		const self = this;
 		return Effect.gen(function* () {
 			if (!baseline) {
 				yield* Effect.log(`📊 No baseline found for ${testName} - establishing new baseline`)
@@ -169,7 +167,7 @@ export class PerformanceRegressionTester {
 				const currentValue = current[metric]
 				const baselineValue = baseline[metric]
 				const percentageChange = ((currentValue - baselineValue) / baselineValue) * 100
-				const threshold = self.config.regressionThresholds[metric === 'compilationTimeMs' ? 'compilationTime' :
+				const threshold = this.config.regressionThresholds[metric === 'compilationTimeMs' ? 'compilationTime' :
 					metric === 'memoryUsageMB' ? 'memoryUsage' :
 						metric === 'throughputOpsPerSec' ? 'throughput' : 'latency']
 
@@ -180,7 +178,7 @@ export class PerformanceRegressionTester {
 					percentageChange > threshold
 
 				if (isRegression) {
-					const severity = self.calculateSeverity(Math.abs(percentageChange), threshold)
+					const severity = this.calculateSeverity(Math.abs(percentageChange), threshold)
 					regressions.push({
 						metric,
 						currentValue,
@@ -188,7 +186,7 @@ export class PerformanceRegressionTester {
 						percentageChange,
 						threshold,
 						severity,
-						description: self.generateRegressionDescription(metric, currentValue, baselineValue, percentageChange),
+						description: this.generateRegressionDescription(metric, currentValue, baselineValue, percentageChange),
 					})
 				}
 			}
