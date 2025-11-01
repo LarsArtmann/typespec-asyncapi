@@ -182,10 +182,10 @@ export class AsyncAPIValidator {
 			const duration = performance.now() - startTime
 
 			// Update statistics
-			self.updateStats(duration)
+			this.updateStats(duration)
 
 			// Extract metrics from document
-			const metrics = self.extractMetrics(parseResult.document, duration)
+			const metrics = this.extractMetrics(parseResult.document, duration)
 
 			yield* Effect.logInfo(`AsyncAPI validation completed in ${duration.toFixed(2)}ms`)
 
@@ -281,8 +281,7 @@ export class AsyncAPIValidator {
 		content: unknown,
 		identifier?: string
 	}>): Effect.Effect<ValidationResult[], never> {
-		const self = this
-		return Effect.gen(function* () {
+		return Effect.gen(function* (this: AsyncAPIValidator) {
 			const startTime = performance.now()
 			yield* railwayLogging.logInitialization(`batch validation of ${documents.length} documents`)
 
