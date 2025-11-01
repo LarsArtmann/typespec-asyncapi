@@ -342,7 +342,7 @@ export class PluginRegistry {
                 Effect.tap(() => Effect.log(`✅ Plugin ${name} stopped`)),
                 Effect.mapError(error => emitterErrors.pluginInitializationFailed(
                     name,
-                    `Plugin ${name} stop failed: ${error}`
+                    `Plugin ${name} stop failed: ${String(error)}`
                 ))
             )
 
@@ -460,8 +460,8 @@ export class PluginRegistry {
         handlers.forEach(handler => {
             Effect.runSync(
                 Effect.tryPromise({
-                    try: () => Promise.resolve(handler(event)),
-                    catch: (error) => new Error(`Event handler error for ${eventType}: ${error}`)
+                    try: () => Effect.succeed(handler(event)),
+                    catch: (error) => new Error(`Event handler error for ${eventType}: ${String(error)}`)
                 }).pipe(
                     Effect.catchAll(error => Effect.logError(`❌ ${error.message}`))
                 )

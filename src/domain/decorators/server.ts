@@ -146,7 +146,7 @@ export function $server(
 //TODO: CRITICAL - Function handles two completely different type structures - violates single responsibility
 //TODO: CRITICAL - Missing error handling for malformed object structures
 //TODO: CRITICAL - Should validate extracted values match ServerConfig schema
-function extractServerConfigFromObject(obj: Model | Record<string, unknown>): Partial<ServerConfig> {
+function _extractServerConfigFromObject(obj: Model | Record<string, unknown>): Partial<ServerConfig> {
 	const config: Partial<ServerConfig> = {}
 
 	if ("properties" in obj && obj.properties && typeof obj.properties === "object" && "entries" in obj.properties) {

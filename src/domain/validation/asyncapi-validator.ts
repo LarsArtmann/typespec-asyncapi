@@ -134,7 +134,7 @@ export class AsyncAPIValidator {
 				Effect.retry(Schedule.exponential("100 millis").pipe(
 					Schedule.compose(Schedule.recurs(3))
 				)),
-				Effect.tapError(attempt => Effect.log(`⚠️  Parser attempt failed, retrying: ${attempt}`)),
+				Effect.tapError(attempt => Effect.log(`⚠️  Parser attempt failed, retrying: ${String(attempt)}`)),
 				Effect.catchAll((error) => {
 					if (error.message?.includes("timeout")) {
 						return Effect.sync(() => {

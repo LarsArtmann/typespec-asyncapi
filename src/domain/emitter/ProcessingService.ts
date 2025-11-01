@@ -183,7 +183,7 @@ const processSingleOperation = (op: Operation, asyncApiDoc: AsyncAPIObject, prog
 
 		// FIXED: Use channel path from @channel decorator instead of hardcoded prefix
 		// channelPath comes from extractOperationMetadata which reads the @channel decorator state
-		const channelName = channelPath
+		const _channelName = channelPath
 		const action: "send" | "receive" = operationType === "subscribe" ? "receive" : "send"
 
 		// Add channel to document - use shared helper to eliminate duplication
