@@ -48,7 +48,7 @@ export class AsyncAPIValidator {
 	 * Initialize the validator with AsyncAPI parser - Railway programming style
 	 */
 	initializeEffect(): Effect.Effect<void, never> {
-		return Effect.gen(function* () {
+		return Effect.gen(function* (this: AsyncAPIValidator) {
 			if (this.initialized) {
 				return
 			}
@@ -56,7 +56,7 @@ export class AsyncAPIValidator {
 			yield* railwayLogging.logInitialization("AsyncAPI 3.0.0 Validator with REAL @asyncapi/parser")
 			this.initialized = true
 			yield* railwayLogging.logInitializationSuccess("AsyncAPI 3.0.0 Validator")
-		}.bind(this))
+		})
 	}
 
 	/**
@@ -75,10 +75,9 @@ export class AsyncAPIValidator {
 	 * Validate AsyncAPI document using the REAL parser - Effect version
 	 */
 	validateEffect(document: unknown, _identifier?: string): Effect.Effect<ValidationResult, never, never> {
-		const self = this
-		return Effect.gen(function* () {
+		return Effect.gen(function* (this: AsyncAPIValidator) {
 			// Ensure initialization in Effect context
-			yield* self.initializeEffect()
+			yield* this.initializeEffect()
 			const startTime = performance.now()
 
 			// Convert document to string for parser (no pretty printing for performance)
@@ -183,10 +182,10 @@ export class AsyncAPIValidator {
 			const duration = performance.now() - startTime
 
 			// Update statistics
-			this.updateStats(duration)
+			self.updateStats(duration)
 
 			// Extract metrics from document
-			const metrics = this.extractMetrics(parseResult.document, duration)
+			const metrics = self.extractMetrics(parseResult.document, duration)
 
 			yield* Effect.logInfo(`AsyncAPI validation completed in ${duration.toFixed(2)}ms`)
 
@@ -235,7 +234,7 @@ export class AsyncAPIValidator {
 	 * Validate AsyncAPI document from file - Effect version
 	 */
 	validateFileEffect(filePath: string): Effect.Effect<ValidationResult, never> {
-		return Effect.gen(function* () {
+		return Effect.gen(function* (this: AsyncAPIValidator) {
 			// Use Effect.tryPromise to wrap Node.js file reading with proper error handling
 			const content = yield* Effect.tryPromise({
 				try: () => NodeFS.readFile(filePath, "utf-8"),
@@ -282,13 +281,14 @@ export class AsyncAPIValidator {
 		content: unknown,
 		identifier?: string
 	}>): Effect.Effect<ValidationResult[], never> {
+		const self = this
 		return Effect.gen(function* () {
 			const startTime = performance.now()
 			yield* railwayLogging.logInitialization(`batch validation of ${documents.length} documents`)
 
 			// Process documents in parallel using Effect.all with controlled concurrency
 			const validationEffects = documents.map(doc =>
-				this.validateEffect(doc.content, doc.identifier),
+				self.validateEffect(doc.content, doc.identifier),
 			)
 
 			// Use Effect.all to run validations in parallel with limited concurrency
@@ -302,7 +302,7 @@ export class AsyncAPIValidator {
 			yield* Effect.logInfo(`📊 Valid: ${validCount}, Invalid: ${invalidCount}`)
 
 			return results
-		}.bind(this))
+		})
 	}
 
 	/**
