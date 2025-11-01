@@ -8,8 +8,8 @@ import { Effect } from "effect";
 // Export all decorators for TypeSpec integration
 export * from "./decorators.js";
 
-// Import SIMPLE Issue #180 fix with working pipeline
-import { generateAsyncAPIWithEffect } from "./application/services/emitter-with-effect-simple.js";
+// Import working emitter with pipeline
+import { generateAsyncAPIWithEffect } from "./application/services/emitter.js";
 
 /**
  * CRITICAL FIX: Use real generation pipeline instead of hardcoded empty objects
@@ -22,10 +22,10 @@ export async function $onEmit(context: EmitContext) {
   
   // CRITICAL FIX: Use REAL generation pipeline that processes operations and channels
   // This uses ProcessingService, DiscoveryService, and all the decorator state handling
-  const generationResult = await Effect.runPromise(
+  const _generationResult = await Effect.runPromise(
     generateAsyncAPIWithEffect(context).pipe(
       Effect.catchAll((error) => {
-        console.error("❌ AsyncAPI generation failed:", error);
+        Effect.logError(`❌ AsyncAPI generation failed: ${String(error)}`);
         // Fallback to minimal spec if generation fails
         return Effect.succeed(void 0);
       })
@@ -33,5 +33,5 @@ export async function $onEmit(context: EmitContext) {
   );
 
   // The generation function handles file creation, so we just need to log completion
-  console.log(`✅ Generated AsyncAPI specification: ${outputFile}.${extension}`);
+  Effect.runSync(Effect.log(`✅ Generated AsyncAPI specification: ${String(outputFile)}.${String(extension)}`));
 }

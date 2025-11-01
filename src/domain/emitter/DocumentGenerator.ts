@@ -115,9 +115,9 @@ export class DocumentGenerator {
 					return documentGenerator.serializeToYAML(document, options)
 				default:
 					return yield* Effect.fail(createError({
-						what: `Unsupported serialization format: ${options.format}`,
+						what: `Unsupported serialization format: ${String(options.format)}`,
 						reassure: "Only JSON and YAML formats are currently supported",
-						why: `Format '${options.format}' is not in the supported list: [json, yaml]`,
+						why: `Format '${String(options.format)}' is not in the supported list: [json, yaml]`,
 						fix: "Use 'json' or 'yaml' as the serialization format",
 						escape: "Default to JSON format if format detection fails",
 						severity: "error" as const,
@@ -413,8 +413,8 @@ export class DocumentGenerator {
 				}
 
 				// Check for balanced quotes
-				const singleQuotes = (content.match(/'/g) || []).length
-				const doubleQuotes = (content.match(/"/g) || []).length
+				const singleQuotes = (content.match(/'/g) ?? []).length
+				const doubleQuotes = (content.match(/"/g) ?? []).length
 
 				if (singleQuotes % 2 !== 0) {
 					yield* Effect.logWarning(`⚠️ Unbalanced single quotes in YAML`)

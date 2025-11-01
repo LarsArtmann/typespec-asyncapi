@@ -9,10 +9,11 @@
  * 5. Proper dependency injection interfaces
  */
 
+import { Effect } from "effect"
 import type { Program, Operation, Model, Namespace } from "@typespec/compiler"
 import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js"
 import type { StandardizedError } from "../../utils/standardized-errors.js"
-import type { SecurityConfig } from "./securityConfig.js"
+import type { SecurityConfig } from "../decorators/securityConfig.js"
 
 /**
  * Performance metrics for service monitoring

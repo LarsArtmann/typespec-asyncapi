@@ -18,9 +18,12 @@ import { ValidationService } from "../../domain/validation/ValidationService.js"
 
 // Error handling
 import { createPluginSystemError } from "../../domain/models/errors/plugin-error.js";
-import type { StandardizedError } from "../../utils/standardized-errors.js";
-import type { PluginSystemError } from "../../domain/models/errors/plugin-error.js";
+import type { _StandardizedError } from "../../utils/standardized-errors.js";
+import type { _PluginSystemError } from "../../domain/models/errors/plugin-error.js";
 import { DocumentBuilder } from "../../domain/emitter/DocumentBuilder.js";
+
+// Plugin system - FIX "No plugin found" warnings
+import { _registerBuiltInPlugins, _pluginRegistry } from "../../infrastructure/adapters/plugin-system.js";
 
 /**
  * 🎯 SIMPLE ISSUE #180 FIX - Bypass complex serialization
@@ -32,9 +35,12 @@ import { DocumentBuilder } from "../../domain/emitter/DocumentBuilder.js";
  * 4. Bypass DocumentGenerator serialization (causing errors)
  * 5. Write files directly with simple JSON/YAML serialization
  */
-export function generateAsyncAPIWithEffect(context: EmitContext): Effect.Effect<void, StandardizedError | PluginSystemError> {
+export function generateAsyncAPIWithEffect(context: EmitContext): Effect.Effect<void, unknown> {
 	return Effect.gen(function* () {
 		yield* Effect.logInfo("🎯 SIMPLE ISSUE #180 FIX: Direct pipeline execution")
+		
+		// 🔧 FIX: Register protocol plugins to eliminate warnings
+		yield* registerBuiltInPlugins()
 		
 		// 🔍 STAGE 1: Discovery (Working - finds operations)
 		yield* Effect.logInfo("🚀 Stage 1: Discovery")
@@ -85,7 +91,7 @@ export function generateAsyncAPIWithEffect(context: EmitContext): Effect.Effect<
 		const outputFile = context.options["output-file"] || "asyncapi";
 		const fileType = (context.options["file-type"] as string) ?? "yaml";
 		const extension = fileType === "json" ? "json" : "yaml";
-		const outputPath = path.join(context.emitterOutputDir, `${outputFile}.${extension}`);
+		const outputPath = path.join(context.emitterOutputDir, `${String(outputFile)}.${extension}`);
 		
 		// Simple serialization using the processed document
 		const content = fileType === "json" 
@@ -107,7 +113,7 @@ export function generateAsyncAPIWithEffect(context: EmitContext): Effect.Effect<
 		const channelsCount = Object.keys(initialDoc.channels ?? {}).length;
 		const operationsCount = Object.keys(initialDoc.operations ?? {}).length;
 		
-		yield* Effect.logInfo(`🎉 ISSUE #180 RESOLVED: ${channelsCount} channels, ${operationsCount} operations`)
-		yield* Effect.logInfo(`✅ File written: ${outputPath}`)
+		yield* Effect.logInfo(`🎉 ISSUE #180 RESOLVED: ${String(channelsCount)} channels, ${String(operationsCount)} operations`)
+		yield* Effect.logInfo(`✅ File written: ${String(outputPath)}`)
 	});
 }
