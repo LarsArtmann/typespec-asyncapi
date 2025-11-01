@@ -244,11 +244,11 @@ export class DocumentGenerator {
 			// Safe statistics generation with error handling
 			return yield* railway.trySync(() => {
 				const stats: DocumentStats = {
-					channels: Object.keys(document.channels || {}).length,
-					operations: Object.keys(document.operations || {}).length,
-					messages: Object.keys(document.components?.messages || {}).length,
-					schemas: Object.keys(document.components?.schemas || {}).length,
-					securitySchemes: Object.keys(document.components?.securitySchemes || {}).length,
+					channels: Object.keys(document.channels ?? {}).length,
+					operations: Object.keys(document.operations ?? {}).length,
+					messages: Object.keys(document.components?.messages ?? {}).length,
+					schemas: Object.keys(document.components?.schemas ?? {}).length,
+					securitySchemes: Object.keys(document.components?.securitySchemes ?? {}).length,
 					contentLength: 0, // Will be set after serialization
 				}
 
