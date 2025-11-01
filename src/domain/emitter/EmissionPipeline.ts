@@ -80,7 +80,7 @@ export class EmissionPipeline implements IPipelineService {
 	 * Using Effect.TS Railway programming for comprehensive error handling
 	 */
 	executePipeline(context: PipelineContext): Effect.Effect<void, StandardizedError> {
-		return Effect.gen(function* () {
+		return Effect.gen(function* (this: EmissionPipeline) {
 			// Validate context parameter with proper error handling
 			if (!context) {
 				return yield* failWith(createError({
@@ -117,13 +117,14 @@ export class EmissionPipeline implements IPipelineService {
 
 			yield* Effect.log(`✅ All emission pipeline stages completed successfully`)
 		})
+		.bind(this))
 	}
 
 	/**
 	 * Stage 1: Discovery - Find all TypeSpec elements using REAL DiscoveryService
 	 */
 	private executeDiscoveryStage(context: PipelineContext) {
-		return Effect.gen(function* () {
+		return Effect.gen(function* (this: EmissionPipeline) {
 			yield* Effect.log(`🔍 Stage 1: Discovery with REAL DiscoveryService`)
 
 			// Use REAL DiscoveryService with complete AST traversal logic
@@ -132,7 +133,7 @@ export class EmissionPipeline implements IPipelineService {
 			yield* Effect.log(`📊 Discovery stage complete: ${result.operations.length} operations, ${result.messageModels.length} messages, ${result.securityConfigs.length} security configs`)
 
 			return result
-		})
+		}.bind(this))
 	}
 
 	/**
@@ -162,7 +163,7 @@ export class EmissionPipeline implements IPipelineService {
 	 * Stage 3: Document Generation - Finalize AsyncAPI document using REAL DocumentBuilder logic
 	 */
 	private executeGenerationStage(context: PipelineContext, discoveryResult: DiscoveryResult) {
-		return Effect.gen(function* () {
+		return Effect.gen(function* (this: EmissionPipeline) {
 			yield* Effect.log(`📄 Stage 3: Document Generation with DocumentBuilder`)
 
 			// Use DocumentBuilder to ensure proper document structure with Effect.TS
@@ -190,14 +191,14 @@ export class EmissionPipeline implements IPipelineService {
 			// Generation stage focuses on document finalization only
 
 			yield* Effect.log(`✅ Document generation completed - processed ${discoveryResult.operations.length} operations and ${discoveryResult.messageModels.length} messages`)
-		})
+		}.bind(this))
 	}
 
 	/**
 	 * Stage 4: Validation - Verify AsyncAPI compliance using REAL ValidationService
 	 */
 	private executeValidationStage(context: PipelineContext) {
-		return Effect.gen(function* () {
+		return Effect.gen(function* (this: EmissionPipeline) {
 			yield* Effect.log(`🔍 Stage 4: Validation with REAL ValidationService`)
 
 			// Use REAL ValidationService with comprehensive AsyncAPI 3.0 compliance checking
@@ -225,7 +226,7 @@ export class EmissionPipeline implements IPipelineService {
 					}
 				}
 			}
-		})
+		}.bind(this))
 	}
 
 	/**
