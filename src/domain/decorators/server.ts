@@ -109,39 +109,6 @@ export function $server(
 		reportDiagnostic(context, target, "invalid-server-config", {serverName: name || ""})
 		return
 	}
-	} else if (name && typeof name === "object" && "valueKind" in name) {
-		//TODO: CRITICAL - Unsafe type assertion defeats type safety
-		const stringValue = name as { value: unknown }
-		//TODO: CRITICAL - String() coercion of unknown type is unsafe
-		serverName = String(stringValue.value)
-	} else {
-		//TODO: CRITICAL - Remove emoji logging from production code
-		Effect.log(`Could not extract string from server name:`, name)
-		//TODO: CRITICAL - "unknown" hardcoded string should be extracted to constant
-		reportDiagnostic(context, target, "invalid-server-config", {serverName: "unknown"})
-		return
-	}
-
-	// Extract server configuration from TypeSpec Record/Object
-	let serverConfig: Partial<ServerConfig>
-	if (config && typeof config === "object" && "properties" in config) {
-		serverConfig = extractServerConfigFromObject(config)
-	} else {
-		Effect.log(`⚠️  Could not extract config from server config:`, config)
-		reportDiagnostic(context, target, "invalid-server-config", {serverName: serverName})
-		return
-	}
-
-	// Validate required server configuration fields
-	if (!serverConfig.url) {
-		reportDiagnostic(context, target, "invalid-server-config", {serverName: serverName})
-		return
-	}
-
-	if (!serverConfig.protocol) {
-		reportDiagnostic(context, target, "invalid-server-config", {serverName: serverName})
-		return
-	}
 
 	//TODO: CRITICAL - Hardcoded protocol array should be extracted to constants
 	//TODO: CRITICAL - Missing AsyncAPI 3.0.0 protocol specifications (mqtt, mqtt5, nats, redis, etc.)
