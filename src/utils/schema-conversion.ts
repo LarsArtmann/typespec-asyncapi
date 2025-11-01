@@ -28,38 +28,46 @@ export function convertModelToSchema(model: Model, program: Program): SchemaObje
 		Effect.gen(function* () {
 			yield* Effect.log(`🔍 Converting model to schema: ${model.name ?? 'Anonymous'} (cache miss)`)
 
-			// === COMPREHENSIVE MODEL DEBUGGING (Issue #180) ===
-			console.log("=== MODEL DEBUG START ===")
-			console.log("Model name:", model.name)
-			console.log("Model kind:", model.kind)
-			console.log("Has properties field?:", "properties" in model)
-			console.log("Properties type:", model.properties?.constructor?.name)
-			console.log("Properties size:", model.properties?.size)
-			console.log("Has node?:", !!model.node)
-			console.log("Has sourceModel?:", !!(model as any).sourceModel)
-			console.log("Is template?:", !!(model as any).templateMapper)
-			console.log("Model keys:", Object.keys(model))
-			console.log("Properties entries:", Array.from(model.properties?.entries() || []))
-			
+			// === ISSUE #180 INVESTIGATION: Property Enumeration ===
+			yield* Effect.log(`🔍 Converting model to schema: ${model.name ?? 'Anonymous'} (cache miss)`)
+
 			const properties: Record<string, SchemaObject> = {}
 			const required: string[] = []
 
-			// Try to iterate with walkPropertiesInherited
+			// CRITICAL INVESTIGATION: Check what walkPropertiesInherited returns
 			const props = Array.from(walkPropertiesInherited(model))
-			console.log("walkPropertiesInherited count:", props.length)
-			console.log("Property names:", props.map(p => p.name))
-			console.log("=== MODEL DEBUG END ===")
+			yield* Effect.log(`🔍 walkPropertiesInherited found ${props.length} properties for model ${model.name}`)
+			
+			if (props.length === 0) {
+				yield* Effect.log(`🚨 ISSUE #180: No properties found for model ${model.name}`)
+				yield* Effect.log(`🔍 Model properties direct access: ${model.properties?.size || 0}`)
+				
+				// FALLBACK: Try direct properties access if walkPropertiesInherited fails
+				if (model.properties && model.properties.size > 0) {
+					yield* Effect.log(`🔧 Using fallback direct property access for model ${model.name}`)
+					for (const [name, prop] of model.properties) {
+						yield* Effect.log(`📋 Processing fallback property: ${name} (type: ${prop.type.kind})`)
 
-			// Process each model property using TypeSpec's walkPropertiesInherited
-			// This properly handles inherited properties and all property sources
-			for (const prop of walkPropertiesInherited(model)) {
-				const name = prop.name
-				yield* Effect.log(`📋 Processing property: ${name} (type: ${prop.type.kind})`)
+						properties[name] = yield* convertPropertyToSchemaEffect(prop, program, name)
 
-				properties[name] = yield* convertPropertyToSchemaEffect(prop, program, name)
+						if (!prop.optional) {
+							required.push(name)
+						}
+					}
+				} else {
+					yield* Effect.log(`🚨 Model ${model.name} has no accessible properties`)
+				}
+			} else {
+				// Normal path: walkPropertiesInherited worked
+				for (const prop of props) {
+					const name = prop.name
+					yield* Effect.log(`📋 Processing property: ${name} (type: ${prop.type.kind})`)
 
-				if (!prop.optional) {
-					required.push(name)
+					properties[name] = yield* convertPropertyToSchemaEffect(prop, program, name)
+
+					if (!prop.optional) {
+						required.push(name)
+					}
 				}
 			}
 
