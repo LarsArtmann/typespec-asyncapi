@@ -270,25 +270,65 @@
 
 ---
 
-## 🎯 **IMMEDIATE ACTION PLAN**
+## 🎯 **IMMEDIATE ACTION PLAN - PRIORITIZED BY IMPACT**
 
-### **TODAY (November 1, 2025)**
-1. **CRITICAL:** Fix GitHub Issue #178 (test execution hanging) - BLOCKS EVERYTHING
-2. **CRITICAL:** Fix 10 most critical ESLint errors
-3. **HIGH:** Fix 5 worst code duplication clones
-4. **MEDIUM:** Update justfile documentation with new find-duplicates
+### **🔥 CRITICAL: 1% → 51% IMPACT (30-100 minutes)**
+**Tasks 1-20: Unblock all development and fix core production blockers**
 
-### **THIS WEEK**
-5. Reactivate 3 most critical infrastructure files
-6. Resolve all 87 ESLint errors
-7. Complete Effect.TS violation fixes
-8. Achieve >95% test coverage
+#### **Phase 1: Emergency Unblockers (15 minutes)**
+1. **FIX GitHub Issue #178:** Test execution hanging investigation (15 min)
+2. **FIX GitHub Issue #179:** TypeSpec decorators registration missing (5 min)
+3. **FIX GitHub Issue #172:** @server decorator crash investigation (20 min)
+4. **FIX GitHub Issue #180:** Property enumeration returns empty (10 min)
+5. **FIX GitHub Issue #176:** Complex infrastructure re-integration plan (10 min)
 
-### **NEXT WEEK**
-9. Complete infrastructure reactivation
-10. Implement medium priority features
-11. Add comprehensive documentation
-12. Prepare v1.0.0 release
+#### **Phase 2: ESLint Critical Errors (45 minutes)**
+6-10. **FIX 15 prefer-nullish-coalescing violations** (15 min)
+11-15. **FIX 8 no-this-alias violations** (10 min)
+16-18. **FIX 8 restrict-template-expressions** (10 min)
+19-20. **FIX 3 no-unnecessary-type-assertion** (5 min)
+
+### **⚡ HIGH PRIORITY: 4% → 64% IMPACT (2-4 hours)**
+**Tasks 21-50: Major infrastructure recovery and quality improvements**
+
+21-25. **FIX 15 consistent-type-definitions violations** (20 min)
+26-30. **FIX 9 naming-convention violations** (15 min)
+31-35. **FIX 8 no-console statements** (10 min)
+36-40. **FIX remaining ESLint errors** (15 min)
+41-45. **FIX Effect.TS violations** (20 min)
+46-50. **REACTIVATE 3 critical infrastructure files** (60 min)
+
+### **🎯 MEDIUM PRIORITY: 20% → 80% IMPACT (6-8 hours)**
+**Tasks 51-100: Feature completion and comprehensive testing**
+
+51-60. **REACTIVATE remaining infrastructure files** (90 min)
+61-70. **FIX 5 worst code duplication clones** (30 min)
+72-80. **IMPLEMENT @effect/schema runtime validation** (60 min)
+81-90. **ADD comprehensive advanced decorator examples** (45 min)
+91-100. **CREATE performance benchmark suite** (60 min)
+
+### **🏢 PRODUCTION POLISH: 80% → 100% IMPACT (8-10 hours)**
+**Tasks 101-150: Advanced features and optimization**
+
+101-110. **INCREASE test coverage to >80%** (60 min)
+111-120. **IMPLEMENT type caching system** (45 min)
+121-130. **ADD real-world examples** (60 min)
+134-140. **CREATE getting started guide** (30 min)
+141-150. **SETUP CI/CD pipeline** (90 min)
+
+---
+
+## 📊 **TIME-INVESTED MATRIX TABLE**
+
+| Priority Range | Task Count | Time Range | Impact Gain | Focus Area |
+|---------------|-----------|-----------|------------|------------|
+| **1% → 51%** | 20 tasks | 30-100 min | **50% impact** | **Critical Unblockers** |
+| **4% → 64%** | 30 tasks | 2-4 hours | **60% impact** | **Infrastructure Recovery** |
+| **20% → 80%** | 50 tasks | 6-8 hours | **60% impact** | **Feature Implementation** |
+| **80% → 100%** | 50 tasks | 8-10 hours | **20% impact** | **Production Polish** |
+
+**🎯 TOTAL ESTIMATE:** 16-23 hours for 100% production readiness
+**⚡ OPTIMAL PATH:** Focus on 1% → 64% range (50 tasks, 2.5-5 hours) for **maximum ROI**
 
 ---
 
