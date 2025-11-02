@@ -19,7 +19,7 @@ export const SECURITY_CONFIGS_KEY = Symbol("security-configs")
 export const $securityEnhanced = (context: DecoratorContext, target: Model | Operation, config: Record<string, unknown>) => {
 	// Store security configuration in TypeSpec state map
 	const stateMap = context.program.stateMap(SECURITY_CONFIGS_KEY)
-	const existingConfigs = stateMap.get(target) || []
+	const existingConfigs = Array.from(stateMap.entries()).filter(([key]) => key === target).map(([, value]) => value)[0] || []
 	
 	// Validate and store security config
 	const securityConfig = config as SecurityConfig
@@ -42,7 +42,16 @@ export const $securityEnhanced = (context: DecoratorContext, target: Model | Ope
  * Get all security configurations from state map
  */
 export const getSecurityConfigurations = (program: Program): Map<Model | Operation, SecurityConfig[]> => {
-	return program.stateMap(SECURITY_CONFIGS_KEY)
+	const stateMap = program.stateMap(SECURITY_CONFIGS_KEY)
+	const result = new Map<Model | Operation, SecurityConfig[]>()
+	
+	for (const [key, value] of stateMap.entries()) {
+		if ((key as any).kind === "Model" || (key as any).kind === "Operation") {
+			result.set(key, value as SecurityConfig[])
+		}
+	}
+	
+	return result
 }
 
 /**
