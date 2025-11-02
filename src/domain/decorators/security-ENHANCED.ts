@@ -16,28 +16,26 @@ export const SECURITY_CONFIGS_KEY = Symbol("security-configs")
 /**
  * Enhanced security decorator implementation with state map integration
  */
-export const $securityEnhanced = (context: DecoratorContext, target: Model | Operation, config: Record<unknown>) => {
-	return Effect.gen(function* () {
-		// Store security configuration in TypeSpec state map
-		const stateMap = context.program.stateMap(SECURITY_CONFIGS_KEY)
-		const existingConfigs = stateMap.get(target) || []
-		
-		// Validate and store security config
-		const securityConfig = config as SecurityConfig
-		if (!securityConfig.name || !securityConfig.scheme) {
-			reportDiagnostic(context.program, {
-				code: "invalid-security-scheme",
-				message: "Security scheme must have 'name' and 'scheme' properties",
-				target: target
-			})
-			return
-		}
-		
-		existingConfigs.push(securityConfig)
-		stateMap.set(target, existingConfigs)
-		
-		yield* Effect.logInfo(`🔐 Enhanced security scheme registered: ${securityConfig.name}`)
-	})
+export const $securityEnhanced = (context: DecoratorContext, target: Model | Operation, config: Record<string, unknown>) => {
+	// Store security configuration in TypeSpec state map
+	const stateMap = context.program.stateMap(SECURITY_CONFIGS_KEY)
+	const existingConfigs = stateMap.get(target) || []
+	
+	// Validate and store security config
+	const securityConfig = config as SecurityConfig
+	if (!securityConfig.name || !securityConfig.scheme) {
+		reportDiagnostic(context.program, {
+			code: "invalid-security-scheme",
+			message: "Security scheme must have 'name' and 'scheme' properties",
+			target: target
+		})
+		return Effect.logInfo(`🔐 Security scheme registration failed: ${securityConfig.name}`)
+	}
+	
+	existingConfigs.push(securityConfig)
+	stateMap.set(target, existingConfigs)
+	
+	return Effect.logInfo(`🔐 Enhanced security scheme registered: ${securityConfig.name}`)
 }
 
 /**
@@ -50,7 +48,7 @@ export const getSecurityConfigurations = (program: Program): Map<Model | Operati
 /**
  * Process security configurations into AsyncAPI document
  */
-export const processSecuritySchemes = (program: Program, asyncApiDoc: any) => {
+export const processSecuritySchemes = (program: Program, asyncApiDoc: Record<string, unknown>) => {
 	return Effect.gen(function* () {
 		const securityConfigs = getSecurityConfigurations(program)
 		
@@ -61,29 +59,28 @@ export const processSecuritySchemes = (program: Program, asyncApiDoc: any) => {
 		
 		// Initialize security schemes in document
 		if (!asyncApiDoc.components) {
-			asyncApiDoc.components = {}
+			(asyncApiDoc as any).components = {}
 		}
 		
-		if (!asyncApiDoc.components.securitySchemes) {
-			asyncApiDoc.components.securitySchemes = {}
+		if (!(asyncApiDoc as any).components.securitySchemes) {
+			(asyncApiDoc as any).components.securitySchemes = {}
 		}
 		
 		// Process all security configurations
 		for (const [target, configs] of securityConfigs) {
 			for (const config of configs) {
 				const securityScheme = {
-					type: config.scheme.type,
 					description: `Security scheme: ${config.name}`,
 					...config.scheme
 				}
 				
 				// Add to document
-				asyncApiDoc.components.securitySchemes[config.name] = securityScheme
+				(asyncApiDoc as any).components.securitySchemes[config.name] = securityScheme
 				
-				yield* Effect.logInfo(`🔧 Processed security scheme: ${config.name} (${securityScheme.type})`)
+				yield* Effect.logInfo(`🔧 Processed security scheme: ${config.name} (${(config.scheme as any).type})`)
 			}
 		}
 		
-		yield* Effect.logInfo(`✅ Security schemes processing complete: ${Object.keys(asyncApiDoc.components.securitySchemes).length} schemes`)
+		yield* Effect.logInfo(`✅ Security schemes processing complete: ${Object.keys((asyncApiDoc as any).components.securitySchemes).length} schemes`)
 	})
 }

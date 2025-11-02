@@ -28,7 +28,7 @@ export const MQTT_PROTOCOL = "mqtt" as const
  * MQTT Plugin Implementation (following kafka-plugin structure)
  */
 export const mqttPlugin = {
-  name: "mqtt",
+  name: "mqtt" as const,
   version: "1.0.0",
   
   /**
@@ -53,11 +53,11 @@ export const mqttPlugin = {
           cleanSession: config.cleanSession,
           keepAlive: config.keepAlive
         }
-      }
+      } as const
 
       // Add will message configuration if provided
       if (config.willTopic || config.willMessage) {
-        binding.mqtt.will = {
+        (binding as any).mqtt.will = {
           topic: config.willTopic,
           payload: config.willMessage,
           qos: config.willQos || 0,
@@ -83,7 +83,7 @@ export const mqttPlugin = {
           retain: config.retain || false,
           contentType: (config as any).contentType
         }
-      }
+      } as const
 
       yield* Effect.logInfo("📨 Generated MQTT message binding")
       return binding
@@ -107,7 +107,7 @@ export const mqttPlugin = {
           maxReconnectAttempts: 16,
           bindingVersion: "0.3.0"
         }
-      }
+      } as const
 
       yield* Effect.logInfo("🖥️ Generated MQTT server binding")
       return binding
