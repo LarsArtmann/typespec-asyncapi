@@ -6,7 +6,6 @@
  */
 
 import { Effect } from "effect"
-import type { Operation } from "@typespec/compiler"
 
 export interface PerformanceMetrics {
   operations: number
