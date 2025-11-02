@@ -7,11 +7,8 @@
 
 import { Effect } from "effect"
 import type { AsyncAPIProtocolType } from "../../constants/protocol-defaults.js"
-import type { Operation } from "@typespec/compiler"
 
-/**
- * MQTT Plugin Configuration (following kafka-plugin patterns)
- */
+// MQTT Plugin Configuration (following kafka-plugin patterns)
 export interface MQTTBindingConfig {
   qos: 0 | 1 | 2
   retain: boolean
@@ -24,6 +21,9 @@ export interface MQTTBindingConfig {
   willRetain?: boolean
 }
 
+// Protocol type for MQTT
+export const MQTT_PROTOCOL = "mqtt" as const
+
 /**
  * MQTT Plugin Implementation (following kafka-plugin structure)
  */
@@ -34,14 +34,14 @@ export const mqttPlugin = {
   /**
    * Check if plugin handles specific protocol
    */
-  canHandle: (protocolName: AsyncAPIProtocolType): boolean => {
-    return protocolName === "mqtt"
+  canHandle: (protocolName: string): boolean => {
+    return protocolName === MQTT_PROTOCOL
   },
 
   /**
    * Generate operation binding for MQTT
    */
-  generateOperationBinding: (operation: Operation, data: Record<string, unknown>) => {
+  generateOperationBinding: (data: Record<string, unknown>) => {
     return Effect.gen(function* () {
       const config = data as MQTTBindingConfig
       
@@ -65,7 +65,7 @@ export const mqttPlugin = {
         }
       }
 
-      yield* Effect.logInfo(`🔌 Generated MQTT operation binding for ${operation.name}: QoS ${config.qos || 0}`)
+      yield* Effect.logInfo(`🔌 Generated MQTT operation binding: QoS ${config.qos || 0}`)
       return binding
     })
   },
@@ -81,7 +81,7 @@ export const mqttPlugin = {
         mqtt: {
           qos: config.qos || 0,
           retain: config.retain || false,
-          contentType: config.contentType
+          contentType: (config as any).contentType
         }
       }
 

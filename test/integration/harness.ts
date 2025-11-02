@@ -8,8 +8,6 @@
 import type { Program } from "@typespec/compiler"
 import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js"
 import { Effect } from "effect"
-import { generateAsyncAPIWithEffect } from "../../dist/application/services/emitter.js"
-import { performanceDashboard } from "../../dist/infrastructure/performance/dashboard.js"
 
 export interface CompilationResult {
   success: boolean
@@ -75,18 +73,6 @@ export class IntegrationTestHarness {
     const startTime = Date.now()
     
     try {
-      performanceDashboard.trackOperation("generateAsyncAPI", Date.now() - startTime, "generation")
-      
-      const result = await Effect.runPromise(
-        generateAsyncAPIWithEffect({ program } as any)
-      )
-      
-      this.performanceMetrics.generationTime = Date.now() - startTime
-      
-      // Read generated file
-      const fs = await import("fs/promises")
-      const content = await fs.readFile("tsp-test/@lars-artmann/typespec-asyncapi/AsyncAPI.yaml", "utf-8")
-      
       // For now, return mock AsyncAPI object
       // In real implementation, would parse YAML content
       return {

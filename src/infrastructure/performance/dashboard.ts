@@ -100,9 +100,6 @@ export class PerformanceDashboard {
    */
   generateReport(): { system: SystemMetrics; operations: OperationMetrics[]; summary: PerformanceMetrics } {
     const totalOperations = this.operationMetrics.length
-    const successfulOperations = this.operationMetrics.filter(m => m.success).length
-    const failedOperations = totalOperations - successfulOperations
-    
     const totalTime = this.operationMetrics.reduce((sum, m) => sum + m.duration, 0)
     const averageTime = totalOperations > 0 ? totalTime / totalOperations : 0
 
