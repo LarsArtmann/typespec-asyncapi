@@ -13,6 +13,7 @@ import {SimplePluginRegistry} from "./simple-plugin-registry.js"
 import {kafkaPlugin} from "./kafka-plugin.js"
 import {websocketPlugin} from "./websocket-plugin.js"
 import {httpPlugin} from "./http-plugin.js"
+import {mqttPlugin} from "./mqtt-plugin.js"
 
 // Export types needed by other modules
 export type {AsyncAPIProtocolType} from "../../constants/protocol-defaults.js"
@@ -67,6 +68,19 @@ export const registerBuiltInPlugins = (): Effect.Effect<void, StandardizedError>
 				escape: "Use other protocol plugins or manual binding configuration",
 				severity: "warning",
 				code: "HTTP_PLUGIN_REGISTRATION_ERROR",
+				context: { error }
+			})))
+		)
+
+		yield* pluginRegistry.register(mqttPlugin).pipe(
+			Effect.catchAll((error) => Effect.fail(createError({
+				what: "Failed to register MQTT plugin",
+				reassure: "The emitter will continue without MQTT protocol support",
+				why: "Plugin registration failed due to configuration or dependency issues",
+				fix: "Check MQTT plugin configuration and dependencies",
+				escape: "Use other protocol plugins or manual binding configuration",
+				severity: "warning",
+				code: "MQTT_PLUGIN_REGISTRATION_ERROR",
 				context: { error }
 			})))
 		)
