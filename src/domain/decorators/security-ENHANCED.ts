@@ -48,7 +48,7 @@ export const getSecurityConfigurations = (program: Program): Map<Model | Operati
 /**
  * Process security configurations into AsyncAPI document
  */
-export const processSecuritySchemes = (program: Program, asyncApiDoc: Record<string, unknown>) => {
+export const processSecuritySchemes = (program: Program, asyncApiDoc: any) => {
 	return Effect.gen(function* () {
 		const securityConfigs = getSecurityConfigurations(program)
 		
@@ -59,28 +59,28 @@ export const processSecuritySchemes = (program: Program, asyncApiDoc: Record<str
 		
 		// Initialize security schemes in document
 		if (!asyncApiDoc.components) {
-			(asyncApiDoc as any).components = {}
+			asyncApiDoc.components = {}
 		}
 		
-		if (!(asyncApiDoc as any).components.securitySchemes) {
-			(asyncApiDoc as any).components.securitySchemes = {}
+		if (!asyncApiDoc.components.securitySchemes) {
+			asyncApiDoc.components.securitySchemes = {}
 		}
 		
 		// Process all security configurations
 		for (const [target, configs] of securityConfigs) {
 			for (const config of configs) {
-				const securityScheme = {
+				const securitySchemeData = {
 					description: `Security scheme: ${config.name}`,
 					...config.scheme
 				}
 				
 				// Add to document
-				(asyncApiDoc as any).components.securitySchemes[config.name] = securityScheme
+				asyncApiDoc.components.securitySchemes[config.name] = securitySchemeData
 				
 				yield* Effect.logInfo(`🔧 Processed security scheme: ${config.name} (${(config.scheme as any).type})`)
 			}
 		}
 		
-		yield* Effect.logInfo(`✅ Security schemes processing complete: ${Object.keys((asyncApiDoc as any).components.securitySchemes).length} schemes`)
+		yield* Effect.logInfo(`✅ Security schemes processing complete: ${Object.keys(asyncApiDoc.components.securitySchemes).length} schemes`)
 	})
 }
