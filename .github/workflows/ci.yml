@@ -16,7 +16,7 @@ env:
 jobs:
   quality-gates:
     name: Quality Gates
-    runs-on: ubuntu-latest
+    runs-on: ["self-hosted", "linux", "x64"]
     
     steps:
     - name: Checkout code
@@ -103,7 +103,7 @@ jobs:
         
   build-artifacts:
     name: Build Release Artifacts
-    runs-on: ubuntu-latest
+    runs-on: ["self-hosted", "linux", "x64"]
     needs: quality-gates
     if: success() && (github.event_name == 'push' || github.event_name == 'release')
     
@@ -144,7 +144,7 @@ jobs:
 
   publish-npm:
     name: Publish to NPM
-    runs-on: ubuntu-latest
+    runs-on: ["self-hosted", "linux", "x64"]
     needs: [quality-gates, build-artifacts]
     if: github.event_name == 'release' && github.event.action == 'published'
     environment: production
@@ -192,7 +192,7 @@ jobs:
 
   security-audit:
     name: Security Audit
-    runs-on: ubuntu-latest
+    runs-on: ["self-hosted", "linux", "x64"]
     
     steps:
     - name: Checkout code
@@ -228,7 +228,7 @@ jobs:
 
   status-checks:
     name: Status Summary
-    runs-on: ubuntu-latest
+    runs-on: ["self-hosted", "linux", "x64"]
     needs: [quality-gates, build-artifacts, security-audit]
     if: always()
     

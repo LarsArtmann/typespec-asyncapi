@@ -15,7 +15,7 @@ jobs:
   # Quality Gates - Must pass before release
   quality-gates:
     name: Quality Gates
-    runs-on: ubuntu-latest
+    runs-on: ["self-hosted", "linux", "x64"]
     
     steps:
     - name: Checkout repository
@@ -74,7 +74,7 @@ jobs:
   # Semantic Version Detection
   version-check:
     name: Version Analysis  
-    runs-on: ubuntu-latest
+    runs-on: ["self-hosted", "linux", "x64"]
     needs: [quality-gates]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     
@@ -146,7 +146,7 @@ jobs:
   # Automated Release Process  
   release:
     name: Automated Release
-    runs-on: ubuntu-latest
+    runs-on: ["self-hosted", "linux", "x64"]
     needs: [quality-gates, version-check]
     if: needs.version-check.outputs.should-release == 'true'
     
@@ -286,7 +286,7 @@ jobs:
   # Post-Release Tasks
   post-release:
     name: Post-Release Tasks
-    runs-on: ubuntu-latest
+    runs-on: ["self-hosted", "linux", "x64"]
     needs: [release]
     if: success()
     
@@ -329,7 +329,7 @@ jobs:
   # Failure Notifications
   notify-failure:
     name: Release Failure Notification
-    runs-on: ubuntu-latest
+    runs-on: ["self-hosted", "linux", "x64"]
     needs: [quality-gates, version-check, release, post-release]
     if: failure()
     

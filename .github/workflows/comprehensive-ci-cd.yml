@@ -26,7 +26,7 @@ jobs:
   # =============================================================================
   setup:
     name: Setup and Environment Validation
-    runs-on: ubuntu-latest
+    runs-on: ["self-hosted", "linux", "x64"]
     timeout-minutes: 5
     outputs:
       should-run-performance: ${{ steps.changes.outputs.performance }}
@@ -64,7 +64,7 @@ jobs:
   # =============================================================================
   lint:
     name: Code Quality (ESLint)
-    runs-on: ubuntu-latest
+    runs-on: ["self-hosted", "linux", "x64"]
     needs: setup
     timeout-minutes: 10
     
@@ -121,7 +121,7 @@ jobs:
 
   typecheck:
     name: TypeScript Type Checking
-    runs-on: ubuntu-latest
+    runs-on: ["self-hosted", "linux", "x64"]
     needs: setup
     timeout-minutes: 8
     
@@ -190,7 +190,7 @@ jobs:
   # =============================================================================
   test-unit:
     name: Unit Tests
-    runs-on: ubuntu-latest
+    runs-on: ["self-hosted", "linux", "x64"]
     needs: [setup, typecheck]
     timeout-minutes: 15
     strategy:
@@ -249,7 +249,7 @@ jobs:
 
   test-integration:
     name: Integration Tests
-    runs-on: ubuntu-latest
+    runs-on: ["self-hosted", "linux", "x64"]
     needs: [setup, typecheck]
     timeout-minutes: 20
     
@@ -315,7 +315,7 @@ jobs:
   # =============================================================================
   performance-tests:
     name: Performance Regression Tests
-    runs-on: ubuntu-latest
+    runs-on: ["self-hosted", "linux", "x64"]
     needs: [setup, test-unit]
     if: needs.setup.outputs.should-run-performance == 'true'
     timeout-minutes: 30
@@ -424,7 +424,7 @@ jobs:
   # =============================================================================
   security-audit:
     name: Security Vulnerability Scan
-    runs-on: ubuntu-latest
+    runs-on: ["self-hosted", "linux", "x64"]
     needs: setup
     if: needs.setup.outputs.should-run-security == 'true' || github.event_name == 'schedule'
     timeout-minutes: 10
@@ -485,7 +485,7 @@ jobs:
 
   dependency-update:
     name: Dependency Update Check
-    runs-on: ubuntu-latest
+    runs-on: ["self-hosted", "linux", "x64"]
     needs: setup
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     timeout-minutes: 15
@@ -563,7 +563,7 @@ jobs:
   # =============================================================================
   build-validation:
     name: Build and Artifact Validation
-    runs-on: ubuntu-latest
+    runs-on: ["self-hosted", "linux", "x64"]
     needs: [lint, typecheck, test-unit]
     timeout-minutes: 15
     
@@ -692,7 +692,7 @@ jobs:
   # =============================================================================
   release-validation:
     name: Release Validation
-    runs-on: ubuntu-latest
+    runs-on: ["self-hosted", "linux", "x64"]
     needs: [build-validation, test-integration, security-audit]
     if: github.event_name == 'release'
     timeout-minutes: 10
@@ -791,7 +791,7 @@ jobs:
 
   publish-npm:
     name: Publish to NPM
-    runs-on: ubuntu-latest
+    runs-on: ["self-hosted", "linux", "x64"]
     needs: [release-validation]
     if: github.event_name == 'release' && !github.event.release.prerelease
     timeout-minutes: 10
@@ -839,7 +839,7 @@ jobs:
   # =============================================================================
   notify-status:
     name: Pipeline Status Notification
-    runs-on: ubuntu-latest
+    runs-on: ["self-hosted", "linux", "x64"]
     needs: [build-validation, test-integration, security-audit, performance-tests]
     if: always()
     timeout-minutes: 5
