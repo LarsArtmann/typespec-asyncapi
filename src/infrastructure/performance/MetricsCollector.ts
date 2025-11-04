@@ -15,7 +15,7 @@ import type { ServiceMetrics } from "../../domain/models/ServiceInterfaces.js"
 /**
  * Performance metrics interface
  */
-export interface PerformanceMetrics {
+export type PerformanceMetrics = {
   readonly timestamp: number
   readonly operation: string
   readonly duration: number
@@ -28,7 +28,7 @@ export interface PerformanceMetrics {
 /**
  * Metrics collector interface
  */
-export interface MetricsCollector {
+export type MetricsCollector = {
   readonly startTiming: (operation: string) => Effect.Effect<void, never>
   readonly endTiming: (operation: string) => Effect.Effect<PerformanceMetrics, never>
   readonly recordMetrics: (metrics: PerformanceMetrics) => Effect.Effect<void, never>

@@ -37,7 +37,7 @@ export const enum ErrorCategory {
 /**
  * Base error interface for all AsyncAPI emitter errors
  */
-export interface BaseError {
+export type BaseError = {
   readonly id: string
   readonly category: ErrorCategory
   readonly severity: ErrorSeverity
@@ -52,38 +52,38 @@ export interface BaseError {
 /**
  * TypeSpec compilation error
  */
-export interface CompilationError extends BaseError {
+export type CompilationError = {
   readonly category: ErrorCategory.COMPILATION
   readonly typeName: string
   readonly decorator?: string
   readonly line?: number
   readonly column?: number
-}
+} & BaseError
 
 /**
  * Plugin system error
  */
-export interface PluginError extends BaseError {
+export type PluginError = {
   readonly category: ErrorCategory.PLUGIN
   readonly pluginName: string
   readonly protocol?: string
   readonly operation?: string
-}
+} & BaseError
 
 /**
  * Schema validation error
  */
-export interface SchemaError extends BaseError {
+export type SchemaError = {
   readonly category: ErrorCategory.SCHEMA
   readonly schemaPath: string
   readonly validationRule: string
   readonly invalidValue: unknown
-}
+} & BaseError
 
 /**
  * Error handler interface
  */
-export interface ErrorHandler {
+export type ErrorHandler = {
   readonly handleError: (error: BaseError) => Effect.Effect<void, never>
   readonly handleCompilationError: (error: CompilationError) => Effect.Effect<void, never>
   readonly handlePluginError: (error: PluginError) => Effect.Effect<void, never>
@@ -94,7 +94,7 @@ export interface ErrorHandler {
 /**
  * Error summary interface
  */
-export interface ErrorSummary {
+export type ErrorSummary = {
   readonly totalErrors: number
   readonly errorsByCategory: Record<ErrorCategory, number>
   readonly errorsBySeverity: Record<ErrorSeverity, number>

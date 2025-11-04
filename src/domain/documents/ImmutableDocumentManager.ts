@@ -54,7 +54,7 @@ const applyMutation = <T>(document: AsyncAPIObject, mutation: DocumentUpdate<T>)
 /**
  * Document mutation operation interface
  */
-export interface DocumentMutation<T = unknown> {
+export type DocumentMutation<T = unknown> = {
   readonly id: string
   readonly type: DocumentUpdate['type']
   readonly path: string[]
@@ -67,7 +67,7 @@ export interface DocumentMutation<T = unknown> {
 /**
  * Document version interface for history tracking
  */
-export interface DocumentVersion {
+export type DocumentVersion = {
   readonly id: string
   readonly version: number
   readonly timestamp: number
@@ -79,7 +79,7 @@ export interface DocumentVersion {
 /**
  * Immutable document manager interface
  */
-export interface DocumentManager {
+export type DocumentManager = {
   readonly getDocument: () => Effect.Effect<AsyncAPIObject, never>
   readonly getCurrentVersion: () => Effect.Effect<number, never>
   readonly mutateDocument: <T>(mutation: DocumentUpdate<T>) => Effect.Effect<AsyncAPIObject, Error, "MetricsCollector" | "ErrorHandler">
@@ -355,7 +355,7 @@ export const DocumentManagerLive = Layer.succeed(DocumentManager, ImmutableDocum
 /**
  * Global type declarations for document state
  */
-export interface DocumentState {
+export type DocumentState = {
   readonly currentDocument: AsyncAPIObject
   readonly currentVersion: number
   readonly currentMutations: DocumentMutation[]
