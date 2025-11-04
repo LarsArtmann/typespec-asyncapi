@@ -1,14 +1,21 @@
 /**
- * 🚀 SIMPLE ISSUE #180 FIX - Direct file writing approach
+ * 🔥 CRITICAL FIX: TypeSpec API Integration - Test Framework Compatibility
  * 
- * CRITICAL ARCHITECTURE DECISION:
- * - Bypass complex DocumentGenerator serialization issues
- * - Use simple direct file writing for immediate Issue #180 resolution
+ * KEY INSIGHT: Use TypeSpec's `emitFile` API instead of direct filesystem writes
+ * - `emitFile` automatically bridges to test framework's outputFiles Map
+ * - Eliminates need for manual bridging/hacking
+ * - Official TypeSpec emitter pattern
+ * - Enables both real file writing AND test framework integration
+ * 
+ * ARCHITECTURE DECISION:
+ * - Replace fs.writeFile with TypeSpec's emitFile API
  * - Maintain all existing pipeline functionality (Discovery → Processing → Validation)
- * - Refactor DocumentGenerator properly in Phase 2
+ * - Fix test framework output capture issue
+ * - Use resolvePath for proper path handling
  */
 
 import type { EmitContext } from "@typespec/compiler";
+import { emitFile, resolvePath } from "@typespec/compiler";
 import { Effect } from "effect";
 
 // Core emission services - keep all working pipeline components
@@ -25,18 +32,18 @@ import { DocumentBuilder } from "../../domain/emitter/DocumentBuilder.js";
 import { registerBuiltInPlugins, pluginRegistry as _pluginRegistry } from "../../infrastructure/adapters/plugin-system.js";
 
 /**
- * 🎯 SIMPLE ISSUE #180 FIX - Bypass complex serialization
+ * 🎯 TYPESPEC API INTEGRATION - Test Framework Compatibility
  * 
  * STRATEGY: 
  * 1. Use working DiscoveryService (finds operations)
  * 2. Use working ProcessingService (creates channels/operations)
  * 3. Use working ValidationService (validates result)
- * 4. Bypass DocumentGenerator serialization (causing errors)
- * 5. Write files directly with simple JSON/YAML serialization
+ * 4. Use TypeSpec's emitFile API (bridges to test framework)
+ * 5. Maintain all existing pipeline functionality
  */
 export function generateAsyncAPIWithEffect(context: EmitContext): Effect.Effect<void, StandardizedError> {
 	return Effect.gen(function* () {
-		yield* Effect.logInfo("🎯 SIMPLE ISSUE #180 FIX: Direct pipeline execution")
+		yield* Effect.logInfo("🚀 TypeSpec API Integration: Using emitFile for test framework compatibility")
 		
 		// 🔧 FIX: Register protocol plugins to eliminate warnings
 		yield* registerBuiltInPlugins()
@@ -68,37 +75,10 @@ export function generateAsyncAPIWithEffect(context: EmitContext): Effect.Effect<
 		const validationResult = yield* validationService.validateDocument(initialDoc)
 		yield* Effect.logInfo(`✅ Validation: ${validationResult.isValid ? 'PASSED' : 'FAILED'}`)
 		
-		// 📄 STAGE 4: SIMPLE FILE WRITING (Bypass DocumentGenerator)
-		yield* Effect.logInfo("🚀 Stage 4: Simple File Writing")
+		// 📄 STAGE 4: TYPESPEC EMITFILE API (Test Framework Integration)
+		yield* Effect.logInfo("🚀 Stage 4: TypeSpec emitFile API")
 		
-		const fs = yield* Effect.tryPromise({
-			try: () => import("node:fs/promises"),
-			catch: (error) => createError({
-				what: "Failed to import node:fs/promises",
-				reassure: "This is a system-level error, but recovery is possible",
-				why: "The file system module could not be loaded",
-				fix: "Check Node.js installation and permissions",
-				escape: "Use alternative file system approach",
-				severity: "error",
-				code: "FS_IMPORT_ERROR",
-				context: { error }
-			})
-		});
-		
-		const path = yield* Effect.tryPromise({
-			try: () => import("node:path"),
-			catch: (error) => createError({
-				what: "Failed to import node:path",
-				reassure: "This is a system-level error, but recovery is possible",
-				why: "The path module could not be loaded",
-				fix: "Check Node.js installation and permissions", 
-				escape: "Use alternative path handling",
-				severity: "error",
-				code: "PATH_IMPORT_ERROR",
-				context: { error }
-			})
-		});
-		
+		// Import YAML for serialization
 		const yaml = yield* Effect.tryPromise({
 			try: () => import("yaml"),
 			catch: (error) => createError({
@@ -117,39 +97,28 @@ export function generateAsyncAPIWithEffect(context: EmitContext): Effect.Effect<
 		const outputFile = context.options["output-file"] || "asyncapi";
 		const fileType = (context.options["file-type"] as string) ?? "yaml";
 		const extension = fileType === "json" ? "json" : "yaml";
-		const outputPath = path.join(context.emitterOutputDir, `${String(outputFile)}.${extension}`);
 		
-		// Simple serialization using the processed document
+		// Simple serialization using processed document
 		const content = fileType === "json" 
 			? JSON.stringify(initialDoc, null, 2)
 			: yaml.stringify(initialDoc);
 		
-		// Simple file writing
+		// 🔥 KEY FIX: Use TypeSpec's emitFile API instead of direct filesystem operations
+		// This automatically bridges to test framework's outputFiles Map!
 		yield* Effect.tryPromise({
-			try: () => fs.mkdir(path.dirname(outputPath), { recursive: true }),
+			try: () => emitFile(context.program, {
+				path: resolvePath(context.emitterOutputDir, `${String(outputFile)}.${extension}`),
+				content: content,
+			}),
 			catch: (error) => createError({
-				what: "Failed to create output directory",
-				reassure: "This error does not corrupt existing files",
-				why: "Directory creation failed due to permissions or disk issues",
-				fix: "Check write permissions and disk space",
-				escape: "Write to a different directory",
+				what: "Failed to emit AsyncAPI file using TypeSpec API",
+				reassure: "This is an emit API error, but alternative approaches exist",
+				why: "The TypeSpec emitFile function failed",
+				fix: "Check file paths and content format",
+				escape: "Use direct file write approach",
 				severity: "error",
-				code: "DIRECTORY_CREATE_ERROR",
-				context: { outputPath, error }
-			})
-		});
-		
-		yield* Effect.tryPromise({
-			try: () => fs.writeFile(outputPath, content, 'utf8'),
-			catch: (error) => createError({
-				what: "Failed to write AsyncAPI file",
-				reassure: "This error does not affect the generated AsyncAPI structure",
-				why: "File writing failed due to permissions or disk issues",
-				fix: "Check write permissions and disk space",
-				escape: "Write to a different location",
-				severity: "error", 
-				code: "FILE_WRITE_ERROR",
-				context: { outputPath, error }
+				code: "EMIT_FILE_ERROR",
+				context: { outputFile: `${outputFile}.${extension}`, error }
 			})
 		});
 		
@@ -157,7 +126,8 @@ export function generateAsyncAPIWithEffect(context: EmitContext): Effect.Effect<
 		const channelsCount = Object.keys(initialDoc.channels ?? {}).length;
 		const operationsCount = Object.keys(initialDoc.operations ?? {}).length;
 		
-		yield* Effect.logInfo(`🎉 ISSUE #180 RESOLVED: ${String(channelsCount)} channels, ${String(operationsCount)} operations`)
-		yield* Effect.logInfo(`✅ File written: ${String(outputPath)}`)
+		yield* Effect.logInfo(`🎉 TYPESPEC API SUCCESS: ${String(channelsCount)} channels, ${String(operationsCount)} operations`)
+		yield* Effect.logInfo(`✅ File emitted: ${String(outputFile)}.${extension}`)
+		yield* Effect.logInfo(`🔗 Test framework bridge: Automatic via emitFile API`)
 	});
 }
