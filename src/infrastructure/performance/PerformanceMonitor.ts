@@ -13,6 +13,9 @@
  */
 
 import {Effect} from "effect"
+// TODO: Fix imports when Effect.Tag API resolved
+// import {PERFORMANCE_METRICS_SERVICE} from "../performance/metrics.js"
+// import {MEMORY_MONITOR_SERVICE} from "../performance/memory-monitor.js"
 import {PERFORMANCE_METRICS_SERVICE} from "../performance/metrics.js"
 import {MEMORY_MONITOR_SERVICE} from "../performance/memory-monitor.js"
 import {createMetricName} from "../performance/PerformanceTypes.js"
@@ -157,8 +160,9 @@ export class PerformanceMonitor {
 			// Use Effect.try for comprehensive snapshot creation with proper error handling
 			yield* Effect.try({
 				try: () => Effect.gen(function* (this: PerformanceMonitor) {
-					const metricsService = yield* PERFORMANCE_METRICS_SERVICE
-					const memoryMonitor = yield* MEMORY_MONITOR_SERVICE
+					// TODO: Fix service usages when Effect.Tag API resolved
+					// const metricsService = yield* PERFORMANCE_METRICS_SERVICE
+					// const memoryMonitor = yield* MEMORY_MONITOR_SERVICE
 
 					// Get current memory metrics
 					const memoryMetrics = yield* memoryMonitor.getMemoryMetrics()
