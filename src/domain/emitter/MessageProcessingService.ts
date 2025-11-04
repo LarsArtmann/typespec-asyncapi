@@ -10,6 +10,7 @@ import type { Model, Program } from "@typespec/compiler"
 import type { AsyncAPIObject, MessageObject } from "@asyncapi/parser/esm/spec-types/v3.js"
 import { convertModelToSchema } from "../../utils/schema-conversion.js"
 import { getMessageConfig } from "../../utils/typespec-helpers.js"
+import { railwayLogging } from "../../utils/effect-helpers.js"
 
 /**
  * Process a single TypeSpec message model into AsyncAPI message
@@ -50,7 +51,7 @@ export const processSingleMessageModel = (
 			asyncApiDoc.components.schemas[`${messageName}Schema`] = schema
 		}
 
-		yield* Effect.logDebug(`Processed message model: ${messageName}`, {
+		yield* railwayLogging.logDebugGeneration("message", messageName, {
 			contentType: message.contentType,
 			hasPayload: !!schema
 		})
@@ -76,7 +77,7 @@ export const processMessageModels = (
 			)
 		)
 
-		yield* Effect.log(`📊 Processed ${messageModels.length} message models successfully`)
+		yield* railwayLogging.logBatchCompletion(messageModels.length, 0, 0)
 		return messageModels.length
 	})
 

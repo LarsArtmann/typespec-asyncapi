@@ -11,6 +11,7 @@ import type { AsyncAPIObject, OperationObject } from "@asyncapi/parser/esm/spec-
 import { createChannelDefinition } from "../../utils/asyncapi-helpers.js"
 import { convertModelToSchema, convertTypeToSchemaType } from "../../utils/schema-conversion.js"
 import { getMessageConfig, getProtocolConfig } from "../../utils/typespec-helpers.js"
+import { railwayLogging } from "../../utils/effect-helpers.js"
 import { generateProtocolBinding } from "../../infrastructure/adapters/plugin-system.js"
 import type { AsyncAPIProtocolType } from "../../infrastructure/adapters/protocol-type.js"
 
@@ -23,6 +24,11 @@ export const processSingleOperation = (
 	program: Program
 ): Effect.Effect<{ channelName: string; operation: OperationObject }, never> =>
 	Effect.gen(function* () {
+		yield* railwayLogging.logDebugGeneration("operation", operation.name, {
+			type: operation.type.name,
+			parameters: operation.parameters?.length || 0
+		})
+
 		// Extract operation metadata using TypeSpec helpers
 		const operationInfo = getMessageConfig(program, operation)
 		const protocolInfo = getProtocolConfig(program, operation)
@@ -73,6 +79,13 @@ export const processSingleOperation = (
 				: undefined,
 			tags: operationInfo.tags
 		}
+
+		yield* railwayLogging.logDebugGeneration("channel", channelName, {
+			operation: operation.name,
+			hasBindings: !!protocolBinding,
+			hasParameters: !!parameters,
+			hasMessage: !!messageSchema
+		})
 
 		return {
 			channelName,
