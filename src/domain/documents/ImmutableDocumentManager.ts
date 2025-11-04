@@ -18,36 +18,31 @@ import { ErrorHandler, ErrorFactory } from "../../infrastructure/errors/Centrali
 /**
  * Internal helper: Apply mutation to document immutably
  */
+const DocumentStateError = (message: string) => new Error(`Document state error: ${message}`)
+
 const applyMutation = <T>(document: AsyncAPIObject, mutation: DocumentUpdate<T>) =>
-  Effect.sync(() => {
-    try {
-      const documentCopy = JSON.parse(JSON.stringify(document))
-      let current: any = documentCopy
-      let oldValue: T | undefined
-      
-      // Navigate to mutation path
-      for (let i = 0; i < mutation.path.length - 1; i++) {
-        const key = mutation.path[i]
-        if (!(key in current)) {
-          current[key] = {}
-        }
-        current = current[key]
+  Effect.gen(function* () {
+    const documentCopy = JSON.parse(JSON.stringify(document))
+    let current: Record<string, unknown> = documentCopy
+    let oldValue: T | undefined
+    
+    // Navigate to mutation path
+    for (let i = 0; i < mutation.path.length - 1; i++) {
+      const key = mutation.path[i]
+      if (!(key in current)) {
+        current[key] = {}
       }
-      
-      const finalKey = mutation.path[mutation.path.length - 1]
-      oldValue = current[finalKey]
-      current[finalKey] = mutation.value
-      
-      return {
-        success: true as const,
-        document: documentCopy,
-        oldValue
-      }
-    } catch (error) {
-      return {
-        success: false as const,
-        error: error instanceof Error ? error.message : String(error)
-      }
+      current = current[key] as Record<string, unknown>
+    }
+    
+    const finalKey = mutation.path[mutation.path.length - 1]
+    oldValue = current[finalKey] as T
+    current[finalKey] = mutation.value
+    
+    return {
+      success: true as const,
+      document: documentCopy,
+      oldValue
     }
   })
 
@@ -100,19 +95,19 @@ export const DocumentManager = Context.GenericTag<"DocumentManager", DocumentMan
  */
 export const ImmutableDocumentManager: DocumentManager = {
   getDocument: () =>
-    Effect.sync(() => {
+    Effect.gen(function* () {
       const currentState = globalThis.__ASYNCAPI_DOCUMENT_STATE
       if (!currentState) {
-        throw new Error("Document state not initialized")
+        return yield* Effect.fail(DocumentStateError("not initialized"))
       }
       return currentState.currentDocument
     }),
   
   getCurrentVersion: () =>
-    Effect.sync(() => {
+    Effect.gen(function* () {
       const currentState = globalThis.__ASYNCAPI_DOCUMENT_STATE
       if (!currentState) {
-        throw new Error("Document state not initialized")
+        return yield* Effect.fail(DocumentStateError("not initialized"))
       }
       return currentState.currentVersion
     }),

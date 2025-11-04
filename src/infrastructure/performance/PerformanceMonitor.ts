@@ -5,7 +5,7 @@
  * Designed to work with Effect.TS patterns for proper error handling.
  */
 
-import { Effect, gen } from "effect"
+import { Effect } from "effect"
 
 export type PerformanceSnapshot = {
 	/** Current memory usage in megabytes */
@@ -58,7 +58,7 @@ export class PerformanceMonitor {
 	/**
 	 * Get current memory usage (simplified implementation)
 	 */
-	private getMemoryUsage = (): number => {
+	private readonly getMemoryUsage = (): number => {
 		// Simplified memory calculation
 		// In a real implementation, this would use process.memoryUsage() or similar
 		if (typeof process !== "undefined" && process.memoryUsage) {

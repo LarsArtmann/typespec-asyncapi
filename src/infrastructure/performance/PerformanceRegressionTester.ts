@@ -5,7 +5,7 @@
  * Ensures code changes don't degrade performance below acceptable thresholds.
  */
 
-import { Effect, gen } from "effect"
+import { Effect } from "effect"
 import { PerformanceMonitor } from "./PerformanceMonitor.js"
 
 export type PerformanceConfig = {
@@ -60,10 +60,22 @@ export type RegressionReport = {
 }
 
 /**
+ * Performance test error type
+ */
+export class PerformanceTestError extends Error {
+	constructor(
+		message: string,
+		public readonly cause?: unknown
+	) {
+		super(message)
+		this.name = "PerformanceTestError"
+	}
+}
+
+/**
  * Performance Regression Tester
  * 
- * Provides comprehensive performance testing with regression detection.
- * Validates against configurable thresholds and baseline comparisons.
+ * Provides comprehensive performance testing with automated regression detection.
  */
 export class PerformanceRegressionTester {
 	private readonly config: PerformanceConfig
@@ -85,15 +97,9 @@ export class PerformanceRegressionTester {
 		regressionReport: RegressionReport
 		passedThresholds: boolean
 	}, E | PerformanceTestError, R> =>
-		Effect.gen(function* () {
+		Effect.gen(function* (this: PerformanceRegressionTester) {
 			// Start performance monitoring
-			const startResult = yield* this.performanceMonitor.startMonitoring()
-			if (startResult.isFailed()) {
-				return yield* Effect.fail(new PerformanceTestError(
-					"Failed to start performance monitoring",
-					startResult.error
-				))
-			}
+			yield* this.performanceMonitor.startMonitoring()
 
 			// Execute the effect with timing
 			const startTime = performance.now()
@@ -101,34 +107,21 @@ export class PerformanceRegressionTester {
 			const endTime = performance.now()
 
 			// Collect performance metrics
-			const metricsResult = yield* this.performanceMonitor.collectMetrics()
-			if (metricsResult.isFailed()) {
-				return yield* Effect.fail(new PerformanceTestError(
-					"Failed to collect performance metrics",
-					metricsResult.error
-				))
-			}
+			const baseMetrics = yield* this.performanceMonitor.collectMetrics()
 
-			// Calculate performance metrics
+			// Calculate derived metrics
 			const executionTimeMs = endTime - startTime
 			const metrics: PerformanceMetrics = {
-				...metricsResult.value,
+				...baseMetrics,
 				executionTimeMs,
 				throughputOpsPerSec: operationCount > 0 ? (operationCount / executionTimeMs) * 1000 : 0,
 			}
 
 			// Check threshold compliance
-			const passedThresholds = this.checkThresholds(metrics)
+			const passedThresholds = this.checkThresholds(metrics, this.config)
 
 			// Generate regression report if baseline available
-			const regressionReport = this.config.baseline
-				? this.generateRegressionReport(metrics, this.config.baseline)
-				: {
-					hasRegression: false,
-					degradedMetrics: [],
-					hasImprovement: false,
-					improvedMetrics: [],
-				}
+			const regressionReport = this.generateRegressionReport(metrics, this.config.baseline)
 
 			return {
 				metrics,
@@ -140,79 +133,86 @@ export class PerformanceRegressionTester {
 	/**
 	 * Check if metrics meet configured thresholds
 	 */
-}
+	private readonly checkThresholds = (metrics: PerformanceMetrics, config: PerformanceConfig): boolean => {
+		return (
+			metrics.executionTimeMs <= config.maxCompilationTimeMs &&
+			metrics.memoryUsageMB <= config.maxMemoryUsageMB &&
+			metrics.throughputOpsPerSec >= config.minThroughputOpsPerSec &&
+			metrics.averageLatencyMs <= config.maxLatencyMs
+		)
+	}
 
-const checkThresholds = (metrics: PerformanceMetrics, config: PerformanceConfig): boolean => {
-	return (
-		metrics.executionTimeMs <= config.maxCompilationTimeMs &&
-		metrics.memoryUsageMB <= config.maxMemoryUsageMB &&
-		metrics.throughputOpsPerSec >= config.minThroughputOpsPerSec &&
-		metrics.averageLatencyMs <= config.maxLatencyMs
-	)
-}
+	/**
+	 * Generate regression report comparing metrics to baseline
+	 */
+	private readonly generateRegressionReport = (
+		current: PerformanceMetrics,
+		baseline?: PerformanceMetrics
+	): RegressionReport => {
+		if (!baseline) {
+			return {
+				hasRegression: false,
+				degradedMetrics: [],
+				hasImprovement: false,
+				improvedMetrics: [],
+			}
+		}
 
-/**
- * Generate regression report comparing metrics to baseline
- */
-const generateRegressionReport = (
-	current: PerformanceMetrics,
-	baseline: PerformanceMetrics
-): RegressionReport => {
-	const threshold = 0.1 // 10% degradation threshold
-	const improvementThreshold = 0.05 // 5% improvement threshold
+		const threshold = 0.1 // 10% degradation threshold
+		const improvementThreshold = 0.05 // 5% improvement threshold
 
-	const degradedMetrics: RegressionReport["degradedMetrics"] = []
-	const improvedMetrics: RegressionReport["improvedMetrics"] = []
+		const degradedMetrics: RegressionReport["degradedMetrics"] = []
+		const improvedMetrics: RegressionReport["improvedMetrics"] = []
 
-	const metricKeys: (keyof PerformanceMetrics)[] = [
-		"executionTimeMs",
-		"memoryUsageMB", 
-		"throughputOpsPerSec",
-		"averageLatencyMs",
-		"peakMemoryUsageMB",
-	]
+		const metricKeys: (keyof PerformanceMetrics)[] = [
+			"executionTimeMs",
+			"memoryUsageMB",
+			"throughputOpsPerSec",
+			"averageLatencyMs",
+			"peakMemoryUsageMB",
+		]
 
-	for (const metric of metricKeys) {
-		const currentValue = current[metric] as number
-		const baselineValue = baseline[metric] as number
+		for (const metric of metricKeys) {
+			const currentValue = current[metric] as number
+			const baselineValue = baseline[metric] as number
 
-		if (baselineValue === 0) continue
+			if (baselineValue === 0) continue
 
-		const percentageChange = (currentValue - baselineValue) / baselineValue
+			const percentageChange = (currentValue - baselineValue) / baselineValue
 
-		// For throughput, higher is better (inverted logic)
-		const isInverseMetric = metric === "throughputOpsPerSec"
-		const isDegradation = isInverseMetric 
-			? percentageChange < -threshold 
-			: percentageChange > threshold
-		const isImprovement = isInverseMetric
-			? percentageChange > improvementThreshold
-			: percentageChange < -improvementThreshold
+			// For throughput, higher is better (inverted logic)
+			const isInverseMetric = metric === "throughputOpsPerSec"
+			const isDegradation = isInverseMetric
+				? percentageChange < -threshold
+				: percentageChange > threshold
+			const isImprovement = isInverseMetric
+				? percentageChange > improvementThreshold
+				: percentageChange < -improvementThreshold
 
-		if (isDegradation) {
-			degradedMetrics.push({
-				metric,
-				currentValue,
-				baselineValue,
-				percentageChange: percentageChange * 100,
-			})
-		} else if (isImprovement) {
-			improvedMetrics.push({
-				metric,
-				currentValue,
-				baselineValue,
-				percentageChange: percentageChange * 100,
-			})
+			if (isDegradation) {
+				degradedMetrics.push({
+					metric,
+					currentValue,
+					baselineValue,
+					percentageChange: percentageChange * 100,
+				})
+			} else if (isImprovement) {
+				improvedMetrics.push({
+					metric,
+					currentValue,
+					baselineValue,
+					percentageChange: percentageChange * 100,
+				})
+			}
+		}
+
+		return {
+			hasRegression: degradedMetrics.length > 0,
+			degradedMetrics,
+			hasImprovement: improvedMetrics.length > 0,
+			improvedMetrics,
 		}
 	}
-
-	return {
-		hasRegression: degradedMetrics.length > 0,
-		degradedMetrics,
-		hasImprovement: improvedMetrics.length > 0,
-		improvedMetrics,
-	}
-}
 
 	/**
 	 * Set baseline metrics for future regression comparisons
@@ -233,7 +233,7 @@ const generateRegressionReport = (
 			minThroughputOpsPerSec: 5,    // 5 ops/sec
 			maxLatencyMs: 2000,          // 2 seconds
 			enableRegressionDetection: true,
-		}
+		};
 	}
 
 	/**
@@ -246,30 +246,11 @@ const generateRegressionReport = (
 			minThroughputOpsPerSec: 10,   // 10 ops/sec
 			maxLatencyMs: 1000,          // 1 second
 			enableRegressionDetection: true,
-		}
+		};
 	}
 }
 
 /**
- * Performance test error type
+ * Default performance configuration for development
  */
-export class PerformanceTestError extends Error {
-	constructor(
-		message: string,
-		public readonly cause?: unknown
-	) {
-		super(message)
-		this.name = "PerformanceTestError"
-	}
-}
-
-/**
- * Default performance configuration for the project
- */
-export const DEFAULT_PERFORMANCE_CONFIG: PerformanceConfig = {
-	maxCompilationTimeMs: 5000,
-	maxMemoryUsageMB: 100,
-	minThroughputOpsPerSec: 10,
-	maxLatencyMs: 1000,
-	enableRegressionDetection: true,
-}
+export const DEFAULT_PERFORMANCE_CONFIG: PerformanceConfig = PerformanceRegressionTester.createDevConfig()
