@@ -23,7 +23,7 @@ export const processSingleOperation = (
 	operation: Operation,
 	asyncApiDoc: AsyncAPIObject,
 	program: Program
-): Effect.Effect<{ channelName: string; operation: OperationObject; messageSchema?: any }, never> =>
+): Effect.Effect<{ channelName: string; operation: OperationObject; messageSchema?: Record<string, unknown> }, never> =>
 	Effect.gen(function* () {
 		yield* railwayLogging.logDebugGeneration("operation", operation.name, {
 			type: operation.returnType?.kind || 'unknown',
