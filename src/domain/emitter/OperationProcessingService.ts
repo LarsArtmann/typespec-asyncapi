@@ -25,33 +25,28 @@ export const processSingleOperation = (
 ): Effect.Effect<{ channelName: string; operation: OperationObject }, never> =>
 	Effect.gen(function* () {
 		yield* railwayLogging.logDebugGeneration("operation", operation.name, {
-			type: operation.type.name,
-			parameters: operation.parameters?.length || 0
+			type: operation.returnType?.kind || 'unknown',
+			parameters: operation.parameters?.properties?.size || 0
 		})
 
 		// Extract operation metadata using TypeSpec helpers
-		const operationInfo = getMessageConfig(program, operation)
-		const protocolInfo = getProtocolConfig(program, operation)
+		const operationInfo = getMessageConfig(program, operation) || {}
+		const protocolInfo = getProtocolConfig(program, operation) || {}
 
 		// Generate channel name from operation
 		const channelName = createChannelDefinition(operation.name)
 
 		// Convert parameters to JSON schema if present
-		const parameters = operation.parameters
-			? yield* Effect.all(
-					operation.parameters.map(param =>
-						Effect.sync(() => {
-							const paramModel = param.type
-							return convertModelToSchema(paramModel, program)
-						})
-					)
-				)
-			: undefined
+		const parameters = operation.parameters?.properties
+			? Array.from(operation.parameters.properties.entries()).map(([paramName, paramModel]) => ({
+					name: paramName,
+					schema: convertModelToSchema(paramModel, program)
+				}))
+			: []
 
-		// Convert return type to JSON schema
-		const messageModel = operation.responses?.[Object.keys(operation.responses)[0]]?.type
-		const messageSchema = messageModel
-			? convertModelToSchema(messageModel, program)
+		// Convert return type to JSON schema  
+		const messageSchema = operation.returnType
+			? convertModelToSchema(operation.returnType, program)
 			: undefined
 
 		// Generate protocol-specific bindings
@@ -65,19 +60,20 @@ export const processSingleOperation = (
 
 		// Create AsyncAPI operation object
 		const asyncApiOperation: OperationObject = {
-			operationId: operation.name,
 			summary: operationInfo.description || `${operation.name} operation`,
 			description: operationInfo.description,
-			parameters,
-			message: {
+			parameters: parameters.map(param => ({
+				name: param.name,
+				schema: param.schema,
+				description: `Parameter: ${param.name}`,
+				location: "message" as const
+			})),
+			messages: messageSchema ? [{
+				name: `${operation.name}Message`,
 				payload: messageSchema,
 				description: operationInfo.description,
-				$contentType: protocolInfo.contentType || "application/json"
-			},
-			bindings: protocolBinding
-				? { [protocolInfo.protocol]: protocolBinding }
-				: undefined,
-			tags: operationInfo.tags
+				contentType: protocolInfo.contentType || "application/json"
+			}] : undefined
 		}
 
 		yield* railwayLogging.logDebugGeneration("channel", channelName, {
@@ -116,44 +112,26 @@ export const processOperations = (
 			asyncApiDoc.channels = asyncApiDoc.channels || {}
 			asyncApiDoc.channels[result.channelName] = {
 				description: `Channel for ${result.channelName} operations`,
-				publish: {
-					operationId: result.operation.operationId,
+				publish: result.operation.messages ? {
+					operationId: result.operation.operationId || result.channelName,
 					summary: result.operation.summary,
 					description: result.operation.description,
 					parameters: result.operation.parameters,
-					message: result.operation.message,
-					bindings: result.operation.bindings,
-					tags: result.operation.tags
-				}
+					messages: result.operation.messages
+				} : undefined,
+				bindings: result.operation.bindings
 			}
 
 			// Add message components if message schema exists
-			if (result.operation.message?.payload) {
+			if (result.operation.messages?.[0]?.payload) {
 				asyncApiDoc.components = asyncApiDoc.components || {}
 				asyncApiDoc.components.messages = asyncApiDoc.components.messages || {}
 				asyncApiDoc.components.messages[`${result.channelName}Message`] = {
 					name: `${result.channelName}Message`,
 					title: `${result.channelName} Message`,
 					description: `Message for ${result.channelName} operations`,
-					contentType: result.operation.message?.$contentType || "application/json",
-					payload: result.operation.message.payload
-				}
-			}
-
-			// Add schema components
-			if (result.operation.message?.payload) {
-				asyncApiDoc.components = asyncApiDoc.components || {}
-				asyncApiDoc.components.schemas = asyncApiDoc.components.schemas || {}
-				// Extract schema reference from payload
-				const schemaRef = typeof result.operation.message.payload === 'object' && 
-					result.operation.message.payload !== null && 
-					'$ref' in result.operation.message.payload
-					? result.operation.message.payload.$ref
-					: undefined
-
-				if (schemaRef) {
-					// Schema is already in components
-					yield* Effect.logDebug(`Using existing schema: ${schemaRef}`)
+					contentType: result.operation.messages[0].contentType || "application/json",
+					payload: result.operation.messages[0].payload
 				}
 			}
 		}

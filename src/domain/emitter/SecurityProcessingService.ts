@@ -18,7 +18,7 @@ export const processSingleSecurityConfig = (
 	asyncApiDoc: AsyncAPIObject
 ): Effect.Effect<void, never> =>
 	Effect.gen(function* () {
-		yield* railwayLogging.logDebugGeneration("security-scheme", config.type, config)
+		yield* railwayLogging.logDebugGeneration("security-scheme", config.name, config)
 
 		// Create AsyncAPI security scheme based on type
 		const securityScheme: SecuritySchemeObject = createSecuritySchemeFromConfig(config)
@@ -26,11 +26,11 @@ export const processSingleSecurityConfig = (
 		// Add to AsyncAPI document components
 		asyncApiDoc.components = asyncApiDoc.components || {}
 		asyncApiDoc.components.securitySchemes = asyncApiDoc.components.securitySchemes || {}
-		asyncApiDoc.components.securitySchemes[config.type] = securityScheme
+		asyncApiDoc.components.securitySchemes[config.name] = securityScheme
 
-		yield* railwayLogging.logDebugGeneration("security-scheme", `Added ${config.type}`, {
-			schemeType: config.scheme,
-			description: config.description
+		yield* railwayLogging.logDebugGeneration("security-scheme", `Added ${config.name}`, {
+			schemeType: config.scheme.type,
+			description: securityScheme.description
 		})
 	})
 
@@ -59,14 +59,14 @@ export const processSecurityConfigs = (
  * Create AsyncAPI security scheme from TypeSpec security config
  */
 const createSecuritySchemeFromConfig = (config: SecurityConfig): SecuritySchemeObject => {
-	switch (config.scheme) {
+	switch (config.scheme.type) {
 		case "oauth2":
 			return {
 				type: "oauth2",
-				description: config.description,
-				flows: config.flows || {
+				description: `OAuth2 security: ${config.name}`,
+				flows: config.scheme.flows || {
 					implicit: {
-						authorizationUrl: config.authorizationUrl || "",
+						authorizationUrl: config.scheme.authorizationUrl || "",
 						scopes: config.scopes || []
 					}
 				}
@@ -75,26 +75,24 @@ const createSecuritySchemeFromConfig = (config: SecurityConfig): SecuritySchemeO
 		case "apiKey":
 			return {
 				type: "apiKey",
-				description: config.description,
-				name: config.name || "X-API-Key",
-				in: config.in || "header",
-				scheme: config.scheme || "Bearer"
+				description: `API Key security: ${config.name}`,
+				name: config.name,
+				in: config.scheme.in || "header"
 			}
 
 		case "http":
 			return {
 				type: "http",
-				description: config.description,
-				scheme: config.httpScheme || "bearer",
-				bearerFormat: config.bearerFormat || "JWT"
+				description: `HTTP security: ${config.name}`,
+				scheme: config.scheme.httpScheme || "bearer",
+				bearerFormat: config.scheme.bearerFormat || "JWT"
 			}
 
 		case "openIdConnect":
 			return {
 				type: "openIdConnect",
-				description: config.description,
-				openIdConnectUrl: config.openIdConnectUrl || "",
-				bearerFormat: config.bearerFormat || "JWT"
+				description: `OpenID Connect security: ${config.name}`,
+				openIdConnectUrl: config.scheme.openIdConnectUrl || ""
 			}
 
 		default:
@@ -120,12 +118,12 @@ export const extractSecurityMetadata = (
 		hasFlows: boolean
 	}, never> =>
 	Effect.gen(function* () {
-		yield* railwayLogging.logDebugGeneration("security-scheme", config.type, config)
+		yield* railwayLogging.logDebugGeneration("security-scheme", config.name, config)
 
 		return {
-			type: config.type,
-			description: config.description,
-			scheme: config.scheme || "apiKey",
-			hasFlows: !!(config.flows && Object.keys(config.flows).length > 0)
+			type: config.scheme.type,
+			description: `Security scheme: ${config.name}`,
+			scheme: config.scheme.type,
+			hasFlows: config.scheme.type === "oauth2" && !!config.scheme.flows
 		}
 	})

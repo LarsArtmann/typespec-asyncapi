@@ -9,3 +9,6 @@ export type ProtocolType =
 	| "nats"
 	| "ws"
 	| "https"
+
+// Re-export as AsyncAPIProtocolType for compatibility
+export type AsyncAPIProtocolType = ProtocolType

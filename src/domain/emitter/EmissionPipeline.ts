@@ -31,7 +31,7 @@ import {
 // Domain services
 import {DocumentBuilder} from "./DocumentBuilder.js"
 import {DiscoveryService} from "./DiscoveryService.js"
-import {ProcessingService} from "./ProcessingService.js"
+import { orchestrateAsyncAPITransformation } from "./ProcessingService.js"
 import {ValidationService} from "../validation/ValidationService.js"
 import type {DiscoveryResult} from "./DiscoveryResult.js"
 import type {PipelineContext} from "../../application/services/PipelineContext.js"
@@ -143,7 +143,7 @@ export class EmissionPipeline implements IPipelineService {
 			yield* Effect.log(`🏗️ Stage 2: Processing with REAL ProcessingService`)
 
 			// Use REAL ProcessingService with complete transformation logic (static methods)
-			const processingResult = yield* ProcessingService.executeProcessing(
+			const processingResult = yield* orchestrateAsyncAPITransformation(
 				discoveryResult.operations,
 				discoveryResult.messageModels,
 				discoveryResult.securityConfigs,

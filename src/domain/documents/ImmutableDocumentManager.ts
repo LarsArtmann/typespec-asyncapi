@@ -97,12 +97,12 @@ export type DocumentVersion = {
  * Immutable document manager interface
  */
 export type DocumentManager = {
-  readonly getDocument: () => Effect.Effect<AsyncAPIObject, never>
-  readonly getCurrentVersion: () => Effect.Effect<number, never>
+  readonly getDocument: () => Effect.Effect<AsyncAPIObject, Error>
+  readonly getCurrentVersion: () => Effect.Effect<number, Error>
   readonly mutateDocument: <T>(mutation: DocumentUpdate<T>) => Effect.Effect<AsyncAPIObject, Error, "MetricsCollector" | "ErrorHandler">
   readonly mutateDocumentAtomic: <T>(mutations: DocumentUpdate<T>[]) => Effect.Effect<AsyncAPIObject, Error, "MetricsCollector" | "ErrorHandler">
   readonly rollbackToVersion: (versionId: string) => Effect.Effect<AsyncAPIObject, Error>
-  readonly getMutationHistory: () => Effect.Effect<DocumentMutation[], never>
+  readonly getMutationHistory: () => Effect.Effect<DocumentMutation[], Error>
   readonly getVersionHistory: () => Effect.Effect<DocumentVersion[], never>
   readonly validateDocument: (document: AsyncAPIObject) => Effect.Effect<boolean, never>
 }
@@ -120,7 +120,7 @@ export const ImmutableDocumentManager: DocumentManager = {
     Effect.gen(function* () {
       const currentState = globalThis.__ASYNCAPI_DOCUMENT_STATE
       if (!currentState) {
-        return yield* Effect.fail(DocumentStateError("not initialized"))
+        yield* Effect.fail(new Error("Document not initialized"))
       }
       return currentState.currentDocument
     }),
@@ -129,7 +129,7 @@ export const ImmutableDocumentManager: DocumentManager = {
     Effect.gen(function* () {
       const currentState = globalThis.__ASYNCAPI_DOCUMENT_STATE
       if (!currentState) {
-        return yield* Effect.fail(DocumentStateError("not initialized"))
+        yield* Effect.fail(new Error("Document not initialized"))
       }
       return currentState.currentVersion
     }),

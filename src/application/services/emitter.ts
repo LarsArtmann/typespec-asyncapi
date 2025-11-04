@@ -20,7 +20,7 @@ import { Effect } from "effect";
 
 // Core emission services - keep all working pipeline components
 import { DiscoveryService } from "../../domain/emitter/DiscoveryService.js";
-import { ProcessingService } from "../../domain/emitter/ProcessingService.js";
+import { orchestrateAsyncAPITransformation } from "../../domain/emitter/ProcessingService.js";
 import { ValidationService } from "../../domain/validation/ValidationService.js";
 
 // Error handling
@@ -60,7 +60,7 @@ export function generateAsyncAPIWithEffect(context: EmitContext): Effect.Effect<
 		
 		// 🏗️ STAGE 2: Processing (Working - creates channels/operations)
 		yield* Effect.logInfo("🚀 Stage 2: Processing")
-		const processingResult = yield* ProcessingService.executeProcessing(
+		const processingResult = yield* orchestrateAsyncAPITransformation(
 			discoveryResult.operations,
 			discoveryResult.messageModels,
 			discoveryResult.securityConfigs,

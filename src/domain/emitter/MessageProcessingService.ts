@@ -21,7 +21,7 @@ export const processSingleMessageModel = (
 	program: Program
 ): Effect.Effect<string, never> =>
 	Effect.gen(function* () {
-		const messageConfig = getMessageConfig(program, messageModel)
+		const messageConfig = getMessageConfig(program, messageModel) || {}
 		
 		// Convert message model to JSON schema
 		const schema = yield* Effect.sync(() => 
@@ -29,7 +29,7 @@ export const processSingleMessageModel = (
 		)
 
 		// Generate message name
-		const messageName = messageModel.name || `${messageConfig.type}Message`
+		const messageName = messageModel.name || `${messageConfig.name || 'Message'}Message`
 
 		// Create AsyncAPI message object
 		const message: MessageObject = {
@@ -99,10 +99,10 @@ export const extractMessageMetadata = (
 		const schema = convertModelToSchema(messageModel, program)
 
 		return {
-			name: messageModel.name || `${messageConfig.type}Message`,
-			title: messageConfig.title,
-			description: messageConfig.description,
-			contentType: messageConfig.contentType,
+			name: messageModel.name || `${messageConfig?.name || 'Message'}Message`,
+			title: messageConfig?.title,
+			description: messageConfig?.description,
+			contentType: messageConfig?.contentType,
 			hasSchema: !!schema
 		}
 	})
