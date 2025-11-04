@@ -62,7 +62,7 @@ export const processOperations = (
 			// Process each operation with functional composition using Effect.all
 			yield* Effect.all(
 				operations.map(op => 
-					Effect.sync(() => processSingleOperation(op, asyncApiDoc, program))
+					processSingleOperation(op, asyncApiDoc, program)
 				)
 			)
 
@@ -138,7 +138,8 @@ export const processSecurityConfigs = (securityConfigs: SecurityConfig[], asyncA
 	 * @param asyncApiDoc - AsyncAPI document to update
 	 * @param program - TypeSpec program for decorator access
 	 */
-const processSingleOperation = (op: Operation, asyncApiDoc: AsyncAPIObject, program: Program): string => {
+const processSingleOperation = (op: Operation, asyncApiDoc: AsyncAPIObject, program: Program): Effect.Effect<string> => 
+  Effect.gen(function*() {
 		const { operationType, channelPath } = extractOperationMetadata(op, program)
 		const protocolConfig = getProtocolConfig(program, op)
 
@@ -159,15 +160,15 @@ const processSingleOperation = (op: Operation, asyncApiDoc: AsyncAPIObject, prog
 			const bindingData = { config: protocolConfig.binding ?? {} }
 			
 			// Generate channel bindings - Plugin system preferred
-			const channelBindingResult = Effect.runSync(generateProtocolBinding(protocolName, 'channel', bindingData).pipe(Effect.catchAll(() => Effect.succeed(null))))
+			const channelBindingResult = yield* generateProtocolBinding(protocolName, 'channel', bindingData).pipe(Effect.catchAll(() => Effect.succeed(null)))
 			channelBindings = channelBindingResult ?? ProtocolBindingFactory.createChannelBindings(protocolType, protocolConfig.binding ?? {})
 			
 			// Generate operation bindings - Plugin system preferred
-			const operationBindingResult = Effect.runSync(generateProtocolBinding(protocolName, 'operation', bindingData).pipe(Effect.catchAll(() => Effect.succeed(null))))
+			const operationBindingResult = yield* generateProtocolBinding(protocolName, 'operation', bindingData).pipe(Effect.catchAll(() => Effect.succeed(null)))
 			operationBindings = operationBindingResult ?? ProtocolBindingFactory.createOperationBindings(protocolType, protocolConfig.binding ?? {})
 			
 			// Generate message bindings - Plugin system preferred
-			const messageBindingResult = Effect.runSync(generateProtocolBinding(protocolName, 'message', bindingData).pipe(Effect.catchAll(() => Effect.succeed(null))))
+			const messageBindingResult = yield* generateProtocolBinding(protocolName, 'message', bindingData).pipe(Effect.catchAll(() => Effect.succeed(null)))
 			messageBindings = messageBindingResult ?? ProtocolBindingFactory.createMessageBindings(protocolType, protocolConfig.binding ?? {})
 			
 			if (channelBindings) {
@@ -257,7 +258,7 @@ const processSingleOperation = (op: Operation, asyncApiDoc: AsyncAPIObject, prog
 			} else {
 				Effect.log(`🔍 Non-model return type (${op.returnType.kind}) - generating inline schema`)
 				// Handle non-model return types by converting to schema
-				const schema = Effect.runSync(convertTypeToSchemaType(op.returnType, program))
+				const schema = yield* convertTypeToSchemaType(op.returnType, program)
 				messageDef.payload = schema
 			}
 		} else {
@@ -276,9 +277,9 @@ const processSingleOperation = (op: Operation, asyncApiDoc: AsyncAPIObject, prog
 		
 		asyncApiDoc.components.messages[`${op.name}Message`] = messageDef
 
-		Effect.log(`✅ Processed operation: ${op.name} (${action})`)
+		yield* Effect.log(`✅ Processed operation: ${op.name} (${action})`)
 		return `Processed operation: ${op.name}`
-	}
+	})
 
 	/**
 	 * Transform single message model to AsyncAPI structures

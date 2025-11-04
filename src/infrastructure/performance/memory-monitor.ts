@@ -41,7 +41,7 @@ export const DEFAULT_MEMORY_BUDGET: MemoryBudget = {
 }
 
 
-export const MEMORY_MONITOR_SERVICE = Context.GenericTag<MemoryMonitorService>("MemoryMonitorService")
+export const MEMORY_MONITOR_SERVICE = Effect.Tag()("MemoryMonitorService")
 
 // MEMORY MONITOR IMPLEMENTATION
 const makeMemoryMonitorService = Effect.gen(function* () {

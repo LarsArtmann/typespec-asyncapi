@@ -86,7 +86,7 @@ export const PERFORMANCE_METRICS = {
 }
 
 
-export const PERFORMANCE_METRICS_SERVICE = Context.GenericTag<PerformanceMetricsService>("PerformanceMetricsService")
+export const PERFORMANCE_METRICS_SERVICE = Effect.Tag()("PerformanceMetricsService")
 
 // HIGH-PERFORMANCE IMPLEMENTATION
 const makePerformanceMetricsService = Effect.gen(function* () {

@@ -9,10 +9,47 @@
  */
 
 import { Effect, Context, Layer, pipe } from "effect"
+import { gen } from "effect/Effect"
 import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js"
 import type { DocumentUpdate, ServiceMetrics } from "../models/ServiceInterfaces.js"
 import { MetricsCollector } from "../../infrastructure/performance/MetricsCollector.js"
 import { ErrorHandler, ErrorFactory } from "../../infrastructure/errors/CentralizedErrorHandler.js"
+
+/**
+ * Internal helper: Apply mutation to document immutably
+ */
+const applyMutation = <T>(document: AsyncAPIObject, mutation: DocumentUpdate<T>) =>
+  Effect.sync(() => {
+    try {
+      const documentCopy = JSON.parse(JSON.stringify(document))
+      let current: any = documentCopy
+      let oldValue: T | undefined
+      
+      // Navigate to mutation path
+      for (let i = 0; i < mutation.path.length - 1; i++) {
+        const key = mutation.path[i]
+        if (!(key in current)) {
+          current[key] = {}
+        }
+        current = current[key]
+      }
+      
+      const finalKey = mutation.path[mutation.path.length - 1]
+      oldValue = current[finalKey]
+      current[finalKey] = mutation.value
+      
+      return {
+        success: true as const,
+        document: documentCopy,
+        oldValue
+      }
+    } catch (error) {
+      return {
+        success: false as const,
+        error: error instanceof Error ? error.message : String(error)
+      }
+    }
+  })
 
 /**
  * Document mutation operation interface
@@ -96,12 +133,8 @@ export const ImmutableDocumentManager: DocumentManager = {
         // Create deep copy of current document
         const currentDocument = JSON.parse(JSON.stringify(currentState.currentDocument))
         
-        // Apply mutation immutably
-        const mutationEffect = ImmutableDocumentManager.applyMutation<T>(
-          currentDocument, 
-          mutation
-        )
-        const mutationResult = Effect.runSync(mutationEffect)
+        // Apply mutation immutably using proper Effect composition
+        const mutationResult = yield* applyMutation<T>(currentDocument, mutation)
         
         if (!mutationResult.success) {
           yield* errorHandler.handleCompilationError(
@@ -130,14 +163,14 @@ export const ImmutableDocumentManager: DocumentManager = {
           id: `ver_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
           version: currentState.currentVersion + 1,
           timestamp: Date.now(),
-          document: mutationResult.newDocument,
+          document: mutationResult.document,
           mutations: [...currentState.currentMutations, documentMutation],
           description: 'Document mutation'
         }
         
         // Update global state
         globalThis.__ASYNCAPI_DOCUMENT_STATE = {
-          currentDocument: mutationResult.newDocument,
+          currentDocument: mutationResult.document,
           currentVersion: newVersion.version,
           currentMutations: newVersion.mutations,
           versionHistory: [...currentState.versionHistory, newVersion],
@@ -145,7 +178,7 @@ export const ImmutableDocumentManager: DocumentManager = {
         }
         
         // Validate new document
-        const isValid = yield* ImmutableDocumentManager.validateDocument(mutationResult.newDocument)
+        const isValid = yield* ImmutableDocumentManager.validateDocument(mutationResult.document)
         if (!isValid) {
           // Rollback on validation failure
           yield* ImmutableDocumentManager.rollbackToVersion(currentState.versionHistory[0]?.id ?? 'initial')
@@ -163,7 +196,7 @@ export const ImmutableDocumentManager: DocumentManager = {
           documentsProcessed: 1
         })
         
-        return mutationResult.newDocument
+        return mutationResult.document
       } catch (error) {
         yield* errorHandler.handleCompilationError(
           ErrorFactory.compilationError('Document mutation failed', {
@@ -193,11 +226,7 @@ export const ImmutableDocumentManager: DocumentManager = {
       const appliedMutations: DocumentMutation[] = []
       
       for (const mutation of mutations) {
-        const mutationEffect = ImmutableDocumentManager.applyMutation<T>(
-          currentDocument,
-          mutation
-        )
-        const mutationResult = Effect.runSync(mutationEffect)
+        const mutationResult = yield* applyMutation<T>(currentDocument, mutation)
         
         if (!mutationResult.success) {
           // Rollback all mutations on failure
@@ -222,7 +251,7 @@ export const ImmutableDocumentManager: DocumentManager = {
         }
         
         appliedMutations.push(documentMutation)
-        currentDocument = mutationResult.newDocument
+        currentDocument = mutationResult.document
       }
       
       // Create single atomic version
@@ -315,43 +344,7 @@ export const ImmutableDocumentManager: DocumentManager = {
       return true
     }),
   
-  /**
-   * Helper: Apply mutation to document immutably
-   */
-  applyMutation: <T>(document: AsyncAPIObject, mutation: DocumentUpdate<T>) =>
-    Effect.sync(() => {
-      try {
-        const documentCopy = JSON.parse(JSON.stringify(document))
-        let current: any = documentCopy
-        let oldValue: T | undefined
-        
-        // Navigate to mutation path
-        for (let i = 0; i < mutation.path.length - 1; i++) {
-          const key = mutation.path[i]
-          if (!(key in current)) {
-            current[key] = {}
-          }
-          current = current[key]
-        }
-        
-        const finalKey = mutation.path[mutation.path.length - 1]
-        oldValue = current[finalKey]
-        current[finalKey] = mutation.value
-        
-        return {
-          success: true as const,
-          newDocument: documentCopy as AsyncAPIObject,
-          oldValue
-        }
-      } catch (error) {
-        return {
-          success: false as const,
-          error: String(error),
-          newDocument: document,
-          oldValue: undefined
-        }
-      }
-    })
+  
 }
 
 /**

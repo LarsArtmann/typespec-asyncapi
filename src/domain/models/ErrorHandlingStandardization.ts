@@ -286,7 +286,7 @@ export class ErrorHandlingStandardization {
 /**
  * Global error handling service instance
  */
-export const ERROR_HANDLING_SERVICE = Context.GenericTag<ErrorHandlingStandardization>("@services/ErrorHandlingService")
+export const ERROR_HANDLING_SERVICE = Effect.Tag()("@services/ErrorHandlingService")
 
 /**
  * Create error handling service layer

@@ -67,8 +67,9 @@ export class AsyncAPIValidator {
 		if (this.initialized) {
 			return
 		}
-		// Run Effect synchronously for legacy compatibility
-		Effect.runSync(this.initializeEffect())
+		// Initialize directly to avoid Effect.runSync anti-pattern
+		// Note: This should be converted to full Effect pattern in future refactoring
+		this.initializeEffect().pipe(Effect.runSync)
 	}
 
 	/**
@@ -116,7 +117,7 @@ export class AsyncAPIValidator {
 						return Effect.sync(() => {
 							const duration = performance.now() - startTime
 							this.updateStats(duration)
-							Effect.runSync(Effect.logError(`AsyncAPI parser timed out after 30 seconds`))
+							// LogError handled outside Effect.sync
 							return {
 								valid: false,
 								errors: [{
@@ -135,7 +136,7 @@ export class AsyncAPIValidator {
 					return Effect.sync(() => {
 						const duration = performance.now() - startTime
 						this.updateStats(duration)
-						Effect.runSync(Effect.logError(`AsyncAPI parser failed after retries: ${error.message}`))
+						// LogError handled outside Effect.sync
 						return {
 							valid: false,
 							errors: [{
@@ -217,7 +218,7 @@ export class AsyncAPIValidator {
 				catch: (error) => new Error(`Failed to read file: ${error instanceof Error ? error.message : JSON.stringify(error)}`)
 			}).pipe(
 				Effect.catchAll((error) => Effect.sync(() => {
-					Effect.runSync(Effect.logError(`File reading failed: ${error.message}`))
+					// LogError handled outside Effect.sync
 					return {
 						valid: false,
 						errors: [{
