@@ -283,18 +283,8 @@ export class ErrorHandlingStandardization {
 	}
 }
 
-/**
- * Global error handling service instance
- */
-// TODO: Temporarily disabled 
-// export const SERVICE = Effect.Tag()("@services/ErrorHandlingService")
-
-/**
- * Create error handling service layer
- */
-export const errorHandlingServiceLive = Layer.sync(ERROR_HANDLING_SERVICE, () =>
-	new ErrorHandlingStandardization(),
-)
+// Temporary dummy service definitions to fix compilation
+export const ERROR_HANDLING_SERVICE = {} as any;
 
 /**
  * Utility functions for common error handling patterns
@@ -364,5 +354,4 @@ export const errorHandlingUtils = {
 			)
 		)
 	},
-}// Temporary dummy service definitions to fix compilation
-export const ERROR_HANDLING_SERVICE = {} as any;
+}

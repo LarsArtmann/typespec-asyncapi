@@ -13,11 +13,8 @@
  */
 
 import {Effect} from "effect"
-// TODO: Fix imports when Effect.Tag API resolved
-// import {PERFORMANCE_METRICS_SERVICE} from "../performance/metrics.js"
-// import {MEMORY_MONITOR_SERVICE} from "../performance/memory-monitor.js"
-import {PERFORMANCE_METRICS_SERVICE} from "../performance/metrics.js"
-import {MEMORY_MONITOR_SERVICE} from "../performance/memory-monitor.js"
+import {PERFORMANCE_METRICS_SERVICE} from "./metrics.js"
+import {MEMORY_MONITOR_SERVICE} from "./memory-monitor.js"
 import {createMetricName} from "../performance/PerformanceTypes.js"
 import {safeStringify} from "../../utils/standardized-errors.js"
 
@@ -160,15 +157,13 @@ export class PerformanceMonitor {
 			// Use Effect.try for comprehensive snapshot creation with proper error handling
 			yield* Effect.try({
 				try: () => Effect.gen(function* (this: PerformanceMonitor) {
-					// TODO: Fix service usages when Effect.Tag API resolved
-					// const metricsService = yield* PERFORMANCE_METRICS_SERVICE
-					// const memoryMonitor = yield* MEMORY_MONITOR_SERVICE
-
 					// Get current memory metrics
+					const memoryMonitor = yield* MEMORY_MONITOR_SERVICE
 					const memoryMetrics = yield* memoryMonitor.getMemoryMetrics()
-					const currentMemory = memoryMetrics.currentMemoryUsage || 0
+					const currentMemory = memoryMetrics.heapUsed || 0
 
-					// Get performance metrics summary
+					// Get performance metrics summary  
+					const metricsService = yield* PERFORMANCE_METRICS_SERVICE
 					const metricsSummary = yield* metricsService.getMetricsSummary()
 
 					const snapshot: PerformanceSnapshot = {
@@ -182,7 +177,7 @@ export class PerformanceMonitor {
 					this.addSnapshotWithMemoryManagement(snapshot, currentMemory)
 					return snapshot
 				}.bind(this)),
-				catch: (error) => new Error(`Failed to take performance snapshot: ${error instanceof Error ? error.message : safeStringify(error)}`)
+				catch: (error) => new Error(`Failed to take performance snapshot: ${error instanceof Error ? error.message : JSON.stringify(error)}`)
 			}).pipe(
 				Effect.flatten,
 				Effect.tap((snapshot) => Effect.log(`📊 Performance snapshot taken: ${snapshot.memoryUsage}MB memory, ${snapshot.operationCount} operations`)),
