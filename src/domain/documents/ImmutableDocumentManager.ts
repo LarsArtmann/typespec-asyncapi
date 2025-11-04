@@ -361,8 +361,8 @@ export const ImmutableDocumentManager: DocumentManager = {
       }
       
       // Type-safe property access
-      const title = (info as Record<string, unknown>).title
-      const version = (info as Record<string, unknown>).version
+      const title = (info).title
+      const version = (info).version
       
       if (!title || !version) {
       }
