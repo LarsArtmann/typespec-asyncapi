@@ -21,7 +21,7 @@ export const processSingleMessageModel = (
 	program: Program
 ): Effect.Effect<string, never> =>
 	Effect.gen(function* () {
-		const messageConfig = getMessageConfig(program, messageModel) || {}
+		const messageConfig = getMessageConfig(program, messageModel) ?? {}
 		
 		// Convert message model to JSON schema
 		const schema = yield* Effect.sync(() => 
@@ -29,25 +29,25 @@ export const processSingleMessageModel = (
 		)
 
 		// Generate message name
-		const messageName = messageModel.name || `${messageConfig.name || 'Message'}Message`
+		const messageName = messageModel.name ?? `${messageConfig.name ?? 'Message'}Message`
 
 		// Create AsyncAPI message object
 		const message: MessageObject = {
 			name: messageName,
-			title: messageConfig.title || messageName,
+			title: messageConfig.title ?? messageName,
 			description: messageConfig.description,
-			contentType: messageConfig.contentType || "application/json",
+			contentType: messageConfig.contentType ?? "application/json",
 			payload: schema
 		}
 
 		// Add to AsyncAPI document components
-		asyncApiDoc.components = asyncApiDoc.components || {}
-		asyncApiDoc.components.messages = asyncApiDoc.components.messages || {}
+		asyncApiDoc.components = asyncApiDoc.components ?? {}
+		asyncApiDoc.components.messages = asyncApiDoc.components.messages ?? {}
 		asyncApiDoc.components.messages[messageName] = message
 
 		// Add schema to components if not already present
 		if (schema && typeof schema === 'object' && schema !== null) {
-			asyncApiDoc.components.schemas = asyncApiDoc.components.schemas || {}
+			asyncApiDoc.components.schemas = asyncApiDoc.components.schemas ?? {}
 			asyncApiDoc.components.schemas[`${messageName}Schema`] = schema
 		}
 

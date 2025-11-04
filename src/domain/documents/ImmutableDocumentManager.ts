@@ -361,6 +361,8 @@ export const ImmutableDocumentManager: DocumentManager = {
       const version = (info).version
       
       if (!title || !version) {
+        // Validation case - both title and version required
+        return false
       }
       
       // Additional validation rules could be added here

@@ -33,8 +33,8 @@ export const processSingleOperation = (
 		// Extract operation metadata using TypeSpec helpers
 		const operationInfo = {
 			name: operation.name,
-			description: getDoc(program, operation) || `Operation ${operation.name}`,
-			summary: getDoc(program, operation) || `Operation ${operation.name}`
+			description: getDoc(program, operation) ?? `Operation ${operation.name}`,
+			summary: getDoc(program, operation) ?? `Operation ${operation.name}`
 		}
 
 		// Generate channel name from operation
@@ -119,12 +119,12 @@ export const processOperations = (
 
 		// Add channels and operations to AsyncAPI document
 		for (const result of operationResults) {
-			asyncApiDoc.channels = asyncApiDoc.channels || {}
+			asyncApiDoc.channels = asyncApiDoc.channels ?? {}
 			
 			// Create message components if message schema exists
 			if (result.messageSchema) {
-				asyncApiDoc.components = asyncApiDoc.components || {}
-				asyncApiDoc.components.messages = asyncApiDoc.components.messages || {}
+				asyncApiDoc.components = asyncApiDoc.components ?? {}
+				asyncApiDoc.components.messages = asyncApiDoc.components.messages ?? {}
 				asyncApiDoc.components.messages[`${result.channelName}Message`] = {
 					name: `${result.channelName}Message`,
 					title: `${result.channelName} Message`,
