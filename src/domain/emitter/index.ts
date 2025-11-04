@@ -1,7 +1,8 @@
 // Domain Emitter - Core AsyncAPI Emission Logic
 // Contains all business logic for AsyncAPI specification generation
 
-export { AsyncAPIEmitter } from './AsyncAPIEmitter.js';
+// export { AsyncAPIEmitter } from './AsyncAPIEmitter.js';
+// AsyncAPIEmitter temporarily disabled - performance infrastructure issues
 export type { IAsyncAPIEmitter } from './IAsyncAPIEmitter.js';
 export { DocumentBuilder } from './DocumentBuilder.js';
 export { DocumentGenerator } from './DocumentGenerator.js';

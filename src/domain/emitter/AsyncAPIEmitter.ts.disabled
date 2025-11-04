@@ -76,7 +76,8 @@ import type {AsyncAPIObject} from "@asyncapi/parser/esm/spec-types/v3.js"
 // ASYNCAPI_VERSION import removed - now using DocumentBuilder.createInitialDocument()
 import {EmissionPipeline} from "./EmissionPipeline.js"
 import {DocumentBuilder} from "./DocumentBuilder.js"
-import {PerformanceMonitor} from "../../infrastructure/performance/PerformanceMonitor.js"
+// import {PerformanceMonitor} from "../../infrastructure/performance/PerformanceMonitor.js"
+// Performance monitoring temporarily disabled - infrastructure issues
 
 import {DEFAULT_SERIALIZATION_FORMAT} from "../models/serialization-format-option.js"
 
@@ -99,7 +100,8 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 	private readonly pipeline: EmissionPipeline
 	private readonly documentGenerator: DocumentGenerator
 	private readonly documentBuilder: DocumentBuilder
-	private readonly performanceMonitor: PerformanceMonitor
+	// private readonly performanceMonitor: PerformanceMonitor
+	// Performance monitoring temporarily disabled - infrastructure issues
 	// TODO: Remove complex plugin system references - use simple plugin-system
 	// private readonly pluginRegistry: PluginRegistry
 	// TODO: CRITICAL - AsyncAPIObject is mutable - should be immutable with copy-on-write updates
@@ -184,9 +186,10 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 					Effect.mapError(error => `DocumentBuilder initialization failed: ${safeStringify(error)}`)
 				)
 				
-				const performanceMonitor = yield* Effect.try(() => new PerformanceMonitor()).pipe(
-					Effect.mapError(error => `PerformanceMonitor initialization failed: ${safeStringify(error)}`)
-				)
+				// const performanceMonitor = yield* Effect.try(() => new PerformanceMonitor()).pipe(
+				// 	Effect.mapError(error => `PerformanceMonitor initialization failed: ${safeStringify(error)}`)
+				// )
+				// Performance monitoring temporarily disabled - infrastructure issues
 				
 				// PluginRegistry removed - use simple plugin-system instead
 				// const pluginRegistry = yield* Effect.try(() => new PluginRegistry()).pipe(

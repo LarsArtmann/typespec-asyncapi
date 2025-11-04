@@ -30,6 +30,10 @@
     "dist",
     "test",
     "**/*.test.ts",
-    "**/*.spec.ts"
+    "**/*.spec.ts",
+    "src/infrastructure/performance/metrics.ts",
+    "src/infrastructure/performance/memory-monitor.ts",
+    "src/infrastructure/performance/PerformanceMonitor.ts",
+    "src/domain/emitter/AsyncAPIEmitter.ts"
   ]
 }
