@@ -121,6 +121,7 @@ export const ImmutableDocumentManager: DocumentManager = {
       const currentState = globalThis.__ASYNCAPI_DOCUMENT_STATE
       if (!currentState) {
         yield* Effect.fail(new Error("Document not initialized"))
+        return undefined as never
       }
       return currentState.currentDocument
     }),
@@ -130,6 +131,7 @@ export const ImmutableDocumentManager: DocumentManager = {
       const currentState = globalThis.__ASYNCAPI_DOCUMENT_STATE
       if (!currentState) {
         yield* Effect.fail(new Error("Document not initialized"))
+        return undefined as never
       }
       return currentState.currentVersion
     }),
@@ -155,13 +157,13 @@ export const ImmutableDocumentManager: DocumentManager = {
         
         if (!mutationResult.success) {
           yield* errorHandler.handleCompilationError(
-            ErrorFactory.compilationError(`Document mutation failed: ${mutationResult.error}`, {
+            ErrorFactory.compilationError(`Document mutation failed`, {
               context: { mutation, path: mutation.path },
               typeName: 'DocumentMutation',
               decorator: 'mutateDocument'
             })
           )
-          throw new Error(mutationResult.error)
+          throw new Error("Document mutation operation failed")
         }
         
         // Create mutation record
@@ -254,7 +256,7 @@ export const ImmutableDocumentManager: DocumentManager = {
               decorator: 'mutateDocumentAtomic'
             })
           )
-          throw new Error(`Atomic mutation failed: ${mutationResult.error}`)
+          throw new Error(`Atomic mutation failed: operation unsuccessful`)
         }
         
         const documentMutation: DocumentMutation<T> = {
@@ -353,7 +355,7 @@ export const ImmutableDocumentManager: DocumentManager = {
       }
       
       // Type-safe validation of document info
-      const info = document.info as Record<string, unknown>
+      const info = document.info as unknown as Record<string, unknown>
       if (!(typeof info === 'object' && info !== null && 'title' in info && 'version' in info)) {
         return false
       }

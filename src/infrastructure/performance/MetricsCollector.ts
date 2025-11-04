@@ -30,7 +30,7 @@ export type PerformanceMetrics = {
  */
 export type MetricsCollector = {
   readonly startTiming: (operation: string) => Effect.Effect<void, never>
-  readonly endTiming: (operation: string) => Effect.Effect<PerformanceMetrics, never>
+  readonly endTiming: (operation: string) => Effect.Effect<PerformanceMetrics | null, never>
   readonly recordMetrics: (metrics: PerformanceMetrics) => Effect.Effect<void, never>
   readonly getMetrics: (operation?: string) => Effect.Effect<PerformanceMetrics[], never>
   readonly getAggregatedMetrics: () => Effect.Effect<ServiceMetrics, never>
@@ -88,7 +88,7 @@ export const MemoryMetricsCollector = {
         timestamp: Date.now(),
         operation,
         duration,
-        memoryUsage,
+        memoryUsage: memoryUsageMB,
         cacheHits: cacheMetrics.hits,
         cacheMisses: cacheMetrics.misses,
         documentsProcessed

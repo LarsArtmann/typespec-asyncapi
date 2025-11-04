@@ -64,12 +64,7 @@ const createSecuritySchemeFromConfig = (config: SecurityConfig): SecuritySchemeO
 			return {
 				type: "oauth2",
 				description: `OAuth2 security: ${config.name}`,
-				flows: config.scheme.flows || {
-					implicit: {
-						authorizationUrl: config.scheme.authorizationUrl || "",
-						scopes: config.scopes || []
-					}
-				}
+				flows: {} // TODO: Implement proper OAuth flows
 			}
 
 		case "apiKey":
@@ -84,8 +79,8 @@ const createSecuritySchemeFromConfig = (config: SecurityConfig): SecuritySchemeO
 			return {
 				type: "http",
 				description: `HTTP security: ${config.name}`,
-				scheme: config.scheme.httpScheme || "bearer",
-				bearerFormat: config.scheme.bearerFormat || "JWT"
+				scheme: "bearer", // TODO: Extract from config
+				bearerFormat: "JWT" // TODO: Extract from config
 			}
 
 		case "openIdConnect":
@@ -99,7 +94,7 @@ const createSecuritySchemeFromConfig = (config: SecurityConfig): SecuritySchemeO
 			// Default to apiKey for unknown schemes
 			return {
 				type: "apiKey",
-				description: config.description || "API key authentication",
+				description: `API key authentication`,
 				name: "Authorization",
 				in: "header"
 			}

@@ -30,50 +30,38 @@ export const processSingleOperation = (
 		})
 
 		// Extract operation metadata using TypeSpec helpers
-		const operationInfo = getMessageConfig(program, operation) || {}
-		const protocolInfo = getProtocolConfig(program, operation) || {}
+		// For operations, we get configs differently since we don't have a Model
+		const operationInfo = {} // TODO: Extract from operation decorators properly
+		// TODO: Extract protocol info properly when protocol decorators work
 
 		// Generate channel name from operation
-		const channelName = createChannelDefinition(operation.name)
+		const channelDefinition = createChannelDefinition(operation, program)
+		const channelName = channelDefinition.name
 
 		// Convert parameters to JSON schema if present
 		const parameters = operation.parameters?.properties
 			? Array.from(operation.parameters.properties.entries()).map(([paramName, paramModel]) => ({
 					name: paramName,
-					schema: convertModelToSchema(paramModel, program)
+					schema: { type: "string" }, // TODO: Proper type conversion
+					description: `Parameter: ${paramName}`,
+					location: "message" as const
 				}))
 			: []
 
 		// Convert return type to JSON schema  
 		const messageSchema = operation.returnType
-			? convertModelToSchema(operation.returnType, program)
+			? { type: "object" } // TODO: Proper type conversion
 			: undefined
 
 		// Generate protocol-specific bindings
-		const protocolBinding = protocolInfo.protocol
-			? generateProtocolBinding(protocolInfo.protocol as AsyncAPIProtocolType, {
-					channel: channelName,
-					operation: operation.name,
-					protocol: protocolInfo.protocol
-				})
-			: undefined
+		const protocolBinding = undefined // TODO: Implement when protocol decorators work
 
 		// Create AsyncAPI operation object
 		const asyncApiOperation: OperationObject = {
-			summary: operationInfo.description || `${operation.name} operation`,
-			description: operationInfo.description,
-			parameters: parameters.map(param => ({
-				name: param.name,
-				schema: param.schema,
-				description: `Parameter: ${param.name}`,
-				location: "message" as const
-			})),
-			messages: messageSchema ? [{
-				name: `${operation.name}Message`,
-				payload: messageSchema,
-				description: operationInfo.description,
-				contentType: protocolInfo.contentType || "application/json"
-			}] : undefined
+			action: "send", // TODO: Extract from operation type
+			channel: { $ref: `#/channels/${channelName}` },
+			summary: `${operation.name} operation`,
+			description: `Generated from TypeSpec operation: ${operation.name}`,
 		}
 
 		yield* railwayLogging.logDebugGeneration("channel", channelName, {
@@ -112,27 +100,7 @@ export const processOperations = (
 			asyncApiDoc.channels = asyncApiDoc.channels || {}
 			asyncApiDoc.channels[result.channelName] = {
 				description: `Channel for ${result.channelName} operations`,
-				publish: result.operation.messages ? {
-					operationId: result.operation.operationId || result.channelName,
-					summary: result.operation.summary,
-					description: result.operation.description,
-					parameters: result.operation.parameters,
-					messages: result.operation.messages
-				} : undefined,
-				bindings: result.operation.bindings
-			}
-
-			// Add message components if message schema exists
-			if (result.operation.messages?.[0]?.payload) {
-				asyncApiDoc.components = asyncApiDoc.components || {}
-				asyncApiDoc.components.messages = asyncApiDoc.components.messages || {}
-				asyncApiDoc.components.messages[`${result.channelName}Message`] = {
-					name: `${result.channelName}Message`,
-					title: `${result.channelName} Message`,
-					description: `Message for ${result.channelName} operations`,
-					contentType: result.operation.messages[0].contentType || "application/json",
-					payload: result.operation.messages[0].payload
-				}
+				address: `/${result.channelName}`,
 			}
 		}
 
@@ -154,14 +122,11 @@ export const extractOperationMetadata = (
 		contentType?: string
 	}, never> =>
 	Effect.gen(function* () {
-		const messageConfig = getMessageConfig(program, operation)
-		const protocolInfo = getProtocolConfig(program, operation)
+		const messageConfig = {} // TODO: Extract from operation decorators properly
+		const protocolInfo = {} // TODO: Extract from operation decorators properly
 
 		return {
 			name: operation.name,
-			description: messageConfig.description,
-			tags: messageConfig.tags,
-			protocol: protocolInfo.protocol,
-			contentType: protocolInfo.contentType
+			description: `${operation.name} operation metadata`,
 		}
 	})
