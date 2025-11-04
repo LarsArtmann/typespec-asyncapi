@@ -6,10 +6,10 @@
  */
 
 import { Effect } from "effect"
-import type { AsyncAPIProtocolType } from "../../constants/protocol-defaults.js"
+
 
 // MQTT Plugin Configuration (following kafka-plugin patterns)
-export interface MQTTBindingConfig {
+export type MQTTBindingConfig = {
   qos: 0 | 1 | 2
   retain: boolean
   clientId?: string
@@ -19,6 +19,7 @@ export interface MQTTBindingConfig {
   willMessage?: string
   willQos?: 0 | 1 | 2
   willRetain?: boolean
+  contentType?: string
 }
 
 // Protocol type for MQTT
@@ -41,17 +42,18 @@ export const mqttPlugin = {
   /**
    * Generate operation binding for MQTT
    */
-  generateOperationBinding: (data: Record<string, unknown>) => {
+  generateOperationBinding: (operation: unknown) => {
     return Effect.gen(function* () {
-      const config = data as MQTTBindingConfig
+      const config = operation as Record<string, unknown>
+      const mqttConfig = config as MQTTBindingConfig
       
       const binding = {
         mqtt: {
           qos: config.qos || 0,
           retain: config.retain || false,
-          clientId: config.clientId,
-          cleanSession: config.cleanSession,
-          keepAlive: config.keepAlive
+          clientId: mqttConfig.clientId,
+          cleanSession: mqttConfig.cleanSession,
+          keepAlive: mqttConfig.keepAlive
         }
       } as const
 
@@ -73,15 +75,16 @@ export const mqttPlugin = {
   /**
    * Generate message binding for MQTT
    */
-  generateMessageBinding: (data: Record<string, unknown>) => {
+  generateMessageBinding: (operation: unknown) => {
     return Effect.gen(function* () {
-      const config = data as MQTTBindingConfig
+      const config = operation as Record<string, unknown>
+      const mqttConfig = config as MQTTBindingConfig
       
       const binding = {
         mqtt: {
-          qos: config.qos || 0,
-          retain: config.retain || false,
-          contentType: (config as any).contentType
+          qos: mqttConfig.qos ?? 0,
+          retain: mqttConfig.retain ?? false,
+          contentType: mqttConfig.contentType ?? 'application/json'
         }
       } as const
 
@@ -93,16 +96,17 @@ export const mqttPlugin = {
   /**
    * Generate server binding for MQTT
    */
-  generateServerBinding: (data: Record<string, unknown>) => {
+  generateServerBinding: (operation: unknown) => {
     return Effect.gen(function* () {
-      const config = data as MQTTBindingConfig
+      const config = operation as Record<string, unknown>
+      const mqttConfig = config as MQTTBindingConfig
       
       const binding = {
         mqtt: {
           protocolVersion: "5.0",
-          clientId: config.clientId,
-          cleanSession: config.cleanSession !== false,
-          keepAlive: config.keepAlive || 60,
+          clientId: mqttConfig.clientId,
+          cleanSession: mqttConfig.cleanSession ?? true,
+          keepAlive: mqttConfig.keepAlive ?? 60,
           maxReconnectInterval: 300,
           maxReconnectAttempts: 16,
           bindingVersion: "0.3.0"
@@ -117,8 +121,9 @@ export const mqttPlugin = {
   /**
    * Validate MQTT binding configuration
    */
-  validate: (config: Record<string, unknown>) => {
+  validateConfig: (operation: unknown) => {
     return Effect.gen(function* () {
+      const config = operation as Record<string, unknown>
       const mqttConfig = config as MQTTBindingConfig
       
       const errors: string[] = []

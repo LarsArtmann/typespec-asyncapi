@@ -5,8 +5,8 @@
  * in TypeSpec state map for document generation processing.
  */
 
-import type {DecoratorContext, Model, Operation, Program} from "@typespec/compiler"
-import {$lib, reportDiagnostic} from "../../lib.js"
+import type {DecoratorContext, Model, Operation, Program, Namespace} from "@typespec/compiler"
+import {reportDiagnostic} from "../../lib.js"
 import {Effect} from "effect"
 import type {SecurityConfig} from "./securityConfig.js"
 
@@ -14,28 +14,38 @@ import type {SecurityConfig} from "./securityConfig.js"
 export const SECURITY_CONFIGS_KEY = Symbol("security-configs")
 
 /**
+ * Type guard functions to ensure type safety
+ */
+const isModel = (value: unknown): value is Model => {
+	return typeof value === 'object' && value !== null && 'kind' in value && (value as any).kind === 'Model'
+}
+
+const isOperation = (value: unknown): value is Operation => {
+	return typeof value === 'object' && value !== null && 'kind' in value && (value as any).kind === 'Operation'
+}
+
+/**
  * Enhanced security decorator implementation with state map integration
  */
 export const $securityEnhanced = (context: DecoratorContext, target: Model | Operation, config: Record<string, unknown>) => {
 	// Store security configuration in TypeSpec state map
 	const stateMap = context.program.stateMap(SECURITY_CONFIGS_KEY)
-	const existingConfigs = Array.from(stateMap.entries()).filter(([key]) => key === target).map(([, value]) => value)[0] || []
+	const existingConfigs = Array.from(stateMap.entries()).filter(([key]) => key === target).map(([, value]) => value as SecurityConfig[])[0] ?? []
 	
 	// Validate and store security config
 	const securityConfig = config as SecurityConfig
 	if (!securityConfig.name || !securityConfig.scheme) {
-		reportDiagnostic(context.program, {
-			code: "invalid-security-scheme",
-			message: "Security scheme must have 'name' and 'scheme' properties",
-			target: target
+		reportDiagnostic(context, target, "invalid-security-scheme", {
+			message: "Security scheme must have 'name' and 'scheme' properties"
 		})
-		return Effect.logInfo(`🔐 Security scheme registration failed: ${securityConfig.name}`)
+		return // TypeScript error expects void return
 	}
 	
 	existingConfigs.push(securityConfig)
 	stateMap.set(target, existingConfigs)
 	
-	return Effect.logInfo(`🔐 Enhanced security scheme registered: ${securityConfig.name}`)
+	// Log successful registration (TypeSpec decorators are synchronous)
+	console.log(`🔐 Enhanced security scheme registered: ${securityConfig.name}`)
 }
 
 /**
@@ -46,7 +56,7 @@ export const getSecurityConfigurations = (program: Program): Map<Model | Operati
 	const result = new Map<Model | Operation, SecurityConfig[]>()
 	
 	for (const [key, value] of stateMap.entries()) {
-		if ((key as any).kind === "Model" || (key as any).kind === "Operation") {
+		if (isModel(key) || isOperation(key)) {
 			result.set(key, value as SecurityConfig[])
 		}
 	}
