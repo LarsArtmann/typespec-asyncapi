@@ -39,7 +39,7 @@ export interface MetricsCollector {
 /**
  * Metrics collector tag for dependency injection
  */
-export const MetricsCollector = Context.Tag<MetricsCollector>()
+export const MetricsCollector = Context.GenericTag<"MetricsCollector", MetricsCollector>("MetricsCollector")
 
 /**
  * In-memory metrics collector implementation
@@ -65,7 +65,7 @@ export const MemoryMetricsCollector = {
       const duration = endTime - startTime
       timers.delete(operation)
       
-      const memoryUsage = performance.memory?.usedJSHeapSize ?? 0
+      const memoryUsage = (performance as any).memory?.usedJSHeapSize ?? 0
       const cacheMetrics = globalThis.__ASYNCAPI_CACHE_METRICS ||= { hits: 0, misses: 0 }
       const documentsProcessed = globalThis.__ASYNCAPI_DOCUMENTS_PROCESSED ||= 0
       
@@ -144,10 +144,7 @@ export const MemoryMetricsCollector = {
 /**
  * Metrics collector layer for dependency injection
  */
-export const MetricsCollectorLive = Layer.succeed(
-  MetricsCollector,
-  MemoryMetricsCollector
-)
+export const MetricsCollectorLive = Layer.succeed(MetricsCollector, MemoryMetricsCollector)
 
 /**
  * Global type declarations for metrics storage
@@ -168,11 +165,13 @@ export const PerformanceMonitor = {
    */
   measure: <A, E>(operation: string, effect: Effect.Effect<A, E>) =>
     Effect.gen(function* () {
-      yield* MetricsCollector.startTiming(operation)
+      const metrics = yield* MetricsCollector
+      
+      yield* metrics.startTiming(operation)
       
       const result = yield* effect
       
-      yield* MetricsCollector.endTiming(operation)
+      yield* metrics.endTiming(operation)
       return result
     }),
   

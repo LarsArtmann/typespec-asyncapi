@@ -45,8 +45,8 @@ export interface DocumentVersion {
 export interface DocumentManager {
   readonly getDocument: () => Effect.Effect<AsyncAPIObject, never>
   readonly getCurrentVersion: () => Effect.Effect<number, never>
-  readonly mutateDocument: <T>(mutation: DocumentUpdate<T>) => Effect.Effect<AsyncAPIObject, Error>
-  readonly mutateDocumentAtomic: <T>(mutations: DocumentUpdate<T>[]) => Effect.Effect<AsyncAPIObject, Error>
+  readonly mutateDocument: <T>(mutation: DocumentUpdate<T>) => Effect.Effect<AsyncAPIObject, Error, "MetricsCollector" | "ErrorHandler">
+  readonly mutateDocumentAtomic: <T>(mutations: DocumentUpdate<T>[]) => Effect.Effect<AsyncAPIObject, Error, "MetricsCollector" | "ErrorHandler">
   readonly rollbackToVersion: (versionId: string) => Effect.Effect<AsyncAPIObject, Error>
   readonly getMutationHistory: () => Effect.Effect<DocumentMutation[], never>
   readonly getVersionHistory: () => Effect.Effect<DocumentVersion[], never>
@@ -56,7 +56,7 @@ export interface DocumentManager {
 /**
  * Document manager tag for dependency injection
  */
-export const DocumentManager = Context.Tag<DocumentManager>()
+export const DocumentManager = Context.GenericTag<"DocumentManager", DocumentManager>("DocumentManager")
 
 /**
  * Immutable document manager implementation
@@ -82,7 +82,10 @@ export const ImmutableDocumentManager: DocumentManager = {
   
   mutateDocument: <T>(mutation: DocumentUpdate<T>) =>
     Effect.gen(function* () {
-      yield* MetricsCollector.startTiming('document-mutation')
+      const metrics = yield* MetricsCollector
+      const errorHandler = yield* ErrorHandler
+      
+      yield* metrics.startTiming('document-mutation')
       
       try {
         const currentState = globalThis.__ASYNCAPI_DOCUMENT_STATE
@@ -94,15 +97,18 @@ export const ImmutableDocumentManager: DocumentManager = {
         const currentDocument = JSON.parse(JSON.stringify(currentState.currentDocument))
         
         // Apply mutation immutably
-        const mutationResult = yield* ImmutableDocumentManager.applyMutation<T>(
+        const mutationEffect = ImmutableDocumentManager.applyMutation<T>(
           currentDocument, 
           mutation
         )
+        const mutationResult = Effect.runSync(mutationEffect)
         
         if (!mutationResult.success) {
-          yield* ErrorHandler.handleCompilationError(
+          yield* errorHandler.handleCompilationError(
             ErrorFactory.compilationError(`Document mutation failed: ${mutationResult.error}`, {
-              context: { mutation, path: mutation.path }
+              context: { mutation, path: mutation.path },
+              typeName: 'DocumentMutation',
+              decorator: 'mutateDocument'
             })
           )
           throw new Error(mutationResult.error)
@@ -116,7 +122,7 @@ export const ImmutableDocumentManager: DocumentManager = {
           oldValue: mutationResult.oldValue,
           newValue: mutation.value,
           timestamp: Date.now(),
-          description: mutation.metadata?.description ?? `Mutation at ${mutation.path.join('.')}`
+          description: `Mutation at ${mutation.path.join('.')}`
         }
         
         // Create new version
@@ -126,7 +132,7 @@ export const ImmutableDocumentManager: DocumentManager = {
           timestamp: Date.now(),
           document: mutationResult.newDocument,
           mutations: [...currentState.currentMutations, documentMutation],
-          description: mutation.metadata?.description ?? 'Document mutation'
+          description: 'Document mutation'
         }
         
         // Update global state
@@ -146,12 +152,12 @@ export const ImmutableDocumentManager: DocumentManager = {
           throw new Error("Document validation failed, rolled back to previous version")
         }
         
-        yield* MetricsCollector.endTiming('document-mutation')
-        yield* MetricsCollector.recordMetrics({
+        yield* metrics.endTiming('document-mutation')
+        yield* metrics.recordMetrics({
           timestamp: Date.now(),
           operation: 'document-mutation',
           duration: 0, // Will be calculated by endTiming
-          memoryUsage: performance.memory?.usedJSHeapSize ?? 0,
+          memoryUsage: (performance as any).memory?.usedJSHeapSize ?? 0,
           cacheHits: 0,
           cacheMisses: 0,
           documentsProcessed: 1
@@ -159,9 +165,11 @@ export const ImmutableDocumentManager: DocumentManager = {
         
         return mutationResult.newDocument
       } catch (error) {
-        yield* ErrorHandler.handleCompilationError(
+        yield* errorHandler.handleCompilationError(
           ErrorFactory.compilationError('Document mutation failed', {
-            context: { mutation, error: String(error) }
+            context: { mutation, error: String(error) },
+            typeName: 'DocumentMutation',
+            decorator: 'mutateDocument'
           })
         )
         throw error
@@ -170,7 +178,10 @@ export const ImmutableDocumentManager: DocumentManager = {
   
   mutateDocumentAtomic: <T>(mutations: DocumentUpdate<T>[]) =>
     Effect.gen(function* () {
-      yield* MetricsCollector.startTiming('atomic-document-mutation')
+      const metrics = yield* MetricsCollector
+      const errorHandler = yield* ErrorHandler
+      
+      yield* metrics.startTiming('atomic-document-mutation')
       
       const currentState = globalThis.__ASYNCAPI_DOCUMENT_STATE
       if (!currentState) {
@@ -182,16 +193,19 @@ export const ImmutableDocumentManager: DocumentManager = {
       const appliedMutations: DocumentMutation[] = []
       
       for (const mutation of mutations) {
-        const mutationResult = yield* ImmutableDocumentManager.applyMutation<T>(
+        const mutationEffect = ImmutableDocumentManager.applyMutation<T>(
           currentDocument,
           mutation
         )
+        const mutationResult = Effect.runSync(mutationEffect)
         
         if (!mutationResult.success) {
           // Rollback all mutations on failure
-          yield* ErrorHandler.handleCompilationError(
+          yield* errorHandler.handleCompilationError(
             ErrorFactory.compilationError(`Atomic mutation failed at step ${appliedMutations.length + 1}`, {
-              context: { failedMutation: mutation, appliedMutations }
+              context: { failedMutation: mutation, appliedMutations },
+              typeName: 'DocumentMutation',
+              decorator: 'mutateDocumentAtomic'
             })
           )
           throw new Error(`Atomic mutation failed: ${mutationResult.error}`)
@@ -204,7 +218,7 @@ export const ImmutableDocumentManager: DocumentManager = {
           oldValue: mutationResult.oldValue,
           newValue: mutation.value,
           timestamp: Date.now(),
-          description: mutation.metadata?.description ?? `Atomic mutation at ${mutation.path.join('.')}`
+          description: `Atomic mutation at ${mutation.path.join('.')}`
         }
         
         appliedMutations.push(documentMutation)
@@ -230,7 +244,7 @@ export const ImmutableDocumentManager: DocumentManager = {
         mutationHistory: [...currentState.mutationHistory, ...appliedMutations]
       }
       
-      yield* MetricsCollector.endTiming('atomic-document-mutation')
+      yield* metrics.endTiming('atomic-document-mutation')
       return currentDocument
     }),
   
@@ -343,10 +357,7 @@ export const ImmutableDocumentManager: DocumentManager = {
 /**
  * Document manager layer for dependency injection
  */
-export const DocumentManagerLive = Layer.succeed(
-  DocumentManager,
-  ImmutableDocumentManager
-)
+export const DocumentManagerLive = Layer.succeed(DocumentManager, ImmutableDocumentManager)
 
 /**
  * Global type declarations for document state
@@ -400,7 +411,8 @@ export const DocumentUtils = {
         throw new Error("Document state not initialized")
       }
       
-      const errorSummary = yield* ErrorHandler.getErrorHandler().getErrorSummary()
+      const errorHandler = yield* ErrorHandler
+      const errorSummary = yield* errorHandler.getErrorSummary()
       
       return {
         version: currentState.currentVersion,

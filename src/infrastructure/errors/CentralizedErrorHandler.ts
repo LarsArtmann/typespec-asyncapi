@@ -105,7 +105,7 @@ export interface ErrorSummary {
 /**
  * Error handler tag for dependency injection
  */
-export const ErrorHandler = Context.Tag<ErrorHandler>()
+export const ErrorHandler = Context.GenericTag<"ErrorHandler", ErrorHandler>("ErrorHandler")
 
 /**
  * Centralized error handler implementation
@@ -216,10 +216,7 @@ export const CentralizedErrorHandler: ErrorHandler = {
 /**
  * Error handler layer for dependency injection
  */
-export const ErrorHandlerLive = Layer.succeed(
-  ErrorHandler,
-  CentralizedErrorHandler
-)
+export const ErrorHandlerLive = Layer.succeed(ErrorHandler, CentralizedErrorHandler)
 
 /**
  * Error factory functions for creating typed errors
