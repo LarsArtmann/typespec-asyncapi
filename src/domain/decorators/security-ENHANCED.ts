@@ -5,7 +5,7 @@
  * in TypeSpec state map for document generation processing.
  */
 
-import type {DecoratorContext, Model, Operation, Program, Namespace} from "@typespec/compiler"
+import type {DecoratorContext, Model, Operation, Program} from "@typespec/compiler"
 import {reportDiagnostic} from "../../lib.js"
 import {Effect} from "effect"
 import type {SecurityConfig} from "./securityConfig.js"
@@ -17,11 +17,11 @@ export const SECURITY_CONFIGS_KEY = Symbol("security-configs")
  * Type guard functions to ensure type safety
  */
 const isModel = (value: unknown): value is Model => {
-	return typeof value === 'object' && value !== null && 'kind' in value && (value as any).kind === 'Model'
+	return typeof value === 'object' && value !== null && 'kind' in value && (value as Model & {kind: string}).kind === 'Model'
 }
 
 const isOperation = (value: unknown): value is Operation => {
-	return typeof value === 'object' && value !== null && 'kind' in value && (value as any).kind === 'Operation'
+	return typeof value === 'object' && value !== null && 'kind' in value && (value as Operation & {kind: string}).kind === 'Operation'
 }
 
 /**
@@ -45,6 +45,7 @@ export const $securityEnhanced = (context: DecoratorContext, target: Model | Ope
 	stateMap.set(target, existingConfigs)
 	
 	// Log successful registration (TypeSpec decorators are synchronous)
+	// Note: console.log used for TypeSpec decorator logging
 	console.log(`🔐 Enhanced security scheme registered: ${securityConfig.name}`)
 }
 
@@ -67,7 +68,7 @@ export const getSecurityConfigurations = (program: Program): Map<Model | Operati
 /**
  * Process security configurations into AsyncAPI document
  */
-export const processSecuritySchemes = (program: Program, asyncApiDoc: any) => {
+export const processSecuritySchemes = (program: Program, asyncApiDoc: Record<string, unknown>) => {
 	return Effect.gen(function* () {
 		const securityConfigs = getSecurityConfigurations(program)
 		
@@ -76,13 +77,14 @@ export const processSecuritySchemes = (program: Program, asyncApiDoc: any) => {
 			return
 		}
 		
-		// Initialize security schemes in document
-		if (!asyncApiDoc.components) {
-			asyncApiDoc.components = {}
+		// Initialize security schemes in document with type safety
+		const doc = asyncApiDoc as {components?: {securitySchemes?: Record<string, unknown>}}
+		if (!doc.components) {
+			doc.components = {}
 		}
 		
-		if (!asyncApiDoc.components.securitySchemes) {
-			asyncApiDoc.components.securitySchemes = {}
+		if (!doc.components.securitySchemes) {
+			doc.components.securitySchemes = {}
 		}
 		
 		// Process all security configurations
@@ -93,13 +95,15 @@ export const processSecuritySchemes = (program: Program, asyncApiDoc: any) => {
 					...config.scheme
 				}
 				
-				// Add to document
-				asyncApiDoc.components.securitySchemes[config.name] = securitySchemeData
+				// Add to document with type safety
+				doc.components.securitySchemes[config.name] = securitySchemeData
 				
-				yield* Effect.logInfo(`🔧 Processed security scheme: ${config.name} (${(config.scheme as any).type})`)
+				// Type-safe scheme type logging
+				const schemeType = (config.scheme as {type?: string}).type ?? 'unknown'
+				yield* Effect.logInfo(`🔧 Processed security scheme: ${config.name} (${schemeType})`)
 			}
 		}
 		
-		yield* Effect.logInfo(`✅ Security schemes processing complete: ${Object.keys(asyncApiDoc.components.securitySchemes).length} schemes`)
+		yield* Effect.logInfo(`✅ Security schemes processing complete: ${Object.keys(doc.components.securitySchemes).length} schemes`)
 	})
 }

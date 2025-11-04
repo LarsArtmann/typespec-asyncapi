@@ -57,17 +57,25 @@ export const mqttPlugin = {
         }
       } as const
 
-      // Add will message configuration if provided
-      if (config.willTopic || config.willMessage) {
-        (binding as any).mqtt.will = {
-          topic: config.willTopic,
-          payload: config.willMessage,
-          qos: config.willQos || 0,
-          retain: config.willRetain || false
-        }
+      // Add will message configuration if provided (type-safe mutation)
+      const willConfig = config.willTopic ?? config.willMessage
+      if (willConfig) {
+        // Create new binding with will configuration to avoid type mutation
+        const bindingWithWill = {
+          mqtt: {
+            ...(binding as {mqtt: Record<string, unknown>}).mqtt,
+            will: {
+              topic: config.willTopic,
+              payload: config.willMessage,
+              qos: config.willQos ?? 0,
+              retain: config.willRetain ?? false
+            }
+          }
+        } as const
+        return bindingWithWill
       }
 
-      yield* Effect.logInfo(`🔌 Generated MQTT operation binding: QoS ${config.qos || 0}`)
+      yield* Effect.logInfo(`🔌 Generated MQTT operation binding: QoS ${mqttConfig.qos ?? 0}`)
       return binding
     })
   },

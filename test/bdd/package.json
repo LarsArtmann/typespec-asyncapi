@@ -1,0 +1,15 @@
+{
+  "name": "typespec-asyncapi-bdd",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test:bdd": "cucumber-js",
+    "test:bdd:debug": "cucumber-js --require-module @cucumber/cucumber/api/typescript",
+    "build:bdd": "tsc"
+  },
+  "devDependencies": {
+    "@cucumber/cucumber": "^10.0.0",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  }
+}
