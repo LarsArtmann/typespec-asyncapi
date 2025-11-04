@@ -9,7 +9,7 @@
  * - Error Isolation: Plugin failures don't crash the system
  * - Third-Party Ready: External developers can create plugins
  * - Hot Reload: Add/remove plugins without restart
- * - Protocol Agnostic: Works with any AsyncAPI protocol
+ * - Protocol Agnostic: Works with all AsyncAPI protocols
  */
 
 import type {Effect} from "effect"

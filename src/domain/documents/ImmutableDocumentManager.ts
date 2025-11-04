@@ -20,6 +20,28 @@ import { ErrorHandler, ErrorFactory } from "../../infrastructure/errors/Centrali
  */
 const DocumentStateError = (message: string) => new Error(`Document state error: ${message}`)
 
+/**
+ * Type-safe memory usage extraction from performance API
+ */
+const getMemoryUsageFromPerformance = (): number => {
+  // Type-safe memory usage calculation
+  if (typeof performance !== "undefined") {
+    // Browser performance API
+    const perf = performance as unknown
+    if (typeof perf === "object" && perf !== null) {
+      // Check for memory API in browser
+      const memoryAPI = (perf as Record<string, unknown>).memory
+      if (typeof memoryAPI === "object" && memoryAPI !== null) {
+        const usedJSHeapSize = (memoryAPI as Record<string, unknown>).usedJSHeapSize
+        if (typeof usedJSHeapSize === "number") {
+          return usedJSHeapSize / 1024 / 1024
+        }
+      }
+    }
+  }
+  return 0
+}
+
 const applyMutation = <T>(document: AsyncAPIObject, mutation: DocumentUpdate<T>) =>
   Effect.gen(function* () {
     const documentCopy = JSON.parse(JSON.stringify(document))
@@ -185,7 +207,7 @@ export const ImmutableDocumentManager: DocumentManager = {
           timestamp: Date.now(),
           operation: 'document-mutation',
           duration: 0, // Will be calculated by endTiming
-          memoryUsage: (performance as any).memory?.usedJSHeapSize ?? 0,
+          memoryUsage: getMemoryUsageFromPerformance(),
           cacheHits: 0,
           cacheMisses: 0,
           documentsProcessed: 1
@@ -330,9 +352,17 @@ export const ImmutableDocumentManager: DocumentManager = {
         return false
       }
       
-      const info = document.info as any
-      if (!info.title || !info.version) {
+      // Type-safe validation of document info
+      const info = document.info as Record<string, unknown>
+      if (!(typeof info === 'object' && info !== null && 'title' in info && 'version' in info)) {
         return false
+      }
+      
+      // Type-safe property access
+      const title = (info as Record<string, unknown>).title
+      const version = (info as Record<string, unknown>).version
+      
+      if (!title || !version) {
       }
       
       // Additional validation rules could be added here

@@ -311,7 +311,7 @@ export function getPropertyType(prop: ModelProperty): {
 			} else if (typeInfoAny.type === "object") {
 				return {type: "object" as const}
 			} else {
-				// Fallback for complex types (oneOf, anyOf, etc.)
+				// Fallback for complex types (oneOf, allOf, etc.)
 				return {type: "object" as const}
 			}
 		}).pipe(

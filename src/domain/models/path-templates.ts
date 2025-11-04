@@ -115,7 +115,7 @@ export function detectProjectRoot(startPath?: string): string {
 	const rootPath = resolve("/")
 
 	while (currentPath !== rootPath) {
-		// Check if any config files exist in current directory
+		// Check if configuration files exist in current directory
 		for (const configFile of configFiles) {
 			const configPath = join(currentPath, configFile)
 			const fileCheckResult = Effect.runSync(

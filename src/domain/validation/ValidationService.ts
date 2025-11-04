@@ -17,7 +17,7 @@ import { emitterErrors, type StandardizedError, safeStringify } from "../../util
 import { PERFORMANCE_CONSTANTS } from "../../constants/defaults.js"
 
 /**
- * Validation result with details about compliance and any issues found
+ * Validation result with details about compliance and issues found
  */
 export type ValidationResult = {
 	isValid: boolean
