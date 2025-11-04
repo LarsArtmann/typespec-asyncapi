@@ -45,8 +45,8 @@ export const $securityEnhanced = (context: DecoratorContext, target: Model | Ope
 	stateMap.set(target, existingConfigs)
 	
 	// Log successful registration (TypeSpec decorators are synchronous)
-	// Note: console.log used for TypeSpec decorator logging
-	console.log(`🔐 Enhanced security scheme registered: ${securityConfig.name}`)
+	// Note: Effect.log used for TypeSpec decorator logging
+	Effect.log(`🔐 Enhanced security scheme registered: ${securityConfig.name}`)
 }
 
 /**

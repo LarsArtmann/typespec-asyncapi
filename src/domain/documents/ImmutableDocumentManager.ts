@@ -44,27 +44,27 @@ const getMemoryUsageFromPerformance = (): number => {
 
 const applyMutation = <T>(document: AsyncAPIObject, mutation: DocumentUpdate<T>) =>
   Effect.gen(function* () {
-    const documentCopy = JSON.parse(JSON.stringify(document))
+    const documentCopy = JSON.parse(JSON.stringify(document)) as Record<string, unknown>
     let current: Record<string, unknown> = documentCopy
-    let oldValue: T | undefined
+    const oldValue: T | undefined = undefined
     
     // Navigate to mutation path
     for (let i = 0; i < mutation.path.length - 1; i++) {
       const key = mutation.path[i]
       if (!(key in current)) {
-        current[key] = {}
+        (current as Record<string, Record<string, unknown>>)[key] = {}
       }
       current = current[key] as Record<string, unknown>
     }
     
-    const finalKey = mutation.path[mutation.path.length - 1]
-    oldValue = current[finalKey] as T
-    current[finalKey] = mutation.value
+    const finalKey = mutation.path[mutation.path.length - 1] as string
+    const finalOldValue: T | undefined = (current as Record<string, T>)[finalKey]
+    ;(current as Record<string, T>)[finalKey] = mutation.value
     
     return {
       success: true as const,
-      document: documentCopy,
-      oldValue
+      document: documentCopy as unknown as AsyncAPIObject,
+      oldValue: finalOldValue
     }
   })
 
@@ -150,7 +150,7 @@ export const ImmutableDocumentManager: DocumentManager = {
       }
       
       // Create deep copy of current document
-      const currentDocument = JSON.parse(JSON.stringify(currentState.currentDocument))
+      const currentDocument = JSON.parse(JSON.stringify(currentState.currentDocument)) as AsyncAPIObject
         
         // Apply mutation immutably using proper Effect composition
         const mutationResult = yield* applyMutation<T>(currentDocument, mutation)

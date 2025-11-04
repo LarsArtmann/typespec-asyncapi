@@ -118,7 +118,7 @@ export function generateAsyncAPIWithEffect(context: EmitContext): Effect.Effect<
 				escape: "Use direct file write approach",
 				severity: "error",
 				code: "EMIT_FILE_ERROR",
-				context: { outputFile: `${outputFile}.${extension}`, error }
+				context: { outputFile: `${String(outputFile)}.${extension}`, error }
 			})
 		});
 		

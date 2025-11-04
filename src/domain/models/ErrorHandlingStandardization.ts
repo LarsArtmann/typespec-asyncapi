@@ -283,8 +283,17 @@ export class ErrorHandlingStandardization {
 	}
 }
 
+// Error handling service interface
+interface ErrorHandlingService {
+	processError: (error: unknown, context?: Record<string, unknown>) => Effect.Effect<unknown, never, never>
+	attemptErrorRecovery: (error: unknown) => Effect.Effect<unknown, never, never>
+}
+
 // Temporary dummy service definitions to fix compilation
-export const ERROR_HANDLING_SERVICE = {} as any;
+export const ERROR_HANDLING_SERVICE: ErrorHandlingService = {
+	processError: (error, context) => Effect.succeed({ error, context }),
+	attemptErrorRecovery: (error) => Effect.succeed({ recovered: true, error })
+};
 
 /**
  * Utility functions for common error handling patterns
@@ -298,7 +307,7 @@ export const errorHandlingUtils = {
 		context?: Record<string, unknown>,
 	) => {
 		return Effect.gen(function* () {
-			const errorHandler = yield* ERROR_HANDLING_SERVICE
+			const errorHandler = ERROR_HANDLING_SERVICE
 			return yield* fn().pipe(
 				Effect.catchAll(error =>
 					Effect.gen(function* () {
