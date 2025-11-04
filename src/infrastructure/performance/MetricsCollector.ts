@@ -58,14 +58,29 @@ export const MemoryMetricsCollector = {
       
       if (!startTime) {
         yield* Effect.logWarning(`⚠️ No start time found for operation: ${operation}`)
-        return null as any
+        return null
       }
       
       const endTime = performance.now()
       const duration = endTime - startTime
       timers.delete(operation)
       
-      const memoryUsage = (performance as any).memory?.usedJSHeapSize ?? 0
+      // Type-safe memory usage calculation
+      let memoryUsageMB = 0
+      if (typeof performance !== "undefined") {
+        // Browser performance API
+        const perf = performance as unknown
+        if (typeof perf === "object" && perf !== null) {
+          // Check for memory API in browser
+          const memoryAPI = (perf as Record<string, unknown>).memory
+          if (typeof memoryAPI === "object" && memoryAPI !== null) {
+            const usedJSHeapSize = (memoryAPI as Record<string, unknown>).usedJSHeapSize
+            if (typeof usedJSHeapSize === "number") {
+              memoryUsageMB = usedJSHeapSize / 1024 / 1024
+            }
+          }
+        }
+      }
       const cacheMetrics = globalThis.__ASYNCAPI_CACHE_METRICS ||= { hits: 0, misses: 0 }
       const documentsProcessed = globalThis.__ASYNCAPI_DOCUMENTS_PROCESSED ||= 0
       

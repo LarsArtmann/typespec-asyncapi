@@ -69,7 +69,7 @@ export const emitterErrors = {
 		what: "TypeSpec compilation failed",
 		reassure: "This is usually a syntax or type error in your TypeSpec source",
 		why: `Compilation failed because: ${reason}`,
-		fix: "Check your TypeSpec syntax and fix any type errors",
+		fix: "Check your TypeSpec syntax and fix type specification errors",
 		escape: "Use a simpler TypeSpec example to test the emitter",
 		severity: "error" as const,
 		code: "TYPESPEC_COMPILATION_FAILED",
@@ -176,7 +176,7 @@ export const emitterErrors = {
 }
 
 /**
- * Transform any error to StandardizedError - eliminates duplication
+ * Transform unknown error to StandardizedError - eliminates duplication
  */
 const transformError = (error: unknown, context?: Record<string, unknown>): StandardizedError => {
 	if (error instanceof Error) {
@@ -383,7 +383,7 @@ export const validators = {
  */
 
 /**
- * Safely convert any value to string for template literals
+ * Safely convert unknown value to string for template literals
  * 
  * @param value - The value to convert (can be anything including Effect errors)
  * @param fallback - Optional fallback string if conversion fails
