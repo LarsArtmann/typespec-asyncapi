@@ -61,7 +61,7 @@ model UserEvent {
 #### Development Infrastructure (100% Working)
 - ✅ TypeScript strict mode compilation
 - ✅ Build and test pipeline
-- ✅ Package.json configured for npm publishing
+- ✅ Package.json configured for bun publishing
 - ✅ Basic validation and quality checks
 
 ### ❌ **EXCLUDED - Beta/v1.0 Features**
@@ -119,7 +119,7 @@ model UserEvent {
 ### Quick Install (Alpha)
 ```bash
 # 🚨 ALPHA WARNING - Not production ready
-npm install @lars-artmann/typespec-asyncapi@alpha @typespec/compiler
+bun add @lars-artmann/typespec-asyncapi@alpha @typespec/compiler
 
 # Or with bun (recommended)
 bun add @lars-artmann/typespec-asyncapi@alpha @typespec/compiler

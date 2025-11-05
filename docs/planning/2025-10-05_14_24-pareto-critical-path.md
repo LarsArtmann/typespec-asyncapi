@@ -31,7 +31,7 @@
 
 ### Value Definition
 **Production Ready = User can successfully:**
-1. Install the package (`npm install @lars-artmann/typespec-asyncapi`)
+1. Install the package (`bun add @lars-artmann/typespec-asyncapi`)
 2. Create a TypeSpec file with AsyncAPI decorators
 3. Run `npx tsp compile` and get valid AsyncAPI 3.0 output
 4. Use the generated AsyncAPI for their event-driven API

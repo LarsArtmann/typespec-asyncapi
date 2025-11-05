@@ -62,7 +62,7 @@ Optimizing for test pass rate was the wrong metric. We should optimize for:
 | **2.3** Create examples/real-world/ directory | 20min | 2% | User learning path |
 | **2.4** Add Kafka example to examples/ | 15min | 1% | Protocol binding proof |
 | **2.5** Add WebSocket example to examples/ | 15min | 1% | Real-time use case |
-| **2.6** Security audit (npm audit) | 10min | 1% | Production safety |
+| **2.6** Security audit (bun audit) | 10min | 1% | Production safety |
 | **2.7** Fix security vulnerabilities | 20min | 0.5% | Trust signal |
 | **2.8** Update README with examples/ links | 10min | 0.5% | Discoverability |
 
@@ -141,7 +141,7 @@ Optimizing for test pass rate was the wrong metric. We should optimize for:
 | **2.5** | Add examples/real-world/kafka-events.tsp | 15min | MEDIUM | Protocol binding |
 | **2.6** | Add examples/real-world/websocket-chat.tsp | 15min | MEDIUM | Real-time example |
 | **2.7** | Add examples/real-world/http-webhooks.tsp | 10min | MEDIUM | HTTP example |
-| **2.8** | Run `npm audit` security scan | 5min | HIGH | Security check |
+| **2.8** | Run `bun audit` security scan | 5min | HIGH | Security check |
 | **2.9** | Fix security vulnerabilities (if any) | 20min | HIGH | Production safety |
 | **2.10** | Update README.md with examples/ links | 10min | LOW | Discoverability |
 
@@ -272,11 +272,11 @@ Optimizing for test pass rate was the wrong metric. We should optimize for:
 #### 2.3 Security Audit (30 min / 6 tasks)
 | # | Task | Time |
 |---|------|------|
-| 2.3.1 | Run `npm audit` | 2min |
+| 2.3.1 | Run `bun audit` | 2min |
 | 2.3.2 | Review audit report | 5min |
-| 2.3.3 | Run `npm audit fix` for auto-fixes | 3min |
+| 2.3.3 | Run `bun audit fix` for auto-fixes | 3min |
 | 2.3.4 | Manually fix remaining vulnerabilities | 15min |
-| 2.3.5 | Re-run `npm audit` to verify | 2min |
+| 2.3.5 | Re-run `bun audit` to verify | 2min |
 | 2.3.6 | Document security status in README | 3min |
 
 #### 2.4 Documentation Updates (20 min / 4 tasks)

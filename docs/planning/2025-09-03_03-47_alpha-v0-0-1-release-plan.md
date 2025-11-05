@@ -220,7 +220,7 @@ cat tsp-output/@lars-artmann/typespec-asyncapi/AsyncAPI.yaml
 # If validation successful:
 just quality-check
 just prepare-alpha
-npm publish --dry-run
+bun publish --dry-run
 ```
 
 **Decision Point**: If Hour 1 succeeds → Proceed with full Alpha release!

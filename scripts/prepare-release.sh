@@ -68,8 +68,8 @@ print_status "AsyncAPI validation tests passed"
 echo ""
 echo "Step 3: Package validation"
 echo "-------------------------"
-npm pack --dry-run > /dev/null
-print_status "npm pack validation successful"
+bun pack --dry-run > /dev/null
+print_status "bun pack validation successful"
 
 # Step 4: Performance validation
 echo ""

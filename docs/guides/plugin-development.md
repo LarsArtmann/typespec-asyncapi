@@ -511,7 +511,7 @@ MQTT protocol plugin for TypeSpec AsyncAPI Emitter following AsyncAPI MQTT Bindi
 ## Installation
 
 ```bash
-npm install @your-org/typespec-asyncapi-mqtt-plugin
+bun add @your-org/typespec-asyncapi-mqtt-plugin
 ```
 
 ## Usage

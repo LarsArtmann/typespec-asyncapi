@@ -216,7 +216,7 @@ This path **bypasses** the EmissionPipeline but **delivers identical results**.
 **User Experience:**
 ```bash
 # Installation works
-npm install @lars-artmann/typespec-asyncapi
+bun add @lars-artmann/typespec-asyncapi
 
 # Compilation works
 npx tsp compile getting-started.tsp --emit @lars-artmann/typespec-asyncapi

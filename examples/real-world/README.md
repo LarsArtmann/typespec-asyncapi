@@ -72,7 +72,7 @@ npx tsp compile examples/real-world/multi-protocol-simple.tsp --emit @lars-artma
 
 ### Prerequisites
 - Node.js 18+ and Bun installed
-- TypeSpec AsyncAPI Emitter: `npm install @lars-artmann/typespec-asyncapi`
+- TypeSpec AsyncAPI Emitter: `bun add @lars-artmann/typespec-asyncapi`
 
 ### Compile Any Example
 ```bash
@@ -89,7 +89,7 @@ cat tsp-test/@lars-artmann/typespec-asyncapi/AsyncAPI.yaml
 ### Validate Generated AsyncAPI
 ```bash
 # Use AsyncAPI parser for validation
-npm install -g @asyncapi/cli
+bun add -g @asyncapi/cli
 asyncapi validate tsp-test/@lars-artmann/typespec-asyncapi/AsyncAPI.yaml
 ```
 

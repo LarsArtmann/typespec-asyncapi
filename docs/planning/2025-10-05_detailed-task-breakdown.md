@@ -246,7 +246,7 @@ Each domain test category follows same pattern:
 
 | # | Micro-Task | Time | Action | File | Lines |
 |---|------------|------|--------|------|-------|
-| 27.1 | Install fast-check dependency | 10min | npm install | package.json | +1 |
+| 27.1 | Install fast-check dependency | 10min | bun add | package.json | +1 |
 | 27.2 | Create property test utilities | 12min | Generators | test/utils/property-generators.ts | +50 |
 | 27.3 | Property test: AsyncAPI version always 3.0.0 | 10min | Test invariant | test/property/asyncapi-invariants.test.ts | +25 |
 | 27.4 | Property test: Channels always have operations | 10min | Test invariant | test/property/asyncapi-invariants.test.ts | +25 |

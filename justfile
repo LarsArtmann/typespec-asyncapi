@@ -636,7 +636,7 @@ release-alpha:
 # npm install @larsartmann/typespec-asyncapi
 # 
 # # Install TypeSpec compiler (if not already installed)
-# npm install @typespec/compiler
+# bun add @typespec/compiler
 # ```
 # 
 # ## 🚀 Quick Start
@@ -744,17 +744,17 @@ validate-all: validate-build test validate-asyncapi validate-bindings
 
 # NPM Publishing Commands
 
-# Setup npm authentication securely (call this once)
+# Setup npm registry authentication for bun publishing (call this once)
 setup-npm-auth:
     #!/bin/bash
     set -euo pipefail
-    echo "🔐 Setting up secure npm authentication..."
+    echo "🔐 Setting up secure npm registry authentication for bun..."
     
     # Check if NPM_TOKEN environment variable is set
     if [ -z "${NPM_TOKEN:-}" ]; then
         echo "❌ NPM_TOKEN environment variable not set!"
         echo ""
-        echo "🔧 To set up npm authentication:"
+        echo "🔧 To set up npm registry authentication for bun:"
         echo "   export NPM_TOKEN='your_npm_token_here'"
         echo ""
         echo "🔒 For permanent setup, add to your shell profile:"
@@ -765,7 +765,7 @@ setup-npm-auth:
         exit 1
     fi
     
-    # Create .npmrc with token from environment variable
+    # Create .npmrc with token for bun to use npm registry
     echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
     echo "registry=https://registry.npmjs.org/" >> .npmrc
     echo "access=public" >> .npmrc
@@ -780,20 +780,20 @@ setup-npm-auth:
         echo ".npmrc" >> .gitignore
     fi
     
-    echo "✅ npm authentication configured securely"
-    echo "🔒 .npmrc created with secure permissions (600)"
+    echo "✅ npm registry authentication configured for bun"
+    echo "🔒 .npmrc created for bun with secure permissions (600)"
     echo "🛡️  .npmrc added to .gitignore to prevent token leaks"
 
-# Publish to npm with full pre-publish validation
+# Publish to npm with bun and full pre-publish validation
 publish-npm:
     #!/bin/bash
     set -euo pipefail
-    echo "🚀 Publishing @lars-artmann/typespec-asyncapi to npm..."
+    echo "🚀 Publishing @lars-artmann/typespec-asyncapi to npm with bun..."
     
-    # Verify npm authentication is set up
+    # Verify bun has npm registry authentication
     if [ ! -f .npmrc ]; then
         echo "❌ npm authentication not configured!"
-        echo "💡 Run 'just setup-npm-auth' first"
+        echo "💡 Run 'just setup-npm-auth' to configure bun for npm publishing"
         exit 1
     fi
     
@@ -824,7 +824,7 @@ publish-npm:
     echo "  Version: $PACKAGE_VERSION"
     
     # Check if this version already exists on npm
-    if npm view "$PACKAGE_NAME@$PACKAGE_VERSION" version &>/dev/null; then
+    if bun pm view "$PACKAGE_NAME@$PACKAGE_VERSION" version &>/dev/null; then
         echo "❌ Version $PACKAGE_VERSION already exists on npm!"
         echo "💡 Update package.json version before publishing"
         exit 1
@@ -841,18 +841,18 @@ publish-npm:
     
     # Perform the actual publish
     echo "📤 Publishing to npm..."
-    if npm publish; then
+    if bun publish; then
         echo "✅ Successfully published $PACKAGE_NAME@$PACKAGE_VERSION!"
         echo "🌐 View on npm: https://www.npmjs.com/package/$PACKAGE_NAME"
-        echo "📦 Install with: npm install $PACKAGE_NAME"
+        echo "📦 Install with: bun install $PACKAGE_NAME"
         
         # Clean up .npmrc after successful publish for security
         echo "🧹 Cleaning up .npmrc for security..."
         rm -f .npmrc
         echo "🔒 .npmrc removed (run setup-npm-auth again before next publish)"
     else
-        echo "❌ npm publish failed!"
-        echo "💡 Check npm authentication and try again"
+        echo "❌ bun publish failed!"
+        echo "💡 Check bun authentication and try again"
         exit 1
     fi
 
@@ -860,12 +860,12 @@ publish-npm:
 publish-npm-quick:
     #!/bin/bash
     set -euo pipefail
-    echo "⚡ Quick npm publish (minimal validation)..."
+    echo "⚡ Quick npm publish with bun (minimal validation)..."
     
-    # Verify npm authentication
+    # Verify bun has npm registry authentication
     if [ ! -f .npmrc ]; then
         echo "❌ npm authentication not configured!"
-        echo "💡 Run 'just setup-npm-auth' first"
+        echo "💡 Run 'just setup-npm-auth' to configure bun for npm publishing"
         exit 1
     fi
     
@@ -874,7 +874,7 @@ publish-npm-quick:
     just test
     
     # Publish
-    npm publish
+    bun publish
     
     # Clean up
     rm -f .npmrc

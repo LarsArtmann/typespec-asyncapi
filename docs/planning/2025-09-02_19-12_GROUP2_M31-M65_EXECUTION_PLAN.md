@@ -180,7 +180,7 @@ Complete the TypeSpec AsyncAPI emitter system with enterprise-grade plugin archi
 #### M53: Create Automated Release Workflows
 - [ ] Create automated release workflow with semantic versioning
 - [ ] Add changelog generation and release notes
-- [ ] Implement automated npm publishing
+- [ ] Implement automated bun publishing
 - [ ] Add release artifact validation and testing
 
 ### PHASE 7: MONITORING & OBSERVABILITY (M54-M56)

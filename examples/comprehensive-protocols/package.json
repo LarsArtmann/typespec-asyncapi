@@ -13,7 +13,7 @@
     "example:mqtt": "tsp compile mqtt-example.tsp --emit @lars-artmann/typespec-asyncapi --output-dir mqtt-output",
     "example:amqp": "tsp compile amqp-example.tsp --emit @lars-artmann/typespec-asyncapi --output-dir amqp-output",
     "example:http": "tsp compile http-example.tsp --emit @lars-artmann/typespec-asyncapi --output-dir http-output",
-    "validate:all": "npm run validate:kafka && npm run validate:websocket && npm run validate:mqtt && npm run validate:amqp && npm run validate:http",
+    "validate:all": "bun run validate:kafka && bun run validate:websocket && bun run validate:mqtt && bun run validate:amqp && bun run validate:http",
     "validate:kafka": "asyncapi validate kafka-output/@lars-artmann/typespec-asyncapi/asyncapi.json",
     "validate:websocket": "asyncapi validate websocket-output/@lars-artmann/typespec-asyncapi/asyncapi.json",
     "validate:mqtt": "asyncapi validate mqtt-output/@lars-artmann/typespec-asyncapi/asyncapi.json",

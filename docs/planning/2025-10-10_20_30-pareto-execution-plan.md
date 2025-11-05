@@ -39,7 +39,7 @@ This plan applies the Pareto Principle (80/20 rule) recursively to identify the 
 | 2 | Update README with "Quick Start" using Kafka example | 10min | 15% | 45% |
 | 3 | Add one-liner install + usage in README | 5min | 6% | 51% |
 
-**Deliverable:** Users can `npm install`, copy example, run `tsp compile`, get AsyncAPI 3.0
+**Deliverable:** Users can `bun add`, copy example, run `tsp compile`, get AsyncAPI 3.0
 
 ---
 
@@ -61,7 +61,7 @@ This plan applies the Pareto Principle (80/20 rule) recursively to identify the 
 |---|------|------|--------|------------------|
 | 4 | Create WebSocket chat example | 15min | 5% | 56% |
 | 5 | Create HTTP webhooks example | 10min | 3% | 59% |
-| 6 | Security audit (npm audit + fixes) | 30min | 4% | 63% |
+| 6 | Security audit (bun audit + fixes) | 30min | 4% | 63% |
 | 7 | Update GitHub Issue #157 with decision to keep branded types | 5min | 1% | 64% |
 
 **Deliverable:** Production-ready emitter with diverse protocol examples, no vulnerabilities
@@ -220,7 +220,7 @@ These are nice-to-haves that don't significantly impact user adoption:
 #### Task 6: Security Audit (30min → 2 micro-tasks)
 | # | Micro-Task | Time | Dependencies |
 |---|------------|------|--------------|
-| 6.1 | Run `npm audit` (or `bun pm audit`) and analyze | 15min | 5.2 |
+| 6.1 | Run `bun audit` (or `bun pm audit`) and analyze | 15min | 5.2 |
 | 6.2 | Update vulnerable dependencies and verify build | 15min | 6.1 |
 
 #### Task 7: Update GitHub Issue (5min → 1 micro-task)

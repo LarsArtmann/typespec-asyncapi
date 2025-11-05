@@ -99,25 +99,24 @@ export class AsyncAPIValidator {
 			if (version !== '3.0.0') {
 				return Effect.fail(new Error(`AsyncAPI version must be 3.0.0, got: ${version}`))
 			}
-			
-			// Fast path optimization: create immediate ValidationResult
-			const immediateResult: ValidationResult = {
-				valid: true,
-				errors: [],
-				warnings: [],
-				summary: "AsyncAPI document structure validated successfully",
-				metrics: {
-					duration: performance.now() - Date.now(),
-					channelCount: 0,
-					operationCount: 0,
-					schemaCount: 0,
-					validatedAt: new Date()
-				}
+		// Fast path optimization: create immediate ValidationResult
+		const immediateResult: ValidationResult = {
+			valid: true,
+			errors: [],
+			warnings: [],
+			summary: "AsyncAPI document structure validated successfully",
+			metrics: {
+				duration: performance.now() - Date.now(),
+				channelCount: 0,
+				operationCount: 0,
+				schemaCount: 0,
+				validatedAt: new Date()
 			}
-			return Effect.succeed(immediateResult)
-		} else {
-			console.log(`🐌 SLOW PATH: document type=${typeof inputDocument}, hasAsyncapi=${'asyncapi' in (inputDocument && typeof inputDocument === 'object' ? inputDocument : {})}, keys=${Object.keys((inputDocument as any) || {}).join(',')}`)
 		}
+		return Effect.succeed(immediateResult)
+	} else {
+		console.log(`🐌 SLOW PATH: document type=${typeof inputDocument}, hasAsyncapi=${'asyncapi' in (inputDocument && typeof inputDocument === 'object' ? inputDocument : {})}, keys=${Object.keys((inputDocument as any) || {}).join(',')}`)
+	}
 		
 		return Effect.gen(function* () {
 			// Performance tracking
@@ -153,24 +152,7 @@ export class AsyncAPIValidator {
 				} else if (content.trim().startsWith('asyncapi:')) {
 					// YAML content - use YAML parser
 					// Note: This part remains async due to import() requirement
-					const yaml = yield* Effect.tryPromise({
-						try: () => import("yaml"),
-						catch: (error) => new Error(`Failed to import YAML parser: ${error}`)
-					})
-					docObject = yaml.parse(content) as Record<string, unknown>
-					
-					if (docObject && typeof docObject === 'object' && 'asyncapi' in docObject) {
-						const version = String(docObject.asyncapi)
-						if (version !== '3.0.0') {
-							yield* Effect.fail(new Error(`AsyncAPI version must be 3.0.0, got: ${version}`))
-						}
-					}
-				} else {
-					// Try JSON first, fallback to YAML
-					try {
-						docObject = JSON.parse(content) as Record<string, unknown>
-					} catch (jsonError) {
-						// Note: This part remains async due to import() requirement
+					return Effect.gen(function*() {
 						const yaml = yield* Effect.tryPromise({
 							try: () => import("yaml"),
 							catch: (error) => new Error(`Failed to import YAML parser: ${error}`)
@@ -183,6 +165,29 @@ export class AsyncAPIValidator {
 								yield* Effect.fail(new Error(`AsyncAPI version must be 3.0.0, got: ${version}`))
 							}
 						}
+						return docObject
+					})
+				} else {
+					// Try JSON first, fallback to YAML
+					try {
+						docObject = JSON.parse(content) as Record<string, unknown>
+					} catch (jsonError) {
+						// Note: This part remains async due to import() requirement
+						return Effect.gen(function*() {
+							const yaml = yield* Effect.tryPromise({
+								try: () => import("yaml"),
+								catch: (error) => new Error(`Failed to import YAML parser: ${error}`)
+							})
+							docObject = yaml.parse(content) as Record<string, unknown>
+							
+							if (docObject && typeof docObject === 'object' && 'asyncapi' in docObject) {
+								const version = String(docObject.asyncapi)
+								if (version !== '3.0.0') {
+									yield* Effect.fail(new Error(`AsyncAPI version must be 3.0.0, got: ${version}`))
+								}
+							}
+							return docObject
+						})
 					}
 				}
 			} else {
@@ -272,16 +277,16 @@ export class AsyncAPIValidator {
 			}
 
 			// Type-safe property access using type guards
-			const parserDocument = parseResult && typeof parseResult === 'object' && 'document' in parseResult 
-				? (parseResult as any).document 
+			const document = parseResult && typeof parseResult === 'object' && 'document' in parseResult 
+				? parseResult.document as any 
 				: undefined
 				
 			const diagnostics = parseResult && typeof parseResult === 'object' && 'diagnostics' in parseResult 
-				? (parseResult as any).diagnostics 
+				? parseResult.diagnostics as any[] 
 				: []
 
 			// Extract metrics from document
-			const metrics = parserDocument ? extractMetrics(parserDocument, duration) : {
+			const metrics = document ? extractMetrics(document, duration) : {
 				duration, channelCount: 0, operationCount: 0, schemaCount: 0, validatedAt: new Date()
 			}
 

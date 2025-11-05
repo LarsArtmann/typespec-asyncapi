@@ -110,7 +110,7 @@ Complete high-impact feature set:
 | T041 | Setup GitHub Actions workflow | P3 | 15min | T040 | C |
 | T042 | Configure automated testing | P3 | 15min | T041 | C |
 | T043 | Setup build verification | P3 | 15min | T042 | C |
-| T044 | Configure npm publishing | P3 | 15min | T043 | C |
+| T044 | Configure bun publishing | P3 | 15min | T043 | C |
 | T045 | Create performance benchmarks | P3 | 15min | T044 | A |
 | T046 | Setup memory monitoring validation | P3 | 15min | T045 | A |
 | T047 | Create error handling standards | P3 | 15min | T046 | B |

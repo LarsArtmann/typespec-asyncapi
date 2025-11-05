@@ -23,21 +23,21 @@ npm --version   # Alternative: >=9.0.0
 bun add @larsartmann/typespec-asyncapi
 
 # Using npm
-npm install @larsartmann/typespec-asyncapi
+bun add @larsartmann/typespec-asyncapi
 
 # Install TypeSpec compiler if not already installed
 bun add -D @typespec/compiler
 # OR
-npm install -D @typespec/compiler
+bun add -D @typespec/compiler
 ```
 
 ### Verify Installation
 ```bash
 # Check TypeSpec compiler
-npx tsp --version
+bunx tsp --version
 
 # Verify emitter installation
-npx tsp compile --help | grep asyncapi
+bunx tsp compile --help | grep asyncapi
 ```
 
 ---
@@ -62,18 +62,18 @@ bun add @larsartmann/typespec-asyncapi
 bun add -D @typespec/compiler
 
 # 5. Verify installation
-npx tsp --version
+bunx tsp --version
 ```
 
 #### Using CMD
 ```cmd
 REM 1. Install Node.js first (nodejs.org)
 REM 2. Install using npm
-npm install -g @typespec/compiler
-npm install @larsartmann/typespec-asyncapi
+bun add -g @typespec/compiler
+bun add @larsartmann/typespec-asyncapi
 
 REM 3. Verify
-npx tsp --version
+bunx tsp --version
 ```
 
 #### Windows Subsystem for Linux (WSL)
@@ -101,7 +101,7 @@ bun add @larsartmann/typespec-asyncapi
 bun add -D @typespec/compiler
 
 # 5. Verify installation
-npx tsp --version
+bunx tsp --version
 bun --version
 ```
 
@@ -127,7 +127,7 @@ bun add -D @typespec/compiler
 # 4. Verify
 node --version
 bun --version
-npx tsp --version
+bunx tsp --version
 ```
 
 #### Alpine Linux (Docker)
@@ -136,11 +136,11 @@ npx tsp --version
 apk add --no-cache nodejs npm
 
 # 2. Install TypeSpec AsyncAPI
-npm install -g @typespec/compiler
-npm install @larsartmann/typespec-asyncapi
+bun add -g @typespec/compiler
+bun add @larsartmann/typespec-asyncapi
 
 # 3. Verify
-npx tsp --version
+bunx tsp --version
 ```
 
 ### 🍎 macOS Installation
@@ -161,7 +161,7 @@ bun add -D @typespec/compiler
 # 4. Verify installation
 node --version
 bun --version
-npx tsp --version
+bunx tsp --version
 ```
 
 #### Using MacPorts
@@ -202,7 +202,7 @@ FROM node:20-alpine
 WORKDIR /app
 
 # Install Bun
-RUN npm install -g bun
+RUN bun add -g bun
 
 # Install TypeSpec compiler and AsyncAPI emitter
 RUN bun add -g @typespec/compiler
@@ -212,10 +212,10 @@ RUN bun add @larsartmann/typespec-asyncapi
 COPY . .
 
 # Verify installation
-RUN npx tsp --version
+RUN bunx tsp --version
 
 # Default command
-CMD ["npx", "tsp", "compile", "."]
+CMD ["bunx", "tsp", "compile", "."]
 ```
 
 ### Docker Compose Setup
@@ -231,7 +231,7 @@ services:
       - .:/app
       - node_modules:/app/node_modules
     working_dir: /app
-    command: npx tsp compile . --emit @larsartmann/typespec-asyncapi
+    command: bunx tsp compile . --emit @larsartmann/typespec-asyncapi
 
 volumes:
   node_modules:
@@ -244,9 +244,9 @@ docker-compose up --build
 
 # OR using Docker directly
 docker run -v $(pwd):/app -w /app node:20-alpine sh -c "
-  npm install -g bun @typespec/compiler &&
+  bun add -g bun @typespec/compiler &&
   bun add @larsartmann/typespec-asyncapi &&
-  npx tsp compile . --emit @larsartmann/typespec-asyncapi
+  bunx tsp compile . --emit @larsartmann/typespec-asyncapi
 "
 ```
 
@@ -286,14 +286,14 @@ jobs:
         run: bun add @larsartmann/typespec-asyncapi
         
       - name: Verify installation
-        run: npx tsp --version
+        run: bunx tsp --version
         
       - name: Compile TypeSpec
-        run: npx tsp compile . --emit @larsartmann/typespec-asyncapi
+        run: bunx tsp compile . --emit @larsartmann/typespec-asyncapi
         
       - name: Validate AsyncAPI output
         run: |
-          npm install -g @asyncapi/cli
+          bun add -g @asyncapi/cli
           asyncapi validate tsp-output/**/*.json
 ```
 
@@ -303,7 +303,7 @@ jobs:
 image: node:20-alpine
 
 before_script:
-  - npm install -g bun
+  - bun add -g bun
   - bun --version
 
 stages:
@@ -324,7 +324,7 @@ install:
 build:
   stage: build
   script:
-    - npx tsp compile . --emit @larsartmann/typespec-asyncapi
+    - bunx tsp compile . --emit @larsartmann/typespec-asyncapi
   artifacts:
     paths:
       - tsp-output/
@@ -332,7 +332,7 @@ build:
 validate:
   stage: validate
   script:
-    - npm install -g @asyncapi/cli
+    - bun add -g @asyncapi/cli
     - asyncapi validate tsp-output/**/*.json
 ```
 
@@ -349,7 +349,7 @@ pipeline {
     stages {
         stage('Setup') {
             steps {
-                sh 'npm install -g bun'
+                sh 'bun add -g bun'
                 sh 'bun --version'
             }
         }
@@ -364,19 +364,19 @@ pipeline {
         
         stage('Verify Installation') {
             steps {
-                sh 'npx tsp --version'
+                sh 'bunx tsp --version'
             }
         }
         
         stage('Build') {
             steps {
-                sh 'npx tsp compile . --emit @larsartmann/typespec-asyncapi'
+                sh 'bunx tsp compile . --emit @larsartmann/typespec-asyncapi'
             }
         }
         
         stage('Validate') {
             steps {
-                sh 'npm install -g @asyncapi/cli'
+                sh 'bun add -g @asyncapi/cli'
                 sh 'asyncapi validate tsp-output/**/*.json'
             }
         }
@@ -452,11 +452,11 @@ bun --version
 # Expected: 1.0.0 or higher
 
 # 3. Check TypeSpec compiler
-npx tsp --version
+bunx tsp --version
 # Expected: TypeSpec compiler version info
 
 # 4. Check emitter availability
-npx tsp compile --help | grep asyncapi
+bunx tsp compile --help | grep asyncapi
 # Expected: @larsartmann/typespec-asyncapi in emitter list
 
 # 5. List installed packages
@@ -489,14 +489,14 @@ op publishTest(): TestMessage;
 EOF
 
 # Compile test file
-npx tsp compile test.tsp --emit @larsartmann/typespec-asyncapi
+bunx tsp compile test.tsp --emit @larsartmann/typespec-asyncapi
 
 # Verify output
 ls tsp-output/@larsartmann/typespec-asyncapi/
 # Expected: asyncapi.json or asyncapi.yaml
 
 # Validate generated AsyncAPI
-npm install -g @asyncapi/cli
+bun add -g @asyncapi/cli
 asyncapi validate tsp-output/@larsartmann/typespec-asyncapi/asyncapi.json
 
 # Clean up
@@ -538,14 +538,14 @@ source ~/.bashrc
 
 ### Windows PATH Issues
 ```powershell
-# Problem: 'npx' or 'tsp' not found
+# Problem: 'bunx' or 'tsp' not found
 
 # Solution: Add Node.js and npm to PATH
 $env:PATH += ";C:\Program Files\nodejs"
 refreshenv
 
 # Verify
-npx --version
+bunx --version
 ```
 
 ### TypeSpec Compiler Not Found
@@ -556,7 +556,7 @@ npx --version
 bun add -D @typespec/compiler
 
 # Verify installation
-npx tsp --version
+bunx tsp --version
 ```
 
 ### Emitter Not Found

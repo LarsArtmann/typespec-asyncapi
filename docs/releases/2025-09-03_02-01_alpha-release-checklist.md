@@ -65,7 +65,7 @@ npx tsp compile alpha-basic-example.tsp --emit @lars-artmann/typespec-asyncapi
 mkdir /tmp/typespec-test
 cd /tmp/typespec-test
 npm init -y
-npm install @lars-artmann/typespec-asyncapi@alpha @typespec/compiler
+bun add @lars-artmann/typespec-asyncapi@alpha @typespec/compiler
 # Create basic TypeSpec file and compile
 ```
 **Status**: ⏳ Pending

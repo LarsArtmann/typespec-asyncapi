@@ -179,9 +179,9 @@ graph TD
 | T13 | Create example repository | 90min | T2 | GitHub repo with 10+ examples |
 | T14 | Migration guide from openapi-emitter | 60min | T2 | Step-by-step guide with code samples |
 | T15 | Performance benchmark suite | 45min | None | Measure compilation time, output size |
-| T16 | Dependency security audit | 30min | None | npm audit passing, no vulnerabilities |
+| T16 | Dependency security audit | 30min | None | bun audit passing, no vulnerabilities |
 | T17 | Troubleshooting FAQ | 45min | T2-T16 | Common issues with solutions |
-| T18 | Automated release pipeline | 60min | None | GitHub Actions for npm publish |
+| T18 | Automated release pipeline | 60min | None | GitHub Actions for bun publish |
 
 ## Micro-Task Breakdown (15 min each, up to 100 tasks)
 
@@ -280,7 +280,7 @@ graph TD
 ### T16: Security Audit (30 min = 2x15min)
 | # | Micro-Task | Time |
 |---|------------|------|
-| 16.1 | Run npm audit, analyze vulnerabilities | 15min |
+| 16.1 | Run bun audit, analyze vulnerabilities | 15min |
 | 16.2 | Update dependencies, retest | 15min |
 
 ### T17: Troubleshooting Guide (45 min = 3x15min)
@@ -338,7 +338,7 @@ graph TD
 - [ ] All 25+ test files using CLI approach
 - [ ] TypeSpec 1.2, 1.3, 1.4 compatibility verified
 - [ ] Example repository published
-- [ ] npm audit shows 0 high/critical vulnerabilities
+- [ ] bun audit shows 0 high/critical vulnerabilities
 - [ ] Performance benchmarks documented
 - [ ] **READY FOR v1.0 RELEASE**
 

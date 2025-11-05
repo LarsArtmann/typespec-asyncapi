@@ -16,7 +16,7 @@ This document provides comprehensive setup instructions for IDE integration with
 
 ```bash
 # Using npm
-npm install --save-dev @typespec/asyncapi
+bun add --save-dev @typespec/asyncapi
 
 # Using bun (recommended)  
 bun add --dev @typespec/asyncapi
@@ -230,14 +230,14 @@ repos:
     hooks:
       - id: typespec-compile
         name: TypeSpec Compilation
-        entry: npm run spec:build
+        entry: bun run spec:build
         language: system
         pass_filenames: false
         files: \.(tsp|yaml)$
         
       - id: asyncapi-validate  
         name: AsyncAPI Validation
-        entry: npm run spec:validate
+        entry: bun run spec:validate
         language: system
         pass_filenames: false
         files: \.tsp$
@@ -274,10 +274,10 @@ jobs:
       run: npm ci
       
     - name: Compile TypeSpec
-      run: npm run spec:build
+      run: bun run spec:build
       
     - name: Validate AsyncAPI
-      run: npm run spec:validate
+      run: bun run spec:validate
       
     - name: Upload AsyncAPI spec
       uses: actions/upload-artifact@v3

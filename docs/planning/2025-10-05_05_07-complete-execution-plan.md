@@ -104,7 +104,7 @@
 |---|------|------|---------|
 | 1.1 | Read current README.md | 3min | Understand current state |
 | 1.2 | Draft README updates | 7min | Production ready badge, status, quick start |
-| 1.3 | Add installation instructions | 3min | npm install command |
+| 1.3 | Add installation instructions | 3min | bun add command |
 | 1.4 | Add basic usage example | 5min | Copy from smoke test |
 | 1.5 | Commit README changes | 2min | git commit with message |
 

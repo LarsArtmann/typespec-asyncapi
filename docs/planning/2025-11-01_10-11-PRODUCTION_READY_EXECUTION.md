@@ -131,7 +131,7 @@ export class PipelineValidator {
 #### **Task 4: Working Examples (15 minutes)**
 ```markdown
 ## Quick Start Guide
-1. Install: npm install @lars-artmann/typespec-asyncapi
+1. Install: bun add @lars-artmann/typespec-asyncapi
 2. Create: api.tsp with decorators
 3. Compile: tsp compile api.tsp --emit @lars-artmann/typespec-asyncapi
 4. Output: asyncapi.yaml ready for use

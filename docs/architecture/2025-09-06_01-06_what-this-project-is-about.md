@@ -217,7 +217,7 @@ The project employs a **micro-kernel architecture** with **plugin-based extensib
 - **Quality Gates:** build → typecheck → lint → test → validate pipeline
 - **Effect.TS Enforcement:** Specialized validation commands
 - **Performance Analysis:** Memory monitoring and duplication detection
-- **Alpha Release:** Automated packaging and npm publishing
+- **Alpha Release:** Automated packaging and bun publishing
 
 #### Configuration Management
 - **TypeScript Config:** Maximum strictness with Effect.TS optimization

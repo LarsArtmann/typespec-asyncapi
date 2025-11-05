@@ -12,13 +12,13 @@ Welcome to the TypeSpec AsyncAPI Emitter! This guide will get you up and running
 
 ```bash
 # Install TypeSpec AsyncAPI emitter
-npm install @larsartmann/typespec-asyncapi
+bun add @larsartmann/typespec-asyncapi
 
 # Install TypeSpec compiler (if not already installed)
-npm install @typespec/compiler
+bun add @typespec/compiler
 
 # Optional: Install AsyncAPI CLI for validation
-npm install -g @asyncapi/cli
+bun add -g @asyncapi/cli
 ```
 
 ## Your First AsyncAPI Spec
@@ -369,10 +369,10 @@ mkdir my-asyncapi-project
 cd my-asyncapi-project
 
 # Initialize package.json
-npm init -y
+bun init -y
 
 # Install dependencies
-npm install @larsartmann/typespec-asyncapi @typespec/compiler
+bun add @larsartmann/typespec-asyncapi @typespec/compiler
 
 # Create TypeSpec configuration
 echo '{"emitters": {"@larsartmann/typespec-asyncapi": {}}}' > tspconfig.yaml
@@ -420,10 +420,10 @@ Error: Cannot resolve import "@larsartmann/typespec-asyncapi"
 **Solution:**
 ```bash
 # Ensure package is installed
-npm install @larsartmann/typespec-asyncapi
+bun add @larsartmann/typespec-asyncapi
 
 # Check package.json dependencies
-npm list @larsartmann/typespec-asyncapi
+bun pm ls @larsartmann/typespec-asyncapi
 ```
 
 #### 2. Compilation Errors
@@ -437,8 +437,8 @@ Error: Emitter "@larsartmann/typespec-asyncapi" not found
 npx tsp compile --help | grep asyncapi
 
 # Reinstall if needed
-npm uninstall @larsartmann/typespec-asyncapi
-npm install @larsartmann/typespec-asyncapi
+bun remove @larsartmann/typespec-asyncapi
+bun add @larsartmann/typespec-asyncapi
 ```
 
 #### 3. Validation Failures

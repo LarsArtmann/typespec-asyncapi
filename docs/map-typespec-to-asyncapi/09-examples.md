@@ -1297,8 +1297,8 @@ x-performance-requirements:
 
 ```bash
 # Install TypeSpec compiler and AsyncAPI emitter
-npm install -g @typespec/compiler
-npm install @larsartmann/typespec-asyncapi
+bun add -g @typespec/compiler
+bun add @larsartmann/typespec-asyncapi
 
 # Compile TypeSpec to AsyncAPI
 tsp compile ecommerce-orders.tsp --emit @larsartmann/typespec-asyncapi
@@ -1312,7 +1312,7 @@ tsp compile ecommerce-orders.tsp --emit @larsartmann/typespec-asyncapi
 
 ```bash
 # Validate generated AsyncAPI document
-npm install -g @asyncapi/cli
+bun add -g @asyncapi/cli
 asyncapi validate asyncapi.yaml
 
 # Generate documentation
