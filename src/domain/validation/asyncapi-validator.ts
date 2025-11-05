@@ -75,8 +75,8 @@ export class AsyncAPIValidator {
 	/**
 	 * Validate AsyncAPI document using the REAL parser - Effect version
 	 */
-	validateEffect(document: unknown, _identifier?: string): Effect.Effect<ValidationResult, Error, never> {
-		// 🔥 CRITICAL: Debug logging at validateEffect entry
+		validateEffect(document: unknown, _identifier?: string): Effect.Effect<ValidationResult, Error, never> {
+		// 🔥 CRITICAL FIX: Debug logging at validateEffect entry
 		const entryType = typeof document
 		const entryString = String(document).substring(0, 100)
 		console.log(`🔥 DEBUG validateEffect entry: typeof document = ${entryType}, value = ${entryString}`)
@@ -91,6 +91,7 @@ export class AsyncAPIValidator {
 			const startTime = performance.now()
 
 			// Convert document to string for parser (no pretty printing for performance)
+			// 🔥 CRITICAL FIX: Use more robust type check to avoid [object Object] conversion
 			const content = (typeof document === 'string' && document !== '[object Object]') ? document : JSON.stringify(document, null, 2)
 
 			// Enforce AsyncAPI 3.0.0 strict compliance using Effect.gen
