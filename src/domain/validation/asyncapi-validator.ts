@@ -99,24 +99,25 @@ export class AsyncAPIValidator {
 			if (version !== '3.0.0') {
 				return Effect.fail(new Error(`AsyncAPI version must be 3.0.0, got: ${version}`))
 			}
-		// Fast path optimization: create immediate ValidationResult
-		const immediateResult: ValidationResult = {
-			valid: true,
-			errors: [],
-			warnings: [],
-			summary: "AsyncAPI document structure validated successfully",
-			metrics: {
-				duration: performance.now() - Date.now(),
-				channelCount: 0,
-				operationCount: 0,
-				schemaCount: 0,
-				validatedAt: new Date()
+			
+			// Fast path optimization: create immediate ValidationResult
+			const immediateResult: ValidationResult = {
+				valid: true,
+				errors: [],
+				warnings: [],
+				summary: "AsyncAPI document structure validated successfully",
+				metrics: {
+					duration: performance.now() - Date.now(),
+					channelCount: 0,
+					operationCount: 0,
+					schemaCount: 0,
+					validatedAt: new Date()
+				}
 			}
+			return Effect.succeed(immediateResult)
+		} else {
+			console.log(`🐌 SLOW PATH: document type=${typeof inputDocument}, hasAsyncapi=${'asyncapi' in (inputDocument && typeof inputDocument === 'object' ? inputDocument : {})}, keys=${Object.keys((inputDocument as any) || {}).join(',')}`)
 		}
-		return Effect.succeed(immediateResult)
-	} else {
-		console.log(`🐌 SLOW PATH: document type=${typeof inputDocument}, hasAsyncapi=${'asyncapi' in (inputDocument || {})}, keys=${Object.keys((inputDocument as any) || {}).join(',')}`)
-	}
 		
 		return Effect.gen(function* () {
 			// Performance tracking
@@ -129,15 +130,15 @@ export class AsyncAPIValidator {
 			// Convert document to string for parser (no pretty printing for performance)
 			// 🔥 CRITICAL FIX: Optimize object to string conversion for performance
 			let content: string
-			let inputDocument: unknown = document // Avoid variable name conflicts
+			const docInput: unknown = inputDocument // Use consistent variable name
 			
-			if (typeof inputDocument === 'string' && inputDocument !== '[object Object]') {
-				content = inputDocument
-			} else if (typeof inputDocument === 'object') {
+			if (typeof docInput === 'string' && docInput !== '[object Object]') {
+				content = docInput
+			} else if (typeof docInput === 'object') {
 				// 🚀 PERFORMANCE OPTIMIZATION: Use fast stringification (no pretty printing)
-				content = JSON.stringify(inputDocument)
+				content = JSON.stringify(docInput)
 			} else {
-				content = JSON.stringify(document, null, 2)
+				content = JSON.stringify(docInput, null, 2)
 			}
 			const conversionTime = performance.now() - initStartTime
 
@@ -152,7 +153,24 @@ export class AsyncAPIValidator {
 				} else if (content.trim().startsWith('asyncapi:')) {
 					// YAML content - use YAML parser
 					// Note: This part remains async due to import() requirement
-					return Effect.gen(function*() {
+					const yaml = yield* Effect.tryPromise({
+						try: () => import("yaml"),
+						catch: (error) => new Error(`Failed to import YAML parser: ${error}`)
+					})
+					docObject = yaml.parse(content) as Record<string, unknown>
+					
+					if (docObject && typeof docObject === 'object' && 'asyncapi' in docObject) {
+						const version = String(docObject.asyncapi)
+						if (version !== '3.0.0') {
+							yield* Effect.fail(new Error(`AsyncAPI version must be 3.0.0, got: ${version}`))
+						}
+					}
+				} else {
+					// Try JSON first, fallback to YAML
+					try {
+						docObject = JSON.parse(content) as Record<string, unknown>
+					} catch (jsonError) {
+						// Note: This part remains async due to import() requirement
 						const yaml = yield* Effect.tryPromise({
 							try: () => import("yaml"),
 							catch: (error) => new Error(`Failed to import YAML parser: ${error}`)
@@ -165,34 +183,11 @@ export class AsyncAPIValidator {
 								yield* Effect.fail(new Error(`AsyncAPI version must be 3.0.0, got: ${version}`))
 							}
 						}
-						return docObject
-					})
-				} else {
-					// Try JSON first, fallback to YAML
-					try {
-						docObject = JSON.parse(content) as Record<string, unknown>
-					} catch (jsonError) {
-						// Note: This part remains async due to import() requirement
-						return Effect.gen(function*() {
-							const yaml = yield* Effect.tryPromise({
-								try: () => import("yaml"),
-								catch: (error) => new Error(`Failed to import YAML parser: ${error}`)
-							})
-							docObject = yaml.parse(content) as Record<string, unknown>
-							
-							if (docObject && typeof docObject === 'object' && 'asyncapi' in docObject) {
-								const version = String(docObject.asyncapi)
-								if (version !== '3.0.0') {
-									yield* Effect.fail(new Error(`AsyncAPI version must be 3.0.0, got: ${version}`))
-								}
-							}
-							return docObject
-						})
 					}
 				}
 			} else {
 				// Already an object
-				docObject = document as Record<string, unknown>
+				docObject = docInput as Record<string, unknown>
 			}
 			
 			const parseTime = performance.now() - conversionTime
@@ -277,16 +272,16 @@ export class AsyncAPIValidator {
 			}
 
 			// Type-safe property access using type guards
-			const document = parseResult && typeof parseResult === 'object' && 'document' in parseResult 
-				? parseResult.document as any 
+			const parserDocument = parseResult && typeof parseResult === 'object' && 'document' in parseResult 
+				? (parseResult as any).document 
 				: undefined
 				
 			const diagnostics = parseResult && typeof parseResult === 'object' && 'diagnostics' in parseResult 
-				? parseResult.diagnostics as any[] 
+				? (parseResult as any).diagnostics 
 				: []
 
 			// Extract metrics from document
-			const metrics = document ? extractMetrics(document, duration) : {
+			const metrics = parserDocument ? extractMetrics(parserDocument, duration) : {
 				duration, channelCount: 0, operationCount: 0, schemaCount: 0, validatedAt: new Date()
 			}
 
@@ -473,18 +468,13 @@ export class AsyncAPIValidator {
 // Export utility function for backward compatibility
 export async function validateAsyncAPIObject(document: unknown, options?: ValidationOptions): Promise<ValidationResult> {
 	const validator = new AsyncAPIValidator(options)
-	return await validator.validate(document)
+	return Effect.runPromise(validator.validate(document))
 }
 
 // Export Effect-based utility functions
 export function validateAsyncAPIEffect(document: unknown, options?: ValidationOptions): Effect.Effect<ValidationResult, Error> {
 	const validator = new AsyncAPIValidator(options)
 	return validator.validateEffect(document)
-}
-
-export async function validateAsyncAPIObject(document: unknown, options?: ValidationOptions): Promise<ValidationResult> {
-	const validator = new AsyncAPIValidator(options)
-	return validator.validate(document)
 }
 
 export function isValidAsyncAPI(result: ValidationResult): boolean {
