@@ -80,11 +80,30 @@ export class AsyncAPIValidator {
 		const entryType = typeof document
 		const entryString = String(document).substring(0, 100)
 		const entrySize = JSON.stringify(document).length
-		console.log(`🔥 DEBUG validateEffect entry: typeof document = ${entryType}, size=${entrySize} chars, value = ${entryString}`)
+		const hasAsyncapiProperty = typeof document === 'object' && document !== null && 'asyncapi' in document
+		console.log(`🔥 DEBUG validateEffect entry: typeof document = ${entryType}, size=${entrySize} chars, hasAsyncapi=${hasAsyncapiProperty}, value = ${entryString}`)
+		
+		// Debug object structure
+		if (typeof document === 'object' && document !== null) {
+			console.log(`🔥 OBJECT STRUCTURE: ${Object.keys(document as any).join(', ')}`)
+		}
 		
 		const parser = this.parser
 		const stats = this.stats
 		const extractMetrics = this.extractMetrics.bind(this)
+		
+		// 🚀 PERFORMANCE OPTIMIZATION: Fast path for objects with asyncapi field
+		if (typeof document === 'object' && document !== null && 'asyncapi' in document) {
+			const version = String((document as any)['asyncapi'])
+			console.log(`🚀 FAST PATH: Found asyncapi=${version} in object, validating immediately`)
+			if (version !== '3.0.0') {
+				return Effect.fail(new Error(`AsyncAPI version must be 3.0.0, got: ${version}`))
+			}
+			// Immediate validation success - no parsing needed
+			return Effect.succeed(document as Record<string, unknown>)
+		} else {
+			console.log(`🐌 SLOW PATH: document type=${typeof document}, hasAsyncapi=${'asyncapi' in (document || {})}, keys=${Object.keys(document as any).join(',')}`)
+		}
 		
 		return Effect.gen(function* () {
 			// Ensure initialization
