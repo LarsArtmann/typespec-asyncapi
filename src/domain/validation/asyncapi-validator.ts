@@ -20,7 +20,7 @@ import {railwayLogging} from "../../utils/effect-helpers.js"
 export class AsyncAPIValidator {
 	private readonly parser: Parser
 	private readonly stats: ValidationStats
-	private initialized = false
+	private readonly initialized = false
 
 	constructor(_options: ValidationOptions = {}) {
 		//TODO: BULLSHIT PLACEHOLDER CODE! "needs to be implemented one day" IS NOT ACCEPTABLE!
@@ -78,6 +78,7 @@ export class AsyncAPIValidator {
 	validateEffect(document: unknown, _identifier?: string): Effect.Effect<ValidationResult, Error, never> {
 		const parser = this.parser
 		const stats = this.stats
+		const extractMetrics = this.extractMetrics.bind(this)
 		
 		return Effect.gen(function* () {
 			// Ensure initialization
@@ -102,13 +103,13 @@ export class AsyncAPIValidator {
 			// Calculate duration and update statistics
 			const duration = performance.now() - startTime
 			// Direct stats update to avoid Effect.TS context issues
-			this.stats.totalValidations++
-			if (this.stats.totalValidations === 1) {
-				this.stats.averageDuration = duration
+			stats.totalValidations++
+			if (stats.totalValidations === 1) {
+				stats.averageDuration = duration
 			} else {
-				this.stats.averageDuration =
-					(this.stats.averageDuration * (this.stats.totalValidations - 1) + duration) /
-					this.stats.totalValidations
+				stats.averageDuration =
+					(stats.averageDuration * (stats.totalValidations - 1) + duration) /
+					stats.totalValidations
 			}
 
 			// Use the REAL AsyncAPI parser with Effect tryPromise wrapper, retry patterns, and timeout
@@ -127,7 +128,7 @@ export class AsyncAPIValidator {
 					if (error.message?.includes("timeout")) {
 						return Effect.sync(() => {
 							const duration = performance.now() - startTime
-							this.updateStats(duration)
+							{stats.totalValidations++; stats.averageDuration = stats.totalValidations === 1 ? duration : (stats.averageDuration * (stats.totalValidations - 1) + duration) / stats.totalValidations;}
 							// LogError handled outside Effect.sync
 							return {
 								valid: false,
@@ -146,7 +147,7 @@ export class AsyncAPIValidator {
 					// Handle non-timeout errors
 					return Effect.sync(() => {
 						const duration = performance.now() - startTime
-						this.updateStats(duration)
+						{stats.totalValidations++; stats.averageDuration = stats.totalValidations === 1 ? duration : (stats.averageDuration * (stats.totalValidations - 1) + duration) / stats.totalValidations;}
 						// LogError handled outside Effect.sync
 						return {
 							valid: false,
@@ -170,10 +171,10 @@ export class AsyncAPIValidator {
 			}
 
 			// Update statistics (duration already calculated above)
-			this.updateStats(duration)
+			{stats.totalValidations++; stats.averageDuration = stats.totalValidations === 1 ? duration : (stats.averageDuration * (stats.totalValidations - 1) + duration) / stats.totalValidations;}
 
 			// Extract metrics from document
-			const metrics = this.extractMetrics(parseResult.document, duration)
+			const metrics = extractMetrics(parseResult.document, duration)
 
 			yield* Effect.logInfo(`AsyncAPI validation completed in ${duration.toFixed(2)}ms`)
 
@@ -222,6 +223,10 @@ export class AsyncAPIValidator {
 	 * Validate AsyncAPI document from file - Effect version
 	 */
 	validateFileEffect(filePath: string): Effect.Effect<ValidationResult, Error> {
+		const parser = this.parser
+		const stats = this.stats
+		const extractMetrics = this.extractMetrics.bind(this)
+		
 		return Effect.gen(function* (this: AsyncAPIValidator) {
 			// Use Effect.tryPromise to wrap Node.js file reading with proper error handling
 			const content = yield* Effect.tryPromise({
@@ -240,7 +245,7 @@ export class AsyncAPIValidator {
 						}],
 						warnings: [],
 						summary: "File reading failed",
-						metrics: this.extractMetrics(null, 0),
+						metrics: extractMetrics(null, 0),
 					}
 				}))
 			)

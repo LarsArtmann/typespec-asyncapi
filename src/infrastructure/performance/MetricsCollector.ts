@@ -104,7 +104,7 @@ export const MemoryMetricsCollector = {
   
   recordMetrics: (metrics: PerformanceMetrics) =>
     Effect.sync(() => {
-      const metricsHistory = globalThis.__ASYNCAPI_METRICS_HISTORY ||= []
+      const metricsHistory = globalThis.__ASYNCAPI_METRICS_HISTORY ??= []
       metricsHistory.push(metrics)
       
       // Keep only last 1000 metrics to prevent memory leaks
@@ -115,7 +115,7 @@ export const MemoryMetricsCollector = {
   
   getMetrics: (operation?: string) =>
     Effect.sync(() => {
-      const metricsHistory = globalThis.__ASYNCAPI_METRICS_HISTORY ||= []
+      const metricsHistory = globalThis.__ASYNCAPI_METRICS_HISTORY ??= []
       return operation 
         ? metricsHistory.filter(m => m.operation === operation)
         : [...metricsHistory]
