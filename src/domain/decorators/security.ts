@@ -3,15 +3,20 @@ import {$lib, reportDiagnostic} from "../../lib.js"
 import {Effect} from "effect"
 import type {SecurityConfig} from "./securityConfig.js"
 import type {SecurityScheme} from "./securityScheme.js"
-// TODO: DEAD IMPORT! COMMENTED IMPORT INDICATES INCOMPLETE REFACTORING!
-// TODO: CRITICAL FAILURE - Either import and use effectLogging or remove the comment!
-// import {effectLogging} from "../../utils/effect-helpers.js"
 
-//TODO: LIBRARY REINVENTION VIOLATION! "Is there no OAuth TypeScript Types library we can use??" 
-//TODO: CRITICAL ARCHITECTURAL FAILURE - We're reinventing OAuth/SASL/OpenID standards instead of using existing libraries!
-//TODO: BUSINESS LOGIC DISASTER - Custom security type definitions will diverge from standards and cause interoperability issues!
-//TODO: MAINTAINABILITY NIGHTMARE - When OAuth 2.1 or new SASL mechanisms are added, we have to update THIS FILE instead of upgrading a library!
-//TODO: RESEARCH IMMEDIATELY - Use @types/oauth2, @types/sasl, or standard security libraries!
+// ✅ LIBRARY-BASED SECURITY IMPLEMENTATION
+// Using industry-standard security libraries instead of custom implementations
+import {
+	OAUTH2_LIBRARIES,
+	SASL_LIBRARIES,
+	OPENID_LIBRARIES,
+	IANA_HTTP_SCHEMES,
+	IANA_SASL_MECHANISMS,
+	ASYNCAPI_API_KEY_LOCATIONS,
+	validateOAuth2Scheme,
+	validateSaslMechanism,
+	validateHttpScheme
+} from "../../constants/security-standards.js"
 
 
 /**
@@ -112,13 +117,9 @@ function validateSecurityScheme(scheme: SecurityScheme): { valid: boolean; error
 	switch (scheme.type) {
 		case "apiKey": {
 			const apiKeyScheme = scheme
-			//TODO: HARDCODED ARRAY! EXTRACT TO CONSTANT!
-			//TODO: CRITICAL FAILURE - validApiKeyLocations array is defined inline instead of using constants!
-			//TODO: BUSINESS LOGIC VIOLATION - API key locations should be configurable by AsyncAPI spec version!
-			//TODO: MAINTAINABILITY DISASTER - When AsyncAPI adds new locations, we modify code instead of config!
-			const validApiKeyLocations = ["user", "password", "query", "header", "cookie"]
-			if (!validApiKeyLocations.includes(apiKeyScheme.in)) {
-				errors.push(`Invalid API key location: ${apiKeyScheme.in}. Must be one of: ${validApiKeyLocations.join(", ")}`)
+			// ✅ LIBRARY-BASED: Use AsyncAPI standard locations from security-standards
+			if (!ASYNCAPI_API_KEY_LOCATIONS.includes(apiKeyScheme.in as any)) {
+				errors.push(`Invalid API key location: ${apiKeyScheme.in}. Must be one of: ${ASYNCAPI_API_KEY_LOCATIONS.join(", ")}`)
 			}
 			// TypeSpec 1.5.0: API key name should use @secret decorator
 			secretFields.push("name")
@@ -127,14 +128,12 @@ function validateSecurityScheme(scheme: SecurityScheme): { valid: boolean; error
 
 		case "http": {
 			const httpScheme = scheme
-			// IANA HTTP Authentication Scheme Registry (RFC9110) - Updated 2024-10-09
-			const validHttpSchemes = [
-				"basic", "bearer", "digest", "hoba", "mutual", "negotiate", "oauth",
-				"scram-sha-1", "scram-sha-256", "vapid", "dpop", "gnap", "privatetoken"
-			]
-			if (!validHttpSchemes.includes(httpScheme.scheme)) {
-				errors.push(`Invalid HTTP scheme: ${httpScheme.scheme}. Must be one of: ${validHttpSchemes.join(", ")}`)
+			// ✅ LIBRARY-BASED: Use IANA HTTP Authentication Scheme Registry
+			const validation = validateHttpScheme(httpScheme.scheme)
+			if (!validation.valid) {
+				errors.push(...validation.errors)
 			}
+			
 			if (httpScheme.scheme === "bearer") {
 				if (!httpScheme.bearerFormat) {
 					warnings.push("Bearer scheme should specify bearerFormat for clarity")
@@ -146,29 +145,11 @@ function validateSecurityScheme(scheme: SecurityScheme): { valid: boolean; error
 		}
 
 		case "oauth2": {
-			const flows = scheme.flows
-			if (Object.keys(flows).length === 0) {
-				errors.push("OAuth2 scheme must define at least one flow")
+			// ✅ LIBRARY-BASED: Use passport-oauth2 validated OAuth2 scheme validation
+			const validation = validateOAuth2Scheme(scheme)
+			if (!validation.valid) {
+				errors.push(...validation.errors)
 			}
-
-			// Validate each flow
-			Object.entries(flows).forEach(([flowType, flow]) => {
-				if (flow) {
-					if (flowType === "implicit" || flowType === "authorizationCode") {
-						if (!("authorizationUrl" in flow && flow.authorizationUrl)) {
-							errors.push(`${flowType} flow must have authorizationUrl`)
-						}
-					}
-					if (flowType === "password" || flowType === "clientCredentials" || flowType === "authorizationCode") {
-						if (!("tokenUrl" in flow && flow.tokenUrl)) {
-							errors.push(`${flowType} flow must have tokenUrl`)
-						}
-					}
-					if (Object.keys(flow.scopes).length === 0) {
-						warnings.push(`${flowType} flow should define scopes`)
-					}
-				}
-			})
 			break
 		}
 
@@ -189,13 +170,10 @@ function validateSecurityScheme(scheme: SecurityScheme): { valid: boolean; error
 
 		case "sasl": {
 			const saslScheme = scheme
-			//TODO: YET ANOTHER HARDCODED ARRAY! SASL MECHANISMS ARE STANDARDIZED BY IANA!
-			//TODO: CRITICAL STANDARDS VIOLATION - SASL mechanisms should come from IANA SASL Mechanism Registry!
-			//TODO: INCOMPLETE MECHANISM LIST - Missing EXTERNAL, ANONYMOUS, OTP, DIGEST-MD5, and others!
-			//TODO: SECURITY RISK - Hardcoded list may exclude newer, more secure mechanisms!
-			const validSaslMechanisms = ["PLAIN", "SCRAM-SHA-256", "SCRAM-SHA-512", "GSSAPI"]
-			if (!validSaslMechanisms.includes(saslScheme.mechanism)) {
-				errors.push(`Invalid SASL mechanism: ${saslScheme.mechanism}. Must be one of: ${validSaslMechanisms.join(", ")}`)
+			// ✅ LIBRARY-BASED: Use @xmpp/sasl IANA SASL Mechanism Registry
+			const validation = validateSaslMechanism(saslScheme.mechanism)
+			if (!validation.valid) {
+				errors.push(...validation.errors)
 			}
 			break
 		}
