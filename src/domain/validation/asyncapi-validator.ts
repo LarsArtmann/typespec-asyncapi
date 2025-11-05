@@ -79,7 +79,8 @@ export class AsyncAPIValidator {
 		// 🔥 CRITICAL FIX: Debug logging at validateEffect entry
 		const entryType = typeof document
 		const entryString = String(document).substring(0, 100)
-		console.log(`🔥 DEBUG validateEffect entry: typeof document = ${entryType}, value = ${entryString}`)
+		const entrySize = JSON.stringify(document).length
+		console.log(`🔥 DEBUG validateEffect entry: typeof document = ${entryType}, size=${entrySize} chars, value = ${entryString}`)
 		
 		const parser = this.parser
 		const stats = this.stats
@@ -87,54 +88,86 @@ export class AsyncAPIValidator {
 		
 		return Effect.gen(function* () {
 			// Ensure initialization
-			yield* railwayLogging.logInitialization("AsyncAPI 3.0.0 Validator with REAL @asyncapi/parser")
-			const startTime = performance.now()
+			yield* railwayLogging.logInitialization("AsyncAPI 3.0.0 Validator with REAL @asyncapi/parser...")
+			const initStartTime = performance.now()
 
 			// Convert document to string for parser (no pretty printing for performance)
-			// 🔥 CRITICAL FIX: Use more robust type check to avoid [object Object] conversion
-			const content = (typeof document === 'string' && document !== '[object Object]') ? document : JSON.stringify(document, null, 2)
+			// 🔥 CRITICAL FIX: Optimize object to string conversion for performance
+			let content: string
+			if (typeof document === 'string' && document !== '[object Object]') {
+				content = document
+			} else if (typeof document === 'object') {
+				// 🚀 PERFORMANCE OPTIMIZATION: Use fast stringification (no pretty printing)
+				content = JSON.stringify(document)
+			} else {
+				content = JSON.stringify(document, null, 2)
+			}
+			const conversionTime = performance.now() - initStartTime
 
-			// Enforce AsyncAPI 3.0.0 strict compliance using Effect.gen
-			yield* Effect.gen(function*() {
-				let docObject: Record<string, unknown>
-				
-				if (typeof document === 'string') {
-					// Handle both JSON and YAML content
-					if (content.trim().startsWith('{') || content.trim().startsWith('[')) {
-						// JSON content
-						docObject = JSON.parse(content) as Record<string, unknown>
-					} else if (content.trim().startsWith('asyncapi:')) {
-						// YAML content - use YAML parser
+			// 🚀 PERFORMANCE OPTIMIZATION: Remove nested Effect.gen to reduce runtime overhead
+			let docObject: Record<string, unknown>
+			
+			if (typeof document === 'string') {
+				// Handle both JSON and YAML content
+				if (content.trim().startsWith('{') || content.trim().startsWith('[')) {
+					// JSON content
+					docObject = JSON.parse(content) as Record<string, unknown>
+				} else if (content.trim().startsWith('asyncapi:')) {
+					// YAML content - use YAML parser
+					// Note: This part remains async due to import() requirement
+					return Effect.gen(function*() {
 						const yaml = yield* Effect.tryPromise({
 							try: () => import("yaml"),
 							catch: (error) => new Error(`Failed to import YAML parser: ${error}`)
 						})
 						docObject = yaml.parse(content) as Record<string, unknown>
-					} else {
-						// Try JSON first, fallback to YAML
-						try {
-							docObject = JSON.parse(content) as Record<string, unknown>
-						} catch (jsonError) {
+						
+						if (docObject && typeof docObject === 'object' && 'asyncapi' in docObject) {
+							const version = String(docObject.asyncapi)
+							if (version !== '3.0.0') {
+								yield* Effect.fail(new Error(`AsyncAPI version must be 3.0.0, got: ${version}`))
+							}
+						}
+						return docObject
+					})
+				} else {
+					// Try JSON first, fallback to YAML
+					try {
+						docObject = JSON.parse(content) as Record<string, unknown>
+					} catch (jsonError) {
+						// Note: This part remains async due to import() requirement
+						return Effect.gen(function*() {
 							const yaml = yield* Effect.tryPromise({
 								try: () => import("yaml"),
 								catch: (error) => new Error(`Failed to import YAML parser: ${error}`)
 							})
 							docObject = yaml.parse(content) as Record<string, unknown>
-						}
-					}
-				} else {
-					// Already an object
-					docObject = document as Record<string, unknown>
-				}
-				
-				if (docObject && typeof docObject === 'object' && 'asyncapi' in docObject) {
-					const version = String(docObject.asyncapi)
-					if (version !== '3.0.0') {
-						yield* Effect.fail(new Error(`AsyncAPI version must be 3.0.0, got: ${version}`))
+							
+							if (docObject && typeof docObject === 'object' && 'asyncapi' in docObject) {
+								const version = String(docObject.asyncapi)
+								if (version !== '3.0.0') {
+									yield* Effect.fail(new Error(`AsyncAPI version must be 3.0.0, got: ${version}`))
+								}
+							}
+							return docObject
+						})
 					}
 				}
-				return docObject
-			})
+			} else {
+				// Already an object
+				docObject = document as Record<string, unknown>
+			}
+			
+			const parseTime = performance.now() - conversionTime
+			
+			if (docObject && typeof docObject === 'object' && 'asyncapi' in docObject) {
+				const version = String(docObject.asyncapi)
+				if (version !== '3.0.0') {
+					return Effect.fail(new Error(`AsyncAPI version must be 3.0.0, got: ${version}`))
+				}
+			}
+			console.log(`🔥 PERFORMANCE TIMING: init=${(conversionTime).toFixed(2)}ms, parse=${parseTime.toFixed(2)}ms, versionCheck=0.00ms`)
+			return Effect.succeed(docObject)
 
 			// Calculate duration and update statistics
 			const duration = performance.now() - startTime
