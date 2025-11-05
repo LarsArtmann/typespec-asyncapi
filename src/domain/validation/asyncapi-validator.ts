@@ -48,13 +48,17 @@ export class AsyncAPIValidator {
 	 * Initialize the validator with AsyncAPI parser - Railway programming style
 	 */
 	initializeEffect(): Effect.Effect<void, never> {
-		return Effect.gen(function* (this: AsyncAPIValidator) {
-			if (this.initialized) {
+		// Create closure that captures instance properly
+		const parser = this.parser
+		const stats = this.stats
+		
+		return Effect.gen(function* () {
+			// Check if already initialized by checking stats
+			if (stats.totalValidations > 0) {
 				return
 			}
 
 			yield* railwayLogging.logInitialization("AsyncAPI 3.0.0 Validator with REAL @asyncapi/parser")
-			this.initialized = true
 			yield* railwayLogging.logInitializationSuccess("AsyncAPI 3.0.0 Validator")
 		})
 	}
@@ -64,11 +68,7 @@ export class AsyncAPIValidator {
 	 * @deprecated Use initializeEffect() for proper Railway programming
 	 */
 	initialize(): void {
-		if (this.initialized) {
-			return
-		}
-		// Initialize directly to avoid Effect.runSync anti-pattern
-		// Note: This should be converted to full Effect pattern in future refactoring
+		// Use Effect.runSync to maintain backward compatibility
 		this.initializeEffect().pipe(Effect.runSync)
 	}
 
@@ -76,9 +76,12 @@ export class AsyncAPIValidator {
 	 * Validate AsyncAPI document using the REAL parser - Effect version
 	 */
 	validateEffect(document: unknown, _identifier?: string): Effect.Effect<ValidationResult, Error, never> {
-		return Effect.gen(function* (this: AsyncAPIValidator) {
-			// Ensure initialization in Effect context
-			yield* this.initializeEffect()
+		const parser = this.parser
+		const stats = this.stats
+		
+		return Effect.gen(function* () {
+			// Ensure initialization
+			yield* railwayLogging.logInitialization("AsyncAPI 3.0.0 Validator with REAL @asyncapi/parser")
 			const startTime = performance.now()
 
 			// Convert document to string for parser (no pretty printing for performance)
@@ -98,11 +101,11 @@ export class AsyncAPIValidator {
 
 			// Calculate duration and update statistics
 			const duration = performance.now() - startTime
-			this.updateStats(duration)
+			updateStatsCallback(stats, duration)
 
 			// Use the REAL AsyncAPI parser with Effect tryPromise wrapper, retry patterns, and timeout
 			const parseResult = yield* Effect.tryPromise({
-				try: () => this.parser.parse(content),
+				try: () => parser.parse(content),
 				catch: (error) => new Error(`Parser failed: ${error instanceof Error ? error.message : JSON.stringify(error)}`)
 			}).pipe(
 				// Add timeout for long-running parsing operations (30 seconds)
