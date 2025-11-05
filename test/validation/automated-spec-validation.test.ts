@@ -16,7 +16,7 @@
 
 import {afterAll, beforeAll, describe, expect, it} from "bun:test"
 import {AsyncAPIValidator} from "../../src/domain/validation/asyncapi-validator.js"
-import {compileAsyncAPISpec, parseAsyncAPIOutput, TestSources} from "../utils/test-helpers.js"
+import {compileAsyncAPISpec, compileAsyncAPISpecWithResult, parseAsyncAPIOutput, TestSources} from "../utils/test-helpers.js"
 import {mkdir, rm, writeFile} from "node:fs/promises"
 import {join} from "node:path"
 import {Effect} from "effect"
@@ -266,13 +266,13 @@ describe("🚨 CRITICAL: AUTOMATED ASYNCAPI SPECIFICATION VALIDATION", () => {
 
 					// Step 1: Generate AsyncAPI specification
 					Effect.log(`  📄 Generating ${format.toUpperCase()} specification...`)
-					const compilationResult = await compileAsyncAPISpec(scenario.source, {
+					const compilationResult = await compileAsyncAPISpecWithResult(scenario.source, {
 						"file-type": format,
 						"output-file": scenario.name,
 					})
 
-					expect(compilationResult.outputFiles).toBeDefined()
-					expect(compilationResult.outputFiles.size).toBeGreaterThan(0)
+					expect(compilationResult.result.outputFiles).toBeDefined()
+					expect(compilationResult.result.outputFiles.size).toBeGreaterThan(0)
 
 					// Step 2: Parse generated specification
 					const fileName = `${scenario.name}.${format}`
@@ -280,7 +280,13 @@ describe("🚨 CRITICAL: AUTOMATED ASYNCAPI SPECIFICATION VALIDATION", () => {
 
 					let parsedSpec: Record<string, unknown>
 					try {
-						parsedSpec = await parseAsyncAPIOutput(compilationResult.outputFiles, fileName)
+						const parsed = await parseAsyncAPIOutput(compilationResult.result.outputFiles, fileName)
+						console.log(`🔍 DEBUG: parseAsyncAPIOutput returned for ${fileName}: ${typeof parsed}`)
+						if (typeof parsed === 'object') {
+							console.log(`🔍 DEBUG: parseAsyncAPIOutput object keys: ${Object.keys(parsed).join(', ')}`)
+						} else if (typeof parsed === 'string') {
+							console.log(`🔍 DEBUG: parseAsyncAPIOutput returned string: ${parsed.substring(0, 100)}`)
+						}
 						expect(parsedSpec).toBeDefined()
 					} catch (error) {
 						throw new Error(`Failed to parse generated ${fileName}: ${error instanceof Error ? error.message : String(error)}`)
@@ -471,6 +477,10 @@ describe("🚨 CRITICAL: AUTOMATED ASYNCAPI SPECIFICATION VALIDATION", () => {
 
 			for (const invalidSpec of invalidSpecs) {
 				Effect.log(`  🧪 Testing invalid spec: ${invalidSpec.name}`)
+				
+				// 🔥 DEBUG: Check type before passing to validator
+				console.log(`🔍 DEBUG: invalidSpec.document type: ${typeof invalidSpec.document}`)
+				console.log(`🔍 DEBUG: invalidSpec.document:`, invalidSpec.document)
 
 				const result = await validator.validate(invalidSpec.document)
 

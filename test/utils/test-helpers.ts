@@ -106,6 +106,10 @@ export async function compileAsyncAPISpecRaw(
 	source: string,
 	options: AsyncAPIEmitterOptions = {},
 ): Promise<CompilationResult> {
+	// 🔥 CRITICAL: Added explicit logging to see if this function is called
+	console.log(`🚀 compileAsyncAPISpecRaw called with source length: ${source.length}`)
+	Effect.log(`🚀 compileAsyncAPISpecRaw called with source length: ${source.length}`)
+	
 	// File system utilities for output file discovery
 	const fs = await import("node:fs/promises")
 	const path = await import("node:path")
@@ -138,7 +142,88 @@ export async function compileAsyncAPISpecRaw(
 	// Access outputFiles correctly from TestCompileResult structure
 	// TestCompileResult has: { program: Program, fs: TestFileSystem }
 	// TestFileSystem has: { fs: Map<string, string>, compilerHost: CompilerHost }
-	const outputFiles = result.fs?.fs || new Map<string, string>()
+	
+	// 🔥 CRITICAL FIX: Handle both TestFileSystem AND real filesystem writes
+	// TypeSpec's emitFile API can write to either:
+	// 1. TestFileSystem (in-memory) during test framework capture
+	// 2. Real filesystem when not captured by test framework
+	
+	let outputFiles = result.fs?.fs || new Map<string, string>()
+	
+	// 🔥 CRITICAL FIX: If TestFileSystem is empty, check real filesystem
+	// This happens when emitFile writes to real FS instead of test framework
+	if (outputFiles.size === 0) {
+		console.log("🔍 TestFileSystem empty, checking real filesystem...")
+		Effect.log("🔍 TestFileSystem empty, checking real filesystem...")
+		
+		// Import filesystem utilities
+		const fs = await import("node:fs/promises")
+		const path = await import("node:path")
+		
+		// 🔥 KEY FIX: Check TypeSpec output directory structure
+		// Files are written to: ./@lars-artmann/typespec-asyncapi/
+		const typeSpecOutputDir = path.join(process.cwd(), '@lars-artmann', 'typespec-asyncapi')
+		
+		try {
+			console.log(`🔍 Attempting to read directory: ${typeSpecOutputDir}`)
+			// Check if TypeSpec output directory exists
+			const files = await fs.readdir(typeSpecOutputDir)
+			console.log(`📁 TypeSpec output directory: ${typeSpecOutputDir}`)
+			console.log(`📁 Found ${files.length} files in directory`)
+			Effect.log(`📁 TypeSpec output directory: ${typeSpecOutputDir}`)
+			Effect.log(`📁 Found ${files.length} files in directory`)
+			
+			// Look for AsyncAPI files that were emitted
+			console.log(`📁 All files found: ${files.join(', ')}`)
+			const asyncapiFiles = files.filter(file => 
+				file.includes('asyncapi') && 
+				(file.endsWith('.yaml') || file.endsWith('.json'))
+			)
+			
+			console.log(`🔍 Found ${asyncapiFiles.length} AsyncAPI files: ${asyncapiFiles.join(', ')}`)
+			Effect.log(`🔍 Found ${asyncapiFiles.length} AsyncAPI files: ${asyncapiFiles.join(', ')}`)
+			
+			// Read found files and add to outputFiles
+			for (const file of asyncapiFiles) {
+				console.log(`🔍 Reading file: ${file}`)
+				const filePath = path.join(typeSpecOutputDir, file)
+				try {
+					const content = await fs.readFile(filePath, 'utf-8')
+					console.log(`✅ Read ${content.length} chars from ${file}`)
+					outputFiles.set(file, content)
+					console.log(`✅ Found AsyncAPI file: ${file} (${content.length} chars)`)
+					console.log(`🔍 Content preview: ${content.substring(0, 200)}...`)
+					Effect.log(`✅ Found AsyncAPI file: ${file} (${content.length} chars)`)
+					Effect.log(`🔍 Content preview: ${content.substring(0, 100)}...`)
+				} catch (error) {
+					console.log(`❌ Failed to read ${file}: ${error}`)
+					Effect.log(`❌ Failed to read ${file}: ${error}`)
+				}
+			}
+			
+			// Also check for files with scenario names
+			for (const file of files) {
+				if (file.endsWith('.yaml') || file.endsWith('.json')) {
+					const filePath = path.join(typeSpecOutputDir, file)
+					try {
+						const content = await fs.readFile(filePath, 'utf-8')
+						// Only add if it looks like an AsyncAPI file
+						if (content.includes('asyncapi:') || content.includes('"asyncapi"')) {
+							outputFiles.set(file, content)
+							Effect.log(`✅ Found AsyncAPI scenario file: ${file} (${content.length} chars)`)
+							Effect.log(`🔍 Content preview: ${content.substring(0, 100)}...`)
+						}
+					} catch (error) {
+						Effect.log(`❌ Failed to read ${file}: ${error}`)
+					}
+				}
+			}
+			
+			Effect.log(`📊 Final outputFiles size: ${outputFiles.size}`)
+		} catch (error) {
+			Effect.log(`❌ Failed to read TypeSpec output directory: ${error}`)
+		}
+	}
 
 	Effect.log("OutputFiles size:", outputFiles.size)
 	const allKeys = Array.from(outputFiles.keys())
@@ -344,6 +429,107 @@ export async function compileAsyncAPISpecWithoutErrors(
 }
 
 /**
+ * Compile TypeSpec source and return both result and parsed AsyncAPI document
+ * This resolves the API mismatch where tests expect CompilationResult but compileAsyncAPISpec returns AsyncAPIObject
+ */
+export async function compileAsyncAPISpecWithResult(
+	source: string,
+	options: AsyncAPIEmitterOptions = {},
+): Promise<{
+	asyncApiDoc: AsyncAPIObject;
+	result: {
+		outputFiles: Map<string, string | { content: string }>;
+		program: Program;
+		diagnostics: readonly Diagnostic[];
+	};
+}> {
+	// Get raw compilation result
+	const rawResult = await compileAsyncAPISpecRaw(source, options)
+	
+	// 🔥 DEBUG: Check what files we got from compilation
+	console.log(`🔍 DEBUG compileAsyncAPISpecWithResult: outputFiles size: ${rawResult.outputFiles.size}`)
+	for (const [key, value] of rawResult.outputFiles) {
+		console.log(`🔍 DEBUG compileAsyncAPISpecWithResult: file ${key} (${typeof value}, ${value?.length || 0} chars)`)
+	}
+
+	// Check for compilation errors first
+	const errors = rawResult.diagnostics.filter(d => d.severity === 'error')
+	if (errors.length > 0) {
+		Effect.log(`❌ Compilation failed with ${errors.length} errors:`)
+		for (const error of errors) {
+			Effect.log(`  - ${error.message}`)
+		}
+		throw new Error(`Compilation failed with errors: ${errors.map(d => d.message).join(', ')}`)
+	}
+
+	// Parse the AsyncAPI document using same logic as compileAsyncAPISpec
+	try {
+		// Try different possible output file names
+		const possibleFiles = ['asyncapi.yaml', 'asyncapi.json']
+
+		for (const fileName of possibleFiles) {
+			try {
+				const parsed = await parseAsyncAPIOutput(rawResult.outputFiles, fileName)
+				console.log(`🔍 DEBUG parsed result for ${fileName}: ${typeof parsed}, ${parsed ? 'has value' : 'null/undefined'}`)
+				if (parsed && typeof parsed === 'object') {
+					console.log(`🔍 DEBUG parsed object has ${Object.keys(parsed).length} keys`)
+					Effect.log(`✅ Successfully parsed AsyncAPI document from ${fileName}`)
+					return {
+						asyncApiDoc: parsed as AsyncAPIObject,
+						result: {
+							outputFiles: rawResult.outputFiles,
+							program: rawResult.program,
+							diagnostics: rawResult.diagnostics,
+						},
+					}
+				} else if (typeof parsed === 'string') {
+					console.log(`🔍 DEBUG got string instead of object: ${parsed}`)
+				}
+			} catch (error) {
+				Effect.log(`Failed to parse ${fileName}: ${error}`)
+				continue
+			}
+		}
+
+		// If no standard file found, try to find any AsyncAPI file
+		const allFiles = Array.from(rawResult.outputFiles.keys())
+		const asyncapiFiles = allFiles.filter(path =>
+			(path.includes('asyncapi') || path.includes('AsyncAPI')) &&
+			(path.endsWith('.yaml') || path.endsWith('.json')),
+		)
+
+		if (asyncapiFiles.length > 0) {
+			const fileName = asyncapiFiles[0]
+			const parsed = await parseAsyncAPIOutput(rawResult.outputFiles, fileName)
+			if (parsed && typeof parsed === 'object') {
+				Effect.log(`✅ Successfully parsed AsyncAPI document from ${fileName}`)
+				return {
+					asyncApiDoc: parsed as AsyncAPIObject,
+					result: {
+						outputFiles: rawResult.outputFiles,
+						program: rawResult.program,
+						diagnostics: rawResult.diagnostics,
+					},
+				}
+			}
+		}
+
+		// NO MORE ALPHA FALLBACK: Emitter works, so throw real error if file not found
+		Effect.log(`❌ No AsyncAPI files found in output`)
+		Effect.log(`📊 Total output files: ${allFiles.length}`)
+		for (const [key, value] of rawResult.outputFiles) {
+			Effect.log(`  📄 ${key}: ${typeof value} (${value?.length || 0} chars)`)
+		}
+
+		throw new Error(`No AsyncAPI files found in compilation output`)
+
+	} catch (error) {
+		Effect.log(`❌ Failed to parse AsyncAPI output: ${error}`)
+		throw new Error(`Failed to parse AsyncAPI output: ${error}`)
+	}
+}
+
+/**
  * Simple decorator testing - compile TypeSpec with decorators registered
  * This function focuses on just testing that decorators are recognized without running the emitter
  */
@@ -382,6 +568,12 @@ export async function parseAsyncAPIOutput(outputFiles: Map<string, string | {
 	content: string
 }>, filename: string): Promise<AsyncAPIObject | string> {
 	//TODO: refactor to use Effect.TS!
+
+	// 🔥 CRITICAL: Added debug logging at entry
+	console.log(`🔍 DEBUG parseAsyncAPIOutput entry: outputFiles size: ${outputFiles.size}, looking for: ${filename}`)
+	for (const [key, value] of outputFiles) {
+		console.log(`🔍 DEBUG parseAsyncAPIOutput entry: file ${key} (${typeof value}, ${value?.length || 0} chars)`)
+	}
 
 	// Check if outputFiles is undefined or null
 	if (!outputFiles) {
@@ -510,10 +702,15 @@ export async function parseAsyncAPIOutput(outputFiles: Map<string, string | {
 		Effect.log(`📁 File sample: ${availableFiles.slice(0, 5).join(', ')}...`)
 
 		// Check if this is requesting a schema we know about
-		const schemaName = extractSchemaNameFromTest(filename)
-		if (schemaName) {
-			return createAlphaFallbackDocument(schemaName)
-		}
+	// 🔥 CRITICAL FIX: Disable premature fallback - filesystem bridge now works correctly
+	// The fallback was triggering even when real 3.0.0 files were found
+	const schemaName = extractSchemaNameFromTest(filename)
+	console.log(`🔍 DEBUG: extractSchemaNameFromTest("${filename}") = "${schemaName}"`)
+	// Disabled premature fallback - let real file parsing work
+	if (false && schemaName) {  // 🚨 TEMPORARILY DISABLED
+		console.log(`🔍 DEBUG: Would trigger fallback for schema: ${schemaName}`)
+		return createAlphaFallbackDocument(schemaName)
+	}
 
 		// Generic fallback
 		return createAlphaFallbackDocument("BasicEvent")
@@ -543,14 +740,20 @@ async function parseFileContent(content: string, filename: string): Promise<Asyn
 		if (content.trim().startsWith('asyncapi:')) {
 			Effect.log("⚠️  Alpha emitter generated YAML content for JSON request - auto-converting")
 			const yaml = await import("yaml")
-			return yaml.parse(content) as AsyncAPIObject
+			const parsed = yaml.parse(content) as AsyncAPIObject
+			Effect.log(`🔍 DEBUG parseFileContent: Parsed YAML to object with ${Object.keys(parsed).length} keys`)
+			return parsed
 		}
-		return JSON.parse(content) as AsyncAPIObject
+		const parsed = JSON.parse(content) as AsyncAPIObject
+		Effect.log(`🔍 DEBUG parseFileContent: Parsed JSON to object with ${Object.keys(parsed).length} keys`)
+		return parsed
 	} else if (filename.endsWith('.yaml') || filename.endsWith('.yml')) {
 		// Parse YAML content into object for validation
 		const yaml = await import("yaml")
 		Effect.log("Parsing YAML content to object")
-		return yaml.parse(content) as AsyncAPIObject
+		const parsed = yaml.parse(content) as AsyncAPIObject
+		Effect.log(`🔍 DEBUG parseFileContent: Parsed YAML to object with ${Object.keys(parsed).length} keys`)
+		return parsed
 	}
 
 	throw new Error(`Unsupported file format: ${filename}`)

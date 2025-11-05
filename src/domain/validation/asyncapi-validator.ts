@@ -76,6 +76,11 @@ export class AsyncAPIValidator {
 	 * Validate AsyncAPI document using the REAL parser - Effect version
 	 */
 	validateEffect(document: unknown, _identifier?: string): Effect.Effect<ValidationResult, Error, never> {
+		// 🔥 CRITICAL: Debug logging at validateEffect entry
+		const entryType = typeof document
+		const entryString = String(document).substring(0, 100)
+		console.log(`🔥 DEBUG validateEffect entry: typeof document = ${entryType}, value = ${entryString}`)
+		
 		const parser = this.parser
 		const stats = this.stats
 		const extractMetrics = this.extractMetrics.bind(this)
@@ -86,11 +91,41 @@ export class AsyncAPIValidator {
 			const startTime = performance.now()
 
 			// Convert document to string for parser (no pretty printing for performance)
-			const content = typeof document === 'string' ? document : JSON.stringify(document)
+			const content = (typeof document === 'string' && document !== '[object Object]') ? document : JSON.stringify(document, null, 2)
 
 			// Enforce AsyncAPI 3.0.0 strict compliance using Effect.gen
 			yield* Effect.gen(function*() {
-				const docObject: Record<string, unknown> = typeof document === 'string' ? JSON.parse(content) as Record<string, unknown> : document as Record<string, unknown>
+				let docObject: Record<string, unknown>
+				
+				if (typeof document === 'string') {
+					// Handle both JSON and YAML content
+					if (content.trim().startsWith('{') || content.trim().startsWith('[')) {
+						// JSON content
+						docObject = JSON.parse(content) as Record<string, unknown>
+					} else if (content.trim().startsWith('asyncapi:')) {
+						// YAML content - use YAML parser
+						const yaml = yield* Effect.tryPromise({
+							try: () => import("yaml"),
+							catch: (error) => new Error(`Failed to import YAML parser: ${error}`)
+						})
+						docObject = yaml.parse(content) as Record<string, unknown>
+					} else {
+						// Try JSON first, fallback to YAML
+						try {
+							docObject = JSON.parse(content) as Record<string, unknown>
+						} catch (jsonError) {
+							const yaml = yield* Effect.tryPromise({
+								try: () => import("yaml"),
+								catch: (error) => new Error(`Failed to import YAML parser: ${error}`)
+							})
+							docObject = yaml.parse(content) as Record<string, unknown>
+						}
+					}
+				} else {
+					// Already an object
+					docObject = document as Record<string, unknown>
+				}
+				
 				if (docObject && typeof docObject === 'object' && 'asyncapi' in docObject) {
 					const version = String(docObject.asyncapi)
 					if (version !== '3.0.0') {
