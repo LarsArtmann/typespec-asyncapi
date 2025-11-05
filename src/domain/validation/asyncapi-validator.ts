@@ -113,7 +113,7 @@ export class AsyncAPIValidator {
 				validatedAt: new Date()
 			}
 		}
-		return Effect.succeed(immediateResult)
+			return yield* Effect.succeed(immediateResult)
 	} else {
 		console.log(`🐌 SLOW PATH: document type=${typeof inputDocument}, hasAsyncapi=${'asyncapi' in (inputDocument && typeof inputDocument === 'object' ? inputDocument : {})}, keys=${Object.keys((inputDocument as any) || {}).join(',')}`)
 	}
@@ -276,51 +276,61 @@ export class AsyncAPIValidator {
 				return parseResult as ValidationResult
 			}
 
-			// Type-safe property access using type guards
-			const document = parseResult && typeof parseResult === 'object' && 'document' in parseResult 
-				? parseResult.document as any 
-				: undefined
+			// Type-safe property access using proper type discrimination
+			if (typeof parseResult === 'object' && parseResult !== null && 'document' in parseResult) {
+				const document = (parseResult as any).document
+				const diagnostics = (parseResult as any).diagnostics || []
 				
-			const diagnostics = parseResult && typeof parseResult === 'object' && 'diagnostics' in parseResult 
-				? parseResult.diagnostics as any[] 
-				: []
+				// Extract metrics from document
+				const metrics = document ? extractMetrics(document, duration) : {
+					duration, channelCount: 0, operationCount: 0, schemaCount: 0, validatedAt: new Date()
+				}
 
-			// Extract metrics from document
-			const metrics = document ? extractMetrics(document, duration) : {
-				duration, channelCount: 0, operationCount: 0, schemaCount: 0, validatedAt: new Date()
-			}
+				yield* Effect.logInfo(`AsyncAPI validation completed in ${duration.toFixed(2)}ms`)
 
-			yield* Effect.logInfo(`AsyncAPI validation completed in ${duration.toFixed(2)}ms`)
+				if (diagnostics.length === 0) {
+					return {
+						valid: true,
+						errors: [],
+						warnings: [],
+						summary: `AsyncAPI document is valid (${duration.toFixed(2)}ms)`,
+						metrics,
+					}
+				} else {
+					// Convert diagnostics to validation errors
+					const errors: ValidationError[] = diagnostics
+						.filter((d: any) => Number(d.severity) === 0) // Error level
+						.map((d: any) => ({
+							message: d.message,
+							keyword: String(d.code || "validation-error"),
+							instancePath: d.path?.join('.') || "",
+							schemaPath: d.path?.join('.') || "",
+						}))
 
-			if (diagnostics.length === 0) {
-				return {
-					valid: true,
-					errors: [],
-					warnings: [],
-					summary: `AsyncAPI document is valid (${duration.toFixed(2)}ms)`,
-					metrics,
+					const warnings = diagnostics
+						.filter((d: any) => Number(d.severity) === 1) // Warning level
+						.map((d: any) => d.message)
+
+					return {
+						valid: errors.length === 0,
+						errors,
+						warnings,
+						summary: `AsyncAPI document validation completed (${errors.length} errors, ${warnings.length} warnings, ${duration.toFixed(2)}ms)`,
+						metrics,
+					}
 				}
 			} else {
-				// Convert diagnostics to validation errors
-				const errors: ValidationError[] = diagnostics
-					.filter((d: any) => Number(d.severity) === 0) // Error level
-					.map((d: any) => ({
-						message: d.message,
-						keyword: String(d.code || "validation-error"),
-						instancePath: d.path?.join('.') || "",
-						schemaPath: d.path?.join('.') || "",
-					}))
-
-				const warnings = diagnostics
-					.filter((d: any) => Number(d.severity) === 1) // Warning level
-					.map((d: any) => d.message)
-
 				return {
-					valid: errors.length === 0,
-					errors,
-					warnings,
-					summary: `AsyncAPI document validation completed (${errors.length} errors, ${warnings.length} warnings, ${duration.toFixed(2)}ms)`,
-					metrics,
+					valid: false,
+					errors: [{
+						message: "Unknown parse result type",
+						keyword: "parse-error",
+						instancePath: "",
+						schemaPath: ""
+					}],
+					warnings: [],
+					summary: "Parse result type error",
+					metrics: { duration, channelCount: 0, operationCount: 0, schemaCount: 0, validatedAt: new Date() }
 				}
 			}
 		})
