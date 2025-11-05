@@ -101,7 +101,15 @@ export class AsyncAPIValidator {
 
 			// Calculate duration and update statistics
 			const duration = performance.now() - startTime
-			updateStatsCallback(stats, duration)
+			// Direct stats update to avoid Effect.TS context issues
+			this.stats.totalValidations++
+			if (this.stats.totalValidations === 1) {
+				this.stats.averageDuration = duration
+			} else {
+				this.stats.averageDuration =
+					(this.stats.averageDuration * (this.stats.totalValidations - 1) + duration) /
+					this.stats.totalValidations
+			}
 
 			// Use the REAL AsyncAPI parser with Effect tryPromise wrapper, retry patterns, and timeout
 			const parseResult = yield* Effect.tryPromise({
