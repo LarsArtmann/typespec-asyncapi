@@ -11,6 +11,7 @@
 
 import { Effect, Context, Layer, Data } from "effect"
 import type { ServiceMetrics } from "../../domain/models/ServiceInterfaces.js"
+import { PERFORMANCE_MONITORING, PERFORMANCE_CONSTANTS } from "../../constants/defaults.js"
 
 /**
  * Performance metrics interface
@@ -78,7 +79,7 @@ export const MemoryMetricsCollector = {
           if (typeof memoryAPI === "object" && memoryAPI !== null) {
             const usedJSHeapSize = (memoryAPI as Record<string, unknown>).usedJSHeapSize
             if (typeof usedJSHeapSize === "number") {
-              memoryUsageMB = usedJSHeapSize / 1024 / 1024
+              memoryUsageMB = usedJSHeapSize / PERFORMANCE_CONSTANTS.BYTES_PER_KB / PERFORMANCE_CONSTANTS.BYTES_PER_KB
             }
           }
         }
@@ -107,9 +108,9 @@ export const MemoryMetricsCollector = {
       const metricsHistory = globalThis.__ASYNCAPI_METRICS_HISTORY ??= []
       metricsHistory.push(metrics)
       
-      // Keep only last 1000 metrics to prevent memory leaks
-      if (metricsHistory.length > 1000) {
-        metricsHistory.splice(0, metricsHistory.length - 1000)
+      // Keep only last METRICS_HISTORY_LIMIT metrics to prevent memory leaks
+      if (metricsHistory.length > PERFORMANCE_MONITORING.METRICS_HISTORY_LIMIT) {
+        metricsHistory.splice(0, metricsHistory.length - PERFORMANCE_MONITORING.METRICS_HISTORY_LIMIT)
       }
     }),
   

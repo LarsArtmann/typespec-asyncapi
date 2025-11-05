@@ -88,6 +88,58 @@ export const PERFORMANCE_CONSTANTS = {
 } as const
 
 /**
+ * Performance Monitoring Constants - Based on Industry Standards
+ * 
+ * These constants are based on established performance engineering standards:
+ * - GC Efficiency: Below 60% needs attention, above 80% is good
+ * - Memory Fragmentation: Above 70% requires optimization
+ * - Memory Per Operation: 1-4KB typical, >16KB problematic
+ * - Leak Detection: Consistent growth rate >1MB/min suspicious
+ * - Throughput: Percentiles based on production baselines
+ */
+export const PERFORMANCE_MONITORING = {
+  /** Metrics history limit to prevent memory leaks (1000 entries) */
+  METRICS_HISTORY_LIMIT: 1000,
+  
+  /** Performance regression thresholds */
+  DEGRADATION_THRESHOLD: 0.1, // 10% degradation threshold
+  IMPROVEMENT_THRESHOLD: 0.05, // 5% improvement threshold
+  PERCENTAGE_MULTIPLIER: 100, // For percentage calculations
+  
+  /** Development configuration thresholds */
+  DEV_MAX_COMPILATION_TIME_MS: 10000, // 10 seconds for dev
+  DEV_MAX_MEMORY_USAGE_MB: 200, // 200MB for dev
+  DEV_MIN_THROUGHPUT_OPS_PER_SEC: 5, // 5 ops/sec for dev
+  DEV_MAX_LATENCY_MS: 2000, // 2 seconds for dev
+  
+  /** CI/CD configuration thresholds (stricter) */
+  CI_MAX_COMPILATION_TIME_MS: 5000, // 5 seconds for CI
+  CI_MAX_MEMORY_USAGE_MB: 100, // 100MB for CI
+  CI_MIN_THROUGHPUT_OPS_PER_SEC: 10, // 10 ops/sec for CI
+  CI_MAX_LATENCY_MS: 1000, // 1 second for CI
+  
+  /** Industry-standard GC efficiency thresholds */
+  GC_EFFICIENCY_POOR_THRESHOLD: 0.6, // Below 60% needs attention
+  GC_EFFICIENCY_GOOD_THRESHOLD: 0.8, // Above 80% is good
+  
+  /** Industry-standard memory fragmentation thresholds */
+  FRAGMENTATION_HIGH_THRESHOLD: 0.7, // Above 70% requires optimization
+  
+  /** Memory per operation thresholds (bytes) */
+  MEMORY_PER_OP_TYPICAL_MIN: 1024, // 1KB typical minimum
+  MEMORY_PER_OP_TYPICAL_MAX: 4096, // 4KB typical maximum
+  MEMORY_PER_OP_PROBLEMATIC: 16384, // >16KB problematic
+  
+  /** Memory leak detection thresholds */
+  LEAK_DETECTION_GROWTH_RATE_PER_MIN: 1048576, // 1MB/min suspicious growth
+  
+  /** Memory leak scoring weights */
+  LEAK_SCORE_STEADY_GROWTH_WEIGHT: 0.4, // 40% weight for steady growth
+  LEAK_SCORE_FRAGMENTATION_WEIGHT: 0.3, // 30% weight for fragmentation
+  LEAK_SCORE_MEMORY_PER_OP_WEIGHT: 0.3 // 30% weight for memory per operation
+} as const
+
+/**
  * File extension mappings
  */
 export const FILE_EXTENSIONS = {

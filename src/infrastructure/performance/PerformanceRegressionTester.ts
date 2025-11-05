@@ -7,6 +7,7 @@
 
 import { Effect } from "effect"
 import { PerformanceMonitor } from "./PerformanceMonitor.js"
+import { PERFORMANCE_MONITORING } from "../../constants/defaults.js"
 
 export type PerformanceConfig = {
 	/** Maximum compilation time in milliseconds */
@@ -158,8 +159,8 @@ export class PerformanceRegressionTester {
 			}
 		}
 
-		const threshold = 0.1 // 10% degradation threshold
-		const improvementThreshold = 0.05 // 5% improvement threshold
+		const threshold = PERFORMANCE_MONITORING.DEGRADATION_THRESHOLD // 10% degradation threshold
+		const improvementThreshold = PERFORMANCE_MONITORING.IMPROVEMENT_THRESHOLD // 5% improvement threshold
 
 		const degradedMetrics: RegressionReport["degradedMetrics"] = []
 		const improvedMetrics: RegressionReport["improvedMetrics"] = []
@@ -194,14 +195,14 @@ export class PerformanceRegressionTester {
 					metric,
 					currentValue,
 					baselineValue,
-					percentageChange: percentageChange * 100,
+					percentageChange: percentageChange * PERFORMANCE_MONITORING.PERCENTAGE_MULTIPLIER,
 				})
 			} else if (isImprovement) {
 				improvedMetrics.push({
 					metric,
 					currentValue,
 					baselineValue,
-					percentageChange: percentageChange * 100,
+					percentageChange: percentageChange * PERFORMANCE_MONITORING.PERCENTAGE_MULTIPLIER,
 				})
 			}
 		}
@@ -228,10 +229,10 @@ export class PerformanceRegressionTester {
 	 */
 	static createDevConfig(): PerformanceConfig {
 		return {
-			maxCompilationTimeMs: 10000,  // 10 seconds
-			maxMemoryUsageMB: 200,        // 200MB
-			minThroughputOpsPerSec: 5,    // 5 ops/sec
-			maxLatencyMs: 2000,          // 2 seconds
+			maxCompilationTimeMs: PERFORMANCE_MONITORING.DEV_MAX_COMPILATION_TIME_MS,  // 10 seconds
+			maxMemoryUsageMB: PERFORMANCE_MONITORING.DEV_MAX_MEMORY_USAGE_MB,        // 200MB
+			minThroughputOpsPerSec: PERFORMANCE_MONITORING.DEV_MIN_THROUGHPUT_OPS_PER_SEC,    // 5 ops/sec
+			maxLatencyMs: PERFORMANCE_MONITORING.DEV_MAX_LATENCY_MS,          // 2 seconds
 			enableRegressionDetection: true,
 		};
 	}
@@ -241,10 +242,10 @@ export class PerformanceRegressionTester {
 	 */
 	static createCiConfig(): PerformanceConfig {
 		return {
-			maxCompilationTimeMs: 5000,   // 5 seconds
-			maxMemoryUsageMB: 100,       // 100MB
-			minThroughputOpsPerSec: 10,   // 10 ops/sec
-			maxLatencyMs: 1000,          // 1 second
+			maxCompilationTimeMs: PERFORMANCE_MONITORING.CI_MAX_COMPILATION_TIME_MS,   // 5 seconds
+			maxMemoryUsageMB: PERFORMANCE_MONITORING.CI_MAX_MEMORY_USAGE_MB,       // 100MB
+			minThroughputOpsPerSec: PERFORMANCE_MONITORING.CI_MIN_THROUGHPUT_OPS_PER_SEC,   // 10 ops/sec
+			maxLatencyMs: PERFORMANCE_MONITORING.CI_MAX_LATENCY_MS,          // 1 second
 			enableRegressionDetection: true,
 		};
 	}
