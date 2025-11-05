@@ -1,0 +1,228 @@
+# 🎯 ISSUE EXECUTION PLAN - Issues #149, #152, #182
+
+**Date:** 2025-11-05  
+**Status:** Ready for systematic execution  
+**Total Issues:** 3 critical issues  
+**Estimated Effort:** 2-3 days
+
+---
+
+## 🚨 EXECUTION STRATEGY
+
+### **Issue Prioritization (Risk-Adjusted)**
+1. **#149 - Extract Magic Numbers** (⚡ QUICK WIN - Low risk, immediate impact)
+2. **#182 - Complete Effect.TS Migration** (🔧 FOUNDATION - Enables other improvements)  
+3. **#152 - Security Library Research** (🔒 HIGH RISK - Security-critical, requires research)
+
+### **Execution Principles**
+- ✅ **Build Stability First** - Never break working functionality
+- ✅ **Test After Each Change** - Run `just test` after each issue
+- ✅ **Commit Incrementally** - Small, focused commits per issue
+- ✅ **Document Decisions** - Update relevant files with changes made
+
+---
+
+## 📋 ISSUE #149: Extract Magic Numbers from Performance Monitoring
+
+### 🎯 **OBJECTIVE**
+Replace hardcoded performance thresholds with centralized, research-based constants
+
+### 📁 **FILES TO MODIFY**
+```
+src/infrastructure/performance/MetricsCollector.ts
+src/infrastructure/performance/PerformanceRegressionTester.ts  
+src/constants/defaults.ts (create/update)
+```
+
+### 🔍 **SPECIFIC MAGIC NUMBERS TO EXTRACT**
+
+#### MetricsCollector.ts
+- `1000` - metrics history limit
+- `1024 * 1024` - MB conversion constant
+
+#### PerformanceRegressionTester.ts  
+- `0.1` - 10% degradation threshold
+- `0.05` - 5% improvement threshold
+- `10000` - 10 second compilation limit
+- `100` - 100MB memory limit
+- `100` - percentage multiplier
+- `200` - dev compilation time threshold
+- `5` - dev memory threshold
+- `2000` - dev percentage multiplier
+
+### 🎯 **INDUSTRY STANDARDS TO APPLY**
+- **GC Efficiency**: Below 60% needs attention, above 80% is good
+- **Memory Fragmentation**: Above 70% requires optimization  
+- **Memory Per Operation**: 1-4KB typical, >16KB problematic
+- **Leak Detection**: Consistent growth rate >1MB/min suspicious
+- **Throughput**: Percentiles based on production baselines
+
+### ✅ **COMPLETION CRITERIA**
+- [ ] All magic numbers extracted to `src/constants/defaults.ts`
+- [ ] Constants use `as const` for type safety
+- [ ] Industry-standard values with documentation
+- [ ] All tests pass
+- [ ] Performance tests still functional
+
+---
+
+## 📋 ISSUE #182: Complete Effect.TS Railway Programming Migration
+
+### 🎯 **OBJECTIVE** 
+Complete migration from Promise patterns to Effect.TS functional programming
+
+### 📁 **FILES TO MODIFY**
+```
+src/domain/validation/asyncapi-validator.ts
+src/infrastructure/performance/MetricsCollector.ts
+src/infrastructure/performance/PerformanceRegressionTester.ts
+src/domain/... (other Promise files)
+```
+
+### 🔍 **PATTERNS TO MIGRATE**
+
+#### Async/Promise → Effect Patterns
+```typescript
+// BEFORE (Mixed patterns)
+async validate(document: unknown): Promise<ValidationResult> {
+  return Effect.runPromise(this.validateEffect(document, _identifier))
+}
+
+// AFTER (Pure Effect)
+validate(document: unknown): Effect.Effect<ValidationResult, ValidationError> {
+  return this.validateEffect(document, _identifier)
+}
+```
+
+#### Effect Runtime Calls → Functional Composition
+```typescript
+// BEFORE (Direct runtime calls)
+Effect.runSync(Effect.log(`Message processed`))
+
+// AFTER (Functional composition)
+yield* Effect.log(`Message processed`)
+```
+
+### ✅ **COMPLETION CRITERIA**
+- [ ] Zero Promise patterns in core files
+- [ ] All Effect runtime calls wrapped in proper functions
+- [ ] Consistent error handling with Effect patterns
+- [ ] All tests pass
+- [ ] No performance regression
+
+---
+
+## 📋 ISSUE #152: Library Research Required - OAuth/SASL/OpenID
+
+### 🎯 **OBJECTIVE**
+Replace custom security implementations with mature, standard libraries
+
+### 📁 **FILES TO MODIFY**
+```
+src/domain/decorators/security.ts
+package.json (add dependencies)
+```
+
+### 🔍 **LIBRARIES TO RESEARCH**
+
+#### OAuth 2.0 Libraries
+- `@types/oauth2` - TypeScript OAuth types
+- `passport-oauth2` - Passport OAuth 2.0 strategy
+- `openid-client` - OpenID Connect Relying Party
+
+#### SASL Libraries  
+- `@types/sasl` - TypeScript SASL types
+- `@amqp/saslmq` - AMQP SASL implementation
+
+#### Security Standards
+- IANA HTTP Authentication Scheme Registry
+- RFC 7616 (HTTP Digest Access)
+- RFC 5802 (SCRAM-SHA)
+
+### ✅ **COMPLETION CRITERIA**
+- [ ] Custom implementations replaced with library calls
+- [ ] All security schemes validated against standards
+- [ ] Dependencies added to package.json
+- [ ] Tests updated for library integration
+- [ ] Documentation updated with new patterns
+
+---
+
+## 🚀 EXECUTION SEQUENCE
+
+### **Phase 1: Quick Wins (Issue #149)**
+1. **Research Industry Standards** - 30 minutes
+2. **Extract Constants** - 1 hour  
+3. **Update Performance Files** - 1 hour
+4. **Test & Validate** - 30 minutes
+5. **Commit Changes** - 15 minutes
+
+### **Phase 2: Foundation Work (Issue #182)**
+1. **Analyze Promise Patterns** - 1 hour
+2. **Create Migration Plan** - 30 minutes
+3. **Migrate Core Files** - 4-6 hours
+4. **Update Error Handling** - 2 hours
+5. **Test & Validate** - 1 hour
+6. **Commit Changes** - 30 minutes
+
+### **Phase 3: Security Research (Issue #152)**
+1. **Library Research** - 2-3 hours
+2. **Implementation Strategy** - 1 hour
+3. **Replace Custom Code** - 4-6 hours
+4. **Security Testing** - 2 hours
+5. **Documentation Updates** - 1 hour
+6. **Commit Changes** - 30 minutes
+
+---
+
+## 🧪 TESTING STRATEGY
+
+### **Per-Issue Validation**
+```bash
+# After each issue
+just build          # Ensure TypeScript compiles
+just test           # Run full test suite
+just lint           # Code quality check
+just typecheck      # Type safety validation
+```
+
+### **Specific Test Categories**
+- **#149**: Performance benchmark tests
+- **#182**: Effect.TS pattern tests
+- **#152**: Security validation tests
+
+### **Integration Validation**
+- Full TypeSpec compilation workflow
+- AsyncAPI generation correctness
+- Performance monitoring accuracy
+
+---
+
+## 📊 SUCCESS METRICS
+
+### **Issue #149 Success**
+- Zero magic numbers in performance code
+- Centralized constants with industry standards
+- Performance tests maintain baseline
+
+### **Issue #182 Success** 
+- Zero Promise patterns in core files
+- Pure Effect.TS functional programming
+- No performance regression
+
+### **Issue #152 Success**
+- Zero custom security implementations
+- Standard library integration
+- Security validation passing
+
+---
+
+## 🎯 NEXT STEPS
+
+1. **Start with Issue #149** - Extract magic numbers (quickest win)
+2. **Move to Issue #182** - Complete Effect.TS migration  
+3. **Finish with Issue #152** - Security library research and implementation
+4. **Final Integration Testing** - Ensure all changes work together
+5. **Documentation Updates** - Reflect all changes in project docs
+
+**READY TO BEGIN EXECUTION** 🚀

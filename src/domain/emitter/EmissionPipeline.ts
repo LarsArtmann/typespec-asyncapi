@@ -50,26 +50,10 @@ export class EmissionPipeline implements IPipelineService {
 	private readonly validationService: ValidationService
 
 	/**
-	 * Constructor with Effect.TS error handling for service initialization
-	 * Service instantiation failures are critical system errors handled via Railway programming
-	 * 
-	 * ProcessingService is now functional with static methods - no instance needed
+	 * Constructor with minimal initialization
 	 */
 	constructor() {
-		// Service initialization with Effect.TS Railway programming
-		void Effect.runSync(
-			Effect.gen(function* () {
-				yield* Effect.log("🚀 Initializing EmissionPipeline services...")
-
-		return {
-			documentBuilder: new DocumentBuilder(),
-			discoveryService: new DiscoveryService(),
-			validationService: new ValidationService(),
-		}
-			})
-		)
-		
-		// Initialize private properties
+		// Initialize private properties synchronously
 		this.documentBuilder = new DocumentBuilder()
 		this.discoveryService = new DiscoveryService()
 		this.validationService = new ValidationService()

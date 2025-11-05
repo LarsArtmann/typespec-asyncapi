@@ -301,16 +301,16 @@ export class AsyncAPIValidator {
 	}
 
 	/**
-	 * Legacy Promise-based validate method for backward compatibility
+	 * Validate AsyncAPI document using REAL parser - Pure Effect Method
 	 */
-	async validate(document: unknown, _identifier?: string): Promise<ValidationResult> {
-		return Effect.runPromise(this.validateEffect(document, _identifier))
+	validate(document: unknown, _identifier?: string): Effect.Effect<ValidationResult, Error> {
+		return this.validateEffect(document, _identifier)
 	}
 
 	/**
-	 * Validate AsyncAPI document from file - Effect version
+	 * Validate AsyncAPI document from file - Pure Effect Method
 	 */
-	validateFileEffect(filePath: string): Effect.Effect<ValidationResult, Error> {
+	validateFile(filePath: string): Effect.Effect<ValidationResult, Error> {
 		const parser = this.parser
 		const stats = this.stats
 		const extractMetrics = this.extractMetrics.bind(this)
@@ -348,17 +348,10 @@ export class AsyncAPIValidator {
 	}
 
 	/**
-	 * Legacy Promise-based validateFile method for backward compatibility
-	 */
-	async validateFile(filePath: string): Promise<ValidationResult> {
-		return Effect.runPromise(this.validateFileEffect(filePath))
-	}
-
-	/**
-	 * Validate multiple AsyncAPI documents in batch - Effect version
+	 * Validate multiple AsyncAPI documents in batch - Pure Effect Method
 	 * Returns an array of ValidationResult objects with optimized performance
 	 */
-	validateBatchEffect(documents: Array<{
+	validateBatch(documents: Array<{
 		content: unknown,
 		identifier?: string
 	}>): Effect.Effect<ValidationResult[], Error> {
@@ -386,10 +379,10 @@ export class AsyncAPIValidator {
 	}
 
 	/**
-	 * Legacy Promise-based validateBatch method for backward compatibility
+	 * Validate batch of AsyncAPI documents - Pure Effect Method
 	 */
-	async validateBatch(documents: Array<{ content: unknown, identifier?: string }>): Promise<ValidationResult[]> {
-		return Effect.runPromise(this.validateBatchEffect(documents))
+	validateBatch(documents: Array<{ content: unknown, identifier?: string }>): Effect.Effect<ValidationResult[], Error> {
+		return this.validateBatchEffect(documents)
 	}
 
 	/**

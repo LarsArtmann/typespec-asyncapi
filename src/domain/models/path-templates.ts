@@ -217,9 +217,7 @@ export function resolvePathTemplateWithValidation(
 	const validation = validatePathTemplate(pathTemplate)
 
 	if (!validation.isValid) {
-		Effect.runSync(Effect.die(new Error(
-			`Path template validation failed: ${validation.errors.join("; ")}`,
-		)))
+		throw new Error(`Path template validation failed: ${validation.errors.join("; ")}`)
 	}
 
 	// Create template variables from context
