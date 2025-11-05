@@ -57,7 +57,7 @@ const applyMutation = <T>(document: AsyncAPIObject, mutation: DocumentUpdate<T>)
       current = current[key] as Record<string, unknown>
     }
     
-    const finalKey = mutation.path[mutation.path.length - 1] as string
+    const finalKey = mutation.path[mutation.path.length - 1]
     const finalOldValue: T | undefined = (current as Record<string, T>)[finalKey]
     ;(current as Record<string, T>)[finalKey] = mutation.value
     

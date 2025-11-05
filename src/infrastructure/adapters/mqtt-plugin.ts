@@ -49,8 +49,8 @@ export const mqttPlugin = {
       
       const binding = {
         mqtt: {
-          qos: config.qos || 0,
-          retain: config.retain || false,
+          qos: config.qos ?? 0,
+          retain: config.retain ?? false,
           clientId: mqttConfig.clientId,
           cleanSession: mqttConfig.cleanSession,
           keepAlive: mqttConfig.keepAlive

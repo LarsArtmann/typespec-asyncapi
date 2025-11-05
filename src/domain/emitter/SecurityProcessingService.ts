@@ -24,8 +24,8 @@ export const processSingleSecurityConfig = (
 		const securityScheme: SecuritySchemeObject = createSecuritySchemeFromConfig(config)
 
 		// Add to AsyncAPI document components
-		asyncApiDoc.components = asyncApiDoc.components || {}
-		asyncApiDoc.components.securitySchemes = asyncApiDoc.components.securitySchemes || {}
+		asyncApiDoc.components ??= {}
+		asyncApiDoc.components.securitySchemes ??= {}
 		asyncApiDoc.components.securitySchemes[config.name] = securityScheme
 
 		yield* railwayLogging.logDebugGeneration("security-scheme", `Added ${config.name}`, {

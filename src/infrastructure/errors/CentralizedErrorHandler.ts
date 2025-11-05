@@ -127,7 +127,8 @@ export const CentralizedErrorHandler: ErrorHandler = {
       })
       
       // Store error in global error registry
-      const errorRegistry = globalThis.__ASYNCAPI_ERROR_REGISTRY ||= []
+      globalThis.__ASYNCAPI_ERROR_REGISTRY ??= []
+      const errorRegistry = globalThis.__ASYNCAPI_ERROR_REGISTRY
       errorRegistry.push(error)
       
       // Keep only last 500 errors to prevent memory leaks
@@ -183,7 +184,8 @@ export const CentralizedErrorHandler: ErrorHandler = {
   
   getErrorSummary: () =>
     Effect.sync(() => {
-      const errorRegistry = globalThis.__ASYNCAPI_ERROR_REGISTRY ||= []
+      globalThis.__ASYNCAPI_ERROR_REGISTRY ??= []
+      const errorRegistry = globalThis.__ASYNCAPI_ERROR_REGISTRY
       
       const errorsByCategory = errorRegistry.reduce((acc, error) => {
         acc[error.category] = (acc[error.category] || 0) + 1

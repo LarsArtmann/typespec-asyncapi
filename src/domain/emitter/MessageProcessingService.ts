@@ -99,7 +99,7 @@ export const extractMessageMetadata = (
 		const schema = convertModelToSchema(messageModel, program)
 
 		return {
-			name: messageModel.name || `${messageConfig?.name || 'Message'}Message`,
+			name: messageModel.name ?? `${messageConfig?.name ?? 'Message'}Message`,
 			title: messageConfig?.title,
 			description: messageConfig?.description,
 			contentType: messageConfig?.contentType,

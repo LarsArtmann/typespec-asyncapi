@@ -284,7 +284,7 @@ export class ErrorHandlingStandardization {
 }
 
 // Error handling service interface
-interface ErrorHandlingService {
+type ErrorHandlingService = {
 	processError: (error: unknown, context?: Record<string, unknown>) => Effect.Effect<unknown, never, never>
 	attemptErrorRecovery: (error: unknown) => Effect.Effect<unknown, never, never>
 }

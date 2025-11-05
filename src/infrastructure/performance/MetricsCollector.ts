@@ -47,13 +47,15 @@ export const MetricsCollector = Context.GenericTag<"MetricsCollector", MetricsCo
 export const MemoryMetricsCollector = {
   startTiming: (operation: string) => 
     Effect.sync(() => {
-      const timers = globalThis.__ASYNCAPI_TIMERS ||= new Map<string, number>()
+      globalThis.__ASYNCAPI_TIMERS ??= new Map<string, number>()
+      const timers = globalThis.__ASYNCAPI_TIMERS
       timers.set(operation, performance.now())
     }),
   
   endTiming: (operation: string) => 
     Effect.gen(function* () {
-      const timers = globalThis.__ASYNCAPI_TIMERS ||= new Map<string, number>()
+      globalThis.__ASYNCAPI_TIMERS ??= new Map<string, number>()
+      const timers = globalThis.__ASYNCAPI_TIMERS
       const startTime = timers.get(operation)
       
       if (!startTime) {
@@ -81,8 +83,10 @@ export const MemoryMetricsCollector = {
           }
         }
       }
-      const cacheMetrics = globalThis.__ASYNCAPI_CACHE_METRICS ||= { hits: 0, misses: 0 }
-      const documentsProcessed = globalThis.__ASYNCAPI_DOCUMENTS_PROCESSED ||= 0
+      globalThis.__ASYNCAPI_CACHE_METRICS ??= { hits: 0, misses: 0 }
+      const cacheMetrics = globalThis.__ASYNCAPI_CACHE_METRICS
+      globalThis.__ASYNCAPI_DOCUMENTS_PROCESSED ??= 0
+      const documentsProcessed = globalThis.__ASYNCAPI_DOCUMENTS_PROCESSED
       
       const metrics: PerformanceMetrics = {
         timestamp: Date.now(),
@@ -119,8 +123,10 @@ export const MemoryMetricsCollector = {
   
   getAggregatedMetrics: () =>
     Effect.sync(() => {
-      const metricsHistory = globalThis.__ASYNCAPI_METRICS_HISTORY ||= []
-      const cacheMetrics = globalThis.__ASYNCAPI_CACHE_METRICS ||= { hits: 0, misses: 0 }
+      globalThis.__ASYNCAPI_METRICS_HISTORY ??= []
+      const metricsHistory = globalThis.__ASYNCAPI_METRICS_HISTORY
+      globalThis.__ASYNCAPI_CACHE_METRICS ??= { hits: 0, misses: 0 }
+      const cacheMetrics = globalThis.__ASYNCAPI_CACHE_METRICS
       
       if (metricsHistory.length === 0) {
         return {
@@ -195,7 +201,8 @@ export const PerformanceMonitor = {
    */
   recordCacheHit: () =>
     Effect.sync(() => {
-      const cacheMetrics = globalThis.__ASYNCAPI_CACHE_METRICS ||= { hits: 0, misses: 0 }
+      globalThis.__ASYNCAPI_CACHE_METRICS ??= { hits: 0, misses: 0 }
+      const cacheMetrics = globalThis.__ASYNCAPI_CACHE_METRICS
       cacheMetrics.hits++
     }),
   
@@ -204,7 +211,8 @@ export const PerformanceMonitor = {
    */
   recordCacheMiss: () =>
     Effect.sync(() => {
-      const cacheMetrics = globalThis.__ASYNCAPI_CACHE_METRICS ||= { hits: 0, misses: 0 }
+      globalThis.__ASYNCAPI_CACHE_METRICS ??= { hits: 0, misses: 0 }
+      const cacheMetrics = globalThis.__ASYNCAPI_CACHE_METRICS
       cacheMetrics.misses++
     }),
   
@@ -213,6 +221,6 @@ export const PerformanceMonitor = {
    */
   incrementDocumentsProcessed: () =>
     Effect.sync(() => {
-      globalThis.__ASYNCAPI_DOCUMENTS_PROCESSED = (globalThis.__ASYNCAPI_DOCUMENTS_PROCESSED || 0) + 1
+      globalThis.__ASYNCAPI_DOCUMENTS_PROCESSED = (globalThis.__ASYNCAPI_DOCUMENTS_PROCESSED ?? 0) + 1
     })
 }

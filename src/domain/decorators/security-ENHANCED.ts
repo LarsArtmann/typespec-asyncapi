@@ -80,15 +80,15 @@ export const processSecuritySchemes = (program: Program, asyncApiDoc: Record<str
 		// Initialize security schemes in document with type safety
 		const doc = asyncApiDoc as {components?: {securitySchemes?: Record<string, unknown>}}
 		if (!doc.components) {
-			doc.components = {}
+			doc.components ??= {}
 		}
 		
 		if (!doc.components.securitySchemes) {
-			doc.components.securitySchemes = {}
+			doc.components.securitySchemes ??= {}
 		}
 		
 		// Process all security configurations
-		for (const [target, configs] of securityConfigs) {
+		for (const [_target, configs] of securityConfigs) {
 			for (const config of configs) {
 				const securitySchemeData = {
 					description: `Security scheme: ${config.name}`,
