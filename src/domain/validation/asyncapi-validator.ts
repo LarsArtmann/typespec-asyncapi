@@ -112,18 +112,18 @@ export class AsyncAPIValidator {
 					return yield* Effect.fail(toError(versionError))
 				}
 				
-				// Fast path optimization: create immediate ValidationResult
-				const immediateResult: ValidationResult = {
+				// 🔥 CRITICAL: Create proper discriminated union ValidationResult
+				const immediateResult: ValidationResult<unknown> = {
 					valid: true,
+					data: inputDocument,
 					errors: [],
 					warnings: [],
-					summary: "AsyncAPI document structure validated successfully",
 					metrics: {
-						duration: performance.now() - startTime,
-						channelCount: 0,
-						operationCount: 0,
-						schemaCount: 0,
-						validatedAt: new Date()
+						readonly duration: performance.now() - startTime,
+						readonly channelCount: 0,
+						readonly operationCount: 0,
+						readonly schemaCount: 0,
+						readonly validatedAt: new Date()
 					}
 				}
 				return yield* Effect.succeed(immediateResult)

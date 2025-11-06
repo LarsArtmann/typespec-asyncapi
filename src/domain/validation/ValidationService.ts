@@ -13,21 +13,23 @@ import type {
 	AsyncAPIObject, 
 	ReferenceObject
 } from "@asyncapi/parser/esm/spec-types/v3.js"
+import type { ValidationResult as BrandedValidationResult, ValidationError } from "../../../types/index.js"
 import { emitterErrors, type StandardizedError, safeStringify } from "../../utils/standardized-errors.js"
 import { PERFORMANCE_CONSTANTS } from "../../constants/defaults.js"
 
 /**
- * Validation result with details about compliance and issues found
+ * 🔥 CRITICAL: Legacy validation result for backward compatibility
+ * DEPRECATED: Use BrandedValidationResult from types/index.ts instead
  */
 export type ValidationResult = {
 	isValid: boolean
-	errors: string[]
+	errors: ValidationError[]
 	warnings: string[]
 	channelsCount: number
 	operationsCount: number
 	messagesCount: number
 	schemasCount: number
-}
+} & BrandedValidationResult<AsyncAPIObject>
 
 /**
  * ValidationService - Core AsyncAPI Document Validation

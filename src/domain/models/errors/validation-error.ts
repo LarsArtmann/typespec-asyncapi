@@ -6,31 +6,30 @@
  */
 
 
+import type {ValidationError as BrandedValidationError, ValidationResult as BrandedValidationResult} from "../../../types/index.js"
+
 /**
- * Validation error type based on AsyncAPI parser diagnostics
+ * 🔥 CRITICAL: AsyncAPI parser diagnostic type
+ * DEPRECATED: Use BrandedValidationError from types/index.ts instead
  */
 export type ValidationError = {
 	message: string;
 	keyword: string;
 	instancePath: string;
 	schemaPath: string;
-}
+} & BrandedValidationError
 
 export type ValidationMetrics = {
-	duration: number;
-	channelCount: number;
-	operationCount: number;
-	schemaCount: number;
-	validatedAt: Date;
+	readonly duration: number;
+	readonly channelCount: number;
+	readonly operationCount: number;
+	readonly schemaCount: number;
+	readonly validatedAt: Date;
 }
 
 /**
- * Validation result type with comprehensive metrics and diagnostics
+ * 🔥 CRITICAL: Consolidated ValidationResult using discriminated union from types/index.ts
  */
-export type ValidationResult = {
-	valid: boolean;
-	errors: ValidationError[];
-	warnings: string[];
-	summary: string;
-	metrics: ValidationMetrics;
+export type ValidationResult<T = unknown> = BrandedValidationResult<T> & {
+	readonly metrics: ValidationMetrics;
 }

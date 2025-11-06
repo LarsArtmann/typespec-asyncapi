@@ -24,8 +24,21 @@ import type {Path} from "effect/ParseResult"
 // Import specific types for aliases (separate import to avoid conflicts)
 import type {AsyncAPIObject} from '@asyncapi/parser/esm/spec-types/v3.js'
 
-type OperationsFoundCount = string & { readonly brand: 'OperationsFoundCount' };
-type GenerationNote = string & { readonly brand: 'GenerationNote' };
+// CRITICAL TYPE SAFETY: Branded types for runtime validation
+export type OperationsFoundCount = string & { readonly brand: 'OperationsFoundCount' };
+export type GenerationNote = string & { readonly brand: 'GenerationNote' };
+
+// 🔥 FUCKING CRITICAL: AsyncAPI version enforcement
+export type AsyncAPIVersion = '3.0.0' & { readonly brand: 'AsyncAPIVersion' };
+
+// 🔥 FUCKING CRITICAL: ValidationResult with discriminated union
+export type ValidationResult<T = unknown> = 
+  | { readonly valid: true; readonly data: T; readonly errors: readonly []; readonly warnings: readonly [] }
+  | { readonly valid: false; readonly data: never; readonly errors: readonly ValidationError[]; readonly warnings: readonly ValidationWarning[] };
+
+// 🔥 FUCKING CRITICAL: Branded error types for compile-time safety
+export type ValidationError = string & { readonly brand: 'ValidationError' };
+export type ValidationWarning = string & { readonly brand: 'ValidationWarning' };
 
 type XGeneratedFromTypeSpec = {
 	sourceFiles?: Path;
