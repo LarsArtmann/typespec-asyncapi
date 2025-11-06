@@ -6,7 +6,7 @@
  */
 
 
-import type {ValidationError as BrandedValidationError, ValidationResult as BrandedValidationResult} from "../../../types/index.js"
+import type {ValidationError as BrandedValidationError, ValidationResult as BrandedValidationResult, ValidationWarning as BrandedValidationWarning} from "../../../types/index.js"
 
 /**
  * 🔥 CRITICAL: AsyncAPI parser diagnostic type
@@ -33,3 +33,5 @@ export type ValidationMetrics = {
 export type ValidationResult<T = unknown> = BrandedValidationResult<T> & {
 	readonly metrics: ValidationMetrics;
 }
+
+export type ValidationWarning = BrandedValidationWarning
