@@ -4,7 +4,7 @@
  * This file provides backward compatibility exports and aggregates all validation functionality.
  */
 
-import type {ValidationError, ValidationResult, ValidationWarning} from "../models/errors/validation-error.js"
+import type {ValidationError, ValidationResult, ValidationWarning, ExtendedValidationResult, StructuredValidationError} from "../models/errors/validation-error.js"
 import {Effect} from "effect"
 import {Parser} from "@asyncapi/parser"
 import type {ValidationStats} from "./ValidationStats.js"
@@ -88,7 +88,7 @@ export class AsyncAPIValidator {
 	/**
 	 * Validate AsyncAPI document using the REAL parser - Effect version
 	 */
-		validateEffect(inputDocument: unknown, _identifier?: string): Effect.Effect<ValidationResult, Error, never> {
+		validateEffect(inputDocument: unknown, _identifier?: string): Effect.Effect<ExtendedValidationResult, Error, never> {
 		// Capture class instance in closure to fix Effect.gen this-binding issue
 		const parser = this.parser
 		const stats = this.stats

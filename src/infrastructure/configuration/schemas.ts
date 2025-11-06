@@ -1,20 +1,182 @@
 /**
  * Effect.TS Schema definitions for AsyncAPI Emitter Options
+ * COMPREHENSIVE AsyncAPI 3.0 Document Schema
  */
 
 import {Schema} from "@effect/schema"
 import {validatePathTemplate} from "../../domain/models/path-templates.js"
-// import type {
-// 	AsyncAPIEmitterOptions,
-// 	VersioningConfig,
-// 	ServerConfig,
-// 	VariableConfig,
-// 	OAuthFlowConfig,
-// 	OAuthFlowsConfig,
-// 	SecuritySchemeConfig
-// } from "./types" // Unused for now
 
 //TODO: WE SHOULD USE Effect Schema a LOT MORE!
+
+/**
+ * AsyncAPI Operation Action Enum - Valid values for operation.action
+ */
+const OperationActionSchema = Schema.Literal("send", "receive")
+
+/**
+ * AsyncAPI Server Protocol Schema - Supported protocols
+ */
+const ProtocolSchema = Schema.Literal("kafka", "amqp", "mqtt", "nats", "http", "ws")
+
+/**
+ * AsyncAPI Version Schema - Only 3.0.0 supported
+ */
+const AsyncAPIVersionSchema = Schema.Literal("3.0.0")
+
+/**
+ * AsyncAPI Info Schema - Basic API metadata
+ */
+const InfoSchema = Schema.Struct({
+	title: Schema.String,
+	version: Schema.String,
+	description: Schema.optional(Schema.String),
+	termsOfService: Schema.optional(Schema.String),
+	contact: Schema.optional(Schema.Struct({
+		name: Schema.String,
+		url: Schema.optional(Schema.String),
+		email: Schema.optional(Schema.String)
+	})),
+	license: Schema.optional(Schema.Struct({
+		name: Schema.String,
+		url: Schema.String
+	}))
+})
+
+/**
+ * AsyncAPI Server Variable Schema - Server template variables
+ */
+const ServerVariableSchema = Schema.Struct({
+	description: Schema.optional(Schema.String),
+	default: Schema.optional(Schema.String),
+	enum: Schema.optional(Schema.Array(Schema.String)),
+	examples: Schema.optional(Schema.Array(Schema.String))
+})
+
+/**
+ * AsyncAPI Server Schema - Server configuration
+ */
+const ServerSchema = Schema.Struct({
+	url: Schema.String,
+	protocol: ProtocolSchema,
+	description: Schema.optional(Schema.String),
+	variables: Schema.optional(Schema.Record(
+		Schema.String.pipe(Schema.pattern(/^[a-zA-Z0-9._-]+$/)),
+		ServerVariableSchema
+	)),
+	security: Schema.optional(Schema.Array(Schema.String)),
+	bindings: Schema.optional(Schema.Record(
+		Schema.String,
+		Schema.Unknown
+	))
+})
+
+/**
+ * AsyncAPI Message Schema - Message definition
+ */
+const MessageSchema = Schema.Struct({
+	messageId: Schema.optional(Schema.String),
+	payload: Schema.optional(Schema.Unknown),
+	headers: Schema.optional(Schema.Record(Schema.String, Schema.Unknown)),
+	correlationId: Schema.optional(Schema.Unknown),
+	schemaFormat: Schema.optional(Schema.String),
+	contentType: Schema.optional(Schema.String),
+	name: Schema.optional(Schema.String),
+	title: Schema.optional(Schema.String),
+	summary: Schema.optional(Schema.String),
+	description: Schema.optional(Schema.String),
+	tags: Schema.optional(Schema.Array(Schema.Struct({
+		name: Schema.String,
+		description: Schema.optional(Schema.String)
+	}))),
+	externalDocs: Schema.optional(Schema.Struct({
+		description: Schema.String,
+		url: Schema.String
+	})),
+	bindings: Schema.optional(Schema.Record(Schema.String, Schema.Unknown))
+})
+
+/**
+ * AsyncAPI Operation Schema - Operation definition
+ */
+const OperationSchema = Schema.Struct({
+	action: OperationActionSchema,
+	channel: Schema.Union(
+		Schema.String,
+		Schema.Struct({$ref: Schema.String})
+	),
+	title: Schema.optional(Schema.String),
+	summary: Schema.optional(Schema.String),
+	description: Schema.optional(Schema.String),
+	tags: Schema.optional(Schema.Array(Schema.Struct({
+		name: Schema.String,
+		description: Schema.optional(Schema.String)
+	}))),
+	externalDocs: Schema.optional(Schema.Struct({
+		description: Schema.String,
+		url: Schema.String
+	})),
+	bindings: Schema.optional(Schema.Record(Schema.String, Schema.Unknown)),
+	messages: Schema.optional(Schema.Record(Schema.String, Schema.Union(
+		Schema.Literal(null),
+		MessageSchema,
+		Schema.Struct({$ref: Schema.String})
+	)))
+})
+
+/**
+ * AsyncAPI Channel Schema - Channel definition
+ */
+const ChannelSchema = Schema.Struct({
+	address: Schema.String,
+	messages: Schema.optional(Schema.Record(Schema.String, Schema.Union(
+		Schema.Literal(null),
+		MessageSchema,
+		Schema.Struct({$ref: Schema.String})
+	))),
+	title: Schema.optional(Schema.String),
+	summary: Schema.optional(Schema.String),
+	description: Schema.optional(Schema.String),
+	tags: Schema.optional(Schema.Array(Schema.Struct({
+		name: Schema.String,
+		description: Schema.optional(Schema.String)
+	}))),
+	externalDocs: Schema.optional(Schema.Struct({
+		description: Schema.String,
+		url: Schema.String
+	})),
+	parameters: Schema.optional(Schema.Record(Schema.String, Schema.Unknown)),
+	bindings: Schema.optional(Schema.Record(Schema.String, Schema.Unknown))
+})
+
+/**
+ * Comprehensive AsyncAPI 3.0 Document Schema
+ */
+export const AsyncAPIDocumentSchema = Schema.Struct({
+	asyncapi: AsyncAPIVersionSchema,
+	info: InfoSchema,
+	servers: Schema.optional(Schema.Record(Schema.String, ServerSchema)),
+	channels: Schema.optional(Schema.Record(Schema.String, ChannelSchema)),
+	operations: Schema.optional(Schema.Record(Schema.String, OperationSchema)),
+	components: Schema.optional(Schema.Unknown),
+	tags: Schema.optional(Schema.Array(Schema.Struct({
+		name: Schema.String,
+		description: Schema.optional(Schema.String),
+		externalDocs: Schema.optional(Schema.Struct({
+			description: Schema.String,
+			url: Schema.String
+		}))
+	}))),
+	externalDocs: Schema.optional(Schema.Struct({
+		description: Schema.String,
+		url: Schema.String
+	})),
+	id: Schema.optional(Schema.String)
+})
+
+/**
+ * Decode Unknown to AsyncAPI Document with validation
+ */
+export const decodeAsyncAPIDocument = Schema.decodeUnknown(AsyncAPIDocumentSchema)
 
 /**
  * Variable configuration schema for server variables

@@ -6,9 +6,14 @@
  * 
  * REAL BUSINESS LOGIC EXTRACTED from validation methods in AsyncAPIEffectEmitter class
  * This service ensures generated AsyncAPI documents meet specification requirements
+ * 
+ * ENHANCED: Now using Effect Schema for runtime validation
  */
 
 import { Effect, Schedule } from "effect"
+import { decodeAsyncAPIDocument } from "../../infrastructure/configuration/schemas.js"
+import type { ValidationResult, ValidationError } from "../../../types/index.js"
+import type { StructuredValidationError, ExtendedValidationResult } from "../models/errors/validation-error.js"
 import type { 
 	AsyncAPIObject, 
 	ReferenceObject
@@ -479,5 +484,41 @@ export class ValidationService {
 		}
 
 		return report.join('\n')
+	}
+
+	/**
+	 * 🔥 NEW: Effect Schema-based validation for runtime type safety
+	 * 
+	 * Uses Effect Schema to provide compile-time and runtime validation
+	 * of AsyncAPI documents with proper error messages
+	 * 
+	 * @param document - Unknown input to validate
+	 * @returns Effect with validated AsyncAPI document or error
+	 */
+	validateWithSchema(document: unknown): Effect.Effect<any, ValidationError> {
+		return Effect.try({
+			try: () => decodeAsyncAPIDocument(document),
+			catch: (error) => ({
+				message: `Schema validation failed: ${error instanceof Error ? error.message : String(error)}`,
+				keyword: "schema-validation",
+				instancePath: "",
+				schemaPath: "root"
+			})
+		})
+	}
+
+	/**
+	 * 🔥 NEW: Static method for schema validation with structured errors
+	 */
+	static validateWithSchema(document: unknown): Effect.Effect<any, StructuredValidationError> {
+		return Effect.try({
+			try: () => decodeAsyncAPIDocument(document),
+			catch: (error) => ({
+				message: `Schema validation failed: ${error instanceof Error ? error.message : String(error)}`,
+				keyword: "schema-validation",
+				instancePath: "",
+				schemaPath: "root"
+			})
+		})
 	}
 }
