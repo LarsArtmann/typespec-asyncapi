@@ -60,7 +60,7 @@ const ServerSchema = Schema.Struct({
 	protocol: ProtocolSchema,
 	description: Schema.optional(Schema.String),
 	variables: Schema.optional(Schema.Record(
-		Schema.String.pipe(Schema.pattern(/^[a-zA-Z0-9._-]+$/)),
+		Schema.String,
 		ServerVariableSchema
 	)),
 	security: Schema.optional(Schema.Array(Schema.String)),
@@ -116,11 +116,14 @@ const OperationSchema = Schema.Struct({
 		url: Schema.String
 	})),
 	bindings: Schema.optional(Schema.Record(Schema.String, Schema.Unknown)),
-	messages: Schema.optional(Schema.Record(Schema.String, Schema.Union(
-		Schema.Literal(null),
-		MessageSchema,
-		Schema.Struct({$ref: Schema.String})
-	)))
+	messages: Schema.optional(Schema.Record(
+		Schema.String,
+		Schema.Union(
+			Schema.Literal(null),
+			MessageSchema,
+			Schema.Struct({$ref: Schema.String})
+		)
+	)),
 })
 
 /**
@@ -128,11 +131,14 @@ const OperationSchema = Schema.Struct({
  */
 const ChannelSchema = Schema.Struct({
 	address: Schema.String,
-	messages: Schema.optional(Schema.Record(Schema.String, Schema.Union(
-		Schema.Literal(null),
-		MessageSchema,
-		Schema.Struct({$ref: Schema.String})
-	))),
+	messages: Schema.optional(Schema.Record(
+		Schema.String,
+		Schema.Union(
+			Schema.Literal(null),
+			MessageSchema,
+			Schema.Struct({$ref: Schema.String})
+		)
+	)),
 	title: Schema.optional(Schema.String),
 	summary: Schema.optional(Schema.String),
 	description: Schema.optional(Schema.String),

@@ -12,8 +12,7 @@
 
 import { Effect, Schedule } from "effect"
 import { decodeAsyncAPIDocument } from "../../infrastructure/configuration/schemas.js"
-import type { ValidationResult, ValidationError } from "../../../types/index.js"
-import type { StructuredValidationError, ExtendedValidationResult } from "../models/errors/validation-error.js"
+import type { ValidationResult, ValidationError, ExtendedValidationResult } from "../../types/index.js"
 import type { 
 	AsyncAPIObject, 
 	ReferenceObject
@@ -508,9 +507,9 @@ export class ValidationService {
 	}
 
 	/**
-	 * 🔥 NEW: Static method for schema validation with structured errors
+	 * 🔥 NEW: Static method for schema validation with unified error types
 	 */
-	static validateWithSchema(document: unknown): Effect.Effect<any, StructuredValidationError> {
+	static validateWithSchema(document: unknown): Effect.Effect<any, ValidationError> {
 		return Effect.try({
 			try: () => decodeAsyncAPIDocument(document),
 			catch: (error) => ({

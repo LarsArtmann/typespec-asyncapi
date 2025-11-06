@@ -36,9 +36,33 @@ export type ValidationResult<T = unknown> =
   | { readonly valid: true; readonly data: T; readonly errors: readonly []; readonly warnings: readonly [] }
   | { readonly valid: false; readonly data: undefined; readonly errors: readonly ValidationError[]; readonly warnings: readonly ValidationWarning[] };
 
-// 🔥 FUCKING CRITICAL: Branded error types for compile-time safety
-export type ValidationError = string & { readonly brand: 'ValidationError' };
-export type ValidationWarning = string & { readonly brand: 'ValidationWarning' };
+// 🔥 FUCKING CRITICAL: Unified error types for compile-time safety
+export type ValidationError = {
+	readonly message: string;
+	readonly keyword: string;
+	readonly instancePath: string;
+	readonly schemaPath: string;
+};
+
+export type ValidationWarning = {
+	readonly message: string;
+	readonly severity?: 'info' | 'warning' | 'error';
+};
+
+// 🔥 FUCKING CRITICAL: Extended ValidationResult with metrics for validation services
+export type ExtendedValidationResult<T = unknown> = ValidationResult<T> & {
+	readonly metrics: ValidationMetrics;
+	readonly summary?: string;
+};
+
+// 🔥 FUCKING CRITICAL: Validation metrics for performance tracking
+export type ValidationMetrics = {
+	readonly duration: number;
+	readonly channelCount: number;
+	readonly operationCount: number;
+	readonly schemaCount: number;
+	readonly validatedAt: Date;
+};
 
 type XGeneratedFromTypeSpec = {
 	sourceFiles?: Path;
