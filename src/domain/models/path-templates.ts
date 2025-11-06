@@ -212,19 +212,19 @@ export function resolvePathTemplate(
 export function resolvePathTemplateWithValidation(
 	pathTemplate: string,
 	context: PathTemplateContext = {},
-): string {
+): Effect.Effect<string, Error, never> {
 	// Validate template variables first
 	const validation = validatePathTemplate(pathTemplate)
 
 	if (!validation.isValid) {
-		throw new Error(`Path template validation failed: ${validation.errors.join("; ")}`)
+		return Effect.fail(new Error(`Path template validation failed: ${validation.errors.join("; ")}`))
 	}
 
 	// Create template variables from context
 	const variables = createTemplateVariables(context)
 
 	// Resolve template
-	return resolvePathTemplate(pathTemplate, variables)
+	return Effect.succeed(resolvePathTemplate(pathTemplate, variables))
 }
 
 /**
