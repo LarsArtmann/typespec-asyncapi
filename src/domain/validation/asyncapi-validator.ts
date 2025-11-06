@@ -11,6 +11,19 @@ import type {ValidationStats} from "./ValidationStats.js"
 import type {ValidationOptions} from "./ValidationOptions.js"
 import * as NodeFS from "node:fs/promises"
 import {railwayLogging} from "../../utils/effect-helpers.js"
+import {failWith, createError} from "../../utils/standardized-errors.js"
+
+type StandardizedError = import("../../utils/standardized-errors.js").StandardizedError
+
+/**
+ * Convert StandardizedError to regular Error for compatibility
+ */
+const toError = (standardizedError: StandardizedError): Error => {
+	const message = `${standardizedError.what}: ${standardizedError.why}`
+	const error = new Error(message)
+	error.name = standardizedError.code
+	return error
+}
 
 /**
  * AsyncAPI 3.0 Validator Class using REAL @asyncapi/parser
@@ -87,7 +100,16 @@ export class AsyncAPIValidator {
 				console.log(`🚀 FAST PATH: Found asyncapi=${version} in object, validating immediately`)
 				
 				if (version !== '3.0.0') {
-					return yield* Effect.fail(new Error(`AsyncAPI version must be 3.0.0, got: ${version}`))
+					const versionError = createError({
+						what: "Invalid AsyncAPI version",
+						reassure: "Version validation ensures compatibility with AsyncAPI 3.0.0 parser",
+						why: `Detected AsyncAPI version ${version} which is not supported by this validator`,
+						fix: "Update your AsyncAPI document to use 'asyncapi: 3.0.0'",
+						escape: "Use a different validator that supports version ${version}",
+						severity: "error",
+						code: "INVALID_ASYNCAPI_VERSION"
+					})
+					return yield* Effect.fail(toError(versionError))
 				}
 				
 				// Fast path optimization: create immediate ValidationResult
@@ -125,7 +147,19 @@ export class AsyncAPIValidator {
 			// Parse document using @asyncapi/parser
 			const parseResult = yield* Effect.tryPromise({
 				try: () => parser.parse(content),
-				catch: (error) => new Error(`Parser failed: ${error instanceof Error ? error.message : String(error)}`)
+				catch: (originalError) => {
+					const parserError = createError({
+						what: "AsyncAPI parser failed",
+						reassure: "This may be a syntax error or unsupported feature in your AsyncAPI document",
+						why: `Parser encountered: ${originalError instanceof Error ? originalError.message : String(originalError)}`,
+						fix: "Check AsyncAPI syntax and validate against AsyncAPI specification",
+						escape: "Use online AsyncAPI validator to debug your document",
+						severity: "error",
+						code: "PARSER_FAILED",
+						context: { originalError: originalError instanceof Error ? originalError.stack : String(originalError) }
+					})
+					return toError(parserError)
+				}
 			}).pipe(
 				Effect.timeout("30 seconds")
 			)
