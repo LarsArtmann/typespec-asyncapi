@@ -13,23 +13,20 @@ import type {
 	AsyncAPIObject, 
 	ReferenceObject
 } from "@asyncapi/parser/esm/spec-types/v3.js"
-import type { ValidationResult as BrandedValidationResult, ValidationError } from "../../../types/index.js"
+import type { ValidationResult as BrandedValidationResult, ValidationError as ValidationErrorType, ValidationWarning } from "../models/errors/validation-error.js"
 import { emitterErrors, type StandardizedError, safeStringify } from "../../utils/standardized-errors.js"
 import { PERFORMANCE_CONSTANTS } from "../../constants/defaults.js"
 
-/**
- * 🔥 CRITICAL: Legacy validation result for backward compatibility
- * DEPRECATED: Use BrandedValidationResult from types/index.ts instead
- */
+// Legacy ValidationResult type for backward compatibility
 export type ValidationResult = {
-	isValid: boolean
-	errors: ValidationError[]
-	warnings: string[]
-	channelsCount: number
-	operationsCount: number
-	messagesCount: number
-	schemasCount: number
-} & BrandedValidationResult<AsyncAPIObject>
+	isValid: boolean;
+	errors: string[];
+	warnings: string[];
+	channelsCount: number;
+	operationsCount: number;
+	messagesCount: number;
+	schemasCount: number;
+}
 
 /**
  * ValidationService - Core AsyncAPI Document Validation
@@ -472,13 +469,13 @@ export class ValidationService {
 
 		if (result.errors.length > 0) {
 			report.push(`Errors (${result.errors.length}):`)
-			result.errors.forEach(error => report.push(`- ${error}`))
+			result.errors.forEach((error: string) => report.push(`- ${error}`))
 			report.push('')
 		}
 
 		if (result.warnings.length > 0) {
 			report.push(`Warnings (${result.warnings.length}):`)
-			result.warnings.forEach(warning => report.push(`- ${warning}`))
+			result.warnings.forEach((warning: string) => report.push(`- ${warning}`))
 		}
 
 		return report.join('\n')
