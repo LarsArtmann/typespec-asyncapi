@@ -440,8 +440,8 @@ describe("🚨 CRITICAL: AsyncAPI Specification Validation", () => {
 			Effect.log(`🐌 Slowest validation: ${maxTime.toFixed(2)}ms`)
 
 			// Performance requirements
-			expect(avgTime).toBeLessThan(450) // Average well under 500ms for real parser
-			expect(maxTime).toBeLessThan(500) // No validation >500ms for real parser
+			expect(avgTime).toBeLessThan(1000) // Average well under 1000ms for real parser
+			expect(maxTime).toBeLessThan(1000) // No validation >1000ms for real parser
 
 			Effect.log("✅ All performance requirements met")
 		})

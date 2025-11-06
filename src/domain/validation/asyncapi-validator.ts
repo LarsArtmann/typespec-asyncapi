@@ -95,12 +95,20 @@ export class AsyncAPIValidator {
 		
 		return Effect.gen(function* () {
 			const startTime = performance.now()
-
-			// 🚀 Fast path for objects with asyncapi field
+			
+			// Debug: Measure initialization cost
+			const initStart = performance.now()
+			// yield* railwayLogging.logInitialization("AsyncAPI 3.0.0 Validator with REAL @asyncapi/parser...")
+			const initTime = performance.now() - initStart
+			if (initTime > 100) {
+				console.log(`⚠️  INITIALIZATION TOOK ${initTime}ms - TOO SLOW!`)
+			}
+			
+			// Debug: Measure fast-path check
+			const fastPathStart = performance.now()
+			// 🚀 Fast path for objects with asyncapi field (but NOT for documents with operations)
 			if (typeof inputDocument === 'object' && inputDocument !== null && 'asyncapi' in inputDocument) {
 				const version = String((inputDocument as any)['asyncapi'])
-				// Use railwayLogging instead of console for Effect.TS compliance
-				// console.log(`🚀 FAST PATH: Found asyncapi=${version} in object, validating immediately`)
 				
 				if (version !== '3.0.0') {
 					const versionError = createError({
@@ -115,26 +123,32 @@ export class AsyncAPIValidator {
 					return yield* Effect.fail(toError(versionError))
 				}
 				
-				// 🔥 CRITICAL: Create proper discriminated union ValidationResult
-				const immediateResult: ValidationResult<unknown> = {
-					valid: true,
-					data: inputDocument,
-					errors: [],
-					warnings: [],
-					summary: `AsyncAPI document is valid (0.00ms)`,
-					metrics: {
-						duration: performance.now() - startTime,
-						channelCount: 0,
-						operationCount: 0,
-						schemaCount: 0,
-						validatedAt: new Date()
+				// Only use fast-path for very simple documents (no operations)
+				const doc = inputDocument as any
+				if (!doc.operations && !doc.channels && !doc.components) {
+					// 🔥 CRITICAL: Create proper discriminated union ValidationResult
+					const immediateResult: ValidationResult<unknown> = {
+						valid: true,
+						data: inputDocument,
+						errors: [],
+						warnings: [],
+						summary: `AsyncAPI document is valid (0.00ms)`,
+						metrics: {
+							duration: performance.now() - startTime,
+							channelCount: 0,
+							operationCount: 0,
+							schemaCount: 0,
+							validatedAt: new Date()
+						}
 					}
+					const fastPathTime = performance.now() - fastPathStart
+					console.log(`🚀 FAST PATH TOOK ${fastPathTime}ms`)
+					return yield* Effect.succeed(immediateResult)
 				}
-				return yield* Effect.succeed(immediateResult)
+				// Fall through to full parser for complex documents
 			}
-
-			// Ensure initialization
-			yield* railwayLogging.logInitialization("AsyncAPI 3.0.0 Validator with REAL @asyncapi/parser...")
+			const fastPathTime = performance.now() - fastPathStart
+			console.log(`🐌 FAST PATH CHECK TOOK ${fastPathTime}ms - FALLING THROUGH TO PARSER`)
 			
 			// Convert document to string for parser
 			let content: string
@@ -150,7 +164,13 @@ export class AsyncAPIValidator {
 
 			// Parse document using @asyncapi/parser
 			const parseResult = yield* Effect.tryPromise({
-				try: () => parser.parse(content),
+				try: () => {
+					const start = performance.now()
+					const result = parser.parse(content)
+					const duration = performance.now() - start
+					console.log(`🔍 RAW PARSER CALL TOOK ${duration}ms`)
+					return result
+				},
 				catch: (originalError) => {
 					const parserError = createError({
 						what: "AsyncAPI parser failed",
@@ -220,7 +240,12 @@ export class AsyncAPIValidator {
 				return {
 					valid: false,
 					data: undefined,
-					errors: ["Unknown parse result type" as ValidationError],
+					errors: [{
+						message: "Unknown parse result type",
+						keyword: "parse-error",
+						instancePath: "",
+						schemaPath: ""
+					} as ValidationError],
 					warnings: [],
 					metrics: { duration: performance.now() - startTime, channelCount: 0, operationCount: 0, schemaCount: 0, validatedAt: new Date() }
 				}
@@ -258,7 +283,28 @@ export class AsyncAPIValidator {
 	 * @deprecated Use validateEffect() for Effect.TS pipeline compatibility
 	 */
 	async validate(inputDocument: unknown, _identifier?: string): Promise<ValidationResult> {
-		return Effect.runPromise(this.validateEffect(inputDocument))
+		const effect = this.validateEffect(inputDocument)
+		
+		// Convert Effect failures to validation results for backward compatibility
+		return Effect.runPromise(effect).catch((error): ValidationResult => ({
+			valid: false,
+			data: undefined,
+			errors: [{
+				message: error instanceof Error ? error.message : String(error),
+				keyword: "validation-error",
+				instancePath: "",
+				schemaPath: ""
+			}],
+			warnings: [],
+			summary: `Validation failed: ${error instanceof Error ? error.message : String(error)}`,
+			metrics: {
+				duration: 0,
+				channelCount: 0,
+				operationCount: 0,
+				schemaCount: 0,
+				validatedAt: new Date()
+			}
+		}))
 	}
 
 	/**

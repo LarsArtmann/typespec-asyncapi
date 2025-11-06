@@ -12,12 +12,6 @@ import type {ValidationError as BrandedValidationError, ValidationResult as Bran
  * 🔥 CRITICAL: AsyncAPI parser diagnostic type
  * DEPRECATED: Use BrandedValidationError from types/index.ts instead
  */
-export type ValidationError = {
-	message: string;
-	keyword: string;
-	instancePath: string;
-	schemaPath: string;
-} & BrandedValidationError
 
 export type ValidationMetrics = {
 	readonly duration: number;
@@ -32,6 +26,9 @@ export type ValidationMetrics = {
  */
 export type ValidationResult<T = unknown> = BrandedValidationResult<T> & {
 	readonly metrics: ValidationMetrics;
+	readonly summary?: string;
 }
 
-export type ValidationWarning = BrandedValidationWarning
+// Re-export for backward compatibility
+export type ValidationError = import("../../../types/index.js").ValidationError
+export type ValidationWarning = import("../../../types/index.js").ValidationWarning
