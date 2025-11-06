@@ -89,7 +89,11 @@ export class AsyncAPIValidator {
 	 * Validate AsyncAPI document using the REAL parser - Effect version
 	 */
 		validateEffect(this: AsyncAPIValidator, inputDocument: unknown, _identifier?: string): Effect.Effect<ValidationResult, Error, never> {
-		return Effect.gen(function* (this: AsyncAPIValidator) {
+		// Capture class instance in closure to fix Effect.gen this-binding issue
+		const parser = this.parser
+		const stats = this.stats
+		
+		return Effect.gen(function* () {
 			const parser = this.parser
 			const stats = this.stats
 			const startTime = performance.now()
@@ -222,7 +226,7 @@ export class AsyncAPIValidator {
 	 * Validate AsyncAPI document from file - Pure Effect Method
 	 */
 	validateFile(this: AsyncAPIValidator, filePath: string): Effect.Effect<ValidationResult, Error> {
-		return Effect.gen(function* (this: AsyncAPIValidator) {
+		return Effect.gen(function* () {
 			const content = yield* Effect.tryPromise({
 				try: () => NodeFS.readFile(filePath, 'utf-8'),
 				catch: (error) => new Error(`Failed to read file: ${error}`)
