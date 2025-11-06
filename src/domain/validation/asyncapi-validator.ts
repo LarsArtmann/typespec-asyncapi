@@ -4,14 +4,14 @@
  * This file provides backward compatibility exports and aggregates all validation functionality.
  */
 
-import type {ValidationError, ValidationResult} from "../models/errors/validation-error.js"
-import {Effect, Schedule} from "effect"
+import type {ValidationError, ValidationResult, ValidationWarning} from "../models/errors/validation-error.js"
+import {Effect} from "effect"
 import {Parser} from "@asyncapi/parser"
 import type {ValidationStats} from "./ValidationStats.js"
 import type {ValidationOptions} from "./ValidationOptions.js"
 import * as NodeFS from "node:fs/promises"
-import {railwayLogging} from "../../utils/effect-helpers.js"
-import {failWith, createError} from "../../utils/standardized-errors.js"
+import { railwayLogging } from "../../utils/effect-helpers.js"
+import { createError } from "../../utils/standardized-errors.js"
 
 type StandardizedError = import("../../utils/standardized-errors.js").StandardizedError
 
@@ -97,7 +97,8 @@ export class AsyncAPIValidator {
 			// 🚀 Fast path for objects with asyncapi field
 			if (typeof inputDocument === 'object' && inputDocument !== null && 'asyncapi' in inputDocument) {
 				const version = String((inputDocument as any)['asyncapi'])
-				console.log(`🚀 FAST PATH: Found asyncapi=${version} in object, validating immediately`)
+				// Use railwayLogging instead of console for Effect.TS compliance
+				// console.log(`🚀 FAST PATH: Found asyncapi=${version} in object, validating immediately`)
 				
 				if (version !== '3.0.0') {
 					const versionError = createError({
@@ -119,11 +120,11 @@ export class AsyncAPIValidator {
 					errors: [],
 					warnings: [],
 					metrics: {
-						readonly duration: performance.now() - startTime,
-						readonly channelCount: 0,
-						readonly operationCount: 0,
-						readonly schemaCount: 0,
-						readonly validatedAt: new Date()
+						duration: performance.now() - startTime,
+						channelCount: 0,
+						operationCount: 0,
+						schemaCount: 0,
+						validatedAt: new Date()
 					}
 				}
 				return yield* Effect.succeed(immediateResult)
@@ -183,44 +184,34 @@ export class AsyncAPIValidator {
 				if (diagnostics.length === 0) {
 					return {
 						valid: true,
+						data: document,
 						errors: [],
 						warnings: [],
-						summary: `AsyncAPI document is valid (${duration.toFixed(2)}ms)`,
 						metrics,
 					}
 				} else {
 					const errors: ValidationError[] = diagnostics
 						.filter((d: any) => Number(d.severity) === 0)
-						.map((d: any) => ({
-							message: d.message,
-							keyword: String(d.code || "validation-error"),
-							instancePath: d.path?.join('.') || "",
-							schemaPath: d.path?.join('.') || "",
-						}))
+						.map((d: any) => d.message as ValidationError)
 
-					const warnings = diagnostics
+					const warnings: ValidationWarning[] = diagnostics
 						.filter((d: any) => Number(d.severity) === 1)
-						.map((d: any) => d.message)
+						.map((d: any) => d.message as ValidationWarning)
 
 					return {
-						valid: errors.length === 0,
+						valid: false,
+						data: undefined,
 						errors,
 						warnings,
-						summary: `AsyncAPI document validation completed (${errors.length} errors, ${warnings.length} warnings, ${duration.toFixed(2)}ms)`,
 						metrics,
 					}
 				}
 			} else {
 				return {
 					valid: false,
-					errors: [{
-						message: "Unknown parse result type",
-						keyword: "parse-error",
-						instancePath: "",
-						schemaPath: ""
-					}],
+					data: undefined,
+					errors: ["Unknown parse result type" as ValidationError],
 					warnings: [],
-					summary: "Parse result type error",
 					metrics: { duration: performance.now() - startTime, channelCount: 0, operationCount: 0, schemaCount: 0, validatedAt: new Date() }
 				}
 			}
