@@ -59,15 +59,15 @@ const ServerSchema = Schema.Struct({
 	url: Schema.String,
 	protocol: ProtocolSchema,
 	description: Schema.optional(Schema.String),
-	variables: Schema.optional(Schema.Record(
-		Schema.String,
-		ServerVariableSchema
-	)),
+	variables: Schema.optional(Schema.Record({
+		key: Schema.String,
+		value: ServerVariableSchema
+	})),
 	security: Schema.optional(Schema.Array(Schema.String)),
-	bindings: Schema.optional(Schema.Record(
-		Schema.String,
-		Schema.Unknown
-	))
+	bindings: Schema.optional(Schema.Record({
+		key: Schema.String,
+		value: Schema.Unknown
+	}))
 })
 
 /**
@@ -76,7 +76,7 @@ const ServerSchema = Schema.Struct({
 const MessageSchema = Schema.Struct({
 	messageId: Schema.optional(Schema.String),
 	payload: Schema.optional(Schema.Unknown),
-	headers: Schema.optional(Schema.Record(Schema.String, Schema.Unknown)),
+	headers: Schema.optional(Schema.Record({ key: Schema.String, value: Schema.Unknown })),
 	correlationId: Schema.optional(Schema.Unknown),
 	schemaFormat: Schema.optional(Schema.String),
 	contentType: Schema.optional(Schema.String),
@@ -92,7 +92,7 @@ const MessageSchema = Schema.Struct({
 		description: Schema.String,
 		url: Schema.String
 	})),
-	bindings: Schema.optional(Schema.Record(Schema.String, Schema.Unknown))
+	bindings: Schema.optional(Schema.Record({ key: Schema.String, value: Schema.Unknown }))
 })
 
 /**
@@ -115,15 +115,15 @@ const OperationSchema = Schema.Struct({
 		description: Schema.String,
 		url: Schema.String
 	})),
-	bindings: Schema.optional(Schema.Record(Schema.String, Schema.Unknown)),
-	messages: Schema.optional(Schema.Record(
-		Schema.String,
-		Schema.Union(
+	bindings: Schema.optional(Schema.Record({ key: Schema.String, value: Schema.Unknown })),
+	messages: Schema.optional(Schema.Record({
+		key: Schema.String,
+		value: Schema.Union(
 			Schema.Literal(null),
 			MessageSchema,
 			Schema.Struct({$ref: Schema.String})
 		)
-	)),
+	})),
 })
 
 /**
@@ -131,14 +131,14 @@ const OperationSchema = Schema.Struct({
  */
 const ChannelSchema = Schema.Struct({
 	address: Schema.String,
-	messages: Schema.optional(Schema.Record(
-		Schema.String,
-		Schema.Union(
+	messages: Schema.optional(Schema.Record({
+		key: Schema.String,
+		value: Schema.Union(
 			Schema.Literal(null),
 			MessageSchema,
 			Schema.Struct({$ref: Schema.String})
 		)
-	)),
+	})),
 	title: Schema.optional(Schema.String),
 	summary: Schema.optional(Schema.String),
 	description: Schema.optional(Schema.String),
@@ -150,8 +150,8 @@ const ChannelSchema = Schema.Struct({
 		description: Schema.String,
 		url: Schema.String
 	})),
-	parameters: Schema.optional(Schema.Record(Schema.String, Schema.Unknown)),
-	bindings: Schema.optional(Schema.Record(Schema.String, Schema.Unknown))
+	parameters: Schema.optional(Schema.Record({ key: Schema.String, value: Schema.Unknown })),
+	bindings: Schema.optional(Schema.Record({ key: Schema.String, value: Schema.Unknown }))
 })
 
 /**
@@ -160,9 +160,9 @@ const ChannelSchema = Schema.Struct({
 export const AsyncAPIDocumentSchema = Schema.Struct({
 	asyncapi: AsyncAPIVersionSchema,
 	info: InfoSchema,
-	servers: Schema.optional(Schema.Record(Schema.String, ServerSchema)),
-	channels: Schema.optional(Schema.Record(Schema.String, ChannelSchema)),
-	operations: Schema.optional(Schema.Record(Schema.String, OperationSchema)),
+	servers: Schema.optional(Schema.Record({ key: Schema.String, value: ServerSchema })),
+	channels: Schema.optional(Schema.Record({ key: Schema.String, value: ChannelSchema })),
+	operations: Schema.optional(Schema.Record({ key: Schema.String, value: OperationSchema })),
 	components: Schema.optional(Schema.Unknown),
 	tags: Schema.optional(Schema.Array(Schema.Struct({
 		name: Schema.String,

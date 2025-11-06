@@ -187,15 +187,18 @@ export class EmissionPipeline implements IPipelineService {
 			// Use REAL ValidationService with comprehensive AsyncAPI 3.0 compliance checking
 			const validationResult = yield* this.validationService.validateDocument(context.asyncApiDoc)
 
-			if (!validationResult.valid) {
+			if (!validationResult.isValid) {
 				yield* Effect.log(`❌ Validation failed with ${validationResult.errors.length} errors:`)
 				for (const error of validationResult.errors) {
 					yield* Effect.log(`  - ${error}`)
 				}
 				
+				// Convert string errors to ValidationError format for emitterErrors
+				const validationErrorStrings = validationResult.errors.map(err => err)
+				
 				// Use standardized error instead of plain Error
 				return yield* failWith(emitterErrors.invalidAsyncAPI(
-					validationResult.errors,
+					validationErrorStrings,
 					context.asyncApiDoc
 				))
 			} else {

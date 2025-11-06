@@ -126,8 +126,8 @@ export class AsyncAPIValidator {
 				// Only use fast-path for very simple documents (no operations)
 				const doc = inputDocument as any
 				if (!doc.operations && !doc.channels && !doc.components) {
-					// 🔥 CRITICAL: Create proper discriminated union ValidationResult
-					const immediateResult: ValidationResult<unknown> = {
+					// 🔥 CRITICAL: Create proper ExtendedValidationResult
+					const immediateResult: ExtendedValidationResult<unknown> = {
 						valid: true,
 						data: inputDocument,
 						errors: [],
@@ -286,7 +286,7 @@ export class AsyncAPIValidator {
 		const effect = this.validateEffect(inputDocument)
 		
 		// Convert Effect failures to validation results for backward compatibility
-		return Effect.runPromise(effect).catch((error): ValidationResult => ({
+		return Effect.runPromise(effect).catch((error): ExtendedValidationResult => ({
 			valid: false,
 			data: undefined,
 			errors: [{

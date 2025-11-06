@@ -73,7 +73,7 @@ export function generateAsyncAPIWithEffect(context: EmitContext): Effect.Effect<
 		yield* Effect.logInfo("🚀 Stage 3: Validation")
 		const validationService = new ValidationService()
 		const validationResult = yield* validationService.validateDocument(initialDoc)
-		yield* Effect.logInfo(`✅ Validation: ${validationResult.valid ? 'PASSED' : 'FAILED'}`)
+		yield* Effect.logInfo(`✅ Validation: ${validationResult.isValid ? 'PASSED' : 'FAILED'}`)
 		
 		// 📄 STAGE 4: TYPESPEC EMITFILE API (Test Framework Integration)
 		yield* Effect.logInfo("🚀 Stage 4: TypeSpec emitFile API")

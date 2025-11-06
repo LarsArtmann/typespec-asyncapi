@@ -12,7 +12,7 @@
 
 import { Effect, Schedule } from "effect"
 import { decodeAsyncAPIDocument } from "../../infrastructure/configuration/schemas.js"
-import type { ValidationResult, ValidationError, ExtendedValidationResult } from "../../types/index.js"
+import type { ValidationResult as NewValidationResult, ValidationError as NewValidationError, ExtendedValidationResult } from "../../types/index.js"
 import type { 
 	AsyncAPIObject, 
 	ReferenceObject
@@ -22,7 +22,7 @@ import { emitterErrors, type StandardizedError, safeStringify } from "../../util
 import { PERFORMANCE_CONSTANTS } from "../../constants/defaults.js"
 
 // Legacy ValidationResult type for backward compatibility
-export type ValidationResult = {
+export type LegacyValidationResult = {
 	isValid: boolean;
 	errors: string[];
 	warnings: string[];
@@ -31,6 +31,9 @@ export type ValidationResult = {
 	messagesCount: number;
 	schemasCount: number;
 }
+
+// Type alias for clarity
+export type ValidationResult = LegacyValidationResult;
 
 /**
  * ValidationService - Core AsyncAPI Document Validation
@@ -88,7 +91,7 @@ export class ValidationService {
 			}
 
 			const isValid = errors.length === 0
-			const result: ValidationResult = {
+			const result: LegacyValidationResult = {
 				isValid,
 				errors,
 				warnings,
@@ -138,7 +141,7 @@ export class ValidationService {
 			this.validateCrossReferences(asyncApiDoc, errors, warnings)
 
 			const isValid = errors.length === 0
-			const result: ValidationResult = {
+			const result: LegacyValidationResult = {
 				isValid,
 				errors,
 				warnings,
@@ -198,7 +201,7 @@ export class ValidationService {
 				)
 			)
 			
-			if (result.valid) {
+			if (result.isValid) {
 				yield* Effect.log(`✅ Document content validation passed!`)
 				return content
 			} else {
@@ -457,8 +460,8 @@ export class ValidationService {
 	 * @param result - Validation result to summarize
 	 * @returns Human-readable validation report
 	 */
-	generateValidationReport(result: ValidationResult): string {
-		const status = result.valid ? '✅ VALID' : '❌ INVALID'
+	generateValidationReport(result: LegacyValidationResult): string {
+		const status = result.isValid ? '✅ VALID' : '❌ INVALID'
 		const report = [
 			`AsyncAPI Document Validation Report`,
 			`Status: ${status}`,
@@ -494,7 +497,7 @@ export class ValidationService {
 	 * @param document - Unknown input to validate
 	 * @returns Effect with validated AsyncAPI document or error
 	 */
-	validateWithSchema(document: unknown): Effect.Effect<any, ValidationError> {
+	validateWithSchema(document: unknown): Effect.Effect<any, NewValidationError> {
 		return Effect.try({
 			try: () => decodeAsyncAPIDocument(document),
 			catch: (error) => ({
@@ -509,7 +512,7 @@ export class ValidationService {
 	/**
 	 * 🔥 NEW: Static method for schema validation with unified error types
 	 */
-	static validateWithSchema(document: unknown): Effect.Effect<any, ValidationError> {
+	static validateWithSchema(document: unknown): Effect.Effect<any, NewValidationError> {
 		return Effect.try({
 			try: () => decodeAsyncAPIDocument(document),
 			catch: (error) => ({
