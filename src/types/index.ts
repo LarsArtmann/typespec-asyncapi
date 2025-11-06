@@ -34,7 +34,7 @@ export type AsyncAPIVersion = '3.0.0' & { readonly brand: 'AsyncAPIVersion' };
 // 🔥 FUCKING CRITICAL: ValidationResult with discriminated union
 export type ValidationResult<T = unknown> = 
   | { readonly valid: true; readonly data: T; readonly errors: readonly []; readonly warnings: readonly [] }
-  | { readonly valid: false; readonly data: never; readonly errors: readonly ValidationError[]; readonly warnings: readonly ValidationWarning[] };
+  | { readonly valid: false; readonly data: undefined; readonly errors: readonly ValidationError[]; readonly warnings: readonly ValidationWarning[] };
 
 // 🔥 FUCKING CRITICAL: Branded error types for compile-time safety
 export type ValidationError = string & { readonly brand: 'ValidationError' };
