@@ -198,7 +198,7 @@ export class ValidationService {
 				)
 			)
 			
-			if (result.isValid) {
+			if (result.valid) {
 				yield* Effect.log(`✅ Document content validation passed!`)
 				return content
 			} else {
@@ -458,7 +458,7 @@ export class ValidationService {
 	 * @returns Human-readable validation report
 	 */
 	generateValidationReport(result: ValidationResult): string {
-		const status = result.isValid ? '✅ VALID' : '❌ INVALID'
+		const status = result.valid ? '✅ VALID' : '❌ INVALID'
 		const report = [
 			`AsyncAPI Document Validation Report`,
 			`Status: ${status}`,

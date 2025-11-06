@@ -57,7 +57,7 @@ export function validatePathTemplate(pathTemplate: string): TemplateValidationRe
 	}
 
 	return {
-		isValid: errors.length === 0,
+		valid: errors.length === 0,
 		variables,
 		unsupportedVariables,
 		errors,
@@ -216,7 +216,7 @@ export function resolvePathTemplateWithValidation(
 	// Validate template variables first
 	const validation = validatePathTemplate(pathTemplate)
 
-	if (!validation.isValid) {
+	if (!validation.valid) {
 		return Effect.fail(new Error(`Path template validation failed: ${validation.errors.join("; ")}`))
 	}
 
