@@ -94,8 +94,6 @@ export class AsyncAPIValidator {
 		const stats = this.stats
 		
 		return Effect.gen(function* () {
-			const parser = this.parser
-			const stats = this.stats
 			const startTime = performance.now()
 
 			// 🚀 Fast path for objects with asyncapi field
