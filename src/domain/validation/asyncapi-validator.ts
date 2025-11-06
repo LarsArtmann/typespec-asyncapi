@@ -238,4 +238,27 @@ export class AsyncAPIValidator {
 	validateString(this: AsyncAPIValidator, content: string): Effect.Effect<ValidationResult, Error> {
 		return this.validateEffect(content)
 	}
+
+	/**
+	 * Backward compatibility method - wraps validateEffect with async/await
+	 * @deprecated Use validateEffect() for Effect.TS pipeline compatibility
+	 */
+	async validate(inputDocument: unknown, _identifier?: string): Promise<ValidationResult> {
+		return Effect.runPromise(this.validateEffect(inputDocument))
+	}
+
+	/**
+	 * Backward compatibility method - wraps validateFile with async/await
+	 * @deprecated Use validateFile() for Effect.TS pipeline compatibility  
+	 */
+	async validateFileCompat(filePath: string): Promise<ValidationResult> {
+		return Effect.runPromise(this.validateFile(filePath))
+	}
+
+	/**
+	 * Backward compatibility method - get validation stats
+	 */
+	getValidationStats(): ValidationStats {
+		return {...this.stats}
+	}
 }
