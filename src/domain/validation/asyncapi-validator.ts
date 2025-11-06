@@ -88,7 +88,7 @@ export class AsyncAPIValidator {
 	/**
 	 * Validate AsyncAPI document using the REAL parser - Effect version
 	 */
-		validateEffect(this: AsyncAPIValidator, inputDocument: unknown, _identifier?: string): Effect.Effect<ValidationResult, Error, never> {
+		validateEffect(inputDocument: unknown, _identifier?: string): Effect.Effect<ValidationResult, Error, never> {
 		// Capture class instance in closure to fix Effect.gen this-binding issue
 		const parser = this.parser
 		const stats = this.stats
@@ -121,6 +121,7 @@ export class AsyncAPIValidator {
 					data: inputDocument,
 					errors: [],
 					warnings: [],
+					summary: `AsyncAPI document is valid (0.00ms)`,
 					metrics: {
 						duration: performance.now() - startTime,
 						channelCount: 0,
@@ -189,22 +190,29 @@ export class AsyncAPIValidator {
 						data: document,
 						errors: [],
 						warnings: [],
+						summary: `AsyncAPI document is valid (${duration.toFixed(2)}ms)`,
 						metrics,
 					}
 				} else {
-					const errors: ValidationError[] = diagnostics
+					const errors = diagnostics
 						.filter((d: any) => Number(d.severity) === 0)
-						.map((d: any) => d.message as ValidationError)
+						.map((d: any) => ({
+							message: d.message,
+							keyword: String(d.code || "validation-error"),
+							instancePath: d.path?.join('.') || "",
+							schemaPath: d.path?.join('.') || "",
+						}))
 
-					const warnings: ValidationWarning[] = diagnostics
+					const warnings = diagnostics
 						.filter((d: any) => Number(d.severity) === 1)
-						.map((d: any) => d.message as ValidationWarning)
+						.map((d: any) => d.message)
 
 					return {
 						valid: false,
 						data: undefined,
 						errors,
 						warnings,
+						summary: `AsyncAPI document validation completed (${errors.length} errors, ${warnings.length} warnings, ${duration.toFixed(2)}ms)`,
 						metrics,
 					}
 				}
@@ -223,14 +231,18 @@ export class AsyncAPIValidator {
 	/**
 	 * Validate AsyncAPI document from file - Pure Effect Method
 	 */
-	validateFile(this: AsyncAPIValidator, filePath: string): Effect.Effect<ValidationResult, Error> {
+	validateFileEffect(filePath: string): Effect.Effect<ValidationResult, Error> {
+		// Capture class instance in closure to fix Effect.gen this-binding issue
+		const self = this
+		const validateEffect = self.validateEffect.bind(self)
+		
 		return Effect.gen(function* () {
 			const content = yield* Effect.tryPromise({
 				try: () => NodeFS.readFile(filePath, 'utf-8'),
 				catch: (error) => new Error(`Failed to read file: ${error}`)
 			})
 			
-			return yield* this.validateEffect(content)
+			return yield* validateEffect(content)
 		})
 	}
 
@@ -250,11 +262,11 @@ export class AsyncAPIValidator {
 	}
 
 	/**
-	 * Backward compatibility method - wraps validateFile with async/await
-	 * @deprecated Use validateFile() for Effect.TS pipeline compatibility  
+	 * Backward compatibility method - wraps validateFileEffect with async/await
+	 * @deprecated Use validateFileEffect() for Effect.TS pipeline compatibility  
 	 */
-	async validateFileCompat(filePath: string): Promise<ValidationResult> {
-		return Effect.runPromise(this.validateFile(filePath))
+	async validateFile(filePath: string): Promise<ValidationResult> {
+		return Effect.runPromise(this.validateFileEffect(filePath))
 	}
 
 	/**
