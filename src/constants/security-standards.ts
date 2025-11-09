@@ -5,6 +5,9 @@
  * Integrates with OAuth2, SASL, and OpenID Connect specifications.
  */
 
+import type { OAuth2Scheme, ApiKeyScheme, HttpScheme } from "../types/security-scheme-types.js"
+import { isOAuth2Scheme } from "../types/security-scheme-types.js"
+
 /**
  * Standard OAuth 2.0 libraries integration
  * Uses @types/passport-oauth2 and passport-oauth2 for mature OAuth2 support
@@ -111,8 +114,13 @@ export const ASYNCAPI_API_KEY_LOCATIONS = [
 /**
  * Validate OAuth2 scheme using passport-oauth2 library
  */
-export const validateOAuth2Scheme = (scheme: any): { valid: boolean; errors: string[] } => {
+export const validateOAuth2Scheme = (scheme: unknown): { valid: boolean; errors: string[] } => {
   const errors: string[] = []
+  
+  if (!isOAuth2Scheme(scheme)) {
+    errors.push("Invalid OAuth2 scheme structure")
+    return { valid: false, errors }
+  }
   
   // OAuth2 flows validation
   const flows = scheme.flows
@@ -122,20 +130,27 @@ export const validateOAuth2Scheme = (scheme: any): { valid: boolean; errors: str
 
   // Use passport-oauth2 for flow validation
   // Note: Actual passport-oauth2 validation would happen at runtime
-  Object.entries(flows || {}).forEach(([flowType, flow]: [string, any]) => {
-    if (!flow) return
+  Object.entries(flows ?? {}).forEach(([flowType, flow]: [string, unknown]) => {
+    if (!flow || typeof flow !== 'object') return
     
+    const flowObj = flow as Record<string, unknown>
     switch (flowType) {
       case "implicit":
-      case "authorizationCode":
-        if (!flow.authorizationUrl) {
+        if (!flowObj.authorizationUrl) {
           errors.push(`${flowType} flow must have authorizationUrl`)
+        }
+        break
+      case "authorizationCode":
+        if (!flowObj.authorizationUrl) {
+          errors.push(`${flowType} flow must have authorizationUrl`)
+        }
+        if (!flowObj.tokenUrl) {
+          errors.push(`${flowType} flow must have tokenUrl`)
         }
         break
       case "password": 
       case "clientCredentials":
-      case "authorizationCode":
-        if (!flow.tokenUrl) {
+        if (!flowObj.tokenUrl) {
           errors.push(`${flowType} flow must have tokenUrl`)
         }
         break
@@ -152,7 +167,7 @@ export const validateSaslMechanism = (mechanism: string): { valid: boolean; erro
   const errors: string[] = []
   
   // Use IANA standard list from @xmpp/sasl
-  if (!IANA_SASL_MECHANISMS.includes(mechanism as any)) {
+  if (!IANA_SASL_MECHANISMS.includes(mechanism as "PLAIN" | "SCRAM-SHA-1" | "SCRAM-SHA-256" | "SCRAM-SHA-512" | "GSSAPI" | "EXTERNAL" | "ANONYMOUS" | "OTP" | "DIGEST-MD5" | "AWS_MSK_IAM")) {
     errors.push(`Invalid SASL mechanism: ${mechanism}. Must be one of: ${IANA_SASL_MECHANISMS.join(", ")}`)
   }
 
@@ -166,7 +181,7 @@ export const validateHttpScheme = (scheme: string): { valid: boolean; errors: st
   const errors: string[] = []
   
   // Use IANA HTTP Authentication Scheme Registry
-  if (!IANA_HTTP_SCHEMES.includes(scheme as any)) {
+  if (!IANA_HTTP_SCHEMES.includes(scheme as "basic" | "bearer" | "digest" | "hoba" | "mutual" | "negotiate" | "oauth" | "scram-sha-1" | "scram-sha-256" | "vapid" | "dpop" | "gnap" | "privatetoken")) {
     errors.push(`Invalid HTTP scheme: ${scheme}. Must be one of: ${IANA_HTTP_SCHEMES.join(", ")}`)
   }
 

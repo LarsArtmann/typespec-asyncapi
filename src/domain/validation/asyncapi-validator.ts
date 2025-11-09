@@ -101,14 +101,14 @@ export class AsyncAPIValidator {
 			// yield* railwayLogging.logInitialization("AsyncAPI 3.0.0 Validator with REAL @asyncapi/parser...")
 			const initTime = performance.now() - initStart
 			if (initTime > 100) {
-				console.log(`⚠️  INITIALIZATION TOOK ${initTime}ms - TOO SLOW!`)
+				// console.log(`⚠️  INITIALIZATION TOOK ${initTime}ms - TOO SLOW!`)
 			}
 			
 			// Debug: Measure fast-path check
 			const fastPathStart = performance.now()
 			// 🚀 Fast path for objects with asyncapi field (but NOT for documents with operations)
 			if (typeof inputDocument === 'object' && inputDocument !== null && 'asyncapi' in inputDocument) {
-				const version = String((inputDocument as any)['asyncapi'])
+				const version = String((inputDocument as Record<string, unknown>)['asyncapi'])
 				
 				if (version !== '3.0.0') {
 					const versionError = createError({
@@ -124,7 +124,7 @@ export class AsyncAPIValidator {
 				}
 				
 				// Only use fast-path for very simple documents (no operations)
-				const doc = inputDocument as any
+				const doc = inputDocument as Record<string, unknown>
 				if (!doc.operations && !doc.channels && !doc.components) {
 					// 🔥 CRITICAL: Create proper ExtendedValidationResult
 					const immediateResult: ExtendedValidationResult<unknown> = {
@@ -142,13 +142,13 @@ export class AsyncAPIValidator {
 						}
 					}
 					const fastPathTime = performance.now() - fastPathStart
-					console.log(`🚀 FAST PATH TOOK ${fastPathTime}ms`)
+					// console.log(`🚀 FAST PATH TOOK ${fastPathTime}ms`)
 					return yield* Effect.succeed(immediateResult)
 				}
 				// Fall through to full parser for complex documents
 			}
 			const fastPathTime = performance.now() - fastPathStart
-			console.log(`🐌 FAST PATH CHECK TOOK ${fastPathTime}ms - FALLING THROUGH TO PARSER`)
+			// console.log(`🐌 FAST PATH CHECK TOOK ${fastPathTime}ms - FALLING THROUGH TO PARSER`)
 			
 			// Convert document to string for parser
 			let content: string
@@ -168,7 +168,7 @@ export class AsyncAPIValidator {
 					const start = performance.now()
 					const result = parser.parse(content)
 					const duration = performance.now() - start
-					console.log(`🔍 RAW PARSER CALL TOOK ${duration}ms`)
+					// console.log(`🔍 RAW PARSER CALL TOOK ${duration}ms`)
 					return result
 				},
 				catch: (originalError) => {
@@ -190,8 +190,8 @@ export class AsyncAPIValidator {
 
 			// Type-safe property access
 			if (typeof parseResult === 'object' && parseResult !== null && 'document' in parseResult) {
-				const document = (parseResult as any).document
-				const diagnostics = (parseResult as any).diagnostics || []
+				const document = (parseResult as {document: unknown}).document
+				const diagnostics = (parseResult as {diagnostics?: unknown[]}).diagnostics ?? []
 				
 				const duration = performance.now() - startTime
 				const metrics = document ? {
@@ -201,7 +201,11 @@ export class AsyncAPIValidator {
 					schemaCount: Object.keys(document).filter(k => k.includes('schema')).length,
 					validatedAt: new Date()
 				} : {
-					duration, channelCount: 0, operationCount: 0, schemaCount: 0, validatedAt: new Date()
+					duration, 
+					channelCount: 0, 
+					operationCount: 0, 
+					schemaCount: 0, 
+					validatedAt: new Date()
 				}
 
 				if (diagnostics.length === 0) {
@@ -215,17 +219,24 @@ export class AsyncAPIValidator {
 					}
 				} else {
 					const errors = diagnostics
-						.filter((d: any) => Number(d.severity) === 0)
-						.map((d: any) => ({
-							message: d.message,
-							keyword: String(d.code || "validation-error"),
-							instancePath: d.path?.join('.') || "",
-							schemaPath: d.path?.join('.') || "",
-						}))
+						.filter((d: unknown) => Number((d as {severity?: number}).severity) === 0)
+						.map((d: unknown) => {
+							const diag = d as {message?: string; code?: unknown; path?: unknown[]}
+							return {
+								message: String(diag.message ?? "Unknown error"),
+								keyword: String(diag.code ?? "validation-error"),
+								instancePath: (diag.path ?? []).join('.'),
+								schemaPath: (diag.path ?? []).join('.'),
+								severity: 0 as const
+							}
+						}) as readonly ValidationError[]
 
 					const warnings = diagnostics
-						.filter((d: any) => Number(d.severity) === 1)
-						.map((d: any) => d.message)
+						.filter((d: unknown) => Number((d as {severity?: number}).severity) === 1)
+						.map((d: unknown) => ({
+							message: String((d as {message?: string}).message ?? "Unknown warning"),
+							severity: "warning" as const
+						})) as readonly ValidationWarning[]
 
 					return {
 						valid: false,
@@ -256,26 +267,25 @@ export class AsyncAPIValidator {
 	/**
 	 * Validate AsyncAPI document from file - Pure Effect Method
 	 */
-	validateFileEffect(filePath: string): Effect.Effect<ValidationResult, Error> {
-		// Capture class instance in closure to fix Effect.gen this-binding issue
-		const self = this
-		const validateEffect = self.validateEffect.bind(self)
-		
+	validateFileEffect(filePath: string): Effect.Effect<ValidationResult, unknown> {
+		// Use direct method call instead of binding to avoid this aliasing
 		return Effect.gen(function* () {
 			const content = yield* Effect.tryPromise({
 				try: () => NodeFS.readFile(filePath, 'utf-8'),
-				catch: (error) => new Error(`Failed to read file: ${error}`)
+				catch: (error) => Error(`Failed to read file: ${String(error)}`)
 			})
 			
-			return yield* validateEffect(content)
+			const validator = new AsyncAPIValidator({})
+			return yield* validator.validateEffect(content)
 		})
 	}
 
 	/**
 	 * Validate AsyncAPI document from string - Pure Effect Method
 	 */
-	validateString(this: AsyncAPIValidator, content: string): Effect.Effect<ValidationResult, Error> {
-		return this.validateEffect(content)
+	validateString(content: string): Effect.Effect<ValidationResult, Error> {
+		const validator = new AsyncAPIValidator({})
+		return validator.validateEffect(content)
 	}
 
 	/**
@@ -286,25 +296,29 @@ export class AsyncAPIValidator {
 		const effect = this.validateEffect(inputDocument)
 		
 		// Convert Effect failures to validation results for backward compatibility
-		return Effect.runPromise(effect).catch((error): ExtendedValidationResult => ({
-			valid: false,
-			data: undefined,
-			errors: [{
-				message: error instanceof Error ? error.message : String(error),
-				keyword: "validation-error",
-				instancePath: "",
-				schemaPath: ""
-			}],
-			warnings: [],
-			summary: `Validation failed: ${error instanceof Error ? error.message : String(error)}`,
-			metrics: {
-				duration: 0,
-				channelCount: 0,
-				operationCount: 0,
-				schemaCount: 0,
-				validatedAt: new Date()
-			}
-		}))
+		return Effect.runPromise(
+			Effect.catchAll(effect, (error): Effect.Effect<ExtendedValidationResult, never> => 
+				Effect.succeed({
+					valid: false,
+					data: undefined,
+					errors: [{
+						message: error instanceof Error ? error.message : String(error),
+						keyword: "validation-error",
+						instancePath: "",
+						schemaPath: ""
+					}],
+					warnings: [],
+					summary: `Validation failed: ${error instanceof Error ? error.message : String(error)}`,
+					metrics: {
+						duration: 0,
+						channelCount: 0,
+						operationCount: 0,
+						schemaCount: 0,
+						validatedAt: new Date()
+					}
+				})
+			)
+		)
 	}
 
 	/**

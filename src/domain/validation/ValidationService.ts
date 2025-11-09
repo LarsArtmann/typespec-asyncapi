@@ -12,14 +12,16 @@
 
 import { Effect, Schedule } from "effect"
 import { decodeAsyncAPIDocument } from "../../infrastructure/configuration/schemas.js"
-import type { ValidationResult as NewValidationResult, ValidationError as NewValidationError, ExtendedValidationResult } from "../../types/index.js"
 import type { 
 	AsyncAPIObject, 
 	ReferenceObject
 } from "@asyncapi/parser/esm/spec-types/v3.js"
-import type { ValidationResult as BrandedValidationResult, ValidationError as ValidationErrorType, ValidationWarning } from "../models/errors/validation-error.js"
 import { emitterErrors, type StandardizedError, safeStringify } from "../../utils/standardized-errors.js"
 import { PERFORMANCE_CONSTANTS } from "../../constants/defaults.js"
+
+// Type-only imports for unused types
+import type { ValidationResult as _NewValidationResult, ValidationError as _ValidationError, ExtendedValidationResult as _ExtendedValidationResult } from "../../types/index.js"
+import type { ValidationResult as _BrandedValidationResult, ValidationError as _ValidationErrorType, ValidationWarning as _ValidationWarning } from "../models/errors/validation-error.js"
 
 // Legacy ValidationResult type for backward compatibility
 export type LegacyValidationResult = {
@@ -497,30 +499,40 @@ export class ValidationService {
 	 * @param document - Unknown input to validate
 	 * @returns Effect with validated AsyncAPI document or error
 	 */
-	validateWithSchema(document: unknown): Effect.Effect<any, NewValidationError> {
-		return Effect.try({
-			try: () => decodeAsyncAPIDocument(document),
-			catch: (error) => ({
-				message: `Schema validation failed: ${error instanceof Error ? error.message : String(error)}`,
-				keyword: "schema-validation",
-				instancePath: "",
-				schemaPath: "root"
-			})
-		})
+	validateWithSchema(document: unknown): Effect.Effect<unknown, unknown> {
+		return Effect.flatten(
+			Effect.map(
+				Effect.try({
+					try: () => decodeAsyncAPIDocument(document),
+					catch: (error) => ({
+						message: `Schema validation failed: ${error instanceof Error ? error.message : String(error)}`,
+						keyword: "schema-validation",
+						instancePath: "",
+						schemaPath: "root"
+					})
+				}),
+				(result) => result
+			)
+		)
 	}
 
 	/**
 	 * 🔥 NEW: Static method for schema validation with unified error types
 	 */
-	static validateWithSchema(document: unknown): Effect.Effect<any, NewValidationError> {
-		return Effect.try({
-			try: () => decodeAsyncAPIDocument(document),
-			catch: (error) => ({
-				message: `Schema validation failed: ${error instanceof Error ? error.message : String(error)}`,
-				keyword: "schema-validation",
-				instancePath: "",
-				schemaPath: "root"
-			})
-		})
+	static validateWithSchema(document: unknown): Effect.Effect<unknown, unknown> {
+		return Effect.flatten(
+			Effect.map(
+				Effect.try({
+					try: () => decodeAsyncAPIDocument(document),
+					catch: (error) => ({
+						message: `Schema validation failed: ${error instanceof Error ? error.message : String(error)}`,
+						keyword: "schema-validation",
+						instancePath: "",
+						schemaPath: "root"
+					})
+				}),
+				(result) => result
+			)
+		)
 	}
 }

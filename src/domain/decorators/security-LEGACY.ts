@@ -118,7 +118,7 @@ function validateSecurityScheme(scheme: SecurityScheme): { valid: boolean; error
 		case "apiKey": {
 			const apiKeyScheme = scheme
 			// ✅ LIBRARY-BASED: Use AsyncAPI standard locations from security-standards
-			if (!ASYNCAPI_API_KEY_LOCATIONS.includes(apiKeyScheme.in as any)) {
+			if (!ASYNCAPI_API_KEY_LOCATIONS.includes(apiKeyScheme.in as "header" | "query" | "cookie")) {
 				errors.push(`Invalid API key location: ${apiKeyScheme.in}. Must be one of: ${ASYNCAPI_API_KEY_LOCATIONS.join(", ")}`)
 			}
 			// TypeSpec 1.5.0: API key name should use @secret decorator
