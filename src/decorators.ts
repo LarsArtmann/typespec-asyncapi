@@ -22,7 +22,7 @@ export { $subscribe } from "./domain/decorators/subscribe.js"
 export { $message } from "./domain/decorators/message.js"
 export { $server } from "./domain/decorators/server.js"
 export { $protocol } from "./domain/decorators/protocol.js"
-export { $security } from "./domain/decorators/security.js"
+export { $securityEnhanced as $security } from "./domain/decorators/security-ENHANCED.js"
 
 // Additional decorators
 export { $tags } from "./domain/decorators/tags.js"

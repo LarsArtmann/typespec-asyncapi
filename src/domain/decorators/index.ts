@@ -7,7 +7,7 @@ export { $publish } from './publish.js';
 export { $subscribe } from './subscribe.js';
 export { $server } from './server.js';
 export { $message } from './message.js';
-export { $security } from './security.js';
+export { $securityEnhanced as $security } from './security-ENHANCED.js';
 export { $protocol } from './protocol.js';
 
 // Optional decorators
