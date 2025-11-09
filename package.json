@@ -117,7 +117,7 @@
     "@types/passport-oauth2": "^1.8.0",
     "@xmpp/sasl": "^0.14.0",
     "ajv": "^8.17.1",
-    "effect": "^3.18.4",
+    "effect": "^3.19.2",
     "openid-client": "^6.8.1",
     "passport-oauth2": "^1.8.0",
     "yaml": "^2.8.1"
@@ -135,18 +135,18 @@
     "tough-cookie": "^4.1.4"
   },
   "devDependencies": {
-    "@asyncapi/cli": "^4.0.0",
+    "@asyncapi/cli": "^4.1.1",
     "@effect/eslint-plugin": "^0.3.2",
-    "@eslint/js": "^9.38.0",
-    "@types/node": "^24.9.2",
+    "@eslint/js": "^9.39.1",
+    "@types/node": "^24.10.0",
     "@typescript-eslint/eslint-plugin": "^8.46.3",
     "@typescript-eslint/parser": "^8.46.3",
-    "@vitest/coverage-v8": "^4.0.3",
+    "@vitest/coverage-v8": "^4.0.8",
     "asyncapi-validator": "^5.1.1",
     "eslint": "^9.39.1",
     "glob": "^11.0.3",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.46.2",
-    "vitest": "^4.0.3"
+    "typescript-eslint": "^8.46.3",
+    "vitest": "^4.0.8"
   }
 }
