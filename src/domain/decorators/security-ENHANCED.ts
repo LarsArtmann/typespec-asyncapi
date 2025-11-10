@@ -177,7 +177,7 @@ function validateSecurityScheme(scheme: any): { valid: boolean; errors: string[]
 		}
 
 		default:
-			warnings.push(`Unknown security scheme type: ${(scheme as any).type}`)
+			warnings.push(`Unknown security scheme type: ${(scheme).type}`)
 			break
 	}
 
