@@ -1,15 +1,11 @@
 /**
- * Constants Index - Centralized Export
+ * Constants Index - Minimal Re-Exports
  *
- * Single point of access for all constants used throughout the TypeSpec AsyncAPI Emitter.
- * This architecture eliminates hardcoded values and provides a centralized location for
- * version management, path configuration, and default settings.
+ * PHILOSOPHY: Prefer direct imports from source files over re-exports.
+ * Only essential exports needed by external consumers are re-exported here.
+ *
+ * For protocol constants, import directly from './protocol-defaults.js'
  */
-
-//I STILL FUCKING HAT re-exports!!!!!!
-//DISABLED!!!!
-
-//TODO: REMOVE RE_EXPORTS I HATE THEM!
 
 // Version Constants (Enhanced)
 export {
@@ -21,15 +17,6 @@ export {
 export {
 	DEFAULT_CONFIG,
 } from './defaults.js'
-//
-// Protocol Constants (from existing files)
+
+// Protocol type export (implementation constants imported directly from protocol-defaults.ts)
 export type {AsyncAPIProtocolType} from './protocol-defaults.js'
-//export {
-//	SUPPORTED_PROTOCOLS,
-//	DEFAULT_PROTOCOL_PORTS,
-//	PROTOCOL_DEFAULTS,
-//	getDefaultProtocolPort,
-//} from './protocol-defaults.js'
-
-
-// Re-export NOT needed!

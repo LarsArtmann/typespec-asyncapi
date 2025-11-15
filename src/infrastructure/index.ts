@@ -1,9 +1,9 @@
-// Infrastructure Layer - External Concerns (Depends on Domain)
-// Implements interfaces defined in domain layer
-
-//I STILL FUCKING HAT re-exports!!!!!!
-//DISABLED!!!!
-
-//export * from './configuration/index.js';
-//export * from './performance/index.js';
-//export * from './adapters/index.js';
+/**
+ * Infrastructure Layer - External Concerns (Depends on Domain)
+ *
+ * PHILOSOPHY: Prefer direct imports from specific files over barrel re-exports.
+ * Import directly from:
+ * - './configuration/*.js'
+ * - './performance/*.js'
+ * - './adapters/*.js'
+ */
