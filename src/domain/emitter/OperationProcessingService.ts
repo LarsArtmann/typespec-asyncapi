@@ -27,11 +27,10 @@ export const processSingleOperation = (
 		})
 
 		// Extract operation metadata using TypeSpec helpers
-		// TODO: Use this metadata when implementing enhanced operation processing
-		const __operationInfo = {
+		const operationInfo = {
 			name: operation.name,
-			description: getDoc(program, operation) ?? `Operation ${operation.name}`,
-			summary: getDoc(program, operation) ?? `Operation ${operation.name}`
+			description: getDoc(program, operation) ?? `Generated from TypeSpec operation: ${operation.name}`,
+			summary: getDoc(program, operation) ?? `${operation.name} operation`
 		}
 
 		// Generate channel name from operation
@@ -74,12 +73,12 @@ export const processSingleOperation = (
 		// Generate protocol-specific bindings
 		const protocolBinding = undefined // TODO: Implement when protocol decorators work
 
-		// Create AsyncAPI operation object
+		// Create AsyncAPI operation object using extracted metadata
 		const asyncApiOperation: OperationObject = {
 			action: "send", // TODO: Extract from operation type
 			channel: { $ref: `#/channels/${channelName}` },
-			summary: `${operation.name} operation`,
-			description: `Generated from TypeSpec operation: ${operation.name}`,
+			summary: operationInfo.summary,
+			description: operationInfo.description,
 		}
 
 		yield* railwayLogging.logDebugGeneration("channel", channelName, {
@@ -152,26 +151,5 @@ export const processOperations = (
 		return operations.length
 	})
 
-/**
- * Extract operation metadata for enhanced AsyncAPI generation
- */
-export const extractOperationMetadata = (
-	operation: Operation,
-	_program: Program
-): Effect.Effect<{
-		name: string
-		description?: string
-		tags?: Array<{ name: string; description?: string }>
-		protocol?: string
-		contentType?: string
-	}, never> =>
-	Effect.gen(function* () {
-		// TODO: Extract from operation decorators properly
-		const __messageConfig = {}
-		const __protocolInfo = {}
-
-		return {
-			name: operation.name,
-			description: `${operation.name} operation metadata`,
-		}
-	})
+// extractOperationMetadata was a ghost function - never called, just had TODO placeholders
+// Metadata extraction is now properly integrated into processSingleOperation above
