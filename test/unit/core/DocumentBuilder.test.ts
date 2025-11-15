@@ -42,7 +42,7 @@ describe("DocumentBuilder", () => {
 			expect(document.info).toBeDefined()
 			expect(document.info.title).toBe("AsyncAPI Specification")
 			expect(document.info.version).toBe("1.0.0")
-			expect(document.info.description).toBe("Generated from TypeSpec with Effect.TS integration")
+			expect(document.info.description).toBe("Generated from TypeSpec with @lars-artmann/typespec-asyncapi")
 
 			// Verify document structure
 			expect(document.channels).toEqual({})
@@ -127,7 +127,7 @@ describe("DocumentBuilder", () => {
 
 			expect(baseDocument.info.title).toBe("AsyncAPI Specification") // Should preserve
 			expect(baseDocument.info.version).toBe("2.1.0")
-			expect(baseDocument.info.description).toBe("Generated from TypeSpec with Effect.TS integration")
+			expect(baseDocument.info.description).toBe("Generated from TypeSpec with @lars-artmann/typespec-asyncapi")
 		})
 
 		it("should handle empty info updates", () => {
