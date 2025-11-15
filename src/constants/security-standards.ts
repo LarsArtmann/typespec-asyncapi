@@ -10,6 +10,8 @@ import { isOAuth2Scheme } from "../types/security-scheme-types.js"
 /**
  * Standard OAuth 2.0 libraries integration
  * Uses @types/passport-oauth2 and passport-oauth2 for mature OAuth2 support
+ *
+ * @internal - Exported for documentation and future use
  */
 export const OAUTH2_LIBRARIES = {
   /** Passport OAuth2 strategy - battle-tested, ecosystem leader */
@@ -23,8 +25,10 @@ export const OAUTH2_LIBRARIES = {
 } as const
 
 /**
- * Standard SASL libraries integration  
+ * Standard SASL libraries integration
  * Uses @xmpp/sasl for comprehensive SASL mechanism support
+ *
+ * @internal - Exported for documentation and future use
  */
 export const SASL_LIBRARIES = {
   /** XMPP SASL framework - comprehensive mechanism support */
@@ -41,6 +45,8 @@ export const SASL_LIBRARIES = {
 /**
  * Standard OpenID Connect libraries integration
  * Uses openid-client for comprehensive OAuth2 + OIDC support
+ *
+ * @internal - Exported for documentation and future use
  */
 export const OPENID_LIBRARIES = {
   /** OpenID Connect client - industry standard, certified */
@@ -57,17 +63,19 @@ export const OPENID_LIBRARIES = {
  * Standard HTTP Authentication Schemes from IANA Registry
  * Reference: RFC 9110, updated 2024-10-09
  * Uses passport-oauth2 for scheme validation and processing
+ *
+ * Module-private: Only used internally by validateHttpScheme
  */
-export const IANA_HTTP_SCHEMES = [
+const IANA_HTTP_SCHEMES = [
   "basic",
-  "bearer", 
+  "bearer",
   "digest",
   "hoba",
   "mutual",
   "negotiate",
   "oauth",
   "scram-sha-1",
-  "scram-sha-256", 
+  "scram-sha-256",
   "vapid",
   "dpop",
   "gnap",
@@ -77,11 +85,13 @@ export const IANA_HTTP_SCHEMES = [
 /**
  * Standard SASL Mechanisms from IANA SASL Mechanism Registry
  * Uses @xmpp/sasl for mechanism validation and processing
+ *
+ * Module-private: Only used internally by validateSaslMechanism
  */
-export const IANA_SASL_MECHANISMS = [
+const IANA_SASL_MECHANISMS = [
   // Standard mechanisms supported by @xmpp/sasl
   "PLAIN",
-  "SCRAM-SHA-1", 
+  "SCRAM-SHA-1",
   "SCRAM-SHA-256",
   "SCRAM-SHA-512",
   "GSSAPI",
@@ -194,16 +204,24 @@ export const validateHttpScheme = (scheme: string): { valid: boolean; errors: st
 export const initializeSecurityLibraries = () => {
   // OAuth2 library initialization (passport-oauth2)
   // Note: Actual passport configuration would happen at runtime
-  
+  const oauth2Library = OAUTH2_LIBRARIES.PASSPORT_OAUTH2
+
   // SASL library initialization (@xmpp/sasl)
   // Note: SASL mechanism registration would happen at runtime
-  
+  const saslLibrary = SASL_LIBRARIES.XMPP_SASL
+
   // OpenID Connect library initialization (openid-client)
   // Note: OIDC client configuration would happen at runtime
-  
+  const openidLibrary = OPENID_LIBRARIES.OPENID_CLIENT
+
   return {
-    oauth2: 'passport-oauth2 initialized',
-    sasl: '@xmpp/sasl initialized', 
-    openid: 'openid-client initialized'
+    oauth2: `${oauth2Library} initialized`,
+    sasl: `${saslLibrary} initialized`,
+    openid: `${openidLibrary} initialized`,
+    availableLibraries: {
+      oauth2: Object.values(OAUTH2_LIBRARIES),
+      sasl: Object.values(SASL_LIBRARIES),
+      openid: Object.values(OPENID_LIBRARIES)
+    }
   }
 }

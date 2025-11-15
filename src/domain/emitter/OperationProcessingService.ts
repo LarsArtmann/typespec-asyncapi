@@ -6,15 +6,11 @@
  */
 
 import { Effect } from "effect"
-import type { Model, Operation, Program } from "@typespec/compiler"
+import type { Operation, Program } from "@typespec/compiler"
 import { getDoc } from "@typespec/compiler"
 import type { AsyncAPIObject, OperationObject } from "@asyncapi/parser/esm/spec-types/v3.js"
 import { createChannelDefinition } from "../../utils/asyncapi-helpers.js"
-import { convertModelToSchema, convertTypeToSchemaType } from "../../utils/schema-conversion.js"
-import { getMessageConfig, getProtocolConfig } from "../../utils/typespec-helpers.js"
 import { railwayLogging } from "../../utils/effect-helpers.js"
-import { generateProtocolBinding } from "../../infrastructure/adapters/plugin-system.js"
-import type { AsyncAPIProtocolType } from "../../infrastructure/adapters/protocol-type.js"
 
 /**
  * Process a single TypeSpec operation into AsyncAPI operation
@@ -31,7 +27,8 @@ export const processSingleOperation = (
 		})
 
 		// Extract operation metadata using TypeSpec helpers
-		const operationInfo = {
+		// TODO: Use this metadata when implementing enhanced operation processing
+		const _operationInfo = {
 			name: operation.name,
 			description: getDoc(program, operation) ?? `Operation ${operation.name}`,
 			summary: getDoc(program, operation) ?? `Operation ${operation.name}`
@@ -160,7 +157,7 @@ export const processOperations = (
  */
 export const extractOperationMetadata = (
 	operation: Operation,
-	program: Program
+	_program: Program
 ): Effect.Effect<{
 		name: string
 		description?: string
@@ -169,8 +166,9 @@ export const extractOperationMetadata = (
 		contentType?: string
 	}, never> =>
 	Effect.gen(function* () {
-		const messageConfig = {} // TODO: Extract from operation decorators properly
-		const protocolInfo = {} // TODO: Extract from operation decorators properly
+		// TODO: Extract from operation decorators properly
+		const _messageConfig = {}
+		const _protocolInfo = {}
 
 		return {
 			name: operation.name,

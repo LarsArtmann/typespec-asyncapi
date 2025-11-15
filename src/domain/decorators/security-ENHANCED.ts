@@ -36,11 +36,12 @@
  */
 
 import type {DecoratorContext, Model, Operation, Program} from "@typespec/compiler"
-import {$lib, reportDiagnostic} from "../../lib.js"
+import {reportDiagnostic} from "../../lib.js"
 import {Effect} from "effect"
 import type {SecurityConfig} from "./securityConfig.js"
 
 // ✅ TYPE-SAFE SECURITY SCHEME TYPES
+// Only import types that are actually used in typed variable declarations
 import type {
 	SecurityScheme,
 	ApiKeyScheme,
@@ -48,26 +49,11 @@ import type {
 	HttpApiKeyScheme,
 	OAuth2Scheme,
 	OpenIdConnectScheme,
-	SaslScheme,
-	UserPasswordScheme,
-	X509Scheme,
-	SymmetricEncryptionScheme,
-	AsymmetricEncryptionScheme
+	SaslScheme
 } from "../../types/security-scheme-types.js"
 
-import {
-	isSecurityScheme,
-	isApiKeyScheme,
-	isHttpScheme,
-	isHttpApiKeyScheme,
-	isOAuth2Scheme,
-	isOpenIdConnectScheme,
-	isSaslScheme,
-	isUserPasswordScheme,
-	isX509Scheme,
-	isSymmetricEncryptionScheme,
-	isAsymmetricEncryptionScheme
-} from "../../types/security-scheme-types.js"
+// Only import the master type guard (specific guards not needed)
+import {isSecurityScheme} from "../../types/security-scheme-types.js"
 
 // ✅ LIBRARY-BASED SECURITY IMPLEMENTATION
 // Using industry-standard security libraries instead of custom implementations
