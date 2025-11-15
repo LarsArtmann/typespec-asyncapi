@@ -1,0 +1,217 @@
+graph TB
+    subgraph "IMPROVED: Event-Driven Architecture with CQRS + Event Sourcing"
+        TSC[TypeSpec Compiler] -->|triggers| ENTRY_COMMAND[EmitAsyncAPIDocumentCommand]
+        ENTRY_COMMAND -->|dispatched to| COMMAND_BUS[CommandBus<Effect>]
+    end
+
+    subgraph "Command Layer - Write Operations"
+        COMMAND_BUS -->|routes to| CMD_HANDLERS[Command Handlers]
+
+        CMD_HANDLERS -->|handles| CMD_CREATE_CHANNEL[CreateChannelCommandHandler]
+        CMD_HANDLERS -->|handles| CMD_CREATE_OPERATION[CreateOperationCommandHandler]
+        CMD_HANDLERS -->|handles| CMD_VALIDATE_SECURITY[ValidateSecuritySchemeCommandHandler]
+        CMD_HANDLERS -->|handles| CMD_GENERATE_DOC[GenerateDocumentCommandHandler]
+        CMD_HANDLERS -->|handles| CMD_PROCESS_MESSAGE[ProcessMessageCommandHandler]
+
+        CMD_CREATE_CHANNEL -->|validates| DOMAIN_VALIDATION[Domain Validation Service]
+        CMD_CREATE_OPERATION -->|validates| DOMAIN_VALIDATION
+        CMD_VALIDATE_SECURITY -->|validates| DOMAIN_VALIDATION
+    end
+
+    subgraph "Domain Events - State Change Notifications"
+        CMD_CREATE_CHANNEL -->|emits| EVT_CHANNEL_CREATED[ChannelCreatedEvent]
+        CMD_CREATE_OPERATION -->|emits| EVT_OPERATION_CREATED[OperationCreatedEvent]
+        CMD_VALIDATE_SECURITY -->|emits| EVT_SECURITY_VALIDATED[SecuritySchemeValidatedEvent]
+        CMD_PROCESS_MESSAGE -->|emits| EVT_MESSAGE_PROCESSED[MessageProcessedEvent]
+        CMD_GENERATE_DOC -->|emits| EVT_DOC_GENERATED[DocumentGeneratedEvent]
+
+        EVT_CHANNEL_CREATED -->|published to| EVENT_BUS[EventBus<Effect>]
+        EVT_OPERATION_CREATED -->|published to| EVENT_BUS
+        EVT_SECURITY_VALIDATED -->|published to| EVENT_BUS
+        EVT_MESSAGE_PROCESSED -->|published to| EVENT_BUS
+        EVT_DOC_GENERATED -->|published to| EVENT_BUS
+    end
+
+    subgraph "Event Handlers - Side Effects & Reactions"
+        EVENT_BUS -->|notifies| EVT_HANDLERS[Event Handlers Registry]
+
+        EVT_HANDLERS -->|listens| HANDLER_METRICS[MetricsCollectionHandler]
+        EVT_HANDLERS -->|listens| HANDLER_AUDIT[AuditLogHandler]
+        EVT_HANDLERS -->|listens| HANDLER_VALIDATION[ValidationHandler]
+        EVT_HANDLERS -->|listens| HANDLER_NOTIFICATION[NotificationHandler]
+        EVT_HANDLERS -->|listens| HANDLER_SCHEMA_UPDATE[SchemaUpdateHandler]
+
+        HANDLER_METRICS -->|records| METRICS_STORE[Metrics Store]
+        HANDLER_AUDIT -->|appends| EVENT_STORE[Event Store]
+        HANDLER_VALIDATION -->|validates| VALIDATION_RULES[Business Rules]
+        HANDLER_NOTIFICATION -->|emits| LOGGING[Effect.log Output]
+        HANDLER_SCHEMA_UPDATE -->|updates| READ_MODEL[CQRS Read Model]
+    end
+
+    subgraph "Event Store - Audit Trail & Replay"
+        EVENT_STORE -->|persists| EVT_STREAM[Event Stream]
+        EVT_STREAM -->|enables| REPLAY[Event Replay]
+        EVT_STREAM -->|enables| TIME_TRAVEL[Time-Travel Debugging]
+        EVT_STREAM -->|enables| AUDIT_TRAIL[Complete Audit Trail]
+
+        REPLAY -->|reconstructs| DOCUMENT_STATE[Document State at Any Point]
+        TIME_TRAVEL -->|debugs| GENERATION_PROCESS[Generation Process]
+    end
+
+    subgraph "CQRS - Separated Read/Write Models"
+        subgraph "Write Model (Commands)"
+            WRITE_MODEL[AsyncAPIDocument Aggregate]
+            CMD_GENERATE_DOC -->|modifies| WRITE_MODEL
+            WRITE_MODEL -->|emits events| EVENT_BUS
+        end
+
+        subgraph "Read Model (Queries)"
+            READ_MODEL[AsyncAPI Projection]
+            READ_MODEL -->|optimized for| QUERY_SERVICE[QueryService]
+            QUERY_SERVICE -->|handles| QUERY_CHANNELS[GetChannelsQuery]
+            QUERY_SERVICE -->|handles| QUERY_OPERATIONS[GetOperationsQuery]
+            QUERY_SERVICE -->|handles| QUERY_SECURITY[GetSecuritySchemesQuery]
+        end
+
+        EVENT_BUS -->|updates| READ_MODEL
+    end
+
+    subgraph "Saga Pattern - Complex Workflows"
+        SAGA_COORDINATOR[DocumentGenerationSaga]
+        SAGA_COORDINATOR -->|orchestrates| SAGA_STEP1[Step 1: Validate Input]
+        SAGA_STEP1 -->|success| SAGA_STEP2[Step 2: Process Channels]
+        SAGA_STEP2 -->|success| SAGA_STEP3[Step 3: Process Operations]
+        SAGA_STEP3 -->|success| SAGA_STEP4[Step 4: Process Security]
+        SAGA_STEP4 -->|success| SAGA_STEP5[Step 5: Generate Document]
+
+        SAGA_STEP1 -->|failure| SAGA_COMPENSATE[Compensating Actions]
+        SAGA_STEP2 -->|failure| SAGA_COMPENSATE
+        SAGA_STEP3 -->|failure| SAGA_COMPENSATE
+        SAGA_STEP4 -->|failure| SAGA_COMPENSATE
+
+        SAGA_COORDINATOR -->|uses| COMMAND_BUS
+        SAGA_COORDINATOR -->|listens| EVENT_BUS
+    end
+
+    subgraph "Effect.TS Integration - Typed Event Infrastructure"
+        EFFECT_EVENT[Effect<Event, Error, Dependencies>]
+        EFFECT_COMMAND[Effect<CommandResult, Error, Dependencies>]
+
+        EFFECT_EVENT -->|provides| TYPED_EVENTS[Type-Safe Events]
+        EFFECT_COMMAND -->|provides| TYPED_COMMANDS[Type-Safe Commands]
+
+        COMMAND_BUS -->|uses| EFFECT_COMMAND
+        EVENT_BUS -->|uses| EFFECT_EVENT
+
+        EFFECT_LAYER[Effect Layers]
+        EFFECT_LAYER -->|provides| EVENT_BUS_LAYER[EventBusLayer]
+        EFFECT_LAYER -->|provides| COMMAND_BUS_LAYER[CommandBusLayer]
+        EFFECT_LAYER -->|provides| EVENT_STORE_LAYER[EventStoreLayer]
+        EFFECT_LAYER -->|provides| SAGA_LAYER[SagaLayer]
+    end
+
+    subgraph "Domain Event Types - Strongly Typed"
+        EVT_TYPES[Domain Event Discriminated Union]
+
+        EVT_TYPES -->|defines| EVT_CHANNEL_CREATED_TYPE["ChannelCreatedEvent { type, channelId, address, ... }"]
+        EVT_TYPES -->|defines| EVT_OPERATION_CREATED_TYPE["OperationCreatedEvent { type, operationId, action, ... }"]
+        EVT_TYPES -->|defines| EVT_SECURITY_VALIDATED_TYPE["SecuritySchemeValidatedEvent { type, schemeId, result, ... }"]
+        EVT_TYPES -->|defines| EVT_MESSAGE_PROCESSED_TYPE["MessageProcessedEvent { type, messageId, schema, ... }"]
+        EVT_TYPES -->|defines| EVT_DOC_GENERATED_TYPE["DocumentGeneratedEvent { type, documentId, timestamp, ... }"]
+
+        EVT_TYPES -->|with| TYPE_GUARDS_EVT[Type Guards: isChannelCreatedEvent, ...]
+    end
+
+    subgraph "Command Types - Strongly Typed"
+        CMD_TYPES[Command Discriminated Union]
+
+        CMD_TYPES -->|defines| CMD_CREATE_CHANNEL_TYPE["CreateChannelCommand { type, channelPath, messages, ... }"]
+        CMD_TYPES -->|defines| CMD_CREATE_OPERATION_TYPE["CreateOperationCommand { type, operationId, action, ... }"]
+        CMD_TYPES -->|defines| CMD_VALIDATE_SECURITY_TYPE["ValidateSecuritySchemeCommand { type, scheme, ... }"]
+        CMD_TYPES -->|defines| CMD_GENERATE_DOC_TYPE["GenerateDocumentCommand { type, options, ... }"]
+
+        CMD_TYPES -->|with| TYPE_GUARDS_CMD[Type Guards: isCreateChannelCommand, ...]
+    end
+
+    subgraph "Benefits of Event-Driven Architecture"
+        BENEFIT1[✅ Decoupled Components - Easy to extend]
+        BENEFIT2[✅ Observable State Changes - Event listeners]
+        BENEFIT3[✅ Audit Trail - Complete event history]
+        BENEFIT4[✅ Time-Travel Debugging - Replay events]
+        BENEFIT5[✅ Type-Safe Events - Compile-time guarantees]
+        BENEFIT6[✅ Testable - Mock event bus easily]
+        BENEFIT7[✅ Scalable - Add handlers without changing core]
+        BENEFIT8[✅ CQRS - Optimized read/write models]
+        BENEFIT9[✅ Event Sourcing - True source of truth]
+        BENEFIT10[✅ Saga Pattern - Complex workflows handled]
+    end
+
+    subgraph "Implementation with Effect.TS"
+        IMPL1[Effect.Queue for EventBus]
+        IMPL2[Effect.Ref for Event Store]
+        IMPL3[Effect.Layer for Dependency Injection]
+        IMPL4[Effect.Stream for Event Streaming]
+        IMPL5[Effect.Schedule for Retry Logic]
+        IMPL6[Effect.Fiber for Concurrent Event Processing]
+
+        IMPL1 -->|enables| ASYNC_EVENTS[Async Event Processing]
+        IMPL2 -->|enables| IMMUTABLE_STORE[Immutable Event History]
+        IMPL3 -->|enables| TESTABLE_INFRA[Testable Infrastructure]
+        IMPL4 -->|enables| REACTIVE_UPDATES[Reactive Read Model Updates]
+        IMPL5 -->|enables| RESILIENT_PROCESSING[Resilient Event Processing]
+        IMPL6 -->|enables| PARALLEL_HANDLERS[Parallel Event Handler Execution]
+    end
+
+    subgraph "Migration Path from Current to Improved"
+        MIGRATION1[Phase 1: Define Domain Events & Commands]
+        MIGRATION2[Phase 2: Implement EventBus with Effect.Queue]
+        MIGRATION3[Phase 3: Implement CommandBus with Effect Handlers]
+        MIGRATION4[Phase 4: Convert Decorators to Emit Events]
+        MIGRATION5[Phase 5: Implement Event Handlers]
+        MIGRATION6[Phase 6: Add Event Store for Audit]
+        MIGRATION7[Phase 7: Implement CQRS Read Model]
+        MIGRATION8[Phase 8: Add Saga for Complex Workflows]
+
+        MIGRATION1 -->|leads to| MIGRATION2
+        MIGRATION2 -->|leads to| MIGRATION3
+        MIGRATION3 -->|leads to| MIGRATION4
+        MIGRATION4 -->|leads to| MIGRATION5
+        MIGRATION5 -->|leads to| MIGRATION6
+        MIGRATION6 -->|leads to| MIGRATION7
+        MIGRATION7 -->|leads to| MIGRATION8
+    end
+
+    style BENEFIT1 fill:#51cf66
+    style BENEFIT2 fill:#51cf66
+    style BENEFIT3 fill:#51cf66
+    style BENEFIT4 fill:#51cf66
+    style BENEFIT5 fill:#51cf66
+    style BENEFIT6 fill:#51cf66
+    style BENEFIT7 fill:#51cf66
+    style BENEFIT8 fill:#51cf66
+    style BENEFIT9 fill:#51cf66
+    style BENEFIT10 fill:#51cf66
+
+    style IMPL1 fill:#74c0fc
+    style IMPL2 fill:#74c0fc
+    style IMPL3 fill:#74c0fc
+    style IMPL4 fill:#74c0fc
+    style IMPL5 fill:#74c0fc
+    style IMPL6 fill:#74c0fc
+
+    style EVT_CHANNEL_CREATED fill:#ffd43b
+    style EVT_OPERATION_CREATED fill:#ffd43b
+    style EVT_SECURITY_VALIDATED fill:#ffd43b
+    style EVT_MESSAGE_PROCESSED fill:#ffd43b
+    style EVT_DOC_GENERATED fill:#ffd43b
+
+    style CMD_CREATE_CHANNEL fill:#845ef7
+    style CMD_CREATE_OPERATION fill:#845ef7
+    style CMD_VALIDATE_SECURITY fill:#845ef7
+    style CMD_GENERATE_DOC fill:#845ef7
+    style CMD_PROCESS_MESSAGE fill:#845ef7
+
+    style EVENT_BUS fill:#51cf66
+    style COMMAND_BUS fill:#51cf66
+    style EVENT_STORE fill:#51cf66
+    style READ_MODEL fill:#51cf66

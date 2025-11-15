@@ -1,0 +1,134 @@
+graph TB
+    subgraph "CURRENT STATE: Ad-Hoc Imperative Processing (NO Event/Command Architecture)"
+        TSC[TypeSpec Compiler] -->|synchronous call| ONEMIT[$onEmit]
+        ONEMIT -->|direct call| EMITTER[generateAsyncAPI]
+        EMITTER -->|direct call| PROCESSING[ProcessingService.orchestrate]
+        PROCESSING -->|direct call| OP_PROC[processOperations]
+        PROCESSING -->|direct call| MSG_PROC[processMessageModels]
+        PROCESSING -->|direct call| SEC_PROC[processSecurityConfigs]
+    end
+
+    subgraph "Decorator Side Effects (Imperative State Mutations)"
+        DEC_CHANNEL[@channel decorator]
+        DEC_PUBLISH[@publish decorator]
+        DEC_SECURITY[@security decorator]
+
+        DEC_CHANNEL -->|MUTATES| STATEMAP1[StateMap - channels]
+        DEC_PUBLISH -->|MUTATES| STATEMAP2[StateMap - operations]
+        DEC_SECURITY -->|MUTATES| STATEMAP3[StateMap - security]
+
+        style DEC_CHANNEL fill:#ff6b6b
+        style DEC_PUBLISH fill:#ff6b6b
+        style DEC_SECURITY fill:#ff6b6b
+    end
+
+    subgraph "Processing Reads State (Tight Coupling)"
+        OP_PROC -->|READS| STATEMAP2
+        MSG_PROC -->|READS| STATEMAP1
+        SEC_PROC -->|READS| STATEMAP3
+
+        style OP_PROC fill:#ffd93d
+        style MSG_PROC fill:#ffd93d
+        style SEC_PROC fill:#ffd93d
+    end
+
+    subgraph "Effect.TS Usage (Railway Programming Only)"
+        EFFECT_LOG[Effect.log - Logging only]
+        EFFECT_SUCCEED[Effect.succeed - Happy path]
+        EFFECT_FAIL[Effect.fail - Error handling]
+
+        PROCESSING -->|uses| EFFECT_LOG
+        PROCESSING -->|uses| EFFECT_SUCCEED
+        PROCESSING -->|uses| EFFECT_FAIL
+
+        style EFFECT_LOG fill:#74c0fc
+        style EFFECT_SUCCEED fill:#74c0fc
+        style EFFECT_FAIL fill:#74c0fc
+    end
+
+    subgraph "Error Handling (Centralized but Not Event-Driven)"
+        ERROR_HANDLER[CentralizedErrorHandler]
+        ERROR_HANDLER -->|logs errors| ERROR_REGISTRY[Error Registry]
+        ERROR_HANDLER -->|no events emitted| VOID[❌ No Event Bus]
+
+        style ERROR_HANDLER fill:#ffd93d
+        style VOID fill:#ff6b6b
+    end
+
+    subgraph "Document Building (Direct Mutation)"
+        DOC_BUILDER[DocumentBuilder]
+        DOC_BUILDER -->|MUTATES| ASYNCAPI_DOC[AsyncAPIObject]
+
+        OP_PROC -->|directly modifies| ASYNCAPI_DOC
+        MSG_PROC -->|directly modifies| ASYNCAPI_DOC
+        SEC_PROC -->|directly modifies| ASYNCAPI_DOC
+
+        style DOC_BUILDER fill:#ffd93d
+        style ASYNCAPI_DOC fill:#ffd93d
+    end
+
+    subgraph "PROBLEMS WITH CURRENT APPROACH"
+        PROB1[❌ NO Domain Events - Can't observe state changes]
+        PROB2[❌ NO Commands - Direct function calls everywhere]
+        PROB3[❌ NO Event Bus - Tight coupling between components]
+        PROB4[❌ NO Event Sourcing - Can't replay/audit changes]
+        PROB5[❌ NO CQRS - Queries and mutations mixed]
+        PROB6[❌ Direct State Mutation - Hard to track changes]
+        PROB7[❌ Synchronous Pipeline - No async event handling]
+        PROB8[❌ No Event Listeners - Can't extend behavior]
+        PROB9[❌ Imperative Code - Hard to reason about flow]
+        PROB10[❌ No Event Store - Lost audit trail]
+    end
+
+    subgraph "Missing Infrastructure"
+        MISSING1[❌ No EventBus/CommandBus]
+        MISSING2[❌ No Event Store]
+        MISSING3[❌ No Event Handlers Registry]
+        MISSING4[❌ No Command Handlers Registry]
+        MISSING5[❌ No Domain Events Definition]
+        MISSING6[❌ No Event Sourcing Infrastructure]
+        MISSING7[❌ No CQRS Read/Write Models]
+        MISSING8[❌ No Saga Pattern for Complex Workflows]
+    end
+
+    style PROB1 fill:#ff6b6b
+    style PROB2 fill:#ff6b6b
+    style PROB3 fill:#ff6b6b
+    style PROB4 fill:#ff6b6b
+    style PROB5 fill:#ff6b6b
+    style PROB6 fill:#ff6b6b
+    style PROB7 fill:#ff6b6b
+    style PROB8 fill:#ff6b6b
+    style PROB9 fill:#ff6b6b
+    style PROB10 fill:#ff6b6b
+
+    style MISSING1 fill:#ff6b6b
+    style MISSING2 fill:#ff6b6b
+    style MISSING3 fill:#ff6b6b
+    style MISSING4 fill:#ff6b6b
+    style MISSING5 fill:#ff6b6b
+    style MISSING6 fill:#ff6b6b
+    style MISSING7 fill:#ff6b6b
+    style MISSING8 fill:#ff6b6b
+
+    subgraph "What We DO Have (Effect.TS)"
+        HAVE1[✅ Effect.TS for Railway Programming]
+        HAVE2[✅ CentralizedErrorHandler]
+        HAVE3[✅ MetricsCollector for Performance]
+        HAVE4[✅ TypeSpec StateMap for Storage]
+
+        style HAVE1 fill:#51cf66
+        style HAVE2 fill:#51cf66
+        style HAVE3 fill:#51cf66
+        style HAVE4 fill:#51cf66
+    end
+
+    subgraph "CONCLUSION"
+        CONCLUSION[Current Architecture = Imperative + Procedural]
+        CONCLUSION2[Missing = Event-Driven + CQRS + Event Sourcing]
+        CONCLUSION3[Opportunity = Leverage Effect.TS for Event Infrastructure]
+
+        style CONCLUSION fill:#ffd93d
+        style CONCLUSION2 fill:#ff6b6b
+        style CONCLUSION3 fill:#74c0fc
+    end

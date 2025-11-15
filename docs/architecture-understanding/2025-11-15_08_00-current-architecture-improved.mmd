@@ -1,0 +1,206 @@
+graph TB
+    subgraph "TypeSpec Compiler Integration"
+        TSC[TypeSpec Compiler]
+        TSC -->|calls| ONEMIT[$onEmit Entry Point]
+    end
+
+    subgraph "Application Layer (src/application/)"
+        ONEMIT -->|delegates to| APP_SERVICE[AsyncAPIEmitterApplicationService]
+        APP_SERVICE -->|orchestrates| USE_CASES[Use Cases]
+        USE_CASES -->|emits document| EMIT_USE_CASE[EmitAsyncAPIDocumentUseCase]
+        USE_CASES -->|validates document| VALIDATE_USE_CASE[ValidateAsyncAPIDocumentUseCase]
+    end
+
+    subgraph "Domain Layer - Core Entities"
+        subgraph "Aggregates"
+            ASYNCAPI_AGG[AsyncAPIDocument Aggregate]
+            ASYNCAPI_AGG -->|contains| CHANNELS_ENT[Channels]
+            ASYNCAPI_AGG -->|contains| OPERATIONS_ENT[Operations]
+            ASYNCAPI_AGG -->|contains| MESSAGES_ENT[Messages]
+            ASYNCAPI_AGG -->|contains| SERVERS_ENT[Servers]
+            ASYNCAPI_AGG -->|contains| SECURITY_ENT[SecuritySchemes]
+        end
+
+        subgraph "Value Objects"
+            VO_CHANNEL[ChannelPath VO]
+            VO_SERVER[ServerUrl VO]
+            VO_PROTOCOL[ProtocolName VO]
+            VO_SCHEMA[SchemaName VO]
+            VO_MESSAGE[MessageName VO]
+            VO_OPERATION[OperationId VO]
+
+            VO_CHANNEL -->|validates| CHANNEL_FORMAT[No double-slash, proper format]
+            VO_SERVER -->|validates| URL_FORMAT[Protocol-specific URL validation]
+            VO_PROTOCOL -->|validates| PROTOCOL_ENUM[Supported protocols only]
+            VO_SCHEMA -->|validates| SCHEMA_NAME[Naming conventions]
+        end
+
+        subgraph "Domain Events"
+            EVT_CHANNEL_CREATED[ChannelCreated]
+            EVT_OPERATION_CREATED[OperationCreated]
+            EVT_MESSAGE_CREATED[MessageCreated]
+            EVT_SECURITY_VALIDATED[SecuritySchemeValidated]
+            EVT_DOC_GENERATED[DocumentGenerated]
+        end
+    end
+
+    subgraph "Domain Layer - Services"
+        DOM_VALIDATION[ValidationDomainService]
+        DOM_SECURITY[SecurityDomainService]
+        DOM_SCHEMA[SchemaTransformationService]
+
+        DOM_SECURITY -->|uses| SEC_TYPES[SecurityScheme Discriminated Union]
+        DOM_SECURITY -->|validates with| TYPE_GUARDS[Type Guards]
+        DOM_VALIDATION -->|validates| ASYNCAPI_RULES[AsyncAPI 3.0 Rules]
+    end
+
+    subgraph "Domain Layer - Repositories (Interfaces)"
+        IREPO_DOC[IAsyncAPIDocumentRepository]
+        IREPO_STATE[ITypeSpecStateRepository]
+        IREPO_CONFIG[IConfigurationRepository]
+    end
+
+    subgraph "Infrastructure Layer - Repository Implementations"
+        REPO_DOC[TypeSpecStateMapDocumentRepository]
+        REPO_STATE[TypeSpecProgramStateRepository]
+        REPO_CONFIG[EffectSchemaConfigRepository]
+
+        REPO_DOC -->|implements| IREPO_DOC
+        REPO_STATE -->|implements| IREPO_STATE
+        REPO_CONFIG -->|implements| IREPO_CONFIG
+    end
+
+    subgraph "Infrastructure Layer - Decorators (Adapters)"
+        DEC_CHANNEL[@channel Decorator Adapter]
+        DEC_PUBLISH[@publish Decorator Adapter]
+        DEC_SUBSCRIBE[@subscribe Decorator Adapter]
+        DEC_SERVER[@server Decorator Adapter]
+        DEC_SECURITY[@security Decorator Adapter]
+
+        DEC_CHANNEL -->|creates| VO_CHANNEL
+        DEC_CHANNEL -->|emits| EVT_CHANNEL_CREATED
+        DEC_CHANNEL -->|stores via| IREPO_STATE
+
+        DEC_SECURITY -->|validates with| DOM_SECURITY
+        DEC_SECURITY -->|creates| SEC_TYPES
+        DEC_SECURITY -->|emits| EVT_SECURITY_VALIDATED
+    end
+
+    subgraph "Infrastructure Layer - Error Handling"
+        ERROR_BOUNDARY[Global Error Boundary]
+        ERROR_BOUNDARY -->|catches| DOMAIN_ERRORS[DomainError]
+        ERROR_BOUNDARY -->|catches| VALIDATION_ERRORS[ValidationError]
+        ERROR_BOUNDARY -->|catches| INFRASTRUCTURE_ERRORS[InfrastructureError]
+        ERROR_BOUNDARY -->|reports via| ERROR_REPORTER[ErrorReporter]
+    end
+
+    subgraph "Infrastructure Layer - Performance"
+        METRICS_SERVICE[MetricsCollectionService]
+        PERF_INTERCEPTOR[PerformanceInterceptor]
+        PERF_INTERCEPTOR -->|measures| USE_CASES
+        PERF_INTERCEPTOR -->|reports to| METRICS_SERVICE
+    end
+
+    subgraph "Plugin Architecture"
+        PLUGIN_REGISTRY[ProtocolPluginRegistry]
+        PLUGIN_KAFKA[KafkaProtocolPlugin]
+        PLUGIN_MQTT[MQTTProtocolPlugin]
+        PLUGIN_AMQP[AMQPProtocolPlugin]
+        PLUGIN_HTTP[HTTPProtocolPlugin]
+
+        PLUGIN_REGISTRY -->|loads| PLUGIN_KAFKA
+        PLUGIN_REGISTRY -->|loads| PLUGIN_MQTT
+        PLUGIN_REGISTRY -->|loads| PLUGIN_AMQP
+        PLUGIN_REGISTRY -->|loads| PLUGIN_HTTP
+
+        PLUGIN_KAFKA -->|generates| KAFKA_BINDINGS[Kafka Protocol Bindings]
+        PLUGIN_MQTT -->|generates| MQTT_BINDINGS[MQTT Protocol Bindings]
+    end
+
+    subgraph "Effect.TS Layered Architecture"
+        EFFECT_LAYER[Effect Layers]
+        EFFECT_LAYER -->|provides| VALIDATION_LAYER[ValidationLayer]
+        EFFECT_LAYER -->|provides| REPOSITORY_LAYER[RepositoryLayer]
+        EFFECT_LAYER -->|provides| METRICS_LAYER[MetricsLayer]
+        EFFECT_LAYER -->|provides| ERROR_LAYER[ErrorHandlingLayer]
+
+        APP_SERVICE -->|runs with| EFFECT_LAYER
+        USE_CASES -->|uses| EFFECT[Effect<A, E, R>]
+    end
+
+    subgraph "Type System - Discriminated Unions"
+        SEC_TYPES -->|defines| OAUTH2[OAuth2Scheme]
+        SEC_TYPES -->|defines| APIKEY[ApiKeyScheme]
+        SEC_TYPES -->|defines| HTTP[HttpScheme]
+        SEC_TYPES -->|defines| OPENID[OpenIdConnectScheme]
+        SEC_TYPES -->|defines| SASL[SaslScheme]
+        SEC_TYPES -->|defines| USERPASS[UserPasswordScheme]
+        SEC_TYPES -->|defines| X509[X509Scheme]
+        SEC_TYPES -->|defines| SYM_ENC[SymmetricEncryptionScheme]
+        SEC_TYPES -->|defines| ASYM_ENC[AsymmetricEncryptionScheme]
+        SEC_TYPES -->|defines| HTTP_APIKEY[HttpApiKeyScheme]
+
+        TYPE_GUARDS -->|validates| SEC_TYPES
+    end
+
+    subgraph "Branded Types"
+        BRANDED[Branded Type System]
+        BRANDED -->|creates| CHANNEL_ID[ChannelId Brand]
+        BRANDED -->|creates| OPERATION_ID[OperationId Brand]
+        BRANDED -->|creates| MESSAGE_ID[MessageId Brand]
+        BRANDED -->|creates| SCHEMA_ID[SchemaId Brand]
+
+        CHANNEL_ID -->|prevents| ID_CONFUSION[ID Type Confusion]
+    end
+
+    subgraph "Output Layer"
+        ASYNCAPI_AGG -->|serializes to| JSON[AsyncAPI JSON]
+        ASYNCAPI_AGG -->|serializes to| YAML[AsyncAPI YAML]
+        ASSET_EMITTER[AssetEmitter]
+        ASSET_EMITTER -->|writes| FILES[Output Files]
+    end
+
+    subgraph "IMPROVEMENTS ACHIEVED"
+        IMP1[✅ Single security implementation: ENHANCED only]
+        IMP2[✅ Value objects prevent invalid states]
+        IMP3[✅ Repository pattern: testable, decoupled]
+        IMP4[✅ Plugin architecture: extensible protocols]
+        IMP5[✅ Domain events: observable, auditable]
+        IMP6[✅ Branded types: prevent ID confusion]
+        IMP7[✅ Effect Layers: composable dependencies]
+        IMP8[✅ Global error boundary: centralized handling]
+        IMP9[✅ Files <200 lines: maintainable]
+        IMP10[✅ No code duplication: DRY principle]
+    end
+
+    subgraph "DDD Principles Applied"
+        DDD1[Ubiquitous Language]
+        DDD2[Bounded Contexts]
+        DDD3[Aggregates with Invariants]
+        DDD4[Value Objects for Type Safety]
+        DDD5[Domain Events for State Changes]
+        DDD6[Repository Pattern for Persistence]
+        DDD7[Domain Services for Complex Logic]
+        DDD8[Anti-Corruption Layer for TypeSpec]
+    end
+
+    style IMP1 fill:#51cf66
+    style IMP2 fill:#51cf66
+    style IMP3 fill:#51cf66
+    style IMP4 fill:#51cf66
+    style IMP5 fill:#51cf66
+    style IMP6 fill:#51cf66
+    style IMP7 fill:#51cf66
+    style IMP8 fill:#51cf66
+    style IMP9 fill:#51cf66
+    style IMP10 fill:#51cf66
+    style DDD1 fill:#74c0fc
+    style DDD2 fill:#74c0fc
+    style DDD3 fill:#74c0fc
+    style DDD4 fill:#74c0fc
+    style DDD5 fill:#74c0fc
+    style DDD6 fill:#74c0fc
+    style DDD7 fill:#74c0fc
+    style DDD8 fill:#74c0fc
+    style EFFECT_LAYER fill:#845ef7
+    style BRANDED fill:#ffd43b

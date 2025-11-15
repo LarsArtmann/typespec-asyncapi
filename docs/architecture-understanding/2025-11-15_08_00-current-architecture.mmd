@@ -1,0 +1,149 @@
+graph TB
+    subgraph "TypeSpec Compiler Integration"
+        TSC[TypeSpec Compiler]
+        TSC -->|calls| ONEMIT[$onEmit Entry Point]
+    end
+
+    subgraph "Entry Layer (src/index.ts)"
+        ONEMIT -->|delegates to| EMITTER[generateAsyncAPI]
+    end
+
+    subgraph "Main Emitter Layer (src/asyncapi-emitter.ts)"
+        EMITTER -->|uses| ASSET[AssetEmitter]
+        EMITTER -->|orchestrates| PROCESSING[ProcessingService]
+        EMITTER -->|builds| DOCBUILDER[DocumentBuilder]
+        EMITTER -->|validates| VALIDATOR[AsyncAPIValidator]
+    end
+
+    subgraph "Domain Layer - Emitter Services"
+        PROCESSING -->|processes| OPERATIONS[OperationProcessingService]
+        PROCESSING -->|processes| MESSAGES[MessageProcessingService]
+        PROCESSING -->|processes| SECURITY[SecurityProcessingService]
+        DOCBUILDER -->|creates| ASYNCAPIDOC[AsyncAPIObject]
+        DOCBUILDER -->|initializes| COMPONENTS[Components Structure]
+    end
+
+    subgraph "Domain Layer - Decorators (src/decorators/)"
+        CHANNEL_DEC[@channel decorator]
+        PUBLISH_DEC[@publish decorator]
+        SUBSCRIBE_DEC[@subscribe decorator]
+        SERVER_DEC[@server decorator]
+        SECURITY_DEC[@security decorator]
+        MESSAGE_DEC[@message decorator]
+        PROTOCOL_DEC[@protocol decorator]
+
+        CHANNEL_DEC -->|stores state in| STATEMAP[TypeSpec StateMap]
+        PUBLISH_DEC -->|stores state in| STATEMAP
+        SUBSCRIBE_DEC -->|stores state in| STATEMAP
+        SERVER_DEC -->|stores state in| STATEMAP
+        SECURITY_DEC -->|stores state in| STATEMAP
+    end
+
+    subgraph "Domain Layer - Security (CRITICAL)"
+        SECURITY_LEGACY[security-LEGACY.ts]
+        SECURITY_ENHANCED[security-ENHANCED.ts]
+        SECURITY_ENHANCED -->|validates with| SEC_VALIDATION[validateSecurityScheme]
+        SECURITY_ENHANCED -->|stores in| SEC_STATEMAP[SECURITY_CONFIGS_KEY StateMap]
+        SECURITY_ENHANCED -->|processes| SEC_PROCESSOR[processSecuritySchemes]
+    end
+
+    subgraph "Domain Layer - Validation"
+        VALIDATOR -->|uses| ASYNCAPI_PARSER[@asyncapi/parser]
+        VALIDATOR -->|validates against| ASYNCAPI_SPEC[AsyncAPI 3.0 Spec]
+        VALIDATOR -->|reports| VALIDATION_ERRORS[Validation Errors]
+    end
+
+    subgraph "Domain Layer - Document Management"
+        DOCMANAGER[ImmutableDocumentManager]
+        DOCMANAGER -->|manages| DOC_STATE[Document State]
+        DOCMANAGER -->|provides| DOC_UTILS[Document Utils]
+    end
+
+    subgraph "Infrastructure Layer - Configuration"
+        SCHEMAS[Effect.TS Schemas]
+        SCHEMAS -->|validates| OPERATION_SCHEMA[OperationSchema]
+        SCHEMAS -->|validates| CHANNEL_SCHEMA[ChannelSchema]
+        SCHEMAS -->|validates| MESSAGE_SCHEMA[MessageSchema]
+        SCHEMAS -->|validates| SERVER_SCHEMA[ServerSchema]
+        SCHEMAS -->|validates| ASYNCAPI_DOC_SCHEMA[AsyncAPIDocumentSchema]
+    end
+
+    subgraph "Infrastructure Layer - Error Handling"
+        ERROR_HANDLER[CentralizedErrorHandler]
+        ERROR_FACTORY[ErrorFactory]
+        ERROR_HANDLER -->|uses| ERROR_REGISTRY[Error Registry]
+        ERROR_HANDLER -->|provides| ERROR_CONTEXT[Error Context]
+    end
+
+    subgraph "Infrastructure Layer - Performance"
+        METRICS[MetricsCollector]
+        PERF_MONITOR[PerformanceMonitor]
+        PERF_REGRESSION[PerformanceRegressionTester]
+        METRICS -->|tracks| TIMERS[Performance Timers]
+        METRICS -->|collects| MEMORY[Memory Metrics]
+    end
+
+    subgraph "Type System (src/types/)"
+        SEC_TYPES[security-scheme-types.ts]
+        SEC_TYPES -->|defines| OAUTH2[OAuth2Scheme]
+        SEC_TYPES -->|defines| APIKEY[ApiKeyScheme]
+        SEC_TYPES -->|defines| HTTP[HttpScheme]
+        SEC_TYPES -->|defines| OPENID[OpenIdConnectScheme]
+        SEC_TYPES -->|defines| SASL[SaslScheme]
+        SEC_TYPES -->|defines| USERPASS[UserPasswordScheme]
+        SEC_TYPES -->|defines| X509[X509Scheme]
+        SEC_TYPES -->|defines| SYM_ENC[SymmetricEncryptionScheme]
+        SEC_TYPES -->|defines| ASYM_ENC[AsymmetricEncryptionScheme]
+        SEC_TYPES -->|defines| HTTP_APIKEY[HttpApiKeyScheme]
+        SEC_TYPES -->|provides| TYPE_GUARDS[Type Guards: isOAuth2Scheme, etc.]
+    end
+
+    subgraph "Constants Layer (src/constants/)"
+        DEFAULTS[defaults.ts]
+        SEC_STANDARDS[security-standards.ts]
+        DEFAULTS -->|defines| LIBRARY_NAME
+        DEFAULTS -->|defines| ASYNCAPI_VERSION
+        SEC_STANDARDS -->|defines| ASYNCAPI_API_KEY_LOCATIONS
+        SEC_STANDARDS -->|validates| OAUTH2_VALIDATION
+        SEC_STANDARDS -->|validates| SASL_VALIDATION
+        SEC_STANDARDS -->|validates| HTTP_VALIDATION
+    end
+
+    subgraph "Effect.TS Integration"
+        EFFECT[Effect Monad]
+        EFFECT -->|provides| RAILWAY[Railway Programming]
+        EFFECT -->|provides| ERROR_HANDLING[Error Handling]
+        EFFECT -->|provides| LOGGING[Logging]
+        PROCESSING -->|uses| EFFECT
+        VALIDATOR -->|uses| EFFECT
+        SECURITY_ENHANCED -->|uses| EFFECT
+    end
+
+    subgraph "Output Layer"
+        ASYNCAPIDOC -->|generates| JSON[AsyncAPI JSON]
+        ASYNCAPIDOC -->|generates| YAML[AsyncAPI YAML]
+        ASSET -->|writes| FILES[Output Files]
+    end
+
+    subgraph "PROBLEMS IDENTIFIED"
+        PROBLEM1[❌ Two security implementations: LEGACY + ENHANCED]
+        PROBLEM2[❌ validateSecurityScheme NOT called in decorator]
+        PROBLEM3[❌ No value objects: strings everywhere]
+        PROBLEM4[❌ Split brain patterns in state management]
+        PROBLEM5[❌ Circular dependencies in imports]
+        PROBLEM6[❌ Large files >350 lines]
+        PROBLEM7[❌ Code duplication: 39 clones detected]
+        PROBLEM8[❌ 313 test failures, fluctuating numbers]
+    end
+
+    style PROBLEM1 fill:#ff6b6b
+    style PROBLEM2 fill:#ff6b6b
+    style PROBLEM3 fill:#ff6b6b
+    style PROBLEM4 fill:#ff6b6b
+    style PROBLEM5 fill:#ff6b6b
+    style PROBLEM6 fill:#ffd93d
+    style PROBLEM7 fill:#ffd93d
+    style PROBLEM8 fill:#ff6b6b
+    style SEC_TYPES fill:#51cf66
+    style TYPE_GUARDS fill:#51cf66
+    style EFFECT fill:#74c0fc
