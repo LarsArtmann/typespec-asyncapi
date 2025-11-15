@@ -14,7 +14,7 @@ export const DEFAULT_CONFIG = {
   /** Default file type for output */
   FILE_TYPE: 'yaml',
   /** Library name for TypeSpec */
-  LIBRARY_NAME: '@lars-artmann/typespec-asyncapi'
+  LIBRARY_NAME: 'Effect.TS integration'
 } as const
 
 /**

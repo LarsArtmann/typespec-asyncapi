@@ -111,7 +111,7 @@ export class DocumentBuilder {
 				const baseDocument = {
 					asyncapi: ASYNCAPI_VERSIONS.CURRENT,
 					info: {
-						title: DEFAULT_CONFIG.OUTPUT_FILE.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+						title: "AsyncAPI Specification",
 						version: "1.0.0",
 						description: `Generated from TypeSpec with ${DEFAULT_CONFIG.LIBRARY_NAME}`,
 					},
