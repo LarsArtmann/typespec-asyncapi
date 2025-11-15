@@ -8,17 +8,11 @@
  * - Document validation after mutations
  */
 
-import { Effect, Context, Layer, pipe } from "effect"
-import { gen } from "effect/Effect"
+import { Effect, Context, Layer } from "effect"
 import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js"
-import type { DocumentUpdate, ServiceMetrics } from "../models/ServiceInterfaces.js"
+import type { DocumentUpdate } from "../models/ServiceInterfaces.js"
 import { MetricsCollector } from "../../infrastructure/performance/MetricsCollector.js"
 import { ErrorHandler, ErrorFactory } from "../../infrastructure/errors/CentralizedErrorHandler.js"
-
-/**
- * Internal helper: Apply mutation to document immutably
- */
-const DocumentStateError = (message: string) => new Error(`Document state error: ${message}`)
 
 /**
  * Type-safe memory usage extraction from performance API
@@ -46,8 +40,7 @@ const applyMutation = <T>(document: AsyncAPIObject, mutation: DocumentUpdate<T>)
   Effect.gen(function* () {
     const documentCopy = JSON.parse(JSON.stringify(document)) as Record<string, unknown>
     let current: Record<string, unknown> = documentCopy
-    const oldValue: T | undefined = undefined
-    
+
     // Navigate to mutation path
     for (let i = 0; i < mutation.path.length - 1; i++) {
       const key = mutation.path[i]
