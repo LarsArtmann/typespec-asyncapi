@@ -28,7 +28,7 @@ export const processSingleOperation = (
 
 		// Extract operation metadata using TypeSpec helpers
 		// TODO: Use this metadata when implementing enhanced operation processing
-		const _operationInfo = {
+		const __operationInfo = {
 			name: operation.name,
 			description: getDoc(program, operation) ?? `Operation ${operation.name}`,
 			summary: getDoc(program, operation) ?? `Operation ${operation.name}`
@@ -167,8 +167,8 @@ export const extractOperationMetadata = (
 	}, never> =>
 	Effect.gen(function* () {
 		// TODO: Extract from operation decorators properly
-		const _messageConfig = {}
-		const _protocolInfo = {}
+		const __messageConfig = {}
+		const __protocolInfo = {}
 
 		return {
 			name: operation.name,
