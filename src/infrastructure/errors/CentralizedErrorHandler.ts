@@ -8,8 +8,7 @@
  * - Error aggregation and reporting
  */
 
-import { Effect, Context, Layer, pipe } from "effect"
-import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js"
+import { Effect, Context, Layer } from "effect"
 
 /**
  * Error severity levels for structured error handling

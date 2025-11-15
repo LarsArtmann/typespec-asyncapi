@@ -104,7 +104,7 @@ export class PerformanceRegressionTester {
 
 			// Execute the effect with timing
 			const startTime = performance.now()
-			const result = yield* effect
+			const _result = yield* effect
 			const endTime = performance.now()
 
 			// Collect performance metrics
@@ -218,10 +218,10 @@ export class PerformanceRegressionTester {
 	/**
 	 * Set baseline metrics for future regression comparisons
 	 */
-	setBaseline = (metrics: PerformanceMetrics): Effect.Effect<void, never, never> =>
+	setBaseline = (_metrics: PerformanceMetrics): Effect.Effect<void, never, never> =>
 		Effect.sync(() => {
 			// In a real implementation, this would persist to storage
-			// Effect.log("Performance baseline set:", metrics)
+			// Effect.log("Performance baseline set:", _metrics)
 		})
 
 	/**

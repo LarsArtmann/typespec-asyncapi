@@ -9,7 +9,7 @@
  * - Cache hit/miss ratios
  */
 
-import { Effect, Context, Layer, Data } from "effect"
+import { Effect, Context, Layer } from "effect"
 import type { ServiceMetrics } from "../../domain/models/ServiceInterfaces.js"
 import { PERFORMANCE_MONITORING, PERFORMANCE_CONSTANTS } from "../../constants/defaults.js"
 

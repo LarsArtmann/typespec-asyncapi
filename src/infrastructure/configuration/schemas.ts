@@ -11,22 +11,22 @@ import {validatePathTemplate} from "../../domain/models/path-templates.js"
 /**
  * AsyncAPI Operation Action Enum - Valid values for operation.action
  */
-const OperationActionSchema = Schema.Literal("send", "receive")
+const OPERATION_ACTION_SCHEMA = Schema.Literal("send", "receive")
 
 /**
  * AsyncAPI Server Protocol Schema - Supported protocols
  */
-const ProtocolSchema = Schema.Literal("kafka", "amqp", "mqtt", "nats", "http", "ws")
+const PROTOCOL_SCHEMA = Schema.Literal("kafka", "amqp", "mqtt", "nats", "http", "ws")
 
 /**
  * AsyncAPI Version Schema - Only 3.0.0 supported
  */
-const AsyncAPIVersionSchema = Schema.Literal("3.0.0")
+const ASYNCAPI_VERSION_SCHEMA = Schema.Literal("3.0.0")
 
 /**
  * AsyncAPI Info Schema - Basic API metadata
  */
-const InfoSchema = Schema.Struct({
+const INFO_SCHEMA = Schema.Struct({
 	title: Schema.String,
 	version: Schema.String,
 	description: Schema.optional(Schema.String),
@@ -45,7 +45,7 @@ const InfoSchema = Schema.Struct({
 /**
  * AsyncAPI Server Variable Schema - Server template variables
  */
-const ServerVariableSchema = Schema.Struct({
+const SERVER_VARIABLE_SCHEMA = Schema.Struct({
 	description: Schema.optional(Schema.String),
 	default: Schema.optional(Schema.String),
 	enum: Schema.optional(Schema.Array(Schema.String)),
@@ -55,13 +55,13 @@ const ServerVariableSchema = Schema.Struct({
 /**
  * AsyncAPI Server Schema - Server configuration
  */
-const ServerSchema = Schema.Struct({
+const SERVER_SCHEMA = Schema.Struct({
 	url: Schema.String,
-	protocol: ProtocolSchema,
+	protocol: PROTOCOL_SCHEMA,
 	description: Schema.optional(Schema.String),
 	variables: Schema.optional(Schema.Record({
 		key: Schema.String,
-		value: ServerVariableSchema
+		value: SERVER_VARIABLE_SCHEMA
 	})),
 	security: Schema.optional(Schema.Array(Schema.String)),
 	bindings: Schema.optional(Schema.Record({
@@ -73,7 +73,7 @@ const ServerSchema = Schema.Struct({
 /**
  * AsyncAPI Message Schema - Message definition
  */
-const MessageSchema = Schema.Struct({
+const MESSAGE_SCHEMA = Schema.Struct({
 	messageId: Schema.optional(Schema.String),
 	payload: Schema.optional(Schema.Unknown),
 	headers: Schema.optional(Schema.Record({ key: Schema.String, value: Schema.Unknown })),
@@ -98,8 +98,8 @@ const MessageSchema = Schema.Struct({
 /**
  * AsyncAPI Operation Schema - Operation definition
  */
-const OperationSchema = Schema.Struct({
-	action: OperationActionSchema,
+const OPERATION_SCHEMA = Schema.Struct({
+	action: OPERATION_ACTION_SCHEMA,
 	channel: Schema.Union(
 		Schema.String,
 		Schema.Struct({$ref: Schema.String})
@@ -120,7 +120,7 @@ const OperationSchema = Schema.Struct({
 		key: Schema.String,
 		value: Schema.Union(
 			Schema.Literal(null),
-			MessageSchema,
+			MESSAGE_SCHEMA,
 			Schema.Struct({$ref: Schema.String})
 		)
 	})),
@@ -129,13 +129,13 @@ const OperationSchema = Schema.Struct({
 /**
  * AsyncAPI Channel Schema - Channel definition
  */
-const ChannelSchema = Schema.Struct({
+const CHANNEL_SCHEMA = Schema.Struct({
 	address: Schema.String,
 	messages: Schema.optional(Schema.Record({
 		key: Schema.String,
 		value: Schema.Union(
 			Schema.Literal(null),
-			MessageSchema,
+			MESSAGE_SCHEMA,
 			Schema.Struct({$ref: Schema.String})
 		)
 	})),
@@ -157,12 +157,12 @@ const ChannelSchema = Schema.Struct({
 /**
  * Comprehensive AsyncAPI 3.0 Document Schema
  */
-export const AsyncAPIDocumentSchema = Schema.Struct({
-	asyncapi: AsyncAPIVersionSchema,
-	info: InfoSchema,
-	servers: Schema.optional(Schema.Record({ key: Schema.String, value: ServerSchema })),
-	channels: Schema.optional(Schema.Record({ key: Schema.String, value: ChannelSchema })),
-	operations: Schema.optional(Schema.Record({ key: Schema.String, value: OperationSchema })),
+export const ASYNCAPI_DOCUMENT_SCHEMA = Schema.Struct({
+	asyncapi: ASYNCAPI_VERSION_SCHEMA,
+	info: INFO_SCHEMA,
+	servers: Schema.optional(Schema.Record({ key: Schema.String, value: SERVER_SCHEMA })),
+	channels: Schema.optional(Schema.Record({ key: Schema.String, value: CHANNEL_SCHEMA })),
+	operations: Schema.optional(Schema.Record({ key: Schema.String, value: OPERATION_SCHEMA })),
 	components: Schema.optional(Schema.Unknown),
 	tags: Schema.optional(Schema.Array(Schema.Struct({
 		name: Schema.String,
@@ -182,7 +182,7 @@ export const AsyncAPIDocumentSchema = Schema.Struct({
 /**
  * Decode Unknown to AsyncAPI Document with validation
  */
-export const decodeAsyncAPIDocument = Schema.decodeUnknown(AsyncAPIDocumentSchema)
+export const decodeAsyncAPIDocument = Schema.decodeUnknown(ASYNCAPI_DOCUMENT_SCHEMA)
 
 /**
  * Variable configuration schema for server variables

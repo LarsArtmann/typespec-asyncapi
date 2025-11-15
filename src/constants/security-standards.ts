@@ -5,7 +5,6 @@
  * Integrates with OAuth2, SASL, and OpenID Connect specifications.
  */
 
-import type { OAuth2Scheme, ApiKeyScheme, HttpScheme } from "../types/security-scheme-types.js"
 import { isOAuth2Scheme } from "../types/security-scheme-types.js"
 
 /**
