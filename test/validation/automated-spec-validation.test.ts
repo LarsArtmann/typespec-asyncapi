@@ -21,6 +21,7 @@ import {mkdir, rm, writeFile} from "node:fs/promises"
 import {join} from "node:path"
 import {Effect} from "effect"
 import {SERIALIZATION_FORMAT_OPTIONS, SERIALIZATION_FORMAT_OPTION_YAML} from "../../src/domain/models/serialization-format-option.js"
+import {getChannelCount, getOperationCount, getSchemaCount, isSuccess} from "../../src/domain/models/validation-result.js"
 
 interface TestScenario {
 	name: string;
@@ -314,7 +315,13 @@ describe("🚨 CRITICAL: AUTOMATED ASYNCAPI SPECIFICATION VALIDATION", () => {
 					expect(validationResult.summary).toContain("AsyncAPI document is valid")
 
 					Effect.log(`    ✅ VALID: ${scenario.name}.${format} (${validationResult.metrics.duration.toFixed(2)}ms)`)
-					Effect.log(`    📊 Channels: ${validationResult.metrics.channelCount}, Operations: ${validationResult.metrics.operationCount}`)
+
+					// Get channel and operation counts using helper functions
+					if (isSuccess(validationResult)) {
+						const channelCount = getChannelCount(validationResult.value)
+						const operationCount = getOperationCount(validationResult.value)
+						Effect.log(`    📊 Channels: ${channelCount}, Operations: ${operationCount}`)
+					}
 
 					// Verify document structure meets AsyncAPI 3.0.0 requirements
 					if (format === "json") {

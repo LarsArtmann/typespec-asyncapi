@@ -173,22 +173,56 @@ export function failure(
 }
 
 /**
- * Extended ValidationResult with performance metrics
- * Useful for validation services that track performance
+ * Performance metrics for validation
+ *
+ * NOTE: Does NOT store derived counts (channelCount, operationCount, schemaCount)
+ * to avoid split brain - those should be computed from the validated value.
+ * Use helper functions to get counts from ValidationSuccess<AsyncAPIObject>.
  */
 export type ValidationMetrics = {
   readonly duration: number
-  readonly channelCount: number
-  readonly operationCount: number
-  readonly schemaCount: number
   readonly validatedAt: Date
 }
 
 /**
  * ValidationResult extended with metrics and summary
  * Used by validation services for detailed reporting
+ *
+ * ARCHITECTURAL DECISION:
+ * - summary is REQUIRED (not optional) because we always set it
+ * - metrics does NOT contain derived counts (compute from value instead)
  */
 export type ExtendedValidationResult<T = unknown> = ValidationResult<T> & {
   readonly metrics: ValidationMetrics
-  readonly summary?: string
+  readonly summary: string  // Made required - we always set it
+}
+
+/**
+ * Helper functions to compute counts from AsyncAPIObject
+ * These prevent split brain by computing from source data instead of storing separately
+ */
+
+import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js"
+
+/**
+ * Get channel count from AsyncAPI document
+ */
+export function getChannelCount(doc: AsyncAPIObject): number {
+  return Object.keys(doc.channels ?? {}).length
+}
+
+/**
+ * Get operation count from AsyncAPI document
+ */
+export function getOperationCount(doc: AsyncAPIObject): number {
+  return Object.keys(doc.operations ?? {}).length
+}
+
+/**
+ * Get schema count from AsyncAPI document (schemas + messages)
+ */
+export function getSchemaCount(doc: AsyncAPIObject): number {
+  const schemas = Object.keys(doc.components?.schemas ?? {}).length
+  const messages = Object.keys(doc.components?.messages ?? {}).length
+  return schemas + messages
 }

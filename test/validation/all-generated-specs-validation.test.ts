@@ -17,6 +17,7 @@ import { AsyncAPIValidator } from "../../src/domain/validation/asyncapi-validato
 import { readdir, readFile, mkdir, writeFile, rm } from "node:fs/promises";
 import { join, extname } from "node:path";
 import {Effect} from "effect"
+import { getChannelCount, getOperationCount, isSuccess } from "../../src/domain/models/validation-result.js"
 
 describe("🚨 ALL GENERATED ASYNCAPI SPECS VALIDATION", () => {
   let validator: AsyncAPIValidator;
@@ -502,10 +503,12 @@ operations:
 
         validationResults.push(resultSummary);
 
-        if (result.valid) {
+        if (isSuccess(result)) {
           Effect.log(`  ✅ VALID (${result.metrics.duration.toFixed(2)}ms)`);
-          Effect.log(`  📊 ${result.metrics.channelCount} channels, ${result.metrics.operationCount} operations`);
-          
+          const channelCount = getChannelCount(result.value)
+          const operationCount = getOperationCount(result.value)
+          Effect.log(`  📊 ${channelCount} channels, ${operationCount} operations`);
+
           // Performance requirement check (adjusted for real AsyncAPI parser)
           expect(result.metrics.duration).toBeLessThan(250); // <250ms requirement
         } else {

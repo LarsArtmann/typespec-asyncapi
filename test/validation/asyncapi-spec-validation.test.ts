@@ -14,6 +14,7 @@ import {
 import {compileAsyncAPISpec, parseAsyncAPIOutput} from "../utils/test-helpers"
 import {mkdir, rm, writeFile} from "node:fs/promises"
 import {join} from "node:path"
+import {getChannelCount, getOperationCount, getSchemaCount, isSuccess} from "../../src/domain/models/validation-result.js"
 
 describe("AsyncAPI Specification Validation Framework", () => {
 	let validator: AsyncAPIValidator
@@ -76,8 +77,10 @@ describe("AsyncAPI Specification Validation Framework", () => {
 			expect(result.errors).toHaveLength(0)
 			expect(result.summary).toContain("AsyncAPI document is valid")
 			expect(result.metrics.duration).toBeGreaterThan(0)
-			expect(result.metrics.channelCount).toBe(1)
-			expect(result.metrics.operationCount).toBe(1)
+			if (isSuccess(result)) {
+				expect(getChannelCount(result.value)).toBe(1)
+				expect(getOperationCount(result.value)).toBe(1)
+			}
 		})
 
 		it("should reject documents with missing required fields", async () => {
@@ -288,9 +291,11 @@ describe("AsyncAPI Specification Validation Framework", () => {
 
 			expect(result.valid).toBe(true)
 			expect(result.errors).toHaveLength(0)
-			expect(result.metrics.channelCount).toBe(2)
-			expect(result.metrics.operationCount).toBe(2)
-			expect(result.metrics.schemaCount).toBe(0) // Not counted at root level
+			if (isSuccess(result)) {
+				expect(getChannelCount(result.value)).toBe(2)
+				expect(getOperationCount(result.value)).toBe(2)
+				expect(getSchemaCount(result.value)).toBe(0) // Not counted at root level
+			}
 		})
 	})
 
@@ -398,7 +403,9 @@ describe("AsyncAPI Specification Validation Framework", () => {
 
 			expect(result.valid).toBe(true)
 			expect(result.errors).toHaveLength(0)
-			expect(result.metrics.channelCount).toBe(1)
+			if (isSuccess(result)) {
+				expect(getChannelCount(result.value)).toBe(1)
+			}
 		})
 
 		it("should validate YAML AsyncAPI files", async () => {
@@ -483,8 +490,10 @@ operations:
 
 			expect(validationResult.valid).toBe(true)
 			expect(validationResult.errors).toHaveLength(0)
-			expect(validationResult.metrics.channelCount).toBeGreaterThan(0)
-			expect(validationResult.metrics.operationCount).toBeGreaterThan(0)
+			if (isSuccess(validationResult)) {
+				expect(getChannelCount(validationResult.value)).toBeGreaterThan(0)
+				expect(getOperationCount(validationResult.value)).toBeGreaterThan(0)
+			}
 		})
 
 		it("should validate complex TypeSpec-generated AsyncAPI with multiple operations", async () => {

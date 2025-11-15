@@ -127,15 +127,12 @@ export class AsyncAPIValidator {
 				// Only use fast-path for very simple documents (no operations)
 				const doc = inputDocument as Record<string, unknown>
 				if (!doc.operations && !doc.channels && !doc.components) {
-					// 🔥 CRITICAL: Create proper ExtendedValidationResult
+					// 🔥 CRITICAL: Create proper ExtendedValidationResult (NO SPLIT BRAIN!)
 					const immediateResult: ExtendedValidationResult<unknown> = {
 						...success(inputDocument),
 						summary: `AsyncAPI document is valid (0.00ms)`,
 						metrics: {
 							duration: performance.now() - startTime,
-							channelCount: 0,
-							operationCount: 0,
-							schemaCount: 0,
 							validatedAt: new Date()
 						}
 					}
@@ -247,7 +244,11 @@ export class AsyncAPIValidator {
 						instancePath: "",
 						schemaPath: ""
 					} as ValidationError]),
-					metrics: { duration: performance.now() - startTime, channelCount: 0, operationCount: 0, schemaCount: 0, validatedAt: new Date() }
+					summary: "Validation failed: Unknown parse result type",
+					metrics: {
+						duration: performance.now() - startTime,
+						validatedAt: new Date()
+					}
 				}
 			}
 		})

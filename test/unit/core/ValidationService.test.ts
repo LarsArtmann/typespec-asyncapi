@@ -8,7 +8,7 @@
 import { describe, expect, it, beforeEach } from "bun:test"
 import { Effect } from "effect"
 import { ValidationService, type ValidationResult } from "../../../src/domain/validation/ValidationService.js"
-import { success, failure } from "../../../src/domain/models/validation-result.js"
+import { success, failure, getChannelCount, getOperationCount, getSchemaCount } from "../../../src/domain/models/validation-result.js"
 import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js"
 
 describe("ValidationService", () => {
@@ -31,9 +31,12 @@ describe("ValidationService", () => {
 			expect(result._tag).toBe("Success")
 			expect(result.errors).toHaveLength(0)
 			expect(result.warnings).toHaveLength(0)
-			expect(result.metrics.channelCount).toBe(1)
-			expect(result.metrics.operationCount).toBe(1)
-			expect(result.metrics.schemaCount).toBe(2) // TestSchema + TestMessage = 2
+			// Compute counts from value (NO SPLIT BRAIN!)
+			if (result._tag === "Success") {
+				expect(getChannelCount(result.value)).toBe(1)
+				expect(getOperationCount(result.value)).toBe(1)
+				expect(getSchemaCount(result.value)).toBe(2) // TestSchema + TestMessage = 2
+			}
 		})
 
 		it("should validate document with multiple channels and operations", async () => {
@@ -62,9 +65,12 @@ describe("ValidationService", () => {
 			)
 
 			expect(result._tag).toBe("Success")
-			expect(result.metrics.channelCount).toBe(3)
-			expect(result.metrics.operationCount).toBe(3)
-			expect(result.metrics.schemaCount).toBe(4) // 2 schemas + 2 messages = 4
+			// Compute counts from value (NO SPLIT BRAIN!)
+			if (result._tag === "Success") {
+				expect(getChannelCount(result.value)).toBe(3)
+				expect(getOperationCount(result.value)).toBe(3)
+				expect(getSchemaCount(result.value)).toBe(4) // 2 schemas + 2 messages = 4
+			}
 		})
 
 		it("should detect missing required fields", async () => {
@@ -180,7 +186,9 @@ describe("ValidationService", () => {
 			expect(result._tag).toBe("Success")
 			const warningMessages = result.warnings.map(w => w.message)
 			expect(warningMessages).toContain("No channels defined - document may be incomplete")
-			expect(result.metrics.channelCount).toBe(0)
+			if (result._tag === "Success") {
+				expect(getChannelCount(result.value)).toBe(0)
+			}
 		})
 
 		it("should validate operation requirements", async () => {
@@ -376,12 +384,29 @@ describe("ValidationService", () => {
 
 	describe("generateValidationReport", () => {
 		it("should generate report for valid document", () => {
+			// Create AsyncAPIObject with actual channels/operations/schemas to compute counts from
+			const docWithData: AsyncAPIObject = {
+				asyncapi: "3.0.0",
+				info: { title: "Test", version: "1.0.0" },
+				channels: {
+					channel1: { address: "/channel1" },
+					channel2: { address: "/channel2" }
+				},
+				operations: {
+					op1: { action: "send", channel: { $ref: "#/channels/channel1" } },
+					op2: { action: "receive", channel: { $ref: "#/channels/channel2" } },
+					op3: { action: "send", channel: { $ref: "#/channels/channel1" } }
+				},
+				components: {
+					schemas: { Schema1: { type: "object" }, Schema2: { type: "object" } },
+					messages: { Msg1: { name: "Msg1" }, Msg2: { name: "Msg2" }, Msg3: { name: "Msg3" } },
+					securitySchemes: {}
+				}
+			} as AsyncAPIObject
+
 			const validResult: ValidationResult = {
-				...success({} as AsyncAPIObject),
+				...success(docWithData),
 				metrics: {
-					channelCount: 2,
-					operationCount: 3,
-					schemaCount: 5, // messages + schemas
 					duration: 10.5,
 					validatedAt: new Date()
 				},
@@ -408,9 +433,6 @@ describe("ValidationService", () => {
 					]
 				),
 				metrics: {
-					channelCount: 1,
-					operationCount: 0,
-					schemaCount: 2,
 					duration: 5.0,
 					validatedAt: new Date()
 				},
@@ -527,8 +549,10 @@ describe("ValidationService", () => {
 			)
 
 			expect(result._tag).toBe("Success")
-			expect(result.metrics.channelCount).toBe(100)
-			expect(result.metrics.operationCount).toBe(100)
+			if (result._tag === "Success") {
+				expect(getChannelCount(result.value)).toBe(100)
+				expect(getOperationCount(result.value)).toBe(100)
+			}
 		})
 
 		it("should handle document with undefined properties", async () => {
@@ -550,8 +574,10 @@ describe("ValidationService", () => {
 
 			// Should handle undefined properties gracefully
 			expect(result._tag === "Success" || result._tag === "Failure").toBe(true)
-			expect(result.metrics.channelCount).toBe(0)
-			expect(result.metrics.operationCount).toBe(0)
+			if (result._tag === "Success") {
+				expect(getChannelCount(result.value)).toBe(0)
+				expect(getOperationCount(result.value)).toBe(0)
+			}
 		})
 	})
 })

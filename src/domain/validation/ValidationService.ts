@@ -24,6 +24,9 @@ import {
 	success,
 	failure,
 	isSuccess,
+	getChannelCount,
+	getOperationCount,
+	getSchemaCount,
 	type ValidationError,
 	type ValidationWarning,
 	type ExtendedValidationResult
@@ -108,12 +111,9 @@ export class ValidationService {
 				})
 			}
 
-			// Build metrics
+			// Build metrics (performance only - NO derived counts to avoid split brain)
 			const metrics = {
 				duration: performance.now() - startTime,
-				channelCount: Object.keys(asyncApiDoc.channels ?? {}).length,
-				operationCount: Object.keys(asyncApiDoc.operations ?? {}).length,
-				schemaCount: Object.keys(asyncApiDoc.components?.schemas ?? {}).length + Object.keys(asyncApiDoc.components?.messages ?? {}).length,
 				validatedAt: new Date()
 			}
 
@@ -184,12 +184,9 @@ export class ValidationService {
 				})
 			})
 
-			// Build metrics
+			// Build metrics (performance only - NO derived counts to avoid split brain)
 			const metrics = {
 				duration: performance.now() - startTime,
-				channelCount: channelsCount,
-				operationCount: operationsCount,
-				schemaCount: schemasCount + messagesCount,
 				validatedAt: new Date()
 			}
 
@@ -259,11 +256,9 @@ export class ValidationService {
 								message: "Document may be partially valid but validation service encountered errors",
 								severity: "warning"
 							}]),
+							summary: "Validation failed with errors",
 							metrics: {
 								duration: 0,
-								channelCount: 0,
-								operationCount: 0,
-								schemaCount: 0,
 								validatedAt: new Date()
 							}
 						}
@@ -553,9 +548,21 @@ export class ValidationService {
 
 		// Add metrics
 		report.push(`Document Statistics:`)
-		report.push(`- Channels: ${result.metrics.channelCount}`)
-		report.push(`- Operations: ${result.metrics.operationCount}`)
-		report.push(`- Schemas: ${result.metrics.schemaCount}`)
+
+		// Compute counts from value (Success) or show N/A (Failure) - NO SPLIT BRAIN!
+		if (result._tag === "Success") {
+			const channelCount = getChannelCount(result.value)
+			const operationCount = getOperationCount(result.value)
+			const schemaCount = getSchemaCount(result.value)
+			report.push(`- Channels: ${channelCount}`)
+			report.push(`- Operations: ${operationCount}`)
+			report.push(`- Schemas: ${schemaCount}`)
+		} else {
+			report.push(`- Channels: N/A (validation failed)`)
+			report.push(`- Operations: N/A (validation failed)`)
+			report.push(`- Schemas: N/A (validation failed)`)
+		}
+
 		report.push(`- Validation Duration: ${result.metrics.duration.toFixed(2)}ms`)
 		report.push(`- Validated At: ${result.metrics.validatedAt.toISOString()}`)
 		report.push(``)

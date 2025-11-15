@@ -12,6 +12,7 @@ import {beforeAll, describe, expect, it} from "bun:test"
 import {AsyncAPIValidator} from "../../src/domain/validation/asyncapi-validator.js"
 import {Effect} from "effect"
 import { railwayLogging } from "../../src/utils/effect-helpers.js"
+import { getChannelCount, getOperationCount, getSchemaCount } from "../../src/domain/models/validation-result.js"
 
 describe("🚨 CRITICAL: AsyncAPI Specification Validation", () => {
 	let validator: AsyncAPIValidator
@@ -88,13 +89,17 @@ describe("🚨 CRITICAL: AsyncAPI Specification Validation", () => {
 			const result = await validator.validate(validDocument)
 
 			// CRITICAL ASSERTIONS - MUST PASS
-			expect(result.valid).toBe(true)
+			expect(result._tag).toBe("Success")
 			expect(result.errors).toHaveLength(0)
 			expect(result.metrics.duration).toBeLessThan(500) // <500ms acceptable for REAL AsyncAPI parser
 			expect(result.summary).toContain("AsyncAPI document is valid")
 
 			Effect.log(`✅ VALID: Basic document (${result.metrics.duration.toFixed(2)}ms)`)
-			Effect.log(`📊 Metrics: ${result.metrics.channelCount} channels, ${result.metrics.operationCount} operations`)
+			if (result._tag === "Success") {
+				const channelCount = getChannelCount(result.value)
+				const operationCount = getOperationCount(result.value)
+				Effect.log(`📊 Metrics: ${channelCount} channels, ${operationCount} operations`)
+			}
 		})
 
 		it("should validate complex AsyncAPI document with all components", async () => {
@@ -242,15 +247,21 @@ describe("🚨 CRITICAL: AsyncAPI Specification Validation", () => {
 			const result = await validator.validate(complexDocument)
 
 			// CRITICAL ASSERTIONS - MUST PASS
-			expect(result.valid).toBe(true)
+			expect(result._tag).toBe("Success")
 			expect(result.errors).toHaveLength(0)
 			expect(result.metrics.duration).toBeLessThan(500) // <500ms acceptable for REAL AsyncAPI parser
 			// Real AsyncAPI parser may extract metrics differently than our custom logic
-			expect(result.metrics.channelCount).toBeGreaterThanOrEqual(0) // Flexible metric expectation
-			expect(result.metrics.operationCount).toBeGreaterThanOrEqual(0) // Flexible metric expectation
+			if (result._tag === "Success") {
+				expect(getChannelCount(result.value)).toBeGreaterThanOrEqual(0)
+			}
+			if (result._tag === "Success") {
+				expect(getOperationCount(result.value)).toBeGreaterThanOrEqual(0)
+			}
 
 			Effect.log(`✅ VALID: Complex document (${result.metrics.duration.toFixed(2)}ms)`)
-			Effect.log(`📊 Channels: ${result.metrics.channelCount}, Operations: ${result.metrics.operationCount}`)
+			if (result._tag === "Success") {
+				Effect.log(`📊 Channels: ${getChannelCount(result.value)}, Operations: ${getOperationCount(result.value)}`)
+			}
 		})
 	})
 
@@ -269,7 +280,7 @@ describe("🚨 CRITICAL: AsyncAPI Specification Validation", () => {
 
 			const result = await validator.validate(invalidDocument)
 
-			expect(result.valid).toBe(false)
+			expect(result._tag).toBe("Failure")
 			expect(result.errors.length).toBeGreaterThan(0)
 			expect(result.errors[0]?.keyword).toMatch(/asyncapi|validation-error/) // Real AsyncAPI parser error codes
 			expect(result.errors[0]?.message).toBeDefined() // Real parser provides meaningful messages
@@ -294,10 +305,10 @@ describe("🚨 CRITICAL: AsyncAPI Specification Validation", () => {
 			// Real AsyncAPI parser might be more lenient with version differences
 			// This is AUTHENTIC behavior - AsyncAPI 2.6.0 may be considered valid by real parser
 			expect(result).toBeDefined() // Just ensure we get a result
-			expect(typeof result.valid).toBe('boolean') // Real parser provides boolean validation result
+			expect(typeof result._tag).toBe("string") // Real parser provides boolean validation result
 
 			// Real AsyncAPI parser may accept 2.6.0 as valid - this is correct behavior
-			if (!result.valid) {
+			if (result._tag === "Failure") {
 				expect(result.errors.length).toBeGreaterThan(0)
 				expect(result.errors[0]?.keyword).toMatch(/asyncapi|validation-error|version-constraint/)
 			}
@@ -329,7 +340,7 @@ describe("🚨 CRITICAL: AsyncAPI Specification Validation", () => {
 
 			const result = await validator.validate(invalidDocument)
 
-			expect(result.valid).toBe(false)
+			expect(result._tag).toBe("Failure")
 			expect(result.errors.length).toBeGreaterThan(0)
 			expect(result.errors[0]?.keyword).toMatch(/asyncapi|validation-error|operation/) // Real AsyncAPI parser behavior
 
@@ -363,9 +374,9 @@ describe("🚨 CRITICAL: AsyncAPI Specification Validation", () => {
 			// Document is structurally valid but semantically invalid
 			// Our simplified schema focuses on structure, not references
 			expect(result).toBeDefined()
-			expect(result.valid).toBeDefined()
+			expect(result._tag).toBeDefined()
 
-			Effect.log(`📋 Channel reference validation result: ${result.valid ? "✅" : "❌"}`)
+			Effect.log(`📋 Channel reference validation result: ${result._tag === "Success" ? "✅" : "❌"}`)
 		})
 	})
 
@@ -427,7 +438,7 @@ describe("🚨 CRITICAL: AsyncAPI Specification Validation", () => {
 			for (let i = 0; i < iterations; i++) {
 				const result = await validator.validate(testDocument, `perf-test-${i}`)
 
-				expect(result.valid).toBe(true)
+				expect(result._tag).toBe("Success")
 				expect(result.metrics.duration).toBeLessThan(1000) // <1000ms acceptable for REAL AsyncAPI parser
 
 				validationTimes.push(result.metrics.duration)
@@ -485,10 +496,12 @@ describe("🚨 CRITICAL: AsyncAPI Specification Validation", () => {
 
 			const result = await validator.validateFile(testFile)
 
-			expect(result.valid).toBe(true)
+			expect(result._tag).toBe("Success")
 			expect(result.errors).toHaveLength(0)
 			// Real AsyncAPI parser extracts metrics from parsed document structure
-			expect(result.metrics.channelCount).toBeGreaterThanOrEqual(0) // Flexible for real parser
+			if (result._tag === "Success") {
+				expect(getChannelCount(result.value)).toBeGreaterThanOrEqual(0)
+			}
 
 			// Clean up
 			await fs.rm(testFile, {force: true})

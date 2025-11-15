@@ -36,6 +36,9 @@ import {ValidationService} from "../validation/ValidationService.js"
 import type {DiscoveryResult} from "./DiscoveryResult.js"
 import type {PipelineContext} from "../../application/services/PipelineContext.js"
 
+// Validation result helpers for computing counts (NO SPLIT BRAIN!)
+import {getChannelCount, getOperationCount, getSchemaCount} from "../models/validation-result.js"
+
 import type { IPipelineService } from "../../application/services/PipelineService.js"
 
 /**
@@ -205,8 +208,11 @@ export class EmissionPipeline implements IPipelineService {
 					context.asyncApiDoc
 				))
 			} else {
-				// Success case - use metrics instead of individual count fields
-				yield* Effect.log(`✅ Validation completed successfully - ${validationResult.metrics.channelCount} channels, ${validationResult.metrics.operationCount} operations, ${validationResult.metrics.schemaCount} schemas`)
+				// Success case - compute counts from value (NO SPLIT BRAIN!)
+				const channelCount = getChannelCount(validationResult.value)
+				const operationCount = getOperationCount(validationResult.value)
+				const schemaCount = getSchemaCount(validationResult.value)
+				yield* Effect.log(`✅ Validation completed successfully - ${channelCount} channels, ${operationCount} operations, ${schemaCount} schemas`)
 
 				// Success case has empty warnings array - no need to log
 			}
