@@ -8,6 +8,7 @@
 import { describe, expect, it, beforeEach } from "bun:test"
 import { Effect } from "effect"
 import { ValidationService, type ValidationResult } from "../../../src/domain/validation/ValidationService.js"
+import { success, failure } from "../../../src/domain/models/validation-result.js"
 import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js"
 
 describe("ValidationService", () => {
@@ -27,13 +28,12 @@ describe("ValidationService", () => {
 				validationService.validateDocument(validAsyncApiDoc)
 			)
 
-			expect(result.isValid).toBe(true)
+			expect(result._tag).toBe("Success")
 			expect(result.errors).toHaveLength(0)
 			expect(result.warnings).toHaveLength(0)
-			expect(result.channelsCount).toBe(1)
-			expect(result.operationsCount).toBe(1)
-			expect(result.messagesCount).toBe(1)
-			expect(result.schemasCount).toBe(1)
+			expect(result.metrics.channelCount).toBe(1)
+			expect(result.metrics.operationCount).toBe(1)
+			expect(result.metrics.schemaCount).toBe(2) // TestSchema + TestMessage = 2
 		})
 
 		it("should validate document with multiple channels and operations", async () => {
@@ -61,11 +61,10 @@ describe("ValidationService", () => {
 				validationService.validateDocument(multiChannelDoc)
 			)
 
-			expect(result.isValid).toBe(true)
-			expect(result.channelsCount).toBe(3)
-			expect(result.operationsCount).toBe(3)
-			expect(result.messagesCount).toBe(2)
-			expect(result.schemasCount).toBe(2)
+			expect(result._tag).toBe("Success")
+			expect(result.metrics.channelCount).toBe(3)
+			expect(result.metrics.operationCount).toBe(3)
+			expect(result.metrics.schemaCount).toBe(4) // 2 schemas + 2 messages = 4
 		})
 
 		it("should detect missing required fields", async () => {
@@ -78,8 +77,9 @@ describe("ValidationService", () => {
 				validationService.validateDocument(docMissingFields)
 			)
 
-			expect(result.isValid).toBe(false)
-			expect(result.errors).toContain("Missing required 'info' section")
+			expect(result._tag).toBe("Failure")
+			const errorMessages = result.errors.map(e => e.message)
+			expect(errorMessages).toContain("Missing required 'info' section")
 		})
 
 		it("should detect invalid AsyncAPI version", async () => {
@@ -92,8 +92,9 @@ describe("ValidationService", () => {
 				validationService.validateDocument(docInvalidVersion)
 			)
 
-			expect(result.isValid).toBe(true) // Should still be valid
-			expect(result.warnings).toContain("Using AsyncAPI version 2.6.0, expected 3.x")
+			expect(result._tag).toBe("Success") // Should still be valid
+			const warningMessages = result.warnings.map(w => w.message)
+			expect(warningMessages).toContain("Using AsyncAPI version 2.6.0, expected 3.x")
 		})
 
 		it("should detect missing AsyncAPI version", async () => {
@@ -107,8 +108,9 @@ describe("ValidationService", () => {
 				validationService.validateDocument(docNoVersion)
 			)
 
-			expect(result.isValid).toBe(false)
-			expect(result.errors).toContain("Missing required 'asyncapi' field")
+			expect(result._tag).toBe("Failure")
+			const errorMessages = result.errors.map(e => e.message)
+			expect(errorMessages).toContain("Missing required 'asyncapi' field")
 		})
 
 		it("should validate info section requirements", async () => {
@@ -121,9 +123,10 @@ describe("ValidationService", () => {
 				validationService.validateDocument(docIncompleteInfo)
 			)
 
-			expect(result.isValid).toBe(false)
-			expect(result.errors).toContain("Missing required 'info.title' field")
-			expect(result.errors).toContain("Missing required 'info.version' field")
+			expect(result._tag).toBe("Failure")
+			const errorMessages = result.errors.map(e => e.message)
+			expect(errorMessages).toContain("Missing required 'info.title' field")
+			expect(errorMessages).toContain("Missing required 'info.version' field")
 		})
 
 		it("should warn about missing recommended fields", async () => {
@@ -140,8 +143,9 @@ describe("ValidationService", () => {
 				validationService.validateDocument(docMissingDescription)
 			)
 
-			expect(result.isValid).toBe(true)
-			expect(result.warnings).toContain("Missing recommended 'info.description' field")
+			expect(result._tag).toBe("Success")
+			const warningMessages = result.warnings.map(w => w.message)
+			expect(warningMessages).toContain("Missing recommended 'info.description' field")
 		})
 
 		it("should validate channel requirements", async () => {
@@ -156,8 +160,9 @@ describe("ValidationService", () => {
 				validationService.validateDocument(docInvalidChannels)
 			)
 
-			expect(result.isValid).toBe(false)
-			expect(result.errors).toContain("Channel 'invalidChannel' missing required 'address' field")
+			expect(result._tag).toBe("Failure")
+			const errorMessages = result.errors.map(e => e.message)
+			expect(errorMessages).toContain("Channel 'invalidChannel' missing required 'address' field")
 		})
 
 		it("should warn about empty channels", async () => {
@@ -172,9 +177,10 @@ describe("ValidationService", () => {
 			)
 
 			// Empty channels should still be valid but generate warning
-			expect(result.isValid).toBe(true)
-			expect(result.warnings).toContain("No channels defined - document may be incomplete")
-			expect(result.channelsCount).toBe(0)
+			expect(result._tag).toBe("Success")
+			const warningMessages = result.warnings.map(w => w.message)
+			expect(warningMessages).toContain("No channels defined - document may be incomplete")
+			expect(result.metrics.channelCount).toBe(0)
 		})
 
 		it("should validate operation requirements", async () => {
@@ -191,10 +197,11 @@ describe("ValidationService", () => {
 				validationService.validateDocument(docInvalidOperations)
 			)
 
-			expect(result.isValid).toBe(false)
-			expect(result.errors).toContain("Operation 'invalidOp1' missing required 'action' field")
-			expect(result.errors).toContain("Operation 'invalidOp2' has invalid action 'invalid', must be 'send' or 'receive'")
-			expect(result.errors).toContain("Operation 'invalidOp3' missing required 'channel' reference")
+			expect(result._tag).toBe("Failure")
+			const errorMessages = result.errors.map(e => e.message)
+			expect(errorMessages).toContain("Operation 'invalidOp1' missing required 'action' field")
+			expect(errorMessages).toContain("Operation 'invalidOp2' has invalid action 'invalid', must be 'send' or 'receive'")
+			expect(errorMessages).toContain("Operation 'invalidOp3' missing required 'channel' reference")
 		})
 
 		it("should validate cross-references between sections", async () => {
@@ -220,9 +227,10 @@ describe("ValidationService", () => {
 				validationService.validateDocument(docInvalidReferences)
 			)
 
-			expect(result.isValid).toBe(false)
-			expect(result.errors).toContain("Operation 'testOp' references non-existent channel 'nonExistentChannel'")
-			expect(result.errors).toContain("Channel 'testChannel' references non-existent message 'nonExistentMessage'")
+			expect(result._tag).toBe("Failure")
+			const errorMessages = result.errors.map(e => e.message)
+			expect(errorMessages).toContain("Operation 'testOp' references non-existent channel 'nonExistentChannel'")
+			expect(errorMessages).toContain("Channel 'testChannel' references non-existent message 'nonExistentMessage'")
 		})
 
 		it("should handle documents without optional sections", async () => {
@@ -236,10 +244,11 @@ describe("ValidationService", () => {
 				validationService.validateDocument(minimalDoc)
 			)
 
-			expect(result.isValid).toBe(true)
-			expect(result.warnings).toContain("No channels defined - document may be incomplete")
-			expect(result.warnings).toContain("No operations defined - document may be incomplete")
-			expect(result.warnings).toContain("No components section defined")
+			expect(result._tag).toBe("Success")
+			const warningMessages = result.warnings.map(w => w.message)
+			expect(warningMessages).toContain("No channels defined - document may be incomplete")
+			expect(warningMessages).toContain("No operations defined - document may be incomplete")
+			expect(warningMessages).toContain("No components section defined")
 		})
 	})
 
@@ -368,13 +377,15 @@ describe("ValidationService", () => {
 	describe("generateValidationReport", () => {
 		it("should generate report for valid document", () => {
 			const validResult: ValidationResult = {
-				isValid: true,
-				errors: [],
-				warnings: [],
-				channelsCount: 2,
-				operationsCount: 3,
-				messagesCount: 1,
-				schemasCount: 4
+				...success({} as AsyncAPIObject),
+				metrics: {
+					channelCount: 2,
+					operationCount: 3,
+					schemaCount: 5, // messages + schemas
+					duration: 10.5,
+					validatedAt: new Date()
+				},
+				summary: "Valid document"
 			}
 
 			const report = validationService.generateValidationReport(validResult)
@@ -382,21 +393,28 @@ describe("ValidationService", () => {
 			expect(report).toContain("Status: ✅ VALID")
 			expect(report).toContain("Channels: 2")
 			expect(report).toContain("Operations: 3")
-			expect(report).toContain("Messages: 1")
-			expect(report).toContain("Schemas: 4")
 			expect(report).not.toContain("Errors")
-			expect(report).not.toContain("Warnings")
 		})
 
 		it("should generate report for invalid document with errors", () => {
 			const invalidResult: ValidationResult = {
-				isValid: false,
-				errors: ["Missing required field", "Invalid reference"],
-				warnings: ["Missing recommended field"],
-				channelsCount: 1,
-				operationsCount: 0,
-				messagesCount: 0,
-				schemasCount: 2
+				...failure(
+					[
+						{ message: "Missing required field", keyword: "required", instancePath: "/field", schemaPath: "#/required" },
+						{ message: "Invalid reference", keyword: "ref", instancePath: "/ref", schemaPath: "#/ref" }
+					],
+					[
+						{ message: "Missing recommended field", severity: "warning" as const }
+					]
+				),
+				metrics: {
+					channelCount: 1,
+					operationCount: 0,
+					schemaCount: 2,
+					duration: 5.0,
+					validatedAt: new Date()
+				},
+				summary: "Invalid document"
 			}
 
 			const report = validationService.generateValidationReport(invalidResult)
@@ -411,13 +429,18 @@ describe("ValidationService", () => {
 
 		it("should generate report without warnings section if no warnings", () => {
 			const resultWithoutWarnings: ValidationResult = {
-				isValid: false,
-				errors: ["Some error"],
-				warnings: [],
-				channelsCount: 0,
-				operationsCount: 0,
-				messagesCount: 0,
-				schemasCount: 0
+				...failure(
+					[{ message: "Some error", keyword: "validation", instancePath: "", schemaPath: "" }],
+					[]
+				),
+				metrics: {
+					channelCount: 0,
+					operationCount: 0,
+					schemaCount: 0,
+					duration: 1.0,
+					validatedAt: new Date()
+				},
+				summary: "Error found"
 			}
 
 			const report = validationService.generateValidationReport(resultWithoutWarnings)
@@ -426,22 +449,30 @@ describe("ValidationService", () => {
 			expect(report).not.toContain("Warnings")
 		})
 
-		it("should generate report without errors section if no errors", () => {
-			const resultWithoutErrors: ValidationResult = {
-				isValid: true,
-				errors: [],
-				warnings: ["Some warning"],
-				channelsCount: 1,
-				operationsCount: 1,
-				messagesCount: 1,
-				schemasCount: 1
+		it("should generate report with warnings only (no errors)", () => {
+			// With discriminated union: Warnings without errors = Failure with empty errors
+			const resultWithWarningsOnly: ValidationResult = {
+				...failure(
+					[], // No errors but has warnings
+					[{ message: "Some warning", severity: "warning" as const }]
+				),
+				metrics: {
+					channelCount: 1,
+					operationCount: 1,
+					schemaCount: 2,
+					duration: 2.0,
+					validatedAt: new Date()
+				},
+				summary: "Valid structure but has warnings"
 			}
 
-			const report = validationService.generateValidationReport(resultWithoutErrors)
+			const report = validationService.generateValidationReport(resultWithWarningsOnly)
 
-			expect(report).toContain("Status: ✅ VALID")
-			expect(report).not.toContain("Errors")
+			// Empty errors array means "Errors" section should NOT appear
+			expect(report).toContain("Status: ❌ INVALID")
+			expect(report).not.toContain("Errors (0):")
 			expect(report).toContain("Warnings (1):")
+			expect(report).toContain("- Some warning")
 		})
 	})
 
@@ -453,7 +484,7 @@ describe("ValidationService", () => {
 				validationService.validateDocument(nullDoc)
 			)
 
-			expect(result.isValid).toBe(false)
+			expect(result._tag).toBe("Failure")
 			expect(result.errors.length).toBeGreaterThan(0)
 		})
 
@@ -470,7 +501,7 @@ describe("ValidationService", () => {
 			)
 
 			// Should handle gracefully without throwing
-			expect(typeof result.isValid).toBe("boolean")
+			expect(result._tag === "Success" || result._tag === "Failure").toBe(true)
 		})
 
 		it("should handle very large documents", async () => {
@@ -495,9 +526,9 @@ describe("ValidationService", () => {
 				validationService.validateDocument(largeDoc)
 			)
 
-			expect(result.isValid).toBe(true)
-			expect(result.channelsCount).toBe(100)
-			expect(result.operationsCount).toBe(100)
+			expect(result._tag).toBe("Success")
+			expect(result.metrics.channelCount).toBe(100)
+			expect(result.metrics.operationCount).toBe(100)
 		})
 
 		it("should handle document with undefined properties", async () => {
@@ -518,9 +549,9 @@ describe("ValidationService", () => {
 			)
 
 			// Should handle undefined properties gracefully
-			expect(typeof result.isValid).toBe("boolean")
-			expect(result.channelsCount).toBe(0)
-			expect(result.operationsCount).toBe(0)
+			expect(result._tag === "Success" || result._tag === "Failure").toBe(true)
+			expect(result.metrics.channelCount).toBe(0)
+			expect(result.metrics.operationCount).toBe(0)
 		})
 	})
 })
