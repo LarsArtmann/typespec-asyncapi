@@ -12,30 +12,25 @@
 
 import { Effect, Schedule } from "effect"
 import { decodeAsyncAPIDocument } from "../../infrastructure/configuration/schemas.js"
-import type { 
-	AsyncAPIObject, 
+import type {
+	AsyncAPIObject,
 	ReferenceObject
 } from "@asyncapi/parser/esm/spec-types/v3.js"
 import { emitterErrors, type StandardizedError, safeStringify } from "../../utils/standardized-errors.js"
 import { PERFORMANCE_CONSTANTS } from "../../constants/defaults.js"
 
-// Type-only imports for unused types
-import type { ValidationResult as _NewValidationResult, ValidationError as _ValidationError, ExtendedValidationResult as _ExtendedValidationResult } from "../../types/index.js"
-import type { ValidationResult as _BrandedValidationResult, ValidationError as _ValidationErrorType, ValidationWarning as _ValidationWarning } from "../models/errors/validation-error.js"
+// Import canonical validation types (no more split brain!)
+import {
+	success,
+	failure,
+	isSuccess,
+	type ValidationError,
+	type ValidationWarning,
+	type ExtendedValidationResult
+} from "../models/validation-result.js"
 
-// Legacy ValidationResult type for backward compatibility
-export type LegacyValidationResult = {
-	isValid: boolean;
-	errors: string[];
-	warnings: string[];
-	channelsCount: number;
-	operationsCount: number;
-	messagesCount: number;
-	schemasCount: number;
-}
-
-// Type alias for clarity
-export type ValidationResult = LegacyValidationResult;
+// Re-export for external consumers
+export type { ExtendedValidationResult as ValidationResult }
 
 /**
  * ValidationService - Core AsyncAPI Document Validation
@@ -64,44 +59,68 @@ export class ValidationService {
 
 	/**
 	 * Static method for document validation (to avoid 'this' binding issues)
-	 * TODO: ENHANCE - Add comprehensive validation rules and error messages
-	 * TODO: ENHANCE - Implement cross-reference validation and consistency checks
-	 * TODO: ENHANCE - Add performance optimization for large documents
+	 *
+	 * Now returns ExtendedValidationResult with discriminated union (_tag)
+	 * NO MORE SPLIT BRAIN: isValid boolean removed, use _tag instead
 	 */
-	static validateDocumentStatic(asyncApiDoc: AsyncAPIObject): Effect.Effect<ValidationResult, StandardizedError> {
+	static validateDocumentStatic(asyncApiDoc: AsyncAPIObject): Effect.Effect<ExtendedValidationResult<AsyncAPIObject>, StandardizedError> {
 		return Effect.gen(function* () {
+			const startTime = performance.now()
 			yield* Effect.log(`🔍 Starting comprehensive AsyncAPI document validation (static method)...`)
 
-			const errors: string[] = []
-			const warnings: string[] = []
+			const errors: ValidationError[] = []
+			const warnings: ValidationWarning[] = []
 
 			// Basic structure validation
 			if (!asyncApiDoc.asyncapi) {
-				errors.push("Missing required field: asyncapi")
+				errors.push({
+					message: "Missing required field: asyncapi",
+					keyword: "required",
+					instancePath: "/asyncapi",
+					schemaPath: "#/required"
+				})
 			}
 
 			if (!asyncApiDoc.info) {
-				errors.push("Missing required field: info")
+				errors.push({
+					message: "Missing required field: info",
+					keyword: "required",
+					instancePath: "/info",
+					schemaPath: "#/required"
+				})
 			}
 
 			if (!asyncApiDoc.info?.title) {
-				errors.push("Missing required field: info.title")
+				errors.push({
+					message: "Missing required field: info.title",
+					keyword: "required",
+					instancePath: "/info/title",
+					schemaPath: "#/properties/info/properties/title"
+				})
 			}
 
 			if (!asyncApiDoc.info?.version) {
-				errors.push("Missing required field: info.version")
+				errors.push({
+					message: "Missing required field: info.version",
+					keyword: "required",
+					instancePath: "/info/version",
+					schemaPath: "#/properties/info/properties/version"
+				})
 			}
 
-			const isValid = errors.length === 0
-			const result: LegacyValidationResult = {
-				isValid,
-				errors,
-				warnings,
-				channelsCount: Object.keys(asyncApiDoc.channels ?? {}).length,
-				operationsCount: Object.keys(asyncApiDoc.operations ?? {}).length,
-				messagesCount: Object.keys(asyncApiDoc.components?.messages ?? {}).length,
-				schemasCount: Object.keys(asyncApiDoc.components?.schemas ?? {}).length
+			// Build metrics
+			const metrics = {
+				duration: performance.now() - startTime,
+				channelCount: Object.keys(asyncApiDoc.channels ?? {}).length,
+				operationCount: Object.keys(asyncApiDoc.operations ?? {}).length,
+				schemaCount: Object.keys(asyncApiDoc.components?.schemas ?? {}).length + Object.keys(asyncApiDoc.components?.messages ?? {}).length,
+				validatedAt: new Date()
 			}
+
+			// Use discriminated union - NO isValid boolean!
+			const result: ExtendedValidationResult<AsyncAPIObject> = errors.length === 0
+				? { ...success(asyncApiDoc), metrics, summary: `AsyncAPI document is valid (${metrics.duration.toFixed(2)}ms)` }
+				: { ...failure(errors, warnings), metrics, summary: `AsyncAPI document validation failed (${errors.length} errors, ${warnings.length} warnings)` }
 
 			yield* Effect.log(`✅ AsyncAPI document validation completed (static method)!`)
 			return result
@@ -110,53 +129,88 @@ export class ValidationService {
 
 	/**
 	 * Validate AsyncAPI document structure and compliance
-	 * 
-	 * EXTRACTED FROM MONOLITHIC FILE: validateDocumentEffectSync method
-	 * Enhanced with comprehensive validation logic vs simple placeholder
-	 * 
+	 *
+	 * MIGRATED: Now returns ExtendedValidationResult (discriminated union)
+	 * NO MORE SPLIT BRAIN: Check result._tag instead of result.isValid
+	 *
 	 * @param asyncApiDoc - AsyncAPI document to validate
-	 * @returns Effect containing detailed validation results
+	 * @returns Effect containing detailed validation results with metrics
 	 */
-	validateDocument(asyncApiDoc: AsyncAPIObject): Effect.Effect<ValidationResult, StandardizedError> {
+	validateDocument(asyncApiDoc: AsyncAPIObject): Effect.Effect<ExtendedValidationResult<AsyncAPIObject>, StandardizedError> {
 		return Effect.gen(function* (this: ValidationService) {
+			const startTime = performance.now()
 			yield* Effect.log(`🔍 Starting comprehensive AsyncAPI document validation...`)
 
-			const errors: string[] = []
-			const warnings: string[] = []
+			const errors: ValidationError[] = []
+			const warnings: ValidationWarning[] = []
+
+			// Temporary string arrays for existing validation methods
+			const stringErrors: string[] = []
+			const stringWarnings: string[] = []
 
 			// Basic structure validation
-			this.validateBasicStructure(asyncApiDoc, errors, warnings)
-			
-			// Validate info section
-			this.validateInfoSection(asyncApiDoc, errors, warnings)
-			
-			// Validate channels
-			const channelsCount = this.validateChannels(asyncApiDoc, errors, warnings)
-			
-			// Validate operations
-			const operationsCount = this.validateOperations(asyncApiDoc, errors, warnings)
-			
-			// Validate components
-			const { messagesCount, schemasCount } = this.validateComponents(asyncApiDoc, errors, warnings)
-			
-			// Validate cross-references
-			this.validateCrossReferences(asyncApiDoc, errors, warnings)
+			this.validateBasicStructure(asyncApiDoc, stringErrors, stringWarnings)
 
-			const isValid = errors.length === 0
-			const result: LegacyValidationResult = {
-				isValid,
-				errors,
-				warnings,
-				channelsCount,
-				operationsCount,
-				messagesCount,
-				schemasCount
+			// Validate info section
+			this.validateInfoSection(asyncApiDoc, stringErrors, stringWarnings)
+
+			// Validate channels
+			const channelsCount = this.validateChannels(asyncApiDoc, stringErrors, stringWarnings)
+
+			// Validate operations
+			const operationsCount = this.validateOperations(asyncApiDoc, stringErrors, stringWarnings)
+
+			// Validate components
+			const { messagesCount, schemasCount } = this.validateComponents(asyncApiDoc, stringErrors, stringWarnings)
+
+			// Validate cross-references
+			this.validateCrossReferences(asyncApiDoc, stringErrors, stringWarnings)
+
+			// Convert string errors to structured ValidationError objects
+			stringErrors.forEach(errorMsg => {
+				errors.push({
+					message: errorMsg,
+					keyword: "validation",
+					instancePath: "",
+					schemaPath: ""
+				})
+			})
+
+			// Convert string warnings to structured ValidationWarning objects
+			stringWarnings.forEach(warningMsg => {
+				warnings.push({
+					message: warningMsg,
+					severity: "warning"
+				})
+			})
+
+			// Build metrics
+			const metrics = {
+				duration: performance.now() - startTime,
+				channelCount: channelsCount,
+				operationCount: operationsCount,
+				schemaCount: schemasCount + messagesCount,
+				validatedAt: new Date()
 			}
 
-			if (isValid) {
-				yield* Effect.log(`✅ AsyncAPI document validation passed! ${channelsCount} channels, ${operationsCount} operations`)
+			// Use discriminated union - NO isValid boolean!
+			const result: ExtendedValidationResult<AsyncAPIObject> = errors.length === 0
+				? {
+					...success(asyncApiDoc),
+					metrics,
+					summary: `AsyncAPI document validation passed! ${channelsCount} channels, ${operationsCount} operations (${metrics.duration.toFixed(2)}ms)`
+				  }
+				: {
+					...failure(errors, warnings),
+					metrics,
+					summary: `AsyncAPI document validation failed with ${errors.length} errors, ${warnings.length} warnings (${metrics.duration.toFixed(2)}ms)`
+				  }
+
+			// Log based on discriminated union _tag
+			if (result._tag === "Success") {
+				yield* Effect.log(`✅ ${result.summary}`)
 			} else {
-				yield* Effect.log(`❌ AsyncAPI document validation failed with ${errors.length} errors, ${warnings.length} warnings`)
+				yield* Effect.log(`❌ ${result.summary}`)
 			}
 
 			return result
@@ -165,11 +219,12 @@ export class ValidationService {
 
 	/**
 	 * Validate document as string content
-	 * 
-	 * EXTRACTED FROM MONOLITHIC FILE: Wrapper around document validation for string input
-	 * 
+	 *
+	 * MIGRATED: Now uses ExtendedValidationResult (discriminated union)
+	 * NO MORE result.isValid - use result._tag === "Success" instead
+	 *
 	 * @param content - Serialized AsyncAPI document content
-	 * @returns Effect containing validation result and content length
+	 * @returns Effect containing validated content or sanitized fallback
 	 */
 	validateDocumentContent(content: string): Effect.Effect<string, StandardizedError> {
 		return Effect.gen(function* () {
@@ -190,26 +245,42 @@ export class ValidationService {
 
 			// Use static validation to avoid this binding issues
 			const result = yield* ValidationService.validateDocumentStatic(parsedDoc).pipe(
-				Effect.catchAll(error => 
+				Effect.catchAll(error =>
 					Effect.gen(function* () {
 						yield* Effect.log(`⚠️  Document validation failed, using graceful degradation: ${safeStringify(error)}`)
-						// Return partial validation result as fallback
-						return Effect.succeed({
-							isValid: false,
-							errors: [`Validation service failed: ${safeStringify(error)}`],
-							warnings: ["Document may be partially valid but validation service encountered errors"]
-						})
+						// Return failure result with error details
+						const fallbackResult: ExtendedValidationResult<AsyncAPIObject> = {
+							...failure([{
+								message: `Validation service failed: ${safeStringify(error)}`,
+								keyword: "validation-failure",
+								instancePath: "",
+								schemaPath: ""
+							}], [{
+								message: "Document may be partially valid but validation service encountered errors",
+								severity: "warning"
+							}]),
+							metrics: {
+								duration: 0,
+								channelCount: 0,
+								operationCount: 0,
+								schemaCount: 0,
+								validatedAt: new Date()
+							}
+						}
+						return Effect.succeed(fallbackResult)
 					}).pipe(Effect.flatten)
 				)
 			)
-			
-			if (result.isValid) {
+
+			// Check discriminated union _tag instead of isValid boolean
+			if (result._tag === "Success") {
 				yield* Effect.log(`✅ Document content validation passed!`)
 				return content
 			} else {
+				// Failure case - log errors
 				yield* Effect.log(`❌ Document content validation failed:`)
-				result.errors.forEach((error: string) => Effect.runSync(Effect.log(`  - ${error}`)))
-				
+				result.errors.forEach((error: ValidationError) => Effect.runSync(Effect.log(`  - ${error.message}`)))
+
 				// Try to return sanitized content instead of failing completely
 				yield* Effect.log(`🔧 Attempting to return sanitized content despite validation errors`)
 				const sanitizedContent = JSON.stringify({
@@ -218,7 +289,7 @@ export class ValidationService {
 					channels: parsedDoc.channels ?? {},
 					operations: parsedDoc.operations ?? {}
 				}, null, 2)
-				
+
 				return sanitizedContent
 			}
 		}).pipe(
@@ -458,33 +529,59 @@ export class ValidationService {
 
 	/**
 	 * Generate validation report summary
-	 * 
-	 * @param result - Validation result to summarize
+	 *
+	 * MIGRATED: Now accepts ExtendedValidationResult (discriminated union)
+	 * Uses _tag to determine status instead of isValid boolean
+	 *
+	 * @param result - Extended validation result to summarize
 	 * @returns Human-readable validation report
 	 */
-	generateValidationReport(result: LegacyValidationResult): string {
-		const status = result.isValid ? '✅ VALID' : '❌ INVALID'
+	generateValidationReport(result: ExtendedValidationResult<AsyncAPIObject>): string {
+		// Use discriminated union _tag instead of isValid boolean
+		const status = result._tag === "Success" ? '✅ VALID' : '❌ INVALID'
 		const report = [
 			`AsyncAPI Document Validation Report`,
 			`Status: ${status}`,
-			``,
-			`Document Statistics:`,
-			`- Channels: ${result.channelsCount}`,
-			`- Operations: ${result.operationsCount}`,
-			`- Messages: ${result.messagesCount}`,
-			`- Schemas: ${result.schemasCount}`,
 			``
 		]
 
-		if (result.errors.length > 0) {
-			report.push(`Errors (${result.errors.length}):`)
-			result.errors.forEach((error: string) => report.push(`- ${error}`))
-			report.push('')
+		// Add summary if present
+		if (result.summary) {
+			report.push(`Summary: ${result.summary}`)
+			report.push(``)
 		}
 
-		if (result.warnings.length > 0) {
-			report.push(`Warnings (${result.warnings.length}):`)
-			result.warnings.forEach((warning: string) => report.push(`- ${warning}`))
+		// Add metrics
+		report.push(`Document Statistics:`)
+		report.push(`- Channels: ${result.metrics.channelCount}`)
+		report.push(`- Operations: ${result.metrics.operationCount}`)
+		report.push(`- Schemas: ${result.metrics.schemaCount}`)
+		report.push(`- Validation Duration: ${result.metrics.duration.toFixed(2)}ms`)
+		report.push(`- Validated At: ${result.metrics.validatedAt.toISOString()}`)
+		report.push(``)
+
+		// Only failure has errors/warnings
+		if (result._tag === "Failure") {
+			if (result.errors.length > 0) {
+				report.push(`Errors (${result.errors.length}):`)
+				result.errors.forEach((error: ValidationError) => {
+					report.push(`- ${error.message}`)
+					if (error.instancePath) {
+						report.push(`  Path: ${error.instancePath}`)
+					}
+				})
+				report.push('')
+			}
+
+			if (result.warnings.length > 0) {
+				report.push(`Warnings (${result.warnings.length}):`)
+				result.warnings.forEach((warning: ValidationWarning) => {
+					report.push(`- ${warning.message}`)
+				})
+			}
+		} else {
+			// Success case - no errors/warnings
+			report.push(`No errors or warnings found.`)
 		}
 
 		return report.join('\n')

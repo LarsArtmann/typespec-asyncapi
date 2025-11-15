@@ -179,6 +179,8 @@ export class EmissionPipeline implements IPipelineService {
 
 	/**
 	 * Stage 4: Validation - Verify AsyncAPI compliance using REAL ValidationService
+	 *
+	 * MIGRATED: Now uses discriminated union (_tag) instead of isValid boolean
 	 */
 	private executeValidationStage(context: PipelineContext) {
 		return Effect.gen(function* (this: EmissionPipeline) {
@@ -187,30 +189,26 @@ export class EmissionPipeline implements IPipelineService {
 			// Use REAL ValidationService with comprehensive AsyncAPI 3.0 compliance checking
 			const validationResult = yield* this.validationService.validateDocument(context.asyncApiDoc)
 
-			if (!validationResult.isValid) {
+			// Check discriminated union _tag instead of isValid boolean
+			if (validationResult._tag === "Failure") {
 				yield* Effect.log(`❌ Validation failed with ${validationResult.errors.length} errors:`)
 				for (const error of validationResult.errors) {
-					yield* Effect.log(`  - ${error}`)
+					yield* Effect.log(`  - ${error.message}`)
 				}
-				
-				// Convert string errors to ValidationError format for emitterErrors
-				const validationErrorStrings = validationResult.errors.map(err => err)
-				
+
+				// Convert ValidationError[] to string[] for emitterErrors
+				const validationErrorStrings = validationResult.errors.map(err => err.message)
+
 				// Use standardized error instead of plain Error
 				return yield* failWith(emitterErrors.invalidAsyncAPI(
 					validationErrorStrings,
 					context.asyncApiDoc
 				))
 			} else {
-				yield* Effect.log(`✅ Validation completed successfully - ${validationResult.channelsCount} channels, ${validationResult.operationsCount} operations, ${validationResult.messagesCount} messages`)
-				
-				// Log warnings using Railway programming
-				if (validationResult.warnings && validationResult.warnings.length > 0) {
-					yield* Effect.log(`⚠️ AsyncAPI document has ${validationResult.warnings.length} warnings:`)
-					for (const warning of validationResult.warnings) {
-						yield* Effect.log(`  - ${warning}`)
-					}
-				}
+				// Success case - use metrics instead of individual count fields
+				yield* Effect.log(`✅ Validation completed successfully - ${validationResult.metrics.channelCount} channels, ${validationResult.metrics.operationCount} operations, ${validationResult.metrics.schemaCount} schemas`)
+
+				// Success case has empty warnings array - no need to log
 			}
 		}.bind(this))
 	}
