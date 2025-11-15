@@ -122,3 +122,22 @@ export const generateTransformationSummary = (
 
 	return summary
 }
+
+/**
+ * ProcessingService namespace export for backwards compatibility with tests
+ * Provides a unified interface to all processing functions
+ */
+export const ProcessingService = {
+	// Main orchestration functions
+	orchestrate: orchestrateAsyncAPITransformation,
+	executeProcessing: orchestrateAsyncAPITransformation, // Alias for tests
+
+	// Individual processing functions (match test expectations)
+	processOperations,
+	processMessageModels,
+	processSecurityConfigs,
+
+	// Utility functions
+	validate: validateTransformation,
+	generateSummary: generateTransformationSummary
+}
