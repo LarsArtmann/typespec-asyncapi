@@ -218,17 +218,3 @@ export const isSecurityScheme = (scheme: unknown): scheme is SecurityScheme => {
          isSymmetricEncryptionScheme(scheme) ||
          isAsymmetricEncryptionScheme(scheme)
 }
-
-export type ValidationSuccess = {
-  readonly valid: true
-  readonly scheme: SecuritySchemeConfig
-  readonly errors: readonly string[]
-}
-
-export type ValidationFailure = {
-  readonly valid: false
-  readonly scheme: null
-  readonly errors: readonly string[]
-}
-
-export type ValidationResult = ValidationSuccess | ValidationFailure

@@ -31,38 +31,27 @@ export type GenerationNote = string & { readonly brand: 'GenerationNote' };
 // 🔥 FUCKING CRITICAL: AsyncAPI version enforcement
 export type AsyncAPIVersion = '3.0.0' & { readonly brand: 'AsyncAPIVersion' };
 
-// 🔥 FUCKING CRITICAL: ValidationResult with discriminated union
-export type ValidationResult<T = unknown> = 
-  | { readonly valid: true; readonly data: T; readonly errors: readonly []; readonly warnings: readonly [] }
-  | { readonly valid: false; readonly data: undefined; readonly errors: readonly ValidationError[]; readonly warnings: readonly ValidationWarning[] };
+// ============================================================================
+// 🔥 CANONICAL VALIDATION TYPES - Single Source of Truth
+// ============================================================================
+// All validation types now imported from domain/models/validation-result.ts
+// This eliminates 9 duplicate ValidationResult definitions across the codebase
+export type {
+	ValidationResult,
+	ValidationSuccess,
+	ValidationFailure,
+	ValidationError,
+	ValidationWarning,
+	ValidationMetrics,
+	ExtendedValidationResult
+} from "../domain/models/validation-result.js"
 
-// 🔥 FUCKING CRITICAL: Unified error types for compile-time safety
-export type ValidationError = {
-	readonly message: string;
-	readonly keyword: string;
-	readonly instancePath: string;
-	readonly schemaPath: string;
-};
-
-export type ValidationWarning = {
-	readonly message: string;
-	readonly severity?: 'info' | 'warning' | 'error';
-};
-
-// 🔥 FUCKING CRITICAL: Extended ValidationResult with metrics for validation services
-export type ExtendedValidationResult<T = unknown> = ValidationResult<T> & {
-	readonly metrics: ValidationMetrics;
-	readonly summary?: string;
-};
-
-// 🔥 FUCKING CRITICAL: Validation metrics for performance tracking
-export type ValidationMetrics = {
-	readonly duration: number;
-	readonly channelCount: number;
-	readonly operationCount: number;
-	readonly schemaCount: number;
-	readonly validatedAt: Date;
-};
+export {
+	isSuccess,
+	isFailure,
+	success,
+	failure
+} from "../domain/models/validation-result.js"
 
 type XGeneratedFromTypeSpec = {
 	sourceFiles?: Path;

@@ -5,6 +5,7 @@
  */
 
 import type {ValidationError, ValidationResult, ValidationWarning, ExtendedValidationResult, ValidationMetrics} from "../../types/index.js"
+import {success, failure} from "../../types/index.js"
 import {Effect} from "effect"
 import {Parser} from "@asyncapi/parser"
 import type {ValidationStats} from "./ValidationStats.js"
@@ -128,10 +129,7 @@ export class AsyncAPIValidator {
 				if (!doc.operations && !doc.channels && !doc.components) {
 					// 🔥 CRITICAL: Create proper ExtendedValidationResult
 					const immediateResult: ExtendedValidationResult<unknown> = {
-						valid: true,
-						data: inputDocument,
-						errors: [],
-						warnings: [],
+						...success(inputDocument),
 						summary: `AsyncAPI document is valid (0.00ms)`,
 						metrics: {
 							duration: performance.now() - startTime,
@@ -210,10 +208,7 @@ export class AsyncAPIValidator {
 
 				if (diagnostics.length === 0) {
 					return {
-						valid: true,
-						data: document,
-						errors: [],
-						warnings: [],
+						...success(document),
 						summary: `AsyncAPI document is valid (${duration.toFixed(2)}ms)`,
 						metrics,
 					}
@@ -239,25 +234,19 @@ export class AsyncAPIValidator {
 						})) as readonly ValidationWarning[]
 
 					return {
-						valid: false,
-						data: undefined,
-						errors,
-						warnings,
+						...failure(errors, warnings),
 						summary: `AsyncAPI document validation completed (${errors.length} errors, ${warnings.length} warnings, ${duration.toFixed(2)}ms)`,
 						metrics,
 					}
 				}
 			} else {
 				return {
-					valid: false,
-					data: undefined,
-					errors: [{
+					...failure([{
 						message: "Unknown parse result type",
 						keyword: "parse-error",
 						instancePath: "",
 						schemaPath: ""
-					} as ValidationError],
-					warnings: [],
+					} as ValidationError]),
 					metrics: { duration: performance.now() - startTime, channelCount: 0, operationCount: 0, schemaCount: 0, validatedAt: new Date() }
 				}
 			}
@@ -297,17 +286,14 @@ export class AsyncAPIValidator {
 		
 		// Convert Effect failures to validation results for backward compatibility
 		return Effect.runPromise(
-			Effect.catchAll(effect, (error): Effect.Effect<ExtendedValidationResult, never> => 
+			Effect.catchAll(effect, (error): Effect.Effect<ExtendedValidationResult, never> =>
 				Effect.succeed({
-					valid: false,
-					data: undefined,
-					errors: [{
+					...failure([{
 						message: error instanceof Error ? error.message : String(error),
 						keyword: "validation-error",
 						instancePath: "",
 						schemaPath: ""
-					}],
-					warnings: [],
+					}]),
 					summary: `Validation failed: ${error instanceof Error ? error.message : String(error)}`,
 					metrics: {
 						duration: 0,
