@@ -257,7 +257,7 @@ export const $securityEnhanced = (context: DecoratorContext, target: Model | Ope
 	// Store security configuration in TypeSpec state map
 	const stateMap = context.program.stateMap(SECURITY_CONFIGS_KEY)
 	const existingConfigs = Array.from(stateMap.entries()).filter(([key]) => key === target).map(([, value]) => value as SecurityConfig[])[0] ?? []
-	
+
 	// Validate and store security config
 	const securityConfig = config as SecurityConfig
 	if (!securityConfig.name || !securityConfig.scheme) {
@@ -266,10 +266,44 @@ export const $securityEnhanced = (context: DecoratorContext, target: Model | Ope
 		})
 		return // TypeScript error expects void return
 	}
-	
+
+	// ✅ INTEGRATION FIX: Runtime type validation with type guard
+	// Prevents invalid security schemes from being stored in state map
+	if (!isSecurityScheme(securityConfig.scheme)) {
+		reportDiagnostic(context, target, "invalid-security-scheme", {
+			message: `Security scheme '${securityConfig.name}' has invalid type. Expected one of: oauth2, apiKey, httpApiKey, http, openIdConnect, sasl, userPassword, x509, symmetricEncryption, asymmetricEncryption`
+		})
+		return
+	}
+
+	// ✅ INTEGRATION FIX: Comprehensive security scheme validation
+	// This is the 150-line validateSecurityScheme function that was never called!
+	const validation = validateSecurityScheme(securityConfig.scheme)
+
+	// ✅ INTEGRATION FIX: Report validation errors via TypeSpec diagnostics
+	if (!validation.valid) {
+		reportDiagnostic(context, target, "invalid-security-scheme", {
+			message: `Security scheme '${securityConfig.name}' validation failed: ${validation.errors.join(", ")}`
+		})
+		return
+	}
+
+	// ✅ INTEGRATION FIX: Log validation warnings to help users improve security
+	// Warnings don't block registration but provide helpful feedback
+	for (const warning of validation.warnings) {
+		// Use Effect.logWarning to differentiate from errors
+		Effect.logWarning(`⚠️  Security scheme '${securityConfig.name}': ${warning}`)
+	}
+
+	// ✅ INTEGRATION FIX: Log secret fields that should use @secret decorator (TypeSpec 1.5.0)
+	if (validation.secretFields.length > 0) {
+		Effect.logInfo(`🔒 Security scheme '${securityConfig.name}' has ${validation.secretFields.length} secret fields: ${validation.secretFields.join(", ")}`)
+	}
+
+	// ✅ NOW SAFE TO STORE: All validation passed
 	existingConfigs.push(securityConfig)
 	stateMap.set(target, existingConfigs)
-	
+
 	// Log successful registration (TypeSpec decorators are synchronous)
 	// Note: Effect.log used for TypeSpec decorator logging
 	Effect.log(`🔐 Enhanced security scheme registered: ${securityConfig.name}`)
