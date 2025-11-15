@@ -7,4 +7,3 @@ export type * from './ObjectValidationOptions.js';
 export type * from './ValidationDiagnostic.js';
 export type * from './ValidationOptions.js';
 export type * from './ValidationStats.js';
-export type * from './ValidationWithDiagnostics.js';
