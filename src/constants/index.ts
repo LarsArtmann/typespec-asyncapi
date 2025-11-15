@@ -17,18 +17,6 @@ export {
 	TEST_VERSIONS,
 } from './asyncapi-constants.js'
 
-// Channel Template Constants
-//export {
-//	CHANNEL_TEMPLATES,
-//	ORDER_CHANNELS,
-//	SYSTEM_CHANNELS,
-//	TEST_CHANNELS,
-//	ECOMMERCE_CHANNELS,
-//	CHANNEL_PARAMETERS,
-//	CHANNEL_PATTERNS,
-//	CHANNEL_PREFIXES,
-//} from './channel-templates.js'
-//
 // Default Configuration Constants
 export {
 	DEFAULT_CONFIG,
