@@ -1334,10 +1334,21 @@ export async function compileAndGetAsyncAPI(
 		// Read the file content
 		const content = host.fs.get(asyncApiFile) as string
 
-		// Parse YAML or JSON
-		const spec = content.startsWith('{')
-			? JSON.parse(content)
-			: require('yaml').parse(content)
+		// Parse YAML or JSON with better error handling
+		let spec: any
+		try {
+			if (content.startsWith('{')) {
+				spec = JSON.parse(content)
+			} else {
+				// Use dynamic import for yaml to avoid bundling issues
+				const yamlModule = await import('yaml')
+				spec = yamlModule.parse(content)
+			}
+		} catch (parseError) {
+			console.log(`⚠️  Content parse error: ${parseError}`)
+			console.log(`⚠️  Content preview: ${content.substring(0, 200)}...`)
+			return null
+		}
 
 		// Debug: Check if spec is valid
 		if (!spec || typeof spec !== 'object') {
@@ -1350,6 +1361,21 @@ export async function compileAndGetAsyncAPI(
 			console.log(`⚠️  Keys found:`, Object.keys(spec))
 			console.log(`⚠️  File:`, asyncApiFile)
 			console.log(`⚠️  Content (first 300 chars):`, content.substring(0, 300))
+			// Try to fix common YAML parsing issues
+			if (content.includes('asyncapi:') && !content.includes('"asyncapi"')) {
+				console.log(`🔧 Attempting to fix YAML parsing for asyncapi field...`)
+				// Sometimes YAML parses weirdly, try JSON approach
+				try {
+					const yamlModule = await import('yaml')
+					const reparsed = yamlModule.parse(content)
+					if (reparsed?.asyncapi) {
+						console.log(`✅ YAML re-parse successful!`)
+						return reparsed as AsyncAPIObject
+					}
+				} catch (reparseError) {
+					console.log(`❌ YAML re-parse failed: ${reparseError}`)
+				}
+			}
 		}
 
 		return spec as AsyncAPIObject
