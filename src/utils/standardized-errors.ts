@@ -411,36 +411,30 @@ export const safeStringify = (value: unknown, fallback = "unknown"): string => {
 		return `${value.name}: ${value.message}`
 	}
 	
-	// Handle objects with toString using Effect.try
+	// Handle objects with toString using try/catch (synchronous operation)
 	if (typeof value.toString === "function" && value.toString !== Object.prototype.toString) {
-		const toStringResult = Effect.runSync(
-			Effect.try({
-				try: () => value.toString(),
-				catch: () => null // Return null on error to fall through
-			})
-		)
-
-		if (toStringResult && typeof toStringResult === "string" && toStringResult.length > 0 && toStringResult !== "[object Object]") {
-			return toStringResult
+		try {
+			const toStringResult = value.toString()
+			if (toStringResult && typeof toStringResult === "string" && toStringResult.length > 0 && toStringResult !== "[object Object]") {
+				return toStringResult
+			}
+		} catch {
+			// Fall through to next handler
 		}
 	}
 
-	// Handle objects using Effect.try
+	// Handle objects using try/catch (synchronous operation)
 	if (typeof value === "object") {
-		const jsonResult = Effect.runSync(
-			Effect.try({
-				try: () => JSON.stringify(value),
-				catch: () => null // Return null to trigger fallback
-			})
-		)
-
-		if (jsonResult) {
+		try {
+			const jsonResult = JSON.stringify(value)
 			if (jsonResult.length > 200) {
 				return `${jsonResult.substring(0, 200)}...`
 			}
 			return jsonResult
+		} catch {
+			// Return fallback for circular or non-serializable objects
+			return fallback
 		}
-		return fallback
 	}
 	
 	// Fallback for functions or other types
