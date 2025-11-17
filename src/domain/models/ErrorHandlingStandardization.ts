@@ -13,7 +13,7 @@
  */
 
 // Effect.TS imports
-import {Context, Effect, Layer, Schedule} from "effect"
+import {Effect, Schedule} from "effect"
 
 // Node.js built-ins
 import type {StandardizedError} from "./StandardizedError.js"

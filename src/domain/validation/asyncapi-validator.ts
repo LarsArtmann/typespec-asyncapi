@@ -4,7 +4,7 @@
  * This file provides backward compatibility exports and aggregates all validation functionality.
  */
 
-import type {ValidationError, ValidationResult, ValidationWarning, ExtendedValidationResult, ValidationMetrics} from "../../types/index.js"
+import type {ValidationError, ValidationResult, ValidationWarning, ExtendedValidationResult} from "../../types/index.js"
 import {success, failure} from "../../types/index.js"
 import {Effect} from "effect"
 import {Parser} from "@asyncapi/parser"
@@ -63,7 +63,7 @@ export class AsyncAPIValidator {
 	 */
 	initializeEffect(): Effect.Effect<void, never> {
 		// Create closure that captures instance properly
-		const parser = this.parser
+		const _parser = this.parser
 		const stats = this.stats
 		
 		return Effect.gen(function* () {
@@ -92,7 +92,7 @@ export class AsyncAPIValidator {
 		validateEffect(inputDocument: unknown, _identifier?: string): Effect.Effect<ExtendedValidationResult, Error, never> {
 		// Capture class instance in closure to fix Effect.gen this-binding issue
 		const parser = this.parser
-		const stats = this.stats
+		const _stats = this.stats
 		
 		return Effect.gen(function* () {
 			const startTime = performance.now()
@@ -136,13 +136,13 @@ export class AsyncAPIValidator {
 							validatedAt: new Date()
 						}
 					}
-					const fastPathTime = performance.now() - fastPathStart
+					const _fastPathTime1 = performance.now() - fastPathStart
 					// console.log(`🚀 FAST PATH TOOK ${fastPathTime}ms`)
 					return yield* Effect.succeed(immediateResult)
 				}
 				// Fall through to full parser for complex documents
 			}
-			const fastPathTime = performance.now() - fastPathStart
+			const _fastPathTime2 = performance.now() - fastPathStart
 			// console.log(`🐌 FAST PATH CHECK TOOK ${fastPathTime}ms - FALLING THROUGH TO PARSER`)
 			
 			// Convert document to string for parser
@@ -162,7 +162,7 @@ export class AsyncAPIValidator {
 				try: () => {
 					const start = performance.now()
 					const result = parser.parse(content)
-					const duration = performance.now() - start
+					const _duration = performance.now() - start
 					// console.log(`🔍 RAW PARSER CALL TOOK ${duration}ms`)
 					return result
 				},

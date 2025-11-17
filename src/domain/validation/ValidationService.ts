@@ -23,7 +23,6 @@ import { PERFORMANCE_CONSTANTS } from "../../constants/defaults.js"
 import {
 	success,
 	failure,
-	isSuccess,
 	getChannelCount,
 	getOperationCount,
 	getSchemaCount,
@@ -161,7 +160,7 @@ export class ValidationService {
 			const operationsCount = this.validateOperations(asyncApiDoc, stringErrors, stringWarnings)
 
 			// Validate components
-			const { messagesCount, schemasCount } = this.validateComponents(asyncApiDoc, stringErrors, stringWarnings)
+			const { messagesCount: _messagesCount, schemasCount: _schemasCount } = this.validateComponents(asyncApiDoc, stringErrors, stringWarnings)
 
 			// Validate cross-references
 			this.validateCrossReferences(asyncApiDoc, stringErrors, stringWarnings)

@@ -330,7 +330,7 @@ export const processSecuritySchemes = (program: Program, asyncApiDoc: Record<str
 		doc.components.securitySchemes ??= {}
 		
 		// Process all security configurations
-		for (const [unusedTarget, configs] of securityConfigs) {
+		for (const [_target, configs] of securityConfigs) {
 			for (const config of configs) {
 				const securitySchemeData = {
 					description: `Security scheme: ${config.name}`,
