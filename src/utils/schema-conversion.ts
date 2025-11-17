@@ -16,6 +16,12 @@ import { globalTypeCache } from "./type-cache.js"
  * Centralized from asyncapi-emitter.ts and emitter-with-effect.ts
  * Enhanced with Effect.TS error handling and comprehensive type support
  * Optimized with type caching for 50-70% performance improvement
+ *
+ * NOTE: Uses Effect.runSync due to TypeSpec synchronous API constraints.
+ * TypeSpec decorators and some emitter contexts require synchronous execution.
+ * The Effect operations inside are for logging/composition, not true async I/O.
+ *
+ * TODO: Consider refactoring to provide both sync and Effect-based async versions.
  */
 export function convertModelToSchema(model: Model, program: Program): SchemaObject {
 	// Check cache first for performance optimization
@@ -24,6 +30,7 @@ export function convertModelToSchema(model: Model, program: Program): SchemaObje
 		return cached
 	}
 
+	// runSync necessary: TypeSpec requires synchronous schema conversion
 	const result = Effect.runSync(
 		Effect.gen(function* () {
 			yield* Effect.log(`🔍 Converting model to schema: ${model.name ?? 'Anonymous'} (cache miss)`)
@@ -96,8 +103,12 @@ export function convertModelToSchema(model: Model, program: Program): SchemaObje
 /**
  * Convert TypeSpec model property to AsyncAPI schema property
  * Enhanced with comprehensive type support and Effect.TS error handling
+ *
+ * NOTE: Uses Effect.runSync due to TypeSpec synchronous API constraints.
+ * TODO: Consider refactoring to provide Effect-based async version.
  */
 export function convertPropertyToSchema(prop: ModelProperty, program: Program, propName: string): SchemaObject {
+	// runSync necessary: TypeSpec requires synchronous property conversion
 	return Effect.runSync(convertPropertyToSchemaEffect(prop, program, propName))
 }
 
@@ -274,11 +285,15 @@ export function convertTypeToSchemaType(type: Type, program: Program): Effect.Ef
  * Get simplified property type information
  * Used by asyncapi-emitter.ts getPropertyType method
  * Enhanced to use the new type conversion system
+ *
+ * NOTE: Uses Effect.runSync due to TypeSpec synchronous API constraints.
+ * TODO: Consider removing Effect wrapper entirely (only used for logging).
  */
 export function getPropertyType(prop: ModelProperty): {
 	type: "string" | "number" | "boolean" | "object" | "array" | "null" | "integer",
 	format?: string
 } {
+	// runSync necessary: TypeSpec requires synchronous type information
 	return Effect.runSync(
 		Effect.gen(function* () {
 			// Legacy compatibility - use stub program to satisfy type requirement
