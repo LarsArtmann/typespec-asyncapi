@@ -274,7 +274,10 @@ export class ValidationService {
 			} else {
 				// Failure case - log errors
 				yield* Effect.log(`❌ Document content validation failed:`)
-				result.errors.forEach((error: ValidationError) => Effect.runSync(Effect.log(`  - ${error.message}`)))
+				// Use Effect.forEach for proper composition instead of runSync
+				yield* Effect.forEach(result.errors, (error: ValidationError) =>
+					Effect.log(`  - ${error.message}`)
+				)
 
 				// Try to return sanitized content instead of failing completely
 				yield* Effect.log(`🔧 Attempting to return sanitized content despite validation errors`)
