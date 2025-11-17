@@ -33,5 +33,5 @@ export async function $onEmit(context: EmitContext) {
   );
 
   // The generation function handles file creation, so we just need to log completion
-  Effect.runSync(Effect.log(`✅ Generated AsyncAPI specification: ${String(outputFile)}.${String(extension)}`));
+  await Effect.runPromise(Effect.log(`✅ Generated AsyncAPI specification: ${String(outputFile)}.${String(extension)}`));
 }
