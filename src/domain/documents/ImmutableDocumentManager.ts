@@ -13,6 +13,14 @@ import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js"
 import type { DocumentUpdate } from "../models/ServiceInterfaces.js"
 import { MetricsCollector } from "../../infrastructure/performance/MetricsCollector.js"
 import { ErrorHandler, ErrorFactory } from "../../infrastructure/errors/CentralizedErrorHandler.js"
+import {
+  getCurrentState,
+  createMutationRecord,
+  createVersionRecord,
+  updateDocumentState,
+  appendMutation,
+  appendAtomicMutations
+} from "./DocumentHelpers.js"
 
 /**
  * Type-safe memory usage extraction from performance API
@@ -111,21 +119,13 @@ export const DocumentManager = Context.GenericTag<"DocumentManager", DocumentMan
 export const ImmutableDocumentManager: DocumentManager = {
   getDocument: () =>
     Effect.gen(function* () {
-      const currentState = globalThis.__ASYNCAPI_DOCUMENT_STATE
-      if (!currentState) {
-        yield* Effect.fail(new Error("Document not initialized"))
-        return undefined as never
-      }
+      const currentState = yield* getCurrentState()
       return currentState.currentDocument
     }),
-  
+
   getCurrentVersion: () =>
     Effect.gen(function* () {
-      const currentState = globalThis.__ASYNCAPI_DOCUMENT_STATE
-      if (!currentState) {
-        yield* Effect.fail(new Error("Document not initialized"))
-        return undefined as never
-      }
+      const currentState = yield* getCurrentState()
       return currentState.currentVersion
     }),
   
@@ -133,21 +133,17 @@ export const ImmutableDocumentManager: DocumentManager = {
     Effect.gen(function* () {
       const metrics = yield* MetricsCollector
       const errorHandler = yield* ErrorHandler
-      
+
       yield* metrics.startTiming('document-mutation')
-      
-      const currentState = globalThis.__ASYNCAPI_DOCUMENT_STATE
-      if (!currentState) {
-        yield* Effect.fail(new Error("Document state not initialized"))
-        return undefined as never // This never executes due to Effect.fail
-      }
-      
+
+      const currentState = yield* getCurrentState()
+
       // Create deep copy of current document
       const currentDocument = JSON.parse(JSON.stringify(currentState.currentDocument)) as AsyncAPIObject
-        
+
         // Apply mutation immutably using proper Effect composition
         const mutationResult = yield* applyMutation<T>(currentDocument, mutation)
-        
+
         if (!mutationResult.success) {
           yield* errorHandler.handleCompilationError(
             ErrorFactory.compilationError(`Document mutation failed`, {
@@ -157,48 +153,30 @@ export const ImmutableDocumentManager: DocumentManager = {
             })
           )
           yield* Effect.fail(new Error("Document mutation operation failed"))
-          return undefined as never // This never executes due to Effect.fail
+          return undefined as never
         }
-        
+
         // Create mutation record
-        const documentMutation: DocumentMutation<T> = {
-          id: `mut_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        const documentMutation = createMutationRecord<T>({
           type: mutation.type,
           path: mutation.path,
           oldValue: mutationResult.oldValue,
           newValue: mutation.value,
-          timestamp: Date.now(),
           description: `Mutation at ${mutation.path.join('.')}`
-        }
-        
-        // Create new version
-        const newVersion: DocumentVersion = {
-          id: `ver_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-          version: currentState.currentVersion + 1,
-          timestamp: Date.now(),
-          document: mutationResult.document,
-          mutations: [...currentState.currentMutations, documentMutation],
-          description: 'Document mutation'
-        }
-        
-        // Update global state
-        globalThis.__ASYNCAPI_DOCUMENT_STATE = {
-          currentDocument: mutationResult.document,
-          currentVersion: newVersion.version,
-          currentMutations: newVersion.mutations,
-          versionHistory: [...currentState.versionHistory, newVersion],
-          mutationHistory: [...currentState.mutationHistory, documentMutation]
-        }
-        
+        })
+
+        // Append mutation and update state
+        yield* appendMutation(currentState, documentMutation, mutationResult.document)
+
         // Validate new document
         const isValid = yield* ImmutableDocumentManager.validateDocument(mutationResult.document)
         if (!isValid) {
           // Rollback on validation failure
           yield* ImmutableDocumentManager.rollbackToVersion(currentState.versionHistory[0]?.id ?? 'initial')
           yield* Effect.fail(new Error("Document validation failed, rolled back to previous version"))
-          return undefined as never // This never executes due to Effect.fail
+          return undefined as never
         }
-        
+
         yield* metrics.endTiming('document-mutation')
         yield* metrics.recordMetrics({
           timestamp: Date.now(),
@@ -209,7 +187,7 @@ export const ImmutableDocumentManager: DocumentManager = {
           cacheMisses: 0,
           documentsProcessed: 1
         })
-        
+
         return mutationResult.document
     }),
   
@@ -217,22 +195,18 @@ export const ImmutableDocumentManager: DocumentManager = {
     Effect.gen(function* () {
       const metrics = yield* MetricsCollector
       const errorHandler = yield* ErrorHandler
-      
+
       yield* metrics.startTiming('atomic-document-mutation')
-      
-      const currentState = globalThis.__ASYNCAPI_DOCUMENT_STATE
-      if (!currentState) {
-        yield* Effect.fail(new Error("Document state not initialized"))
-        return undefined as never // This never executes due to Effect.fail
-      }
-      
+
+      const currentState = yield* getCurrentState()
+
       // Apply mutations sequentially to ensure atomicity
       let currentDocument = currentState.currentDocument
       const appliedMutations: DocumentMutation[] = []
-      
+
       for (const mutation of mutations) {
         const mutationResult = yield* applyMutation<T>(currentDocument, mutation)
-        
+
         if (!mutationResult.success) {
           // Rollback all mutations on failure
           yield* errorHandler.handleCompilationError(
@@ -243,75 +217,58 @@ export const ImmutableDocumentManager: DocumentManager = {
             })
           )
           yield* Effect.fail(new Error(`Atomic mutation failed: operation unsuccessful`))
-          return undefined as never // This never executes due to Effect.fail
+          return undefined as never
         }
-        
-        const documentMutation: DocumentMutation<T> = {
-          id: `mut_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+
+        const documentMutation = createMutationRecord<T>({
           type: mutation.type,
           path: mutation.path,
           oldValue: mutationResult.oldValue,
           newValue: mutation.value,
-          timestamp: Date.now(),
           description: `Atomic mutation at ${mutation.path.join('.')}`
-        }
-        
+        })
+
         appliedMutations.push(documentMutation)
         currentDocument = mutationResult.document
       }
-      
-      // Create single atomic version
-      const newVersion: DocumentVersion = {
-        id: `ver_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        version: currentState.currentVersion + 1,
-        timestamp: Date.now(),
-        document: currentDocument,
-        mutations: [...currentState.currentMutations, ...appliedMutations],
-        description: `Atomic document mutation with ${mutations.length} changes`
-      }
-      
-      // Update global state
-      globalThis.__ASYNCAPI_DOCUMENT_STATE = {
+
+      // Append all mutations atomically
+      yield* appendAtomicMutations(
+        currentState,
+        appliedMutations,
         currentDocument,
-        currentVersion: newVersion.version,
-        currentMutations: newVersion.mutations,
-        versionHistory: [...currentState.versionHistory, newVersion],
-        mutationHistory: [...currentState.mutationHistory, ...appliedMutations]
-      }
-      
+        `Atomic document mutation with ${mutations.length} changes`
+      )
+
       yield* metrics.endTiming('atomic-document-mutation')
       return currentDocument
     }),
   
   rollbackToVersion: (versionId: string) =>
     Effect.gen(function* () {
-      const currentState = globalThis.__ASYNCAPI_DOCUMENT_STATE
-      if (!currentState) {
-        yield* Effect.fail(new Error("Document state not initialized"))
-        return undefined as never // This never executes due to Effect.fail
-      }
-      
+      const currentState = yield* getCurrentState()
+
       const targetVersion = currentState.versionHistory.find(v => v.id === versionId)
       if (!targetVersion) {
         yield* Effect.fail(new Error(`Version ${versionId} not found`))
-        return undefined as never // This never executes due to Effect.fail
+        return undefined as never
       }
-      
+
       // Update state to target version
-      globalThis.__ASYNCAPI_DOCUMENT_STATE = {
+      yield* updateDocumentState({
         currentDocument: targetVersion.document,
         currentVersion: targetVersion.version,
         currentMutations: targetVersion.mutations,
         versionHistory: currentState.versionHistory.slice(
-          0, 
+          0,
           currentState.versionHistory.findIndex(v => v.id === versionId) + 1
         ),
         mutationHistory: currentState.mutationHistory.slice(
-          0, 
+          0,
           currentState.mutationHistory.findIndex(m => targetVersion.mutations.some(tm => tm.id === m.id)) + 1
         )
-      }
-      
+      })
+
       yield* Effect.logInfo(`🔄 Rolled back to version ${targetVersion.version} (${versionId})`)
       return targetVersion.document
     }),
@@ -417,15 +374,11 @@ export const DocumentUtils = {
    */
   getHealthMetrics: () =>
     Effect.gen(function* () {
-      const currentState = globalThis.__ASYNCAPI_DOCUMENT_STATE
-      if (!currentState) {
-        yield* Effect.fail(new Error("Document state not initialized"))
-        return undefined as never // This never executes due to Effect.fail
-      }
-      
+      const currentState = yield* getCurrentState()
+
       const errorHandler = yield* ErrorHandler
       const errorSummary = yield* errorHandler.getErrorSummary()
-      
+
       return {
         version: currentState.currentVersion,
         totalMutations: currentState.mutationHistory.length,
