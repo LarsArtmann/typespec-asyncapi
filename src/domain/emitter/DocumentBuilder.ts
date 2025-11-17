@@ -112,7 +112,7 @@ export class DocumentBuilder {
 					asyncapi: ASYNCAPI_VERSIONS.CURRENT,
 					info: {
 						title: "AsyncAPI Specification",
-						version: "1.0.0",
+						version: API_VERSIONS.DEFAULT,
 						description: `Generated from TypeSpec with ${DEFAULT_CONFIG.LIBRARY_NAME}`,
 					},
 					channels: {},
