@@ -13,7 +13,7 @@ import { createChannelDefinition } from "../../utils/asyncapi-helpers.js"
 import { railwayLogging } from "../../utils/effect-helpers.js"
 
 // 🔥 CRITICAL FIX: Apply branded types to eliminate type safety waste
-import { ChannelName, OperationName } from "../../types/branded-types.js"
+import type { ChannelName, OperationName } from "../../types/branded-types.js"
 
 /**
  * Process a single TypeSpec operation into AsyncAPI operation

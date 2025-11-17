@@ -9,7 +9,7 @@ import type {ChannelObject, OperationObject} from "@asyncapi/parser/esm/spec-typ
 import {getAsyncAPIAction, getChannelPath, getOperationType} from "./typespec-helpers.js"
 
 // 🔥 CRITICAL FIX: Apply branded types to eliminate type safety waste
-import { ChannelName, OperationName, MessageName } from "../types/branded-types.js"
+import type { ChannelName, OperationName } from "../types/branded-types.js"
 
 
 /**
@@ -48,6 +48,7 @@ export function createOperationDefinition(op: Operation, program: Program, chann
 	const operationName: OperationName = op.name as OperationName
 
 	return {
+		name: operationName,
 		action,
 		channel: {$ref: `#/channels/${channelName}`},
 		summary: getDoc(program, op) ?? `Operation ${op.name}`,

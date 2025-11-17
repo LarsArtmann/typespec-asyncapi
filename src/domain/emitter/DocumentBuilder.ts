@@ -22,7 +22,7 @@ import { ASYNCAPI_VERSIONS } from "../../constants/index.js"
 import { DEFAULT_CONFIG } from "../../constants/defaults.js"
 
 // 🔥 CRITICAL FIX: Import branded types to eliminate type safety waste
-import { ChannelName, OperationName, MessageName, SchemaName, ServerName, SecuritySchemeName } from "../../types/branded-types.js"
+import type { ChannelName, OperationName, MessageName, SchemaName, ServerName, SecuritySchemeName } from "../../types/branded-types.js"
 
 // Standardized error handling
 import { 
@@ -115,7 +115,7 @@ export class DocumentBuilder {
 					asyncapi: ASYNCAPI_VERSIONS.CURRENT,
 					info: {
 						title: "AsyncAPI Specification",
-						version: API_VERSIONS.DEFAULT,
+						version: "1.0.0",
 						description: `Generated from TypeSpec with ${DEFAULT_CONFIG.LIBRARY_NAME}`,
 					},
 					channels: {},
