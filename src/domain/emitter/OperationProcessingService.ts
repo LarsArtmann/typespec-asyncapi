@@ -12,6 +12,9 @@ import type { AsyncAPIObject, OperationObject } from "@asyncapi/parser/esm/spec-
 import { createChannelDefinition } from "../../utils/asyncapi-helpers.js"
 import { railwayLogging } from "../../utils/effect-helpers.js"
 
+// 🔥 CRITICAL FIX: Apply branded types to eliminate type safety waste
+import { ChannelName, OperationName } from "../../types/branded-types.js"
+
 /**
  * Process a single TypeSpec operation into AsyncAPI operation
  */
@@ -19,23 +22,24 @@ export const processSingleOperation = (
 	operation: Operation,
 	asyncApiDoc: AsyncAPIObject,
 	program: Program
-): Effect.Effect<{ channelName: string; operation: OperationObject; messageSchema?: Record<string, unknown> }, never> =>
+): Effect.Effect<{ channelName: ChannelName; operation: OperationObject; messageSchema?: Record<string, unknown> }, never> =>
 	Effect.gen(function* () {
 		yield* railwayLogging.logDebugGeneration("operation", operation.name, {
 			type: operation.returnType?.kind || 'unknown',
 			parameters: operation.parameters?.properties?.size || 0
 		})
 
+		// 🔥 CRITICAL FIX: Apply branded types for type safety
 		// Extract operation metadata using TypeSpec helpers
 		const operationInfo = {
-			name: operation.name,
+			name: operation.name as OperationName,
 			description: getDoc(program, operation) ?? `Generated from TypeSpec operation: ${operation.name}`,
 			summary: getDoc(program, operation) ?? `${operation.name} operation`
 		}
 
 		// Generate channel name from operation
 		const channelDefinition = createChannelDefinition(operation, program)
-		const channelName = channelDefinition.name
+		const channelName: ChannelName = channelDefinition.name
 
 		// Convert parameters to JSON schema if present
 		const parameters = operation.parameters?.properties
