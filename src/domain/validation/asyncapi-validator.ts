@@ -78,12 +78,12 @@ export class AsyncAPIValidator {
 	}
 
 	/**
-	 * Legacy synchronous initialize for backward compatibility
-	 * @deprecated Use initializeEffect() for proper Railway programming
+	 * Async initialize for proper Railway programming
+	 * Replaced Effect.runSync with Effect.runPromise for non-blocking execution
 	 */
-	initialize(): void {
-		// Use Effect.runSync to maintain backward compatibility
-		this.initializeEffect().pipe(Effect.runSync)
+	async initialize(): Promise<void> {
+		// Use Effect.runPromise for proper async execution (no event loop blocking)
+		await this.initializeEffect().pipe(Effect.runPromise)
 	}
 
 	/**

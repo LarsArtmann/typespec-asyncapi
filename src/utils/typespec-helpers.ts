@@ -228,20 +228,17 @@ export function buildServersFromNamespaces(program: Program): ServersObject {
 /**
  * Extract host from server URL (remove protocol prefix)
  * Utility for AsyncAPI server object generation
+ *
+ * Uses try/catch instead of Effect.TS since URL parsing is synchronous
+ * and this is a simple utility function.
  */
 function extractHostFromUrl(url: string): string {
-	return Effect.runSync(
-		Effect.gen(function* () {
-			const urlObj = new URL(url)
-			return urlObj.host
-		}).pipe(
-			Effect.catchAll((error) =>
-				Effect.gen(function* () {
-					yield* Effect.logWarning(`⚠️  URL parsing failed for ${String(url)}: ${String(error)}`)
-					// If URL parsing fails, return as-is
-					return url
-				})
-			)
-		)
-	)
+	// eslint-disable-next-line no-restricted-syntax -- JUSTIFIED: Simple sync utility for URL parsing. try/catch appropriate for synchronous URL constructor which can throw. No Effect.TS overhead needed for simple string parsing.
+	try {
+		const urlObj = new URL(url)
+		return urlObj.host
+	} catch {
+		// If URL parsing fails, return as-is (graceful degradation)
+		return url
+	}
 }
