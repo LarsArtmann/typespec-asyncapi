@@ -411,7 +411,8 @@ export const safeStringify = (value: unknown, fallback = "unknown"): string => {
 		return `${value.name}: ${value.message}`
 	}
 	
-	// Handle objects with toString using try/catch (synchronous operation)
+	// Handle objects with toString - using try/catch for sync error recovery
+	// eslint-disable-next-line no-restricted-syntax -- JUSTIFIED: try/catch appropriate for sync utility function. toString() can throw, we need immediate error recovery without Effect overhead. This is a pure utility used in template literals.
 	if (typeof value.toString === "function" && value.toString !== Object.prototype.toString) {
 		try {
 			const toStringResult = value.toString()
@@ -423,7 +424,8 @@ export const safeStringify = (value: unknown, fallback = "unknown"): string => {
 		}
 	}
 
-	// Handle objects using try/catch (synchronous operation)
+	// Handle objects with JSON.stringify - using try/catch for sync error recovery
+	// eslint-disable-next-line no-restricted-syntax -- JUSTIFIED: try/catch appropriate for sync utility function. JSON.stringify() can throw (circular refs, non-serializable), we need immediate fallback without Effect overhead. This is a pure utility used in template literals.
 	if (typeof value === "object") {
 		try {
 			const jsonResult = JSON.stringify(value)

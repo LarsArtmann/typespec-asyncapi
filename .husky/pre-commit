@@ -1,0 +1,26 @@
+#!/bin/sh
+
+# Pre-commit quality gate - ensures all changes pass build, lint, and tests
+# Prevents broken code from being committed
+
+echo "🔍 Running pre-commit quality checks..."
+
+echo "📦 Building TypeScript..."
+just build || {
+    echo "❌ Build failed! Fix TypeScript errors before committing."
+    exit 1
+}
+
+echo "🔎 Running ESLint..."
+just lint || {
+    echo "❌ Lint failed! Fix ESLint errors before committing."
+    exit 1
+}
+
+echo "🧪 Running tests..."
+bun test || {
+    echo "❌ Tests failed! Fix failing tests before committing."
+    exit 1
+}
+
+echo "✅ All quality checks passed! Proceeding with commit..."

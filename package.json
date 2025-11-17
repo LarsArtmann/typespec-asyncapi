@@ -92,7 +92,8 @@
     "alpha-release": "bun run clean && bun run build && bun run test && bun run lint",
     "prepublishOnly": "bun run check && bun run build && bun run test",
     "version": "bun run build && bun run test && git add .",
-    "postversion": "git push && git push --tags"
+    "postversion": "git push && git push --tags",
+    "prepare": "husky"
   },
   "files": [
     "dist/",
@@ -145,6 +146,8 @@
     "asyncapi-validator": "^5.1.1",
     "eslint": "^9.39.1",
     "glob": "^11.0.3",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.6",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.46.3",
     "vitest": "^4.0.8"
