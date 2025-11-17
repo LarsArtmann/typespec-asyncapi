@@ -1,12 +1,20 @@
-export function createOperationDefinition(op: Operation, program: Program, channelName: ChannelName): { name: OperationName, definition: OperationObject } {
+import type { Operation, Program } from "@typespec/compiler"
+import { getDoc } from "@typespec/compiler"
+import type { OperationObject } from "@asyncapi/parser/esm/spec-types/v3.js"
+import { getOperationType, getAsyncAPIAction } from "./typespec-helpers.js"
+import type { ChannelName, OperationName } from "../types/branded-types.js"
+import { unbrand } from "../types/branded-types.js"
+
+export function createChannelDefinition(op: Operation, program: Program): { name: ChannelName; definition: OperationObject } {
 	const operationType = getOperationType(op, program)
 	const action = getAsyncAPIAction(operationType)
 	
 	// 🔥 CRITICAL FIX: Use branded types for type safety
 	const operationName: OperationName = op.name as OperationName
+	const channelName: ChannelName = unbrand(operationName) as ChannelName // Convert to string then brand as ChannelName
 
 	return {
-		name: operationName,
+		name: channelName,
 		definition: {
 			action,
 			channel: {$ref: `#/channels/${channelName}`},
