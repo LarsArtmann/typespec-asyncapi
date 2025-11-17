@@ -24,6 +24,37 @@ const PROTOCOL_SCHEMA = Schema.Literal("kafka", "amqp", "mqtt", "nats", "http", 
 const ASYNCAPI_VERSION_SCHEMA = Schema.Literal("3.0.0")
 
 /**
+ * Common Schema Helpers - Eliminate duplication across AsyncAPI schemas
+ */
+
+/** Tag schema - used in messages, operations, channels, and document */
+const TAG_SCHEMA = Schema.Struct({
+	name: Schema.String,
+	description: Schema.optional(Schema.String)
+})
+
+/** Optional array of tags */
+const OPTIONAL_TAGS_SCHEMA = Schema.optional(Schema.Array(TAG_SCHEMA))
+
+/** External documentation schema - used across multiple AsyncAPI objects */
+const EXTERNAL_DOCS_SCHEMA = Schema.Struct({
+	description: Schema.String,
+	url: Schema.String
+})
+
+/** Optional external docs */
+const OPTIONAL_EXTERNAL_DOCS_SCHEMA = Schema.optional(EXTERNAL_DOCS_SCHEMA)
+
+/** Optional string-keyed record with unknown values (for bindings, parameters, etc.) */
+const OPTIONAL_RECORD_SCHEMA = Schema.optional(Schema.Record({
+	key: Schema.String,
+	value: Schema.Unknown
+}))
+
+/** Reference schema - for $ref patterns */
+const REF_SCHEMA = Schema.Struct({$ref: Schema.String})
+
+/**
  * AsyncAPI Info Schema - Basic API metadata
  */
 const INFO_SCHEMA = Schema.Struct({
@@ -64,10 +95,7 @@ const SERVER_SCHEMA = Schema.Struct({
 		value: SERVER_VARIABLE_SCHEMA
 	})),
 	security: Schema.optional(Schema.Array(Schema.String)),
-	bindings: Schema.optional(Schema.Record({
-		key: Schema.String,
-		value: Schema.Unknown
-	}))
+	bindings: OPTIONAL_RECORD_SCHEMA
 })
 
 /**
@@ -76,7 +104,7 @@ const SERVER_SCHEMA = Schema.Struct({
 const MESSAGE_SCHEMA = Schema.Struct({
 	messageId: Schema.optional(Schema.String),
 	payload: Schema.optional(Schema.Unknown),
-	headers: Schema.optional(Schema.Record({ key: Schema.String, value: Schema.Unknown })),
+	headers: OPTIONAL_RECORD_SCHEMA,
 	correlationId: Schema.optional(Schema.Unknown),
 	schemaFormat: Schema.optional(Schema.String),
 	contentType: Schema.optional(Schema.String),
@@ -84,15 +112,9 @@ const MESSAGE_SCHEMA = Schema.Struct({
 	title: Schema.optional(Schema.String),
 	summary: Schema.optional(Schema.String),
 	description: Schema.optional(Schema.String),
-	tags: Schema.optional(Schema.Array(Schema.Struct({
-		name: Schema.String,
-		description: Schema.optional(Schema.String)
-	}))),
-	externalDocs: Schema.optional(Schema.Struct({
-		description: Schema.String,
-		url: Schema.String
-	})),
-	bindings: Schema.optional(Schema.Record({ key: Schema.String, value: Schema.Unknown }))
+	tags: OPTIONAL_TAGS_SCHEMA,
+	externalDocs: OPTIONAL_EXTERNAL_DOCS_SCHEMA,
+	bindings: OPTIONAL_RECORD_SCHEMA
 })
 
 /**
@@ -100,28 +122,19 @@ const MESSAGE_SCHEMA = Schema.Struct({
  */
 const OPERATION_SCHEMA = Schema.Struct({
 	action: OPERATION_ACTION_SCHEMA,
-	channel: Schema.Union(
-		Schema.String,
-		Schema.Struct({$ref: Schema.String})
-	),
+	channel: Schema.Union(Schema.String, REF_SCHEMA),
 	title: Schema.optional(Schema.String),
 	summary: Schema.optional(Schema.String),
 	description: Schema.optional(Schema.String),
-	tags: Schema.optional(Schema.Array(Schema.Struct({
-		name: Schema.String,
-		description: Schema.optional(Schema.String)
-	}))),
-	externalDocs: Schema.optional(Schema.Struct({
-		description: Schema.String,
-		url: Schema.String
-	})),
-	bindings: Schema.optional(Schema.Record({ key: Schema.String, value: Schema.Unknown })),
+	tags: OPTIONAL_TAGS_SCHEMA,
+	externalDocs: OPTIONAL_EXTERNAL_DOCS_SCHEMA,
+	bindings: OPTIONAL_RECORD_SCHEMA,
 	messages: Schema.optional(Schema.Record({
 		key: Schema.String,
 		value: Schema.Union(
 			Schema.Literal(null),
 			MESSAGE_SCHEMA,
-			Schema.Struct({$ref: Schema.String})
+			REF_SCHEMA
 		)
 	})),
 })
@@ -136,22 +149,16 @@ const CHANNEL_SCHEMA = Schema.Struct({
 		value: Schema.Union(
 			Schema.Literal(null),
 			MESSAGE_SCHEMA,
-			Schema.Struct({$ref: Schema.String})
+			REF_SCHEMA
 		)
 	})),
 	title: Schema.optional(Schema.String),
 	summary: Schema.optional(Schema.String),
 	description: Schema.optional(Schema.String),
-	tags: Schema.optional(Schema.Array(Schema.Struct({
-		name: Schema.String,
-		description: Schema.optional(Schema.String)
-	}))),
-	externalDocs: Schema.optional(Schema.Struct({
-		description: Schema.String,
-		url: Schema.String
-	})),
-	parameters: Schema.optional(Schema.Record({ key: Schema.String, value: Schema.Unknown })),
-	bindings: Schema.optional(Schema.Record({ key: Schema.String, value: Schema.Unknown }))
+	tags: OPTIONAL_TAGS_SCHEMA,
+	externalDocs: OPTIONAL_EXTERNAL_DOCS_SCHEMA,
+	parameters: OPTIONAL_RECORD_SCHEMA,
+	bindings: OPTIONAL_RECORD_SCHEMA
 })
 
 /**
@@ -167,15 +174,9 @@ export const ASYNCAPI_DOCUMENT_SCHEMA = Schema.Struct({
 	tags: Schema.optional(Schema.Array(Schema.Struct({
 		name: Schema.String,
 		description: Schema.optional(Schema.String),
-		externalDocs: Schema.optional(Schema.Struct({
-			description: Schema.String,
-			url: Schema.String
-		}))
+		externalDocs: OPTIONAL_EXTERNAL_DOCS_SCHEMA
 	}))),
-	externalDocs: Schema.optional(Schema.Struct({
-		description: Schema.String,
-		url: Schema.String
-	})),
+	externalDocs: OPTIONAL_EXTERNAL_DOCS_SCHEMA,
 	id: Schema.optional(Schema.String)
 })
 
