@@ -36,12 +36,16 @@ export function createChannelDefinition(op: Operation, program: Program): { name
 }
 
 /**
+ * 🔥 CRITICAL FIX: Apply branded types for type safety
  * Create operation definition from TypeSpec operation
  * Centralized operation definition creation
  */
-export function createOperationDefinition(op: Operation, program: Program, channelName: string): OperationObject {
+export function createOperationDefinition(op: Operation, program: Program, channelName: ChannelName): { name: OperationName, definition: OperationObject } {
 	const operationType = getOperationType(op, program)
 	const action = getAsyncAPIAction(operationType)
+	
+	// 🔥 CRITICAL FIX: Use branded types for type safety
+	const operationName: OperationName = op.name as OperationName
 
 	return {
 		action,
