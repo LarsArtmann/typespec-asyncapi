@@ -8,6 +8,9 @@ import {getDoc} from "@typespec/compiler"
 import type {ChannelObject, OperationObject} from "@asyncapi/parser/esm/spec-types/v3.js"
 import {getAsyncAPIAction, getChannelPath, getOperationType} from "./typespec-helpers.js"
 
+// 🔥 CRITICAL FIX: Apply branded types to eliminate type safety waste
+import { ChannelName, OperationName, MessageName } from "../types/branded-types.js"
+
 
 /**
  * Create channel definition from operation
