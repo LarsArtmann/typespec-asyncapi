@@ -15,7 +15,7 @@
  */
 
 import type { EmitContext } from "@typespec/compiler";
-import { emitFile, resolvePath } from "@typespec/compiler";
+import { emitFile } from "@typespec/compiler";
 import { Effect } from "effect";
 
 // Core emission services - keep all working pipeline components
