@@ -1,0 +1,7 @@
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/validation/asyncapi-validator.ts[0m:[0m[32m105[0m:				// [0m[1m[31mconsole.log[0m(`⚠️  INITIALIZATION TOOK ${initTime}ms - TOO SLOW!`)
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/validation/asyncapi-validator.ts[0m:[0m[32m140[0m:					// [0m[1m[31mconsole.log[0m(`🚀 FAST PATH TOOK ${fastPathTime}ms`)
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/validation/asyncapi-validator.ts[0m:[0m[32m146[0m:			// [0m[1m[31mconsole.log[0m(`🐌 FAST PATH CHECK TOOK ${fastPathTime}ms - FALLING THROUGH TO PARSER`)
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/validation/asyncapi-validator.ts[0m:[0m[32m166[0m:					// [0m[1m[31mconsole.log[0m(`🔍 RAW PARSER CALL TOOK ${duration}ms`)
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/models/validation-result.ts[0m:[0m[32m84[0m: *   [0m[1m[31mconsole.log[0m(result.value) // Type: T
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/models/validation-result.ts[0m:[0m[32m86[0m: *   [0m[1m[31mconsole.log[0m(result.errors) // Type: ValidationError[]
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/decorators/channel.ts[0m:[0m[32m14[0m://TODO: CRITICAL - Remove [0m[1m[31mconsole.log[0m style Effect.log calls - use proper structured logging

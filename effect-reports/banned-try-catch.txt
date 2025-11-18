@@ -1,0 +1,7 @@
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/plugins/core/PluginSystem.ts[0m:[0m[32m18[0m:export class PluginRegis[0m[1m[31mtry {[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/utils/typespec-helpers.ts[0m:[0m[32m237[0m:	[0m[1m[31mtry {[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/utils/standardized-errors.ts[0m:[0m[32m417[0m:		[0m[1m[31mtry {[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/utils/standardized-errors.ts[0m:[0m[32m430[0m:		[0m[1m[31mtry {[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/infrastructure/adapters/PluginRegistry.ts[0m:[0m[32m97[0m:export class PluginRegis[0m[1m[31mtry {[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/infrastructure/adapters/cloud-binding-plugin-registry.ts[0m:[0m[32m8[0m:export class CloudBindingPluginRegis[0m[1m[31mtry {[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/infrastructure/adapters/simple-plugin-registry.ts[0m:[0m[32m9[0m:export class SimplePluginRegis[0m[1m[31mtry {[0m

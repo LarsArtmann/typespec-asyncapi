@@ -1,0 +1,59 @@
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/validation/ValidationService.ts[0m:[0m[32m59[0m:		return obj [0m[1m[31m!= null[0m && typeof obj === 'object' && '$ref' in obj
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/validation/ValidationService.ts[0m:[0m[32m294[0m:				if (typeof error === 'object' && error [0m[1m[31m!== null[0m && 'what' in error) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/validation/asyncapi-validator.ts[0m:[0m[32m111[0m:			if (typeof inputDocument === 'object' && inputDocument [0m[1m[31m!== null[0m && 'asyncapi' in inputDocument) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/validation/asyncapi-validator.ts[0m:[0m[32m187[0m:			if (typeof parseResult === 'object' && parseResult [0m[1m[31m!== null[0m && 'document' in parseResult) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/documents/ImmutableDocumentManager.ts[0m:[0m[32m33[0m:    if (typeof perf === "object" && perf [0m[1m[31m!== null[0m) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/documents/ImmutableDocumentManager.ts[0m:[0m[32m36[0m:      if (typeof memoryAPI === "object" && memoryAPI [0m[1m[31m!== null[0m) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/documents/ImmutableDocumentManager.ts[0m:[0m[32m305[0m:      if (!(typeof info === 'object' && info [0m[1m[31m!== null[0m && 'title' in info && 'version' in info)) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/decorators/tags.ts[0m:[0m[32m183[0m:		if (priority ![0m[1m[31m== undefined[0m) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/decorators/server.ts[0m:[0m[32m177[0m:			} else if (value && typeof value === "object" && "value" in value && value.value ![0m[1m[31m== undefined[0m) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/utils/validation-helpers.ts[0m:[0m[32m75[0m:		doc["info"] [0m[1m[31m!== null[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/decorators/header.ts[0m:[0m[32m114[0m:	return getHeaderConfig(context, modelProperty) ![0m[1m[31m== undefined[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/utils/protocol-validation.ts[0m:[0m[32m41[0m:	if (value ![0m[1m[31m== undefined[0m) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/utils/protocol-validation.ts[0m:[0m[32m63[0m:	if (value ![0m[1m[31m== undefined[0m && value.trim() !== '' && !pattern.test(value)) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/utils/protocol-validation.ts[0m:[0m[32m77[0m:	if (value ![0m[1m[31m== undefined[0m && value.length > maxLength) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/utils/protocol-validation.ts[0m:[0m[32m91[0m:	if (value ![0m[1m[31m== undefined[0m && !allowedValues.includes(value)) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/utils/protocol-validation.ts[0m:[0m[32m105[0m:	if (statusCode ![0m[1m[31m== undefined[0m && (statusCode < 100 || statusCode > 599)) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/utils/standardized-errors.ts[0m:[0m[32m336[0m:		value =[0m[1m[31m== undefined[0m || value [0m[1m[31m=== null[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/utils/standardized-errors.ts[0m:[0m[32m394[0m:	if (value [0m[1m[31m=== null[0m) return "null"
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/utils/standardized-errors.ts[0m:[0m[32m395[0m:	if (value =[0m[1m[31m== undefined[0m) return "undefined"
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/utils/standardized-errors.ts[0m:[0m[32m451[0m:		   value [0m[1m[31m!== null[0m && 
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/models/path-templates.ts[0m:[0m[32m40[0m:	while ((match = TEMPLATE_VARIABLE_PATTERN.exec(pathTemplate)) [0m[1m[31m!== null[0m) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/models/path-templates.ts[0m:[0m[32m251[0m:	while ((match = regex.exec(pathTemplate)) [0m[1m[31m!== null[0m) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/types/security-scheme-types.ts[0m:[0m[32m148[0m:         value [0m[1m[31m!== null[0m &&
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/types/security-scheme-types.ts[0m:[0m[32m156[0m:  return "flows" in s && typeof s.flows === "object" && s.flows [0m[1m[31m!== null[0m
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/emitter/DocumentGenerator.ts[0m:[0m[32m76[0m:				if (typeof error === 'object' && error [0m[1m[31m!== null[0m && 'what' in error) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/emitter/DocumentGenerator.ts[0m:[0m[32m130[0m:				if (typeof error === 'object' && error [0m[1m[31m!== null[0m && 'what' in error) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/emitter/DocumentGenerator.ts[0m:[0m[32m356[0m:			} else if (value [0m[1m[31m=== null[0m || value =[0m[1m[31m== undefined[0m || value === '') {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/emitter/MessageProcessingService.ts[0m:[0m[32m49[0m:		if (schema && typeof schema === 'object' && schema [0m[1m[31m!== null[0m) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/infrastructure/performance/MetricsCollector.ts[0m:[0m[32m76[0m:        if (typeof perf === "object" && perf [0m[1m[31m!== null[0m) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/infrastructure/performance/MetricsCollector.ts[0m:[0m[32m79[0m:          if (typeof memoryAPI === "object" && memoryAPI [0m[1m[31m!== null[0m) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/infrastructure/adapters/http-plugin.ts[0m:[0m[32m73[0m:		if (typeof config !== 'object' || config [0m[1m[31m=== null[0m) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/infrastructure/configuration/validation.ts[0m:[0m[32m21[0m:	if (input["separate-files"] ![0m[1m[31m== undefined[0m) result["separate-files"] = input["separate-files"]
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/infrastructure/configuration/validation.ts[0m:[0m[32m22[0m:	if (input["file-naming"] ![0m[1m[31m== undefined[0m) result["file-naming"] = input["file-naming"]
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/infrastructure/configuration/validation.ts[0m:[0m[32m23[0m:	if (input["include-version-info"] ![0m[1m[31m== undefined[0m) result["include-version-info"] = input["include-version-info"]
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/infrastructure/configuration/validation.ts[0m:[0m[32m24[0m:	if (input["version-mappings"] ![0m[1m[31m== undefined[0m) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/infrastructure/configuration/validation.ts[0m:[0m[32m27[0m:	if (input["validate-version-compatibility"] ![0m[1m[31m== undefined[0m) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/infrastructure/configuration/validation.ts[0m:[0m[32m41[0m:	if (input.description ![0m[1m[31m== undefined[0m) result.description = input.description
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/infrastructure/configuration/validation.ts[0m:[0m[32m42[0m:	if (input.variables ![0m[1m[31m== undefined[0m) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/infrastructure/configuration/validation.ts[0m:[0m[32m47[0m:					...(value.description ![0m[1m[31m== undefined[0m && {description: value.description}),
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/infrastructure/configuration/validation.ts[0m:[0m[32m48[0m:					...(value.default ![0m[1m[31m== undefined[0m && {default: value.default}),
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/infrastructure/configuration/validation.ts[0m:[0m[32m49[0m:					...(value.enum ![0m[1m[31m== undefined[0m && {enum: [...value.enum]}),
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/infrastructure/configuration/validation.ts[0m:[0m[32m50[0m:					...(value.examples ![0m[1m[31m== undefined[0m && {examples: [...value.examples]}),
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/infrastructure/configuration/validation.ts[0m:[0m[32m55[0m:	if (input.security ![0m[1m[31m== undefined[0m) result.security = [...input.security]
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/infrastructure/configuration/validation.ts[0m:[0m[32m56[0m:	if (input.bindings ![0m[1m[31m== undefined[0m) result.bindings = {...input.bindings}
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/infrastructure/configuration/validation.ts[0m:[0m[32m80[0m:		if (input [0m[1m[31m=== null[0m || input =[0m[1m[31m== undefined[0m) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/infrastructure/configuration/validation.ts[0m:[0m[32m135[0m:		if (result[key] ![0m[1m[31m== undefined[0m) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/infrastructure/configuration/validation.ts[0m:[0m[32m149[0m:	if (result["default-servers"] ![0m[1m[31m== undefined[0m && result["default-servers"] [0m[1m[31m!== null[0m) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/infrastructure/configuration/validation.ts[0m:[0m[32m159[0m:	if (result["security-schemes"] ![0m[1m[31m== undefined[0m && result["security-schemes"] [0m[1m[31m!== null[0m) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/infrastructure/configuration/validation.ts[0m:[0m[32m169[0m:	if (result["versioning"] ![0m[1m[31m== undefined[0m) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/infrastructure/adapters/kafka-plugin.ts[0m:[0m[32m113[0m:		if (typeof config !== 'object' || config [0m[1m[31m=== null[0m) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/decorators/security-ENHANCED.ts[0m:[0m[32m74[0m:	return typeof value === 'object' && value [0m[1m[31m!== null[0m && 'kind' in value && (value as Model & {kind: string}).kind === 'Model'
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/decorators/security-ENHANCED.ts[0m:[0m[32m78[0m:	return typeof value === 'object' && value [0m[1m[31m!== null[0m && 'kind' in value && (value as Operation & {kind: string}).kind === 'Operation'
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/decorators/protocol.ts[0m:[0m[32m47[0m:		return value [0m[1m[31m!== null[0m && typeof value === 'object' && 'kind' in value && (value as {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/decorators/protocol.ts[0m:[0m[32m77[0m:								if (astNode.value ![0m[1m[31m== undefined[0m) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/decorators/protocol.ts[0m:[0m[32m91[0m:												if (nestedKey && nestedValue ![0m[1m[31m== undefined[0m) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/infrastructure/adapters/mqtt-plugin.ts[0m:[0m[32m140[0m:      if (mqttConfig.qos ![0m[1m[31m== undefined[0m && ![0, 1, 2].includes(mqttConfig.qos)) {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/infrastructure/adapters/mqtt-plugin.ts[0m:[0m[32m145[0m:      if (mqttConfig.retain ![0m[1m[31m== undefined[0m && typeof mqttConfig.retain !== "boolean") {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/infrastructure/adapters/mqtt-plugin.ts[0m:[0m[32m150[0m:      if (mqttConfig.keepAlive ![0m[1m[31m== undefined[0m && 
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/infrastructure/adapters/websocket-plugin.ts[0m:[0m[32m62[0m:			return typeof config === 'object' && config [0m[1m[31m!== null[0m

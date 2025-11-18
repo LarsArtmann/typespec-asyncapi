@@ -34,9 +34,10 @@ extern dec security(target: Operation | Namespace, config: Record<unknown>);
 
 /**
  * Define server configuration
- * @param config Server configuration object containing name and config
+ * @param name Server name identifier
+ * @param config Server configuration object
  */
-extern dec server(target: Namespace, config: Record<unknown>);
+extern dec server(target: Namespace, name: valueof string, config: Record<unknown>);
 
 /**
  * Mark an operation as a publish operation (sends messages to the channel)
