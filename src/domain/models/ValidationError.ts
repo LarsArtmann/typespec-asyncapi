@@ -1,4 +1,5 @@
 import type { StandardizedError } from "./StandardizedError.js"
+import {createStandardizedError, mergeContext} from "./ErrorBase.js"
 
 /**
  * Standardized error classes following Effect.TS patterns
@@ -13,14 +14,13 @@ export class ValidationError {
 	}
 
 	toStandardizedError(): StandardizedError {
-		return {
-			category: "validation_error",
-			code: "VALIDATION_FAILED",
-			message: this.message,
-			details: this.details,
-			timestamp: new Date(),
-			...(this.context ? { context: this.context } : { context: {} }),
-			recoverable: true
-		}
+		return createStandardizedError(
+			"validation_error",
+			"VALIDATION_FAILED",
+			this.message,
+			this.details as Record<string, unknown> || {},
+			this.context,
+			true
+		)
 	}
 }

@@ -1,4 +1,6 @@
 import type {StandardizedError} from "./StandardizedError.js"
+import {createStandardizedError, mergeContext} from "./ErrorBase.js"
+
 export class CompilationError {
 	readonly _tag = "CompilationError"
 
@@ -11,14 +13,13 @@ export class CompilationError {
 	}
 
 	toStandardizedError(): StandardizedError {
-		return {
-			category: "compilation_error",
-			code: "COMPILATION_FAILED",
-			message: this.message,
-			details: {filePath: this.filePath, lineNumber: this.lineNumber},
-			timestamp: new Date(),
-			...(this.context ? { context: this.context } : { context: {} }),
-			recoverable: false,
-		}
+		return createStandardizedError(
+			"compilation_error",
+			"COMPILATION_FAILED",
+			this.message,
+			{filePath: this.filePath, lineNumber: this.lineNumber},
+			this.context,
+			false
+		)
 	}
 }

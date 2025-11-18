@@ -1,4 +1,6 @@
 import type {StandardizedError} from "./StandardizedError.js"
+import {createStandardizedError, mergeContext} from "./ErrorBase.js"
+
 export class TypeResolutionError {
 	readonly _tag = "TypeResolutionError"
 
@@ -10,14 +12,13 @@ export class TypeResolutionError {
 	}
 
 	toStandardizedError(): StandardizedError {
-		return {
-			category: "type_error",
-			code: "TYPE_RESOLUTION_FAILED",
-			message: this.message,
-			details: {typeName: this.typeName},
-			timestamp: new Date(),
-			...(this.context ? { context: this.context } : { context: {} }),
-			recoverable: false,
-		}
+		return createStandardizedError(
+			"type_error",
+			"TYPE_RESOLUTION_FAILED",
+			this.message,
+			{typeName: this.typeName},
+			this.context,
+			false
+		)
 	}
 }

@@ -24,12 +24,36 @@ import type {Path} from "effect/ParseResult"
 // Import specific types for aliases (separate import to avoid conflicts)
 import type {AsyncAPIObject} from '@asyncapi/parser/esm/spec-types/v3.js'
 
-// CRITICAL TYPE SAFETY: Branded types for runtime validation
-export type OperationsFoundCount = string & { readonly brand: 'OperationsFoundCount' };
-export type GenerationNote = string & { readonly brand: 'GenerationNote' };
-
-// 🔥 FUCKING CRITICAL: AsyncAPI version enforcement
-export type AsyncAPIVersion = '3.0.0' & { readonly brand: 'AsyncAPIVersion' };
+// CRITICAL TYPE SAFETY: Import our comprehensive branded types system
+export type {
+	ChannelName,
+	OperationName,
+	MessageName,
+	SchemaName,
+	ServerName,
+	SecuritySchemeName,
+	
+	// Type guards
+	isValidChannelName,
+	isValidOperationName,
+	isValidSchemaName,
+	
+	// Converters with validation
+	toChannelName,
+	toOperationName,
+	toSchemaName,
+	
+	// Unsafe branding (when validation already done)
+	brandChannelName,
+	brandOperationName,
+	brandMessageName,
+	brandSchemaName,
+	brandServerName,
+	brandSecuritySchemeName,
+	
+	// Utility
+	unbrand
+} from "./branded-types.js"
 
 // ============================================================================
 // 🔥 CANONICAL VALIDATION TYPES - Single Source of Truth

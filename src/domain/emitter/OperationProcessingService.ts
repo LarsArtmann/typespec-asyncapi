@@ -11,6 +11,7 @@ import { getDoc } from "@typespec/compiler"
 import type { AsyncAPIObject, OperationObject } from "@asyncapi/parser/esm/spec-types/v3.js"
 import { createChannelDefinition } from "../../utils/asyncapi-helpers.js"
 import { railwayLogging } from "../../utils/effect-helpers.js"
+import { processItemsWithEffect, createProcessingContext } from "./SharedProcessingUtils.js"
 
 // 🔥 CRITICAL FIX: Apply branded types to eliminate type safety waste
 import type { ChannelName, OperationName } from "../../types/branded-types.js"

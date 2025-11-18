@@ -121,6 +121,35 @@ export const createUpdatedState = (
 })
 
 /**
+ * Creates and updates document state with new version and mutations
+ * Eliminates duplication between appendMutation and appendAtomicMutations
+ */
+const createVersionAndUpdateState = (
+	currentState: DocumentState,
+	document: AsyncAPIObject,
+	mutations: DocumentMutation[],
+	description: string
+) => {
+	const newVersion = createVersionRecord({
+		document,
+		mutations: [...currentState.currentMutations, ...mutations],
+		description,
+		currentVersion: currentState.currentVersion
+	})
+
+	return {
+		newVersion,
+		stateUpdate: updateDocumentState({
+			currentDocument: document,
+			currentVersion: newVersion.version,
+			currentMutations: newVersion.mutations,
+			versionHistory: [...currentState.versionHistory, newVersion],
+			mutationHistory: [...currentState.mutationHistory, ...mutations]
+		})
+	}
+}
+
+/**
  * Append mutation to state history
  *
  * @param currentState - Current document state
@@ -134,20 +163,14 @@ export const appendMutation = (
   document: AsyncAPIObject
 ) =>
   Effect.gen(function* () {
-    const newVersion = createVersionRecord({
-      document,
-      mutations: [...currentState.currentMutations, mutation],
-      description: 'Document mutation',
-      currentVersion: currentState.currentVersion
-    })
-
-    yield* updateDocumentState({
-      currentDocument: document,
-      currentVersion: newVersion.version,
-      currentMutations: newVersion.mutations,
-      versionHistory: [...currentState.versionHistory, newVersion],
-      mutationHistory: [...currentState.mutationHistory, mutation]
-    })
+    const { newVersion, stateUpdate } = createVersionAndUpdateState(
+		currentState,
+		document,
+		[mutation],
+		'Document mutation'
+	)
+    
+    yield* stateUpdate
 
     return newVersion
   })
@@ -168,20 +191,14 @@ export const appendAtomicMutations = (
   description: string
 ) =>
   Effect.gen(function* () {
-    const newVersion = createVersionRecord({
-      document,
-      mutations: [...currentState.currentMutations, ...mutations],
-      description,
-      currentVersion: currentState.currentVersion
-    })
-
-    yield* updateDocumentState({
-      currentDocument: document,
-      currentVersion: newVersion.version,
-      currentMutations: newVersion.mutations,
-      versionHistory: [...currentState.versionHistory, newVersion],
-      mutationHistory: [...currentState.mutationHistory, ...mutations]
-    })
+    const { newVersion, stateUpdate } = createVersionAndUpdateState(
+		currentState,
+		document,
+		mutations,
+		description
+	)
+    
+    yield* stateUpdate
 
     return newVersion
   })

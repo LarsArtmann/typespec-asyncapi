@@ -69,6 +69,21 @@ const applyMutation = <T>(document: AsyncAPIObject, mutation: DocumentUpdate<T>)
   })
 
 /**
+ * Creates a standardized mutation record with consistent formatting
+ */
+const createDocumentMutation = <T>(
+	mutation: { type: string; path: string[]; value: T },
+	mutationResult: { oldValue?: T; document: T },
+	descriptionPrefix: string = "Mutation"
+) => createMutationRecord<T>({
+	type: mutation.type,
+	path: mutation.path,
+	oldValue: mutationResult.oldValue,
+	newValue: mutation.value,
+	description: `${descriptionPrefix} at ${mutation.path.join('.')}`
+})
+
+/**
  * Document mutation operation interface
  */
 export type DocumentMutation<T = unknown> = {
@@ -156,13 +171,7 @@ export const ImmutableDocumentManager: DocumentManager = {
         }
 
         // Create mutation record
-        const documentMutation = createMutationRecord<T>({
-          type: mutation.type,
-          path: mutation.path,
-          oldValue: mutationResult.oldValue,
-          newValue: mutation.value,
-          description: `Mutation at ${mutation.path.join('.')}`
-        })
+        const documentMutation = createDocumentMutation(mutation, mutationResult, "Mutation")
 
         // Append mutation and update state
         yield* appendMutation(currentState, documentMutation, mutationResult.document)
@@ -219,13 +228,7 @@ export const ImmutableDocumentManager: DocumentManager = {
           return undefined as never
         }
 
-        const documentMutation = createMutationRecord<T>({
-          type: mutation.type,
-          path: mutation.path,
-          oldValue: mutationResult.oldValue,
-          newValue: mutation.value,
-          description: `Atomic mutation at ${mutation.path.join('.')}`
-        })
+        const documentMutation = createDocumentMutation(mutation, mutationResult, "Atomic mutation")
 
         appliedMutations.push(documentMutation)
         currentDocument = mutationResult.document
