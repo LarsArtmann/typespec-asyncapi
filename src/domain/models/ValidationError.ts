@@ -1,5 +1,5 @@
 import type { StandardizedError } from "./StandardizedError.js"
-import {createStandardizedError, mergeContext} from "./ErrorBase.js"
+import {createStandardizedError} from "./ErrorBase.js"
 
 /**
  * Standardized error classes following Effect.TS patterns
