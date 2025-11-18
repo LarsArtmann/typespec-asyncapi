@@ -29,7 +29,7 @@ import {
 	type ValidationError,
 	type ValidationWarning,
 	type ExtendedValidationResult
-} from "../types/ValidationTypes.js"
+} from "../models/validation-result.js"
 
 /**
  * 🛠️ HELPER: Build validation metrics consistently
@@ -55,13 +55,13 @@ const buildValidationResult = (
 		return {
 			...success(asyncApiDoc),
 			metrics,
-			summary: customSummary || `AsyncAPI document validation passed! (${metrics.duration.toFixed(2)}ms)`
+			summary: customSummary ?? `AsyncAPI document validation passed! (${metrics.duration.toFixed(2)}ms)`
 		}
 	} else {
 		return {
 			...failure(errors, warnings),
 			metrics,
-			summary: customSummary || `AsyncAPI document validation failed with ${errors.length} errors, ${warnings.length} warnings (${metrics.duration.toFixed(2)}ms)`
+			summary: customSummary ?? `AsyncAPI document validation failed with ${errors.length} errors, ${warnings.length} warnings (${metrics.duration.toFixed(2)}ms)`
 		}
 	}
 }
@@ -85,7 +85,6 @@ const validateWithSchemaConsistent = (document: unknown): Effect.Effect<unknown,
 		)
 	)
 }
-} from "../models/validation-result.js"
 
 // Re-export for external consumers
 export type { ExtendedValidationResult as ValidationResult }
@@ -232,8 +231,6 @@ export class ValidationService {
 			})
 
 			// Build validation result using helper (NO split brain)
-			const channelsCount = getChannelCount(asyncApiDoc)
-			const operationsCount = getOperationCount(asyncApiDoc)
 			const customSummary = errors.length === 0 
 				? `AsyncAPI document validation passed! ${channelsCount} channels, ${operationsCount} operations (${buildValidationMetrics(startTime).duration.toFixed(2)}ms)`
 				: `AsyncAPI document validation failed with ${errors.length} errors, ${warnings.length} warnings (${buildValidationMetrics(startTime).duration.toFixed(2)}ms)`
