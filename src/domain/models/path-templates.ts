@@ -28,7 +28,7 @@ export type SupportedTemplateVariable = typeof SUPPORTED_TEMPLATE_VARIABLES[numb
  * Validate template variables in a path string
  *
  * @param pathTemplate - Path template string with variables like "{cmd}/output.yaml"
- * @returns Validation result with detected variables and errors
+ * @returns Validation result using discriminated union for type-safe error handling
  */
 export function validatePathTemplate(pathTemplate: string): TemplateValidationResult {
 	const variables: string[] = []
@@ -56,12 +56,10 @@ export function validatePathTemplate(pathTemplate: string): TemplateValidationRe
 		)
 	}
 
-	return {
-		isValid: errors.length === 0,
-		variables,
-		unsupportedVariables,
-		errors,
-	}
+	// Return discriminated union based on validation state
+	return errors.length === 0
+		? { _tag: "valid", variables, unsupportedVariables }
+		: { _tag: "invalid", variables, unsupportedVariables, errors }
 }
 
 /**
@@ -216,7 +214,8 @@ export function resolvePathTemplateWithValidation(
 	// Validate template variables first
 	const validation = validatePathTemplate(pathTemplate)
 
-	if (!validation.isValid) {
+	// Use discriminated union for type-safe validation checking
+	if (validation._tag === "invalid") {
 		return Effect.fail(new Error(`Path template validation failed: ${validation.errors.join("; ")}`))
 	}
 

@@ -31,6 +31,9 @@ import { DocumentBuilder } from "../../domain/emitter/DocumentBuilder.js";
 // Plugin system - FIX "No plugin found" warnings
 import { registerBuiltInPlugins, pluginRegistry as _pluginRegistry } from "../../infrastructure/adapters/plugin-system.js";
 
+// Library state access for virtual filesystem bridging
+import { $lib } from "../../lib.js";
+
 /**
  * 🎯 TYPESPEC API INTEGRATION - Test Framework Compatibility
  * 
