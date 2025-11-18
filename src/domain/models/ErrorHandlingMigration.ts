@@ -16,7 +16,21 @@ export class ErrorHandlingMigration {
 		promiseFn: () => Promise<T>,
 		errorMapper?: (error: unknown) => StandardizedError,
 	) {
-		return Effect.tryPromise(promiseFn).pipe(
+		return ErrorHandlingMigration.handleEffectErrors(
+			Effect.tryPromise(promiseFn),
+			errorMapper
+		)
+	}
+
+	/**
+	 * Shared error handling pattern for Effect conversion
+	 * Eliminates duplication between promiseToEffect and syncToEffect
+	 */
+	private static handleEffectErrors<T>(
+		effect: Effect.Effect<T, unknown>,
+		errorMapper?: (error: unknown) => StandardizedError,
+	): Effect.Effect<T, StandardizedError> {
+		return effect.pipe(
 			Effect.catchAll(error => {
 				const standardError = errorMapper
 					? errorMapper(error)
@@ -33,13 +47,9 @@ export class ErrorHandlingMigration {
 		tryFn: () => T,
 		errorMapper?: (error: unknown) => StandardizedError,
 	) {
-		return Effect.sync(tryFn).pipe(
-			Effect.catchAll(error => {
-				const standardError = errorMapper
-					? errorMapper(error)
-					: ErrorHandlingMigration.mapUnknownError(error)
-				return Effect.fail(standardError)
-			})
+		return ErrorHandlingMigration.handleEffectErrors(
+			Effect.sync(tryFn),
+			errorMapper
 		)
 	}
 

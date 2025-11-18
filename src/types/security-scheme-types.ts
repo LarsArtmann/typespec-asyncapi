@@ -156,18 +156,23 @@ export const isOAuth2Scheme = (scheme: unknown): scheme is OAuth2Scheme => {
   return "flows" in s && typeof s.flows === "object" && s.flows !== null
 }
 
+/**
+ * Generic helper for checking schemes with name and in properties
+ * Eliminates duplication between isApiKeyScheme and isHttpApiKeyScheme
+ */
+const isSchemeWithNameAndIn = (scheme: unknown, expectedType: string): scheme is Record<string, unknown> & { name: string; in: string } => {
+	if (!hasType(scheme, expectedType)) return false
+	const s = scheme as Record<string, unknown>
+	return "name" in s && typeof s.name === "string" &&
+	       "in" in s && typeof s.in === "string"
+}
+
 export const isApiKeyScheme = (scheme: unknown): scheme is ApiKeyScheme => {
-  if (!hasType(scheme, "apiKey")) return false
-  const s = scheme as Record<string, unknown>
-  return "name" in s && typeof s.name === "string" &&
-         "in" in s && typeof s.in === "string"
+	return isSchemeWithNameAndIn(scheme, "apiKey")
 }
 
 export const isHttpApiKeyScheme = (scheme: unknown): scheme is HttpApiKeyScheme => {
-  if (!hasType(scheme, "httpApiKey")) return false
-  const s = scheme as Record<string, unknown>
-  return "name" in s && typeof s.name === "string" &&
-         "in" in s && typeof s.in === "string"
+	return isSchemeWithNameAndIn(scheme, "httpApiKey")
 }
 
 export const isHttpScheme = (scheme: unknown): scheme is HttpScheme => {

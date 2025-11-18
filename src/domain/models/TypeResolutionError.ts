@@ -1,5 +1,5 @@
 import type {StandardizedError} from "./StandardizedError.js"
-import {createStandardizedError, mergeContext} from "./ErrorBase.js"
+import {createStandardizedError} from "./ErrorBase.js"
 
 export class TypeResolutionError {
 	readonly _tag = "TypeResolutionError"
