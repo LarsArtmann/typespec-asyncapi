@@ -90,14 +90,35 @@ export default [
 			// === NAMING CONVENTIONS (WARNINGS) ===
 			"@typescript-eslint/naming-convention": [
 				"warn",
+				// Effect.TS service patterns and AsyncAPI internals - allow PascalCase and UPPER_CASE with underscores
 				{
-					selector: "variableLike",
-					format: ["camelCase", "UPPER_CASE"],
+					selector: "variable",
+					format: ["camelCase", "UPPER_CASE", "PascalCase"],
+					leadingUnderscore: "allowDouble",  // Allow __ prefix for __ASYNCAPI_* variables
+					filter: {
+						// Allow PascalCase for Effect.TS Context.Tag/Layer definitions
+						// Allow UPPER_CASE for __ASYNCAPI_ internal state
+						regex: "^(.*Service|.*Manager|.*Handler|.*Collector|.*Monitor|.*Factory|.*Utils|.*Live|__ASYNCAPI_.*)$",
+						match: true,
+					},
 				},
+				// All other variables must use camelCase or UPPER_CASE (no PascalCase)
+				{
+					selector: "variable",
+					format: ["camelCase", "UPPER_CASE"],
+					leadingUnderscore: "allow",  // Allow _ prefix for unused variables
+					filter: {
+						// Exclude the patterns above - this enforces camelCase for everything else
+						regex: "^(.*Service|.*Manager|.*Handler|.*Collector|.*Monitor|.*Factory|.*Utils|.*Live|__ASYNCAPI_.*)$",
+						match: false,
+					},
+				},
+				// Types always use PascalCase
 				{
 					selector: "typeLike",
 					format: ["PascalCase"],
 				},
+				// Parameters use camelCase with optional leading underscore
 				{
 					selector: "parameter",
 					format: ["camelCase"],
