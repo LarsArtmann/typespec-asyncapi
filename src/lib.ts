@@ -150,7 +150,7 @@ export const $lib = createTypeSpecLibrary({
 		"invalid-server-config": {
 			severity: "error",
 			messages: {
-				default: paramMessage`Server configuration '${"config"}' is not valid. Server configurations must include url and protocol.`,
+				default: paramMessage`Server configuration '${"serverName"}' is not valid. ${"error"} Server configurations must include url and protocol.`,
 			},
 		},
 		"duplicate-server-name": {

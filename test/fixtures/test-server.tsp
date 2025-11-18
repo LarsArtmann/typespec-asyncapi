@@ -1,24 +1,28 @@
-import "@larsartmann/typespec-asyncapi";
-
-using AsyncAPI;
+import "@lars-artmann/typespec-asyncapi";
+using TypeSpec.AsyncAPI;
 
 @server("production", #{
-  url: "kafka://broker.example.com:9092",
-  protocol: "kafka",
-  description: "Production Kafka cluster"
+  url: "api.example.com",
+  protocol: "https",
+  description: "Production API"
 })
-namespace TestNamespace {
-  model Event {
-    id: string;
-    timestamp: utcDateTime;
-    data: string;
-  }
-  
-  @channel("user.events")
-  @publish
-  op publishUserEvent(): Event;
-  
-  @channel("notifications")
-  @subscribe  
-  op subscribeNotifications(): Event;
+@server("development", #{
+  url: "dev-api.example.com",
+  protocol: "http",
+  description: "Development API"
+})
+namespace TestServer;
+
+@message(#{
+  name: "UserEvent",
+  title: "User Event Message"
+})
+model UserEvent {
+  userId: string;
+  event: string;
+  timestamp: utcDateTime;
 }
+
+@channel("user.events")
+@publish
+op publishUserEvent(): UserEvent;

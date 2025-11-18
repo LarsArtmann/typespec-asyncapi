@@ -109,22 +109,22 @@ export function generateAsyncAPIWithEffect(context: EmitContext): Effect.Effect<
 		const fileName = `${String(outputFile)}.${extension}`
 		yield* Effect.logInfo(`🔍 Emitting file: ${fileName}`)
 		
-		// 🔥 CRITICAL FIX: Direct emitFile call for test framework compatibility
-		yield* Effect.logInfo(`🔍 Emitting file: ${fileName}`)
-		
-		// Direct emitFile call using Effect.sync for test framework compatibility
-		// 🔥 CRITICAL FIX: Direct emitFile call inside Effect.gen for test framework compatibility
-		yield* Effect.logInfo(`🔍 Emitting file: ${fileName}`)
-		
-		// Direct emitFile call without any Effect wrapper - let TypeSpec handle it directly
-		await emitFile(context.program, {
-			path: fileName,
-			content: content,
+		yield* Effect.tryPromise({
+			try: () => emitFile(context.program, {
+				path: fileName,  // Simple path - no directory resolution
+				content: content,
+			}),
+			catch: (error) => createError({
+				what: "Failed to emit AsyncAPI file using TypeSpec API",
+				reassure: "This is an emit API error, but alternative approaches exist",
+				why: "The TypeSpec emitFile function failed",
+				fix: "Check file paths and content format",
+				escape: "Use direct file write approach",
+				severity: "error",
+				code: "EMIT_FILE_ERROR",
+				context: { outputFile: `${String(outputFile)}.${extension}`, error }
+			})
 		});
-		
-		yield* Effect.logInfo(`✅ File emitted: ${fileName}`)
-		
-		yield* Effect.logInfo(`✅ File emitted: ${fileName}`)
 		
 		// 🎉 ISSUE #180 RESOLUTION SUCCESS
 		const channelsCount = Object.keys(initialDoc.channels ?? {}).length;

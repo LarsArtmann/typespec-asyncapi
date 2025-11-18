@@ -18,25 +18,25 @@ extern dec channel(target: Operation, address: valueof string, description?: val
  * Apply message metadata to a model representing an AsyncAPI message
  * @param config Message configuration object
  */
-extern dec message(target: Model, config: Record<unknown>);
+extern dec message(target: Model, config: Model);
 
 /**
  * Define protocol-specific binding configuration
  * @param config Protocol binding configuration object
  */
-extern dec protocol(target: Operation | Model, config: Record<unknown>);
+extern dec protocol(target: Operation | Model, config: Model);
 
 /**
  * Apply security scheme information
  * @param config Security configuration object containing name and scheme
  */
-extern dec security(target: Operation | Namespace, config: Record<unknown>);
+extern dec security(target: Operation | Namespace, config: Model);
 
 /**
  * Define server configuration
- * @param config Server configuration object (merged name+config)
+ * @param config Server configuration object (validated for type safety)
  */
-extern dec server(target: Namespace, config: Record<unknown>);
+extern dec server(target: Namespace, config: unknown);
 
 /**
  * Mark an operation as a publish operation (sends messages to the channel)
@@ -65,13 +65,13 @@ extern dec correlationId(target: Model, location: valueof string, property?: val
  * Define protocol bindings (generic)
  * @param value Bindings configuration object
  */
-extern dec bindings(target: Operation | Model, value: Record<unknown>);
+extern dec bindings(target: Operation | Model, value: Model);
 
 /**
  * Define message header
  * @param name Header name
  * @param value Header value or configuration
  */
-extern dec header(target: Model | ModelProperty, name: valueof string, value: valueof string | Record<unknown>);
+extern dec header(target: Model | ModelProperty, name: valueof string, value: valueof string | Model);
 
 

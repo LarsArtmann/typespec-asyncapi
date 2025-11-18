@@ -29,6 +29,62 @@ import {
 	type ValidationError,
 	type ValidationWarning,
 	type ExtendedValidationResult
+} from "../types/ValidationTypes.js"
+
+/**
+ * 🛠️ HELPER: Build validation metrics consistently
+ */
+const buildValidationMetrics = (startTime: number) => ({
+	duration: performance.now() - startTime,
+	validatedAt: new Date()
+})
+
+/**
+ * 🛠️ HELPER: Build validation result consistently (NO split brain - discriminated union)
+ */
+const buildValidationResult = (
+	asyncApiDoc: AsyncAPIObject,
+	errors: ValidationError[],
+	warnings: ValidationWarning[],
+	startTime: number,
+	customSummary?: string
+): ExtendedValidationResult<AsyncAPIObject> => {
+	const metrics = buildValidationMetrics(startTime)
+	
+	if (errors.length === 0) {
+		return {
+			...success(asyncApiDoc),
+			metrics,
+			summary: customSummary || `AsyncAPI document validation passed! (${metrics.duration.toFixed(2)}ms)`
+		}
+	} else {
+		return {
+			...failure(errors, warnings),
+			metrics,
+			summary: customSummary || `AsyncAPI document validation failed with ${errors.length} errors, ${warnings.length} warnings (${metrics.duration.toFixed(2)}ms)`
+		}
+	}
+}
+
+/**
+ * 🛠️ HELPER: Schema validation with consistent error handling
+ */
+const validateWithSchemaConsistent = (document: unknown): Effect.Effect<unknown, unknown> => {
+	return Effect.flatten(
+		Effect.map(
+			Effect.try({
+				try: () => decodeAsyncAPIDocument(document),
+				catch: (error) => ({
+					message: `Schema validation failed: ${error instanceof Error ? error.message : String(error)}`,
+					keyword: "schema-validation",
+					instancePath: "",
+					schemaPath: "root"
+				})
+			}),
+			(result) => result
+		)
+	)
+}
 } from "../models/validation-result.js"
 
 // Re-export for external consumers
@@ -110,16 +166,8 @@ export class ValidationService {
 				})
 			}
 
-			// Build metrics (performance only - NO derived counts to avoid split brain)
-			const metrics = {
-				duration: performance.now() - startTime,
-				validatedAt: new Date()
-			}
-
-			// Use discriminated union - NO isValid boolean!
-			const result: ExtendedValidationResult<AsyncAPIObject> = errors.length === 0
-				? { ...success(asyncApiDoc), metrics, summary: `AsyncAPI document is valid (${metrics.duration.toFixed(2)}ms)` }
-				: { ...failure(errors, warnings), metrics, summary: `AsyncAPI document validation failed (${errors.length} errors, ${warnings.length} warnings)` }
+			// Build validation result using helper (NO split brain)
+			const result = buildValidationResult(asyncApiDoc, errors, warnings, startTime)
 
 			yield* Effect.log(`✅ AsyncAPI document validation completed (static method)!`)
 			return result
@@ -183,24 +231,14 @@ export class ValidationService {
 				})
 			})
 
-			// Build metrics (performance only - NO derived counts to avoid split brain)
-			const metrics = {
-				duration: performance.now() - startTime,
-				validatedAt: new Date()
-			}
-
-			// Use discriminated union - NO isValid boolean!
-			const result: ExtendedValidationResult<AsyncAPIObject> = errors.length === 0
-				? {
-					...success(asyncApiDoc),
-					metrics,
-					summary: `AsyncAPI document validation passed! ${channelsCount} channels, ${operationsCount} operations (${metrics.duration.toFixed(2)}ms)`
-				  }
-				: {
-					...failure(errors, warnings),
-					metrics,
-					summary: `AsyncAPI document validation failed with ${errors.length} errors, ${warnings.length} warnings (${metrics.duration.toFixed(2)}ms)`
-				  }
+			// Build validation result using helper (NO split brain)
+			const channelsCount = getChannelCount(asyncApiDoc)
+			const operationsCount = getOperationCount(asyncApiDoc)
+			const customSummary = errors.length === 0 
+				? `AsyncAPI document validation passed! ${channelsCount} channels, ${operationsCount} operations (${buildValidationMetrics(startTime).duration.toFixed(2)}ms)`
+				: `AsyncAPI document validation failed with ${errors.length} errors, ${warnings.length} warnings (${buildValidationMetrics(startTime).duration.toFixed(2)}ms)`
+			
+			const result = buildValidationResult(asyncApiDoc, errors, warnings, startTime, customSummary)
 
 			// Log based on discriminated union _tag
 			if (result._tag === "Success") {
@@ -606,39 +644,13 @@ export class ValidationService {
 	 * @returns Effect with validated AsyncAPI document or error
 	 */
 	validateWithSchema(document: unknown): Effect.Effect<unknown, unknown> {
-		return Effect.flatten(
-			Effect.map(
-				Effect.try({
-					try: () => decodeAsyncAPIDocument(document),
-					catch: (error) => ({
-						message: `Schema validation failed: ${error instanceof Error ? error.message : String(error)}`,
-						keyword: "schema-validation",
-						instancePath: "",
-						schemaPath: "root"
-					})
-				}),
-				(result) => result
-			)
-		)
+		return validateWithSchemaConsistent(document)
 	}
 
 	/**
 	 * 🔥 NEW: Static method for schema validation with unified error types
 	 */
 	static validateWithSchema(document: unknown): Effect.Effect<unknown, unknown> {
-		return Effect.flatten(
-			Effect.map(
-				Effect.try({
-					try: () => decodeAsyncAPIDocument(document),
-					catch: (error) => ({
-						message: `Schema validation failed: ${error instanceof Error ? error.message : String(error)}`,
-						keyword: "schema-validation",
-						instancePath: "",
-						schemaPath: "root"
-					})
-				}),
-				(result) => result
-			)
-		)
+		return validateWithSchemaConsistent(document)
 	}
 }

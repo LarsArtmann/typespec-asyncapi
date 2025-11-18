@@ -16,7 +16,6 @@ import { ErrorHandler, ErrorFactory } from "../../infrastructure/errors/Centrali
 import {
   getCurrentState,
   createMutationRecord,
-  createVersionRecord,
   updateDocumentState,
   appendMutation,
   appendAtomicMutations
