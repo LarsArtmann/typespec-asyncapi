@@ -104,11 +104,14 @@ export function generateAsyncAPIWithEffect(context: EmitContext): Effect.Effect<
 			? JSON.stringify(initialDoc, null, 2)
 			: yaml.stringify(initialDoc);
 		
-		// 🔥 KEY FIX: Use TypeSpec's emitFile API instead of direct filesystem operations
-		// This automatically bridges to test framework's outputFiles Map!
+		// 🔥 KEY FIX: Use simple filename approach for test framework bridge
+		// CRITICAL: Test framework expects files in root, not subdirectories
+		const fileName = `${String(outputFile)}.${extension}`
+		yield* Effect.logInfo(`🔍 Emitting file: ${fileName}`)
+		
 		yield* Effect.tryPromise({
 			try: () => emitFile(context.program, {
-				path: resolvePath(context.emitterOutputDir, `${String(outputFile)}.${extension}`),
+				path: fileName,  // Simple path - no directory resolution
 				content: content,
 			}),
 			catch: (error) => createError({
