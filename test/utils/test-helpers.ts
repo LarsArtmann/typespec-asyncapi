@@ -150,6 +150,59 @@ export async function compileAsyncAPISpecRaw(
 	
 	let outputFiles = result.fs?.fs || new Map<string, string>()
 	
+	Effect.log(`🔍 DEBUG parseAsyncAPIOutput: outputFiles size: ${outputFiles.size}`)
+	
+	// 🔥 CRITICAL FIX: If TestFileSystem is empty, check real filesystem
+	// This happens when emitFile writes to real FS instead of test framework
+	if (outputFiles.size === 0) {
+		Effect.log("🔍 TestFileSystem empty, reading from real filesystem")
+		
+		try {
+			// Import filesystem utilities
+			const fs = await import("node:fs/promises")
+			const path = await import("node:path")
+			const yaml = await import("yaml")
+			
+			// Check TypeSpec output directory (real FS)
+			const typeSpecOutputDir = path.join(process.cwd(), '@lars-artmann', 'typespec-asyncapi')
+			
+			// Read all files in output directory
+			const files = await fs.readdir(typeSpecOutputDir)
+			Effect.log(`📁 Found ${files.length} files in ${typeSpecOutputDir}`)
+			
+			// Look for AsyncAPI files - sort by modification time to get latest
+			const asyncapiFiles = files.filter(file => 
+				file.includes('asyncapi') && 
+				(file.endsWith('.yaml') || file.endsWith('.json'))
+			)
+			
+			Effect.log(`🔍 Found ${asyncapiFiles.length} AsyncAPI files: ${asyncapiFiles.join(', ')}`)
+			
+			// Get file stats to find the most recent
+			const fileStats = await Promise.all(
+				asyncapiFiles.map(async (file) => {
+					const filePath = path.join(typeSpecOutputDir, file)
+					const stats = await fs.stat(filePath)
+					return { file, mtime: stats.mtime, path: filePath }
+				})
+			)
+			
+			// Sort by modification time, get most recent
+			const latestFile = fileStats.sort((a, b) => b.mtime.getTime() - a.mtime.getTime())[0]
+			
+			if (latestFile) {
+				const content = await fs.readFile(latestFile.path, 'utf-8')
+				outputFiles.set(latestFile.file, content)
+				Effect.log(`✅ Loaded latest AsyncAPI file: ${latestFile.file} (${content.length} chars)`)
+				Effect.log(`🕐 Modified: ${latestFile.mtime.toISOString()}`)
+			}
+			
+			Effect.log(`📊 Final outputFiles count: ${outputFiles.size}`)
+		} catch (error) {
+			Effect.log(`❌ Failed to read from filesystem: ${error}`)
+		}
+	}
+	
 	// 🔥 CRITICAL FIX: If TestFileSystem is empty, check real filesystem
 	// This happens when emitFile writes to real FS instead of test framework
 	if (outputFiles.size === 0) {
@@ -341,6 +394,7 @@ export async function compileAsyncAPISpec(
 		Effect.log(`🔥 parseAsyncAPIOutput error: ${error}`)
 		throw error
 	}
+}
 
 /**
  * Compile TypeSpec and expect no errors
