@@ -1,9 +1,17 @@
 /**
-function findGeneratedFilesOnFilesystem(outputFile: string) {file: string, content: string} | null {
+ * 🔥 WORKAROUND: TypeSpec 1.6.0 filesystem fallback for test framework
+ *
+ * TypeSpec's emitFile API writes files but doesn't populate result.outputs Map.
+ * This function searches the filesystem for generated AsyncAPI files as a fallback.
+ *
+ * @param outputFile - Base output filename (e.g., "asyncapi")
+ * @returns File info {file, content} or null if not found
+ */
+function findGeneratedFilesOnFilesystem(outputFile: string): {file: string, content: string} | null {
 	const fs = require("fs");
 	const possiblePaths = ["./", "./tsp-output/", "./tsp-output/@lars-artmann/typespec-asyncapi/"];
 	const extensions = [".json", ".yaml"];
-	
+
 	for (const basePath of possiblePaths) {
 		for (const ext of extensions) {
 			const filePath = basePath + outputFile + ext;
@@ -18,12 +26,12 @@ function findGeneratedFilesOnFilesystem(outputFile: string) {file: string, conte
 			}
 		}
 	}
-	
+
 	return null;
 }
 
 /**
- * TypeSpec 1.4.0 EmitterTester-based test helpers
+ * TypeSpec 1.6.0 EmitterTester-based test helpers
  *
  * This replaces the old createTestWrapper approach with the proper
  * EmitterTester API that correctly passes options to emitters.
@@ -94,7 +102,24 @@ export async function compileAsyncAPI(
 	)
 
 	if (!outputFile) {
-		throw new Error("No AsyncAPI output generated")
+		// 🔥 WORKAROUND: TypeSpec 1.6.0 emitFile API doesn't populate result.outputs
+		// Use filesystem fallback to find generated files
+		const fallback = findGeneratedFilesOnFilesystem(options["output-file"] || "asyncapi");
+		if (fallback) {
+			console.log(`🔍 FALLBACK: Using file system search - found ${fallback.file}`);
+			const content = fallback.content;
+			const doc = fallback.file.endsWith(".json") ? JSON.parse(content) : YAML.parse(content);
+
+			return {
+				asyncApiDoc: doc,
+				diagnostics: result.program.diagnostics,
+				program: result.program,
+				outputs: {[fallback.file]: content},
+				outputFile: fallback.file,
+			};
+		}
+
+		throw new Error("No AsyncAPI output generated - check emitFile integration")
 	}
 
 	const content = result.outputs[outputFile]

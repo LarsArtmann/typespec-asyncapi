@@ -163,8 +163,39 @@ export async function compileAsyncAPISpecRaw(
 			const path = await import("node:path")
 			const yaml = await import("yaml")
 			
-			// Check TypeSpec output directory (real FS)
-			const typeSpecOutputDir = path.join(process.cwd(), '@lars-artmann', 'typespec-asyncapi')
+			// Check TypeSpec output directories (real FS)
+			// Try multiple possible locations where emitFile might write
+			const possibleDirs = [
+				process.cwd(), // Current directory
+				path.join(process.cwd(), 'tsp-output', '@lars-artmann', 'typespec-asyncapi'),
+				path.join(process.cwd(), '@lars-artmann', 'typespec-asyncapi'),
+				path.join(process.cwd(), 'tsp-output'),
+			]
+
+			let typeSpecOutputDir = process.cwd()
+			let filesFound = false
+
+			// Find first directory that exists and has files
+			for (const dir of possibleDirs) {
+				try {
+					const exists = await fs.access(dir).then(() => true).catch(() => false)
+					if (exists) {
+						const testFiles = await fs.readdir(dir)
+						if (testFiles.length > 0) {
+							typeSpecOutputDir = dir
+							filesFound = true
+							Effect.log(`📁 Using output directory: ${dir}`)
+							break
+						}
+					}
+				} catch {
+					continue
+				}
+			}
+
+			if (!filesFound) {
+				Effect.log(`⚠️  No output directory found, using: ${typeSpecOutputDir}`)
+			}
 			
 			// Read all files in output directory
 			const files = await fs.readdir(typeSpecOutputDir)
@@ -555,7 +586,7 @@ export async function compileTypeSpecWithDecorators(
  */
 export async function parseAsyncAPIOutput(outputFiles: Map<string, string | {
 	content: string
-}>, filename: string): Promise<AsyncAPIObject | string> {
+}>, filename: string = "asyncapi.yaml"): Promise<AsyncAPIObject | string> {
 	//TODO: refactor to use Effect.TS!
 
 	// 🔥 CRITICAL: Added debug logging at entry
