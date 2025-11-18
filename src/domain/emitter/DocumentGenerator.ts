@@ -18,9 +18,38 @@
  */
 
 import {Effect} from "effect"
-import {safeStringify} from "../../utils/standardized-errors.js"
+import {createError, type StandardizedError} from "../../utils/standardized-errors.js"
+import {ensureStandardizedErrorMapper} from "../../utils/effect-error-utils.js"
 import {stringify} from "yaml"
 import type {AsyncAPIObject} from "@asyncapi/parser/esm/spec-types/v3.js"
+
+/**
+ * Validate required info field
+ * Extracted from duplicated validation patterns for title and version fields
+ */
+function* validateRequiredInfoField(
+	document: AsyncAPIObject,
+	fieldName: "title" | "version",
+	config: {
+		why: string
+		fix: string
+		escape: string
+	}
+) {
+	const fieldValue = document.info[fieldName]
+	if (!fieldValue) {
+		yield* Effect.fail(createError({
+			what: `AsyncAPI document info section is missing required '${fieldName}' field`,
+			reassure: "This is a metadata validation issue",
+			why: config.why,
+			fix: config.fix,
+			escape: config.escape,
+			severity: "error" as const,
+			code: `MISSING_INFO_${fieldName.toUpperCase()}` as "MISSING_INFO_TITLE" | "MISSING_INFO_VERSION",
+			context: { hasInfo: !!document.info, infoKeys: Object.keys(document.info || {}) }
+		}))
+	}
+}
 import {
 	DEFAULT_SERIALIZATION_FORMAT,
 	SERIALIZATION_FORMAT_OPTION_JSON,
@@ -29,13 +58,8 @@ import {
 	type SerializationOptions,
 } from "../models/serialization-format-option.js"
 
-// Standardized error handling
-import { 
-	type StandardizedError, 
-	createError, 
-	failWith as _failWith, 
-	railway 
-} from "../../utils/standardized-errors.js"
+// Railway programming utilities (failWith and railway already imported from standardized-errors at top)
+import { failWith as _failWith, railway } from "../../utils/standardized-errors.js"
 
 export type DocumentStats = {
 	channels: number
@@ -72,20 +96,14 @@ export class DocumentGenerator {
 			const documentGenerator = new DocumentGenerator()
 			return yield* documentGenerator.serializeWithOptions(document, options)
 		}).pipe(
-			Effect.mapError((error: unknown): StandardizedError => {
-				if (typeof error === 'object' && error !== null && 'what' in error) {
-					return error as StandardizedError
-				}
-				return createError({
-					what: 'Document serialization failed',
-					reassure: 'This is a recoverable error that can be fixed',
-					why: `Unexpected error during serialization: ${safeStringify(error)}`,
-					fix: 'Check document structure and serialization options',
-					escape: 'Try with different serialization format',
-					severity: 'error' as const,
-					code: 'SERIALIZATION_ERROR'
-				})
-			})
+			Effect.mapError(ensureStandardizedErrorMapper({
+				what: 'Document serialization failed',
+				reassure: 'This is a recoverable error that can be fixed',
+				why: 'Unexpected error during serialization',
+				fix: 'Check document structure and serialization options',
+				escape: 'Try with different serialization format',
+				code: 'SERIALIZATION_ERROR'
+			}))
 		)
 	}
 
@@ -126,20 +144,14 @@ export class DocumentGenerator {
 					}))
 			}
 		}).pipe(
-			Effect.mapError((error: unknown): StandardizedError => {
-				if (typeof error === 'object' && error !== null && 'what' in error) {
-					return error as StandardizedError
-				}
-				return createError({
-					what: 'Document serialization failed',
-					reassure: 'This is a recoverable error that can be fixed',
-					why: `Unexpected error during serialization: ${safeStringify(error)}`,
-					fix: 'Check document structure and serialization options',
-					escape: 'Try with different serialization format',
-					severity: 'error' as const,
-					code: 'SERIALIZATION_ERROR'
-				})
-			})
+			Effect.mapError(ensureStandardizedErrorMapper({
+				what: 'Document serialization failed',
+				reassure: 'This is a recoverable error that can be fixed',
+				why: 'Unexpected error during serialization',
+				fix: 'Check document structure and serialization options',
+				escape: 'Try with different serialization format',
+				code: 'SERIALIZATION_ERROR'
+			}))
 		)
 	}
 
@@ -209,31 +221,17 @@ export class DocumentGenerator {
 				}))
 			}
 
-			if (!document.info.title) {
-				yield* Effect.fail(createError({
-					what: "AsyncAPI document info section is missing required 'title' field",
-					reassure: "This is a metadata validation issue",
-					why: "AsyncAPI specification requires 'info.title' to describe the API",
-					fix: "Add a 'title' field to the 'info' section with a descriptive API name",
-					escape: "Use a generic title like 'AsyncAPI Specification' as placeholder",
-					severity: "error" as const,
-					code: "MISSING_INFO_TITLE",
-					context: { hasInfo: !!document.info, infoKeys: Object.keys(document.info || {}) }
-				}))
-			}
+			yield* validateRequiredInfoField(document, "title", {
+				why: "AsyncAPI specification requires 'info.title' to describe the API",
+				fix: "Add a 'title' field to the 'info' section with a descriptive API name",
+				escape: "Use a generic title like 'AsyncAPI Specification' as placeholder"
+			})
 
-			if (!document.info.version) {
-				yield* Effect.fail(createError({
-					what: "AsyncAPI document info section is missing required 'version' field",
-					reassure: "This is a metadata validation issue",
-					why: "AsyncAPI specification requires 'info.version' to specify the API version",
-					fix: "Add a 'version' field to the 'info' section (e.g., '1.0.0')",
-					escape: "Use '1.0.0' as a default API version",
-					severity: "error" as const,
-					code: "MISSING_INFO_VERSION",
-					context: { hasInfo: !!document.info, infoKeys: Object.keys(document.info || {}) }
-				}))
-			}
+			yield* validateRequiredInfoField(document, "version", {
+				why: "AsyncAPI specification requires 'info.version' to specify the API version",
+				fix: "Add a 'version' field to the 'info' section (e.g., '1.0.0')",
+				escape: "Use '1.0.0' as a default API version"
+			})
 
 			// Validate AsyncAPI version format
 			const versionPattern = /^\d+\.\d+\.\d+$/

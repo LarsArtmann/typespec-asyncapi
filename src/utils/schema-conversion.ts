@@ -12,6 +12,27 @@ import type {SchemaObject} from "@asyncapi/parser/esm/spec-types/v3.js"
 import { globalTypeCache } from "./type-cache.js"
 
 /**
+ * Process a single model property and add it to the schema
+ * Extracted from duplicated property processing loops
+ */
+function* processModelProperty(
+	prop: ModelProperty,
+	program: Program,
+	properties: Record<string, SchemaObject>,
+	required: string[],
+	logPrefix: string = "📋 Processing property"
+) {
+	const name = prop.name
+	yield* Effect.log(`${logPrefix}: ${name} (type: ${prop.type.kind})`)
+
+	properties[name] = yield* convertPropertyToSchemaEffect(prop, program, name)
+
+	if (!prop.optional) {
+		required.push(name)
+	}
+}
+
+/**
  * Convert TypeSpec model to AsyncAPI schema object
  * Centralized from asyncapi-emitter.ts and emitter-with-effect.ts
  * Enhanced with Effect.TS error handling and comprehensive type support
@@ -52,14 +73,8 @@ export function convertModelToSchema(model: Model, program: Program): SchemaObje
 				// FALLBACK: Try direct properties access if walkPropertiesInherited fails
 				if (model.properties && model.properties.size > 0) {
 					yield* Effect.log(`🔧 Using fallback direct property access for model ${model.name}`)
-					for (const [name, prop] of model.properties) {
-						yield* Effect.log(`📋 Processing fallback property: ${name} (type: ${prop.type.kind})`)
-
-						properties[name] = yield* convertPropertyToSchemaEffect(prop, program, name)
-
-						if (!prop.optional) {
-							required.push(name)
-						}
+					for (const [, prop] of model.properties) {
+						yield* processModelProperty(prop, program, properties, required, "📋 Processing fallback property")
 					}
 				} else {
 					yield* Effect.log(`🚨 Model ${model.name} has no accessible properties`)
@@ -67,14 +82,7 @@ export function convertModelToSchema(model: Model, program: Program): SchemaObje
 			} else {
 				// Normal path: walkPropertiesInherited worked
 				for (const prop of props) {
-					const name = prop.name
-					yield* Effect.log(`📋 Processing property: ${name} (type: ${prop.type.kind})`)
-
-					properties[name] = yield* convertPropertyToSchemaEffect(prop, program, name)
-
-					if (!prop.optional) {
-						required.push(name)
-					}
+					yield* processModelProperty(prop, program, properties, required)
 				}
 			}
 

@@ -17,6 +17,7 @@ import type {
 	ReferenceObject
 } from "@asyncapi/parser/esm/spec-types/v3.js"
 import { emitterErrors, type StandardizedError, safeStringify } from "../../utils/standardized-errors.js"
+import { ensureStandardizedErrorMapperCustom } from "../../utils/effect-error-utils.js"
 import { PERFORMANCE_CONSTANTS } from "../../constants/defaults.js"
 
 // Import canonical validation types (no more split brain!)
@@ -325,15 +326,12 @@ export class ValidationService {
 				return sanitizedContent
 			}
 		}).pipe(
-			Effect.mapError((error: unknown): StandardizedError => {
-				if (typeof error === 'object' && error !== null && 'what' in error) {
-					return error as StandardizedError
-				}
-				return emitterErrors.validationFailure(
+			Effect.mapError(ensureStandardizedErrorMapperCustom(error =>
+				emitterErrors.validationFailure(
 					[`Unexpected validation error: ${safeStringify(error)}`],
 					{ content: content.substring(0, 100) + "..." }
 				)
-			})
+			))
 		)
 	}
 

@@ -1,7 +1,7 @@
 [0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/models/validation-result.ts[0m:[0m[32m94[0m: *     [0m[1m[31mthrow new[0m Error(result.errors[0].message)
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/emitter/DocumentBuilder.ts[0m:[0m[32m10[0m: * - Eliminates [0m[1m[31mthrow s[0mtatements and try/catch blocks
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/decorators/legacy-index.ts[0m:[0m[32m9[0m: * - Eliminates [0m[1m[31mthrow s[0mtatements and try/catch blocks
 [0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/types/branded-types.ts[0m:[0m[32m208[0m:		[0m[1m[31mthrow new[0m Error(
 [0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/types/branded-types.ts[0m:[0m[32m224[0m:		[0m[1m[31mthrow new[0m Error(
 [0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/types/branded-types.ts[0m:[0m[32m240[0m:		[0m[1m[31mthrow new[0m Error(
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/decorators/legacy-index.ts[0m:[0m[32m9[0m: * - Eliminates [0m[1m[31mthrow s[0mtatements and try/catch blocks
 [0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/emitter/DocumentGenerator.ts[0m:[0m[32m15[0m: * - Eliminates [0m[1m[31mthrow s[0mtatements and try/catch blocks
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/emitter/DocumentBuilder.ts[0m:[0m[32m10[0m: * - Eliminates [0m[1m[31mthrow s[0mtatements and try/catch blocks

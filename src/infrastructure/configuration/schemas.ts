@@ -55,6 +55,19 @@ const OPTIONAL_RECORD_SCHEMA = Schema.optional(Schema.Record({
 const REF_SCHEMA = Schema.Struct({$ref: Schema.String})
 
 /**
+ * Common metadata fields shared across AsyncAPI objects
+ * Extracted from duplicated field definitions in MESSAGE_SCHEMA, OPERATION_SCHEMA, and CHANNEL_SCHEMA
+ */
+const COMMON_METADATA_FIELDS = {
+	title: Schema.optional(Schema.String),
+	summary: Schema.optional(Schema.String),
+	description: Schema.optional(Schema.String),
+	tags: OPTIONAL_TAGS_SCHEMA,
+	externalDocs: OPTIONAL_EXTERNAL_DOCS_SCHEMA,
+	bindings: OPTIONAL_RECORD_SCHEMA
+} as const
+
+/**
  * AsyncAPI Info Schema - Basic API metadata
  */
 const INFO_SCHEMA = Schema.Struct({
@@ -84,17 +97,32 @@ const SERVER_VARIABLE_SCHEMA = Schema.Struct({
 })
 
 /**
+ * Helper to create variables field with specific value schema
+ * Extracted from duplicated variable definition pattern
+ */
+const createVariablesField = <T>(valueSchema: Schema.Schema<T>) =>
+	Schema.optional(Schema.Record({
+		key: Schema.String,
+		value: valueSchema
+	}))
+
+/**
+ * Common server-related fields (security array)
+ * Extracted from duplication in SERVER_SCHEMA and serverConfigSchema
+ */
+const COMMON_SERVER_SECURITY_FIELD = {
+	security: Schema.optional(Schema.Array(Schema.String))
+} as const
+
+/**
  * AsyncAPI Server Schema - Server configuration
  */
 const SERVER_SCHEMA = Schema.Struct({
 	url: Schema.String,
 	protocol: PROTOCOL_SCHEMA,
 	description: Schema.optional(Schema.String),
-	variables: Schema.optional(Schema.Record({
-		key: Schema.String,
-		value: SERVER_VARIABLE_SCHEMA
-	})),
-	security: Schema.optional(Schema.Array(Schema.String)),
+	variables: createVariablesField(SERVER_VARIABLE_SCHEMA),
+	...COMMON_SERVER_SECURITY_FIELD,
 	bindings: OPTIONAL_RECORD_SCHEMA
 })
 
@@ -109,12 +137,7 @@ const MESSAGE_SCHEMA = Schema.Struct({
 	schemaFormat: Schema.optional(Schema.String),
 	contentType: Schema.optional(Schema.String),
 	name: Schema.optional(Schema.String),
-	title: Schema.optional(Schema.String),
-	summary: Schema.optional(Schema.String),
-	description: Schema.optional(Schema.String),
-	tags: OPTIONAL_TAGS_SCHEMA,
-	externalDocs: OPTIONAL_EXTERNAL_DOCS_SCHEMA,
-	bindings: OPTIONAL_RECORD_SCHEMA
+	...COMMON_METADATA_FIELDS
 })
 
 /**
@@ -123,12 +146,7 @@ const MESSAGE_SCHEMA = Schema.Struct({
 const OPERATION_SCHEMA = Schema.Struct({
 	action: OPERATION_ACTION_SCHEMA,
 	channel: Schema.Union(Schema.String, REF_SCHEMA),
-	title: Schema.optional(Schema.String),
-	summary: Schema.optional(Schema.String),
-	description: Schema.optional(Schema.String),
-	tags: OPTIONAL_TAGS_SCHEMA,
-	externalDocs: OPTIONAL_EXTERNAL_DOCS_SCHEMA,
-	bindings: OPTIONAL_RECORD_SCHEMA,
+	...COMMON_METADATA_FIELDS,
 	messages: Schema.optional(Schema.Record({
 		key: Schema.String,
 		value: Schema.Union(
@@ -152,13 +170,8 @@ const CHANNEL_SCHEMA = Schema.Struct({
 			REF_SCHEMA
 		)
 	})),
-	title: Schema.optional(Schema.String),
-	summary: Schema.optional(Schema.String),
-	description: Schema.optional(Schema.String),
-	tags: OPTIONAL_TAGS_SCHEMA,
-	externalDocs: OPTIONAL_EXTERNAL_DOCS_SCHEMA,
 	parameters: OPTIONAL_RECORD_SCHEMA,
-	bindings: OPTIONAL_RECORD_SCHEMA
+	...COMMON_METADATA_FIELDS
 })
 
 /**
@@ -313,11 +326,8 @@ const serverConfigSchema = Schema.Struct({
 	host: Schema.String,
 	protocol: Schema.String,
 	description: Schema.optional(Schema.String),
-	variables: Schema.optional(Schema.Record({
-		key: Schema.String,
-		value: variableConfigSchema,
-	})),
-	security: Schema.optional(Schema.Array(Schema.String)),
+	variables: createVariablesField(variableConfigSchema),
+	...COMMON_SERVER_SECURITY_FIELD,
 	bindings: Schema.optional(Schema.Record({
 		key: Schema.String,
 		value: Schema.Unknown,
@@ -371,7 +381,7 @@ export const asyncAPIEmitterOptionsEffectSchema = createSchema(
 				// If it has template variables, validate them
 				if (value.includes("{")) {
 					const validation = validatePathTemplate(value)
-					return validation.isValid
+					return validation._tag === "valid"
 				}
 				// If no template variables, it's valid
 				return true

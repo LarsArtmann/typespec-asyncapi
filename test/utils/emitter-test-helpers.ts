@@ -11,6 +11,9 @@ import * as path from "path";
  * @returns File info {file, content} or null if not found
  */
 function findGeneratedFilesOnFilesystem(outputFile: string): {file: string, content: string} | null {
+	// 🔍 CRITICAL DEBUG: Log when fallback is called
+	console.log(`🚨 FALLBACK CALLED: findGeneratedFilesOnFilesystem("${outputFile}")`)
+	
 	// 🔍 ENHANCED DEBUGGING: Log current working directory and search paths
 	const cwd = process.cwd();
 	console.log(`🔍 DEBUG: Current working directory: ${cwd}`);
@@ -59,13 +62,21 @@ function findGeneratedFilesOnFilesystem(outputFile: string): {file: string, cont
 	// 🔥 ENHANCED WORKAROUND: TypeSpec 1.6.0 emitFile API doesn't populate result.outputs
 		// Issue: emitFile writes to real FS but test framework only scans virtual FS
 	// Solution: Search both temp directories AND current working directory
+	// Define search parameters (missing from original edit)
+	const possibleFilenames = [
+		outputFile, // Default from options
+		"asyncapi", // Common default
+		"AsyncAPI", // Common capitalization
+		"output", // Generic fallback
+	];
+	
 	console.log(`🔧 ENHANCED FALLBACK: emitFile API + filesystem search`)
 	
 	// Search current working directory first (where emitFile actually writes)
-	const cwd = process.cwd()
+	const currentWorkingDir = process.cwd()
 	for (const filename of possibleFilenames) {
 		for (const ext of extensions) {
-			const filePath = path.join(cwd, filename + ext)
+			const filePath = path.join(currentWorkingDir, filename + ext)
 			console.log(`🔍 DEBUG: Checking CWD path: ${filePath}`)
 			try {
 				const exists = fs.existsSync(filePath)

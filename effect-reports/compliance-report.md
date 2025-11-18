@@ -1,5 +1,5 @@
 # Effect.TS Compliance Report
-Generated: Mon Nov 17 22:45:48 CET 2025
+Generated: Tue Nov 18 23:51:15 CET 2025
 
 ## Effect Usage Statistics
 - Effect imports: 56

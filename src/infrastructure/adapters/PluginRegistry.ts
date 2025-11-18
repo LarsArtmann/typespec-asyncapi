@@ -24,6 +24,39 @@ import { emitterErrors, type StandardizedError } from "../../utils/standardized-
 type CpuPercentage = number & { readonly brand: 'CpuPercentage' };
 export const createCpuPercentage = (value: number): CpuPercentage => value as CpuPercentage;
 
+/**
+ * Plugin operation pipeline wrapper
+ * Extracted from duplicated error handling patterns across plugin lifecycle methods
+ */
+type PluginOperationConfig = {
+	successState: PluginState
+	successMessage: string
+	operationName: string
+}
+
+function createPluginOperationPipe<T>(
+	pluginName: string,
+	metadata: PluginMetadata,
+	config: PluginOperationConfig
+): (effect: Effect.Effect<T, unknown, never>) => Effect.Effect<T, StandardizedError, never> {
+	return (effect: Effect.Effect<T, unknown, never>) =>
+		effect.pipe(
+			Effect.tapError(() => Effect.sync(() => {
+				metadata.state = PluginState.ERROR
+				metadata.errorCount++
+			})),
+			Effect.tap(() => Effect.sync(() => {
+				metadata.state = config.successState
+				metadata.lastActivity = new Date()
+			})),
+			Effect.tap(() => Effect.log(`✅ ${config.successMessage}`)),
+			Effect.mapError(error => emitterErrors.pluginInitializationFailed(
+				pluginName,
+				`Plugin ${pluginName} ${config.operationName} failed: ${String(error)}`
+			))
+		)
+}
+
 export enum PluginState {
     DISCOVERED = "discovered",
     LOADED = "loaded", 
@@ -252,21 +285,11 @@ export class PluginRegistry {
         return Effect.gen(function* (this: PluginRegistry) {
             const { plugin, metadata } = yield* this.getPluginAndMetadata(name)
 
-            const result = yield* plugin.initialize().pipe(
-                Effect.tapError(() => Effect.sync(() => {
-                    metadata.state = PluginState.ERROR
-                    metadata.errorCount++
-                })),
-                Effect.tap(() => Effect.sync(() => {
-                    metadata.state = PluginState.INITIALIZED
-                    metadata.lastActivity = new Date()
-                })),
-                Effect.tap(() => Effect.log(`✅ Plugin ${name} initialized`)),
-                Effect.mapError(error => emitterErrors.pluginInitializationFailed(
-                    name,
-                    `Plugin ${name} initialization failed: ${String(error)}`
-                ))
-            )
+            const result = yield* createPluginOperationPipe(name, metadata, {
+                successState: PluginState.INITIALIZED,
+                successMessage: `Plugin ${name} initialized`,
+                operationName: "initialization"
+            })(plugin.initialize())
 
             return result
         })
@@ -286,21 +309,11 @@ export class PluginRegistry {
                 ))
             }
 
-            const result = yield* plugin.start().pipe(
-                Effect.tapError(() => Effect.sync(() => {
-                    metadata.state = PluginState.ERROR
-                    metadata.errorCount++
-                })),
-                Effect.tap(() => Effect.sync(() => {
-                    metadata.state = PluginState.STARTED
-                    metadata.lastActivity = new Date()
-                })),
-                Effect.tap(() => Effect.log(`✅ Plugin ${name} started`)),
-                Effect.mapError(error => emitterErrors.pluginInitializationFailed(
-                    name,
-                    `Plugin ${name} start failed: ${String(error)}`
-                ))
-            )
+            const result = yield* createPluginOperationPipe(name, metadata, {
+                successState: PluginState.STARTED,
+                successMessage: `Plugin ${name} started`,
+                operationName: "start"
+            })(plugin.start())
 
             return result
         })
@@ -327,21 +340,11 @@ export class PluginRegistry {
                 Effect.flatMap(() => Effect.fail(new Error(`Plugin ${name} shutdown timeout`)))
             )
 
-            const result = yield* Effect.race(plugin.stop(), timeoutEffect).pipe(
-                Effect.tapError(() => Effect.sync(() => {
-                    metadata.state = PluginState.ERROR
-                    metadata.errorCount++
-                })),
-                Effect.tap(() => Effect.sync(() => {
-                    metadata.state = PluginState.STOPPED
-                    metadata.lastActivity = new Date()
-                })),
-                Effect.tap(() => Effect.log(`✅ Plugin ${name} stopped`)),
-                Effect.mapError(error => emitterErrors.pluginInitializationFailed(
-                    name,
-                    `Plugin ${name} stop failed: ${String(error)}`
-                ))
-            )
+            const result = yield* createPluginOperationPipe(name, metadata, {
+                successState: PluginState.STOPPED,
+                successMessage: `Plugin ${name} stopped`,
+                operationName: "stop"
+            })(Effect.race(plugin.stop(), timeoutEffect))
 
             return result
         })

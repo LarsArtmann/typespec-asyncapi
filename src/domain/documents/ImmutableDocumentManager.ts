@@ -13,6 +13,7 @@ import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js"
 import type { DocumentUpdate } from "../models/ServiceInterfaces.js"
 import { MetricsCollector } from "../../infrastructure/performance/MetricsCollector.js"
 import { ErrorHandler, ErrorFactory } from "../../infrastructure/errors/CentralizedErrorHandler.js"
+import { getMemoryUsageFromPerformance } from "../../utils/performance-utils.js"
 import {
   getCurrentState,
   createMutationRecord,
@@ -20,28 +21,6 @@ import {
   appendMutation,
   appendAtomicMutations
 } from "./DocumentHelpers.js"
-
-/**
- * Type-safe memory usage extraction from performance API
- */
-const getMemoryUsageFromPerformance = (): number => {
-  // Type-safe memory usage calculation
-  if (typeof performance !== "undefined") {
-    // Browser performance API
-    const perf = performance as unknown
-    if (typeof perf === "object" && perf !== null) {
-      // Check for memory API in browser
-      const memoryAPI = (perf as Record<string, unknown>).memory
-      if (typeof memoryAPI === "object" && memoryAPI !== null) {
-        const usedJSHeapSize = (memoryAPI as Record<string, unknown>).usedJSHeapSize
-        if (typeof usedJSHeapSize === "number") {
-          return usedJSHeapSize / 1024 / 1024
-        }
-      }
-    }
-  }
-  return 0
-}
 
 const applyMutation = <T>(document: AsyncAPIObject, mutation: DocumentUpdate<T>) =>
   Effect.gen(function* () {

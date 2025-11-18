@@ -26,6 +26,15 @@ export type MQTTBindingConfig = {
 export const MQTT_PROTOCOL = "mqtt" as const
 
 /**
+ * Parse unknown operation to MQTT config
+ * Extracted from duplicated type casting across binding generators
+ */
+function parseMQTTConfig(operation: unknown): MQTTBindingConfig {
+	const config = operation as Record<string, unknown>
+	return config as MQTTBindingConfig
+}
+
+/**
  * MQTT Plugin Implementation (following kafka-plugin structure)
  */
 export const mqttPlugin = {
@@ -44,13 +53,12 @@ export const mqttPlugin = {
    */
   generateOperationBinding: (operation: unknown) => {
     return Effect.gen(function* () {
-      const config = operation as Record<string, unknown>
-      const mqttConfig = config as MQTTBindingConfig
-      
+      const mqttConfig = parseMQTTConfig(operation)
+
       const binding = {
         mqtt: {
-          qos: config.qos ?? 0,
-          retain: config.retain ?? false,
+          qos: mqttConfig.qos ?? 0,
+          retain: mqttConfig.retain ?? false,
           clientId: mqttConfig.clientId,
           cleanSession: mqttConfig.cleanSession,
           keepAlive: mqttConfig.keepAlive
@@ -58,17 +66,17 @@ export const mqttPlugin = {
       } as const
 
       // Add will message configuration if provided (type-safe mutation)
-      const willConfig = config.willTopic ?? config.willMessage
+      const willConfig = mqttConfig.willTopic ?? mqttConfig.willMessage
       if (willConfig) {
         // Create new binding with will configuration to avoid type mutation
         const bindingWithWill = {
           mqtt: {
             ...(binding as {mqtt: Record<string, unknown>}).mqtt,
             will: {
-              topic: config.willTopic,
-              payload: config.willMessage,
-              qos: config.willQos ?? 0,
-              retain: config.willRetain ?? false
+              topic: mqttConfig.willTopic,
+              payload: mqttConfig.willMessage,
+              qos: mqttConfig.willQos ?? 0,
+              retain: mqttConfig.willRetain ?? false
             }
           }
         } as const
@@ -85,8 +93,7 @@ export const mqttPlugin = {
    */
   generateMessageBinding: (operation: unknown) => {
     return Effect.gen(function* () {
-      const config = operation as Record<string, unknown>
-      const mqttConfig = config as MQTTBindingConfig
+      const mqttConfig = parseMQTTConfig(operation)
       
       const binding = {
         mqtt: {
@@ -106,8 +113,7 @@ export const mqttPlugin = {
    */
   generateServerBinding: (operation: unknown) => {
     return Effect.gen(function* () {
-      const config = operation as Record<string, unknown>
-      const mqttConfig = config as MQTTBindingConfig
+      const mqttConfig = parseMQTTConfig(operation)
       
       const binding = {
         mqtt: {
@@ -131,8 +137,7 @@ export const mqttPlugin = {
    */
   validateConfig: (operation: unknown) => {
     return Effect.gen(function* () {
-      const config = operation as Record<string, unknown>
-      const mqttConfig = config as MQTTBindingConfig
+      const mqttConfig = parseMQTTConfig(operation)
       
       const errors: string[] = []
 

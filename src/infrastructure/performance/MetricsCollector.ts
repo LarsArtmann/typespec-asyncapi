@@ -11,7 +11,8 @@
 
 import { Effect, Context, Layer } from "effect"
 import type { ServiceMetrics } from "../../domain/models/ServiceInterfaces.js"
-import { PERFORMANCE_MONITORING, PERFORMANCE_CONSTANTS } from "../../constants/defaults.js"
+import { PERFORMANCE_MONITORING } from "../../constants/defaults.js"
+import { getMemoryUsageFromPerformance } from "../../utils/performance-utils.js"
 
 /**
  * Performance metrics interface
@@ -67,23 +68,10 @@ export const MemoryMetricsCollector = {
       const endTime = performance.now()
       const duration = endTime - startTime
       timers.delete(operation)
-      
-      // Type-safe memory usage calculation
-      let memoryUsageMB = 0
-      if (typeof performance !== "undefined") {
-        // Browser performance API
-        const perf = performance as unknown
-        if (typeof perf === "object" && perf !== null) {
-          // Check for memory API in browser
-          const memoryAPI = (perf as Record<string, unknown>).memory
-          if (typeof memoryAPI === "object" && memoryAPI !== null) {
-            const usedJSHeapSize = (memoryAPI as Record<string, unknown>).usedJSHeapSize
-            if (typeof usedJSHeapSize === "number") {
-              memoryUsageMB = usedJSHeapSize / PERFORMANCE_CONSTANTS.BYTES_PER_KB / PERFORMANCE_CONSTANTS.BYTES_PER_KB
-            }
-          }
-        }
-      }
+
+      // Get memory usage from shared utility
+      const memoryUsageMB = getMemoryUsageFromPerformance()
+
       globalThis.__ASYNCAPI_CACHE_METRICS ??= { hits: 0, misses: 0 }
       const cacheMetrics = globalThis.__ASYNCAPI_CACHE_METRICS
       globalThis.__ASYNCAPI_DOCUMENTS_PROCESSED ??= 0
