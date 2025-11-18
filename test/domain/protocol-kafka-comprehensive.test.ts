@@ -16,7 +16,8 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
-				@server("kafka-prod", #{
+				@server(#{
+					name: "kafka-prod",
 					url: "kafka://broker1:9092,broker2:9092,broker3:9092",
 					protocol: "kafka",
 					description: "Production Kafka cluster"

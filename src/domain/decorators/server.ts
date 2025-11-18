@@ -89,16 +89,15 @@ export type ServerConfig = {
 export function $server(
 	context: DecoratorContext,
 	target: Namespace,
-	name: string,
-	config: {url: string, protocol: string, description?: string, [key: string]: unknown},
+	config: {url: string, protocol: string, description?: string, name?: string, [key: string]: unknown},
 ): void {
 	Effect.log(`🌐 PROCESSING @server decorator on target: ${target.name}`)
-	Effect.log(`📍 Server name: ${name}`)
 	Effect.log(`📍 Server config:`, config)
 	Effect.log(`🏷️  Target type: ${target.kind}`)
 
-	// Use provided name directly
-	const serverConfig = config
+	// Extract name from config (flexible to handle both patterns)
+	const name = config.name ?? "default"
+	const {name: _ignoredName, ...serverConfig} = config
 
 	//TODO: CRITICAL - Redundant validation - TypeScript ensures target is Namespace
 	if (target.kind !== "Namespace") {
