@@ -214,7 +214,7 @@ export async function compileAsyncAPI(
 	const result = await tester.compile(source)
 
 	// Find the AsyncAPI output file
-	const outputFile = Object.keys(result.outputs).find(
+	const outputFile = Array.from(result.outputs.keys()).find(
 		f => f.endsWith(".yaml") || f.endsWith(".json"),
 	)
 
