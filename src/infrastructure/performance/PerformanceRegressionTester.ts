@@ -39,26 +39,44 @@ export type PerformanceMetrics = {
 	cpuUsagePercent?: number
 }
 
-export type RegressionReport = {
-	/** Performance regression detected */
-	hasRegression: boolean
-	/** Degraded metrics with percentage change */
-	degradedMetrics: Array<{
-		metric: keyof PerformanceMetrics
-		currentValue: number
-		baselineValue: number
-		percentageChange: number
-	}>
-	/** Performance improvement detected */
-	hasImprovement: boolean
-	/** Improved metrics with percentage change */
-	improvedMetrics: Array<{
-		metric: keyof PerformanceMetrics
-		currentValue: number
-		baselineValue: number
-		percentageChange: number
-	}>
+/**
+ * Metric change details for regression/improvement tracking
+ */
+export type MetricChange = {
+	metric: keyof PerformanceMetrics
+	currentValue: number
+	baselineValue: number
+	percentageChange: number
 }
+
+/**
+ * Performance regression report using discriminated union
+ *
+ * ARCHITECTURE: Eliminates split brain pattern by making states mutually exclusive.
+ * Previous version had hasRegression + hasImprovement booleans which could both be true/false,
+ * creating ambiguous states. Now we have explicit, unrepresentable illegal states.
+ */
+export type RegressionReport =
+	| {
+		_tag: "stable"
+		/** No significant performance changes detected */
+	}
+	| {
+		_tag: "regression"
+		/** Performance degraded - metrics performing worse than baseline */
+		degradedMetrics: MetricChange[]
+	}
+	| {
+		_tag: "improvement"
+		/** Performance improved - metrics performing better than baseline */
+		improvedMetrics: MetricChange[]
+	}
+	| {
+		_tag: "mixed"
+		/** Mixed results - some metrics improved, others degraded */
+		degradedMetrics: MetricChange[]
+		improvedMetrics: MetricChange[]
+	}
 
 /**
  * Performance test error type
@@ -145,25 +163,23 @@ export class PerformanceRegressionTester {
 
 	/**
 	 * Generate regression report comparing metrics to baseline
+	 *
+	 * Uses discriminated union to eliminate split brain pattern.
+	 * Returns one of four mutually exclusive states: stable, regression, improvement, mixed.
 	 */
 	private readonly generateRegressionReport = (
 		current: PerformanceMetrics,
 		baseline?: PerformanceMetrics
 	): RegressionReport => {
 		if (!baseline) {
-			return {
-				hasRegression: false,
-				degradedMetrics: [],
-				hasImprovement: false,
-				improvedMetrics: [],
-			}
+			return { _tag: "stable" }
 		}
 
 		const threshold = PERFORMANCE_MONITORING.DEGRADATION_THRESHOLD // 10% degradation threshold
 		const improvementThreshold = PERFORMANCE_MONITORING.IMPROVEMENT_THRESHOLD // 5% improvement threshold
 
-		const degradedMetrics: RegressionReport["degradedMetrics"] = []
-		const improvedMetrics: RegressionReport["improvedMetrics"] = []
+		const degradedMetrics: MetricChange[] = []
+		const improvedMetrics: MetricChange[] = []
 
 		const metricKeys: (keyof PerformanceMetrics)[] = [
 			"executionTimeMs",
@@ -207,11 +223,19 @@ export class PerformanceRegressionTester {
 			}
 		}
 
-		return {
-			hasRegression: degradedMetrics.length > 0,
-			degradedMetrics,
-			hasImprovement: improvedMetrics.length > 0,
-			improvedMetrics,
+		// Return discriminated union based on metrics state
+		const hasRegression = degradedMetrics.length > 0
+		const hasImprovement = improvedMetrics.length > 0
+
+		if (!hasRegression && !hasImprovement) {
+			return { _tag: "stable" }
+		} else if (hasRegression && !hasImprovement) {
+			return { _tag: "regression", degradedMetrics }
+		} else if (!hasRegression && hasImprovement) {
+			return { _tag: "improvement", improvedMetrics }
+		} else {
+			// Both regression and improvement detected (mixed results)
+			return { _tag: "mixed", degradedMetrics, improvedMetrics }
 		}
 	}
 
@@ -255,3 +279,52 @@ export class PerformanceRegressionTester {
  * Default performance configuration for development
  */
 export const DEFAULT_PERFORMANCE_CONFIG: PerformanceConfig = PerformanceRegressionTester.createDevConfig()
+
+/**
+ * Helper functions for working with RegressionReport discriminated union
+ */
+export const regressionReportHelpers = {
+	/**
+	 * Check if report indicates performance regression
+	 */
+	hasRegression: (report: RegressionReport): report is Extract<RegressionReport, { _tag: "regression" | "mixed" }> =>
+		report._tag === "regression" || report._tag === "mixed",
+
+	/**
+	 * Check if report indicates performance improvement
+	 */
+	hasImprovement: (report: RegressionReport): report is Extract<RegressionReport, { _tag: "improvement" | "mixed" }> =>
+		report._tag === "improvement" || report._tag === "mixed",
+
+	/**
+	 * Check if performance is stable (no significant changes)
+	 */
+	isStable: (report: RegressionReport): report is Extract<RegressionReport, { _tag: "stable" }> =>
+		report._tag === "stable",
+
+	/**
+	 * Get degraded metrics from report (if any)
+	 */
+	getDegradedMetrics: (report: RegressionReport): MetricChange[] => {
+		switch (report._tag) {
+			case "regression":
+			case "mixed":
+				return report.degradedMetrics
+			default:
+				return []
+		}
+	},
+
+	/**
+	 * Get improved metrics from report (if any)
+	 */
+	getImprovedMetrics: (report: RegressionReport): MetricChange[] => {
+		switch (report._tag) {
+			case "improvement":
+			case "mixed":
+				return report.improvedMetrics
+			default:
+				return []
+		}
+	},
+}

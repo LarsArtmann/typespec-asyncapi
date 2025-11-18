@@ -179,10 +179,12 @@ test.skip("Performance Regression - detection validation", async () => {
 	const regressionResult = await Effect.runPromise(
 		regressionTester.runPerformanceTest("regression-test", regressionTest)
 	)
-	
-	// Should detect performance regression
-	expect(regressionResult.hasRegression).toBe(true)
-	expect(regressionResult.regressionDetails).toBeDefined()
+
+	// Should detect performance regression using discriminated union
+	expect(regressionResult.regressionReport._tag).toMatch(/regression|mixed/)
+	if (regressionResult.regressionReport._tag === "regression" || regressionResult.regressionReport._tag === "mixed") {
+		expect(regressionResult.regressionReport.degradedMetrics.length).toBeGreaterThan(0)
+	}
 })
 
 /**
