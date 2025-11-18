@@ -1,3 +1,6 @@
+import * as fs from "fs";
+import * as path from "path";
+
 /**
  * 🔥 WORKAROUND: TypeSpec 1.6.0 filesystem fallback for test framework
  *
@@ -8,23 +11,114 @@
  * @returns File info {file, content} or null if not found
  */
 function findGeneratedFilesOnFilesystem(outputFile: string): {file: string, content: string} | null {
-	const fs = require("fs");
-	const possiblePaths = ["./", "./tsp-output/", "./tsp-output/@lars-artmann/typespec-asyncapi/"];
+	// 🔍 ENHANCED DEBUGGING: Log current working directory and search paths
+	const cwd = process.cwd();
+	console.log(`🔍 DEBUG: Current working directory: ${cwd}`);
+	
+	const possiblePaths = [
+		"./", 
+		"./tsp-output/", 
+		"./tsp-output/@lars-artmann/typespec-asyncapi/",
+		path.join(cwd, "tsp-output", "@lars-artmann", "typespec-asyncapi"),
+		path.join(cwd, "tsp-output"),
+		path.join(cwd),
+		"tsp-output/",
+		"tsp-output/@lars-artmann/typespec-asyncapi/",
+		// 🔥 KEY INSIGHT: TypeSpec uses temp directories for test isolation!
+		"./test/temp-output/",
+		path.join(cwd, "test", "temp-output"),
+	];
 	const extensions = [".json", ".yaml"];
+	
+	// 🔥 DYNAMIC DISCOVERY: Search all temp-output subdirectories
+	const tempOutputBase = path.join(cwd, "test", "temp-output");
+	if (fs.existsSync(tempOutputBase)) {
+		console.log(`🔍 DEBUG: temp-output exists, listing subdirectories...`);
+		try {
+			const subdirs = fs.readdirSync(tempOutputBase);
+			console.log(`🔍 DEBUG: Found temp subdirs:`, subdirs);
+			for (const subdir of subdirs) {
+				if (subdir === ".DS_Store") continue;
+				const fullPath = path.join(tempOutputBase, subdir, "@lars-artmann", "typespec-asyncapi");
+				possiblePaths.push(fullPath);
+				possiblePaths.push(path.join(tempOutputBase, subdir));
+				
+				// 🔥 KEY INSIGHT: Check what files actually exist in each temp dir
+				try {
+					const files = fs.readdirSync(fullPath);
+					console.log(`🔍 DEBUG: Files in ${fullPath}:`, files);
+				} catch (error) {
+					// Directory might not exist, continue
+				}
+			}
+		} catch (error) {
+			console.log(`🔍 DEBUG: Error reading temp-output: ${error}`);
+		}
+	}
+	
+	// 🔥 ENHANCED SEARCH: Look for common AsyncAPI filenames
+	const possibleFilenames = [
+		outputFile, // Default from options
+		"asyncapi", // Common default
+		"AsyncAPI", // What we actually found!
+		"output", // Generic fallback
+	];
+
+	console.log(`🔍 DEBUG: Searching for files: ${possibleFilenames.join(", ")}`);
+	console.log(`🔍 DEBUG: Search paths:`, possiblePaths.slice(0, 10)); // Show first 10 paths
 
 	for (const basePath of possiblePaths) {
-		for (const ext of extensions) {
-			const filePath = basePath + outputFile + ext;
-			try {
-				if (fs.existsSync(filePath)) {
-					const content = fs.readFileSync(filePath, "utf8");
-					console.log(`🔍 FALLBACK: Found file at ${filePath}`);
-					return {file: outputFile + ext, content};
+		for (const filename of possibleFilenames) {
+			for (const ext of extensions) {
+				const filePath = path.join(basePath, filename + ext);
+				console.log(`🔍 DEBUG: Checking path: ${filePath}`);
+				try {
+					const exists = fs.existsSync(filePath);
+					console.log(`🔍 DEBUG: File exists at ${filePath}: ${exists}`);
+					
+					if (exists) {
+						const content = fs.readFileSync(filePath, "utf8");
+						console.log(`🔍 FALLBACK: Found file at ${filePath}`);
+						console.log(`🔍 DEBUG: Content length: ${content.length} characters`);
+						console.log(`🔍 DEBUG: Content preview: ${content.substring(0, 200)}...`);
+						return {file: filename + ext, content};
+					}
+				} catch (error) {
+					console.log(`🔍 DEBUG: Error checking ${filePath}: ${error}`);
+					// Continue searching
 				}
-			} catch (error) {
-				// Continue searching
 			}
 		}
+	}
+
+	// 🔍 ADDITIONAL DEBUG: List directories to see what's available
+	console.log(`🔍 DEBUG: Listing current directory contents:`);
+	try {
+		const files = fs.readdirSync(cwd);
+		console.log(`🔍 DEBUG: CWD files:`, files);
+	} catch (error) {
+		console.log(`🔍 DEBUG: Error listing CWD: ${error}`);
+	}
+	
+	// Check for tsp-output directory
+	const tspOutputPath = path.join(cwd, "tsp-output");
+	if (fs.existsSync(tspOutputPath)) {
+		console.log(`🔍 DEBUG: tsp-output directory exists, listing contents:`);
+		try {
+			const files = fs.readdirSync(tspOutputPath);
+			console.log(`🔍 DEBUG: tsp-output files:`, files);
+			
+			// Check nested directory
+			const nestedPath = path.join(tspOutputPath, "@lars-artmann", "typespec-asyncapi");
+			if (fs.existsSync(nestedPath)) {
+				const nestedFiles = fs.readdirSync(nestedPath);
+				console.log(`🔍 DEBUG: nested directory files:`, nestedFiles);
+			}
+		} catch (error) {
+			console.log(`🔍 DEBUG: Error listing tsp-output: ${error}`);
+		}
+	} else {
+		console.log(`🔍 DEBUG: tsp-output directory does NOT exist`);
 	}
 
 	return null;

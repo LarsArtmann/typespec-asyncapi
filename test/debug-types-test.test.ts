@@ -10,6 +10,9 @@ import "@lars-artmann/typespec-asyncapi";
 using TypeSpec.AsyncAPI;
 using TypeSpec.Reflection;
 
+// Fix Task 2.3: Blockless namespace MUST come first
+namespace TestTypes;
+
 // Test 1: Try {} type in declaration
 extern dec testObject(target: Namespace, config: {});
 
@@ -22,7 +25,7 @@ extern dec testUnknown(target: Namespace, config: unknown);
 // Test 4: Try valueof {} type
 extern dec testValueofObject(target: Namespace, config: valueof {});
 
-// Now test actual @server
+// Now test actual @server (after namespace declarations)
 @server({
   name: "test",
   url: "kafka://localhost:9092",

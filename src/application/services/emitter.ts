@@ -45,6 +45,11 @@ export function generateAsyncAPIWithEffect(context: EmitContext): Effect.Effect<
 	return Effect.gen(function* () {
 		yield* Effect.logInfo("🚀 TypeSpec API Integration: Using emitFile for test framework compatibility")
 		
+		// 🔧 DEBUG: Log received options to verify they reach the emitter
+		yield* Effect.logInfo(`🔍 DEBUG: Received context.options:`, JSON.stringify(context.options, null, 2))
+		yield* Effect.logInfo(`🔍 DEBUG: output-file option: ${context.options["output-file"]}`)
+		yield* Effect.logInfo(`🔍 DEBUG: file-type option: ${context.options["file-type"]}`)
+		
 		// 🔧 FIX: Register protocol plugins to eliminate warnings
 		yield* registerBuiltInPlugins()
 		
@@ -98,6 +103,10 @@ export function generateAsyncAPIWithEffect(context: EmitContext): Effect.Effect<
 		const outputFile = context.options["output-file"] || "asyncapi";
 		const fileType = (context.options["file-type"] as string) ?? "yaml";
 		const extension = fileType === "json" ? "json" : "yaml";
+		
+		yield* Effect.logInfo(`🔍 DEBUG: Resolved outputFile: ${outputFile}`)
+		yield* Effect.logInfo(`🔍 DEBUG: Resolved fileType: ${fileType}`)
+		yield* Effect.logInfo(`🔍 DEBUG: Resolved extension: ${extension}`)
 		
 		// Simple serialization using processed document
 		const content = fileType === "json" 
