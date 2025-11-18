@@ -56,36 +56,48 @@ function findGeneratedFilesOnFilesystem(outputFile: string): {file: string, cont
 		}
 	}
 	
-	// 🔥 ENHANCED SEARCH: Look for common AsyncAPI filenames
-	const possibleFilenames = [
-		outputFile, // Default from options
-		"asyncapi", // Common default
-		"AsyncAPI", // What we actually found!
-		"output", // Generic fallback
-	];
-
-	console.log(`🔍 DEBUG: Searching for files: ${possibleFilenames.join(", ")}`);
-	console.log(`🔍 DEBUG: Search paths:`, possiblePaths.slice(0, 10)); // Show first 10 paths
-
+	// 🔥 ENHANCED WORKAROUND: TypeSpec 1.6.0 emitFile API doesn't populate result.outputs
+		// Issue: emitFile writes to real FS but test framework only scans virtual FS
+	// Solution: Search both temp directories AND current working directory
+	console.log(`🔧 ENHANCED FALLBACK: emitFile API + filesystem search`)
+	
+	// Search current working directory first (where emitFile actually writes)
+	const cwd = process.cwd()
+	for (const filename of possibleFilenames) {
+		for (const ext of extensions) {
+			const filePath = path.join(cwd, filename + ext)
+			console.log(`🔍 DEBUG: Checking CWD path: ${filePath}`)
+			try {
+				const exists = fs.existsSync(filePath)
+				console.log(`🔍 DEBUG: File exists in CWD at ${filePath}: ${exists}`)
+				if (exists) {
+					const content = fs.readFileSync(filePath, "utf8")
+					console.log(`🔍 ENHANCED FALLBACK: Found file in CWD: ${filename + ext}`)
+					return {file: filename + ext, content}
+				}
+			} catch (error) {
+				console.log(`🔍 DEBUG: Error checking CWD ${filePath}: ${error}`)
+			}
+		}
+	}
+	
+	// Then search temp directories (existing logic)
 	for (const basePath of possiblePaths) {
 		for (const filename of possibleFilenames) {
 			for (const ext of extensions) {
-				const filePath = path.join(basePath, filename + ext);
-				console.log(`🔍 DEBUG: Checking path: ${filePath}`);
+				const filePath = path.join(basePath, filename + ext)
+				console.log(`🔍 DEBUG: Checking temp path: ${filePath}`)
 				try {
-					const exists = fs.existsSync(filePath);
-					console.log(`🔍 DEBUG: File exists at ${filePath}: ${exists}`);
+					const exists = fs.existsSync(filePath)
+					console.log(`🔍 DEBUG: File exists in temp at ${filePath}: ${exists}`)
 					
 					if (exists) {
-						const content = fs.readFileSync(filePath, "utf8");
-						console.log(`🔍 FALLBACK: Found file at ${filePath}`);
-						console.log(`🔍 DEBUG: Content length: ${content.length} characters`);
-						console.log(`🔍 DEBUG: Content preview: ${content.substring(0, 200)}...`);
-						return {file: filename + ext, content};
+						const content = fs.readFileSync(filePath, "utf8")
+						console.log(`🔍 ENHANCED FALLBACK: Found file in temp: ${filename + ext}`)
+						return {file: filename + ext, content}
 					}
 				} catch (error) {
-					console.log(`🔍 DEBUG: Error checking ${filePath}: ${error}`);
-					// Continue searching
+					console.log(`🔍 DEBUG: Error checking temp ${filePath}: ${error}`)
 				}
 			}
 		}

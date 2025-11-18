@@ -31,9 +31,6 @@ import { DocumentBuilder } from "../../domain/emitter/DocumentBuilder.js";
 // Plugin system - FIX "No plugin found" warnings
 import { registerBuiltInPlugins, pluginRegistry as _pluginRegistry } from "../../infrastructure/adapters/plugin-system.js";
 
-// Library state access for virtual filesystem bridging
-import { $lib } from "../../lib.js";
-
 /**
  * 🎯 TYPESPEC API INTEGRATION - Test Framework Compatibility
  * 
@@ -50,8 +47,8 @@ export function generateAsyncAPIWithEffect(context: EmitContext): Effect.Effect<
 		
 		// 🔧 DEBUG: Log received options to verify they reach the emitter
 		yield* Effect.logInfo(`🔍 DEBUG: Received context.options:`, JSON.stringify(context.options, null, 2))
-		yield* Effect.logInfo(`🔍 DEBUG: output-file option: ${context.options["output-file"]}`)
-		yield* Effect.logInfo(`🔍 DEBUG: file-type option: ${context.options["file-type"]}`)
+		yield* Effect.logInfo(`🔍 DEBUG: output-file option: ${String(context.options["output-file"] ?? "undefined")}`)
+		yield* Effect.logInfo(`🔍 DEBUG: file-type option: ${String(context.options["file-type"] ?? "undefined")}`)
 		
 		// 🔧 FIX: Register protocol plugins to eliminate warnings
 		yield* registerBuiltInPlugins()
@@ -103,10 +100,10 @@ export function generateAsyncAPIWithEffect(context: EmitContext): Effect.Effect<
 		});
 		
 		// Simple configuration
-		const outputFile = context.options["output-file"] || "asyncapi";
-		const fileType = (context.options["file-type"] as string) ?? "yaml";
+		const outputFile = (context.options["output-file"] as string | undefined) ?? "asyncapi";
+		const fileType = (context.options["file-type"] as string | undefined) ?? "yaml";
 		const extension = fileType === "json" ? "json" : "yaml";
-		
+
 		yield* Effect.logInfo(`🔍 DEBUG: Resolved outputFile: ${outputFile}`)
 		yield* Effect.logInfo(`🔍 DEBUG: Resolved fileType: ${fileType}`)
 		yield* Effect.logInfo(`🔍 DEBUG: Resolved extension: ${extension}`)
@@ -153,30 +150,37 @@ export function generateAsyncAPIWithEffect(context: EmitContext): Effect.Effect<
 		
 		// 🎯 ISSUE #230 FIX: Try multiple approaches to bridge emitFile to virtual filesystem
 		yield* Effect.logInfo(`🔧 ATTEMPTING emitFile virtual filesystem bridging`)
-		
+
 		// Approach 1: Try to access test framework's virtual filesystem directly
 		// The test framework creates result.fs.fs which is a Map that gets scanned
-		try {
+		// Use Effect.gen with catchAll for proper error handling (no try/catch)
+		yield* Effect.gen(function* () {
 			// Access program's internal filesystem reference if available
-			const programFs = (context.program as any).fs || (context.program as any).virtualFs;
-			if (programFs && typeof programFs.add === 'function') {
+			// TypeSpec Program type doesn't expose fs/virtualFs, but test framework may inject it
+			type ProgramWithFs = typeof context.program & {
+				fs?: { add?: (path: string, content: string) => void }
+				virtualFs?: { add?: (path: string, content: string) => void }
+			}
+			const programWithFs = context.program as ProgramWithFs
+			const programFs = programWithFs.fs ?? programWithFs.virtualFs
+
+			if (programFs?.add && typeof programFs.add === 'function') {
 				// Add file to virtual filesystem under tsp-output path
-				const tspOutputPath = `tsp-output/${fileName}`;
-				programFs.add(tspOutputPath, content);
+				const tspOutputPath = `tsp-output/${fileName}`
+				programFs.add(tspOutputPath, content)
 				yield* Effect.logInfo(`✅ Added ${fileName} to virtual filesystem via program.fs.add()`)
 			} else {
 				yield* Effect.logInfo(`⚠️  Cannot access virtual filesystem via program.fs`)
 			}
-		} catch (error) {
-			yield* Effect.logInfo(`⚠️  Virtual filesystem bridging failed: ${String(error)}`)
-		}
+		}).pipe(
+			Effect.catchAll((error) =>
+				Effect.logInfo(`⚠️  Virtual filesystem bridging failed: ${String(error)}`)
+			)
+		)
 		
-		// Approach 2: Store in custom state for potential retrieval  
-		// NOTE: stateMap expects actual Type objects, not string keys
-		const serverConfigsState = context.program.stateMap($lib.stateKeys.serverConfigs);
-		
-		// For now, just log that we attempted this approach
-		yield* Effect.logInfo(`⚠️  Virtual filesystem bridging via stateMap completed (limited approach)`)
+		// Approach 2: Store in custom state for potential retrieval
+		// NOTE: Approach 1 (virtual filesystem) is preferred; state approach removed as unused
+		yield* Effect.logInfo(`ℹ️  File emission complete via emitFile API`)
 		
 		yield* Effect.logInfo(`✅ File emitted: ${fileName}`)
 		yield* Effect.logInfo(`🔗 Test framework bridge: Multiple approaches attempted`)
