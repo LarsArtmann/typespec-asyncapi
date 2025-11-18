@@ -76,7 +76,7 @@ const createDocumentMutation = <T>(
 	mutationResult: { oldValue?: T; document: T },
 	descriptionPrefix: string = "Mutation"
 ) => createMutationRecord<T>({
-	type: mutation.type,
+	type: mutation.type as "operations" | "components" | "messages" | "channels" | "schemas",
 	path: mutation.path,
 	oldValue: mutationResult.oldValue,
 	newValue: mutation.value,
@@ -171,7 +171,7 @@ export const ImmutableDocumentManager: DocumentManager = {
         }
 
         // Create mutation record
-        const documentMutation = createDocumentMutation(mutation, mutationResult, "Mutation")
+        const documentMutation = createDocumentMutation(mutation, mutationResult as unknown as { oldValue?: T; document: T }, "Mutation")
 
         // Append mutation and update state
         yield* appendMutation(currentState, documentMutation, mutationResult.document)
@@ -228,7 +228,7 @@ export const ImmutableDocumentManager: DocumentManager = {
           return undefined as never
         }
 
-        const documentMutation = createDocumentMutation(mutation, mutationResult, "Atomic mutation")
+        const documentMutation = createDocumentMutation(mutation, mutationResult as unknown as { oldValue?: T; document: T }, "Atomic mutation")
 
         appliedMutations.push(documentMutation)
         currentDocument = mutationResult.document

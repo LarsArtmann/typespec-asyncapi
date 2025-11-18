@@ -21,7 +21,7 @@ export const createStandardizedError = (
 	message,
 	details,
 	timestamp: new Date(),
-	context: context || {},
+	context: context ?? {},
 	recoverable
 })
 
@@ -30,7 +30,7 @@ export const createStandardizedError = (
  */
 export const mergeContext = (
 	userContext?: Record<string, unknown>
-): Record<string, unknown> => userContext || {}
+): Record<string, unknown> => userContext ?? {}
 
 /**
  * Creates consistent error details object

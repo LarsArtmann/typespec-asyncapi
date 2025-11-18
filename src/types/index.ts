@@ -77,6 +77,9 @@ export {
 	failure
 } from "../domain/models/validation-result.js"
 
+type OperationsFoundCount = number;
+type GenerationNote = string;
+
 type XGeneratedFromTypeSpec = {
 	sourceFiles?: Path;
 	operationsFound?: OperationsFoundCount;

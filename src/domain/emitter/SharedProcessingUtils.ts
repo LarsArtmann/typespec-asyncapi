@@ -9,14 +9,15 @@ import type { Program } from "@typespec/compiler"
 
 /**
  * Generic processing function with consistent logging and structure
+ * Returns processed items to match existing pattern
  */
 export const processItemsWithEffect = <TItem, TResult>(
 	items: TItem[],
 	itemTypeName: string,
 	processFn: (item: TItem) => Effect.Effect<TResult, never>,
 	logPrefix: string = "🔄"
-): Effect.Effect<TResult[], never> =>
-	Effect.gen(function* () {
+): Effect.Effect<TResult[], never> => {
+	return Effect.gen(function* () {
 		yield* Effect.log(`${logPrefix} Processing ${items.length} ${itemTypeName} with Effect.TS...`)
 
 		// Process all items in parallel for performance
@@ -27,6 +28,7 @@ export const processItemsWithEffect = <TItem, TResult>(
 		yield* Effect.log(`✅ Processed ${items.length} ${itemTypeName} successfully`)
 		return results
 	})
+}
 
 /**
  * Processing context for consistent error handling and metrics
