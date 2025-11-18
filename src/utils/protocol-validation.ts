@@ -4,17 +4,28 @@
  */
 
 /**
- * Protocol validation result structure
+ * Protocol validation result using discriminated union
+ *
+ * ARCHITECTURE: Eliminates split brain pattern (isValid derived from errors.length).
+ * Previous version had redundant isValid boolean that could become inconsistent.
  *
  * Note: This is different from ValidationResult in src/errors/validation-error.ts
  * which is for AsyncAPI document validation with comprehensive metrics.
  * This type is for simple protocol binding validation with basic error/warning lists.
  */
-export type ProtocolValidationResult = {
-	isValid: boolean;
-	errors: string[];
-	warnings: string[];
-};
+export type ProtocolValidationResult =
+	| {
+		_tag: "valid"
+		/** Validation passed, possibly with warnings */
+		warnings: string[]
+	}
+	| {
+		_tag: "invalid"
+		/** Validation failed with errors */
+		errors: string[]
+		/** Additional warnings alongside errors */
+		warnings: string[]
+	}
 
 /**
  * Validate basic string field requirements
@@ -33,6 +44,8 @@ export function validateRequiredString(value: string | undefined, fieldName: str
 /**
  * Validate positive integer field
  * Centralized integer validation logic
+ *
+ * Returns discriminated union for type-safe error handling.
  */
 export function validatePositiveInteger(value: number | undefined, fieldName: string, maxValue?: number): ProtocolValidationResult {
 	const errors: string[] = []
@@ -46,11 +59,9 @@ export function validatePositiveInteger(value: number | undefined, fieldName: st
 		}
 	}
 
-	return {
-		isValid: errors.length === 0,
-		errors,
-		warnings,
-	}
+	return errors.length === 0
+		? { _tag: "valid", warnings }
+		: { _tag: "invalid", errors, warnings }
 }
 
 /**
@@ -111,20 +122,51 @@ export function validateHttpStatusCode(statusCode: number | undefined, fieldName
 
 /**
  * Combine multiple validation results
- * Utility to merge validation results
+ * Utility to merge validation results into single discriminated union
+ *
+ * Aggregates all errors and warnings from multiple results.
  */
 export function combineValidationResults(...results: ProtocolValidationResult[]): ProtocolValidationResult {
 	const allErrors: string[] = []
 	const allWarnings: string[] = []
 
 	for (const result of results) {
-		allErrors.push(...result.errors)
+		if (result._tag === "invalid") {
+			allErrors.push(...result.errors)
+		}
 		allWarnings.push(...result.warnings)
 	}
 
-	return {
-		isValid: allErrors.length === 0,
-		errors: allErrors,
-		warnings: allWarnings,
-	}
+	return allErrors.length === 0
+		? { _tag: "valid", warnings: allWarnings }
+		: { _tag: "invalid", errors: allErrors, warnings: allWarnings }
+}
+
+/**
+ * Helper functions for working with ProtocolValidationResult discriminated union
+ */
+export const protocolValidationHelpers = {
+	/**
+	 * Check if validation passed
+	 */
+	isValid: (result: ProtocolValidationResult): result is Extract<ProtocolValidationResult, { _tag: "valid" }> =>
+		result._tag === "valid",
+
+	/**
+	 * Check if validation failed
+	 */
+	isInvalid: (result: ProtocolValidationResult): result is Extract<ProtocolValidationResult, { _tag: "invalid" }> =>
+		result._tag === "invalid",
+
+	/**
+	 * Get errors from result (empty array if valid)
+	 */
+	getErrors: (result: ProtocolValidationResult): string[] =>
+		result._tag === "invalid" ? result.errors : [],
+
+	/**
+	 * Get warnings from result
+	 */
+	getWarnings: (result: ProtocolValidationResult): string[] =>
+		result.warnings,
 }
