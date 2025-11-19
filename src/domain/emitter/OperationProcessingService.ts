@@ -137,7 +137,7 @@ export const processOperations = (
 			// Create AsyncAPI 3.0 compliant channel
 			const channelObject = {
 				description: `Channel for ${result.channelName} operations`,
-				address: `/${result.channelName}`,
+				address: result.channelName, // channelName already includes "/" prefix
 				messages: result.messageSchema ? {
 					[`${result.channelName}Message`]: {
 						$ref: `#/components/messages/${result.channelName}Message`,

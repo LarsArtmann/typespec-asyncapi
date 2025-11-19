@@ -11,7 +11,8 @@ export function createChannelDefinition(op: Operation, program: Program): { name
 	
 	// 🔥 CRITICAL FIX: Use branded types for type safety
 	const operationName: OperationName = op.name as OperationName
-	const channelName: ChannelName = unbrand(operationName) as ChannelName // Convert to string then brand as ChannelName
+	// Generate default channel path: "/" + lowercase operation name
+	const channelName: ChannelName = ("/" + unbrand(operationName).toLowerCase()) as ChannelName
 
 	return {
 		name: channelName,

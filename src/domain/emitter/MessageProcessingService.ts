@@ -22,10 +22,16 @@ export const processSingleMessageModel = (
 	program: Program
 ): Effect.Effect<string, never> =>
 	Effect.gen(function* () {
-		const messageConfig = getMessageConfig(program, messageModel) ?? {}
-		
+		const messageConfig = getMessageConfig(program, messageModel)
+
+		// Skip message creation if no message config decorator was applied
+		if (!messageConfig) {
+			yield* Effect.log(`⏭️  Skipping message creation for ${messageModel.name} (no @message decorator)`)
+			return "" // Return empty string to indicate no message created
+		}
+
 		// Convert message model to JSON schema
-		const schema = yield* Effect.sync(() => 
+		const schema = yield* Effect.sync(() =>
 			convertModelToSchema(messageModel, program)
 		)
 
