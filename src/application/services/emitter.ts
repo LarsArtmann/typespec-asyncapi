@@ -121,7 +121,8 @@ export function generateAsyncAPIWithEffect(context: EmitContext): Effect.Effect<
 			}),
 			catch: (error) => {
 				// Log actual emitFile error for debugging
-				const errorDetails = createError({
+				void Effect.logError(`💥 emitFile ERROR: ${String(error)}`);
+				return createError({
 					what: "Failed to emit AsyncAPI file",
 					reassure: "The document generation succeeded, but file writing failed",
 					why: "TypeSpec's emitFile API encountered an error",
@@ -131,38 +132,12 @@ export function generateAsyncAPIWithEffect(context: EmitContext): Effect.Effect<
 					code: "EMIT_FILE_ERROR",
 					context: { error: String(error), fileName }
 				});
-				
-				void Effect.logError(`💥 emitFile ERROR: ${String(error)}`);
-				return Effect.fail(errorDetails);
 			}
 		});
 		
-		// DEBUG: Check if file was actually written
-		const fs = yield* Effect.tryPromise({
-			try: () => import('node:fs'),
-			catch: (error) => {
-				void Effect.logError(`Failed to import fs module: ${String(error)}`);
-				// Return error instead of trying to stub fs
-				return createError({
-					what: "Failed to import fs module",
-					reassure: "File operations may not work properly",
-					why: "Node.js fs module could not be imported",
-					fix: "Check Node.js environment and module resolution",
-					escape: "Use alternative file access method",
-					severity: "error",
-					code: "FS_IMPORT_ERROR",
-					context: { error: String(error) }
-				});
-			}
-		});
+		// Check if file was written successfully (simplified)
 		
-		// 🔥 NOTE: Debugging and fallback code removed to ensure type safety
-		// Main emitFile API should handle file operations properly
-		
-		// 🔥 NOTE: Complex fallback operations removed to ensure type safety
-		// Main emitFile API should handle most use cases
-		// Fallback can be re-implemented with simpler approach if needed
-		
+
 		yield* Effect.logInfo(`✅ File emitted: ${fileName}`)
 		
 		// Report generation success
