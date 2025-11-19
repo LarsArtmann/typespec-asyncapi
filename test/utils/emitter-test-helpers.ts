@@ -213,14 +213,51 @@ export async function compileAsyncAPI(
 	const tester = await createAsyncAPIEmitterTester(options)
 	const result = await tester.compile(source)
 
+	// Debug result.outputs structure
+		console.log(`🔍 result.outputs type:`, typeof result.outputs)
+		console.log(`🔍 result.outputs constructor:`, result.outputs?.constructor?.name)
+		console.log(`🔍 result.outputs:`, result.outputs)
+		console.log(`🔍 result.outputs keys:`, Object.keys(result.outputs || {}))
+		
 	// Find the AsyncAPI output file
-	const outputFile = Array.from(result.outputs.keys()).find(
+	const outputFile = Object.keys(result.outputs).find(
 		f => f.endsWith(".yaml") || f.endsWith(".json"),
 	)
 
+	// 🔥 WORKAROUND: TypeSpec 1.6.0 emitFile API doesn't populate result.outputs
+	// Manual bridge from virtual filesystem to outputs for test compatibility
 	if (!outputFile) {
-		// 🔥 WORKAROUND: TypeSpec 1.6.0 emitFile API doesn't populate result.outputs
-		// Use filesystem fallback to find generated files
+		// Check virtual filesystem for files that should have been emitted
+		const outputDir = "tsp-output";
+		const virtualFiles = Object.entries(result.fs.fs || {});
+		
+		// Look for files in tsp-output directory
+		for (const [virtualPath, content] of virtualFiles) {
+			if (virtualPath.startsWith(outputDir)) {
+				const relativePath = virtualPath.slice(outputDir.length + 1);
+				// Match against expected filename patterns
+				const expectedName = options["output-file"] || "asyncapi";
+				if (relativePath.includes(expectedName) && 
+					(relativePath.endsWith(".yaml") || relativePath.endsWith(".json"))) {
+					
+					// Manually populate result.outputs for test framework
+					(result.outputs as any)[relativePath] = content;
+					console.log(`🔧 WORKAROUND: Bridged ${virtualPath} to result.outputs.${relativePath}`);
+					
+					return {
+						asyncApiDoc: relativePath.endsWith(".json") 
+							? JSON.parse(content) 
+							: YAML.parse(content),
+						diagnostics: result.program.diagnostics,
+						program: result.program,
+						outputs: {[relativePath]: content},
+						outputFile: relativePath,
+					};
+				}
+			}
+		}
+		
+		// If no virtual files found, try filesystem fallback
 		const fallback = findGeneratedFilesOnFilesystem(options["output-file"] || "asyncapi");
 		if (fallback) {
 			console.log(`🔍 FALLBACK: Using file system search - found ${fallback.file}`);

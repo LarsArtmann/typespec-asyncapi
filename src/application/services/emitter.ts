@@ -63,7 +63,7 @@ export function generateAsyncAPIWithEffect(context: EmitContext): Effect.Effect<
 		const documentBuilder = new DocumentBuilder()
 		const initialDoc = yield* documentBuilder.createInitialDocument(context.program)
 		
-		// 🏗️ STAGE 2: Processing (Working - creates channels/operations)
+		// Stage 2: Processing
 		yield* Effect.logInfo("🚀 Stage 2: Processing")
 		const processingResult = yield* orchestrateAsyncAPITransformation(
 			discoveryResult.operations,
@@ -74,14 +74,13 @@ export function generateAsyncAPIWithEffect(context: EmitContext): Effect.Effect<
 		)
 		yield* Effect.logInfo(`✅ Processing: ${processingResult.totalProcessed} elements processed`)
 		
-		// 🔍 STAGE 3: Validation (Working - validates document)
+		// Stage 3: Validation
 		yield* Effect.logInfo("🚀 Stage 3: Validation")
 		const validationService = new ValidationService()
 		const validationResult = yield* validationService.validateDocument(initialDoc)
-		// Use discriminated union _tag instead of isValid boolean
 		yield* Effect.logInfo(`✅ Validation: ${validationResult._tag === "Success" ? 'PASSED' : 'FAILED'}`)
 		
-		// 📄 STAGE 4: TYPESPEC EMITFILE API (Test Framework Integration)
+		// Stage 4: TypeSpec emitFile API
 		yield* Effect.logInfo("🚀 Stage 4: TypeSpec emitFile API")
 		
 		// Import YAML for serialization
@@ -103,60 +102,55 @@ export function generateAsyncAPIWithEffect(context: EmitContext): Effect.Effect<
 		const outputFile = (context.options["output-file"] as string | undefined) ?? "asyncapi";
 		const fileType = (context.options["file-type"] as string | undefined) ?? "yaml";
 		const extension = fileType === "json" ? "json" : "yaml";
-
-		yield* Effect.logInfo(`🔍 DEBUG: Resolved outputFile: ${outputFile}`)
-		yield* Effect.logInfo(`🔍 DEBUG: Resolved fileType: ${fileType}`)
-		yield* Effect.logInfo(`🔍 DEBUG: Resolved extension: ${extension}`)
 		
 		// Simple serialization using processed document
 		const content = fileType === "json" 
 			? JSON.stringify(initialDoc, null, 2)
 			: yaml.stringify(initialDoc);
 		
-		// 🔥 KEY FIX: Use simple filename approach for test framework bridge
-		// CRITICAL: Test framework expects files in root, not subdirectories
-		const fileName = `${String(outputFile)}.${extension}`
-		yield* Effect.logInfo(`🔍 Emitting file: ${fileName}`)
-		
-		// 🔥 CRITICAL FIX: Direct emitFile call for test framework compatibility
+		// Use correct path format for TypeSpec test framework
+		// The test framework expects files under tsp-output/ prefix
+		const fileName = `tsp-output/${String(outputFile)}.${extension}`
 		yield* Effect.logInfo(`🔍 Emitting file: ${fileName}`)
 		
 		// Direct emitFile call using Effect.sync for test framework compatibility
-		// 🔥 CRITICAL FIX: Direct emitFile call inside Effect.gen for test framework compatibility
-		yield* Effect.logInfo(`🔍 Emitting file: ${fileName}`)
-		
-		// 🎯 ISSUE #230 FIX: Bridge emitFile to virtual filesystem for test framework
-		// The problem: emitFile writes to real FS, but test framework only scans virtual FS
-		// The solution: After emitFile, also add file to program.state so test framework can find it
-		yield* Effect.logInfo(`🔧 BRIDGING emitFile to virtual filesystem for test framework`)
-		
-		// Call emitFile (writes to real filesystem)
 		yield* Effect.tryPromise({
 			try: () => emitFile(context.program, {
 				path: fileName,
 				content: content,
 			}),
-			catch: (error) => createError({
-				what: "Failed to emit AsyncAPI file",
-				reassure: "The document generation succeeded, but file writing failed",
-				why: "TypeSpec's emitFile API encountered an error",
-				fix: "Check file permissions and disk space",
-				escape: "Try using a different output directory",
-				severity: "error",
-				code: "EMIT_FILE_ERROR",
-				context: { error, fileName }
-			})
+			catch: (error) => {
+				// Log actual emitFile error for debugging
+				console.log(`💥 emitFile ERROR:`, error);
+				return createError({
+					what: "Failed to emit AsyncAPI file",
+					reassure: "The document generation succeeded, but file writing failed",
+					why: "TypeSpec's emitFile API encountered an error",
+					fix: "Check file permissions and disk space",
+					escape: "Try using a different output directory",
+					severity: "error",
+					code: "EMIT_FILE_ERROR",
+					context: { error, fileName }
+				});
+			}
 		});
 		
-		// 🎯 ISSUE #230 FIX: Try multiple approaches to bridge emitFile to virtual filesystem
-		yield* Effect.logInfo(`🔧 ATTEMPTING emitFile virtual filesystem bridging`)
-
-		// Approach 1: Try to access test framework's virtual filesystem directly
-		// The test framework creates result.fs.fs which is a Map that gets scanned
-		// Use Effect.gen with catchAll for proper error handling (no try/catch)
+		// DEBUG: Check if file was actually written
+		const fs = yield* Effect.tryPromise({
+			try: () => import('fs'),
+			catch: () => ({ existsSync: () => false } as any)
+		});
+		const pathMod = yield* Effect.tryPromise({
+			try: () => import('path'),
+			catch: () => ({ join: (...args: string[]) => args.join('/') } as any)
+		});
+		const cwd = process.cwd();
+		const fullPath = pathMod.join(cwd, fileName);
+		const fileExists = fs.existsSync(fullPath);
+		console.log(`🔍 DEBUG: File written check - ${fullPath} exists: ${fileExists}`);
+		
+		// Try virtual filesystem bridging for test framework compatibility
 		yield* Effect.gen(function* () {
-			// Access program's internal filesystem reference if available
-			// TypeSpec Program type doesn't expose fs/virtualFs, but test framework may inject it
 			type ProgramWithFs = typeof context.program & {
 				fs?: { add?: (path: string, content: string) => void }
 				virtualFs?: { add?: (path: string, content: string) => void }
@@ -165,32 +159,22 @@ export function generateAsyncAPIWithEffect(context: EmitContext): Effect.Effect<
 			const programFs = programWithFs.fs ?? programWithFs.virtualFs
 
 			if (programFs?.add && typeof programFs.add === 'function') {
-				// Add file to virtual filesystem under tsp-output path
 				const tspOutputPath = `tsp-output/${fileName}`
 				programFs.add(tspOutputPath, content)
-				yield* Effect.logInfo(`✅ Added ${fileName} to virtual filesystem via program.fs.add()`)
-			} else {
-				yield* Effect.logInfo(`⚠️  Cannot access virtual filesystem via program.fs`)
+				yield* Effect.logInfo(`✅ Added ${fileName} to virtual filesystem`)
 			}
 		}).pipe(
 			Effect.catchAll((error) =>
-				Effect.logInfo(`⚠️  Virtual filesystem bridging failed: ${String(error)}`)
+				Effect.logInfo(`⚠️ Virtual filesystem bridging failed: ${String(error)}`)
 			)
 		)
 		
-		// Approach 2: Store in custom state for potential retrieval
-		// NOTE: Approach 1 (virtual filesystem) is preferred; state approach removed as unused
-		yield* Effect.logInfo(`ℹ️  File emission complete via emitFile API`)
-		
 		yield* Effect.logInfo(`✅ File emitted: ${fileName}`)
-		yield* Effect.logInfo(`🔗 Test framework bridge: Multiple approaches attempted`)
 		
-		// 🎉 ISSUE #180 RESOLUTION SUCCESS
+		// Report generation success
 		const channelsCount = Object.keys(initialDoc.channels ?? {}).length;
 		const operationsCount = Object.keys(initialDoc.operations ?? {}).length;
 		
 		yield* Effect.logInfo(`🎉 TYPESPEC API SUCCESS: ${String(channelsCount)} channels, ${String(operationsCount)} operations`)
-		yield* Effect.logInfo(`✅ File emitted: ${String(outputFile)}.${extension}`)
-		yield* Effect.logInfo(`🔗 Test framework bridge: Automatic via emitFile API`)
 	});
 }
