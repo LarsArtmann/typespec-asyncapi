@@ -342,8 +342,8 @@ describe("ProcessingService", () => {
 			)
 
 			expect(result.operationsProcessed).toBe(1)
-			expect(result.messageModelsProcessed).toBe(1)
-			expect(result.securityConfigsProcessed).toBe(1)
+			expect(result.messagesProcessed).toBe(1)
+			expect(result.securityProcessed).toBe(1)
 			expect(result.totalProcessed).toBe(3)
 
 			// Verify all elements were processed
@@ -358,8 +358,8 @@ describe("ProcessingService", () => {
 			)
 
 			expect(result.operationsProcessed).toBe(0)
-			expect(result.messageModelsProcessed).toBe(0)
-			expect(result.securityConfigsProcessed).toBe(0)
+			expect(result.messagesProcessed).toBe(0)
+			expect(result.securityProcessed).toBe(0)
 			expect(result.totalProcessed).toBe(0)
 		})
 
@@ -390,8 +390,8 @@ describe("ProcessingService", () => {
 			)
 
 			expect(result.operationsProcessed).toBe(20)
-			expect(result.messageModelsProcessed).toBe(10)
-			expect(result.securityConfigsProcessed).toBe(5)
+			expect(result.messagesProcessed).toBe(10)
+			expect(result.securityProcessed).toBe(5)
 			expect(result.totalProcessed).toBe(35)
 		})
 	})

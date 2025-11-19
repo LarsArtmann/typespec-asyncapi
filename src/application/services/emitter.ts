@@ -41,7 +41,7 @@ import { registerBuiltInPlugins, pluginRegistry as _pluginRegistry } from "../..
  * 4. Use TypeSpec's emitFile API (bridges to test framework)
  * 5. Maintain all existing pipeline functionality
  */
-export function generateAsyncAPIWithEffect(context: EmitContext): Effect.Effect<void, StandardizedError> {
+export function generateAsyncAPIWithEffect(context: EmitContext): Effect.Effect<void, StandardizedError, never> {
 	return Effect.gen(function* () {
 		yield* Effect.logInfo("🚀 TypeSpec API Integration: Using emitFile for test framework compatibility")
 		
@@ -94,7 +94,7 @@ export function generateAsyncAPIWithEffect(context: EmitContext): Effect.Effect<
 				escape: "Use JSON output format instead",
 				severity: "error",
 				code: "YAML_IMPORT_ERROR",
-				context: { error }
+				context: { error: String(error) }
 			})
 		});
 		
@@ -121,8 +121,7 @@ export function generateAsyncAPIWithEffect(context: EmitContext): Effect.Effect<
 			}),
 			catch: (error) => {
 				// Log actual emitFile error for debugging
-				console.log(`💥 emitFile ERROR:`, error);
-				return createError({
+				const errorDetails = createError({
 					what: "Failed to emit AsyncAPI file",
 					reassure: "The document generation succeeded, but file writing failed",
 					why: "TypeSpec's emitFile API encountered an error",
@@ -130,64 +129,39 @@ export function generateAsyncAPIWithEffect(context: EmitContext): Effect.Effect<
 					escape: "Try using a different output directory",
 					severity: "error",
 					code: "EMIT_FILE_ERROR",
-					context: { error, fileName }
+					context: { error: String(error), fileName }
 				});
+				
+				void Effect.logError(`💥 emitFile ERROR: ${String(error)}`);
+				return Effect.fail(errorDetails);
 			}
 		});
 		
 		// DEBUG: Check if file was actually written
 		const fs = yield* Effect.tryPromise({
-			try: () => import('fs'),
-			catch: () => ({ existsSync: () => false } as any)
-		});
-		const pathMod = yield* Effect.tryPromise({
-			try: () => import('path'),
-			catch: () => ({ join: (...args: string[]) => args.join('/') } as any)
-		});
-		const cwd = process.cwd();
-		const fullPath = pathMod.join(cwd, fileName);
-		const fileExists = fs.existsSync(fullPath);
-		console.log(`🔍 DEBUG: File written check - ${fullPath} exists: ${fileExists}`);
-		
-		// 🔥 WORKAROUND: TypeSpec 1.6.0 emitFile API test framework bridge
-		// The issue: emitFile doesn't populate virtual FS that test framework reads
-		// The solution: Manually bridge to result.outputs via program.state
-		yield* Effect.logInfo(`🔧 BRIDGING emitFile to virtual filesystem for test framework`)
-		
-		// Store file content in program state for test framework retrieval
-		// Note: context.program.state is not available in all contexts, but keep for compatibility
-		try {
-			(context.program as any).state?.set?.(`emitFile-${fileName}`, content);
-		} catch (e) {
-			// Program state not available, continue with filesystem workaround
-		}
-		
-		// 🔥 WORKAROUND: Write file to test temp directory for fallback system
-		const fsModule = require('fs');
-		const pathModule = require('path');
-		
-		// Find current test temp directory
-		const testTempBase = pathModule.join(process.cwd(), "test", "temp-output");
-		if (fsModule.existsSync(testTempBase)) {
-			const subdirs = fsModule.readdirSync(testTempBase)
-				.filter((d: string) => d.startsWith("test-"))
-				.sort();
-			const latestSubdir = subdirs[subdirs.length - 1];
-			
-			if (latestSubdir) {
-				// Write to subdirectory structure that fallback expects
-				const outputDir = pathModule.join(testTempBase, latestSubdir, "@lars-artmann", "typespec-asyncapi");
-				if (!fsModule.existsSync(outputDir)) {
-					fsModule.mkdirSync(outputDir, { recursive: true });
-				}
-				
-				const outputPath = pathModule.join(outputDir, String(outputFile) + `.${extension}`);
-				
-				// Write file directly to test temp directory
-				fsModule.writeFileSync(outputPath, content);
-				yield* Effect.logInfo(`🔧 WORKAROUND: Written to test temp directory: ${outputPath}`);
+			try: () => import('node:fs'),
+			catch: (error) => {
+				void Effect.logError(`Failed to import fs module: ${String(error)}`);
+				// Return error instead of trying to stub fs
+				return createError({
+					what: "Failed to import fs module",
+					reassure: "File operations may not work properly",
+					why: "Node.js fs module could not be imported",
+					fix: "Check Node.js environment and module resolution",
+					escape: "Use alternative file access method",
+					severity: "error",
+					code: "FS_IMPORT_ERROR",
+					context: { error: String(error) }
+				});
 			}
-		}
+		});
+		
+		// 🔥 NOTE: Debugging and fallback code removed to ensure type safety
+		// Main emitFile API should handle file operations properly
+		
+		// 🔥 NOTE: Complex fallback operations removed to ensure type safety
+		// Main emitFile API should handle most use cases
+		// Fallback can be re-implemented with simpler approach if needed
 		
 		yield* Effect.logInfo(`✅ File emitted: ${fileName}`)
 		

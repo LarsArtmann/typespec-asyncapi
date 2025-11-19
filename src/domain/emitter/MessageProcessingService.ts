@@ -70,7 +70,7 @@ export const processMessageModels = (
 ): Effect.Effect<number, never> =>
 	Effect.gen(function* () {
 		// Use shared processing pipeline to eliminate duplication
-		const messageResults = yield* processItemsWithEffect(
+		const _messageResults = yield* processItemsWithEffect(
 			messageModels,
 			"message models",
 			(model: Model) => processSingleMessageModel(model, asyncApiDoc, program),

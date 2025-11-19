@@ -17,9 +17,9 @@ import { globalTypeCache } from "./type-cache.js"
  */
 const processModelPropertyDuplicated = (
 	name: string,
-	prop: any,
+	prop: ModelProperty,
 	program: Program,
-	properties: Record<string, any>,
+	properties: Record<string, SchemaObject>,
 	required: string[]
 ): Effect.Effect<void, never> => 
 	Effect.gen(function* () {
@@ -30,11 +30,11 @@ const processModelPropertyDuplicated = (
 	})
 
 // Legacy synchronous version for compatibility
-const processModelPropertySync = (
+const _processModelPropertySync = (
 	name: string,
-	prop: any,
+	prop: ModelProperty,
 	program: Program,
-	properties: Record<string, any>,
+	properties: Record<string, SchemaObject>,
 	required: string[]
 ): void => {
 	// Use existing convertPropertyToSchema which should be synchronous version
