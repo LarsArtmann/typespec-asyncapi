@@ -11,7 +11,7 @@ import { getDoc } from "@typespec/compiler"
 import type { AsyncAPIObject, OperationObject } from "@asyncapi/parser/esm/spec-types/v3.js"
 import { createChannelDefinition } from "../../utils/asyncapi-helpers.js"
 import { railwayLogging } from "../../utils/effect-helpers.js"
-// import { processItemsWithEffect, createProcessingContext } from "./SharedProcessingUtils.js" // TODO: Use later
+import { processItemsWithEffect } from "./SharedProcessingUtils.js"
 
 // 🔥 CRITICAL FIX: Apply branded types to eliminate type safety waste
 import type { ChannelName, OperationName } from "../../types/branded-types.js"
@@ -109,13 +109,12 @@ export const processOperations = (
 	program: Program
 ): Effect.Effect<number, never> =>
 	Effect.gen(function* () {
-		yield* Effect.log(`🔄 Processing ${operations.length} operations with Effect.TS...`)
-
-		// Process all operations in parallel for performance
-		const operationResults = yield* Effect.all(
-			operations.map(operation =>
-				processSingleOperation(operation, asyncApiDoc, program)
-			)
+		// Use shared processing pipeline to eliminate duplication
+		const operationResults = yield* processItemsWithEffect(
+			operations,
+			"operations",
+			(operation: Operation) => processSingleOperation(operation, asyncApiDoc, program),
+			"🔄"
 		)
 
 		// Add channels and operations to AsyncAPI document

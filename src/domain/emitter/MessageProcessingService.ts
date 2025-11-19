@@ -11,6 +11,7 @@ import type { AsyncAPIObject, MessageObject } from "@asyncapi/parser/esm/spec-ty
 import { convertModelToSchema } from "../../utils/schema-conversion.js"
 import { getMessageConfig } from "../../utils/typespec-helpers.js"
 import { railwayLogging } from "../../utils/effect-helpers.js"
+import { processItemsWithEffect } from "./SharedProcessingUtils.js"
 
 /**
  * Process a single TypeSpec message model into AsyncAPI message
@@ -68,13 +69,12 @@ export const processMessageModels = (
 	program: Program
 ): Effect.Effect<number, never> =>
 	Effect.gen(function* () {
-		yield* Effect.log(`🎯 Processing ${messageModels.length} message models with functional composition...`)
-
-		// Process each message model in parallel for performance
-		yield* Effect.all(
-			messageModels.map(model =>
-				processSingleMessageModel(model, asyncApiDoc, program)
-			)
+		// Use shared processing pipeline to eliminate duplication
+		const messageResults = yield* processItemsWithEffect(
+			messageModels,
+			"message models",
+			(model: Model) => processSingleMessageModel(model, asyncApiDoc, program),
+			"🎯"
 		)
 
 		yield* railwayLogging.logBatchCompletion(messageModels.length, 0, 0)
