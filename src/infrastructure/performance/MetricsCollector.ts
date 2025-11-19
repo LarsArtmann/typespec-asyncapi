@@ -15,6 +15,15 @@ import { PERFORMANCE_MONITORING } from "../../constants/defaults.js"
 import { getMemoryUsageFromPerformance } from "../../utils/performance-utils.js"
 
 /**
+ * Shared utility to initialize and get cache metrics
+ * Eliminates duplication across hit/miss recording functions
+ */
+const getCacheMetrics = (): { hits: number, misses: number } => {
+	globalThis.__ASYNCAPI_CACHE_METRICS ??= { hits: 0, misses: 0 }
+	return globalThis.__ASYNCAPI_CACHE_METRICS
+}
+
+/**
  * Performance metrics interface
  */
 export type PerformanceMetrics = {
@@ -190,8 +199,7 @@ export const PerformanceMonitor = {
    */
   recordCacheHit: () =>
     Effect.sync(() => {
-      globalThis.__ASYNCAPI_CACHE_METRICS ??= { hits: 0, misses: 0 }
-      const cacheMetrics = globalThis.__ASYNCAPI_CACHE_METRICS
+      const cacheMetrics = getCacheMetrics()
       cacheMetrics.hits++
     }),
   
@@ -200,8 +208,7 @@ export const PerformanceMonitor = {
    */
   recordCacheMiss: () =>
     Effect.sync(() => {
-      globalThis.__ASYNCAPI_CACHE_METRICS ??= { hits: 0, misses: 0 }
-      const cacheMetrics = globalThis.__ASYNCAPI_CACHE_METRICS
+      const cacheMetrics = getCacheMetrics()
       cacheMetrics.misses++
     }),
   

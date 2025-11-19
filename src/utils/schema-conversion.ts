@@ -12,6 +12,39 @@ import type {SchemaObject} from "@asyncapi/parser/esm/spec-types/v3.js"
 import { globalTypeCache } from "./type-cache.js"
 
 /**
+ * Shared utility to process model properties without duplication
+ * Eliminates split-brain anti-patterns across conversion functions
+ */
+const processModelPropertyDuplicated = (
+	name: string,
+	prop: any,
+	program: Program,
+	properties: Record<string, any>,
+	required: string[]
+): Effect.Effect<void, never> => 
+	Effect.gen(function* () {
+		properties[name] = yield* convertPropertyToSchemaEffect(prop, program, name)
+		if (!prop.optional) {
+			required.push(name)
+		}
+	})
+
+// Legacy synchronous version for compatibility
+const processModelPropertySync = (
+	name: string,
+	prop: any,
+	program: Program,
+	properties: Record<string, any>,
+	required: string[]
+): void => {
+	// Use existing convertPropertyToSchema which should be synchronous version
+	properties[name] = convertPropertyToSchema(prop, program, name)
+	if (!prop.optional) {
+		required.push(name)
+	}
+}
+
+/**
  * Process a single model property and add it to the schema
  * Extracted from duplicated property processing loops
  */
@@ -25,11 +58,8 @@ function* processModelProperty(
 	const name = prop.name
 	yield* Effect.log(`${logPrefix}: ${name} (type: ${prop.type.kind})`)
 
-	properties[name] = yield* convertPropertyToSchemaEffect(prop, program, name)
-
-	if (!prop.optional) {
-		required.push(name)
-	}
+	// Use shared utility to eliminate duplication
+	yield* processModelPropertyDuplicated(name, prop, program, properties, required)
 }
 
 /**
@@ -262,10 +292,8 @@ export function convertTypeToSchemaType(type: Type, program: Program): Effect.Ef
 					const required: string[] = []
 
 					for (const [name, prop] of modelType.properties.entries()) {
-						properties[name] = yield* convertPropertyToSchemaEffect(prop, program, name)
-						if (!prop.optional) {
-							required.push(name)
-						}
+						// Use shared utility to eliminate duplication
+						yield* processModelPropertyDuplicated(name, prop, program, properties, required)
 					}
 
 					const inlineSchema: SchemaObject = {
