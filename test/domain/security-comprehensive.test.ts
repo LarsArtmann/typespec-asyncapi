@@ -4,15 +4,20 @@
  * Tests 100+ security scenarios for AsyncAPI generation
  */
 
-import { describe, it, expect } from "bun:test"
-import { createAsyncAPITestHost, compileAndGetAsyncAPI } from "../utils/test-helpers.js"
+import { describe, it, expect } from "bun:test";
+import {
+  createAsyncAPITestHost,
+  compileAndGetAsyncAPI,
+} from "../utils/test-helpers.js";
 
 describe("Security Schemes - Comprehensive Domain Tests", () => {
-	// HTTP Authentication (20 tests)
-	describe("HTTP Authentication", () => {
-		it("should support HTTP Basic Auth", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+  // HTTP Authentication (20 tests)
+  describe("HTTP Authentication", () => {
+    it("should support HTTP Basic Auth", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -30,16 +35,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support HTTP Bearer JWT", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support HTTP Bearer JWT", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -58,16 +66,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support HTTP Bearer with custom format", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support HTTP Bearer with custom format", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -86,16 +97,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support HTTP Digest Auth", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support HTTP Digest Auth", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -113,16 +127,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support HTTP Mutual TLS", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support HTTP Mutual TLS", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -140,16 +157,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support HTTP HOBA (HTTP Origin-Bound Auth)", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support HTTP HOBA (HTTP Origin-Bound Auth)", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -167,16 +187,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support HTTP Negotiate (SPNEGO)", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support HTTP Negotiate (SPNEGO)", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -194,16 +217,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support HTTP SCRAM-SHA-1", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support HTTP SCRAM-SHA-1", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -221,16 +247,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support HTTP SCRAM-SHA-256", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support HTTP SCRAM-SHA-256", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -248,16 +277,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support HTTP AWS Signature V4", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support HTTP AWS Signature V4", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -275,16 +307,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support HTTP MAC (Message Authentication Code)", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support HTTP MAC (Message Authentication Code)", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -302,16 +337,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support HTTP VAPID (Web Push)", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support HTTP VAPID (Web Push)", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -329,16 +367,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): PushMsg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support HTTP DPoP (Demonstrating Proof-of-Possession)", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support HTTP DPoP (Demonstrating Proof-of-Possession)", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -356,16 +397,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support HTTP PrivateToken", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support HTTP PrivateToken", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -383,16 +427,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support HTTP GNAP (Grant Negotiation and Authorization Protocol)", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support HTTP GNAP (Grant Negotiation and Authorization Protocol)", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -410,16 +457,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support multiple HTTP auth schemes (OR)", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support multiple HTTP auth schemes (OR)", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -449,16 +499,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op pub2(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support HTTP auth with realm", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support HTTP auth with realm", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -477,16 +530,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support HTTP auth with charset", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support HTTP auth with charset", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -505,16 +561,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support HTTP auth with nonce", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support HTTP auth with nonce", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -533,16 +592,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support HTTP Hawk authentication", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support HTTP Hawk authentication", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -560,19 +622,22 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
-	})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
+  });
 
-	// API Key Authentication (20 tests)
-	describe("API Key Authentication", () => {
-		it("should support API Key in header", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+  // API Key Authentication (20 tests)
+  describe("API Key Authentication", () => {
+    it("should support API Key in header", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -591,16 +656,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support API Key in query parameter", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support API Key in query parameter", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -619,16 +687,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support API Key in cookie", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support API Key in cookie", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -647,16 +718,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support multiple API keys", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support multiple API keys", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -687,16 +761,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op pub2(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support API Key with prefix", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support API Key with prefix", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -716,16 +793,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support API Key rotation", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support API Key rotation", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -748,16 +828,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support API Key scopes", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support API Key scopes", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -777,16 +860,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support API Key rate limiting", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support API Key rate limiting", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -809,16 +895,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support API Key expiration", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support API Key expiration", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -841,16 +930,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support API Key IP whitelisting", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support API Key IP whitelisting", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -873,16 +965,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support API Key usage tracking", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support API Key usage tracking", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -905,16 +1000,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support API Key with CORS", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support API Key with CORS", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -934,16 +1032,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support API Key with environment (dev/staging/prod)", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support API Key with environment (dev/staging/prod)", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -966,16 +1067,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support API Key with request signing", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support API Key with request signing", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -999,16 +1103,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support API Key with custom validation", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support API Key with custom validation", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1028,16 +1135,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support API Key with webhook verification", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support API Key with webhook verification", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1061,16 +1171,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@subscribe
 				op receiveWebhook(): WebhookMsg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support API Key with tenant isolation", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support API Key with tenant isolation", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1093,16 +1206,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support API Key with fallback authentication", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support API Key with fallback authentication", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1122,16 +1238,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support API Key with conditional requirements", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support API Key with conditional requirements", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1154,16 +1273,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support API Key with audit logging", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support API Key with audit logging", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1186,19 +1308,22 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
-	})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
+  });
 
-	// OAuth2 Flows (20 tests)
-	describe("OAuth2 Flows", () => {
-		it("should support OAuth2 Authorization Code flow", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+  // OAuth2 Flows (20 tests)
+  describe("OAuth2 Flows", () => {
+    it("should support OAuth2 Authorization Code flow", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1225,16 +1350,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support OAuth2 Client Credentials flow", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support OAuth2 Client Credentials flow", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1260,16 +1388,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support OAuth2 Implicit flow", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support OAuth2 Implicit flow", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1295,16 +1426,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support OAuth2 Password flow (Resource Owner)", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support OAuth2 Password flow (Resource Owner)", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1329,16 +1463,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support OAuth2 with multiple flows", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support OAuth2 with multiple flows", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1366,16 +1503,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support OAuth2 with PKCE", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support OAuth2 with PKCE", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1400,16 +1540,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support OAuth2 with refresh tokens", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support OAuth2 with refresh tokens", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1437,16 +1580,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support OAuth2 with OpenID Connect", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support OAuth2 with OpenID Connect", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1474,16 +1620,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support OAuth2 with dynamic scopes", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support OAuth2 with dynamic scopes", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1511,16 +1660,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support OAuth2 with audience restriction", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support OAuth2 with audience restriction", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1547,16 +1699,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support OAuth2 Device Authorization Grant", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support OAuth2 Device Authorization Grant", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1583,16 +1738,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support OAuth2 Token Exchange (RFC 8693)", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support OAuth2 Token Exchange (RFC 8693)", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1618,16 +1776,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support OAuth2 JWT Bearer Grant (RFC 7523)", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support OAuth2 JWT Bearer Grant (RFC 7523)", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1653,16 +1814,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support OAuth2 SAML Bearer Grant (RFC 7522)", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support OAuth2 SAML Bearer Grant (RFC 7522)", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1688,16 +1852,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support OAuth2 with token introspection", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support OAuth2 with token introspection", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1724,16 +1891,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support OAuth2 with token revocation", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support OAuth2 with token revocation", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1761,16 +1931,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support OAuth2 with scope negotiation", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support OAuth2 with scope negotiation", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1801,16 +1974,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support OAuth2 with consent management", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support OAuth2 with consent management", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1838,16 +2014,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support OAuth2 with session management", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support OAuth2 with session management", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1875,19 +2054,22 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
-	})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
+  });
 
-	// SASL & Other Mechanisms (20 tests)
-	describe("SASL & Other Security Mechanisms", () => {
-		it("should support SASL PLAIN", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+  // SASL & Other Mechanisms (20 tests)
+  describe("SASL & Other Security Mechanisms", () => {
+    it("should support SASL PLAIN", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1905,16 +2087,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support SASL SCRAM-SHA-1", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support SASL SCRAM-SHA-1", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1932,16 +2117,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support SASL SCRAM-SHA-256", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support SASL SCRAM-SHA-256", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1959,16 +2147,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support SASL SCRAM-SHA-512", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support SASL SCRAM-SHA-512", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1986,16 +2177,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support SASL GSSAPI (Kerberos)", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support SASL GSSAPI (Kerberos)", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -2013,16 +2207,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support SASL EXTERNAL", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support SASL EXTERNAL", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -2040,16 +2237,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support SASL OAUTHBEARER", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support SASL OAUTHBEARER", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -2067,16 +2267,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support SASL CRAM-MD5", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support SASL CRAM-MD5", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -2094,16 +2297,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support SASL DIGEST-MD5", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support SASL DIGEST-MD5", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -2121,16 +2327,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support SASL ANONYMOUS", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support SASL ANONYMOUS", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -2148,16 +2357,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support X.509 Client Certificates", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support X.509 Client Certificates", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -2175,16 +2387,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support Asymmetric Key Pairs", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support Asymmetric Key Pairs", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -2205,16 +2420,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support Symmetric Keys", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support Symmetric Keys", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -2235,16 +2453,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it.skip("should support User Context Token", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it.skip("should support User Context Token", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -2265,16 +2486,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it.skip("should support Open Authenticator", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it.skip("should support Open Authenticator", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -2291,16 +2515,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support Plain Text (No Authentication)", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support Plain Text (No Authentication)", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -2317,16 +2544,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it.skip("should support Scrambled Username/Password", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it.skip("should support Scrambled Username/Password", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -2343,16 +2573,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it.skip("should support HTTP Signature", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it.skip("should support HTTP Signature", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -2373,16 +2606,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it.skip("should support PASETO (Platform-Agnostic Security Tokens)", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it.skip("should support PASETO (Platform-Agnostic Security Tokens)", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -2403,16 +2639,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it.skip("should support Macaroons", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it.skip("should support Macaroons", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -2432,19 +2671,22 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
-	})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
+  });
 
-	// Combined & Advanced Security (20 tests)
-	describe("Combined & Advanced Security", () => {
-		it("should support multiple security schemes (AND)", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+  // Combined & Advanced Security (20 tests)
+  describe("Combined & Advanced Security", () => {
+    it("should support multiple security schemes (AND)", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -2475,16 +2717,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op pub2(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support security with rate limiting", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support security with rate limiting", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -2508,16 +2753,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support security with IP restrictions", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support security with IP restrictions", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -2540,16 +2788,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support security with geographic restrictions", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support security with geographic restrictions", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -2572,16 +2823,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support security with time-based access", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support security with time-based access", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -2604,16 +2858,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support security with MFA requirements", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support security with MFA requirements", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -2636,16 +2893,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support security with device fingerprinting", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support security with device fingerprinting", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -2668,16 +2928,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it.skip("should support security with biometric authentication", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it.skip("should support security with biometric authentication", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -2698,16 +2961,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it.skip("should support security with hardware token", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it.skip("should support security with hardware token", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -2728,16 +2994,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support security with risk-based authentication", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support security with risk-based authentication", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -2761,16 +3030,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it.skip("should support security with behavioral analytics", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it.skip("should support security with behavioral analytics", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -2791,16 +3063,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it.skip("should support security with zero-trust architecture", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it.skip("should support security with zero-trust architecture", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -2821,16 +3096,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it.skip("should support security with blockchain-based identity", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it.skip("should support security with blockchain-based identity", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -2851,16 +3129,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it.skip("should support security with quantum-resistant cryptography", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it.skip("should support security with quantum-resistant cryptography", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -2881,16 +3162,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it.skip("should support security with homomorphic encryption", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it.skip("should support security with homomorphic encryption", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -2911,16 +3195,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it.skip("should support security with secure multi-party computation", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it.skip("should support security with secure multi-party computation", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -2941,16 +3228,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it.skip("should support security with confidential computing", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it.skip("should support security with confidential computing", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -2971,16 +3261,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it.skip("should support security with privacy-preserving protocols", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it.skip("should support security with privacy-preserving protocols", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -3001,16 +3294,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it.skip("should support security with federated learning", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it.skip("should support security with federated learning", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -3031,16 +3327,19 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it.skip("should support security with verifiable credentials", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it.skip("should support security with verifiable credentials", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -3062,11 +3361,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
-	})
-})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
+  });
+});

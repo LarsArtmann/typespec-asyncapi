@@ -23,8 +23,8 @@
  * ```
  */
 
-import { expect } from 'bun:test'
-import type { AsyncAPIObject } from '@asyncapi/parser/esm/spec-types/v3.js'
+import { expect } from "bun:test";
+import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js";
 
 /**
  * Type guard: Asserts value is AsyncAPI 3.0 document
@@ -43,42 +43,42 @@ import type { AsyncAPIObject } from '@asyncapi/parser/esm/spec-types/v3.js'
  * console.log(doc.asyncapi) // No error, no optional chaining needed
  * ```
  */
-export function assertAsyncAPIDoc(value: unknown): asserts value is AsyncAPIObject {
-	// Check value exists and is object
-	if (!value || typeof value !== 'object') {
-		throw new Error(
-			`Expected AsyncAPI document to be an object, got ${typeof value}`
-		)
-	}
+export function assertAsyncAPIDoc(
+  value: unknown,
+): asserts value is AsyncAPIObject {
+  // Check value exists and is object
+  if (!value || typeof value !== "object") {
+    throw new Error(
+      `Expected AsyncAPI document to be an object, got ${typeof value}`,
+    );
+  }
 
-	const doc = value as Partial<AsyncAPIObject>
+  const doc = value as Partial<AsyncAPIObject>;
 
-	// Check AsyncAPI version
-	if (doc.asyncapi !== '3.0.0') {
-		throw new Error(
-			`Expected AsyncAPI version "3.0.0", got "${doc.asyncapi}"`
-		)
-	}
+  // Check AsyncAPI version
+  if (doc.asyncapi !== "3.0.0") {
+    throw new Error(`Expected AsyncAPI version "3.0.0", got "${doc.asyncapi}"`);
+  }
 
-	// Check required info section
-	if (!doc.info || typeof doc.info !== 'object') {
-		throw new Error('AsyncAPI document missing required "info" section')
-	}
+  // Check required info section
+  if (!doc.info || typeof doc.info !== "object") {
+    throw new Error('AsyncAPI document missing required "info" section');
+  }
 
-	if (!doc.info.title || typeof doc.info.title !== 'string') {
-		throw new Error('AsyncAPI info section missing required "title" field')
-	}
+  if (!doc.info.title || typeof doc.info.title !== "string") {
+    throw new Error('AsyncAPI info section missing required "title" field');
+  }
 
-	if (!doc.info.version || typeof doc.info.version !== 'string') {
-		throw new Error('AsyncAPI info section missing required "version" field')
-	}
+  if (!doc.info.version || typeof doc.info.version !== "string") {
+    throw new Error('AsyncAPI info section missing required "version" field');
+  }
 
-	// Check channels section exists (can be empty object)
-	if (doc.channels === undefined) {
-		throw new Error('AsyncAPI document missing "channels" section')
-	}
+  // Check channels section exists (can be empty object)
+  if (doc.channels === undefined) {
+    throw new Error('AsyncAPI document missing "channels" section');
+  }
 
-	// All checks passed - TypeScript now knows value is AsyncAPIObject
+  // All checks passed - TypeScript now knows value is AsyncAPIObject
 }
 
 /**
@@ -99,12 +99,12 @@ export function assertAsyncAPIDoc(value: unknown): asserts value is AsyncAPIObje
  * ```
  */
 export function assertDefined<T>(
-	value: T,
-	message = 'Expected value to be defined'
+  value: T,
+  message = "Expected value to be defined",
 ): asserts value is NonNullable<T> {
-	if (value === null || value === undefined) {
-		throw new Error(message)
-	}
+  if (value === null || value === undefined) {
+    throw new Error(message);
+  }
 }
 
 /**
@@ -127,21 +127,21 @@ export function assertDefined<T>(
  * ```
  */
 export function assertHasProperty<T extends object>(
-	obj: T | undefined | null,
-	key: string,
-	message?: string
+  obj: T | undefined | null,
+  key: string,
+  message?: string,
 ): void {
-	if (!obj || typeof obj !== 'object') {
-		throw new Error(`Cannot check property "${key}" on non-object`)
-	}
+  if (!obj || typeof obj !== "object") {
+    throw new Error(`Cannot check property "${key}" on non-object`);
+  }
 
-	const keys = Object.keys(obj)
-	if (!keys.includes(key)) {
-		throw new Error(
-			message ||
-				`Expected object to have property "${key}". Available properties: ${keys.join(', ') || '(none)'}`
-		)
-	}
+  const keys = Object.keys(obj);
+  if (!keys.includes(key)) {
+    throw new Error(
+      message ||
+        `Expected object to have property "${key}". Available properties: ${keys.join(", ") || "(none)"}`,
+    );
+  }
 }
 
 /**
@@ -166,21 +166,21 @@ export function assertHasProperty<T extends object>(
  * ```
  */
 export function assertHasProperties<T extends object>(
-	obj: T | undefined | null,
-	...keys: string[]
+  obj: T | undefined | null,
+  ...keys: string[]
 ): void {
-	if (!obj || typeof obj !== 'object') {
-		throw new Error(`Cannot check properties on non-object`)
-	}
+  if (!obj || typeof obj !== "object") {
+    throw new Error(`Cannot check properties on non-object`);
+  }
 
-	const objectKeys = Object.keys(obj)
-	const missing = keys.filter((k) => !objectKeys.includes(k))
+  const objectKeys = Object.keys(obj);
+  const missing = keys.filter((k) => !objectKeys.includes(k));
 
-	if (missing.length > 0) {
-		throw new Error(
-			`Missing properties: ${missing.join(', ')}. Available properties: ${objectKeys.join(', ') || '(none)'}`
-		)
-	}
+  if (missing.length > 0) {
+    throw new Error(
+      `Missing properties: ${missing.join(", ")}. Available properties: ${objectKeys.join(", ") || "(none)"}`,
+    );
+  }
 }
 
 /**
@@ -199,16 +199,16 @@ export function assertHasProperties<T extends object>(
  * ```
  */
 export function assertNonEmptyString(
-	value: unknown,
-	name = 'value'
+  value: unknown,
+  name = "value",
 ): asserts value is string {
-	if (typeof value !== 'string') {
-		throw new Error(`Expected ${name} to be a string, got ${typeof value}`)
-	}
+  if (typeof value !== "string") {
+    throw new Error(`Expected ${name} to be a string, got ${typeof value}`);
+  }
 
-	if (value.trim().length === 0) {
-		throw new Error(`Expected ${name} to be non-empty string`)
-	}
+  if (value.trim().length === 0) {
+    throw new Error(`Expected ${name} to be non-empty string`);
+  }
 }
 
 /**
@@ -227,21 +227,21 @@ export function assertNonEmptyString(
  * ```
  */
 export function assertNonEmptyObject(
-	value: unknown,
-	name = 'object'
+  value: unknown,
+  name = "object",
 ): asserts value is Record<string, unknown> {
-	if (!value || typeof value !== 'object') {
-		throw new Error(`Expected ${name} to be an object, got ${typeof value}`)
-	}
+  if (!value || typeof value !== "object") {
+    throw new Error(`Expected ${name} to be an object, got ${typeof value}`);
+  }
 
-	if (Array.isArray(value)) {
-		throw new Error(`Expected ${name} to be an object, got array`)
-	}
+  if (Array.isArray(value)) {
+    throw new Error(`Expected ${name} to be an object, got array`);
+  }
 
-	const keys = Object.keys(value)
-	if (keys.length === 0) {
-		throw new Error(`Expected ${name} to have at least one property`)
-	}
+  const keys = Object.keys(value);
+  if (keys.length === 0) {
+    throw new Error(`Expected ${name} to have at least one property`);
+  }
 }
 
 /**
@@ -260,27 +260,29 @@ export function assertNonEmptyObject(
  * // Compilation succeeded, asyncapiDoc is guaranteed to exist
  * ```
  */
-export function assertCompilationSuccess(
-	result: { exitCode: number; errors?: string[]; asyncapiDoc?: unknown }
-): asserts result is { exitCode: 0; errors: []; asyncapiDoc: AsyncAPIObject } {
-	if (result.exitCode !== 0) {
-		throw new Error(
-			`Compilation failed with exit code ${result.exitCode}. Errors: ${result.errors?.join(', ') || 'none'}`
-		)
-	}
+export function assertCompilationSuccess(result: {
+  exitCode: number;
+  errors?: string[];
+  asyncapiDoc?: unknown;
+}): asserts result is { exitCode: 0; errors: []; asyncapiDoc: AsyncAPIObject } {
+  if (result.exitCode !== 0) {
+    throw new Error(
+      `Compilation failed with exit code ${result.exitCode}. Errors: ${result.errors?.join(", ") || "none"}`,
+    );
+  }
 
-	if (result.errors && result.errors.length > 0) {
-		throw new Error(
-			`Compilation reported errors: ${result.errors.join(', ')}`
-		)
-	}
+  if (result.errors && result.errors.length > 0) {
+    throw new Error(`Compilation reported errors: ${result.errors.join(", ")}`);
+  }
 
-	if (!result.asyncapiDoc) {
-		throw new Error('Compilation succeeded but AsyncAPI document not generated')
-	}
+  if (!result.asyncapiDoc) {
+    throw new Error(
+      "Compilation succeeded but AsyncAPI document not generated",
+    );
+  }
 
-	// Validate it's a proper AsyncAPI document
-	assertAsyncAPIDoc(result.asyncapiDoc)
+  // Validate it's a proper AsyncAPI document
+  assertAsyncAPIDoc(result.asyncapiDoc);
 }
 
 /**
@@ -300,9 +302,9 @@ export function assertCompilationSuccess(
  * ```
  */
 export function getPropertyKeys<T extends object>(
-	obj: T | undefined | null
+  obj: T | undefined | null,
 ): string[] {
-	return Object.keys(obj || {})
+  return Object.keys(obj || {});
 }
 
 /**
@@ -325,11 +327,11 @@ export function getPropertyKeys<T extends object>(
  * ```
  */
 export function getProperty<T extends object, K extends string>(
-	obj: T | undefined | null,
-	key: K
+  obj: T | undefined | null,
+  key: K,
 ): unknown {
-	if (!obj || typeof obj !== 'object') return undefined
-	return (obj as Record<string, unknown>)[key]
+  if (!obj || typeof obj !== "object") return undefined;
+  return (obj as Record<string, unknown>)[key];
 }
 
 /**
@@ -348,14 +350,14 @@ export function getProperty<T extends object, K extends string>(
  * ```
  */
 export function assertContainsKeys<T extends object>(
-	obj: T | undefined | null,
-	keys: string[]
+  obj: T | undefined | null,
+  keys: string[],
 ): void {
-	const actualKeys = getPropertyKeys(obj)
+  const actualKeys = getPropertyKeys(obj);
 
-	for (const key of keys) {
-		expect(actualKeys).toContain(key)
-	}
+  for (const key of keys) {
+    expect(actualKeys).toContain(key);
+  }
 }
 
 /**
@@ -373,11 +375,11 @@ export function assertContainsKeys<T extends object>(
  * ```
  */
 export function assertExactKeys<T extends object>(
-	obj: T | undefined | null,
-	expectedKeys: string[]
+  obj: T | undefined | null,
+  expectedKeys: string[],
 ): void {
-	const actualKeys = getPropertyKeys(obj).sort()
-	const expected = [...expectedKeys].sort()
+  const actualKeys = getPropertyKeys(obj).sort();
+  const expected = [...expectedKeys].sort();
 
-	expect(actualKeys).toEqual(expected)
+  expect(actualKeys).toEqual(expected);
 }

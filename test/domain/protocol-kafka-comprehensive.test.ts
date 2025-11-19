@@ -4,15 +4,20 @@
  * Tests 50+ Kafka-specific scenarios for AsyncAPI generation
  */
 
-import { describe, it, expect } from "bun:test"
-import { createAsyncAPITestHost, compileAndGetAsyncAPI } from "../utils/test-helpers.js"
+import { describe, it, expect } from "bun:test";
+import {
+  createAsyncAPITestHost,
+  compileAndGetAsyncAPI,
+} from "../utils/test-helpers.js";
 
 describe("Kafka Protocol - Comprehensive Domain Tests", () => {
-	// Basic Kafka Configuration Tests (10 tests)
-	describe("Basic Kafka Configuration", () => {
-		it("should generate Kafka server with bootstrap servers", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+  // Basic Kafka Configuration Tests (10 tests)
+  describe("Basic Kafka Configuration", () => {
+    it("should generate Kafka server with bootstrap servers", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -29,19 +34,22 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				@channel("test.topic")
 				@publish
 				op publishMessage(): KafkaMessage;
-			`)
+			`,
+      );
 
-			await host.compile("./main.tsp")
-			const diagnostics = await host.diagnose("./main.tsp", {
-				emit: ["@lars-artmann/typespec-asyncapi"]
-			})
+      await host.compile("./main.tsp");
+      const diagnostics = await host.diagnose("./main.tsp", {
+        emit: ["@lars-artmann/typespec-asyncapi"],
+      });
 
-			expect(diagnostics.filter(d => d.severity === "error").length).toBe(0)
-		})
+      expect(diagnostics.filter((d) => d.severity === "error").length).toBe(0);
+    });
 
-		it("should handle Kafka topic with partitions", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should handle Kafka topic with partitions", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -60,16 +68,19 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishEvent(): Event;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0") // Compilation success
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0"); // Compilation success
+    });
 
-		it("should handle Kafka consumer group configuration", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should handle Kafka consumer group configuration", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -87,16 +98,19 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				})
 				@subscribe
 				op consumeMessages(): Message;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support Kafka key-based routing", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support Kafka key-based routing", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -114,16 +128,19 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishUserEvent(): UserEvent;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should handle Kafka compression settings", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should handle Kafka compression settings", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -141,16 +158,19 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishCompressed(): LargeMessage;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support Kafka retention policies", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support Kafka retention policies", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -168,16 +188,19 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishTimedEvent(): TimedEvent;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should handle Kafka idempotent producers", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should handle Kafka idempotent producers", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -195,16 +218,19 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishTransaction(): Transaction;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support Kafka exactly-once semantics", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support Kafka exactly-once semantics", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -222,16 +248,19 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishPayment(): Payment;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should handle Kafka topic cleanup policies", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should handle Kafka topic cleanup policies", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -249,16 +278,19 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishSnapshot(): Snapshot;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support Kafka batch configurations", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support Kafka batch configurations", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -277,19 +309,22 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishBatch(): BatchEvent;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
-	})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
+  });
 
-	// Kafka Security & Authentication (10 tests)
-	describe("Kafka Security & Authentication", () => {
-		it("should support SASL/SCRAM-SHA-256 authentication", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+  // Kafka Security & Authentication (10 tests)
+  describe("Kafka Security & Authentication", () => {
+    it("should support SASL/SCRAM-SHA-256 authentication", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -311,16 +346,19 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishSecure(): SecureMessage;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support SASL/SCRAM-SHA-512 authentication", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support SASL/SCRAM-SHA-512 authentication", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -338,16 +376,19 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publish(): Message;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support SASL/PLAIN authentication", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support SASL/PLAIN authentication", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -365,16 +406,19 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support SASL/GSSAPI (Kerberos) authentication", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support SASL/GSSAPI (Kerberos) authentication", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -392,16 +436,19 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishKerberos(): KerberosMsg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support SASL/OAUTHBEARER authentication", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support SASL/OAUTHBEARER authentication", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -419,16 +466,19 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishOAuth(): OAuthMsg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support SSL/TLS encryption", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support SSL/TLS encryption", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -445,16 +495,19 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				@channel("encrypted.topic")
 				@publish
 				op publishEncrypted(): EncryptedMsg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support Kafka ACLs configuration", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support Kafka ACLs configuration", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -472,16 +525,19 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishACL(): ACLMessage;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support mTLS (mutual TLS) authentication", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support mTLS (mutual TLS) authentication", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -499,16 +555,19 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				@channel("mtls.topic")
 				@publish
 				op publishMTLS(): MutualAuthMsg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support Schema Registry authentication", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support Schema Registry authentication", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -527,16 +586,19 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishRegistered(): RegisteredMsg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support delegation tokens", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support delegation tokens", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -555,19 +617,22 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishToken(): TokenMsg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
-	})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
+  });
 
-	// Kafka Message Formats & Serialization (10 tests)
-	describe("Kafka Message Formats & Serialization", () => {
-		it("should support Avro serialization", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+  // Kafka Message Formats & Serialization (10 tests)
+  describe("Kafka Message Formats & Serialization", () => {
+    it("should support Avro serialization", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -589,16 +654,19 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishAvro(): AvroMsg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support Protobuf serialization", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support Protobuf serialization", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -619,16 +687,19 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishProto(): ProtoMsg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support JSON serialization", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support JSON serialization", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -649,16 +720,19 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishJSON(): JSONMsg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support binary/raw serialization", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support binary/raw serialization", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -679,16 +753,19 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishBinary(): BinaryMsg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support message headers", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support message headers", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -710,16 +787,19 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishHeadered(): HeaderedMsg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support CloudEvents format", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support CloudEvents format", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -743,16 +823,19 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishCloudEvent(): CloudEvent;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support message timestamps", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support message timestamps", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -774,16 +857,19 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishTimestamped(): TimestampedMsg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support Schema Registry with versioning", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support Schema Registry with versioning", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -805,16 +891,19 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishVersioned(): VersionedMsg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support custom serializers", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support custom serializers", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -835,16 +924,19 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishCustom(): CustomMsg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support message compression per message", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support message compression per message", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -864,19 +956,22 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishCompressed(): CompressedMsg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
-	})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
+  });
 
-	// Kafka Streams & Advanced Patterns (20 tests)
-	describe("Kafka Streams & Advanced Patterns", () => {
-		it("should support Kafka Streams topology", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+  // Kafka Streams & Advanced Patterns (20 tests)
+  describe("Kafka Streams & Advanced Patterns", () => {
+    it("should support Kafka Streams topology", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -891,16 +986,19 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				@channel("stream.output")
 				@publish
 				op publishStream(): StreamEvent;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support compacted topics for state stores", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support compacted topics for state stores", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -918,16 +1016,19 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishState(): State;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support changelog topics", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support changelog topics", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -945,16 +1046,19 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishChange(): Change;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support windowed aggregations", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support windowed aggregations", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -969,16 +1073,19 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				@channel("windowed.results")
 				@publish
 				op publishWindowedResult(): WindowedResult;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support join operations", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support join operations", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -993,16 +1100,19 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				@channel("joined.events")
 				@publish
 				op publishJoined(): JoinedEvent;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support dead letter queues", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support dead letter queues", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1024,16 +1134,19 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishDLQ(): FailedMessage;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support exactly-once processing", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support exactly-once processing", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1052,16 +1165,19 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishTransaction(): Transaction;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support Kafka Connect integration", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support Kafka Connect integration", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1082,16 +1198,19 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishConnectorEvent(): ConnectorEvent;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support CDC (Change Data Capture) patterns", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support CDC (Change Data Capture) patterns", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1107,16 +1226,19 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				@channel("cdc.events")
 				@publish
 				op publishCDC(): CDCEvent;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support event sourcing patterns", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support event sourcing patterns", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1132,16 +1254,19 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				@channel("events.{aggregateId}")
 				@publish
 				op publishEvent(): Event;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support CQRS patterns", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support CQRS patterns", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1165,16 +1290,19 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				@channel("query.results")
 				@publish
 				op publishQueryResult(): QueryResult;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support saga patterns", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support saga patterns", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1190,16 +1318,19 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				@channel("saga.steps")
 				@publish
 				op publishSagaStep(): SagaStep;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support request-reply patterns", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support request-reply patterns", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1223,16 +1354,19 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				@channel("responses.{requestId}")
 				@subscribe
 				op consumeResponse(): Response;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support priority queues", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support priority queues", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1253,16 +1387,19 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishPriority(): PriorityMessage;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support scheduled messages", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support scheduled messages", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1276,16 +1413,19 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				@channel("scheduled.messages")
 				@publish
 				op publishScheduled(): ScheduledMessage;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support batch processing", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support batch processing", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1300,16 +1440,19 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				@channel("batch.jobs")
 				@publish
 				op publishBatch(): BatchJob;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support rate limiting", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support rate limiting", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1332,16 +1475,19 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishRateLimited(): RateLimitedMsg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support circuit breaker patterns", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support circuit breaker patterns", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1356,16 +1502,19 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				@channel("circuit.state")
 				@publish
 				op publishCircuitState(): CircuitState;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support distributed tracing", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support distributed tracing", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1381,16 +1530,19 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				@channel("traced.messages")
 				@publish
 				op publishTraced(): TracedMessage;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support multi-region replication", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support multi-region replication", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1413,11 +1565,12 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishReplicated(): ReplicatedMsg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
-	})
-})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
+  });
+});

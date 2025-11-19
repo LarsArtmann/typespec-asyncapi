@@ -1,13 +1,13 @@
 /**
  * BREAKTHROUGH VERIFICATION TEST
- * 
+ *
  * This test verifies that we successfully bypassed TypeSpec package resolution
  * and can now compile TypeSpec programs directly without library dependencies.
  */
 
-import { describe, it, expect } from "bun:test"
-import { compileAsyncAPISpecRaw } from "../utils/test-helpers"
-import { Effect } from "effect"
+import { describe, it, expect } from "bun:test";
+import { compileAsyncAPISpecRaw } from "../utils/test-helpers";
+import { Effect } from "effect";
 
 describe("🚀 BREAKTHROUGH: TypeSpec Direct Compilation", () => {
   it("should compile basic TypeSpec without decorators", async () => {
@@ -20,20 +20,20 @@ describe("🚀 BREAKTHROUGH: TypeSpec Direct Compilation", () => {
       }
       
       op getMessage(): SimpleMessage;
-    `
-    
+    `;
+
     // This should compile successfully now - no package resolution issues!
-    const result = await compileAsyncAPISpecRaw(source)
-    
+    const result = await compileAsyncAPISpecRaw(source);
+
     // We know the compilation succeeded based on the logs
     // This is a BREAKTHROUGH - TypeSpec compilation works without package resolution!
-    expect(result).toBeDefined()
-    
+    expect(result).toBeDefined();
+
     // The diagnostics should be empty (no errors)
-    expect(result.diagnostics.length).toBe(0)
-    
-    Effect.log("🎉 BREAKTHROUGH SUCCESS: Direct TypeSpec compilation works!")
-    Effect.log("🎉 NO MORE PACKAGE RESOLUTION ERRORS!")
-    Effect.log("✅ Real TypeSpec Program created successfully")
-  })
-})
+    expect(result.diagnostics.length).toBe(0);
+
+    Effect.log("🎉 BREAKTHROUGH SUCCESS: Direct TypeSpec compilation works!");
+    Effect.log("🎉 NO MORE PACKAGE RESOLUTION ERRORS!");
+    Effect.log("✅ Real TypeSpec Program created successfully");
+  });
+});

@@ -4,7 +4,7 @@ import { createAsyncAPITestHost } from "./utils/test-helpers.js";
 describe("Minimal Decorators Test", () => {
   it("should execute minimal decorators", async () => {
     console.log("🧪 TESTING MINIMAL DECORATORS");
-    
+
     try {
       const host = await createAsyncAPITestHost();
       host.addTypeSpecFile(
@@ -34,7 +34,7 @@ namespace TestNamespace;
       });
 
       console.log(`📊 Minimal diagnostics count: ${diagnostics.length}`);
-      
+
       if (diagnostics.length > 0) {
         console.log("=== All diagnostics ===");
         diagnostics.forEach((d, i) => {
@@ -42,11 +42,15 @@ namespace TestNamespace;
           console.log(`   Severity: ${d.severity}`);
           console.log(`   Message: ${d.message}`);
         });
-        
+
         // Check for missing implementation errors
-        const missingImpl = diagnostics.filter(d => d.code === "missing-implementation");
+        const missingImpl = diagnostics.filter(
+          (d) => d.code === "missing-implementation",
+        );
         if (missingImpl.length > 0) {
-          console.log(`❌ CRITICAL: ${missingImpl.length} missing-implementation errors`);
+          console.log(
+            `❌ CRITICAL: ${missingImpl.length} missing-implementation errors`,
+          );
           console.log("🚨 Decorators not being discovered by TypeSpec");
         } else {
           console.log("✅ No missing-implementation errors");
@@ -55,7 +59,6 @@ namespace TestNamespace;
       } else {
         console.log("✅ No diagnostics - decorators working silently");
       }
-      
     } catch (error) {
       console.log("💥 ERROR:", error);
       throw error;

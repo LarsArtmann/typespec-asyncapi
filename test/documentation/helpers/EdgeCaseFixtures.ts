@@ -1,11 +1,11 @@
 /**
  * Edge Case Test Fixtures for TypeSpec-AsyncAPI
- * 
+ *
  * Edge cases, error scenarios, validation tests, and boundary conditions.
  * Split from massive 1822-line test-fixtures.ts for maintainability.
  */
 
-import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js"
+import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js";
 
 /**
  * Edge cases and boundary conditions for testing
@@ -16,7 +16,7 @@ export const EdgeCaseFixtures = {
       // No operations or models
     }
   `,
-  
+
   invalidTypeSpecSyntax: `
     namespace InvalidService {
       @channel("invalid-channel"
@@ -24,7 +24,7 @@ export const EdgeCaseFixtures = {
       op invalidOp(data: NonExistentModel): void;
     }
   `,
-  
+
   missingDecorators: `
     namespace NoServiceDecorator {
       op operationWithoutChannel(data: SimpleModel): void;
@@ -163,8 +163,8 @@ export const EdgeCaseFixtures = {
       environment: "production" | "staging";
       data: Record<string>;
     }
-  `
-}
+  `,
+};
 
 /**
  * Error scenarios for negative testing
@@ -182,7 +182,7 @@ export const ErrorFixtures = {
         model TestModel {
           field: string;
         // Missing closing brace
-      `
+      `,
     },
     {
       name: "Invalid decorator syntax",
@@ -196,7 +196,7 @@ export const ErrorFixtures = {
         model TestModel {
           field: string;
         }
-      `
+      `,
     },
     {
       name: "Undefined model reference",
@@ -206,8 +206,8 @@ export const ErrorFixtures = {
           @publish
           op testOp(data: NonExistentModel): void;
         }
-      `
-    }
+      `,
+    },
   ],
 
   validationErrors: [
@@ -218,8 +218,8 @@ export const ErrorFixtures = {
         info: { title: "Test", version: "1.0.0" },
         channels: {},
         operations: {},
-        components: { schemas: {}, messages: {}, securitySchemes: {} }
-      }
+        components: { schemas: {}, messages: {}, securitySchemes: {} },
+      },
     },
     {
       name: "Missing required info fields",
@@ -228,8 +228,8 @@ export const ErrorFixtures = {
         info: {}, // Missing title and version
         channels: {},
         operations: {},
-        components: { schemas: {}, messages: {}, securitySchemes: {} }
-      }
+        components: { schemas: {}, messages: {}, securitySchemes: {} },
+      },
     },
     {
       name: "Channel reference mismatch",
@@ -239,20 +239,20 @@ export const ErrorFixtures = {
         channels: {
           "existing-channel": {
             address: "existing-channel",
-            messages: {}
-          }
+            messages: {},
+          },
         },
         operations: {
           testOp: {
             action: "send",
-            channel: { $ref: "#/channels/non-existent-channel" }
-          }
+            channel: { $ref: "#/channels/non-existent-channel" },
+          },
         },
-        components: { schemas: {}, messages: {}, securitySchemes: {} }
-      }
-    }
-  ]
-}
+        components: { schemas: {}, messages: {}, securitySchemes: {} },
+      },
+    },
+  ],
+};
 
 /**
  * Protocol binding edge cases for testing
@@ -295,5 +295,5 @@ export const ProtocolEdgeCases = {
       @publish
       op sendChatMessage(roomId: string, message: ChatMessage): void;
     }
-  `
-}
+  `,
+};

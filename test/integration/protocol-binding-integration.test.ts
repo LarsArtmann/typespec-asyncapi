@@ -1,6 +1,6 @@
 /**
  * Integration tests for AsyncAPI Standard Protocol Bindings with Emitter
- * 
+ *
  * Tests the integration of AsyncAPI 3.0 standard protocol bindings with the TypeSpec emitter.
  * Focuses on emitter functionality rather than custom binding factories.
  */

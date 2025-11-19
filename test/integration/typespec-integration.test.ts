@@ -1,6 +1,6 @@
 /**
  * TypeSpec Integration Test
- * 
+ *
  * Simple test to verify TypeSpec compiler integration works correctly
  */
 
@@ -13,16 +13,19 @@ import { TypeSpecCompilerIntegration } from "../src/typespec-compiler/TypeSpecIn
 async function testTypeSpecIntegration() {
   try {
     console.log("🔧 Testing TypeSpec compiler integration...");
-    
+
     // Test that TypeSpecCompilerIntegration class is available
     const extractor = new TypeSpecCompilerIntegration();
     console.log("✅ TypeSpecCompilerIntegration instantiated successfully");
-    
+
     // Test that methods are available
-    console.log("Available methods:", Object.getOwnPropertyNames(Object.getPrototypeOf(extractor)));
-    
+    console.log(
+      "Available methods:",
+      Object.getOwnPropertyNames(Object.getPrototypeOf(extractor)),
+    );
+
     console.log("✅ TypeSpec compiler integration test completed successfully");
-    
+
     return true;
   } catch (error) {
     console.error("❌ TypeSpec compiler integration test failed:", error);
@@ -31,7 +34,7 @@ async function testTypeSpecIntegration() {
 }
 
 // Run the test
-testTypeSpecIntegration().then(success => {
+testTypeSpecIntegration().then((success) => {
   if (success) {
     console.log("🎉 TypeSpec integration test passed!");
   } else {

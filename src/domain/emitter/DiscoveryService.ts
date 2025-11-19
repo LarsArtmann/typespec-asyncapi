@@ -1,241 +1,268 @@
 /**
  * DiscoveryService - TypeSpec AST Traversal and Discovery
- * 
+ *
  * Extracted from 1,800-line monolithic emitter to handle TypeSpec AST traversal
  * and discovery of operations, message models, and security configurations.
- * 
+ *
  * REAL BUSINESS LOGIC EXTRACTED from lines 431-608 of AsyncAPIEffectEmitter class
  * This is the HEART of the emitter - where TypeSpec definitions are discovered
  */
 
-import { Effect } from "effect"
-import type { Model, Namespace, Operation, Program } from "@typespec/compiler"
-import { $lib } from "../../lib.js"
-import type {SecurityConfig} from "../decorators/securityConfig.js"
+import { Effect } from "effect";
+import type { Model, Namespace, Operation, Program } from "@typespec/compiler";
+import { $lib } from "../../lib.js";
+import type { SecurityConfig } from "../decorators/securityConfig.js";
 
 // Standardized error handling
 import {
-	type StandardizedError,
-	createError,
-	safeStringify
-} from "../../utils/standardized-errors.js"
+  type StandardizedError,
+  createError,
+  safeStringify,
+} from "../../utils/standardized-errors.js";
 
 /**
  * Discovery results containing all discovered TypeSpec elements
  */
 export type DiscoveryResult = {
-	operations: Operation[]
-	messageModels: Model[]
-	securityConfigs: SecurityConfig[]
-}
+  operations: Operation[];
+  messageModels: Model[];
+  securityConfigs: SecurityConfig[];
+};
 
 /**
  * DiscoveryService - Core TypeSpec AST Discovery Engine
- * 
+ *
  * Handles systematic traversal of TypeSpec namespaces to discover:
  * - Operations with @publish/@subscribe decorators
  * - Models with @message decorators
  * - Security configurations with @security decorators
- * 
+ *
  * Uses Effect.TS for functional error handling and logging
  */
 export class DiscoveryService {
+  /**
+   * Discover all operations in TypeSpec program
+   *
+   * EXTRACTED FROM MONOLITHIC FILE: lines 431-488 (discoverOperationsEffectSync)
+   * This is the REAL implementation that was working in the 1,800-line file
+   *
+   * @param program - TypeSpec program to traverse
+   * @returns Effect containing discovered operations
+   */
+  discoverOperations(program: Program) {
+    return Effect.gen(function* () {
+      Effect.log(
+        `🔍 CRITICAL DEBUG: Starting synchronous operation discovery...`,
+      );
 
-	/**
-	 * Discover all operations in TypeSpec program
-	 * 
-	 * EXTRACTED FROM MONOLITHIC FILE: lines 431-488 (discoverOperationsEffectSync)
-	 * This is the REAL implementation that was working in the 1,800-line file
-	 * 
-	 * @param program - TypeSpec program to traverse
-	 * @returns Effect containing discovered operations
-	 */
-	discoverOperations(program: Program) {
-		return Effect.gen(function* () {
-			Effect.log(`🔍 CRITICAL DEBUG: Starting synchronous operation discovery...`)
+      const discoveryOperation = Effect.sync(() => {
+        const operations: Operation[] = [];
 
-			const discoveryOperation = Effect.sync(() => {
-				const operations: Operation[] = []
+        // Safe access to global namespace - handles both real and test scenarios
+        if (typeof program.getGlobalNamespaceType === "function") {
+          const globalNamespace = program.getGlobalNamespaceType();
+          Effect.log(
+            `🔍 CRITICAL DEBUG: Global namespace: ${globalNamespace?.name}`,
+          );
+          Effect.log(
+            `🔍 CRITICAL DEBUG: Global namespace operations: ${globalNamespace?.operations?.size || 0}`,
+          );
 
-				// Safe access to global namespace - handles both real and test scenarios
-				if (typeof program.getGlobalNamespaceType === 'function') {
-					const globalNamespace = program.getGlobalNamespaceType()
-					Effect.log(`🔍 CRITICAL DEBUG: Global namespace: ${globalNamespace?.name}`)
-					Effect.log(`🔍 CRITICAL DEBUG: Global namespace operations: ${globalNamespace?.operations?.size || 0}`)
+          // Recursive namespace walker - REAL business logic
+          const walkNamespace = (ns: Namespace | null) => {
+            if (!ns) return;
 
-				// Recursive namespace walker - REAL business logic
-				const walkNamespace = (ns: Namespace | null) => {
-					if (!ns) return
-					
-					Effect.log(`🔍 CRITICAL DEBUG: Walking namespace: ${ns.name}`)
-					
-					if (ns.operations) {
-						ns.operations.forEach((op: Operation, name: string) => {
-							operations.push(op)
-							Effect.log(`🔍 CRITICAL DEBUG: Found operation: ${name}`)
-							Effect.log(`🔍 CRITICAL DEBUG: Operation kind: ${op.kind}, name: ${op.name}`)
-						})
-					}
+            Effect.log(`🔍 CRITICAL DEBUG: Walking namespace: ${ns.name}`);
 
-					if (ns.namespaces) {
-						ns.namespaces.forEach((childNs: Namespace) => {
-							walkNamespace(childNs)
-						})
-					}
-				}
+            if (ns.operations) {
+              ns.operations.forEach((op: Operation, name: string) => {
+                operations.push(op);
+                Effect.log(`🔍 CRITICAL DEBUG: Found operation: ${name}`);
+                Effect.log(
+                  `🔍 CRITICAL DEBUG: Operation kind: ${op.kind}, name: ${op.name}`,
+                );
+              });
+            }
 
-				walkNamespace(globalNamespace)
-				} else {
-					Effect.log(`🔍 CRITICAL DEBUG: No getGlobalNamespaceType function available`)
-				}
+            if (ns.namespaces) {
+              ns.namespaces.forEach((childNs: Namespace) => {
+                walkNamespace(childNs);
+              });
+            }
+          };
 
-				Effect.log(`📊 Total operations discovered: ${operations.length}`)
-				return operations
-			})
+          walkNamespace(globalNamespace);
+        } else {
+          Effect.log(
+            `🔍 CRITICAL DEBUG: No getGlobalNamespaceType function available`,
+          );
+        }
 
-			const operations = yield* discoveryOperation
-			return operations
-		}).pipe(Effect.mapError(error => createError({
-			what: "Operation discovery failed during TypeSpec AST traversal",
-			reassure: "This is usually a temporary issue with TypeSpec compilation",
-			why: `Operation discovery failed: ${safeStringify(error)}`,
-			fix: "Check your TypeSpec syntax and ensure all operations are properly defined",
-			escape: "Try using simpler operation definitions to isolate the issue",
-			severity: "error" as const,
-			code: "OPERATION_DISCOVERY_FAILED",
-			context: { originalError: error }
-		})))
-	}
+        Effect.log(`📊 Total operations discovered: ${operations.length}`);
+        return operations;
+      });
 
-	/**
-	 * Discover message models with @message decorators
-	 * 
-	 * EXTRACTED FROM MONOLITHIC FILE: lines 570-607 (discoverMessageModelsEffectSync)
-	 * Uses TypeSpec stateMap to access decorator state - CRITICAL for proper functionality
-	 * 
-	 * @param program - TypeSpec program to traverse
-	 * @returns Effect containing discovered message models
-	 */
-	discoverMessageModels(program: Program) {
-		return Effect.sync(() => {
-			const messageModels: Model[] = []
-			// Access decorator state - this is HOW decorators work in TypeSpec
-			const messageConfigsMap = program.stateMap($lib.stateKeys.messageConfigs)
+      const operations = yield* discoveryOperation;
+      return operations;
+    }).pipe(
+      Effect.mapError((error) =>
+        createError({
+          what: "Operation discovery failed during TypeSpec AST traversal",
+          reassure:
+            "This is usually a temporary issue with TypeSpec compilation",
+          why: `Operation discovery failed: ${safeStringify(error)}`,
+          fix: "Check your TypeSpec syntax and ensure all operations are properly defined",
+          escape:
+            "Try using simpler operation definitions to isolate the issue",
+          severity: "error" as const,
+          code: "OPERATION_DISCOVERY_FAILED",
+          context: { originalError: error },
+        }),
+      ),
+    );
+  }
 
-			// Recursive walker for models - specialized for message discovery
-			const walkNamespaceForModels = (ns: Namespace | null) => {
-				if (!ns) return
-				if (ns.models) {
-					ns.models.forEach((model: Model, name: string) => {
-						// Check if model has @message decorator via stateMap
-						if (messageConfigsMap.has(model)) {
-							messageModels.push(model)
-							Effect.log(`🎯 Found message model: ${name}`)
-						}
-					})
-				}
+  /**
+   * Discover message models with @message decorators
+   *
+   * EXTRACTED FROM MONOLITHIC FILE: lines 570-607 (discoverMessageModelsEffectSync)
+   * Uses TypeSpec stateMap to access decorator state - CRITICAL for proper functionality
+   *
+   * @param program - TypeSpec program to traverse
+   * @returns Effect containing discovered message models
+   */
+  discoverMessageModels(program: Program) {
+    return Effect.sync(() => {
+      const messageModels: Model[] = [];
+      // Access decorator state - this is HOW decorators work in TypeSpec
+      const messageConfigsMap = program.stateMap($lib.stateKeys.messageConfigs);
 
-				if (ns.namespaces) {
-					ns.namespaces.forEach((childNs: Namespace) => {
-						walkNamespaceForModels(childNs)
-					})
-				}
-			}
+      // Recursive walker for models - specialized for message discovery
+      const walkNamespaceForModels = (ns: Namespace | null) => {
+        if (!ns) return;
+        if (ns.models) {
+          ns.models.forEach((model: Model, name: string) => {
+            // Check if model has @message decorator via stateMap
+            if (messageConfigsMap.has(model)) {
+              messageModels.push(model);
+              Effect.log(`🎯 Found message model: ${name}`);
+            }
+          });
+        }
 
-			// Safe traversal with proper namespace access
-			if (typeof program.getGlobalNamespaceType === 'function') {
-				walkNamespaceForModels(program.getGlobalNamespaceType())
-			}
+        if (ns.namespaces) {
+          ns.namespaces.forEach((childNs: Namespace) => {
+            walkNamespaceForModels(childNs);
+          });
+        }
+      };
 
-			Effect.log(`📊 Total message models discovered: ${messageModels.length}`)
-			return messageModels
-		})
-	}
+      // Safe traversal with proper namespace access
+      if (typeof program.getGlobalNamespaceType === "function") {
+        walkNamespaceForModels(program.getGlobalNamespaceType());
+      }
 
-	/**
-	 * Discover security configurations on operations and models
-	 * 
-	 * EXTRACTED FROM MONOLITHIC FILE: (discoverSecurityConfigsEffectSync)
-	 * Finds @security decorators on operations and models using stateMap access
-	 * 
-	 * @param program - TypeSpec program to traverse
-	 * @returns Effect containing discovered security configurations
-	 */
-	discoverSecurityConfigs(program: Program) {
-		return Effect.sync(() => {
-			const securityConfigs: SecurityConfig[] = []
-			// Access security decorator state via stateMap
-			const securityConfigsMap = program.stateMap($lib.stateKeys.securityConfigs)
+      Effect.log(`📊 Total message models discovered: ${messageModels.length}`);
+      return messageModels;
+    });
+  }
 
-			// Recursive walker for security configs
-			const walkNamespaceForSecurity = (ns: Namespace | null) => {
-				if (!ns) return
-				// Check operations for security decorators
-				if (ns.operations) {
-					ns.operations.forEach((operation: Operation, name: string) => {
-						if (securityConfigsMap.has(operation)) {
-							const config = securityConfigsMap.get(operation) as SecurityConfig
-							securityConfigs.push(config)
-							Effect.log(`🔐 Found security config on operation: ${name}`)
-						}
-					})
-				}
+  /**
+   * Discover security configurations on operations and models
+   *
+   * EXTRACTED FROM MONOLITHIC FILE: (discoverSecurityConfigsEffectSync)
+   * Finds @security decorators on operations and models using stateMap access
+   *
+   * @param program - TypeSpec program to traverse
+   * @returns Effect containing discovered security configurations
+   */
+  discoverSecurityConfigs(program: Program) {
+    return Effect.sync(() => {
+      const securityConfigs: SecurityConfig[] = [];
+      // Access security decorator state via stateMap
+      const securityConfigsMap = program.stateMap(
+        $lib.stateKeys.securityConfigs,
+      );
 
-				// Check models for security decorators
-				if (ns.models) {
-					ns.models.forEach((model: Model, name: string) => {
-						if (securityConfigsMap.has(model)) {
-							const config = securityConfigsMap.get(model) as SecurityConfig
-							securityConfigs.push(config)
-							Effect.log(`🔐 Found security config on model: ${name}`)
-						}
-					})
-				}
+      // Recursive walker for security configs
+      const walkNamespaceForSecurity = (ns: Namespace | null) => {
+        if (!ns) return;
+        // Check operations for security decorators
+        if (ns.operations) {
+          ns.operations.forEach((operation: Operation, name: string) => {
+            if (securityConfigsMap.has(operation)) {
+              const config = securityConfigsMap.get(
+                operation,
+              ) as SecurityConfig;
+              securityConfigs.push(config);
+              Effect.log(`🔐 Found security config on operation: ${name}`);
+            }
+          });
+        }
 
-				// Recurse into child namespaces
-				if (ns.namespaces) {
-					ns.namespaces.forEach((childNs: Namespace) => {
-						walkNamespaceForSecurity(childNs)
-					})
-				}
-			}
+        // Check models for security decorators
+        if (ns.models) {
+          ns.models.forEach((model: Model, name: string) => {
+            if (securityConfigsMap.has(model)) {
+              const config = securityConfigsMap.get(model) as SecurityConfig;
+              securityConfigs.push(config);
+              Effect.log(`🔐 Found security config on model: ${name}`);
+            }
+          });
+        }
 
-			// Safe traversal with proper namespace access
-			if (typeof program.getGlobalNamespaceType === 'function') {
-				walkNamespaceForSecurity(program.getGlobalNamespaceType())
-			}
+        // Recurse into child namespaces
+        if (ns.namespaces) {
+          ns.namespaces.forEach((childNs: Namespace) => {
+            walkNamespaceForSecurity(childNs);
+          });
+        }
+      };
 
-			Effect.log(`📊 Total security configs discovered: ${securityConfigs.length}`)
-			return securityConfigs
-		})
-	}
+      // Safe traversal with proper namespace access
+      if (typeof program.getGlobalNamespaceType === "function") {
+        walkNamespaceForSecurity(program.getGlobalNamespaceType());
+      }
 
-	/**
-	 * Execute complete discovery process
-	 * 
-	 * Orchestrates all discovery methods to provide complete TypeSpec element discovery
-	 * 
-	 * @param program - TypeSpec program to traverse
-	 * @returns Effect containing complete discovery results
-	 */
-	executeDiscovery(program: Program): Effect.Effect<DiscoveryResult, StandardizedError> {
-		return Effect.gen(function* (this: DiscoveryService) {
-			Effect.log(`🚀 Starting complete TypeSpec discovery process...`)
+      Effect.log(
+        `📊 Total security configs discovered: ${securityConfigs.length}`,
+      );
+      return securityConfigs;
+    });
+  }
 
-			// Execute all discovery operations
-			const operations = yield* this.discoverOperations(program)
-			const messageModels = yield* this.discoverMessageModels(program)
-			const securityConfigs = yield* this.discoverSecurityConfigs(program)
+  /**
+   * Execute complete discovery process
+   *
+   * Orchestrates all discovery methods to provide complete TypeSpec element discovery
+   *
+   * @param program - TypeSpec program to traverse
+   * @returns Effect containing complete discovery results
+   */
+  executeDiscovery(
+    program: Program,
+  ): Effect.Effect<DiscoveryResult, StandardizedError> {
+    return Effect.gen(
+      function* (this: DiscoveryService) {
+        Effect.log(`🚀 Starting complete TypeSpec discovery process...`);
 
-			const result: DiscoveryResult = {
-				operations,
-				messageModels,
-				securityConfigs
-			}
+        // Execute all discovery operations
+        const operations = yield* this.discoverOperations(program);
+        const messageModels = yield* this.discoverMessageModels(program);
+        const securityConfigs = yield* this.discoverSecurityConfigs(program);
 
-			Effect.log(`✅ Discovery complete: ${operations.length} operations, ${messageModels.length} messages, ${securityConfigs.length} security configs`)
+        const result: DiscoveryResult = {
+          operations,
+          messageModels,
+          securityConfigs,
+        };
 
-			return result
-		}.bind(this))
-	}
+        Effect.log(
+          `✅ Discovery complete: ${operations.length} operations, ${messageModels.length} messages, ${securityConfigs.length} security configs`,
+        );
+
+        return result;
+      }.bind(this),
+    );
+  }
 }

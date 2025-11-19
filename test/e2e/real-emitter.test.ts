@@ -2,22 +2,28 @@
  * REAL emitter test - no mocks, just real TypeSpec compilation
  */
 
-import {describe, expect, it} from "bun:test"
-import {expectDiagnosticEmpty, formatDiagnostics, createTestHost} from "@typespec/compiler/testing"
-import {AsyncAPITestLibrary} from "./test-host"
-import {createAsyncAPITestHost} from "../utils/test-helpers.js"
-import { Effect } from "effect"
+import { describe, expect, it } from "bun:test";
+import {
+  expectDiagnosticEmpty,
+  formatDiagnostics,
+  createTestHost,
+} from "@typespec/compiler/testing";
+import { AsyncAPITestLibrary } from "./test-host";
+import { createAsyncAPITestHost } from "../utils/test-helpers.js";
+import { Effect } from "effect";
 
 describe("REAL Emitter Test - No Mocks", () => {
-	it.skip("should compile TypeSpec to AsyncAPI using REAL emitter", async () => {
-		// Create a REAL TypeSpec test host with the AsyncAPI library loaded
-		const host = await createAsyncAPITestHost()
-		
-		// Load our actual decorator implementations
-		await host.compile("")  // Initialize the host first
+  it.skip("should compile TypeSpec to AsyncAPI using REAL emitter", async () => {
+    // Create a REAL TypeSpec test host with the AsyncAPI library loaded
+    const host = await createAsyncAPITestHost();
 
-		// Test a simple TypeSpec document without decorators first
-		host.addTypeSpecFile("main.tsp", `
+    // Load our actual decorator implementations
+    await host.compile(""); // Initialize the host first
+
+    // Test a simple TypeSpec document without decorators first
+    host.addTypeSpecFile(
+      "main.tsp",
+      `
 			import "@lars-artmann/typespec-asyncapi";
 			using TypeSpec.AsyncAPI;
 			
@@ -31,49 +37,53 @@ describe("REAL Emitter Test - No Mocks", () => {
 			// Simple operations without decorators - test basic emitter functionality
 			op publishUserEvent(): UserEvent;
 			op subscribeUserEvent(): UserEvent;
-		`)
+		`,
+    );
 
-		// Debug: Check what files are actually in the host filesystem
-		Effect.log("Files in host filesystem:", Array.from(host.fs.keys()))
-		
-		// Compile with the REAL emitter - specify the correct file path
-		const program = await host.compile("./main.tsp")
-		
-		// Check if there are any compilation diagnostics first
-		expectDiagnosticEmpty(program.diagnostics)
+    // Debug: Check what files are actually in the host filesystem
+    Effect.log("Files in host filesystem:", Array.from(host.fs.keys()));
 
-		// Now emit AsyncAPI
-		const diagnostics = await host.diagnose("./main.tsp", {
-			emit: ["@lars-artmann/typespec-asyncapi"],
-		})
+    // Compile with the REAL emitter - specify the correct file path
+    const program = await host.compile("./main.tsp");
 
-		// Should compile without errors
-		expect(diagnostics).toHaveLength(0)
+    // Check if there are any compilation diagnostics first
+    expectDiagnosticEmpty(program.diagnostics);
 
-		// Check that AsyncAPI output was generated
-		const outputFiles = host.fs.keys()
-		const asyncApiFile = Array.from(outputFiles).find(f => 
-			f.includes("asyncapi") && (f.endsWith(".json") || f.endsWith(".yaml"))
-		)
-		
-		expect(asyncApiFile).toBeDefined()
-		
-		if (asyncApiFile) {
-			const content = host.fs.get(asyncApiFile)
-			expect(content).toBeDefined()
-			
-			// Parse and validate the AsyncAPI document
-			const spec = JSON.parse(content as string)
-			expect(spec.asyncapi).toBe("3.0.0")
-			expect(spec.servers).toBeDefined()
-			expect(spec.channels).toBeDefined()
-		}
-	})
+    // Now emit AsyncAPI
+    const diagnostics = await host.diagnose("./main.tsp", {
+      emit: ["@lars-artmann/typespec-asyncapi"],
+    });
 
-	it.skip("should handle real decorators without mocking", async () => {
-		const host = await createAsyncAPITestHost()
+    // Should compile without errors
+    expect(diagnostics).toHaveLength(0);
 
-		host.addTypeSpecFile("test.tsp", `
+    // Check that AsyncAPI output was generated
+    const outputFiles = host.fs.keys();
+    const asyncApiFile = Array.from(outputFiles).find(
+      (f) =>
+        f.includes("asyncapi") && (f.endsWith(".json") || f.endsWith(".yaml")),
+    );
+
+    expect(asyncApiFile).toBeDefined();
+
+    if (asyncApiFile) {
+      const content = host.fs.get(asyncApiFile);
+      expect(content).toBeDefined();
+
+      // Parse and validate the AsyncAPI document
+      const spec = JSON.parse(content as string);
+      expect(spec.asyncapi).toBe("3.0.0");
+      expect(spec.servers).toBeDefined();
+      expect(spec.channels).toBeDefined();
+    }
+  });
+
+  it.skip("should handle real decorators without mocking", async () => {
+    const host = await createAsyncAPITestHost();
+
+    host.addTypeSpecFile(
+      "test.tsp",
+      `
 			import "@lars-artmann/typespec-asyncapi";
 			using TypeSpec.AsyncAPI;
 			
@@ -87,14 +97,15 @@ describe("REAL Emitter Test - No Mocks", () => {
 			// Test basic compilation without decorators
 			op receiveMessage(): Message;
 			op sendMessage(msg: Message): void;
-		`)
+		`,
+    );
 
-		const program = await host.compile("./test.tsp")
-		
-		// The REAL program has all the methods we need
-		expect(program.stateMap).toBeDefined()
-		expect(typeof program.stateMap).toBe("function")
-		
-		// No mocking needed - it just works!
-	})
-})
+    const program = await host.compile("./test.tsp");
+
+    // The REAL program has all the methods we need
+    expect(program.stateMap).toBeDefined();
+    expect(typeof program.stateMap).toBe("function");
+
+    // No mocking needed - it just works!
+  });
+});

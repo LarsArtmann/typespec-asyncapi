@@ -3,13 +3,17 @@
 
 // export { AsyncAPIEmitter } from './AsyncAPIEmitter.js';
 // AsyncAPIEmitter temporarily disabled - performance infrastructure issues
-export type { IAsyncAPIEmitter } from './IAsyncAPIEmitter.js';
-export { DocumentBuilder } from './DocumentBuilder.js';
-export { DocumentGenerator } from './DocumentGenerator.js';
-export { EmissionPipeline } from './EmissionPipeline.js';
-export { orchestrateAsyncAPITransformation, validateTransformation, generateTransformationSummary } from './ProcessingService.js';
+export type { IAsyncAPIEmitter } from "./IAsyncAPIEmitter.js";
+export { DocumentBuilder } from "./DocumentBuilder.js";
+export { DocumentGenerator } from "./DocumentGenerator.js";
+export { EmissionPipeline } from "./EmissionPipeline.js";
+export {
+  orchestrateAsyncAPITransformation,
+  validateTransformation,
+  generateTransformationSummary,
+} from "./ProcessingService.js";
 
 // Discovery services
-export { DiscoveryService } from './DiscoveryService.js';
+export { DiscoveryService } from "./DiscoveryService.js";
 // export { DiscoveryServiceInterface } from './DiscoveryServiceInterface.js'; // REMOVED: Interface not defined in source file
-export type { DiscoveryResult } from './DiscoveryResult.js';
+export type { DiscoveryResult } from "./DiscoveryResult.js";

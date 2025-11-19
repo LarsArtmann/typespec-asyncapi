@@ -1,43 +1,43 @@
 /**
  * Basic Plugin System - Restored Infrastructure
- * 
+ *
  * Simplified plugin architecture to enable extensibility without complex
  * interdependencies that caused the original TypeScript catastrophe.
  */
 
-import { Effect } from "effect"
+import { Effect } from "effect";
 
 // Basic plugin interface
 export type Plugin = {
-  readonly name: string
-  readonly version: string
-  readonly initialize: () => Effect.Effect<void, never>
-}
+  readonly name: string;
+  readonly version: string;
+  readonly initialize: () => Effect.Effect<void, never>;
+};
 
 // Simple plugin registry
 export class PluginRegistry {
-  private readonly plugins = new Map<string, Plugin>()
+  private readonly plugins = new Map<string, Plugin>();
 
   register(plugin: Plugin): Effect.Effect<void, never> {
     return Effect.sync(() => {
-      this.plugins.set(plugin.name, plugin)
-    })
+      this.plugins.set(plugin.name, plugin);
+    });
   }
 
   get(name: string): Plugin | undefined {
-    return this.plugins.get(name)
+    return this.plugins.get(name);
   }
 
   getAll(): Plugin[] {
-    return Array.from(this.plugins.values())
+    return Array.from(this.plugins.values());
   }
 
   clear(): Effect.Effect<void, never> {
     return Effect.sync(() => {
-      this.plugins.clear()
-    })
+      this.plugins.clear();
+    });
   }
 }
 
 // Export singleton instance
-export const pluginRegistry = new PluginRegistry()
+export const pluginRegistry = new PluginRegistry();

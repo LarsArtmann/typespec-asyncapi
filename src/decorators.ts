@@ -10,10 +10,10 @@
 /**
  * CRITICAL: TypeSpec namespace declaration
  *
- * This MUST match the library name in lib.ts (@lars-artmann/typespec-asyncapi)
+ * This MUST match the namespace declared in lib/main.tsp (TypeSpec.AsyncAPI)
  * TypeSpec uses this to link extern dec declarations to JS implementations
  */
-export const namespace = "@lars-artmann/typespec-asyncapi";
+export const namespace = "TypeSpec.AsyncAPI";
 
 // DEBUG: ONLY export minimal decorators for debugging
 export { $channel, $server } from "./minimal-decorators.js";

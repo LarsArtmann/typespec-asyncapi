@@ -1,6 +1,6 @@
 /**
  * Path Constants
- * 
+ *
  * Centralized path management for file operations, testing, and output directories.
  * This replaces hardcoded paths throughout the codebase.
  */
@@ -10,49 +10,49 @@
  */
 export const TEST_PATHS = {
   /** Base output directory for test files */
-  OUTPUT: 'test-output',
+  OUTPUT: "test-output",
   /** Integration test output directory */
-  INTEGRATION: 'test-output/integration-basic',
+  INTEGRATION: "test-output/integration-basic",
   /** Test fixtures and helper files directory */
-  FIXTURES: 'test/documentation/helpers',
+  FIXTURES: "test/documentation/helpers",
   /** Temporary test output directory */
-  TEMP: 'test-output/temp'
-} as const
+  TEMP: "test-output/temp",
+} as const;
 
 /**
  * TypeSpec emitter output paths
  */
 export const EMITTER_PATHS = {
   /** Default TypeSpec output directory for this emitter */
-  OUTPUT_DIR: 'tsp-output/@lars-artmann/typespec-asyncapi',
+  OUTPUT_DIR: "tsp-output/@lars-artmann/typespec-asyncapi",
   /** Temporary directory for emitter operations */
-  TEMP_DIR: 'temp',
+  TEMP_DIR: "temp",
   /** Base tsp-output directory */
-  TSP_OUTPUT: 'tsp-output'
-} as const
+  TSP_OUTPUT: "tsp-output",
+} as const;
 
 /**
  * Library and package-related paths
  */
 export const LIBRARY_PATHS = {
   /** Main TypeSpec library file */
-  MAIN_TSP: 'lib/main.tsp',
+  MAIN_TSP: "lib/main.tsp",
   /** Source directory */
-  SRC: 'src',
+  SRC: "src",
   /** Distribution directory */
-  DIST: 'dist',
+  DIST: "dist",
   /** Library directory */
-  LIB: 'lib'
-} as const
+  LIB: "lib",
+} as const;
 
 /**
  * Configuration file paths
  */
 export const CONFIG_PATHS = {
   /** TypeScript configuration */
-  TSCONFIG: 'tsconfig.json',
+  TSCONFIG: "tsconfig.json",
   /** Package.json file */
-  PACKAGE_JSON: 'package.json',
+  PACKAGE_JSON: "package.json",
   /** ESLint configuration */
-  ESLINT_CONFIG: 'eslint.config.js'
-} as const
+  ESLINT_CONFIG: "eslint.config.js",
+} as const;

@@ -1,11 +1,11 @@
 /**
  * Performance Test Fixtures for TypeSpec-AsyncAPI
- * 
+ *
  * Large datasets, performance testing scenarios, and complex protocol bindings.
  * Split from massive 1822-line test-fixtures.ts for maintainability.
  */
 
-import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js"
+import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js";
 
 /**
  * Performance test fixtures with large datasets
@@ -13,14 +13,19 @@ import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js"
 export const PerformanceFixtures = {
   largeServiceDefinition: (operationCount: number, modelCount: number) => `
     namespace LargePerformanceService {
-      ${Array.from({ length: operationCount }, (_, i) => `
+      ${Array.from(
+        { length: operationCount },
+        (_, i) => `
         @channel("channel-${i}")
         @publish
         op operation${i}(data: Model${i % modelCount}): void;
-      `).join('\n')}
+      `,
+      ).join("\n")}
     }
     
-    ${Array.from({ length: modelCount }, (_, i) => `
+    ${Array.from(
+      { length: modelCount },
+      (_, i) => `
       model Model${i} {
         field1: string;
         field2: int32;
@@ -28,7 +33,8 @@ export const PerformanceFixtures = {
         field4: boolean;
         field5: utcDateTime;
       }
-    `).join('\n')}
+    `,
+    ).join("\n")}
   `,
 
   complexProtocolBindings: `
@@ -62,8 +68,8 @@ export const PerformanceFixtures = {
       checksum: string;
       data: bytes;
     }
-  `
-}
+  `,
+};
 
 /**
  * Advanced patterns for performance testing
@@ -235,8 +241,8 @@ export const AdvancedPatternFixtures = {
       error: string;
       failedStep: string;
     }
-  `
-}
+  `,
+};
 
 /**
  * Real-world example fixtures for performance testing
@@ -406,8 +412,8 @@ export const RealWorldExamples = {
     @channel("trades/executed")
     @subscribe
     op handleTradeExecution(): TradeExecution;
-  `
-}
+  `,
+};
 
 /**
  * Common test data generators for performance testing
@@ -415,78 +421,81 @@ export const RealWorldExamples = {
  */
 export class TestDataGenerator {
   static generateTestService(name: string, operationCount: number): string {
-    return 'namespace TestService; model TestModel { id: string; }'
+    return "namespace TestService; model TestModel { id: string; }";
   }
 
-  static generateExpectedAsyncAPI(title: string, operationCount: number): AsyncAPIObject {
-    const channels: Record<string, any> = {}
-    const operations: Record<string, any> = {}
-    const messages: Record<string, any> = {}
-    
+  static generateExpectedAsyncAPI(
+    title: string,
+    operationCount: number,
+  ): AsyncAPIObject {
+    const channels: Record<string, any> = {};
+    const operations: Record<string, any> = {};
+    const messages: Record<string, any> = {};
+
     for (let i = 0; i < operationCount; i++) {
-      const channelName = 'channel-' + i
-      const modelName = 'TestModel' + i
-      const opName = 'operation' + i
-      
+      const channelName = "channel-" + i;
+      const modelName = "TestModel" + i;
+      const opName = "operation" + i;
+
       channels[channelName] = {
         address: channelName,
         messages: {
           [modelName]: {
-            $ref: '#/components/messages/' + modelName
-          }
-        }
-      }
-      
+            $ref: "#/components/messages/" + modelName,
+          },
+        },
+      };
+
       operations[opName] = {
         action: "send",
         channel: {
-          $ref: '#/channels/' + channelName
-        }
-      }
-      
+          $ref: "#/channels/" + channelName,
+        },
+      };
+
       messages[modelName] = {
         payload: {
           type: "object",
           properties: {
             id: { type: "string" },
             data: { type: "string" },
-            timestamp: { type: "string", format: "date-time" }
+            timestamp: { type: "string", format: "date-time" },
           },
-          required: ["id", "data", "timestamp"]
-        }
-      }
+          required: ["id", "data", "timestamp"],
+        },
+      };
     }
-    
+
     return {
       asyncapi: "3.0.0",
       info: {
         title: title,
-        version: "1.0.0"
+        version: "1.0.0",
       },
       channels,
       operations,
       components: {
         schemas: {},
         messages,
-        securitySchemes: {}
-      }
-    }
+        securitySchemes: {},
+      },
+    };
   }
 
   /**
    * Generate random test data for performance testing
    */
   static generateRandomTestData(size: "small" | "medium" | "large"): {
-    operationCount: number
-    modelCount: number
-    channelCount: number
+    operationCount: number;
+    modelCount: number;
+    channelCount: number;
   } {
     const sizes = {
       small: { operationCount: 5, modelCount: 3, channelCount: 5 },
       medium: { operationCount: 25, modelCount: 15, channelCount: 25 },
-      large: { operationCount: 100, modelCount: 50, channelCount: 100 }
-    }
-    
-    return sizes[size]
+      large: { operationCount: 100, modelCount: 50, channelCount: 100 },
+    };
+
+    return sizes[size];
   }
 }

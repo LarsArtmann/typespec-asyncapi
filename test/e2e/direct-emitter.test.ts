@@ -2,19 +2,19 @@
  * Direct test of emitter function bypass TypeSpec test framework
  */
 
-import {describe, expect, it} from "bun:test"
-import {createTestHost} from "@typespec/compiler/testing"
-import {$onEmit} from "../../src/index.js"
-import {AsyncAPITestLibrary} from "./test-host"
-import {createAsyncAPITestHost} from "../utils/test-helpers.js"
-import {Effect} from "effect"
+import { describe, expect, it } from "bun:test";
+import { createTestHost } from "@typespec/compiler/testing";
+import { $onEmit } from "../../src/index.js";
+import { AsyncAPITestLibrary } from "./test-host";
+import { createAsyncAPITestHost } from "../utils/test-helpers.js";
+import { Effect } from "effect";
 
 describe("Direct Emitter Test", () => {
-	it.skip("should call emitter function directly", async () => {
-		const host = await createAsyncAPITestHost()
+  it.skip("should call emitter function directly", async () => {
+    const host = await createAsyncAPITestHost();
 
-		// Simple TypeSpec source with proper imports
-		const source = `
+    // Simple TypeSpec source with proper imports
+    const source = `
       import "@lars-artmann/typespec-asyncapi";
       using TypeSpec.AsyncAPI;
       
@@ -26,59 +26,69 @@ describe("Direct Emitter Test", () => {
       }
       
       op publishTestEvent(): TestEvent;
-    `
+    `;
 
-		host.addTypeSpecFile("main.tsp", source)
+    host.addTypeSpecFile("main.tsp", source);
 
-		// Note: Cannot capture Effect.log output (readonly)
-		// Test will verify emitter runs without errors
+    // Note: Cannot capture Effect.log output (readonly)
+    // Test will verify emitter runs without errors
 
-		try {
-			// Use TypeSpec's compile method properly
-			const result = await host.compile("main.tsp")
-			Effect.logInfo("Compile result type:", typeof result)
-			
-			// The compile method returns a Program directly
-			const program = result
+    try {
+      // Use TypeSpec's compile method properly
+      const result = await host.compile("main.tsp");
+      Effect.logInfo("Compile result type:", typeof result);
 
-			Effect.logInfo("Program compiled successfully")
-			Effect.logInfo("Program type:", {type: typeof program})
-			Effect.logInfo("Program sourceFiles:", {count: program.sourceFiles?.size || 0})
+      // The compile method returns a Program directly
+      const program = result;
 
-			// USE THE REAL PROGRAM OBJECT - NO MOCKING!
-			Effect.logInfo("=== USING REAL TYPESPEC PROGRAM ===")
+      Effect.logInfo("Program compiled successfully");
+      Effect.logInfo("Program type:", { type: typeof program });
+      Effect.logInfo("Program sourceFiles:", {
+        count: program.sourceFiles?.size || 0,
+      });
 
-			const emitterContext = {
-				program: program, // REAL PROGRAM from TypeSpec compilation
-				emitterOutputDir: "/direct-test-output",
-				options: {
-					"output-file": "direct-test",
-					"file-type": "json" as const,
-				},
-			}
+      // USE THE REAL PROGRAM OBJECT - NO MOCKING!
+      Effect.logInfo("=== USING REAL TYPESPEC PROGRAM ===");
 
-			Effect.logInfo("Emitter context program:", {hasProgram: !!emitterContext.program})
-			Effect.logInfo("Emitter context program type:", {type: typeof emitterContext.program})
-			Effect.logInfo("Program has sourceFiles:", {hasSourceFiles: !!emitterContext.program?.sourceFiles})
+      const emitterContext = {
+        program: program, // REAL PROGRAM from TypeSpec compilation
+        emitterOutputDir: "/direct-test-output",
+        options: {
+          "output-file": "direct-test",
+          "file-type": "json" as const,
+        },
+      };
 
-			// Call the emitter directly
-			await $onEmit(emitterContext)
+      Effect.logInfo("Emitter context program:", {
+        hasProgram: !!emitterContext.program,
+      });
+      Effect.logInfo("Emitter context program type:", {
+        type: typeof emitterContext.program,
+      });
+      Effect.logInfo("Program has sourceFiles:", {
+        hasSourceFiles: !!emitterContext.program?.sourceFiles,
+      });
 
-			Effect.logInfo("=== EMITTER CALL COMPLETE ===")
+      // Call the emitter directly
+      await $onEmit(emitterContext);
 
-			// Verify emitter produced output files
-			const outputFiles = Array.from(host.fs.keys())
-			const asyncapiFiles = outputFiles.filter(f =>
-				f.includes('asyncapi') || f.includes('direct-test')
-			)
+      Effect.logInfo("=== EMITTER CALL COMPLETE ===");
 
-			Effect.logInfo(`Found ${asyncapiFiles.length} output files:`, asyncapiFiles)
+      // Verify emitter produced output files
+      const outputFiles = Array.from(host.fs.keys());
+      const asyncapiFiles = outputFiles.filter(
+        (f) => f.includes("asyncapi") || f.includes("direct-test"),
+      );
 
-			// Verify at least emitter ran without throwing
-			expect(asyncapiFiles.length).toBeGreaterThanOrEqual(0)
+      Effect.logInfo(
+        `Found ${asyncapiFiles.length} output files:`,
+        asyncapiFiles,
+      );
 
-		} catch (error) {
-			throw error
-		}
-	})
-})
+      // Verify at least emitter ran without throwing
+      expect(asyncapiFiles.length).toBeGreaterThanOrEqual(0);
+    } catch (error) {
+      throw error;
+    }
+  });
+});

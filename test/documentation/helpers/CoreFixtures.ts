@@ -1,13 +1,13 @@
 /**
  * Core Test Fixtures for TypeSpec-AsyncAPI
- * 
+ *
  * Essential TypeSpec code snippets and expected AsyncAPI outputs for core functionality.
  * Split from massive 1822-line test-fixtures.ts for maintainability.
- * 
+ *
  * ALPHA VERSION - Uses only supported decorators: @channel, @publish, @subscribe
  */
 
-import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js"
+import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js";
 
 /**
  * Core TypeSpec code snippets for fundamental concepts
@@ -412,8 +412,8 @@ export const CoreTypeSpecFixtures = {
     @channel("inventory-level-changes")
     @publish
     op publishInventoryLevelChange(event: InventoryLevelChangedEvent): void;
-  `
-}
+  `,
+};
 
 /**
  * Expected AsyncAPI outputs for core concepts validation
@@ -424,39 +424,39 @@ export const CoreAsyncAPIFixtures = {
     asyncapi: "3.0.0",
     info: {
       title: "AsyncAPI", // Alpha version uses default title
-      version: "1.0.0"
+      version: "1.0.0",
     },
     channels: {
       "orders/{orderId}": {
         address: "orders/{orderId}",
         parameters: {
           orderId: {
-            schema: { type: "string" }
-          }
-        }
+            schema: { type: "string" },
+          },
+        },
       },
       "orders/{orderId}/status": {
-        address: "orders/{orderId}/status", 
+        address: "orders/{orderId}/status",
         parameters: {
           orderId: {
-            schema: { type: "string" }
-          }
-        }
-      }
+            schema: { type: "string" },
+          },
+        },
+      },
     },
     operations: {
       createOrder: {
         action: "send",
         channel: {
-          $ref: "#/channels/orders~1{orderId}"
-        }
+          $ref: "#/channels/orders~1{orderId}",
+        },
       },
       orderStatusUpdated: {
         action: "receive",
         channel: {
-          $ref: "#/channels/orders~1{orderId}~1status"
-        }
-      }
+          $ref: "#/channels/orders~1{orderId}~1status",
+        },
+      },
     },
     components: {
       schemas: {
@@ -467,72 +467,72 @@ export const CoreAsyncAPIFixtures = {
             items: {
               type: "array",
               items: {
-                $ref: "#/components/schemas/OrderItem"
-              }
-            }
+                $ref: "#/components/schemas/OrderItem",
+              },
+            },
           },
-          required: ["customerId", "items"]
+          required: ["customerId", "items"],
         },
         OrderItem: {
           type: "object",
           properties: {
             productId: { type: "string" },
             quantity: { type: "integer", format: "int32" },
-            price: { type: "number", format: "double" }
+            price: { type: "number", format: "double" },
           },
-          required: ["productId", "quantity", "price"]
+          required: ["productId", "quantity", "price"],
         },
         CreateOrderResponse: {
-          type: "object", 
+          type: "object",
           properties: {
             orderId: { type: "string" },
-            status: { 
+            status: {
               type: "string",
-              enum: ["pending", "confirmed", "rejected"]
-            }
+              enum: ["pending", "confirmed", "rejected"],
+            },
           },
-          required: ["orderId", "status"]
+          required: ["orderId", "status"],
         },
         OrderStatusEvent: {
           type: "object",
           properties: {
             orderId: { type: "string" },
             status: { type: "string" },
-            timestamp: { type: "string", format: "date-time" }
+            timestamp: { type: "string", format: "date-time" },
           },
-          required: ["orderId", "status", "timestamp"]
-        }
-      }
-    }
+          required: ["orderId", "status", "timestamp"],
+        },
+      },
+    },
   },
 
   dataTypesPrimitivesExpected: {
     asyncapi: "3.0.0",
     info: {
       title: "AsyncAPI",
-      version: "1.0.0"
+      version: "1.0.0",
     },
     channels: {
       "data.primitives": {
-        address: "data.primitives"
+        address: "data.primitives",
       },
       "data.arrays": {
-        address: "data.arrays"
-      }
+        address: "data.arrays",
+      },
     },
     operations: {
       publishPrimitiveTypes: {
         action: "send",
         channel: {
-          $ref: "#/channels/data.primitives"
-        }
+          $ref: "#/channels/data.primitives",
+        },
       },
       publishArrayTypes: {
         action: "send",
         channel: {
-          $ref: "#/channels/data.arrays"
-        }
-      }
+          $ref: "#/channels/data.arrays",
+        },
+      },
     },
     components: {
       schemas: {
@@ -547,42 +547,49 @@ export const CoreAsyncAPIFixtures = {
             booleanField: { type: "boolean" },
             dateTimeField: { type: "string", format: "date-time" },
             durationField: { type: "string", format: "duration" },
-            urlField: { type: "string", format: "uri" }
+            urlField: { type: "string", format: "uri" },
           },
           required: [
-            "stringField", "int32Field", "int64Field", "float32Field",
-            "float64Field", "booleanField", "dateTimeField", "durationField", "urlField"
-          ]
+            "stringField",
+            "int32Field",
+            "int64Field",
+            "float32Field",
+            "float64Field",
+            "booleanField",
+            "dateTimeField",
+            "durationField",
+            "urlField",
+          ],
         },
         ArrayTypesMessage: {
-          type: "object", 
+          type: "object",
           properties: {
             stringArray: {
               type: "array",
-              items: { type: "string" }
+              items: { type: "string" },
             },
             numberArray: {
-              type: "array", 
-              items: { type: "integer", format: "int32" }
+              type: "array",
+              items: { type: "integer", format: "int32" },
             },
             objectArray: {
               type: "array",
               items: {
-                $ref: "#/components/schemas/OrderItem"
-              }
-            }
+                $ref: "#/components/schemas/OrderItem",
+              },
+            },
           },
-          required: ["stringArray", "numberArray", "objectArray"]
+          required: ["stringArray", "numberArray", "objectArray"],
         },
         OrderItem: {
           type: "object",
           properties: {
             productId: { type: "string" },
-            quantity: { type: "integer", format: "int32" }
+            quantity: { type: "integer", format: "int32" },
           },
-          required: ["productId", "quantity"]
-        }
-      }
-    }
-  }
-}
+          required: ["productId", "quantity"],
+        },
+      },
+    },
+  },
+};

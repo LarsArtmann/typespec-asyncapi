@@ -5,16 +5,18 @@
  * with proper bindings, security schemes, and message flows.
  */
 
-import { describe, expect, it } from "bun:test"
-import { createTestHost } from "@typespec/compiler/testing"
-import { createAsyncAPITestHost } from "../utils/test-helpers.js"
-import { Effect } from "effect"
+import { describe, expect, it } from "bun:test";
+import { createTestHost } from "@typespec/compiler/testing";
+import { createAsyncAPITestHost } from "../utils/test-helpers.js";
+import { Effect } from "effect";
 
 describe("E2E: Multi-Protocol Comprehensive Test", () => {
-	it("should generate AsyncAPI 3.0 with all protocols", async () => {
-		const host = await createAsyncAPITestHost()
+  it("should generate AsyncAPI 3.0 with all protocols", async () => {
+    const host = await createAsyncAPITestHost();
 
-		host.addTypeSpecFile("main.tsp", `
+    host.addTypeSpecFile(
+      "main.tsp",
+      `
 			import "@lars-artmann/typespec-asyncapi";
 			using TypeSpec.AsyncAPI;
 
@@ -137,66 +139,80 @@ describe("E2E: Multi-Protocol Comprehensive Test", () => {
 			})
 			@publish
 			op publishDeviceStatus(): DeviceStatus;
-		`)
+		`,
+    );
 
-		// Compile
-		const program = await host.compile("./main.tsp")
+    // Compile
+    const program = await host.compile("./main.tsp");
 
-		// Emit AsyncAPI
-		const diagnostics = await host.diagnose("./main.tsp", {
-			emit: ["@lars-artmann/typespec-asyncapi"]
-		})
+    // Emit AsyncAPI
+    const diagnostics = await host.diagnose("./main.tsp", {
+      emit: ["@lars-artmann/typespec-asyncapi"],
+    });
 
-		Effect.log(`Diagnostics count: ${diagnostics.length}`)
-		if (diagnostics.length > 0) {
-			diagnostics.forEach(d => Effect.log(`  - ${d.severity}: ${d.message}`))
-		}
+    Effect.log(`Diagnostics count: ${diagnostics.length}`);
+    if (diagnostics.length > 0) {
+      diagnostics.forEach((d) => Effect.log(`  - ${d.severity}: ${d.message}`));
+    }
 
-		// Find generated AsyncAPI file
-		const outputFiles = Array.from(host.fs.keys())
-		const asyncApiFile = outputFiles.find(f =>
-			f.includes("asyncapi") && (f.endsWith(".json") || f.endsWith(".yaml"))
-		)
+    // Find generated AsyncAPI file
+    const outputFiles = Array.from(host.fs.keys());
+    const asyncApiFile = outputFiles.find(
+      (f) =>
+        f.includes("asyncapi") && (f.endsWith(".json") || f.endsWith(".yaml")),
+    );
 
-		expect(asyncApiFile).toBeDefined()
+    expect(asyncApiFile).toBeDefined();
 
-		if (asyncApiFile) {
-			const content = host.fs.get(asyncApiFile) as string
-			const spec = content.startsWith('{') ? JSON.parse(content) : require('yaml').parse(content)
+    if (asyncApiFile) {
+      const content = host.fs.get(asyncApiFile) as string;
+      const spec = content.startsWith("{")
+        ? JSON.parse(content)
+        : require("yaml").parse(content);
 
-			// Validate AsyncAPI 3.0
-			expect(spec.asyncapi).toBe("3.0.0")
+      // Validate AsyncAPI 3.0
+      expect(spec.asyncapi).toBe("3.0.0");
 
-			// Validate all 4 channels exist
-			expect(Object.keys(spec.channels || {}).length).toBeGreaterThanOrEqual(4)
+      // Validate all 4 channels exist
+      expect(Object.keys(spec.channels || {}).length).toBeGreaterThanOrEqual(4);
 
-			// Validate all 4 operations exist
-			expect(Object.keys(spec.operations || {}).length).toBeGreaterThanOrEqual(4)
+      // Validate all 4 operations exist
+      expect(Object.keys(spec.operations || {}).length).toBeGreaterThanOrEqual(
+        4,
+      );
 
-			// Validate all 4 message schemas exist
-			const schemas = spec.components?.schemas || {}
-			expect(schemas.UserCreatedEvent).toBeDefined()
-			expect(schemas.LiveNotification).toBeDefined()
-			expect(schemas.WebhookPayload).toBeDefined()
-			expect(schemas.DeviceStatus).toBeDefined()
+      // Validate all 4 message schemas exist
+      const schemas = spec.components?.schemas || {};
+      expect(schemas.UserCreatedEvent).toBeDefined();
+      expect(schemas.LiveNotification).toBeDefined();
+      expect(schemas.WebhookPayload).toBeDefined();
+      expect(schemas.DeviceStatus).toBeDefined();
 
-			// Validate union types are converted to enums
-			expect(schemas.UserCreatedEvent.properties.accountType.enum).toEqual(["free", "premium", "enterprise"])
-			expect(schemas.DeviceStatus.properties.status.enum).toEqual(["online", "offline", "error"])
+      // Validate union types are converted to enums
+      expect(schemas.UserCreatedEvent.properties.accountType.enum).toEqual([
+        "free",
+        "premium",
+        "enterprise",
+      ]);
+      expect(schemas.DeviceStatus.properties.status.enum).toEqual([
+        "online",
+        "offline",
+        "error",
+      ]);
 
-			// Validate optional fields
-			expect(schemas.DeviceStatus.properties.batteryLevel).toBeDefined()
-			expect(schemas.DeviceStatus.required).not.toContain("batteryLevel")
+      // Validate optional fields
+      expect(schemas.DeviceStatus.properties.batteryLevel).toBeDefined();
+      expect(schemas.DeviceStatus.required).not.toContain("batteryLevel");
 
-			// Validate nested objects
-			expect(schemas.DeviceStatus.properties.location.type).toBe("object")
-			expect(schemas.WebhookPayload.properties.data.type).toBe("object")
+      // Validate nested objects
+      expect(schemas.DeviceStatus.properties.location.type).toBe("object");
+      expect(schemas.WebhookPayload.properties.data.type).toBe("object");
 
-			// Validate security schemes (all 4 different auth types)
-			const securitySchemes = spec.components?.securitySchemes || {}
-			expect(Object.keys(securitySchemes).length).toBeGreaterThanOrEqual(3)
+      // Validate security schemes (all 4 different auth types)
+      const securitySchemes = spec.components?.securitySchemes || {};
+      expect(Object.keys(securitySchemes).length).toBeGreaterThanOrEqual(3);
 
-			Effect.log("✅ Multi-protocol E2E test passed!")
-		}
-	})
-})
+      Effect.log("✅ Multi-protocol E2E test passed!");
+    }
+  });
+});

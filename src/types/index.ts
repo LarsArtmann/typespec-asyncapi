@@ -20,40 +20,40 @@
 
 //No re-exports! Use the real thing!
 
-import type {Path} from "effect/ParseResult"
+import type { Path } from "effect/ParseResult";
 // Import specific types for aliases (separate import to avoid conflicts)
-import type {AsyncAPIObject} from '@asyncapi/parser/esm/spec-types/v3.js'
+import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js";
 
 // CRITICAL TYPE SAFETY: Import our comprehensive branded types system
 export type {
-	ChannelName,
-	OperationName,
-	MessageName,
-	SchemaName,
-	ServerName,
-	SecuritySchemeName,
-	
-	// Type guards
-	isValidChannelName,
-	isValidOperationName,
-	isValidSchemaName,
-	
-	// Converters with validation
-	toChannelName,
-	toOperationName,
-	toSchemaName,
-	
-	// Unsafe branding (when validation already done)
-	brandChannelName,
-	brandOperationName,
-	brandMessageName,
-	brandSchemaName,
-	brandServerName,
-	brandSecuritySchemeName,
-	
-	// Utility
-	unbrand
-} from "./branded-types.js"
+  ChannelName,
+  OperationName,
+  MessageName,
+  SchemaName,
+  ServerName,
+  SecuritySchemeName,
+
+  // Type guards
+  isValidChannelName,
+  isValidOperationName,
+  isValidSchemaName,
+
+  // Converters with validation
+  toChannelName,
+  toOperationName,
+  toSchemaName,
+
+  // Unsafe branding (when validation already done)
+  brandChannelName,
+  brandOperationName,
+  brandMessageName,
+  brandSchemaName,
+  brandServerName,
+  brandSecuritySchemeName,
+
+  // Utility
+  unbrand,
+} from "./branded-types.js";
 
 // ============================================================================
 // 🔥 CANONICAL VALIDATION TYPES - Single Source of Truth
@@ -61,30 +61,30 @@ export type {
 // All validation types now imported from domain/models/validation-result.ts
 // This eliminates 9 duplicate ValidationResult definitions across the codebase
 export type {
-	ValidationResult,
-	ValidationSuccess,
-	ValidationFailure,
-	ValidationError,
-	ValidationWarning,
-	ValidationMetrics,
-	ExtendedValidationResult
-} from "../domain/models/validation-result.js"
+  ValidationResult,
+  ValidationSuccess,
+  ValidationFailure,
+  ValidationError,
+  ValidationWarning,
+  ValidationMetrics,
+  ExtendedValidationResult,
+} from "../domain/models/validation-result.js";
 
 export {
-	isSuccess,
-	isFailure,
-	success,
-	failure
-} from "../domain/models/validation-result.js"
+  isSuccess,
+  isFailure,
+  success,
+  failure,
+} from "../domain/models/validation-result.js";
 
 type OperationsFoundCount = number;
 type GenerationNote = string;
 
 type XGeneratedFromTypeSpec = {
-	sourceFiles?: Path;
-	operationsFound?: OperationsFoundCount;
-	note?: GenerationNote;
-}
+  sourceFiles?: Path;
+  operationsFound?: OperationsFoundCount;
+  note?: GenerationNote;
+};
 
 //TODO: Should we use this type somewhere???
 // Emitter-specific types (not part of official AsyncAPI spec)
@@ -93,37 +93,43 @@ type XGeneratedFromTypeSpec = {
  * These are project-specific types not covered by the official spec
  */
 export type EmitterAsyncAPIObject = {
-	// Extend with emitter-specific metadata
-	'x-generated-from-typespec'?: XGeneratedFromTypeSpec;
-} & AsyncAPIObject
+  // Extend with emitter-specific metadata
+  "x-generated-from-typespec"?: XGeneratedFromTypeSpec;
+} & AsyncAPIObject;
 
 // Configuration types used in testing
 export type BaseConfig = {
-	name: string;
-	version: string;
-}
+  name: string;
+  version: string;
+};
 
 export type ValidationConfig = {
-	validateSchema: boolean;
-	strictMode: boolean;
-}
+  validateSchema: boolean;
+  strictMode: boolean;
+};
 
 export type PerformanceConfig = {
-	enableCache: boolean;
-	maxCacheSize: number;
-}
+  enableCache: boolean;
+  maxCacheSize: number;
+};
 
 export type CompleteConfig = BaseConfig & ValidationConfig & PerformanceConfig;
 
 // Generic AsyncAPI component type
 export type AsyncAPIComponent<T extends string> = {
-	componentType: T;
-	name: string;
-	specification: Record<string, unknown>;
-}
+  componentType: T;
+  name: string;
+  specification: Record<string, unknown>;
+};
 
 // Schema value union type
-export type SchemaValue = string | number | boolean | null | Record<string, unknown> | Record<string, unknown>[];
+export type SchemaValue =
+  | string
+  | number
+  | boolean
+  | null
+  | Record<string, unknown>
+  | Record<string, unknown>[];
 
 /**
  * MIGRATION NOTES:

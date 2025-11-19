@@ -4,28 +4,28 @@
  * Uses type guards for type-safe assertions
  */
 
-import { describe, test, expect, afterEach } from 'bun:test'
-import { compileWithCLI, cleanupTestDir } from '../utils/cli-test-helpers.js'
-import type { CLITestResult } from '../utils/cli-test-helpers.js'
+import { describe, test, expect, afterEach } from "bun:test";
+import { compileWithCLI, cleanupTestDir } from "../utils/cli-test-helpers.js";
+import type { CLITestResult } from "../utils/cli-test-helpers.js";
 import {
-	assertAsyncAPIDoc,
-	assertCompilationSuccess,
-	getPropertyKeys,
-	assertContainsKeys,
-} from '../utils/type-guards.js'
+  assertAsyncAPIDoc,
+  assertCompilationSuccess,
+  getPropertyKeys,
+  assertContainsKeys,
+} from "../utils/type-guards.js";
 
-describe('CLI Tests: Simple AsyncAPI Emitter', () => {
-	let testResult: CLITestResult | undefined
+describe("CLI Tests: Simple AsyncAPI Emitter", () => {
+  let testResult: CLITestResult | undefined;
 
-	afterEach(async () => {
-		if (testResult?.workdir) {
-			await cleanupTestDir(testResult.workdir)
-		}
-	})
+  afterEach(async () => {
+    if (testResult?.workdir) {
+      await cleanupTestDir(testResult.workdir);
+    }
+  });
 
-	test('should generate basic AsyncAPI from simple TypeSpec', async () => {
-		// Arrange: Simple TypeSpec without decorators
-		const source = `
+  test("should generate basic AsyncAPI from simple TypeSpec", async () => {
+    // Arrange: Simple TypeSpec without decorators
+    const source = `
 			import "@lars-artmann/typespec-asyncapi";
 			using AsyncAPI;
 
@@ -40,28 +40,28 @@ describe('CLI Tests: Simple AsyncAPI Emitter', () => {
 			@channel("simple.event")
 			@publish
 			op publishSimpleEvent(...SimpleEvent): void;
-		`
+		`;
 
-		// Act: Compile with CLI
-		testResult = await compileWithCLI(source)
+    // Act: Compile with CLI
+    testResult = await compileWithCLI(source);
 
-		// Assert: Compilation succeeded with type safety
-		assertCompilationSuccess(testResult)
-		// Now TypeScript knows testResult.asyncapiDoc is AsyncAPIObject
+    // Assert: Compilation succeeded with type safety
+    assertCompilationSuccess(testResult);
+    // Now TypeScript knows testResult.asyncapiDoc is AsyncAPIObject
 
-		// Assert: Valid AsyncAPI document (type guard removes optional chaining)
-		assertAsyncAPIDoc(testResult.asyncapiDoc)
+    // Assert: Valid AsyncAPI document (type guard removes optional chaining)
+    assertAsyncAPIDoc(testResult.asyncapiDoc);
 
-		// Assert: Channel created (clean, no ?. operators)
-		const channelKeys = getPropertyKeys(testResult.asyncapiDoc.channels)
-		expect(channelKeys).toContain('simple.event')
+    // Assert: Channel created (clean, no ?. operators)
+    const channelKeys = getPropertyKeys(testResult.asyncapiDoc.channels);
+    expect(channelKeys).toContain("simple.event");
 
-		console.log('✅ Basic AsyncAPI generation works')
-	})
+    console.log("✅ Basic AsyncAPI generation works");
+  });
 
-	test('should handle multiple operations', async () => {
-		// Arrange: Multiple operations with different models
-		const source = `
+  test("should handle multiple operations", async () => {
+    // Arrange: Multiple operations with different models
+    const source = `
 			import "@lars-artmann/typespec-asyncapi";
 			using AsyncAPI;
 
@@ -84,35 +84,37 @@ describe('CLI Tests: Simple AsyncAPI Emitter', () => {
 			@channel("system.events")
 			@publish
 			op publishSystemEvent(...SystemEvent): void;
-		`
+		`;
 
-		// Act: Compile with CLI
-		testResult = await compileWithCLI(source)
+    // Act: Compile with CLI
+    testResult = await compileWithCLI(source);
 
-		// Assert: Compilation succeeded
-		expect(testResult.exitCode).toBe(0)
-		expect(testResult.asyncapiDoc).toBeDefined()
-		expect(testResult.asyncapiDoc?.asyncapi).toBe('3.0.0')
+    // Assert: Compilation succeeded
+    expect(testResult.exitCode).toBe(0);
+    expect(testResult.asyncapiDoc).toBeDefined();
+    expect(testResult.asyncapiDoc?.asyncapi).toBe("3.0.0");
 
-		// Assert: Multiple channels created
-		const channelKeys = Object.keys(testResult.asyncapiDoc?.channels || {})
-		expect(channelKeys).toContain('user.events')
-		expect(channelKeys).toContain('system.events')
+    // Assert: Multiple channels created
+    const channelKeys = Object.keys(testResult.asyncapiDoc?.channels || {});
+    expect(channelKeys).toContain("user.events");
+    expect(channelKeys).toContain("system.events");
 
-		// Assert: Multiple operations
-		const operationKeys = Object.keys(testResult.asyncapiDoc?.operations || {})
-		expect(operationKeys).toContain('publishUserEvent')
-		expect(operationKeys).toContain('publishSystemEvent')
+    // Assert: Multiple operations
+    const operationKeys = Object.keys(testResult.asyncapiDoc?.operations || {});
+    expect(operationKeys).toContain("publishUserEvent");
+    expect(operationKeys).toContain("publishSystemEvent");
 
-		// Assert: Info section
-		expect(testResult.asyncapiDoc?.info.title).toBeDefined()
+    // Assert: Info section
+    expect(testResult.asyncapiDoc?.info.title).toBeDefined();
 
-		console.log(`✅ Generated AsyncAPI with title: ${testResult.asyncapiDoc?.info.title}`)
-	})
+    console.log(
+      `✅ Generated AsyncAPI with title: ${testResult.asyncapiDoc?.info.title}`,
+    );
+  });
 
-	test('should generate YAML output', async () => {
-		// Arrange: Basic test event
-		const source = `
+  test("should generate YAML output", async () => {
+    // Arrange: Basic test event
+    const source = `
 			import "@lars-artmann/typespec-asyncapi";
 			using AsyncAPI;
 
@@ -126,27 +128,27 @@ describe('CLI Tests: Simple AsyncAPI Emitter', () => {
 			@channel("test.events")
 			@publish
 			op publishTest(...TestEvent): void;
-		`
+		`;
 
-		// Act: Compile with CLI
-		testResult = await compileWithCLI(source)
+    // Act: Compile with CLI
+    testResult = await compileWithCLI(source);
 
-		// Assert: Compilation succeeded
-		expect(testResult.exitCode).toBe(0)
-		expect(testResult.asyncapiDoc).toBeDefined()
-		expect(testResult.asyncapiDoc?.asyncapi).toBe('3.0.0')
-		expect(testResult.asyncapiDoc?.info).toBeDefined()
+    // Assert: Compilation succeeded
+    expect(testResult.exitCode).toBe(0);
+    expect(testResult.asyncapiDoc).toBeDefined();
+    expect(testResult.asyncapiDoc?.asyncapi).toBe("3.0.0");
+    expect(testResult.asyncapiDoc?.info).toBeDefined();
 
-		// Assert: Channel created
-		const channelKeys = Object.keys(testResult.asyncapiDoc?.channels || {})
-		expect(channelKeys).toContain('test.events')
+    // Assert: Channel created
+    const channelKeys = Object.keys(testResult.asyncapiDoc?.channels || {});
+    expect(channelKeys).toContain("test.events");
 
-		console.log('✅ YAML generation works')
-	})
+    console.log("✅ YAML generation works");
+  });
 
-	test('should include schema components for models', async () => {
-		// Arrange: TypeSpec with explicit model schema
-		const source = `
+  test("should include schema components for models", async () => {
+    // Arrange: TypeSpec with explicit model schema
+    const source = `
 			import "@lars-artmann/typespec-asyncapi";
 			using AsyncAPI;
 
@@ -163,24 +165,26 @@ describe('CLI Tests: Simple AsyncAPI Emitter', () => {
 			@channel("detailed.events")
 			@publish
 			op publishDetailed(...DetailedEvent): void;
-		`
+		`;
 
-		// Act: Compile with CLI
-		testResult = await compileWithCLI(source)
+    // Act: Compile with CLI
+    testResult = await compileWithCLI(source);
 
-		// Assert: Compilation succeeded
-		expect(testResult.exitCode).toBe(0)
-		expect(testResult.asyncapiDoc?.components).toBeDefined()
+    // Assert: Compilation succeeded
+    expect(testResult.exitCode).toBe(0);
+    expect(testResult.asyncapiDoc?.components).toBeDefined();
 
-		// Assert: Schemas section exists
-		if (testResult.asyncapiDoc?.components?.schemas) {
-			console.log(`✅ Generated ${Object.keys(testResult.asyncapiDoc.components.schemas).length} schema components`)
-		}
-	})
+    // Assert: Schemas section exists
+    if (testResult.asyncapiDoc?.components?.schemas) {
+      console.log(
+        `✅ Generated ${Object.keys(testResult.asyncapiDoc.components.schemas).length} schema components`,
+      );
+    }
+  });
 
-	test('should handle namespaces correctly', async () => {
-		// Arrange: Nested namespace structure
-		const source = `
+  test("should handle namespaces correctly", async () => {
+    // Arrange: Nested namespace structure
+    const source = `
 			import "@lars-artmann/typespec-asyncapi";
 			using AsyncAPI;
 
@@ -196,19 +200,19 @@ describe('CLI Tests: Simple AsyncAPI Emitter', () => {
 					op sendNotification(...NotificationEvent): void;
 				}
 			}
-		`
+		`;
 
-		// Act: Compile with CLI
-		testResult = await compileWithCLI(source)
+    // Act: Compile with CLI
+    testResult = await compileWithCLI(source);
 
-		// Assert: Compilation succeeded
-		expect(testResult.exitCode).toBe(0)
-		expect(testResult.asyncapiDoc).toBeDefined()
+    // Assert: Compilation succeeded
+    expect(testResult.exitCode).toBe(0);
+    expect(testResult.asyncapiDoc).toBeDefined();
 
-		// Assert: Channel created regardless of namespace nesting
-		const channelKeys = Object.keys(testResult.asyncapiDoc?.channels || {})
-		expect(channelKeys).toContain('notifications.sent')
+    // Assert: Channel created regardless of namespace nesting
+    const channelKeys = Object.keys(testResult.asyncapiDoc?.channels || {});
+    expect(channelKeys).toContain("notifications.sent");
 
-		console.log('✅ Namespace handling works correctly')
-	})
-})
+    console.log("✅ Namespace handling works correctly");
+  });
+});

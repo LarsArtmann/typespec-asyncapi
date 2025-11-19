@@ -1,7 +1,11 @@
-import type {DecoratorContext, Model, ModelProperty} from "@typespec/compiler"
-import {$lib} from "../../lib.js"
-import {Effect} from "effect"
-import type {HeaderConfig} from "./headerConfig.js"
+import type {
+  DecoratorContext,
+  Model,
+  ModelProperty,
+} from "@typespec/compiler";
+import { $lib } from "../../lib.js";
+import { Effect } from "effect";
+import type { HeaderConfig } from "./headerConfig.js";
 
 /**
  * @header decorator for marking model properties as message headers
@@ -16,7 +20,7 @@ import type {HeaderConfig} from "./headerConfig.js"
  *   @header messageId: string;
  *   @header("correlation-id") correlationId?: string;
  *   @header traceId?: string;
- *   
+ *
  *   // These remain in payload
  *   userId: string;
  *   data: string;
@@ -24,178 +28,187 @@ import type {HeaderConfig} from "./headerConfig.js"
  * ```
  */
 export function $header(
-	context: DecoratorContext,
-	target: ModelProperty,
-	name?: string,
+  context: DecoratorContext,
+  target: ModelProperty,
+  name?: string,
 ): void {
-	Effect.log(`📧 PROCESSING @header decorator on property: ${target.name}`)
-	Effect.log(`📧 Custom header name:`, name)
+  Effect.log(`📧 PROCESSING @header decorator on property: ${target.name}`);
+  Effect.log(`📧 Custom header name:`, name);
 
-	// Validate target is a ModelProperty
-	if (target.kind !== 'ModelProperty') {
-		Effect.log(`❌ @header can only be applied to model properties, not ${target.kind as string}`)
-		return
-	}
+  // Validate target is a ModelProperty
+  if (target.kind !== "ModelProperty") {
+    Effect.log(
+      `❌ @header can only be applied to model properties, not ${target.kind as string}`,
+    );
+    return;
+  }
 
-	// Get property information
-	const propertyName = target.name
-	const headerName = name ?? propertyName
+  // Get property information
+  const propertyName = target.name;
+  const headerName = name ?? propertyName;
 
-	// Validate header name
-	if (!isValidHeaderName(headerName)) {
-		Effect.log(`❌ Invalid header name: ${headerName}`)
-		return
-	}
+  // Validate header name
+  if (!isValidHeaderName(headerName)) {
+    Effect.log(`❌ Invalid header name: ${headerName}`);
+    return;
+  }
 
-	// Build header configuration with conditional properties
-	const headerType = inferHeaderType(target)
-	const headerConfig: HeaderConfig = {
-		name: headerName,
-		description: `Header extracted from property: ${propertyName}`,
-		required: !target.optional,
-		...(headerType ? { type: headerType } : {}),
-	}
+  // Build header configuration with conditional properties
+  const headerType = inferHeaderType(target);
+  const headerConfig: HeaderConfig = {
+    name: headerName,
+    description: `Header extracted from property: ${propertyName}`,
+    required: !target.optional,
+    ...(headerType ? { type: headerType } : {}),
+  };
 
-	// Store header configuration in program state
-	const headersMap = context.program.stateMap($lib.stateKeys.messageHeaders)
-	
-	// Get existing headers for the parent model
-	const parentModel = target.model
-	if (!parentModel) {
-		Effect.log(`❌ Could not find parent model for property ${propertyName}`)
-		return
-	}
+  // Store header configuration in program state
+  const headersMap = context.program.stateMap($lib.stateKeys.messageHeaders);
 
-	const existingHeaders = (headersMap.get(parentModel) as Map<string, HeaderConfig>) || new Map()
-	existingHeaders.set(propertyName, headerConfig)
-	
-	headersMap.set(parentModel, existingHeaders)
+  // Get existing headers for the parent model
+  const parentModel = target.model;
+  if (!parentModel) {
+    Effect.log(`❌ Could not find parent model for property ${propertyName}`);
+    return;
+  }
 
-	Effect.log(`✅ Successfully stored header config for property ${propertyName}`)
-	Effect.log(`📧 Header name: ${headerConfig.name}`)
-	Effect.log(`📧 Required: ${headerConfig.required}`)
-	Effect.log(`📧 Type:`, headerConfig.type)
+  const existingHeaders =
+    (headersMap.get(parentModel) as Map<string, HeaderConfig>) || new Map();
+  existingHeaders.set(propertyName, headerConfig);
+
+  headersMap.set(parentModel, existingHeaders);
+
+  Effect.log(
+    `✅ Successfully stored header config for property ${propertyName}`,
+  );
+  Effect.log(`📧 Header name: ${headerConfig.name}`);
+  Effect.log(`📧 Required: ${headerConfig.required}`);
+  Effect.log(`📧 Type:`, headerConfig.type);
 }
 
 /**
  * Get header configuration for a model property
  */
 export function getHeaderConfig(
-	context: DecoratorContext,
-	modelProperty: ModelProperty,
+  context: DecoratorContext,
+  modelProperty: ModelProperty,
 ): HeaderConfig | undefined {
-	const headersMap = context.program.stateMap($lib.stateKeys.messageHeaders)
-	const parentModel = modelProperty.model
-	
-	if (!parentModel) return undefined
-	
-	const modelHeaders = headersMap.get(parentModel) as Map<string, HeaderConfig> | undefined
-	return modelHeaders?.get(modelProperty.name)
+  const headersMap = context.program.stateMap($lib.stateKeys.messageHeaders);
+  const parentModel = modelProperty.model;
+
+  if (!parentModel) return undefined;
+
+  const modelHeaders = headersMap.get(parentModel) as
+    | Map<string, HeaderConfig>
+    | undefined;
+  return modelHeaders?.get(modelProperty.name);
 }
 
 /**
  * Get all header configurations for a model
  */
 export function getModelHeaders(
-	context: DecoratorContext,
-	model: Model,
+  context: DecoratorContext,
+  model: Model,
 ): Map<string, HeaderConfig> {
-	const headersMap = context.program.stateMap($lib.stateKeys.messageHeaders)
-	return (headersMap.get(model) as Map<string, HeaderConfig>) || new Map()
+  const headersMap = context.program.stateMap($lib.stateKeys.messageHeaders);
+  return (headersMap.get(model) as Map<string, HeaderConfig>) || new Map();
 }
 
 /**
  * Check if a model property is marked as a header
  */
 export function isHeader(
-	context: DecoratorContext,
-	modelProperty: ModelProperty,
+  context: DecoratorContext,
+  modelProperty: ModelProperty,
 ): boolean {
-	return getHeaderConfig(context, modelProperty) !== undefined
+  return getHeaderConfig(context, modelProperty) !== undefined;
 }
 
 /**
  * Validate header name according to HTTP header naming rules
  */
 function isValidHeaderName(name: string): boolean {
-	// HTTP header names are case-insensitive and consist of alphanumeric characters and hyphens
-	// They cannot start or end with hyphens
-	return /^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?$/.test(name)
+  // HTTP header names are case-insensitive and consist of alphanumeric characters and hyphens
+  // They cannot start or end with hyphens
+  return /^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?$/.test(name);
 }
 
 /**
  * Infer header type from TypeSpec model property type
  * TODO: Improve!
  */
-function inferHeaderType(property: ModelProperty): HeaderConfig['type'] {
-	// Get the property type
-	const type = property.type
-	
-	// Default type configuration
-	const defaultType: HeaderConfig['type'] = {
-		type: 'string'
-	}
+function inferHeaderType(property: ModelProperty): HeaderConfig["type"] {
+  // Get the property type
+  const type = property.type;
 
-	// Basic type inference based on TypeSpec intrinsic types
-	if (type.kind === 'Intrinsic') {
-		const typeName = String(type.name)
-		
-		if (typeName === 'string') {
-			return { type: 'string' }
-		} else if (['int32', 'int64', 'float32', 'float64', 'numeric'].includes(typeName)) {
-			return { type: 'number' }
-		} else if (typeName === 'boolean') {
-			return { type: 'boolean' }
-		} else {
-			return defaultType
-		}
-	}
+  // Default type configuration
+  const defaultType: HeaderConfig["type"] = {
+    type: "string",
+  };
 
-	// For other types, default to string
-	return defaultType
+  // Basic type inference based on TypeSpec intrinsic types
+  if (type.kind === "Intrinsic") {
+    const typeName = String(type.name);
+
+    if (typeName === "string") {
+      return { type: "string" };
+    } else if (
+      ["int32", "int64", "float32", "float64", "numeric"].includes(typeName)
+    ) {
+      return { type: "number" };
+    } else if (typeName === "boolean") {
+      return { type: "boolean" };
+    } else {
+      return defaultType;
+    }
+  }
+
+  // For other types, default to string
+  return defaultType;
 }
 
 /**
  * Generate AsyncAPI headers schema from header configurations
  */
 export function generateHeadersSchema(
-	headers: Map<string, HeaderConfig>,
+  headers: Map<string, HeaderConfig>,
 ): Record<string, unknown> {
-	const schema: Record<string, unknown> = {}
-	
-	for (const [propertyName, config] of headers) {
-		schema[config.name ?? propertyName] = {
-			type: config.type?.type ?? 'string',
-			description: config.description,
-			...(config.type?.format && { format: config.type.format }),
-			...(config.type?.pattern && { pattern: config.type.pattern })
-		}
-	}
-	
-	return schema
+  const schema: Record<string, unknown> = {};
+
+  for (const [propertyName, config] of headers) {
+    schema[config.name ?? propertyName] = {
+      type: config.type?.type ?? "string",
+      description: config.description,
+      ...(config.type?.format && { format: config.type.format }),
+      ...(config.type?.pattern && { pattern: config.type.pattern }),
+    };
+  }
+
+  return schema;
 }
 
 /**
  * Extract headers from a model and return the remaining payload properties
  */
 export function extractHeaders(
-	context: DecoratorContext,
-	model: Model,
-): { headers: Map<string, HeaderConfig>, payloadProperties: string[] } {
-	const allHeaders = getModelHeaders(context, model)
-	const payloadProperties: string[] = []
-	
-	// Identify properties that are NOT headers
-	if (model.properties) {
-		for (const [propName] of model.properties) {
-			if (!allHeaders.has(propName)) {
-				payloadProperties.push(propName)
-			}
-		}
-	}
-	
-	return {
-		headers: allHeaders,
-		payloadProperties
-	}
+  context: DecoratorContext,
+  model: Model,
+): { headers: Map<string, HeaderConfig>; payloadProperties: string[] } {
+  const allHeaders = getModelHeaders(context, model);
+  const payloadProperties: string[] = [];
+
+  // Identify properties that are NOT headers
+  if (model.properties) {
+    for (const [propName] of model.properties) {
+      if (!allHeaders.has(propName)) {
+        payloadProperties.push(propName);
+      }
+    }
+  }
+
+  return {
+    headers: allHeaders,
+    payloadProperties,
+  };
 }

@@ -1,7 +1,7 @@
-import type {DecoratorContext, Operation} from "@typespec/compiler"
-import {reportDiagnostic} from "../../lib.js"
-import {Effect} from "effect"
-import {checkOperationTypeConflict} from "./publish.js"
+import type { DecoratorContext, Operation } from "@typespec/compiler";
+import { reportDiagnostic } from "../../lib.js";
+import { Effect } from "effect";
+import { checkOperationTypeConflict } from "./publish.js";
 
 //TODO: CRITICAL - Add AsyncAPI 3.0.0 Subscribe Operation Object compliance validation
 //TODO: CRITICAL - Implement proper Effect.TS Result/Either types for error handling
@@ -14,25 +14,29 @@ import {checkOperationTypeConflict} from "./publish.js"
 //TODO: CRITICAL - Implement AsyncAPI 3.0.0 action validation ("receive" for subscribe operations)
 
 export function $subscribe(context: DecoratorContext, target: Operation): void {
-	Effect.log(`= PROCESSING @subscribe decorator on operation: ${target.name}`)
-	Effect.log(`🔽 Target type: ${target.kind}`)
+  Effect.log(`= PROCESSING @subscribe decorator on operation: ${target.name}`);
+  Effect.log(`🔽 Target type: ${target.kind}`);
 
-	//TODO: CRITICAL - This validation is redundant - TypeScript ensures target is Operation
-	if (target.kind !== "Operation") {
-		//TODO: CRITICAL - Wrong diagnostic type - should be operation-type-mismatch not invalid-channel-path
-		reportDiagnostic(context, target, "invalid-channel-path", {path: "@subscribe can only be applied to operations"})
-		return
-	}
+  //TODO: CRITICAL - This validation is redundant - TypeScript ensures target is Operation
+  if (target.kind !== "Operation") {
+    //TODO: CRITICAL - Wrong diagnostic type - should be operation-type-mismatch not invalid-channel-path
+    reportDiagnostic(context, target, "invalid-channel-path", {
+      path: "@subscribe can only be applied to operations",
+    });
+    return;
+  }
 
-	//TODO: CRITICAL - Missing validation: operation must have appropriate input/output message schemas
-	// Check for operation type conflicts and set type
-	if (checkOperationTypeConflict(context, target, "subscribe", "publish")) {
-		return
-	}
+  //TODO: CRITICAL - Missing validation: operation must have appropriate input/output message schemas
+  // Check for operation type conflicts and set type
+  if (checkOperationTypeConflict(context, target, "subscribe", "publish")) {
+    return;
+  }
 
-	//TODO: CRITICAL - Need to validate that operation has appropriate message schema for subscription
-	//TODO: CRITICAL - Should store additional subscribe-specific metadata (message filters, etc.)
-	//TODO: CRITICAL - Remove debug logging from production decorator
+  //TODO: CRITICAL - Need to validate that operation has appropriate message schema for subscription
+  //TODO: CRITICAL - Should store additional subscribe-specific metadata (message filters, etc.)
+  //TODO: CRITICAL - Remove debug logging from production decorator
 
-	Effect.log(`✅ Successfully marked operation ${target.name} as subscribe operation`)
+  Effect.log(
+    `✅ Successfully marked operation ${target.name} as subscribe operation`,
+  );
 }

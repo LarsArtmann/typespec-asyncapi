@@ -8,7 +8,7 @@
  * - Channel and operation creation from TypeSpec operations
  * - AsyncAPI 3.0.0 specification compliance validation
  * - Multi-namespace and inheritance handling
- * 
+ *
  * TODO: MASSIVE TEST FILE - 749 lines violates maintainability
  * TODO: Split into focused test suites: schema-generation.test.ts, channel-operations.test.ts
  * TODO: Extract test data to dedicated fixtures (avoid massive inline TypeSpec strings)
@@ -21,22 +21,22 @@
  * TODO: Implement test isolation - each test should be completely independent
  */
 
-import {describe, expect, test} from "bun:test"
+import { describe, expect, test } from "bun:test";
 import {
-	type AsyncAPIObject,
-	compileAsyncAPISpecWithoutErrors,
-	parseAsyncAPIOutput,
-	validateAsyncAPIObjectComprehensive,
-	TestValidationPatterns,
-	TestLogging,
-} from "../utils/test-helpers.js"
-import {Effect} from "effect"
+  type AsyncAPIObject,
+  compileAsyncAPISpecWithoutErrors,
+  parseAsyncAPIOutput,
+  validateAsyncAPIObjectComprehensive,
+  TestValidationPatterns,
+  TestLogging,
+} from "../utils/test-helpers.js";
+import { Effect } from "effect";
 //TODO: this file is getting to big split it up
 
 describe("Real AsyncAPI Generation Tests", () => {
-	describe("Complete TypeSpec → AsyncAPI Transformation", () => {
-		test("should transform complex TypeSpec namespace to valid AsyncAPI document", async () => {
-			const source = `
+  describe("Complete TypeSpec → AsyncAPI Transformation", () => {
+    test("should transform complex TypeSpec namespace to valid AsyncAPI document", async () => {
+      const source = `
         @doc("Enterprise event-driven microservice architecture")
         namespace EnterpriseEvents;
         
@@ -299,81 +299,115 @@ describe("Real AsyncAPI Generation Tests", () => {
         @doc("Subscribe to orders by status")
         @subscribe
         op subscribeOrdersByStatus(status: string): OrderEvent;
-      `
+      `;
 
-			const {outputFiles, program} = await compileAsyncAPISpecWithoutErrors(source)
+      const { outputFiles, program } =
+        await compileAsyncAPISpecWithoutErrors(source);
 
-			// Verify comprehensive compilation
-			expect(program).toBeDefined()
-			expect(outputFiles.size).toBeGreaterThan(0)
+      // Verify comprehensive compilation
+      expect(program).toBeDefined();
+      expect(outputFiles.size).toBeGreaterThan(0);
 
-			const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "enterprise-events.json") as AsyncAPIObject
+      const asyncapiDoc = (await parseAsyncAPIOutput(
+        outputFiles,
+        "enterprise-events.json",
+      )) as AsyncAPIObject;
 
-			// Validate AsyncAPI document structure
-			expect(asyncapiDoc.asyncapi).toBe("3.0.0")
-			expect(asyncapiDoc.info).toBeDefined()
-			expect(asyncapiDoc.channels).toBeDefined()
-			expect(asyncapiDoc.operations).toBeDefined()
-			expect(asyncapiDoc.components?.schemas).toBeDefined()
+      // Validate AsyncAPI document structure
+      expect(asyncapiDoc.asyncapi).toBe("3.0.0");
+      expect(asyncapiDoc.info).toBeDefined();
+      expect(asyncapiDoc.channels).toBeDefined();
+      expect(asyncapiDoc.operations).toBeDefined();
+      expect(asyncapiDoc.components?.schemas).toBeDefined();
 
-			// Validate all complex schemas were generated
-			const expectedSchemas = [
-				"BaseEvent", "EventMetadata", "UserContext", "OrderEvent", "OrderDetails",
-				"OrderItem", "ProductVariant", "Address", "GeoCoordinates", "PaymentMethod",
-				"InventoryEvent", "InventoryChangeDetails",
-			]
+      // Validate all complex schemas were generated
+      const expectedSchemas = [
+        "BaseEvent",
+        "EventMetadata",
+        "UserContext",
+        "OrderEvent",
+        "OrderDetails",
+        "OrderItem",
+        "ProductVariant",
+        "Address",
+        "GeoCoordinates",
+        "PaymentMethod",
+        "InventoryEvent",
+        "InventoryChangeDetails",
+      ];
 
-			// Validate all expected schemas using shared utility
-			for (const schemaName of expectedSchemas) {
-				expect(asyncapiDoc.components.schemas[schemaName]).toBeDefined()
-			}
-			TestValidationPatterns.validateExpectedSchemas(asyncapiDoc, expectedSchemas)
+      // Validate all expected schemas using shared utility
+      for (const schemaName of expectedSchemas) {
+        expect(asyncapiDoc.components.schemas[schemaName]).toBeDefined();
+      }
+      TestValidationPatterns.validateExpectedSchemas(
+        asyncapiDoc,
+        expectedSchemas,
+      );
 
-			// Validate inheritance handling (OrderEvent extends BaseEvent)
-			const orderEventSchema = asyncapiDoc.components.schemas.OrderEvent
-			expect(orderEventSchema.properties?.eventId).toBeDefined() // From BaseEvent
-			expect(orderEventSchema.properties?.timestamp).toBeDefined() // From BaseEvent
-			expect(orderEventSchema.properties?.orderId).toBeDefined() // From OrderEvent
-			expect(orderEventSchema.properties?.customerId).toBeDefined() // From OrderEvent
+      // Validate inheritance handling (OrderEvent extends BaseEvent)
+      const orderEventSchema = asyncapiDoc.components.schemas.OrderEvent;
+      expect(orderEventSchema.properties?.eventId).toBeDefined(); // From BaseEvent
+      expect(orderEventSchema.properties?.timestamp).toBeDefined(); // From BaseEvent
+      expect(orderEventSchema.properties?.orderId).toBeDefined(); // From OrderEvent
+      expect(orderEventSchema.properties?.customerId).toBeDefined(); // From OrderEvent
 
-			// Validate complex nested object handling
-			const orderDetailsSchema = asyncapiDoc.components.schemas.OrderDetails
-			expect(orderDetailsSchema.properties?.items?.type).toBe("array")
-			expect(orderDetailsSchema.properties?.shippingAddress?.type).toBe("object")
-			expect(orderDetailsSchema.properties?.billingAddress?.type).toBe("object")
+      // Validate complex nested object handling
+      const orderDetailsSchema = asyncapiDoc.components.schemas.OrderDetails;
+      expect(orderDetailsSchema.properties?.items?.type).toBe("array");
+      expect(orderDetailsSchema.properties?.shippingAddress?.type).toBe(
+        "object",
+      );
+      expect(orderDetailsSchema.properties?.billingAddress?.type).toBe(
+        "object",
+      );
 
-			// Validate all operations were generated
-			const expectedOperations = [
-				"publishOrderCreated", "publishOrderConfirmed", "publishOrderShipped",
-				"publishOrderDelivered", "publishOrderCancelled", "publishInventoryStockChanged",
-				"publishInventoryLowStock", "subscribeCustomerOrderEvents",
-				"subscribeWarehouseInventoryChanges", "subscribeOrdersByStatus",
-			]
+      // Validate all operations were generated
+      const expectedOperations = [
+        "publishOrderCreated",
+        "publishOrderConfirmed",
+        "publishOrderShipped",
+        "publishOrderDelivered",
+        "publishOrderCancelled",
+        "publishInventoryStockChanged",
+        "publishInventoryLowStock",
+        "subscribeCustomerOrderEvents",
+        "subscribeWarehouseInventoryChanges",
+        "subscribeOrdersByStatus",
+      ];
 
-			// Validate all expected operations using shared utility
-			for (const operationName of expectedOperations) {
-				expect(asyncapiDoc.operations[operationName]).toBeDefined()
-			}
-			TestValidationPatterns.validateExpectedOperations(asyncapiDoc, expectedOperations)
+      // Validate all expected operations using shared utility
+      for (const operationName of expectedOperations) {
+        expect(asyncapiDoc.operations[operationName]).toBeDefined();
+      }
+      TestValidationPatterns.validateExpectedOperations(
+        asyncapiDoc,
+        expectedOperations,
+      );
 
-			// Validate publish vs subscribe actions
-			expect(asyncapiDoc.operations.publishOrderCreated.action).toBe("send")
-			expect(asyncapiDoc.operations.subscribeCustomerOrderEvents.action).toBe("receive")
+      // Validate publish vs subscribe actions
+      expect(asyncapiDoc.operations.publishOrderCreated.action).toBe("send");
+      expect(asyncapiDoc.operations.subscribeCustomerOrderEvents.action).toBe(
+        "receive",
+      );
 
-			// Run comprehensive AsyncAPI validation
-			const validation = await validateAsyncAPIObjectComprehensive(asyncapiDoc)
-			expect(validation.valid).toBe(true)
-			if (!validation.valid) {
-				console.error("Validation errors:", validation.errors)
-				throw new Error(`AsyncAPI validation failed: ${validation.summary}`)
-			}
+      // Run comprehensive AsyncAPI validation
+      const validation = await validateAsyncAPIObjectComprehensive(asyncapiDoc);
+      expect(validation.valid).toBe(true);
+      if (!validation.valid) {
+        console.error("Validation errors:", validation.errors);
+        throw new Error(`AsyncAPI validation failed: ${validation.summary}`);
+      }
 
-			// Log completion using shared utility
-			TestValidationPatterns.validateAndLogCompletion(asyncapiDoc, "Complex TypeSpec → AsyncAPI transformation completed successfully")
-		})
+      // Log completion using shared utility
+      TestValidationPatterns.validateAndLogCompletion(
+        asyncapiDoc,
+        "Complex TypeSpec → AsyncAPI transformation completed successfully",
+      );
+    });
 
-		test("should handle TypeSpec union types and optional fields correctly", async () => {
-			const source = `
+    test("should handle TypeSpec union types and optional fields correctly", async () => {
+      const source = `
         namespace UnionTypeTest;
         
         @doc("Event with union types and optional fields")
@@ -404,30 +438,33 @@ describe("Real AsyncAPI Generation Tests", () => {
         @channel("flexible.events")
         @publish
         op publishFlexibleEvent(): FlexibleEvent;
-      `
+      `;
 
-			const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source)
+      const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
 
-			const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "union-type-test.json") as AsyncAPIObject
+      const asyncapiDoc = (await parseAsyncAPIOutput(
+        outputFiles,
+        "union-type-test.json",
+      )) as AsyncAPIObject;
 
-			// Validate union type handling in schema
-			const flexibleEventSchema = asyncapiDoc.components.schemas.FlexibleEvent
-			expect(flexibleEventSchema).toBeDefined()
-			expect(flexibleEventSchema.properties?.eventId?.type).toBe("string")
+      // Validate union type handling in schema
+      const flexibleEventSchema = asyncapiDoc.components.schemas.FlexibleEvent;
+      expect(flexibleEventSchema).toBeDefined();
+      expect(flexibleEventSchema.properties?.eventId?.type).toBe("string");
 
-			// Validate required vs optional fields
-			expect(flexibleEventSchema.required).toContain("eventId")
-			expect(flexibleEventSchema.required).toContain("data")
-			expect(flexibleEventSchema.required).toContain("numericValue")
-			expect(flexibleEventSchema.required).not.toContain("status")
-			expect(flexibleEventSchema.required).not.toContain("metadata")
-			expect(flexibleEventSchema.required).not.toContain("mixedArray")
+      // Validate required vs optional fields
+      expect(flexibleEventSchema.required).toContain("eventId");
+      expect(flexibleEventSchema.required).toContain("data");
+      expect(flexibleEventSchema.required).toContain("numericValue");
+      expect(flexibleEventSchema.required).not.toContain("status");
+      expect(flexibleEventSchema.required).not.toContain("metadata");
+      expect(flexibleEventSchema.required).not.toContain("mixedArray");
 
-			Effect.log("✅ Union types and optional fields processed correctly")
-		})
+      Effect.log("✅ Union types and optional fields processed correctly");
+    });
 
-		test("should generate valid AsyncAPI for multi-namespace TypeSpec", async () => {
-			const source = `
+    test("should generate valid AsyncAPI for multi-namespace TypeSpec", async () => {
+      const source = `
         @doc("User management namespace")
         namespace UserManagement {
           @doc("User account information")
@@ -490,36 +527,49 @@ describe("Real AsyncAPI Generation Tests", () => {
           @publish
           op publishNotification(): Notification;
         }
-      `
+      `;
 
-			const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source)
+      const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
 
-			const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "multi-namespace-test.json") as AsyncAPIObject
+      const asyncapiDoc = (await parseAsyncAPIOutput(
+        outputFiles,
+        "multi-namespace-test.json",
+      )) as AsyncAPIObject;
 
-			// Validate schemas from all namespaces using shared utility
-			const expectedSchemas = ["User", "UserProfile", "Order", "OrderItem", "Notification"]
-			for (const schemaName of expectedSchemas) {
-				expect(asyncapiDoc.components.schemas[schemaName]).toBeDefined()
-				TestLogging.logMultiNamespaceSchema(schemaName)
-			}
+      // Validate schemas from all namespaces using shared utility
+      const expectedSchemas = [
+        "User",
+        "UserProfile",
+        "Order",
+        "OrderItem",
+        "Notification",
+      ];
+      for (const schemaName of expectedSchemas) {
+        expect(asyncapiDoc.components.schemas[schemaName]).toBeDefined();
+        TestLogging.logMultiNamespaceSchema(schemaName);
+      }
 
-			// Validate operations from all namespaces using shared utility
-			const expectedOperations = [
-				"publishUserCreated", "publishOrderProcessed",
-				"subscribeUserOrderStatus", "publishNotification",
-			]
-			for (const operationName of expectedOperations) {
-				expect(asyncapiDoc.operations[operationName]).toBeDefined()
-				TestLogging.logMultiNamespaceOperation(operationName)
-			}
+      // Validate operations from all namespaces using shared utility
+      const expectedOperations = [
+        "publishUserCreated",
+        "publishOrderProcessed",
+        "subscribeUserOrderStatus",
+        "publishNotification",
+      ];
+      for (const operationName of expectedOperations) {
+        expect(asyncapiDoc.operations[operationName]).toBeDefined();
+        TestLogging.logMultiNamespaceOperation(operationName);
+      }
 
-			TestLogging.logValidationSuccess("Multi-namespace TypeSpec processed successfully")
-		})
-	})
+      TestLogging.logValidationSuccess(
+        "Multi-namespace TypeSpec processed successfully",
+      );
+    });
+  });
 
-	describe("AsyncAPI 3.0.0 Specification Compliance", () => {
-		test("should generate AsyncAPI document compliant with 3.0.0 specification", async () => {
-			const source = `
+  describe("AsyncAPI 3.0.0 Specification Compliance", () => {
+    test("should generate AsyncAPI document compliant with 3.0.0 specification", async () => {
+      const source = `
         namespace ComplianceTest;
         
         @doc("Specification compliance test message")
@@ -550,59 +600,66 @@ describe("Real AsyncAPI Generation Tests", () => {
         @doc("Subscription channel for compliance testing")
         @subscribe
         op subscribeComplianceMessages(): ComplianceMessage;
-      `
+      `;
 
-			const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source)
+      const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
 
-			const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "compliance-test.json") as AsyncAPIObject
+      const asyncapiDoc = (await parseAsyncAPIOutput(
+        outputFiles,
+        "compliance-test.json",
+      )) as AsyncAPIObject;
 
-			// Validate AsyncAPI 3.0.0 specification compliance
-			expect(asyncapiDoc.asyncapi).toBe("3.0.0")
+      // Validate AsyncAPI 3.0.0 specification compliance
+      expect(asyncapiDoc.asyncapi).toBe("3.0.0");
 
-			// Validate required top-level fields
-			expect(asyncapiDoc.info).toBeDefined()
-			expect(asyncapiDoc.info.title).toBeDefined()
-			expect(asyncapiDoc.info.version).toBeDefined()
+      // Validate required top-level fields
+      expect(asyncapiDoc.info).toBeDefined();
+      expect(asyncapiDoc.info.title).toBeDefined();
+      expect(asyncapiDoc.info.version).toBeDefined();
 
-			// Validate channels structure
-			expect(asyncapiDoc.channels).toBeDefined()
-			expect(Object.keys(asyncapiDoc.channels).length).toBeGreaterThan(0)
+      // Validate channels structure
+      expect(asyncapiDoc.channels).toBeDefined();
+      expect(Object.keys(asyncapiDoc.channels).length).toBeGreaterThan(0);
 
-			// Validate operations structure
-			expect(asyncapiDoc.operations).toBeDefined()
-			expect(Object.keys(asyncapiDoc.operations).length).toBeGreaterThan(0)
+      // Validate operations structure
+      expect(asyncapiDoc.operations).toBeDefined();
+      expect(Object.keys(asyncapiDoc.operations).length).toBeGreaterThan(0);
 
-			// Validate components structure
-			expect(asyncapiDoc.components).toBeDefined()
-			expect(asyncapiDoc.components.schemas).toBeDefined()
+      // Validate components structure
+      expect(asyncapiDoc.components).toBeDefined();
+      expect(asyncapiDoc.components.schemas).toBeDefined();
 
-			// Validate operation structure compliance
-			const publishOp = asyncapiDoc.operations.publishComplianceMessage
-			expect(publishOp.action).toBe("send")
-			expect(publishOp.channel).toBeDefined()
-			expect(publishOp.channel.$ref).toMatch(/^#\/channels\//)
+      // Validate operation structure compliance
+      const publishOp = asyncapiDoc.operations.publishComplianceMessage;
+      expect(publishOp.action).toBe("send");
+      expect(publishOp.channel).toBeDefined();
+      expect(publishOp.channel.$ref).toMatch(/^#\/channels\//);
 
-			const subscribeOp = asyncapiDoc.operations.subscribeComplianceMessages
-			expect(subscribeOp.action).toBe("receive")
-			expect(subscribeOp.channel).toBeDefined()
+      const subscribeOp = asyncapiDoc.operations.subscribeComplianceMessages;
+      expect(subscribeOp.action).toBe("receive");
+      expect(subscribeOp.channel).toBeDefined();
 
-			// Run comprehensive specification compliance validation
-			const validation = await validateAsyncAPIObjectComprehensive(asyncapiDoc)
-			expect(validation.valid).toBe(true)
+      // Run comprehensive specification compliance validation
+      const validation = await validateAsyncAPIObjectComprehensive(asyncapiDoc);
+      expect(validation.valid).toBe(true);
 
-			if (!validation.valid) {
-				console.error("AsyncAPI 3.0.0 compliance validation failed:")
-				validation.errors.forEach(error => {
-					console.error(`- ${error.path}: ${error.message}`)
-				})
-				throw new Error(`AsyncAPI 3.0.0 compliance validation failed: ${validation.summary}`)
-			}
+      if (!validation.valid) {
+        console.error("AsyncAPI 3.0.0 compliance validation failed:");
+        validation.errors.forEach((error) => {
+          console.error(`- ${error.path}: ${error.message}`);
+        });
+        throw new Error(
+          `AsyncAPI 3.0.0 compliance validation failed: ${validation.summary}`,
+        );
+      }
 
-			Effect.log("✅ AsyncAPI 3.0.0 specification compliance validated successfully")
-		})
+      Effect.log(
+        "✅ AsyncAPI 3.0.0 specification compliance validated successfully",
+      );
+    });
 
-		test("should handle complex schema references correctly", async () => {
-			const source = `
+    test("should handle complex schema references correctly", async () => {
+      const source = `
         namespace ReferenceTest;
         
         @doc("Referenced base model")
@@ -641,40 +698,44 @@ describe("Real AsyncAPI Generation Tests", () => {
         @channel("references.test")
         @publish
         op publishReferenceTest(): ModelWithReferences;
-      `
+      `;
 
-			const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source)
+      const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
 
-			const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "reference-test.json") as AsyncAPIObject
+      const asyncapiDoc = (await parseAsyncAPIOutput(
+        outputFiles,
+        "reference-test.json",
+      )) as AsyncAPIObject;
 
-			// Validate all referenced schemas are generated
-			expect(asyncapiDoc.components.schemas.BaseReference).toBeDefined()
-			expect(asyncapiDoc.components.schemas.ModelWithReferences).toBeDefined()
-			expect(asyncapiDoc.components.schemas.RelatedModel).toBeDefined()
+      // Validate all referenced schemas are generated
+      expect(asyncapiDoc.components.schemas.BaseReference).toBeDefined();
+      expect(asyncapiDoc.components.schemas.ModelWithReferences).toBeDefined();
+      expect(asyncapiDoc.components.schemas.RelatedModel).toBeDefined();
 
-			// Validate inheritance in schema
-			const modelWithRefsSchema = asyncapiDoc.components.schemas.ModelWithReferences
-			expect(modelWithRefsSchema.properties?.id).toBeDefined() // From BaseReference
-			expect(modelWithRefsSchema.properties?.createdAt).toBeDefined() // From BaseReference
-			expect(modelWithRefsSchema.properties?.relatedModel).toBeDefined() // Own property
+      // Validate inheritance in schema
+      const modelWithRefsSchema =
+        asyncapiDoc.components.schemas.ModelWithReferences;
+      expect(modelWithRefsSchema.properties?.id).toBeDefined(); // From BaseReference
+      expect(modelWithRefsSchema.properties?.createdAt).toBeDefined(); // From BaseReference
+      expect(modelWithRefsSchema.properties?.relatedModel).toBeDefined(); // Own property
 
-			// Validate nested object structures
-			expect(modelWithRefsSchema.properties?.nested?.type).toBe("object")
+      // Validate nested object structures
+      expect(modelWithRefsSchema.properties?.nested?.type).toBe("object");
 
-			Effect.log("✅ Complex schema references handled correctly")
-		})
-	})
+      Effect.log("✅ Complex schema references handled correctly");
+    });
+  });
 
-	describe("Performance and Scale Testing", () => {
-		test("should generate large AsyncAPI document efficiently", async () => {
-			// Generate a large TypeSpec source with many models and operations
-			const generateLargeTypeSpecSource = (): string => {
-				const models = []
-				const operations = []
+  describe("Performance and Scale Testing", () => {
+    test("should generate large AsyncAPI document efficiently", async () => {
+      // Generate a large TypeSpec source with many models and operations
+      const generateLargeTypeSpecSource = (): string => {
+        const models = [];
+        const operations = [];
 
-				// Generate 20 models with multiple properties each
-				for (let i = 1; i <= 20; i++) {
-					models.push(`
+        // Generate 20 models with multiple properties each
+        for (let i = 1; i <= 20; i++) {
+          models.push(`
             @doc("Generated model ${i}")
             model GeneratedModel${i} {
               @doc("Model ${i} ID")
@@ -697,10 +758,10 @@ describe("Real AsyncAPI Generation Tests", () => {
               @doc("Model ${i} status")
               status${i}: "pending" | "active" | "inactive" | "archived";
             }
-          `)
+          `);
 
-					// Generate publish and subscribe operations for each model
-					operations.push(`
+          // Generate publish and subscribe operations for each model
+          operations.push(`
             @channel("generated.model${i}.events")
             @publish
             op publishGeneratedModel${i}Event(): GeneratedModel${i};
@@ -708,39 +769,51 @@ describe("Real AsyncAPI Generation Tests", () => {
             @channel("generated.model${i}.subscribe")
             @subscribe
             op subscribeGeneratedModel${i}Events(): GeneratedModel${i};
-          `)
-				}
+          `);
+        }
 
-				return `
+        return `
           namespace LargeScaleTest;
-          ${models.join('\n')}
-          ${operations.join('\n')}
-        `
-			}
+          ${models.join("\n")}
+          ${operations.join("\n")}
+        `;
+      };
 
-			const startTime = Date.now()
-			const largeSource = generateLargeTypeSpecSource()
+      const startTime = Date.now();
+      const largeSource = generateLargeTypeSpecSource();
 
-			const {outputFiles} = await compileAsyncAPISpecWithoutErrors(largeSource, {
-				"output-file": "large-scale-test",
-				"file-type": "json",
-			})
+      const { outputFiles } = await compileAsyncAPISpecWithoutErrors(
+        largeSource,
+        {
+          "output-file": "large-scale-test",
+          "file-type": "json",
+        },
+      );
 
-			const endTime = Date.now()
-			const compilationTime = endTime - startTime
+      const endTime = Date.now();
+      const compilationTime = endTime - startTime;
 
-			const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "large-scale-test.json") as AsyncAPIObject
+      const asyncapiDoc = (await parseAsyncAPIOutput(
+        outputFiles,
+        "large-scale-test.json",
+      )) as AsyncAPIObject;
 
-			// Validate scale - should have 20 schemas and 40 operations
-			expect(Object.keys(asyncapiDoc?.components?.schemas).length).toBe(20)
-			expect(Object.keys(asyncapiDoc?.operations).length).toBe(40)
+      // Validate scale - should have 20 schemas and 40 operations
+      expect(Object.keys(asyncapiDoc?.components?.schemas).length).toBe(20);
+      expect(Object.keys(asyncapiDoc?.operations).length).toBe(40);
 
-			// Performance assertion - should compile large document in reasonable time
-			expect(compilationTime).toBeLessThan(30000) // 30 seconds max
+      // Performance assertion - should compile large document in reasonable time
+      expect(compilationTime).toBeLessThan(30000); // 30 seconds max
 
-			Effect.log(`✅ Large scale AsyncAPI generation completed in ${compilationTime}ms`)
-			Effect.log(`📊 Generated ${Object.keys(asyncapiDoc.components.schemas).length} schemas`)
-			Effect.log(`📊 Generated ${Object.keys(asyncapiDoc.operations).length} operations`)
-		})
-	})
-})
+      Effect.log(
+        `✅ Large scale AsyncAPI generation completed in ${compilationTime}ms`,
+      );
+      Effect.log(
+        `📊 Generated ${Object.keys(asyncapiDoc.components.schemas).length} schemas`,
+      );
+      Effect.log(
+        `📊 Generated ${Object.keys(asyncapiDoc.operations).length} operations`,
+      );
+    });
+  });
+});

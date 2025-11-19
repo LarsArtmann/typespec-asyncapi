@@ -1,19 +1,26 @@
 /**
  * End-to-End Protocol Bindings Integration Tests
- * 
+ *
  * Tests complete pipeline from TypeSpec decorators → AsyncAPI with protocol bindings
  * Validates Kafka, WebSocket, HTTP, AMQP, MQTT integrations in full compilation
  */
 
 import { describe, it, expect, beforeAll, afterAll } from "bun:test";
-import { compileAsyncAPISpec, parseAsyncAPIOutput } from "../utils/test-helpers";
+import {
+  compileAsyncAPISpec,
+  parseAsyncAPIOutput,
+} from "../utils/test-helpers";
 import { AsyncAPIValidator } from "../../src/domain/validation/asyncapi-validator.js";
 import { mkdir, rm } from "node:fs/promises";
 import { join } from "node:path";
 import { Effect } from "effect";
 
 describe("E2E Protocol Bindings Integration", () => {
-  const testOutputDir = join(process.cwd(), "test-output", "e2e-protocol-bindings");
+  const testOutputDir = join(
+    process.cwd(),
+    "test-output",
+    "e2e-protocol-bindings",
+  );
   let validator: AsyncAPIValidator;
 
   beforeAll(async () => {
@@ -123,7 +130,10 @@ describe("E2E Protocol Bindings Integration", () => {
       expect(compilationResult.outputFiles.size).toBeGreaterThan(0);
 
       // Parse generated AsyncAPI document
-      const asyncApiDoc = parseAsyncAPIOutput(compilationResult.outputFiles, "kafka-api.json");
+      const asyncApiDoc = parseAsyncAPIOutput(
+        compilationResult.outputFiles,
+        "kafka-api.json",
+      );
       expect(asyncApiDoc).toBeDefined();
 
       // Validate against AsyncAPI schema
@@ -140,8 +150,12 @@ describe("E2E Protocol Bindings Integration", () => {
 
       // Verify Kafka-specific channel patterns
       const channelNames = Object.keys(doc.channels);
-      expect(channelNames.some(name => name.includes("user-account-events"))).toBe(true);
-      expect(channelNames.some(name => name.includes("financial-transactions"))).toBe(true);
+      expect(
+        channelNames.some((name) => name.includes("user-account-events")),
+      ).toBe(true);
+      expect(
+        channelNames.some((name) => name.includes("financial-transactions")),
+      ).toBe(true);
 
       // Verify operations contain Kafka patterns
       const operationNames = Object.keys(doc.operations);
@@ -190,16 +204,22 @@ describe("E2E Protocol Bindings Integration", () => {
         ): PartitionedEvent;
       `;
 
-      const compilationResult = await compileAsyncAPISpec(kafkaPartitioningSpec, {
-        "file-type": "json", 
-        "output-file": "kafka-partitioned",
-      });
+      const compilationResult = await compileAsyncAPISpec(
+        kafkaPartitioningSpec,
+        {
+          "file-type": "json",
+          "output-file": "kafka-partitioned",
+        },
+      );
 
-      const asyncApiDoc = parseAsyncAPIOutput(compilationResult.outputFiles, "kafka-partitioned.json");
+      const asyncApiDoc = parseAsyncAPIOutput(
+        compilationResult.outputFiles,
+        "kafka-partitioned.json",
+      );
       const validationResult = await validator.validate(asyncApiDoc);
 
       expect(validationResult.valid).toBe(true);
-      
+
       const doc = asyncApiDoc;
       expect(Object.keys(doc.operations)).toHaveLength(2);
       expect(doc.operations.publishPartitionedEvent).toBeDefined();
@@ -304,7 +324,10 @@ describe("E2E Protocol Bindings Integration", () => {
         "output-file": "websocket-api",
       });
 
-      const asyncApiDoc = parseAsyncAPIOutput(compilationResult.outputFiles, "websocket-api.json");
+      const asyncApiDoc = parseAsyncAPIOutput(
+        compilationResult.outputFiles,
+        "websocket-api.json",
+      );
       const validationResult = await validator.validate(asyncApiDoc);
 
       expect(validationResult.valid).toBe(true);
@@ -314,8 +337,8 @@ describe("E2E Protocol Bindings Integration", () => {
 
       // Verify parameterized channels (WebSocket pattern)
       const channelNames = Object.keys(doc.channels);
-      expect(channelNames.some(name => name.includes("{roomId}"))).toBe(true);
-      expect(channelNames.some(name => name.includes("{userId}"))).toBe(true);
+      expect(channelNames.some((name) => name.includes("{roomId}"))).toBe(true);
+      expect(channelNames.some((name) => name.includes("{userId}"))).toBe(true);
 
       // Verify bidirectional operations (send/receive pattern)
       const operationNames = Object.keys(doc.operations);
@@ -329,7 +352,9 @@ describe("E2E Protocol Bindings Integration", () => {
       expect(doc.components.schemas.UserPresence).toBeDefined();
       expect(doc.components.schemas.TypingIndicator).toBeDefined();
 
-      Effect.log("✅ WebSocket protocol binding E2E test completed successfully");
+      Effect.log(
+        "✅ WebSocket protocol binding E2E test completed successfully",
+      );
     });
   });
 
@@ -424,7 +449,10 @@ describe("E2E Protocol Bindings Integration", () => {
         "output-file": "http-webhook-api",
       });
 
-      const asyncApiDoc = parseAsyncAPIOutput(compilationResult.outputFiles, "http-webhook-api.json");
+      const asyncApiDoc = parseAsyncAPIOutput(
+        compilationResult.outputFiles,
+        "http-webhook-api.json",
+      );
       const validationResult = await validator.validate(asyncApiDoc);
 
       expect(validationResult.valid).toBe(true);
@@ -505,7 +533,10 @@ describe("E2E Protocol Bindings Integration", () => {
         "output-file": "multi-protocol-api",
       });
 
-      const asyncApiDoc = parseAsyncAPIOutput(compilationResult.outputFiles, "multi-protocol-api.json");
+      const asyncApiDoc = parseAsyncAPIOutput(
+        compilationResult.outputFiles,
+        "multi-protocol-api.json",
+      );
       const validationResult = await validator.validate(asyncApiDoc);
 
       expect(validationResult.valid).toBe(true);
@@ -514,10 +545,12 @@ describe("E2E Protocol Bindings Integration", () => {
 
       // Verify multiple protocol channels
       const channelNames = Object.keys(doc.channels);
-      expect(channelNames.some(name => name.includes("kafka"))).toBe(true);
-      expect(channelNames.some(name => name.includes("websocket"))).toBe(true);
-      expect(channelNames.some(name => name.includes("http"))).toBe(true);
-      expect(channelNames.some(name => name.includes("amqp"))).toBe(true);
+      expect(channelNames.some((name) => name.includes("kafka"))).toBe(true);
+      expect(channelNames.some((name) => name.includes("websocket"))).toBe(
+        true,
+      );
+      expect(channelNames.some((name) => name.includes("http"))).toBe(true);
+      expect(channelNames.some((name) => name.includes("amqp"))).toBe(true);
 
       // Verify all operations exist
       const operationNames = Object.keys(doc.operations);
@@ -535,8 +568,12 @@ describe("E2E Protocol Bindings Integration", () => {
       expect(eventSchema.properties.metadata).toBeDefined();
 
       Effect.log("✅ Multi-protocol E2E test completed successfully");
-      Effect.log(`📊 Generated ${channelNames.length} channels across multiple protocols`);
-      Effect.log(`📊 Generated ${operationNames.length} operations for protocol diversity`);
+      Effect.log(
+        `📊 Generated ${channelNames.length} channels across multiple protocols`,
+      );
+      Effect.log(
+        `📊 Generated ${operationNames.length} operations for protocol diversity`,
+      );
     });
   });
 });

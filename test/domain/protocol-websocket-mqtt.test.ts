@@ -4,15 +4,20 @@
  * Tests 50+ WebSocket and MQTT scenarios for AsyncAPI generation
  */
 
-import { describe, it, expect } from "bun:test"
-import { createAsyncAPITestHost, compileAndGetAsyncAPI } from "../utils/test-helpers.js"
+import { describe, it, expect } from "bun:test";
+import {
+  createAsyncAPITestHost,
+  compileAndGetAsyncAPI,
+} from "../utils/test-helpers.js";
 
 describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
-	// WebSocket Protocol Tests (25 tests)
-	describe("WebSocket Protocol", () => {
-		it("should support basic WebSocket connection", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+  // WebSocket Protocol Tests (25 tests)
+  describe("WebSocket Protocol", () => {
+    it("should support basic WebSocket connection", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -27,16 +32,19 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 				@channel("messages")
 				@subscribe
 				op receiveMessage(): Message;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support WebSocket with query parameters", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support WebSocket with query parameters", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -56,16 +64,19 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 				})
 				@subscribe
 				op subscribeMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support WebSocket with custom headers", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support WebSocket with custom headers", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -84,16 +95,19 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 				})
 				@subscribe
 				op receiveMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support Socket.IO namespace", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support Socket.IO namespace", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -111,16 +125,19 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 				})
 				@subscribe
 				op joinChat(): Event;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support WebSocket ping/pong heartbeat", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support WebSocket ping/pong heartbeat", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -138,16 +155,19 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op sendPing(): Ping;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support WebSocket binary frames", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support WebSocket binary frames", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -164,16 +184,19 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op sendBinary(): BinaryData;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support WebSocket text frames", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support WebSocket text frames", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -190,16 +213,19 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op sendText(): TextMsg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support WebSocket compression (permessage-deflate)", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support WebSocket compression (permessage-deflate)", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -216,16 +242,19 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op sendCompressed(): CompressedMsg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support WebSocket multiplexing", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support WebSocket multiplexing", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -246,16 +275,19 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 				})
 				@subscribe
 				op receiveMultiplexed(): MultiplexedMsg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support WebSocket broadcast to all clients", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support WebSocket broadcast to all clients", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -272,16 +304,19 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op broadcastToAll(): BroadcastMsg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support WebSocket room-based messaging", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support WebSocket room-based messaging", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -301,16 +336,19 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op sendToRoom(): RoomMsg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support WebSocket acknowledgments", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support WebSocket acknowledgments", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -331,16 +369,19 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op sendWithAck(): AckMsg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support WebSocket reconnection strategy", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support WebSocket reconnection strategy", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -359,16 +400,19 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 				})
 				@subscribe
 				op connect(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support WebSocket close codes", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support WebSocket close codes", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -389,16 +433,19 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op sendClose(): CloseMsg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support WebSocket subprotocols", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support WebSocket subprotocols", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -415,16 +462,19 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 				})
 				@subscribe
 				op receiveWAMP(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support WebSocket extensions", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support WebSocket extensions", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -441,16 +491,19 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 				})
 				@subscribe
 				op receiveMessage(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support WebSocket max message size", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support WebSocket max message size", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -467,16 +520,19 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op sendLarge(): LargeMsg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support WebSocket message ordering", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support WebSocket message ordering", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -496,16 +552,19 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 				})
 				@subscribe
 				op receiveOrdered(): OrderedMsg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support WebSocket backpressure", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support WebSocket backpressure", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -523,16 +582,19 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 				})
 				@subscribe
 				op receiveWithBackpressure(): FlowMsg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support WebSocket message batching", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support WebSocket message batching", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -551,16 +613,19 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op sendBatch(): BatchMsg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support WebSocket presence tracking", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support WebSocket presence tracking", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -580,16 +645,19 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 				})
 				@subscribe
 				op trackPresence(): PresenceMsg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support WebSocket typing indicators", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support WebSocket typing indicators", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -603,16 +671,19 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 				@channel("typing")
 				@publish
 				op sendTyping(): TypingMsg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support WebSocket read receipts", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support WebSocket read receipts", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -627,16 +698,19 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 				@channel("receipts")
 				@publish
 				op sendReceipt(): Receipt;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support WebSocket file transfer", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support WebSocket file transfer", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -652,16 +726,19 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 				@channel("file.transfer")
 				@publish
 				op sendFileChunk(): FileChunk;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support WebSocket voice/video streaming", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support WebSocket voice/video streaming", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -684,19 +761,22 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op streamAudio(): StreamPacket;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
-	})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
+  });
 
-	// MQTT Protocol Tests (25 tests)
-	describe("MQTT Protocol", () => {
-		it("should support MQTT QoS 0 (at most once)", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+  // MQTT Protocol Tests (25 tests)
+  describe("MQTT Protocol", () => {
+    it("should support MQTT QoS 0 (at most once)", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -717,16 +797,19 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishTemp(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support MQTT QoS 1 (at least once)", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support MQTT QoS 1 (at least once)", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -743,16 +826,19 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishCritical(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support MQTT QoS 2 (exactly once)", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support MQTT QoS 2 (exactly once)", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -769,16 +855,19 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishTx(): Transaction;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support MQTT retained messages", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support MQTT retained messages", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -795,16 +884,19 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishStatus(): Status;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support MQTT wildcard subscriptions (+)", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support MQTT wildcard subscriptions (+)", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -815,16 +907,19 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 				@channel("sensors/+/temperature")
 				@subscribe
 				op subscribeSensors(): SensorData;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support MQTT multi-level wildcard (#)", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support MQTT multi-level wildcard (#)", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -835,16 +930,19 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 				@channel("events/#")
 				@subscribe
 				op subscribeAllEvents(): Event;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support MQTT last will and testament", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support MQTT last will and testament", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -863,16 +961,19 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishWill(): WillMsg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support MQTT clean session", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support MQTT clean session", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -889,16 +990,19 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 				})
 				@subscribe
 				op connectClean(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support MQTT persistent session", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support MQTT persistent session", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -916,16 +1020,19 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 				})
 				@subscribe
 				op connectPersistent(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support MQTT client ID", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support MQTT client ID", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -942,16 +1049,19 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishWithClientId(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support MQTT keep alive", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support MQTT keep alive", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -968,16 +1078,19 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op sendPing(): Ping;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support MQTT v5 user properties", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support MQTT v5 user properties", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -998,16 +1111,19 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishWithProps(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support MQTT v5 response topic", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support MQTT v5 response topic", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1028,16 +1144,19 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishRequest(): Request;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support MQTT v5 correlation data", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support MQTT v5 correlation data", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1058,16 +1177,19 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishCorrelated(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support MQTT v5 content type", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support MQTT v5 content type", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1088,16 +1210,19 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishTyped(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support MQTT v5 message expiry", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support MQTT v5 message expiry", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1118,16 +1243,19 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishExpiring(): ExpiringMsg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support MQTT v5 topic alias", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support MQTT v5 topic alias", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1145,16 +1273,19 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishAliased(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support MQTT v5 subscription identifiers", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support MQTT v5 subscription identifiers", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1172,16 +1303,19 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 				})
 				@subscribe
 				op subscribeWithId(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support MQTT v5 flow control", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support MQTT v5 flow control", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1199,16 +1333,19 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 				})
 				@subscribe
 				op receiveWithFlow(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support MQTT v5 maximum packet size", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support MQTT v5 maximum packet size", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1226,16 +1363,19 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishLarge(): LargeMsg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support MQTT over WebSocket", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support MQTT over WebSocket", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1250,16 +1390,19 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 				@channel("ws/mqtt/topic")
 				@publish
 				op publishOverWS(): Msg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support MQTT TLS/SSL", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support MQTT TLS/SSL", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1274,16 +1417,19 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 				@channel("secure/topic")
 				@publish
 				op publishSecure(): SecureMsg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support MQTT bridge configuration", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support MQTT bridge configuration", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1305,16 +1451,19 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 				})
 				@publish
 				op publishBridged(): BridgeMsg;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support MQTT shared subscriptions", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support MQTT shared subscriptions", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1332,16 +1481,19 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 				})
 				@subscribe
 				op consumeWork(): WorkItem;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
 
-		it("should support MQTT system topics ($SYS)", async () => {
-			const host = await createAsyncAPITestHost()
-			host.addTypeSpecFile("main.tsp", `
+    it("should support MQTT system topics ($SYS)", async () => {
+      const host = await createAsyncAPITestHost();
+      host.addTypeSpecFile(
+        "main.tsp",
+        `
 				import "@lars-artmann/typespec-asyncapi";
 				using TypeSpec.AsyncAPI;
 
@@ -1356,11 +1508,12 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 				@channel("$SYS/broker/clients/connected")
 				@subscribe
 				op monitorBroker(): BrokerStats;
-			`)
+			`,
+      );
 
-			const spec = await compileAndGetAsyncAPI(host, "./main.tsp")
-		expect(spec).toBeDefined()
-		expect(spec?.asyncapi).toBe("3.0.0")
-		})
-	})
-})
+      const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+      expect(spec).toBeDefined();
+      expect(spec?.asyncapi).toBe("3.0.0");
+    });
+  });
+});

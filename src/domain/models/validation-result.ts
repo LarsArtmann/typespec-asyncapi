@@ -27,19 +27,19 @@
  * Validation error with detailed context
  */
 export type ValidationError = {
-  readonly message: string
-  readonly keyword: string
-  readonly instancePath: string
-  readonly schemaPath: string
-}
+  readonly message: string;
+  readonly keyword: string;
+  readonly instancePath: string;
+  readonly schemaPath: string;
+};
 
 /**
  * Validation warning with optional severity
  */
 export type ValidationWarning = {
-  readonly message: string
-  readonly severity?: 'info' | 'warning' | 'error'
-}
+  readonly message: string;
+  readonly severity?: "info" | "warning" | "error";
+};
 
 /**
  * Success case of ValidationResult
@@ -48,21 +48,21 @@ export type ValidationWarning = {
  * @template T The type of the validated value
  */
 export type ValidationSuccess<T> = {
-  readonly _tag: "Success"
-  readonly value: T
-  readonly errors: readonly []
-  readonly warnings: readonly []
-}
+  readonly _tag: "Success";
+  readonly value: T;
+  readonly errors: readonly [];
+  readonly warnings: readonly [];
+};
 
 /**
  * Failure case of ValidationResult
  * Contains error details and optional warnings
  */
 export type ValidationFailure = {
-  readonly _tag: "Failure"
-  readonly errors: readonly ValidationError[]
-  readonly warnings: readonly ValidationWarning[]
-}
+  readonly _tag: "Failure";
+  readonly errors: readonly ValidationError[];
+  readonly warnings: readonly ValidationWarning[];
+};
 
 /**
  * Canonical ValidationResult discriminated union
@@ -95,7 +95,9 @@ export type ValidationFailure = {
  * }
  * ```
  */
-export type ValidationResult<T = unknown> = ValidationSuccess<T> | ValidationFailure
+export type ValidationResult<T = unknown> =
+  | ValidationSuccess<T>
+  | ValidationFailure;
 
 /**
  * Type guard for ValidationSuccess
@@ -104,8 +106,10 @@ export type ValidationResult<T = unknown> = ValidationSuccess<T> | ValidationFai
  * @param result The validation result to check
  * @returns True if result is success, false otherwise
  */
-export function isSuccess<T>(result: ValidationResult<T>): result is ValidationSuccess<T> {
-  return result._tag === "Success"
+export function isSuccess<T>(
+  result: ValidationResult<T>,
+): result is ValidationSuccess<T> {
+  return result._tag === "Success";
 }
 
 /**
@@ -115,8 +119,10 @@ export function isSuccess<T>(result: ValidationResult<T>): result is ValidationS
  * @param result The validation result to check
  * @returns True if result is failure, false otherwise
  */
-export function isFailure<T>(result: ValidationResult<T>): result is ValidationFailure {
-  return result._tag === "Failure"
+export function isFailure<T>(
+  result: ValidationResult<T>,
+): result is ValidationFailure {
+  return result._tag === "Failure";
 }
 
 /**
@@ -140,8 +146,8 @@ export function success<T>(value: T): ValidationSuccess<T> {
     _tag: "Success",
     value,
     errors: [],
-    warnings: []
-  }
+    warnings: [],
+  };
 }
 
 /**
@@ -163,13 +169,13 @@ export function success<T>(value: T): ValidationSuccess<T> {
  */
 export function failure(
   errors: readonly ValidationError[],
-  warnings: readonly ValidationWarning[] = []
+  warnings: readonly ValidationWarning[] = [],
 ): ValidationFailure {
   return {
     _tag: "Failure",
     errors,
-    warnings
-  }
+    warnings,
+  };
 }
 
 /**
@@ -180,9 +186,9 @@ export function failure(
  * Use helper functions to get counts from ValidationSuccess<AsyncAPIObject>.
  */
 export type ValidationMetrics = {
-  readonly duration: number
-  readonly validatedAt: Date
-}
+  readonly duration: number;
+  readonly validatedAt: Date;
+};
 
 /**
  * ValidationResult extended with metrics and summary
@@ -193,36 +199,36 @@ export type ValidationMetrics = {
  * - metrics does NOT contain derived counts (compute from value instead)
  */
 export type ExtendedValidationResult<T = unknown> = ValidationResult<T> & {
-  readonly metrics: ValidationMetrics
-  readonly summary: string  // Made required - we always set it
-}
+  readonly metrics: ValidationMetrics;
+  readonly summary: string; // Made required - we always set it
+};
 
 /**
  * Helper functions to compute counts from AsyncAPIObject
  * These prevent split brain by computing from source data instead of storing separately
  */
 
-import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js"
+import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js";
 
 /**
  * Get channel count from AsyncAPI document
  */
 export function getChannelCount(doc: AsyncAPIObject): number {
-  return Object.keys(doc.channels ?? {}).length
+  return Object.keys(doc.channels ?? {}).length;
 }
 
 /**
  * Get operation count from AsyncAPI document
  */
 export function getOperationCount(doc: AsyncAPIObject): number {
-  return Object.keys(doc.operations ?? {}).length
+  return Object.keys(doc.operations ?? {}).length;
 }
 
 /**
  * Get schema count from AsyncAPI document (schemas + messages)
  */
 export function getSchemaCount(doc: AsyncAPIObject): number {
-  const schemas = Object.keys(doc.components?.schemas ?? {}).length
-  const messages = Object.keys(doc.components?.messages ?? {}).length
-  return schemas + messages
+  const schemas = Object.keys(doc.components?.schemas ?? {}).length;
+  const messages = Object.keys(doc.components?.messages ?? {}).length;
+  return schemas + messages;
 }

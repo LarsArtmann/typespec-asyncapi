@@ -8,8 +8,8 @@
  * Part of Phase 1 architectural excellence improvements.
  */
 
-import { Effect } from "effect"
-import { decodeAsyncAPIDocument } from "../../infrastructure/configuration/schemas.js"
+import { Effect } from "effect";
+import { decodeAsyncAPIDocument } from "../../infrastructure/configuration/schemas.js";
 
 /**
  * Schema validation with consistent error handling
@@ -17,22 +17,24 @@ import { decodeAsyncAPIDocument } from "../../infrastructure/configuration/schem
  * @param document - Unknown document to validate against AsyncAPI schema
  * @returns Effect with validated document or structured error
  */
-export const validateWithSchemaConsistent = (document: unknown): Effect.Effect<unknown, unknown> => {
-	return Effect.flatten(
-		Effect.map(
-			Effect.try({
-				try: () => decodeAsyncAPIDocument(document),
-				catch: (error) => ({
-					message: `Schema validation failed: ${error instanceof Error ? error.message : String(error)}`,
-					keyword: "schema-validation",
-					instancePath: "",
-					schemaPath: "root"
-				})
-			}),
-			(result) => result
-		)
-	)
-}
+export const validateWithSchemaConsistent = (
+  document: unknown,
+): Effect.Effect<unknown, unknown> => {
+  return Effect.flatten(
+    Effect.map(
+      Effect.try({
+        try: () => decodeAsyncAPIDocument(document),
+        catch: (error) => ({
+          message: `Schema validation failed: ${error instanceof Error ? error.message : String(error)}`,
+          keyword: "schema-validation",
+          instancePath: "",
+          schemaPath: "root",
+        }),
+      }),
+      (result) => result,
+    ),
+  );
+};
 
 /**
  * Static method for schema validation with unified error types
@@ -42,6 +44,8 @@ export const validateWithSchemaConsistent = (document: unknown): Effect.Effect<u
  * @param document - Unknown document to validate
  * @returns Effect with validated document or error
  */
-export const validateWithSchemaStatic = (document: unknown): Effect.Effect<unknown, unknown> => {
-	return validateWithSchemaConsistent(document)
-}
+export const validateWithSchemaStatic = (
+  document: unknown,
+): Effect.Effect<unknown, unknown> => {
+  return validateWithSchemaConsistent(document);
+};

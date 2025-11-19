@@ -6,9 +6,13 @@
  * and version control.
  */
 
-import { Effect } from "effect"
-import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js"
-import type { DocumentMutation, DocumentVersion, DocumentState } from "./ImmutableDocumentManager.js"
+import { Effect } from "effect";
+import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js";
+import type {
+  DocumentMutation,
+  DocumentVersion,
+  DocumentState,
+} from "./ImmutableDocumentManager.js";
 
 /**
  * Safely retrieve current document state
@@ -17,13 +21,13 @@ import type { DocumentMutation, DocumentVersion, DocumentState } from "./Immutab
  */
 export const getCurrentState = () =>
   Effect.gen(function* () {
-    const currentState = globalThis.__ASYNCAPI_DOCUMENT_STATE
+    const currentState = globalThis.__ASYNCAPI_DOCUMENT_STATE;
     if (!currentState) {
-      yield* Effect.fail(new Error("Document state not initialized"))
-      return undefined as never
+      yield* Effect.fail(new Error("Document state not initialized"));
+      return undefined as never;
     }
-    return currentState
-  })
+    return currentState;
+  });
 
 /**
  * Generate unique mutation ID
@@ -31,7 +35,7 @@ export const getCurrentState = () =>
  * @returns Unique ID string in format: mut_<timestamp>_<random>
  */
 export const generateMutationId = (): string =>
-  `mut_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+  `mut_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
 /**
  * Generate unique version ID
@@ -39,7 +43,7 @@ export const generateMutationId = (): string =>
  * @returns Unique ID string in format: ver_<timestamp>_<random>
  */
 export const generateVersionId = (): string =>
-  `ver_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+  `ver_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
 /**
  * Create document mutation record
@@ -49,11 +53,11 @@ export const generateVersionId = (): string =>
  * @returns DocumentMutation record with generated ID and timestamp
  */
 export const createMutationRecord = <T>(params: {
-  type: DocumentMutation['type']
-  path: string[]
-  oldValue: T | undefined
-  newValue: T
-  description: string
+  type: DocumentMutation["type"];
+  path: string[];
+  oldValue: T | undefined;
+  newValue: T;
+  description: string;
 }): DocumentMutation<T> => ({
   id: generateMutationId(),
   type: params.type,
@@ -61,8 +65,8 @@ export const createMutationRecord = <T>(params: {
   oldValue: params.oldValue,
   newValue: params.newValue,
   timestamp: Date.now(),
-  description: params.description
-})
+  description: params.description,
+});
 
 /**
  * Create document version record
@@ -72,18 +76,18 @@ export const createMutationRecord = <T>(params: {
  * @returns DocumentVersion record with generated ID and timestamp
  */
 export const createVersionRecord = (params: {
-  document: AsyncAPIObject
-  mutations: DocumentMutation[]
-  description: string
-  currentVersion: number
+  document: AsyncAPIObject;
+  mutations: DocumentMutation[];
+  description: string;
+  currentVersion: number;
 }): DocumentVersion => ({
   id: generateVersionId(),
   version: params.currentVersion + 1,
   timestamp: Date.now(),
   document: params.document,
   mutations: params.mutations,
-  description: params.description
-})
+  description: params.description,
+});
 
 /**
  * Update global document state immutably
@@ -93,8 +97,8 @@ export const createVersionRecord = (params: {
  */
 export const updateDocumentState = (newState: DocumentState) =>
   Effect.sync(() => {
-    globalThis.__ASYNCAPI_DOCUMENT_STATE = newState
-  })
+    globalThis.__ASYNCAPI_DOCUMENT_STATE = newState;
+  });
 
 /**
  * Create new document state with updated fields
@@ -106,48 +110,48 @@ export const updateDocumentState = (newState: DocumentState) =>
 export const createUpdatedState = (
   currentState: DocumentState,
   updates: {
-    document?: AsyncAPIObject
-    version?: number
-    mutations?: DocumentMutation[]
-    versionHistory?: DocumentVersion[]
-    mutationHistory?: DocumentMutation[]
-  }
+    document?: AsyncAPIObject;
+    version?: number;
+    mutations?: DocumentMutation[];
+    versionHistory?: DocumentVersion[];
+    mutationHistory?: DocumentMutation[];
+  },
 ): DocumentState => ({
   currentDocument: updates.document ?? currentState.currentDocument,
   currentVersion: updates.version ?? currentState.currentVersion,
   currentMutations: updates.mutations ?? currentState.currentMutations,
   versionHistory: updates.versionHistory ?? currentState.versionHistory,
-  mutationHistory: updates.mutationHistory ?? currentState.mutationHistory
-})
+  mutationHistory: updates.mutationHistory ?? currentState.mutationHistory,
+});
 
 /**
  * Creates and updates document state with new version and mutations
  * Eliminates duplication between appendMutation and appendAtomicMutations
  */
 const createVersionAndUpdateState = (
-	currentState: DocumentState,
-	document: AsyncAPIObject,
-	mutations: DocumentMutation[],
-	description: string
+  currentState: DocumentState,
+  document: AsyncAPIObject,
+  mutations: DocumentMutation[],
+  description: string,
 ) => {
-	const newVersion = createVersionRecord({
-		document,
-		mutations: [...currentState.currentMutations, ...mutations],
-		description,
-		currentVersion: currentState.currentVersion
-	})
+  const newVersion = createVersionRecord({
+    document,
+    mutations: [...currentState.currentMutations, ...mutations],
+    description,
+    currentVersion: currentState.currentVersion,
+  });
 
-	return {
-		newVersion,
-		stateUpdate: updateDocumentState({
-			currentDocument: document,
-			currentVersion: newVersion.version,
-			currentMutations: newVersion.mutations,
-			versionHistory: [...currentState.versionHistory, newVersion],
-			mutationHistory: [...currentState.mutationHistory, ...mutations]
-		})
-	}
-}
+  return {
+    newVersion,
+    stateUpdate: updateDocumentState({
+      currentDocument: document,
+      currentVersion: newVersion.version,
+      currentMutations: newVersion.mutations,
+      versionHistory: [...currentState.versionHistory, newVersion],
+      mutationHistory: [...currentState.mutationHistory, ...mutations],
+    }),
+  };
+};
 
 /**
  * Append mutation to state history
@@ -160,20 +164,20 @@ const createVersionAndUpdateState = (
 export const appendMutation = (
   currentState: DocumentState,
   mutation: DocumentMutation,
-  document: AsyncAPIObject
+  document: AsyncAPIObject,
 ) =>
   Effect.gen(function* () {
     const { newVersion, stateUpdate } = createVersionAndUpdateState(
-		currentState,
-		document,
-		[mutation],
-		'Document mutation'
-	)
-    
-    yield* stateUpdate
+      currentState,
+      document,
+      [mutation],
+      "Document mutation",
+    );
 
-    return newVersion
-  })
+    yield* stateUpdate;
+
+    return newVersion;
+  });
 
 /**
  * Append multiple mutations atomically
@@ -188,17 +192,17 @@ export const appendAtomicMutations = (
   currentState: DocumentState,
   mutations: DocumentMutation[],
   document: AsyncAPIObject,
-  description: string
+  description: string,
 ) =>
   Effect.gen(function* () {
     const { newVersion, stateUpdate } = createVersionAndUpdateState(
-		currentState,
-		document,
-		mutations,
-		description
-	)
-    
-    yield* stateUpdate
+      currentState,
+      document,
+      mutations,
+      description,
+    );
 
-    return newVersion
-  })
+    yield* stateUpdate;
+
+    return newVersion;
+  });

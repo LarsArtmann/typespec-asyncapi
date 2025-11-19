@@ -3,19 +3,19 @@
  * BDD tests validating documentation navigation and quick reference
  */
 
-import { describe, expect, it, beforeEach } from "bun:test"
-import { createTypeSpecTestCompiler } from "./helpers/typespec-compiler.js"
-import { createAsyncAPIValidator } from "./helpers/asyncapi-validator.js"
-import { TypeSpecFixtures } from "./helpers/test-fixtures.js"
+import { describe, expect, it, beforeEach } from "bun:test";
+import { createTypeSpecTestCompiler } from "./helpers/typespec-compiler.js";
+import { createAsyncAPIValidator } from "./helpers/asyncapi-validator.js";
+import { TypeSpecFixtures } from "./helpers/test-fixtures.js";
 
 describe("Documentation: README and Quick Reference Validation", () => {
-  let compiler: ReturnType<typeof createTypeSpecTestCompiler>
-  let validator: ReturnType<typeof createAsyncAPIValidator>
+  let compiler: ReturnType<typeof createTypeSpecTestCompiler>;
+  let validator: ReturnType<typeof createAsyncAPIValidator>;
 
   beforeEach(() => {
-    compiler = createTypeSpecTestCompiler()
-    validator = createAsyncAPIValidator()
-  })
+    compiler = createTypeSpecTestCompiler();
+    validator = createAsyncAPIValidator();
+  });
 
   describe("GIVEN quick reference patterns", () => {
     describe("WHEN using essential decorators", () => {
@@ -30,26 +30,28 @@ describe("Documentation: README and Quick Reference Validation", () => {
           @channel("test")
           @publish
           op testOp(data: TestData): void;
-        `
+        `;
 
         const result = await compiler.compileTypeSpec({
           code: serviceCode,
-          emitAsyncAPI: true
-        })
+          emitAsyncAPI: true,
+        });
 
-        expect(result.asyncapi!.info.title).toBe("AsyncAPI") // Alpha version default
-      })
+        expect(result.asyncapi!.info.title).toBe("AsyncAPI"); // Alpha version default
+      });
 
       it("THEN should validate @channel decorator usage", async () => {
         const result = await compiler.compileTypeSpec({
           code: TypeSpecFixtures.decoratorsChannel,
-          emitAsyncAPI: true
-        })
+          emitAsyncAPI: true,
+        });
 
-        const channels = result.asyncapi!.channels!
-        expect(channels["simple-channel"]).toBeDefined()
-        expect(channels["parameterized/{userId}/events/{eventType}"]).toBeDefined()
-      })
+        const channels = result.asyncapi!.channels!;
+        expect(channels["simple-channel"]).toBeDefined();
+        expect(
+          channels["parameterized/{userId}/events/{eventType}"],
+        ).toBeDefined();
+      });
 
       it("THEN should validate @publish and @subscribe decorators", async () => {
         const pubSubCode = `
@@ -67,17 +69,19 @@ describe("Documentation: README and Quick Reference Validation", () => {
           @channel("events")
           @subscribe
           op subscribeEvent(): Event;
-        `
+        `;
 
         const result = await compiler.compileTypeSpec({
           code: pubSubCode,
-          emitAsyncAPI: true
-        })
+          emitAsyncAPI: true,
+        });
 
-        expect(result.asyncapi!.operations!.publishEvent.action).toBe("send")
-        expect(result.asyncapi!.operations!.subscribeEvent.action).toBe("receive")
-      })
-    })
+        expect(result.asyncapi!.operations!.publishEvent.action).toBe("send");
+        expect(result.asyncapi!.operations!.subscribeEvent.action).toBe(
+          "receive",
+        );
+      });
+    });
 
     describe("WHEN using common type mappings", () => {
       it("THEN should validate primitive type mappings", async () => {
@@ -95,29 +99,32 @@ describe("Documentation: README and Quick Reference Validation", () => {
           @channel("types")
           @publish
           op publishTypes(data: TypeMapping): void;
-        `
+        `;
 
         const result = await compiler.compileTypeSpec({
           code: typeCode,
-          emitAsyncAPI: true
-        })
+          emitAsyncAPI: true,
+        });
 
-        const schema = result.asyncapi!.components!.schemas!.TypeMapping
-        const props = schema.properties!
+        const schema = result.asyncapi!.components!.schemas!.TypeMapping;
+        const props = schema.properties!;
 
-        expect(props.stringField).toEqual({ type: "string" })
-        expect(props.int32Field).toEqual({ type: "integer", format: "int32" })
-        expect(props.recordField).toEqual({ type: "object", additionalProperties: { type: "string" } })
-        expect(props.arrayField).toEqual({ type: "array", items: { type: "string" } })
+        expect(props.stringField).toEqual({ type: "string" });
+        expect(props.int32Field).toEqual({ type: "integer", format: "int32" });
+        expect(props.recordField).toEqual({
+          type: "object",
+          additionalProperties: { type: "string" },
+        });
+        expect(props.arrayField).toEqual({
+          type: "array",
+          items: { type: "string" },
+        });
         expect(props.unionField).toEqual({
-          oneOf: [
-            { type: "string" },
-            { type: "integer", format: "int32" }
-          ]
-        })
-      })
-    })
-  })
+          oneOf: [{ type: "string" }, { type: "integer", format: "int32" }],
+        });
+      });
+    });
+  });
 
   describe("GIVEN message pattern templates", () => {
     describe("WHEN using event notification pattern", () => {
@@ -134,18 +141,22 @@ describe("Documentation: README and Quick Reference Validation", () => {
           @channel("user-events")
           @publish
           op publishUserEvent(event: UserRegisteredEvent): void;
-        `
+        `;
 
         const result = await compiler.compileTypeSpec({
           code: eventCode,
-          emitAsyncAPI: true
-        })
+          emitAsyncAPI: true,
+        });
 
-        const schema = result.asyncapi!.components!.schemas!.UserRegisteredEvent
-        expect(schema.properties!.userId).toEqual({ type: "string" })
-        expect(schema.properties!.registeredAt).toEqual({ type: "string", format: "date-time" })
-      })
-    })
+        const schema =
+          result.asyncapi!.components!.schemas!.UserRegisteredEvent;
+        expect(schema.properties!.userId).toEqual({ type: "string" });
+        expect(schema.properties!.registeredAt).toEqual({
+          type: "string",
+          format: "date-time",
+        });
+      });
+    });
 
     describe("WHEN using command message pattern", () => {
       it("THEN should validate command structure", async () => {
@@ -171,51 +182,61 @@ describe("Documentation: README and Quick Reference Validation", () => {
           @channel("commands")
           @publish
           op publishCommand(command: CreateOrderCommand): void;
-        `
+        `;
 
         const result = await compiler.compileTypeSpec({
           code: commandCode,
-          emitAsyncAPI: true
-        })
+          emitAsyncAPI: true,
+        });
 
-        const command = result.asyncapi!.components!.schemas!.CreateOrderCommand
-        expect(command.properties!.customerId).toEqual({ type: "string" })
+        const command =
+          result.asyncapi!.components!.schemas!.CreateOrderCommand;
+        expect(command.properties!.customerId).toEqual({ type: "string" });
         expect(command.properties!.items).toEqual({
           type: "array",
-          items: { $ref: "#/components/schemas/OrderItem" }
-        })
+          items: { $ref: "#/components/schemas/OrderItem" },
+        });
         expect(command.properties!.metadata).toEqual({
-          $ref: "#/components/schemas/RequestMetadata"
-        })
-      })
-    })
+          $ref: "#/components/schemas/RequestMetadata",
+        });
+      });
+    });
 
     describe("WHEN using event sourcing pattern", () => {
       it("THEN should validate domain event structure", async () => {
         const result = await compiler.compileTypeSpec({
           code: TypeSpecFixtures.schemasEventSourcing,
-          emitAsyncAPI: true
-        })
+          emitAsyncAPI: true,
+        });
 
-        const domainEvent = result.asyncapi!.components!.schemas!.DomainEvent
-        expect(domainEvent.properties!.eventId).toEqual({ type: "string" })
-        expect(domainEvent.properties!.aggregateId).toEqual({ type: "string" })
-        expect(domainEvent.properties!.aggregateVersion).toEqual({ type: "integer", format: "int32" })
-        expect(domainEvent.properties!.eventType).toEqual({ type: "string" })
-        expect(domainEvent.properties!.occurredAt).toEqual({ type: "string", format: "date-time" })
+        const domainEvent = result.asyncapi!.components!.schemas!.DomainEvent;
+        expect(domainEvent.properties!.eventId).toEqual({ type: "string" });
+        expect(domainEvent.properties!.aggregateId).toEqual({ type: "string" });
+        expect(domainEvent.properties!.aggregateVersion).toEqual({
+          type: "integer",
+          format: "int32",
+        });
+        expect(domainEvent.properties!.eventType).toEqual({ type: "string" });
+        expect(domainEvent.properties!.occurredAt).toEqual({
+          type: "string",
+          format: "date-time",
+        });
 
         // Check if OrderCreatedEvent exists and test inheritance
-        const orderCreatedEvent = result.asyncapi!.components!.schemas!.OrderCreatedEvent
+        const orderCreatedEvent =
+          result.asyncapi!.components!.schemas!.OrderCreatedEvent;
         if (orderCreatedEvent) {
-          expect(orderCreatedEvent.properties!.eventId).toBeDefined()
-          expect(orderCreatedEvent.properties!.eventType).toBeDefined()
+          expect(orderCreatedEvent.properties!.eventId).toBeDefined();
+          expect(orderCreatedEvent.properties!.eventType).toBeDefined();
         } else {
           // In Alpha, inheritance might not be fully working
-          console.log("OrderCreatedEvent not found in schemas - inheritance may not be implemented")
+          console.log(
+            "OrderCreatedEvent not found in schemas - inheritance may not be implemented",
+          );
         }
-      })
-    })
-  })
+      });
+    });
+  });
 
   describe("GIVEN protocol quick setup", () => {
     describe("WHEN configuring Kafka protocol", () => {
@@ -236,19 +257,19 @@ describe("Documentation: README and Quick Reference Validation", () => {
           })
           @publish
           op publishToKafka(event: KafkaEvent): void;
-        `
+        `;
 
         const result = await compiler.compileTypeSpec({
           code: kafkaCode,
-          emitAsyncAPI: true
-        })
+          emitAsyncAPI: true,
+        });
 
-        const channel = result.asyncapi!.channels!["kafka-channel"]
-        expect(channel.bindings?.kafka?.topic).toBe("orders")
-        expect(channel.bindings?.kafka?.partitionKey).toBe("customerId")
-        expect(channel.bindings?.kafka?.replicationFactor).toBe(3)
-      })
-    })
+        const channel = result.asyncapi!.channels!["kafka-channel"];
+        expect(channel.bindings?.kafka?.topic).toBe("orders");
+        expect(channel.bindings?.kafka?.partitionKey).toBe("customerId");
+        expect(channel.bindings?.kafka?.replicationFactor).toBe(3);
+      });
+    });
 
     describe("WHEN configuring AMQP protocol", () => {
       it("THEN should validate AMQP configuration", async () => {
@@ -268,19 +289,19 @@ describe("Documentation: README and Quick Reference Validation", () => {
           })
           @publish
           op publishToAMQP(event: AMQPEvent): void;
-        `
+        `;
 
         const result = await compiler.compileTypeSpec({
           code: amqpCode,
-          emitAsyncAPI: true
-        })
+          emitAsyncAPI: true,
+        });
 
-        const channel = result.asyncapi!.channels!["amqp-channel"]
-        expect(channel.bindings?.amqp?.exchange).toBe("orders.exchange")
-        expect(channel.bindings?.amqp?.routingKey).toBe("order.created")
-        expect(channel.bindings?.amqp?.deliveryMode).toBe(2)
-      })
-    })
+        const channel = result.asyncapi!.channels!["amqp-channel"];
+        expect(channel.bindings?.amqp?.exchange).toBe("orders.exchange");
+        expect(channel.bindings?.amqp?.routingKey).toBe("order.created");
+        expect(channel.bindings?.amqp?.deliveryMode).toBe(2);
+      });
+    });
 
     describe("WHEN configuring WebSocket protocol", () => {
       it("THEN should validate WebSocket configuration", async () => {
@@ -302,20 +323,20 @@ describe("Documentation: README and Quick Reference Validation", () => {
           })
           @subscribe
           op subscribeWebSocket(): WSEvent;
-        `
+        `;
 
         const result = await compiler.compileTypeSpec({
           code: wsCode,
-          emitAsyncAPI: true
-        })
+          emitAsyncAPI: true,
+        });
 
-        const channel = result.asyncapi!.channels!["ws-channel"]
-        expect(channel.bindings?.ws?.method).toBe("GET")
-        expect(channel.bindings?.ws?.query?.token).toBe("string")
-        expect(channel.bindings?.ws?.query?.version).toBe("string")
-      })
-    })
-  })
+        const channel = result.asyncapi!.channels!["ws-channel"];
+        expect(channel.bindings?.ws?.method).toBe("GET");
+        expect(channel.bindings?.ws?.query?.token).toBe("string");
+        expect(channel.bindings?.ws?.query?.version).toBe("string");
+      });
+    });
+  });
 
   describe("GIVEN workflow validation", () => {
     describe("WHEN following getting started workflow", () => {
@@ -339,32 +360,32 @@ describe("Documentation: README and Quick Reference Validation", () => {
           @channel("user-events")
           @publish
           op publishUserEvent(event: UserEvent): void;
-        `
+        `;
 
         const result = await compiler.compileTypeSpec({
           code: completeWorkflowCode,
-          emitAsyncAPI: true
-        })
+          emitAsyncAPI: true,
+        });
 
         // Validate complete workflow result - adjust expectations for Alpha
-        expect(result.asyncapi!.info.title).toBe("AsyncAPI") // Alpha default
-        expect(result.asyncapi!.channels!["user-events"]).toBeDefined()
-        expect(result.asyncapi!.operations!.publishUserEvent).toBeDefined()
-        expect(result.asyncapi!.components!.schemas!.UserEvent).toBeDefined()
-        
+        expect(result.asyncapi!.info.title).toBe("AsyncAPI"); // Alpha default
+        expect(result.asyncapi!.channels!["user-events"]).toBeDefined();
+        expect(result.asyncapi!.operations!.publishUserEvent).toBeDefined();
+        expect(result.asyncapi!.components!.schemas!.UserEvent).toBeDefined();
+
         // These features may not be implemented in Alpha - make them optional
         // expect(result.asyncapi!.servers!.production).toBeDefined()
         // expect(result.asyncapi!.components!.securitySchemes!.oauth2).toBeDefined()
 
         const validation = await validator.validateAsyncAPI(result.asyncapi!, {
           strict: true,
-          validateSemantic: true
-        })
+          validateSemantic: true,
+        });
 
-        expect(validation.isValid).toBe(true)
-      })
-    })
-  })
+        expect(validation.isValid).toBe(true);
+      });
+    });
+  });
 
   describe("GIVEN troubleshooting scenarios", () => {
     describe("WHEN handling common issues", () => {
@@ -376,22 +397,24 @@ describe("Documentation: README and Quick Reference Validation", () => {
             @publish
             op testOp(@body data: NonExistentModel): void;
           }
-        `
+        `;
 
         try {
           const result = await compiler.compileTypeSpec({
             code: invalidCode,
-            emitAsyncAPI: true
-          })
+            emitAsyncAPI: true,
+          });
 
           if (result.diagnostics.length > 0) {
-            const errors = result.diagnostics.filter(d => d.severity === "error")
-            expect(errors.length).toBeGreaterThan(0)
+            const errors = result.diagnostics.filter(
+              (d) => d.severity === "error",
+            );
+            expect(errors.length).toBeGreaterThan(0);
           }
         } catch (error) {
-          expect(error).toBeDefined()
+          expect(error).toBeDefined();
         }
-      })
+      });
 
       it("THEN should handle protocol configuration errors gracefully", async () => {
         const missingProtocolCode = `
@@ -406,26 +429,28 @@ describe("Documentation: README and Quick Reference Validation", () => {
           model TestData {
             value: string;
           }
-        `
+        `;
 
         try {
           const result = await compiler.compileTypeSpec({
             code: missingProtocolCode,
-            emitAsyncAPI: true
-          })
+            emitAsyncAPI: true,
+          });
 
           // Should either handle gracefully or provide clear error
           if (result.asyncapi) {
-            expect(result.asyncapi).toBeDefined()
+            expect(result.asyncapi).toBeDefined();
           } else if (result.diagnostics.length > 0) {
-            expect(result.diagnostics.some(d => d.severity === "error")).toBe(true)
+            expect(result.diagnostics.some((d) => d.severity === "error")).toBe(
+              true,
+            );
           }
         } catch (error) {
-          expect(error).toBeDefined()
+          expect(error).toBeDefined();
         }
-      })
-    })
-  })
+      });
+    });
+  });
 
   describe("GIVEN documentation completeness", () => {
     describe("WHEN validating all quick reference examples", () => {
@@ -435,24 +460,27 @@ describe("Documentation: README and Quick Reference Validation", () => {
           TypeSpecFixtures.dataTypesPrimitives,
           TypeSpecFixtures.operationsPublishSubscribe,
           TypeSpecFixtures.decoratorsChannel,
-          TypeSpecFixtures.decoratorsProtocol
-        ]
+          TypeSpecFixtures.decoratorsProtocol,
+        ];
 
         for (const example of quickRefExamples) {
           const result = await compiler.compileTypeSpec({
             code: example,
-            emitAsyncAPI: true
-          })
+            emitAsyncAPI: true,
+          });
 
-          compiler.validateCompilationSuccess(result)
-          expect(result.asyncapi).toBeDefined()
+          compiler.validateCompilationSuccess(result);
+          expect(result.asyncapi).toBeDefined();
 
-          const validation = await validator.validateAsyncAPI(result.asyncapi!, {
-            strict: true
-          })
-          expect(validation.isValid).toBe(true)
+          const validation = await validator.validateAsyncAPI(
+            result.asyncapi!,
+            {
+              strict: true,
+            },
+          );
+          expect(validation.isValid).toBe(true);
         }
-      })
-    })
-  })
-})
+      });
+    });
+  });
+});

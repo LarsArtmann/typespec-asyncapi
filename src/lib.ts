@@ -31,6 +31,8 @@
 import {
   createTypeSpecLibrary,
   type DecoratorContext,
+  type Diagnostic,
+  type DiagnosticTarget,
   paramMessage,
 } from "@typespec/compiler";
 
@@ -153,10 +155,10 @@ export const $lib = createTypeSpecLibrary({
       },
     },
     "test-simple": {
-      severity: "error", 
+      severity: "error",
       messages: {
-        default: "This is a simple test diagnostic without parameters."
-      }
+        default: "This is a simple test diagnostic without parameters.",
+      },
     },
     "invalid-server-config": {
       severity: "error",
@@ -452,7 +454,7 @@ export const stateKeys = {
 // TODO: VALIDATION - Add validation that the diagnostic code exists in the library definition before reporting
 export function reportDiagnostic(
   context: DecoratorContext,
-  target: unknown,
+  target: DiagnosticTarget | unknown,
   code: keyof typeof $lib.diagnostics,
   args?: Record<string, unknown>,
 ): void {
@@ -468,7 +470,7 @@ export function reportDiagnostic(
   // Debug: Create diagnostic using library creator first
   const diagnosticInput = {
     code,
-    target,
+    target: target as DiagnosticTarget,
     format: args ?? {},
   };
 

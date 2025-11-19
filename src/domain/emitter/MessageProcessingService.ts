@@ -1,114 +1,123 @@
 /**
  * Message Processing Service
- * 
+ *
  * Handles transformation of TypeSpec message models into AsyncAPI message structures.
  * Extracted from ProcessingService.ts for single responsibility principle.
  */
 
-import { Effect } from "effect"
-import type { Model, Program } from "@typespec/compiler"
-import type { AsyncAPIObject, MessageObject } from "@asyncapi/parser/esm/spec-types/v3.js"
-import { convertModelToSchema } from "../../utils/schema-conversion.js"
-import { getMessageConfig } from "../../utils/typespec-helpers.js"
-import { railwayLogging } from "../../utils/effect-helpers.js"
-import { processItemsWithEffect } from "./SharedProcessingUtils.js"
+import { Effect } from "effect";
+import type { Model, Program } from "@typespec/compiler";
+import type {
+  AsyncAPIObject,
+  MessageObject,
+} from "@asyncapi/parser/esm/spec-types/v3.js";
+import { convertModelToSchema } from "../../utils/schema-conversion.js";
+import { getMessageConfig } from "../../utils/typespec-helpers.js";
+import { railwayLogging } from "../../utils/effect-helpers.js";
+import { processItemsWithEffect } from "./SharedProcessingUtils.js";
 
 /**
  * Process a single TypeSpec message model into AsyncAPI message
  */
 export const processSingleMessageModel = (
-	messageModel: Model,
-	asyncApiDoc: AsyncAPIObject,
-	program: Program
+  messageModel: Model,
+  asyncApiDoc: AsyncAPIObject,
+  program: Program,
 ): Effect.Effect<string, never> =>
-	Effect.gen(function* () {
-		const messageConfig = getMessageConfig(program, messageModel)
+  Effect.gen(function* () {
+    const messageConfig = getMessageConfig(program, messageModel);
 
-		// Skip message creation if no message config decorator was applied
-		if (!messageConfig) {
-			yield* Effect.log(`⏭️  Skipping message creation for ${messageModel.name} (no @message decorator)`)
-			return "" // Return empty string to indicate no message created
-		}
+    // Skip message creation if no message config decorator was applied
+    if (!messageConfig) {
+      yield* Effect.log(
+        `⏭️  Skipping message creation for ${messageModel.name} (no @message decorator)`,
+      );
+      return ""; // Return empty string to indicate no message created
+    }
 
-		// Convert message model to JSON schema
-		const schema = yield* Effect.sync(() =>
-			convertModelToSchema(messageModel, program)
-		)
+    // Convert message model to JSON schema
+    const schema = yield* Effect.sync(() =>
+      convertModelToSchema(messageModel, program),
+    );
 
-		// Generate message name
-		const messageName = messageModel.name ?? `${messageConfig.name ?? 'Message'}Message`
+    // Generate message name
+    const messageName =
+      messageModel.name ?? `${messageConfig.name ?? "Message"}Message`;
 
-		// Create AsyncAPI message object
-		const message: MessageObject = {
-			name: messageName,
-			title: messageConfig.title ?? messageName,
-			description: messageConfig.description,
-			contentType: messageConfig.contentType ?? "application/json",
-			payload: schema
-		}
+    // Create AsyncAPI message object
+    const message: MessageObject = {
+      name: messageName,
+      title: messageConfig.title ?? messageName,
+      description: messageConfig.description,
+      contentType: messageConfig.contentType ?? "application/json",
+      payload: schema,
+    };
 
-		// Add to AsyncAPI document components
-		asyncApiDoc.components = asyncApiDoc.components ?? {}
-		asyncApiDoc.components.messages = asyncApiDoc.components.messages ?? {}
-		asyncApiDoc.components.messages[messageName] = message
+    // Add to AsyncAPI document components
+    asyncApiDoc.components = asyncApiDoc.components ?? {};
+    asyncApiDoc.components.messages = asyncApiDoc.components.messages ?? {};
+    asyncApiDoc.components.messages[messageName] = message;
 
-		// Add schema to components if not already present
-		if (schema && typeof schema === 'object' && schema !== null) {
-			asyncApiDoc.components.schemas = asyncApiDoc.components.schemas ?? {}
-			asyncApiDoc.components.schemas[`${messageName}Schema`] = schema
-		}
+    // Add schema to components if not already present
+    if (schema && typeof schema === "object" && schema !== null) {
+      asyncApiDoc.components.schemas = asyncApiDoc.components.schemas ?? {};
+      asyncApiDoc.components.schemas[`${messageName}Schema`] = schema;
+    }
 
-		yield* railwayLogging.logDebugGeneration("message", messageName, {
-			contentType: message.contentType,
-			hasPayload: !!schema
-		})
+    yield* railwayLogging.logDebugGeneration("message", messageName, {
+      contentType: message.contentType,
+      hasPayload: !!schema,
+    });
 
-		return messageName
-	})
+    return messageName;
+  });
 
 /**
  * Process multiple message models and add them to AsyncAPI document
  */
 export const processMessageModels = (
-	messageModels: Model[],
-	asyncApiDoc: AsyncAPIObject,
-	program: Program
+  messageModels: Model[],
+  asyncApiDoc: AsyncAPIObject,
+  program: Program,
 ): Effect.Effect<number, never> =>
-	Effect.gen(function* () {
-		// Use shared processing pipeline to eliminate duplication
-		const _messageResults = yield* processItemsWithEffect(
-			messageModels,
-			"message models",
-			(model: Model) => processSingleMessageModel(model, asyncApiDoc, program),
-			"🎯"
-		)
+  Effect.gen(function* () {
+    // Use shared processing pipeline to eliminate duplication
+    const _messageResults = yield* processItemsWithEffect(
+      messageModels,
+      "message models",
+      (model: Model) => processSingleMessageModel(model, asyncApiDoc, program),
+      "🎯",
+    );
 
-		yield* railwayLogging.logBatchCompletion(messageModels.length, 0, 0)
-		return messageModels.length
-	})
+    yield* railwayLogging.logBatchCompletion(messageModels.length, 0, 0);
+    return messageModels.length;
+  });
 
 /**
  * Extract message metadata for enhanced AsyncAPI generation
  */
 export const extractMessageMetadata = (
-	messageModel: Model,
-	program: Program
-): Effect.Effect<{
-		name: string
-		title?: string
-		description?: string
-		contentType?: string
-		hasSchema: boolean
-	}, never> =>
-	Effect.gen(function* () {
-		const messageConfig = getMessageConfig(program, messageModel)
-		const schema = convertModelToSchema(messageModel, program)
+  messageModel: Model,
+  program: Program,
+): Effect.Effect<
+  {
+    name: string;
+    title?: string;
+    description?: string;
+    contentType?: string;
+    hasSchema: boolean;
+  },
+  never
+> =>
+  Effect.gen(function* () {
+    const messageConfig = getMessageConfig(program, messageModel);
+    const schema = convertModelToSchema(messageModel, program);
 
-		return {
-			name: messageModel.name ?? `${messageConfig?.name ?? 'Message'}Message`,
-			title: messageConfig?.title,
-			description: messageConfig?.description,
-			contentType: messageConfig?.contentType,
-			hasSchema: !!schema
-		}
-	})
+    return {
+      name: messageModel.name ?? `${messageConfig?.name ?? "Message"}Message`,
+      title: messageConfig?.title,
+      description: messageConfig?.description,
+      contentType: messageConfig?.contentType,
+      hasSchema: !!schema,
+    };
+  });

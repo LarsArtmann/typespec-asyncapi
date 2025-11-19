@@ -7,42 +7,42 @@
  * @see docs/architecture/CLI-TEST-ARCHITECTURE.md
  */
 
-import { spawn } from 'child_process'
-import { promises as fs } from 'fs'
-import { join } from 'path'
-import { parse as parseYAML } from 'yaml'
-import type { AsyncAPIObject } from '@asyncapi/parser/esm/spec-types/v3.js'
+import { spawn } from "child_process";
+import { promises as fs } from "fs";
+import { join } from "path";
+import { parse as parseYAML } from "yaml";
+import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js";
 
 /**
  * Result from CLI compilation
  */
 export interface CLITestResult {
-	/** Exit code from tsp compile (0 = success) */
-	exitCode: number
-	/** Standard output from compilation */
-	stdout: string
-	/** Standard error from compilation */
-	stderr: string
-	/** Parsed AsyncAPI document (if successful) */
-	asyncapiDoc?: AsyncAPIObject
-	/** Parsed compiler errors from stderr */
-	errors: string[]
-	/** Working directory where test was executed */
-	workdir: string
+  /** Exit code from tsp compile (0 = success) */
+  exitCode: number;
+  /** Standard output from compilation */
+  stdout: string;
+  /** Standard error from compilation */
+  stderr: string;
+  /** Parsed AsyncAPI document (if successful) */
+  asyncapiDoc?: AsyncAPIObject;
+  /** Parsed compiler errors from stderr */
+  errors: string[];
+  /** Working directory where test was executed */
+  workdir: string;
 }
 
 /**
  * Options for CLI compilation
  */
 export interface CLICompileOptions {
-	/** Emitter-specific options */
-	emitterOptions?: Record<string, unknown>
-	/** Working directory (creates temp if not specified) */
-	workdir?: string
-	/** Compilation timeout in milliseconds */
-	timeout?: number
-	/** Whether to cleanup workdir after test */
-	autoCleanup?: boolean
+  /** Emitter-specific options */
+  emitterOptions?: Record<string, unknown>;
+  /** Working directory (creates temp if not specified) */
+  workdir?: string;
+  /** Compilation timeout in milliseconds */
+  timeout?: number;
+  /** Whether to cleanup workdir after test */
+  autoCleanup?: boolean;
 }
 
 /**
@@ -71,63 +71,79 @@ export interface CLICompileOptions {
  * @returns Parsed AsyncAPI document and compilation metadata
  */
 export async function compileWithCLI(
-	sourceFileOrContent: string,
-	options: CLICompileOptions = {}
+  sourceFileOrContent: string,
+  options: CLICompileOptions = {},
 ): Promise<CLITestResult> {
-	const workdir = options.workdir || (await createTempDir())
-	const tspFile = join(workdir, 'main.tsp')
+  const workdir = options.workdir || (await createTempDir());
+  const tspFile = join(workdir, "main.tsp");
 
-	try {
-		// Write TypeSpec source to disk
-		if (sourceFileOrContent.includes('import') || sourceFileOrContent.includes('model')) {
-			// Inline source code
-			await fs.writeFile(tspFile, sourceFileOrContent, 'utf-8')
-		} else {
-			// Path to fixture file
-			await fs.copyFile(sourceFileOrContent, tspFile)
-		}
+  try {
+    // Write TypeSpec source to disk
+    if (
+      sourceFileOrContent.includes("import") ||
+      sourceFileOrContent.includes("model")
+    ) {
+      // Inline source code
+      await fs.writeFile(tspFile, sourceFileOrContent, "utf-8");
+    } else {
+      // Path to fixture file
+      await fs.copyFile(sourceFileOrContent, tspFile);
+    }
 
-		// Run tsp compile via CLI from project root (so it can find our emitter package)
-		// Pass the test file path explicitly
-		const { exitCode, stdout, stderr } = await runCommand(
-			'npx',
-			['tsp', 'compile', tspFile, '--emit', '@lars-artmann/typespec-asyncapi', '--output-dir', workdir],
-			{
-				cwd: process.cwd(), // Run from project root, not temp dir!
-				timeout: options.timeout || 30000,
-			}
-		)
+    // Run tsp compile via CLI from project root (so it can find our emitter package)
+    // Pass the test file path explicitly
+    const { exitCode, stdout, stderr } = await runCommand(
+      "npx",
+      [
+        "tsp",
+        "compile",
+        tspFile,
+        "--emit",
+        "@lars-artmann/typespec-asyncapi",
+        "--output-dir",
+        workdir,
+      ],
+      {
+        cwd: process.cwd(), // Run from project root, not temp dir!
+        timeout: options.timeout || 30000,
+      },
+    );
 
-		// Read AsyncAPI output from disk
-		// Output goes to {output-dir}/@lars-artmann/typespec-asyncapi/AsyncAPI.yaml
-		const outputPath = join(workdir, '@lars-artmann', 'typespec-asyncapi', 'AsyncAPI.yaml')
-		let asyncapiDoc: AsyncAPIObject | undefined
+    // Read AsyncAPI output from disk
+    // Output goes to {output-dir}/@lars-artmann/typespec-asyncapi/AsyncAPI.yaml
+    const outputPath = join(
+      workdir,
+      "@lars-artmann",
+      "typespec-asyncapi",
+      "AsyncAPI.yaml",
+    );
+    let asyncapiDoc: AsyncAPIObject | undefined;
 
-		try {
-			const content = await fs.readFile(outputPath, 'utf-8')
-			asyncapiDoc = parseYAML(content) as AsyncAPIObject
-		} catch (err) {
-			// Output not generated - not always an error (compile errors may prevent emission)
-			// Don't throw here, let caller decide if missing output is a failure
-		}
+    try {
+      const content = await fs.readFile(outputPath, "utf-8");
+      asyncapiDoc = parseYAML(content) as AsyncAPIObject;
+    } catch (err) {
+      // Output not generated - not always an error (compile errors may prevent emission)
+      // Don't throw here, let caller decide if missing output is a failure
+    }
 
-		// Parse compiler errors from stderr
-		const errors = parseCompilerErrors(stderr)
+    // Parse compiler errors from stderr
+    const errors = parseCompilerErrors(stderr);
 
-		return {
-			exitCode,
-			stdout,
-			stderr,
-			asyncapiDoc,
-			errors,
-			workdir,
-		}
-	} finally {
-		// Auto-cleanup if requested
-		if (options.autoCleanup) {
-			await cleanupTestDir(workdir)
-		}
-	}
+    return {
+      exitCode,
+      stdout,
+      stderr,
+      asyncapiDoc,
+      errors,
+      workdir,
+    };
+  } finally {
+    // Auto-cleanup if requested
+    if (options.autoCleanup) {
+      await cleanupTestDir(workdir);
+    }
+  }
 }
 
 /**
@@ -142,44 +158,44 @@ export async function compileWithCLI(
  * @returns Exit code and captured output
  */
 async function runCommand(
-	command: string,
-	args: string[],
-	options: { cwd: string; timeout: number }
+  command: string,
+  args: string[],
+  options: { cwd: string; timeout: number },
 ): Promise<{ exitCode: number; stdout: string; stderr: string }> {
-	return new Promise((resolve, reject) => {
-		const proc = spawn(command, args, {
-			cwd: options.cwd,
-			env: process.env,
-			shell: true,
-		})
+  return new Promise((resolve, reject) => {
+    const proc = spawn(command, args, {
+      cwd: options.cwd,
+      env: process.env,
+      shell: true,
+    });
 
-		let stdout = ''
-		let stderr = ''
+    let stdout = "";
+    let stderr = "";
 
-		proc.stdout?.on('data', (data) => {
-			stdout += data.toString()
-		})
+    proc.stdout?.on("data", (data) => {
+      stdout += data.toString();
+    });
 
-		proc.stderr?.on('data', (data) => {
-			stderr += data.toString()
-		})
+    proc.stderr?.on("data", (data) => {
+      stderr += data.toString();
+    });
 
-		proc.on('close', (exitCode) => {
-			resolve({ exitCode: exitCode || 0, stdout, stderr })
-		})
+    proc.on("close", (exitCode) => {
+      resolve({ exitCode: exitCode || 0, stdout, stderr });
+    });
 
-		proc.on('error', (err) => {
-			reject(new Error(`Command failed: ${err.message}`))
-		})
+    proc.on("error", (err) => {
+      reject(new Error(`Command failed: ${err.message}`));
+    });
 
-		// Timeout protection
-		const timer = setTimeout(() => {
-			proc.kill('SIGTERM')
-			reject(new Error(`Command timeout after ${options.timeout}ms`))
-		}, options.timeout)
+    // Timeout protection
+    const timer = setTimeout(() => {
+      proc.kill("SIGTERM");
+      reject(new Error(`Command timeout after ${options.timeout}ms`));
+    }, options.timeout);
 
-		proc.on('exit', () => clearTimeout(timer))
-	})
+    proc.on("exit", () => clearTimeout(timer));
+  });
 }
 
 /**
@@ -191,13 +207,13 @@ async function runCommand(
  * @returns Absolute path to temp directory
  */
 async function createTempDir(): Promise<string> {
-	const tmpDir = join(
-		process.cwd(),
-		'test/temp-output',
-		`test-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
-	)
-	await fs.mkdir(tmpDir, { recursive: true })
-	return tmpDir
+  const tmpDir = join(
+    process.cwd(),
+    "test/temp-output",
+    `test-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+  );
+  await fs.mkdir(tmpDir, { recursive: true });
+  return tmpDir;
 }
 
 /**
@@ -210,22 +226,22 @@ async function createTempDir(): Promise<string> {
  * @returns Array of error messages
  */
 function parseCompilerErrors(stderr: string): string[] {
-	const errors: string[] = []
+  const errors: string[] = [];
 
-	// Match TypeSpec error format: "error TS1234: message"
-	const errorPattern = /error\s+([A-Z0-9]+):\s+(.+)/g
+  // Match TypeSpec error format: "error TS1234: message"
+  const errorPattern = /error\s+([A-Z0-9]+):\s+(.+)/g;
 
-	let match
-	while ((match = errorPattern.exec(stderr)) !== null) {
-		errors.push(`[${match[1]}] ${match[2]}`)
-	}
+  let match;
+  while ((match = errorPattern.exec(stderr)) !== null) {
+    errors.push(`[${match[1]}] ${match[2]}`);
+  }
 
-	// Also capture generic errors that don't match pattern
-	if (stderr.includes('error') && errors.length === 0) {
-		errors.push(stderr.trim())
-	}
+  // Also capture generic errors that don't match pattern
+  if (stderr.includes("error") && errors.length === 0) {
+    errors.push(stderr.trim());
+  }
 
-	return errors
+  return errors;
 }
 
 /**
@@ -237,12 +253,12 @@ function parseCompilerErrors(stderr: string): string[] {
  * @param workdir - Path to test working directory
  */
 export async function cleanupTestDir(workdir: string): Promise<void> {
-	try {
-		await fs.rm(workdir, { recursive: true, force: true })
-	} catch (err) {
-		// Ignore cleanup errors (directory may not exist)
-		// Don't fail tests due to cleanup issues
-	}
+  try {
+    await fs.rm(workdir, { recursive: true, force: true });
+  } catch (err) {
+    // Ignore cleanup errors (directory may not exist)
+    // Don't fail tests due to cleanup issues
+  }
 }
 
 /**
@@ -254,17 +270,17 @@ export async function cleanupTestDir(workdir: string): Promise<void> {
  * @returns Path to fixture directory
  */
 export async function createTestFixture(
-	files: Record<string, string>
+  files: Record<string, string>,
 ): Promise<string> {
-	const fixtureDir = await createTempDir()
+  const fixtureDir = await createTempDir();
 
-	for (const [filename, content] of Object.entries(files)) {
-		const filePath = join(fixtureDir, filename)
-		await fs.mkdir(join(fixtureDir, '..', filename, '..'), { recursive: true })
-		await fs.writeFile(filePath, content, 'utf-8')
-	}
+  for (const [filename, content] of Object.entries(files)) {
+    const filePath = join(fixtureDir, filename);
+    await fs.mkdir(join(fixtureDir, "..", filename, ".."), { recursive: true });
+    await fs.writeFile(filePath, content, "utf-8");
+  }
 
-	return fixtureDir
+  return fixtureDir;
 }
 
 /**
@@ -274,18 +290,20 @@ export async function createTestFixture(
  *
  * @param doc - AsyncAPI document to validate
  */
-export function assertValidAsyncAPI(doc: AsyncAPIObject | undefined): asserts doc is AsyncAPIObject {
-	if (!doc) {
-		throw new Error('AsyncAPI document is undefined')
-	}
+export function assertValidAsyncAPI(
+  doc: AsyncAPIObject | undefined,
+): asserts doc is AsyncAPIObject {
+  if (!doc) {
+    throw new Error("AsyncAPI document is undefined");
+  }
 
-	if (doc.asyncapi !== '3.0.0') {
-		throw new Error(`Expected AsyncAPI 3.0.0, got ${doc.asyncapi}`)
-	}
+  if (doc.asyncapi !== "3.0.0") {
+    throw new Error(`Expected AsyncAPI 3.0.0, got ${doc.asyncapi}`);
+  }
 
-	if (!doc.info) {
-		throw new Error('AsyncAPI document missing info section')
-	}
+  if (!doc.info) {
+    throw new Error("AsyncAPI document missing info section");
+  }
 }
 
 /**
@@ -295,7 +313,10 @@ export function assertValidAsyncAPI(doc: AsyncAPIObject | undefined): asserts do
  * @returns Path to AsyncAPI.yaml output
  */
 export function getAsyncAPIOutputPath(workdir: string): string {
-	return join(workdir, 'tsp-output/@lars-artmann/typespec-asyncapi/AsyncAPI.yaml')
+  return join(
+    workdir,
+    "tsp-output/@lars-artmann/typespec-asyncapi/AsyncAPI.yaml",
+  );
 }
 
 /**
@@ -305,10 +326,10 @@ export function getAsyncAPIOutputPath(workdir: string): string {
  * @returns True if AsyncAPI.yaml exists
  */
 export async function hasAsyncAPIOutput(workdir: string): Promise<boolean> {
-	try {
-		await fs.access(getAsyncAPIOutputPath(workdir))
-		return true
-	} catch {
-		return false
-	}
+  try {
+    await fs.access(getAsyncAPIOutputPath(workdir));
+    return true;
+  } catch {
+    return false;
+  }
 }

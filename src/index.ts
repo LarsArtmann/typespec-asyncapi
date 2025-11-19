@@ -19,7 +19,7 @@ export async function $onEmit(context: EmitContext) {
   const outputFile = context.options["output-file"] || "asyncapi";
   const fileType = context.options["file-type"] || "yaml";
   const extension = (fileType as string) === "json" ? "json" : "yaml";
-  
+
   // CRITICAL FIX: Use REAL generation pipeline that processes operations and channels
   // This uses ProcessingService, DiscoveryService, and all the decorator state handling
   await Effect.runPromise(
@@ -28,10 +28,14 @@ export async function $onEmit(context: EmitContext) {
         Effect.logError(`❌ AsyncAPI generation failed: ${String(error)}`);
         // Fallback to minimal spec if generation fails
         return Effect.succeed(void 0);
-      })
-    )
+      }),
+    ),
   );
 
   // The generation function handles file creation, so we just need to log completion
-  await Effect.runPromise(Effect.log(`✅ Generated AsyncAPI specification: ${String(outputFile)}.${String(extension)}`));
+  await Effect.runPromise(
+    Effect.log(
+      `✅ Generated AsyncAPI specification: ${String(outputFile)}.${String(extension)}`,
+    ),
+  );
 }

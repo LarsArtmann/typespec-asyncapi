@@ -1,14 +1,17 @@
-import {describe, expect, it} from "bun:test"
-import {compileAsyncAPISpecWithoutErrors, parseAsyncAPIOutput} from "../utils/test-helpers"
-import {Effect} from "effect"
+import { describe, expect, it } from "bun:test";
 import {
-	DEFAULT_SERIALIZATION_FORMAT,
-	SERIALIZATION_FORMAT_OPTION_JSON,
-} from "../../src/domain/models/serialization-format-option.js"
+  compileAsyncAPISpecWithoutErrors,
+  parseAsyncAPIOutput,
+} from "../utils/test-helpers";
+import { Effect } from "effect";
+import {
+  DEFAULT_SERIALIZATION_FORMAT,
+  SERIALIZATION_FORMAT_OPTION_JSON,
+} from "../../src/domain/models/serialization-format-option.js";
 
 describe("AsyncAPI Emitter Integration", () => {
-	it("should compile basic-events example and generate AsyncAPI", async () => {
-		const source = `
+  it("should compile basic-events example and generate AsyncAPI", async () => {
+    const source = `
       namespace UserEvents;
 
       @doc("User signup event model")
@@ -36,36 +39,38 @@ describe("AsyncAPI Emitter Integration", () => {
         @doc("User ID parameter")
         userId: string
       ): UserSignupEvent;
-    `
+    `;
 
-		const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source)
+    const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
 
-	// Find the generated AsyncAPI file - read raw content from Map
-	const availableFiles = Array.from(outputFiles.keys())
-	const yamlFiles = availableFiles.filter(f => f.endsWith('.yaml'))
-	
-	// Filter AsyncAPI files by content (more reliable than filename)
-	const asyncapiFiles = yamlFiles.filter(f => {
-		const content = outputFiles.get(f) as string
-		return content && content.includes('asyncapi: 3.0.0')
-	})
-	
-	if (asyncapiFiles.length === 0) {
-		throw new Error(`No AsyncAPI YAML files found. Available files: ${availableFiles.join(', ')}`)
-	}
-	const content = outputFiles.get(asyncapiFiles[0]) as string
+    // Find the generated AsyncAPI file - read raw content from Map
+    const availableFiles = Array.from(outputFiles.keys());
+    const yamlFiles = availableFiles.filter((f) => f.endsWith(".yaml"));
 
-		// Validate AsyncAPI structure
-		expect(content).toContain("asyncapi: 3.0.0")
-		expect(content).toContain("publishUserSignup")
-		expect(content).toContain("receiveUserMessage")
-		expect(content).toContain("UserSignupEvent")
+    // Filter AsyncAPI files by content (more reliable than filename)
+    const asyncapiFiles = yamlFiles.filter((f) => {
+      const content = outputFiles.get(f) as string;
+      return content && content.includes("asyncapi: 3.0.0");
+    });
 
-		Effect.log("✅ Generated AsyncAPI content validated")
-	})
+    if (asyncapiFiles.length === 0) {
+      throw new Error(
+        `No AsyncAPI YAML files found. Available files: ${availableFiles.join(", ")}`,
+      );
+    }
+    const content = outputFiles.get(asyncapiFiles[0]) as string;
 
-	it("should validate TypeSpec models and generate schemas", async () => {
-		const source = `
+    // Validate AsyncAPI structure
+    expect(content).toContain("asyncapi: 3.0.0");
+    expect(content).toContain("publishUserSignup");
+    expect(content).toContain("receiveUserMessage");
+    expect(content).toContain("UserSignupEvent");
+
+    Effect.log("✅ Generated AsyncAPI content validated");
+  });
+
+  it("should validate TypeSpec models and generate schemas", async () => {
+    const source = `
       namespace EventTests;
 
       @doc("Complex event model with nested properties")
@@ -92,37 +97,43 @@ describe("AsyncAPI Emitter Integration", () => {
 
       @channel("complex.events")
       op publishComplexEvent(): ComplexEvent;
-    `
+    `;
 
-		const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source)
+    const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
 
-		const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "complex-test.json")
+    const asyncapiDoc = await parseAsyncAPIOutput(
+      outputFiles,
+      "complex-test.json",
+    );
 
-		// Validate AsyncAPI 3.0 structure
-		expect(asyncapiDoc.asyncapi).toBe("3.0.0")
-		expect(asyncapiDoc.info).toBeDefined()
-		expect(asyncapiDoc.channels).toBeDefined()
-		expect(asyncapiDoc.operations).toBeDefined()
-		expect(asyncapiDoc.components.schemas).toBeDefined()
+    // Validate AsyncAPI 3.0 structure
+    expect(asyncapiDoc.asyncapi).toBe("3.0.0");
+    expect(asyncapiDoc.info).toBeDefined();
+    expect(asyncapiDoc.channels).toBeDefined();
+    expect(asyncapiDoc.operations).toBeDefined();
+    expect(asyncapiDoc.components.schemas).toBeDefined();
 
-		// Validate generated schema for ComplexEvent
-		const complexEventSchema = asyncapiDoc.components.schemas.ComplexEvent
-		expect(complexEventSchema).toBeDefined()
-		expect(complexEventSchema.type).toBe("object")
-		expect(complexEventSchema.properties).toBeDefined()
-		expect(complexEventSchema.properties.id).toEqual({type: "string", description: "Event identifier"})
+    // Validate generated schema for ComplexEvent
+    const complexEventSchema = asyncapiDoc.components.schemas.ComplexEvent;
+    expect(complexEventSchema).toBeDefined();
+    expect(complexEventSchema.type).toBe("object");
+    expect(complexEventSchema.properties).toBeDefined();
+    expect(complexEventSchema.properties.id).toEqual({
+      type: "string",
+      description: "Event identifier",
+    });
 
-		// Validate required fields
-		expect(complexEventSchema.required).toContain("id")
-		expect(complexEventSchema.required).toContain("timestamp")
-		expect(complexEventSchema.required).toContain("status")
-		expect(complexEventSchema.required).not.toContain("description") // optional field
+    // Validate required fields
+    expect(complexEventSchema.required).toContain("id");
+    expect(complexEventSchema.required).toContain("timestamp");
+    expect(complexEventSchema.required).toContain("status");
+    expect(complexEventSchema.required).not.toContain("description"); // optional field
 
-		Effect.log("✅ Complex schema validation passed")
-	})
+    Effect.log("✅ Complex schema validation passed");
+  });
 
-	it("should handle multiple operations and channels", async () => {
-		const source = `
+  it("should handle multiple operations and channels", async () => {
+    const source = `
       namespace MultiOperationTest;
 
       model UserEvent {
@@ -145,46 +156,52 @@ describe("AsyncAPI Emitter Integration", () => {
 
       @channel("user.notifications")
       op subscribeUserNotifications(userId: string): UserEvent;
-    `
+    `;
 
-		const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source)
+    const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
 
-		// Read raw YAML content from outputFiles Map
-	const availableFiles = Array.from(outputFiles.keys())
-	const yamlFiles = availableFiles.filter(f => f.endsWith('.yaml'))
-	
-	// Filter AsyncAPI files by content (more reliable than filename)
-	const asyncapiFiles = yamlFiles.filter(f => {
-		const rawContent = outputFiles.get(f)
-		const content = typeof rawContent === 'string' ? rawContent : (rawContent as any).content
-		return content && content.includes('asyncapi: 3.0.0')
-	})
-	
-	if (asyncapiFiles.length === 0) {
-		throw new Error(`No AsyncAPI YAML files found. Available files: ${availableFiles.join(', ')}`)
-	}
-	const rawContent = outputFiles.get(asyncapiFiles[0])
-	const content = typeof rawContent === 'string' ? rawContent : (rawContent as any).content
+    // Read raw YAML content from outputFiles Map
+    const availableFiles = Array.from(outputFiles.keys());
+    const yamlFiles = availableFiles.filter((f) => f.endsWith(".yaml"));
 
-		// Should contain all operations
-		expect(content).toContain("publishUserEvent")
-		expect(content).toContain("publishSystemAlert")
-		expect(content).toContain("subscribeUserNotifications")
+    // Filter AsyncAPI files by content (more reliable than filename)
+    const asyncapiFiles = yamlFiles.filter((f) => {
+      const rawContent = outputFiles.get(f);
+      const content =
+        typeof rawContent === "string"
+          ? rawContent
+          : (rawContent as any).content;
+      return content && content.includes("asyncapi: 3.0.0");
+    });
 
-		// Should contain all channels
-		expect(content).toContain("user.events")
-		expect(content).toContain("system.alerts")
-		expect(content).toContain("user.notifications")
+    if (asyncapiFiles.length === 0) {
+      throw new Error(
+        `No AsyncAPI YAML files found. Available files: ${availableFiles.join(", ")}`,
+      );
+    }
+    const rawContent = outputFiles.get(asyncapiFiles[0]);
+    const content =
+      typeof rawContent === "string" ? rawContent : (rawContent as any).content;
 
-		// Should contain all schemas
-		expect(content).toContain("UserEvent")
-		expect(content).toContain("SystemAlert")
+    // Should contain all operations
+    expect(content).toContain("publishUserEvent");
+    expect(content).toContain("publishSystemAlert");
+    expect(content).toContain("subscribeUserNotifications");
 
-		Effect.log("✅ Multi-operation test passed")
-	})
+    // Should contain all channels
+    expect(content).toContain("user.events");
+    expect(content).toContain("system.alerts");
+    expect(content).toContain("user.notifications");
 
-	it("should handle TypeSpec decorators and documentation", async () => {
-		const source = `
+    // Should contain all schemas
+    expect(content).toContain("UserEvent");
+    expect(content).toContain("SystemAlert");
+
+    Effect.log("✅ Multi-operation test passed");
+  });
+
+  it("should handle TypeSpec decorators and documentation", async () => {
+    const source = `
       @doc("Documentation test namespace")
       namespace DocTest;
 
@@ -203,22 +220,28 @@ describe("AsyncAPI Emitter Integration", () => {
       @channel("documented.events")
       @doc("Channel for publishing documented events with full metadata")
       op publishDocumentedEvent(): DocumentedEvent;
-    `
+    `;
 
-		const {outputFiles} = await compileAsyncAPISpecWithoutErrors(source)
+    const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
 
-		const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "doc-test.json")
+    const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "doc-test.json");
 
-		// Validate documentation is preserved
-		const channel = asyncapiDoc.channels.documented.events
-		expect(channel.description).toContain("Channel for publishing documented events")
+    // Validate documentation is preserved
+    const channel = asyncapiDoc.channels.documented.events;
+    expect(channel.description).toContain(
+      "Channel for publishing documented events",
+    );
 
-		const schema = asyncapiDoc.components.schemas.DocumentedEvent
-		expect(schema.description).toBe("Well-documented event model")
-		expect(schema.properties.id.description).toBe("Primary key field")
-		expect(schema.properties.name.description).toBe("Human-readable event name")
-		expect(schema.properties.createdAt.description).toBe("Event creation timestamp in UTC")
+    const schema = asyncapiDoc.components.schemas.DocumentedEvent;
+    expect(schema.description).toBe("Well-documented event model");
+    expect(schema.properties.id.description).toBe("Primary key field");
+    expect(schema.properties.name.description).toBe(
+      "Human-readable event name",
+    );
+    expect(schema.properties.createdAt.description).toBe(
+      "Event creation timestamp in UTC",
+    );
 
-		Effect.log("✅ Documentation preservation test passed")
-	})
-})
+    Effect.log("✅ Documentation preservation test passed");
+  });
+});

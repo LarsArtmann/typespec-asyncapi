@@ -1,11 +1,16 @@
-import { createAsyncAPITestHost, compileAndGetAsyncAPI } from './utils/test-helpers.js'
+import {
+  createAsyncAPITestHost,
+  compileAndGetAsyncAPI,
+} from "./utils/test-helpers.js";
 
 async function testDocDecorator() {
-  console.log('🧪 TESTING DOC DECORATOR EQUIVALENT')
-  
+  console.log("🧪 TESTING DOC DECORATOR EQUIVALENT");
+
   try {
-    const host = await createAsyncAPITestHost()
-    host.addTypeSpecFile("doc-test.tsp", `
+    const host = await createAsyncAPITestHost();
+    host.addTypeSpecFile(
+      "doc-test.tsp",
+      `
 import "@lars-artmann/typespec-asyncapi";
 using TypeSpec.AsyncAPI;
 
@@ -25,26 +30,26 @@ model TestMessage {
 @channel("test.topic")
 @publish
 op publishTest(): TestMessage;
-    `)
-    
-    console.log('📝 Files added, testing doc decorator...')
-    
-    // Test compilation 
-    const compilationResult = await host.compile("doc-test.tsp")
-    console.log('✅ Compilation:', compilationResult ? 'SUCCESS' : 'FAILED')
-    
-    const spec = await compileAndGetAsyncAPI(host, "doc-test.tsp")
-    
+    `,
+    );
+
+    console.log("📝 Files added, testing doc decorator...");
+
+    // Test compilation
+    const compilationResult = await host.compile("doc-test.tsp");
+    console.log("✅ Compilation:", compilationResult ? "SUCCESS" : "FAILED");
+
+    const spec = await compileAndGetAsyncAPI(host, "doc-test.tsp");
+
     if (spec) {
-      console.log('🎉 SUCCESS: AsyncAPI spec generated!')
-      console.log('📊 Version:', spec.asyncapi)
+      console.log("🎉 SUCCESS: AsyncAPI spec generated!");
+      console.log("📊 Version:", spec.asyncapi);
     } else {
-      console.log('❌ FAILED: No AsyncAPI spec generated')
+      console.log("❌ FAILED: No AsyncAPI spec generated");
     }
-    
   } catch (error) {
-    console.log('💥 ERROR:', error.message)
+    console.log("💥 ERROR:", error.message);
   }
 }
 
-testDocDecorator()
+testDocDecorator();

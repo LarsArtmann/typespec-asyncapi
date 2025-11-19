@@ -1,19 +1,26 @@
 /**
  * Plugin Integration Tests
- * 
+ *
  * Tests for the extracted HTTP and Kafka plugins working with real TypeSpec compilation
  * Validates M7-M15 completion: Plugin extraction and real output testing
  */
 
 import { describe, it, expect, beforeAll, afterAll } from "bun:test";
-import { compileAsyncAPISpec, parseAsyncAPIOutput } from "../utils/test-helpers";
+import {
+  compileAsyncAPISpec,
+  parseAsyncAPIOutput,
+} from "../utils/test-helpers";
 import { AsyncAPIValidator } from "../../src/domain/validation/asyncapi-validator.js";
 import { mkdir, rm } from "node:fs/promises";
 import { join } from "node:path";
 import { Effect } from "effect";
 
 describe("Plugin Integration Tests", () => {
-  const testOutputDir = join(process.cwd(), "test-output", "plugin-integration");
+  const testOutputDir = join(
+    process.cwd(),
+    "test-output",
+    "plugin-integration",
+  );
   let validator: AsyncAPIValidator;
 
   beforeAll(async () => {
@@ -60,19 +67,28 @@ describe("Plugin Integration Tests", () => {
       expect(compilationResult.outputFiles.size).toBeGreaterThan(0);
 
       // Parse generated AsyncAPI document
-      const asyncApiDoc = parseAsyncAPIOutput(compilationResult.outputFiles, "http-plugin-test.json");
+      const asyncApiDoc = parseAsyncAPIOutput(
+        compilationResult.outputFiles,
+        "http-plugin-test.json",
+      );
       expect(asyncApiDoc).toBeDefined();
 
       // Validate against AsyncAPI schema
       const validationResult = await validator.validate(asyncApiDoc);
-      
+
       // Debug output if validation fails
       if (!validationResult.valid) {
         console.log("❌ AsyncAPI validation failed for HTTP plugin test:");
-        console.log("Errors:", JSON.stringify(validationResult.errors, null, 2));
-        console.log("Generated document:", JSON.stringify(asyncApiDoc, null, 2));
+        console.log(
+          "Errors:",
+          JSON.stringify(validationResult.errors, null, 2),
+        );
+        console.log(
+          "Generated document:",
+          JSON.stringify(asyncApiDoc, null, 2),
+        );
       }
-      
+
       expect(validationResult.valid).toBe(true);
       expect(validationResult.errors).toHaveLength(0);
 
@@ -85,10 +101,10 @@ describe("Plugin Integration Tests", () => {
 
       // Verify HTTP operation exists
       expect(doc.operations.deliverWebhook).toBeDefined();
-      
+
       // Verify schema is properly generated
       expect(doc.components.schemas.WebhookEvent).toBeDefined();
-      
+
       Effect.log(" HTTP plugin integration test completed successfully");
     });
   });
@@ -134,10 +150,13 @@ describe("Plugin Integration Tests", () => {
       expect(compilationResult.outputFiles.size).toBeGreaterThan(0);
 
       // Parse generated AsyncAPI document
-      const asyncApiDoc = parseAsyncAPIOutput(compilationResult.outputFiles, "kafka-plugin-test.json");
+      const asyncApiDoc = parseAsyncAPIOutput(
+        compilationResult.outputFiles,
+        "kafka-plugin-test.json",
+      );
       expect(asyncApiDoc).toBeDefined();
 
-      // Validate against AsyncAPI schema  
+      // Validate against AsyncAPI schema
       const validationResult = await validator.validate(asyncApiDoc);
       expect(validationResult.valid).toBe(true);
       expect(validationResult.errors).toHaveLength(0);
@@ -151,10 +170,10 @@ describe("Plugin Integration Tests", () => {
       // Verify Kafka operations exist
       expect(doc.operations.publishEvent).toBeDefined();
       expect(doc.operations.subscribeEvents).toBeDefined();
-      
+
       // Verify schema is properly generated
       expect(doc.components.schemas.KafkaEvent).toBeDefined();
-      
+
       Effect.log(" Kafka plugin integration test completed successfully");
     });
   });
@@ -212,23 +231,26 @@ describe("Plugin Integration Tests", () => {
       expect(compilationResult.outputFiles.size).toBeGreaterThan(0);
 
       // Parse and validate AsyncAPI output (M89)
-      const asyncApiDoc = parseAsyncAPIOutput(compilationResult.outputFiles, "plugin-system-test.json");
+      const asyncApiDoc = parseAsyncAPIOutput(
+        compilationResult.outputFiles,
+        "plugin-system-test.json",
+      );
       const validationResult = await validator.validate(asyncApiDoc);
-      
+
       expect(validationResult.valid).toBe(true);
       expect(validationResult.errors).toHaveLength(0);
 
       // Verify complete document structure
       const doc = asyncApiDoc;
       expect(doc.asyncapi).toBe("3.0.0");
-      
+
       // Verify channels and operations
       const channelNames = Object.keys(doc.channels);
       const operationNames = Object.keys(doc.operations);
-      
+
       expect(channelNames.length).toBeGreaterThan(0);
       expect(operationNames.length).toBe(3); // deliverWebhook, publishToStream, subscribeFromStream
-      
+
       expect(operationNames).toContain("deliverWebhook");
       expect(operationNames).toContain("publishToStream");
       expect(operationNames).toContain("subscribeFromStream");
@@ -241,7 +263,9 @@ describe("Plugin Integration Tests", () => {
       expect(eventSchema.properties.metadata).toBeDefined();
 
       Effect.log(" Complete user workflow validation completed successfully");
-      Effect.log(`=� Generated ${channelNames.length} channels and ${operationNames.length} operations`);
+      Effect.log(
+        `=� Generated ${channelNames.length} channels and ${operationNames.length} operations`,
+      );
       Effect.log(`=� Document validated successfully with AsyncAPI 3.0 parser`);
     });
 
@@ -270,18 +294,21 @@ describe("Plugin Integration Tests", () => {
 
       // Verify YAML output is generated
       expect(compilationResult.outputFiles.size).toBeGreaterThan(0);
-      
+
       // Parse YAML output
-      const asyncApiDoc = parseAsyncAPIOutput(compilationResult.outputFiles, "binding-test.yaml");
+      const asyncApiDoc = parseAsyncAPIOutput(
+        compilationResult.outputFiles,
+        "binding-test.yaml",
+      );
       const validationResult = await validator.validate(asyncApiDoc);
-      
+
       expect(validationResult.valid).toBe(true);
-      
+
       // Verify operations exist in YAML output
       const doc = asyncApiDoc;
       expect(doc.operations.httpOperation).toBeDefined();
       expect(doc.operations.kafkaOperation).toBeDefined();
-      
+
       Effect.log(" Protocol bindings verified in YAML output");
     });
   });

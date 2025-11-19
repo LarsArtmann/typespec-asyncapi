@@ -34,7 +34,7 @@
  *
  * @example "user.events", "orders.created", "notifications.sent"
  */
-export type ChannelName = string & { readonly __brand: 'ChannelName' }
+export type ChannelName = string & { readonly __brand: "ChannelName" };
 
 /**
  * Branded type for AsyncAPI operation names
@@ -44,7 +44,7 @@ export type ChannelName = string & { readonly __brand: 'ChannelName' }
  *
  * @example "publishUserEvent", "subscribeOrderCreated"
  */
-export type OperationName = string & { readonly __brand: 'OperationName' }
+export type OperationName = string & { readonly __brand: "OperationName" };
 
 /**
  * Branded type for AsyncAPI message names
@@ -54,7 +54,7 @@ export type OperationName = string & { readonly __brand: 'OperationName' }
  *
  * @example "UserEventMessage", "OrderCreatedMessage"
  */
-export type MessageName = string & { readonly __brand: 'MessageName' }
+export type MessageName = string & { readonly __brand: "MessageName" };
 
 /**
  * Branded type for AsyncAPI schema names
@@ -64,7 +64,7 @@ export type MessageName = string & { readonly __brand: 'MessageName' }
  *
  * @example "UserEvent", "OrderCreated", "Address"
  */
-export type SchemaName = string & { readonly __brand: 'SchemaName' }
+export type SchemaName = string & { readonly __brand: "SchemaName" };
 
 /**
  * Branded type for AsyncAPI server names
@@ -73,7 +73,7 @@ export type SchemaName = string & { readonly __brand: 'SchemaName' }
  *
  * @example "production", "staging", "kafka-broker"
  */
-export type ServerName = string & { readonly __brand: 'ServerName' }
+export type ServerName = string & { readonly __brand: "ServerName" };
 
 /**
  * Branded type for AsyncAPI security scheme names
@@ -82,7 +82,9 @@ export type ServerName = string & { readonly __brand: 'ServerName' }
  *
  * @example "apiKey", "oauth2", "bearer"
  */
-export type SecuritySchemeName = string & { readonly __brand: 'SecuritySchemeName' }
+export type SecuritySchemeName = string & {
+  readonly __brand: "SecuritySchemeName";
+};
 
 /**
  * Type guard: Check if string is valid channel name format
@@ -96,11 +98,11 @@ export type SecuritySchemeName = string & { readonly __brand: 'SecuritySchemeNam
  * @returns true if valid channel name format
  */
 export function isValidChannelName(value: string): value is ChannelName {
-	if (!value || typeof value !== 'string') return false
-	if (value.trim() !== value) return false // No leading/trailing whitespace
-	if (value.length === 0) return false
-	// Allow alphanumeric, dots, hyphens, underscores, slashes (for paths)
-	return /^[a-zA-Z0-9._\-/]+$/.test(value)
+  if (!value || typeof value !== "string") return false;
+  if (value.trim() !== value) return false; // No leading/trailing whitespace
+  if (value.length === 0) return false;
+  // Allow alphanumeric, dots, hyphens, underscores, slashes (for paths)
+  return /^[a-zA-Z0-9._\-/]+$/.test(value);
 }
 
 /**
@@ -112,10 +114,10 @@ export function isValidChannelName(value: string): value is ChannelName {
  * @returns true if valid operation name format
  */
 export function isValidOperationName(value: string): value is OperationName {
-	if (!value || typeof value !== 'string') return false
-	if (value.trim() !== value) return false
-	// Must be valid JavaScript identifier
-	return /^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(value)
+  if (!value || typeof value !== "string") return false;
+  if (value.trim() !== value) return false;
+  // Must be valid JavaScript identifier
+  return /^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(value);
 }
 
 /**
@@ -127,10 +129,10 @@ export function isValidOperationName(value: string): value is OperationName {
  * @returns true if valid schema name format
  */
 export function isValidSchemaName(value: string): value is SchemaName {
-	if (!value || typeof value !== 'string') return false
-	if (value.trim() !== value) return false
-	// Must start with uppercase letter (TypeScript convention)
-	return /^[A-Z][a-zA-Z0-9_]*$/.test(value)
+  if (!value || typeof value !== "string") return false;
+  if (value.trim() !== value) return false;
+  // Must start with uppercase letter (TypeScript convention)
+  return /^[A-Z][a-zA-Z0-9_]*$/.test(value);
 }
 
 /**
@@ -143,7 +145,7 @@ export function isValidSchemaName(value: string): value is SchemaName {
  * @returns Branded ChannelName
  */
 export function brandChannelName(value: string): ChannelName {
-	return value as ChannelName
+  return value as ChannelName;
 }
 
 /**
@@ -153,7 +155,7 @@ export function brandChannelName(value: string): ChannelName {
  * @returns Branded OperationName
  */
 export function brandOperationName(value: string): OperationName {
-	return value as OperationName
+  return value as OperationName;
 }
 
 /**
@@ -163,7 +165,7 @@ export function brandOperationName(value: string): OperationName {
  * @returns Branded MessageName
  */
 export function brandMessageName(value: string): MessageName {
-	return value as MessageName
+  return value as MessageName;
 }
 
 /**
@@ -173,7 +175,7 @@ export function brandMessageName(value: string): MessageName {
  * @returns Branded SchemaName
  */
 export function brandSchemaName(value: string): SchemaName {
-	return value as SchemaName
+  return value as SchemaName;
 }
 
 /**
@@ -183,7 +185,7 @@ export function brandSchemaName(value: string): SchemaName {
  * @returns Branded ServerName
  */
 export function brandServerName(value: string): ServerName {
-	return value as ServerName
+  return value as ServerName;
 }
 
 /**
@@ -193,7 +195,7 @@ export function brandServerName(value: string): ServerName {
  * @returns Branded SecuritySchemeName
  */
 export function brandSecuritySchemeName(value: string): SecuritySchemeName {
-	return value as SecuritySchemeName
+  return value as SecuritySchemeName;
 }
 
 /**
@@ -204,12 +206,12 @@ export function brandSecuritySchemeName(value: string): SecuritySchemeName {
  * @throws {Error} If validation fails
  */
 export function toChannelName(value: string): ChannelName {
-	if (!isValidChannelName(value)) {
-		throw new Error(
-			`Invalid channel name: "${value}". Must be alphanumeric with dots, hyphens, underscores, or slashes.`
-		)
-	}
-	return value
+  if (!isValidChannelName(value)) {
+    throw new Error(
+      `Invalid channel name: "${value}". Must be alphanumeric with dots, hyphens, underscores, or slashes.`,
+    );
+  }
+  return value;
 }
 
 /**
@@ -220,12 +222,12 @@ export function toChannelName(value: string): ChannelName {
  * @throws {Error} If validation fails
  */
 export function toOperationName(value: string): OperationName {
-	if (!isValidOperationName(value)) {
-		throw new Error(
-			`Invalid operation name: "${value}". Must be a valid JavaScript identifier.`
-		)
-	}
-	return value
+  if (!isValidOperationName(value)) {
+    throw new Error(
+      `Invalid operation name: "${value}". Must be a valid JavaScript identifier.`,
+    );
+  }
+  return value;
 }
 
 /**
@@ -236,12 +238,12 @@ export function toOperationName(value: string): OperationName {
  * @throws {Error} If validation fails
  */
 export function toSchemaName(value: string): SchemaName {
-	if (!isValidSchemaName(value)) {
-		throw new Error(
-			`Invalid schema name: "${value}". Must start with uppercase letter.`
-		)
-	}
-	return value
+  if (!isValidSchemaName(value)) {
+    throw new Error(
+      `Invalid schema name: "${value}". Must start with uppercase letter.`,
+    );
+  }
+  return value;
 }
 
 /**
@@ -251,5 +253,5 @@ export function toSchemaName(value: string): SchemaName {
  * @returns Plain string
  */
 export function unbrand<T extends string>(branded: T): string {
-	return branded as string
+  return branded as string;
 }

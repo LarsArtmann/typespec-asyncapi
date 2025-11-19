@@ -25,13 +25,13 @@ describe("AsyncAPI Decorator Validation", () => {
         @channel("events.user.{userId}")
         op validChannelWithParam(): Event;
       `;
-      
+
       const { diagnostics } = await compileAsyncAPISpec(source, {
         "output-file": "channel-valid",
-        "file-type": "json"
+        "file-type": "json",
       });
-      
-      const errors = diagnostics.filter(d => d.severity === "error");
+
+      const errors = diagnostics.filter((d) => d.severity === "error");
       expect(errors).toHaveLength(0);
     });
 
@@ -50,20 +50,23 @@ describe("AsyncAPI Decorator Validation", () => {
         @channel("valid.channel")
         op validChannel(): Event;
       `;
-      
+
       const { diagnostics } = await compileAsyncAPISpec(source, {
         "output-file": "channel-validation",
-        "file-type": "json"
+        "file-type": "json",
       });
-      
+
       // Should have diagnostics for invalid channels but not for valid ones
-      const channelErrors = diagnostics.filter(d => 
-        d.code === "@lars-artmann/typespec-asyncapi/invalid-channel-path"
+      const channelErrors = diagnostics.filter(
+        (d) =>
+          d.code === "@lars-artmann/typespec-asyncapi/invalid-channel-path",
       );
-      
+
       // Note: The exact validation depends on implementation
       // This test structure shows how to validate decorator constraints
-      expect(diagnostics.filter(d => d.severity === "error").length).toBeGreaterThanOrEqual(0);
+      expect(
+        diagnostics.filter((d) => d.severity === "error").length,
+      ).toBeGreaterThanOrEqual(0);
     });
 
     it("should require @channel decorator for operations", async () => {
@@ -78,17 +81,18 @@ describe("AsyncAPI Decorator Validation", () => {
         @channel("valid.channel")
         op validOp(): Event;
       `;
-      
+
       const { diagnostics } = await compileAsyncAPISpec(source, {
         "output-file": "missing-channel",
-        "file-type": "json"
+        "file-type": "json",
       });
-      
+
       // Check for missing channel diagnostic
-      const missingChannelErrors = diagnostics.filter(d => 
-        d.code === "@lars-artmann/typespec-asyncapi/missing-channel-path"
+      const missingChannelErrors = diagnostics.filter(
+        (d) =>
+          d.code === "@lars-artmann/typespec-asyncapi/missing-channel-path",
       );
-      
+
       // Structure shows validation - actual behavior depends on decorator implementation
       expect(diagnostics).toBeDefined();
     });
@@ -113,15 +117,15 @@ describe("AsyncAPI Decorator Validation", () => {
         @channel("default.events")
         op defaultTypeEvent(): Event;
       `;
-      
+
       const { diagnostics, outputFiles } = await compileAsyncAPISpec(source, {
         "output-file": "operation-types",
-        "file-type": "json"
+        "file-type": "json",
       });
-      
-      const errors = diagnostics.filter(d => d.severity === "error");
+
+      const errors = diagnostics.filter((d) => d.severity === "error");
       expect(errors).toHaveLength(0);
-      
+
       // Should generate output for all valid operations
       expect(outputFiles.size).toBeGreaterThan(0);
     });
@@ -141,17 +145,19 @@ describe("AsyncAPI Decorator Validation", () => {
         @publish
         op validOperation(): Event;
       `;
-      
+
       const { diagnostics } = await compileAsyncAPISpec(source, {
         "output-file": "conflict-test",
-        "file-type": "json"
+        "file-type": "json",
       });
-      
+
       // Should detect the conflict
-      const conflictErrors = diagnostics.filter(d => 
-        d.code === "@lars-artmann/typespec-asyncapi/conflicting-operation-type"
+      const conflictErrors = diagnostics.filter(
+        (d) =>
+          d.code ===
+          "@lars-artmann/typespec-asyncapi/conflicting-operation-type",
       );
-      
+
       // The test structure shows how to validate - actual implementation may vary
       expect(diagnostics.length).toBeGreaterThanOrEqual(0);
     });
@@ -191,18 +197,18 @@ describe("AsyncAPI Decorator Validation", () => {
         @channel("complete.events")
         op publishCompleteEvent(): CompleteEvent;
       `;
-      
+
       const { diagnostics, outputFiles } = await compileAsyncAPISpec(source, {
         "output-file": "model-validation",
-        "file-type": "json"
+        "file-type": "json",
       });
-      
-      const errors = diagnostics.filter(d => d.severity === "error");
+
+      const errors = diagnostics.filter((d) => d.severity === "error");
       expect(errors).toHaveLength(0);
-      
+
       // Should generate schema for complex model
       expect(outputFiles.size).toBeGreaterThan(0);
-      
+
       const outputFile = outputFiles.get("/model-validation.json");
       if (outputFile) {
         const asyncapiDoc = JSON.parse(outputFile.content);
@@ -226,18 +232,20 @@ describe("AsyncAPI Decorator Validation", () => {
         @channel("tree.events")
         op publishTreeEvent(): TreeNode;
       `;
-      
+
       const { diagnostics, outputFiles } = await compileAsyncAPISpec(source, {
         "output-file": "recursive-test",
-        "file-type": "json"
+        "file-type": "json",
       });
-      
+
       // Recursive models should not cause infinite loops
-      const errors = diagnostics.filter(d => d.severity === "error");
-      const circularErrors = diagnostics.filter(d => 
-        d.code === "@lars-artmann/typespec-asyncapi/circular-message-reference"
+      const errors = diagnostics.filter((d) => d.severity === "error");
+      const circularErrors = diagnostics.filter(
+        (d) =>
+          d.code ===
+          "@lars-artmann/typespec-asyncapi/circular-message-reference",
       );
-      
+
       // Test structure - actual behavior depends on implementation
       expect(diagnostics).toBeDefined();
       expect(outputFiles.size).toBeGreaterThanOrEqual(0);
@@ -269,35 +277,43 @@ describe("AsyncAPI Decorator Validation", () => {
         @doc("Channel for publishing well-documented events")
         op publishDocumentedEvent(): DocumentedEvent;
       `;
-      
+
       const { diagnostics, outputFiles } = await compileAsyncAPISpec(source, {
         "output-file": "doc-validation",
-        "file-type": "json"
+        "file-type": "json",
       });
-      
-      const errors = diagnostics.filter(d => d.severity === "error");
+
+      const errors = diagnostics.filter((d) => d.severity === "error");
       expect(errors).toHaveLength(0);
-      
+
       const outputFile = outputFiles.get("/doc-validation.json");
       if (outputFile) {
         const asyncapiDoc = JSON.parse(outputFile.content);
-        
+
         // Validate documentation preservation
         const schema = asyncapiDoc.components?.schemas?.DocumentedEvent;
-        expect(schema?.description).toContain("Event model with comprehensive documentation");
-        
+        expect(schema?.description).toContain(
+          "Event model with comprehensive documentation",
+        );
+
         if (schema?.properties) {
-          expect(schema.properties.id?.description).toContain("Unique event identifier");
-          expect(schema.properties.name?.description).toContain("Human-readable event name");
-          expect(schema.properties.createdAt?.description).toContain("Event creation timestamp");
+          expect(schema.properties.id?.description).toContain(
+            "Unique event identifier",
+          );
+          expect(schema.properties.name?.description).toContain(
+            "Human-readable event name",
+          );
+          expect(schema.properties.createdAt?.description).toContain(
+            "Event creation timestamp",
+          );
         }
-        
+
         // Validate channel documentation
         const channels = asyncapiDoc.channels;
         if (channels) {
           const channelKeys = Object.keys(channels);
           expect(channelKeys.length).toBeGreaterThan(0);
-          
+
           const firstChannel = channels[channelKeys[0]];
           expect(firstChannel?.description).toContain("Channel for publishing");
         }
@@ -330,15 +346,15 @@ describe("AsyncAPI Decorator Validation", () => {
           minLevel?: "info" | "warning" | "error"
         ): UserEvent;
       `;
-      
+
       const { diagnostics, outputFiles } = await compileAsyncAPISpec(source, {
         "output-file": "parameter-test",
-        "file-type": "json"
+        "file-type": "json",
       });
-      
-      const errors = diagnostics.filter(d => d.severity === "error");
+
+      const errors = diagnostics.filter((d) => d.severity === "error");
       expect(errors).toHaveLength(0);
-      
+
       // Should handle parameterized operations
       expect(outputFiles.size).toBeGreaterThan(0);
     });

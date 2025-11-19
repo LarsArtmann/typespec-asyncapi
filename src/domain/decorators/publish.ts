@@ -1,6 +1,6 @@
-import type {DecoratorContext, Operation} from "@typespec/compiler"
-import {$lib, reportDiagnostic} from "../../lib.js"
-import {Effect} from "effect"
+import type { DecoratorContext, Operation } from "@typespec/compiler";
+import { $lib, reportDiagnostic } from "../../lib.js";
+import { Effect } from "effect";
 
 //TODO: CRITICAL - Add AsyncAPI 3.0.0 Publish Operation Object compliance validation
 //TODO: CRITICAL - Implement proper Effect.TS Result/Either types for error handling
@@ -23,48 +23,54 @@ import {Effect} from "effect"
 //TODO: CRITICAL - Validate state map exists before accessing
 //TODO: CRITICAL - Add comprehensive logging for state mutations
 export function checkOperationTypeConflict(
-	context: DecoratorContext,
-	target: Operation,
-	newType: string,
-	conflictType: string
+  context: DecoratorContext,
+  target: Operation,
+  newType: string,
+  conflictType: string,
 ): boolean {
-	//TODO: CRITICAL - Handle potential undefined state map gracefully
-	// Get existing operation types to check for conflicts
-	const operationTypesMap = context.program.stateMap($lib.stateKeys.operationTypes)
-	const rawType = operationTypesMap.get(target) as string | undefined
-	//TODO: CRITICAL - This type guard is insufficient - need proper schema validation
-	const existingType = typeof rawType === 'string' ? rawType : undefined
+  //TODO: CRITICAL - Handle potential undefined state map gracefully
+  // Get existing operation types to check for conflicts
+  const operationTypesMap = context.program.stateMap(
+    $lib.stateKeys.operationTypes,
+  );
+  const rawType = operationTypesMap.get(target) as string | undefined;
+  //TODO: CRITICAL - This type guard is insufficient - need proper schema validation
+  const existingType = typeof rawType === "string" ? rawType : undefined;
 
-	if (existingType === conflictType) {
-		reportDiagnostic(context, target, "conflicting-operation-type", {operationName: target.name})
-		return true
-	}
+  if (existingType === conflictType) {
+    reportDiagnostic(context, target, "conflicting-operation-type", {
+      operationName: target.name,
+    });
+    return true;
+  }
 
-	//TODO: CRITICAL - No validation that newType is valid AsyncAPI operation type
-	// Store operation type in program state
-	operationTypesMap.set(target, newType)
-	return false
+  //TODO: CRITICAL - No validation that newType is valid AsyncAPI operation type
+  // Store operation type in program state
+  operationTypesMap.set(target, newType);
+  return false;
 }
 
 //TODO: CRITICAL - Add support for publish operation options (reply channel, headers, etc.)
 //TODO: CRITICAL - Implement AsyncAPI 3.0.0 action validation ("send" for publish operations)
 //TODO: CRITICAL - Add message trait validation and inheritance
 export function $publish(context: DecoratorContext, target: Operation): void {
-	Effect.log(`=
- PROCESSING @publish decorator on operation: ${target.name}`)
-	Effect.log(`<�  Target type: ${target.kind}`)
+  Effect.log(`=
+ PROCESSING @publish decorator on operation: ${target.name}`);
+  Effect.log(`<�  Target type: ${target.kind}`);
 
-	//TODO: CRITICAL - This comment is misleading - should validate Operation type constraints
-	// Target is already typed as Operation - no validation needed
+  //TODO: CRITICAL - This comment is misleading - should validate Operation type constraints
+  // Target is already typed as Operation - no validation needed
 
-	//TODO: CRITICAL - Missing validation: operation must have input/output types defined
-	// Check for operation type conflicts and set type
-	if (checkOperationTypeConflict(context, target, "publish", "subscribe")) {
-		return
-	}
+  //TODO: CRITICAL - Missing validation: operation must have input/output types defined
+  // Check for operation type conflicts and set type
+  if (checkOperationTypeConflict(context, target, "publish", "subscribe")) {
+    return;
+  }
 
-	//TODO: CRITICAL - Need to validate that operation has appropriate message schema
-	//TODO: CRITICAL - Should store additional publish-specific metadata (channel binding, etc.)
+  //TODO: CRITICAL - Need to validate that operation has appropriate message schema
+  //TODO: CRITICAL - Should store additional publish-specific metadata (channel binding, etc.)
 
-	Effect.log(` Successfully marked operation ${target.name} as publish operation`)
+  Effect.log(
+    ` Successfully marked operation ${target.name} as publish operation`,
+  );
 }

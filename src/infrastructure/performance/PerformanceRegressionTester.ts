@@ -1,53 +1,53 @@
 /**
  * Performance Regression Testing Infrastructure
- * 
+ *
  * Comprehensive performance testing with automated regression detection.
  * Ensures code changes don't degrade performance below acceptable thresholds.
  */
 
-import { Effect } from "effect"
-import { PerformanceMonitor } from "./PerformanceMonitor.js"
-import { PERFORMANCE_MONITORING } from "../../constants/defaults.js"
+import { Effect } from "effect";
+import { PerformanceMonitor } from "./PerformanceMonitor.js";
+import { PERFORMANCE_MONITORING } from "../../constants/defaults.js";
 
 export type PerformanceConfig = {
-	/** Maximum compilation time in milliseconds */
-	maxCompilationTimeMs: number
-	/** Maximum memory usage in megabytes */
-	maxMemoryUsageMB: number
-	/** Minimum throughput operations per second */
-	minThroughputOpsPerSec: number
-	/** Maximum latency in milliseconds */
-	maxLatencyMs: number
-	/** Enable/disable regression detection */
-	enableRegressionDetection: boolean
-	/** Baseline metrics for regression comparison */
-	baseline?: PerformanceMetrics
-}
+  /** Maximum compilation time in milliseconds */
+  maxCompilationTimeMs: number;
+  /** Maximum memory usage in megabytes */
+  maxMemoryUsageMB: number;
+  /** Minimum throughput operations per second */
+  minThroughputOpsPerSec: number;
+  /** Maximum latency in milliseconds */
+  maxLatencyMs: number;
+  /** Enable/disable regression detection */
+  enableRegressionDetection: boolean;
+  /** Baseline metrics for regression comparison */
+  baseline?: PerformanceMetrics;
+};
 
 export type PerformanceMetrics = {
-	/** Total execution time in milliseconds */
-	executionTimeMs: number
-	/** Memory usage in megabytes */
-	memoryUsageMB: number
-	/** Operations per second throughput */
-	throughputOpsPerSec: number
-	/** Average latency in milliseconds */
-	averageLatencyMs: number
-	/** Peak memory usage in megabytes */
-	peakMemoryUsageMB: number
-	/** CPU usage percentage */
-	cpuUsagePercent?: number
-}
+  /** Total execution time in milliseconds */
+  executionTimeMs: number;
+  /** Memory usage in megabytes */
+  memoryUsageMB: number;
+  /** Operations per second throughput */
+  throughputOpsPerSec: number;
+  /** Average latency in milliseconds */
+  averageLatencyMs: number;
+  /** Peak memory usage in megabytes */
+  peakMemoryUsageMB: number;
+  /** CPU usage percentage */
+  cpuUsagePercent?: number;
+};
 
 /**
  * Metric change details for regression/improvement tracking
  */
 export type MetricChange = {
-	metric: keyof PerformanceMetrics
-	currentValue: number
-	baselineValue: number
-	percentageChange: number
-}
+  metric: keyof PerformanceMetrics;
+  currentValue: number;
+  baselineValue: number;
+  percentageChange: number;
+};
 
 /**
  * Performance regression report using discriminated union
@@ -57,274 +57,298 @@ export type MetricChange = {
  * creating ambiguous states. Now we have explicit, unrepresentable illegal states.
  */
 export type RegressionReport =
-	| {
-		_tag: "stable"
-		/** No significant performance changes detected */
-	}
-	| {
-		_tag: "regression"
-		/** Performance degraded - metrics performing worse than baseline */
-		degradedMetrics: MetricChange[]
-	}
-	| {
-		_tag: "improvement"
-		/** Performance improved - metrics performing better than baseline */
-		improvedMetrics: MetricChange[]
-	}
-	| {
-		_tag: "mixed"
-		/** Mixed results - some metrics improved, others degraded */
-		degradedMetrics: MetricChange[]
-		improvedMetrics: MetricChange[]
-	}
+  | {
+      _tag: "stable";
+      /** No significant performance changes detected */
+    }
+  | {
+      _tag: "regression";
+      /** Performance degraded - metrics performing worse than baseline */
+      degradedMetrics: MetricChange[];
+    }
+  | {
+      _tag: "improvement";
+      /** Performance improved - metrics performing better than baseline */
+      improvedMetrics: MetricChange[];
+    }
+  | {
+      _tag: "mixed";
+      /** Mixed results - some metrics improved, others degraded */
+      degradedMetrics: MetricChange[];
+      improvedMetrics: MetricChange[];
+    };
 
 /**
  * Performance test error type
  */
 export class PerformanceTestError extends Error {
-	constructor(
-		message: string,
-		public readonly cause?: unknown
-	) {
-		super(message)
-		this.name = "PerformanceTestError"
-	}
+  constructor(
+    message: string,
+    public readonly cause?: unknown,
+  ) {
+    super(message);
+    this.name = "PerformanceTestError";
+  }
 }
 
 /**
  * Performance Regression Tester
- * 
+ *
  * Provides comprehensive performance testing with automated regression detection.
  */
 export class PerformanceRegressionTester {
-	private readonly config: PerformanceConfig
-	private readonly performanceMonitor: PerformanceMonitor
+  private readonly config: PerformanceConfig;
+  private readonly performanceMonitor: PerformanceMonitor;
 
-	constructor(config: PerformanceConfig) {
-		this.config = config
-		this.performanceMonitor = new PerformanceMonitor()
-	}
+  constructor(config: PerformanceConfig) {
+    this.config = config;
+    this.performanceMonitor = new PerformanceMonitor();
+  }
 
-	/**
-	 * Run comprehensive performance test with regression detection
-	 */
-	runPerformanceTest = <A, E, R>(
-		effect: Effect.Effect<A, E, R>,
-		operationCount: number = 1
-	): Effect.Effect<{
-		metrics: PerformanceMetrics
-		regressionReport: RegressionReport
-		passedThresholds: boolean
-	}, E | PerformanceTestError, R> =>
-		Effect.gen(function* (this: PerformanceRegressionTester) {
-			// Start performance monitoring
-			yield* this.performanceMonitor.startMonitoring()
+  /**
+   * Run comprehensive performance test with regression detection
+   */
+  runPerformanceTest = <A, E, R>(
+    effect: Effect.Effect<A, E, R>,
+    operationCount: number = 1,
+  ): Effect.Effect<
+    {
+      metrics: PerformanceMetrics;
+      regressionReport: RegressionReport;
+      passedThresholds: boolean;
+    },
+    E | PerformanceTestError,
+    R
+  > =>
+    Effect.gen(function* (this: PerformanceRegressionTester) {
+      // Start performance monitoring
+      yield* this.performanceMonitor.startMonitoring();
 
-			// Execute the effect with timing
-			const startTime = performance.now()
-			const _result = yield* effect
-			const endTime = performance.now()
+      // Execute the effect with timing
+      const startTime = performance.now();
+      const _result = yield* effect;
+      const endTime = performance.now();
 
-			// Collect performance metrics
-			const baseMetrics = yield* this.performanceMonitor.collectMetrics()
+      // Collect performance metrics
+      const baseMetrics = yield* this.performanceMonitor.collectMetrics();
 
-			// Calculate derived metrics
-			const executionTimeMs = endTime - startTime
-			const metrics: PerformanceMetrics = {
-				...baseMetrics,
-				executionTimeMs,
-				throughputOpsPerSec: operationCount > 0 ? (operationCount / executionTimeMs) * 1000 : 0,
-			}
+      // Calculate derived metrics
+      const executionTimeMs = endTime - startTime;
+      const metrics: PerformanceMetrics = {
+        ...baseMetrics,
+        executionTimeMs,
+        throughputOpsPerSec:
+          operationCount > 0 ? (operationCount / executionTimeMs) * 1000 : 0,
+      };
 
-			// Check threshold compliance
-			const passedThresholds = this.checkThresholds(metrics, this.config)
+      // Check threshold compliance
+      const passedThresholds = this.checkThresholds(metrics, this.config);
 
-			// Generate regression report if baseline available
-			const regressionReport = this.generateRegressionReport(metrics, this.config.baseline)
+      // Generate regression report if baseline available
+      const regressionReport = this.generateRegressionReport(
+        metrics,
+        this.config.baseline,
+      );
 
-			return {
-				metrics,
-				regressionReport,
-				passedThresholds,
-			}
-		})
+      return {
+        metrics,
+        regressionReport,
+        passedThresholds,
+      };
+    });
 
-	/**
-	 * Check if metrics meet configured thresholds
-	 */
-	private readonly checkThresholds = (metrics: PerformanceMetrics, config: PerformanceConfig): boolean => {
-		return (
-			metrics.executionTimeMs <= config.maxCompilationTimeMs &&
-			metrics.memoryUsageMB <= config.maxMemoryUsageMB &&
-			metrics.throughputOpsPerSec >= config.minThroughputOpsPerSec &&
-			metrics.averageLatencyMs <= config.maxLatencyMs
-		)
-	}
+  /**
+   * Check if metrics meet configured thresholds
+   */
+  private readonly checkThresholds = (
+    metrics: PerformanceMetrics,
+    config: PerformanceConfig,
+  ): boolean => {
+    return (
+      metrics.executionTimeMs <= config.maxCompilationTimeMs &&
+      metrics.memoryUsageMB <= config.maxMemoryUsageMB &&
+      metrics.throughputOpsPerSec >= config.minThroughputOpsPerSec &&
+      metrics.averageLatencyMs <= config.maxLatencyMs
+    );
+  };
 
-	/**
-	 * Generate regression report comparing metrics to baseline
-	 *
-	 * Uses discriminated union to eliminate split brain pattern.
-	 * Returns one of four mutually exclusive states: stable, regression, improvement, mixed.
-	 */
-	private readonly generateRegressionReport = (
-		current: PerformanceMetrics,
-		baseline?: PerformanceMetrics
-	): RegressionReport => {
-		if (!baseline) {
-			return { _tag: "stable" }
-		}
+  /**
+   * Generate regression report comparing metrics to baseline
+   *
+   * Uses discriminated union to eliminate split brain pattern.
+   * Returns one of four mutually exclusive states: stable, regression, improvement, mixed.
+   */
+  private readonly generateRegressionReport = (
+    current: PerformanceMetrics,
+    baseline?: PerformanceMetrics,
+  ): RegressionReport => {
+    if (!baseline) {
+      return { _tag: "stable" };
+    }
 
-		const threshold = PERFORMANCE_MONITORING.DEGRADATION_THRESHOLD // 10% degradation threshold
-		const improvementThreshold = PERFORMANCE_MONITORING.IMPROVEMENT_THRESHOLD // 5% improvement threshold
+    const threshold = PERFORMANCE_MONITORING.DEGRADATION_THRESHOLD; // 10% degradation threshold
+    const improvementThreshold = PERFORMANCE_MONITORING.IMPROVEMENT_THRESHOLD; // 5% improvement threshold
 
-		const degradedMetrics: MetricChange[] = []
-		const improvedMetrics: MetricChange[] = []
+    const degradedMetrics: MetricChange[] = [];
+    const improvedMetrics: MetricChange[] = [];
 
-		const metricKeys: (keyof PerformanceMetrics)[] = [
-			"executionTimeMs",
-			"memoryUsageMB",
-			"throughputOpsPerSec",
-			"averageLatencyMs",
-			"peakMemoryUsageMB",
-		]
+    const metricKeys: (keyof PerformanceMetrics)[] = [
+      "executionTimeMs",
+      "memoryUsageMB",
+      "throughputOpsPerSec",
+      "averageLatencyMs",
+      "peakMemoryUsageMB",
+    ];
 
-		for (const metric of metricKeys) {
-			const currentValue = current[metric] as number
-			const baselineValue = baseline[metric] as number
+    for (const metric of metricKeys) {
+      const currentValue = current[metric] as number;
+      const baselineValue = baseline[metric] as number;
 
-			if (baselineValue === 0) continue
+      if (baselineValue === 0) continue;
 
-			const percentageChange = (currentValue - baselineValue) / baselineValue
+      const percentageChange = (currentValue - baselineValue) / baselineValue;
 
-			// For throughput, higher is better (inverted logic)
-			const isInverseMetric = metric === "throughputOpsPerSec"
-			const isDegradation = isInverseMetric
-				? percentageChange < -threshold
-				: percentageChange > threshold
-			const isImprovement = isInverseMetric
-				? percentageChange > improvementThreshold
-				: percentageChange < -improvementThreshold
+      // For throughput, higher is better (inverted logic)
+      const isInverseMetric = metric === "throughputOpsPerSec";
+      const isDegradation = isInverseMetric
+        ? percentageChange < -threshold
+        : percentageChange > threshold;
+      const isImprovement = isInverseMetric
+        ? percentageChange > improvementThreshold
+        : percentageChange < -improvementThreshold;
 
-			if (isDegradation) {
-				degradedMetrics.push({
-					metric,
-					currentValue,
-					baselineValue,
-					percentageChange: percentageChange * PERFORMANCE_MONITORING.PERCENTAGE_MULTIPLIER,
-				})
-			} else if (isImprovement) {
-				improvedMetrics.push({
-					metric,
-					currentValue,
-					baselineValue,
-					percentageChange: percentageChange * PERFORMANCE_MONITORING.PERCENTAGE_MULTIPLIER,
-				})
-			}
-		}
+      if (isDegradation) {
+        degradedMetrics.push({
+          metric,
+          currentValue,
+          baselineValue,
+          percentageChange:
+            percentageChange * PERFORMANCE_MONITORING.PERCENTAGE_MULTIPLIER,
+        });
+      } else if (isImprovement) {
+        improvedMetrics.push({
+          metric,
+          currentValue,
+          baselineValue,
+          percentageChange:
+            percentageChange * PERFORMANCE_MONITORING.PERCENTAGE_MULTIPLIER,
+        });
+      }
+    }
 
-		// Return discriminated union based on metrics state
-		const hasRegression = degradedMetrics.length > 0
-		const hasImprovement = improvedMetrics.length > 0
+    // Return discriminated union based on metrics state
+    const hasRegression = degradedMetrics.length > 0;
+    const hasImprovement = improvedMetrics.length > 0;
 
-		if (!hasRegression && !hasImprovement) {
-			return { _tag: "stable" }
-		} else if (hasRegression && !hasImprovement) {
-			return { _tag: "regression", degradedMetrics }
-		} else if (!hasRegression && hasImprovement) {
-			return { _tag: "improvement", improvedMetrics }
-		} else {
-			// Both regression and improvement detected (mixed results)
-			return { _tag: "mixed", degradedMetrics, improvedMetrics }
-		}
-	}
+    if (!hasRegression && !hasImprovement) {
+      return { _tag: "stable" };
+    } else if (hasRegression && !hasImprovement) {
+      return { _tag: "regression", degradedMetrics };
+    } else if (!hasRegression && hasImprovement) {
+      return { _tag: "improvement", improvedMetrics };
+    } else {
+      // Both regression and improvement detected (mixed results)
+      return { _tag: "mixed", degradedMetrics, improvedMetrics };
+    }
+  };
 
-	/**
-	 * Set baseline metrics for future regression comparisons
-	 */
-	setBaseline = (_metrics: PerformanceMetrics): Effect.Effect<void, never, never> =>
-		Effect.sync(() => {
-			// In a real implementation, this would persist to storage
-			// Effect.log("Performance baseline set:", _metrics)
-		})
+  /**
+   * Set baseline metrics for future regression comparisons
+   */
+  setBaseline = (
+    _metrics: PerformanceMetrics,
+  ): Effect.Effect<void, never, never> =>
+    Effect.sync(() => {
+      // In a real implementation, this would persist to storage
+      // Effect.log("Performance baseline set:", _metrics)
+    });
 
-	/**
-	 * Create default configuration for development
-	 */
-	static createDevConfig(): PerformanceConfig {
-		return {
-			maxCompilationTimeMs: PERFORMANCE_MONITORING.DEV_MAX_COMPILATION_TIME_MS,  // 10 seconds
-			maxMemoryUsageMB: PERFORMANCE_MONITORING.DEV_MAX_MEMORY_USAGE_MB,        // 200MB
-			minThroughputOpsPerSec: PERFORMANCE_MONITORING.DEV_MIN_THROUGHPUT_OPS_PER_SEC,    // 5 ops/sec
-			maxLatencyMs: PERFORMANCE_MONITORING.DEV_MAX_LATENCY_MS,          // 2 seconds
-			enableRegressionDetection: true,
-		};
-	}
+  /**
+   * Create default configuration for development
+   */
+  static createDevConfig(): PerformanceConfig {
+    return {
+      maxCompilationTimeMs: PERFORMANCE_MONITORING.DEV_MAX_COMPILATION_TIME_MS, // 10 seconds
+      maxMemoryUsageMB: PERFORMANCE_MONITORING.DEV_MAX_MEMORY_USAGE_MB, // 200MB
+      minThroughputOpsPerSec:
+        PERFORMANCE_MONITORING.DEV_MIN_THROUGHPUT_OPS_PER_SEC, // 5 ops/sec
+      maxLatencyMs: PERFORMANCE_MONITORING.DEV_MAX_LATENCY_MS, // 2 seconds
+      enableRegressionDetection: true,
+    };
+  }
 
-	/**
-	 * Create strict configuration for CI/CD
-	 */
-	static createCiConfig(): PerformanceConfig {
-		return {
-			maxCompilationTimeMs: PERFORMANCE_MONITORING.CI_MAX_COMPILATION_TIME_MS,   // 5 seconds
-			maxMemoryUsageMB: PERFORMANCE_MONITORING.CI_MAX_MEMORY_USAGE_MB,       // 100MB
-			minThroughputOpsPerSec: PERFORMANCE_MONITORING.CI_MIN_THROUGHPUT_OPS_PER_SEC,   // 10 ops/sec
-			maxLatencyMs: PERFORMANCE_MONITORING.CI_MAX_LATENCY_MS,          // 1 second
-			enableRegressionDetection: true,
-		};
-	}
+  /**
+   * Create strict configuration for CI/CD
+   */
+  static createCiConfig(): PerformanceConfig {
+    return {
+      maxCompilationTimeMs: PERFORMANCE_MONITORING.CI_MAX_COMPILATION_TIME_MS, // 5 seconds
+      maxMemoryUsageMB: PERFORMANCE_MONITORING.CI_MAX_MEMORY_USAGE_MB, // 100MB
+      minThroughputOpsPerSec:
+        PERFORMANCE_MONITORING.CI_MIN_THROUGHPUT_OPS_PER_SEC, // 10 ops/sec
+      maxLatencyMs: PERFORMANCE_MONITORING.CI_MAX_LATENCY_MS, // 1 second
+      enableRegressionDetection: true,
+    };
+  }
 }
 
 /**
  * Default performance configuration for development
  */
-export const DEFAULT_PERFORMANCE_CONFIG: PerformanceConfig = PerformanceRegressionTester.createDevConfig()
+export const DEFAULT_PERFORMANCE_CONFIG: PerformanceConfig =
+  PerformanceRegressionTester.createDevConfig();
 
 /**
  * Helper functions for working with RegressionReport discriminated union
  */
 export const regressionReportHelpers = {
-	/**
-	 * Check if report indicates performance regression
-	 */
-	hasRegression: (report: RegressionReport): report is Extract<RegressionReport, { _tag: "regression" | "mixed" }> =>
-		report._tag === "regression" || report._tag === "mixed",
+  /**
+   * Check if report indicates performance regression
+   */
+  hasRegression: (
+    report: RegressionReport,
+  ): report is Extract<RegressionReport, { _tag: "regression" | "mixed" }> =>
+    report._tag === "regression" || report._tag === "mixed",
 
-	/**
-	 * Check if report indicates performance improvement
-	 */
-	hasImprovement: (report: RegressionReport): report is Extract<RegressionReport, { _tag: "improvement" | "mixed" }> =>
-		report._tag === "improvement" || report._tag === "mixed",
+  /**
+   * Check if report indicates performance improvement
+   */
+  hasImprovement: (
+    report: RegressionReport,
+  ): report is Extract<RegressionReport, { _tag: "improvement" | "mixed" }> =>
+    report._tag === "improvement" || report._tag === "mixed",
 
-	/**
-	 * Check if performance is stable (no significant changes)
-	 */
-	isStable: (report: RegressionReport): report is Extract<RegressionReport, { _tag: "stable" }> =>
-		report._tag === "stable",
+  /**
+   * Check if performance is stable (no significant changes)
+   */
+  isStable: (
+    report: RegressionReport,
+  ): report is Extract<RegressionReport, { _tag: "stable" }> =>
+    report._tag === "stable",
 
-	/**
-	 * Get degraded metrics from report (if any)
-	 */
-	getDegradedMetrics: (report: RegressionReport): MetricChange[] => {
-		switch (report._tag) {
-			case "regression":
-			case "mixed":
-				return report.degradedMetrics
-			default:
-				return []
-		}
-	},
+  /**
+   * Get degraded metrics from report (if any)
+   */
+  getDegradedMetrics: (report: RegressionReport): MetricChange[] => {
+    switch (report._tag) {
+      case "regression":
+      case "mixed":
+        return report.degradedMetrics;
+      default:
+        return [];
+    }
+  },
 
-	/**
-	 * Get improved metrics from report (if any)
-	 */
-	getImprovedMetrics: (report: RegressionReport): MetricChange[] => {
-		switch (report._tag) {
-			case "improvement":
-			case "mixed":
-				return report.improvedMetrics
-			default:
-				return []
-		}
-	},
-}
+  /**
+   * Get improved metrics from report (if any)
+   */
+  getImprovedMetrics: (report: RegressionReport): MetricChange[] => {
+    switch (report._tag) {
+      case "improvement":
+      case "mixed":
+        return report.improvedMetrics;
+      default:
+        return [];
+    }
+  },
+};

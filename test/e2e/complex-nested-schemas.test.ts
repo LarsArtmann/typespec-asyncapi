@@ -4,15 +4,17 @@
  * Tests deep nesting, arrays, recursive types, and complex object structures
  */
 
-import { describe, expect, it } from "bun:test"
-import { createAsyncAPITestHost } from "../utils/test-helpers.js"
-import { Effect } from "effect"
+import { describe, expect, it } from "bun:test";
+import { createAsyncAPITestHost } from "../utils/test-helpers.js";
+import { Effect } from "effect";
 
 describe("E2E: Complex Nested Schemas", () => {
-	it("should handle deeply nested and complex schema structures", async () => {
-		const host = await createAsyncAPITestHost()
+  it("should handle deeply nested and complex schema structures", async () => {
+    const host = await createAsyncAPITestHost();
 
-		host.addTypeSpecFile("main.tsp", `
+    host.addTypeSpecFile(
+      "main.tsp",
+      `
 			import "@lars-artmann/typespec-asyncapi";
 			using TypeSpec.AsyncAPI;
 
@@ -162,62 +164,80 @@ describe("E2E: Complex Nested Schemas", () => {
 			@channel("products.variants.update")
 			@subscribe
 			op subscribeProductVariants(): ProductVariant;
-		`)
+		`,
+    );
 
-		const program = await host.compile("./main.tsp")
-		const diagnostics = await host.diagnose("./main.tsp", {
-			emit: ["@lars-artmann/typespec-asyncapi"]
-		})
+    const program = await host.compile("./main.tsp");
+    const diagnostics = await host.diagnose("./main.tsp", {
+      emit: ["@lars-artmann/typespec-asyncapi"],
+    });
 
-		Effect.log(`Diagnostics: ${diagnostics.length}`)
+    Effect.log(`Diagnostics: ${diagnostics.length}`);
 
-		const outputFiles = Array.from(host.fs.keys())
-		const asyncApiFile = outputFiles.find(f =>
-			f.includes("asyncapi") && (f.endsWith(".json") || f.endsWith(".yaml"))
-		)
+    const outputFiles = Array.from(host.fs.keys());
+    const asyncApiFile = outputFiles.find(
+      (f) =>
+        f.includes("asyncapi") && (f.endsWith(".json") || f.endsWith(".yaml")),
+    );
 
-		expect(asyncApiFile).toBeDefined()
+    expect(asyncApiFile).toBeDefined();
 
-		if (asyncApiFile) {
-			const content = host.fs.get(asyncApiFile) as string
-			const spec = content.startsWith('{') ? JSON.parse(content) : require('yaml').parse(content)
+    if (asyncApiFile) {
+      const content = host.fs.get(asyncApiFile) as string;
+      const spec = content.startsWith("{")
+        ? JSON.parse(content)
+        : require("yaml").parse(content);
 
-			const schemas = spec.components?.schemas || {}
+      const schemas = spec.components?.schemas || {};
 
-			// Validate deep nesting (5 levels)
-			expect(schemas.UserProfile).toBeDefined()
-			expect(schemas.UserProfile.properties.personalInfo.type).toBe("object")
-			expect(schemas.UserProfile.properties.personalInfo.properties.contact.type).toBe("object")
-			expect(schemas.Address).toBeDefined()
+      // Validate deep nesting (5 levels)
+      expect(schemas.UserProfile).toBeDefined();
+      expect(schemas.UserProfile.properties.personalInfo.type).toBe("object");
+      expect(
+        schemas.UserProfile.properties.personalInfo.properties.contact.type,
+      ).toBe("object");
+      expect(schemas.Address).toBeDefined();
 
-			// Validate arrays
-			expect(schemas.Order.properties.items.type).toBe("array")
-			expect(schemas.Order.properties.items.items.type).toBe("object")
-			expect(schemas.ProductVariant.properties.attributes.type).toBe("array")
+      // Validate arrays
+      expect(schemas.Order.properties.items.type).toBe("array");
+      expect(schemas.Order.properties.items.items.type).toBe("object");
+      expect(schemas.ProductVariant.properties.attributes.type).toBe("array");
 
-			// Validate optional fields in nested structures
-			expect(schemas.ContactInfo.properties.phone).toBeDefined()
-			expect(schemas.ContactInfo.required).not.toContain("phone")
+      // Validate optional fields in nested structures
+      expect(schemas.ContactInfo.properties.phone).toBeDefined();
+      expect(schemas.ContactInfo.required).not.toContain("phone");
 
-			// Validate union types in nested structures
-			expect(schemas.ProductVariant.properties.pricing.properties.discount).toBeDefined()
+      // Validate union types in nested structures
+      expect(
+        schemas.ProductVariant.properties.pricing.properties.discount,
+      ).toBeDefined();
 
-			// Validate enums from union types
-			expect(schemas.Order.properties.shipping.properties.method.enum).toEqual(["standard", "express", "overnight"])
-			expect(schemas.UserEventPayload.properties.eventType.enum).toEqual(["created", "updated", "deleted"])
+      // Validate enums from union types
+      expect(schemas.Order.properties.shipping.properties.method.enum).toEqual([
+        "standard",
+        "express",
+        "overnight",
+      ]);
+      expect(schemas.UserEventPayload.properties.eventType.enum).toEqual([
+        "created",
+        "updated",
+        "deleted",
+      ]);
 
-			// Validate all required schemas exist
-			expect(schemas.Address).toBeDefined()
-			expect(schemas.ContactInfo).toBeDefined()
-			expect(schemas.EmploymentHistory).toBeDefined()
-			expect(schemas.UserProfile).toBeDefined()
-			expect(schemas.ProductVariant).toBeDefined()
-			expect(schemas.Order).toBeDefined()
+      // Validate all required schemas exist
+      expect(schemas.Address).toBeDefined();
+      expect(schemas.ContactInfo).toBeDefined();
+      expect(schemas.EmploymentHistory).toBeDefined();
+      expect(schemas.UserProfile).toBeDefined();
+      expect(schemas.ProductVariant).toBeDefined();
+      expect(schemas.Order).toBeDefined();
 
-			// Validate operations
-			expect(Object.keys(spec.operations || {}).length).toBeGreaterThanOrEqual(3)
+      // Validate operations
+      expect(Object.keys(spec.operations || {}).length).toBeGreaterThanOrEqual(
+        3,
+      );
 
-			Effect.log("✅ Complex nested schemas E2E test passed!")
-		}
-	})
-})
+      Effect.log("✅ Complex nested schemas E2E test passed!");
+    }
+  });
+});
