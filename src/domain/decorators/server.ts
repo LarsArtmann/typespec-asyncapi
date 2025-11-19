@@ -91,16 +91,24 @@ export function $server(
 	target: Namespace,
 	config: unknown,
 ): void {
+	Effect.log(`🔍 PROCESSING @server decorator on namespace: ${target.name}`)
+	Effect.log(`📋 Config raw value:`, config)
+	Effect.log(`📋 Config type:`, typeof config)
+
 	//TODO: CRITICAL - Redundant validation - TypeScript ensures target is Namespace
 	if (target.kind !== "Namespace") {
+		const targetKind = target.kind as string
+		Effect.log(`❌ Target kind validation failed: ${targetKind}`)
 		reportDiagnostic(context, target, "invalid-server-config", {serverName: "unknown"})
 		return
 	}
 
 	// Extract and validate server configuration with proper type safety
 	const validationResult = extractServerConfig(config)
+	Effect.log(`📋 Validation result:`, validationResult)
 	
 	if (!validationResult.success || !validationResult.config) {
+		Effect.log(`❌ Server config validation failed: ${validationResult.error}`)
 		reportDiagnostic(context, target, "invalid-server-config", {
 			serverName: validationResult.config?.name ?? "unknown",
 			error: validationResult.error ?? "Unknown error"
@@ -109,16 +117,22 @@ export function $server(
 	}
 
 	const serverConfig = validationResult.config
+	Effect.log(`✅ Extracted server config:`, serverConfig)
 
 	// Validate protocol against known AsyncAPI 3.0.0 protocols
 	const currentProtocol = serverConfig.protocol
 	const supportedProtocols = Object.values(Protocol)
+	Effect.log(`📋 Current protocol: ${currentProtocol}`)
+	Effect.log(`📋 Supported protocols:`, supportedProtocols)
+	
 	//TODO: CRITICAL - Extend with missing AsyncAPI 3.0.0 protocols (mqtt, mqtt5, nats, redis, etc.)
 	if (!supportedProtocols.includes(currentProtocol)) {
+		Effect.log(`❌ Protocol not supported: ${currentProtocol}`)
 		reportDiagnostic(context, target, "unsupported-protocol", {protocol: currentProtocol})
 		return
 	}
 
+	Effect.log(`✅ Server configuration validated and stored for ${target.name}`)
 	//TODO: CRITICAL - Ensure serverConfigsMap state exists and handle properly
 	// Store server configuration in program state with proper type safety
 	const serverConfigsMap = context.program.stateMap($lib.stateKeys.serverConfigs)

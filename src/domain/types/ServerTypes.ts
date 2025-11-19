@@ -53,11 +53,10 @@ export function extractProtocol(value: unknown): Protocol | null {
   if (!protocol) return null
   
   const upperProtocol = protocol.toUpperCase()
-  if (upperProtocol in Protocol) {
-    return Protocol[upperProtocol as keyof typeof Protocol]
-  }
-  
-  return null
+  // Convert string to Protocol enum value
+  const protocolValues = Object.values(Protocol)
+  const foundProtocol = protocolValues.find(p => p.toUpperCase() === upperProtocol)
+  return foundProtocol ?? null
 }
 
 /**

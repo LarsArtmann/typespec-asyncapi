@@ -28,11 +28,15 @@
 // TODO: TYPE_SAFETY - Add explicit return type annotations to imported functions for better IDE support
 // TODO: TYPE_SAFETY - Consider importing { type } for createTypeSpecLibrary if only used in type position
 // TODO: PERFORMANCE - Verify all imported functions are actually used to avoid dead imports
-import {createTypeSpecLibrary, type DecoratorContext, type Diagnostic, paramMessage} from "@typespec/compiler"
+import {
+  createTypeSpecLibrary,
+  type DecoratorContext,
+  paramMessage,
+} from "@typespec/compiler";
 
 // Constants - Import centralized constants to eliminate hardcoded values
-import {DEFAULT_CONFIG} from "./constants/index.js"
-import {ASYNCAPI_VERSIONS} from "./constants/asyncapi-constants.js"
+import { DEFAULT_CONFIG } from "./constants/index.js";
+import { ASYNCAPI_VERSIONS } from "./constants/asyncapi-constants.js";
 
 /**
  * TypeSpec AsyncAPI Library Definition - Core library configuration and metadata
@@ -75,204 +79,223 @@ import {ASYNCAPI_VERSIONS} from "./constants/asyncapi-constants.js"
 // TODO: MAINTENANCE - Extract diagnostic messages to separate localization file for i18n support
 // TODO: VALIDATION - Add JSON Schema validation for library definition structure at build time
 export const $lib = createTypeSpecLibrary({
-	// Using centralized constant instead of hardcoded library name
-	name: DEFAULT_CONFIG.LIBRARY_NAME,
-	// TODO: Add library description, version, and other metadata fields
-	diagnostics: {
-		// TODO: TYPE_SAFETY - Extract diagnostics to typed const with DiagnosticMap<string, DiagnosticDefinition> for reusability
-		// TODO: TYPE_SAFETY - Each diagnostic should have explicit severity type: "error" | "warning" | "info"
-		// TODO: TYPE_SAFETY - Add template parameter types for paramMessage template arguments
-		// TODO: ARCHITECTURE - Group related diagnostics with separating comments (version, channel, message, protocol, security)
-		// TODO: MAINTENANCE - Consider using enum for diagnostic codes to prevent typos and enable refactoring
-		// TODO: VALIDATION - Add runtime validation that all referenced template parameters exist in messages
+  // Using centralized constant instead of hardcoded library name
+  name: DEFAULT_CONFIG.LIBRARY_NAME,
+  // TODO: Add library description, version, and other metadata fields
+  diagnostics: {
+    // TODO: TYPE_SAFETY - Extract diagnostics to typed const with DiagnosticMap<string, DiagnosticDefinition> for reusability
+    // TODO: TYPE_SAFETY - Each diagnostic should have explicit severity type: "error" | "warning" | "info"
+    // TODO: TYPE_SAFETY - Add template parameter types for paramMessage template arguments
+    // TODO: ARCHITECTURE - Group related diagnostics with separating comments (version, channel, message, protocol, security)
+    // TODO: MAINTENANCE - Consider using enum for diagnostic codes to prevent typos and enable refactoring
+    // TODO: VALIDATION - Add runtime validation that all referenced template parameters exist in messages
 
-		// === VERSION VALIDATION DIAGNOSTICS ===
-		"invalid-asyncapi-version": {
-			// TODO: TYPE_SAFETY - severity should use const assertion: "error" as const
-			severity: "error",
-			// TODO: TYPE_SAFETY - Add multiple message variants for different contexts (CLI, IDE, programmatic)
-			// TODO: TYPE_SAFETY - Template parameters should be explicitly typed: version: string
-			messages: {
-				// Using centralized AsyncAPI version constant instead of hardcoded version
-				// TODO: TYPE_SAFETY - paramMessage template should specify parameter types
-				default: paramMessage`AsyncAPI version '${"version"}' is not supported. Only AsyncAPI ${ASYNCAPI_VERSIONS.CURRENT} is supported. Update your emitter options to use "${ASYNCAPI_VERSIONS.CURRENT}".`,
-			},
-		},
+    // === VERSION VALIDATION DIAGNOSTICS ===
+    "invalid-asyncapi-version": {
+      // TODO: TYPE_SAFETY - severity should use const assertion: "error" as const
+      severity: "error",
+      // TODO: TYPE_SAFETY - Add multiple message variants for different contexts (CLI, IDE, programmatic)
+      // TODO: TYPE_SAFETY - Template parameters should be explicitly typed: version: string
+      messages: {
+        // Using centralized AsyncAPI version constant instead of hardcoded version
+        // TODO: TYPE_SAFETY - paramMessage template should specify parameter types
+        default: paramMessage`AsyncAPI version '${"version"}' is not supported. Only AsyncAPI ${ASYNCAPI_VERSIONS.CURRENT} is supported. Update your emitter options to use "${ASYNCAPI_VERSIONS.CURRENT}".`,
+      },
+    },
 
-		// === CHANNEL VALIDATION DIAGNOSTICS ===
-		"missing-channel-path": {
-			// TODO: TYPE_SAFETY - severity: "error" as const for better type inference
-			severity: "error",
-			messages: {
-				// TODO: TYPE_SAFETY - Template parameters should be typed: operationName: string
-				// TODO: UX - Add actionable examples in the error message for different channel patterns
-				// TODO: UX - Add link to documentation about channel path requirements
-				// TODO: UX - Include common channel patterns in the error message for immediate help
-				default: paramMessage`Operation '${"operationName"}' missing @channel decorator. Add @channel("/your-channel-path") to specify the channel path.`,
-			},
-		},
-		"invalid-channel-path": {
-			// TODO: TYPE_SAFETY - severity: "error" as const
-			severity: "error",
-			messages: {
-				// TODO: TYPE_SAFETY - Template parameters should be typed: path: string
-				// TODO: UX - Add specific validation rules documentation in the error message
-				// TODO: UX - Provide examples of valid channel path formats
-				// TODO: UX - Add suggestion for fixing common path format mistakes
-				// TODO: UX - Include regex pattern or validation function reference for developers
-				default: paramMessage`Channel path '${"path"}' is not valid. Use format: /topic-name, /service/event-type, or {variable} syntax.`,
-			},
-		},
-		"missing-message-schema": {
-			severity: "error",
-			messages: {
-				default: paramMessage`Message '${"messageName"}' must have a defined schema. Use @message decorator with a TypeSpec model.`,
-			},
-		},
-		"conflicting-operation-type": {
-			severity: "error",
-			messages: {
-				default: paramMessage`Operation '${"operationName"}' cannot be both @publish and @subscribe. Choose one operation type.`,
-			},
-		},
-		"unsupported-protocol": {
-			severity: "error",
-			messages: {
-				default: paramMessage`Protocol '${"protocol"}' is not supported. Supported protocols: kafka, amqp, websocket, http.`,
-			},
-		},
-		"missing-server-config": {
-			severity: "warning",
-			messages: {
-				default: "No server configuration found. Add @server decorator to define AsyncAPI servers.",
-			},
-		},
-		"invalid-server-config": {
-			severity: "error",
-			messages: {
-				default: paramMessage`Server configuration '${"serverName"}' is not valid. ${"error"} Server configurations must include url and protocol.`,
-			},
-		},
-		"duplicate-server-name": {
-			severity: "error",
-			messages: {
-				default: paramMessage`Server name '${"serverName"}' is already defined. Server names must be unique within a namespace.`,
-			},
-		},
-		"invalid-security-scheme": {
-			severity: "error",
-			messages: {
-				default: paramMessage`Security scheme '${"scheme"}' is not valid for AsyncAPI 3.0.`,
-			},
-		},
-		"duplicate-channel-id": {
-			severity: "error",
-			messages: {
-				default: paramMessage`Channel ID '${"channelId"}' is already defined. Channel IDs must be unique within an AsyncAPI specification.`,
-			},
-		},
-		"circular-message-reference": {
-			severity: "error",
-			messages: {
-				default: paramMessage`Circular reference detected in message schema for '${"messageName"}'. Break the circular dependency or use $ref to handle recursion.`,
-			},
-		},
-		"invalid-message-target": {
-			severity: "error",
-			messages: {
-				default: paramMessage`@message decorator can only be applied to models, not '${"targetType"}'.`,
-			},
-		},
-		"invalid-protocol-target": {
-			severity: "error",
-			messages: {
-				default: paramMessage`@protocol decorator can only be applied to operations or models, not '${"targetType"}'.`,
-			},
-		},
-		"missing-protocol-type": {
-			severity: "error",
-			messages: {
-				default: "Protocol configuration must specify a protocol type.",
-			},
-		},
-		"invalid-protocol-type": {
-			severity: "error",
-			messages: {
-				default: paramMessage`Protocol type '${"protocol"}' is not supported. Supported types: ${"validProtocols"}.`,
-			},
-		},
-		"invalid-security-target": {
-			severity: "error",
-			messages: {
-				default: paramMessage`@security decorator can only be applied to operations or models, not '${"targetType"}'.`,
-			},
-		},
-		"missing-security-config": {
-			severity: "error",
-			messages: {
-				default: "Security configuration must specify a name and scheme.",
-			},
-		},
-		"security-scheme-validation-failed": {
-			severity: "error",
-			messages: {
-				default: paramMessage`Security scheme validation failed: ${"errors"}.`,
-			},
-		},
-		"invalid-asyncapi-target": {
-			severity: "error",
-			messages: {
-				default: paramMessage`@asyncapi decorator can only be applied to namespaces, not '${"targetType"}'.`,
-			},
-		},
-		// TODO: Add more diagnostic codes for edge cases and advanced validations
-		// TODO: Consider adding info-level diagnostics for best practices
-		// TODO: Add diagnostic codes for performance warnings (large schemas, etc.)
-	},
-	/**
-	 * State Management Schema - Decorator data persistence during TypeSpec compilation
-	 *
-	 * This section defines the state storage schema used by decorators to persist data
-	 * throughout the TypeSpec compilation process. Each state key represents a different
-	 * category of data that decorators collect and the emitter later processes.
-	 *
-	 * State Categories:
-	 * - Channel Configuration: Path mappings and channel-specific settings
-	 * - Message Definitions: Schema references and message metadata
-	 * - Server Configuration: Connection details and server bindings
-	 * - Protocol Settings: Transport-specific configuration (MQTT, WebSocket, etc.)
-	 * - Security Configuration: Authentication and authorization schemes
-	 * - Operation Metadata: Publish/subscribe classifications and routing information
-	 *
-	 * The TypeSpec compiler automatically manages state lifecycle:
-	 * 1. Decorators store data using context.program.stateMap()
-	 * 2. State persists throughout compilation phases
-	 * 3. Emitter retrieves consolidated state for document generation
-	 * 4. State is cleaned up automatically after compilation completion
-	 *
-	 * @see {@link stateKeys} Strongly-typed state key constants
-	 */
-	state: {
-		// TODO: Add more detailed descriptions including data types and usage patterns
-		// TODO: Consider adding validation functions for state data integrity
-		// TODO: Group related state by functionality (channels, messages, servers, etc.)
-		channelPaths: {description: "Map of operation to channel path"},
-		messageSchemas: {description: "Map of message names to their schemas"},
-		messageConfigs: {description: "Map of models to message configurations"},
-		messageHeaders: {description: "Map of model properties marked as headers"},
-		serverConfigs: {description: "Server configurations"},
-		protocolBindings: {description: "Protocol-specific bindings"},
-		protocolConfigs: {description: "Map of targets to protocol configurations"},
-		securitySchemes: {description: "Security scheme configurations"},
-		securityConfigs: {description: "Map of targets to security configurations"},
-		operationTypes: {description: "Map of operations to publish/subscribe type"},
-		tags: {description: "Map of targets to tag arrays for categorization"},
-		correlationIds: {description: "Map of models to correlation ID configurations"},
-		cloudBindings: {description: "Map of targets to cloud provider specific bindings"},
-	},
-	// TODO: Add additional library metadata (version, author, repository)
-	// NOTE: Decorators are auto-discovered through module exports, not registered in createTypeSpecLibrary
-} as const)
+    // === CHANNEL VALIDATION DIAGNOSTICS ===
+    "missing-channel-path": {
+      // TODO: TYPE_SAFETY - severity: "error" as const for better type inference
+      severity: "error",
+      messages: {
+        // TODO: TYPE_SAFETY - Template parameters should be typed: operationName: string
+        // TODO: UX - Add actionable examples in the error message for different channel patterns
+        // TODO: UX - Add link to documentation about channel path requirements
+        // TODO: UX - Include common channel patterns in the error message for immediate help
+        default: paramMessage`Operation '${"operationName"}' missing @channel decorator. Add @channel("/your-channel-path") to specify the channel path.`,
+      },
+    },
+    "invalid-channel-path": {
+      // TODO: TYPE_SAFETY - severity: "error" as const
+      severity: "error",
+      messages: {
+        // TODO: TYPE_SAFETY - Template parameters should be typed: path: string
+        // TODO: UX - Add specific validation rules documentation in the error message
+        // TODO: UX - Provide examples of valid channel path formats
+        // TODO: UX - Add suggestion for fixing common path format mistakes
+        // TODO: UX - Include regex pattern or validation function reference for developers
+        default: paramMessage`Channel path '${"path"}' is not valid. Use format: /topic-name, /service/event-type, or {variable} syntax.`,
+      },
+    },
+    "missing-message-schema": {
+      severity: "error",
+      messages: {
+        default: paramMessage`Message '${"messageName"}' must have a defined schema. Use @message decorator with a TypeSpec model.`,
+      },
+    },
+    "conflicting-operation-type": {
+      severity: "error",
+      messages: {
+        default: paramMessage`Operation '${"operationName"}' cannot be both @publish and @subscribe. Choose one operation type.`,
+      },
+    },
+    "unsupported-protocol": {
+      severity: "error",
+      messages: {
+        default: paramMessage`Protocol '${"protocol"}' is not supported. Supported protocols: kafka, amqp, websocket, http.`,
+      },
+    },
+    "missing-server-config": {
+      severity: "warning",
+      messages: {
+        default:
+          "No server configuration found. Add @server decorator to define AsyncAPI servers.",
+      },
+    },
+    "test-simple": {
+      severity: "error", 
+      messages: {
+        default: "This is a simple test diagnostic without parameters."
+      }
+    },
+    "invalid-server-config": {
+      severity: "error",
+      messages: {
+        default: paramMessage`Server configuration '${"serverName"}' is not valid. ${"error"} Server configurations must include url and protocol.`,
+      },
+    },
+    "duplicate-server-name": {
+      severity: "error",
+      messages: {
+        default: paramMessage`Server name '${"serverName"}' is already defined. Server names must be unique within a namespace.`,
+      },
+    },
+    "invalid-security-scheme": {
+      severity: "error",
+      messages: {
+        default: paramMessage`Security scheme '${"scheme"}' is not valid for AsyncAPI 3.0.`,
+      },
+    },
+    "duplicate-channel-id": {
+      severity: "error",
+      messages: {
+        default: paramMessage`Channel ID '${"channelId"}' is already defined. Channel IDs must be unique within an AsyncAPI specification.`,
+      },
+    },
+    "circular-message-reference": {
+      severity: "error",
+      messages: {
+        default: paramMessage`Circular reference detected in message schema for '${"messageName"}'. Break the circular dependency or use $ref to handle recursion.`,
+      },
+    },
+    "invalid-message-target": {
+      severity: "error",
+      messages: {
+        default: paramMessage`@message decorator can only be applied to models, not '${"targetType"}'.`,
+      },
+    },
+    "invalid-protocol-target": {
+      severity: "error",
+      messages: {
+        default: paramMessage`@protocol decorator can only be applied to operations or models, not '${"targetType"}'.`,
+      },
+    },
+    "missing-protocol-type": {
+      severity: "error",
+      messages: {
+        default: "Protocol configuration must specify a protocol type.",
+      },
+    },
+    "invalid-protocol-type": {
+      severity: "error",
+      messages: {
+        default: paramMessage`Protocol type '${"protocol"}' is not supported. Supported types: ${"validProtocols"}.`,
+      },
+    },
+    "invalid-security-target": {
+      severity: "error",
+      messages: {
+        default: paramMessage`@security decorator can only be applied to operations or models, not '${"targetType"}'.`,
+      },
+    },
+    "missing-security-config": {
+      severity: "error",
+      messages: {
+        default: "Security configuration must specify a name and scheme.",
+      },
+    },
+    "security-scheme-validation-failed": {
+      severity: "error",
+      messages: {
+        default: paramMessage`Security scheme validation failed: ${"errors"}.`,
+      },
+    },
+    "invalid-asyncapi-target": {
+      severity: "error",
+      messages: {
+        default: paramMessage`@asyncapi decorator can only be applied to namespaces, not '${"targetType"}'.`,
+      },
+    },
+    // TODO: Add more diagnostic codes for edge cases and advanced validations
+    // TODO: Consider adding info-level diagnostics for best practices
+    // TODO: Add diagnostic codes for performance warnings (large schemas, etc.)
+  },
+  /**
+   * State Management Schema - Decorator data persistence during TypeSpec compilation
+   *
+   * This section defines the state storage schema used by decorators to persist data
+   * throughout the TypeSpec compilation process. Each state key represents a different
+   * category of data that decorators collect and the emitter later processes.
+   *
+   * State Categories:
+   * - Channel Configuration: Path mappings and channel-specific settings
+   * - Message Definitions: Schema references and message metadata
+   * - Server Configuration: Connection details and server bindings
+   * - Protocol Settings: Transport-specific configuration (MQTT, WebSocket, etc.)
+   * - Security Configuration: Authentication and authorization schemes
+   * - Operation Metadata: Publish/subscribe classifications and routing information
+   *
+   * The TypeSpec compiler automatically manages state lifecycle:
+   * 1. Decorators store data using context.program.stateMap()
+   * 2. State persists throughout compilation phases
+   * 3. Emitter retrieves consolidated state for document generation
+   * 4. State is cleaned up automatically after compilation completion
+   *
+   * @see {@link stateKeys} Strongly-typed state key constants
+   */
+  state: {
+    // TODO: Add more detailed descriptions including data types and usage patterns
+    // TODO: Consider adding validation functions for state data integrity
+    // TODO: Group related state by functionality (channels, messages, servers, etc.)
+    channelPaths: { description: "Map of operation to channel path" },
+    messageSchemas: { description: "Map of message names to their schemas" },
+    messageConfigs: { description: "Map of models to message configurations" },
+    messageHeaders: {
+      description: "Map of model properties marked as headers",
+    },
+    serverConfigs: { description: "Server configurations" },
+    protocolBindings: { description: "Protocol-specific bindings" },
+    protocolConfigs: {
+      description: "Map of targets to protocol configurations",
+    },
+    securitySchemes: { description: "Security scheme configurations" },
+    securityConfigs: {
+      description: "Map of targets to security configurations",
+    },
+    operationTypes: {
+      description: "Map of operations to publish/subscribe type",
+    },
+    tags: { description: "Map of targets to tag arrays for categorization" },
+    correlationIds: {
+      description: "Map of models to correlation ID configurations",
+    },
+    cloudBindings: {
+      description: "Map of targets to cloud provider specific bindings",
+    },
+  },
+  // TODO: Add additional library metadata (version, author, repository)
+  // NOTE: Decorators are auto-discovered through module exports, not registered in createTypeSpecLibrary
+} as const);
 
 /**
  * State Keys Constants - Strongly-typed keys for decorator state management
@@ -336,22 +359,22 @@ export const $lib = createTypeSpecLibrary({
 // TODO: TYPE_SAFETY - Consider using template literal types for better IntelliSense support
 // TODO: PERFORMANCE - Evaluate if stateKeys should be frozen with Object.freeze() for immutability
 export const stateKeys = {
-	// TODO: TYPE_SAFETY - Each key should have explicit type annotation and inline comment
-	// TODO: VALIDATION - Add static assertion that these keys exist in $lib.state schema
-	channelPaths: "channelPaths", // Maps TypeSpec operations to AsyncAPI channel path strings
-	messageSchemas: "messageSchemas", // Maps message names to their TypeSpec model schema definitions
-	messageConfigs: "messageConfigs", // Maps TypeSpec models to @message decorator configuration objects
-	messageHeaders: "messageHeaders", // Maps model properties marked as headers with @header decorator
-	serverConfigs: "serverConfigs", // Stores @server decorator configuration data for AsyncAPI servers
-	protocolBindings: "protocolBindings", // Maps protocol names to their binding configuration objects
-	protocolConfigs: "protocolConfigs", // Maps TypeSpec targets to @protocol decorator settings
-	securitySchemes: "securitySchemes", // Stores security scheme definitions for authentication
-	securityConfigs: "securityConfigs", // Maps TypeSpec targets to @security decorator settings
-	operationTypes: "operationTypes", // Maps operations to publish/subscribe classifications
-	tags: "tags", // Maps targets to tag arrays for categorization and organization
-	correlationIds: "correlationIds", // Maps models to correlation ID configurations for message tracking
-	cloudBindings: "cloudBindings", // Maps targets to cloud provider specific binding configurations
-} as const
+  // TODO: TYPE_SAFETY - Each key should have explicit type annotation and inline comment
+  // TODO: VALIDATION - Add static assertion that these keys exist in $lib.state schema
+  channelPaths: "channelPaths", // Maps TypeSpec operations to AsyncAPI channel path strings
+  messageSchemas: "messageSchemas", // Maps message names to their TypeSpec model schema definitions
+  messageConfigs: "messageConfigs", // Maps TypeSpec models to @message decorator configuration objects
+  messageHeaders: "messageHeaders", // Maps model properties marked as headers with @header decorator
+  serverConfigs: "serverConfigs", // Stores @server decorator configuration data for AsyncAPI servers
+  protocolBindings: "protocolBindings", // Maps protocol names to their binding configuration objects
+  protocolConfigs: "protocolConfigs", // Maps TypeSpec targets to @protocol decorator settings
+  securitySchemes: "securitySchemes", // Stores security scheme definitions for authentication
+  securityConfigs: "securityConfigs", // Maps TypeSpec targets to @security decorator settings
+  operationTypes: "operationTypes", // Maps operations to publish/subscribe classifications
+  tags: "tags", // Maps targets to tag arrays for categorization and organization
+  correlationIds: "correlationIds", // Maps models to correlation ID configurations for message tracking
+  cloudBindings: "cloudBindings", // Maps targets to cloud provider specific binding configurations
+} as const;
 
 /**
  * TypeSpec Diagnostic Reporter Helper
@@ -369,9 +392,8 @@ export const stateKeys = {
  *
  * @param context - TypeSpec emitter context containing the program reference
  * @param target - The TypeSpec AST node that triggered the diagnostic
- * @param code - Diagnostic code (will be prefixed with "@lars-artmann/typespec-asyncapi.")
+ * @param code - Diagnostic code (must be one of the codes defined in $lib.diagnostics)
  * @param args - Optional arguments for error message templating
- *
  *
  * @returns {void} No return value - diagnostics are reported directly to TypeSpec compiler
  *
@@ -428,21 +450,33 @@ export const stateKeys = {
 // TODO: TYPE_SAFETY - Add function overloads for common diagnostic patterns to improve developer experience
 // TODO: PERFORMANCE - Consider caching the prefixed diagnostic code for performance in hot paths
 // TODO: VALIDATION - Add validation that the diagnostic code exists in the library definition before reporting
-export function reportDiagnostic(context: DecoratorContext, target: unknown, code: string, args?: Record<string, unknown>): void {
-	// TODO: TYPE_SAFETY - Add runtime validation that context is valid DecoratorContext
-	// TODO: TYPE_SAFETY - Add validation that target is valid TypeSpec AST node
-	// TODO: TYPE_SAFETY - Add validation that code is non-empty string and exists in diagnostic definitions
-	// TODO: ERROR_HANDLING - Add error handling for reportDiagnostic failures with try-catch
-	// TODO: PERFORMANCE - Consider caching the prefixed diagnostic code for performance optimization
-	// TODO: TYPE_SAFETY - Cast to Diagnostic should be more specific about the shape of the diagnostic object
-	context.program.reportDiagnostic({
-		code: `${DEFAULT_CONFIG.LIBRARY_NAME}.${code}`,
-		target,
-		// TODO: TYPE_SAFETY - Add validation for args parameter structure to ensure required template params exist
-		// TODO: SECURITY - Consider deep cloning args to prevent mutation and potential security issues
-		// TODO: TYPE_SAFETY - Spread operator should be typed to ensure args matches expected diagnostic parameter
-		...args,
-	} as Diagnostic)
+export function reportDiagnostic(
+  context: DecoratorContext,
+  target: unknown,
+  code: keyof typeof $lib.diagnostics,
+  args?: Record<string, unknown>,
+): void {
+  // TODO: TYPE_SAFETY - Add runtime validation that context is valid DecoratorContext
+  // TODO: TYPE_SAFETY - Add validation that target is valid TypeSpec AST node
+  // TODO: TYPE_SAFETY - Add validation that code is non-empty string and exists in diagnostic definitions
+  // TODO: ERROR_HANDLING - Add error handling for reportDiagnostic failures with try-catch
+  // TODO: PERFORMANCE - Consider caching the prefixed diagnostic code for performance optimization
+
+  // Use TypeSpec library's diagnostic system which handles template resolution automatically
+  // $lib.reportDiagnostic automatically resolves paramMessage templates and creates proper Diagnostic objects
+  // The args object is passed as the 'format' property for template parameter resolution
+  // Debug: Create diagnostic using library creator first
+  const diagnosticInput = {
+    code,
+    target,
+    format: args ?? {},
+  };
+
+  // Create diagnostic using library's diagnostic creator
+  const resolvedDiagnostic = $lib.createDiagnostic(diagnosticInput);
+
+  // Report directly to program
+  context.program.reportDiagnostic(resolvedDiagnostic);
 }
 
 /**
