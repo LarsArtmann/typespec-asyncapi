@@ -36,12 +36,13 @@ extern dec security(target: Operation | Namespace, config: Model);
  * Define server configuration
  * @param config Server configuration object (validated for type safety)
  */
-extern dec server(target: Namespace, config: unknown);
+extern dec server(target: Namespace, config: Model);
 
 /**
  * Mark an operation as a publish operation (sends messages to the channel)
+ * @param config Optional message configuration
  */
-extern dec publish(target: Operation);
+extern dec publish(target: Operation, config?: Model);
 
 /**
  * Mark an operation as a subscribe operation (receives messages from the channel)
@@ -52,7 +53,7 @@ extern dec subscribe(target: Operation);
  * Apply tags metadata for categorization
  * @param value Array of tag strings
  */
-extern dec tags(target: unknown, value: valueof string[]);
+extern dec tags(target: Model | Operation | Namespace, value: valueof string[]);
 
 /**
  * Specify correlation ID configuration

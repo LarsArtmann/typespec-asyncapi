@@ -31,14 +31,9 @@
 import {
   createTypeSpecLibrary,
   type DecoratorContext,
-  type Diagnostic,
   type DiagnosticTarget,
   paramMessage,
 } from "@typespec/compiler";
-
-// Constants - Import centralized constants to eliminate hardcoded values
-import { DEFAULT_CONFIG } from "./constants/index.js";
-import { ASYNCAPI_VERSIONS } from "./constants/asyncapi-constants.js";
 
 /**
  * TypeSpec AsyncAPI Library Definition - Core library configuration and metadata
@@ -81,8 +76,7 @@ import { ASYNCAPI_VERSIONS } from "./constants/asyncapi-constants.js";
 // TODO: MAINTENANCE - Extract diagnostic messages to separate localization file for i18n support
 // TODO: VALIDATION - Add JSON Schema validation for library definition structure at build time
 export const $lib = createTypeSpecLibrary({
-  // Using centralized constant instead of hardcoded library name
-  name: DEFAULT_CONFIG.LIBRARY_NAME,
+  name: "@typespec/asyncapi",
   // TODO: Add library description, version, and other metadata fields
   diagnostics: {
     // TODO: TYPE_SAFETY - Extract diagnostics to typed const with DiagnosticMap<string, DiagnosticDefinition> for reusability
@@ -99,9 +93,9 @@ export const $lib = createTypeSpecLibrary({
       // TODO: TYPE_SAFETY - Add multiple message variants for different contexts (CLI, IDE, programmatic)
       // TODO: TYPE_SAFETY - Template parameters should be explicitly typed: version: string
       messages: {
-        // Using centralized AsyncAPI version constant instead of hardcoded version
+        // Using hardcoded AsyncAPI version instead of constant
         // TODO: TYPE_SAFETY - paramMessage template should specify parameter types
-        default: paramMessage`AsyncAPI version '${"version"}' is not supported. Only AsyncAPI ${ASYNCAPI_VERSIONS.CURRENT} is supported. Update your emitter options to use "${ASYNCAPI_VERSIONS.CURRENT}".`,
+        default: paramMessage`AsyncAPI version '${"version"}' is not supported. Only AsyncAPI 3.0.0 is supported. Update your emitter options to use "3.0.0".`,
       },
     },
 
@@ -454,9 +448,9 @@ export const stateKeys = {
 // TODO: VALIDATION - Add validation that the diagnostic code exists in the library definition before reporting
 export function reportDiagnostic(
   context: DecoratorContext,
-  target: DiagnosticTarget | unknown,
+  target: DiagnosticTarget,
   code: keyof typeof $lib.diagnostics,
-  args?: Record<string, unknown>,
+  args?: Record<string, never>,
 ): void {
   // TODO: TYPE_SAFETY - Add runtime validation that context is valid DecoratorContext
   // TODO: TYPE_SAFETY - Add validation that target is valid TypeSpec AST node
@@ -470,7 +464,7 @@ export function reportDiagnostic(
   // Debug: Create diagnostic using library creator first
   const diagnosticInput = {
     code,
-    target: target as DiagnosticTarget,
+    target,
     format: args ?? {},
   };
 

@@ -16,4 +16,16 @@
 export const namespace = "TypeSpec.AsyncAPI";
 
 // DEBUG: ONLY export minimal decorators for debugging
-export { $channel, $server, $publish, $message, $protocol, $security, $subscribe, $tags, $correlationId, $bindings, $header } from "./minimal-decorators.js";
+export {
+  $channel,
+  $server,
+  $publish,
+  $message,
+  $protocol,
+  $security,
+  $subscribe,
+  $tags,
+  $correlationId,
+  $bindings,
+  $header,
+} from "./minimal-decorators.js";

@@ -4,6 +4,7 @@
  * Simplest possible decorator implementations to test TypeSpec linkage
  */
 
+/* eslint-disable no-console */
 import type {
   DecoratorContext,
   Namespace,
@@ -72,11 +73,12 @@ export function $server(
 export function $publish(
   context: DecoratorContext,
   target: Operation,
-  config: unknown,
+  config?: Model,
 ): void {
   console.log(`🔍 MINIMAL @publish decorator executed! config:`, config);
   console.log(`🔍 Target:`, target);
-  
+
+  // TODO: Add state management to persist publish configuration
   if (!config) {
     console.log(`❌ No publish config - should trigger diagnostic`);
     context.program.reportDiagnostic({
@@ -100,7 +102,7 @@ export function $message(
 ): void {
   console.log(`🔍 MINIMAL @message decorator executed! config:`, config);
   console.log(`🔍 Target:`, target);
-  
+
   if (!config) {
     console.log(`❌ No message config - should trigger diagnostic`);
     context.program.reportDiagnostic({
@@ -124,7 +126,7 @@ export function $protocol(
 ): void {
   console.log(`🔍 MINIMAL @protocol decorator executed! config:`, config);
   console.log(`🔍 Target:`, target);
-  
+
   if (!config) {
     console.log(`❌ No protocol config - should trigger diagnostic`);
     context.program.reportDiagnostic({
@@ -148,7 +150,7 @@ export function $security(
 ): void {
   console.log(`🔍 MINIMAL @security decorator executed! config:`, config);
   console.log(`🔍 Target:`, target);
-  
+
   if (!config) {
     console.log(`❌ No security config - should trigger diagnostic`);
     context.program.reportDiagnostic({
@@ -165,10 +167,7 @@ export function $security(
 /**
  * Simplest possible @subscribe decorator for testing
  */
-export function $subscribe(
-  context: DecoratorContext,
-  target: Operation,
-): void {
+export function $subscribe(context: DecoratorContext, target: Operation): void {
   console.log(`🔍 MINIMAL @subscribe decorator executed!`);
   console.log(`🔍 Target:`, target);
   console.log(`✅ @subscribe decorator completed successfully`);
@@ -184,7 +183,7 @@ export function $tags(
 ): void {
   console.log(`🔍 MINIMAL @tags decorator executed! value:`, value);
   console.log(`🔍 Target:`, target);
-  
+
   if (!value || !Array.isArray(value)) {
     console.log(`❌ No tags value - should trigger diagnostic`);
     context.program.reportDiagnostic({
@@ -207,9 +206,11 @@ export function $correlationId(
   location: unknown,
   property?: unknown,
 ): void {
-  console.log(`🔍 MINIMAL @correlationId decorator executed! location: ${location}, property: ${property}`);
+  console.log(
+    `🔍 MINIMAL @correlationId decorator executed! location: ${String(location)}, property: ${String(property)}`,
+  );
   console.log(`🔍 Target:`, target);
-  
+
   if (!location) {
     console.log(`❌ No correlationId location - should trigger diagnostic`);
     context.program.reportDiagnostic({
@@ -233,7 +234,7 @@ export function $bindings(
 ): void {
   console.log(`🔍 MINIMAL @bindings decorator executed! value:`, value);
   console.log(`🔍 Target:`, target);
-  
+
   if (!value) {
     console.log(`❌ No bindings value - should trigger diagnostic`);
     context.program.reportDiagnostic({
@@ -256,9 +257,12 @@ export function $header(
   name: unknown,
   value: unknown,
 ): void {
-  console.log(`🔍 MINIMAL @header decorator executed! name: ${name}, value:`, value);
+  console.log(
+    `🔍 MINIMAL @header decorator executed! name: ${String(name)}, value:`,
+    value,
+  );
   console.log(`🔍 Target:`, target);
-  
+
   if (!name) {
     console.log(`❌ No header name - should trigger diagnostic`);
     context.program.reportDiagnostic({
