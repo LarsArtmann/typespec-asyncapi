@@ -5,25 +5,16 @@ info:
   description: API generated from TypeSpec
 
 channels:
-  /test:
-    description: "Channel for publishTest operation"
+  test.messages:
+    description: "Channel for publishTestMessage operation"
     publish:
-      operationId: "publishTest"
-      description: "Publish operation for publishTest"
+      operationId: "publishTestMessage"
+      description: "Publish operation for publishTestMessage"
 
 messages:
-  TestMessage:
-    description: "Message TestMessage"
-    contentType: "application/json"
-    title: "TestMessage"
+
 
 components:
   schemas:
-  TestMessage:
-    type: object
-    properties:      message:
-        type: "string"
-        description: "Property message"
-    required:
-      - message
+
 

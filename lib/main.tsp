@@ -1,8 +1,6 @@
 // TypeSpec AsyncAPI Library Definition - Core decorator infrastructure
 // Restored after critical infrastructure loss on 2025-10-25
 
-import "../dist/index.js";
-
 using TypeSpec.Reflection;
 
 // Core AsyncAPI namespace for all decorators

@@ -125,7 +125,7 @@
     "yaml": "^2.8.1"
   },
   "peerDependencies": {
-    "@typespec/versioning": "latest"
+    "@typespec/versioning": ""
   },
   "peerDependenciesMeta": {
     "@typespec/versioning": {
@@ -143,6 +143,9 @@
     "@types/node": "^24.10.1",
     "@typescript-eslint/eslint-plugin": "^8.47.0",
     "@typescript-eslint/parser": "^8.47.0",
+    "@typespec/http": "^1.6.0",
+    "@typespec/openapi3": "^1.6.0",
+    "@typespec/rest": "^0.76.0",
     "@vitest/coverage-v8": "^4.0.10",
     "asyncapi-validator": "^5.1.1",
     "eslint": "^9.39.1",
