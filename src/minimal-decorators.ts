@@ -13,6 +13,8 @@ import type {
   ModelProperty,
   DiagnosticTarget,
 } from "@typespec/compiler";
+import { stateSymbols } from "./lib.js";
+import type { MessageConfigData } from "./state.js";
 
 /**
  * Simplest possible @channel decorator for testing
@@ -38,7 +40,15 @@ export function $channel(
     return;
   }
 
-  console.log(`✅ @channel decorator completed successfully`);
+  // Store channel path in state for emitter to use
+  const channelPathsMap = context.program.stateMap(stateSymbols.channelPaths);
+  channelPathsMap.set(target, {
+    path: path,
+    hasParameters: path.includes('{'),
+    parameters: path.match(/\{([^}]+)\}/g)?.map(param => param.slice(1, -1)),
+  });
+
+  console.log(`✅ @channel decorator completed successfully - stored in state`);
 }
 
 /**
@@ -78,18 +88,26 @@ export function $publish(
   console.log(`🔍 MINIMAL @publish decorator executed! config:`, config);
   console.log(`🔍 Target:`, target);
 
-  // TODO: Add state management to persist publish configuration
-  if (!config) {
-    console.log(`❌ No publish config - should trigger diagnostic`);
-    context.program.reportDiagnostic({
-      code: "invalid-publish-config",
-      target: target,
-      message: `Publish operation '${target.name}' missing configuration. Use @publish with message configuration.`,
-      severity: "error",
-    });
-    return;
+  // Store publish operation type in state
+  const operationTypesMap = context.program.stateMap(stateSymbols.operationTypes);
+  operationTypesMap.set(target, {
+    type: "publish",
+    messageType: config?.name,
+    description: `Publish operation for ${target.name ?? "unnamed"}`,
+    tags: [],
+  });
+
+  // If there's a message config, link it
+  if (config) {
+    const messageConfigsMap = context.program.stateMap(stateSymbols.messageConfigs);
+    const existingConfig = messageConfigsMap.get(config) as MessageConfigData | undefined;
+    if (existingConfig) {
+      existingConfig.messageId = config.name;
+      messageConfigsMap.set(config, existingConfig);
+    }
   }
-  console.log(`✅ @publish decorator completed successfully`);
+
+  console.log(`✅ @publish decorator completed successfully - stored in state`);
 }
 
 /**
@@ -113,7 +131,17 @@ export function $message(
     });
     return;
   }
-  console.log(`✅ @message decorator completed successfully`);
+
+  // Store message configuration in state
+  const messageConfigsMap = context.program.stateMap(stateSymbols.messageConfigs);
+  const configTyped = config as Record<string, unknown> | undefined;
+  messageConfigsMap.set(target, {
+    title: (configTyped?.title as string) ?? target.name,
+    description: (configTyped?.description as string) ?? `Message ${target.name}`,
+    contentType: (configTyped?.contentType as string) ?? "application/json",
+  });
+
+  console.log(`✅ @message decorator completed successfully - stored in state`);
 }
 
 /**
@@ -170,7 +198,17 @@ export function $security(
 export function $subscribe(context: DecoratorContext, target: Operation): void {
   console.log(`🔍 MINIMAL @subscribe decorator executed!`);
   console.log(`🔍 Target:`, target);
-  console.log(`✅ @subscribe decorator completed successfully`);
+
+  // Store subscribe operation type in state
+  const operationTypesMap = context.program.stateMap(stateSymbols.operationTypes);
+  operationTypesMap.set(target, {
+    type: "subscribe",
+    messageType: undefined,
+    description: `Subscribe operation for ${target.name ?? "unnamed"}`,
+    tags: [],
+  });
+
+  console.log(`✅ @subscribe decorator completed successfully - stored in state`);
 }
 
 /**

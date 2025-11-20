@@ -1,0 +1,29 @@
+asyncapi: 3.0.0
+info:
+  title: Generated API
+  version: 1.0.0
+  description: API generated from TypeSpec
+
+channels:
+  /test:
+    description: "Channel for publishTest operation"
+    publish:
+      operationId: "publishTest"
+      description: "Publish operation for publishTest"
+
+messages:
+  TestMessage:
+    description: "Message TestMessage"
+    contentType: "application/json"
+    title: "TestMessage"
+
+components:
+  schemas:
+  TestMessage:
+    type: object
+    properties:      message:
+        type: "string"
+        description: "Property message"
+    required:
+      - message
+

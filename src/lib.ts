@@ -476,6 +476,28 @@ export function reportDiagnostic(
 }
 
 /**
+ * State Symbols - Unique symbols for TypeSpec state management
+ *
+ * These symbols provide collision-proof keys for storing decorator data
+ * during TypeSpec compilation. Each symbol is scoped to this library.
+ */
+export const stateSymbols = {
+  channelPaths: $lib.createStateSymbol("channelPaths"),
+  messageSchemas: $lib.createStateSymbol("messageSchemas"),
+  messageConfigs: $lib.createStateSymbol("messageConfigs"),
+  messageHeaders: $lib.createStateSymbol("messageHeaders"),
+  serverConfigs: $lib.createStateSymbol("serverConfigs"),
+  protocolBindings: $lib.createStateSymbol("protocolBindings"),
+  protocolConfigs: $lib.createStateSymbol("protocolConfigs"),
+  securitySchemes: $lib.createStateSymbol("securitySchemes"),
+  securityConfigs: $lib.createStateSymbol("securityConfigs"),
+  operationTypes: $lib.createStateSymbol("operationTypes"),
+  tags: $lib.createStateSymbol("tags"),
+  correlationIds: $lib.createStateSymbol("correlationIds"),
+  cloudBindings: $lib.createStateSymbol("cloudBindings"),
+} as const;
+
+/**
  * NOTE: Decorators do NOT need to be exported from lib.ts
  *
  * TypeSpec auto-discovers decorators through the namespace export in decorators.ts.
