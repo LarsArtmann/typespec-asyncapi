@@ -16,6 +16,16 @@ import {
   createAsyncAPIMessages,
   createAsyncAPISchemas
 } from "./types/domain/asyncapi-domain-types.js";
+import type {
+  ChannelPath,
+  MessageId,
+  SchemaName
+} from "./types/domain/asyncapi-branded-types.js";
+import {
+  createChannelPath,
+  createMessageId,
+  createSchemaName
+} from "./types/domain/asyncapi-branded-types.js";
 
 /**
  * Basic AsyncAPI emitter - generates working AsyncAPI files
@@ -234,7 +244,8 @@ function generateChannels(state: AsyncAPIConsolidatedState): AsyncAPIChannels {
       };
     }
 
-    (channels)[channelPathData.path] = channelData as unknown;
+    const brandedChannelPath = createChannelPath(channelPathData.path);
+    (channels as any)[brandedChannelPath] = channelData as unknown;
   }
   
   return createAsyncAPIChannels(channels);
@@ -276,7 +287,8 @@ function generateMessages(state: AsyncAPIConsolidatedState): AsyncAPIMessages {
       }
     }
 
-    (messages)[modelName ?? "unnamed"] = messageData;
+    const brandedMessageId = createMessageId(modelName ?? "unnamed");
+  (messages as any)[brandedMessageId] = messageData;
   }
   
   return createAsyncAPIMessages(messages);
@@ -311,7 +323,8 @@ function generateSchemas(state: AsyncAPIConsolidatedState): AsyncAPISchemas {
         }
       }
 
-      (schemas)[modelName ?? "unnamed"] = schemaData;
+      const brandedSchemaName = createSchemaName(modelName ?? "unnamed");
+      (schemas as any)[brandedSchemaName] = schemaData;
     }
   }
   

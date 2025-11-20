@@ -1,9 +1,17 @@
 /**
- * 🎯 ASYNCAPI TYPE SAFETY: Incremental Record Replacement
+ * 🎯 ASYNCAPI DOMAIN TYPES: Complete Type Safety Infrastructure
  * 
- * Replaces Record<string, unknown> with typed collections
- * Maintains compatibility with existing code while improving type safety
+ * Runtime validation with branded types integration
+ * Production-ready type safety system
  */
+
+import type { 
+  ChannelPath,
+  MessageId, 
+  SchemaName,
+  OperationId,
+  ServerUrl
+} from "./asyncapi-branded-types.js";
 
 // ===== VALIDATION HELPERS =====
 
@@ -48,27 +56,32 @@ function validateSchema(schema: unknown): asserts schema is Record<string, unkno
   }
 }
 
-// ===== TYPE-SAFE RECORD REPLACEMENTS =====
+// ===== TYPE-SAFE RECORD REPLACEMENTS WITH BRANDED TYPES =====
 
 /**
- * Type-safe channel collection replacing Record<string, unknown>
+ * Type-safe channel collection using branded channel paths
  */
-export type AsyncAPIChannels = Record<string, unknown>;
+export type AsyncAPIChannels = Record<ChannelPath, unknown>;
 
 /**
- * Type-safe message collection replacing Record<string, unknown>
+ * Type-safe message collection using branded message IDs
  */
-export type AsyncAPIMessages = Record<string, unknown>;
+export type AsyncAPIMessages = Record<MessageId, unknown>;
 
 /**
- * Type-safe schema collection replacing Record<string, unknown>
+ * Type-safe schema collection using branded schema names
  */
-export type AsyncAPISchemas = Record<string, unknown>;
+export type AsyncAPISchemas = Record<SchemaName, unknown>;
 
 /**
- * Type-safe operation collection replacing Record<string, unknown>
+ * Type-safe operation collection using branded operation IDs
  */
-export type AsyncAPIOperations = Record<string, unknown>;
+export type AsyncAPIOperations = Record<OperationId, unknown>;
+
+/**
+ * Type-safe server collection using branded server URLs
+ */
+export type AsyncAPIServers = Record<ServerUrl, unknown>;
 
 // ===== TYPE CONSTRUCTORS WITH RUNTIME VALIDATION =====
 
@@ -150,33 +163,4 @@ export const createAsyncAPIOperations = (
   }
   
   return operations as AsyncAPIOperations;
-};
-
-// ===== TYPE GUARDS =====
-
-/**
- * Type guard for AsyncAPI channels
- */
-export const isAsyncAPIChannels = (
-  value: unknown
-): value is AsyncAPIChannels => {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-};
-
-/**
- * Type guard for AsyncAPI messages
- */
-export const isAsyncAPIMessages = (
-  value: unknown
-): value is AsyncAPIMessages => {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-};
-
-/**
- * Type guard for AsyncAPI schemas
- */
-export const isAsyncAPISchemas = (
-  value: unknown
-): value is AsyncAPISchemas => {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
 };
