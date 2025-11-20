@@ -9,7 +9,10 @@ import { consolidateAsyncAPIState, type AsyncAPIConsolidatedState } from "./stat
 import type { 
   AsyncAPIChannels, 
   AsyncAPIMessages, 
-  AsyncAPISchemas 
+  AsyncAPISchemas,
+  createAsyncAPIChannels,
+  createAsyncAPIMessages,
+  createAsyncAPISchemas
 } from "./types/domain/asyncapi-domain-types.js";
 
 /**
@@ -184,26 +187,25 @@ function generateAsyncAPI30Document(
 function generateChannels(state: AsyncAPIConsolidatedState): AsyncAPIChannels {
   const channels: AsyncAPIChannels = {};
   
-  for (const [operation, channelData] of state.channels) {
+  for (const [operation, channelPathData] of state.channels) {
     const operationName = getOperationName(operation);
     const operationType = state.operations.get(operation);
     
     // eslint-disable-next-line no-console
     console.log(`🔍 Processing channel for operation ${operationName ?? "unknown"}`);
     // eslint-disable-next-line no-console
-    console.log(`📍 Channel path: ${channelData.path}`);
+    console.log(`📍 Channel path: ${channelPathData.path}`);
     // eslint-disable-next-line no-console
     console.log(`⚡ Operation type: ${operationType?.type}`);
     
     // Build channel with operations
-    const channel: Record<string, unknown> = {
+    const channelData: any = {
       description: `Channel for ${operationName ?? "unnamed"} operation`,
     };
 
     // Add publish/subscribe operations
     if (operationType?.type === "publish") {
-      const channelPub = channel;
-      channelPub.publish = {
+      channelData.publish = {
         operationId: operationName,
         description: operationType.description ?? `Publish ${operationName} operation`,
         message: operationType.messageType ? {
@@ -218,8 +220,7 @@ function generateChannels(state: AsyncAPIConsolidatedState): AsyncAPIChannels {
     }
 
     if (operationType?.type === "subscribe") {
-      const channelSub = channel;
-      channelSub.subscribe = {
+      channelData.subscribe = {
         operationId: operationName,
         description: operationType.description ?? `Subscribe ${operationName} operation`,
         message: {
@@ -231,7 +232,7 @@ function generateChannels(state: AsyncAPIConsolidatedState): AsyncAPIChannels {
       };
     }
 
-    (channels)[channelData.path] = channel as unknown;
+    (channels)[channelPathData.path] = channelData as unknown;
   }
   
   return channels;
@@ -249,7 +250,7 @@ function generateMessages(state: AsyncAPIConsolidatedState): AsyncAPIMessages {
     console.log(`📨 Processing message for model ${modelName ?? "unknown"}`);
     
     // Generate full message structure from TypeSpec model
-    const message: Record<string, unknown> = {
+    const messageData: any = {
       description: messageConfig.description ?? `Message ${modelName}`,
       contentType: messageConfig.contentType ?? "application/json",
       title: messageConfig.title ?? modelName,
@@ -257,7 +258,7 @@ function generateMessages(state: AsyncAPIConsolidatedState): AsyncAPIMessages {
 
     // Add schema from model properties
     if (model.kind === "Model" && model.properties.size > 0) {
-      (message).payload = {
+      messageData.payload = {
         type: "object",
         properties: {}
       };
@@ -265,15 +266,15 @@ function generateMessages(state: AsyncAPIConsolidatedState): AsyncAPIMessages {
       // Process model properties
       for (const [propName, prop] of model.properties) {
         const propType = prop.type;
-        const messagePayload = (message).payload as Record<string, unknown>;
-        (messagePayload.properties as Record<string, unknown>)[propName] = {
+        const messagePayload = messageData.payload as any;
+        (messagePayload.properties as any)[propName] = {
           type: getTypeString(propType),
           description: `Property ${propName}`
         };
       }
     }
 
-    (messages)[modelName ?? "unnamed"] = message;
+    (messages)[modelName ?? "unnamed"] = messageData;
   }
   
   return messages;
@@ -289,7 +290,7 @@ function generateSchemas(state: AsyncAPIConsolidatedState): AsyncAPISchemas {
     const modelName = getOperationName(model);
     
     if (model.kind === "Model") {
-      const schema: Record<string, unknown> = {
+      const schemaData = {
         type: "object",
         properties: {},
         required: []
@@ -297,18 +298,18 @@ function generateSchemas(state: AsyncAPIConsolidatedState): AsyncAPISchemas {
 
       // Process model properties
       for (const [propName, prop] of model.properties) {
-        ((schema).properties as Record<string, unknown>)[propName] = {
+        ((schemaData as any).properties as any)[propName] = {
           type: getTypeString(prop.type),
           description: `Property ${propName}`
         };
 
         // Check if property is required (no optional)
         if (!prop.optional) {
-          ((schema).required as string[]).push(propName);
+          ((schemaData as any).required as string[]).push(propName);
         }
       }
 
-      (schemas)[modelName ?? "unnamed"] = schema;
+      (schemas)[modelName ?? "unnamed"] = schemaData;
     }
   }
   
