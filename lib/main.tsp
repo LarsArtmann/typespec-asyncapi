@@ -1,9 +1,10 @@
 // TypeSpec AsyncAPI Library Definition - Core decorator infrastructure
-// Restored after critical infrastructure loss on 2025-10-25
+// Following exact @typespec/http library pattern for compatibility
+
+import "../dist/src/tsp-index.js";
 
 using TypeSpec.Reflection;
 
-// Core AsyncAPI namespace for all decorators
 namespace TypeSpec.AsyncAPI;
 
 /**

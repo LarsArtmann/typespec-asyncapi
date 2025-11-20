@@ -5,6 +5,7 @@
     "": {
       "name": "@larsartmann/typespec-asyncapi",
       "dependencies": {
+        "@larsartmann/typespec-asyncapi": ".",
         "@asyncapi/parser": "^3.4.0",
         "@asyncapi/specs": "^6.10.0",
         "@effect/schema": "^0.75.5",
@@ -631,6 +632,8 @@
     "@kwsites/file-exists": ["@kwsites/file-exists@1.1.1", "", { "dependencies": { "debug": "^4.1.1" } }, "sha512-m9/5YGR18lIwxSFDwfE3oA7bWuq9kdau6ugN4H2rJeyhFQZcG9AgSHkQtSD15a8WvTgfz9aikZMrKPHvbpqFiw=="],
 
     "@kwsites/promise-deferred": ["@kwsites/promise-deferred@1.1.1", "", {}, "sha512-GaHYm+c0O9MjZRu0ongGBRbinu8gVAMd2UZjji6jVmqKtZluZnptXGWhz1E8j8D2HJ3f/yMxKAUC0b+57wncIw=="],
+
+    "@larsartmann/typespec-asyncapi": ["@larsartmann/typespec-asyncapi@root:", {}],
 
     "@lezer/common": ["@lezer/common@1.2.3", "", {}, "sha512-w7ojc8ejBqr2REPsWxJjrMFsA/ysDCFICn8zEOR9mrqzOu2amhITYuLD8ag6XZf0CFXDrhKqw7+tW8cX66NaDA=="],
 

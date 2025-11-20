@@ -7,16 +7,8 @@
  * in lib/main.tsp.
  */
 
-/**
- * CRITICAL: TypeSpec namespace declaration
- *
- * This MUST match the namespace declared in lib/main.tsp (TypeSpec.AsyncAPI)
- * TypeSpec uses this to link extern dec declarations to JS implementations
- */
-export const namespace = "TypeSpec.AsyncAPI";
-
-// DEBUG: ONLY export minimal decorators for debugging
-export {
+// Import decorator implementations with $ prefix
+import {
   $channel,
   $server,
   $publish,
@@ -29,3 +21,23 @@ export {
   $bindings,
   $header,
 } from "./minimal-decorators.js";
+
+// CRITICAL: TypeSpec namespace declaration
+export const namespace = "TypeSpec.AsyncAPI";
+
+// CRITICAL: TypeSpec requires $decorators object export
+export const $decorators = {
+  "TypeSpec.AsyncAPI": {
+    channel: $channel,
+    server: $server,
+    publish: $publish,
+    message: $message,
+    protocol: $protocol,
+    security: $security,
+    subscribe: $subscribe,
+    tags: $tags,
+    correlationId: $correlationId,
+    bindings: $bindings,
+    header: $header,
+  },
+};
