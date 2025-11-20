@@ -6,6 +6,11 @@
 
 import type { EmitContext, Type } from "@typespec/compiler";
 import { consolidateAsyncAPIState, type AsyncAPIConsolidatedState } from "./state.js";
+import type { 
+  AsyncAPIChannels, 
+  AsyncAPIMessages, 
+  AsyncAPISchemas 
+} from "./types/domain/asyncapi-domain-types.js";
 
 /**
  * Basic AsyncAPI emitter - generates working AsyncAPI files
@@ -26,10 +31,10 @@ export type AsyncAPIDocument = {
     version: string;
     description: string;
   };
-  channels: Record<string, unknown>;
-  messages: Record<string, unknown>;
+  channels: AsyncAPIChannels;
+  messages: AsyncAPIMessages;
   components: {
-    schemas: Record<string, unknown>;
+    schemas: AsyncAPISchemas;
   };
 };
 
@@ -176,8 +181,8 @@ function generateAsyncAPI30Document(
 /**
  * Generate channels from state data
  */
-function generateChannels(state: AsyncAPIConsolidatedState): Record<string, unknown> {
-  const channels: Record<string, unknown> = {};
+function generateChannels(state: AsyncAPIConsolidatedState): AsyncAPIChannels {
+  const channels: AsyncAPIChannels = {};
   
   for (const [operation, channelData] of state.channels) {
     const operationName = getOperationName(operation);
@@ -235,8 +240,8 @@ function generateChannels(state: AsyncAPIConsolidatedState): Record<string, unkn
 /**
  * Generate messages from state data
  */
-function generateMessages(state: AsyncAPIConsolidatedState): Record<string, unknown> {
-  const messages: Record<string, unknown> = {};
+function generateMessages(state: AsyncAPIConsolidatedState): AsyncAPIMessages {
+  const messages: AsyncAPIMessages = {};
   
   for (const [model, messageConfig] of state.messages) {
     const modelName = getOperationName(model);
@@ -277,8 +282,8 @@ function generateMessages(state: AsyncAPIConsolidatedState): Record<string, unkn
 /**
  * Generate JSON Schemas from TypeSpec models
  */
-function generateSchemas(state: AsyncAPIConsolidatedState): Record<string, unknown> {
-  const schemas: Record<string, unknown> = {};
+function generateSchemas(state: AsyncAPIConsolidatedState): AsyncAPISchemas {
+  const schemas: AsyncAPISchemas = {};
   
   for (const [model, _] of state.messages) {
     const modelName = getOperationName(model);
