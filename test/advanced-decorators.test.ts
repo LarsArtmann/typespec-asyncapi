@@ -7,7 +7,7 @@ describe("Advanced AsyncAPI Decorators", () => {
       import "@lars-artmann/typespec-asyncapi";
       using TypeSpec.AsyncAPI;
       
-      @tags(#["user", "auth"])
+      @tags(["user", "auth"])
       model SimpleModel {
         id: string;
       }

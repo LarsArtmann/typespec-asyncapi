@@ -2,14 +2,14 @@
   "name": "@lars-artmann/typespec-asyncapi",
   "version": "0.0.1",
   "description": "TypeSpec emitter for AsyncAPI 3.0 specifications",
-  "main": "dist/index.js",
+  "main": "dist/src/index.js",
   "type": "module",
-  "types": "dist/index.d.ts",
+  "types": "dist/src/index.d.ts",
   "exports": {
     ".": {
       "typespec": "./lib/main.tsp",
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
+      "types": "./dist/src/index.d.ts",
+      "default": "./dist/src/index.js"
     },
     "./package.json": "./package.json"
   },
