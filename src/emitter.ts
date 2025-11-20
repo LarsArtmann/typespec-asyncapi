@@ -9,7 +9,9 @@ import { consolidateAsyncAPIState, type AsyncAPIConsolidatedState } from "./stat
 import type { 
   AsyncAPIChannels, 
   AsyncAPIMessages, 
-  AsyncAPISchemas,
+  AsyncAPISchemas
+} from "./types/domain/asyncapi-domain-types.js";
+import {
   createAsyncAPIChannels,
   createAsyncAPIMessages,
   createAsyncAPISchemas
@@ -235,7 +237,7 @@ function generateChannels(state: AsyncAPIConsolidatedState): AsyncAPIChannels {
     (channels)[channelPathData.path] = channelData as unknown;
   }
   
-  return channels;
+  return createAsyncAPIChannels(channels);
 }
 
 /**
@@ -277,7 +279,7 @@ function generateMessages(state: AsyncAPIConsolidatedState): AsyncAPIMessages {
     (messages)[modelName ?? "unnamed"] = messageData;
   }
   
-  return messages;
+  return createAsyncAPIMessages(messages);
 }
 
 /**
@@ -313,7 +315,7 @@ function generateSchemas(state: AsyncAPIConsolidatedState): AsyncAPISchemas {
     }
   }
   
-  return schemas;
+  return createAsyncAPISchemas(schemas);
 }
 
 /**
