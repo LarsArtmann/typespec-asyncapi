@@ -82,11 +82,9 @@ export const railwayLogging = {
    * TODO: USE Effect.TS logging pipeline for async safety
    */
   debug: (message: string, data?: unknown) => {
-    // TODO: Replace with Effect.log for proper effect composition
-    // TODO: Add proper error handling for logging failures
-    // TODO: Use structured logging instead of string concatenation
-    // eslint-disable-next-line no-console
-    console.log(`[DEBUG] ${message}`, data);
+    return Effect.logDebug(message).pipe(
+      Effect.annotateLogs(data ? { data: JSON.stringify(data) } : {})
+    );
   },
   
   /**
@@ -98,8 +96,9 @@ export const railwayLogging = {
    * TODO: USE proper logging library instead of console
    */
   info: (message: string, data?: unknown) => {
-    // eslint-disable-next-line no-console
-    console.log(`[INFO] ${message}`, data);
+    return Effect.logInfo(message).pipe(
+      Effect.annotateLogs(data ? { data: JSON.stringify(data) } : {})
+    );
   },
   
   /**
@@ -111,8 +110,9 @@ export const railwayLogging = {
    * TODO: USE Effect.catch for proper error handling
    */
   warn: (message: string, data?: unknown) => {
-    // eslint-disable-next-line no-console
-    console.warn(`[WARN] ${message}`, data);
+    return Effect.logWarning(message).pipe(
+      Effect.annotateLogs(data ? { data: JSON.stringify(data) } : {})
+    );
   },
   
   /**
@@ -124,8 +124,9 @@ export const railwayLogging = {
    * TODO: PROVIDE error reporting and alerting
    */
   error: (message: string, error?: Error) => {
-    // eslint-disable-next-line no-console
-    console.error(`[ERROR] ${message}`, error);
+    return Effect.logError(message).pipe(
+      Effect.annotateLogs(error ? { error: error.message, stack: error.stack } : {})
+    );
   },
   
   /**
@@ -146,15 +147,23 @@ export const railwayLogging = {
     // TODO: REMOVE custom initialization logging
     // TODO: USE Effect.acquireRelease for resource management
     // TODO: IMPLEMENT proper service lifecycle logging
-    return Effect.sync(() => {
-      // eslint-disable-next-line no-console
-      console.log(`[INIT] Initializing ${serviceName}`);
-      // eslint-disable-next-line no-console
-      console.log(`[INIT] Service: ${serviceName}`);
-      // eslint-disable-next-line no-console
-      console.log(`[INIT] Status: Starting`);
-      // eslint-disable-next-line no-console
-      console.log(`[INIT] Dependencies: Loaded`);
+    return Effect.gen(function*() {
+      yield* Effect.log(`Initializing ${serviceName}`).pipe(
+        Effect.annotateLogs({
+          phase: "init",
+          service: serviceName,
+          status: "starting"
+        })
+      );
+      yield* Effect.log(`Service: ${serviceName}`).pipe(
+        Effect.annotateLogs({ phase: "init" })
+      );
+      yield* Effect.log("Status: Starting").pipe(
+        Effect.annotateLogs({ phase: "init" })
+      );
+      yield* Effect.log("Dependencies: Loaded").pipe(
+        Effect.annotateLogs({ phase: "init" })
+      );
       return { initialized: true, service: serviceName };
     });
   },
@@ -168,15 +177,23 @@ export const railwayLogging = {
    * TODO: USE Effect.TS patterns for operation logging
    */
   logInitializationSuccess: (serviceName: string) => {
-    return Effect.sync(() => {
-      // eslint-disable-next-line no-console
-      console.log(`[SUCCESS] ${serviceName} initialized successfully`);
-      // eslint-disable-next-line no-console
-      console.log(`[SUCCESS] Service: ${serviceName}`);
-      // eslint-disable-next-line no-console
-      console.log(`[SUCCESS] Status: Ready`);
-      // eslint-disable-next-line no-console
-      console.log(`[SUCCESS] Dependencies: Verified`);
+    return Effect.gen(function*() {
+      yield* Effect.log(`${serviceName} initialized successfully`).pipe(
+        Effect.annotateLogs({
+          phase: "success",
+          service: serviceName,
+          status: "ready"
+        })
+      );
+      yield* Effect.log(`Service: ${serviceName}`).pipe(
+        Effect.annotateLogs({ phase: "success" })
+      );
+      yield* Effect.log("Status: Ready").pipe(
+        Effect.annotateLogs({ phase: "success" })
+      );
+      yield* Effect.log("Dependencies: Verified").pipe(
+        Effect.annotateLogs({ phase: "success" })
+      );
       return { initialized: true, service: serviceName, status: "ready" };
     });
   },
@@ -190,8 +207,12 @@ export const railwayLogging = {
    * TODO: USE Effect.TS patterns for operation logging
    */
   logSuccess: (operation: string, result?: unknown) => {
-    // eslint-disable-next-line no-console
-    console.log(`[SUCCESS] ${operation}`, result);
+    return Effect.log(operation).pipe(
+      Effect.annotateLogs({
+        level: "success",
+        result: result ? JSON.stringify(result) : undefined
+      })
+    );
   },
   
   /**
@@ -203,8 +224,13 @@ export const railwayLogging = {
    * TODO: IMPLEMENT error classification and routing
    */
   logFailure: (operation: string, error: Error) => {
-    // eslint-disable-next-line no-console
-    console.error(`[FAILURE] ${operation}`, error);
+    return Effect.logError(operation).pipe(
+      Effect.annotateLogs({
+        level: "failure",
+        error: error.message,
+        stack: error.stack
+      })
+    );
   },
 } as const;
 

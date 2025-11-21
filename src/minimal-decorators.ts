@@ -4,7 +4,7 @@
  * Simplest possible decorator implementations to test TypeSpec linkage
  */
 
-/* eslint-disable no-console */
+import { Effect } from "effect";
 import type {
   DecoratorContext,
   Namespace,
@@ -24,12 +24,12 @@ export function $channel(
   target: Operation,
   path: string,
 ): void {
-  console.log(`🔍 MINIMAL @channel decorator executed! path: ${path}`);
-  console.log(`🔍 Target:`, target);
-  console.log(`🔍 Context:`, context);
+  Effect.runSync(Effect.log(`🔍 MINIMAL @channel decorator executed! path: ${path}`));
+  Effect.runSync(Effect.log("🔍 Target:").pipe(Effect.annotateLogs({ target: target.name })));
+  Effect.runSync(Effect.log("🔍 Context:").pipe(Effect.annotateLogs({ context: "DecoratorContext" })));
 
   if (!path || path.length === 0) {
-    console.log(`❌ Empty channel path - should trigger diagnostic`);
+    Effect.runSync(Effect.log("❌ Empty channel path - should trigger diagnostic"));
     // This will show if diagnostic reporting works
     context.program.reportDiagnostic({
       code: "missing-channel-path",
@@ -48,7 +48,7 @@ export function $channel(
     parameters: path.match(/\{([^}]+)\}/g)?.map(param => param.slice(1, -1)),
   });
 
-  console.log(`✅ @channel decorator completed successfully - stored in state`);
+  Effect.runSync(Effect.log("✅ @channel decorator completed successfully - stored in state"));
 }
 
 /**
@@ -59,12 +59,12 @@ export function $server(
   target: Namespace,
   config: unknown,
 ): void {
-  console.log(`🔍 MINIMAL @server decorator executed!`);
-  console.log(`🔍 Target:`, target);
-  console.log(`🔍 Config:`, config);
+  Effect.runSync(Effect.log("🔍 MINIMAL @server decorator executed!"));
+  Effect.runSync(Effect.log("🔍 Target:").pipe(Effect.annotateLogs({ target: target.name })));
+  Effect.runSync(Effect.log("🔍 Config:").pipe(Effect.annotateLogs({ config: JSON.stringify(config) })));
 
   if (!config) {
-    console.log(`❌ No server config`);
+    Effect.runSync(Effect.log("❌ No server config"));
     context.program.reportDiagnostic({
       code: "invalid-server-config",
       target: target,
@@ -74,7 +74,7 @@ export function $server(
     return;
   }
 
-  console.log(`✅ @server decorator completed successfully`);
+  Effect.runSync(Effect.log("✅ @server decorator completed successfully"));
 }
 
 /**
@@ -85,8 +85,8 @@ export function $publish(
   target: Operation,
   config?: Model,
 ): void {
-  console.log(`🔍 MINIMAL @publish decorator executed! config:`, config);
-  console.log(`🔍 Target:`, target);
+  Effect.runSync(Effect.log("🔍 MINIMAL @publish decorator executed!").pipe(Effect.annotateLogs({ config: config?.name })));
+  Effect.runSync(Effect.log("🔍 Target:").pipe(Effect.annotateLogs({ target: target.name })));
 
   // Store publish operation type in state
   const operationTypesMap = context.program.stateMap(stateSymbols.operationTypes);
@@ -107,7 +107,7 @@ export function $publish(
     }
   }
 
-  console.log(`✅ @publish decorator completed successfully - stored in state`);
+  Effect.runSync(Effect.log("✅ @publish decorator completed successfully - stored in state"));
 }
 
 /**
@@ -118,11 +118,11 @@ export function $message(
   target: Model,
   config: unknown,
 ): void {
-  console.log(`🔍 MINIMAL @message decorator executed! config:`, config);
-  console.log(`🔍 Target:`, target);
+  Effect.runSync(Effect.log("🔍 MINIMAL @message decorator executed!").pipe(Effect.annotateLogs({ config: JSON.stringify(config) })));
+  Effect.runSync(Effect.log("🔍 Target:").pipe(Effect.annotateLogs({ target: target.name })));
 
   if (!config) {
-    console.log(`❌ No message config - should trigger diagnostic`);
+    Effect.runSync(Effect.log("❌ No message config - should trigger diagnostic"));
     context.program.reportDiagnostic({
       code: "invalid-message-config",
       target: target,
@@ -141,7 +141,7 @@ export function $message(
     contentType: (configTyped?.contentType as string) ?? "application/json",
   });
 
-  console.log(`✅ @message decorator completed successfully - stored in state`);
+  Effect.runSync(Effect.log("✅ @message decorator completed successfully - stored in state"));
 }
 
 /**
@@ -152,11 +152,11 @@ export function $protocol(
   target: Operation | Model,
   config: unknown,
 ): void {
-  console.log(`🔍 MINIMAL @protocol decorator executed! config:`, config);
-  console.log(`🔍 Target:`, target);
+  Effect.runSync(Effect.log("🔍 MINIMAL @protocol decorator executed!").pipe(Effect.annotateLogs({ config: JSON.stringify(config) })));
+  Effect.runSync(Effect.log("🔍 Target:").pipe(Effect.annotateLogs({ target: target.name })));
 
   if (!config) {
-    console.log(`❌ No protocol config - should trigger diagnostic`);
+    Effect.runSync(Effect.log("❌ No protocol config - should trigger diagnostic"));
     context.program.reportDiagnostic({
       code: "invalid-protocol-config",
       target: target,
@@ -165,7 +165,7 @@ export function $protocol(
     });
     return;
   }
-  console.log(`✅ @protocol decorator completed successfully`);
+  Effect.runSync(Effect.log("✅ @protocol decorator completed successfully"));
 }
 
 /**
@@ -176,11 +176,11 @@ export function $security(
   target: Operation | Namespace,
   config: unknown,
 ): void {
-  console.log(`🔍 MINIMAL @security decorator executed! config:`, config);
-  console.log(`🔍 Target:`, target);
+  Effect.runSync(Effect.log("🔍 MINIMAL @security decorator executed!").pipe(Effect.annotateLogs({ config: JSON.stringify(config) })));
+  Effect.runSync(Effect.log("🔍 Target:").pipe(Effect.annotateLogs({ target: target.name })));
 
   if (!config) {
-    console.log(`❌ No security config - should trigger diagnostic`);
+    Effect.runSync(Effect.log("❌ No security config - should trigger diagnostic"));
     context.program.reportDiagnostic({
       code: "invalid-security-config",
       target: target,
@@ -189,15 +189,15 @@ export function $security(
     });
     return;
   }
-  console.log(`✅ @security decorator completed successfully`);
+  Effect.runSync(Effect.log("✅ @security decorator completed successfully"));
 }
 
 /**
  * Simplest possible @subscribe decorator for testing
  */
 export function $subscribe(context: DecoratorContext, target: Operation): void {
-  console.log(`🔍 MINIMAL @subscribe decorator executed!`);
-  console.log(`🔍 Target:`, target);
+  Effect.runSync(Effect.log("🔍 MINIMAL @subscribe decorator executed!"));
+  Effect.runSync(Effect.log("🔍 Target:").pipe(Effect.annotateLogs({ target: target.name })));
 
   // Store subscribe operation type in state
   const operationTypesMap = context.program.stateMap(stateSymbols.operationTypes);
@@ -208,7 +208,7 @@ export function $subscribe(context: DecoratorContext, target: Operation): void {
     tags: [],
   });
 
-  console.log(`✅ @subscribe decorator completed successfully - stored in state`);
+  Effect.runSync(Effect.log("✅ @subscribe decorator completed successfully - stored in state"));
 }
 
 /**
@@ -219,11 +219,11 @@ export function $tags(
   target: DiagnosticTarget,
   value: unknown,
 ): void {
-  console.log(`🔍 MINIMAL @tags decorator executed! value:`, value);
-  console.log(`🔍 Target:`, target);
+  Effect.runSync(Effect.log("🔍 MINIMAL @tags decorator executed!").pipe(Effect.annotateLogs({ value: JSON.stringify(value) })));
+  Effect.runSync(Effect.log("🔍 Target:").pipe(Effect.annotateLogs({ target: String(target) })));
 
   if (!value || !Array.isArray(value)) {
-    console.log(`❌ No tags value - should trigger diagnostic`);
+    Effect.runSync(Effect.log("❌ No tags value - should trigger diagnostic"));
     context.program.reportDiagnostic({
       code: "invalid-tags-config",
       target: target,
@@ -232,7 +232,7 @@ export function $tags(
     });
     return;
   }
-  console.log(`✅ @tags decorator completed successfully`);
+  Effect.runSync(Effect.log("✅ @tags decorator completed successfully"));
 }
 
 /**
@@ -244,13 +244,18 @@ export function $correlationId(
   location: unknown,
   property?: unknown,
 ): void {
-  console.log(
-    `🔍 MINIMAL @correlationId decorator executed! location: ${String(location)}, property: ${String(property)}`,
+  Effect.runSync(
+    Effect.log("🔍 MINIMAL @correlationId decorator executed!").pipe(
+      Effect.annotateLogs({
+        location: String(location),
+        property: String(property)
+      })
+    )
   );
-  console.log(`🔍 Target:`, target);
+  Effect.runSync(Effect.log("🔍 Target:").pipe(Effect.annotateLogs({ target: target.name })));
 
   if (!location) {
-    console.log(`❌ No correlationId location - should trigger diagnostic`);
+    Effect.runSync(Effect.log("❌ No correlationId location - should trigger diagnostic"));
     context.program.reportDiagnostic({
       code: "invalid-correlationId-config",
       target: target,
@@ -259,7 +264,7 @@ export function $correlationId(
     });
     return;
   }
-  console.log(`✅ @correlationId decorator completed successfully`);
+  Effect.runSync(Effect.log("✅ @correlationId decorator completed successfully"));
 }
 
 /**
@@ -270,11 +275,11 @@ export function $bindings(
   target: Operation | Model,
   value: unknown,
 ): void {
-  console.log(`🔍 MINIMAL @bindings decorator executed! value:`, value);
-  console.log(`🔍 Target:`, target);
+  Effect.runSync(Effect.log("🔍 MINIMAL @bindings decorator executed!").pipe(Effect.annotateLogs({ value: JSON.stringify(value) })));
+  Effect.runSync(Effect.log("🔍 Target:").pipe(Effect.annotateLogs({ target: target.name })));
 
   if (!value) {
-    console.log(`❌ No bindings value - should trigger diagnostic`);
+    Effect.runSync(Effect.log("❌ No bindings value - should trigger diagnostic"));
     context.program.reportDiagnostic({
       code: "invalid-bindings-config",
       target: target,
@@ -283,7 +288,7 @@ export function $bindings(
     });
     return;
   }
-  console.log(`✅ @bindings decorator completed successfully`);
+  Effect.runSync(Effect.log("✅ @bindings decorator completed successfully"));
 }
 
 /**
@@ -295,14 +300,18 @@ export function $header(
   name: unknown,
   value: unknown,
 ): void {
-  console.log(
-    `🔍 MINIMAL @header decorator executed! name: ${String(name)}, value:`,
-    value,
+  Effect.runSync(
+    Effect.log("🔍 MINIMAL @header decorator executed!").pipe(
+      Effect.annotateLogs({
+        name: String(name),
+        value: JSON.stringify(value)
+      })
+    )
   );
-  console.log(`🔍 Target:`, target);
+  Effect.runSync(Effect.log("🔍 Target:").pipe(Effect.annotateLogs({ target: target.kind })));
 
   if (!name) {
-    console.log(`❌ No header name - should trigger diagnostic`);
+    Effect.runSync(Effect.log("❌ No header name - should trigger diagnostic"));
     context.program.reportDiagnostic({
       code: "invalid-header-config",
       target: target,
@@ -311,5 +320,5 @@ export function $header(
     });
     return;
   }
-  console.log(`✅ @header decorator completed successfully`);
+  Effect.runSync(Effect.log("✅ @header decorator completed successfully"));
 }

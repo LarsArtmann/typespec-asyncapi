@@ -46,7 +46,7 @@ export const operationSchema = Schema.Struct({
  */
 export const serverSchema = Schema.Struct({
   url: serverUrlSchema,
-  protocol: Schema.Literal("kafka", "mqtt", "amqp", "ws", "http"),
+  protocol: Schema.Literal("kafka", "mqtt", "amqp", "ws", "http", "https"),
   description: Schema.optional(Schema.String)
 })
 

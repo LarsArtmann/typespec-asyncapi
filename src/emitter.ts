@@ -64,6 +64,8 @@ export type AsyncAPIDocument = {
   };
   channels: AsyncAPIChannels;
   messages: AsyncAPIMessages;
+  operations?: Record<string, unknown>;
+  servers?: Record<string, unknown>;
   components: {
     schemas: AsyncAPISchemas;
   };
@@ -75,23 +77,29 @@ export type AsyncAPIDocument = {
 export async function $onEmit(
   context: EmitContext<AsyncAPIEmitterOptions>,
 ): Promise<void> {
-  // eslint-disable-next-line no-console
-  console.log("🚀 ASYNCAPI EMITTER: Starting generation");
+  await Effect.runPromise(
+    Effect.log("🚀 ASYNCAPI EMITTER: Starting generation")
+  );
 
   const program = context.program;
   const options = context.options;
 
-  // eslint-disable-next-line no-console
-  console.log("📋 Emitter options:", options);
+  await Effect.runPromise(
+    Effect.log("📋 Emitter options:").pipe(
+      Effect.annotateLogs({ options: JSON.stringify(options) })
+    )
+  );
 
-  // eslint-disable-next-line no-console
-  console.log("📊 ASYNCAPI EMITTER: Extracting decorator state from program");
+  await Effect.runPromise(
+    Effect.log("📊 ASYNCAPI EMITTER: Extracting decorator state from program")
+  );
   
   // Extract decorator state from program
   const _state = consolidateAsyncAPIState(program);
-  
-  // eslint-disable-next-line no-console
-  console.log("🏗️ ASYNCAPI EMITTER: Generating AsyncAPI 3.0 document structure");
+
+  await Effect.runPromise(
+    Effect.log("🏗️ ASYNCAPI EMITTER: Generating AsyncAPI 3.0 document structure")
+  );
   
   // Generate complete AsyncAPI document - temporary direct approach for typing
   const asyncapiDocument: AsyncAPIDocument = {
@@ -111,12 +119,14 @@ export async function $onEmit(
   // Write to output file - respect options
   const outputFile = options["output-file"];
   const fileType = options["file-type"];
-  
+
   // Debug option parsing
-  // eslint-disable-next-line no-console
-  console.log(`🔧 DEBUG: outputFile option: "${outputFile}"`);
-  // eslint-disable-next-line no-console
-  console.log(`🔧 DEBUG: fileType option: "${fileType}"`);
+  await Effect.runPromise(
+    Effect.logDebug(`🔧 DEBUG: outputFile option: "${outputFile}"`)
+  );
+  await Effect.runPromise(
+    Effect.logDebug(`🔧 DEBUG: fileType option: "${fileType}"`)
+  );
   
   // Determine output path based on options
   let outputPath = outputFile ?? "asyncapi";
@@ -127,8 +137,9 @@ export async function $onEmit(
   }
   
   // Debug final path
-  // eslint-disable-next-line no-console
-  console.log(`🔧 DEBUG: Final outputPath: "${outputPath}"`);
+  await Effect.runPromise(
+    Effect.logDebug(`🔧 DEBUG: Final outputPath: "${outputPath}"`)
+  );
   
   // Convert document to requested format
   const isJsonFormat = fileType === "json";
@@ -219,8 +230,9 @@ ${required.map(req => `      - ${req}`).join('\n')}`;
   }
 
   // Debug emitter output directory
-  // eslint-disable-next-line no-console
-  console.log(`🔧 DEBUG: context.emitterOutputDir: "${context.emitterOutputDir}"`);
+  await Effect.runPromise(
+    Effect.logDebug(`🔧 DEBUG: context.emitterOutputDir: "${context.emitterOutputDir}"`)
+  );
   
   // CRITICAL FIX: Use emitFile with just filename (TypeSpec handles directory automatically)
   const emitOptions: EmitFileOptions = {
@@ -236,8 +248,9 @@ ${required.map(req => `      - ${req}`).join('\n')}`;
   });
 
   await Effect.runPromise(emitProgram);
-  // eslint-disable-next-line no-console
-  console.log(`✅ ASYNCAPI EMITTER: Generated ${outputPath} via emitFile API`);
+  await Effect.runPromise(
+    Effect.log(`✅ ASYNCAPI EMITTER: Generated ${outputPath} via emitFile API`)
+  );
   
   // Report generation statistics
   reportGenerationStatistics(asyncapiDocument);
@@ -281,13 +294,15 @@ function generateChannels(state: AsyncAPIConsolidatedState): Effect.Effect<Async
     for (const [operation, channelPathData] of state.channels) {
       const operationName = getOperationName(operation);
       const operationType = state.operations.get(operation);
-      
-      // eslint-disable-next-line no-console
-      console.log(`🔍 Processing channel for operation ${operationName ?? "unknown"}`);
-      // eslint-disable-next-line no-console
-      console.log(`📍 Channel path: ${channelPathData.path}`);
-      // eslint-disable-next-line no-console
-      console.log(`⚡ Operation type: ${operationType?.type}`);
+
+      yield* Effect.log(`🔍 Processing channel for operation ${operationName ?? "unknown"}`).pipe(
+        Effect.annotateLogs({
+          channelPath: channelPathData.path,
+          operationType: operationType?.type
+        })
+      );
+      yield* Effect.log(`📍 Channel path: ${channelPathData.path}`);
+      yield* Effect.log(`⚡ Operation type: ${operationType?.type}`);
       
       // Build channel with operations
       const channelData: {
@@ -344,8 +359,7 @@ function generateMessages(state: AsyncAPIConsolidatedState): Effect.Effect<Async
   
     for (const [model, messageConfig] of state.messages) {
       const modelName = getOperationName(model);
-      // eslint-disable-next-line no-console
-      console.log(`📨 Processing message for model ${modelName ?? "unknown"}`);
+      yield* Effect.log(`📨 Processing message for model ${modelName ?? "unknown"}`);
       
       // Generate full message structure from TypeSpec model
       const messageData: AsyncAPIMessageData = {
@@ -463,9 +477,13 @@ function reportGenerationStatistics(document: AsyncAPIDocument): void {
     messages: Object.keys(document.messages ?? {}).length,
     components: document.components ? Object.keys(document.components).length : 0,
   };
-  
-  // eslint-disable-next-line no-console
-  console.log("📊 ASYNCAPI EMITTER: Generation Statistics:", stats);
-  // eslint-disable-next-line no-console
-  console.log(`🎯 ASYNCAPI EMITTER: Generated ${stats.channels} channels, ${stats.messages} messages`);
+
+  Effect.runSync(
+    Effect.log("📊 ASYNCAPI EMITTER: Generation Statistics:").pipe(
+      Effect.annotateLogs({ stats: JSON.stringify(stats) })
+    )
+  );
+  Effect.runSync(
+    Effect.log(`🎯 ASYNCAPI EMITTER: Generated ${stats.channels} channels, ${stats.messages} messages`)
+  );
 }

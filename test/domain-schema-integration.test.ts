@@ -26,7 +26,7 @@ import {
   operationSchema,
   serverSchema,
   asyncapiSchema
-} from "../../src/types/domain/asyncapi-domain-types.js"
+} from "../../dist/src/types/domain/asyncapi-domain-types.js"
 import {
   createChannelPath,
   createMessageId,

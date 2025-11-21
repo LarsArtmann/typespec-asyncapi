@@ -4,7 +4,7 @@
  * Exports all domain decorators for consistent import patterns
  */
 
-export { ServerDecorator } from './server.js';
+export { $server as ServerDecorator } from './server.js';
 
 /**
  * Domain decorator factory
