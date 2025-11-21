@@ -228,15 +228,16 @@ ${required.map(req => `      - ${req}`).join('\n')}`;
     content: content,
   };
 
-  try {
-    await emitFile(context.program, emitOptions);
-    // eslint-disable-next-line no-console
-    console.log(`✅ ASYNCAPI EMITTER: Generated ${outputPath} via emitFile API`);
-  } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error(`❌ ASYNCAPI EMITTER: Failed to generate ${outputPath}:`, error);
-    throw error;
-  }
+  const emitProgram = Effect.gen(function*() {
+    yield* Effect.tryPromise({
+      try: () => emitFile(context.program, emitOptions),
+      catch: (error) => Effect.fail(new Error(`Failed to generate ${outputPath}: ${String(error)}`))
+    });
+  });
+
+  await Effect.runPromise(emitProgram);
+  // eslint-disable-next-line no-console
+  console.log(`✅ ASYNCAPI EMITTER: Generated ${outputPath} via emitFile API`);
   
   // Report generation statistics
   reportGenerationStatistics(asyncapiDocument);
