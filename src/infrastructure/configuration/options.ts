@@ -74,6 +74,15 @@ export const ASYNC_API_EMITTER_OPTIONS_SCHEMA = {
 } as const;
 
 /**
+ * Create AsyncAPI Emitter Options
+ * 
+ * Factory function for creating properly typed emitter options
+ */
+export function createAsyncAPIEmitterOptions(options?: Partial<EmitterOptions>): EmitterOptions {
+  return mergeWithDefaults(options);
+}
+
+/**
  * Merge options with defaults
  */
 export function mergeWithDefaults(options?: Partial<EmitterOptions>): Required<EmitterOptions> {
