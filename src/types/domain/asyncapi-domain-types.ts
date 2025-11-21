@@ -4,14 +4,14 @@
  * Basic domain object schema integration
  * Demonstrates completion of @effect/schema Step 3
  */
-import { Effect, Schema } from "effect"
-import { 
+import type { 
   channelPathSchema,
   messageIdSchema, 
   schemaNameSchema,
   operationIdSchema,
   serverUrlSchema
 } from "./asyncapi-branded-types.js";
+import { Effect, Schema } from "effect"
 
 // ===== DOMAIN SCHEMA DEFINITIONS =====
 
@@ -102,7 +102,7 @@ export const createChannel = (
   return Effect.try({
     try: () => Schema.decodeSync(channelSchema)(input),
     catch: (error) => new AsyncAPIValidationError(
-      `Channel validation failed: ${error}`,
+      `Channel validation failed: ${String(error)}`,
       undefined,
       input
     )
@@ -118,7 +118,7 @@ export const createMessage = (
   return Effect.try({
     try: () => Schema.decodeSync(messageSchema)(input),
     catch: (error) => new AsyncAPIValidationError(
-      `Message validation failed: ${error}`,
+      `Message validation failed: ${String(error)}`,
       undefined,
       input
     )
@@ -134,7 +134,7 @@ export const createOperation = (
   return Effect.try({
     try: () => Schema.decodeSync(operationSchema)(input),
     catch: (error) => new AsyncAPIValidationError(
-      `Operation validation failed: ${error}`,
+      `Operation validation failed: ${String(error)}`,
       undefined,
       input
     )
@@ -150,7 +150,7 @@ export const createServer = (
   return Effect.try({
     try: () => Schema.decodeSync(serverSchema)(input),
     catch: (error) => new AsyncAPIValidationError(
-      `Server validation failed: ${error}`,
+      `Server validation failed: ${String(error)}`,
       undefined,
       input
     )
@@ -166,7 +166,7 @@ export const createAsyncAPISpec = (
   return Effect.try({
     try: () => Schema.decodeSync(asyncapiSchema)(input),
     catch: (error) => new AsyncAPIValidationError(
-      `AsyncAPI spec validation failed: ${error}`,
+      `AsyncAPI spec validation failed: ${String(error)}`,
       undefined,
       input
     )
@@ -191,7 +191,7 @@ export const createAsyncAPIChannels = (
       return result
     },
     catch: (error) => new AsyncAPIValidationError(
-      `Channels collection validation failed: ${error}`,
+      `Channels collection validation failed: ${String(error)}`,
       undefined,
       input
     )
@@ -214,7 +214,7 @@ export const createAsyncAPIMessages = (
       return result
     },
     catch: (error) => new AsyncAPIValidationError(
-      `Messages collection validation failed: ${error}`,
+      `Messages collection validation failed: ${String(error)}`,
       undefined,
       input
     )
@@ -237,7 +237,7 @@ export const createAsyncAPIOperations = (
       return result
     },
     catch: (error) => new AsyncAPIValidationError(
-      `Operations collection validation failed: ${error}`,
+      `Operations collection validation failed: ${String(error)}`,
       undefined,
       input
     )
@@ -260,7 +260,7 @@ export const createAsyncAPIServers = (
       return result
     },
     catch: (error) => new AsyncAPIValidationError(
-      `Servers collection validation failed: ${error}`,
+      `Servers collection validation failed: ${String(error)}`,
       undefined,
       input
     )
@@ -283,7 +283,7 @@ export const createAsyncAPISchemas = (
       return result
     },
     catch: (error) => new AsyncAPIValidationError(
-      `Schemas collection validation failed: ${error}`,
+      `Schemas collection validation failed: ${String(error)}`,
       undefined,
       input
     )
