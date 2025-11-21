@@ -92,24 +92,59 @@ export async function $onEmit(
     yield* Effect.log("📊 ASYNCAPI EMITTER: Extracting decorator state from program");
 
     // Extract decorator state from program
-    const _state = consolidateAsyncAPIState(program);
+    const rawState = consolidateAsyncAPIState(program);
 
     yield* Effect.log("🏗️ ASYNCAPI EMITTER: Generating AsyncAPI 3.0 document structure");
   
-  // Generate complete AsyncAPI document - temporary direct approach for typing
-  const asyncapiDocument: AsyncAPIDocument = {
-    asyncapi: "3.0.0",
-    info: {
-      title: options.title ?? "Generated API",
-      version: options.version ?? "1.0.0",
-      description: options.description ?? "Generated AsyncAPI document"
-    },
-    channels: {} as AsyncAPIChannels,
-    messages: {} as AsyncAPIMessages,
-    components: {
-      schemas: {} as AsyncAPISchemas
+    // Convert raw state to AsyncAPI format
+    const channels: AsyncAPIChannels = {};
+    const messages: AsyncAPIMessages = {};
+    const schemas: AsyncAPISchemas = {};
+
+    // Convert channel paths to AsyncAPI channels
+    if (rawState.channels) {
+      for (const [type, data] of rawState.channels) {
+        const channelKey = data.path;
+        channels[channelKey] = {
+          description: `Generated channel for ${data.path}`,
+          // Add basic structure - can be enhanced later
+        };
+      }
     }
-  };
+
+    // Convert message configs to AsyncAPI messages
+    if (rawState.messages) {
+      for (const [type, data] of rawState.messages) {
+        const messageKey = data.schemaName || `message${type.name}`;
+        messages[messageKey] = {
+          $ref: `#/components/schemas/${messageKey}`,
+          description: data.description || `Generated message for ${messageKey}`,
+          contentType: "application/json"
+        };
+        
+        // Add basic schema
+        schemas[messageKey] = {
+          type: "object",
+          description: data.description || `Schema for ${messageKey}`,
+          properties: {}
+        };
+      }
+    }
+
+    // Generate complete AsyncAPI document
+    const asyncapiDocument: AsyncAPIDocument = {
+      asyncapi: "3.0.0",
+      info: {
+        title: options.title ?? "Generated API",
+        version: options.version ?? "1.0.0",
+        description: options.description ?? "API generated from TypeSpec"
+      },
+      channels,
+      messages,
+      components: {
+        schemas
+      }
+    };
 
     // Write to output file - respect options
     const outputFile = options["output-file"];
