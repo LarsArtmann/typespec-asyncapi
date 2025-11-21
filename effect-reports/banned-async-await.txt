@@ -1,4 +1,4 @@
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/validation/asyncapi-validator.ts[0m:[0m[32m86[0m:		[0m[1m[31mawait [0mthis.initializeEffect().pipe(Effect.runPromise)
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/index.ts[0m:[0m[32m17[0m:export [0m[1m[31masync function[0m $onEmit(context: EmitContext) {
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/index.ts[0m:[0m[32m25[0m:  [0m[1m[31mawait [0mEffect.runPromise(
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/index.ts[0m:[0m[32m36[0m:  [0m[1m[31mawait [0mEffect.runPromise(Effect.log(`✅ Generated AsyncAPI specification: ${String(outputFile)}.${String(extension)}`));
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/utils/effect-helpers.ts[0m:[0m[32m37[0m:    try: [0m[1m[31masync ([0m) => {
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/utils/effect-helpers.ts[0m:[0m[32m38[0m:      const data = [0m[1m[31mawait [0mfn();
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/emitter.ts[0m:[0m[32m72[0m:export [0m[1m[31masync function[0m $onEmit(
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/emitter.ts[0m:[0m[32m191[0m:  [0m[1m[31mawait [0mcontext.program.host.writeFile(outputPath, yamlContent);

@@ -49,6 +49,7 @@ export const DEFAULT_CONFIG = {
     strict: true,
     warnings: true,
   },
+  libraryName: "@lars-artmann/typespec-asyncapi",
 } as const;
 
 export const PROTOCOL_DEFAULTS = {

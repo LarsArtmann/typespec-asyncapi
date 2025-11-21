@@ -57,6 +57,9 @@ coverage
 # Test outputs
 test-output/
 
+# Effect reports
+/effect-reports/*.txt
+
 # Claude
 /.claude/settings.local.json
 .npmrc

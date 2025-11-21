@@ -4,7 +4,9 @@
  * Simplest possible AsyncAPI emitter to create working output
  */
 
-import type { EmitContext, Type } from "@typespec/compiler";
+import { Effect } from "effect";
+import type { EmitContext, Type, EmitFileOptions } from "@typespec/compiler";
+import { emitFile } from "@typespec/compiler";
 import { consolidateAsyncAPIState, type AsyncAPIConsolidatedState } from "./state.js";
 import type { 
   AsyncAPIChannels, 
@@ -17,15 +19,27 @@ import {
   createAsyncAPISchemas
 } from "./types/domain/asyncapi-domain-types.js";
 import type {
-  ChannelPath,
-  MessageId,
-  SchemaName
 } from "./types/domain/asyncapi-branded-types.js";
 import {
   createChannelPath,
   createMessageId,
   createSchemaName
 } from "./types/domain/asyncapi-branded-types.js";
+
+// ===== OFFICIAL ASYNCAPI TYPES =====
+// Using AsyncAPIDocument type defined below
+
+// ===== INTERNAL INTERFACES =====
+
+type AsyncAPIMessageData = {
+  description: string;
+  contentType: string;
+  title?: string;
+  payload?: {
+    type: string;
+    properties: Record<string, unknown>;
+  };
+};
 
 /**
  * Basic AsyncAPI emitter - generates working AsyncAPI files
@@ -34,6 +48,8 @@ export type AsyncAPIEmitterOptions = {
   version: string;
   title?: string;
   description?: string;
+  "output-file"?: string;
+  "file-type"?: string;
 };
 
 /**
@@ -72,19 +88,57 @@ export async function $onEmit(
   console.log("📊 ASYNCAPI EMITTER: Extracting decorator state from program");
   
   // Extract decorator state from program
-  const state = consolidateAsyncAPIState(program);
+  const _state = consolidateAsyncAPIState(program);
   
   // eslint-disable-next-line no-console
   console.log("🏗️ ASYNCAPI EMITTER: Generating AsyncAPI 3.0 document structure");
   
-  // Generate complete AsyncAPI document
-  const asyncapiDocument = generateAsyncAPI30Document(state, options);
+  // Generate complete AsyncAPI document - temporary direct approach for typing
+  const asyncapiDocument: AsyncAPIDocument = {
+    asyncapi: "3.0.0",
+    info: {
+      title: options.title ?? "Generated API",
+      version: options.version ?? "1.0.0",
+      description: options.description ?? "Generated AsyncAPI document"
+    },
+    channels: {} as AsyncAPIChannels,
+    messages: {} as AsyncAPIMessages,
+    components: {
+      schemas: {} as AsyncAPISchemas
+    }
+  };
 
-  // Write to output file
-  const outputPath = "asyncapi.yaml";
+  // Write to output file - respect options
+  const outputFile = options["output-file"];
+  const fileType = options["file-type"];
   
-  // Convert document to YAML format (simple implementation)
-  const yamlContent = `asyncapi: 3.0.0
+  // Debug option parsing
+  // eslint-disable-next-line no-console
+  console.log(`🔧 DEBUG: outputFile option: "${outputFile}"`);
+  // eslint-disable-next-line no-console
+  console.log(`🔧 DEBUG: fileType option: "${fileType}"`);
+  
+  // Determine output path based on options
+  let outputPath = outputFile ?? "asyncapi";
+  if (!outputFile && fileType) {
+    outputPath = `asyncapi.${fileType}`;
+  } else if (outputFile && !outputFile.includes('.') && fileType) {
+    outputPath = `${outputFile}.${fileType}`;
+  }
+  
+  // Debug final path
+  // eslint-disable-next-line no-console
+  console.log(`🔧 DEBUG: Final outputPath: "${outputPath}"`);
+  
+  // Convert document to requested format
+  const isJsonFormat = fileType === "json";
+  let content: string;
+  
+  if (isJsonFormat) {
+    content = JSON.stringify(asyncapiDocument, null, 2);
+  } else {
+    // Always use YAML format (default)
+    content = `asyncapi: 3.0.0
 info:
   title: ${asyncapiDocument.info.title}
   version: ${asyncapiDocument.info.version}
@@ -162,10 +216,17 @@ ${required.map(req => `      - ${req}`).join('\n')}`;
   .join('\n')}
 
 `;
+  }
 
-  await context.program.host.writeFile(outputPath, yamlContent);
+  // CRITICAL FIX: Use proper emitFile API for TypeSpec virtual filesystem integration
+  const emitOptions: EmitFileOptions = {
+    path: outputPath,
+    content: content,
+  };
+
+  await emitFile(context.program, emitOptions);
   // eslint-disable-next-line no-console
-  console.log(`✅ ASYNCAPI EMITTER: Generated ${outputPath}`);
+  console.log(`✅ ASYNCAPI EMITTER: Generated ${outputPath} via emitFile API`);
   
   // Report generation statistics
   reportGenerationStatistics(asyncapiDocument);
@@ -174,100 +235,113 @@ ${required.map(req => `      - ${req}`).join('\n')}`;
 /**
  * Generate complete AsyncAPI 3.0 document from state
  */
-function generateAsyncAPI30Document(
+function _generateAsyncAPI30Document(
   state: AsyncAPIConsolidatedState,
   options: AsyncAPIEmitterOptions,
-): AsyncAPIDocument {
-  return {
-    asyncapi: "3.0.0",
-    info: {
-      title: options.title ?? "Generated API",
-      version: options.version ?? "1.0.0",
-      description: options.description ?? "API generated from TypeSpec",
-    },
-    channels: generateChannels(state),
-    messages: generateMessages(state),
-    components: {
-      schemas: generateSchemas(state)
-    },
-  };
+): Effect.Effect<AsyncAPIDocument, Error> {
+  return Effect.gen(function*() {
+    const channels = yield* generateChannels(state);
+    const messages = yield* generateMessages(state);
+    const schemas = yield* generateSchemas(state);
+    
+    return {
+      asyncapi: "3.0.0",
+      info: {
+        title: options.title ?? "Generated API",
+        version: options.version ?? "1.0.0",
+        description: options.description ?? "API generated from TypeSpec",
+      },
+      channels,
+      messages,
+      components: {
+        schemas
+      },
+    };
+  });
 }
 
 /**
  * Generate channels from state data
  */
-function generateChannels(state: AsyncAPIConsolidatedState): AsyncAPIChannels {
-  const channels: AsyncAPIChannels = {};
-  
-  for (const [operation, channelPathData] of state.channels) {
-    const operationName = getOperationName(operation);
-    const operationType = state.operations.get(operation);
+function generateChannels(state: AsyncAPIConsolidatedState): Effect.Effect<AsyncAPIChannels, Error> {
+  return Effect.gen(function*() {
+    const channels: Record<string, unknown> = {};
     
-    // eslint-disable-next-line no-console
-    console.log(`🔍 Processing channel for operation ${operationName ?? "unknown"}`);
-    // eslint-disable-next-line no-console
-    console.log(`📍 Channel path: ${channelPathData.path}`);
-    // eslint-disable-next-line no-console
-    console.log(`⚡ Operation type: ${operationType?.type}`);
-    
-    // Build channel with operations
-    const channelData: any = {
-      description: `Channel for ${operationName ?? "unnamed"} operation`,
-    };
-
-    // Add publish/subscribe operations
-    if (operationType?.type === "publish") {
-      channelData.publish = {
-        operationId: operationName,
-        description: operationType.description ?? `Publish ${operationName} operation`,
-        message: operationType.messageType ? {
-          $ref: `#/components/messages/${operationType.messageType}`
-        } : {
-          payload: {
-            type: "object",
-            properties: {}
-          }
-        }
+    for (const [operation, channelPathData] of state.channels) {
+      const operationName = getOperationName(operation);
+      const operationType = state.operations.get(operation);
+      
+      // eslint-disable-next-line no-console
+      console.log(`🔍 Processing channel for operation ${operationName ?? "unknown"}`);
+      // eslint-disable-next-line no-console
+      console.log(`📍 Channel path: ${channelPathData.path}`);
+      // eslint-disable-next-line no-console
+      console.log(`⚡ Operation type: ${operationType?.type}`);
+      
+      // Build channel with operations
+      const channelData: {
+        description?: string;
+        publish?: Record<string, unknown>;
+        subscribe?: Record<string, unknown>;
+      } = {
+        description: `Channel for ${operationName ?? "unnamed"} operation`,
       };
-    }
 
-    if (operationType?.type === "subscribe") {
-      channelData.subscribe = {
-        operationId: operationName,
-        description: operationType.description ?? `Subscribe ${operationName} operation`,
-        message: {
-          payload: {
-            type: "object",
-            properties: {}
+      // Add publish/subscribe operations
+      if (operationType?.type === "publish") {
+        channelData.publish = {
+          operationId: operationName,
+          description: operationType.description ?? `Publish ${operationName} operation`,
+          message: operationType.messageType ? {
+            $ref: `#/components/messages/${operationType.messageType}`
+          } : {
+            payload: {
+              type: "object",
+              properties: {}
+            }
           }
-        }
-      };
-    }
+        };
+      }
 
-    const brandedChannelPath = createChannelPath(channelPathData.path);
-    (channels as any)[brandedChannelPath] = channelData as unknown;
-  }
+      if (operationType?.type === "subscribe") {
+        channelData.subscribe = {
+          operationId: operationName,
+          description: operationType.description ?? `Subscribe ${operationName} operation`,
+          message: {
+            payload: {
+              type: "object",
+              properties: {}
+            }
+          }
+        };
+      }
+
+      const brandedChannelPath = yield* createChannelPath(channelPathData.path);
+      channels[brandedChannelPath] = channelData;
+    }
   
-  return createAsyncAPIChannels(channels);
+    return yield* createAsyncAPIChannels(channels);
+  });
 }
 
 /**
  * Generate messages from state data
  */
-function generateMessages(state: AsyncAPIConsolidatedState): AsyncAPIMessages {
-  const messages: AsyncAPIMessages = {};
+function generateMessages(state: AsyncAPIConsolidatedState): Effect.Effect<AsyncAPIMessages, Error> {
+  return Effect.gen(function*() {
+    const messages: Record<string, unknown> = {};
   
-  for (const [model, messageConfig] of state.messages) {
-    const modelName = getOperationName(model);
-    // eslint-disable-next-line no-console
-    console.log(`📨 Processing message for model ${modelName ?? "unknown"}`);
-    
-    // Generate full message structure from TypeSpec model
-    const messageData: any = {
-      description: messageConfig.description ?? `Message ${modelName}`,
-      contentType: messageConfig.contentType ?? "application/json",
-      title: messageConfig.title ?? modelName,
-    };
+    for (const [model, messageConfig] of state.messages) {
+      const modelName = getOperationName(model);
+      // eslint-disable-next-line no-console
+      console.log(`📨 Processing message for model ${modelName ?? "unknown"}`);
+      
+      // Generate full message structure from TypeSpec model
+      const messageData: AsyncAPIMessageData = {
+        description: messageConfig.description ?? `Message ${modelName}`,
+        contentType: messageConfig.contentType ?? "application/json",
+        title: messageConfig.title ?? modelName,
+      };
 
     // Add schema from model properties
     if (model.kind === "Model" && model.properties.size > 0) {
@@ -279,32 +353,42 @@ function generateMessages(state: AsyncAPIConsolidatedState): AsyncAPIMessages {
       // Process model properties
       for (const [propName, prop] of model.properties) {
         const propType = prop.type;
-        const messagePayload = messageData.payload as any;
-        (messagePayload.properties as any)[propName] = {
-          type: getTypeString(propType),
-          description: `Property ${propName}`
-        };
+        if (messageData.payload) {
+          messageData.payload.properties[propName] = {
+            type: getTypeString(propType),
+            description: `Property ${propName}`
+          };
+        }
       }
     }
 
-    const brandedMessageId = createMessageId(modelName ?? "unnamed");
-  (messages as any)[brandedMessageId] = messageData;
+    const brandedMessageId = yield* createMessageId(modelName ?? "unnamed");
+    messages[brandedMessageId] = messageData;
   }
   
-  return createAsyncAPIMessages(messages);
+  return yield* createAsyncAPIMessages(messages);
+});
 }
 
 /**
  * Generate JSON Schemas from TypeSpec models
  */
-function generateSchemas(state: AsyncAPIConsolidatedState): AsyncAPISchemas {
-  const schemas: AsyncAPISchemas = {};
+function generateSchemas(state: AsyncAPIConsolidatedState): Effect.Effect<AsyncAPISchemas, Error> {
+  return Effect.gen(function*() {
+    const schemas: AsyncAPISchemas = {};
   
   for (const [model, _] of state.messages) {
     const modelName = getOperationName(model);
     
     if (model.kind === "Model") {
-      const schemaData = {
+      const schemaData: {
+        type: "object";
+        properties: Record<string, {
+          type: string;
+          description: string;
+        }>;
+        required: string[];
+      } = {
         type: "object",
         properties: {},
         required: []
@@ -312,23 +396,24 @@ function generateSchemas(state: AsyncAPIConsolidatedState): AsyncAPISchemas {
 
       // Process model properties
       for (const [propName, prop] of model.properties) {
-        ((schemaData as any).properties as any)[propName] = {
+        schemaData.properties[propName] = {
           type: getTypeString(prop.type),
           description: `Property ${propName}`
         };
 
         // Check if property is required (no optional)
         if (!prop.optional) {
-          ((schemaData as any).required as string[]).push(propName);
+          schemaData.required.push(propName);
         }
       }
 
-      const brandedSchemaName = createSchemaName(modelName ?? "unnamed");
-      (schemas as any)[brandedSchemaName] = schemaData;
+      const brandedSchemaName = yield* createSchemaName(modelName ?? "unnamed");
+      schemas[brandedSchemaName] = schemaData;
     }
   }
   
-  return createAsyncAPISchemas(schemas);
+  return yield* createAsyncAPISchemas(schemas);
+  });
 }
 
 /**

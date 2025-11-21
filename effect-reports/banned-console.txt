@@ -1,7 +1,70 @@
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/validation/asyncapi-validator.ts[0m:[0m[32m105[0m:				// [0m[1m[31mconsole.log[0m(`⚠️  INITIALIZATION TOOK ${initTime}ms - TOO SLOW!`)
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/validation/asyncapi-validator.ts[0m:[0m[32m140[0m:					// [0m[1m[31mconsole.log[0m(`🚀 FAST PATH TOOK ${fastPathTime}ms`)
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/validation/asyncapi-validator.ts[0m:[0m[32m146[0m:			// [0m[1m[31mconsole.log[0m(`🐌 FAST PATH CHECK TOOK ${fastPathTime}ms - FALLING THROUGH TO PARSER`)
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/validation/asyncapi-validator.ts[0m:[0m[32m166[0m:					// [0m[1m[31mconsole.log[0m(`🔍 RAW PARSER CALL TOOK ${duration}ms`)
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/models/validation-result.ts[0m:[0m[32m84[0m: *   [0m[1m[31mconsole.log[0m(result.value) // Type: T
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/models/validation-result.ts[0m:[0m[32m86[0m: *   [0m[1m[31mconsole.log[0m(result.errors) // Type: ValidationError[]
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/decorators/channel.ts[0m:[0m[32m14[0m://TODO: CRITICAL - Remove [0m[1m[31mconsole.log[0m style Effect.log calls - use proper structured logging
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/utils/effect-helpers.ts[0m:[0m[32m89[0m:    [0m[1m[31mconsole.log[0m(`[DEBUG] ${message}`, data);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/utils/effect-helpers.ts[0m:[0m[32m102[0m:    [0m[1m[31mconsole.log[0m(`[INFO] ${message}`, data);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/utils/effect-helpers.ts[0m:[0m[32m106[0m:   * 🚨 ANTI-PATTERN: Using [0m[1m[31mconsole.warn[0m for errors
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/utils/effect-helpers.ts[0m:[0m[32m115[0m:    [0m[1m[31mconsole.warn[0m(`[WARN] ${message}`, data);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/utils/effect-helpers.ts[0m:[0m[32m128[0m:    [0m[1m[31mconsole.error[0m(`[ERROR] ${message}`, error);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/utils/effect-helpers.ts[0m:[0m[32m151[0m:      [0m[1m[31mconsole.log[0m(`[INIT] Initializing ${serviceName}`);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/utils/effect-helpers.ts[0m:[0m[32m153[0m:      [0m[1m[31mconsole.log[0m(`[INIT] Service: ${serviceName}`);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/utils/effect-helpers.ts[0m:[0m[32m155[0m:      [0m[1m[31mconsole.log[0m(`[INIT] Status: Starting`);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/utils/effect-helpers.ts[0m:[0m[32m157[0m:      [0m[1m[31mconsole.log[0m(`[INIT] Dependencies: Loaded`);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/utils/effect-helpers.ts[0m:[0m[32m173[0m:      [0m[1m[31mconsole.log[0m(`[SUCCESS] ${serviceName} initialized successfully`);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/utils/effect-helpers.ts[0m:[0m[32m175[0m:      [0m[1m[31mconsole.log[0m(`[SUCCESS] Service: ${serviceName}`);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/utils/effect-helpers.ts[0m:[0m[32m177[0m:      [0m[1m[31mconsole.log[0m(`[SUCCESS] Status: Ready`);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/utils/effect-helpers.ts[0m:[0m[32m179[0m:      [0m[1m[31mconsole.log[0m(`[SUCCESS] Dependencies: Verified`);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/utils/effect-helpers.ts[0m:[0m[32m194[0m:    [0m[1m[31mconsole.log[0m(`[SUCCESS] ${operation}`, result);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/utils/effect-helpers.ts[0m:[0m[32m207[0m:    [0m[1m[31mconsole.error[0m(`[FAILURE] ${operation}`, error);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/minimal-decorators.ts[0m:[0m[32m27[0m:  [0m[1m[31mconsole.log[0m(`🔍 MINIMAL @channel decorator executed! path: ${path}`);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/minimal-decorators.ts[0m:[0m[32m28[0m:  [0m[1m[31mconsole.log[0m(`🔍 Target:`, target);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/minimal-decorators.ts[0m:[0m[32m29[0m:  [0m[1m[31mconsole.log[0m(`🔍 Context:`, context);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/minimal-decorators.ts[0m:[0m[32m32[0m:    [0m[1m[31mconsole.log[0m(`❌ Empty channel path - should trigger diagnostic`);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/minimal-decorators.ts[0m:[0m[32m51[0m:  [0m[1m[31mconsole.log[0m(`✅ @channel decorator completed successfully - stored in state`);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/minimal-decorators.ts[0m:[0m[32m62[0m:  [0m[1m[31mconsole.log[0m(`🔍 MINIMAL @server decorator executed!`);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/minimal-decorators.ts[0m:[0m[32m63[0m:  [0m[1m[31mconsole.log[0m(`🔍 Target:`, target);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/minimal-decorators.ts[0m:[0m[32m64[0m:  [0m[1m[31mconsole.log[0m(`🔍 Config:`, config);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/minimal-decorators.ts[0m:[0m[32m67[0m:    [0m[1m[31mconsole.log[0m(`❌ No server config`);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/minimal-decorators.ts[0m:[0m[32m77[0m:  [0m[1m[31mconsole.log[0m(`✅ @server decorator completed successfully`);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/minimal-decorators.ts[0m:[0m[32m88[0m:  [0m[1m[31mconsole.log[0m(`🔍 MINIMAL @publish decorator executed! config:`, config);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/minimal-decorators.ts[0m:[0m[32m89[0m:  [0m[1m[31mconsole.log[0m(`🔍 Target:`, target);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/minimal-decorators.ts[0m:[0m[32m110[0m:  [0m[1m[31mconsole.log[0m(`✅ @publish decorator completed successfully - stored in state`);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/minimal-decorators.ts[0m:[0m[32m121[0m:  [0m[1m[31mconsole.log[0m(`🔍 MINIMAL @message decorator executed! config:`, config);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/minimal-decorators.ts[0m:[0m[32m122[0m:  [0m[1m[31mconsole.log[0m(`🔍 Target:`, target);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/minimal-decorators.ts[0m:[0m[32m125[0m:    [0m[1m[31mconsole.log[0m(`❌ No message config - should trigger diagnostic`);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/minimal-decorators.ts[0m:[0m[32m144[0m:  [0m[1m[31mconsole.log[0m(`✅ @message decorator completed successfully - stored in state`);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/minimal-decorators.ts[0m:[0m[32m155[0m:  [0m[1m[31mconsole.log[0m(`🔍 MINIMAL @protocol decorator executed! config:`, config);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/minimal-decorators.ts[0m:[0m[32m156[0m:  [0m[1m[31mconsole.log[0m(`🔍 Target:`, target);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/minimal-decorators.ts[0m:[0m[32m159[0m:    [0m[1m[31mconsole.log[0m(`❌ No protocol config - should trigger diagnostic`);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/minimal-decorators.ts[0m:[0m[32m168[0m:  [0m[1m[31mconsole.log[0m(`✅ @protocol decorator completed successfully`);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/minimal-decorators.ts[0m:[0m[32m179[0m:  [0m[1m[31mconsole.log[0m(`🔍 MINIMAL @security decorator executed! config:`, config);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/minimal-decorators.ts[0m:[0m[32m180[0m:  [0m[1m[31mconsole.log[0m(`🔍 Target:`, target);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/minimal-decorators.ts[0m:[0m[32m183[0m:    [0m[1m[31mconsole.log[0m(`❌ No security config - should trigger diagnostic`);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/minimal-decorators.ts[0m:[0m[32m192[0m:  [0m[1m[31mconsole.log[0m(`✅ @security decorator completed successfully`);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/minimal-decorators.ts[0m:[0m[32m199[0m:  [0m[1m[31mconsole.log[0m(`🔍 MINIMAL @subscribe decorator executed!`);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/minimal-decorators.ts[0m:[0m[32m200[0m:  [0m[1m[31mconsole.log[0m(`🔍 Target:`, target);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/minimal-decorators.ts[0m:[0m[32m211[0m:  [0m[1m[31mconsole.log[0m(`✅ @subscribe decorator completed successfully - stored in state`);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/minimal-decorators.ts[0m:[0m[32m222[0m:  [0m[1m[31mconsole.log[0m(`🔍 MINIMAL @tags decorator executed! value:`, value);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/minimal-decorators.ts[0m:[0m[32m223[0m:  [0m[1m[31mconsole.log[0m(`🔍 Target:`, target);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/minimal-decorators.ts[0m:[0m[32m226[0m:    [0m[1m[31mconsole.log[0m(`❌ No tags value - should trigger diagnostic`);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/minimal-decorators.ts[0m:[0m[32m235[0m:  [0m[1m[31mconsole.log[0m(`✅ @tags decorator completed successfully`);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/minimal-decorators.ts[0m:[0m[32m247[0m:  [0m[1m[31mconsole.log[0m(
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/minimal-decorators.ts[0m:[0m[32m250[0m:  [0m[1m[31mconsole.log[0m(`🔍 Target:`, target);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/minimal-decorators.ts[0m:[0m[32m253[0m:    [0m[1m[31mconsole.log[0m(`❌ No correlationId location - should trigger diagnostic`);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/minimal-decorators.ts[0m:[0m[32m262[0m:  [0m[1m[31mconsole.log[0m(`✅ @correlationId decorator completed successfully`);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/minimal-decorators.ts[0m:[0m[32m273[0m:  [0m[1m[31mconsole.log[0m(`🔍 MINIMAL @bindings decorator executed! value:`, value);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/minimal-decorators.ts[0m:[0m[32m274[0m:  [0m[1m[31mconsole.log[0m(`🔍 Target:`, target);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/minimal-decorators.ts[0m:[0m[32m277[0m:    [0m[1m[31mconsole.log[0m(`❌ No bindings value - should trigger diagnostic`);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/minimal-decorators.ts[0m:[0m[32m286[0m:  [0m[1m[31mconsole.log[0m(`✅ @bindings decorator completed successfully`);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/minimal-decorators.ts[0m:[0m[32m298[0m:  [0m[1m[31mconsole.log[0m(
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/minimal-decorators.ts[0m:[0m[32m302[0m:  [0m[1m[31mconsole.log[0m(`🔍 Target:`, target);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/minimal-decorators.ts[0m:[0m[32m305[0m:    [0m[1m[31mconsole.log[0m(`❌ No header name - should trigger diagnostic`);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/minimal-decorators.ts[0m:[0m[32m314[0m:  [0m[1m[31mconsole.log[0m(`✅ @header decorator completed successfully`);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/emitter.ts[0m:[0m[32m76[0m:  [0m[1m[31mconsole.log[0m("🚀 ASYNCAPI EMITTER: Starting generation");
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/emitter.ts[0m:[0m[32m82[0m:  [0m[1m[31mconsole.log[0m("📋 Emitter options:", options);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/emitter.ts[0m:[0m[32m85[0m:  [0m[1m[31mconsole.log[0m("📊 ASYNCAPI EMITTER: Extracting decorator state from program");
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/emitter.ts[0m:[0m[32m91[0m:  [0m[1m[31mconsole.log[0m("🏗️ ASYNCAPI EMITTER: Generating AsyncAPI 3.0 document structure");
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/emitter.ts[0m:[0m[32m193[0m:  [0m[1m[31mconsole.log[0m(`✅ ASYNCAPI EMITTER: Generated ${outputPath}`);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/emitter.ts[0m:[0m[32m239[0m:      [0m[1m[31mconsole.log[0m(`🔍 Processing channel for operation ${operationName ?? "unknown"}`);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/emitter.ts[0m:[0m[32m241[0m:      [0m[1m[31mconsole.log[0m(`📍 Channel path: ${channelPathData.path}`);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/emitter.ts[0m:[0m[32m243[0m:      [0m[1m[31mconsole.log[0m(`⚡ Operation type: ${operationType?.type}`);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/emitter.ts[0m:[0m[32m301[0m:      [0m[1m[31mconsole.log[0m(`📨 Processing message for model ${modelName ?? "unknown"}`);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/emitter.ts[0m:[0m[32m421[0m:  [0m[1m[31mconsole.log[0m("📊 ASYNCAPI EMITTER: Generation Statistics:", stats);
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/emitter.ts[0m:[0m[32m423[0m:  [0m[1m[31mconsole.log[0m(`🎯 ASYNCAPI EMITTER: Generated ${stats.channels} channels, ${stats.messages} messages`);

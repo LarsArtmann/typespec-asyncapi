@@ -57,23 +57,45 @@ describe("emitFile API Isolation Test", () => {
     // Compile and capture result
     const result = await tester.compile(source);
 
-    // DEBUG: Show all filesystem paths in virtual FS
-    console.log("🔍 Virtual FS contents:");
-    for (const [name, value] of Object.entries(result.fs.fs)) {
-      console.log(
-        `  ${name}: ${typeof value === "string" ? "string(" + value.length + " chars)" : typeof value}`,
-      );
+    // FIRST: Check result structure
+    console.log("🔍 COMPLETE RESULT STRUCTURE:", {
+      hasOutputs: !!result.outputs,
+      outputsKeys: result.outputs ? Object.keys(result.outputs) : [],
+      outputsCount: result.outputs ? Object.keys(result.outputs).length : 0,
+      hasFs: !!result.fs,
+      fsKeys: result.fs ? Object.keys(result.fs) : [],
+      hasProgram: !!result.program,
+      hasDiagnostics: !!result.diagnostics
+    });
+    
+    // Show ALL files in virtual filesystem (including small ones)
+    console.log("🔍 Virtual FS ALL entries:");
+    if (result.fs && result.fs.fs) {
+      for (const [path, content] of Object.entries(result.fs.fs)) {
+        console.log(`  ${path}: ${typeof content}${typeof content === 'string' ? `(${content.length})` : ''}`);
+        if (typeof content === 'string' && content.length > 0 && content.length < 200) {
+          console.log(`    Preview: ${content.substring(0, 100)}...`);
+        }
+      }
     }
 
-    // DEBUG: Show result.outputs
+    // Show result.outputs
     console.log("🔍 result.outputs:", result.outputs);
-
-    // DEBUG: Show all filesystem paths in virtual FS
-    console.log("🔍 Virtual FS contents:");
-    for (const [name, value] of Object.entries(result.fs.fs)) {
-      console.log(
-        `  ${name}: ${typeof value === "string" ? "string(" + value.length + " chars)" : typeof value}`,
-      );
+    
+    if (result.outputs && Object.keys(result.outputs).length > 0) {
+      console.log("🎉 SUCCESS: Files captured in result.outputs!");
+      for (const [filename, content] of Object.entries(result.outputs)) {
+        console.log(`  📄 ${filename}: ${typeof content === 'string' ? content.length + ' chars' : typeof content}`);
+        
+        const doc = filename.endsWith(".json") ? JSON.parse(String(content)) : YAML.load(String(content));
+        return {
+          asyncApiDoc: doc,
+          diagnostics: result.program.diagnostics,
+          program: result.program,
+          outputs: result.outputs,
+          outputFile: filename,
+        };
+      }
     }
 
     // This should find the emitted file but will fail

@@ -1,7 +1,2 @@
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/validation/asyncapi-validator.ts[0m:[0m[32m84[0m:	async initialize(): [0m[1m[31mPromise<[0mvoid> {
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/validation/asyncapi-validator.ts[0m:[0m[32m285[0m:	async validate(inputDocument: unknown, _identifier?: string): [0m[1m[31mPromise<[0mValidationResult> {
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/validation/asyncapi-validator.ts[0m:[0m[32m315[0m:	async validateFile(filePath: string): [0m[1m[31mPromise<[0mValidationResult> {
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/utils/effect-helpers.ts[0m:[0m[32m190[0m:	executeAsync: <T>(operation: () => [0m[1m[31mPromise<[0mT>, errorMessage: string) =>
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/utils/standardized-errors.ts[0m:[0m[32m233[0m:	tryAsync: <T>(fn: () => [0m[1m[31mPromise<[0mT>, context?: Record<string, unknown>) =>
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/emitter/IAsyncAPIEmitter.ts[0m:[0m[32m40[0m:	writeOutput(sourceFiles: SourceFile<string>[]): [0m[1m[31mPromise<[0mvoid>
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/domain/models/ErrorHandlingMigration.ts[0m:[0m[32m16[0m:		promiseFn: () => [0m[1m[31mPromise<[0mT>,
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/utils/effect-helpers.ts[0m:[0m[32m34[0m:  fn: () => [0m[1m[31mPromise<[0mT>
+[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/emitter.ts[0m:[0m[32m74[0m:): [0m[1m[31mPromise<[0mvoid> {

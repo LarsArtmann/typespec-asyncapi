@@ -81,11 +81,11 @@ export async function createAsyncAPITestLibrary() {
 
   return createTestLibrary({
     // Using centralized library name constant instead of hardcoded string
-    name: DEFAULT_CONFIG.LIBRARY_NAME,
+    name: DEFAULT_CONFIG.libraryName,
     packageRoot,
     // Using centralized library path constants instead of hardcoded folder names
-    typespecFileFolder: LIBRARY_PATHS.LIB,
-    jsFileFolder: LIBRARY_PATHS.DIST,
+    typespecFileFolder: LIBRARY_PATHS.LIB_DIR,
+    jsFileFolder: LIBRARY_PATHS.DIST_DIR,
   });
 }
 

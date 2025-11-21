@@ -1,72 +1,10 @@
-/Users/larsartmann/projects/typespec-asyncapi/src/domain/models/validation-result.ts:107:export function isSuccess<T>(result: ValidationResult<T>): result is ValidationSuccess<T> {
-/Users/larsartmann/projects/typespec-asyncapi/src/domain/models/validation-result.ts:118:export function isFailure<T>(result: ValidationResult<T>): result is ValidationFailure {
-/Users/larsartmann/projects/typespec-asyncapi/src/domain/models/validation-result.ts:138:export function success<T>(value: T): ValidationSuccess<T> {
-/Users/larsartmann/projects/typespec-asyncapi/src/domain/models/validation-result.ts:210:export function getChannelCount(doc: AsyncAPIObject): number {
-/Users/larsartmann/projects/typespec-asyncapi/src/domain/models/validation-result.ts:217:export function getOperationCount(doc: AsyncAPIObject): number {
-/Users/larsartmann/projects/typespec-asyncapi/src/domain/models/validation-result.ts:224:export function getSchemaCount(doc: AsyncAPIObject): number {
-/Users/larsartmann/projects/typespec-asyncapi/src/domain/models/path-templates.ts:33:export function validatePathTemplate(pathTemplate: string): TemplateValidationResult {
-/Users/larsartmann/projects/typespec-asyncapi/src/domain/models/path-templates.ts:70:export function detectCommandName(): string {
-/Users/larsartmann/projects/typespec-asyncapi/src/domain/models/path-templates.ts:101:export function detectProjectRoot(startPath?: string): string {
-/Users/larsartmann/projects/typespec-asyncapi/src/domain/models/path-templates.ts:159:export function createTemplateVariables(context: PathTemplateContext): PathTemplateVariables {
-/Users/larsartmann/projects/typespec-asyncapi/src/domain/models/path-templates.ts:235:export function hasTemplateVariables(path: string): boolean {
-/Users/larsartmann/projects/typespec-asyncapi/src/domain/models/path-templates.ts:245:export function getTemplateVariables(pathTemplate: string): string[] {
-/Users/larsartmann/projects/typespec-asyncapi/src/index.ts:17:export async function $onEmit(context: EmitContext) {
-/Users/larsartmann/projects/typespec-asyncapi/src/lib.ts:312: * export function $channel(context: DecoratorContext, target: Operation, path: string) {
-/Users/larsartmann/projects/typespec-asyncapi/src/lib.ts:385: * export function $channel(context: DecoratorContext, target: Operation, path?: string) {
-/Users/larsartmann/projects/typespec-asyncapi/src/lib.ts:431:export function reportDiagnostic(context: DecoratorContext, target: unknown, code: string, args?: Record<string, unknown>): void {
-/Users/larsartmann/projects/typespec-asyncapi/src/domain/types/ServerTypes.ts:29:export function isServerConfigObject(config: unknown): config is Record<string, unknown> {
-/Users/larsartmann/projects/typespec-asyncapi/src/domain/types/ServerTypes.ts:36:export function extractStringValue(value: unknown): string | undefined {
-/Users/larsartmann/projects/typespec-asyncapi/src/domain/types/ServerTypes.ts:51:export function extractProtocol(value: unknown): Protocol | null {
-/Users/larsartmann/projects/typespec-asyncapi/src/domain/types/ServerTypes.ts:67:export function extractServerConfig(config: unknown): { success: boolean; config: ServerConfig | null; error?: string } {
-/Users/larsartmann/projects/typespec-asyncapi/src/constants/cloud-binding-type.ts:24:export function getSupportedBindingTypes(): readonly CloudBindingType[] {
-/Users/larsartmann/projects/typespec-asyncapi/src/constants/protocol-defaults.ts:105:export function getDefaultProtocolPort(protocol: AsyncAPIProtocolType): number | undefined {
-/Users/larsartmann/projects/typespec-asyncapi/src/types/branded-types.ts:98:export function isValidChannelName(value: string): value is ChannelName {
-/Users/larsartmann/projects/typespec-asyncapi/src/types/branded-types.ts:114:export function isValidOperationName(value: string): value is OperationName {
-/Users/larsartmann/projects/typespec-asyncapi/src/types/branded-types.ts:129:export function isValidSchemaName(value: string): value is SchemaName {
-/Users/larsartmann/projects/typespec-asyncapi/src/types/branded-types.ts:145:export function brandChannelName(value: string): ChannelName {
-/Users/larsartmann/projects/typespec-asyncapi/src/types/branded-types.ts:155:export function brandOperationName(value: string): OperationName {
-/Users/larsartmann/projects/typespec-asyncapi/src/types/branded-types.ts:165:export function brandMessageName(value: string): MessageName {
-/Users/larsartmann/projects/typespec-asyncapi/src/types/branded-types.ts:175:export function brandSchemaName(value: string): SchemaName {
-/Users/larsartmann/projects/typespec-asyncapi/src/types/branded-types.ts:185:export function brandServerName(value: string): ServerName {
-/Users/larsartmann/projects/typespec-asyncapi/src/types/branded-types.ts:195:export function brandSecuritySchemeName(value: string): SecuritySchemeName {
-/Users/larsartmann/projects/typespec-asyncapi/src/types/branded-types.ts:206:export function toChannelName(value: string): ChannelName {
-/Users/larsartmann/projects/typespec-asyncapi/src/types/branded-types.ts:222:export function toOperationName(value: string): OperationName {
-/Users/larsartmann/projects/typespec-asyncapi/src/types/branded-types.ts:238:export function toSchemaName(value: string): SchemaName {
-/Users/larsartmann/projects/typespec-asyncapi/src/types/branded-types.ts:253:export function unbrand<T extends string>(branded: T): string {
-/Users/larsartmann/projects/typespec-asyncapi/src/utils/validation-helpers.ts:68:export function isValidAsyncAPIStructure(document: unknown): document is AsyncAPIObject {
-/Users/larsartmann/projects/typespec-asyncapi/src/utils/validation-helpers.ts:83:export function validateAsyncAPIObjectSync(document: unknown): { valid: boolean; errors: string[] } {
-/Users/larsartmann/projects/typespec-asyncapi/src/utils/asyncapi-helpers.ts:8:export function createChannelDefinition(op: Operation, program: Program): { name: ChannelName; definition: OperationObject } {
-/Users/larsartmann/projects/typespec-asyncapi/src/utils/protocol-validation.ts:34:export function validateRequiredString(value: string | undefined, fieldName: string): string[] {
-/Users/larsartmann/projects/typespec-asyncapi/src/utils/protocol-validation.ts:50:export function validatePositiveInteger(value: number | undefined, fieldName: string, maxValue?: number): ProtocolValidationResult {
-/Users/larsartmann/projects/typespec-asyncapi/src/utils/protocol-validation.ts:71:export function validateStringPattern(value: string | undefined, fieldName: string, pattern: RegExp, description: string): string[] {
-/Users/larsartmann/projects/typespec-asyncapi/src/utils/protocol-validation.ts:85:export function validateStringLength(value: string | undefined, fieldName: string, maxLength: number): string[] {
-/Users/larsartmann/projects/typespec-asyncapi/src/utils/protocol-validation.ts:99:export function validateEnumValue<T extends string>(value: T | undefined, fieldName: string, allowedValues: readonly T[]): string[] {
-/Users/larsartmann/projects/typespec-asyncapi/src/utils/protocol-validation.ts:113:export function validateHttpStatusCode(statusCode: number | undefined, fieldName: string): string[] {
-/Users/larsartmann/projects/typespec-asyncapi/src/utils/protocol-validation.ts:129:export function combineValidationResults(...results: ProtocolValidationResult[]): ProtocolValidationResult {
-/Users/larsartmann/projects/typespec-asyncapi/src/infrastructure/adapters/cloud-binding-plugin.ts:85:export function registerCloudBindingPlugin(plugin: CloudBindingPlugin): void {
-/Users/larsartmann/projects/typespec-asyncapi/src/utils/schema-conversion.ts:47:export function convertModelToSchema(model: Model, program: Program): SchemaObject {
-/Users/larsartmann/projects/typespec-asyncapi/src/utils/schema-conversion.ts:118:export function convertPropertyToSchema(prop: ModelProperty, program: Program, propName: string): SchemaObject {
-/Users/larsartmann/projects/typespec-asyncapi/src/utils/schema-conversion.ts:300:export function getPropertyType(prop: ModelProperty): {
-/Users/larsartmann/projects/typespec-asyncapi/src/utils/schema-conversion.ts:350:export function generateSchemaPropertiesFromModel(model: Model): Record<string, unknown> {
-/Users/larsartmann/projects/typespec-asyncapi/src/utils/performance-utils.ts:17:export function getMemoryUsageFromPerformance(): number {
-/Users/larsartmann/projects/typespec-asyncapi/src/domain/decorators/protocol.ts:239:export function getProtocolConfig(context: DecoratorContext, target: Operation | Model): ProtocolConfig | undefined {
-/Users/larsartmann/projects/typespec-asyncapi/src/domain/decorators/protocol.ts:247:export function hasProtocolBinding(context: DecoratorContext, target: Operation | Model): boolean {
-/Users/larsartmann/projects/typespec-asyncapi/src/domain/decorators/protocol.ts:255:export function getAllProtocolConfigs(context: DecoratorContext): Map<Type, ProtocolConfig> {
-/Users/larsartmann/projects/typespec-asyncapi/src/utils/typespec-helpers.ts:19:export function discoverOperations(program: Program): Operation[] {
-/Users/larsartmann/projects/typespec-asyncapi/src/utils/typespec-helpers.ts:43:export function walkNamespace(ns: Namespace, operations: Operation[], program: Program): void {
-/Users/larsartmann/projects/typespec-asyncapi/src/utils/typespec-helpers.ts:71:export function getOperationType(operation: Operation, program: Program): string | undefined {
-/Users/larsartmann/projects/typespec-asyncapi/src/utils/typespec-helpers.ts:80:export function getChannelPath(operation: Operation, program: Program): string | undefined {
-/Users/larsartmann/projects/typespec-asyncapi/src/utils/typespec-helpers.ts:89:export function getAsyncAPIAction(operationType: string | undefined): "send" | "receive" {
-/Users/larsartmann/projects/typespec-asyncapi/src/utils/typespec-helpers.ts:97:export function sanitizeChannelId(channelPath: string): string {
-/Users/larsartmann/projects/typespec-asyncapi/src/utils/typespec-helpers.ts:111:export function logOperationDetails(operation: Operation, program: Program): void {
-/Users/larsartmann/projects/typespec-asyncapi/src/utils/typespec-helpers.ts:135:export function getServerConfigs(program: Program, namespace: Namespace): Map<string, ServerConfig> | undefined {
-/Users/larsartmann/projects/typespec-asyncapi/src/utils/typespec-helpers.ts:147:export function getAllServerConfigs(program: Program): Map<Namespace, Map<string, ServerConfig>> {
-/Users/larsartmann/projects/typespec-asyncapi/src/utils/typespec-helpers.ts:167:export function getMessageConfig(program: Program, model: Model): MessageConfig | undefined {
-/Users/larsartmann/projects/typespec-asyncapi/src/utils/typespec-helpers.ts:176:export function getProtocolConfig(program: Program, target: Operation | Model): ProtocolConfig | undefined {
-/Users/larsartmann/projects/typespec-asyncapi/src/utils/typespec-helpers.ts:185:export function getSecurityConfig(program: Program, target: Operation | Model): SecurityConfig | undefined {
-/Users/larsartmann/projects/typespec-asyncapi/src/utils/typespec-helpers.ts:194:export function buildServersFromNamespaces(program: Program): ServersObject {
-/Users/larsartmann/projects/typespec-asyncapi/src/domain/decorators/channel.ts:16:export function $channel(context: DecoratorContext, target: Operation, path: StringValue | string): void {
-/Users/larsartmann/projects/typespec-asyncapi/src/domain/decorators/subscribe.ts:16:export function $subscribe(context: DecoratorContext, target: Operation): void {
-/Users/larsartmann/projects/typespec-asyncapi/src/domain/decorators/message.ts:130:export function getMessageConfig(context: DecoratorContext, target: Model): MessageConfig | undefined {
-/Users/larsartmann/projects/typespec-asyncapi/src/domain/decorators/message.ts:139:export function isMessage(context: DecoratorContext, target: Model): boolean {
-/Users/larsartmann/projects/typespec-asyncapi/src/domain/decorators/publish.ts:52:export function $publish(context: DecoratorContext, target: Operation): void {
+/Users/larsartmann/projects/typespec-asyncapi/src/domain/validation/asyncapi-validator.ts:16:export function validateAsyncAPI(document: AsyncAPIDocument): ValidationResult {
+/Users/larsartmann/projects/typespec-asyncapi/src/domain/validation/asyncapi-validator.ts:56:export function isProductionReady(document: AsyncAPIDocument): boolean {
+/Users/larsartmann/projects/typespec-asyncapi/src/domain/validation/asyncapi-validator.ts:69:export function getValidationSummary(document: AsyncAPIDocument): string {
+/Users/larsartmann/projects/typespec-asyncapi/src/infrastructure/configuration/options.ts:79:export function mergeWithDefaults(options?: Partial<EmitterOptions>): Required<EmitterOptions> {
+/Users/larsartmann/projects/typespec-asyncapi/src/lib.ts:331: * export function $channel(context: DecoratorContext, target: Operation, path: string) {
+/Users/larsartmann/projects/typespec-asyncapi/src/lib.ts:403: * export function $channel(context: DecoratorContext, target: Operation, path?: string) {
+/Users/larsartmann/projects/typespec-asyncapi/src/utils/effect-helpers.ts:51:export function isEffectSuccess<T>(result: EffectResult<T>): result is { data: T; error?: undefined } {
+/Users/larsartmann/projects/typespec-asyncapi/src/utils/effect-helpers.ts:58:export function getEffectError<T>(result: EffectResult<T>): Error | undefined {
+/Users/larsartmann/projects/typespec-asyncapi/src/minimal-decorators.ts:198:export function $subscribe(context: DecoratorContext, target: Operation): void {
+/Users/larsartmann/projects/typespec-asyncapi/src/state.ts:73:export function consolidateAsyncAPIState(program: Program): AsyncAPIConsolidatedState {

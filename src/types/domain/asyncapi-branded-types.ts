@@ -5,6 +5,8 @@
  * Ensures type safety beyond generic Record<string, unknown> patterns
  */
 
+import { Effect } from "effect"
+
 // ===== BRANDED TYPE UTILITIES =====
 
 /**
@@ -54,83 +56,84 @@ export type ServerUrl = Branded<string, 'ServerUrl'>;
 /**
  * Create a branded channel path with validation
  */
-export const createChannelPath = (path: string): ChannelPath => {
+export const createChannelPath = (path: string): Effect.Effect<ChannelPath, Error> => {
   if (typeof path !== 'string' || !path.trim()) {
-    throw new Error(`Channel path must be a non-empty string, got: ${JSON.stringify(path)}`);
+    return Effect.fail(new Error(`Channel path must be a non-empty string, got: ${JSON.stringify(path)}`));
   }
   
   // Additional validation for AsyncAPI channel path format
   if (!path.startsWith('/')) {
-    throw new Error(`Channel path must start with '/', got: ${path}`);
+    return Effect.fail(new Error(`Channel path must start with '/', got: ${path}`));
   }
   
-  return path as ChannelPath;
+  return Effect.succeed(path as ChannelPath);
 };
 
 /**
  * Create a branded message identifier with validation
  */
-export const createMessageId = (messageId: string): MessageId => {
+export const createMessageId = (messageId: string): Effect.Effect<MessageId, Error> => {
   if (typeof messageId !== 'string' || !messageId.trim()) {
-    throw new Error(`Message ID must be a non-empty string, got: ${JSON.stringify(messageId)}`);
+    return Effect.fail(new Error(`Message ID must be a non-empty string, got: ${JSON.stringify(messageId)}`));
   }
   
   // Additional validation for message ID format
   if (!/^[a-zA-Z0-9._-]+$/.test(messageId)) {
-    throw new Error(`Message ID contains invalid characters, got: ${messageId}`);
+    return Effect.fail(new Error(`Message ID contains invalid characters, got: ${messageId}`));
   }
   
-  return messageId as MessageId;
+  return Effect.succeed(messageId as MessageId);
 };
 
 /**
  * Create a branded schema name with validation
  */
-export const createSchemaName = (schemaName: string): SchemaName => {
+export const createSchemaName = (schemaName: string): Effect.Effect<SchemaName, Error> => {
   if (typeof schemaName !== 'string' || !schemaName.trim()) {
-    throw new Error(`Schema name must be a non-empty string, got: ${JSON.stringify(schemaName)}`);
+    return Effect.fail(new Error(`Schema name must be a non-empty string, got: ${JSON.stringify(schemaName)}`));
   }
   
   // Additional validation for JSON Schema identifier format
   if (!/^[a-zA-Z0-9._-]+$/.test(schemaName)) {
-    throw new Error(`Schema name contains invalid characters, got: ${schemaName}`);
+    return Effect.fail(new Error(`Schema name contains invalid characters, got: ${schemaName}`));
   }
   
-  return schemaName as SchemaName;
+  return Effect.succeed(schemaName as SchemaName);
 };
 
 /**
  * Create a branded operation identifier with validation
  */
-export const createOperationId = (operationId: string): OperationId => {
+export const createOperationId = (operationId: string): Effect.Effect<OperationId, Error> => {
   if (typeof operationId !== 'string' || !operationId.trim()) {
-    throw new Error(`Operation ID must be a non-empty string, got: ${JSON.stringify(operationId)}`);
+    return Effect.fail(new Error(`Operation ID must be a non-empty string, got: ${JSON.stringify(operationId)}`));
   }
   
   // Additional validation for operation ID format
   if (!/^[a-zA-Z0-9._-]+$/.test(operationId)) {
-    throw new Error(`Operation ID contains invalid characters, got: ${operationId}`);
+    return Effect.fail(new Error(`Operation ID contains invalid characters, got: ${operationId}`));
   }
   
-  return operationId as OperationId;
+  return Effect.succeed(operationId as OperationId);
 };
 
 /**
  * Create a branded server URL with validation
  */
-export const createServerUrl = (url: string): ServerUrl => {
+export const createServerUrl = (url: string): Effect.Effect<ServerUrl, Error> => {
   if (typeof url !== 'string' || !url.trim()) {
-    throw new Error(`Server URL must be a non-empty string, got: ${JSON.stringify(url)}`);
+    return Effect.fail(new Error(`Server URL must be a non-empty string, got: ${JSON.stringify(url)}`));
   }
   
-  // Basic URL validation
-  try {
-    new URL(url);
-  } catch {
-    throw new Error(`Server URL must be a valid URL, got: ${url}`);
-  }
-  
-  return url as ServerUrl;
+  // Basic URL validation using Effect.try
+  const urlValidationError = (_error: unknown) => new Error(`Server URL must be a valid URL, got: ${url}`);
+  return Effect.try({
+    try: () => {
+      new URL(url);
+      return url as ServerUrl;
+    },
+    catch: urlValidationError
+  });
 };
 
 // ===== TYPE GUARDS =====

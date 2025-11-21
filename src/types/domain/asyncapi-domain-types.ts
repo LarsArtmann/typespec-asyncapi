@@ -5,6 +5,7 @@
  * Production-ready type safety system
  */
 
+import { Effect } from "effect"
 import type { 
   ChannelPath,
   MessageId, 
@@ -32,28 +33,31 @@ export class AsyncAPIValidationError extends Error {
 /**
  * Validates a channel structure
  */
-function validateChannel(channel: unknown): asserts channel is Record<string, unknown> {
+function validateChannel(channel: unknown): Effect.Effect<void, AsyncAPIValidationError> {
   if (typeof channel !== 'object' || channel === null || Array.isArray(channel)) {
-    throw new AsyncAPIValidationError('Channel must be an object', 'channel', channel);
+    return Effect.fail(new AsyncAPIValidationError('Channel must be an object', 'channel', channel));
   }
+  return Effect.succeed(undefined);
 }
 
 /**
  * Validates a message structure
  */
-function validateMessage(message: unknown): asserts message is Record<string, unknown> {
+function validateMessage(message: unknown): Effect.Effect<void, AsyncAPIValidationError> {
   if (typeof message !== 'object' || message === null || Array.isArray(message)) {
-    throw new AsyncAPIValidationError('Message must be an object', 'message', message);
+    return Effect.fail(new AsyncAPIValidationError('Message must be an object', 'message', message));
   }
+  return Effect.succeed(undefined);
 }
 
 /**
  * Validates a schema structure
  */
-function validateSchema(schema: unknown): asserts schema is Record<string, unknown> {
+function validateSchema(schema: unknown): Effect.Effect<void, AsyncAPIValidationError> {
   if (typeof schema !== 'object' || schema === null || Array.isArray(schema)) {
-    throw new AsyncAPIValidationError('Schema must be an object', 'schema', schema);
+    return Effect.fail(new AsyncAPIValidationError('Schema must be an object', 'schema', schema));
   }
+  return Effect.succeed(undefined);
 }
 
 // ===== TYPE-SAFE RECORD REPLACEMENTS WITH BRANDED TYPES =====
@@ -90,17 +94,19 @@ export type AsyncAPIServers = Record<ServerUrl, unknown>;
  */
 export const createAsyncAPIChannels = (
   channels: Record<string, unknown>
-): AsyncAPIChannels => {
-  // Runtime validation - channel structure verification
-  for (const [path, channel] of Object.entries(channels)) {
-    if (typeof path !== 'string' || !path.trim()) {
-      throw new AsyncAPIValidationError('Channel path must be a non-empty string', 'path', path);
+): Effect.Effect<AsyncAPIChannels, AsyncAPIValidationError> => {
+  return Effect.gen(function*() {
+    // Runtime validation - channel structure verification
+    for (const [path, channel] of Object.entries(channels)) {
+      if (typeof path !== 'string' || !path.trim()) {
+        return yield* Effect.fail(new AsyncAPIValidationError('Channel path must be a non-empty string', 'path', path));
+      }
+      
+      yield* validateChannel(channel);
     }
-    
-    validateChannel(channel);
-  }
   
-  return channels as AsyncAPIChannels;
+    return channels as AsyncAPIChannels;
+  });
 };
 
 /**
@@ -108,17 +114,19 @@ export const createAsyncAPIChannels = (
  */
 export const createAsyncAPIMessages = (
   messages: Record<string, unknown>
-): AsyncAPIMessages => {
-  // Runtime validation - message structure verification
-  for (const [messageId, message] of Object.entries(messages)) {
-    if (typeof messageId !== 'string' || !messageId.trim()) {
-      throw new AsyncAPIValidationError('Message ID must be a non-empty string', 'messageId', messageId);
+): Effect.Effect<AsyncAPIMessages, AsyncAPIValidationError> => {
+  return Effect.gen(function*() {
+    // Runtime validation - message structure verification
+    for (const [messageId, message] of Object.entries(messages)) {
+      if (typeof messageId !== 'string' || !messageId.trim()) {
+        return yield* Effect.fail(new AsyncAPIValidationError('Message ID must be a non-empty string', 'messageId', messageId));
+      }
+      
+      yield* validateMessage(message);
     }
-    
-    validateMessage(message);
-  }
   
-  return messages as AsyncAPIMessages;
+    return messages as AsyncAPIMessages;
+  });
 };
 
 /**
@@ -126,23 +134,25 @@ export const createAsyncAPIMessages = (
  */
 export const createAsyncAPISchemas = (
   schemas: Record<string, unknown>
-): AsyncAPISchemas => {
-  // Runtime validation - JSON Schema verification
-  for (const [schemaName, schema] of Object.entries(schemas)) {
-    if (typeof schemaName !== 'string' || !schemaName.trim()) {
-      throw new AsyncAPIValidationError('Schema name must be a non-empty string', 'schemaName', schemaName);
+): Effect.Effect<AsyncAPISchemas, AsyncAPIValidationError> => {
+  return Effect.gen(function*() {
+    // Runtime validation - JSON Schema verification
+    for (const [schemaName, schema] of Object.entries(schemas)) {
+      if (typeof schemaName !== 'string' || !schemaName.trim()) {
+        return yield* Effect.fail(new AsyncAPIValidationError('Schema name must be a non-empty string', 'schemaName', schemaName));
+      }
+      
+      yield* validateSchema(schema);
+      
+      // Additional JSON Schema validation
+      const schemaObj = schema as Record<string, unknown>;
+      if (!('type' in schemaObj)) {
+        return yield* Effect.fail(new AsyncAPIValidationError('Schema must have a type property', 'schema', schema));
+      }
     }
-    
-    validateSchema(schema);
-    
-    // Additional JSON Schema validation
-    const schemaObj = schema as Record<string, unknown>;
-    if (!('type' in schemaObj)) {
-      throw new AsyncAPIValidationError('Schema must have a type property', 'schema', schema);
-    }
-  }
   
-  return schemas as AsyncAPISchemas;
+    return schemas as AsyncAPISchemas;
+  });
 };
 
 /**
@@ -150,17 +160,19 @@ export const createAsyncAPISchemas = (
  */
 export const createAsyncAPIOperations = (
   operations: Record<string, unknown>
-): AsyncAPIOperations => {
-  // Runtime validation - operation structure verification
-  for (const [operationId, operation] of Object.entries(operations)) {
-    if (typeof operationId !== 'string' || !operationId.trim()) {
-      throw new AsyncAPIValidationError('Operation ID must be a non-empty string', 'operationId', operationId);
+): Effect.Effect<AsyncAPIOperations, AsyncAPIValidationError> => {
+  return Effect.gen(function*() {
+    // Runtime validation - operation structure verification
+    for (const [operationId, operation] of Object.entries(operations)) {
+      if (typeof operationId !== 'string' || !operationId.trim()) {
+        return yield* Effect.fail(new AsyncAPIValidationError('Operation ID must be a non-empty string', 'operationId', operationId));
+      }
+      
+      if (typeof operation !== 'object' || operation === null || Array.isArray(operation)) {
+        return yield* Effect.fail(new AsyncAPIValidationError('Operation must be an object', 'operation', operation));
+      }
     }
-    
-    if (typeof operation !== 'object' || operation === null || Array.isArray(operation)) {
-      throw new AsyncAPIValidationError('Operation must be an object', 'operation', operation);
-    }
-  }
   
-  return operations as AsyncAPIOperations;
+    return operations as AsyncAPIOperations;
+  });
 };
