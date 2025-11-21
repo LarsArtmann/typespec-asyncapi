@@ -4,7 +4,7 @@
  * Basic domain object schema integration
  * Demonstrates completion of @effect/schema Step 3
  */
-import type { 
+import { 
   channelPathSchema,
   messageIdSchema, 
   schemaNameSchema,
@@ -19,7 +19,7 @@ import { Effect, Schema } from "effect"
  * Simple schema for AsyncAPI channel objects
  */
 export const channelSchema = Schema.Struct({
-  path: Schema.String, // Simplified for Step 3 completion
+  path: channelPathSchema,
   description: Schema.optional(Schema.String)
 })
 
@@ -27,8 +27,8 @@ export const channelSchema = Schema.Struct({
  * Simple schema for AsyncAPI message objects
  */
 export const messageSchema = Schema.Struct({
-  id: Schema.String, // Simplified for Step 3 completion
-  schemaName: Schema.String,
+  id: messageIdSchema,
+  schemaName: schemaNameSchema,
   description: Schema.optional(Schema.String)
 })
 
@@ -36,7 +36,7 @@ export const messageSchema = Schema.Struct({
  * Simple schema for AsyncAPI operation objects
  */
 export const operationSchema = Schema.Struct({
-  id: Schema.String, // Simplified for Step 3 completion
+  id: operationIdSchema,
   type: Schema.Literal("send", "receive"),
   description: Schema.optional(Schema.String)
 })
@@ -45,7 +45,7 @@ export const operationSchema = Schema.Struct({
  * Simple schema for AsyncAPI server objects
  */
 export const serverSchema = Schema.Struct({
-  url: Schema.String, // Simplified for Step 3 completion
+  url: serverUrlSchema,
   protocol: Schema.Literal("kafka", "mqtt", "amqp", "ws", "http"),
   description: Schema.optional(Schema.String)
 })
@@ -100,7 +100,7 @@ export const createChannel = (
   input: unknown
 ): Effect.Effect<Channel, AsyncAPIValidationError> => {
   return Effect.try({
-    try: () => Schema.decodeSync(channelSchema)(input),
+    try: () => Schema.decodeUnknownSync(channelSchema)(input),
     catch: (error) => new AsyncAPIValidationError(
       `Channel validation failed: ${String(error)}`,
       undefined,
@@ -116,7 +116,7 @@ export const createMessage = (
   input: unknown
 ): Effect.Effect<Message, AsyncAPIValidationError> => {
   return Effect.try({
-    try: () => Schema.decodeSync(messageSchema)(input),
+    try: () => Schema.decodeUnknownSync(messageSchema)(input),
     catch: (error) => new AsyncAPIValidationError(
       `Message validation failed: ${String(error)}`,
       undefined,
@@ -132,7 +132,7 @@ export const createOperation = (
   input: unknown
 ): Effect.Effect<Operation, AsyncAPIValidationError> => {
   return Effect.try({
-    try: () => Schema.decodeSync(operationSchema)(input),
+    try: () => Schema.decodeUnknownSync(operationSchema)(input),
     catch: (error) => new AsyncAPIValidationError(
       `Operation validation failed: ${String(error)}`,
       undefined,
@@ -148,7 +148,7 @@ export const createServer = (
   input: unknown
 ): Effect.Effect<Server, AsyncAPIValidationError> => {
   return Effect.try({
-    try: () => Schema.decodeSync(serverSchema)(input),
+    try: () => Schema.decodeUnknownSync(serverSchema)(input),
     catch: (error) => new AsyncAPIValidationError(
       `Server validation failed: ${String(error)}`,
       undefined,
@@ -164,7 +164,7 @@ export const createAsyncAPISpec = (
   input: unknown
 ): Effect.Effect<AsyncAPISpec, AsyncAPIValidationError> => {
   return Effect.try({
-    try: () => Schema.decodeSync(asyncapiSchema)(input),
+    try: () => Schema.decodeUnknownSync(asyncapiSchema)(input),
     catch: (error) => new AsyncAPIValidationError(
       `AsyncAPI spec validation failed: ${String(error)}`,
       undefined,
@@ -186,7 +186,7 @@ export const createAsyncAPIChannels = (
       const parsed = input as Record<string, unknown>
       const result: AsyncAPIChannels = {}
       for (const [key, value] of Object.entries(parsed)) {
-        result[key] = Schema.decodeSync(channelSchema)(value)
+        result[key] = Schema.decodeUnknownSync(channelSchema)(value)
       }
       return result
     },
@@ -209,7 +209,7 @@ export const createAsyncAPIMessages = (
       const parsed = input as Record<string, unknown>
       const result: AsyncAPIMessages = {}
       for (const [key, value] of Object.entries(parsed)) {
-        result[key] = Schema.decodeSync(messageSchema)(value)
+        result[key] = Schema.decodeUnknownSync(messageSchema)(value)
       }
       return result
     },
@@ -232,7 +232,7 @@ export const createAsyncAPIOperations = (
       const parsed = input as Record<string, unknown>
       const result: AsyncAPIOperations = {}
       for (const [key, value] of Object.entries(parsed)) {
-        result[key] = Schema.decodeSync(operationSchema)(value)
+        result[key] = Schema.decodeUnknownSync(operationSchema)(value)
       }
       return result
     },
@@ -255,7 +255,7 @@ export const createAsyncAPIServers = (
       const parsed = input as Record<string, unknown>
       const result: AsyncAPIServers = {}
       for (const [key, value] of Object.entries(parsed)) {
-        result[key] = Schema.decodeSync(serverSchema)(value)
+        result[key] = Schema.decodeUnknownSync(serverSchema)(value)
       }
       return result
     },
