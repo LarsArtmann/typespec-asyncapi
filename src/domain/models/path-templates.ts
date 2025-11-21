@@ -8,18 +8,18 @@
 /**
  * TypeSpec path template types
  */
-export interface PathTemplate {
+export type PathTemplate = {
   path: string;
   parameters: PathParameter[];
-  segments: string[];
-}
+  segments: string[]
+};
 
-export interface PathParameter {
+export type PathParameter = {
   name: string;
   type: string;
   required: boolean;
   description?: string;
-}
+};
 
 /**
  * Parse TypeSpec path template
@@ -28,10 +28,10 @@ export function parsePathTemplate(path: string): PathTemplate {
   const segments = path.split('/').filter(segment => segment.length > 0);
   const parameters: PathParameter[] = [];
   
-  const pathWithParameters = path.replace(/\{([^}]+)\}/g, (match, paramStr) => {
+  const pathWithParameters = path.replace(/\{([^}]+)\}/g, (match: string, paramStr: string) => {
     const parts = paramStr.split(':');
-    const name = parts[0];
-    const type = parts[1] || 'string';
+    const name = parts[0] ?? '';
+    const type = parts[1] ?? 'string';
     
     parameters.push({
       name,
@@ -80,8 +80,8 @@ export function validatePathTemplate(path: string): boolean {
   }
 
   // Check for balanced braces
-  const openBraces = (path.match(/\{/g) || []).length;
-  const closeBraces = (path.match(/\}/g) || []).length;
+  const openBraces = (path.match(/\{/g) ?? []).length;
+  const closeBraces = (path.match(/\}/g) ?? []).length;
   
   if (openBraces !== closeBraces) {
     return false;

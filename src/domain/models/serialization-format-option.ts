@@ -6,11 +6,11 @@
 
 export type SerializationFormat = 'json' | 'yaml' | 'yml';
 
-export interface SerializationFormatOption {
+export type SerializationFormatOption = {
   format: SerializationFormat;
   pretty: boolean;
   indent: number;
-}
+};
 
 /**
  * Create serialization format options

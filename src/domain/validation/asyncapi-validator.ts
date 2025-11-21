@@ -37,7 +37,7 @@ export type ValidationError = {
   instancePath: string;
   schemaPath: string;
   message: string;
-  params?: any;
+  params?: unknown;
 }
 
 export type ValidatorConfig = {
@@ -54,8 +54,8 @@ export type ValidatorConfig = {
  * the full @asyncapi/parser once the integration complexity is resolved.
  */
 export class AsyncAPIValidator {
-  private config: ValidatorConfig;
-  private cache = new Map<string, ValidationSuccess | ValidationFailure>();
+  private readonly config: ValidatorConfig;
+  private readonly cache = new Map<string, ValidationSuccess | ValidationFailure>();
 
   constructor(config: ValidatorConfig) {
     this.config = config;
@@ -64,21 +64,28 @@ export class AsyncAPIValidator {
   /**
    * Initialize validator
    */
-  async initialize(): Promise<void> {
+  initialize(): Promise<void> {
     // For now, simulate initialization
     // TODO: Integrate real @asyncapi/parser
-    await Effect.sleep(10);
+    return Effect.runPromise(Effect.sleep(10));
   }
 
   /**
    * Validate AsyncAPI document
    */
-  async validate(document: unknown, documentId?: string): Promise<ValidationSuccess | ValidationFailure> {
-    const startTime = Date.now();
-    
-    try {
-      const doc = document as AsyncAPIDocument;
-      const validation = this.validateAsyncAPI(doc);
+  validate(document: unknown, documentId?: string): Promise<ValidationSuccess | ValidationFailure> {
+    return Effect.runPromise(Effect.gen(this as AsyncAPIValidator, function*() {
+      const startTime = Date.now();
+      
+      const doc = yield* Effect.try({
+        try: () => document as AsyncAPIDocument,
+        catch: () => new Error("Failed to parse AsyncAPI document")
+      });
+      
+      const validation = yield* Effect.try({
+        try: () => this.validateAsyncAPI(doc),
+        catch: () => new Error("Validation failed")
+      });
       
       const metrics: ValidationMetrics = {
         duration: Date.now() - startTime,
@@ -104,11 +111,11 @@ export class AsyncAPIValidator {
         const failure: ValidationFailure = {
           _tag: "Failure",
           value: doc,
-          errors: validation.errors.map(error => ({
+          errors: validation.errors.map((error: unknown) => ({
             keyword: "validation-error",
             instancePath: "",
             schemaPath: "",
-            message: error,
+            message: String(error),
             params: {}
           })),
           metrics,
@@ -117,60 +124,38 @@ export class AsyncAPIValidator {
         
         return failure;
       }
-    } catch (error) {
-      const failure: ValidationFailure = {
-        _tag: "Failure",
-        value: document as AsyncAPIDocument,
-        errors: [{
-          keyword: "parse-error",
-          instancePath: "",
-          schemaPath: "",
-          message: error instanceof Error ? error.message : "Unknown validation error",
-          params: {}
-        }],
-        metrics: {
-          duration: Date.now() - startTime,
-          documentSize: 0,
-          complexity: 'simple'
-        },
-        summary: "Failed to parse AsyncAPI document"
-      };
-      
-      return failure;
-    }
+    }));
   }
 
   /**
    * Validate AsyncAPI document from file
    */
-  async validateFile(filePath: string): Promise<ValidationSuccess | ValidationFailure> {
-    try {
-      const fs = await import('node:fs/promises');
-      const content = await fs.readFile(filePath, 'utf-8');
-      const document = JSON.parse(content);
+  validateFile(filePath: string): Promise<ValidationSuccess | ValidationFailure> {
+    return Effect.runPromise(Effect.gen(function*() {
+      const fs = yield* Effect.tryPromise({
+        try: () => import('node:fs/promises'),
+        catch: () => new Error("Failed to load fs module")
+      });
       
-      return this.validate(document, filePath);
-    } catch (error) {
-      const failure: ValidationFailure = {
-        _tag: "Failure",
-        value: {} as AsyncAPIDocument,
-        errors: [{
-          keyword: "file-error",
-          instancePath: "",
-          schemaPath: "",
-          message: error instanceof Error ? error.message : "Failed to read file",
-          params: { filePath }
-        }],
-        metrics: {
-          duration: 0,
-          documentSize: 0,
-          complexity: 'simple'
-        },
-        summary: `Failed to validate file: ${filePath}`
-      };
+      const content = yield* Effect.tryPromise({
+        try: () => fs.readFile(filePath, 'utf-8'),
+        catch: () => new Error(`Failed to read file: ${filePath}`)
+      });
       
-      return failure;
-    }
+      const document = yield* Effect.try({
+        try: () => JSON.parse(content) as unknown,
+        catch: () => new Error("Invalid JSON format")
+      });
+      
+      return yield* Effect.tryPromise({
+        try: () => new AsyncAPIValidator({
+          strict: false,
+          enableCache: false,
+          benchmarking: false
+        }).validate(document, filePath),
+        catch: () => new Error("Validation failed")
+      });
+    }));
   }
 
   /**

@@ -9,11 +9,11 @@ export { $server as ServerDecorator } from './server.js';
 /**
  * Domain decorator factory
  */
-export interface DomainDecorator {
+export type DomainDecorator = {
   namespace: string;
   name: string;
-  target: any;
-}
+  target: unknown;
+};
 
 /**
  * Create domain decorator
@@ -21,7 +21,7 @@ export interface DomainDecorator {
 export function createDomainDecorator(
   namespace: string,
   name: string,
-  target: any
+  target: unknown
 ): DomainDecorator {
   return {
     namespace,

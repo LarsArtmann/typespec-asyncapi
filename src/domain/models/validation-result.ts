@@ -8,7 +8,7 @@
 /**
  * Extract channel count from AsyncAPI document
  */
-export function getChannelCount(doc: any): number {
+export function getChannelCount(doc: Record<string, unknown>): number {
   if (!doc.channels) return 0;
   return Object.keys(doc.channels).length;
 }
@@ -16,7 +16,7 @@ export function getChannelCount(doc: any): number {
 /**
  * Extract operation count from AsyncAPI document  
  */
-export function getOperationCount(doc: any): number {
+export function getOperationCount(doc: Record<string, unknown>): number {
   if (!doc.operations) return 0;
   return Object.keys(doc.operations).length;
 }
@@ -24,15 +24,17 @@ export function getOperationCount(doc: any): number {
 /**
  * Extract schema count from AsyncAPI document
  */
-export function getSchemaCount(doc: any): number {
-  if (!doc.components?.schemas) return 0;
-  return Object.keys(doc.components.schemas).length;
+export function getSchemaCount(doc: Record<string, unknown>): number {
+  const components = doc.components as Record<string, unknown> | undefined;
+  const schemas = components?.schemas as Record<string, unknown> | undefined;
+  if (!schemas || typeof schemas !== 'object') return 0;
+  return Object.keys(schemas).length;
 }
 
 /**
  * Extract server count from AsyncAPI document
  */
-export function getServerCount(doc: any): number {
+export function getServerCount(doc: Record<string, unknown>): number {
   if (!doc.servers) return 0;
   return Object.keys(doc.servers).length;
 }
@@ -40,7 +42,7 @@ export function getServerCount(doc: any): number {
 /**
  * Calculate validation metrics summary
  */
-export function getValidationMetrics(doc: any) {
+export function getValidationMetrics(doc: Record<string, unknown>) {
   return {
     channels: getChannelCount(doc),
     operations: getOperationCount(doc),

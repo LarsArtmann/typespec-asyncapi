@@ -4,12 +4,12 @@
  * TypeSpec channel decorator implementation for AsyncAPI generation
  */
 
-export interface ChannelDecorator {
+export type ChannelDecorator = {
   channelName: string;
   address: string;
   description?: string;
-  parameters?: Record<string, any>;
-}
+  parameters?: Record<string, unknown>;
+};
 
 /**
  * Create channel decorator
