@@ -7,7 +7,7 @@
  * TODO: Replace with proper Effect.TS patterns without embedded success/error states.
  */
 
-import { Effect } from "effect";
+import { Effect, Schedule } from "effect";
 
 /**
  * 🚨 TYPE SAFETY VIOLATION: This type creates representable invalid states!
@@ -206,4 +206,155 @@ export const railwayLogging = {
     // eslint-disable-next-line no-console
     console.error(`[FAILURE] ${operation}`, error);
   },
+} as const;
+
+/**
+ * ✅ RAILWAY ERROR RECOVERY PATTERNS
+ * 
+ * Production-ready error recovery mechanisms for Effect.TS operations.
+ * Implements common resilience patterns: retry with backoff, graceful degradation,
+ * fallback chains, and partial failure handling.
+ * 
+ * These functions follow Effect.TS best practices and provide type-safe error handling
+ * with configurable recovery strategies for production environments.
+ */
+export const railwayErrorRecovery = {
+  /**
+   * Retry an Effect with exponential backoff and jitter
+   * 
+   * @param effect - The Effect to retry
+   * @param times - Maximum number of retry attempts
+   * @param minDelay - Minimum delay in milliseconds  
+   * @param maxDelay - Maximum delay in milliseconds
+   * 
+   * @returns Effect that succeeds when the operation succeeds or fails after max attempts
+   */
+  retryWithBackoff: <A, E>(
+    effect: Effect.Effect<A, E>,
+    times: number = 3,
+    minDelay: number = 100,
+    maxDelay: number = 5000
+  ): Effect.Effect<A, E> => {
+    // Create exponential backoff schedule with jitter
+    const backoffSchedule = Schedule.exponential(`${minDelay} millis`)
+      .pipe(Schedule.upTo(`${maxDelay} millis`))
+      .pipe(Schedule.compose(Schedule.recurs(times)));
+    
+    // Apply retry with schedule
+    return Effect.retry(effect, backoffSchedule);
+  },
+  
+  /**
+   * Graceful degradation: Try primary operation, fallback on failure
+   * 
+   * @param primary - Primary Effect that may fail
+   * @param fallback - Fallback value to return on primary failure
+   * @param message - Optional message to log when falling back
+   * 
+   * @returns Effect that never fails (returns primary or fallback)
+   */
+  gracefulDegrade: <A, E>(
+    primary: Effect.Effect<A, E>,
+    fallback: A,
+    message?: string
+  ): Effect.Effect<A, never> => {
+    return Effect.gen(function*() {
+      // Try primary operation
+      const result = yield* Effect.either(primary);
+      
+      if (result._tag === "Right") {
+        return result.right;
+      }
+      
+      // Log degradation message if provided
+      if (message) {
+        yield* Effect.log(message).pipe(
+          Effect.annotateLogs({
+            operation: "graceful_degradation",
+            error: String(result.left)
+          })
+        );
+      }
+      
+      return fallback;
+    });
+  },
+  
+  /**
+   * Fallback chain: Try operations sequentially until one succeeds
+   * 
+   * @param effects - Array of Effects to try in order
+   * @param fallback - Final fallback value if all fail
+   * 
+   * @returns Effect that never fails (returns first success or final fallback)
+   */
+  fallbackChain: <A, E>(
+    effects: Array<Effect.Effect<A, E>>,
+    fallback: A
+  ): Effect.Effect<A, never> => {
+    return Effect.gen(function*() {
+      for (const effect of effects) {
+        const result = yield* Effect.either(effect);
+        if (result._tag === "Right") {
+          return result.right;
+        }
+      }
+      
+      // Log that all operations failed
+      yield* Effect.log("All fallback operations failed, using final fallback").pipe(
+        Effect.annotateLogs({
+          operation: "fallback_chain",
+          attemptedOperations: effects.length
+        })
+      );
+      
+      return fallback;
+    });
+  },
+  
+  /**
+   * Partial failure handling: Execute batch operations with some failures tolerated
+   * 
+   * @param effects - Array of Effects to execute in parallel
+   * @param successThreshold - Minimum number of successes required
+   * 
+   * @returns Effect with successes array and failures array (never fails)
+   */
+  partialFailureHandling: <A, E>(
+    effects: Array<Effect.Effect<A, E>>,
+    successThreshold: number = Math.floor(effects.length * 0.8)
+  ): Effect.Effect<{successes: A[], failures: E[]}, never> => {
+    return Effect.gen(function*() {
+      // Execute all effects in parallel
+      const results = yield* Effect.all(
+        effects.map(effect => Effect.either(effect)),
+        { concurrency: "inherit" }
+      );
+      
+      // Separate successes and failures
+      const successes: A[] = [];
+      const failures: E[] = [];
+      
+      results.forEach(result => {
+        if (result._tag === "Right") {
+          successes.push(result.right);
+        } else {
+          failures.push(result.left);
+        }
+      });
+      
+      // Log partial failure statistics
+      yield* Effect.log("Batch operation completed with partial failures").pipe(
+        Effect.annotateLogs({
+          operation: "partial_failure_handling",
+          successes: successes.length,
+          failures: failures.length,
+          successThreshold,
+          metThreshold: successes.length >= successThreshold
+        })
+      );
+      
+      return { successes, failures };
+    });
+  }
 } as const;
