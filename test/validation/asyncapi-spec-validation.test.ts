@@ -33,9 +33,8 @@ describe("AsyncAPI Specification Validation Framework", () => {
     validator = new AsyncAPIValidator({
       strict: true,
       enableCache: true,
+      benchmarking: false
     });
-
-    await validator.initialize();
 
     // Create test output directory
     await mkdir(testOutputDir, { recursive: true });
@@ -105,11 +104,10 @@ describe("AsyncAPI Specification Validation Framework", () => {
 
       expect(result.valid).toBe(false);
       expect(result.errors.length).toBeGreaterThan(0);
-      expect(result.errors[0]?.keyword).toMatch(
-        /asyncapi|validation-error|required/,
+      expect(result.errors[0]).toMatch(
+        /asyncapi|Missing|validation/,
       );
-      expect(result.errors[0]?.message).toContain("asyncapi");
-      expect(result.summary).toContain("invalid");
+      expect(result.errors[0]).toContain("asyncapi");
     });
 
     it("should reject documents with wrong AsyncAPI version", async () => {

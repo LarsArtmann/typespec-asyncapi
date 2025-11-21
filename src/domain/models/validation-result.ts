@@ -1,9 +1,27 @@
 /**
  * 📊 ASYNCAPI VALIDATION RESULT UTILITIES
  * 
- * Provides utility functions for extracting metrics from validated
- * AsyncAPI documents. Used by critical validation tests.
+ * Provides utility functions and types for AsyncAPI validation.
+ * Used by critical validation tests and core functionality.
  */
+
+/**
+ * Validation result interface
+ */
+export type ValidationResult = {
+  valid: boolean;
+  errors: string[];
+  warnings: string[];
+}
+
+/**
+ * Validation metrics for performance tracking
+ */
+export type ValidationMetrics = {
+  duration: number;
+  documentSize: number;
+  complexity: number;
+}
 
 /**
  * Extract channel count from AsyncAPI document
@@ -14,7 +32,7 @@ export function getChannelCount(doc: Record<string, unknown>): number {
 }
 
 /**
- * Extract operation count from AsyncAPI document  
+ * Extract operation count from AsyncAPI document
  */
 export function getOperationCount(doc: Record<string, unknown>): number {
   if (!doc.operations) return 0;
@@ -25,10 +43,8 @@ export function getOperationCount(doc: Record<string, unknown>): number {
  * Extract schema count from AsyncAPI document
  */
 export function getSchemaCount(doc: Record<string, unknown>): number {
-  const components = doc.components as Record<string, unknown> | undefined;
-  const schemas = components?.schemas as Record<string, unknown> | undefined;
-  if (!schemas || typeof schemas !== 'object') return 0;
-  return Object.keys(schemas).length;
+  if (!doc.schemas) return 0;
+  return Object.keys(doc.schemas).length;
 }
 
 /**
@@ -40,14 +56,19 @@ export function getServerCount(doc: Record<string, unknown>): number {
 }
 
 /**
- * Calculate validation metrics summary
+ * Get validation metrics from AsyncAPI document
  */
-export function getValidationMetrics(doc: Record<string, unknown>) {
+export function getValidationMetrics(doc: Record<string, unknown>): ValidationMetrics {
   return {
-    channels: getChannelCount(doc),
-    operations: getOperationCount(doc),
-    schemas: getSchemaCount(doc),
-    servers: getServerCount(doc),
-    total: getChannelCount(doc) + getOperationCount(doc) + getSchemaCount(doc) + getServerCount(doc)
+    duration: 0,
+    documentSize: JSON.stringify(doc).length,
+    complexity: getChannelCount(doc) + getOperationCount(doc) + getSchemaCount(doc)
   };
+}
+
+/**
+ * Type guard for ValidationSuccess result
+ */
+export function isSuccess(result: { _tag: string }): result is { _tag: "Success" } {
+  return result._tag === "Success";
 }

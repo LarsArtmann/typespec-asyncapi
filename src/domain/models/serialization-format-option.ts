@@ -57,3 +57,12 @@ export const DEFAULT_SERIALIZATION_FORMAT_OPTION: SerializationFormatOption = {
   pretty: true,
   indent: 2
 };
+
+/**
+ * All serialization format options
+ */
+export const SERIALIZATION_FORMAT_OPTIONS = {
+  JSON: SERIALIZATION_FORMAT_OPTION_JSON,
+  YAML: SERIALIZATION_FORMAT_OPTION_YAML,
+  DEFAULT: DEFAULT_SERIALIZATION_FORMAT_OPTION
+};
