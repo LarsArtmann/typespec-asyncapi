@@ -71,11 +71,33 @@ describe("emitFile API Isolation Test", () => {
     // Show ALL files in virtual filesystem (including small ones)
     console.log("🔍 Virtual FS ALL entries:");
     if (result.fs && result.fs.fs) {
-      for (const [path, content] of Object.entries(result.fs.fs)) {
-        console.log(`  ${path}: ${typeof content}${typeof content === 'string' ? `(${content.length})` : ''}`);
-        if (typeof content === 'string' && content.length > 0 && content.length < 200) {
-          console.log(`    Preview: ${content.substring(0, 100)}...`);
+      const entries = Object.entries(result.fs.fs);
+      console.log(`🔍 Total virtual files: ${entries.length}`);
+      for (const [path, content] of entries) {
+        const isString = typeof content === 'string';
+        const length = isString ? content.length : 0;
+        console.log(`  ${path}: ${typeof content}${isString ? `(${length} chars)` : ''}`);
+        
+        // Check if this looks like an AsyncAPI file
+        if (isString && (path.includes('asyncapi') || path.includes('yaml') || path.includes('json'))) {
+          if (length > 0 && length < 500) {
+            console.log(`    Preview: ${content.substring(0, 100)}...`);
+          }
         }
+      }
+    } else {
+      console.log("🔍 No virtual filesystem found");
+    }
+
+    // Check if files exist in test framework's expected output directory
+    console.log("🔍 Checking tsp-output directory in virtual FS:");
+    if (result.fs && result.fs.fs) {
+      const tspFiles = Object.entries(result.fs.fs).filter(([path]) => 
+        path.startsWith('tsp-output/') || path.includes('asyncapi')
+      );
+      console.log(`🔍 Found ${tspFiles.length} potential AsyncAPI files:`);
+      for (const [path, content] of tspFiles) {
+        console.log(`  📄 ${path}: ${typeof content === 'string' ? content.length + ' chars' : typeof content}`);
       }
     }
 

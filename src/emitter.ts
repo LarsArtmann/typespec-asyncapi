@@ -218,15 +218,25 @@ ${required.map(req => `      - ${req}`).join('\n')}`;
 `;
   }
 
-  // CRITICAL FIX: Use proper emitFile API for TypeSpec virtual filesystem integration
+  // Debug emitter output directory
+  // eslint-disable-next-line no-console
+  console.log(`🔧 DEBUG: context.emitterOutputDir: "${context.emitterOutputDir}"`);
+  
+  // CRITICAL FIX: Use emitFile with just filename (TypeSpec handles directory automatically)
   const emitOptions: EmitFileOptions = {
-    path: outputPath,
+    path: outputPath,  // Let TypeSpec handle directory placement
     content: content,
   };
 
-  await emitFile(context.program, emitOptions);
-  // eslint-disable-next-line no-console
-  console.log(`✅ ASYNCAPI EMITTER: Generated ${outputPath} via emitFile API`);
+  try {
+    await emitFile(context.program, emitOptions);
+    // eslint-disable-next-line no-console
+    console.log(`✅ ASYNCAPI EMITTER: Generated ${outputPath} via emitFile API`);
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error(`❌ ASYNCAPI EMITTER: Failed to generate ${outputPath}:`, error);
+    throw error;
+  }
   
   // Report generation statistics
   reportGenerationStatistics(asyncapiDocument);

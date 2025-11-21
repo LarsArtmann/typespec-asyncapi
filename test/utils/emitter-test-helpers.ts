@@ -250,35 +250,42 @@ export async function compileAsyncAPI(
   // Manual bridge from virtual filesystem to outputs for test compatibility
   if (!outputFile) {
     // Check virtual filesystem for files that should have been emitted
-    const outputDir = "tsp-output";
+    // FIXED: Look in correct TypeSpec emitFile output directory structure
+    const searchPaths = [
+      "tsp-output",                    // Direct search
+      "tsp-output/@lars-artmann/typespec-asyncapi",  // Package-scoped search
+      "tsp-output/*",                  // Wildcard package search
+    ];
+    
     const virtualFiles = Object.entries(result.fs.fs || {});
+    console.log(`🔍 DEBUG: Searching ${searchPaths.length} paths in virtual FS with ${virtualFiles.length} total files`);
 
-    // Look for files in tsp-output directory
+    // Look for AsyncAPI files in all possible locations
     for (const [virtualPath, content] of virtualFiles) {
-      if (virtualPath.startsWith(outputDir)) {
-        const relativePath = virtualPath.slice(outputDir.length + 1);
-        // Match against expected filename patterns
-        const expectedName = options["output-file"] || "asyncapi";
-        if (
-          relativePath.includes(expectedName) &&
-          (relativePath.endsWith(".yaml") || relativePath.endsWith(".json"))
-        ) {
-          // Manually populate result.outputs for test framework
-          (result.outputs as any)[relativePath] = content;
-          console.log(
-            `🔧 WORKAROUND: Bridged ${virtualPath} to result.outputs.${relativePath}`,
-          );
+      // Match against expected filename patterns
+      const expectedName = options["output-file"] || "asyncapi";
+      const filename = virtualPath.split('/').pop() || "";  // Extract just the filename
+      
+      if (
+        filename.includes(expectedName) &&
+        (filename.endsWith(".yaml") || filename.endsWith(".json"))
+      ) {
+        // SUCCESS: Found emitted file in virtual filesystem
+        const relativePath = filename;  // Use simple filename for outputs
+        (result.outputs as any)[relativePath] = content;
+        console.log(
+          `🎉 SUCCESS: Found ${virtualPath} -> result.outputs.${relativePath}`,
+        );
 
-          return {
-            asyncApiDoc: relativePath.endsWith(".json")
-              ? JSON.parse(content)
-              : YAML.parse(content),
-            diagnostics: result.program.diagnostics,
-            program: result.program,
-            outputs: { [relativePath]: content },
-            outputFile: relativePath,
-          };
-        }
+        return {
+          asyncApiDoc: filename.endsWith(".json")
+            ? JSON.parse(String(content))
+            : YAML.load(String(content)),
+          diagnostics: result.program.diagnostics,
+          program: result.program,
+          outputs: { [relativePath]: content },
+          outputFile: relativePath,
+        };
       }
     }
 
