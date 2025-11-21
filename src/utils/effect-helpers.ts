@@ -232,6 +232,21 @@ export const railwayLogging = {
       })
     );
   },
+
+  /**
+   * Log performance test execution
+   *
+   * TODO: ADD performance metrics and timing information
+   * TODO: INTEGRATE with performance monitoring system
+   */
+  logPerformanceTest: (mode: string) => {
+    return Effect.log("Performance test execution").pipe(
+      Effect.annotateLogs({
+        mode,
+        phase: "performance-test"
+      })
+    );
+  },
 } as const;
 
 /**

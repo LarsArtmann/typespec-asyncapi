@@ -61,7 +61,7 @@ export function $server(
 ): void {
   Effect.runSync(Effect.log("🔍 MINIMAL @server decorator executed!"));
   Effect.runSync(Effect.log("🔍 Target:").pipe(Effect.annotateLogs({ target: target.name })));
-  Effect.runSync(Effect.log("🔍 Config:").pipe(Effect.annotateLogs({ config: JSON.stringify(config) })));
+  Effect.runSync(Effect.log("🔍 Config:").pipe(Effect.annotateLogs({ hasConfig: !!config })));
 
   if (!config) {
     Effect.runSync(Effect.log("❌ No server config"));
@@ -118,7 +118,7 @@ export function $message(
   target: Model,
   config: unknown,
 ): void {
-  Effect.runSync(Effect.log("🔍 MINIMAL @message decorator executed!").pipe(Effect.annotateLogs({ config: JSON.stringify(config) })));
+  Effect.runSync(Effect.log("🔍 MINIMAL @message decorator executed!").pipe(Effect.annotateLogs({ hasConfig: !!config })));
   Effect.runSync(Effect.log("🔍 Target:").pipe(Effect.annotateLogs({ target: target.name })));
 
   if (!config) {
@@ -152,7 +152,7 @@ export function $protocol(
   target: Operation | Model,
   config: unknown,
 ): void {
-  Effect.runSync(Effect.log("🔍 MINIMAL @protocol decorator executed!").pipe(Effect.annotateLogs({ config: JSON.stringify(config) })));
+  Effect.runSync(Effect.log("🔍 MINIMAL @protocol decorator executed!").pipe(Effect.annotateLogs({ hasConfig: !!config })));
   Effect.runSync(Effect.log("🔍 Target:").pipe(Effect.annotateLogs({ target: target.name })));
 
   if (!config) {
@@ -176,7 +176,7 @@ export function $security(
   target: Operation | Namespace,
   config: unknown,
 ): void {
-  Effect.runSync(Effect.log("🔍 MINIMAL @security decorator executed!").pipe(Effect.annotateLogs({ config: JSON.stringify(config) })));
+  Effect.runSync(Effect.log("🔍 MINIMAL @security decorator executed!").pipe(Effect.annotateLogs({ hasConfig: !!config })));
   Effect.runSync(Effect.log("🔍 Target:").pipe(Effect.annotateLogs({ target: target.name })));
 
   if (!config) {
@@ -219,8 +219,8 @@ export function $tags(
   target: DiagnosticTarget,
   value: unknown,
 ): void {
-  Effect.runSync(Effect.log("🔍 MINIMAL @tags decorator executed!").pipe(Effect.annotateLogs({ value: JSON.stringify(value) })));
-  Effect.runSync(Effect.log("🔍 Target:").pipe(Effect.annotateLogs({ target: String(target) })));
+  Effect.runSync(Effect.log("🔍 MINIMAL @tags decorator executed!").pipe(Effect.annotateLogs({ hasValue: !!value, isArray: Array.isArray(value) })));
+  Effect.runSync(Effect.log("🔍 Target:").pipe(Effect.annotateLogs({ targetKind: String(target) })));
 
   if (!value || !Array.isArray(value)) {
     Effect.runSync(Effect.log("❌ No tags value - should trigger diagnostic"));
@@ -275,7 +275,7 @@ export function $bindings(
   target: Operation | Model,
   value: unknown,
 ): void {
-  Effect.runSync(Effect.log("🔍 MINIMAL @bindings decorator executed!").pipe(Effect.annotateLogs({ value: JSON.stringify(value) })));
+  Effect.runSync(Effect.log("🔍 MINIMAL @bindings decorator executed!").pipe(Effect.annotateLogs({ hasValue: !!value })));
   Effect.runSync(Effect.log("🔍 Target:").pipe(Effect.annotateLogs({ target: target.name })));
 
   if (!value) {
@@ -304,11 +304,11 @@ export function $header(
     Effect.log("🔍 MINIMAL @header decorator executed!").pipe(
       Effect.annotateLogs({
         name: String(name),
-        value: JSON.stringify(value)
+        hasValue: !!value
       })
     )
   );
-  Effect.runSync(Effect.log("🔍 Target:").pipe(Effect.annotateLogs({ target: target.kind })));
+  Effect.runSync(Effect.log("🔍 Target:").pipe(Effect.annotateLogs({ targetKind: target.kind })));
 
   if (!name) {
     Effect.runSync(Effect.log("❌ No header name - should trigger diagnostic"));
