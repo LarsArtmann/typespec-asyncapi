@@ -8,6 +8,7 @@ import { Effect } from "effect";
 import type { EmitContext, Type, EmitFileOptions } from "@typespec/compiler";
 import { emitFile } from "@typespec/compiler";
 import { consolidateAsyncAPIState, type AsyncAPIConsolidatedState } from "./state.js";
+import { LoggerLive } from "./logger.js";
 import type { 
   AsyncAPIChannels, 
   AsyncAPIMessages, 
@@ -77,29 +78,23 @@ export type AsyncAPIDocument = {
 export async function $onEmit(
   context: EmitContext<AsyncAPIEmitterOptions>,
 ): Promise<void> {
-  await Effect.runPromise(
-    Effect.log("🚀 ASYNCAPI EMITTER: Starting generation")
-  );
-
   const program = context.program;
   const options = context.options;
 
-  await Effect.runPromise(
-    Effect.log("📋 Emitter options:").pipe(
+  // Main emitter logic as composable Effect
+  const emitterProgram = Effect.gen(function*() {
+    yield* Effect.log("🚀 ASYNCAPI EMITTER: Starting generation");
+
+    yield* Effect.log("📋 Emitter options:").pipe(
       Effect.annotateLogs({ options: JSON.stringify(options) })
-    )
-  );
+    );
 
-  await Effect.runPromise(
-    Effect.log("📊 ASYNCAPI EMITTER: Extracting decorator state from program")
-  );
-  
-  // Extract decorator state from program
-  const _state = consolidateAsyncAPIState(program);
+    yield* Effect.log("📊 ASYNCAPI EMITTER: Extracting decorator state from program");
 
-  await Effect.runPromise(
-    Effect.log("🏗️ ASYNCAPI EMITTER: Generating AsyncAPI 3.0 document structure")
-  );
+    // Extract decorator state from program
+    const _state = consolidateAsyncAPIState(program);
+
+    yield* Effect.log("🏗️ ASYNCAPI EMITTER: Generating AsyncAPI 3.0 document structure");
   
   // Generate complete AsyncAPI document - temporary direct approach for typing
   const asyncapiDocument: AsyncAPIDocument = {
@@ -116,40 +111,34 @@ export async function $onEmit(
     }
   };
 
-  // Write to output file - respect options
-  const outputFile = options["output-file"];
-  const fileType = options["file-type"];
+    // Write to output file - respect options
+    const outputFile = options["output-file"];
+    const fileType = options["file-type"];
 
-  // Debug option parsing
-  await Effect.runPromise(
-    Effect.logDebug(`🔧 DEBUG: outputFile option: "${outputFile}"`)
-  );
-  await Effect.runPromise(
-    Effect.logDebug(`🔧 DEBUG: fileType option: "${fileType}"`)
-  );
-  
-  // Determine output path based on options
-  let outputPath = outputFile ?? "asyncapi";
-  if (!outputFile && fileType) {
-    outputPath = `asyncapi.${fileType}`;
-  } else if (outputFile && !outputFile.includes('.') && fileType) {
-    outputPath = `${outputFile}.${fileType}`;
-  }
-  
-  // Debug final path
-  await Effect.runPromise(
-    Effect.logDebug(`🔧 DEBUG: Final outputPath: "${outputPath}"`)
-  );
-  
-  // Convert document to requested format
-  const isJsonFormat = fileType === "json";
-  let content: string;
-  
-  if (isJsonFormat) {
-    content = JSON.stringify(asyncapiDocument, null, 2);
-  } else {
-    // Always use YAML format (default)
-    content = `asyncapi: 3.0.0
+    // Debug option parsing
+    yield* Effect.logDebug(`🔧 DEBUG: outputFile option: "${outputFile}"`);
+    yield* Effect.logDebug(`🔧 DEBUG: fileType option: "${fileType}"`);
+
+    // Determine output path based on options
+    let outputPath = outputFile ?? "asyncapi";
+    if (!outputFile && fileType) {
+      outputPath = `asyncapi.${fileType}`;
+    } else if (outputFile && !outputFile.includes('.') && fileType) {
+      outputPath = `${outputFile}.${fileType}`;
+    }
+
+    // Debug final path
+    yield* Effect.logDebug(`🔧 DEBUG: Final outputPath: "${outputPath}"`);
+
+    // Convert document to requested format
+    const isJsonFormat = fileType === "json";
+    let content: string;
+
+    if (isJsonFormat) {
+      content = JSON.stringify(asyncapiDocument, null, 2);
+    } else {
+      // Always use YAML format (default)
+      content = `asyncapi: 3.0.0
 info:
   title: ${asyncapiDocument.info.title}
   version: ${asyncapiDocument.info.version}
@@ -222,38 +211,36 @@ ${Object.entries(asyncapiDocument.components.schemas)
 ${required.map(req => `      - ${req}`).join('\n')}`;
     }
     
-    return schemaYaml;
-  })
-  .join('\n')}
+      return schemaYaml;
+    })
+    .join('\n')}
 
 `;
-  }
+    }
 
-  // Debug emitter output directory
-  await Effect.runPromise(
-    Effect.logDebug(`🔧 DEBUG: context.emitterOutputDir: "${context.emitterOutputDir}"`)
-  );
-  
-  // CRITICAL FIX: Use emitFile with just filename (TypeSpec handles directory automatically)
-  const emitOptions: EmitFileOptions = {
-    path: outputPath,  // Let TypeSpec handle directory placement
-    content: content,
-  };
+    // Debug emitter output directory
+    yield* Effect.logDebug(`🔧 DEBUG: context.emitterOutputDir: "${context.emitterOutputDir}"`);
 
-  const emitProgram = Effect.gen(function*() {
+    // CRITICAL FIX: Use emitFile with just filename (TypeSpec handles directory automatically)
+    const emitOptions: EmitFileOptions = {
+      path: outputPath,  // Let TypeSpec handle directory placement
+      content: content,
+    };
+
+    // Emit the file using TypeSpec's emitFile API
     yield* Effect.tryPromise({
       try: () => emitFile(context.program, emitOptions),
-      catch: (error) => Effect.fail(new Error(`Failed to generate ${outputPath}: ${String(error)}`))
+      catch: (error) => new Error(`Failed to generate ${outputPath}: ${String(error)}`)
     });
-  });
 
-  await Effect.runPromise(emitProgram);
-  await Effect.runPromise(
-    Effect.log(`✅ ASYNCAPI EMITTER: Generated ${outputPath} via emitFile API`)
-  );
-  
-  // Report generation statistics
-  reportGenerationStatistics(asyncapiDocument);
+    yield* Effect.log(`✅ ASYNCAPI EMITTER: Generated ${outputPath} via emitFile API`);
+
+    // Report generation statistics (side effect)
+    reportGenerationStatistics(asyncapiDocument);
+  }).pipe(Effect.provide(LoggerLive));
+
+  // Run the emitter program
+  await Effect.runPromise(emitterProgram);
 }
 
 /**
