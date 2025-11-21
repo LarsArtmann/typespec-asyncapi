@@ -8,7 +8,7 @@
 
 import { runTestSuiteCLI } from "../src/test-runner.js";
 import { Effect } from "effect";
-import { railwayLogging } from "../src/utils/effect-helpers.js";
+import { LoggerLive } from "../src/logger.js";
 
 // Configuration for CI/CD performance validation
 const ciConfig = {
@@ -45,7 +45,11 @@ const args = process.argv.slice(2);
 const mode = args[0] || "ci";
 
 // Execute performance test logging in proper Effect context
-Effect.runSync(railwayLogging.logPerformanceTest(mode));
+const logProgram = Effect.log("Performance test execution").pipe(
+  Effect.annotateLogs({ mode, phase: "performance-test" }),
+  Effect.provide(LoggerLive)
+);
+Effect.runSync(logProgram);
 
 switch (mode) {
   case "ci":

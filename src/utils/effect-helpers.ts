@@ -60,17 +60,33 @@ export function getEffectError<T>(result: EffectResult<T>): Error | undefined {
 }
 
 /**
+ * @deprecated Use src/logger.ts instead - Logger service with proper Layer patterns
+ *
  * 🚨 LEGACY COMPATIBILITY: Railway logging expected by tests
- * 
- * Tests expect railwayLogging function but this creates SPLIT BRAIN:
- * - Function name suggests railway programming but implementation doesn't match
- * - Should be using Effect.TS built-in logging instead of custom logging
- * - Creates dependency on logging pattern that isn't used elsewhere
- * 
- * TODO: IMPLEMENT proper Effect.TS logging with Effect.log
- * TODO: REMOVE custom logging function in favor of standard patterns
- * TODO: UPDATE tests to use Effect.TS built-in logging
- * TODO: CONSOLIDATE logging configuration with Effect.TS
+ *
+ * This object is deprecated and will be removed in a future version.
+ * Use the new Logger service from src/logger.ts which provides:
+ * - Proper Effect.TS Layer patterns
+ * - Composable logging with yield*
+ * - Testable via LoggerTest Layer
+ * - Better performance and type safety
+ *
+ * Migration path:
+ * ```typescript
+ * // OLD
+ * import { railwayLogging } from "./effect-helpers.js"
+ * Effect.runSync(railwayLogging.logInitialization("Service"))
+ *
+ * // NEW
+ * import { LoggerLive } from "./logger.js"
+ * const program = Effect.gen(function*() {
+ *   yield* Effect.log("Initializing Service")
+ * }).pipe(Effect.provide(LoggerLive))
+ * Effect.runSync(program)
+ * ```
+ *
+ * TODO: Migrate all tests to use src/logger.ts
+ * TODO: Remove this object after test migration complete
  */
 export const railwayLogging = {
   /**
