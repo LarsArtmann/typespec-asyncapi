@@ -7,11 +7,11 @@
 
 import { Effect } from "effect"
 import type { 
-  ChannelPath,
-  MessageId, 
-  SchemaName,
-  OperationId,
-  ServerUrl
+  channelPathSchema,
+  messageIdSchema, 
+  schemaNameSchema,
+  operationIdSchema,
+  serverUrlSchema
 } from "./asyncapi-branded-types.js";
 
 // ===== VALIDATION HELPERS =====
@@ -65,27 +65,27 @@ function validateSchema(schema: unknown): Effect.Effect<void, AsyncAPIValidation
 /**
  * Type-safe channel collection using branded channel paths
  */
-export type AsyncAPIChannels = Record<ChannelPath, unknown>;
+export type AsyncAPIChannels = Record<typeof channelPathSchema.Type, unknown>;
 
 /**
  * Type-safe message collection using branded message IDs
  */
-export type AsyncAPIMessages = Record<MessageId, unknown>;
+export type AsyncAPIMessages = Record<typeof messageIdSchema.Type, unknown>;
 
 /**
  * Type-safe schema collection using branded schema names
  */
-export type AsyncAPISchemas = Record<SchemaName, unknown>;
+export type AsyncAPISchemas = Record<typeof schemaNameSchema.Type, unknown>;
 
 /**
  * Type-safe operation collection using branded operation IDs
  */
-export type AsyncAPIOperations = Record<OperationId, unknown>;
+export type AsyncAPIOperations = Record<typeof operationIdSchema.Type, unknown>;
 
 /**
  * Type-safe server collection using branded server URLs
  */
-export type AsyncAPIServers = Record<ServerUrl, unknown>;
+export type AsyncAPIServers = Record<typeof serverUrlSchema.Type, unknown>;
 
 // ===== TYPE CONSTRUCTORS WITH RUNTIME VALIDATION =====
 

@@ -1,197 +1,220 @@
 /**
  * 🎯 ASYNCAPI BRANDED TYPES: Compile-Time & Runtime Safety
  * 
- * Makes impossible states unrepresentable through branded types
+ * Makes impossible states unrepresentable through schema-based branded types
  * Ensures type safety beyond generic Record<string, unknown> patterns
+ * 
+ * MIGRATION: Manual validation → @effect/schema validation
  */
 
-import { Effect } from "effect"
+import { Effect, Schema } from "effect"
 
-// ===== BRANDED TYPE UTILITIES =====
+// ===== SCHEMA-BASED BRANDED TYPES =====
 
 /**
- * Brand type utility for creating opaque types
+ * Schema for AsyncAPI channel paths with validation
  */
-declare const brand: unique symbol;
+export const channelPathSchema = Schema.String.pipe(
+  Schema.minLength(1),
+  Schema.pattern(/^\//),
+  Schema.brand("ChannelPath")
+)
 
 /**
- * Create a branded type from a base type
+ * Schema for AsyncAPI message identifiers with validation
  */
-export type Branded<Type, Brand> = Type & { readonly [brand]: Brand };
+export const messageIdSchema = Schema.String.pipe(
+  Schema.minLength(1),
+  Schema.pattern(/^[a-zA-Z0-9._-]+$/),
+  Schema.brand("MessageId")
+)
 
-// ===== ASYNCAPI DOMAIN BRANDED TYPES =====
+/**
+ * Schema for AsyncAPI schema names with validation
+ */
+export const schemaNameSchema = Schema.String.pipe(
+  Schema.minLength(1),
+  Schema.pattern(/^[a-zA-Z0-9._-]+$/),
+  Schema.brand("SchemaName")
+)
+
+/**
+ * Schema for AsyncAPI operation identifiers with validation
+ */
+export const operationIdSchema = Schema.String.pipe(
+  Schema.minLength(1),
+  Schema.pattern(/^[a-zA-Z0-9._-]+$/),
+  Schema.brand("OperationId")
+)
+
+/**
+ * Schema for AsyncAPI server URLs with validation
+ */
+export const serverUrlSchema = Schema.String.pipe(
+  Schema.minLength(1),
+  Schema.filter((value) => {
+    // eslint-disable-next-line no-restricted-syntax -- URL constructor validation requires try/catch
+    try {
+      const url = new URL(value);
+      return !!(url.protocol && url.hostname);
+    } catch {
+      return false;
+    }
+  }, {
+    message: () => "Server URL must be a valid URL with protocol and hostname"
+  }),
+  Schema.brand("ServerUrl")
+)
+
+// ===== TYPE EXPORTS =====
 
 /**
  * Branded type for AsyncAPI channel paths
- * Ensures channel paths are properly formatted and validated
  */
-export type ChannelPath = Branded<string, 'ChannelPath'>;
+export type ChannelPathType = typeof channelPathSchema.Type
 
 /**
- * Branded type for AsyncAPI message identifiers  
- * Ensures message IDs are properly formatted and non-empty
+ * Branded type for AsyncAPI message identifiers
  */
-export type MessageId = Branded<string, 'MessageId'>;
+export type MessageType = typeof messageIdSchema.Type
 
 /**
  * Branded type for AsyncAPI schema names
- * Ensures schema names are properly formatted and valid JSON Schema identifiers
  */
-export type SchemaName = Branded<string, 'SchemaName'>;
+export type SchemaNameType = typeof schemaNameSchema.Type
 
 /**
  * Branded type for AsyncAPI operation identifiers
- * Ensures operation IDs are properly formatted and unique within context
  */
-export type OperationId = Branded<string, 'OperationId'>;
+export type OperationIdType = typeof operationIdSchema.Type
 
 /**
  * Branded type for AsyncAPI server URLs
- * Ensures server URLs are properly formatted and valid
  */
-export type ServerUrl = Branded<string, 'ServerUrl'>;
+export type ServerUrlType = typeof serverUrlSchema.Type
 
-// ===== TYPE CONSTRUCTORS =====
+// ===== SCHEMA-BASED TYPE CONSTRUCTORS =====
 
 /**
- * Create a branded channel path with validation
+ * Create a branded channel path using schema validation
  */
-export const createChannelPath = (path: string): Effect.Effect<ChannelPath, Error> => {
-  if (typeof path !== 'string' || !path.trim()) {
-    return Effect.fail(new Error(`Channel path must be a non-empty string, got: ${JSON.stringify(path)}`));
-  }
-  
-  // Additional validation for AsyncAPI channel path format
-  if (!path.startsWith('/')) {
-    return Effect.fail(new Error(`Channel path must start with '/', got: ${path}`));
-  }
-  
-  return Effect.succeed(path as ChannelPath);
-};
+export const createChannelPath = (path: string): Effect.Effect<typeof channelPathSchema.Type, Error> => 
+  Effect.gen(function*() {
+    return yield* Effect.try({
+      try: () => Schema.decodeSync(channelPathSchema)(path),
+      catch: (error) => new Error(`Channel path validation failed: ${String(error)}`)
+    })
+  })
 
 /**
- * Create a branded message identifier with validation
+ * Create a branded message identifier using schema validation
  */
-export const createMessageId = (messageId: string): Effect.Effect<MessageId, Error> => {
-  if (typeof messageId !== 'string' || !messageId.trim()) {
-    return Effect.fail(new Error(`Message ID must be a non-empty string, got: ${JSON.stringify(messageId)}`));
-  }
-  
-  // Additional validation for message ID format
-  if (!/^[a-zA-Z0-9._-]+$/.test(messageId)) {
-    return Effect.fail(new Error(`Message ID contains invalid characters, got: ${messageId}`));
-  }
-  
-  return Effect.succeed(messageId as MessageId);
-};
+export const createMessageId = (messageId: string): Effect.Effect<typeof messageIdSchema.Type, Error> => 
+  Effect.gen(function*() {
+    return yield* Effect.try({
+      try: () => Schema.decodeSync(messageIdSchema)(messageId),
+      catch: (error) => new Error(`Message ID validation failed: ${String(error)}`)
+    })
+  })
 
 /**
- * Create a branded schema name with validation
+ * Create a branded schema name using schema validation
  */
-export const createSchemaName = (schemaName: string): Effect.Effect<SchemaName, Error> => {
-  if (typeof schemaName !== 'string' || !schemaName.trim()) {
-    return Effect.fail(new Error(`Schema name must be a non-empty string, got: ${JSON.stringify(schemaName)}`));
-  }
-  
-  // Additional validation for JSON Schema identifier format
-  if (!/^[a-zA-Z0-9._-]+$/.test(schemaName)) {
-    return Effect.fail(new Error(`Schema name contains invalid characters, got: ${schemaName}`));
-  }
-  
-  return Effect.succeed(schemaName as SchemaName);
-};
+export const createSchemaName = (schemaName: string): Effect.Effect<typeof schemaNameSchema.Type, Error> => 
+  Effect.gen(function*() {
+    return yield* Effect.try({
+      try: () => Schema.decodeSync(schemaNameSchema)(schemaName),
+      catch: (error) => new Error(`Schema name validation failed: ${String(error)}`)
+    })
+  })
 
 /**
- * Create a branded operation identifier with validation
+ * Create a branded operation identifier using schema validation
  */
-export const createOperationId = (operationId: string): Effect.Effect<OperationId, Error> => {
-  if (typeof operationId !== 'string' || !operationId.trim()) {
-    return Effect.fail(new Error(`Operation ID must be a non-empty string, got: ${JSON.stringify(operationId)}`));
-  }
-  
-  // Additional validation for operation ID format
-  if (!/^[a-zA-Z0-9._-]+$/.test(operationId)) {
-    return Effect.fail(new Error(`Operation ID contains invalid characters, got: ${operationId}`));
-  }
-  
-  return Effect.succeed(operationId as OperationId);
-};
+export const createOperationId = (operationId: string): Effect.Effect<typeof operationIdSchema.Type, Error> => 
+  Effect.gen(function*() {
+    return yield* Effect.try({
+      try: () => Schema.decodeSync(operationIdSchema)(operationId),
+      catch: (error) => new Error(`Operation ID validation failed: ${String(error)}`)
+    })
+  })
 
 /**
- * Create a branded server URL with validation
+ * Create a branded server URL using schema validation
  */
-export const createServerUrl = (url: string): Effect.Effect<ServerUrl, Error> => {
-  if (typeof url !== 'string' || !url.trim()) {
-    return Effect.fail(new Error(`Server URL must be a non-empty string, got: ${JSON.stringify(url)}`));
-  }
-  
-  // Basic URL validation using Effect.try
-  const urlValidationError = (_error: unknown) => new Error(`Server URL must be a valid URL, got: ${url}`);
-  return Effect.try({
-    try: () => {
-      new URL(url);
-      return url as ServerUrl;
-    },
-    catch: urlValidationError
-  });
-};
+export const createServerUrl = (url: string): Effect.Effect<typeof serverUrlSchema.Type, Error> => 
+  Effect.gen(function*() {
+    return yield* Effect.try({
+      try: () => Schema.decodeSync(serverUrlSchema)(url),
+      catch: (error) => new Error(`Server URL validation failed: ${String(error)}`)
+    })
+  })
 
-// ===== TYPE GUARDS =====
+// ===== SCHEMA-BASED TYPE GUARDS =====
 
 /**
- * Type guard for ChannelPath
+ * Type guard for ChannelPath using schema validation
  */
-export const isChannelPath = (value: unknown): value is ChannelPath => {
-  return typeof value === 'string' && value.startsWith('/');
-};
+export const isChannelPath = (value: unknown): value is typeof channelPathSchema.Type => 
+  Schema.is(channelPathSchema)(value)
 
 /**
- * Type guard for MessageId
+ * Type guard for MessageId using schema validation
  */
-export const isMessageId = (value: unknown): value is MessageId => {
-  return typeof value === 'string' && /^[a-zA-Z0-9._-]+$/.test(value);
-};
+export const isMessageId = (value: unknown): value is typeof messageIdSchema.Type => 
+  Schema.is(messageIdSchema)(value)
 
 /**
- * Type guard for SchemaName
+ * Type guard for SchemaName using schema validation
  */
-export const isSchemaName = (value: unknown): value is SchemaName => {
-  return typeof value === 'string' && /^[a-zA-Z0-9._-]+$/.test(value);
-};
+export const isSchemaName = (value: unknown): value is typeof schemaNameSchema.Type => 
+  Schema.is(schemaNameSchema)(value)
+
+/**
+ * Type guard for OperationId using schema validation
+ */
+export const isOperationId = (value: unknown): value is typeof operationIdSchema.Type => 
+  Schema.is(operationIdSchema)(value)
+
+/**
+ * Type guard for ServerUrl using schema validation
+ */
+export const isServerUrl = (value: unknown): value is typeof serverUrlSchema.Type => 
+  Schema.is(serverUrlSchema)(value)
 
 // ===== UTILITY FUNCTIONS =====
 
 /**
  * Extract string value from branded ChannelPath
  */
-export const channelPathToString = (channelPath: ChannelPath): string => {
+export const channelPathToString = (channelPath: typeof channelPathSchema.Type): string => {
   return channelPath as string;
 };
 
 /**
  * Extract string value from branded MessageId
  */
-export const messageIdToString = (messageId: MessageId): string => {
+export const messageIdToString = (messageId: typeof messageIdSchema.Type): string => {
   return messageId as string;
 };
 
 /**
  * Extract string value from branded SchemaName
  */
-export const schemaNameToString = (schemaName: SchemaName): string => {
+export const schemaNameToString = (schemaName: typeof schemaNameSchema.Type): string => {
   return schemaName as string;
 };
 
 /**
  * Extract string value from branded OperationId
  */
-export const operationIdToString = (operationId: OperationId): string => {
+export const operationIdToString = (operationId: typeof operationIdSchema.Type): string => {
   return operationId as string;
 };
 
 /**
  * Extract string value from branded ServerUrl
  */
-export const serverUrlToString = (serverUrl: ServerUrl): string => {
+export const serverUrlToString = (serverUrl: typeof serverUrlSchema.Type): string => {
   return serverUrl as string;
 };

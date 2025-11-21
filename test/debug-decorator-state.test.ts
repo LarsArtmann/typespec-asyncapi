@@ -11,17 +11,17 @@ describe("Decorator State Consolidation", () => {
     });
     
     const source = `
-      namespace TestService;
-      
-      model UserEvent {
-        userId: string;
-        action: string;
-      }
-      
-      @channel("user/events")
-      @publish
-      op publishUserEvent(event: UserEvent);
-    `;
+namespace TestService {
+  
+model UserEvent {
+  userId: string;
+  action: string;
+}
+
+@channel("user/events")
+@publish
+op publishUserEvent(event: UserEvent);
+}
     
     const result = await tester.compile(source);
     

@@ -10,7 +10,7 @@ describe("Decorator State Consolidation - Clean", () => {
     });
     
     const source = `
-namespace TestService;
+namespace TestService {
   
 model UserEvent {
   userId: string;
@@ -20,6 +20,7 @@ model UserEvent {
 @channel("user/events")
 @publish
 op publishUserEvent(event: UserEvent);
+}
     `;
     
     const result = await tester.compile(source);
@@ -45,10 +46,10 @@ op publishUserEvent(event: UserEvent);
       const hasOperationData = consolidatedState.operations && consolidatedState.operations.size > 0;
       
       console.log("🔍 STATE DATA PRESENT:");
-      console.log(`  📡 Channels: ${hasChannelData ? '✅' : '❌'} (${consolidatedState.channels?.size || 0})`);
-      console.log(`  📨 Messages: ${hasMessageData ? '✅' : '❌'} (${consolidatedState.messages?.size || 0})`);
-      console.log(`  🖥️  Servers: ${hasServerData ? '✅' : '❌'} (${consolidatedState.servers?.size || 0})`);
-      console.log(`  ⚡ Operations: ${hasOperationData ? '✅' : '❌'} (${consolidatedState.operations?.size || 0})`);
+      console.log("  Channels: " + (hasChannelData ? '✅' : '❌') + " (" + (consolidatedState.channels?.size || 0) + ")");
+      console.log("  Messages: " + (hasMessageData ? '✅' : '❌') + " (" + (consolidatedState.messages?.size || 0) + ")");
+      console.log("  Servers: " + (hasServerData ? '✅' : '❌') + " (" + (consolidatedState.servers?.size || 0) + ")");
+      console.log("  Operations: " + (hasOperationData ? '✅' : '❌') + " (" + (consolidatedState.operations?.size || 0) + ")");
       
       // At least one decorator should have worked
       expect(hasChannelData || hasMessageData || hasServerData || hasOperationData).toBe(true);
