@@ -23,11 +23,11 @@ import {
 } from "./minimal-decorators.js";
 
 // CRITICAL: TypeSpec namespace declaration
-export const namespace = "TypeSpec.AsyncAPI";
+export const namespace = "AsyncAPI";
 
 // CRITICAL: TypeSpec requires $decorators object export
 export const $decorators = {
-  "TypeSpec.AsyncAPI": {
+  AsyncAPI: {
     channel: $channel,
     server: $server,
     publish: $publish,
