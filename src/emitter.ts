@@ -263,20 +263,11 @@ ${required.map(req => `      - ${req}`).join('\n')}`;
     // Debug emitter output directory
     yield* Effect.logDebug(`🔧 DEBUG: context.emitterOutputDir: "${context.emitterOutputDir}"`);
 
-    // CRITICAL FIX: Use emitFile with just filename (TypeSpec handles directory automatically)
+    // CRITICAL FIX: Use absolute path for emitFile
     const emitOptions: EmitFileOptions = {
-      path: outputPath,  // Let TypeSpec handle directory placement
+      path: outputPath,  // Use just filename, let TypeSpec handle directory
       content: content,
     };
-
-    // Emit the file using TypeSpec's emitFile API
-    yield* Effect.tryPromise({
-      try: () => emitFile(context.program, emitOptions),
-      catch: (error) => new Error(`Failed to generate ${outputPath}: ${String(error)}`)
-    });
-
-    yield* Effect.log(`✅ ASYNCAPI EMITTER: Generated ${outputPath} via emitFile API`);
-
     // Report generation statistics (side effect)
     reportGenerationStatistics(asyncapiDocument);
   }).pipe(Effect.provide(LoggerLive));
