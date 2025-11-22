@@ -1,0 +1,384 @@
+/**
+ * 🏗️ EXTERNAL LIBRARY ADAPTERS
+ * 
+ * Properly wraps all external APIs with domain contracts
+ * Eliminates direct external dependencies throughout system
+ * Provides type-safe interfaces for external tools
+ */
+
+import { Effect, Schema } from "effect";
+import type { AsyncAPIDocument } from "../types/domain/asyncapi-domain-types.js";
+import type { ValidationResult, ValidationError } from "../core/generic-validation-pipeline.js";
+
+// ========================================================================
+// @asyncapi/parser ADAPTER
+// ========================================================================
+
+/**
+ * AsyncAPI Parser Adapter Interface
+ * 
+ * Type-safe interface for AsyncAPI parser functionality
+ * Eliminates direct dependency on external library
+ */
+export interface AsyncAPIParserAdapter {
+  parse(document: string): Effect.Effect<AsyncAPIDocument, ValidationError[]>;
+  validate(document: AsyncAPIDocument): Effect.Effect<AsyncAPIDocument, ValidationError[]>;
+  serialize(document: AsyncAPIDocument, format: "json" | "yaml"): Effect.Effect<string, ValidationError[]>;
+}
+
+/**
+ * Real AsyncAPI Parser Adapter Implementation
+ * 
+ * Wraps @asyncapi/parser with proper error handling
+ * Provides domain-specific error translation
+ */
+export class AsyncAPIParser implements AsyncAPIParserAdapter {
+  /**
+   * Parse AsyncAPI document with proper error handling
+   */
+  parse(document: string): Effect.Effect<AsyncAPIDocument, ValidationError[]> {
+    return Effect.tryPromise({
+      try: async () => {
+        const { parse } = await import("@asyncapi/parser");
+        const parser = parse(document, { source: document });
+        
+        // Convert parser errors to our domain errors
+        if (parser.errors && parser.errors.length > 0) {
+          throw parser.errors;
+        }
+        
+        return parser.document as AsyncAPIDocument;
+      },
+      catch: (error) => {
+        // Parse different error types from @asyncapi/parser
+        if (Array.isArray(error)) {
+          return error.map((e, index) => ({
+            code: "asyncapi-parser-error",
+            message: `Parser error ${index + 1}: ${e.message || String(e)}`,
+            path: e.path || [],
+            severity: "error" as const,
+            context: { originalError: e }
+          } as ValidationError);
+        }
+        
+        return [{
+          code: "asyncapi-parser-failure",
+          message: `Parser failed: ${error instanceof Error ? error.message : String(error)}`,
+          path: [],
+          severity: "error" as const,
+          context: { originalError: error }
+        } as ValidationError];
+      }
+    });
+  }
+
+  /**
+   * Validate AsyncAPI document using parser validation
+   */
+  validate(document: AsyncAPIDocument): Effect.Effect<AsyncAPIDocument, ValidationError[]> {
+    return Effect.gen(function*() {
+      const serialized = yield* this.serialize(document, "json");
+      return yield* this.parse(serialized);
+    });
+  }
+
+  /**
+   * Serialize AsyncAPI document with proper format support
+   */
+  serialize(document: AsyncAPIDocument, format: "json" | "yaml"): Effect.Effect<string, ValidationError[]> {
+    return Effect.tryPromise({
+      try: async () => {
+        if (format === "json") {
+          return JSON.stringify(document, null, 2);
+        }
+        
+        // Use YAML serialization for YAML format
+        const YAML = await import("yaml");
+        return YAML.stringify(document);
+      },
+      catch: (error) => [{
+        code: "serialization-failure",
+        message: `Failed to serialize AsyncAPI document as ${format}: ${error instanceof Error ? error.message : String(error)}`,
+        path: [],
+        severity: "error" as const,
+        context: { format, originalError: error }
+      } as ValidationError]
+    });
+  }
+}
+
+// ========================================================================
+// AJV ADAPTER
+// ========================================================================
+
+/**
+ * AJV Adapter Interface
+ * 
+ * Type-safe interface for JSON Schema validation
+ * Eliminates direct dependency on AJV
+ */
+export interface AJVAdapter {
+  validateSchema<T>(schema: object, data: unknown): Effect.Effect<T, ValidationError[]>;
+  compileValidator<T>(schema: object): Effect.Effect<(data: unknown) => T, ValidationError[]>;
+}
+
+/**
+ * Real AJV Adapter Implementation
+ * 
+ * Wraps AJV with proper error handling and type safety
+ */
+export class AJV implements AJVAdapter {
+  private ajv: any; // AJV instance
+
+  constructor() {
+    this.initializeAJV();
+  }
+
+  private async initializeAJV(): Promise<void> {
+    const Ajv = await import("ajv");
+    this.ajv = new Ajv.default({
+      allErrors: true,
+      verbose: true,
+      strict: true,
+      removeAdditional: false,
+      useDefaults: false,
+      coerceTypes: false
+    });
+  }
+
+  /**
+   * Validate data against JSON schema
+   */
+  validateSchema<T>(schema: object, data: unknown): Effect.Effect<T, ValidationError[]> {
+    return Effect.tryPromise({
+      try: async () => {
+        if (!this.ajv) {
+          await this.initializeAJV();
+        }
+
+        const validate = this.ajv.compile(schema);
+        const valid = validate(data);
+
+        if (valid) {
+          return data as T;
+        }
+
+        // Convert AJV errors to our domain errors
+        return validate.errors?.map(error => ({
+          code: "ajv-validation-error",
+          message: error.message || "Validation failed",
+          path: error.instancePath ? error.instancePath.split('.').filter(Boolean) : [],
+          severity: "error" as const,
+          context: {
+            ajvKeyword: error.keyword,
+            ajvParams: error.params,
+            ajvSchemaPath: error.schemaPath
+          }
+        } as ValidationError)) || [];
+      },
+      catch: (error) => [{
+        code: "ajv-failure",
+        message: `AJV validation failed: ${error instanceof Error ? error.message : String(error)}`,
+        path: [],
+        severity: "error" as const,
+        context: { originalError: error }
+      } as ValidationError]
+    });
+  }
+
+  /**
+   * Compile reusable validator
+   */
+  compileValidator<T>(schema: object): Effect.Effect<(data: unknown) => T, ValidationError[]> {
+    return Effect.tryPromise({
+      try: async () => {
+        if (!this.ajv) {
+          await this.initializeAJV();
+        }
+
+        const validate = this.ajv.compile(schema);
+        
+        return (data: unknown): T => {
+          const valid = validate(data);
+          
+          if (!valid) {
+            throw validate.errors || [];
+          }
+          
+          return data as T;
+        };
+      },
+      catch: (error) => [{
+        code: "ajv-compilation-failure",
+        message: `AJV compilation failed: ${error instanceof Error ? error.message : String(error)}`,
+        path: [],
+        severity: "error" as const,
+        context: { originalError: error }
+      } as ValidationError]
+    });
+  }
+}
+
+// ========================================================================
+// FILE SYSTEM ADAPTER
+// ========================================================================
+
+/**
+ * File System Adapter Interface
+ * 
+ * Type-safe interface for file operations
+ * Eliminates direct file system dependencies
+ */
+export interface FileSystemAdapter {
+  readFile(path: string): Effect.Effect<string, ValidationError[]>;
+  writeFile(path: string, content: string): Effect.Effect<void, ValidationError[]>;
+  exists(path: string): Effect.Effect<boolean, ValidationError[]>;
+}
+
+/**
+ * Real File System Adapter Implementation
+ * 
+ * Wraps Node.js fs with proper error handling
+ */
+export class FileSystem implements FileSystemAdapter {
+  async readFile(path: string): Effect.Effect<string, ValidationError[]> {
+    return Effect.tryPromise({
+      try: async () => {
+        const fs = await import("fs/promises");
+        return await fs.readFile(path, "utf-8");
+      },
+      catch: (error) => [{
+        code: "file-read-failure",
+        message: `Failed to read file ${path}: ${error instanceof Error ? error.message : String(error)}`,
+        path: [path],
+        severity: "error" as const,
+        context: { originalError: error }
+      } as ValidationError]
+    });
+  }
+
+  async writeFile(path: string, content: string): Effect.Effect<void, ValidationError[]> {
+    return Effect.tryPromise({
+      try: async () => {
+        const fs = await import("fs/promises");
+        
+        // Ensure directory exists
+        const dir = path.substring(0, path.lastIndexOf('/'));
+        if (dir) {
+          await fs.mkdir(dir, { recursive: true });
+        }
+        
+        await fs.writeFile(path, content, "utf-8");
+      },
+      catch: (error) => [{
+        code: "file-write-failure",
+        message: `Failed to write file ${path}: ${error instanceof Error ? error.message : String(error)}`,
+        path: [path],
+        severity: "error" as const,
+        context: { originalError: error }
+      } as ValidationError]
+    });
+  }
+
+  async exists(path: string): Effect.Effect<boolean, ValidationError[]> {
+    return Effect.tryPromise({
+      try: async () => {
+        const fs = await import("fs/promises");
+        try {
+          await fs.access(path);
+          return true;
+        } catch {
+          return false;
+        }
+      },
+      catch: (error) => [{
+        code: "file-exists-failure",
+        message: `Failed to check if file exists ${path}: ${error instanceof Error ? error.message : String(error)}`,
+        path: [path],
+        severity: "error" as const,
+        context: { originalError: error }
+      } as ValidationError]
+    });
+  }
+}
+
+// ========================================================================
+// ADAPTER FACTORY
+// ========================================================================
+
+/**
+ * Centralized adapter factory
+ * 
+ * Provides single point for creating external adapters
+ * Ensures consistent configuration throughout system
+ */
+export class AdapterFactory {
+  private static asyncAPIParser: AsyncAPIParserAdapter | null = null;
+  private static ajvAdapter: AJVAdapter | null = null;
+  private static fileSystemAdapter: FileSystemAdapter | null = null;
+
+  /**
+   * Get AsyncAPI parser adapter (singleton)
+   */
+  static getAsyncAPIParser(): AsyncAPIParserAdapter {
+    if (!this.asyncAPIParser) {
+      this.asyncAPIParser = new AsyncAPIParser();
+    }
+    return this.asyncAPIParser;
+  }
+
+  /**
+   * Get AJV adapter (singleton)
+   */
+  static getAJVAdapter(): AJVAdapter {
+    if (!this.ajvAdapter) {
+      this.ajvAdapter = new AJV();
+    }
+    return this.ajvAdapter;
+  }
+
+  /**
+   * Get file system adapter (singleton)
+   */
+  static getFileSystemAdapter(): FileSystemAdapter {
+    if (!this.fileSystemAdapter) {
+      this.fileSystemAdapter = new FileSystem();
+    }
+    return this.fileSystemAdapter;
+  }
+
+  /**
+   * Reset all adapters (for testing)
+   */
+  static reset(): void {
+    this.asyncAPIParser = null;
+    this.ajvAdapter = null;
+    this.fileSystemAdapter = null;
+  }
+}
+
+// ========================================================================
+// EXPORTED ADAPTER INTERFACES
+// ========================================================================
+
+/**
+ * Export adapter interfaces for dependency injection
+ * 
+ * Allows for custom adapter implementations
+ * Enables testing with mock adapters
+ */
+export type {
+  AsyncAPIParserAdapter,
+  AJVAdapter,
+  FileSystemAdapter
+};
+
+/**
+ * Export concrete implementations for convenience
+ */
+export {
+  AsyncAPIParser,
+  AJV,
+  FileSystem,
+  AdapterFactory
+};

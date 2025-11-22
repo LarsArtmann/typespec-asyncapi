@@ -10,6 +10,6 @@ export * from "./minimal-decorators.js";
 export { $onEmit } from "./emitter.js";
 export * from "./state.js";
 
-// CRITICAL: Export decorators as default for TypeSpec discovery
+// CRITICAL: Export decorators for TypeSpec library discovery
 import { $decorators } from "./decorators.js";
-export default $decorators;
+export { $decorators };
