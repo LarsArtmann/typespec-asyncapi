@@ -8,7 +8,7 @@
 
 import type { AsyncAPIDocument } from "../../emitter.js";
 import { readFile } from 'node:fs/promises';
-import type { ValidationResult, ValidationMetrics } from "../models/validation-result.js";
+import type { ValidationResult, _ValidationMetrics } from "../models/validation-result.js";
 
 /**
  * Validator Configuration
