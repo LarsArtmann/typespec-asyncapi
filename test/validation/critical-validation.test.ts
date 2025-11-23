@@ -11,7 +11,7 @@
 import { beforeAll, describe, expect, it } from "bun:test";
 import { AsyncAPIValidator } from "../../src/domain/validation/asyncapi-validator.js";
 import { Effect } from "effect";
-import { railwayLogging } from "../../src/utils/effect-helpers.js";
+import { LoggerLive } from "../../src/logger.js";
 import {
   getChannelCount,
   getOperationCount,
@@ -24,7 +24,9 @@ describe("🚨 CRITICAL: AsyncAPI Specification Validation", () => {
   beforeAll(async () => {
     // Execute initialization logging in proper Effect context
     await Effect.runPromise(
-      railwayLogging.logInitialization("AsyncAPI 3.0.0 Validator"),
+      Effect.log("Initializing AsyncAPI 3.0.0 Validator").pipe(
+  Effect.provide(LoggerLive)
+    ),
     );
     validator = new AsyncAPIValidator({
       strict: true,

@@ -7,7 +7,7 @@ import {
   type BasicTestRunner,
 } from "@typespec/compiler/testing";
 import { Effect } from "effect";
-import { railwayLogging } from "../../src/utils/effect-helpers.js";
+import { LoggerLive } from "../../src/logger.js";
 
 describe("Real AsyncAPI Validation Tests", () => {
   let runner: BasicTestRunner;

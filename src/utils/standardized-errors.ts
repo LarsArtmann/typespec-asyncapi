@@ -22,12 +22,37 @@ export abstract class AsyncAPIEmitterError extends Error {
 /**
  * Validation Error
  */
-export class ValidationError extends AsyncAPIEmitterError {
+/**
+ * Validation Error Type
+ */
+export type StandardizedError = {
+  what: string;
+  reassure: string;
+  why: string;
+  fix: string;
+  escape: string;
+  severity: "error" | "warning" | "info";
+  code: string;
+  context?: Record<string, unknown>;
+}
+
+export class ValidationError extends AsyncAPIEmitterError implements StandardizedError {
   readonly _tag = "ValidationError";
   readonly code = "VALIDATION_ERROR";
+  
+  // StandardizedError interface properties
+  what: string = "Validation failed";
+  reassure: string = "This validation error can be fixed";
+  why: string = "Input validation failed";
+  fix: string = "Provide valid input data";
+  escape: string = "Use default values or skip validation";
+  severity: "error" | "warning" | "info" = "error";
 
   constructor(message: string, context?: Record<string, unknown>) {
     super(`Validation failed: ${message}`, context);
+    
+    // Extract error details from message if available
+    this.what = `Validation failed: ${message}`;
   }
 }
 

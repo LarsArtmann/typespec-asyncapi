@@ -7,7 +7,7 @@
 
 import { test, expect } from "bun:test";
 import { Effect, Either } from "effect";
-import { railwayLogging } from "../src/utils/effect-helpers.js";
+import { LoggerLive } from "../src/logger.js";
 
 /**
  * PHASE 1: Effect.TS Pattern Unit Tests - Railway Programming Validation
@@ -135,9 +135,9 @@ test("Error Boundary - resource cleanup patterns", async () => {
 test("Railway Logging - initialization and success logging", async () => {
   // Test railway logging patterns
   const loggingEffect = Effect.gen(function* () {
-    yield* railwayLogging.logInitialization("Test Service");
+    yield* Effect.log("Initializing Test Service");
     yield* Effect.succeed("operation complete");
-    yield* railwayLogging.logInitializationSuccess("Test Service");
+    yield* Effect.log("Test Service initialized successfully");
     return "success";
   });
 
@@ -216,7 +216,7 @@ test("Integration - complete Effect pipeline", async () => {
   // Test end-to-end Effect.TS pipeline
   const pipelineEffect = Effect.gen(function* () {
     // Initialization phase
-    yield* railwayLogging.logInitialization("Pipeline Test");
+    yield* Effect.log("Initializing Pipeline Test");
 
     // Data processing phase with error handling
     const processedData = yield* Effect.gen(function* () {
@@ -238,7 +238,7 @@ test("Integration - complete Effect pipeline", async () => {
       : Effect.fail(new Error("No data to validate"));
 
     // Success logging
-    yield* railwayLogging.logInitializationSuccess("Pipeline Test");
+    yield* Effect.log("Pipeline Test initialized successfully");
 
     return {
       success: true,

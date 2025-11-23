@@ -6,7 +6,7 @@ describe("DEBUG: Library Structure", () => {
     
     try {
       // Import TypeScript file directly
-      const library = await import("../../src/index.ts");
+      const library = await import("../src/index.ts");
       console.log("🔍 DEBUG: Library loaded successfully");
       console.log("🔍 DEBUG: Library keys:", Object.keys(library));
       console.log("🔍 DEBUG: Has $decorators:", "$decorators" in library);

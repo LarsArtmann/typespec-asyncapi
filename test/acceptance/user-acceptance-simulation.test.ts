@@ -20,7 +20,7 @@ import {
   pluginRegistry,
   registerBuiltInPlugins,
   generateProtocolBinding,
-} from "../../dist/infrastructure/adapters/plugin-system.js";
+} from "../../src/plugins/core/PluginSystem.js"; // TODO: Fix plugin system architecture
 import {
   compileAsyncAPISpecWithoutErrors,
   validateAsyncAPIStructure,
