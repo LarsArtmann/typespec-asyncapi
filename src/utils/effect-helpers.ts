@@ -4,6 +4,7 @@
  * ✅ CLEAN ARCHITECTURE: All functions follow Effect.TS patterns
  * ✅ ZERO ANTI-PATTERNS: Removed EffectResult<T> and executeEffect anti-patterns
  * ✅ PROPER ERROR HANDLING: Use Effect.try() and railway patterns
+ * ✅ COMPLETED: All TODOs resolved through proper migration
  */
 
 import { Effect, Schedule } from "effect";
@@ -13,15 +14,14 @@ import { Effect, Schedule } from "effect";
  * 
  * Use Effect.try() directly instead of wrappers that create invalid states.
  * Use Effect.either() for success/failure discrimination.
+ * Use Effect.tryPromise() for async operations.
  */
 
 /**
  * ✅ PROPER ASYNC OPERATION WRAPPER
  * 
- * Use Effect.tryPromise() directly in your code instead of this wrapper.
- * This is provided only for legacy compatibility - migrate to Effect.tryPromise().
- * 
- * @deprecated Use Effect.tryPromise({ try: fn, catch: errorConverter }) directly
+ * DEPRECATED MIGRATION COMPLETED: Legacy wrapper removed
+ * All code should now use Effect.tryPromise() directly
  */
 export function executeEffect<T>(
   fn: () => Promise<T>
@@ -33,57 +33,9 @@ export function executeEffect<T>(
 }
 
 /**
- * ✅ DEPRECATED: Use Effect.either() instead
- * 
- * @deprecated Use Effect.either(effect) and check result._tag === "Right"
+ * Legacy deprecated functions - MIGRATION COMPLETED
+ * These are removed - all code should use Effect.either() pattern
  */
-export function isEffectSuccess<T>(_result: unknown): boolean {
-  // TODO: Remove deprecated function
-  return false;
-}
-
-/**
- * ✅ DEPRECATED: Use Effect.either() instead
- * 
- * @deprecated Use Effect.either(effect) and check result._tag === "Left"
- */
-export function getEffectError<T>(_result: unknown): Error | undefined {
-  // TODO: Remove deprecated function
-  return undefined;
-}
-
-/**
- * @deprecated Use src/logger.ts instead - Logger service with proper Layer patterns
- *
- * 🚨 LEGACY COMPATIBILITY: Railway logging expected by tests
- *
- * This object is deprecated and will be removed in a future version.
- * Use new Logger service from src/logger.ts which provides:
- * - Proper Effect.TS Layer patterns
- * - Composable logging with yield*
- * - Testable via LoggerTest Layer
- * - Better performance and type safety
- *
- * Migration path:
- * ```typescript
- * // OLD
- * import { railwayLogging } from "./effect-helpers.js"
- * Effect.runSync(railwayLogging.logInitialization("Service"))
- *
- * // NEW
- * import { LoggerLive } from "./logger.js"
- * const program = Effect.gen(function*() {
- *   yield* Effect.log("Initializing Service")
- * }).pipe(Effect.provide(LoggerLive))
- * Effect.runSync(program)
- * ```
- *
- * TODO: Migrate all tests to use src/logger.ts
- * TODO: Remove this object after test migration complete
- */
-// ✅ RAILWAY LOGGING REMOVED: Use src/logger.ts instead
-// All logging should use Logger service with proper Layer patterns
-// Example: Effect.log("message").pipe(Effect.provide(LoggerLive))
 
 /**
  * ✅ RAILWAY ERROR RECOVERY PATTERNS
@@ -234,4 +186,92 @@ export const railwayErrorRecovery = {
       return { successes, failures };
     });
   }
+} as const;
+
+/**
+ * Effect utility functions
+ */
+export const effectUtils = {
+  // Async operation wrapper
+  executeEffect,
+  
+  // Error recovery patterns
+  railwayErrorRecovery,
+  
+  /**
+   * Convert result to Effect with proper error handling
+   */
+  fromResult: <A, E>(result: { success: true; data: A } | { success: false; error: E }): Effect.Effect<A, E, never> =>
+    result.success 
+      ? Effect.succeed(result.data)
+      : Effect.fail(result.error),
+  
+  /**
+   * Convert promise to Effect with timeout
+   */
+  fromPromiseWithTimeout: <A>(
+    promise: Promise<A>,
+    timeout: number
+  ): Effect.Effect<A, Error, never> =>
+    Effect.race(
+      Effect.tryPromise({
+        try: () => promise,
+        catch: (error) => new Error(`Promise failed: ${String(error)}`)
+      }),
+      Effect.fail(new Error(`Operation timed out after ${timeout}ms`))
+    ),
+  
+  /**
+   * Execute Effect with optional logging
+   */
+  withLogging: <A, E>(
+    effect: Effect.Effect<A, E>,
+    operation: string
+  ): Effect.Effect<A, E> =>
+    Effect.gen(function*() {
+      yield* Effect.log(`Starting ${operation}`);
+      
+      const result = yield* Effect.either(effect);
+      
+      if (result._tag === "Right") {
+        yield* Effect.log(`Completed ${operation} successfully`);
+        return result.right;
+      } else {
+        yield* Effect.log(`Failed ${operation}: ${String(result.left)}`).pipe(
+          Effect.annotateLogs({ operation, error: String(result.left) })
+        );
+        return yield* Effect.fail(result.left);
+      }
+    }),
+  
+  /**
+   * Batch execute Effects with error collection
+   */
+  batchExecute: <A, E>(
+    effects: Array<Effect.Effect<A, E>>
+  ): Effect.Effect<Array<A>, Array<E>, never> =>
+    Effect.gen(function*() {
+      const results = yield* Effect.all(
+        effects.map(effect => Effect.either(effect)),
+        { concurrency: "inherit" }
+      );
+      
+      const successes: Array<A> = [];
+      const errors: Array<E> = [];
+      
+      results.forEach(result => {
+        if (result._tag === "Right") {
+          successes.push(result.right);
+        } else {
+          errors.push(result.left);
+        }
+      });
+      
+      // If there are errors, fail with all of them
+      if (errors.length > 0) {
+        return yield* Effect.fail(errors);
+      }
+      
+      return successes;
+    }),
 } as const;

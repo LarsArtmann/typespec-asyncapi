@@ -1,7 +1,8 @@
 /**
- * Simple Discovery Service - FINAL FIX
+ * Simple Discovery Service
  * 
- * Uses correct TypeSpec Program API
+ * MINIMAL WORKING VERSION: Basic TypeSpec discovery
+ * Focus on getting compilation working first
  */
 
 import { Effect } from "effect";
@@ -31,8 +32,7 @@ export class DiscoveryService {
       try {
         const models: string[] = [];
         
-        // Correct API: iterate over stateMap.values()
-        for (const entity of program.stateMap.values()) {
+        for (const [_, entity] of program.stateMap) {
           if (entity.kind === "Model") {
             models.push(entity.name ?? "unnamed_model");
           }
@@ -58,8 +58,7 @@ export class DiscoveryService {
       try {
         const operations: string[] = [];
         
-        // Correct API: iterate over stateMap.values()
-        for (const entity of program.stateMap.values()) {
+        for (const [_, entity] of program.stateMap) {
           if (entity.kind === "Operation") {
             operations.push(entity.name ?? "unnamed_operation");
           }
@@ -85,8 +84,7 @@ export class DiscoveryService {
       try {
         const namespaces: string[] = [];
         
-        // Correct API: iterate over stateMap.values()
-        for (const entity of program.stateMap.values()) {
+        for (const [_, entity] of program.stateMap) {
           if (entity.kind === "Namespace") {
             namespaces.push(entity.name ?? "unnamed_namespace");
           }
@@ -112,8 +110,7 @@ export class DiscoveryService {
       try {
         const decorators: string[] = [];
         
-        // Correct API: iterate over stateMap.values()
-        for (const entity of program.stateMap.values()) {
+        for (const [_, entity] of program.stateMap) {
           for (const decorator of entity.decorators) {
             decorators.push(decorator.decorator.name);
           }

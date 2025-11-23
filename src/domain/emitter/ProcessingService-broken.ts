@@ -1,7 +1,8 @@
 /**
- * Simple Processing Service - FINAL FIX
+ * Simple Processing Service
  * 
- * Uses correct TypeSpec Program API
+ * MINIMAL WORKING VERSION: Basic TypeSpec processing
+ * Focus on getting compilation working first
  */
 
 import { Effect } from "effect";
@@ -43,8 +44,8 @@ export class ProcessingService {
       };
       
       try {
-        // Correct API: iterate over stateMap.values()
-        for (const entity of program.stateMap.values()) {
+        // Simple implementation - just extract model names
+        for (const [_, entity] of program.stateMap) {
           if (entity.kind === "Model") {
             result.processedItems.push({
               name: entity.name ?? "unnamed_model",
@@ -80,8 +81,8 @@ export class ProcessingService {
       };
       
       try {
-        // Correct API: iterate over stateMap.values()
-        for (const entity of program.stateMap.values()) {
+        // Simple implementation - just extract operation names
+        for (const [_, entity] of program.stateMap) {
           if (entity.kind === "Operation") {
             result.processedItems.push({
               name: entity.name ?? "unnamed_operation",

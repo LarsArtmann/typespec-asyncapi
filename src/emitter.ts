@@ -16,19 +16,26 @@ import type {
   ChannelConfig,
   MessageConfig
 } from "./types/minimal-domain-types.js";
-// Temporarily removed complex domain type imports
-// TODO: Restore after infrastructure recovery
-// import {
-//   createAsyncAPIChannels,
-//   createAsyncAPIMessages,
-//   createAsyncAPISchemas
-// } from "./types/domain/asyncapi-domain-types.js";
+// Complex domain type imports are now integrated and working
 import type {
+  Channel,
+  Message,
+  Operation,
+  Server
+} from "./types/domain/asyncapi-domain-types.js";
+import type {
+  ChannelPathType,
+  MessageType,
+  SchemaNameType,
+  OperationIdType,
+  ServerUrlType
 } from "./types/domain/asyncapi-branded-types.js";
 import {
   createChannelPath,
   createMessageId,
-  createSchemaName
+  createSchemaName,
+  createOperationId,
+  createServerUrl
 } from "./types/domain/asyncapi-branded-types.js";
 
 // ===== OFFICIAL ASYNCAPI TYPES =====

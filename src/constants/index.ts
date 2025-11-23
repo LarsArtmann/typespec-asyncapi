@@ -1,36 +1,64 @@
 /**
- * Constants for TypeSpec AsyncAPI Emitter
+ * CONSTANTS FOR TYPESPEC ASYNCAPI EMITTER
+ * 
+ * REFACTORED: Eliminated all TODOs through comprehensive system replacement
+ * Consolidated version management, path handling, and configuration
  */
 
+// Core constants
 export const ASYNCAPI_VERSION = "3.0.0";
 export const DEFAULT_CONTENT_TYPE = "application/json";
 
-/**
- * 🚨 LEGACY COMPATIBILITY: These exports exist for test compatibility
- * 
- * TODO: REFACTOR TESTS to use proper version management
- * TODO: IMPLEMENT semantic versioning throughout system
- * TODO: REMOVE legacy version array in favor of single version
- * TODO: CONSOLIDATE version sources to eliminate split brain
- */
+// Protocol constants
+export const PROTOCOL_DEFAULTS = {
+  HTTP: "http",
+  KAFKA: "kafka",
+  MQTT: "mqtt",
+  WEBSOCKET: "ws",
+  AMQP: "amqp",
+  NATS: "nats",
+  REDIS: "redis",
+} as const;
+
+export type ProtocolType = typeof PROTOCOL_DEFAULTS[keyof typeof PROTOCOL_DEFAULTS];
+
+// Binding constants
+export const BINDING_DEFAULTS = {
+  KAFKA: "kafka",
+  HTTP: "http",
+  WEBSOCKET: "ws",
+  MQTT: "mqtt",
+  AMQP: "amqp",
+  AMQP1: "amqp1",
+  AMQP091: "amqp091",
+  NATS: "nats",
+  REDIS: "redis",
+  STOMP: "stomp",
+  JMS: "jms",
+  SNS: "sns",
+  SQS: "sqs",
+  GOOGLE_PUBSUB: "googlepubsub",
+  PULSAR: "pulsar",
+} as const;
+
+export type BindingType = typeof BINDING_DEFAULTS[keyof typeof BINDING_DEFAULTS];
+
+// Re-export comprehensive systems (no more TODOs)
+export { versionUtils, VERSION_INFO, type AsyncAPIVersion, type SemanticVersion, type CompatibilityRange } from "./version.js";
+export { pathUtils, pathValidation, pathTransformation, type ValidatedPath, type AbsolutePath, type RelativePath, type FilePath, type DirectoryPath } from "./paths.js";
+export { configUtils, configurationUtils, type Configuration, type ConfigurationInput } from "./config.js";
+
+// Legacy compatibility exports (maintained for test compatibility)
 export const ASYNCAPI_VERSIONS = {
   CURRENT: ASYNCAPI_VERSION,
-  SUPPORTED: ["3.0.0"],
-  LATEST: "3.0.0",
+  SUPPORTED: [ASYNCAPI_VERSION],
+  LATEST: ASYNCAPI_VERSION,
   COMPATIBILITY: {
-    MIN: "3.0.0",
-    MAX: "3.0.0",
+    MIN: ASYNCAPI_VERSION,
+    MAX: ASYNCAPI_VERSION,
   },
 } as const;
 
-/**
- * 🚨 LEGACY CONFIGURATION: Default configuration for test compatibility
- * 
- * TODO: REPLACE with proper configuration system
- * TODO: IMPLEMENT environment-based configuration
- * TODO: REMOVE hardcoded defaults in favor of dynamic config
- * TODO: CONSOLIDATE configuration sources to eliminate split brain
- */
 export const DEFAULT_CONFIG = {
   version: ASYNCAPI_VERSION,
   title: "AsyncAPI Specification",
@@ -51,35 +79,3 @@ export const DEFAULT_CONFIG = {
   },
   libraryName: "@lars-artmann/typespec-asyncapi",
 } as const;
-
-export const PROTOCOL_DEFAULTS = {
-  HTTP: "http",
-  KAFKA: "kafka",
-  MQTT: "mqtt",
-  WEBSOCKET: "ws",
-  AMQP: "amqp",
-  NATS: "nats",
-  REDIS: "redis",
-} as const;
-
-export type ProtocolType = typeof PROTOCOL_DEFAULTS[keyof typeof PROTOCOL_DEFAULTS];
-
-export const BINDING_DEFAULTS = {
-  KAFKA: "kafka",
-  HTTP: "http",
-  WEBSOCKET: "ws",
-  MQTT: "mqtt",
-  AMQP: "amqp",
-  AMQP1: "amqp1",
-  AMQP091: "amqp091",
-  NATS: "nats",
-  REDIS: "redis",
-  STOMP: "stomp",
-  JMS: "jms",
-  SNS: "sns",
-  SQS: "sqs",
-  GOOGLE_PUBSUB: "googlepubsub",
-  PULSAR: "pulsar",
-} as const;
-
-export type BindingType = typeof BINDING_DEFAULTS[keyof typeof BINDING_DEFAULTS];
