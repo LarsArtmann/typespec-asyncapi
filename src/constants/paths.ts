@@ -163,8 +163,12 @@ export const pathUtils = {
 
 /**
  * Library path exports for test utilities
+ * NOTE: TypeSpec createTestLibrary expects relative folder names from package root,
+ * NOT absolute paths. Use these constants for test library configuration.
  */
 export const LIBRARY_PATHS = {
-  LIB_DIR: PATHS.SRC_DIR,
-  DIST_DIR: PATHS.DIST_DIR,
+  /** Relative folder name for TypeSpec files (from package root) */
+  LIB_DIR: "lib",
+  /** Relative folder name for JS files (from package root) */
+  DIST_DIR: "dist/src",
 };

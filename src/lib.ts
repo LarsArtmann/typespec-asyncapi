@@ -76,7 +76,7 @@ import {
 // TODO: MAINTENANCE - Extract diagnostic messages to separate localization file for i18n support
 // TODO: VALIDATION - Add JSON Schema validation for library definition structure at build time
 export const $lib = createTypeSpecLibrary({
-  name: "@typespec/asyncapi",
+  name: "@lars-artmann/typespec-asyncapi",
   // TODO: Add library description, version, and other metadata fields
   diagnostics: {
     // TODO: TYPE_SAFETY - Extract diagnostics to typed const with DiagnosticMap<string, DiagnosticDefinition> for reusability
