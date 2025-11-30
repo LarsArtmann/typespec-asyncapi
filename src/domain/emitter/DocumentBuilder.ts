@@ -15,7 +15,7 @@ export class DocumentBuilder {
   /**
    * Create initial AsyncAPI document structure
    */
-  createInitialDocument(program: Program): Effect.Effect<AsyncAPIObject, never, never> {
+  createInitialDocument(_program: Program): Effect.Effect<AsyncAPIObject, never, never> {
     return Effect.gen(function*() {
       yield* Effect.log("Creating initial AsyncAPI document");
       

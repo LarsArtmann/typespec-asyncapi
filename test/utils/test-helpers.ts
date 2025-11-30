@@ -139,7 +139,7 @@ export async function compileAsyncAPISpecRaw(
 
   // Compile and emit TypeSpec code - this triggers emitters
   const [result, diagnostics] = await runner.compileAndDiagnose(source, {
-    emit: [DEFAULT_CONFIG.LIBRARY_NAME],
+    emit: [DEFAULT_CONFIG.libraryName],
   });
 
   // TypeSpec test runner automatically calls emitters - no manual invocation needed

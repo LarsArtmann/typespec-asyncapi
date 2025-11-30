@@ -5,8 +5,7 @@
  */
 
 import { Effect } from "effect";
-import type { EmitContext, Type, EmitFileOptions } from "@typespec/compiler";
-import { emitFile } from "@typespec/compiler";
+import type { EmitContext, Type, EmitFileOptions as _EmitFileOptions } from "@typespec/compiler";
 import { consolidateAsyncAPIState, type AsyncAPIConsolidatedState } from "./state.js";
 import { LoggerLive } from "./logger.js";
 import type { 
@@ -18,24 +17,24 @@ import type {
 } from "./types/minimal-domain-types.js";
 // Complex domain type imports are now integrated and working
 import type {
-  Channel,
-  Message,
-  Operation,
-  Server
+  Channel as _Channel,
+  Message as _Message,
+  Operation as _Operation,
+  Server as _Server
 } from "./types/domain/asyncapi-domain-types.js";
 import type {
-  ChannelPathType,
-  MessageType,
-  SchemaNameType,
-  OperationIdType,
-  ServerUrlType
+  ChannelPathType as _ChannelPathType,
+  MessageType as _MessageType,
+  SchemaNameType as _SchemaNameType,
+  OperationIdType as _OperationIdType,
+  ServerUrlType as _ServerUrlType
 } from "./types/domain/asyncapi-branded-types.js";
 import {
   createChannelPath,
   createMessageId,
   createSchemaName,
-  createOperationId,
-  createServerUrl
+  createOperationId as _createOperationId,
+  createServerUrl as _createServerUrl
 } from "./types/domain/asyncapi-branded-types.js";
 
 // ===== OFFICIAL ASYNCAPI TYPES =====
@@ -271,7 +270,7 @@ ${required.map(req => `      - ${req}`).join('\n')}`;
     yield* Effect.logDebug(`🔧 DEBUG: context.emitterOutputDir: "${context.emitterOutputDir}"`);
 
     // CRITICAL FIX: Use absolute path for emitFile
-    const emitOptions: EmitFileOptions = {
+    const _emitOptions: _EmitFileOptions = {
       path: outputPath,  // Use just filename, let TypeSpec handle directory
       content: content,
     };

@@ -5,7 +5,7 @@
  */
 
 import { Effect } from "effect";
-import type { Program, Type } from "@typespec/compiler";
+import type { Program } from "@typespec/compiler";
 
 /**
  * Processing result interface

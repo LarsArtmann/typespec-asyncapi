@@ -105,29 +105,26 @@ export class ValidationService {
           break;
         }
 
-        try {
-          const result = yield* validator(input);
-          results.push({ input, result });
-
-          if (!result.valid) {
-            errorCount += result.errors.length;
-          }
-        } catch (error) {
-          const errorResult: ValidationResult = {
+        const result = yield* Effect.catchAll(
+          validator(input),
+          (error) => Effect.succeed({
             valid: false,
             errors: [{
               path: "root",
               message: `Validation failed: ${String(error)}`,
-              severity: "error"
+              severity: "error" as const
             }],
             warnings: [],
             metadata: {
               version: "unknown",
               componentCounts: { channels: 0, messages: 0, operations: 0, servers: 0 },
             },
-          };
-          results.push({ input, result: errorResult });
-          errorCount++;
+          })
+        );
+        results.push({ input, result });
+
+        if (!result.valid) {
+          errorCount += result.errors.length;
         }
       }
 
@@ -190,23 +187,14 @@ export class ValidationService {
     attempts: number,
     validator: (input: T) => Effect.Effect<ValidationResult, Error, never>
   ): Effect.Effect<ValidationResult, Error, never> {
-    return Effect.gen(function*() {
-      let lastError: Error | null = null;
-
-      for (let i = 0; i < attempts; i++) {
-        try {
-          const result = yield* validator(input);
-          return result;
-        } catch (error) {
-          lastError = error as Error;
-          if (i < attempts - 1) {
-            yield* Effect.log(`Validation attempt ${i + 1} failed, retrying...`);
-          }
-        }
-      }
-
-      throw lastError || new Error("Validation failed after retry attempts");
-    });
+    return Effect.retry(
+      validator(input).pipe(
+        Effect.catchAll((error) => Effect.fail(error))
+      ),
+      { times: attempts - 1 }
+    ).pipe(
+      Effect.catchAll((error) => Effect.fail(error))
+    );
   }
 
   /**

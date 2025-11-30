@@ -11,6 +11,7 @@
  */
 
 import type { EmitterOptions } from "./asyncAPIEmitterOptions.js";
+import { Effect } from "effect";
 
 export type ServerOptions = {
   url?: string;
@@ -154,4 +155,92 @@ export function mergeWithDefaults(options?: Partial<EmitterOptions>): Required<E
     ...DEFAULT_OPTIONS,
     ...options,
   } as Required<EmitterOptions>;
+}
+
+/**
+ * Re-export AsyncAPIEmitterOptions type for test compatibility
+ */
+export type { EmitterOptions as AsyncAPIEmitterOptions } from "./asyncAPIEmitterOptions.js";
+
+/**
+ * Parse and validate AsyncAPI emitter options
+ * Returns an Effect that succeeds with valid options or fails with validation error
+ */
+export function parseAsyncAPIEmitterOptions(options: unknown): Effect.Effect<EmitterOptions, Error, never> {
+  return Effect.gen(function*() {
+    if (!isAsyncAPIEmitterOptions(options)) {
+      return yield* Effect.fail(new Error("Invalid AsyncAPI emitter options"));
+    }
+    return options;
+  });
+}
+
+/**
+ * Type guard for AsyncAPI emitter options
+ */
+export function isAsyncAPIEmitterOptions(options: unknown): options is EmitterOptions {
+  if (!options || typeof options !== "object") {
+    return false;
+  }
+  const opts = options as Record<string, unknown>;
+  
+  // Check optional file-type if present
+  if ("file-type" in opts && opts["file-type"] !== undefined) {
+    if (opts["file-type"] !== "yaml" && opts["file-type"] !== "json") {
+      return false;
+    }
+  }
+  
+  // Check optional asyncapi-version if present - must be valid version string
+  if ("asyncapi-version" in opts && opts["asyncapi-version"] !== undefined) {
+    const version = opts["asyncapi-version"];
+    if (typeof version !== "string") {
+      return false;
+    }
+    // Check valid AsyncAPI versions (3.0.0 only supported currently)
+    const validVersions = ["3.0.0"];
+    if (!validVersions.includes(version)) {
+      return false;
+    }
+  }
+  
+  // Check optional protocol-bindings if present - must be array of valid protocols
+  if ("protocol-bindings" in opts && opts["protocol-bindings"] !== undefined) {
+    const bindings = opts["protocol-bindings"];
+    if (!Array.isArray(bindings)) {
+      return false;
+    }
+    const validProtocols = ["http", "https", "ws", "wss", "websocket", "kafka", "amqp", "mqtt", "nats", "jms", "stomp", "sns", "sqs", "redis", "pulsar"];
+    for (const protocol of bindings) {
+      if (typeof protocol !== "string" || !validProtocols.includes(protocol)) {
+        return false;
+      }
+    }
+  }
+  
+  // Check optional versioning if present
+  if ("versioning" in opts && opts["versioning"] !== undefined) {
+    const versioning = opts["versioning"];
+    if (versioning && typeof versioning === "object") {
+      const versioningObj = versioning as Record<string, unknown>;
+      // Check file-naming if present
+      if ("file-naming" in versioningObj && versioningObj["file-naming"] !== undefined) {
+        const fileNaming = versioningObj["file-naming"];
+        const validFileNamings = ["suffix", "prefix", "directory"];
+        if (typeof fileNaming !== "string" || !validFileNamings.includes(fileNaming)) {
+          return false;
+        }
+      }
+    }
+  }
+  
+  return true;
+}
+
+/**
+ * Validate AsyncAPI emitter options
+ * Returns an Effect that succeeds if valid or fails with validation errors
+ */
+export function validateAsyncAPIEmitterOptions(options: unknown): Effect.Effect<EmitterOptions, Error, never> {
+  return parseAsyncAPIEmitterOptions(options);
 }

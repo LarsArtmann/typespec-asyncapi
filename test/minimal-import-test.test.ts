@@ -1,7 +1,6 @@
 import { describe, it } from "bun:test";
-import { createTestHost, createTestLibrary } from "@typespec/compiler/testing";
+import { createTestHost, createTestLibrary, createTestWrapper } from "@typespec/compiler/testing";
 import { findTestPackageRoot } from "@typespec/compiler/testing";
-import { join } from "path";
 
 describe("MINIMAL: Import Resolution Test", () => {
   it("should test library creation in isolation", async () => {
@@ -20,17 +19,21 @@ describe("MINIMAL: Import Resolution Test", () => {
     
     console.log("Library created:", asyncapiLib.name);
     
-    // Create host with just our library
-    const host = createTestHost({
+    // Create host with just our library (MUST await)
+    const host = await createTestHost({
       libraries: [asyncapiLib],
     });
     
-    console.log("Host created with libraries:", Object.keys(host.libraries));
+    console.log("Host created, checking libraries...");
     
-    // Try a simple compilation
+    // Create test wrapper and use proper compilation API
+    const runner = createTestWrapper(host, {
+      autoUsings: ["TypeSpec.AsyncAPI"],
+    });
+    
+    // Try a simple compilation using correct test host API
     const testCode = `
 import "@lars-artmann/typespec-asyncapi";
-using TypeSpec.AsyncAPI;
 
 @server("https://api.test.com")
 namespace TestApi {
@@ -38,10 +41,13 @@ namespace TestApi {
 `;
     
     try {
-      const result = await host.compile(testCode);
-      console.log("Compilation result diagnostics:", result.diagnostics.length);
-      if (result.diagnostics.length > 0) {
-        console.log("First diagnostic:", result.diagnostics[0]);
+      const [result, diagnostics] = await runner.compileAndDiagnose(testCode, {
+        emit: ["@lars-artmann/typespec-asyncapi"],
+      });
+      
+      console.log("Compilation result diagnostics:", diagnostics.length);
+      if (diagnostics.length > 0) {
+        console.log("First diagnostic:", diagnostics[0]);
       }
     } catch (error) {
       console.log("Compilation error:", error.message);

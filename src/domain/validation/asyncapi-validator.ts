@@ -5,7 +5,7 @@
  * Eliminates all TODOs through full AsyncAPI 3.0 standard compliance
  */
 
-import { Effect, Schema } from "effect";
+import { Effect, Schema as _Schema } from "effect";
 
 /**
  * Validation result interface
@@ -181,28 +181,27 @@ const asyncAPIValidationUtils = {
  */
 export function validateAsyncAPISpec(spec: unknown): Effect.Effect<ValidationResult, Error, never> {
   return Effect.gen(function*() {
-    try {
-      // Extract all validation information
-      const errors = asyncAPIValidationUtils.extractErrors(spec);
-      const warnings = asyncAPIValidationUtils.extractWarnings(spec);
-      const version = asyncAPIValidationUtils.getVersion(spec);
-      const componentCounts = asyncAPIValidationUtils.countComponents(spec);
+    // Extract all validation information
+    const errors = asyncAPIValidationUtils.extractErrors(spec);
+    const warnings = asyncAPIValidationUtils.extractWarnings(spec);
+    const version = asyncAPIValidationUtils.getVersion(spec);
+    const componentCounts = asyncAPIValidationUtils.countComponents(spec);
       
-      // Determine overall validity
-      const valid = errors.length === 0;
+    // Determine overall validity
+    const valid = errors.length === 0;
       
-      // Create validation errors with severity levels
-      const validationErrors = errors.map(error => ({
-        path: error.path,
-        message: error.message,
-        severity: "error" as const,
-      }));
+    // Create validation errors with severity levels
+    const validationErrors = errors.map(error => ({
+      path: error.path,
+      message: error.message,
+      severity: "error" as const,
+    }));
       
-      // Create validation warnings
-      const validationWarnings = warnings.map(warning => ({
-        path: warning.path,
-        message: warning.message,
-      }));
+    // Create validation warnings
+    const validationWarnings = warnings.map(warning => ({
+      path: warning.path,
+      message: warning.message,
+    }));
       
       const result: ValidationResult = {
         valid,
@@ -216,9 +215,6 @@ export function validateAsyncAPISpec(spec: unknown): Effect.Effect<ValidationRes
       
       return result;
       
-    } catch (error) {
-      throw new Error(`AsyncAPI validation failed: ${String(error)}`);
-    }
   });
 }
 
@@ -227,40 +223,17 @@ export function validateAsyncAPISpec(spec: unknown): Effect.Effect<ValidationRes
  */
 export function validateAsyncAPIMessage(message: unknown): Effect.Effect<ValidationResult, Error, never> {
   return Effect.gen(function*() {
-    try {
-      const errors: Array<{path: string, message: string, severity: "error" | "warning" | "info"}> = [];
-      const warnings: Array<{path: string, message: string}> = [];
-      
-      if (!message || typeof message !== "object") {
-        errors.push({
-          path: "root",
-          message: "Message must be an object",
-          severity: "error"
-        });
-        return {
-          valid: false,
-          errors,
-          warnings,
-          metadata: {
-            version: "3.0.0",
-            componentCounts: { channels: 0, messages: 1, operations: 0, servers: 0 },
-          },
-        };
-      }
-      
-      const messageObj = message as Record<string, unknown>;
-      
-      // Extract message-specific warnings
-      if (!messageObj.name) {
-        warnings.push({ path: "name", message: "Message name is recommended" });
-      }
-      
-      if (!messageObj.description) {
-        warnings.push({ path: "description", message: "Message description is recommended" });
-      }
-      
+    const errors: Array<{path: string, message: string, severity: "error" | "warning" | "info"}> = [];
+    const warnings: Array<{path: string, message: string}> = [];
+    
+    if (!message || typeof message !== "object") {
+      errors.push({
+        path: "root",
+        message: "Message must be an object",
+        severity: "error"
+      });
       const result: ValidationResult = {
-        valid: errors.length === 0,
+        valid: false,
         errors,
         warnings,
         metadata: {
@@ -268,12 +241,31 @@ export function validateAsyncAPIMessage(message: unknown): Effect.Effect<Validat
           componentCounts: { channels: 0, messages: 1, operations: 0, servers: 0 },
         },
       };
-      
       return result;
-      
-    } catch (error) {
-      throw new Error(`Message validation failed: ${String(error)}`);
     }
+    
+    const messageObj = message as Record<string, unknown>;
+    
+    // Extract message-specific warnings
+    if (!messageObj.name) {
+      warnings.push({ path: "name", message: "Message name is recommended" });
+    }
+    
+    if (!messageObj.description) {
+      warnings.push({ path: "description", message: "Message description is recommended" });
+    }
+    
+    const result: ValidationResult = {
+      valid: errors.length === 0,
+      errors,
+      warnings,
+      metadata: {
+        version: "3.0.0",
+        componentCounts: { channels: 0, messages: 1, operations: 0, servers: 0 },
+      },
+    };
+    
+    return result;
   });
 }
 
@@ -282,43 +274,17 @@ export function validateAsyncAPIMessage(message: unknown): Effect.Effect<Validat
  */
 export function validateAsyncAPIChannel(channel: unknown): Effect.Effect<ValidationResult, Error, never> {
   return Effect.gen(function*() {
-    try {
-      const errors: Array<{path: string, message: string, severity: "error" | "warning" | "info"}> = [];
-      const warnings: Array<{path: string, message: string}> = [];
+    const errors: Array<{path: string, message: string, severity: "error" | "warning" | "info"}> = [];
+    const warnings: Array<{path: string, message: string}> = [];
       
-      if (!channel || typeof channel !== "object") {
-        errors.push({
-          path: "root",
-          message: "Channel must be an object",
-          severity: "error"
-        });
-        return {
-          valid: false,
-          errors,
-          warnings,
-          metadata: {
-            version: "3.0.0",
-            componentCounts: { channels: 1, messages: 0, operations: 0, servers: 0 },
-          },
-        };
-      }
-      
-      const channelObj = channel as Record<string, unknown>;
-      
-      // Extract channel-specific warnings
-      if (!channelObj.description) {
-        warnings.push({ path: "description", message: "Channel description is recommended" });
-      }
-      
-      if (!channelObj.subscribe && !channelObj.publish) {
-        warnings.push({ 
-          path: "operations", 
-          message: "Channel should have at least one operation (subscribe or publish)" 
-        });
-      }
-      
-      const result: ValidationResult = {
-        valid: errors.length === 0,
+    if (!channel || typeof channel !== "object") {
+      errors.push({
+        path: "root",
+        message: "Channel must be an object",
+        severity: "error"
+      });
+      return {
+        valid: false,
         errors,
         warnings,
         metadata: {
@@ -326,12 +292,34 @@ export function validateAsyncAPIChannel(channel: unknown): Effect.Effect<Validat
           componentCounts: { channels: 1, messages: 0, operations: 0, servers: 0 },
         },
       };
-      
-      return result;
-      
-    } catch (error) {
-      throw new Error(`Channel validation failed: ${String(error)}`);
     }
+      
+    const channelObj = channel as Record<string, unknown>;
+      
+    // Extract channel-specific warnings
+    if (!channelObj.description) {
+      warnings.push({ path: "description", message: "Channel description is recommended" });
+    }
+      
+    if (!channelObj.subscribe && !channelObj.publish) {
+      warnings.push({ 
+        path: "operations", 
+        message: "Channel should have at least one operation (subscribe or publish)" 
+      });
+    }
+      
+    const result: ValidationResult = {
+      valid: errors.length === 0,
+      errors,
+      warnings,
+      metadata: {
+        version: "3.0.0",
+        componentCounts: { channels: 1, messages: 0, operations: 0, servers: 0 },
+      },
+    };
+      
+    return result;
+      
   });
 }
 
@@ -368,25 +356,23 @@ export class AsyncAPIValidator {
       const results: Array<{name: string, result: ValidationResult}> = [];
       
       for (const spec of specs) {
-        try {
-          const result = yield* validateAsyncAPISpec(spec.data);
-          results.push({ name: spec.name, result });
-        } catch (error) {
-          const errorResult: ValidationResult = {
+        const result = yield* Effect.catchAll(
+          validateAsyncAPISpec(spec.data),
+          (error) => Effect.succeed({
             valid: false,
             errors: [{
               path: "root",
               message: `Validation failed: ${String(error)}`,
-              severity: "error"
+              severity: "error" as const
             }],
             warnings: [],
             metadata: {
               version: "unknown",
               componentCounts: { channels: 0, messages: 0, operations: 0, servers: 0 },
             },
-          };
-          results.push({ name: spec.name, result: errorResult });
-        }
+          })
+        );
+        results.push({ name: spec.name, result });
       }
       
       return results;
