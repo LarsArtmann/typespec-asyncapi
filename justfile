@@ -295,6 +295,16 @@ dev:
 watch:
     bun run watch
 
+# Test metrics reporter (split brain solution for issue #134)
+test-metrics:
+    #!/bin/bash
+    set -euo pipefail
+    echo "📊 Running test metrics reporter (Issue #134 split brain solution)..."
+    bun run scripts/test-metrics-reporter.ts
+
+# Alias for test-metrics
+alias tm := test-metrics
+
 # Watch mode for tests
 test-watch:
     bun run test:watch

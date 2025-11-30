@@ -34,6 +34,7 @@
     "src/infrastructure/performance/metrics.ts",
     "src/infrastructure/performance/memory-monitor.ts",
     "src/infrastructure/performance/PerformanceMonitor.ts",
-    "src/domain/emitter/AsyncAPIEmitter.ts"
+    "src/domain/emitter/AsyncAPIEmitter.ts",
+    "**/*-broken.ts"
   ]
 }

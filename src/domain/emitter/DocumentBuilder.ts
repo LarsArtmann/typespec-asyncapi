@@ -15,7 +15,7 @@ export class DocumentBuilder {
   /**
    * Create initial AsyncAPI document structure
    */
-  createInitialDocument(program: Program): Effect.Effect<AsyncAPIObject, Error, never> {
+  createInitialDocument(program: Program): Effect.Effect<AsyncAPIObject, never, never> {
     return Effect.gen(function*() {
       yield* Effect.log("Creating initial AsyncAPI document");
       
@@ -44,7 +44,7 @@ export class DocumentBuilder {
   updateDocumentInfo(
     document: AsyncAPIObject, 
     updates: Partial<{ title: string; version: string; description: string }>
-  ): Effect.Effect<AsyncAPIObject, Error, never> {
+  ): Effect.Effect<AsyncAPIObject, never, never> {
     return Effect.gen(function*() {
       yield* Effect.log("Updating document info");
       

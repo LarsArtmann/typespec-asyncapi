@@ -142,6 +142,15 @@ export const pathTransformation = {
 };
 
 /**
+ * Path type definitions
+ */
+export type ValidatedPath = string & { readonly _brand: "ValidatedPath" };
+export type AbsolutePath = string & { readonly _brand: "AbsolutePath" };
+export type RelativePath = string & { readonly _brand: "RelativePath" };
+export type FilePath = string & { readonly _brand: "FilePath" };
+export type DirectoryPath = string & { readonly _brand: "DirectoryPath" };
+
+/**
  * Path utility exports
  */
 export const pathUtils = {
@@ -150,4 +159,12 @@ export const pathUtils = {
   ...FILE_PATTERNS,
   validation: pathValidation,
   transformation: pathTransformation,
+};
+
+/**
+ * Library path exports for test utilities
+ */
+export const LIBRARY_PATHS = {
+  LIB_DIR: PATHS.SRC_DIR,
+  DIST_DIR: PATHS.DIST_DIR,
 };

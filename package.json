@@ -76,6 +76,7 @@
     "test:coverage": "bun run build && bun test --coverage",
     "test:validation": "bun run build && bun test test/critical-validation.test.ts test/all-generated-specs-validation.test.ts",
     "test:asyncapi": "bun run build && bun test test/validation/",
+    "test:metrics": "bun run scripts/test-metrics-reporter.ts",
     "typecheck": "bunx tsc --noEmit",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",

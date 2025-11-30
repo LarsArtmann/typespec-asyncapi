@@ -1,0 +1,181 @@
+[
+  {
+    "timestamp": "2025-11-30T06:18:55.546Z",
+    "metrics": {
+      "passing": 0,
+      "failing": 0,
+      "skipped": 0,
+      "total": 0,
+      "passRate": 0,
+      "failures": {
+        "total": 0,
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "low": 0
+      }
+    }
+  },
+  {
+    "timestamp": "2025-11-30T06:19:49.113Z",
+    "metrics": {
+      "passing": 0,
+      "failing": 0,
+      "skipped": 0,
+      "total": 0,
+      "passRate": 0,
+      "failures": {
+        "total": 0,
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "low": 0
+      },
+      "deltaPassing": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-30T06:21:23.960Z",
+    "metrics": {
+      "passing": 0,
+      "failing": 0,
+      "skipped": 0,
+      "total": 0,
+      "passRate": 0,
+      "failures": {
+        "total": 0,
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "low": 0
+      },
+      "deltaPassing": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-30T06:22:30.251Z",
+    "metrics": {
+      "passing": 0,
+      "failing": 0,
+      "skipped": 0,
+      "total": 0,
+      "passRate": 0,
+      "failures": {
+        "total": 0,
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "low": 0
+      },
+      "deltaPassing": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-30T06:24:57.503Z",
+    "metrics": {
+      "passing": 0,
+      "failing": 0,
+      "skipped": 0,
+      "total": 0,
+      "passRate": 0,
+      "failures": {
+        "total": 0,
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "low": 0
+      },
+      "deltaPassing": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-30T06:25:24.499Z",
+    "metrics": {
+      "passing": 0,
+      "failing": 0,
+      "skipped": 0,
+      "total": 0,
+      "passRate": 0,
+      "failures": {
+        "total": 0,
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "low": 0
+      },
+      "deltaPassing": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-30T06:26:43.699Z",
+    "metrics": {
+      "passing": 0,
+      "failing": 0,
+      "skipped": 0,
+      "total": 0,
+      "passRate": 0,
+      "failures": {
+        "total": 0,
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "low": 0
+      },
+      "deltaPassing": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-30T06:27:21.772Z",
+    "metrics": {
+      "passing": 0,
+      "failing": 0,
+      "skipped": 0,
+      "total": 0,
+      "passRate": 0,
+      "failures": {
+        "total": 0,
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "low": 0
+      },
+      "deltaPassing": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-30T06:27:50.091Z",
+    "metrics": {
+      "passing": 0,
+      "failing": 0,
+      "skipped": 0,
+      "total": 0,
+      "passRate": 0,
+      "failures": {
+        "total": 0,
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "low": 0
+      },
+      "deltaPassing": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-30T06:48:28.966Z",
+    "metrics": {
+      "passing": 0,
+      "failing": 0,
+      "skipped": 0,
+      "total": 0,
+      "passRate": 0,
+      "failures": {
+        "total": 0,
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "low": 0
+      },
+      "deltaPassing": 0
+    }
+  }
+]
