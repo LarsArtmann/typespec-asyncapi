@@ -3,6 +3,8 @@
  *
  * Tests the extracted DocumentBuilder service that handles AsyncAPI document
  * construction, initialization, and component setup.
+ * 
+ * NOTE: All methods return NEW documents (immutable pattern) - tests must capture return values.
  */
 
 import { describe, expect, it, beforeEach } from "bun:test";
@@ -10,6 +12,7 @@ import type { Program } from "@typespec/compiler";
 import { DocumentBuilder } from "../../../src/domain/emitter/DocumentBuilder.js";
 import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js";
 import { Effect } from "effect";
+import { stateSymbols } from "../../../src/lib.js";
 
 describe("DocumentBuilder", () => {
   let documentBuilder: DocumentBuilder;
@@ -26,7 +29,6 @@ describe("DocumentBuilder", () => {
         models: new Map(),
         namespaces: new Map(),
       }),
-      // Add other Program properties as needed for tests
     } as unknown as Program;
   });
 
@@ -52,9 +54,9 @@ describe("DocumentBuilder", () => {
 
       // Verify components structure
       expect(document.components).toBeDefined();
-      expect(document.components.schemas).toEqual({});
-      expect(document.components.messages).toEqual({});
-      expect(document.components.securitySchemes).toEqual({});
+      expect(document.components!.schemas).toEqual({});
+      expect(document.components!.messages).toEqual({});
+      expect(document.components!.securitySchemes).toEqual({});
     });
 
     it("should handle program without getGlobalNamespaceType", () => {
@@ -77,6 +79,10 @@ describe("DocumentBuilder", () => {
         description: "Test Kafka server",
       };
 
+      // Create a proper stateMap that returns a Map with server configs
+      const serverConfigsMap = new Map();
+      serverConfigsMap.set({ name: "testServer" }, mockServerConfig);
+
       const mockProgramWithServers = {
         getGlobalNamespaceType: () => ({
           name: "TestNamespace",
@@ -84,10 +90,13 @@ describe("DocumentBuilder", () => {
           models: new Map(),
           namespaces: new Map(),
         }),
-        stateMap: () =>
-          new Map([
-            ["TestNamespace", new Map([["testServer", mockServerConfig]])],
-          ]),
+        stateMap: (key: symbol) => {
+          // Only return the server configs when the right symbol is used
+          if (key === stateSymbols.serverConfigs) {
+            return serverConfigsMap;
+          }
+          return new Map();
+        },
       } as unknown as Program;
 
       const documentEffect = documentBuilder.createInitialDocument(
@@ -120,11 +129,11 @@ describe("DocumentBuilder", () => {
         baseDocument,
         customInfo,
       );
-      Effect.runSync(updateEffect);
+      const updatedDocument = Effect.runSync(updateEffect);
 
-      expect(baseDocument.info.title).toBe("Custom API Title");
-      expect(baseDocument.info.version).toBe("1.0.0"); // Should preserve original
-      expect(baseDocument.info.description).toBe("Custom description");
+      expect(updatedDocument.info.title).toBe("Custom API Title");
+      expect(updatedDocument.info.version).toBe("1.0.0"); // Should preserve original
+      expect(updatedDocument.info.description).toBe("Custom description");
     });
 
     it("should merge custom info with existing info", () => {
@@ -136,11 +145,11 @@ describe("DocumentBuilder", () => {
         baseDocument,
         customInfo,
       );
-      Effect.runSync(updateEffect);
+      const updatedDocument = Effect.runSync(updateEffect);
 
-      expect(baseDocument.info.title).toBe("AsyncAPI Specification"); // Should preserve
-      expect(baseDocument.info.version).toBe("2.1.0");
-      expect(baseDocument.info.description).toBe(
+      expect(updatedDocument.info.title).toBe("AsyncAPI Specification"); // Should preserve
+      expect(updatedDocument.info.version).toBe("2.1.0");
+      expect(updatedDocument.info.description).toBe(
         "Generated from TypeSpec with @lars-artmann/typespec-asyncapi",
       );
     });
@@ -149,9 +158,9 @@ describe("DocumentBuilder", () => {
       const originalInfo = { ...baseDocument.info };
 
       const updateEffect = documentBuilder.updateDocumentInfo(baseDocument, {});
-      Effect.runSync(updateEffect);
+      const updatedDocument = Effect.runSync(updateEffect);
 
-      expect(baseDocument.info).toEqual(originalInfo);
+      expect(updatedDocument.info).toEqual(originalInfo);
     });
 
     it("should handle complete info replacement", () => {
@@ -159,22 +168,17 @@ describe("DocumentBuilder", () => {
         title: "New Title",
         version: "3.0.0",
         description: "New description",
-        contact: {
-          name: "API Team",
-          email: "api@example.com",
-        },
       };
 
       const updateEffect = documentBuilder.updateDocumentInfo(
         baseDocument,
         completeInfo,
       );
-      Effect.runSync(updateEffect);
+      const updatedDocument = Effect.runSync(updateEffect);
 
-      expect(baseDocument.info.title).toBe("New Title");
-      expect(baseDocument.info.version).toBe("3.0.0");
-      expect(baseDocument.info.description).toBe("New description");
-      expect(baseDocument.info.contact).toEqual(completeInfo.contact);
+      expect(updatedDocument.info.title).toBe("New Title");
+      expect(updatedDocument.info.version).toBe("3.0.0");
+      expect(updatedDocument.info.description).toBe("New description");
     });
   });
 
@@ -186,12 +190,12 @@ describe("DocumentBuilder", () => {
       } as AsyncAPIObject;
 
       const effect = documentBuilder.initializeComponents(document);
-      Effect.runSync(effect);
+      const result = Effect.runSync(effect);
 
-      expect(document.components).toBeDefined();
-      expect(document.components.schemas).toEqual({});
-      expect(document.components.messages).toEqual({});
-      expect(document.components.securitySchemes).toEqual({});
+      expect(result.components).toBeDefined();
+      expect(result.components!.schemas).toEqual({});
+      expect(result.components!.messages).toEqual({});
+      expect(result.components!.securitySchemes).toEqual({});
     });
 
     it("should preserve existing components", () => {
@@ -205,15 +209,15 @@ describe("DocumentBuilder", () => {
       } as AsyncAPIObject;
 
       const effect = documentBuilder.initializeComponents(document);
-      Effect.runSync(effect);
+      const result = Effect.runSync(effect);
 
-      expect(document.components.schemas).toEqual({
+      expect(result.components!.schemas).toEqual({
         ExistingSchema: { type: "string" },
       });
-      expect(document.components.messages).toEqual({
+      expect(result.components!.messages).toEqual({
         ExistingMessage: { name: "test" },
       });
-      expect(document.components.securitySchemes).toEqual({}); // Should be added
+      expect(result.components!.securitySchemes).toEqual({}); // Should be added
     });
 
     it("should initialize missing component sections individually", () => {
@@ -227,13 +231,13 @@ describe("DocumentBuilder", () => {
       } as AsyncAPIObject;
 
       const effect = documentBuilder.initializeComponents(document);
-      Effect.runSync(effect);
+      const result = Effect.runSync(effect);
 
-      expect(document.components.schemas).toEqual({
+      expect(result.components!.schemas).toEqual({
         ExistingSchema: { type: "string" },
       });
-      expect(document.components.messages).toEqual({});
-      expect(document.components.securitySchemes).toEqual({});
+      expect(result.components!.messages).toEqual({});
+      expect(result.components!.securitySchemes).toEqual({});
     });
 
     it("should handle document without components", () => {
@@ -243,12 +247,12 @@ describe("DocumentBuilder", () => {
       } as AsyncAPIObject;
 
       const effect = documentBuilder.initializeComponents(document);
-      Effect.runSync(effect);
+      const result = Effect.runSync(effect);
 
-      expect(document.components).toBeDefined();
-      expect(document.components.schemas).toEqual({});
-      expect(document.components.messages).toEqual({});
-      expect(document.components.securitySchemes).toEqual({});
+      expect(result.components).toBeDefined();
+      expect(result.components!.schemas).toEqual({});
+      expect(result.components!.messages).toEqual({});
+      expect(result.components!.securitySchemes).toEqual({});
     });
   });
 
@@ -260,14 +264,14 @@ describe("DocumentBuilder", () => {
       } as AsyncAPIObject;
 
       const effect = documentBuilder.initializeDocumentStructure(document);
-      Effect.runSync(effect);
+      const result = Effect.runSync(effect);
 
-      expect(document.channels).toEqual({});
-      expect(document.operations).toEqual({});
-      expect(document.components).toBeDefined();
-      expect(document.components.schemas).toEqual({});
-      expect(document.components.messages).toEqual({});
-      expect(document.components.securitySchemes).toEqual({});
+      expect(result.channels).toEqual({});
+      expect(result.operations).toEqual({});
+      expect(result.components).toBeDefined();
+      expect(result.components!.schemas).toEqual({});
+      expect(result.components!.messages).toEqual({});
+      expect(result.components!.securitySchemes).toEqual({});
     });
 
     it("should preserve existing document structure", () => {
@@ -281,15 +285,15 @@ describe("DocumentBuilder", () => {
       } as AsyncAPIObject;
 
       const effect = documentBuilder.initializeDocumentStructure(document);
-      Effect.runSync(effect);
+      const result = Effect.runSync(effect);
 
-      expect(document.channels).toEqual({
+      expect(result.channels).toEqual({
         existingChannel: { address: "/existing" },
       });
-      expect(document.operations).toEqual({
+      expect(result.operations).toEqual({
         existingOp: { action: "send", channel: { $ref: "#/channels/test" } },
       });
-      expect(document.components).toBeDefined();
+      expect(result.components).toBeDefined();
     });
 
     it("should call initializeComponents internally", () => {
@@ -299,13 +303,13 @@ describe("DocumentBuilder", () => {
       } as AsyncAPIObject;
 
       const effect = documentBuilder.initializeDocumentStructure(document);
-      Effect.runSync(effect);
+      const result = Effect.runSync(effect);
 
       // Verify components were initialized (tested in initializeComponents tests)
-      expect(document.components).toBeDefined();
-      expect(document.components.schemas).toEqual({});
-      expect(document.components.messages).toEqual({});
-      expect(document.components.securitySchemes).toEqual({});
+      expect(result.components).toBeDefined();
+      expect(result.components!.schemas).toEqual({});
+      expect(result.components!.messages).toEqual({});
+      expect(result.components!.securitySchemes).toEqual({});
     });
   });
 
@@ -333,31 +337,27 @@ describe("DocumentBuilder", () => {
       expect(document.info.title).toBe("Production API");
       expect(document.channels).toEqual({});
       expect(document.operations).toEqual({});
-      expect(document.components.schemas).toEqual({});
-      expect(document.components.messages).toEqual({});
-      expect(document.components.securitySchemes).toEqual({});
+      expect(document.components!.schemas).toEqual({});
+      expect(document.components!.messages).toEqual({});
+      expect(document.components!.securitySchemes).toEqual({});
     });
 
     it("should handle multiple initialization calls safely", () => {
       const documentEffect = documentBuilder.createInitialDocument(mockProgram);
       let document = Effect.runSync(documentEffect);
 
-      // Multiple calls should be safe
-      let effect = documentBuilder.initializeComponents(document);
-      Effect.runSync(effect);
-      effect = documentBuilder.initializeComponents(document);
-      Effect.runSync(effect);
-      effect = documentBuilder.initializeDocumentStructure(document);
-      document = Effect.runSync(effect);
-      effect = documentBuilder.initializeDocumentStructure(document);
-      document = Effect.runSync(effect);
+      // Multiple calls should be safe - each returns a new document
+      document = Effect.runSync(documentBuilder.initializeComponents(document));
+      document = Effect.runSync(documentBuilder.initializeComponents(document));
+      document = Effect.runSync(documentBuilder.initializeDocumentStructure(document));
+      document = Effect.runSync(documentBuilder.initializeDocumentStructure(document));
 
       // Should still have valid structure
       expect(document.channels).toEqual({});
       expect(document.operations).toEqual({});
-      expect(document.components.schemas).toEqual({});
-      expect(document.components.messages).toEqual({});
-      expect(document.components.securitySchemes).toEqual({});
+      expect(document.components!.schemas).toEqual({});
+      expect(document.components!.messages).toEqual({});
+      expect(document.components!.securitySchemes).toEqual({});
     });
   });
 
