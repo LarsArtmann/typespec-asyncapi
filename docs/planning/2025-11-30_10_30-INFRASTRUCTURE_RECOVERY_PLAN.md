@@ -2,29 +2,31 @@
 
 **Date:** 2025-11-30  
 **Status:** 🟡 IN PROGRESS  
-**Author:** Claude Opus 4.5 via Crush
+**Author:** Claude Opus 4.5 via Crush  
+**Last Updated:** 2025-11-30 10:30 CET
 
 ---
 
 ## 📊 Executive Summary
 
-### Current State Analysis
+### Current State Analysis (Updated)
 
-| Metric | Status | Value |
-|--------|--------|-------|
-| Build System | ✅ WORKING | 0 TypeScript errors |
-| ESLint | ✅ WORKING | 0 errors, 0 warnings |
-| Library Resolution | ✅ FIXED | Decorators discovered |
-| Tests Passing | 🟡 PARTIAL | 240/664 (36%) |
-| Tests Failing | 🔴 HIGH | 395/664 (60%) |
-| Tests Skipped | ⚪ | 29/664 (4%) |
+| Metric | Status | Value | Change |
+|--------|--------|-------|--------|
+| Build System | ✅ WORKING | 0 TypeScript errors | ✅ Stable |
+| ESLint | ✅ WORKING | 0 errors, 0 warnings | ✅ Fixed |
+| Library Resolution | ✅ FIXED | Decorators discovered | ✅ Fixed |
+| Tests Passing | 🟡 PARTIAL | 255/664 (38%) | +15 tests |
+| Tests Failing | 🔴 HIGH | 380/664 (57%) | -15 failures |
+| Tests Skipped | ⚪ | 29/664 (4%) | Unchanged |
 
 ### Root Cause Analysis
 
 1. **Library Name Mismatch (FIXED)**: `lib.ts` used `@typespec/asyncapi` instead of `@lars-artmann/typespec-asyncapi`
 2. **Path Resolution (FIXED)**: `LIBRARY_PATHS` used absolute paths instead of relative folder names
-3. **Test Expectations**: Unit tests have outdated expectations that don't match current implementation
-4. **Protocol Test Infrastructure**: 362 protocol tests failing due to missing TypeSpec compilation infrastructure
+3. **Test Expectations (PARTIALLY FIXED)**: DocumentBuilder tests fixed (18/18 passing)
+4. **API Mismatch**: DiscoveryService/ProcessingService have static methods but tests expect instance methods
+5. **Protocol Test Infrastructure**: 362 protocol tests failing due to missing TypeSpec compilation infrastructure
 
 ---
 
@@ -32,15 +34,14 @@
 
 ### 1% → 51% Impact (Critical Path) - TOP PRIORITY
 
-| Task | Impact | Effort | Description |
-|------|--------|--------|-------------|
-| ✅ Fix library name in lib.ts | HIGH | 5min | Changed to `@lars-artmann/typespec-asyncapi` |
-| ✅ Fix LIBRARY_PATHS | HIGH | 5min | Use relative folder names for TypeSpec test lib |
-| ✅ Fix minimal import test | HIGH | 10min | Proper library configuration |
-| 🟡 Update test helper paths | HIGH | 15min | Ensure test-helpers.ts uses correct paths |
-| 🔴 Fix 42 DiscoveryService tests | CRITICAL | 30min | Core emitter functionality |
-| 🔴 Fix 40 ProcessingService tests | CRITICAL | 30min | Core processing logic |
-| 🔴 Fix 30 DocumentBuilder tests | CRITICAL | 30min | Document generation |
+| Task | Impact | Effort | Description | Status |
+|------|--------|--------|-------------|--------|
+| ✅ Fix library name in lib.ts | HIGH | 5min | Changed to `@lars-artmann/typespec-asyncapi` | DONE |
+| ✅ Fix LIBRARY_PATHS | HIGH | 5min | Use relative folder names for TypeSpec test lib | DONE |
+| ✅ Fix minimal import test | HIGH | 10min | Proper library configuration | DONE |
+| ✅ Fix DocumentBuilder tests | CRITICAL | 30min | Document generation (18/18) | DONE |
+| 🔴 Fix 42 DiscoveryService tests | CRITICAL | 60min | API mismatch - needs redesign | BLOCKED |
+| 🔴 Fix 40 ProcessingService tests | CRITICAL | 60min | API mismatch - needs redesign | BLOCKED |
 
 ### 4% → 64% Impact (High Value)
 
