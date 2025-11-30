@@ -12,7 +12,7 @@ import { stateSymbols } from "../../lib.js";
 /**
  * Server configuration from @server decorator
  */
-interface ServerConfig {
+type ServerConfig = {
   url: string;
   protocol: string;
   description?: string;
@@ -22,21 +22,71 @@ interface ServerConfig {
  * Parse URL into host and pathname components
  */
 function parseServerUrl(url: string): { host: string; pathname?: string } {
-  try {
-    // Handle protocol-prefixed URLs
-    if (url.includes('://')) {
-      const urlObj = new URL(url);
-      return {
-        host: urlObj.host,
-        pathname: urlObj.pathname !== '/' ? urlObj.pathname : undefined
-      };
-    }
-    // Handle plain host:port format
-    return { host: url };
-  } catch {
-    // Fallback if URL parsing fails
-    return { host: url };
+  // Handle protocol-prefixed URLs
+  if (url.includes('://')) {
+    return Effect.runSync(
+      Effect.try(() => {
+        const urlObj = new URL(url);
+        return {
+          host: urlObj.host,
+          pathname: urlObj.pathname !== '/' ? urlObj.pathname : undefined
+        };
+      }).pipe(
+        Effect.orElse(() => Effect.succeed({ host: url }))
+      )
+    );
   }
+  // Handle plain host:port format
+  return { host: url };
+}
+
+/**
+ * Extract servers from program state
+ */
+function extractServersFromState(program: Program): Record<string, ServerObject> {
+  const servers: Record<string, ServerObject> = {};
+  
+  return Effect.runSync(
+    Effect.try(() => {
+      if (program && typeof program.stateMap === 'function') {
+        const serverConfigsMap = program.stateMap(stateSymbols.serverConfigs);
+        if (serverConfigsMap && serverConfigsMap.size > 0) {
+          for (const [target, config] of serverConfigsMap) {
+            const serverConfig = config as ServerConfig;
+            const serverName = typeof target === 'object' && 'name' in target 
+              ? String(target.name) 
+              : 'default';
+            const { host, pathname } = parseServerUrl(serverConfig.url);
+            servers[serverName] = {
+              host,
+              protocol: serverConfig.protocol,
+              ...(pathname && { pathname }),
+              ...(serverConfig.description && { description: serverConfig.description })
+            };
+          }
+        }
+      }
+      return servers;
+    }).pipe(
+      Effect.orElse(() => Effect.succeed(servers))
+    )
+  );
+}
+
+/**
+ * Initialize components helper - pure function
+ */
+function initializeComponentsInternal(document: AsyncAPIObject): AsyncAPIObject {
+  const components = document.components ?? {};
+  return {
+    ...document,
+    components: {
+      schemas: components.schemas ?? {},
+      messages: components.messages ?? {},
+      securitySchemes: components.securitySchemes ?? {},
+      ...components
+    }
+  };
 }
 
 /**
@@ -54,30 +104,7 @@ export class DocumentBuilder {
       yield* Effect.log("Creating initial AsyncAPI document");
       
       // Build servers from program state if available
-      const servers: Record<string, ServerObject> = {};
-      
-      try {
-        if (program && typeof program.stateMap === 'function') {
-          const serverConfigsMap = program.stateMap(stateSymbols.serverConfigs);
-          if (serverConfigsMap && serverConfigsMap.size > 0) {
-            for (const [target, config] of serverConfigsMap) {
-              const serverConfig = config as ServerConfig;
-              const serverName = typeof target === 'object' && 'name' in target 
-                ? String(target.name) 
-                : 'default';
-              const { host, pathname } = parseServerUrl(serverConfig.url);
-              servers[serverName] = {
-                host,
-                protocol: serverConfig.protocol,
-                ...(pathname && { pathname }),
-                ...(serverConfig.description && { description: serverConfig.description })
-              };
-            }
-          }
-        }
-      } catch {
-        // Ignore errors when accessing state - program may not have stateMap
-      }
+      const servers = extractServersFromState(program);
       
       const document: AsyncAPIObject = {
         asyncapi: "3.0.0",
@@ -128,20 +155,7 @@ export class DocumentBuilder {
   initializeComponents(document: AsyncAPIObject): Effect.Effect<AsyncAPIObject, never, never> {
     return Effect.gen(function*() {
       yield* Effect.log("Initializing components");
-      
-      const components = document.components ?? {};
-      
-      const result: AsyncAPIObject = {
-        ...document,
-        components: {
-          schemas: components.schemas ?? {},
-          messages: components.messages ?? {},
-          securitySchemes: components.securitySchemes ?? {},
-          ...components
-        }
-      };
-      
-      return result;
+      return initializeComponentsInternal(document);
     });
   }
   
@@ -149,7 +163,6 @@ export class DocumentBuilder {
    * Initialize full document structure
    */
   initializeDocumentStructure(document: AsyncAPIObject): Effect.Effect<AsyncAPIObject, never, never> {
-    const self = this;
     return Effect.gen(function*() {
       yield* Effect.log("Initializing document structure");
       
@@ -160,8 +173,8 @@ export class DocumentBuilder {
         operations: document.operations ?? {},
       };
       
-      // Initialize components
-      return yield* self.initializeComponents(initializedDoc);
+      // Initialize components using pure function
+      return initializeComponentsInternal(initializedDoc);
     });
   }
 }
