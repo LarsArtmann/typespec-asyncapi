@@ -5,7 +5,7 @@
 import { describe, expect, it } from "bun:test";
 import { createTestHost } from "@typespec/compiler/testing";
 import { $onEmit } from "../../src/index.js";
-import { AsyncAPITestLibrary } from "./test-host";
+import { createAsyncAPITestLibrary as AsyncAPITestLibrary } from "./test-helpers";
 import { createAsyncAPITestHost } from "../utils/test-helpers.js";
 import { Effect } from "effect";
 

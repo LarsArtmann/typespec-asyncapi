@@ -5,7 +5,8 @@
  */
 
 import { Effect } from "effect";
-import type { EmitContext, Type, EmitFileOptions as _EmitFileOptions } from "@typespec/compiler";
+import type { EmitContext, Type, EmitFileOptions } from "@typespec/compiler";
+import type { AsyncAPIEmitterOptions as _AsyncAPIEmitterOptions } from "./infrastructure/configuration/asyncAPIEmitterOptions.js";
 import { consolidateAsyncAPIState, type AsyncAPIConsolidatedState } from "./state.js";
 import { LoggerLive } from "./logger.js";
 import type { 
@@ -53,17 +54,6 @@ type AsyncAPIMessageData = {
 };
 
 /**
- * Basic AsyncAPI emitter - generates working AsyncAPI files
- */
-export type AsyncAPIEmitterOptions = {
-  version: string;
-  title?: string;
-  description?: string;
-  "output-file"?: string;
-  "file-type"?: string;
-};
-
-/**
  * AsyncAPI Document Structure
  */
 export type AsyncAPIDocument = {
@@ -86,7 +76,7 @@ export type AsyncAPIDocument = {
  * Generate AsyncAPI file from TypeSpec program
  */
 export async function $onEmit(
-  context: EmitContext<AsyncAPIEmitterOptions>,
+  context: EmitContext<_AsyncAPIEmitterOptions>,
 ): Promise<void> {
   const program = context.program;
   const options = context.options;
@@ -96,7 +86,7 @@ export async function $onEmit(
     yield* Effect.log("🚀 ASYNCAPI EMITTER: Starting generation");
 
     yield* Effect.log("📋 Emitter options:").pipe(
-      Effect.annotateLogs({ options: JSON.stringify(options) })
+      Effect.annotateLogs({ options: JSON.stringify(context.options) })
     );
 
     yield* Effect.log("📊 ASYNCAPI EMITTER: Extracting decorator state from program");
@@ -148,9 +138,9 @@ export async function $onEmit(
     const asyncapiDocument: AsyncAPIDocument = {
       asyncapi: "3.0.0",
       info: {
-        title: options.title ?? "Generated API",
-        version: options.version ?? "1.0.0",
-        description: options.description ?? "API generated from TypeSpec"
+        title: options?.title ?? "Generated API",
+        version: options?.version ?? "1.0.0",
+        description: options?.description ?? "API generated from TypeSpec"
       },
       channels,
       messages,
@@ -270,7 +260,7 @@ ${required.map(req => `      - ${req}`).join('\n')}`;
     yield* Effect.logDebug(`🔧 DEBUG: context.emitterOutputDir: "${context.emitterOutputDir}"`);
 
     // CRITICAL FIX: Use absolute path for emitFile
-    const _emitOptions: _EmitFileOptions = {
+    const emitOptions: EmitFileOptions = {
       path: outputPath,  // Use just filename, let TypeSpec handle directory
       content: content,
     };
@@ -287,7 +277,7 @@ ${required.map(req => `      - ${req}`).join('\n')}`;
  */
 function _generateAsyncAPI30Document(
   state: AsyncAPIConsolidatedState,
-  options: AsyncAPIEmitterOptions,
+  options: _AsyncAPIEmitterOptions,
 ): Effect.Effect<AsyncAPIDocument, Error> {
   return Effect.gen(function*() {
     const channels = yield* generateChannels(state);
@@ -297,9 +287,9 @@ function _generateAsyncAPI30Document(
     return {
       asyncapi: "3.0.0",
       info: {
-        title: options.title ?? "Generated API",
-        version: options.version ?? "1.0.0",
-        description: options.description ?? "API generated from TypeSpec",
+        title: options?.title ?? "Generated API",
+        version: options?.version ?? "1.0.0",
+        description: options?.description ?? "API generated from TypeSpec",
       },
       channels,
       messages,

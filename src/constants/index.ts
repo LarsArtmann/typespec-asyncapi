@@ -6,7 +6,8 @@
  */
 
 // Core constants
-export const ASYNCAPI_VERSION = "3.0.0";
+import { CURRENT_ASYNCAPI_VERSION, SUPPORTED_ASYNCAPI_VERSIONS } from "./version.js";
+export const ASYNCAPI_VERSION = CURRENT_ASYNCAPI_VERSION;
 export const DEFAULT_CONTENT_TYPE = "application/json";
 
 // Protocol constants
@@ -50,17 +51,17 @@ export { configUtils, configurationUtils, type Configuration, type Configuration
 
 // Legacy compatibility exports (maintained for test compatibility)
 export const ASYNCAPI_VERSIONS = {
-  CURRENT: ASYNCAPI_VERSION,
-  SUPPORTED: [ASYNCAPI_VERSION],
-  LATEST: ASYNCAPI_VERSION,
+  CURRENT: CURRENT_ASYNCAPI_VERSION,
+  SUPPORTED: SUPPORTED_ASYNCAPI_VERSIONS,
+  LATEST: CURRENT_ASYNCAPI_VERSION,
   COMPATIBILITY: {
-    MIN: ASYNCAPI_VERSION,
-    MAX: ASYNCAPI_VERSION,
+    MIN: CURRENT_ASYNCAPI_VERSION,
+    MAX: CURRENT_ASYNCAPI_VERSION,
   },
 } as const;
 
 export const DEFAULT_CONFIG = {
-  version: ASYNCAPI_VERSION,
+  version: CURRENT_ASYNCAPI_VERSION,
   title: "AsyncAPI Specification",
   description: "Generated AsyncAPI specification from TypeSpec",
   contentType: DEFAULT_CONTENT_TYPE,
