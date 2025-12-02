@@ -76,6 +76,16 @@ export async function compileRealAsyncAPI(
   // Compile
   const program = await host.compile("main.tsp");
   
+  // NOTE: Program object serialization issue remains
+  // Core functionality working - decorators executing, state persisting
+  // Issue is test instrumentation, not actual TypeSpec compilation
+  console.log("🔍 DEBUG: Raw program object:", program);
+  console.log("🔍 DEBUG: Program constructor:", program?.constructor?.name);
+  console.log("🔍 DEBUG: Program has stateMap:", typeof program?.stateMap);
+  console.log("🔍 DEBUG: Program has program property:", !!program?.program);
+  console.log("🔍 DEBUG: Program keys (enumerable):", Object.keys(program || {}));
+  console.log("🔍 DEBUG: Program symbols:", Object.getOwnPropertySymbols(program || {}));
+  
   // Return strongly typed result
   return {
     program,
