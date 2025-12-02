@@ -120,10 +120,10 @@
     "@typespec/compiler": "^1.6.0",
     "@xmpp/sasl": "^0.14.0",
     "ajv": "^8.17.1",
-    "effect": "^3.19.4",
+    "effect": "^3.19.8",
     "openid-client": "^6.8.1",
     "passport-oauth2": "^1.8.0",
-    "yaml": "^2.8.1"
+    "yaml": "^2.8.2"
   },
   "peerDependencies": {
     "@typespec/versioning": ""
@@ -142,19 +142,19 @@
     "@effect/eslint-plugin": "^0.3.2",
     "@eslint/js": "^9.39.1",
     "@types/node": "^24.10.1",
-    "@typescript-eslint/eslint-plugin": "^8.47.0",
-    "@typescript-eslint/parser": "^8.47.0",
+    "@typescript-eslint/eslint-plugin": "^8.48.1",
+    "@typescript-eslint/parser": "^8.48.1",
     "@typespec/http": "^1.6.0",
     "@typespec/openapi3": "^1.6.0",
     "@typespec/rest": "^0.76.0",
-    "@vitest/coverage-v8": "^4.0.10",
+    "@vitest/coverage-v8": "^4.0.15",
     "asyncapi-validator": "^5.1.1",
     "eslint": "^9.39.1",
-    "glob": "^12.0.0",
+    "glob": "^13.0.0",
     "husky": "^9.1.7",
-    "lint-staged": "^16.2.6",
+    "lint-staged": "^16.2.7",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.47.0",
-    "vitest": "^4.0.10"
+    "typescript-eslint": "^8.48.1",
+    "vitest": "^4.0.15"
   }
 }
