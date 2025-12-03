@@ -6,7 +6,6 @@
  */
 
 import { type Program, type Type } from "@typespec/compiler";
-import { stateSymbols } from "./lib.js";
 
 /**
  * Compatibility layer for stateMap access
@@ -14,9 +13,7 @@ import { stateSymbols } from "./lib.js";
  */
 export function getStateMap<T>(program: Program, symbol: symbol): Map<Type, T> {
   // EMERGENCY FALLBACK: Return empty map for now
-  console.log(`🔍 DEBUG: State access not implemented yet, returning empty map`);
-  console.log(`🔍 DEBUG: program type: ${typeof program}`);
-  console.log(`🔍 DEBUG: Looking for symbol: ${String(symbol)}`);
+  // TODO: Implement proper TypeSpec 1.6.0 API access
   
   return new Map();
 }
@@ -28,7 +25,7 @@ export function tryGetStateMap<T>(program: Program, symbol: symbol): Map<Type, T
   try {
     return getStateMap(program, symbol);
   } catch (error) {
-    console.error(`🚨 ERROR: State map access failed for symbol ${String(symbol)}:`, error);
+    // TODO: Replace with proper Effect.TS error handling
     return null;
   }
 }

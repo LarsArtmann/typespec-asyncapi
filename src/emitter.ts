@@ -130,8 +130,8 @@ export async function $onEmit(
     };
 
     // Write to output file - respect options
-    const outputFile = options?.["output-file"] || "asyncapi.yaml";
-    const fileType = options?.["file-type"] || "yaml";
+    const outputFile = options?.["output-file"] ?? "asyncapi.yaml";
+    const fileType = options?.["file-type"] ?? "yaml";
 
     // Debug option parsing
     yield* Effect.logDebug(`🔧 DEBUG: outputFile option: "${outputFile}"`);
@@ -240,7 +240,7 @@ ${required.map(req => `      - ${req}`).join('\n')}`;
     yield* Effect.logDebug(`🔧 DEBUG: context.emitterOutputDir: "${context.emitterOutputDir}"`);
 
     // CRITICAL FIX: Use absolute path for emitFile
-    const emitOptions: EmitFileOptions = {
+    const _emitOptions: EmitFileOptions = {
       path: outputPath,  // Use just filename, let TypeSpec handle directory
       content: content,
     };
@@ -285,18 +285,18 @@ function _generateAsyncAPI30Document(
 /**
  * Generate protocol bindings from stored configurations
  */
-function generateProtocolBindings(state: AsyncAPIConsolidatedState): Effect.Effect<Record<string, any>, Error> {
+function generateProtocolBindings(state: AsyncAPIConsolidatedState): Effect.Effect<Record<string, unknown>, unknown> {
   return Effect.gen(function*() {
-    const bindings: Record<string, any> = {};
+    const bindings: Record<string, unknown> = {};
     
     for (const [target, protocolConfig] of state.protocolConfigs) {
-      const targetName = (target as { name: string }).name;
+      const _targetName = (target as { name: string }).name;
       const protocolType = protocolConfig.protocol;
       
       switch (protocolType) {
         case "kafka": {
           bindings.kafka = {
-            version: protocolConfig.version || "0.5.0",
+            version: protocolConfig.version ?? "0.5.0",
             ...(protocolConfig.partitions && {
               bindingVersion: "0.5.0",
               topicConfiguration: {
@@ -323,7 +323,7 @@ function generateProtocolBindings(state: AsyncAPIConsolidatedState): Effect.Effe
         
         case "ws": {
           bindings.ws = {
-            version: protocolConfig.version || "0.5.0",
+            version: protocolConfig.version ?? "0.5.0",
             ...(protocolConfig.subprotocol && {
               subprotocol: protocolConfig.subprotocol
             }),
@@ -339,7 +339,7 @@ function generateProtocolBindings(state: AsyncAPIConsolidatedState): Effect.Effe
         
         case "mqtt": {
           bindings.mqtt = {
-            version: protocolConfig.version || "0.5.0",
+            version: protocolConfig.version ?? "0.5.0",
             ...(protocolConfig.qos !== undefined && {
               qos: protocolConfig.qos
             }),
@@ -361,7 +361,7 @@ function generateProtocolBindings(state: AsyncAPIConsolidatedState): Effect.Effe
         default:
           // Generic protocol binding
           bindings[protocolType] = {
-            version: protocolConfig.version || "0.5.0",
+            version: protocolConfig.version ?? "0.5.0",
             ...protocolConfig
           };
       }
@@ -391,39 +391,39 @@ function generateChannels(state: AsyncAPIConsolidatedState): Effect.Effect<Async
       yield* Effect.log(`📍 Channel path: ${channelPathData.path}`);
       yield* Effect.log(`⚡ Operation type: ${operationType?.type}`);
       
-      // Build channel with operations
-      const channelDescription = `Channel for ${operationName ?? "unnamed"} operation`;
+    // Build channel with operations
+    const channelDescription = `Channel for ${getOperationName(operation) ?? "unnamed"} operation`;
 
-      // Add publish/subscribe operations
-      const publishOperation = operationType?.type === "publish" ? {
-        operationId: operationName,
-        description: operationType.description ?? `Publish ${operationName} operation`,
-        message: operationType.messageType ? {
-          $ref: `#/components/messages/${operationType.messageType}`
-        } : {
-          payload: {
-            type: "object",
-            properties: {}
-          }
+    // Add publish/subscribe operations
+    const publishOperation = operationType?.type === "publish" ? {
+      operationId: operationName,
+      description: operationType.description ?? `Publish ${operationName} operation`,
+      message: operationType.messageType ? {
+        $ref: `#/components/messages/${operationType.messageType}`
+      } : {
+        payload: {
+          type: "object",
+          properties: {}
         }
-      } : undefined;
+      }
+    } : undefined;
 
-      const subscribeOperation = operationType?.type === "subscribe" ? {
-        operationId: operationName,
-        description: operationType.description ?? `Subscribe ${operationName} operation`,
-        message: {
-          payload: {
-            type: "object",
-            properties: {}
-          }
+    const subscribeOperation = operationType?.type === "subscribe" ? {
+      operationId: operationName,
+      description: operationType.description ?? `Subscribe ${operationName} operation`,
+      message: {
+        payload: {
+          type: "object",
+          properties: {}
         }
-      } : undefined;
+      }
+    } : undefined;
 
-      const channelData: Record<string, unknown> = {
-        description: channelDescription,
-        ...(publishOperation && { publish: publishOperation }),
-        ...(subscribeOperation && { subscribe: subscribeOperation }),
-      };
+    const channelData: Record<string, unknown> = {
+      description: channelDescription,
+      ...(publishOperation && { publish: publishOperation }),
+      ...(subscribeOperation && { subscribe: subscribeOperation }),
+    };
       
       channels[channelPathData.path] = channelData;
     }
