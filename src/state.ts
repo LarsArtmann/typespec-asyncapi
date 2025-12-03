@@ -4,6 +4,7 @@
 
 import { stateSymbols } from "./lib.js";
 import { type Program, type Type } from "@typespec/compiler";
+import { getStateMap } from "./state-compatibility.js";
 
 // === STATE DATA INTERFACES ===
 
@@ -47,6 +48,38 @@ export type OperationTypeData = {
 };
 
 /**
+ * Protocol Configuration State Data
+ */
+export type ProtocolConfigData = {
+  protocol: string;
+  // Kafka specific
+  partitions?: number;
+  replicationFactor?: number;
+  consumerGroup?: string;
+  sasl?: {
+    mechanism: string;
+    username: string;
+    password: string;
+  };
+  // WebSocket specific
+  subprotocol?: string;
+  queryParams?: Record<string, string>;
+  headers?: Record<string, string>;
+  // MQTT specific
+  qos?: 0 | 1 | 2;
+  retain?: boolean;
+  lastWill?: {
+    topic: string;
+    message: string;
+    qos: 0 | 1 | 2;
+    retain: boolean;
+  };
+  // Generic protocol properties
+  version?: string;
+  [key: string]: unknown;
+};
+
+/**
  * Tag Configuration State Data
  */
 export type TagData = {
@@ -65,17 +98,19 @@ export type AsyncAPIConsolidatedState = {
   servers: Map<Type, ServerConfigData>;
   operations: Map<Type, OperationTypeData>;
   tags: Map<Type, TagData>;
+  protocolConfigs: Map<Type, ProtocolConfigData>;
 };
 
 /**
  * Consolidates all AsyncAPI state data from TypeSpec program
  */
 export function consolidateAsyncAPIState(program: Program): AsyncAPIConsolidatedState {
-  const channelPaths = program.stateMap(stateSymbols.channelPaths) as Map<Type, ChannelPathData>;
-  const messageConfigs = program.stateMap(stateSymbols.messageConfigs) as Map<Type, MessageConfigData>;
-  const serverConfigs = program.stateMap(stateSymbols.serverConfigs) as Map<Type, ServerConfigData>;
-  const operationTypes = program.stateMap(stateSymbols.operationTypes) as Map<Type, OperationTypeData>;
-  const tags = program.stateMap(stateSymbols.tags) as Map<Type, TagData>;
+  const channelPaths = getStateMap<ChannelPathData>(program, stateSymbols.channelPaths);
+  const messageConfigs = getStateMap<MessageConfigData>(program, stateSymbols.messageConfigs);
+  const serverConfigs = getStateMap<ServerConfigData>(program, stateSymbols.serverConfigs);
+  const operationTypes = getStateMap<OperationTypeData>(program, stateSymbols.operationTypes);
+  const tags = getStateMap<TagData>(program, stateSymbols.tags);
+  const protocolConfigs = getStateMap<ProtocolConfigData>(program, stateSymbols.protocolConfigs);
 
   return {
     channels: channelPaths,
@@ -83,5 +118,6 @@ export function consolidateAsyncAPIState(program: Program): AsyncAPIConsolidated
     servers: serverConfigs,
     operations: operationTypes,
     tags: tags,
+    protocolConfigs: protocolConfigs,
   };
 }

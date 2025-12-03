@@ -16,27 +16,7 @@ import type {
   ChannelConfig,
   MessageConfig
 } from "./types/minimal-domain-types.js";
-// Complex domain type imports are now integrated and working
-import type {
-  Channel as _Channel,
-  Message as _Message,
-  Operation as _Operation,
-  Server as _Server
-} from "./types/domain/asyncapi-domain-types.js";
-import type {
-  ChannelPathType as _ChannelPathType,
-  MessageType as _MessageType,
-  SchemaNameType as _SchemaNameType,
-  OperationIdType as _OperationIdType,
-  ServerUrlType as _ServerUrlType
-} from "./types/domain/asyncapi-branded-types.js";
-import {
-  createChannelPath,
-  createMessageId,
-  createSchemaName,
-  createOperationId as _createOperationId,
-  createServerUrl as _createServerUrl
-} from "./types/domain/asyncapi-branded-types.js";
+// Simplified imports - removed complex domain types temporarily
 
 // ===== OFFICIAL ASYNCAPI TYPES =====
 // Using AsyncAPIDocument type defined below
@@ -150,8 +130,8 @@ export async function $onEmit(
     };
 
     // Write to output file - respect options
-    const outputFile = options["output-file"];
-    const fileType = options["file-type"];
+    const outputFile = options?.["output-file"] || "asyncapi.yaml";
+    const fileType = options?.["file-type"] || "yaml";
 
     // Debug option parsing
     yield* Effect.logDebug(`🔧 DEBUG: outputFile option: "${outputFile}"`);
@@ -278,11 +258,12 @@ ${required.map(req => `      - ${req}`).join('\n')}`;
 function _generateAsyncAPI30Document(
   state: AsyncAPIConsolidatedState,
   options: _AsyncAPIEmitterOptions,
-): Effect.Effect<AsyncAPIDocument, Error> {
+): Effect.Effect<AsyncAPIDocument, unknown> {
   return Effect.gen(function*() {
     const channels = yield* generateChannels(state);
     const messages = yield* generateMessages(state);
     const schemas = yield* generateSchemas(state);
+    const bindings = yield* generateProtocolBindings(state);
     
     return {
       asyncapi: "3.0.0",
@@ -294,16 +275,106 @@ function _generateAsyncAPI30Document(
       channels,
       messages,
       components: {
-        schemas
+        schemas,
+        ...(Object.keys(bindings).length > 0 && { bindings })
       },
     };
   });
 }
 
 /**
+ * Generate protocol bindings from stored configurations
+ */
+function generateProtocolBindings(state: AsyncAPIConsolidatedState): Effect.Effect<Record<string, any>, Error> {
+  return Effect.gen(function*() {
+    const bindings: Record<string, any> = {};
+    
+    for (const [target, protocolConfig] of state.protocolConfigs) {
+      const targetName = (target as { name: string }).name;
+      const protocolType = protocolConfig.protocol;
+      
+      switch (protocolType) {
+        case "kafka": {
+          bindings.kafka = {
+            version: protocolConfig.version || "0.5.0",
+            ...(protocolConfig.partitions && {
+              bindingVersion: "0.5.0",
+              topicConfiguration: {
+                partitions: protocolConfig.partitions
+              }
+            }),
+            ...(protocolConfig.consumerGroup && {
+              groupId: protocolConfig.consumerGroup
+            }),
+            ...(protocolConfig.sasl && {
+              sasl: {
+                mechanism: protocolConfig.sasl.mechanism,
+                ...(protocolConfig.sasl.username && {
+                  username: protocolConfig.sasl.username
+                }),
+                ...(protocolConfig.sasl.password && {
+                  password: protocolConfig.sasl.password
+                })
+              }
+            })
+          };
+          break;
+        }
+        
+        case "ws": {
+          bindings.ws = {
+            version: protocolConfig.version || "0.5.0",
+            ...(protocolConfig.subprotocol && {
+              subprotocol: protocolConfig.subprotocol
+            }),
+            ...(protocolConfig.queryParams && {
+              query: protocolConfig.queryParams
+            }),
+            ...(protocolConfig.headers && {
+              headers: protocolConfig.headers
+            })
+          };
+          break;
+        }
+        
+        case "mqtt": {
+          bindings.mqtt = {
+            version: protocolConfig.version || "0.5.0",
+            ...(protocolConfig.qos !== undefined && {
+              qos: protocolConfig.qos
+            }),
+            ...(protocolConfig.retain !== undefined && {
+              retain: protocolConfig.retain
+            }),
+            ...(protocolConfig.lastWill && {
+              will: {
+                topic: protocolConfig.lastWill.topic,
+                payload: protocolConfig.lastWill.message,
+                qos: protocolConfig.lastWill.qos,
+                retain: protocolConfig.lastWill.retain
+              }
+            })
+          };
+          break;
+        }
+        
+        default:
+          // Generic protocol binding
+          bindings[protocolType] = {
+            version: protocolConfig.version || "0.5.0",
+            ...protocolConfig
+          };
+      }
+    }
+    
+    return bindings;
+  });
+}
+
+/**
  * Generate channels from state data
  */
-function generateChannels(state: AsyncAPIConsolidatedState): Effect.Effect<AsyncAPIChannels, Error> {
+function generateChannels(state: AsyncAPIConsolidatedState): Effect.Effect<AsyncAPIChannels, unknown> {
   return Effect.gen(function*() {
     const channels: Record<string, Record<string, unknown>> = {};
     
@@ -321,45 +392,40 @@ function generateChannels(state: AsyncAPIConsolidatedState): Effect.Effect<Async
       yield* Effect.log(`⚡ Operation type: ${operationType?.type}`);
       
       // Build channel with operations
-      const channelData: {
-        description?: string;
-        publish?: Record<string, unknown>;
-        subscribe?: Record<string, unknown>;
-      } = {
-        description: `Channel for ${operationName ?? "unnamed"} operation`,
-      };
+      const channelDescription = `Channel for ${operationName ?? "unnamed"} operation`;
 
       // Add publish/subscribe operations
-      if (operationType?.type === "publish") {
-        channelData.publish = {
-          operationId: operationName,
-          description: operationType.description ?? `Publish ${operationName} operation`,
-          message: operationType.messageType ? {
-            $ref: `#/components/messages/${operationType.messageType}`
-          } : {
-            payload: {
-              type: "object",
-              properties: {}
-            }
+      const publishOperation = operationType?.type === "publish" ? {
+        operationId: operationName,
+        description: operationType.description ?? `Publish ${operationName} operation`,
+        message: operationType.messageType ? {
+          $ref: `#/components/messages/${operationType.messageType}`
+        } : {
+          payload: {
+            type: "object",
+            properties: {}
           }
-        };
-      }
+        }
+      } : undefined;
 
-      if (operationType?.type === "subscribe") {
-        channelData.subscribe = {
-          operationId: operationName,
-          description: operationType.description ?? `Subscribe ${operationName} operation`,
-          message: {
-            payload: {
-              type: "object",
-              properties: {}
-            }
+      const subscribeOperation = operationType?.type === "subscribe" ? {
+        operationId: operationName,
+        description: operationType.description ?? `Subscribe ${operationName} operation`,
+        message: {
+          payload: {
+            type: "object",
+            properties: {}
           }
-        };
-      }
+        }
+      } : undefined;
 
-      const brandedChannelPath = yield* createChannelPath(channelPathData.path);
-      channels[brandedChannelPath] = channelData;
+      const channelData: Record<string, unknown> = {
+        description: channelDescription,
+        ...(publishOperation && { publish: publishOperation }),
+        ...(subscribeOperation && { subscribe: subscribeOperation }),
+      };
+      
+      channels[channelPathData.path] = channelData;
     }
   
     return channels;
@@ -369,7 +435,7 @@ function generateChannels(state: AsyncAPIConsolidatedState): Effect.Effect<Async
 /**
  * Generate messages from state data
  */
-function generateMessages(state: AsyncAPIConsolidatedState): Effect.Effect<AsyncAPIMessages, Error> {
+function generateMessages(state: AsyncAPIConsolidatedState): Effect.Effect<AsyncAPIMessages, unknown> {
   return Effect.gen(function*() {
     const messages: Record<string, Record<string, unknown>> = {};
   
@@ -403,8 +469,8 @@ function generateMessages(state: AsyncAPIConsolidatedState): Effect.Effect<Async
       }
     }
 
-    const brandedMessageId = yield* createMessageId(modelName ?? "unnamed");
-    messages[brandedMessageId] = messageData;
+    const messageId = modelName ?? "unnamed";
+    messages[messageId] = messageData;
   }
   
   return messages;
@@ -414,7 +480,7 @@ function generateMessages(state: AsyncAPIConsolidatedState): Effect.Effect<Async
 /**
  * Generate JSON Schemas from TypeSpec models
  */
-function generateSchemas(state: AsyncAPIConsolidatedState): Effect.Effect<AsyncAPISchemas, Error> {
+function generateSchemas(state: AsyncAPIConsolidatedState): Effect.Effect<AsyncAPISchemas, unknown> {
   return Effect.gen(function*() {
     const schemas: Record<string, Record<string, unknown>> = {};
   
@@ -448,8 +514,8 @@ function generateSchemas(state: AsyncAPIConsolidatedState): Effect.Effect<AsyncA
         }
       }
 
-      const brandedSchemaName = yield* createSchemaName(modelName ?? "unnamed");
-      schemas[brandedSchemaName] = schemaData as Record<string, unknown>;
+      const schemaName = modelName ?? "unnamed";
+      schemas[schemaName] = schemaData as Record<string, unknown>;
     }
   }
   

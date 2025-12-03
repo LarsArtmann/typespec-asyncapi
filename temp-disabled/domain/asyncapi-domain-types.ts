@@ -91,87 +91,83 @@ export class AsyncAPIValidationError extends Error {
   }
 }
 
+// ===== TYPE CONSTRUCTOR UTILITIES =====
+
+/**
+ * Generic domain object constructor factory - eliminates duplicate constructor patterns
+ */
+const createDomainObjectConstructor = <A, I>(
+  schema: Schema.Schema<A, I, any>,
+  typeName: string
+) => 
+  (input: I): Effect.Effect<A, AsyncAPIValidationError> => {
+    return Effect.try({
+      try: () => Schema.decodeUnknownSync(schema)(input),
+      catch: (error) => new AsyncAPIValidationError(
+        `${typeName} validation failed: ${String(error)}`,
+        undefined,
+        input
+      )
+    })
+  }
+
+/**
+ * Generic collection constructor factory - eliminates duplicate collection patterns
+ */
+const createCollectionConstructor = <A, I>(
+  schema: Schema.Schema<A, I, any>,
+  collectionName: string,
+  itemSchema: Schema.Schema<A, I, any>
+) => 
+  (input: unknown): Effect.Effect<Record<string, A>, AsyncAPIValidationError> => {
+    return Effect.try({
+      try: () => {
+        const parsed = input as Record<string, unknown>
+        const result: Record<string, A> = {}
+        for (const [key, value] of Object.entries(parsed)) {
+          result[key] = Schema.decodeUnknownSync(itemSchema)(value)
+        }
+        return result
+      },
+      catch: (error) => new AsyncAPIValidationError(
+        `${collectionName} collection validation failed: ${String(error)}`,
+        undefined,
+        input
+      )
+    })
+  }
+
 // ===== TYPE CONSTRUCTORS =====
 
 /**
  * Create type-safe channel with schema validation
  */
-export const createChannel = (
-  input: unknown
-): Effect.Effect<Channel, AsyncAPIValidationError> => {
-  return Effect.try({
-    try: () => Schema.decodeUnknownSync(channelSchema)(input),
-    catch: (error) => new AsyncAPIValidationError(
-      `Channel validation failed: ${String(error)}`,
-      undefined,
-      input
-    )
-  })
-}
+export const createChannel = (input: unknown): Effect.Effect<Channel, AsyncAPIValidationError> => 
+  createDomainObjectConstructor(channelSchema, "Channel")(input)
 
 /**
  * Create type-safe message with schema validation
  */
-export const createMessage = (
-  input: unknown
-): Effect.Effect<Message, AsyncAPIValidationError> => {
-  return Effect.try({
-    try: () => Schema.decodeUnknownSync(messageSchema)(input),
-    catch: (error) => new AsyncAPIValidationError(
-      `Message validation failed: ${String(error)}`,
-      undefined,
-      input
-    )
-  })
-}
+export const createMessage = (input: unknown): Effect.Effect<Message, AsyncAPIValidationError> => 
+  createDomainObjectConstructor(messageSchema, "Message")(input)
 
 /**
  * Create type-safe operation with schema validation
  */
-export const createOperation = (
-  input: unknown
-): Effect.Effect<Operation, AsyncAPIValidationError> => {
-  return Effect.try({
-    try: () => Schema.decodeUnknownSync(operationSchema)(input),
-    catch: (error) => new AsyncAPIValidationError(
-      `Operation validation failed: ${String(error)}`,
-      undefined,
-      input
-    )
-  })
-}
+export const createOperation = (input: unknown): Effect.Effect<Operation, AsyncAPIValidationError> => 
+  createDomainObjectConstructor(operationSchema, "Operation")(input)
 
 /**
  * Create type-safe server with schema validation
  */
-export const createServer = (
-  input: unknown
-): Effect.Effect<Server, AsyncAPIValidationError> => {
-  return Effect.try({
-    try: () => Schema.decodeUnknownSync(serverSchema)(input),
-    catch: (error) => new AsyncAPIValidationError(
-      `Server validation failed: ${String(error)}`,
-      undefined,
-      input
-    )
-  })
-}
+export const createServer = (input: unknown): Effect.Effect<Server, AsyncAPIValidationError> => 
+  createDomainObjectConstructor(serverSchema, "Server")(input)
 
 /**
  * Create type-safe AsyncAPI specification with schema validation
  */
-export const createAsyncAPISpec = (
-  input: unknown
-): Effect.Effect<AsyncAPISpec, AsyncAPIValidationError> => {
-  return Effect.try({
-    try: () => Schema.decodeUnknownSync(asyncapiSchema)(input),
-    catch: (error) => new AsyncAPIValidationError(
-      `AsyncAPI spec validation failed: ${String(error)}`,
-      undefined,
-      input
-    )
-  })
-}
+export const createAsyncAPISpec = (input: unknown): Effect.Effect<AsyncAPISpec, AsyncAPIValidationError> => 
+  createDomainObjectConstructor(asyncapiSchema, "AsyncAPI spec")(input)
 
 // ===== COLLECTION CONSTRUCTORS =====
 
