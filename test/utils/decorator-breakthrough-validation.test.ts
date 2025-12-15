@@ -42,9 +42,7 @@ describe("🚀 DECORATOR REGISTRATION BREAKTHROUGH", () => {
     // COUNT: Before fix = 371 failing tests due to "Unknown decorator"
     // COUNT: After fix = 0 "Unknown decorator" errors
     const unknownDecoratorErrors = diagnostics.filter(
-      (d) =>
-        d.message?.includes("Unknown decorator") ||
-        d.message?.includes("is not recognized"),
+      (d) => d.message?.includes("Unknown decorator") || d.message?.includes("is not recognized"),
     );
 
     Effect.log(
@@ -101,13 +99,9 @@ describe("🚀 DECORATOR REGISTRATION BREAKTHROUGH", () => {
     for (const test of decoratorTests) {
       const { diagnostics } = await compileTypeSpecWithDecorators(test.code);
 
-      const unknownErrors = diagnostics.filter((d) =>
-        d.message?.includes("Unknown decorator"),
-      );
+      const unknownErrors = diagnostics.filter((d) => d.message?.includes("Unknown decorator"));
 
-      Effect.log(
-        `✅ ${test.name}: ${unknownErrors.length} unknown decorator errors`,
-      );
+      Effect.log(`✅ ${test.name}: ${unknownErrors.length} unknown decorator errors`);
       expect(unknownErrors).toHaveLength(0);
     }
 
@@ -161,18 +155,13 @@ describe("🚀 DECORATOR REGISTRATION BREAKTHROUGH", () => {
     const compilationTime = Date.now() - startTime;
 
     const typeErrors = diagnostics.filter(
-      (d) =>
-        d.severity === "error" && !d.message?.includes("Extern declaration"),
+      (d) => d.severity === "error" && !d.message?.includes("Extern declaration"),
     );
-    const unknownDecorators = diagnostics.filter((d) =>
-      d.message?.includes("Unknown decorator"),
-    );
+    const unknownDecorators = diagnostics.filter((d) => d.message?.includes("Unknown decorator"));
 
     Effect.log("📊 BREAKTHROUGH METRICS:");
     Effect.log(`   Compilation time: ${compilationTime}ms`);
-    Effect.log(
-      `   Unknown decorator errors: ${unknownDecorators.length} (BREAKTHROUGH: was 371+)`,
-    );
+    Effect.log(`   Unknown decorator errors: ${unknownDecorators.length} (BREAKTHROUGH: was 371+)`);
     Effect.log(`   Critical type errors: ${typeErrors.length}`);
     Effect.log(`   Program validity: ${!!program && !!program.checker}`);
 
@@ -185,8 +174,6 @@ describe("🚀 DECORATOR REGISTRATION BREAKTHROUGH", () => {
     expect(program.checker).toBeDefined();
 
     Effect.log("🚀 BREAKTHROUGH CONFIRMED: 51% impact achieved");
-    Effect.log(
-      "🚀 BREAKTHROUGH CONFIRMED: Decorator registration system operational",
-    );
+    Effect.log("🚀 BREAKTHROUGH CONFIRMED: Decorator registration system operational");
   });
 });

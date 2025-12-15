@@ -29,8 +29,7 @@ describe("🔧 M6: Decorator Registration Integration", () => {
     Effect.log("✅ TypeSpec program created successfully");
 
     // Import and test the decorator registration function
-    const { createAsyncAPIDecorators } =
-      await import("../../src/domain/decorators/index.js");
+    const { createAsyncAPIDecorators } = await import("../../src/domain/decorators/index.js");
     expect(createAsyncAPIDecorators).toBeDefined();
     expect(typeof createAsyncAPIDecorators).toBe("function");
     Effect.log("✅ createAsyncAPIDecorators function imported successfully");
@@ -47,9 +46,7 @@ describe("🔧 M6: Decorator Registration Integration", () => {
     // The function should not throw errors
     expect(registrationError).toBeNull();
 
-    Effect.log(
-      "🎉 M6 SUCCESS: Decorator registration function works correctly!",
-    );
+    Effect.log("🎉 M6 SUCCESS: Decorator registration function works correctly!");
   });
 
   it("should verify TypeSpec.AsyncAPI namespace creation", async () => {
@@ -65,8 +62,7 @@ describe("🔧 M6: Decorator Registration Integration", () => {
     const program: Program = result.program || result;
 
     // Register decorators manually
-    const { createAsyncAPIDecorators } =
-      await import("../../src/domain/decorators/index.js");
+    const { createAsyncAPIDecorators } = await import("../../src/domain/decorators/index.js");
     createAsyncAPIDecorators(program);
 
     // Verify global namespace exists - check if program has checker first
@@ -127,8 +123,6 @@ describe("🔧 M6: Decorator Registration Integration", () => {
       Effect.log(`✅ ${decoratorName} decorator function available`);
     }
 
-    Effect.log(
-      "🎉 M6 SUCCESS: All decorator functions are available and callable!",
-    );
+    Effect.log("🎉 M6 SUCCESS: All decorator functions are available and callable!");
   });
 });

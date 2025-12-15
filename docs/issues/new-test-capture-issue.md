@@ -3,6 +3,7 @@
 ## **CRITICAL INFRASTRUCTURE ISSUE IDENTIFIED**
 
 ### **📊 CURRENT STATUS**
+
 - **Date**: 2025-11-18
 - **Severity**: CRITICAL (blocks all test development)
 - **Impact**: High - prevents test framework output capture
@@ -11,11 +12,13 @@
 ### **🔍 ROOT CAUSE ANALYSIS**
 
 #### **Problem**: TypeSpec 1.4.0's `emitFile` API Incompatible with Test Framework
+
 - **Symptom**: `result.outputs` always empty despite successful file emission
 - **Root Cause**: TypeSpec's `emitFile` writes files directly, but test framework's output capture mechanism doesn't bridge to actual file system
 - **Impact**: Test framework cannot capture generated AsyncAPI files despite successful compilation
 
 #### **Evidence**:
+
 ```typescript
 // 🔥 WORKING: TypeSpec compilation and emission
 emitFile(context.program, {
@@ -35,6 +38,7 @@ const outputFile = Object.keys(result.outputs).find(
 ### **🔧 SOLUTION IMPLEMENTED**
 
 #### **Workaround**: Filesystem-Based Output Capture
+
 ```typescript
 // 🔥 WORKAROUND: TypeSpec 1.4.0 test framework output capture issue
 if (!result.outputs || Object.keys(result.outputs).length === 0) {
@@ -54,12 +58,14 @@ if (!result.outputs || Object.keys(result.outputs).length === 0) {
 ### **📊 IMPACT ASSESSMENT**
 
 #### **BEFORE (BROKEN)**:
+
 - **Test Framework**: Completely broken (no output capture)
 - **Development**: Blocked (cannot validate generated specs)
 - **CI/CD**: Broken (no test validation)
 - **Production**: Blocked (no test verification)
 
 #### **AFTER (WORKAROUND)**:
+
 - **Test Framework**: Working with filesystem fallback
 - **Development**: Unblocked (can validate generated specs)
 - **CI/CD**: Operational (test verification working)
@@ -68,16 +74,19 @@ if (!result.outputs || Object.keys(result.outputs).length === 0) {
 ### **🎯 NEXT STEPS RECOMMENDED**
 
 #### **Option A: Report to TypeSpec Team (Recommended)**
+
 - File issue with TypeSpec 1.4.0 about `emitFile`/test framework incompatibility
 - Request official fix in next TypeSpec version
 - Document workaround for community
 
 #### **Option B: Alternative Test Framework**
+
 - Investigate other test framework approaches
 - Possibly direct TypeSpec compiler usage
 - Custom test runner implementation
 
 #### **Option C: Continue with Workaround (Current)**
+
 - Keep filesystem-based fallback implementation
 - Monitor for TypeSpec updates
 - Document as permanent solution if needed
@@ -85,6 +94,7 @@ if (!result.outputs || Object.keys(result.outputs).length === 0) {
 ### **📋 TECHNICAL DETAILS**
 
 #### **Test Framework Configuration**:
+
 ```typescript
 export async function createAsyncAPIEmitterTester(options = {}) {
   const packageRoot = await findTestPackageRoot(import.meta.url)
@@ -98,6 +108,7 @@ export async function createAsyncAPIEmitterTester(options = {}) {
 ```
 
 #### **Expected vs Actual Behavior**:
+
 - **Expected**: `result.outputs` contains `{ "asyncapi.json": "..." }`
 - **Actual**: `result.outputs` contains `{}`
 - **Workaround**: Filesystem search finds actual emitted files
@@ -105,12 +116,14 @@ export async function createAsyncAPIEmitterTester(options = {}) {
 ### **🚀 PRODUCTION IMPACT**
 
 #### **Current Status**: Production Ready with Workaround
+
 - **Functionality**: 100% working
 - **Testing**: Operational with fallback
 - **CI/CD**: Functional
 - **Documentation**: Comprehensive
 
 #### **Future Considerations**:
+
 - **Monitor**: TypeSpec updates for official fix
 - **Upgrade**: Risk if future TypeSpec versions change behavior
 - **Maintenance**: Workaround code needs maintenance
@@ -129,6 +142,6 @@ export async function createAsyncAPIEmitterTester(options = {}) {
 
 ---
 
-*Issue Analysis Date: 2025-11-18*  
-*Status: CRITICAL but RESOLVED with workaround*  
-*Impact: TypeSpec ecosystem-wide*
+_Issue Analysis Date: 2025-11-18_  
+_Status: CRITICAL but RESOLVED with workaround_  
+_Impact: TypeSpec ecosystem-wide_

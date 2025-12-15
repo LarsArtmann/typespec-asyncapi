@@ -8,10 +8,7 @@
  */
 
 import { describe, expect, it } from "bun:test";
-import {
-  compileAsyncAPI,
-  compileAsyncAPIWithoutErrors,
-} from "../utils/emitter-test-helpers.js";
+import { compileAsyncAPI, compileAsyncAPIWithoutErrors } from "../utils/emitter-test-helpers.js";
 import { SERIALIZATION_FORMAT_OPTION_JSON } from "../../src/domain/models/serialization-format-option.js";
 
 describe("EmitterTester API Verification", () => {

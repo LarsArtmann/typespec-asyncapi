@@ -6,21 +6,14 @@
  */
 
 import { describe, it, expect, beforeAll, afterAll } from "bun:test";
-import {
-  compileAsyncAPISpec,
-  parseAsyncAPIOutput,
-} from "../utils/test-helpers";
+import { compileAsyncAPISpec, parseAsyncAPIOutput } from "../utils/test-helpers";
 import { AsyncAPIValidator } from "../../src/domain/validation/asyncapi-validator.js";
 import { mkdir, rm } from "node:fs/promises";
 import { join } from "node:path";
 import { Effect } from "effect";
 
 describe("Plugin Integration Tests", () => {
-  const testOutputDir = join(
-    process.cwd(),
-    "test-output",
-    "plugin-integration",
-  );
+  const testOutputDir = join(process.cwd(), "test-output", "plugin-integration");
   let validator: AsyncAPIValidator;
 
   beforeAll(async () => {
@@ -79,14 +72,8 @@ describe("Plugin Integration Tests", () => {
       // Debug output if validation fails
       if (!validationResult.valid) {
         console.log("❌ AsyncAPI validation failed for HTTP plugin test:");
-        console.log(
-          "Errors:",
-          JSON.stringify(validationResult.errors, null, 2),
-        );
-        console.log(
-          "Generated document:",
-          JSON.stringify(asyncApiDoc, null, 2),
-        );
+        console.log("Errors:", JSON.stringify(validationResult.errors, null, 2));
+        console.log("Generated document:", JSON.stringify(asyncApiDoc, null, 2));
       }
 
       expect(validationResult.valid).toBe(true);
@@ -296,10 +283,7 @@ describe("Plugin Integration Tests", () => {
       expect(compilationResult.outputFiles.size).toBeGreaterThan(0);
 
       // Parse YAML output
-      const asyncApiDoc = parseAsyncAPIOutput(
-        compilationResult.outputFiles,
-        "binding-test.yaml",
-      );
+      const asyncApiDoc = parseAsyncAPIOutput(compilationResult.outputFiles, "binding-test.yaml");
       const validationResult = await validator.validate(asyncApiDoc);
 
       expect(validationResult.valid).toBe(true);

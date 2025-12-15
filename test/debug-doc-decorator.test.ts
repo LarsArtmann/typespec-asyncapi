@@ -1,7 +1,4 @@
-import {
-  createAsyncAPITestHost,
-  compileAndGetAsyncAPI,
-} from "./utils/test-helpers.js";
+import { createAsyncAPITestHost, compileAndGetAsyncAPI } from "./utils/test-helpers.js";
 
 async function testDocDecorator() {
   console.log("🧪 TESTING DOC DECORATOR EQUIVALENT");

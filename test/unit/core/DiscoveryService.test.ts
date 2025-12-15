@@ -37,9 +37,7 @@ describe("DiscoveryService", () => {
         ]),
       });
 
-      const result = await Effect.runPromise(
-        discoveryService.discoverOperations(mockProgram),
-      );
+      const result = await Effect.runPromise(discoveryService.discoverOperations(mockProgram));
 
       expect(result).toHaveLength(2);
       expect(result[0].name).toBe("testOp1");
@@ -56,9 +54,7 @@ describe("DiscoveryService", () => {
         namespaces: new Map([["child", childNamespace]]),
       });
 
-      const result = await Effect.runPromise(
-        discoveryService.discoverOperations(mockProgram),
-      );
+      const result = await Effect.runPromise(discoveryService.discoverOperations(mockProgram));
 
       expect(result).toHaveLength(1);
       expect(result[0].name).toBe("nestedOp");
@@ -67,9 +63,7 @@ describe("DiscoveryService", () => {
     it("should handle empty namespaces", async () => {
       mockProgram = createMockProgram(); // Empty namespace
 
-      const result = await Effect.runPromise(
-        discoveryService.discoverOperations(mockProgram),
-      );
+      const result = await Effect.runPromise(discoveryService.discoverOperations(mockProgram));
 
       expect(result).toHaveLength(0);
     });
@@ -97,9 +91,7 @@ describe("DiscoveryService", () => {
         namespaces: new Map([["mid", midNamespace]]),
       });
 
-      const result = await Effect.runPromise(
-        discoveryService.discoverOperations(mockProgram),
-      );
+      const result = await Effect.runPromise(discoveryService.discoverOperations(mockProgram));
 
       expect(result).toHaveLength(1);
       expect(result[0].name).toBe("deepOp");
@@ -117,9 +109,7 @@ describe("DiscoveryService", () => {
         namespaces: new Map([["child", childNamespace]]),
       });
 
-      const result = await Effect.runPromise(
-        discoveryService.discoverOperations(mockProgram),
-      );
+      const result = await Effect.runPromise(discoveryService.discoverOperations(mockProgram));
 
       expect(result).toHaveLength(2);
       expect(result.map((op) => op.name)).toContain("rootOp");
@@ -153,9 +143,7 @@ describe("DiscoveryService", () => {
         },
       });
 
-      const result = await Effect.runPromise(
-        discoveryService.discoverMessageModels(mockProgram),
-      );
+      const result = await Effect.runPromise(discoveryService.discoverMessageModels(mockProgram));
 
       expect(result).toHaveLength(2);
       expect(result[0].name).toBe("MessageModel1");
@@ -181,9 +169,7 @@ describe("DiscoveryService", () => {
         },
       });
 
-      const result = await Effect.runPromise(
-        discoveryService.discoverMessageModels(mockProgram),
-      );
+      const result = await Effect.runPromise(discoveryService.discoverMessageModels(mockProgram));
 
       expect(result).toHaveLength(1);
       expect(result[0].name).toBe("NestedMessage");
@@ -194,9 +180,7 @@ describe("DiscoveryService", () => {
         stateMap: (key: string) => new Map(), // Empty state map
       });
 
-      const result = await Effect.runPromise(
-        discoveryService.discoverMessageModels(mockProgram),
-      );
+      const result = await Effect.runPromise(discoveryService.discoverMessageModels(mockProgram));
 
       expect(result).toHaveLength(0);
     });
@@ -209,9 +193,7 @@ describe("DiscoveryService", () => {
         stateMap: (key: string) => new Map(), // Empty - no @message decorators
       });
 
-      const result = await Effect.runPromise(
-        discoveryService.discoverMessageModels(mockProgram),
-      );
+      const result = await Effect.runPromise(discoveryService.discoverMessageModels(mockProgram));
 
       expect(result).toHaveLength(0);
     });
@@ -238,9 +220,7 @@ describe("DiscoveryService", () => {
         },
       });
 
-      const result = await Effect.runPromise(
-        discoveryService.discoverSecurityConfigs(mockProgram),
-      );
+      const result = await Effect.runPromise(discoveryService.discoverSecurityConfigs(mockProgram));
 
       expect(result).toHaveLength(1);
       expect(result[0]).toEqual(securityConfig);
@@ -266,9 +246,7 @@ describe("DiscoveryService", () => {
         },
       });
 
-      const result = await Effect.runPromise(
-        discoveryService.discoverSecurityConfigs(mockProgram),
-      );
+      const result = await Effect.runPromise(discoveryService.discoverSecurityConfigs(mockProgram));
 
       expect(result).toHaveLength(1);
       expect(result[0]).toEqual(securityConfig);
@@ -298,9 +276,7 @@ describe("DiscoveryService", () => {
         },
       });
 
-      const result = await Effect.runPromise(
-        discoveryService.discoverSecurityConfigs(mockProgram),
-      );
+      const result = await Effect.runPromise(discoveryService.discoverSecurityConfigs(mockProgram));
 
       expect(result).toHaveLength(1);
       expect(result[0]).toEqual(securityConfig);
@@ -311,9 +287,7 @@ describe("DiscoveryService", () => {
         stateMap: (key: string) => new Map(), // Empty state map
       });
 
-      const result = await Effect.runPromise(
-        discoveryService.discoverSecurityConfigs(mockProgram),
-      );
+      const result = await Effect.runPromise(discoveryService.discoverSecurityConfigs(mockProgram));
 
       expect(result).toHaveLength(0);
     });
@@ -343,9 +317,7 @@ describe("DiscoveryService", () => {
         },
       });
 
-      const result = await Effect.runPromise(
-        discoveryService.discoverSecurityConfigs(mockProgram),
-      );
+      const result = await Effect.runPromise(discoveryService.discoverSecurityConfigs(mockProgram));
 
       expect(result).toHaveLength(2);
       expect(result).toContainEqual(opSecurityConfig);
@@ -409,17 +381,11 @@ describe("DiscoveryService", () => {
     });
 
     it("should handle large-scale discovery", async () => {
-      const operations = Array.from({ length: 10 }, (_, i) =>
-        createMockOperation(`op${i}`),
-      );
-      const messageModels = Array.from({ length: 5 }, (_, i) =>
-        createMockModel(`Message${i}`),
-      );
+      const operations = Array.from({ length: 10 }, (_, i) => createMockOperation(`op${i}`));
+      const messageModels = Array.from({ length: 5 }, (_, i) => createMockModel(`Message${i}`));
 
       const operationsMap = new Map(operations.map((op) => [op.name, op]));
-      const modelsMap = new Map(
-        messageModels.map((model) => [model.name, model]),
-      );
+      const modelsMap = new Map(messageModels.map((model) => [model.name, model]));
 
       const messageConfigsMap = new Map(
         messageModels.map((model) => [model, { name: model.name }]),
@@ -467,9 +433,7 @@ describe("DiscoveryService", () => {
         }),
       } as unknown as Program;
 
-      const result = await Effect.runPromise(
-        discoveryService.discoverOperations(corruptedProgram),
-      );
+      const result = await Effect.runPromise(discoveryService.discoverOperations(corruptedProgram));
       expect(result).toHaveLength(0);
     });
 
@@ -483,9 +447,7 @@ describe("DiscoveryService", () => {
 
       // Should throw an error because stateMap fails
       await expect(
-        Effect.runPromise(
-          discoveryService.discoverMessageModels(problematicProgram),
-        ),
+        Effect.runPromise(discoveryService.discoverMessageModels(problematicProgram)),
       ).rejects.toThrow(); // Just expect any error, not specific message
     });
   });

@@ -16,62 +16,44 @@ import {
 describe("AsyncAPI Emitter Core (NEW API)", () => {
   describe("Basic Compilation", () => {
     it("should compile simple TypeSpec model to AsyncAPI", async () => {
-      const result = await compileAsyncAPIWithoutErrors(
-        TestSources.basicEvent,
-        { "output-file": "basic", "file-type": "json" },
-      );
+      const result = await compileAsyncAPIWithoutErrors(TestSources.basicEvent, {
+        "output-file": "basic",
+        "file-type": "json",
+      });
 
       // With new API, we get direct access to the document
       const asyncapiDoc = result.asyncApiDoc;
 
       expect(AsyncAPIAssertions.hasValidStructure(asyncapiDoc)).toBe(true);
-      expect(AsyncAPIAssertions.hasSchema(asyncapiDoc, "BasicEvent")).toBe(
-        true,
-      );
-      expect(AsyncAPIAssertions.hasChannel(asyncapiDoc, "test.basic")).toBe(
-        true,
-      );
-      expect(
-        AsyncAPIAssertions.hasOperation(asyncapiDoc, "publishBasicEvent"),
-      ).toBe(true);
+      expect(AsyncAPIAssertions.hasSchema(asyncapiDoc, "BasicEvent")).toBe(true);
+      expect(AsyncAPIAssertions.hasChannel(asyncapiDoc, "test.basic")).toBe(true);
+      expect(AsyncAPIAssertions.hasOperation(asyncapiDoc, "publishBasicEvent")).toBe(true);
     });
 
     it("should handle complex nested models", async () => {
-      const result = await compileAsyncAPIWithoutErrors(
-        TestSources.complexEvent,
-        { "output-file": "complex", "file-type": "json" },
-      );
+      const result = await compileAsyncAPIWithoutErrors(TestSources.complexEvent, {
+        "output-file": "complex",
+        "file-type": "json",
+      });
 
       const asyncapiDoc = result.asyncApiDoc;
 
       expect(AsyncAPIAssertions.hasValidStructure(asyncapiDoc)).toBe(true);
-      expect(AsyncAPIAssertions.hasSchema(asyncapiDoc, "ComplexEvent")).toBe(
+      expect(AsyncAPIAssertions.hasSchema(asyncapiDoc, "ComplexEvent")).toBe(true);
+      expect(AsyncAPIAssertions.schemaHasProperty(asyncapiDoc, "ComplexEvent", "id")).toBe(true);
+      expect(AsyncAPIAssertions.schemaHasProperty(asyncapiDoc, "ComplexEvent", "metadata")).toBe(
         true,
       );
-      expect(
-        AsyncAPIAssertions.schemaHasProperty(asyncapiDoc, "ComplexEvent", "id"),
-      ).toBe(true);
-      expect(
-        AsyncAPIAssertions.schemaHasProperty(
-          asyncapiDoc,
-          "ComplexEvent",
-          "metadata",
-        ),
-      ).toBe(true);
-      expect(
-        AsyncAPIAssertions.schemaHasProperty(
-          asyncapiDoc,
-          "ComplexEvent",
-          "status",
-        ),
-      ).toBe(true);
+      expect(AsyncAPIAssertions.schemaHasProperty(asyncapiDoc, "ComplexEvent", "status")).toBe(
+        true,
+      );
     });
 
     it("should preserve TypeSpec documentation", async () => {
-      const result = await compileAsyncAPIWithoutErrors(
-        TestSources.withDocumentation,
-        { "output-file": "documented", "file-type": "json" },
-      );
+      const result = await compileAsyncAPIWithoutErrors(TestSources.withDocumentation, {
+        "output-file": "documented",
+        "file-type": "json",
+      });
 
       const asyncapiDoc = result.asyncApiDoc;
 
@@ -81,17 +63,11 @@ describe("AsyncAPI Emitter Core (NEW API)", () => {
         const schema = asyncapiDoc.components.schemas.DocumentedEvent;
 
         // Test documentation
-        AsyncAPIAssertions.hasDocumentation(
-          schema,
-          "Fully documented event model",
-        );
+        AsyncAPIAssertions.hasDocumentation(schema, "Fully documented event model");
 
         // Test property documentation
         if (schema?.properties?.id) {
-          AsyncAPIAssertions.hasDocumentation(
-            schema.properties.id,
-            "Primary identifier",
-          );
+          AsyncAPIAssertions.hasDocumentation(schema.properties.id, "Primary identifier");
         }
       }
     });
@@ -99,13 +75,10 @@ describe("AsyncAPI Emitter Core (NEW API)", () => {
 
   describe("Output Formats", () => {
     it("should generate valid JSON output", async () => {
-      const result = await compileAsyncAPIWithoutErrors(
-        TestSources.basicEvent,
-        {
-          "output-file": "json-test",
-          "file-type": SERIALIZATION_FORMAT_OPTION_JSON,
-        },
-      );
+      const result = await compileAsyncAPIWithoutErrors(TestSources.basicEvent, {
+        "output-file": "json-test",
+        "file-type": SERIALIZATION_FORMAT_OPTION_JSON,
+      });
 
       // Verify correct filename
       expect(result.outputFile).toBe("json-test.json");
@@ -120,13 +93,10 @@ describe("AsyncAPI Emitter Core (NEW API)", () => {
     });
 
     it("should generate valid YAML output", async () => {
-      const result = await compileAsyncAPIWithoutErrors(
-        TestSources.basicEvent,
-        {
-          "output-file": "yaml-test",
-          "file-type": SERIALIZATION_FORMAT_OPTION_YAML,
-        },
-      );
+      const result = await compileAsyncAPIWithoutErrors(TestSources.basicEvent, {
+        "output-file": "yaml-test",
+        "file-type": SERIALIZATION_FORMAT_OPTION_YAML,
+      });
 
       // Verify correct filename
       expect(result.outputFile).toBe("yaml-test.yaml");
@@ -140,20 +110,18 @@ describe("AsyncAPI Emitter Core (NEW API)", () => {
     });
 
     it("should default to YAML when no file-type specified", async () => {
-      const result = await compileAsyncAPIWithoutErrors(
-        TestSources.basicEvent,
-        { "output-file": "default-format" },
-      );
+      const result = await compileAsyncAPIWithoutErrors(TestSources.basicEvent, {
+        "output-file": "default-format",
+      });
 
       // Should generate YAML by default
       expect(result.outputFile).toBe("default-format.yaml");
     });
 
     it("should default filename when no output-file specified", async () => {
-      const result = await compileAsyncAPIWithoutErrors(
-        TestSources.basicEvent,
-        { "file-type": SERIALIZATION_FORMAT_OPTION_JSON },
-      );
+      const result = await compileAsyncAPIWithoutErrors(TestSources.basicEvent, {
+        "file-type": SERIALIZATION_FORMAT_OPTION_JSON,
+      });
 
       // Should use default filename "asyncapi"
       expect(result.outputFile).toBe("asyncapi.json");
@@ -162,55 +130,32 @@ describe("AsyncAPI Emitter Core (NEW API)", () => {
 
   describe("Multiple Operations", () => {
     it("should handle multiple operations in single namespace", async () => {
-      const result = await compileAsyncAPIWithoutErrors(
-        TestSources.multipleOperations,
-        {
-          "output-file": "multi",
-          "file-type": SERIALIZATION_FORMAT_OPTION_JSON,
-        },
-      );
+      const result = await compileAsyncAPIWithoutErrors(TestSources.multipleOperations, {
+        "output-file": "multi",
+        "file-type": SERIALIZATION_FORMAT_OPTION_JSON,
+      });
 
       const asyncapiDoc = result.asyncApiDoc;
 
       expect(AsyncAPIAssertions.hasValidStructure(asyncapiDoc)).toBe(true);
       expect(AsyncAPIAssertions.hasSchema(asyncapiDoc, "UserEvent")).toBe(true);
-      expect(AsyncAPIAssertions.hasSchema(asyncapiDoc, "SystemEvent")).toBe(
-        true,
-      );
-      expect(
-        AsyncAPIAssertions.hasOperation(asyncapiDoc, "publishUserEvent"),
-      ).toBe(true);
-      expect(
-        AsyncAPIAssertions.hasOperation(asyncapiDoc, "publishSystemEvent"),
-      ).toBe(true);
-      expect(
-        AsyncAPIAssertions.hasOperation(
-          asyncapiDoc,
-          "subscribeUserNotifications",
-        ),
-      ).toBe(true);
+      expect(AsyncAPIAssertions.hasSchema(asyncapiDoc, "SystemEvent")).toBe(true);
+      expect(AsyncAPIAssertions.hasOperation(asyncapiDoc, "publishUserEvent")).toBe(true);
+      expect(AsyncAPIAssertions.hasOperation(asyncapiDoc, "publishSystemEvent")).toBe(true);
+      expect(AsyncAPIAssertions.hasOperation(asyncapiDoc, "subscribeUserNotifications")).toBe(true);
     });
 
     it("should create unique channels for each operation", async () => {
-      const result = await compileAsyncAPIWithoutErrors(
-        TestSources.multipleOperations,
-        {
-          "output-file": "channels",
-          "file-type": SERIALIZATION_FORMAT_OPTION_JSON,
-        },
-      );
+      const result = await compileAsyncAPIWithoutErrors(TestSources.multipleOperations, {
+        "output-file": "channels",
+        "file-type": SERIALIZATION_FORMAT_OPTION_JSON,
+      });
 
       const asyncapiDoc = result.asyncApiDoc;
 
-      expect(AsyncAPIAssertions.hasChannel(asyncapiDoc, "user.events")).toBe(
-        true,
-      );
-      expect(AsyncAPIAssertions.hasChannel(asyncapiDoc, "system.events")).toBe(
-        true,
-      );
-      expect(
-        AsyncAPIAssertions.hasChannel(asyncapiDoc, "user.notifications"),
-      ).toBe(true);
+      expect(AsyncAPIAssertions.hasChannel(asyncapiDoc, "user.events")).toBe(true);
+      expect(AsyncAPIAssertions.hasChannel(asyncapiDoc, "system.events")).toBe(true);
+      expect(AsyncAPIAssertions.hasChannel(asyncapiDoc, "user.notifications")).toBe(true);
 
       // Test channel uniqueness
       const channelKeys = Object.keys(asyncapiDoc.channels);
@@ -271,23 +216,13 @@ describe("AsyncAPI Emitter Core (NEW API)", () => {
 
       const asyncapiDoc = result.asyncApiDoc;
 
-      expect(AsyncAPIAssertions.hasSchema(asyncapiDoc, "EventWithStatus")).toBe(
+      expect(AsyncAPIAssertions.hasSchema(asyncapiDoc, "EventWithStatus")).toBe(true);
+      expect(AsyncAPIAssertions.schemaHasProperty(asyncapiDoc, "EventWithStatus", "status")).toBe(
         true,
       );
-      expect(
-        AsyncAPIAssertions.schemaHasProperty(
-          asyncapiDoc,
-          "EventWithStatus",
-          "status",
-        ),
-      ).toBe(true);
-      expect(
-        AsyncAPIAssertions.schemaHasProperty(
-          asyncapiDoc,
-          "EventWithStatus",
-          "priority",
-        ),
-      ).toBe(true);
+      expect(AsyncAPIAssertions.schemaHasProperty(asyncapiDoc, "EventWithStatus", "priority")).toBe(
+        true,
+      );
     });
 
     it("should handle utcDateTime types", async () => {

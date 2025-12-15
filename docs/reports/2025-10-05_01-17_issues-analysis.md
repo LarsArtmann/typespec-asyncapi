@@ -1,10 +1,12 @@
 # TypeSpec AsyncAPI Project - Complete Issues Analysis
+
 **Generated:** October 3, 2025  
 **Total Issues:** 239 (119 ESLint errors + 16 code duplications + potential structural issues)
 
 ---
 
 ## 🚨 CRITICAL COMPILATION ISSUES (FIXED ✅)
+
 - [x] **ValidationService.ts syntax errors** - Fixed broken class structure
 - [x] **Build failures** - Now compiles successfully with 442 generated files
 
@@ -13,42 +15,52 @@
 ## 📊 ISSUE BREAKDOWN
 
 ### 🔥 ESLint Issues (119 errors)
+
 **Impact:** Code quality, type safety, maintainability  
 **Priority:** HIGH (87 errors) + MEDIUM (32 errors)
 
 #### Template Expression Safety (43 errors)
+
 `@typescript-eslint/restrict-template-expressions`
+
 - **Files affected:** AsyncAPIEmitter.ts, ValidationService.ts, PerformanceMonitor.ts, etc.
 - **Root cause:** Effect.TS error types in template literals
 - **Fix approach:** Type guards + safe string conversion
 
-#### Nullish Coalescing (58 errors)  
+#### Nullish Coalescing (58 errors)
+
 `@typescript-eslint/prefer-nullish-coalescing`
+
 - **Files affected:** DocumentBuilder.ts, ProcessingService.ts, etc.
 - **Root cause:** Using `||` instead of `??` for null checks
 - **Fix approach:** Systematic `||` → `??` migration
 
 #### Assignment Patterns (9 errors)
+
 `@typescript-eslint/prefer-nullish-coalescing` (??= vs assignment)
+
 - **Files affected:** DocumentBuilder.ts, ProcessingService.ts
 - **Fix approach:** `x = x || y` → `x ??= y`
 
 #### Other Issues (9 errors)
+
 - **This aliasing:** 1 error in ValidationService.ts
 - **Type safety:** Various minor type issues
 
 ---
 
 ### 🔄 Code Duplication Issues (16 clones)
+
 **Impact:** Maintainability, code consistency  
 **Duplication Rate:** 0.49% lines, 0.77% tokens (EXCELLENT ✅)
 
 #### By Category:
+
 1. **Import Statements** (4 clones)
    - Standard imports across similar files
    - **Impact:** Low - Expected pattern
 
-2. **Error Handling Patterns** (3 clones)  
+2. **Error Handling Patterns** (3 clones)
    - Similar try/catch structures
    - **Files:** PerformanceMonitor.ts, asyncapi-validator.ts
    - **Recommendation:** Extract to helper functions
@@ -74,12 +86,13 @@
 ## 🎯 PRIORITIZED TASK LIST (Max 250 tasks)
 
 ### 🚨 IMMEDIATE FIXES (1-10) - HIGH IMPACT
+
 1. **Fix template expression safety** - 43 errors
    - Create safeStringify() utility for Effect errors
    - Apply across all affected files
    - **Estimate:** 4-6 hours
 
-2. **Migrate to nullish coalescing** - 58 errors  
+2. **Migrate to nullish coalescing** - 58 errors
    - Systematic `||` → `??` replacement
    - Focus on DocumentBuilder.ts, ProcessingService.ts
    - **Estimate:** 2-3 hours
@@ -101,6 +114,7 @@
 ### 🔧 MEDIUM PRIORITY (11-50) - MAINTENANCE
 
 #### Code Duplication Cleanup (11-25)
+
 11. Extract common error handling helpers (PerformanceMonitor.ts)
 12. Consolidate validation utilities (DocumentGenerator vs ValidationService)
 13. Create Effect.TS boilerplate helpers
@@ -112,7 +126,8 @@
 19. Unify cloud-binding plugin patterns
 20. Extract schema conversion helpers
 
-#### Performance & Structure (26-40)  
+#### Performance & Structure (26-40)
+
 26. Review Effect.TS binding usage patterns
 27. Optimize import statement organization
 28. Check for unused imports after fixes
@@ -125,6 +140,7 @@
 35. Validate consistent error handling across services
 
 #### Testing & Validation (41-50)
+
 41. Run full test suite after ESLint fixes
 42. Verify all Effect.TS patterns work correctly
 43. Test error handling scenarios
@@ -141,6 +157,7 @@
 ### 📈 LOW PRIORITY (51-100) - ENHANCEMENTS
 
 #### Documentation & Standards (51-65)
+
 51. Update JSDoc for affected functions after fixes
 52. Document new utility functions created
 53. Add type safety examples to documentation
@@ -153,6 +170,7 @@
 60. Create contribution guidelines updates
 
 #### Code Quality Improvements (66-80)
+
 66. Review and optimize all `any` types usage
 67. Add stricter type guards where missing
 68. Review enum vs string literal usage
@@ -165,6 +183,7 @@
 75. Optimize import statements for tree-shaking
 
 #### Architecture Review (81-100)
+
 81. Review service dependencies and coupling
 82. Check for single responsibility violations
 83. Review interface design consistency
@@ -184,13 +203,14 @@
 97. Check for proper error categorization
 98. Review data flow patterns
 99. Validate security considerations
-100. Review scalability considerations
+100.  Review scalability considerations
 
 ---
 
 ### 🚀 FUTURE ENHANCEMENTS (101-250) - NICE TO HAVE
 
 #### Advanced Features (101-150)
+
 101-150. [Various feature enhancements, optimizations, and improvements]
 
 ---
@@ -198,16 +218,19 @@
 ## 🎯 EXECUTION STRATEGY
 
 ### Phase 1: Critical Fixes (Tasks 1-10)
+
 - **Timeline:** 1-2 days
 - **Goal:** Zero ESLint errors
 - **Success metric:** Clean lint output
 
-### Phase 2: Code Quality (Tasks 11-50)  
+### Phase 2: Code Quality (Tasks 11-50)
+
 - **Timeline:** 3-5 days
 - **Goal:** Improved maintainability
 - **Success metric:** Reduced duplication, better patterns
 
 ### Phase 3: Enhancement (Tasks 51-100)
+
 - **Timeline:** 1-2 weeks
 - **Goal:** Production readiness
 - **Success metric:** Documentation, test coverage
@@ -217,6 +240,7 @@
 ## 📊 CURRENT PROJECT STATUS
 
 ### ✅ STRENGTHS
+
 - **Build system:** Working correctly
 - **Type compilation:** Strict mode, no errors
 - **Code duplication:** Excellent (0.49%)
@@ -224,12 +248,14 @@
 - **Test coverage:** Comprehensive (138+ tests)
 
 ### ⚠️ AREAS FOR IMPROVEMENT
+
 - **ESLint compliance:** 119 errors to fix
 - **Type safety:** Template expressions need hardening
 - **Code patterns:** Some inconsistency in nullish handling
 - **Documentation:** Could be enhanced after cleanup
 
 ### 🚀 READINESS LEVEL
+
 - **Alpha:** ✅ Ready (after critical fixes)
 - **Beta:** ⚠️ Needs ESLint compliance
 - **Production:** 🔄 Needs Phase 2 completion

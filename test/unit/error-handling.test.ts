@@ -79,9 +79,7 @@ describe("Error Handling Excellence", () => {
 
     it("should format error for user display", () => {
       const formatted = ErrorFormatters.forUser(testError);
-      expect(formatted).toBe(
-        "Database connection failed. This is a temporary network issue",
-      );
+      expect(formatted).toBe("Database connection failed. This is a temporary network issue");
     });
 
     it("should format error for developer display", () => {
@@ -190,9 +188,7 @@ describe("Error Handling Excellence", () => {
       );
       expect(undefinedResult).toBe(undefined);
 
-      const validResult = await Effect.runPromise(
-        Validators.optionalString("valid", "testField"),
-      );
+      const validResult = await Effect.runPromise(Validators.optionalString("valid", "testField"));
       expect(validResult).toBe("valid");
     });
 
@@ -275,9 +271,7 @@ describe("Error Handling Excellence", () => {
     it("should demonstrate complete error handling pipeline", async () => {
       // Test complete pipeline with error recovery
       const operations = [
-        Effect.fail(
-          EmitterErrors.compilationFailed("Syntax error", "test.tsp"),
-        ),
+        Effect.fail(EmitterErrors.compilationFailed("Syntax error", "test.tsp")),
         Effect.fail(EmitterErrors.invalidAsyncAPI(["Missing title"], {})),
         Effect.succeed("recovered-successfully"),
       ];
@@ -293,9 +287,7 @@ describe("Error Handling Excellence", () => {
       // Test error recovery across multiple components
       const operations = [
         // Simulate different failure modes
-        Effect.fail(
-          EmitterErrors.compilationFailed("Syntax error", "test.tsp"),
-        ),
+        Effect.fail(EmitterErrors.compilationFailed("Syntax error", "test.tsp")),
         Effect.fail(EmitterErrors.invalidAsyncAPI(["Missing title"], {})),
         Effect.succeed("recovered-successfully"),
       ];
@@ -316,9 +308,7 @@ export const errorTestHelpers = {
   /**
    * Create a mock StandardizedError for testing
    */
-  createMockError: (
-    overrides: Partial<StandardizedError> = {},
-  ): StandardizedError => ({
+  createMockError: (overrides: Partial<StandardizedError> = {}): StandardizedError => ({
     what: "Mock error occurred",
     reassure: "This is just a test error",
     why: "Testing error handling functionality",
@@ -332,10 +322,7 @@ export const errorTestHelpers = {
   /**
    * Assert that an Effect operation fails with expected error
    */
-  asyncAssertFailure: async <E>(
-    operation: Effect.Effect<any, E>,
-    expectCode?: string,
-  ) => {
+  asyncAssertFailure: async <E>(operation: Effect.Effect<any, E>, expectCode?: string) => {
     const result = await Effect.runPromise(operation.pipe(Effect.either));
     expect(result._tag).toBe("Left");
     if (result._tag === "Left" && expectCode) {

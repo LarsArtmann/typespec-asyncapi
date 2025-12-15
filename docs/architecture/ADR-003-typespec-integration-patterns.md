@@ -2,7 +2,7 @@
 
 **Status:** Accepted  
 **Date:** 2025-09-01  
-**Deciders:** TypeSpec AsyncAPI Team  
+**Deciders:** TypeSpec AsyncAPI Team
 
 ## Context
 
@@ -22,6 +22,7 @@ We implemented a **Comprehensive TypeSpec Integration Strategy** that follows Ty
 ## Integration Architecture Overview
 
 ### 1. Emitter Entry Point Pattern
+
 ```typescript
 // src/index.ts - Standard TypeSpec emitter entry point
 export async function $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): Promise<void> {
@@ -31,6 +32,7 @@ export async function $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): Pro
 ```
 
 ### 2. TypeSpec Library Definition
+
 ```typescript
 // lib/main.tsp - TypeSpec library definition
 import "../dist/index.js";
@@ -50,6 +52,7 @@ extern dec server(target: Namespace, name: valueof string, config: Record<unknow
 ```
 
 ### 3. State Management Integration
+
 ```typescript
 // src/lib.ts - Library state management
 import { createAsyncAPILibrary } from "@typespec/compiler";
@@ -77,6 +80,7 @@ export const $lib = createAsyncAPILibrary({
 ## Decorator Implementation Patterns
 
 ### 1. Channel Decorator Pattern
+
 ```typescript
 // src/decorators/channel.ts
 export function $channel(context: DecoratorContext, target: Operation, path: StringValue | string): void {
@@ -101,6 +105,7 @@ export function $channel(context: DecoratorContext, target: Operation, path: Str
 ```
 
 ### 2. Configuration Decorator Pattern
+
 ```typescript
 // src/decorators/protocol.ts
 export function $protocol(
@@ -110,7 +115,7 @@ export function $protocol(
 ): void {
   // Type-safe config extraction
   const protocolConfig = extractProtocolConfig(config);
-  
+
   // Validation with diagnostics
   const validation = validateProtocolConfig(protocolConfig);
   if (!validation.valid) {
@@ -125,6 +130,7 @@ export function $protocol(
 ```
 
 ### 3. Namespace Decorator Pattern
+
 ```typescript
 // src/decorators/server.ts
 export function $server(
@@ -153,6 +159,7 @@ export function $server(
 ## AST Processing Integration
 
 ### 1. Program Traversal Pattern
+
 ```typescript
 // src/emitter-with-effect.ts
 const processTypeSpecProgram = (program: Program) =>
@@ -164,7 +171,7 @@ const processTypeSpecProgram = (program: Program) =>
 
     // Extract decorated operations
     const decoratedOps = operations.filter(op => hasAsyncAPIDecorators(op));
-    
+
     // Process each operation through Effect pipeline
     const processedOps = yield* Effect.all(
       decoratedOps.map(op => processOperation(program, op))
@@ -175,6 +182,7 @@ const processTypeSpecProgram = (program: Program) =>
 ```
 
 ### 2. State Retrieval Pattern
+
 ```typescript
 const processOperation = (program: Program, operation: Operation) =>
   Effect.gen(function* () {
@@ -195,6 +203,7 @@ const processOperation = (program: Program, operation: Operation) =>
 ```
 
 ### 3. Model Processing Pattern
+
 ```typescript
 const processModels = (program: Program) =>
   Effect.gen(function* () {
@@ -215,6 +224,7 @@ const processModels = (program: Program) =>
 ## AssetEmitter Integration
 
 ### 1. Asset Management Pattern
+
 ```typescript
 const writeAsyncAPIFiles = (emitter: AssetEmitter, spec: AsyncAPIObject) =>
   Effect.gen(function* () {
@@ -229,7 +239,7 @@ const writeAsyncAPIFiles = (emitter: AssetEmitter, spec: AsyncAPIObject) =>
     // YAML output
     yield* Effect.promise(() =>
       emitter.emitFile({
-        path: "asyncapi.yaml", 
+        path: "asyncapi.yaml",
         content: stringify(spec)
       })
     );
@@ -239,6 +249,7 @@ const writeAsyncAPIFiles = (emitter: AssetEmitter, spec: AsyncAPIObject) =>
 ```
 
 ### 2. TypeEmitter Integration
+
 ```typescript
 class AsyncAPITypeEmitter extends TypeEmitter {
   modelDeclaration(model: Model, name: string): EmittedSourceFile {
@@ -258,6 +269,7 @@ class AsyncAPITypeEmitter extends TypeEmitter {
 ## Error Handling and Diagnostics
 
 ### 1. Diagnostic Reporting Pattern
+
 ```typescript
 // Comprehensive diagnostic categories
 const diagnostics = {
@@ -266,7 +278,7 @@ const diagnostics = {
     messages: { default: "Operation {operationName} requires a channel path" }
   },
   "invalid-protocol-config": {
-    severity: "error", 
+    severity: "error",
     messages: { default: "Invalid protocol configuration: {errors}" }
   },
   "unsupported-protocol": {
@@ -281,6 +293,7 @@ const diagnostics = {
 ```
 
 ### 2. Validation Integration
+
 ```typescript
 const validateTypeSpecInput = (program: Program) =>
   Effect.gen(function* () {
@@ -305,6 +318,7 @@ const validateTypeSpecInput = (program: Program) =>
 ## Performance Optimization Patterns
 
 ### 1. Lazy State Access
+
 ```typescript
 // Only access state when needed
 const getChannelPath = (program: Program, operation: Operation): string | undefined => {
@@ -314,6 +328,7 @@ const getChannelPath = (program: Program, operation: Operation): string | undefi
 ```
 
 ### 2. Batch Processing
+
 ```typescript
 // Process related operations together
 const processOperationBatch = (program: Program, operations: Operation[]) =>
@@ -324,6 +339,7 @@ const processOperationBatch = (program: Program, operations: Operation[]) =>
 ```
 
 ### 3. Memory-Efficient Traversal
+
 ```typescript
 // Stream-like processing for large programs
 const processSourceFiles = function* (program: Program) {
@@ -336,21 +352,25 @@ const processSourceFiles = function* (program: Program) {
 ## Benefits of This Integration Strategy
 
 ### 1. TypeSpec Ecosystem Alignment
+
 - **Standard Patterns**: Follows established TypeSpec emitter conventions
 - **Tool Compatibility**: Works with TypeSpec CLI, Language Server, and IDE extensions
 - **Future-Proof**: Aligned with TypeSpec evolution and best practices
 
 ### 2. Type Safety Throughout
+
 - **Compile-Time Validation**: TypeScript strict mode catches errors early
 - **TypeSpec Type System**: Leverage TypeSpec's rich type information
 - **Effect.TS Integration**: Type-safe error handling and data flow
 
 ### 3. Performance Benefits
+
 - **Lazy Loading**: State accessed only when needed
 - **Efficient Traversal**: Optimized AST processing patterns
 - **Memory Management**: Proper cleanup and resource management
 
 ### 4. Developer Experience
+
 - **Clear Error Messages**: Comprehensive diagnostic reporting
 - **IDE Support**: Full IntelliSense and error highlighting
 - **Debugging**: Clear stack traces and logging integration
@@ -358,14 +378,17 @@ const processSourceFiles = function* (program: Program) {
 ## Alternative Approaches Considered
 
 ### 1. Manual AST Traversal (Rejected)
+
 - **Issues**: Complex, error-prone, doesn't leverage TypeSpec infrastructure
 - **Maintenance**: Requires deep TypeSpec internals knowledge
 
-### 2. Simple String Processing (Rejected)  
+### 2. Simple String Processing (Rejected)
+
 - **Issues**: No type safety, fragile, limited functionality
 - **Scalability**: Can't handle complex TypeSpec constructs
 
 ### 3. External Tool Chain (Rejected)
+
 - **Issues**: Poor integration, complex setup, tool chain fragmentation
 - **User Experience**: Complicated installation and usage
 

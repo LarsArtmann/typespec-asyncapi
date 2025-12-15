@@ -87,12 +87,14 @@ describe("Documentation: Core Concepts Mapping", () => {
         });
 
         // Assert
-        const validation: AsyncAPIValidationResult =
-          await validator.validateAsyncAPI(result.asyncapi!, {
+        const validation: AsyncAPIValidationResult = await validator.validateAsyncAPI(
+          result.asyncapi!,
+          {
             strict: true,
             validateSemantic: true,
             customRules: validator.createTypeSpecValidationRules(),
-          });
+          },
+        );
 
         expect(validation.isValid).toBe(true);
         expect(validation.errors).toHaveLength(0);
@@ -208,9 +210,7 @@ describe("Documentation: Core Concepts Mapping", () => {
         for (const [operationId, operation] of Object.entries(operations)) {
           const channelRef = operation.channel?.$ref;
           if (channelRef) {
-            const channelName = channelRef
-              .replace("#/channels/", "")
-              .replace(/~/g, "/");
+            const channelName = channelRef.replace("#/channels/", "").replace(/~/g, "/");
             expect(Object.keys(channels)).toContain(channelName);
           }
         }
@@ -309,8 +309,7 @@ describe("Documentation: Core Concepts Mapping", () => {
         });
 
         // Assert
-        const channel =
-          result.asyncapi!.channels!["orders/{orderId}/items/{itemId}"];
+        const channel = result.asyncapi!.channels!["orders/{orderId}/items/{itemId}"];
         expect(channel.parameters!.orderId.schema).toEqual({ type: "string" });
         expect(channel.parameters!.itemId.schema).toEqual({
           type: "integer",
@@ -360,17 +359,11 @@ describe("Documentation: Core Concepts Mapping", () => {
                 const errors: string[] = [];
 
                 // Must have both channels and operations
-                if (
-                  !asyncapi.channels ||
-                  Object.keys(asyncapi.channels).length === 0
-                ) {
+                if (!asyncapi.channels || Object.keys(asyncapi.channels).length === 0) {
                   errors.push("Must have at least one channel");
                 }
 
-                if (
-                  !asyncapi.operations ||
-                  Object.keys(asyncapi.operations).length === 0
-                ) {
+                if (!asyncapi.operations || Object.keys(asyncapi.operations).length === 0) {
                   errors.push("Must have at least one operation");
                 }
 
@@ -403,9 +396,7 @@ describe("Documentation: Core Concepts Mapping", () => {
         for (const [operationId, operation] of Object.entries(operations)) {
           const channelRef = operation.channel?.$ref;
           if (channelRef) {
-            const channelName = channelRef
-              .replace("#/channels/", "")
-              .replace(/~/g, "/");
+            const channelName = channelRef.replace("#/channels/", "").replace(/~/g, "/");
             expect(channels[channelName]).toBeDefined();
           }
         }
@@ -430,8 +421,7 @@ describe("Documentation: Core Concepts Mapping", () => {
         expect(asyncapi.operations!.orderStatusUpdated.action).toBe("receive");
 
         // Model structures preserved with proper types
-        const orderStatusSchema =
-          asyncapi.components!.schemas!.OrderStatusEvent;
+        const orderStatusSchema = asyncapi.components!.schemas!.OrderStatusEvent;
         expect(orderStatusSchema.properties!.status).toEqual({
           type: "string",
         });
@@ -492,9 +482,7 @@ describe("Documentation: Core Concepts Mapping", () => {
 
           // Should either succeed with defaults or provide meaningful diagnostics
           if (result.diagnostics.length > 0) {
-            const errors = result.diagnostics.filter(
-              (d) => d.severity === "error",
-            );
+            const errors = result.diagnostics.filter((d) => d.severity === "error");
             expect(errors.length).toBeGreaterThan(0);
           }
         } catch (error) {
@@ -532,9 +520,7 @@ describe("Documentation: Core Concepts Mapping", () => {
 
         // Assert
         compiler.validateCompilationSuccess(result);
-        expect(
-          result.asyncapi!.channels!["deeply/nested/channel"],
-        ).toBeDefined();
+        expect(result.asyncapi!.channels!["deeply/nested/channel"]).toBeDefined();
         expect(result.asyncapi!.operations!.deepOperation).toBeDefined();
       });
     });

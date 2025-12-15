@@ -1,50 +1,36 @@
 {
   "name": "@lars-artmann/typespec-asyncapi",
   "version": "0.0.1",
-  "description": "TypeSpec emitter for AsyncAPI 3.0 specifications",
-  "main": "dist/src/index.js",
-  "type": "module",
-  "types": "dist/src/index.d.ts",
-  "exports": {
-    ".": {
-      "typespec": "./lib/main.tsp",
-      "types": "./dist/src/index.d.ts",
-      "default": "./dist/src/index.js"
-    },
-    "./package.json": "./package.json"
-  },
-  "sideEffects": false,
   "private": false,
-  "tspMain": "lib/main.tsp",
-  "typespec": {
-    "emitter": true,
-    "language": "asyncapi",
-    "emitter-output-dir": "tsp-output/@lars-artmann/typespec-asyncapi",
-    "options": {
-      "output-file": "asyncapi",
-      "file-type": "yaml"
-    }
-  },
+  "description": "TypeSpec emitter for AsyncAPI 3.0 specifications",
   "keywords": [
-    "typespec",
+    "alpha",
+    "amqp",
+    "api",
     "asyncapi",
     "asyncapi3",
+    "code-generation",
     "emitter",
     "event-driven",
-    "api",
-    "kafka",
-    "websockets",
-    "mqtt",
-    "amqp",
-    "microservices",
     "event-streaming",
-    "schema-generation",
-    "code-generation",
-    "specification",
+    "kafka",
+    "microservices",
+    "microsoft-typespec",
+    "mqtt",
     "openapi",
-    "alpha",
-    "microsoft-typespec"
+    "schema-generation",
+    "specification",
+    "typespec",
+    "websockets"
   ],
+  "homepage": "https://github.com/LarsArtmann/typespec-asyncapi#readme",
+  "bugs": {
+    "url": "https://github.com/LarsArtmann/typespec-asyncapi/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LarsArtmann/typespec-asyncapi.git"
+  },
   "author": {
     "name": "Lars Artmann",
     "url": "https://github.com/LarsArtmann"
@@ -56,14 +42,25 @@
     }
   ],
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/LarsArtmann/typespec-asyncapi.git"
+  "sideEffects": false,
+  "type": "module",
+  "main": "dist/src/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "typespec": "./lib/main.tsp",
+      "default": "./dist/src/index.js"
+    },
+    "./package.json": "./package.json"
   },
-  "homepage": "https://github.com/LarsArtmann/typespec-asyncapi#readme",
-  "bugs": {
-    "url": "https://github.com/LarsArtmann/typespec-asyncapi/issues"
-  },
+  "types": "dist/src/index.d.ts",
+  "files": [
+    "CHANGELOG.md",
+    "LICENSE",
+    "README.md",
+    "dist/",
+    "lib/"
+  ],
   "scripts": {
     "build": "bunx tsc -p tsconfig.json",
     "build:watch": "bunx tsc -p tsconfig.json --watch",
@@ -96,19 +93,9 @@
     "postversion": "git push && git push --tags",
     "prepare": "husky"
   },
-  "files": [
-    "dist/",
-    "lib/",
-    "README.md",
-    "CHANGELOG.md",
-    "LICENSE"
-  ],
-  "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org/"
-  },
-  "engines": {
-    "node": ">=20.0.0"
+  "overrides": {
+    "form-data": "^4.0.0",
+    "tough-cookie": "^4.1.4"
   },
   "dependencies": {
     "@asyncapi/parser": "^3.4.0",
@@ -124,18 +111,6 @@
     "openid-client": "^6.8.1",
     "passport-oauth2": "^1.8.0",
     "yaml": "^2.8.2"
-  },
-  "peerDependencies": {
-    "@typespec/versioning": ""
-  },
-  "peerDependenciesMeta": {
-    "@typespec/versioning": {
-      "optional": true
-    }
-  },
-  "overrides": {
-    "form-data": "^4.0.0",
-    "tough-cookie": "^4.1.4"
   },
   "devDependencies": {
     "@asyncapi/cli": "^4.1.1",
@@ -156,5 +131,30 @@
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.49.0",
     "vitest": "^4.0.15"
+  },
+  "peerDependencies": {
+    "@typespec/versioning": ""
+  },
+  "peerDependenciesMeta": {
+    "@typespec/versioning": {
+      "optional": true
+    }
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "tspMain": "lib/main.tsp",
+  "typespec": {
+    "emitter": true,
+    "language": "asyncapi",
+    "emitter-output-dir": "tsp-output/@lars-artmann/typespec-asyncapi",
+    "options": {
+      "output-file": "asyncapi",
+      "file-type": "yaml"
+    }
   }
 }

@@ -14,11 +14,7 @@ import {
   createAsyncAPIValidator,
   type AsyncAPIValidationResult,
 } from "./helpers/asyncapi-validator.js";
-import {
-  TypeSpecFixtures,
-  AsyncAPIFixtures,
-  TestDataGenerator,
-} from "./helpers/test-fixtures.js";
+import { TypeSpecFixtures, AsyncAPIFixtures, TestDataGenerator } from "./helpers/test-fixtures.js";
 
 describe("Documentation: Data Types Mapping", () => {
   let compiler: ReturnType<typeof createTypeSpecTestCompiler>;
@@ -93,8 +89,7 @@ describe("Documentation: Data Types Mapping", () => {
         });
 
         // Assert
-        const message =
-          result.asyncapi!.components!.schemas!.FormattedStringData;
+        const message = result.asyncapi!.components!.schemas!.FormattedStringData;
         const props = message.properties!;
 
         // Alpha version: some formats not supported, but utcDateTime works
@@ -135,8 +130,7 @@ describe("Documentation: Data Types Mapping", () => {
         });
 
         // Assert
-        const message =
-          result.asyncapi!.components!.schemas!.ConstrainedStringData;
+        const message = result.asyncapi!.components!.schemas!.ConstrainedStringData;
         const props = message.properties!;
 
         // Alpha version doesn't support constraint decorators yet
@@ -170,8 +164,7 @@ describe("Documentation: Data Types Mapping", () => {
 
         // Assert
         compiler.validateCompilationSuccess(result);
-        const message =
-          result.asyncapi!.components!.schemas!.subscribeIntegersMessage;
+        const message = result.asyncapi!.components!.schemas!.subscribeIntegersMessage;
         const schema = result.asyncapi!.components!.schemas!.IntegerData;
         const props = schema.properties!;
 
@@ -210,8 +203,7 @@ describe("Documentation: Data Types Mapping", () => {
         });
 
         // Assert
-        const message =
-          result.asyncapi!.components!.schemas!.IntegerConstraintsData;
+        const message = result.asyncapi!.components!.schemas!.IntegerConstraintsData;
         const props = message.properties!;
 
         // Alpha version doesn't support constraint decorators yet
@@ -260,8 +252,7 @@ describe("Documentation: Data Types Mapping", () => {
         });
 
         // Assert
-        const message =
-          result.asyncapi!.components!.schemas!.IntegerVariantsData;
+        const message = result.asyncapi!.components!.schemas!.IntegerVariantsData;
         const props = message.properties!;
 
         // Alpha version: int8/int16/uint types default to string, only int32/int64 work
@@ -406,8 +397,7 @@ describe("Documentation: Data Types Mapping", () => {
         });
 
         // Assert
-        const message =
-          result.asyncapi!.components!.schemas!.BooleanVariantsData;
+        const message = result.asyncapi!.components!.schemas!.BooleanVariantsData;
         const props = message.properties!;
         const required = message.required || [];
 
@@ -483,8 +473,7 @@ describe("Documentation: Data Types Mapping", () => {
         });
 
         // Assert
-        const message =
-          result.asyncapi!.components!.schemas!.DateTimeVariantsData;
+        const message = result.asyncapi!.components!.schemas!.DateTimeVariantsData;
         const props = message.properties!;
 
         // Alpha version: only basic date-time format supported, others default to string
@@ -600,8 +589,7 @@ describe("Documentation: Data Types Mapping", () => {
         });
 
         // Assert
-        const message =
-          result.asyncapi!.components!.schemas!.ConstrainedArrayData;
+        const message = result.asyncapi!.components!.schemas!.ConstrainedArrayData;
         const props = message.properties!;
 
         // Alpha version doesn't support array constraint decorators yet
@@ -727,11 +715,7 @@ describe("Documentation: Data Types Mapping", () => {
         const props = schema.properties!;
 
         expect(props.typeUnion).toEqual({
-          oneOf: [
-            { type: "string" },
-            { type: "integer", format: "int32" },
-            { type: "boolean" },
-          ],
+          oneOf: [{ type: "string" }, { type: "integer", format: "int32" }, { type: "boolean" }],
         });
       });
 
@@ -942,8 +926,7 @@ describe("Documentation: Data Types Mapping", () => {
         });
 
         // Assert
-        const message =
-          result.asyncapi!.components!.schemas!.RecordTypesMessage;
+        const message = result.asyncapi!.components!.schemas!.RecordTypesMessage;
         const props = message.properties!;
 
         expect(props.dynamicObject).toEqual({
@@ -962,8 +945,7 @@ describe("Documentation: Data Types Mapping", () => {
         });
 
         // Assert
-        const message =
-          result.asyncapi!.components!.schemas!.RecordTypesMessage;
+        const message = result.asyncapi!.components!.schemas!.RecordTypesMessage;
         const props = message.properties!;
 
         expect(props.typedRecord).toEqual({
@@ -984,8 +966,7 @@ describe("Documentation: Data Types Mapping", () => {
         });
 
         // Assert
-        const message =
-          result.asyncapi!.components!.schemas!.RecordTypesMessage;
+        const message = result.asyncapi!.components!.schemas!.RecordTypesMessage;
         const props = message.properties!;
 
         expect(props.nestedRecord).toEqual({
@@ -1351,8 +1332,7 @@ describe("Documentation: Data Types Mapping", () => {
     describe("WHEN handling large type definitions", () => {
       it("THEN should handle models with many fields efficiently", async () => {
         // Arrange
-        const largeModelData =
-          TestDataGenerator.generateRandomTestData("large");
+        const largeModelData = TestDataGenerator.generateRandomTestData("large");
         const largeModelCode = TestDataGenerator.generateTestService(
           "LargeModelService",
           largeModelData.operationCount,

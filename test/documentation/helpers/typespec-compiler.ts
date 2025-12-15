@@ -23,13 +23,7 @@
 // //# sourceMappingURL=index.d.ts.map
 import { createTestHost, createTester } from "@typespec/compiler/testing";
 import type { Tester } from "@typespec/compiler/testing";
-import type {
-  Model,
-  Namespace,
-  Operation,
-  Program,
-  Type,
-} from "@typespec/compiler";
+import type { Model, Namespace, Operation, Program, Type } from "@typespec/compiler";
 import { resolvePath } from "@typespec/compiler";
 import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js";
 import { SERIALIZATION_FORMAT_OPTION_JSON } from "../../../src/core/serialization-format-option.js";
@@ -75,9 +69,7 @@ export class TypeSpecDocumentationTestCompiler {
    * Simulate TypeSpec compilation for documentation testing
    * Returns mock results to test documentation patterns
    */
-  async compileTypeSpec(
-    options: TypeSpecTestCompileOptions,
-  ): Promise<TypeSpecCompileResult> {
+  async compileTypeSpec(options: TypeSpecTestCompileOptions): Promise<TypeSpecCompileResult> {
     const { code, emitAsyncAPI = false } = options;
 
     // For documentation testing, we simulate compilation results
@@ -136,9 +128,7 @@ export class TypeSpecDocumentationTestCompiler {
       asyncapi.servers = {};
       patterns.servers.forEach((server) => {
         asyncapi.servers![server.name] = {
-          url:
-            server.config.url ||
-            `${server.config.protocol || "http"}://localhost`,
+          url: server.config.url || `${server.config.protocol || "http"}://localhost`,
           protocol: server.config.protocol || "http",
           description: server.config.description,
         };
@@ -163,8 +153,7 @@ export class TypeSpecDocumentationTestCompiler {
         // Add protocol bindings if protocol configuration exists
         if (op.protocolConfig) {
           channel.bindings = {};
-          channel.bindings[op.protocolConfig.protocol] =
-            op.protocolConfig.config;
+          channel.bindings[op.protocolConfig.protocol] = op.protocolConfig.config;
         }
 
         asyncapi.channels![channelKey] = channel;
@@ -176,11 +165,7 @@ export class TypeSpecDocumentationTestCompiler {
           for (const paramMatch of paramMatches) {
             const paramName = paramMatch[1];
             // Try to extract parameter type from operation definition
-            const paramType = this.extractParameterType(
-              op.name,
-              paramName,
-              code,
-            );
+            const paramType = this.extractParameterType(op.name, paramName, code);
             parameters[paramName] = {
               schema: paramType,
             };
@@ -220,10 +205,7 @@ export class TypeSpecDocumentationTestCompiler {
     };
 
     // Add security schemes to components (parsed from @security decorators)
-    Object.assign(
-      asyncapi.components.securitySchemes!,
-      patterns.securitySchemes || {},
-    );
+    Object.assign(asyncapi.components.securitySchemes!, patterns.securitySchemes || {});
 
     // Add message components from @message decorated models
     patterns.models
@@ -231,10 +213,7 @@ export class TypeSpecDocumentationTestCompiler {
       .forEach((model) => {
         const messageName = model.messageName || model.name;
         // Generate model properties for payload and headers (simplified for tests)
-        const { properties, headers } = this.generateModelPropertiesWithHeaders(
-          model.name,
-          code,
-        );
+        const { properties, headers } = this.generateModelPropertiesWithHeaders(model.name, code);
 
         const message: any = {
           name: messageName,
@@ -354,10 +333,7 @@ export class TypeSpecDocumentationTestCompiler {
     for (const serverStart of serverStarts) {
       const serverName = serverStart.name;
       try {
-        const configStr = this.extractBalancedBraces(
-          code,
-          serverStart.configStart,
-        );
+        const configStr = this.extractBalancedBraces(code, serverStart.configStart);
 
         // Convert to valid JSON by quoting property names
         const lines = configStr.split("\n");
@@ -418,10 +394,7 @@ export class TypeSpecDocumentationTestCompiler {
       let securityConfig: any;
 
       // Extract the config object using balanced brace parsing
-      const configStr = this.extractBalancedBraces(
-        code,
-        securityStart.configStart,
-      );
+      const configStr = this.extractBalancedBraces(code, securityStart.configStart);
 
       try {
         // Try to parse the complex nested configuration
@@ -617,14 +590,8 @@ export class TypeSpecDocumentationTestCompiler {
   /**
    * Generate model properties from TypeSpec code (simplified for tests)
    */
-  private generateModelProperties(
-    modelName: string,
-    code: string,
-  ): Record<string, any> {
-    const { properties } = this.generateModelPropertiesWithHeaders(
-      modelName,
-      code,
-    );
+  private generateModelProperties(modelName: string, code: string): Record<string, any> {
+    const { properties } = this.generateModelPropertiesWithHeaders(modelName, code);
     return properties;
   }
 
@@ -636,10 +603,7 @@ export class TypeSpecDocumentationTestCompiler {
     code: string,
   ): { properties: Record<string, any>; headers: Record<string, any> } {
     // Find the model definition
-    const modelRegex = new RegExp(
-      `model\\s+${modelName}\\s*\\{([^}]+)\\}`,
-      "m",
-    );
+    const modelRegex = new RegExp(`model\\s+${modelName}\\s*\\{([^}]+)\\}`, "m");
     const modelMatch = code.match(modelRegex);
 
     if (!modelMatch) {
@@ -703,8 +667,7 @@ export class TypeSpecDocumentationTestCompiler {
     if (typeSpec === "float32") return { type: "number", format: "float" };
     if (typeSpec === "float64") return { type: "number", format: "double" };
     if (typeSpec === "boolean") return { type: "boolean" };
-    if (typeSpec === "utcDateTime")
-      return { type: "string", format: "date-time" };
+    if (typeSpec === "utcDateTime") return { type: "string", format: "date-time" };
 
     // Handle Record types: Record<T> -> object with additionalProperties
     const recordMatch = typeSpec.match(/^Record<(.+)>$/);
@@ -739,9 +702,7 @@ export class TypeSpecDocumentationTestCompiler {
       } else {
         // Mixed types - use oneOf
         return {
-          oneOf: unionParts.map((part) =>
-            this.mapTypeSpecTypeToJsonSchema(part),
-          ),
+          oneOf: unionParts.map((part) => this.mapTypeSpecTypeToJsonSchema(part)),
         };
       }
     }
@@ -758,11 +719,7 @@ export class TypeSpecDocumentationTestCompiler {
   /**
    * Extract parameter type from operation definition
    */
-  private extractParameterType(
-    operationName: string,
-    paramName: string,
-    code: string,
-  ): any {
+  private extractParameterType(operationName: string, paramName: string, code: string): any {
     // Find the operation definition
     const opRegex = new RegExp(
       `op\\s+${operationName}\\s*\\([^)]*@path\\s+${paramName}:\\s*([^,)]+)`,
@@ -782,16 +739,10 @@ export class TypeSpecDocumentationTestCompiler {
   /**
    * Build complete TypeSpec source code with imports
    */
-  private buildSourceCode(
-    userCode: string,
-    additionalLibraries: string[],
-  ): string {
+  private buildSourceCode(userCode: string, additionalLibraries: string[]): string {
     // With the new testing framework, libraries are loaded via tester config
     // We still need the imports for the source code
-    const standardImports = [
-      'import "@typespec/http";',
-      'import "@typespec/rest";',
-    ];
+    const standardImports = ['import "@typespec/http";', 'import "@typespec/rest";'];
 
     const allImports = [
       ...standardImports,
@@ -812,10 +763,7 @@ export class TypeSpecDocumentationTestCompiler {
   /**
    * Recursively find a namespace by name
    */
-  private findNamespaceRecursive(
-    namespace: Namespace,
-    targetName: string,
-  ): Namespace | undefined {
+  private findNamespaceRecursive(namespace: Namespace, targetName: string): Namespace | undefined {
     if (namespace.name === targetName) {
       return namespace;
     }
@@ -834,10 +782,7 @@ export class TypeSpecDocumentationTestCompiler {
   /**
    * Extract operation from namespace by name
    */
-  getOperation(
-    namespace: Namespace,
-    operationName: string,
-  ): Operation | undefined {
+  getOperation(namespace: Namespace, operationName: string): Operation | undefined {
     return namespace.operations.get(operationName);
   }
 
@@ -878,11 +823,7 @@ export class TypeSpecDocumentationTestCompiler {
   /**
    * Get decorator metadata from a type
    */
-  getDecoratorMetadata(
-    program: Program,
-    type: Type,
-    decoratorName: string,
-  ): any {
+  getDecoratorMetadata(program: Program, type: Type, decoratorName: string): any {
     return program.stateMap(decoratorName).get(type);
   }
 

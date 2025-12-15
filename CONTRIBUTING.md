@@ -9,6 +9,7 @@ We're solving **[Microsoft TypeSpec Issue #2463](https://github.com/microsoft/ty
 ## 🤝 Ways to Contribute
 
 ### 1. Code Contributions
+
 - **Core emitter improvements** - Enhance the main TypeSpec processing pipeline
 - **Plugin development** - Create new protocol bindings (MQTT, AMQP, Redis, etc.)
 - **Performance optimization** - Improve memory usage and processing speed
@@ -16,6 +17,7 @@ We're solving **[Microsoft TypeSpec Issue #2463](https://github.com/microsoft/ty
 - **Test improvements** - Expand test coverage and add edge case testing
 
 ### 2. Documentation
+
 - **User guides** - Improve getting-started and usage documentation
 - **API documentation** - Enhance TypeScript API reference
 - **Examples** - Create real-world usage examples
@@ -23,12 +25,14 @@ We're solving **[Microsoft TypeSpec Issue #2463](https://github.com/microsoft/ty
 - **Architecture docs** - Document design decisions and patterns
 
 ### 3. Community Support
+
 - **Issue triage** - Help classify and reproduce bug reports
 - **Code reviews** - Review pull requests and provide feedback
 - **Questions** - Help answer questions in GitHub Discussions
 - **Testing** - Test Alpha releases and provide feedback
 
 ### 4. Ecosystem Development
+
 - **CI/CD templates** - Create deployment and automation templates
 - **Cloud bindings** - Add support for AWS, GCP, Azure services
 
@@ -88,6 +92,7 @@ typespec-asyncapi/
 ## 📋 Contribution Process
 
 ### 1. Issue First
+
 Before starting work, create or find a relevant GitHub issue:
 
 - **Bug reports** - Describe the problem, steps to reproduce, and expected behavior
@@ -95,7 +100,9 @@ Before starting work, create or find a relevant GitHub issue:
 - **Plugin requests** - Specify the protocol, binding specification, and community need
 
 ### 2. Discussion and Planning
+
 For significant changes:
+
 - Comment on the issue with your proposed approach
 - Get feedback from maintainers and community
 - Consider creating a design document for complex features
@@ -156,7 +163,7 @@ export const processOperation = (operation: Operation): Effect.Effect<AsyncAPIOp
   Effect.gen(function* () {
     const channelPath = yield* extractChannelPath(operation);
     const operationType = yield* determineOperationType(operation);
-    
+
     return {
       action: operationType,
       channel: { $ref: `#/channels/${channelPath}` }
@@ -184,7 +191,7 @@ const validateConfig = (config: unknown): Effect.Effect<ProtocolConfig, Validati
     if (typeof config !== 'object') {
       return yield* Effect.fail(new ValidationError("Config must be object"));
     }
-    
+
     const validConfig = yield* parseProtocolConfig(config);
     return validConfig;
   });
@@ -206,22 +213,22 @@ describe("Channel Decorator", () => {
   it("should process parameterized channel paths", async () => {
     const operation = createMockOperation("publishUserEvent");
     const channelPath = "user.{userId}.events";
-    
+
     const result = await Effect.runPromise(
       processChannelDecorator(operation, channelPath)
     );
-    
+
     expect(result.channelPath).toBe("user.{userId}.events");
     expect(result.parameters).toEqual(["userId"]);
   });
-  
+
   it("should fail gracefully with invalid paths", async () => {
     const operation = createMockOperation("invalidOp");
-    
+
     const result = await Effect.runPromise(
       Effect.either(processChannelDecorator(operation, ""))
     );
-    
+
     expect(result._tag).toBe("Left");
     expect(result.left).toBeInstanceOf(ValidationError);
   });
@@ -267,7 +274,7 @@ bun test --watch
 
 All public APIs must include JSDoc comments:
 
-```typescript
+````typescript
 /**
  * Generates AsyncAPI 3.0 channel object from TypeSpec operation
  *
@@ -292,7 +299,7 @@ export const generateChannel = (
 		operation: Operation,
 		channelPath: string,
     ): Effect.Effect<AsyncAPIChannel, ValidationError>
-```
+````
 
 ### User Documentation
 
@@ -347,6 +354,7 @@ See [Plugin Development Guide](docs/guides/plugin-development.md) for comprehens
 ### Version Strategy
 
 We follow semantic versioning:
+
 - **Major** (1.0.0) - Breaking changes
 - **Minor** (0.1.0) - New features, backward compatible
 - **Patch** (0.1.1) - Bug fixes, backward compatible
@@ -371,6 +379,7 @@ Contributors are recognized in:
 ## 📞 Communication
 
 ### GitHub
+
 - **Issues** - Bug reports and feature requests
 - **Discussions** - Q&A, ideas, and community chat
 - **Pull Requests** - Code review and collaboration
@@ -405,4 +414,4 @@ Every contribution, no matter how small, helps make the TypeSpec AsyncAPI Emitte
 
 **Ready to contribute? Start by checking out [good first issues](https://github.com/LarsArtmann/typespec-asyncapi/labels/good%20first%20issue) and join the discussion!**
 
-*This project is built by the community, for the community. Welcome aboard!*
+_This project is built by the community, for the community. Welcome aboard!_

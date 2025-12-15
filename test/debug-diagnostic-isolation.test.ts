@@ -35,9 +35,7 @@ namespace TestNamespace;
       const serverMissingDiagnostics = diagnostics.filter((d) =>
         d.code?.includes("missing-server-config"),
       );
-      console.log(
-        `🔍 Missing server config diagnostics: ${serverMissingDiagnostics.length}`,
-      );
+      console.log(`🔍 Missing server config diagnostics: ${serverMissingDiagnostics.length}`);
 
       serverMissingDiagnostics.forEach((d, i) => {
         console.log(`\n=== Simple Diagnostic ${i + 1} ===`);
@@ -97,24 +95,16 @@ op testOp(): void;
         console.log("📊 Direct diagnostics count:", diagnostics.length);
 
         // Check if there are any diagnostic codes that look like our custom ones
-        const customDiagnostics = diagnostics.filter((d) =>
-          d.code?.includes("asyncapi"),
-        );
-        console.log(
-          `🔍 Custom AsyncAPI diagnostics: ${customDiagnostics.length}`,
-        );
+        const customDiagnostics = diagnostics.filter((d) => d.code?.includes("asyncapi"));
+        console.log(`🔍 Custom AsyncAPI diagnostics: ${customDiagnostics.length}`);
 
         // Check all diagnostic codes
         const allCodes = diagnostics.map((d) => d.code);
         console.log(`🔍 All diagnostic codes:`, allCodes);
 
         // Check for undefined messages
-        const undefinedMessages = diagnostics.filter(
-          (d) => d.message === undefined,
-        );
-        console.log(
-          `🔍 Diagnostics with undefined messages: ${undefinedMessages.length}`,
-        );
+        const undefinedMessages = diagnostics.filter((d) => d.message === undefined);
+        console.log(`🔍 Diagnostics with undefined messages: ${undefinedMessages.length}`);
 
         diagnostics.forEach((d, i) => {
           console.log(`\n=== Diagnostic ${i + 1} ===`);
@@ -136,13 +126,9 @@ op testOp(): void;
         expect(diagnostics.length).toBeGreaterThan(0);
 
         // Find any undefined diagnostic messages
-        const undefinedDiagnostics = diagnostics.filter(
-          (d) => d.message === undefined,
-        );
+        const undefinedDiagnostics = diagnostics.filter((d) => d.message === undefined);
         if (undefinedDiagnostics.length > 0) {
-          console.log(
-            "❌ Found undefined diagnostic messages - this is the core issue!",
-          );
+          console.log("❌ Found undefined diagnostic messages - this is the core issue!");
 
           // Log problematic diagnostic details
           undefinedDiagnostics.forEach((d, i) => {

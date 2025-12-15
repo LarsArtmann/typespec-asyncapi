@@ -2,19 +2,19 @@ name: Comprehensive CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, master, develop ]
+    branches: [main, master, develop]
   pull_request:
-    branches: [ main, master ]
+    branches: [main, master]
   release:
-    types: [ published ]
+    types: [published]
   schedule:
     # Run security audit daily at 2 AM UTC
-    - cron: '0 2 * * *'
+    - cron: "0 2 * * *"
 
 env:
-  NODE_VERSION: '20'
-  BUN_VERSION: 'latest'
-  REGISTRY_URL: 'https://registry.npmjs.org'
+  NODE_VERSION: "20"
+  BUN_VERSION: "latest"
+  REGISTRY_URL: "https://registry.npmjs.org"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -32,7 +32,7 @@ jobs:
       should-run-performance: ${{ steps.changes.outputs.performance }}
       should-run-security: ${{ steps.changes.outputs.security }}
       cache-key: ${{ steps.cache-info.outputs.cache-key }}
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -67,7 +67,7 @@ jobs:
     runs-on: ["self-hosted", "linux", "x64"]
     needs: setup
     timeout-minutes: 10
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -99,11 +99,11 @@ jobs:
         run: |
           echo "🔍 Running ESLint with production-ready configuration..."
           bun run lint 2>&1 | tee eslint-results.txt
-          
+
           # Extract error and warning counts
           ERRORS=$(grep -o "✖ [0-9]* problems" eslint-results.txt | grep -o "[0-9]*" || echo "0")
           echo "ESLint found $ERRORS issues"
-          
+
           # Fail CI if critical errors found (not warnings)
           if [ "$ERRORS" -gt 0 ]; then
             echo "❌ ESLint found $ERRORS issues that must be fixed"
@@ -124,7 +124,7 @@ jobs:
     runs-on: ["self-hosted", "linux", "x64"]
     needs: setup
     timeout-minutes: 8
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -161,28 +161,28 @@ jobs:
         run: |
           echo "🏗️ Building project..."
           bun run build
-          
+
           echo "✅ Validating build artifacts..."
           if [ ! -d "dist" ]; then
             echo "❌ Build failed - no dist directory found"
             exit 1
           fi
-          
+
           JS_COUNT=$(find dist -name "*.js" | wc -l)
           DTS_COUNT=$(find dist -name "*.d.ts" | wc -l)
-          
+
           echo "📊 Build artifacts: $JS_COUNT JS files, $DTS_COUNT declaration files"
-          
+
           if [ "$JS_COUNT" -eq 0 ]; then
             echo "❌ No JavaScript files generated"
             exit 1
           fi
-          
+
           if [ "$DTS_COUNT" -eq 0 ]; then
             echo "❌ No TypeScript declaration files generated"
             exit 1
           fi
-          
+
           echo "✅ Build artifacts validation passed"
 
   # =============================================================================
@@ -195,9 +195,9 @@ jobs:
     timeout-minutes: 15
     strategy:
       matrix:
-        node-version: ['20', '21']
+        node-version: ["20", "21"]
       fail-fast: false
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -252,7 +252,7 @@ jobs:
     runs-on: ["self-hosted", "linux", "x64"]
     needs: [setup, typecheck]
     timeout-minutes: 20
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -292,15 +292,15 @@ jobs:
       - name: Validate AsyncAPI generation
         run: |
           echo "🔍 Validating generated AsyncAPI specifications..."
-          
+
           # Install AsyncAPI CLI
           npm install -g @asyncapi/cli
-          
+
           # Test comprehensive example
           cd examples/comprehensive-protocols
           bun install
           bun run build
-          
+
           # Validate all generated specs
           if [ -d "tsp-output" ]; then
             find tsp-output -name "*.json" -exec asyncapi validate {} \;
@@ -319,7 +319,7 @@ jobs:
     needs: [setup, test-unit]
     if: needs.setup.outputs.should-run-performance == 'true'
     timeout-minutes: 30
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -363,15 +363,15 @@ jobs:
       - name: Run performance regression tests
         run: |
           echo "⚡ Running performance regression tests..."
-          
+
           # Create test script for performance regression
           cat > performance-test.js << 'EOF'
           import { PerformanceRegressionTester } from './dist/performance/PerformanceRegressionTester.js';
-          
+
           const tester = new PerformanceRegressionTester();
-          
+
           const results = [];
-          
+
           // Test TypeSpec compilation performance
           results.push(await tester.runRegressionTest('typespec_compilation', async () => {
             // Simulate TypeSpec compilation
@@ -379,7 +379,7 @@ jobs:
             await import('./dist/index.js');
             return Date.now() - start;
           }));
-          
+
           // Test memory usage performance
           results.push(await tester.runRegressionTest('memory_usage', async () => {
             const memStart = process.memoryUsage().heapUsed;
@@ -388,21 +388,21 @@ jobs:
             const memEnd = process.memoryUsage().heapUsed;
             return memEnd - memStart;
           }));
-          
+
           // Generate report
           const report = await tester.generateRegressionReport(results);
           console.log(report);
-          
+
           // Check CI validation
           const ciResult = await tester.validateForCi(results);
           if (ciResult.shouldFailBuild) {
             console.error(`❌ Performance regression detected: ${ciResult.reason}`);
             process.exit(1);
           }
-          
+
           console.log('✅ Performance regression tests passed');
           EOF
-          
+
           node performance-test.js
 
       - name: Save performance baselines
@@ -428,7 +428,7 @@ jobs:
     needs: setup
     if: needs.setup.outputs.should-run-security == 'true' || github.event_name == 'schedule'
     timeout-minutes: 10
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -450,22 +450,22 @@ jobs:
         run: |
           echo "🔒 Running Bun security audit..."
           bun audit || true  # Don't fail on audit warnings initially
-          
+
           # Get audit results
           bun audit --json > audit-results.json 2>/dev/null || echo "{}" > audit-results.json
 
       - name: Analyze security vulnerabilities
         run: |
           echo "🔍 Analyzing security vulnerabilities..."
-          
+
           # Count high and critical vulnerabilities
           HIGH_VULNS=$(cat audit-results.json | jq '.vulnerabilities | map(select(.severity == "high")) | length' 2>/dev/null || echo "0")
           CRITICAL_VULNS=$(cat audit-results.json | jq '.vulnerabilities | map(select(.severity == "critical")) | length' 2>/dev/null || echo "0")
-          
+
           echo "🛡️ Security audit results:"
           echo "  - Critical vulnerabilities: $CRITICAL_VULNS"
           echo "  - High vulnerabilities: $HIGH_VULNS"
-          
+
           if [ "$CRITICAL_VULNS" -gt 0 ]; then
             echo "❌ Critical security vulnerabilities found - failing build"
             exit 1
@@ -489,7 +489,7 @@ jobs:
     needs: setup
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     timeout-minutes: 15
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -510,7 +510,7 @@ jobs:
         run: |
           echo "🔍 Checking for outdated dependencies..."
           bun outdated > outdated-deps.txt || true
-          
+
           if [ -s outdated-deps.txt ]; then
             echo "📦 Outdated dependencies found:"
             cat outdated-deps.txt
@@ -531,29 +531,29 @@ jobs:
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: 'chore: update dependencies to latest secure versions'
-          title: 'Automated Dependency Updates'
+          commit-message: "chore: update dependencies to latest secure versions"
+          title: "Automated Dependency Updates"
           body: |
             ## 📦 Automated Dependency Updates
-            
+
             This PR contains automated updates to patch and minor versions of dependencies.
-            
+
             ### Changes
             - Updated dependencies to latest secure versions
             - Only patch and minor version updates included
             - Major version updates require manual review
-            
+
             ### Security
             - All updates have been security audited
             - No known vulnerabilities in updated packages
-            
+
             ### Testing
             This PR will trigger the full CI/CD pipeline including:
             - Unit and integration tests
             - Security vulnerability scanning  
             - Performance regression testing
             - Build artifact validation
-            
+
             Auto-generated by GitHub Actions 🤖
           branch: automated-dependency-updates
           delete-branch: true
@@ -566,7 +566,7 @@ jobs:
     runs-on: ["self-hosted", "linux", "x64"]
     needs: [lint, typecheck, test-unit]
     timeout-minutes: 15
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -602,33 +602,33 @@ jobs:
       - name: Validate build artifacts
         run: |
           echo "✅ Validating build artifacts..."
-          
+
           # Check dist directory exists
           if [ ! -d "dist" ]; then
             echo "❌ Build failed - no dist directory found"
             exit 1
           fi
-          
+
           # Check for JavaScript files
           JS_COUNT=$(find dist -name "*.js" | wc -l)
           if [ "$JS_COUNT" -eq 0 ]; then
             echo "❌ No JavaScript files found in build output"
             exit 1
           fi
-          
+
           # Check for TypeScript declaration files
           DTS_COUNT=$(find dist -name "*.d.ts" | wc -l)
           if [ "$DTS_COUNT" -eq 0 ]; then
             echo "❌ No TypeScript declaration files found"
             exit 1
           fi
-          
+
           # Check main entry point exists
           if [ ! -f "dist/index.js" ]; then
             echo "❌ Main entry point dist/index.js not found"
             exit 1
           fi
-          
+
           # Check package.json exports are valid
           echo "📦 Validating package.json exports..."
           node -e "
@@ -647,7 +647,7 @@ jobs:
             
             console.log('✅ Package.json exports validation passed');
           "
-          
+
           echo "✅ Build artifacts validation completed successfully"
           echo "📊 Generated files:"
           echo "  - JavaScript files: $JS_COUNT"
@@ -657,16 +657,16 @@ jobs:
       - name: Test package installation
         run: |
           echo "📦 Testing package installation..."
-          
+
           # Pack the package
           bun pack
-          
+
           # Test installation in a temporary directory
           mkdir -p /tmp/test-install
           cd /tmp/test-install
           npm init -y
           npm install "$GITHUB_WORKSPACE"/*.tgz
-          
+
           # Test import
           node -e "
             try {
@@ -696,7 +696,7 @@ jobs:
     needs: [build-validation, test-integration, security-audit]
     if: github.event_name == 'release'
     timeout-minutes: 10
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -704,89 +704,89 @@ jobs:
       - name: Validate release tag
         run: |
           echo "🏷️ Validating release tag: ${{ github.event.release.tag_name }}"
-          
+
           TAG="${{ github.event.release.tag_name }}"
-          
+
           # Check tag format (semantic versioning)
           if [[ ! "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.-]+)?$ ]]; then
             echo "❌ Invalid tag format: $TAG"
             echo "Expected format: v1.2.3 or v1.2.3-alpha.1"
             exit 1
           fi
-          
+
           # Check if tag matches package.json version
           PACKAGE_VERSION=$(node -e "console.log(require('./package.json').version)")
           EXPECTED_TAG="v$PACKAGE_VERSION"
-          
+
           if [ "$TAG" != "$EXPECTED_TAG" ]; then
             echo "❌ Tag mismatch: $TAG != $EXPECTED_TAG"
             echo "Release tag must match package.json version"
             exit 1
           fi
-          
+
           echo "✅ Release tag validation passed"
 
       - name: Generate release notes
         run: |
           echo "📝 Generating release notes..."
-          
+
           # Extract version from tag
           VERSION="${{ github.event.release.tag_name }}"
           VERSION="${VERSION#v}"
-          
+
           # Generate comprehensive release notes
           cat > release-notes.md << EOF
           # TypeSpec AsyncAPI Emitter ${VERSION}
-          
+
           **Release Date:** $(date '+%Y-%m-%d')
           **Status:** Production Release
-          
+
           ## 🚀 What's New
-          
+
           This release includes significant improvements to the TypeSpec AsyncAPI emitter:
-          
+
           ### Core Features
           - Enhanced AsyncAPI 3.0 specification generation
           - Improved plugin system with hot-reload capabilities
           - Advanced performance monitoring and memory leak detection
           - Comprehensive security scanning and vulnerability management
-          
+
           ### Performance Improvements
           - Optimized TypeScript compilation performance
           - Reduced memory footprint during large schema processing
           - Enhanced error handling with Effect.TS patterns
-          
+
           ### Developer Experience
           - Updated documentation with comprehensive examples
           - Improved installation guide for all environments
           - Enhanced troubleshooting and debugging capabilities
-          
+
           ## 📊 Technical Metrics
-          
+
           - **Build Artifacts:** JavaScript files with TypeScript declarations
           - **Test Coverage:** 95%+ code coverage maintained  
           - **Security:** Zero known critical vulnerabilities
           - **Performance:** Sub-2s processing for complex schemas
-          
+
           ## 🔧 Installation
-          
+
           \`\`\`bash
           bun add @larsartmann/typespec-asyncapi
           # or
           npm install @larsartmann/typespec-asyncapi
           \`\`\`
-          
+
           ## 📚 Documentation
-          
+
           - [Installation Guide](./docs/installation-guide.md)
           - [API Documentation](./docs/api/index.html)
           - [Example Projects](./examples/)
-          
+
           ---
-          
+
           **Full Changelog:** https://github.com/LarsArtmann/typespec-asyncapi/compare/v0.1.0-alpha...${VERSION}
           EOF
-          
+
           echo "✅ Release notes generated"
 
   publish-npm:
@@ -798,7 +798,7 @@ jobs:
     environment:
       name: npm-production
       url: https://www.npmjs.com/package/@larsartmann/typespec-asyncapi
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -823,13 +823,13 @@ jobs:
       - name: Publish to NPM
         run: |
           echo "📦 Publishing to NPM registry..."
-          
+
           # Configure npm authentication
           echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
-          
+
           # Publish package
           npm publish --access public
-          
+
           echo "✅ Package published successfully to NPM"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -843,23 +843,23 @@ jobs:
     needs: [build-validation, test-integration, security-audit, performance-tests]
     if: always()
     timeout-minutes: 5
-    
+
     steps:
       - name: Evaluate pipeline status
         run: |
           echo "📊 Evaluating overall pipeline status..."
-          
+
           # Check individual job statuses
           BUILD_STATUS="${{ needs.build-validation.result }}"
           TEST_STATUS="${{ needs.test-integration.result }}"
           SECURITY_STATUS="${{ needs.security-audit.result }}"
           PERF_STATUS="${{ needs.performance-tests.result }}"
-          
+
           echo "Build: $BUILD_STATUS"
           echo "Tests: $TEST_STATUS"
           echo "Security: $SECURITY_STATUS"
           echo "Performance: $PERF_STATUS"
-          
+
           # Determine overall status
           if [[ "$BUILD_STATUS" == "failure" || "$TEST_STATUS" == "failure" || "$SECURITY_STATUS" == "failure" ]]; then
             echo "OVERALL_STATUS=failure" >> $GITHUB_ENV
@@ -875,30 +875,30 @@ jobs:
       - name: Generate pipeline report
         run: |
           echo "📊 Generating pipeline execution report..."
-          
+
           cat > pipeline-report.md << EOF
           # CI/CD Pipeline Execution Report
-          
+
           **Repository:** ${{ github.repository }}
           **Branch/Tag:** ${{ github.ref_name }}
           **Commit:** ${{ github.sha }}
           **Triggered by:** ${{ github.event_name }}
           **Execution Time:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')
-          
+
           ## Pipeline Status: ${{ env.OVERALL_STATUS }}
-          
+
           ### Job Results
           - **Build Validation:** ${{ needs.build-validation.result }}
           - **Integration Tests:** ${{ needs.test-integration.result }}  
           - **Security Audit:** ${{ needs.security-audit.result }}
           - **Performance Tests:** ${{ needs.performance-tests.result }}
-          
+
           ### Quality Metrics
           - **TypeScript:** Strict mode compilation ✅
           - **ESLint:** Production-ready configuration ✅
           - **Test Coverage:** 95%+ maintained ✅
           - **Security Vulnerabilities:** Zero critical issues ✅
-          
+
           ---
           🤖 Generated by GitHub Actions
           EOF

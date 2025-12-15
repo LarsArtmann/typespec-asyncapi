@@ -20,12 +20,12 @@ import type { AsyncAPIProtocolType } from "@larsartmann/typespec-asyncapi";
 export interface ProtocolPlugin {
   readonly name: AsyncAPIProtocolType;
   readonly version: string;
-  
+
   // Optional binding generators
   generateOperationBinding?: (operation: unknown) => Effect.Effect<Record<string, unknown>, Error>;
   generateMessageBinding?: (message: unknown) => Effect.Effect<Record<string, unknown>, Error>;
   generateServerBinding?: (server: unknown) => Effect.Effect<Record<string, unknown>, Error>;
-  
+
   // Optional validation
   validateConfig?: (config: unknown) => Effect.Effect<boolean, Error>;
 }
@@ -79,11 +79,11 @@ interface MQTTServerBinding {
 export const mqttPlugin: ProtocolPlugin = {
   name: "mqtt",
   version: "1.0.0",
-  
+
   generateOperationBinding: (operation: unknown) =>
     Effect.gen(function* () {
       yield* Effect.log("🔧 Generating MQTT operation binding");
-      
+
       // Extract operation-specific data
       // In real implementation, you'd extract from TypeSpec operation
       const binding: MQTTOperationBinding = {
@@ -92,45 +92,45 @@ export const mqttPlugin: ProtocolPlugin = {
         messageExpiryInterval: 60, // 60 seconds
         bindingVersion: "0.2.0"
       };
-      
+
       return { mqtt: binding };
     }),
-    
+
   generateMessageBinding: (message: unknown) =>
     Effect.gen(function* () {
       yield* Effect.log("📨 Generating MQTT message binding");
-      
+
       const binding: MQTTMessageBinding = {
         payloadFormatIndicator: 1, // UTF-8 string
         contentType: "application/json",
         bindingVersion: "0.2.0"
       };
-      
+
       return { mqtt: binding };
     }),
-    
+
   generateServerBinding: (server: unknown) =>
     Effect.gen(function* () {
       yield* Effect.log("🖥️  Generating MQTT server binding");
-      
+
       const binding: MQTTServerBinding = {
         clientId: "typespec-asyncapi-client",
         cleanSession: true,
         keepAlive: 60,
         bindingVersion: "0.2.0"
       };
-      
+
       return { mqtt: binding };
     }),
-    
+
   validateConfig: (config: unknown) =>
     Effect.gen(function* () {
       yield* Effect.log("✅ Validating MQTT configuration");
-      
+
       // Implement validation logic
       if (typeof config === 'object' && config !== null) {
         const mqttConfig = config as Record<string, unknown>;
-        
+
         // Validate QoS levels
         if ('qos' in mqttConfig) {
           const qos = mqttConfig.qos;
@@ -139,10 +139,10 @@ export const mqttPlugin: ProtocolPlugin = {
           }
           return false;
         }
-        
+
         return true;
       }
-      
+
       return false;
     })
 };
@@ -171,11 +171,11 @@ await registerMqttPlugin();
 export const redisPlugin: ProtocolPlugin = {
   name: "redis",
   version: "1.0.0",
-  
+
   generateOperationBinding: (operation: unknown) =>
     Effect.gen(function* () {
       yield* Effect.log("🔧 Generating Redis Streams operation binding");
-      
+
       // Redis Streams specific binding
       const binding = {
         stream: "events-stream",
@@ -185,10 +185,10 @@ export const redisPlugin: ProtocolPlugin = {
         maxLength: 10000,
         bindingVersion: "0.1.0"
       };
-      
+
       return { redis: binding };
     }),
-    
+
   generateMessageBinding: (message: unknown) =>
     Effect.gen(function* () {
       const binding = {
@@ -197,7 +197,7 @@ export const redisPlugin: ProtocolPlugin = {
         compression: "gzip",
         bindingVersion: "0.1.0"
       };
-      
+
       return { redis: binding };
     })
 };
@@ -209,11 +209,11 @@ export const redisPlugin: ProtocolPlugin = {
 export const sqsPlugin: ProtocolPlugin = {
   name: "sqs",
   version: "1.0.0",
-  
+
   generateOperationBinding: (operation: unknown) =>
     Effect.gen(function* () {
       yield* Effect.log("🔧 Generating AWS SQS operation binding");
-      
+
       const binding = {
         queueUrl: "https://sqs.us-east-1.amazonaws.com/123456789/my-queue",
         region: "us-east-1",
@@ -222,10 +222,10 @@ export const sqsPlugin: ProtocolPlugin = {
         visibilityTimeout: 30,
         bindingVersion: "0.1.0"
       };
-      
+
       return { sqs: binding };
     }),
-    
+
   generateServerBinding: (server: unknown) =>
     Effect.gen(function* () {
       const binding = {
@@ -235,18 +235,18 @@ export const sqsPlugin: ProtocolPlugin = {
         endpoint: "https://sqs.us-east-1.amazonaws.com",
         bindingVersion: "0.1.0"
       };
-      
+
       return { sqs: binding };
     }),
-    
+
   validateConfig: (config: unknown) =>
     Effect.gen(function* () {
       // Validate AWS SQS configuration
       const sqsConfig = config as Record<string, unknown>;
-      
+
       const requiredFields = ['queueUrl', 'region'];
       const hasRequired = requiredFields.every(field => field in sqsConfig);
-      
+
       return hasRequired;
     })
 };
@@ -272,22 +272,22 @@ const extractOperationData = (operation: Operation) => {
 export const advancedPlugin: ProtocolPlugin = {
   name: "advanced",
   version: "1.0.0",
-  
+
   generateOperationBinding: (operation: unknown) =>
     Effect.gen(function* () {
       // Cast to TypeSpec Operation type
       const tsOperation = operation as Operation;
       const opData = extractOperationData(tsOperation);
-      
+
       yield* Effect.log(`Processing operation: ${opData.name}`);
-      
+
       // Generate binding based on operation data
       const binding = {
         operationName: opData.name,
         namespace: opData.namespace,
         // ... protocol-specific configuration
       };
-      
+
       return { advanced: binding };
     })
 };
@@ -311,7 +311,7 @@ const processMessageBinding = (message: unknown) =>
   Effect.gen(function* () {
     const model = message as Model;
     const msgData = extractMessageData(model);
-    
+
     // Create binding based on message structure
     const binding = {
       messageName: msgData.name,
@@ -319,7 +319,7 @@ const processMessageBinding = (message: unknown) =>
       validation: "strict",
       // ... additional message configuration
     };
-    
+
     return { custom: binding };
   });
 ```
@@ -351,15 +351,15 @@ const validatePluginConfig = (config: unknown): Effect.Effect<PluginConfig, Erro
     if (typeof config !== 'object' || config === null) {
       return yield* Effect.fail(new Error("Config must be an object"));
     }
-    
+
     const cfg = config as Record<string, unknown>;
-    
+
     if (typeof cfg.endpoint !== 'string') {
       return yield* Effect.fail(new Error("endpoint is required and must be a string"));
     }
-    
+
     // ... additional validation
-    
+
     return cfg as PluginConfig;
   });
 ```
@@ -370,13 +370,13 @@ const validatePluginConfig = (config: unknown): Effect.Effect<PluginConfig, Erro
 export const environmentAwarePlugin: ProtocolPlugin = {
   name: "environment-aware",
   version: "1.0.0",
-  
+
   generateServerBinding: (server: unknown) =>
     Effect.gen(function* () {
       // Environment-specific configuration
       const environment = process.env.NODE_ENV || "development";
-      
-      const binding = environment === "production" 
+
+      const binding = environment === "production"
         ? {
             url: process.env.PROD_SERVER_URL,
             ssl: true,
@@ -387,7 +387,7 @@ export const environmentAwarePlugin: ProtocolPlugin = {
             ssl: false,
             connectionPool: 2
           };
-      
+
       return { "environment-aware": { ...binding, environment } };
     })
 };
@@ -404,11 +404,11 @@ import { mqttPlugin } from "./mqtt-plugin.js";
 describe("MQTT Plugin", () => {
   it("should generate operation binding", async () => {
     const mockOperation = { name: "publishMessage" };
-    
+
     const result = await Effect.runPromise(
       mqttPlugin.generateOperationBinding!(mockOperation)
     );
-    
+
     expect(result).toEqual({
       mqtt: {
         qos: 1,
@@ -418,14 +418,14 @@ describe("MQTT Plugin", () => {
       }
     });
   });
-  
+
   it("should validate configuration", async () => {
     const validConfig = { qos: 1, retain: true };
-    
+
     const isValid = await Effect.runPromise(
       mqttPlugin.validateConfig!(validConfig)
     );
-    
+
     expect(isValid).toBe(true);
   });
 });
@@ -441,12 +441,12 @@ describe("Plugin Integration", () => {
   beforeAll(async () => {
     await Effect.runPromise(pluginRegistry.register(mqttPlugin));
   });
-  
+
   it("should register plugin successfully", async () => {
     const plugin = await Effect.runPromise(
       pluginRegistry.getPlugin("mqtt")
     );
-    
+
     expect(plugin).toBeDefined();
     expect(plugin?.name).toBe("mqtt");
     expect(plugin?.version).toBe("1.0.0");
@@ -482,7 +482,7 @@ my-asyncapi-plugin/
   "types": "dist/index.d.ts",
   "keywords": [
     "typespec",
-    "asyncapi", 
+    "asyncapi",
     "mqtt",
     "plugin",
     "event-driven"
@@ -503,7 +503,7 @@ my-asyncapi-plugin/
 
 Create comprehensive README with:
 
-```markdown
+````markdown
 # TypeSpec AsyncAPI MQTT Plugin
 
 MQTT protocol plugin for TypeSpec AsyncAPI Emitter following AsyncAPI MQTT Binding v0.2.0 specification.
@@ -512,7 +512,7 @@ MQTT protocol plugin for TypeSpec AsyncAPI Emitter following AsyncAPI MQTT Bindi
 
 ```bash
 bun add @your-org/typespec-asyncapi-mqtt-plugin
-```
+````
 
 ## Usage
 
@@ -538,7 +538,8 @@ await pluginRegistry.register(mqttPlugin);
 @publish
 op publishTemperature(): TemperatureReading;
 ```
-```
+
+````
 
 ## Best Practices
 
@@ -556,7 +557,7 @@ op publishTemperature(): TemperatureReading;
 const robustPlugin: ProtocolPlugin = {
   name: "robust",
   version: "1.0.0",
-  
+
   generateOperationBinding: (operation: unknown) =>
     Effect.gen(function* () {
       try {
@@ -569,7 +570,7 @@ const robustPlugin: ProtocolPlugin = {
         return { robust: { fallback: true } };
       }
     }),
-    
+
   validateConfig: (config: unknown) =>
     Effect.gen(function* () {
       return yield* Effect.try(() => {
@@ -581,7 +582,7 @@ const robustPlugin: ProtocolPlugin = {
       );
     })
 };
-```
+````
 
 ### 3. Performance Optimization
 
@@ -593,11 +594,13 @@ const robustPlugin: ProtocolPlugin = {
 ## Community Plugins
 
 ### Existing Plugins
+
 - **Kafka Plugin** (Built-in) - Apache Kafka protocol support
-- **WebSocket Plugin** (Built-in) - WebSocket protocol support  
+- **WebSocket Plugin** (Built-in) - WebSocket protocol support
 - **HTTP Plugin** (Built-in) - HTTP protocol support
 
 ### Community Contributions
+
 - **MQTT Plugin** - MQTT v3.1.1 and v5.0 support
 - **Redis Plugin** - Redis Streams and Pub/Sub
 - **RabbitMQ Plugin** - AMQP 0.9.1 support
@@ -608,7 +611,7 @@ const robustPlugin: ProtocolPlugin = {
 
 1. **Fork** the TypeSpec AsyncAPI repository
 2. **Create** your plugin in a separate package
-3. **Test** thoroughly with real-world scenarios  
+3. **Test** thoroughly with real-world scenarios
 4. **Document** usage patterns and examples
 5. **Share** with the community
 

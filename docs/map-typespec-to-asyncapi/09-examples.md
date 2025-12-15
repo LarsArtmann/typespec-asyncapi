@@ -13,8 +13,8 @@ import "@larsartmann/typespec-asyncapi";
 
 using TypeSpec.AsyncAPI;
 
-@service({ 
-  title: "E-Commerce Order Processing", 
+@service({
+  title: "E-Commerce Order Processing",
   version: "1.0.0",
   description: "Event-driven order processing system for e-commerce platform"
 })
@@ -68,26 +68,26 @@ model OrderCreatedEvent {
   eventType: "order.created";
   eventVersion: "1.0";
   occurredAt: utcDateTime;
-  
+
   // Order data
   orderId: string;
   customerId: string;
   orderNumber: string;
   orderTotal: decimal;
   currency: "USD" | "EUR" | "GBP";
-  
+
   // Order details
   items: OrderItem[];
   shippingAddress: Address;
   billingAddress: Address;
-  
+
   // Metadata
   source: "web" | "mobile" | "api";
   correlationId?: string;
 }
 
 @message({
-  name: "PaymentProcessedEvent", 
+  name: "PaymentProcessedEvent",
   title: "Payment Processed Event",
   description: "Fired when payment processing completes"
 })
@@ -96,27 +96,27 @@ model PaymentProcessedEvent {
   eventType: "payment.processed";
   eventVersion: "1.0";
   occurredAt: utcDateTime;
-  
+
   // Payment data
   paymentId: string;
   orderId: string;
   amount: decimal;
   currency: string;
   status: "succeeded" | "failed" | "requires_action";
-  
+
   // Payment method
   paymentMethod: {
     type: "card" | "bank_transfer" | "digital_wallet";
     last4?: string;
     brand?: string;
   };
-  
+
   correlationId?: string;
 }
 
 @message({
   name: "InventoryReservedEvent",
-  title: "Inventory Reserved Event", 
+  title: "Inventory Reserved Event",
   description: "Fired when inventory is successfully reserved for an order"
 })
 model InventoryReservedEvent {
@@ -124,7 +124,7 @@ model InventoryReservedEvent {
   eventType: "inventory.reserved";
   eventVersion: "1.0";
   occurredAt: utcDateTime;
-  
+
   reservationId: string;
   orderId: string;
   items: {
@@ -132,7 +132,7 @@ model InventoryReservedEvent {
     quantityReserved: int32;
     reservationExpiry: utcDateTime;
   }[];
-  
+
   correlationId?: string;
 }
 
@@ -150,7 +150,7 @@ op publishOrderEvent(@body event: OrderCreatedEvent): void;
 
 @protocol({
   type: "kafka",
-  topic: "ecommerce.payments.events", 
+  topic: "ecommerce.payments.events",
   partitionKey: "orderId",
   acks: "all"
 })
@@ -216,7 +216,7 @@ channels:
         partitions: 12
         replicas: 3
         bindingVersion: "0.4.0"
-        
+
   payments.events:
     address: ecommerce.payments.events
     description: Payment processing events
@@ -229,7 +229,7 @@ channels:
         partitions: 6
         replicas: 3
         bindingVersion: "0.4.0"
-        
+
   inventory.events:
     address: ecommerce.inventory.events
     description: Inventory management events
@@ -257,7 +257,7 @@ operations:
           type: string
           description: Customer ID for partitioning
         bindingVersion: "0.4.0"
-        
+
   publishPaymentEvent:
     action: send
     channel:
@@ -270,7 +270,7 @@ operations:
           type: string
           description: Order ID for partitioning
         bindingVersion: "0.4.0"
-        
+
   handleOrderCreated:
     action: receive
     channel:
@@ -281,7 +281,7 @@ operations:
         groupId: inventory-service
         autoOffsetReset: earliest
         bindingVersion: "0.4.0"
-        
+
   publishInventoryEvent:
     action: send
     channel:
@@ -293,7 +293,7 @@ operations:
           type: string
           description: Order ID for partitioning
         bindingVersion: "0.4.0"
-        
+
   handlePaymentProcessed:
     action: receive
     channel:
@@ -332,7 +332,7 @@ components:
                 unitPrice: "149.99"
                 totalPrice: "149.99"
             source: "web"
-            
+
   schemas:
     OrderCreatedEvent:
       type: object
@@ -408,7 +408,7 @@ using TypeSpec.AsyncAPI;
 
 @service({
   title: "IoT Device Management System",
-  version: "2.0.0", 
+  version: "2.0.0",
   description: "Real-time IoT device monitoring and management"
 })
 @server("mqtt-broker", {
@@ -417,7 +417,7 @@ using TypeSpec.AsyncAPI;
   description: "MQTT broker for IoT communications"
 })
 @server("websocket-gateway", {
-  url: "wss://iot-gateway.example.com/ws", 
+  url: "wss://iot-gateway.example.com/ws",
   protocol: "wss",
   description: "WebSocket gateway for real-time monitoring"
 })
@@ -426,7 +426,7 @@ namespace IoT.DeviceManagement;
 // Device Models
 enum DeviceType {
   TemperatureSensor: "temperature_sensor",
-  HumiditySensor: "humidity_sensor", 
+  HumiditySensor: "humidity_sensor",
   MotionDetector: "motion_detector",
   SmartThermostat: "smart_thermostat",
   SecurityCamera: "security_camera"
@@ -468,18 +468,18 @@ model DeviceTelemetryEvent {
   eventId: string;
   eventType: "device.telemetry";
   timestamp: utcDateTime;
-  
+
   deviceId: string;
   deviceType: DeviceType;
   location: DeviceLocation;
-  
+
   readings: SensorReading[];
   batteryLevel?: int32;
   signalStrength?: int32;
 }
 
 @message({
-  name: "DeviceStatusEvent", 
+  name: "DeviceStatusEvent",
   title: "Device Status Change",
   description: "Device online/offline status changes"
 })
@@ -487,7 +487,7 @@ model DeviceStatusEvent {
   eventId: string;
   eventType: "device.status.changed";
   timestamp: utcDateTime;
-  
+
   deviceId: string;
   deviceType: DeviceType;
   previousStatus: DeviceStatus;
@@ -498,7 +498,7 @@ model DeviceStatusEvent {
 
 @message({
   name: "DeviceCommandEvent",
-  title: "Device Command", 
+  title: "Device Command",
   description: "Commands sent to devices"
 })
 model DeviceCommandEvent {
@@ -523,7 +523,7 @@ op receiveDeviceTelemetry(@path deviceId: string): DeviceTelemetryEvent;
 
 @protocol({
   type: "mqtt",
-  topic: "devices/{deviceId}/status", 
+  topic: "devices/{deviceId}/status",
   qos: 2,
   retain: true
 })
@@ -602,7 +602,7 @@ servers:
         cleanSession: false
         keepAlive: 60
         bindingVersion: "0.1.0"
-        
+
   websocket-gateway:
     host: iot-gateway.example.com
     pathname: /ws
@@ -626,7 +626,7 @@ channels:
       mqtt:
         retain: false
         bindingVersion: "0.1.0"
-        
+
   device.status:
     address: devices/{deviceId}/status
     parameters:
@@ -640,7 +640,7 @@ channels:
       mqtt:
         retain: true
         bindingVersion: "0.1.0"
-        
+
   device.commands:
     address: devices/{deviceId}/commands
     parameters:
@@ -654,7 +654,7 @@ channels:
       mqtt:
         retain: false
         bindingVersion: "0.1.0"
-        
+
   realtime.telemetry:
     address: /realtime/telemetry
     description: Real-time telemetry data stream
@@ -668,7 +668,7 @@ channels:
               type: string
               pattern: '^Bearer .+'
         bindingVersion: "0.1.0"
-        
+
   realtime.alerts:
     address: /realtime/alerts
     description: Real-time alert notifications
@@ -693,7 +693,7 @@ operations:
       mqtt:
         qos: 1
         bindingVersion: "0.1.0"
-        
+
   receiveDeviceStatus:
     action: receive
     channel:
@@ -703,7 +703,7 @@ operations:
       mqtt:
         qos: 2
         bindingVersion: "0.1.0"
-        
+
   sendDeviceCommand:
     action: send
     channel:
@@ -713,7 +713,7 @@ operations:
       mqtt:
         qos: 1
         bindingVersion: "0.1.0"
-        
+
   streamTelemetryData:
     action: send
     channel:
@@ -722,7 +722,7 @@ operations:
     bindings:
       ws:
         bindingVersion: "0.1.0"
-        
+
   streamAlerts:
     action: send
     channel:
@@ -809,7 +809,7 @@ components:
         - deviceType
         - location
         - readings
-        
+
     DeviceType:
       type: string
       enum:
@@ -856,7 +856,7 @@ enum OrderType {
 
 enum OrderStatus {
   Pending: "pending",
-  PartiallyFilled: "partially_filled", 
+  PartiallyFilled: "partially_filled",
   Filled: "filled",
   Cancelled: "cancelled",
   Rejected: "rejected"
@@ -878,7 +878,7 @@ model MarketDataEvent {
   eventId: string;
   eventType: "market.data";
   timestamp: utcDateTime;
-  
+
   instrument: TradingInstrument;
   bidPrice: decimal;
   askPrice: decimal;
@@ -892,30 +892,30 @@ model MarketDataEvent {
 
 @message({
   name: "OrderEvent",
-  title: "Order Event", 
+  title: "Order Event",
   description: "Order lifecycle events"
 })
 model OrderEvent {
   eventId: string;
   eventType: "order.created" | "order.updated" | "order.filled" | "order.cancelled";
   timestamp: utcDateTime;
-  
+
   orderId: string;
   clientOrderId: string;
   accountId: string;
   instrument: TradingInstrument;
-  
+
   side: OrderSide;
   orderType: OrderType;
   status: OrderStatus;
-  
+
   quantity: decimal;
   filledQuantity: decimal;
   remainingQuantity: decimal;
-  
+
   price?: decimal;
   averageFillPrice?: decimal;
-  
+
   correlationId?: string;
 }
 
@@ -928,19 +928,19 @@ model TradeExecutionEvent {
   eventId: string;
   eventType: "trade.executed";
   timestamp: utcDateTime;
-  
+
   tradeId: string;
   orderId: string;
   instrument: TradingInstrument;
-  
+
   side: OrderSide;
   quantity: decimal;
   price: decimal;
   value: decimal;
-  
+
   buyerAccountId: string;
   sellerAccountId: string;
-  
+
   executionTime: utcDateTime;
   sequenceNumber: int64;
 }
@@ -966,7 +966,7 @@ op receiveMarketData(@path exchange: string): MarketDataEvent;
   acks: "all",
   enableIdempotence: true
 })
-@channel("orders") 
+@channel("orders")
 @publish
 op publishOrderEvent(@body order: OrderEvent): void;
 
@@ -981,7 +981,7 @@ op processOrderEvent(): OrderEvent;
 
 // Trade execution
 @protocol({
-  type: "kafka", 
+  type: "kafka",
   topic: "trading.executions",
   partitionKey: "instrument.symbol",
   acks: "all"
@@ -1020,16 +1020,16 @@ model PositionUpdateEvent {
   eventId: string;
   eventType: "position.updated";
   timestamp: utcDateTime;
-  
+
   accountId: string;
   instrument: TradingInstrument;
-  
+
   position: decimal;
   averageCost: decimal;
   marketValue: decimal;
   unrealizedPnL: decimal;
   realizedPnL: decimal;
-  
+
   lastUpdateTime: utcDateTime;
 }
 ```
@@ -1072,7 +1072,7 @@ channels:
           min.insync.replicas: 2
           unclean.leader.election.enable: false
         bindingVersion: "0.4.0"
-        
+
   orders:
     address: trading.orders
     description: Order lifecycle events
@@ -1084,7 +1084,7 @@ channels:
           compression.type: gzip
           retention.ms: 604800000
         bindingVersion: "0.4.0"
-        
+
   executions:
     address: trading.executions
     description: Trade execution events
@@ -1096,7 +1096,7 @@ channels:
           compression.type: gzip
           cleanup.policy: compact
         bindingVersion: "0.4.0"
-        
+
   positions.realtime:
     address: /trading/positions/{accountId}
     parameters:
@@ -1137,7 +1137,7 @@ operations:
     x-performance:
       latencyTarget: 1ms
       throughputTarget: 1000000msg/s
-      
+
   publishOrderEvent:
     action: send
     channel:
@@ -1154,7 +1154,7 @@ operations:
         bindingVersion: "0.4.0"
     x-performance:
       latencyTarget: 5ms
-      
+
   processOrderEvent:
     action: receive
     channel:
@@ -1166,7 +1166,7 @@ operations:
         enableAutoCommit: false
         maxPollRecords: 1000
         bindingVersion: "0.4.0"
-        
+
   publishTradeExecution:
     action: send
     channel:
@@ -1180,7 +1180,7 @@ operations:
           type: string
           description: Instrument symbol for partitioning
         bindingVersion: "0.4.0"
-        
+
   monitorTradeExecution:
     action: receive
     channel:
@@ -1191,7 +1191,7 @@ operations:
         groupId: risk-management-system
         autoOffsetReset: earliest
         bindingVersion: "0.4.0"
-        
+
   streamPositionUpdate:
     action: send
     channel:
@@ -1216,7 +1216,7 @@ components:
       x-performance:
         compressionRatio: 0.3
         avgSizeBytes: 150
-        
+
   schemas:
     MarketDataEvent:
       type: object
@@ -1327,10 +1327,11 @@ asyncapi generate fromTemplate asyncapi.yaml @asyncapi/nodejs-template
 These examples demonstrate:
 
 1. **E-Commerce System**: Complete order processing workflow with Kafka
-2. **IoT Device Management**: Multi-protocol (MQTT/WebSocket) real-time system  
+2. **IoT Device Management**: Multi-protocol (MQTT/WebSocket) real-time system
 3. **Financial Trading**: High-performance, low-latency trading system
 
 Each example shows:
+
 - ✅ Proper TypeSpec modeling techniques
 - ✅ Protocol-specific configurations
 - ✅ Message design patterns
@@ -1341,4 +1342,4 @@ These serve as reference implementations for building production-ready event-dri
 
 ---
 
-*These examples bridge the gap between theoretical mapping concepts and practical implementation, providing complete, working patterns for real-world event-driven architectures.*
+_These examples bridge the gap between theoretical mapping concepts and practical implementation, providing complete, working patterns for real-world event-driven architectures._

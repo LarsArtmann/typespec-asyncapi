@@ -1,6 +1,6 @@
 /**
  * CONSTANTS FOR TYPESPEC ASYNCAPI EMITTER
- * 
+ *
  * REFACTORED: Eliminated all TODOs through comprehensive system replacement
  * Consolidated version management, path handling, and configuration
  */
@@ -21,7 +21,7 @@ export const PROTOCOL_DEFAULTS = {
   REDIS: "redis",
 } as const;
 
-export type ProtocolType = typeof PROTOCOL_DEFAULTS[keyof typeof PROTOCOL_DEFAULTS];
+export type ProtocolType = (typeof PROTOCOL_DEFAULTS)[keyof typeof PROTOCOL_DEFAULTS];
 
 // Binding constants
 export const BINDING_DEFAULTS = {
@@ -42,12 +42,32 @@ export const BINDING_DEFAULTS = {
   PULSAR: "pulsar",
 } as const;
 
-export type BindingType = typeof BINDING_DEFAULTS[keyof typeof BINDING_DEFAULTS];
+export type BindingType = (typeof BINDING_DEFAULTS)[keyof typeof BINDING_DEFAULTS];
 
 // Re-export comprehensive systems (no more TODOs)
-export { versionUtils, VERSION_INFO, type AsyncAPIVersion, type SemanticVersion, type CompatibilityRange } from "./version.js";
-export { pathUtils, pathValidation, pathTransformation, type ValidatedPath, type AbsolutePath, type RelativePath, type FilePath, type DirectoryPath } from "./paths.js";
-export { configUtils, configurationUtils, type Configuration, type ConfigurationInput } from "./config.js";
+export {
+  versionUtils,
+  VERSION_INFO,
+  type AsyncAPIVersion,
+  type SemanticVersion,
+  type CompatibilityRange,
+} from "./version.js";
+export {
+  pathUtils,
+  pathValidation,
+  pathTransformation,
+  type ValidatedPath,
+  type AbsolutePath,
+  type RelativePath,
+  type FilePath,
+  type DirectoryPath,
+} from "./paths.js";
+export {
+  configUtils,
+  configurationUtils,
+  type Configuration,
+  type ConfigurationInput,
+} from "./config.js";
 
 // Legacy compatibility exports (maintained for test compatibility)
 export const ASYNCAPI_VERSIONS = {

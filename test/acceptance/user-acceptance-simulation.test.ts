@@ -97,9 +97,7 @@ describe("🎯 USER ACCEPTANCE TESTING - Real Workflows", () => {
       const isValid = validateAsyncAPIStructure(asyncapiDoc);
       expect(isValid).toBe(true);
 
-      console.log(
-        "✅ UAT-1 PASSED: Complete e-commerce workflow successfully processed",
-      );
+      console.log("✅ UAT-1 PASSED: Complete e-commerce workflow successfully processed");
     });
 
     it("should validate plugin system supports all required protocols", async () => {
@@ -143,15 +141,12 @@ describe("🎯 USER ACCEPTANCE TESTING - Real Workflows", () => {
 
       // VALIDATE: Constants are properly typed (TypeScript validation)
       const asyncapiVersion: "3.0.0" = ASYNCAPI_VERSIONS.CURRENT;
-      const channelTemplate: "orders/{orderId}" =
-        CHANNEL_TEMPLATES.ORDERS.LIFECYCLE;
+      const channelTemplate: "orders/{orderId}" = CHANNEL_TEMPLATES.ORDERS.LIFECYCLE;
 
       expect(asyncapiVersion).toBe("3.0.0");
       expect(channelTemplate).toBe("orders/{orderId}");
 
-      console.log(
-        "✅ UAT-2 PASSED: Constants system eliminates hardcoded values",
-      );
+      console.log("✅ UAT-2 PASSED: Constants system eliminates hardcoded values");
     });
 
     it("should validate enhanced error handling and validation", async () => {
@@ -242,9 +237,7 @@ describe("🎯 USER ACCEPTANCE TESTING - Real Workflows", () => {
       `;
 
       // VALIDATE: Complex microservices architecture compiles
-      const result = await compileAsyncAPISpecWithoutErrors(
-        microservicesTypeSpec,
-      );
+      const result = await compileAsyncAPISpecWithoutErrors(microservicesTypeSpec);
       expect(result.asyncapi).toBeDefined();
       expect(result.emitResult).toBeDefined();
 
@@ -267,9 +260,7 @@ describe("🎯 USER ACCEPTANCE TESTING - Real Workflows", () => {
       const isValid = validateAsyncAPIStructure(asyncapiDoc);
       expect(isValid).toBe(true);
 
-      console.log(
-        "✅ UAT-3 PASSED: Production-ready microservices architecture validated",
-      );
+      console.log("✅ UAT-3 PASSED: Production-ready microservices architecture validated");
     });
 
     it("should validate plugin system performance and reliability", async () => {
@@ -360,9 +351,7 @@ describe("🎯 USER ACCEPTANCE TESTING - Real Workflows", () => {
       expect(documentString).not.toMatch(
         /(?<![a-zA-Z])3\.0\.0(?![a-zA-Z]).*(?<![a-zA-Z])3\.0\.0(?![a-zA-Z])/,
       ); // No duplicate hardcoded versions
-      expect(documentString).not.toMatch(
-        /orders\/\{orderId\}.*orders\/\{orderId\}/,
-      ); // No duplicate hardcoded channels
+      expect(documentString).not.toMatch(/orders\/\{orderId\}.*orders\/\{orderId\}/); // No duplicate hardcoded channels
 
       console.log("✅ UAT-4.1 PASSED: Zero hardcoded constants detected");
     });
@@ -394,8 +383,7 @@ describe("🎯 USER ACCEPTANCE TESTING - Real Workflows", () => {
 
       // STEP 2: Compilation
       console.log("  Step 2: Compiling TypeSpec...");
-      const compileResult =
-        await compileAsyncAPISpecWithoutErrors(developerTypeSpec);
+      const compileResult = await compileAsyncAPISpecWithoutErrors(developerTypeSpec);
       expect(compileResult.asyncapi).toBeDefined();
 
       // STEP 3: Validation
@@ -406,9 +394,7 @@ describe("🎯 USER ACCEPTANCE TESTING - Real Workflows", () => {
       // STEP 4: Plugin Integration
       console.log("  Step 4: Testing plugin integration...");
       await Effect.runPromise(registerBuiltInPlugins());
-      const httpBinding = await Effect.runPromise(
-        generateProtocolBinding("http", "server", {}),
-      );
+      const httpBinding = await Effect.runPromise(generateProtocolBinding("http", "server", {}));
       expect(httpBinding).not.toBeNull();
 
       console.log("✅ Complete developer workflow validated successfully!");

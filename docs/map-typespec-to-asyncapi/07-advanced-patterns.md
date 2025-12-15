@@ -20,7 +20,7 @@ namespace EventStore {
     occurredAt: utcDateTime;
     metadata: EventMetadata;
   }
-  
+
   // User aggregate events
   @discriminator("eventType")
   union UserEvent extends DomainEvent {
@@ -29,24 +29,24 @@ namespace EventStore {
     deactivated: UserDeactivatedEvent,
     reactivated: UserReactivatedEvent
   }
-  
+
   model UserCreatedEvent extends DomainEvent {
     eventType: "user.created";
     data: UserCreatedData;
   }
-  
+
   model UserUpdatedEvent extends DomainEvent {
     eventType: "user.updated";
     data: UserUpdatedData;
     changes: ChangeSet;
   }
-  
+
   model ChangeSet {
     changedFields: string[];
     previousValues: Record<unknown>;
     newValues: Record<unknown>;
   }
-  
+
   // Event store operations
   @channel("eventstore.{aggregateType}")
   @publish
@@ -54,7 +54,7 @@ namespace EventStore {
     @path aggregateType: string,
     @body events: DomainEvent[]
   ): void;
-  
+
   @channel("eventstore.{aggregateType}.{aggregateId}")
   @subscribe
   op replayEvents(
@@ -77,7 +77,7 @@ channels:
           type: string
           enum: [user, order, payment, inventory]
     description: Event append stream for event sourcing
-    
+
   eventstore-replay:
     address: eventstore.{aggregateType}.{aggregateId}
     parameters:
@@ -97,7 +97,7 @@ operations:
       $ref: '#/channels/eventstore-append'
     summary: Append events to event store
     description: Atomically append events to aggregate stream
-    
+
   replayEvents:
     action: receive
     channel:
@@ -117,7 +117,7 @@ components:
           - $ref: '#/components/schemas/UserReactivatedEvent'
         discriminator:
           propertyName: eventType
-          
+
   schemas:
     DomainEvent:
       type: object
@@ -163,29 +163,29 @@ namespace CQRS {
       issuedAt: utcDateTime;
       issuedBy: string;
     }
-    
+
     model CreateUserCommand extends Command {
       commandType: "user.create";
       data: CreateUserData;
     }
-    
+
     model UpdateUserCommand extends Command {
       commandType: "user.update";
       userId: string;
       data: UpdateUserData;
       expectedVersion: int32;
     }
-    
+
     // Command handlers
     @channel("commands.user")
     @subscribe
     op handleCreateUser(): CreateUserCommand;
-    
+
     @channel("commands.user")
     @subscribe
     op handleUpdateUser(): UpdateUserCommand;
   }
-  
+
   // Query side
   namespace Queries {
     interface Query {
@@ -195,43 +195,43 @@ namespace CQRS {
       requestedAt: utcDateTime;
       requestedBy: string;
     }
-    
+
     model GetUserQuery extends Query {
       queryType: "user.get";
       userId: string;
     }
-    
+
     model SearchUsersQuery extends Query {
       queryType: "user.search";
       criteria: UserSearchCriteria;
       pagination: PaginationRequest;
     }
-    
+
     // Query handlers
     @channel("queries.user.get")
-    @subscribe  
+    @subscribe
     op handleGetUser(): GetUserQuery;
-    
+
     @channel("queries.user.search")
     @subscribe
     op handleSearchUsers(): SearchUsersQuery;
-    
+
     // Query results
     @channel("queries.user.get.results")
     @publish
     op returnUserResult(@body result: UserQueryResult): void;
-    
+
     @channel("queries.user.search.results")
     @publish
     op returnSearchResults(@body results: UserSearchResults): void;
   }
-  
+
   // Read model updates
   namespace ReadModels {
     @channel("readmodels.user.updates")
     @subscribe
     op updateUserReadModel(): UserEvent;
-    
+
     @channel("readmodels.user.projections")
     @publish
     op publishProjectionUpdate(@body update: ProjectionUpdate): void;
@@ -250,27 +250,27 @@ channels:
         $ref: '#/components/messages/CreateUserCommand'
       UpdateUserCommand:
         $ref: '#/components/messages/UpdateUserCommand'
-        
+
   queries.user.get:
     address: queries.user.get
     description: Single user queries
-    
+
   queries.user.search:
     address: queries.user.search
     description: User search queries
-    
+
   queries.user.get.results:
     address: queries.user.get.results
     description: Single user query results
-    
+
   queries.user.search.results:
     address: queries.user.search.results
     description: User search results
-    
+
   readmodels.user.updates:
     address: readmodels.user.updates
     description: Events for read model updates
-    
+
   readmodels.user.projections:
     address: readmodels.user.projections
     description: Read model projection updates
@@ -285,7 +285,7 @@ operations:
     tags:
       - name: command-side
       - name: user-management
-        
+
   handleUpdateUser:
     action: receive
     channel:
@@ -294,7 +294,7 @@ operations:
     tags:
       - name: command-side
       - name: user-management
-      
+
   # Query side
   handleGetUser:
     action: receive
@@ -304,7 +304,7 @@ operations:
     tags:
       - name: query-side
       - name: user-management
-      
+
   returnUserResult:
     action: send
     channel:
@@ -313,7 +313,7 @@ operations:
     tags:
       - name: query-side
       - name: user-management
-      
+
   # Read model side
   updateUserReadModel:
     action: receive
@@ -352,7 +352,7 @@ namespace Sagas {
     compensatedSteps: string[];
     context: Record<unknown>;
   }
-  
+
   // Order processing saga
   model OrderProcessingSaga extends SagaState {
     sagaType: "order.processing";
@@ -362,7 +362,7 @@ namespace Sagas {
     inventoryReservationId?: string;
     shippingId?: string;
   }
-  
+
   // Saga commands
   @discriminator("commandType")
   union SagaCommand {
@@ -371,30 +371,30 @@ namespace Sagas {
     stepFailed: SagaStepFailedCommand,
     compensate: CompensateSagaCommand
   }
-  
+
   model StartSagaCommand {
     commandType: "saga.start";
     sagaId: string;
     sagaType: string;
     initialContext: Record<unknown>;
   }
-  
+
   model SagaStepCompletedCommand {
     commandType: "saga.step.completed";
     sagaId: string;
     stepName: string;
     result: Record<unknown>;
   }
-  
+
   // Saga orchestrator operations
   @channel("saga.orchestrator.commands")
   @subscribe
   op handleSagaCommand(): SagaCommand;
-  
+
   @channel("saga.orchestrator.events")
   @publish
   op publishSagaEvent(@body event: SagaEvent): void;
-  
+
   // Step execution
   @channel("saga.steps.{stepType}")
   @publish
@@ -402,13 +402,13 @@ namespace Sagas {
     @path stepType: string,
     @body command: StepCommand
   ): void;
-  
+
   @channel("saga.steps.{stepType}.results")
   @subscribe
   op handleStepResult(
     @path stepType: string
   ): StepResult;
-  
+
   // Compensation
   @channel("saga.compensation.{stepType}")
   @publish
@@ -425,31 +425,31 @@ channels:
   saga.orchestrator.commands:
     address: saga.orchestrator.commands
     description: Commands to saga orchestrator
-    
+
   saga.orchestrator.events:
     address: saga.orchestrator.events
     description: Events from saga orchestrator
-    
+
   saga.steps.payment:
     address: saga.steps.payment
     description: Payment processing step
-    
+
   saga.steps.payment.results:
     address: saga.steps.payment.results
     description: Payment step results
-    
+
   saga.steps.inventory:
     address: saga.steps.inventory
     description: Inventory reservation step
-    
+
   saga.steps.inventory.results:
     address: saga.steps.inventory.results
     description: Inventory step results
-    
+
   saga.compensation.payment:
     address: saga.compensation.payment
     description: Payment compensation
-    
+
   saga.compensation.inventory:
     address: saga.compensation.inventory
     description: Inventory compensation
@@ -463,7 +463,7 @@ operations:
     description: |
       Handles saga lifecycle commands including start, step completion,
       step failure, and compensation initiation
-      
+
   publishSagaEvent:
     action: send
     channel:
@@ -472,21 +472,21 @@ operations:
     description: |
       Publishes events about saga state changes for monitoring
       and external system integration
-      
+
   executeStep:
     action: send
     channel:
       $ref: '#/channels/saga.steps.{stepType}'
     summary: Execute saga step
     description: Send command to execute a specific saga step
-    
+
   handleStepResult:
     action: receive
     channel:
       $ref: '#/channels/saga.steps.{stepType}.results'
     summary: Handle saga step results
     description: Process results from saga step execution
-    
+
   compensateStep:
     action: send
     channel:
@@ -546,39 +546,39 @@ namespace Microservices {
     @channel("services.user.events")
     @publish
     op publishUserEvent(@body event: UserDomainEvent): void;
-    
+
     @channel("services.user.commands")
     @subscribe
     op handleUserCommand(): UserCommand;
   }
-  
+
   namespace OrderService {
     @channel("services.order.events")
     @publish
     op publishOrderEvent(@body event: OrderDomainEvent): void;
-    
+
     // Listen to user events
     @channel("services.user.events")
     @subscribe
     op handleUserEvent(): UserDomainEvent;
-    
+
     // Integration events
     @channel("integration.user.validated")
     @subscribe
     op handleUserValidated(): UserValidatedEvent;
   }
-  
+
   namespace PaymentService {
     @channel("services.payment.events")
     @publish
     op publishPaymentEvent(@body event: PaymentDomainEvent): void;
-    
+
     // Listen to order events
     @channel("services.order.events")
     @subscribe
     op handleOrderEvent(): OrderDomainEvent;
   }
-  
+
   // Cross-service integration events
   namespace Integration {
     model IntegrationEvent {
@@ -590,11 +590,11 @@ namespace Microservices {
       time: utcDateTime;
       data: Record<unknown>;
     }
-    
+
     @channel("integration.events")
     @publish
     op publishIntegrationEvent(@body event: IntegrationEvent): void;
-    
+
     @channel("integration.events")
     @subscribe
     op handleIntegrationEvent(): IntegrationEvent;
@@ -609,22 +609,22 @@ channels:
     address: services.user.events
     description: User service domain events
     x-service: user-service
-    
+
   services.user.commands:
     address: services.user.commands
     description: User service commands
     x-service: user-service
-    
+
   services.order.events:
     address: services.order.events
     description: Order service domain events
     x-service: order-service
-    
+
   services.payment.events:
     address: services.payment.events
     description: Payment service domain events
     x-service: payment-service
-    
+
   integration.events:
     address: integration.events
     description: Cross-service integration events
@@ -638,14 +638,14 @@ operations:
       $ref: '#/channels/services.user.events'
     x-service: user-service
     x-service-role: publisher
-    
+
   handleUserCommand:
     action: receive
     channel:
       $ref: '#/channels/services.user.commands'
     x-service: user-service
     x-service-role: consumer
-    
+
   # Order Service
   publishOrderEvent:
     action: send
@@ -653,7 +653,7 @@ operations:
       $ref: '#/channels/services.order.events'
     x-service: order-service
     x-service-role: publisher
-    
+
   handleUserEvent:
     action: receive
     channel:
@@ -661,14 +661,14 @@ operations:
     x-service: order-service
     x-service-role: consumer
     x-cross-service: true
-    
+
   # Integration Layer
   publishIntegrationEvent:
     action: send
     channel:
       $ref: '#/channels/integration.events'
     x-integration-layer: true
-    
+
   handleIntegrationEvent:
     action: receive
     channel:
@@ -710,7 +710,7 @@ namespace StreamProcessing {
     type: string;
     data: Record<unknown>;
   }
-  
+
   // Processed events
   model ProcessedEvent {
     originalEventId: string;
@@ -722,7 +722,7 @@ namespace StreamProcessing {
     enrichedData: Record<unknown>;
     metrics: ProcessingMetrics;
   }
-  
+
   // Aggregated events
   model AggregatedEvent {
     aggregationId: string;
@@ -732,7 +732,7 @@ namespace StreamProcessing {
     eventCount: int32;
     aggregations: Record<unknown>;
   }
-  
+
   // Stream operations
   @protocol({
     type: "kafka",
@@ -743,7 +743,7 @@ namespace StreamProcessing {
   @channel("streams.raw.events")
   @subscribe
   op consumeRawEvents(): RawEvent;
-  
+
   @protocol({
     type: "kafka",
     streaming: true,
@@ -752,7 +752,7 @@ namespace StreamProcessing {
   @channel("streams.processed.events")
   @publish
   op publishProcessedEvents(@body events: ProcessedEvent[]): void;
-  
+
   @protocol({
     type: "kafka",
     streaming: true,
@@ -762,7 +762,7 @@ namespace StreamProcessing {
   @channel("streams.aggregated.events")
   @publish
   op publishAggregatedEvents(@body events: AggregatedEvent[]): void;
-  
+
   // Real-time notifications
   @protocol({
     type: "websocket",
@@ -789,7 +789,7 @@ channels:
           retention.ms: 259200000  # 3 days
           cleanup.policy: delete
         bindingVersion: "0.4.0"
-        
+
   streams.processed.events:
     address: streams.processed.events
     description: Processed and enriched events
@@ -802,7 +802,7 @@ channels:
           retention.ms: 604800000  # 7 days
           cleanup.policy: delete
         bindingVersion: "0.4.0"
-        
+
   streams.aggregated.events:
     address: streams.aggregated.events
     description: Time-windowed aggregations
@@ -815,7 +815,7 @@ channels:
           retention.ms: 2592000000  # 30 days
           cleanup.policy: compact
         bindingVersion: "0.4.0"
-        
+
   streams.realtime.notifications:
     address: /realtime/notifications
     description: Real-time notification stream
@@ -840,7 +840,7 @@ operations:
       type: continuous
       parallelism: 4
       checkpointInterval: 10000
-      
+
   publishProcessedEvents:
     action: send
     channel:
@@ -856,7 +856,7 @@ operations:
       type: batch
       batchSize: 1000
       flushInterval: 5000
-      
+
   publishAggregatedEvents:
     action: send
     channel:
@@ -871,7 +871,7 @@ operations:
       windowType: tumbling
       windowSize: PT1H
       watermarkDelay: PT5M
-      
+
   publishRealtimeNotification:
     action: send
     channel:
@@ -902,31 +902,31 @@ namespace MessageRouting {
     content: Record<unknown>;
     routingHints: RoutingHints;
   }
-  
+
   model RoutingHints {
     targetServices: string[];
     excludeServices?: string[];
     routingRules?: RoutingRule[];
     ttl?: int32;
   }
-  
+
   model RoutingRule {
     condition: string;  // JSONPath expression
     action: "route" | "filter" | "transform" | "enrich";
     target?: string;
     parameters?: Record<unknown>;
   }
-  
+
   // Routing operations
   @channel("routing.ingress")
   @subscribe
   op receiveMessage(): RoutableMessage;
-  
+
   // High priority routing
   @channel("routing.priority.high")
   @publish
   op routeHighPriority(@body message: RoutableMessage): void;
-  
+
   // Regional routing
   @channel("routing.region.{region}")
   @publish
@@ -934,7 +934,7 @@ namespace MessageRouting {
     @path region: string,
     @body message: RoutableMessage
   ): void;
-  
+
   // Service-specific routing
   @channel("routing.service.{serviceName}")
   @publish
@@ -942,7 +942,7 @@ namespace MessageRouting {
     @path serviceName: string,
     @body message: RoutableMessage
   ): void;
-  
+
   // Dead letter queue
   @channel("routing.deadletter")
   @publish
@@ -956,35 +956,35 @@ channels:
   routing.ingress:
     address: routing.ingress
     description: Message ingress point for routing
-    
+
   routing.priority.high:
     address: routing.priority.high
     description: High priority message route
-    
+
   routing.region.us-east:
     address: routing.region.us-east
     description: US East region message route
-    
+
   routing.region.us-west:
     address: routing.region.us-west
     description: US West region message route
-    
+
   routing.region.eu:
     address: routing.region.eu
     description: Europe region message route
-    
+
   routing.region.asia:
     address: routing.region.asia
     description: Asia region message route
-    
+
   routing.service.user-service:
     address: routing.service.user-service
     description: Route to user service
-    
+
   routing.service.order-service:
     address: routing.service.order-service
     description: Route to order service
-    
+
   routing.deadletter:
     address: routing.deadletter
     description: Failed message routing
@@ -1007,7 +1007,7 @@ operations:
         - condition: "$.routingHints.targetServices[*] == 'user-service'"
           action: route
           target: routing.service.user-service
-          
+
   routeHighPriority:
     action: send
     channel:
@@ -1015,7 +1015,7 @@ operations:
     summary: Route high priority messages
     x-routing:
       priority: 1
-      
+
   routeByRegion:
     action: send
     channel:
@@ -1023,7 +1023,7 @@ operations:
     summary: Route messages by region
     x-routing:
       type: regional
-      
+
   routeToService:
     action: send
     channel:
@@ -1031,7 +1031,7 @@ operations:
     summary: Route messages to specific services
     x-routing:
       type: service-specific
-      
+
   routeToDeadLetter:
     action: send
     channel:
@@ -1080,16 +1080,16 @@ namespace Resilience {
     lastHealthCheck: utcDateTime;
     consecutiveFailures: int32;
   }
-  
+
   // Health monitoring
   @channel("health.monitoring")
   @publish
   op reportHealthStatus(@body health: ServiceHealth): void;
-  
+
   @channel("health.alerts")
   @subscribe
   op handleHealthAlert(): HealthAlert;
-  
+
   // Circuit breaker events
   @channel("circuitbreaker.{serviceName}")
   @publish
@@ -1097,14 +1097,14 @@ namespace Resilience {
     @path serviceName: string,
     @body state: CircuitBreakerEvent
   ): void;
-  
+
   // Retry and fallback
   @channel("retry.{operationType}")
   @subscribe
   op handleRetryableOperation(
     @path operationType: string
   ): RetryableMessage;
-  
+
   @channel("fallback.{operationType}")
   @subscribe
   op handleFallbackOperation(
@@ -1119,15 +1119,15 @@ channels:
   health.monitoring:
     address: health.monitoring
     description: Service health status reporting
-    
+
   health.alerts:
     address: health.alerts
     description: Health alert notifications
-    
+
   circuitbreaker.user-service:
     address: circuitbreaker.user-service
     description: User service circuit breaker events
-    
+
   retry.payment-processing:
     address: retry.payment-processing
     description: Payment processing retry queue
@@ -1142,7 +1142,7 @@ channels:
               arn: arn:aws:sqs:region:account:payment-dlq
             maxReceiveCount: 5
         bindingVersion: "0.2.0"
-        
+
   fallback.payment-processing:
     address: fallback.payment-processing
     description: Payment processing fallback queue
@@ -1155,7 +1155,7 @@ operations:
     x-resilience:
       pattern: health-monitoring
       checkInterval: 30s
-      
+
   handleHealthAlert:
     action: receive
     channel:
@@ -1163,7 +1163,7 @@ operations:
     x-resilience:
       pattern: alerting
       escalation: true
-      
+
   reportCircuitBreakerState:
     action: send
     channel:
@@ -1172,7 +1172,7 @@ operations:
       pattern: circuit-breaker
       failureThreshold: 5
       recoveryTimeout: 60s
-      
+
   handleRetryableOperation:
     action: receive
     channel:
@@ -1183,7 +1183,7 @@ operations:
       backoffStrategy: exponential
       initialDelay: 1s
       maxDelay: 60s
-      
+
   handleFallbackOperation:
     action: receive
     channel:
@@ -1216,30 +1216,35 @@ x-resilience-configuration:
 ## Advanced Pattern Best Practices
 
 ### 1. Event Sourcing
+
 - Design events for replay and projection rebuilding
 - Version events for schema evolution
 - Implement snapshotting for performance
 - Use correlation IDs for request tracing
 
 ### 2. CQRS Implementation
+
 - Separate read and write models completely
 - Use eventual consistency between command and query sides
 - Implement projection rebuilding capabilities
 - Monitor read model lag and health
 
 ### 3. Saga Orchestration
+
 - Design compensating actions for each step
 - Implement saga state persistence and recovery
 - Use correlation IDs for message routing
 - Handle partial failures gracefully
 
 ### 4. Stream Processing
+
 - Design for exactly-once processing semantics
 - Implement proper watermarking for event time
 - Handle out-of-order events appropriately
 - Monitor processing lag and throughput
 
 ### 5. Message Routing
+
 - Use consistent routing keys for partitioning
 - Implement proper error handling and dead letter queues
 - Monitor routing performance and success rates
@@ -1248,6 +1253,7 @@ x-resilience-configuration:
 ## Next Steps
 
 These advanced patterns enable:
+
 - **Production Implementation** - Real-world deployment strategies
 - **Performance Optimization** - Scaling and tuning approaches
 - **Monitoring Integration** - Observability and alerting patterns
@@ -1255,4 +1261,4 @@ These advanced patterns enable:
 
 ---
 
-*Advanced patterns transform simple message exchange into sophisticated, resilient, and scalable event-driven architectures that can handle enterprise-scale requirements.*
+_Advanced patterns transform simple message exchange into sophisticated, resilient, and scalable event-driven architectures that can handle enterprise-scale requirements._

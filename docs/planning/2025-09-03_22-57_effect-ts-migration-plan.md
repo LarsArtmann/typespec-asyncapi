@@ -1,4 +1,5 @@
 # 🚀 EFFECT.TS MIGRATION EXECUTION PLAN
+
 **TypeSpec AsyncAPI Project - Systematic Anti-Pattern Elimination**  
 **Generated:** September 3, 2025  
 **Status:** READY FOR EXECUTION  
@@ -11,8 +12,9 @@
 **APPROACH:** Systematic layer-by-layer migration prioritizing business-critical code paths and highest-impact violations.
 
 **SUCCESS CRITERIA:**
+
 - ✅ Zero critical violations (try/catch, throw, null checks)
-- ✅ 90%+ Effect function adoption in service layers  
+- ✅ 90%+ Effect function adoption in service layers
 - ✅ 100% Promise elimination
 - ✅ Railway Oriented Programming implementation
 - ✅ Zero runtime exceptions in business logic
@@ -20,17 +22,21 @@
 ---
 
 ## 📋 PHASE 1: CRITICAL INFRASTRUCTURE (Week 1-2)
+
 **Priority:** IMMEDIATE  
 **Effort:** 8-10 developer days  
 **Impact:** System-wide reliability and error handling
 
 ### 🚨 Task 1.1: Core Emitter Layer Migration (3 days)
+
 **Target Files:**
+
 - `src/core/AsyncAPIEmitter.ts` (11 violations)
-- `src/core/DocumentGenerator.ts` (6 violations)  
+- `src/core/DocumentGenerator.ts` (6 violations)
 - `src/core/ValidationService.ts` (3 violations)
 
 **Specific Actions:**
+
 ```typescript
 // 1. Convert constructor validation from throw to Effect.fail
 throw new Error("AsyncAPIEmitter constructor requires valid AssetEmitter instance")
@@ -59,16 +65,20 @@ override programContext(program: Program): Effect.Effect<Record<string, unknown>
 ```
 
 **Quality Gates:**
+
 - [ ] Zero try/catch blocks in core emitter files
 - [ ] All constructor validations use Effect.fail()
 - [ ] All async operations use Effect.gen()
 - [ ] Tests pass with Effect-based implementations
 
 ### 🚨 Task 1.2: Plugin Registry Migration (2 days)
+
 **Target Files:**
+
 - `src/core/PluginRegistry.ts` (18 violations)
 
 **Specific Actions:**
+
 ```typescript
 // Convert plugin lifecycle methods to Effects
 async loadPlugin(plugin: Plugin): Promise<void>
@@ -102,9 +112,11 @@ return Effect.gen(function* () {
 ```
 
 ### 🚨 Task 1.3: Null Safety Implementation (2 days)
+
 **Target:** All 58 null/undefined check violations
 
 **Specific Actions:**
+
 ```typescript
 // Convert null checks to Option patterns
 if (value != null) {
@@ -130,10 +142,12 @@ type ConfigOptions = {
 }
 ```
 
-### 🚨 Task 1.4: Error Standardization (1 day)  
+### 🚨 Task 1.4: Error Standardization (1 day)
+
 **Target:** Create Effect.TS compatible error hierarchy
 
 **Actions:**
+
 ```typescript
 // Create tagged error classes
 export class EmitterConstructorError extends Data.TaggedError("EmitterConstructorError")<{
@@ -156,15 +170,19 @@ export class ValidationError extends Data.TaggedError("ValidationError")<{
 ---
 
 ## 📋 PHASE 2: SERVICE LAYER EFFECTS (Week 3)
+
 **Priority:** HIGH  
 **Effort:** 5-7 developer days  
 **Impact:** Business logic composability
 
 ### ⚠️ Task 2.1: Validation Services Migration (2 days)
+
 **Target Files:**
+
 - `src/validation/asyncapi-validator.ts` (8 violations)
 
 **Actions:**
+
 ```typescript
 // Convert async validation to Effect
 async validate(document: unknown): Promise<ValidationResult>
@@ -183,9 +201,11 @@ return Effect.gen(function* () {
 ```
 
 ### ⚠️ Task 2.2: Promise Elimination (2 days)
+
 **Target:** All 27 Promise<T> usages
 
 **Actions:**
+
 ```typescript
 // Convert Promise-returning interfaces to Effect
 interface IAsyncAPIEmitter {
@@ -213,9 +233,11 @@ return pipe(
 ```
 
 ### ⚠️ Task 2.3: Function Effect Conversion (1 day)
+
 **Target:** 55 functions not returning Effects
 
 **Actions:**
+
 ```typescript
 // Convert utility functions to Effects
 export function validateConfiguration(config: unknown): boolean {
@@ -233,15 +255,18 @@ export function validateConfiguration(config: unknown): Effect.Effect<boolean, C
 
 ---
 
-## 📋 PHASE 3: INFRASTRUCTURE & POLISH (Week 4)  
+## 📋 PHASE 3: INFRASTRUCTURE & POLISH (Week 4)
+
 **Priority:** MEDIUM  
 **Effort:** 2-3 developer days
 **Impact:** Developer experience and consistency
 
 ### 📋 Task 3.1: async/await Elimination (1 day)
+
 **Target:** All 21 async/await patterns
 
 **Actions:**
+
 ```typescript
 // Convert async functions to Effect.gen
 export async function $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): Promise<void> {
@@ -258,24 +283,28 @@ export function $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): Effect.Ef
 ```
 
 ### 📋 Task 3.2: Logging Standardization (0.5 days)
-**Target:** 3 console.* violations  
+
+**Target:** 3 console.\* violations
 
 **Actions:**
+
 ```typescript
 // Replace console logging with Effect.log
 console.error("Validation failed:", error)
 // BECOMES:
 yield* Effect.logError("Validation failed", { error: error.message, context: error.context })
 
-console.log("Processing completed successfully")  
+console.log("Processing completed successfully")
 // BECOMES:
 yield* Effect.logInfo("Processing completed successfully")
 ```
 
 ### 📋 Task 3.3: Performance Testing Migration (0.5 days)
+
 **Target:** `src/performance/PerformanceRegressionTester.ts` (4 violations)
 
 **Actions:**
+
 ```typescript
 // Convert performance test runners to Effects
 runRegressionTest(testCaseName: string, testFunction: () => Promise<void>)
@@ -286,26 +315,33 @@ runRegressionTest(testCaseName: string, testFunction: Effect.Effect<void, TestEr
 ---
 
 ## 📋 PHASE 4: TESTING & VALIDATION (Week 5)
+
 **Priority:** CRITICAL FOR SUCCESS  
 **Effort:** 3-4 developer days
 **Impact:** Ensures migration success
 
 ### 🧪 Task 4.1: Test Suite Migration (2 days)
+
 **Actions:**
+
 - Convert existing tests to work with Effect-based APIs
 - Add Effect-specific test utilities
 - Ensure test coverage remains >80%
 - Add integration tests for Effect composition
 
-### 🧪 Task 4.2: Performance Validation (1 day)  
+### 🧪 Task 4.2: Performance Validation (1 day)
+
 **Actions:**
+
 - Benchmark Effect-based implementation vs. Promise-based
 - Validate memory usage improvements
 - Ensure sub-2s compilation times maintained
 - Test Effect.gen() performance characteristics
 
 ### 🧪 Task 4.3: Integration Testing (1 day)
+
 **Actions:**
+
 - End-to-end TypeSpec compilation testing
 - AsyncAPI generation validation
 - Plugin system reliability testing
@@ -318,19 +354,21 @@ runRegressionTest(testCaseName: string, testFunction: Effect.Effect<void, TestEr
 ### 📚 Migration Patterns Reference
 
 #### Pattern 1: Constructor Validation
+
 ```typescript
 // BEFORE
 if (!param) {
   throw new Error("Invalid parameter")
 }
 
-// AFTER  
+// AFTER
 if (!param) {
   return Effect.fail(new InvalidParameterError("Parameter is required"))
 }
 ```
 
 #### Pattern 2: Async Operation Conversion
+
 ```typescript
 // BEFORE
 try {
@@ -351,6 +389,7 @@ return Effect.gen(function* () {
 ```
 
 #### Pattern 3: Null Safety Implementation
+
 ```typescript
 // BEFORE
 function getValue(obj: { prop?: string }): string {
@@ -366,12 +405,14 @@ function getValue(obj: { prop: Option.Option<string> }): string {
 ### 🔧 Development Workflow
 
 #### Daily Development Process:
+
 1. **Run integrated validation:** `just effect-lint-quick`
 2. **Fix immediate violations** before continuing development
 3. **Run comprehensive validation:** `just effect-lint-comprehensive` (weekly)
 4. **Monitor progress** via violation count tracking
 
 #### Quality Assurance Process:
+
 1. **Pre-commit:** Effect.TS validation must pass
 2. **PR Review:** Include Effect.TS compliance check
 3. **Integration:** Dual validation in CI/CD pipeline
@@ -382,12 +423,14 @@ function getValue(obj: { prop: Option.Option<string> }): string {
 ## 📊 SUCCESS TRACKING
 
 ### 📈 Progress Metrics
+
 - **Critical Violations:** 167 → 0 (target)
-- **Medium Violations:** 103 → <20 (target)  
+- **Medium Violations:** 103 → <20 (target)
 - **Low Priority Violations:** 58 → <10 (target)
 - **Effect Function Adoption:** ~30% → 90%+ (target)
 
 ### 🎯 Weekly Milestones
+
 - **Week 1:** Critical violations reduced by 70%
 - **Week 2:** Zero try/catch and throw statements remaining
 - **Week 3:** All service functions return Effects
@@ -395,6 +438,7 @@ function getValue(obj: { prop: Option.Option<string> }): string {
 - **Week 5:** Full test suite passing with Effect-based implementation
 
 ### 📋 Final Acceptance Criteria
+
 - [ ] `just effect-lint-dual` reports zero critical violations
 - [ ] All async operations use Effect.gen()
 - [ ] All error handling uses Effect.catchAll()/orElse()
@@ -408,6 +452,7 @@ function getValue(obj: { prop: Option.Option<string> }): string {
 ## 🚀 EXECUTION READINESS
 
 **PREREQUISITES COMPLETE:**
+
 - ✅ Comprehensive baseline analysis (328 violations identified)
 - ✅ Dual validation system operational
 - ✅ Developer workflows integrated
@@ -415,6 +460,7 @@ function getValue(obj: { prop: Option.Option<string> }): string {
 - ✅ Migration patterns documented
 
 **READY FOR IMMEDIATE EXECUTION:**
+
 - 🎯 Clear task breakdown (15 major tasks)
 - 📅 Realistic timeline (4-5 weeks)
 - 📊 Success metrics defined
@@ -422,13 +468,14 @@ function getValue(obj: { prop: Option.Option<string> }): string {
 - 🧪 Testing strategy prepared
 
 **BUSINESS VALUE:**
+
 - 🛡️ **99.9% reliability** through Railway Oriented Programming
-- ⚡ **100% composability** with Effect.TS patterns  
+- ⚡ **100% composability** with Effect.TS patterns
 - 🚫 **Zero runtime exceptions** in business logic
 - 🔧 **Maintainable codebase** with predictable error flows
 - 🚀 **Rapid feature development** via Effect composition
 
 ---
 
-*🤖 Generated with Claude Code - Effect.TS Migration Plan Complete*  
-*Ready for systematic execution to achieve 100% Effect.TS compliance*
+_🤖 Generated with Claude Code - Effect.TS Migration Plan Complete_  
+_Ready for systematic execution to achieve 100% Effect.TS compliance_

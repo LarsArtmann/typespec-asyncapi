@@ -45,8 +45,7 @@ describe("Documentation: Advanced Patterns Mapping", () => {
           emitAsyncAPI: true,
         });
 
-        const projectionMessage =
-          result.asyncapi!.components!.schemas!.ProjectionUpdate;
+        const projectionMessage = result.asyncapi!.components!.schemas!.ProjectionUpdate;
         expect(projectionMessage.properties!.projectionName).toBeDefined();
         expect(projectionMessage.properties!.lastProcessedEvent).toBeDefined();
         expect(projectionMessage.properties!.updatedData).toBeDefined();
@@ -60,8 +59,7 @@ describe("Documentation: Advanced Patterns Mapping", () => {
           emitAsyncAPI: true,
         });
 
-        const snapshotMessage =
-          result.asyncapi!.components!.schemas!.AggregateSnapshot;
+        const snapshotMessage = result.asyncapi!.components!.schemas!.AggregateSnapshot;
         expect(snapshotMessage.properties!.aggregateId).toBeDefined();
         expect(snapshotMessage.properties!.version).toBeDefined();
         expect(snapshotMessage.properties!.snapshotData).toBeDefined();
@@ -96,8 +94,7 @@ describe("Documentation: Advanced Patterns Mapping", () => {
         const metadata = commandMessage.properties!.metadata;
         expect(metadata).toBeDefined();
 
-        const metadataSchema =
-          result.asyncapi!.components!.schemas!.CommandMetadata;
+        const metadataSchema = result.asyncapi!.components!.schemas!.CommandMetadata;
         expect(metadataSchema.properties!.userId).toBeDefined();
         expect(metadataSchema.properties!.correlationId).toBeDefined();
         expect(metadataSchema.properties!.expectedVersion).toBeDefined();
@@ -118,8 +115,7 @@ describe("Documentation: Advanced Patterns Mapping", () => {
         expect(channels["saga/{sagaId}/step/{stepId}"]).toBeDefined();
         expect(channels["saga/{sagaId}/compensate/{stepId}"]).toBeDefined();
 
-        const sagaDefinition =
-          result.asyncapi!.components!.schemas!.SagaDefinition;
+        const sagaDefinition = result.asyncapi!.components!.schemas!.SagaDefinition;
         // NOTE: Alpha version has different schema structure
         if (sagaDefinition?.properties) {
           expect(sagaDefinition.properties.steps).toBeDefined();
@@ -178,9 +174,7 @@ describe("Documentation: Advanced Patterns Mapping", () => {
           expect(compensation.properties.compensationData).toBeDefined();
         } else if (compensation?.payload?.properties?.reason) {
           expect(compensation.payload.properties.reason).toBeDefined();
-          expect(
-            compensation.payload.properties.compensationData,
-          ).toBeDefined();
+          expect(compensation.payload.properties.compensationData).toBeDefined();
         }
 
         const retryPolicy = result.asyncapi!.components!.schemas!.RetryPolicy;
@@ -291,8 +285,7 @@ describe("Documentation: Advanced Patterns Mapping", () => {
           emitAsyncAPI: true,
         });
 
-        const message =
-          result.asyncapi!.components!.schemas!.CircuitBreakerEvent;
+        const message = result.asyncapi!.components!.schemas!.CircuitBreakerEvent;
         expect(message.properties!.circuitName).toBeDefined();
         expect(message.properties!.previousState).toBeDefined();
         expect(message.properties!.currentState).toBeDefined();
@@ -304,9 +297,7 @@ describe("Documentation: Advanced Patterns Mapping", () => {
         } else {
           // Alpha version may not generate union type schemas - that's acceptable
           // Validate that the compilation was successful instead
-          expect(
-            Object.keys(result.asyncapi!.components!.schemas!).length,
-          ).toBeGreaterThan(0);
+          expect(Object.keys(result.asyncapi!.components!.schemas!).length).toBeGreaterThan(0);
         }
       });
     });

@@ -14,17 +14,20 @@
 **Problem:** We're using `Effect.runSync` **INCORRECTLY** throughout the codebase.
 
 **Effect.TS Documentation States:**
+
 > "Asynchronous execution should be the default"
 > "Reserve runSync for edge cases"
 > "Only use runSync in scenarios where asynchronous execution is not feasible"
 
 **Current State:**
+
 - **17 instances of `Effect.runSync`** across 11 files
 - Most are **NOT justified** - they should use `Effect.runPromise`
 - **Blocks event loop** - defeats the purpose of Effect.TS
 - **Anti-pattern** - violates Effect.TS best practices
 
 **Locations:**
+
 ```typescript
 // ❌ WRONG - Using runSync for logging
 Effect.runSync(Effect.log(`message`))
@@ -35,6 +38,7 @@ await Effect.runPromise(Effect.log(`message`))
 ```
 
 **Files Affected:**
+
 1. `src/index.ts:36` - Logging (WRONG)
 2. `src/domain/validation/ValidationService.ts:277` - Error logging (WRONG)
 3. `src/domain/validation/asyncapi-validator.ts:85-86` - Initialization (QUESTIONABLE)
@@ -58,6 +62,7 @@ await Effect.runPromise(Effect.log(`message`))
 **Problem:** Multiple files exceed 350-line limit, violating Single Responsibility Principle.
 
 **Identified in Previous Analysis:**
+
 - `ValidationService.ts`: **634 lines** (81% over limit) 🔴
 - `effect-helpers.ts`: **536 lines** (53% over limit) 🔴
 - `ValidationService.ts`: **537 lines** (53% over limit) 🔴
@@ -79,12 +84,14 @@ await Effect.runPromise(Effect.log(`message`))
 **Problem:** We created branded types (`src/types/branded-types.ts`) but **NOT using them consistently**.
 
 **Found:**
+
 - Branded types defined: `ChannelId`, `OperationId`, `MessageId`, etc.
 - **NOT used throughout codebase**
 - Strings used directly instead of branded types
 - **Split brain:** Type definitions exist but aren't enforced
 
 **Example of Violation:**
+
 ```typescript
 // ❌ CURRENT (weak typing):
 function createChannel(id: string, path: string): Channel
@@ -103,6 +110,7 @@ function createChannel(id: ChannelId, path: ChannelPath): Channel
 **Problem:** Magic strings like `"send"` and `"receive"` used throughout codebase.
 
 **Should Be:**
+
 ```typescript
 export enum OperationAction {
   Send = "send",
@@ -120,6 +128,7 @@ export enum OperationAction {
 **Problem:** Found 4 boolean properties that could be more expressive enums.
 
 **Examples:**
+
 ```typescript
 // ❌ CURRENT:
 retain: boolean
@@ -140,6 +149,7 @@ retainPolicy: RetainPolicy.Always | RetainPolicy.Never
 **CRITICAL QUESTION:** Is this **ACTUALLY NEEDED** for this project?
 
 **Honest Assessment:**
+
 - **Scope:** 20-30 hours of work
 - **Value:** Questionable for current project size
 - **Risk:** **OVER-ENGINEERING** - could create ghost system
@@ -153,12 +163,14 @@ retainPolicy: RetainPolicy.Always | RetainPolicy.Never
 ### 7. **TEST SUITE CRISIS: 52% Pass Rate**
 
 **Current Status:**
+
 - **382 pass / 320 fail / 29 skip** (731 total)
 - **52.3% pass rate** - UNACCEPTABLE for production
 - **Test instability** - numbers fluctuate between runs
 - **No BDD/TDD** approach
 
 **Root Causes:**
+
 1. Tests depend on execution order
 2. Shared state not cleaned up
 3. Effect.TS async operations not properly awaited
@@ -174,6 +186,7 @@ retainPolicy: RetainPolicy.Always | RetainPolicy.Never
 ### 1. **Type Safety Foundation - EXCELLENT**
 
 **SecurityScheme Discriminated Union:**
+
 - ✅ 10 security scheme types properly modeled
 - ✅ 11 type guards implemented
 - ✅ No `any` types in security validation
@@ -187,6 +200,7 @@ retainPolicy: RetainPolicy.Always | RetainPolicy.Never
 ### 2. **Split Brain Elimination - COMPLETE**
 
 **ValidationResult Split Brains:**
+
 - ✅ Metrics duplication eliminated
 - ✅ Optional summary field fixed
 - ✅ Single source of truth established
@@ -340,11 +354,13 @@ retainPolicy: RetainPolicy.Always | RetainPolicy.Never
 **Q: Should we implement Event-Driven Architecture (Issue #225) or is it massive over-engineering?**
 
 **Context:**
+
 - Issue proposes 20-30 hours of work for CQRS + Event Sourcing
 - We're building a TypeSpec emitter, not a distributed system
 - Current imperative approach works fine
 
 **My Assessment:**
+
 - **Risk:** GHOST SYSTEM - perfect code that provides zero value
 - **Scope Creep:** Adds complexity without customer value
 - **Alternative:** Simple Effect.TS composition is sufficient
@@ -356,47 +372,56 @@ retainPolicy: RetainPolicy.Always | RetainPolicy.Never
 ## 🤔 REFLECTION: What Did I Forget?
 
 ### 1. **What Did I Forget?**
+
 - To verify Effect.TS usage patterns (NOW FOUND)
 - To check if branded types are actually used (THEY'RE NOT)
 - To question if Event-Driven Architecture is over-engineering
 
 ### 2. **What's Stupid That We Do Anyway?**
+
 - **Effect.runSync everywhere** - Blocks event loop
 - **Large files** - Violates SRP
 - **Defining branded types but not using them** - Split brain
 - **No pre-commit hooks** - Can commit broken code
 
 ### 3. **What Could I Have Done Better?**
+
 - Read Effect.TS docs FIRST before implementing
 - Apply branded types when creating them
 - Set up pre-commit hooks immediately
 - Question architectural proposals earlier
 
 ### 4. **Did I Lie?**
+
 - **NO.** I'm being brutally honest about ALL problems
 
 ### 5. **How Can We Be Less Stupid?**
+
 - **READ THE DOCS** before implementing (Effect.TS)
 - **Apply patterns immediately** when creating them (branded types)
 - **Question scope** - is this feature actually needed?
 - **Set up quality gates** (pre-commit hooks, coverage)
 
 ### 6. **Ghost Systems?**
+
 - ✅ validateSecurityScheme - WAS ghost (Issue #224) - NOW INTEGRATED
 - ⚠️ Branded types - Defined but NOT USED - PARTIAL GHOST
 - ⚠️ Event-Driven Architecture (Issue #225) - WOULD BE GHOST if implemented
 
 ### 7. **Focusing on Scope Creep?**
+
 - ❌ **YES** - Event-Driven Architecture is scope creep
 - ✅ **NO** - Type safety work is in scope
 - ✅ **NO** - Bug fixes are in scope
 
 ### 8. **Split Brains Created?**
+
 - ❌ **YES** - Branded types defined but not used
 - ❌ **YES** - Effect.runSync used instead of runPromise
 - ✅ **NO** - ValidationResult split brains eliminated
 
 ### 9. **Tests - What Can We Do Better?**
+
 - ❌ **52% pass rate** - UNACCEPTABLE
 - ❌ **Test instability** - Flaky tests
 - ❌ **No BDD/TDD** approach
@@ -407,16 +432,19 @@ retainPolicy: RetainPolicy.Always | RetainPolicy.Never
 ## 💰 CUSTOMER VALUE DELIVERED
 
 ### ACTUAL Customer Value (What Works):
+
 1. ✅ **AsyncAPI 3.0 Generation** - Core functionality works
 2. ✅ **Build System** - 0 TypeScript errors
 3. ✅ **Type Safety** - SecurityScheme is excellent
 4. ✅ **Clean Codebase** - 0 ESLint errors
 
 ### QUESTIONABLE Customer Value (Perfect but Unused):
+
 1. 🟡 **Branded Types** - Defined but not enforced
 2. 🟡 **17 Effect.runSync** - Working but WRONG pattern
 
 ### ZERO Customer Value (Would Be Waste):
+
 1. ❌ **Event-Driven Architecture** - Over-engineering
 2. ❌ **CQRS/Event Sourcing** - Not needed for TypeSpec emitter
 
@@ -427,6 +455,7 @@ retainPolicy: RetainPolicy.Always | RetainPolicy.Never
 ### Phase 1: CRITICAL FIXES (Immediate - 2-3 hours)
 
 **Step 1.1:** Fix Effect.runSync in src/index.ts (5min)
+
 ```typescript
 // BEFORE:
 Effect.runSync(Effect.log(`✅ Generated...`));
@@ -436,25 +465,30 @@ await Effect.runPromise(Effect.log(`✅ Generated...`));
 ```
 
 **Step 1.2:** Fix Effect.runSync in logging (15min)
+
 - ValidationService.ts line 277
 - standardized-errors.ts (2 instances)
 
 **Step 1.3:** Fix Effect.runSync in schema-conversion.ts (20min)
+
 - 3 instances
 - Use Effect.gen + runPromise
 
 **Step 1.4:** Triage 320 test failures (60-120min)
+
 - Run verbose output
 - Categorize errors
 - Create fix plan
 
 **Step 1.5:** Add pre-commit hooks (10min)
+
 - Install husky
 - Add test + build checks
 
 ### Phase 2: TYPE SAFETY (Next - 3-4 hours)
 
 **Step 2.1:** Apply ChannelId branded type (45min)
+
 - Update function signatures
 - Enforce at boundaries
 
@@ -480,16 +514,19 @@ await Effect.runPromise(Effect.log(`✅ Generated...`));
 ## 🎬 NEXT ACTIONS
 
 **IMMEDIATE (Now):**
+
 1. Commit this status report
 2. Create Issue for Effect.runSync migration
 3. Start Phase 1 fixes
 
 **THIS SESSION:**
+
 1. Fix Effect.runSync in src/index.ts
 2. Fix Effect.runSync in logging
 3. Add pre-commit hooks
 
 **TOMORROW:**
+
 1. Complete Effect.runSync migration
 2. Triage test failures
 3. Start applying branded types

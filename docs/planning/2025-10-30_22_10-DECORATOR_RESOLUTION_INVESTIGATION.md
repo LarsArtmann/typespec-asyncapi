@@ -1,5 +1,7 @@
 # 🔍 TypeSpec Decorator Resolution Investigation & Fix Plan
+
 ## Date: 2025-10-30 22:10 CET
+
 ## Status: IN PROGRESS - Decorator "missing implementation" errors persisting
 
 ---
@@ -7,6 +9,7 @@
 ## 📋 EXECUTIVE SUMMARY
 
 **PROBLEM:** TypeSpec reports "missing implementation" errors for ALL decorators despite:
+
 - ✅ Decorators exist in `dist/decorators.js`
 - ✅ `dist/index.js` exports decorators via `export * from "./decorators.js"`
 - ✅ `dist/lib.js` NOW exports decorators (added today)
@@ -21,14 +24,16 @@
 
 ## 🎯 WHAT WE FORGOT / COULD IMPROVE
 
-###  1. Research First, Code Second
+### 1. Research First, Code Second
 
 **What We Did Wrong:**
+
 - Made assumptions about test infrastructure (node_modules staleness)
 - Added decorator exports without understanding TypeSpec's resolution mechanism
 - Didn't check TypeSpec official templates first
 
 **What We Should Have Done:**
+
 - Read TypeSpec documentation for decorator resolution
 - Examined TypeSpec templates BEFORE making changes
 - Created minimal reproduction case
@@ -89,60 +94,60 @@ export * from "./decorators.js"  // ✅ NOW exports decorators (after today's fi
 
 ### Phase 1: UNDERSTAND (Research & Discovery) - 2-3 hours
 
-| Step | Task | Time | Impact | Priority |
-|------|------|------|--------|----------|
-| 1.1 | Read TypeSpec docs on decorator resolution | 30m | CRITICAL | 🔴 NOW |
-| 1.2 | Examine TypeSpec compiler source (decorator loading) | 45m | CRITICAL | 🔴 NOW |
-| 1.3 | Check package.json exports field requirements | 15m | HIGH | 🔴 NOW |
-| 1.4 | Create minimal TypeSpec library test case | 30m | CRITICAL | 🔴 NOW |
-| 1.5 | Test minimal case to verify decorator resolution | 15m | CRITICAL | 🔴 NOW |
-| 1.6 | Compare our structure vs working TypeSpec library | 30m | HIGH | 🟡 SOON |
+| Step | Task                                                 | Time | Impact   | Priority |
+| ---- | ---------------------------------------------------- | ---- | -------- | -------- |
+| 1.1  | Read TypeSpec docs on decorator resolution           | 30m  | CRITICAL | 🔴 NOW   |
+| 1.2  | Examine TypeSpec compiler source (decorator loading) | 45m  | CRITICAL | 🔴 NOW   |
+| 1.3  | Check package.json exports field requirements        | 15m  | HIGH     | 🔴 NOW   |
+| 1.4  | Create minimal TypeSpec library test case            | 30m  | CRITICAL | 🔴 NOW   |
+| 1.5  | Test minimal case to verify decorator resolution     | 15m  | CRITICAL | 🔴 NOW   |
+| 1.6  | Compare our structure vs working TypeSpec library    | 30m  | HIGH     | 🟡 SOON  |
 
 **Total Phase 1:** ~2.5 hours
 **Expected Outcome:** Understanding of HOW TypeSpec resolves decorators
 
 ### Phase 2: FIX DECORATOR RESOLUTION (Implementation) - 1-2 hours
 
-| Step | Task | Time | Impact | Priority |
-|------|------|------|--------|----------|
-| 2.1 | Implement correct decorator export structure | 20m | CRITICAL | 🔴 NOW |
-| 2.2 | Update package.json if needed | 10m | HIGH | 🔴 NOW |
-| 2.3 | Rebuild and verify dist/ structure | 10m | HIGH | 🔴 NOW |
-| 2.4 | Test single decorator test case | 15m | CRITICAL | 🔴 NOW |
-| 2.5 | Run full decorator test suite | 20m | HIGH | 🟡 SOON |
-| 2.6 | Verify all 11 decorators work | 20m | HIGH | 🟡 SOON |
+| Step | Task                                         | Time | Impact   | Priority |
+| ---- | -------------------------------------------- | ---- | -------- | -------- |
+| 2.1  | Implement correct decorator export structure | 20m  | CRITICAL | 🔴 NOW   |
+| 2.2  | Update package.json if needed                | 10m  | HIGH     | 🔴 NOW   |
+| 2.3  | Rebuild and verify dist/ structure           | 10m  | HIGH     | 🔴 NOW   |
+| 2.4  | Test single decorator test case              | 15m  | CRITICAL | 🔴 NOW   |
+| 2.5  | Run full decorator test suite                | 20m  | HIGH     | 🟡 SOON  |
+| 2.6  | Verify all 11 decorators work                | 20m  | HIGH     | 🟡 SOON  |
 
 **Total Phase 2:** ~1.5 hours
 **Expected Outcome:** Decorators correctly resolved by TypeSpec
 
 ### Phase 3: FIX CHANNEL AMBIGUITY (Quick Win) - 30 minutes
 
-| Step | Task | Time | Impact | Priority |
-|------|------|------|--------|----------|
-| 3.1 | Update lib/main.tsp to use qualified names | 10m | MEDIUM | 🟡 SOON |
-| 3.2 | OR: Remove global.channel conflict | 10m | MEDIUM | 🟡 SOON |
-| 3.3 | Test channel decorator usage | 10m | MEDIUM | 🟡 SOON |
+| Step | Task                                       | Time | Impact | Priority |
+| ---- | ------------------------------------------ | ---- | ------ | -------- |
+| 3.1  | Update lib/main.tsp to use qualified names | 10m  | MEDIUM | 🟡 SOON  |
+| 3.2  | OR: Remove global.channel conflict         | 10m  | MEDIUM | 🟡 SOON  |
+| 3.3  | Test channel decorator usage               | 10m  | MEDIUM | 🟡 SOON  |
 
 **Total Phase 3:** ~30 minutes
 **Expected Outcome:** +50-100 tests passing
 
 ### Phase 4: PROPERTY ENUMERATION FIX (Original Issue) - 1 hour
 
-| Step | Task | Time | Impact | Priority |
-|------|------|------|--------|----------|
-| 4.1 | Debug why walkPropertiesInherited returns empty | 30m | CRITICAL | 🟡 AFTER 2 |
-| 4.2 | Check if models are fully resolved when accessed | 20m | CRITICAL | 🟡 AFTER 2 |
-| 4.3 | Implement fix for property enumeration | 10m | CRITICAL | 🟡 AFTER 2 |
+| Step | Task                                             | Time | Impact   | Priority   |
+| ---- | ------------------------------------------------ | ---- | -------- | ---------- |
+| 4.1  | Debug why walkPropertiesInherited returns empty  | 30m  | CRITICAL | 🟡 AFTER 2 |
+| 4.2  | Check if models are fully resolved when accessed | 20m  | CRITICAL | 🟡 AFTER 2 |
+| 4.3  | Implement fix for property enumeration           | 10m  | CRITICAL | 🟡 AFTER 2 |
 
 **Total Phase 4:** ~1 hour
 **Expected Outcome:** +300-350 tests passing
 
 ### Phase 5: SPLIT-BRAIN FIX (Code Quality) - 30 minutes
 
-| Step | Task | Time | Impact | Priority |
-|------|------|------|--------|----------|
-| 5.1 | Replace model.properties.entries() with walkPropertiesInherited | 15m | MEDIUM | 🟢 LATER |
-| 5.2 | Replace model.properties.forEach with walkPropertiesInherited | 15m | MEDIUM | 🟢 LATER |
+| Step | Task                                                            | Time | Impact | Priority |
+| ---- | --------------------------------------------------------------- | ---- | ------ | -------- |
+| 5.1  | Replace model.properties.entries() with walkPropertiesInherited | 15m  | MEDIUM | 🟢 LATER |
+| 5.2  | Replace model.properties.forEach with walkPropertiesInherited   | 15m  | MEDIUM | 🟢 LATER |
 
 **Total Phase 5:** ~30 minutes
 **Expected Outcome:** Consistent property enumeration

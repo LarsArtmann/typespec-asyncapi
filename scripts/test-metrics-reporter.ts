@@ -2,7 +2,7 @@
 
 /**
  * Test Metrics Reporter - Split Brain Solution for Issue #134
- * 
+ *
  * PRIMARY METRIC: Absolute passing tests (always comparable)
  * SECONDARY METRIC: Pass rate (with denominator caveat)
  * TERTIARY METRIC: Failure breakdown by severity
@@ -34,20 +34,24 @@ interface SessionHistory {
 
 class TestMetricsReporter {
   private readonly metricsFile = join(process.cwd(), "test-metrics-history.json");
-  
+
   /**
    * Extract test metrics from bun test output
    */
   private extractMetricsFromOutput(testOutput: string): TestMetrics {
-    const lines = testOutput.split('\n');
-    
+    const lines = testOutput.split("\n");
+
     // Look for the final summary line at the end of output
     // Format: "X pass Y skip Z fail" or "Ran N tests across M files. [X.Ys]"
-    const summaryLine = lines.slice().reverse().find(line => 
-      (line.includes('pass') && line.includes('skip') && line.includes('fail')) ||
-      (line.includes('Ran') && line.includes('tests') && line.includes('across'))
-    );
-    
+    const summaryLine = lines
+      .slice()
+      .reverse()
+      .find(
+        (line) =>
+          (line.includes("pass") && line.includes("skip") && line.includes("fail")) ||
+          (line.includes("Ran") && line.includes("tests") && line.includes("across")),
+      );
+
     // Primary: Try to parse summary line
     if (summaryLine) {
       const passSkipFailMatch = summaryLine.match(/(\d+)\s+pass\s+(\d+)\s+skip\s+(\d+)\s+fail/);
@@ -58,7 +62,7 @@ class TestMetricsReporter {
         const total = passing + skipped + failing;
 
         // Count failure types from output
-        const failureLines = lines.filter(line => line.includes('(fail)'));
+        const failureLines = lines.filter((line) => line.includes("(fail)"));
         const failures = this.categorizeFailures(failureLines);
 
         return {
@@ -67,27 +71,29 @@ class TestMetricsReporter {
           skipped,
           total,
           passRate: (passing / total) * 100,
-          failures
+          failures,
         };
       }
     }
-    
+
     // Fallback 1: Count individual test result lines
-    console.log('🔍 Using fallback parsing strategy...');
-    const passLines = lines.filter(line => line.trim().startsWith('(pass)'));
-    const failLines = lines.filter(line => line.trim().startsWith('(fail)'));
-    const skipLines = lines.filter(line => line.trim().startsWith('(skip)'));
-    
+    console.log("🔍 Using fallback parsing strategy...");
+    const passLines = lines.filter((line) => line.trim().startsWith("(pass)"));
+    const failLines = lines.filter((line) => line.trim().startsWith("(fail)"));
+    const skipLines = lines.filter((line) => line.trim().startsWith("(skip)"));
+
     const passing = passLines.length;
     const failing = failLines.length;
     const skipped = skipLines.length;
     const total = passing + skipped + failing;
-    
+
     console.log(`📊 Extracted metrics from test result lines:`);
-    console.log(`   Passing: ${passing}, Failing: ${failing}, Skipped: ${skipped}, Total: ${total}`);
-    
+    console.log(
+      `   Passing: ${passing}, Failing: ${failing}, Skipped: ${skipped}, Total: ${total}`,
+    );
+
     // Count failure types from output
-    const failureLines = lines.filter(line => line.includes('(fail)'));
+    const failureLines = lines.filter((line) => line.includes("(fail)"));
     const failures = this.categorizeFailures(failureLines);
 
     return {
@@ -96,53 +102,61 @@ class TestMetricsReporter {
       skipped,
       total,
       passRate: total > 0 ? (passing / total) * 100 : 0,
-      failures
+      failures,
     };
   }
 
   /**
    * Categorize failures by severity based on test names and error patterns
    */
-  private categorizeFailures(failureLines: string[]): TestMetrics['failures'] {
+  private categorizeFailures(failureLines: string[]): TestMetrics["failures"] {
     const failures = {
       total: failureLines.length,
       critical: 0,
       high: 0,
       medium: 0,
-      low: 0
+      low: 0,
     };
 
     for (const line of failureLines) {
       const testDescription = line.toLowerCase();
-      
+
       // Critical: core functionality broken
-      if (testDescription.includes('critical') || 
-          testDescription.includes('compilation') ||
-          testDescription.includes('typescript') ||
-          testDescription.includes('build') ||
-          testDescription.includes('integration') ||
-          testDescription.includes('validation')) {
+      if (
+        testDescription.includes("critical") ||
+        testDescription.includes("compilation") ||
+        testDescription.includes("typescript") ||
+        testDescription.includes("build") ||
+        testDescription.includes("integration") ||
+        testDescription.includes("validation")
+      ) {
         failures.critical++;
       }
       // High: important features failing
-      else if (testDescription.includes('security') ||
-               testDescription.includes('performance') ||
-               testDescription.includes('protocol') ||
-               testDescription.includes('decorator') ||
-               testDescription.includes('emitter')) {
+      else if (
+        testDescription.includes("security") ||
+        testDescription.includes("performance") ||
+        testDescription.includes("protocol") ||
+        testDescription.includes("decorator") ||
+        testDescription.includes("emitter")
+      ) {
         failures.high++;
       }
       // Medium: test infrastructure and utilities
-      else if (testDescription.includes('test') ||
-               testDescription.includes('debug') ||
-               testDescription.includes('helper') ||
-               testDescription.includes('utils')) {
+      else if (
+        testDescription.includes("test") ||
+        testDescription.includes("debug") ||
+        testDescription.includes("helper") ||
+        testDescription.includes("utils")
+      ) {
         failures.medium++;
       }
       // Low: documentation and examples
-      else if (testDescription.includes('documentation') ||
-               testDescription.includes('example') ||
-               testDescription.includes('readme')) {
+      else if (
+        testDescription.includes("documentation") ||
+        testDescription.includes("example") ||
+        testDescription.includes("readme")
+      ) {
         failures.low++;
       }
       // Default to medium for uncategorized
@@ -163,7 +177,7 @@ class TestMetricsReporter {
     }
 
     try {
-      const content = readFileSync(this.metricsFile, 'utf-8');
+      const content = readFileSync(this.metricsFile, "utf-8");
       return JSON.parse(content) as SessionHistory[];
     } catch (error) {
       console.warn(`Warning: Could not load metrics history: ${error}`);
@@ -176,21 +190,21 @@ class TestMetricsReporter {
    */
   private saveHistory(currentMetrics: TestMetrics): void {
     const history = this.loadHistory();
-    
+
     const session: SessionHistory = {
       timestamp: new Date().toISOString(),
-      metrics: currentMetrics
+      metrics: currentMetrics,
     };
 
     history.push(session);
-    
+
     // Keep only last 30 sessions
     if (history.length > 30) {
       history.splice(0, history.length - 30);
     }
 
     try {
-      writeFileSync(this.metricsFile, JSON.stringify(history, null, 2), 'utf-8');
+      writeFileSync(this.metricsFile, JSON.stringify(history, null, 2), "utf-8");
     } catch (error) {
       console.error(`Error saving metrics history: ${error}`);
     }
@@ -202,7 +216,7 @@ class TestMetricsReporter {
   public generateReport(testOutput: string): TestMetrics {
     const currentMetrics = this.extractMetricsFromOutput(testOutput);
     const history = this.loadHistory();
-    
+
     // Calculate delta from previous session
     if (history.length > 0) {
       const previousMetrics = history[history.length - 1].metrics;
@@ -219,9 +233,12 @@ class TestMetricsReporter {
    * Print formatted metrics report
    */
   public printReport(metrics: TestMetrics): void {
-    const trend = metrics.deltaPassing !== undefined 
-      ? (metrics.deltaPassing > 0 ? `+${metrics.deltaPassing}` : `${metrics.deltaPassing}`)
-      : 'N/A';
+    const trend =
+      metrics.deltaPassing !== undefined
+        ? metrics.deltaPassing > 0
+          ? `+${metrics.deltaPassing}`
+          : `${metrics.deltaPassing}`
+        : "N/A";
 
     console.log(`
 📊 Test Metrics Summary - Split Brain Solution (Issue #134)
@@ -270,7 +287,7 @@ class TestMetricsReporter {
    */
   public checkQualityGates(metrics: TestMetrics): void {
     console.log("\n🚪 Quality Gate Status:");
-    
+
     // Absolute passing tests gate
     if (metrics.passing >= 200) {
       console.log("   ✅ Absolute Passing Tests: Above 200 baseline");
@@ -303,22 +320,21 @@ class TestMetricsReporter {
  */
 async function main() {
   const reporter = new TestMetricsReporter();
-  
+
   try {
     // Get current test output by running tests
     console.log("🧪 Running tests to get current metrics...");
-    
+
     const { execSync } = await import("node:child_process");
-    const testOutput = execSync("just test", { 
-      encoding: "utf-8", 
-      cwd: process.cwd() 
+    const testOutput = execSync("just test", {
+      encoding: "utf-8",
+      cwd: process.cwd(),
     });
-    
+
     // Generate and print report
     const metrics = reporter.generateReport(testOutput);
     reporter.printReport(metrics);
     reporter.checkQualityGates(metrics);
-    
   } catch (error: any) {
     // Try to extract metrics from partial output
     if (error.stdout) {

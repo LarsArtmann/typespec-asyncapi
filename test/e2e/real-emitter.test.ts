@@ -60,8 +60,7 @@ describe("REAL Emitter Test - No Mocks", () => {
     // Check that AsyncAPI output was generated
     const outputFiles = host.fs.keys();
     const asyncApiFile = Array.from(outputFiles).find(
-      (f) =>
-        f.includes("asyncapi") && (f.endsWith(".json") || f.endsWith(".yaml")),
+      (f) => f.includes("asyncapi") && (f.endsWith(".json") || f.endsWith(".yaml")),
     );
 
     expect(asyncApiFile).toBeDefined();

@@ -11,6 +11,7 @@
 ### 1. **Always Verify End-to-End FIRST**
 
 **What Happened:**
+
 - Spent 4 hours fixing import paths in 24 test files
 - Achieved 406/579 tests passing (70%)
 - Declared victory: "Import fixes complete!"
@@ -18,11 +19,13 @@
 - Discovered later: Tests use wrong package name, emitter can't be imported
 
 **What I Learned:**
+
 - **Test the happy path before fixing anything else**
 - "Passing tests" mean nothing if the core functionality doesn't work
 - End-to-end smoke test should be the FIRST test, not the last
 
 **New Rule:**
+
 ```
 ALWAYS start with:
 1. Does `tsp compile example.tsp` work? YES/NO
@@ -37,6 +40,7 @@ ALWAYS start with:
 ### 2. **Ghost Systems Are Worse Than Broken Systems**
 
 **What Happened:**
+
 - Found `test/plugins/enhanced-protocol-plugins.test.ts` (350 lines)
 - Tests 3 plugins: WebSocket, AMQP, MQTT
 - None of these plugins exist!
@@ -44,11 +48,13 @@ ALWAYS start with:
 - These tests pass (0 assertions actually run)
 
 **What I Learned:**
+
 - **Commented-out code is a code smell for ghost systems**
 - Tests that don't test anything are worse than no tests
 - Better to have 100 valuable tests than 579 mixed-quality tests
 
 **New Rule:**
+
 ```
 Before fixing tests:
 1. Run: find . -name "*.test.ts" | xargs grep "DISABLED\|TODO\|FIXME"
@@ -63,6 +69,7 @@ Before fixing tests:
 ### 3. **Multiple Test Utility Systems = Technical Debt**
 
 **What Happened:**
+
 - Found `test/utils/test-helpers.ts` (1095 lines)
 - Found `test/e2e/test-host.ts` (AsyncAPITestLibrary)
 - Both provide similar functionality
@@ -70,11 +77,13 @@ Before fixing tests:
 - Duplication creates maintenance burden
 
 **What I Learned:**
+
 - **One way to do it** - consolidate utilities before scaling tests
 - Duplication happens gradually if not monitored
 - Should have consolidated BEFORE fixing imports
 
 **New Rule:**
+
 ```
 When adding new test utility:
 1. Does similar functionality exist? YES/NO
@@ -90,17 +99,20 @@ When adding new test utility:
 ### 4. **Package Name Typos Are Silent Killers**
 
 **What Happened:**
+
 - Package.json: `@lars-artmann/typespec-asyncapi`
 - Tests import: `@larsartmann/typespec-asyncapi` (missing hyphen!)
 - All tests fail with "import-not-found"
 - Error message doesn't hint at typo
 
 **What I Learned:**
+
 - **Test imports in isolation** - Don't assume imports work
 - Typos in package names are hard to spot in error messages
 - Should have run actual `tsp compile` to catch this immediately
 
 **New Rule:**
+
 ```
 After any package.json name change:
 1. Grep codebase for old name
@@ -115,18 +127,21 @@ After any package.json name change:
 ### 5. **Session Summaries Belong in docs/, Not GitHub Issues**
 
 **What Happened:**
+
 - Found 4 GitHub issues that are session summaries (#125, #120, #103, #67)
 - These aren't actionable work items
 - They clog the issues list
 - Hard to find actual bugs/features among documentation
 
 **What I Learned:**
+
 - **Issues = actionable work only**
 - Session notes → `docs/sessions/`
 - Architectural decisions → `docs/adr/`
 - Keep issues focused on things that need doing
 
 **New Rule:**
+
 ```
 Create GitHub issue when:
 - Bug needs fixing
@@ -146,6 +161,7 @@ Create docs/ file when:
 ### 6. **Test Quality > Test Quantity**
 
 **What Happened:**
+
 - Have 579 total tests
 - 173 failing (30%)
 - Many passing tests don't provide value
@@ -153,11 +169,13 @@ Create docs/ file when:
 - Better to have 200 high-value tests than 579 mixed tests
 
 **What I Learned:**
+
 - **Delete low-value tests aggressively**
 - Focus on behavior tests, not implementation tests
 - One good end-to-end test worth 10 unit tests
 
 **New Rule:**
+
 ```
 For each test file, ask:
 1. If this test passes, what behavior is guaranteed?
@@ -172,6 +190,7 @@ For each test file, ask:
 ### 7. **Performance Testing Infrastructure Needs Usage or Deletion**
 
 **What Happened:**
+
 - Found `PerformanceRegressionTester.ts` (464 lines)
 - Found `ConfigurableMetrics.ts` (extensive infrastructure)
 - No baselines captured
@@ -179,11 +198,13 @@ For each test file, ask:
 - Never used in production
 
 **What I Learned:**
+
 - **Infrastructure without usage is dead code**
 - "We might need this later" leads to unused code
 - Delete aggressively, recreate if actually needed
 
 **New Rule:**
+
 ```
 For any "testing infrastructure":
 1. Is it used in CI? YES/NO
@@ -199,17 +220,20 @@ For any "testing infrastructure":
 ### 8. **Railway Programming Requires Consistent Application**
 
 **What Happened:**
+
 - Library code uses Effect.TS patterns (good!)
 - Test code still uses promises (bad!)
 - Mixed patterns create confusion
 - Issue #112 tracks "Effect.TS in tests" but not prioritized
 
 **What I Learned:**
+
 - **Consistency matters more than perfection**
 - Half-migrated patterns are worse than old patterns
 - Should either fully migrate or not migrate at all
 
 **New Rule:**
+
 ```
 When adopting new pattern:
 1. Identify scope: Library only? Library + Tests? Everything?
@@ -225,16 +249,19 @@ When adopting new pattern:
 ### 9. **Import Fixes Are Symptoms, Not Root Causes**
 
 **What Happened:**
+
 - Spent 4 hours fixing imports after architecture refactor
 - Fixed symptoms (wrong paths) not root cause (poor refactoring process)
 - Should have: 1) Refactor, 2) Run tests immediately, 3) Fix breaks
 
 **What I Learned:**
+
 - **Test immediately after refactoring**
 - Don't let import errors accumulate
 - Batch refactoring without testing = technical debt
 
 **New Rule:**
+
 ```
 When refactoring:
 1. Move file
@@ -252,16 +279,19 @@ When refactoring:
 ### 10. **Brutal Honesty Catches More Problems**
 
 **What Happened:**
+
 - First status report: "Import fixes complete! 70% tests passing!"
 - Brutal honesty review: "Did you verify emitter works? NO."
 - Discovered multiple ghost systems, wrong package names, etc.
 
 **What I Learned:**
+
 - **Question your own claims**
 - "Complete" needs clear definition
 - Always ask: "What didn't I test?"
 
 **New Rule:**
+
 ```
 Before declaring "done":
 1. What did I NOT test?
@@ -276,17 +306,17 @@ Before declaring "done":
 
 ## 📊 QUANTIFIED IMPACT
 
-| Mistake | Time Wasted | Potential User Impact |
-|---------|-------------|----------------------|
-| No end-to-end test | 4 hours | 🔴 BLOCKS ALL USAGE |
-| Ghost plugin tests | Ongoing | 🟡 Wastes CI time |
-| Duplicate test utilities | 2x effort | 🟡 Contributor confusion |
-| Package name typo | Caught early | 🔴 Would block all usage |
-| Sessions as issues | Ongoing | 🟡 Cluttered issues |
-| Low-value tests | 30% of tests | 🟡 False confidence |
-| Unused perf infrastructure | 464 lines | ⚪ Minor maintenance |
-| Hybrid Effect.TS patterns | Ongoing | 🟡 Inconsistent errors |
-| Batch import fixes | 4 hours | ⚪ One-time cost |
+| Mistake                    | Time Wasted  | Potential User Impact    |
+| -------------------------- | ------------ | ------------------------ |
+| No end-to-end test         | 4 hours      | 🔴 BLOCKS ALL USAGE      |
+| Ghost plugin tests         | Ongoing      | 🟡 Wastes CI time        |
+| Duplicate test utilities   | 2x effort    | 🟡 Contributor confusion |
+| Package name typo          | Caught early | 🔴 Would block all usage |
+| Sessions as issues         | Ongoing      | 🟡 Cluttered issues      |
+| Low-value tests            | 30% of tests | 🟡 False confidence      |
+| Unused perf infrastructure | 464 lines    | ⚪ Minor maintenance     |
+| Hybrid Effect.TS patterns  | Ongoing      | 🟡 Inconsistent errors   |
+| Batch import fixes         | 4 hours      | ⚪ One-time cost         |
 
 **TOTAL ESTIMATED COST: ~10 hours + ongoing maintenance burden**
 

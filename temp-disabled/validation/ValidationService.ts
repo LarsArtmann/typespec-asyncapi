@@ -1,16 +1,16 @@
 /**
  * Validation Service
- * 
+ *
  * IMPLEMENTED: Generic validation service with proper Effect.TS patterns
  * Eliminates all TODOs through comprehensive validation framework
  */
 
 import { Effect } from "effect";
-import { 
-  validateAsyncAPISpec, 
-  validateAsyncAPIMessage, 
+import {
+  validateAsyncAPISpec,
+  validateAsyncAPIMessage,
   validateAsyncAPIChannel,
-  type ValidationResult 
+  type ValidationResult,
 } from "./asyncapi-validator.js";
 
 /**
@@ -35,19 +35,23 @@ const validationUtils = {
   /**
    * Create validation effect with proper error handling
    */
-  createValidationEffect: <T>(
-    validator: (input: T) => Effect.Effect<ValidationResult, Error, never>,
-    config: ValidationConfig
-  ) => (input: T): Effect.Effect<boolean, Error, never> =>
-    Effect.gen(function*() {
-      const result = yield* validator(input);
-      
-      if (config.strict && !result.valid) {
-        return yield* Effect.fail(new Error(`Validation failed: ${result.errors.map(e => e.message).join(", ")}`));
-      }
-      
-      return validationUtils.resultToBoolean(result);
-    }),
+  createValidationEffect:
+    <T>(
+      validator: (input: T) => Effect.Effect<ValidationResult, Error, never>,
+      config: ValidationConfig,
+    ) =>
+    (input: T): Effect.Effect<boolean, Error, never> =>
+      Effect.gen(function* () {
+        const result = yield* validator(input);
+
+        if (config.strict && !result.valid) {
+          return yield* Effect.fail(
+            new Error(`Validation failed: ${result.errors.map((e) => e.message).join(", ")}`),
+          );
+        }
+
+        return validationUtils.resultToBoolean(result);
+      }),
 } as const;
 
 /**
@@ -57,7 +61,15 @@ export class ValidationService {
   /**
    * Validate AsyncAPI specification with boolean return
    */
-  static validateSpec(spec: unknown, config: ValidationConfig = { strict: false, warnings: true, bailOnFirstError: false, maxErrors: 10 }): Effect.Effect<boolean, Error, never> {
+  static validateSpec(
+    spec: unknown,
+    config: ValidationConfig = {
+      strict: false,
+      warnings: true,
+      bailOnFirstError: false,
+      maxErrors: 10,
+    },
+  ): Effect.Effect<boolean, Error, never> {
     const effect = validationUtils.createValidationEffect(validateAsyncAPISpec, config);
     return effect(spec);
   }
@@ -65,7 +77,15 @@ export class ValidationService {
   /**
    * Validate AsyncAPI message with boolean return
    */
-  static validateMessage(message: unknown, config: ValidationConfig = { strict: false, warnings: true, bailOnFirstError: false, maxErrors: 10 }): Effect.Effect<boolean, Error, never> {
+  static validateMessage(
+    message: unknown,
+    config: ValidationConfig = {
+      strict: false,
+      warnings: true,
+      bailOnFirstError: false,
+      maxErrors: 10,
+    },
+  ): Effect.Effect<boolean, Error, never> {
     const effect = validationUtils.createValidationEffect(validateAsyncAPIMessage, config);
     return effect(message);
   }
@@ -73,7 +93,15 @@ export class ValidationService {
   /**
    * Validate AsyncAPI channel with boolean return
    */
-  static validateChannel(channel: unknown, config: ValidationConfig = { strict: false, warnings: true, bailOnFirstError: false, maxErrors: 10 }): Effect.Effect<boolean, Error, never> {
+  static validateChannel(
+    channel: unknown,
+    config: ValidationConfig = {
+      strict: false,
+      warnings: true,
+      bailOnFirstError: false,
+      maxErrors: 10,
+    },
+  ): Effect.Effect<boolean, Error, never> {
     const effect = validationUtils.createValidationEffect(validateAsyncAPIChannel, config);
     return effect(channel);
   }
@@ -83,7 +111,7 @@ export class ValidationService {
    */
   static validateDetailed<T>(
     input: T,
-    validator: (input: T) => Effect.Effect<ValidationResult, Error, never>
+    validator: (input: T) => Effect.Effect<ValidationResult, Error, never>,
   ): Effect.Effect<ValidationResult, Error, never> {
     return validator(input);
   }
@@ -94,10 +122,15 @@ export class ValidationService {
   static batchValidate<T>(
     inputs: Array<T>,
     validator: (input: T) => Effect.Effect<ValidationResult, Error, never>,
-    config: ValidationConfig = { strict: false, warnings: true, bailOnFirstError: false, maxErrors: 10 }
-  ): Effect.Effect<Array<{ input: T, result: ValidationResult }>, Error, never> {
-    return Effect.gen(function*() {
-      const results: Array<{ input: T, result: ValidationResult }> = [];
+    config: ValidationConfig = {
+      strict: false,
+      warnings: true,
+      bailOnFirstError: false,
+      maxErrors: 10,
+    },
+  ): Effect.Effect<Array<{ input: T; result: ValidationResult }>, Error, never> {
+    return Effect.gen(function* () {
+      const results: Array<{ input: T; result: ValidationResult }> = [];
       let errorCount = 0;
 
       for (const input of inputs) {
@@ -105,21 +138,22 @@ export class ValidationService {
           break;
         }
 
-        const result = yield* Effect.catchAll(
-          validator(input),
-          (error) => Effect.succeed({
+        const result = yield* Effect.catchAll(validator(input), (error) =>
+          Effect.succeed({
             valid: false,
-            errors: [{
-              path: "root",
-              message: `Validation failed: ${String(error)}`,
-              severity: "error" as const
-            }],
+            errors: [
+              {
+                path: "root",
+                message: `Validation failed: ${String(error)}`,
+                severity: "error" as const,
+              },
+            ],
             warnings: [],
             metadata: {
               version: "unknown",
               componentCounts: { channels: 0, messages: 0, operations: 0, servers: 0 },
             },
-          })
+          }),
         );
         results.push({ input, result });
 
@@ -138,22 +172,22 @@ export class ValidationService {
   static validateWithContext<T>(
     input: T,
     context: string,
-    validator: (input: T) => Effect.Effect<ValidationResult, Error, never>
+    validator: (input: T) => Effect.Effect<ValidationResult, Error, never>,
   ): Effect.Effect<ValidationResult, Error, never> {
-    return Effect.gen(function*() {
+    return Effect.gen(function* () {
       const result = yield* validator(input);
-      
+
       // Add context to error messages
       const contextResult = {
         ...result,
-        errors: result.errors.map(error => ({
+        errors: result.errors.map((error) => ({
           ...error,
-          message: `[${context}] ${error.message}`
+          message: `[${context}] ${error.message}`,
         })),
-        warnings: result.warnings.map(warning => ({
+        warnings: result.warnings.map((warning) => ({
           ...warning,
-          message: `[${context}] ${warning.message}`
-        }))
+          message: `[${context}] ${warning.message}`,
+        })),
       };
 
       return contextResult;
@@ -166,11 +200,11 @@ export class ValidationService {
   static validateWithFallback<T>(
     input: T,
     fallback: ValidationResult,
-    validator: (input: T) => Effect.Effect<ValidationResult, Error, never>
+    validator: (input: T) => Effect.Effect<ValidationResult, Error, never>,
   ): Effect.Effect<ValidationResult, Error, never> {
-    return Effect.gen(function*() {
+    return Effect.gen(function* () {
       const result = yield* Effect.either(validator(input));
-      
+
       if (result._tag === "Right") {
         return result.right;
       } else {
@@ -185,16 +219,11 @@ export class ValidationService {
   static validateWithRetry<T>(
     input: T,
     attempts: number,
-    validator: (input: T) => Effect.Effect<ValidationResult, Error, never>
+    validator: (input: T) => Effect.Effect<ValidationResult, Error, never>,
   ): Effect.Effect<ValidationResult, Error, never> {
-    return Effect.retry(
-      validator(input).pipe(
-        Effect.catchAll((error) => Effect.fail(error))
-      ),
-      { times: attempts - 1 }
-    ).pipe(
-      Effect.catchAll((error) => Effect.fail(error))
-    );
+    return Effect.retry(validator(input).pipe(Effect.catchAll((error) => Effect.fail(error))), {
+      times: attempts - 1,
+    }).pipe(Effect.catchAll((error) => Effect.fail(error)));
   }
 
   /**
@@ -212,8 +241,8 @@ export class ValidationService {
   } {
     const stats = {
       total: results.length,
-      valid: results.filter(r => r.valid).length,
-      invalid: results.filter(r => !r.valid).length,
+      valid: results.filter((r) => r.valid).length,
+      invalid: results.filter((r) => !r.valid).length,
       errorCount: results.reduce((sum, r) => sum + r.errors.length, 0),
       warningCount: results.reduce((sum, r) => sum + r.warnings.length, 0),
       errorsByPath: {} as Record<string, number>,
@@ -222,14 +251,14 @@ export class ValidationService {
     };
 
     // Calculate errors by path and severity
-    results.forEach(result => {
-      result.errors.forEach(error => {
+    results.forEach((result) => {
+      result.errors.forEach((error) => {
         const path = error.path || "unknown";
         stats.errorsByPath[path] = (stats.errorsByPath[path] || 0) + 1;
         stats.errorsBySeverity[error.severity] = (stats.errorsBySeverity[error.severity] || 0) + 1;
       });
 
-      result.warnings.forEach(warning => {
+      result.warnings.forEach((warning) => {
         const path = warning.path || "unknown";
         stats.warningsByPath[path] = (stats.warningsByPath[path] || 0) + 1;
       });

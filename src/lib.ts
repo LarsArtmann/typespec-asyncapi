@@ -144,8 +144,7 @@ export const $lib = createTypeSpecLibrary({
     "missing-server-config": {
       severity: "warning",
       messages: {
-        default:
-          "No server configuration found. Add @server decorator to define AsyncAPI servers.",
+        default: "No server configuration found. Add @server decorator to define AsyncAPI servers.",
       },
     },
     "test-simple": {

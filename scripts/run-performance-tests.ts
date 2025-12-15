@@ -47,7 +47,7 @@ const mode = args[0] || "ci";
 // Execute performance test logging in proper Effect context
 const logProgram = Effect.log("Performance test execution").pipe(
   Effect.annotateLogs({ mode, phase: "performance-test" }),
-  Effect.provide(LoggerLive)
+  Effect.provide(LoggerLive),
 );
 Effect.runSync(logProgram);
 
@@ -73,8 +73,6 @@ switch (mode) {
     break;
   default:
     // Execute usage logging in proper Effect context
-    Effect.runSync(
-      Effect.logInfo("Usage: bun run-performance-tests.ts [ci|dev|prod|quick]"),
-    );
+    Effect.runSync(Effect.logInfo("Usage: bun run-performance-tests.ts [ci|dev|prod|quick]"));
     process.exit(1);
 }

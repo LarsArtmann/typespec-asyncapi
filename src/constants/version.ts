@@ -1,6 +1,6 @@
 /**
  * VERSION MANAGEMENT SYSTEM
- * 
+ *
  * Comprehensive semantic versioning and version management
  * Eliminates "split brain" issues and provides single source of truth
  */
@@ -64,20 +64,20 @@ export const versionUtils = {
   /**
    * Check if AsyncAPI version is supported
    */
-  isAsyncAPISupported: (version: string): boolean => 
-    SUPPORTED_ASYNCAPI_VERSIONS.includes(version as typeof SUPPORTED_ASYNCAPI_VERSIONS[number]),
+  isAsyncAPISupported: (version: string): boolean =>
+    SUPPORTED_ASYNCAPI_VERSIONS.includes(version as (typeof SUPPORTED_ASYNCAPI_VERSIONS)[number]),
 
   /**
    * Check if version is in compatibility range
    */
-  isCompatibleVersion: (version: string): boolean => 
+  isCompatibleVersion: (version: string): boolean =>
     version >= ASYNCAPI_COMPATIBILITY.MIN && version <= ASYNCAPI_COMPATIBILITY.MAX,
 
   /**
    * Parse semantic version
    */
   parseVersion: (version: string) => {
-    const [major, minor = "0", patch = "0"] = version.split('.');
+    const [major, minor = "0", patch = "0"] = version.split(".");
     return { major, minor, patch };
   },
 
@@ -87,11 +87,10 @@ export const versionUtils = {
   compareVersions: (a: string, b: string): number => {
     const aVer = versionUtils.parseVersion(a);
     const bVer = versionUtils.parseVersion(b);
-    
-    const compare = (part: keyof typeof aVer) => 
-      parseInt(aVer[part]) - parseInt(bVer[part]);
-    
-    return compare('major') || compare('minor') || compare('patch');
+
+    const compare = (part: keyof typeof aVer) => parseInt(aVer[part]) - parseInt(bVer[part]);
+
+    return compare("major") || compare("minor") || compare("patch");
   },
 
   /**
@@ -103,6 +102,6 @@ export const versionUtils = {
 /**
  * Type definitions for version management
  */
-export type AsyncAPIVersion = typeof SUPPORTED_ASYNCAPI_VERSIONS[number];
+export type AsyncAPIVersion = (typeof SUPPORTED_ASYNCAPI_VERSIONS)[number];
 export type SemanticVersion = `${string}.${string}.${string}`;
 export type CompatibilityRange = typeof ASYNCAPI_COMPATIBILITY.RANGE;

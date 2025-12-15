@@ -25,11 +25,7 @@ import {
 
 describe("🚨 ALL GENERATED ASYNCAPI SPECS VALIDATION", () => {
   let validator: AsyncAPIValidator;
-  const testOutputDir = join(
-    process.cwd(),
-    "test-output",
-    "all-specs-validation",
-  );
+  const testOutputDir = join(process.cwd(), "test-output", "all-specs-validation");
   let discoveredSpecs: Array<{
     filePath: string;
     fileName: string;
@@ -257,12 +253,7 @@ operations:
                         },
                         timestamp: { type: "string", format: "date-time" },
                       },
-                      required: [
-                        "productId",
-                        "currentStock",
-                        "severity",
-                        "timestamp",
-                      ],
+                      required: ["productId", "currentStock", "severity", "timestamp"],
                     },
                   },
                 },
@@ -277,8 +268,7 @@ operations:
               subscribeInventoryUpdates: {
                 action: "receive",
                 channel: { $ref: "#/channels/inventory.updates" },
-                description:
-                  "Subscribe to inventory updates for specific product",
+                description: "Subscribe to inventory updates for specific product",
               },
               subscribeInventoryAlerts: {
                 action: "receive",
@@ -363,13 +353,7 @@ operations:
                         data: { type: "object" },
                         timestamp: { type: "string", format: "date-time" },
                       },
-                      required: [
-                        "notificationId",
-                        "deviceToken",
-                        "title",
-                        "message",
-                        "timestamp",
-                      ],
+                      required: ["notificationId", "deviceToken", "title", "message", "timestamp"],
                     },
                   },
                 },
@@ -398,16 +382,12 @@ operations:
         const filePath = join(testOutputDir, fileName);
 
         const content =
-          sample.format === "json"
-            ? JSON.stringify(sample.spec, null, 2)
-            : String(sample.spec);
+          sample.format === "json" ? JSON.stringify(sample.spec, null, 2) : String(sample.spec);
 
         await writeFile(filePath, content);
 
         // Update the shared discoveredSpecs array
-        const existingIndex = discoveredSpecs.findIndex(
-          (spec) => spec.fileName === fileName,
-        );
+        const existingIndex = discoveredSpecs.findIndex((spec) => spec.fileName === fileName);
         const specEntry = {
           filePath,
           fileName,
@@ -424,9 +404,7 @@ operations:
         generatedCount++;
       }
 
-      Effect.log(
-        `✅ Generated ${generatedCount} sample AsyncAPI specifications`,
-      );
+      Effect.log(`✅ Generated ${generatedCount} sample AsyncAPI specifications`);
       expect(generatedCount).toBe(sampleSpecs.length);
       expect(discoveredSpecs.length).toBeGreaterThan(0);
     });
@@ -456,16 +434,9 @@ operations:
                 try {
                   // Check if it's an AsyncAPI file by looking for asyncapi field
                   const content = await readFile(filePath, "utf-8");
-                  if (
-                    content.includes('"asyncapi"') ||
-                    content.includes("asyncapi:")
-                  ) {
+                  if (content.includes('"asyncapi"') || content.includes("asyncapi:")) {
                     // Avoid duplicates
-                    if (
-                      !discoveredSpecs.some(
-                        (spec) => spec.filePath === filePath,
-                      )
-                    ) {
+                    if (!discoveredSpecs.some((spec) => spec.filePath === filePath)) {
                       discoveredSpecs.push({
                         filePath,
                         fileName: file.name,
@@ -486,14 +457,10 @@ operations:
         }
       }
 
-      Effect.log(
-        `🎯 Discovered ${discoveredSpecs.length} AsyncAPI specification files`,
-      );
+      Effect.log(`🎯 Discovered ${discoveredSpecs.length} AsyncAPI specification files`);
       Effect.log("📋 Files found:");
       discoveredSpecs.forEach((spec) => {
-        Effect.log(
-          `  📄 ${spec.fileName} (${spec.format.toUpperCase()}, ${spec.size} bytes)`,
-        );
+        Effect.log(`  📄 ${spec.fileName} (${spec.format.toUpperCase()}, ${spec.size} bytes)`);
       });
 
       expect(discoveredSpecs.length).toBeGreaterThan(0);
@@ -501,14 +468,10 @@ operations:
 
     it("should validate ALL discovered AsyncAPI specifications", async () => {
       Effect.log("\n🚨 VALIDATING ALL DISCOVERED ASYNCAPI SPECIFICATIONS");
-      Effect.log(
-        `📊 Total specifications to validate: ${discoveredSpecs.length}`,
-      );
+      Effect.log(`📊 Total specifications to validate: ${discoveredSpecs.length}`);
 
       if (discoveredSpecs.length === 0) {
-        throw new Error(
-          "❌ NO ASYNCAPI SPECIFICATIONS FOUND - VALIDATION CANNOT PROCEED",
-        );
+        throw new Error("❌ NO ASYNCAPI SPECIFICATIONS FOUND - VALIDATION CANNOT PROCEED");
       }
 
       const validationResults: Array<{
@@ -528,9 +491,7 @@ operations:
       // Validate each discovered specification
       for (let i = 0; i < discoveredSpecs.length; i++) {
         const spec = discoveredSpecs[i];
-        Effect.log(
-          `\n📄 [${i + 1}/${discoveredSpecs.length}] Validating: ${spec.fileName}`,
-        );
+        Effect.log(`\n📄 [${i + 1}/${discoveredSpecs.length}] Validating: ${spec.fileName}`);
 
         const validationStartTime = performance.now();
         const result = await validator.validateFile(spec.filePath);
@@ -555,9 +516,7 @@ operations:
           Effect.log(`  ✅ VALID (${result.metrics.duration.toFixed(2)}ms)`);
           const channelCount = getChannelCount(result.value);
           const operationCount = getOperationCount(result.value);
-          Effect.log(
-            `  📊 ${channelCount} channels, ${operationCount} operations`,
-          );
+          Effect.log(`  📊 ${channelCount} channels, ${operationCount} operations`);
 
           // Performance requirement check (adjusted for real AsyncAPI parser)
           expect(result.metrics.duration).toBeLessThan(250); // <250ms requirement
@@ -565,9 +524,7 @@ operations:
           Effect.log(`  ❌ INVALID (${result.errors.length} errors)`);
           Effect.log(`  🔍 Errors:`);
           result.errors.forEach((error) => {
-            Effect.log(
-              `    - ${error.message} (${error.keyword}) at ${error.instancePath}`,
-            );
+            Effect.log(`    - ${error.message} (${error.keyword}) at ${error.instancePath}`);
           });
 
           // CRITICAL: Any invalid spec fails the entire build
@@ -575,9 +532,7 @@ operations:
             `🚨 INVALID ASYNCAPI SPECIFICATION DETECTED: ${spec.fileName}\n` +
               `📁 File: ${spec.filePath}\n` +
               `❌ Errors (${result.errors.length}):\n` +
-              result.errors
-                .map((e) => `  - ${e.message} (${e.keyword})`)
-                .join("\n") +
+              result.errors.map((e) => `  - ${e.message} (${e.keyword})`).join("\n") +
               "\n\n" +
               `🛑 This specification MUST be fixed before deployment!\n` +
               `Invalid AsyncAPI specs can cause runtime failures and integration issues.`,
@@ -591,27 +546,18 @@ operations:
       const validSpecs = validationResults.filter((r) => r.valid).length;
       const invalidSpecs = validationResults.length - validSpecs;
       const avgValidationTime =
-        validationResults.reduce((sum, r) => sum + r.duration, 0) /
-        validationResults.length;
-      const maxValidationTime = Math.max(
-        ...validationResults.map((r) => r.duration),
-      );
+        validationResults.reduce((sum, r) => sum + r.duration, 0) / validationResults.length;
+      const maxValidationTime = Math.max(...validationResults.map((r) => r.duration));
 
       Effect.log("\n" + "=".repeat(80));
       Effect.log("🎯 FINAL VALIDATION RESULTS");
       Effect.log("=".repeat(80));
-      Effect.log(
-        `📄 Total Specifications Validated: ${validationResults.length}`,
-      );
+      Effect.log(`📄 Total Specifications Validated: ${validationResults.length}`);
       Effect.log(`✅ Valid Specifications: ${validSpecs}`);
       Effect.log(`❌ Invalid Specifications: ${invalidSpecs}`);
-      Effect.log(
-        `📈 Success Rate: ${((validSpecs / validationResults.length) * 100).toFixed(1)}%`,
-      );
+      Effect.log(`📈 Success Rate: ${((validSpecs / validationResults.length) * 100).toFixed(1)}%`);
       Effect.log(`⏱️  Total Validation Time: ${batchDuration.toFixed(2)}ms`);
-      Effect.log(
-        `⚡ Average Validation Time: ${avgValidationTime.toFixed(2)}ms`,
-      );
+      Effect.log(`⚡ Average Validation Time: ${avgValidationTime.toFixed(2)}ms`);
       Effect.log(`🐌 Slowest Validation: ${maxValidationTime.toFixed(2)}ms`);
 
       Effect.log("\n📋 Individual Results:");
@@ -632,9 +578,7 @@ operations:
 
       if (validSpecs === validationResults.length && invalidSpecs === 0) {
         Effect.log("\n🎉 ALL ASYNCAPI SPECIFICATIONS ARE VALID!");
-        Effect.log(
-          "🛡️  No invalid specifications detected - build can proceed safely",
-        );
+        Effect.log("🛡️  No invalid specifications detected - build can proceed safely");
         Effect.log("⚡ All performance requirements met");
         Effect.log("🚀 Ready for production deployment");
       }
@@ -655,18 +599,13 @@ operations:
         },
       };
 
-      await writeFile(
-        wrongVersionSpec.filePath,
-        JSON.stringify(wrongVersionSpec.content, null, 2),
-      );
+      await writeFile(wrongVersionSpec.filePath, JSON.stringify(wrongVersionSpec.content, null, 2));
 
       const result = await validator.validateFile(wrongVersionSpec.filePath);
 
       expect(result.valid).toBe(false);
       expect(result.errors.length).toBeGreaterThan(0);
-      expect(result.errors[0].keyword).toMatch(
-        /const|asyncapi|validation-error/,
-      );
+      expect(result.errors[0].keyword).toMatch(/const|asyncapi|validation-error/);
 
       Effect.log("✅ Version compliance check: ENFORCED");
 
@@ -741,9 +680,7 @@ operations:
 
       expect(result.valid).toBe(false);
       expect(result.errors.length).toBeGreaterThan(0);
-      expect(result.errors[0].keyword).toMatch(
-        /enum|asyncapi|validation-error/,
-      );
+      expect(result.errors[0].keyword).toMatch(/enum|asyncapi|validation-error/);
 
       Effect.log("✅ Operation action validation: ENFORCED");
 

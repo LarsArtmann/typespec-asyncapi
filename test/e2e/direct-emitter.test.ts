@@ -80,10 +80,7 @@ describe("Direct Emitter Test", () => {
         (f) => f.includes("asyncapi") || f.includes("direct-test"),
       );
 
-      Effect.logInfo(
-        `Found ${asyncapiFiles.length} output files:`,
-        asyncapiFiles,
-      );
+      Effect.logInfo(`Found ${asyncapiFiles.length} output files:`, asyncapiFiles);
 
       // Verify at least emitter ran without throwing
       expect(asyncapiFiles.length).toBeGreaterThanOrEqual(0);

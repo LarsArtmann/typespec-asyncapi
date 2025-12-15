@@ -3,10 +3,7 @@
  */
 
 import { describe, expect, it } from "bun:test";
-import {
-  compileAsyncAPISpecWithoutErrors,
-  parseAsyncAPIOutput,
-} from "../utils/test-helpers.js";
+import { compileAsyncAPISpecWithoutErrors, parseAsyncAPIOutput } from "../utils/test-helpers.js";
 import { Effect } from "effect";
 
 describe("Simple AsyncAPI Emitter (No Decorators)", () => {
@@ -36,10 +33,7 @@ describe("Simple AsyncAPI Emitter (No Decorators)", () => {
     }
 
     // Should have generated an output file
-    const asyncapiDoc = await parseAsyncAPIOutput(
-      outputFiles,
-      "simple-test.json",
-    );
+    const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "simple-test.json");
 
     // Should be a valid AsyncAPI document structure
     expect(typeof asyncapiDoc).toBe("object");

@@ -53,17 +53,9 @@ describe("Debug Emitter Registration", () => {
       if (Array.isArray(result) && result.length >= 2) {
         const [program, diagnostics] = result;
         Effect.log(`Program (array[0]):`, !!program, typeof program);
-        Effect.log(
-          `Diagnostics (array[1]):`,
-          Array.isArray(diagnostics),
-          diagnostics?.length || 0,
-        );
+        Effect.log(`Diagnostics (array[1]):`, Array.isArray(diagnostics), diagnostics?.length || 0);
 
-        if (
-          diagnostics &&
-          Array.isArray(diagnostics) &&
-          diagnostics.length > 0
-        ) {
+        if (diagnostics && Array.isArray(diagnostics) && diagnostics.length > 0) {
           const errors = diagnostics.filter((d) => d.severity === "error");
           const warnings = diagnostics.filter((d) => d.severity === "warning");
           Effect.log(`Errors: ${errors.length}, Warnings: ${warnings.length}`);
@@ -79,12 +71,8 @@ describe("Debug Emitter Registration", () => {
 
         // Check diagnostics
         if (result.diagnostics?.length > 0) {
-          const errors = result.diagnostics.filter(
-            (d) => d.severity === "error",
-          );
-          const warnings = result.diagnostics.filter(
-            (d) => d.severity === "warning",
-          );
+          const errors = result.diagnostics.filter((d) => d.severity === "error");
+          const warnings = result.diagnostics.filter((d) => d.severity === "warning");
           Effect.log(`Errors: ${errors.length}, Warnings: ${warnings.length}`);
 
           if (errors.length > 0) {
@@ -99,10 +87,7 @@ describe("Debug Emitter Registration", () => {
         Effect.log(`  - ${path} (${file.content?.length || 0} chars)`);
 
         // Look specifically for our emitter output
-        if (
-          path.includes("debug-test-output") ||
-          path.includes("debug-output")
-        ) {
+        if (path.includes("debug-test-output") || path.includes("debug-output")) {
           Effect.log(`  🎯 FOUND EMITTER OUTPUT: ${path}`);
           Effect.log(`     Content: ${file.content?.substring(0, 200)}...`);
         }

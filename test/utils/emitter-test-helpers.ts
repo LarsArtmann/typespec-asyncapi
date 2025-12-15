@@ -14,9 +14,7 @@ function findGeneratedFilesOnFilesystem(
   outputFile: string,
 ): { file: string; content: string } | null {
   // 🔍 CRITICAL DEBUG: Log when fallback is called
-  console.log(
-    `🚨 FALLBACK CALLED: findGeneratedFilesOnFilesystem("${outputFile}")`,
-  );
+  console.log(`🚨 FALLBACK CALLED: findGeneratedFilesOnFilesystem("${outputFile}")`);
 
   // 🔍 ENHANCED DEBUGGING: Log current working directory and search paths
   const cwd = process.cwd();
@@ -46,12 +44,7 @@ function findGeneratedFilesOnFilesystem(
       console.log(`🔍 DEBUG: Found temp subdirs:`, subdirs);
       for (const subdir of subdirs) {
         if (subdir === ".DS_Store") continue;
-        const fullPath = path.join(
-          tempOutputBase,
-          subdir,
-          "@lars-artmann",
-          "typespec-asyncapi",
-        );
+        const fullPath = path.join(tempOutputBase, subdir, "@lars-artmann", "typespec-asyncapi");
         possiblePaths.push(fullPath);
         possiblePaths.push(path.join(tempOutputBase, subdir));
 
@@ -92,9 +85,7 @@ function findGeneratedFilesOnFilesystem(
         console.log(`🔍 DEBUG: File exists in CWD at ${filePath}: ${exists}`);
         if (exists) {
           const content = fs.readFileSync(filePath, "utf8");
-          console.log(
-            `🔍 ENHANCED FALLBACK: Found file in CWD: ${filename + ext}`,
-          );
+          console.log(`🔍 ENHANCED FALLBACK: Found file in CWD: ${filename + ext}`);
           return { file: filename + ext, content };
         }
       } catch (error) {
@@ -111,15 +102,11 @@ function findGeneratedFilesOnFilesystem(
         console.log(`🔍 DEBUG: Checking temp path: ${filePath}`);
         try {
           const exists = fs.existsSync(filePath);
-          console.log(
-            `🔍 DEBUG: File exists in temp at ${filePath}: ${exists}`,
-          );
+          console.log(`🔍 DEBUG: File exists in temp at ${filePath}: ${exists}`);
 
           if (exists) {
             const content = fs.readFileSync(filePath, "utf8");
-            console.log(
-              `🔍 ENHANCED FALLBACK: Found file in temp: ${filename + ext}`,
-            );
+            console.log(`🔍 ENHANCED FALLBACK: Found file in temp: ${filename + ext}`);
             return { file: filename + ext, content };
           }
         } catch (error) {
@@ -147,11 +134,7 @@ function findGeneratedFilesOnFilesystem(
       console.log(`🔍 DEBUG: tsp-output files:`, files);
 
       // Check nested directory
-      const nestedPath = path.join(
-        tspOutputPath,
-        "@lars-artmann",
-        "typespec-asyncapi",
-      );
+      const nestedPath = path.join(tspOutputPath, "@lars-artmann", "typespec-asyncapi");
       if (fs.existsSync(nestedPath)) {
         const nestedFiles = fs.readdirSync(nestedPath);
         console.log(`🔍 DEBUG: nested directory files:`, nestedFiles);
@@ -185,9 +168,7 @@ import YAML from "yaml";
  * @param options - AsyncAPI emitter options (file-type, output-file, etc.)
  * @returns Configured EmitterTester instance
  */
-export async function createAsyncAPIEmitterTester(
-  options: AsyncAPIEmitterOptions = {},
-) {
+export async function createAsyncAPIEmitterTester(options: AsyncAPIEmitterOptions = {}) {
   const packageRoot = await findTestPackageRoot(import.meta.url);
 
   return createTester(packageRoot, {
@@ -225,19 +206,13 @@ export async function createAsyncAPIEmitterTester(
  * @param options - AsyncAPI emitter options
  * @returns AsyncAPI document, diagnostics, program, and outputs
  */
-export async function compileAsyncAPI(
-  source: string,
-  options: AsyncAPIEmitterOptions = {},
-) {
+export async function compileAsyncAPI(source: string, options: AsyncAPIEmitterOptions = {}) {
   const tester = await createAsyncAPIEmitterTester(options);
   const result = await tester.compile(source);
 
   // Debug result.outputs structure
   console.log(`🔍 result.outputs type:`, typeof result.outputs);
-  console.log(
-    `🔍 result.outputs constructor:`,
-    result.outputs?.constructor?.name,
-  );
+  console.log(`🔍 result.outputs constructor:`, result.outputs?.constructor?.name);
   console.log(`🔍 result.outputs:`, result.outputs);
   console.log(`🔍 result.outputs keys:`, Object.keys(result.outputs || {}));
 
@@ -252,30 +227,30 @@ export async function compileAsyncAPI(
     // Check virtual filesystem for files that should have been emitted
     // FIXED: Look in correct TypeSpec emitFile output directory structure
     const searchPaths = [
-      "tsp-output",                    // Direct search
-      "tsp-output/@lars-artmann/typespec-asyncapi",  // Package-scoped search
-      "tsp-output/*",                  // Wildcard package search
+      "tsp-output", // Direct search
+      "tsp-output/@lars-artmann/typespec-asyncapi", // Package-scoped search
+      "tsp-output/*", // Wildcard package search
     ];
-    
+
     const virtualFiles = Object.entries(result.fs.fs || {});
-    console.log(`🔍 DEBUG: Searching ${searchPaths.length} paths in virtual FS with ${virtualFiles.length} total files`);
+    console.log(
+      `🔍 DEBUG: Searching ${searchPaths.length} paths in virtual FS with ${virtualFiles.length} total files`,
+    );
 
     // Look for AsyncAPI files in all possible locations
     for (const [virtualPath, content] of virtualFiles) {
       // Match against expected filename patterns
       const expectedName = options["output-file"] || "asyncapi";
-      const filename = virtualPath.split('/').pop() || "";  // Extract just the filename
-      
+      const filename = virtualPath.split("/").pop() || ""; // Extract just the filename
+
       if (
         filename.includes(expectedName) &&
         (filename.endsWith(".yaml") || filename.endsWith(".json"))
       ) {
         // SUCCESS: Found emitted file in virtual filesystem
-        const relativePath = filename;  // Use simple filename for outputs
+        const relativePath = filename; // Use simple filename for outputs
         (result.outputs as any)[relativePath] = content;
-        console.log(
-          `🎉 SUCCESS: Found ${virtualPath} -> result.outputs.${relativePath}`,
-        );
+        console.log(`🎉 SUCCESS: Found ${virtualPath} -> result.outputs.${relativePath}`);
 
         return {
           asyncApiDoc: filename.endsWith(".json")
@@ -290,17 +265,11 @@ export async function compileAsyncAPI(
     }
 
     // If no virtual files found, try filesystem fallback
-    const fallback = findGeneratedFilesOnFilesystem(
-      options["output-file"] || "asyncapi",
-    );
+    const fallback = findGeneratedFilesOnFilesystem(options["output-file"] || "asyncapi");
     if (fallback) {
-      console.log(
-        `🔍 FALLBACK: Using file system search - found ${fallback.file}`,
-      );
+      console.log(`🔍 FALLBACK: Using file system search - found ${fallback.file}`);
       const content = fallback.content;
-      const doc = fallback.file.endsWith(".json")
-        ? JSON.parse(content)
-        : YAML.parse(content);
+      const doc = fallback.file.endsWith(".json") ? JSON.parse(content) : YAML.parse(content);
 
       return {
         asyncApiDoc: doc,
@@ -311,15 +280,11 @@ export async function compileAsyncAPI(
       };
     }
 
-    throw new Error(
-      "No AsyncAPI output generated - check emitFile integration",
-    );
+    throw new Error("No AsyncAPI output generated - check emitFile integration");
   }
 
   const content = result.outputs[outputFile];
-  const doc = outputFile.endsWith(".json")
-    ? JSON.parse(content)
-    : YAML.parse(content);
+  const doc = outputFile.endsWith(".json") ? JSON.parse(content) : YAML.parse(content);
 
   return {
     asyncApiDoc: doc,
@@ -347,9 +312,7 @@ export async function compileAsyncAPIWithoutErrors(
 
   const errors = result.diagnostics.filter((d) => d.severity === "error");
   if (errors.length > 0) {
-    const errorMessages = errors
-      .map((e) => `${e.code}: ${e.message}`)
-      .join("\n");
+    const errorMessages = errors.map((e) => `${e.code}: ${e.message}`).join("\n");
     throw new Error(`Compilation failed with errors:\n${errorMessages}`);
   }
 

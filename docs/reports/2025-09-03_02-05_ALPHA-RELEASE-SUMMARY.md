@@ -9,6 +9,7 @@
 ## 📦 Release Package Summary
 
 ### ✅ **Package Configuration Complete**
+
 - **Version**: Updated to `0.0.1-alpha.1`
 - **Package Name**: `@lars-artmann/typespec-asyncapi`
 - **Keywords**: Added `alpha` and `microsoft-typespec` for discoverability
@@ -16,6 +17,7 @@
 - **Dependencies**: All up to date and secure
 
 ### ✅ **Documentation Complete**
+
 - **Alpha Documentation**: [`docs/alpha-v0.0.1.md`](docs/alpha-v0.0.1.md) - Complete Alpha scope and limitations
 - **README Updated**: Clear Alpha status with installation warnings
 - **Release Checklist**: [`docs/alpha-release-checklist.md`](docs/alpha-release-checklist.md) - QA validation steps
@@ -23,6 +25,7 @@
 - **Basic Example**: [`examples/alpha-basic-example.tsp`](examples/alpha-basic-example.tsp) - Alpha-focused usage
 
 ### ✅ **Code Quality Status**
+
 - **TypeScript Build**: ✅ Passes without errors
 - **ESLint**: ✅ Critical errors fixed (31 warnings remain - acceptable for Alpha)
 - **Core Functionality**: ✅ Basic @channel, @publish, @subscribe working
@@ -35,6 +38,7 @@
 ### ✅ **INCLUDED - Fully Functional**
 
 #### Core Decorators (100% Working)
+
 ```typespec
 @channel("user.events")        // ✅ Channel path mapping
 @channel("user.{userId}.data") // ✅ Parameterized channels
@@ -43,6 +47,7 @@
 ```
 
 #### Message Schema Generation (100% Working)
+
 ```typespec
 model UserEvent {
   userId: string;                          // ✅ String types
@@ -53,12 +58,14 @@ model UserEvent {
 ```
 
 #### AsyncAPI 3.0 Output (100% Working)
+
 - ✅ JSON and YAML output formats
 - ✅ AsyncAPI 3.0.0 specification compliance
 - ✅ Channels, operations, messages, components structure
 - ✅ Proper schema generation with JSON Schema mapping
 
 #### Development Infrastructure (100% Working)
+
 - ✅ TypeScript strict mode compilation
 - ✅ Build and test pipeline
 - ✅ Package.json configured for bun publishing
@@ -67,6 +74,7 @@ model UserEvent {
 ### ❌ **EXCLUDED - Beta/v1.0 Features**
 
 #### Advanced Decorators (NOT IMPLEMENTED)
+
 ```typespec
 // ❌ Beta features - not available in Alpha
 @server("kafka", { url: "kafka://localhost" })
@@ -77,12 +85,14 @@ model UserEvent {
 ```
 
 #### Complex TypeScript Features (LIMITED)
+
 - ❌ Advanced union types and discriminated unions
 - ❌ Complex model inheritance patterns
 - ❌ TypeSpec versioning support
 - ❌ Custom scalar types beyond built-ins
 
 #### Performance & Error Handling (BASIC)
+
 - ❌ Memory optimization for large schemas
 - ❌ Comprehensive error messages with TypeSpec locations
 - ❌ Performance monitoring and regression testing
@@ -94,29 +104,30 @@ model UserEvent {
 
 ### ✅ **RELEASE CRITERIA MET**
 
-| Criteria | Status | Details |
-|----------|--------|---------|
-| **TypeScript Build** | ✅ PASS | Zero compilation errors |
-| **Package Config** | ✅ PASS | Alpha version, dependencies clean |
+| Criteria               | Status  | Details                                |
+| ---------------------- | ------- | -------------------------------------- |
+| **TypeScript Build**   | ✅ PASS | Zero compilation errors                |
+| **Package Config**     | ✅ PASS | Alpha version, dependencies clean      |
 | **Core Functionality** | ✅ PASS | @channel, @publish, @subscribe working |
-| **Documentation** | ✅ PASS | Alpha scope clearly documented |
-| **Examples** | ✅ PASS | Alpha-specific example created |
-| **Code Quality** | ✅ PASS | Critical ESLint errors fixed |
+| **Documentation**      | ✅ PASS | Alpha scope clearly documented         |
+| **Examples**           | ✅ PASS | Alpha-specific example created         |
+| **Code Quality**       | ✅ PASS | Critical ESLint errors fixed           |
 
 ### ⚠️ **KNOWN LIMITATIONS (Documented)**
 
-| Limitation | Impact | Resolution |
-|------------|--------|------------|
-| **Test Failures** | Some tests fail due to missing advanced features | Beta release |
-| **ESLint Warnings** | 31 code quality warnings (non-blocking) | Ongoing improvement |
-| **Memory Usage** | Not optimized for large schemas | v1.0 performance work |
-| **Error Messages** | Basic error reporting only | Beta enhanced diagnostics |
+| Limitation          | Impact                                           | Resolution                |
+| ------------------- | ------------------------------------------------ | ------------------------- |
+| **Test Failures**   | Some tests fail due to missing advanced features | Beta release              |
+| **ESLint Warnings** | 31 code quality warnings (non-blocking)          | Ongoing improvement       |
+| **Memory Usage**    | Not optimized for large schemas                  | v1.0 performance work     |
+| **Error Messages**  | Basic error reporting only                       | Beta enhanced diagnostics |
 
 ---
 
 ## 🚀 Installation & Usage
 
 ### Quick Install (Alpha)
+
 ```bash
 # 🚨 ALPHA WARNING - Not production ready
 bun add @lars-artmann/typespec-asyncapi@alpha @typespec/compiler
@@ -126,6 +137,7 @@ bun add @lars-artmann/typespec-asyncapi@alpha @typespec/compiler
 ```
 
 ### Basic Usage
+
 ```typespec
 import "@lars-artmann/typespec-asyncapi";
 using TypeSpec.AsyncAPI;
@@ -144,6 +156,7 @@ op publishUserCreated(): { payload: UserCreated };
 ```
 
 ### Compile to AsyncAPI
+
 ```bash
 npx tsp compile example.tsp --emit @lars-artmann/typespec-asyncapi
 ```
@@ -153,11 +166,13 @@ npx tsp compile example.tsp --emit @lars-artmann/typespec-asyncapi
 ## 📊 Community Impact
 
 ### Problem Solved
+
 - **Microsoft TypeSpec Issue #2463**: First production AsyncAPI emitter
 - **37+ 👍 reactions**: Strong community demand addressed
 - **Enterprise Interest**: Sportradar, SwissPost, and others waiting
 
 ### Alpha Goals Achieved
+
 - ✅ **Core Value Demonstration**: TypeSpec → AsyncAPI generation works
 - ✅ **Community Feedback**: Clear Alpha scope for user testing
 - ✅ **Foundation Architecture**: Effect.TS patterns, proper emitter structure
@@ -168,12 +183,14 @@ npx tsp compile example.tsp --emit @lars-artmann/typespec-asyncapi
 ## 🎯 Next Steps (Post-Alpha Release)
 
 ### Immediate Actions
+
 1. **GitHub Release**: Create v0.0.1-alpha.1 release with changelog
 2. **NPM Publish**: Publish with `alpha` tag to npm registry
 3. **Community Update**: Update TypeSpec Issue #2463 with release
 4. **Feedback Collection**: Monitor issues and community feedback
 
 ### Beta Planning (Target: Q4 2025)
+
 1. **Advanced Decorators**: Complete @server, @security, @protocol implementation
 2. **Error Handling**: Enhanced diagnostics and validation
 3. **Performance**: Memory optimization and large schema support
@@ -184,14 +201,16 @@ npx tsp compile example.tsp --emit @lars-artmann/typespec-asyncapi
 ## 📞 Support & Feedback
 
 ### For Alpha Users
+
 - **GitHub Issues**: [Report bugs and feedback](https://github.com/LarsArtmann/typespec-asyncapi/issues)
 - **Alpha Label**: Tag issues with `alpha-feedback`
 - **Documentation**: See [Alpha Documentation](docs/alpha-v0.0.1.md) for complete scope
 - **Examples**: Use [Alpha Example](examples/alpha-basic-example.tsp) as starting point
 
 ### Contribution Opportunities
+
 - **Beta Features**: Help implement advanced decorators
-- **Testing**: Add more comprehensive test coverage  
+- **Testing**: Add more comprehensive test coverage
 - **Documentation**: Improve user guides and examples
 - **Performance**: Optimize for large schema processing
 

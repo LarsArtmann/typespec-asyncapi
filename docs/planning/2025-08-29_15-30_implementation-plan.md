@@ -50,16 +50,18 @@ This project implements a native TypeSpec emitter that generates AsyncAPI 3.0 sp
 ### 🎯 Next Development Sprint (Week 1-2)
 
 #### A. Decorator Implementation (`src/decorators/`)
+
 ```typescript
 // Priority order for implementation:
 1. @channel decorator - Core channel path mapping
-2. @publish/@subscribe decorators - Operation type classification  
+2. @publish/@subscribe decorators - Operation type classification
 3. @message decorator - Message schema association
 4. @server decorator - Server configuration
 5. @protocol decorator - Protocol-specific bindings
 ```
 
 #### B. Type Conversion Engine (`src/converters/`)
+
 ```typescript
 // TypeSpec to AsyncAPI mapping:
 1. Model → Schema conversion with JSON Schema compatibility
@@ -70,6 +72,7 @@ This project implements a native TypeSpec emitter that generates AsyncAPI 3.0 sp
 ```
 
 #### C. Document Builder (`src/builders/`)
+
 ```typescript
 // AsyncAPI document construction:
 1. Info object from TypeSpec service metadata
@@ -90,12 +93,12 @@ This project implements a native TypeSpec emitter that generates AsyncAPI 3.0 sp
 
 ### Protocol Support Matrix
 
-| Protocol | Status | Bindings Support | Authentication |
-|----------|--------|------------------|----------------|
-| Kafka    | 📋 Planned | ✅ Topic, Partition, Key | SASL, mTLS |
-| AMQP     | 📋 Planned | ✅ Exchange, Queue, Routing | Username/Password |
-| WebSocket| 📋 Planned | ✅ Headers, Query Params | Bearer Token |
-| HTTP     | 📋 Planned | ✅ Method, Headers | OAuth2, API Key |
+| Protocol  | Status     | Bindings Support            | Authentication    |
+| --------- | ---------- | --------------------------- | ----------------- |
+| Kafka     | 📋 Planned | ✅ Topic, Partition, Key    | SASL, mTLS        |
+| AMQP      | 📋 Planned | ✅ Exchange, Queue, Routing | Username/Password |
+| WebSocket | 📋 Planned | ✅ Headers, Query Params    | Bearer Token      |
+| HTTP      | 📋 Planned | ✅ Method, Headers          | OAuth2, API Key   |
 
 ### Security Scheme Implementation
 
@@ -112,7 +115,7 @@ This project implements a native TypeSpec emitter that generates AsyncAPI 3.0 sp
 ### Advanced Features
 
 1. **Correlation ID Management**: Message tracking across operations
-2. **Operation Traits**: Reusable operation characteristics  
+2. **Operation Traits**: Reusable operation characteristics
 3. **Message Traits**: Common message patterns
 4. **Operation Replies**: Request-response messaging patterns
 5. **Runtime Expressions**: Dynamic value resolution
@@ -122,18 +125,21 @@ This project implements a native TypeSpec emitter that generates AsyncAPI 3.0 sp
 ### Testing Strategy
 
 #### Unit Tests (`test/unit/`)
+
 - Decorator functionality and parameter validation
 - Type conversion accuracy and edge cases
 - Document builder component isolation
 - Error handling and diagnostic reporting
 
 #### Integration Tests (`test/integration/`)
+
 - End-to-end TypeSpec → AsyncAPI transformation
 - Multi-protocol scenario validation
 - Complex schema composition testing
 - Real-world API pattern verification
 
 #### Validation Framework
+
 ```typescript
 // AsyncAPI specification validation:
 1. JSON Schema validation against AsyncAPI 3.0.0 meta-schema
@@ -145,7 +151,7 @@ This project implements a native TypeSpec emitter that generates AsyncAPI 3.0 sp
 ### Performance Targets
 
 - **Large Schema Handling**: 1000+ operations in <5 seconds
-- **Memory Efficiency**: <100MB for typical enterprise schemas  
+- **Memory Efficiency**: <100MB for typical enterprise schemas
 - **Incremental Compilation**: Support for TypeSpec's incremental builds
 - **Error Recovery**: Graceful handling of partial compilation failures
 
@@ -171,6 +177,7 @@ This project implements a native TypeSpec emitter that generates AsyncAPI 3.0 sp
 ### Example Projects (`examples/`)
 
 #### 1. Basic Event System (`examples/basic-events/`)
+
 ```typespec
 @service({
   title: "User Events API",
@@ -178,26 +185,27 @@ This project implements a native TypeSpec emitter that generates AsyncAPI 3.0 sp
 })
 namespace UserEvents;
 
-@channel("user.signup")  
+@channel("user.signup")
 @publish
 op publishUserSignup(): UserSignupEvent;
 
 @channel("user.{userId}.messages")
-@subscribe  
+@subscribe
 op receiveUserMessage(@path userId: string): UserMessage;
 ```
 
 #### 2. Kafka Microservices (`examples/kafka-microservices/`)
+
 ```typespec
 @server("production", {
   host: "kafka.example.com:9092",
-  protocol: "kafka", 
+  protocol: "kafka",
   description: "Production Kafka cluster"
 })
 namespace OrderProcessing;
 
 @channel("orders.created")
-@protocol("kafka", { 
+@protocol("kafka", {
   topic: "orders",
   partitionKey: "customerId"
 })
@@ -206,6 +214,7 @@ op publishOrderCreated(): OrderCreatedEvent;
 ```
 
 #### 3. WebSocket Chat (`examples/websocket-chat/`)
+
 ```typespec
 @server("chat", {
   host: "ws.example.com",
@@ -245,18 +254,21 @@ op receiveMessage(@path roomId: string): ChatMessage;
 ## Success Metrics & Acceptance Criteria
 
 ### Functional Requirements ✅
+
 - [x] Generate valid AsyncAPI 3.0.0 specifications
 - [x] Support all major AsyncAPI components (servers, channels, operations, messages)
 - [x] Handle complex TypeScript type compositions
 - [x] Provide comprehensive error reporting
 
 ### Performance Requirements
+
 - [ ] Process 500+ operations in <2 seconds
 - [ ] Handle schemas with 10+ levels of nesting
 - [ ] Support incremental compilation for large projects
 - [ ] Memory usage <50MB for typical projects
 
 ### Quality Requirements
+
 - [ ] 90%+ unit test coverage
 - [ ] 100% TypeScript strict mode compliance
 - [ ] Zero breaking changes during minor version updates
@@ -265,12 +277,14 @@ op receiveMessage(@path roomId: string): ChatMessage;
 ## Risk Mitigation
 
 ### Technical Risks
+
 1. **AsyncAPI Spec Evolution**: Regular updates to track specification changes
 2. **TypeSpec Breaking Changes**: Pin to stable TypeSpec versions, test upgrades
 3. **Protocol Binding Complexity**: Modular architecture for easy extension
 4. **Performance Degradation**: Continuous benchmarking and optimization
 
 ### Timeline Risks
+
 1. **Scope Creep**: Phased delivery with MVP focus
 2. **Dependency Changes**: Conservative dependency management
 3. **Testing Complexity**: Automated testing infrastructure from day one
@@ -278,18 +292,21 @@ op receiveMessage(@path roomId: string): ChatMessage;
 ## Future Roadmap (Post v1.0)
 
 ### Version 1.1 - Enhanced Protocol Support
+
 - GraphQL subscriptions mapping
-- gRPC streaming support  
+- gRPC streaming support
 - Server-Sent Events (SSE) protocol
 - MQTT protocol bindings
 
 ### Version 1.2 - Developer Tooling
+
 - AsyncAPI Studio integration
 - Live documentation generation
 - Mock server generation from specs
 - Contract testing integration
 
 ### Version 2.0 - Advanced Features
+
 - AsyncAPI 3.1+ specification support
 - Multi-specification output (OpenAPI + AsyncAPI)
 - Visual schema editor integration

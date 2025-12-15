@@ -186,15 +186,10 @@ export class IntegrationTestHarness {
       }
 
       // Step 2: Generate AsyncAPI
-      const asyncAPIObject = await this.generateAsyncAPI(
-        compilationResult.program!,
-      );
+      const asyncAPIObject = await this.generateAsyncAPI(compilationResult.program!);
 
       // Step 3: Validate output
-      const validationResult = await this.validateOutput(
-        asyncAPIObject,
-        expectedOutput,
-      );
+      const validationResult = await this.validateOutput(asyncAPIObject, expectedOutput);
 
       return {
         success: validationResult.valid,

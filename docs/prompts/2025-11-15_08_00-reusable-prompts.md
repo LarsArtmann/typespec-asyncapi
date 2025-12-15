@@ -11,6 +11,7 @@
 **Name:** `systematic-execution-with-verification`
 
 **When to Use:**
+
 - Starting complex refactoring work
 - Implementing new features with high quality standards
 - Type safety improvements
@@ -55,6 +56,7 @@ DELIVERABLES:
 ```
 
 **Expected Output:**
+
 - Comprehensive plan document (30+ tasks)
 - Pareto analysis breakdown
 - Systematic execution with frequent commits
@@ -62,6 +64,7 @@ DELIVERABLES:
 - Architectural improvements
 
 **Example Usage:**
+
 ```
 I need you to work on eliminating all `any` types from security-critical code with the HIGHEST possible standards:
 
@@ -75,6 +78,7 @@ I need you to work on eliminating all `any` types from security-critical code wi
 **Name:** `comprehensive-status-request`
 
 **When to Use:**
+
 - After significant work sessions
 - Before making major decisions
 - When you need clarity on progress
@@ -111,6 +115,7 @@ FORMAT:
 ```
 
 **Expected Output:**
+
 - Detailed status report covering all 7 sections (a-g)
 - Metrics tables showing before/after
 - Priority matrix for next tasks
@@ -118,6 +123,7 @@ FORMAT:
 - Clear question for user decision
 
 **Example Output Structure:**
+
 ```
 # COMPREHENSIVE STATUS UPDATE
 
@@ -153,6 +159,7 @@ FORMAT:
 **Name:** `architecture-visualization-request`
 
 **When to Use:**
+
 - Starting work on unfamiliar codebase
 - Before major refactoring
 - When documenting architecture
@@ -187,6 +194,7 @@ Include in IMPROVED architecture:
 ```
 
 **Expected Output:**
+
 - Two mermaid.js diagram files
 - Current architecture showing problems
 - Improved architecture showing solutions
@@ -199,6 +207,7 @@ Include in IMPROVED architecture:
 **Name:** `eliminate-any-types-systematically`
 
 **When to Use:**
+
 - Eliminating `any` types from codebase
 - Improving type safety in critical code
 - Creating discriminated unions for domain models
@@ -234,6 +243,7 @@ VALIDATION:
 ```
 
 **Expected Output:**
+
 - Complete discriminated union types
 - Comprehensive type guards
 - All `any` types eliminated
@@ -241,6 +251,7 @@ VALIDATION:
 - ESLint improvements
 
 **Example Usage:**
+
 ```
 Eliminate all `any` types from src/domain/decorators/security-ENHANCED.ts using discriminated unions:
 
@@ -254,6 +265,7 @@ Eliminate all `any` types from src/domain/decorators/security-ENHANCED.ts using 
 **Name:** `create-value-objects-with-validation`
 
 **When to Use:**
+
 - Creating domain value objects
 - Replacing primitive types with rich types
 - Adding validation to domain concepts
@@ -261,7 +273,7 @@ Eliminate all `any` types from src/domain/decorators/security-ENHANCED.ts using 
 
 **The Prompt:**
 
-```
+````
 Create value objects for [DOMAIN CONCEPT] following DDD principles:
 
 VALUE OBJECT REQUIREMENTS:
@@ -295,9 +307,10 @@ export const ChannelPath = {
 
   toString: (path: ChannelPath): string => path
 }
-```
+````
 
 IMPLEMENTATION STEPS:
+
 1. Identify primitive types that represent domain concepts
 2. Create branded type for type safety
 3. Create factory function with validation
@@ -305,6 +318,7 @@ IMPLEMENTATION STEPS:
 5. Add utility methods
 6. Update codebase to use value object
 7. Add comprehensive tests
+
 ```
 
 **Expected Output:**
@@ -329,9 +343,11 @@ IMPLEMENTATION STEPS:
 **The Prompt:**
 
 ```
+
 Identify 10 quick wins for code quality improvement:
 
 CRITERIA:
+
 - Each fix should take <15 minutes
 - Focus on ESLint warnings that are easy to fix
 - Prioritize by impact (type safety > naming conventions)
@@ -339,6 +355,7 @@ CRITERIA:
 - Each gets its own git commit
 
 CATEGORIES:
+
 1. Remove unused imports
 2. Fix naming conventions (Effect.TS schemas: UPPER_CASE)
 3. Prefix unused variables with underscore
@@ -350,6 +367,7 @@ CATEGORIES:
 
 EXECUTION:
 For each quick win:
+
 1. Identify the issue
 2. Make the fix
 3. Verify build passes
@@ -359,10 +377,12 @@ For each quick win:
 
 REPORTING:
 After all 10 quick wins:
+
 - Show before/after ESLint metrics
 - List all commits made
 - Highlight biggest improvements
 - Identify remaining issues for follow-up
+
 ```
 
 **Expected Output:**
@@ -386,15 +406,18 @@ After all 10 quick wins:
 **The Prompt:**
 
 ```
+
 Investigate test failures systematically:
 
 CURRENT STATE:
+
 - Test pass/fail counts
 - Test number fluctuations
 - Error messages from failures
 - Build status (TypeScript errors)
 
 INVESTIGATION STEPS:
+
 1. Run tests 3 times, record pass/fail numbers
 2. Identify patterns in failures
    - Same tests always fail?
@@ -414,16 +437,19 @@ INVESTIGATION STEPS:
    - Look for TypeSpec Program objects reused
 
 HYPOTHESES TO TEST:
+
 1. Test order dependency
 2. Timing/race conditions
 3. Mock state pollution
 4. Effect.TS context issues
 
 REPORTING:
+
 - Document findings
 - Identify root causes
 - Propose fixes
 - Estimate effort to fix
+
 ```
 
 **Expected Output:**
@@ -447,11 +473,13 @@ REPORTING:
 **The Prompt:**
 
 ```
+
 Based on this chat history list/write your learnings into 1 new and consolidated .md file so we can get better in the future.
 
 Put the new .md file at docs/learnings/<YYYY-MM-DD_HH_MM-SESSION_NAME>.md
 
 STRUCTURE:
+
 1. What Worked Exceptionally Well
 2. What Went Wrong
 3. Key Insights & Principles
@@ -460,6 +488,7 @@ STRUCTURE:
 6. Session Metrics
 
 CONTENT REQUIREMENTS:
+
 - Concrete examples with code snippets
 - Before/after comparisons
 - Honest assessment of mistakes
@@ -468,17 +497,20 @@ CONTENT REQUIREMENTS:
 - Links to relevant files/commits
 
 Be brutally honest about:
+
 - Mistakes made
 - Why they happened
 - How to prevent them
 - What you learned
 
 Format for readability:
+
 - Use headers and subheaders
 - Use code blocks for examples
 - Use tables for metrics
 - Use bullet points for lists
 - Highlight key principles
+
 ```
 
 **Expected Output:**
@@ -502,9 +534,11 @@ Format for readability:
 **The Prompt:**
 
 ```
+
 Create git commit with comprehensive message following these standards:
 
 COMMIT MESSAGE FORMAT:
+
 ```
 <type>: <short summary (50 chars max)>
 
@@ -521,6 +555,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 ```
 
 COMMIT TYPES:
+
 - feat: New feature
 - fix: Bug fix
 - refactor: Code refactoring (no behavior change)
@@ -532,11 +567,13 @@ COMMIT TYPES:
 - ci: CI/CD changes
 
 REQUIREMENTS:
+
 - Run `git status` to see changes
 - Run `git diff` to see actual changes
 - Analyze impact of changes
 - Write clear, descriptive message
 - Include motivation and context
+
 ```
 
 **Expected Output:**
@@ -560,33 +597,39 @@ REQUIREMENTS:
 **The Prompt:**
 
 ```
+
 Create Pareto analysis for [IMPROVEMENT AREA]:
 
 FRAMEWORK:
+
 - THE 1% → 51% of value (highest leverage tasks)
 - THE 4% → 64% of value (critical fixes)
 - THE 20% → 80% of value (architecture improvements)
 
 ANALYSIS:
 For each task, calculate:
+
 - Impact (CRITICAL/HIGH/MEDIUM/LOW)
 - Effort (time estimate in minutes)
 - Leverage (Impact ÷ Effort)
 - Priority (sort by leverage descending)
 
 THE 1% CRITERIA (Highest Leverage):
+
 - Type safety improvements
 - Eliminating dangerous patterns (any, split brain)
 - Security-critical fixes
 - Core domain modeling
 
 THE 4% CRITERIA (Critical):
+
 - Fixing circular dependencies
 - Test stability
 - Build system reliability
 - Error handling improvements
 
 THE 20% CRITERIA (Architecture):
+
 - Code organization
 - Plugin architecture
 - Performance optimizations
@@ -601,6 +644,7 @@ OUTPUT FORMAT:
 
 RECOMMENDATION:
 Start with THE 1% tasks. These provide 51% of value with 1% of effort.
+
 ```
 
 **Expected Output:**
@@ -615,27 +659,39 @@ Start with THE 1% tasks. These provide 51% of value with 1% of effort.
 
 ### Starting a Major Refactoring:
 ```
+
 [Use Prompt #1: systematic-execution-with-verification]
-+ [Use Prompt #3: architecture-visualization-request]
-+ [Use Prompt #10: prioritize-with-pareto-analysis]
+
+- [Use Prompt #3: architecture-visualization-request]
+- [Use Prompt #10: prioritize-with-pareto-analysis]
+
 ```
 
 ### After Work Session:
 ```
+
 [Use Prompt #2: comprehensive-status-request]
-+ [Use Prompt #8: document-session-learnings]
+
+- [Use Prompt #8: document-session-learnings]
+
 ```
 
 ### Improving Type Safety:
 ```
+
 [Use Prompt #4: eliminate-any-types-systematically]
-+ [Use Prompt #5: create-value-objects-with-validation]
+
+- [Use Prompt #5: create-value-objects-with-validation]
+
 ```
 
 ### Daily Code Quality:
 ```
+
 [Use Prompt #6: identify-quick-wins]
-+ [Use Prompt #9: create-meaningful-commits]
+
+- [Use Prompt #9: create-meaningful-commits]
+
 ```
 
 ---
@@ -643,3 +699,4 @@ Start with THE 1% tasks. These provide 51% of value with 1% of effort.
 **Maintained By:** Claude Code + User Collaboration
 **Last Updated:** 2025-11-15
 **Status:** Active and Battle-Tested ✅
+```

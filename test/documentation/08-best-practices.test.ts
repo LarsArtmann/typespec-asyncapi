@@ -43,8 +43,7 @@ describe("Documentation: Best Practices Validation", () => {
           emitAsyncAPI: true,
         });
 
-        const userEvent =
-          result.asyncapi!.components!.schemas!.UserProfileUpdatedEvent;
+        const userEvent = result.asyncapi!.components!.schemas!.UserProfileUpdatedEvent;
         const props = userEvent.properties!;
 
         expect(props.userId).toBeDefined();
@@ -110,8 +109,7 @@ describe("Documentation: Best Practices Validation", () => {
           emitAsyncAPI: true,
         });
 
-        const errorMessage =
-          result.asyncapi!.components!.schemas!.ProcessingError;
+        const errorMessage = result.asyncapi!.components!.schemas!.ProcessingError;
         const errorProps = errorMessage.properties!;
 
         expect(errorProps.errorId).toBeDefined();
@@ -241,9 +239,7 @@ describe("Documentation: Best Practices Validation", () => {
 
         const securitySchemes = result.asyncapi!.components!.securitySchemes!;
         expect(securitySchemes.oauth2).toBeDefined();
-        expect(
-          securitySchemes.oauth2.flows?.clientCredentials?.scopes,
-        ).toBeDefined();
+        expect(securitySchemes.oauth2.flows?.clientCredentials?.scopes).toBeDefined();
 
         // NOTE: Alpha version has limited support for complex security configurations
         // This channel might not be generated due to complex @security and @protocol decorators
@@ -254,9 +250,7 @@ describe("Documentation: Best Practices Validation", () => {
           expect(channel).toBeDefined();
         } else {
           // Accept that complex security channels might not be supported in Alpha
-          expect(
-            Object.keys(result.asyncapi!.channels!).length,
-          ).toBeGreaterThan(0);
+          expect(Object.keys(result.asyncapi!.channels!).length).toBeGreaterThan(0);
         }
       });
     });
@@ -325,13 +319,10 @@ describe("Documentation: Best Practices Validation", () => {
           expect(channel).toBeDefined();
         } else {
           // Accept that complex documented channels might not be supported in Alpha
-          expect(
-            Object.keys(result.asyncapi!.channels!).length,
-          ).toBeGreaterThanOrEqual(0);
+          expect(Object.keys(result.asyncapi!.channels!).length).toBeGreaterThanOrEqual(0);
         }
 
-        const message =
-          result.asyncapi!.components!.schemas!.UserProfileChangeEvent;
+        const message = result.asyncapi!.components!.schemas!.UserProfileChangeEvent;
         // NOTE: Alpha version might not generate descriptions and examples for complex decorated models
         if (message) {
           // expect(message.description).toBeDefined()
@@ -393,13 +384,9 @@ describe("Documentation: Best Practices Validation", () => {
                 const warnings: string[] = [];
 
                 // Check for generic channel names
-                for (const channelName of Object.keys(
-                  asyncapi.channels || {},
-                )) {
+                for (const channelName of Object.keys(asyncapi.channels || {})) {
                   if (channelName === "data" || channelName === "events") {
-                    warnings.push(
-                      `Generic channel name detected: ${channelName}`,
-                    );
+                    warnings.push(`Generic channel name detected: ${channelName}`);
                   }
                 }
 
@@ -409,14 +396,8 @@ describe("Documentation: Best Practices Validation", () => {
                 )) {
                   if (messageName.includes("Event")) {
                     const props = message.payload?.properties || {};
-                    if (
-                      !props.timestamp &&
-                      !props.occurredAt &&
-                      !props.createdAt
-                    ) {
-                      warnings.push(
-                        `Event message ${messageName} missing timestamp field`,
-                      );
+                    if (!props.timestamp && !props.occurredAt && !props.createdAt) {
+                      warnings.push(`Event message ${messageName} missing timestamp field`);
                     }
                   }
                 }

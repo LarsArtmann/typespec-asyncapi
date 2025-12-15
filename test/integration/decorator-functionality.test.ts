@@ -58,8 +58,7 @@ describe("Real Decorator Functionality Tests", () => {
         op publishUserRegistered(): UserRegisteredMessage;
       `;
 
-      const { outputFiles, program } =
-        await compileAsyncAPISpecWithoutErrors(source);
+      const { outputFiles, program } = await compileAsyncAPISpecWithoutErrors(source);
 
       // Verify the compilation actually processed the decorator
       expect(program).toBeDefined();
@@ -72,9 +71,7 @@ describe("Real Decorator Functionality Tests", () => {
       expect(asyncapiDoc).toBeDefined();
 
       // Validate the message decorator was processed correctly
-      expect(
-        asyncapiDoc.components?.schemas?.UserRegisteredMessage,
-      ).toBeDefined();
+      expect(asyncapiDoc.components?.schemas?.UserRegisteredMessage).toBeDefined();
 
       const userSchema = asyncapiDoc.components.schemas.UserRegisteredMessage;
       expect(userSchema.type).toBe("object");
@@ -93,17 +90,13 @@ describe("Real Decorator Functionality Tests", () => {
       expect(userSchema.required).toContain("preferences");
 
       // Validate operations were created
-      expect(Object.keys(asyncapiDoc.operations || {})).toContain(
-        "publishUserRegistered",
-      );
+      expect(Object.keys(asyncapiDoc.operations || {})).toContain("publishUserRegistered");
 
       const operation = asyncapiDoc.operations?.publishUserRegistered;
       expect(operation?.action).toBe("send");
       expect(operation?.channel?.$ref).toBeDefined();
 
-      Effect.log(
-        "✅ @message decorator processed real TypeSpec model successfully",
-      );
+      Effect.log("✅ @message decorator processed real TypeSpec model successfully");
     });
 
     test("should validate @message decorator with different content types", async () => {
@@ -157,9 +150,7 @@ describe("Real Decorator Functionality Tests", () => {
       const protobufSchema = asyncapiDoc.components.schemas.ProtobufMessage;
       expect(protobufSchema.properties?.messageType?.type).toBe("string");
 
-      Effect.log(
-        "✅ @message decorator with different content types processed successfully",
-      );
+      Effect.log("✅ @message decorator with different content types processed successfully");
     });
 
     test("should handle @message decorator with headers and correlation ID", async () => {
@@ -199,9 +190,7 @@ describe("Real Decorator Functionality Tests", () => {
       expect(trackedSchema?.properties?.correlationId?.type).toBe("string");
       expect(trackedSchema?.properties?.payload?.type).toBe("object");
 
-      Effect.log(
-        "✅ @message decorator with headers and correlation ID processed successfully",
-      );
+      Effect.log("✅ @message decorator with headers and correlation ID processed successfully");
     });
   });
 
@@ -232,8 +221,7 @@ describe("Real Decorator Functionality Tests", () => {
         op publishKafkaUserEvent(): KafkaMessage;
       `;
 
-      const { outputFiles, program } =
-        await compileAsyncAPISpecWithoutErrors(source);
+      const { outputFiles, program } = await compileAsyncAPISpecWithoutErrors(source);
 
       // Verify real compilation occurred
       expect(program).toBeDefined();
@@ -257,9 +245,7 @@ describe("Real Decorator Functionality Tests", () => {
       const operation = asyncapiDoc.operations.publishKafkaUserEvent;
       expect(operation.action).toBe("send");
 
-      Effect.log(
-        "✅ @protocol decorator with Kafka binding processed successfully",
-      );
+      Effect.log("✅ @protocol decorator with Kafka binding processed successfully");
     });
 
     test("should process @protocol decorator with WebSocket binding", async () => {
@@ -308,9 +294,7 @@ describe("Real Decorator Functionality Tests", () => {
       const operation = asyncapiDoc.operations.subscribeWebSocketChat;
       expect(operation.action).toBe("receive");
 
-      Effect.log(
-        "✅ @protocol decorator with WebSocket binding processed successfully",
-      );
+      Effect.log("✅ @protocol decorator with WebSocket binding processed successfully");
     });
 
     test("should process @protocol decorator with multiple protocols", async () => {
@@ -363,9 +347,7 @@ describe("Real Decorator Functionality Tests", () => {
       // Validate schemas
       expect(asyncapiDoc.components?.schemas?.EventMessage).toBeDefined();
 
-      Effect.log(
-        "✅ @protocol decorator with multiple protocols processed successfully",
-      );
+      Effect.log("✅ @protocol decorator with multiple protocols processed successfully");
     });
   });
 
@@ -393,8 +375,7 @@ describe("Real Decorator Functionality Tests", () => {
         op publishSecureMessage(): SecureMessage;
       `;
 
-      const { outputFiles, program } =
-        await compileAsyncAPISpecWithoutErrors(source);
+      const { outputFiles, program } = await compileAsyncAPISpecWithoutErrors(source);
 
       // Verify compilation occurred
       expect(program).toBeDefined();
@@ -414,9 +395,7 @@ describe("Real Decorator Functionality Tests", () => {
       // Validate operation
       expect(asyncapiDoc.operations?.publishSecureMessage).toBeDefined();
 
-      Effect.log(
-        "✅ @security decorator with JWT Bearer processed successfully",
-      );
+      Effect.log("✅ @security decorator with JWT Bearer processed successfully");
     });
 
     test("should process @security decorator with OAuth2 flows", async () => {
@@ -467,9 +446,7 @@ describe("Real Decorator Functionality Tests", () => {
       )) as AsyncAPIObject;
 
       // Validate OAuth2 secured message schema
-      expect(
-        asyncapiDoc.components?.schemas?.OAuth2SecuredMessage,
-      ).toBeDefined();
+      expect(asyncapiDoc.components?.schemas?.OAuth2SecuredMessage).toBeDefined();
 
       const oauth2Schema = asyncapiDoc.components.schemas.OAuth2SecuredMessage;
       expect(oauth2Schema.properties?.resourceId?.type).toBe("string");
@@ -478,9 +455,7 @@ describe("Real Decorator Functionality Tests", () => {
       // Validate operation
       expect(asyncapiDoc.operations?.publishOAuth2SecuredMessage).toBeDefined();
 
-      Effect.log(
-        "✅ @security decorator with OAuth2 flows processed successfully",
-      );
+      Effect.log("✅ @security decorator with OAuth2 flows processed successfully");
     });
 
     test("should process @security decorator with SASL authentication for Kafka", async () => {
@@ -527,9 +502,7 @@ describe("Real Decorator Functionality Tests", () => {
       expect(saslSchema.properties?.payload?.type).toBe("string");
       expect(saslSchema.properties?.producerId?.type).toBe("string");
 
-      Effect.log(
-        "✅ @security decorator with SASL authentication processed successfully",
-      );
+      Effect.log("✅ @security decorator with SASL authentication processed successfully");
     });
   });
 
@@ -628,8 +601,7 @@ describe("Real Decorator Functionality Tests", () => {
         op subscribeUserAuditEvents(userId: string): SecureKafkaEvent;
       `;
 
-      const { outputFiles, program } =
-        await compileAsyncAPISpecWithoutErrors(source);
+      const { outputFiles, program } = await compileAsyncAPISpecWithoutErrors(source);
 
       // Verify comprehensive compilation
       expect(program).toBeDefined();
@@ -672,12 +644,8 @@ describe("Real Decorator Functionality Tests", () => {
       const validation = await validateAsyncAPIObjectComprehensive(asyncapiDoc);
       expect(validation.valid).toBe(true);
 
-      Effect.log(
-        "✅ Combined decorators with complex scenario processed successfully",
-      );
-      Effect.log(
-        `📊 Generated ${Object.keys(asyncapiDoc.operations || {}).length} operations`,
-      );
+      Effect.log("✅ Combined decorators with complex scenario processed successfully");
+      Effect.log(`📊 Generated ${Object.keys(asyncapiDoc.operations || {}).length} operations`);
       Effect.log(
         `📊 Generated ${Object.keys(asyncapiDoc.components?.schemas || {}).length} schemas`,
       );

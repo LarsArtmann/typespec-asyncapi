@@ -686,7 +686,7 @@ operations:
 op sendUserWebhook(@body event: UserWebhookEvent): void;
 
 @protocol({
-  type: "http", 
+  type: "http",
   method: "POST",
   path: "/events",
   query: {
@@ -778,7 +778,7 @@ servers:
       "StringValue": "user.created"
     },
     "priority": {
-      "DataType": "Number", 
+      "DataType": "Number",
       "StringValue": "1"
     }
   },
@@ -937,7 +937,7 @@ namespace MultiProtocol {
     protocol: "kafka"
   })
   // Production uses managed Kafka
-  @server("production", { 
+  @server("production", {
     url: "kafka://kafka.prod.example.com:9092",
     protocol: "kafka"
   })
@@ -946,7 +946,7 @@ namespace MultiProtocol {
     url: "inmemory://events",
     protocol: "inmemory"
   })
-  
+
   @protocol({
     type: "kafka",
     topic: "events.multi",
@@ -975,7 +975,7 @@ servers:
     bindings:
       kafka:
         bindingVersion: "0.4.0"
-        
+
   production:
     host: kafka.prod.example.com:9092
     protocol: kafka
@@ -984,7 +984,7 @@ servers:
       kafka:
         schemaRegistryUrl: https://schema-registry.prod.example.com
         bindingVersion: "0.4.0"
-        
+
   testing:
     host: inmemory
     protocol: inmemory
@@ -1003,7 +1003,7 @@ channels:
           cleanup.policy: delete
           retention.ms: 604800000
         bindingVersion: "0.4.0"
-        
+
 # Alternative development configuration
 x-development-overrides:
   channels:
@@ -1017,30 +1017,35 @@ x-development-overrides:
 ## Protocol-Specific Best Practices
 
 ### Kafka Optimization
+
 - Use appropriate partitioning strategies for parallel processing
 - Configure proper replication for fault tolerance
 - Enable idempotence for exactly-once semantics
 - Use schema registry for schema evolution
 
 ### AMQP Reliability
+
 - Configure dead letter queues for failure handling
 - Use publisher confirms for delivery guarantees
 - Set appropriate QoS for flow control
 - Design exchanges and routing for flexibility
 
 ### WebSocket Scalability
+
 - Implement proper authentication and authorization
 - Use subprotocols for message type discrimination
 - Handle connection lifecycle events
 - Implement heartbeat/ping for connection health
 
 ### MQTT Efficiency
+
 - Use appropriate QoS levels for use case
 - Leverage retained messages for state
 - Implement proper session handling
 - Use topic hierarchies effectively
 
 ### HTTP Webhook Reliability
+
 - Implement proper signature verification
 - Use exponential backoff for retries
 - Handle webhook registration/unregistration
@@ -1049,6 +1054,7 @@ x-development-overrides:
 ## Next Steps
 
 Understanding protocol bindings enables:
+
 - **Advanced Patterns** - Complex event-driven architectures
 - **Performance Tuning** - Protocol-specific optimizations
 - **Reliability Patterns** - Error handling and resilience
@@ -1056,4 +1062,4 @@ Understanding protocol bindings enables:
 
 ---
 
-*Protocol bindings bridge the gap between AsyncAPI's generic specification and the specific requirements of messaging protocols, enabling production-ready event-driven systems.*
+_Protocol bindings bridge the gap between AsyncAPI's generic specification and the specific requirements of messaging protocols, enabling production-ready event-driven systems._

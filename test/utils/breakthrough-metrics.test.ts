@@ -54,9 +54,7 @@ describe("📊 BREAKTHROUGH METRICS", () => {
     for (const testCase of testCases) {
       const startTime = Date.now();
 
-      const { program, diagnostics } = await compileTypeSpecWithDecorators(
-        testCase.code,
-      );
+      const { program, diagnostics } = await compileTypeSpecWithDecorators(testCase.code);
 
       const compilationTime = Date.now() - startTime;
       totalCompilationTime += compilationTime;
@@ -75,9 +73,7 @@ describe("📊 BREAKTHROUGH METRICS", () => {
       }
 
       Effect.log(`✅ ${testCase.name}:`);
-      Effect.log(
-        `   Unknown decorator errors: ${unknownDecoratorErrors.length}`,
-      );
+      Effect.log(`   Unknown decorator errors: ${unknownDecoratorErrors.length}`);
       Effect.log(`   Compilation time: ${compilationTime}ms`);
       Effect.log(`   Program created: ${!!program}`);
     }
@@ -88,12 +84,8 @@ describe("📊 BREAKTHROUGH METRICS", () => {
 
     Effect.log("=".repeat(60));
     Effect.log("📊 BREAKTHROUGH IMPACT SUMMARY:");
-    Effect.log(
-      `   BEFORE: 371+ tests failed due to "Unknown decorator" errors`,
-    );
-    Effect.log(
-      `   AFTER:  ${totalUnknownDecoratorErrors} unknown decorator errors (FIXED!)`,
-    );
+    Effect.log(`   BEFORE: 371+ tests failed due to "Unknown decorator" errors`);
+    Effect.log(`   AFTER:  ${totalUnknownDecoratorErrors} unknown decorator errors (FIXED!)`);
     Effect.log(`   SUCCESS RATE: ${successRate}% of compilations successful`);
     Effect.log(`   AVERAGE COMPILATION: ${averageCompilationTime}ms`);
     Effect.log(`   DECORATOR SYSTEM: OPERATIONAL ✅`);

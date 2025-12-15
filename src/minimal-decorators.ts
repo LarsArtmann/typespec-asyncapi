@@ -17,29 +17,35 @@ import { stateSymbols } from "./lib.js";
 import type { MessageConfigData } from "./state.js";
 
 // Decorator logging utilities - eliminates duplicate logging patterns
-export const logDecoratorTarget = (decoratorName: string, target: any, extraData?: Record<string, any>) => {
-  Effect.runSync(Effect.log(`🔍 MINIMAL @${decoratorName} decorator executed!`).pipe(
-    Effect.annotateLogs(extraData || {})
-  ));
+export const logDecoratorTarget = (
+  decoratorName: string,
+  target: any,
+  extraData?: Record<string, any>,
+) => {
+  Effect.runSync(
+    Effect.log(`🔍 MINIMAL @${decoratorName} decorator executed!`).pipe(
+      Effect.annotateLogs(extraData || {}),
+    ),
+  );
   Effect.runSync(Effect.log("🔍 Target:").pipe(Effect.annotateLogs({ target: target.name })));
 };
 
 export const logConfigPresence = (config?: unknown, extraData?: Record<string, any>) => {
-  Effect.runSync(Effect.log("🔍 Config:").pipe(
-    Effect.annotateLogs({ hasConfig: !!config, ...extraData })
-  ));
+  Effect.runSync(
+    Effect.log("🔍 Config:").pipe(Effect.annotateLogs({ hasConfig: !!config, ...extraData })),
+  );
 };
 
 export const logContext = (context?: any) => {
   if (context) {
-    Effect.runSync(Effect.log("🔍 Context:").pipe(
-      Effect.annotateLogs({ context: context.constructor.name })
-    ));
+    Effect.runSync(
+      Effect.log("🔍 Context:").pipe(Effect.annotateLogs({ context: context.constructor.name })),
+    );
   }
 };
 
 export const logSuccess = (decoratorName: string, extraInfo?: string) => {
-  const message = `✅ @${decoratorName} decorator completed successfully${extraInfo ? ` - ${extraInfo}` : ''}`;
+  const message = `✅ @${decoratorName} decorator completed successfully${extraInfo ? ` - ${extraInfo}` : ""}`;
   Effect.runSync(Effect.log(message));
 };
 
@@ -53,7 +59,7 @@ export const reportDecoratorDiagnostic = (
   code: string,
   target: any,
   message: string,
-  severity: "error" | "warning" = "error"
+  severity: "error" | "warning" = "error",
 ) => {
   context.program.reportDiagnostic({
     code,
@@ -69,7 +75,7 @@ export const validateConfig = (
   context: DecoratorContext,
   target: any,
   diagnosticCode: string,
-  errorMessage: string
+  errorMessage: string,
 ): boolean => {
   if (!config) {
     logError(errorMessage);
@@ -80,16 +86,12 @@ export const validateConfig = (
 };
 
 // State management utilities - eliminates duplicate state operations
-export const storeChannelState = (
-  program: any,
-  target: Operation,
-  path: string
-) => {
+export const storeChannelState = (program: any, target: Operation, path: string) => {
   const channelPathsMap = program.stateMap(stateSymbols.channelPaths);
   channelPathsMap.set(target, {
     path: path,
-    hasParameters: path.includes('{'),
-    parameters: path.match(/\{([^}]+)\}/g)?.map(param => param.slice(1, -1)),
+    hasParameters: path.includes("{"),
+    parameters: path.match(/\{([^}]+)\}/g)?.map((param) => param.slice(1, -1)),
   });
 };
 
@@ -98,7 +100,7 @@ export const storeOperationType = (
   target: Operation,
   type: "publish" | "subscribe",
   messageType?: string,
-  description?: string
+  description?: string,
 ) => {
   const operationTypesMap = program.stateMap(stateSymbols.operationTypes);
   operationTypesMap.set(target, {
@@ -112,7 +114,7 @@ export const storeOperationType = (
 export const storeMessageConfig = (
   program: any,
   target: Model,
-  config: Record<string, unknown>
+  config: Record<string, unknown>,
 ) => {
   const messageConfigsMap = program.stateMap(stateSymbols.messageConfigs);
   messageConfigsMap.set(target, {
@@ -125,11 +127,7 @@ export const storeMessageConfig = (
 /**
  * Simplest possible @channel decorator for testing
  */
-export function $channel(
-  context: DecoratorContext,
-  target: Operation,
-  path: string,
-): void {
+export function $channel(context: DecoratorContext, target: Operation, path: string): void {
   logDecoratorTarget("channel", target);
   logContext(context);
 
@@ -139,7 +137,7 @@ export function $channel(
       context,
       "missing-channel-path",
       target,
-      `Operation '${target.name}' missing @channel decorator path`
+      `Operation '${target.name}' missing @channel decorator path`,
     );
     return;
   }
@@ -153,53 +151,47 @@ export function $channel(
 export const storeServerConfig = (
   program: any,
   target: Namespace,
-  config: Record<string, unknown>
+  config: Record<string, unknown>,
 ) => {
   const serverConfigsMap = program.stateMap(stateSymbols.serverConfigs);
   serverConfigsMap.set(target, {
-    name: config.name as string || target.name,
-    url: config.url as string || "http://localhost:3000",
-    protocol: config.protocol as string || "http",
-    description: config.description as string || `Server for ${target.name}`,
+    name: (config.name as string) || target.name,
+    url: (config.url as string) || "http://localhost:3000",
+    protocol: (config.protocol as string) || "http",
+    description: (config.description as string) || `Server for ${target.name}`,
   });
 };
 
 /**
  * Simplest possible @server decorator for testing
  */
-export function $server(
-  context: DecoratorContext,
-  target: Namespace,
-  config: unknown,
-): void {
+export function $server(context: DecoratorContext, target: Namespace, config: unknown): void {
   logDecoratorTarget("server", target);
   logConfigPresence(config);
 
-  if (!validateConfig(
-    config,
-    context,
-    target,
-    "invalid-server-config",
-    "Server configuration is missing"
-  )) {
+  if (
+    !validateConfig(
+      config,
+      context,
+      target,
+      "invalid-server-config",
+      "Server configuration is missing",
+    )
+  ) {
     return;
   }
 
   // Store server configuration in state map
   const configTyped = config as Record<string, unknown>;
   storeServerConfig(context.program, target, configTyped);
-  
+
   logSuccess("server");
 }
 
 /**
  * Simplest possible @publish decorator for testing
  */
-export function $publish(
-  context: DecoratorContext,
-  target: Operation,
-  config?: Model,
-): void {
+export function $publish(context: DecoratorContext, target: Operation, config?: Model): void {
   logDecoratorTarget("publish", target, { config: config?.name });
 
   // Store publish operation type in state
@@ -208,7 +200,7 @@ export function $publish(
     target,
     "publish",
     config?.name,
-    `Publish operation for ${target.name ?? "unnamed"}`
+    `Publish operation for ${target.name ?? "unnamed"}`,
   );
 
   // If there's a message config, link it
@@ -227,21 +219,19 @@ export function $publish(
 /**
  * Simplest possible @message decorator for testing
  */
-export function $message(
-  context: DecoratorContext,
-  target: Model,
-  config: unknown,
-): void {
+export function $message(context: DecoratorContext, target: Model, config: unknown): void {
   logDecoratorTarget("message", target);
   logConfigPresence(config);
 
-  if (!validateConfig(
-    config,
-    context,
-    target,
-    "invalid-message-config",
-    `Message model '${target.name}' missing configuration. Use @message with configuration object.`
-  )) {
+  if (
+    !validateConfig(
+      config,
+      context,
+      target,
+      "invalid-message-config",
+      `Message model '${target.name}' missing configuration. Use @message with configuration object.`,
+    )
+  ) {
     return;
   }
 
@@ -262,22 +252,24 @@ export function $protocol(
   logDecoratorTarget("protocol", target);
   logConfigPresence(config);
 
-  if (!validateConfig(
-    config,
-    context,
-    target,
-    "invalid-protocol-config",
-    `Protocol configuration missing for '${target.kind}'. Use @protocol with configuration object.`
-  )) {
+  if (
+    !validateConfig(
+      config,
+      context,
+      target,
+      "invalid-protocol-config",
+      `Protocol configuration missing for '${target.kind}'. Use @protocol with configuration object.`,
+    )
+  ) {
     return;
   }
 
   // Store protocol configuration in state map
   const protocolConfigsMap = context.program.stateMap(stateSymbols.protocolConfigs);
   const configTyped = config as Record<string, unknown>;
-  
+
   // Store protocol-specific configuration based on type
-  const protocolType = configTyped.protocol as string || "kafka";
+  const protocolType = (configTyped.protocol as string) || "kafka";
   const protocolConfig = {
     protocol: protocolType,
     ...configTyped,
@@ -289,13 +281,13 @@ export function $protocol(
       sasl: configTyped.sasl || {
         mechanism: "plain",
         username: "",
-        password: ""
-      }
+        password: "",
+      },
     }),
     ...(protocolType === "ws" && {
       subprotocol: configTyped.subprotocol || "asyncapi",
       queryParams: configTyped.queryParams || {},
-      headers: configTyped.headers || {}
+      headers: configTyped.headers || {},
     }),
     ...(protocolType === "mqtt" && {
       qos: configTyped.qos || 1,
@@ -304,13 +296,13 @@ export function $protocol(
         topic: "",
         message: "",
         qos: 1,
-        retain: false
-      }
-    })
+        retain: false,
+      },
+    }),
   };
-  
+
   protocolConfigsMap.set(target, protocolConfig);
-  
+
   logSuccess("protocol");
 }
 
@@ -325,13 +317,15 @@ export function $security(
   logDecoratorTarget("security", target);
   logConfigPresence(config);
 
-  if (!validateConfig(
-    config,
-    context,
-    target,
-    "invalid-security-config",
-    `Security configuration missing for '${target.kind}'. Use @security with configuration object.`
-  )) {
+  if (
+    !validateConfig(
+      config,
+      context,
+      target,
+      "invalid-security-config",
+      `Security configuration missing for '${target.kind}'. Use @security with configuration object.`,
+    )
+  ) {
     return;
   }
   logSuccess("security");
@@ -349,7 +343,7 @@ export function $subscribe(context: DecoratorContext, target: Operation): void {
     target,
     "subscribe",
     undefined,
-    `Subscribe operation for ${target.name ?? "unnamed"}`
+    `Subscribe operation for ${target.name ?? "unnamed"}`,
   );
 
   logSuccess("subscribe", "stored in state");
@@ -358,11 +352,7 @@ export function $subscribe(context: DecoratorContext, target: Operation): void {
 /**
  * Simplest possible @tags decorator for testing
  */
-export function $tags(
-  context: DecoratorContext,
-  target: DiagnosticTarget,
-  value: unknown,
-): void {
+export function $tags(context: DecoratorContext, target: DiagnosticTarget, value: unknown): void {
   logDecoratorTarget("tags", target, { hasValue: !!value, isArray: Array.isArray(value) });
 
   if (!value || !Array.isArray(value)) {
@@ -371,7 +361,7 @@ export function $tags(
       context,
       "invalid-tags-config",
       target,
-      "Tags configuration missing or invalid. Use @tags with string array."
+      "Tags configuration missing or invalid. Use @tags with string array.",
     );
     return;
   }
@@ -389,7 +379,7 @@ export function $correlationId(
 ): void {
   logDecoratorTarget("correlationId", target, {
     location: String(location),
-    property: String(property)
+    property: String(property),
   });
 
   if (!location) {
@@ -398,7 +388,7 @@ export function $correlationId(
       context,
       "invalid-correlationId-config",
       target,
-      `Correlation ID location missing for model '${target.name}'. Use @correlationId with location path.`
+      `Correlation ID location missing for model '${target.name}'. Use @correlationId with location path.`,
     );
     return;
   }
@@ -421,7 +411,7 @@ export function $bindings(
       context,
       "invalid-bindings-config",
       target,
-      `Protocol bindings missing for '${target.kind}'. Use @bindings with configuration object.`
+      `Protocol bindings missing for '${target.kind}'. Use @bindings with configuration object.`,
     );
     return;
   }
@@ -439,7 +429,7 @@ export function $header(
 ): void {
   logDecoratorTarget("header", target, {
     name: String(name),
-    hasValue: !!value
+    hasValue: !!value,
   });
 
   if (!name) {
@@ -448,7 +438,7 @@ export function $header(
       context,
       "invalid-header-config",
       target,
-      `Header name missing for '${target.kind}'. Use @header with name and value.`
+      `Header name missing for '${target.kind}'. Use @header with name and value.`,
     );
     return;
   }

@@ -25,8 +25,9 @@ The TypeSpec AsyncAPI emitter is **working perfectly**. The 146 failing tests ar
 ### What We Discovered
 
 **Created minimal smoke test** (Pareto 1% → 51% value):
+
 ```bash
-cd examples/smoke  
+cd examples/smoke
 npx tsp compile main.tsp --emit @lars-artmann/typespec-asyncapi
 ```
 
@@ -35,6 +36,7 @@ npx tsp compile main.tsp --emit @lars-artmann/typespec-asyncapi
 ### The Real Problem
 
 **Tests check wrong thing:**
+
 - Real emitter: Uses AssetEmitter to write files to disk
 - Tests: Check `result.fs.fs` Map from TypeSpec test infrastructure
 - TypeSpec test infrastructure may not populate Map for AssetEmitter
@@ -48,6 +50,7 @@ npx tsp compile main.tsp --emit @lars-artmann/typespec-asyncapi
 File: `tsp-test/@lars-artmann/typespec-asyncapi/AsyncAPI.yaml`
 
 **Perfect AsyncAPI 3.0:**
+
 - ✅ asyncapi: 3.0.0
 - ✅ channels defined correctly
 - ✅ operations with correct actions
@@ -59,7 +62,7 @@ File: `tsp-test/@lars-artmann/typespec-asyncapi/AsyncAPI.yaml`
 
 ```
 ✅ AsyncAPI document validation passed! 1 channels, 1 operations
-✅ All emission pipeline stages completed successfully  
+✅ All emission pipeline stages completed successfully
 ✅ Document generation completed - processed 1 operations and 0 messages
 ✅ Serializing AsyncAPI document
 ✅ writeOutput completed

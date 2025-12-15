@@ -5,13 +5,16 @@ This directory contains production-ready examples demonstrating the TypeSpec Asy
 ## 📁 Available Examples
 
 ### 1. Kafka Events (`kafka-events.tsp`)
+
 **Use Case:** E-commerce platform event streaming
+
 - **Protocols:** Apache Kafka
 - **Operations:** 4 (3 publish, 1 subscribe)
 - **Events:** User registration, order creation, payment processing, user updates
 - **Features:** Complex nested models, enums, optional properties
 
 **Compilation:**
+
 ```bash
 npx tsp compile examples/real-world/kafka-events.tsp --emit @lars-artmann/typespec-asyncapi
 ```
@@ -21,13 +24,16 @@ npx tsp compile examples/real-world/kafka-events.tsp --emit @lars-artmann/typesp
 ---
 
 ### 2. WebSocket Events (`websocket-events.tsp`)
+
 **Use Case:** Real-time collaboration platform
+
 - **Protocols:** WebSocket
-- **Operations:** 7 (6 publish, 1 subscribe)  
+- **Operations:** 7 (6 publish, 1 subscribe)
 - **Events:** User presence, cursor tracking, document editing, chat
 - **Features:** Template parameters, complex nested structures, unions
 
 **Compilation:**
+
 ```bash
 npx tsp compile examples/real-world/websocket-events.tsp --emit @lars-artmann/typespec-asyncapi
 ```
@@ -37,13 +43,16 @@ npx tsp compile examples/real-world/websocket-events.tsp --emit @lars-artmann/ty
 ---
 
 ### 3. HTTP Events (`http-events.tsp`)
+
 **Use Case:** Microservices webhook system
+
 - **Protocols:** HTTP webhooks
 - **Operations:** 8 (6 publish, 2 subscribe)
 - **Events:** User accounts, orders, payments, inventory, shipping
 - **Features:** Service integration, payment processing, health monitoring
 
 **Compilation:**
+
 ```bash
 npx tsp compile examples/real-world/http-events.tsp --emit @lars-artmann/typespec-asyncapi
 ```
@@ -53,13 +62,16 @@ npx tsp compile examples/real-world/http-events.tsp --emit @lars-artmann/typespe
 ---
 
 ### 4. Multi-Protocol (`multi-protocol-simple.tsp`)
+
 **Use Case:** IoT platform with multiple protocols
+
 - **Protocols:** MQTT, WebSocket, HTTP, Kafka
 - **Operations:** 5 (5 publish)
 - **Events:** Device telemetry, alerts, dashboard updates, webhooks, processed data
 - **Features:** Cross-protocol integration, template parameters
 
 **Compilation:**
+
 ```bash
 npx tsp compile examples/real-world/multi-protocol-simple.tsp --emit @lars-artmann/typespec-asyncapi
 ```
@@ -71,10 +83,12 @@ npx tsp compile examples/real-world/multi-protocol-simple.tsp --emit @lars-artma
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - Node.js 18+ and Bun installed
 - TypeSpec AsyncAPI Emitter: `bun add @lars-artmann/typespec-asyncapi`
 
 ### Compile Any Example
+
 ```bash
 # Navigate to project root
 cd typespec-asyncapi
@@ -87,6 +101,7 @@ cat tsp-test/@lars-artmann/typespec-asyncapi/AsyncAPI.yaml
 ```
 
 ### Validate Generated AsyncAPI
+
 ```bash
 # Use AsyncAPI parser for validation
 bun add -g @asyncapi/cli
@@ -98,6 +113,7 @@ asyncapi validate tsp-test/@lars-artmann/typespec-asyncapi/AsyncAPI.yaml
 ## 📋 TypeSpec Patterns Used
 
 ### Core Decorators
+
 ```typescript
 @channel("topic.path")           // Channel definition with template parameters
 @publish                         // Mark operation as sending messages
@@ -105,6 +121,7 @@ asyncapi validate tsp-test/@lars-artmann/typespec-asyncapi/AsyncAPI.yaml
 ```
 
 ### Data Modeling
+
 ```typescript
 // Basic model
 model UserEvent {
@@ -126,6 +143,7 @@ model OrderEvent {
 ```
 
 ### Template Parameters
+
 ```typescript
 @channel("devices.{deviceId}/telemetry")
 op publishDeviceTelemetry(deviceId: string): DeviceTelemetry;
@@ -139,17 +157,20 @@ op publishOrderUpdate(orderId: string): OrderStatus;
 ## 🔧 Generated AsyncAPI Features
 
 ### Channels & Operations
+
 - **Channel Addressing:** Full support for template parameters (`{param}`, `.{param}`)
 - **Operation Types:** Both `send` (publish) and `receive` (subscribe)
 - **Message Binding:** Automatic message schema generation
 
 ### Schema Generation
+
 - **JSON Schema:** Complete schema generation with proper types
 - **Enums:** Union types converted to JSON schema enums
 - **Nested Objects:** Proper $ref handling for complex models
 - **Optional Fields:** Correct required/optional property handling
 
 ### AsyncAPI 3.0 Compliance
+
 - **Specification:** Full AsyncAPI 3.0 compliance
 - **Validation:** Generated specs pass AsyncAPI parser validation
 - **Extensibility:** Proper component structure for extensibility
@@ -160,18 +181,19 @@ op publishOrderUpdate(orderId: string): OrderStatus;
 
 All examples demonstrate excellent performance:
 
-| Example | Operations | Compilation Time | Generated Size |
-|---------|------------|------------------|----------------|
-| Kafka Events | 4 | ~52ms | ~4KB |
-| WebSocket Events | 7 | ~45ms | ~6KB |
-| HTTP Events | 8 | ~54ms | ~8KB |
-| Multi-Protocol | 5 | ~45ms | ~3KB |
+| Example          | Operations | Compilation Time | Generated Size |
+| ---------------- | ---------- | ---------------- | -------------- |
+| Kafka Events     | 4          | ~52ms            | ~4KB           |
+| WebSocket Events | 7          | ~45ms            | ~6KB           |
+| HTTP Events      | 8          | ~54ms            | ~8KB           |
+| Multi-Protocol   | 5          | ~45ms            | ~3KB           |
 
 ---
 
 ## 🎯 Best Practices Demonstrated
 
 ### 1. Namespace Organization
+
 ```typescript
 namespace ECommerce;        // Business domain
 namespace Collaboration;   // Feature domain
@@ -179,16 +201,19 @@ namespace Microservices;    // Architecture domain
 ```
 
 ### 2. Event Design Patterns
+
 - **Event Naming:** Past tense for completed events (UserRegistered)
 - **Data Enrichment:** Include timestamps and correlation IDs
 - **Type Safety:** Use enums for constrained values
 
 ### 3. Channel Design
+
 - **Hierarchical Topics:** Logical grouping (user.registered, order.created)
 - **Template Parameters:** Dynamic routing (devices.{deviceId}/telemetry)
 - **Protocol-Specific:** Appropriate naming per protocol
 
 ### 4. Model Composition
+
 - **Reusable Models:** Common structures across events
 - **Nested Models:** Complex data relationships
 - **Optional Fields:** Flexible event payloads
@@ -198,6 +223,7 @@ namespace Microservices;    // Architecture domain
 ## 🧪 Testing & Validation
 
 ### Manual Testing
+
 ```bash
 # Compile each example
 for file in examples/real-world/*.tsp; do
@@ -211,7 +237,9 @@ asyncapi validate tsp-test/@lars-artmann/typespec-asyncapi/AsyncAPI.yaml
 ```
 
 ### Integration Testing
+
 All examples are designed to:
+
 - ✅ Compile without errors
 - ✅ Generate valid AsyncAPI 3.0 specifications
 - ✅ Support real-world event-driven architectures
@@ -241,4 +269,4 @@ When adding new examples:
 ---
 
 **Generated with TypeSpec AsyncAPI Emitter v1.0.0**
-*Production-ready event-driven API specification generation*
+_Production-ready event-driven API specification generation_

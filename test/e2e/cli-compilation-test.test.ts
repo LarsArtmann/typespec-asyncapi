@@ -79,9 +79,7 @@ op publishTestMessage(): TestMessage;
           resolve();
         } else {
           reject(
-            new Error(
-              `Compilation failed with code ${code}\nStdout: ${stdout}\nStderr: ${stderr}`,
-            ),
+            new Error(`Compilation failed with code ${code}\nStdout: ${stdout}\nStderr: ${stderr}`),
           );
         }
       });
@@ -92,19 +90,10 @@ op publishTestMessage(): TestMessage;
 
     // Verify AsyncAPI output was generated
     // TypeSpec emitters output to {output-dir}/{emitter-package-name}/
-    const emitterOutputDir = join(
-      outputDir,
-      "@lars-artmann",
-      "typespec-asyncapi",
-    );
+    const emitterOutputDir = join(outputDir, "@lars-artmann", "typespec-asyncapi");
     const asyncapiFiles = [];
     try {
-      const files = [
-        "AsyncAPI.yaml",
-        "AsyncAPI.json",
-        "asyncapi.yaml",
-        "asyncapi.json",
-      ];
+      const files = ["AsyncAPI.yaml", "AsyncAPI.json", "asyncapi.yaml", "asyncapi.json"];
       for (const file of files) {
         const filepath = join(emitterOutputDir, file);
         if (existsSync(filepath)) {

@@ -61,6 +61,7 @@ Date: 2025-10-05T00:37:09Z
 ## What I wish for the future is:
 
 ### 1. **Test-First Workflow**
+
 ```bash
 # ALWAYS start with this
 bun test 2>&1 | tee /tmp/test-output.txt
@@ -70,6 +71,7 @@ grep -E "(pass|fail|error)" /tmp/test-output.txt | tail -5
 **Wish:** Clear instruction to run tests BEFORE any analysis or planning
 
 ### 2. **Architecture Documentation**
+
 ```
 docs/architecture/
   ├── current-state.mmd (mermaid diagram)
@@ -81,11 +83,15 @@ docs/architecture/
 **Wish:** Existing architecture documentation to reference
 
 ### 3. **Ghost System Definition**
+
 **Wish:** Clear definition upfront:
+
 > "Ghost system: Code that duplicates existing framework/library functionality, or creates fake data to hide real bugs"
 
 ### 4. **Priority Framework**
+
 **Wish:** Clear priority when multiple tasks given:
+
 ```
 Priority 1 (CRITICAL): Fix failing tests
 Priority 2 (HIGH): Add missing tests
@@ -94,7 +100,9 @@ Priority 4 (LOW): Documentation
 ```
 
 ### 5. **Dependency Research Checklist**
+
 **Wish:** Standard research steps before implementing:
+
 ```
 Before creating custom utilities:
 ☐ Check if @typespec/compiler/testing provides it
@@ -105,7 +113,9 @@ Before creating custom utilities:
 ```
 
 ### 6. **Commit Discipline Template**
+
 **Wish:** Explicit commit template after each change:
+
 ```bash
 # After EVERY code change
 git status
@@ -121,7 +131,9 @@ git push origin <branch>
 ```
 
 ### 7. **Session Scope Contract**
+
 **Wish:** Upfront agreement on scope:
+
 ```
 Session Goal: [Fix 175 failing tests]
 Success Criteria: [80%+ pass rate]
@@ -130,7 +142,9 @@ Time Box: [4 hours]
 ```
 
 ### 8. **Truth Source for Test Status**
+
 **Wish:** Single source of truth for metrics:
+
 ```
 docs/metrics/
   └── test-status.md (updated automatically after each test run)
@@ -139,7 +153,9 @@ docs/metrics/
 Instead of conflicting numbers in multiple GitHub issues
 
 ### 9. **Library Inventory**
+
 **Wish:** Documented list of what each dependency provides:
+
 ```
 docs/dependencies.md
 
@@ -154,7 +170,9 @@ docs/dependencies.md
 ```
 
 ### 10. **Incremental Progress Tracking**
+
 **Wish:** Visible progress during long sessions:
+
 ```
 Session Progress:
 ☑ Run tests (407/580 passing)
@@ -168,6 +186,7 @@ Session Progress:
 ## Summary
 
 The main confusion came from **WRONG ASSUMPTIONS** in the previous session that I trusted without verification:
+
 - "90 failing tests" → Actually 175
 - "Import path issues" → Actually architectural issues
 - No tests running → Tests ARE running
@@ -177,7 +196,6 @@ The main confusion came from **WRONG ASSUMPTIONS** in the previous session that 
 **Lesson:** ALWAYS verify with actual data before planning.
 
 **Wish:** Clear instruction to "Run tests FIRST, analyze output, THEN plan" would have saved 2+ hours of incorrect analysis.
-
 
 Best regards,
 Claude (Sonnet 4.5)

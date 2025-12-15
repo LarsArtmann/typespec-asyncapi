@@ -9,7 +9,7 @@
 
 ## The Prompt
 
-```markdown
+````markdown
 ## Instructions:
 0. ALWAYS be BRUTALLY-HONEST! NEVER LIE TO THE USER!
 
@@ -94,9 +94,10 @@ What I wish for the future is:
 
 Best regards,
 <YOUR_NAME>
-```
+````
 
 ### 2. Architecture Understanding
+
 File: docs/architecture-understanding/<YYYY-MM-DD_HH_MM-SESSION_NAME>.mmd
 
 Provide me with a mermaid.js graph on how you think the App is architected. Do NOT do anything else! JUST THE mermaid.js graph RIGHT NOW!
@@ -107,6 +108,7 @@ File: docs/architecture-understanding/<YYYY-MM-DD_HH_MM-SESSION_NAME-improved>.m
 Now provide me with a mermaid.js graph on how you think the App SHOULD BE architected! Do NOT do anything else! JUST THE mermaid.js graph RIGHT NOW!
 
 ### 3. Learnings Document
+
 File: docs/learnings/<YYYY-MM-DD_HH_MM-SESSION_NAME>.md
 
 Based on this chat history list/write your learnings into 1 new and consolidated .md file so we can get better in the future.
@@ -114,6 +116,7 @@ Based on this chat history list/write your learnings into 1 new and consolidated
 List all files in learnings/ folder. Make sure the numbering is correct. Make sure not to add duplicates.
 
 ### 4. Reusable Prompts
+
 File: docs/prompts/<YYYY-MM-DD_HH_MM-SESSION_NAME>.md
 
 Based on this chat history write 1 prompt that I may reuse in the future.
@@ -131,7 +134,8 @@ MAKE SURE IF I CLOSE THIS CHAT I WILL NOT LOSE ANY IMPORTANT INSIGHT
 
 Reminder: Don't forget to check your internal todo list.
 NOTE: Use the cli to get the current date.
-```
+
+````
 
 ---
 
@@ -187,15 +191,17 @@ NOTE: Use the cli to get the current date.
    - [LIST YOUR FRAMEWORK/LIBS HERE]
    - [COMMON PATTERNS IN YOUR CODEBASE]
    - [ARCHITECTURE PATTERNS YOU FOLLOW]
-```
+````
 
 ### For Different Project Types:
+
 - **Backend API:** Add "Are endpoints actually tested with real HTTP calls?"
 - **Frontend:** Add "Are components tested in isolation and integrated?"
 - **Data Pipeline:** Add "Are transformations tested with real-world data?"
 - **CLI Tool:** Add "Are commands tested end-to-end with actual shell execution?"
 
 ### For Different Team Sizes:
+
 - **Solo:** Focus on self-reflection and documentation for future self
 - **Small Team:** Emphasize consistent patterns and shared understanding
 - **Large Team:** Add "Are our conventions documented and enforced?"
@@ -205,6 +211,7 @@ NOTE: Use the cli to get the current date.
 ## Success Criteria
 
 You've successfully used this prompt if:
+
 1. ✅ You found at least one "ghost system" or stupid pattern
 2. ✅ You created honest documentation that will help future you/team
 3. ✅ You have actionable plan sorted by impact
@@ -216,6 +223,7 @@ You've successfully used this prompt if:
 ## Anti-Patterns to Avoid
 
 When using this prompt, DO NOT:
+
 1. ❌ Sugarcoat findings to feel better
 2. ❌ Defend past bad decisions instead of learning from them
 3. ❌ Create generic "we should do better" without specifics

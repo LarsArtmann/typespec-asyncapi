@@ -27,15 +27,9 @@ namespace TestService {
     });
 
     console.log("🔍 DEBUG: Compilation completed");
-    console.log(
-      "🔍 DEBUG: Output files found:",
-      Object.keys(result.outputs || {}),
-    );
+    console.log("🔍 DEBUG: Output files found:", Object.keys(result.outputs || {}));
     console.log("🔍 DEBUG: Output file:", result.outputFile);
-    console.log(
-      "🔍 DEBUG: Document keys:",
-      Object.keys(result.asyncApiDoc || {}),
-    );
+    console.log("🔍 DEBUG: Document keys:", Object.keys(result.asyncApiDoc || {}));
     console.log("🔍 DEBUG: Success - AsyncAPI document generated!");
   } catch (error) {
     console.log("🔍 DEBUG: Error caught:", error.message);

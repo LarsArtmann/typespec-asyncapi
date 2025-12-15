@@ -3,7 +3,7 @@
  *
  * Tests the extracted DocumentBuilder service that handles AsyncAPI document
  * construction, initialization, and component setup.
- * 
+ *
  * NOTE: All methods return NEW documents (immutable pattern) - tests must capture return values.
  */
 
@@ -62,8 +62,7 @@ describe("DocumentBuilder", () => {
     it("should handle program without getGlobalNamespaceType", () => {
       const programWithoutMethod = {} as Program;
 
-      const documentEffect =
-        documentBuilder.createInitialDocument(programWithoutMethod);
+      const documentEffect = documentBuilder.createInitialDocument(programWithoutMethod);
       const document = Effect.runSync(documentEffect);
 
       // Should still create valid document structure
@@ -99,9 +98,7 @@ describe("DocumentBuilder", () => {
         },
       } as unknown as Program;
 
-      const documentEffect = documentBuilder.createInitialDocument(
-        mockProgramWithServers,
-      );
+      const documentEffect = documentBuilder.createInitialDocument(mockProgramWithServers);
       const document = Effect.runSync(documentEffect);
 
       // Servers should be processed
@@ -114,8 +111,7 @@ describe("DocumentBuilder", () => {
     let baseDocument: AsyncAPIObject;
 
     beforeEach(() => {
-      const baseDocumentEffect =
-        documentBuilder.createInitialDocument(mockProgram);
+      const baseDocumentEffect = documentBuilder.createInitialDocument(mockProgram);
       baseDocument = Effect.runSync(baseDocumentEffect);
     });
 
@@ -125,10 +121,7 @@ describe("DocumentBuilder", () => {
         description: "Custom description",
       };
 
-      const updateEffect = documentBuilder.updateDocumentInfo(
-        baseDocument,
-        customInfo,
-      );
+      const updateEffect = documentBuilder.updateDocumentInfo(baseDocument, customInfo);
       const updatedDocument = Effect.runSync(updateEffect);
 
       expect(updatedDocument.info.title).toBe("Custom API Title");
@@ -141,10 +134,7 @@ describe("DocumentBuilder", () => {
         version: "2.1.0",
       };
 
-      const updateEffect = documentBuilder.updateDocumentInfo(
-        baseDocument,
-        customInfo,
-      );
+      const updateEffect = documentBuilder.updateDocumentInfo(baseDocument, customInfo);
       const updatedDocument = Effect.runSync(updateEffect);
 
       expect(updatedDocument.info.title).toBe("AsyncAPI Specification"); // Should preserve
@@ -170,10 +160,7 @@ describe("DocumentBuilder", () => {
         description: "New description",
       };
 
-      const updateEffect = documentBuilder.updateDocumentInfo(
-        baseDocument,
-        completeInfo,
-      );
+      const updateEffect = documentBuilder.updateDocumentInfo(baseDocument, completeInfo);
       const updatedDocument = Effect.runSync(updateEffect);
 
       expect(updatedDocument.info.title).toBe("New Title");
@@ -328,8 +315,7 @@ describe("DocumentBuilder", () => {
       document = Effect.runSync(updateEffect);
 
       // Step 3: Initialize full structure
-      const structureEffect =
-        documentBuilder.initializeDocumentStructure(document);
+      const structureEffect = documentBuilder.initializeDocumentStructure(document);
       document = Effect.runSync(structureEffect);
 
       // Verify complete document
@@ -376,8 +362,7 @@ describe("DocumentBuilder", () => {
         info: { title: "Test", version: "1.0.0" },
       } as AsyncAPIObject;
 
-      const structureEffect =
-        documentBuilder.initializeDocumentStructure(partialDocument);
+      const structureEffect = documentBuilder.initializeDocumentStructure(partialDocument);
       const result = Effect.runSync(structureEffect);
 
       expect(result.channels).toEqual({});

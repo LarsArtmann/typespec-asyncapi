@@ -29,9 +29,7 @@ describe("Documentation: Decorators Mapping", () => {
 
         const channels = result.asyncapi!.channels!;
         expect(channels["simple-channel"]).toBeDefined();
-        expect(
-          channels["parameterized/{userId}/events/{eventType}"],
-        ).toBeDefined();
+        expect(channels["parameterized/{userId}/events/{eventType}"]).toBeDefined();
       });
 
       it("THEN should extract channel parameters", async () => {
@@ -40,10 +38,7 @@ describe("Documentation: Decorators Mapping", () => {
           emitAsyncAPI: true,
         });
 
-        const channel =
-          result.asyncapi!.channels![
-            "parameterized/{userId}/events/{eventType}"
-          ];
+        const channel = result.asyncapi!.channels!["parameterized/{userId}/events/{eventType}"];
         expect(channel.parameters!.userId).toBeDefined();
         expect(channel.parameters!.eventType).toBeDefined();
       });
@@ -69,8 +64,7 @@ describe("Documentation: Decorators Mapping", () => {
           emitAsyncAPI: true,
         });
 
-        const messageSchema =
-          result.asyncapi!.components!.schemas!.MessageWithDecorators;
+        const messageSchema = result.asyncapi!.components!.schemas!.MessageWithDecorators;
         expect(messageSchema.properties!.messageId).toBeDefined();
         expect(messageSchema.properties!.correlationId).toBeDefined();
         expect(messageSchema.properties!.payload).toBeDefined();
@@ -236,9 +230,7 @@ describe("Documentation: Decorators Mapping", () => {
 
           // Either compilation fails with diagnostics or the operation succeeds with basic processing
           if (result.diagnostics && result.diagnostics.length > 0) {
-            const errors = result.diagnostics.filter(
-              (d) => d.severity === "error",
-            );
+            const errors = result.diagnostics.filter((d) => d.severity === "error");
             expect(errors.length).toBeGreaterThan(0);
           } else {
             // Alpha might handle this gracefully - just ensure basic structure exists

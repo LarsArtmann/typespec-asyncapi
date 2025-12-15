@@ -5,12 +5,8 @@ const currentCode = readFileSync("test/utils/emitter-test-helpers.ts", "utf8");
 
 // Find the line after "if (!outputFile) {" and add fallback
 const lines = currentCode.split("\n");
-const insertIndex = lines.findIndex((line) =>
-  line.includes("if (!outputFile) {"),
-);
-const closingIndex = lines.findIndex(
-  (line, idx) => idx > insertIndex && line === "	}",
-);
+const insertIndex = lines.findIndex((line) => line.includes("if (!outputFile) {"));
+const closingIndex = lines.findIndex((line, idx) => idx > insertIndex && line === "	}");
 
 if (insertIndex !== -1 && closingIndex !== -1) {
   // Replace the error throwing with fallback logic

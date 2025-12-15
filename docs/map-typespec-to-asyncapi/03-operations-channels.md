@@ -8,12 +8,12 @@ This document explains how TypeSpec operations transform into AsyncAPI's event-d
 
 ### TypeSpec Operations vs AsyncAPI Operations
 
-| Aspect | TypeSpec | AsyncAPI |
-|--------|----------|----------|
-| **Purpose** | Method-like operations | Message flow actions |
-| **Direction** | Request → Response | Send/Receive messages |
-| **Timing** | Often synchronous thinking | Always asynchronous |
-| **Identification** | Operation name | Channel + Operation combination |
+| Aspect             | TypeSpec                   | AsyncAPI                        |
+| ------------------ | -------------------------- | ------------------------------- |
+| **Purpose**        | Method-like operations     | Message flow actions            |
+| **Direction**      | Request → Response         | Send/Receive messages           |
+| **Timing**         | Often synchronous thinking | Always asynchronous             |
+| **Identification** | Operation name             | Channel + Operation combination |
 
 ## Basic Operation Mapping
 
@@ -38,7 +38,7 @@ channels:
     messages:
       UserRegisteredMessage:
         $ref: '#/components/messages/UserRegisteredMessage'
-        
+
   order.events:
     address: order.events
     messages:
@@ -53,7 +53,7 @@ operations:
     summary: User registration event
     messages:
       - $ref: '#/channels/user.events/messages/UserRegisteredMessage'
-      
+
   orderCreated:
     action: send
     channel:
@@ -70,7 +70,7 @@ components:
       contentType: application/json
       payload:
         $ref: '#/components/schemas/UserRegisteredEvent'
-        
+
     OrderCreatedMessage:
       name: OrderCreatedEvent
       title: Order Creation Event
@@ -102,7 +102,7 @@ operations:
     summary: Handle user registration events
     messages:
       - $ref: '#/channels/user.events/messages/UserRegisteredMessage'
-      
+
   handlePaymentProcessed:
     action: receive
     channel:
@@ -123,7 +123,7 @@ operations:
 op publishUserEvent(@body event: UserEvent): void;
 
 @channel("system.alerts")
-@publish  
+@publish
 op publishSystemAlert(@body alert: SystemAlert): void;
 ```
 
@@ -133,7 +133,7 @@ channels:
   user.events:
     address: user.events
     description: User-related events
-    
+
   system.alerts:
     address: system.alerts
     description: System alert notifications
@@ -169,7 +169,7 @@ channels:
     messages:
       NotificationMessage:
         $ref: '#/components/messages/NotificationMessage'
-        
+
   tenant-order-updates:
     address: tenant/{tenantId}/orders/{orderId}
     parameters:
@@ -193,7 +193,7 @@ operations:
       $ref: '#/channels/user-notifications'
     bindings:
       # Channel parameter values from operation parameters
-      
+
   handleOrderUpdate:
     action: receive
     channel:
@@ -208,11 +208,11 @@ namespace ECommerce.Orders {
   @channel("orders.lifecycle.created")
   @publish
   op orderCreated(@body order: OrderCreatedEvent): void;
-  
-  @channel("orders.lifecycle.updated") 
+
+  @channel("orders.lifecycle.updated")
   @publish
   op orderUpdated(@body order: OrderUpdatedEvent): void;
-  
+
   @channel("orders.lifecycle.completed")
   @publish
   op orderCompleted(@body order: OrderCompletedEvent): void;
@@ -222,7 +222,7 @@ namespace ECommerce.Inventory {
   @channel("inventory.stock.depleted")
   @publish
   op stockDepleted(@body item: StockDepletedEvent): void;
-  
+
   @channel("inventory.stock.replenished")
   @publish
   op stockReplenished(@body item: StockReplenishedEvent): void;
@@ -235,19 +235,19 @@ channels:
   orders.lifecycle.created:
     address: orders.lifecycle.created
     description: Order creation events
-    
+
   orders.lifecycle.updated:
     address: orders.lifecycle.updated
     description: Order update events
-    
+
   orders.lifecycle.completed:
     address: orders.lifecycle.completed
     description: Order completion events
-    
+
   inventory.stock.depleted:
     address: inventory.stock.depleted
     description: Stock depletion notifications
-    
+
   inventory.stock.replenished:
     address: inventory.stock.replenished
     description: Stock replenishment notifications
@@ -284,7 +284,7 @@ operations:
 @publish
 op requestUserInfo(@body query: UserQuery): void;
 
-@channel("user.responses") 
+@channel("user.responses")
 @subscribe
 op receiveUserInfo(): UserInfoResponse;
 
@@ -311,9 +311,9 @@ channels:
           location: $message.payload#/correlationId
         payload:
           $ref: '#/components/schemas/UserQuery'
-          
+
   user.responses:
-    address: user.responses  
+    address: user.responses
     messages:
       UserInfoResponseMessage:
         correlationId:
@@ -330,7 +330,7 @@ operations:
     reply:
       channel:
         $ref: '#/channels/user.responses'
-        
+
   receiveUserInfo:
     action: receive
     channel:
@@ -350,10 +350,10 @@ op processSensorStream(): SensorReading;
 op publishAnalytics(@body analytics: AnalyticsResult): void;
 
 // Indicates streaming/continuous processing
-@protocol({ 
-  type: "kafka", 
+@protocol({
+  type: "kafka",
   streaming: true,
-  batchSize: 100 
+  batchSize: 100
 })
 @channel("data.stream")
 @subscribe
@@ -368,13 +368,13 @@ operations:
     channel:
       $ref: '#/channels/sensor.data'
     summary: Continuously process sensor readings
-    
+
   publishAnalytics:
     action: send
     channel:
       $ref: '#/channels/analytics.results'
     summary: Publish processed analytics results
-    
+
   processDataBatch:
     action: receive
     channel:
@@ -492,10 +492,10 @@ components:
 interface UserEvents {
   @publish
   created(@body user: UserCreatedEvent): void;
-  
-  @publish  
+
+  @publish
   updated(@body user: UserUpdatedEvent): void;
-  
+
   @publish
   deleted(@body user: UserDeletedEvent): void;
 }
@@ -504,10 +504,10 @@ interface UserEvents {
 interface UserCommands {
   @subscribe
   handleCreateUser(): CreateUserCommand;
-  
+
   @subscribe
   handleUpdateUser(): UpdateUserCommand;
-  
+
   @subscribe
   handleDeleteUser(): DeleteUserCommand;
 }
@@ -539,28 +539,28 @@ operations:
     action: send
     channel: { $ref: '#/channels/user' }
     summary: User created event
-    
+
   updated:
     action: send
     channel: { $ref: '#/channels/user' }
     summary: User updated event
-    
+
   deleted:
     action: send
     channel: { $ref: '#/channels/user' }
     summary: User deleted event
-    
+
   # Subscribe operations (commands)
   handleCreateUser:
     action: receive
     channel: { $ref: '#/channels/user' }
     summary: Handle user creation command
-    
+
   handleUpdateUser:
     action: receive
     channel: { $ref: '#/channels/user' }
     summary: Handle user update command
-    
+
   handleDeleteUser:
     action: receive
     channel: { $ref: '#/channels/user' }
@@ -602,7 +602,7 @@ channels:
     messages:
       OrderRequest:
         $ref: '#/components/messages/OrderRequest'
-        
+
   order.results:
     address: order.results
     messages:
@@ -619,7 +619,7 @@ components:
         oneOf:
           - $ref: '#/components/schemas/OrderSuccessResult'
           - $ref: '#/components/schemas/OrderFailureResult'
-          
+
     OrderResponse:
       name: OrderResponse
       payload:
@@ -666,7 +666,7 @@ channels:
             x-dead-letter-exchange: orders.dlx
             x-dead-letter-routing-key: failed
             x-message-ttl: 300000
-            
+
   orders.deadletter:
     address: orders.deadletter
     description: Failed order processing events
@@ -698,7 +698,7 @@ channels:
 op publishUserRegistration(@body user: UserRegistrationEvent): void;
 
 @doc("Handles incoming user registration events for downstream processing")
-@summary("User Registration Event Handler") 
+@summary("User Registration Event Handler")
 @channel("user.events")
 @subscribe
 op handleUserRegistration(): UserRegistrationEvent;
@@ -713,7 +713,7 @@ operations:
     title: User Registration Event Publisher
     summary: User Registration Event Publisher
     description: Publishes user registration events to the user events stream
-    
+
   handleUserRegistration:
     action: receive
     channel: { $ref: '#/channels/user.events' }
@@ -767,7 +767,7 @@ operations:
         description: User management operations
       - name: authentication
         description: Authentication-related operations
-        
+
   processMetrics:
     action: receive
     channel: { $ref: '#/channels/metrics.data' }
@@ -791,26 +791,31 @@ tags:
 ## Best Practices
 
 ### 1. Channel Naming Conventions
+
 - Use hierarchical dot notation: `domain.entity.action`
 - Be consistent across the API: `user.events`, `order.events`
 - Include direction context when needed: `user.commands`, `user.events`
 
 ### 2. Operation Organization
+
 - Group related operations in interfaces
 - Use clear action-oriented names: `publishOrder`, `handlePayment`
 - Separate commands (actions) from events (results)
 
 ### 3. Message Flow Design
+
 - Design for eventual consistency
 - Use correlation IDs for request-reply patterns
 - Plan for error handling and dead letter queues
 
 ### 4. Channel Parameters
+
 - Use path parameters for routing: `tenant/{tenantId}/orders`
 - Validate parameter formats and ranges
 - Document parameter semantics clearly
 
 ### 5. Documentation Strategy
+
 - Document message flow patterns, not just individual operations
 - Include timing expectations and ordering guarantees
 - Provide comprehensive examples for complex patterns
@@ -853,13 +858,14 @@ op something(@body data: unknown): void; // Unclear intent
 op query(@body q: Query): void; // No correlation strategy
 
 @channel("responses")
-@subscribe  
+@subscribe
 op response(): Response; // Can't correlate with request
 ```
 
 ## Next Steps
 
 Understanding operations and channels mapping enables:
+
 - **Schema Design** - Message payload and header patterns
 - **Decorator Usage** - Advanced decorator configurations
 - **Protocol Bindings** - Protocol-specific operation features
@@ -867,4 +873,4 @@ Understanding operations and channels mapping enables:
 
 ---
 
-*This operations mapping forms the core of event-driven API design, transforming TypeSpec's operation-centric model into AsyncAPI's message-flow paradigm.*
+_This operations mapping forms the core of event-driven API design, transforming TypeSpec's operation-centric model into AsyncAPI's message-flow paradigm._

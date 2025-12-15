@@ -19,7 +19,7 @@ namespace ServiceA {
 }
 
 @server("prod", {url: "wss://b.example.com", protocol: "websockets"})
-namespace ServiceB {  
+namespace ServiceB {
 }
 ```
 
@@ -227,7 +227,7 @@ function convertServerConfigToAsyncAPI(config: ServerConfig): AsyncAPIServer {
 ```typespec
 // TypeSpec Input → AsyncAPI Output
 
-@server("production", {...})  // → "UserService.production"  
+@server("production", {...})  // → "UserService.production"
 @server("staging", {...})     // → "UserService.staging"
 namespace UserService {
 

@@ -18,7 +18,7 @@ This document provides comprehensive setup instructions for IDE integration with
 # Using npm
 bun add --save-dev @typespec/asyncapi
 
-# Using bun (recommended)  
+# Using bun (recommended)
 bun add --dev @typespec/asyncapi
 ```
 
@@ -61,7 +61,7 @@ The TypeSpec AsyncAPI emitter provides the following advanced decorators with fu
 #### Core Decorators
 
 - `@channel(path)` - Define AsyncAPI channel paths
-- `@publish` - Mark operations as message publishers  
+- `@publish` - Mark operations as message publishers
 - `@subscribe` - Mark operations as message subscribers
 - `@message(config)` - Configure AsyncAPI message schemas
 - `@server(name, config)` - Define AsyncAPI server configurations
@@ -103,7 +103,7 @@ namespace MyEventAPI;
 
 @tags(["user", "authentication", "v1"])
 @message(#{
-  name: "UserLoginEvent", 
+  name: "UserLoginEvent",
   title: "User Login Event",
   description: "Emitted when a user successfully logs in",
   contentType: "application/json"
@@ -111,7 +111,7 @@ namespace MyEventAPI;
 model UserLoginEvent {
   @header messageId: string;
   @header correlationId?: string;
-  
+
   userId: string;
   timestamp: utcDateTime;
   ipAddress?: string;
@@ -140,7 +140,7 @@ op publishUserLogin(userId: string): UserLoginEvent;
 The TypeSpec language server provides:
 
 1. **Syntax Validation**: Real-time TypeScript and TypeSpec syntax checking
-2. **Decorator Validation**: AsyncAPI-specific decorator parameter validation  
+2. **Decorator Validation**: AsyncAPI-specific decorator parameter validation
 3. **Schema Validation**: AsyncAPI 3.0 specification compliance checking
 4. **Cross-reference Validation**: Model and operation relationship validation
 
@@ -171,7 +171,7 @@ The emitter provides detailed, actionable error messages:
 ```
 ❌ Error: Channel path '/user-events' is not valid
    Use format: /topic-name, /service/event-type, or {variable} syntax
-   
+
 💡 Suggestion: @channel("/user/{userId}/events")
 ```
 
@@ -234,8 +234,8 @@ repos:
         language: system
         pass_filenames: false
         files: \.(tsp|yaml)$
-        
-      - id: asyncapi-validate  
+
+      - id: asyncapi-validate
         name: AsyncAPI Validation
         entry: bun run spec:validate
         language: system
@@ -261,24 +261,24 @@ on:
 jobs:
   typespec:
     runs-on: ubuntu-latest
-    
+
     steps:
     - uses: actions/checkout@v3
-    
+
     - name: Setup Node.js
       uses: actions/setup-node@v3
       with:
         node-version: '18'
-        
+
     - name: Install dependencies
       run: npm ci
-      
+
     - name: Compile TypeSpec
       run: bun run spec:build
-      
+
     - name: Validate AsyncAPI
       run: bun run spec:validate
-      
+
     - name: Upload AsyncAPI spec
       uses: actions/upload-artifact@v3
       with:
@@ -295,6 +295,7 @@ jobs:
 **Error**: `Decorator '@tags' not found`
 
 **Solution**: Ensure proper import and namespace usage:
+
 ```typespec
 import "@typespec/asyncapi";
 using TypeSpec.AsyncAPI;
@@ -305,6 +306,7 @@ using TypeSpec.AsyncAPI;
 **Error**: `Invalid configuration structure`
 
 **Solution**: Use TypeSpec object literal syntax:
+
 ```typespec
 // ✅ Correct
 @message(#{
@@ -312,7 +314,7 @@ using TypeSpec.AsyncAPI;
   contentType: "application/json"
 })
 
-// ❌ Incorrect  
+// ❌ Incorrect
 @message({
   name: "EventName",
   contentType: "application/json"

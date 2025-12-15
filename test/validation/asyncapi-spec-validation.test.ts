@@ -11,10 +11,7 @@ import {
   AsyncAPIValidator,
   validateAsyncAPIObject,
 } from "../../src/domain/validation/asyncapi-validator.js";
-import {
-  compileAsyncAPISpec,
-  parseAsyncAPIOutput,
-} from "../utils/test-helpers";
+import { compileAsyncAPISpec, parseAsyncAPIOutput } from "../utils/test-helpers";
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import {
@@ -33,7 +30,7 @@ describe("AsyncAPI Specification Validation Framework", () => {
     validator = new AsyncAPIValidator({
       strict: true,
       enableCache: true,
-      benchmarking: false
+      benchmarking: false,
     });
 
     // Create test output directory
@@ -104,9 +101,7 @@ describe("AsyncAPI Specification Validation Framework", () => {
 
       expect(result.valid).toBe(false);
       expect(result.errors.length).toBeGreaterThan(0);
-      expect(result.errors[0]).toMatch(
-        /asyncapi|Missing|validation/,
-      );
+      expect(result.errors[0]).toMatch(/asyncapi|Missing|validation/);
       expect(result.errors[0]).toContain("asyncapi");
     });
 
@@ -124,9 +119,7 @@ describe("AsyncAPI Specification Validation Framework", () => {
 
       expect(result.valid).toBe(false);
       expect(result.errors.length).toBeGreaterThan(0);
-      expect(result.errors[0].keyword).toMatch(
-        /const|asyncapi|validation-error/,
-      );
+      expect(result.errors[0].keyword).toMatch(/const|asyncapi|validation-error/);
       expect(result.summary).toContain("invalid");
     });
 
@@ -333,9 +326,7 @@ describe("AsyncAPI Specification Validation Framework", () => {
       const result = await validator.validate(documentWithInvalidRef);
 
       expect(result.valid).toBe(false);
-      const referenceError = result.errors.find(
-        (e) => e.keyword === "reference",
-      );
+      const referenceError = result.errors.find((e) => e.keyword === "reference");
       expect(referenceError).toBeDefined();
       expect(referenceError?.message).toContain("invalid-channel");
     });
@@ -376,9 +367,7 @@ describe("AsyncAPI Specification Validation Framework", () => {
       const result = await validator.validate(documentWithInvalidMessageRef);
 
       expect(result.valid).toBe(false);
-      const referenceError = result.errors.find(
-        (e) => e.keyword === "reference",
-      );
+      const referenceError = result.errors.find((e) => e.keyword === "reference");
       expect(referenceError).toBeDefined();
       expect(referenceError?.message).toContain("NonExistentMessage");
     });

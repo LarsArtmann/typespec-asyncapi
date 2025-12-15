@@ -52,7 +52,7 @@
 - [ ] Eliminate all `any` types and strengthen type safety
 - [ ] Resolve architectural inconsistencies and split brains
 
-### 4% → 64% IMPACT (Professional Polish)  
+### 4% → 64% IMPACT (Professional Polish)
 - [ ] Clean up excessive debug logging
 - [ ] Implement user-friendly error messages with guidance
 - [ ] Remove unused imports and dead code
@@ -118,6 +118,7 @@
 **THIS IS NON-NEGOTIABLE - ZERO 'any' POLICY ENFORCEMENT:**
 
 #### **ABSOLUTELY FORBIDDEN:**
+
 ```typescript
 // 🚨 FORBIDDEN - NEVER DO THIS
 const data = response.data as any;
@@ -126,6 +127,7 @@ const result = (data as any).property;
 ```
 
 #### **REQUIRED ALTERNATIVES:**
+
 ```typescript
 // ✅ REQUIRED - PROPER TYPE SAFETY
 interface ResponseData<T> {
@@ -143,6 +145,7 @@ const result = data.property; // Type-safe access
 ```
 
 #### **TYPE SAFETY ENFORCEMENT:**
+
 - **NEVER use 'any'** - Not even for "temporary" fixes
 - **NEVER use 'as' casting** - Use proper type guards and interfaces
 - **ALWAYS define interfaces** - Unknown data must have proper types
@@ -151,6 +154,7 @@ const result = data.property; // Type-safe access
 - **ALWAYS use branded types** - For compile-time validation
 
 #### **VIOLATION CONSEQUENCES:**
+
 - **Immediate commit rejection** - Any 'any' usage blocks commits
 - **Code review failure** - 'any' types are automatic rejection
 - **Technical debt tracking** - Violations logged as critical debt
@@ -159,6 +163,7 @@ const result = data.property; // Type-safe access
 ### 🏗️ **TYPE-SAFE ARCHITECTURE PATTERNS**
 
 #### **BRANDED TYPES FOR VALIDATION:**
+
 ```typescript
 // ✅ PREFERRED - Branded types prevent invalid states
 type ChannelPath = string & { readonly _brand: "ChannelPath" };
@@ -174,9 +179,10 @@ const ChannelPath = (path: string): ChannelPath => {
 ```
 
 #### **DISCRIMINATED UNIONS FOR CONFIGURATION:**
+
 ```typescript
 // ✅ PREFERRED - Compile-time error prevention
-type OutputConfiguration = 
+type OutputConfiguration =
   | { readonly format: "json" }
   | { readonly format: "yaml"; readonly prettyPrint: boolean };
 
@@ -188,13 +194,14 @@ type OutputConfiguration = {
 ```
 
 #### **TYPE GUARDS FOR UNKNOWN DATA:**
+
 ```typescript
 // ✅ REQUIRED - Proper type validation
 function isChannelConfig(data: unknown): data is ChannelConfig {
   return (
-    typeof data === 'object' && 
-    data !== null && 
-    'path' in data && 
+    typeof data === 'object' &&
+    data !== null &&
+    'path' in data &&
     typeof (data as any).path === 'string'
   );
 }
@@ -230,7 +237,7 @@ if (isChannelConfig(rawData)) {
 ### TypeSpec Integration
 
 - **@typespec/compiler** - TypeSpec compiler core
-- **@typespec/*-emitter** - Proper emitter architecture
+- **@typespec/\*-emitter** - Proper emitter architecture
 - **@typespec/versioning** - Optional versioning support
 - Decorator-based API design
 
@@ -433,7 +440,7 @@ git commit -m "
 type(scope): brief description
 
 - Detailed explanation of what was changed
-- Why it was changed (business/technical reason)  
+- Why it was changed (business/technical reason)
 - Any side effects or considerations
 - Link to issues/tickets if applicable
 - Include architectural improvements made
@@ -490,22 +497,26 @@ Assisted-by: <Model-Name> via Crush
 ### **CURRENT STATE (2025-01-22)**
 
 #### **✅ WORKING SYSTEMS**
+
 - **Build System:** FULLY OPERATIONAL - 0 TypeScript compilation errors (from 425)
 - **Justfile Commands:** ALL WORKING - `just build`, `just test`, `just lint`, `just fd`
 - **Core Emitter:** FUNCTIONAL - Basic AsyncAPI 3.0 generation working
 - **Code Duplication:** EXCELLENT - 0.47% (17 clones, 83 lines) - best in class
 
 #### **🟡 PARTIALLY WORKING**
+
 - **Performance Tests:** STABILIZED - Core benchmarks working, advanced tests disabled
 - **Test Infrastructure:** MOSTLY WORKING - Core functionality operational
 - **Type Safety:** IMPROVING - Simplified TypeScript config, zero compilation errors
 
 #### **🔴 CRITICAL ISSUES**
+
 - **Complex Files Disabled:** 5,745 lines of code temporarily removed
 - **TypeSpec Decorator Discovery:** BROKEN - @channel/@publish showing as "Unknown"
 - **Infrastructure Dependencies:** MISSING - Complex type system and validation pipelines
 
 #### **🎯 IMMEDIATE GOALS**
+
 - **Fix Decorator Discovery** - Resolve namespace mismatch issue identified
 - **Establish Clean Build** - Maintain 0 TypeScript compilation errors
 - **Restore Core Infrastructure** - Systematic recovery of complex files
@@ -516,6 +527,7 @@ Assisted-by: <Model-Name> via Crush
 ## 🚀 QUICK START GUIDE
 
 ### **For New Development**
+
 ```bash
 # 1. Setup environment
 git clone https://github.com/LarsArtmann/typespec-asyncapi
@@ -535,6 +547,7 @@ bunx tsp compile examples/complete-example.tsp --emit @lars-artmann/typespec-asy
 ```
 
 ### **For Infrastructure Recovery**
+
 ```bash
 # 1. Check current status
 git status
@@ -638,6 +651,7 @@ git commit -m "Restore PluginSystem infrastructure"
 This AGENTS.md represents the **absolute highest standards** for software development with **ZERO tolerance** for violations, particularly around **type safety** and **'any' type prohibition**.
 
 **NON-NEGOTIABLE REQUIREMENTS:**
+
 - **ZERO 'any' types** - Absolutely forbidden under all circumstances
 - **ZERO 'as' casting** - Use proper type guards and interfaces only
 - **100% TYPE SAFETY** - Compile-time error prevention is mandatory
@@ -645,8 +659,9 @@ This AGENTS.md represents the **absolute highest standards** for software develo
 - **CUSTOMER VALUE FOCUS** - Working functionality over theoretical perfection
 
 **VIOLATION CONSEQUENCES:**
+
 - **Immediate commit rejection** - Any 'any' usage blocks commits
-- **Code review failure** - 'any' types are automatic rejection  
+- **Code review failure** - 'any' types are automatic rejection
 - **Technical debt tracking** - Violations logged as critical debt
 - **Performance impact** - 'any' usage causes performance penalties
 
@@ -654,4 +669,4 @@ This is not just guidelines - this is **absolute mandate** for **architectural e
 
 ---
 
-*Last updated: January 22, 2025 - ZERO 'ANY' TYPES & ARCHITECTURAL EXCELLENCE EDITION*
+_Last updated: January 22, 2025 - ZERO 'ANY' TYPES & ARCHITECTURAL EXCELLENCE EDITION_

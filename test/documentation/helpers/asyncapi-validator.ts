@@ -118,12 +118,8 @@ export class AsyncAPIDocumentationValidator {
 
       // Check for parsing errors
       if (document.diagnostics && document.diagnostics.length > 0) {
-        const errors = document.diagnostics.filter(
-          (d: any) => d.severity === "error",
-        );
-        const warnings = document.diagnostics.filter(
-          (d: any) => d.severity === "warning",
-        );
+        const errors = document.diagnostics.filter((d: any) => d.severity === "error");
+        const warnings = document.diagnostics.filter((d: any) => d.severity === "warning");
 
         result.errors.push(...errors.map((e: any) => e.message));
         if (includeWarnings) {
@@ -141,9 +137,7 @@ export class AsyncAPIDocumentationValidator {
       for (const rule of customRules) {
         const ruleErrors = rule.validate(asyncapi);
         if (ruleErrors.length > 0) {
-          result.errors.push(
-            ...ruleErrors.map((error) => `${rule.name}: ${error}`),
-          );
+          result.errors.push(...ruleErrors.map((error) => `${rule.name}: ${error}`));
         }
       }
 
@@ -173,9 +167,7 @@ export class AsyncAPIDocumentationValidator {
 
     // Validate AsyncAPI version
     if (expectations.version && asyncapi.asyncapi !== expectations.version) {
-      errors.push(
-        `Expected AsyncAPI version ${expectations.version}, got ${asyncapi.asyncapi}`,
-      );
+      errors.push(`Expected AsyncAPI version ${expectations.version}, got ${asyncapi.asyncapi}`);
     }
 
     // Validate info section
@@ -183,18 +175,12 @@ export class AsyncAPIDocumentationValidator {
       if (!asyncapi.info) {
         errors.push("Missing info section");
       } else {
-        if (
-          expectations.info.title &&
-          asyncapi.info.title !== expectations.info.title
-        ) {
+        if (expectations.info.title && asyncapi.info.title !== expectations.info.title) {
           errors.push(
             `Expected info.title "${expectations.info.title}", got "${asyncapi.info.title}"`,
           );
         }
-        if (
-          expectations.info.version &&
-          asyncapi.info.version !== expectations.info.version
-        ) {
+        if (expectations.info.version && asyncapi.info.version !== expectations.info.version) {
           errors.push(
             `Expected info.version "${expectations.info.version}", got "${asyncapi.info.version}"`,
           );
@@ -214,9 +200,7 @@ export class AsyncAPIDocumentationValidator {
     if (expectations.channelCount !== undefined) {
       const actualChannelCount = Object.keys(asyncapi.channels || {}).length;
       if (actualChannelCount !== expectations.channelCount) {
-        errors.push(
-          `Expected ${expectations.channelCount} channels, got ${actualChannelCount}`,
-        );
+        errors.push(`Expected ${expectations.channelCount} channels, got ${actualChannelCount}`);
       }
     }
 
@@ -232,9 +216,7 @@ export class AsyncAPIDocumentationValidator {
 
     // Validate operations
     if (expectations.operationCount !== undefined) {
-      const actualOperationCount = Object.keys(
-        asyncapi.operations || {},
-      ).length;
+      const actualOperationCount = Object.keys(asyncapi.operations || {}).length;
       if (actualOperationCount !== expectations.operationCount) {
         errors.push(
           `Expected ${expectations.operationCount} operations, got ${actualOperationCount}`,
@@ -248,9 +230,7 @@ export class AsyncAPIDocumentationValidator {
         (name) => !actualOperationNames.includes(name),
       );
       if (missingOperations.length > 0) {
-        errors.push(
-          `Missing expected operations: ${missingOperations.join(", ")}`,
-        );
+        errors.push(`Missing expected operations: ${missingOperations.join(", ")}`);
       }
     }
 
@@ -259,9 +239,7 @@ export class AsyncAPIDocumentationValidator {
       if (!asyncapi.servers) {
         errors.push("Expected servers configuration, but none found");
       } else {
-        for (const [serverName, serverConfig] of Object.entries(
-          expectations.servers,
-        )) {
+        for (const [serverName, serverConfig] of Object.entries(expectations.servers)) {
           if (!asyncapi.servers[serverName]) {
             errors.push(`Missing expected server: ${serverName}`);
           }
@@ -276,9 +254,7 @@ export class AsyncAPIDocumentationValidator {
         (name) => !actualSchemas.includes(name),
       );
       if (missingSchemas.length > 0) {
-        errors.push(
-          `Missing expected component schemas: ${missingSchemas.join(", ")}`,
-        );
+        errors.push(`Missing expected component schemas: ${missingSchemas.join(", ")}`);
       }
     }
 
@@ -289,9 +265,7 @@ export class AsyncAPIDocumentationValidator {
         (name) => !actualMessages.includes(name),
       );
       if (missingMessages.length > 0) {
-        errors.push(
-          `Missing expected component messages: ${missingMessages.join(", ")}`,
-        );
+        errors.push(`Missing expected component messages: ${missingMessages.join(", ")}`);
       }
     }
 
@@ -301,22 +275,15 @@ export class AsyncAPIDocumentationValidator {
   /**
    * Perform semantic validation beyond schema validation
    */
-  private async performSemanticValidation(
-    asyncapi: AsyncAPIObject,
-  ): Promise<string[]> {
+  private async performSemanticValidation(asyncapi: AsyncAPIObject): Promise<string[]> {
     const errors: string[] = [];
 
     // Validate that all channel references in operations exist
     if (asyncapi.operations) {
-      for (const [operationId, operation] of Object.entries(
-        asyncapi.operations,
-      )) {
+      for (const [operationId, operation] of Object.entries(asyncapi.operations)) {
         if (operation.channel) {
           const channelRef = operation.channel.$ref || operation.channel;
-          if (
-            typeof channelRef === "string" &&
-            channelRef.startsWith("#/channels/")
-          ) {
+          if (typeof channelRef === "string" && channelRef.startsWith("#/channels/")) {
             const channelName = channelRef.replace("#/channels/", "");
             if (!asyncapi.channels || !asyncapi.channels[channelName]) {
               errors.push(
@@ -332,20 +299,12 @@ export class AsyncAPIDocumentationValidator {
     if (asyncapi.channels) {
       for (const [channelName, channel] of Object.entries(asyncapi.channels)) {
         if (channel.messages) {
-          for (const [messageKey, message] of Object.entries(
-            channel.messages,
-          )) {
+          for (const [messageKey, message] of Object.entries(channel.messages)) {
             if (typeof message === "object" && message.$ref) {
               const messageRef = message.$ref;
               if (messageRef.startsWith("#/components/messages/")) {
-                const messageName = messageRef.replace(
-                  "#/components/messages/",
-                  "",
-                );
-                if (
-                  !asyncapi.components?.messages ||
-                  !asyncapi.components.messages[messageName]
-                ) {
+                const messageName = messageRef.replace("#/components/messages/", "");
+                if (!asyncapi.components?.messages || !asyncapi.components.messages[messageName]) {
                   errors.push(
                     `Channel '${channelName}' references non-existent message '${messageName}'`,
                   );
@@ -367,13 +326,10 @@ export class AsyncAPIDocumentationValidator {
     return [
       {
         name: "TypeSpec AsyncAPI Version",
-        description:
-          "Ensures AsyncAPI version is 3.0.0 as generated by TypeSpec",
+        description: "Ensures AsyncAPI version is 3.0.0 as generated by TypeSpec",
         validate: (asyncapi: AsyncAPIObject): string[] => {
           if (asyncapi.asyncapi !== "3.0.0") {
-            return [
-              `Expected AsyncAPI version 3.0.0, got ${asyncapi.asyncapi}`,
-            ];
+            return [`Expected AsyncAPI version 3.0.0, got ${asyncapi.asyncapi}`];
           }
           return [];
         },
@@ -390,9 +346,7 @@ export class AsyncAPIDocumentationValidator {
 
           const requiredSections = ["schemas", "messages", "securitySchemes"];
           for (const section of requiredSections) {
-            if (
-              !asyncapi.components[section as keyof typeof asyncapi.components]
-            ) {
+            if (!asyncapi.components[section as keyof typeof asyncapi.components]) {
               errors.push(`Missing components.${section} section`);
             }
           }

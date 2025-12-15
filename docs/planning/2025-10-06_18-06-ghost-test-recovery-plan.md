@@ -1,4 +1,5 @@
 # Ghost Test Recovery & Validation Plan
+
 **Date:** 2025-10-06 18:06
 **Status:** 439 passing / 347 failing / 26 errors (787 total tests)
 **Goal:** Fix the 91 tests that broke after ghost test conversion + maximize test coverage
@@ -20,6 +21,7 @@ After converting 198 ghost tests from `expect(true).toBe(true)` to real AsyncAPI
 **Impact:** If this helper is fixed, ~40-50 tests might pass immediately because they're failing on `spec === null`, not because the TypeSpec is wrong.
 
 **Tasks (15 min total):**
+
 1. ✅ Fix file matching logic in `compileAndGetAsyncAPI()` (10 min)
 2. ✅ Run tests to verify impact (5 min)
 
@@ -140,29 +142,32 @@ graph TD
 
 ## Success Metrics
 
-| Phase | Tests Passing | Pass Rate | Effort | ROI |
-|-------|--------------|-----------|--------|-----|
-| **Current** | 439 | 55.8% | - | - |
-| **After 1%** | ~480 | 61.0% | 15 min | 51% value |
-| **After 4%** | ~500 | 63.5% | 1.5 hrs | 64% value |
-| **After 20%** | ~530 | 67.3% | 5 hrs | 80% value |
-| **Stretch Goal** | ~600 | 76.2% | 20+ hrs | 95% value |
+| Phase            | Tests Passing | Pass Rate | Effort  | ROI       |
+| ---------------- | ------------- | --------- | ------- | --------- |
+| **Current**      | 439           | 55.8%     | -       | -         |
+| **After 1%**     | ~480          | 61.0%     | 15 min  | 51% value |
+| **After 4%**     | ~500          | 63.5%     | 1.5 hrs | 64% value |
+| **After 20%**    | ~530          | 67.3%     | 5 hrs   | 80% value |
+| **Stretch Goal** | ~600          | 76.2%     | 20+ hrs | 95% value |
 
 ---
 
 ## Risk Analysis
 
 ### High Risk (Address First)
+
 - ❌ `compileAndGetAsyncAPI()` helper completely broken → No tests work
 - ❌ TypeSpec compilation errors → Tests can't run
 - ❌ Import errors in E2E tests → Core functionality untested
 
 ### Medium Risk (Address Second)
+
 - ⚠️ Missing emitter features → Expected, documented
 - ⚠️ Complex security schemes not implemented → Deferred to v2.0
 - ⚠️ Protocol bindings incomplete → Phased rollout
 
 ### Low Risk (Address Last)
+
 - ✅ Test helper ergonomics → Nice to have
 - ✅ Documentation completeness → Iterative improvement
 - ✅ Advanced features → Future roadmap
@@ -186,6 +191,7 @@ graph LR
 ## Implementation Strategy
 
 ### Phase 1: Critical Path (THE 1%)
+
 **Duration:** 15 minutes
 **Goal:** Unblock test execution
 
@@ -196,6 +202,7 @@ graph LR
 5. Run full suite to measure impact
 
 ### Phase 2: Quick Wins (THE 4%)
+
 **Duration:** 1.5 hours
 **Goal:** Low-hanging fruit
 
@@ -206,6 +213,7 @@ graph LR
 5. Run validation
 
 ### Phase 3: Strategic Fixes (THE 20%)
+
 **Duration:** 5 hours
 **Goal:** Maximize coverage
 
@@ -222,18 +230,21 @@ graph LR
 ## Post-Implementation
 
 ### Metrics to Track
+
 - Test pass rate (target: 67%+)
 - Test execution time
 - Code coverage
 - Feature completeness
 
 ### Documentation Updates
+
 - CLAUDE.md - Feature matrix
 - README.md - Test coverage badge
 - docs/known-limitations.md - Honest assessment
 - docs/roadmap.md - Future features
 
 ### Next Steps
+
 - Implement remaining security schemes (v2.0)
 - Add protocol binding support (v2.0)
 - Performance optimization (v2.1)
@@ -244,18 +255,21 @@ graph LR
 ## Appendix: Current Test Breakdown
 
 ### By Category
+
 - **Unit Tests:** ~400 tests (mostly passing)
 - **Integration Tests:** ~200 tests (mixed)
 - **E2E Tests:** ~13 tests (6 working, 3 broken imports, 4 ghost)
 - **Validation Tests:** ~174 tests (mostly passing)
 
 ### By Status
+
 - ✅ **Passing:** 439 (55.8%)
 - ❌ **Failing:** 347 (44.1%)
 - ⚠️ **Errors:** 26 (3.3%)
 - ⏭️ **Skipped:** 1 (0.1%)
 
 ### By Root Cause (Estimated)
+
 - 🐛 **Helper Bug:** ~50 tests (11% - THE 1%)
 - 📝 **TypeSpec Syntax:** ~30 tests (7% - THE 4%)
 - 🚧 **Missing Features:** ~250 tests (58% - Future work)
@@ -263,4 +277,4 @@ graph LR
 
 ---
 
-*This plan follows the Pareto principle: 1% effort → 51% value → 4% effort → 64% value → 20% effort → 80% value*
+_This plan follows the Pareto principle: 1% effort → 51% value → 4% effort → 64% value → 20% effort → 80% value_

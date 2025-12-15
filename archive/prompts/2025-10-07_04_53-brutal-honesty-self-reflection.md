@@ -11,31 +11,37 @@
 Before you start working on any task, answer these questions with BRUTAL HONESTY:
 
 ### 1. What's The REAL Problem?
+
 - What am I ACTUALLY trying to solve?
 - Is this the ROOT CAUSE or just a SYMPTOM?
 - Have I verified this is still a problem (not cached/stale data)?
 
 ### 2. Is This A Ghost System?
+
 - Does this elaborate code work around a simpler problem?
 - Is there a TODO comment nearby saying "this doesn't work"?
 - Am I about to add MORE complexity to a broken foundation?
 
 ### 3. Should I Even Be Doing This?
+
 - What did yesterday's summary say was #1 priority?
 - Is THIS that priority, or am I getting distracted?
 - If I'm changing priorities, have I DOCUMENTED why?
 
 ### 4. Have I Validated My Assumptions?
+
 - Am I assuming cached data is current?
 - Am I assuming tests pass for the right reasons?
 - Have I run with CLEAN STATE to verify?
 
 ### 5. What's My Exit Strategy?
+
 - If this takes >30 minutes, what will I do?
 - Have I set a timer?
 - Will I stop and ask for help, or keep digging?
 
 ### 6. Am I Being Honest About Technical Debt?
+
 - Is there a TODO I'm ignoring?
 - Am I adding code to work around it?
 - Should I fix/remove/document instead?
@@ -100,6 +106,7 @@ Found a problem/bug/issue
 **Scenario:** Tests are failing with "file not found"
 
 ### ❌ Bad Approach (Ghost System):
+
 ```
 1. Add more file search paths
 2. Try different file extensions
@@ -111,6 +118,7 @@ Found a problem/bug/issue
 Result: 200 lines of workaround code, problem not solved
 
 ### ✅ Good Approach (Brutal Honesty):
+
 ```
 1. WHY are files not found?
    → Emitter outputs to: tsp-test/@org/pkg/AsyncAPI.yaml

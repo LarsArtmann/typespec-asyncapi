@@ -129,9 +129,7 @@ describe("Documentation: Protocol Bindings Mapping", () => {
               description: "Validates protocol binding completeness",
               validate: (asyncapi) => {
                 const errors: string[] = [];
-                for (const [channelName, channel] of Object.entries(
-                  asyncapi.channels || {},
-                )) {
+                for (const [channelName, channel] of Object.entries(asyncapi.channels || {})) {
                   // NOTE: Alpha version doesn't support protocol bindings
                   // if (!channel.bindings) {
                   //   errors.push(`Channel ${channelName} missing protocol bindings`)

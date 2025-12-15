@@ -7,6 +7,7 @@
 ## 📋 Quick Installation (Recommended)
 
 ### Prerequisites Check
+
 ```bash
 # Verify Node.js version (required: >=20.0.0)
 node --version  # Should show v20.x.x or higher
@@ -18,6 +19,7 @@ npm --version   # Alternative: >=9.0.0
 ```
 
 ### Install TypeSpec AsyncAPI Emitter
+
 ```bash
 # Using Bun (recommended - faster)
 bun add @larsartmann/typespec-asyncapi
@@ -32,6 +34,7 @@ bun add -D @typespec/compiler
 ```
 
 ### Verify Installation
+
 ```bash
 # Check TypeSpec compiler
 bunx tsp --version
@@ -47,6 +50,7 @@ bunx tsp compile --help | grep asyncapi
 ### 🖥️ Windows Installation
 
 #### Using PowerShell (Recommended)
+
 ```powershell
 # 1. Install Node.js (if not installed)
 # Download from: https://nodejs.org/en/download/
@@ -66,6 +70,7 @@ bunx tsp --version
 ```
 
 #### Using CMD
+
 ```cmd
 REM 1. Install Node.js first (nodejs.org)
 REM 2. Install using npm
@@ -77,6 +82,7 @@ bunx tsp --version
 ```
 
 #### Windows Subsystem for Linux (WSL)
+
 ```bash
 # Use Linux installation instructions below
 ```
@@ -84,6 +90,7 @@ bunx tsp --version
 ### 🐧 Linux Installation
 
 #### Ubuntu/Debian
+
 ```bash
 # 1. Update system
 sudo apt update
@@ -106,6 +113,7 @@ bun --version
 ```
 
 #### CentOS/RHEL/Fedora
+
 ```bash
 # 1. Install Node.js 20+
 sudo dnf install nodejs npm
@@ -131,6 +139,7 @@ bunx tsp --version
 ```
 
 #### Alpine Linux (Docker)
+
 ```bash
 # 1. Install Node.js and npm
 apk add --no-cache nodejs npm
@@ -146,6 +155,7 @@ bunx tsp --version
 ### 🍎 macOS Installation
 
 #### Using Homebrew (Recommended)
+
 ```bash
 # 1. Install Node.js
 brew install node
@@ -165,6 +175,7 @@ bunx tsp --version
 ```
 
 #### Using MacPorts
+
 ```bash
 # 1. Install Node.js
 sudo port install nodejs20
@@ -179,6 +190,7 @@ bun add -D @typespec/compiler
 ```
 
 #### Using Direct Download
+
 ```bash
 # 1. Download and install Node.js from nodejs.org
 # 2. Install Bun
@@ -194,6 +206,7 @@ bun add -D @typespec/compiler
 ## 🐳 Docker Installation
 
 ### Official Docker Image
+
 ```dockerfile
 # Use the official Node.js image
 FROM node:20-alpine
@@ -219,6 +232,7 @@ CMD ["bunx", "tsp", "compile", "."]
 ```
 
 ### Docker Compose Setup
+
 ```yaml
 # docker-compose.yml
 version: '3.8'
@@ -238,6 +252,7 @@ volumes:
 ```
 
 ### Run with Docker
+
 ```bash
 # Build and run
 docker-compose up --build
@@ -255,6 +270,7 @@ docker run -v $(pwd):/app -w /app node:20-alpine sh -c "
 ## 🏢 CI/CD Installation
 
 ### GitHub Actions
+
 ```yaml
 # .github/workflows/typespec-build.yml
 name: TypeSpec Build
@@ -263,34 +279,34 @@ on: [push, pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          
+
       - name: Setup Bun
         uses: oven-sh/setup-bun@v1
         with:
           bun-version: latest
-          
+
       - name: Install dependencies
         run: |
           bun install
           bun add -D @typespec/compiler
-          
+
       - name: Install TypeSpec AsyncAPI
         run: bun add @larsartmann/typespec-asyncapi
-        
+
       - name: Verify installation
         run: bunx tsp --version
-        
+
       - name: Compile TypeSpec
         run: bunx tsp compile . --emit @larsartmann/typespec-asyncapi
-        
+
       - name: Validate AsyncAPI output
         run: |
           bun add -g @asyncapi/cli
@@ -298,6 +314,7 @@ jobs:
 ```
 
 ### GitLab CI
+
 ```yaml
 # .gitlab-ci.yml
 image: node:20-alpine
@@ -337,15 +354,16 @@ validate:
 ```
 
 ### Jenkins Pipeline
+
 ```groovy
 // Jenkinsfile
 pipeline {
     agent any
-    
+
     tools {
         nodejs '20'
     }
-    
+
     stages {
         stage('Setup') {
             steps {
@@ -353,7 +371,7 @@ pipeline {
                 sh 'bun --version'
             }
         }
-        
+
         stage('Install Dependencies') {
             steps {
                 sh 'bun install'
@@ -361,19 +379,19 @@ pipeline {
                 sh 'bun add @larsartmann/typespec-asyncapi'
             }
         }
-        
+
         stage('Verify Installation') {
             steps {
                 sh 'bunx tsp --version'
             }
         }
-        
+
         stage('Build') {
             steps {
                 sh 'bunx tsp compile . --emit @larsartmann/typespec-asyncapi'
             }
         }
-        
+
         stage('Validate') {
             steps {
                 sh 'bun add -g @asyncapi/cli'
@@ -381,7 +399,7 @@ pipeline {
             }
         }
     }
-    
+
     post {
         always {
             archiveArtifacts artifacts: 'tsp-output/**/*', allowEmptyArchive: true
@@ -395,6 +413,7 @@ pipeline {
 ## 🔧 Advanced Installation Options
 
 ### Development Installation
+
 ```bash
 # Clone the repository for development
 git clone https://github.com/LarsArtmann/typespec-asyncapi.git
@@ -414,6 +433,7 @@ bun link @larsartmann/typespec-asyncapi
 ```
 
 ### Global Installation
+
 ```bash
 # Install TypeSpec compiler globally
 bun add -g @typespec/compiler
@@ -426,6 +446,7 @@ tsp --version
 ```
 
 ### Specific Version Installation
+
 ```bash
 # Install specific version
 bun add @larsartmann/typespec-asyncapi@0.1.0-alpha
@@ -442,6 +463,7 @@ npm view @larsartmann/typespec-asyncapi versions --json
 ## ✅ Installation Verification
 
 ### Basic Verification
+
 ```bash
 # 1. Check Node.js version
 node --version
@@ -465,6 +487,7 @@ bun list | grep typespec
 ```
 
 ### Comprehensive Verification
+
 ```bash
 # Create test TypeSpec file
 cat > test.tsp << 'EOF'
@@ -473,7 +496,7 @@ import "@larsartmann/typespec-asyncapi";
 using TypeSpec.AsyncAPI;
 
 @server("production", {
-  url: "kafka://localhost:9092", 
+  url: "kafka://localhost:9092",
   protocol: "kafka"
 })
 namespace TestNamespace;
@@ -509,6 +532,7 @@ rm -rf tsp-output
 ## 🚨 Troubleshooting Common Issues
 
 ### Node.js Version Issues
+
 ```bash
 # Problem: Node.js version too old
 node --version  # Shows v18.x or lower
@@ -523,6 +547,7 @@ nvm use 20
 ```
 
 ### Permission Issues (Linux/macOS)
+
 ```bash
 # Problem: EACCES errors during installation
 
@@ -537,6 +562,7 @@ source ~/.bashrc
 ```
 
 ### Windows PATH Issues
+
 ```powershell
 # Problem: 'bunx' or 'tsp' not found
 
@@ -549,6 +575,7 @@ bunx --version
 ```
 
 ### TypeSpec Compiler Not Found
+
 ```bash
 # Problem: Cannot find module '@typespec/compiler'
 
@@ -560,6 +587,7 @@ bunx tsp --version
 ```
 
 ### Emitter Not Found
+
 ```bash
 # Problem: Unknown emitter "@larsartmann/typespec-asyncapi"
 
@@ -575,6 +603,7 @@ cat package.json | grep typespec-asyncapi
 ```
 
 ### Memory Issues During Installation
+
 ```bash
 # Problem: JavaScript heap out of memory
 
@@ -587,6 +616,7 @@ $env:NODE_OPTIONS = "--max-old-space-size=4096"
 ```
 
 ### Corporate Firewall Issues
+
 ```bash
 # Problem: Cannot download packages
 
@@ -606,16 +636,19 @@ npm config set registry https://registry.yarnpkg.com/
 ## 📞 Getting Help
 
 ### Documentation
+
 - **GitHub Repository**: https://github.com/LarsArtmann/typespec-asyncapi
 - **API Documentation**: [Generated TypeDoc](./api/index.html)
 - **Examples**: [Example Projects](../examples/)
 
 ### Community Support
+
 - **GitHub Issues**: Report bugs and request features
 - **GitHub Discussions**: Community Q&A and discussions
 - **TypeSpec Discord**: #asyncapi channel
 
 ### Professional Support
+
 - **Enterprise Support**: Available for production deployments
 - **Custom Development**: Plugin development and customization
 - **Training**: TypeSpec and AsyncAPI training programs
@@ -633,5 +666,5 @@ After successful installation:
 
 ---
 
-*Installation Guide Last Updated: September 2, 2025*  
-*For the latest installation instructions, visit: https://github.com/LarsArtmann/typespec-asyncapi*
+_Installation Guide Last Updated: September 2, 2025_  
+_For the latest installation instructions, visit: https://github.com/LarsArtmann/typespec-asyncapi_

@@ -48,9 +48,7 @@ describe("Documentation: README and Quick Reference Validation", () => {
 
         const channels = result.asyncapi!.channels!;
         expect(channels["simple-channel"]).toBeDefined();
-        expect(
-          channels["parameterized/{userId}/events/{eventType}"],
-        ).toBeDefined();
+        expect(channels["parameterized/{userId}/events/{eventType}"]).toBeDefined();
       });
 
       it("THEN should validate @publish and @subscribe decorators", async () => {
@@ -77,9 +75,7 @@ describe("Documentation: README and Quick Reference Validation", () => {
         });
 
         expect(result.asyncapi!.operations!.publishEvent.action).toBe("send");
-        expect(result.asyncapi!.operations!.subscribeEvent.action).toBe(
-          "receive",
-        );
+        expect(result.asyncapi!.operations!.subscribeEvent.action).toBe("receive");
       });
     });
 
@@ -148,8 +144,7 @@ describe("Documentation: README and Quick Reference Validation", () => {
           emitAsyncAPI: true,
         });
 
-        const schema =
-          result.asyncapi!.components!.schemas!.UserRegisteredEvent;
+        const schema = result.asyncapi!.components!.schemas!.UserRegisteredEvent;
         expect(schema.properties!.userId).toEqual({ type: "string" });
         expect(schema.properties!.registeredAt).toEqual({
           type: "string",
@@ -189,8 +184,7 @@ describe("Documentation: README and Quick Reference Validation", () => {
           emitAsyncAPI: true,
         });
 
-        const command =
-          result.asyncapi!.components!.schemas!.CreateOrderCommand;
+        const command = result.asyncapi!.components!.schemas!.CreateOrderCommand;
         expect(command.properties!.customerId).toEqual({ type: "string" });
         expect(command.properties!.items).toEqual({
           type: "array",
@@ -223,8 +217,7 @@ describe("Documentation: README and Quick Reference Validation", () => {
         });
 
         // Check if OrderCreatedEvent exists and test inheritance
-        const orderCreatedEvent =
-          result.asyncapi!.components!.schemas!.OrderCreatedEvent;
+        const orderCreatedEvent = result.asyncapi!.components!.schemas!.OrderCreatedEvent;
         if (orderCreatedEvent) {
           expect(orderCreatedEvent.properties!.eventId).toBeDefined();
           expect(orderCreatedEvent.properties!.eventType).toBeDefined();
@@ -406,9 +399,7 @@ describe("Documentation: README and Quick Reference Validation", () => {
           });
 
           if (result.diagnostics.length > 0) {
-            const errors = result.diagnostics.filter(
-              (d) => d.severity === "error",
-            );
+            const errors = result.diagnostics.filter((d) => d.severity === "error");
             expect(errors.length).toBeGreaterThan(0);
           }
         } catch (error) {
@@ -441,9 +432,7 @@ describe("Documentation: README and Quick Reference Validation", () => {
           if (result.asyncapi) {
             expect(result.asyncapi).toBeDefined();
           } else if (result.diagnostics.length > 0) {
-            expect(result.diagnostics.some((d) => d.severity === "error")).toBe(
-              true,
-            );
+            expect(result.diagnostics.some((d) => d.severity === "error")).toBe(true);
           }
         } catch (error) {
           expect(error).toBeDefined();
@@ -472,12 +461,9 @@ describe("Documentation: README and Quick Reference Validation", () => {
           compiler.validateCompilationSuccess(result);
           expect(result.asyncapi).toBeDefined();
 
-          const validation = await validator.validateAsyncAPI(
-            result.asyncapi!,
-            {
-              strict: true,
-            },
-          );
+          const validation = await validator.validateAsyncAPI(result.asyncapi!, {
+            strict: true,
+          });
           expect(validation.isValid).toBe(true);
         }
       });

@@ -236,11 +236,7 @@ const VALIDATION_TEST_SCENARIOS: TestScenario[] = [
 
 describe("🚨 CRITICAL: AUTOMATED ASYNCAPI SPECIFICATION VALIDATION", () => {
   let validator: AsyncAPIValidator;
-  const testOutputDir = join(
-    process.cwd(),
-    "test-output",
-    "automated-validation",
-  );
+  const testOutputDir = join(process.cwd(), "test-output", "automated-validation");
   const generatedSpecs: Array<{
     filePath: string;
     scenario: string;
@@ -287,16 +283,11 @@ describe("🚨 CRITICAL: AUTOMATED ASYNCAPI SPECIFICATION VALIDATION", () => {
           const testStartTime = performance.now();
 
           // Step 1: Generate AsyncAPI specification
-          Effect.log(
-            `  📄 Generating ${format.toUpperCase()} specification...`,
-          );
-          const compilationResult = await compileAsyncAPISpecWithResult(
-            scenario.source,
-            {
-              "file-type": format,
-              "output-file": scenario.name,
-            },
-          );
+          Effect.log(`  📄 Generating ${format.toUpperCase()} specification...`);
+          const compilationResult = await compileAsyncAPISpecWithResult(scenario.source, {
+            "file-type": format,
+            "output-file": scenario.name,
+          });
 
           expect(compilationResult.result.outputFiles).toBeDefined();
           expect(compilationResult.result.outputFiles.size).toBeGreaterThan(0);
@@ -311,9 +302,7 @@ describe("🚨 CRITICAL: AUTOMATED ASYNCAPI SPECIFICATION VALIDATION", () => {
               compilationResult.result.outputFiles,
               fileName,
             );
-            console.log(
-              `🔍 DEBUG: parseAsyncAPIOutput returned for ${fileName}: ${typeof parsed}`,
-            );
+            console.log(`🔍 DEBUG: parseAsyncAPIOutput returned for ${fileName}: ${typeof parsed}`);
             if (typeof parsed === "object") {
               console.log(
                 `🔍 DEBUG: parseAsyncAPIOutput object keys: ${Object.keys(parsed).join(", ")}`,
@@ -333,17 +322,13 @@ describe("🚨 CRITICAL: AUTOMATED ASYNCAPI SPECIFICATION VALIDATION", () => {
           // Step 3: Write spec to file system for file validation
           const filePath = join(testOutputDir, fileName);
           const fileContent =
-            format === "json"
-              ? JSON.stringify(parsedSpec, null, 2)
-              : String(parsedSpec);
+            format === "json" ? JSON.stringify(parsedSpec, null, 2) : String(parsedSpec);
 
           await writeFile(filePath, fileContent);
           generatedSpecs.push({ filePath, scenario: scenario.name, format });
 
           // Step 4: CRITICAL VALIDATION - Spec MUST be valid
-          Effect.log(
-            `  ✅ Validating ${fileName} against AsyncAPI 3.0.0 schema...`,
-          );
+          Effect.log(`  ✅ Validating ${fileName} against AsyncAPI 3.0.0 schema...`);
 
           const validationResult = await validator.validateFile(filePath);
           const validationDuration = performance.now() - testStartTime;
@@ -352,9 +337,7 @@ describe("🚨 CRITICAL: AUTOMATED ASYNCAPI SPECIFICATION VALIDATION", () => {
           expect(validationResult.valid).toBe(true);
           expect(validationResult.errors).toHaveLength(0);
           expect(validationResult.metrics.duration).toBeLessThan(500); // <500ms requirement for real AsyncAPI parser
-          expect(validationResult.summary).toContain(
-            "AsyncAPI document is valid",
-          );
+          expect(validationResult.summary).toContain("AsyncAPI document is valid");
 
           Effect.log(
             `    ✅ VALID: ${scenario.name}.${format} (${validationResult.metrics.duration.toFixed(2)}ms)`,
@@ -364,9 +347,7 @@ describe("🚨 CRITICAL: AUTOMATED ASYNCAPI SPECIFICATION VALIDATION", () => {
           if (isSuccess(validationResult)) {
             const channelCount = getChannelCount(validationResult.value);
             const operationCount = getOperationCount(validationResult.value);
-            Effect.log(
-              `    📊 Channels: ${channelCount}, Operations: ${operationCount}`,
-            );
+            Effect.log(`    📊 Channels: ${channelCount}, Operations: ${operationCount}`);
           }
 
           // Verify document structure meets AsyncAPI 3.0.0 requirements
@@ -383,25 +364,18 @@ describe("🚨 CRITICAL: AUTOMATED ASYNCAPI SPECIFICATION VALIDATION", () => {
               expect(Object.keys(doc.operations).length).toBeGreaterThan(0);
 
               // Validate all operation channel references
-              for (const [opName, operation] of Object.entries(
-                doc.operations,
-              )) {
+              for (const [opName, operation] of Object.entries(doc.operations)) {
                 expect(operation).toHaveProperty("action");
                 expect(operation).toHaveProperty("channel");
                 expect(operation.channel).toHaveProperty("$ref");
 
-                const channelRef = operation.channel.$ref.replace(
-                  "#/channels/",
-                  "",
-                );
+                const channelRef = operation.channel.$ref.replace("#/channels/", "");
                 expect(doc.channels).toHaveProperty(channelRef);
               }
             }
           }
 
-          Effect.log(
-            `    ⏱️  Total test time: ${validationDuration.toFixed(2)}ms`,
-          );
+          Effect.log(`    ⏱️  Total test time: ${validationDuration.toFixed(2)}ms`);
         }
 
         Effect.log(`✅ ${scenario.name} - ALL FORMATS VALID`);
@@ -412,14 +386,10 @@ describe("🚨 CRITICAL: AUTOMATED ASYNCAPI SPECIFICATION VALIDATION", () => {
 
   describe("🔍 Batch Validation of All Generated Specs", () => {
     it("should validate all generated specifications in a single batch", async () => {
-      Effect.log(
-        "\n🏭 Running batch validation of all generated specifications...",
-      );
+      Effect.log("\n🏭 Running batch validation of all generated specifications...");
 
       if (generatedSpecs.length === 0) {
-        throw new Error(
-          "No specifications were generated for batch validation",
-        );
+        throw new Error("No specifications were generated for batch validation");
       }
 
       const batchStartTime = performance.now();
@@ -450,9 +420,7 @@ describe("🚨 CRITICAL: AUTOMATED ASYNCAPI SPECIFICATION VALIDATION", () => {
           console.error(`❌ INVALID SPEC: ${spec.scenario}.${spec.format}`);
           console.error("Validation Errors:");
           result.errors.forEach((error) => {
-            console.error(
-              `  - ${error.message} (${error.keyword}) at ${error.instancePath}`,
-            );
+            console.error(`  - ${error.message} (${error.keyword}) at ${error.instancePath}`);
           });
 
           throw new Error(
@@ -466,8 +434,7 @@ describe("🚨 CRITICAL: AUTOMATED ASYNCAPI SPECIFICATION VALIDATION", () => {
       const batchDuration = performance.now() - batchStartTime;
       const totalSpecs = batchResults.length;
       const validSpecs = batchResults.filter((r) => r.valid).length;
-      const avgValidationTime =
-        batchResults.reduce((sum, r) => sum + r.duration, 0) / totalSpecs;
+      const avgValidationTime = batchResults.reduce((sum, r) => sum + r.duration, 0) / totalSpecs;
 
       // Performance requirements
       expect(batchDuration).toBeLessThan(5000); // Total batch validation <5 seconds
@@ -479,12 +446,8 @@ describe("🚨 CRITICAL: AUTOMATED ASYNCAPI SPECIFICATION VALIDATION", () => {
       Effect.log(`  ✅ Valid Specifications: ${validSpecs}`);
       Effect.log(`  ❌ Invalid Specifications: ${totalSpecs - validSpecs}`);
       Effect.log(`  ⏱️  Total Validation Time: ${batchDuration.toFixed(2)}ms`);
-      Effect.log(
-        `  ⚡ Average Validation Time: ${avgValidationTime.toFixed(2)}ms`,
-      );
-      Effect.log(
-        `  📈 Success Rate: ${((validSpecs / totalSpecs) * 100).toFixed(1)}%`,
-      );
+      Effect.log(`  ⚡ Average Validation Time: ${avgValidationTime.toFixed(2)}ms`);
+      Effect.log(`  📈 Success Rate: ${((validSpecs / totalSpecs) * 100).toFixed(1)}%`);
 
       // Detailed results
       Effect.log("\n📋 Individual Results:");
@@ -552,9 +515,7 @@ describe("🚨 CRITICAL: AUTOMATED ASYNCAPI SPECIFICATION VALIDATION", () => {
         Effect.log(`  🧪 Testing invalid spec: ${invalidSpec.name}`);
 
         // 🔥 DEBUG: Check type before passing to validator
-        console.log(
-          `🔍 DEBUG: invalidSpec.document type: ${typeof invalidSpec.document}`,
-        );
+        console.log(`🔍 DEBUG: invalidSpec.document type: ${typeof invalidSpec.document}`);
         console.log(`🔍 DEBUG: invalidSpec.document:`, invalidSpec.document);
 
         const result = await validator.validate(invalidSpec.document);
@@ -579,9 +540,7 @@ describe("🚨 CRITICAL: AUTOMATED ASYNCAPI SPECIFICATION VALIDATION", () => {
           ),
         ).toBe(true);
 
-        Effect.log(
-          `    ❌ Correctly identified as invalid (${result.errors.length} errors)`,
-        );
+        Effect.log(`    ❌ Correctly identified as invalid (${result.errors.length} errors)`);
         Effect.log(`    🔍 Error: ${result.errors[0].message}`);
       }
 
@@ -668,8 +627,7 @@ describe("🚨 CRITICAL: AUTOMATED ASYNCAPI SPECIFICATION VALIDATION", () => {
         validationTimes.push(duration);
       }
 
-      const avgTime =
-        validationTimes.reduce((sum, time) => sum + time, 0) / iterations;
+      const avgTime = validationTimes.reduce((sum, time) => sum + time, 0) / iterations;
       const maxTime = Math.max(...validationTimes);
       const minTime = Math.min(...validationTimes);
 

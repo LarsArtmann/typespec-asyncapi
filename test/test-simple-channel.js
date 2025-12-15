@@ -42,9 +42,7 @@ op testOp(): void;
 
 testSimpleChannel()
   .then((diagnostics) => {
-    const missingImpl = diagnostics.filter(
-      (d) => d.code === "missing-implementation",
-    );
+    const missingImpl = diagnostics.filter((d) => d.code === "missing-implementation");
     console.log(`🔍 Missing implementation count: ${missingImpl.length}`);
 
     if (missingImpl.length === 0) {

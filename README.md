@@ -13,6 +13,7 @@
 ## 📊 **CURRENT STATUS ANALYSIS (2025-12-02)**
 
 ### ✅ **WORKING SYSTEMS**
+
 - **Build System:** ✅ FULLY OPERATIONAL - 0 TypeScript compilation errors
 - **Core Decorators:** ✅ FUNCTIONAL - @channel, @publish, @subscribe working
 - **Schema Validation:** ✅ OPERATIONAL - @effect/schema domain objects working
@@ -22,6 +23,7 @@
 - **Justfile Commands:** ✅ FUNCTIONAL - All core commands (`just build`, `just test`) working
 
 ### 🔴 **BROKEN SYSTEMS**
+
 - **State Management:** 🔴 CRITICAL - `program.stateMap` undefined causing crashes
 - **Import Resolution:** 🔴 PARTIALLY BROKEN - Some module import issues in tests
 - **Complex Protocol Tests:** 🔴 FAILING - Advanced protocol tests (Kafka, MQTT, etc.) broken
@@ -29,6 +31,7 @@
 - **Advanced Features:** 🔴 DISABLED - Complex infrastructure files temporarily removed (5,745 lines)
 
 ### 📈 **ACTUAL TEST METRICS**
+
 - **Pass Rate:** 255/664 tests passing (38.4%) - **Improving but needs work**
 - **Build Status:** ✅ PERFECT - TypeScript compilation with 0 errors
 - **Core Functionality:** ✅ WORKING - Basic AsyncAPI generation functional
@@ -49,7 +52,7 @@ using TypeSpec.AsyncAPI;
 op publishUserEvent(userId: string, eventType: string): void;
 
 @channel("orders")
-@subscribe  
+@subscribe
 op subscribeToOrders(): void;
 ```
 
@@ -63,8 +66,9 @@ bunx tsp compile example.tsp --emit @lars-artmann/typespec-asyncapi
 ```
 
 ### **Working Features**
+
 - ✅ **@channel decorator** - Basic channel path definition
-- ✅ **@publish decorator** - Send operations 
+- ✅ **@publish decorator** - Send operations
 - ✅ **@subscribe decorator** - Receive operations
 - ✅ **Basic AsyncAPI 3.0 structure** - Core spec generation
 - ✅ **Schema validation** - Type-safe validation with @effect/schema
@@ -78,28 +82,31 @@ bunx tsp compile example.tsp --emit @lars-artmann/typespec-asyncapi
 ### **Critical Issues (Block Advanced Usage)**
 
 #### **State Management Failure**
+
 ```bash
-# Current Error: 
+# Current Error:
 TypeError: undefined is not an object (evaluating 'program.stateMap')
 # Impact: Advanced state consolidation crashes
 # Status: 🔴 CRITICAL - Blocks complex TypeSpec processing
 ```
 
 #### **Complex Protocol Support**
+
 ```bash
 # Status: Advanced protocol tests FAILING
 # Kafka: 0/45 tests passing
-# MQTT: 0/45 tests passing  
+# MQTT: 0/45 tests passing
 # WebSocket: 0/45 tests passing
 # Impact: No enterprise protocol support
 ```
 
 #### **Infrastructure Gaps**
+
 ```bash
 # Problem: 5,745 lines of complex infrastructure disabled
 # Files affected:
 # - AsyncAPIEmitterCore.ts (360 lines)
-# - PluginSystem.ts (1,254 lines)  
+# - PluginSystem.ts (1,254 lines)
 # - StateManager.ts + StateTransitions.ts (1,223 lines)
 # - AdvancedTypeModels.ts (749 lines)
 # Impact: No plugin system, no advanced state management
@@ -110,6 +117,7 @@ TypeError: undefined is not an object (evaluating 'program.stateMap')
 ## 🛠️ **GETTING STARTED (What Actually Works)**
 
 ### **Installation**
+
 ```bash
 # Install the emitter
 bun add @lars-artmann/typespec-asyncapi
@@ -121,12 +129,13 @@ bun install
 ```
 
 ### **Basic Usage (WORKING)**
+
 ```typescript
 // Create your TypeSpec file (api.tsp)
 using TypeSpec.AsyncAPI;
 
 @channel("user/events")
-@publish  
+@publish
 op publishUserEvent(userId: string, eventType: string): void;
 
 @channel("orders")
@@ -142,6 +151,7 @@ bunx tsp compile api.tsp --emit @lars-artmann/typespec-asyncapi
 ```
 
 ### **Development Workflow**
+
 ```bash
 just build          # ✅ Build TypeScript (0 errors)
 just test           # ✅ Run tests (255/664 pass)
@@ -154,6 +164,7 @@ bun test --watch    # ✅ Watch mode for development
 ## 📋 **KNOWN WORKAROUNDS**
 
 ### **For State Management Issues**
+
 ```typescript
 // Workaround: Use simple decorator patterns
 @channel("simple/path")  // ✅ Works
@@ -161,6 +172,7 @@ bun test --watch    # ✅ Watch mode for development
 ```
 
 ### **For Protocol Limitations**
+
 ```typescript
 // Workaround: Basic channel generation works
 @channel("kafka.orders")  // ✅ Generates channel name
@@ -168,6 +180,7 @@ bun test --watch    # ✅ Watch mode for development
 ```
 
 ### **For Test Failures**
+
 ```bash
 # Run only working test categories
 bun test test/documentation/     # ✅ Core tests pass
@@ -184,6 +197,7 @@ bun test test/schema-integration.test.ts # ✅ Schema validation works
 ## 🎯 **REALISTIC ROADMAP**
 
 ### **PHASE 1: State Management Recovery (Next 1-2 weeks)**
+
 **Priority: CRITICAL**
 
 1. **Fix program.stateMap Access**
@@ -202,11 +216,12 @@ bun test test/schema-integration.test.ts # ✅ Schema validation works
    - Fix critical integration tests
 
 ### **PHASE 2: Protocol Support (Next 3-4 weeks)**
+
 **Priority: HIGH**
 
 1. **Enterprise Protocol Recovery**
    - Restore Kafka protocol support
-   - Restore MQTT protocol support  
+   - Restore MQTT protocol support
    - Restore WebSocket protocol support
    - Fix 300+ failing protocol tests
 
@@ -216,6 +231,7 @@ bun test test/schema-integration.test.ts # ✅ Schema validation works
    - Implement proper validation
 
 ### **PHASE 3: Production Readiness (Next 2-3 months)**
+
 **Priority: MEDIUM**
 
 1. **Quality Assurance**
@@ -233,12 +249,14 @@ bun test test/schema-integration.test.ts # ✅ Schema validation works
 ## 🏷️ **HONEST USAGE RECOMMENDATIONS**
 
 ### **✅ USE FOR:**
+
 - **Experimentation** - Learning TypeSpec and AsyncAPI integration
 - **Basic Projects** - Simple event-driven APIs with standard channels
 - **Prototyping** - Quick AsyncAPI spec generation from TypeSpec
 - **Contributions** - Core infrastructure is working and testable
 
 ### **❌ AVOID FOR:**
+
 - **Production Systems** - State management issues too critical
 - **Complex Protocols** - Kafka, MQTT, WebSocket support broken
 - **Enterprise Features** - Plugin system, advanced security disabled
@@ -249,12 +267,14 @@ bun test test/schema-integration.test.ts # ✅ Schema validation works
 ## 🤝 **CONTRIBUTION STATUS**
 
 ### **WELCOMED CONTRIBUTIONS:**
+
 - **Bug Fixes** - Core infrastructure issues
 - **Documentation** - Examples and getting started guides
 - **Test Improvements** - Core test suite reliability
 - **Basic Features** - Simple decorator enhancements
 
 ### **DIFFICULT AREAS:**
+
 - **State Management** - Requires TypeSpec compiler expertise
 - **Protocol Support** - Complex infrastructure restoration needed
 - **Plugin System** - 5,745 lines of complex code to restore
@@ -264,6 +284,7 @@ bun test test/schema-integration.test.ts # ✅ Schema validation works
 ## 📊 **PROJECT METRICS**
 
 ### **Current State (December 2, 2025)**
+
 - **Version:** 0.0.1 (Alpha)
 - **Build Status:** ✅ Perfect (0 TypeScript errors)
 - **Test Coverage:** 38.4% (255/664 passing)
@@ -272,6 +293,7 @@ bun test test/schema-integration.test.ts # ✅ Schema validation works
 - **Production Ready:** ❌ Not yet (state management critical)
 
 ### **Quality Metrics**
+
 - **TypeScript Compilation:** ✅ 0 errors (from 425 previously)
 - **Code Duplication:** ✅ Excellent (0.47% - best in class)
 - **ESLint Compliance:** ✅ 5 critical errors, 105 warnings
@@ -283,12 +305,14 @@ bun test test/schema-integration.test.ts # ✅ Schema validation works
 ## 📞 **SUPPORT & COMMUNICATION**
 
 ### **CURRENT REALITY**
+
 - **Issues:** ✅ Open for core infrastructure bug reports
 - **PRs:** ✅ Welcomed for basic functionality fixes
 - **Support:** ⚠️ Limited - focus on infrastructure recovery
 - **Documentation:** ✅ Core examples accurate and tested
 
 ### **GETTING HELP**
+
 - **Basic Questions:** GitHub Discussions (working features)
 - **Bug Reports:** GitHub Issues (with reproduction steps)
 - **Complex Issues:** Check known limitations first
@@ -301,11 +325,11 @@ bun test test/schema-integration.test.ts # ✅ Schema validation works
 **Status:** 🟡 Alpha Quality - Core Working, Advanced Broken  
 **Usability:** ✅ Basic use cases functional  
 **Production Ready:** ❌ State management issues critical  
-**Contribution Ready:** ✅ Core infrastructure stable  
+**Contribution Ready:** ✅ Core infrastructure stable
 
 **This project provides functional TypeSpec-to-AsyncAPI generation for basic use cases, with significant limitations in advanced features and enterprise protocol support.**
 
 ---
 
-*Last Honest Update: 2025-12-02*  
-*Status: Alpha Quality - Basic functionality working, advanced features disabled*
+_Last Honest Update: 2025-12-02_  
+_Status: Alpha Quality - Basic functionality working, advanced features disabled_

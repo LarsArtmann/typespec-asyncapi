@@ -33,11 +33,7 @@ test("Railway Programming - Error propagation and recovery", async () => {
     yield* Effect.fail(new Error("Simulated error"));
     const result2 = yield* Effect.succeed(20);
     return result1 + result2;
-  }).pipe(
-    Effect.catchAll((error) =>
-      Effect.succeed(`Recovered from: ${error.message}`),
-    ),
-  );
+  }).pipe(Effect.catchAll((error) => Effect.succeed(`Recovered from: ${error.message}`)));
 
   const errorResult = await Effect.runPromise(errorEffect);
   expect(errorResult).toBe("Recovered from: Simulated error");

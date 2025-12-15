@@ -27,6 +27,7 @@ Object.keys(result) = []    // ❌
 **Root Cause**: AssetEmitter writes files to **disk** (`tsp-output/`), not to TypeSpec's virtual filesystem.
 
 **Evidence**:
+
 - 2/7 CLI-based tests in `basic-functionality.test.ts` work perfectly
 - Programmatic tests fail to access output
 - Documented in ADR as known limitation
@@ -291,6 +292,7 @@ describe('CLI-Based Tests: Basic Functionality', () => {
 ### 3. Fixture Files
 
 **`test/utils/fixtures/simple-channel.tsp`:**
+
 ```typespec
 import "@lars-artmann/typespec-asyncapi";
 using AsyncAPI;
@@ -367,6 +369,7 @@ expect(asyncapiDoc.asyncapi).toBe('3.0.0')
 - Total: ~150ms per test case
 
 **Optimization:**
+
 - Reuse workdir for multiple related tests
 - Parallel test execution (Bun supports this)
 - Cache TypeSpec compilation between tests
@@ -495,6 +498,7 @@ expect(result.asyncapiDoc?.channels).toBeDefined()  // Has channels
 ---
 
 **Next Steps:**
+
 1. Implement `cli-test-helpers.ts` (T5)
 2. Create test template (T6)
 3. Convert critical tests (T7-T9)

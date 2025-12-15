@@ -6,7 +6,7 @@
 #
 # Features:
 # - ✅ Effect.TS pattern isolation (no native async/promises/exceptions)
-# - ✅ Railway Oriented Programming enforcement 
+# - ✅ Railway Oriented Programming enforcement
 # - ✅ Functional layer boundaries
 # - ✅ Clear dependency flow: Pure Domain → Effect Services → Infrastructure Effects
 
@@ -15,10 +15,10 @@ workdir: .
 
 # 🚨 EFFECT.TS PATTERN CONFIGURATION
 allow:
-  nativePromises: false     # BANNED: Use Effect<T, E, R> instead of Promise<T>
-  throwStatements: false    # BANNED: Use Effect.fail() instead of throw
-  tryCatchBlocks: false     # BANNED: Use Effect.gen() with proper error handling
-  consoleLogging: false     # BANNED: Use Effect.log() for structured logging
+  nativePromises: false # BANNED: Use Effect<T, E, R> instead of Promise<T>
+  throwStatements: false # BANNED: Use Effect.fail() instead of throw
+  tryCatchBlocks: false # BANNED: Use Effect.gen() with proper error handling
+  consoleLogging: false # BANNED: Use Effect.log() for structured logging
   nullUndefinedChecks: false # BANNED: Use Option<T> for nullable values
 
 # 📦 EFFECT.TS ARCHITECTURAL COMPONENTS
@@ -30,16 +30,16 @@ components:
   domain-types:
     in: src/types/**
     patterns:
-      - no-effects     # Pure types only, no Effect<> usage
-      - no-io         # No I/O operations
-      - no-mutations  # Immutable only
-      
+      - no-effects # Pure types only, no Effect<> usage
+      - no-io # No I/O operations
+      - no-mutations # Immutable only
+
   domain-schemas:
     in: src/schemas/**
     patterns:
-      - effect-schema-only  # Must use @effect/schema
-      - no-zod             # BANNED: Use @effect/schema instead
-      - no-joi             # BANNED: Use @effect/schema instead
+      - effect-schema-only # Must use @effect/schema
+      - no-zod # BANNED: Use @effect/schema instead
+      - no-joi # BANNED: Use @effect/schema instead
 
   # ========================================
   # EFFECT SERVICES LAYER - Core Business Effects
@@ -47,15 +47,15 @@ components:
   effect-services:
     in: src/core/**
     patterns:
-      - effect-gen-required    # Must use Effect.gen() for async operations
-      - railway-programming    # Must use Effect.flatMap/map chains
+      - effect-gen-required # Must use Effect.gen() for async operations
+      - railway-programming # Must use Effect.flatMap/map chains
       - no-promise-constructors # BANNED: Use Effect.async() instead
-      
+
   effect-utils:
     in: src/utils/**
     patterns:
-      - pure-effect-functions  # Functions must return Effect<T, E, R>
-      - no-side-effects       # No console.log, mutations, etc.
+      - pure-effect-functions # Functions must return Effect<T, E, R>
+      - no-side-effects # No console.log, mutations, etc.
 
   # ========================================
   # INFRASTRUCTURE EFFECTS - External I/O
@@ -63,19 +63,19 @@ components:
   infrastructure-effects:
     in: src/infrastructure/**
     patterns:
-      - effect-resource-management  # Must use Effect.acquireUseRelease
-      - no-raw-promises           # All promises must be wrapped with Effect.promise()
-      - effect-error-tagging      # Errors must be tagged with Data.TaggedError
+      - effect-resource-management # Must use Effect.acquireUseRelease
+      - no-raw-promises # All promises must be wrapped with Effect.promise()
+      - effect-error-tagging # Errors must be tagged with Data.TaggedError
 
   # ========================================
-  # VALIDATION & PARSING - Type-Safe Boundaries  
+  # VALIDATION & PARSING - Type-Safe Boundaries
   # ========================================
   effect-validation:
     in: src/validation/**
     patterns:
-      - schema-validation-only    # Must use @effect/schema validation
-      - no-manual-parsing        # BANNED: Use Schema.decodeUnknown()
-      - effect-parse-errors      # Parse errors must be Effect errors
+      - schema-validation-only # Must use @effect/schema validation
+      - no-manual-parsing # BANNED: Use Schema.decodeUnknown()
+      - effect-parse-errors # Parse errors must be Effect errors
 
   # ========================================
   # PERFORMANCE & MONITORING - Observability Effects
@@ -83,36 +83,36 @@ components:
   effect-performance:
     in: src/performance/**
     patterns:
-      - effect-metrics-only      # Must use Effect.Metric for metrics
-      - effect-tracing-only      # Must use Effect.withSpan() for tracing
-      - no-manual-timers        # BANNED: Use Effect.timed() instead
+      - effect-metrics-only # Must use Effect.Metric for metrics
+      - effect-tracing-only # Must use Effect.withSpan() for tracing
+      - no-manual-timers # BANNED: Use Effect.timed() instead
 
 # 🔒 EFFECT.TS DEPENDENCY RULES - Enforce Functional Architecture
 deps:
   # PURE DOMAIN LAYER - Zero effects, pure functions only
   domain-types:
     allowedPatterns:
-      - readonly-properties    # Properties must be readonly
-      - branded-types         # Use branded types for domain concepts
-      - no-classes           # BANNED: Use type/interface for domain models
-    mayDependOn: []           # Completely isolated pure layer
+      - readonly-properties # Properties must be readonly
+      - branded-types # Use branded types for domain concepts
+      - no-classes # BANNED: Use type/interface for domain models
+    mayDependOn: [] # Completely isolated pure layer
 
-  domain-schemas:  
+  domain-schemas:
     allowedPatterns:
-      - effect-schema-exports  # Must export Schema<A, I, R> types
+      - effect-schema-exports # Must export Schema<A, I, R> types
     mayDependOn:
       - domain-types
 
   # EFFECT SERVICES - Business logic with controlled effects
   effect-services:
     allowedPatterns:
-      - effect-return-types    # Functions must return Effect<T, E, R>
-      - effect-gen-usage      # Async operations must use Effect.gen()
-      - tagged-errors         # Errors must extend Data.TaggedError
+      - effect-return-types # Functions must return Effect<T, E, R>
+      - effect-gen-usage # Async operations must use Effect.gen()
+      - tagged-errors # Errors must extend Data.TaggedError
     bannedPatterns:
-      - promise-constructors   # BANNED: new Promise()
-      - async-functions       # BANNED: async/await syntax
-      - throw-statements      # BANNED: throw keyword
+      - promise-constructors # BANNED: new Promise()
+      - async-functions # BANNED: async/await syntax
+      - throw-statements # BANNED: throw keyword
     mayDependOn:
       - domain-types
       - domain-schemas
@@ -120,11 +120,11 @@ deps:
 
   effect-utils:
     allowedPatterns:
-      - pure-functions        # Functions have no side effects
-      - effect-combinators    # Use Effect.map, flatMap, etc.
+      - pure-functions # Functions have no side effects
+      - effect-combinators # Use Effect.map, flatMap, etc.
     bannedPatterns:
-      - console-logging       # BANNED: console.log/warn/error
-      - mutations            # BANNED: Mutating operations
+      - console-logging # BANNED: console.log/warn/error
+      - mutations # BANNED: Mutating operations
     mayDependOn:
       - domain-types
       - domain-schemas
@@ -132,25 +132,25 @@ deps:
   # INFRASTRUCTURE - External integrations with proper resource management
   infrastructure-effects:
     allowedPatterns:
-      - resource-acquisition  # Must use Effect.acquireUseRelease
+      - resource-acquisition # Must use Effect.acquireUseRelease
       - effect-async-wrapping # Raw promises wrapped with Effect.async()
-      - service-context      # Use Effect.Context for dependency injection
+      - service-context # Use Effect.Context for dependency injection
     bannedPatterns:
-      - raw-promise-usage    # BANNED: Direct promise usage
-      - synchronous-io      # BANNED: Sync I/O operations
+      - raw-promise-usage # BANNED: Direct promise usage
+      - synchronous-io # BANNED: Sync I/O operations
     mayDependOn:
       - domain-types
-      - domain-schemas  
+      - domain-schemas
       - effect-services
       - effect-utils
 
   effect-validation:
     allowedPatterns:
-      - schema-decode-usage   # Must use Schema.decodeUnknown()
-      - parse-error-effects  # Parse errors wrapped as effects
+      - schema-decode-usage # Must use Schema.decodeUnknown()
+      - parse-error-effects # Parse errors wrapped as effects
     bannedPatterns:
-      - json-parse-usage     # BANNED: JSON.parse()
-      - manual-validation    # BANNED: Manual object validation
+      - json-parse-usage # BANNED: JSON.parse()
+      - manual-validation # BANNED: Manual object validation
     mayDependOn:
       - domain-types
       - domain-schemas
@@ -158,11 +158,11 @@ deps:
 
   effect-performance:
     allowedPatterns:
-      - effect-metrics       # Use Effect.Metric.* for metrics
-      - effect-tracing      # Use Effect.withSpan() for tracing
+      - effect-metrics # Use Effect.Metric.* for metrics
+      - effect-tracing # Use Effect.withSpan() for tracing
     bannedPatterns:
-      - manual-timing       # BANNED: Date.now(), performance.now()
-      - console-time        # BANNED: console.time()
+      - manual-timing # BANNED: Date.now(), performance.now()
+      - console-time # BANNED: console.time()
     mayDependOn:
       - domain-types
       - effect-services
@@ -170,18 +170,18 @@ deps:
 
 # 🌍 COMMON EFFECT COMPONENTS - Available everywhere
 commonComponents:
-  - domain-types     # Pure domain types available to all layers
-  - effect-utils     # Shared utilities available to effect layers
+  - domain-types # Pure domain types available to all layers
+  - effect-utils # Shared utilities available to effect layers
 
 # 🚫 EXCLUSION PATTERNS (Effect.TS specific)
 exclude:
   # Generated and build files
   - "**/*.d.ts"
-  - "**/*_generated.ts" 
+  - "**/*_generated.ts"
   - "**/dist/**"
   - "**/build/**"
   - "**/coverage/**"
-  
+
   # Test files (different rules for tests)
   - "**/*.test.ts"
   - "**/*.spec.ts"
@@ -202,7 +202,7 @@ antiPatterns:
 
   asyncAwaitFunctions:
     pattern: "async function|async \\("
-    message: "🚨 BANNED: async/await functions. Use Effect.gen() for composable async operations"  
+    message: "🚨 BANNED: async/await functions. Use Effect.gen() for composable async operations"
     replacement: "Effect.gen(function*"
 
   throwStatements:
@@ -248,7 +248,7 @@ antiPatterns:
 #    - core/          : Business logic as composable effects
 #    - utils/         : Pure utility functions returning effects
 #
-# 3. INFRASTRUCTURE LAYER (External Effects)  
+# 3. INFRASTRUCTURE LAYER (External Effects)
 #    - infrastructure/ : External service integrations
 #    - validation/    : Type-safe parsing with schemas
 #    - performance/   : Observability and metrics

@@ -41,9 +41,7 @@ test("Performance Benchmark - TypeSpec compilation speed", async () => {
     const endTime = performance.now();
     const compilationTime = endTime - startTime;
 
-    yield* Effect.log(
-      `TypeSpec compilation completed in ${compilationTime.toFixed(2)}ms`,
-    );
+    yield* Effect.log(`TypeSpec compilation completed in ${compilationTime.toFixed(2)}ms`);
 
     return compilationTime;
   });
@@ -51,9 +49,7 @@ test("Performance Benchmark - TypeSpec compilation speed", async () => {
   const compilationTime = await Effect.runPromise(compilationBenchmark);
 
   // Validate performance threshold
-  expect(compilationTime).toBeLessThan(
-    PERFORMANCE_THRESHOLDS.maxCompilationTimeMs,
-  );
+  expect(compilationTime).toBeLessThan(PERFORMANCE_THRESHOLDS.maxCompilationTimeMs);
   expect(compilationTime).toBeGreaterThan(0);
 });
 
@@ -105,9 +101,7 @@ test("Performance Benchmark - Throughput validation", async () => {
     const totalTime = (endTime - startTime) / 1000; // Convert to seconds
     const throughput = operationCount / totalTime;
 
-    yield* Effect.log(
-      `Processed ${operationCount} operations in ${totalTime.toFixed(3)}s`,
-    );
+    yield* Effect.log(`Processed ${operationCount} operations in ${totalTime.toFixed(3)}s`);
     yield* Effect.log(`Throughput: ${throughput.toFixed(2)} ops/sec`);
 
     return { throughput, results };
@@ -116,9 +110,7 @@ test("Performance Benchmark - Throughput validation", async () => {
   const { throughput, results } = await Effect.runPromise(throughputBenchmark);
 
   // Validate throughput threshold
-  expect(throughput).toBeGreaterThan(
-    PERFORMANCE_THRESHOLDS.minThroughputOpsPerSec,
-  );
+  expect(throughput).toBeGreaterThan(PERFORMANCE_THRESHOLDS.minThroughputOpsPerSec);
   expect(results).toHaveLength(50);
 });
 
@@ -138,10 +130,7 @@ test.skip("Performance Regression - baseline establishment", async () => {
   };
 
   const performanceMonitor = new PerformanceMonitor();
-  const regressionTester = new PerformanceRegressionTester(
-    config,
-    performanceMonitor,
-  );
+  const regressionTester = new PerformanceRegressionTester(config, performanceMonitor);
 
   // Test baseline establishment
   const baselineTest = async () => {
@@ -172,10 +161,7 @@ test.skip("Performance Regression - detection validation", async () => {
   };
 
   const performanceMonitor = new PerformanceMonitor();
-  const regressionTester = new PerformanceRegressionTester(
-    config,
-    performanceMonitor,
-  );
+  const regressionTester = new PerformanceRegressionTester(config, performanceMonitor);
 
   // First run - establish baseline
   const baselineTest = async () => {
@@ -183,9 +169,7 @@ test.skip("Performance Regression - detection validation", async () => {
     return "baseline";
   };
 
-  await Effect.runPromise(
-    regressionTester.runPerformanceTest("regression-test", baselineTest),
-  );
+  await Effect.runPromise(regressionTester.runPerformanceTest("regression-test", baselineTest));
 
   // Second run - simulate regression
   const regressionTest = async () => {
@@ -203,9 +187,7 @@ test.skip("Performance Regression - detection validation", async () => {
     regressionResult.regressionReport._tag === "regression" ||
     regressionResult.regressionReport._tag === "mixed"
   ) {
-    expect(
-      regressionResult.regressionReport.degradedMetrics.length,
-    ).toBeGreaterThan(0);
+    expect(regressionResult.regressionReport.degradedMetrics.length).toBeGreaterThan(0);
   }
 });
 
@@ -242,9 +224,7 @@ test("Performance Scenario - Large TypeSpec file processing", async () => {
     const processingTime = endTime - startTime;
     const memoryUsage = endMemory - startMemory;
 
-    yield* Effect.log(
-      `Processed ${processedNodes.length} nodes in ${processingTime.toFixed(2)}ms`,
-    );
+    yield* Effect.log(`Processed ${processedNodes.length} nodes in ${processingTime.toFixed(2)}ms`);
     yield* Effect.log(`Memory usage: ${memoryUsage.toFixed(2)}MB`);
 
     return {
@@ -291,12 +271,8 @@ test.skip("Performance Scenario - Concurrent AsyncAPI generation", async () => {
     const totalTime = endTime - startTime;
     const documentsPerSecond = documents.length / (totalTime / 1000);
 
-    yield* Effect.log(
-      `Generated ${documents.length} documents in ${totalTime.toFixed(2)}ms`,
-    );
-    yield* Effect.log(
-      `Generation rate: ${documentsPerSecond.toFixed(2)} docs/sec`,
-    );
+    yield* Effect.log(`Generated ${documents.length} documents in ${totalTime.toFixed(2)}ms`);
+    yield* Effect.log(`Generation rate: ${documentsPerSecond.toFixed(2)} docs/sec`);
 
     return {
       totalTime,
@@ -362,12 +338,7 @@ test("Automated Validation - performance gate checks", () => {
   expect(performanceGates.latencyGate).toBeLessThan(5000); // Reasonable latency
 
   // Validate gate configuration is complete
-  const requiredGates = [
-    "compilationTimeGate",
-    "memoryGate",
-    "throughputGate",
-    "latencyGate",
-  ];
+  const requiredGates = ["compilationTimeGate", "memoryGate", "throughputGate", "latencyGate"];
   requiredGates.forEach((gate) => {
     expect(performanceGates).toHaveProperty(gate);
   });

@@ -1,6 +1,6 @@
 /**
  * Simple Processing Service - FINAL FIX
- * 
+ *
  * Uses correct TypeSpec Program API with Effect.TS patterns
  */
 
@@ -23,7 +23,7 @@ export type ProcessingResult = {
     item: string;
     message: string;
   }>;
-}
+};
 
 /**
  * Simple Processing Service class
@@ -33,15 +33,15 @@ export class ProcessingService {
    * Process TypeSpec models
    */
   static processModels(program: Program): Effect.Effect<ProcessingResult, never, never> {
-    return Effect.gen(function*() {
+    return Effect.gen(function* () {
       yield* Effect.log("Processing TypeSpec models");
-      
+
       const result: ProcessingResult = {
         processedItems: [],
         warnings: [],
-        errors: []
+        errors: [],
       };
-      
+
       // Simple approach: iterate through available types
       // We'll use a more basic approach for now since exact stateMap API is unclear
       if (typeof program.stateMap === "function") {
@@ -51,20 +51,24 @@ export class ProcessingService {
       } else {
         yield* Effect.log("StateMap structure is unclear, using fallback approach");
       }
-      
+
       // For now, return empty result - we can implement proper discovery later
       yield* Effect.log(`Processed ${result.processedItems.length} models`);
-      
+
       return result;
     }).pipe(
-      Effect.catchAll(_error => Effect.succeed({
-        processedItems: [],
-        warnings: [],
-        errors: [{
-          item: "global",
-          message: `Model processing failed: ${String(_error)}`
-        }]
-      }))
+      Effect.catchAll((_error) =>
+        Effect.succeed({
+          processedItems: [],
+          warnings: [],
+          errors: [
+            {
+              item: "global",
+              message: `Model processing failed: ${String(_error)}`,
+            },
+          ],
+        }),
+      ),
     );
   }
 
@@ -72,15 +76,15 @@ export class ProcessingService {
    * Process TypeSpec operations
    */
   static processOperations(program: Program): Effect.Effect<ProcessingResult, never, never> {
-    return Effect.gen(function*() {
+    return Effect.gen(function* () {
       yield* Effect.log("Processing TypeSpec operations");
-      
+
       const result: ProcessingResult = {
         processedItems: [],
         warnings: [],
-        errors: []
+        errors: [],
       };
-      
+
       // Simple approach: iterate through available types
       // We'll use a more basic approach for now since exact stateMap API is unclear
       if (typeof program.stateMap === "function") {
@@ -90,20 +94,24 @@ export class ProcessingService {
       } else {
         yield* Effect.log("StateMap structure is unclear, using fallback approach");
       }
-      
+
       // For now, return empty result - we can implement proper discovery later
       yield* Effect.log(`Processed ${result.processedItems.length} operations`);
-      
+
       return result;
     }).pipe(
-      Effect.catchAll(_error => Effect.succeed({
-        processedItems: [],
-        warnings: [],
-        errors: [{
-          item: "global",
-          message: `Operation processing failed: ${String(_error)}`
-        }]
-      }))
+      Effect.catchAll((_error) =>
+        Effect.succeed({
+          processedItems: [],
+          warnings: [],
+          errors: [
+            {
+              item: "global",
+              message: `Operation processing failed: ${String(_error)}`,
+            },
+          ],
+        }),
+      ),
     );
   }
 
@@ -111,23 +119,14 @@ export class ProcessingService {
    * Process all components
    */
   static processAll(program: Program): Effect.Effect<ProcessingResult, never, never> {
-    return Effect.gen(function*() {
+    return Effect.gen(function* () {
       const models = yield* ProcessingService.processModels(program);
       const operations = yield* ProcessingService.processOperations(program);
-      
+
       return {
-        processedItems: [
-          ...models.processedItems,
-          ...operations.processedItems,
-        ],
-        warnings: [
-          ...models.warnings,
-          ...operations.warnings,
-        ],
-        errors: [
-          ...models.errors,
-          ...operations.errors,
-        ]
+        processedItems: [...models.processedItems, ...operations.processedItems],
+        warnings: [...models.warnings, ...operations.warnings],
+        errors: [...models.errors, ...operations.errors],
       };
     });
   }

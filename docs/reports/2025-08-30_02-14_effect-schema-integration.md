@@ -7,6 +7,7 @@ This project successfully integrates **Effect.TS Schema** validation with TypeSp
 ## 🎯 Integration Achievements
 
 ### ✅ Core Requirements Met
+
 - [x] **Complete JSONSchemaType Replacement**: All `JSONSchemaType<T>` usage replaced with Effect.TS Schema
 - [x] **TypeSpec Compatibility**: Maintains compatibility with TypeSpec compiler expectations
 - [x] **Type Safety**: Full compile-time and runtime type validation
@@ -93,6 +94,7 @@ export async function onEmit(context: any, options: unknown): Promise<void> {
 ## 📊 Validation Coverage
 
 ### Comprehensive Schema Validation
+
 - **11 root properties** with full type constraints
 - **Nested object validation** for complex configurations
 - **Enum constraints** for protocol bindings, file types, etc.
@@ -127,12 +129,14 @@ const invalidOptions = {
 ## 🔐 Security Improvements
 
 ### Prevented Vulnerabilities
+
 - **Arbitrary Property Injection**: `additionalProperties: false` enforced
-- **Type Injection**: All properties strictly typed and validated  
+- **Type Injection**: All properties strictly typed and validated
 - **Runtime Validation**: Effect.TS prevents runtime type errors
 - **Input Sanitization**: Comprehensive input validation with detailed error messages
 
 ### Security Features
+
 ```typescript
 // SECURITY: Schema prevents arbitrary property injection
 export const AsyncAPIEmitterOptionsSchema = {
@@ -147,12 +151,14 @@ export const AsyncAPIEmitterOptionsSchema = {
 ## 🚀 Performance Benefits
 
 ### Efficient Validation
+
 - **Compile-time optimization**: Effect.TS compiles schemas for performance
-- **Minimal runtime overhead**: ~15KB Effect.TS runtime footprint  
+- **Minimal runtime overhead**: ~15KB Effect.TS runtime footprint
 - **Lazy evaluation**: Schemas only evaluated when needed
 - **Parallel validation**: Concurrent processing for complex configurations
 
 ### Performance Test Results
+
 ```typescript
 test("schema validation should be performant for large option objects", async () => {
   const largeOptions = {
@@ -172,6 +178,7 @@ test("schema validation should be performant for large option objects", async ()
 ## 🧪 Comprehensive Testing
 
 ### Test Coverage: 21 tests, 36 assertions
+
 - **Validation success tests** - Ensure valid options pass
 - **Validation failure tests** - Ensure invalid options fail appropriately
 - **Type guard tests** - Runtime type checking validation
@@ -181,6 +188,7 @@ test("schema validation should be performant for large option objects", async ()
 - **Error handling tests** - Comprehensive error scenarios
 
 ### Example Test Cases
+
 ```typescript
 test("should validate complete valid options", async () => {
   const completeOptions: AsyncAPIEmitterOptions = {
@@ -207,6 +215,7 @@ test("should reject invalid protocol-bindings", async () => {
 ## 📚 Usage Patterns
 
 ### 1. Basic Validation
+
 ```typescript
 import { validateAsyncAPIEmitterOptions } from "./options.js";
 
@@ -225,31 +234,33 @@ const validateUserInput = async (input: unknown) => {
 ```
 
 ### 2. Advanced Usage with Business Rules
+
 ```typescript
 const validateWithBusinessRules = (input: unknown) =>
   Effect.gen(function* () {
     // Standard Effect.TS schema validation
     const options = yield* validateAsyncAPIEmitterOptions(input);
-    
+
     // Custom business rules
     if (options["file-type"] === "json" && options["include-source-info"]) {
       yield* Effect.fail(new Error("Source info not supported in JSON format"));
     }
-    
+
     if (options["protocol-bindings"]?.includes("kafka") && !options["security-schemes"]) {
       yield* Effect.fail(new Error("Kafka protocol requires security schemes"));
     }
-    
+
     return options;
   });
 ```
 
 ### 3. Resource Management with Validation
+
 ```typescript
 const processWithManagedResources = (options: unknown) =>
   Effect.gen(function* () {
     const validatedOptions = yield* validateAsyncAPIEmitterOptions(options);
-    
+
     return yield* Effect.acquireUseRelease(
       // Acquire: Setup resources
       Effect.succeed({ connection: "resource", options: validatedOptions }),
@@ -264,6 +275,7 @@ const processWithManagedResources = (options: unknown) =>
 ## 🔗 TypeSpec Integration
 
 ### Compatibility Bridge
+
 The integration maintains full TypeSpec compatibility through a bridge pattern:
 
 ```typescript
@@ -275,6 +287,7 @@ export const AsyncAPIEmitterOptionsSchema = JSONSchema.make(EffectSchema);
 ```
 
 ### Emitter Integration
+
 ```typescript
 // TypeSpec expects this pattern
 import { AsyncAPIEmitterOptionsSchema } from "./options.js";
@@ -300,18 +313,21 @@ export const emitterDefinition = {
 ## 🎉 Benefits Achieved
 
 ### Developer Experience
+
 - **Better Error Messages**: Detailed validation errors with context
 - **Type Safety**: Compile-time and runtime type validation
 - **IntelliSense Support**: Full TypeScript autocompletion
 - **Functional Patterns**: Modern functional programming with Effect.TS
 
 ### Code Quality
+
 - **Eliminated `as any` casts**: No more unsafe type assertions
 - **Comprehensive Testing**: 100% test coverage for validation logic
 - **Security Hardened**: Prevents configuration injection attacks
 - **Maintainable**: Clear separation of concerns and functional composition
 
 ### Production Readiness
+
 - **Error Recovery**: Graceful fallback strategies
 - **Performance Optimized**: Sub-100ms validation for complex configs
 - **TypeSpec Compatible**: Seamless integration with existing TypeSpec toolchain
@@ -322,6 +338,7 @@ export const emitterDefinition = {
 ### From JSONSchemaType to Effect.TS Schema
 
 **Before:**
+
 ```typescript
 const schema: JSONSchemaType<Options> = {
   type: "object",
@@ -332,6 +349,7 @@ const schema: JSONSchemaType<Options> = {
 ```
 
 **After:**
+
 ```typescript
 const EffectSchema = Schema.Struct({
   "file-type": Schema.optional(Schema.Literal("yaml", "json"))

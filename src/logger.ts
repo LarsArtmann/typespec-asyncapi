@@ -68,7 +68,7 @@ export const loggerTest = Logger.replace(
   Logger.defaultLogger,
   Logger.make(() => {
     // Silent logger - no output
-  })
+  }),
 );
 
 /**
@@ -92,9 +92,7 @@ export const loggerDev = Logger.replace(Logger.defaultLogger, consoleLogger);
  *
  * await runWithLogging(program);
  */
-export const runWithLogging = <A, E>(
-  effect: Effect.Effect<A, E>
-): Promise<A> => {
+export const runWithLogging = <A, E>(effect: Effect.Effect<A, E>): Promise<A> => {
   return Effect.runPromise(effect.pipe(Effect.provide(LoggerLive)));
 };
 
@@ -104,8 +102,6 @@ export const runWithLogging = <A, E>(
  * @example
  * await runSilent(program);
  */
-export const runSilent = <A, E>(
-  effect: Effect.Effect<A, E, never>
-): Promise<A> => {
+export const runSilent = <A, E>(effect: Effect.Effect<A, E, never>): Promise<A> => {
   return Effect.runPromise(effect.pipe(Effect.provide(loggerTest)));
 };

@@ -8,27 +8,28 @@ This document provides comprehensive mapping between TypeSpec's type system and 
 
 ### Primitive Types
 
-| TypeSpec Type | AsyncAPI JSON Schema | Validation | Example |
-|--------------|---------------------|------------|---------|
-| `string` | `{ "type": "string" }` | Length, pattern | `"hello world"` |
-| `boolean` | `{ "type": "boolean" }` | None | `true`, `false` |
-| `int32` | `{ "type": "integer", "format": "int32" }` | Range: -2³¹ to 2³¹-1 | `42` |
-| `int64` | `{ "type": "integer", "format": "int64" }` | Range: -2⁶³ to 2⁶³-1 | `"9223372036854775807"` |
-| `float32` | `{ "type": "number", "format": "float" }` | IEEE 754 single | `3.14` |
-| `float64` | `{ "type": "number", "format": "double" }` | IEEE 754 double | `3.141592653589793` |
-| `decimal` | `{ "type": "string", "format": "decimal" }` | Arbitrary precision | `"123.456789"` |
-| `bytes` | `{ "type": "string", "format": "binary" }` | Base64 encoding | `"base64data"` |
-| `unknown` | `{}` | No constraints | Any valid JSON |
+| TypeSpec Type | AsyncAPI JSON Schema                        | Validation           | Example                 |
+| ------------- | ------------------------------------------- | -------------------- | ----------------------- |
+| `string`      | `{ "type": "string" }`                      | Length, pattern      | `"hello world"`         |
+| `boolean`     | `{ "type": "boolean" }`                     | None                 | `true`, `false`         |
+| `int32`       | `{ "type": "integer", "format": "int32" }`  | Range: -2³¹ to 2³¹-1 | `42`                    |
+| `int64`       | `{ "type": "integer", "format": "int64" }`  | Range: -2⁶³ to 2⁶³-1 | `"9223372036854775807"` |
+| `float32`     | `{ "type": "number", "format": "float" }`   | IEEE 754 single      | `3.14`                  |
+| `float64`     | `{ "type": "number", "format": "double" }`  | IEEE 754 double      | `3.141592653589793`     |
+| `decimal`     | `{ "type": "string", "format": "decimal" }` | Arbitrary precision  | `"123.456789"`          |
+| `bytes`       | `{ "type": "string", "format": "binary" }`  | Base64 encoding      | `"base64data"`          |
+| `unknown`     | `{}`                                        | No constraints       | Any valid JSON          |
 
 ### Date/Time Types
 
-| TypeSpec Type | AsyncAPI JSON Schema | Format | Example |
-|--------------|---------------------|--------|---------|
-| `utcDateTime` | `{ "type": "string", "format": "date-time" }` | RFC 3339 | `"2023-12-25T10:30:00Z"` |
-| `plainDate` | `{ "type": "string", "format": "date" }` | YYYY-MM-DD | `"2023-12-25"` |
-| `plainTime` | `{ "type": "string", "format": "time" }` | HH:MM:SS | `"10:30:00"` |
+| TypeSpec Type | AsyncAPI JSON Schema                          | Format     | Example                  |
+| ------------- | --------------------------------------------- | ---------- | ------------------------ |
+| `utcDateTime` | `{ "type": "string", "format": "date-time" }` | RFC 3339   | `"2023-12-25T10:30:00Z"` |
+| `plainDate`   | `{ "type": "string", "format": "date" }`      | YYYY-MM-DD | `"2023-12-25"`           |
+| `plainTime`   | `{ "type": "string", "format": "time" }`      | HH:MM:SS   | `"10:30:00"`             |
 
 #### Example:
+
 ```typespec
 // TypeSpec
 model EventMetadata {
@@ -162,7 +163,7 @@ Age:
 // TypeSpec
 enum Status {
   Pending: "pending",
-  InProgress: "in-progress", 
+  InProgress: "in-progress",
   Completed: "completed",
   Failed: "failed"
 }
@@ -211,7 +212,7 @@ Priority:
   enum: [1, 2, 3, 4]
   x-enum-names:
     - Low
-    - Medium  
+    - Medium
     - High
     - Critical
 ```
@@ -347,7 +348,7 @@ model ValidatedList {
   @minItems(1)
   @maxItems(10)
   items: string[];
-  
+
   @uniqueItems(true)
   uniqueIds: string[];
 }
@@ -532,12 +533,12 @@ model User {
   // Required fields
   id: string;
   name: string;
-  
+
   // Optional fields
   email?: string;
   phone?: string;
   age?: int32;
-  
+
   // Default values
   isActive: boolean = true;
   role: string = "user";
@@ -583,14 +584,14 @@ model ValidatedStrings {
   @minLength(3)
   @maxLength(50)
   username: string;
-  
+
   @pattern("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")
   email: string;
-  
+
   @format("uri")
   website: string;
-  
-  @format("uuid") 
+
+  @format("uuid")
   id: string;
 }
 ```
@@ -623,13 +624,13 @@ model ValidatedNumbers {
   @minValue(0)
   @maxValue(100)
   percentage: float32;
-  
+
   @minValueExclusive(0)
   positiveAmount: decimal;
-  
+
   @maxValueExclusive(10)
   lessThanTen: int32;
-  
+
   @multipleOf(5)
   fiveMultiple: int32;
 }
@@ -683,7 +684,7 @@ ConditionalUserResponse:
       $ref: '#/components/schemas/User'
 
 ConditionalOrderResponse:
-  type: object  
+  type: object
   properties:
     type:
       type: string
@@ -840,21 +841,25 @@ Department:
 ## Type Mapping Best Practices
 
 ### 1. Schema Organization
+
 - Use `components/schemas` for reusable types
 - Create separate schemas for complex nested objects
 - Prefer composition over deep nesting
 
 ### 2. Validation Strategy
+
 - Apply validation at message boundaries
 - Use format validators for structured strings
 - Consider protocol-specific constraints
 
 ### 3. Evolution Patterns
+
 - Design for backward compatibility
 - Use optional fields for extensibility
 - Version schemas when making breaking changes
 
 ### 4. Performance Considerations
+
 - Avoid excessive nesting levels (>3-4 levels)
 - Use references to reduce schema size
 - Consider serialization performance for large schemas
@@ -862,6 +867,7 @@ Department:
 ## Common Type Mapping Pitfalls
 
 ### 1. Lost Type Information
+
 ```typespec
 // TypeSpec - Rich type information
 scalar UserId extends string;
@@ -872,6 +878,7 @@ scalar OrderId extends string;
 ```
 
 ### 2. Generic Type Explosion
+
 ```typespec
 // Problem: Too many generic instantiations
 model Response<T, E, M> // Creates many schema variants
@@ -880,6 +887,7 @@ model Response<T, E, M> // Creates many schema variants
 ```
 
 ### 3. Complex Union Types
+
 ```typespec
 // Problem: Complex unions hard to validate
 union ComplexData { /* many variants */ }
@@ -890,6 +898,7 @@ union ComplexData { /* many variants */ }
 ## Next Steps
 
 Understanding these type mappings enables:
+
 - **Operation Mapping** - How TypeSpec operations become AsyncAPI channels
 - **Schema Patterns** - Advanced schema composition techniques
 - **Message Design** - Effective event payload structures
@@ -897,4 +906,4 @@ Understanding these type mappings enables:
 
 ---
 
-*This comprehensive type mapping forms the foundation for all message schema generation in the TypeSpec to AsyncAPI transformation process.*
+_This comprehensive type mapping forms the foundation for all message schema generation in the TypeSpec to AsyncAPI transformation process._

@@ -13,6 +13,7 @@
 **Problem:** Bun's `toHaveProperty()` matcher doesn't work correctly with object properties from parsed JSON or complex objects.
 
 **Symptom:**
+
 ```typescript
 // This FAILS even when property exists!
 expect(asyncapiDoc.channels).toHaveProperty('simple.event')
@@ -24,6 +25,7 @@ console.log(Object.keys(asyncapiDoc.channels))
 ```
 
 **Root Cause:**
+
 - Bun's matcher implementation differs from Jest
 - May be related to property descriptors or prototype chain
 - AsyncAPI objects parsed from YAML/JSON have different property characteristics
@@ -31,6 +33,7 @@ console.log(Object.keys(asyncapiDoc.channels))
 ### ✅ USE THIS INSTEAD: `Object.keys()` + `toContain()`
 
 **Correct Pattern:**
+
 ```typescript
 // ✅ WORKS: Check if property key exists
 const channelKeys = Object.keys(asyncapiDoc.channels || {})
@@ -54,6 +57,7 @@ expect(channelKeys).not.toContain('nonexistent.channel')
 ### 1. **Checking Object Properties**
 
 #### ❌ DON'T (Jest pattern - doesn't work in Bun)
+
 ```typescript
 expect(asyncapiDoc).toHaveProperty('asyncapi')
 expect(asyncapiDoc.channels).toHaveProperty('events')
@@ -61,6 +65,7 @@ expect(asyncapiDoc.operations).toHaveProperty('publishEvent')
 ```
 
 #### ✅ DO (Bun-compatible pattern)
+
 ```typescript
 // Check property exists using Object.keys
 const keys = Object.keys(asyncapiDoc)
@@ -80,6 +85,7 @@ expect(asyncapiDoc.channels['events']).toBeDefined()
 ### 2. **Checking Property Values**
 
 #### ✅ Direct Value Checks (These work fine)
+
 ```typescript
 // Direct value comparison - WORKS
 expect(asyncapiDoc.asyncapi).toBe('3.0.0')
@@ -99,6 +105,7 @@ expect(asyncapiDoc.info.termsOfService).toBeUndefined()
 ### 3. **Checking Arrays**
 
 #### ✅ Array Patterns (These work fine)
+
 ```typescript
 // Check array contains item - WORKS
 const operationKeys = Object.keys(asyncapiDoc.operations)
@@ -119,6 +126,7 @@ expect(operationKeys[0]).toBe('publishEvent')
 ### 4. **Checking Object Structure**
 
 #### ✅ Structure Validation Patterns
+
 ```typescript
 // Validate required top-level properties
 function assertValidAsyncAPI(doc: unknown): asserts doc is AsyncAPIDoc {
@@ -149,6 +157,7 @@ assertValidAsyncAPI(testResult.asyncapiDoc)
 ### 5. **Checking Optional Properties**
 
 #### ✅ Optional Property Patterns
+
 ```typescript
 // Safe optional chaining with default
 const description = asyncapiDoc.info.description ?? 'No description'
@@ -170,6 +179,7 @@ expect(hasDescription).toBe(true)
 ## 🎯 Common Test Scenarios
 
 ### Scenario 1: Verify Channel Exists
+
 ```typescript
 test('should create channel for operation', async () => {
   const result = await compileWithCLI(source)
@@ -185,6 +195,7 @@ test('should create channel for operation', async () => {
 ```
 
 ### Scenario 2: Verify Operation Exists
+
 ```typescript
 test('should create operation', async () => {
   const result = await compileWithCLI(source)
@@ -201,6 +212,7 @@ test('should create operation', async () => {
 ```
 
 ### Scenario 3: Verify Schema Component Exists
+
 ```typescript
 test('should create schema component for model', async () => {
   const result = await compileWithCLI(source)
@@ -218,6 +230,7 @@ test('should create schema component for model', async () => {
 ```
 
 ### Scenario 4: Verify Multiple Properties
+
 ```typescript
 test('should create multiple channels', async () => {
   const result = await compileWithCLI(source)
@@ -238,6 +251,7 @@ test('should create multiple channels', async () => {
 ```
 
 ### Scenario 5: Verify Property Doesn't Exist
+
 ```typescript
 test('should not create channel for internal operation', async () => {
   const result = await compileWithCLI(source)
@@ -253,6 +267,7 @@ test('should not create channel for internal operation', async () => {
 ## 🔧 Bun Test Limitations
 
 ### Known Issues:
+
 1. **`toHaveProperty()` doesn't work with JSON-parsed objects**
    - Use `Object.keys().toContain()` instead
 
@@ -336,6 +351,7 @@ export function getPropertyKeys<T extends object>(
 ```
 
 ### Usage Example:
+
 ```typescript
 import { assertHasProperty, assertHasProperties, getPropertyKeys } from '../utils/assertion-helpers'
 
@@ -375,18 +391,21 @@ When writing new tests:
 When a test fails:
 
 1. **Add Debug Logging:**
+
    ```typescript
    console.log('Keys:', Object.keys(asyncapiDoc.channels))
    console.log('Full object:', JSON.stringify(asyncapiDoc, null, 2))
    ```
 
 2. **Check Type:**
+
    ```typescript
    console.log('Type:', typeof asyncapiDoc.channels)
    console.log('Is Object:', Object.prototype.toString.call(asyncapiDoc.channels))
    ```
 
 3. **Verify Property Exists:**
+
    ```typescript
    console.log('Has property:', 'simple.event' in asyncapiDoc.channels)
    console.log('Direct access:', asyncapiDoc.channels['simple.event'])

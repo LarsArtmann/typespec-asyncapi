@@ -52,8 +52,7 @@ describe("Documentation: Complete Examples Validation", () => {
         // expect(orderChannel.bindings?.kafka?.partitionKey).toBe("customerId")
 
         // AMQP bindings for shipping - not implemented in Alpha
-        const shippingChannel =
-          result.asyncapi!.channels!["orders/{orderId}/shipping"];
+        const shippingChannel = result.asyncapi!.channels!["orders/{orderId}/shipping"];
         // expect(shippingChannel.bindings?.amqp?.exchange).toBe("shipping.exchange")
         // expect(shippingChannel.bindings?.amqp?.routingKey).toBe("order.shipped")
 
@@ -153,14 +152,10 @@ describe("Documentation: Complete Examples Validation", () => {
                   const orderEvent = messages.OrderCreatedEvent.payload;
                   const required = orderEvent.required || [];
                   if (!required.includes("orderId")) {
-                    errors.push(
-                      "OrderCreatedEvent must have orderId as required field",
-                    );
+                    errors.push("OrderCreatedEvent must have orderId as required field");
                   }
                   if (!required.includes("customerId")) {
-                    errors.push(
-                      "OrderCreatedEvent must have customerId as required field",
-                    );
+                    errors.push("OrderCreatedEvent must have customerId as required field");
                   }
                 }
 
@@ -168,9 +163,7 @@ describe("Documentation: Complete Examples Validation", () => {
                 if (messages.PaymentProcessedEvent) {
                   const paymentEvent = messages.PaymentProcessedEvent.payload;
                   if (!paymentEvent.properties?.amount) {
-                    errors.push(
-                      "PaymentProcessedEvent must include amount field",
-                    );
+                    errors.push("PaymentProcessedEvent must include amount field");
                   }
                 }
 
@@ -216,19 +209,15 @@ describe("Documentation: Complete Examples Validation", () => {
         });
 
         // MQTT bindings for telemetry
-        const telemetryChannel =
-          result.asyncapi!.channels!["devices/{deviceId}/telemetry"];
+        const telemetryChannel = result.asyncapi!.channels!["devices/{deviceId}/telemetry"];
         if (telemetryChannel.bindings?.mqtt) {
           expect(telemetryChannel.bindings.mqtt.qos).toBe(1);
           // Alpha version might serialize booleans as strings
-          expect([false, "false"]).toContain(
-            telemetryChannel.bindings.mqtt.retain,
-          );
+          expect([false, "false"]).toContain(telemetryChannel.bindings.mqtt.retain);
         }
 
         // MQTT bindings for commands with higher QoS
-        const commandChannel =
-          result.asyncapi!.channels!["devices/{deviceId}/commands"];
+        const commandChannel = result.asyncapi!.channels!["devices/{deviceId}/commands"];
         if (commandChannel.bindings?.mqtt) {
           expect(commandChannel.bindings.mqtt.qos).toBe(2);
           expect([true, "true"]).toContain(commandChannel.bindings.mqtt.retain);
@@ -289,8 +278,7 @@ describe("Documentation: Complete Examples Validation", () => {
           emitAsyncAPI: true,
         });
 
-        const deviceCommand =
-          result.asyncapi!.components!.schemas!.DeviceCommand;
+        const deviceCommand = result.asyncapi!.components!.schemas!.DeviceCommand;
         expect(deviceCommand.properties!.command.type).toBe("string");
         // Note: Alpha version might not generate complex enums
         expect(deviceCommand.properties!.parameters.type).toBe("object");
@@ -304,8 +292,7 @@ describe("Documentation: Complete Examples Validation", () => {
           emitAsyncAPI: true,
         });
 
-        const aggregatedMetrics =
-          result.asyncapi!.components!.schemas!.AggregatedDeviceMetrics;
+        const aggregatedMetrics = result.asyncapi!.components!.schemas!.AggregatedDeviceMetrics;
         expect(aggregatedMetrics.properties!.deviceType).toEqual({
           type: "string",
         });
@@ -356,8 +343,7 @@ describe("Documentation: Complete Examples Validation", () => {
         });
 
         // NOTE: Alpha version doesn't support WebSocket bindings
-        const marketDataChannel =
-          result.asyncapi!.channels!["market-data/{symbol}/quotes"];
+        const marketDataChannel = result.asyncapi!.channels!["market-data/{symbol}/quotes"];
         // expect(marketDataChannel.bindings?.ws?.method).toBe("GET")
         // expect(marketDataChannel.bindings?.ws?.query?.symbols).toBe("string")
         // expect(marketDataChannel.bindings?.ws?.query?.depth).toBe("number")
@@ -421,8 +407,7 @@ describe("Documentation: Complete Examples Validation", () => {
         });
 
         // Note: RiskAlert not in Alpha fixture
-        const tradeExecution =
-          result.asyncapi!.components!.schemas!.TradeExecution;
+        const tradeExecution = result.asyncapi!.components!.schemas!.TradeExecution;
         expect(tradeExecution.properties!.tradeId).toEqual({ type: "string" });
         expect(tradeExecution.properties!.price).toEqual({
           type: "number",
@@ -479,25 +464,16 @@ describe("Documentation: Complete Examples Validation", () => {
           expect(result.asyncapi!.info.version).toBeDefined();
 
           // All examples should have channels and operations
-          expect(
-            Object.keys(result.asyncapi!.channels!).length,
-          ).toBeGreaterThan(0);
-          expect(
-            Object.keys(result.asyncapi!.operations!).length,
-          ).toBeGreaterThan(0);
+          expect(Object.keys(result.asyncapi!.channels!).length).toBeGreaterThan(0);
+          expect(Object.keys(result.asyncapi!.operations!).length).toBeGreaterThan(0);
 
           // All examples should have message components
-          expect(
-            Object.keys(result.asyncapi!.components!.messages!).length,
-          ).toBeGreaterThan(0);
+          expect(Object.keys(result.asyncapi!.components!.messages!).length).toBeGreaterThan(0);
 
           // All examples should validate against AsyncAPI 3.0
-          const validation = await validator.validateAsyncAPI(
-            result.asyncapi!,
-            {
-              strict: true,
-            },
-          );
+          const validation = await validator.validateAsyncAPI(result.asyncapi!, {
+            strict: true,
+          });
           expect(validation.isValid).toBe(true);
         }
       });
@@ -508,27 +484,21 @@ describe("Documentation: Complete Examples Validation", () => {
           code: TypeSpecFixtures.exampleEcommerce,
           emitAsyncAPI: true,
         });
-        expect(
-          ecommerceResult.asyncapi!.channels!["orders/created"],
-        ).toBeDefined();
+        expect(ecommerceResult.asyncapi!.channels!["orders/created"]).toBeDefined();
 
         // IoT: Device telemetry streams
         const iotResult = await compiler.compileTypeSpec({
           code: TypeSpecFixtures.exampleIoT,
           emitAsyncAPI: true,
         });
-        expect(
-          iotResult.asyncapi!.channels!["devices/{deviceId}/telemetry"],
-        ).toBeDefined();
+        expect(iotResult.asyncapi!.channels!["devices/{deviceId}/telemetry"]).toBeDefined();
 
         // Financial: High-frequency trading
         const financialResult = await compiler.compileTypeSpec({
           code: TypeSpecFixtures.exampleFinancial,
           emitAsyncAPI: true,
         });
-        expect(
-          financialResult.asyncapi!.channels!["market-data/{symbol}/quotes"],
-        ).toBeDefined();
+        expect(financialResult.asyncapi!.channels!["market-data/{symbol}/quotes"]).toBeDefined();
       });
     });
   });

@@ -1,7 +1,4 @@
-import {
-  createAsyncAPITestHost,
-  compileAndGetAsyncAPI,
-} from "./utils/test-helpers.js";
+import { createAsyncAPITestHost, compileAndGetAsyncAPI } from "./utils/test-helpers.js";
 
 async function testMinimalServer() {
   console.log("🧪 TESTING MINIMAL @server REPRODUCTION");
@@ -59,10 +56,7 @@ op publishTest(): TestMessage;
     if (spec) {
       console.log("🎉 SUCCESS: AsyncAPI spec generated!");
       console.log("📊 Version:", spec.asyncapi);
-      console.log(
-        "📊 Servers:",
-        spec.servers ? Object.keys(spec.servers).length : 0,
-      );
+      console.log("📊 Servers:", spec.servers ? Object.keys(spec.servers).length : 0);
     } else {
       console.log("❌ FAILED: No AsyncAPI spec generated");
     }

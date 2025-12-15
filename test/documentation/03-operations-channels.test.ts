@@ -84,12 +84,8 @@ describe("Documentation: Operations and Channels Mapping", () => {
         });
 
         const schemas = result.asyncapi!.components!.schemas!;
-        expect(
-          schemas.OrderValidationRequest.properties!.correlationId,
-        ).toBeDefined();
-        expect(
-          schemas.OrderValidationResponse.properties!.correlationId,
-        ).toBeDefined();
+        expect(schemas.OrderValidationRequest.properties!.correlationId).toBeDefined();
+        expect(schemas.OrderValidationResponse.properties!.correlationId).toBeDefined();
       });
     });
   });
@@ -142,9 +138,7 @@ describe("Documentation: Operations and Channels Mapping", () => {
 
         expect(Object.keys(result.asyncapi!.operations!)).toHaveLength(2);
         expect(result.asyncapi!.operations!.sendMessage.action).toBe("send");
-        expect(result.asyncapi!.operations!.receiveMessage.action).toBe(
-          "receive",
-        );
+        expect(result.asyncapi!.operations!.receiveMessage.action).toBe("receive");
       });
     });
   });

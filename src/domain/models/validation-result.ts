@@ -1,6 +1,6 @@
 /**
  * 📊 ASYNCAPI VALIDATION RESULT UTILITIES
- * 
+ *
  * Provides utility functions and types for AsyncAPI validation.
  * Used by critical validation tests and core functionality.
  */
@@ -12,7 +12,7 @@ export type ValidationResult = {
   valid: boolean;
   errors: string[];
   warnings: string[];
-}
+};
 
 /**
  * Validation metrics for performance tracking
@@ -21,7 +21,7 @@ export type ValidationMetrics = {
   duration: number;
   documentSize: number;
   complexity: number;
-}
+};
 
 /**
  * Extract channel count from AsyncAPI document
@@ -62,7 +62,7 @@ export function getValidationMetrics(doc: Record<string, unknown>): ValidationMe
   return {
     duration: 0,
     documentSize: JSON.stringify(doc).length,
-    complexity: getChannelCount(doc) + getOperationCount(doc) + getSchemaCount(doc)
+    complexity: getChannelCount(doc) + getOperationCount(doc) + getSchemaCount(doc),
   };
 }
 

@@ -22,27 +22,27 @@
 
 ### **🚨 CRITICAL PATH - MINIMAL WORK, MAXIMUM IMPACT**
 
-| Step | Task | Est. Time | Impact | Risk | Dependencies |
-|------|------|-----------|--------|------|---------------|
-| **1** | Implement railwayErrorRecovery module | 45min | Unblock 100+ tests | LOW | None |
-| **2** | Fix EffectResult<T> anti-pattern | 20min | Restore type safety | LOW | None |
-| **3** | Create basic Schema.TaggedError hierarchy | 30min | Foundation for all errors | LOW | Effect types |
+| Step  | Task                                      | Est. Time | Impact                    | Risk | Dependencies |
+| ----- | ----------------------------------------- | --------- | ------------------------- | ---- | ------------ |
+| **1** | Implement railwayErrorRecovery module     | 45min     | Unblock 100+ tests        | LOW  | None         |
+| **2** | Fix EffectResult<T> anti-pattern          | 20min     | Restore type safety       | LOW  | None         |
+| **3** | Create basic Schema.TaggedError hierarchy | 30min     | Foundation for all errors | LOW  | Effect types |
 
 ### **⚡ HIGH IMPACT - MODERATE WORK, SYSTEM-WIDE BENEFITS**
 
-| Step | Task | Est. Time | Impact | Risk | Dependencies |
-|------|------|-----------|--------|------|---------------|
-| **4** | Replace 25 critical raw throw statements | 45min | Type safety improvement | MEDIUM | Error hierarchy |
-| **5** | Implement structured logging system | 30min | Debugging experience | LOW | Effect logging |
-| **6** | Enhance branded type validation errors | 40min | Better developer experience | LOW | Error hierarchy |
+| Step  | Task                                     | Est. Time | Impact                      | Risk   | Dependencies    |
+| ----- | ---------------------------------------- | --------- | --------------------------- | ------ | --------------- |
+| **4** | Replace 25 critical raw throw statements | 45min     | Type safety improvement     | MEDIUM | Error hierarchy |
+| **5** | Implement structured logging system      | 30min     | Debugging experience        | LOW    | Effect logging  |
+| **6** | Enhance branded type validation errors   | 40min     | Better developer experience | LOW    | Error hierarchy |
 
 ### **🎯 EXCELLENCE - HIGHER WORK, PRODUCTION READY**
 
-| Step | Task | Est. Time | Impact | Risk | Dependencies |
-|------|------|-----------|--------|------|---------------|
-| **7** | Add error classification utilities | 25min | Recovery mechanisms | LOW | Error system |
-| **8** | Integrate TypeSpec compiler errors | 35min | Ecosystem alignment | MEDIUM | Error hierarchy |
-| **9** | Implement retry & recovery patterns | 50min | Production resilience | MEDIUM | All prior |
+| Step  | Task                                | Est. Time | Impact                | Risk   | Dependencies    |
+| ----- | ----------------------------------- | --------- | --------------------- | ------ | --------------- |
+| **7** | Add error classification utilities  | 25min     | Recovery mechanisms   | LOW    | Error system    |
+| **8** | Integrate TypeSpec compiler errors  | 35min     | Ecosystem alignment   | MEDIUM | Error hierarchy |
+| **9** | Implement retry & recovery patterns | 50min     | Production resilience | MEDIUM | All prior       |
 
 **TOTAL ESTIMATED TIME:** 5.5 hours spread across focused implementation sessions
 
@@ -55,35 +55,36 @@
 **WHY:** Tests expect these functions but they're undefined, blocking 100+ tests.
 
 **IMPLEMENTATION:**
+
 ```typescript
 // /src/utils/railway-error-recovery.ts
 export const railwayErrorRecovery = {
   retryWithBackoff: <A, E>(
-    effect: Effect.Effect<A, E>, 
-    times: number = 3, 
-    minDelay: number = 100, 
+    effect: Effect.Effect<A, E>,
+    times: number = 3,
+    minDelay: number = 100,
     maxDelay: number = 5000
   ): Effect.Effect<A, E> => {
     // Exponential backoff with jitter using Effect.retry
   },
-  
+
   gracefulDegrade: <A, E>(
-    primary: Effect.Effect<A, E>, 
-    fallback: A, 
+    primary: Effect.Effect<A, E>,
+    fallback: A,
     message?: string
   ): Effect.Effect<A, never> => {
     // Fallback pattern with effect.catchAll + Effect.log
   },
-  
+
   fallbackChain: <A, E>(
-    effects: Array<Effect.Effect<A, E>>, 
+    effects: Array<Effect.Effect<A, E>>,
     fallback: A
   ): Effect.Effect<A, never> => {
     // Sequential fallbacks with Effect.firstSuccessOf
   },
-  
+
   partialFailureHandling: <A, E>(
-    effects: Array<Effect.Effect<A, E>>, 
+    effects: Array<Effect.Effect<A, E>>,
     successThreshold: number = 0.8
   ): Effect.Effect<{successes: A[], failures: E[]}, never> => {
     // Batch operations with threshold using Effect.all
@@ -102,6 +103,7 @@ export const railwayErrorRecovery = {
 **WHY:** Current pattern allows impossible states (both success and error data).
 
 **CURRENT ANTI-PATTERN:**
+
 ```typescript
 // /src/utils/effect-helpers.ts
 export type EffectResult<T> = {
@@ -111,6 +113,7 @@ export type EffectResult<T> = {
 ```
 
 **CORRECTED PATTERN:**
+
 ```typescript
 // Replace with Effect.Effect or branded result
 export type EffectResult<T, E = Error> = Effect.Effect<T, E>
@@ -130,6 +133,7 @@ export type EffectResult<T, E = Error> = Either.Either<T, E>
 **WHY:** Establishes production-grade error classification system.
 
 **IMPLEMENTATION:**
+
 ```typescript
 // /src/types/errors/asyncapi-error-hierarchy.ts
 import { Schema } from "effect"
@@ -146,7 +150,7 @@ export class AsyncAPIValidationError extends Schema.TaggedError<AsyncAPIValidati
   }
 ) {}
 
-// INFRASTRUCTURE ERRORS  
+// INFRASTRUCTURE ERRORS
 export class TypeSpecCompilationError extends Schema.TaggedError<TypeSpecCompilationError>()(
   "TypeSpecCompilationError",
   {
@@ -178,9 +182,9 @@ export class RuntimeError extends Schema.TaggedError<RuntimeError>()(
 ) {}
 
 // Error union for comprehensive error handling
-export type AsyncAPIError = 
+export type AsyncAPIError =
   | AsyncAPIValidationError
-  | TypeSpecCompilationError  
+  | TypeSpecCompilationError
   | FileSystemError
   | RuntimeError
 ```
@@ -196,10 +200,11 @@ export type AsyncAPIError =
 **WHY:** 100+ raw throws bypass Effect.TS error handling patterns.
 
 **TARGETED LOCATIONS (Starting Points):**
+
 ```typescript
 // /src/emitter.ts:234 - Emit failures
-Effect.fail(new FileSystemError({ 
-  message: `Failed to generate ${outputPath}`, 
+Effect.fail(new FileSystemError({
+  message: `Failed to generate ${outputPath}`,
   operation: "write",
   path: outputPath,
   originalError: String(error)
@@ -208,7 +213,7 @@ Effect.fail(new FileSystemError({
 // /src/types/domain/asyncapi-domain-types.ts - Validation errors
 Effect.fail(new AsyncAPIValidationError({
   message: 'Schema name must be non-empty string',
-  field: 'schemaName', 
+  field: 'schemaName',
   value: schemaName,
   constraint: 'nonempty_string',
   suggestion: 'Provide a valid schema name'
@@ -228,31 +233,32 @@ Effect.fail(new AsyncAPIValidationError({
 **WHY:** Replace console.log with Effect.TS aware logging system.
 
 **IMPLEMENTATION:**
+
 ```typescript
 // /src/utils/effect-logging.ts
 export const effectLogging = {
   logWithContext: (
-    level: "debug" | "info" | "warn" | "error", 
-    message: string, 
+    level: "debug" | "info" | "warn" | "error",
+    message: string,
     context: Record<string, unknown>
   ) => Effect.log(message).pipe(
-    Effect.annotateLogs({ 
-      level, 
+    Effect.annotateLogs({
+      level,
       timestamp: Date.now(),
       component: "AsyncAPIEmitter",
-      ...context 
+      ...context
     })
   ),
-    
-  logError: (error: Schema.TaggedError<any>, context?: Record<string, unknown>) => 
+
+  logError: (error: Schema.TaggedError<any>, context?: Record<string, unknown>) =>
     Effect.logError(error.message).pipe(
-      Effect.annotateLogs({ 
+      Effect.annotateLogs({
         errorType: error._tag,
         timestamp: Date.now(),
-        ...context 
+        ...context
       })
     ),
-    
+
   logValidation: (field: string, value: unknown, error: AsyncAPIValidationError) =>
     effectLogging.logError(error, {
       validationField: field,
@@ -286,6 +292,7 @@ return Effect.fail(
 **WHY:** Current branded types have basic errors; enhance with context and suggestions.
 
 **ENHANCED PATTERNS:**
+
 ```typescript
 // /src/types/domain/asyncapi-branded-types.ts
 export class ChannelPathError extends Schema.TaggedError<ChannelPathError>()(
@@ -307,16 +314,16 @@ export const createChannelPath = (path: string): Effect.Effect<ChannelPath, Chan
       suggestion: 'Provide a non-empty string starting with "/"'
     }));
   }
-  
+
   if (!path.startsWith('/')) {
     return Effect.fail(new ChannelPathError({
       message: `Channel path "${path}" must start with "/"`,
       path,
-      reason: "missing_slash", 
+      reason: "missing_slash",
       suggestion: 'Channel paths must start with "/" - add leading slash'
     }));
   }
-  
+
   if (path.includes(' ') || /[!@#$%^&*()]/.test(path) && !path.includes('{') && !path.includes('}')) {
     return Effect.fail(new ChannelPathError({
       message: `Channel path "${path}" contains invalid characters`,
@@ -325,7 +332,7 @@ export const createChannelPath = (path: string): Effect.Effect<ChannelPath, Chan
       suggestion: 'Use only alphanumeric characters, slashes, and parameter placeholders like {userId}'
     }));
   }
-  
+
   return Effect.succeed(path as ChannelPath)
 };
 ```
@@ -341,6 +348,7 @@ export const createChannelPath = (path: string): Effect.Effect<ChannelPath, Chan
 **WHY:** Enable intelligent error recovery and retry mechanisms.
 
 **IMPLEMENTATION:**
+
 ```typescript
 // /src/utils/error-classification.ts
 export const errorClassification = {
@@ -358,7 +366,7 @@ export const errorClassification = {
         return false
     }
   },
-  
+
   getSeverity: (error: AsyncAPIError): "low" | "medium" | "high" | "critical" => {
     switch (error._tag) {
       case "AsyncAPIValidationError": return "medium"
@@ -368,7 +376,7 @@ export const errorClassification = {
       default: return "medium"
     }
   },
-  
+
   getRetryStrategy: (error: AsyncAPIError) => ({
     shouldRetry: errorClassification.isRecoverable(error),
     maxAttempts: error._tag === "FileSystemError" ? 3 : 1,
@@ -399,6 +407,7 @@ export const smartRetry = <A>(effect: Effect.Effect<A, AsyncAPIError>): Effect.E
 **WHY:** Transform TypeSpec compiler diagnostics into Effect errors.
 
 **IMPLEMENTATION:**
+
 ```typescript
 // /src/utils/typespec-error-integration.ts
 export const transformTypeSpecError = (
@@ -451,11 +460,12 @@ export const compileWithTypedErrors = (
 **WHY:** Production systems need sophisticated error recovery.
 
 **IMPLEMENTATION:**
+
 ```typescript
 // /src/utils/error-recovery-patterns.ts
 export const recoveryPatterns = {
   // Resilient file operations with fallback
-  resilientFileWrite: (path: string, content: string): Effect.Effect<void, never> => 
+  resilientFileWrite: (path: string, content: string): Effect.Effect<void, never> =>
     Effect.gen(function*() {
       // Try primary location
       const primaryWrite = Effect.tryPromise({
@@ -467,16 +477,16 @@ export const recoveryPatterns = {
           originalError: String(error)
         })
       })
-      
+
       // Fallback to temp directory
       const fallbackWrite = primaryWrite.pipe(
-        Effect.catchTag("FileSystemError", (error) => 
+        Effect.catchTag("FileSystemError", (error) =>
           Effect.gen(function*() {
-            yield* effectLogging.logError(error, { 
-              operation: "fileWrite", 
-              usingFallback: true 
+            yield* effectLogging.logError(error, {
+              operation: "fileWrite",
+              usingFallback: true
             })
-            
+
             const tempPath = `/tmp/${basename(path)}`
             yield* Effect.tryPromise({
               try: () => fs.writeFile(tempPath, content),
@@ -487,18 +497,18 @@ export const recoveryPatterns = {
                 originalError: String(error)
               })
             })
-            
-            yield* effectLogging.logWithContext("info", 
+
+            yield* effectLogging.logWithContext("info",
               `Fallback write succeeded to ${tempPath}`,
               { originalPath: path, fallbackPath: tempPath }
             )
           })
         )
       )
-      
+
       yield* railwayErrorRecovery.retryWithBackoff(fallbackWrite, 3, 100, 1000)
     }),
-    
+
   // Graceful compilation with multiple attempts
   resilientCompilation: (program: any) =>
     railwayErrorRecovery.gracefulDegrade(
@@ -506,7 +516,7 @@ export const recoveryPatterns = {
       { warnings: [], errors: [] }, // fallback empty result
       "Compilation failed, using empty result"
     ),
-    
+
   // Batch processing with partial failure tolerance
   batchProcessTyped: <A, E>(
     items: Array<A>,
@@ -529,13 +539,15 @@ export const recoveryPatterns = {
 ## 🎯 **VERIFICATION & QUALITY GATES**
 
 ### **After Each Step:**
+
 1. **Build Verification**: `just build` passes with 0 TypeScript errors
-2. **Lint Verification**: `just lint` passes with no new issues  
+2. **Lint Verification**: `just lint` passes with no new issues
 3. **Test Verification**: Related tests pass, no regressions
 4. **Type Safety**: Effect.catchTags patterns compile correctly
 5. **Git Commit**: Small, focused commit with descriptive message
 
 ### **Final Verification (After All Steps):**
+
 - **Test Success Rate**: Target 85%+ from current 57%
 - **Error Coverage**: 90%+ error handling through Effect.TS
 - **Type Safety**: Eliminate all anti-patterns and impossible states

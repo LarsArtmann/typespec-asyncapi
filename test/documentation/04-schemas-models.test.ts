@@ -127,8 +127,7 @@ describe("Documentation: Schema and Models Mapping", () => {
           emitAsyncAPI: true,
         });
 
-        const messageSchema =
-          result.asyncapi!.components!.schemas!.EnvelopedMessage;
+        const messageSchema = result.asyncapi!.components!.schemas!.EnvelopedMessage;
         expect(messageSchema.properties!.payload).toBeDefined();
         expect(messageSchema.properties!.messageId).toEqual({ type: "string" });
         expect(messageSchema.properties!.timestamp).toEqual({

@@ -5,10 +5,7 @@
  */
 
 import { describe, it, expect } from "bun:test";
-import {
-  createAsyncAPITestHost,
-  compileAndGetAsyncAPI,
-} from "../utils/test-helpers.js";
+import { createAsyncAPITestHost, compileAndGetAsyncAPI } from "../utils/test-helpers.js";
 
 describe("Kafka Protocol - Comprehensive Domain Tests", () => {
   // Basic Kafka Configuration Tests (10 tests)

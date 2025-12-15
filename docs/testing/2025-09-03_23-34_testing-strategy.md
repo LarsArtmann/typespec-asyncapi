@@ -18,6 +18,7 @@
 ## 🏗️ THREE-TIER TESTING ARCHITECTURE
 
 ### **Tier 1: BDD Behavior Specification (End-to-End Business Value)**
+
 ```typescript
 // Location: test/behaviors/ (renamed from test/documentation/)
 // Purpose: Verify TypeSpec → AsyncAPI transformation behaviors
@@ -34,10 +35,10 @@ describe("GIVEN a TypeSpec service with @channel decorator", () => {
           op UserCreated(user: User): void;
         }
       `
-      
+
       // Act: Run emitter pipeline
       const result = await compileTypeSpecToAsyncAPI(typeSpecCode)
-      
+
       // Assert: Validate AsyncAPI output structure
       expect(result.channels["user.events"]).toBeDefined()
       expect(result.channels["user.events"].address).toBe("user.events")
@@ -47,12 +48,14 @@ describe("GIVEN a TypeSpec service with @channel decorator", () => {
 ```
 
 **Characteristics:**
+
 - **Focus:** End-to-end business value validation
 - **Scope:** TypeSpec input → AsyncAPI output verification
 - **Tools:** Custom Given-When-Then helpers + AsyncAPI validators
 - **Coverage:** All decorator behaviors, protocol bindings, edge cases
 
 ### **Tier 2: Effect.TS Integration Testing (Service Interaction)**
+
 ```typescript
 // Location: test/integration/
 // Purpose: Test Effect.TS composition and error handling
@@ -63,25 +66,25 @@ describe("ValidationService", () => {
     // Arrange
     const validationService = new ValidationService()
     const document = createValidAsyncApiDoc()
-    
+
     // Act & Assert: Effect.TS composition
     const result = await Effect.runPromise(
       validationService.validateDocument(document)
     )
-    
+
     expect(result.isValid).toBe(true)
     expect(result.errors).toHaveLength(0)
   })
-  
+
   it("should handle validation failures with Railway Programming", async () => {
     // Arrange
     const invalidDocument = createInvalidAsyncApiDoc()
-    
+
     // Act: Effect.TS error handling
     const result = await Effect.runPromise(
       Effect.either(validationService.validateDocument(invalidDocument))
     )
-    
+
     // Assert: Railway programming patterns
     expect(Effect.isLeft(result)).toBe(true)
     expect(result.left.message).toContain("Validation failed")
@@ -90,12 +93,14 @@ describe("ValidationService", () => {
 ```
 
 **Characteristics:**
+
 - **Focus:** Service interaction and data flow
 - **Scope:** Effect.TS composition, Railway programming, error handling
 - **Tools:** Effect.runPromise, Effect.either, proper error boundaries
 - **Coverage:** Service integration, async orchestration, error chains
 
 ### **Tier 3: Traditional Unit Testing (Pure Functions)**
+
 ```typescript
 // Location: test/unit/
 // Purpose: Test pure functions and utilities
@@ -105,18 +110,18 @@ describe("parseChannelAddress", () => {
   it("should extract channel name from TypeSpec operation", () => {
     // Arrange
     const operationName = "user.events.created"
-    
+
     // Act
     const result = parseChannelAddress(operationName)
-    
+
     // Assert
-    expect(result).toEqual({ 
-      domain: "user", 
+    expect(result).toEqual({
+      domain: "user",
       event: "created",
       fullPath: "user.events.created"
     })
   })
-  
+
   it("should handle single-level channel names", () => {
     expect(parseChannelAddress("notifications")).toEqual({
       domain: "notifications",
@@ -128,6 +133,7 @@ describe("parseChannelAddress", () => {
 ```
 
 **Characteristics:**
+
 - **Focus:** Algorithm correctness and edge cases
 - **Scope:** Pure functions, utilities, data transformations
 - **Tools:** Standard Jest/Bun assertions
@@ -169,11 +175,12 @@ test/
 ## 🔧 TEST CONFIGURATION & TOOLING
 
 ### **Primary Test Runner: Bun**
+
 ```json
 {
   "scripts": {
     "test": "bun test",
-    "test:watch": "bun test --watch", 
+    "test:watch": "bun test --watch",
     "test:behaviors": "bun test test/behaviors/",
     "test:integration": "bun test test/integration/",
     "test:unit": "bun test test/unit/",
@@ -183,11 +190,12 @@ test/
 ```
 
 ### **Custom BDD Helpers**
+
 ```typescript
 // test/helpers/bdd-helpers.ts
-export const Given = (description: string, setupFn: () => any) => ({ 
-  description, 
-  setup: setupFn 
+export const Given = (description: string, setupFn: () => any) => ({
+  description,
+  setup: setupFn
 })
 
 export const When = (action: string, actionFn: (context: any) => any) => ({
@@ -210,6 +218,7 @@ export const BDDScenario = (given: any, when: any, then: any) => {
 ```
 
 ### **Effect.TS Test Utilities**
+
 ```typescript
 // test/helpers/effect-test-utils.ts
 export const runEffectTest = <A, E>(
@@ -244,6 +253,7 @@ export const expectEffectFailure = async <A, E>(
 ## 🎯 TESTING PATTERNS & BEST PRACTICES
 
 ### **BDD Test Pattern**
+
 ```typescript
 describe("Feature: AsyncAPI Channel Generation", () => {
   describe("Scenario: Basic channel with message", () => {
@@ -275,6 +285,7 @@ describe("Feature: AsyncAPI Channel Generation", () => {
 ```
 
 ### **Effect.TS Test Pattern**
+
 ```typescript
 describe("ProcessingService", () => {
   it("should process TypeSpec models with proper error handling", async () => {
@@ -282,7 +293,7 @@ describe("ProcessingService", () => {
     const service = new ProcessingService()
     const program = await createTestProgram()
     const models = extractModelsFromProgram(program)
-    
+
     // Act: Use Effect.TS composition
     const result = await runEffectTest(
       Effect.gen(function* () {
@@ -294,7 +305,7 @@ describe("ProcessingService", () => {
         return processedModels
       })
     )
-    
+
     // Assert
     expect(result).toHaveLength(models.length)
     result.forEach(processed => {
@@ -305,6 +316,7 @@ describe("ProcessingService", () => {
 ```
 
 ### **Unit Test Pattern**
+
 ```typescript
 describe("AsyncAPIValidator", () => {
   describe("validateChannelAddress", () => {
@@ -326,25 +338,28 @@ describe("AsyncAPIValidator", () => {
 ## 📊 COVERAGE & QUALITY METRICS
 
 ### **Coverage Requirements**
+
 - **Overall Coverage:** ≥90% (currently 85%)
 - **BDD Tests:** ≥95% end-to-end scenarios
-- **Integration Tests:** ≥90% service interactions  
+- **Integration Tests:** ≥90% service interactions
 - **Unit Tests:** ≥95% pure function coverage
 
 ### **Quality Gates**
+
 - ✅ All tests must pass before merge
 - ✅ Coverage threshold must be met
 - ✅ No flaky tests allowed (>99% reliability)
 - ✅ Test execution time <30 seconds total
 
 ### **Performance Benchmarks**
+
 ```typescript
 describe("Performance Benchmarks", () => {
   it("should compile medium TypeSpec program in <2 seconds", async () => {
     const startTime = Date.now()
     await compileTypeSpecToAsyncAPI(MEDIUM_TYPESPEC_PROGRAM)
     const duration = Date.now() - startTime
-    
+
     expect(duration).toBeLessThan(2000)
   })
 })
@@ -355,18 +370,21 @@ describe("Performance Benchmarks", () => {
 ## 🚀 MIGRATION PLAN
 
 ### **Phase 1: Immediate (Current)**
+
 - [x] **Document this testing strategy**
-- [ ] **Rename test/documentation → test/behaviors**  
+- [ ] **Rename test/documentation → test/behaviors**
 - [ ] **Create BDD helper utilities**
 - [ ] **Standardize Effect.TS test patterns**
 
 ### **Phase 2: Short-term (1-2 weeks)**
+
 - [ ] **Migrate existing tests to new structure**
 - [ ] **Add missing BDD scenarios for all decorators**
 - [ ] **Improve Effect.TS integration test coverage**
 - [ ] **Achieve 90% coverage target**
 
 ### **Phase 3: Long-term (1 month)**
+
 - [ ] **Add performance benchmarking automation**
 - [ ] **Implement test data generation**
 - [ ] **Add visual regression testing for generated specs**
@@ -377,16 +395,19 @@ describe("Performance Benchmarks", () => {
 ## 💡 KEY BENEFITS
 
 ### **For Developers**
+
 - **Clear Testing Patterns:** Know exactly which test type to write
 - **Faster Debugging:** BDD tests show business impact immediately
 - **Reliable Refactoring:** High coverage enables confident changes
 
 ### **For Business**
+
 - **Behavior Documentation:** BDD tests serve as living specifications
 - **Quality Assurance:** 100% automation prevents manual testing bottlenecks
 - **Risk Reduction:** Comprehensive coverage prevents production issues
 
 ### **For Architecture**
+
 - **Effect.TS Validation:** Ensures functional programming patterns work correctly
 - **Integration Confidence:** Services compose properly under all conditions
 - **Regression Prevention:** Changes don't break existing functionality
@@ -396,10 +417,10 @@ describe("Performance Benchmarks", () => {
 ## 🔗 RELATED DOCUMENTATION
 
 - [Architectural Reflection Document](../planning/2025-09-03_COMPREHENSIVE_ARCHITECT_REFLECTION.md)
-- [Package Structure Plan](../architecture/PACKAGE_STRUCTURE.md)  
+- [Package Structure Plan](../architecture/PACKAGE_STRUCTURE.md)
 - [Effect.TS Integration Guide](../architecture/EFFECT_PATTERNS.md)
 - [Testing Infrastructure Setup](./TESTING_INFRASTRUCTURE.md)
 
 ---
 
-*This testing strategy implements the decisions from our comprehensive architectural analysis and provides the foundation for sustainable, high-quality development of the TypeSpec AsyncAPI Emitter.*
+_This testing strategy implements the decisions from our comprehensive architectural analysis and provides the foundation for sustainable, high-quality development of the TypeSpec AsyncAPI Emitter._

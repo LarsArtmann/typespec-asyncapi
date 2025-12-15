@@ -26,6 +26,7 @@ tsp compile . --emit @lars-artmann/typespec-asyncapi
 Should create: `tsp-output/@lars-artmann/typespec-asyncapi/asyncapi.yaml`
 
 Content should have:
+
 - `asyncapi: "3.0.0"`
 - `channels.events`
 - `operations.publishEvent`

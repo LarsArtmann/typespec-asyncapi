@@ -1,8 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import {
-  createAsyncAPIEmitterTester,
-  compileAsyncAPI,
-} from "./utils/emitter-test-helpers.js";
+import { createAsyncAPIEmitterTester, compileAsyncAPI } from "./utils/emitter-test-helpers.js";
 
 describe("emitFile API Isolation Test", () => {
   it("should demonstrate emitFile -> result.outputs disconnect", async () => {
@@ -21,12 +18,7 @@ describe("emitFile API Isolation Test", () => {
       console.log(`🔍 temp-output subdirs:`, subdirs);
       for (const subdir of subdirs) {
         if (subdir === ".DS_Store") continue;
-        const fullPath = path.join(
-          tempOutputBase,
-          subdir,
-          "@lars-artmann",
-          "typespec-asyncapi",
-        );
+        const fullPath = path.join(tempOutputBase, subdir, "@lars-artmann", "typespec-asyncapi");
         if (fs.existsSync(fullPath)) {
           const files = fs.readdirSync(fullPath);
           console.log(`🔍 Files in ${fullPath}:`, files);
@@ -65,21 +57,24 @@ describe("emitFile API Isolation Test", () => {
       hasFs: !!result.fs,
       fsKeys: result.fs ? Object.keys(result.fs) : [],
       hasProgram: !!result.program,
-      hasDiagnostics: !!result.diagnostics
+      hasDiagnostics: !!result.diagnostics,
     });
-    
+
     // Show ALL files in virtual filesystem (including small ones)
     console.log("🔍 Virtual FS ALL entries:");
     if (result.fs && result.fs.fs) {
       const entries = Object.entries(result.fs.fs);
       console.log(`🔍 Total virtual files: ${entries.length}`);
       for (const [path, content] of entries) {
-        const isString = typeof content === 'string';
+        const isString = typeof content === "string";
         const length = isString ? content.length : 0;
-        console.log(`  ${path}: ${typeof content}${isString ? `(${length} chars)` : ''}`);
-        
+        console.log(`  ${path}: ${typeof content}${isString ? `(${length} chars)` : ""}`);
+
         // Check if this looks like an AsyncAPI file
-        if (isString && (path.includes('asyncapi') || path.includes('yaml') || path.includes('json'))) {
+        if (
+          isString &&
+          (path.includes("asyncapi") || path.includes("yaml") || path.includes("json"))
+        ) {
           if (length > 0 && length < 500) {
             console.log(`    Preview: ${content.substring(0, 100)}...`);
           }
@@ -92,24 +87,30 @@ describe("emitFile API Isolation Test", () => {
     // Check if files exist in test framework's expected output directory
     console.log("🔍 Checking tsp-output directory in virtual FS:");
     if (result.fs && result.fs.fs) {
-      const tspFiles = Object.entries(result.fs.fs).filter(([path]) => 
-        path.startsWith('tsp-output/') || path.includes('asyncapi')
+      const tspFiles = Object.entries(result.fs.fs).filter(
+        ([path]) => path.startsWith("tsp-output/") || path.includes("asyncapi"),
       );
       console.log(`🔍 Found ${tspFiles.length} potential AsyncAPI files:`);
       for (const [path, content] of tspFiles) {
-        console.log(`  📄 ${path}: ${typeof content === 'string' ? content.length + ' chars' : typeof content}`);
+        console.log(
+          `  📄 ${path}: ${typeof content === "string" ? content.length + " chars" : typeof content}`,
+        );
       }
     }
 
     // Show result.outputs
     console.log("🔍 result.outputs:", result.outputs);
-    
+
     if (result.outputs && Object.keys(result.outputs).length > 0) {
       console.log("🎉 SUCCESS: Files captured in result.outputs!");
       for (const [filename, content] of Object.entries(result.outputs)) {
-        console.log(`  📄 ${filename}: ${typeof content === 'string' ? content.length + ' chars' : typeof content}`);
-        
-        const doc = filename.endsWith(".json") ? JSON.parse(String(content)) : YAML.load(String(content));
+        console.log(
+          `  📄 ${filename}: ${typeof content === "string" ? content.length + " chars" : typeof content}`,
+        );
+
+        const doc = filename.endsWith(".json")
+          ? JSON.parse(String(content))
+          : YAML.load(String(content));
         return {
           asyncApiDoc: doc,
           diagnostics: result.program.diagnostics,
@@ -127,16 +128,11 @@ describe("emitFile API Isolation Test", () => {
 
     // DEBUG: Show result.outputs structure
     console.log(`🔍 result.outputs type:`, typeof result.outputs);
-    console.log(
-      `🔍 result.outputs constructor:`,
-      result.outputs?.constructor?.name,
-    );
+    console.log(`🔍 result.outputs constructor:`, result.outputs?.constructor?.name);
     console.log(`🔍 result.outputs keys:`, Object.keys(result.outputs || {}));
 
     if (!outputFile) {
-      console.log(
-        "⚠️  emitFile didn't populate result.outputs - testing workaround",
-      );
+      console.log("⚠️  emitFile didn't populate result.outputs - testing workaround");
 
       // Use the compileAsyncAPI helper which includes fallback search
       const fallbackResult = await compileAsyncAPI(source, {
@@ -145,9 +141,7 @@ describe("emitFile API Isolation Test", () => {
       });
 
       if (fallbackResult.outputFile) {
-        console.log(
-          "✅ WORKAROUND SUCCESS: Fallback system found generated file",
-        );
+        console.log("✅ WORKAROUND SUCCESS: Fallback system found generated file");
         console.log(`📄 File: ${fallbackResult.outputFile}`);
         console.log(
           `📊 Channels: ${Object.keys(fallbackResult.asyncApiDoc.channels || {}).length}`,
@@ -162,9 +156,7 @@ describe("emitFile API Isolation Test", () => {
         return;
       }
 
-      console.log(
-        "❌ CONFIRMED: emitFile API test framework integration broken",
-      );
+      console.log("❌ CONFIRMED: emitFile API test framework integration broken");
       throw new Error("emitFile API test framework integration broken");
     }
 

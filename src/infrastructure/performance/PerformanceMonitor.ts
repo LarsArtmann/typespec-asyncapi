@@ -1,6 +1,6 @@
 /**
  * Minimal Performance Monitor for Test Compatibility
- * 
+ *
  * Simplified performance monitoring to unblock tests
  */
 
@@ -8,7 +8,7 @@ export type PerformanceMetrics = {
   duration: number;
   memoryUsage: number;
   timestamp: number;
-}
+};
 
 export class PerformanceMonitor {
   private startTime: number = 0;

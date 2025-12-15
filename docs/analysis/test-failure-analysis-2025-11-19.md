@@ -3,8 +3,9 @@
 ## Summary Statistics
 
 **Test Results:**
+
 - ✅ Pass: 364 (49.4%)
-- ⏭️  Skip: 28 (3.8%)
+- ⏭️ Skip: 28 (3.8%)
 - ❌ Fail: 345 (46.8%)
 - 🔴 Errors: 13
 - **Total:** 737 tests across 77 files
@@ -23,6 +24,7 @@
 **Effort:** 30-45 minutes
 
 #### Error Patterns:
+
 ```
 undefined @lars-artmann/typespec-asyncapi.invalid-server-config: undefined
 error missing-implementation: Extern declaration must have an implementation in JS file
@@ -31,12 +33,14 @@ error multiple-blockless-namespace: Cannot use multiple blockless namespaces
 ```
 
 #### Root Causes:
+
 1. **Diagnostic Not Defined:** `invalid-server-config` diagnostic referenced but not registered
 2. **Extern Declarations:** Decorator extern declarations in `lib/main.tsp` missing JS implementations
 3. **Namespace Conflicts:** Test files using multiple `using` statements incorrectly
 4. **Blockless Namespace:** TypeSpec syntax change in 1.6.0 prevents multiple blockless namespaces
 
 #### Affected Files:
+
 - `test/debug-types-test.test.ts`
 - `test/debug-diagnostic-isolation.test.ts`
 - `test/advanced-decorators.test.ts`
@@ -44,6 +48,7 @@ error multiple-blockless-namespace: Cannot use multiple blockless namespaces
 - All decorator-related integration tests
 
 #### Fix Strategy:
+
 1. Register all diagnostics in `src/lib.ts`
 2. Verify extern declarations have corresponding implementations
 3. Update test TypeSpec files to use single `using` statement
@@ -58,6 +63,7 @@ error multiple-blockless-namespace: Cannot use multiple blockless namespaces
 **Effort:** 45-60 minutes
 
 #### Error Pattern:
+
 ```typescript
 🔍 result.outputs: {}
 🔍 result.outputs keys: []
@@ -65,18 +71,22 @@ error multiple-blockless-namespace: Cannot use multiple blockless namespaces
 ```
 
 #### Root Cause:
+
 TypeSpec 1.6.0 changed the emitFile API contract. The emitter correctly calls `context.program.emitFile()` but the test framework's virtual filesystem (`result.outputs`) is not being populated.
 
 #### Current Workaround:
+
 Tests are falling back to filesystem search in `test/temp-output/*` directories, which is unreliable and slow.
 
 #### Affected Files:
+
 - `test/debug-emitfile.test.ts`
 - `test/debug-emitfile-isolation.test.ts`
 - `test/integration/basic-functionality.test.ts`
 - All tests using `emitFile` API
 
 #### Fix Strategy:
+
 1. Review TypeSpec 1.6.0 emitFile API documentation
 2. Update `src/asyncapi-emitter.ts` to properly integrate with new API
 3. Fix test framework bridge in test helpers
@@ -91,6 +101,7 @@ Tests are falling back to filesystem search in `test/temp-output/*` directories,
 **Effort:** 20-30 minutes
 
 #### Error Pattern:
+
 ```typescript
 expect(result.operationsProcessed).toBe(1)
 expect(result.messageModelsProcessed).toBe(1)
@@ -98,9 +109,11 @@ expect(result.messageModelsProcessed).toBe(1)
 ```
 
 #### Root Cause:
+
 `ProcessingService.executeProcessing()` return type changed. Tests expect properties that no longer exist on the return value.
 
 #### Log Evidence:
+
 ```
 ✅ Complete transformation orchestrated {
   "operationsProcessed": 1,
@@ -111,9 +124,11 @@ expect(result.messageModelsProcessed).toBe(1)
 ```
 
 #### Affected Files:
+
 - `test/unit/core/ProcessingService.test.ts` (multiple tests)
 
 #### Fix Strategy:
+
 1. Check actual return type of `ProcessingService.executeProcessing()`
 2. Update test expectations to match actual return structure
 3. Verify property names: `messagesProcessed` vs `messageModelsProcessed`
@@ -127,6 +142,7 @@ expect(result.messageModelsProcessed).toBe(1)
 **Effort:** 30-45 minutes
 
 #### Error Pattern:
+
 ```
 🔍 walkPropertiesInherited found 0 properties for model Message0
 🚨 ISSUE #180: No properties found for model Message0
@@ -135,13 +151,16 @@ expect(result.messageModelsProcessed).toBe(1)
 ```
 
 #### Root Cause:
+
 TypeSpec 1.6.0 API changes in property iteration. The `walkPropertiesInherited()` function or direct property access is not working correctly with the new compiler API.
 
 #### Affected Files:
+
 - `src/utils/schema-conversion.ts`
 - All tests creating model schemas
 
 #### Fix Strategy:
+
 1. Review TypeSpec 1.6.0 Model/ModelProperty API changes
 2. Update `walkPropertiesInherited()` or equivalent property iteration
 3. Fix direct property access method
@@ -156,6 +175,7 @@ TypeSpec 1.6.0 API changes in property iteration. The `walkPropertiesInherited()
 **Effort:** 20-30 minutes
 
 #### Error Pattern:
+
 ```typescript
 const channel = baseAsyncApiDoc.channels["/missingmetadataop"]
 expect(channel).toBeDefined()
@@ -163,13 +183,16 @@ expect(channel).toBeDefined()
 ```
 
 #### Root Cause:
+
 Operations/channels with missing or invalid metadata are not being created in the document. Expected fallback behavior is not working.
 
 #### Affected Files:
+
 - `test/unit/core/ProcessingService.test.ts`
 - Integration tests expecting default channel creation
 
 #### Fix Strategy:
+
 1. Review operation processing logic for missing metadata handling
 2. Ensure fallback channel paths are created
 3. Update channel creation to handle edge cases
@@ -183,18 +206,22 @@ Operations/channels with missing or invalid metadata are not being created in th
 **Effort:** 15-20 minutes
 
 #### Error Pattern:
+
 ```typescript
 expect(Object.keys(baseAsyncApiDoc.components?.messages || {})).toHaveLength(0)
 // Expected: 0, Received: 1
 ```
 
 #### Root Cause:
+
 Messages are being created even when they shouldn't be, or vice versa. Message creation logic may have regression.
 
 #### Affected Files:
+
 - `test/unit/core/ProcessingService.test.ts`
 
 #### Fix Strategy:
+
 1. Review message model processing conditions
 2. Check when messages should be added to components
 3. Fix message creation logic for edge cases
@@ -208,6 +235,7 @@ Messages are being created even when they shouldn't be, or vice versa. Message c
 **Effort:** 120-180 minutes
 
 Remaining test failures from:
+
 - Validation tests
 - Plugin system tests
 - Performance benchmarks
@@ -276,18 +304,21 @@ Remaining test failures from:
 ## Success Metrics
 
 ### Phase 1 Success Criteria:
+
 - ✅ Test pass rate >70%
 - ✅ All decorator tests passing
 - ✅ emitFile API integration working
 - ✅ ProcessingService unit tests passing
 
 ### Phase 2 Success Criteria:
+
 - ✅ Test pass rate >85%
 - ✅ Schema conversion working
 - ✅ Channel/operation creation working
 - ✅ Message component logic correct
 
 ### Final Success Criteria:
+
 - ✅ Test pass rate >95% (700+ tests passing)
 - ✅ ESLint: 0 errors, 0 warnings
 - ✅ Build: 0 TypeScript errors
@@ -298,12 +329,14 @@ Remaining test failures from:
 ## Technical Notes
 
 ### TypeSpec 1.6.0 API Changes (Suspected)
+
 - emitFile API contract changed
 - Model property iteration changed
 - Diagnostic system registration may have changed
 - Namespace/using syntax strictness increased
 
 ### Investigation Required
+
 1. Review TypeSpec 1.6.0 changelog thoroughly
 2. Compare against TypeSpec 1.5.0 API for breaking changes
 3. Check @typespec/compiler migration guide

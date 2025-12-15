@@ -20,10 +20,7 @@ async function testTypeSpecIntegration() {
     console.log("🚨 SKIPPED: TypeSpecCompilerIntegration not implemented");
 
     // Test that methods are available
-    console.log(
-      "Available methods:",
-      Object.getOwnPropertyNames(Object.getPrototypeOf(extractor)),
-    );
+    console.log("Available methods:", Object.getOwnPropertyNames(Object.getPrototypeOf(extractor)));
 
     console.log("✅ TypeSpec compiler integration test completed successfully");
 

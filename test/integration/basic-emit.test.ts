@@ -1,8 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import {
-  compileAsyncAPISpecWithoutErrors,
-  parseAsyncAPIOutput,
-} from "../utils/test-helpers";
+import { compileAsyncAPISpecWithoutErrors, parseAsyncAPIOutput } from "../utils/test-helpers";
 import { Effect } from "effect";
 import {
   DEFAULT_SERIALIZATION_FORMAT,
@@ -101,10 +98,7 @@ describe("AsyncAPI Emitter Integration", () => {
 
     const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
 
-    const asyncapiDoc = await parseAsyncAPIOutput(
-      outputFiles,
-      "complex-test.json",
-    );
+    const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "complex-test.json");
 
     // Validate AsyncAPI 3.0 structure
     expect(asyncapiDoc.asyncapi).toBe("3.0.0");
@@ -167,10 +161,7 @@ describe("AsyncAPI Emitter Integration", () => {
     // Filter AsyncAPI files by content (more reliable than filename)
     const asyncapiFiles = yamlFiles.filter((f) => {
       const rawContent = outputFiles.get(f);
-      const content =
-        typeof rawContent === "string"
-          ? rawContent
-          : (rawContent as any).content;
+      const content = typeof rawContent === "string" ? rawContent : (rawContent as any).content;
       return content && content.includes("asyncapi: 3.0.0");
     });
 
@@ -180,8 +171,7 @@ describe("AsyncAPI Emitter Integration", () => {
       );
     }
     const rawContent = outputFiles.get(asyncapiFiles[0]);
-    const content =
-      typeof rawContent === "string" ? rawContent : (rawContent as any).content;
+    const content = typeof rawContent === "string" ? rawContent : (rawContent as any).content;
 
     // Should contain all operations
     expect(content).toContain("publishUserEvent");
@@ -228,19 +218,13 @@ describe("AsyncAPI Emitter Integration", () => {
 
     // Validate documentation is preserved
     const channel = asyncapiDoc.channels.documented.events;
-    expect(channel.description).toContain(
-      "Channel for publishing documented events",
-    );
+    expect(channel.description).toContain("Channel for publishing documented events");
 
     const schema = asyncapiDoc.components.schemas.DocumentedEvent;
     expect(schema.description).toBe("Well-documented event model");
     expect(schema.properties.id.description).toBe("Primary key field");
-    expect(schema.properties.name.description).toBe(
-      "Human-readable event name",
-    );
-    expect(schema.properties.createdAt.description).toBe(
-      "Event creation timestamp in UTC",
-    );
+    expect(schema.properties.name.description).toBe("Human-readable event name");
+    expect(schema.properties.createdAt.description).toBe("Event creation timestamp in UTC");
 
     Effect.log("✅ Documentation preservation test passed");
   });

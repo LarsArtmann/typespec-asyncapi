@@ -1,6 +1,6 @@
 /**
  * Minimal Performance Regression Tester for Test Compatibility
- * 
+ *
  * Simplified performance regression testing to unblock tests
  */
 
@@ -56,12 +56,16 @@ export class PerformanceRegressionTester {
     const violations: string[] = [];
 
     if (metrics.duration > this.config.maxCompilationTimeMs) {
-      violations.push(`Compilation time ${metrics.duration}ms exceeds threshold ${this.config.maxCompilationTimeMs}ms`);
+      violations.push(
+        `Compilation time ${metrics.duration}ms exceeds threshold ${this.config.maxCompilationTimeMs}ms`,
+      );
     }
 
     const memoryUsageMB = metrics.memoryUsage / 1024 / 1024;
     if (memoryUsageMB > this.config.maxMemoryUsageMB) {
-      violations.push(`Memory usage ${memoryUsageMB.toFixed(2)}MB exceeds threshold ${this.config.maxMemoryUsageMB}MB`);
+      violations.push(
+        `Memory usage ${memoryUsageMB.toFixed(2)}MB exceeds threshold ${this.config.maxMemoryUsageMB}MB`,
+      );
     }
 
     return {
@@ -73,15 +77,17 @@ export class PerformanceRegressionTester {
   }
 
   generateReport(results: PerformanceReport[]): void {
-    const passed = results.filter(r => r.passed).length;
+    const passed = results.filter((r) => r.passed).length;
     const failed = results.length - passed;
-    
+
     if (failed > 0) {
-      results.filter(r => !r.passed).forEach(result => {
-        result.violations.forEach((_violation) => {
-          // Silent logging for test compatibility
+      results
+        .filter((r) => !r.passed)
+        .forEach((result) => {
+          result.violations.forEach((_violation) => {
+            // Silent logging for test compatibility
+          });
         });
-      });
     }
   }
 }

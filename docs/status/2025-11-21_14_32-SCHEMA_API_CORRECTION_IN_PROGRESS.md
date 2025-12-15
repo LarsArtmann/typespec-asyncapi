@@ -11,8 +11,9 @@
 **Resolution:** In progress - converting to modern `Schema.brand()` API
 
 ### Current API Issues Identified:
+
 1. **Schema.branded() → Schema.brand()** - API method renamed
-2. **Schema.Schema.To → typeof Schema.Type** - Type inference API changed  
+2. **Schema.Schema.To → typeof Schema.Type** - Type inference API changed
 3. **Complex ServerUrl validation** - Need proper chain pattern
 4. **Backward compatibility** - Need type aliases for existing code
 
@@ -21,17 +22,20 @@
 ## 🔄 STEP 2: API Correction Progress
 
 ### ✅ Partially Complete:
+
 - [x] Identified correct modern @effect/schema API patterns
 - [x] Started converting to Schema.brand() patterns
 - [x] Updated type inference approach
 
 ### 🔄 In Progress:
+
 - [ ] Fix ServerUrl schema chain pattern
 - [ ] Complete type inference updates
 - [ ] Resolve compilation errors
 - [ ] Test schema validation works
 
 ### 📋 Remaining Tasks for Step 2:
+
 - [ ] Fix ServerUrl schema validation chain
 - [ ] Complete type inference for all branded types
 - [ ] Resolve TypeScript compilation errors
@@ -43,14 +47,17 @@
 ## 🎯 IMMEDIATE NEXT ACTIONS
 
 ### 1. Fix ServerUrl Schema Chain
+
 **Issue:** Complex brand + fromBrand pattern not working  
 **Solution:** Use separate validation pipeline
 
-### 2. Complete Type Inference  
+### 2. Complete Type Inference
+
 **Issue:** Still using old Schema.Schema.To API  
 **Solution:** Use typeof Schema.Type pattern
 
 ### 3. Build Verification
+
 **Goal:** All TypeScript compilation errors resolved
 **Test:** `just build` passes with 0 errors
 
@@ -59,19 +66,22 @@
 ## 📊 CURRENT STATUS
 
 ### Files Affected:
+
 - **asyncapi-branded-types.ts** 🔄 ACTIVE EDITING
   - 5 schema conversions in progress
   - Type inference fixes needed
   - ServerUrl validation pattern to fix
 
 ### Compilation Status:
+
 - **TypeScript Errors:** 🔴 ~15 errors (API mismatches)
 - **Build State:** ❌ Failing (expected during conversion)
 - **Import Dependencies:** ✅ @effect/schema working
 
 ### Schema Conversion Progress:
+
 - **ChannelPath:** 🔄 80% complete
-- **MessageId:** 🔄 80% complete  
+- **MessageId:** 🔄 80% complete
 - **SchemaName:** 🔄 80% complete
 - **OperationId:** 🔄 80% complete
 - **ServerUrl:** 🔴 40% complete (complex validation)
@@ -81,6 +91,7 @@
 ## 🔧 TECHNICAL DETAILS
 
 ### Correct @effect/schema v0.75.5 Patterns:
+
 ```typescript
 // ✅ Modern branded type creation
 export const UserId = Schema.String.pipe(
@@ -97,6 +108,7 @@ const create = (value: string): Effect.Effect<typeof UserId.Type, Schema.Schema.
 ```
 
 ### ServerUrl Complex Validation Pattern:
+
 ```typescript
 // Need to fix this pattern
 export const ServerUrl = Schema.String.pipe(
@@ -118,4 +130,4 @@ export const ServerUrl = Schema.String.pipe(
 
 ---
 
-*This status report will be updated when Step 2 completes*
+_This status report will be updated when Step 2 completes_

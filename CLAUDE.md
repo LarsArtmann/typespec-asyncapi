@@ -7,12 +7,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 This is the **TypeSpec AsyncAPI Emitter** - currently in **INFRASTRUCTURE RECOVERY** mode. Basic AsyncAPI 3.0 generation works, but advanced features are temporarily disabled while recovering from a TypeScript catastrophe.
 
 **Current Status (2025-10-25):**
+
 - **Build System:** ✅ OPERATIONAL - 0 TypeScript compilation errors (from 425)
 - **Core Emitter:** ✅ FUNCTIONAL - Basic AsyncAPI 3.0 generation working
 - **Advanced Features:** 🔴 DISABLED - 5,745 lines of code temporarily removed
 - **Infrastructure Recovery:** 🟡 IN PROGRESS - Phase 2 of 3
 
 **Key Technologies:**
+
 - **TypeSpec Compiler Integration** - Uses AssetEmitter architecture for proper TypeSpec integration
 - **Effect.TS** - Modern functional programming patterns (core patterns working, advanced disabled)
 - **AsyncAPI 3.0** - Latest event-driven API specification standard
@@ -21,10 +23,11 @@ This is the **TypeSpec AsyncAPI Emitter** - currently in **INFRASTRUCTURE RECOVE
 ## Essential Commands
 
 ### Core Development Workflow
+
 ```bash
 # Use justfile commands (preferred)
 just build          # Build TypeScript → JavaScript
-just lint           # Run ESLint with production-ready config  
+just lint           # Run ESLint with production-ready config
 just test           # Run all tests (138+ tests)
 just typecheck      # Type check without emitting
 just quality-check  # Full CI pipeline (clean, build, lint, test)
@@ -36,10 +39,11 @@ bun run dev         # Development watch mode
 ```
 
 ### Testing Commands
+
 ```bash
 # Test categories
 just test-validation    # Run critical validation tests
-just test-asyncapi     # Run AsyncAPI specification tests  
+just test-asyncapi     # Run AsyncAPI specification tests
 just test-coverage     # Run with coverage reports
 bun test --watch       # Watch mode during development
 
@@ -48,6 +52,7 @@ bun test test/integration/basic-functionality.test.ts
 ```
 
 ### Code Quality & Analysis
+
 ```bash
 just find-duplicates   # Code duplication analysis (alias: just fd)
 just lint-fix         # Auto-fix ESLint issues
@@ -55,6 +60,7 @@ just validate-build   # Verify build artifacts
 ```
 
 ### TypeSpec Compilation
+
 ```bash
 # Compile TypeSpec files to AsyncAPI
 npx tsp compile example.tsp --emit @typespec/asyncapi
@@ -65,23 +71,27 @@ npx tsp compile example.tsp --emit @typespec/asyncapi
 ### Core Emitter Architecture
 
 **Entry Point:** `src/index.ts`
+
 - Exports `$onEmit` function called by TypeSpec compiler
 - Delegates to `generateAsyncAPI` in `asyncapi-emitter.ts`
 
-**Main Emitter:** `src/asyncapi-emitter.ts`  
+**Main Emitter:** `src/asyncapi-emitter.ts`
+
 - Uses TypeSpec AssetEmitter architecture for proper file generation
 - Processes TypeSpec AST → AsyncAPI 3.0 JSON/YAML
 - Supports channels, operations, messages, servers, security
 
 **TypeSpec Library:** `lib/main.tsp`
+
 - Defines AsyncAPI decorators: `@channel`, `@publish`, `@subscribe`, `@server`
 - Extern declarations implemented in `src/decorators/`
 
 ### Decorator System
 
 **Location:** `src/decorators/`
+
 - `channel.ts` - `@channel` decorator for message routing
-- `publish.ts` - `@publish` decorator for send operations  
+- `publish.ts` - `@publish` decorator for send operations
 - `subscribe.ts` - `@subscribe` decorator for receive operations
 - `server.ts` - `@server` decorator for server configurations
 - `message.ts`, `protocol.ts`, `security.ts` - Additional AsyncAPI features
@@ -89,6 +99,7 @@ npx tsp compile example.tsp --emit @typespec/asyncapi
 ### Effect.TS Integration
 
 **Functional Programming Patterns:**
+
 - Railway programming for error handling
 - Monadic composition with `Effect` types
 - Type-safe schema validation with `@effect/schema`
@@ -97,18 +108,21 @@ npx tsp compile example.tsp --emit @typespec/asyncapi
 ### Testing Strategy
 
 **Test Organization:**
+
 - `test/unit/` - Unit tests for individual components
-- `test/integration/` - Integration tests for complete workflows  
+- `test/integration/` - Integration tests for complete workflows
 - `test/validation/` - AsyncAPI specification compliance validation
 - `test/` (root) - Critical validation and emitter tests
 
 **Key Test Patterns:**
-- Uses Bun's built-in test runner  
+
+- Uses Bun's built-in test runner
 - TypeSpec compiler integration tests
 - AsyncAPI specification validation against official schemas
 - Comprehensive test coverage (138+ tests)
 
 **CRITICAL TEST INFRASTRUCTURE:**
+
 - **Build-Before-Test Policy:** All test commands run `bun run build` first to catch TypeScript compilation errors
 - **Fail-Fast on TS Errors:** Tests will NOT run if TypeScript compilation fails - this prevents broken code from passing tests
 - **Package.json Integration:** Uses `pretest` hook and explicit build commands in test scripts
@@ -118,22 +132,26 @@ npx tsp compile example.tsp --emit @typespec/asyncapi
 ## Configuration Details
 
 ### TypeScript Configuration
+
 - **Maximum Strictness:** `strict: true` plus additional strict flags
 - **Effect.TS Compatible:** `verbatimModuleSyntax: true`, `downlevelIteration: true`
 - **ESM Modules:** `module: "NodeNext"`, `moduleResolution: "NodeNext"`
 - **Performance Optimized:** Incremental builds with `.tsbuildinfo`
 
-### ESLint Configuration  
+### ESLint Configuration
+
 **Production-Ready Balance:** (`eslint.config.js`)
+
 - **Critical Safety (ERRORS):** `no-explicit-any`, `no-unsafe-*`, `no-floating-promises`
 - **Code Quality (WARNINGS):** `prefer-nullish-coalescing`, `naming-convention`, `explicit-function-return-type`
 - **Result:** 5 critical errors (must fix) + 105 warnings (track improvements)
 
 ### Package.json Scripts
+
 ```json
 {
   "build": "tsc -p tsconfig.json",
-  "test": "bun test", 
+  "test": "bun test",
   "lint": "eslint src",
   "typecheck": "tsc --noEmit"
 }
@@ -152,6 +170,7 @@ npx tsp compile example.tsp --emit @typespec/asyncapi
 ### Error Handling Patterns
 
 **Use Effect.TS patterns:**
+
 - `Effect.succeed()` for successful results
 - `Effect.fail()` for expected failures
 - `Effect.die()` for unexpected errors
@@ -160,6 +179,7 @@ npx tsp compile example.tsp --emit @typespec/asyncapi
 ### Testing New Features
 
 **Required Test Coverage:**
+
 - Unit tests for decorator functions
 - Integration tests for emitter processing
 - Validation tests against AsyncAPI schemas
@@ -168,11 +188,13 @@ npx tsp compile example.tsp --emit @typespec/asyncapi
 ## Key Limitations & Known Issues
 
 **Current Limitations:**
+
 - **Versioning:** Does NOT support `@typespec/versioning` decorators
 - **ESLint:** 105 code quality warnings (non-blocking)
 - **Advanced AsyncAPI:** Some complex AsyncAPI 3.0 features not implemented
 
 **Architecture Decisions:**
+
 - Focused on core AsyncAPI features for v1.0
 - Deferred optional decorators (`@correlationId`, `@header`, `@tags`) to maintain focus
 - Prioritized production readiness over feature completeness
@@ -180,13 +202,15 @@ npx tsp compile example.tsp --emit @typespec/asyncapi
 ## Dependencies & Peer Dependencies
 
 **Critical Dependencies:**
+
 - `@typespec/compiler` - TypeSpec compiler integration
 - `@typespec/asset-emitter` - Proper emitter architecture
 - `@asyncapi/parser` - AsyncAPI specification validation
 - `effect` + `@effect/schema` - Functional programming patterns
 
 **Development Dependencies:**
-- `bun:test` - Built-in Bun testing framework  
+
+- `bun:test` - Built-in Bun testing framework
 - `eslint` + `typescript-eslint` - Code quality
 - `typescript` - TypeScript compilation
 

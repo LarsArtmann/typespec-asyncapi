@@ -5,7 +5,7 @@
     // Allow importing .ts files directly during development
     "allowImportingTsExtensions": false,
     "noEmit": true,
-    
+
     // More permissive for development speed
     "skipLibCheck": true,
     "skipDefaultLibCheck": true

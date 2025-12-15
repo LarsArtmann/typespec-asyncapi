@@ -3,23 +3,27 @@
 ## 🎯 Planning Principles
 
 ### 1. Research Existing Code First
+
 - ✅ Check what types we already have
 - ✅ Check what validation exists
 - ✅ Check what libraries we use
 - ✅ Leverage existing patterns
 
 ### 2. Small, Verifiable Steps
+
 - Each step: 5-15 minutes
 - Commit after each self-contained change
 - Verify build/tests pass
 - Push when done
 
 ### 3. High Value First
+
 - Focus on user-facing improvements
 - Avoid perfectionism on internal code
 - Real-world examples > internal refactoring
 
 ### 4. Leverage Existing Libraries
+
 - @asyncapi/parser for types
 - Existing validation-helpers.ts
 - Effect.TS patterns already in codebase
@@ -31,33 +35,36 @@
 
 Sorted by: **Impact / Effort = Priority Score**
 
-| # | Task | Impact | Effort | Score | Time | Category |
-|---|------|--------|--------|-------|------|----------|
-| 1 | Update branded-types.ts JSDoc to explain integration | 3 | 10min | 0.3 | 10min | Documentation |
-| 2 | Fix Bun matcher in cli-test-template.test.ts | 5 | 10min | 0.5 | 10min | Test Quality |
-| 3 | Create real-world Kafka example | 9 | 15min | 0.6 | 15min | User Value |
-| 4 | Create real-world WebSocket example | 9 | 15min | 0.6 | 15min | User Value |
-| 5 | Create real-world HTTP webhook example | 8 | 10min | 0.8 | 10min | User Value |
-| 6 | Update README with examples links | 7 | 10min | 0.7 | 10min | Discoverability |
-| 7 | Add branded types to type-guards.ts | 6 | 20min | 0.3 | 20min | Type Safety |
-| 8 | Run bun audit and fix security issues | 8 | 30min | 0.27 | 30min | Production |
-| 9 | Apply Bun matcher fix to options.test.ts | 5 | 30min | 0.17 | 30min | Test Quality |
-| 10 | Integrate branded types into DocumentBuilder | 8 | 60min | 0.13 | 60min | Architecture |
-| 11 | Create helper to convert @asyncapi types to branded | 6 | 45min | 0.13 | 45min | Type Safety |
-| 12 | Fix remaining ESLint warnings (100+) | 4 | 120min | 0.03 | 120min | Code Quality |
+| #   | Task                                                 | Impact | Effort | Score | Time   | Category        |
+| --- | ---------------------------------------------------- | ------ | ------ | ----- | ------ | --------------- |
+| 1   | Update branded-types.ts JSDoc to explain integration | 3      | 10min  | 0.3   | 10min  | Documentation   |
+| 2   | Fix Bun matcher in cli-test-template.test.ts         | 5      | 10min  | 0.5   | 10min  | Test Quality    |
+| 3   | Create real-world Kafka example                      | 9      | 15min  | 0.6   | 15min  | User Value      |
+| 4   | Create real-world WebSocket example                  | 9      | 15min  | 0.6   | 15min  | User Value      |
+| 5   | Create real-world HTTP webhook example               | 8      | 10min  | 0.8   | 10min  | User Value      |
+| 6   | Update README with examples links                    | 7      | 10min  | 0.7   | 10min  | Discoverability |
+| 7   | Add branded types to type-guards.ts                  | 6      | 20min  | 0.3   | 20min  | Type Safety     |
+| 8   | Run bun audit and fix security issues                | 8      | 30min  | 0.27  | 30min  | Production      |
+| 9   | Apply Bun matcher fix to options.test.ts             | 5      | 30min  | 0.17  | 30min  | Test Quality    |
+| 10  | Integrate branded types into DocumentBuilder         | 8      | 60min  | 0.13  | 60min  | Architecture    |
+| 11  | Create helper to convert @asyncapi types to branded  | 6      | 45min  | 0.13  | 45min  | Type Safety     |
+| 12  | Fix remaining ESLint warnings (100+)                 | 4      | 120min | 0.03  | 120min | Code Quality    |
 
 ---
 
 ## 🚀 PHASE 1: QUICK WINS (60 minutes total)
 
 ### Step 1: Document Branded Types Integration Plan (10min)
+
 **Goal:** Explain how branded types will integrate with existing @asyncapi/parser types
 
 **Existing Code to Leverage:**
+
 - `src/types/index.ts` - Already uses @asyncapi/parser types
 - `src/types/branded-types.ts` - Our new branded types
 
 **Actions:**
+
 1. Read src/types/index.ts comments about type architecture
 2. Add JSDoc to branded-types.ts explaining:
    - These complement @asyncapi/parser types
@@ -71,13 +78,16 @@ Sorted by: **Impact / Effort = Priority Score**
 ---
 
 ### Step 2: Fix Bun Matcher in Template Test (10min)
+
 **Goal:** Apply discovered Bun matcher fix to template test
 
 **Existing Code to Leverage:**
+
 - `test/integration/cli-simple-emitter.test.ts` - Has correct pattern
 - `docs/testing/BUN-TEST-PATTERNS.md` - Documents the fix
 
 **Actions:**
+
 1. Open test/templates/cli-test-template.test.ts
 2. Find line 137: `expect(testResult.asyncapiDoc?.channels).toHaveProperty('edge.case')`
 3. Replace with pattern from cli-simple-emitter.test.ts:
@@ -93,13 +103,16 @@ Sorted by: **Impact / Effort = Priority Score**
 ---
 
 ### Step 3: Create Real-World Kafka Example (15min)
+
 **Goal:** Give users a copy-paste Kafka integration example
 
 **Existing Code to Leverage:**
+
 - `examples/smoke/main.tsp` - Has basic structure
 - Existing Kafka decorator in lib/main.tsp
 
 **Actions:**
+
 1. Create `examples/real-world/kafka-events.tsp`
 2. Use realistic event names (UserCreated, OrderPlaced, etc.)
 3. Add Kafka-specific decorators
@@ -108,6 +121,7 @@ Sorted by: **Impact / Effort = Priority Score**
 6. Commit: "docs: Add real-world Kafka events example"
 
 **Template:**
+
 ```typescript
 import "@lars-artmann/typespec-asyncapi";
 using AsyncAPI;
@@ -167,9 +181,11 @@ op subscribeUserCreated(...UserCreatedEvent): void;
 ---
 
 ### Step 4: Create Real-World WebSocket Example (15min)
+
 **Goal:** WebSocket chat application example
 
 **Actions:**
+
 1. Create `examples/real-world/websocket-chat.tsp`
 2. Model chat messages, connections, typing indicators
 3. WebSocket protocol decorators
@@ -182,9 +198,11 @@ op subscribeUserCreated(...UserCreatedEvent): void;
 ---
 
 ### Step 5: Create Real-World HTTP Webhook Example (10min)
+
 **Goal:** HTTP webhook delivery pattern
 
 **Actions:**
+
 1. Create `examples/real-world/http-webhooks.tsp`
 2. Model webhook payloads, headers, signatures
 3. HTTP protocol decorators
@@ -197,13 +215,16 @@ op subscribeUserCreated(...UserCreatedEvent): void;
 ---
 
 ### Step 6: Update README with Examples (10min)
+
 **Goal:** Make examples discoverable
 
 **Existing Code to Leverage:**
+
 - Main README.md
 - examples/ directory structure
 
 **Actions:**
+
 1. Add "Real-World Examples" section to README
 2. Link to examples/real-world/ directory
 3. Brief description of each example
@@ -217,13 +238,16 @@ op subscribeUserCreated(...UserCreatedEvent): void;
 ## 🏗️ PHASE 2: TYPE ARCHITECTURE (90 minutes total)
 
 ### Step 7: Add Branded Type Guards to test-utils (20min)
+
 **Goal:** Make branded types available in tests
 
 **Existing Code to Leverage:**
+
 - `test/utils/type-guards.ts` - Already has type guards
 - `src/types/branded-types.ts` - Has validation functions
 
 **Actions:**
+
 1. Import branded types into type-guards.ts
 2. Add helper: `assertValidChannelName(value: string): ChannelName`
 3. Add helper: `assertValidOperationName(value: string): OperationName`
@@ -235,9 +259,11 @@ op subscribeUserCreated(...UserCreatedEvent): void;
 ---
 
 ### Step 8: Security Audit (30min)
+
 **Goal:** Production requirement - no vulnerabilities
 
 **Actions:**
+
 1. Run `bun audit` (or `bun pm audit`)
 2. Review vulnerability report
 3. Update vulnerable dependencies
@@ -250,13 +276,16 @@ op subscribeUserCreated(...UserCreatedEvent): void;
 ---
 
 ### Step 9: Apply Bun Matcher Fix to options.test.ts (30min)
+
 **Goal:** Fix matcher usage in options tests
 
 **Existing Code to Leverage:**
+
 - `docs/testing/BUN-TEST-PATTERNS.md` - Pattern guide
 - `test/integration/cli-simple-emitter.test.ts` - Working example
 
 **Actions:**
+
 1. Open test/unit/options.test.ts
 2. Find all `toHaveProperty` usages (12 occurrences)
 3. Analyze if they're testing AsyncAPI docs or regular objects
@@ -270,9 +299,11 @@ op subscribeUserCreated(...UserCreatedEvent): void;
 ---
 
 ### Step 10: Document Type Integration Strategy (30min)
+
 **Goal:** Clear plan for using branded types in emitter
 
 **Actions:**
+
 1. Create `docs/architecture/type-system.md`
 2. Document three type layers:
    - Layer 1: @asyncapi/parser types (official spec)
@@ -290,14 +321,17 @@ op subscribeUserCreated(...UserCreatedEvent): void;
 ## 🔧 PHASE 3: TYPE INTEGRATION (120 minutes total)
 
 ### Step 11: Create Type Conversion Helpers (45min)
+
 **Goal:** Safe conversion between @asyncapi types and branded types
 
 **Existing Code to Leverage:**
+
 - `src/types/branded-types.ts` - Validation functions
 - `src/types/index.ts` - @asyncapi/parser types
 - `src/utils/validation-helpers.ts` - Existing validation patterns
 
 **Actions:**
+
 1. Create `src/utils/type-conversion-helpers.ts`
 2. Add function: `extractChannelNames(doc: AsyncAPIObject): ChannelName[]`
 3. Add function: `extractOperationNames(doc: AsyncAPIObject): OperationName[]`
@@ -311,13 +345,16 @@ op subscribeUserCreated(...UserCreatedEvent): void;
 ---
 
 ### Step 12: Integrate Branded Types in DocumentBuilder (60min)
+
 **Goal:** Use branded types in core emitter code
 
 **Existing Code to Leverage:**
+
 - `src/infrastructure/DocumentBuilder.ts` - Main builder class
 - `src/utils/type-conversion-helpers.ts` - New conversion helpers
 
 **Actions:**
+
 1. Read DocumentBuilder.ts to understand structure
 2. Identify where channel/operation names are created
 3. Add branded type validation at creation points
@@ -332,12 +369,15 @@ op subscribeUserCreated(...UserCreatedEvent): void;
 ---
 
 ### Step 13: Update Type Exports (15min)
+
 **Goal:** Make branded types available to emitter users
 
 **Existing Code to Leverage:**
+
 - `src/types/index.ts` - Main type exports
 
 **Actions:**
+
 1. Add exports for branded types
 2. Add type aliases for common combinations
 3. Update JSDoc with usage examples
@@ -350,9 +390,11 @@ op subscribeUserCreated(...UserCreatedEvent): void;
 ## 🧹 PHASE 4: CODE QUALITY (Optional - 120 minutes)
 
 ### Step 14: Fix High-Priority ESLint Warnings (60min)
+
 **Goal:** Address most impactful code quality issues
 
 **Actions:**
+
 1. Run `bun run lint | grep "error"` to find remaining errors
 2. Focus on type-cache.ts and schema-conversion.ts
 3. Fix explicit-any violations
@@ -365,13 +407,16 @@ op subscribeUserCreated(...UserCreatedEvent): void;
 ---
 
 ### Step 15: Custom Bun Matchers (60min)
+
 **Goal:** Better test DX with domain-specific matchers
 
 **Existing Code to Leverage:**
+
 - `test/utils/type-guards.ts` - Assertion functions
 - Bun test API documentation
 
 **Actions:**
+
 1. Create `test/utils/custom-matchers.ts`
 2. Implement: `toHaveChannel(name: ChannelName)`
 3. Implement: `toHaveOperation(name: OperationName)`
@@ -387,6 +432,7 @@ op subscribeUserCreated(...UserCreatedEvent): void;
 ## 🎯 RECOMMENDED EXECUTION ORDER
 
 ### TODAY (90 minutes)
+
 1. ✅ Document branded types integration (10min) - COMMIT
 2. ✅ Fix Bun matcher in template (10min) - COMMIT
 3. ✅ Kafka example (15min) - COMMIT
@@ -399,6 +445,7 @@ op subscribeUserCreated(...UserCreatedEvent): void;
 **Result:** Users get real-world examples, security issues fixed, build stable
 
 ### TOMORROW (120 minutes)
+
 1. Type conversion helpers (45min) - COMMIT
 2. Document type system architecture (30min) - COMMIT
 3. Branded type guards in tests (20min) - COMMIT
@@ -408,6 +455,7 @@ op subscribeUserCreated(...UserCreatedEvent): void;
 **Result:** Type system architecture documented and tested
 
 ### THIS WEEK (120 minutes)
+
 1. Integrate branded types in DocumentBuilder (60min) - COMMIT
 2. Update type exports (15min) - COMMIT
 3. Fix high-priority ESLint (60min) - COMMIT
@@ -420,6 +468,7 @@ op subscribeUserCreated(...UserCreatedEvent): void;
 ## 🔑 KEY INSIGHTS
 
 ### What We Learned:
+
 1. **Always check existing code first**
    - We had @asyncapi/parser types
    - We had validation-helpers.ts
@@ -441,6 +490,7 @@ op subscribeUserCreated(...UserCreatedEvent): void;
    - Complements official types
 
 ### Architecture Principles:
+
 1. **Three Type Layers:**
    - Official types (@asyncapi/parser) - Ground truth
    - Branded types (compile-time safety) - Developer experience
@@ -483,6 +533,7 @@ op subscribeUserCreated(...UserCreatedEvent): void;
 ## ✅ SUCCESS CRITERIA
 
 ### Phase 1 (Today):
+
 - [ ] Build passes ✅ (already fixed)
 - [ ] 3 real-world examples committed
 - [ ] README updated with examples
@@ -490,12 +541,14 @@ op subscribeUserCreated(...UserCreatedEvent): void;
 - [ ] All work pushed to remote
 
 ### Phase 2 (Tomorrow):
+
 - [ ] Type system documented
 - [ ] Conversion helpers implemented and tested
 - [ ] Bun matcher applied to more tests
 - [ ] Branded types in test utils
 
 ### Phase 3 (This Week):
+
 - [ ] DocumentBuilder uses branded types
 - [ ] All tests pass with new types
 - [ ] ESLint high-priority issues fixed

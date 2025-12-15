@@ -12,6 +12,7 @@
 **Mission:** Systematic quality improvement using Pareto analysis (1% → 4% → 20% → 100%)
 
 **THE 4% Results:**
+
 - ✅ **3 hours invested → 64% value delivered**
 - ✅ **ESLint errors: 2 → 0** (CI pipeline unblocked)
 - ✅ **Code duplications: 39 → 28 clones** (28% reduction)
@@ -20,6 +21,7 @@
 - ⏳ **Test pass rate: 52%** (THE 20% target)
 
 **Key Wins:**
+
 1. Quality gates enforced (pre-commit hooks)
 2. Major duplication reduction (39 → 28 clones)
 3. Async performance improved (10 runSync fixes)
@@ -32,6 +34,7 @@
 ### THE 1% (51% Value - 30 minutes) ✅
 
 **T1.1: Fix ESLint Errors - 15 minutes** ✅
+
 - **What:** Fixed 2 ESLint errors in standardized-errors.ts
 - **How:** Added eslint-disable with detailed justifications
 - **Why:** try/catch appropriate for sync utility functions
@@ -39,6 +42,7 @@
 - **Commit:** d15109b "feat: THE 1% - ESLint fixes + pre-commit hooks"
 
 **T1.2: Add Pre-commit Hooks - 15 minutes** ✅
+
 - **What:** Installed husky + lint-staged, created pre-commit hook
 - **How:** Hooks run build, lint, test on every commit
 - **Why:** Prevent 80%+ future quality issues
@@ -48,6 +52,7 @@
 ### THE 4% (64% Value - 3 hours) ✅
 
 **T1.3: Eliminate ImmutableDocumentManager Duplications - 60 minutes** ✅
+
 - **What:** Extracted 10 duplicate patterns into DocumentHelpers.ts
 - **How:** Created reusable helper functions
   - getCurrentState() - Safe state retrieval
@@ -62,6 +67,7 @@
 - **Commit:** 5422bfe "refactor: eliminate ImmutableDocumentManager duplications"
 
 **T1.4: Eliminate schemas.ts Duplications - 60 minutes** ✅
+
 - **What:** Created reusable schema helper constants
 - **How:** Extracted 6 common schema patterns
   - TAG_SCHEMA - Tag structure
@@ -76,6 +82,7 @@
 - **Commit:** 84bd994 "refactor: eliminate schemas.ts duplications"
 
 **T1.5: Fix asyncapi-validator Effect.runSync - 45 minutes** ✅
+
 - **What:** Replaced Effect.runSync with Effect.runPromise
 - **How:** Changed initialize() to async Promise<void>
 - **Why:** Tests already use 'await', now properly async
@@ -83,6 +90,7 @@
 - **Commit:** ee99f04 "fix: eliminate Effect.runSync in asyncapi-validator & typespec-helpers"
 
 **T1.6: Fix typespec-helpers Effect.runSync - 45 minutes** ✅
+
 - **What:** Replaced Effect.runSync with try/catch
 - **How:** Simplified extractHostFromUrl() utility
 - **Why:** URL parsing is sync, no Effect overhead needed
@@ -92,6 +100,7 @@
 ### Planning & Documentation ✅
 
 **Comprehensive Execution Plan Created** ✅
+
 - **What:** 668-line execution plan with Pareto analysis
 - **File:** docs/planning/2025-11-17_12_30-PARETO-EXECUTION-PLAN.md
 - **Contents:**
@@ -109,6 +118,7 @@
 ### Effect.runSync Migration (59% complete)
 
 **Fixed (10 instances):** ✅
+
 - src/index.ts (1 instance) - Logging → runPromise
 - src/domain/validation/ValidationService.ts (1 instance) - forEach → Effect.forEach
 - src/domain/validation/asyncapi-validator.ts (1 instance) - initialize → async
@@ -116,9 +126,11 @@
 - src/utils/standardized-errors.ts (2 instances) - Removed Effect.runSync + try
 
 **Documented as Justified (3 instances):** ✅
+
 - src/utils/schema-conversion.ts (3 instances) - TypeSpec synchronous API constraints
 
 **Remaining to Review (7 instances):** ⏳
+
 - src/domain/models/path-templates.ts (1)
 - src/infrastructure/adapters/PluginRegistry.ts (1)
 - src/infrastructure/configuration/utils.ts (2)
@@ -135,10 +147,12 @@
 **Reduction:** 11 clones eliminated (28% improvement)
 
 **Fixed Files:**
+
 - ImmutableDocumentManager.ts: 10 → 1 clone (90% improvement)
 - schemas.ts: 10 → ~3 clones (70% improvement)
 
 **Remaining Duplications (28 clones):**
+
 - ValidationService.ts: 2 clones
 - mqtt-plugin.ts: 3 clones
 - Other minor duplications: 23 clones
@@ -149,9 +163,11 @@
 ### File Size Reduction (Progress)
 
 **Files Improved:**
+
 - ImmutableDocumentManager.ts: 438 → 391 lines (11% reduction, approaching 350 target)
 
 **Files Still Over 350 Lines (11 files):**
+
 1. ValidationService.ts: 644 lines (84% over limit) - **WORST**
 2. effect-helpers.ts: 536 lines (53% over)
 3. PluginRegistry.ts: 509 lines (45% over)
@@ -174,31 +190,37 @@
 ### THE 20% (80% Value - 9.5 hours remaining)
 
 **T2.1: Test Suite Triage - 120 minutes** ❌
+
 - Analyze all 323 test failures
 - Categorize by pattern
 - Identify top 10 failure patterns
 - Create fix priority order
 
 **T2.2: Fix Top 5 Test Patterns - 60 minutes** ❌
+
 - Fix highest-impact test failures
 - Target: 52% → 70%+ pass rate
 
 **T3.1: Apply Branded Types (ChannelId) - 60 minutes** ❌
+
 - Enforce type safety at boundaries
 - Create constructor with validation
 - Update all call sites
 
 **T3.2: Replace Booleans with Enums - 30 minutes** ❌
+
 - Make invalid states unrepresentable
 - More expressive domain model
 
 **T3.3: Replace Magic Strings with Enums - 30 minutes** ❌
+
 - Type-safe operation actions
 - Type-safe protocol names
 
 ### PHASE 4: FILE SPLITTING (4 hours)
 
 **T4.1-T4.4: Split Large Files** ❌
+
 - ValidationService.ts (644→<350 lines)
 - effect-helpers.ts (536→<350 lines)
 - PluginRegistry.ts (509→<350 lines)
@@ -207,14 +229,17 @@
 ### PHASE 5: REMAINING QUALITY (3 hours)
 
 **T5.1: Fix Remaining Effect.runSync** ❌
+
 - 7 instances remaining
 - Review, fix, or document
 
 **T5.2: Fix Remaining Duplications** ❌
+
 - 28 clones remaining
 - Target: <10 clones
 
 **T5.3: Apply Remaining Branded Types** ❌
+
 - OperationId, MessageId, ServerId, SchemaId
 
 ---
@@ -224,6 +249,7 @@
 ### 1. Test Suite Instability (52% pass rate)
 
 **Current State:**
+
 - **Pass:** 384 tests (52.2%)
 - **Fail:** 323 tests (43.9%)
 - **Skip:** 29 tests (3.9%)
@@ -233,6 +259,7 @@
 **Impact:** Can't trust test results, blocks deployment
 
 **Root Causes (Hypotheses):**
+
 1. Test execution order dependencies
 2. Shared state pollution between tests
 3. Effect.TS async operations not properly awaited
@@ -240,11 +267,13 @@
 5. Race conditions in Effect operations
 
 **Evidence:**
+
 - Test results fluctuate between runs (51% → 52% → 53%)
 - Failure counts vary: 348 → 331 → 323 → 320
 - Non-deterministic behavior suggests state/timing issues
 
 **Fix Plan (THE 20%):**
+
 - T2.1: Comprehensive triage (120min) - Categorize all failures
 - T2.2: Fix top 5 patterns (60min) - Target 70%+ pass rate
 - **Priority:** P0 - MUST FIX THIS WEEK
@@ -256,6 +285,7 @@
 ### 2. Branded Types Split Brain
 
 **Current State:**
+
 - ✅ **DEFINED:** ChannelId, OperationId, MessageId, ServerId, SchemaId
 - ❌ **USED:** 0% (NOT AT ALL)
 
@@ -265,6 +295,7 @@
 **Root Cause:** Types created but never applied systematically
 
 **Evidence:**
+
 ```typescript
 // ❌ CURRENT: Weak typing
 function createChannel(id: string, path: string): Channel
@@ -274,6 +305,7 @@ function createChannel(id: ChannelId, path: ChannelPath): Channel
 ```
 
 **Fix Plan (THE 20%):**
+
 - T3.1: Apply ChannelId (60min) - Most critical type
 - T5.3: Apply remaining types (90min) - Complete the pattern
 
@@ -286,12 +318,14 @@ function createChannel(id: ChannelId, path: ChannelPath): Channel
 ### 1. Test Infrastructure (P0 - CRITICAL)
 
 **Current Issues:**
+
 - 52% pass rate (UNACCEPTABLE)
 - Non-deterministic results
 - No proper isolation between tests
 - Shared state pollution
 
 **Improvements Needed:**
+
 - **BDD Framework** - Clear Given/When/Then structure
 - **Test Isolation** - Clean state between tests
 - **Proper async/await** - Fix Effect.TS timing issues
@@ -304,11 +338,13 @@ function createChannel(id: ChannelId, path: ChannelPath): Channel
 ### 2. Type Safety Enforcement (P1 - HIGH)
 
 **Current Issues:**
+
 - Branded types defined but unused
 - String primitives everywhere
 - No validation at boundaries
 
 **Improvements Needed:**
+
 - **Apply branded types** - ChannelId, OperationId, etc.
 - **Add constructors** - Validation in branded type creation
 - **Enforce at boundaries** - Type errors at call sites
@@ -320,11 +356,13 @@ function createChannel(id: ChannelId, path: ChannelPath): Channel
 ### 3. File Size (SRP) Compliance (P2 - MEDIUM)
 
 **Current Issues:**
+
 - 11 files >350 lines
 - ValidationService.ts at 644 lines (84% over)
 - Violates Single Responsibility Principle
 
 **Improvements Needed:**
+
 - **Split large files** - <350 lines each
 - **Clear separation** - One responsibility per file
 - **Better organization** - Logical grouping
@@ -336,10 +374,12 @@ function createChannel(id: ChannelId, path: ChannelPath): Channel
 ### 4. Code Duplication Elimination (P2 - MEDIUM)
 
 **Current Issues:**
+
 - 28 clones remaining (2.2% of codebase)
 - ValidationService.ts, mqtt-plugin.ts have duplications
 
 **Improvements Needed:**
+
 - **Extract patterns** - Create reusable helpers
 - **DRY principle** - Single source of truth
 - **Consistency** - Uniform patterns
@@ -351,10 +391,12 @@ function createChannel(id: ChannelId, path: ChannelPath): Channel
 ### 5. Effect.runSync Elimination (P1 - HIGH)
 
 **Current Issues:**
+
 - 7 instances remaining
 - Event loop blocking in some paths
 
 **Improvements Needed:**
+
 - **Review remaining** - path-templates, decorators, plugins
 - **Fix or document** - runPromise or justify
 - **Performance** - Non-blocking async
@@ -366,11 +408,13 @@ function createChannel(id: ChannelId, path: ChannelPath): Channel
 ### 6. Documentation & Architecture (P3 - LOW)
 
 **Current Issues:**
+
 - Some patterns not documented
 - Helper functions need JSDoc
 - Architectural decisions implicit
 
 **Improvements Needed:**
+
 - **JSDoc comments** - All public APIs
 - **Architecture docs** - Decision records
 - **Pattern guides** - How to use helpers
@@ -387,54 +431,54 @@ function createChannel(id: ChannelId, path: ChannelPath): Channel
 
 ### 🔥 CRITICAL (Do This Week) - 8-12 hours
 
-| # | Task | Time | Impact | Priority | Phase |
-|---|------|------|--------|----------|-------|
-| 1 | **Test Suite Triage** | 120min | CRITICAL | P0 | THE 20% |
-| 2 | **Fix Top 5 Test Patterns** | 60min | CRITICAL | P0 | THE 20% |
-| 3 | **Fix Remaining Effect.runSync (7)** | 60min | HIGH | P1 | THE 20% |
-| 4 | **Apply Branded Types - ChannelId** | 60min | HIGH | P1 | THE 20% |
-| 5 | **Replace Magic Strings → Enums** | 30min | MEDIUM | P2 | THE 20% |
-| 6 | **Replace Booleans → Enums** | 30min | MEDIUM | P2 | THE 20% |
+| #   | Task                                 | Time   | Impact   | Priority | Phase   |
+| --- | ------------------------------------ | ------ | -------- | -------- | ------- |
+| 1   | **Test Suite Triage**                | 120min | CRITICAL | P0       | THE 20% |
+| 2   | **Fix Top 5 Test Patterns**          | 60min  | CRITICAL | P0       | THE 20% |
+| 3   | **Fix Remaining Effect.runSync (7)** | 60min  | HIGH     | P1       | THE 20% |
+| 4   | **Apply Branded Types - ChannelId**  | 60min  | HIGH     | P1       | THE 20% |
+| 5   | **Replace Magic Strings → Enums**    | 30min  | MEDIUM   | P2       | THE 20% |
+| 6   | **Replace Booleans → Enums**         | 30min  | MEDIUM   | P2       | THE 20% |
 
 **Total:** 6 hours → Pass rate 70%+, types enforced, async correct
 
 ### ⚡ HIGH PRIORITY (Next Week) - 6-8 hours
 
-| # | Task | Time | Impact | Priority | Phase |
-|---|------|------|--------|----------|-------|
-| 7 | **Split ValidationService.ts** | 60min | MEDIUM | P2 | PHASE 3 |
-| 8 | **Split effect-helpers.ts** | 45min | MEDIUM | P2 | PHASE 3 |
-| 9 | **Split PluginRegistry.ts** | 60min | MEDIUM | P2 | PHASE 3 |
-| 10 | **Split standardized-errors.ts** | 45min | LOW | P3 | PHASE 3 |
-| 11 | **Fix ValidationService duplications** | 30min | MEDIUM | P2 | PHASE 5 |
-| 12 | **Fix mqtt-plugin duplications** | 30min | MEDIUM | P2 | PHASE 5 |
-| 13 | **Apply OperationId branded type** | 30min | MEDIUM | P2 | PHASE 5 |
-| 14 | **Apply MessageId branded type** | 30min | MEDIUM | P2 | PHASE 5 |
+| #   | Task                                   | Time  | Impact | Priority | Phase   |
+| --- | -------------------------------------- | ----- | ------ | -------- | ------- |
+| 7   | **Split ValidationService.ts**         | 60min | MEDIUM | P2       | PHASE 3 |
+| 8   | **Split effect-helpers.ts**            | 45min | MEDIUM | P2       | PHASE 3 |
+| 9   | **Split PluginRegistry.ts**            | 60min | MEDIUM | P2       | PHASE 3 |
+| 10  | **Split standardized-errors.ts**       | 45min | LOW    | P3       | PHASE 3 |
+| 11  | **Fix ValidationService duplications** | 30min | MEDIUM | P2       | PHASE 5 |
+| 12  | **Fix mqtt-plugin duplications**       | 30min | MEDIUM | P2       | PHASE 5 |
+| 13  | **Apply OperationId branded type**     | 30min | MEDIUM | P2       | PHASE 5 |
+| 14  | **Apply MessageId branded type**       | 30min | MEDIUM | P2       | PHASE 5 |
 
 **Total:** 6 hours → Files <350 lines, more branded types
 
 ### 📋 MEDIUM PRIORITY (Week 3) - 4-6 hours
 
-| # | Task | Time | Impact | Priority | Phase |
-|---|------|------|--------|----------|-------|
-| 15 | **Implement BDD Framework** | 120min | HIGH | P1 | PHASE 5 |
-| 16 | **Add Test Coverage Reporting** | 60min | MEDIUM | P2 | PHASE 5 |
-| 17 | **Fix AsyncAPI 3.0 Generation** | 120min | HIGH | P1 | PHASE 4 |
-| 18 | **Fix OperationProcessingService** | 120min | HIGH | P1 | PHASE 4 |
-| 19 | **Apply ServerId branded type** | 15min | LOW | P3 | PHASE 5 |
-| 20 | **Apply SchemaId branded type** | 15min | LOW | P3 | PHASE 5 |
+| #   | Task                               | Time   | Impact | Priority | Phase   |
+| --- | ---------------------------------- | ------ | ------ | -------- | ------- |
+| 15  | **Implement BDD Framework**        | 120min | HIGH   | P1       | PHASE 5 |
+| 16  | **Add Test Coverage Reporting**    | 60min  | MEDIUM | P2       | PHASE 5 |
+| 17  | **Fix AsyncAPI 3.0 Generation**    | 120min | HIGH   | P1       | PHASE 4 |
+| 18  | **Fix OperationProcessingService** | 120min | HIGH   | P1       | PHASE 4 |
+| 19  | **Apply ServerId branded type**    | 15min  | LOW    | P3       | PHASE 5 |
+| 20  | **Apply SchemaId branded type**    | 15min  | LOW    | P3       | PHASE 5 |
 
 **Total:** 6.5 hours → BDD tests, AsyncAPI fixes
 
 ### 🔧 FUTURE WORK (Sprint Planning) - 12+ hours
 
-| # | Task | Time | Impact | Priority | Phase |
-|---|------|------|--------|----------|-------|
-| 21 | **Implement Missing Decorators** | 180min | MEDIUM | P2 | PHASE 4 |
-| 22 | **Complete Value Objects** | 300min | MEDIUM | P2 | PHASE 4 |
-| 23 | **Implement TDD for New Features** | Ongoing | HIGH | P1 | PHASE 5 |
-| 24 | **Add JSDoc to All Public APIs** | 120min | LOW | P3 | Ongoing |
-| 25 | **Architecture Decision Records** | 60min | LOW | P3 | Ongoing |
+| #   | Task                               | Time    | Impact | Priority | Phase   |
+| --- | ---------------------------------- | ------- | ------ | -------- | ------- |
+| 21  | **Implement Missing Decorators**   | 180min  | MEDIUM | P2       | PHASE 4 |
+| 22  | **Complete Value Objects**         | 300min  | MEDIUM | P2       | PHASE 4 |
+| 23  | **Implement TDD for New Features** | Ongoing | HIGH   | P1       | PHASE 5 |
+| 24  | **Add JSDoc to All Public APIs**   | 120min  | LOW    | P3       | Ongoing |
+| 25  | **Architecture Decision Records**  | 60min   | LOW    | P3       | Ongoing |
 
 ---
 
@@ -443,12 +487,14 @@ function createChannel(id: ChannelId, path: ChannelPath): Channel
 **Q: What's the root cause of test instability (52% pass rate with fluctuating results)?**
 
 **Observations:**
+
 - Pass rate varies between runs: 51% → 52% → 53%
 - Failure count varies: 348 → 331 → 323 → 320
 - Suggests non-deterministic behavior
 - 323 failures is too many to analyze manually
 
 **Hypotheses:**
+
 1. **Test execution order matters** (shared state)
    - Tests pass/fail depending on which tests run first
    - Global state not cleaned between tests
@@ -475,12 +521,14 @@ function createChannel(id: ChannelId, path: ChannelPath): Channel
    - Other global state not reset
 
 **What I Need:**
+
 - **Verbose test output** - See exact failure patterns
 - **Test isolation analysis** - Which tests affect others
 - **Timing analysis** - Are failures timing-dependent?
 - **State inspection** - What state leaks between tests?
 
 **Decision Point:** Should we:
+
 - **A) Fix tests one by one** (slow but thorough)
   - Pros: Understand each failure deeply
   - Cons: 323 failures × 5min each = 27 hours
@@ -494,6 +542,7 @@ function createChannel(id: ChannelId, path: ChannelPath): Channel
 **Recommendation:** **Option C** - Add test isolation, then systematic fixes
 
 **Next Steps:**
+
 1. Run tests with verbose logging
 2. Categorize failures by pattern (T2.1)
 3. Add proper cleanup hooks
@@ -501,6 +550,7 @@ function createChannel(id: ChannelId, path: ChannelPath): Channel
 5. Implement BDD for new tests (T3.1)
 
 **Why This Matters:**
+
 - Can't ship with 52% pass rate
 - Unreliable tests = unreliable releases
 - Blocks future development
@@ -512,57 +562,57 @@ function createChannel(id: ChannelId, path: ChannelPath): Channel
 
 ### Code Quality Metrics
 
-| Metric | Before | After | Change | Target |
-|--------|--------|-------|--------|--------|
-| **TypeScript Errors** | 0 | 0 | ✅ 0 | 0 |
-| **ESLint Errors** | 2 | 0 | ✅ -100% | 0 |
-| **ESLint Warnings** | 33 | 34 | +3% | <10 |
-| **Build Status** | ✅ | ✅ | ✅ | ✅ |
-| **Lint Status** | ❌ | ✅ | ✅ | ✅ |
+| Metric                | Before | After | Change   | Target |
+| --------------------- | ------ | ----- | -------- | ------ |
+| **TypeScript Errors** | 0      | 0     | ✅ 0     | 0      |
+| **ESLint Errors**     | 2      | 0     | ✅ -100% | 0      |
+| **ESLint Warnings**   | 33     | 34    | +3%      | <10    |
+| **Build Status**      | ✅     | ✅    | ✅       | ✅     |
+| **Lint Status**       | ❌     | ✅    | ✅       | ✅     |
 
 ### Code Duplication Metrics
 
-| Metric | Before | After | Change | Target |
-|--------|--------|-------|--------|--------|
-| **Total Clones** | 39 | 28 | ✅ -28% | <10 |
-| **Duplicated Lines** | 273 (1.67%) | 239 (1.45%) | ✅ -12% | <1% |
-| **Duplicated Tokens** | 2867 (2.58%) | 2461 (2.2%) | ✅ -14% | <1% |
-| **Files Analyzed** | 207 | 208 | +1 | - |
+| Metric                | Before       | After       | Change  | Target |
+| --------------------- | ------------ | ----------- | ------- | ------ |
+| **Total Clones**      | 39           | 28          | ✅ -28% | <10    |
+| **Duplicated Lines**  | 273 (1.67%)  | 239 (1.45%) | ✅ -12% | <1%    |
+| **Duplicated Tokens** | 2867 (2.58%) | 2461 (2.2%) | ✅ -14% | <1%    |
+| **Files Analyzed**    | 207          | 208         | +1      | -      |
 
 ### Performance Metrics
 
-| Metric | Before | After | Change | Target |
-|--------|--------|-------|--------|--------|
-| **Effect.runSync Instances** | 17 | 7 | ✅ -59% | 3 |
-| **Event Loop Blocking** | HIGH | MEDIUM | ✅ -59% | NONE |
-| **Async Correctness** | 59% | 82% | ✅ +23% | 100% |
+| Metric                       | Before | After  | Change  | Target |
+| ---------------------------- | ------ | ------ | ------- | ------ |
+| **Effect.runSync Instances** | 17     | 7      | ✅ -59% | 3      |
+| **Event Loop Blocking**      | HIGH   | MEDIUM | ✅ -59% | NONE   |
+| **Async Correctness**        | 59%    | 82%    | ✅ +23% | 100%   |
 
 ### Test Metrics
 
-| Metric | Before | After | Change | Target |
-|--------|--------|-------|--------|--------|
-| **Pass Rate** | 52.2% | 52.2% | - | 85%+ |
-| **Tests Passing** | 384 | 384 | - | 625+ |
-| **Tests Failing** | 323 | 323 | - | <50 |
-| **Tests Skipped** | 29 | 29 | - | <10 |
-| **Total Tests** | 736 | 736 | - | 800+ |
+| Metric            | Before | After | Change | Target |
+| ----------------- | ------ | ----- | ------ | ------ |
+| **Pass Rate**     | 52.2%  | 52.2% | -      | 85%+   |
+| **Tests Passing** | 384    | 384   | -      | 625+   |
+| **Tests Failing** | 323    | 323   | -      | <50    |
+| **Tests Skipped** | 29     | 29    | -      | <10    |
+| **Total Tests**   | 736    | 736   | -      | 800+   |
 
 ### File Size Metrics (SRP)
 
-| Metric | Before | After | Change | Target |
-|--------|--------|-------|--------|--------|
-| **Files >350 Lines** | 11 | 11 | - | 0 |
-| **Largest File** | 644 lines | 644 lines | - | <350 |
-| **ImmutableDocumentManager** | 438 | 391 | ✅ -11% | <350 |
-| **schemas.ts** | 441 | 442 | +1 | <350 |
+| Metric                       | Before    | After     | Change  | Target |
+| ---------------------------- | --------- | --------- | ------- | ------ |
+| **Files >350 Lines**         | 11        | 11        | -       | 0      |
+| **Largest File**             | 644 lines | 644 lines | -       | <350   |
+| **ImmutableDocumentManager** | 438       | 391       | ✅ -11% | <350   |
+| **schemas.ts**               | 441       | 442       | +1      | <350   |
 
 ### Type Safety Metrics
 
-| Metric | Before | After | Change | Target |
-|--------|--------|-------|--------|--------|
-| **Branded Types Defined** | 5 | 5 | - | 5 |
-| **Branded Types Applied** | 0 | 0 | - | 5 |
-| **Type Safety at Boundaries** | 0% | 0% | - | 100% |
+| Metric                        | Before | After | Change | Target |
+| ----------------------------- | ------ | ----- | ------ | ------ |
+| **Branded Types Defined**     | 5      | 5     | -      | 5      |
+| **Branded Types Applied**     | 0      | 0     | -      | 5      |
+| **Type Safety at Boundaries** | 0%     | 0%    | -      | 100%   |
 
 ---
 
@@ -575,6 +625,7 @@ function createChannel(id: ChannelId, path: ChannelPath): Channel
 **ROI:** 17× return on time investment
 
 **Deliverables:**
+
 - ✅ ESLint errors eliminated (2 → 0)
 - ✅ Pre-commit hooks active (80%+ issue prevention)
 - ✅ Quality gates enforced
@@ -590,6 +641,7 @@ function createChannel(id: ChannelId, path: ChannelPath): Channel
 **ROI:** 3.5× return on time investment
 
 **Deliverables:**
+
 - ✅ Duplications reduced 28% (39 → 28 clones)
 - ✅ Effect.runSync 59% fixed (17 → 7 instances)
 - ✅ ImmutableDocumentManager 90% improved (10 → 1 clone)
@@ -606,6 +658,7 @@ function createChannel(id: ChannelId, path: ChannelPath): Channel
 **Estimated ROI:** 1.4× return on time investment
 
 **Planned Deliverables:**
+
 - ⏳ Test pass rate: 52% → 70%+
 - ⏳ Branded types: 0% → 100% (ChannelId applied)
 - ⏳ Magic strings → Enums
@@ -693,6 +746,7 @@ function createChannel(id: ChannelId, path: ChannelPath): Channel
 **Priority:** Fix test suite instability
 
 **Tasks:**
+
 1. T2.1: Test triage (120min) - Categorize all 323 failures
 2. T2.2: Fix top 5 patterns (60min) - Target 70%+ pass rate
 3. T1.5: Fix remaining Effect.runSync (60min) - Non-blocking async
@@ -706,6 +760,7 @@ function createChannel(id: ChannelId, path: ChannelPath): Channel
 **Priority:** Complete THE 20% (80% value)
 
 **Tasks:**
+
 1. Apply remaining branded types
 2. Replace magic strings with enums
 3. Replace booleans with enums
@@ -719,6 +774,7 @@ function createChannel(id: ChannelId, path: ChannelPath): Channel
 **Priority:** Complete file splitting + features
 
 **Tasks:**
+
 1. Split all files >350 lines
 2. Implement missing decorators
 3. Complete value objects
@@ -734,6 +790,7 @@ function createChannel(id: ChannelId, path: ChannelPath): Channel
 ### Value Delivered Today ✅
 
 **THE 4% Complete (3 hours):**
+
 - ✅ **Quality Gates** - Pre-commit hooks prevent 80%+ future issues
 - ✅ **Code Quality** - 28% duplication reduction, cleaner codebase
 - ✅ **Performance** - 59% Effect.runSync fixed, better async
@@ -744,6 +801,7 @@ function createChannel(id: ChannelId, path: ChannelPath): Channel
 ### Value In Progress 🟡
 
 **Test Suite (THE 20%):**
+
 - ⏳ 52% pass rate → 85%+ target
 - ⏳ Reliable test results
 - ⏳ Faster CI pipeline
@@ -753,6 +811,7 @@ function createChannel(id: ChannelId, path: ChannelPath): Channel
 ### Future Value 📋
 
 **Type Safety (THE 20%):**
+
 - 📋 Branded types at boundaries
 - 📋 Compile-time error catching
 - 📋 Fewer runtime bugs
@@ -760,6 +819,7 @@ function createChannel(id: ChannelId, path: ChannelPath): Channel
 **Customer Impact:** **HIGH** - More reliable software
 
 **Features (PHASE 4):**
+
 - 📋 Missing decorators implemented
 - 📋 AsyncAPI 3.0 compliance complete
 - 📋 Value objects pattern applied
@@ -771,6 +831,7 @@ function createChannel(id: ChannelId, path: ChannelPath): Channel
 ## 🏆 OVERALL GRADE
 
 **Today's Session:**
+
 - **Planning:** A+ (Comprehensive, systematic, Pareto-optimized)
 - **Execution:** A+ (100% of THE 4% completed, quality verified)
 - **Documentation:** A+ (Detailed commits, comprehensive status reports)
@@ -778,6 +839,7 @@ function createChannel(id: ChannelId, path: ChannelPath): Channel
 - **Time Management:** A+ (3 hours → 64% value = 17× ROI)
 
 **Project Status:**
+
 - **Code Quality:** A+ (0 TS/ESLint errors, 28% duplication reduction)
 - **Type Safety:** C (Good foundation, branded types unused)
 - **Architecture:** B+ (Clean patterns, some large files)
@@ -786,6 +848,7 @@ function createChannel(id: ChannelId, path: ChannelPath): Channel
 - **Performance:** B+ (59% Effect.runSync fixed, improving)
 
 **Overall:** **B+** → **A-** (Improving)
+
 - Excellent progress on quality
 - Critical test issues identified
 - Clear path forward with THE 20%
@@ -844,6 +907,7 @@ d15109b feat: THE 1% - ESLint fixes + pre-commit hooks (51% value delivered)
 **ROI:** 3.5× return on time investment
 
 **Key Achievements:**
+
 1. ✅ Quality gates enforced (pre-commit hooks)
 2. ✅ ESLint compliance (2→0 errors)
 3. ✅ Duplication reduced 28% (39→28 clones)
@@ -851,11 +915,13 @@ d15109b feat: THE 1% - ESLint fixes + pre-commit hooks (51% value delivered)
 5. ✅ Documentation complete (668-line plan + this report)
 
 **Critical Next Steps:**
+
 1. **Fix test suite** (P0) - 52% → 85%+ pass rate
 2. **Apply branded types** (P1) - Type safety at boundaries
 3. **Complete Effect.runSync** (P1) - Remove remaining 7 instances
 
 **Project Health:** **IMPROVING** ⬆️
+
 - Strong foundation established
 - Clear execution plan
 - Systematic progress

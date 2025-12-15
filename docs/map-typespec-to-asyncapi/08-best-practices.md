@@ -9,10 +9,11 @@ This document provides comprehensive best practices for designing effective Type
 ### API-First Development
 
 **✅ Start with Domain Events**
+
 ```typespec
 // Good: Domain-driven event design
 namespace UserManagement {
-  @message({ 
+  @message({
     name: "UserRegisteredEvent",
     description: "Fired when a new user completes registration"
   })
@@ -26,6 +27,7 @@ namespace UserManagement {
 ```
 
 **❌ Technology-First Design**
+
 ```typespec
 // Bad: Implementation-driven design
 @channel("kafka.topic.user")
@@ -36,6 +38,7 @@ op sendMessage(@body data: Record<unknown>): void;
 ### Event Storming to TypeSpec
 
 **✅ Model Business Processes**
+
 ```typespec
 // Good: Business process modeling
 namespace OrderFulfillment {
@@ -45,7 +48,7 @@ namespace OrderFulfillment {
     items: OrderItem[];
     paymentMethod: PaymentMethod;
   }
-  
+
   // Events (past tense, business outcomes)
   model OrderPlacedEvent { /* ... */ }
   model PaymentAuthorizedEvent { /* ... */ }
@@ -60,10 +63,11 @@ namespace OrderFulfillment {
 ### Channel Naming Strategy
 
 **✅ Hierarchical Naming**
+
 ```typespec
 // Good: Clear hierarchy and purpose
 @channel("ecommerce.orders.lifecycle.created")
-@channel("ecommerce.orders.lifecycle.updated") 
+@channel("ecommerce.orders.lifecycle.updated")
 @channel("ecommerce.orders.lifecycle.shipped")
 @channel("ecommerce.inventory.stock.depleted")
 @channel("ecommerce.inventory.stock.replenished")
@@ -71,6 +75,7 @@ namespace OrderFulfillment {
 ```
 
 **❌ Flat or Unclear Naming**
+
 ```typespec
 // Bad: Unclear purpose and organization
 @channel("orders")
@@ -82,6 +87,7 @@ namespace OrderFulfillment {
 ### Operation Naming Patterns
 
 **✅ Action-Oriented Names**
+
 ```typespec
 // Good: Clear intent and direction
 @publish op publishOrderCreated(@body event: OrderCreatedEvent): void;
@@ -91,6 +97,7 @@ namespace OrderFulfillment {
 ```
 
 **❌ Generic or Unclear Names**
+
 ```typespec
 // Bad: Unclear intent
 @publish op send(@body data: unknown): void;
@@ -101,6 +108,7 @@ namespace OrderFulfillment {
 ### Message and Model Naming
 
 **✅ Domain Language**
+
 ```typespec
 // Good: Uses ubiquitous language
 model CustomerRegisteredEvent {
@@ -119,6 +127,7 @@ model ProductCatalogUpdatedEvent {
 ```
 
 **❌ Technical Language**
+
 ```typespec
 // Bad: Implementation-focused naming
 model DataRecord {
@@ -133,6 +142,7 @@ model DataRecord {
 ### Message Structure Patterns
 
 **✅ Consistent Event Envelope**
+
 ```typespec
 // Good: Standardized event structure
 model BaseEvent {
@@ -140,16 +150,16 @@ model BaseEvent {
   eventId: string;
   eventType: string;
   eventVersion: string;
-  
+
   // Timing information
   occurredAt: utcDateTime;
   processedAt?: utcDateTime;
-  
+
   // Tracing and correlation
   correlationId?: string;
   causationId?: string;
   traceId?: string;
-  
+
   // Source information
   source: string;
   sourceVersion: string;
@@ -158,7 +168,7 @@ model BaseEvent {
 model UserRegisteredEvent extends BaseEvent {
   eventType: "user.registered";
   eventVersion: "1.0";
-  
+
   // Business data
   user: UserData;
   registrationContext: RegistrationContext;
@@ -166,6 +176,7 @@ model UserRegisteredEvent extends BaseEvent {
 ```
 
 **❌ Inconsistent Structure**
+
 ```typespec
 // Bad: Different structures for different events
 model UserEvent {
@@ -185,6 +196,7 @@ model OrderEvent {
 ### Schema Evolution Strategy
 
 **✅ Additive-Only Changes**
+
 ```typespec
 // Good: Backward compatible evolution
 model UserEventV1 {
@@ -198,13 +210,14 @@ model UserEventV2 extends UserEventV1 {
   // v2.0 additions (all optional for backward compatibility)
   phoneNumber?: string;
   preferences?: UserPreferences;
-  
+
   // v2.1 additions
   socialProfiles?: SocialProfile[];
 }
 ```
 
 **❌ Breaking Changes**
+
 ```typespec
 // Bad: Breaking changes
 model UserEventV2 {
@@ -218,25 +231,26 @@ model UserEventV2 {
 ### Validation Best Practices
 
 **✅ Comprehensive Validation**
+
 ```typespec
 // Good: Business rule validation
 model OrderCreatedEvent {
   @format("uuid")
   orderId: string;
-  
-  @format("uuid") 
+
+  @format("uuid")
   customerId: string;
-  
+
   @minItems(1)
   @maxItems(50)
   items: OrderItem[];
-  
+
   @minValue(0.01)
   totalAmount: decimal;
-  
+
   @pattern("^[A-Z]{3}$")
   currency: string;
-  
+
   @doc("Order creation timestamp")
   @example("2023-12-25T10:30:00Z")
   createdAt: utcDateTime;
@@ -245,11 +259,11 @@ model OrderCreatedEvent {
 model OrderItem {
   @format("uuid")
   productId: string;
-  
+
   @minValue(1)
   @maxValue(1000)
   quantity: int32;
-  
+
   @minValue(0.01)
   unitPrice: decimal;
 }
@@ -260,6 +274,7 @@ model OrderItem {
 ### Request-Reply Patterns
 
 **✅ Proper Correlation**
+
 ```typespec
 // Good: Clear request-reply with correlation
 namespace UserQuery {
@@ -269,7 +284,7 @@ namespace UserQuery {
     userId: string;
     requestedFields: string[];
   }
-  
+
   model UserQueryResponse {
     queryId: string;
     correlationId: string;  // Same as request
@@ -277,11 +292,11 @@ namespace UserQuery {
     error?: QueryError;
     respondedAt: utcDateTime;
   }
-  
+
   @channel("users.queries")
   @publish
   op requestUserData(@body query: UserQueryRequest): void;
-  
+
   @channel("users.query-responses")
   @subscribe
   op receiveUserData(): UserQueryResponse;
@@ -291,6 +306,7 @@ namespace UserQuery {
 ### Event Sourcing Patterns
 
 **✅ Proper Aggregate Design**
+
 ```typespec
 // Good: Well-designed aggregate events
 namespace OrderAggregate {
@@ -300,20 +316,20 @@ namespace OrderAggregate {
     eventType: string;
     occurredAt: utcDateTime;
   }
-  
+
   model OrderCreatedEvent extends OrderEvent {
     eventType: "order.created";
     customerId: string;
     items: OrderItem[];
     totalAmount: decimal;
   }
-  
+
   model OrderItemAddedEvent extends OrderEvent {
     eventType: "order.item.added";
     item: OrderItem;
     newTotalAmount: decimal;
   }
-  
+
   model OrderCancelledEvent extends OrderEvent {
     eventType: "order.cancelled";
     reason: CancellationReason;
@@ -327,24 +343,25 @@ namespace OrderAggregate {
 ### Kafka Best Practices
 
 **✅ Production-Ready Configuration**
+
 ```typespec
 // Good: Comprehensive Kafka configuration
 @protocol({
   type: "kafka",
   topic: "orders.events",
   partitionKey: "customerId",
-  
+
   // Reliability settings
   acks: "all",
   retries: 2147483647,
   enableIdempotence: true,
   maxInFlightRequestsPerConnection: 1,
-  
+
   // Performance settings
   batchSize: 16384,
   compressionType: "lz4",
   lingerMs: 5,
-  
+
   // Schema registry
   schemaRegistry: {
     url: "https://schema-registry.production.com",
@@ -358,6 +375,7 @@ op publishOrderEvent(@body event: OrderEvent): void;
 ```
 
 **❌ Minimal Configuration**
+
 ```typespec
 // Bad: Insufficient configuration
 @protocol({ type: "kafka" })
@@ -369,11 +387,12 @@ op publish(@body data: unknown): void;
 ### Security Configuration
 
 **✅ Comprehensive Security**
+
 ```typespec
 // Good: Multi-layered security
 @security({
   name: "oauth2",
-  type: "oauth2", 
+  type: "oauth2",
   flows: {
     clientCredentials: {
       tokenUrl: "https://auth.example.com/oauth/token",
@@ -401,6 +420,7 @@ op processOrderEvent(): OrderEvent;
 ### Comprehensive Error Design
 
 **✅ Rich Error Information**
+
 ```typespec
 // Good: Comprehensive error handling
 @error
@@ -433,6 +453,7 @@ model ValidationFailure {
 ### Dead Letter Queue Patterns
 
 **✅ Proper DLQ Configuration**
+
 ```typespec
 // Good: Complete error handling setup
 @protocol({
@@ -458,6 +479,7 @@ op handleFailedOrder(): FailedOrderEvent;
 ### Comprehensive Documentation
 
 **✅ Rich Documentation**
+
 ```typespec
 // Good: Comprehensive documentation
 @doc("User lifecycle events representing key moments in user journey")
@@ -483,18 +505,18 @@ model UserLifecycleEvent {
   @doc("Unique event identifier for tracking and correlation")
   @example("evt_01234567-89ab-cdef-0123-456789abcdef")
   eventId: string;
-  
+
   @doc("Event type discriminator following domain.action pattern")
   @example("user.registered")
   eventType: "user.registered" | "user.activated" | "user.deactivated" | "user.deleted";
-  
+
   @doc("Precise timestamp when the event occurred in the source system")
   @example("2023-12-25T10:30:00Z")
   occurredAt: utcDateTime;
-  
+
   @doc("Complete user data at the time of the event")
   user: UserEventData;
-  
+
   @doc("Additional context about how and why the event occurred")
   context: EventContext;
 }
@@ -505,6 +527,7 @@ model UserLifecycleEvent {
 ### Contract Testing
 
 **✅ Comprehensive Testing Approach**
+
 ```typespec
 // Good: Test-friendly design
 @example({
@@ -517,13 +540,13 @@ model UserLifecycleEvent {
   }
 })
 @example({
-  name: "registration-with-preferences", 
+  name: "registration-with-preferences",
   description: "Registration including user preferences",
   value: {
     eventId: "evt_54321",
-    eventType: "user.registered", 
-    user: { 
-      id: "usr_09876", 
+    eventType: "user.registered",
+    user: {
+      id: "usr_09876",
       email: "premium@example.com",
       preferences: { notifications: true, marketing: false }
     }
@@ -542,24 +565,25 @@ model UserRegisteredEvent {
 ### Efficient Schema Design
 
 **✅ Optimized for Performance**
+
 ```typespec
 // Good: Performance-conscious design
 model OptimizedEvent {
   // Fixed-size identifiers
   @format("uuid")
   eventId: string;
-  
+
   @format("uuid")
   userId: string;
-  
+
   // Compact timestamps
   @format("unix-timestamp")
   occurredAt: int64;
-  
+
   // Bounded collections
   @maxItems(100)
   tags: string[];
-  
+
   // Optional heavy data for lazy loading
   detailedData?: {
     href: string;  // Link to detailed data
@@ -570,13 +594,14 @@ model OptimizedEvent {
 ### Lazy Loading Patterns
 
 **✅ Efficient Data Access**
+
 ```typespec
 // Good: HATEOAS for event data
 model EventSummary {
   eventId: string;
   eventType: string;
   occurredAt: utcDateTime;
-  
+
   // Links to detailed data
   _links: {
     self: { href: string };
@@ -590,7 +615,7 @@ model EventDetails extends EventSummary {
   payload: EventPayload;
   metadata: EventMetadata;
   relatedEvents: RelatedEvent[];
-  
+
   // Remove links since we have full data
   _links?: never;
 }
@@ -601,6 +626,7 @@ model EventDetails extends EventSummary {
 ### Metrics Integration
 
 **✅ Observable Events**
+
 ```typespec
 // Good: Built-in observability
 @extension("x-metrics", {
@@ -625,6 +651,7 @@ op processUserEvent(): UserEvent;
 ### Team Boundaries
 
 **✅ Clear Ownership**
+
 ```typespec
 // Good: Clear team boundaries and ownership
 namespace UserService {
@@ -638,7 +665,7 @@ namespace UserService {
 }
 
 namespace OrderService {
-  @tag("order-team") 
+  @tag("order-team")
   @contact("order-team@example.com")
   interface OrderEvents {
     // Events owned by order team
@@ -651,6 +678,7 @@ namespace OrderService {
 ### API Versioning Strategy
 
 **✅ Semantic Versioning**
+
 ```typespec
 // Good: Clear versioning strategy
 @version("2023-12-01")
@@ -659,15 +687,15 @@ namespace UserEventsV2 {
   model UserRegisteredEvent {
     eventId: string;
     eventVersion: "2.0";
-    
+
     // v1.0 fields
     userId: string;
     email: string;
-    
+
     // v2.0 additions (optional for compatibility)
     @added(Versions.v2_0)
     phoneNumber?: string;
-    
+
     @added(Versions.v2_0)
     preferences?: UserPreferences;
   }
@@ -677,6 +705,7 @@ namespace UserEventsV2 {
 ## Common Anti-Patterns to Avoid
 
 ### ❌ God Objects
+
 ```typespec
 // Bad: Monolithic event with everything
 model MegaEvent {
@@ -691,6 +720,7 @@ model MegaEvent {
 ```
 
 ### ❌ Anemic Events
+
 ```typespec
 // Bad: Events without business meaning
 model DataChanged {
@@ -702,6 +732,7 @@ model DataChanged {
 ```
 
 ### ❌ Technology Leakage
+
 ```typespec
 // Bad: Implementation details in API
 @channel("mysql.users.table")  // Database-specific
@@ -710,6 +741,7 @@ op publishDatabaseChange(@body change: DatabaseChangeEvent): void;
 ```
 
 ### ❌ Poor Error Handling
+
 ```typespec
 // Bad: Generic error handling
 @channel("events")
@@ -722,6 +754,7 @@ op process(): unknown;  // No error information
 ## Summary Checklist
 
 ### Design Quality ✅
+
 - [ ] Events represent business outcomes, not technical operations
 - [ ] Clear domain language throughout
 - [ ] Consistent naming conventions
@@ -729,6 +762,7 @@ op process(): unknown;  // No error information
 - [ ] Comprehensive validation rules
 
 ### Technical Excellence ✅
+
 - [ ] Protocol configurations optimized for production
 - [ ] Security properly configured
 - [ ] Error handling comprehensive
@@ -736,6 +770,7 @@ op process(): unknown;  // No error information
 - [ ] Monitoring and observability integrated
 
 ### Team Success ✅
+
 - [ ] Clear ownership and boundaries
 - [ ] Comprehensive documentation
 - [ ] Testing strategy defined
@@ -744,4 +779,4 @@ op process(): unknown;  // No error information
 
 ---
 
-*Following these best practices ensures TypeSpec to AsyncAPI mappings result in maintainable, scalable, and business-valuable event-driven APIs that serve organizations effectively over time.*
+_Following these best practices ensures TypeSpec to AsyncAPI mappings result in maintainable, scalable, and business-valuable event-driven APIs that serve organizations effectively over time._

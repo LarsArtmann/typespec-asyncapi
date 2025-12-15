@@ -12,12 +12,12 @@ repos:
       - id: end-of-file-fixer
         exclude: '\.md$'
       - id: check-yaml
-        args: ['--unsafe']
+        args: ["--unsafe"]
       - id: check-json
       - id: check-toml
       - id: check-merge-conflict
       - id: check-added-large-files
-        args: ['--maxkb=1000']
+        args: ["--maxkb=1000"]
       - id: detect-private-key
       - id: check-case-conflict
 
@@ -62,7 +62,7 @@ repos:
     rev: v1.4.0
     hooks:
       - id: detect-secrets
-        args: ['--baseline', '.secrets.baseline']
+        args: ["--baseline", ".secrets.baseline"]
         exclude: '\.lock$|package-lock\.json$|bun\.lockb$'
 
   # Markdown linting
@@ -74,7 +74,7 @@ repos:
 
 # Global configuration
 default_language_version:
-  node: '18.17.0'
+  node: "18.17.0"
 
 # Exclude patterns
 exclude: |

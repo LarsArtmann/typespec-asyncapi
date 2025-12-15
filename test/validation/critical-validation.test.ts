@@ -24,9 +24,7 @@ describe("🚨 CRITICAL: AsyncAPI Specification Validation", () => {
   beforeAll(async () => {
     // Execute initialization logging in proper Effect context
     await Effect.runPromise(
-      Effect.log("Initializing AsyncAPI 3.0.0 Validator").pipe(
-  Effect.provide(LoggerLive)
-    ),
+      Effect.log("Initializing AsyncAPI 3.0.0 Validator").pipe(Effect.provide(LoggerLive)),
     );
     validator = new AsyncAPIValidator({
       strict: true,
@@ -102,15 +100,11 @@ describe("🚨 CRITICAL: AsyncAPI Specification Validation", () => {
       expect(result.metrics.duration).toBeLessThan(500); // <500ms acceptable for REAL AsyncAPI parser
       expect(result.summary).toContain("AsyncAPI document is valid");
 
-      Effect.log(
-        `✅ VALID: Basic document (${result.metrics.duration.toFixed(2)}ms)`,
-      );
+      Effect.log(`✅ VALID: Basic document (${result.metrics.duration.toFixed(2)}ms)`);
       if (result._tag === "Success") {
         const channelCount = getChannelCount(result.value);
         const operationCount = getOperationCount(result.value);
-        Effect.log(
-          `📊 Metrics: ${channelCount} channels, ${operationCount} operations`,
-        );
+        Effect.log(`📊 Metrics: ${channelCount} channels, ${operationCount} operations`);
       }
     });
 
@@ -274,9 +268,7 @@ describe("🚨 CRITICAL: AsyncAPI Specification Validation", () => {
         expect(getOperationCount(result.value)).toBeGreaterThanOrEqual(0);
       }
 
-      Effect.log(
-        `✅ VALID: Complex document (${result.metrics.duration.toFixed(2)}ms)`,
-      );
+      Effect.log(`✅ VALID: Complex document (${result.metrics.duration.toFixed(2)}ms)`);
       if (result._tag === "Success") {
         Effect.log(
           `📊 Channels: ${getChannelCount(result.value)}, Operations: ${getOperationCount(result.value)}`,
@@ -330,9 +322,7 @@ describe("🚨 CRITICAL: AsyncAPI Specification Validation", () => {
       // Real AsyncAPI parser may accept 2.6.0 as valid - this is correct behavior
       if (result._tag === "Failure") {
         expect(result.errors.length).toBeGreaterThan(0);
-        expect(result.errors[0]?.keyword).toMatch(
-          /asyncapi|validation-error|version-constraint/,
-        );
+        expect(result.errors[0]?.keyword).toMatch(/asyncapi|validation-error|version-constraint/);
       }
 
       Effect.log("❌ Correctly rejected document with wrong AsyncAPI version");
@@ -364,13 +354,9 @@ describe("🚨 CRITICAL: AsyncAPI Specification Validation", () => {
 
       expect(result._tag).toBe("Failure");
       expect(result.errors.length).toBeGreaterThan(0);
-      expect(result.errors[0]?.keyword).toMatch(
-        /asyncapi|validation-error|operation/,
-      ); // Real AsyncAPI parser behavior
+      expect(result.errors[0]?.keyword).toMatch(/asyncapi|validation-error|operation/); // Real AsyncAPI parser behavior
 
-      Effect.log(
-        "❌ Correctly rejected document with invalid operation action",
-      );
+      Effect.log("❌ Correctly rejected document with invalid operation action");
     });
 
     it("should REJECT documents with invalid channel references", async () => {
@@ -472,8 +458,7 @@ describe("🚨 CRITICAL: AsyncAPI Specification Validation", () => {
         validationTimes.push(result.metrics.duration);
       }
 
-      const avgTime =
-        validationTimes.reduce((sum, time) => sum + time, 0) / iterations;
+      const avgTime = validationTimes.reduce((sum, time) => sum + time, 0) / iterations;
       const maxTime = Math.max(...validationTimes);
 
       Effect.log(`⏱️  Average validation time: ${avgTime.toFixed(2)}ms`);
@@ -518,11 +503,7 @@ describe("🚨 CRITICAL: AsyncAPI Specification Validation", () => {
       // Write test file
       const fs = await import("node:fs/promises");
       const path = await import("node:path");
-      const testFile = path.join(
-        process.cwd(),
-        "test-output",
-        "file-validation-test.json",
-      );
+      const testFile = path.join(process.cwd(), "test-output", "file-validation-test.json");
 
       await fs.mkdir(path.dirname(testFile), { recursive: true });
       await fs.writeFile(testFile, JSON.stringify(validDocument, null, 2));
@@ -539,9 +520,7 @@ describe("🚨 CRITICAL: AsyncAPI Specification Validation", () => {
       // Clean up
       await fs.rm(testFile, { force: true });
 
-      Effect.log(
-        `✅ JSON file validation passed (${result.metrics.duration.toFixed(2)}ms)`,
-      );
+      Effect.log(`✅ JSON file validation passed (${result.metrics.duration.toFixed(2)}ms)`);
     });
   });
 
@@ -553,9 +532,7 @@ describe("🚨 CRITICAL: AsyncAPI Specification Validation", () => {
       Effect.log("  ✅ Invalid document detection: OPERATIONAL");
       Effect.log("  ✅ Performance requirements: MET");
       Effect.log("  ✅ File validation: OPERATIONAL");
-      Effect.log(
-        "\n🚨 CRITICAL VALIDATION IS ACTIVE AND PROTECTING AGAINST INVALID SPECS!",
-      );
+      Effect.log("\n🚨 CRITICAL VALIDATION IS ACTIVE AND PROTECTING AGAINST INVALID SPECS!");
 
       // This test always passes - it's a summary
       expect(true).toBe(true);

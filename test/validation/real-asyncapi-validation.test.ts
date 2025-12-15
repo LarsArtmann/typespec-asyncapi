@@ -2,10 +2,7 @@ import { describe, it, expect, beforeEach } from "bun:test";
 import { readFileSync } from "fs";
 import { parse } from "yaml";
 import { Parser } from "@asyncapi/parser";
-import {
-  createTestRunner,
-  type BasicTestRunner,
-} from "@typespec/compiler/testing";
+import { createTestRunner, type BasicTestRunner } from "@typespec/compiler/testing";
 import { Effect } from "effect";
 import { LoggerLive } from "../../src/logger.js";
 
@@ -50,9 +47,7 @@ describe("Real AsyncAPI Validation Tests", () => {
     expect(files.length).toBeGreaterThan(0);
 
     // Find AsyncAPI output file
-    const asyncApiFile = files.find(
-      (f) => f.path.includes("asyncapi") || f.path.endsWith(".yaml"),
-    );
+    const asyncApiFile = files.find((f) => f.path.includes("asyncapi") || f.path.endsWith(".yaml"));
     expect(asyncApiFile).toBeDefined();
 
     if (asyncApiFile) {
@@ -67,9 +62,7 @@ describe("Real AsyncAPI Validation Tests", () => {
       // Validate AsyncAPI 3.0 structure using proper parser
       expect(document?.version()).toBe("3.0.0");
       expect(document?.info()).toBeDefined();
-      expect(document?.info()?.title()).toBe(
-        "Generated from REAL TypeSpec AST",
-      );
+      expect(document?.info()?.title()).toBe("Generated from REAL TypeSpec AST");
       expect(document?.channels()).toBeDefined();
       expect(document?.operations()).toBeDefined();
       expect(document?.components()).toBeDefined();
@@ -95,8 +88,7 @@ describe("Real AsyncAPI Validation Tests", () => {
 
   it("should validate YAML structure and AsyncAPI compliance", async () => {
     // Read the generated file from our working test
-    const testFile =
-      "test-output-basic/@lars-artmann/typespec-asyncapi/test-output.yaml";
+    const testFile = "test-output-basic/@lars-artmann/typespec-asyncapi/test-output.yaml";
 
     try {
       const content = readFileSync(testFile, "utf-8");
@@ -115,9 +107,7 @@ describe("Real AsyncAPI Validation Tests", () => {
       // This proves our generated spec is ACTUALLY valid by AsyncAPI standards
       // Execute success logging in proper Effect context
       await Effect.runPromise(
-        Effect.logInfo(
-          "✅ Generated AsyncAPI 3.0 spec passes OFFICIAL AsyncAPI parser validation",
-        ),
+        Effect.logInfo("✅ Generated AsyncAPI 3.0 spec passes OFFICIAL AsyncAPI parser validation"),
       );
     } catch (error) {
       // If file doesn't exist, skip this validation
@@ -127,8 +117,7 @@ describe("Real AsyncAPI Validation Tests", () => {
 
   it("should generate spec with proper AsyncAPI 3.0 metadata", async () => {
     // Test the generated content structure
-    const testFile =
-      "test-output-basic/@lars-artmann/typespec-asyncapi/test-output.yaml";
+    const testFile = "test-output-basic/@lars-artmann/typespec-asyncapi/test-output.yaml";
 
     try {
       const content = readFileSync(testFile, "utf-8");
@@ -192,15 +181,11 @@ describe("Real AsyncAPI Validation Tests", () => {
     expect(result.diagnostics.length).toBe(0);
 
     const files = result.source.getJsSourceFiles();
-    const asyncApiFile = files.find(
-      (f) => f.path.includes("asyncapi") || f.path.endsWith(".yaml"),
-    );
+    const asyncApiFile = files.find((f) => f.path.includes("asyncapi") || f.path.endsWith(".yaml"));
 
     if (asyncApiFile) {
       // Use PROPER AsyncAPI parser
-      const { document, diagnostics } = await parser.parse(
-        asyncApiFile.contents,
-      );
+      const { document, diagnostics } = await parser.parse(asyncApiFile.contents);
 
       // No validation errors
       expect(diagnostics.length).toBe(0);
@@ -240,9 +225,7 @@ describe("Real AsyncAPI Validation Tests", () => {
     expect(result.diagnostics.length).toBe(0);
 
     const files = result.source.getJsSourceFiles();
-    const asyncApiFile = files.find(
-      (f) => f.path.includes("asyncapi") || f.path.endsWith(".yaml"),
-    );
+    const asyncApiFile = files.find((f) => f.path.includes("asyncapi") || f.path.endsWith(".yaml"));
 
     if (asyncApiFile) {
       const content = asyncApiFile.contents;
@@ -262,9 +245,7 @@ describe("Real AsyncAPI Validation Tests", () => {
       expect(sendNotification).toBeDefined();
 
       // Should have processed documentation (if supported)
-      expect(document?.info()?.description()).toContain(
-        "operations in TypeSpec source",
-      );
+      expect(document?.info()?.description()).toContain("operations in TypeSpec source");
     }
   });
 });

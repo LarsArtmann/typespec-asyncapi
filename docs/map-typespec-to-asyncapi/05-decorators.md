@@ -14,7 +14,7 @@ This document provides comprehensive mapping of TypeSpec decorators to AsyncAPI 
 @publish
 op publishUserEvent(@body event: UserEvent): void;
 
-@channel("user/{userId}/notifications") 
+@channel("user/{userId}/notifications")
 @subscribe
 op handleUserNotification(@path userId: string): UserNotification;
 
@@ -32,7 +32,7 @@ channels:
     messages:
       UserEvent:
         $ref: '#/components/messages/UserEvent'
-        
+
   user-notifications:
     address: user/{userId}/notifications
     description: User-specific notifications
@@ -45,7 +45,7 @@ channels:
     messages:
       UserNotification:
         $ref: '#/components/messages/UserNotification'
-        
+
   orders-processing:
     address: orders.processing.{priority}
     description: Order processing by priority
@@ -71,7 +71,7 @@ channels:
 op publishUserEvent(@body event: UserLifecycleEvent): void;
 
 // With additional metadata
-@channel("events.order")  
+@channel("events.order")
 @publish
 @operationId("publishOrderEvent")
 @tag("order-management")
@@ -91,7 +91,7 @@ operations:
     description: Publishes user lifecycle events
     messages:
       - $ref: '#/channels/events.user/messages/UserLifecycleEvent'
-      
+
   publishOrderEvent:
     action: send
     channel:
@@ -122,7 +122,7 @@ op processPaymentEvent(): PaymentEvent | PaymentError;
 ```
 
 ```yaml
-# AsyncAPI: Receive operations  
+# AsyncAPI: Receive operations
 operations:
   handleUserEvent:
     action: receive
@@ -133,7 +133,7 @@ operations:
     description: Handles incoming user events for processing
     messages:
       - $ref: '#/channels/events.user/messages/UserLifecycleEvent'
-      
+
   processPaymentEvent:
     action: receive
     channel:
@@ -151,7 +151,7 @@ operations:
 // TypeSpec: Message decorator
 @message({
   name: "UserRegisteredEvent",
-  title: "User Registration Event", 
+  title: "User Registration Event",
   summary: "Fired when a new user registers",
   contentType: "application/json",
   description: "Contains all data related to user registration including metadata",
@@ -205,7 +205,7 @@ components:
             user:
               id: "usr_456"
               email: "user@example.com"
-              
+
     OrderProcessingCommand:
       name: OrderProcessingCommand
       title: Order Processing Command
@@ -256,7 +256,7 @@ op publishUserEvent(@body event: UserEvent): void;
   messageId: true
 })
 @channel("orders.created")
-@publish  
+@publish
 op publishOrderCreated(@body order: OrderCreatedEvent): void;
 
 // WebSocket protocol binding
@@ -310,7 +310,7 @@ operations:
         acks: all
         retries: 3
         bindingVersion: "0.4.0"
-        
+
   publishOrderCreated:
     action: send
     channel:
@@ -322,7 +322,7 @@ operations:
         deliveryMode: 2
         mandatory: true
         bindingVersion: "0.2.0"
-        
+
   handleRealtimeEvent:
     action: receive
     bindings:
@@ -395,7 +395,7 @@ components:
       in: header
       name: x-api-key
       description: API key for service authentication
-      
+
     oauth2:
       type: oauth2
       flows:
@@ -412,7 +412,7 @@ operations:
       $ref: '#/channels/secure.events'
     security:
       - apiKey: []
-      
+
   handleProtectedEvent:
     action: receive
     channel:
@@ -420,7 +420,7 @@ operations:
     security:
       - oauth2:
           - events:read
-          
+
   publishAuthEvent:
     action: send
     channel:
@@ -448,7 +448,7 @@ operations:
 })
 @server("production", {
   url: "kafka://kafka.{environment}.example.com:9092",
-  protocol: "kafka", 
+  protocol: "kafka",
   description: "Production Kafka cluster",
   variables: {
     environment: {
@@ -487,7 +487,7 @@ servers:
       kafka:
         schemaRegistryUrl: http://localhost:8081
         schemaRegistryVendor: confluent
-        
+
   production:
     host: kafka.{environment}.example.com:9092
     protocol: kafka
@@ -501,7 +501,7 @@ servers:
       kafka:
         schemaRegistryUrl: https://schema-registry.{environment}.example.com
         schemaRegistryVendor: confluent
-        
+
   websocket:
     host: events.example.com
     pathname: /ws
@@ -531,7 +531,7 @@ servers:
 @example({
   user: {
     id: "usr_123",
-    email: "user@example.com", 
+    email: "user@example.com",
     status: "active"
   },
   metadata: {
@@ -545,10 +545,10 @@ model UserEvent {
   @doc("Unique event identifier for tracking and correlation")
   @example("evt_01234567-89ab-cdef-0123-456789abcdef")
   eventId: string;
-  
+
   @doc("User data at the time of the event")
   user: UserData;
-  
+
   @doc("Additional event context and metadata")
   metadata: EventMetadata;
 }
@@ -623,25 +623,25 @@ model ValidatedEventData {
   @pattern("^[a-zA-Z0-9_-]+$")
   @doc("Event name following naming conventions")
   eventName: string;
-  
+
   @minValue(1)
   @maxValue(100)
   @doc("Event priority level")
   priority: int32;
-  
+
   @minItems(1)
   @maxItems(10)
   @doc("Event tags for categorization")
   tags: string[];
-  
+
   @format("email")
   @doc("Contact email for event owner")
   contactEmail: string;
-  
+
   @secret
   @doc("Sensitive configuration data")
   secretData: string;
-  
+
   @minProperties(1)
   @maxProperties(5)
   @doc("Additional event metadata")
@@ -654,7 +654,7 @@ model EventBatch {
   @maxItems(100)
   @uniqueItems(true)
   events: ValidatedEventData[];
-  
+
   @minLength(1)
   batchId: string;
 }
@@ -703,7 +703,7 @@ components:
           maxProperties: 5
           description: Additional event metadata
       required: [eventName, priority, tags, contactEmail, secretData, metadata]
-      
+
     EventBatch:
       type: object
       properties:
@@ -723,20 +723,20 @@ components:
 ### Visibility Decorators
 
 ```typespec
-// TypeSpec: Visibility decorators  
+// TypeSpec: Visibility decorators
 model UserManagementEvent {
   @visibility("read")
   @doc("System-generated event ID")
   eventId: string;
-  
+
   @visibility("create", "update")
   @doc("Event data provided by client")
   eventData: EventPayload;
-  
+
   @visibility("create")
   @doc("Initial creation context")
   creationContext: CreationContext;
-  
+
   @visibility("read")
   @doc("System processing metadata")
   systemMetadata: SystemMetadata;
@@ -747,7 +747,7 @@ model UserManagementEvent {
 @publish
 op createUserEvent(@body event: Create<UserManagementEvent>): void;
 
-@channel("user.events.response") 
+@channel("user.events.response")
 @subscribe
 op handleUserEventResponse(): Read<UserManagementEvent>;
 
@@ -771,7 +771,7 @@ components:
           $ref: '#/components/schemas/CreationContext'
           description: Initial creation context
       required: [eventData, creationContext]
-      
+
     # Schema for reading (read visibility)
     UserManagementEventRead:
       type: object
@@ -787,7 +787,7 @@ components:
           $ref: '#/components/schemas/SystemMetadata'
           description: System processing metadata
       required: [eventId, eventData, systemMetadata]
-      
+
     # Schema for updates (create + update visibility)
     UserManagementEventUpdate:
       type: object
@@ -802,12 +802,12 @@ components:
       name: CreateUserEvent
       payload:
         $ref: '#/components/schemas/UserManagementEventCreate'
-        
+
     UserEventResponse:
       name: UserEventResponse
       payload:
         $ref: '#/components/schemas/UserManagementEventRead'
-        
+
     UpdateUserEvent:
       name: UpdateUserEvent
       payload:
@@ -823,8 +823,8 @@ components:
 @tag("user-management")
 @tag("high-priority")
 @extension("x-rate-limit", { rpm: 1000, burst: 50 })
-@extension("x-retry-policy", { 
-  maxRetries: 3, 
+@extension("x-retry-policy", {
+  maxRetries: 3,
   backoffStrategy: "exponential",
   initialDelay: 1000
 })
@@ -867,7 +867,7 @@ operations:
       maxRetries: 3
       backoffStrategy: exponential
       initialDelay: 1000
-      
+
   publishOrderEvent:
     action: send
     channel:
@@ -889,12 +889,12 @@ operations:
 
 ```typespec
 // TypeSpec: Environment-specific decorators
-@server("development", { 
+@server("development", {
   url: "kafka://localhost:9092",
   protocol: "kafka"
 })
 @server("production", {
-  url: "kafka://prod-kafka.example.com:9092", 
+  url: "kafka://prod-kafka.example.com:9092",
   protocol: "kafka"
 })
 namespace ConditionalEvents;
@@ -908,7 +908,7 @@ namespace ConditionalEvents;
     retries: 1,
     batchSize: 10
   } : {}),
-  // Production settings  
+  // Production settings
   ...(environment === "production" ? {
     acks: "all",
     retries: 5,
@@ -928,12 +928,12 @@ servers:
     host: localhost:9092
     protocol: kafka
     description: Development Kafka cluster
-    
+
   production:
     host: prod-kafka.example.com:9092
     protocol: kafka
     description: Production Kafka cluster
-    
+
 operations:
   publishConditionalEvent:
     action: send
@@ -975,9 +975,9 @@ interface UserEventOperations extends BaseEventOperations {
   @operationId("publishUserLifecycle")
   @doc("Publishes user lifecycle events")
   publishUserLifecycle(@body event: UserLifecycleEvent): void;
-  
+
   @channel("user.lifecycle")
-  @subscribe  
+  @subscribe
   @operationId("handleUserLifecycle")
   @doc("Handles user lifecycle events")
   handleUserLifecycle(): UserLifecycleEvent;
@@ -993,7 +993,7 @@ interface UserEventOperations extends BaseEventOperations {
 interface HighVolumeOperations extends BaseEventOperations {
   @channel("metrics.data")
   @publish
-  @protocol({ 
+  @protocol({
     type: "kafka",
     compressionType: "lz4",
     batchSize: 1000
@@ -1025,7 +1025,7 @@ operations:
       - user-events
     security:
       - apiKey: []
-      
+
   handleUserLifecycle:
     operationId: handleUserLifecycle
     action: receive
@@ -1037,7 +1037,7 @@ operations:
       - user-events
     security:
       - apiKey: []
-      
+
   publishMetricsBatch:
     action: send
     channel:
@@ -1058,27 +1058,32 @@ operations:
 ## Decorator Best Practices
 
 ### 1. Consistent Usage Patterns
+
 - Always pair `@channel` with `@publish` or `@subscribe`
 - Use `@message` for reusable message definitions
 - Apply `@protocol` at the operation level for specific bindings
 
 ### 2. Documentation Strategy
+
 - Use `@doc` for detailed descriptions
 - Use `@summary` for brief overviews
 - Include `@example` for complex message structures
 - Add `@deprecated` with migration guidance
 
 ### 3. Security Configuration
+
 - Define security schemes at the namespace level
 - Apply security to operations, not just channels
 - Use multiple security options for flexibility
 
 ### 4. Protocol Optimization
+
 - Configure protocol bindings based on use case
 - Use compression for high-volume channels
 - Set appropriate retry and acknowledgment policies
 
 ### 5. Evolution Management
+
 - Use extensions (`@extension`) for custom metadata
 - Apply versioning consistently across related operations
 - Plan decorator changes for backward compatibility
@@ -1086,6 +1091,7 @@ operations:
 ## Next Steps
 
 Understanding decorator mapping enables:
+
 - **Protocol Bindings** - Protocol-specific configurations
 - **Advanced Patterns** - Complex event-driven architectures
 - **Best Practices** - Comprehensive design guidelines
@@ -1093,4 +1099,4 @@ Understanding decorator mapping enables:
 
 ---
 
-*Decorators are the bridge between TypeSpec's declarative power and AsyncAPI's rich feature set, enabling precise control over every aspect of event-driven API specification.*
+_Decorators are the bridge between TypeSpec's declarative power and AsyncAPI's rich feature set, enabling precise control over every aspect of event-driven API specification._

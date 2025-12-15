@@ -1,6 +1,6 @@
 /**
  * Standardized Error Types
- * 
+ *
  * Provides consistent error handling across the AsyncAPI emitter
  */
 
@@ -12,8 +12,11 @@ import { Effect } from "effect";
 export abstract class AsyncAPIEmitterError extends Error {
   abstract readonly _tag: string;
   abstract readonly code: string;
-  
-  constructor(message: string, public readonly context?: Record<string, unknown>) {
+
+  constructor(
+    message: string,
+    public readonly context?: Record<string, unknown>,
+  ) {
     super(message);
     this.name = this.constructor.name;
   }
@@ -34,12 +37,12 @@ export type StandardizedError = {
   severity: "error" | "warning" | "info";
   code: string;
   context?: Record<string, unknown>;
-}
+};
 
 export class ValidationError extends AsyncAPIEmitterError implements StandardizedError {
   readonly _tag = "ValidationError";
   readonly code = "VALIDATION_ERROR";
-  
+
   // StandardizedError interface properties
   what: string = "Validation failed";
   reassure: string = "This validation error can be fixed";
@@ -50,7 +53,7 @@ export class ValidationError extends AsyncAPIEmitterError implements Standardize
 
   constructor(message: string, context?: Record<string, unknown>) {
     super(`Validation failed: ${message}`, context);
-    
+
     // Extract error details from message if available
     this.what = `Validation failed: ${message}`;
   }
@@ -110,7 +113,7 @@ export class ConfigurationError extends AsyncAPIEmitterError {
 export function createErrorEffect<T>(
   errorClass: new (message: string, context?: Record<string, unknown>) => AsyncAPIEmitterError,
   message: string,
-  context?: Record<string, unknown>
+  context?: Record<string, unknown>,
 ): Effect.Effect<T, AsyncAPIEmitterError> {
   return Effect.fail(new errorClass(message, context));
 }
@@ -126,7 +129,9 @@ export function isCompilationError(error: AsyncAPIEmitterError): error is Compil
   return error._tag === "CompilationError";
 }
 
-export function isSchemaGenerationError(error: AsyncAPIEmitterError): error is SchemaGenerationError {
+export function isSchemaGenerationError(
+  error: AsyncAPIEmitterError,
+): error is SchemaGenerationError {
   return error._tag === "SchemaGenerationError";
 }
 

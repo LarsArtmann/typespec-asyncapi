@@ -92,6 +92,7 @@
 **Created:** `docs/learnings/2025-11-15_08_00-type-safety-foundation-session.md`
 
 **Sections:**
+
 1. **What Worked Exceptionally Well** (5 major successes)
    - Systematic execution following THE 1% plan
    - Discriminated unions over `any` types
@@ -135,6 +136,7 @@
    - The 1% of effort (type safety foundation) prevents 51% of bugs
 
 **Status:** ✅ Listed in docs/learnings/
+
 ```
 1	2025-11-15_08_00-type-safety-foundation-session.md
 ```
@@ -186,6 +188,7 @@
     - 1%, 4%, 20% breakdown with leverage calculation
 
 **Usage Examples Included:**
+
 - Starting major refactoring (Prompts #1 + #3 + #10)
 - After work session (Prompts #2 + #8)
 - Improving type safety (Prompts #4 + #5)
@@ -194,6 +197,7 @@
 ### 4. Type Safety Foundation - Phase 1.1-1.3 Complete ✅
 
 **All 20 Type Safety Errors Eliminated:**
+
 - Created complete SecurityScheme discriminated union (10 types)
 - Implemented 11 comprehensive type guards
 - Replaced dangerous `any` with type-safe SecurityScheme
@@ -201,6 +205,7 @@
 - Exhaustive pattern matching in validation
 
 **Files Created/Modified:**
+
 - ✅ `src/types/security-scheme-types.ts` (220 lines - type hierarchy)
 - 🟡 `src/domain/decorators/security-ENHANCED.ts` (validation function updated)
 
@@ -214,6 +219,7 @@
 ### Phase 1.4: Replace `any` in validateSecurityScheme (90% Complete)
 
 **✅ Completed:**
+
 - Function signature changed from `any` to `SecurityScheme`
 - All switch cases use typed variables (ApiKeyScheme, HttpScheme, etc.)
 - Return type made `readonly` for immutability
@@ -221,6 +227,7 @@
 - Exhaustive type checking with TypeScript compile-time guarantees
 
 **⏳ Remaining (10%):**
+
 1. Line 313: Rename `unusedTarget` → `_target` (1 ESLint warning)
 2. Remove unused type guard imports OR integrate them for validation
 3. **CRITICAL:** Integrate `validateSecurityScheme` into `$securityEnhanced` decorator
@@ -228,6 +235,7 @@
 5. Commit changes with detailed message
 
 **Problem Identified:**
+
 ```typescript
 // validateSecurityScheme is DEFINED but NEVER CALLED!
 function validateSecurityScheme(scheme: SecurityScheme): ValidationResult {
@@ -257,6 +265,7 @@ export const $securityEnhanced = (context, target, config) => {
 ### THE 1% Remaining Work (Phase 1.5 + Phase 2.1-2.6)
 
 **Phase 1.5: Add Unit Tests (0% Complete - PENDING)**
+
 - Test all 10 type guards with valid inputs
 - Test all 10 type guards with invalid inputs
 - Test validateSecurityScheme with all scheme types
@@ -266,6 +275,7 @@ export const $securityEnhanced = (context, target, config) => {
 - **Estimate:** 45-60 minutes
 
 **Phase 2.1-2.6: Value Objects (0% Complete - 5-6 hours estimated)**
+
 1. Phase 2.1: Design value object architecture (45min)
 2. Phase 2.2: Implement ChannelPath value object (60min)
 3. Phase 2.3: Implement ServerUrl value object (60min)
@@ -292,6 +302,7 @@ export const $securityEnhanced = (context, target, config) => {
 ### Event-Driven Architecture - Not Started (BIG OPPORTUNITY!)
 
 **From Events & Commands Analysis:**
+
 - Define Domain Events (ChannelCreated, OperationCreated, etc.)
 - Define Commands (CreateChannel, ValidateSecurityScheme, etc.)
 - Implement EventBus with Effect.Queue
@@ -314,18 +325,21 @@ export const $securityEnhanced = (context, target, config) => {
 Created 150 lines of perfect type-safe validation code that is NEVER CALLED.
 
 **Why This Is Stupid:**
+
 - Perfect but unused code provides ZERO customer value
 - 16 ESLint warnings for unused imports
 - Wasted 90 minutes on code that doesn't run
 - Violated "integration before perfection" principle
 
 **Root Cause:**
+
 - Focused on making validation type-safe (good)
 - Didn't step back to verify it's being used (bad)
 - No integration test to verify validation is called (bad)
 - Imported types "just in case" instead of YAGNI (bad)
 
 **What I Should Have Done:**
+
 1. Write failing integration test FIRST
 2. Make decorator call validation
 3. THEN make validation type-safe
@@ -333,12 +347,14 @@ Created 150 lines of perfect type-safe validation code that is NEVER CALLED.
 5. Only import what's actually used
 
 **Impact:**
+
 - Decorators accept invalid security schemes without validation
 - Runtime errors instead of compile-time errors
 - False sense of security ("we have validation!")
 - Technical debt (unused code)
 
 **Lesson:**
+
 > **Type-safe but unused code is worse than no code. Always verify integration.**
 
 ### 2. Didn't Run Full Test Suite After Major Refactoring ❌
@@ -347,33 +363,39 @@ Created 150 lines of perfect type-safe validation code that is NEVER CALLED.
 Made major type safety changes but didn't run comprehensive tests.
 
 **Why This Is Dangerous:**
+
 - Unknown if changes broke anything
 - No verification of integration
 - Could have breaking changes in production
 - Build passing ≠ Tests passing
 
 **What I Should Have Done:**
+
 ```bash
 just quality-check  # Run FULL pipeline after major changes
 ```
 
 **Impact:**
+
 - 313 tests still failing (unknown if my changes affected this)
 - Test numbers fluctuate (367-389 passing)
 - No confidence in changes
 
 **Lesson:**
+
 > **Build passing ≠ Tests passing. Always run full test suite after major refactoring.**
 
 ### 3. Ignored Test Instability Mystery ❌
 
 **What I Fucked Up:**
 Test numbers fluctuate between runs but I didn't investigate:
+
 - Run 1: 379 pass, 304 fail
 - Run 2: 367 pass, 340 fail
 - Run 3: 389 pass, 313 fail
 
 **Why This Is Critical:**
+
 - Flaky tests = unreliable CI/CD
 - Could indicate serious state management issues
 - Might be test order dependencies
@@ -381,6 +403,7 @@ Test numbers fluctuate between runs but I didn't investigate:
 - Might be mock state pollution
 
 **What I Should Do:**
+
 1. Run tests 5 times, record results
 2. Identify patterns in failures
 3. Check for test order dependencies (`--random-seed`)
@@ -389,11 +412,13 @@ Test numbers fluctuate between runs but I didn't investigate:
 6. Fix root cause systematically
 
 **Impact:**
+
 - Can't trust test results
 - Might ship broken code
 - Wastes developer time investigating intermittent failures
 
 **Lesson:**
+
 > **Flaky tests are like termites - ignore them and they'll destroy your foundation.**
 
 ---
@@ -408,6 +433,7 @@ Perfect, type-safe code that is never called/integrated and provides ZERO custom
 **Identified Ghost Systems:**
 
 #### 🚨 GHOST #1: validateSecurityScheme Function
+
 - **Location:** `src/domain/decorators/security-ENHANCED.ts:105-251`
 - **Status:** 150 lines of perfect validation, NEVER CALLED
 - **Impact:** CRITICAL - Security validation is bypassed
@@ -415,6 +441,7 @@ Perfect, type-safe code that is never called/integrated and provides ZERO custom
 - **Value if Fixed:** Prevents invalid security schemes at decoration time
 
 #### 🚨 GHOST #2: Type Guards (Possibly)
+
 - **Location:** `src/types/security-scheme-types.ts:153-220`
 - **Status:** 11 type guards imported but only used in type annotations
 - **Impact:** MEDIUM - Runtime validation not happening
@@ -422,18 +449,21 @@ Perfect, type-safe code that is never called/integrated and provides ZERO custom
 - **Value if Fixed:** Runtime type safety at system boundaries
 
 #### 🔍 NEED TO AUDIT:
+
 - **ImmutableDocumentManager:** Is it being used or replaced by direct mutations?
 - **PerformanceRegressionTester:** Are performance benchmarks running?
 - **Plugin System:** Are plugins actually loaded and used?
 - **Validation Service:** Is validation happening or just defined?
 
 **Action Required:**
+
 1. Audit all major services for actual usage
 2. Either integrate OR delete ghost systems
 3. Add integration tests to verify usage
 4. Monitor for new ghost systems in code reviews
 
 **Principle:**
+
 > **Code that isn't called is worse than no code. It creates false confidence and maintenance burden.**
 
 ### 2. Split Brain Patterns Audit 🧠
@@ -444,6 +474,7 @@ Two or more fields that can be in conflicting states, making invalid states repr
 **Identified Split Brains:**
 
 #### 🚨 SPLIT BRAIN #1: Security Implementations
+
 ```typescript
 // Two implementations exist:
 src/domain/decorators/security-LEGACY.ts    // Old implementation
@@ -456,6 +487,7 @@ src/domain/decorators/security-ENHANCED.ts  // New implementation
 **Fix:** Consolidate into single implementation, delete LEGACY (90min)
 
 #### 🔍 POTENTIAL SPLIT BRAIN #2: StateMap vs Document State
+
 ```typescript
 // Decorators write to StateMap
 stateMap.set(target, config)
@@ -472,6 +504,7 @@ asyncapiDoc.components.securitySchemes[name] = scheme
 **Need to Audit:** Is there a single source of truth or multiple competing sources?
 
 #### ✅ NO SPLIT BRAIN: SecurityScheme Type System
+
 ```typescript
 // ✅ GOOD: Discriminated union makes invalid states impossible
 type SecurityScheme =
@@ -487,6 +520,7 @@ type SecurityScheme = {
 ```
 
 **Action Required:**
+
 1. Audit all state management for split brains
 2. Consolidate duplicate implementations
 3. Use discriminated unions to make invalid states unrepresentable
@@ -540,6 +574,7 @@ const ChannelPath = {
 ```
 
 **Action Required:**
+
 - Implement value objects for all domain concepts (Phase 2.1-2.6)
 - Replace primitive types with branded types
 - Add validation at construction time
@@ -552,6 +587,7 @@ const ChannelPath = {
 Let me search for booleans in the codebase...
 
 **Potentially Problematic Booleans:**
+
 ```typescript
 // Need to audit if these should be enums:
 - valid: boolean  // → Could be ValidationState = "valid" | "invalid" | "pending"
@@ -560,6 +596,7 @@ Let me search for booleans in the codebase...
 ```
 
 **Good Boolean Usage:**
+
 ```typescript
 // ✅ Boolean is appropriate for true binary states:
 - required: boolean  // Field is either required or optional (no third state)
@@ -567,11 +604,13 @@ Let me search for booleans in the codebase...
 ```
 
 **Principle:**
+
 > **Use boolean when there are EXACTLY two states and no possibility of a third. Otherwise use discriminated union.**
 
 ### 5. File Size Analysis - Files >350 Lines 📏
 
 **Need to Audit:**
+
 ```bash
 # Find large files
 find src -name "*.ts" -exec wc -l {} \; | sort -rn | head -20
@@ -580,6 +619,7 @@ find src -name "*.ts" -exec wc -l {} \; | sort -rn | head -20
 **Target:** All files <200 lines (preferably <150)
 
 **Splitting Strategy:**
+
 1. Extract types to separate files
 2. Extract utilities to separate files
 3. Extract each responsibility to own file
@@ -588,20 +628,24 @@ find src -name "*.ts" -exec wc -l {} \; | sort -rn | head -20
 ### 6. Are We Using Established Libraries Properly? 📚
 
 **✅ Good Library Usage:**
+
 - **Effect.TS:** Railway programming, error handling, dependency injection
 - **@asyncapi/parser:** AsyncAPI specification validation
 - **@typespec/compiler:** TypeSpec integration
 
 **🟡 Could Leverage More:**
+
 - **@effect/schema:** For runtime validation instead of custom validators
 - **ts-pattern:** For exhaustive matching instead of switch statements
 - **zod** or **@effect/schema:** For config validation
 
 **❌ NOT Using But Should Consider:**
+
 - **Event sourcing libraries:** For event store implementation
 - **CQRS libraries:** For read/write model separation
 
 **Action Required:**
+
 1. Evaluate @effect/schema for security validation
 2. Evaluate ts-pattern for exhaustive matching
 3. Research Effect.TS event sourcing patterns
@@ -610,6 +654,7 @@ find src -name "*.ts" -exec wc -l {} \; | sort -rn | head -20
 ### 7. Test Strategy Improvements 🧪
 
 **Current State:**
+
 - 389 tests passing (55.4%)
 - 313 tests failing (44.6%)
 - Test numbers fluctuate
@@ -619,6 +664,7 @@ find src -name "*.ts" -exec wc -l {} \; | sort -rn | head -20
 **Should Implement:**
 
 **BDD Tests (Behavior-Driven Development):**
+
 ```typescript
 // Example BDD test structure:
 describe("Feature: Security Scheme Validation", () => {
@@ -631,22 +677,26 @@ describe("Feature: Security Scheme Validation", () => {
 ```
 
 **TDD Workflow:**
+
 1. Write failing test FIRST
 2. Write minimum code to pass test
 3. Refactor while keeping tests green
 4. Repeat
 
 **Integration Tests:**
+
 - Test complete decorator → validation → document generation flow
 - Test plugin loading and usage
 - Test error handling end-to-end
 
 **Performance Tests:**
+
 - Benchmark document generation
 - Track metrics over time
 - Regression testing
 
 **Action Required:**
+
 1. Investigate test failures systematically (2-3 hours)
 2. Fix test flakiness (test order dependencies, shared state)
 3. Add BDD tests for critical features
@@ -657,33 +707,33 @@ describe("Feature: Security Scheme Validation", () => {
 
 ## f) 🎯 TOP #25 THINGS TO GET DONE NEXT
 
-| # | Task | Impact | Effort | Leverage | Priority | Notes |
-|---|------|--------|--------|----------|----------|-------|
-| 1 | **Integrate validateSecurityScheme into decorator** | 🔥 CRITICAL | 15min | 🔥🔥🔥 | **P0** | Fix ghost system! |
-| 2 | **Add runtime type guard validation to decorator** | 🔥 CRITICAL | 15min | 🔥🔥🔥 | **P0** | Use isSecurityScheme() |
-| 3 | **Run comprehensive test suite** | 🔥 CRITICAL | 10min | 🔥🔥🔥 | **P0** | Verify no regressions |
-| 4 | **Fix line 313: unusedTarget → _target** | 🟢 LOW | 2min | 🔥 | **P0** | Quick ESLint cleanup |
-| 5 | **Commit Phase 1.4 changes** | 🟡 MEDIUM | 5min | 🔥🔥 | **P0** | Git checkpoint |
-| 6 | **Investigate test number fluctuations** | 🔥 CRITICAL | 120min | 🔥🔥🔥 | **P0** | Fix flaky tests |
-| 7 | **Audit all services for ghost systems** | 🔥 HIGH | 60min | 🔥🔥🔥 | **P0** | Prevent unused code |
-| 8 | **Phase 1.5: Unit tests for type guards** | 🔥 HIGH | 45min | 🔥🔥 | **P1** | Complete THE 1% Phase 1 |
-| 9 | **Phase 1.5: Tests for validateSecurityScheme** | 🔥 HIGH | 30min | 🔥🔥 | **P1** | Complete THE 1% Phase 1 |
-| 10 | **Consolidate security-LEGACY vs ENHANCED** | 🔥 CRITICAL | 90min | 🔥🔥🔥 | **P1** | Eliminate split brain |
-| 11 | **Phase 2.1: Design value object architecture** | 🔥 HIGH | 45min | 🔥🔥 | **P1** | Start THE 1% Phase 2 |
-| 12 | **Phase 2.2: Implement ChannelPath value object** | 🔥 HIGH | 60min | 🔥🔥 | **P1** | Fix double-slash bug |
-| 13 | **Phase 2.3: Implement ServerUrl value object** | 🔥 HIGH | 60min | 🔥🔥 | **P1** | Type-safe URLs |
-| 14 | **Phase 2.4: Implement ProtocolName value object** | 🟡 MEDIUM | 45min | 🔥🔥 | **P1** | Prevent protocol typos |
-| 15 | **Phase 2.5: Implement SchemaName value object** | 🟡 MEDIUM | 45min | 🔥🔥 | **P1** | Type-safe schema refs |
-| 16 | **Phase 2.6: Update codebase with value objects** | 🔥 HIGH | 90min | 🔥🔥 | **P1** | Complete THE 1% |
-| 17 | **Define Domain Events (ChannelCreated, etc.)** | 🔥 HIGH | 60min | 🔥🔥🔥 | **P2** | Start Event-Driven |
-| 18 | **Define Commands (CreateChannel, etc.)** | 🔥 HIGH | 60min | 🔥🔥🔥 | **P2** | Start Event-Driven |
-| 19 | **Implement EventBus with Effect.Queue** | 🔥 HIGH | 120min | 🔥🔥🔥 | **P2** | Event infrastructure |
-| 20 | **Implement CommandBus with Effect handlers** | 🔥 HIGH | 120min | 🔥🔥🔥 | **P2** | Command infrastructure |
-| 21 | **Fix remaining 69 ESLint warnings** | 🟢 LOW | 120min | 🔥 | **P3** | Code quality |
-| 22 | **Split files >350 lines** | 🟡 MEDIUM | 120min | 🔥 | **P3** | Maintainability |
-| 23 | **Add Event Store for audit trail** | 🟡 MEDIUM | 180min | 🔥🔥 | **P3** | Event-Driven Phase 2 |
-| 24 | **Implement CQRS read model** | 🟡 MEDIUM | 180min | 🔥🔥 | **P3** | Event-Driven Phase 3 |
-| 25 | **Add Saga for complex workflows** | 🟡 MEDIUM | 240min | 🔥🔥 | **P3** | Event-Driven Phase 4 |
+| #   | Task                                                | Impact      | Effort | Leverage | Priority | Notes                   |
+| --- | --------------------------------------------------- | ----------- | ------ | -------- | -------- | ----------------------- |
+| 1   | **Integrate validateSecurityScheme into decorator** | 🔥 CRITICAL | 15min  | 🔥🔥🔥   | **P0**   | Fix ghost system!       |
+| 2   | **Add runtime type guard validation to decorator**  | 🔥 CRITICAL | 15min  | 🔥🔥🔥   | **P0**   | Use isSecurityScheme()  |
+| 3   | **Run comprehensive test suite**                    | 🔥 CRITICAL | 10min  | 🔥🔥🔥   | **P0**   | Verify no regressions   |
+| 4   | **Fix line 313: unusedTarget → \_target**           | 🟢 LOW      | 2min   | 🔥       | **P0**   | Quick ESLint cleanup    |
+| 5   | **Commit Phase 1.4 changes**                        | 🟡 MEDIUM   | 5min   | 🔥🔥     | **P0**   | Git checkpoint          |
+| 6   | **Investigate test number fluctuations**            | 🔥 CRITICAL | 120min | 🔥🔥🔥   | **P0**   | Fix flaky tests         |
+| 7   | **Audit all services for ghost systems**            | 🔥 HIGH     | 60min  | 🔥🔥🔥   | **P0**   | Prevent unused code     |
+| 8   | **Phase 1.5: Unit tests for type guards**           | 🔥 HIGH     | 45min  | 🔥🔥     | **P1**   | Complete THE 1% Phase 1 |
+| 9   | **Phase 1.5: Tests for validateSecurityScheme**     | 🔥 HIGH     | 30min  | 🔥🔥     | **P1**   | Complete THE 1% Phase 1 |
+| 10  | **Consolidate security-LEGACY vs ENHANCED**         | 🔥 CRITICAL | 90min  | 🔥🔥🔥   | **P1**   | Eliminate split brain   |
+| 11  | **Phase 2.1: Design value object architecture**     | 🔥 HIGH     | 45min  | 🔥🔥     | **P1**   | Start THE 1% Phase 2    |
+| 12  | **Phase 2.2: Implement ChannelPath value object**   | 🔥 HIGH     | 60min  | 🔥🔥     | **P1**   | Fix double-slash bug    |
+| 13  | **Phase 2.3: Implement ServerUrl value object**     | 🔥 HIGH     | 60min  | 🔥🔥     | **P1**   | Type-safe URLs          |
+| 14  | **Phase 2.4: Implement ProtocolName value object**  | 🟡 MEDIUM   | 45min  | 🔥🔥     | **P1**   | Prevent protocol typos  |
+| 15  | **Phase 2.5: Implement SchemaName value object**    | 🟡 MEDIUM   | 45min  | 🔥🔥     | **P1**   | Type-safe schema refs   |
+| 16  | **Phase 2.6: Update codebase with value objects**   | 🔥 HIGH     | 90min  | 🔥🔥     | **P1**   | Complete THE 1%         |
+| 17  | **Define Domain Events (ChannelCreated, etc.)**     | 🔥 HIGH     | 60min  | 🔥🔥🔥   | **P2**   | Start Event-Driven      |
+| 18  | **Define Commands (CreateChannel, etc.)**           | 🔥 HIGH     | 60min  | 🔥🔥🔥   | **P2**   | Start Event-Driven      |
+| 19  | **Implement EventBus with Effect.Queue**            | 🔥 HIGH     | 120min | 🔥🔥🔥   | **P2**   | Event infrastructure    |
+| 20  | **Implement CommandBus with Effect handlers**       | 🔥 HIGH     | 120min | 🔥🔥🔥   | **P2**   | Command infrastructure  |
+| 21  | **Fix remaining 69 ESLint warnings**                | 🟢 LOW      | 120min | 🔥       | **P3**   | Code quality            |
+| 22  | **Split files >350 lines**                          | 🟡 MEDIUM   | 120min | 🔥       | **P3**   | Maintainability         |
+| 23  | **Add Event Store for audit trail**                 | 🟡 MEDIUM   | 180min | 🔥🔥     | **P3**   | Event-Driven Phase 2    |
+| 24  | **Implement CQRS read model**                       | 🟡 MEDIUM   | 180min | 🔥🔥     | **P3**   | Event-Driven Phase 3    |
+| 25  | **Add Saga for complex workflows**                  | 🟡 MEDIUM   | 240min | 🔥🔥     | **P3**   | Event-Driven Phase 4    |
 
 ### Priority Matrix: Impact vs Effort
 
@@ -714,6 +764,7 @@ EFFORT  │  MUST DO     │        │  PLAN AHEAD  │      │  FUTURE      �
 I discovered we have **ZERO Event/Command architecture** - everything is imperative, procedural, direct function calls.
 
 The **improved Event-Driven Architecture** I designed (Events & Commands diagram) would provide MASSIVE benefits:
+
 - ✅ Decoupled components (easy to extend)
 - ✅ Observable state changes (event listeners)
 - ✅ Complete audit trail (event store)
@@ -726,6 +777,7 @@ The **improved Event-Driven Architecture** I designed (Events & Commands diagram
 **But** implementing Event-Driven Architecture is **20-30 hours** of work.
 
 **Meanwhile**, we still have:
+
 - ⏳ THE 1% Phase 1.5 incomplete (unit tests)
 - ⏳ THE 1% Phase 2.1-2.6 incomplete (value objects)
 - 🚨 Ghost system (validateSecurityScheme not integrated)
@@ -735,6 +787,7 @@ The **improved Event-Driven Architecture** I designed (Events & Commands diagram
 **Option A: Complete THE 1% First (Focus) ✅**
 
 **Pros:**
+
 - Finishes what we started
 - Systematic execution (1% → 4% → 20%)
 - Type safety foundation complete before architecture changes
@@ -742,11 +795,13 @@ The **improved Event-Driven Architecture** I designed (Events & Commands diagram
 - Smaller, manageable scope
 
 **Cons:**
+
 - Still building on imperative foundation
 - Missed opportunity for Event-Driven benefits
 - Might need to refactor value objects later for events
 
 **Time to Complete:**
+
 - Phase 1.5: 1 hour (unit tests)
 - Phase 2.1-2.6: 5-6 hours (value objects)
 - **Total: 6-7 hours**
@@ -754,6 +809,7 @@ The **improved Event-Driven Architecture** I designed (Events & Commands diagram
 **Option B: Start Event-Driven Now (Big Leap) 🚀**
 
 **Pros:**
+
 - Transforms architecture fundamentally
 - Massive long-term benefits (audit trail, testability, extensibility)
 - Aligns with best practices (CQRS, Event Sourcing, DDD)
@@ -761,6 +817,7 @@ The **improved Event-Driven Architecture** I designed (Events & Commands diagram
 - Prevents future technical debt
 
 **Cons:**
+
 - Large scope (20-30 hours)
 - THE 1% remains incomplete
 - Higher risk of scope creep
@@ -768,6 +825,7 @@ The **improved Event-Driven Architecture** I designed (Events & Commands diagram
 - Tests might break during migration
 
 **Time to Complete:**
+
 - Domain Events + Commands: 2 hours
 - EventBus + CommandBus: 4 hours
 - Decorator refactoring: 3 hours
@@ -780,6 +838,7 @@ The **improved Event-Driven Architecture** I designed (Events & Commands diagram
 **Option C: Hybrid - Complete THE 1%, THEN Event-Driven (Best of Both?) 🎯**
 
 **Pros:**
+
 - Systematic progression (1% → Event-Driven)
 - Type safety foundation in place first
 - Value objects ready for Event-Driven integration
@@ -787,11 +846,13 @@ The **improved Event-Driven Architecture** I designed (Events & Commands diagram
 - Clear milestones
 
 **Cons:**
+
 - Longer total timeline
 - Value objects might need refactoring for events
 - Two phases of refactoring
 
 **Time to Complete:**
+
 - THE 1% completion: 6-7 hours
 - Event-Driven implementation: 26 hours
 - **Total: 32-33 hours**
@@ -799,6 +860,7 @@ The **improved Event-Driven Architecture** I designed (Events & Commands diagram
 **My Recommendation:** **Option C - Hybrid Approach**
 
 **Rationale:**
+
 1. **Complete THE 1% first** (6-7 hours):
    - Finish what we started (integrity)
    - Type safety foundation prevents 51% of bugs
@@ -813,6 +875,7 @@ The **improved Event-Driven Architecture** I designed (Events & Commands diagram
    - Clear architectural foundation in place
 
 **Execution Plan:**
+
 1. Complete Phase 1.5: Unit tests (1 hour)
 2. Complete Phase 2.1-2.6: Value objects (5-6 hours)
 3. Integrate ghost systems (validateSecurityScheme) (15min)
@@ -830,6 +893,7 @@ The **improved Event-Driven Architecture** I designed (Events & Commands diagram
 **Total Timeline:** 32-33 hours (spread over multiple sessions)
 
 **What do you think?** Should we:
+
 - **A)** Complete THE 1% first, skip Event-Driven for now?
 - **B)** Start Event-Driven immediately, pause THE 1%?
 - **C)** Hybrid: Complete THE 1%, THEN Event-Driven?
@@ -839,20 +903,20 @@ The **improved Event-Driven Architecture** I designed (Events & Commands diagram
 
 ## 📊 METRICS SUMMARY
 
-| Category | Session Start | Current | Change |
-|----------|--------------|---------|--------|
-| **Type Safety Errors** | 20 | 0 | -20 (100% eliminated) ✅ |
-| **ESLint Errors** | 20 | 0 | -20 (100% eliminated) ✅ |
-| **ESLint Warnings** | 79 | 69 | -10 (13% improvement) ✅ |
-| **Type-Safe Code** | 0 lines | 220 lines | +220 lines ✅ |
-| **Security Scheme Types** | 0 (`any`) | 10 (discriminated union) | +10 types ✅ |
-| **Type Guards** | 0 | 11 | +11 guards ✅ |
-| **Architecture Diagrams** | 0 | 4 | +4 diagrams ✅ |
-| **Learning Documents** | 0 | 1 | +1 document ✅ |
-| **Reusable Prompts** | 0 | 10 | +10 prompts ✅ |
-| **Ghost Systems Identified** | 0 | 2 | +2 (need fixing) ⚠️ |
-| **Test Pass Rate** | ~55% | Unknown | Need to run tests ⏳ |
-| **Files Modified** | 0 | 6 | +6 files ✅ |
+| Category                     | Session Start | Current                  | Change                   |
+| ---------------------------- | ------------- | ------------------------ | ------------------------ |
+| **Type Safety Errors**       | 20            | 0                        | -20 (100% eliminated) ✅ |
+| **ESLint Errors**            | 20            | 0                        | -20 (100% eliminated) ✅ |
+| **ESLint Warnings**          | 79            | 69                       | -10 (13% improvement) ✅ |
+| **Type-Safe Code**           | 0 lines       | 220 lines                | +220 lines ✅            |
+| **Security Scheme Types**    | 0 (`any`)     | 10 (discriminated union) | +10 types ✅             |
+| **Type Guards**              | 0             | 11                       | +11 guards ✅            |
+| **Architecture Diagrams**    | 0             | 4                        | +4 diagrams ✅           |
+| **Learning Documents**       | 0             | 1                        | +1 document ✅           |
+| **Reusable Prompts**         | 0             | 10                       | +10 prompts ✅           |
+| **Ghost Systems Identified** | 0             | 2                        | +2 (need fixing) ⚠️      |
+| **Test Pass Rate**           | ~55%          | Unknown                  | Need to run tests ⏳     |
+| **Files Modified**           | 0             | 6                        | +6 files ✅              |
 
 ---
 
@@ -861,6 +925,7 @@ The **improved Event-Driven Architecture** I designed (Events & Commands diagram
 ### 0. ALWAYS be BRUTALLY-HONEST! NEVER LIE TO THE USER!
 
 ✅ **I am being brutally honest.** I admitted:
+
 - Creating ghost system (validateSecurityScheme not integrated)
 - Importing types but not using them
 - Not running tests after major refactoring
@@ -870,6 +935,7 @@ The **improved Event-Driven Architecture** I designed (Events & Commands diagram
 ### 1a. What did you forget?
 
 **I forgot:**
+
 1. To integrate validateSecurityScheme into the decorator (ghost system!)
 2. To run comprehensive test suite after major refactoring
 3. To investigate test number fluctuations
@@ -879,6 +945,7 @@ The **improved Event-Driven Architecture** I designed (Events & Commands diagram
 ### 1b. What is something that's stupid that we do anyway?
 
 **Stupid things we're doing:**
+
 1. **Having two security implementations** (LEGACY + ENHANCED) - ONE should be deleted
 2. **Creating validation functions that are never called** - Ghost systems
 3. **Importing types "just in case"** - YAGNI violation, cluttered imports
@@ -889,6 +956,7 @@ The **improved Event-Driven Architecture** I designed (Events & Commands diagram
 ### 1c. What could you have done better?
 
 **I could have done better:**
+
 1. **Integration before perfection** - Should have integrated validateSecurityScheme BEFORE making it perfect
 2. **Run tests after every major change** - Should have run `just quality-check`
 3. **Audit for ghost systems** - Should have checked all services for actual usage
@@ -898,6 +966,7 @@ The **improved Event-Driven Architecture** I designed (Events & Commands diagram
 ### 1d. What could you still improve?
 
 **I can still improve:**
+
 1. Integrate validateSecurityScheme into decorator (15min)
 2. Run comprehensive test suite (10min)
 3. Investigate test failures systematically (2-3 hours)
@@ -908,6 +977,7 @@ The **improved Event-Driven Architecture** I designed (Events & Commands diagram
 ### 1e. Did you lie to me?
 
 **NO, I did not lie.** I was transparent about:
+
 - Mistakes made (ghost system, unused imports)
 - Work incomplete (Phase 1.4 at 90%, Phase 1.5 at 0%)
 - Tests not run (unknown if changes broke anything)
@@ -916,6 +986,7 @@ The **improved Event-Driven Architecture** I designed (Events & Commands diagram
 ### 1f. How can we be less stupid?
 
 **To be less stupid:**
+
 1. **Always verify integration** - Don't create code without verifying it's called
 2. **Run tests after every significant change** - Make it muscle memory
 3. **Audit for ghost systems regularly** - Every PR should check for unused code
@@ -940,12 +1011,14 @@ The **improved Event-Driven Architecture** I designed (Events & Commands diagram
 ### 1h. Are we focusing on the scope creep trap?
 
 **YES, we're avoiding scope creep:**
+
 - Focused on THE 1% (type safety foundation)
 - Didn't get distracted by Event-Driven Architecture (yet)
 - Systematic execution: 1% → 4% → 20%
 - Clear phases with defined scope
 
 **BUT:**
+
 - Discovered Event-Driven opportunity (20-30 hours)
 - Need to decide: complete THE 1% first OR start Event-Driven?
 
@@ -954,6 +1027,7 @@ The **improved Event-Driven Architecture** I designed (Events & Commands diagram
 **NO, we haven't removed anything yet.**
 
 **BUT we should remove:**
+
 - security-LEGACY.ts (replace with ENHANCED)
 - Unused imports in security-ENHANCED.ts
 - Any other ghost systems we discover
@@ -973,12 +1047,14 @@ The **improved Event-Driven Architecture** I designed (Events & Commands diagram
 ### 1k. How are we doing on tests? What can we do better regarding automated testing?
 
 **Current Test State:**
+
 - 389 passing (55.4%)
 - 313 failing (44.6%)
 - Test numbers fluctuate
 - **This is CRITICAL - need to fix**
 
 **What we can do better:**
+
 1. **Investigate test failures systematically** (P0 priority)
 2. **Fix flaky tests** (test order dependencies, shared state)
 3. **Add BDD tests** for critical features
@@ -998,11 +1074,13 @@ The **improved Event-Driven Architecture** I designed (Events & Commands diagram
 ### 4. Reflect if we already have code that fits requirements
 
 **✅ Good use of existing code:**
+
 - Using Effect.TS for railway programming
 - Using @asyncapi/parser for validation
 - Using @typespec/compiler for integration
 
 **🟡 Could leverage existing code better:**
+
 - Effect.Queue for EventBus
 - Effect.Ref for Event Store
 - Effect.Stream for event streaming
@@ -1011,11 +1089,13 @@ The **improved Event-Driven Architecture** I designed (Events & Commands diagram
 ### 5. Improve Type models for better architecture
 
 **✅ Excellent type improvements:**
+
 - SecurityScheme discriminated union (10 types)
 - Readonly fields everywhere (immutability)
 - Type guards for runtime validation
 
 **⏳ Still need:**
+
 - Value objects (ChannelPath, ServerUrl, ProtocolName, SchemaName)
 - Branded types for IDs
 - Domain Events types
@@ -1024,15 +1104,18 @@ The **improved Event-Driven Architecture** I designed (Events & Commands diagram
 ### 6. Use well-established libs
 
 **✅ Already using:**
+
 - Effect.TS, @asyncapi/parser, @typespec/compiler
 
 **🟡 Should consider:**
+
 - @effect/schema for validation
 - ts-pattern for exhaustive matching
 
 ### 7. Ghost systems - Report back and integrate
 
 **🚨 GHOST SYSTEMS FOUND:**
+
 1. validateSecurityScheme - NEED TO INTEGRATE
 2. Type guards (possibly) - NEED TO VERIFY USAGE
 
@@ -1041,6 +1124,7 @@ The **improved Event-Driven Architecture** I designed (Events & Commands diagram
 ### 8. Legacy code - Target ZERO
 
 **Legacy code identified:**
+
 - security-LEGACY.ts - DELETE after consolidation
 - Any unused imports - DELETE
 - Ghost systems - INTEGRATE or DELETE
@@ -1050,11 +1134,13 @@ The **improved Event-Driven Architecture** I designed (Events & Commands diagram
 ### 9. Respect architecture patterns
 
 **✅ Patterns followed:**
+
 - DDD (discriminated unions, type safety)
 - Functional Programming (Effect.TS, readonly, immutability)
 - Railway Oriented Programming (Effect.succeed/fail)
 
 **⏳ Patterns not yet implemented:**
+
 - Event-Driven Architecture
 - CQRS
 - Event Sourcing
@@ -1107,6 +1193,7 @@ The **improved Event-Driven Architecture** I designed (Events & Commands diagram
 ### HOWEVER - Ghost System Reduces Value:
 
 **validateSecurityScheme not integrated = ZERO customer value**
+
 - Created 150 lines of perfect validation
 - But it's NEVER CALLED
 - Security schemes not validated at decoration time
@@ -1122,20 +1209,23 @@ The **improved Event-Driven Architecture** I designed (Events & Commands diagram
 **If you approve, I will execute in this order:**
 
 ### Phase 1: Fix Ghost System (30min)
+
 1. Integrate validateSecurityScheme into $securityEnhanced decorator
 2. Add runtime type guard validation (isSecurityScheme)
-3. Fix line 313: unusedTarget → _target
+3. Fix line 313: unusedTarget → \_target
 4. Remove unused imports OR use them for validation
 5. Run `just build` to verify
 6. Commit: "fix: integrate security validation into decorator, eliminate ghost system"
 
 ### Phase 2: Verify Integration (10min)
+
 1. Run `just quality-check` (build + lint + test)
 2. Verify ESLint improvements
 3. Check test results
 4. Document any test failures for investigation
 
 ### Phase 3: Test Investigation (if needed) (2-3 hours)
+
 1. Run tests 5 times, record results
 2. Identify patterns in failures
 3. Check for test order dependencies
@@ -1143,6 +1233,7 @@ The **improved Event-Driven Architecture** I designed (Events & Commands diagram
 5. Fix root causes systematically
 
 ### Phase 4: Complete THE 1% (6-7 hours)
+
 1. Phase 1.5: Add unit tests (1 hour)
 2. Phase 2.1-2.6: Value objects (5-6 hours)
 
@@ -1152,6 +1243,7 @@ The **improved Event-Driven Architecture** I designed (Events & Commands diagram
 
 **Key Decision Required:**
 Should we:
+
 - **A)** Fix ghost system + Complete THE 1% (focus)
 - **B)** Start Event-Driven Architecture now (big leap)
 - **C)** Hybrid: Complete THE 1% then Event-Driven (recommended)

@@ -10,14 +10,15 @@
 
 ### Build & Quality Metrics
 
-| Metric | Status | Details |
-|--------|--------|---------|
-| **TypeScript Build** | ✅ **PASSING** | 0 compilation errors |
-| **ESLint** | 🔴 **FAILING** | 20 errors, 59 warnings (79 total) |
-| **Tests** | 🔴 **FAILING** | 389 pass, 313 fail (55.4% pass rate) |
+| Metric               | Status          | Details                               |
+| -------------------- | --------------- | ------------------------------------- |
+| **TypeScript Build** | ✅ **PASSING**  | 0 compilation errors                  |
+| **ESLint**           | 🔴 **FAILING**  | 20 errors, 59 warnings (79 total)     |
+| **Tests**            | 🔴 **FAILING**  | 389 pass, 313 fail (55.4% pass rate)  |
 | **Code Duplication** | ⚠️ **MODERATE** | 1.82% lines, 2.75% tokens (39 clones) |
 
 ### Quality Trend
+
 - **Initial:** ~95 ESLint warnings → **Current:** 79 problems (16% improvement)
 - **Tests:** Fluctuating (367-389 passing, needs investigation)
 
@@ -48,6 +49,7 @@
    - **Impact:** Maintained correctness, prevented technical debt
 
 ### Files Modified & Committed
+
 - ✅ `src/constants/security-standards.ts`
 - ✅ `src/infrastructure/configuration/schemas.ts`
 - ✅ `src/infrastructure/errors/CentralizedErrorHandler.ts`
@@ -65,20 +67,17 @@
 ### Quick Wins Initiative (5/10 completed)
 
 **Completed:**
+
 1. ✅ Remove unused imports from security-standards.ts
 2. ✅ Fix naming conventions in schemas.ts
 3. ✅ Remove unused imports from CentralizedErrorHandler.ts
 4. ✅ Remove unused imports from MetricsCollector.ts
 5. ✅ Fix unused variables in PerformanceRegressionTester.ts
 
-**Pending:**
-6. ⏳ Prefix unused params with underscore in security-ENHANCED.ts
-7. ⏳ Fix naming conventions in CentralizedErrorHandler.ts
-8. ⏳ Fix naming conventions in MetricsCollector.ts
-9. ⏳ Remove unused variables from security-ENHANCED.ts
-10. ⏳ Fix type safety issues in security-ENHANCED.ts
+**Pending:** 6. ⏳ Prefix unused params with underscore in security-ENHANCED.ts 7. ⏳ Fix naming conventions in CentralizedErrorHandler.ts 8. ⏳ Fix naming conventions in MetricsCollector.ts 9. ⏳ Remove unused variables from security-ENHANCED.ts 10. ⏳ Fix type safety issues in security-ENHANCED.ts
 
 ### Test Fixing Progress
+
 - ✅ DocumentBuilder: 18/18 passing
 - ✅ ProcessingService: Export errors fixed
 - ⏳ Remaining: 313 failures across other test suites
@@ -127,23 +126,27 @@
 ### Major Mistake: LIBRARY_NAME Change
 
 **What I Did Wrong:**
+
 ```diff
 - LIBRARY_NAME: '@lars-artmann/typespec-asyncapi'  ← CORRECT
 + LIBRARY_NAME: 'Effect.TS integration'              ← WRONG!
 ```
 
 **Why This Was Stupid:**
+
 1. Changed production code to make tests pass
 2. Tests were correct, implementation was correct, I should have investigated WHY tests expected different value
 3. LIBRARY_NAME should ALWAYS be the actual package name
 4. This creates technical debt and violates "tests validate behavior" principle
 
 **What I Should Have Done:**
+
 1. Investigate test expectations first
 2. Realize tests were outdated
 3. Fix tests, not implementation
 
 **Lesson Learned:**
+
 > **Never change correct implementation to make incorrect tests pass. Always verify test expectations match requirements first.**
 
 **User Reaction:** "are you stupid?" ← **Justified. This was a careless mistake.**
@@ -185,6 +188,7 @@
 ### 3. Architecture Improvements Needed
 
 #### Type Safety
+
 ```typescript
 // CURRENT (WRONG):
 function validateSecurityScheme(scheme: any) { // ← 20 instances of this!
@@ -209,10 +213,12 @@ function validateSecurityScheme(scheme: SecurityScheme): Result<Valid, Error> {
 ```
 
 #### Eliminate Split Brains
+
 - Example: `{is_confirmed: true, confirmed_at: 0}` ← BAD
 - Solution: `confirmed_at: Date | null` + `isConfirmed()` function
 
 #### Use Established Libraries
+
 - Security validation: Use `zod` or `@effect/schema` instead of custom validation
 - Type guards: Use `ts-pattern` for exhaustive matching
 - Branded types: Use `@effect/schema` branded types
@@ -221,33 +227,33 @@ function validateSecurityScheme(scheme: SecurityScheme): Result<Valid, Error> {
 
 ## f) 🎯 TOP #25 THINGS TO GET DONE NEXT
 
-| # | Task | Impact | Effort | Priority | Notes |
-|---|------|--------|--------|----------|-------|
-| 1 | Fix security-ENHANCED.ts type safety (20 errors) | 🔥 CRITICAL | 90min | **P0** | Security code must be type-safe |
-| 2 | Create proper SecurityScheme discriminated union | 🔥 HIGH | 45min | **P0** | Foundation for #1 |
-| 3 | Investigate test number fluctuations | 🔥 HIGH | 30min | **P0** | Flaky tests = unreliable CI |
-| 4 | Fix ValidationService Effect.TS errors | 🔥 HIGH | 45min | **P1** | Many tests failing here |
-| 5 | Complete quick wins #6-10 | 🟡 MEDIUM | 60min | **P1** | Finish what we started |
-| 6 | Fix ProcessingService test assertions | 🟡 MEDIUM | 45min | **P1** | 13 failures remaining |
-| 7 | Consolidate security-LEGACY vs security-ENHANCED | 🟢 LOW | 90min | **P2** | 41 lines duplicated |
-| 8 | Fix Effect.TS naming conventions (59 warnings) | 🟢 LOW | 45min | **P2** | Code style consistency |
-| 9 | Consolidate ImmutableDocumentManager duplicates | 🟢 LOW | 60min | **P2** | 10 clones detected |
-| 10 | Replace `any` with proper type guards | 🔥 HIGH | 60min | **P1** | Prevents future type errors |
-| 11 | Use `@effect/schema` for security validation | 🟡 MEDIUM | 90min | **P2** | Replace custom validation |
-| 12 | Use `ts-pattern` for exhaustive matching | 🟡 MEDIUM | 45min | **P2** | Better than switch statements |
-| 13 | Extract MQTT plugin logic | 🟢 LOW | 60min | **P3** | Plugin architecture |
-| 14 | Extract Kafka plugin logic | 🟢 LOW | 60min | **P3** | Plugin architecture |
-| 15 | Split files >350 lines | 🟢 LOW | 90min | **P3** | Maintainability |
-| 16 | Add proper error types (not generic Error) | 🟡 MEDIUM | 45min | **P2** | Better error handling |
-| 17 | Create ADR for security architecture | 🟢 LOW | 30min | **P3** | Documentation |
-| 18 | Add pre-commit hooks (lint+test) | 🟢 LOW | 15min | **P3** | Prevent bad commits |
-| 19 | Fix channel address double-slash bug | 🟡 MEDIUM | 15min | **P1** | Test showed "//" instead of "/" |
-| 20 | Investigate why 340+ tests fail | 🔥 HIGH | 120min | **P0** | Systematic investigation needed |
-| 21 | Create type-safe message schema builders | 🟡 MEDIUM | 60min | **P2** | DDD value objects |
-| 22 | Use branded types for IDs | 🟡 MEDIUM | 45min | **P2** | Prevent ID confusion |
-| 23 | Add integration tests for full pipeline | 🟡 MEDIUM | 90min | **P2** | End-to-end coverage |
-| 24 | Performance baseline benchmarks | 🟢 LOW | 30min | **P3** | Track regressions |
-| 25 | Update CLAUDE.md with current status | 🟢 LOW | 20min | **P3** | Keep docs current |
+| #   | Task                                             | Impact      | Effort | Priority | Notes                           |
+| --- | ------------------------------------------------ | ----------- | ------ | -------- | ------------------------------- |
+| 1   | Fix security-ENHANCED.ts type safety (20 errors) | 🔥 CRITICAL | 90min  | **P0**   | Security code must be type-safe |
+| 2   | Create proper SecurityScheme discriminated union | 🔥 HIGH     | 45min  | **P0**   | Foundation for #1               |
+| 3   | Investigate test number fluctuations             | 🔥 HIGH     | 30min  | **P0**   | Flaky tests = unreliable CI     |
+| 4   | Fix ValidationService Effect.TS errors           | 🔥 HIGH     | 45min  | **P1**   | Many tests failing here         |
+| 5   | Complete quick wins #6-10                        | 🟡 MEDIUM   | 60min  | **P1**   | Finish what we started          |
+| 6   | Fix ProcessingService test assertions            | 🟡 MEDIUM   | 45min  | **P1**   | 13 failures remaining           |
+| 7   | Consolidate security-LEGACY vs security-ENHANCED | 🟢 LOW      | 90min  | **P2**   | 41 lines duplicated             |
+| 8   | Fix Effect.TS naming conventions (59 warnings)   | 🟢 LOW      | 45min  | **P2**   | Code style consistency          |
+| 9   | Consolidate ImmutableDocumentManager duplicates  | 🟢 LOW      | 60min  | **P2**   | 10 clones detected              |
+| 10  | Replace `any` with proper type guards            | 🔥 HIGH     | 60min  | **P1**   | Prevents future type errors     |
+| 11  | Use `@effect/schema` for security validation     | 🟡 MEDIUM   | 90min  | **P2**   | Replace custom validation       |
+| 12  | Use `ts-pattern` for exhaustive matching         | 🟡 MEDIUM   | 45min  | **P2**   | Better than switch statements   |
+| 13  | Extract MQTT plugin logic                        | 🟢 LOW      | 60min  | **P3**   | Plugin architecture             |
+| 14  | Extract Kafka plugin logic                       | 🟢 LOW      | 60min  | **P3**   | Plugin architecture             |
+| 15  | Split files >350 lines                           | 🟢 LOW      | 90min  | **P3**   | Maintainability                 |
+| 16  | Add proper error types (not generic Error)       | 🟡 MEDIUM   | 45min  | **P2**   | Better error handling           |
+| 17  | Create ADR for security architecture             | 🟢 LOW      | 30min  | **P3**   | Documentation                   |
+| 18  | Add pre-commit hooks (lint+test)                 | 🟢 LOW      | 15min  | **P3**   | Prevent bad commits             |
+| 19  | Fix channel address double-slash bug             | 🟡 MEDIUM   | 15min  | **P1**   | Test showed "//" instead of "/" |
+| 20  | Investigate why 340+ tests fail                  | 🔥 HIGH     | 120min | **P0**   | Systematic investigation needed |
+| 21  | Create type-safe message schema builders         | 🟡 MEDIUM   | 60min  | **P2**   | DDD value objects               |
+| 22  | Use branded types for IDs                        | 🟡 MEDIUM   | 45min  | **P2**   | Prevent ID confusion            |
+| 23  | Add integration tests for full pipeline          | 🟡 MEDIUM   | 90min  | **P2**   | End-to-end coverage             |
+| 24  | Performance baseline benchmarks                  | 🟢 LOW      | 30min  | **P3**   | Track regressions               |
+| 25  | Update CLAUDE.md with current status             | 🟢 LOW      | 20min  | **P3**   | Keep docs current               |
 
 ### Priority Matrix
 
@@ -276,12 +282,14 @@ EFFORT  │  MUST DO     │        │  PLAN AHEAD  │      │  LOW PRIORITY�
 ### 🤔 Why are 313 tests failing when build is clean?
 
 **The Mystery:**
+
 - TypeScript compilation: **0 errors**
 - Tests passing: **389** (55.4%)
 - Tests failing: **313** (44.6%)
 - Test numbers **fluctuate** between runs
 
 **Evidence:**
+
 - Run 1: 379 pass, 304 fail
 - Run 2: 367 pass, 340 fail
 - Run 3: 389 pass, 313 fail
@@ -310,6 +318,7 @@ EFFORT  │  MUST DO     │        │  PLAN AHEAD  │      │  LOW PRIORITY�
 
 **What I Need Help With:**
 Should I:
+
 - **A)** Investigate test flakiness systematically (2-3 hours)
 - **B)** Fix type safety first, then investigate tests
 - **C)** Rewrite tests to be more isolated/deterministic
@@ -321,6 +330,7 @@ Should I:
 ## 📋 EXECUTION PLAN RECOMMENDATION
 
 ### Phase 1: Critical Type Safety (P0)
+
 **Estimated:** 2-3 hours
 
 1. Create SecurityScheme discriminated union types
@@ -330,6 +340,7 @@ Should I:
 5. Test and verify all 20 errors fixed
 
 ### Phase 2: Test Stability Investigation (P0)
+
 **Estimated:** 2-3 hours
 
 1. Identify patterns in failing tests
@@ -339,6 +350,7 @@ Should I:
 5. Verify stable test results
 
 ### Phase 3: Complete Quick Wins (P1)
+
 **Estimated:** 1 hour
 
 1. Finish remaining 5 quick wins
@@ -347,6 +359,7 @@ Should I:
 4. Clean up imports
 
 ### Phase 4: Code Quality & Architecture (P2-P3)
+
 **Estimated:** 4-6 hours
 
 1. Consolidate duplicated code
@@ -372,13 +385,13 @@ Should I:
 
 ## 📊 METRICS SUMMARY
 
-| Category | Before | After | Change |
-|----------|--------|-------|--------|
-| ESLint Problems | ~95 | 79 | -16% ✅ |
-| Type Errors | 0 | 0 | Stable ✅ |
-| Test Pass Rate | ~53% | 55.4% | +2.4% 📈 |
-| Commits Pushed | 0 | 4 | +4 ✅ |
-| Files Fixed | 0 | 9 | +9 ✅ |
+| Category        | Before | After | Change    |
+| --------------- | ------ | ----- | --------- |
+| ESLint Problems | ~95    | 79    | -16% ✅   |
+| Type Errors     | 0      | 0     | Stable ✅ |
+| Test Pass Rate  | ~53%   | 55.4% | +2.4% 📈  |
+| Commits Pushed  | 0      | 4     | +4 ✅     |
+| Files Fixed     | 0      | 9     | +9 ✅     |
 
 ---
 

@@ -1,6 +1,6 @@
 /**
  * Simple Paths
- * 
+ *
  * MINIMAL WORKING VERSION: Basic path management without complex branding
  * Focus on getting compilation working first
  */
@@ -16,10 +16,7 @@ export const CURRENT_WORKING_DIR = process.cwd();
 /**
  * Project root directory (automatically detected)
  */
-export const PROJECT_ROOT_DIR = resolve(
-  dirname(fileURLToPath(import.meta.url)),
-  ".."
-);
+export const PROJECT_ROOT_DIR = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
 /**
  * Core path directories
@@ -32,14 +29,14 @@ export const PATHS = {
   TEST_DIR: join(PROJECT_ROOT_DIR, "test"),
   DOCS_DIR: join(PROJECT_ROOT_DIR, "docs"),
   REPORTS_DIR: join(PROJECT_ROOT_DIR, "reports"),
-  
+
   // Source subdirectories
   TYPES_DIR: join(PROJECT_ROOT_DIR, "src", "types"),
   UTILS_DIR: join(PROJECT_ROOT_DIR, "src", "utils"),
   CONSTANTS_DIR: join(PROJECT_ROOT_DIR, "src", "constants"),
   DOMAIN_DIR: join(PROJECT_ROOT_DIR, "src", "domain"),
   INFRASTRUCTURE_DIR: join(PROJECT_ROOT_DIR, "src", "infrastructure"),
-  
+
   // Default paths
   DEFAULT_OUTPUT_DIR: PROJECT_ROOT_DIR,
   DEFAULT_OUTPUT_FILE: "asyncapi.yaml",
@@ -89,13 +86,12 @@ export const pathValidation = {
    * Check if path has valid file extension
    */
   hasValidExtension: (path: string, extensions: readonly string[]): boolean =>
-    extensions.some(ext => path.toLowerCase().endsWith(ext.toLowerCase())),
+    extensions.some((ext) => path.toLowerCase().endsWith(ext.toLowerCase())),
 
   /**
    * Check if path matches a pattern
    */
-  matchesPattern: (path: string, pattern: RegExp): boolean =>
-    pattern.test(basename(path)),
+  matchesPattern: (path: string, pattern: RegExp): boolean => pattern.test(basename(path)),
 };
 
 /**
@@ -105,20 +101,17 @@ export const pathTransformation = {
   /**
    * Convert to absolute path
    */
-  toAbsolute: (path: string, base: string = CURRENT_WORKING_DIR): string =>
-    resolve(base, path),
+  toAbsolute: (path: string, base: string = CURRENT_WORKING_DIR): string => resolve(base, path),
 
   /**
    * Convert to relative path
    */
-  toRelative: (path: string, base: string = CURRENT_WORKING_DIR): string =>
-    relative(base, path),
+  toRelative: (path: string, base: string = CURRENT_WORKING_DIR): string => relative(base, path),
 
   /**
    * Normalize path separators
    */
-  normalize: (path: string): string =>
-    resolve(path).replace(/\\/g, "/"),
+  normalize: (path: string): string => resolve(path).replace(/\\/g, "/"),
 
   /**
    * Join path segments safely

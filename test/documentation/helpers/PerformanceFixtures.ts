@@ -424,10 +424,7 @@ export class TestDataGenerator {
     return "namespace TestService; model TestModel { id: string; }";
   }
 
-  static generateExpectedAsyncAPI(
-    title: string,
-    operationCount: number,
-  ): AsyncAPIObject {
+  static generateExpectedAsyncAPI(title: string, operationCount: number): AsyncAPIObject {
     const channels: Record<string, any> = {};
     const operations: Record<string, any> = {};
     const messages: Record<string, any> = {};

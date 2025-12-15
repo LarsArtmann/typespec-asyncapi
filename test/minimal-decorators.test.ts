@@ -44,13 +44,9 @@ namespace TestNamespace;
         });
 
         // Check for missing implementation errors
-        const missingImpl = diagnostics.filter(
-          (d) => d.code === "missing-implementation",
-        );
+        const missingImpl = diagnostics.filter((d) => d.code === "missing-implementation");
         if (missingImpl.length > 0) {
-          console.log(
-            `❌ CRITICAL: ${missingImpl.length} missing-implementation errors`,
-          );
+          console.log(`❌ CRITICAL: ${missingImpl.length} missing-implementation errors`);
           console.log("🚨 Decorators not being discovered by TypeSpec");
         } else {
           console.log("✅ No missing-implementation errors");

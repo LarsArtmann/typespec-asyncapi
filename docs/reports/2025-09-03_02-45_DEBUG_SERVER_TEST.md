@@ -1,8 +1,9 @@
 # Server Processing Debug Report
 
 ## Current Status
+
 - ✅ TypeScript compilation working
-- ✅ Library registration working  
+- ✅ Library registration working
 - ✅ Decorator syntax fixed (`#{...}` instead of `{...}`)
 - ✅ Operations processing working (schemas being converted)
 - ❌ Server decorators not being processed
@@ -11,6 +12,7 @@
 ## Evidence from Test Logs
 
 ### Working Components
+
 ```
 🚀 Loading built-in protocol plugins...
 ✅ Plugin kafka registered successfully
@@ -19,6 +21,7 @@
 ```
 
 ### Missing Components
+
 - No server decorator processing logs (`🌐 PROCESSING @server decorator`)
 - No server building logs (`🔍 Building servers: found X namespace(s)`)
 - No pipeline stage logs (`🚀 Starting emission pipeline stages`)
@@ -34,7 +37,9 @@ The problem is likely that the `@server` decorator is not being invoked at all d
 ## Next Steps Required
 
 ### 1. Test Server Decorator Registration
+
 Create a minimal test to verify the server decorator is being called:
+
 ```tsp
 @server("test", #{ url: "test://localhost", protocol: "test" })
 namespace TestNamespace;
@@ -42,22 +47,26 @@ namespace TestNamespace;
 model TestEvent { id: string; }
 
 @channel("test")
-@subscribe 
+@subscribe
 op testOp(): TestEvent;
 ```
 
 ### 2. Check Compiled JavaScript
+
 Verify that the compiled `dist/decorators/server.js` contains the `$server` function properly.
 
 ### 3. Add Direct Server Building Test
+
 Test `buildServersFromNamespaces()` directly with a known good program state.
 
 ### 4. Fix Integration Path
+
 Once server decorators work, ensure the EmissionPipeline Stage 3 is being executed to populate servers in the final document.
 
 ## Expected Fix Sequence
+
 1. Fix server decorator invocation
-2. Fix server state storage  
+2. Fix server state storage
 3. Fix server building from state
 4. Fix server integration in final document
 5. Test protocol bindings integration

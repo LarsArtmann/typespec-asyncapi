@@ -4,17 +4,17 @@ Comprehensive documentation for mapping TypeSpec definitions to AsyncAPI 3.0 spe
 
 ## Quick Navigation
 
-| Document | Focus | Key Topics |
-|----------|-------|------------|
-| **[01-core-concepts.md](01-core-concepts.md)** | Foundational mapping | Services→Applications, Namespaces→Channels, Philosophy |
-| **[02-data-types.md](02-data-types.md)** | Type system mapping | Primitives, Objects, Arrays, Unions, Enums → JSON Schema |
-| **[03-operations-channels.md](03-operations-channels.md)** | Event-driven patterns | @publish/@subscribe → Channels/Operations |
-| **[04-schemas-models.md](04-schemas-models.md)** | Schema transformation | Event Sourcing, Versioning, Message Envelopes |
-| **[05-decorators.md](05-decorators.md)** | Decorator mapping | @channel, @protocol, @security, @server → AsyncAPI features |
-| **[06-protocol-bindings.md](06-protocol-bindings.md)** | Protocol configuration | Kafka, AMQP, WebSocket, MQTT, HTTP, SNS/SQS bindings |
-| **[07-advanced-patterns.md](07-advanced-patterns.md)** | Complex architectures | Event Sourcing, CQRS, Sagas, Stream Processing |
-| **[08-best-practices.md](08-best-practices.md)** | Design guidelines | Conventions, Performance, Security, Anti-patterns |
-| **[09-examples.md](09-examples.md)** | Real-world examples | E-Commerce, IoT, Financial complete implementations |
+| Document                                                   | Focus                  | Key Topics                                                  |
+| ---------------------------------------------------------- | ---------------------- | ----------------------------------------------------------- |
+| **[01-core-concepts.md](01-core-concepts.md)**             | Foundational mapping   | Services→Applications, Namespaces→Channels, Philosophy      |
+| **[02-data-types.md](02-data-types.md)**                   | Type system mapping    | Primitives, Objects, Arrays, Unions, Enums → JSON Schema    |
+| **[03-operations-channels.md](03-operations-channels.md)** | Event-driven patterns  | @publish/@subscribe → Channels/Operations                   |
+| **[04-schemas-models.md](04-schemas-models.md)**           | Schema transformation  | Event Sourcing, Versioning, Message Envelopes               |
+| **[05-decorators.md](05-decorators.md)**                   | Decorator mapping      | @channel, @protocol, @security, @server → AsyncAPI features |
+| **[06-protocol-bindings.md](06-protocol-bindings.md)**     | Protocol configuration | Kafka, AMQP, WebSocket, MQTT, HTTP, SNS/SQS bindings        |
+| **[07-advanced-patterns.md](07-advanced-patterns.md)**     | Complex architectures  | Event Sourcing, CQRS, Sagas, Stream Processing              |
+| **[08-best-practices.md](08-best-practices.md)**           | Design guidelines      | Conventions, Performance, Security, Anti-patterns           |
+| **[09-examples.md](09-examples.md)**                       | Real-world examples    | E-Commerce, IoT, Financial complete implementations         |
 
 ## Quick Reference
 
@@ -33,17 +33,18 @@ Comprehensive documentation for mapping TypeSpec definitions to AsyncAPI 3.0 spe
 
 ### Common Type Mappings
 
-| TypeSpec | AsyncAPI JSON Schema | Notes |
-|----------|---------------------|-------|
-| `string` | `{"type": "string"}` | Basic string type |
-| `int32` | `{"type": "integer", "format": "int32"}` | 32-bit integer |
-| `Record<string, T>` | `{"type": "object", "additionalProperties": T}` | Dynamic objects |
-| `T[]` | `{"type": "array", "items": T}` | Arrays |
-| `T \| U` | `{"oneOf": [T, U]}` | Union types |
+| TypeSpec            | AsyncAPI JSON Schema                            | Notes             |
+| ------------------- | ----------------------------------------------- | ----------------- |
+| `string`            | `{"type": "string"}`                            | Basic string type |
+| `int32`             | `{"type": "integer", "format": "int32"}`        | 32-bit integer    |
+| `Record<string, T>` | `{"type": "object", "additionalProperties": T}` | Dynamic objects   |
+| `T[]`               | `{"type": "array", "items": T}`                 | Arrays            |
+| `T \| U`            | `{"oneOf": [T, U]}`                             | Union types       |
 
 ### Message Pattern Templates
 
 #### Event Notification
+
 ```typescript
 @message("UserRegistered")
 model UserRegistered {
@@ -54,6 +55,7 @@ model UserRegistered {
 ```
 
 #### Command Message
+
 ```typescript
 @message("CreateOrder")
 model CreateOrder {
@@ -64,6 +66,7 @@ model CreateOrder {
 ```
 
 #### Event Sourcing Event
+
 ```typescript
 @message("OrderCreated")
 model OrderCreated extends DomainEvent {
@@ -77,6 +80,7 @@ model OrderCreated extends DomainEvent {
 ### Protocol Quick Setup
 
 #### Kafka Configuration
+
 ```typescript
 @protocol("kafka", {
   topic: "orders",
@@ -86,6 +90,7 @@ model OrderCreated extends DomainEvent {
 ```
 
 #### AMQP Configuration
+
 ```typescript
 @protocol("amqp", {
   exchange: "orders.exchange",
@@ -95,6 +100,7 @@ model OrderCreated extends DomainEvent {
 ```
 
 #### WebSocket Configuration
+
 ```typescript
 @protocol("ws", {
   method: "GET",
@@ -140,18 +146,21 @@ model OrderCreated extends DomainEvent {
 ## Architecture Patterns
 
 ### Event Sourcing
+
 - Domain events as first-class messages
 - Aggregate versioning and conflict resolution
 - Event store as source of truth
 - See: [Advanced Patterns](07-advanced-patterns.md#event-sourcing)
 
 ### CQRS (Command Query Responsibility Segregation)
+
 - Separate command and query channels
 - Command validation and event emission
 - Read model projection patterns
 - See: [Advanced Patterns](07-advanced-patterns.md#cqrs-patterns)
 
 ### Saga Orchestration
+
 - Long-running business processes
 - Compensation and rollback handling
 - State machine coordination
@@ -160,6 +169,7 @@ model OrderCreated extends DomainEvent {
 ## Validation & Testing
 
 ### AsyncAPI Validation
+
 ```bash
 # Compile TypeSpec to AsyncAPI
 npx tsp compile --emit @typespec/asyncapi
@@ -169,6 +179,7 @@ npx @asyncapi/parser validate asyncapi.json
 ```
 
 ### Schema Testing
+
 ```typescript
 // Test message schema compliance
 const message = { userId: "123", email: "user@example.com" };
@@ -192,12 +203,14 @@ const isValid = validateSchema("UserRegistered", message);
 ## Migration Strategies
 
 ### From OpenAPI to AsyncAPI
+
 1. Identify async operations in OpenAPI
 2. Convert webhooks to AsyncAPI channels
 3. Transform callbacks to publish/subscribe patterns
 4. Add protocol bindings for message brokers
 
 ### From Legacy Message Systems
+
 1. Document existing message formats
 2. Create TypeSpec models for messages
 3. Add AsyncAPI decorators progressively

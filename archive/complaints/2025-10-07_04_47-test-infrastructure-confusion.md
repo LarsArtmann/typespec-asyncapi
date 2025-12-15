@@ -3,6 +3,7 @@
 Date: 2025-10-07T04:47:00+00:00
 
 I was asked to perform:
+
 - Fix test regression (583 → 581 passing tests)
 - Investigate why "correct" await fixes caused tests to fail
 - Batch-fix test output paths
@@ -10,12 +11,14 @@ I was asked to perform:
 - Complete comprehensive planning and documentation
 
 I was given these context information's:
+
 - Session summary from 2025-10-06 indicating "batch-fix test paths = #1 priority"
 - Test suite showing 583 passing tests (from yesterday)
 - Information about AssetEmitter fixes from previous session
 - GitHub issues and project state
 
 I was missing these information:
+
 1. **Critical Missing Info:** Test infrastructure has KNOWN BUGS that were never documented
    - Line 120 comment says "options still not passed correctly" but no details
    - Line 125 says "TODO: Options passing still not working" but no root cause analysis
@@ -43,6 +46,7 @@ I was missing these information:
    - No documentation about this critical issue
 
 I was confused by:
+
 1. **The "await fixes" regression:** How can adding correct `await` keywords make tests WORSE?
    - Answer: Tests were accidentally passing with wrong Promise types
    - Now they get correct objects but hit different bugs (missing files)
@@ -63,6 +67,7 @@ I was confused by:
    - Scope creep trap!
 
 What I wish for the future is:
+
 1. **Document KNOWN BUGS prominently** - Don't hide TODOs in comments
    - Create GitHub issues for "options not passed correctly"
    - Add README warning about test infrastructure limitations

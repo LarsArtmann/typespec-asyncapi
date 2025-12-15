@@ -45,17 +45,14 @@ describe("E2E: Error Handling and Edge Cases", () => {
 
     const outputFiles = Array.from(host.fs.keys());
     const asyncApiFile = outputFiles.find(
-      (f) =>
-        f.includes("asyncapi") && (f.endsWith(".json") || f.endsWith(".yaml")),
+      (f) => f.includes("asyncapi") && (f.endsWith(".json") || f.endsWith(".yaml")),
     );
 
     expect(asyncApiFile).toBeDefined();
 
     if (asyncApiFile) {
       const content = host.fs.get(asyncApiFile) as string;
-      const spec = content.startsWith("{")
-        ? JSON.parse(content)
-        : require("yaml").parse(content);
+      const spec = content.startsWith("{") ? JSON.parse(content) : require("yaml").parse(content);
 
       // Empty model should still generate valid schema
       expect(spec.components?.schemas?.EmptyMessage).toBeDefined();
@@ -92,9 +89,7 @@ describe("E2E: Error Handling and Edge Cases", () => {
     });
 
     // Should compile (might have warnings but not errors)
-    expect(
-      diagnostics.filter((d) => d.severity === "error").length,
-    ).toBeLessThanOrEqual(1);
+    expect(diagnostics.filter((d) => d.severity === "error").length).toBeLessThanOrEqual(1);
 
     Effect.log("✅ Operations without decorators handled");
   });
@@ -169,17 +164,14 @@ describe("E2E: Error Handling and Edge Cases", () => {
 
     const outputFiles = Array.from(host.fs.keys());
     const asyncApiFile = outputFiles.find(
-      (f) =>
-        f.includes("asyncapi") && (f.endsWith(".json") || f.endsWith(".yaml")),
+      (f) => f.includes("asyncapi") && (f.endsWith(".json") || f.endsWith(".yaml")),
     );
 
     expect(asyncApiFile).toBeDefined();
 
     if (asyncApiFile) {
       const content = host.fs.get(asyncApiFile) as string;
-      const spec = content.startsWith("{")
-        ? JSON.parse(content)
-        : require("yaml").parse(content);
+      const spec = content.startsWith("{") ? JSON.parse(content) : require("yaml").parse(content);
 
       const schema = spec.components?.schemas?.EdgeCaseMessage;
       expect(schema).toBeDefined();
@@ -197,11 +189,7 @@ describe("E2E: Error Handling and Edge Cases", () => {
       expect(schema.properties.numbers.items.type).toBe("integer");
 
       // Validate unions become enums
-      expect(schema.properties.status.enum).toEqual([
-        "active",
-        "inactive",
-        "pending",
-      ]);
+      expect(schema.properties.status.enum).toEqual(["active", "inactive", "pending"]);
 
       // Validate optional fields
       expect(schema.required).not.toContain("optionalInt");
@@ -242,9 +230,7 @@ describe("E2E: Error Handling and Edge Cases", () => {
     });
 
     // Should handle recursion without infinite loops
-    expect(
-      diagnostics.filter((d) => d.severity === "error").length,
-    ).toBeLessThanOrEqual(1);
+    expect(diagnostics.filter((d) => d.severity === "error").length).toBeLessThanOrEqual(1);
 
     Effect.log("✅ Recursive structures handled safely");
   });
@@ -293,17 +279,14 @@ describe("E2E: Error Handling and Edge Cases", () => {
 
     const outputFiles = Array.from(host.fs.keys());
     const asyncApiFile = outputFiles.find(
-      (f) =>
-        f.includes("asyncapi") && (f.endsWith(".json") || f.endsWith(".yaml")),
+      (f) => f.includes("asyncapi") && (f.endsWith(".json") || f.endsWith(".yaml")),
     );
 
     expect(asyncApiFile).toBeDefined();
 
     if (asyncApiFile) {
       const content = host.fs.get(asyncApiFile) as string;
-      const spec = content.startsWith("{")
-        ? JSON.parse(content)
-        : require("yaml").parse(content);
+      const spec = content.startsWith("{") ? JSON.parse(content) : require("yaml").parse(content);
 
       const schema = spec.components?.schemas?.StrictMessage;
       expect(schema).toBeDefined();
@@ -359,17 +342,14 @@ describe("E2E: Error Handling and Edge Cases", () => {
 
     const outputFiles = Array.from(host.fs.keys());
     const asyncApiFile = outputFiles.find(
-      (f) =>
-        f.includes("asyncapi") && (f.endsWith(".json") || f.endsWith(".yaml")),
+      (f) => f.includes("asyncapi") && (f.endsWith(".json") || f.endsWith(".yaml")),
     );
 
     expect(asyncApiFile).toBeDefined();
 
     if (asyncApiFile) {
       const content = host.fs.get(asyncApiFile) as string;
-      const spec = content.startsWith("{")
-        ? JSON.parse(content)
-        : require("yaml").parse(content);
+      const spec = content.startsWith("{") ? JSON.parse(content) : require("yaml").parse(content);
 
       // Should have valid AsyncAPI without security
       expect(spec.asyncapi).toBe("3.0.0");

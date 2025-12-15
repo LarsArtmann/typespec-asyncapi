@@ -17,6 +17,7 @@ This document details the successful migration of the TypeSpec AsyncAPI emitter 
 ## Architecture Changes
 
 ### Before: Simple Emitter Pattern
+
 ```typescript
 // Old approach: Direct function-based emitter
 export async function generateAsyncAPI(context: EmitContext<AsyncAPIEmitterOptions>): Promise<void> {
@@ -28,6 +29,7 @@ export async function generateAsyncAPI(context: EmitContext<AsyncAPIEmitterOptio
 ```
 
 ### After: AssetEmitter Architecture
+
 ```typescript
 // New approach: TypeEmitter class with AssetEmitter integration
 class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
@@ -47,21 +49,25 @@ export async function generateAsyncAPI(context: EmitContext<AsyncAPIEmitterOptio
 ## Performance Improvements
 
 ### 1. Caching and Deduplication
+
 - **Before**: No caching, potential duplicate processing
 - **After**: AssetEmitter provides automatic caching of processed types
 - **Benefit**: Significant performance improvement for complex schemas
 
 ### 2. Memory Management
+
 - **Before**: All operations held in memory simultaneously
 - **After**: AssetEmitter manages memory lifecycle efficiently
 - **Benefit**: Better memory usage for large TypeSpec programs
 
 ### 3. Type Processing Optimization
+
 - **Before**: Linear processing of all types
 - **After**: AssetEmitter's intelligent type graph traversal
 - **Benefit**: Faster emission for interconnected types
 
 ### 4. File Output Optimization
+
 - **Before**: Single-threaded file writing
 - **After**: AssetEmitter's optimized file management
 - **Benefit**: Better handling of multiple output formats
@@ -69,18 +75,21 @@ export async function generateAsyncAPI(context: EmitContext<AsyncAPIEmitterOptio
 ## Breaking Changes Analysis
 
 ### Public API Compatibility ✅
+
 - **Entry Point**: `generateAsyncAPI()` function signature unchanged
 - **Options Interface**: `AsyncAPIEmitterOptions` fully preserved
 - **Output Format**: AsyncAPI 3.0.0 document structure identical
 - **File Generation**: Same YAML/JSON output capabilities
 
 ### Decorator Compatibility ✅
+
 - **@channel**: Fully supported, same behavior
-- **@publish**: Fully supported, same behavior  
+- **@publish**: Fully supported, same behavior
 - **@subscribe**: Fully supported, same behavior
 - **Custom decorators**: All existing decorator integration preserved
 
 ### Error Handling ✅
+
 - **Diagnostics**: Same diagnostic reporting
 - **Fallback Mechanisms**: Enhanced error recovery with AssetEmitter
 - **Validation**: All existing validation logic preserved
@@ -88,12 +97,14 @@ export async function generateAsyncAPI(context: EmitContext<AsyncAPIEmitterOptio
 ## Migration Implementation Details
 
 ### 1. Import Changes
+
 ```typescript
 // Added AssetEmitter imports
 import { createAssetEmitter, TypeEmitter, type SourceFile } from "@typespec/asset-emitter";
 ```
 
 ### 2. Class Structure
+
 ```typescript
 class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
   override programContext(program: Program): Record<string, unknown>

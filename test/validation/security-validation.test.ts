@@ -26,33 +26,23 @@ describe("Security Validation", () => {
 
     for (const prop of expectedProperties) {
       expect(ASYNC_API_EMITTER_OPTIONS_SCHEMA.properties[prop]).toBeDefined();
-      expect(ASYNC_API_EMITTER_OPTIONS_SCHEMA.properties[prop].nullable).toBe(
-        true,
-      );
+      expect(ASYNC_API_EMITTER_OPTIONS_SCHEMA.properties[prop].nullable).toBe(true);
     }
   });
 
   test("file-type enum is properly constrained", () => {
-    const fileTypeSchema =
-      ASYNC_API_EMITTER_OPTIONS_SCHEMA.properties["file-type"];
+    const fileTypeSchema = ASYNC_API_EMITTER_OPTIONS_SCHEMA.properties["file-type"];
     expect(fileTypeSchema.enum).toEqual(["yaml", "json"]);
   });
 
   test("asyncapi-version enum is properly constrained", () => {
-    const versionSchema =
-      ASYNC_API_EMITTER_OPTIONS_SCHEMA.properties["asyncapi-version"];
+    const versionSchema = ASYNC_API_EMITTER_OPTIONS_SCHEMA.properties["asyncapi-version"];
     expect(versionSchema.enum).toEqual(["3.0.0"]);
   });
 
   test("protocol-bindings enum is properly constrained", () => {
-    const bindingsSchema =
-      ASYNC_API_EMITTER_OPTIONS_SCHEMA.properties["protocol-bindings"];
-    expect(bindingsSchema.items.enum).toEqual([
-      "kafka",
-      "amqp",
-      "websocket",
-      "http",
-    ]);
+    const bindingsSchema = ASYNC_API_EMITTER_OPTIONS_SCHEMA.properties["protocol-bindings"];
+    expect(bindingsSchema.items.enum).toEqual(["kafka", "amqp", "websocket", "http"]);
     // uniqueItems may not be present in all schema versions
     if (bindingsSchema.uniqueItems !== undefined) {
       expect(bindingsSchema.uniqueItems).toBe(true);
@@ -60,8 +50,7 @@ describe("Security Validation", () => {
   });
 
   test("versioning sub-object prevents arbitrary properties", () => {
-    const versioningSchema =
-      ASYNC_API_EMITTER_OPTIONS_SCHEMA.properties["versioning"];
+    const versioningSchema = ASYNC_API_EMITTER_OPTIONS_SCHEMA.properties["versioning"];
     expect(versioningSchema.additionalProperties).toBe(false);
     // Properties may not be present in fallback schemas
     if (versioningSchema.properties !== undefined) {
@@ -80,8 +69,6 @@ describe("Security Validation", () => {
     expect(schemaString).not.toContain("{}");
 
     // Ensure we have actual validation rules
-    expect(
-      Object.keys(ASYNC_API_EMITTER_OPTIONS_SCHEMA.properties).length,
-    ).toBeGreaterThan(0);
+    expect(Object.keys(ASYNC_API_EMITTER_OPTIONS_SCHEMA.properties).length).toBeGreaterThan(0);
   });
 });

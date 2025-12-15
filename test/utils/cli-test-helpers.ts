@@ -79,10 +79,7 @@ export async function compileWithCLI(
 
   try {
     // Write TypeSpec source to disk
-    if (
-      sourceFileOrContent.includes("import") ||
-      sourceFileOrContent.includes("model")
-    ) {
+    if (sourceFileOrContent.includes("import") || sourceFileOrContent.includes("model")) {
       // Inline source code
       await fs.writeFile(tspFile, sourceFileOrContent, "utf-8");
     } else {
@@ -111,12 +108,7 @@ export async function compileWithCLI(
 
     // Read AsyncAPI output from disk
     // Output goes to {output-dir}/@lars-artmann/typespec-asyncapi/AsyncAPI.yaml
-    const outputPath = join(
-      workdir,
-      "@lars-artmann",
-      "typespec-asyncapi",
-      "AsyncAPI.yaml",
-    );
+    const outputPath = join(workdir, "@lars-artmann", "typespec-asyncapi", "AsyncAPI.yaml");
     let asyncapiDoc: AsyncAPIObject | undefined;
 
     try {
@@ -269,9 +261,7 @@ export async function cleanupTestDir(workdir: string): Promise<void> {
  * @param files - Map of filename to content
  * @returns Path to fixture directory
  */
-export async function createTestFixture(
-  files: Record<string, string>,
-): Promise<string> {
+export async function createTestFixture(files: Record<string, string>): Promise<string> {
   const fixtureDir = await createTempDir();
 
   for (const [filename, content] of Object.entries(files)) {
@@ -313,10 +303,7 @@ export function assertValidAsyncAPI(
  * @returns Path to AsyncAPI.yaml output
  */
 export function getAsyncAPIOutputPath(workdir: string): string {
-  return join(
-    workdir,
-    "tsp-output/@lars-artmann/typespec-asyncapi/AsyncAPI.yaml",
-  );
+  return join(workdir, "tsp-output/@lars-artmann/typespec-asyncapi/AsyncAPI.yaml");
 }
 
 /**

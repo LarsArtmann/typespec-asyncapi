@@ -1,6 +1,6 @@
 /**
  * 🏗️ UNIFIED TEST INFRASTRUCTURE
- * 
+ *
  * Eliminates duplicate test host systems
  * Provides single source of truth for real compilation testing
  * Uses strongly-typed configuration throughout
@@ -23,27 +23,27 @@ export interface UnifiedTestOptions {
 
 /**
  * Real AsyncAPI Test Host Factory
- * 
+ *
  * Creates a properly configured test host with our library
  * Eliminates duplicate test infrastructure
  */
 export async function createUnifiedAsyncAPITestHost(
-  options: UnifiedTestOptions = {}
+  options: UnifiedTestOptions = {},
 ): Promise<TestHost> {
   // Create our library once
   const asyncAPILibrary = await createLibrary();
-  
+
   // Create test host with our library
   return createTestHost({
     libraries: [asyncAPILibrary],
     compilerOptions: options.compilerOptions ?? {},
-    ...options
+    ...options,
   });
 }
 
 /**
  * Real compilation result with strong typing
- * 
+ *
  * Eliminates 'any' type disasters in test infrastructure
  */
 export interface RealCompilationResult {
@@ -55,27 +55,30 @@ export interface RealCompilationResult {
 
 /**
  * Real compilation function
- * 
+ *
  * Performs actual TypeSpec compilation without mocking
  * Returns properly typed results
  */
 export async function compileRealAsyncAPI(
   typespecCode: string,
-  options: UnifiedTestOptions = {}
+  options: UnifiedTestOptions = {},
 ): Promise<RealCompilationResult> {
   // Create test host
   const host = await createUnifiedAsyncAPITestHost(options);
-  
+
   // Add TypeSpec code with proper library import
-  host.addTypeSpecFile("main.tsp", `
+  host.addTypeSpecFile(
+    "main.tsp",
+    `
     import "@lars-artmann/typespec-asyncapi";
     
     ${typespecCode}
-  `);
-  
+  `,
+  );
+
   // Compile
   const program = await host.compile("main.tsp");
-  
+
   // NOTE: Program object serialization issue remains
   // Core functionality working - decorators executing, state persisting
   // Issue is test instrumentation, not actual TypeSpec compilation
@@ -85,19 +88,19 @@ export async function compileRealAsyncAPI(
   console.log("🔍 DEBUG: Program has program property:", !!program?.program);
   console.log("🔍 DEBUG: Program keys (enumerable):", Object.keys(program || {}));
   console.log("🔍 DEBUG: Program symbols:", Object.getOwnPropertySymbols(program || {}));
-  
+
   // Return strongly typed result
   return {
     program,
     diagnostics: program.diagnostics,
     asyncapi: undefined, // Will be populated by emitter
-    outputs: new Map()
+    outputs: new Map(),
   };
 }
 
 /**
  * Legacy compatibility exports
- * 
+ *
  * TODO: Remove after migrating all tests to unified infrastructure
  */
 export { createUnifiedAsyncAPITestHost as createAsyncAPITestHost };

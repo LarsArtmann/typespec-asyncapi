@@ -42,8 +42,9 @@ export async function emitFile(program, options) {
 ## 📊 Impact Assessment
 
 ### Affected Components
+
 - ✅ **emitFile() API**: Works correctly, writes files
-- ✅ **Emitter Options**: Pass correctly (`output-file`, `file-type`) 
+- ✅ **Emitter Options**: Pass correctly (`output-file`, `file-type`)
 - ❌ **Test Framework**: `result.outputs` empty
 - ❌ **All Emitter Tests**: 345/736 failing due to output capture
 
@@ -62,12 +63,14 @@ throw new Error("emitFile API test framework integration broken")
 
 ### Debugging Evidence
 
-✅ **emitFile() working**: 
-- "✅ File emitted: emitfile-test.json"  
+✅ **emitFile() working**:
+
+- "✅ File emitted: emitfile-test.json"
 - "🔍 DEBUG: Resolved outputFile: emitfile-test"
 - "🔍 DEBUG: Resolved fileType: json"
 
-❌ **result.outputs empty**: 
+❌ **result.outputs empty**:
+
 - "🔍 Virtual FS contents:" (nothing shown)
 - "🔍 result.outputs: {}" (empty Map)
 - "⚠️ Cannot access virtual filesystem via program.fs" (bridge attempt failed)
@@ -75,12 +78,14 @@ throw new Error("emitFile API test framework integration broken")
 ## 🛠️ Technical Details
 
 ### Expected Behavior
+
 1. Emitter calls `emitFile(context.program, {path, content})`
 2. File written to real filesystem
 3. **AND** file added to `result.outputs` Map for test access
 4. Tests can access generated content via `result.outputs[filename]`
 
-### Actual Behavior  
+### Actual Behavior
+
 1. Emitter calls `emitFile()` ✅
 2. File written to real filesystem ✅
 3. **NOT** added to `result.outputs` Map ❌
@@ -94,6 +99,7 @@ throw new Error("emitFile API test framework integration broken")
 4. **Direct File Addition**: No API available to add files to `result.fs.fs`
 
 ### Workaround Attempts (All Fail)
+
 1. **Filesystem Search**: Temp directories cleaned up before test can access them
 2. **AssetEmitter Migration**: Different API, same underlying issue with virtual FS isolation
 3. **Manual outputs population**: Test framework resets virtual FS after compilation
@@ -101,6 +107,7 @@ throw new Error("emitFile API test framework integration broken")
 ## 🎯 Proposed Solution
 
 ### Option 1: Fix Test Framework Bridge (Recommended)
+
 Update `tester.js` to capture `emitFile()` calls and mirror them to virtual FS:
 
 ```javascript
@@ -109,7 +116,7 @@ const originalEmitFile = program.host.writeFile;
 program.host.writeFile = async (path, content) => {
     // Call original (real filesystem)
     await originalEmitFile(path, content);
-    
+
     // Mirror to virtual filesystem for test framework
     const virtualPath = joinPaths("tsp-output", params.emitter, path);
     fs.add(virtualPath, content);
@@ -117,13 +124,14 @@ program.host.writeFile = async (path, content) => {
 ```
 
 ### Option 2: Enhanced emitFile API
+
 Modify `emitter-utils.js` to accept virtual FS reference:
 
 ```javascript
 export async function emitFile(program, options, virtualFs) {
     // Write to real filesystem
     await program.host.writeFile(options.path, content);
-    
+
     // Also write to virtual FS if provided
     if (virtualFs) {
         const virtualPath = joinPaths("tsp-output", options.path);
@@ -133,6 +141,7 @@ export async function emitFile(program, options, virtualFs) {
 ```
 
 ### Option 3: Configurable Output Location
+
 Allow test framework to capture files from any output directory, not just virtual FS.
 
 ## 🧪 Verification Steps
@@ -148,12 +157,14 @@ Allow test framework to capture files from any output directory, not just virtua
 ## 📋 Files Needing Changes
 
 ### Primary Fix Location
+
 - `node_modules/@typespec/compiler/dist/src/testing/tester.js`
   - Lines 231-235: Add virtual FS mirroring for emitFile calls
   - Lines 188-194: Handle emitFile bridging in createEmitterTesterInternal
   - Lines 214-240: Ensure virtual FS scanning finds emitFile-generated files
 
-### Secondary Fix Location  
+### Secondary Fix Location
+
 - `node_modules/@typespec/compiler/dist/src/core/emitter-utils.js`
   - Lines 11-20: Add virtual FS parameter support
 

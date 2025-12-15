@@ -26,10 +26,7 @@ export { CoreTypeSpecFixtures, CoreAsyncAPIFixtures } from "./CoreFixtures.js";
 
 export { ProtocolEdgeCases } from "./EdgeCaseFixtures.js";
 
-export {
-  AdvancedPatternFixtures,
-  RealWorldExamples,
-} from "./PerformanceFixtures.js";
+export { AdvancedPatternFixtures, RealWorldExamples } from "./PerformanceFixtures.js";
 
 // Legacy TypeSpecFixtures export - combines all TypeSpec fixtures
 export const TypeSpecFixtures = {
@@ -44,12 +41,7 @@ export const AsyncAPIFixtures = {
 };
 
 // Direct re-exports for immediate compatibility (avoiding duplicates)
-export {
-  EdgeCaseFixtures,
-  PerformanceFixtures,
-  ErrorFixtures,
-  TestDataGenerator,
-};
+export { EdgeCaseFixtures, PerformanceFixtures, ErrorFixtures, TestDataGenerator };
 
 /**
  * MIGRATION GUIDE for test files:

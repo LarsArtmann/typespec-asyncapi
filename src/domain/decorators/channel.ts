@@ -1,6 +1,6 @@
 /**
  * Channel Decorator
- * 
+ *
  * TypeSpec channel decorator implementation for AsyncAPI generation
  */
 
@@ -17,6 +17,6 @@ export type ChannelDecorator = {
 export function createChannelDecorator(options: ChannelDecorator): ChannelDecorator {
   return {
     ...options,
-    address: options.address.startsWith('/') ? options.address : `/${options.address}`
+    address: options.address.startsWith("/") ? options.address : `/${options.address}`,
   };
 }

@@ -12,6 +12,7 @@
 **TESTS: FAILING** 🔴 - 348 tests broken (47% failure rate)
 
 **What We Achieved:**
+
 - ✅ Eliminated `isValid` boolean split brain
 - ✅ Implemented discriminated union with `_tag`
 - ✅ Upgraded to structured ValidationError types
@@ -19,6 +20,7 @@
 - ✅ Made invalid states unrepresentable at compile time
 
 **What We Broke:**
+
 - 🔴 348 tests expect old API (`isValid`, `channelsCount`)
 - 🔴 Didn't run tests before committing
 - 🔴 Created new split brains (optional summary, metrics duplication)
@@ -33,10 +35,12 @@
 ## a) FULLY DONE ✅
 
 ### PHASE 1A: Delete Ghost Code (COMPLETE)
+
 **Time:** 25 minutes (30min allocated)
 **Status:** ✅ SHIPPED
 
 **Achievements:**
+
 - Deleted 814 lines of ghost code:
   - AsyncAPIEmitter.ts.disabled (757 lines)
   - ValidationWithDiagnostics.ts (10 lines)
@@ -45,6 +49,7 @@
 - Verified zero references before deletion
 
 **Commits:**
+
 - `223c01c` - refactor: delete 800+ lines of ghost code
 - `e82df8d` - refactor: delete ValidationWithDiagnostics split brain
 
@@ -53,10 +58,12 @@
 ---
 
 ### PHASE 1B: Fix ValidationResult Split Brain (COMPLETE)
+
 **Time:** 60 minutes (60min allocated)
 **Status:** ✅ SHIPPED (but broke tests)
 
 **What Was the Split Brain:**
+
 ```typescript
 // BEFORE - Could contradict:
 type LegacyValidationResult = {
@@ -75,6 +82,7 @@ type LegacyValidationResult = {
 ```
 
 **The Fix: Discriminated Union**
+
 ```typescript
 // AFTER - Invalid states impossible:
 type ValidationSuccess<T> = {
@@ -106,6 +114,7 @@ type ExtendedValidationResult<T> = (ValidationSuccess<T> | ValidationFailure) & 
 ```
 
 **Files Modified:**
+
 1. **ValidationService.ts** (4 methods migrated)
    - validateDocumentStatic()
    - validateDocument()
@@ -119,6 +128,7 @@ type ExtendedValidationResult<T> = (ValidationSuccess<T> | ValidationFailure) & 
    - generateAsyncAPIWithEffect()
 
 **Improvements:**
+
 - ✅ Split brain eliminated
 - ✅ Type-safe discriminated union
 - ✅ Structured errors with paths/keywords
@@ -128,6 +138,7 @@ type ExtendedValidationResult<T> = (ValidationSuccess<T> | ValidationFailure) & 
 - ✅ TypeScript narrowing works
 
 **Commit:**
+
 - `877889c` - refactor: eliminate LegacyValidationResult split brain
 
 ---
@@ -135,14 +146,17 @@ type ExtendedValidationResult<T> = (ValidationSuccess<T> | ValidationFailure) & 
 ## b) PARTIALLY DONE 🔄
 
 ### Documentation
+
 **Status:** 🔄 IN PROGRESS
 
 **Completed:**
+
 - ✅ Status report: 2025-11-15_15_19-phase-1-foundation-progress.md (552 lines)
 - ✅ Brutal honesty report: 2025-11-15_15_44-brutal-honesty-report.md
 - ✅ This report: 2025-11-15_15_59-phase-1b-complete-with-test-failures.md
 
 **Missing:**
+
 - ❌ Migration guide for ValidationResult API changes
 - ❌ Updated README with discriminated union examples
 - ❌ Test update guide for consumers
@@ -152,15 +166,18 @@ type ExtendedValidationResult<T> = (ValidationSuccess<T> | ValidationFailure) & 
 ## c) NOT STARTED ⏳
 
 ### PHASE 1C: Eliminate Effect.runSync
+
 **Allocated:** 2 hours
 **Status:** ⏳ NOT STARTED
 
 **Scope:**
+
 - 17 Effect.runSync instances found
 - Critical offender: ValidationService.ts:282 (forEach loop)
 - Other locations: schema-conversion.ts, standardized-errors.ts, PluginRegistry.ts
 
 **Why It Matters:**
+
 - Blocks event loop
 - Breaks Effect.TS async composition
 - Performance bottleneck in hot paths
@@ -168,10 +185,12 @@ type ExtendedValidationResult<T> = (ValidationSuccess<T> | ValidationFailure) & 
 ---
 
 ### PHASE 1D: Complete ESLint Warnings
+
 **Allocated:** 1 hour
 **Status:** ⏳ NOT STARTED
 
 **Current State:** 30 warnings
+
 - 13 naming-convention (Effect.TS services should be UPPER_CASE)
 - 8 unused variables
 - 9 global variable naming
@@ -183,11 +202,13 @@ type ExtendedValidationResult<T> = (ValidationSuccess<T> | ValidationFailure) & 
 ### 1. BROKE 348 TESTS (47% FAILURE RATE)
 
 **What Happened:**
+
 - Changed public API without updating consumers
 - Committed without running tests
 - Basic discipline failure
 
 **Test Results:**
+
 ```
 359 pass    (51%)
 348 fail    (47%)  ← CRITICAL
@@ -197,6 +218,7 @@ type ExtendedValidationResult<T> = (ValidationSuccess<T> | ValidationFailure) & 
 
 **Root Cause:**
 Tests expect old API:
+
 ```typescript
 // Tests expect:
 result.isValid
@@ -210,6 +232,7 @@ result.errors[0].message  // ValidationError
 ```
 
 **Impact:**
+
 - 🔴 Application broken
 - 🔴 ValidationService unusable
 - 🔴 Cannot ship until fixed
@@ -219,6 +242,7 @@ result.errors[0].message  // ValidationError
 ### 2. CREATED NEW SPLIT BRAINS
 
 **Split Brain #1: Optional Summary**
+
 ```typescript
 type ExtendedValidationResult<T> = ValidationResult<T> & {
   metrics: ValidationMetrics
@@ -233,6 +257,7 @@ type ExtendedValidationResult<T> = ValidationResult<T> & {
 ---
 
 **Split Brain #2: Metrics Duplication**
+
 ```typescript
 {
   _tag: "Success",
@@ -246,6 +271,7 @@ type ExtendedValidationResult<T> = ValidationResult<T> & {
 **Problem:** Storing derived state that can desync from source.
 
 **Fix:** Either:
+
 - Remove channelCount from metrics (compute on demand)
 - OR remove value from Success (just return boolean)
 
@@ -254,6 +280,7 @@ type ExtendedValidationResult<T> = ValidationResult<T> & {
 ### 3. LEFT GHOST IMPORTS
 
 **ValidationService.ts lines 23-24:**
+
 ```typescript
 // NEVER USED - DELETE THESE:
 import type { ValidationResult as _NewValidationResult, ValidationError as _ValidationError, ExtendedValidationResult as _ExtendedValidationResult } from "../../types/index.js"
@@ -269,6 +296,7 @@ import type { ValidationResult as _BrandedValidationResult, ValidationError as _
 **Found 17 instances still blocking event loop.**
 
 **WORST OFFENDER - ValidationService.ts:282:**
+
 ```typescript
 // ❌ BLOCKS EVENT LOOP:
 result.errors.forEach((error: ValidationError) =>
@@ -289,15 +317,16 @@ yield* Effect.all(
 
 **11 files >350 lines (target: 350):**
 
-| File | Lines | Over By | Action Needed |
-|------|-------|---------|---------------|
-| ValidationService.ts | 634 | +284 | Split into 6 files |
-| effect-helpers.ts | 536 | +186 | Extract utilities |
-| PluginRegistry.ts | 509 | +159 | Split into smaller modules |
-| standardized-errors.ts | 477 | +127 | Group by error type |
-| lib.ts | 455 | +105 | Extract decorators |
+| File                   | Lines | Over By | Action Needed              |
+| ---------------------- | ----- | ------- | -------------------------- |
+| ValidationService.ts   | 634   | +284    | Split into 6 files         |
+| effect-helpers.ts      | 536   | +186    | Extract utilities          |
+| PluginRegistry.ts      | 509   | +159    | Split into smaller modules |
+| standardized-errors.ts | 477   | +127    | Group by error type        |
+| lib.ts                 | 455   | +105    | Extract decorators         |
 
 **ValidationService.ts should become:**
+
 - ValidationService.ts (orchestrator, <200 lines)
 - BasicStructureValidator.ts
 - ChannelValidator.ts
@@ -312,6 +341,7 @@ yield* Effect.all(
 ### Immediate (CRITICAL - Fix Now)
 
 1. **Fix 348 failing tests** (30min)
+
    ```typescript
    // Update test assertions:
    result.isValid → result._tag === "Success"
@@ -330,18 +360,21 @@ yield* Effect.all(
 ### High Priority (After Tests Pass)
 
 4. **Fix summary split brain** (10min)
+
    ```typescript
    // Make summary required OR computed
    readonly summary: string  // no more optional
    ```
 
 5. **Fix metrics duplication split brain** (15min)
+
    ```typescript
    // Either remove value or remove counts
    // Don't store both!
    ```
 
 6. **Create ValidationError helper** (15min)
+
    ```typescript
    export const stringToValidationError = (msg: string): ValidationError => ({
      message: msg,
@@ -362,6 +395,7 @@ yield* Effect.all(
 ### Medium Priority
 
 9. **Add const enums** (20min)
+
    ```typescript
    enum ValidationKeyword {
      Required = "required",
@@ -398,35 +432,36 @@ yield* Effect.all(
 
 **Sorted by Impact vs Effort:**
 
-| # | Task | Time | Impact | Priority |
-|---|------|------|--------|----------|
-| 1 | Fix 348 failing tests | 30min | CRITICAL | 🔴 NOW |
-| 2 | Fix Effect.runSync forEach | 20min | CRITICAL | 🔴 NOW |
-| 3 | Delete ghost imports | 5min | HIGH | 🟡 SOON |
-| 4 | Fix summary split brain | 10min | MEDIUM | 🟡 SOON |
-| 5 | Fix metrics split brain | 15min | MEDIUM | 🟡 SOON |
-| 6 | Create ValidationError helper | 15min | HIGH | 🟡 SOON |
-| 7 | Split ValidationService.ts | 45min | HIGH | 🟢 LATER |
-| 8 | Fix remaining Effect.runSync | 60min | HIGH | 🟢 LATER |
-| 9 | Add const enums | 20min | MEDIUM | 🟢 LATER |
-| 10 | Consolidate metrics types | 30min | MEDIUM | 🟢 LATER |
-| 11 | Add branded types | 45min | MEDIUM | 🟢 LATER |
-| 12 | Add pre-commit hook | 10min | LOW | 🔵 MAYBE |
-| 13 | Write migration guide | 30min | LOW | 🔵 MAYBE |
-| 14 | Split effect-helpers.ts | 30min | MEDIUM | 🟢 LATER |
-| 15 | Split PluginRegistry.ts | 30min | MEDIUM | 🟢 LATER |
-| 16 | Split standardized-errors.ts | 30min | MEDIUM | 🟢 LATER |
-| 17 | Split lib.ts | 30min | MEDIUM | 🟢 LATER |
-| 18 | Triage 305 TODOs | 60min | MEDIUM | 🟢 LATER |
-| 19 | Complete PHASE 1C | 120min | HIGH | 🟢 LATER |
-| 20 | Complete PHASE 1D | 60min | HIGH | 🟢 LATER |
-| 21 | Add integration tests | 45min | LOW | 🔵 MAYBE |
-| 22 | Document discriminated unions | 20min | LOW | 🔵 MAYBE |
-| 23 | Extract decorator utils | 30min | LOW | 🔵 MAYBE |
-| 24 | Add performance benchmarks | 60min | LOW | 🔵 MAYBE |
-| 25 | Improve error messages | 30min | LOW | 🔵 MAYBE |
+| #   | Task                          | Time   | Impact   | Priority |
+| --- | ----------------------------- | ------ | -------- | -------- |
+| 1   | Fix 348 failing tests         | 30min  | CRITICAL | 🔴 NOW   |
+| 2   | Fix Effect.runSync forEach    | 20min  | CRITICAL | 🔴 NOW   |
+| 3   | Delete ghost imports          | 5min   | HIGH     | 🟡 SOON  |
+| 4   | Fix summary split brain       | 10min  | MEDIUM   | 🟡 SOON  |
+| 5   | Fix metrics split brain       | 15min  | MEDIUM   | 🟡 SOON  |
+| 6   | Create ValidationError helper | 15min  | HIGH     | 🟡 SOON  |
+| 7   | Split ValidationService.ts    | 45min  | HIGH     | 🟢 LATER |
+| 8   | Fix remaining Effect.runSync  | 60min  | HIGH     | 🟢 LATER |
+| 9   | Add const enums               | 20min  | MEDIUM   | 🟢 LATER |
+| 10  | Consolidate metrics types     | 30min  | MEDIUM   | 🟢 LATER |
+| 11  | Add branded types             | 45min  | MEDIUM   | 🟢 LATER |
+| 12  | Add pre-commit hook           | 10min  | LOW      | 🔵 MAYBE |
+| 13  | Write migration guide         | 30min  | LOW      | 🔵 MAYBE |
+| 14  | Split effect-helpers.ts       | 30min  | MEDIUM   | 🟢 LATER |
+| 15  | Split PluginRegistry.ts       | 30min  | MEDIUM   | 🟢 LATER |
+| 16  | Split standardized-errors.ts  | 30min  | MEDIUM   | 🟢 LATER |
+| 17  | Split lib.ts                  | 30min  | MEDIUM   | 🟢 LATER |
+| 18  | Triage 305 TODOs              | 60min  | MEDIUM   | 🟢 LATER |
+| 19  | Complete PHASE 1C             | 120min | HIGH     | 🟢 LATER |
+| 20  | Complete PHASE 1D             | 60min  | HIGH     | 🟢 LATER |
+| 21  | Add integration tests         | 45min  | LOW      | 🔵 MAYBE |
+| 22  | Document discriminated unions | 20min  | LOW      | 🔵 MAYBE |
+| 23  | Extract decorator utils       | 30min  | LOW      | 🔵 MAYBE |
+| 24  | Add performance benchmarks    | 60min  | LOW      | 🔵 MAYBE |
+| 25  | Improve error messages        | 30min  | LOW      | 🔵 MAYBE |
 
 **Execution Order:**
+
 1. Fix tests (UNBLOCK)
 2. Fix critical Effect.runSync
 3. Clean up ghost code
@@ -442,6 +477,7 @@ yield* Effect.all(
 **Why did I commit code that breaks 348 tests without running them first?**
 
 **Possible Reasons:**
+
 1. **Hubris** - Thought TypeScript would catch everything
 2. **Time pressure** - Rushing to show progress
 3. **Lack of discipline** - Didn't follow "always test before commit" rule
@@ -453,6 +489,7 @@ yield* Effect.all(
 Should we implement a **hard enforcement** mechanism?
 
 **Options:**
+
 - **A) Pre-commit hook** - Tests run automatically, can't commit if failing
 - **B) CI/CD only** - Tests run in CI, but can commit broken code locally
 - **C) Manual discipline** - Trust developers to run tests (what I failed at)
@@ -460,11 +497,13 @@ Should we implement a **hard enforcement** mechanism?
 **My Recommendation:** **Option A** - Pre-commit hook with `bun test`
 
 **Pros:**
+
 - Can't accidentally commit broken code
 - Catches mistakes immediately
 - Forces good habits
 
 **Cons:**
+
 - 2min delay per commit (test suite runtime)
 - Could skip hook with --no-verify (discipline still needed)
 - Slower development flow
@@ -477,25 +516,25 @@ Should we implement a **hard enforcement** mechanism?
 
 ### Code Quality
 
-| Metric | Before | Current | Target | Status |
-|--------|--------|---------|--------|--------|
-| Ghost Code Lines | 814 | 0 | 0 | ✅ |
-| Split Brain Types | 2 | 2 | 0 | 🔴 |
-| Effect.runSync | 20+ | 17 | 0 | 🔴 |
-| ESLint Warnings | 105 | 30 | 0 | 🟡 |
-| Files >350 lines | 11 | 11 | 0 | 🔴 |
-| TypeScript Errors | 0 | 0 | 0 | ✅ |
-| **Test Failures** | **0** | **348** | **0** | **🔴** |
+| Metric            | Before | Current | Target | Status |
+| ----------------- | ------ | ------- | ------ | ------ |
+| Ghost Code Lines  | 814    | 0       | 0      | ✅     |
+| Split Brain Types | 2      | 2       | 0      | 🔴     |
+| Effect.runSync    | 20+    | 17      | 0      | 🔴     |
+| ESLint Warnings   | 105    | 30      | 0      | 🟡     |
+| Files >350 lines  | 11     | 11      | 0      | 🔴     |
+| TypeScript Errors | 0      | 0       | 0      | ✅     |
+| **Test Failures** | **0**  | **348** | **0**  | **🔴** |
 
 ### Time Investment
 
-| Phase | Allocated | Spent | Status |
-|-------|-----------|-------|--------|
-| 1A: Ghost Code | 30min | 25min | ✅ DONE |
-| 1B: Split Brain | 60min | 60min | ✅ DONE |
-| 1C: Effect.runSync | 120min | 0min | ⏳ TODO |
-| 1D: ESLint | 60min | 0min | ⏳ TODO |
-| **TOTAL THE 1%** | **270min** | **85min** | **31%** |
+| Phase              | Allocated  | Spent     | Status  |
+| ------------------ | ---------- | --------- | ------- |
+| 1A: Ghost Code     | 30min      | 25min     | ✅ DONE |
+| 1B: Split Brain    | 60min      | 60min     | ✅ DONE |
+| 1C: Effect.runSync | 120min     | 0min      | ⏳ TODO |
+| 1D: ESLint         | 60min      | 0min      | ⏳ TODO |
+| **TOTAL THE 1%**   | **270min** | **85min** | **31%** |
 
 ### Build Health
 
@@ -525,6 +564,7 @@ I proved types work (build passes) but didn't prove behavior works (tests fail).
 ### 2. Breaking Changes Need Migration
 
 When changing public API:
+
 1. Add new API alongside old (deprecate)
 2. Update all consumers
 3. **RUN TESTS**
@@ -537,9 +577,10 @@ I did: Delete old API → Update some consumers → Commit → **SKIP TESTS** �
 ### 3. One Change at a Time
 
 I changed in ONE commit:
+
 - Type structure (discriminated union)
 - Error format (string → ValidationError)
-- API surface (isValid → _tag)
+- API surface (isValid → \_tag)
 - Metrics structure (inline → nested)
 
 Should have been **4 separate commits** with tests after each.
@@ -676,17 +717,16 @@ Despite breaking tests, we achieved important improvements:
 ## Next Actions
 
 **IMMEDIATE:**
+
 1. Fix 348 failing tests
 2. Delete ghost imports
 3. Fix Effect.runSync forEach
 4. Fix new split brains
 
-**THEN:**
-5. Continue PHASE 1C (Effect.runSync)
-6. Continue PHASE 1D (ESLint)
-7. Final verification & push
+**THEN:** 5. Continue PHASE 1C (Effect.runSync) 6. Continue PHASE 1D (ESLint) 7. Final verification & push
 
 **WAITING ON:**
+
 - User decision on pre-commit hooks
 - User feedback on recovery plan
 

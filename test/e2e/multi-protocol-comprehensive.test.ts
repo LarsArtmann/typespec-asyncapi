@@ -158,17 +158,14 @@ describe("E2E: Multi-Protocol Comprehensive Test", () => {
     // Find generated AsyncAPI file
     const outputFiles = Array.from(host.fs.keys());
     const asyncApiFile = outputFiles.find(
-      (f) =>
-        f.includes("asyncapi") && (f.endsWith(".json") || f.endsWith(".yaml")),
+      (f) => f.includes("asyncapi") && (f.endsWith(".json") || f.endsWith(".yaml")),
     );
 
     expect(asyncApiFile).toBeDefined();
 
     if (asyncApiFile) {
       const content = host.fs.get(asyncApiFile) as string;
-      const spec = content.startsWith("{")
-        ? JSON.parse(content)
-        : require("yaml").parse(content);
+      const spec = content.startsWith("{") ? JSON.parse(content) : require("yaml").parse(content);
 
       // Validate AsyncAPI 3.0
       expect(spec.asyncapi).toBe("3.0.0");
@@ -177,9 +174,7 @@ describe("E2E: Multi-Protocol Comprehensive Test", () => {
       expect(Object.keys(spec.channels || {}).length).toBeGreaterThanOrEqual(4);
 
       // Validate all 4 operations exist
-      expect(Object.keys(spec.operations || {}).length).toBeGreaterThanOrEqual(
-        4,
-      );
+      expect(Object.keys(spec.operations || {}).length).toBeGreaterThanOrEqual(4);
 
       // Validate all 4 message schemas exist
       const schemas = spec.components?.schemas || {};
@@ -194,11 +189,7 @@ describe("E2E: Multi-Protocol Comprehensive Test", () => {
         "premium",
         "enterprise",
       ]);
-      expect(schemas.DeviceStatus.properties.status.enum).toEqual([
-        "online",
-        "offline",
-        "error",
-      ]);
+      expect(schemas.DeviceStatus.properties.status.enum).toEqual(["online", "offline", "error"]);
 
       // Validate optional fields
       expect(schemas.DeviceStatus.properties.batteryLevel).toBeDefined();

@@ -15,10 +15,7 @@
 import { describe, test, expect, afterEach } from "bun:test";
 import { compileWithCLI, cleanupTestDir } from "../utils/cli-test-helpers.js";
 import type { CLITestResult } from "../utils/cli-test-helpers.js";
-import {
-  assertCompilationSuccess,
-  getPropertyKeys,
-} from "../utils/type-guards.js";
+import { assertCompilationSuccess, getPropertyKeys } from "../utils/type-guards.js";
 
 describe("CLI Tests: FEATURE_NAME", () => {
   let testResult: CLITestResult | undefined;

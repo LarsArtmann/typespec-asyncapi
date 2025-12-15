@@ -1,6 +1,6 @@
 /**
  * Simple Configuration
- * 
+ *
  * MINIMAL WORKING VERSION: Basic configuration without complex schemas
  * Focus on getting compilation working first
  */
@@ -11,39 +11,39 @@
 export const DEFAULT_CONFIGURATION = {
   asyncapi: "3.0.0",
   library: "1.0.0",
-  
+
   output: {
     directory: "/Users/larsartmann/projects/typespec-asyncapi",
     file: "asyncapi",
     format: "yaml" as const,
     encoding: "utf8" as const,
   },
-  
+
   content: {
     title: "AsyncAPI Specification",
     version: "1.0.0",
     description: "Generated AsyncAPI specification from TypeSpec",
     contentType: "application/json" as const,
   },
-  
+
   server: {
     url: "http://localhost:3000",
     protocol: "http" as const,
     description: "Default development server",
   },
-  
+
   validation: {
     strict: true,
     warnings: true,
     emitErrors: true,
   },
-  
+
   logging: {
     level: "info" as const,
     file: "/Users/larsartmann/projects/typespec-asyncapi/typespec-asyncapi.log",
     console: true,
   },
-  
+
   advanced: {
     caching: true,
     optimization: true,

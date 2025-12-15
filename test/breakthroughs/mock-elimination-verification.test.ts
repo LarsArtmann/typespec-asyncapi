@@ -61,9 +61,7 @@ describe("🚨 Mock Infrastructure Elimination", () => {
     Effect.log("Generated files:", files);
 
     // Should have AsyncAPI specification file
-    const hasAsyncAPIFile = files.some(
-      (f) => f.includes("asyncapi") || f.includes("AsyncAPI"),
-    );
+    const hasAsyncAPIFile = files.some((f) => f.includes("asyncapi") || f.includes("AsyncAPI"));
     expect(hasAsyncAPIFile).toBe(true);
 
     Effect.log("✅ SUCCESS: Real emitter generated actual output files!");

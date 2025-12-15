@@ -119,24 +119,14 @@ describe("Real Type Definitions Unit Tests", () => {
       // Type checking - these should not produce TypeScript errors
       expect(validAsyncAPIObject.asyncapi).toBe("3.0.0");
       expect(validAsyncAPIObject.info.title).toBe("Test API");
-      expect(validAsyncAPIObject.channels["test-channel"].address).toBe(
-        "/test",
-      );
+      expect(validAsyncAPIObject.channels["test-channel"].address).toBe("/test");
       expect(validAsyncAPIObject.operations.testOperation.action).toBe("send");
-      expect(validAsyncAPIObject.components.schemas.TestSchema.type).toBe(
-        "object",
-      );
+      expect(validAsyncAPIObject.components.schemas.TestSchema.type).toBe("object");
 
       Effect.log("✅ AsyncAPI document structure types validated");
-      Effect.log(
-        `📊 Channels: ${Object.keys(validAsyncAPIObject.channels).length}`,
-      );
-      Effect.log(
-        `📊 Operations: ${Object.keys(validAsyncAPIObject.operations).length}`,
-      );
-      Effect.log(
-        `📊 Schemas: ${Object.keys(validAsyncAPIObject.components.schemas).length}`,
-      );
+      Effect.log(`📊 Channels: ${Object.keys(validAsyncAPIObject.channels).length}`);
+      Effect.log(`📊 Operations: ${Object.keys(validAsyncAPIObject.operations).length}`);
+      Effect.log(`📊 Schemas: ${Object.keys(validAsyncAPIObject.components.schemas).length}`);
     });
 
     test("should enforce required properties in AsyncAPI types", () => {
@@ -224,11 +214,7 @@ describe("Real Type Definitions Unit Tests", () => {
             required: ["version"],
           },
           unionField: {
-            anyOf: [
-              { type: "string" },
-              { type: "integer" },
-              { type: "boolean" },
-            ],
+            anyOf: [{ type: "string" }, { type: "integer" }, { type: "boolean" }],
           },
         },
         required: ["id", "metadata"],
@@ -243,9 +229,7 @@ describe("Real Type Definitions Unit Tests", () => {
       expect(complexSchema.additionalProperties).toBe(false);
 
       Effect.log("✅ Complex schema object structures supported");
-      Effect.log(
-        `📊 Schema properties: ${Object.keys(complexSchema.properties || {}).length}`,
-      );
+      Effect.log(`📊 Schema properties: ${Object.keys(complexSchema.properties || {}).length}`);
       Effect.log(`📊 Required fields: ${complexSchema.required?.length || 0}`);
     });
   });
@@ -271,8 +255,7 @@ describe("Real Type Definitions Unit Tests", () => {
       expect(extendedOptions["validate-output"]).toBe(true);
 
       // File type validation
-      const fileTypes: readonly SerializationFormatOption[] =
-        SERIALIZATION_FORMAT_OPTIONS;
+      const fileTypes: readonly SerializationFormatOption[] = SERIALIZATION_FORMAT_OPTIONS;
       expect(fileTypes).toContain(validOptions["file-type"]);
       expect(fileTypes).toContain(extendedOptions["file-type"]);
 
@@ -319,20 +302,15 @@ describe("Real Type Definitions Unit Tests", () => {
 
       for (const { options, shouldBeValid, description } of validationCases) {
         // Simulate options validation
-        const hasOutputFile = Boolean(
-          options["output-file"] && options["output-file"].length > 0,
-        );
+        const hasOutputFile = Boolean(options["output-file"] && options["output-file"].length > 0);
         const hasValidFileType = Boolean(
-          options["file-type"] &&
-          SERIALIZATION_FORMAT_OPTIONS.includes(options["file-type"]),
+          options["file-type"] && SERIALIZATION_FORMAT_OPTIONS.includes(options["file-type"]),
         );
         const isValid = hasOutputFile && hasValidFileType;
 
         expect(isValid).toBe(shouldBeValid);
 
-        Effect.log(
-          `${isValid ? "✅" : "❌"} ${description}: ${isValid ? "Valid" : "Invalid"}`,
-        );
+        Effect.log(`${isValid ? "✅" : "❌"} ${description}: ${isValid ? "Valid" : "Invalid"}`);
       }
 
       Effect.log("✅ Emitter options validation rules enforced");
@@ -373,14 +351,7 @@ describe("Real Type Definitions Unit Tests", () => {
       expect(amqpBinding.deliveryMode).toBe(2);
 
       // Protocol type validation
-      const protocolTypes: ProtocolType[] = [
-        "kafka",
-        "websocket",
-        "http",
-        "amqp",
-        "mqtt",
-        "redis",
-      ];
+      const protocolTypes: ProtocolType[] = ["kafka", "websocket", "http", "amqp", "mqtt", "redis"];
       const validProtocol: ProtocolType = "kafka";
 
       expect(protocolTypes).toContain(validProtocol);
@@ -402,8 +373,7 @@ describe("Real Type Definitions Unit Tests", () => {
           clientId: "complex-client",
         },
         version: "2.8.0",
-        description:
-          "Complex Kafka configuration for high-throughput processing",
+        description: "Complex Kafka configuration for high-throughput processing",
       };
 
       const complexMqttConfig: ProtocolConfig = {
@@ -421,19 +391,15 @@ describe("Real Type Definitions Unit Tests", () => {
 
       // Validate complex configurations
       expect(complexKafkaConfig.protocol).toBe("kafka");
-      expect(
-        (complexKafkaConfig.binding as KafkaBindingConfig).schemaLookupStrategy,
-      ).toBe("TopicRecordNameStrategy");
+      expect((complexKafkaConfig.binding as KafkaBindingConfig).schemaLookupStrategy).toBe(
+        "TopicRecordNameStrategy",
+      );
       expect(complexMqttConfig.protocol).toBe("mqtt");
       expect((complexMqttConfig.binding as MQTTBindingConfig).qos).toBe(2);
 
       Effect.log("✅ Complex protocol configurations supported");
-      Effect.log(
-        `📊 Kafka binding properties: ${Object.keys(complexKafkaConfig.binding).length}`,
-      );
-      Effect.log(
-        `📊 MQTT binding properties: ${Object.keys(complexMqttConfig.binding).length}`,
-      );
+      Effect.log(`📊 Kafka binding properties: ${Object.keys(complexKafkaConfig.binding).length}`);
+      Effect.log(`📊 MQTT binding properties: ${Object.keys(complexMqttConfig.binding).length}`);
     });
   });
 
@@ -525,9 +491,7 @@ describe("Real Type Definitions Unit Tests", () => {
       Effect.log("✅ Validation result type structures supported");
       Effect.log(`📊 Errors: ${validationResult.errors.length}`);
       Effect.log(`📊 Warnings: ${validationResult.warnings.length}`);
-      Effect.log(
-        `📊 Performance: ${validationResult.performanceMetrics.validationTimeMs}ms`,
-      );
+      Effect.log(`📊 Performance: ${validationResult.performanceMetrics.validationTimeMs}ms`);
     });
   });
 
@@ -542,17 +506,10 @@ describe("Real Type Definitions Unit Tests", () => {
       const arrayValue: SchemaValue = [{ type: "string" }, { type: "number" }];
 
       // Type guards for union types
-      const isString = (value: SchemaValue): value is string =>
-        typeof value === "string";
-      const isNumber = (value: SchemaValue): value is number =>
-        typeof value === "number";
-      const isSchemaObject = (
-        value: SchemaValue,
-      ): value is Record<string, unknown> =>
-        typeof value === "object" &&
-        value !== null &&
-        !Array.isArray(value) &&
-        "type" in value;
+      const isString = (value: SchemaValue): value is string => typeof value === "string";
+      const isNumber = (value: SchemaValue): value is number => typeof value === "number";
+      const isSchemaObject = (value: SchemaValue): value is Record<string, unknown> =>
+        typeof value === "object" && value !== null && !Array.isArray(value) && "type" in value;
 
       expect(isString(stringValue)).toBe(true);
       expect(isNumber(numberValue)).toBe(true);

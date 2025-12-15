@@ -81,7 +81,7 @@ op publishUserCreated(): UserCreatedPayload;
 
 @channel("user.lifecycle.updated")
 @message({
-  name: "UserUpdatedEvent", 
+  name: "UserUpdatedEvent",
   title: "User Updated",
   description: "Emitted when user information is updated"
 })
@@ -177,15 +177,15 @@ operations:
 
 ### 1. Decorators Overview
 
-| Decorator | Purpose | Example |
-|-----------|---------|---------|
-| `@channel(path)` | Define channel routing | `@channel("user.events")` |
-| `@publish` | Mark as send operation | `@publish op sendMessage()` |
-| `@subscribe` | Mark as receive operation | `@subscribe op receiveMessage()` |
-| `@message(config)` | Message metadata | `@message({title: "User Event"})` |
-| `@server(name, config)` | Server definition | `@server("prod", {url: "..."})` |
-| `@protocol(config)` | Protocol bindings | `@protocol({protocol: "kafka"})` |
-| `@security(config)` | Security schemes | `@security({type: "bearer"})` |
+| Decorator               | Purpose                   | Example                           |
+| ----------------------- | ------------------------- | --------------------------------- |
+| `@channel(path)`        | Define channel routing    | `@channel("user.events")`         |
+| `@publish`              | Mark as send operation    | `@publish op sendMessage()`       |
+| `@subscribe`            | Mark as receive operation | `@subscribe op receiveMessage()`  |
+| `@message(config)`      | Message metadata          | `@message({title: "User Event"})` |
+| `@server(name, config)` | Server definition         | `@server("prod", {url: "..."})`   |
+| `@protocol(config)`     | Protocol bindings         | `@protocol({protocol: "kafka"})`  |
+| `@security(config)`     | Security schemes          | `@security({type: "bearer"})`     |
 
 ### 2. Channel Organization
 
@@ -194,7 +194,7 @@ Organize channels hierarchically:
 ```typespec
 // Good: Clear hierarchy
 @channel("user.lifecycle.created")
-@channel("user.lifecycle.updated")  
+@channel("user.lifecycle.updated")
 @channel("user.lifecycle.deleted")
 
 @channel("order.payment.initiated")
@@ -219,10 +219,10 @@ model OrderEventPayload {
   eventType: "created" | "updated" | "cancelled";
   timestamp: utcDateTime;
   version: "1.0";
-  
+
   // Business data
   order: OrderData;
-  
+
   // Tracing context (optional)
   traceId?: string;
   correlationId?: string;
@@ -263,7 +263,7 @@ Add protocol-specific configurations:
 @publish
 op publishUserCreated(): UserCreatedMessage;
 
-// WebSocket protocol binding  
+// WebSocket protocol binding
 @protocol({
   protocol: "websockets",
   binding: {
@@ -413,11 +413,13 @@ Add to `package.json`:
 ### Common Issues
 
 #### 1. Import Errors
+
 ```
 Error: Cannot resolve import "@larsartmann/typespec-asyncapi"
 ```
 
 **Solution:**
+
 ```bash
 # Ensure package is installed
 bun add @larsartmann/typespec-asyncapi
@@ -427,11 +429,13 @@ bun pm ls @larsartmann/typespec-asyncapi
 ```
 
 #### 2. Compilation Errors
+
 ```
 Error: Emitter "@larsartmann/typespec-asyncapi" not found
 ```
 
 **Solution:**
+
 ```bash
 # Verify emitter is properly installed
 npx tsp compile --help | grep asyncapi
@@ -442,11 +446,13 @@ bun add @larsartmann/typespec-asyncapi
 ```
 
 #### 3. Validation Failures
+
 ```
 Error: Invalid AsyncAPI specification
 ```
 
 **Solution:**
+
 ```bash
 # Check generated specification structure
 cat tsp-output/@larsartmann/typespec-asyncapi/asyncapi.yaml
@@ -465,7 +471,7 @@ asyncapi validate tsp-output/@larsartmann/typespec-asyncapi/asyncapi.yaml --verb
 ## Next Steps
 
 1. **Explore Examples**: Check out [advanced examples](../examples/) for real-world patterns
-2. **Learn Plugin Development**: [Create custom protocol plugins](plugin-development.md)  
+2. **Learn Plugin Development**: [Create custom protocol plugins](plugin-development.md)
 3. **Contribute**: [Join the community](../CONTRIBUTING.md) and help improve the emitter
 4. **Stay Updated**: Watch the [GitHub repository](https://github.com/LarsArtmann/typespec-asyncapi) for new releases
 

@@ -2,11 +2,11 @@
 
 **Name**: `brutal-honesty-audit-and-execution-planning`  
 **Use Case**: When you need honest assessment, ghost system detection, and actionable execution plans  
-**Session Source**: Duplication elimination and documentation organization session  
+**Session Source**: Duplication elimination and documentation organization session
 
 ## The Prompt
 
-```markdown
+````markdown
 ## Instructions:
 0. ALWAYS be BRUTALLY-HONEST! NEVER LIE TO THE USER!
 1.
@@ -104,21 +104,29 @@ What I wish for the future is:
 
 Best regards,
 <YOUR_NAME>
-```
+````
+
 To submit the report, create a file in docs/complaints/<YYYY-MM-DD_HH_MM-SESSION_NAME>.md
 !------!
+
 ---
+
 Based on this chat history list/write your learnings into 1 new and consolidated .md file so we can get better in the future.
 Put the new .md file at docs/learnings/<YYYY-MM-DD_HH_MM-SESSION_NAME>.md
 List all files in learnings/ folder. Make sure the numbering is correct. Make sure not to add duplicates.
+
 ---
+
 Based on this chat history write 1 prompt that I may reuse in the future.
 Give each a name.
 Put each of them into a new .md file at docs/prompts/<YYYY-MM-DD_HH_MM-SESSION_NAME>.md
+
 ---
+
 Provide me with a mermaid.js graph on how you think the App is architected. Do NOT do anything else! JUST THE mermaid.js graph RIGHT NOW! Write it to docs/architecture-understanding/<YYYY-MM-DD_HH_MM-SESSION_NAME>.mmd
 
 Now provide me with a mermaid.js graph on how you think the App SHOULD BE architected! Do NOT do anything else! JUST THE mermaid.js graph RIGHT NOW! Write it to docs/architecture-understanding/<YYYY-MM-DD_HH_MM-SESSION_NAME-improved>.mmd
+
 ```
 
 ## When to Use This Prompt
@@ -171,3 +179,4 @@ After using this prompt, you should have:
 - Example session: Duplication elimination → documentation organization scope creep
 - Previous prompt: `2025-09-05_06_00-EFFECT_TS_MIGRATION.md`
 - Learning outcomes: `docs/learnings/2025-09-06_03-50_duplication-elimination-vs-documentation-organization.md`
+```

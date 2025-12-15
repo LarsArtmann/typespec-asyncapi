@@ -62,7 +62,7 @@ components:
           format: date-time
           description: Last modification timestamp
       required: [id, version, createdAt, updatedAt]
-      
+
     # Domain entities
     User:
       allOf:
@@ -83,7 +83,7 @@ components:
               enum: [active, inactive, suspended]
               description: User account status
           required: [email, name, status]
-          
+
     Order:
       allOf:
         - $ref: '#/components/schemas/BaseEntity'
@@ -109,7 +109,7 @@ components:
               minItems: 1
               description: Items in the order
           required: [userId, amount, currency, items]
-          
+
     OrderItem:
       type: object
       properties:
@@ -147,12 +147,12 @@ model UserRegisteredEvent {
   eventType: "user.registered";
   eventVersion: "1.0";
   occurredAt: utcDateTime;
-  
+
   // Correlation and tracing
   correlationId?: string;
   causationId?: string;
   traceId?: string;
-  
+
   // Event payload
   user: UserData;
   registrationContext: RegistrationContext;
@@ -267,11 +267,11 @@ model CreateOrderCommand {
   commandVersion: "1.0";
   requestedAt: utcDateTime;
   requestedBy: string;
-  
+
   // Idempotency and correlation
   idempotencyKey: string;
   correlationId?: string;
-  
+
   // Command payload
   order: CreateOrderRequest;
   validationRules?: ValidationRule[];
@@ -283,7 +283,7 @@ model CreateOrderRequest {
   shippingAddress: Address;
   billingAddress?: Address;
   paymentMethod: PaymentMethodRequest;
-  
+
   // Optional metadata
   couponCode?: string;
   notes?: string;
@@ -294,7 +294,7 @@ model OrderItemRequest {
   productId: string;
   @minValue(1)
   quantity: int32;
-  
+
   // Optional customizations
   customizations?: Record<string>;
   specialInstructions?: string;
@@ -396,7 +396,7 @@ namespace Events.V2 {
     // New metadata
     metadata: EventMetadata;
   }
-  
+
   model UserPreferences {
     language: string;
     timezone: string;
@@ -405,7 +405,7 @@ namespace Events.V2 {
       sms: boolean;
     };
   }
-  
+
   model EventMetadata {
     source: string;
     timestamp: utcDateTime;
@@ -439,7 +439,7 @@ components:
           required: [id, email, name]
       required: [eventId, user]
       x-schema-version: "1.0"
-      
+
     # Version 2.0 - Current version
     UserCreatedV2:
       type: object
@@ -499,18 +499,18 @@ model UserEvent {
   eventId: string;
   userId: string;
   timestamp: utcDateTime;
-  
+
   // V1.0 fields
   email: string;
   name: string;
-  
+
   // V1.1 additions (all optional)
   phoneNumber?: string;
-  
+
   // V1.2 additions (all optional)
   address?: Address;
   preferences?: UserPreferences;
-  
+
   // V1.3 additions (all optional)
   socialProfiles?: SocialProfile[];
   verificationStatus?: "pending" | "verified" | "rejected";
@@ -535,19 +535,19 @@ UserEvent:
       type: string
       format: date-time
       description: Event occurrence time
-      
+
     # V1.0 fields - always required
     email:
       type: string
       format: email
     name:
       type: string
-      
+
     # V1.1 additions - optional
     phoneNumber:
       type: string
       x-schema-added-in: "1.1"
-      
+
     # V1.2 additions - optional
     address:
       $ref: '#/components/schemas/Address'
@@ -555,7 +555,7 @@ UserEvent:
     preferences:
       $ref: '#/components/schemas/UserPreferences'
       x-schema-added-in: "1.2"
-      
+
     # V1.3 additions - optional
     socialProfiles:
       type: array
@@ -566,7 +566,7 @@ UserEvent:
       type: string
       enum: [pending, verified, rejected]
       x-schema-added-in: "1.3"
-      
+
   required: [eventId, userId, timestamp, email, name]
   x-schema-version: "1.3"
   x-schema-evolution: "additive-only"
@@ -635,7 +635,7 @@ components:
           order: '#/components/schemas/OrderEvent'
           payment: '#/components/schemas/PaymentEvent'
           system: '#/components/schemas/SystemEvent'
-          
+
     # User event discriminated union
     UserEvent:
       oneOf:
@@ -648,7 +648,7 @@ components:
           user.created: '#/components/schemas/UserCreatedEvent'
           user.updated: '#/components/schemas/UserUpdatedEvent'
           user.deleted: '#/components/schemas/UserDeletedEvent'
-          
+
     # Concrete event types
     UserCreatedEvent:
       type: object
@@ -668,7 +668,7 @@ components:
         user:
           $ref: '#/components/schemas/User'
       required: [eventType, type, eventId, timestamp, user]
-      
+
     UserUpdatedEvent:
       type: object
       properties:
@@ -701,11 +701,11 @@ components:
 model PaymentRequest {
   @minValue(0.01)
   amount: decimal;
-  
+
   currency: "USD" | "EUR" | "GBP";
-  
+
   method: PaymentMethod;
-  
+
   // Conditional validation based on method
   cardDetails?: CardDetails;
   bankDetails?: BankDetails;
@@ -727,15 +727,15 @@ model CardPayment {
 model CardDetails {
   @pattern("^[0-9]{4}$")
   lastFourDigits: string;
-  
+
   @minLength(2)
   @maxLength(2)
   expiryMonth: string;
-  
+
   @minLength(4)
   @maxLength(4)
   expiryYear: string;
-  
+
   @pattern("^[A-Za-z ]+$")
   cardholderName: string;
 }
@@ -797,7 +797,7 @@ components:
                     const: wallet
           then:
             required: [digitalWalletDetails]
-            
+
     CardDetails:
       type: object
       properties:
@@ -878,7 +878,7 @@ components:
           format: date-time
           description: Last update timestamp
       required: [createdAt, updatedAt]
-      
+
     Versioned:
       type: object
       properties:
@@ -890,7 +890,7 @@ components:
           type: string
           description: Entity tag for caching
       required: [version, etag]
-      
+
     Auditable:
       type: object
       properties:
@@ -908,7 +908,7 @@ components:
             $ref: '#/components/schemas/AuditEntry'
           description: Complete audit trail
       required: [createdBy, updatedBy, auditTrail]
-      
+
     # Composed entity using allOf
     Product:
       allOf:
@@ -953,7 +953,7 @@ model OrderSummary {
   totalAmount: decimal;
   itemCount: int32;
   createdAt: utcDateTime;
-  
+
   // Lazy-loaded details (separate message/endpoint)
   _links?: {
     details: string;  // URL to get full details
@@ -969,7 +969,7 @@ model OrderDetails extends OrderSummary {
   billingAddress: Address;
   paymentMethod: PaymentMethod;
   history: OrderHistoryEntry[];
-  
+
   // Remove links since we have full data
   _links?: never;
 }
@@ -1019,7 +1019,7 @@ components:
           description: HATEOAS links for lazy loading
       required: [id, userId, status, totalAmount, itemCount, createdAt]
       x-schema-purpose: "summary"
-      
+
     # Full details for individual access
     OrderDetails:
       allOf:
@@ -1162,26 +1162,31 @@ components:
 ## Schema Documentation Best Practices
 
 ### 1. Consistent Naming
+
 - Use clear, descriptive names: `UserRegisteredEvent`, `OrderCreatedCommand`
 - Follow domain language: `Product`, `Customer`, `ShippingAddress`
 - Be explicit about purpose: `CreateUserRequest` vs `UserCreatedEvent`
 
 ### 2. Comprehensive Descriptions
+
 - Document business meaning, not just structure
 - Include examples for complex formats
 - Explain relationships and dependencies
 
 ### 3. Evolution Strategy
+
 - Plan for backward compatibility from day one
 - Use additive-only changes when possible
 - Version schemas with clear migration paths
 
 ### 4. Validation Completeness
+
 - Include all business rules as constraints
 - Use format validators for structured data
 - Document validation errors clearly
 
 ### 5. Performance Considerations
+
 - Design for message size optimization
 - Use references to avoid duplication
 - Consider lazy loading patterns for large objects
@@ -1189,11 +1194,12 @@ components:
 ## Next Steps
 
 Understanding schema transformation patterns enables:
+
 - **Decorator Mapping** - Specific TypeSpec decorator implementations
-- **Protocol Bindings** - Protocol-specific schema adaptations  
+- **Protocol Bindings** - Protocol-specific schema adaptations
 - **Advanced Patterns** - Complex event sourcing and CQRS patterns
 - **Testing Strategies** - Schema validation and compatibility testing
 
 ---
 
-*These schema patterns form the backbone of maintainable, evolvable event-driven APIs, ensuring messages are both machine-readable and human-understandable.*
+_These schema patterns form the backbone of maintainable, evolvable event-driven APIs, ensuring messages are both machine-readable and human-understandable._

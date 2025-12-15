@@ -17,10 +17,7 @@ import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js";
 import { Effect } from "effect";
 
 // Constants - Import centralized constants to eliminate hardcoded values
-import {
-  ASYNCAPI_VERSIONS,
-  DEFAULT_CONFIG,
-} from "../../src/constants/index.js";
+import { ASYNCAPI_VERSIONS, DEFAULT_CONFIG } from "../../src/constants/index.js";
 
 import { LIBRARY_PATHS } from "../../src/constants/paths.js";
 
@@ -98,9 +95,7 @@ export async function createAsyncAPITestHost() {
   //TODO: LOGGING ARCHITECTURE DISASTER - Effect.log mixed with Promise-based async functions!
   //TODO: PROPER EFFECT COMPOSITION REQUIRED - Should return Effect<TestHost, never, never>!
   //TODO: EMOJI LOGGING IN PRODUCTION CODE - Remove emojis from library code!
-  Effect.log(
-    "🚀 Using PROPER library approach - registering AsyncAPI test library",
-  );
+  Effect.log("🚀 Using PROPER library approach - registering AsyncAPI test library");
   const asyncAPITestLibrary = await createAsyncAPITestLibrary();
   return createTestHost({
     libraries: [asyncAPITestLibrary], // Register our AsyncAPI library properly
@@ -116,12 +111,8 @@ export async function compileAsyncAPISpecRaw(
   options: AsyncAPIEmitterOptions = {},
 ): Promise<CompilationResult> {
   // 🔥 CRITICAL: Added explicit logging to see if this function is called
-  console.log(
-    `🚀 compileAsyncAPISpecRaw called with source length: ${source.length}`,
-  );
-  Effect.log(
-    `🚀 compileAsyncAPISpecRaw called with source length: ${source.length}`,
-  );
+  console.log(`🚀 compileAsyncAPISpecRaw called with source length: ${source.length}`);
+  Effect.log(`🚀 compileAsyncAPISpecRaw called with source length: ${source.length}`);
 
   // File system utilities for output file discovery
   const fs = await import("node:fs/promises");
@@ -163,9 +154,7 @@ export async function compileAsyncAPISpecRaw(
 
   let outputFiles = result.fs?.fs || new Map<string, string>();
 
-  Effect.log(
-    `🔍 DEBUG parseAsyncAPIOutput: outputFiles size: ${outputFiles.size}`,
-  );
+  Effect.log(`🔍 DEBUG parseAsyncAPIOutput: outputFiles size: ${outputFiles.size}`);
 
   // 🔥 CRITICAL FIX: If TestFileSystem is empty, check real filesystem
   // This happens when emitFile writes to real FS instead of test framework
@@ -182,12 +171,7 @@ export async function compileAsyncAPISpecRaw(
       // Try multiple possible locations where emitFile might write
       const possibleDirs = [
         process.cwd(), // Current directory
-        path.join(
-          process.cwd(),
-          "tsp-output",
-          "@lars-artmann",
-          "typespec-asyncapi",
-        ),
+        path.join(process.cwd(), "tsp-output", "@lars-artmann", "typespec-asyncapi"),
         path.join(process.cwd(), "@lars-artmann", "typespec-asyncapi"),
         path.join(process.cwd(), "tsp-output"),
       ];
@@ -226,14 +210,10 @@ export async function compileAsyncAPISpecRaw(
 
       // Look for AsyncAPI files - sort by modification time to get latest
       const asyncapiFiles = files.filter(
-        (file) =>
-          file.includes("asyncapi") &&
-          (file.endsWith(".yaml") || file.endsWith(".json")),
+        (file) => file.includes("asyncapi") && (file.endsWith(".yaml") || file.endsWith(".json")),
       );
 
-      Effect.log(
-        `🔍 Found ${asyncapiFiles.length} AsyncAPI files: ${asyncapiFiles.join(", ")}`,
-      );
+      Effect.log(`🔍 Found ${asyncapiFiles.length} AsyncAPI files: ${asyncapiFiles.join(", ")}`);
 
       // Get file stats to find the most recent
       const fileStats = await Promise.all(
@@ -245,16 +225,12 @@ export async function compileAsyncAPISpecRaw(
       );
 
       // Sort by modification time, get most recent
-      const latestFile = fileStats.sort(
-        (a, b) => b.mtime.getTime() - a.mtime.getTime(),
-      )[0];
+      const latestFile = fileStats.sort((a, b) => b.mtime.getTime() - a.mtime.getTime())[0];
 
       if (latestFile) {
         const content = await fs.readFile(latestFile.path, "utf-8");
         outputFiles.set(latestFile.file, content);
-        Effect.log(
-          `✅ Loaded latest AsyncAPI file: ${latestFile.file} (${content.length} chars)`,
-        );
+        Effect.log(`✅ Loaded latest AsyncAPI file: ${latestFile.file} (${content.length} chars)`);
         Effect.log(`🕐 Modified: ${latestFile.mtime.toISOString()}`);
       }
 
@@ -276,11 +252,7 @@ export async function compileAsyncAPISpecRaw(
 
     // 🔥 KEY FIX: Check TypeSpec output directory structure
     // Files are written to: ./@lars-artmann/typespec-asyncapi/
-    const typeSpecOutputDir = path.join(
-      process.cwd(),
-      "@lars-artmann",
-      "typespec-asyncapi",
-    );
+    const typeSpecOutputDir = path.join(process.cwd(), "@lars-artmann", "typespec-asyncapi");
 
     try {
       console.log(`🔍 Attempting to read directory: ${typeSpecOutputDir}`);
@@ -294,17 +266,11 @@ export async function compileAsyncAPISpecRaw(
       // Look for AsyncAPI files that were emitted
       console.log(`📁 All files found: ${files.join(", ")}`);
       const asyncapiFiles = files.filter(
-        (file) =>
-          file.includes("asyncapi") &&
-          (file.endsWith(".yaml") || file.endsWith(".json")),
+        (file) => file.includes("asyncapi") && (file.endsWith(".yaml") || file.endsWith(".json")),
       );
 
-      console.log(
-        `🔍 Found ${asyncapiFiles.length} AsyncAPI files: ${asyncapiFiles.join(", ")}`,
-      );
-      Effect.log(
-        `🔍 Found ${asyncapiFiles.length} AsyncAPI files: ${asyncapiFiles.join(", ")}`,
-      );
+      console.log(`🔍 Found ${asyncapiFiles.length} AsyncAPI files: ${asyncapiFiles.join(", ")}`);
+      Effect.log(`🔍 Found ${asyncapiFiles.length} AsyncAPI files: ${asyncapiFiles.join(", ")}`);
 
       // Read found files and add to outputFiles
       for (const file of asyncapiFiles) {
@@ -314,13 +280,9 @@ export async function compileAsyncAPISpecRaw(
           const content = await fs.readFile(filePath, "utf-8");
           console.log(`✅ Read ${content.length} chars from ${file}`);
           outputFiles.set(file, content);
-          console.log(
-            `✅ Found AsyncAPI file: ${file} (${content.length} chars)`,
-          );
+          console.log(`✅ Found AsyncAPI file: ${file} (${content.length} chars)`);
           console.log(`🔍 Content preview: ${content.substring(0, 200)}...`);
-          Effect.log(
-            `✅ Found AsyncAPI file: ${file} (${content.length} chars)`,
-          );
+          Effect.log(`✅ Found AsyncAPI file: ${file} (${content.length} chars)`);
           Effect.log(`🔍 Content preview: ${content.substring(0, 100)}...`);
         } catch (error) {
           console.log(`❌ Failed to read ${file}: ${error}`);
@@ -335,14 +297,9 @@ export async function compileAsyncAPISpecRaw(
           try {
             const content = await fs.readFile(filePath, "utf-8");
             // Only add if it looks like an AsyncAPI file
-            if (
-              content.includes("asyncapi:") ||
-              content.includes('"asyncapi"')
-            ) {
+            if (content.includes("asyncapi:") || content.includes('"asyncapi"')) {
               outputFiles.set(file, content);
-              Effect.log(
-                `✅ Found AsyncAPI scenario file: ${file} (${content.length} chars)`,
-              );
+              Effect.log(`✅ Found AsyncAPI scenario file: ${file} (${content.length} chars)`);
               Effect.log(`🔍 Content preview: ${content.substring(0, 100)}...`);
             }
           } catch (error) {
@@ -368,17 +325,13 @@ export async function compileAsyncAPISpecRaw(
   let count = 0;
   for (const [key, value] of outputFiles) {
     if (count < 3) {
-      Effect.log(
-        `  File ${count}: ${key} = ${typeof value} (${value?.length || 0} chars)`,
-      );
+      Effect.log(`  File ${count}: ${key} = ${typeof value} (${value?.length || 0} chars)`);
       count++;
     }
   }
 
   if (!program) {
-    throw new Error(
-      `Failed to compile TypeSpec program. Available keys: ${Object.keys(result)}`,
-    );
+    throw new Error(`Failed to compile TypeSpec program. Available keys: ${Object.keys(result)}`);
   }
 
   return {
@@ -406,9 +359,7 @@ export async function compileAsyncAPISpec(
     for (const error of errors) {
       Effect.log(`  - ${error.message}`);
     }
-    throw new Error(
-      `Compilation failed with errors: ${errors.map((d) => d.message).join(", ")}`,
-    );
+    throw new Error(`Compilation failed with errors: ${errors.map((d) => d.message).join(", ")}`);
   }
 
   // Try to find and parse the generated AsyncAPI document
@@ -420,9 +371,7 @@ export async function compileAsyncAPISpec(
       try {
         const parsed = await parseAsyncAPIOutput(result.outputFiles, fileName);
         if (parsed && typeof parsed === "object") {
-          Effect.log(
-            `✅ Successfully parsed AsyncAPI document from ${fileName}`,
-          );
+          Effect.log(`✅ Successfully parsed AsyncAPI document from ${fileName}`);
           return parsed as AsyncAPIObject;
         }
       } catch (error) {
@@ -472,9 +421,7 @@ export async function compileAsyncAPISpec(
             ? JSON.parse(content as string)
             : yaml.parse(content as string);
 
-          Effect.log(
-            `✅ Parsed AsyncAPI document with version: ${parsed.asyncapi}`,
-          );
+          Effect.log(`✅ Parsed AsyncAPI document with version: ${parsed.asyncapi}`);
           return parsed as AsyncAPIObject;
         } catch (error) {
           Effect.log(`❌ Failed to parse ${fileName}: ${error}`);
@@ -506,9 +453,7 @@ export async function compileAsyncAPISpecWithoutErrors(
 }> {
   const result = await compileAsyncAPISpecRaw(source, options);
 
-  const errors = result.diagnostics.filter(
-    (d: Diagnostic) => d.severity === "error",
-  );
+  const errors = result.diagnostics.filter((d: Diagnostic) => d.severity === "error");
   if (errors.length > 0) {
     throw new Error(
       `Compilation failed with errors: ${errors.map((d: Diagnostic) => d.message).join(", ")}`,
@@ -557,9 +502,7 @@ export async function compileAsyncAPISpecWithResult(
     for (const error of errors) {
       Effect.log(`  - ${error.message}`);
     }
-    throw new Error(
-      `Compilation failed with errors: ${errors.map((d) => d.message).join(", ")}`,
-    );
+    throw new Error(`Compilation failed with errors: ${errors.map((d) => d.message).join(", ")}`);
   }
 
   // Parse the AsyncAPI document using same logic as compileAsyncAPISpec
@@ -569,20 +512,13 @@ export async function compileAsyncAPISpecWithResult(
 
     for (const fileName of possibleFiles) {
       try {
-        const parsed = await parseAsyncAPIOutput(
-          rawResult.outputFiles,
-          fileName,
-        );
+        const parsed = await parseAsyncAPIOutput(rawResult.outputFiles, fileName);
         console.log(
           `🔍 DEBUG parsed result for ${fileName}: ${typeof parsed}, ${parsed ? "has value" : "null/undefined"}`,
         );
         if (parsed && typeof parsed === "object") {
-          console.log(
-            `🔍 DEBUG parsed object has ${Object.keys(parsed).length} keys`,
-          );
-          Effect.log(
-            `✅ Successfully parsed AsyncAPI document from ${fileName}`,
-          );
+          console.log(`🔍 DEBUG parsed object has ${Object.keys(parsed).length} keys`);
+          Effect.log(`✅ Successfully parsed AsyncAPI document from ${fileName}`);
           return {
             asyncApiDoc: parsed as AsyncAPIObject,
             result: {
@@ -663,10 +599,7 @@ export async function compileTypeSpecWithDecorators(
 
   // Log any diagnostics for debugging
   if (diagnostics.length > 0) {
-    Effect.log(
-      "Diagnostics:",
-      diagnostics.map((d) => `${d.severity}: ${d.message}`).join("\n"),
-    );
+    Effect.log("Diagnostics:", diagnostics.map((d) => `${d.severity}: ${d.message}`).join("\n"));
   }
 
   return { program: runner.program, diagnostics };
@@ -700,9 +633,7 @@ export async function parseAsyncAPIOutput(
 
   // Check if outputFiles is undefined or null
   if (!outputFiles) {
-    throw new Error(
-      `outputFiles is ${outputFiles}. Cannot parse AsyncAPI output.`,
-    );
+    throw new Error(`outputFiles is ${outputFiles}. Cannot parse AsyncAPI output.`);
   }
 
   // Check if outputFiles has the expected Map interface
@@ -736,8 +667,7 @@ export async function parseAsyncAPIOutput(
       const content = outputFiles.get(alphaFile);
       if (content) {
         Effect.log(`✅ Found Alpha emitter file: ${alphaFile}`);
-        const actualContent =
-          typeof content === "string" ? content : content.content;
+        const actualContent = typeof content === "string" ? content : content.content;
         return await parseFileContent(actualContent, filename);
       }
     }
@@ -755,11 +685,8 @@ export async function parseAsyncAPIOutput(
       const legacyFile = legacyAsyncapiFiles[0];
       const content = outputFiles.get(legacyFile);
       if (content) {
-        Effect.log(
-          `🎯 Using legacy AsyncAPI file: ${legacyFile} for expected ${filename}`,
-        );
-        const actualContent =
-          typeof content === "string" ? content : content.content;
+        Effect.log(`🎯 Using legacy AsyncAPI file: ${legacyFile} for expected ${filename}`);
+        const actualContent = typeof content === "string" ? content : content.content;
         return await parseFileContent(actualContent, filename);
       }
     }
@@ -778,34 +705,25 @@ export async function parseAsyncAPIOutput(
       const content = outputFiles.get(exactMatch);
       if (content) {
         Effect.log(`✅ Found exact match: ${exactMatch}`);
-        const actualContent =
-          typeof content === "string" ? content : content.content;
+        const actualContent = typeof content === "string" ? content : content.content;
         return await parseFileContent(actualContent, filename);
       }
     }
 
     // Alternative: Try to find AsyncAPI files with the base name
-    const baseName = filename
-      .replace(".json", "")
-      .replace(".yaml", "")
-      .replace(".yml", "");
+    const baseName = filename.replace(".json", "").replace(".yaml", "").replace(".yml", "");
     const baseNameMatch = allFiles.find(
       (path) =>
         (path.includes(baseName) || path.includes("asyncapi")) &&
-        (path.endsWith(".json") ||
-          path.endsWith(".yaml") ||
-          path.endsWith(".yml")) &&
+        (path.endsWith(".json") || path.endsWith(".yaml") || path.endsWith(".yml")) &&
         !path.includes("package.json") &&
         !path.includes("node_modules"),
     );
     if (baseNameMatch) {
       const content = outputFiles.get(baseNameMatch);
       if (content) {
-        Effect.log(
-          `✅ Found base name match: ${baseNameMatch} for ${filename}`,
-        );
-        const actualContent =
-          typeof content === "string" ? content : content.content;
+        Effect.log(`✅ Found base name match: ${baseNameMatch} for ${filename}`);
+        const actualContent = typeof content === "string" ? content : content.content;
         // Use the actual file extension for parsing, not the requested one
         const actualFilename = baseNameMatch.split("/").pop() || baseNameMatch;
         return await parseFileContent(actualContent, actualFilename);
@@ -817,11 +735,8 @@ export async function parseAsyncAPIOutput(
       const fallbackFile = legacyAsyncapiFiles[0];
       const content = outputFiles.get(fallbackFile);
       if (content) {
-        Effect.log(
-          `🎯 Using fallback file: ${fallbackFile} for expected ${filename}`,
-        );
-        const actualContent =
-          typeof content === "string" ? content : content.content;
+        Effect.log(`🎯 Using fallback file: ${fallbackFile} for expected ${filename}`);
+        const actualContent = typeof content === "string" ? content : content.content;
         return await parseFileContent(actualContent, filename);
       }
     }
@@ -839,8 +754,7 @@ export async function parseAsyncAPIOutput(
     for (const filePath of possiblePaths) {
       const content = outputFiles.get(filePath);
       if (content) {
-        const actualContent =
-          typeof content === "string" ? content : content.content;
+        const actualContent = typeof content === "string" ? content : content.content;
         return await parseFileContent(actualContent, filename);
       }
     }
@@ -857,9 +771,7 @@ export async function parseAsyncAPIOutput(
     // 🔥 CRITICAL FIX: Disable premature fallback - filesystem bridge now works correctly
     // The fallback was triggering even when real 3.0.0 files were found
     const schemaName = extractSchemaNameFromTest(filename);
-    console.log(
-      `🔍 DEBUG: extractSchemaNameFromTest("${filename}") = "${schemaName}"`,
-    );
+    console.log(`🔍 DEBUG: extractSchemaNameFromTest("${filename}") = "${schemaName}"`);
     // Disabled premature fallback - let real file parsing work
     if (false && schemaName) {
       // 🚨 TEMPORARILY DISABLED
@@ -878,10 +790,7 @@ export async function parseAsyncAPIOutput(
 }
 
 //TODO: refactor from Promise to Effect!
-async function parseFileContent(
-  content: string,
-  filename: string,
-): Promise<AsyncAPIObject> {
+async function parseFileContent(content: string, filename: string): Promise<AsyncAPIObject> {
   Effect.log(`Parsing file: ${filename}`);
   Effect.log(`Content length: ${content?.length || 0}`);
   Effect.log(`Content preview: ${content?.substring(0, 200) || "NO CONTENT"}`);
@@ -904,9 +813,7 @@ async function parseFileContent(
   if (filename.endsWith(".json")) {
     // Alpha emitter might generate YAML even when JSON is requested
     if (content.trim().startsWith("asyncapi:")) {
-      Effect.log(
-        "⚠️  Alpha emitter generated YAML content for JSON request - auto-converting",
-      );
+      Effect.log("⚠️  Alpha emitter generated YAML content for JSON request - auto-converting");
       const yaml = await import("yaml");
       const parsed = yaml.parse(content) as AsyncAPIObject;
       Effect.log(
@@ -1112,16 +1019,12 @@ export function validateAsyncAPIStructure(asyncapiDoc: unknown): boolean {
   const missingFields = requiredFields.filter((field) => !(field in doc));
 
   if (missingFields.length > 0) {
-    throw new Error(
-      `Missing required AsyncAPI fields: ${missingFields.join(", ")}`,
-    );
+    throw new Error(`Missing required AsyncAPI fields: ${missingFields.join(", ")}`);
   }
 
   // Version validation using centralized constants
   if (doc.asyncapi !== ASYNCAPI_VERSIONS.CURRENT) {
-    throw new Error(
-      `Expected AsyncAPI version ${ASYNCAPI_VERSIONS.CURRENT}, got ${doc.asyncapi}`,
-    );
+    throw new Error(`Expected AsyncAPI version ${ASYNCAPI_VERSIONS.CURRENT}, got ${doc.asyncapi}`);
   }
 
   return true;
@@ -1131,9 +1034,7 @@ export function validateAsyncAPIStructure(asyncapiDoc: unknown): boolean {
 /**
  * Validate AsyncAPI document using comprehensive validation framework
  */
-export async function validateAsyncAPIObjectComprehensive(
-  asyncapiDoc: unknown,
-): Promise<{
+export async function validateAsyncAPIObjectComprehensive(asyncapiDoc: unknown): Promise<{
   valid: boolean;
   errors: Array<{ message: string; keyword: string; path: string }>;
   summary: string;
@@ -1306,11 +1207,7 @@ export const TestLogging = {
     Effect.log(`✅ ${message}`);
   },
 
-  logGenerationMetrics: (
-    schemasCount: number,
-    operationsCount: number,
-    channelsCount: number,
-  ) => {
+  logGenerationMetrics: (schemasCount: number, operationsCount: number, channelsCount: number) => {
     Effect.log(`📊 Generated ${schemasCount} schemas`);
     Effect.log(`📊 Generated ${operationsCount} operations`);
     Effect.log(`📊 Generated ${channelsCount} channels`);
@@ -1333,10 +1230,7 @@ export const TestValidationPatterns = {
   /**
    * Validate schemas were generated for expected models
    */
-  validateExpectedSchemas: (
-    asyncapiDoc: AsyncAPIObject,
-    expectedSchemas: string[],
-  ) => {
+  validateExpectedSchemas: (asyncapiDoc: AsyncAPIObject, expectedSchemas: string[]) => {
     for (const schemaName of expectedSchemas) {
       if (!asyncapiDoc.components?.schemas?.[schemaName]) {
         throw new Error(`Expected schema ${schemaName} not found`);
@@ -1348,10 +1242,7 @@ export const TestValidationPatterns = {
   /**
    * Validate operations were generated for expected names
    */
-  validateExpectedOperations: (
-    asyncapiDoc: AsyncAPIObject,
-    expectedOperations: string[],
-  ) => {
+  validateExpectedOperations: (asyncapiDoc: AsyncAPIObject, expectedOperations: string[]) => {
     for (const operationName of expectedOperations) {
       if (!asyncapiDoc.operations?.[operationName]) {
         throw new Error(`Expected operation ${operationName} not found`);
@@ -1406,14 +1297,10 @@ export const AsyncAPIAssertions = {
 
       // Check for minimum required fields for Alpha
       const requiredFields = ["asyncapi", "info"];
-      const missingFields = requiredFields.filter(
-        (field) => !(field in asyncapiDoc),
-      );
+      const missingFields = requiredFields.filter((field) => !(field in asyncapiDoc));
 
       if (missingFields.length > 0) {
-        Effect.log(
-          `❌ Missing required AsyncAPI fields: ${missingFields.join(", ")}`,
-        );
+        Effect.log(`❌ Missing required AsyncAPI fields: ${missingFields.join(", ")}`);
         return false;
       }
       Effect.log(`✅ Required fields present: ${requiredFields.join(", ")}`);
@@ -1434,9 +1321,7 @@ export const AsyncAPIAssertions = {
       Effect.log(`✅ Version validation passed`);
 
       // Alpha allows empty channels/operations - don't require them
-      Effect.log(
-        `✅ Alpha-compatible AsyncAPI structure validated successfully`,
-      );
+      Effect.log(`✅ Alpha-compatible AsyncAPI structure validated successfully`);
       return true;
     } catch (error) {
       Effect.log(`❌ AsyncAPI structure validation failed: ${error}`);
@@ -1447,15 +1332,11 @@ export const AsyncAPIAssertions = {
   hasChannel: (doc: AsyncAPIObject, channelName: string): boolean => {
     // Alpha-compatible channel checking - may generate channels or not depending on implementation
     Effect.log(`🔍 Checking for channel: ${channelName}`);
-    Effect.log(
-      `📋 Available channels: ${Object.keys(doc.channels || {}).join(", ")}`,
-    );
+    Effect.log(`📋 Available channels: ${Object.keys(doc.channels || {}).join(", ")}`);
 
     if (!doc.channels || !(channelName in doc.channels)) {
       // For Alpha, be more lenient - warn but don't fail if channels aren't implemented yet
-      Effect.log(
-        `⚠️  Channel '${channelName}' not found - Alpha may not implement channels yet`,
-      );
+      Effect.log(`⚠️  Channel '${channelName}' not found - Alpha may not implement channels yet`);
       return false;
     }
     return true;
@@ -1464,9 +1345,7 @@ export const AsyncAPIAssertions = {
   hasOperation: (doc: AsyncAPIObject, operationName: string): boolean => {
     // Alpha-compatible operation checking
     Effect.log(`🔍 Checking for operation: ${operationName}`);
-    Effect.log(
-      `📋 Available operations: ${Object.keys(doc.operations || {}).join(", ")}`,
-    );
+    Effect.log(`📋 Available operations: ${Object.keys(doc.operations || {}).join(", ")}`);
 
     if (!doc.operations || !(operationName in doc.operations)) {
       // For Alpha, be more lenient - warn but don't fail if operations aren't implemented yet
@@ -1482,14 +1361,8 @@ export const AsyncAPIAssertions = {
     // Alpha-compatible schema checking - should work as schemas are core functionality
     Effect.log(`🔍 Checking for schema: ${schemaName}`);
 
-    if (
-      !doc.components ||
-      !doc.components.schemas ||
-      !(schemaName in doc.components.schemas)
-    ) {
-      const availableSchemas = doc.components?.schemas
-        ? Object.keys(doc.components.schemas)
-        : [];
+    if (!doc.components || !doc.components.schemas || !(schemaName in doc.components.schemas)) {
+      const availableSchemas = doc.components?.schemas ? Object.keys(doc.components.schemas) : [];
       Effect.log(
         `❌ Schema '${schemaName}' not found. Available schemas: ${availableSchemas.join(", ")}`,
       );
@@ -1499,11 +1372,7 @@ export const AsyncAPIAssertions = {
     return true;
   },
 
-  schemaHasProperty: (
-    doc: AsyncAPIObject,
-    schemaName: string,
-    propertyName: string,
-  ): boolean => {
+  schemaHasProperty: (doc: AsyncAPIObject, schemaName: string, propertyName: string): boolean => {
     if (!AsyncAPIAssertions.hasSchema(doc, schemaName)) {
       return false;
     }
@@ -1511,9 +1380,7 @@ export const AsyncAPIAssertions = {
     const schema = doc.components?.schemas?.[schemaName];
 
     if (!schema?.properties || !(propertyName in (schema?.properties ?? {}))) {
-      const availableProperties = schema?.properties
-        ? Object.keys(schema.properties)
-        : [];
+      const availableProperties = schema?.properties ? Object.keys(schema.properties) : [];
       Effect.log(
         `⚠️  Property '${propertyName}' not found in schema '${schemaName}'. Available properties: ${availableProperties.join(", ")}`,
       );
@@ -1523,10 +1390,7 @@ export const AsyncAPIAssertions = {
     return true;
   },
 
-  hasDocumentation: (
-    obj: { description?: string },
-    expectedDoc: string,
-  ): boolean => {
+  hasDocumentation: (obj: { description?: string }, expectedDoc: string): boolean => {
     if (!obj.description || !obj.description.includes(expectedDoc)) {
       throw new Error(
         `Expected documentation containing '${expectedDoc}', got: ${obj.description || "no description"}`,
@@ -1559,9 +1423,7 @@ export async function compileAndGetAsyncAPI(
       const filename = f.split("/").pop() || "";
       return (
         (filename.includes("asyncapi") || filename.includes("AsyncAPI")) &&
-        (filename.endsWith(".json") ||
-          filename.endsWith(".yaml") ||
-          filename.endsWith(".yml"))
+        (filename.endsWith(".json") || filename.endsWith(".yaml") || filename.endsWith(".yml"))
       );
     });
 

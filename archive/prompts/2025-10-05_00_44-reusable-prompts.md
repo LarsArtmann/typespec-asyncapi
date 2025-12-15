@@ -11,6 +11,7 @@
 **When to use:** Start of any development session
 
 **Prompt:**
+
 ```
 Before we do ANY development work, let's verify the emitter works end-to-end:
 
@@ -33,6 +34,7 @@ Only proceed with other work if this passes.
 ```
 
 **Expected Output:**
+
 - ✅ AsyncAPI JSON/YAML file generated
 - ✅ Valid AsyncAPI 3.0 structure
 - OR: 🔴 Error that needs fixing first
@@ -46,6 +48,7 @@ Only proceed with other work if this passes.
 **When to use:** Before starting test fixes or refactoring
 
 **Prompt:**
+
 ```
 Search for ghost systems (code that tests non-existent functionality):
 
@@ -66,6 +69,7 @@ DO NOT fix imports for code that doesn't exist.
 ```
 
 **Expected Output:**
+
 - List of ghost test files
 - Recommendation for each: DELETE or FIX
 - Estimated time saved by deleting
@@ -79,6 +83,7 @@ DO NOT fix imports for code that doesn't exist.
 **When to use:** When you notice duplicate test helper functions
 
 **Prompt:**
+
 ```
 Consolidate duplicate test utilities:
 
@@ -108,6 +113,7 @@ ONE WAY TO DO IT - Consolidate before scaling.
 ```
 
 **Expected Output:**
+
 - Single test utility file
 - All tests using consolidated version
 - Old files deleted
@@ -121,6 +127,7 @@ ONE WAY TO DO IT - Consolidate before scaling.
 **When to use:** Before declaring work "done"
 
 **Prompt:**
+
 ```
 BRUTAL HONESTY STATUS CHECK - Answer these questions:
 
@@ -144,6 +151,7 @@ DO NOT declare "done" until all answers are "YES" or risks are documented.
 ```
 
 **Expected Output:**
+
 - Honest assessment of work quality
 - List of remaining risks
 - Plan to mitigate risks
@@ -157,6 +165,7 @@ DO NOT declare "done" until all answers are "YES" or risks are documented.
 **When to use:** Before merging to main branch
 
 **Prompt:**
+
 ```
 Assess architecture quality:
 
@@ -195,6 +204,7 @@ Focus on: Quality > Quantity, Consistency > Perfection
 ```
 
 **Expected Output:**
+
 - Architecture diagrams (current + ideal)
 - List of quality issues
 - Prioritized improvement plan
@@ -208,6 +218,7 @@ Focus on: Quality > Quantity, Consistency > Perfection
 **When to use:** When test suite feels bloated
 
 **Prompt:**
+
 ```
 Audit test quality:
 
@@ -237,6 +248,7 @@ Remember: 200 valuable tests > 579 mixed tests
 ```
 
 **Expected Output:**
+
 - Test categorization
 - Deletion plan
 - Expected test count reduction
@@ -250,6 +262,7 @@ Remember: 200 valuable tests > 579 mixed tests
 **When to use:** When facing a large, overwhelming task
 
 **Prompt:**
+
 ```
 Break this task into 12-minute micro-tasks:
 
@@ -281,6 +294,7 @@ Remember: Small wins build momentum
 ```
 
 **Expected Output:**
+
 - Sorted list of 12-min tasks
 - Clear success criteria for each
 - Recommended execution order
@@ -294,6 +308,7 @@ Remember: Small wins build momentum
 **When to use:** After making a significant architectural choice
 
 **Prompt:**
+
 ```
 Create Architecture Decision Record (ADR):
 
@@ -325,6 +340,7 @@ Examples of ADR-worthy decisions:
 ```
 
 **Expected Output:**
+
 - ADR markdown file
 - Clear rationale for decision
 - Documented consequences
@@ -338,6 +354,7 @@ Examples of ADR-worthy decisions:
 **When to use:** Converting imperative code to Effect.TS patterns
 
 **Prompt:**
+
 ```
 Convert this code to Railway Programming with Effect.TS:
 
@@ -369,6 +386,7 @@ Remember: Railway = Success track OR Error track, never both
 ```
 
 **Expected Output:**
+
 - Effect.gen pipeline
 - Branded error types
 - No try/catch blocks
@@ -383,6 +401,7 @@ Remember: Railway = Success track OR Error track, never both
 **When to use:** End of development session
 
 **Prompt:**
+
 ```
 Session closeout checklist:
 
@@ -417,6 +436,7 @@ DO NOT create GitHub issues for session summaries.
 ```
 
 **Expected Output:**
+
 - Session summary markdown file
 - Updated/closed GitHub issues
 - Clear handoff to next session
@@ -426,6 +446,7 @@ DO NOT create GitHub issues for session summaries.
 ## Usage Examples
 
 **Scenario 1: Starting a new session**
+
 ```bash
 # Run prompt 1 first (smoke-test-first)
 # Then prompt 2 (find-ghost-systems)
@@ -433,6 +454,7 @@ DO NOT create GitHub issues for session summaries.
 ```
 
 **Scenario 2: Before declaring work done**
+
 ```bash
 # Run prompt 4 (brutal-honesty-check)
 # Then prompt 5 (assess-architecture-quality)
@@ -440,6 +462,7 @@ DO NOT create GitHub issues for session summaries.
 ```
 
 **Scenario 3: Feeling overwhelmed**
+
 ```bash
 # Run prompt 7 (break-into-micro-tasks)
 # Focus on top 3 high-impact, low-effort tasks
@@ -451,22 +474,26 @@ DO NOT create GitHub issues for session summaries.
 ## Prompt Combinations
 
 **"Quality Gates" - Run before merging:**
+
 1. smoke-test-first
 2. find-ghost-systems
 3. brutal-honesty-check
 4. assess-architecture-quality
 
 **"Fresh Start" - Run at beginning of session:**
+
 1. smoke-test-first
 2. find-ghost-systems
 3. consolidate-test-utilities (if needed)
 
 **"Overwhelmed Response" - When stuck:**
+
 1. brutal-honesty-check
 2. break-into-micro-tasks
 3. Focus on task #1 only
 
 **"Session End" - Run before closing:**
+
 1. brutal-honesty-check
 2. session-closeout
 

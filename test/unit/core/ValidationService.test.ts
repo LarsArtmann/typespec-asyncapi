@@ -121,9 +121,7 @@ describe("ValidationService", () => {
 
       expect(result._tag).toBe("Success"); // Should still be valid
       const warningMessages = result.warnings.map((w) => w.message);
-      expect(warningMessages).toContain(
-        "Using AsyncAPI version 2.6.0, expected 3.x",
-      );
+      expect(warningMessages).toContain("Using AsyncAPI version 2.6.0, expected 3.x");
     });
 
     it("should detect missing AsyncAPI version", async () => {
@@ -174,9 +172,7 @@ describe("ValidationService", () => {
 
       expect(result._tag).toBe("Success");
       const warningMessages = result.warnings.map((w) => w.message);
-      expect(warningMessages).toContain(
-        "Missing recommended 'info.description' field",
-      );
+      expect(warningMessages).toContain("Missing recommended 'info.description' field");
     });
 
     it("should validate channel requirements", async () => {
@@ -193,9 +189,7 @@ describe("ValidationService", () => {
 
       expect(result._tag).toBe("Failure");
       const errorMessages = result.errors.map((e) => e.message);
-      expect(errorMessages).toContain(
-        "Channel 'invalidChannel' missing required 'address' field",
-      );
+      expect(errorMessages).toContain("Channel 'invalidChannel' missing required 'address' field");
     });
 
     it("should warn about empty channels", async () => {
@@ -212,9 +206,7 @@ describe("ValidationService", () => {
       // Empty channels should still be valid but generate warning
       expect(result._tag).toBe("Success");
       const warningMessages = result.warnings.map((w) => w.message);
-      expect(warningMessages).toContain(
-        "No channels defined - document may be incomplete",
-      );
+      expect(warningMessages).toContain("No channels defined - document may be incomplete");
       if (result._tag === "Success") {
         expect(getChannelCount(result.value)).toBe(0);
       }
@@ -236,9 +228,7 @@ describe("ValidationService", () => {
 
       expect(result._tag).toBe("Failure");
       const errorMessages = result.errors.map((e) => e.message);
-      expect(errorMessages).toContain(
-        "Operation 'invalidOp1' missing required 'action' field",
-      );
+      expect(errorMessages).toContain("Operation 'invalidOp1' missing required 'action' field");
       expect(errorMessages).toContain(
         "Operation 'invalidOp2' has invalid action 'invalid', must be 'send' or 'receive'",
       );
@@ -293,12 +283,8 @@ describe("ValidationService", () => {
 
       expect(result._tag).toBe("Success");
       const warningMessages = result.warnings.map((w) => w.message);
-      expect(warningMessages).toContain(
-        "No channels defined - document may be incomplete",
-      );
-      expect(warningMessages).toContain(
-        "No operations defined - document may be incomplete",
-      );
+      expect(warningMessages).toContain("No channels defined - document may be incomplete");
+      expect(warningMessages).toContain("No operations defined - document may be incomplete");
       expect(warningMessages).toContain("No components section defined");
     });
   });
@@ -363,9 +349,7 @@ describe("ValidationService", () => {
 
   describe("quickValidation", () => {
     it("should perform quick validation on valid document", async () => {
-      const result = await Effect.runPromise(
-        validationService.quickValidation(validAsyncApiDoc),
-      );
+      const result = await Effect.runPromise(validationService.quickValidation(validAsyncApiDoc));
 
       expect(result).toBe(true);
     });
@@ -376,9 +360,7 @@ describe("ValidationService", () => {
         // Missing asyncapi field
       } as AsyncAPIObject;
 
-      const result = await Effect.runPromise(
-        validationService.quickValidation(invalidDoc),
-      );
+      const result = await Effect.runPromise(validationService.quickValidation(invalidDoc));
 
       expect(result).toBe(false);
     });
@@ -390,9 +372,7 @@ describe("ValidationService", () => {
         channels: { test: { address: "/test" } },
       } as AsyncAPIObject;
 
-      const result = await Effect.runPromise(
-        validationService.quickValidation(docWithChannels),
-      );
+      const result = await Effect.runPromise(validationService.quickValidation(docWithChannels));
 
       expect(result).toBe(true);
     });
@@ -406,9 +386,7 @@ describe("ValidationService", () => {
         },
       } as AsyncAPIObject;
 
-      const result = await Effect.runPromise(
-        validationService.quickValidation(docWithOperations),
-      );
+      const result = await Effect.runPromise(validationService.quickValidation(docWithOperations));
 
       expect(result).toBe(true);
     });
@@ -534,9 +512,7 @@ describe("ValidationService", () => {
         summary: "Error found",
       };
 
-      const report = validationService.generateValidationReport(
-        resultWithoutWarnings,
-      );
+      const report = validationService.generateValidationReport(resultWithoutWarnings);
 
       expect(report).toContain("Errors (1):");
       expect(report).not.toContain("Warnings");
@@ -559,9 +535,7 @@ describe("ValidationService", () => {
         summary: "Valid structure but has warnings",
       };
 
-      const report = validationService.generateValidationReport(
-        resultWithWarningsOnly,
-      );
+      const report = validationService.generateValidationReport(resultWithWarningsOnly);
 
       // Empty errors array means "Errors" section should NOT appear
       expect(report).toContain("Status: ❌ INVALID");

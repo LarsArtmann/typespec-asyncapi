@@ -52,17 +52,11 @@ describe("Path Template Validation", () => {
   });
 
   test("should validate all supported template variables", () => {
-    const allVariablesTemplate =
-      "{cmd}/{project-root}/{emitter-name}/{output-dir}/spec.yaml";
+    const allVariablesTemplate = "{cmd}/{project-root}/{emitter-name}/{output-dir}/spec.yaml";
     const result = validatePathTemplate(allVariablesTemplate);
 
     expect(result.isValid).toBe(true);
-    expect(result.variables).toEqual([
-      "cmd",
-      "project-root",
-      "emitter-name",
-      "output-dir",
-    ]);
+    expect(result.variables).toEqual(["cmd", "project-root", "emitter-name", "output-dir"]);
     expect(result.unsupportedVariables).toEqual([]);
     expect(result.errors).toEqual([]);
   });
@@ -306,9 +300,7 @@ describe("Cross-Platform Path Handling", () => {
     const template = "{project-root}/generated/{cmd}/{emitter-name}.yaml";
     const resolved = resolvePathTemplate(template, variables);
 
-    expect(resolved).toBe(
-      "/home/user/projects/api/generated/typespec/asyncapi.yaml",
-    );
+    expect(resolved).toBe("/home/user/projects/api/generated/typespec/asyncapi.yaml");
   });
 });
 
@@ -367,8 +359,7 @@ describe("Performance Tests", () => {
   });
 
   test("should validate complex templates efficiently", () => {
-    const complexTemplate =
-      "{cmd}/{project-root}/{emitter-name}/{output-dir}".repeat(50);
+    const complexTemplate = "{cmd}/{project-root}/{emitter-name}/{output-dir}".repeat(50);
 
     const start = performance.now();
     const result = validatePathTemplate(complexTemplate);

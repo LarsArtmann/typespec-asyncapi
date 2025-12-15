@@ -40,6 +40,7 @@ bun test       # ❌ 348 failures!
 ### 2. **BROKE PUBLIC API WITHOUT MIGRATION PATH**
 
 **Breaking Changes Made:**
+
 ```typescript
 // BEFORE (what tests expect):
 if (result.isValid) {
@@ -53,6 +54,7 @@ if (result._tag === "Success") {
 ```
 
 **What We Should Have Done:**
+
 1. Add new API alongside old API (deprecate, don't delete)
 2. Update all consumers
 3. Run tests
@@ -61,6 +63,7 @@ if (result._tag === "Success") {
 ### 3. **CREATED NEW SPLIT BRAINS WHILE FIXING OLD ONES**
 
 **Split Brain #1: Optional Summary**
+
 ```typescript
 type ExtendedValidationResult<T> = ValidationResult<T> & {
   metrics: ValidationMetrics
@@ -71,6 +74,7 @@ type ExtendedValidationResult<T> = ValidationResult<T> & {
 **Problem:** We ALWAYS set summary, so it should be required. Optional indicates it might be missing, creating uncertainty.
 
 **Split Brain #2: Derived State in Metrics**
+
 ```typescript
 {
   _tag: "Success",
@@ -86,6 +90,7 @@ type ExtendedValidationResult<T> = ValidationResult<T> & {
 ### 4. **LEFT GHOST IMPORTS**
 
 **ValidationService.ts lines 23-24:**
+
 ```typescript
 import type { ValidationResult as _NewValidationResult, ValidationError as _ValidationError, ExtendedValidationResult as _ExtendedValidationResult } from "../../types/index.js"
 import type { ValidationResult as _BrandedValidationResult, ValidationError as _ValidationErrorType, ValidationWarning as _ValidationWarning } from "../models/errors/validation-error.js"
@@ -98,6 +103,7 @@ import type { ValidationResult as _BrandedValidationResult, ValidationError as _
 **Found 17 instances still blocking the event loop:**
 
 **WORST OFFENDER - ValidationService.ts:282:**
+
 ```typescript
 result.errors.forEach((error: ValidationError) =>
   Effect.runSync(Effect.log(`  - ${error.message}`))
@@ -107,6 +113,7 @@ result.errors.forEach((error: ValidationError) =>
 **Problem:** Synchronous wrapper inside forEach breaks Effect.TS composition.
 
 **Should be:**
+
 ```typescript
 yield* Effect.all(
   result.errors.map(error =>
@@ -127,6 +134,7 @@ yield* Effect.all(
 | lib.ts | 455 | 350 | +105 |
 
 **ValidationService.ts should be split into:**
+
 - `ValidationService.ts` (orchestrator, <200 lines)
 - `BasicStructureValidator.ts`
 - `ChannelValidator.ts`
@@ -141,12 +149,14 @@ yield* Effect.all(
 ### ✅ **Eliminated Split Brain in ValidationResult**
 
 **BEFORE (could contradict):**
+
 ```typescript
 { isValid: true, errors: ["broke"] }   // ❌ INVALID STATE
 { isValid: false, errors: [] }          // ❌ INVALID STATE
 ```
 
 **AFTER (impossible to contradict):**
+
 ```typescript
 { _tag: "Success", errors: readonly [] }        // ✅ TYPE SAFE
 { _tag: "Failure", errors: ValidationError[] }  // ✅ TYPE SAFE
@@ -157,11 +167,13 @@ TypeScript **PREVENTS** invalid states at compile time.
 ### ✅ **Upgraded to Structured Errors**
 
 **BEFORE (primitive):**
+
 ```typescript
 errors: ["Missing required field: asyncapi"]
 ```
 
 **AFTER (structured):**
+
 ```typescript
 errors: [{
   message: "Missing required field: asyncapi",
@@ -200,16 +212,16 @@ if (result._tag === "Success") {
 
 ### Codebase Metrics
 
-| Metric | Count | Target | Status |
-|--------|-------|--------|--------|
-| TypeScript Files | 210 | - | - |
-| Total Lines | 16,342 | - | - |
-| Files >350 lines | 11 | 0 | 🔴 |
-| TODO Markers | 305 | 0 | 🔴 |
-| Effect.runSync | 17 | 0 | 🔴 |
-| TypeScript Errors | 0 | 0 | ✅ |
-| **Test Failures** | **348** | **0** | **🔴** |
-| Test Pass Rate | 51% | 100% | 🔴 |
+| Metric            | Count   | Target | Status |
+| ----------------- | ------- | ------ | ------ |
+| TypeScript Files  | 210     | -      | -      |
+| Total Lines       | 16,342  | -      | -      |
+| Files >350 lines  | 11      | 0      | 🔴     |
+| TODO Markers      | 305     | 0      | 🔴     |
+| Effect.runSync    | 17      | 0      | 🔴     |
+| TypeScript Errors | 0       | 0      | ✅     |
+| **Test Failures** | **348** | **0**  | **🔴** |
+| Test Pass Rate    | 51%     | 100%   | 🔴     |
 
 ### Test Results Breakdown
 
@@ -221,6 +233,7 @@ if (result._tag === "Success") {
 ```
 
 **Critical Failures:**
+
 - Tests expect `result.isValid` (doesn't exist)
 - Tests expect `result.channelsCount` (now `result.metrics.channelCount`)
 - Tests expect `errors: string[]` (now `errors: ValidationError[]`)
@@ -232,6 +245,7 @@ if (result._tag === "Success") {
 ### CRITICAL (Must Fix Before Any New Work)
 
 **1. Fix Failing Tests** (30min, Priority: CRITICAL)
+
 ```bash
 # Find all test failures
 bun test 2>&1 | grep "error:"
@@ -243,12 +257,14 @@ bun test 2>&1 | grep "error:"
 ```
 
 **2. Delete Ghost Imports** (5min, Priority: HIGH)
+
 ```typescript
 // DELETE ValidationService.ts lines 23-24
 // These imports are NEVER USED
 ```
 
 **3. Fix Effect.runSync in forEach** (20min, Priority: CRITICAL)
+
 ```typescript
 // BEFORE (blocks event loop):
 result.errors.forEach(error => Effect.runSync(Effect.log(error.message)))
@@ -260,6 +276,7 @@ yield* Effect.all(result.errors.map(error => Effect.log(error.message)))
 ### HIGH PRIORITY (After Tests Pass)
 
 **4. Fix summary Split Brain** (10min)
+
 ```typescript
 // Make summary required OR computed property
 type ExtendedValidationResult<T> = ValidationResult<T> & {
@@ -269,6 +286,7 @@ type ExtendedValidationResult<T> = ValidationResult<T> & {
 ```
 
 **5. Create ValidationError Helper** (15min)
+
 ```typescript
 export const stringToValidationError = (message: string): ValidationError => ({
   message,
@@ -279,10 +297,12 @@ export const stringToValidationError = (message: string): ValidationError => ({
 ```
 
 **6. Split ValidationService.ts** (45min)
+
 - 634 lines → 6 files of ~100 lines each
 - Extract validation methods to separate validators
 
 **7. Fix Remaining Effect.runSync** (60min)
+
 - 17 instances total
 - Each one blocks event loop
 - Replace with proper Effect composition
@@ -290,6 +310,7 @@ export const stringToValidationError = (message: string): ValidationError => ({
 ### MEDIUM PRIORITY
 
 **8. Add Const Enums** (20min)
+
 ```typescript
 enum ValidationKeyword {
   Required = "required",
@@ -299,10 +320,12 @@ enum ValidationKeyword {
 ```
 
 **9. Consolidate Metrics Types** (30min)
+
 - Single `Metrics` type
 - Remove ValidationMetrics, PerformanceMetrics duplication
 
 **10. Add Branded Types** (45min)
+
 ```typescript
 type ChannelPath = string & { readonly __brand: 'ChannelPath' }
 type OperationId = string & { readonly __brand: 'OperationId' }
@@ -353,6 +376,7 @@ Tests prove behavior is correct.
 Don't remove old API until all consumers updated.
 
 **Pattern:**
+
 1. Add new API (deprecate old)
 2. Update consumers
 3. Run tests
@@ -375,9 +399,10 @@ Add pre-commit hook if needed.
 ### 5. **One Change at a Time**
 
 We changed:
+
 - Type structure (discriminated union)
 - Error format (string → ValidationError)
-- API surface (isValid → _tag)
+- API surface (isValid → \_tag)
 - Metrics structure (inline → nested)
 
 **Should have been 4 separate commits with tests after each.**
@@ -389,6 +414,7 @@ We changed:
 ### Step-by-Step Recovery Plan
 
 **Step 1: Fix Test Assertions** (30min)
+
 ```bash
 # Find all test files using old API
 rg "\.isValid" test/ --type ts
@@ -402,12 +428,14 @@ bun test [file]
 ```
 
 **Step 2: Verify All Tests Pass** (5min)
+
 ```bash
 bun test
 # Target: 359 pass, 0 fail
 ```
 
 **Step 3: Delete Ghost Code** (5min)
+
 ```bash
 # Remove unused imports from ValidationService.ts
 # Verify build still passes
@@ -415,6 +443,7 @@ bun run build
 ```
 
 **Step 4: Fix Effect.runSync** (60min)
+
 ```bash
 # Find all instances
 rg "Effect\.runSync" src/ --type ts
@@ -424,6 +453,7 @@ rg "Effect\.runSync" src/ --type ts
 ```
 
 **Step 5: Commit Fixes** (5min)
+
 ```bash
 git add -A
 git commit -m "fix: update tests for ValidationResult discriminated union API
@@ -441,6 +471,7 @@ git push
 ```
 
 **Step 6: Add Pre-commit Hook** (10min)
+
 ```bash
 # .husky/pre-commit
 #!/bin/sh
@@ -454,6 +485,7 @@ bun test || exit 1
 ### 1. **Should we ALWAYS run tests before commit?**
 
 **Options:**
+
 - A) Yes, add pre-commit hook (2min delay per commit)
 - B) Yes, but manually (discipline required)
 - C) No, run tests in CI only (risk of broken commits)
@@ -463,6 +495,7 @@ bun test || exit 1
 ### 2. **How should we handle breaking changes?**
 
 **Options:**
+
 - A) Deprecate first, remove later (gradual migration)
 - B) Version bump + migration guide (big bang)
 - C) Feature flags (toggle old/new behavior)
@@ -472,6 +505,7 @@ bun test || exit 1
 ### 3. **Should we split ValidationService.ts now or after tests pass?**
 
 **Options:**
+
 - A) Now (634 lines violates SRP)
 - B) After tests pass (one thing at a time)
 - C) After PHASE 1 complete (focus first)
@@ -538,6 +572,7 @@ bun test || exit 1
 **But we failed to verify the changes worked** before committing.
 
 **Recovery plan:**
+
 1. Fix 348 tests (30min)
 2. Delete ghost code (5min)
 3. Fix Effect.runSync (60min)

@@ -1,6 +1,6 @@
 /**
  * Document Builder Service
- * 
+ *
  * Provides functionality to build AsyncAPI documents from TypeSpec programs
  */
 
@@ -16,24 +16,22 @@ type ServerConfig = {
   url: string;
   protocol: string;
   description?: string;
-}
+};
 
 /**
  * Parse URL into host and pathname components
  */
 function parseServerUrl(url: string): { host: string; pathname?: string } {
   // Handle protocol-prefixed URLs
-  if (url.includes('://')) {
+  if (url.includes("://")) {
     return Effect.runSync(
       Effect.try(() => {
         const urlObj = new URL(url);
         return {
           host: urlObj.host,
-          pathname: urlObj.pathname !== '/' ? urlObj.pathname : undefined
+          pathname: urlObj.pathname !== "/" ? urlObj.pathname : undefined,
         };
-      }).pipe(
-        Effect.orElse(() => Effect.succeed({ host: url }))
-      )
+      }).pipe(Effect.orElse(() => Effect.succeed({ host: url }))),
     );
   }
   // Handle plain host:port format
@@ -45,31 +43,28 @@ function parseServerUrl(url: string): { host: string; pathname?: string } {
  */
 function extractServersFromState(program: Program): Record<string, ServerObject> {
   const servers: Record<string, ServerObject> = {};
-  
+
   return Effect.runSync(
     Effect.try(() => {
-      if (program && typeof program.stateMap === 'function') {
+      if (program && typeof program.stateMap === "function") {
         const serverConfigsMap = program.stateMap(stateSymbols.serverConfigs);
         if (serverConfigsMap && serverConfigsMap.size > 0) {
           for (const [target, config] of serverConfigsMap) {
             const serverConfig = config as ServerConfig;
-            const serverName = typeof target === 'object' && 'name' in target 
-              ? String(target.name) 
-              : 'default';
+            const serverName =
+              typeof target === "object" && "name" in target ? String(target.name) : "default";
             const { host, pathname } = parseServerUrl(serverConfig.url);
             servers[serverName] = {
               host,
               protocol: serverConfig.protocol,
               ...(pathname && { pathname }),
-              ...(serverConfig.description && { description: serverConfig.description })
+              ...(serverConfig.description && { description: serverConfig.description }),
             };
           }
         }
       }
       return servers;
-    }).pipe(
-      Effect.orElse(() => Effect.succeed(servers))
-    )
+    }).pipe(Effect.orElse(() => Effect.succeed(servers))),
   );
 }
 
@@ -84,14 +79,14 @@ function initializeComponentsInternal(document: AsyncAPIObject): AsyncAPIObject 
       schemas: components.schemas ?? {},
       messages: components.messages ?? {},
       securitySchemes: components.securitySchemes ?? {},
-      ...components
-    }
+      ...components,
+    },
   };
 }
 
 /**
  * Document Builder class
- * 
+ *
  * Handles creation and modification of AsyncAPI document structures
  */
 export class DocumentBuilder {
@@ -100,79 +95,81 @@ export class DocumentBuilder {
    * Extracts server configurations from program state if available
    */
   createInitialDocument(program: Program): Effect.Effect<AsyncAPIObject, never, never> {
-    return Effect.gen(function*() {
+    return Effect.gen(function* () {
       yield* Effect.log("Creating initial AsyncAPI document");
-      
+
       // Build servers from program state if available
       const servers = extractServersFromState(program);
-      
+
       const document: AsyncAPIObject = {
         asyncapi: "3.0.0",
         info: {
           title: "AsyncAPI Specification",
           version: "1.0.0",
-          description: "Generated from TypeSpec with @lars-artmann/typespec-asyncapi"
+          description: "Generated from TypeSpec with @lars-artmann/typespec-asyncapi",
         },
         channels: {},
         operations: {},
         components: {
           schemas: {},
           messages: {},
-          securitySchemes: {}
+          securitySchemes: {},
         },
-        ...(Object.keys(servers).length > 0 && { servers })
+        ...(Object.keys(servers).length > 0 && { servers }),
       };
-      
+
       return document;
     });
   }
-  
+
   /**
    * Update document info section
    */
   updateDocumentInfo(
-    document: AsyncAPIObject, 
-    updates: Partial<{ title: string; version: string; description: string }>
+    document: AsyncAPIObject,
+    updates: Partial<{ title: string; version: string; description: string }>,
   ): Effect.Effect<AsyncAPIObject, never, never> {
-    return Effect.gen(function*() {
+    return Effect.gen(function* () {
       yield* Effect.log("Updating document info");
-      
+
       const updatedDocument: AsyncAPIObject = {
         ...document,
         info: {
           ...document.info,
-          ...updates
-        }
+          ...updates,
+        },
       };
-      
+
       return updatedDocument;
     });
   }
-  
+
   /**
    * Initialize components section with empty structures
    */
   initializeComponents(document: AsyncAPIObject): Effect.Effect<AsyncAPIObject, never, never> {
-    return Effect.gen(function*() {
+    return Effect.gen(function* () {
       yield* Effect.log("Initializing components");
       return initializeComponentsInternal(document);
     });
   }
-  
+
   /**
    * Initialize full document structure
    */
-  initializeDocumentStructure(document: AsyncAPIObject): Effect.Effect<AsyncAPIObject, never, never> {
-    return Effect.gen(function*() {
+  initializeDocumentStructure(
+    document: AsyncAPIObject,
+  ): Effect.Effect<AsyncAPIObject, never, never> {
+    return Effect.gen(function* () {
       yield* Effect.log("Initializing document structure");
-      
+
       // Ensure all required sections exist
       const initializedDoc: AsyncAPIObject = {
         ...document,
         channels: document.channels ?? {},
         operations: document.operations ?? {},
       };
-      
+
       // Initialize components using pure function
       return initializeComponentsInternal(initializedDoc);
     });

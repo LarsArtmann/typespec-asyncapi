@@ -1,6 +1,6 @@
 /**
  * 🏗️ MINIMAL DOMAIN TYPES - TYPE SPECIFIC IMPLEMENTATION
- * 
+ *
  * TEMPORARY: Provides essential types while complex infrastructure is disabled
  * PRINCIPLE: NO 'any' types, NO 'as' casting - Proper types only
  */

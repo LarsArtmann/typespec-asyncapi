@@ -151,17 +151,14 @@ describe("E2E: Security Schemes Comprehensive", () => {
 
     const outputFiles = Array.from(host.fs.keys());
     const asyncApiFile = outputFiles.find(
-      (f) =>
-        f.includes("asyncapi") && (f.endsWith(".json") || f.endsWith(".yaml")),
+      (f) => f.includes("asyncapi") && (f.endsWith(".json") || f.endsWith(".yaml")),
     );
 
     expect(asyncApiFile).toBeDefined();
 
     if (asyncApiFile) {
       const content = host.fs.get(asyncApiFile) as string;
-      const spec = content.startsWith("{")
-        ? JSON.parse(content)
-        : require("yaml").parse(content);
+      const spec = content.startsWith("{") ? JSON.parse(content) : require("yaml").parse(content);
 
       // Validate security schemes
       const securitySchemes = spec.components?.securitySchemes || {};
@@ -185,18 +182,14 @@ describe("E2E: Security Schemes Comprehensive", () => {
 
       // Validate OAuth2 Client Credentials
       expect(securitySchemes.oauth2ClientCreds?.type).toBe("oauth2");
-      expect(
-        securitySchemes.oauth2ClientCreds?.flows?.clientCredentials,
-      ).toBeDefined();
-      expect(
-        securitySchemes.oauth2ClientCreds?.flows?.clientCredentials?.tokenUrl,
-      ).toContain("oauth");
+      expect(securitySchemes.oauth2ClientCreds?.flows?.clientCredentials).toBeDefined();
+      expect(securitySchemes.oauth2ClientCreds?.flows?.clientCredentials?.tokenUrl).toContain(
+        "oauth",
+      );
 
       // Validate OAuth2 Authorization Code
       expect(securitySchemes.oauth2AuthCode?.type).toBe("oauth2");
-      expect(
-        securitySchemes.oauth2AuthCode?.flows?.authorizationCode,
-      ).toBeDefined();
+      expect(securitySchemes.oauth2AuthCode?.flows?.authorizationCode).toBeDefined();
 
       // Validate Kafka SASL
       expect(securitySchemes.kafkaSASL256?.type).toBe("sasl");

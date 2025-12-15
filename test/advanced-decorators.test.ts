@@ -13,8 +13,7 @@ describe("Advanced AsyncAPI Decorators", () => {
       }
     `;
 
-    const { program, diagnostics } =
-      await compileTypeSpecWithDecorators(testCode);
+    const { program, diagnostics } = await compileTypeSpecWithDecorators(testCode);
 
     // Debug: Log all diagnostics
     if (diagnostics.length > 0) {
@@ -45,8 +44,7 @@ describe("Advanced AsyncAPI Decorators", () => {
       }
     `;
 
-    const { program, diagnostics } =
-      await compileTypeSpecWithDecorators(testCode);
+    const { program, diagnostics } = await compileTypeSpecWithDecorators(testCode);
 
     expect(program).toBeDefined();
     const errors = diagnostics.filter((d) => d.severity === "error");
@@ -81,8 +79,7 @@ describe("Advanced AsyncAPI Decorators", () => {
       }
     `;
 
-    const { program, diagnostics } =
-      await compileTypeSpecWithDecorators(testCode);
+    const { program, diagnostics } = await compileTypeSpecWithDecorators(testCode);
 
     expect(program).toBeDefined();
     const errors = diagnostics.filter((d) => d.severity === "error");
@@ -109,8 +106,7 @@ describe("Advanced AsyncAPI Decorators", () => {
       }
     `;
 
-    const { program, diagnostics } =
-      await compileTypeSpecWithDecorators(testCode);
+    const { program, diagnostics } = await compileTypeSpecWithDecorators(testCode);
 
     expect(program).toBeDefined();
     const errors = diagnostics.filter((d) => d.severity === "error");

@@ -7,6 +7,7 @@ AsyncAPI Studio (https://studio.asyncapi.com/) is the official web-based editor 
 ## AsyncAPI Studio Features
 
 ### Core Features
+
 - **Visual Editor**: Drag-and-drop interface for designing AsyncAPI specifications
 - **Code Editor**: Monaco-based editor with syntax highlighting and validation
 - **Real-time Validation**: Live validation against AsyncAPI schema
@@ -15,6 +16,7 @@ AsyncAPI Studio (https://studio.asyncapi.com/) is the official web-based editor 
 - **Import/Export**: Supports JSON and YAML formats
 
 ### Supported AsyncAPI Versions
+
 - ✅ **AsyncAPI 3.0.0** - Full support (latest)
 - ✅ **AsyncAPI 2.6.0** - Full support
 - ✅ **AsyncAPI 2.5.0** - Full support
@@ -25,6 +27,7 @@ AsyncAPI Studio (https://studio.asyncapi.com/) is the official web-based editor 
 ### 1. Specification Format Requirements
 
 #### Required Fields
+
 ```yaml
 # MUST be present for Studio compatibility
 asyncapi: "3.0.0"  # Version string is required
@@ -34,6 +37,7 @@ info:
 ```
 
 #### Recommended Fields for Better Studio Experience
+
 ```yaml
 info:
   description: "Detailed API description"  # Enhances documentation rendering
@@ -49,6 +53,7 @@ info:
 ### 2. Server Definitions
 
 #### Studio-Compatible Server Format
+
 ```yaml
 servers:
   production:
@@ -63,8 +68,9 @@ servers:
 ```
 
 #### Supported Protocols in Studio
+
 - ✅ **kafka** - Full visualization and validation
-- ✅ **websocket** - Full visualization support  
+- ✅ **websocket** - Full visualization support
 - ✅ **http** - Full visualization support
 - ✅ **mqtt** - Full visualization support
 - ✅ **amqp** - Full visualization support
@@ -73,6 +79,7 @@ servers:
 ### 3. Channel Definitions
 
 #### Studio-Optimized Channel Format
+
 ```yaml
 channels:
   "user.events":
@@ -96,6 +103,7 @@ channels:
 ### 4. Operation Definitions
 
 #### Studio-Compatible Operations
+
 ```yaml
 operations:
   publishUserCreated:
@@ -114,6 +122,7 @@ operations:
 ### 5. Schema Definitions
 
 #### JSON Schema Compatibility
+
 AsyncAPI Studio uses JSON Schema Draft 7 for schema validation and rendering:
 
 ```yaml
@@ -146,6 +155,7 @@ components:
 ### 6. Protocol Bindings Compatibility
 
 #### Kafka Bindings (AsyncAPI Kafka Binding v0.5.0)
+
 ```yaml
 # Server Binding
 servers:
@@ -156,7 +166,7 @@ servers:
         schemaRegistryVendor: "confluent"
         bindingVersion: "0.5.0"
 
-# Channel Binding  
+# Channel Binding
 channels:
   "events":
     bindings:
@@ -185,11 +195,12 @@ components:
             type: "string"
             description: "User ID for partitioning"
           schemaIdLocation: "header"
-          schemaLookupStrategy: "TopicIdStrategy" 
+          schemaLookupStrategy: "TopicIdStrategy"
           bindingVersion: "0.5.0"
 ```
 
 #### WebSocket Bindings (AsyncAPI WebSocket Binding v0.1.0)
+
 ```yaml
 channels:
   "notifications":
@@ -212,16 +223,19 @@ channels:
 ## Studio Validation Requirements
 
 ### 1. Schema Validation
+
 - All schemas must be valid JSON Schema Draft 7
 - `$ref` references must resolve correctly
 - Circular references should be avoided or handled properly
 
 ### 2. Required Metadata
+
 - `info.title` and `info.version` are mandatory
 - Channel names must be valid strings
 - Operation actions must be "send" or "receive"
 
 ### 3. Binding Version Compliance
+
 - All bindings should specify `bindingVersion`
 - Use officially supported binding versions:
   - Kafka: `"0.5.0"`
@@ -232,20 +246,21 @@ channels:
 ## Best Practices for Studio Integration
 
 ### 1. Documentation Enhancement
+
 ```yaml
 # Add rich descriptions everywhere
 info:
   description: |
     # User Events API
-    
+
     This API handles user lifecycle events including:
     - User registration and account creation
-    - Profile updates and modifications  
+    - Profile updates and modifications
     - Account deactivation and deletion
-    
+
     ## Authentication
     All operations require valid JWT authentication.
-    
+
     ## Rate Limits
     - 1000 requests per minute per API key
     - Burst allowance: 100 additional requests
@@ -254,13 +269,14 @@ channels:
   "user.events":
     description: |
       User lifecycle events channel.
-      
+
       **Partitioning Strategy**: Messages are partitioned by `userId`
       **Retention**: 7 days
       **Replication Factor**: 3
 ```
 
 ### 2. Comprehensive Examples
+
 ```yaml
 components:
   messages:
@@ -282,6 +298,7 @@ components:
 ```
 
 ### 3. Clear Operation Titles
+
 ```yaml
 operations:
   publishUserCreated:
@@ -290,7 +307,7 @@ operations:
     description: |
       This operation publishes a user creation event to the user.events
       channel whenever a new user account is successfully created.
-      
+
       **Triggers**: User registration form submission, OAuth signup
       **Downstream Consumers**: Email service, Analytics service, CRM
 ```
@@ -298,6 +315,7 @@ operations:
 ## Testing Studio Compatibility
 
 ### 1. Validation Checklist
+
 - [ ] Specification validates with AsyncAPI CLI
 - [ ] All `$ref` references resolve correctly
 - [ ] No circular references in schemas
@@ -305,17 +323,19 @@ operations:
 - [ ] Binding versions are specified and supported
 
 ### 2. Studio Import Testing
+
 1. **Direct Import**: Copy specification into Studio code editor
 2. **File Import**: Upload JSON/YAML file to Studio
 3. **URL Import**: Host specification and import via URL
 4. **Visual Editor**: Test drag-and-drop functionality
 
 ### 3. Validation Commands
+
 ```bash
 # Validate with AsyncAPI CLI
 bunx asyncapi validate asyncapi.yaml
 
-# Check Studio compatibility 
+# Check Studio compatibility
 just check-studio-compatibility
 
 # Generate and validate
@@ -325,18 +345,20 @@ just validate-generated
 ## Common Compatibility Issues
 
 ### 1. Unsupported AsyncAPI Features
+
 - **Correlation IDs**: Limited Studio support
-- **Message Traits**: Basic support only  
+- **Message Traits**: Basic support only
 - **Custom Extensions**: May not render properly
 
 ### 2. Binding Version Mismatches
+
 ```yaml
 # ❌ Problematic - no binding version
 bindings:
   kafka:
     topic: "events"
 
-# ✅ Studio-compatible - with binding version  
+# ✅ Studio-compatible - with binding version
 bindings:
   kafka:
     topic: "events"
@@ -344,6 +366,7 @@ bindings:
 ```
 
 ### 3. Complex Schema References
+
 ```yaml
 # ❌ May cause Studio issues - nested $ref chains
 components:
@@ -371,6 +394,7 @@ components:
 ## Integration Testing Workflow
 
 ### 1. Automated Testing
+
 ```bash
 # Full compatibility test pipeline
 just build
@@ -380,6 +404,7 @@ just check-studio-compatibility
 ```
 
 ### 2. Manual Studio Testing
+
 1. Open https://studio.asyncapi.com/
 2. Import generated specification
 3. Verify visual rendering
@@ -387,6 +412,7 @@ just check-studio-compatibility
 5. Check code generation features
 
 ### 3. Continuous Integration
+
 ```yaml
 # GitHub Actions example
 name: AsyncAPI Studio Compatibility

@@ -20,9 +20,7 @@ describe("Effect.TS Schema AsyncAPI Emitter Options", () => {
       "file-type": "yaml" as const,
     };
 
-    const result = await Effect.runPromise(
-      parseAsyncAPIEmitterOptions(validOptions),
-    );
+    const result = await Effect.runPromise(parseAsyncAPIEmitterOptions(validOptions));
     expect(result).toEqual(validOptions);
   });
 
@@ -63,9 +61,7 @@ describe("Effect.TS Schema AsyncAPI Emitter Options", () => {
       },
     };
 
-    const result = await Effect.runPromise(
-      parseAsyncAPIEmitterOptions(completeOptions),
-    );
+    const result = await Effect.runPromise(parseAsyncAPIEmitterOptions(completeOptions));
     expect(result).toEqual(completeOptions);
   });
 
@@ -81,9 +77,7 @@ describe("Effect.TS Schema AsyncAPI Emitter Options", () => {
       "file-type": "xml", // Invalid enum value
     };
 
-    const result = Effect.runPromise(
-      parseAsyncAPIEmitterOptions(invalidOptions),
-    );
+    const result = Effect.runPromise(parseAsyncAPIEmitterOptions(invalidOptions));
     await expect(result).rejects.toThrow();
   });
 
@@ -92,9 +86,7 @@ describe("Effect.TS Schema AsyncAPI Emitter Options", () => {
       "asyncapi-version": "2.0.0", // Not supported version
     };
 
-    const result = Effect.runPromise(
-      parseAsyncAPIEmitterOptions(invalidOptions),
-    );
+    const result = Effect.runPromise(parseAsyncAPIEmitterOptions(invalidOptions));
     await expect(result).rejects.toThrow();
   });
 
@@ -103,9 +95,7 @@ describe("Effect.TS Schema AsyncAPI Emitter Options", () => {
       "protocol-bindings": ["kafka", "invalid-protocol"],
     };
 
-    const result = Effect.runPromise(
-      parseAsyncAPIEmitterOptions(invalidOptions),
-    );
+    const result = Effect.runPromise(parseAsyncAPIEmitterOptions(invalidOptions));
     await expect(result).rejects.toThrow();
   });
 
@@ -116,9 +106,7 @@ describe("Effect.TS Schema AsyncAPI Emitter Options", () => {
       },
     };
 
-    const result = Effect.runPromise(
-      parseAsyncAPIEmitterOptions(invalidOptions),
-    );
+    const result = Effect.runPromise(parseAsyncAPIEmitterOptions(invalidOptions));
     await expect(result).rejects.toThrow();
   });
 
@@ -131,9 +119,7 @@ describe("Effect.TS Schema AsyncAPI Emitter Options", () => {
       },
     };
 
-    const result = Effect.runPromise(
-      parseAsyncAPIEmitterOptions(invalidOptions),
-    );
+    const result = Effect.runPromise(parseAsyncAPIEmitterOptions(invalidOptions));
     await expect(result).rejects.toThrow();
   });
 
@@ -173,9 +159,7 @@ describe("Effect.TS Schema AsyncAPI Emitter Options", () => {
       "file-type": "json" as const,
     };
 
-    const result = await Effect.runPromise(
-      createAsyncAPIEmitterOptions(customOptions),
-    );
+    const result = await Effect.runPromise(createAsyncAPIEmitterOptions(customOptions));
 
     expect(result).toMatchObject({
       "output-file": "custom-output",
@@ -216,10 +200,7 @@ describe("Effect.TS Schema AsyncAPI Emitter Options", () => {
   test("AsyncAPIEmitterOptionsSchema should be compatible with TypeSpec", () => {
     // Verify the schema has the expected JSONSchema structure
     expect(ASYNC_API_EMITTER_OPTIONS_SCHEMA).toHaveProperty("type", "object");
-    expect(ASYNC_API_EMITTER_OPTIONS_SCHEMA).toHaveProperty(
-      "additionalProperties",
-      false,
-    );
+    expect(ASYNC_API_EMITTER_OPTIONS_SCHEMA).toHaveProperty("additionalProperties", false);
 
     // Effect.TS JSONSchema uses $defs structure with $ref
     expect(ASYNC_API_EMITTER_OPTIONS_SCHEMA).toHaveProperty("$defs");
@@ -228,10 +209,7 @@ describe("Effect.TS Schema AsyncAPI Emitter Options", () => {
     // Verify key properties are present in $defs.AsyncAPIEmitterOptions
     const defs = ASYNC_API_EMITTER_OPTIONS_SCHEMA.$defs as Record<string, any>;
     expect(defs).toHaveProperty("AsyncAPIEmitterOptions");
-    const properties = defs.AsyncAPIEmitterOptions.properties as Record<
-      string,
-      unknown
-    >;
+    const properties = defs.AsyncAPIEmitterOptions.properties as Record<string, unknown>;
     expect(properties).toHaveProperty("output-file");
     expect(properties).toHaveProperty("file-type");
     expect(properties).toHaveProperty("asyncapi-version");
@@ -245,10 +223,7 @@ describe("Effect.TS Schema AsyncAPI Emitter Options", () => {
 
     // Ensure enum constraints are preserved in $defs structure
     const defs = ASYNC_API_EMITTER_OPTIONS_SCHEMA.$defs as Record<string, any>;
-    const properties = defs.AsyncAPIEmitterOptions.properties as Record<
-      string,
-      unknown
-    >;
+    const properties = defs.AsyncAPIEmitterOptions.properties as Record<string, unknown>;
     expect(properties["file-type"]).toHaveProperty("enum", ["yaml", "json"]);
     expect(properties["asyncapi-version"]).toHaveProperty("enum", ["3.0.0"]);
   });
@@ -280,9 +255,7 @@ describe("Effect.TS Schema AsyncAPI Emitter Options", () => {
       },
     };
 
-    const result = await Effect.runPromise(
-      parseAsyncAPIEmitterOptions(serverOptions),
-    );
+    const result = await Effect.runPromise(parseAsyncAPIEmitterOptions(serverOptions));
     expect(result).toEqual(serverOptions);
   });
 
@@ -314,9 +287,7 @@ describe("Effect.TS Schema AsyncAPI Emitter Options", () => {
       },
     };
 
-    const result = await Effect.runPromise(
-      parseAsyncAPIEmitterOptions(securityOptions),
-    );
+    const result = await Effect.runPromise(parseAsyncAPIEmitterOptions(securityOptions));
     expect(result).toEqual(securityOptions);
   });
 
@@ -331,9 +302,7 @@ describe("Effect.TS Schema AsyncAPI Emitter Options", () => {
     };
 
     try {
-      await Effect.runPromise(
-        parseAsyncAPIEmitterOptions(invalidNestedOptions),
-      );
+      await Effect.runPromise(parseAsyncAPIEmitterOptions(invalidNestedOptions));
       expect.unreachable("Should have thrown validation error");
     } catch (error) {
       // Error should contain information about the nested validation failures
@@ -350,9 +319,7 @@ describe("Path Template Validation Tests", () => {
       "output-file": "{project-root}/generated/{cmd}-asyncapi.yaml",
     };
 
-    const result = await Effect.runPromise(
-      parseAsyncAPIEmitterOptions(pathTemplateOptions),
-    );
+    const result = await Effect.runPromise(parseAsyncAPIEmitterOptions(pathTemplateOptions));
     expect(result).toEqual(pathTemplateOptions);
   });
 
@@ -361,9 +328,7 @@ describe("Path Template Validation Tests", () => {
       "output-file": "{emitter-name}/{cmd}/{project-root}/spec.json",
     };
 
-    const result = await Effect.runPromise(
-      parseAsyncAPIEmitterOptions(complexPathOptions),
-    );
+    const result = await Effect.runPromise(parseAsyncAPIEmitterOptions(complexPathOptions));
     expect(result).toEqual(complexPathOptions);
   });
 
@@ -372,9 +337,7 @@ describe("Path Template Validation Tests", () => {
       "output-file": "simple-output-file.yaml",
     };
 
-    const result = await Effect.runPromise(
-      parseAsyncAPIEmitterOptions(simplePathOptions),
-    );
+    const result = await Effect.runPromise(parseAsyncAPIEmitterOptions(simplePathOptions));
     expect(result).toEqual(simplePathOptions);
   });
 
@@ -383,9 +346,7 @@ describe("Path Template Validation Tests", () => {
       "output-file": "{project-root}/{unknown-variable}/output.yaml",
     };
 
-    const result = Effect.runPromise(
-      parseAsyncAPIEmitterOptions(invalidPathOptions),
-    );
+    const result = Effect.runPromise(parseAsyncAPIEmitterOptions(invalidPathOptions));
     await expect(result).rejects.toThrow();
   });
 
@@ -394,9 +355,7 @@ describe("Path Template Validation Tests", () => {
       "output-file": "{invalid1}/{invalid2}/{cmd}/output.yaml",
     };
 
-    const result = Effect.runPromise(
-      parseAsyncAPIEmitterOptions(invalidPathOptions),
-    );
+    const result = Effect.runPromise(parseAsyncAPIEmitterOptions(invalidPathOptions));
     await expect(result).rejects.toThrow();
   });
 
@@ -417,13 +376,10 @@ describe("Path Template Validation Tests", () => {
 
   test("should validate all supported template variables", async () => {
     const allVariablesOptions = {
-      "output-file":
-        "{cmd}/{project-root}/{emitter-name}/{output-dir}/complete.yaml",
+      "output-file": "{cmd}/{project-root}/{emitter-name}/{output-dir}/complete.yaml",
     };
 
-    const result = await Effect.runPromise(
-      parseAsyncAPIEmitterOptions(allVariablesOptions),
-    );
+    const result = await Effect.runPromise(parseAsyncAPIEmitterOptions(allVariablesOptions));
     expect(result).toEqual(allVariablesOptions);
   });
 
@@ -433,9 +389,7 @@ describe("Path Template Validation Tests", () => {
       "file-type": "json" as const,
     };
 
-    const result = await Effect.runPromise(
-      createAsyncAPIEmitterOptions(pathTemplateOptions),
-    );
+    const result = await Effect.runPromise(createAsyncAPIEmitterOptions(pathTemplateOptions));
 
     expect(result).toMatchObject({
       "output-file": "{project-root}/specs/{cmd}-api.yaml",
@@ -451,21 +405,16 @@ describe("Path Template Validation Tests", () => {
     };
 
     // Paths without template variables should pass validation
-    const result = await Effect.runPromise(
-      parseAsyncAPIEmitterOptions(malformedPathOptions),
-    );
+    const result = await Effect.runPromise(parseAsyncAPIEmitterOptions(malformedPathOptions));
     expect(result).toEqual(malformedPathOptions);
   });
 
   test("should validate complex nested paths with templates", async () => {
     const nestedPathOptions = {
-      "output-file":
-        "{project-root}/api-specs/{emitter-name}/v1/{cmd}-generated.yaml",
+      "output-file": "{project-root}/api-specs/{emitter-name}/v1/{cmd}-generated.yaml",
     };
 
-    const result = await Effect.runPromise(
-      parseAsyncAPIEmitterOptions(nestedPathOptions),
-    );
+    const result = await Effect.runPromise(parseAsyncAPIEmitterOptions(nestedPathOptions));
     expect(result).toEqual(nestedPathOptions);
   });
 
@@ -514,9 +463,7 @@ describe("Performance and Memory Tests", () => {
     };
 
     const start = performance.now();
-    const result = await Effect.runPromise(
-      parseAsyncAPIEmitterOptions(largeOptions),
-    );
+    const result = await Effect.runPromise(parseAsyncAPIEmitterOptions(largeOptions));
     const duration = performance.now() - start;
 
     expect(result).toEqual(largeOptions);
@@ -532,9 +479,7 @@ describe("Performance and Memory Tests", () => {
       },
     };
 
-    const result = await Effect.runPromise(
-      parseAsyncAPIEmitterOptions(deepOptions),
-    );
+    const result = await Effect.runPromise(parseAsyncAPIEmitterOptions(deepOptions));
     expect(result).toEqual(deepOptions);
   });
 });

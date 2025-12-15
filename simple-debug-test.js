@@ -21,22 +21,13 @@ namespace TestService {
     });
 
     console.log("🔍 SIMPLE DEBUG: SUCCESS!");
-    console.log(
-      "🔍 SIMPLE DEBUG: Output files:",
-      Object.keys(result.outputs || {}),
-    );
+    console.log("🔍 SIMPLE DEBUG: Output files:", Object.keys(result.outputs || {}));
     console.log("🔍 SIMPLE DEBUG: Output file:", result.outputFile);
-    console.log(
-      "🔍 SIMPLE DEBUG: Document has keys:",
-      Object.keys(result.asyncApiDoc || {}),
-    );
+    console.log("🔍 SIMPLE DEBUG: Document has keys:", Object.keys(result.asyncApiDoc || {}));
 
     // Check actual content
     if (result.asyncApiDoc) {
-      console.log(
-        "🔍 SIMPLE DEBUG: Document title:",
-        result.asyncApiDoc.info?.title || "NO TITLE",
-      );
+      console.log("🔍 SIMPLE DEBUG: Document title:", result.asyncApiDoc.info?.title || "NO TITLE");
       console.log(
         "🔍 SIMPLE DEBUG: Document version:",
         result.asyncApiDoc.asyncapi || "NO VERSION",

@@ -1,8 +1,18 @@
 {
   "name": "typespec-asyncapi-comprehensive-example",
   "version": "1.0.0",
-  "description": "Comprehensive example showing all 5 supported protocols in TypeSpec AsyncAPI",
   "private": true,
+  "description": "Comprehensive example showing all 5 supported protocols in TypeSpec AsyncAPI",
+  "keywords": [
+    "amqp",
+    "asyncapi",
+    "example",
+    "http",
+    "kafka",
+    "mqtt",
+    "typespec",
+    "websocket"
+  ],
   "scripts": {
     "build": "tsp compile . --emit @lars-artmann/typespec-asyncapi",
     "validate": "asyncapi validate tsp-output/@lars-artmann/typespec-asyncapi/asyncapi.json",
@@ -24,15 +34,5 @@
     "@asyncapi/cli": "^3.4.2",
     "@lars-artmann/typespec-asyncapi": "file:../..",
     "@typespec/compiler": "^1.3.0"
-  },
-  "keywords": [
-    "typespec",
-    "asyncapi",
-    "kafka",
-    "websocket", 
-    "mqtt",
-    "amqp",
-    "http",
-    "example"
-  ]
+  }
 }

@@ -107,9 +107,7 @@ describe("CLI Tests: Simple AsyncAPI Emitter", () => {
     // Assert: Info section
     expect(testResult.asyncapiDoc?.info.title).toBeDefined();
 
-    console.log(
-      `✅ Generated AsyncAPI with title: ${testResult.asyncapiDoc?.info.title}`,
-    );
+    console.log(`✅ Generated AsyncAPI with title: ${testResult.asyncapiDoc?.info.title}`);
   });
 
   test("should generate YAML output", async () => {

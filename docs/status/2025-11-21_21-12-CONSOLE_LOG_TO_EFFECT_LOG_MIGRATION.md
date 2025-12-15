@@ -11,6 +11,7 @@
 Successfully migrated entire codebase from `console.log` to Effect.TS structured logging. Initial migration introduced 3 critical bugs, all identified and fixed within the session. Project now uses Effect.log patterns consistently across all source files.
 
 **Net Result:**
+
 - ✅ 0 console.log statements in src/ (100% migration)
 - ✅ All TypeScript compilation errors fixed
 - ✅ Tests improved: +1 passing, -1 failing
@@ -23,6 +24,7 @@ Successfully migrated entire codebase from `console.log` to Effect.TS structured
 ### Files Modified (7 files, 2 commits)
 
 #### Commit 1: f08b267 "Replace all console.log with Effect.log for proper logging"
+
 1. **src/utils/effect-helpers.ts**
    - Converted all `railwayLogging` functions to return Effects
    - Changed: `debug`, `info`, `warn`, `error`, `logSuccess`, `logFailure`
@@ -50,6 +52,7 @@ Successfully migrated entire codebase from `console.log` to Effect.TS structured
    - test/domain-schema-integration.test.ts
 
 #### Commit 2: 0d33c99 "Fix critical bugs from Effect.log migration"
+
 1. **src/utils/effect-helpers.ts**
    - Added: Missing `logPerformanceTest` method
    - Impact: Fixed broken scripts/run-performance-tests.ts
@@ -73,11 +76,12 @@ Successfully migrated entire codebase from `console.log` to Effect.TS structured
 
 ## 🔍 Technical Implementation Details
 
-### Why Effect.runSync vs yield*?
+### Why Effect.runSync vs yield\*?
 
 **Context:** TypeSpec decorator functions must be synchronous (cannot be async or return Effects)
 
 **Solution:** Use `Effect.runSync` for immediate execution
+
 ```typescript
 // Decorator context - MUST be synchronous
 export function $channel(context: DecoratorContext, target: Operation, path: string): void {
@@ -87,6 +91,7 @@ export function $channel(context: DecoratorContext, target: Operation, path: str
 ```
 
 **Effect.runPromise:** Used in async contexts (emitter functions)
+
 ```typescript
 // Async emitter context - can use Promise
 export async function $onEmit(context: EmitContext): Promise<void> {
@@ -95,7 +100,8 @@ export async function $onEmit(context: EmitContext): Promise<void> {
 }
 ```
 
-**yield*:** Only works inside `Effect.gen` generator functions
+**yield\*:** Only works inside `Effect.gen` generator functions
+
 ```typescript
 // Effect composition context - future refactor target
 const program = Effect.gen(function*() {
@@ -107,11 +113,13 @@ const program = Effect.gen(function*() {
 ### Logging Patterns Applied
 
 1. **Simple logging:**
+
    ```typescript
    Effect.log("message")
    ```
 
 2. **Structured logging with metadata:**
+
    ```typescript
    Effect.log("Processing channel").pipe(
      Effect.annotateLogs({
@@ -134,11 +142,13 @@ const program = Effect.gen(function*() {
 ## 🐛 Critical Bugs Found & Fixed
 
 ### Bug #1: Missing logPerformanceTest Method
+
 **Severity:** 🔴 CRITICAL - Breaks performance test script
 **Location:** src/utils/effect-helpers.ts
 **Root Cause:** Method called by scripts/run-performance-tests.ts:48 didn't exist
 
 **Fix:**
+
 ```typescript
 logPerformanceTest: (mode: string) => {
   return Effect.log("Performance test execution").pipe(
@@ -151,23 +161,27 @@ logPerformanceTest: (mode: string) => {
 ```
 
 ### Bug #2: Cyclic JSON.stringify Errors
+
 **Severity:** 🔴 CRITICAL - Crashes decorator execution
 **Location:** src/minimal-decorators.ts (7 decorators)
 **Root Cause:** TypeSpec config objects contain circular references
 
 **Error:**
+
 ```
 TypeError: JSON.stringify cannot serialize cyclic structures.
   at $server (/Users/larsartmann/projects/typespec-asyncapi/dist/src/minimal-decorators.js:41:84)
 ```
 
 **Fix:** Replace detailed serialization with simple presence check
+
 ```typescript
 // Before: JSON.stringify(config) ❌ Crashes on cycles
 // After:  { hasConfig: !!config } ✅ Safe boolean check
 ```
 
 **Affected decorators:**
+
 - $server (line 64)
 - $message (line 121)
 - $protocol (line 155)
@@ -177,20 +191,26 @@ TypeError: JSON.stringify cannot serialize cyclic structures.
 - $header (line 307)
 
 ### Bug #3: TypeScript Compilation Errors
+
 **Severity:** 🔴 CRITICAL - Blocks build
 **Location:** src/domain/validation/asyncapi-validator.ts
 
 **Error 1:** Invalid import
+
 ```
 error TS2614: Module '"@asyncapi/parser"' has no exported member 'fromString'
 ```
+
 **Fix:** Commented out unused imports
 
 **Error 2:** Unknown type access (line 210)
+
 ```
 error TS18046: 'operation' is of type 'unknown'
 ```
+
 **Fix:** Added proper type guard
+
 ```typescript
 // Before
 for (const [opName, operation] of Object.entries(document.operations)) {
@@ -210,6 +230,7 @@ for (const [opName, operation] of Object.entries(document.operations)) {
 ## 📈 Test Results
 
 ### Before Migration
+
 ```
 196 pass
 29 skip
@@ -219,6 +240,7 @@ for (const [opName, operation] of Object.entries(document.operations)) {
 ```
 
 ### After Migration + Bug Fixes
+
 ```
 197 pass  (+1)
 29 skip   (±0)
@@ -228,6 +250,7 @@ for (const [opName, operation] of Object.entries(document.operations)) {
 ```
 
 ### Analysis
+
 - ✅ **Net improvement:** +1 passing test, -1 failing test
 - ⚠️ **+1 error:** Unrelated to logging changes (pre-existing module import issues)
 - ✅ **No cyclic JSON errors** in test output
@@ -235,6 +258,7 @@ for (const [opName, operation] of Object.entries(document.operations)) {
 - ℹ️ **337 failing tests:** Pre-existing from INFRASTRUCTURE RECOVERY phase (per CLAUDE.md)
 
 ### Test Categories Still Failing (Pre-existing)
+
 - Missing module imports (17 errors):
   - `src/constants/protocol-defaults.js`
   - `src/domain/validation/ValidationService.js`
@@ -258,7 +282,9 @@ for (const [opName, operation] of Object.entries(document.operations)) {
 ## 🚨 Known Limitations & Technical Debt
 
 ### 1. Effect.runSync/runPromise Pattern
+
 **Issue:** Current approach breaks Effect composition
+
 ```typescript
 // Current - can't be composed
 Effect.runSync(Effect.log("message"))
@@ -274,7 +300,9 @@ Effect.gen(function*() {
 **Solution:** Future refactor to Effect Logger service + Layer pattern
 
 ### 2. railwayLogging Object Marked for Deletion
+
 **Issue:** Code comments throughout effect-helpers.ts say:
+
 ```typescript
 // TODO: REMOVE custom logging function in favor of standard patterns
 // TODO: DELETE this function and use Effect.TS built-in logging
@@ -285,7 +313,9 @@ Effect.gen(function*() {
 **Solution:** Migrate to pure Effect Logger service (see recommendations)
 
 ### 3. EffectResult<T> Anti-Pattern Still Exists
+
 **Issue:** Type marked as "ARCHITECTURAL VIOLATION" in code
+
 ```typescript
 /**
  * 🚨 TYPE SAFETY VIOLATION: This type creates representable invalid states!
@@ -302,6 +332,7 @@ export type EffectResult<T> = {
 **Solution:** Remove type, use `Effect<T, Error>` directly
 
 ### 4. Test Infrastructure Not Updated
+
 **Issue:** Tests don't verify logging behavior
 
 **Impact:** No assertions on logging output, can't test log levels
@@ -315,15 +346,18 @@ export type EffectResult<T> = {
 ### TIER 1: Critical Architecture Improvements
 
 #### 1. Migrate to Effect Logger Service (HIGHEST PRIORITY)
+
 **Effort:** 🔨🔨🔨🔨 (4/5) - Major refactor
 **Impact:** ⭐⭐⭐⭐⭐ (5/5) - Fundamental improvement
 
 **Current problems:**
+
 - Effect.runSync/runPromise everywhere breaks composition
 - Can't use logging in Effect pipelines
 - Not following Effect.TS best practices
 
 **Recommended approach:**
+
 ```typescript
 import { Effect, Logger, Layer, LogLevel } from "effect"
 
@@ -347,6 +381,7 @@ Effect.runPromise(program)
 ```
 
 **Benefits:**
+
 - ✅ Proper Effect composition with `yield*`
 - ✅ Testable/mockable via Layer injection
 - ✅ Configurable log levels
@@ -354,9 +389,10 @@ Effect.runPromise(program)
 - ✅ Follows Effect.TS philosophy
 
 **Implementation steps:**
+
 1. Research Effect Logger + Layer patterns (1-2 hours)
 2. Create LoggerLive Layer configuration (30 mins)
-3. Refactor emitter to use Effect.gen + yield* (2-3 hours)
+3. Refactor emitter to use Effect.gen + yield\* (2-3 hours)
 4. Refactor decorators (tricky - still need runSync for TypeSpec) (2-3 hours)
 5. Update tests with Logger test layer (1-2 hours)
 6. Remove railwayLogging object (30 mins)
@@ -364,10 +400,12 @@ Effect.runPromise(program)
 **Total estimated time:** 8-12 hours
 
 #### 2. Remove EffectResult<T> Anti-Pattern
+
 **Effort:** 🔨🔨 (2/5) - Straightforward refactor
 **Impact:** ⭐⭐⭐⭐ (4/5) - Type safety improvement
 
 **Steps:**
+
 1. Find all usages of EffectResult<T> (5 mins)
 2. Replace with proper Effect<T, Error> (1-2 hours)
 3. Remove executeEffect() wrapper (30 mins)
@@ -379,10 +417,12 @@ Effect.runPromise(program)
 ### TIER 2: Code Quality & Maintainability
 
 #### 3. Fix ESLint Errors (BLOCKS CLEAN COMMITS)
+
 **Effort:** 🔨🔨🔨 (3/5) - Many small fixes
 **Impact:** ⭐⭐⭐⭐ (4/5) - Workflow improvement
 
 **Breakdown:**
+
 - 15x `no-explicit-any` → Replace with proper types
 - 6x `no-restricted-syntax` → Replace try/catch with Effect.catchAll
 - 8x `consistent-type-definitions` → interface → type
@@ -394,10 +434,12 @@ Effect.runPromise(program)
 **Estimated time:** 4-6 hours
 
 #### 4. Fix Missing Module Imports (17 TEST ERRORS)
+
 **Effort:** 🔨🔨 (2/5) - Investigation + fixes
 **Impact:** ⭐⭐⭐ (3/5) - Test coverage
 
 **Missing modules:**
+
 - src/constants/protocol-defaults.js
 - src/domain/validation/ValidationService.js
 - src/domain/emitter/DocumentBuilder.js
@@ -405,6 +447,7 @@ Effect.runPromise(program)
 - src/domain/emitter/ProcessingService.js
 
 **Steps:**
+
 1. Check if removed during INFRASTRUCTURE RECOVERY (30 mins)
 2. Either restore modules or remove/update tests (2-3 hours)
 3. Verify test coverage maintained (30 mins)
@@ -414,6 +457,7 @@ Effect.runPromise(program)
 ### TIER 3: Enhancements
 
 #### 5. Structured Logging Enhancement
+
 - Add log level configuration (debug, info, warn, error)
 - Implement correlation IDs for request tracking
 - Add performance timing to logs
@@ -422,6 +466,7 @@ Effect.runPromise(program)
 **Estimated time:** 2-3 hours
 
 #### 6. Documentation
+
 - Document Effect.TS logging architecture
 - Add logging examples to docs/
 - Update CLAUDE.md with patterns used
@@ -434,17 +479,20 @@ Effect.runPromise(program)
 ## 🎯 Recommended Immediate Next Actions
 
 ### Option A: Quick Wins (2-4 hours)
+
 1. Fix critical ESLint errors (no-explicit-any)
 2. Add proper type guards for unsafe operations
 3. Fix interface → type conversions
 
 ### Option B: Architecture First (8-12 hours)
+
 1. Research Effect Logger service patterns
 2. Implement Logger Layer configuration
 3. Refactor emitter to use Effect.gen
 4. Update tests with Logger mocks
 
 ### Option C: Balanced Approach (6-8 hours)
+
 1. Remove EffectResult<T> anti-pattern (3-4 hours)
 2. Fix missing module imports (3-4 hours)
 3. Document current logging patterns (1 hour)
@@ -454,16 +502,19 @@ Effect.runPromise(program)
 ## 📌 Questions for Product Owner
 
 ### 1. Logger Service Migration Priority
+
 **Question:** Should we refactor to Effect Logger service now, or continue with current runSync/runPromise pattern?
 
 **Context:** Code comments say current railwayLogging should be deleted, but migration requires significant refactor
 
 **Options:**
+
 - A) Migrate now (8-12 hours, proper architecture)
 - B) Keep current pattern (0 hours, but technical debt)
 - C) Incremental migration (4-6 hours, hybrid approach)
 
 ### 2. ESLint Error Tolerance
+
 **Question:** Should we fix all ESLint errors before new features, or continue with --no-verify for urgent commits?
 
 **Context:** 50+ ESLint errors currently blocking clean commits
@@ -471,6 +522,7 @@ Effect.runPromise(program)
 **Impact on velocity:** Fixing all errors = 4-6 hours investment
 
 ### 3. Test Infrastructure Priority
+
 **Question:** Should we fix 337 failing tests before adding features, or focus on new AsyncAPI functionality?
 
 **Context:** Tests mostly failing from INFRASTRUCTURE RECOVERY phase, not related to logging
@@ -482,6 +534,7 @@ Effect.runPromise(program)
 ## 💾 Commit History
 
 ### Commit 1: f08b267
+
 ```
 Replace all console.log with Effect.log for proper logging
 
@@ -505,6 +558,7 @@ Technical notes:
 ```
 
 ### Commit 2: 0d33c99
+
 ```
 Fix critical bugs from Effect.log migration
 

@@ -29,11 +29,7 @@ describe("ProcessingService", () => {
       const operations = [testOp1, testOp2];
 
       const result = await Effect.runPromise(
-        ProcessingService.processOperations(
-          operations,
-          baseAsyncApiDoc,
-          mockProgram,
-        ),
+        ProcessingService.processOperations(operations, baseAsyncApiDoc, mockProgram),
       );
 
       expect(result).toBe(2); // Should return count of processed operations
@@ -46,18 +42,12 @@ describe("ProcessingService", () => {
       // Verify operations were created
       expect(baseAsyncApiDoc.operations).toBeDefined();
       expect(baseAsyncApiDoc.operations["publishUserEvent"]).toBeDefined();
-      expect(
-        baseAsyncApiDoc.operations["subscribeNotifications"],
-      ).toBeDefined();
+      expect(baseAsyncApiDoc.operations["subscribeNotifications"]).toBeDefined();
 
       // Verify messages were created
       expect(baseAsyncApiDoc.components?.messages).toBeDefined();
-      expect(
-        baseAsyncApiDoc.components?.messages?.["publishUserEventMessage"],
-      ).toBeDefined();
-      expect(
-        baseAsyncApiDoc.components?.messages?.["subscribeNotificationsMessage"],
-      ).toBeDefined();
+      expect(baseAsyncApiDoc.components?.messages?.["publishUserEventMessage"]).toBeDefined();
+      expect(baseAsyncApiDoc.components?.messages?.["subscribeNotificationsMessage"]).toBeDefined();
     });
 
     it("should handle empty operations array", async () => {
@@ -75,11 +65,7 @@ describe("ProcessingService", () => {
       setupMockProgramWithChannelPath(mockProgram, testOp, "/test/channel");
 
       await Effect.runPromise(
-        ProcessingService.processOperations(
-          [testOp],
-          baseAsyncApiDoc,
-          mockProgram,
-        ),
+        ProcessingService.processOperations([testOp], baseAsyncApiDoc, mockProgram),
       );
 
       const channel = baseAsyncApiDoc.channels["/testoperation"];
@@ -101,11 +87,7 @@ describe("ProcessingService", () => {
       setupMockProgramWithOperationType(mockProgram, subscribeOp, "subscribe");
 
       await Effect.runPromise(
-        ProcessingService.processOperations(
-          [publishOp, subscribeOp],
-          baseAsyncApiDoc,
-          mockProgram,
-        ),
+        ProcessingService.processOperations([publishOp, subscribeOp], baseAsyncApiDoc, mockProgram),
       );
 
       const publishOperation = baseAsyncApiDoc.operations["publishEvent"];
@@ -131,11 +113,7 @@ describe("ProcessingService", () => {
       };
 
       await Effect.runPromise(
-        ProcessingService.processOperations(
-          [testOp],
-          baseAsyncApiDoc,
-          mockProgram,
-        ),
+        ProcessingService.processOperations([testOp], baseAsyncApiDoc, mockProgram),
       );
 
       const message = baseAsyncApiDoc.components?.messages?.["testOpMessage"];
@@ -165,16 +143,8 @@ describe("ProcessingService", () => {
         summary: "System alerts and notifications",
       };
 
-      setupMockProgramWithMessageConfig(
-        mockProgram,
-        messageModel1,
-        messageConfig1,
-      );
-      setupMockProgramWithMessageConfig(
-        mockProgram,
-        messageModel2,
-        messageConfig2,
-      );
+      setupMockProgramWithMessageConfig(mockProgram, messageModel1, messageConfig1);
+      setupMockProgramWithMessageConfig(mockProgram, messageModel2, messageConfig2);
 
       const result = await Effect.runPromise(
         ProcessingService.processMessageModels(
@@ -187,8 +157,7 @@ describe("ProcessingService", () => {
       expect(result).toBe(2);
 
       // Verify messages were created
-      const userEventMessage =
-        baseAsyncApiDoc.components?.messages?.["UserEvent"];
+      const userEventMessage = baseAsyncApiDoc.components?.messages?.["UserEvent"];
       expect(userEventMessage).toBeDefined();
       expect(userEventMessage.name).toBe("UserEvent");
       expect(userEventMessage.title).toBe("User Event Message");
@@ -198,57 +167,38 @@ describe("ProcessingService", () => {
         $ref: "#/components/schemas/UserEvent",
       });
 
-      const systemAlertMessage =
-        baseAsyncApiDoc.components?.messages?.["SystemAlert"];
+      const systemAlertMessage = baseAsyncApiDoc.components?.messages?.["SystemAlert"];
       expect(systemAlertMessage).toBeDefined();
       expect(systemAlertMessage.name).toBe("SystemAlert");
       expect(systemAlertMessage.title).toBe("System Alert");
-      expect(systemAlertMessage.summary).toBe(
-        "System alerts and notifications",
-      );
+      expect(systemAlertMessage.summary).toBe("System alerts and notifications");
     });
 
     it("should handle models without message configs", async () => {
       const modelWithoutConfig = createMockModel("PlainModel");
 
       const result = await Effect.runPromise(
-        ProcessingService.processMessageModels(
-          [modelWithoutConfig],
-          baseAsyncApiDoc,
-          mockProgram,
-        ),
+        ProcessingService.processMessageModels([modelWithoutConfig], baseAsyncApiDoc, mockProgram),
       );
 
       expect(result).toBe(1); // Still counts as processed
       // Should not add message to components (no config found)
-      expect(
-        Object.keys(baseAsyncApiDoc.components?.messages || {}),
-      ).toHaveLength(0);
+      expect(Object.keys(baseAsyncApiDoc.components?.messages || {})).toHaveLength(0);
     });
 
     it("should handle empty message models array", async () => {
       const result = await Effect.runPromise(
-        ProcessingService.processMessageModels(
-          [],
-          baseAsyncApiDoc,
-          mockProgram,
-        ),
+        ProcessingService.processMessageModels([], baseAsyncApiDoc, mockProgram),
       );
 
       expect(result).toBe(0);
-      expect(
-        Object.keys(baseAsyncApiDoc.components?.messages || {}),
-      ).toHaveLength(0);
+      expect(Object.keys(baseAsyncApiDoc.components?.messages || {})).toHaveLength(0);
     });
 
     it("should create components.messages if not exists", async () => {
       const messageModel = createMockModel("TestMessage");
       const messageConfig = { name: "TestMessage", title: "Test" };
-      setupMockProgramWithMessageConfig(
-        mockProgram,
-        messageModel,
-        messageConfig,
-      );
+      setupMockProgramWithMessageConfig(mockProgram, messageModel, messageConfig);
 
       // Start with document without components.messages
       const docWithoutMessages = {
@@ -257,17 +207,11 @@ describe("ProcessingService", () => {
       };
 
       await Effect.runPromise(
-        ProcessingService.processMessageModels(
-          [messageModel],
-          docWithoutMessages,
-          mockProgram,
-        ),
+        ProcessingService.processMessageModels([messageModel], docWithoutMessages, mockProgram),
       );
 
       expect(docWithoutMessages.components.messages).toBeDefined();
-      expect(
-        docWithoutMessages.components.messages["TestMessage"],
-      ).toBeDefined();
+      expect(docWithoutMessages.components.messages["TestMessage"]).toBeDefined();
     });
   });
 
@@ -298,23 +242,18 @@ describe("ProcessingService", () => {
       ];
 
       const result = await Effect.runPromise(
-        ProcessingService.processSecurityConfigs(
-          securityConfigs,
-          baseAsyncApiDoc,
-        ),
+        ProcessingService.processSecurityConfigs(securityConfigs, baseAsyncApiDoc),
       );
 
       expect(result).toBe(2);
 
       // Verify security schemes were created
-      const apiKeyScheme =
-        baseAsyncApiDoc.components?.securitySchemes?.["apiKeyAuth"];
+      const apiKeyScheme = baseAsyncApiDoc.components?.securitySchemes?.["apiKeyAuth"];
       expect(apiKeyScheme).toBeDefined();
       expect(apiKeyScheme.type).toBe("apiKey");
       expect(apiKeyScheme.description).toBe("API Key authentication");
 
-      const oauth2Scheme =
-        baseAsyncApiDoc.components?.securitySchemes?.["oauth2Auth"];
+      const oauth2Scheme = baseAsyncApiDoc.components?.securitySchemes?.["oauth2Auth"];
       expect(oauth2Scheme).toBeDefined();
       expect(oauth2Scheme.type).toBe("oauth2");
       expect(oauth2Scheme.flows).toBeDefined();
@@ -332,14 +271,10 @@ describe("ProcessingService", () => {
       };
 
       await Effect.runPromise(
-        ProcessingService.processSecurityConfigs(
-          [httpSecurityConfig],
-          baseAsyncApiDoc,
-        ),
+        ProcessingService.processSecurityConfigs([httpSecurityConfig], baseAsyncApiDoc),
       );
 
-      const bearerScheme =
-        baseAsyncApiDoc.components?.securitySchemes?.["bearerAuth"];
+      const bearerScheme = baseAsyncApiDoc.components?.securitySchemes?.["bearerAuth"];
       expect(bearerScheme).toBeDefined();
       expect(bearerScheme.type).toBe("http");
       expect(bearerScheme.scheme).toBe("bearer");
@@ -356,15 +291,11 @@ describe("ProcessingService", () => {
       };
 
       await Effect.runPromise(
-        ProcessingService.processSecurityConfigs(
-          [unknownSecurityConfig],
-          baseAsyncApiDoc,
-        ),
+        ProcessingService.processSecurityConfigs([unknownSecurityConfig], baseAsyncApiDoc),
       );
 
       // Should fallback to apiKey
-      const scheme =
-        baseAsyncApiDoc.components?.securitySchemes?.["unknownAuth"];
+      const scheme = baseAsyncApiDoc.components?.securitySchemes?.["unknownAuth"];
       expect(scheme).toBeDefined();
       expect(scheme.type).toBe("apiKey");
       expect(scheme.in).toBe("user");
@@ -383,16 +314,11 @@ describe("ProcessingService", () => {
       };
 
       await Effect.runPromise(
-        ProcessingService.processSecurityConfigs(
-          [securityConfig],
-          docWithoutSecurity,
-        ),
+        ProcessingService.processSecurityConfigs([securityConfig], docWithoutSecurity),
       );
 
       expect(docWithoutSecurity.components.securitySchemes).toBeDefined();
-      expect(
-        docWithoutSecurity.components.securitySchemes["testAuth"],
-      ).toBeDefined();
+      expect(docWithoutSecurity.components.securitySchemes["testAuth"]).toBeDefined();
     });
 
     it("should handle empty security configs array", async () => {
@@ -401,9 +327,7 @@ describe("ProcessingService", () => {
       );
 
       expect(result).toBe(0);
-      expect(
-        Object.keys(baseAsyncApiDoc.components?.securitySchemes || {}),
-      ).toHaveLength(0);
+      expect(Object.keys(baseAsyncApiDoc.components?.securitySchemes || {})).toHaveLength(0);
     });
   });
 
@@ -439,23 +363,13 @@ describe("ProcessingService", () => {
 
       // Verify all elements were processed
       expect(baseAsyncApiDoc.operations["testOp"]).toBeDefined();
-      expect(
-        baseAsyncApiDoc.components?.messages?.["TestMessage"],
-      ).toBeDefined();
-      expect(
-        baseAsyncApiDoc.components?.securitySchemes?.["testAuth"],
-      ).toBeDefined();
+      expect(baseAsyncApiDoc.components?.messages?.["TestMessage"]).toBeDefined();
+      expect(baseAsyncApiDoc.components?.securitySchemes?.["testAuth"]).toBeDefined();
     });
 
     it("should handle empty processing inputs", async () => {
       const result = await Effect.runPromise(
-        ProcessingService.executeProcessing(
-          [],
-          [],
-          [],
-          baseAsyncApiDoc,
-          mockProgram,
-        ),
+        ProcessingService.executeProcessing([], [], [], baseAsyncApiDoc, mockProgram),
       );
 
       expect(result.operationsProcessed).toBe(0);
@@ -465,19 +379,12 @@ describe("ProcessingService", () => {
     });
 
     it("should handle large-scale processing", async () => {
-      const operations = Array.from({ length: 20 }, (_, i) =>
-        createMockOperation(`op${i}`),
-      );
-      const messageModels = Array.from({ length: 10 }, (_, i) =>
-        createMockModel(`Message${i}`),
-      );
-      const securityConfigs: SecurityConfig[] = Array.from(
-        { length: 5 },
-        (_, i) => ({
-          name: `auth${i}`,
-          scheme: { type: "apiKey", in: "header" },
-        }),
-      );
+      const operations = Array.from({ length: 20 }, (_, i) => createMockOperation(`op${i}`));
+      const messageModels = Array.from({ length: 10 }, (_, i) => createMockModel(`Message${i}`));
+      const securityConfigs: SecurityConfig[] = Array.from({ length: 5 }, (_, i) => ({
+        name: `auth${i}`,
+        scheme: { type: "apiKey", in: "header" },
+      }));
 
       // Setup message configs
       messageModels.forEach((model) => {
@@ -528,17 +435,11 @@ describe("ProcessingService", () => {
       const modelWithoutConfig = createMockModel("NoConfigModel");
 
       const result = await Effect.runPromise(
-        ProcessingService.processMessageModels(
-          [modelWithoutConfig],
-          baseAsyncApiDoc,
-          mockProgram,
-        ),
+        ProcessingService.processMessageModels([modelWithoutConfig], baseAsyncApiDoc, mockProgram),
       );
 
       expect(result).toBe(1); // Still counts as processed
-      expect(
-        Object.keys(baseAsyncApiDoc.components?.messages || {}),
-      ).toHaveLength(0);
+      expect(Object.keys(baseAsyncApiDoc.components?.messages || {})).toHaveLength(0);
     });
 
     it("should handle document without components", async () => {
@@ -555,10 +456,7 @@ describe("ProcessingService", () => {
       };
 
       await Effect.runPromise(
-        ProcessingService.processSecurityConfigs(
-          [securityConfig],
-          docWithoutComponents,
-        ),
+        ProcessingService.processSecurityConfigs([securityConfig], docWithoutComponents),
       );
 
       expect(docWithoutComponents.components).toBeDefined();
@@ -617,29 +515,17 @@ function createMockModel(name: string): Model {
   } as unknown as Model;
 }
 
-function setupMockProgramWithChannelPath(
-  program: Program,
-  operation: Operation,
-  path: string,
-) {
+function setupMockProgramWithChannelPath(program: Program, operation: Operation, path: string) {
   const channelPathsMap = program.stateMap($lib.stateKeys.channelPaths);
   channelPathsMap.set(operation, path);
 }
 
-function setupMockProgramWithOperationType(
-  program: Program,
-  operation: Operation,
-  type: string,
-) {
+function setupMockProgramWithOperationType(program: Program, operation: Operation, type: string) {
   const operationTypesMap = program.stateMap($lib.stateKeys.operationTypes);
   operationTypesMap.set(operation, type);
 }
 
-function setupMockProgramWithMessageConfig(
-  program: Program,
-  model: Model,
-  config: any,
-) {
+function setupMockProgramWithMessageConfig(program: Program, model: Model, config: any) {
   const messageConfigsMap = program.stateMap($lib.stateKeys.messageConfigs);
   messageConfigsMap.set(model, config);
 }
