@@ -9,49 +9,49 @@
 /**
  * Basic AsyncAPI channel type
  */
-export interface Channel {
+export type Channel = {
   path: string;
   description?: string;
-}
+};
 
 /**
  * Basic AsyncAPI message type
  */
-export interface Message {
+export type Message = {
   id: string;
   schemaName: string;
   description?: string;
-}
+};
 
 /**
  * Basic AsyncAPI operation type
  */
-export interface Operation {
+export type Operation = {
   id: string;
   type: "send" | "receive";
   description?: string;
-}
+};
 
 /**
  * Basic AsyncAPI server type
  */
-export interface Server {
+export type Server = {
   url: string;
   protocol: "kafka" | "mqtt" | "amqp" | "ws" | "http" | "https";
   description?: string;
-}
+};
 
 /**
  * Basic AsyncAPI specification type
  */
-export interface AsyncAPISpec {
+export type AsyncAPISpec = {
   asyncapi: "3.0.0";
   info: {
     title: string;
     version: string;
     description?: string;
   };
-}
+};
 
 // ===== TYPE COLLECTIONS =====
 

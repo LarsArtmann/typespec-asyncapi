@@ -360,13 +360,13 @@ validate-asyncapi:
     echo "🔍 Validating AsyncAPI specifications with AsyncAPI CLI..."
 
     # Check if asyncapi command is available
-    if ! command -v asyncapi &> /dev/null; then
+    if ! bunx asyncapi --version &> /dev/null; then
         echo "❌ AsyncAPI CLI not found. Installing..."
         bun install
     fi
 
     # Find generated AsyncAPI files
-    asyncapi_files=$(find tsp-output test-output examples -name "*.json" -o -name "*.yaml" -o -name "*.yml" 2>/dev/null | grep -E "(asyncapi|tsp-output)" | head -10)
+    asyncapi_files=$(find . -name "*.json" -o -name "*.yaml" -o -name "*.yml" 2>/dev/null | grep -E "(asyncapi|tsp-output)" | head -10)
 
     if [ -z "$asyncapi_files" ]; then
         echo "⚠️  No AsyncAPI files found. Generate them first with 'just compile'"

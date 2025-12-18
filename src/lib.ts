@@ -481,19 +481,19 @@ export function reportDiagnostic(
  * during TypeSpec compilation. Each symbol is scoped to this library.
  */
 export const stateSymbols = {
-  channelPaths: $lib.createStateSymbol("channelPaths"),
-  messageSchemas: $lib.createStateSymbol("messageSchemas"),
-  messageConfigs: $lib.createStateSymbol("messageConfigs"),
-  messageHeaders: $lib.createStateSymbol("messageHeaders"),
-  serverConfigs: $lib.createStateSymbol("serverConfigs"),
-  protocolBindings: $lib.createStateSymbol("protocolBindings"),
-  protocolConfigs: $lib.createStateSymbol("protocolConfigs"),
-  securitySchemes: $lib.createStateSymbol("securitySchemes"),
-  securityConfigs: $lib.createStateSymbol("securityConfigs"),
-  operationTypes: $lib.createStateSymbol("operationTypes"),
-  tags: $lib.createStateSymbol("tags"),
-  correlationIds: $lib.createStateSymbol("correlationIds"),
-  cloudBindings: $lib.createStateSymbol("cloudBindings"),
+  channelPaths: Symbol("channelPaths"),
+  messageSchemas: Symbol("messageSchemas"),
+  messageConfigs: Symbol("messageConfigs"),
+  messageHeaders: Symbol("messageHeaders"),
+  serverConfigs: Symbol("serverConfigs"),
+  protocolBindings: Symbol("protocolBindings"),
+  protocolConfigs: Symbol("protocolConfigs"),
+  securitySchemes: Symbol("securitySchemes"),
+  securityConfigs: Symbol("securityConfigs"),
+  operationTypes: Symbol("operationTypes"),
+  tags: Symbol("tags"),
+  correlationIds: Symbol("correlationIds"),
+  cloudBindings: Symbol("cloudBindings"),
 } as const;
 
 /**

@@ -4,7 +4,6 @@
  * Simplest possible decorator implementations to test TypeSpec linkage
  */
 
-import { Effect } from "effect";
 import type {
   DecoratorContext,
   Namespace,
@@ -16,54 +15,58 @@ import type {
 import { stateSymbols } from "./lib.js";
 import type { MessageConfigData } from "./state.js";
 
-// Decorator logging utilities - eliminates duplicate logging patterns
+// Decorator logging utilities - simple console based logging
 export const logDecoratorTarget = (
   decoratorName: string,
-  target: any,
-  extraData?: Record<string, any>,
+  target: unknown,
+  extraData?: Record<string, unknown>,
 ) => {
-  Effect.runSync(
-    Effect.log(`🔍 MINIMAL @${decoratorName} decorator executed!`).pipe(
-      Effect.annotateLogs(extraData || {}),
-    ),
-  );
-  Effect.runSync(Effect.log("🔍 Target:").pipe(Effect.annotateLogs({ target: target.name })));
+  // eslint-disable-next-line no-console
+  console.log(`🔍 MINIMAL @${decoratorName} decorator executed!`, extraData ?? {});
+  const targetName = typeof target === 'object' && target !== null && 'name' in target 
+    ? String(target.name) 
+    : 'unknown';
+  // eslint-disable-next-line no-console
+  console.log(`🔍 Target:`, { target: targetName });
 };
 
-export const logConfigPresence = (config?: unknown, extraData?: Record<string, any>) => {
-  Effect.runSync(
-    Effect.log("🔍 Config:").pipe(Effect.annotateLogs({ hasConfig: !!config, ...extraData })),
-  );
+export const logConfigPresence = (config?: unknown, extraData?: Record<string, unknown>) => {
+  // eslint-disable-next-line no-console
+  console.log("🔍 Config:", { hasConfig: !!config, ...extraData });
 };
 
-export const logContext = (context?: any) => {
+export const logContext = (context?: unknown) => {
   if (context) {
-    Effect.runSync(
-      Effect.log("🔍 Context:").pipe(Effect.annotateLogs({ context: context.constructor.name })),
-    );
+    const contextName = typeof context === 'object' && context !== null && 'constructor' in context
+      ? context.constructor?.name ?? 'unknown'
+      : 'unknown';
+    // eslint-disable-next-line no-console
+    console.log("🔍 Context:", { context: contextName });
   }
 };
 
 export const logSuccess = (decoratorName: string, extraInfo?: string) => {
   const message = `✅ @${decoratorName} decorator completed successfully${extraInfo ? ` - ${extraInfo}` : ""}`;
-  Effect.runSync(Effect.log(message));
+  // eslint-disable-next-line no-console
+  console.log(message);
 };
 
 export const logError = (message: string) => {
-  Effect.runSync(Effect.log(`❌ ${message}`));
+  // eslint-disable-next-line no-console
+  console.log(`❌ ${message}`);
 };
 
 // Diagnostic reporting utilities - eliminates duplicate diagnostic patterns
 export const reportDecoratorDiagnostic = (
   context: DecoratorContext,
   code: string,
-  target: any,
+  target: unknown,
   message: string,
   severity: "error" | "warning" = "error",
 ) => {
   context.program.reportDiagnostic({
     code,
-    target,
+    target: target as DiagnosticTarget,
     message,
     severity,
   });
@@ -73,7 +76,7 @@ export const reportDecoratorDiagnostic = (
 export const validateConfig = (
   config: unknown,
   context: DecoratorContext,
-  target: any,
+  target: unknown,
   diagnosticCode: string,
   errorMessage: string,
 ): boolean => {
@@ -86,8 +89,9 @@ export const validateConfig = (
 };
 
 // State management utilities - eliminates duplicate state operations
-export const storeChannelState = (program: any, target: Operation, path: string) => {
-  const channelPathsMap = program.stateMap(stateSymbols.channelPaths);
+export const storeChannelState = (program: unknown, target: Operation, path: string) => {
+  const programTyped = program as { stateMap: (symbol: symbol) => Map<unknown, unknown> };
+  const channelPathsMap = programTyped.stateMap(stateSymbols.channelPaths);
   channelPathsMap.set(target, {
     path: path,
     hasParameters: path.includes("{"),
@@ -96,27 +100,29 @@ export const storeChannelState = (program: any, target: Operation, path: string)
 };
 
 export const storeOperationType = (
-  program: any,
+  program: unknown,
   target: Operation,
   type: "publish" | "subscribe",
   messageType?: string,
   description?: string,
 ) => {
-  const operationTypesMap = program.stateMap(stateSymbols.operationTypes);
+  const programTyped = program as { stateMap: (symbol: symbol) => Map<unknown, unknown> };
+  const operationTypesMap = programTyped.stateMap(stateSymbols.operationTypes);
   operationTypesMap.set(target, {
     type,
     messageType,
-    description: description || `${type} operation for ${target.name ?? "unnamed"}`,
+    description: description ?? `${type} operation for ${target.name ?? "unnamed"}`,
     tags: [],
   });
 };
 
 export const storeMessageConfig = (
-  program: any,
+  program: unknown,
   target: Model,
   config: Record<string, unknown>,
 ) => {
-  const messageConfigsMap = program.stateMap(stateSymbols.messageConfigs);
+  const programTyped = program as { stateMap: (symbol: symbol) => Map<unknown, unknown> };
+  const messageConfigsMap = programTyped.stateMap(stateSymbols.messageConfigs);
   messageConfigsMap.set(target, {
     title: (config.title as string) ?? target.name,
     description: (config.description as string) ?? `Message ${target.name}`,
@@ -149,16 +155,17 @@ export function $channel(context: DecoratorContext, target: Operation, path: str
 
 // State management utilities - eliminates duplicate state operations
 export const storeServerConfig = (
-  program: any,
+  program: unknown,
   target: Namespace,
   config: Record<string, unknown>,
 ) => {
-  const serverConfigsMap = program.stateMap(stateSymbols.serverConfigs);
+  const programTyped = program as { stateMap: (symbol: symbol) => Map<unknown, unknown> };
+  const serverConfigsMap = programTyped.stateMap(stateSymbols.serverConfigs);
   serverConfigsMap.set(target, {
-    name: (config.name as string) || target.name,
-    url: (config.url as string) || "http://localhost:3000",
-    protocol: (config.protocol as string) || "http",
-    description: (config.description as string) || `Server for ${target.name}`,
+    name: (config.name as string) ?? target.name,
+    url: (config.url as string) ?? "http://localhost:3000",
+    protocol: (config.protocol as string) ?? "http",
+    description: (config.description as string) ?? `Server for ${target.name}`,
   });
 };
 
@@ -205,7 +212,8 @@ export function $publish(context: DecoratorContext, target: Operation, config?: 
 
   // If there's a message config, link it
   if (config) {
-    const messageConfigsMap = context.program.stateMap(stateSymbols.messageConfigs);
+    const programTyped = context.program as { stateMap: (symbol: symbol) => Map<unknown, unknown> };
+    const messageConfigsMap = programTyped.stateMap(stateSymbols.messageConfigs);
     const existingConfig = messageConfigsMap.get(config) as MessageConfigData | undefined;
     if (existingConfig) {
       existingConfig.messageId = config.name;
@@ -265,34 +273,35 @@ export function $protocol(
   }
 
   // Store protocol configuration in state map
-  const protocolConfigsMap = context.program.stateMap(stateSymbols.protocolConfigs);
+  const programTyped = context.program as { stateMap: (symbol: symbol) => Map<unknown, unknown> };
+  const protocolConfigsMap = programTyped.stateMap(stateSymbols.protocolConfigs);
   const configTyped = config as Record<string, unknown>;
 
   // Store protocol-specific configuration based on type
-  const protocolType = (configTyped.protocol as string) || "kafka";
+  const protocolType = (configTyped.protocol as string) ?? "kafka";
   const protocolConfig = {
     protocol: protocolType,
     ...configTyped,
     // Add protocol-specific defaults
     ...(protocolType === "kafka" && {
-      partitions: configTyped.partitions || 1,
-      replicationFactor: configTyped.replicationFactor || 1,
-      consumerGroup: configTyped.consumerGroup || "default",
-      sasl: configTyped.sasl || {
+      partitions: configTyped.partitions ?? 1,
+      replicationFactor: configTyped.replicationFactor ?? 1,
+      consumerGroup: configTyped.consumerGroup ?? "default",
+      sasl: configTyped.sasl ?? {
         mechanism: "plain",
         username: "",
         password: "",
       },
     }),
     ...(protocolType === "ws" && {
-      subprotocol: configTyped.subprotocol || "asyncapi",
-      queryParams: configTyped.queryParams || {},
-      headers: configTyped.headers || {},
+      subprotocol: configTyped.subprotocol ?? "asyncapi",
+      queryParams: configTyped.queryParams ?? {},
+      headers: configTyped.headers ?? {},
     }),
     ...(protocolType === "mqtt" && {
-      qos: configTyped.qos || 1,
-      retain: configTyped.retain || false,
-      lastWill: configTyped.lastWill || {
+      qos: configTyped.qos ?? 1,
+      retain: configTyped.retain ?? false,
+      lastWill: configTyped.lastWill ?? {
         topic: "",
         message: "",
         qos: 1,
