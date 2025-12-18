@@ -1,10 +1,35 @@
-/Users/larsartmann/projects/typespec-asyncapi/src/domain/validation/asyncapi-validator.ts:16:export function validateAsyncAPI(document: AsyncAPIDocument): ValidationResult {
-/Users/larsartmann/projects/typespec-asyncapi/src/domain/validation/asyncapi-validator.ts:56:export function isProductionReady(document: AsyncAPIDocument): boolean {
-/Users/larsartmann/projects/typespec-asyncapi/src/domain/validation/asyncapi-validator.ts:69:export function getValidationSummary(document: AsyncAPIDocument): string {
-/Users/larsartmann/projects/typespec-asyncapi/src/infrastructure/configuration/options.ts:79:export function mergeWithDefaults(options?: Partial<EmitterOptions>): Required<EmitterOptions> {
-/Users/larsartmann/projects/typespec-asyncapi/src/lib.ts:331: * export function $channel(context: DecoratorContext, target: Operation, path: string) {
-/Users/larsartmann/projects/typespec-asyncapi/src/lib.ts:403: * export function $channel(context: DecoratorContext, target: Operation, path?: string) {
-/Users/larsartmann/projects/typespec-asyncapi/src/utils/effect-helpers.ts:51:export function isEffectSuccess<T>(result: EffectResult<T>): result is { data: T; error?: undefined } {
-/Users/larsartmann/projects/typespec-asyncapi/src/utils/effect-helpers.ts:58:export function getEffectError<T>(result: EffectResult<T>): Error | undefined {
-/Users/larsartmann/projects/typespec-asyncapi/src/minimal-decorators.ts:198:export function $subscribe(context: DecoratorContext, target: Operation): void {
-/Users/larsartmann/projects/typespec-asyncapi/src/state.ts:73:export function consolidateAsyncAPIState(program: Program): AsyncAPIConsolidatedState {
+/Users/larsartmann/projects/typespec-asyncapi/src/state.ts:107:export function consolidateAsyncAPIState(program: Program): AsyncAPIConsolidatedState {
+/Users/larsartmann/projects/typespec-asyncapi/src/infrastructure/configuration/options.ts:146:export function createAsyncAPIEmitterOptions(options?: Partial<EmitterOptions>): EmitterOptions {
+/Users/larsartmann/projects/typespec-asyncapi/src/infrastructure/configuration/options.ts:153:export function mergeWithDefaults(options?: Partial<EmitterOptions>): Required<EmitterOptions> {
+/Users/larsartmann/projects/typespec-asyncapi/src/infrastructure/configuration/options.ts:183:export function isAsyncAPIEmitterOptions(options: unknown): options is EmitterOptions {
+/Users/larsartmann/projects/typespec-asyncapi/src/domain/models/validation-result.ts:29:export function getChannelCount(doc: Record<string, unknown>): number {
+/Users/larsartmann/projects/typespec-asyncapi/src/domain/models/validation-result.ts:37:export function getOperationCount(doc: Record<string, unknown>): number {
+/Users/larsartmann/projects/typespec-asyncapi/src/domain/models/validation-result.ts:45:export function getSchemaCount(doc: Record<string, unknown>): number {
+/Users/larsartmann/projects/typespec-asyncapi/src/domain/models/validation-result.ts:53:export function getServerCount(doc: Record<string, unknown>): number {
+/Users/larsartmann/projects/typespec-asyncapi/src/domain/models/validation-result.ts:61:export function getValidationMetrics(doc: Record<string, unknown>): ValidationMetrics {
+/Users/larsartmann/projects/typespec-asyncapi/src/domain/models/validation-result.ts:72:export function isSuccess(result: { _tag: string }): result is { _tag: "Success" } {
+/Users/larsartmann/projects/typespec-asyncapi/src/state-compatibility.ts:14:export function getStateMap<T>(program: Program, symbol: symbol): Map<Type, T> {
+/Users/larsartmann/projects/typespec-asyncapi/src/state-compatibility.ts:24:export function tryGetStateMap<T>(program: Program, symbol: symbol): Map<Type, T> | null {
+/Users/larsartmann/projects/typespec-asyncapi/src/lib.ts:330: * export function $channel(context: DecoratorContext, target: Operation, path: string) {
+/Users/larsartmann/projects/typespec-asyncapi/src/lib.ts:402: * export function $channel(context: DecoratorContext, target: Operation, path?: string) {
+/Users/larsartmann/projects/typespec-asyncapi/src/constants/protocol-defaults.ts:64:export function isSupportedProtocol(protocol: string): protocol is AsyncAPIProtocolType {
+/Users/larsartmann/projects/typespec-asyncapi/src/constants/protocol-defaults.ts:71:export function getProtocolBindingDefaults(protocol: AsyncAPIProtocolType) {
+/Users/larsartmann/projects/typespec-asyncapi/src/utils/standardized-errors.ts:124:export function isValidationError(error: AsyncAPIEmitterError): error is ValidationError {
+/Users/larsartmann/projects/typespec-asyncapi/src/utils/standardized-errors.ts:128:export function isCompilationError(error: AsyncAPIEmitterError): error is CompilationError {
+/Users/larsartmann/projects/typespec-asyncapi/src/utils/standardized-errors.ts:138:export function isFileError(error: AsyncAPIEmitterError): error is FileError {
+/Users/larsartmann/projects/typespec-asyncapi/src/utils/standardized-errors.ts:142:export function isConfigurationError(error: AsyncAPIEmitterError): error is ConfigurationError {
+/Users/larsartmann/projects/typespec-asyncapi/src/domain/models/path-templates.ts:27:export function parsePathTemplate(path: string): PathTemplate {
+/Users/larsartmann/projects/typespec-asyncapi/src/domain/models/path-templates.ts:56:export function convertToAsyncAPIAddress(template: PathTemplate): string {
+/Users/larsartmann/projects/typespec-asyncapi/src/domain/models/path-templates.ts:63:export function extractParameters(path: string): PathParameter[] {
+/Users/larsartmann/projects/typespec-asyncapi/src/domain/models/path-templates.ts:71:export function validatePathTemplate(path: string): boolean {
+/Users/larsartmann/projects/typespec-asyncapi/src/domain/models/path-templates.ts:107:export function normalizePathTemplate(path: string): string {
+/Users/larsartmann/projects/typespec-asyncapi/src/domain/models/path-templates.ts:124:export function pathToChannelName(path: string): string {
+/Users/larsartmann/projects/typespec-asyncapi/src/domain/decorators/channel.ts:17:export function createChannelDecorator(options: ChannelDecorator): ChannelDecorator {
+/Users/larsartmann/projects/typespec-asyncapi/src/minimal-decorators.ts:130:export function $channel(context: DecoratorContext, target: Operation, path: string): void {
+/Users/larsartmann/projects/typespec-asyncapi/src/minimal-decorators.ts:168:export function $server(context: DecoratorContext, target: Namespace, config: unknown): void {
+/Users/larsartmann/projects/typespec-asyncapi/src/minimal-decorators.ts:194:export function $publish(context: DecoratorContext, target: Operation, config?: Model): void {
+/Users/larsartmann/projects/typespec-asyncapi/src/minimal-decorators.ts:222:export function $message(context: DecoratorContext, target: Model, config: unknown): void {
+/Users/larsartmann/projects/typespec-asyncapi/src/minimal-decorators.ts:337:export function $subscribe(context: DecoratorContext, target: Operation): void {
+/Users/larsartmann/projects/typespec-asyncapi/src/minimal-decorators.ts:355:export function $tags(context: DecoratorContext, target: DiagnosticTarget, value: unknown): void {
+/Users/larsartmann/projects/typespec-asyncapi/src/domain/models/serialization-format-option.ts:33:export function isValidSerializationFormat(format: string): format is SerializationFormat {
+/Users/larsartmann/projects/typespec-asyncapi/src/emitter.ts:58:export async function $onEmit(context: EmitContext<_AsyncAPIEmitterOptions>): Promise<void> {

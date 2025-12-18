@@ -5,7 +5,8 @@
  */
 
 import { Effect } from "effect";
-import type { EmitContext, Type, EmitFileOptions } from "@typespec/compiler";
+import { emitFile } from "@typespec/compiler";
+import type { EmitContext, EmitFileOptions, Type } from "@typespec/compiler";
 import type { AsyncAPIEmitterOptions as _AsyncAPIEmitterOptions } from "./infrastructure/configuration/asyncAPIEmitterOptions.js";
 import { consolidateAsyncAPIState, type AsyncAPIConsolidatedState } from "./state.js";
 import { LoggerLive } from "./logger.js";
@@ -242,6 +243,13 @@ ${required.map((req) => `      - ${req}`).join("\n")}`;
       path: outputPath, // Use just filename, let TypeSpec handle directory
       content: content,
     };
+    
+    // Actually emit the file - CRITICAL FIX!
+    yield* Effect.tryPromise({
+      try: () => emitFile(context.program, _emitOptions),
+      catch: (error) => Effect.fail(new Error(`Failed to emit file: ${error instanceof Error ? error.message : String(error)}`))
+    });
+    
     // Report generation statistics (side effect)
     reportGenerationStatistics(asyncapiDocument);
   }).pipe(Effect.provide(LoggerLive));

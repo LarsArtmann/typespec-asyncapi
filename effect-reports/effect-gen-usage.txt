@@ -1,2 +1,4 @@
-/Users/larsartmann/projects/typespec-asyncapi/src/emitter.ts:9
-/Users/larsartmann/projects/typespec-asyncapi/src/types/domain/asyncapi-domain-types.ts:9
+/Users/larsartmann/projects/typespec-asyncapi/src/logger.ts:2
+/Users/larsartmann/projects/typespec-asyncapi/src/emitter.ts:16
+/Users/larsartmann/projects/typespec-asyncapi/src/utils/effect-helpers.ts:13
+/Users/larsartmann/projects/typespec-asyncapi/src/infrastructure/configuration/options.ts:1
