@@ -229,6 +229,7 @@ export default [
       "**/*.spec.ts",
       "**/*.d.ts",
       "src/integration-example.ts", // Temporary exclusion to get under issue threshold
+      "src/logger.ts", // Logger implementation requires console output
     ],
   },
 ];

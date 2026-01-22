@@ -15,46 +15,7 @@ import type {
 import { stateSymbols } from "./lib.js";
 import type { MessageConfigData } from "./state.js";
 
-// Decorator logging utilities - simple console based logging
-export const logDecoratorTarget = (
-  decoratorName: string,
-  target: unknown,
-  extraData?: Record<string, unknown>,
-) => {
-  // eslint-disable-next-line no-console
-  console.log(`🔍 MINIMAL @${decoratorName} decorator executed!`, extraData ?? {});
-  const targetName = typeof target === 'object' && target !== null && 'name' in target 
-    ? String(target.name) 
-    : 'unknown';
-  // eslint-disable-next-line no-console
-  console.log(`🔍 Target:`, { target: targetName });
-};
-
-export const logConfigPresence = (config?: unknown, extraData?: Record<string, unknown>) => {
-  // eslint-disable-next-line no-console
-  console.log("🔍 Config:", { hasConfig: !!config, ...extraData });
-};
-
-export const logContext = (context?: unknown) => {
-  if (context) {
-    const contextName = typeof context === 'object' && context !== null && 'constructor' in context
-      ? context.constructor?.name ?? 'unknown'
-      : 'unknown';
-    // eslint-disable-next-line no-console
-    console.log("🔍 Context:", { context: contextName });
-  }
-};
-
-export const logSuccess = (decoratorName: string, extraInfo?: string) => {
-  const message = `✅ @${decoratorName} decorator completed successfully${extraInfo ? ` - ${extraInfo}` : ""}`;
-  // eslint-disable-next-line no-console
-  console.log(message);
-};
-
-export const logError = (message: string) => {
-  // eslint-disable-next-line no-console
-  console.log(`❌ ${message}`);
-};
+// Decorator logging utilities removed - use Effect.log for production logging
 
 // Diagnostic reporting utilities - eliminates duplicate diagnostic patterns
 export const reportDecoratorDiagnostic = (
@@ -81,7 +42,6 @@ export const validateConfig = (
   errorMessage: string,
 ): boolean => {
   if (!config) {
-    logError(errorMessage);
     reportDecoratorDiagnostic(context, diagnosticCode, target, errorMessage);
     return false;
   }
@@ -134,11 +94,7 @@ export const storeMessageConfig = (
  * Simplest possible @channel decorator for testing
  */
 export function $channel(context: DecoratorContext, target: Operation, path: string): void {
-  logDecoratorTarget("channel", target);
-  logContext(context);
-
   if (!path || path.length === 0) {
-    logError("Empty channel path - should trigger diagnostic");
     reportDecoratorDiagnostic(
       context,
       "missing-channel-path",
@@ -150,7 +106,6 @@ export function $channel(context: DecoratorContext, target: Operation, path: str
 
   // Store channel path in state for emitter to use
   storeChannelState(context.program, target, path);
-  logSuccess("channel", "stored in state");
 }
 
 // State management utilities - eliminates duplicate state operations
@@ -173,8 +128,6 @@ export const storeServerConfig = (
  * Simplest possible @server decorator for testing
  */
 export function $server(context: DecoratorContext, target: Namespace, config: unknown): void {
-  logDecoratorTarget("server", target);
-  logConfigPresence(config);
 
   if (
     !validateConfig(
@@ -191,15 +144,12 @@ export function $server(context: DecoratorContext, target: Namespace, config: un
   // Store server configuration in state map
   const configTyped = config as Record<string, unknown>;
   storeServerConfig(context.program, target, configTyped);
-
-  logSuccess("server");
 }
 
 /**
  * Simplest possible @publish decorator for testing
  */
 export function $publish(context: DecoratorContext, target: Operation, config?: Model): void {
-  logDecoratorTarget("publish", target, { config: config?.name });
 
   // Store publish operation type in state
   storeOperationType(
@@ -220,16 +170,12 @@ export function $publish(context: DecoratorContext, target: Operation, config?: 
       messageConfigsMap.set(config, existingConfig);
     }
   }
-
-  logSuccess("publish", "stored in state");
 }
 
 /**
  * Simplest possible @message decorator for testing
  */
 export function $message(context: DecoratorContext, target: Model, config: unknown): void {
-  logDecoratorTarget("message", target);
-  logConfigPresence(config);
 
   if (
     !validateConfig(
@@ -246,7 +192,6 @@ export function $message(context: DecoratorContext, target: Model, config: unkno
   // Store message configuration in state
   const configTyped = config as Record<string, unknown>;
   storeMessageConfig(context.program, target, configTyped);
-  logSuccess("message", "stored in state");
 }
 
 /**
@@ -257,8 +202,6 @@ export function $protocol(
   target: Operation | Model,
   config: unknown,
 ): void {
-  logDecoratorTarget("protocol", target);
-  logConfigPresence(config);
 
   if (
     !validateConfig(
@@ -311,8 +254,6 @@ export function $protocol(
   };
 
   protocolConfigsMap.set(target, protocolConfig);
-
-  logSuccess("protocol");
 }
 
 /**
@@ -323,8 +264,6 @@ export function $security(
   target: Operation | Namespace,
   config: unknown,
 ): void {
-  logDecoratorTarget("security", target);
-  logConfigPresence(config);
 
   if (
     !validateConfig(
@@ -337,14 +276,12 @@ export function $security(
   ) {
     return;
   }
-  logSuccess("security");
 }
 
 /**
  * Simplest possible @subscribe decorator for testing
  */
 export function $subscribe(context: DecoratorContext, target: Operation): void {
-  logDecoratorTarget("subscribe", target);
 
   // Store subscribe operation type in state
   storeOperationType(
@@ -354,18 +291,14 @@ export function $subscribe(context: DecoratorContext, target: Operation): void {
     undefined,
     `Subscribe operation for ${target.name ?? "unnamed"}`,
   );
-
-  logSuccess("subscribe", "stored in state");
 }
 
 /**
  * Simplest possible @tags decorator for testing
  */
 export function $tags(context: DecoratorContext, target: DiagnosticTarget, value: unknown): void {
-  logDecoratorTarget("tags", target, { hasValue: !!value, isArray: Array.isArray(value) });
 
   if (!value || !Array.isArray(value)) {
-    logError("No tags value - should trigger diagnostic");
     reportDecoratorDiagnostic(
       context,
       "invalid-tags-config",
@@ -374,7 +307,6 @@ export function $tags(context: DecoratorContext, target: DiagnosticTarget, value
     );
     return;
   }
-  logSuccess("tags");
 }
 
 /**
@@ -384,15 +316,10 @@ export function $correlationId(
   context: DecoratorContext,
   target: Model,
   location: unknown,
-  property?: unknown,
+  _property?: unknown,
 ): void {
-  logDecoratorTarget("correlationId", target, {
-    location: String(location),
-    property: String(property),
-  });
 
   if (!location) {
-    logError("No correlationId location - should trigger diagnostic");
     reportDecoratorDiagnostic(
       context,
       "invalid-correlationId-config",
@@ -401,7 +328,6 @@ export function $correlationId(
     );
     return;
   }
-  logSuccess("correlationId");
 }
 
 /**
@@ -412,10 +338,8 @@ export function $bindings(
   target: Operation | Model,
   value: unknown,
 ): void {
-  logDecoratorTarget("bindings", target);
 
   if (!value) {
-    logError("No bindings value - should trigger diagnostic");
     reportDecoratorDiagnostic(
       context,
       "invalid-bindings-config",
@@ -424,7 +348,6 @@ export function $bindings(
     );
     return;
   }
-  logSuccess("bindings");
 }
 
 /**
@@ -434,15 +357,10 @@ export function $header(
   context: DecoratorContext,
   target: Model | ModelProperty,
   name: unknown,
-  value: unknown,
+  _value: unknown,
 ): void {
-  logDecoratorTarget("header", target, {
-    name: String(name),
-    hasValue: !!value,
-  });
 
   if (!name) {
-    logError("No header name - should trigger diagnostic");
     reportDecoratorDiagnostic(
       context,
       "invalid-header-config",
@@ -451,5 +369,4 @@ export function $header(
     );
     return;
   }
-  logSuccess("header");
 }

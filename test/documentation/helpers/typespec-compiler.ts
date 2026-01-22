@@ -339,7 +339,7 @@ export class TypeSpecDocumentationTestCompiler {
         const lines = configStr.split("\n");
         const jsonLines = lines.map((line) => {
           // Only process lines that look like property definitions (not inside quoted strings)
-          if (/^\s*\w+\s*:\s*/.test(line) && !line.includes('":\s*"')) {
+          if (/^\s*\w+\s*:\s*/.test(line) && !line.includes('":s*"')) {
             return line.replace(/^\s*(\w+)(\s*:\s*)/, '  "$1"$2');
           }
           return line;

@@ -6,7 +6,7 @@
 
 import { emitFile } from "@typespec/compiler";
 import type { EmitContext, EmitFileOptions } from "@typespec/compiler";
-import type { AsyncAPIEmitterOptions as _AsyncAPIEmitterOptions } from "./infrastructure/configuration/asyncAPIEmitterOptions.js";
+import type { AsyncAPIEmitterOptions } from "./infrastructure/configuration/asyncAPIEmitterOptions.js";
 import { consolidateAsyncAPIState, type AsyncAPIConsolidatedState, type MessageConfigData } from "./state.js";
 
 /**
@@ -31,7 +31,7 @@ type AsyncAPIDocument = {
  */
 function generateBasicAsyncAPI(
   state: AsyncAPIConsolidatedState,
-  options: _AsyncAPIEmitterOptions,
+  options: AsyncAPIEmitterOptions,
 ): AsyncAPIDocument {
   const channels: Record<string, unknown> = {};
   const messages: Record<string, unknown> = {};
@@ -122,43 +122,18 @@ ${Object.entries(document.components.schemas)
 `;
 }
 
-/**
- * Simple logger function to bypass ESLint no-console rule
- */
-function log(message: string, ...args: unknown[]): void {
-  // eslint-disable-next-line no-console
-  console.log(message, ...args);
-}
 
-/**
- * Report generation statistics
- */
-function reportGenerationStatistics(document: AsyncAPIDocument): void {
-  const channelCount = Object.keys(document.channels).length;
-  const messageCount = Object.keys(document.messages).length;
-  const schemaCount = Object.keys(document.components.schemas).length;
-
-  log(`📊 Generation Statistics:`);
-  log(`  🔌 Channels: ${channelCount}`);
-  log(`  📨 Messages: ${messageCount}`);
-  log(`  📋 Schemas: ${schemaCount}`);
-  log(`  📄 Total: ${channelCount + messageCount + schemaCount} items`);
-}
 
 /**
  * Generate AsyncAPI file from TypeSpec program
  */
-export async function $onEmit(context: EmitContext<_AsyncAPIEmitterOptions>): Promise<void> {
+export async function $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): Promise<void> {
   const options = context.options;
 
-  log("🚀 ASYNCAPI EMITTER: Starting generation");
-  log("📋 Emitter options:", JSON.stringify(context.options));
-  log("📊 ASYNCAPI EMITTER: Extracting decorator state from program");
 
   // Extract decorator state from program
   const rawState = consolidateAsyncAPIState(context.program);
 
-  log("🏗️ ASYNCAPI EMITTER: Generating AsyncAPI 3.0 document structure");
 
   // Generate basic AsyncAPI document
   const asyncapiDocument = generateBasicAsyncAPI(rawState, options);
@@ -167,7 +142,6 @@ export async function $onEmit(context: EmitContext<_AsyncAPIEmitterOptions>): Pr
   const content = generateYAML(asyncapiDocument);
   const outputPath = "asyncapi.yaml";
 
-  log(`🔧 DEBUG: Output path: ${outputPath}`);
 
   // Emit file - use direct call without try/catch to satisfy ESLint
   const _emitOptions: EmitFileOptions = {
@@ -177,8 +151,6 @@ export async function $onEmit(context: EmitContext<_AsyncAPIEmitterOptions>): Pr
   
   await emitFile(context.program, _emitOptions);
   
-  // Report generation statistics
-  reportGenerationStatistics(asyncapiDocument);
-  
-  log("✅ ASYNCAPI EMISSION COMPLETE");
+
+
 }
