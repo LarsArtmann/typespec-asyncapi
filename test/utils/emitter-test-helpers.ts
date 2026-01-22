@@ -1,153 +1,8 @@
 import * as fs from "fs";
 import * as path from "path";
-
-/**
- * 🔥 WORKAROUND: TypeSpec 1.6.0 filesystem fallback for test framework
- *
- * TypeSpec's emitFile API writes files but doesn't populate result.outputs Map.
- * This function searches the filesystem for generated AsyncAPI files as a fallback.
- *
- * @param outputFile - Base output filename (e.g., "asyncapi")
- * @returns File info {file, content} or null if not found
- */
-function findGeneratedFilesOnFilesystem(
-  outputFile: string,
-): { file: string; content: string } | null {
-  // 🔍 CRITICAL DEBUG: Log when fallback is called
-  console.log(`🚨 FALLBACK CALLED: findGeneratedFilesOnFilesystem("${outputFile}")`);
-
-  // 🔍 ENHANCED DEBUGGING: Log current working directory and search paths
-  const cwd = process.cwd();
-  console.log(`🔍 DEBUG: Current working directory: ${cwd}`);
-
-  const possiblePaths = [
-    "./",
-    "./tsp-output/",
-    "./tsp-output/@lars-artmann/typespec-asyncapi/",
-    path.join(cwd, "tsp-output", "@lars-artmann", "typespec-asyncapi"),
-    path.join(cwd, "tsp-output"),
-    path.join(cwd),
-    "tsp-output/",
-    "tsp-output/@lars-artmann/typespec-asyncapi/",
-    // 🔥 KEY INSIGHT: TypeSpec uses temp directories for test isolation!
-    "./test/temp-output/",
-    path.join(cwd, "test", "temp-output"),
-  ];
-  const extensions = [".json", ".yaml"];
-
-  // 🔥 DYNAMIC DISCOVERY: Search all temp-output subdirectories
-  const tempOutputBase = path.join(cwd, "test", "temp-output");
-  if (fs.existsSync(tempOutputBase)) {
-    console.log(`🔍 DEBUG: temp-output exists, listing subdirectories...`);
-    try {
-      const subdirs = fs.readdirSync(tempOutputBase);
-      console.log(`🔍 DEBUG: Found temp subdirs:`, subdirs);
-      for (const subdir of subdirs) {
-        if (subdir === ".DS_Store") continue;
-        const fullPath = path.join(tempOutputBase, subdir, "@lars-artmann", "typespec-asyncapi");
-        possiblePaths.push(fullPath);
-        possiblePaths.push(path.join(tempOutputBase, subdir));
-
-        // 🔥 KEY INSIGHT: Check what files actually exist in each temp dir
-        try {
-          const files = fs.readdirSync(fullPath);
-          console.log(`🔍 DEBUG: Files in ${fullPath}:`, files);
-        } catch (error) {
-          // Directory might not exist, continue
-        }
-      }
-    } catch (error) {
-      console.log(`🔍 DEBUG: Error reading temp-output: ${error}`);
-    }
-  }
-
-  // 🔥 ENHANCED WORKAROUND: TypeSpec 1.6.0 emitFile API doesn't populate result.outputs
-  // Issue: emitFile writes to real FS but test framework only scans virtual FS
-  // Solution: Search both temp directories AND current working directory
-  // Define search parameters (missing from original edit)
-  const possibleFilenames = [
-    outputFile, // Default from options
-    "asyncapi", // Common default
-    "AsyncAPI", // Common capitalization
-    "output", // Generic fallback
-  ];
-
-  console.log(`🔧 ENHANCED FALLBACK: emitFile API + filesystem search`);
-
-  // Search current working directory first (where emitFile actually writes)
-  const currentWorkingDir = process.cwd();
-  for (const filename of possibleFilenames) {
-    for (const ext of extensions) {
-      const filePath = path.join(currentWorkingDir, filename + ext);
-      console.log(`🔍 DEBUG: Checking CWD path: ${filePath}`);
-      try {
-        const exists = fs.existsSync(filePath);
-        console.log(`🔍 DEBUG: File exists in CWD at ${filePath}: ${exists}`);
-        if (exists) {
-          const content = fs.readFileSync(filePath, "utf8");
-          console.log(`🔍 ENHANCED FALLBACK: Found file in CWD: ${filename + ext}`);
-          return { file: filename + ext, content };
-        }
-      } catch (error) {
-        console.log(`🔍 DEBUG: Error checking CWD ${filePath}: ${error}`);
-      }
-    }
-  }
-
-  // Then search temp directories (existing logic)
-  for (const basePath of possiblePaths) {
-    for (const filename of possibleFilenames) {
-      for (const ext of extensions) {
-        const filePath = path.join(basePath, filename + ext);
-        console.log(`🔍 DEBUG: Checking temp path: ${filePath}`);
-        try {
-          const exists = fs.existsSync(filePath);
-          console.log(`🔍 DEBUG: File exists in temp at ${filePath}: ${exists}`);
-
-          if (exists) {
-            const content = fs.readFileSync(filePath, "utf8");
-            console.log(`🔍 ENHANCED FALLBACK: Found file in temp: ${filename + ext}`);
-            return { file: filename + ext, content };
-          }
-        } catch (error) {
-          console.log(`🔍 DEBUG: Error checking temp ${filePath}: ${error}`);
-        }
-      }
-    }
-  }
-
-  // 🔍 ADDITIONAL DEBUG: List directories to see what's available
-  console.log(`🔍 DEBUG: Listing current directory contents:`);
-  try {
-    const files = fs.readdirSync(cwd);
-    console.log(`🔍 DEBUG: CWD files:`, files);
-  } catch (error) {
-    console.log(`🔍 DEBUG: Error listing CWD: ${error}`);
-  }
-
-  // Check for tsp-output directory
-  const tspOutputPath = path.join(cwd, "tsp-output");
-  if (fs.existsSync(tspOutputPath)) {
-    console.log(`🔍 DEBUG: tsp-output directory exists, listing contents:`);
-    try {
-      const files = fs.readdirSync(tspOutputPath);
-      console.log(`🔍 DEBUG: tsp-output files:`, files);
-
-      // Check nested directory
-      const nestedPath = path.join(tspOutputPath, "@lars-artmann", "typespec-asyncapi");
-      if (fs.existsSync(nestedPath)) {
-        const nestedFiles = fs.readdirSync(nestedPath);
-        console.log(`🔍 DEBUG: nested directory files:`, nestedFiles);
-      }
-    } catch (error) {
-      console.log(`🔍 DEBUG: Error listing tsp-output: ${error}`);
-    }
-  } else {
-    console.log(`🔍 DEBUG: tsp-output directory does NOT exist`);
-  }
-
-  return null;
-}
+import { createTester, findTestPackageRoot } from "@typespec/compiler/testing";
+import type { AsyncAPIEmitterOptions } from "../../src/infrastructure/configuration/options.js";
+import YAML from "yaml";
 
 /**
  * TypeSpec 1.6.0 EmitterTester-based test helpers
@@ -155,10 +10,6 @@ function findGeneratedFilesOnFilesystem(
  * This replaces the old createTestWrapper approach with the proper
  * EmitterTester API that correctly passes options to emitters.
  */
-
-import { createTester, findTestPackageRoot } from "@typespec/compiler/testing";
-import type { AsyncAPIEmitterOptions } from "../../src/infrastructure/configuration/options.js";
-import YAML from "yaml";
 
 /**
  * Create an EmitterTester configured for AsyncAPI emitter testing
@@ -180,27 +31,16 @@ export async function createAsyncAPIEmitterTester(options: AsyncAPIEmitterOption
 }
 
 /**
-		// 🔥 WORKAROUND: Try fallback file system search for test framework issues
-		const fallback = findGeneratedFilesOnFilesystem(options["output-file"] || "asyncapi");
-		if (fallback) {
-			console.log(`🔍 FALLBACK: Using file system search - found ${fallback.file}`);
-			const content = fallback.content;
-			const doc = fallback.file.endsWith(".json") ? JSON.parse(content) : YAML.parse(content);
-			
-			return {
-				asyncApiDoc: doc,
-				diagnostics: result.program.diagnostics,
-				program: result.program,
-				outputs: {[fallback.file]: content},
-				outputFile: fallback.file,
-			};
-		}
-		
-		throw new Error("No AsyncAPI output generated - even with fallback search")
- * - Properly passes options to the emitter
- * - Has direct access to output files via result.outputs
- * - Doesn't require filesystem searches
- * - Provides better test isolation
+ * Compile TypeSpec source with AsyncAPI emitter
+ *
+ * Key insight: TypeSpec's emitFile() writes to program.host.writeFile() which
+ * populates the virtual filesystem (result.fs.fs), but doesn't auto-populate
+ * result.outputs. This function bridges that gap.
+ *
+ * Answer to "How to design TestEmitterFile mock":
+ * - NO MOCK NEEDED! TypeSpec's emitFile delegates to program.host.writeFile()
+ * - The test framework already provides a virtual filesystem through program.host
+ * - The solution is to bridge virtual FS to result.outputs, NOT to mock emitFile
  *
  * @param source - TypeSpec source code to compile
  * @param options - AsyncAPI emitter options
@@ -210,52 +50,44 @@ export async function compileAsyncAPI(source: string, options: AsyncAPIEmitterOp
   const tester = await createAsyncAPIEmitterTester(options);
   const result = await tester.compile(source);
 
-  // Debug result.outputs structure
-  console.log(`🔍 result.outputs type:`, typeof result.outputs);
-  console.log(`🔍 result.outputs constructor:`, result.outputs?.constructor?.name);
-  console.log(`🔍 result.outputs:`, result.outputs);
-  console.log(`🔍 result.outputs keys:`, Object.keys(result.outputs || {}));
-
-  // Find the AsyncAPI output file
-  const outputFile = Object.keys(result.outputs).find(
-    (f) => f.endsWith(".yaml") || f.endsWith(".json"),
+  // FIRST: Try to find output in result.outputs (ideal path)
+  const outputFile = Object.keys(result.outputs || {}).find(
+    (f) => f.endsWith(".json") || f.endsWith(".yaml"),
   );
 
-  // 🔥 WORKAROUND: TypeSpec 1.6.0 emitFile API doesn't populate result.outputs
-  // Manual bridge from virtual filesystem to outputs for test compatibility
-  if (!outputFile) {
-    // Check virtual filesystem for files that should have been emitted
-    // FIXED: Look in correct TypeSpec emitFile output directory structure
-    const searchPaths = [
-      "tsp-output", // Direct search
-      "tsp-output/@lars-artmann/typespec-asyncapi", // Package-scoped search
-      "tsp-output/*", // Wildcard package search
-    ];
+  if (outputFile) {
+    const content = result.outputs[outputFile];
+    const doc = outputFile.endsWith(".json") ? JSON.parse(content) : YAML.parse(content);
 
-    const virtualFiles = Object.entries(result.fs.fs || {});
-    console.log(
-      `🔍 DEBUG: Searching ${searchPaths.length} paths in virtual FS with ${virtualFiles.length} total files`,
-    );
+    return {
+      asyncApiDoc: doc,
+      diagnostics: result.program.diagnostics,
+      program: result.program,
+      outputs: result.outputs,
+      outputFile,
+    };
+  }
 
-    // Look for AsyncAPI files in all possible locations
+  // SECOND: Bridge virtual filesystem to result.outputs
+  // TypeSpec's emitFile writes to result.fs.fs but doesn't populate result.outputs
+  if (result.fs && result.fs.fs) {
+    const virtualFiles = Object.entries(result.fs.fs);
+    const expectedName = options["output-file"] || "asyncapi";
+
+    // Search for AsyncAPI files by matching against expected filename patterns
     for (const [virtualPath, content] of virtualFiles) {
-      // Match against expected filename patterns
-      const expectedName = options["output-file"] || "asyncapi";
-      const filename = virtualPath.split("/").pop() || ""; // Extract just the filename
+      const filename = virtualPath.split("/").pop() || "";
+      const isAsyncAPIFile =
+        (filename.includes(expectedName) || filename.includes("asyncapi")) &&
+        (filename.endsWith(".yaml") || filename.endsWith(".json"));
 
-      if (
-        filename.includes(expectedName) &&
-        (filename.endsWith(".yaml") || filename.endsWith(".json"))
-      ) {
-        // SUCCESS: Found emitted file in virtual filesystem
-        const relativePath = filename; // Use simple filename for outputs
-        (result.outputs as any)[relativePath] = content;
-        console.log(`🎉 SUCCESS: Found ${virtualPath} -> result.outputs.${relativePath}`);
+      if (isAsyncAPIFile && typeof content === "string") {
+        const relativePath = filename;
 
         return {
           asyncApiDoc: filename.endsWith(".json")
-            ? JSON.parse(String(content))
-            : YAML.load(String(content)),
+            ? JSON.parse(content)
+            : YAML.parse(content),
           diagnostics: result.program.diagnostics,
           program: result.program,
           outputs: { [relativePath]: content },
@@ -263,36 +95,9 @@ export async function compileAsyncAPI(source: string, options: AsyncAPIEmitterOp
         };
       }
     }
-
-    // If no virtual files found, try filesystem fallback
-    const fallback = findGeneratedFilesOnFilesystem(options["output-file"] || "asyncapi");
-    if (fallback) {
-      console.log(`🔍 FALLBACK: Using file system search - found ${fallback.file}`);
-      const content = fallback.content;
-      const doc = fallback.file.endsWith(".json") ? JSON.parse(content) : YAML.parse(content);
-
-      return {
-        asyncApiDoc: doc,
-        diagnostics: result.program.diagnostics,
-        program: result.program,
-        outputs: { [fallback.file]: content },
-        outputFile: fallback.file,
-      };
-    }
-
-    throw new Error("No AsyncAPI output generated - check emitFile integration");
   }
 
-  const content = result.outputs[outputFile];
-  const doc = outputFile.endsWith(".json") ? JSON.parse(content) : YAML.parse(content);
-
-  return {
-    asyncApiDoc: doc,
-    diagnostics: result.program.diagnostics,
-    program: result.program,
-    outputs: result.outputs,
-    outputFile,
-  };
+  throw new Error("No AsyncAPI output generated - check emitFile integration");
 }
 
 /**
