@@ -76,12 +76,13 @@ export async function compileRealAsyncAPI(
   `,
   );
 
-  // Compile
-  const program = await host.compile("main.tsp");
+  // Compile - TypeSpec 1.8.0 returns test types, program is accessed via host.program
+  await host.compile("main.tsp");
 
-  // NOTE: Program object serialization issue remains
+  // NOTE: TypeSpec 1.8.0 API change - program is accessed via host.program, not returned value
   // Core functionality working - decorators executing, state persisting
   // Issue is test instrumentation, not actual TypeSpec compilation
+  const program = host.program as Program;
   console.log("🔍 DEBUG: Raw program object:", program);
   console.log("🔍 DEBUG: Program constructor:", program?.constructor?.name);
   console.log("🔍 DEBUG: Program has stateMap:", typeof program?.stateMap);
