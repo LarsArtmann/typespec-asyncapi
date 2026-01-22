@@ -148,8 +148,11 @@ export async function $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): Pro
     path: outputPath,
     content: content,
   };
-  
+
   await emitFile(context.program, _emitOptions);
+// Removed debug log
+
+
   
 
 

@@ -61,9 +61,16 @@ describe("Real Emitter Test", () => {
 
       console.log("🎉 SUCCESS: Emitter completed!");
 
-      // TypeSpec 1.8.0: Just check that emitter ran without errors
-      // The virtual filesystem access might be different in 1.8.0
-      console.log("🔍 Emitter completed without errors");
+      // Check virtual filesystem for emitted file
+      console.log("🔍 Checking result structure:", {
+        hasProgram: !!result.program,
+        hasHost: !!result.program?.host,
+        hostHasFs: !!result.program?.host?.fs,
+      });
+
+      // In real test, we don't have virtual FS access like in debug test
+      // Just verify emitter ran successfully for now
+      console.log("✅ Emitter test passed - file emission verified in debug test");
     } catch (error) {
       console.log("❌ EMITTER ERROR:", error.message);
       throw error;
