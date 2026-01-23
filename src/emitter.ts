@@ -130,18 +130,32 @@ ${Object.entries(document.components.schemas)
 export async function $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): Promise<void> {
   const options = context.options;
 
+  // DEBUG: Verify emitter was called
+  // eslint-disable-next-line no-console
+  console.log("🔍 EMITTER DEBUG: $onEmit called");
+  // eslint-disable-next-line no-console
+  console.log("🔍 EMITTER DEBUG: Options:", JSON.stringify(options));
+  // eslint-disable-next-line no-console
+  console.log("🔍 EMITTER DEBUG: Has program:", context.program !== undefined);
 
   // Extract decorator state from program
   const rawState = consolidateAsyncAPIState(context.program);
 
+  // eslint-disable-next-line no-console
+  console.log("🔍 EMITTER DEBUG: Raw state:", JSON.stringify(rawState, (key: string, value: unknown): unknown => (typeof value === 'object' && value instanceof Map ? Object.fromEntries(value) : value), 2));
 
   // Generate basic AsyncAPI document
   const asyncapiDocument = generateBasicAsyncAPI(rawState, options);
-  
+
+  // eslint-disable-next-line no-console
+  console.log("🔍 EMITTER DEBUG: Generated document with", Object.keys(asyncapiDocument.channels || {}).length, "channels");
+
   // Generate YAML content
   const content = generateYAML(asyncapiDocument);
   const outputPath = "asyncapi.yaml";
 
+  // eslint-disable-next-line no-console
+  console.log("🔍 EMITTER DEBUG: Generated", content.length, "chars of YAML");
 
   // Emit file - use direct call without try/catch to satisfy ESLint
   const _emitOptions: EmitFileOptions = {
@@ -149,11 +163,13 @@ export async function $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): Pro
     content: content,
   };
 
+  // eslint-disable-next-line no-console
+  console.log("🔍 EMITTER DEBUG: About to call emitFile with path:", outputPath);
+
   await emitFile(context.program, _emitOptions);
 // Removed debug log
 
-
-  
-
+  // eslint-disable-next-line no-console
+  console.log("🔍 EMITTER DEBUG: emitFile completed");
 
 }

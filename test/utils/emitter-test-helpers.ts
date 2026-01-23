@@ -70,9 +70,51 @@ export async function compileAsyncAPI(source: string, options: AsyncAPIEmitterOp
 
   // SECOND: Bridge virtual filesystem to result.outputs
   // TypeSpec's emitFile writes to result.fs.fs but doesn't populate result.outputs
+  // eslint-disable-next-line no-console
+  console.log("🔧 TEST HELP: result.fs:", result.fs ? "exists" : "undefined");
+  // eslint-disable-next-line no-console
+  console.log("🔧 TEST HELP: result.fs.fs:", result.fs?.fs ? "exists" : "undefined");
+  // eslint-disable-next-line no-console
+  console.log("🔧 TEST HELP: result.fs.fs keys:", result.fs?.fs ? Object.keys(result.fs.fs) : "N/A");
+  // eslint-disable-next-line no-console
+  console.log("🔧 TEST HELP: result.program.host:", result.program.host ? "exists" : "undefined");
+  // eslint-disable-next-line no-console
+  console.log("🔧 TEST HELP: result.program.host.fs:", result.program.host?.fs ? "exists" : "undefined");
+  // eslint-disable-next-line no-console
+  console.log("🔧 TEST HELP: result.program.host.fs root:", result.program.host?.fs?.root ? result.program.host.fs.root : "no root");
+
+  if (result.program.host?.fs) {
+    try {
+      const fs = await import("node:fs");
+      const path = await import("node:path");
+      // result.program.host.fs might have different API
+      // eslint-disable-next-line no-console
+      console.log("🔧 TEST HELP: result.program.host.fs type:", typeof result.program.host.fs);
+      // eslint-disable-next-line no-console
+      console.log("🔧 TEST HELP: result.program.host.fs keys:", Object.keys(result.program.host.fs));
+
+      // Check if it has readFile, writeFile, etc. methods
+      const hostFs = result.program.host.fs as Record<string, any>;
+      for (const key of ['readFile', 'writeFile', 'exists', 'readdir']) {
+        // eslint-disable-next-line no-console
+        console.log("🔧 TEST HELP: result.program.host.fs has", key, ":", typeof hostFs[key]);
+      }
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.log("🔧 TEST HELP: Error inspecting result.program.host.fs:", e);
+    }
+  }
+
   if (result.fs && result.fs.fs) {
     const virtualFiles = Object.entries(result.fs.fs);
     const expectedName = options["output-file"] || "asyncapi";
+
+    // eslint-disable-next-line no-console
+    console.log("🔧 TEST HELP: Virtual files count:", virtualFiles.length);
+    for (const [path, content] of virtualFiles) {
+      // eslint-disable-next-line no-console
+      console.log("🔧 TEST HELP: Virtual file:", path, "(length:", typeof content === "string" ? content.length : "not string", ")");
+    }
 
     // Search for AsyncAPI files by matching against expected filename patterns
     for (const [virtualPath, content] of virtualFiles) {
@@ -94,6 +136,51 @@ export async function compileAsyncAPI(source: string, options: AsyncAPIEmitterOp
           outputFile: relativePath,
         };
       }
+    }
+  } else {
+    // eslint-disable-next-line no-console
+    console.log("🔧 TEST HELP: No virtual filesystem available");
+  }
+
+  // THIRD: Check real filesystem (TypeSpec >=1.8.0 emits to project root!)
+  // CRITICAL DISCOVERY: Emitter writes to ./asyncapi.yaml in project root, NOT to virtual FS
+  // The virtual FS is empty, but real FS has the file
+  const fs = await import("node:fs");
+  const path = await import("node:path");
+  const expectedName = options["output-file"] || "asyncapi";
+
+  // eslint-disable-next-line no-console
+  console.log("🔧 TEST HELP: Expected filename:", expectedName);
+
+  // Check for file directly - simpler than readdir
+  const possibleFiles = [
+    expectedName,
+    `${expectedName}.yaml`,
+    `${expectedName}.json`,
+    `asyncapi.yaml`,
+    `asyncapi.json`,
+    path.join("tsp-output", "@lars-artmann", "typespec-asyncapi", `${expectedName}.yaml`),
+    path.join("tsp-output", "@lars-artmann", "typespec-asyncapi", `${expectedName}.json`),
+  ];
+
+  for (const filePath of possibleFiles) {
+    const fullPath = path.resolve(filePath);
+    try {
+      await fs.access(fullPath); // Throws if file doesn't exist
+      const content = await fs.readFile(fullPath, "utf-8");
+
+      // eslint-disable-next-line no-console
+      console.log("🔧 TEST HELP: Found and read file:", filePath, "length:", content.length);
+
+      return {
+        asyncApiDoc: filePath.endsWith(".json") ? JSON.parse(content) : YAML.parse(content),
+        diagnostics: result.program.diagnostics,
+        program: result.program,
+        outputs: { [path.basename(filePath)]: content },
+        outputFile: path.basename(filePath),
+      };
+    } catch {
+      // File doesn't exist, continue checking
     }
   }
 
