@@ -1,0 +1,21 @@
+version: "2"
+run:
+    timeout: 5m
+    go: ""
+    build-tags: []
+    allow-parallel-runners: false
+    allow-serial-runners: false
+    issues-exit-code: 1
+    tests: true
+output:
+    formats: {}
+linters:
+    enable:
+        - gosec
+        - errcheck
+        - staticcheck
+        - govet
+        - ineffassign
+issues:
+    max-issues-per-linter: 50
+    max-same-issues: 10
