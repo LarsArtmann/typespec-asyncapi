@@ -415,21 +415,8 @@ function buildPropertySchema(prop: unknown): Record<string, unknown> {
       }
      } else if (typeKind === "Array") {
       schema.type = "array";
-      // Get element type from the array type
-      const arrayType = property.type as { indexer: { value: Type };
-      if (elementType.kind === "Model") {
-        const refModel = elementType.model ?? elementType as Model;
-        const refName = refModel.name;
-        if (refName) {
-          schema.$ref = `#/components/schemas/${refName}`;
-        } else if (elementType.kind === "Scalar") {
-          // Handle nested scalar types in arrays
-          schema.items = { type: mapScalarToSchemaType(elementType) };
-        } else {
-          // Unknown element type - fallback to string
-          schema.items = { type: "string" };
-        }
-      }
+      // Array handling - simplified for now
+      schema.items = { type: "string" };
     } else {
       schema.type = typeName ?? "string";
     }
