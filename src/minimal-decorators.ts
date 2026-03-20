@@ -289,6 +289,20 @@ export function $protocol(
 }
 
 /**
+ * Helper to extract value from Model property (handles any type)
+ */
+function getModelPropertyValue(model: Model, propertyName: string): unknown {
+  const property = model.properties.get(propertyName);
+  if (!property) return undefined;
+  const type = property.type as { kind: string; value?: unknown };
+  if (type.kind === "String" && type.value !== undefined) {
+    return type.value;
+  }
+  // Return the type itself for complex properties (like objects)
+  return type;
+}
+
+/**
  * Simplest possible @security decorator for testing
  */
 export function $security(
@@ -310,13 +324,40 @@ export function $security(
   }
 
   // Store security configuration in state for emitter to use
-  const configTyped = config as Record<string, unknown>;
-  const name = configTyped.name as string;
-  const scheme = configTyped.scheme as Record<string, unknown>;
+  // Handle both plain objects and Model types
+  let name: string | undefined;
+  let scheme: Record<string, unknown> | undefined;
+
+  if (config && typeof config === "object" && "kind" in config && config.kind === "Model") {
+    // Extract from Model properties
+    const configModel = config as Model;
+    name = getModelPropertyStringValue(configModel, "name");
+    const schemeValue = getModelPropertyValue(configModel, "scheme");
+    if (schemeValue && typeof schemeValue === "object" && "properties" in schemeValue) {
+      // Scheme is a nested Model - extract its properties
+      const schemeModel = schemeValue as Model;
+      scheme = {};
+      for (const [propName, prop] of schemeModel.properties) {
+        const propType = prop.type as { kind: string; value?: unknown; name?: string };
+        if (propType.kind === "String" && propType.value !== undefined) {
+          scheme[propName] = propType.value;
+        } else if (propType.kind === "Scalar" && propType.name !== undefined) {
+          scheme[propName] = propType.name;
+        }
+      }
+    } else if (schemeValue && typeof schemeValue === "object") {
+      scheme = schemeValue as Record<string, unknown>;
+    }
+  } else {
+    // Plain object config
+    const configTyped = config as Record<string, unknown>;
+    name = configTyped.name as string;
+    scheme = configTyped.scheme as Record<string, unknown>;
+  }
 
   // Skip validation if values aren't present (let TypeSpec handle type checking)
   // This allows both inline objects and Model references to work
-  if (name && scheme) {
+  if (name && scheme && Object.keys(scheme).length > 0) {
     storeSecurityConfig(context.program, target, { name, scheme });
   }
 }
@@ -473,8 +514,20 @@ export const storeHeader = (
   // If target is a ModelProperty, also store reference to the parent model
   const targetKey = target.kind === "ModelProperty" ? target.model ?? target : target;
 
-  const existingHeaders = (headersMap.get(targetKey) as Array<{ name: string; value?: unknown }> | undefined) ?? [];
-  headersMap.set(targetKey, [...existingHeaders, { name, value }]);
+  // Extract type from the property if available
+  let headerType = "string";
+  let description: string | undefined;
+
+  if (target.kind === "ModelProperty") {
+    const prop = target as { type?: { kind?: string; name?: string }; doc?: string };
+    if (prop.type?.kind === "Scalar") {
+      headerType = prop.type.name?.toLowerCase() ?? "string";
+    }
+    description = prop.doc;
+  }
+
+  const existingHeaders = (headersMap.get(targetKey) as Array<{ name: string; value?: unknown; type?: string; description?: string }> | undefined) ?? [];
+  headersMap.set(targetKey, [...existingHeaders, { name, value, type: headerType, description }]);
 };
 
 /**

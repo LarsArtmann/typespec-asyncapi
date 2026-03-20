@@ -316,7 +316,23 @@ function buildComponents(state: AsyncAPIConsolidatedState): Record<string, unkno
           ...(correlationIdData.property && { property: correlationIdData.property }),
         };
       }
-      
+
+      // Add headers if present
+      const headersData = state.messageHeaders?.get(type);
+      if (headersData && headersData.length > 0) {
+        const headers: Record<string, unknown> = {};
+        for (const header of headersData) {
+          headers[header.name] = {
+            type: header.type ?? "string",
+            ...(header.description && { description: header.description }),
+          };
+        }
+        messageEntry.headers = {
+          type: "object",
+          properties: headers,
+        };
+      }
+
       messages[modelName] = messageEntry;
       collectedModels.add(model);
     }

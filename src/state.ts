@@ -103,6 +103,16 @@ export type CorrelationIdData = {
   property?: string;
 };
 
+/**
+ * Message Header State Data
+ */
+export type MessageHeaderData = {
+  name: string;
+  value?: unknown;
+  description?: string;
+  type?: string;
+};
+
 // === STATE CONSOLIDATION UTILITIES ===
 
 /**
@@ -117,6 +127,7 @@ export type AsyncAPIConsolidatedState = {
   protocolConfigs: Map<Type, ProtocolConfigData>;
   securityConfigs: Map<Type, SecurityConfigData>;
   correlationIds: Map<Type, CorrelationIdData>;
+  messageHeaders: Map<Type, MessageHeaderData[]>;
 };
 
 /**
@@ -131,6 +142,7 @@ export function consolidateAsyncAPIState(program: Program): AsyncAPIConsolidated
   const protocolConfigs = getStateMap<ProtocolConfigData>(program, stateSymbols.protocolConfigs);
   const securityConfigs = getStateMap<SecurityConfigData>(program, stateSymbols.securityConfigs);
   const correlationIds = getStateMap<CorrelationIdData>(program, stateSymbols.correlationIds);
+  const messageHeaders = getStateMap<MessageHeaderData[]>(program, stateSymbols.messageHeaders);
 
   return {
     channels: channelPaths,
@@ -141,5 +153,6 @@ export function consolidateAsyncAPIState(program: Program): AsyncAPIConsolidated
     protocolConfigs: protocolConfigs,
     securityConfigs: securityConfigs,
     correlationIds: correlationIds,
+    messageHeaders: messageHeaders,
   };
 }
