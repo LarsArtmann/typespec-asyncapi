@@ -5,8 +5,8 @@
  */
 
 import { Output, SourceFile } from "@alloy-js/core";
-import type { EmitContext, Program, Operation, Model, Namespace, Type } from "@typespec/compiler";
-import { listOperationsIn, getNamespaceFullName, isArrayModelType } from "@typespec/compiler";
+import type { EmitContext, Program, Operation, Model, Namespace } from "@typespec/compiler";
+import { listOperationsIn, getNamespaceFullName } from "@typespec/compiler";
 import { writeOutput } from "@typespec/emitter-framework";
 import { consolidateAsyncAPIState, type AsyncAPIConsolidatedState } from "./state.js";
 import type { AsyncAPIEmitterOptions } from "./infrastructure/configuration/asyncAPIEmitterOptions.js";
