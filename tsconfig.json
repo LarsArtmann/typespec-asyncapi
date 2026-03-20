@@ -20,9 +20,11 @@
     "tsBuildInfoFile": ".tsbuildinfo",
     "verbatimModuleSyntax": true,
     "allowImportingTsExtensions": false,
-    "noEmitOnError": false
+    "noEmitOnError": false,
+    "jsx": "react-jsx",
+    "jsxImportSource": "@alloy-js/core"
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
   "exclude": [
     "node_modules",
     "dist",

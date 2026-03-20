@@ -79,16 +79,16 @@ export const storeOperationType = (
 export const storeMessageConfig = (
   program: unknown,
   target: Model,
-  config: Record<string, unknown>,
+  config: { title: string; description: string; contentType: string },
 ) => {
   const programTyped = program as { stateMap: (symbol: symbol) => Map<unknown, unknown> };
   const messageConfigsMap = programTyped.stateMap(stateSymbols.messageConfigs);
   messageConfigsMap.set(target, {
-    title: (config.title as string) ?? target.name,
-    description: (config.description as string) ?? `Message ${target.name}`,
-    contentType: (config.contentType as string) ?? "application/json",
+    title: config.title ?? target.name,
+    description: config.description ?? `Message ${target.name}`,
+    contentType: config.contentType ?? "application/json",
   });
-};
+};;
 
 /**
  * Simplest possible @channel decorator for testing
@@ -150,7 +150,6 @@ export function $server(context: DecoratorContext, target: Namespace, config: un
  * Simplest possible @publish decorator for testing
  */
 export function $publish(context: DecoratorContext, target: Operation, config?: Model): void {
-
   // Store publish operation type in state
   storeOperationType(
     context.program,
@@ -173,10 +172,22 @@ export function $publish(context: DecoratorContext, target: Operation, config?: 
 }
 
 /**
+ * Helper to extract string value from Model property
+ */
+function getModelPropertyStringValue(model: Model, propertyName: string): string | undefined {
+  const property = model.properties.get(propertyName);
+  if (!property) return undefined;
+  const type = property.type as { kind: string; value?: string };
+  if (type.kind === "String" && type.value !== undefined) {
+    return type.value;
+  }
+  return undefined;
+}
+
+/**
  * Simplest possible @message decorator for testing
  */
 export function $message(context: DecoratorContext, target: Model, config: unknown): void {
-
   if (
     !validateConfig(
       config,
@@ -189,9 +200,14 @@ export function $message(context: DecoratorContext, target: Model, config: unkno
     return;
   }
 
+  // Extract config values from Model
+  const configModel = config as Model;
+  const title = getModelPropertyStringValue(configModel, "title") ?? target.name;
+  const description = getModelPropertyStringValue(configModel, "description") ?? `Message ${target.name}`;
+  const contentType = getModelPropertyStringValue(configModel, "contentType") ?? "application/json";
+
   // Store message configuration in state
-  const configTyped = config as Record<string, unknown>;
-  storeMessageConfig(context.program, target, configTyped);
+  storeMessageConfig(context.program, target, { title, description, contentType });
 }
 
 /**
@@ -282,7 +298,6 @@ export function $security(
  * Simplest possible @subscribe decorator for testing
  */
 export function $subscribe(context: DecoratorContext, target: Operation): void {
-
   // Store subscribe operation type in state
   storeOperationType(
     context.program,

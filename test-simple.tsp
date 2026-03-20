@@ -1,14 +1,33 @@
+/**
+ * Simple test for AsyncAPI emitter
+ */
+
 import "@lars-artmann/typespec-asyncapi";
+
 using TypeSpec.AsyncAPI;
 
-@message({
-  title: "Test Message",
-  description: "A simple test message"
-})
-model TestMessage {
-  message: string;
+namespace TestAPI;
+
+model User {
+  id: string;
+  name: string;
+  email: string;
 }
 
-@channel("/test")
-@publish(TestMessage)
-op publishTest(): TestMessage;
+@message({
+  name: "UserCreated",
+  title: "User Created Event",
+  description: "Emitted when a new user is created"
+})
+model UserCreatedMessage {
+  user: User;
+  timestamp: utcDateTime;
+}
+
+@channel("user.created")
+@publish
+op publishUserCreated(): UserCreatedMessage;
+
+@channel("user.created")
+@subscribe
+op subscribeUserCreated(): UserCreatedMessage;

@@ -68,3 +68,4 @@ pipeline-test/
 tsp-test/
 test/temp-output/
 tmp/
+output/

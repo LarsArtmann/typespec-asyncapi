@@ -13,9 +13,9 @@ export default [
   ...tseslint.configs.recommendedTypeChecked,
   ...tseslint.configs.strict,
 
-  // Apply to TypeScript files in src directory
+  // Apply to TypeScript files in src directory (including .tsx for Alloy components)
   {
-    files: ["src/**/*.ts"],
+    files: ["src/**/*.ts", "src/**/*.tsx"],
     languageOptions: {
       parserOptions: {
         project: "./tsconfig.json",
