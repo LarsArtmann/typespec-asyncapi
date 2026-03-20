@@ -1,1 +1,0 @@
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/plugins/core/PluginSystem.ts[0m:[0m[32m18[0m:export class PluginRegis[0m[1m[31mtry {[0m

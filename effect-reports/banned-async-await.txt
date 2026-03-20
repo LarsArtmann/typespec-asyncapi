@@ -1,4 +1,0 @@
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/utils/effect-helpers.ts[0m:[0m[32m37[0m:    try: [0m[1m[31masync ([0m) => {
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/utils/effect-helpers.ts[0m:[0m[32m38[0m:      const data = [0m[1m[31mawait [0mfn();
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/emitter.ts[0m:[0m[32m72[0m:export [0m[1m[31masync function[0m $onEmit(
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/emitter.ts[0m:[0m[32m191[0m:  [0m[1m[31mawait [0mcontext.program.host.writeFile(outputPath, yamlContent);

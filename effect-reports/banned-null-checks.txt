@@ -1,5 +1,0 @@
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/infrastructure/configuration/asyncAPIEmitterOptions.ts[0m:[0m[32m172[0m:  if (typeof config === "object" && config [0m[1m[31m!== null[0m) {
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/types/domain/asyncapi-domain-types.ts[0m:[0m[32m37[0m:  if (typeof channel !== 'object' || channel [0m[1m[31m=== null[0m || Array.isArray(channel)) {
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/types/domain/asyncapi-domain-types.ts[0m:[0m[32m47[0m:  if (typeof message !== 'object' || message [0m[1m[31m=== null[0m || Array.isArray(message)) {
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/types/domain/asyncapi-domain-types.ts[0m:[0m[32m57[0m:  if (typeof schema !== 'object' || schema [0m[1m[31m=== null[0m || Array.isArray(schema)) {
-[0m[35m/Users/larsartmann/projects/typespec-asyncapi/src/types/domain/asyncapi-domain-types.ts[0m:[0m[32m171[0m:      if (typeof operation !== 'object' || operation [0m[1m[31m=== null[0m || Array.isArray(operation)) {
