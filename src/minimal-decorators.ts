@@ -125,6 +125,22 @@ export const storeServerConfig = (
 };
 
 /**
+ * Store security configuration in state for emitter to use
+ */
+export const storeSecurityConfig = (
+  program: unknown,
+  target: Operation | Namespace,
+  config: { name: string; scheme: Record<string, unknown> },
+) => {
+  const programTyped = program as { stateMap: (symbol: symbol) => Map<unknown, unknown> };
+  const securityConfigsMap = programTyped.stateMap(stateSymbols.securityConfigs);
+  securityConfigsMap.set(target, {
+    name: config.name,
+    scheme: config.scheme,
+  });
+};
+
+/**
  * Simplest possible @server decorator for testing
  */
 export function $server(context: DecoratorContext, target: Namespace, config: unknown): void {
@@ -292,6 +308,33 @@ export function $security(
   ) {
     return;
   }
+
+  // Store security configuration in state for emitter to use
+  const configTyped = config as Record<string, unknown>;
+  const name = configTyped.name as string;
+  const scheme = configTyped.scheme as Record<string, unknown>;
+
+  if (!name || typeof name !== "string") {
+    reportDecoratorDiagnostic(
+      context,
+      "invalid-security-config",
+      target,
+      "Security configuration must have a 'name' property of type string.",
+    );
+    return;
+  }
+
+  if (!scheme || typeof scheme !== "object") {
+    reportDecoratorDiagnostic(
+      context,
+      "invalid-security-config",
+      target,
+      "Security configuration must have a 'scheme' property of type object.",
+    );
+    return;
+  }
+
+  storeSecurityConfig(context.program, target, { name, scheme });
 }
 
 /**

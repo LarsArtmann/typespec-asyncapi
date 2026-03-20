@@ -212,7 +212,7 @@ function buildComponents(state: AsyncAPIConsolidatedState): Record<string, unkno
       const messageData = data;
       const modelName = model.name;
       
-      messages[modelName] = {
+      const messageEntry: Record<string, unknown> = {
         name: messageData.title ?? modelName,
         title: messageData.title ?? modelName,
         summary: messageData.description,
@@ -222,6 +222,22 @@ function buildComponents(state: AsyncAPIConsolidatedState): Record<string, unkno
         },
       };
       
+      // Add tags if present
+      const tagsData = state.tags?.get(type);
+      if (tagsData) {
+        messageEntry.tags = [{ name: tagsData.name }];
+      }
+      
+      // Add correlationId if present
+      const correlationIdData = state.correlationIds?.get(type);
+      if (correlationIdData) {
+        messageEntry.correlationId = {
+          location: correlationIdData.location,
+          ...(correlationIdData.property && { property: correlationIdData.property }),
+        };
+      }
+      
+      messages[modelName] = messageEntry;
       collectedModels.add(model);
     }
   }
@@ -280,7 +296,29 @@ function buildComponents(state: AsyncAPIConsolidatedState): Record<string, unkno
     components.schemas = schemas;
   }
   
+  // Add security schemes from @security decorator
+  const securitySchemes = buildSecuritySchemes(state);
+  if (securitySchemes && Object.keys(securitySchemes).length > 0) {
+    components.securitySchemes = securitySchemes;
+  }
+  
   return Object.keys(components).length > 0 ? components : undefined;
+}
+
+/**
+ * Build security schemes from @security decorator configurations
+ */
+function buildSecuritySchemes(state: AsyncAPIConsolidatedState): Record<string, unknown> | undefined {
+  const schemes: Record<string, unknown> = {};
+  
+  if (state.securityConfigs) {
+    for (const [_type, data] of state.securityConfigs) {
+      const securityData = data;
+      schemes[securityData.name] = securityData.scheme;
+    }
+  }
+  
+  return Object.keys(schemes).length > 0 ? schemes : undefined;
 }
 
 /**

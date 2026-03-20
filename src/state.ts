@@ -87,6 +87,22 @@ export type TagData = {
   description?: string;
 };
 
+/**
+ * Security Configuration State Data
+ */
+export type SecurityConfigData = {
+  name: string;
+  scheme: Record<string, unknown>;
+};
+
+/**
+ * Correlation ID Configuration State Data
+ */
+export type CorrelationIdData = {
+  location: string;
+  property?: string;
+};
+
 // === STATE CONSOLIDATION UTILITIES ===
 
 /**
@@ -99,6 +115,8 @@ export type AsyncAPIConsolidatedState = {
   operations: Map<Type, OperationTypeData>;
   tags: Map<Type, TagData>;
   protocolConfigs: Map<Type, ProtocolConfigData>;
+  securityConfigs: Map<Type, SecurityConfigData>;
+  correlationIds: Map<Type, CorrelationIdData>;
 };
 
 /**
@@ -111,6 +129,8 @@ export function consolidateAsyncAPIState(program: Program): AsyncAPIConsolidated
   const operationTypes = getStateMap<OperationTypeData>(program, stateSymbols.operationTypes);
   const tags = getStateMap<TagData>(program, stateSymbols.tags);
   const protocolConfigs = getStateMap<ProtocolConfigData>(program, stateSymbols.protocolConfigs);
+  const securityConfigs = getStateMap<SecurityConfigData>(program, stateSymbols.securityConfigs);
+  const correlationIds = getStateMap<CorrelationIdData>(program, stateSymbols.correlationIds);
 
   return {
     channels: channelPaths,
@@ -119,5 +139,7 @@ export function consolidateAsyncAPIState(program: Program): AsyncAPIConsolidated
     operations: operationTypes,
     tags: tags,
     protocolConfigs: protocolConfigs,
+    securityConfigs: securityConfigs,
+    correlationIds: correlationIds,
   };
 }
