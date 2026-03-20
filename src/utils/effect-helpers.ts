@@ -205,15 +205,16 @@ export const effectUtils = {
     result.success ? Effect.succeed(result.data) : Effect.fail(result.error),
 
   /**
-   * Convert promise to Effect with timeout
+   * Convert promise factory to Effect with timeout
+   * Takes a lazy function that returns a Promise instead of Promise directly
    */
   fromPromiseWithTimeout: <A>(
-    promise: Promise<A>,
+    promiseFactory: () => Promise<A>,
     timeout: number,
   ): Effect.Effect<A, Error, never> =>
     Effect.race(
       Effect.tryPromise({
-        try: () => promise,
+        try: promiseFactory,
         catch: (error) => new Error(`Promise failed: ${String(error)}`),
       }),
       Effect.fail(new Error(`Operation timed out after ${timeout}ms`)),

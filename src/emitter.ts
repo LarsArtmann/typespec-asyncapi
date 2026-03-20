@@ -8,6 +8,7 @@ import { emitFile } from "@typespec/compiler";
 import type { EmitContext, EmitFileOptions } from "@typespec/compiler";
 import type { AsyncAPIEmitterOptions } from "./infrastructure/configuration/asyncAPIEmitterOptions.js";
 import { consolidateAsyncAPIState, type AsyncAPIConsolidatedState, type MessageConfigData } from "./state.js";
+import { Effect } from "effect";
 
 /**
  * Minimal AsyncAPI document type
@@ -130,46 +131,60 @@ ${Object.entries(document.components.schemas)
 export async function $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): Promise<void> {
   const options = context.options;
 
-  // DEBUG: Verify emitter was called
-  // eslint-disable-next-line no-console
-  console.log("🔍 EMITTER DEBUG: $onEmit called");
-  // eslint-disable-next-line no-console
-  console.log("🔍 EMITTER DEBUG: Options:", JSON.stringify(options));
-  // eslint-disable-next-line no-console
-  console.log("🔍 EMITTER DEBUG: Has program:", context.program !== undefined);
+  // Use Effect.runPromise to execute logging effects
+  await Effect.runPromise(
+    Effect.gen(function* () {
+      yield* Effect.log("🔍 EMITTER DEBUG: $onEmit called");
+      yield* Effect.log("🔍 EMITTER DEBUG: Options:").pipe(
+        Effect.annotateLogs({ options: JSON.stringify(options) }),
+      );
+      yield* Effect.log("🔍 EMITTER DEBUG: Has program:").pipe(
+        Effect.annotateLogs({ hasProgram: context.program !== undefined }),
+      );
 
-  // Extract decorator state from program
-  const rawState = consolidateAsyncAPIState(context.program);
+      // Extract decorator state from program
+      const rawState = consolidateAsyncAPIState(context.program);
 
-  // eslint-disable-next-line no-console
-  console.log("🔍 EMITTER DEBUG: Raw state:", JSON.stringify(rawState, (key: string, value: unknown): unknown => (typeof value === 'object' && value instanceof Map ? Object.fromEntries(value) : value), 2));
+      yield* Effect.log("🔍 EMITTER DEBUG: Raw state:").pipe(
+        Effect.annotateLogs({
+          rawState: JSON.stringify(rawState, (key: string, value: unknown): unknown =>
+            typeof value === "object" && value instanceof Map ? Object.fromEntries(value) : value,
+          ),
+        }),
+      );
 
-  // Generate basic AsyncAPI document
-  const asyncapiDocument = generateBasicAsyncAPI(rawState, options);
+      // Generate basic AsyncAPI document
+      const asyncapiDocument = generateBasicAsyncAPI(rawState, options);
 
-  // eslint-disable-next-line no-console
-  console.log("🔍 EMITTER DEBUG: Generated document with", Object.keys(asyncapiDocument.channels || {}).length, "channels");
+      yield* Effect.log("🔍 EMITTER DEBUG: Generated document").pipe(
+        Effect.annotateLogs({ channelCount: Object.keys(asyncapiDocument.channels || {}).length }),
+      );
 
-  // Generate YAML content
-  const content = generateYAML(asyncapiDocument);
-  const outputPath = "asyncapi.yaml";
+      // Generate YAML content
+      const content = generateYAML(asyncapiDocument);
+      const outputPath = "asyncapi.yaml";
 
-  // eslint-disable-next-line no-console
-  console.log("🔍 EMITTER DEBUG: Generated", content.length, "chars of YAML");
+      yield* Effect.log("🔍 EMITTER DEBUG: Generated YAML").pipe(
+        Effect.annotateLogs({ contentLength: content.length }),
+      );
 
-  // Emit file - use direct call without try/catch to satisfy ESLint
-  const _emitOptions: EmitFileOptions = {
-    path: outputPath,
-    content: content,
-  };
+      // Emit file
+      const _emitOptions: EmitFileOptions = {
+        path: outputPath,
+        content: content,
+      };
 
-  // eslint-disable-next-line no-console
-  console.log("🔍 EMITTER DEBUG: About to call emitFile with path:", outputPath);
+      yield* Effect.log("🔍 EMITTER DEBUG: About to call emitFile").pipe(
+        Effect.annotateLogs({ outputPath }),
+      );
 
-  await emitFile(context.program, _emitOptions);
-// Removed debug log
+      // Use Effect.tryPromise for async operations
+      yield* Effect.tryPromise({
+        try: () => emitFile(context.program, _emitOptions),
+        catch: (error) => new Error(`emitFile failed: ${String(error)}`),
+      });
 
-  // eslint-disable-next-line no-console
-  console.log("🔍 EMITTER DEBUG: emitFile completed");
-
+      yield* Effect.log("🔍 EMITTER DEBUG: emitFile completed");
+    }),
+  );
 }

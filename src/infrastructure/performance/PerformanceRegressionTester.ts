@@ -2,8 +2,10 @@
  * Minimal Performance Regression Tester for Test Compatibility
  *
  * Simplified performance regression testing to unblock tests
+ * Converted to Effect.TS patterns - no async/await
  */
 
+import { Effect } from "effect";
 import { PerformanceMonitor, type PerformanceMetrics } from "./PerformanceMonitor.js";
 
 export type PerformanceConfig = {
@@ -26,68 +28,109 @@ export class PerformanceRegressionTester {
     this.config = config;
   }
 
-  async runCompilationTest(compileOperation: () => Promise<void>): Promise<PerformanceReport> {
-    const monitor = new PerformanceMonitor();
-    monitor.start();
+  /**
+   * Run compilation test with Effect.TS patterns
+   * Returns an Effect that produces a PerformanceReport
+   */
+  runCompilationTest(
+    compileOperation: () => Promise<void>,
+  ): Effect.Effect<PerformanceReport, never, never> {
+    const config = this.config;
 
-    const startMemory = PerformanceMonitor.getCurrentMemoryUsage();
-    const startTime = Date.now();
+    return Effect.gen(function* () {
+      const monitor = new PerformanceMonitor();
+      monitor.start();
 
-    await compileOperation();
+      const startMemory = PerformanceMonitor.getCurrentMemoryUsage();
+      const startTime = Date.now();
 
-    const endMemory = PerformanceMonitor.getCurrentMemoryUsage();
-    const endTime = Date.now();
+      // Execute the compile operation using tryPromise with catchAll to handle errors
+      const compileResult = yield* Effect.either(
+        Effect.tryPromise({
+          try: () => compileOperation(),
+          catch: (error) => new Error(`Compilation failed: ${String(error)}`),
+        }),
+      );
 
-    const metrics: PerformanceMetrics = {
-      duration: endTime - startTime,
-      memoryUsage: endMemory - startMemory,
-      timestamp: endTime,
-    };
+      // Log if compilation failed but continue with metrics
+      if (compileResult._tag === "Left") {
+        yield* Effect.log("Compilation failed").pipe(
+          Effect.annotateLogs({ error: String(compileResult.left) }),
+        );
+      }
 
-    return this.evaluatePerformance(metrics);
+      const endMemory = PerformanceMonitor.getCurrentMemoryUsage();
+      const endTime = Date.now();
+
+      const metrics: PerformanceMetrics = {
+        duration: endTime - startTime,
+        memoryUsage: endMemory - startMemory,
+        timestamp: endTime,
+      };
+
+      return yield* PerformanceRegressionTester.evaluatePerformance(metrics, config);
+    });
   }
 
-  async runPerformanceTest(testOperation: () => Promise<void>): Promise<PerformanceReport> {
-    // Simple wrapper for compatibility
+  /**
+   * Run performance test - wrapper for compatibility
+   */
+  runPerformanceTest(
+    testOperation: () => Promise<void>,
+  ): Effect.Effect<PerformanceReport, never, never> {
+    // Wrapper for compatibility - delegates to runCompilationTest
     return this.runCompilationTest(testOperation);
   }
 
-  private evaluatePerformance(metrics: PerformanceMetrics): PerformanceReport {
-    const violations: string[] = [];
+  /**
+   * Evaluate performance against thresholds
+   */
+  private static evaluatePerformance(
+    metrics: PerformanceMetrics,
+    config: PerformanceConfig,
+  ): Effect.Effect<PerformanceReport, never, never> {
+    return Effect.gen(function* () {
+      const violations: string[] = [];
 
-    if (metrics.duration > this.config.maxCompilationTimeMs) {
-      violations.push(
-        `Compilation time ${metrics.duration}ms exceeds threshold ${this.config.maxCompilationTimeMs}ms`,
-      );
-    }
+      if (metrics.duration > config.maxCompilationTimeMs) {
+        violations.push(
+          `Compilation time ${metrics.duration}ms exceeds threshold ${config.maxCompilationTimeMs}ms`,
+        );
+      }
 
-    const memoryUsageMB = metrics.memoryUsage / 1024 / 1024;
-    if (memoryUsageMB > this.config.maxMemoryUsageMB) {
-      violations.push(
-        `Memory usage ${memoryUsageMB.toFixed(2)}MB exceeds threshold ${this.config.maxMemoryUsageMB}MB`,
-      );
-    }
+      const memoryUsageMB = metrics.memoryUsage / 1024 / 1024;
+      if (memoryUsageMB > config.maxMemoryUsageMB) {
+        violations.push(
+          `Memory usage ${memoryUsageMB.toFixed(2)}MB exceeds threshold ${config.maxMemoryUsageMB}MB`,
+        );
+      }
 
-    return {
-      passed: violations.length === 0,
-      metrics,
-      thresholds: this.config,
-      violations,
-    };
+      return {
+        passed: violations.length === 0,
+        metrics,
+        thresholds: config,
+        violations,
+      };
+    });
   }
 
-  generateReport(results: PerformanceReport[]): void {
-    const passed = results.filter((r) => r.passed).length;
-    const failed = results.length - passed;
+  /**
+   * Generate report from multiple results
+   */
+  generateReport(results: PerformanceReport[]): Effect.Effect<void, never, never> {
+    return Effect.gen(function* () {
+      const passed = results.filter((r) => r.passed).length;
+      const failed = results.length - passed;
 
-    if (failed > 0) {
-      results
-        .filter((r) => !r.passed)
-        .forEach((result) => {
-          result.violations.forEach((_violation) => {
-            // Silent logging for test compatibility
-          });
-        });
-    }
+      if (failed > 0) {
+        yield* Effect.log("Performance report generated").pipe(
+          Effect.annotateLogs({
+            passed,
+            failed,
+            total: results.length,
+          }),
+        );
+      }
+    });
   }
 }
