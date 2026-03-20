@@ -149,6 +149,46 @@ function buildChannels(state: AsyncAPIConsolidatedState): Record<string, unknown
         },
       };
       
+      // Add protocol bindings if present
+      const protocolConfig = state.protocolConfigs?.get(type);
+      if (protocolConfig) {
+        const bindings: Record<string, unknown> = {};
+        
+        // Format bindings per AsyncAPI spec based on protocol type
+        switch (protocolConfig.protocol) {
+          case "kafka":
+            bindings.kafka = {
+              partitions: protocolConfig.partitions ?? 1,
+              replicationFactor: protocolConfig.replicationFactor ?? 1,
+              ...(protocolConfig.consumerGroup && { consumerGroup: protocolConfig.consumerGroup }),
+              ...(protocolConfig.sasl && { sasl: protocolConfig.sasl }),
+            };
+            break;
+          case "ws":
+          case "websocket":
+            bindings.ws = {
+              ...(protocolConfig.subprotocol && { subprotocol: protocolConfig.subprotocol }),
+              ...(protocolConfig.queryParams && { queryParams: protocolConfig.queryParams }),
+              ...(protocolConfig.headers && { headers: protocolConfig.headers }),
+            };
+            break;
+          case "mqtt":
+            bindings.mqtt = {
+              ...(protocolConfig.qos !== undefined && { qos: protocolConfig.qos }),
+              ...(protocolConfig.retain !== undefined && { retain: protocolConfig.retain }),
+              ...(protocolConfig.lastWill && { lastWill: protocolConfig.lastWill }),
+            };
+            break;
+          case "http":
+            bindings.http = {};
+            break;
+        }
+        
+        if (Object.keys(bindings).length > 0) {
+          channelEntry.bindings = bindings;
+        }
+      }
+      
       channels[channelPath] = channelEntry;
     }
   }
@@ -180,7 +220,7 @@ function buildOperations(state: AsyncAPIConsolidatedState): Record<string, unkno
         messageName = model.name ?? "default";
       }
       
-      operations[operation.name] = {
+      const operationEntry: Record<string, unknown> = {
         action: operationData.type === "publish" ? "send" : "receive",
         channel: {
           $ref: `#/channels/${channelPath}`,
@@ -191,6 +231,46 @@ function buildOperations(state: AsyncAPIConsolidatedState): Record<string, unkno
           },
         ],
       };
+      
+      // Add security reference if present
+      const securityConfig = state.securityConfigs?.get(type);
+      if (securityConfig) {
+        operationEntry.security = [
+          { [securityConfig.name]: [] },
+        ];
+      }
+      
+      // Add protocol bindings if present
+      const protocolConfig = state.protocolConfigs?.get(type);
+      if (protocolConfig) {
+        const bindings: Record<string, unknown> = {};
+        
+        switch (protocolConfig.protocol) {
+          case "kafka":
+            bindings.kafka = {
+              ...(protocolConfig.partitions && { partitions: protocolConfig.partitions }),
+              ...(protocolConfig.replicationFactor && { replicationFactor: protocolConfig.replicationFactor }),
+            };
+            break;
+          case "ws":
+          case "websocket":
+            bindings.ws = {
+              ...(protocolConfig.subprotocol && { subprotocol: protocolConfig.subprotocol }),
+            };
+            break;
+          case "mqtt":
+            bindings.mqtt = {
+              ...(protocolConfig.qos !== undefined && { qos: protocolConfig.qos }),
+            };
+            break;
+        }
+        
+        if (Object.keys(bindings).length > 0) {
+          operationEntry.bindings = bindings;
+        }
+      }
+      
+      operations[operation.name] = operationEntry;
     }
   }
   
