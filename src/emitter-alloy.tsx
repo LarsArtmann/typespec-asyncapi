@@ -5,8 +5,8 @@
  */
 
 import { Output, SourceFile } from "@alloy-js/core";
-import type { EmitContext, Program, Operation, Model, Namespace } from "@typespec/compiler";
-import { listOperationsIn, getNamespaceFullName } from "@typespec/compiler";
+import type { EmitContext, Program, Operation, Model, Namespace, Type } from "@typespec/compiler";
+import { listOperationsIn, getNamespaceFullName, isArrayModelType } from "@typespec/compiler";
 import { writeOutput } from "@typespec/emitter-framework";
 import { consolidateAsyncAPIState, type AsyncAPIConsolidatedState } from "./state.js";
 import type { AsyncAPIEmitterOptions } from "./infrastructure/configuration/asyncAPIEmitterOptions.js";
@@ -413,8 +413,23 @@ function buildPropertySchema(prop: unknown): Record<string, unknown> {
           schema.properties = props;
         }
       }
-    } else if (typeKind === "Array") {
+     } else if (typeKind === "Array") {
       schema.type = "array";
+      // Get element type from the array type
+      const arrayType = property.type as { indexer: { value: Type };
+      if (elementType.kind === "Model") {
+        const refModel = elementType.model ?? elementType as Model;
+        const refName = refModel.name;
+        if (refName) {
+          schema.$ref = `#/components/schemas/${refName}`;
+        } else if (elementType.kind === "Scalar") {
+          // Handle nested scalar types in arrays
+          schema.items = { type: mapScalarToSchemaType(elementType) };
+        } else {
+          // Unknown element type - fallback to string
+          schema.items = { type: "string" };
+        }
+      }
     } else {
       schema.type = typeName ?? "string";
     }
