@@ -23,11 +23,6 @@
  */
 
 // TypeSpec Core Imports - Library infrastructure and diagnostic system
-// TODO: CRITICAL - Group imports by category with separating comments for maintainability
-// TODO: TYPE_SAFETY - Import specific types needed: type TypeSpecLibrary from "@typespec/compiler"
-// TODO: TYPE_SAFETY - Add explicit return type annotations to imported functions for better IDE support
-// TODO: TYPE_SAFETY - Consider importing { type } for createTypeSpecLibrary if only used in type position
-// TODO: PERFORMANCE - Verify all imported functions are actually used to avoid dead imports
 import {
   createTypeSpecLibrary,
   type DecoratorContext,
@@ -68,13 +63,6 @@ import {
  *
  * @see {@link createTypeSpecLibrary} TypeSpec library creation function
  */
-// TODO: TYPE_SAFETY - Add explicit TypeSpecLibrary type import and annotation: const $lib: TypeSpecLibrary
-// TODO: TYPE_SAFETY - Consider extracting diagnostics object to separate const with explicit type for reusability
-// TODO: TYPE_SAFETY - State schema could use more specific types instead of generic description strings
-// TODO: ARCHITECTURE - Add version information to library metadata for better debugging and compatibility
-// TODO: ARCHITECTURE - Consider organizing diagnostics by category (validation, protocol, security, performance)
-// TODO: MAINTENANCE - Extract diagnostic messages to separate localization file for i18n support
-// TODO: VALIDATION - Add JSON Schema validation for library definition structure at build time
 export const $lib = createTypeSpecLibrary({
   name: "@lars-artmann/typespec-asyncapi",
   // TODO: Add library description, version, and other metadata fields
@@ -288,7 +276,6 @@ export const $lib = createTypeSpecLibrary({
       description: "Map of targets to cloud provider specific bindings",
     },
   },
-  // TODO: Add additional library metadata (version, author, repository)
   // NOTE: Decorators are auto-discovered through module exports, not registered in createTypeSpecLibrary
 } as const);
 
@@ -345,17 +332,7 @@ export const $lib = createTypeSpecLibrary({
  *
  * @see {@link $lib.state} State schema definitions
  */
-// TODO: CRITICAL TYPE_SAFETY - Use keyof typeof $lib.state to ensure stateKeys match state schema exactly
-// TODO: TYPE_SAFETY - Add explicit type annotation: const stateKeys: StateKeyMap = {...}
-// TODO: TYPE_SAFETY - Create StateKeyMap interface to define the expected structure
-// TODO: VALIDATION - Add runtime validation to ensure stateKeys match library state definitions at build time
-// TODO: ARCHITECTURE - Consider extracting to a separate constants file for better organization and reusability
-// TODO: MAINTENANCE - Add unit tests to verify stateKeys sync with $lib.state schema
-// TODO: TYPE_SAFETY - Consider using template literal types for better IntelliSense support
-// TODO: PERFORMANCE - Evaluate if stateKeys should be frozen with Object.freeze() for immutability
 export const stateKeys = {
-  // TODO: TYPE_SAFETY - Each key should have explicit type annotation and inline comment
-  // TODO: VALIDATION - Add static assertion that these keys exist in $lib.state schema
   channelPaths: "channelPaths", // Maps TypeSpec operations to AsyncAPI channel path strings
   messageSchemas: "messageSchemas", // Maps message names to their TypeSpec model schema definitions
   messageConfigs: "messageConfigs", // Maps TypeSpec models to @message decorator configuration objects
@@ -433,44 +410,18 @@ export const stateKeys = {
  * @since 0.1.0-alpha
  * @public
  */
-// TODO: CRITICAL TYPE_SAFETY - Add input validation for context, target, and code parameters with proper type guards
-// TODO: TYPE_SAFETY - Add explicit return type annotation: ): void for clarity and consistency
-// TODO: TYPE_SAFETY - Target parameter should be more specific: target: Node | Type instead of unknown
-// TODO: TYPE_SAFETY - Code parameter should use union type of valid diagnostic codes for type safety
-// TODO: TYPE_SAFETY - Args parameter should be typed as specific interfaces per diagnostic code
-// TODO: ARCHITECTURE - Extract library namespace prefix to a constant to avoid duplication and centralize config
-// TODO: FEATURE - Consider adding severity parameter to override default diagnostic severity (error/warning/info)
-// TODO: LOGGING - Add structured logging for diagnostic reporting for debugging and monitoring purposes
-// TODO: ARCHITECTURE - Consider adding diagnostic categories or tags for better organization and filtering
-// TODO: TYPE_SAFETY - Add function overloads for common diagnostic patterns to improve developer experience
-// TODO: PERFORMANCE - Consider caching the prefixed diagnostic code for performance in hot paths
-// TODO: VALIDATION - Add validation that the diagnostic code exists in the library definition before reporting
 export function reportDiagnostic(
   context: DecoratorContext,
   target: DiagnosticTarget,
   code: keyof typeof $lib.diagnostics,
   args?: Record<string, never>,
 ): void {
-  // TODO: TYPE_SAFETY - Add runtime validation that context is valid DecoratorContext
-  // TODO: TYPE_SAFETY - Add validation that target is valid TypeSpec AST node
-  // TODO: TYPE_SAFETY - Add validation that code is non-empty string and exists in diagnostic definitions
-  // TODO: ERROR_HANDLING - Add error handling for reportDiagnostic failures with try-catch
-  // TODO: PERFORMANCE - Consider caching the prefixed diagnostic code for performance optimization
-
   // Use TypeSpec library's diagnostic system which handles template resolution automatically
-  // $lib.reportDiagnostic automatically resolves paramMessage templates and creates proper Diagnostic objects
-  // The args object is passed as the 'format' property for template parameter resolution
-  // Debug: Create diagnostic using library creator first
-  const diagnosticInput = {
+  const resolvedDiagnostic = $lib.createDiagnostic({
     code,
     target,
     format: args ?? {},
-  };
-
-  // Create diagnostic using library's diagnostic creator
-  const resolvedDiagnostic = $lib.createDiagnostic(diagnosticInput);
-
-  // Report directly to program
+  });
   context.program.reportDiagnostic(resolvedDiagnostic);
 }
 

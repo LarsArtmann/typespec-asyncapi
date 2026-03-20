@@ -42,15 +42,8 @@ export const DEFAULT_SERVER_OPTIONS: Partial<ServerOptions> = {
  * 🚨 LEGACY COMPATIBILITY: Schema export expected by tests
  *
  * Tests expect ASYNC_API_EMITTER_OPTIONS_SCHEMA but this creates
- * SPLIT BRAIN between multiple configuration definitions:
- * - This file has EmitterOptions
- * - asyncAPIEmitterOptions.ts has AsyncAPIEmitterOptions
- * - Tests expect schema that doesn't match either
- *
- * TODO: CONSOLIDATE configuration into single source of truth
- * TODO: REFACTOR tests to use unified configuration
- * TODO: ELIMINATE duplicate configuration types
- * TODO: IMPLEMENT proper schema validation
+ * SPLIT BRAIN between multiple configuration definitions.
+ * Future work: Consolidate configuration into single source of truth.
  */
 /**
  * 🚀 PRODUCTION-READY ASYNCAPI EMITTER OPTIONS SCHEMA
