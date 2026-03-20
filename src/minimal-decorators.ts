@@ -309,6 +309,20 @@ export function $subscribe(context: DecoratorContext, target: Operation): void {
 }
 
 /**
+ * Store tags in state for emitter to use
+ */
+export const storeTags = (
+  program: unknown,
+  target: Operation | Model,
+  tags: string[],
+) => {
+  const programTyped = program as { stateMap: (symbol: symbol) => Map<unknown, unknown> };
+  const tagsMap = programTyped.stateMap(stateSymbols.tags);
+  const existingTags = (tagsMap.get(target) as string[] | undefined) ?? [];
+  tagsMap.set(target, [...existingTags, ...tags]);
+};
+
+/**
  * Simplest possible @tags decorator for testing
  */
 export function $tags(context: DecoratorContext, target: DiagnosticTarget, value: unknown): void {
@@ -322,7 +336,39 @@ export function $tags(context: DecoratorContext, target: DiagnosticTarget, value
     );
     return;
   }
+
+  // Validate all values are strings
+  const stringTags = value.filter((tag): tag is string => typeof tag === "string");
+  if (stringTags.length !== value.length) {
+    reportDecoratorDiagnostic(
+      context,
+      "invalid-tags-config",
+      target,
+      "All tags must be strings.",
+    );
+    return;
+  }
+
+  // Store tags in state for emitter to use
+  storeTags(context.program, target as Operation, stringTags);
 }
+
+/**
+ * Store correlation ID in state for emitter to use
+ */
+export const storeCorrelationId = (
+  program: unknown,
+  target: Model,
+  location: string,
+  property?: string,
+) => {
+  const programTyped = program as { stateMap: (symbol: symbol) => Map<unknown, unknown> };
+  const correlationIdsMap = programTyped.stateMap(stateSymbols.correlationIds);
+  correlationIdsMap.set(target, {
+    location,
+    property,
+  });
+};
 
 /**
  * Simplest possible @correlationId decorator for testing
@@ -331,10 +377,10 @@ export function $correlationId(
   context: DecoratorContext,
   target: Model,
   location: unknown,
-  _property?: unknown,
+  property?: unknown,
 ): void {
 
-  if (!location) {
+  if (!location || typeof location !== "string") {
     reportDecoratorDiagnostic(
       context,
       "invalid-correlationId-config",
@@ -343,7 +389,24 @@ export function $correlationId(
     );
     return;
   }
+
+  // Store correlation ID in state
+  storeCorrelationId(context.program, target, location, property as string | undefined);
 }
+
+/**
+ * Store bindings in state for emitter to use
+ */
+export const storeBindings = (
+  program: unknown,
+  target: Operation | Model,
+  bindings: Record<string, unknown>,
+) => {
+  const programTyped = program as { stateMap: (symbol: symbol) => Map<unknown, unknown> };
+  const bindingsMap = programTyped.stateMap(stateSymbols.protocolBindings);
+  const existingBindings = (bindingsMap.get(target) as Record<string, unknown> | undefined) ?? {};
+  bindingsMap.set(target, { ...existingBindings, ...bindings });
+};
 
 /**
  * Simplest possible @bindings decorator for testing
@@ -354,7 +417,7 @@ export function $bindings(
   value: unknown,
 ): void {
 
-  if (!value) {
+  if (!value || typeof value !== "object") {
     reportDecoratorDiagnostic(
       context,
       "invalid-bindings-config",
@@ -363,7 +426,29 @@ export function $bindings(
     );
     return;
   }
+
+  // Store bindings in state
+  storeBindings(context.program, target, value as Record<string, unknown>);
 }
+
+/**
+ * Store header in state for emitter to use
+ */
+export const storeHeader = (
+  program: unknown,
+  target: Model | ModelProperty,
+  name: string,
+  value?: unknown,
+) => {
+  const programTyped = program as { stateMap: (symbol: symbol) => Map<unknown, unknown> };
+  const headersMap = programTyped.stateMap(stateSymbols.messageHeaders);
+
+  // If target is a ModelProperty, also store reference to the parent model
+  const targetKey = target.kind === "ModelProperty" ? target.model ?? target : target;
+
+  const existingHeaders = (headersMap.get(targetKey) as Array<{ name: string; value?: unknown }> | undefined) ?? [];
+  headersMap.set(targetKey, [...existingHeaders, { name, value }]);
+};
 
 /**
  * Simplest possible @header decorator for testing
@@ -372,10 +457,10 @@ export function $header(
   context: DecoratorContext,
   target: Model | ModelProperty,
   name: unknown,
-  _value: unknown,
+  value?: unknown,
 ): void {
 
-  if (!name) {
+  if (!name || typeof name !== "string") {
     reportDecoratorDiagnostic(
       context,
       "invalid-header-config",
@@ -384,4 +469,7 @@ export function $header(
     );
     return;
   }
+
+  // Store header in state
+  storeHeader(context.program, target, name, value);
 }

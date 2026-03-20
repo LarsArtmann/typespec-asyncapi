@@ -272,7 +272,7 @@ describe("Real Type Definitions Unit Tests", () => {
         {
           options: {
             "output-file": "valid",
-            "file-type": SERIALIZATION_FORMAT_OPTION_JSON,
+            "file-type": "json",
           },
           shouldBeValid: true,
           description: "Valid minimal options",
@@ -280,7 +280,7 @@ describe("Real Type Definitions Unit Tests", () => {
         {
           options: {
             "output-file": "",
-            "file-type": SERIALIZATION_FORMAT_OPTION_JSON,
+            "file-type": "json",
           },
           shouldBeValid: false,
           description: "Empty output file",

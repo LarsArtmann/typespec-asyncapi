@@ -61,7 +61,12 @@ export const DEFAULT_SERIALIZATION_FORMAT_OPTION: SerializationFormatOption = {
 /**
  * All serialization format options
  */
-export const SERIALIZATION_FORMAT_OPTIONS = {
+export const SERIALIZATION_FORMAT_OPTIONS = ["json", "yaml", "yml"] as const;
+
+/**
+ * Legacy object format for backward compatibility
+ */
+export const SERIALIZATION_FORMAT_OPTION_OBJECTS = {
   JSON: SERIALIZATION_FORMAT_OPTION_JSON,
   YAML: SERIALIZATION_FORMAT_OPTION_YAML,
   DEFAULT: DEFAULT_SERIALIZATION_FORMAT_OPTION,
