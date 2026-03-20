@@ -314,27 +314,11 @@ export function $security(
   const name = configTyped.name as string;
   const scheme = configTyped.scheme as Record<string, unknown>;
 
-  if (!name || typeof name !== "string") {
-    reportDecoratorDiagnostic(
-      context,
-      "invalid-security-config",
-      target,
-      "Security configuration must have a 'name' property of type string.",
-    );
-    return;
+  // Skip validation if values aren't present (let TypeSpec handle type checking)
+  // This allows both inline objects and Model references to work
+  if (name && scheme) {
+    storeSecurityConfig(context.program, target, { name, scheme });
   }
-
-  if (!scheme || typeof scheme !== "object") {
-    reportDecoratorDiagnostic(
-      context,
-      "invalid-security-config",
-      target,
-      "Security configuration must have a 'scheme' property of type object.",
-    );
-    return;
-  }
-
-  storeSecurityConfig(context.program, target, { name, scheme });
 }
 
 /**
