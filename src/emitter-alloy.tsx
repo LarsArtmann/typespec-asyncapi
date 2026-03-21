@@ -322,15 +322,22 @@ function buildComponents(state: AsyncAPIConsolidatedState): Record<string, unkno
       }
 
       // Add headers if present
-      const headersData = state.messageHeaders?.get(type);
-      if (headersData && headersData.length > 0) {
-        const headers: Record<string, unknown> = {};
-        for (const header of headersData) {
-          headers[header.name] = {
-            type: header.type ?? "string",
-            ...(header.description && { description: header.description }),
-          };
+      // Headers are stored on ModelProperty, so we need to iterate through model properties
+      const headers: Record<string, unknown> = {};
+      if (model.properties) {
+        for (const [_propName, prop] of model.properties) {
+          const headersData = state.messageHeaders?.get(prop);
+          if (headersData && headersData.length > 0) {
+            for (const header of headersData) {
+              headers[header.name] = {
+                type: header.type ?? "string",
+                ...(header.description && { description: header.description }),
+              };
+            }
+          }
         }
+      }
+      if (Object.keys(headers).length > 0) {
         messageEntry.headers = {
           type: "object",
           properties: headers,

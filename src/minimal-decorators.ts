@@ -514,23 +514,26 @@ export const storeHeader = (
   const programTyped = program as { stateMap: (symbol: symbol) => Map<unknown, unknown> };
   const headersMap = programTyped.stateMap(stateSymbols.messageHeaders);
 
-  // If target is a ModelProperty, also store reference to the parent model
-  const targetKey = target.kind === "ModelProperty" ? target.model ?? target : target;
-
-  // Extract type from the property if available
+  // Store headers on the property itself since parent model reference
+  // may not be available at decorator execution time
+  // The emitter will need to collect headers from properties when building messages
   let headerType = "string";
   let description: string | undefined;
 
   if (target.kind === "ModelProperty") {
-    const prop = target as { type?: { kind?: string; name?: string }; doc?: string };
-    if (prop.type?.kind === "Scalar") {
-      headerType = prop.type.name?.toLowerCase() ?? "string";
+    const prop = target;
+
+    // Try to get type info from the property
+    const propType = prop.type as { kind?: string; name?: string } | undefined;
+    if (propType?.kind === "Scalar") {
+      headerType = propType.name?.toLowerCase() ?? "string";
     }
-    description = prop.doc;
+    // Get doc from decorators or value
+    description = typeof value === "string" ? value : undefined;
   }
 
-  const existingHeaders = (headersMap.get(targetKey) as Array<{ name: string; value?: unknown; type?: string; description?: string }> | undefined) ?? [];
-  headersMap.set(targetKey, [...existingHeaders, { name, value, type: headerType, description }]);
+  const existingHeaders = (headersMap.get(target) as Array<{ name: string; value?: unknown; type?: string; description?: string }> | undefined) ?? [];
+  headersMap.set(target, [...existingHeaders, { name, value, type: headerType, description }]);
 };
 
 /**
@@ -542,7 +545,6 @@ export function $header(
   name: unknown,
   value?: unknown,
 ): void {
-
   if (!name || typeof name !== "string") {
     reportDecoratorDiagnostic(
       context,
