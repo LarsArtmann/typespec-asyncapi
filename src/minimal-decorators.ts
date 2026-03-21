@@ -88,7 +88,7 @@ export const storeMessageConfig = (
     description: config.description ?? `Message ${target.name}`,
     contentType: config.contentType ?? "application/json",
   });
-};;
+};
 
 /**
  * Simplest possible @channel decorator for testing
@@ -112,12 +112,12 @@ export function $channel(context: DecoratorContext, target: Operation, path: str
 export const storeServerConfig = (
   program: unknown,
   target: Namespace,
-  config: Record<string, unknown>,
+  config: Record<string, unknown> & { name: string },
 ) => {
   const programTyped = program as { stateMap: (symbol: symbol) => Map<unknown, unknown> };
   const serverConfigsMap = programTyped.stateMap(stateSymbols.serverConfigs);
   serverConfigsMap.set(target, {
-    name: (config.name as string) ?? target.name,
+    name: config.name,
     url: (config.url as string) ?? "http://localhost:3000",
     protocol: (config.protocol as string) ?? "http",
     description: (config.description as string) ?? `Server for ${target.name}`,
@@ -143,8 +143,7 @@ export const storeSecurityConfig = (
 /**
  * Simplest possible @server decorator for testing
  */
-export function $server(context: DecoratorContext, target: Namespace, config: unknown): void {
-
+export function $server(context: DecoratorContext, target: Namespace, name: string, config: unknown): void {
   if (
     !validateConfig(
       config,
@@ -157,9 +156,44 @@ export function $server(context: DecoratorContext, target: Namespace, config: un
     return;
   }
 
-  // Store server configuration in state map
   const configTyped = config as Record<string, unknown>;
-  storeServerConfig(context.program, target, configTyped);
+  
+  // Validate required fields
+  if (!configTyped.url) {
+    reportDecoratorDiagnostic(
+      context,
+      "server-url-required",
+      target,
+      "Server URL is required",
+    );
+    return;
+  }
+  
+  if (!configTyped.protocol) {
+    reportDecoratorDiagnostic(
+      context,
+      "server-protocol-required",
+      target,
+      "Server protocol is required",
+    );
+    return;
+  }
+  
+  // Validate protocol is supported
+  const supportedProtocols = ["kafka", "amqp", "amqp1", "mqtt", "mqtt5", "http", "https", "ws", "wss", "websocket", "nats", "jms", "sns", "sqs", "stomp", "redis", "mercure", "ibmmq"];
+  const protocol = (configTyped.protocol as string).toLowerCase();
+  if (!supportedProtocols.includes(protocol)) {
+    reportDecoratorDiagnostic(
+      context,
+      "unsupported-protocol",
+      target,
+      `Protocol '${configTyped.protocol}' is not supported. Supported protocols: ${supportedProtocols.join(", ")}`,
+    );
+    return;
+  }
+
+  // Store server configuration in state map with the provided name
+  storeServerConfig(context.program, target, { ...configTyped, name });
 }
 
 /**

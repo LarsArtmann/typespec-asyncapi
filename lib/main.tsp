@@ -33,9 +33,10 @@ extern dec security(target: Operation | Namespace, config: Model);
 
 /**
  * Define server configuration
- * @param config Server configuration object (validated for type safety)
+ * @param name Server name (used as key in AsyncAPI servers object)
+ * @param config Server configuration object containing url and protocol
  */
-extern dec server(target: Namespace, config: Model);
+extern dec server(target: Namespace, name: valueof string, config: valueof Record<unknown>);
 
 /**
  * Mark an operation as a publish operation (sends messages to the channel)
