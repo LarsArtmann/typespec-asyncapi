@@ -304,8 +304,12 @@ function buildComponents(state: AsyncAPIConsolidatedState): Record<string, unkno
       
       // Add tags if present
       const tagsData = state.tags?.get(type);
-      if (tagsData) {
-        messageEntry.tags = [{ name: tagsData.name }];
+      if (tagsData?.name) {
+        // Split comma-separated tags and format as array of objects
+        const tagNames = tagsData.name.split(",").filter((tag) => tag.length > 0);
+        if (tagNames.length > 0) {
+          messageEntry.tags = tagNames.map((name) => ({ name }));
+        }
       }
       
       // Add correlationId if present

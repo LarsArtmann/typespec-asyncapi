@@ -386,8 +386,11 @@ export const storeTags = (
 ) => {
   const programTyped = program as { stateMap: (symbol: symbol) => Map<unknown, unknown> };
   const tagsMap = programTyped.stateMap(stateSymbols.tags);
-  const existingTags = (tagsMap.get(target) as string[] | undefined) ?? [];
-  tagsMap.set(target, [...existingTags, ...tags]);
+  // Store as comma-separated string to match TagData interface
+  const existingTags = (tagsMap.get(target) as { name: string } | undefined)?.name ?? "";
+  const allTags = existingTags ? existingTags.split(",") : [];
+  const newTags = [...allTags, ...tags].filter((tag, index, arr) => arr.indexOf(tag) === index);
+  tagsMap.set(target, { name: newTags.join(",") });
 };
 
 /**
