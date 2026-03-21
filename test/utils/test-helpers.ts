@@ -110,10 +110,6 @@ export async function compileAsyncAPISpecRaw(
   source: string,
   options: AsyncAPIEmitterOptions = {},
 ): Promise<CompilationResult> {
-  // 🔥 CRITICAL: Added explicit logging to see if this function is called
-  console.log(`🚀 compileAsyncAPISpecRaw called with source length: ${source.length}`);
-  Effect.log(`🚀 compileAsyncAPISpecRaw called with source length: ${source.length}`);
-
   // File system utilities for output file discovery
   const fs = await import("node:fs/promises");
   const path = await import("node:path");
@@ -243,74 +239,70 @@ export async function compileAsyncAPISpecRaw(
   // 🔥 CRITICAL FIX: If TestFileSystem is empty, check real filesystem
   // This happens when emitFile writes to real FS instead of test framework
   if (outputFiles.size === 0) {
-    console.log("🔍 TestFileSystem empty, checking real filesystem...");
-    Effect.log("🔍 TestFileSystem empty, checking real filesystem...");
-
     // Import filesystem utilities
     const fs = await import("node:fs/promises");
     const path = await import("node:path");
 
-    // 🔥 KEY FIX: Check TypeSpec output directory structure
-    // Files are written to: ./@lars-artmann/typespec-asyncapi/
-    const typeSpecOutputDir = path.join(process.cwd(), "@lars-artmann", "typespec-asyncapi");
+    // Check multiple possible TypeSpec output directories
+    // Files can be written to different locations depending on test context
+    const possibleOutputDirs = [
+      path.join(process.cwd(), "@lars-artmann", "typespec-asyncapi"),
+      path.join(process.cwd(), "tsp-test", "@lars-artmann", "typespec-asyncapi"),
+      path.join(process.cwd(), "tsp-output", "@lars-artmann", "typespec-asyncapi"),
+    ];
 
-    try {
-      console.log(`🔍 Attempting to read directory: ${typeSpecOutputDir}`);
-      // Check if TypeSpec output directory exists
-      const files = await fs.readdir(typeSpecOutputDir);
-      console.log(`📁 TypeSpec output directory: ${typeSpecOutputDir}`);
-      console.log(`📁 Found ${files.length} files in directory`);
-      Effect.log(`📁 TypeSpec output directory: ${typeSpecOutputDir}`);
-      Effect.log(`📁 Found ${files.length} files in directory`);
+    for (const typeSpecOutputDir of possibleOutputDirs) {
+      try {
+        // Check if TypeSpec output directory exists
+        const files = await fs.readdir(typeSpecOutputDir);
+        Effect.log(`📁 TypeSpec output directory: ${typeSpecOutputDir}`);
+        Effect.log(`📁 Found ${files.length} files in directory`);
 
-      // Look for AsyncAPI files that were emitted
-      console.log(`📁 All files found: ${files.join(", ")}`);
-      const asyncapiFiles = files.filter(
-        (file) => file.includes("asyncapi") && (file.endsWith(".yaml") || file.endsWith(".json")),
-      );
+        // Look for AsyncAPI files that were emitted
+        const asyncapiFiles = files.filter(
+          (file) => file.includes("asyncapi") && (file.endsWith(".yaml") || file.endsWith(".json")),
+        );
 
-      console.log(`🔍 Found ${asyncapiFiles.length} AsyncAPI files: ${asyncapiFiles.join(", ")}`);
-      Effect.log(`🔍 Found ${asyncapiFiles.length} AsyncAPI files: ${asyncapiFiles.join(", ")}`);
+        Effect.log(`🔍 Found ${asyncapiFiles.length} AsyncAPI files: ${asyncapiFiles.join(", ")}`);
 
-      // Read found files and add to outputFiles
-      for (const file of asyncapiFiles) {
-        console.log(`🔍 Reading file: ${file}`);
-        const filePath = path.join(typeSpecOutputDir, file);
-        try {
-          const content = await fs.readFile(filePath, "utf-8");
-          console.log(`✅ Read ${content.length} chars from ${file}`);
-          outputFiles.set(file, content);
-          console.log(`✅ Found AsyncAPI file: ${file} (${content.length} chars)`);
-          console.log(`🔍 Content preview: ${content.substring(0, 200)}...`);
-          Effect.log(`✅ Found AsyncAPI file: ${file} (${content.length} chars)`);
-          Effect.log(`🔍 Content preview: ${content.substring(0, 100)}...`);
-        } catch (error) {
-          console.log(`❌ Failed to read ${file}: ${error}`);
-          Effect.log(`❌ Failed to read ${file}: ${error}`);
-        }
-      }
-
-      // Also check for files with scenario names
-      for (const file of files) {
-        if (file.endsWith(".yaml") || file.endsWith(".json")) {
+        // Read found files and add to outputFiles
+        for (const file of asyncapiFiles) {
           const filePath = path.join(typeSpecOutputDir, file);
           try {
             const content = await fs.readFile(filePath, "utf-8");
-            // Only add if it looks like an AsyncAPI file
-            if (content.includes("asyncapi:") || content.includes('"asyncapi"')) {
-              outputFiles.set(file, content);
-              Effect.log(`✅ Found AsyncAPI scenario file: ${file} (${content.length} chars)`);
-              Effect.log(`🔍 Content preview: ${content.substring(0, 100)}...`);
-            }
+            outputFiles.set(file, content);
+            Effect.log(`✅ Found AsyncAPI file: ${file} (${content.length} chars)`);
           } catch (error) {
             Effect.log(`❌ Failed to read ${file}: ${error}`);
           }
         }
-      }
 
-      Effect.log(`📊 Final outputFiles size: ${outputFiles.size}`);
-    } catch (error) {
-      Effect.log(`❌ Failed to read TypeSpec output directory: ${error}`);
+        // Also check for files with scenario names
+        for (const file of files) {
+          if (file.endsWith(".yaml") || file.endsWith(".json")) {
+            const filePath = path.join(typeSpecOutputDir, file);
+            try {
+              const content = await fs.readFile(filePath, "utf-8");
+              // Only add if it looks like an AsyncAPI file
+              if (content.includes("asyncapi:") || content.includes('"asyncapi"')) {
+                outputFiles.set(file, content);
+                Effect.log(`✅ Found AsyncAPI scenario file: ${file} (${content.length} chars)`);
+              }
+            } catch (error) {
+              Effect.log(`❌ Failed to read ${file}: ${error}`);
+            }
+          }
+        }
+
+        Effect.log(`📊 Final outputFiles size: ${outputFiles.size}`);
+        
+        // If we found files, break out of the loop
+        if (outputFiles.size > 0) {
+          break;
+        }
+      } catch (error) {
+        Effect.log(`❌ Failed to read TypeSpec output directory: ${error}`);
+      }
     }
   }
 

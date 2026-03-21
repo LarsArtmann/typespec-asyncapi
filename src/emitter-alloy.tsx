@@ -575,7 +575,6 @@ function buildPropertySchema(prop: unknown): Record<string, unknown> {
  */
 export async function $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): Promise<void> {
   const options = context.options ?? {};
-  
   const state = consolidateAsyncAPIState(context.program);
   
   await writeOutput(

@@ -126,7 +126,7 @@
     "@typespec/rest": "^0.80.0",
     "@vitest/coverage-v8": "^4.1.0",
     "asyncapi-validator": "^5.1.1",
-    "eslint": "^10.0.3",
+    "eslint": "^10.1.0",
     "glob": "^13.0.6",
     "husky": "^9.1.7",
     "lint-staged": "^16.4.0",

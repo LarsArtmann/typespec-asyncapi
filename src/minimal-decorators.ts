@@ -143,13 +143,24 @@ export const storeSecurityConfig = (
 /**
  * Simplest possible @server decorator for testing
  */
-export function $server(context: DecoratorContext, target: Namespace, name: string, config: unknown): void {
+export function $server(context: DecoratorContext, target: Namespace | Operation, name: string, config: unknown): void {
+  // Validate target is a Namespace (not an Operation or other type)
+  if (target.kind !== "Namespace") {
+    reportDecoratorDiagnostic(
+      context,
+      "@lars-artmann/typespec-asyncapi/server-target-invalid",
+      target,
+      "@server can only be applied to namespaces",
+    );
+    return;
+  }
+
   if (
     !validateConfig(
       config,
       context,
       target,
-      "invalid-server-config",
+      "@lars-artmann/typespec-asyncapi/invalid-server-config",
       "Server configuration is missing",
     )
   ) {
@@ -162,7 +173,7 @@ export function $server(context: DecoratorContext, target: Namespace, name: stri
   if (!configTyped.url) {
     reportDecoratorDiagnostic(
       context,
-      "server-url-required",
+      "@lars-artmann/typespec-asyncapi/server-url-required",
       target,
       "Server URL is required",
     );
@@ -172,7 +183,7 @@ export function $server(context: DecoratorContext, target: Namespace, name: stri
   if (!configTyped.protocol) {
     reportDecoratorDiagnostic(
       context,
-      "server-protocol-required",
+      "@lars-artmann/typespec-asyncapi/server-protocol-required",
       target,
       "Server protocol is required",
     );
@@ -183,11 +194,12 @@ export function $server(context: DecoratorContext, target: Namespace, name: stri
   const supportedProtocols = ["kafka", "amqp", "amqp1", "mqtt", "mqtt5", "http", "https", "ws", "wss", "websocket", "nats", "jms", "sns", "sqs", "stomp", "redis", "mercure", "ibmmq"];
   const protocol = (configTyped.protocol as string).toLowerCase();
   if (!supportedProtocols.includes(protocol)) {
+    const protocolValue = String(configTyped.protocol);
     reportDecoratorDiagnostic(
       context,
-      "unsupported-protocol",
+      "@lars-artmann/typespec-asyncapi/unsupported-protocol",
       target,
-      `Protocol '${configTyped.protocol}' is not supported. Supported protocols: ${supportedProtocols.join(", ")}`,
+      `Protocol '${protocolValue}' is not supported. Supported protocols: ${supportedProtocols.join(", ")}`,
     );
     return;
   }

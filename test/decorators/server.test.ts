@@ -206,7 +206,10 @@ describe("@server decorator", () => {
       });
 
       // Should have error for applying @server to operation instead of namespace
+      // TypeSpec's built-in decorator target validation produces this error
       const targetErrors = diagnostics.filter((d) =>
+        d.code === "decorator-wrong-target" ||
+        d.message?.includes("not assignable to Namespace") ||
         d.message?.includes("@server can only be applied to namespaces"),
       );
       expect(targetErrors.length).toBeGreaterThan(0);
