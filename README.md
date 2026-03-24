@@ -2,7 +2,15 @@
 
 [![Build Status](https://img.shields.io/badge/Build-PASSING-green)](https://github.com/LarsArtmann/typespec-asyncapi)[![TypeScript](https://img.shields.io/badge/TypeScript-0%20Errors-green)](https://www.typescriptlang.org/)[![AsyncAPI](https://img.shields.io/badge/AsyncAPI-3.0-blue)](https://www.asyncapi.com/)
 
-**TypeSpec-to-AsyncAPI 3.0 emitter with working core functionality.**
+A TypeSpec emitter that transforms TypeSpec service definitions into [AsyncAPI 3.0](https://www.asyncapi.com/) specifications for event-driven architectures. Define your event schemas, channels, and operations in TypeSpec, then generate standards-compliant AsyncAPI YAML documentation automatically.
+
+**Key capabilities:**
+- Define event messages, channels, and operations using TypeSpec decorators
+- Generate complete AsyncAPI 3.0 YAML specifications
+- Support for publish/subscribe operations, message schemas, and server configurations
+- Protocol bindings for Kafka, WebSocket, MQTT, and HTTP
+- Security scheme definitions (OAuth2, API Key, etc.)
+- TypeSpec model schemas converted to JSON Schema components
 
 ---
 
@@ -151,13 +159,119 @@ model UserCreatedMessage {
 }
 ```
 
+### `@server(name: string, config)`
+
+Defines server configuration for the API.
+
+```typespec
+@server("production", {
+  url: "mqtt://broker.example.com:1883",
+  protocol: "mqtt",
+  description: "Production MQTT broker"
+})
+namespace MyAPI;
+```
+
+### `@protocol(config)`
+
+Applies protocol-specific bindings to operations or models.
+
+```typespec
+@channel("events")
+@publish
+@protocol({
+  protocol: "kafka",
+  partitions: 3,
+  replicationFactor: 2
+})
+op publishEvent(): Event;
+```
+
+### `@security(config)`
+
+Applies security scheme to operations or namespaces.
+
+```typespec
+@security({
+  name: "oauth2",
+  scheme: {
+    type: "oauth2",
+    flows: {
+      clientCredentials: {
+        tokenUrl: "https://auth.example.com/oauth/token"
+      }
+    }
+  }
+})
+@server("secure", {
+  url: "amqps://broker.example.com:5671",
+  protocol: "amqp"
+})
+namespace SecureAPI;
+```
+
+### `@tags(value: string[])`
+
+Applies tags for categorization.
+
+```typespec
+@tags(["orders", "critical"])
+@message({
+  name: "OrderPlaced",
+  title: "Order Placed Event"
+})
+model OrderPlacedMessage {
+  orderId: string;
+  customerId: string;
+  total: decimal;
+}
+```
+
+### `@correlationId(location: string, property?: string)`
+
+Specifies correlation ID location for message tracing.
+
+```typespec
+@correlationId("$message.header#/correlationId", "correlationId")
+model EventWithCorrelation {
+  payload: string;
+}
+```
+
+### `@header(name: string, value: string | Model)`
+
+Defines message headers.
+
+```typespec
+model EventHeaders {
+  @header("X-Event-Type", "Content-Type")
+  contentType: "application/json";
+
+  @header("X-Trace-Id", "string")
+  traceId: string;
+}
+```
+
+### `@bindings(value: Model)`
+
+Applies generic bindings configuration.
+
+```typespec
+@channel("payments")
+@bindings({
+  kafka: {
+    partitions: 10,
+    replicas: 3
+  }
+})
+op processPayment(): PaymentResult;
+
 ---
 
 ## Known Limitations
 
-- **Protocol bindings**: Kafka, MQTT, WebSocket bindings not yet implemented
-- **Security schemes**: OAuth2, API Key, SASL not yet implemented
 - **Advanced schemas**: Arrays, enums, union types partially supported
+- **Some advanced protocol configurations**: May require additional testing
 
 ---
 
@@ -170,4 +284,4 @@ model UserCreatedMessage {
 
 ---
 
-_Last updated: 2026-03-20_
+_Last updated: 2026-03-23_
