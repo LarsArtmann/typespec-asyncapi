@@ -11,7 +11,6 @@ import {
   assertAsyncAPIDoc,
   assertCompilationSuccess,
   getPropertyKeys,
-  assertContainsKeys,
 } from "../utils/type-guards.js";
 
 describe("CLI Tests: Simple AsyncAPI Emitter", () => {

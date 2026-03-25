@@ -105,7 +105,7 @@ describe("📊 BREAKTHROUGH METRICS", () => {
   });
 
   it("🎯 System Readiness: Ready for emitter processing", async () => {
-    const { program, diagnostics } = await compileTypeSpecWithDecorators(`
+    const { program } = await compileTypeSpecWithDecorators(`
       model UserEvent {
         userId: string;
         action: string;

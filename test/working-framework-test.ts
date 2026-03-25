@@ -28,4 +28,4 @@ op publishTest(): string;
   }
 }
 
-testWorkingFramework();
+void testWorkingFramework();

@@ -177,7 +177,7 @@ describe("DiscoveryService", () => {
 
     it("should handle empty message configs", async () => {
       mockProgram = createMockProgram({
-        stateMap: (key: string) => new Map(), // Empty state map
+        stateMap: (_key: string) => new Map(), // Empty state map
       });
 
       const result = await Effect.runPromise(discoveryService.discoverMessageModels(mockProgram));
@@ -190,7 +190,7 @@ describe("DiscoveryService", () => {
 
       mockProgram = createMockProgram({
         models: new Map([["PlainModel", modelWithoutDecorator]]),
-        stateMap: (key: string) => new Map(), // Empty - no @message decorators
+        stateMap: (_key: string) => new Map(), // Empty - no @message decorators
       });
 
       const result = await Effect.runPromise(discoveryService.discoverMessageModels(mockProgram));
@@ -284,7 +284,7 @@ describe("DiscoveryService", () => {
 
     it("should handle empty security configs", async () => {
       mockProgram = createMockProgram({
-        stateMap: (key: string) => new Map(), // Empty state map
+        stateMap: (_key: string) => new Map(), // Empty state map
       });
 
       const result = await Effect.runPromise(discoveryService.discoverSecurityConfigs(mockProgram));
@@ -368,7 +368,7 @@ describe("DiscoveryService", () => {
 
     it("should handle empty discovery results", async () => {
       mockProgram = createMockProgram({
-        stateMap: (key: string) => new Map(), // All empty
+        stateMap: (_key: string) => new Map(), // All empty
       });
 
       const result: DiscoveryResult = await Effect.runPromise(

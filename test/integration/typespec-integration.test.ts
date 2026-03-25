@@ -4,7 +4,6 @@
  * Simple test to verify TypeSpec compiler integration works correctly
  */
 
-import { Effect } from "effect";
 // TODO: Create TypeSpecCompilerIntegration module
 // import { TypeSpecCompilerIntegration } from "../src/typespec-compiler/TypeSpecIntegration.js";
 
@@ -32,7 +31,7 @@ async function testTypeSpecIntegration() {
 }
 
 // Run the test
-testTypeSpecIntegration().then((success) => {
+void testTypeSpecIntegration().then((success) => {
   if (success) {
     console.log("🎉 TypeSpec integration test passed!");
   } else {

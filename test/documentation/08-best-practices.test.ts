@@ -173,7 +173,7 @@ describe("Documentation: Best Practices Validation", () => {
         // Validate that channel exists (Alpha baseline functionality)
         expect(channel).toBeDefined();
 
-        const message = result.asyncapi!.components!.schemas!.OptimizedEvent;
+        const _message = result.asyncapi!.components!.schemas!.OptimizedEvent;
         const compactData = result.asyncapi!.components!.schemas!.CompactData;
         // NOTE: Alpha version has limited support for complex data types
         // Validate that the schemas exist but don't enforce specific property formats
@@ -374,7 +374,7 @@ describe("Documentation: Best Practices Validation", () => {
           emitAsyncAPI: true,
         });
 
-        const validation = await validator.validateAsyncAPI(result.asyncapi!, {
+        await validator.validateAsyncAPI(result.asyncapi!, {
           strict: true,
           customRules: [
             {

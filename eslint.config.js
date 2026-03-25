@@ -38,7 +38,6 @@ export default [
       "@typescript-eslint/only-throw-error": "error", // TypeScript version - only throw Error objects
       "@typescript-eslint/prefer-promise-reject-errors": "error", // Use Effect.fail() instead
       "@typescript-eslint/no-misused-promises": "error", // Use Effect patterns instead of raw promises
-      "@typescript-eslint/require-await": "error", // If using async, it must await - prefer Effect.gen()
       "@typescript-eslint/no-unnecessary-type-assertion": "error", // Effect.TS provides better type inference
 
       // === CODE QUALITY RULES (WARNINGS - TRACK BUT DON'T BLOCK) ===
@@ -52,7 +51,6 @@ export default [
       ],
       "@typescript-eslint/prefer-readonly": "warn",
       "@typescript-eslint/no-non-null-assertion": "warn",
-      "@typescript-eslint/require-await": "warn",
       "@typescript-eslint/no-unnecessary-condition": "off", // ENABLED: Better null safety (temporarily disabled due to 113 pre-existing violations)
       "@typescript-eslint/prefer-nullish-coalescing": "error", // ENABLED: Modern null handling, correct behavior with falsy values
       "@typescript-eslint/restrict-template-expressions": "error", // ENABLED: Type-safe template literals with proper validation
@@ -74,7 +72,6 @@ export default [
       "@typescript-eslint/prefer-as-const": "error",
       "@typescript-eslint/prefer-includes": "error",
       "@typescript-eslint/prefer-string-starts-ends-with": "error",
-      "@typescript-eslint/no-unnecessary-type-assertion": "error",
       "@typescript-eslint/no-unnecessary-type-constraint": "error",
 
       // === DISABLE CONFLICTING BASE RULES ===

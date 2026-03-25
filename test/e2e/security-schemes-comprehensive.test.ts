@@ -142,7 +142,7 @@ describe("E2E: Security Schemes Comprehensive", () => {
 		`,
     );
 
-    const program = await host.compile("./main.tsp");
+    await host.compile("./main.tsp");
     const diagnostics = await host.diagnose("./main.tsp", {
       emit: ["@lars-artmann/typespec-asyncapi"],
     });

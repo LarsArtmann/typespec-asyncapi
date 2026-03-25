@@ -116,7 +116,7 @@ namespace TestService {
     const content = await fs.readFile(asyncapiFile, "utf-8");
     const asyncapi = YAML.parse(content);
 
-    for (const [name, channel] of Object.entries(asyncapi.channels)) {
+    for (const [_name, channel] of Object.entries(asyncapi.channels)) {
       const ch = channel as Record<string, unknown>;
       expect(ch).toHaveProperty("address");
       expect(ch).toHaveProperty("messages");
@@ -131,7 +131,7 @@ namespace TestService {
     const content = await fs.readFile(asyncapiFile, "utf-8");
     const asyncapi = YAML.parse(content);
 
-    for (const [name, operation] of Object.entries(asyncapi.operations)) {
+    for (const [_name, operation] of Object.entries(asyncapi.operations)) {
       const op = operation as Record<string, unknown>;
       expect(op).toHaveProperty("action");
       expect(op).toHaveProperty("channel");
@@ -148,7 +148,7 @@ namespace TestService {
     const content = await fs.readFile(asyncapiFile, "utf-8");
     const asyncapi = YAML.parse(content);
 
-    for (const [name, message] of Object.entries(asyncapi.components.messages)) {
+    for (const [_name, message] of Object.entries(asyncapi.components.messages)) {
       const msg = message as Record<string, unknown>;
       expect(msg).toHaveProperty("name");
       expect(msg).toHaveProperty("payload");

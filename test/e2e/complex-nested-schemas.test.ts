@@ -167,7 +167,7 @@ describe("E2E: Complex Nested Schemas", () => {
 		`,
     );
 
-    const program = await host.compile("./main.tsp");
+    await host.compile("./main.tsp");
     const diagnostics = await host.diagnose("./main.tsp", {
       emit: ["@lars-artmann/typespec-asyncapi"],
     });

@@ -3,9 +3,7 @@
  */
 
 import { describe, expect, it } from "bun:test";
-import { createTestHost } from "@typespec/compiler/testing";
 import { $onEmit } from "../../src/index.js";
-import { createAsyncAPITestLibrary as AsyncAPITestLibrary } from "./test-helpers";
 import { createAsyncAPITestHost } from "../utils/test-helpers.js";
 import { Effect } from "effect";
 
@@ -84,8 +82,5 @@ describe("Direct Emitter Test", () => {
 
       // Verify at least emitter ran without throwing
       expect(asyncapiFiles.length).toBeGreaterThanOrEqual(0);
-    } catch (error) {
-      throw error;
-    }
   });
 });

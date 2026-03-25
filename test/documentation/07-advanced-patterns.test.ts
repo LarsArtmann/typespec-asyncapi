@@ -6,7 +6,6 @@
 import { describe, expect, it, beforeEach } from "bun:test";
 import { createTypeSpecTestCompiler } from "./helpers/typespec-compiler.js";
 import { createAsyncAPIValidator } from "./helpers/asyncapi-validator.js";
-import { TypeSpecFixtures } from "./helpers/test-fixtures.js";
 import { AdvancedPatternFixtures } from "./helpers/PerformanceFixtures.js";
 
 describe("Documentation: Advanced Patterns Mapping", () => {

@@ -17,7 +17,6 @@
 import { afterAll, beforeAll, describe, expect, it } from "bun:test";
 import { AsyncAPIValidator } from "../../src/domain/validation/asyncapi-validator.js";
 import {
-  compileAsyncAPISpec,
   compileAsyncAPISpecWithResult,
   parseAsyncAPIOutput,
   TestSources,
@@ -32,7 +31,6 @@ import {
 import {
   getChannelCount,
   getOperationCount,
-  getSchemaCount,
   isSuccess,
 } from "../../src/domain/models/validation-result.js";
 
@@ -296,20 +294,20 @@ describe("🚨 CRITICAL: AUTOMATED ASYNCAPI SPECIFICATION VALIDATION", () => {
           const fileName = `${scenario.name}.${format}`;
           Effect.log(`  🔍 Parsing ${fileName}...`);
 
-          let parsedSpec: Record<string, unknown>;
+          let parsedSpec: AsyncAPIObject | string;
           try {
-            const parsed = await parseAsyncAPIOutput(
+            parsedSpec = await parseAsyncAPIOutput(
               compilationResult.result.outputFiles,
               fileName,
             );
-            console.log(`🔍 DEBUG: parseAsyncAPIOutput returned for ${fileName}: ${typeof parsed}`);
+            console.log(`🔍 DEBUG: parseAsyncAPIOutput returned for ${fileName}: ${typeof parsedSpec}`);
             if (typeof parsed === "object") {
               console.log(
-                `🔍 DEBUG: parseAsyncAPIOutput object keys: ${Object.keys(parsed).join(", ")}`,
+                `🔍 DEBUG: parseAsyncAPIOutput object keys: ${Object.keys(parsedSpec as object).join(", ")}`,
               );
-            } else if (typeof parsed === "string") {
+            } else if (typeof parsedSpec === "string") {
               console.log(
-                `🔍 DEBUG: parseAsyncAPIOutput returned string: ${parsed.substring(0, 100)}`,
+                `🔍 DEBUG: parseAsyncAPIOutput returned string: ${parsedSpec.substring(0, 100)}`,
               );
             }
             expect(parsedSpec).toBeDefined();
@@ -364,7 +362,7 @@ describe("🚨 CRITICAL: AUTOMATED ASYNCAPI SPECIFICATION VALIDATION", () => {
               expect(Object.keys(doc.operations).length).toBeGreaterThan(0);
 
               // Validate all operation channel references
-              for (const [opName, operation] of Object.entries(doc.operations)) {
+              for (const [_opName, operation] of Object.entries(doc.operations)) {
                 expect(operation).toHaveProperty("action");
                 expect(operation).toHaveProperty("channel");
                 expect(operation.channel).toHaveProperty("$ref");

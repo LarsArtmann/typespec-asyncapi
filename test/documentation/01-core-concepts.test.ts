@@ -14,7 +14,7 @@ import {
   createAsyncAPIValidator,
   type AsyncAPIValidationResult,
 } from "./helpers/asyncapi-validator.js";
-import { TypeSpecFixtures, AsyncAPIFixtures } from "./helpers/test-fixtures.js";
+import { TypeSpecFixtures } from "./helpers/test-fixtures.js";
 
 describe("Documentation: Core Concepts Mapping", () => {
   let compiler: ReturnType<typeof createTypeSpecTestCompiler>;
@@ -207,7 +207,7 @@ describe("Documentation: Core Concepts Mapping", () => {
         const channels = result.asyncapi!.channels!;
 
         // Validate channel references exist
-        for (const [operationId, operation] of Object.entries(operations)) {
+        for (const [_operationId, operation] of Object.entries(operations)) {
           const channelRef = operation.channel?.$ref;
           if (channelRef) {
             const channelName = channelRef.replace("#/channels/", "").replace(/~/g, "/");
@@ -393,7 +393,7 @@ describe("Documentation: Core Concepts Mapping", () => {
         const operations = result.asyncapi!.operations!;
         const channels = result.asyncapi!.channels!;
 
-        for (const [operationId, operation] of Object.entries(operations)) {
+        for (const [_operationId, operation] of Object.entries(operations)) {
           const channelRef = operation.channel?.$ref;
           if (channelRef) {
             const channelName = channelRef.replace("#/channels/", "").replace(/~/g, "/");

@@ -10,8 +10,8 @@ const closingIndex = lines.findIndex((line, idx) => idx > insertIndex && line ==
 
 if (insertIndex !== -1 && closingIndex !== -1) {
   // Replace the error throwing with fallback logic
-  const beforeError = lines.slice(0, insertIndex);
-  const afterError = lines.slice(closingIndex + 1);
+  const linesBefore = lines.slice(0, insertIndex);
+  const linesAfter = lines.slice(closingIndex + 1);
 
   const fallbackCode = [
     "		// 🔥 WORKAROUND: Try fallback file system search for test framework issues",

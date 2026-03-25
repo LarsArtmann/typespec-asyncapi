@@ -6,7 +6,6 @@
  */
 
 import { describe, expect, it } from "bun:test";
-import { createTestHost } from "@typespec/compiler/testing";
 import { createAsyncAPITestHost } from "../utils/test-helpers.js";
 import { Effect } from "effect";
 
@@ -143,7 +142,7 @@ describe("E2E: Multi-Protocol Comprehensive Test", () => {
     );
 
     // Compile
-    const program = await host.compile("./main.tsp");
+    await host.compile("./main.tsp");
 
     // Emit AsyncAPI
     const diagnostics = await host.diagnose("./main.tsp", {

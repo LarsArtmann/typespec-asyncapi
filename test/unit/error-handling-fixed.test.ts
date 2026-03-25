@@ -276,4 +276,5 @@ describe("Error Handling Migration (M016-M021)", () => {
       expect(result.failures.length).toBe(2);
     });
   });
+});
 

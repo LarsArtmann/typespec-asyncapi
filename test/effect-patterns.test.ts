@@ -6,8 +6,8 @@
  */
 
 import { test, expect } from "bun:test";
-import { Effect, Either } from "effect";
-import { LoggerLive } from "../src/logger.js";
+import { Effect } from "effect";
+
 
 /**
  * PHASE 1: Effect.TS Pattern Unit Tests - Railway Programming Validation
