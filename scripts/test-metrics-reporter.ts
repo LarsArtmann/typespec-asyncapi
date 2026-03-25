@@ -180,7 +180,7 @@ class TestMetricsReporter {
       const content = readFileSync(this.metricsFile, "utf-8");
       return JSON.parse(content) as SessionHistory[];
     } catch (error) {
-      console.warn(`Warning: Could not load metrics history: ${error}`);
+      console.warn(`Warning: Could not load metrics history: ${String(error)}`);
       return [];
     }
   }
@@ -206,7 +206,7 @@ class TestMetricsReporter {
     try {
       writeFileSync(this.metricsFile, JSON.stringify(history, null, 2), "utf-8");
     } catch (error) {
-      console.error(`Error saving metrics history: ${error}`);
+      console.error(`Error saving metrics history: ${String(error)}`);
     }
   }
 
@@ -351,7 +351,7 @@ async function main() {
 
 // Run if executed directly
 if (import.meta.main) {
-  main();
+  void main();
 }
 
 export { TestMetricsReporter, type TestMetrics, type SessionHistory };

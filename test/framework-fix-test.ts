@@ -42,4 +42,4 @@ op publishTest(): string;
   }
 }
 
-testFrameworkPattern();
+void testFrameworkPattern();

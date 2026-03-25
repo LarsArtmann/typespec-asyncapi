@@ -31,4 +31,4 @@ op publishTest(): string;
   }
 }
 
-testFixedFramework();
+void testFixedFramework();

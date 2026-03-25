@@ -89,28 +89,26 @@ export class PerformanceRegressionTester {
     metrics: PerformanceMetrics,
     config: PerformanceConfig,
   ): Effect.Effect<PerformanceReport, never, never> {
-    return Effect.gen(function* () {
-      const violations: string[] = [];
+    const violations: string[] = [];
 
-      if (metrics.duration > config.maxCompilationTimeMs) {
-        violations.push(
-          `Compilation time ${metrics.duration}ms exceeds threshold ${config.maxCompilationTimeMs}ms`,
-        );
-      }
+    if (metrics.duration > config.maxCompilationTimeMs) {
+      violations.push(
+        `Compilation time ${metrics.duration}ms exceeds threshold ${config.maxCompilationTimeMs}ms`,
+      );
+    }
 
-      const memoryUsageMB = metrics.memoryUsage / 1024 / 1024;
-      if (memoryUsageMB > config.maxMemoryUsageMB) {
-        violations.push(
-          `Memory usage ${memoryUsageMB.toFixed(2)}MB exceeds threshold ${config.maxMemoryUsageMB}MB`,
-        );
-      }
+    const memoryUsageMB = metrics.memoryUsage / 1024 / 1024;
+    if (memoryUsageMB > config.maxMemoryUsageMB) {
+      violations.push(
+        `Memory usage ${memoryUsageMB.toFixed(2)}MB exceeds threshold ${config.maxMemoryUsageMB}MB`,
+      );
+    }
 
-      return {
-        passed: violations.length === 0,
-        metrics,
-        thresholds: config,
-        violations,
-      };
+    return Effect.succeed({
+      passed: violations.length === 0,
+      metrics,
+      thresholds: config,
+      violations,
     });
   }
 

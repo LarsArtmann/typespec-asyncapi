@@ -1,5 +1,3 @@
-import * as fs from "fs";
-import * as path from "path";
 import { createTester, findTestPackageRoot } from "@typespec/compiler/testing";
 import type { AsyncAPIEmitterOptions } from "../../src/infrastructure/configuration/options.js";
 import YAML from "yaml";
@@ -85,8 +83,6 @@ export async function compileAsyncAPI(source: string, options: AsyncAPIEmitterOp
 
   if (result.program.host?.fs) {
     try {
-      const fs = await import("node:fs");
-      const path = await import("node:path");
       // result.program.host.fs might have different API
       // eslint-disable-next-line no-console
       console.log("🔧 TEST HELP: result.program.host.fs type:", typeof result.program.host.fs);

@@ -66,4 +66,4 @@ op publishTest(): TestMessage;
   }
 }
 
-testMinimalServer();
+void testMinimalServer();

@@ -89,7 +89,7 @@ export class IntegrationTestHarness {
         },
       } as AsyncAPIObject;
     } catch (error) {
-      throw new Error(`AsyncAPI generation failed: ${error}`);
+      throw new Error(`AsyncAPI generation failed: ${String(error)}`);
     }
   }
 
@@ -138,7 +138,7 @@ export class IntegrationTestHarness {
     } catch (error) {
       return {
         valid: false,
-        errors: [`Validation failed: ${error}`],
+        errors: [`Validation failed: ${String(error)}`],
       };
     }
   }

@@ -1,10 +1,8 @@
 import { describe, it, expect, beforeEach } from "bun:test";
 import { readFileSync } from "fs";
-import { parse } from "yaml";
 import { Parser } from "@asyncapi/parser";
 import { createTestRunner, type BasicTestRunner } from "@typespec/compiler/testing";
 import { Effect } from "effect";
-import { LoggerLive } from "../../src/logger.js";
 
 describe("Real AsyncAPI Validation Tests", () => {
   let runner: BasicTestRunner;
@@ -109,7 +107,7 @@ describe("Real AsyncAPI Validation Tests", () => {
       await Effect.runPromise(
         Effect.logInfo("✅ Generated AsyncAPI 3.0 spec passes OFFICIAL AsyncAPI parser validation"),
       );
-    } catch (error) {
+    } catch (_error) {
       // If file doesn't exist, skip this validation
       console.warn(`Test file ${testFile} not found, skipping YAML validation`);
     }
@@ -156,7 +154,7 @@ describe("Real AsyncAPI Validation Tests", () => {
         expect(operation.action()).toBeDefined();
         expect(operation.channels()).toBeDefined();
       });
-    } catch (error) {
+    } catch (_error) {
       console.warn(`Test file ${testFile} not found, skipping metadata test`);
       // Don't fail the test if the file doesn't exist
     }

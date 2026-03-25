@@ -49,4 +49,4 @@ op publishTest(): TestMessage;
   }
 }
 
-testDocDecorator();
+void testDocDecorator();

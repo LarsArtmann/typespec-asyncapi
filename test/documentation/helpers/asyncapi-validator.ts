@@ -99,7 +99,7 @@ export class AsyncAPIDocumentationValidator {
     options: AsyncAPIValidationOptions = {},
   ): Promise<AsyncAPIValidationResult> {
     const {
-      strict = true,
+      strict: _strict = true,
       validateSemantic = true,
       includeWarnings = true,
       customRules = [],
@@ -137,7 +137,7 @@ export class AsyncAPIDocumentationValidator {
       for (const rule of customRules) {
         const ruleErrors = rule.validate(asyncapi);
         if (ruleErrors.length > 0) {
-          result.errors.push(...ruleErrors.map((error) => `${rule.name}: ${error}`));
+          result.errors.push(...ruleErrors.map((error) => `${rule.name}: ${String(error)}`));
         }
       }
 
@@ -239,7 +239,7 @@ export class AsyncAPIDocumentationValidator {
       if (!asyncapi.servers) {
         errors.push("Expected servers configuration, but none found");
       } else {
-        for (const [serverName, serverConfig] of Object.entries(expectations.servers)) {
+        for (const [serverName, _serverConfig] of Object.entries(expectations.servers)) {
           if (!asyncapi.servers[serverName]) {
             errors.push(`Missing expected server: ${serverName}`);
           }
@@ -299,7 +299,7 @@ export class AsyncAPIDocumentationValidator {
     if (asyncapi.channels) {
       for (const [channelName, channel] of Object.entries(asyncapi.channels)) {
         if (channel.messages) {
-          for (const [messageKey, message] of Object.entries(channel.messages)) {
+          for (const [_messageKey, message] of Object.entries(channel.messages)) {
             if (typeof message === "object" && message.$ref) {
               const messageRef = message.$ref;
               if (messageRef.startsWith("#/components/messages/")) {

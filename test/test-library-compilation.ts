@@ -67,4 +67,4 @@ op publishTest(): string;
   }
 }
 
-testLibraryLoading();
+void testLibraryLoading();

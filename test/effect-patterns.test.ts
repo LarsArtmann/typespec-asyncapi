@@ -43,7 +43,7 @@ test("Railway Programming - tryPromise pattern conversion", async () => {
   // Test Effect.tryPromise for async operation conversion
   const promiseEffect = Effect.tryPromise({
     try: () => Promise.resolve("async success"),
-    catch: (error) => new Error(`Async failed: ${error}`),
+    catch: (error) => new Error(`Async failed: ${String(error)}`),
   });
 
   const promiseResult = await Effect.runPromise(promiseEffect);
@@ -220,7 +220,7 @@ test("Integration - complete Effect pipeline", async () => {
 
       const processed = yield* Effect.tryPromise({
         try: () => Promise.resolve(rawData.map((x) => x * x)),
-        catch: (error) => new Error(`Processing failed: ${error}`),
+        catch: (error) => new Error(`Processing failed: ${String(error)}`),
       });
 
       return processed;

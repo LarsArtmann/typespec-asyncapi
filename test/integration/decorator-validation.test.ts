@@ -57,7 +57,7 @@ describe("AsyncAPI Decorator Validation", () => {
       });
 
       // Should have diagnostics for invalid channels but not for valid ones
-      const channelErrors = diagnostics.filter(
+      const _channelErrors = diagnostics.filter(
         (d) => d.code === "@lars-artmann/typespec-asyncapi/invalid-channel-path",
       );
 
@@ -85,7 +85,7 @@ describe("AsyncAPI Decorator Validation", () => {
       });
 
       // Check for missing channel diagnostic
-      const missingChannelErrors = diagnostics.filter(
+      const _missingChannelErrors = diagnostics.filter(
         (d) => d.code === "@lars-artmann/typespec-asyncapi/missing-channel-path",
       );
 
@@ -148,7 +148,7 @@ describe("AsyncAPI Decorator Validation", () => {
       });
 
       // Should detect the conflict
-      const conflictErrors = diagnostics.filter(
+      const _conflictErrors = diagnostics.filter(
         (d) => d.code === "@lars-artmann/typespec-asyncapi/conflicting-operation-type",
       );
 
@@ -233,8 +233,8 @@ describe("AsyncAPI Decorator Validation", () => {
       });
 
       // Recursive models should not cause infinite loops
-      const errors = diagnostics.filter((d) => d.severity === "error");
-      const circularErrors = diagnostics.filter(
+      const _errors = diagnostics.filter((d) => d.severity === "error");
+      const _circularErrors = diagnostics.filter(
         (d) => d.code === "@lars-artmann/typespec-asyncapi/circular-message-reference",
       );
 

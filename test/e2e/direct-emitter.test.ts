@@ -82,5 +82,9 @@ describe("Direct Emitter Test", () => {
 
       // Verify at least emitter ran without throwing
       expect(asyncapiFiles.length).toBeGreaterThanOrEqual(0);
+    } catch (_error) {
+      Effect.logError("Emitter test failed");
+      throw _error;
+    }
   });
 });

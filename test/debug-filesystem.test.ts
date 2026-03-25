@@ -22,7 +22,7 @@ describe("DEBUG: File System Access", () => {
       );
 
       console.log("🔍 Files related to our library:");
-      asyncAPIFiles.forEach((file) => console.log(`  ${file}`));
+      asyncAPIFiles.forEach((file) => console.log(`  ${String(file)}`));
 
       if (asyncAPIFiles.length === 0) {
         console.log("❌ NO AsyncAPI library files found in virtual filesystem!");

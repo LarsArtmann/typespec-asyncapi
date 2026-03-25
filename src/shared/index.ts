@@ -7,3 +7,5 @@
  * - '../constants/*.js'
  * - '../types/index.js'
  */
+
+export {};

@@ -420,7 +420,7 @@ export const RealWorldExamples = {
  * TEMPORARILY DISABLED due to TypeScript parsing conflicts with template literals
  */
 export class TestDataGenerator {
-  static generateTestService(name: string, operationCount: number): string {
+  static generateTestService(_name: string, _operationCount: number): string {
     return "namespace TestService; model TestModel { id: string; }";
   }
 

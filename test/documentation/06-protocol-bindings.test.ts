@@ -6,7 +6,6 @@
 import { describe, expect, it, beforeEach } from "bun:test";
 import { createTypeSpecTestCompiler } from "./helpers/typespec-compiler.js";
 import { createAsyncAPIValidator } from "./helpers/asyncapi-validator.js";
-import { TypeSpecFixtures } from "./helpers/test-fixtures.js";
 import { ProtocolEdgeCases } from "./helpers/EdgeCaseFixtures.js";
 
 describe("Documentation: Protocol Bindings Mapping", () => {
@@ -129,7 +128,7 @@ describe("Documentation: Protocol Bindings Mapping", () => {
               description: "Validates protocol binding completeness",
               validate: (asyncapi) => {
                 const errors: string[] = [];
-                for (const [channelName, channel] of Object.entries(asyncapi.channels || {})) {
+                for (const [_channelName, _channel] of Object.entries(asyncapi.channels || {})) {
                   // NOTE: Alpha version doesn't support protocol bindings
                   // if (!channel.bindings) {
                   //   errors.push(`Channel ${channelName} missing protocol bindings`)

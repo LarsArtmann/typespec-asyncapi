@@ -95,7 +95,7 @@ export async function createAsyncAPITestHost() {
   //TODO: LOGGING ARCHITECTURE DISASTER - Effect.log mixed with Promise-based async functions!
   //TODO: PROPER EFFECT COMPOSITION REQUIRED - Should return Effect<TestHost, never, never>!
   //TODO: EMOJI LOGGING IN PRODUCTION CODE - Remove emojis from library code!
-  Effect.log("🚀 Using PROPER library approach - registering AsyncAPI test library");
+  void Effect.log("🚀 Using PROPER library approach - registering AsyncAPI test library");
   const asyncAPITestLibrary = await createAsyncAPITestLibrary();
   return createTestHost({
     libraries: [asyncAPITestLibrary], // Register our AsyncAPI library properly
@@ -111,8 +111,8 @@ export async function compileAsyncAPISpecRaw(
   options: AsyncAPIEmitterOptions = {},
 ): Promise<CompilationResult> {
   // File system utilities for output file discovery
-  const fs = await import("node:fs/promises");
-  const path = await import("node:path");
+  const _fs = await import("node:fs/promises");
+  const _path = await import("node:path");
 
   // Create test host WITH proper AsyncAPI library registration
   const host = await createAsyncAPITestHost();
@@ -132,12 +132,12 @@ export async function compileAsyncAPISpecRaw(
   // TypeSpec test runner automatically calls emitters - no manual invocation needed
 
   // Debug logging
-  Effect.log("Compilation result:", typeof result, !!result);
+  void Effect.log("Compilation result:", typeof result, !!result);
 
   const program = result.program || result;
 
-  Effect.log("Program created:", !!program);
-  Effect.log("Diagnostics count:", diagnostics.length);
+  void Effect.log("Program created:", !!program);
+  void Effect.log("Diagnostics count:", diagnostics.length);
 
   // Access outputFiles correctly from TestCompileResult structure
   // TestCompileResult has: { program: Program, fs: TestFileSystem }
@@ -150,7 +150,7 @@ export async function compileAsyncAPISpecRaw(
 
   let outputFiles = result.fs?.fs || new Map<string, string>();
 
-  Effect.log(`🔍 DEBUG parseAsyncAPIOutput: outputFiles size: ${outputFiles.size}`);
+  void Effect.log(`🔍 DEBUG parseAsyncAPIOutput: outputFiles size: ${outputFiles.size}`);
 
   // 🔥 CRITICAL FIX: If TestFileSystem is empty, check real filesystem
   // This happens when emitFile writes to real FS instead of test framework
@@ -159,9 +159,9 @@ export async function compileAsyncAPISpecRaw(
 
     try {
       // Import filesystem utilities
-      const fs = await import("node:fs/promises");
+      const _fs = await import("node:fs/promises");
       const path = await import("node:path");
-      const yaml = await import("yaml");
+      const _yaml = await import("yaml");
 
       // Check TypeSpec output directories (real FS)
       // Try multiple possible locations where emitFile might write
@@ -232,7 +232,7 @@ export async function compileAsyncAPISpecRaw(
 
       Effect.log(`📊 Final outputFiles count: ${outputFiles.size}`);
     } catch (error) {
-      Effect.log(`❌ Failed to read from filesystem: ${error}`);
+      Effect.log(`❌ Failed to read from filesystem: ${String(error)}`);
     }
   }
 
@@ -273,7 +273,7 @@ export async function compileAsyncAPISpecRaw(
             outputFiles.set(file, content);
             Effect.log(`✅ Found AsyncAPI file: ${file} (${content.length} chars)`);
           } catch (error) {
-            Effect.log(`❌ Failed to read ${file}: ${error}`);
+            Effect.log(`❌ Failed to read ${file}: ${String(error)}`);
           }
         }
 
@@ -289,7 +289,7 @@ export async function compileAsyncAPISpecRaw(
                 Effect.log(`✅ Found AsyncAPI scenario file: ${file} (${content.length} chars)`);
               }
             } catch (error) {
-              Effect.log(`❌ Failed to read ${file}: ${error}`);
+              Effect.log(`❌ Failed to read ${file}: ${String(error)}`);
             }
           }
         }
@@ -301,14 +301,14 @@ export async function compileAsyncAPISpecRaw(
           break;
         }
       } catch (error) {
-        Effect.log(`❌ Failed to read TypeSpec output directory: ${error}`);
+        Effect.log(`❌ Failed to read TypeSpec output directory: ${String(error)}`);
       }
     }
   }
 
-  Effect.log("OutputFiles size:", outputFiles.size);
+  void Effect.log("OutputFiles size:", outputFiles.size);
   const allKeys = Array.from(outputFiles.keys());
-  Effect.log(
+  void Effect.log(
     "All outputFiles keys:",
     allKeys.slice(0, 10).join(", ") + (allKeys.length > 10 ? "..." : ""),
   );
@@ -323,7 +323,7 @@ export async function compileAsyncAPISpecRaw(
   }
 
   if (!program) {
-    throw new Error(`Failed to compile TypeSpec program. Available keys: ${Object.keys(result)}`);
+    throw new Error(`Failed to compile TypeSpec program. Available keys: ${Object.keys(result).join(", ")}`);
   }
 
   return {
@@ -367,7 +367,7 @@ export async function compileAsyncAPISpec(
           return parsed as AsyncAPIObject;
         }
       } catch (error) {
-        Effect.log(`Failed to parse ${fileName}: ${error}`);
+        Effect.log(`Failed to parse ${fileName}: ${String(error)}`);
         continue;
       }
     }
@@ -416,7 +416,7 @@ export async function compileAsyncAPISpec(
           Effect.log(`✅ Parsed AsyncAPI document with version: ${parsed.asyncapi}`);
           return parsed as AsyncAPIObject;
         } catch (error) {
-          Effect.log(`❌ Failed to parse ${fileName}: ${error}`);
+          Effect.log(`❌ Failed to parse ${fileName}: ${String(error)}`);
           continue;
         }
       }
@@ -427,7 +427,7 @@ export async function compileAsyncAPISpec(
       `No valid AsyncAPI files found in output. Found files: ${Array.from(outputFiles.keys()).join(", ")}`,
     );
   } catch (error) {
-    Effect.log(`🔥 parseAsyncAPIOutput error: ${error}`);
+    Effect.log(`🔥 parseAsyncAPIOutput error: ${String(error)}`);
     throw error;
   }
 }
@@ -523,7 +523,7 @@ export async function compileAsyncAPISpecWithResult(
           console.log(`🔍 DEBUG got string instead of object: ${parsed}`);
         }
       } catch (error) {
-        Effect.log(`Failed to parse ${fileName}: ${error}`);
+        Effect.log(`Failed to parse ${fileName}: ${String(error)}`);
         continue;
       }
     }
@@ -561,8 +561,8 @@ export async function compileAsyncAPISpecWithResult(
 
     throw new Error(`No AsyncAPI files found in compilation output`);
   } catch (error) {
-    Effect.log(`❌ Failed to parse AsyncAPI output: ${error}`);
-    throw new Error(`Failed to parse AsyncAPI output: ${error}`);
+    Effect.log(`❌ Failed to parse AsyncAPI output: ${String(error)}`);
+    throw new Error(`Failed to parse AsyncAPI output: ${String(error)}`);
   }
 }
 
@@ -582,12 +582,10 @@ export async function compileTypeSpecWithDecorators(
   });
 
   // Compile and return just program and diagnostics
-  const [result, diagnostics] = await runner.compileAndDiagnose(source);
+  const [_result, diagnostics] = await runner.compileAndDiagnose(source);
 
-  result; //<--- TODO: use it!!!???
-
-  Effect.log("Program created:", !!runner.program);
-  Effect.log("Diagnostics count:", diagnostics.length);
+  void Effect.log("Program created:", !!runner.program);
+  void Effect.log("Diagnostics count:", diagnostics.length);
 
   // Log any diagnostics for debugging
   if (diagnostics.length > 0) {
@@ -625,7 +623,7 @@ export async function parseAsyncAPIOutput(
 
   // Check if outputFiles is undefined or null
   if (!outputFiles) {
-    throw new Error(`outputFiles is ${outputFiles}. Cannot parse AsyncAPI output.`);
+    throw new Error(`outputFiles is ${String(outputFiles)}. Cannot parse AsyncAPI output.`);
   }
 
   // Check if outputFiles has the expected Map interface
@@ -765,27 +763,26 @@ export async function parseAsyncAPIOutput(
     const schemaName = extractSchemaNameFromTest(filename);
     console.log(`🔍 DEBUG: extractSchemaNameFromTest("${filename}") = "${schemaName}"`);
     // Disabled premature fallback - let real file parsing work
-    if (false && schemaName) {
-      // 🚨 TEMPORARILY DISABLED
-      console.log(`🔍 DEBUG: Would trigger fallback for schema: ${schemaName}`);
-      return createAlphaFallbackDocument(schemaName);
-    }
+    // if (schemaName) {
+    //   console.log(`🔍 DEBUG: Would trigger fallback for schema: ${schemaName}`);
+    //   return createAlphaFallbackDocument(schemaName);
+    // }
 
     // Generic fallback
     return createAlphaFallbackDocument("BasicEvent");
   } catch (error) {
     const availableFiles = Array.from(outputFiles.keys());
     throw new Error(
-      `Failed to parse ${filename}: ${error}. Available files: ${availableFiles.join(", ")}`,
+      `Failed to parse ${filename}: ${String(error)}. Available files: ${availableFiles.join(", ")}`,
     );
   }
 }
 
 //TODO: refactor from Promise to Effect!
 async function parseFileContent(content: string, filename: string): Promise<AsyncAPIObject> {
-  Effect.log(`Parsing file: ${filename}`);
-  Effect.log(`Content length: ${content?.length || 0}`);
-  Effect.log(`Content preview: ${content?.substring(0, 200) || "NO CONTENT"}`);
+  void Effect.log(`Parsing file: ${filename}`);
+  void Effect.log(`Content length: ${content?.length || 0}`);
+  void Effect.log(`Content preview: ${content?.substring(0, 200) || "NO CONTENT"}`);
 
   // DEBUG: Empty content analysis - emitter generates content but test framework doesn't extract it
   if (!content || content.length === 0) {
@@ -1316,7 +1313,7 @@ export const AsyncAPIAssertions = {
       Effect.log(`✅ Alpha-compatible AsyncAPI structure validated successfully`);
       return true;
     } catch (error) {
-      Effect.log(`❌ AsyncAPI structure validation failed: ${error}`);
+      Effect.log(`❌ AsyncAPI structure validation failed: ${String(error)}`);
       return false;
     }
   },
@@ -1439,7 +1436,7 @@ export async function compileAndGetAsyncAPI(
         spec = yamlModule.parse(content);
       }
     } catch (parseError) {
-      console.log(`⚠️  Content parse error: ${parseError}`);
+      console.log(`⚠️  Content parse error: ${String(parseError)}`);
       console.log(`⚠️  Content preview: ${content.substring(0, 200)}...`);
       return null;
     }
@@ -1467,7 +1464,7 @@ export async function compileAndGetAsyncAPI(
             return reparsed as AsyncAPIObject;
           }
         } catch (reparseError) {
-          console.log(`❌ YAML re-parse failed: ${reparseError}`);
+          console.log(`❌ YAML re-parse failed: ${String(reparseError)}`);
         }
       }
     }

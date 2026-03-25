@@ -50,7 +50,7 @@ export async function compileSimpleTest(source: string): Promise<any> {
 
     throw new Error("No AsyncAPI file found in output");
   } catch (error) {
-    Effect.log(`❌ Clean test helper failed: ${error}`);
+    Effect.log(`❌ Clean test helper failed: ${String(error)}`);
     throw error;
   }
 }

@@ -5,8 +5,6 @@
  * Split from massive 1822-line test-fixtures.ts for maintainability.
  */
 
-import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js";
-
 /**
  * Edge cases and boundary conditions for testing
  */

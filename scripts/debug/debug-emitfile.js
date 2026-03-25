@@ -37,4 +37,4 @@ namespace TestService {
   }
 }
 
-debugEmitFile();
+void debugEmitFile();

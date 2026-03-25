@@ -17,7 +17,6 @@ import {
   TEST_VERSIONS,
 } from "../../src/constants/index.js";
 import {
-  pluginRegistry,
   registerBuiltInPlugins,
   generateProtocolBinding,
 } from "../../src/plugins/core/PluginSystem.js"; // TODO: Fix plugin system architecture
@@ -165,7 +164,7 @@ describe("🎯 USER ACCEPTANCE TESTING - Real Workflows", () => {
       // VALIDATE: System catches and reports errors properly
       // Invalid TypeSpec should fail compilation - we expect this to throw or return errors
       try {
-        const result = await compileAsyncAPISpecWithoutErrors(invalidTypeSpec);
+        const _result = await compileAsyncAPISpecWithoutErrors(invalidTypeSpec);
         // If it somehow succeeds, there should be issues
         expect(true).toBe(false); // Should not reach here
       } catch (error) {

@@ -51,7 +51,7 @@ describe("🚨 ALL GENERATED ASYNCAPI SPECS VALIDATION", () => {
   afterAll(async () => {
     try {
       await rm(testOutputDir, { recursive: true, force: true });
-    } catch (error) {
+    } catch (_error) {
       // Ignore cleanup errors
     }
 
@@ -445,14 +445,14 @@ operations:
                       });
                     }
                   }
-                } catch (error) {
+                } catch (_error) {
                   // Skip files that can't be read
                   Effect.log(`⚠️  Skipped unreadable file: ${file.name}`);
                 }
               }
             }
           }
-        } catch (error) {
+        } catch (_error) {
           // Directory doesn't exist or can't be read - skip
         }
       }
@@ -485,7 +485,7 @@ operations:
         size: number;
       }> = [];
 
-      let totalValidationTime = 0;
+      let _totalValidationTime = 0;
       const batchStartTime = performance.now();
 
       // Validate each discovered specification
