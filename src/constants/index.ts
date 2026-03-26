@@ -9,6 +9,7 @@
 import { CURRENT_ASYNCAPI_VERSION, SUPPORTED_ASYNCAPI_VERSIONS } from "./version.js";
 export const ASYNCAPI_VERSION = CURRENT_ASYNCAPI_VERSION;
 export const DEFAULT_CONTENT_TYPE = "application/json";
+export const DEFAULT_SERVER_URL = "http://localhost:3000";
 
 // Protocol constants
 export const PROTOCOL_DEFAULTS = {

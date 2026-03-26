@@ -59,8 +59,8 @@ export const railwayErrorRecovery = {
   retryWithBackoff: <A, E>(
     effect: Effect.Effect<A, E>,
     times: number = 3,
-    minDelay: number = 100,
-    maxDelay: number = 5000,
+    minDelay: number = RETRY_DELAYS.MIN,
+    maxDelay: number = RETRY_DELAYS.MAX,
   ): Effect.Effect<A, E> => {
     // Create exponential backoff schedule with jitter
     const backoffSchedule = Schedule.exponential(`${minDelay} millis`)
@@ -184,6 +184,14 @@ export const railwayErrorRecovery = {
       return { successes, failures };
     });
   },
+} as const;
+
+/**
+ * Retry delay constants (milliseconds)
+ */
+export const RETRY_DELAYS = {
+  MIN: 100,
+  MAX: 5000,
 } as const;
 
 /**
