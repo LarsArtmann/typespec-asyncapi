@@ -104,7 +104,9 @@ const fileType = options?.["file-type"] || "yaml";
 ```typescript
 // BEFORE: Effect<AsyncAPIChannels, Error> (TYPE ERRORS)
 // AFTER: Effect<AsyncAPIChannels, unknown> (COMPATIBLE)
-function generateChannels(state: AsyncAPIConsolidatedState): Effect.Effect<AsyncAPIChannels, unknown>
+function generateChannels(
+  state: AsyncAPIConsolidatedState,
+): Effect.Effect<AsyncAPIChannels, unknown>;
 ```
 
 ---

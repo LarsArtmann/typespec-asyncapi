@@ -29,17 +29,19 @@ This issue represents the **final architectural transformation** needed to eleva
 ```typescript
 // ✅ IMPLEMENT: Complete branded types utilization
 export class ChannelName {
-  readonly brand: "ChannelName"
+  readonly brand: "ChannelName";
   constructor(readonly value: string) {
     if (!value.match(/^[a-zA-Z][a-zA-Z0-9_]*$/)) {
-      throw new Error(`Invalid channel name: ${value}`)
+      throw new Error(`Invalid channel name: ${value}`);
     }
   }
-  toString() { return this.value }
+  toString() {
+    return this.value;
+  }
 }
 
 export class AsyncAPIVersion {
-  readonly brand: "AsyncAPIVersion"
+  readonly brand: "AsyncAPIVersion";
   constructor(readonly value: "3.0.0") {} // Only supported version
 }
 
@@ -56,27 +58,25 @@ export class ChannelDomainService {
   static validateChannelName(name: ChannelName): ValidationResult {
     return name.value.length > 50
       ? ValidationFailure.channelNameTooLong(name.value)
-      : ValidationSuccess.valid()
+      : ValidationSuccess.valid();
   }
 
   static createChannelFromOperation(op: Operation): Channel {
-    const name = new ChannelName(op.name)
-    const validation = this.validateChannelName(name)
-    return validation.isSuccess
-      ? new Channel(name, op)
-      : Channel.invalid(validation.errors)
+    const name = new ChannelName(op.name);
+    const validation = this.validateChannelName(name);
+    return validation.isSuccess ? new Channel(name, op) : Channel.invalid(validation.errors);
   }
 }
 
 export class MessageDomainService {
   static extractMessageSchema(operation: Operation): MessageSchema {
-    return MessageSchema.fromTypeSpec(operation.returns)
+    return MessageSchema.fromTypeSpec(operation.returns);
   }
 
   static validateMessageStructure(schema: MessageSchema): ValidationResult {
     return schema.hasRequiredFields()
       ? ValidationSuccess.valid()
-      : ValidationFailure.missingRequiredFields(schema.missingFields)
+      : ValidationFailure.missingRequiredFields(schema.missingFields);
   }
 }
 ```
@@ -86,25 +86,29 @@ export class MessageDomainService {
 ```typescript
 // ✅ IMPLEMENT: Event/command pattern for side effects
 export abstract class DomainEvent {
-  readonly id: string = crypto.randomUUID()
-  readonly timestamp: Date = new Date()
-  abstract readonly type: string
+  readonly id: string = crypto.randomUUID();
+  readonly timestamp: Date = new Date();
+  abstract readonly type: string;
 }
 
 export class ChannelCreated extends DomainEvent {
-  readonly type = "ChannelCreated"
+  readonly type = "ChannelCreated";
   constructor(
     readonly channelName: ChannelName,
-    readonly operation: Operation
-  ) { super() }
+    readonly operation: Operation,
+  ) {
+    super();
+  }
 }
 
 export class MessageValidated extends DomainEvent {
-  readonly type = "MessageValidated"
+  readonly type = "MessageValidated";
   constructor(
     readonly messageName: MessageName,
-    readonly validationResult: ValidationResult
-  ) { super() }
+    readonly validationResult: ValidationResult,
+  ) {
+    super();
+  }
 }
 
 // 🔧 REPLACE: Direct mutations with events
@@ -117,22 +121,22 @@ export class MessageValidated extends DomainEvent {
 ```typescript
 // ✅ IMPLEMENT: Clean state management
 export interface AsyncAPIRepository {
-  saveChannel(channel: Channel): Promise<void>
-  findChannelByName(name: ChannelName): Promise<Channel | null>
-  getAllChannels(): Promise<Channel[]>
-  deleteChannel(name: ChannelName): Promise<void>
+  saveChannel(channel: Channel): Promise<void>;
+  findChannelByName(name: ChannelName): Promise<Channel | null>;
+  getAllChannels(): Promise<Channel[]>;
+  deleteChannel(name: ChannelName): Promise<void>;
 }
 
 export class InMemoryAsyncAPIRepository implements AsyncAPIRepository {
-  private channels = new Map<string, Channel>()
+  private channels = new Map<string, Channel>();
 
   async saveChannel(channel: Channel): Promise<void> {
-    this.channels.set(channel.name.value, channel)
-    this.eventBus.publish(new ChannelSaved(channel))
+    this.channels.set(channel.name.value, channel);
+    this.eventBus.publish(new ChannelSaved(channel));
   }
 
   async findChannelByName(name: ChannelName): Promise<Channel | null> {
-    return this.channels.get(name.value) || null
+    return this.channels.get(name.value) || null;
   }
 }
 ```

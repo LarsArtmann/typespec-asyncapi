@@ -71,20 +71,22 @@ serviceMethod(input: Input): Effect.Effect<Output, StandardizedError> {
 ```typescript
 // BROKEN: Context binding issues
 return Effect.gen(function* () {
-  yield* this.someMethod()  // TS2683: 'this' implicitly has type 'any'
-})
+  yield* this.someMethod(); // TS2683: 'this' implicitly has type 'any'
+});
 
 // SOLUTION 1: Explicit binding
-return Effect.gen((function* () {
-  yield* this.someMethod()
-}).bind(this))
+return Effect.gen(
+  function* () {
+    yield* this.someMethod();
+  }.bind(this),
+);
 
 // SOLUTION 2: Functional composition (PREFERRED)
 return pipe(
   Effect.succeed(input),
   Effect.flatMap(someServiceFunction),
-  Effect.map(transformResult)
-)
+  Effect.map(transformResult),
+);
 ```
 
 **PHASE 5: Quality Assurance & Optimization**
@@ -132,24 +134,26 @@ newMethod(param: Type): Effect.Effect<Result, StandardizedError> {
 ```typescript
 // OLD: Multiple error handling strategies
 try {
-  const result = await operation()
-  return result
+  const result = await operation();
+  return result;
 } catch (error) {
-  console.error(error)
-  throw error
+  console.error(error);
+  throw error;
 }
 
 // NEW: Standardized Railway programming
 return pipe(
   operation(),
-  Effect.catchAll(error =>
-    failWith(createError({
-      what: "Operation failed",
-      why: String(error),
-      // ... standardized properties
-    }))
-  )
-)
+  Effect.catchAll((error) =>
+    failWith(
+      createError({
+        what: "Operation failed",
+        why: String(error),
+        // ... standardized properties
+      }),
+    ),
+  ),
+);
 ```
 
 #### Pattern 3: Context Binding Resolution
@@ -159,18 +163,14 @@ return pipe(
 class Service {
   method(): Effect.Effect<void> {
     return Effect.gen(function* () {
-      yield* this.helper()  // BROKEN
-    })
+      yield* this.helper(); // BROKEN
+    });
   }
 }
 
 // PREFER: Functional composition
 const serviceMethod = (dependencies: Dependencies) => (input: Input) =>
-  pipe(
-    Effect.succeed(input),
-    Effect.flatMap(dependencies.helper),
-    Effect.map(transform)
-  )
+  pipe(Effect.succeed(input), Effect.flatMap(dependencies.helper), Effect.map(transform));
 ```
 
 ## Results Achieved
@@ -231,30 +231,35 @@ const serviceMethod = (dependencies: Dependencies) => (input: Input) =>
 ## Effect.TS Migration Checklist for Service: [SERVICE_NAME]
 
 ### Pre-Migration Analysis
+
 - [ ] Map Promise-based methods requiring conversion
 - [ ] Identify error handling patterns (try/catch locations)
 - [ ] Document service dependencies and call sites
 - [ ] Verify testing coverage for behavior validation
 
 ### Core Conversion
+
 - [ ] Convert async methods to Effect.Effect return types
 - [ ] Replace try/catch with Railway programming patterns
 - [ ] Update function signatures with precise Effect types
 - [ ] Resolve context binding issues (avoid .bind(this))
 
 ### Error Integration
+
 - [ ] Integrate standardized error types
 - [ ] Convert throw statements to Effect.fail/failWith
 - [ ] Implement Railway programming error flow
 - [ ] Add context to error messages
 
 ### Quality Validation
+
 - [ ] TypeScript compilation succeeds (zero errors)
 - [ ] ESLint passes with Effect.TS rules
 - [ ] All tests pass with equivalent behavior
 - [ ] Performance benchmarking (if critical path)
 
 ### Integration Testing
+
 - [ ] Update calling services for new Effect signatures
 - [ ] Verify end-to-end workflows function correctly
 - [ ] Test error scenarios and error propagation
@@ -265,18 +270,18 @@ const serviceMethod = (dependencies: Dependencies) => (input: Input) =>
 
 ```typescript
 // Service Migration Template
-import { Effect, pipe } from "effect"
-import { StandardizedError, createError, failWith } from "./error-system"
+import { Effect, pipe } from "effect";
+import { StandardizedError, createError, failWith } from "./error-system";
 
 // OLD SERVICE PATTERN
 class OldService {
   async method(input: Input): Promise<Output> {
     try {
-      const step1 = await this.step1(input)
-      const step2 = await this.step2(step1)
-      return this.finalStep(step2)
+      const step1 = await this.step1(input);
+      const step2 = await this.step2(step1);
+      return this.finalStep(step2);
     } catch (error) {
-      throw new Error(`Service failed: ${error.message}`)
+      throw new Error(`Service failed: ${error.message}`);
     }
   }
 }
@@ -289,34 +294,39 @@ class NewService {
       Effect.flatMap(this.step1.bind(this)),
       Effect.flatMap(this.step2.bind(this)),
       Effect.flatMap(this.finalStep.bind(this)),
-      Effect.catchAll(error =>
-        failWith(createError({
-          what: "Service method failed",
-          why: error instanceof Error ? error.message : String(error),
-          fix: "Validate input parameters and check service dependencies",
-          reassure: "This is a recoverable service error",
-          escape: "Check service configuration and retry",
-          severity: "error" as const,
-          category: "service" as const,
-        }))
-      )
-    )
+      Effect.catchAll((error) =>
+        failWith(
+          createError({
+            what: "Service method failed",
+            why: error instanceof Error ? error.message : String(error),
+            fix: "Validate input parameters and check service dependencies",
+            reassure: "This is a recoverable service error",
+            escape: "Check service configuration and retry",
+            severity: "error" as const,
+            category: "service" as const,
+          }),
+        ),
+      ),
+    );
   }
 
   // PREFERRED: Functional composition (avoid .bind(this))
-  static methodFunctional = (dependencies: ServiceDependencies) =>
+  static methodFunctional =
+    (dependencies: ServiceDependencies) =>
     (input: Input): Effect.Effect<Output, StandardizedError> =>
       pipe(
         Effect.succeed(input),
         Effect.flatMap(dependencies.step1),
         Effect.flatMap(dependencies.step2),
         Effect.flatMap(dependencies.finalStep),
-        Effect.catchAll(error =>
-          failWith(createError({
-            // ... error details
-          }))
-        )
-      )
+        Effect.catchAll((error) =>
+          failWith(
+            createError({
+              // ... error details
+            }),
+          ),
+        ),
+      );
 }
 ```
 

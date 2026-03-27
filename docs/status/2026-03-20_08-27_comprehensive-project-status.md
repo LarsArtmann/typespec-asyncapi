@@ -199,48 +199,48 @@
 
 ### Immediate (Critical Path - Core Emitter Stabilization)
 
-| # | Task | Impact | Effort | Priority |
-|---|------|--------|--------|----------|
-| 1 | Fix test suite - categorize and update tests | HIGH | HIGH | P0 |
-| 2 | Consolidate type system - merge 3 type files | HIGH | MEDIUM | P0 |
-| 3 | Add array type schema generation | HIGH | LOW | P0 |
-| 4 | Add enum type schema generation | HIGH | LOW | P0 |
-| 5 | Update basic-functionality test expectations | HIGH | LOW | P0 |
-| 6 | Clean up .disabled and .bak files | MEDIUM | LOW | P0 |
-| 7 | Update README.md with current status | MEDIUM | LOW | P1 |
+| #   | Task                                         | Impact | Effort | Priority |
+| --- | -------------------------------------------- | ------ | ------ | -------- |
+| 1   | Fix test suite - categorize and update tests | HIGH   | HIGH   | P0       |
+| 2   | Consolidate type system - merge 3 type files | HIGH   | MEDIUM | P0       |
+| 3   | Add array type schema generation             | HIGH   | LOW    | P0       |
+| 4   | Add enum type schema generation              | HIGH   | LOW    | P0       |
+| 5   | Update basic-functionality test expectations | HIGH   | LOW    | P0       |
+| 6   | Clean up .disabled and .bak files            | MEDIUM | LOW    | P0       |
+| 7   | Update README.md with current status         | MEDIUM | LOW    | P1       |
 
 ### Short Term (Week 1-2 - Feature Completion)
 
-| # | Task | Impact | Effort | Priority |
-|---|------|--------|--------|----------|
-| 8 | Add union type schema generation | HIGH | MEDIUM | P1 |
-| 9 | Add map type schema generation | MEDIUM | MEDIUM | P1 |
-| 10 | Add nullable field handling | HIGH | LOW | P1 |
-| 11 | Implement basic protocol binding generation | HIGH | HIGH | P1 |
-| 12 | Add message traits support | MEDIUM | MEDIUM | P2 |
-| 13 | Add message examples support | MEDIUM | MEDIUM | P2 |
-| 14 | Add message externalDocs support | LOW | MEDIUM | P2 |
-| 15 | Implement Kafka binding generation | HIGH | HIGH | P2 |
-| 16 | Implement WebSocket binding generation | MEDIUM | HIGH | P2 |
+| #   | Task                                        | Impact | Effort | Priority |
+| --- | ------------------------------------------- | ------ | ------ | -------- |
+| 8   | Add union type schema generation            | HIGH   | MEDIUM | P1       |
+| 9   | Add map type schema generation              | MEDIUM | MEDIUM | P1       |
+| 10  | Add nullable field handling                 | HIGH   | LOW    | P1       |
+| 11  | Implement basic protocol binding generation | HIGH   | HIGH   | P1       |
+| 12  | Add message traits support                  | MEDIUM | MEDIUM | P2       |
+| 13  | Add message examples support                | MEDIUM | MEDIUM | P2       |
+| 14  | Add message externalDocs support            | LOW    | MEDIUM | P2       |
+| 15  | Implement Kafka binding generation          | HIGH   | HIGH   | P2       |
+| 16  | Implement WebSocket binding generation      | MEDIUM | HIGH   | P2       |
 
 ### Medium Term (Week 3-4 - Advanced Features)
 
-| # | Task | Impact | Effort | Priority |
-|---|------|--------|--------|----------|
-| 17 | Implement HTTP binding generation | MEDIUM | MEDIUM | P2 |
-| 18 | Implement MQTT binding generation | MEDIUM | MEDIUM | P2 |
-| 19 | Implement AMQP binding generation | LOW | MEDIUM | P3 |
-| 20 | Add security scheme generation (HTTP Bearer) | HIGH | HIGH | P2 |
-| 21 | Add security scheme generation (API Key) | MEDIUM | MEDIUM | P2 |
-| 22 | Add security scheme generation (OAuth2) | HIGH | HIGH | P3 |
-| 23 | Add security scheme generation (SASL) | MEDIUM | MEDIUM | P3 |
+| #   | Task                                         | Impact | Effort | Priority |
+| --- | -------------------------------------------- | ------ | ------ | -------- |
+| 17  | Implement HTTP binding generation            | MEDIUM | MEDIUM | P2       |
+| 18  | Implement MQTT binding generation            | MEDIUM | MEDIUM | P2       |
+| 19  | Implement AMQP binding generation            | LOW    | MEDIUM | P3       |
+| 20  | Add security scheme generation (HTTP Bearer) | HIGH   | HIGH   | P2       |
+| 21  | Add security scheme generation (API Key)     | MEDIUM | MEDIUM | P2       |
+| 22  | Add security scheme generation (OAuth2)      | HIGH   | HIGH   | P3       |
+| 23  | Add security scheme generation (SASL)        | MEDIUM | MEDIUM | P3       |
 
 ### Long Term (Month 2+ - Polish & Production)
 
-| # | Task | Impact | Effort | Priority |
-|---|------|--------|--------|----------|
-| 24 | Comprehensive error handling with guidance | MEDIUM | MEDIUM | P3 |
-| 25 | Performance optimization and monitoring | LOW | HIGH | P4 |
+| #   | Task                                       | Impact | Effort | Priority |
+| --- | ------------------------------------------ | ------ | ------ | -------- |
+| 24  | Comprehensive error handling with guidance | MEDIUM | MEDIUM | P3       |
+| 25  | Performance optimization and monitoring    | LOW    | HIGH   | P4       |
 
 ---
 
@@ -249,17 +249,20 @@
 **Question:** Should we use the existing `asyncapi-branded-types.ts` and `asyncapi-domain-types.ts` files, or should we consolidate everything into a simpler type system?
 
 **Context:**
+
 - We have three type files with overlapping concepts
 - `asyncapi-branded-types.ts` has validation schemas but they're not used in the emitter
 - `asyncapi-domain-types.ts` has domain types that don't match what the emitter actually generates
 - `minimal-domain-types.ts` has the simplest types but they're not complete
 
 **Dilemma:**
+
 1. **Consolidate:** Create a single, unified type system that matches what the emitter actually produces
 2. **Extend:** Use the existing branded types with validation, but this adds complexity
 3. **Hybrid:** Keep branded types for validation, simple types for emitter
 
 **Impact:** This decision affects:
+
 - Type safety throughout the codebase
 - Validation strategy
 - Test expectations
@@ -281,6 +284,7 @@
 ## Reflection: What I Forgot & Could Improve
 
 ### What I Forgot in Previous Session
+
 1. **Test Organization** - Didn't categorize tests into core vs. advanced
 2. **Type Consolidation** - Left three separate type files instead of unifying
 3. **Documentation Updates** - Didn't update README with current status
@@ -288,6 +292,7 @@
 5. **Example Validation** - Didn't verify all examples compile correctly
 
 ### What Could Be Improved
+
 1. **Schema Generation** - Missing arrays, enums, unions, maps
 2. **Type Safety** - Too many `unknown` types in emitter
 3. **Error Handling** - Generic errors without specific guidance
@@ -295,12 +300,14 @@
 5. **Code Organization** - Decorators in multiple locations
 
 ### Existing Code That Could Be Used
+
 1. **`asyncapi-domain-types.ts`** - Has good type definitions for Channel, Message, Operation, Server
 2. **`asyncapi-branded-types.ts`** - Has validation schemas already implemented
 3. **`PluginSystem.ts`** - Has plugin infrastructure that could be extended
 4. **`PerformanceMonitor.ts`** - Has monitoring infrastructure ready to use
 
 ### Libraries to Consider
+
 1. **`@effect/schema`** - Already installed, could be used for validation
 2. **`ajv`** - Already installed, could validate generated schemas
 3. **`@asyncapi/parser`** - Already installed, could validate output
@@ -309,6 +316,7 @@
 ---
 
 ## Commit Plan
+
 1. Create this status document
 2. Git commit with detailed message
 3. Await user direction on type system architecture

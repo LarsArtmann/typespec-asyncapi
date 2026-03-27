@@ -144,11 +144,8 @@ export function createAddChannelFix(operation: Operation) {
     label: "Add @channel decorator",
     fix: (context) => {
       const location = getSourceLocation(operation);
-      return context.insertText(
-        location.start,
-        `@channel("${operation.name}-channel")\n`
-      );
-    }
+      return context.insertText(location.start, `@channel("${operation.name}-channel")\n`);
+    },
   });
 }
 ```
@@ -174,12 +171,12 @@ export const requireChannelRule = createLinterRule({
           context.reportDiagnostic({
             code: "missing-channel",
             target: op,
-            codefixes: [createAddChannelFix(op)]
+            codefixes: [createAddChannelFix(op)],
           });
         }
-      }
+      },
     };
-  }
+  },
 });
 ```
 

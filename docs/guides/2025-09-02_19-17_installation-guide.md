@@ -235,7 +235,7 @@ CMD ["bunx", "tsp", "compile", "."]
 
 ```yaml
 # docker-compose.yml
-version: '3.8'
+version: "3.8"
 services:
   typespec-asyncapi:
     build:
@@ -286,7 +286,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "20"
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v1

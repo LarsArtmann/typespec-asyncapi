@@ -202,10 +202,10 @@ describe("AsyncAPI Emitter Behavior", () => {
     describe("When emitter processes the specification", () => {
       it("Then should generate AsyncAPI channel definition", () => {
         // BDD test implementation
-      })
-    })
-  })
-})
+      });
+    });
+  });
+});
 ```
 
 ## File Splitting Analysis

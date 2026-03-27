@@ -198,13 +198,13 @@ TypeSpec's `emitFile` API successfully writes files to disk, but the test framew
 
 ```typescript
 // Emitter logs show success:
-"✅ File emitted: asyncapi.yaml"
+"✅ File emitted: asyncapi.yaml";
 
 // But test framework shows:
-result.outputs = {} // Empty Map!
+result.outputs = {}; // Empty Map!
 
 // Tests fail with:
-"No AsyncAPI output generated"
+("No AsyncAPI output generated");
 ```
 
 #### Root Cause Analysis
@@ -228,33 +228,35 @@ result.outputs = {} // Empty Map!
 
 ```typescript
 // Activated filesystem fallback function
-function findGeneratedFilesOnFilesystem(outputFile: string): {file: string, content: string} | null {
-    const possiblePaths = ["./", "./tsp-output/", "./tsp-output/@lars-artmann/typespec-asyncapi/"];
-    const extensions = [".json", ".yaml"];
+function findGeneratedFilesOnFilesystem(
+  outputFile: string,
+): { file: string; content: string } | null {
+  const possiblePaths = ["./", "./tsp-output/", "./tsp-output/@lars-artmann/typespec-asyncapi/"];
+  const extensions = [".json", ".yaml"];
 
-    // Search filesystem for emitted files
-    for (const basePath of possiblePaths) {
-        for (const ext of extensions) {
-            const filePath = basePath + outputFile + ext;
-            if (fs.existsSync(filePath)) {
-                const content = fs.readFileSync(filePath, "utf8");
-                return {file: outputFile + ext, content};
-            }
-        }
+  // Search filesystem for emitted files
+  for (const basePath of possiblePaths) {
+    for (const ext of extensions) {
+      const filePath = basePath + outputFile + ext;
+      if (fs.existsSync(filePath)) {
+        const content = fs.readFileSync(filePath, "utf8");
+        return { file: outputFile + ext, content };
+      }
     }
-    return null;
+  }
+  return null;
 }
 
 // Integrated into compileAsyncAPI:
 if (!outputFile) {
-    const fallback = findGeneratedFilesOnFilesystem(options["output-file"] || "asyncapi");
-    if (fallback) {
-        return {
-            asyncApiDoc: doc,
-            outputs: {[fallback.file]: content},
-            outputFile: fallback.file,
-        };
-    }
+  const fallback = findGeneratedFilesOnFilesystem(options["output-file"] || "asyncapi");
+  if (fallback) {
+    return {
+      asyncApiDoc: doc,
+      outputs: { [fallback.file]: content },
+      outputFile: fallback.file,
+    };
+  }
 }
 ```
 
@@ -263,17 +265,17 @@ if (!outputFile) {
 ```typescript
 // Enhanced directory search:
 const possibleDirs = [
-    process.cwd(),
-    path.join(process.cwd(), 'tsp-output', '@lars-artmann', 'typespec-asyncapi'),
-    path.join(process.cwd(), '@lars-artmann', 'typespec-asyncapi'),
-    path.join(process.cwd(), 'tsp-output'),
+  process.cwd(),
+  path.join(process.cwd(), "tsp-output", "@lars-artmann", "typespec-asyncapi"),
+  path.join(process.cwd(), "@lars-artmann", "typespec-asyncapi"),
+  path.join(process.cwd(), "tsp-output"),
 ];
 
 // Made filename parameter optional:
 export async function parseAsyncAPIOutput(
-    outputFiles: Map<string, string | { content: string }>,
-    filename: string = "asyncapi.yaml" // Default added
-): Promise<AsyncAPIObject | string>
+  outputFiles: Map<string, string | { content: string }>,
+  filename: string = "asyncapi.yaml", // Default added
+): Promise<AsyncAPIObject | string>;
 ```
 
 #### Current Status

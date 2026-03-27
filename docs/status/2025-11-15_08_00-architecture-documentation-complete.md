@@ -477,8 +477,8 @@ Two or more fields that can be in conflicting states, making invalid states repr
 
 ```typescript
 // Two implementations exist:
-src/domain/decorators/security-LEGACY.ts    // Old implementation
-src/domain/decorators/security-ENHANCED.ts  // New implementation
+src / domain / decorators / security - LEGACY.ts; // Old implementation
+src / domain / decorators / security - ENHANCED.ts; // New implementation
 
 // PROBLEM: Which one is actually used?
 // PROBLEM: Can they be in conflicting states?
@@ -490,13 +490,13 @@ src/domain/decorators/security-ENHANCED.ts  // New implementation
 
 ```typescript
 // Decorators write to StateMap
-stateMap.set(target, config)
+stateMap.set(target, config);
 
 // Processing reads from StateMap
-const configs = stateMap.get(target)
+const configs = stateMap.get(target);
 
 // But document is mutated directly
-asyncapiDoc.components.securitySchemes[name] = scheme
+asyncapiDoc.components.securitySchemes[name] = scheme;
 
 // QUESTION: Can StateMap and Document be out of sync?
 ```
@@ -508,15 +508,15 @@ asyncapiDoc.components.securitySchemes[name] = scheme
 ```typescript
 // ✅ GOOD: Discriminated union makes invalid states impossible
 type SecurityScheme =
-  | { type: "oauth2", flows: OAuth2Flows }  // Can't have oauth2 without flows
-  | { type: "apiKey", name: string, in: Location }  // Can't have apiKey without name/location
+  | { type: "oauth2"; flows: OAuth2Flows } // Can't have oauth2 without flows
+  | { type: "apiKey"; name: string; in: Location }; // Can't have apiKey without name/location
 
 // ❌ BAD (if we had done it this way):
 type SecurityScheme = {
-  type: string
-  flows?: OAuth2Flows  // ← Split brain: type=apiKey but flows present?
-  name?: string        // ← Split brain: type=oauth2 but name present?
-}
+  type: string;
+  flows?: OAuth2Flows; // ← Split brain: type=apiKey but flows present?
+  name?: string; // ← Split brain: type=oauth2 but name present?
+};
 ```
 
 **Action Required:**
@@ -533,16 +533,16 @@ type SecurityScheme = {
 ```typescript
 // ✅ SecurityScheme - Discriminated Union
 type SecurityScheme =
-  | { type: "oauth2", flows: OAuth2Flows }
-  | { type: "apiKey", name: string, in: Location }
+  | { type: "oauth2"; flows: OAuth2Flows }
+  | { type: "apiKey"; name: string; in: Location };
 
 // ✅ IMPOSSIBLE to have oauth2 without flows
 // ✅ IMPOSSIBLE to have apiKey without name
 
 // ✅ ValidationResult - Discriminated Union
 type ValidationResult =
-  | { valid: true, scheme: SecurityScheme, errors: [] }
-  | { valid: false, scheme: null, errors: string[] }
+  | { valid: true; scheme: SecurityScheme; errors: [] }
+  | { valid: false; scheme: null; errors: string[] };
 
 // ✅ IMPOSSIBLE to have valid=true with errors
 // ✅ IMPOSSIBLE to have valid=false without errors
@@ -553,24 +553,24 @@ type ValidationResult =
 ```typescript
 // ❌ Current: Strings everywhere (invalid states possible)
 type Channel = {
-  address: string  // Could be "//invalid//path", "no-leading-slash", etc.
-}
+  address: string; // Could be "//invalid//path", "no-leading-slash", etc.
+};
 
 type Server = {
-  url: string  // Could be "not-a-url", "http://should-be-kafka://", etc.
-}
+  url: string; // Could be "not-a-url", "http://should-be-kafka://", etc.
+};
 
 // ✅ Should be: Value Objects with validation
-type ChannelPath = string & { readonly __brand: "ChannelPath" }
-type ServerUrl = string & { readonly __brand: "ServerUrl" }
+type ChannelPath = string & { readonly __brand: "ChannelPath" };
+type ServerUrl = string & { readonly __brand: "ServerUrl" };
 
 const ChannelPath = {
   create: (value: string): Result<ChannelPath, ValidationError> => {
-    if (value.includes("//")) return Result.fail(new ValidationError("No double slashes"))
-    if (!value.startsWith("/")) return Result.fail(new ValidationError("Must start with /"))
-    return Result.ok(value as ChannelPath)
-  }
-}
+    if (value.includes("//")) return Result.fail(new ValidationError("No double slashes"));
+    if (!value.startsWith("/")) return Result.fail(new ValidationError("Must start with /"));
+    return Result.ok(value as ChannelPath);
+  },
+};
 ```
 
 **Action Required:**

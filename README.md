@@ -5,6 +5,7 @@
 A TypeSpec emitter that transforms TypeSpec service definitions into [AsyncAPI 3.0](https://www.asyncapi.com/) specifications for event-driven architectures. Define your event schemas, channels, and operations in TypeSpec, then generate standards-compliant AsyncAPI YAML documentation automatically.
 
 **Key capabilities:**
+
 - Define event messages, channels, and operations using TypeSpec decorators
 - Generate complete AsyncAPI 3.0 YAML specifications
 - Support for publish/subscribe operations, message schemas, and server configurations
@@ -82,15 +83,15 @@ components:
 
 ## Working Features
 
-| Feature | Status |
-|---------|--------|
-| `@channel` decorator | Working |
-| `@publish` decorator | Working |
-| `@subscribe` decorator | Working |
-| `@message` decorator | Working |
-| Basic model schemas | Working |
-| AsyncAPI 3.0 YAML output | Working |
-| TypeScript compilation | 0 errors |
+| Feature                  | Status   |
+| ------------------------ | -------- |
+| `@channel` decorator     | Working  |
+| `@publish` decorator     | Working  |
+| `@subscribe` decorator   | Working  |
+| `@message` decorator     | Working  |
+| Basic model schemas      | Working  |
+| AsyncAPI 3.0 YAML output | Working  |
+| TypeScript compilation   | 0 errors |
 
 ---
 
@@ -285,3 +286,4 @@ op processPayment(): PaymentResult;
 ---
 
 _Last updated: 2026-03-23_
+```

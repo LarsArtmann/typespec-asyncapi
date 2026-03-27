@@ -43,11 +43,11 @@
 
 ```typescript
 // ❌ DOESN'T WORK: Bun toHaveProperty() with parsed objects
-expect(asyncapiDoc.channels).toHaveProperty('user.events')
+expect(asyncapiDoc.channels).toHaveProperty("user.events");
 
 // ✅ WORKS: Object.keys() + toContain()
-const keys = Object.keys(asyncapiDoc.channels)
-expect(keys).toContain('user.events')
+const keys = Object.keys(asyncapiDoc.channels);
+expect(keys).toContain("user.events");
 ```
 
 **Impact:**
@@ -105,18 +105,18 @@ expect(keys).toContain('user.events')
 **Before:**
 
 ```typescript
-expect(testResult.asyncapiDoc?.channels).toBeDefined()
-expect(testResult.asyncapiDoc?.asyncapi).toBe('3.0.0')
-const keys = Object.keys(testResult.asyncapiDoc?.channels || {})
+expect(testResult.asyncapiDoc?.channels).toBeDefined();
+expect(testResult.asyncapiDoc?.asyncapi).toBe("3.0.0");
+const keys = Object.keys(testResult.asyncapiDoc?.channels || {});
 ```
 
 **After:**
 
 ```typescript
-assertCompilationSuccess(testResult)
-assertAsyncAPIDoc(testResult.asyncapiDoc)
+assertCompilationSuccess(testResult);
+assertAsyncAPIDoc(testResult.asyncapiDoc);
 // No more ?. operators!
-const keys = getPropertyKeys(testResult.asyncapiDoc.channels)
+const keys = getPropertyKeys(testResult.asyncapiDoc.channels);
 ```
 
 **Test Results:**
@@ -259,19 +259,16 @@ const keys = getPropertyKeys(testResult.asyncapiDoc.channels)
 **Example:**
 
 ```typescript
-import { Schema } from '@effect/schema'
+import { Schema } from "@effect/schema";
 
 const AsyncAPIDocumentSchema = Schema.Struct({
-  asyncapi: Schema.Literal('3.0.0'),
+  asyncapi: Schema.Literal("3.0.0"),
   info: Schema.Struct({
     title: Schema.String,
     version: Schema.String,
   }),
-  channels: Schema.Record(
-    Schema.String.pipe(Schema.brand('ChannelName')),
-    ChannelSchema
-  ),
-})
+  channels: Schema.Record(Schema.String.pipe(Schema.brand("ChannelName")), ChannelSchema),
+});
 ```
 
 ---

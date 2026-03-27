@@ -29,7 +29,7 @@
 ```typescript
 // BEFORE: Basic schema definitions
 const BasicSchema = Schema.Struct({
-  field: Schema.String
+  field: Schema.String,
 });
 
 // AFTER: Optimized with caching and constraints
@@ -37,11 +37,9 @@ const OptimizedSchema = getCachedSchema("key", () =>
   Schema.Struct({
     field: Schema.String.pipe(
       Schema.maxLength(100),
-      Schema.annotations({ description: "Field with constraints" })
-    )
-  }).pipe(
-    Schema.annotations({ identifier: "OptimizedSchema" })
-  )
+      Schema.annotations({ description: "Field with constraints" }),
+    ),
+  }).pipe(Schema.annotations({ identifier: "OptimizedSchema" })),
 );
 ```
 
@@ -49,8 +47,7 @@ const OptimizedSchema = getCachedSchema("key", () =>
 
 ```typescript
 // BEFORE: Generic error handling
-export const validate = (input: unknown) =>
-  Schema.decodeUnknown(schema)(input);
+export const validate = (input: unknown) => Schema.decodeUnknown(schema)(input);
 
 // AFTER: Tagged errors with recovery strategies
 export class AsyncAPIOptionsValidationError {
@@ -59,7 +56,7 @@ export class AsyncAPIOptionsValidationError {
     readonly field: string,
     readonly value: unknown,
     readonly message: string,
-    readonly cause?: Error
+    readonly cause?: Error,
   ) {}
 }
 
@@ -70,7 +67,7 @@ export const parseAsyncAPIEmitterOptions = (input: unknown) =>
     }
 
     return yield* Schema.decodeUnknown(schema)(input).pipe(
-      Effect.mapError(error => new AsyncAPIOptionsValidationError(/*...*/))
+      Effect.mapError((error) => new AsyncAPIOptionsValidationError(/*...*/)),
     );
   });
 ```
@@ -94,8 +91,8 @@ export async function onEmit(context, options) {
         Effect.gen(function* () {
           yield* Effect.logError("Validation failed", error);
           return yield* createAsyncAPIEmitterOptions({});
-        })
-      )
+        }),
+      ),
     );
 
     yield* Effect.acquireUseRelease(
@@ -104,7 +101,7 @@ export async function onEmit(context, options) {
       // Use resources
       () => emitterService.generateSpec(validatedOptions),
       // Release resources
-      () => Effect.logInfo("Cleanup completed")
+      () => Effect.logInfo("Cleanup completed"),
     );
   });
 
@@ -112,8 +109,8 @@ export async function onEmit(context, options) {
     program.pipe(
       Effect.provide(EmitterLive),
       Effect.withSpan("asyncapi-emit"),
-      Effect.timeout("30 seconds")
-    )
+      Effect.timeout("30 seconds"),
+    ),
   );
 }
 ```
@@ -124,7 +121,7 @@ export async function onEmit(context, options) {
 export const makeValidationService = Effect.gen(function* () {
   const schemaCache = yield* createSchemaCache({
     maxSize: 500,
-    ttl: Duration.minutes(15)
+    ttl: Duration.minutes(15),
   });
 
   const validateOptions = (input: unknown) =>
@@ -172,7 +169,7 @@ export const makeValidationService = Effect.gen(function* () {
    // Use singleton error instances where possible
    const COMMON_ERRORS = {
      NULL_INPUT: new AsyncAPIOptionsParseError("Input cannot be null"),
-     INVALID_TYPE: new AsyncAPIOptionsParseError("Expected object input")
+     INVALID_TYPE: new AsyncAPIOptionsParseError("Expected object input"),
    };
    ```
 
@@ -186,9 +183,7 @@ export const makeValidationService = Effect.gen(function* () {
        const results = new Map();
 
        for await (const config of configs) {
-         const result = yield* validateAsyncAPIEmitterOptions(config).pipe(
-           Effect.either
-         );
+         const result = yield* validateAsyncAPIEmitterOptions(config).pipe(Effect.either);
          results.set(config.id, result);
 
          // Yield control every 100 items
@@ -202,6 +197,7 @@ export const makeValidationService = Effect.gen(function* () {
    ```
 
 4. **Memory Pool for Error Objects**
+
    ```typescript
    class ErrorPool {
      private pool: AsyncAPIOptionsValidationError[] = [];
@@ -229,7 +225,7 @@ export const makeValidationService = Effect.gen(function* () {
    const FastValidationRuntime = {
      runSync: <A, E>(effect: Effect.Effect<A, E>) => {
        // Optimized sync runner with minimal overhead
-     }
+     },
    };
    ```
 
@@ -238,7 +234,7 @@ export const makeValidationService = Effect.gen(function* () {
    // Use TypeScript transformers to pre-compile schemas at build time
    const preCompiledSchemas = buildTimeSchemaCompilation({
      schemas: [AsyncAPIEmitterOptionsEffectSchema],
-     optimizationLevel: "aggressive"
+     optimizationLevel: "aggressive",
    });
    ```
 
@@ -312,20 +308,20 @@ export const makeValidationService = Effect.gen(function* () {
 export const setupValidationMonitoring = () => ({
   memoryUsage: {
     threshold: "Monitor reasonable usage",
-    action: "Scale horizontally if needed"
+    action: "Scale horizontally if needed",
   },
   functionality: {
     threshold: "Monitor validation success rate",
-    action: "Investigate functional regressions"
+    action: "Investigate functional regressions",
   },
   errorRate: {
     threshold: "5% validation failures",
-    action: "Check for invalid input patterns"
+    action: "Check for invalid input patterns",
   },
   cacheHitRate: {
     threshold: "Monitor cache effectiveness",
-    action: "Review caching strategy"
-  }
+    action: "Review caching strategy",
+  },
 });
 ```
 

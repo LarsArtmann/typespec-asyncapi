@@ -86,17 +86,17 @@ Made every field in every type `readonly`:
 
 ```typescript
 export type OAuth2Scheme = {
-  readonly type: "oauth2"
-  readonly description?: string
-  readonly flows: Record<string, OAuth2Flow>
-}
+  readonly type: "oauth2";
+  readonly description?: string;
+  readonly flows: Record<string, OAuth2Flow>;
+};
 
 export type OAuth2Flow = {
-  readonly authorizationUrl?: string
-  readonly tokenUrl?: string
-  readonly refreshUrl?: string
-  readonly scopes?: Record<string, string>
-}
+  readonly authorizationUrl?: string;
+  readonly tokenUrl?: string;
+  readonly refreshUrl?: string;
+  readonly scopes?: Record<string, string>;
+};
 ```
 
 **Why It Worked:**
@@ -123,17 +123,19 @@ Created 11 type guard functions with proper runtime validation:
 
 ```typescript
 const hasType = (value: unknown, expectedType: string): boolean => {
-  return typeof value === "object" &&
-         value !== null &&
-         "type" in value &&
-         (value as { type: unknown }).type === expectedType
-}
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "type" in value &&
+    (value as { type: unknown }).type === expectedType
+  );
+};
 
 export const isOAuth2Scheme = (scheme: unknown): scheme is OAuth2Scheme => {
-  if (!hasType(scheme, "oauth2")) return false
-  const s = scheme as Record<string, unknown>
-  return "flows" in s && typeof s.flows === "object" && s.flows !== null
-}
+  if (!hasType(scheme, "oauth2")) return false;
+  const s = scheme as Record<string, unknown>;
+  return "flows" in s && typeof s.flows === "object" && s.flows !== null;
+};
 ```
 
 **Why It Worked:**
@@ -225,12 +227,12 @@ Imported 16 type guards and type definitions but only used them in type annotati
 
 ```typescript
 import {
-  isSecurityScheme,           // ← Unused
-  isApiKeyScheme,             // ← Unused
-  isHttpScheme,               // ← Unused
-  isOAuth2Scheme,             // ← Unused
+  isSecurityScheme, // ← Unused
+  isApiKeyScheme, // ← Unused
+  isHttpScheme, // ← Unused
+  isOAuth2Scheme, // ← Unused
   // ... 12 more unused imports
-} from "../../types/security-scheme-types.js"
+} from "../../types/security-scheme-types.js";
 ```
 
 **Why It Happened:**
@@ -326,21 +328,19 @@ Test numbers fluctuate between runs:
 
 ```typescript
 type User = {
-  is_confirmed: boolean
-  confirmed_at: number  // 0 if not confirmed
-}
+  is_confirmed: boolean;
+  confirmed_at: number; // 0 if not confirmed
+};
 
 // ❌ INVALID STATE POSSIBLE:
-const user = { is_confirmed: true, confirmed_at: 0 }  // Confirmed but no timestamp?
-const user2 = { is_confirmed: false, confirmed_at: 12345 }  // Not confirmed but has timestamp?
+const user = { is_confirmed: true, confirmed_at: 0 }; // Confirmed but no timestamp?
+const user2 = { is_confirmed: false, confirmed_at: 12345 }; // Not confirmed but has timestamp?
 ```
 
 **Good (Discriminated Union):**
 
 ```typescript
-type User =
-  | { status: "unconfirmed" }
-  | { status: "confirmed", confirmed_at: Date }
+type User = { status: "unconfirmed" } | { status: "confirmed"; confirmed_at: Date };
 
 // ✅ INVALID STATES IMPOSSIBLE:
 // Can't have confirmed without timestamp
@@ -411,13 +411,13 @@ Changed `LIBRARY_NAME` to match wrong test expectations instead of fixing the te
 
 ```typescript
 type Config = {
-  timeout: number
-  retries: number
-}
+  timeout: number;
+  retries: number;
+};
 
 // Hope developers don't mutate
 function processConfig(config: Config) {
-  config.timeout = 5000  // ❌ Oops, mutated!
+  config.timeout = 5000; // ❌ Oops, mutated!
 }
 ```
 
@@ -425,13 +425,13 @@ function processConfig(config: Config) {
 
 ```typescript
 type Config = {
-  readonly timeout: number
-  readonly retries: number
-}
+  readonly timeout: number;
+  readonly retries: number;
+};
 
 // Mutation prevented by compiler
 function processConfig(config: Config) {
-  config.timeout = 5000  // ✅ Compile error!
+  config.timeout = 5000; // ✅ Compile error!
 }
 ```
 

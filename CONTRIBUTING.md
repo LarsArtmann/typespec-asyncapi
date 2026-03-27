@@ -166,7 +166,7 @@ export const processOperation = (operation: Operation): Effect.Effect<AsyncAPIOp
 
     return {
       action: operationType,
-      channel: { $ref: `#/channels/${channelPath}` }
+      channel: { $ref: `#/channels/${channelPath}` },
     };
   });
 
@@ -188,7 +188,7 @@ export function processOperation(operation: any): any {
 // ✅ Good: Effect.TS error handling
 const validateConfig = (config: unknown): Effect.Effect<ProtocolConfig, ValidationError> =>
   Effect.gen(function* () {
-    if (typeof config !== 'object') {
+    if (typeof config !== "object") {
       return yield* Effect.fail(new ValidationError("Config must be object"));
     }
 
@@ -198,7 +198,7 @@ const validateConfig = (config: unknown): Effect.Effect<ProtocolConfig, Validati
 
 // ❌ Avoid: Throwing exceptions
 function validateConfig(config: unknown): ProtocolConfig {
-  if (typeof config !== 'object') {
+  if (typeof config !== "object") {
     throw new Error("Config must be object");
   }
   return config as ProtocolConfig;
@@ -214,9 +214,7 @@ describe("Channel Decorator", () => {
     const operation = createMockOperation("publishUserEvent");
     const channelPath = "user.{userId}.events";
 
-    const result = await Effect.runPromise(
-      processChannelDecorator(operation, channelPath)
-    );
+    const result = await Effect.runPromise(processChannelDecorator(operation, channelPath));
 
     expect(result.channelPath).toBe("user.{userId}.events");
     expect(result.parameters).toEqual(["userId"]);
@@ -225,9 +223,7 @@ describe("Channel Decorator", () => {
   it("should fail gracefully with invalid paths", async () => {
     const operation = createMockOperation("invalidOp");
 
-    const result = await Effect.runPromise(
-      Effect.either(processChannelDecorator(operation, ""))
-    );
+    const result = await Effect.runPromise(Effect.either(processChannelDecorator(operation, "")));
 
     expect(result._tag).toBe("Left");
     expect(result.left).toBeInstanceOf(ValidationError);

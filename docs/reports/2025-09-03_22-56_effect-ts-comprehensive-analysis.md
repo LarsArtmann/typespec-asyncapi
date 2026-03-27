@@ -48,21 +48,19 @@
 ```typescript
 // BEFORE (anti-pattern)
 try {
-  const result = riskyOperation()
-  return result
+  const result = riskyOperation();
+  return result;
 } catch (error) {
-  throw new Error(`Operation failed: ${error}`)
+  throw new Error(`Operation failed: ${error}`);
 }
 
 // AFTER (Effect.TS)
 const result = Effect.gen(function* () {
   return yield* Effect.try({
     try: () => riskyOperation(),
-    catch: (error) => new OperationError(error)
-  })
-}).pipe(
-  Effect.catchAll((error) => Effect.fail(new ProcessingError(error)))
-)
+    catch: (error) => new OperationError(error),
+  });
+}).pipe(Effect.catchAll((error) => Effect.fail(new ProcessingError(error))));
 ```
 
 #### 2. null/undefined Checks → Option<T> (58 violations)
@@ -75,15 +73,15 @@ const result = Effect.gen(function* () {
 ```typescript
 // BEFORE (anti-pattern)
 if (value != null) {
-  return processValue(value)
+  return processValue(value);
 }
 
 // AFTER (Effect.TS)
 pipe(
   Option.fromNullable(value),
   Option.map(processValue),
-  Option.getOrElse(() => defaultValue)
-)
+  Option.getOrElse(() => defaultValue),
+);
 ```
 
 #### 3. throw Statements → Effect.fail() (34 violations)

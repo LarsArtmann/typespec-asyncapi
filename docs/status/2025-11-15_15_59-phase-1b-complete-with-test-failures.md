@@ -86,27 +86,27 @@ type LegacyValidationResult = {
 ```typescript
 // AFTER - Invalid states impossible:
 type ValidationSuccess<T> = {
-  readonly _tag: "Success"      // ← DISCRIMINATOR
-  readonly value: T
-  readonly errors: readonly []  // ← LITERALLY EMPTY by type!
-  readonly warnings: readonly []
-}
+  readonly _tag: "Success"; // ← DISCRIMINATOR
+  readonly value: T;
+  readonly errors: readonly []; // ← LITERALLY EMPTY by type!
+  readonly warnings: readonly [];
+};
 
 type ValidationFailure = {
-  readonly _tag: "Failure"                        // ← DISCRIMINATOR
-  readonly errors: readonly ValidationError[]     // ← MUST have errors
-  readonly warnings: readonly ValidationWarning[]
-}
+  readonly _tag: "Failure"; // ← DISCRIMINATOR
+  readonly errors: readonly ValidationError[]; // ← MUST have errors
+  readonly warnings: readonly ValidationWarning[];
+};
 
 type ExtendedValidationResult<T> = (ValidationSuccess<T> | ValidationFailure) & {
   metrics: {
-    duration: number,
-    channelCount: number,
-    operationCount: number,
-    schemaCount: number,
-    validatedAt: Date
-  }
-}
+    duration: number;
+    channelCount: number;
+    operationCount: number;
+    schemaCount: number;
+    validatedAt: Date;
+  };
+};
 
 // TypeScript PREVENTS invalid states:
 // { _tag: "Success", errors: [{...}] }  ← TYPE ERROR
@@ -221,14 +221,14 @@ Tests expect old API:
 
 ```typescript
 // Tests expect:
-result.isValid
-result.channelsCount
-result.errors[0]  // string
+result.isValid;
+result.channelsCount;
+result.errors[0]; // string
 
 // We shipped:
-result._tag === "Success"
-result.metrics.channelCount
-result.errors[0].message  // ValidationError
+result._tag === "Success";
+result.metrics.channelCount;
+result.errors[0].message; // ValidationError
 ```
 
 **Impact:**
@@ -245,9 +245,9 @@ result.errors[0].message  // ValidationError
 
 ```typescript
 type ExtendedValidationResult<T> = ValidationResult<T> & {
-  metrics: ValidationMetrics
-  summary?: string  // ← CAN BE UNDEFINED!
-}
+  metrics: ValidationMetrics;
+  summary?: string; // ← CAN BE UNDEFINED!
+};
 ```
 
 **Problem:** We ALWAYS set summary in code, so why is it optional? Type says "might be missing" but behavior says "always present" - **CONTRADICTION**.
@@ -283,8 +283,16 @@ type ExtendedValidationResult<T> = ValidationResult<T> & {
 
 ```typescript
 // NEVER USED - DELETE THESE:
-import type { ValidationResult as _NewValidationResult, ValidationError as _ValidationError, ExtendedValidationResult as _ExtendedValidationResult } from "../../types/index.js"
-import type { ValidationResult as _BrandedValidationResult, ValidationError as _ValidationErrorType, ValidationWarning as _ValidationWarning } from "../models/errors/validation-error.js"
+import type {
+  ValidationResult as _NewValidationResult,
+  ValidationError as _ValidationError,
+  ExtendedValidationResult as _ExtendedValidationResult,
+} from "../../types/index.js";
+import type {
+  ValidationResult as _BrandedValidationResult,
+  ValidationError as _ValidationErrorType,
+  ValidationWarning as _ValidationWarning,
+} from "../models/errors/validation-error.js";
 ```
 
 **Impact:** Code clutter, confusing for maintainers
@@ -300,15 +308,11 @@ import type { ValidationResult as _BrandedValidationResult, ValidationError as _
 ```typescript
 // ❌ BLOCKS EVENT LOOP:
 result.errors.forEach((error: ValidationError) =>
-  Effect.runSync(Effect.log(`  - ${error.message}`))
-)
+  Effect.runSync(Effect.log(`  - ${error.message}`)),
+);
 
 // ✅ SHOULD BE:
-yield* Effect.all(
-  result.errors.map(error =>
-    Effect.log(`  - ${error.message}`)
-  )
-)
+yield * Effect.all(result.errors.map((error) => Effect.log(`  - ${error.message}`)));
 ```
 
 ---
@@ -380,8 +384,8 @@ yield* Effect.all(
      message: msg,
      keyword: "validation",
      instancePath: "",
-     schemaPath: ""
-   })
+     schemaPath: "",
+   });
    ```
 
 7. **Split ValidationService.ts** (45min)
@@ -399,7 +403,7 @@ yield* Effect.all(
    ```typescript
    enum ValidationKeyword {
      Required = "required",
-     Type = "type"
+     Type = "type",
    }
    ```
 
@@ -409,7 +413,7 @@ yield* Effect.all(
 
 11. **Add branded types** (45min)
     ```typescript
-    type ChannelPath = string & { readonly __brand: 'ChannelPath' }
+    type ChannelPath = string & { readonly __brand: "ChannelPath" };
     ```
 
 ---
@@ -640,10 +644,10 @@ bun run build
 ```typescript
 // ValidationService.ts:282
 // BEFORE:
-result.errors.forEach(error => Effect.runSync(Effect.log(error.message)))
+result.errors.forEach((error) => Effect.runSync(Effect.log(error.message)));
 
 // AFTER:
-yield* Effect.all(result.errors.map(error => Effect.log(error.message)))
+yield * Effect.all(result.errors.map((error) => Effect.log(error.message)));
 ```
 
 ### Step 5: Fix Split Brains (25min)

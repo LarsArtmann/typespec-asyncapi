@@ -253,15 +253,15 @@ model SystemEvent {
 # AsyncAPI
 Event:
   oneOf:
-    - $ref: '#/components/schemas/UserEvent'
-    - $ref: '#/components/schemas/OrderEvent'
-    - $ref: '#/components/schemas/SystemEvent'
+    - $ref: "#/components/schemas/UserEvent"
+    - $ref: "#/components/schemas/OrderEvent"
+    - $ref: "#/components/schemas/SystemEvent"
   discriminator:
     propertyName: type
     mapping:
-      user: '#/components/schemas/UserEvent'
-      order: '#/components/schemas/OrderEvent'
-      system: '#/components/schemas/SystemEvent'
+      user: "#/components/schemas/UserEvent"
+      order: "#/components/schemas/OrderEvent"
+      system: "#/components/schemas/SystemEvent"
 
 UserEvent:
   type: object
@@ -401,7 +401,7 @@ UserResponse:
   type: object
   properties:
     data:
-      $ref: '#/components/schemas/User'
+      $ref: "#/components/schemas/User"
     success:
       type: boolean
     timestamp:
@@ -414,7 +414,7 @@ UserList:
     items:
       type: array
       items:
-        $ref: '#/components/schemas/User'
+        $ref: "#/components/schemas/User"
     total:
       type: integer
       format: int32
@@ -448,9 +448,9 @@ UserResponse:
   type: object
   properties:
     data:
-      $ref: '#/components/schemas/User'
+      $ref: "#/components/schemas/User"
     error:
-      $ref: '#/components/schemas/ValidationError'
+      $ref: "#/components/schemas/ValidationError"
     code:
       type: integer
       format: int32
@@ -681,7 +681,7 @@ ConditionalUserResponse:
       type: string
       const: user
     data:
-      $ref: '#/components/schemas/User'
+      $ref: "#/components/schemas/User"
 
 ConditionalOrderResponse:
   type: object
@@ -690,7 +690,7 @@ ConditionalOrderResponse:
       type: string
       const: order
     data:
-      $ref: '#/components/schemas/Order'
+      $ref: "#/components/schemas/Order"
 ```
 
 ### Model Inheritance
@@ -731,7 +731,7 @@ BaseEntity:
 
 User:
   allOf:
-    - $ref: '#/components/schemas/BaseEntity'
+    - $ref: "#/components/schemas/BaseEntity"
     - type: object
       properties:
         name:
@@ -742,7 +742,7 @@ User:
 
 Order:
   allOf:
-    - $ref: '#/components/schemas/BaseEntity'
+    - $ref: "#/components/schemas/BaseEntity"
     - type: object
       properties:
         userId:
@@ -789,11 +789,11 @@ Company:
     name:
       type: string
     address:
-      $ref: '#/components/schemas/Address'
+      $ref: "#/components/schemas/Address"
     employees:
       type: array
       items:
-        $ref: '#/components/schemas/Employee'
+        $ref: "#/components/schemas/Employee"
 
 Address:
   type: object
@@ -805,7 +805,7 @@ Address:
     country:
       type: string
     coordinates:
-      $ref: '#/components/schemas/Coordinates'
+      $ref: "#/components/schemas/Coordinates"
   required: [street, city, country]
 
 Coordinates:
@@ -826,7 +826,7 @@ Employee:
     name:
       type: string
     department:
-      $ref: '#/components/schemas/Department'
+      $ref: "#/components/schemas/Department"
 
 Department:
   type: object

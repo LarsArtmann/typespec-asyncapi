@@ -144,10 +144,10 @@ Includes THE 4% plus:
 ```typescript
 // ❌ BANNED: try/catch blocks (standardized-errors.ts:416,428)
 try {
-    const toStringResult = value.toString()
-    // ...
+  const toStringResult = value.toString();
+  // ...
 } catch {
-    // Fall through
+  // Fall through
 }
 ```
 
@@ -156,12 +156,12 @@ try {
 ```typescript
 // ✅ CORRECT: Effect.TS pattern
 Effect.gen(function* () {
-    const result = yield* Effect.try({
-        try: () => value.toString(),
-        catch: () => null
-    })
-    return result
-})
+  const result = yield* Effect.try({
+    try: () => value.toString(),
+    catch: () => null,
+  });
+  return result;
+});
 ```
 
 **Files to Fix:**
@@ -272,13 +272,13 @@ bun test || exit 1
 **Current:**
 
 ```typescript
-const result = Effect.runSync(validateEffect)
+const result = Effect.runSync(validateEffect);
 ```
 
 **Target:**
 
 ```typescript
-const result = await Effect.runPromise(validateEffect)
+const result = await Effect.runPromise(validateEffect);
 ```
 
 **Success Criteria:**
@@ -371,26 +371,26 @@ grep "error:" test-output.txt | sort | uniq -c | sort -rn
 
 ```typescript
 // ❌ WEAK: Plain strings
-function createChannel(id: string): Channel
+function createChannel(id: string): Channel;
 ```
 
 **Target:**
 
 ```typescript
 // ✅ STRONG: Branded types
-import {ChannelId} from "./types/branded-types.js"
+import { ChannelId } from "./types/branded-types.js";
 
-function createChannel(id: ChannelId): Channel
+function createChannel(id: ChannelId): Channel;
 
 // Constructor with validation
 export const ChannelId = {
-    create: (value: string): ChannelId => {
-        if (!value.startsWith("/")) {
-            throw new Error("Channel ID must start with /")
-        }
-        return value as ChannelId
+  create: (value: string): ChannelId => {
+    if (!value.startsWith("/")) {
+      throw new Error("Channel ID must start with /");
     }
-}
+    return value as ChannelId;
+  },
+};
 ```
 
 **Files to Update:**
@@ -417,14 +417,14 @@ export const ChannelId = {
 
 ```typescript
 // ❌ BEFORE
-retain: boolean
+retain: boolean;
 
 // ✅ AFTER
 export enum RetainPolicy {
-    Always = "always",
-    Never = "never"
+  Always = "always",
+  Never = "never",
 }
-retainPolicy: RetainPolicy
+retainPolicy: RetainPolicy;
 ```
 
 **Success Criteria:**
@@ -443,7 +443,7 @@ retainPolicy: RetainPolicy
 
 ```typescript
 // ❌ WEAK
-action: "send" | "receive"
+action: "send" | "receive";
 ```
 
 **Target:**
@@ -451,8 +451,8 @@ action: "send" | "receive"
 ```typescript
 // ✅ STRONG
 export enum OperationAction {
-    Send = "send",
-    Receive = "receive"
+  Send = "send",
+  Receive = "receive",
 }
 ```
 

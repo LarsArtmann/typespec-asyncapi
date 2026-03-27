@@ -85,9 +85,7 @@ describe("Error Handling Migration (M016-M021)", () => {
 
     it("should format error for user display", () => {
       const formatted = ErrorFormatters.forUser(testError);
-      expect(formatted).toBe(
-        "Database connection failed. This is a temporary network issue",
-      );
+      expect(formatted).toBe("Database connection failed. This is a temporary network issue");
     });
 
     it("should format error for developer display", () => {
@@ -196,9 +194,7 @@ describe("Error Handling Migration (M016-M021)", () => {
       );
       expect(undefinedResult).toBe(undefined);
 
-      const validResult = await Effect.runPromise(
-        Validators.optionalString("valid", "testField"),
-      );
+      const validResult = await Effect.runPromise(Validators.optionalString("valid", "testField"));
       expect(validResult).toBe("valid");
     });
 
@@ -277,4 +273,3 @@ describe("Error Handling Migration (M016-M021)", () => {
     });
   });
 });
-

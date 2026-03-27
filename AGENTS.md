@@ -41,13 +41,13 @@ docs/        # Documentation and ADRs
 
 ## Essential Commands
 
-| Command | Purpose |
-|---------|---------|
-| `just build` | Compile TypeScript (must pass 0 errors) |
-| `just test` | Run all tests |
-| `just lint` | Run ESLint |
-| `just typecheck` | Type check without emitting |
-| `just quality-check` | Full CI pipeline |
+| Command              | Purpose                                 |
+| -------------------- | --------------------------------------- |
+| `just build`         | Compile TypeScript (must pass 0 errors) |
+| `just test`          | Run all tests                           |
+| `just lint`          | Run ESLint                              |
+| `just typecheck`     | Type check without emitting             |
+| `just quality-check` | Full CI pipeline                        |
 
 ## TypeSpec Compilation
 

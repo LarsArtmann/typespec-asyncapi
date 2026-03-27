@@ -63,7 +63,7 @@ export const railwayErrorRecovery = {
     effect: Effect.Effect<A, E>,
     times: number = 3,
     minDelay: number = 100,
-    maxDelay: number = 5000
+    maxDelay: number = 5000,
   ): Effect.Effect<A, E> => {
     // Exponential backoff with jitter using Effect.retry
   },
@@ -71,24 +71,24 @@ export const railwayErrorRecovery = {
   gracefulDegrade: <A, E>(
     primary: Effect.Effect<A, E>,
     fallback: A,
-    message?: string
+    message?: string,
   ): Effect.Effect<A, never> => {
     // Fallback pattern with effect.catchAll + Effect.log
   },
 
   fallbackChain: <A, E>(
     effects: Array<Effect.Effect<A, E>>,
-    fallback: A
+    fallback: A,
   ): Effect.Effect<A, never> => {
     // Sequential fallbacks with Effect.firstSuccessOf
   },
 
   partialFailureHandling: <A, E>(
     effects: Array<Effect.Effect<A, E>>,
-    successThreshold: number = 0.8
-  ): Effect.Effect<{successes: A[], failures: E[]}, never> => {
+    successThreshold: number = 0.8,
+  ): Effect.Effect<{ successes: A[]; failures: E[] }, never> => {
     // Batch operations with threshold using Effect.all
-  }
+  },
 };
 ```
 
@@ -108,18 +108,18 @@ export const railwayErrorRecovery = {
 // /src/utils/effect-helpers.ts
 export type EffectResult<T> = {
   data: T;
-  error?: Error;  // 🚨 Both can be defined
-}
+  error?: Error; // 🚨 Both can be defined
+};
 ```
 
 **CORRECTED PATTERN:**
 
 ```typescript
 // Replace with Effect.Effect or branded result
-export type EffectResult<T, E = Error> = Effect.Effect<T, E>
+export type EffectResult<T, E = Error> = Effect.Effect<T, E>;
 
 // Or if a result type is needed, use Either
-export type EffectResult<T, E = Error> = Either.Either<T, E>
+export type EffectResult<T, E = Error> = Either.Either<T, E>;
 ```
 
 **VERIFICATION:** TypeScript compilation confirms no type errors, tests pass
@@ -136,7 +136,7 @@ export type EffectResult<T, E = Error> = Either.Either<T, E>
 
 ```typescript
 // /src/types/errors/asyncapi-error-hierarchy.ts
-import { Schema } from "effect"
+import { Schema } from "effect";
 
 // DOMAIN ERRORS - Business validation failures
 export class AsyncAPIValidationError extends Schema.TaggedError<AsyncAPIValidationError>()(
@@ -147,7 +147,7 @@ export class AsyncAPIValidationError extends Schema.TaggedError<AsyncAPIValidati
     value: Schema.optional(Schema.Unknown),
     constraint: Schema.String,
     suggestion: Schema.optional(Schema.String),
-  }
+  },
 ) {}
 
 // INFRASTRUCTURE ERRORS
@@ -158,35 +158,29 @@ export class TypeSpecCompilationError extends Schema.TaggedError<TypeSpecCompila
     source: Schema.optional(Schema.String),
     line: Schema.optional(Schema.Number),
     diagnosticCode: Schema.optional(Schema.String),
-  }
+  },
 ) {}
 
-export class FileSystemError extends Schema.TaggedError<FileSystemError>()(
-  "FileSystemError",
-  {
-    message: Schema.String,
-    operation: Schema.String.pipe(Schema.fromEnum(["read", "write", "delete", "mkdir", "exists"])),
-    path: Schema.String,
-    originalError: Schema.optional(Schema.String),
-  }
-) {}
+export class FileSystemError extends Schema.TaggedError<FileSystemError>()("FileSystemError", {
+  message: Schema.String,
+  operation: Schema.String.pipe(Schema.fromEnum(["read", "write", "delete", "mkdir", "exists"])),
+  path: Schema.String,
+  originalError: Schema.optional(Schema.String),
+}) {}
 
 // RUNTIME ERRORS
-export class RuntimeError extends Schema.TaggedError<RuntimeError>()(
-  "RuntimeError",
-  {
-    message: Schema.String,
-    phase: Schema.optional(Schema.String),
-    context: Schema.optional(Schema.Unknown),
-  }
-) {}
+export class RuntimeError extends Schema.TaggedError<RuntimeError>()("RuntimeError", {
+  message: Schema.String,
+  phase: Schema.optional(Schema.String),
+  context: Schema.optional(Schema.Unknown),
+}) {}
 
 // Error union for comprehensive error handling
 export type AsyncAPIError =
   | AsyncAPIValidationError
   | TypeSpecCompilationError
   | FileSystemError
-  | RuntimeError
+  | RuntimeError;
 ```
 
 **VERIFICATION:** New error types compile, can be used with Effect.catchTags
@@ -203,21 +197,25 @@ export type AsyncAPIError =
 
 ```typescript
 // /src/emitter.ts:234 - Emit failures
-Effect.fail(new FileSystemError({
-  message: `Failed to generate ${outputPath}`,
-  operation: "write",
-  path: outputPath,
-  originalError: String(error)
-}))
+Effect.fail(
+  new FileSystemError({
+    message: `Failed to generate ${outputPath}`,
+    operation: "write",
+    path: outputPath,
+    originalError: String(error),
+  }),
+);
 
 // /src/types/domain/asyncapi-domain-types.ts - Validation errors
-Effect.fail(new AsyncAPIValidationError({
-  message: 'Schema name must be non-empty string',
-  field: 'schemaName',
-  value: schemaName,
-  constraint: 'nonempty_string',
-  suggestion: 'Provide a valid schema name'
-}))
+Effect.fail(
+  new AsyncAPIValidationError({
+    message: "Schema name must be non-empty string",
+    field: "schemaName",
+    value: schemaName,
+    constraint: "nonempty_string",
+    suggestion: "Provide a valid schema name",
+  }),
+);
 
 // Test files - Use Effect.fail instead of throw new Error()
 ```
@@ -240,45 +238,44 @@ export const effectLogging = {
   logWithContext: (
     level: "debug" | "info" | "warn" | "error",
     message: string,
-    context: Record<string, unknown>
-  ) => Effect.log(message).pipe(
-    Effect.annotateLogs({
-      level,
-      timestamp: Date.now(),
-      component: "AsyncAPIEmitter",
-      ...context
-    })
-  ),
+    context: Record<string, unknown>,
+  ) =>
+    Effect.log(message).pipe(
+      Effect.annotateLogs({
+        level,
+        timestamp: Date.now(),
+        component: "AsyncAPIEmitter",
+        ...context,
+      }),
+    ),
 
   logError: (error: Schema.TaggedError<any>, context?: Record<string, unknown>) =>
     Effect.logError(error.message).pipe(
       Effect.annotateLogs({
         errorType: error._tag,
         timestamp: Date.now(),
-        ...context
-      })
+        ...context,
+      }),
     ),
 
   logValidation: (field: string, value: unknown, error: AsyncAPIValidationError) =>
     effectLogging.logError(error, {
       validationField: field,
       attemptedValue: value,
-      category: "validation"
-    })
+      category: "validation",
+    }),
 };
 
 // Usage in validation functions:
 return Effect.fail(
   new AsyncAPIValidationError({
     message: `Invalid channel path: ${path}`,
-    field: 'channelPath',
+    field: "channelPath",
     value: path,
-    constraint: 'nonempty_path_starting_with_slash',
-    suggestion: 'Channel paths must start with "/" and not be empty'
-  })
-).pipe(
-  Effect.tapError(error => effectLogging.logValidation('channelPath', path, error))
-)
+    constraint: "nonempty_path_starting_with_slash",
+    suggestion: 'Channel paths must start with "/" and not be empty',
+  }),
+).pipe(Effect.tapError((error) => effectLogging.logValidation("channelPath", path, error)));
 ```
 
 **VERIFICATION:** Logs appear in test output, structure is consistent
@@ -295,45 +292,52 @@ return Effect.fail(
 
 ```typescript
 // /src/types/domain/asyncapi-branded-types.ts
-export class ChannelPathError extends Schema.TaggedError<ChannelPathError>()(
-  "ChannelPathError",
-  {
-    message: Schema.String,
-    path: Schema.String,
-    reason: Schema.String.pipe(Schema.fromEnum(["empty", "missing_slash", "invalid_format"])),
-    suggestion: Schema.String,
-  }
-) {}
+export class ChannelPathError extends Schema.TaggedError<ChannelPathError>()("ChannelPathError", {
+  message: Schema.String,
+  path: Schema.String,
+  reason: Schema.String.pipe(Schema.fromEnum(["empty", "missing_slash", "invalid_format"])),
+  suggestion: Schema.String,
+}) {}
 
 export const createChannelPath = (path: string): Effect.Effect<ChannelPath, ChannelPathError> => {
-  if (!path || typeof path !== 'string' || !path.trim()) {
-    return Effect.fail(new ChannelPathError({
-      message: `Channel path is invalid: received empty or non-string value`,
-      path: String(path),
-      reason: "empty",
-      suggestion: 'Provide a non-empty string starting with "/"'
-    }));
+  if (!path || typeof path !== "string" || !path.trim()) {
+    return Effect.fail(
+      new ChannelPathError({
+        message: `Channel path is invalid: received empty or non-string value`,
+        path: String(path),
+        reason: "empty",
+        suggestion: 'Provide a non-empty string starting with "/"',
+      }),
+    );
   }
 
-  if (!path.startsWith('/')) {
-    return Effect.fail(new ChannelPathError({
-      message: `Channel path "${path}" must start with "/"`,
-      path,
-      reason: "missing_slash",
-      suggestion: 'Channel paths must start with "/" - add leading slash'
-    }));
+  if (!path.startsWith("/")) {
+    return Effect.fail(
+      new ChannelPathError({
+        message: `Channel path "${path}" must start with "/"`,
+        path,
+        reason: "missing_slash",
+        suggestion: 'Channel paths must start with "/" - add leading slash',
+      }),
+    );
   }
 
-  if (path.includes(' ') || /[!@#$%^&*()]/.test(path) && !path.includes('{') && !path.includes('}')) {
-    return Effect.fail(new ChannelPathError({
-      message: `Channel path "${path}" contains invalid characters`,
-      path,
-      reason: "invalid_format",
-      suggestion: 'Use only alphanumeric characters, slashes, and parameter placeholders like {userId}'
-    }));
+  if (
+    path.includes(" ") ||
+    (/[!@#$%^&*()]/.test(path) && !path.includes("{") && !path.includes("}"))
+  ) {
+    return Effect.fail(
+      new ChannelPathError({
+        message: `Channel path "${path}" contains invalid characters`,
+        path,
+        reason: "invalid_format",
+        suggestion:
+          "Use only alphanumeric characters, slashes, and parameter placeholders like {userId}",
+      }),
+    );
   }
 
-  return Effect.succeed(path as ChannelPath)
+  return Effect.succeed(path as ChannelPath);
 };
 ```
 
@@ -355,25 +359,30 @@ export const errorClassification = {
   isRecoverable: (error: AsyncAPIError): boolean => {
     switch (error._tag) {
       case "FileSystemError":
-        return error.operation === "read" || error.operation === "mkdir"
+        return error.operation === "read" || error.operation === "mkdir";
       case "TypeSpecCompilationError":
-        return false // User must fix source
+        return false; // User must fix source
       case "AsyncAPIValidationError":
-        return false // User must fix specification
+        return false; // User must fix specification
       case "RuntimeError":
-        return true // Usually transient
+        return true; // Usually transient
       default:
-        return false
+        return false;
     }
   },
 
   getSeverity: (error: AsyncAPIError): "low" | "medium" | "high" | "critical" => {
     switch (error._tag) {
-      case "AsyncAPIValidationError": return "medium"
-      case "FileSystemError": return "high"
-      case "TypeSpecCompilationError": return "critical"
-      case "RuntimeError": return error.phase === "compilation" ? "critical" : "medium"
-      default: return "medium"
+      case "AsyncAPIValidationError":
+        return "medium";
+      case "FileSystemError":
+        return "high";
+      case "TypeSpecCompilationError":
+        return "critical";
+      case "RuntimeError":
+        return error.phase === "compilation" ? "critical" : "medium";
+      default:
+        return "medium";
     }
   },
 
@@ -381,19 +390,21 @@ export const errorClassification = {
     shouldRetry: errorClassification.isRecoverable(error),
     maxAttempts: error._tag === "FileSystemError" ? 3 : 1,
     baseDelay: error._tag === "FileSystemError" ? 100 : 0,
-    backoffFactor: error._tag === "FileSystemError" ? 2 : 1
-  })
+    backoffFactor: error._tag === "FileSystemError" ? 2 : 1,
+  }),
 };
 
 // Integration with railwayErrorRecovery:
-export const smartRetry = <A>(effect: Effect.Effect<A, AsyncAPIError>): Effect.Effect<A, AsyncAPIError> =>
+export const smartRetry = <A>(
+  effect: Effect.Effect<A, AsyncAPIError>,
+): Effect.Effect<A, AsyncAPIError> =>
   Effect.retry(effect, {
     while: (error, attempt) => {
-      const strategy = errorClassification.getRetryStrategy(error)
-      return strategy.shouldRetry && attempt < strategy.maxAttempts
+      const strategy = errorClassification.getRetryStrategy(error);
+      return strategy.shouldRetry && attempt < strategy.maxAttempts;
     },
-    schedule: Schedule.exponential("100 millis").pipe(Schedule.upTo("5 seconds"))
-  })
+    schedule: Schedule.exponential("100 millis").pipe(Schedule.upTo("5 seconds")),
+  });
 ```
 
 **VERIFICATION:** Error classification tests pass, retry behavior works as expected
@@ -411,42 +422,43 @@ export const smartRetry = <A>(effect: Effect.Effect<A, AsyncAPIError>): Effect.E
 ```typescript
 // /src/utils/typespec-error-integration.ts
 export const transformTypeSpecError = (
-  diagnostic: any // TypeSpec diagnostic type
-): TypeSpecCompilationError => new TypeSpecCompilationError({
-  message: diagnostic.message || `TypeSpec compilation error: ${diagnostic.code}`,
-  source: diagnostic.file?.path || "unknown",
-  line: diagnostic.pos?.line,
-  diagnosticCode: diagnostic.code,
-  context: {
-    severity: diagnostic.severity,
-    category: diagnostic.category
-  }
-})
+  diagnostic: any, // TypeSpec diagnostic type
+): TypeSpecCompilationError =>
+  new TypeSpecCompilationError({
+    message: diagnostic.message || `TypeSpec compilation error: ${diagnostic.code}`,
+    source: diagnostic.file?.path || "unknown",
+    line: diagnostic.pos?.line,
+    diagnosticCode: diagnostic.code,
+    context: {
+      severity: diagnostic.severity,
+      category: diagnostic.category,
+    },
+  });
 
 export const compileWithTypedErrors = (
   program: any,
-  options: any
+  options: any,
 ): Effect.Effect<any, TypeSpecCompilationError | FileSystemError> =>
   Effect.tryPromise({
     try: () => compiler.compile(program, options),
     catch: (error) => {
       if (error.code) {
-        return transformTypeSpecError(error)
-      } else if (error.message?.includes('ENOENT')) {
+        return transformTypeSpecError(error);
+      } else if (error.message?.includes("ENOENT")) {
         return new FileSystemError({
           message: `File not found: ${error.path}`,
           operation: "read",
           path: error.path || "unknown",
-          originalError: error.message
-        })
+          originalError: error.message,
+        });
       }
       return new RuntimeError({
         message: `Unexpected compilation error: ${String(error)}`,
         phase: "compilation",
-        context: { originalError: error }
-      })
-    }
-  })
+        context: { originalError: error },
+      });
+    },
+  });
 ```
 
 **VERIFICATION:** TypeSpec errors transform correctly, compilation flow works
@@ -466,47 +478,49 @@ export const compileWithTypedErrors = (
 export const recoveryPatterns = {
   // Resilient file operations with fallback
   resilientFileWrite: (path: string, content: string): Effect.Effect<void, never> =>
-    Effect.gen(function*() {
+    Effect.gen(function* () {
       // Try primary location
       const primaryWrite = Effect.tryPromise({
         try: () => fs.writeFile(path, content),
-        catch: (error) => new FileSystemError({
-          message: `Failed to write ${path}`,
-          operation: "write",
-          path,
-          originalError: String(error)
-        })
-      })
+        catch: (error) =>
+          new FileSystemError({
+            message: `Failed to write ${path}`,
+            operation: "write",
+            path,
+            originalError: String(error),
+          }),
+      });
 
       // Fallback to temp directory
       const fallbackWrite = primaryWrite.pipe(
         Effect.catchTag("FileSystemError", (error) =>
-          Effect.gen(function*() {
+          Effect.gen(function* () {
             yield* effectLogging.logError(error, {
               operation: "fileWrite",
-              usingFallback: true
-            })
+              usingFallback: true,
+            });
 
-            const tempPath = `/tmp/${basename(path)}`
+            const tempPath = `/tmp/${basename(path)}`;
             yield* Effect.tryPromise({
               try: () => fs.writeFile(tempPath, content),
-              catch: (error) => new FileSystemError({
-                message: `Fallback write failed for ${tempPath}`,
-                operation: "write",
-                path: tempPath,
-                originalError: String(error)
-              })
-            })
+              catch: (error) =>
+                new FileSystemError({
+                  message: `Fallback write failed for ${tempPath}`,
+                  operation: "write",
+                  path: tempPath,
+                  originalError: String(error),
+                }),
+            });
 
-            yield* effectLogging.logWithContext("info",
-              `Fallback write succeeded to ${tempPath}`,
-              { originalPath: path, fallbackPath: tempPath }
-            )
-          })
-        )
-      )
+            yield* effectLogging.logWithContext("info", `Fallback write succeeded to ${tempPath}`, {
+              originalPath: path,
+              fallbackPath: tempPath,
+            });
+          }),
+        ),
+      );
 
-      yield* railwayErrorRecovery.retryWithBackoff(fallbackWrite, 3, 100, 1000)
+      yield* railwayErrorRecovery.retryWithBackoff(fallbackWrite, 3, 100, 1000);
     }),
 
   // Graceful compilation with multiple attempts
@@ -514,19 +528,19 @@ export const recoveryPatterns = {
     railwayErrorRecovery.gracefulDegrade(
       compileWithTypedErrors(program),
       { warnings: [], errors: [] }, // fallback empty result
-      "Compilation failed, using empty result"
+      "Compilation failed, using empty result",
     ),
 
   // Batch processing with partial failure tolerance
   batchProcessTyped: <A, E>(
     items: Array<A>,
     processor: (item: A) => Effect.Effect<any, E>,
-    successThreshold: number = 0.8
-  ): Effect.Effect<{successes: any[], failures: E[]}, never> =>
+    successThreshold: number = 0.8,
+  ): Effect.Effect<{ successes: any[]; failures: E[] }, never> =>
     railwayErrorRecovery.partialFailureHandling(
-      items.map(item => processor(item)),
-      successThreshold
-    )
+      items.map((item) => processor(item)),
+      successThreshold,
+    ),
 };
 ```
 

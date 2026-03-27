@@ -82,22 +82,26 @@ const DEFAULT_MEMORY_LEAK_DETECTION_RATE = 0.1 // MB/sec
 ```typescript
 // Before: try/catch hell
 try {
-  const result = await parser.parse(content)
-  return result
+  const result = await parser.parse(content);
+  return result;
 } catch (error) {
-  console.error(error) // NO STRUCTURE!
+  console.error(error); // NO STRUCTURE!
 }
 
 // After: Effect.TS Railway Programming
-const parseResult = yield* Effect.tryPromise({
-  try: () => this.parser.parse(content),
-  catch: (error) => new Error(`Parser failed: ${error.message}`)
-}).pipe(
-  Effect.catchAll((error) => Effect.sync(() => {
-    Effect.runSync(Effect.logError(`AsyncAPI parser failed: ${error.message}`))
-    return validationFailureResult
-  }))
-)
+const parseResult =
+  yield *
+  Effect.tryPromise({
+    try: () => this.parser.parse(content),
+    catch: (error) => new Error(`Parser failed: ${error.message}`),
+  }).pipe(
+    Effect.catchAll((error) =>
+      Effect.sync(() => {
+        Effect.runSync(Effect.logError(`AsyncAPI parser failed: ${error.message}`));
+        return validationFailureResult;
+      }),
+    ),
+  );
 ```
 
 #### Type-Safe Error Handling

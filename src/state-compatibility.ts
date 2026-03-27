@@ -29,7 +29,12 @@ export function getStateMap<T>(program: Program, symbol: symbol): Map<Type, T> {
 
   // TypeSpec 1.8.0+ returns StateMapView which is Map-like but may not be instanceof Map
   // Return the result directly if it has Map-like interface (size, get, set, etc.)
-  if (result && typeof result === 'object' && 'size' in result && typeof (result).get === 'function') {
+  if (
+    result &&
+    typeof result === "object" &&
+    "size" in result &&
+    typeof result.get === "function"
+  ) {
     return result;
   }
 

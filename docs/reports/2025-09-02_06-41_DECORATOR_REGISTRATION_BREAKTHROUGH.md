@@ -68,23 +68,23 @@
 ```typescript
 // Creates proper TypeSpec library without package resolution issues
 export async function createAsyncAPITestLibrary() {
-  const packageRoot = await findTestPackageRoot(import.meta.url)
+  const packageRoot = await findTestPackageRoot(import.meta.url);
 
   return createTestLibrary({
     name: "@larsartmann/typespec-asyncapi",
     packageRoot,
     typespecFileFolder: "lib",
-    jsFileFolder: "dist/src"
-  })
+    jsFileFolder: "dist/src",
+  });
 }
 
 // Registers library and enables decorator recognition
 export async function createAsyncAPITestHost() {
-  const asyncAPILib = await createAsyncAPITestLibrary()
+  const asyncAPILib = await createAsyncAPITestLibrary();
 
   return createTestHost({
-    libraries: [asyncAPILib] // Proper library registration
-  })
+    libraries: [asyncAPILib], // Proper library registration
+  });
 }
 ```
 
@@ -93,8 +93,8 @@ export async function createAsyncAPITestHost() {
 ```typescript
 // Auto-imports TypeSpec.AsyncAPI namespace in test environment
 const runner = createTestWrapper(host, {
-  autoUsings: ["TypeSpec.AsyncAPI"]
-})
+  autoUsings: ["TypeSpec.AsyncAPI"],
+});
 ```
 
 ---

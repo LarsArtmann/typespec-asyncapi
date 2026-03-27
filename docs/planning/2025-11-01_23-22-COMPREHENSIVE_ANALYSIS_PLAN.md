@@ -106,9 +106,14 @@
 
 ```typescript
 // EXAMPLE: src/lib.ts (BAD PATTERNS)
-import {createTypeSpecLibrary, type DecoratorContext, type Diagnostic, paramMessage} from "@typespec/compiler"
-import {DEFAULT_CONFIG} from "./constants/index.js"
-import {ASYNCAPI_VERSIONS} from "./constants/asyncapi-constants.js"
+import {
+  createTypeSpecLibrary,
+  type DecoratorContext,
+  type Diagnostic,
+  paramMessage,
+} from "@typespec/compiler";
+import { DEFAULT_CONFIG } from "./constants/index.js";
+import { ASYNCAPI_VERSIONS } from "./constants/asyncapi-constants.js";
 // PROBLEM: No grouping, no comments, mixing types and values
 ```
 
@@ -130,8 +135,8 @@ import {ASYNCAPI_VERSIONS} from "./constants/asyncapi-constants.js"
 ```typescript
 // CURRENT DISASTROUS PATTERNS:
 export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
-  private readonly pipeline: EmissionPipeline  // Could be undefined!
-  private readonly documentGenerator: DocumentGenerator  // No null safety!
+  private readonly pipeline: EmissionPipeline; // Could be undefined!
+  private readonly documentGenerator: DocumentGenerator; // No null safety!
   // MISSING: Branded types, proper interfaces, null safety
 }
 ```

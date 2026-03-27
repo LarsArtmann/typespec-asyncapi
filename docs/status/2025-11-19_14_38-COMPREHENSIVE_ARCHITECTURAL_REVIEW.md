@@ -150,8 +150,8 @@ All ghost systems must be **integrated with working decorator foundation** or th
 type DiagnosticTarget = DiagnosticTarget | unknown;
 
 // CRITICAL: No generics, code duplication
-export function $channel(context: any, target: any, path: string): void
-export function $server(context: any, target: any, config: unknown): void
+export function $channel(context: any, target: any, path: string): void;
+export function $server(context: any, target: any, config: unknown): void;
 
 // CRITICAL: Boolean flags instead of enums
 interface ServerConfig {
@@ -179,11 +179,11 @@ interface MessageBinding {
 
 ```typescript
 // WRONG: Duplicate implementations
-export function validateString(value: unknown): ValidationResult<string>
-export function validateNumber(value: unknown): ValidationResult<number>
+export function validateString(value: unknown): ValidationResult<string>;
+export function validateNumber(value: unknown): ValidationResult<number>;
 
 // CORRECT: Generic implementation
-export function validate<T>(schema: Schema<T>, value: unknown): ValidationResult<T>
+export function validate<T>(schema: Schema<T>, value: unknown): ValidationResult<T>;
 ```
 
 ### **Enums Over Booleans Missing:**
@@ -197,8 +197,15 @@ interface DecoratorConfig {
 }
 
 // CORRECT: Typed enums
-enum DecoratorRequirement { Required, Optional }
-enum Environment { Development, Staging, Production }
+enum DecoratorRequirement {
+  Required,
+  Optional,
+}
+enum Environment {
+  Development,
+  Staging,
+  Production,
+}
 ```
 
 ### **File Size Violations:**

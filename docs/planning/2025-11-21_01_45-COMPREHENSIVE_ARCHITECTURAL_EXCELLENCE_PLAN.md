@@ -64,12 +64,12 @@
 
 ```typescript
 // Critical paths that need branding
-type AsyncAPIVersion = Brand<string, "AsyncAPIVersion">
-type ChannelName = Brand<string, "ChannelName">
-type MessageId = Brand<string, "MessageId">
-type ServerUrl = Brand<string, "ServerUrl">
-type ProtocolType = Brand<"kafka" | "websocket" | "http", "ProtocolType">
-type SecuritySchemeId = Brand<string, "SecuritySchemeId">
+type AsyncAPIVersion = Brand<string, "AsyncAPIVersion">;
+type ChannelName = Brand<string, "ChannelName">;
+type MessageId = Brand<string, "MessageId">;
+type ServerUrl = Brand<string, "ServerUrl">;
+type ProtocolType = Brand<"kafka" | "websocket" | "http", "ProtocolType">;
+type SecuritySchemeId = Brand<string, "SecuritySchemeId">;
 ```
 
 **EXECUTION PLAN:**

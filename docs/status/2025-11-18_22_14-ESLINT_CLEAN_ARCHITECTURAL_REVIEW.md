@@ -170,13 +170,13 @@ The codebase demonstrates **EXCEPTIONAL** architectural discipline by already us
 
 ```typescript
 // ValidationService.ts
-"NO MORE SPLIT BRAIN: isValid boolean removed, use _tag instead"
+"NO MORE SPLIT BRAIN: isValid boolean removed, use _tag instead";
 
 // EmissionPipeline.ts
-"MIGRATED: Now uses discriminated union (_tag) instead of isValid boolean"
+"MIGRATED: Now uses discriminated union (_tag) instead of isValid boolean";
 
 // emitter.ts
-"Use discriminated union _tag instead of isValid boolean"
+"Use discriminated union _tag instead of isValid boolean";
 ```
 
 **Pattern Used:**
@@ -184,7 +184,7 @@ The codebase demonstrates **EXCEPTIONAL** architectural discipline by already us
 ```typescript
 type ValidationResult =
   | { _tag: "success"; data: AsyncAPIObject }
-  | { _tag: "error"; errors: ValidationError[] }
+  | { _tag: "error"; errors: ValidationError[] };
 
 // NOT: { isValid: boolean; data?: AsyncAPIObject; errors?: ValidationError[] }
 ```
@@ -220,7 +220,7 @@ type RegressionStatus =
   | { _tag: "regression"; degradedMetrics: DegradedMetric[] }
   | { _tag: "improvement"; improvedMetrics: ImprovedMetric[] }
   | { _tag: "stable" }
-  | { _tag: "mixed"; degradedMetrics: DegradedMetric[]; improvedMetrics: ImprovedMetric[] }
+  | { _tag: "mixed"; degradedMetrics: DegradedMetric[]; improvedMetrics: ImprovedMetric[] };
 ```
 
 **Impact:** Makes impossible states unrepresentable ✅
@@ -233,10 +233,10 @@ type RegressionStatus =
 
 ```typescript
 export type ProtocolValidationResult = {
-  isValid: boolean;    // Computed: errors.length === 0
+  isValid: boolean; // Computed: errors.length === 0
   errors: string[];
   warnings: string[];
-}
+};
 ```
 
 **Issue:** `isValid` is **REDUNDANT** - always derivable from `errors.length`
@@ -247,7 +247,7 @@ export type ProtocolValidationResult = {
 ```typescript
 type ProtocolValidationResult =
   | { _tag: "valid"; warnings: string[] }
-  | { _tag: "invalid"; errors: string[]; warnings: string[] }
+  | { _tag: "invalid"; errors: string[]; warnings: string[] };
 ```
 
 **Recommended Fix (Option B - Computed Property):**
@@ -257,7 +257,7 @@ type ProtocolValidationResult = {
   errors: string[];
   warnings: string[];
   readonly isValid: boolean; // getter: errors.length === 0
-}
+};
 ```
 
 **Recommended Fix (Option C - Remove isValid):**
@@ -266,7 +266,7 @@ type ProtocolValidationResult = {
 type ProtocolValidationResult = {
   errors: string[];
   warnings: string[];
-}
+};
 // Usage: result.errors.length === 0
 ```
 
@@ -280,11 +280,11 @@ type ProtocolValidationResult = {
 
 ```typescript
 export type TemplateValidationResult = {
-  isValid: boolean;           // Derived from errors.length === 0
+  isValid: boolean; // Derived from errors.length === 0
   variables: string[];
   unsupportedVariables: string[];
   errors: string[];
-}
+};
 ```
 
 **Same issue as #2** - `isValid` redundant and potential split brain
@@ -303,7 +303,7 @@ type TemplateValidationResult =
       variables: string[];
       unsupportedVariables: string[];
       errors: string[];
-    }
+    };
 ```
 
 ---
@@ -335,9 +335,9 @@ The project already uses sophisticated branded types:
 
 ```typescript
 // Examples from branded-types.ts
-type ChannelPath = string & { readonly __brand: "ChannelPath" }
-type MessageId = string & { readonly __brand: "MessageId" }
-type ServerId = string & { readonly __brand: "ServerId" }
+type ChannelPath = string & { readonly __brand: "ChannelPath" };
+type MessageId = string & { readonly __brand: "MessageId" };
+type ServerId = string & { readonly __brand: "ServerId" };
 ```
 
 This provides **compile-time type safety** for identifiers ✅
@@ -354,10 +354,10 @@ Consider adding branded types for:
 **Example:**
 
 ```typescript
-type Timestamp = number & { readonly __brand: "Timestamp" }
-type Port = number & { readonly __brand: "Port" }  // uint 1-65535
-type HttpUrl = string & { readonly __brand: "HttpUrl" }
-type SemanticVersion = string & { readonly __brand: "SemanticVersion" }
+type Timestamp = number & { readonly __brand: "Timestamp" };
+type Port = number & { readonly __brand: "Port" }; // uint 1-65535
+type HttpUrl = string & { readonly __brand: "HttpUrl" };
+type SemanticVersion = string & { readonly __brand: "SemanticVersion" };
 ```
 
 ---

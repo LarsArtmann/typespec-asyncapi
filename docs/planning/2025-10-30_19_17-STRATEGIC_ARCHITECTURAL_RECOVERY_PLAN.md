@@ -515,10 +515,10 @@ graph TD
 
 ```typescript
 // ❌ BAD: Stringly-typed
-function getChannel(name: string): Channel
+function getChannel(name: string): Channel;
 
 // ✅ GOOD: Branded types
-function getChannel(name: ChannelName): Channel
+function getChannel(name: ChannelName): Channel;
 ```
 
 ### Explicit > Implicit
@@ -536,13 +536,21 @@ if (hasNoProperties(model))
 ```typescript
 // ❌ BAD: God class (763 lines)
 class AsyncAPIEmitter {
-  emit() { /* 500 lines */ }
+  emit() {
+    /* 500 lines */
+  }
 }
 
 // ✅ GOOD: Focused classes
-class EmitterCore { /* 250 lines */ }
-class EmitterPipeline { /* 250 lines */ }
-class EmitterLifecycle { /* 250 lines */ }
+class EmitterCore {
+  /* 250 lines */
+}
+class EmitterPipeline {
+  /* 250 lines */
+}
+class EmitterLifecycle {
+  /* 250 lines */
+}
 ```
 
 ### Dependency Injection
@@ -560,16 +568,16 @@ constructor(private validator: IValidationService)
 ```typescript
 // ❌ BAD: Try/catch hell
 try {
-  const result = doSomething()
+  const result = doSomething();
 } catch (e) {
   // Handle
 }
 
 // ✅ GOOD: Effect.TS patterns
-Effect.gen(function*() {
-  const result = yield* doSomething()
-  return result
-})
+Effect.gen(function* () {
+  const result = yield* doSomething();
+  return result;
+});
 ```
 
 ---

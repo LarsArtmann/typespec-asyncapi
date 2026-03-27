@@ -134,7 +134,7 @@ at test/utils/test-helpers.ts:356
 
 ```typescript
 if (!outputFiles) {
-    throw new Error(`outputFiles is ${outputFiles}. Cannot parse AsyncAPI output.`)
+  throw new Error(`outputFiles is ${outputFiles}. Cannot parse AsyncAPI output.`);
 }
 ```
 

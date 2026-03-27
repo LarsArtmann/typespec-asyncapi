@@ -74,8 +74,12 @@
 // SOLUTION: Restructure class properly with all methods inside
 export class PerformanceRegressionTester {
   // All methods properly inside class
-  static createDevConfig(): PerformanceConfig { /* ... */ }
-  static createCiConfig(): PerformanceConfig { /* ... */ }
+  static createDevConfig(): PerformanceConfig {
+    /* ... */
+  }
+  static createCiConfig(): PerformanceConfig {
+    /* ... */
+  }
 }
 ```
 
@@ -222,17 +226,17 @@ graph TD
 
 ```typescript
 // ✅ CORRECT: Railway programming
-const program = Effect.gen(function*() {
-  const result = yield* someOperation()
-  return yield* validateResult(result)
-})
+const program = Effect.gen(function* () {
+  const result = yield* someOperation();
+  return yield* validateResult(result);
+});
 
 // ❌ FORBIDDEN: Traditional error handling
 try {
-  const result = await someOperation()
-  return result
-} catch(error) {
-  throw new Error(error.message)
+  const result = await someOperation();
+  return result;
+} catch (error) {
+  throw new Error(error.message);
 }
 ```
 
@@ -240,10 +244,10 @@ try {
 
 ```typescript
 // ✅ CORRECT: Strong typing
-const processUser = (user: User) => user.name
+const processUser = (user: User) => user.name;
 
 // ❌ FORBIDDEN: any types
-const processUser = (user: any) => user.name
+const processUser = (user: any) => user.name;
 ```
 
 ### **CODE ORGANIZATION STANDARDS**

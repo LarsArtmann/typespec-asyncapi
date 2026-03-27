@@ -38,14 +38,16 @@ Ensure AsyncAPIEmitter constructor properly initializes and calls EmissionPipeli
 
 ```typescript
 // In AsyncAPIEmitter constructor
-this.asyncApiDoc = this.documentBuilder.createInitialDocument(emitter.getProgram())
+this.asyncApiDoc = this.documentBuilder.createInitialDocument(emitter.getProgram());
 
 // ADD: Force pipeline execution
-Effect.runSync(this.pipeline.executePipeline({
-  program: emitter.getProgram(),
-  asyncApiDoc: this.asyncApiDoc,
-  emitter: emitter
-}))
+Effect.runSync(
+  this.pipeline.executePipeline({
+    program: emitter.getProgram(),
+    asyncApiDoc: this.asyncApiDoc,
+    emitter: emitter,
+  }),
+);
 ```
 
 #### **Solution B: Fix Server Decorator Model Handling**
@@ -53,16 +55,18 @@ Effect.runSync(this.pipeline.executePipeline({
 Update `extractServerConfigFromObject` to handle both Model objects and plain objects
 
 ```typescript
-function extractServerConfigFromObject(obj: Model | Record<string, unknown>): Partial<ServerConfig> {
+function extractServerConfigFromObject(
+  obj: Model | Record<string, unknown>,
+): Partial<ServerConfig> {
   if (obj && typeof obj === "object") {
     // Handle plain object (for testing)
     if (!("properties" in obj)) {
-      return obj as ServerConfig
+      return obj as ServerConfig;
     }
     // Handle TypeSpec Model (production)
-    return extractFromModelProperties(obj)
+    return extractFromModelProperties(obj);
   }
-  return {}
+  return {};
 }
 ```
 
@@ -77,9 +81,9 @@ if (!spec.servers || Object.keys(spec.servers).length === 0) {
     "kafka-cluster": {
       host: "broker.example.com:9092",
       protocol: "kafka",
-      description: "Kafka cluster with schema registry"
-    }
-  }
+      description: "Kafka cluster with schema registry",
+    },
+  };
 }
 ```
 

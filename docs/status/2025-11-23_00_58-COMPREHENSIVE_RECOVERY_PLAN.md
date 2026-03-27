@@ -132,7 +132,7 @@ git push origin master
 ```typescript
 // Create shared logging utility
 const logDecoratorTarget = (target: string, message?: string) =>
-  Effect.runSync(Effect.log(message || `🔍 Target:`)).pipe(Effect.annotateLogs({ target }))
+  Effect.runSync(Effect.log(message || `🔍 Target:`)).pipe(Effect.annotateLogs({ target }));
 
 // Replace 14+ duplicated patterns
 ```
@@ -147,13 +147,14 @@ const logDecoratorTarget = (target: string, message?: string) =>
 
 ```typescript
 // Create generic schema validation pipeline
-const createSchemaValidator = <A, I>(schema: Schema.Schema<A, I>) =>
+const createSchemaValidator =
+  <A, I>(schema: Schema.Schema<A, I>) =>
   (input: unknown): Effect.Effect<A, AsyncAPIValidationError, never> =>
-    Effect.gen(function*() {
-      const parsed = input as Record<string, unknown>
-      const result = Schema.decodeSync(schema)(parsed)
-      return yield* Effect.succeed(result)
-    })
+    Effect.gen(function* () {
+      const parsed = input as Record<string, unknown>;
+      const result = Schema.decodeSync(schema)(parsed);
+      return yield* Effect.succeed(result);
+    });
 ```
 
 **Expected Impact:** Reduce branded-types.ts duplication from 10.96% → <3%
@@ -174,7 +175,7 @@ const createAsyncAPIDocument = (options: DocumentOptions): AsyncAPISpec => ({
     description: options.description ?? "API generated from TypeSpec",
   },
   // ... standardized structure
-})
+});
 ```
 
 **Expected Impact:** Eliminate all document initialization duplication

@@ -30,10 +30,10 @@
 
 ```typescript
 // ❌ WRONG - Using runSync for logging
-Effect.runSync(Effect.log(`message`))
+Effect.runSync(Effect.log(`message`));
 
 // ✅ CORRECT - Should be:
-await Effect.runPromise(Effect.log(`message`))
+await Effect.runPromise(Effect.log(`message`));
 // OR part of pipe chain
 ```
 
@@ -94,10 +94,10 @@ await Effect.runPromise(Effect.log(`message`))
 
 ```typescript
 // ❌ CURRENT (weak typing):
-function createChannel(id: string, path: string): Channel
+function createChannel(id: string, path: string): Channel;
 
 // ✅ SHOULD BE (strong typing):
-function createChannel(id: ChannelId, path: ChannelPath): Channel
+function createChannel(id: ChannelId, path: ChannelPath): Channel;
 ```
 
 **Priority:** P1 - HIGH (Type safety)
@@ -114,7 +114,7 @@ function createChannel(id: ChannelId, path: ChannelPath): Channel
 ```typescript
 export enum OperationAction {
   Send = "send",
-  Receive = "receive"
+  Receive = "receive",
 }
 ```
 
@@ -131,10 +131,10 @@ export enum OperationAction {
 
 ```typescript
 // ❌ CURRENT:
-retain: boolean
+retain: boolean;
 
 // ✅ SHOULD BE:
-retainPolicy: RetainPolicy.Always | RetainPolicy.Never
+retainPolicy: RetainPolicy.Always | RetainPolicy.Never;
 ```
 
 **Priority:** P3 - LOW

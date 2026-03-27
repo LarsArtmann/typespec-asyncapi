@@ -106,18 +106,18 @@ channels:
     messages:
       userMessage:
         payload:
-          $ref: '#/components/schemas/User'
+          $ref: "#/components/schemas/User"
 
 operations:
   userRegistered:
     action: send
     channel:
-      $ref: '#/channels/user.events'
+      $ref: "#/channels/user.events"
 
   handleUserRegistered:
     action: receive
     channel:
-      $ref: '#/channels/user.events'
+      $ref: "#/channels/user.events"
 ```
 
 ### 4. Metadata and Documentation

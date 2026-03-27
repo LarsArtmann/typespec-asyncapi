@@ -46,8 +46,10 @@ This comprehensive research reveals critical opportunities to transform the Type
 ```typescript
 // ✅ GOOD PATTERN (Few instances):
 export const createChannelPath = (path: string): Effect.Effect<ChannelPath, Error> => {
-  if (typeof path !== 'string' || !path.trim()) {
-    return Effect.fail(new Error(`Channel path must be non-empty string, got: ${JSON.stringify(path)}`));
+  if (typeof path !== "string" || !path.trim()) {
+    return Effect.fail(
+      new Error(`Channel path must be non-empty string, got: ${JSON.stringify(path)}`),
+    );
   }
   return Effect.succeed(path as ChannelPath);
 };
@@ -68,7 +70,7 @@ From comprehensive Effect.TS research, here are the proven patterns:
 
 ```typescript
 // ✅ PRODUCTION-GRADE ERROR HIERARCHY
-class ExternalSyncError extends Schema.TaggedError<ExternalSyncError>()('ExternalSyncError', {
+class ExternalSyncError extends Schema.TaggedError<ExternalSyncError>()("ExternalSyncError", {
   cause: Schema.optional(Schema.Unknown),
   message: Schema.String,
 }) {}
@@ -77,11 +79,11 @@ class AgentError extends Data.TaggedError("AgentError")<{
   agentName: string;
   operation: string;
   cause: unknown;
-}> {};
+}> {}
 
 class ThreadNotFoundError extends Data.TaggedError("ThreadNotFoundError")<{
   threadId: string;
-}> {};
+}> {}
 ```
 
 ### **Effect Error Handling Patterns**
@@ -136,18 +138,22 @@ export const createChannelPath = (path: string): Effect.Effect<ChannelPath, Erro
 ```typescript
 export const createChannelPath = (path: string): Effect.Effect<ChannelPath, ChannelPathError> => {
   if (!path.trim()) {
-    return Effect.fail(new ChannelPathError({
-      path,
-      reason: 'empty_path',
-      suggestion: 'Provide a non-empty path starting with "/"'
-    }));
+    return Effect.fail(
+      new ChannelPathError({
+        path,
+        reason: "empty_path",
+        suggestion: 'Provide a non-empty path starting with "/"',
+      }),
+    );
   }
-  if (!path.startsWith('/')) {
-    return Effect.fail(new ChannelPathError({
-      path,
-      reason: 'invalid_format',
-      suggestion: 'Channel paths must start with "/"'
-    }));
+  if (!path.startsWith("/")) {
+    return Effect.fail(
+      new ChannelPathError({
+        path,
+        reason: "invalid_format",
+        suggestion: 'Channel paths must start with "/"',
+      }),
+    );
   }
   return Effect.succeed(path as ChannelPath);
 };
@@ -157,22 +163,28 @@ export const createChannelPath = (path: string): Effect.Effect<ChannelPath, Chan
 
 ```typescript
 // DOMAIN ERRORS - Business logic validation failures
-class AsyncAPIValidationError extends Schema.TaggedError<AsyncAPIValidationError>()('AsyncAPIValidationError', {
-  field: Schema.String,
-  value: Schema.optional(Schema.Unknown),
-  constraint: Schema.String,
-  suggestion: Schema.optional(Schema.String),
-}) {}
+class AsyncAPIValidationError extends Schema.TaggedError<AsyncAPIValidationError>()(
+  "AsyncAPIValidationError",
+  {
+    field: Schema.String,
+    value: Schema.optional(Schema.Unknown),
+    constraint: Schema.String,
+    suggestion: Schema.optional(Schema.String),
+  },
+) {}
 
 // INFRASTRUCTURE ERRORS - External system failures
-class TypeSpecCompilationError extends Schema.TaggedError<TypeSpecCompilationError>()('TypeSpecCompilationError', {
-  source: Schema.String,
-  line: Schema.optional(Schema.Number),
-  reason: Schema.String,
-  diagnosticCode: Schema.optional(Schema.String),
-}) {}
+class TypeSpecCompilationError extends Schema.TaggedError<TypeSpecCompilationError>()(
+  "TypeSpecCompilationError",
+  {
+    source: Schema.String,
+    line: Schema.optional(Schema.Number),
+    reason: Schema.String,
+    diagnosticCode: Schema.optional(Schema.String),
+  },
+) {}
 
-class FileSystemError extends Schema.TaggedError<FileSystemError>()('FileSystemError', {
+class FileSystemError extends Schema.TaggedError<FileSystemError>()("FileSystemError", {
   operation: Schema.String,
   path: Schema.String,
   cause: Schema.optional(Schema.Unknown),
@@ -193,7 +205,7 @@ export const railwayErrorRecovery = {
     effect: Effect.Effect<A, E>,
     times: number,
     minDelay: number,
-    maxDelay: number
+    maxDelay: number,
   ): Effect.Effect<A, E> => {
     // Exponential backoff with jitter
   },
@@ -201,24 +213,24 @@ export const railwayErrorRecovery = {
   gracefulDegrade: <A, E>(
     primary: Effect.Effect<A, E>,
     fallback: A,
-    message: string
+    message: string,
   ): Effect.Effect<A, E> => {
     // Fallback pattern with logging
   },
 
   fallbackChain: <A, E>(
     effects: Array<Effect.Effect<A, E>>,
-    fallback: A
+    fallback: A,
   ): Effect.Effect<A, never> => {
     // Sequential fallback operations
   },
 
   partialFailureHandling: <A, E>(
     effects: Array<Effect.Effect<A, E>>,
-    successThreshold: number
-  ): Effect.Effect<{successes: A[], failures: E[]}, never> => {
+    successThreshold: number,
+  ): Effect.Effect<{ successes: A[]; failures: E[] }, never> => {
     // Batch operations with some failures allowed
-  }
+  },
 };
 ```
 
@@ -228,11 +240,11 @@ export const railwayErrorRecovery = {
 // 🚨 ANTI-PATTERN: Creates representable invalid states
 export type EffectResult<T> = {
   data: T;
-  error?: Error;  // Both data and error can be defined/undefined
-}
+  error?: Error; // Both data and error can be defined/undefined
+};
 
 // ✅ CORRECT PATTERN: Use Effect.Effect
-export type EffectResult<T, E = Error> = Effect.Effect<T, E>
+export type EffectResult<T, E = Error> = Effect.Effect<T, E>;
 ```
 
 ### **3. Structured Logging System**
@@ -247,10 +259,12 @@ export const effectLogging = {
     Effect.log(message).pipe(Effect.annotateLogs(context)),
 
   logError: (error: Schema.TaggedError<any>) =>
-    Effect.logError(error.message).pipe(Effect.annotateLogs({
-      errorType: error._tag,
-      timestamp: Date.now()
-    }))
+    Effect.logError(error.message).pipe(
+      Effect.annotateLogs({
+        errorType: error._tag,
+        timestamp: Date.now(),
+      }),
+    ),
 };
 ```
 
@@ -265,13 +279,16 @@ export const effectLogging = {
 const validateUser = Schema.decodeUnknown(UserSchema);
 
 // Enhanced branded type validation with schema errors
-const result = yield* Effect.tryPromise({
-  try: () => Schema.decodeUnknown(UserSchema)(input),
-  catch: (parseError) => new ValidationError({
-    field: 'user',
-    cause: parseError
-  })
-});
+const result =
+  yield *
+  Effect.tryPromise({
+    try: () => Schema.decodeUnknown(UserSchema)(input),
+    catch: (parseError) =>
+      new ValidationError({
+        field: "user",
+        cause: parseError,
+      }),
+  });
 ```
 
 ### **@effect/platform HTTP Error Patterns**

@@ -41,14 +41,14 @@
 ```typescript
 // SINGLE SOURCE OF TRUTH - compute from source
 export type ValidationMetrics = {
-  readonly duration: number
-  readonly validatedAt: Date
+  readonly duration: number;
+  readonly validatedAt: Date;
   // NO derived counts!
-}
+};
 
 // Helper functions compute from source
 export function getChannelCount(doc: AsyncAPIObject): number {
-  return Object.keys(doc.channels ?? {}).length
+  return Object.keys(doc.channels ?? {}).length;
 }
 ```
 
@@ -66,9 +66,9 @@ export function getChannelCount(doc: AsyncAPIObject): number {
 ```typescript
 // TYPE LIES - summary is optional but we ALWAYS set it
 type ExtendedValidationResult<T> = ValidationResult<T> & {
-  readonly metrics: ValidationMetrics
-  readonly summary?: string  // ← DISHONEST TYPE!
-}
+  readonly metrics: ValidationMetrics;
+  readonly summary?: string; // ← DISHONEST TYPE!
+};
 ```
 
 **Solution Implemented:**
@@ -76,9 +76,9 @@ type ExtendedValidationResult<T> = ValidationResult<T> & {
 ```typescript
 // HONEST TYPE - summary is required
 type ExtendedValidationResult<T> = ValidationResult<T> & {
-  readonly metrics: ValidationMetrics
-  readonly summary: string  // ← TYPE MATCHES REALITY
-}
+  readonly metrics: ValidationMetrics;
+  readonly summary: string; // ← TYPE MATCHES REALITY
+};
 ```
 
 **Impact:**
@@ -110,11 +110,11 @@ type ExtendedValidationResult<T> = ValidationResult<T> & {
 
 ```typescript
 // BEFORE (deprecated - split brain):
-expect(result.metrics.channelCount).toBe(2)
+expect(result.metrics.channelCount).toBe(2);
 
 // AFTER (proper - single source of truth):
 if (result._tag === "Success") {
-  expect(getChannelCount(result.value)).toBe(2)
+  expect(getChannelCount(result.value)).toBe(2);
 }
 ```
 
@@ -146,7 +146,7 @@ Every test assertion now uses discriminated union pattern:
 ```typescript
 if (result._tag === "Success") {
   // TypeScript KNOWS result.value exists here
-  const count = getChannelCount(result.value)
+  const count = getChannelCount(result.value);
 }
 ```
 
@@ -256,7 +256,7 @@ Used 4 Task agents in parallel to fix test files simultaneously - efficient work
 enum ValidationKeyword {
   Required = "required",
   Type = "type",
-  Format = "format"
+  Format = "format",
 }
 ```
 
@@ -267,8 +267,8 @@ export const stringToValidationError = (message: string): ValidationError => ({
   message,
   keyword: "validation",
   instancePath: "",
-  schemaPath: ""
-})
+  schemaPath: "",
+});
 ```
 
 **6. Consolidate Metrics Types**
@@ -278,8 +278,8 @@ export const stringToValidationError = (message: string): ValidationError => ({
 **7. Add Branded Types for Runtime Safety**
 
 ```typescript
-type ChannelPath = string & { readonly __brand: 'ChannelPath' }
-type OperationId = string & { readonly __brand: 'OperationId' }
+type ChannelPath = string & { readonly __brand: "ChannelPath" };
+type OperationId = string & { readonly __brand: "OperationId" };
 ```
 
 ### LOW PRIORITY

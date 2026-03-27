@@ -34,36 +34,36 @@
 
 ```typescript
 // BEFORE (Split Brain):
-expect(result.isValid).toBe(true)
-expect(result.errors).toContain("error message")
+expect(result.isValid).toBe(true);
+expect(result.errors).toContain("error message");
 
 // AFTER (Discriminated Union):
-expect(result._tag).toBe("Success")
-const errorMessages = result.errors.map(e => e.message)
-expect(errorMessages).toContain("error message")
+expect(result._tag).toBe("Success");
+const errorMessages = result.errors.map((e) => e.message);
+expect(errorMessages).toContain("error message");
 ```
 
 **B. Metrics Access Pattern**
 
 ```typescript
 // BEFORE:
-expect(result.channelsCount).toBe(3)
-expect(result.operationsCount).toBe(2)
+expect(result.channelsCount).toBe(3);
+expect(result.operationsCount).toBe(2);
 
 // AFTER:
-expect(result.metrics.channelCount).toBe(3)
-expect(result.metrics.operationCount).toBe(2)
+expect(result.metrics.channelCount).toBe(3);
+expect(result.metrics.operationCount).toBe(2);
 ```
 
 **C. Structured Error Objects**
 
 ```typescript
 // BEFORE: errors: string[]
-result.errors.toContain("Missing required field")
+result.errors.toContain("Missing required field");
 
 // AFTER: errors: ValidationError[]
-const errorMessages = result.errors.map(e => e.message)
-errorMessages.toContain("Missing required field")
+const errorMessages = result.errors.map((e) => e.message);
+errorMessages.toContain("Missing required field");
 ```
 
 **D. Mock ValidationResult Objects**
@@ -74,11 +74,11 @@ const validResult: ValidationResult = {
   isValid: true,
   errors: [],
   warnings: [],
-  channelsCount: 2
-}
+  channelsCount: 2,
+};
 
 // AFTER:
-import { success, failure } from "../../../src/domain/models/validation-result.js"
+import { success, failure } from "../../../src/domain/models/validation-result.js";
 
 const validResult: ValidationResult = {
   ...success(asyncApiDoc),
@@ -87,10 +87,10 @@ const validResult: ValidationResult = {
     operationCount: 3,
     schemaCount: 5,
     duration: 10.5,
-    validatedAt: new Date()
+    validatedAt: new Date(),
   },
-  summary: "Valid document"
-}
+  summary: "Valid document",
+};
 ```
 
 **Tests Fixed:** 17 out of 29 tests (59% success rate in this file)
@@ -165,11 +165,11 @@ Updated all error/warning assertions:
 
 ```typescript
 // Pattern:
-expect(result.errors).toContain("message")
+expect(result.errors).toContain("message");
 
 // Becomes:
-const errorMessages = result.errors.map(e => e.message)
-expect(errorMessages).toContain("message")
+const errorMessages = result.errors.map((e) => e.message);
+expect(errorMessages).toContain("message");
 ```
 
 **Step 3: Mock Objects (15 minutes)**
@@ -230,10 +230,10 @@ bun test test/unit/core/ValidationService.test.ts  # 23/29 passing ✅
 
 ```typescript
 it("should warn about missing recommended fields", async () => {
-  expect(result._tag).toBe("Success")
-  expect(result.warnings).toContain("Missing recommended field")
+  expect(result._tag).toBe("Success");
+  expect(result.warnings).toContain("Missing recommended field");
   // ❌ FAILS: Success has empty warnings array
-})
+});
 ```
 
 **Architecture:** Discriminated union design:
@@ -253,10 +253,10 @@ it("should warn about missing recommended fields", async () => {
 
 ```typescript
 it("should reject invalid JSON content", async () => {
-  const invalidJson = "{ invalid json }"
-  const result = await validationService.validateDocumentContent(invalidJson)
-  expect(result).toBeDefined()  // ❌ FAILS: Now throws error
-})
+  const invalidJson = "{ invalid json }";
+  const result = await validationService.validateDocumentContent(invalidJson);
+  expect(result).toBeDefined(); // ❌ FAILS: Now throws error
+});
 ```
 
 **Architecture:** ValidationService now throws on parse errors instead of returning fallback
@@ -273,9 +273,9 @@ it("should reject invalid JSON content", async () => {
 
 ```typescript
 it("should handle document with circular references", async () => {
-  expect(typeof result.isValid).toBe("boolean")
+  expect(typeof result.isValid).toBe("boolean");
   // ✅ FIXED: Now checks discriminated union
-})
+});
 ```
 
 **Status:** ACTUALLY FIXED in this session
@@ -345,14 +345,14 @@ if (result._tag === "Success") {
 
 ```typescript
 export function success<T>(value: T): ValidationSuccess<T> {
-  return { _tag: "Success", value, errors: [], warnings: [] }
+  return { _tag: "Success", value, errors: [], warnings: [] };
 }
 
 export function failure(
   errors: readonly ValidationError[],
-  warnings: readonly ValidationWarning[] = []
+  warnings: readonly ValidationWarning[] = [],
 ): ValidationFailure {
-  return { _tag: "Failure", errors, warnings }
+  return { _tag: "Failure", errors, warnings };
 }
 ```
 
@@ -371,7 +371,7 @@ export function failure(
 
 ```typescript
 // Location: src/domain/models/validation-result.ts
-type ValidationResult<T> = ValidationSuccess<T> | ValidationFailure
+type ValidationResult<T> = ValidationSuccess<T> | ValidationFailure;
 ```
 
 **2. TemplateValidationResult (path templates)**
@@ -379,11 +379,11 @@ type ValidationResult<T> = ValidationSuccess<T> | ValidationFailure
 ```typescript
 // Location: src/domain/models/template-validation-result.ts
 type TemplateValidationResult = {
-  isValid: boolean  // ← Still uses old pattern
-  variables: string[]
-  unsupportedVariables: string[]
-  errors: string[]
-}
+  isValid: boolean; // ← Still uses old pattern
+  variables: string[];
+  unsupportedVariables: string[];
+  errors: string[];
+};
 ```
 
 **3. AsyncAPIValidationResult (documentation tests)**
@@ -391,10 +391,10 @@ type TemplateValidationResult = {
 ```typescript
 // Location: test/documentation/helpers/asyncapi-validator.ts
 interface AsyncAPIValidationResult {
-  isValid: boolean  // ← Still uses old pattern
-  errors: string[]
-  warnings: string[]
-  parsedDocument?: any
+  isValid: boolean; // ← Still uses old pattern
+  errors: string[];
+  warnings: string[];
+  parsedDocument?: any;
 }
 ```
 
@@ -553,10 +553,10 @@ readonly summary: string  // Remove ? to make required
 
 ```typescript
 // ❌ BLOCKS EVENT LOOP:
-result.errors.forEach(error => Effect.runSync(Effect.log(error.message)))
+result.errors.forEach((error) => Effect.runSync(Effect.log(error.message)));
 
 // ✅ SHOULD BE:
-yield* Effect.all(result.errors.map(error => Effect.log(error.message)))
+yield * Effect.all(result.errors.map((error) => Effect.log(error.message)));
 ```
 
 ### MEDIUM PRIORITY
@@ -635,11 +635,11 @@ yield* Effect.all(result.errors.map(error => Effect.log(error.message)))
 
 ## Old API → New API
 
-| Old Pattern | New Pattern | Why |
-|------------|-------------|-----|
-| result.isValid | result._tag === "Success" | Discriminated union |
-| result.channelsCount | result.metrics.channelCount | Nested structure |
-| result.errors[0] | result.errors[0].message | Structured errors |
+| Old Pattern          | New Pattern                 | Why                 |
+| -------------------- | --------------------------- | ------------------- |
+| result.isValid       | result.\_tag === "Success"  | Discriminated union |
+| result.channelsCount | result.metrics.channelCount | Nested structure    |
+| result.errors[0]     | result.errors[0].message    | Structured errors   |
 ```
 
 ---

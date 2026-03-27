@@ -19,12 +19,15 @@
 
 ```typescript
 // THIS IS THE PROBLEM:
-function createChannelDefinition(op: Operation, program: Program): { name: ChannelName, definition: ChannelObject } {
+function createChannelDefinition(
+  op: Operation,
+  program: Program,
+): { name: ChannelName; definition: ChannelObject } {
   // getChannelPath can return string | undefined (ERROR TYPE)
-  const channelPath = getChannelPath(op, program)  // ❌ ERROR TYPE!
+  const channelPath = getChannelPath(op, program); // ❌ ERROR TYPE!
 
   // TypeScript sees: ERROR.type → ChannelName (UNSAFE)
-  const channelName: ChannelName = channelPath as ChannelName  // ❌ UNSAFE!
+  const channelName: ChannelName = channelPath as ChannelName; // ❌ UNSAFE!
 }
 ```
 
@@ -64,10 +67,10 @@ function createChannelDefinition(op: Operation, program: Program): { name: Chann
 
 ```typescript
 // FIX ALL UNSAFE ASSIGNMENTS WITH ASSERTIONS
-const channelPath = getChannelPath(op, program)
-const channelName: ChannelName = (channelPath ?? `/${op.name.toLowerCase()}`) as ChannelName
+const channelPath = getChannelPath(op, program);
+const channelName: ChannelName = (channelPath ?? `/${op.name.toLowerCase()}`) as ChannelName;
 
-const operationName: OperationName = op.name as OperationName
+const operationName: OperationName = op.name as OperationName;
 
 // ALL BRAND TYPE ASSIGNMENTS FIXED
 ```

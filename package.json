@@ -27,10 +27,7 @@
   "bugs": {
     "url": "https://github.com/LarsArtmann/typespec-asyncapi/issues"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/LarsArtmann/typespec-asyncapi.git"
-  },
+  "license": "MIT",
   "author": {
     "name": "Lars Artmann",
     "url": "https://github.com/LarsArtmann"
@@ -41,10 +38,21 @@
       "url": "https://github.com/LarsArtmann/typespec-asyncapi/graphs/contributors"
     }
   ],
-  "license": "MIT",
-  "sideEffects": false,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LarsArtmann/typespec-asyncapi.git"
+  },
+  "files": [
+    "CHANGELOG.md",
+    "LICENSE",
+    "README.md",
+    "dist/",
+    "lib/"
+  ],
   "type": "module",
+  "sideEffects": false,
   "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/src/index.d.ts",
@@ -53,14 +61,10 @@
     },
     "./package.json": "./package.json"
   },
-  "types": "dist/src/index.d.ts",
-  "files": [
-    "CHANGELOG.md",
-    "LICENSE",
-    "README.md",
-    "dist/",
-    "lib/"
-  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "scripts": {
     "build": "bunx tsc -p tsconfig.json",
     "build:watch": "bunx tsc -p tsconfig.json --watch",
@@ -92,10 +96,6 @@
     "version": "bun run build && bun run test && git add .",
     "postversion": "git push && git push --tags",
     "prepare": "husky"
-  },
-  "overrides": {
-    "form-data": "^4.0.0",
-    "tough-cookie": "^4.1.4"
   },
   "dependencies": {
     "@alloy-js/core": "^0.22.0",
@@ -142,12 +142,12 @@
       "optional": true
     }
   },
+  "overrides": {
+    "form-data": "^4.0.0",
+    "tough-cookie": "^4.1.4"
+  },
   "engines": {
     "node": ">=20.0.0"
-  },
-  "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org/"
   },
   "tspMain": "lib/main.tsp",
   "typespec": {

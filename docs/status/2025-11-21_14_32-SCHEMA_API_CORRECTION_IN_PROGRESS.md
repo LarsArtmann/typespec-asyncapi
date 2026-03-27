@@ -94,29 +94,24 @@
 
 ```typescript
 // ✅ Modern branded type creation
-export const UserId = Schema.String.pipe(
-  Schema.minLength(1),
-  Schema.brand("UserId")
-)
+export const UserId = Schema.String.pipe(Schema.minLength(1), Schema.brand("UserId"));
 
 // ✅ Modern type inference
-export type UserId = typeof UserId.Type
+export type UserId = typeof UserId.Type;
 
 // ✅ Modern decode/encode
 const create = (value: string): Effect.Effect<typeof UserId.Type, Schema.Schema.DecodeError> =>
-  Schema.decode(UserId)(value)
+  Schema.decode(UserId)(value);
 ```
 
 ### ServerUrl Complex Validation Pattern:
 
 ```typescript
 // Need to fix this pattern
-export const ServerUrl = Schema.String.pipe(
-  Schema.minLength(1),
-  Schema.brand("ServerUrl")
-).pipe(
+export const ServerUrl = Schema.String.pipe(Schema.minLength(1), Schema.brand("ServerUrl"))
+  .pipe
   // Additional URL validation
-)
+  ();
 ```
 
 ---

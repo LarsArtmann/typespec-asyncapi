@@ -44,12 +44,12 @@ bun test       # ❌ 348 failures!
 ```typescript
 // BEFORE (what tests expect):
 if (result.isValid) {
-  console.log(result.channelsCount)
+  console.log(result.channelsCount);
 }
 
 // AFTER (what we shipped):
 if (result._tag === "Success") {
-  console.log(result.metrics.channelCount)
+  console.log(result.metrics.channelCount);
 }
 ```
 
@@ -66,9 +66,9 @@ if (result._tag === "Success") {
 
 ```typescript
 type ExtendedValidationResult<T> = ValidationResult<T> & {
-  metrics: ValidationMetrics
-  summary?: string  // ← Can be undefined!
-}
+  metrics: ValidationMetrics;
+  summary?: string; // ← Can be undefined!
+};
 ```
 
 **Problem:** We ALWAYS set summary, so it should be required. Optional indicates it might be missing, creating uncertainty.
@@ -92,8 +92,16 @@ type ExtendedValidationResult<T> = ValidationResult<T> & {
 **ValidationService.ts lines 23-24:**
 
 ```typescript
-import type { ValidationResult as _NewValidationResult, ValidationError as _ValidationError, ExtendedValidationResult as _ExtendedValidationResult } from "../../types/index.js"
-import type { ValidationResult as _BrandedValidationResult, ValidationError as _ValidationErrorType, ValidationWarning as _ValidationWarning } from "../models/errors/validation-error.js"
+import type {
+  ValidationResult as _NewValidationResult,
+  ValidationError as _ValidationError,
+  ExtendedValidationResult as _ExtendedValidationResult,
+} from "../../types/index.js";
+import type {
+  ValidationResult as _BrandedValidationResult,
+  ValidationError as _ValidationErrorType,
+  ValidationWarning as _ValidationWarning,
+} from "../models/errors/validation-error.js";
 ```
 
 **These are NEVER USED!** Delete them.
@@ -106,8 +114,8 @@ import type { ValidationResult as _BrandedValidationResult, ValidationError as _
 
 ```typescript
 result.errors.forEach((error: ValidationError) =>
-  Effect.runSync(Effect.log(`  - ${error.message}`))
-)
+  Effect.runSync(Effect.log(`  - ${error.message}`)),
+);
 ```
 
 **Problem:** Synchronous wrapper inside forEach breaks Effect.TS composition.
@@ -115,11 +123,7 @@ result.errors.forEach((error: ValidationError) =>
 **Should be:**
 
 ```typescript
-yield* Effect.all(
-  result.errors.map(error =>
-    Effect.log(`  - ${error.message}`)
-  )
-)
+yield * Effect.all(result.errors.map((error) => Effect.log(`  - ${error.message}`)));
 ```
 
 ### 6. **FILES ARE STILL MASSIVE**
@@ -169,18 +173,20 @@ TypeScript **PREVENTS** invalid states at compile time.
 **BEFORE (primitive):**
 
 ```typescript
-errors: ["Missing required field: asyncapi"]
+errors: ["Missing required field: asyncapi"];
 ```
 
 **AFTER (structured):**
 
 ```typescript
-errors: [{
-  message: "Missing required field: asyncapi",
-  keyword: "required",
-  instancePath: "/asyncapi",
-  schemaPath: "#/required"
-}]
+errors: [
+  {
+    message: "Missing required field: asyncapi",
+    keyword: "required",
+    instancePath: "/asyncapi",
+    schemaPath: "#/required",
+  },
+];
 ```
 
 **Value:** Machine-readable error paths for debugging.
@@ -201,8 +207,8 @@ metrics: {
 
 ```typescript
 if (result._tag === "Success") {
-  result.value   // ✅ TypeScript knows this exists
-  result.errors  // ✅ TypeScript knows this is []
+  result.value; // ✅ TypeScript knows this exists
+  result.errors; // ✅ TypeScript knows this is []
 }
 ```
 
@@ -267,10 +273,10 @@ bun test 2>&1 | grep "error:"
 
 ```typescript
 // BEFORE (blocks event loop):
-result.errors.forEach(error => Effect.runSync(Effect.log(error.message)))
+result.errors.forEach((error) => Effect.runSync(Effect.log(error.message)));
 
 // AFTER (proper composition):
-yield* Effect.all(result.errors.map(error => Effect.log(error.message)))
+yield * Effect.all(result.errors.map((error) => Effect.log(error.message)));
 ```
 
 ### HIGH PRIORITY (After Tests Pass)
@@ -280,9 +286,9 @@ yield* Effect.all(result.errors.map(error => Effect.log(error.message)))
 ```typescript
 // Make summary required OR computed property
 type ExtendedValidationResult<T> = ValidationResult<T> & {
-  metrics: ValidationMetrics
-  readonly summary: string  // ← NOW REQUIRED
-}
+  metrics: ValidationMetrics;
+  readonly summary: string; // ← NOW REQUIRED
+};
 ```
 
 **5. Create ValidationError Helper** (15min)
@@ -292,8 +298,8 @@ export const stringToValidationError = (message: string): ValidationError => ({
   message,
   keyword: "validation",
   instancePath: "",
-  schemaPath: ""
-})
+  schemaPath: "",
+});
 ```
 
 **6. Split ValidationService.ts** (45min)
@@ -315,7 +321,7 @@ export const stringToValidationError = (message: string): ValidationError => ({
 enum ValidationKeyword {
   Required = "required",
   Type = "type",
-  Format = "format"
+  Format = "format",
 }
 ```
 
@@ -327,8 +333,8 @@ enum ValidationKeyword {
 **10. Add Branded Types** (45min)
 
 ```typescript
-type ChannelPath = string & { readonly __brand: 'ChannelPath' }
-type OperationId = string & { readonly __brand: 'OperationId' }
+type ChannelPath = string & { readonly __brand: "ChannelPath" };
+type OperationId = string & { readonly __brand: "OperationId" };
 ```
 
 ---

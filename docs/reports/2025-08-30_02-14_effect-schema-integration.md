@@ -25,9 +25,11 @@ import { Effect } from "effect";
 
 // Main schema with comprehensive validation
 export const AsyncAPIEmitterOptionsEffectSchema = Schema.Struct({
-  "output-file": Schema.optional(Schema.String.annotations({
-    description: "Name of the output file. Default: 'asyncapi.yaml'"
-  })),
+  "output-file": Schema.optional(
+    Schema.String.annotations({
+      description: "Name of the output file. Default: 'asyncapi.yaml'",
+    }),
+  ),
   "file-type": Schema.optional(Schema.Literal("yaml", "json")),
   // ... 11 total properties with full validation
 });
@@ -43,7 +45,9 @@ export const AsyncAPIEmitterOptionsSchema = (() => {
     };
   } catch (error) {
     // Graceful fallback to manual JSON Schema
-    return { /* fallback implementation */ };
+    return {
+      /* fallback implementation */
+    };
   }
 })();
 ```
@@ -56,7 +60,9 @@ export const parseAsyncAPIEmitterOptions = (input: unknown) =>
   Schema.decodeUnknown(AsyncAPIEmitterOptionsEffectSchema)(input);
 
 // TypeScript-compatible validation with type conversion
-export const validateAsyncAPIEmitterOptions = (input: unknown): Effect.Effect<AsyncAPIEmitterOptions, string> =>
+export const validateAsyncAPIEmitterOptions = (
+  input: unknown,
+): Effect.Effect<AsyncAPIEmitterOptions, string> =>
   Effect.gen(function* () {
     const result = yield* Schema.decodeUnknown(AsyncAPIEmitterOptionsEffectSchema)(input);
     return convertToTypeScriptInterface(result); // Handles readonly -> optional conversion
@@ -65,7 +71,9 @@ export const validateAsyncAPIEmitterOptions = (input: unknown): Effect.Effect<As
 // Create with defaults using Effect.TS
 export const createAsyncAPIEmitterOptions = (input: Partial<AsyncAPIEmitterOptions> = {}) =>
   Effect.gen(function* () {
-    const defaults = { /* comprehensive defaults */ };
+    const defaults = {
+      /* comprehensive defaults */
+    };
     const merged = { ...defaults, ...input };
     return yield* validateAsyncAPIEmitterOptions(merged);
   });
@@ -82,9 +90,7 @@ export async function onEmit(context: any, options: unknown): Promise<void> {
       const optionsWithDefaults = yield* createAsyncAPIEmitterOptions(validatedOptions);
       yield* Console.log("AsyncAPI Emitter Options validated successfully");
       return optionsWithDefaults;
-    }).pipe(
-      Effect.mapError(error => new Error(`Invalid emitter options: ${error}`))
-    )
+    }).pipe(Effect.mapError((error) => new Error(`Invalid emitter options: ${error}`))),
   );
 
   await generateAsyncAPISpec(context, validationResult);
@@ -110,19 +116,19 @@ const validOptions = {
   "output-file": "my-api",
   "file-type": "json",
   "protocol-bindings": ["kafka", "websocket"],
-  "versioning": {
+  versioning: {
     "separate-files": true,
-    "file-naming": "suffix"
-  }
+    "file-naming": "suffix",
+  },
 };
 
 // ❌ Invalid configuration (caught at validation)
 const invalidOptions = {
   "file-type": "xml", // Invalid enum
   "protocol-bindings": ["invalid-protocol"], // Invalid enum
-  "versioning": {
-    "file-naming": "invalid-strategy" // Invalid enum
-  }
+  versioning: {
+    "file-naming": "invalid-strategy", // Invalid enum
+  },
 };
 ```
 
@@ -144,7 +150,7 @@ export const AsyncAPIEmitterOptionsSchema = {
   additionalProperties: false, // CRITICAL SECURITY SETTING
   properties: {
     // Only allowed properties defined here
-  }
+  },
 };
 ```
 
@@ -163,8 +169,10 @@ export const AsyncAPIEmitterOptionsSchema = {
 test("schema validation should be performant for large option objects", async () => {
   const largeOptions = {
     "default-servers": Object.fromEntries(
-      Array.from({ length: 100 }, (_, i) => [/* 100 server configs */])
-    )
+      Array.from({ length: 100 }, (_, i) => [
+        /* 100 server configs */
+      ]),
+    ),
   };
 
   const start = performance.now();
@@ -204,7 +212,7 @@ test("should validate complete valid options", async () => {
 
 test("should reject invalid protocol-bindings", async () => {
   const invalidOptions = {
-    "protocol-bindings": ["kafka", "invalid-protocol"]
+    "protocol-bindings": ["kafka", "invalid-protocol"],
   };
 
   const result = Effect.runPromise(parseAsyncAPIEmitterOptions(invalidOptions));
@@ -221,9 +229,7 @@ import { validateAsyncAPIEmitterOptions } from "./options.js";
 
 const validateUserInput = async (input: unknown) => {
   try {
-    const validated = await Effect.runPromise(
-      validateAsyncAPIEmitterOptions(input)
-    );
+    const validated = await Effect.runPromise(validateAsyncAPIEmitterOptions(input));
     console.log("Valid options:", validated);
     return validated;
   } catch (error) {
@@ -267,7 +273,7 @@ const processWithManagedResources = (options: unknown) =>
       // Use: Process with guaranteed valid options
       ({ connection, options }) => Effect.succeed(`Processed ${options["file-type"]}`),
       // Release: Cleanup (always called)
-      ({ connection }) => Effect.succeed(console.log("Cleaned up", connection))
+      ({ connection }) => Effect.succeed(console.log("Cleaned up", connection)),
     );
   });
 ```
@@ -280,7 +286,9 @@ The integration maintains full TypeSpec compatibility through a bridge pattern:
 
 ```typescript
 // Effect.TS Schema for validation
-const EffectSchema = Schema.Struct({ /* definitions */ });
+const EffectSchema = Schema.Struct({
+  /* definitions */
+});
 
 // TypeSpec-compatible JSON Schema
 export const AsyncAPIEmitterOptionsSchema = JSONSchema.make(EffectSchema);
@@ -295,7 +303,7 @@ import { AsyncAPIEmitterOptionsSchema } from "./options.js";
 export const emitterDefinition = {
   name: "@typespec/asyncapi",
   optionsSchema: AsyncAPIEmitterOptionsSchema, // ✅ Compatible
-  emit: onEmit
+  emit: onEmit,
 };
 ```
 
@@ -343,8 +351,8 @@ export const emitterDefinition = {
 const schema: JSONSchemaType<Options> = {
   type: "object",
   properties: {
-    "file-type": { type: "string", enum: ["yaml", "json"], nullable: true }
-  }
+    "file-type": { type: "string", enum: ["yaml", "json"], nullable: true },
+  },
 } as any; // ❌ Unsafe
 ```
 
@@ -352,11 +360,10 @@ const schema: JSONSchemaType<Options> = {
 
 ```typescript
 const EffectSchema = Schema.Struct({
-  "file-type": Schema.optional(Schema.Literal("yaml", "json"))
+  "file-type": Schema.optional(Schema.Literal("yaml", "json")),
 }); // ✅ Type-safe
 
-const validateOptions = (input: unknown) =>
-  Schema.decodeUnknown(EffectSchema)(input); // ✅ Runtime safe
+const validateOptions = (input: unknown) => Schema.decodeUnknown(EffectSchema)(input); // ✅ Runtime safe
 ```
 
 ## ✅ Success Metrics

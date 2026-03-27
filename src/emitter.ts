@@ -7,7 +7,11 @@
 import { emitFile } from "@typespec/compiler";
 import type { EmitContext, EmitFileOptions } from "@typespec/compiler";
 import type { AsyncAPIEmitterOptions } from "./infrastructure/configuration/asyncAPIEmitterOptions.js";
-import { consolidateAsyncAPIState, type AsyncAPIConsolidatedState, type MessageConfigData } from "./state.js";
+import {
+  consolidateAsyncAPIState,
+  type AsyncAPIConsolidatedState,
+  type MessageConfigData,
+} from "./state.js";
 import { Effect } from "effect";
 
 /**
@@ -41,7 +45,7 @@ function generateBasicAsyncAPI(
   // Simple channel conversion
   if (state.channels) {
     for (const [type, data] of state.channels) {
-      const channelData = data as { path?: string; };
+      const channelData = data as { path?: string };
       const typeWithName = type as { name: string };
       const channelKey = channelData.path ?? typeWithName.name;
       channels[channelKey] = {
@@ -98,7 +102,7 @@ ${Object.entries(document.channels)
     path: ${channelData.path}
     description: ${channelData.description}`;
   })
-  .join('\n')}
+  .join("\n")}
 
 messages:
 ${Object.entries(document.messages)
@@ -109,7 +113,7 @@ ${Object.entries(document.messages)
     schemaName: ${messageData.schemaName}
     description: ${messageData.description}`;
   })
-  .join('\n')}
+  .join("\n")}
 
 components:
   schemas:
@@ -119,11 +123,9 @@ ${Object.entries(document.components.schemas)
     type: object
     properties: {}`;
   })
-  .join('\n')}
+  .join("\n")}
 `;
 }
-
-
 
 /**
  * Generate AsyncAPI file from TypeSpec program

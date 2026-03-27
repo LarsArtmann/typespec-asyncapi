@@ -139,21 +139,21 @@ bun test test/validation/asyncapi-spec-validation.test.ts
 ### TypeSpec Compilation Testing
 
 ```typescript
-import { compileAsyncAPISpec } from "./utils/test-helpers"
+import { compileAsyncAPISpec } from "./utils/test-helpers";
 
 const result = await compileAsyncAPISpec(`
   @channel("user-events")
   namespace UserService;
-`)
+`);
 ```
 
 ### AsyncAPI Validation Testing
 
 ```typescript
-import { validateAsyncAPIDocument } from "./utils/test-helpers"
+import { validateAsyncAPIDocument } from "./utils/test-helpers";
 
-const validation = await validateAsyncAPIDocument(generatedSpec)
-expect(validation.errors).toHaveLength(0)
+const validation = await validateAsyncAPIDocument(generatedSpec);
+expect(validation.errors).toHaveLength(0);
 ```
 
 ## Current Test Status

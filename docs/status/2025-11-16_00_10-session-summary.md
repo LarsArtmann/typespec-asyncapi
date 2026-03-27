@@ -56,37 +56,37 @@
 
 ```typescript
 type ValidationMetrics = {
-  duration: number
-  channelCount: number      // ← Duplicates value.channels
-  operationCount: number    // ← Duplicates value.operations
-  schemaCount: number       // ← Duplicates value.components
-  validatedAt: Date
-}
+  duration: number;
+  channelCount: number; // ← Duplicates value.channels
+  operationCount: number; // ← Duplicates value.operations
+  schemaCount: number; // ← Duplicates value.components
+  validatedAt: Date;
+};
 
 type ExtendedValidationResult = ValidationResult & {
-  metrics: ValidationMetrics
-  summary?: string  // ← Type lies - always set
-}
+  metrics: ValidationMetrics;
+  summary?: string; // ← Type lies - always set
+};
 ```
 
 **AFTER (Single Source of Truth):**
 
 ```typescript
 type ValidationMetrics = {
-  duration: number
-  validatedAt: Date
+  duration: number;
+  validatedAt: Date;
   // NO derived counts - compute from source!
-}
+};
 
 type ExtendedValidationResult = ValidationResult & {
-  metrics: ValidationMetrics
-  summary: string  // ← Honest type - required
-}
+  metrics: ValidationMetrics;
+  summary: string; // ← Honest type - required
+};
 
 // Helper functions compute from source
-export function getChannelCount(doc: AsyncAPIObject): number
-export function getOperationCount(doc: AsyncAPIObject): number
-export function getSchemaCount(doc: AsyncAPIObject): number
+export function getChannelCount(doc: AsyncAPIObject): number;
+export function getOperationCount(doc: AsyncAPIObject): number;
+export function getSchemaCount(doc: AsyncAPIObject): number;
 ```
 
 **Benefits:**
@@ -109,12 +109,12 @@ export function getSchemaCount(doc: AsyncAPIObject): number
 
 ```typescript
 // BEFORE (split brain):
-yield* Effect.log(`Channels: ${result.metrics.channelCount}`)
+yield * Effect.log(`Channels: ${result.metrics.channelCount}`);
 
 // AFTER (single source of truth):
 if (result._tag === "Success") {
-  const channelCount = getChannelCount(result.value)
-  yield* Effect.log(`Channels: ${channelCount}`)
+  const channelCount = getChannelCount(result.value);
+  yield * Effect.log(`Channels: ${channelCount}`);
 }
 ```
 
@@ -132,11 +132,11 @@ if (result._tag === "Success") {
 
 ```typescript
 // BEFORE (deprecated API):
-expect(result.metrics.channelCount).toBe(2)
+expect(result.metrics.channelCount).toBe(2);
 
 // AFTER (type-safe with guards):
 if (result._tag === "Success") {
-  expect(getChannelCount(result.value)).toBe(2)
+  expect(getChannelCount(result.value)).toBe(2);
 }
 ```
 

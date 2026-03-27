@@ -21,8 +21,8 @@
 // test/documentation/README.test.ts:115
 expect(props.recordField).toEqual({
   type: "object",
-  additionalProperties: { type: "string" }
-})
+  additionalProperties: { type: "string" },
+});
 // ❌ ACTUAL: { type: "string" } - property enumeration broken
 
 // Processing logs show:
@@ -53,11 +53,11 @@ expect(props.recordField).toEqual({
 
 ```typescript
 // test/documentation/05-decorators.test.ts:113
-expect(securitySchemes.oauth2).toBeDefined()
+expect(securitySchemes.oauth2).toBeDefined();
 // ❌ ACTUAL: undefined - @security decorators not processed
 
 // test/documentation/05-decorators.test.ts:143
-expect(servers.production).toBeDefined()
+expect(servers.production).toBeDefined();
 // ❌ ACTUAL: undefined - @server decorators not processed
 ```
 
@@ -254,7 +254,7 @@ test/integration/real-compilation.test.ts
 
 ```typescript
 // test/validation/property-enumeration-validation.test.ts
-import { compileAsyncAPISpec } from "../utils/test-helpers.js"
+import { compileAsyncAPISpec } from "../utils/test-helpers.js";
 
 describe("Property Enumeration Validation", () => {
   it("should enumerate simple model properties", async () => {
@@ -271,18 +271,18 @@ describe("Property Enumeration Validation", () => {
         @publish
         op test(@body data: SimpleModel): void;
       }
-    `
+    `;
 
-    const result = await compileAsyncAPISpec(source)
-    const schema = result.components?.schemas?.SimpleModel
+    const result = await compileAsyncAPISpec(source);
+    const schema = result.components?.schemas?.SimpleModel;
 
-    expect(schema).toBeDefined()
-    expect(schema?.properties).toBeDefined()
-    expect(Object.keys(schema?.properties ?? {})).toEqual(["id", "count", "active"])
-    expect(schema?.properties?.id).toEqual({ type: "string" })
-    expect(schema?.properties?.count).toEqual({ type: "integer", format: "int32" })
-    expect(schema?.properties?.active).toEqual({ type: "boolean" })
-  })
+    expect(schema).toBeDefined();
+    expect(schema?.properties).toBeDefined();
+    expect(Object.keys(schema?.properties ?? {})).toEqual(["id", "count", "active"]);
+    expect(schema?.properties?.id).toEqual({ type: "string" });
+    expect(schema?.properties?.count).toEqual({ type: "integer", format: "int32" });
+    expect(schema?.properties?.active).toEqual({ type: "boolean" });
+  });
 
   it("should handle Record types correctly", async () => {
     const source = `
@@ -297,20 +297,20 @@ describe("Property Enumeration Validation", () => {
         @publish
         op testRecords(@body data: RecordModel): void;
       }
-    `
+    `;
 
-    const result = await compileAsyncAPISpec(source)
-    const schema = result.components?.schemas?.RecordModel
+    const result = await compileAsyncAPISpec(source);
+    const schema = result.components?.schemas?.RecordModel;
 
     expect(schema?.properties?.metadata).toEqual({
       type: "object",
-      additionalProperties: { type: "string" }
-    })
+      additionalProperties: { type: "string" },
+    });
     expect(schema?.properties?.counters).toEqual({
       type: "object",
-      additionalProperties: { type: "integer", format: "int32" }
-    })
-  })
+      additionalProperties: { type: "integer", format: "int32" },
+    });
+  });
 
   it("should handle Union types correctly", async () => {
     const source = `
@@ -325,23 +325,20 @@ describe("Property Enumeration Validation", () => {
         @publish
         op testUnions(@body data: UnionModel): void;
       }
-    `
+    `;
 
-    const result = await compileAsyncAPISpec(source)
-    const schema = result.components?.schemas?.UnionModel
+    const result = await compileAsyncAPISpec(source);
+    const schema = result.components?.schemas?.UnionModel;
 
     expect(schema?.properties?.status).toEqual({
       type: "string",
-      enum: ["active", "inactive", "pending"]
-    })
+      enum: ["active", "inactive", "pending"],
+    });
     expect(schema?.properties?.value).toEqual({
-      oneOf: [
-        { type: "string" },
-        { type: "integer", format: "int32" }
-      ]
-    })
-  })
-})
+      oneOf: [{ type: "string" }, { type: "integer", format: "int32" }],
+    });
+  });
+});
 ```
 
 ### **Validation Test Suite: Basic Decorators**
@@ -364,18 +361,18 @@ describe("Basic Decorator Validation", () => {
 
       model SimpleEvent { id: string; }
       model UserEvent { type: string; }
-    `
+    `;
 
-    const result = await compileAsyncAPISpec(source)
+    const result = await compileAsyncAPISpec(source);
 
-    expect(result.channels).toBeDefined()
-    expect(result.channels?.["simple-channel"]).toBeDefined()
-    expect(result.channels?.["parameterized/{userId}/events"]).toBeDefined()
+    expect(result.channels).toBeDefined();
+    expect(result.channels?.["simple-channel"]).toBeDefined();
+    expect(result.channels?.["parameterized/{userId}/events"]).toBeDefined();
 
     // Check parameterized channels have parameters
-    const parameterizedChannel = result.channels?.["parameterized/{userId}/events"]
-    expect(parameterizedChannel?.parameters?.userId).toBeDefined()
-  })
+    const parameterizedChannel = result.channels?.["parameterized/{userId}/events"];
+    expect(parameterizedChannel?.parameters?.userId).toBeDefined();
+  });
 
   it("should process @publish and @subscribe decorators", async () => {
     const source = `
@@ -391,14 +388,14 @@ describe("Basic Decorator Validation", () => {
       }
 
       model Event { id: string; }
-    `
+    `;
 
-    const result = await compileAsyncAPISpec(source)
+    const result = await compileAsyncAPISpec(source);
 
-    expect(result.operations?.publishEvent?.action).toBe("send")
-    expect(result.operations?.subscribeEvent?.action).toBe("receive")
-  })
-})
+    expect(result.operations?.publishEvent?.action).toBe("send");
+    expect(result.operations?.subscribeEvent?.action).toBe("receive");
+  });
+});
 ```
 
 ---
@@ -446,7 +443,7 @@ const basicWorkflowTest = `
     status: string;
     timestamp: utcDateTime;
   }
-`
+`;
 ```
 
 ### **Scenario 2: Complex Types Integration**
@@ -495,7 +492,7 @@ const complexTypesTest = `
     email: string;
     role: "admin" | "editor" | "viewer";
   }
-`
+`;
 ```
 
 ### **Scenario 3: Advanced Decorators Integration**
@@ -546,7 +543,7 @@ const advancedDecoratorsTest = `
     timestamp: utcDateTime;
     data: Record<string>;
   }
-`
+`;
 ```
 
 ---

@@ -143,7 +143,12 @@ export const storeSecurityConfig = (
 /**
  * Simplest possible @server decorator for testing
  */
-export function $server(context: DecoratorContext, target: Namespace | Operation, name: string, config: unknown): void {
+export function $server(
+  context: DecoratorContext,
+  target: Namespace | Operation,
+  name: string,
+  config: unknown,
+): void {
   // Validate target is a Namespace (not an Operation or other type)
   if (target.kind !== "Namespace") {
     reportDecoratorDiagnostic(
@@ -168,7 +173,7 @@ export function $server(context: DecoratorContext, target: Namespace | Operation
   }
 
   const configTyped = config as Record<string, unknown>;
-  
+
   // Validate required fields
   if (!configTyped.url) {
     reportDecoratorDiagnostic(
@@ -179,7 +184,7 @@ export function $server(context: DecoratorContext, target: Namespace | Operation
     );
     return;
   }
-  
+
   if (!configTyped.protocol) {
     reportDecoratorDiagnostic(
       context,
@@ -189,9 +194,28 @@ export function $server(context: DecoratorContext, target: Namespace | Operation
     );
     return;
   }
-  
+
   // Validate protocol is supported
-  const supportedProtocols = ["kafka", "amqp", "amqp1", "mqtt", "mqtt5", "http", "https", "ws", "wss", "websocket", "nats", "jms", "sns", "sqs", "stomp", "redis", "mercure", "ibmmq"];
+  const supportedProtocols = [
+    "kafka",
+    "amqp",
+    "amqp1",
+    "mqtt",
+    "mqtt5",
+    "http",
+    "https",
+    "ws",
+    "wss",
+    "websocket",
+    "nats",
+    "jms",
+    "sns",
+    "sqs",
+    "stomp",
+    "redis",
+    "mercure",
+    "ibmmq",
+  ];
   const protocol = (configTyped.protocol as string).toLowerCase();
   if (!supportedProtocols.includes(protocol)) {
     const protocolValue = String(configTyped.protocol);
@@ -265,7 +289,8 @@ export function $message(context: DecoratorContext, target: Model, config: unkno
   // Extract config values from Model
   const configModel = config as Model;
   const title = getModelPropertyStringValue(configModel, "title") ?? target.name;
-  const description = getModelPropertyStringValue(configModel, "description") ?? `Message ${target.name}`;
+  const description =
+    getModelPropertyStringValue(configModel, "description") ?? `Message ${target.name}`;
   const contentType = getModelPropertyStringValue(configModel, "contentType") ?? "application/json";
 
   // Store message configuration in state
@@ -280,7 +305,6 @@ export function $protocol(
   target: Operation | Model,
   config: unknown,
 ): void {
-
   if (
     !validateConfig(
       config,
@@ -356,7 +380,6 @@ export function $security(
   target: Operation | Namespace,
   config: unknown,
 ): void {
-
   if (
     !validateConfig(
       config,
@@ -425,11 +448,7 @@ export function $subscribe(context: DecoratorContext, target: Operation): void {
 /**
  * Store tags in state for emitter to use
  */
-export const storeTags = (
-  program: unknown,
-  target: Operation | Model,
-  tags: string[],
-) => {
+export const storeTags = (program: unknown, target: Operation | Model, tags: string[]) => {
   const programTyped = program as { stateMap: (symbol: symbol) => Map<unknown, unknown> };
   const tagsMap = programTyped.stateMap(stateSymbols.tags);
   // Store as comma-separated string to match TagData interface
@@ -443,7 +462,6 @@ export const storeTags = (
  * Simplest possible @tags decorator for testing
  */
 export function $tags(context: DecoratorContext, target: DiagnosticTarget, value: unknown): void {
-
   if (!value || !Array.isArray(value)) {
     reportDecoratorDiagnostic(
       context,
@@ -457,12 +475,7 @@ export function $tags(context: DecoratorContext, target: DiagnosticTarget, value
   // Validate all values are strings
   const stringTags = value.filter((tag): tag is string => typeof tag === "string");
   if (stringTags.length !== value.length) {
-    reportDecoratorDiagnostic(
-      context,
-      "invalid-tags-config",
-      target,
-      "All tags must be strings.",
-    );
+    reportDecoratorDiagnostic(context, "invalid-tags-config", target, "All tags must be strings.");
     return;
   }
 
@@ -496,7 +509,6 @@ export function $correlationId(
   location: unknown,
   property?: unknown,
 ): void {
-
   if (!location || typeof location !== "string") {
     reportDecoratorDiagnostic(
       context,
@@ -533,7 +545,6 @@ export function $bindings(
   target: Operation | Model,
   value: unknown,
 ): void {
-
   if (!value || typeof value !== "object") {
     reportDecoratorDiagnostic(
       context,
@@ -578,7 +589,10 @@ export const storeHeader = (
     description = typeof value === "string" ? value : undefined;
   }
 
-  const existingHeaders = (headersMap.get(target) as Array<{ name: string; value?: unknown; type?: string; description?: string }> | undefined) ?? [];
+  const existingHeaders =
+    (headersMap.get(target) as
+      | Array<{ name: string; value?: unknown; type?: string; description?: string }>
+      | undefined) ?? [];
   headersMap.set(target, [...existingHeaders, { name, value, type: headerType, description }]);
 };
 

@@ -90,7 +90,7 @@ export const mqttPlugin: ProtocolPlugin = {
         qos: 1, // Default QoS level
         retain: false,
         messageExpiryInterval: 60, // 60 seconds
-        bindingVersion: "0.2.0"
+        bindingVersion: "0.2.0",
       };
 
       return { mqtt: binding };
@@ -103,7 +103,7 @@ export const mqttPlugin: ProtocolPlugin = {
       const binding: MQTTMessageBinding = {
         payloadFormatIndicator: 1, // UTF-8 string
         contentType: "application/json",
-        bindingVersion: "0.2.0"
+        bindingVersion: "0.2.0",
       };
 
       return { mqtt: binding };
@@ -117,7 +117,7 @@ export const mqttPlugin: ProtocolPlugin = {
         clientId: "typespec-asyncapi-client",
         cleanSession: true,
         keepAlive: 60,
-        bindingVersion: "0.2.0"
+        bindingVersion: "0.2.0",
       };
 
       return { mqtt: binding };
@@ -128,13 +128,13 @@ export const mqttPlugin: ProtocolPlugin = {
       yield* Effect.log("✅ Validating MQTT configuration");
 
       // Implement validation logic
-      if (typeof config === 'object' && config !== null) {
+      if (typeof config === "object" && config !== null) {
         const mqttConfig = config as Record<string, unknown>;
 
         // Validate QoS levels
-        if ('qos' in mqttConfig) {
+        if ("qos" in mqttConfig) {
           const qos = mqttConfig.qos;
-          if (typeof qos === 'number' && [0, 1, 2].includes(qos)) {
+          if (typeof qos === "number" && [0, 1, 2].includes(qos)) {
             return true;
           }
           return false;
@@ -144,7 +144,7 @@ export const mqttPlugin: ProtocolPlugin = {
       }
 
       return false;
-    })
+    }),
 };
 ```
 
@@ -156,8 +156,7 @@ import { pluginRegistry } from "@larsartmann/typespec-asyncapi";
 import { mqttPlugin } from "./mqtt-plugin.js";
 
 // Register the plugin
-const registerMqttPlugin = () =>
-  pluginRegistry.register(mqttPlugin);
+const registerMqttPlugin = () => pluginRegistry.register(mqttPlugin);
 
 // Call during initialization
 await registerMqttPlugin();
@@ -183,7 +182,7 @@ export const redisPlugin: ProtocolPlugin = {
         consumer: "service-instance-1",
         acknowledgment: true,
         maxLength: 10000,
-        bindingVersion: "0.1.0"
+        bindingVersion: "0.1.0",
       };
 
       return { redis: binding };
@@ -195,11 +194,11 @@ export const redisPlugin: ProtocolPlugin = {
         messageId: "auto", // Redis auto-generates
         ttl: 3600, // 1 hour TTL
         compression: "gzip",
-        bindingVersion: "0.1.0"
+        bindingVersion: "0.1.0",
       };
 
       return { redis: binding };
-    })
+    }),
 };
 ```
 
@@ -220,7 +219,7 @@ export const sqsPlugin: ProtocolPlugin = {
         messageGroupId: "user-events",
         messageDeduplicationId: "auto",
         visibilityTimeout: 30,
-        bindingVersion: "0.1.0"
+        bindingVersion: "0.1.0",
       };
 
       return { sqs: binding };
@@ -233,7 +232,7 @@ export const sqsPlugin: ProtocolPlugin = {
         accessKey: "${AWS_ACCESS_KEY}",
         secretKey: "${AWS_SECRET_KEY}",
         endpoint: "https://sqs.us-east-1.amazonaws.com",
-        bindingVersion: "0.1.0"
+        bindingVersion: "0.1.0",
       };
 
       return { sqs: binding };
@@ -244,11 +243,11 @@ export const sqsPlugin: ProtocolPlugin = {
       // Validate AWS SQS configuration
       const sqsConfig = config as Record<string, unknown>;
 
-      const requiredFields = ['queueUrl', 'region'];
-      const hasRequired = requiredFields.every(field => field in sqsConfig);
+      const requiredFields = ["queueUrl", "region"];
+      const hasRequired = requiredFields.every((field) => field in sqsConfig);
 
       return hasRequired;
-    })
+    }),
 };
 ```
 
@@ -289,7 +288,7 @@ export const advancedPlugin: ProtocolPlugin = {
       };
 
       return { advanced: binding };
-    })
+    }),
 };
 ```
 
@@ -348,13 +347,13 @@ interface PluginConfig {
 const validatePluginConfig = (config: unknown): Effect.Effect<PluginConfig, Error> =>
   Effect.gen(function* () {
     // Type-safe configuration validation
-    if (typeof config !== 'object' || config === null) {
+    if (typeof config !== "object" || config === null) {
       return yield* Effect.fail(new Error("Config must be an object"));
     }
 
     const cfg = config as Record<string, unknown>;
 
-    if (typeof cfg.endpoint !== 'string') {
+    if (typeof cfg.endpoint !== "string") {
       return yield* Effect.fail(new Error("endpoint is required and must be a string"));
     }
 
@@ -376,20 +375,21 @@ export const environmentAwarePlugin: ProtocolPlugin = {
       // Environment-specific configuration
       const environment = process.env.NODE_ENV || "development";
 
-      const binding = environment === "production"
-        ? {
-            url: process.env.PROD_SERVER_URL,
-            ssl: true,
-            connectionPool: 10
-          }
-        : {
-            url: "localhost:8080",
-            ssl: false,
-            connectionPool: 2
-          };
+      const binding =
+        environment === "production"
+          ? {
+              url: process.env.PROD_SERVER_URL,
+              ssl: true,
+              connectionPool: 10,
+            }
+          : {
+              url: "localhost:8080",
+              ssl: false,
+              connectionPool: 2,
+            };
 
       return { "environment-aware": { ...binding, environment } };
-    })
+    }),
 };
 ```
 
@@ -405,26 +405,22 @@ describe("MQTT Plugin", () => {
   it("should generate operation binding", async () => {
     const mockOperation = { name: "publishMessage" };
 
-    const result = await Effect.runPromise(
-      mqttPlugin.generateOperationBinding!(mockOperation)
-    );
+    const result = await Effect.runPromise(mqttPlugin.generateOperationBinding!(mockOperation));
 
     expect(result).toEqual({
       mqtt: {
         qos: 1,
         retain: false,
         messageExpiryInterval: 60,
-        bindingVersion: "0.2.0"
-      }
+        bindingVersion: "0.2.0",
+      },
     });
   });
 
   it("should validate configuration", async () => {
     const validConfig = { qos: 1, retain: true };
 
-    const isValid = await Effect.runPromise(
-      mqttPlugin.validateConfig!(validConfig)
-    );
+    const isValid = await Effect.runPromise(mqttPlugin.validateConfig!(validConfig));
 
     expect(isValid).toBe(true);
   });
@@ -443,9 +439,7 @@ describe("Plugin Integration", () => {
   });
 
   it("should register plugin successfully", async () => {
-    const plugin = await Effect.runPromise(
-      pluginRegistry.getPlugin("mqtt")
-    );
+    const plugin = await Effect.runPromise(pluginRegistry.getPlugin("mqtt"));
 
     expect(plugin).toBeDefined();
     expect(plugin?.name).toBe("mqtt");
@@ -480,13 +474,7 @@ my-asyncapi-plugin/
   "description": "MQTT protocol plugin for TypeSpec AsyncAPI Emitter",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "keywords": [
-    "typespec",
-    "asyncapi",
-    "mqtt",
-    "plugin",
-    "event-driven"
-  ],
+  "keywords": ["typespec", "asyncapi", "mqtt", "plugin", "event-driven"],
   "peerDependencies": {
     "@larsartmann/typespec-asyncapi": "^0.1.0",
     "effect": "^3.17.0"
@@ -512,6 +500,7 @@ MQTT protocol plugin for TypeSpec AsyncAPI Emitter following AsyncAPI MQTT Bindi
 
 ```bash
 bun add @your-org/typespec-asyncapi-mqtt-plugin
+```
 ````
 
 ## Usage

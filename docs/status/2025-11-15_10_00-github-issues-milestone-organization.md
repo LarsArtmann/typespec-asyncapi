@@ -137,17 +137,17 @@
 // In $securityEnhanced decorator, add:
 if (!isSecurityScheme(securityConfig.scheme)) {
   reportDiagnostic(context, target, "invalid-security-scheme", {
-    message: "Security scheme type is not valid"
-  })
-  return
+    message: "Security scheme type is not valid",
+  });
+  return;
 }
 
-const validation = validateSecurityScheme(securityConfig.scheme)
+const validation = validateSecurityScheme(securityConfig.scheme);
 if (!validation.valid) {
   reportDiagnostic(context, target, "invalid-security-scheme", {
-    message: `Security scheme validation failed: ${validation.errors.join(", ")}`
-  })
-  return
+    message: `Security scheme validation failed: ${validation.errors.join(", ")}`,
+  });
+  return;
 }
 ```
 
@@ -321,8 +321,8 @@ if (!validation.valid) {
 **Current:** Using primitive strings without validation:
 
 ```typescript
-type Channel = { address: string }  // Could be "//invalid//path"
-type Server = { url: string }       // Could be "not-a-url"
+type Channel = { address: string }; // Could be "//invalid//path"
+type Server = { url: string }; // Could be "not-a-url"
 ```
 
 **Solution:** Value Objects with branded types (Issue #226)

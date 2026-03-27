@@ -121,17 +121,17 @@ I was told to watch for ghost systems but didn't recognize:
 **Integration tests** use `compileAsyncAPISpec()`:
 
 ```typescript
-const spec = await compileAsyncAPISpec(source)
-expect(spec.servers).toBeDefined()
-expect(spec.channels["test"]).toBeDefined()
+const spec = await compileAsyncAPISpec(source);
+expect(spec.servers).toBeDefined();
+expect(spec.channels["test"]).toBeDefined();
 ```
 
 **Some domain tests** appeared to use `createAsyncAPITestHost()`:
 
 ```typescript
-const host = await createAsyncAPITestHost()
-await host.compile("./main.tsp")
-expect(true).toBe(true) // 🚨 GHOST!
+const host = await createAsyncAPITestHost();
+await host.compile("./main.tsp");
+expect(true).toBe(true); // 🚨 GHOST!
 ```
 
 **Confusion:** Why do different test categories use different patterns? Which is correct?
@@ -166,6 +166,7 @@ expect(true).toBe(true) // 🚨 GHOST!
 
 ```markdown
 A test is considered "production ready" if:
+
 1. ✅ Tests actual emitter output (not just compilation)
 2. ✅ Would catch regressions if emitter breaks
 3. ✅ Asserts on specific AsyncAPI structure elements
@@ -182,17 +183,20 @@ A test is considered "production ready" if:
 ### Test Helpers Guide
 
 **Use `createAsyncAPITestHost()`:**
+
 - Decorator registration tests
 - TypeSpec syntax validation tests
 - Tests that verify decorators are recognized
 
 **Use `compileAsyncAPISpec()`:**
+
 - Domain tests (protocol, security, channels, messages)
 - Integration tests (full emitter workflow)
 - E2E tests (real-world scenarios)
 - Any test that validates AsyncAPI output
 
 **Use `AsyncAPIAssertions` helpers:**
+
 - After calling `compileAsyncAPISpec()`
 - To validate AsyncAPI structure consistency
 - For reusable validation patterns
@@ -204,6 +208,7 @@ A test is considered "production ready" if:
 
 ```markdown
 Before creating N similar tests:
+
 1. ☐ Create 1 test with full validation
 2. ☐ Run the test and verify it passes
 3. ☐ Manually break the emitter and verify test catches it
@@ -239,6 +244,7 @@ Before creating N similar tests:
 
 ```markdown
 When adding large test suites:
+
 - After first 10 tests: STOP and verify they validate correctly
 - After first 50 tests: STOP and run full suite, check pass rate
 - After first 100 tests: STOP and review with code coverage
@@ -259,22 +265,22 @@ it("should generate Kafka server with proper bindings", async () => {
     namespace Test;
     model Event { id: string; }
     @channel("events") @publish op publish(): Event;
-  `)
+  `);
 
-  expect(spec.servers["kafka"]).toBeDefined()
-  expect(spec.servers["kafka"].protocol).toBe("kafka")
-  expect(spec.channels["events"]).toBeDefined()
-})
+  expect(spec.servers["kafka"]).toBeDefined();
+  expect(spec.servers["kafka"].protocol).toBe("kafka");
+  expect(spec.channels["events"]).toBeDefined();
+});
 ```
 
 "DO NOT create tests like this:"
 
 ```typescript
 it("should support Kafka", async () => {
-  const host = await createAsyncAPITestHost()
-  await host.compile("./main.tsp")
-  expect(true).toBe(true) // 🚨 WORTHLESS!
-})
+  const host = await createAsyncAPITestHost();
+  await host.compile("./main.tsp");
+  expect(true).toBe(true); // 🚨 WORTHLESS!
+});
 ```
 
 ## Summary of Root Cause

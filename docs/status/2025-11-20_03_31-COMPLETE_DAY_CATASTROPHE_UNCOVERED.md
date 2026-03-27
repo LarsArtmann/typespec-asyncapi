@@ -129,16 +129,16 @@ src/emitter.ts: 354 lines   // 🚨 OVER 300-line limit
 ```typescript
 // COMPLETE BREAKDOWN: Record<string, unknown> allowing invalid states
 export type AsyncAPIDocument = {
-  channels: Record<string, unknown>,      // Could contain ANYTHING
-  messages: Record<string, unknown>,      // No validation possible
+  channels: Record<string, unknown>; // Could contain ANYTHING
+  messages: Record<string, unknown>; // No validation possible
   components: {
-    schemas: Record<string, unknown>,    // Completely unsafe
+    schemas: Record<string, unknown>; // Completely unsafe
   };
 };
 
 // CATASTROPHE: Runtime crashes imminent
 const channel = { description: { nested: "object" } };
-let yaml = `description: "${channel.description}"`;  // CRASH!
+let yaml = `description: "${channel.description}"`; // CRASH!
 ```
 
 **IMPACT:** 🔴 **PRODUCTION SAFETY CRISIS** - Runtime crashes guaranteed
@@ -185,7 +185,7 @@ let yaml = `description: "${channel.description}"`;  // CRASH!
 
 ```typescript
 // COMPLETE BREAKDOWN: Primitive string concatenation only
-let channelYaml = `description: "${channelObj.description ?? ''}"`;
+let channelYaml = `description: "${channelObj.description ?? ""}"`;
 // No: AST-based transformations
 // No: Type-safe code generation
 // No: Schema-driven output
@@ -222,8 +222,8 @@ let channelYaml = `description: "${channelObj.description ?? ''}"`;
 ```typescript
 // COMPLETE BREAKDOWN: Booleans that should be enums
 export type ChannelPathData = {
-  hasParameters: boolean,  // Should be ParameterState enum
-  parameters?: string[],   // Ambiguous with boolean flag
+  hasParameters: boolean; // Should be ParameterState enum
+  parameters?: string[]; // Ambiguous with boolean flag
 };
 ```
 
@@ -234,10 +234,10 @@ export type ChannelPathData = {
 ```typescript
 // COMPLETE BREAKDOWN: No unsigned integers where negative impossible
 export interface PerformanceMetrics {
-  channels: number,      // Could be negative (invalid)
-  messages: number,      // Could be negative (invalid)
-  errors: number,        // Could be negative (invalid)
-};
+  channels: number; // Could be negative (invalid)
+  messages: number; // Could be negative (invalid)
+  errors: number; // Could be negative (invalid)
+}
 ```
 
 **IMPACT:** 🔴 **TYPE CONSTRAINT CRISIS** - Invalid values allowed
@@ -246,9 +246,9 @@ export interface PerformanceMetrics {
 
 ```typescript
 // COMPLETE BREAKDOWN: Inconsistent, unclear naming
-ASYNCAPI_VERSION          // Should be AsyncAPI.VERSION
-PROTOCOL_DEFAULTS          // Should be Protocol.DEFAULTS
-consolidateAsyncAPIState    // Should be aggregateDocumentState
+ASYNCAPI_VERSION; // Should be AsyncAPI.VERSION
+PROTOCOL_DEFAULTS; // Should be Protocol.DEFAULTS
+consolidateAsyncAPIState; // Should be aggregateDocumentState
 ```
 
 **IMPACT:** 🔴 **MAINTAINABILITY CRISIS** - Confusing naming

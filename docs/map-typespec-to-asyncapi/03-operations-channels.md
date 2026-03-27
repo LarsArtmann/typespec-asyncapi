@@ -37,30 +37,30 @@ channels:
     address: user.events
     messages:
       UserRegisteredMessage:
-        $ref: '#/components/messages/UserRegisteredMessage'
+        $ref: "#/components/messages/UserRegisteredMessage"
 
   order.events:
     address: order.events
     messages:
       OrderCreatedMessage:
-        $ref: '#/components/messages/OrderCreatedMessage'
+        $ref: "#/components/messages/OrderCreatedMessage"
 
 operations:
   userRegistered:
     action: send
     channel:
-      $ref: '#/channels/user.events'
+      $ref: "#/channels/user.events"
     summary: User registration event
     messages:
-      - $ref: '#/channels/user.events/messages/UserRegisteredMessage'
+      - $ref: "#/channels/user.events/messages/UserRegisteredMessage"
 
   orderCreated:
     action: send
     channel:
-      $ref: '#/channels/order.events'
+      $ref: "#/channels/order.events"
     summary: Order creation event
     messages:
-      - $ref: '#/channels/order.events/messages/OrderCreatedMessage'
+      - $ref: "#/channels/order.events/messages/OrderCreatedMessage"
 
 components:
   messages:
@@ -69,14 +69,14 @@ components:
       title: User Registration Event
       contentType: application/json
       payload:
-        $ref: '#/components/schemas/UserRegisteredEvent'
+        $ref: "#/components/schemas/UserRegisteredEvent"
 
     OrderCreatedMessage:
       name: OrderCreatedEvent
       title: Order Creation Event
       contentType: application/json
       payload:
-        $ref: '#/components/schemas/OrderCreatedEvent'
+        $ref: "#/components/schemas/OrderCreatedEvent"
 ```
 
 ### Subscribe Operations (Receive Messages)
@@ -98,18 +98,18 @@ operations:
   handleUserRegistered:
     action: receive
     channel:
-      $ref: '#/channels/user.events'
+      $ref: "#/channels/user.events"
     summary: Handle user registration events
     messages:
-      - $ref: '#/channels/user.events/messages/UserRegisteredMessage'
+      - $ref: "#/channels/user.events/messages/UserRegisteredMessage"
 
   handlePaymentProcessed:
     action: receive
     channel:
-      $ref: '#/channels/payment.events'
+      $ref: "#/channels/payment.events"
     summary: Handle payment processing events
     messages:
-      - $ref: '#/channels/payment.events/messages/PaymentProcessedMessage'
+      - $ref: "#/channels/payment.events/messages/PaymentProcessedMessage"
 ```
 
 ## Channel Path Patterns
@@ -168,7 +168,7 @@ channels:
           format: uuid
     messages:
       NotificationMessage:
-        $ref: '#/components/messages/NotificationMessage'
+        $ref: "#/components/messages/NotificationMessage"
 
   tenant-order-updates:
     address: tenant/{tenantId}/orders/{orderId}
@@ -184,20 +184,20 @@ channels:
           format: uuid
     messages:
       OrderUpdateMessage:
-        $ref: '#/components/messages/OrderUpdateMessage'
+        $ref: "#/components/messages/OrderUpdateMessage"
 
 operations:
   sendUserNotification:
     action: send
     channel:
-      $ref: '#/channels/user-notifications'
+      $ref: "#/channels/user-notifications"
     bindings:
       # Channel parameter values from operation parameters
 
   handleOrderUpdate:
     action: receive
     channel:
-      $ref: '#/channels/tenant-order-updates'
+      $ref: "#/channels/tenant-order-updates"
 ```
 
 ### Hierarchical Channel Organization
@@ -272,7 +272,7 @@ operations:
   logAuditEvent:
     action: send
     channel:
-      $ref: '#/channels/audit.logs'
+      $ref: "#/channels/audit.logs"
     summary: Log audit events (fire-and-forget)
 ```
 
@@ -310,7 +310,7 @@ channels:
           description: Correlation ID for request-reply
           location: $message.payload#/correlationId
         payload:
-          $ref: '#/components/schemas/UserQuery'
+          $ref: "#/components/schemas/UserQuery"
 
   user.responses:
     address: user.responses
@@ -320,21 +320,21 @@ channels:
           description: Correlation ID for request-reply
           location: $message.payload#/correlationId
         payload:
-          $ref: '#/components/schemas/UserInfoResponse'
+          $ref: "#/components/schemas/UserInfoResponse"
 
 operations:
   requestUserInfo:
     action: send
     channel:
-      $ref: '#/channels/user.queries'
+      $ref: "#/channels/user.queries"
     reply:
       channel:
-        $ref: '#/channels/user.responses'
+        $ref: "#/channels/user.responses"
 
   receiveUserInfo:
     action: receive
     channel:
-      $ref: '#/channels/user.responses'
+      $ref: "#/channels/user.responses"
 ```
 
 ### Event Streaming Pattern
@@ -366,19 +366,19 @@ operations:
   processSensorStream:
     action: receive
     channel:
-      $ref: '#/channels/sensor.data'
+      $ref: "#/channels/sensor.data"
     summary: Continuously process sensor readings
 
   publishAnalytics:
     action: send
     channel:
-      $ref: '#/channels/analytics.results'
+      $ref: "#/channels/analytics.results"
     summary: Publish processed analytics results
 
   processDataBatch:
     action: receive
     channel:
-      $ref: '#/channels/data.stream'
+      $ref: "#/channels/data.stream"
     summary: Process data in batches
     bindings:
       kafka:
@@ -416,7 +416,7 @@ operations:
   sendNotification:
     action: send
     channel:
-      $ref: '#/channels/user-notifications'
+      $ref: "#/channels/user-notifications"
 
 components:
   messages:
@@ -432,7 +432,7 @@ components:
             type: boolean
             default: false
       payload:
-        $ref: '#/components/schemas/NotificationContent'
+        $ref: "#/components/schemas/NotificationContent"
 ```
 
 ### Complex Parameter Patterns
@@ -479,7 +479,7 @@ components:
             description: Execute in dry-run mode
         required: [x-request-id]
       payload:
-        $ref: '#/components/schemas/OrderProcessingRequest'
+        $ref: "#/components/schemas/OrderProcessingRequest"
 ```
 
 ## Interface-Based Organization
@@ -521,49 +521,49 @@ channels:
     description: User-related events and commands
     messages:
       UserCreatedEvent:
-        $ref: '#/components/messages/UserCreatedEvent'
+        $ref: "#/components/messages/UserCreatedEvent"
       UserUpdatedEvent:
-        $ref: '#/components/messages/UserUpdatedEvent'
+        $ref: "#/components/messages/UserUpdatedEvent"
       UserDeletedEvent:
-        $ref: '#/components/messages/UserDeletedEvent'
+        $ref: "#/components/messages/UserDeletedEvent"
       CreateUserCommand:
-        $ref: '#/components/messages/CreateUserCommand'
+        $ref: "#/components/messages/CreateUserCommand"
       UpdateUserCommand:
-        $ref: '#/components/messages/UpdateUserCommand'
+        $ref: "#/components/messages/UpdateUserCommand"
       DeleteUserCommand:
-        $ref: '#/components/messages/DeleteUserCommand'
+        $ref: "#/components/messages/DeleteUserCommand"
 
 operations:
   # Publish operations (events)
   created:
     action: send
-    channel: { $ref: '#/channels/user' }
+    channel: { $ref: "#/channels/user" }
     summary: User created event
 
   updated:
     action: send
-    channel: { $ref: '#/channels/user' }
+    channel: { $ref: "#/channels/user" }
     summary: User updated event
 
   deleted:
     action: send
-    channel: { $ref: '#/channels/user' }
+    channel: { $ref: "#/channels/user" }
     summary: User deleted event
 
   # Subscribe operations (commands)
   handleCreateUser:
     action: receive
-    channel: { $ref: '#/channels/user' }
+    channel: { $ref: "#/channels/user" }
     summary: Handle user creation command
 
   handleUpdateUser:
     action: receive
-    channel: { $ref: '#/channels/user' }
+    channel: { $ref: "#/channels/user" }
     summary: Handle user update command
 
   handleDeleteUser:
     action: receive
-    channel: { $ref: '#/channels/user' }
+    channel: { $ref: "#/channels/user" }
     summary: Handle user deletion command
 ```
 
@@ -601,15 +601,15 @@ channels:
     address: order.processing
     messages:
       OrderRequest:
-        $ref: '#/components/messages/OrderRequest'
+        $ref: "#/components/messages/OrderRequest"
 
   order.results:
     address: order.results
     messages:
       OrderResult:
-        $ref: '#/components/messages/OrderResult'
+        $ref: "#/components/messages/OrderResult"
       OrderError:
-        $ref: '#/components/messages/OrderError'
+        $ref: "#/components/messages/OrderError"
 
 components:
   messages:
@@ -617,16 +617,16 @@ components:
       name: OrderResult
       payload:
         oneOf:
-          - $ref: '#/components/schemas/OrderSuccessResult'
-          - $ref: '#/components/schemas/OrderFailureResult'
+          - $ref: "#/components/schemas/OrderSuccessResult"
+          - $ref: "#/components/schemas/OrderFailureResult"
 
     OrderResponse:
       name: OrderResponse
       payload:
         oneOf:
-          - $ref: '#/components/schemas/CompletedOrder'
-          - $ref: '#/components/schemas/FailedOrder'
-          - $ref: '#/components/schemas/RetryableOrder'
+          - $ref: "#/components/schemas/CompletedOrder"
+          - $ref: "#/components/schemas/FailedOrder"
+          - $ref: "#/components/schemas/RetryableOrder"
         discriminator:
           propertyName: status
 ```
@@ -709,14 +709,14 @@ op handleUserRegistration(): UserRegistrationEvent;
 operations:
   publishUserRegistration:
     action: send
-    channel: { $ref: '#/channels/user.events' }
+    channel: { $ref: "#/channels/user.events" }
     title: User Registration Event Publisher
     summary: User Registration Event Publisher
     description: Publishes user registration events to the user events stream
 
   handleUserRegistration:
     action: receive
-    channel: { $ref: '#/channels/user.events' }
+    channel: { $ref: "#/channels/user.events" }
     title: User Registration Event Handler
     summary: User Registration Event Handler
     description: Handles incoming user registration events for downstream processing
@@ -761,7 +761,7 @@ op processMetrics(): MetricDataPoint;
 operations:
   userAuthenticated:
     action: send
-    channel: { $ref: '#/channels/auth.events' }
+    channel: { $ref: "#/channels/auth.events" }
     tags:
       - name: user-management
         description: User management operations
@@ -770,7 +770,7 @@ operations:
 
   processMetrics:
     action: receive
-    channel: { $ref: '#/channels/metrics.data' }
+    channel: { $ref: "#/channels/metrics.data" }
     tags:
       - name: high-volume
         description: High-volume data processing

@@ -103,8 +103,8 @@ Tests are falling back to filesystem search in `test/temp-output/*` directories,
 #### Error Pattern:
 
 ```typescript
-expect(result.operationsProcessed).toBe(1)
-expect(result.messageModelsProcessed).toBe(1)
+expect(result.operationsProcessed).toBe(1);
+expect(result.messageModelsProcessed).toBe(1);
 // Result: undefined for both properties
 ```
 
@@ -177,8 +177,8 @@ TypeSpec 1.6.0 API changes in property iteration. The `walkPropertiesInherited()
 #### Error Pattern:
 
 ```typescript
-const channel = baseAsyncApiDoc.channels["/missingmetadataop"]
-expect(channel).toBeDefined()
+const channel = baseAsyncApiDoc.channels["/missingmetadataop"];
+expect(channel).toBeDefined();
 // Result: undefined
 ```
 
@@ -208,7 +208,7 @@ Operations/channels with missing or invalid metadata are not being created in th
 #### Error Pattern:
 
 ```typescript
-expect(Object.keys(baseAsyncApiDoc.components?.messages || {})).toHaveLength(0)
+expect(Object.keys(baseAsyncApiDoc.components?.messages || {})).toHaveLength(0);
 // Expected: 0, Received: 1
 ```
 

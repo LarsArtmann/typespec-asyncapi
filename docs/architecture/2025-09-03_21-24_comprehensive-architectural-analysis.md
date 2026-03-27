@@ -95,36 +95,36 @@ The TypeSpec AsyncAPI Emitter codebase has significant architectural issues that
 
 ```typescript
 // CURRENT (UNSAFE):
-type FileName = string
-type FileType = string
-type ChannelPath = string
+type FileName = string;
+type FileType = string;
+type ChannelPath = string;
 
 // SHOULD BE (TYPE-SAFE):
-type FileName = string & { readonly _brand: 'FileName' }
-type FileType = 'yaml' | 'json'
-type ChannelPath = string & { readonly _brand: 'ChannelPath' }
+type FileName = string & { readonly _brand: "FileName" };
+type FileType = "yaml" | "json";
+type ChannelPath = string & { readonly _brand: "ChannelPath" };
 ```
 
 #### Unsafe Property Access
 
 ```typescript
 // CURRENT (UNSAFE):
-const fileType = options["file-type"] || DEFAULT_SERIALIZATION_FORMAT
+const fileType = options["file-type"] || DEFAULT_SERIALIZATION_FORMAT;
 
 // SHOULD BE (TYPE-SAFE):
-const fileType: FileType = validateFileType(options?.fileType) ?? DEFAULT_SERIALIZATION_FORMAT
+const fileType: FileType = validateFileType(options?.fileType) ?? DEFAULT_SERIALIZATION_FORMAT;
 ```
 
 #### Missing Null Safety
 
 ```typescript
 // CURRENT (UNSAFE):
-this.asyncApiDoc = this.documentBuilder.createInitialDocument(emitter.getProgram())
+this.asyncApiDoc = this.documentBuilder.createInitialDocument(emitter.getProgram());
 
 // SHOULD BE (NULL-SAFE):
-const program = emitter.getProgram()
-if (!program) throw new Error("Program is required")
-this.asyncApiDoc = this.documentBuilder.createInitialDocument(program)
+const program = emitter.getProgram();
+if (!program) throw new Error("Program is required");
+this.asyncApiDoc = this.documentBuilder.createInitialDocument(program);
 ```
 
 ### 4. ERROR HANDLING GAPS
@@ -173,11 +173,11 @@ this.asyncApiDoc = this.documentBuilder.createInitialDocument(program)
 ```typescript
 // MISSING:
 interface IPlugin {
-  readonly name: string
-  readonly version: string
-  initialize(context: PluginContext): Effect<void, PluginError>
-  process(input: PluginInput): Effect<PluginOutput, PluginError>
-  cleanup(): Effect<void, never>
+  readonly name: string;
+  readonly version: string;
+  initialize(context: PluginContext): Effect<void, PluginError>;
+  process(input: PluginInput): Effect<PluginOutput, PluginError>;
+  cleanup(): Effect<void, never>;
 }
 ```
 
@@ -191,10 +191,10 @@ interface IPlugin {
 
 ```typescript
 // INCONSISTENT REPRESENTATIONS:
-type FileType1 = "yaml" | "json"           // In some files
-type FileType2 = string                    // In other files
-const DEFAULT_SERIALIZATION_FORMAT = "yaml" // Constant
-const fileType = options["file-type"]      // Runtime string
+type FileType1 = "yaml" | "json"; // In some files
+type FileType2 = string; // In other files
+const DEFAULT_SERIALIZATION_FORMAT = "yaml"; // Constant
+const fileType = options["file-type"]; // Runtime string
 ```
 
 #### 2. Error State Management
@@ -211,8 +211,8 @@ throw new Error("message")                 // Exception patterns
 
 ```typescript
 // INCONSISTENT LOGGING:
-Effect.log("message")                      // Effect logging
-console.log("message")                     // Console logging (if any)
+Effect.log("message"); // Effect logging
+console.log("message"); // Console logging (if any)
 // No structured logging with levels
 ```
 
@@ -220,8 +220,8 @@ console.log("message")                     // Console logging (if any)
 
 ```typescript
 // BRACKET NOTATION vs PROPERTY ACCESS:
-options["file-type"]                       // Bracket access
-options.fileType                          // Property access (missing)
+options["file-type"]; // Bracket access
+options.fileType; // Property access (missing)
 ```
 
 ---
@@ -239,21 +239,21 @@ options.fileType                          // Property access (missing)
 
 ```typescript
 interface IEmissionPipeline {
-  executePipeline(context: PipelineContext): Effect<void, PipelineError>
+  executePipeline(context: PipelineContext): Effect<void, PipelineError>;
 }
 
 interface IDocumentGenerator {
-  serializeDocument(doc: AsyncAPIObject, format: FileType): string
+  serializeDocument(doc: AsyncAPIObject, format: FileType): string;
 }
 
 interface IPerformanceMonitor {
-  startMonitoring(): Effect<void, MonitorError>
-  getMetrics(): PerformanceMetrics
+  startMonitoring(): Effect<void, MonitorError>;
+  getMetrics(): PerformanceMetrics;
 }
 
 interface IPluginRegistry {
-  registerPlugin(plugin: IPlugin): Effect<void, PluginError>
-  executePlugins(context: PluginContext): Effect<void, PluginError>
+  registerPlugin(plugin: IPlugin): Effect<void, PluginError>;
+  executePlugins(context: PluginContext): Effect<void, PluginError>;
 }
 ```
 
@@ -357,10 +357,10 @@ test/
 
 ```typescript
 // UNSAFE:
-const outputPath = `${fileName}.${fileType}`
+const outputPath = `${fileName}.${fileType}`;
 
 // SHOULD BE:
-const outputPath = path.join(sanitize(fileName), sanitize(fileType))
+const outputPath = path.join(sanitize(fileName), sanitize(fileType));
 ```
 
 ### Input Validation Missing

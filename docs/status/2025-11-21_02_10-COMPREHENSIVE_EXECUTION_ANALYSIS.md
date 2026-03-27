@@ -151,10 +151,10 @@ interface ProtocolHandler {
 ```typescript
 // NEEDED SECURITY TYPES:
 type SecurityScheme = {
-  type: 'apiKey' | 'oauth2' | 'openIdConnect' | 'http';
+  type: "apiKey" | "oauth2" | "openIdConnect" | "http";
   description?: string;
   name?: string;
-  in?: 'header' | 'query' | 'cookie';
+  in?: "header" | "query" | "cookie";
   flows?: OAuth2Flow[];
 };
 ```

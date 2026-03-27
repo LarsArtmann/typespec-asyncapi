@@ -17,6 +17,7 @@ The TypeSpec AsyncAPI Emitter is a **TypeSpec compiler plugin** that transforms 
 ## a) FULLY DONE ✅
 
 ### Build System (100% Operational)
+
 - ✅ TypeScript compilation: 0 errors (was 425 errors)
 - ✅ Build artifacts: 58 files generated, 564KB total
 - ✅ Justfile commands: `just build`, `just test`, `just lint` all working
@@ -24,6 +25,7 @@ The TypeSpec AsyncAPI Emitter is a **TypeSpec compiler plugin** that transforms 
 - ✅ Pre-commit hooks: quality checks run automatically
 
 ### Core Decorator System (Basic Implementation)
+
 - ✅ `@channel` - Maps operations to AsyncAPI channels with path parameters
 - ✅ `@publish` - Marks operations as publish (send) operations
 - ✅ `@subscribe` - Marks operations as subscribe (receive) operations
@@ -32,6 +34,7 @@ The TypeSpec AsyncAPI Emitter is a **TypeSpec compiler plugin** that transforms 
 - ✅ Decorator state management: Maps store decorator data for emitter access
 
 ### Emitter Core (Minimal Working)
+
 - ✅ `$onEmit` function exports correctly
 - ✅ State consolidation from TypeSpec program
 - ✅ Basic AsyncAPI document generation (channels, messages, schemas)
@@ -40,6 +43,7 @@ The TypeSpec AsyncAPI Emitter is a **TypeSpec compiler plugin** that transforms 
 - ✅ Effect.TS integration for logging and error handling
 
 ### Project Hygiene (Recent Cleanup)
+
 - ✅ Root directory cleaned: 30+ clutter files → 16 essential files
 - ✅ AGENTS.md consolidated: 672 lines → 47 lines
 - ✅ Obsolete documentation deleted: CLAUDE.md, CRUSH.md, planning docs
@@ -48,6 +52,7 @@ The TypeSpec AsyncAPI Emitter is a **TypeSpec compiler plugin** that transforms 
 - ✅ Test files organized: Moved to appropriate `test/` subdirectories
 
 ### Test Infrastructure (Partially Working)
+
 - ✅ Bun test runner: Fully functional
 - ✅ Real compilation tests: Integration with `tsp compile` works
 - ✅ Core functionality tests: 120 tests passing
@@ -59,6 +64,7 @@ The TypeSpec AsyncAPI Emitter is a **TypeSpec compiler plugin** that transforms 
 ## b) PARTIALLY DONE 🟡
 
 ### Protocol Bindings (20% Complete)
+
 - 🟡 `@protocol` decorator: Basic structure exists, no real binding generation
 - 🔴 Kafka protocol: 25 tests failing (authentication, serialization, streams)
 - 🔴 MQTT protocol: Not implemented
@@ -67,6 +73,7 @@ The TypeSpec AsyncAPI Emitter is a **TypeSpec compiler plugin** that transforms 
 - 🔴 HTTP protocol: Not implemented
 
 ### Security Schemes (10% Complete)
+
 - 🟡 `@security` decorator: Stub implementation (empty function)
 - 🔴 OAuth2 flows: Not implemented
 - 🔴 OpenID Connect: Not implemented
@@ -75,18 +82,21 @@ The TypeSpec AsyncAPI Emitter is a **TypeSpec compiler plugin** that transforms 
 - 🔴 mTLS: Not implemented
 
 ### Advanced Decorators (Stubs Only)
+
 - 🟡 `@tags` - Stub: validates array input, no output
 - 🟡 `@correlationId` - Stub: validates location, no output
 - 🟡 `@bindings` - Stub: validates value exists, no output
 - 🟡 `@header` - Stub: validates name exists, no output
 
 ### Schema Generation (Basic Only)
+
 - 🟡 Basic schema placeholders: Generated but empty (`properties: {}`)
 - 🔴 Full TypeSpec-to-JSON Schema conversion: Not implemented
 - 🔴 Complex types (unions, intersections): Not supported
 - 🔴 References and circular dependencies: Not handled
 
 ### State Management (Simplified)
+
 - 🟡 Basic state maps: Working for channels, operations, messages
 - 🔴 Advanced state transitions: Disabled in temp-disabled/
 - 🔴 State validation: Minimal validation only
@@ -97,6 +107,7 @@ The TypeSpec AsyncAPI Emitter is a **TypeSpec compiler plugin** that transforms 
 ## c) NOT STARTED 🔴
 
 ### Disabled Infrastructure (5,745 lines in temp-disabled/)
+
 - 🔴 `PluginSystem.ts` (1,254 lines) - Plugin architecture backbone
 - 🔴 `StateManager.ts` + `StateTransitions.ts` (1,223 lines) - State management
 - 🔴 `AsyncAPIEmitterCore.ts` (360 lines) - Advanced emitter orchestration
@@ -108,12 +119,14 @@ The TypeSpec AsyncAPI Emitter is a **TypeSpec compiler plugin** that transforms 
 - 🔴 `ValidationService.ts` (115 lines) - AsyncAPI validation
 
 ### Effect.TS Service Layer
+
 - 🔴 Service injection architecture: Completely broken
 - 🔴 `MemoryMonitorService`: Service not found errors
 - 🔴 Performance regression testing: Method doesn't exist
 - 🔴 Dependency injection container: Not configured
 
 ### AsyncAPI 3.0 Compliance
+
 - 🔴 Full AsyncAPI 3.0 spec compliance: Basic generation only
 - 🔴 Operation replies: Not implemented
 - 🔴 Message traits: Not implemented
@@ -122,6 +135,7 @@ The TypeSpec AsyncAPI Emitter is a **TypeSpec compiler plugin** that transforms 
 - 🔴 External documentation: Not implemented
 
 ### Developer Experience
+
 - 🔴 Source maps: Not configured
 - 🔴 Error messages with guidance: Basic only
 - 🔴 IDE integration: Basic TypeSpec support only
@@ -132,6 +146,7 @@ The TypeSpec AsyncAPI Emitter is a **TypeSpec compiler plugin** that transforms 
 ## d) TOTALLY FUCKED UP 🔥
 
 ### Test Suite (68% Failure Rate)
+
 - 🔥 314 tests FAILING (out of 462 total)
 - 🔥 31 tests with ERRORS (crashing)
 - 🔥 Only 120 tests passing (26%)
@@ -141,16 +156,18 @@ The TypeSpec AsyncAPI Emitter is a **TypeSpec compiler plugin** that transforms 
 - 🔥 Protocol bindings tests: 100% failure rate
 
 ### Root Cause Analysis
+
 1. **Disabled Infrastructure**: Tests depend on disabled service layer
 2. **Stub Implementations**: Decorators exist but don't generate output
 3. **Missing Protocol Bindings**: Kafka/MQTT/etc. not actually implemented
 4. **Schema Generation**: Schemas are placeholders, not real conversions
 
 ### Specific Test Failures
+
 ```
 Kafka Protocol: 25/25 fail
 - SASL authentication (5 tests)
-- Message serialization (5 tests)  
+- Message serialization (5 tests)
 - Kafka Streams patterns (9 tests)
 - Basic configuration (6 tests)
 
@@ -164,6 +181,7 @@ Protocol Bindings: 1/1 fails
 ```
 
 ### Code Quality
+
 - 🔥 75 TODO/FIXME/XXX comments in source (technical debt markers)
 - 🔥 ESLint: Unknown number of warnings (not currently blocking)
 - 🔥 Test duplication: Many test files with similar patterns
@@ -174,6 +192,7 @@ Protocol Bindings: 1/1 fails
 ## e) WHAT WE SHOULD IMPROVE 📈
 
 ### Immediate (Next 24 Hours)
+
 1. **Fix Critical Test Failures**: Either implement features or disable irrelevant tests
 2. **Restore PluginSystem.ts**: Core infrastructure for extensibility
 3. **Fix Service Injection**: Get Effect.TS service layer working
@@ -181,6 +200,7 @@ Protocol Bindings: 1/1 fails
 5. **Protocol Bindings**: Start with HTTP (simplest), then MQTT
 
 ### Short Term (Next Week)
+
 6. **Re-enable ValidationService**: AsyncAPI spec validation
 7. **Advanced State Management**: Restore StateManager + StateTransitions
 8. **Decorators Completion**: Implement @tags, @correlationId, @bindings, @header output
@@ -188,6 +208,7 @@ Protocol Bindings: 1/1 fails
 10. **Error Messages**: User-friendly messages with actionable guidance
 
 ### Medium Term (Next Month)
+
 11. **Full AsyncAPI 3.0 Compliance**: Complete spec implementation
 12. **Performance Monitoring**: Restore performance regression testing
 13. **Plugin Architecture**: Complete plugin system with marketplace
@@ -195,6 +216,7 @@ Protocol Bindings: 1/1 fails
 15. **IDE Integration**: VS Code extension, autocomplete
 
 ### Technical Debt
+
 16. **Remove 75 TODOs**: Address or ticket each one
 17. **Test Refactoring**: Consolidate duplicate test patterns
 18. **Code Cleanup**: Remove unused utilities and orphaned code
@@ -202,6 +224,7 @@ Protocol Bindings: 1/1 fails
 20. **Archive Cleanup**: Review scripts/archive/ for permanent deletion
 
 ### Architecture Improvements
+
 21. **Type Safety**: Eliminate remaining `any` types (line 180 in minimal-decorators.ts)
 22. **Branded Types**: Implement for compile-time validation
 23. **Error Handling**: Railway programming throughout
@@ -212,33 +235,33 @@ Protocol Bindings: 1/1 fails
 
 ## f) Top #25 Things To Get Done Next 🔝
 
-| Priority | Task | Impact | Effort |
-|----------|------|--------|--------|
-| P0 | Fix @tags decorator to actually output tags | High | Low |
-| P0 | Implement real TypeSpec-to-JSON Schema conversion | Critical | High |
-| P0 | Fix Effect.TS service injection | Critical | Medium |
-| P0 | Restore PluginSystem.ts | High | Medium |
-| P0 | Disable or fix failing Kafka tests | High | Low |
-| P1 | Implement @correlationId output | Medium | Low |
-| P1 | Implement @bindings output | Medium | Low |
-| P1 | Implement @header output | Medium | Low |
-| P1 | Add HTTP protocol binding | High | Medium |
-| P1 | Add MQTT protocol binding | Medium | Medium |
-| P1 | Restore ValidationService.ts | Medium | Low |
-| P2 | Implement OAuth2 security scheme | Medium | Medium |
-| P2 | Implement API key security | Medium | Low |
-| P2 | Restore StateManager.ts | Medium | Medium |
-| P2 | Add source maps for debugging | Low | Low |
-| P2 | Clean up 75 TODOs | Low | Medium |
-| P3 | Restore AdvancedTypeModels.ts | Low | High |
-| P3 | Restore CompilerService.ts | Low | Medium |
-| P3 | Implement message traits | Low | Medium |
-| P3 | Implement operation replies | Low | Medium |
-| P3 | Add server variables support | Low | Medium |
-| P4 | Create VS Code extension | Low | High |
-| P4 | Plugin marketplace | Low | High |
-| P4 | Performance optimization | Low | Medium |
-| P4 | Complete AsyncAPI 3.0 compliance | Medium | High |
+| Priority | Task                                              | Impact   | Effort |
+| -------- | ------------------------------------------------- | -------- | ------ |
+| P0       | Fix @tags decorator to actually output tags       | High     | Low    |
+| P0       | Implement real TypeSpec-to-JSON Schema conversion | Critical | High   |
+| P0       | Fix Effect.TS service injection                   | Critical | Medium |
+| P0       | Restore PluginSystem.ts                           | High     | Medium |
+| P0       | Disable or fix failing Kafka tests                | High     | Low    |
+| P1       | Implement @correlationId output                   | Medium   | Low    |
+| P1       | Implement @bindings output                        | Medium   | Low    |
+| P1       | Implement @header output                          | Medium   | Low    |
+| P1       | Add HTTP protocol binding                         | High     | Medium |
+| P1       | Add MQTT protocol binding                         | Medium   | Medium |
+| P1       | Restore ValidationService.ts                      | Medium   | Low    |
+| P2       | Implement OAuth2 security scheme                  | Medium   | Medium |
+| P2       | Implement API key security                        | Medium   | Low    |
+| P2       | Restore StateManager.ts                           | Medium   | Medium |
+| P2       | Add source maps for debugging                     | Low      | Low    |
+| P2       | Clean up 75 TODOs                                 | Low      | Medium |
+| P3       | Restore AdvancedTypeModels.ts                     | Low      | High   |
+| P3       | Restore CompilerService.ts                        | Low      | Medium |
+| P3       | Implement message traits                          | Low      | Medium |
+| P3       | Implement operation replies                       | Low      | Medium |
+| P3       | Add server variables support                      | Low      | Medium |
+| P4       | Create VS Code extension                          | Low      | High   |
+| P4       | Plugin marketplace                                | Low      | High   |
+| P4       | Performance optimization                          | Low      | Medium |
+| P4       | Complete AsyncAPI 3.0 compliance                  | Medium   | High   |
 
 ---
 
@@ -255,6 +278,7 @@ Protocol Bindings: 1/1 fails
 **Option B:** Simplify the architecture, make the core features work end-to-end first, then gradually add complexity only where needed?
 
 **Context:**
+
 - The disabled infrastructure represents ~5,745 lines of sophisticated code
 - It was disabled because it caused 425 TypeScript compilation errors
 - The current minimal implementation (120 lines) compiles and basic features work
@@ -262,12 +286,14 @@ Protocol Bindings: 1/1 fails
 - We have ~75 TODOs suggesting the complex code wasn't complete when disabled
 
 **Why I can't decide:**
+
 - Option A risks re-introducing the same compilation errors and complexity that broke the build
 - Option B risks never restoring valuable infrastructure that was nearly complete
 - The disabled code includes sophisticated patterns (Effect.TS services, plugin architecture, state machines) that represent real engineering investment
 - But we don't have clear documentation on WHY exactly each file was disabled
 
 **What I need:**
+
 - Decision on architecture direction
 - Risk assessment of restoring complex files
 - Definition of "minimum viable product" vs "production-ready"
@@ -276,17 +302,17 @@ Protocol Bindings: 1/1 fails
 
 ## Metrics Summary
 
-| Metric | Value | Status |
-|--------|-------|--------|
-| TypeScript Errors | 0 | ✅ Excellent |
-| Build Time | ~5s | ✅ Good |
-| Test Pass Rate | 26% (120/462) | 🔥 Critical |
-| Code Coverage | Unknown | 🟡 Needs measurement |
-| Source Files | 29 TypeScript | ✅ Lean |
-| Test Files | 110 TypeScript | 🔥 Too many? |
-| TODO Comments | 75 | 🔥 High debt |
-| Disabled Code | ~5,745 lines | 🔥 Blocker |
-| Root Files | 16 (down from 30+) | ✅ Clean |
+| Metric            | Value              | Status               |
+| ----------------- | ------------------ | -------------------- |
+| TypeScript Errors | 0                  | ✅ Excellent         |
+| Build Time        | ~5s                | ✅ Good              |
+| Test Pass Rate    | 26% (120/462)      | 🔥 Critical          |
+| Code Coverage     | Unknown            | 🟡 Needs measurement |
+| Source Files      | 29 TypeScript      | ✅ Lean              |
+| Test Files        | 110 TypeScript     | 🔥 Too many?         |
+| TODO Comments     | 75                 | 🔥 High debt         |
+| Disabled Code     | ~5,745 lines       | 🔥 Blocker           |
+| Root Files        | 16 (down from 30+) | ✅ Clean             |
 
 ---
 
@@ -300,5 +326,5 @@ Protocol Bindings: 1/1 fails
 
 ---
 
-*Report generated by Crush AI Assistant*  
-*Assisted-by: Kimi K2.5 via Crush <crush@charm.land>*
+_Report generated by Crush AI Assistant_  
+_Assisted-by: Kimi K2.5 via Crush <crush@charm.land>_

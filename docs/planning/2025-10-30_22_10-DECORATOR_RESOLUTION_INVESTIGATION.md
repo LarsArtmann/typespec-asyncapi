@@ -75,15 +75,15 @@ export const $lib = createTypeSpecLibrary({ ... })  // ❌ NO decorator exports
 
 ```typescript
 // src/index.ts
-export * from "./decorators.js"  // ✅ Exports all decorators + helpers
+export * from "./decorators.js"; // ✅ Exports all decorators + helpers
 
 // src/decorators.ts
-export { $channel } from "./domain/decorators/channel.js"
-export { $publish } from "./domain/decorators/publish.js"
+export { $channel } from "./domain/decorators/channel.js";
+export { $publish } from "./domain/decorators/publish.js";
 // ... all 11 decorators
 
 // src/lib.ts (NEWLY ADDED)
-export * from "./decorators.js"  // ✅ NOW exports decorators (after today's fix)
+export * from "./decorators.js"; // ✅ NOW exports decorators (after today's fix)
 ```
 
 **QUESTION:** Why does our structure not work when it seems more comprehensive?
@@ -216,7 +216,7 @@ type TestState =
   | { phase: "compiling"; source: string }
   | { phase: "compiled"; program: Program }
   | { phase: "validating"; spec: AsyncAPIObject }
-  | { phase: "complete"; result: TestResult }
+  | { phase: "complete"; result: TestResult };
 
 // Impossible states become unrepresentable:
 // - Can't validate without compiling first
@@ -262,17 +262,17 @@ return Effect.runSync(pipeline)
 **Benefit:** Type inference, clear error messages
 
 ```typescript
-import { z } from "zod"
+import { z } from "zod";
 
 const TestConfigSchema = z.object({
   source: z.string().min(1),
   options: z.object({
     outputFile: z.string().optional(),
-    fileType: z.enum(["json", "yaml"]).default("yaml")
-  })
-})
+    fileType: z.enum(["json", "yaml"]).default("yaml"),
+  }),
+});
 
-type TestConfig = z.infer<typeof TestConfigSchema>
+type TestConfig = z.infer<typeof TestConfigSchema>;
 ```
 
 ### 2. ts-pattern for Pattern Matching
@@ -282,13 +282,13 @@ type TestConfig = z.infer<typeof TestConfigSchema>
 **Benefit:** Exhaustiveness checking, cleaner code
 
 ```typescript
-import { match } from "ts-pattern"
+import { match } from "ts-pattern";
 
 const schemaType = match(type.kind)
   .with("Scalar", () => handleScalar(type))
   .with("Model", () => handleModel(type))
   .with("Union", () => handleUnion(type))
-  .exhaustive()  // ✅ Compile error if case missing
+  .exhaustive(); // ✅ Compile error if case missing
 ```
 
 ### 3. fast-check for Property-Based Testing
@@ -298,17 +298,20 @@ const schemaType = match(type.kind)
 **Benefit:** Finds edge cases, comprehensive coverage
 
 ```typescript
-import fc from "fast-check"
+import fc from "fast-check";
 
 fc.assert(
-  fc.property(fc.record({
-    name: fc.string(),
-    type: fc.constantFrom("string", "number", "boolean")
-  }), (prop) => {
-    const result = convertPropertyToSchema(prop)
-    expect(result.type).toBeDefined()
-  })
-)
+  fc.property(
+    fc.record({
+      name: fc.string(),
+      type: fc.constantFrom("string", "number", "boolean"),
+    }),
+    (prop) => {
+      const result = convertPropertyToSchema(prop);
+      expect(result.type).toBeDefined();
+    },
+  ),
+);
 ```
 
 ---

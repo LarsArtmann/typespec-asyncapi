@@ -313,11 +313,11 @@ graph LR
 // ✅ PERFECT - validation-result.ts
 export type ValidationResult<T> =
   | { _tag: "Success"; value: T; errors: readonly []; warnings: readonly [] }
-  | { _tag: "Failure"; errors: readonly ValidationError[]; warnings: readonly ValidationWarning[] }
+  | { _tag: "Failure"; errors: readonly ValidationError[]; warnings: readonly ValidationWarning[] };
 
 // ✅ NO SPLIT BRAIN - computed from source
 export function getChannelCount(doc: AsyncAPIObject): number {
-  return Object.keys(doc.channels ?? {}).length
+  return Object.keys(doc.channels ?? {}).length;
 }
 ```
 
@@ -348,9 +348,9 @@ export function getChannelCount(doc: AsyncAPIObject): number {
 
 ```typescript
 // ⚠️ REVIEW NEEDED - Could these be enums?
-hasSchema: boolean  // → SchemaPresence: "present" | "absent" | "inherited"
-isValid: boolean    // → Already using _tag! ✅
-isEnabled: boolean  // → FeatureState: "enabled" | "disabled" | "pending"
+hasSchema: boolean; // → SchemaPresence: "present" | "absent" | "inherited"
+isValid: boolean; // → Already using _tag! ✅
+isEnabled: boolean; // → FeatureState: "enabled" | "disabled" | "pending"
 ```
 
 ### **4. SPLIT BRAIN PATTERNS**
@@ -382,8 +382,15 @@ isEnabled: boolean  // → FeatureState: "enabled" | "disabled" | "pending"
 
 ```typescript
 export const createError = (config: ErrorConfig): StandardizedError => ({
-  what, reassure, why, fix, escape, severity, code, context
-})
+  what,
+  reassure,
+  why,
+  fix,
+  escape,
+  severity,
+  code,
+  context,
+});
 ```
 
 **Recommendation:** Already following best practices!

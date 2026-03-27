@@ -31,7 +31,7 @@ channels:
     description: User-related events channel
     messages:
       UserEvent:
-        $ref: '#/components/messages/UserEvent'
+        $ref: "#/components/messages/UserEvent"
 
   user-notifications:
     address: user/{userId}/notifications
@@ -44,7 +44,7 @@ channels:
           format: uuid
     messages:
       UserNotification:
-        $ref: '#/components/messages/UserNotification'
+        $ref: "#/components/messages/UserNotification"
 
   orders-processing:
     address: orders.processing.{priority}
@@ -57,7 +57,7 @@ channels:
           enum: [high, normal, low]
     messages:
       Order:
-        $ref: '#/components/messages/Order'
+        $ref: "#/components/messages/Order"
 ```
 
 ### @publish - Send Operation
@@ -85,23 +85,23 @@ operations:
   publishUserEvent:
     action: send
     channel:
-      $ref: '#/channels/events.user'
+      $ref: "#/channels/events.user"
     title: User Event Publisher
     summary: User Event Publisher
     description: Publishes user lifecycle events
     messages:
-      - $ref: '#/channels/events.user/messages/UserLifecycleEvent'
+      - $ref: "#/channels/events.user/messages/UserLifecycleEvent"
 
   publishOrderEvent:
     action: send
     channel:
-      $ref: '#/channels/events.order'
+      $ref: "#/channels/events.order"
     operationId: publishOrderEvent
     tags:
       - name: order-management
       - name: high-volume
     messages:
-      - $ref: '#/channels/events.order/messages/OrderEvent'
+      - $ref: "#/channels/events.order/messages/OrderEvent"
 ```
 
 ### @subscribe - Receive Operation
@@ -127,22 +127,22 @@ operations:
   handleUserEvent:
     action: receive
     channel:
-      $ref: '#/channels/events.user'
+      $ref: "#/channels/events.user"
     title: User Event Handler
     summary: User Event Handler
     description: Handles incoming user events for processing
     messages:
-      - $ref: '#/channels/events.user/messages/UserLifecycleEvent'
+      - $ref: "#/channels/events.user/messages/UserLifecycleEvent"
 
   processPaymentEvent:
     action: receive
     channel:
-      $ref: '#/channels/events.payment'
+      $ref: "#/channels/events.payment"
     title: Payment Event Processor
     description: Processes payment events with error handling
     messages:
-      - $ref: '#/channels/events.payment/messages/PaymentEvent'
-      - $ref: '#/channels/events.payment/messages/PaymentError'
+      - $ref: "#/channels/events.payment/messages/PaymentEvent"
+      - $ref: "#/channels/events.payment/messages/PaymentError"
 ```
 
 ### @message - Message Configuration
@@ -197,7 +197,7 @@ components:
       description: Contains all data related to user registration including metadata
       contentType: application/json
       payload:
-        $ref: '#/components/schemas/UserRegisteredEvent'
+        $ref: "#/components/schemas/UserRegisteredEvent"
       examples:
         - name: Sample user registration
           payload:
@@ -223,7 +223,7 @@ components:
         location: $message.payload#/correlationId
         description: Correlation identifier for request-reply pattern
       payload:
-        $ref: '#/components/schemas/OrderProcessingCommand'
+        $ref: "#/components/schemas/OrderProcessingCommand"
 ```
 
 ### @protocol - Protocol Bindings
@@ -302,7 +302,7 @@ operations:
   publishUserEvent:
     action: send
     channel:
-      $ref: '#/channels/user.events'
+      $ref: "#/channels/user.events"
     bindings:
       kafka:
         groupId: user-event-publishers
@@ -314,7 +314,7 @@ operations:
   publishOrderCreated:
     action: send
     channel:
-      $ref: '#/channels/orders.created'
+      $ref: "#/channels/orders.created"
     bindings:
       amqp:
         expiration: 300000
@@ -339,7 +339,7 @@ operations:
           properties:
             Authorization:
               type: string
-              pattern: '^Bearer .+'
+              pattern: "^Bearer .+"
         bindingVersion: "0.1.0"
 ```
 
@@ -409,14 +409,14 @@ operations:
   publishSecureEvent:
     action: send
     channel:
-      $ref: '#/channels/secure.events'
+      $ref: "#/channels/secure.events"
     security:
       - apiKey: []
 
   handleProtectedEvent:
     action: receive
     channel:
-      $ref: '#/channels/protected.events'
+      $ref: "#/channels/protected.events"
     security:
       - oauth2:
           - events:read
@@ -424,7 +424,7 @@ operations:
   publishAuthEvent:
     action: send
     channel:
-      $ref: '#/channels/multi.auth.events'
+      $ref: "#/channels/multi.auth.events"
     security:
       - apiKey: []
       - oauth2:
@@ -517,7 +517,7 @@ servers:
           properties:
             Authorization:
               type: string
-              pattern: '^Bearer .+'
+              pattern: "^Bearer .+"
 ```
 
 ## Standard TypeSpec Decorators
@@ -586,10 +586,10 @@ components:
           description: Unique event identifier for tracking and correlation
           example: "evt_01234567-89ab-cdef-0123-456789abcdef"
         user:
-          $ref: '#/components/schemas/UserData'
+          $ref: "#/components/schemas/UserData"
           description: User data at the time of the event
         metadata:
-          $ref: '#/components/schemas/EventMetadata'
+          $ref: "#/components/schemas/EventMetadata"
           description: Additional event context and metadata
       examples:
         - user:
@@ -605,7 +605,7 @@ operations:
     operationId: publishUserLifecycleEvent
     action: send
     channel:
-      $ref: '#/channels/user.lifecycle'
+      $ref: "#/channels/user.lifecycle"
     title: User Lifecycle Event Publisher
     summary: User Lifecycle Event Publisher
     description: Publishes events related to user lifecycle changes including registration, activation, and deactivation
@@ -671,7 +671,7 @@ components:
           type: string
           minLength: 3
           maxLength: 50
-          pattern: '^[a-zA-Z0-9_-]+$'
+          pattern: "^[a-zA-Z0-9_-]+$"
           description: Event name following naming conventions
         priority:
           type: integer
@@ -710,7 +710,7 @@ components:
         events:
           type: array
           items:
-            $ref: '#/components/schemas/ValidatedEventData'
+            $ref: "#/components/schemas/ValidatedEventData"
           minItems: 1
           maxItems: 100
           uniqueItems: true
@@ -765,10 +765,10 @@ components:
       type: object
       properties:
         eventData:
-          $ref: '#/components/schemas/EventPayload'
+          $ref: "#/components/schemas/EventPayload"
           description: Event data provided by client
         creationContext:
-          $ref: '#/components/schemas/CreationContext'
+          $ref: "#/components/schemas/CreationContext"
           description: Initial creation context
       required: [eventData, creationContext]
 
@@ -781,10 +781,10 @@ components:
           format: uuid
           description: System-generated event ID
         eventData:
-          $ref: '#/components/schemas/EventPayload'
+          $ref: "#/components/schemas/EventPayload"
           description: Event data provided by client
         systemMetadata:
-          $ref: '#/components/schemas/SystemMetadata'
+          $ref: "#/components/schemas/SystemMetadata"
           description: System processing metadata
       required: [eventId, eventData, systemMetadata]
 
@@ -793,7 +793,7 @@ components:
       type: object
       properties:
         eventData:
-          $ref: '#/components/schemas/EventPayload'
+          $ref: "#/components/schemas/EventPayload"
           description: Event data provided by client
       required: [eventData]
 
@@ -801,17 +801,17 @@ components:
     CreateUserEvent:
       name: CreateUserEvent
       payload:
-        $ref: '#/components/schemas/UserManagementEventCreate'
+        $ref: "#/components/schemas/UserManagementEventCreate"
 
     UserEventResponse:
       name: UserEventResponse
       payload:
-        $ref: '#/components/schemas/UserManagementEventRead'
+        $ref: "#/components/schemas/UserManagementEventRead"
 
     UpdateUserEvent:
       name: UpdateUserEvent
       payload:
-        $ref: '#/components/schemas/UserManagementEventUpdate'
+        $ref: "#/components/schemas/UserManagementEventUpdate"
 ```
 
 ## Advanced Decorator Patterns
@@ -856,7 +856,7 @@ operations:
   publishHighPriorityUserEvent:
     action: send
     channel:
-      $ref: '#/channels/user.high-priority'
+      $ref: "#/channels/user.high-priority"
     tags:
       - name: user-management
       - name: high-priority
@@ -871,7 +871,7 @@ operations:
   publishOrderEvent:
     action: send
     channel:
-      $ref: '#/channels/orders.processing'
+      $ref: "#/channels/orders.processing"
     x-tracing:
       serviceName: user-service
       spanName: publish-order-event
@@ -938,7 +938,7 @@ operations:
   publishConditionalEvent:
     action: send
     channel:
-      $ref: '#/channels/events.conditional'
+      $ref: "#/channels/events.conditional"
     # Development bindings
     x-development-bindings:
       kafka:
@@ -1018,7 +1018,7 @@ operations:
     operationId: publishUserLifecycle
     action: send
     channel:
-      $ref: '#/channels/user.lifecycle'
+      $ref: "#/channels/user.lifecycle"
     description: Publishes user lifecycle events
     tags:
       - event-system
@@ -1030,7 +1030,7 @@ operations:
     operationId: handleUserLifecycle
     action: receive
     channel:
-      $ref: '#/channels/user.lifecycle'
+      $ref: "#/channels/user.lifecycle"
     description: Handles user lifecycle events
     tags:
       - event-system
@@ -1041,7 +1041,7 @@ operations:
   publishMetricsBatch:
     action: send
     channel:
-      $ref: '#/channels/metrics.data'
+      $ref: "#/channels/metrics.data"
     tags:
       - event-system
       - high-volume

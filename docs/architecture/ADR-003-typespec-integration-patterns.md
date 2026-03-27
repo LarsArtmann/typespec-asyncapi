@@ -26,8 +26,8 @@ We implemented a **Comprehensive TypeSpec Integration Strategy** that follows Ty
 ```typescript
 // src/index.ts - Standard TypeSpec emitter entry point
 export async function $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): Promise<void> {
-    const { generateAsyncAPIWithEffect } = await import("./emitter-with-effect.js");
-    await generateAsyncAPIWithEffect(context);
+  const { generateAsyncAPIWithEffect } = await import("./emitter-with-effect.js");
+  await generateAsyncAPIWithEffect(context);
 }
 ```
 
@@ -62,8 +62,8 @@ export const $lib = createAsyncAPILibrary({
   diagnostics: {
     "missing-channel-path": {
       severity: "error",
-      messages: { default: "Operation {operationName} requires a channel path" }
-    }
+      messages: { default: "Operation {operationName} requires a channel path" },
+    },
     // ... more diagnostics
   },
   state: {
@@ -72,8 +72,8 @@ export const $lib = createAsyncAPILibrary({
     messageConfigs: { description: "Message metadata configurations" },
     protocolConfigs: { description: "Protocol binding configurations" },
     securityConfigs: { description: "Security scheme configurations" },
-    servers: { description: "Server configurations" }
-  }
+    servers: { description: "Server configurations" },
+  },
 } as const);
 ```
 
@@ -83,7 +83,11 @@ export const $lib = createAsyncAPILibrary({
 
 ```typescript
 // src/decorators/channel.ts
-export function $channel(context: DecoratorContext, target: Operation, path: StringValue | string): void {
+export function $channel(
+  context: DecoratorContext,
+  target: Operation,
+  path: StringValue | string,
+): void {
   // Extract string value from TypeSpec value types
   let channelPath: string;
   if (typeof path === "string") {
@@ -94,7 +98,7 @@ export function $channel(context: DecoratorContext, target: Operation, path: Str
 
   // Validate channel path
   if (!channelPath) {
-    reportDiagnostic(context, target, "missing-channel-path", {operationName: target.name});
+    reportDiagnostic(context, target, "missing-channel-path", { operationName: target.name });
     return;
   }
 
@@ -111,7 +115,7 @@ export function $channel(context: DecoratorContext, target: Operation, path: Str
 export function $protocol(
   context: DecoratorContext,
   target: Operation | Model,
-  config: ObjectValue | Record<string, unknown>
+  config: ObjectValue | Record<string, unknown>,
 ): void {
   // Type-safe config extraction
   const protocolConfig = extractProtocolConfig(config);
@@ -137,14 +141,14 @@ export function $server(
   context: DecoratorContext,
   target: Namespace,
   name: StringValue | string,
-  config: ObjectValue | Record<string, unknown>
+  config: ObjectValue | Record<string, unknown>,
 ): void {
   const serverName = extractStringValue(name);
   const serverConfig = extractServerConfig(config);
 
   // Server-specific validation
   if (!serverConfig.url || !serverConfig.protocol) {
-    reportDiagnostic(context, target, "incomplete-server-config", {serverName});
+    reportDiagnostic(context, target, "incomplete-server-config", { serverName });
     return;
   }
 
@@ -166,16 +170,14 @@ const processTypeSpecProgram = (program: Program) =>
   Effect.gen(function* () {
     // Process operations with decorators
     const operations = Array.from(program.sourceFiles.values())
-      .flatMap(sourceFile => sourceFile.namespaces)
-      .flatMap(namespace => Array.from(namespace.operations.values()));
+      .flatMap((sourceFile) => sourceFile.namespaces)
+      .flatMap((namespace) => Array.from(namespace.operations.values()));
 
     // Extract decorated operations
-    const decoratedOps = operations.filter(op => hasAsyncAPIDecorators(op));
+    const decoratedOps = operations.filter((op) => hasAsyncAPIDecorators(op));
 
     // Process each operation through Effect pipeline
-    const processedOps = yield* Effect.all(
-      decoratedOps.map(op => processOperation(program, op))
-    );
+    const processedOps = yield* Effect.all(decoratedOps.map((op) => processOperation(program, op)));
 
     return processedOps;
   });
@@ -209,12 +211,12 @@ const processModels = (program: Program) =>
   Effect.gen(function* () {
     // Find models with @message decorator
     const messageModels = Array.from(program.sourceFiles.values())
-      .flatMap(sf => sf.models)
-      .filter(model => program.stateMap($lib.stateKeys.messageConfigs).has(model));
+      .flatMap((sf) => sf.models)
+      .filter((model) => program.stateMap($lib.stateKeys.messageConfigs).has(model));
 
     // Convert TypeSpec models to AsyncAPI schemas
     const schemas = yield* Effect.all(
-      messageModels.map(model => convertModelToAsyncAPISchema(program, model))
+      messageModels.map((model) => convertModelToAsyncAPISchema(program, model)),
     );
 
     return schemas;
@@ -232,16 +234,16 @@ const writeAsyncAPIFiles = (emitter: AssetEmitter, spec: AsyncAPIObject) =>
     yield* Effect.promise(() =>
       emitter.emitFile({
         path: "asyncapi.json",
-        content: JSON.stringify(spec, null, 2)
-      })
+        content: JSON.stringify(spec, null, 2),
+      }),
     );
 
     // YAML output
     yield* Effect.promise(() =>
       emitter.emitFile({
         path: "asyncapi.yaml",
-        content: stringify(spec)
-      })
+        content: stringify(spec),
+      }),
     );
 
     yield* Effect.log("✅ AsyncAPI files written successfully");
@@ -275,20 +277,20 @@ class AsyncAPITypeEmitter extends TypeEmitter {
 const diagnostics = {
   "missing-channel-path": {
     severity: "error",
-    messages: { default: "Operation {operationName} requires a channel path" }
+    messages: { default: "Operation {operationName} requires a channel path" },
   },
   "invalid-protocol-config": {
     severity: "error",
-    messages: { default: "Invalid protocol configuration: {errors}" }
+    messages: { default: "Invalid protocol configuration: {errors}" },
   },
   "unsupported-protocol": {
     severity: "warning",
-    messages: { default: "Protocol {protocol} not supported, skipping bindings" }
+    messages: { default: "Protocol {protocol} not supported, skipping bindings" },
   },
   "missing-message-payload": {
     severity: "error",
-    messages: { default: "Message operation {operationName} missing payload model" }
-  }
+    messages: { default: "Message operation {operationName} missing payload model" },
+  },
 } as const;
 ```
 
@@ -333,8 +335,8 @@ const getChannelPath = (program: Program, operation: Operation): string | undefi
 // Process related operations together
 const processOperationBatch = (program: Program, operations: Operation[]) =>
   Effect.all(
-    operations.map(op => processOperation(program, op)),
-    { concurrency: "unbounded" } // TypeSpec operations are CPU-bound
+    operations.map((op) => processOperation(program, op)),
+    { concurrency: "unbounded" }, // TypeSpec operations are CPU-bound
   );
 ```
 

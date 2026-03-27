@@ -19,9 +19,9 @@
 
 ```typescript
 // TODO: Extract from operation decorators properly
-const operationInfo = {}
+const operationInfo = {};
 // TODO: Extract from operation decorators properly
-const protocolInfo = {}
+const protocolInfo = {};
 ```
 
 **Impact:** Service is BROKEN - no actual operation processing happening
@@ -60,7 +60,7 @@ asyncApiDoc.channels[result.channelName] = {
   description: `Channel for ${result.channelName} operations`,
   address: `/${result.channelName}`,
   // Missing: messages, operations, bindings
-}
+};
 ```
 
 **Impact:** Generated AsyncAPI won't work with any AsyncAPI tools

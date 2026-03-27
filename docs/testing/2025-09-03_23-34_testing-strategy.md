@@ -34,17 +34,17 @@ describe("GIVEN a TypeSpec service with @channel decorator", () => {
           @channel("user.events")
           op UserCreated(user: User): void;
         }
-      `
+      `;
 
       // Act: Run emitter pipeline
-      const result = await compileTypeSpecToAsyncAPI(typeSpecCode)
+      const result = await compileTypeSpecToAsyncAPI(typeSpecCode);
 
       // Assert: Validate AsyncAPI output structure
-      expect(result.channels["user.events"]).toBeDefined()
-      expect(result.channels["user.events"].address).toBe("user.events")
-    })
-  })
-})
+      expect(result.channels["user.events"]).toBeDefined();
+      expect(result.channels["user.events"].address).toBe("user.events");
+    });
+  });
+});
 ```
 
 **Characteristics:**
@@ -64,32 +64,30 @@ describe("GIVEN a TypeSpec service with @channel decorator", () => {
 describe("ValidationService", () => {
   it("should validate AsyncAPI document with Effect.TS error handling", async () => {
     // Arrange
-    const validationService = new ValidationService()
-    const document = createValidAsyncApiDoc()
+    const validationService = new ValidationService();
+    const document = createValidAsyncApiDoc();
 
     // Act & Assert: Effect.TS composition
-    const result = await Effect.runPromise(
-      validationService.validateDocument(document)
-    )
+    const result = await Effect.runPromise(validationService.validateDocument(document));
 
-    expect(result.isValid).toBe(true)
-    expect(result.errors).toHaveLength(0)
-  })
+    expect(result.isValid).toBe(true);
+    expect(result.errors).toHaveLength(0);
+  });
 
   it("should handle validation failures with Railway Programming", async () => {
     // Arrange
-    const invalidDocument = createInvalidAsyncApiDoc()
+    const invalidDocument = createInvalidAsyncApiDoc();
 
     // Act: Effect.TS error handling
     const result = await Effect.runPromise(
-      Effect.either(validationService.validateDocument(invalidDocument))
-    )
+      Effect.either(validationService.validateDocument(invalidDocument)),
+    );
 
     // Assert: Railway programming patterns
-    expect(Effect.isLeft(result)).toBe(true)
-    expect(result.left.message).toContain("Validation failed")
-  })
-})
+    expect(Effect.isLeft(result)).toBe(true);
+    expect(result.left.message).toContain("Validation failed");
+  });
+});
 ```
 
 **Characteristics:**
@@ -109,27 +107,27 @@ describe("ValidationService", () => {
 describe("parseChannelAddress", () => {
   it("should extract channel name from TypeSpec operation", () => {
     // Arrange
-    const operationName = "user.events.created"
+    const operationName = "user.events.created";
 
     // Act
-    const result = parseChannelAddress(operationName)
+    const result = parseChannelAddress(operationName);
 
     // Assert
     expect(result).toEqual({
       domain: "user",
       event: "created",
-      fullPath: "user.events.created"
-    })
-  })
+      fullPath: "user.events.created",
+    });
+  });
 
   it("should handle single-level channel names", () => {
     expect(parseChannelAddress("notifications")).toEqual({
       domain: "notifications",
       event: null,
-      fullPath: "notifications"
-    })
-  })
-})
+      fullPath: "notifications",
+    });
+  });
+});
 ```
 
 **Characteristics:**
@@ -195,57 +193,51 @@ test/
 // test/helpers/bdd-helpers.ts
 export const Given = (description: string, setupFn: () => any) => ({
   description,
-  setup: setupFn
-})
+  setup: setupFn,
+});
 
 export const When = (action: string, actionFn: (context: any) => any) => ({
   action,
-  execute: actionFn
-})
+  execute: actionFn,
+});
 
 export const Then = (expectation: string, assertionFn: (result: any) => void) => ({
   expectation,
-  assert: assertionFn
-})
+  assert: assertionFn,
+});
 
 export const BDDScenario = (given: any, when: any, then: any) => {
   return async () => {
-    const context = await given.setup()
-    const result = await when.execute(context)
-    await then.assert(result)
-  }
-}
+    const context = await given.setup();
+    const result = await when.execute(context);
+    await then.assert(result);
+  };
+};
 ```
 
 ### **Effect.TS Test Utilities**
 
 ```typescript
 // test/helpers/effect-test-utils.ts
-export const runEffectTest = <A, E>(
-  effect: Effect.Effect<A, E>
-): Promise<A> => {
-  return Effect.runPromise(effect)
-}
+export const runEffectTest = <A, E>(effect: Effect.Effect<A, E>): Promise<A> => {
+  return Effect.runPromise(effect);
+};
 
-export const expectEffectSuccess = async <A, E>(
-  effect: Effect.Effect<A, E>
-): Promise<A> => {
-  const result = await Effect.runPromise(Effect.either(effect))
+export const expectEffectSuccess = async <A, E>(effect: Effect.Effect<A, E>): Promise<A> => {
+  const result = await Effect.runPromise(Effect.either(effect));
   if (Effect.isLeft(result)) {
-    throw new Error(`Expected success but got error: ${result.left}`)
+    throw new Error(`Expected success but got error: ${result.left}`);
   }
-  return result.right
-}
+  return result.right;
+};
 
-export const expectEffectFailure = async <A, E>(
-  effect: Effect.Effect<A, E>
-): Promise<E> => {
-  const result = await Effect.runPromise(Effect.either(effect))
+export const expectEffectFailure = async <A, E>(effect: Effect.Effect<A, E>): Promise<E> => {
+  const result = await Effect.runPromise(Effect.either(effect));
   if (Effect.isRight(result)) {
-    throw new Error(`Expected failure but got success: ${result.right}`)
+    throw new Error(`Expected failure but got success: ${result.right}`);
   }
-  return result.left
-}
+  return result.left;
+};
 ```
 
 ---
@@ -263,25 +255,25 @@ describe("Feature: AsyncAPI Channel Generation", () => {
           typespec: `
             @channel("orders.created")
             op OrderCreated(order: Order): void;
-          `
+          `,
         })),
         When("compiling to AsyncAPI", async (context) => {
-          return await compileTypeSpecToAsyncAPI(context.typespec)
+          return await compileTypeSpecToAsyncAPI(context.typespec);
         }),
         Then("should produce valid AsyncAPI channel", (result) => {
           expect(result.channels["orders.created"]).toMatchObject({
             address: "orders.created",
             messages: {
               OrderCreated: {
-                payload: { $ref: "#/components/schemas/Order" }
-              }
-            }
-          })
-        })
-      )()
-    })
-  })
-})
+                payload: { $ref: "#/components/schemas/Order" },
+              },
+            },
+          });
+        }),
+      )();
+    });
+  });
+});
 ```
 
 ### **Effect.TS Test Pattern**
@@ -290,29 +282,29 @@ describe("Feature: AsyncAPI Channel Generation", () => {
 describe("ProcessingService", () => {
   it("should process TypeSpec models with proper error handling", async () => {
     // Arrange
-    const service = new ProcessingService()
-    const program = await createTestProgram()
-    const models = extractModelsFromProgram(program)
+    const service = new ProcessingService();
+    const program = await createTestProgram();
+    const models = extractModelsFromProgram(program);
 
     // Act: Use Effect.TS composition
     const result = await runEffectTest(
       Effect.gen(function* () {
-        const processedModels = []
+        const processedModels = [];
         for (const model of models) {
-          const processed = yield* service.processModel(model, program)
-          processedModels.push(processed)
+          const processed = yield* service.processModel(model, program);
+          processedModels.push(processed);
         }
-        return processedModels
-      })
-    )
+        return processedModels;
+      }),
+    );
 
     // Assert
-    expect(result).toHaveLength(models.length)
-    result.forEach(processed => {
-      expect(processed.isValid).toBe(true)
-    })
-  })
-})
+    expect(result).toHaveLength(models.length);
+    result.forEach((processed) => {
+      expect(processed.isValid).toBe(true);
+    });
+  });
+});
 ```
 
 ### **Unit Test Pattern**
@@ -324,13 +316,13 @@ describe("AsyncAPIValidator", () => {
       ["user.events", { valid: true, domain: "user", event: "events" }],
       ["notifications", { valid: true, domain: "notifications", event: null }],
       ["", { valid: false, error: "Empty channel address" }],
-      ["user..events", { valid: false, error: "Invalid double dot" }]
+      ["user..events", { valid: false, error: "Invalid double dot" }],
     ])("should validate '%s' as %o", (address, expected) => {
-      const result = validateChannelAddress(address)
-      expect(result).toEqual(expected)
-    })
-  })
-})
+      const result = validateChannelAddress(address);
+      expect(result).toEqual(expected);
+    });
+  });
+});
 ```
 
 ---
@@ -356,13 +348,13 @@ describe("AsyncAPIValidator", () => {
 ```typescript
 describe("Performance Benchmarks", () => {
   it("should compile medium TypeSpec program in <2 seconds", async () => {
-    const startTime = Date.now()
-    await compileTypeSpecToAsyncAPI(MEDIUM_TYPESPEC_PROGRAM)
-    const duration = Date.now() - startTime
+    const startTime = Date.now();
+    await compileTypeSpecToAsyncAPI(MEDIUM_TYPESPEC_PROGRAM);
+    const duration = Date.now() - startTime;
 
-    expect(duration).toBeLessThan(2000)
-  })
-})
+    expect(duration).toBeLessThan(2000);
+  });
+});
 ```
 
 ---

@@ -36,17 +36,19 @@
 export const channelPathSchema = Schema.String.pipe(
   Schema.minLength(1),
   Schema.pattern(/^\//),
-  Schema.brand("ChannelPath")
-)
+  Schema.brand("ChannelPath"),
+);
 
 // ✅ Modern error handling with Effect.gen()
-export const createChannelPath = (path: string): Effect.Effect<typeof channelPathSchema.Type, Error> =>
-  Effect.gen(function*() {
+export const createChannelPath = (
+  path: string,
+): Effect.Effect<typeof channelPathSchema.Type, Error> =>
+  Effect.gen(function* () {
     return yield* Effect.try({
       try: () => Schema.decodeSync(channelPathSchema)(path),
-      catch: (error) => new Error(`Channel path validation failed: ${String(error)}`)
-    })
-  })
+      catch: (error) => new Error(`Channel path validation failed: ${String(error)}`),
+    });
+  });
 ```
 
 ### 🚨 Blocking Issue: URL Validation
@@ -55,18 +57,21 @@ export const createChannelPath = (path: string): Effect.Effect<typeof channelPat
 // ❌ ESLint Error: Banned try/catch blocks
 export const serverUrlSchema = Schema.String.pipe(
   Schema.minLength(1),
-  Schema.filter((value) => {
-    try {
-      new URL(value)  // 🚨 ESLint blocking here
-      return true
-    } catch {
-      return false
-    }
-  }, {
-    message: () => "Server URL must be a valid URL"
-  }),
-  Schema.brand("ServerUrl")
-)
+  Schema.filter(
+    (value) => {
+      try {
+        new URL(value); // 🚨 ESLint blocking here
+        return true;
+      } catch {
+        return false;
+      }
+    },
+    {
+      message: () => "Server URL must be a valid URL",
+    },
+  ),
+  Schema.brand("ServerUrl"),
+);
 ```
 
 ---
@@ -129,9 +134,11 @@ Use Schema.pattern() with comprehensive URL regex to avoid try/catch entirely:
 ```typescript
 export const serverUrlSchema = Schema.String.pipe(
   Schema.minLength(1),
-  Schema.pattern(/^https?:\/\/(?:[-\w.])+(?:[:\d]+)?(?:\/(?:[\w/_.])*(?:\?(?:[\w&=%.])*)?(?:#(?:[\w.])*)?)?$/),
-  Schema.brand("ServerUrl")
-)
+  Schema.pattern(
+    /^https?:\/\/(?:[-\w.])+(?:[:\d]+)?(?:\/(?:[\w/_.])*(?:\?(?:[\w&=%.])*)?(?:#(?:[\w.])*)?)?$/,
+  ),
+  Schema.brand("ServerUrl"),
+);
 ```
 
 ---

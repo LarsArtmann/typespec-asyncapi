@@ -109,12 +109,14 @@
 Found in `test/domain/protocol-kafka-comprehensive.test.ts`:
 
 ```typescript
-import { createAsyncAPITestHost } from "../utils/test-helpers.js"  // ❌ Wrong helper
+import { createAsyncAPITestHost } from "../utils/test-helpers.js"; // ❌ Wrong helper
 
 describe("Kafka Protocol - Comprehensive Domain Tests", () => {
-    it("should generate Kafka server with bootstrap servers", async () => {
-        const host = await createAsyncAPITestHost()  // ❌ Ghost pattern
-        host.addTypeSpecFile("main.tsp", `
+  it("should generate Kafka server with bootstrap servers", async () => {
+    const host = await createAsyncAPITestHost(); // ❌ Ghost pattern
+    host.addTypeSpecFile(
+      "main.tsp",
+      `
             import "@lars-artmann/typespec-asyncapi";
             using TypeSpec.AsyncAPI;
 
@@ -130,26 +132,27 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
             @channel("test.topic")
             @publish
             op publishMessage(): KafkaMessage;
-        `)
+        `,
+    );
 
-        await host.compile("./main.tsp")
-        const diagnostics = await host.diagnose("./main.tsp", {
-            emit: ["@lars-artmann/typespec-asyncapi"]
-        })
+    await host.compile("./main.tsp");
+    const diagnostics = await host.diagnose("./main.tsp", {
+      emit: ["@lars-artmann/typespec-asyncapi"],
+    });
 
-        // ❌ Only checks compilation succeeded, NOT AsyncAPI output!
-        expect(diagnostics.filter(d => d.severity === "error").length).toBe(0)
-    })
+    // ❌ Only checks compilation succeeded, NOT AsyncAPI output!
+    expect(diagnostics.filter((d) => d.severity === "error").length).toBe(0);
+  });
 
-    it("should handle Kafka topic with partitions", async () => {
-        const host = await createAsyncAPITestHost()
-        // ... setup code ...
-        await host.compile("./main.tsp")
+  it("should handle Kafka topic with partitions", async () => {
+    const host = await createAsyncAPITestHost();
+    // ... setup code ...
+    await host.compile("./main.tsp");
 
-        // ❌ Literally tests NOTHING
-        expect(true).toBe(true) // Compilation success
-    })
-})
+    // ❌ Literally tests NOTHING
+    expect(true).toBe(true); // Compilation success
+  });
+});
 ```
 
 **What's Wrong:**
@@ -163,10 +166,10 @@ describe("Kafka Protocol - Comprehensive Domain Tests", () => {
 **What It Should Do:**
 
 ```typescript
-import { compileAsyncAPISpec } from "../utils/test-helpers.js"  // ✅ Right helper
+import { compileAsyncAPISpec } from "../utils/test-helpers.js"; // ✅ Right helper
 
 it("should generate Kafka server with bootstrap servers", async () => {
-    const asyncapi = await compileAsyncAPISpec(`  // ✅ Returns AsyncAPI
+  const asyncapi = await compileAsyncAPISpec(`  // ✅ Returns AsyncAPI
         import "@lars-artmann/typespec-asyncapi";
         using TypeSpec.AsyncAPI;
 
@@ -181,20 +184,20 @@ it("should generate Kafka server with bootstrap servers", async () => {
         @channel("test.topic")
         @publish
         op publishMessage(): KafkaMessage;
-    `)
+    `);
 
-    // ✅ Validate AsyncAPI output
-    expect(asyncapi.servers).toBeDefined()
-    expect(asyncapi.servers["kafka-prod"]).toBeDefined()
-    expect(asyncapi.servers["kafka-prod"].url).toBe("kafka://broker1:9092")
-    expect(asyncapi.servers["kafka-prod"].protocol).toBe("kafka")
+  // ✅ Validate AsyncAPI output
+  expect(asyncapi.servers).toBeDefined();
+  expect(asyncapi.servers["kafka-prod"]).toBeDefined();
+  expect(asyncapi.servers["kafka-prod"].url).toBe("kafka://broker1:9092");
+  expect(asyncapi.servers["kafka-prod"].protocol).toBe("kafka");
 
-    expect(asyncapi.channels).toBeDefined()
-    expect(asyncapi.channels["test.topic"]).toBeDefined()
+  expect(asyncapi.channels).toBeDefined();
+  expect(asyncapi.channels["test.topic"]).toBeDefined();
 
-    expect(asyncapi.operations).toBeDefined()
-    // ... validate operations ...
-})
+  expect(asyncapi.operations).toBeDefined();
+  // ... validate operations ...
+});
 ```
 
 #### Error Pattern Analysis
@@ -205,12 +208,12 @@ Example: `test/validation/automated-spec-validation.test.ts:283`
 
 ```typescript
 // ❌ Missing await - returns Promise<AsyncAPIObject> not AsyncAPIObject
-parsedSpec = parseAsyncAPIOutput(compilationResult.outputFiles, fileName)
-expect(parsedSpec).toBeDefined()  // ❌ parsedSpec is Promise, not object
+parsedSpec = parseAsyncAPIOutput(compilationResult.outputFiles, fileName);
+expect(parsedSpec).toBeDefined(); // ❌ parsedSpec is Promise, not object
 
 // ✅ Fixed
-parsedSpec = await parseAsyncAPIOutput(compilationResult.outputFiles, fileName)
-expect(parsedSpec).toBeDefined()  // ✅ parsedSpec is AsyncAPIObject
+parsedSpec = await parseAsyncAPIOutput(compilationResult.outputFiles, fileName);
+expect(parsedSpec).toBeDefined(); // ✅ parsedSpec is AsyncAPIObject
 ```
 
 **But wait:** Why fix 42 `await` bugs in tests we're about to delete?

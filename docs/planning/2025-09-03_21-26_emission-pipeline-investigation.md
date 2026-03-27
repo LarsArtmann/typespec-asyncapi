@@ -26,34 +26,34 @@ info:
   title: AsyncAPI Specification
   version: 1.0.0
   description: Generated from TypeSpec with 2 operations, 0 messages, 0 security configs
-servers: {}  # Present but empty (expected for basic examples)
+servers: {} # Present but empty (expected for basic examples)
 channels:
-  channel_sendUserMessage:    # ✅ COMPLETE
+  channel_sendUserMessage: # ✅ COMPLETE
     address: user.messages
     messages:
       sendUserMessageMessage:
         $ref: "#/components/messages/sendUserMessageMessage"
   channel_receiveUserMessage: # ✅ COMPLETE
 operations:
-  sendUserMessage:           # ✅ COMPLETE
+  sendUserMessage: # ✅ COMPLETE
     action: send
     channel:
       $ref: "#/channels/channel_sendUserMessage"
-  receiveUserMessage:        # ✅ COMPLETE
+  receiveUserMessage: # ✅ COMPLETE
     action: receive
 components:
   schemas:
-    UserMessage:             # ✅ COMPLETE with full property definitions
+    UserMessage: # ✅ COMPLETE with full property definitions
       type: object
       properties:
-        userId: {type: string}
-        message: {type: string}
-        timestamp: {type: string, format: date-time}
+        userId: { type: string }
+        message: { type: string }
+        timestamp: { type: string, format: date-time }
       required: [userId, message, timestamp]
   messages:
-    sendUserMessageMessage:   # ✅ COMPLETE
+    sendUserMessageMessage: # ✅ COMPLETE
     receiveUserMessageMessage: # ✅ COMPLETE
-  securitySchemes: {}        # ✅ PRESENT (empty but valid)
+  securitySchemes: {} # ✅ PRESENT (empty but valid)
 ```
 
 ### 🔍 **ACTUAL ISSUE IDENTIFIED**

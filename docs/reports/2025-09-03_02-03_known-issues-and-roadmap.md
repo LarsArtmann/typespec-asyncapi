@@ -222,10 +222,12 @@
 **Issue**: @channel with parameters not generating correct AsyncAPI
 
 **Reproduction**:
+
 ```typescript
 @channel("user.{userId}.events")
 @publish
 op publishUserEvent(): UserEventMessage;
+```
 ````
 
 **Expected**: Channel with parameter in AsyncAPI spec

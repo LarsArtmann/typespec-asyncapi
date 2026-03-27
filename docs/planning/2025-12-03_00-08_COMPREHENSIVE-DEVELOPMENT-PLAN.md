@@ -245,18 +245,18 @@ interface QualityGate {
   name: string;
   threshold: number;
   unit: string;
-  phase: '0' | '1' | '2';
+  phase: "0" | "1" | "2";
 }
 
 const qualityGates: QualityGate[] = [
-  { name: 'testPassRate', threshold: 85, unit: '%', phase: '0' },
-  { name: 'testPassRate', threshold: 75, unit: '%', phase: '1' },
-  { name: 'testPassRate', threshold: 90, unit: '%', phase: '2' },
-  { name: 'buildErrors', threshold: 0, unit: 'count', phase: '0' },
-  { name: 'processingTime', threshold: 2000, unit: 'ms', phase: '2' },
-  { name: 'memoryUsage', threshold: 100, unit: 'MB', phase: '2' },
-  { name: 'protocolsSupported', threshold: 4, unit: 'count', phase: '1' },
-  { name: 'documentationCoverage', threshold: 80, unit: '%', phase: '2' }
+  { name: "testPassRate", threshold: 85, unit: "%", phase: "0" },
+  { name: "testPassRate", threshold: 75, unit: "%", phase: "1" },
+  { name: "testPassRate", threshold: 90, unit: "%", phase: "2" },
+  { name: "buildErrors", threshold: 0, unit: "count", phase: "0" },
+  { name: "processingTime", threshold: 2000, unit: "ms", phase: "2" },
+  { name: "memoryUsage", threshold: 100, unit: "MB", phase: "2" },
+  { name: "protocolsSupported", threshold: 4, unit: "count", phase: "1" },
+  { name: "documentationCoverage", threshold: 80, unit: "%", phase: "2" },
 ];
 ```
 

@@ -20,15 +20,15 @@ export enum Protocol {
   HTTP = "http",
   HTTPS = "https",
   WS = "ws",
-  WSS = "wss"
+  WSS = "wss",
 }
 
 export interface ServerConfig {
-  name: string
-  url: string
-  protocol: Protocol
-  description?: string
-  [key: string]: unknown  // Allow extension
+  name: string;
+  url: string;
+  protocol: Protocol;
+  description?: string;
+  [key: string]: unknown; // Allow extension
 }
 ```
 
@@ -38,8 +38,8 @@ export interface ServerConfig {
 export function extractServerConfig(config: unknown): {
   success: boolean;
   config: ServerConfig | null;
-  error?: string
-}
+  error?: string;
+};
 ```
 
 #### **3. Comprehensive Input Validation** ✅

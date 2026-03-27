@@ -85,9 +85,9 @@ src/plugins/built-in/enhanced-mqtt-plugin.ts (546 lines): Plugin too large
 
 ```typescript
 // Configuration-Driven Performance - Eliminates hardcoded limits
-- "HARDCODED MAGIC NUMBERS! EXTRACT ALL METRIC BOUNDARIES TO CONSTANTS!"
-- "Different deployment environments need different throughput boundaries!"
-- "These should be configurable based on hardware capabilities!"
+-"HARDCODED MAGIC NUMBERS! EXTRACT ALL METRIC BOUNDARIES TO CONSTANTS!" -
+  "Different deployment environments need different throughput boundaries!" -
+  "These should be configurable based on hardware capabilities!";
 ```
 
 ---
@@ -100,9 +100,9 @@ _Code quality and developer experience improvements_
 
 ```typescript
 // Effect.TS Integration - Modern error handling
-- "Should use Effect.gen for proper error handling and composability"
-- "Pipeline failure in any stage stops entire process - no partial recovery"
-- "Missing Result/Either types from Effect for better error handling"
+-"Should use Effect.gen for proper error handling and composability" -
+  "Pipeline failure in any stage stops entire process - no partial recovery" -
+  "Missing Result/Either types from Effect for better error handling";
 ```
 
 ### **🧪 Testing Infrastructure (Impact: 6)**
@@ -118,9 +118,9 @@ _Code quality and developer experience improvements_
 
 ```typescript
 // Code Organization - Developer experience
-- "Import organization inconsistent - group by source"
-- "Effect import could be more specific - only Effect.gen and Effect.log used"
-- "REMOVE RE_EXPORTS I HATE THEM!" (src/constants/index.ts)
+-"Import organization inconsistent - group by source" -
+  "Effect import could be more specific - only Effect.gen and Effect.log used" -
+  "REMOVE RE_EXPORTS I HATE THEM!"(src / constants / index.ts);
 ```
 
 ---
@@ -142,9 +142,9 @@ description: "Generated from TypeSpec", // TODO: Make configurable
 
 ```typescript
 // Logging Improvements
-- "Effect.log not awaited - may not appear in logs"
-- "Emoji characters could break terminal/log parsers"
-- "Log uses special characters that may break JSON parsers"
+-"Effect.log not awaited - may not appear in logs" -
+  "Emoji characters could break terminal/log parsers" -
+  "Log uses special characters that may break JSON parsers";
 ```
 
 ---

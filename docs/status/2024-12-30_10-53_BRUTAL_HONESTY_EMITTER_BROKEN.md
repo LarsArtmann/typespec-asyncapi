@@ -27,7 +27,7 @@ The TypeSpec AsyncAPI Emitter project is in a critical state. While the codebase
 
 ### a) FULLY DONE ✅ (3 items)
 
-1. **TypeScript Compilation** 
+1. **TypeScript Compilation**
    - Zero compilation errors
    - Strict mode enabled
    - All files compile successfully
@@ -116,7 +116,6 @@ The TypeSpec AsyncAPI Emitter project is in a critical state. While the codebase
    - **Impact:** No decorator data available to emitter, resulting in empty output
    - **Root Cause Unknown:** Same symbols used, same program instance, yet state not persisting
    - **Evidence:** Console logs show "stored in state" but extraction shows 0 items
-   
 2. **Emitter Integration - CRITICAL**
    - **Problem:** Using Node.js `fs.writeFileSync()` instead of TypeSpec's `emitFile()` API
    - **Impact:** Bypasses TypeSpec's output management, wrong file location, no directory handling
@@ -240,20 +239,23 @@ The TypeSpec AsyncAPI Emitter project is in a critical state. While the codebase
 #### 1. Type Safety - FAILED ❌
 
 **Problems:**
+
 - Type casts used throughout codebase
 - No proper TypeSpec program type definitions
 - Runtime type validation missing
 - TypeScript provides zero protection
 
 **Evidence:**
+
 ```typescript
 // Found in multiple locations:
 const programTyped = program as { stateMap: (symbol: symbol) => Map<unknown, unknown> };
 const stateTyped = state as Record<string, unknown>;
-const channelData = data as { path?: string; };
+const channelData = data as { path?: string };
 ```
 
 **Impact:**
+
 - Code will crash if type assumptions are wrong
 - No compile-time safety
 - Difficult to maintain and refactor
@@ -262,12 +264,14 @@ const channelData = data as { path?: string; };
 #### 2. Composition - FAILED ❌
 
 **Problems:**
+
 - No clear separation of concerns
 - Emitter directly accessing program state
 - No adapter layer for TypeSpec APIs
 - Tight coupling between components
 
 **Evidence:**
+
 ```typescript
 // Emitter directly accessing state:
 const rawState = consolidateAsyncAPIState(context.program);
@@ -275,6 +279,7 @@ const channelPaths = getStateMap<ChannelPathData>(program, stateSymbols.channelP
 ```
 
 **Impact:**
+
 - Difficult to test in isolation
 - Cannot swap implementations
 - Hard to maintain
@@ -283,16 +288,18 @@ const channelPaths = getStateMap<ChannelPathData>(program, stateSymbols.channelP
 #### 3. Domain Model - ABSENT ❌
 
 **Problems:**
+
 - No proper AsyncAPI 3.0 type definitions
 - TypeSpec types mixed with AsyncAPI types
 - No clear type boundaries
 - String unions instead of enums
 
 **Evidence:**
+
 ```typescript
 // Poor type definitions:
 type OperationTypeData = {
-  type: "publish" | "subscribe";  // String union, not enum
+  type: "publish" | "subscribe"; // String union, not enum
   messageType?: string;
   description?: string;
   tags?: string[];
@@ -300,6 +307,7 @@ type OperationTypeData = {
 ```
 
 **Impact:**
+
 - No type safety for protocol types
 - String typos possible
 - No autocomplete support
@@ -308,12 +316,14 @@ type OperationTypeData = {
 #### 4. Generics Usage - FAILED ❌
 
 **Problems:**
+
 - Type casts instead of generics
 - No type parameters in utility functions
 - Hard-coded types everywhere
 - No reusable patterns
 
 **Evidence:**
+
 ```typescript
 // Should use generics but doesn't:
 export function consolidateAsyncAPIState(program: Program): AsyncAPIConsolidatedState {
@@ -323,6 +333,7 @@ export function consolidateAsyncAPIState(program: Program): AsyncAPIConsolidated
 ```
 
 **Impact:**
+
 - Code duplication
 - No type safety
 - Hard to reuse
@@ -331,23 +342,26 @@ export function consolidateAsyncAPIState(program: Program): AsyncAPIConsolidated
 #### 5. Enums Usage - FAILED ❌
 
 **Problems:**
+
 - String unions instead of enums
 - Magic strings throughout codebase
 - No compile-time validation
 - Runtime string comparison
 
 **Evidence:**
+
 ```typescript
 // String unions instead of enums:
 type OperationTypeData = {
-  type: "publish" | "subscribe";  // Should be: type: OperationType
+  type: "publish" | "subscribe"; // Should be: type: OperationType
 };
 
 // Magic strings:
-"publish", "subscribe", "channel", "message", "protocol"
+("publish", "subscribe", "channel", "message", "protocol");
 ```
 
 **Impact:**
+
 - Typos possible at runtime
 - No autocomplete
 - Difficult to refactor
@@ -365,6 +379,7 @@ type OperationTypeData = {
 Decorators execute during TypeSpec compilation and log "stored in state", but when the emitter runs during the emission phase, `consolidateAsyncAPIState()` returns empty maps for all state types.
 
 **Reproduction Steps:**
+
 1. Define TypeSpec file with decorators:
    ```typespec
    @channel("user.messages")
@@ -387,20 +402,24 @@ Decorators execute during TypeSpec compilation and log "stored in state", but wh
    ```
 
 **Expected Behavior:**
+
 - State should contain 1 channel and 1 operation type
 - Emitter should retrieve this data
 
 **Actual Behavior:**
+
 - State maps are completely empty (Map(0))
 - No decorator data available to emitter
 
 **Investigation Needed:**
+
 1. Are symbols the same instance between storage and retrieval?
 2. Is the program instance the same between decorator execution and emission?
 3. Does TypeSpec clear state between compilation and emission phases?
 4. Is `program.stateMap()` the correct API?
 
 **Hypotheses:**
+
 - Hypothesis 1: Different program instances
 - Hypothesis 2: Symbol mismatch
 - Hypothesis 3: State cleared between phases
@@ -416,15 +435,17 @@ Decorators execute during TypeSpec compilation and log "stored in state", but wh
 Emitter uses Node.js `fs` module directly instead of TypeSpec's `emitFile()` API, bypassing all of TypeSpec's output management.
 
 **Evidence:**
+
 ```typescript
 // Current broken implementation:
 import { emitFile } from "@typespec/compiler";
 // But then doing this instead:
-const fs = await import('fs');
-fs.default.writeFileSync(outputPath, content, 'utf-8');  // WRONG!
+const fs = await import("fs");
+fs.default.writeFileSync(outputPath, content, "utf-8"); // WRONG!
 ```
 
 **Expected Behavior:**
+
 ```typescript
 // Should be:
 import { emitFile } from "@typespec/compiler";
@@ -435,10 +456,11 @@ const emitOptions: EmitFileOptions = {
   content: content,
 };
 
-await emitFile(context.program, emitOptions);  // CORRECT!
+await emitFile(context.program, emitOptions); // CORRECT!
 ```
 
 **Consequences:**
+
 - File output goes to wrong directory (project root instead of tsp-output/)
 - Cannot work with TypeSpec's --output-dir configuration
 - Not a proper TypeSpec emitter
@@ -455,6 +477,7 @@ await emitFile(context.program, emitOptions);  // CORRECT!
 Generated AsyncAPI YAML files contain no data - empty channels, messages, and schemas sections.
 
 **Evidence:**
+
 ```yaml
 asyncapi: 3.0.0
 info:
@@ -462,10 +485,10 @@ info:
   version: 1.0.0
   description: API generated from TypeSpec
 
-channels:      # EMPTY!
-messages:      # EMPTY!
+channels: # EMPTY!
+messages: # EMPTY!
 components:
-  schemas:     # EMPTY!
+  schemas: # EMPTY!
 ```
 
 **Root Cause:**
@@ -481,15 +504,17 @@ State management broken (Issue #1), so emitter has no data to generate output fr
 TypeScript type assertions used throughout codebase, eliminating all type safety guarantees.
 
 **Examples:**
+
 ```typescript
 // Throughout codebase:
 const programTyped = program as { stateMap: (symbol: symbol) => Map<unknown, unknown> };
 const stateTyped = state as Record<string, unknown>;
-const channelData = data as { path?: string; };
+const channelData = data as { path?: string };
 const configTyped = config as Record<string, unknown>;
 ```
 
 **Impact:**
+
 - Code will crash at runtime if assumptions wrong
 - TypeScript compiler provides zero protection
 - Refactoring is dangerous
@@ -498,6 +523,7 @@ const configTyped = config as Record<string, unknown>;
 
 **Required Fix:**
 Create proper TypeSpec program type definitions:
+
 ```typescript
 interface TypeSpecProgramState {
   stateMap<K>(key: StateKey<K>): StateMap<K>;
@@ -536,6 +562,7 @@ interface StateMap<K> extends Map<unknown, K> {
 **Status:** EXCELLENT
 
 **Categories Tested:**
+
 - Core Concepts Mapping ✅
 - Schema and Models Mapping ✅
 - Security Schemas Mapping ✅
@@ -554,6 +581,7 @@ interface StateMap<K> extends Map<unknown, K> {
 **Impact:** Cannot verify end-to-end functionality
 
 **Missing Tests:**
+
 1. TypeSpec file → Decorators execution ✅ (have)
 2. Decorators → State storage ❌ (don't verify)
 3. State → Emitter extraction ❌ (broken)
@@ -568,6 +596,7 @@ interface StateMap<K> extends Map<unknown, K> {
 **Status:** ALL FAILING ❌
 
 **Categories:**
+
 - Kafka Protocol: 0% passing (0/N)
 - WebSocket Protocol: 0% passing (0/N)
 - MQTT Protocol: 0% passing (0/N)
@@ -583,9 +612,11 @@ interface StateMap<K> extends Map<unknown, K> {
 ### Phase 1: Fix Critical Foundation (Days 1-3)
 
 #### Day 1: Debug State Management
+
 **Goal:** Understand why state maps are empty
 
 **Tasks:**
+
 1. Add extensive logging to all decorator state storage operations
 2. Add logging to state extraction operations
 3. Verify symbol identity across modules (add symbol hash logging)
@@ -596,6 +627,7 @@ interface StateMap<K> extends Map<unknown, K> {
 8. Identify root cause and fix
 
 **Success Criteria:**
+
 - State extraction returns data stored by decorators
 - State maps contain expected items
 - Symbol identity verified
@@ -606,9 +638,11 @@ interface StateMap<K> extends Map<unknown, K> {
 ---
 
 #### Day 2: Implement Proper Emitter Integration
+
 **Goal:** Use TypeSpec's emitFile API correctly
 
 **Tasks:**
+
 1. Study @typespec/http emitter implementation in detail
 2. Copy exact emitFile usage pattern
 3. Remove fs module usage completely
@@ -618,6 +652,7 @@ interface StateMap<K> extends Map<unknown, K> {
 7. Add integration test for file output
 
 **Success Criteria:**
+
 - emitFile API used correctly
 - Files output to tsp-output/@lars-artmann/typespec-asyncapi/
 - Output directory respects TypeSpec configuration
@@ -629,9 +664,11 @@ interface StateMap<K> extends Map<unknown, K> {
 ---
 
 #### Day 3: Add Type Safety
+
 **Goal:** Eliminate all type casts
 
 **Tasks:**
+
 1. Audit codebase for all `as` type assertions
 2. Create TypeSpec program wrapper interface
 3. Create StateKey and StateMap generic types
@@ -641,6 +678,7 @@ interface StateMap<K> extends Map<unknown, K> {
 7. Verify TypeScript strict mode compilation
 
 **Success Criteria:**
+
 - Zero `as` type assertions
 - Proper TypeSpec program type definitions
 - AsyncAPI domain model with proper types
@@ -655,9 +693,11 @@ interface StateMap<K> extends Map<unknown, K> {
 ### Phase 2: Working Emitter (Days 4-7)
 
 #### Day 4: Real AsyncAPI Generation
+
 **Goal:** Generate actual AsyncAPI specs with data
 
 **Tasks:**
+
 1. Define proper AsyncAPI 3.0 domain types
 2. Implement channel generation from state data
 3. Implement message generation from state data
@@ -667,6 +707,7 @@ interface StateMap<K> extends Map<unknown, K> {
 7. Validate generated specs against AsyncAPI schema
 
 **Success Criteria:**
+
 - Generated AsyncAPI specs contain channel data
 - Generated AsyncAPI specs contain message data
 - Generated AsyncAPI specs contain schema data
@@ -678,9 +719,11 @@ interface StateMap<K> extends Map<unknown, K> {
 ---
 
 #### Day 5: Integration Testing
+
 **Goal:** Verify complete pipeline end-to-end
 
 **Tasks:**
+
 1. Create end-to-end integration test suite
 2. Write test: TypeSpec file → Decorators execution
 3. Write test: Decorators → State storage verification
@@ -691,6 +734,7 @@ interface StateMap<K> extends Map<unknown, K> {
 8. Test all decorator combinations
 
 **Success Criteria:**
+
 - Complete pipeline tested end-to-end
 - All integration tests passing
 - Generated specs validated
@@ -702,9 +746,11 @@ interface StateMap<K> extends Map<unknown, K> {
 ---
 
 #### Day 6: Validation Layer
+
 **Goal:** Ensure generated specs are valid AsyncAPI
 
 **Tasks:**
+
 1. Integrate @asyncapi/parser for validation
 2. Add validation to build pipeline
 3. Add validation to emitter (pre-write check)
@@ -714,6 +760,7 @@ interface StateMap<K> extends Map<unknown, K> {
 7. Document validation behavior
 
 **Success Criteria:**
+
 - All generated specs validated
 - Invalid specs rejected with clear errors
 - Validation in CI/CD pipeline
@@ -725,9 +772,11 @@ interface StateMap<K> extends Map<unknown, K> {
 ---
 
 #### Day 7: Error Handling
+
 **Goal:** Robust error handling throughout
 
 **Tasks:**
+
 1. Create centralized error types
 2. Define error hierarchy (CompilerError, EmitterError, ValidationError, etc.)
 3. Add proper error messages
@@ -737,6 +786,7 @@ interface StateMap<K> extends Map<unknown, K> {
 7. Document error behavior
 
 **Success Criteria:**
+
 - Centralized error types defined
 - All code paths have error handling
 - Clear error messages with context
@@ -751,9 +801,11 @@ interface StateMap<K> extends Map<unknown, K> {
 ### Phase 3: Code Quality (Days 8-10)
 
 #### Day 8: Refactor and Cleanup
+
 **Goal:** Professional code quality
 
 **Tasks:**
+
 1. Split files >350 lines into proper modules
 2. Remove all duplicate code
 3. Extract common patterns to utilities
@@ -763,6 +815,7 @@ interface StateMap<K> extends Map<unknown, K> {
 7. Remove unused/disabled code
 
 **Success Criteria:**
+
 - All files <350 lines
 - No code duplication (<1%)
 - Clear module boundaries
@@ -776,9 +829,11 @@ interface StateMap<K> extends Map<unknown, K> {
 ---
 
 #### Day 9: Architecture Documentation
+
 **Goal:** Clear architecture documentation
 
 **Tasks:**
+
 1. Document data flow (TypeSpec → Decorators → State → Emitter → AsyncAPI)
 2. Create architectural diagrams
 3. Document type system (TypeSpec types → AsyncAPI types)
@@ -788,6 +843,7 @@ interface StateMap<K> extends Map<unknown, K> {
 7. Document emitter integration pattern
 
 **Success Criteria:**
+
 - Data flow clearly documented
 - Architecture diagrams created
 - Type system documented
@@ -801,9 +857,11 @@ interface StateMap<K> extends Map<unknown, K> {
 ---
 
 #### Day 10: Production Validation
+
 **Goal:** Production readiness
 
 **Tasks:**
+
 1. Test with complex real-world TypeSpec files
 2. Stress test with large specifications
 3. Performance benchmarking (measure compilation times)
@@ -813,6 +871,7 @@ interface StateMap<K> extends Map<unknown, K> {
 7. Test on multiple platforms (Linux, macOS, Windows)
 
 **Success Criteria:**
+
 - Complex real-world specs compile successfully
 - Performance acceptable (<10s for typical specs)
 - No memory leaks
@@ -829,12 +888,14 @@ interface StateMap<K> extends Map<unknown, K> {
 ### Current State: ZERO CUSTOMER VALUE
 
 **Why:**
+
 - Emitter doesn't work end-to-end
 - Cannot generate real AsyncAPI specifications
 - Would fail immediately in production
 - Users cannot use it for anything real
 
 **Risk:**
+
 - Shipping broken code would damage reputation
 - Negative community feedback
 - Loss of trust
@@ -845,6 +906,7 @@ interface StateMap<K> extends Map<unknown, K> {
 ### After Fixes: HIGH CUSTOMER VALUE
 
 **Value Proposition:**
+
 - First working TypeSpec → AsyncAPI emitter
 - Solves real community need (37+ GitHub reactions)
 - Enables event-driven API development in TypeSpec
@@ -852,6 +914,7 @@ interface StateMap<K> extends Map<unknown, K> {
 - Foundation for enterprise features
 
 **Use Cases Enabled:**
+
 1. **Event-Driven Architecture** - Define event channels in TypeSpec
 2. **Kafka Integration** - Generate Kafka topic configurations
 3. **WebSocket APIs** - Define real-time message schemas
@@ -859,6 +922,7 @@ interface StateMap<K> extends Map<unknown, K> {
 5. **API Documentation** - Generate AsyncAPI specs from code
 
 **Customer Impact:**
+
 - Faster development (code-first approach)
 - Type safety (catch errors at compile time)
 - Consistency (single source of truth)
@@ -872,6 +936,7 @@ interface StateMap<K> extends Map<unknown, K> {
 ### STOP IMMEDIATELY
 
 ❌ **Do NOT:**
+
 - Ship any code in current state
 - Use workaround hacks (fs module, type casts)
 - Claim production readiness
@@ -883,6 +948,7 @@ interface StateMap<K> extends Map<unknown, K> {
 ### START IMMEDIATELY
 
 ✅ **Do:**
+
 - Pause all release efforts
 - Acknowledge current state is broken
 - Focus on fixing critical issues
@@ -956,6 +1022,7 @@ interface StateMap<K> extends Map<unknown, K> {
 ### Architecture Vision
 
 **Domain-Driven Design + Strong Types:**
+
 - Clear domain boundaries (TypeSpec → AsyncAPI)
 - Type-safe transformations
 - No runtime errors
@@ -963,12 +1030,14 @@ interface StateMap<K> extends Map<unknown, K> {
 - Composable and extensible
 
 **Adapter Pattern:**
+
 - Clean separation from TypeSpec APIs
 - Easy to swap implementations
 - Testable in isolation
 - Clear interfaces
 
 **State Management Protocol:**
+
 - Well-defined data flow
 - Clear lifecycle (store → compile → extract)
 - Type-safe access
@@ -1011,6 +1080,7 @@ interface StateMap<K> extends Map<unknown, K> {
 **Why is `program.stateMap()` returning empty maps when decorators claim to have stored data?**
 
 **Details:**
+
 - Decorators execute and log "stored in state"
 - State storage uses: `programTyped.stateMap(stateSymbols.channelPaths).set(target, data)`
 - State extraction uses: `programTyped.stateMap(stateSymbols.channelPaths)`
@@ -1019,6 +1089,7 @@ interface StateMap<K> extends Map<unknown, K> {
 - Yet extraction returns `Map(0)` - completely empty
 
 **Investigation Needed:**
+
 1. Are symbols truly the same instance between storage and retrieval?
 2. Is the TypeSpec program instance the same between decorator execution and emission?
 3. Does TypeSpec clear state between compilation and emission phases?
@@ -1063,6 +1134,7 @@ interface StateMap<K> extends Map<unknown, K> {
 **Value:** ZERO ❌
 
 ### What We Have:
+
 - ✅ Working TypeScript compilation
 - ✅ Executing decorators
 - ✅ Passing documentation tests
@@ -1072,6 +1144,7 @@ interface StateMap<K> extends Map<unknown, K> {
 - ❌ Production readiness
 
 ### What We Need:
+
 - 🔥 Fix state management (3 days)
 - 🔥 Fix emitter integration (1 day)
 - 🔥 Add type safety (1 day)
@@ -1090,6 +1163,7 @@ interface StateMap<K> extends Map<unknown, K> {
 **The TypeSpec AsyncAPI Emitter is NOT ready for any release.**
 
 The current state is completely broken:
+
 - State management doesn't work
 - Emitter integration is wrong
 - End-to-end functionality is non-existent
@@ -1122,11 +1196,13 @@ The current state is completely broken:
 ### Appendix A: File Structure Analysis
 
 **Files >350 Lines (need splitting):**
+
 - `src/minimal-decorators.ts` (455 lines) - Split into individual decorator files
 - `src/emitter.ts.backup` (538 lines) - Delete or reference only
 - `test/documentation/02-schemas-models.test.ts` (likely >350 lines) - Split into test modules
 
 **Recommendations:**
+
 - Split decorators into: `decorators/channel.ts`, `decorators/publish.ts`, `decorators/subscribe.ts`, etc.
 - Create proper test modules: `test/integration/emitter.test.ts`, `test/integration/state.test.ts`
 - Keep files under 350 lines for maintainability
@@ -1136,6 +1212,7 @@ The current state is completely broken:
 ### Appendix B: Type Cast Inventory
 
 **All `as` type assertions found:**
+
 1. `program as { stateMap: (symbol: symbol) => Map<unknown, unknown> }` (15+ occurrences)
 2. `state as Record<string, unknown>` (10+ occurrences)
 3. `data as { path?: string; }` (5+ occurrences)
@@ -1151,6 +1228,7 @@ The current state is completely broken:
 ### Appendix C: Duplicate Code Patterns
 
 **Identified Duplications:**
+
 1. State map access pattern (repeated 10+ times)
 2. Decorator logging utilities (duplicated in multiple files)
 3. Error reporting patterns (similar across decorators)
@@ -1163,6 +1241,7 @@ The current state is completely broken:
 ### Appendix D: Magic Strings
 
 **String literals that should be enums:**
+
 - `"publish"`, `"subscribe"` → `enum OperationType { Publish = "publish", Subscribe = "subscribe" }`
 - `"channel"`, `"message"`, `"server"`, `"protocol"`, `"security"` → `enum DecoratorType { ... }`
 - `"error"`, `"warning"`, `"info"` → `enum DiagnosticSeverity { ... }`

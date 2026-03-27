@@ -248,10 +248,10 @@ chmod +x .husky/pre-commit
 
 ```typescript
 // ❌ WEAK: Strings everywhere
-function createChannel(id: string, path: string): Channel
+function createChannel(id: string, path: string): Channel;
 
 // ✅ STRONG: Branded types
-function createChannel(id: ChannelId, path: ChannelPath): Channel
+function createChannel(id: ChannelId, path: ChannelPath): Channel;
 ```
 
 **Branded Types to Apply:**
@@ -288,10 +288,10 @@ function createChannel(id: ChannelId, path: ChannelPath): Channel
 
 ```typescript
 // ❌ BEFORE: Weak booleans
-retain: boolean
+retain: boolean;
 
 // ✅ AFTER: Expressive enums
-retainPolicy: RetainPolicy.Always | RetainPolicy.Never
+retainPolicy: RetainPolicy.Always | RetainPolicy.Never;
 ```
 
 **Found:**
@@ -314,7 +314,7 @@ retainPolicy: RetainPolicy.Always | RetainPolicy.Never
 
 ```typescript
 // ❌ WEAK: Magic strings
-action: "send" | "receive"
+action: "send" | "receive";
 ```
 
 **Target:**
@@ -323,7 +323,7 @@ action: "send" | "receive"
 // ✅ STRONG: Const enum
 export enum OperationAction {
   Send = "send",
-  Receive = "receive"
+  Receive = "receive",
 }
 ```
 
@@ -471,16 +471,16 @@ describe("AsyncAPI Generation", () => {
   describe("When processing a TypeSpec model", () => {
     it("should generate valid AsyncAPI 3.0 document", async () => {
       // Given
-      const model = createTestModel()
+      const model = createTestModel();
 
       // When
-      const result = await generateAsyncAPI(model)
+      const result = await generateAsyncAPI(model);
 
       // Then
-      expect(result).toMatchAsyncAPISchema()
-    })
-  })
-})
+      expect(result).toMatchAsyncAPISchema();
+    });
+  });
+});
 ```
 
 **Success Criteria:**

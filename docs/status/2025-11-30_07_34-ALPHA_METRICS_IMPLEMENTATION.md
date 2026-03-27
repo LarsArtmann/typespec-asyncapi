@@ -54,17 +54,18 @@
 
 ```typescript
 interface TestMetrics {
-  passing: number;        // Primary metric (always comparable)
-  failing: number;        // Failure count for analysis
-  skipped: number;        // Skipped test tracking
-  total: number;          // Comprehensive total
-  passRate: number;       // Secondary metric (threshold-based)
-  deltaPassing?: number;   // Session-to-session delta
-  failures: {             // Categorized breakdown
-    critical: number;      // Core functionality
-    high: number;         // Important features
-    medium: number;       // Test infrastructure
-    low: number;         // Documentation/examples
+  passing: number; // Primary metric (always comparable)
+  failing: number; // Failure count for analysis
+  skipped: number; // Skipped test tracking
+  total: number; // Comprehensive total
+  passRate: number; // Secondary metric (threshold-based)
+  deltaPassing?: number; // Session-to-session delta
+  failures: {
+    // Categorized breakdown
+    critical: number; // Core functionality
+    high: number; // Important features
+    medium: number; // Test infrastructure
+    low: number; // Documentation/examples
   };
 }
 ```

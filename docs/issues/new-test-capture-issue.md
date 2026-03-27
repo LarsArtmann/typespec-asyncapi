@@ -29,7 +29,7 @@ emitFile(context.program, {
 
 // ❌ BROKEN: Test framework output capture
 const outputFile = Object.keys(result.outputs).find(
-  f => f.endsWith(".yaml") || f.endsWith(".json"),
+  (f) => f.endsWith(".yaml") || f.endsWith(".json"),
 );
 // result.outputs: {} (EMPTY)
 // Result: "No AsyncAPI output generated"
@@ -48,7 +48,7 @@ if (!result.outputs || Object.keys(result.outputs).length === 0) {
       asyncApiDoc: doc,
       diagnostics: result.program.diagnostics,
       program: result.program,
-      outputs: {[fallback.file]: content}, // Simulate result.outputs
+      outputs: { [fallback.file]: content }, // Simulate result.outputs
       outputFile: fallback.file,
     };
   }

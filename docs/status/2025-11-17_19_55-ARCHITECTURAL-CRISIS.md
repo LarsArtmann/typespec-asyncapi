@@ -14,16 +14,16 @@
 
 ```typescript
 // WHAT WE BUILT: 255 lines of perfect branded types
-export type ChannelName = string & { readonly __brand: 'ChannelName' }
-export type OperationName = string & { readonly __brand: 'OperationName' }
-export type MessageName = string & { readonly __brand: 'MessageName' }
-export type SchemaName = string & { readonly __brand: 'SchemaName' }
-export type ServerName = string & { readonly __brand: 'ServerName' }
-export type SecuritySchemeName = string & { readonly __brand: 'SecuritySchemeName' }
+export type ChannelName = string & { readonly __brand: "ChannelName" };
+export type OperationName = string & { readonly __brand: "OperationName" };
+export type MessageName = string & { readonly __brand: "MessageName" };
+export type SchemaName = string & { readonly __brand: "SchemaName" };
+export type ServerName = string & { readonly __brand: "ServerName" };
+export type SecuritySchemeName = string & { readonly __brand: "SecuritySchemeName" };
 
 // WHAT WE ACTUALLY USE: 20% - INVESTMENT WASTE
-function createChannel(id: string, path: string): Channel  // ❌ SHOULD BE ChannelName, ChannelPath
-function createOperation(name: string): Operation      // ❌ SHOULD BE OperationName
+function createChannel(id: string, path: string): Channel; // ❌ SHOULD BE ChannelName, ChannelPath
+function createOperation(name: string): Operation; // ❌ SHOULD BE OperationName
 // 4/6 types COMPLETELY UNUSED - 67% WASTE
 ```
 
@@ -78,15 +78,17 @@ class MQTTProtocolBinding { static createChannelBinding(...) { ... } }
 class ChannelPath {
   private constructor(private readonly value: string) {}
   static create(path: string): Result<ChannelPath, ValidationError> {
-    return path.startsWith('/') ?
-      Result.ok(new ChannelPath(path)) :
-      Result.error(new ValidationError("ChannelPath must start with '/'"))
+    return path.startsWith("/")
+      ? Result.ok(new ChannelPath(path))
+      : Result.error(new ValidationError("ChannelPath must start with '/'"));
   }
 }
 
 // WHAT WE ACTUALLY BUILT (PRIMITIVE STRINGS):
-type ChannelName = string & { readonly __brand: 'ChannelName' }  // ❌ NO VALIDATION
-function createChannel(path: string): Channel { /* NO PATH VALIDATION! */ }
+type ChannelName = string & { readonly __brand: "ChannelName" }; // ❌ NO VALIDATION
+function createChannel(path: string): Channel {
+  /* NO PATH VALIDATION! */
+}
 ```
 
 **Impact:** **INVALID DOMAINS** - No business rule enforcement
@@ -117,8 +119,8 @@ interface ValidationResult {
 
 // AFTER: INVALID STATES UNREPRESENTABLE
 type ValidationResult<T> =
-  | { _tag: "Success", data: T }
-  | { _tag: "Failure", errors: ValidationError[] }
+  | { _tag: "Success"; data: T }
+  | { _tag: "Failure"; errors: ValidationError[] };
 // Can't have valid=true AND errors non-empty - IMPOSSIBLE!
 ```
 

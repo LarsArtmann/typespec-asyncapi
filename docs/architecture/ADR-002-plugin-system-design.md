@@ -33,17 +33,17 @@ We implemented a **Simple Plugin Registry Architecture** that provides protocol 
 
 ```typescript
 export type ProtocolPlugin = {
-  readonly name: AsyncAPIProtocolType
-  readonly version: string
+  readonly name: AsyncAPIProtocolType;
+  readonly version: string;
 
   // Optional binding generators
-  generateOperationBinding?: (operation: unknown) => Effect.Effect<Record<string, unknown>, Error>
-  generateMessageBinding?: (message: unknown) => Effect.Effect<Record<string, unknown>, Error>
-  generateServerBinding?: (server: unknown) => Effect.Effect<Record<string, unknown>, Error>
+  generateOperationBinding?: (operation: unknown) => Effect.Effect<Record<string, unknown>, Error>;
+  generateMessageBinding?: (message: unknown) => Effect.Effect<Record<string, unknown>, Error>;
+  generateServerBinding?: (server: unknown) => Effect.Effect<Record<string, unknown>, Error>;
 
   // Optional validation
-  validateConfig?: (config: unknown) => Effect.Effect<boolean, Error>
-}
+  validateConfig?: (config: unknown) => Effect.Effect<boolean, Error>;
+};
 ```
 
 ## Plugin Registry Implementation
@@ -52,12 +52,12 @@ export type ProtocolPlugin = {
 
 ```typescript
 class SimplePluginRegistry {
-  private readonly plugins = new Map<AsyncAPIProtocolType, ProtocolPlugin>()
+  private readonly plugins = new Map<AsyncAPIProtocolType, ProtocolPlugin>();
 
-  register(plugin: ProtocolPlugin): Effect.Effect<void, Error>
-  getPlugin(protocolName: AsyncAPIProtocolType): Effect.Effect<ProtocolPlugin | null, never>
-  getAllPlugins(): Effect.Effect<ProtocolPlugin[], never>
-  isSupported(protocolName: AsyncAPIProtocolType): Effect.Effect<boolean, never>
+  register(plugin: ProtocolPlugin): Effect.Effect<void, Error>;
+  getPlugin(protocolName: AsyncAPIProtocolType): Effect.Effect<ProtocolPlugin | null, never>;
+  getAllPlugins(): Effect.Effect<ProtocolPlugin[], never>;
+  isSupported(protocolName: AsyncAPIProtocolType): Effect.Effect<boolean, never>;
 }
 ```
 
@@ -95,12 +95,12 @@ export const kafkaPlugin: ProtocolPlugin = {
       const binding: KafkaOperationBinding = {
         groupId: PROTOCOL_DEFAULTS.kafka.defaultGroupId,
         clientId: PROTOCOL_DEFAULTS.kafka.defaultClientId,
-        bindingVersion: "0.5.0"
-      }
-      return { kafka: binding }
-    })
+        bindingVersion: "0.5.0",
+      };
+      return { kafka: binding };
+    }),
   // ... message and server bindings
-}
+};
 ```
 
 ### WebSocket Plugin (`websocket-plugin.ts`)
@@ -115,11 +115,11 @@ export const websocketPlugin: ProtocolPlugin = {
       const binding: WebSocketOperationBinding = {
         method: "GET",
         query: { type: "object" },
-        bindingVersion: "0.1.0"
-      }
-      return { websockets: binding }
-    })
-}
+        bindingVersion: "0.1.0",
+      };
+      return { websockets: binding };
+    }),
+};
 ```
 
 ### HTTP Plugin (`http-plugin.ts`)
@@ -134,11 +134,11 @@ export const httpPlugin: ProtocolPlugin = {
       const binding: HTTPOperationBinding = {
         type: "request",
         method: "POST",
-        bindingVersion: "0.3.0"
-      }
-      return { http: binding }
-    })
-}
+        bindingVersion: "0.3.0",
+      };
+      return { http: binding };
+    }),
+};
 ```
 
 ## Plugin Loading Strategy
@@ -148,17 +148,19 @@ export const httpPlugin: ProtocolPlugin = {
 ```typescript
 export const registerBuiltInPlugins = (): Effect.Effect<void, Error> =>
   Effect.gen(function* () {
-    yield* Effect.log("🚀 Loading built-in protocol plugins...")
+    yield* Effect.log("🚀 Loading built-in protocol plugins...");
 
     // Lazy imports for performance
-    const { kafkaPlugin } = yield* Effect.promise(() => import("./built-in/kafka-plugin.js"))
-    const { websocketPlugin } = yield* Effect.promise(() => import("./built-in/websocket-plugin.js"))
-    const { httpPlugin } = yield* Effect.promise(() => import("./built-in/http-plugin.js"))
+    const { kafkaPlugin } = yield* Effect.promise(() => import("./built-in/kafka-plugin.js"));
+    const { websocketPlugin } = yield* Effect.promise(
+      () => import("./built-in/websocket-plugin.js"),
+    );
+    const { httpPlugin } = yield* Effect.promise(() => import("./built-in/http-plugin.js"));
 
-    yield* pluginRegistry.register(kafkaPlugin)
-    yield* pluginRegistry.register(websocketPlugin)
-    yield* pluginRegistry.register(httpPlugin)
-  })
+    yield* pluginRegistry.register(kafkaPlugin);
+    yield* pluginRegistry.register(websocketPlugin);
+    yield* pluginRegistry.register(httpPlugin);
+  });
 ```
 
 ### Dynamic Plugin Usage
@@ -166,25 +168,26 @@ export const registerBuiltInPlugins = (): Effect.Effect<void, Error> =>
 ```typescript
 export const generateProtocolBinding = (
   protocolName: AsyncAPIProtocolType,
-  bindingType: 'operation' | 'message' | 'server',
-  data: unknown
+  bindingType: "operation" | "message" | "server",
+  data: unknown,
 ): Effect.Effect<Record<string, unknown> | null, Error> =>
   Effect.gen(function* () {
-    const plugin = yield* pluginRegistry.getPlugin(protocolName)
+    const plugin = yield* pluginRegistry.getPlugin(protocolName);
 
     if (!plugin) {
-      yield* Effect.log(`⚠️  No plugin found for protocol: ${protocolName}`)
-      return null
+      yield* Effect.log(`⚠️  No plugin found for protocol: ${protocolName}`);
+      return null;
     }
 
     // Execute appropriate plugin method
     switch (bindingType) {
-      case 'operation':
-        return plugin.generateOperationBinding ?
-          yield* plugin.generateOperationBinding(data) : null
+      case "operation":
+        return plugin.generateOperationBinding
+          ? yield* plugin.generateOperationBinding(data)
+          : null;
       // ... other cases
     }
-  })
+  });
 ```
 
 ## Community Plugin Development
@@ -200,28 +203,27 @@ export const mqttPlugin: ProtocolPlugin = {
   generateOperationBinding: (operation: unknown) =>
     Effect.gen(function* () {
       // Extract MQTT-specific operation data
-      const mqttData = extractMqttData(operation)
+      const mqttData = extractMqttData(operation);
 
       const binding: MQTTOperationBinding = {
         qos: mqttData.qos ?? 1,
         retain: mqttData.retain ?? false,
         messageExpiryInterval: mqttData.expiry ?? 60,
-        bindingVersion: "0.2.0"
-      }
+        bindingVersion: "0.2.0",
+      };
 
-      return { mqtt: binding }
+      return { mqtt: binding };
     }),
 
   validateConfig: (config: unknown) =>
     Effect.gen(function* () {
       // MQTT-specific validation logic
-      return isMqttConfigValid(config)
-    })
-}
+      return isMqttConfigValid(config);
+    }),
+};
 
 // Registration in user code
-export const registerMqttPlugin = () =>
-  pluginRegistry.register(mqttPlugin)
+export const registerMqttPlugin = () => pluginRegistry.register(mqttPlugin);
 ```
 
 ## AsyncAPI 3.0 Binding Compliance

@@ -77,10 +77,9 @@ namespace TestService {
     await fs.writeFile(tspFile, tspContent, "utf-8");
 
     // Compile
-    await execAsync(
-      `npx tsp compile ${tspFile} --emit @lars-artmann/typespec-asyncapi`,
-      { cwd: testDir },
-    );
+    await execAsync(`npx tsp compile ${tspFile} --emit @lars-artmann/typespec-asyncapi`, {
+      cwd: testDir,
+    });
   });
 
   afterAll(async () => {

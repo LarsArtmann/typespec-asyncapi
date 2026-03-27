@@ -262,9 +262,9 @@ Error: "Expected to contain: 'emitfile-test' Received: 'asyncapi.yaml'"
 // ✅ AVAILABLE: Use existing libraries effectively
 {
   "@asyncapi/parser": "3.4.0", // Use for validation
-  "@effect/schema": "0.75.5",   // Use for type-safe decorators
-  "ajv": "8.12.0",             // Use for JSON schema validation
-  "yaml": "2.3.4"              // Use for YAML processing
+  "@effect/schema": "0.75.5", // Use for type-safe decorators
+  "ajv": "8.12.0", // Use for JSON schema validation
+  "yaml": "2.3.4" // Use for YAML processing
 }
 ```
 

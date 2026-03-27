@@ -295,7 +295,7 @@ export async function compileAsyncAPISpecRaw(
         }
 
         Effect.log(`📊 Final outputFiles size: ${outputFiles.size}`);
-        
+
         // If we found files, break out of the loop
         if (outputFiles.size > 0) {
           break;
@@ -323,7 +323,9 @@ export async function compileAsyncAPISpecRaw(
   }
 
   if (!program) {
-    throw new Error(`Failed to compile TypeSpec program. Available keys: ${Object.keys(result).join(", ")}`);
+    throw new Error(
+      `Failed to compile TypeSpec program. Available keys: ${Object.keys(result).join(", ")}`,
+    );
   }
 
   return {

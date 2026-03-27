@@ -120,26 +120,26 @@ return Effect.gen(function* () {
 ```typescript
 // Convert null checks to Option patterns
 if (value != null) {
-  return processValue(value)
+  return processValue(value);
 }
-return defaultValue
+return defaultValue;
 // BECOMES:
 return pipe(
   Option.fromNullable(value),
   Option.map(processValue),
-  Option.getOrElse(() => defaultValue)
-)
+  Option.getOrElse(() => defaultValue),
+);
 
 // Convert nullable properties to Option<T>
 type ConfigOptions = {
-  timeout?: number
-  retries?: number
-}
+  timeout?: number;
+  retries?: number;
+};
 // BECOMES:
 type ConfigOptions = {
-  timeout: Option.Option<number>
-  retries: Option.Option<number>
-}
+  timeout: Option.Option<number>;
+  retries: Option.Option<number>;
+};
 ```
 
 ### 🚨 Task 1.4: Error Standardization (1 day)
@@ -151,19 +151,19 @@ type ConfigOptions = {
 ```typescript
 // Create tagged error classes
 export class EmitterConstructorError extends Data.TaggedError("EmitterConstructorError")<{
-  message: string
-  context?: Record<string, unknown>
+  message: string;
+  context?: Record<string, unknown>;
 }> {}
 
 export class PluginLoadError extends Data.TaggedError("PluginLoadError")<{
-  pluginName: string
-  reason: string
-  originalError?: unknown
+  pluginName: string;
+  reason: string;
+  originalError?: unknown;
 }> {}
 
 export class ValidationError extends Data.TaggedError("ValidationError")<{
-  documentId: string
-  errors: readonly string[]
+  documentId: string;
+  errors: readonly string[];
 }> {}
 ```
 
@@ -209,27 +209,27 @@ return Effect.gen(function* () {
 ```typescript
 // Convert Promise-returning interfaces to Effect
 interface IAsyncAPIEmitter {
-  programContext(program: Program): Promise<Record<string, unknown>>
-  writeOutput(sourceFiles: SourceFile<string>[]): Promise<void>
+  programContext(program: Program): Promise<Record<string, unknown>>;
+  writeOutput(sourceFiles: SourceFile<string>[]): Promise<void>;
 }
 // BECOMES:
 interface IAsyncAPIEmitter {
-  programContext(program: Program): Effect.Effect<Record<string, unknown>, ProgramContextError>
-  writeOutput(sourceFiles: SourceFile<string>[]): Effect.Effect<void, WriteOutputError>
+  programContext(program: Program): Effect.Effect<Record<string, unknown>, ProgramContextError>;
+  writeOutput(sourceFiles: SourceFile<string>[]): Effect.Effect<void, WriteOutputError>;
 }
 
 // Convert existing Promise chains to Effect composition
 return loadConfig()
-  .then(config => processConfig(config))
-  .then(result => saveResult(result))
-  .catch(error => handleError(error))
+  .then((config) => processConfig(config))
+  .then((result) => saveResult(result))
+  .catch((error) => handleError(error));
 // BECOMES:
 return pipe(
   loadConfig(),
   Effect.flatMap(processConfig),
   Effect.flatMap(saveResult),
-  Effect.catchAll(handleError)
-)
+  Effect.catchAll(handleError),
+);
 ```
 
 ### ⚠️ Task 2.3: Function Effect Conversion (1 day)
@@ -242,14 +242,16 @@ return pipe(
 // Convert utility functions to Effects
 export function validateConfiguration(config: unknown): boolean {
   // validation logic
-  return isValid
+  return isValid;
 }
 // BECOMES:
-export function validateConfiguration(config: unknown): Effect.Effect<boolean, ConfigValidationError> {
+export function validateConfiguration(
+  config: unknown,
+): Effect.Effect<boolean, ConfigValidationError> {
   return Effect.gen(function* () {
     // validation logic with proper error handling
-    return yield* Effect.succeed(isValid)
-  })
+    return yield* Effect.succeed(isValid);
+  });
 }
 ```
 
@@ -270,15 +272,19 @@ export function validateConfiguration(config: unknown): Effect.Effect<boolean, C
 ```typescript
 // Convert async functions to Effect.gen
 export async function $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): Promise<void> {
-  const { generateAsyncAPIWithEffect } = await import("./emitter-with-effect.js")
-  await Effect.runPromise(generateAsyncAPIWithEffect(context))
+  const { generateAsyncAPIWithEffect } = await import("./emitter-with-effect.js");
+  await Effect.runPromise(generateAsyncAPIWithEffect(context));
 }
 // BECOMES:
-export function $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): Effect.Effect<void, EmitError> {
+export function $onEmit(
+  context: EmitContext<AsyncAPIEmitterOptions>,
+): Effect.Effect<void, EmitError> {
   return Effect.gen(function* () {
-    const { generateAsyncAPIWithEffect } = yield* Effect.promise(() => import("./emitter-with-effect.js"))
-    return yield* generateAsyncAPIWithEffect(context)
-  })
+    const { generateAsyncAPIWithEffect } = yield* Effect.promise(
+      () => import("./emitter-with-effect.js"),
+    );
+    return yield* generateAsyncAPIWithEffect(context);
+  });
 }
 ```
 
@@ -290,13 +296,13 @@ export function $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): Effect.Ef
 
 ```typescript
 // Replace console logging with Effect.log
-console.error("Validation failed:", error)
+console.error("Validation failed:", error);
 // BECOMES:
-yield* Effect.logError("Validation failed", { error: error.message, context: error.context })
+yield * Effect.logError("Validation failed", { error: error.message, context: error.context });
 
-console.log("Processing completed successfully")
+console.log("Processing completed successfully");
 // BECOMES:
-yield* Effect.logInfo("Processing completed successfully")
+yield * Effect.logInfo("Processing completed successfully");
 ```
 
 ### 📋 Task 3.3: Performance Testing Migration (0.5 days)
@@ -358,12 +364,12 @@ runRegressionTest(testCaseName: string, testFunction: Effect.Effect<void, TestEr
 ```typescript
 // BEFORE
 if (!param) {
-  throw new Error("Invalid parameter")
+  throw new Error("Invalid parameter");
 }
 
 // AFTER
 if (!param) {
-  return Effect.fail(new InvalidParameterError("Parameter is required"))
+  return Effect.fail(new InvalidParameterError("Parameter is required"));
 }
 ```
 
@@ -372,20 +378,20 @@ if (!param) {
 ```typescript
 // BEFORE
 try {
-  const result = await operation()
-  return processResult(result)
+  const result = await operation();
+  return processResult(result);
 } catch (error) {
-  throw new ProcessingError(error)
+  throw new ProcessingError(error);
 }
 
 // AFTER
 return Effect.gen(function* () {
   const result = yield* Effect.tryPromise({
     try: () => operation(),
-    catch: (error) => new OperationError(error)
-  })
-  return yield* Effect.succeed(processResult(result))
-})
+    catch: (error) => new OperationError(error),
+  });
+  return yield* Effect.succeed(processResult(result));
+});
 ```
 
 #### Pattern 3: Null Safety Implementation
@@ -393,12 +399,12 @@ return Effect.gen(function* () {
 ```typescript
 // BEFORE
 function getValue(obj: { prop?: string }): string {
-  return obj.prop != null ? obj.prop : "default"
+  return obj.prop != null ? obj.prop : "default";
 }
 
 // AFTER
 function getValue(obj: { prop: Option.Option<string> }): string {
-  return Option.getOrElse(obj.prop, () => "default")
+  return Option.getOrElse(obj.prop, () => "default");
 }
 ```
 

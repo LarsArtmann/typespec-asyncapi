@@ -42,8 +42,9 @@
 
 16-18. **Fix naming-convention (9 violations):** - RuntimeValidator.ts: 6 Schema variables → camelCase - state.ts: 3 Schema/Transition variables → camelCase
 
-19-20. **Fix template literal expressions (5 violations):** - DocumentGenerator.ts: 2 fixes - PluginRegistry.ts: 2 fixes  
- - Other files: 1 fix
+19-20. **Fix template literal expressions (5 violations):** - DocumentGenerator.ts: 2 fixes - PluginRegistry.ts: 2 fixes
+
+- Other files: 1 fix
 
 #### **Progress Check 2:** Expect ~60 problems remaining
 

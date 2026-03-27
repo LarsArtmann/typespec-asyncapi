@@ -20,7 +20,9 @@ This document details the successful migration of the TypeSpec AsyncAPI emitter 
 
 ```typescript
 // Old approach: Direct function-based emitter
-export async function generateAsyncAPI(context: EmitContext<AsyncAPIEmitterOptions>): Promise<void> {
+export async function generateAsyncAPI(
+  context: EmitContext<AsyncAPIEmitterOptions>,
+): Promise<void> {
   const operations = discoverOperations(program);
   const asyncApiDoc = createAsyncAPIDocument(operations);
   // ... 15 separate functions
@@ -34,12 +36,14 @@ export async function generateAsyncAPI(context: EmitContext<AsyncAPIEmitterOptio
 // New approach: TypeEmitter class with AssetEmitter integration
 class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
   // All 15 functions now encapsulated as private methods
-  private discoverOperations(program: Program): Operation[]
-  private createAsyncAPIDocument(operations: Operation[]): AsyncAPIDocument
+  private discoverOperations(program: Program): Operation[];
+  private createAsyncAPIDocument(operations: Operation[]): AsyncAPIDocument;
   // ... all other functions preserved
 }
 
-export async function generateAsyncAPI(context: EmitContext<AsyncAPIEmitterOptions>): Promise<void> {
+export async function generateAsyncAPI(
+  context: EmitContext<AsyncAPIEmitterOptions>,
+): Promise<void> {
   const assetEmitter = createAssetEmitter(context.program, AsyncAPITypeEmitter, context);
   assetEmitter.emitProgram();
   await assetEmitter.writeOutput();
@@ -107,9 +111,9 @@ import { createAssetEmitter, TypeEmitter, type SourceFile } from "@typespec/asse
 
 ```typescript
 class AsyncAPITypeEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
-  override programContext(program: Program): Record<string, unknown>
-  override async writeOutput(sourceFiles: SourceFile<string>[]): Promise<void>
-  override async sourceFile(sourceFile: SourceFile<string>): Promise<any>
+  override programContext(program: Program): Record<string, unknown>;
+  override async writeOutput(sourceFiles: SourceFile<string>[]): Promise<void>;
+  override async sourceFile(sourceFile: SourceFile<string>): Promise<any>;
 }
 ```
 

@@ -102,10 +102,10 @@ export const regressionReportHelpers = {
 ```typescript
 // OLD - Redundant isValid
 type ProtocolValidationResult = {
-  isValid: boolean     // Derived from errors.length === 0
-  errors: string[]     // Single source of truth
-  warnings: string[]   // Could become inconsistent
-}
+  isValid: boolean; // Derived from errors.length === 0
+  errors: string[]; // Single source of truth
+  warnings: string[]; // Could become inconsistent
+};
 ```
 
 **Solution:**
@@ -114,15 +114,15 @@ type ProtocolValidationResult = {
 // NEW - Discriminated Union
 type ProtocolValidationResult =
   | { _tag: "valid"; warnings: string[] }
-  | { _tag: "invalid"; errors: string[]; warnings: string[] }
+  | { _tag: "invalid"; errors: string[]; warnings: string[] };
 
 // Helper functions
 export const protocolValidationHelpers = {
   isValid: (result) => result._tag === "valid",
   isInvalid: (result) => result._tag === "invalid",
-  getErrors: (result) => result._tag === "invalid" ? result.errors : [],
+  getErrors: (result) => (result._tag === "invalid" ? result.errors : []),
   getWarnings: (result) => result.warnings,
-}
+};
 ```
 
 **Benefits:**
@@ -142,11 +142,11 @@ export const protocolValidationHelpers = {
 ```typescript
 // OLD - Same redundant pattern as #2
 type TemplateValidationResult = {
-  isValid: boolean              // Derived from errors.length === 0
-  variables: string[]
-  unsupportedVariables: string[]
-  errors: string[]
-}
+  isValid: boolean; // Derived from errors.length === 0
+  variables: string[];
+  unsupportedVariables: string[];
+  errors: string[];
+};
 ```
 
 **Solution:**
@@ -189,13 +189,13 @@ export const templateValidationHelpers = {
 
 ```typescript
 // OLD - Type 'never' not allowed in template literals
-yield* Effect.logInfo(`option: ${context.options["output-file"]}`)
+yield * Effect.logInfo(`option: ${context.options["output-file"]}`);
 
 // NEW - Explicit type conversion
-yield* Effect.logInfo(`option: ${String(context.options["output-file"] ?? "undefined")}`)
+yield * Effect.logInfo(`option: ${String(context.options["output-file"] ?? "undefined")}`);
 
 // NEW - Proper type assertion
-const outputFile = (context.options["output-file"] as string | undefined) ?? "asyncapi"
+const outputFile = (context.options["output-file"] as string | undefined) ?? "asyncapi";
 ```
 
 #### B) Banned try/catch Block (Line 159)
@@ -203,29 +203,26 @@ const outputFile = (context.options["output-file"] as string | undefined) ?? "as
 ```typescript
 // OLD - Banned by ESLint (should use Effect.gen)
 try {
-  const programFs = (context.program as any).fs || (context.program as any).virtualFs
-  programFs.add(path, content)
+  const programFs = (context.program as any).fs || (context.program as any).virtualFs;
+  programFs.add(path, content);
 } catch (error) {
-  console.log(error)
+  console.log(error);
 }
 
 // NEW - Effect.gen with catchAll
-yield* Effect.gen(function* () {
-  type ProgramWithFs = typeof context.program & {
-    fs?: { add?: (path: string, content: string) => void }
-    virtualFs?: { add?: (path: string, content: string) => void }
-  }
-  const programWithFs = context.program as ProgramWithFs
-  const programFs = programWithFs.fs ?? programWithFs.virtualFs
+yield *
+  Effect.gen(function* () {
+    type ProgramWithFs = typeof context.program & {
+      fs?: { add?: (path: string, content: string) => void };
+      virtualFs?: { add?: (path: string, content: string) => void };
+    };
+    const programWithFs = context.program as ProgramWithFs;
+    const programFs = programWithFs.fs ?? programWithFs.virtualFs;
 
-  if (programFs?.add && typeof programFs.add === 'function') {
-    programFs.add(tspOutputPath, content)
-  }
-}).pipe(
-  Effect.catchAll((error) =>
-    Effect.logInfo(`bridging failed: ${String(error)}`)
-  )
-)
+    if (programFs?.add && typeof programFs.add === "function") {
+      programFs.add(tspOutputPath, content);
+    }
+  }).pipe(Effect.catchAll((error) => Effect.logInfo(`bridging failed: ${String(error)}`)));
 ```
 
 #### C) Unsafe 'any' Type Assignments (Line 161)

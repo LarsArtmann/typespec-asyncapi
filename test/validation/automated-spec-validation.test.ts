@@ -296,11 +296,10 @@ describe("🚨 CRITICAL: AUTOMATED ASYNCAPI SPECIFICATION VALIDATION", () => {
 
           let parsedSpec: AsyncAPIObject | string;
           try {
-            parsedSpec = await parseAsyncAPIOutput(
-              compilationResult.result.outputFiles,
-              fileName,
+            parsedSpec = await parseAsyncAPIOutput(compilationResult.result.outputFiles, fileName);
+            console.log(
+              `🔍 DEBUG: parseAsyncAPIOutput returned for ${fileName}: ${typeof parsedSpec}`,
             );
-            console.log(`🔍 DEBUG: parseAsyncAPIOutput returned for ${fileName}: ${typeof parsedSpec}`);
             if (typeof parsed === "object") {
               console.log(
                 `🔍 DEBUG: parseAsyncAPIOutput object keys: ${Object.keys(parsedSpec as object).join(", ")}`,

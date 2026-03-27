@@ -8,6 +8,7 @@
 ## Overview
 
 This document analyzes the TypeSpec AsyncAPI Emitter project to identify:
+
 1. Existing components that could be extracted as standalone reusable libraries/SDKs
 2. Alternative projects in each space and how our abstractions could provide more value
 3. Strategic recommendations for library extraction
@@ -16,14 +17,14 @@ This document analyzes the TypeSpec AsyncAPI Emitter project to identify:
 
 ## Executive Summary
 
-| Component | Extraction Priority | Value | Effort | Recommendation |
-|-----------|--------------------| ----- | ------ | -------------- |
-| TypeSpec Decorator Framework | HIGH | HIGH | LOW | Extract immediately |
-| AsyncAPI Domain Types | HIGH | MEDIUM | LOW | Extract as separate package |
-| Path Template Utilities | MEDIUM | MEDIUM | LOW | Extract to utility package |
-| Protocol Binding Registry | MEDIUM | HIGH | MEDIUM | Extract after stabilization |
-| Plugin System | LOW | HIGH | HIGH | Mature first, then extract |
-| AsyncAPI Validator | LOW | MEDIUM | MEDIUM | Consider contributing to asyncapi org |
+| Component                    | Extraction Priority | Value  | Effort | Recommendation                        |
+| ---------------------------- | ------------------- | ------ | ------ | ------------------------------------- |
+| TypeSpec Decorator Framework | HIGH                | HIGH   | LOW    | Extract immediately                   |
+| AsyncAPI Domain Types        | HIGH                | MEDIUM | LOW    | Extract as separate package           |
+| Path Template Utilities      | MEDIUM              | MEDIUM | LOW    | Extract to utility package            |
+| Protocol Binding Registry    | MEDIUM              | HIGH   | MEDIUM | Extract after stabilization           |
+| Plugin System                | LOW                 | HIGH   | HIGH   | Mature first, then extract            |
+| AsyncAPI Validator           | LOW                 | MEDIUM | MEDIUM | Consider contributing to asyncapi org |
 
 ---
 
@@ -34,6 +35,7 @@ This document analyzes the TypeSpec AsyncAPI Emitter project to identify:
 **Location:** `src/minimal-decorators.ts`, `src/decorators.ts`, `lib/main.tsp`
 
 **Current State:**
+
 - Decorator implementations for AsyncAPI concepts (@channel, @publish, @subscribe, @message, @protocol, @security, @server)
 - State management utilities for storing decorator data
 - Diagnostic reporting helpers
@@ -44,17 +46,18 @@ This document analyzes the TypeSpec AsyncAPI Emitter project to identify:
 **Proposed Package:** `@lars-artmann/typespec-decorator-utils`
 
 **What It Would Contain:**
+
 ```typescript
 // Core utilities for TypeSpec decorator development
-export function reportDecoratorDiagnostic(context, code, target, message, severity)
-export function validateConfig(config, context, target, diagnosticCode, errorMessage)
-export function createStoreState<T>(program, symbol)
-export function getStateMap<T>(program, symbol)
+export function reportDecoratorDiagnostic(context, code, target, message, severity);
+export function validateConfig(config, context, target, diagnosticCode, errorMessage);
+export function createStoreState<T>(program, symbol);
+export function getStateMap<T>(program, symbol);
 
 // Decorator factory patterns
-export function createTypedDecorator<TConfig>(options: DecoratorOptions<TConfig>)
-export function createModelDecorator<TConfig>(options: ModelDecoratorOptions<TConfig>)
-export function createOperationDecorator<TConfig>(options: OperationDecoratorOptions<TConfig>)
+export function createTypedDecorator<TConfig>(options: DecoratorOptions<TConfig>);
+export function createModelDecorator<TConfig>(options: ModelDecoratorOptions<TConfig>);
+export function createOperationDecorator<TConfig>(options: OperationDecoratorOptions<TConfig>);
 ```
 
 **Alternatives:**
@@ -64,6 +67,7 @@ export function createOperationDecorator<TConfig>(options: OperationDecoratorOpt
 | TypeSpec HTTP library | Reference implementation | Tied to HTTP, not reusable |
 
 **Our Value Add:**
+
 - Higher-level abstraction over TypeSpec's low-level decorator API
 - Reusable patterns for validation, state management, diagnostics
 - Works across any TypeSpec library (not just AsyncAPI)
@@ -76,6 +80,7 @@ export function createOperationDecorator<TConfig>(options: OperationDecoratorOpt
 **Location:** `src/types/minimal-domain-types.ts`, `src/state.ts`
 
 **Current State:**
+
 - Branded types for type safety (ChannelPath, MessageId, SchemaName)
 - Configuration interfaces (ChannelConfig, MessageConfig, ServerConfigData)
 - AsyncAPI document types
@@ -86,6 +91,7 @@ export function createOperationDecorator<TConfig>(options: OperationDecoratorOpt
 **Proposed Package:** `@lars-artmann/asyncapi-types`
 
 **What It Would Contain:**
+
 ```typescript
 // Branded types for compile-time safety
 export type ChannelPath = Brand<"ChannelPath", string>
@@ -115,6 +121,7 @@ export const AsyncAPIDocumentSchema = Schema.Struct({ ... })
 | Hand-written types | Common approach | No branded types, no validation |
 
 **Our Value Add:**
+
 - Branded types prevent mixing up IDs (ChannelPath vs MessageId)
 - Effect.Schema integration for runtime + compile-time validation
 - Protocol-specific bindings with proper typing
@@ -127,6 +134,7 @@ export const AsyncAPIDocumentSchema = Schema.Struct({ ... })
 **Location:** `src/domain/models/path-templates.ts`
 
 **Current State:**
+
 - Path template parsing (`parsePathTemplate`)
 - TypeSpec to AsyncAPI address conversion
 - Parameter extraction
@@ -137,19 +145,20 @@ export const AsyncAPIDocumentSchema = Schema.Struct({ ... })
 **Proposed Package:** `@lars-artmann/path-template-utils`
 
 **What It Would Contain:**
+
 ```typescript
 // Parsing and conversion
-export function parsePathTemplate(path: string): PathTemplate
-export function convertToAsyncAPIAddress(template: PathTemplate): string
-export function extractParameters(path: string): PathParameter[]
+export function parsePathTemplate(path: string): PathTemplate;
+export function convertToAsyncAPIAddress(template: PathTemplate): string;
+export function extractParameters(path: string): PathParameter[];
 
 // Validation
-export function validatePathTemplate(path: string): boolean
-export function normalizePathTemplate(path: string): string
+export function validatePathTemplate(path: string): boolean;
+export function normalizePathTemplate(path: string): string;
 
 // Utilities
-export function pathToChannelName(path: string): string
-export function interpolatePath(template: string, params: Record<string, string>): string
+export function pathToChannelName(path: string): string;
+export function interpolatePath(template: string, params: Record<string, string>): string;
 ```
 
 **Alternatives:**
@@ -160,6 +169,7 @@ export function interpolatePath(template: string, params: Record<string, string>
 | OpenAPI path utils | Common ecosystem | Different conventions |
 
 **Our Value Add:**
+
 - TypeSpec-specific path syntax support (`{param:type}`)
 - AsyncAPI channel address conventions
 - Lightweight, zero dependencies
@@ -172,6 +182,7 @@ export function interpolatePath(template: string, params: Record<string, string>
 **Location:** `src/domain/decorators/`, `src/types/minimal-domain-types.ts`
 
 **Current State:**
+
 - Protocol configuration types (Kafka, MQTT, WebSocket, HTTP, AMQP)
 - Protocol-specific defaults
 - Binding validation
@@ -181,6 +192,7 @@ export function interpolatePath(template: string, params: Record<string, string>
 **Proposed Package:** `@lars-artmann/asyncapi-protocol-bindings`
 
 **What It Would Contain:**
+
 ```typescript
 // Protocol registry
 export const ProtocolRegistry = {
@@ -191,24 +203,24 @@ export const ProtocolRegistry = {
   amqp: AMQPProtocolHandler,
   nats: NATSProtocolHandler,
   redis: RedisProtocolHandler,
-}
+};
 
 // Per-protocol types and defaults
 export interface KafkaProtocolConfig {
-  partitions?: number
-  replicationFactor?: number
-  consumerGroup?: string
-  sasl?: SASLConfig
+  partitions?: number;
+  replicationFactor?: number;
+  consumerGroup?: string;
+  sasl?: SASLConfig;
 }
 
 export const KafkaDefaults = {
   partitions: 1,
   replicationFactor: 1,
   consumerGroup: "default",
-}
+};
 
 // Validation per protocol
-export function validateKafkaConfig(config: unknown): Result<KafkaProtocolConfig>
+export function validateKafkaConfig(config: unknown): Result<KafkaProtocolConfig>;
 ```
 
 **Alternatives:**
@@ -218,6 +230,7 @@ export function validateKafkaConfig(config: unknown): Result<KafkaProtocolConfig
 | Protocol-specific SDKs | Per-protocol | Fragmented, no unified interface |
 
 **Our Value Add:**
+
 - Unified TypeScript interface across all protocols
 - Per-protocol defaults with type safety
 - Validation with Effect.Schema
@@ -230,6 +243,7 @@ export function validateKafkaConfig(config: unknown): Result<KafkaProtocolConfig
 **Location:** `src/plugins/core/PluginSystem.ts`
 
 **Current State:**
+
 - Basic plugin interface
 - Plugin registry with Effect.TS integration
 - Initialize/start/stop lifecycle
@@ -239,27 +253,28 @@ export function validateKafkaConfig(config: unknown): Result<KafkaProtocolConfig
 **Proposed Package:** `@lars-artmann/effect-plugin-system`
 
 **What It Would Contain:**
+
 ```typescript
 // Plugin interface
 export interface Plugin {
-  readonly name: string
-  readonly version: string
-  readonly initialize: () => Effect.Effect<void, never>
+  readonly name: string;
+  readonly version: string;
+  readonly initialize: () => Effect.Effect<void, never>;
 }
 
 // Registry
 export class PluginRegistry {
-  register(plugin: Plugin): Effect.Effect<void, never>
-  get(name: string): Plugin | undefined
-  getAll(): Plugin[]
-  clear(): Effect.Effect<void, never>
+  register(plugin: Plugin): Effect.Effect<void, never>;
+  get(name: string): Plugin | undefined;
+  getAll(): Plugin[];
+  clear(): Effect.Effect<void, never>;
 }
 
 // Lifecycle management
 export interface PluginLifecycle {
-  onStart: () => Effect.Effect<void, Error>
-  onStop: () => Effect.Effect<void, Error>
-  onHealthCheck: () => Effect.Effect<void, Error>
+  onStart: () => Effect.Effect<void, Error>;
+  onStop: () => Effect.Effect<void, Error>;
+  onHealthCheck: () => Effect.Effect<void, Error>;
 }
 ```
 
@@ -271,6 +286,7 @@ export interface PluginLifecycle {
 | InversifyJS | DI container | Different paradigm |
 
 **Our Value Add:**
+
 - Native Effect.TS integration
 - Railway-oriented error handling
 - Type-safe plugin interfaces
@@ -285,6 +301,7 @@ export interface PluginLifecycle {
 **Location:** Test utilities, `@asyncapi/parser` integration
 
 **Current State:**
+
 - Integration with `@asyncapi/parser`
 - Schema validation
 - Spec compliance checking
@@ -370,27 +387,28 @@ Per `HOW_TO_GOLANG.md` principles (adapted for TypeScript):
 
 ### AsyncAPI Ecosystem
 
-| Project | Purpose | Relationship |
-|---------|---------|--------------|
-| `@asyncapi/parser` | Parse AsyncAPI specs | We use for validation |
-| `@asyncapi/specs` | JSON Schemas | We could use for validation |
-| `@asyncapi/cli` | CLI tools | Complementary |
-| `@asyncapi/java-spring-template` | Code generation | Different language |
-| `@asyncapi/nodejs-template` | Code generation | Potential integration |
+| Project                          | Purpose              | Relationship                |
+| -------------------------------- | -------------------- | --------------------------- |
+| `@asyncapi/parser`               | Parse AsyncAPI specs | We use for validation       |
+| `@asyncapi/specs`                | JSON Schemas         | We could use for validation |
+| `@asyncapi/cli`                  | CLI tools            | Complementary               |
+| `@asyncapi/java-spring-template` | Code generation      | Different language          |
+| `@asyncapi/nodejs-template`      | Code generation      | Potential integration       |
 
 ### TypeSpec Ecosystem
 
-| Project | Purpose | Relationship |
-|---------|---------|--------------|
-| `@typespec/compiler` | Core compiler | Dependency |
-| `@typespec/http` | HTTP library | Pattern reference |
-| `@typespec/openapi3` | OpenAPI emitter | Parallel effort |
-| `@typespec/rest` | REST library | Complementary |
-| `@typespec/versioning` | Versioning | Optional peer |
+| Project                | Purpose         | Relationship      |
+| ---------------------- | --------------- | ----------------- |
+| `@typespec/compiler`   | Core compiler   | Dependency        |
+| `@typespec/http`       | HTTP library    | Pattern reference |
+| `@typespec/openapi3`   | OpenAPI emitter | Parallel effort   |
+| `@typespec/rest`       | REST library    | Complementary     |
+| `@typespec/versioning` | Versioning      | Optional peer     |
 
 ### Our Unique Position
 
 We bridge TypeSpec and AsyncAPI ecosystems:
+
 - Type-safe API design with TypeSpec
 - Event-driven API documentation with AsyncAPI
 - Protocol-agnostic abstraction

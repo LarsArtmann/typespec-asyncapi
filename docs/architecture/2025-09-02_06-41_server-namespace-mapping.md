@@ -125,7 +125,7 @@ identifiers at the document level.
 ```typescript
 // emitter-options.ts
 export interface AsyncAPIEmitterOptions {
-	serverNamingStrategy: "qualified" | "last-wins" | "error-on-conflict"
+  serverNamingStrategy: "qualified" | "last-wins" | "error-on-conflict";
 }
 ```
 
@@ -178,39 +178,39 @@ This approach best aligns with **TypeSpec's core philosophy**:
 
 ```typescript
 function buildServersFromNamespaces(program: Program): Record<string, AsyncAPIServer> {
-	const servers: Record<string, AsyncAPIServer> = {}
+  const servers: Record<string, AsyncAPIServer> = {};
 
-	// Iterate through all namespaces with server configurations
-	for (const [namespace, serverConfigs] of program.stateMap($lib.stateKeys.serverConfigs)) {
-		const namespaceName = getNamespaceName(namespace)
+  // Iterate through all namespaces with server configurations
+  for (const [namespace, serverConfigs] of program.stateMap($lib.stateKeys.serverConfigs)) {
+    const namespaceName = getNamespaceName(namespace);
 
-		// Process each server within the namespace
-		for (const [serverName, config] of serverConfigs) {
-			const qualifiedName = `${namespaceName}.${serverName}`
-			servers[qualifiedName] = convertServerConfigToAsyncAPI(config)
-		}
-	}
+    // Process each server within the namespace
+    for (const [serverName, config] of serverConfigs) {
+      const qualifiedName = `${namespaceName}.${serverName}`;
+      servers[qualifiedName] = convertServerConfigToAsyncAPI(config);
+    }
+  }
 
-	return servers
+  return servers;
 }
 
 function getNamespaceName(namespace: Namespace): string {
-	// Handle global namespace
-	if (namespace.name === "" || !namespace.name) {
-		return "Global"
-	}
+  // Handle global namespace
+  if (namespace.name === "" || !namespace.name) {
+    return "Global";
+  }
 
-	// Sanitize namespace name for AsyncAPI compatibility
-	return namespace.name.replace(/[^a-zA-Z0-9_-]/g, '_')
+  // Sanitize namespace name for AsyncAPI compatibility
+  return namespace.name.replace(/[^a-zA-Z0-9_-]/g, "_");
 }
 
 function convertServerConfigToAsyncAPI(config: ServerConfig): AsyncAPIServer {
-	return {
-		host: extractHostFromUrl(config.url),
-		protocol: config.protocol,
-		description: config.description,
-		// Additional AsyncAPI server properties...
-	}
+  return {
+    host: extractHostFromUrl(config.url),
+    protocol: config.protocol,
+    description: config.description,
+    // Additional AsyncAPI server properties...
+  };
 }
 ```
 
@@ -273,11 +273,11 @@ namespace "" {
 ```typescript
 // This should be impossible but validate anyway
 if (servers[qualifiedName]) {
-	program.reportDiagnostic({
-		code: "duplicate-server-qualified-name",
-		messageId: "duplicateQualifiedServerName",
-		target: serverDeclaration
-	})
+  program.reportDiagnostic({
+    code: "duplicate-server-qualified-name",
+    messageId: "duplicateQualifiedServerName",
+    target: serverDeclaration,
+  });
 }
 ```
 
@@ -343,7 +343,7 @@ This is a **BREAKING CHANGE** for any existing users expecting flat server names
 ```typescript
 // Potential future enhancement
 export interface AsyncAPIEmitterOptions {
-	serverNaming: "qualified" | "legacy-flat" // Default: "qualified"
+  serverNaming: "qualified" | "legacy-flat"; // Default: "qualified"
 }
 ```
 

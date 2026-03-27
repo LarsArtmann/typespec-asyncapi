@@ -82,13 +82,13 @@ expect(command.payload.properties!.items).toEqual({
 **Evidence**:
 
 ```javascript
-expect(message.headers).toBeDefined()
+expect(message.headers).toBeDefined();
 // Received: undefined
 
-expect(securitySchemes.oauth2).toBeDefined()
+expect(securitySchemes.oauth2).toBeDefined();
 // Received: undefined
 
-expect(servers.production).toBeDefined()
+expect(servers.production).toBeDefined();
 // Received: undefined
 ```
 

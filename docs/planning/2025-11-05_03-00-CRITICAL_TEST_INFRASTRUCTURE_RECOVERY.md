@@ -18,10 +18,10 @@
 
 ```typescript
 // TEST EXPECTS:
-expect(compilationResult.outputFiles.size).toBeGreaterThan(0)
+expect(compilationResult.outputFiles.size).toBeGreaterThan(0);
 
 // BUT compileAsyncAPISpec RETURNS:
-AsyncAPIObject // Not CompilationResult!
+AsyncAPIObject; // Not CompilationResult!
 ```
 
 ---
@@ -70,15 +70,15 @@ Each ~30 minutes, restore critical functionality:
 export async function compileAsyncAPISpec(
   source: string,
   options: AsyncAPIEmitterOptions = {},
-): Promise<AsyncAPIObject> // ← Tests expect CompilationResult!
+): Promise<AsyncAPIObject>; // ← Tests expect CompilationResult!
 
 // Tests expect:
 const compilationResult = await compileAsyncAPISpec(scenario.source, {
   "file-type": format,
   "output-file": scenario.name,
-})
-expect(compilationResult.outputFiles).toBeDefined() // ← FAILS!
-expect(compilationResult.outputFiles.size).toBeGreaterThan(0) // ← FAILS!
+});
+expect(compilationResult.outputFiles).toBeDefined(); // ← FAILS!
+expect(compilationResult.outputFiles.size).toBeGreaterThan(0); // ← FAILS!
 ```
 
 **Solution Options:**
@@ -89,10 +89,10 @@ expect(compilationResult.outputFiles.size).toBeGreaterThan(0) // ← FAILS!
 export async function compileAsyncAPISpecWithResult(
   source: string,
   options: AsyncAPIEmitterOptions = {},
-): Promise<{asyncApiDoc: AsyncAPIObject, result: CompilationResult}> {
-  const result = await compileAsyncAPISpecRaw(source, options)
-  const asyncApiDoc = await parseAndValidateOutput(result)
-  return { asyncApiDoc, result }
+): Promise<{ asyncApiDoc: AsyncAPIObject; result: CompilationResult }> {
+  const result = await compileAsyncAPISpecRaw(source, options);
+  const asyncApiDoc = await parseAndValidateOutput(result);
+  return { asyncApiDoc, result };
 }
 ```
 

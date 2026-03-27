@@ -14,8 +14,9 @@
 **THE PROBLEM:** TypeSpec AsyncAPI emitter decorators (@channel, @publish, @subscribe, @server) execute correctly with `createTestHost()` but **NEVER execute** when using `EmitterTester.compile()`. This blocks 250+ tests from validating any functionality.
 
 **IMPACT:** All EmitterTester-based integration tests fail with empty state:
+
 - Generated AsyncAPI documents have 0 channels
-- Generated AsyncAPI documents have 0 operations  
+- Generated AsyncAPI documents have 0 operations
 - Generated AsyncAPI documents have 0 messages
 - State remains empty: `{channels: {}, messages: {}, servers: {}}`
 
@@ -44,17 +45,20 @@
 ### Working Tests (What Proves The Code Works):
 
 **✅ Effect.TS Pattern Tests: 13/13 (100%)**
+
 - Railway programming patterns
 - Error propagation and recovery
 - Performance benchmarks
 
 **✅ Documentation Tests: 84/84 (100%)**
+
 - Core concepts mapping
 - Data types validation
 - Quick reference patterns
 - Real-world examples
 
 **✅ Simple Integration Tests: 3/3 (100%)**
+
 - Simple AsyncAPI emitter (no decorators)
 - Uses direct compilation approach
 - Bypasses EmitterTester completely
@@ -77,11 +81,12 @@
 ### What Works Perfectly:
 
 **Approach A: Direct Compilation (createTestHost)**
+
 ```typescript
 const host = await createAsyncAPITestHost();
 host.addTypeSpecFile("test.tsp", "@channel('/test') op test(): void;");
 const result = await host.diagnose("test.tsp", {
-  emit: ["@lars-artmann/typespec-asyncapi"]
+  emit: ["@lars-artmann/typespec-asyncapi"],
 });
 // ✅ Decorators EXECUTE
 // ✅ State POPULATED
@@ -90,6 +95,7 @@ const result = await host.diagnose("test.tsp", {
 ```
 
 **Evidence of Working:**
+
 - test/integration/simple-emitter.test.ts: 3/3 passing
 - Files written to `./@lars-artmann/typespec-asyncapi/`
 - Decorator state correctly populated
@@ -98,9 +104,10 @@ const result = await host.diagnose("test.tsp", {
 ### What Fails Completely:
 
 **Approach B: EmitterTester API (Broken)**
+
 ```typescript
 const tester = await createTester(packageRoot, {
-  libraries: ["@lars-artmann/typespec-asyncapi"]
+  libraries: ["@lars-artmann/typespec-asyncapi"],
 })
   .importLibraries()
   .using("TypeSpec.AsyncAPI")
@@ -115,6 +122,7 @@ const result = await tester.compile("@channel('/test') op test(): void;");
 ```
 
 **Evidence of Failing:**
+
 - test/unit/emitter-core.test.ts: 0/12 passing
 - Console logs show `$onEmit` called but decorators never execute
 - Virtual filesystem empty: `result.fs.fs` has 0 keys
@@ -124,6 +132,7 @@ const result = await tester.compile("@channel('/test') op test(): void;");
 ### The Critical Gap:
 
 **Working Path (createTestHost):**
+
 - ✅ Creates TypeSpec program
 - ✅ Loads JavaScript library files (dist/src/tsp-index.js)
 - ✅ Registers decorator functions with TypeSpec
@@ -132,6 +141,7 @@ const result = await tester.compile("@channel('/test') op test(): void;");
 - ✅ Emitter extracts state and generates files
 
 **Failing Path (EmitterTester):**
+
 - ✅ Creates TypeSpec program
 - ❓ **Unknown:** Does it load JavaScript library files?
 - ❓ **Unknown:** Are decorator functions registered?
@@ -168,12 +178,14 @@ const result = await tester.compile("@channel('/test') op test(): void;");
 **Theory:** EmitterTester compiles TypeSpec to AST but never imports/executes the JavaScript library files that contain decorator implementations.
 
 **Evidence:**
+
 - No console.log output from decorator functions in EmitterTester mode
 - Decorators work with createTestHost (which uses `loadTypeSpecScript()` and explicit imports)
 - virtual filesystem empty suggests nothing was written by emitter
 - Real filesystem has stale file (unchanged from previous compilation)
 
 **Test:** Check if `dist/src/tsp-index.js` loads during EmitterTester.compile()
+
 ```typescript
 // Add console.log in dist/src/tsp-index.js
 console.log("🔥 LIBRARY LOADED: tsp-index.js executed");
@@ -186,12 +198,14 @@ console.log("🔥 LIBRARY LOADED: tsp-index.js executed");
 **Theory:** `.using("TypeSpec.AsyncAPI")` works in test setup but decorators are registered under different namespace or not registered at all in compiled program context.
 
 **Evidence:**
+
 - `.using()` is called and doesn't error
 - No diagnostics about "unknown decorator"
 - Importerror not thrown
 - Just silent failure (decorators don't execute)
 
 **Test:** Check what's in result.program.stateKeys or try direct namespace access
+
 ```typescript
 console.log(Object.keys(result.program.stateMap));
 ```
@@ -203,10 +217,12 @@ console.log(Object.keys(result.program.stateMap));
 **Theory:** EmitterTester creates TypeSpec program in isolated context - library loads in test file context but decorators not registered with compiled program context.
 
 **Evidence:**
+
 - Decorators might be loaded but attached to wrong program instance
 - Instance.create() might create fresh program without library bindings
 
 **Test:** Check library registration after createInstance()
+
 ```typescript
 const instance = await tester.createInstance();
 console.log(instance.program.stateMap.size);
@@ -219,6 +235,7 @@ console.log(instance.program.stateMap.size);
 **Theory:** TypeSpec 1.8.0 introduced changes to EmitterTester API that aren't documented, and existing examples use older patterns.
 
 **Evidence:**
+
 - commit d2e7c75 says "fixed" virtual FS by removing validation
 - Previous developers struggled with EmitterTester
 - No clear examples in TypeSpec docs of decorator-based emitter tests
@@ -236,6 +253,7 @@ console.log(instance.program.stateMap.size);
 ### The Options:
 
 **Option A: Continue Debugging EmitterTester (HIGH RISK)**
+
 - 🔴 Unclear timeline (1 day to 1 week+)
 - 🔴 Unclear probability of success (10-30%)
 - 🔴 Requires deep TypeSpec framework knowledge
@@ -244,6 +262,7 @@ console.log(instance.program.stateMap.size);
 - ⚠️ Even if fixed, API may be unstable across TypeSpec versions
 
 **Option B: Switch to createTestHost (LOW RISK - STRONGLY RECOMMENDED)**
+
 - ✅ Pattern already proven (3/3 tests passing)
 - ✅ Immediate solution (2-4 hours to migrate 250 tests)
 - ✅ Higher confidence of success (90%)
@@ -253,6 +272,7 @@ console.log(instance.program.stateMap.size);
 - 🎯 Gets us to 80%+ test pass rate TODAY
 
 **Option C: Hybrid Approach (BALANCED RISK)**
+
 - 🟡 Use EmitterTester where decorators not needed (unit tests)
 - 🟡 Use createTestHost where decorators needed (integration tests)
 - 🟡 Document both patterns
@@ -265,6 +285,7 @@ console.log(instance.program.stateMap.size);
 **Choose Option B: Switch to createTestHost/direct compilation approach**
 
 **Rationale:**
+
 1. **Proven to work:** simple-emitter.test.ts demonstrates full functionality
 2. **Immediate results:** 250+ tests unblock in 2-4 hours
 3. **Lower risk:** 90% confidence vs 10-30% for EmitterTester
@@ -273,12 +294,14 @@ console.log(instance.program.stateMap.size);
 6. **Goal-oriented:** Achieves 80%+ test pass rate, proves system works
 
 **Counter-argument for Option A (why NOT to continue EmitterTester):**
+
 - Risk of spending days with no solution
 - Even if solved, may be fragile across TypeSpec versions
 - Better to have working system today than perfect system next week
 - Can always revisit and improve testing approach later
 
 **Counter-argument for Option C (why hybrid adds complexity):**
+
 - Two different test patterns = more to maintain
 - Harder for contributors to understand
 - Doesn't solve core problem, just works around it
@@ -291,6 +314,7 @@ console.log(instance.program.stateMap.size);
 ### If Choosing Option A (Debug EmitterTester):
 
 **Next Steps (4-8 hours):**
+
 1. Add instrumentation to verify library loading in EmitterTester mode
 2. Check if dist/src/tsp-index.js executes during EmitterTester compilation
 3. Manually import library after createTester() to verify decorator loading
@@ -299,6 +323,7 @@ console.log(instance.program.stateMap.size);
 6. Create minimal reproduction case and ask TypeSpec maintainers
 
 **Expected Outcome:**
+
 - **Success (10-30%):** Decorators load and execute, tests pass
 - **Partial (30-50%):** Partial understanding, more debugging needed
 - **Failure (20-60%):** Cannot determine root cause, timeline extends to days
@@ -306,6 +331,7 @@ console.log(instance.program.stateMap.size);
 ### If Choosing Option B (Switch to createTestHost):
 
 **Next Steps (2-4 hours):**
+
 1. Migrate test/unit/emitter-core.test.ts to use compileTypeSpecWithDecorators()
 2. Update test/utils/emitter-test-helpers.ts to use test-helpers pattern
 3. Run test suite and verify pass rate jumps to 80%+
@@ -313,6 +339,7 @@ console.log(instance.program.stateMap.size);
 5. Update test writing guidelines for consistency
 
 **Expected Outcome:**
+
 - **Success (90%):** 250+ tests pass immediately
 - **Test pass rate:** 80%+ (486/605 tests)
 - **Confidence:** Very high, pattern already proven
@@ -321,6 +348,7 @@ console.log(instance.program.stateMap.size);
 ### If Choosing Option C (Hybrid):
 
 **Next Steps (1-2 hours decision, 4-6 hours implementation):**
+
 1. Document when to use EmitterTester vs createTestHost
 2. Create utility functions for both approaches
 3. Migrate critical tests to createTestHost
@@ -328,6 +356,7 @@ console.log(instance.program.stateMap.size);
 5. Plan gradual migration path to single approach
 
 **Expected Outcome:**
+
 - **Partial success:** ~50-75% of tests unblocked
 - **Complexity:** Higher, two code paths to maintain
 - **Timeline:** 4-6 hours for partial resolution
@@ -340,6 +369,7 @@ console.log(instance.program.stateMap.size);
 ### Option A (Debug EmitterTester):
 
 **If SUCCESS (10-30% probability):**
+
 - ✅ Uses "official" TypeSpec testing API
 - ✅ More "pure" approach per TypeSpec docs
 - ✅ 250+ tests pass eventually
@@ -347,6 +377,7 @@ console.log(instance.program.stateMap.size);
 - ⚠️ Risk of spending time with no solution
 
 **If FAILURE (70-90% probability):**
+
 - ❌ Days spent with no results
 - ❌ Project remains blocked
 - ❌ No clear path forward
@@ -356,6 +387,7 @@ console.log(instance.program.stateMap.size);
 ### Option B (Switch to createTestHost):
 
 **If SUCCESS (90% probability):**
+
 - ✅ 250+ tests pass immediately
 - ✅ Test pass rate: 80%+ (486/605)
 - ✅ Validates core functionality works
@@ -365,6 +397,7 @@ console.log(instance.program.stateMap.size);
 - ⏱️ Timeline: 2-4 hours
 
 **If PARTIAL (10% probability):**
+
 - 🟡 200+ tests pass
 - 🟡 Test pass rate: 70%+
 - 🟡 Still significant improvement
@@ -373,15 +406,15 @@ console.log(instance.program.stateMap.size);
 
 ### Comparison:
 
-| Metric | Option A (EmitterTester) | Option B (createTestHost) |
-|--------|-------------------------|--------------------------|
-| Success Probability | 10-30% | 90% |
-| Time to Results | 1 day - 1 week+ | 2-4 hours |
-| Tests Unblocked | 250+ (if succeeds) | 250+ (when succeeds) |
-| Pass Rate Target | 80%+ (uncertain) | 80%+ (high confidence) |
-| Risk Level | HIGH | LOW |
-| Maintainability | Uncertain | Good |
-| Matches User Workflow | No | Yes (CLI-like) |
+| Metric                | Option A (EmitterTester) | Option B (createTestHost) |
+| --------------------- | ------------------------ | ------------------------- |
+| Success Probability   | 10-30%                   | 90%                       |
+| Time to Results       | 1 day - 1 week+          | 2-4 hours                 |
+| Tests Unblocked       | 250+ (if succeeds)       | 250+ (when succeeds)      |
+| Pass Rate Target      | 80%+ (uncertain)         | 80%+ (high confidence)    |
+| Risk Level            | HIGH                     | LOW                       |
+| Maintainability       | Uncertain                | Good                      |
+| Matches User Workflow | No                       | Yes (CLI-like)            |
 
 ---
 
@@ -390,27 +423,32 @@ console.log(instance.program.stateMap.size);
 ### What I Did Wrong:
 
 **1. Didn't Research First**
+
 - Jumped into debugging without understanding TypeSpec EmitterTester
 - Spent 3 hours on wrong problem (virtual FS) before discovering decorator issue
 - Lesson: Always check git history and documentation FIRST
 
 **2. Didn't Compare Working vs Non-Working**
+
 - Treated all failing tests as same problem
 - Missed obvious pattern: createTestHost works, EmitterTester doesn't
 - Lesson: Find what works, compare to what doesn't, identify the delta
 
 **3. Theorized Before Instrumenting**
+
 - Assumed virtual filesystem bridging was the issue
 - Added complex code to bridge FS but real problem was decorators not executing
 - Lesson: Add logging BEFORE theorizing, verify actual behavior
 
 **4. Didn't Commit Incrementally**
+
 - Modified test files without committing changes
 - Lost track of what was tried
 - Broke the golden rule of incremental commits
 - Lesson: Each small change gets committed immediately
 
 **5. No Systematic Root Cause Analysis**
+
 - Chased theories instead of data
 - Didn't systematically eliminate possibilities
 - Lesson: Be methodical, collect evidence, form hypothesis from data
@@ -418,6 +456,7 @@ console.log(instance.program.stateMap.size);
 ### What I Should Have Done:
 
 **Better Approach:**
+
 1. ✅ Run test suite, identify patterns (passing vs failing)
 2. ✅ Compare simple-emitter.test.ts (PASSING) vs emitter-core.test.ts (FAILING)
 3. ✅ Notice createTestHost vs EmitterTester difference
@@ -435,26 +474,31 @@ console.log(instance.program.stateMap.size);
 ### Relevant Files:
 
 **Emitter Implementation:**
+
 - `src/emitter.ts:130-160` - $onEmit function (adds instrumentation currently)
 - `src/emitter.ts:32-80` - generateBasicAsyncAPI (works with empty state)
 - `src/emitter.ts:85-123` - generateYAML (works with empty state)
 
 **Test Infrastructure:**
+
 - `test/utils/test-helpers.ts:93-190` - createAsyncAPITestHost (WORKING)
 - `test/utils/emitter-test-helpers.ts:22-150` - createAsyncAPIEmitterTester (BROKEN)
 - `test/integration/simple-emitter.test.ts:1-99` - Works with test-helpers
 - `test/unit/emitter-core.test.ts:1-240` - Fails with emitter-test-helpers
 
 **Decorator Implementation:**
+
 - `src/decorators.js` - Decorator implementations
 - `src/lib.ts:78-293` - Library definition with diagnostics
 - `dist/src/tsp-index.js:1-10` - Library entry point
 
 **Test Sources:**
+
 - `test/utils/test-helpers.ts:100-150` - TestSources.basicEvent (has decorators)
 - `test/unit/emitter-core.test.ts:19-28` - Basic compilation test (fails)
 
 ### Recent Status Reports:
+
 - `docs/status/2026-01-23_07-14_TYPESPEC-ASYNCAPI-INFRASTRUCTURE-RECOVERY.md` - Previous comprehensive status
 - `docs/status/2026-01-22_07-04_COMPREHENSIVE-PROJECT-STATUS.md` - Earlier status
 
@@ -485,10 +529,10 @@ console.log(instance.program.stateMap.size);
 
 ### What I Need:
 
-1. **Working example:** Show me ANY TypeSpec emitter test that uses EmitterTester with decorators  
-2. **API documentation:** Official EmitterTester documentation showing decorator loading pattern  
-3. **Source code inspection:** Read TypeSpec compiler source to understand loading mechanism  
-4. **Community help:** Ask TypeSpec maintainers about EmitterTester decorator loading  
+1. **Working example:** Show me ANY TypeSpec emitter test that uses EmitterTester with decorators
+2. **API documentation:** Official EmitterTester documentation showing decorator loading pattern
+3. **Source code inspection:** Read TypeSpec compiler source to understand loading mechanism
+4. **Community help:** Ask TypeSpec maintainers about EmitterTester decorator loading
 5. **Verification method:** Way to inspect what's registered in TypeSpec program's decorator registry
 
 **Without one of these, I cannot solve this problem through external observation alone.**
@@ -504,28 +548,32 @@ This is a **deep TypeSpec framework integration issue**, not a simple configurat
 Which strategic approach should I commit to?
 
 **A)** [ ] Continue debugging EmitterTester decorator loading (high risk, uncertain timeline)
-  - Add more instrumentation
-  - Try manual decorator registration
-  - Research TypeSpec source code
-  - Contact TypeSpec maintainers for help
+
+- Add more instrumentation
+- Try manual decorator registration
+- Research TypeSpec source code
+- Contact TypeSpec maintainers for help
 
 **B)** [ ] Switch to createTestHost/direct compilation approach (low risk, immediate unblock)
-  - Migrate emitter-core tests to use compileTypeSpecWithDecorators()
-  - Update test helper utilities
-  - Maintain createTestHost as primary testing strategy
-  - Achieve 80%+ test pass rate today
+
+- Migrate emitter-core tests to use compileTypeSpecWithDecorators()
+- Update test helper utilities
+- Maintain createTestHost as primary testing strategy
+- Achieve 80%+ test pass rate today
 
 **C)** [ ] Hybrid approach (balanced risk, partial unblock)
-  - Use EmitterTester for simple unit tests
-  - Use createTestHost for integration tests requiring decorators
-  - Document both patterns
-  - Plan gradual migration path
+
+- Use EmitterTester for simple unit tests
+- Use createTestHost for integration tests requiring decorators
+- Document both patterns
+- Plan gradual migration path
 
 **D)** [ ] Pause and research more before deciding
-  - Gather working examples from other TypeSpec emitters
-  - Read TypeSpec source code
-  - Create minimal reproduction case
-  - Request guidance from TypeSpec community
+
+- Gather working examples from other TypeSpec emitters
+- Read TypeSpec source code
+- Create minimal reproduction case
+- Request guidance from TypeSpec community
 
 **Recommendation:** B - Switch to createTestHost for immediate unblocking
 
@@ -552,14 +600,14 @@ Test Suite:
   ✅ Passing: 246/605 (40.7%)
   ⏭️  Skipped: 29/605 (4.8%)
   ❌ Failing: 330/605 (54.5%)
-  
+
   Expected after fix:
   🎯 Target: 486/605 (80.3%)
   🚀 If B succeeds: 250+ tests unblock immediately
 
 Critical Issues:
   🔴 #1: EmitterTester decorator loading (blocks 250 tests)
-  🟡 #2: Missing module exports (blocks 40 tests)  
+  🟡 #2: Missing module exports (blocks 40 tests)
   🟡 #3: CLI tests env issues (blocks 12 tests)
 
 Decision Point:

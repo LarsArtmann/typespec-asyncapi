@@ -57,7 +57,7 @@ operations:
   publishUserEvent:
     action: send
     channel:
-      $ref: '#/channels/user.events'
+      $ref: "#/channels/user.events"
     bindings:
       kafka:
         acks: all
@@ -69,12 +69,12 @@ operations:
         clientId: user-event-publisher
         bindingVersion: "0.4.0"
     messages:
-      - $ref: '#/channels/user.events/messages/UserEvent'
+      - $ref: "#/channels/user.events/messages/UserEvent"
 
   processUserEvent:
     action: receive
     channel:
-      $ref: '#/channels/user.events'
+      $ref: "#/channels/user.events"
     bindings:
       kafka:
         groupId: user-event-processors
@@ -158,7 +158,7 @@ operations:
   publishOrderCreated:
     action: send
     channel:
-      $ref: '#/channels/orders.created'
+      $ref: "#/channels/orders.created"
     bindings:
       kafka:
         acks: all
@@ -173,7 +173,7 @@ operations:
         schemaIdPayloadEncoding: confluent
         bindingVersion: "0.4.0"
     messages:
-      - $ref: '#/components/messages/OrderCreatedEvent'
+      - $ref: "#/components/messages/OrderCreatedEvent"
         bindings:
           kafka:
             headers:
@@ -193,7 +193,7 @@ operations:
   processOrderCreated:
     action: receive
     channel:
-      $ref: '#/channels/orders.created'
+      $ref: "#/channels/orders.created"
     bindings:
       kafka:
         groupId: order-processors
@@ -268,7 +268,7 @@ operations:
   publishUserEvent:
     action: send
     channel:
-      $ref: '#/channels/user.events'
+      $ref: "#/channels/user.events"
     bindings:
       amqp:
         expiration: 300000
@@ -282,7 +282,7 @@ operations:
   processUserEvent:
     action: receive
     channel:
-      $ref: '#/channels/user.events'
+      $ref: "#/channels/user.events"
     bindings:
       amqp:
         ack: true
@@ -370,13 +370,13 @@ operations:
   processPremiumOrder:
     action: receive
     channel:
-      $ref: '#/channels/premium.orders'
+      $ref: "#/channels/premium.orders"
     bindings:
       amqp:
         ack: true
         bindingVersion: "0.2.0"
     messages:
-      - $ref: '#/components/messages/PremiumOrder'
+      - $ref: "#/components/messages/PremiumOrder"
         bindings:
           amqp:
             contentEncoding: gzip
@@ -395,7 +395,7 @@ operations:
   sendNotification:
     action: send
     channel:
-      $ref: '#/channels/notifications'
+      $ref: "#/channels/notifications"
     bindings:
       amqp:
         mandatory: true
@@ -477,7 +477,7 @@ channels:
           properties:
             Authorization:
               type: string
-              pattern: '^Bearer .+'
+              pattern: "^Bearer .+"
             X-Client-Version:
               type: string
         bindingVersion: "0.1.0"
@@ -486,7 +486,7 @@ operations:
   subscribeUserEvents:
     action: receive
     channel:
-      $ref: '#/channels/user.events'
+      $ref: "#/channels/user.events"
     bindings:
       ws:
         bindingVersion: "0.1.0"
@@ -494,7 +494,7 @@ operations:
   sendUserCommand:
     action: send
     channel:
-      $ref: '#/channels/user.commands'
+      $ref: "#/channels/user.commands"
     bindings:
       ws:
         method: POST
@@ -559,7 +559,7 @@ channels:
       deviceId:
         schema:
           type: string
-          pattern: '^[a-zA-Z0-9_-]+$'
+          pattern: "^[a-zA-Z0-9_-]+$"
     bindings:
       mqtt:
         retain: true
@@ -569,7 +569,7 @@ operations:
   publishTemperature:
     action: send
     channel:
-      $ref: '#/channels/sensor.temperature'
+      $ref: "#/channels/sensor.temperature"
     bindings:
       mqtt:
         qos: 1
@@ -581,7 +581,7 @@ operations:
   processTemperature:
     action: receive
     channel:
-      $ref: '#/channels/sensor.temperature'
+      $ref: "#/channels/sensor.temperature"
     bindings:
       mqtt:
         qos: 2
@@ -635,7 +635,7 @@ operations:
   publishTelemetry:
     action: send
     channel:
-      $ref: '#/channels/device.telemetry'
+      $ref: "#/channels/device.telemetry"
     bindings:
       mqtt:
         qos: 1
@@ -643,7 +643,7 @@ operations:
         messageExpiryInterval: 300
         bindingVersion: "0.1.0"
     messages:
-      - $ref: '#/components/messages/DeviceTelemetry'
+      - $ref: "#/components/messages/DeviceTelemetry"
         bindings:
           mqtt:
             payloadFormatIndicator: 1
@@ -708,7 +708,7 @@ operations:
   sendUserWebhook:
     action: send
     channel:
-      $ref: '#/channels/user.webhook'
+      $ref: "#/channels/user.webhook"
     bindings:
       http:
         method: POST
@@ -720,7 +720,7 @@ operations:
               const: application/json
             X-Webhook-Signature:
               type: string
-              pattern: '^sha256=.+'
+              pattern: "^sha256=.+"
             User-Agent:
               type: string
               const: EventService/1.0
@@ -729,7 +729,7 @@ operations:
   receiveEvent:
     action: receive
     channel:
-      $ref: '#/channels/incoming.events'
+      $ref: "#/channels/incoming.events"
     bindings:
       http:
         method: POST
@@ -744,7 +744,7 @@ operations:
           properties:
             Authorization:
               type: string
-              pattern: '^Bearer .+'
+              pattern: "^Bearer .+"
         bindingVersion: "0.3.0"
 
 channels:
@@ -841,12 +841,12 @@ operations:
   publishToSNS:
     action: send
     channel:
-      $ref: '#/channels/user.events.sns'
+      $ref: "#/channels/user.events.sns"
     bindings:
       sns:
         bindingVersion: "0.1.0"
     messages:
-      - $ref: '#/components/messages/UserEvent'
+      - $ref: "#/components/messages/UserEvent"
         bindings:
           sns:
             messageAttributes:
@@ -861,7 +861,7 @@ operations:
   processFromSQS:
     action: receive
     channel:
-      $ref: '#/channels/user.events.sqs'
+      $ref: "#/channels/user.events.sqs"
     bindings:
       sqs:
         visibilityTimeout: 300
@@ -912,7 +912,7 @@ operations:
   processFromPubSub:
     action: receive
     channel:
-      $ref: '#/channels/user.events.pubsub'
+      $ref: "#/channels/user.events.pubsub"
     bindings:
       googlepubsub:
         subscription: projects/my-project/subscriptions/user-event-processor

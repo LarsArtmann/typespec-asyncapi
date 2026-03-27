@@ -30,17 +30,17 @@ AsyncAPI Studio (https://studio.asyncapi.com/) is the official web-based editor 
 
 ```yaml
 # MUST be present for Studio compatibility
-asyncapi: "3.0.0"  # Version string is required
+asyncapi: "3.0.0" # Version string is required
 info:
-  title: "API Title"  # Required
-  version: "1.0.0"   # Required
+  title: "API Title" # Required
+  version: "1.0.0" # Required
 ```
 
 #### Recommended Fields for Better Studio Experience
 
 ```yaml
 info:
-  description: "Detailed API description"  # Enhances documentation rendering
+  description: "Detailed API description" # Enhances documentation rendering
   contact:
     name: "Support Team"
     url: "https://example.com/support"
@@ -58,10 +58,10 @@ info:
 servers:
   production:
     host: "api.example.com"
-    protocol: "kafka"  # Must be a recognized protocol
+    protocol: "kafka" # Must be a recognized protocol
     description: "Production Kafka cluster"
-    protocolVersion: "2.8.0"  # Optional but recommended
-    bindings:  # Protocol-specific bindings
+    protocolVersion: "2.8.0" # Optional but recommended
+    bindings: # Protocol-specific bindings
       kafka:
         schemaRegistryUrl: "https://schema-registry.example.com"
         bindingVersion: "0.5.0"
@@ -83,16 +83,16 @@ servers:
 ```yaml
 channels:
   "user.events":
-    address: "user.events"  # AsyncAPI 3.0 format
+    address: "user.events" # AsyncAPI 3.0 format
     messages:
       UserCreated:
         name: "UserCreated"
-        title: "User Created Event"  # Displayed in Studio UI
+        title: "User Created Event" # Displayed in Studio UI
         description: "Triggered when user account is created"
         contentType: "application/json"
         payload:
           $ref: "#/components/schemas/UserCreatedPayload"
-        examples:  # Enhances Studio documentation
+        examples: # Enhances Studio documentation
           - name: "Basic Example"
             summary: "Standard user creation"
             payload:
@@ -107,12 +107,12 @@ channels:
 ```yaml
 operations:
   publishUserCreated:
-    action: "send"  # Must be "send" or "receive"
+    action: "send" # Must be "send" or "receive"
     channel:
       $ref: "#/channels/user.events"
-    title: "Publish User Created Event"  # Displayed in Studio
+    title: "Publish User Created Event" # Displayed in Studio
     description: "Publishes user creation events to Kafka"
-    bindings:  # Protocol-specific operation bindings
+    bindings: # Protocol-specific operation bindings
       kafka:
         groupId: "user-service"
         clientId: "user-publisher"
@@ -130,7 +130,7 @@ components:
   schemas:
     UserCreatedPayload:
       type: "object"
-      title: "User Created Event Payload"  # Displayed in Studio
+      title: "User Created Event Payload" # Displayed in Studio
       description: "Payload for user creation events"
       properties:
         userId:
@@ -146,7 +146,7 @@ components:
           format: "date-time"
           description: "Account creation timestamp"
       required: ["userId", "email", "createdAt"]
-      examples:  # Studio shows these in documentation
+      examples: # Studio shows these in documentation
         - userId: "user_abc123def456"
           email: "john.doe@example.com"
           createdAt: "2024-01-15T10:30:00Z"

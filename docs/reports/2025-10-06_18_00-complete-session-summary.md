@@ -87,10 +87,10 @@
 ```typescript
 // test/domain/protocol-kafka-comprehensive.test.ts
 it("should handle Kafka topic", async () => {
-    const host = await createAsyncAPITestHost()  // ❌ Wrong helper
-    await host.compile("./main.tsp")
-    expect(true).toBe(true)  // ❌ Tests NOTHING!
-})
+  const host = await createAsyncAPITestHost(); // ❌ Wrong helper
+  await host.compile("./main.tsp");
+  expect(true).toBe(true); // ❌ Tests NOTHING!
+});
 ```
 
 **ROI Analysis:**

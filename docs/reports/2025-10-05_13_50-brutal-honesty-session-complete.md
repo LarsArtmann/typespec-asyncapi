@@ -41,10 +41,10 @@
 ```typescript
 // GHOST TEST (WORTHLESS):
 it("should support Kafka", async () => {
-  const host = await createAsyncAPITestHost()
-  await host.compile("./main.tsp")
-  expect(true).toBe(true) // 🚨 ALWAYS PASSES, TESTS NOTHING!
-})
+  const host = await createAsyncAPITestHost();
+  await host.compile("./main.tsp");
+  expect(true).toBe(true); // 🚨 ALWAYS PASSES, TESTS NOTHING!
+});
 ```
 
 **Files Affected:**

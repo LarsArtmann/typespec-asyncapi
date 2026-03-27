@@ -90,8 +90,8 @@ export const VERSION_INFO = {
   asyncapi: "3.0.0",
   library: "1.0.0",
   supported: ["3.0.0"],
-  compatibility: { min: "3.0.0", max: "3.0.0" }
-}
+  compatibility: { min: "3.0.0", max: "3.0.0" },
+};
 ```
 
 #### **Effect.TS Error Recovery**
@@ -111,11 +111,11 @@ export const railwayErrorRecovery = {
 ```typescript
 // Complete validation system
 export class AsyncAPIValidator {
-  static validateSpec(spec): Effect<ValidationResult>
-  static validateMessage(message): Effect<ValidationResult>
-  static validateChannel(channel): Effect<ValidationResult>
-  static batchValidate(specs): Effect<Array<ValidationResult>>
-  static getValidationStats(results): ValidationStats
+  static validateSpec(spec): Effect<ValidationResult>;
+  static validateMessage(message): Effect<ValidationResult>;
+  static validateChannel(channel): Effect<ValidationResult>;
+  static batchValidate(specs): Effect<Array<ValidationResult>>;
+  static getValidationStats(results): ValidationStats;
 }
 ```
 
@@ -126,10 +126,10 @@ export class AsyncAPIValidator {
 ```typescript
 // Basic discovery (WORKING)
 export class DiscoveryService {
-  static discoverModels(program): Effect<string[]>
-  static discoverOperations(program): Effect<string[]>
-  static discoverNamespaces(program): Effect<string[]>
-  static discoverDecorators(program): Effect<string[]>
+  static discoverModels(program): Effect<string[]>;
+  static discoverOperations(program): Effect<string[]>;
+  static discoverNamespaces(program): Effect<string[]>;
+  static discoverDecorators(program): Effect<string[]>;
 }
 
 // Complex analysis (NEEDS API FIX)
@@ -149,8 +149,8 @@ export const DEFAULT_CONFIGURATION = {
   server: { url, protocol, description },
   validation: { strict, warnings, emitErrors },
   logging: { level, file, console },
-  advanced: { caching, optimization, experimental }
-}
+  advanced: { caching, optimization, experimental },
+};
 
 // Complex schema validation (NEEDS SIMPLIFICATION)
 // - Effect.TS schema validation

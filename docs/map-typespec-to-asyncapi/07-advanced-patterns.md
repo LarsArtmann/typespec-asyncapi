@@ -94,14 +94,14 @@ operations:
   appendEvents:
     action: send
     channel:
-      $ref: '#/channels/eventstore-append'
+      $ref: "#/channels/eventstore-append"
     summary: Append events to event store
     description: Atomically append events to aggregate stream
 
   replayEvents:
     action: receive
     channel:
-      $ref: '#/channels/eventstore-replay'
+      $ref: "#/channels/eventstore-replay"
     summary: Replay aggregate events
     description: Replay all events for aggregate from specified version
 
@@ -111,10 +111,10 @@ components:
       name: DomainEvent
       payload:
         oneOf:
-          - $ref: '#/components/schemas/UserCreatedEvent'
-          - $ref: '#/components/schemas/UserUpdatedEvent'
-          - $ref: '#/components/schemas/UserDeactivatedEvent'
-          - $ref: '#/components/schemas/UserReactivatedEvent'
+          - $ref: "#/components/schemas/UserCreatedEvent"
+          - $ref: "#/components/schemas/UserUpdatedEvent"
+          - $ref: "#/components/schemas/UserDeactivatedEvent"
+          - $ref: "#/components/schemas/UserReactivatedEvent"
         discriminator:
           propertyName: eventType
 
@@ -141,7 +141,7 @@ components:
           type: string
           format: date-time
         metadata:
-          $ref: '#/components/schemas/EventMetadata'
+          $ref: "#/components/schemas/EventMetadata"
       required: [eventId, aggregateId, aggregateVersion, eventType, occurredAt]
       discriminator:
         propertyName: eventType
@@ -247,9 +247,9 @@ channels:
     description: User command processing
     messages:
       CreateUserCommand:
-        $ref: '#/components/messages/CreateUserCommand'
+        $ref: "#/components/messages/CreateUserCommand"
       UpdateUserCommand:
-        $ref: '#/components/messages/UpdateUserCommand'
+        $ref: "#/components/messages/UpdateUserCommand"
 
   queries.user.get:
     address: queries.user.get
@@ -280,7 +280,7 @@ operations:
   handleCreateUser:
     action: receive
     channel:
-      $ref: '#/channels/commands.user'
+      $ref: "#/channels/commands.user"
     summary: Handle user creation commands
     tags:
       - name: command-side
@@ -289,7 +289,7 @@ operations:
   handleUpdateUser:
     action: receive
     channel:
-      $ref: '#/channels/commands.user'
+      $ref: "#/channels/commands.user"
     summary: Handle user update commands
     tags:
       - name: command-side
@@ -299,7 +299,7 @@ operations:
   handleGetUser:
     action: receive
     channel:
-      $ref: '#/channels/queries.user.get'
+      $ref: "#/channels/queries.user.get"
     summary: Handle single user queries
     tags:
       - name: query-side
@@ -308,7 +308,7 @@ operations:
   returnUserResult:
     action: send
     channel:
-      $ref: '#/channels/queries.user.get.results'
+      $ref: "#/channels/queries.user.get.results"
     summary: Return single user query results
     tags:
       - name: query-side
@@ -318,7 +318,7 @@ operations:
   updateUserReadModel:
     action: receive
     channel:
-      $ref: '#/channels/readmodels.user.updates'
+      $ref: "#/channels/readmodels.user.updates"
     summary: Update user read models from events
     tags:
       - name: read-model
@@ -458,7 +458,7 @@ operations:
   handleSagaCommand:
     action: receive
     channel:
-      $ref: '#/channels/saga.orchestrator.commands'
+      $ref: "#/channels/saga.orchestrator.commands"
     summary: Process saga orchestration commands
     description: |
       Handles saga lifecycle commands including start, step completion,
@@ -467,7 +467,7 @@ operations:
   publishSagaEvent:
     action: send
     channel:
-      $ref: '#/channels/saga.orchestrator.events'
+      $ref: "#/channels/saga.orchestrator.events"
     summary: Publish saga state changes
     description: |
       Publishes events about saga state changes for monitoring
@@ -476,21 +476,21 @@ operations:
   executeStep:
     action: send
     channel:
-      $ref: '#/channels/saga.steps.{stepType}'
+      $ref: "#/channels/saga.steps.{stepType}"
     summary: Execute saga step
     description: Send command to execute a specific saga step
 
   handleStepResult:
     action: receive
     channel:
-      $ref: '#/channels/saga.steps.{stepType}.results'
+      $ref: "#/channels/saga.steps.{stepType}.results"
     summary: Handle saga step results
     description: Process results from saga step execution
 
   compensateStep:
     action: send
     channel:
-      $ref: '#/channels/saga.compensation.{stepType}'
+      $ref: "#/channels/saga.compensation.{stepType}"
     summary: Execute compensation action
     description: Send command to compensate a previously executed step
 
@@ -635,14 +635,14 @@ operations:
   publishUserEvent:
     action: send
     channel:
-      $ref: '#/channels/services.user.events'
+      $ref: "#/channels/services.user.events"
     x-service: user-service
     x-service-role: publisher
 
   handleUserCommand:
     action: receive
     channel:
-      $ref: '#/channels/services.user.commands'
+      $ref: "#/channels/services.user.commands"
     x-service: user-service
     x-service-role: consumer
 
@@ -650,14 +650,14 @@ operations:
   publishOrderEvent:
     action: send
     channel:
-      $ref: '#/channels/services.order.events'
+      $ref: "#/channels/services.order.events"
     x-service: order-service
     x-service-role: publisher
 
   handleUserEvent:
     action: receive
     channel:
-      $ref: '#/channels/services.user.events'
+      $ref: "#/channels/services.user.events"
     x-service: order-service
     x-service-role: consumer
     x-cross-service: true
@@ -666,13 +666,13 @@ operations:
   publishIntegrationEvent:
     action: send
     channel:
-      $ref: '#/channels/integration.events'
+      $ref: "#/channels/integration.events"
     x-integration-layer: true
 
   handleIntegrationEvent:
     action: receive
     channel:
-      $ref: '#/channels/integration.events'
+      $ref: "#/channels/integration.events"
     x-integration-layer: true
 
 # Service dependency mapping
@@ -786,7 +786,7 @@ channels:
         partitions: 24
         replicas: 3
         configs:
-          retention.ms: 259200000  # 3 days
+          retention.ms: 259200000 # 3 days
           cleanup.policy: delete
         bindingVersion: "0.4.0"
 
@@ -799,7 +799,7 @@ channels:
         partitions: 12
         replicas: 3
         configs:
-          retention.ms: 604800000  # 7 days
+          retention.ms: 604800000 # 7 days
           cleanup.policy: delete
         bindingVersion: "0.4.0"
 
@@ -812,7 +812,7 @@ channels:
         partitions: 6
         replicas: 3
         configs:
-          retention.ms: 2592000000  # 30 days
+          retention.ms: 2592000000 # 30 days
           cleanup.policy: compact
         bindingVersion: "0.4.0"
 
@@ -827,7 +827,7 @@ operations:
   consumeRawEvents:
     action: receive
     channel:
-      $ref: '#/channels/streams.raw.events'
+      $ref: "#/channels/streams.raw.events"
     summary: Consume raw events for processing
     bindings:
       kafka:
@@ -844,7 +844,7 @@ operations:
   publishProcessedEvents:
     action: send
     channel:
-      $ref: '#/channels/streams.processed.events'
+      $ref: "#/channels/streams.processed.events"
     summary: Publish enriched events
     bindings:
       kafka:
@@ -860,7 +860,7 @@ operations:
   publishAggregatedEvents:
     action: send
     channel:
-      $ref: '#/channels/streams.aggregated.events'
+      $ref: "#/channels/streams.aggregated.events"
     summary: Publish time-windowed aggregations
     bindings:
       kafka:
@@ -875,7 +875,7 @@ operations:
   publishRealtimeNotification:
     action: send
     channel:
-      $ref: '#/channels/streams.realtime.notifications'
+      $ref: "#/channels/streams.realtime.notifications"
     summary: Push real-time notifications
     bindings:
       ws:
@@ -993,7 +993,7 @@ operations:
   receiveMessage:
     action: receive
     channel:
-      $ref: '#/channels/routing.ingress'
+      $ref: "#/channels/routing.ingress"
     summary: Receive messages for routing
     x-routing:
       type: content-based
@@ -1011,7 +1011,7 @@ operations:
   routeHighPriority:
     action: send
     channel:
-      $ref: '#/channels/routing.priority.high'
+      $ref: "#/channels/routing.priority.high"
     summary: Route high priority messages
     x-routing:
       priority: 1
@@ -1019,7 +1019,7 @@ operations:
   routeByRegion:
     action: send
     channel:
-      $ref: '#/channels/routing.region.{region}'
+      $ref: "#/channels/routing.region.{region}"
     summary: Route messages by region
     x-routing:
       type: regional
@@ -1027,7 +1027,7 @@ operations:
   routeToService:
     action: send
     channel:
-      $ref: '#/channels/routing.service.{serviceName}'
+      $ref: "#/channels/routing.service.{serviceName}"
     summary: Route messages to specific services
     x-routing:
       type: service-specific
@@ -1035,7 +1035,7 @@ operations:
   routeToDeadLetter:
     action: send
     channel:
-      $ref: '#/channels/routing.deadletter'
+      $ref: "#/channels/routing.deadletter"
     summary: Route failed messages to dead letter queue
     x-routing:
       type: error-handling
@@ -1151,7 +1151,7 @@ operations:
   reportHealthStatus:
     action: send
     channel:
-      $ref: '#/channels/health.monitoring'
+      $ref: "#/channels/health.monitoring"
     x-resilience:
       pattern: health-monitoring
       checkInterval: 30s
@@ -1159,7 +1159,7 @@ operations:
   handleHealthAlert:
     action: receive
     channel:
-      $ref: '#/channels/health.alerts'
+      $ref: "#/channels/health.alerts"
     x-resilience:
       pattern: alerting
       escalation: true
@@ -1167,7 +1167,7 @@ operations:
   reportCircuitBreakerState:
     action: send
     channel:
-      $ref: '#/channels/circuitbreaker.{serviceName}'
+      $ref: "#/channels/circuitbreaker.{serviceName}"
     x-resilience:
       pattern: circuit-breaker
       failureThreshold: 5
@@ -1176,7 +1176,7 @@ operations:
   handleRetryableOperation:
     action: receive
     channel:
-      $ref: '#/channels/retry.{operationType}'
+      $ref: "#/channels/retry.{operationType}"
     x-resilience:
       pattern: retry
       maxRetries: 5
@@ -1187,7 +1187,7 @@ operations:
   handleFallbackOperation:
     action: receive
     channel:
-      $ref: '#/channels/fallback.{operationType}'
+      $ref: "#/channels/fallback.{operationType}"
     x-resilience:
       pattern: fallback
       fallbackType: cached-response

@@ -249,6 +249,7 @@
 
 ```markdown
 ## Test Infrastructure Policy
+
 - All test commands run `bun run build` first
 - Tests will NOT run if TypeScript compilation fails
 - Purpose: Ensures tests catch what build catches

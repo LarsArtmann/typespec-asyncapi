@@ -73,13 +73,22 @@ export async function compileAsyncAPI(source: string, options: AsyncAPIEmitterOp
   // eslint-disable-next-line no-console
   console.log("🔧 TEST HELP: result.fs.fs:", result.fs?.fs ? "exists" : "undefined");
   // eslint-disable-next-line no-console
-  console.log("🔧 TEST HELP: result.fs.fs keys:", result.fs?.fs ? Object.keys(result.fs.fs) : "N/A");
+  console.log(
+    "🔧 TEST HELP: result.fs.fs keys:",
+    result.fs?.fs ? Object.keys(result.fs.fs) : "N/A",
+  );
   // eslint-disable-next-line no-console
   console.log("🔧 TEST HELP: result.program.host:", result.program.host ? "exists" : "undefined");
   // eslint-disable-next-line no-console
-  console.log("🔧 TEST HELP: result.program.host.fs:", result.program.host?.fs ? "exists" : "undefined");
+  console.log(
+    "🔧 TEST HELP: result.program.host.fs:",
+    result.program.host?.fs ? "exists" : "undefined",
+  );
   // eslint-disable-next-line no-console
-  console.log("🔧 TEST HELP: result.program.host.fs root:", result.program.host?.fs?.root ? result.program.host.fs.root : "no root");
+  console.log(
+    "🔧 TEST HELP: result.program.host.fs root:",
+    result.program.host?.fs?.root ? result.program.host.fs.root : "no root",
+  );
 
   if (result.program.host?.fs) {
     try {
@@ -87,11 +96,14 @@ export async function compileAsyncAPI(source: string, options: AsyncAPIEmitterOp
       // eslint-disable-next-line no-console
       console.log("🔧 TEST HELP: result.program.host.fs type:", typeof result.program.host.fs);
       // eslint-disable-next-line no-console
-      console.log("🔧 TEST HELP: result.program.host.fs keys:", Object.keys(result.program.host.fs));
+      console.log(
+        "🔧 TEST HELP: result.program.host.fs keys:",
+        Object.keys(result.program.host.fs),
+      );
 
       // Check if it has readFile, writeFile, etc. methods
       const hostFs = result.program.host.fs as Record<string, any>;
-      for (const key of ['readFile', 'writeFile', 'exists', 'readdir']) {
+      for (const key of ["readFile", "writeFile", "exists", "readdir"]) {
         // eslint-disable-next-line no-console
         console.log("🔧 TEST HELP: result.program.host.fs has", key, ":", typeof hostFs[key]);
       }
@@ -109,7 +121,13 @@ export async function compileAsyncAPI(source: string, options: AsyncAPIEmitterOp
     console.log("🔧 TEST HELP: Virtual files count:", virtualFiles.length);
     for (const [path, content] of virtualFiles) {
       // eslint-disable-next-line no-console
-      console.log("🔧 TEST HELP: Virtual file:", path, "(length:", typeof content === "string" ? content.length : "not string", ")");
+      console.log(
+        "🔧 TEST HELP: Virtual file:",
+        path,
+        "(length:",
+        typeof content === "string" ? content.length : "not string",
+        ")",
+      );
     }
 
     // Search for AsyncAPI files by matching against expected filename patterns
@@ -123,9 +141,7 @@ export async function compileAsyncAPI(source: string, options: AsyncAPIEmitterOp
         const relativePath = filename;
 
         return {
-          asyncApiDoc: filename.endsWith(".json")
-            ? JSON.parse(content)
-            : YAML.parse(content),
+          asyncApiDoc: filename.endsWith(".json") ? JSON.parse(content) : YAML.parse(content),
           diagnostics: result.program.diagnostics,
           program: result.program,
           outputs: { [relativePath]: content },

@@ -27,10 +27,10 @@ The current codebase violates fundamental software engineering principles, lacks
 ```typescript
 // 🚨 VIOLATION: Using Record<string, unknown> allows invalid states
 export type AsyncAPIDocument = {
-  channels: Record<string, unknown>;  // Could contain ANYTHING
-  messages: Record<string, unknown>;  // No type safety
+  channels: Record<string, unknown>; // Could contain ANYTHING
+  messages: Record<string, unknown>; // No type safety
   components: {
-    schemas: Record<string, unknown>;  // Completely untyped
+    schemas: Record<string, unknown>; // Completely untyped
   };
 };
 ```
@@ -51,8 +51,8 @@ export type AsyncAPIDocument = {
   kind: "document";
   asyncapi: "3.0.0";
   info: AsyncAPIInfo;
-  channels: ReadonlyMap<string, AsyncAPIChannel>;  // Strongly typed
-  messages: ReadonlyMap<string, AsyncAPIMessage>;   // No unknown types
+  channels: ReadonlyMap<string, AsyncAPIChannel>; // Strongly typed
+  messages: ReadonlyMap<string, AsyncAPIMessage>; // No unknown types
 };
 ```
 
@@ -158,8 +158,8 @@ export type DeepPartial<T> = {
 ```typescript
 // 🚨 VIOLATION: Booleans that should be enums
 export type ChannelPathData = {
-  hasParameters: boolean;  // What about future states?
-  parameters?: string[];    // Empty array vs undefined ambiguity
+  hasParameters: boolean; // What about future states?
+  parameters?: string[]; // Empty array vs undefined ambiguity
 };
 ```
 
@@ -171,7 +171,7 @@ export enum ParameterState {
   None = "none",
   Required = "required",
   Optional = "optional",
-  Conditional = "conditional"
+  Conditional = "conditional",
 }
 
 export enum ProcessingState {
@@ -179,7 +179,7 @@ export enum ProcessingState {
   Processing = "processing",
   Completed = "completed",
   Failed = "failed",
-  Cancelled = "cancelled"
+  Cancelled = "cancelled",
 }
 
 export interface ChannelParameters {
@@ -207,9 +207,9 @@ export type ProcessingStatus =
 ```typescript
 // 🚨 VIOLATION: No unsigned integers where negative values impossible
 export interface PerformanceMetrics {
-  channels: number;      // Cannot be negative
-  messages: number;      // Cannot be negative
-  errors: number;        // Cannot be negative
+  channels: number; // Cannot be negative
+  messages: number; // Cannot be negative
+  errors: number; // Cannot be negative
 }
 ```
 
@@ -218,10 +218,10 @@ export interface PerformanceMetrics {
 ```typescript
 // ✅ TYPE-SAFE NUMBERS: Unsigned integers where appropriate
 export interface PerformanceMetrics {
-  readonly channels: uint32;    // Cannot be negative, max 4.2B
-  readonly messages: uint64;    // Cannot be negative, max 18 quintillion
-  readonly errors: uint16;      // Cannot be negative, max 65K
-  readonly latencyMs: uint32;   // Cannot be negative
+  readonly channels: uint32; // Cannot be negative, max 4.2B
+  readonly messages: uint64; // Cannot be negative, max 18 quintillion
+  readonly errors: uint16; // Cannot be negative, max 65K
+  readonly latencyMs: uint32; // Cannot be negative
 }
 
 // ✅ VALIDATED RANGES: Constrained number types
@@ -459,9 +459,7 @@ try {
 
 // ✅ REFACTORED: Effect.TS railway programming
 const result = await operation.pipe(
-  Effect.catchAll(error =>
-    Effect.fail(new AsyncAPIError(error))
-  )
+  Effect.catchAll((error) => Effect.fail(new AsyncAPIError(error))),
 );
 ```
 
@@ -679,14 +677,12 @@ import { fc } from "fast-check";
 
 describe("Channel Generation", () => {
   it("should generate valid channels for all valid inputs", () => {
-    fc.assert(fc.property(
-      fc.string({ minLength: 1 }),
-      fc.array(fc.string()),
-      (path, parameters) => {
+    fc.assert(
+      fc.property(fc.string({ minLength: 1 }), fc.array(fc.string()), (path, parameters) => {
         const channel = generateChannel(path, parameters);
         return isValidChannel(channel);
-      }
-    ));
+      }),
+    );
   });
 });
 
@@ -803,8 +799,8 @@ export const serializeDocumentToYaml = (doc: Document): string => { ... };
 ```typescript
 // 🚨 NO DDD: Just data structures, no domain
 export type ChannelPathData = {
-  path: string;        // Just data, no domain behavior
-  hasParameters: boolean;  // No domain logic
+  path: string; // Just data, no domain behavior
+  hasParameters: boolean; // No domain logic
 };
 ```
 
@@ -822,24 +818,25 @@ export namespace Domain {
     constructor(props: Channel.Props) {
       this._id = ChannelId.generate();
       this._address = AddressPattern.parse(props.address);
-      this._parameters = props.parameters.map(p => new ChannelParameter(p));
+      this._parameters = props.parameters.map((p) => new ChannelParameter(p));
     }
 
     // ✅ DOMAIN BEHAVIOR: Business logic methods
     public addParameter(param: ChannelParameter.Props): Result<Channel, Error> {
-      if (this._parameters.some(p => p.name === param.name)) {
+      if (this._parameters.some((p) => p.name === param.name)) {
         return Result.fail(new Error(`Parameter ${param.name} already exists`));
       }
-      return Result.success(new Channel({
-        ...this.toProps(),
-        parameters: [...this._parameters, new ChannelParameter(param)]
-      }));
+      return Result.success(
+        new Channel({
+          ...this.toProps(),
+          parameters: [...this._parameters, new ChannelParameter(param)],
+        }),
+      );
     }
 
     // ✅ INVARIANTS: Business rule enforcement
     public validate(): ValidationResult {
-      return this._address.validate()
-        .combine(this._parameters.map(p => p.validate()));
+      return this._address.validate().combine(this._parameters.map((p) => p.validate()));
     }
   }
 
@@ -862,7 +859,7 @@ export namespace Domain {
     // ✅ BEHAVIOR: Domain operations
     public substitute(params: readonly Parameter[]): string {
       return this._value.replace(/\{(\w+)\}/g, (match, paramName) => {
-        const param = params.find(p => p.name === paramName);
+        const param = params.find((p) => p.name === paramName);
         return param ? param.value : match;
       });
     }
@@ -877,7 +874,7 @@ export namespace Domain {
     public createFromOperation(operation: TypeSpec.Operation): Result<Channel, Error> {
       return Channel.create({
         address: AddressPattern.parse(operation.path),
-        parameters: this.extractParameters(operation)
+        parameters: this.extractParameters(operation),
       });
     }
 
@@ -908,7 +905,7 @@ export type ValidationResult =
 try {
   const result = await operation();
 } catch (error) {
-  console.error(error);  // 🚨 Just logging, no structure
+  console.error(error); // 🚨 Just logging, no structure
 }
 ```
 
@@ -924,7 +921,10 @@ export namespace AsyncAPIError {
     abstract readonly severity: Severity;
     abstract readonly recoverable: boolean;
 
-    constructor(message: string, public readonly context: Context) {
+    constructor(
+      message: string,
+      public readonly context: Context,
+    ) {
       super(message);
       this.name = this.constructor.name;
     }
@@ -936,7 +936,7 @@ export namespace AsyncAPIError {
     COMPILATION = "compilation",
     GENERATION = "generation",
     SERIALIZATION = "serialization",
-    INTEGRATION = "integration"
+    INTEGRATION = "integration",
   }
 
   // ✅ ERROR CODES: Exhaustive, maintainable
@@ -954,7 +954,7 @@ export namespace AsyncAPIError {
     // Generation errors (3000-3999)
     DOCUMENT_GENERATION_FAILED = 3001,
     SCHEMA_INFERENCE_FAILED = 3002,
-    BINDING_RESOLUTION_FAILED = 3003
+    BINDING_RESOLUTION_FAILED = 3003,
   }
 
   // ✅ SPECIFIC ERROR TYPES: Domain errors
@@ -978,7 +978,7 @@ export namespace AsyncAPIError {
     | { readonly success: false; readonly error: E };
 
   export const safeExecute = async <T>(
-    operation: () => Promise<T>
+    operation: () => Promise<T>,
   ): Promise<Result<T, CompilationFailed>> => {
     try {
       const data = await operation();
@@ -986,10 +986,9 @@ export namespace AsyncAPIError {
     } catch (error) {
       return {
         success: false,
-        error: new CompilationFailed(
-          `Operation failed: ${error.message}`,
-          { originalError: error }
-        )
+        error: new CompilationFailed(`Operation failed: ${error.message}`, {
+          originalError: error,
+        }),
       };
     }
   };
@@ -1022,10 +1021,8 @@ export namespace TypeSpec.AsyncAPI {
   export const compile = (options: Compile.Options): Promise<Compile.Result> =>
     Effect.runPromise(
       compileProgram(options).pipe(
-        Effect.catchAll(error =>
-          Effect.succeed(Compile.Result.failure(error))
-        )
-      )
+        Effect.catchAll((error) => Effect.succeed(Compile.Result.failure(error))),
+      ),
     );
 
   // ✅ OPTIONS API: Type-safe, validated
@@ -1070,7 +1067,7 @@ export namespace TypeSpec.AsyncAPI {
 
   // ✅ STREAMING API: For large documents
   export const compileStream = (
-    options: Compile.StreamOptions
+    options: Compile.StreamOptions,
   ): AsyncIterableStream<Compile.StreamResult> =>
     new AsyncIterableStream(async function* () {
       for await (const chunk of processInChunks(options)) {
@@ -1093,9 +1090,9 @@ export namespace TypeSpec.AsyncAPI {
 ```typescript
 // 🚨 SHORT-TERM THINKING: Immediate problems only
 export type AsyncAPIEmitterOptions = {
-  version: string;        // No versioning strategy
-  title?: string;        // No extensibility
-  description?: string;  // No evolution planning
+  version: string; // No versioning strategy
+  title?: string; // No extensibility
+  description?: string; // No evolution planning
 };
 ```
 
@@ -1118,7 +1115,7 @@ export namespace TypeSpec.AsyncAPI {
     export const COMPATIBILITY_MATRIX: Record<string, Compatibility> = {
       "3.0.x": { min: "3.0.0", max: "3.0.999", breaking: [] },
       "3.1.x": { min: "3.1.0", max: "3.1.999", breaking: ["3.2.0"] },
-      "4.0.x": { min: "4.0.0", max: "4.0.999", breaking: ["3.x.x"] }
+      "4.0.x": { min: "4.0.0", max: "4.0.999", breaking: ["3.x.x"] },
     };
   }
 
@@ -1155,7 +1152,7 @@ export namespace TypeSpec.AsyncAPI {
     export const migrate = async (
       document: unknown,
       from: string,
-      to: string
+      to: string,
     ): Promise<unknown> => {
       const plan = Migration.Plan.find(from, to);
       if (!plan) {
@@ -1186,8 +1183,7 @@ export namespace TypeSpec.AsyncAPI {
         metrics.documentSize > Thresholds.maxDocumentSize ||
         metrics.processingTimeMs > Thresholds.maxProcessingTime,
 
-      suggestOptimization: (metrics: Metrics): Optimization[] =>
-        Optimization.analyze(metrics)
+      suggestOptimization: (metrics: Metrics): Optimization[] => Optimization.analyze(metrics),
     };
   }
 }
@@ -1224,7 +1220,7 @@ export namespace CodeGen {
 
       return validated.match({
         valid: () => Serialization.serialize(ast),
-        invalid: (errors) => Generation.Result.failure(errors)
+        invalid: (errors) => Generation.Result.failure(errors),
       });
     }
   }
@@ -1238,12 +1234,12 @@ export namespace CodeGen {
 
     export const YAML: Serializer<AsyncAPI.Document> = {
       serialize: (doc) => YAML.stringify(doc, YAML.Schema.Strict),
-      deserialize: (input) => YAML.parse(input, YAML.Schema.Strict)
+      deserialize: (input) => YAML.parse(input, YAML.Schema.Strict),
     };
 
     export const JSON: Serializer<AsyncAPI.Document> = {
       serialize: (doc) => JSON.stringify(doc, null, 2),
-      deserialize: (input) => JSON.parse(input)
+      deserialize: (input) => JSON.parse(input),
     };
   }
 
@@ -1259,17 +1255,14 @@ export namespace CodeGen {
       render: (data) => `
         channel: "${data.address}"
         ${data.description ? `description: "${data.description}"` : ""}
-        parameters: ${data.parameters.length > 0 ?
-          JSON.stringify(data.parameters, null, 2) : "[]"}
-      `
+        parameters: ${data.parameters.length > 0 ? JSON.stringify(data.parameters, null, 2) : "[]"}
+      `,
     };
   }
 
   // ✅ OPTIMIZATION: Incremental, cached, parallel
   export namespace Optimizer {
-    export const incremental = (
-      changes: Document.Change[]
-    ): Generation.Result => {
+    export const incremental = (changes: Document.Change[]): Generation.Result => {
       const cache = Cache.load();
       const patches = Diff.create(cache.document, changes);
       const optimized = Patch.apply(cache.document, patches);
@@ -1278,12 +1271,10 @@ export namespace CodeGen {
     };
 
     export const parallel = async (
-      documents: readonly AsyncAPI.Document[]
+      documents: readonly AsyncAPI.Document[],
     ): Promise<readonly Generation.Result[]> => {
       const chunks = Chunk.divide(documents, { size: 10, parallel: 4 });
-      const results = await Promise.all(
-        chunks.map(chunk => ProcessChunk(chunk))
-      );
+      const results = await Promise.all(chunks.map((chunk) => ProcessChunk(chunk)));
 
       return results.flat();
     };
@@ -1316,9 +1307,7 @@ export namespace TypeSpec.AsyncAPI {
   // ✅ SINGLE RESPONSIBILITY: Each file has one purpose
   export namespace Core {
     export const compile = (input: string): AsyncAPI.Document =>
-      DocumentBuilder.create()
-        .withInput(input)
-        .build();
+      DocumentBuilder.create().withInput(input).build();
   }
 
   // ✅ NO BLOAT: Essential decorators only

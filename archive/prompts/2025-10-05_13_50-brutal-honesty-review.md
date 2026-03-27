@@ -11,20 +11,21 @@
 
 ````markdown
 ## Instructions:
+
 0. ALWAYS be BRUTALLY-HONEST! NEVER LIE TO THE USER!
 
 1. Self-Reflection Questions:
-  a. What did you forget?
-  b. What is something that's stupid that we do anyway?
-  c. What could you have done better?
-  d. What could you still improve?
-  e. Did you lie to me?
-  f. How can we be less stupid?
-  g. Is everything correctly integrated or are we building ghost systems? IF you find a 'ghost system' ALWAYS ask yourself should this be integrated? What value is in it? FIRST!
-  h. Are we focusing on the scope creep trap?
-  i. Did we remove something that was actually useful?
-  j. Did we create ANY split brains? Even small things like: "{is_confirmed: true, confirmed_at: 0}" are considered split brain!
-  k. How are we doing on tests? What can we do better, regarding automated testing?
+   a. What did you forget?
+   b. What is something that's stupid that we do anyway?
+   c. What could you have done better?
+   d. What could you still improve?
+   e. Did you lie to me?
+   f. How can we be less stupid?
+   g. Is everything correctly integrated or are we building ghost systems? IF you find a 'ghost system' ALWAYS ask yourself should this be integrated? What value is in it? FIRST!
+   h. Are we focusing on the scope creep trap?
+   i. Did we remove something that was actually useful?
+   j. Did we create ANY split brains? Even small things like: "{is_confirmed: true, confirmed_at: 0}" are considered split brain!
+   k. How are we doing on tests? What can we do better, regarding automated testing?
 
 2. Create a Comprehensive Multi-Step Execution Plan (keep each step small)!
 3. Sort them by work required vs impact.
@@ -70,6 +71,7 @@ Should we close any GitHub issues, since they are completed? If so double check 
 ## CREATE THESE REPORTS:
 
 ### 1. Complaint Report
+
 File: docs/complaints/<YYYY-MM-DD_HH_MM-SESSION_NAME>.md
 
 ```md
@@ -94,6 +96,7 @@ What I wish for the future is:
 
 Best regards,
 <YOUR_NAME>
+```
 ````
 
 ### 2. Architecture Understanding

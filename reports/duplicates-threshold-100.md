@@ -52,7 +52,7 @@ Duplicated Tokens:    869 (3.69%)
 **Pattern A: Decorator Target Logging (4 clones)**
 
 ```typescript
-Effect.runSync(Effect.log("🔍 Target:")).pipe(Effect.annotateLogs({ target: target.name }))
+Effect.runSync(Effect.log("🔍 Target:")).pipe(Effect.annotateLogs({ target: target.name }));
 ```
 
 - **Locations:** Lines 27-29, 88-91, 121-124, 199-202
@@ -72,7 +72,7 @@ Effect.runSync(Effect.log("🔍 Target:")).pipe(Effect.annotateLogs({ target: ta
 **Pattern C: Extended Decorator Logging (3 clones)**
 
 ```typescript
-Effect.runSync(Effect.log("🔍 Target:")).pipe(Effect.annotateLogs({ target: target.name }))
+Effect.runSync(Effect.log("🔍 Target:")).pipe(Effect.annotateLogs({ target: target.name }));
 ```
 
 - **Locations:** Lines 88-124, 155-183, 252-281
@@ -160,8 +160,8 @@ export const <type> = (input: unknown): <Brand>Type =>
 **Pattern B: Type Casting and Schema Decoding (4 clones)**
 
 ```typescript
-const parsed = input as Record<string, unknown>
-const result: AsyncAPI<Type> = Schema.decodeSync(<type>Schema)
+const parsed = input as Record<string, unknown>;
+const result: AsyncAPI<Type> = Schema.decodeSync(<type>Schema);
 ```
 
 - **Locations:** Lines 183-279 (same validation patterns)
@@ -189,20 +189,17 @@ const result: AsyncAPI<Type> = Schema.decodeSync(<type>Schema)
 ```typescript
 // Extract shared utilities
 const logDecoratorTarget = (target: string, message?: string) =>
-  Effect.runSync(Effect.log(message || "🔍 Target:")).pipe(
-    Effect.annotateLogs({ target })
-  )
+  Effect.runSync(Effect.log(message || "🔍 Target:")).pipe(Effect.annotateLogs({ target }));
 
-const logConfigPresence = (config: unknown) =>
-  Effect.annotateLogs({ hasConfig: !!config })
+const logConfigPresence = (config: unknown) => Effect.annotateLogs({ hasConfig: !!config });
 
 const logDecoratorExecution = (target: string, config?: unknown) =>
-  Effect.gen(function*() {
-    yield* logDecoratorTarget(target)
+  Effect.gen(function* () {
+    yield* logDecoratorTarget(target);
     if (config) {
-      yield* Effect.logInfo("Configuration present").pipe(logConfigPresence(config))
+      yield* Effect.logInfo("Configuration present").pipe(logConfigPresence(config));
     }
-  })
+  });
 ```
 
 ### Opportunity #2: Generic Schema Validation (P1 - HIGH)
@@ -215,25 +212,24 @@ const logDecoratorExecution = (target: string, config?: unknown) =>
 
 ```typescript
 // Extract generic validation pipeline
-const createSchemaValidator = <A, I>(schema: Schema.Schema<A, I>, brandName: string) =>
+const createSchemaValidator =
+  <A, I>(schema: Schema.Schema<A, I>, brandName: string) =>
   (input: unknown): Effect.Effect<A, AsyncAPIValidationError, never> =>
-    Effect.gen(function*() {
+    Effect.gen(function* () {
       return yield* Effect.try({
         try: () => Schema.decodeSync(schema)(input),
-        catch: (error) => new AsyncAPIValidationError(`Invalid ${brandName}: ${error}`)
-      })
-    })
+        catch: (error) => new AsyncAPIValidationError(`Invalid ${brandName}: ${error}`),
+      });
+    });
 
 // Extract branded type constructor
-const createBrandedTypeConstructor = <A, I, B extends string>(
-  schema: Schema.Schema<A, I>,
-  brandName: B,
-  errorPrefix: string
-) =>
+const createBrandedTypeConstructor =
+  <A, I, B extends string>(schema: Schema.Schema<A, I>, brandName: B, errorPrefix: string) =>
   (input: unknown): Effect.Effect<A & Brand<B>, AsyncAPIValidationError, never> =>
-    createSchemaValidator(schema, `${errorPrefix} ${brandName}`)(input).pipe(
-      Effect.map((value) => value as A & Brand<B>)
-    )
+    createSchemaValidator(
+      schema,
+      `${errorPrefix} ${brandName}`,
+    )(input).pipe(Effect.map((value) => value as A & Brand<B>));
 ```
 
 ### Opportunity #3: Domain Validation Factory (P1 - HIGH)
@@ -246,27 +242,29 @@ const createBrandedTypeConstructor = <A, I, B extends string>(
 
 ```typescript
 // Extract domain validation pipeline
-const createDomainValidator = <A, I>(schema: Schema.Schema<A, I>, typeName: string) =>
+const createDomainValidator =
+  <A, I>(schema: Schema.Schema<A, I>, typeName: string) =>
   (input: unknown): Effect.Effect<A, AsyncAPIValidationError, never> =>
-    Effect.gen(function*() {
-      const parsed = input as Record<string, unknown>
+    Effect.gen(function* () {
+      const parsed = input as Record<string, unknown>;
       const result = yield* Effect.try({
         try: () => Schema.decodeSync(schema)(parsed),
-        catch: (error) => new AsyncAPIValidationError(`Failed to validate ${typeName}: ${error}`)
-      })
-      return result
-    })
+        catch: (error) => new AsyncAPIValidationError(`Failed to validate ${typeName}: ${error}`),
+      });
+      return result;
+    });
 
 // Extract input processing utility
-const parseAndDecode = <A, I>(schema: Schema.Schema<A, I>) =>
+const parseAndDecode =
+  <A, I>(schema: Schema.Schema<A, I>) =>
   (input: unknown): Effect.Effect<A, AsyncAPIValidationError, never> =>
-    Effect.gen(function*() {
-      const parsed = input as Record<string, unknown>
+    Effect.gen(function* () {
+      const parsed = input as Record<string, unknown>;
       return yield* Effect.try({
         try: () => Schema.decodeSync(schema)(parsed),
-        catch: (error) => new AsyncAPIValidationError(`Schema decoding failed: ${error}`)
-      })
-    })
+        catch: (error) => new AsyncAPIValidationError(`Schema decoding failed: ${error}`),
+      });
+    });
 ```
 
 ---

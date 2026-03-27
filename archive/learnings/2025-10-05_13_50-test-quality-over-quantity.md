@@ -20,21 +20,21 @@
 ```typescript
 // What we created (WORTHLESS):
 it("should support Kafka consumer groups", async () => {
-  const host = await createAsyncAPITestHost()
-  host.addTypeSpecFile("main.tsp", `...TypeSpec code...`)
-  await host.compile("./main.tsp")
-  expect(true).toBe(true) // 🚨 GHOST TEST!
-})
+  const host = await createAsyncAPITestHost();
+  host.addTypeSpecFile("main.tsp", `...TypeSpec code...`);
+  await host.compile("./main.tsp");
+  expect(true).toBe(true); // 🚨 GHOST TEST!
+});
 
 // What we should have created (VALUABLE):
 it("should generate AsyncAPI with Kafka consumer group config", async () => {
   const spec = await compileAsyncAPISpec(`
     @protocol(#{ protocol: "kafka", binding: #{ groupId: "consumers" } })
     @channel("events") @subscribe op consume(): Event;
-  `)
-  expect(spec.channels["events"]).toBeDefined()
-  expect(spec.channels["events"].bindings?.kafka?.groupId).toBe("consumers")
-})
+  `);
+  expect(spec.channels["events"]).toBeDefined();
+  expect(spec.channels["events"].bindings?.kafka?.groupId).toBe("consumers");
+});
 ```
 
 ### Impact Metrics
@@ -73,13 +73,13 @@ it("should generate AsyncAPI with Kafka consumer group config", async () => {
 
 ```typescript
 // ❌ WRONG: Using compilation helper for emitter validation
-const host = await createAsyncAPITestHost()  // Returns: TypeSpec TestHost
-await host.compile("./main.tsp")
+const host = await createAsyncAPITestHost(); // Returns: TypeSpec TestHost
+await host.compile("./main.tsp");
 // No AsyncAPI output to validate!
 
 // ✅ RIGHT: Using emitter helper for validation
-const spec = await compileAsyncAPISpec(source)  // Returns: AsyncAPIObject
-expect(spec.servers).toBeDefined()  // Actually validates emitter!
+const spec = await compileAsyncAPISpec(source); // Returns: AsyncAPIObject
+expect(spec.servers).toBeDefined(); // Actually validates emitter!
 ```
 
 **Lesson:** Document helper purpose and enforce through examples/linting.
@@ -202,8 +202,8 @@ Before creating N similar tests:
  *
  * All domain tests should follow this pattern!
  */
-import { describe, it, expect } from "bun:test"
-import { compileAsyncAPISpec } from "../utils/test-helpers.js"
+import { describe, it, expect } from "bun:test";
+import { compileAsyncAPISpec } from "../utils/test-helpers.js";
 
 describe("Feature Category", () => {
   it("should generate specific AsyncAPI element", async () => {
@@ -213,17 +213,17 @@ describe("Feature Category", () => {
       namespace Test;
       model Msg { id: string; }
       @channel("chan") @publish op pub(): Msg;
-    `)
+    `);
 
     // 2. Assert on SPECIFIC AsyncAPI output elements
-    expect(spec.servers["srv"]).toBeDefined()
-    expect(spec.servers["srv"].protocol).toBe("proto")
-    expect(spec.channels["chan"]).toBeDefined()
-    expect(spec.components?.messages).toBeDefined()
+    expect(spec.servers["srv"]).toBeDefined();
+    expect(spec.servers["srv"].protocol).toBe("proto");
+    expect(spec.channels["chan"]).toBeDefined();
+    expect(spec.components?.messages).toBeDefined();
 
     // 3. NO trivial assertions like expect(true).toBe(true)!
-  })
-})
+  });
+});
 ```
 
 ### Code Review Guidelines

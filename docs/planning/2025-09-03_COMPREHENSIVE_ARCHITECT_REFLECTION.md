@@ -117,10 +117,10 @@ _Context: Post-TODO Analysis and TypeScript Error Resolution Phase_
 
 ```typescript
 interface IUniversalPlugin {
-  readonly metadata: PluginMetadata
-  initialize(context: PluginContext): Effect.Effect<void, Error>
-  processBinding(target: ProcessingTarget): Effect.Effect<PluginResult, Error>
-  dispose(): Effect.Effect<void, Error>
+  readonly metadata: PluginMetadata;
+  initialize(context: PluginContext): Effect.Effect<void, Error>;
+  processBinding(target: ProcessingTarget): Effect.Effect<PluginResult, Error>;
+  dispose(): Effect.Effect<void, Error>;
 }
 ```
 
@@ -329,9 +329,9 @@ describe("GIVEN a TypeSpec service with @channel decorator", () => {
       // Arrange: TypeSpec source with @channel
       // Act: Run emitter pipeline
       // Assert: Validate AsyncAPI output structure
-    })
-  })
-})
+    });
+  });
+});
 ```
 
 - **Purpose:** Verify TypeSpec → AsyncAPI transformation behaviors
@@ -343,12 +343,10 @@ describe("GIVEN a TypeSpec service with @channel decorator", () => {
 ```typescript
 describe("ValidationService", () => {
   it("should validate AsyncAPI document with Effect.TS error handling", async () => {
-    const result = await Effect.runPromise(
-      validationService.validateDocument(document)
-    )
-    expect(result.isValid).toBe(true)
-  })
-})
+    const result = await Effect.runPromise(validationService.validateDocument(document));
+    expect(result.isValid).toBe(true);
+  });
+});
 ```
 
 - **Purpose:** Test Effect.TS composition and error handling
@@ -360,10 +358,10 @@ describe("ValidationService", () => {
 ```typescript
 describe("parseChannelAddress", () => {
   it("should extract channel name from TypeSpec operation", () => {
-    const result = parseChannelAddress("user.events.created")
-    expect(result).toEqual({ domain: "user", event: "created" })
-  })
-})
+    const result = parseChannelAddress("user.events.created");
+    expect(result).toEqual({ domain: "user", event: "created" });
+  });
+});
 ```
 
 - **Purpose:** Test pure functions and utilities

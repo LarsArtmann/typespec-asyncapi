@@ -48,9 +48,9 @@
    // test/utils/test-helpers.ts:153
    const runner = createTestWrapper(host, {
      emitters: {
-       "@lars-artmann/typespec-asyncapi": options  // ← Options passed here
-     }
-   })
+       "@lars-artmann/typespec-asyncapi": options, // ← Options passed here
+     },
+   });
    ```
 
 2. **TypeSpec Infrastructure:**
@@ -61,7 +61,7 @@
 
    ```typescript
    // src/domain/emitter/AsyncAPIEmitter.ts:279, 392
-   const options = this.emitter.getOptions()  // ← AssetEmitter.getOptions()
+   const options = this.emitter.getOptions(); // ← AssetEmitter.getOptions()
    ```
 
 4. **Conclusion:**
@@ -241,9 +241,9 @@ Ran 7 tests across 1 file. [466.00ms]
 // Options passed via emitters config
 const runner = createTestWrapper(host, {
   emitters: {
-    "@lars-artmann/typespec-asyncapi": options
-  }
-})
+    "@lars-artmann/typespec-asyncapi": options,
+  },
+});
 ```
 
 **TypeSpec Processing:**
@@ -256,9 +256,9 @@ const runner = createTestWrapper(host, {
 
 ```typescript
 // Emitter accesses options via AssetEmitter.getOptions()
-const options = this.emitter.getOptions()
-const filename = options["output-file"] || "asyncapi"
-const format = options["file-type"] || "yaml"
+const options = this.emitter.getOptions();
+const filename = options["output-file"] || "asyncapi";
+const format = options["file-type"] || "yaml";
 ```
 
 **Conclusion:** The entire flow works correctly. Previous test failures were due to Alpha fallback hiding the real issues.

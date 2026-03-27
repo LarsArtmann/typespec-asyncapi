@@ -92,8 +92,8 @@ Sorted by: **Impact / Effort = Priority Score**
 2. Find line 137: `expect(testResult.asyncapiDoc?.channels).toHaveProperty('edge.case')`
 3. Replace with pattern from cli-simple-emitter.test.ts:
    ```typescript
-   const channelKeys = getPropertyKeys(testResult.asyncapiDoc.channels)
-   expect(channelKeys).toContain('edge.case')
+   const channelKeys = getPropertyKeys(testResult.asyncapiDoc.channels);
+   expect(channelKeys).toContain("edge.case");
    ```
 4. Verify test still compiles
 5. Commit: "fix: Apply Bun matcher fix to template test"

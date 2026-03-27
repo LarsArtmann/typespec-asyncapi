@@ -76,16 +76,16 @@
 - **Current:**
   ```typescript
   // ❌ CURRENT: String confusion possible
-  function createChannel(id: string, path: string): Channel
+  function createChannel(id: string, path: string): Channel;
   // Can accidentally swap arguments - compiles!
-  createChannel("/path", "channel-123") // BUG!
+  createChannel("/path", "channel-123"); // BUG!
   ```
 - **Target:**
   ```typescript
   // ✅ AFTER: Type-safe branded types
-  function createChannel(id: ChannelId, path: ChannelPath): Effect.Effect<Channel, ValidationError>
+  function createChannel(id: ChannelId, path: ChannelPath): Effect.Effect<Channel, ValidationError>;
   // Can't swap - compile error!
-  createChannel(ChannelPath.create("/path"), ChannelId.create("channel-123")) // ✅
+  createChannel(ChannelPath.create("/path"), ChannelId.create("channel-123")); // ✅
   ```
 - **Action:**
   1. Create `ChannelId.create()` with validation (15 min)
@@ -123,7 +123,7 @@
   // ✅ NO SPLIT BRAIN POSSIBLE
   type ValidationResult<T> =
     | { readonly status: "valid"; readonly data: T }
-    | { readonly status: "invalid"; readonly errors: readonly ValidationError[] }
+    | { readonly status: "invalid"; readonly errors: readonly ValidationError[] };
   ```
 - **Action:**
   1. Identify all split brains (15 min)
@@ -203,12 +203,12 @@
 
   ```typescript
   // ❌ BEFORE: Boolean flags
-  retain: boolean
-  clean_session: boolean
+  retain: boolean;
+  clean_session: boolean;
 
   // ✅ AFTER: Expressive enums
-  retainPolicy: RetainPolicy.RETAIN | RetainPolicy.DISCARD
-  sessionPolicy: SessionPolicy.CLEAN | SessionPolicy.PERSISTENT
+  retainPolicy: RetainPolicy.RETAIN | RetainPolicy.DISCARD;
+  sessionPolicy: SessionPolicy.CLEAN | SessionPolicy.PERSISTENT;
   ```
 
 #### T3.8: Replace Magic Strings with Enums (30 min)
@@ -217,12 +217,12 @@
 
   ```typescript
   // ❌ BEFORE: Magic strings
-  action: "send" | "receive"
-  protocol: "kafka" | "mqtt"
+  action: "send" | "receive";
+  protocol: "kafka" | "mqtt";
 
   // ✅ AFTER: Type-safe enums
-  action: OperationAction.SEND | OperationAction.RECEIVE
-  protocol: Protocol.KAFKA | Protocol.MQTT
+  action: OperationAction.SEND | OperationAction.RECEIVE;
+  protocol: Protocol.KAFKA | Protocol.MQTT;
   ```
 
 **THE 20% Total:** 12 hours → 80% value delivered

@@ -61,23 +61,23 @@ test/
 
 ```typescript
 // Test compilation functions
-createAsyncAPITestHost()
-compileAsyncAPISpec(source, options)
-compileAsyncAPISpecWithoutErrors(source, options)
-parseAsyncAPIOutput(outputFiles, filename)
+createAsyncAPITestHost();
+compileAsyncAPISpec(source, options);
+compileAsyncAPISpecWithoutErrors(source, options);
+parseAsyncAPIOutput(outputFiles, filename);
 
 // Validation utilities
-validateAsyncAPIStructure(asyncapiDoc)
-AsyncAPIAssertions.hasValidStructure(doc)
-AsyncAPIAssertions.hasChannel(doc, channelName)
-AsyncAPIAssertions.hasOperation(doc, operationName)
-AsyncAPIAssertions.hasSchema(doc, schemaName)
+validateAsyncAPIStructure(asyncapiDoc);
+AsyncAPIAssertions.hasValidStructure(doc);
+AsyncAPIAssertions.hasChannel(doc, channelName);
+AsyncAPIAssertions.hasOperation(doc, operationName);
+AsyncAPIAssertions.hasSchema(doc, schemaName);
 
 // Test data generators
-TestSources.basicEvent
-TestSources.complexEvent
-TestSources.multipleOperations
-TestSources.withDocumentation
+TestSources.basicEvent;
+TestSources.complexEvent;
+TestSources.multipleOperations;
+TestSources.withDocumentation;
 ```
 
 #### 5. **Test Configuration**

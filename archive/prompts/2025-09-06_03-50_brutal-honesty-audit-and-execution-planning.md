@@ -8,18 +8,18 @@
 
 ````markdown
 ## Instructions:
+
 0. ALWAYS be BRUTALLY-HONEST! NEVER LIE TO THE USER!
-1.
-  a. What did you forget?
-  b. What is something that's stupid that we do anyway?
-  c. What could you have done better?
-  d. What could you still improve?
-  e. Did you lie to me?
-  f. How can we be less stupid?
-  g. Is everything correctly integrated or are we building ghost systems? IF you find a 'ghost system' ALLWAYS ask yourself should this be integrated? What value is in it? FIRST!
-  h. Are we focusing on the scope creep trap?
-  j. Did we remove something that was actually useful?
-  k. Did we create ANY split brains? Event small things like: "{is_confirmed: true, confirmed_at: 0}" are considered split brain!
+1. a. What did you forget?
+   b. What is something that's stupid that we do anyway?
+   c. What could you have done better?
+   d. What could you still improve?
+   e. Did you lie to me?
+   f. How can we be less stupid?
+   g. Is everything correctly integrated or are we building ghost systems? IF you find a 'ghost system' ALLWAYS ask yourself should this be integrated? What value is in it? FIRST!
+   h. Are we focusing on the scope creep trap?
+   j. Did we remove something that was actually useful?
+   k. Did we create ANY split brains? Event small things like: "{is_confirmed: true, confirmed_at: 0}" are considered split brain!
 2. Create a Comprehensive Multi-Step Execution Plan (keep each step small)!
 3. Sort them by work required vs impact.
 4. If you want to implement some feature, reflect if we already have some code that would fit your requirements before implementing it from scratch!
@@ -35,7 +35,9 @@ Repeat until done. Keep going until everything works and you think you did a gre
 
 Run "git status & git commit ..." after each smallest self-contained change.
 Run "git push" when done.
+
 ---
+
 1. Which architectural decisions we made in the past are causing problem now / could be improved? How can we be less stupid?
 2. Create a Comprehensive Multi-Step Execution Plan (keep each step small)!
 3. Sort them by work required vs impact.
@@ -48,10 +50,14 @@ Run "git push" when done.
 
 Run "git status & git commit ..." after each smallest self-contained change.
 Run "git push" when done.
+
 ---
+
 How does your work contribute to creating customer value?
 git status & git diff(s) & git commit <-- with VERY DETAILED commit message(s) & git push
+
 ---
+
 MAKE SURE TO CREATE A VERY COMPREHENSIVE PLAN FIRST!
 Split the TODOs into to small tasks 30min to 100min each (up to 24 tasks total)! It should include ALL TODOS! UNDERSTAND???!
 Sort all by importance/impact/effort/customer-value.
@@ -61,26 +67,31 @@ THEN BREAK DOWN THE VERY COMPREHENSIVE & DETAILED PLAN INTO EVEN SMALLER TODOs!
 EACH tasks max 12min each (up to 60 tasks total)! It should include ALL TODOS! UNDERSTAND???!
 Sort all by importance/impact/effort/customer-value.
 REPORT BACK WITH A TABLE VIEW WHEN DONE!
+
 ---
+
 Run 'gh issue list -L 700'. READ, UNDERSTAND.; Are there any open Issues that you should add a comment to based on your completed work? If the Issue is fully COMPLETED: close it with a comment.
 Comment on all relevant GitHub Issues. Create new GitHub Issues for tasks you have that are not reflected in GitHub Issues yet!
 
-It's time to clean up, call it a day. Document everything important in GitHub and say bye until tomorrow - Use the GitHub CLI to get it done (gh)!
----
-Should we close any GitHub issues, since they are completed? If so double check via the cli and make sure you READ ALL comments too!!! Then list me all the once you would close and why!
----
+## It's time to clean up, call it a day. Document everything important in GitHub and say bye until tomorrow - Use the GitHub CLI to get it done (gh)!
+
+## Should we close any GitHub issues, since they are completed? If so double check via the cli and make sure you READ ALL comments too!!! Then list me all the once you would close and why!
+
 AFTER YOU REFLECTED and created the sorted VERY COMPREHENSIVE todo list, focus ONLY on the GitHub Issues!!!
 
-MAKE SURE IF I CLOSE THIS CHAT I WILL NOT LOSE ANY IMPORTANT INSIGHT
-------
+## MAKE SURE IF I CLOSE THIS CHAT I WILL NOT LOSE ANY IMPORTANT INSIGHT
+
 Reminder: Don't forget to check your internal todo list.
 NOTE: Use the cli to get the current date.
+
 ---
+
 !------!
 File a report: Where there ANY under-specified or confusing information?
 Did you not know what to do at any point in time?
 
 Here is the Form:
+
 ```md
 # Report about missing/under-specified/confusing information
 
@@ -101,9 +112,9 @@ I was confused by:
 What I wish for the future is:
 <FILL_IN_HERE>
 
-
 Best regards,
 <YOUR_NAME>
+```
 ````
 
 To submit the report, create a file in docs/complaints/<YYYY-MM-DD_HH_MM-SESSION_NAME>.md

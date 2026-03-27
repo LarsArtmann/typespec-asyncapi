@@ -70,21 +70,21 @@ createStructuredError(type: string, message: string, details: Record<string, unk
 
 ```typescript
 // String Branded Types - Prevent Type Confusion
-export type ChannelName = string & { readonly __brand: 'ChannelName' }
-export type OperationName = string & { readonly __brand: 'OperationName' }
-export type MessageName = string & { readonly __brand: 'MessageName' }
-export type SchemaName = string & { readonly __brand: 'SchemaName' }
-export type ServerName = string & { readonly __brand: 'ServerName' }
+export type ChannelName = string & { readonly __brand: "ChannelName" };
+export type OperationName = string & { readonly __brand: "OperationName" };
+export type MessageName = string & { readonly __brand: "MessageName" };
+export type SchemaName = string & { readonly __brand: "SchemaName" };
+export type ServerName = string & { readonly __brand: "ServerName" };
 
 // Type Guards - Runtime Validation
-export function isValidChannelName(value: string): value is ChannelName
-export function isValidOperationName(value: string): value is OperationName
-export function isValidSchemaName(value: string): value is SchemaName
+export function isValidChannelName(value: string): value is ChannelName;
+export function isValidOperationName(value: string): value is OperationName;
+export function isValidSchemaName(value: string): value is SchemaName;
 
 // Safe Constructors - With Validation
-export function toChannelName(value: string): ChannelName
-export function toOperationName(value: string): OperationName
-export function toSchemaName(value: string): SchemaName
+export function toChannelName(value: string): ChannelName;
+export function toOperationName(value: string): OperationName;
+export function toSchemaName(value: string): SchemaName;
 ```
 
 **Impact:** Compile-time error prevention, self-documenting code, zero runtime overhead  
@@ -251,12 +251,10 @@ How do we safely migrate from old implementations to new library utilities **wit
 
 ```typescript
 // Enable through configuration
-const USE_NEW_LIBRARY_UTILS = process.env.USE_NEW_LIBRARY_UTILS === 'true'
+const USE_NEW_LIBRARY_UTILS = process.env.USE_NEW_LIBRARY_UTILS === "true";
 
 // Gradual rollout with safe fallback
-const result = USE_NEW_LIBRARY_UTILS
-  ? parseYaml(content)
-  : customParseYaml(content)
+const result = USE_NEW_LIBRARY_UTILS ? parseYaml(content) : customParseYaml(content);
 ```
 
 **Pros:** Safe rollout, easy rollback, A/B testing capability
@@ -267,8 +265,8 @@ const result = USE_NEW_LIBRARY_UTILS
 ```typescript
 // Wrap new utilities to match old interfaces
 const legacyParseYaml = (content: string) => {
-  return Effect.runSync(parseYaml(content))
-}
+  return Effect.runSync(parseYaml(content));
+};
 ```
 
 **Pros:** Transparent migration, minimal breaking changes

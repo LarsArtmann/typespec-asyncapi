@@ -298,10 +298,10 @@
 
 ```typescript
 // ❌ CURRENT: Weak typing
-function createChannel(id: string, path: string): Channel
+function createChannel(id: string, path: string): Channel;
 
 // ✅ TARGET: Strong typing
-function createChannel(id: ChannelId, path: ChannelPath): Channel
+function createChannel(id: ChannelId, path: ChannelPath): Channel;
 ```
 
 **Fix Plan (THE 20%):**

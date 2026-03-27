@@ -66,7 +66,7 @@ components:
     # Domain entities
     User:
       allOf:
-        - $ref: '#/components/schemas/BaseEntity'
+        - $ref: "#/components/schemas/BaseEntity"
         - type: object
           properties:
             email:
@@ -86,7 +86,7 @@ components:
 
     Order:
       allOf:
-        - $ref: '#/components/schemas/BaseEntity'
+        - $ref: "#/components/schemas/BaseEntity"
         - type: object
           properties:
             userId:
@@ -100,12 +100,12 @@ components:
               description: Total order amount
             currency:
               type: string
-              pattern: '^[A-Z]{3}$'
+              pattern: "^[A-Z]{3}$"
               description: ISO 4217 currency code
             items:
               type: array
               items:
-                $ref: '#/components/schemas/OrderItem'
+                $ref: "#/components/schemas/OrderItem"
               minItems: 1
               description: Items in the order
           required: [userId, amount, currency, items]
@@ -192,7 +192,7 @@ components:
             type: string
             const: "1.0"
       payload:
-        $ref: '#/components/schemas/UserRegisteredEventPayload'
+        $ref: "#/components/schemas/UserRegisteredEventPayload"
       examples:
         - name: Web registration
           summary: User registering via web interface
@@ -245,9 +245,9 @@ components:
           type: string
           description: Distributed tracing identifier
         user:
-          $ref: '#/components/schemas/UserData'
+          $ref: "#/components/schemas/UserData"
         registrationContext:
-          $ref: '#/components/schemas/RegistrationContext'
+          $ref: "#/components/schemas/RegistrationContext"
       required: [eventId, eventType, eventVersion, occurredAt, user, registrationContext]
 ```
 
@@ -324,7 +324,7 @@ components:
             description: Idempotency key for duplicate prevention
         required: [commandType, commandVersion, idempotencyKey]
       payload:
-        $ref: '#/components/schemas/CreateOrderCommandPayload'
+        $ref: "#/components/schemas/CreateOrderCommandPayload"
 
   schemas:
     CreateOrderCommandPayload:
@@ -352,12 +352,13 @@ components:
           type: string
           description: Request correlation ID
         order:
-          $ref: '#/components/schemas/CreateOrderRequest'
+          $ref: "#/components/schemas/CreateOrderRequest"
         validationRules:
           type: array
           items:
-            $ref: '#/components/schemas/ValidationRule'
-      required: [commandId, commandType, commandVersion, requestedAt, requestedBy, idempotencyKey, order]
+            $ref: "#/components/schemas/ValidationRule"
+      required:
+        [commandId, commandType, commandVersion, requestedAt, requestedBy, idempotencyKey, order]
 ```
 
 ## Schema Evolution Patterns
@@ -468,10 +469,10 @@ components:
                   type: string
               required: [first, last]
             preferences:
-              $ref: '#/components/schemas/UserPreferences'
+              $ref: "#/components/schemas/UserPreferences"
           required: [id, email, name]
         metadata:
-          $ref: '#/components/schemas/EventMetadata'
+          $ref: "#/components/schemas/EventMetadata"
       required: [eventId, eventVersion, user, metadata]
       x-schema-version: "2.0"
 
@@ -481,13 +482,13 @@ components:
       title: User Created Event
       payload:
         oneOf:
-          - $ref: '#/components/schemas/UserCreatedV1'
-          - $ref: '#/components/schemas/UserCreatedV2'
+          - $ref: "#/components/schemas/UserCreatedV1"
+          - $ref: "#/components/schemas/UserCreatedV2"
         discriminator:
           propertyName: eventVersion
           mapping:
-            "1.0": '#/components/schemas/UserCreatedV1'
-            "2.0": '#/components/schemas/UserCreatedV2'
+            "1.0": "#/components/schemas/UserCreatedV1"
+            "2.0": "#/components/schemas/UserCreatedV2"
 ```
 
 ### Additive Evolution Pattern
@@ -550,17 +551,17 @@ UserEvent:
 
     # V1.2 additions - optional
     address:
-      $ref: '#/components/schemas/Address'
+      $ref: "#/components/schemas/Address"
       x-schema-added-in: "1.2"
     preferences:
-      $ref: '#/components/schemas/UserPreferences'
+      $ref: "#/components/schemas/UserPreferences"
       x-schema-added-in: "1.2"
 
     # V1.3 additions - optional
     socialProfiles:
       type: array
       items:
-        $ref: '#/components/schemas/SocialProfile'
+        $ref: "#/components/schemas/SocialProfile"
       x-schema-added-in: "1.3"
     verificationStatus:
       type: string
@@ -624,30 +625,30 @@ components:
     # Root discriminated union
     DomainEvent:
       oneOf:
-        - $ref: '#/components/schemas/UserEvent'
-        - $ref: '#/components/schemas/OrderEvent'
-        - $ref: '#/components/schemas/PaymentEvent'
-        - $ref: '#/components/schemas/SystemEvent'
+        - $ref: "#/components/schemas/UserEvent"
+        - $ref: "#/components/schemas/OrderEvent"
+        - $ref: "#/components/schemas/PaymentEvent"
+        - $ref: "#/components/schemas/SystemEvent"
       discriminator:
         propertyName: eventType
         mapping:
-          user: '#/components/schemas/UserEvent'
-          order: '#/components/schemas/OrderEvent'
-          payment: '#/components/schemas/PaymentEvent'
-          system: '#/components/schemas/SystemEvent'
+          user: "#/components/schemas/UserEvent"
+          order: "#/components/schemas/OrderEvent"
+          payment: "#/components/schemas/PaymentEvent"
+          system: "#/components/schemas/SystemEvent"
 
     # User event discriminated union
     UserEvent:
       oneOf:
-        - $ref: '#/components/schemas/UserCreatedEvent'
-        - $ref: '#/components/schemas/UserUpdatedEvent'
-        - $ref: '#/components/schemas/UserDeletedEvent'
+        - $ref: "#/components/schemas/UserCreatedEvent"
+        - $ref: "#/components/schemas/UserUpdatedEvent"
+        - $ref: "#/components/schemas/UserDeletedEvent"
       discriminator:
         propertyName: type
         mapping:
-          user.created: '#/components/schemas/UserCreatedEvent'
-          user.updated: '#/components/schemas/UserUpdatedEvent'
-          user.deleted: '#/components/schemas/UserDeletedEvent'
+          user.created: "#/components/schemas/UserCreatedEvent"
+          user.updated: "#/components/schemas/UserUpdatedEvent"
+          user.deleted: "#/components/schemas/UserDeletedEvent"
 
     # Concrete event types
     UserCreatedEvent:
@@ -666,7 +667,7 @@ components:
           type: string
           format: date-time
         user:
-          $ref: '#/components/schemas/User'
+          $ref: "#/components/schemas/User"
       required: [eventType, type, eventId, timestamp, user]
 
     UserUpdatedEvent:
@@ -688,7 +689,7 @@ components:
           type: string
           format: uuid
         changes:
-          $ref: '#/components/schemas/UserChangeSet'
+          $ref: "#/components/schemas/UserChangeSet"
       required: [eventType, type, eventId, timestamp, userId, changes]
 ```
 
@@ -759,15 +760,15 @@ components:
           enum: [USD, EUR, GBP]
           description: ISO 4217 currency code
         method:
-          $ref: '#/components/schemas/PaymentMethod'
+          $ref: "#/components/schemas/PaymentMethod"
         cardDetails:
-          $ref: '#/components/schemas/CardDetails'
+          $ref: "#/components/schemas/CardDetails"
           description: Required when method.type is 'card'
         bankDetails:
-          $ref: '#/components/schemas/BankDetails'
+          $ref: "#/components/schemas/BankDetails"
           description: Required when method.type is 'bank'
         digitalWalletDetails:
-          $ref: '#/components/schemas/DigitalWalletDetails'
+          $ref: "#/components/schemas/DigitalWalletDetails"
           description: Required when method.type is 'wallet'
       required: [amount, currency, method]
       # JSON Schema doesn't support conditional requirements natively
@@ -803,19 +804,19 @@ components:
       properties:
         lastFourDigits:
           type: string
-          pattern: '^[0-9]{4}$'
+          pattern: "^[0-9]{4}$"
           description: Last four digits of the card
         expiryMonth:
           type: string
-          pattern: '^(0[1-9]|1[0-2])$'
+          pattern: "^(0[1-9]|1[0-2])$"
           description: Expiry month (01-12)
         expiryYear:
           type: string
-          pattern: '^20[2-9][0-9]$'
+          pattern: "^20[2-9][0-9]$"
           description: Expiry year (2020+)
         cardholderName:
           type: string
-          pattern: '^[A-Za-z ]+$'
+          pattern: "^[A-Za-z ]+$"
           minLength: 2
           maxLength: 50
           description: Name on the card
@@ -905,16 +906,16 @@ components:
         auditTrail:
           type: array
           items:
-            $ref: '#/components/schemas/AuditEntry'
+            $ref: "#/components/schemas/AuditEntry"
           description: Complete audit trail
       required: [createdBy, updatedBy, auditTrail]
 
     # Composed entity using allOf
     Product:
       allOf:
-        - $ref: '#/components/schemas/Timestamped'
-        - $ref: '#/components/schemas/Versioned'
-        - $ref: '#/components/schemas/Auditable'
+        - $ref: "#/components/schemas/Timestamped"
+        - $ref: "#/components/schemas/Versioned"
+        - $ref: "#/components/schemas/Auditable"
         - type: object
           properties:
             id:
@@ -936,7 +937,7 @@ components:
               pattern: '^\\d+\\.\\d{2}$'
               description: Product price
             category:
-              $ref: '#/components/schemas/ProductCategory'
+              $ref: "#/components/schemas/ProductCategory"
           required: [id, name, price, category]
 ```
 
@@ -990,7 +991,7 @@ components:
           type: string
           format: uuid
         status:
-          $ref: '#/components/schemas/OrderStatus'
+          $ref: "#/components/schemas/OrderStatus"
         totalAmount:
           type: string
           format: decimal
@@ -1023,24 +1024,24 @@ components:
     # Full details for individual access
     OrderDetails:
       allOf:
-        - $ref: '#/components/schemas/OrderSummary'
+        - $ref: "#/components/schemas/OrderSummary"
         - type: object
           properties:
             items:
               type: array
               items:
-                $ref: '#/components/schemas/OrderItem'
+                $ref: "#/components/schemas/OrderItem"
               description: Complete order items
             shippingAddress:
-              $ref: '#/components/schemas/Address'
+              $ref: "#/components/schemas/Address"
             billingAddress:
-              $ref: '#/components/schemas/Address'
+              $ref: "#/components/schemas/Address"
             paymentMethod:
-              $ref: '#/components/schemas/PaymentMethod'
+              $ref: "#/components/schemas/PaymentMethod"
             history:
               type: array
               items:
-                $ref: '#/components/schemas/OrderHistoryEntry'
+                $ref: "#/components/schemas/OrderHistoryEntry"
               description: Complete order history
           required: [items, shippingAddress, paymentMethod, history]
       x-schema-purpose: "details"
@@ -1102,7 +1103,7 @@ components:
           type: string
           format: date-time
         order:
-          $ref: '#/components/schemas/OrderEventData'
+          $ref: "#/components/schemas/OrderEventData"
       required: [eventId, eventType, timestamp, order]
       examples:
         - eventId: "evt_01234567-89ab-cdef-0123-456789abcdef"
@@ -1122,7 +1123,7 @@ components:
     OrderCreatedEvent:
       name: OrderCreatedEvent
       payload:
-        $ref: '#/components/schemas/OrderCreatedEvent'
+        $ref: "#/components/schemas/OrderCreatedEvent"
       examples:
         - name: Standard order creation
           summary: Typical order with single item

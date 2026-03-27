@@ -119,10 +119,10 @@ rm -rf tsp-test tsp-output test-output
 
 ```javascript
 // Files stored as:
-outputFiles.set("AsyncAPI.yaml", content)  // Capital A
+outputFiles.set("AsyncAPI.yaml", content); // Capital A
 
 // Search looks for:
-path.includes('asyncapi')  // lowercase
+path.includes("asyncapi"); // lowercase
 
 // Result: NO MATCH!
 ```
@@ -137,7 +137,7 @@ path.includes('asyncapi')  // lowercase
 **The Fix:**
 
 ```javascript
-path.toLowerCase().includes('asyncapi')  // Case-insensitive
+path.toLowerCase().includes("asyncapi"); // Case-insensitive
 ```
 
 **Lesson:** When dealing with filenames/paths:

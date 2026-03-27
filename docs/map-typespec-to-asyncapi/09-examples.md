@@ -209,7 +209,7 @@ channels:
     description: Order lifecycle events
     messages:
       OrderCreatedEvent:
-        $ref: '#/components/messages/OrderCreatedEvent'
+        $ref: "#/components/messages/OrderCreatedEvent"
     bindings:
       kafka:
         topic: ecommerce.orders.events
@@ -222,7 +222,7 @@ channels:
     description: Payment processing events
     messages:
       PaymentProcessedEvent:
-        $ref: '#/components/messages/PaymentProcessedEvent'
+        $ref: "#/components/messages/PaymentProcessedEvent"
     bindings:
       kafka:
         topic: ecommerce.payments.events
@@ -235,7 +235,7 @@ channels:
     description: Inventory management events
     messages:
       InventoryReservedEvent:
-        $ref: '#/components/messages/InventoryReservedEvent'
+        $ref: "#/components/messages/InventoryReservedEvent"
     bindings:
       kafka:
         topic: ecommerce.inventory.events
@@ -247,7 +247,7 @@ operations:
   publishOrderEvent:
     action: send
     channel:
-      $ref: '#/channels/orders.events'
+      $ref: "#/channels/orders.events"
     summary: Publish order creation events
     bindings:
       kafka:
@@ -261,7 +261,7 @@ operations:
   publishPaymentEvent:
     action: send
     channel:
-      $ref: '#/channels/payments.events'
+      $ref: "#/channels/payments.events"
     summary: Publish payment processing events
     bindings:
       kafka:
@@ -274,7 +274,7 @@ operations:
   handleOrderCreated:
     action: receive
     channel:
-      $ref: '#/channels/orders.events'
+      $ref: "#/channels/orders.events"
     summary: Handle order creation events
     bindings:
       kafka:
@@ -285,7 +285,7 @@ operations:
   publishInventoryEvent:
     action: send
     channel:
-      $ref: '#/channels/inventory.events'
+      $ref: "#/channels/inventory.events"
     summary: Publish inventory reservation events
     bindings:
       kafka:
@@ -297,7 +297,7 @@ operations:
   handlePaymentProcessed:
     action: receive
     channel:
-      $ref: '#/channels/payments.events'
+      $ref: "#/channels/payments.events"
     summary: Handle payment processing events
     bindings:
       kafka:
@@ -313,7 +313,7 @@ components:
       description: Fired when a new order is successfully created
       contentType: application/json
       payload:
-        $ref: '#/components/schemas/OrderCreatedEvent'
+        $ref: "#/components/schemas/OrderCreatedEvent"
       examples:
         - name: Standard Order
           payload:
@@ -358,7 +358,7 @@ components:
           format: uuid
         orderNumber:
           type: string
-          pattern: '^ORD-[0-9]{4}-[0-9]{6}$'
+          pattern: "^ORD-[0-9]{4}-[0-9]{6}$"
         orderTotal:
           type: string
           format: decimal
@@ -369,12 +369,12 @@ components:
         items:
           type: array
           items:
-            $ref: '#/components/schemas/OrderItem'
+            $ref: "#/components/schemas/OrderItem"
           minItems: 1
         shippingAddress:
-          $ref: '#/components/schemas/Address'
+          $ref: "#/components/schemas/Address"
         billingAddress:
-          $ref: '#/components/schemas/Address'
+          $ref: "#/components/schemas/Address"
         source:
           type: string
           enum: [web, mobile, api]
@@ -620,7 +620,7 @@ channels:
         description: Unique device identifier
         schema:
           type: string
-          pattern: '^[a-zA-Z0-9_-]+$'
+          pattern: "^[a-zA-Z0-9_-]+$"
     description: Device telemetry data stream
     bindings:
       mqtt:
@@ -634,7 +634,7 @@ channels:
         description: Unique device identifier
         schema:
           type: string
-          pattern: '^[a-zA-Z0-9_-]+$'
+          pattern: "^[a-zA-Z0-9_-]+$"
     description: Device status updates
     bindings:
       mqtt:
@@ -648,7 +648,7 @@ channels:
         description: Target device identifier
         schema:
           type: string
-          pattern: '^[a-zA-Z0-9_-]+$'
+          pattern: "^[a-zA-Z0-9_-]+$"
     description: Commands sent to devices
     bindings:
       mqtt:
@@ -666,7 +666,7 @@ channels:
           properties:
             Authorization:
               type: string
-              pattern: '^Bearer .+'
+              pattern: "^Bearer .+"
         bindingVersion: "0.1.0"
 
   realtime.alerts:
@@ -680,14 +680,14 @@ channels:
           properties:
             Authorization:
               type: string
-              pattern: '^Bearer .+'
+              pattern: "^Bearer .+"
         bindingVersion: "0.1.0"
 
 operations:
   receiveDeviceTelemetry:
     action: receive
     channel:
-      $ref: '#/channels/device.telemetry'
+      $ref: "#/channels/device.telemetry"
     summary: Receive device telemetry data
     bindings:
       mqtt:
@@ -697,7 +697,7 @@ operations:
   receiveDeviceStatus:
     action: receive
     channel:
-      $ref: '#/channels/device.status'
+      $ref: "#/channels/device.status"
     summary: Receive device status updates
     bindings:
       mqtt:
@@ -707,7 +707,7 @@ operations:
   sendDeviceCommand:
     action: send
     channel:
-      $ref: '#/channels/device.commands'
+      $ref: "#/channels/device.commands"
     summary: Send commands to devices
     bindings:
       mqtt:
@@ -717,7 +717,7 @@ operations:
   streamTelemetryData:
     action: send
     channel:
-      $ref: '#/channels/realtime.telemetry'
+      $ref: "#/channels/realtime.telemetry"
     summary: Stream real-time telemetry to dashboards
     bindings:
       ws:
@@ -726,7 +726,7 @@ operations:
   streamAlerts:
     action: send
     channel:
-      $ref: '#/channels/realtime.alerts'
+      $ref: "#/channels/realtime.alerts"
     summary: Stream real-time alerts to monitoring systems
     bindings:
       ws:
@@ -741,7 +741,7 @@ components:
       description: Real-time telemetry data from IoT devices
       contentType: application/json
       payload:
-        $ref: '#/components/schemas/DeviceTelemetryEvent'
+        $ref: "#/components/schemas/DeviceTelemetryEvent"
       examples:
         - name: Temperature Sensor Reading
           payload:
@@ -779,15 +779,15 @@ components:
           format: date-time
         deviceId:
           type: string
-          pattern: '^[a-zA-Z0-9_-]+$'
+          pattern: "^[a-zA-Z0-9_-]+$"
         deviceType:
-          $ref: '#/components/schemas/DeviceType'
+          $ref: "#/components/schemas/DeviceType"
         location:
-          $ref: '#/components/schemas/DeviceLocation'
+          $ref: "#/components/schemas/DeviceLocation"
         readings:
           type: array
           items:
-            $ref: '#/components/schemas/SensorReading'
+            $ref: "#/components/schemas/SensorReading"
           minItems: 1
         batteryLevel:
           type: integer
@@ -1114,7 +1114,7 @@ channels:
           properties:
             Authorization:
               type: string
-              pattern: '^Bearer .+'
+              pattern: "^Bearer .+"
             X-Trading-Session:
               type: string
               format: uuid
@@ -1124,7 +1124,7 @@ operations:
   receiveMarketData:
     action: receive
     channel:
-      $ref: '#/channels/market.data'
+      $ref: "#/channels/market.data"
     summary: Receive high-frequency market data
     bindings:
       kafka:
@@ -1141,7 +1141,7 @@ operations:
   publishOrderEvent:
     action: send
     channel:
-      $ref: '#/channels/orders'
+      $ref: "#/channels/orders"
     summary: Publish order lifecycle events
     bindings:
       kafka:
@@ -1158,7 +1158,7 @@ operations:
   processOrderEvent:
     action: receive
     channel:
-      $ref: '#/channels/orders'
+      $ref: "#/channels/orders"
     summary: Process order events
     bindings:
       kafka:
@@ -1170,7 +1170,7 @@ operations:
   publishTradeExecution:
     action: send
     channel:
-      $ref: '#/channels/executions'
+      $ref: "#/channels/executions"
     summary: Publish trade executions
     bindings:
       kafka:
@@ -1184,7 +1184,7 @@ operations:
   monitorTradeExecution:
     action: receive
     channel:
-      $ref: '#/channels/executions'
+      $ref: "#/channels/executions"
     summary: Monitor trade executions for risk management
     bindings:
       kafka:
@@ -1195,7 +1195,7 @@ operations:
   streamPositionUpdate:
     action: send
     channel:
-      $ref: '#/channels/positions.realtime'
+      $ref: "#/channels/positions.realtime"
     summary: Stream real-time position updates
     bindings:
       ws:
@@ -1212,7 +1212,7 @@ components:
       description: Real-time market data updates
       contentType: application/json
       payload:
-        $ref: '#/components/schemas/MarketDataEvent'
+        $ref: "#/components/schemas/MarketDataEvent"
       x-performance:
         compressionRatio: 0.3
         avgSizeBytes: 150
@@ -1231,7 +1231,7 @@ components:
           type: string
           format: date-time
         instrument:
-          $ref: '#/components/schemas/TradingInstrument'
+          $ref: "#/components/schemas/TradingInstrument"
         bidPrice:
           type: string
           format: decimal

@@ -1,4 +1,5 @@
 # TypeSpec AsyncAPI Emitter - Infrastructure Recovery Status Report
+
 **Report Date:** 2026-01-23 07:14:50 CET  
 **Report Type:** P0 Infrastructure Recovery Status  
 **Project Phase:** Emergency Recovery & Stabilization  
@@ -13,6 +14,7 @@
 **Mission-Critical Issue:** The emitter's `$onEmit` hook is being invoked, but `emitFile` integration with TypeSpec's test framework is not producing output files, causing a cascade of 100+ test failures. This is the single blocking issue preventing all downstream functionality from being validated.
 
 **Key Metrics:**
+
 - ✅ Build System: 100% Operational (0 TS errors)
 - 🟡 Decorator Discovery: 93% Operational (11 unknown decorators remaining)
 - ❌ Test Infrastructure: 45% Operational (246/605 passing)
@@ -23,6 +25,7 @@
 ## 📊 BUILD SYSTEM STATUS
 
 ### TypeScript Compilation: ✅ PERFECT
+
 ```
 ✅ Zero compilation errors (down from 425 errors)
 ✅ Build completes successfully: 62 files, 572K total size
@@ -32,6 +35,7 @@
 ```
 
 **Build Artifacts Structure:**
+
 ```
 dist/src/
 ├── constants/          ✅ Generated (7 modules)
@@ -51,6 +55,7 @@ dist/src/
 ## 🧪 TEST SUITE ANALYSIS
 
 ### Summary Statistics
+
 ```
 Total Tests:    605 tests across 87 files
 Passed:         246 tests (40.7%) ✅
@@ -64,6 +69,7 @@ expect() Calls: 1,113 assertions
 ### Test Category Breakdown
 
 **✅ WORKING TEST CATEGORIES:**
+
 1. **Effect Patterns** - 13/13 passing (100%)
    - Railway programming patterns
    - Error propagation
@@ -145,12 +151,14 @@ expect() Calls: 1,113 assertions
 **Issue:** EmitterTester infrastructure cannot find AsyncAPI files after compilation
 
 **Evidence:**
+
 ```
 Error: No AsyncAPI output generated - check emitFile integration
 at compileAsyncAPI (test/utils/emitter-test-helpers.ts:100:13)
 ```
 
 **Expected Behavior:**
+
 1. TypeSpec tester compiles TypeSpec source
 2. $onEmit is invoked with EmitContext
 3. emitFile(context.program, options) writes file
@@ -159,12 +167,14 @@ at compileAsyncAPI (test/utils/emitter-test-helpers.ts:100:13)
    - result.fs.fs (virtual filesystem, needs bridging)
 
 **Actual Behavior:**
+
 - Compilation succeed ✓
 - $onEmit may or may not be invoked (needs verification)
 - Either emitFile not called OR writing to wrong location
 - test/utils/emitter-test-helpers.ts finds no files
 
 **Investigation Required:**
+
 1. ✅ Verify emitter registered in package.json (tspMain: "lib/main.tsp")
 2. ✅ Verify $onEmit exported from index.js (present)
 3. 🔍 Add console.log to verify $onEmit is actually called
@@ -190,6 +200,7 @@ at compileAsyncAPI (test/utils/emitter-test-helpers.ts:100:13)
 ```
 
 **Evidence:**
+
 - test/unit/error-handling.test.ts - ErrorFormatters usage
 - test/unit/decorator-registration.test.ts - createAsyncAPIDecorators missing
 - test/validation/automated-spec-validation.test.ts - API_VERSIONS import
@@ -197,6 +208,7 @@ at compileAsyncAPI (test/utils/emitter-test-helpers.ts:100:13)
 **Root Cause:** Tests reference implementation files that were removed/disabled, or functions were never implemented
 
 **Solution Options:**
+
 1. **Recommended:** Remove tests for non-existent features (clean house)
 2. Quick-fix: Add stub exports to satisfy imports
 3. Implement missing utilities
@@ -212,6 +224,7 @@ at compileAsyncAPI (test/utils/emitter-test-helpers.ts:100:13)
 **Issue:** CLI tests spawn `npx tsp` which fails with "command not found"
 
 **Evidence:**
+
 ```
 /bin/sh: npx: command not found
 Executable not found in $PATH: "npx"
@@ -219,6 +232,7 @@ at spawn (test/integration/cli-simple-emitter.test.ts:48:25)
 ```
 
 **Root Cause:**
+
 - TypeSpec CLI not installed globally in test environment
 - Tests use child_process.spawn to invoke npx
 - Alternative: Use programmatic TypeSpec API
@@ -226,6 +240,7 @@ at spawn (test/integration/cli-simple-emitter.test.ts:48:25)
 **Status:** Expected CLI tests to fail in non-global environment
 
 **Solution:**
+
 - Implement execAsync helper with better error detection
 - Mock spawn for CLI tests OR
 - Use programmatic TypeSpec tester API exclusively
@@ -242,6 +257,7 @@ at spawn (test/integration/cli-simple-emitter.test.ts:48:25)
 **Issue:** Some AsyncAPI decorators not being recognized by TypeSpec
 
 **Evidence:**
+
 ```
 📊 BREAKTHROUGH METRICS: Unknown decorator errors: 11 (was 371+)
 ```
@@ -249,6 +265,7 @@ at spawn (test/integration/cli-simple-emitter.test.ts:48:25)
 **Status:** **93% FIXED** - down from 371 errors, but 11 remain
 
 **Outstanding Unknown Decorators:**
+
 - Need to analyze which specific decorators still failing
 - Likely advanced decorators (@tags, @bindings, @correlationId, @header)
 
@@ -263,21 +280,23 @@ at spawn (test/integration/cli-simple-emitter.test.ts:48:25)
 ### The Core Problem: Test-Emitter Integration Gap
 
 **What Works:**
+
 1. ✅ TypeScript compilation - all code compiles
 2. ✅ Decorator discovery - imports and executes
 3. ✅ State consolidation - data collected in program state
 4. ✅ Emitter infrastructure - $onEmit function exists and compiles
 
-**What Breaks:**
-5. ❌ File generation - emitFile not producing testable output
+**What Breaks:** 5. ❌ File generation - emitFile not producing testable output
 
 **The Missing Link:**
 
 The test infrastructure (`test/utils/emitter-test-helpers.ts`) expects either:
+
 - Files in `result.outputs` (auto-populated by TypeSpec testing framework)
 - Files in `result.fs.fs` (virtual filesystem populated by emitFile)
 
 Current logic:
+
 ```typescript
 // Search result.outputs first
 // If empty, bridge from virtual FS
@@ -302,6 +321,7 @@ throw new Error("No AsyncAPI output generated");
 **Debugging Strategy:**
 
 Add instrumentation to `src/emitter.ts`:
+
 ```typescript
 console.log("Emitter invoked: $onEmit called");
 console.log("Program has stateMaps:", context.program.stateMap !== undefined);
@@ -310,12 +330,13 @@ console.log("State consolidated:", JSON.stringify(state, null, 2));
 console.log("About to call emitFile...");
 await emitFile(context.program, {
   path: outputPath,
-  content: content
+  content: content,
 });
 console.log("emitFile completed");
 ```
 
 Add debugging to test helper:
+
 ```typescript
 console.log("Compiling TypeSpec...");
 const result = await tester.compile(source);
@@ -334,6 +355,7 @@ console.log("FS filesystem keys:", Object.keys(result.fs?.fs || {}));
 ### 1. Effect.TS Schema Validation - FIXED ✅
 
 **Problem:** Tests calling `Effect.runPromise()` on synchronous functions throwing:
+
 ```
 RuntimeException: Not a valid effect: /user/events
 ```
@@ -341,6 +363,7 @@ RuntimeException: Not a valid effect: /user/events
 **Root Cause:** `createChannelPath()` returns string, not Effect. Tests incorrectly wrapped in Effect.TS runtime.
 
 **Fix Applied:** Changed `test/schema-integration.test.ts`:
+
 ```typescript
 // Before ❌
 const result = await Effect.runPromise(createChannelPath("/user/events"));
@@ -360,6 +383,7 @@ const result = createChannelPath("/user/events");
 2. Build System Stability - ACHIEVED ✅
 
 **Work Completed:**
+
 - Resolved 425 TypeScript compilation errors
 - Achieved zero-errors baseline
 - TypeScript strict mode fully functional
@@ -377,6 +401,7 @@ const result = createChannelPath("/user/events");
 **Goal:** Get AsyncAPI files generating in test environment
 
 **Steps:**
+
 1. Add comprehensive instrumentation to `src/emitter.ts` ($onEmit)
 2. Add logging to `test/utils/emitter-test-helpers.ts`
 3. Run minimal test to capture actual behavior
@@ -388,6 +413,7 @@ const result = createChannelPath("/user/events");
 
 **Estimated Completion:** 2-4 hours  
 **Success Criteria:**
+
 - At least 50% of tests start passing
 - AsyncAPI documents validated in test assertions
 - No "No AsyncAPI output generated" errors
@@ -399,6 +425,7 @@ const result = createChannelPath("/user/events");
 **Goal:** Get test suite to >=80% pass rate
 
 **Steps:**
+
 1. Fix P1: Remove or stub missing export tests
    - Comment out ErrorFormatters tests (non-existent feature)
    - Comment out decorator-registration tests (needs work)
@@ -413,6 +440,7 @@ const result = createChannelPath("/user/events");
 
 **Estimated Completion:** 4-6 hours  
 **Success Criteria:**
+
 - 80%+ tests passing (486/605)
 - All critical paths covered
 - Test execution time <60 seconds
@@ -425,6 +453,7 @@ const result = createChannelPath("/user/events");
 **Goal:** Validate all core features work end-to-end
 
 **Steps:**
+
 1. Comprehensive integration testing
 2. Real-world scenario validation
 3. Performance benchmarking
@@ -434,6 +463,7 @@ const result = createChannelPath("/user/events");
 
 **Estimated Completion:** 8-12 hours  
 **Success Criteria:**
+
 - 90%+ tests passing (545/605)
 - All P0/P1 features working
 - Performance within 10% of target
@@ -445,14 +475,14 @@ const result = createChannelPath("/user/events");
 
 ### Current State (2026-01-23 07:14) 📊
 
-| Metric | Status | Target |
-|--------|--------|--------|
-| TypeScript Errors | 0 ✅ | 0 |
-| Test Pass Rate | 40.7% (246/605) | 90% |
-| Build Time | ~15 seconds | <10s |
-| Test Time | 54 seconds | <60s |
-| Code Coverage | Unknown | >80% |
-| Decorator Discovery | 93% | 100% |
+| Metric              | Status          | Target |
+| ------------------- | --------------- | ------ |
+| TypeScript Errors   | 0 ✅            | 0      |
+| Test Pass Rate      | 40.7% (246/605) | 90%    |
+| Build Time          | ~15 seconds     | <10s   |
+| Test Time           | 54 seconds      | <60s   |
+| Code Coverage       | Unknown         | >80%   |
+| Decorator Discovery | 93%             | 100%   |
 
 ### P0 Recovery Goals 🎯
 
@@ -478,6 +508,7 @@ const result = createChannelPath("/user/events");
 ### For Next Development Session:
 
 **Hour 1-2: Debug emitFile** (CRITICAL)
+
 - [ ] Add console.log instrumentation to emitter
 - [ ] Run single minimal test: `bun test test/unit/emitter-core.test.ts`
 - [ ] Analyze logs to identify failure point
@@ -485,12 +516,14 @@ const result = createChannelPath("/user/events");
 - [ ] Verify at least 1 test can find generated AsyncAPI file
 
 **Hour 3-4: Clean Test Infrastructure**
+
 - [ ] Comment out tests for non-existent ErrorFormatters
 - [ ] Skip CLI tests gracefully when npx unavailable
 - [ ] Run test suite and categorize failures
 - [ ] Fix easy issues immediately
 
 **Hour 5-6: Stabilize Core**
+
 - [ ] Get emitter-core tests to >=80% passing
 - [ ] Validate simple decorator functionality
 - [ ] Ensure basic AsyncAPI generation works
@@ -516,24 +549,28 @@ const result = createChannelPath("/user/events");
 ## 💡 RECOMMENDATIONS
 
 ### Immediate (Today):
+
 1. ✅ **FOCUS 100%** on emitFile integration - this blocks everything
 2. Use console.log debugging to understand actual behavior
 3. Don't try to fix multiple issues at once
 4. Get 1 test passing end-to-end, then scale
 
 ### Short-term (This Week):
+
 1. Establish test suite baseline after emitFile fixed
 2. Create PR template requiring test pass verification
 3. Set up pre-commit hooks to catch TypeScript errors
 4. Create test writing guidelines for developers
 
 ### Medium-term (This Month):
+
 1. Re-enable disabled complex files incrementally
 2. Implement performance regression suite
 3. Add test coverage reporting
 4. Set up CI/CD pipeline with test gates
 
 ### Stop Doing:
+
 1. ❌ Don't add new features until infrastructure stable
 2. ❌ Don't write tests before fixing emitFile
 3. ❌ Don't manually test - automate everything
@@ -546,6 +583,7 @@ const result = createChannelPath("/user/events");
 ### By Severity:
 
 **P0 - Blocking (emitFile): 250 tests**
+
 - All emitter-core tests
 - All integration tests
 - All e2e tests
@@ -554,12 +592,14 @@ const result = createChannelPath("/user/events");
 - All decorator functionality tests
 
 **P1 - Infrastructure: 60 tests**
+
 - Error handling tests (missing ErrorFormatters)
 - Decorator registration tests
 - CLI invocation tests (npx not found)
 - Path validation tests (missing constants)
 
 **P2 - Minor/Quality: 20 tests**
+
 - Options validation edge cases
 - Schema property ordering
 - Performance regression tests (skipped)
@@ -567,6 +607,7 @@ const result = createChannelPath("/user/events");
 ### By Category:
 
 **Core Emitter (0/12):** 0% - **BLOCKING**
+
 - Simple model compilation
 - Complex nested models
 - Documentation preservation
@@ -578,12 +619,14 @@ const result = createChannelPath("/user/events");
 - Error handling
 
 **Decorators (2/20):** 10% - **BLOCKING**
+
 - @subscribe: 0/4 passing
 - @server: 0/9 passing
 - @protocol: 0/0 passing (all skipped)
 - @security: 0/0 passing (all skipped)
 
 **Integration (0/86):** 0% - **BLOCKING**
+
 - Protocol bindings: 0/10
 - Basic functionality: 0/7
 - Decorator validation: 0/8
@@ -595,6 +638,7 @@ const result = createChannelPath("/user/events");
 - Protocol integration: 0/7
 
 **E2E (0/16):** 0% - **BLOCKING**
+
 - Real-world e-commerce: 0/1
 - Multi-protocol: 0/1
 - CLI compilation: 0/1
@@ -603,11 +647,13 @@ const result = createChannelPath("/user/events");
 - Security schemes: 0/7
 
 **Domain Tests (0/170):** 0% - **BLOCKING**
+
 - Security comprehensive: 0/75
 - WebSocket/MQTT: 0/30
 - Kafka protocols: 0/65
 
 **Validation (2/8):** 25% 🟡
+
 - Security validation: 1/2 passing
 - Protocol bindings: 5/6 passing (good!)
 - Real validation: 0/1 (emitFile blocked)
@@ -618,6 +664,7 @@ const result = createChannelPath("/user/events");
 ## 🎓 LESSONS LEARNED
 
 ### What Went Well:
+
 1. ✅ TypeScript strict mode configuration - caught many errors early
 2. ✅ Build-before-test pipeline - prevents false positives
 3. ✅ Effect.TS patterns in core logic - composable and testable
@@ -625,6 +672,7 @@ const result = createChannelPath("/user/events");
 5. ✅ Documentation test coverage - validates real user workflows
 
 ### What Needs Improvement:
+
 1. ❌ Test-emitter integration bridging - need better understanding
 2. ❌ Module export management - clean up removed features
 3. ❌ TypeSpec version compatibility tracking - need upgrade docs
@@ -632,6 +680,7 @@ const result = createChannelPath("/user/events");
 5. ❌ Performance monitoring - no baseline established yet
 
 ### Technical Debt Identified:
+
 1. ⚠️ 5,745 lines of complex features disabled (needs systematic restoration)
 2. ⚠️ Effect.TS service layer not fully operational
 3. ⚠️ Import path inconsistencies in test helpers
@@ -643,6 +692,7 @@ const result = createChannelPath("/user/events");
 ## 🔗 REFERENCES
 
 ### File Locations:
+
 - Build artifact: `/Users/larsartmann/projects/typespec-asyncapi/dist/src/`
 - Test helpers: `/Users/larsartmann/projects/typespec-asyncapi/test/utils/emitter-test-helpers.ts`
 - Core emitter: `/Users/larsartmann/projects/typespec-asyncapi/src/emitter.ts`
@@ -650,6 +700,7 @@ const result = createChannelPath("/user/events");
 - This report: `/Users/larsartmann/projects/typespec-asyncapi/docs/status/2026-01-23_07-14_TYPESPEC-ASYNCAPI-INFRASTRUCTURE-RECOVERY.md`
 
 ### Key Metrics Tracking:
+
 - Last snapshot: 425 TypeScript errors (now 0) ✅
 - Last snapshot: 371 unknown decorator errors (now 11) ✅
 - Last snapshot: 0% core tests passing (now 0% - blocked by emitFile) 🔄

@@ -37,10 +37,10 @@
 
 ```typescript
 // WRONG (old code):
-const channelName = `channel_${op.name}` // Hardcoded prefix!
+const channelName = `channel_${op.name}`; // Hardcoded prefix!
 
 // RIGHT (fixed):
-const channelName = channelPath // From @channel decorator
+const channelName = channelPath; // From @channel decorator
 ```
 
 **Files Fixed:**

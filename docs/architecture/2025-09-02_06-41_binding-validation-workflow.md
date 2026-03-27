@@ -470,42 +470,42 @@ name: AsyncAPI Binding Validation
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   binding-validation:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Setup Bun
-      uses: oven-sh/setup-bun@v1
-      with:
-        bun-version: latest
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
 
-    - name: Install dependencies
-      run: bun install
+      - name: Install dependencies
+        run: bun install
 
-    - name: Build project
-      run: just build
+      - name: Build project
+        run: just build
 
-    - name: Generate AsyncAPI specifications
-      run: just compile
+      - name: Generate AsyncAPI specifications
+        run: just compile
 
-    - name: Validate AsyncAPI specifications
-      run: just validate-asyncapi
+      - name: Validate AsyncAPI specifications
+        run: just validate-asyncapi
 
-    - name: Validate binding compliance
-      run: just validate-bindings
+      - name: Validate binding compliance
+        run: just validate-bindings
 
-    - name: Check Studio compatibility
-      run: just check-studio-compatibility
+      - name: Check Studio compatibility
+        run: just check-studio-compatibility
 
-    - name: Test external tools
-      run: just test-external-tools
+      - name: Test external tools
+        run: just test-external-tools
 ```
 
 This comprehensive validation workflow ensures that all generated AsyncAPI specifications are fully compliant with official binding specifications and compatible with the AsyncAPI ecosystem.

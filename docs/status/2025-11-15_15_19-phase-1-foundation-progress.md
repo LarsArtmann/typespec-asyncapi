@@ -103,6 +103,7 @@
    - Never used - eliminated
 
 2. ❌ **LegacyValidationResult** (TO FIX)
+
    ```typescript
    {
      isValid: boolean,      // ← REDUNDANT (errors.length === 0)
@@ -143,19 +144,19 @@
 
 ```typescript
 type ValidationSuccess<T> = {
-  readonly _tag: "Success"      // ✅ DISCRIMINATOR
-  readonly value: T
-  readonly errors: readonly []  // ✅ LITERALLY EMPTY by type!
-  readonly warnings: readonly []
-}
+  readonly _tag: "Success"; // ✅ DISCRIMINATOR
+  readonly value: T;
+  readonly errors: readonly []; // ✅ LITERALLY EMPTY by type!
+  readonly warnings: readonly [];
+};
 
 type ValidationFailure = {
-  readonly _tag: "Failure"                        // ✅ DISCRIMINATOR
-  readonly errors: readonly ValidationError[]     // ✅ MUST have errors
-  readonly warnings: readonly ValidationWarning[]
-}
+  readonly _tag: "Failure"; // ✅ DISCRIMINATOR
+  readonly errors: readonly ValidationError[]; // ✅ MUST have errors
+  readonly warnings: readonly ValidationWarning[];
+};
 
-type ValidationResult<T> = ValidationSuccess<T> | ValidationFailure
+type ValidationResult<T> = ValidationSuccess<T> | ValidationFailure;
 ```
 
 **Why This Is Superior:**
@@ -174,10 +175,10 @@ type ValidationResult<T> = ValidationSuccess<T> | ValidationFailure
 
    ```typescript
    if (result._tag === "Success") {
-     result.value   // ✅ TypeScript KNOWS this exists
-     result.errors  // ✅ TypeScript KNOWS this is []
+     result.value; // ✅ TypeScript KNOWS this exists
+     result.errors; // ✅ TypeScript KNOWS this is []
    } else {
-     result.errors  // ✅ TypeScript KNOWS this is ValidationError[]
+     result.errors; // ✅ TypeScript KNOWS this is ValidationError[]
    }
    ```
 
@@ -185,23 +186,25 @@ type ValidationResult<T> = ValidationSuccess<T> | ValidationFailure
 
    ```typescript
    // BEFORE (primitive):
-   errors: ["Something broke"]
+   errors: ["Something broke"];
 
    // AFTER (structured):
-   errors: [{
-     message: "Required field missing",
-     keyword: "required",
-     instancePath: "/info/title",  // ← Precise location
-     schemaPath: "#/required"       // ← Schema reference
-   }]
+   errors: [
+     {
+       message: "Required field missing",
+       keyword: "required",
+       instancePath: "/info/title", // ← Precise location
+       schemaPath: "#/required", // ← Schema reference
+     },
+   ];
    ```
 
 4. **Immutability** - `readonly` prevents accidental mutation
 
 5. **Factory Functions** - Safe construction
    ```typescript
-   success(asyncApiDoc)           // ✅ Can't forget _tag
-   failure([errors], [warnings])  // ✅ Can't create invalid state
+   success(asyncApiDoc); // ✅ Can't forget _tag
+   failure([errors], [warnings]); // ✅ Can't create invalid state
    ```
 
 #### Migration Plan
@@ -216,22 +219,22 @@ import {
   failure,
   type ValidationResult,
   type ValidationError,
-  type ValidationWarning
-} from "../models/validation-result.js"
+  type ValidationWarning,
+} from "../models/validation-result.js";
 ```
 
 **Step 2:** Create extended type with metrics
 
 ```typescript
 export type ValidationServiceResult = {
-  result: ValidationResult<AsyncAPIObject>
+  result: ValidationResult<AsyncAPIObject>;
   metrics: {
-    channelCount: number
-    operationCount: number
-    messageCount: number
-    schemaCount: number
-  }
-}
+    channelCount: number;
+    operationCount: number;
+    messageCount: number;
+    schemaCount: number;
+  };
+};
 ```
 
 **Step 3:** Update 4 usage locations
@@ -245,15 +248,15 @@ export type ValidationServiceResult = {
 
 ```typescript
 // BEFORE:
-errors.push("Missing required field: asyncapi")
+errors.push("Missing required field: asyncapi");
 
 // AFTER:
 errors.push({
   message: "Missing required field: asyncapi",
   keyword: "required",
   instancePath: "/asyncapi",
-  schemaPath: "#/required"
-})
+  schemaPath: "#/required",
+});
 ```
 
 **Remaining Work:** ~35 minutes

@@ -18,10 +18,10 @@ TypeSpec's `createTestWrapper().compileAndDiagnose()` API is **incompatible** wi
 
 ```typescript
 // BROKEN: Returns empty object
-const result = await compileAndDiagnose(source, emitterConfig)
-result.program = undefined  // ❌
-result.fs = undefined       // ❌
-Object.keys(result) = []    // ❌
+const result = await compileAndDiagnose(source, emitterConfig);
+result.program = undefined; // ❌
+result.fs = undefined; // ❌
+Object.keys(result) = []; // ❌
 ```
 
 **Root Cause**: AssetEmitter writes files to **disk** (`tsp-output/`), not to TypeSpec's virtual filesystem.
@@ -100,17 +100,17 @@ test/
 ### 1. CLI Test Helper (`cli-test-helpers.ts`)
 
 ```typescript
-import { spawn } from 'child_process'
-import { promises as fs } from 'fs'
-import { join } from 'path'
-import { parse as parseYAML } from 'yaml'
+import { spawn } from "child_process";
+import { promises as fs } from "fs";
+import { join } from "path";
+import { parse as parseYAML } from "yaml";
 
 export interface CLITestResult {
-  exitCode: number
-  stdout: string
-  stderr: string
-  asyncapiDoc?: AsyncAPIObject
-  errors: string[]
+  exitCode: number;
+  stdout: string;
+  stderr: string;
+  asyncapiDoc?: AsyncAPIObject;
+  errors: string[];
 }
 
 /**
@@ -123,45 +123,45 @@ export interface CLITestResult {
 export async function compileWithCLI(
   sourceFile: string,
   options: {
-    emitterOptions?: Record<string, unknown>
-    workdir?: string
-    timeout?: number
-  } = {}
+    emitterOptions?: Record<string, unknown>;
+    workdir?: string;
+    timeout?: number;
+  } = {},
 ): Promise<CLITestResult> {
-  const workdir = options.workdir || await createTempDir()
-  const tspFile = join(workdir, 'main.tsp')
+  const workdir = options.workdir || (await createTempDir());
+  const tspFile = join(workdir, "main.tsp");
 
   // Write TypeSpec source
-  if (sourceFile.includes('import')) {
+  if (sourceFile.includes("import")) {
     // Inline source
-    await fs.writeFile(tspFile, sourceFile)
+    await fs.writeFile(tspFile, sourceFile);
   } else {
     // Copy from fixtures
-    await fs.copyFile(sourceFile, tspFile)
+    await fs.copyFile(sourceFile, tspFile);
   }
 
   // Run tsp compile (TypeSpec's built-in CLI)
   const { exitCode, stdout, stderr } = await runCommand(
-    'tsp',
-    ['compile', '.', '--emit', '@typespec/asyncapi'],
-    { cwd: workdir, timeout: options.timeout || 30000 }
-  )
+    "tsp",
+    ["compile", ".", "--emit", "@typespec/asyncapi"],
+    { cwd: workdir, timeout: options.timeout || 30000 },
+  );
 
   // Read output
-  const outputPath = join(workdir, 'tsp-output/@lars-artmann/typespec-asyncapi/AsyncAPI.yaml')
-  let asyncapiDoc: AsyncAPIObject | undefined
+  const outputPath = join(workdir, "tsp-output/@lars-artmann/typespec-asyncapi/AsyncAPI.yaml");
+  let asyncapiDoc: AsyncAPIObject | undefined;
 
   try {
-    const content = await fs.readFile(outputPath, 'utf-8')
-    asyncapiDoc = parseYAML(content)
+    const content = await fs.readFile(outputPath, "utf-8");
+    asyncapiDoc = parseYAML(content);
   } catch (err) {
     // Output not found - not always an error (compile errors)
   }
 
   // Parse errors from stderr
-  const errors = parseCompilerErrors(stderr)
+  const errors = parseCompilerErrors(stderr);
 
-  return { exitCode, stdout, stderr, asyncapiDoc, errors }
+  return { exitCode, stdout, stderr, asyncapiDoc, errors };
 }
 
 /**
@@ -170,83 +170,87 @@ export async function compileWithCLI(
 async function runCommand(
   command: string,
   args: string[],
-  options: { cwd: string; timeout: number }
+  options: { cwd: string; timeout: number },
 ): Promise<{ exitCode: number; stdout: string; stderr: string }> {
   return new Promise((resolve, reject) => {
     const proc = spawn(command, args, {
       cwd: options.cwd,
       env: process.env,
-      shell: true
-    })
+      shell: true,
+    });
 
-    let stdout = ''
-    let stderr = ''
+    let stdout = "";
+    let stderr = "";
 
-    proc.stdout.on('data', (data) => { stdout += data.toString() })
-    proc.stderr.on('data', (data) => { stderr += data.toString() })
+    proc.stdout.on("data", (data) => {
+      stdout += data.toString();
+    });
+    proc.stderr.on("data", (data) => {
+      stderr += data.toString();
+    });
 
-    proc.on('close', (exitCode) => {
-      resolve({ exitCode: exitCode || 0, stdout, stderr })
-    })
+    proc.on("close", (exitCode) => {
+      resolve({ exitCode: exitCode || 0, stdout, stderr });
+    });
 
-    proc.on('error', reject)
+    proc.on("error", reject);
 
     // Timeout
     setTimeout(() => {
-      proc.kill()
-      reject(new Error(`Command timeout after ${options.timeout}ms`))
-    }, options.timeout)
-  })
+      proc.kill();
+      reject(new Error(`Command timeout after ${options.timeout}ms`));
+    }, options.timeout);
+  });
 }
 
 /**
  * Create temporary test directory
  */
 async function createTempDir(): Promise<string> {
-  const tmpDir = join(process.cwd(), 'test/temp-output', `test-${Date.now()}`)
-  await fs.mkdir(tmpDir, { recursive: true })
-  return tmpDir
+  const tmpDir = join(process.cwd(), "test/temp-output", `test-${Date.now()}`);
+  await fs.mkdir(tmpDir, { recursive: true });
+  return tmpDir;
 }
 
 /**
  * Parse TypeSpec compiler errors from stderr
  */
 function parseCompilerErrors(stderr: string): string[] {
-  const errors: string[] = []
-  const errorPattern = /error\s+[A-Z0-9]+:\s+(.+)/g
+  const errors: string[] = [];
+  const errorPattern = /error\s+[A-Z0-9]+:\s+(.+)/g;
 
-  let match
+  let match;
   while ((match = errorPattern.exec(stderr)) !== null) {
-    errors.push(match[1])
+    errors.push(match[1]);
   }
 
-  return errors
+  return errors;
 }
 
 /**
  * Cleanup test directory after test
  */
 export async function cleanupTestDir(workdir: string): Promise<void> {
-  await fs.rm(workdir, { recursive: true, force: true })
+  await fs.rm(workdir, { recursive: true, force: true });
 }
 ```
 
 ### 2. Test Template
 
 ```typescript
-import { describe, test, expect, afterEach } from 'bun:test'
-import { compileWithCLI, cleanupTestDir } from '../utils/cli-test-helpers.js'
+import { describe, test, expect, afterEach } from "bun:test";
+import { compileWithCLI, cleanupTestDir } from "../utils/cli-test-helpers.js";
 
-describe('CLI-Based Tests: Basic Functionality', () => {
-  let workdir: string
+describe("CLI-Based Tests: Basic Functionality", () => {
+  let workdir: string;
 
   afterEach(async () => {
     if (workdir) {
-      await cleanupTestDir(workdir)
+      await cleanupTestDir(workdir);
     }
-  })
+  });
 
-  test('should generate AsyncAPI for simple channel', async () => {
+  test("should generate AsyncAPI for simple channel", async () => {
     const result = await compileWithCLI(`
       import "@lars-artmann/typespec-asyncapi";
       using AsyncAPI;
@@ -259,34 +263,34 @@ describe('CLI-Based Tests: Basic Functionality', () => {
       @channel("user.created")
       @publish
       op userCreated(...UserEvent): void;
-    `)
+    `);
 
-    workdir = result.workdir
+    workdir = result.workdir;
 
     // Assertions
-    expect(result.exitCode).toBe(0)
-    expect(result.errors).toHaveLength(0)
-    expect(result.asyncapiDoc).toBeDefined()
-    expect(result.asyncapiDoc?.asyncapi).toBe('3.0.0')
-    expect(result.asyncapiDoc?.channels).toHaveProperty('user.created')
-  })
+    expect(result.exitCode).toBe(0);
+    expect(result.errors).toHaveLength(0);
+    expect(result.asyncapiDoc).toBeDefined();
+    expect(result.asyncapiDoc?.asyncapi).toBe("3.0.0");
+    expect(result.asyncapiDoc?.channels).toHaveProperty("user.created");
+  });
 
-  test('should handle compilation errors gracefully', async () => {
+  test("should handle compilation errors gracefully", async () => {
     const result = await compileWithCLI(`
       import "@lars-artmann/typespec-asyncapi";
       using AsyncAPI;
 
       @channel("invalid")
       op missingModel(): InvalidType;  // ← Error: InvalidType not defined
-    `)
+    `);
 
-    workdir = result.workdir
+    workdir = result.workdir;
 
-    expect(result.exitCode).not.toBe(0)
-    expect(result.errors.length).toBeGreaterThan(0)
-    expect(result.asyncapiDoc).toBeUndefined()
-  })
-})
+    expect(result.exitCode).not.toBe(0);
+    expect(result.errors.length).toBeGreaterThan(0);
+    expect(result.asyncapiDoc).toBeUndefined();
+  });
+});
 ```
 
 ### 3. Fixture Files
@@ -342,20 +346,20 @@ op userCreated(...UserEvent): void;
 ```typescript
 // ❌ BROKEN: Virtual FS incompatible with AssetEmitter
 const result = await compileAndDiagnose(source, {
-  emitters: { "@typespec/asyncapi": {} }
-})
+  emitters: { "@typespec/asyncapi": {} },
+});
 
-const outputFiles = result.fs  // undefined ❌
+const outputFiles = result.fs; // undefined ❌
 ```
 
 ### New Approach (Working)
 
 ```typescript
 // ✅ WORKS: Real CLI compilation
-const result = await compileWithCLI(source)
+const result = await compileWithCLI(source);
 
-const asyncapiDoc = result.asyncapiDoc  // ✅ Parsed YAML
-expect(asyncapiDoc.asyncapi).toBe('3.0.0')
+const asyncapiDoc = result.asyncapiDoc; // ✅ Parsed YAML
+expect(asyncapiDoc.asyncapi).toBe("3.0.0");
 ```
 
 ---
@@ -387,19 +391,19 @@ expect(asyncapiDoc.asyncapi).toBe('3.0.0')
 ### Compilation Errors
 
 ```typescript
-const result = await compileWithCLI(invalidSource)
+const result = await compileWithCLI(invalidSource);
 
-expect(result.exitCode).not.toBe(0)
-expect(result.errors).toContain('Type "Invalid" not found')
-expect(result.asyncapiDoc).toBeUndefined()
+expect(result.exitCode).not.toBe(0);
+expect(result.errors).toContain('Type "Invalid" not found');
+expect(result.asyncapiDoc).toBeUndefined();
 ```
 
 ### Timeout Errors
 
 ```typescript
 const result = await compileWithCLI(complexSource, {
-  timeout: 5000  // 5 second max
-})
+  timeout: 5000, // 5 second max
+});
 
 // Throws if compilation takes >5s
 ```
@@ -409,10 +413,10 @@ const result = await compileWithCLI(complexSource, {
 ```typescript
 try {
   await compileWithCLI(source, {
-    workdir: '/invalid/path'  // ❌ No write permission
-  })
+    workdir: "/invalid/path", // ❌ No write permission
+  });
 } catch (err) {
-  expect(err.message).toContain('EACCES')
+  expect(err.message).toContain("EACCES");
 }
 ```
 
@@ -423,33 +427,37 @@ try {
 ### 1. Use Fixtures for Complex Tests
 
 ```typescript
-test('should support Kafka protocol', async () => {
-  const result = await compileWithCLI('test/utils/fixtures/kafka-protocol.tsp')
-  expect(result.asyncapiDoc?.channels['orders.events']).toBeDefined()
-})
+test("should support Kafka protocol", async () => {
+  const result = await compileWithCLI("test/utils/fixtures/kafka-protocol.tsp");
+  expect(result.asyncapiDoc?.channels["orders.events"]).toBeDefined();
+});
 ```
 
 ### 2. Always Cleanup
 
 ```typescript
 afterEach(async () => {
-  await cleanupTestDir(workdir)
-})
+  await cleanupTestDir(workdir);
+});
 ```
 
 ### 3. Test Both Success and Failure
 
 ```typescript
-test('should succeed with valid TypeSpec', async () => { /* ... */ })
-test('should fail with invalid TypeSpec', async () => { /* ... */ })
+test("should succeed with valid TypeSpec", async () => {
+  /* ... */
+});
+test("should fail with invalid TypeSpec", async () => {
+  /* ... */
+});
 ```
 
 ### 4. Verify Multiple Aspects
 
 ```typescript
-expect(result.exitCode).toBe(0)                    // Compilation succeeded
-expect(result.asyncapiDoc?.asyncapi).toBe('3.0.0') // Correct version
-expect(result.asyncapiDoc?.channels).toBeDefined()  // Has channels
+expect(result.exitCode).toBe(0); // Compilation succeeded
+expect(result.asyncapiDoc?.asyncapi).toBe("3.0.0"); // Correct version
+expect(result.asyncapiDoc?.channels).toBeDefined(); // Has channels
 ```
 
 ---

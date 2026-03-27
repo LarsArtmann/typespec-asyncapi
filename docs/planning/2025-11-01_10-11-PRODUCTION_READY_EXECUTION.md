@@ -103,9 +103,12 @@ graph TD
 ```typescript
 // Create: test/integration/harness.ts
 export class IntegrationTestHarness {
-  async compileTypeSpec(source: string): Promise<CompilationResult>
-  async generateAsyncAPI(compilation: CompilationResult): Promise<AsyncAPIObject>
-  async validateOutput(actual: AsyncAPIObject, expected: Partial<AsyncAPIObject>): Promise<ValidationResult>
+  async compileTypeSpec(source: string): Promise<CompilationResult>;
+  async generateAsyncAPI(compilation: CompilationResult): Promise<AsyncAPIObject>;
+  async validateOutput(
+    actual: AsyncAPIObject,
+    expected: Partial<AsyncAPIObject>,
+  ): Promise<ValidationResult>;
 }
 ```
 
@@ -114,9 +117,9 @@ export class IntegrationTestHarness {
 ```typescript
 // Create: test/integration/comparison.ts
 export class AsyncAPIComparator {
-  compareChannels(actual: Channel[], expected: Channel[]): ComparisonResult
-  compareOperations(actual: Operation[], expected: Operation[]): ComparisonResult
-  compareSchemas(actual: Schema[], expected: Schema[]): ComparisonResult
+  compareChannels(actual: Channel[], expected: Channel[]): ComparisonResult;
+  compareOperations(actual: Operation[], expected: Operation[]): ComparisonResult;
+  compareSchemas(actual: Schema[], expected: Schema[]): ComparisonResult;
 }
 ```
 
@@ -125,10 +128,10 @@ export class AsyncAPIComparator {
 ```typescript
 // Create: test/integration/pipeline-validation.ts
 export class PipelineValidator {
-  validateDiscovery(result: DiscoveryResult): ValidationResult
-  validateProcessing(result: ProcessingResult): ValidationResult
-  validateValidation(result: ValidationResult): ValidationResult
-  validateFileGeneration(outputPath: string): ValidationResult
+  validateDiscovery(result: DiscoveryResult): ValidationResult;
+  validateProcessing(result: ProcessingResult): ValidationResult;
+  validateValidation(result: ValidationResult): ValidationResult;
+  validateFileGeneration(outputPath: string): ValidationResult;
 }
 ```
 
@@ -138,12 +141,14 @@ export class PipelineValidator {
 
 ```markdown
 ## Quick Start Guide
+
 1. Install: bun add @lars-artmann/typespec-asyncapi
 2. Create: api.tsp with decorators
 3. Compile: tsp compile api.tsp --emit @lars-artmann/typespec-asyncapi
 4. Output: asyncapi.yaml ready for use
 
 ## Examples
+
 - Simple messaging (5 lines)
 - E-commerce workflow (complete)
 - IoT device management (advanced)
@@ -155,14 +160,14 @@ export class PipelineValidator {
 // Enhance: src/domain/decorators/security.ts
 export const $security = (context, target, config) => {
   // Access TypeSpec state map for security configs
-  const securityConfigs = context.program.stateMap($lib.stateKeys.securityConfigs)
+  const securityConfigs = context.program.stateMap($lib.stateKeys.securityConfigs);
 
   // Process into AsyncAPI document
   if (securityConfigs.has(target)) {
-    const securityConfig = securityConfigs.get(target)
+    const securityConfig = securityConfigs.get(target);
     // Add to document.components.securitySchemes
   }
-}
+};
 ```
 
 ### **BATCH 3: Protocol + Performance (30 minutes)**
@@ -180,11 +185,11 @@ export const mqttPlugin = {
       mqtt: {
         qos: data.qos || 0,
         retain: data.retain || false,
-        clientId: data.clientId
-      }
-    }
-  }
-}
+        clientId: data.clientId,
+      },
+    };
+  },
+};
 ```
 
 #### **Task 7: Performance Dashboard (15 minutes)**
@@ -192,9 +197,9 @@ export const mqttPlugin = {
 ```typescript
 // Create: src/infrastructure/performance/dashboard.ts
 export class PerformanceDashboard {
-  trackOperation(op: string, duration: number): void
-  generateReport(): PerformanceReport
-  displayMetrics(): void // Real-time console output
+  trackOperation(op: string, duration: number): void;
+  generateReport(): PerformanceReport;
+  displayMetrics(): void; // Real-time console output
 }
 ```
 

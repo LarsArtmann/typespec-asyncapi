@@ -7,6 +7,7 @@
 ## Overview
 
 This plan implements full AsyncAPI protocol binding support for:
+
 - Kafka
 - AMQP
 - MQTT
@@ -41,25 +42,26 @@ This plan implements full AsyncAPI protocol binding support for:
 
 ## Protocol Binding Features by Priority
 
-| Protocol | Priority | Features | Status |
-|----------|----------|----------|--------|
-| **Kafka** | P0 | Partitions, replicas, consumer groups, security (Sasl/mTLS), schema registry, serialization (Avro/Protobuf/JSON/Binary), CloudEvents, headers, compression, streams | NOT started |
-| **AMQP** | P1 | Exchange types, queues, routing, message durability | not started |
-| **MQTT** | P1 | QoS levels, retain, will, sessions, authentication | not started |
-| **HTTP/WS** | P2 | Standard HTTP/WS features | not started |
-| **Redis** | P3 | Pub/sub patterns | not started |
-| **NATS** | P3 | JetStream subject patterns | not started |
-| **Pulsar** | P3 | Tenant patterns, not started |
-| **Solace/SNS/SQS** | P4 | Cloud message queues, topics | not started |
-| **STOMP** | P4 | STOMP protocol features | not started |
-| **Google Pub/Sub** | P4 | Google-specific patterns | not started |
-| **IBM MQ** | P4 | IBM MQ patterns | not started |
-| **JMS** | P4 | JMS patterns | not started |
-| **Mercure** | P4 | Mercure patterns | not started |
+| Protocol           | Priority | Features                                                                                                                                                            | Status      |
+| ------------------ | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| **Kafka**          | P0       | Partitions, replicas, consumer groups, security (Sasl/mTLS), schema registry, serialization (Avro/Protobuf/JSON/Binary), CloudEvents, headers, compression, streams | NOT started |
+| **AMQP**           | P1       | Exchange types, queues, routing, message durability                                                                                                                 | not started |
+| **MQTT**           | P1       | QoS levels, retain, will, sessions, authentication                                                                                                                  | not started |
+| **HTTP/WS**        | P2       | Standard HTTP/WS features                                                                                                                                           | not started |
+| **Redis**          | P3       | Pub/sub patterns                                                                                                                                                    | not started |
+| **NATS**           | P3       | JetStream subject patterns                                                                                                                                          | not started |
+| **Pulsar**         | P3       | Tenant patterns, not started                                                                                                                                        |
+| **Solace/SNS/SQS** | P4       | Cloud message queues, topics                                                                                                                                        | not started |
+| **STOMP**          | P4       | STOMP protocol features                                                                                                                                             | not started |
+| **Google Pub/Sub** | P4       | Google-specific patterns                                                                                                                                            | not started |
+| **IBM MQ**         | P4       | IBM MQ patterns                                                                                                                                                     | not started |
+| **JMS**            | P4       | JMS patterns                                                                                                                                                        | not started |
+| **Mercure**        | P4       | Mercure patterns                                                                                                                                                    | not started |
 
 | **WebSocket** | P4 | WebSocket subprotocols | not started |
 
 ## File Structure
+
 ```
 src/
 ├── protocols/
@@ -89,8 +91,11 @@ src/
 ├── state/
 │   └── protocol-bindings-state.ts   # State management for bindings
 ```
+
 test/
-├── protocol-bindings.test.ts           # Comprehensive tests for all protocols
+├── protocol-bindings.test.ts # Comprehensive tests for all protocols
+
 ```
 docs/
 └── protocol-bindings.md                 # Protocol bindings documentation
+```

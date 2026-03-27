@@ -101,7 +101,7 @@ const channelPaths = program.stateMap(stateSymbols.channelPaths) as Map<Type, Ch
 const getStateMap = <T>(program: Program, symbol: StateSymbol) =>
   Effect.try({
     try: () => program.stateMap?.(symbol) ?? new Map(),
-    catch: (cause) => new StateMapError(cause)
+    catch: (cause) => new StateMapError(cause),
   });
 ```
 
@@ -109,12 +109,12 @@ const getStateMap = <T>(program: Program, symbol: StateSymbol) =>
 
 ```typescript
 // CURRENT PROBLEM: Direct API usage without compatibility
-program.stateMap(stateSymbols.channelPaths)
+program.stateMap(stateSymbols.channelPaths);
 
 // MISSED COMPATIBILITY SOLUTION:
 function getStateMap<T>(program: Program, symbol: StateSymbol): Map<any, T> {
   // Handle TypeSpec 1.5.x → 1.6.x API changes
-  if (typeof program.stateMap === 'function') {
+  if (typeof program.stateMap === "function") {
     return program.stateMap(symbol);
   } else if (program.state?.get) {
     return program.state.get(symbol);
@@ -137,7 +137,7 @@ export type ChannelPathData = {
 // MISSED IMPROVEMENT: Branded types
 type ChannelPath = string & { readonly _brand: "ChannelPath" };
 const ChannelPath = (path: string): ChannelPath => {
-  if (!path.startsWith('/')) {
+  if (!path.startsWith("/")) {
     throw new Error(`Channel path must start with '/': ${path}`);
   }
   return path as ChannelPath;
@@ -154,11 +154,10 @@ export function consolidateAsyncAPIState(program: Program): AsyncAPIConsolidated
 }
 
 // MISSED IMPROVEMENT: Effect.TS Result types
-export const consolidateAsyncAPIState = (program: Program): Effect.Effect<
-  AsyncAPIConsolidatedState,
-  StateMapError
-> =>
-  Effect.gen(function*() {
+export const consolidateAsyncAPIState = (
+  program: Program,
+): Effect.Effect<AsyncAPIConsolidatedState, StateMapError> =>
+  Effect.gen(function* () {
     const channelPaths = yield* getStateMap(program, stateSymbols.channelPaths);
     const messageConfigs = yield* getStateMap(program, stateSymbols.messageConfigs);
     // ... safe composition
@@ -300,7 +299,7 @@ const fixStateMap: Task = {
   description: "Create TypeSpec 1.6.0 compatibility layer",
   timeLimit: 15,
   validationStep: "Run: bun test test/state-compatibility.test.ts",
-  successCriteria: "0 stateMap undefined errors"
+  successCriteria: "0 stateMap undefined errors",
 };
 ```
 
@@ -338,7 +337,7 @@ const result: TaskResult = {
   task: "Create getStateMap compatibility function",
   success: true,
   testResults: "3/3 tests passing",
-  nextTask: "Update consolidateAsyncAPIState to use compatibility"
+  nextTask: "Update consolidateAsyncAPIState to use compatibility",
 };
 ```
 

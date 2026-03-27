@@ -51,7 +51,7 @@ await Effect.runPromise(Effect.log("message 2"));
 **After:**
 
 ```typescript
-const emitterProgram = Effect.gen(function*() {
+const emitterProgram = Effect.gen(function* () {
   yield* Effect.log("message 1");
   yield* Effect.log("message 2");
   // ... all logic in one composable Effect
@@ -96,7 +96,7 @@ export const ConsoleLogger = Logger.make(({ logLevel, message, annotations }) =>
 export const LoggerLive = Logger.replace(Logger.defaultLogger, ConsoleLogger);
 
 // Use in program
-const program = Effect.gen(function*() {
+const program = Effect.gen(function* () {
   yield* Effect.log("message");
 }).pipe(Effect.provide(LoggerLive));
 
@@ -111,27 +111,26 @@ await Effect.runPromise(Effect.log("step 1"));
 await Effect.runPromise(Effect.log("step 2"));
 
 // New (composable)
-const program = Effect.gen(function*() {
+const program = Effect.gen(function* () {
   yield* Effect.log("step 1");
   yield* Effect.log("step 2");
   // Can compose with other Effects!
   const result = yield* someOperation();
-  yield* Effect.log("done").pipe(
-    Effect.annotateLogs({ result })
-  );
+  yield* Effect.log("done").pipe(Effect.annotateLogs({ result }));
 });
 ```
 
 ### 3. Structured Logging with Annotations
 
 ```typescript
-yield* Effect.log("Processing channel").pipe(
-  Effect.annotateLogs({
-    channelPath: "/users/{id}",
-    operationType: "publish",
-    timestamp: Date.now()
-  })
-);
+yield *
+  Effect.log("Processing channel").pipe(
+    Effect.annotateLogs({
+      channelPath: "/users/{id}",
+      operationType: "publish",
+      timestamp: Date.now(),
+    }),
+  );
 
 // Output: [2025-11-21T21:25:33.000Z] [INFO ] Processing channel | channelPath="/users/{id}" operationType="publish"
 ```
@@ -288,7 +287,7 @@ Effect.runSync(railwayLogging.logInitialization("Test"));
 
 // NEW
 import { LoggerTest } from "../src/logger.js";
-const program = Effect.gen(function*() {
+const program = Effect.gen(function* () {
   yield* Effect.log("Test initialization");
 }).pipe(Effect.provide(LoggerTest));
 Effect.runSync(program);

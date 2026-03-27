@@ -70,14 +70,17 @@ Successfully migrated from 5000+ lines of custom protocol bindings to official A
 
 ```typescript
 // ✅ IMPLEMENTED: Official AsyncAPI 3.0 standard binding helper
-const createAsyncAPIBinding = (protocol: AsyncAPIProtocolType, config: Record<string, unknown> = {}) => {
+const createAsyncAPIBinding = (
+  protocol: AsyncAPIProtocolType,
+  config: Record<string, unknown> = {},
+) => {
   return {
     [protocol]: {
       bindingVersion: "0.5.0", // AsyncAPI 3.0 standard
-      ...config
-    }
-  }
-}
+      ...config,
+    },
+  };
+};
 ```
 
 ### Official Validation Success

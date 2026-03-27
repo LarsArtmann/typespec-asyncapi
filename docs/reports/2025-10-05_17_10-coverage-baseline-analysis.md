@@ -209,14 +209,14 @@ Target errors that block multiple tests or cause cascading failures.
 
 ```typescript
 // BEFORE (ghost test)
-const host = await createAsyncAPITestHost()
-const spec = await compileTypeSpec(host, code)
-expect(spec).toBeDefined()
+const host = await createAsyncAPITestHost();
+const spec = await compileTypeSpec(host, code);
+expect(spec).toBeDefined();
 
 // AFTER (real test)
-const result = await compileAsyncAPISpec(code)
-expect(result.channels).toHaveProperty('user.events')
-expect(result.channels['user.events'].address).toBe('user.events')
+const result = await compileAsyncAPISpec(code);
+expect(result.channels).toHaveProperty("user.events");
+expect(result.channels["user.events"].address).toBe("user.events");
 ```
 
 ### Task 5: Re-run Coverage & Compare (15min)

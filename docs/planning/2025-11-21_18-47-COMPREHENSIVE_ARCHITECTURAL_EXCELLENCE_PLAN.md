@@ -251,12 +251,12 @@ export interface AsyncAPIEmitterConfig {
 ```typescript
 // 🎯 REUSABLE EFFECT.TS PATTERNS
 export const createValidationPattern = <A>(schema: Schema<A>) =>
-  Effect.gen(function*() {
+  Effect.gen(function* () {
     return yield* Effect.try({
       try: () => Schema.decodeUnknownSync(schema)(input),
-      catch: (error) => new ValidationError(error)
-    })
-  })
+      catch: (error) => new ValidationError(error),
+    });
+  });
 // No more duplicated validation code
 ```
 
@@ -265,8 +265,8 @@ export const createValidationPattern = <A>(schema: Schema<A>) =>
 ```typescript
 // 🎯 CLEAN EXTERNAL API WRAPPERS
 export interface AsyncAPIAdapter {
-  generate(spec: AsyncAPISpec): Effect<AsyncAPIDocument, Error>
-  validate(doc: AsyncAPIDocument): Effect<boolean, ValidationError>
+  generate(spec: AsyncAPISpec): Effect<AsyncAPIDocument, Error>;
+  validate(doc: AsyncAPIDocument): Effect<boolean, ValidationError>;
 }
 // Centralized external system interfaces
 ```
@@ -344,16 +344,16 @@ export interface AsyncAPIAdapter {
 ```typescript
 // ✅ EXCELLENT: Strong types, no any
 interface Channel {
-  readonly path: BrandedPath<string>
-  readonly messages: ReadonlyArray<Message>
-  readonly operations: ReadonlyMap<OperationType, Operation>
+  readonly path: BrandedPath<string>;
+  readonly messages: ReadonlyArray<Message>;
+  readonly operations: ReadonlyMap<OperationType, Operation>;
 }
 
 // ❌ FORBIDDEN: Any types, weak validation
 interface Channel {
-  path: string  // Should be branded
-  messages: any[]  // Should be typed
-  operations: Record<string, any>  // Should be Map
+  path: string; // Should be branded
+  messages: any[]; // Should be typed
+  operations: Record<string, any>; // Should be Map
 }
 ```
 
@@ -362,18 +362,18 @@ interface Channel {
 ```typescript
 // ✅ EXCELLENT: Effect.TS patterns, typed errors
 const createChannel = (input: unknown) =>
-  Effect.gen(function*() {
-    const validated = yield* validateChannelSchema(input)
-    return yield* createChannelEntity(validated)
-  }).catchTag("ValidationError", handleValidationError)
+  Effect.gen(function* () {
+    const validated = yield* validateChannelSchema(input);
+    return yield* createChannelEntity(validated);
+  }).catchTag("ValidationError", handleValidationError);
 
 // ❌ FORBIDDEN: Try/catch, untyped errors
 try {
-  const channel = createChannel(input)
-  return channel
+  const channel = createChannel(input);
+  return channel;
 } catch (error) {
-  console.error("Error:", error)  // Should be typed
-  throw error  // Should be Effect
+  console.error("Error:", error); // Should be typed
+  throw error; // Should be Effect
 }
 ```
 
@@ -384,8 +384,8 @@ try {
 export const emitterConfig = {
   version: "3.0.0" as const,
   outputFormat: ["json", "yaml"] as const,
-  validation: { strict: true } as const
-} satisfies AsyncAPIEmitterConfig
+  validation: { strict: true } as const,
+} satisfies AsyncAPIEmitterConfig;
 
 // ❌ FORBIDDEN: Multiple config sources
 // config1.ts, config2.ts, config3.ts → DUPLICATION

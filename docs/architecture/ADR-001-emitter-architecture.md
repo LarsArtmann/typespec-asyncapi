@@ -37,8 +37,8 @@ We adopted a **dual-architecture approach** combining:
 ```typescript
 // Entry point: src/index.ts
 export async function $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): Promise<void> {
-    const { generateAsyncAPIWithEffect } = await import("./emitter-with-effect.js");
-    await generateAsyncAPIWithEffect(context);
+  const { generateAsyncAPIWithEffect } = await import("./emitter-with-effect.js");
+  await generateAsyncAPIWithEffect(context);
 }
 
 // Core processor: src/emitter-with-effect.ts
@@ -130,7 +130,12 @@ const processTypeSpecProgram = (program: Program) =>
 
     // 5. Compose final AsyncAPI spec
     return yield* composeAsyncAPISpec({
-      channels, messages, operations, servers, security, bindings
+      channels,
+      messages,
+      operations,
+      servers,
+      security,
+      bindings,
     });
   });
 ```
@@ -143,13 +148,13 @@ const writeOutputFiles = (emitter: AssetEmitter, spec: AsyncAPISpec) =>
     // Write JSON output
     emitter.emitFile({
       path: "asyncapi.json",
-      content: JSON.stringify(spec, null, 2)
+      content: JSON.stringify(spec, null, 2),
     });
 
     // Write YAML output
     emitter.emitFile({
       path: "asyncapi.yaml",
-      content: YAML.stringify(spec)
+      content: YAML.stringify(spec),
     });
   });
 ```

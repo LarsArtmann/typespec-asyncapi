@@ -17,27 +17,29 @@ Completed comprehensive documentation mapping TypeSpec to AsyncAPI 3.0 specifica
 
 Created complete documentation in `docs/map-typespec-to-asyncapi/`:
 
-| File | Purpose | Lines |
-|------|---------|-------|
-| `01-core-concepts.md` | Foundational mapping (services→applications, namespaces→channels) | ~200 |
-| `02-data-types.md` | Complete type system transformations | ~300 |
-| `03-operations-channels.md` | Event-driven operation patterns | ~250 |
-| `04-schemas-models.md` | Advanced schema transformation patterns | ~280 |
-| `05-decorators.md` | Decorator to AsyncAPI feature mapping | ~220 |
-| `06-protocol-bindings.md` | Protocol-specific configurations (Kafka, WebSocket, HTTP, AMQP) | ~180 |
-| `07-advanced-patterns.md` | Complex event-driven architecture patterns | ~350 |
-| `08-best-practices.md` | Design guidelines and anti-patterns | ~200 |
-| `09-examples.md` | Complete working examples (E-commerce, IoT, Financial) | ~400 |
-| `README.md` | Navigation and quick reference guide | ~150 |
+| File                        | Purpose                                                           | Lines |
+| --------------------------- | ----------------------------------------------------------------- | ----- |
+| `01-core-concepts.md`       | Foundational mapping (services→applications, namespaces→channels) | ~200  |
+| `02-data-types.md`          | Complete type system transformations                              | ~300  |
+| `03-operations-channels.md` | Event-driven operation patterns                                   | ~250  |
+| `04-schemas-models.md`      | Advanced schema transformation patterns                           | ~280  |
+| `05-decorators.md`          | Decorator to AsyncAPI feature mapping                             | ~220  |
+| `06-protocol-bindings.md`   | Protocol-specific configurations (Kafka, WebSocket, HTTP, AMQP)   | ~180  |
+| `07-advanced-patterns.md`   | Complex event-driven architecture patterns                        | ~350  |
+| `08-best-practices.md`      | Design guidelines and anti-patterns                               | ~200  |
+| `09-examples.md`            | Complete working examples (E-commerce, IoT, Financial)            | ~400  |
+| `README.md`                 | Navigation and quick reference guide                              | ~150  |
 
 ### Phase 2: BDD Test Infrastructure
 
 **Test Helper Files:**
+
 - `test/documentation/helpers/typespec-compiler.ts` (372 lines) - Mock compiler
 - `test/documentation/helpers/asyncapi-validator.ts` (355 lines) - AsyncAPI 3.0 validation
 - `test/documentation/helpers/test-fixtures.ts` (1718 lines) - Test data generators
 
 **Test Suites Created:**
+
 - `01-core-concepts.test.ts` (562 lines)
 - `02-data-types.test.ts` (1301 lines)
 - `03-operations-channels.test.ts` (145 lines)
@@ -53,13 +55,13 @@ Created complete documentation in `docs/map-typespec-to-asyncapi/`:
 
 ## Current Test Results
 
-| Test Suite | Status | Pass Rate | Notes |
-|------------|--------|-----------|-------|
-| Core Concepts (01) | ✅ Complete | 21/21 (100%) | Full coverage |
-| Protocol Bindings (06) | ✅ Complete | 6/6 (100%) | Kafka, WebSocket, HTTP, AMQP |
-| Security Decorators (05) | ❌ Regression | 0/1 error | Known 2-line fix |
-| Data Types (02) | ⏳ Pending | Variable | Needs review |
-| Other Suites (03,04,07-09) | ⏳ Pending | Variable | Needs review |
+| Test Suite                 | Status        | Pass Rate    | Notes                        |
+| -------------------------- | ------------- | ------------ | ---------------------------- |
+| Core Concepts (01)         | ✅ Complete   | 21/21 (100%) | Full coverage                |
+| Protocol Bindings (06)     | ✅ Complete   | 6/6 (100%)   | Kafka, WebSocket, HTTP, AMQP |
+| Security Decorators (05)   | ❌ Regression | 0/1 error    | Known 2-line fix             |
+| Data Types (02)            | ⏳ Pending    | Variable     | Needs review                 |
+| Other Suites (03,04,07-09) | ⏳ Pending    | Variable     | Needs review                 |
 
 ---
 
@@ -68,12 +70,14 @@ Created complete documentation in `docs/map-typespec-to-asyncapi/`:
 **File:** `test/documentation/helpers/test-fixtures.ts`
 
 **Issue 1 - Regex Syntax Error (Line 312):**
+
 ```diff
 - const securityMatches = code.matchAll(/@security\("([^"]+)"/g)
 + const securityMatches = code.matchAll(/@security\("([^"]+)"\)/g)
 ```
 
 **Issue 2 - Array Indexing (Lines 329, 332):**
+
 ```diff
 - name: match[7],
 + name: match[6],
@@ -108,15 +112,18 @@ const PERFORMANCE_THRESHOLD = 0.5;
 ## Outstanding Work
 
 ### Immediate (5 minutes)
+
 - [ ] Apply 2-line fix for security parsing regression
 - [ ] Re-run tests to verify fix
 
 ### Phase 2 Remaining (~90 minutes)
+
 - [ ] P2.4: @server configuration parsing tests
 - [ ] P2.5: Namespace hierarchy parsing tests
 - [ ] P2.6: Advanced model property type mapping tests
 
 ### Technical Debt Remediation
+
 - [ ] Extract magic strings to constants
 - [ ] Split monolithic emitter files (>300 lines)
 - [ ] Eliminate 'any' types with proper interfaces

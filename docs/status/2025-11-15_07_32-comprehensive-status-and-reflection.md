@@ -191,23 +191,30 @@
 
 ```typescript
 // CURRENT (WRONG):
-function validateSecurityScheme(scheme: any) { // ← 20 instances of this!
-  if (scheme.type === 'oauth2') { // ← Unsafe access
+function validateSecurityScheme(scheme: any) {
+  // ← 20 instances of this!
+  if (scheme.type === "oauth2") {
+    // ← Unsafe access
     // ...
   }
 }
 
 // SHOULD BE:
 type SecurityScheme =
-  | { type: 'oauth2', flows: OAuth2Flows }
-  | { type: 'apiKey', in: ApiKeyLocation }
-  | { type: 'http', scheme: string }
+  | { type: "oauth2"; flows: OAuth2Flows }
+  | { type: "apiKey"; in: ApiKeyLocation }
+  | { type: "http"; scheme: string };
 
 function validateSecurityScheme(scheme: SecurityScheme): Result<Valid, Error> {
-  switch (scheme.type) { // ← Type-safe discriminated union
-    case 'oauth2': return validateOAuth2(scheme.flows)
-    case 'apiKey': return validateApiKey(scheme.in)
-    case 'http': return validateHttp(scheme.scheme)
+  switch (
+    scheme.type // ← Type-safe discriminated union
+  ) {
+    case "oauth2":
+      return validateOAuth2(scheme.flows);
+    case "apiKey":
+      return validateApiKey(scheme.in);
+    case "http":
+      return validateHttp(scheme.scheme);
   }
 }
 ```

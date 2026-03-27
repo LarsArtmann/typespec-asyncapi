@@ -55,13 +55,13 @@
 ```typescript
 // 🔥 WORKAROUND: TypeSpec 1.4.0 test framework output capture issue
 if (!result.outputs || Object.keys(result.outputs).length === 0) {
-  const fallback = findGeneratedFilesOnFilesystem(options['output-file'] || 'asyncapi');
+  const fallback = findGeneratedFilesOnFilesystem(options["output-file"] || "asyncapi");
   if (fallback) {
     return {
       asyncApiDoc: doc,
       diagnostics: result.program.diagnostics,
       program: result.program,
-      outputs: {[fallback.file]: content}, // Simulate result.outputs
+      outputs: { [fallback.file]: content }, // Simulate result.outputs
       outputFile: fallback.file,
     };
   }

@@ -42,7 +42,7 @@
 1. **File Creation Logic EXISTS** (AsyncAPIEmitter.ts:286)
 
    ```typescript
-   const sourceFile = this.emitter.createSourceFile(outputPath)
+   const sourceFile = this.emitter.createSourceFile(outputPath);
    ```
 
 2. **Content Generation Method EXISTS** (AsyncAPIEmitter.ts:385-401)
@@ -60,13 +60,13 @@
    return {
      sourceFile,
      scope: sourceFile.globalScope,
-   }
+   };
    ```
 
 4. **BUT: Test Helper Shows NO FILES** (test/utils/test-helpers.ts:140)
    ```typescript
-   const outputFiles = result.fs?.fs || new Map<string, string>()
-   Effect.log("OutputFiles size:", outputFiles.size)  // Shows: 0
+   const outputFiles = result.fs?.fs || new Map<string, string>();
+   Effect.log("OutputFiles size:", outputFiles.size); // Shows: 0
    ```
 
 ### What's Wrong:
@@ -125,9 +125,11 @@ Evidence:
 
 ```typescript
 // Line 104 in ValidationService.ts
-return Effect.gen(function* (this: ValidationService) {
-  // ...
-}.bind(this))  // ✅ ALREADY USING .bind(this)!
+return Effect.gen(
+  function* (this: ValidationService) {
+    // ...
+  }.bind(this),
+); // ✅ ALREADY USING .bind(this)!
 ```
 
 This was a red herring - the method already has proper `this` binding.

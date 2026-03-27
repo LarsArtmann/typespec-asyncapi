@@ -18,12 +18,12 @@
 
 ### Test Progress
 
-| Metric | Before | After | Change |
-|--------|--------|-------|--------|
-| Server tests passing | 3/10 | **10/10** | +7 tests |
-| Full suite passing | 136 | 142 | +6 tests |
-| Full suite failing | 316 | 297 | -19 failures |
-| Test files total | 92 | 92 | - |
+| Metric               | Before | After     | Change       |
+| -------------------- | ------ | --------- | ------------ |
+| Server tests passing | 3/10   | **10/10** | +7 tests     |
+| Full suite passing   | 136    | 142       | +6 tests     |
+| Full suite failing   | 316    | 297       | -19 failures |
+| Test files total     | 92     | 92        | -            |
 
 ---
 
@@ -70,6 +70,7 @@
 ### Server Decorator - 90% Complete
 
 **What Works:**
+
 - Basic server configuration
 - Multiple servers per namespace
 - Required field validation
@@ -77,6 +78,7 @@
 - Target validation (TypeSpec built-in)
 
 **What's Missing:**
+
 - Multiple server storage (currently only last server stored)
 - Custom server variables
 - Server bindings
@@ -84,12 +86,14 @@
 ### Test Framework - 70% Complete
 
 **What Works:**
+
 - Test compilation
 - Output file discovery
 - Diagnostic collection
 - Most decorator tests
 
 **What's Missing:**
+
 - Many domain tests failing (Kafka, AMQP, etc.)
 - E2E tests incomplete
 - Performance tests not validated
@@ -98,11 +102,13 @@
 ### Emitter Output - 80% Complete
 
 **What Works:**
+
 - YAML generation
 - File writing to disk
 - Basic document structure
 
 **What's Missing:**
+
 - JSON output option
 - Custom output file names
 - Multiple file output
@@ -113,18 +119,18 @@
 
 ### Phase 2 Tasks (from planning doc)
 
-| Task | Priority | Status |
-|------|----------|--------|
-| Extract builder modules from emitter | P2.1 | NOT STARTED |
-| Add runtime AsyncAPI validation | P2.2 | NOT STARTED |
-| Add try/catch around async operations | P2.3 | NOT STARTED |
-| Generate oneOf with discriminator | P2.4 | NOT STARTED |
-| Add @trait decorator | P2.5 | NOT STARTED |
-| Implement message traits | P2.6 | NOT STARTED |
-| Implement operation traits | P2.7 | NOT STARTED |
-| Server variables support | P2.8 | NOT STARTED |
-| External documentation decorator | P2.9 | NOT STARTED |
-| Complete protocol bindings | P2.10 | NOT STARTED |
+| Task                                  | Priority | Status      |
+| ------------------------------------- | -------- | ----------- |
+| Extract builder modules from emitter  | P2.1     | NOT STARTED |
+| Add runtime AsyncAPI validation       | P2.2     | NOT STARTED |
+| Add try/catch around async operations | P2.3     | NOT STARTED |
+| Generate oneOf with discriminator     | P2.4     | NOT STARTED |
+| Add @trait decorator                  | P2.5     | NOT STARTED |
+| Implement message traits              | P2.6     | NOT STARTED |
+| Implement operation traits            | P2.7     | NOT STARTED |
+| Server variables support              | P2.8     | NOT STARTED |
+| External documentation decorator      | P2.9     | NOT STARTED |
+| Complete protocol bindings            | P2.10    | NOT STARTED |
 
 ### Missing Features
 
@@ -263,22 +269,26 @@
 ### Why do domain tests (Kafka, AMQP, etc.) all fail?
 
 **Context:**
+
 - 155+ Kafka-specific tests all failing
 - 50+ AMQP-specific tests all failing
 - Tests appear to expect features not yet implemented
 - Error messages unclear
 
 **What I've Tried:**
+
 - Running individual tests - same failures
 - Checking decorator implementations - seem correct
 - Looking at test expectations - complex scenarios
 
 **What I Need:**
+
 - Understanding of what these tests actually expect
 - Decision: implement missing features or skip these tests?
 - Are these tests even valid for current project scope?
 
 **Example from Kafka tests:**
+
 ```typescript
 // test/domain/kafka-protocol.test.ts
 it("should support compacted topics", async () => {
@@ -289,6 +299,7 @@ it("should support compacted topics", async () => {
 
 **Question for User:**
 Should we:
+
 1. Implement all Kafka/AMQP/MQTT specific features? (Huge effort)
 2. Skip these tests for now and focus on core? (Pragmatic)
 3. Create stub implementations that pass basic validation? (Quick fix)
@@ -297,13 +308,13 @@ Should we:
 
 ## Files Changed This Session
 
-| File | Lines Changed | Description |
-|------|---------------|-------------|
-| `src/minimal-decorators.ts` | +21/-5 | Added target validation, diagnostic codes |
-| `test/utils/test-helpers.ts` | +42/-64 | Fixed file discovery, cleaned logging |
-| `test/decorators/server.test.ts` | +3/-3 | Fixed test assertion |
-| `src/emitter-alloy.tsx` | +0/-1 | Removed debug logging |
-| `package.json` | +1/-1 | Version or dependency update |
+| File                             | Lines Changed | Description                               |
+| -------------------------------- | ------------- | ----------------------------------------- |
+| `src/minimal-decorators.ts`      | +21/-5        | Added target validation, diagnostic codes |
+| `test/utils/test-helpers.ts`     | +42/-64       | Fixed file discovery, cleaned logging     |
+| `test/decorators/server.test.ts` | +3/-3         | Fixed test assertion                      |
+| `src/emitter-alloy.tsx`          | +0/-1         | Removed debug logging                     |
+| `package.json`                   | +1/-1         | Version or dependency update              |
 
 **Total:** 5 files, ~69 insertions, ~64 deletions
 
@@ -353,7 +364,7 @@ Full test suite: 316 → 297 failing (-19 failures)
 
 ---
 
-*Report generated: 2026-03-21 11:11*
-*Session duration: ~2 hours*
-*Tests fixed: 19*
-*Files modified: 5*
+_Report generated: 2026-03-21 11:11_
+_Session duration: ~2 hours_
+_Tests fixed: 19_
+_Files modified: 5_

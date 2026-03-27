@@ -76,8 +76,8 @@ All public APIs must include comprehensive JSDoc comments:
  * @public
  */
 export async function generateAsyncAPIWithEffect(
-  context: EmitContext<AsyncAPIEmitterOptions>
-): Promise<void>
+  context: EmitContext<AsyncAPIEmitterOptions>,
+): Promise<void>;
 ````
 
 ### 2. Plugin API Documentation
@@ -112,9 +112,7 @@ export interface ProtocolPlugin {
    * @param operation - TypeSpec operation to process
    * @returns Effect containing protocol bindings or error
    */
-  generateOperationBinding?: (
-    operation: unknown
-  ) => Effect.Effect<Record<string, unknown>, Error>;
+  generateOperationBinding?: (operation: unknown) => Effect.Effect<Record<string, unknown>, Error>;
 }
 ````
 

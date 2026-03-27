@@ -33,22 +33,26 @@
 
 ```typescript
 // BEFORE: Inconsistent patterns, unsafe operations
-const result = yield* Effect.try({
-    try: () => { /* unsafe yield* inside */ },
-    catch: (error) => new Error(error.message)
-})
+const result =
+  yield *
+  Effect.try({
+    try: () => {
+      /* unsafe yield* inside */
+    },
+    catch: (error) => new Error(error.message),
+  });
 
 // AFTER: Railway programming excellence
-const result = yield* Effect.gen(function* (this: ServiceClass) {
-    yield* Effect.logInfo("🔧 Processing...")
+const result =
+  yield *
+  Effect.gen(function* (this: ServiceClass) {
+    yield* Effect.logInfo("🔧 Processing...");
     // Safe operations with proper error boundaries
     yield* Effect.tryPromise({
-        try: () => this.performOperation(),
-        catch: (error) => new StandardizedError(error.message)
-    }).pipe(
-        Effect.catchAll((error) => Effect.logError(`❌ ${error.message}`))
-    )
-})
+      try: () => this.performOperation(),
+      catch: (error) => new StandardizedError(error.message),
+    }).pipe(Effect.catchAll((error) => Effect.logError(`❌ ${error.message}`)));
+  });
 ```
 
 ### **✅ TYPE SAFETY INFRASTRUCTURE**
@@ -176,9 +180,9 @@ const result = yield* Effect.gen(function* (this: ServiceClass) {
 2. **Branded Types Implementation**:
 
    ```typescript
-   export type DocumentId = string & Brand<"DocumentId">
-   export type ChannelPath = string & Brand<"ChannelPath">
-   export type OperationId = string & Brand<"OperationId">
+   export type DocumentId = string & Brand<"DocumentId">;
+   export type ChannelPath = string & Brand<"ChannelPath">;
+   export type OperationId = string & Brand<"OperationId">;
    ```
 
 3. **BDD Test Patterns**:
@@ -188,10 +192,10 @@ const result = yield* Effect.gen(function* (this: ServiceClass) {
        when("the emitter processes the file", () => {
          then("it should generate valid AsyncAPI operations", () => {
            // BDD assertion patterns
-         })
-       })
-     })
-   })
+         });
+       });
+     });
+   });
    ```
 
 ---

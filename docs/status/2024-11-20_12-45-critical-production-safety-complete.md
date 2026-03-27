@@ -102,11 +102,11 @@
 ### **Branded Type System**
 
 ```typescript
-export type ChannelPath = Branded<string, 'ChannelPath'>;
-export type MessageId = Branded<string, 'MessageId'>;
-export type SchemaName = Branded<string, 'SchemaName'>;
-export type OperationId = Branded<string, 'OperationId'>;
-export type ServerUrl = Branded<string, 'ServerUrl'>;
+export type ChannelPath = Branded<string, "ChannelPath">;
+export type MessageId = Branded<string, "MessageId">;
+export type SchemaName = Branded<string, "SchemaName">;
+export type OperationId = Branded<string, "OperationId">;
+export type ServerUrl = Branded<string, "ServerUrl">;
 ```
 
 ### **Domain Types with Branded Keys**
@@ -134,8 +134,8 @@ export class AsyncAPIValidationError extends Error {
 
 ```typescript
 export const createChannelPath = (path: string): ChannelPath => {
-  if (!path.startsWith('/')) {
-    throw new AsyncAPIValidationError('Channel path must start with \'/\'', 'path', path);
+  if (!path.startsWith("/")) {
+    throw new AsyncAPIValidationError("Channel path must start with '/'", "path", path);
   }
   return path as ChannelPath;
 };

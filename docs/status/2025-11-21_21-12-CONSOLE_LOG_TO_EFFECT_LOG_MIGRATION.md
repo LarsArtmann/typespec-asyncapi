@@ -104,7 +104,7 @@ export async function $onEmit(context: EmitContext): Promise<void> {
 
 ```typescript
 // Effect composition context - future refactor target
-const program = Effect.gen(function*() {
+const program = Effect.gen(function* () {
   yield* Effect.log("Composable logging!");
   yield* Effect.succeed(result);
 });
@@ -115,7 +115,7 @@ const program = Effect.gen(function*() {
 1. **Simple logging:**
 
    ```typescript
-   Effect.log("message")
+   Effect.log("message");
    ```
 
 2. **Structured logging with metadata:**
@@ -124,17 +124,17 @@ const program = Effect.gen(function*() {
    Effect.log("Processing channel").pipe(
      Effect.annotateLogs({
        channelPath: "/users/{id}",
-       operationType: "publish"
-     })
-   )
+       operationType: "publish",
+     }),
+   );
    ```
 
 3. **Log levels:**
    ```typescript
-   Effect.logDebug("Debug info")
-   Effect.logInfo("Info message")
-   Effect.logWarning("Warning")
-   Effect.logError("Error occurred")
+   Effect.logDebug("Debug info");
+   Effect.logInfo("Info message");
+   Effect.logWarning("Warning");
+   Effect.logError("Error occurred");
    ```
 
 ---
@@ -154,10 +154,10 @@ logPerformanceTest: (mode: string) => {
   return Effect.log("Performance test execution").pipe(
     Effect.annotateLogs({
       mode,
-      phase: "performance-test"
-    })
+      phase: "performance-test",
+    }),
   );
-}
+};
 ```
 
 ### Bug #2: Cyclic JSON.stringify Errors
@@ -287,12 +287,12 @@ for (const [opName, operation] of Object.entries(document.operations)) {
 
 ```typescript
 // Current - can't be composed
-Effect.runSync(Effect.log("message"))
+Effect.runSync(Effect.log("message"));
 
 // Desired - composable
-Effect.gen(function*() {
-  yield* Effect.log("message")
-})
+Effect.gen(function* () {
+  yield* Effect.log("message");
+});
 ```
 
 **Impact:** Can't use logging in Effect pipelines without runSync overhead
@@ -324,7 +324,7 @@ Effect.gen(function*() {
 export type EffectResult<T> = {
   data: T;
   error?: Error;
-}
+};
 ```
 
 **Impact:** Not using Effect.TS patterns correctly
@@ -359,25 +359,25 @@ export type EffectResult<T> = {
 **Recommended approach:**
 
 ```typescript
-import { Effect, Logger, Layer, LogLevel } from "effect"
+import { Effect, Logger, Layer, LogLevel } from "effect";
 
 // 1. Define custom logger
 const CustomLogger = Logger.make(({ message, logLevel, annotations }) => {
-  console.log(`[${logLevel}] ${message}`, annotations)
-})
+  console.log(`[${logLevel}] ${message}`, annotations);
+});
 
 // 2. Create logger layer
-const LoggerLive = Logger.replace(Logger.defaultLogger, CustomLogger)
+const LoggerLive = Logger.replace(Logger.defaultLogger, CustomLogger);
 
 // 3. Use in programs (composable!)
-const program = Effect.gen(function*() {
-  yield* Effect.logInfo("Starting generation")
-  yield* Effect.logDebug("Processing channels", { count: 5 })
+const program = Effect.gen(function* () {
+  yield* Effect.logInfo("Starting generation");
+  yield* Effect.logDebug("Processing channels", { count: 5 });
   // ... rest of program
-}).pipe(Effect.provide(LoggerLive))
+}).pipe(Effect.provide(LoggerLive));
 
 // 4. Run program
-Effect.runPromise(program)
+Effect.runPromise(program);
 ```
 
 **Benefits:**

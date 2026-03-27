@@ -33,22 +33,22 @@ const enhancedProgram = {
   ...program,
   host: {
     mkdirp: async (path: string) => {
-      Effect.log(`Mock mkdirp for test: ${path}`)
+      Effect.log(`Mock mkdirp for test: ${path}`);
     },
     writeFile: async (path: string, content: string) => {
-      Effect.log(`Mock writeFile for test: ${path} (${content.length} chars)`)
-      host.fs.set(path, content)
+      Effect.log(`Mock writeFile for test: ${path} (${content.length} chars)`);
+      host.fs.set(path, content);
     },
   },
-  getGlobalNamespaceType: program.getGlobalNamespaceType || (() => ({
-    name: "Global",
-    operations: new Map(),
-    namespaces: new Map(),
-  })),
-  sourceFiles: program.sourceFiles || new Map([
-    ["main.tsp", {content: wrappedSource}],
-  ]),
-}
+  getGlobalNamespaceType:
+    program.getGlobalNamespaceType ||
+    (() => ({
+      name: "Global",
+      operations: new Map(),
+      namespaces: new Map(),
+    })),
+  sourceFiles: program.sourceFiles || new Map([["main.tsp", { content: wrappedSource }]]),
+};
 ```
 
 **AFTER (Real TypeSpec Programs):**
@@ -62,7 +62,7 @@ const emitterContext = {
   program: program, // Use the REAL program from TypeSpec test runner!
   emitterOutputDir: "test-output",
   options,
-}
+};
 ```
 
 ### **🎯 CLI Verification Success**

@@ -130,7 +130,7 @@ servers:
     pathname: /events
     description: Development WebSocket server
 channels:
-  'user.lifecycle.created':
+  "user.lifecycle.created":
     messages:
       UserCreatedEvent:
         name: UserCreatedEvent
@@ -166,11 +166,11 @@ operations:
   publishUserCreated:
     action: send
     channel:
-      $ref: '#/channels/user.lifecycle.created'
+      $ref: "#/channels/user.lifecycle.created"
   subscribeToUserUpdates:
     action: receive
     channel:
-      $ref: '#/channels/user.lifecycle.updated'
+      $ref: "#/channels/user.lifecycle.updated"
 ```
 
 ## Core Concepts

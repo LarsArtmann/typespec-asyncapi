@@ -254,36 +254,36 @@ name: TypeSpec AsyncAPI
 
 on:
   push:
-    paths: ['**.tsp', 'tspconfig.yaml']
+    paths: ["**.tsp", "tspconfig.yaml"]
   pull_request:
-    paths: ['**.tsp', 'tspconfig.yaml']
+    paths: ["**.tsp", "tspconfig.yaml"]
 
 jobs:
   typespec:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
 
-    - name: Install dependencies
-      run: npm ci
+      - name: Install dependencies
+        run: npm ci
 
-    - name: Compile TypeSpec
-      run: bun run spec:build
+      - name: Compile TypeSpec
+        run: bun run spec:build
 
-    - name: Validate AsyncAPI
-      run: bun run spec:validate
+      - name: Validate AsyncAPI
+        run: bun run spec:validate
 
-    - name: Upload AsyncAPI spec
-      uses: actions/upload-artifact@v3
-      with:
-        name: asyncapi-spec
-        path: tsp-output/@typespec/asyncapi/
+      - name: Upload AsyncAPI spec
+        uses: actions/upload-artifact@v3
+        with:
+          name: asyncapi-spec
+          path: tsp-output/@typespec/asyncapi/
 ```
 
 ## Debugging and Troubleshooting

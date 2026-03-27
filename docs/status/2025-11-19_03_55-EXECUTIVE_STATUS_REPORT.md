@@ -135,10 +135,10 @@ extern @channeldecorator channel(name: string, ...): void;  // ✅ Defined
 
 ```typescript
 // PRIORITY: Create runtime implementations
-src/decorators/channel.ts     // @channel decorator logic
-src/decorators/publish.ts      // @publish decorator logic
-src/decorators/subscribe.ts    // @subscribe decorator logic
-src/decorators/server.ts       // @server decorator logic
+src / decorators / channel.ts; // @channel decorator logic
+src / decorators / publish.ts; // @publish decorator logic
+src / decorators / subscribe.ts; // @subscribe decorator logic
+src / decorators / server.ts; // @server decorator logic
 ```
 
 #### **1.2 GitHub Issue Resolution (1.5 hours)**

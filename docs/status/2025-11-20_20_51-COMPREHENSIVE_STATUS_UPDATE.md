@@ -33,7 +33,7 @@
 - **Purpose:** Core AsyncAPI document parsing & validation
 - **Key Features:**
   ```javascript
-  import { Parser } from '@asyncapi/parser';
+  import { Parser } from "@asyncapi/parser";
   const { document, diagnostics } = await parser.parse(asyncapiDocument);
   ```
 - **Status:** ✅ INSTALLED & INTEGRATED
@@ -214,7 +214,7 @@ import type { AsyncAPIDocument, Channel } from "@asyncapi/parser";
 // FIX EFFECT PATTERNS
 return Effect.try({
   try: () => new URL(url),
-  catch: (error) => new Error(`Server URL must be valid: ${url}`)
+  catch: (error) => new Error(`Server URL must be valid: ${url}`),
 });
 
 // FIX EXECUTION

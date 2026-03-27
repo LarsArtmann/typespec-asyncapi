@@ -160,7 +160,7 @@ throw new AsyncAPIValidationError({
   value: "xml",
   expected: "'yaml' or 'json'",
   operation: "validateOptions",
-  recoveryValue: "yaml" // Default fallback
+  recoveryValue: "yaml", // Default fallback
 });
 ```
 
@@ -186,12 +186,7 @@ try {
 ```typescript
 import { withErrorHandling } from "./errors/integration.js";
 
-const result = yield* withErrorHandling(
-  () => performOperation(),
-  "operationName",
-  config,
-  logger
-);
+const result = yield * withErrorHandling(() => performOperation(), "operationName", config, logger);
 
 if (result.success) {
   // Use result.result

@@ -13,10 +13,11 @@ After deep investigation into TypeSpec source code (`node_modules/@typespec/comp
 ```javascript
 const outputs = {};
 for (const [name, value] of result.fs.fs) {
-    if (name.startsWith(outputDir)) {           // ✅ Checks virtual FS
-        const relativePath = name.slice(outputDir.length + 1);
-        outputs[relativePath] = value;        // ✅ Populates from virtual FS
-    }
+  if (name.startsWith(outputDir)) {
+    // ✅ Checks virtual FS
+    const relativePath = name.slice(outputDir.length + 1);
+    outputs[relativePath] = value; // ✅ Populates from virtual FS
+  }
 }
 ```
 
@@ -24,11 +25,11 @@ for (const [name, value] of result.fs.fs) {
 
 ```javascript
 export async function emitFile(program, options) {
-    const outputFolder = getDirectoryPath(options.path);
-    await program.host.mkdirp(outputFolder);     // ✅ Real filesystem
-    const content = options.content;
-    emittedFilesPaths.push(options.path);      // ✅ Tracks paths only
-    return await program.host.writeFile(options.path, content); // ✅ Real filesystem
+  const outputFolder = getDirectoryPath(options.path);
+  await program.host.mkdirp(outputFolder); // ✅ Real filesystem
+  const content = options.content;
+  emittedFilesPaths.push(options.path); // ✅ Tracks paths only
+  return await program.host.writeFile(options.path, content); // ✅ Real filesystem
 }
 ```
 
@@ -52,12 +53,12 @@ export async function emitFile(program, options) {
 
 ```typescript
 // Emitter logs show success:
-"🔍 DEBUG: output-file option: emitfile-test"
-"🔍 DEBUG: file-type option: json"
-"✅ File emitted: emitfile-test.json"
+"🔍 DEBUG: output-file option: emitfile-test";
+"🔍 DEBUG: file-type option: json";
+"✅ File emitted: emitfile-test.json";
 
 // But test framework fails:
-throw new Error("emitFile API test framework integration broken")
+throw new Error("emitFile API test framework integration broken");
 // result.outputs is empty Map {}
 ```
 
@@ -114,12 +115,12 @@ Update `tester.js` to capture `emitFile()` calls and mirror them to virtual FS:
 // In createEmitterTesterInternal function:
 const originalEmitFile = program.host.writeFile;
 program.host.writeFile = async (path, content) => {
-    // Call original (real filesystem)
-    await originalEmitFile(path, content);
+  // Call original (real filesystem)
+  await originalEmitFile(path, content);
 
-    // Mirror to virtual filesystem for test framework
-    const virtualPath = joinPaths("tsp-output", params.emitter, path);
-    fs.add(virtualPath, content);
+  // Mirror to virtual filesystem for test framework
+  const virtualPath = joinPaths("tsp-output", params.emitter, path);
+  fs.add(virtualPath, content);
 };
 ```
 
@@ -129,14 +130,14 @@ Modify `emitter-utils.js` to accept virtual FS reference:
 
 ```javascript
 export async function emitFile(program, options, virtualFs) {
-    // Write to real filesystem
-    await program.host.writeFile(options.path, content);
+  // Write to real filesystem
+  await program.host.writeFile(options.path, content);
 
-    // Also write to virtual FS if provided
-    if (virtualFs) {
-        const virtualPath = joinPaths("tsp-output", options.path);
-        virtualFs.add(virtualPath, options.content);
-    }
+  // Also write to virtual FS if provided
+  if (virtualFs) {
+    const virtualPath = joinPaths("tsp-output", options.path);
+    virtualFs.add(virtualPath, options.content);
+  }
 }
 ```
 

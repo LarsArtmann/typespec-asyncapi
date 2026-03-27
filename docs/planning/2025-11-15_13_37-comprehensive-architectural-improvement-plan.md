@@ -89,7 +89,7 @@ This codebase has **EXCELLENT type safety** in isolated components, but **POOR i
    ```typescript
    export type ValidationResult<T> =
      | { _tag: "Success"; value: T }
-     | { _tag: "Failure"; errors: readonly string[] }
+     | { _tag: "Failure"; errors: readonly string[] };
    ```
 
    - **Impact:** Unrepresentable invalid states
@@ -220,14 +220,14 @@ Building on THE 1% foundation, we now have clarity. THE 4% is about making the c
 
 ```typescript
 // BEFORE (ANTI-PATTERN):
-const result = Effect.runSync(someEffect)
+const result = Effect.runSync(someEffect);
 
 // AFTER (PROPER):
 export const processDocument = (doc: Document) =>
   Effect.gen(function* () {
-    const result = yield* someEffect
+    const result = yield* someEffect;
     // ... rest of pipeline
-  })
+  });
 ```
 
 **Files to Fix:**

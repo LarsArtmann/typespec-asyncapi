@@ -60,9 +60,9 @@ export type AsyncAPIEmitterConfig = {
 };
 
 export const createEmitFileOptions = (config, content) => ({
-  path: fullPath,    // Computed from config
-  content,          // Generated output
-  newLine: "lf"     // Emitter-specific concern
+  path: fullPath, // Computed from config
+  content, // Generated output
+  newLine: "lf", // Emitter-specific concern
 });
 ```
 
@@ -147,7 +147,7 @@ export type AsyncAPIEmitterConfig = {
 // ✅ BRIDGE PATTERN: EmitFileOptions integration perfected
 export const createEmitFileOptions = (
   config: AsyncAPIEmitterConfig,
-  content: string
+  content: string,
 ): EmitFileOptions => {
   const filename = `${config.outputFile ?? "asyncapi"}.${config.fileType ?? "yaml"}`;
   const fullPath = config.outputDir ? `${config.outputDir}/${filename}` : filename;
@@ -155,7 +155,7 @@ export const createEmitFileOptions = (
   return {
     path: fullPath,
     content,
-    newLine: "lf" // Default to LF line endings
+    newLine: "lf", // Default to LF line endings
   };
 };
 ```
@@ -171,9 +171,15 @@ export const createEmitFileOptions = (
 
 ```typescript
 // ✅ BACKWARD COMPATIBILITY: Zero breaking changes
-export type EmitterOptions = { /* Legacy interface preserved */ };
-export const DEFAULT_OPTIONS: Partial<EmitterOptions> = { /* Legacy defaults */ };
-export function mergeWithDefaults(options?: Partial<EmitterOptions>) { /* Legacy merge */ };
+export type EmitterOptions = {
+  /* Legacy interface preserved */
+};
+export const DEFAULT_OPTIONS: Partial<EmitterOptions> = {
+  /* Legacy defaults */
+};
+export function mergeWithDefaults(options?: Partial<EmitterOptions>) {
+  /* Legacy merge */
+}
 
 // ✅ NEW RECOMMENDED API: Modern patterns available
 export type { DEFAULT_ASYNC_API_CONFIG as DEFAULT_CONFIG };
@@ -202,7 +208,8 @@ export const createAsyncAPIDocument = (
     version: options.version ?? "1.0.0",
     description: options.description ?? "API generated from TypeSpec",
   },
-  channels, messages,
+  channels,
+  messages,
   components: { schemas },
 });
 ```
@@ -239,10 +246,10 @@ Error: { "_id": "Effect", "_op": "WithRuntime" }
 
 ```typescript
 // ❌ PROBLEMATIC CODE IDENTIFIED:
-const emitProgram = Effect.gen(function*() {
+const emitProgram = Effect.gen(function* () {
   yield* Effect.tryPromise({
     try: () => emitFile(context.program, emitOptions),
-    catch: (error) => Effect.fail(new Error(`Failed to generate ${outputPath}: ${String(error)}`))
+    catch: (error) => Effect.fail(new Error(`Failed to generate ${outputPath}: ${String(error)}`)),
   });
 });
 
@@ -423,17 +430,17 @@ Test Success: 40%             Test Success: 57%            42% IMPROVED ⚠️
 
 ```typescript
 // ✅ CURRENT EXCELLENT PATTERNS (DON'T WANT TO BREAK):
-const program = Effect.gen(function*() {
+const program = Effect.gen(function* () {
   const state = yield* extractAsyncAPIState(program);
   const document = yield* generateDocument(state, options);
   return document;
 });
 
 // ❌ CRASHING INTEGRATION (NEEDS FIX):
-const emitProgram = Effect.gen(function*() {
+const emitProgram = Effect.gen(function* () {
   yield* Effect.tryPromise({
     try: () => emitFile(context.program, emitOptions), // ← CRASHES
-    catch: (error) => Effect.fail(new Error(`Generation failed: ${error}`))
+    catch: (error) => Effect.fail(new Error(`Generation failed: ${error}`)),
   });
 });
 await Effect.runPromise(emitProgram); // ← { "_id": "Effect", "_op": "WithRuntime" }

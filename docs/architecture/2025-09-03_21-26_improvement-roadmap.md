@@ -45,15 +45,15 @@ rm src/core/DocumentStats.ts              # Empty - causing import issues
 
 ```typescript
 // NEW FILES:
-src/performance/monitoring/MemoryCollector.ts       // Data collection (150 lines)
-src/performance/monitoring/MemoryAnalyzer.ts        // Analysis logic (180 lines)
-src/performance/monitoring/MemoryReporter.ts        // Reporting (120 lines)
-src/performance/monitoring/MemoryThresholds.ts      // Configuration (80 lines)
+src / performance / monitoring / MemoryCollector.ts; // Data collection (150 lines)
+src / performance / monitoring / MemoryAnalyzer.ts; // Analysis logic (180 lines)
+src / performance / monitoring / MemoryReporter.ts; // Reporting (120 lines)
+src / performance / monitoring / MemoryThresholds.ts; // Configuration (80 lines)
 
 // INTERFACES:
 interface IMemoryCollector {
-  collectSnapshot(): Effect<MemorySnapshot, MemoryError>
-  startCollection(): Effect<void, MemoryError>
+  collectSnapshot(): Effect<MemorySnapshot, MemoryError>;
+  startCollection(): Effect<void, MemoryError>;
 }
 ```
 
@@ -61,19 +61,19 @@ interface IMemoryCollector {
 
 ```typescript
 // NEW FILES:
-src/errors/ErrorTypes.ts                   // Type definitions (100 lines)
-src/errors/ErrorFactory.ts                 // Error creation (150 lines)
-src/errors/ErrorHandler.ts                 // Error processing (200 lines)
-src/errors/ErrorRecovery.ts                // Recovery strategies (117 lines)
+src / errors / ErrorTypes.ts; // Type definitions (100 lines)
+src / errors / ErrorFactory.ts; // Error creation (150 lines)
+src / errors / ErrorHandler.ts; // Error processing (200 lines)
+src / errors / ErrorRecovery.ts; // Recovery strategies (117 lines)
 ```
 
 #### 1.2.3: Split Large Plugin Files (3 files)
 
 ```typescript
 // Split enhanced-mqtt-plugin.ts (546 lines → 3 files):
-src/plugins/mqtt/MqttBindingGenerator.ts    // Binding generation (200 lines)
-src/plugins/mqtt/MqttValidationRules.ts     // Validation (180 lines)
-src/plugins/mqtt/MqttSchemaTransforms.ts    // Schema transformation (166 lines)
+src / plugins / mqtt / MqttBindingGenerator.ts; // Binding generation (200 lines)
+src / plugins / mqtt / MqttValidationRules.ts; // Validation (180 lines)
+src / plugins / mqtt / MqttSchemaTransforms.ts; // Schema transformation (166 lines)
 
 // Similar splits for enhanced-amqp-plugin.ts and enhanced-websocket-plugin.ts
 ```
@@ -84,18 +84,18 @@ src/plugins/mqtt/MqttSchemaTransforms.ts    // Schema transformation (166 lines)
 
 ```typescript
 // src/types/branded.ts
-export type FileName = string & { readonly _brand: 'FileName' }
-export type FileType = 'yaml' | 'json'
-export type ChannelPath = string & { readonly _brand: 'ChannelPath' }
-export type PluginName = string & { readonly _brand: 'PluginName' }
+export type FileName = string & { readonly _brand: "FileName" };
+export type FileType = "yaml" | "json";
+export type ChannelPath = string & { readonly _brand: "ChannelPath" };
+export type PluginName = string & { readonly _brand: "PluginName" };
 
 // Type guards and validators
 export const validateFileName = (input: string): FileName => {
   if (!/^[a-zA-Z0-9._-]+$/.test(input)) {
-    throw new Error(`Invalid filename: ${input}`)
+    throw new Error(`Invalid filename: ${input}`);
   }
-  return input as FileName
-}
+  return input as FileName;
+};
 ```
 
 #### 1.3.2: Add Null Safety to AsyncAPIEmitter
@@ -147,21 +147,21 @@ _Priority: 🟡 HIGH - Enables better development velocity_
 ```typescript
 // src/interfaces/core.ts
 export interface IEmissionPipeline {
-  executePipeline(context: PipelineContext): Effect<void, PipelineError>
+  executePipeline(context: PipelineContext): Effect<void, PipelineError>;
 }
 
 export interface IDocumentGenerator {
-  serializeDocument(doc: AsyncAPIObject, format: FileType): Effect<string, SerializationError>
+  serializeDocument(doc: AsyncAPIObject, format: FileType): Effect<string, SerializationError>;
 }
 
 export interface IPerformanceMonitor {
-  startMonitoring(): Effect<void, MonitorError>
-  captureMetrics(): Effect<PerformanceMetrics, MonitorError>
+  startMonitoring(): Effect<void, MonitorError>;
+  captureMetrics(): Effect<PerformanceMetrics, MonitorError>;
 }
 
 export interface IPluginRegistry {
-  registerPlugin(plugin: IPlugin): Effect<void, PluginError>
-  executePlugins(context: PluginContext): Effect<void, PluginError>
+  registerPlugin(plugin: IPlugin): Effect<void, PluginError>;
+  executePlugins(context: PluginContext): Effect<void, PluginError>;
 }
 ```
 
@@ -169,8 +169,8 @@ export interface IPluginRegistry {
 
 ```typescript
 // src/di/Container.ts - Using Effect Context for DI
-export const EmissionPipelineService = Context.GenericTag<IEmissionPipeline>("EmissionPipeline")
-export const DocumentGeneratorService = Context.GenericTag<IDocumentGenerator>("DocumentGenerator")
+export const EmissionPipelineService = Context.GenericTag<IEmissionPipeline>("EmissionPipeline");
+export const DocumentGeneratorService = Context.GenericTag<IDocumentGenerator>("DocumentGenerator");
 // ... other services
 
 // DI Layer configuration
@@ -178,7 +178,7 @@ export const ProductionLayer = Layer.mergeAll(
   Layer.succeed(EmissionPipelineService, new EmissionPipeline()),
   Layer.succeed(DocumentGeneratorService, new DocumentGenerator()),
   // ... other services
-)
+);
 ```
 
 #### 2.1.3: Refactor AsyncAPIEmitter with DI
@@ -188,11 +188,11 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
   constructor(
     emitter: AssetEmitter<string, AsyncAPIEmitterOptions>,
     private readonly services: {
-      pipeline: IEmissionPipeline
-      generator: IDocumentGenerator
-      monitor: IPerformanceMonitor
-      registry: IPluginRegistry
-    }
+      pipeline: IEmissionPipeline;
+      generator: IDocumentGenerator;
+      monitor: IPerformanceMonitor;
+      registry: IPluginRegistry;
+    },
   ) {
     // Clean constructor with injected dependencies
   }
@@ -206,19 +206,19 @@ export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions>
 ```typescript
 // src/plugins/core/IPlugin.ts
 export interface IPlugin {
-  readonly metadata: PluginMetadata
-  initialize(context: PluginContext): Effect<void, PluginError>
-  process(input: PluginInput): Effect<PluginOutput, PluginError>
-  validate?(input: unknown): Effect<ValidationResult, ValidationError>
-  cleanup(): Effect<void, never>
+  readonly metadata: PluginMetadata;
+  initialize(context: PluginContext): Effect<void, PluginError>;
+  process(input: PluginInput): Effect<PluginOutput, PluginError>;
+  validate?(input: unknown): Effect<ValidationResult, ValidationError>;
+  cleanup(): Effect<void, never>;
 }
 
 export interface PluginMetadata {
-  readonly name: PluginName
-  readonly version: string
-  readonly description: string
-  readonly protocols: readonly string[]
-  readonly dependencies: readonly PluginName[]
+  readonly name: PluginName;
+  readonly version: string;
+  readonly description: string;
+  readonly protocols: readonly string[];
+  readonly dependencies: readonly PluginName[];
 }
 ```
 
@@ -227,9 +227,9 @@ export interface PluginMetadata {
 ```typescript
 // src/plugins/core/PluginLifecycleManager.ts
 export class PluginLifecycleManager {
-  async initializePlugin(plugin: IPlugin): Promise<void>
-  async shutdownPlugin(plugin: IPlugin): Promise<void>
-  async healthCheckPlugin(plugin: IPlugin): Promise<HealthStatus>
+  async initializePlugin(plugin: IPlugin): Promise<void>;
+  async shutdownPlugin(plugin: IPlugin): Promise<void>;
+  async healthCheckPlugin(plugin: IPlugin): Promise<HealthStatus>;
 }
 ```
 
@@ -282,11 +282,11 @@ _Priority: 🟢 MEDIUM - Quality and performance optimization_
 
 ```typescript
 // Split test/documentation/02-data-types.test.ts (1426 lines):
-test/unit/data-types/primitives.test.ts          // 200 lines
-test/unit/data-types/objects.test.ts             // 200 lines
-test/unit/data-types/arrays.test.ts              // 200 lines
-test/unit/data-types/unions.test.ts              // 200 lines
-test/integration/data-types/full-workflow.test.ts // 300 lines
+test / unit / data - types / primitives.test.ts; // 200 lines
+test / unit / data - types / objects.test.ts; // 200 lines
+test / unit / data - types / arrays.test.ts; // 200 lines
+test / unit / data - types / unions.test.ts; // 200 lines
+test / integration / data - types / full - workflow.test.ts; // 300 lines
 // Remaining 326 lines distributed across specific test files
 ```
 
@@ -315,12 +315,12 @@ export const TestContainer = Layer.mergeAll(
   Layer.succeed(EmissionPipelineService, new MockEmissionPipeline()),
   Layer.succeed(DocumentGeneratorService, new MockDocumentGenerator()),
   // ... mock services
-)
+);
 
 // test/helpers/PluginTestHarness.ts - Plugin testing utilities
 export class PluginTestHarness {
-  async testPlugin(plugin: IPlugin): Promise<TestResult>
-  async benchmarkPlugin(plugin: IPlugin): Promise<BenchmarkResult>
+  async testPlugin(plugin: IPlugin): Promise<TestResult>;
+  async benchmarkPlugin(plugin: IPlugin): Promise<BenchmarkResult>;
 }
 ```
 
@@ -331,8 +331,8 @@ export class PluginTestHarness {
 ```typescript
 // src/performance/streaming/StreamingProcessor.ts
 export class StreamingProcessor {
-  processTypeSpecProgram(program: Program): AsyncIterable<ProcessingEvent>
-  processInBatches<T>(items: T[], batchSize: number): AsyncIterable<T[]>
+  processTypeSpecProgram(program: Program): AsyncIterable<ProcessingEvent>;
+  processInBatches<T>(items: T[], batchSize: number): AsyncIterable<T[]>;
 }
 ```
 
@@ -341,9 +341,9 @@ export class StreamingProcessor {
 ```typescript
 // src/infrastructure/caching/CacheManager.ts
 export class CacheManager {
-  async get<T>(key: string): Promise<T | null>
-  async set<T>(key: string, value: T, ttl?: number): Promise<void>
-  async invalidate(pattern: string): Promise<void>
+  async get<T>(key: string): Promise<T | null>;
+  async set<T>(key: string, value: T, ttl?: number): Promise<void>;
+  async invalidate(pattern: string): Promise<void>;
 }
 ```
 
@@ -362,9 +362,9 @@ export class CacheManager {
 ```typescript
 // src/security/InputValidator.ts
 export class InputValidator {
-  validateFileName(input: string): Effect<FileName, ValidationError>
-  sanitizeUserInput(input: string): Effect<string, ValidationError>
-  validateTypeSpecProgram(program: Program): Effect<Program, SecurityError>
+  validateFileName(input: string): Effect<FileName, ValidationError>;
+  sanitizeUserInput(input: string): Effect<string, ValidationError>;
+  validateTypeSpecProgram(program: Program): Effect<Program, SecurityError>;
 }
 ```
 
@@ -373,8 +373,8 @@ export class InputValidator {
 ```typescript
 // src/plugins/security/PluginSandbox.ts
 export class PluginSandbox {
-  executeInSandbox<T>(plugin: IPlugin, operation: () => T): Effect<T, SandboxError>
-  validatePluginPermissions(plugin: IPlugin): Effect<void, PermissionError>
+  executeInSandbox<T>(plugin: IPlugin, operation: () => T): Effect<T, SandboxError>;
+  validatePluginPermissions(plugin: IPlugin): Effect<void, PermissionError>;
 }
 ```
 

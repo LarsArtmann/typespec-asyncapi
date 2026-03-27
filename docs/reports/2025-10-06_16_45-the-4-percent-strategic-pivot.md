@@ -36,23 +36,23 @@ Found perfect example in `test/domain/protocol-kafka-comprehensive.test.ts`:
 
 ```typescript
 // Line 8: Uses wrong helper
-import { createAsyncAPITestHost } from "../utils/test-helpers.js"
+import { createAsyncAPITestHost } from "../utils/test-helpers.js";
 
 // Lines 13-39: Ghost test pattern
 it("should generate Kafka server with bootstrap servers", async () => {
-    const host = await createAsyncAPITestHost()  // ❌ Wrong helper
-    host.addTypeSpecFile("main.tsp", `...`)
-    await host.compile("./main.tsp")
+  const host = await createAsyncAPITestHost(); // ❌ Wrong helper
+  host.addTypeSpecFile("main.tsp", `...`);
+  await host.compile("./main.tsp");
 
-    // ❌ Only checks compilation succeeded, NOT AsyncAPI output!
-    const diagnostics = await host.diagnose("./main.tsp", {
-        emit: ["@lars-artmann/typespec-asyncapi"]
-    })
-    expect(diagnostics.filter(d => d.severity === "error").length).toBe(0)
-})
+  // ❌ Only checks compilation succeeded, NOT AsyncAPI output!
+  const diagnostics = await host.diagnose("./main.tsp", {
+    emit: ["@lars-artmann/typespec-asyncapi"],
+  });
+  expect(diagnostics.filter((d) => d.severity === "error").length).toBe(0);
+});
 
 // Line 65: Even worse - literally tests nothing
-expect(true).toBe(true) // Compilation success
+expect(true).toBe(true); // Compilation success
 ```
 
 **This test:**
@@ -79,10 +79,10 @@ Example from `test/validation/automated-spec-validation.test.ts:283`:
 
 ```typescript
 // ❌ Missing await - causes "undefined" error
-parsedSpec = parseAsyncAPIOutput(compilationResult.outputFiles, fileName)
+parsedSpec = parseAsyncAPIOutput(compilationResult.outputFiles, fileName);
 
 // ✅ Should be:
-parsedSpec = await parseAsyncAPIOutput(compilationResult.outputFiles, fileName)
+parsedSpec = await parseAsyncAPIOutput(compilationResult.outputFiles, fileName);
 ```
 
 **BUT:** Why fix ghost tests if we're deleting them?
@@ -226,6 +226,7 @@ bun run test:coverage
 
 ```markdown
 # Test Helper Usage Guide
+
 - ✅ Use `compileAsyncAPISpec()` for integration tests
 - ✅ Assert on AsyncAPI output (channels, operations, servers)
 - ❌ NEVER use `createAsyncAPITestHost()` (creates ghost tests)

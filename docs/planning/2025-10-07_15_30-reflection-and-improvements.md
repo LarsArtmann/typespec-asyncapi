@@ -98,8 +98,8 @@ grep -r "toContain" test/
 **Current Pattern (Weak):**
 
 ```typescript
-expect(testResult.asyncapiDoc?.channels).toBeDefined()
-const channelKeys = Object.keys(testResult.asyncapiDoc?.channels || {})
+expect(testResult.asyncapiDoc?.channels).toBeDefined();
+const channelKeys = Object.keys(testResult.asyncapiDoc?.channels || {});
 ```
 
 **Better Pattern (Type-Safe):**
@@ -107,14 +107,14 @@ const channelKeys = Object.keys(testResult.asyncapiDoc?.channels || {})
 ```typescript
 // Use type guard
 function assertAsyncAPIDoc(doc: unknown): asserts doc is AsyncAPIObject {
-  if (!doc || typeof doc !== 'object' || !('asyncapi' in doc)) {
-    throw new Error('Invalid AsyncAPI document')
+  if (!doc || typeof doc !== "object" || !("asyncapi" in doc)) {
+    throw new Error("Invalid AsyncAPI document");
   }
 }
 
-assertAsyncAPIDoc(testResult.asyncapiDoc)
+assertAsyncAPIDoc(testResult.asyncapiDoc);
 // Now TypeScript KNOWS asyncapiDoc is AsyncAPIObject
-const channelKeys = Object.keys(testResult.asyncapiDoc.channels)
+const channelKeys = Object.keys(testResult.asyncapiDoc.channels);
 ```
 
 **Future Prevention:**
@@ -139,20 +139,21 @@ const channelKeys = Object.keys(testResult.asyncapiDoc.channels)
 // Add custom matchers with better error messages
 expect.extend({
   toHaveChannel(received, channelName) {
-    const channels = Object.keys(received?.channels || {})
-    const pass = channels.includes(channelName)
+    const channels = Object.keys(received?.channels || {});
+    const pass = channels.includes(channelName);
 
     return {
       pass,
-      message: () => pass
-        ? `Expected NOT to have channel "${channelName}"`
-        : `Expected to have channel "${channelName}"\nAvailable channels: ${channels.join(', ')}`
-    }
-  }
-})
+      message: () =>
+        pass
+          ? `Expected NOT to have channel "${channelName}"`
+          : `Expected to have channel "${channelName}"\nAvailable channels: ${channels.join(", ")}`,
+    };
+  },
+});
 
 // Usage
-expect(asyncapiDoc).toHaveChannel('user.events')
+expect(asyncapiDoc).toHaveChannel("user.events");
 // Error: Expected to have channel "user.events"
 //        Available channels: simple.event, test.events
 ```
@@ -189,50 +190,50 @@ expect(asyncapiDoc).toHaveChannel('user.events')
 #### Proposed Solution: Effect Schema + Branded Types
 
 ```typescript
-import { Schema } from '@effect/schema'
+import { Schema } from "@effect/schema";
 
 // Branded types for type safety
-type ChannelName = string & { readonly _brand: 'ChannelName' }
-type OperationName = string & { readonly _brand: 'OperationName' }
-type MessageName = string & { readonly _brand: 'MessageName' }
+type ChannelName = string & { readonly _brand: "ChannelName" };
+type OperationName = string & { readonly _brand: "OperationName" };
+type MessageName = string & { readonly _brand: "MessageName" };
 
 // Effect Schema for runtime validation
 const AsyncAPIDocumentSchema = Schema.Struct({
-  asyncapi: Schema.Literal('3.0.0'),
+  asyncapi: Schema.Literal("3.0.0"),
   info: Schema.Struct({
     title: Schema.String,
     version: Schema.String,
     description: Schema.optional(Schema.String),
   }),
   channels: Schema.Record(
-    Schema.String.pipe(Schema.brand('ChannelName')),
+    Schema.String.pipe(Schema.brand("ChannelName")),
     Schema.Struct({
       address: Schema.String,
       description: Schema.optional(Schema.String),
       messages: Schema.Record(Schema.String, Schema.Any),
-    })
+    }),
   ),
   operations: Schema.Record(
-    Schema.String.pipe(Schema.brand('OperationName')),
+    Schema.String.pipe(Schema.brand("OperationName")),
     Schema.Struct({
-      action: Schema.Literal('send', 'receive'),
+      action: Schema.Literal("send", "receive"),
       channel: Schema.Struct({
         $ref: Schema.String,
       }),
       summary: Schema.optional(Schema.String),
-    })
+    }),
   ),
-})
+});
 
 // Type-safe parse
-const parseAsyncAPIDocument = Schema.decodeUnknownEither(AsyncAPIDocumentSchema)
+const parseAsyncAPIDocument = Schema.decodeUnknownEither(AsyncAPIDocumentSchema);
 
 // Usage in tests
-const result = parseAsyncAPIDocument(testResult.asyncapiDoc)
+const result = parseAsyncAPIDocument(testResult.asyncapiDoc);
 if (Effect.Either.isRight(result)) {
-  const doc = result.right
+  const doc = result.right;
   // doc is now strongly typed!
-  const channels: Record<ChannelName, Channel> = doc.channels
+  const channels: Record<ChannelName, Channel> = doc.channels;
 }
 ```
 
@@ -282,21 +283,15 @@ if (Effect.Either.isRight(result)) {
 **Example:**
 
 ```typescript
-import { Schema } from '@effect/schema'
+import { Schema } from "@effect/schema";
 
 const ChannelSchema = Schema.Struct({
-  address: Schema.String.pipe(
-    Schema.minLength(1),
-    Schema.pattern(/^[a-zA-Z0-9.\-_]+$/)
-  ),
-  messages: Schema.NonEmptyRecord(
-    Schema.String,
-    Schema.Struct({ $ref: Schema.String })
-  ),
-})
+  address: Schema.String.pipe(Schema.minLength(1), Schema.pattern(/^[a-zA-Z0-9.\-_]+$/)),
+  messages: Schema.NonEmptyRecord(Schema.String, Schema.Struct({ $ref: Schema.String })),
+});
 
 // Parse with automatic validation
-const parseChannel = Schema.decodeUnknownSync(ChannelSchema)
+const parseChannel = Schema.decodeUnknownSync(ChannelSchema);
 ```
 
 ##### 2. **ts-pattern** for Pattern Matching
@@ -316,14 +311,14 @@ const parseChannel = Schema.decodeUnknownSync(ChannelSchema)
 **Example:**
 
 ```typescript
-import { match } from 'ts-pattern'
+import { match } from "ts-pattern";
 
 const processTypeSpecNode = (node: Type) =>
   match(node)
-    .with({ kind: 'Model' }, (model) => processModel(model))
-    .with({ kind: 'Operation' }, (op) => processOperation(op))
-    .with({ kind: 'Scalar' }, (scalar) => processScalar(scalar))
-    .exhaustive() // TypeScript ensures all cases covered!
+    .with({ kind: "Model" }, (model) => processModel(model))
+    .with({ kind: "Operation" }, (op) => processOperation(op))
+    .with({ kind: "Scalar" }, (scalar) => processScalar(scalar))
+    .exhaustive(); // TypeScript ensures all cases covered!
 ```
 
 ##### 3. **fast-check** for Property-Based Testing
@@ -343,22 +338,22 @@ const processTypeSpecNode = (node: Type) =>
 **Example:**
 
 ```typescript
-import * as fc from 'fast-check'
+import * as fc from "fast-check";
 
-test('AsyncAPI emitter handles any valid TypeSpec model', () => {
+test("AsyncAPI emitter handles any valid TypeSpec model", () => {
   fc.assert(
     fc.property(
       fc.record({
         name: fc.string(),
-        properties: fc.dictionary(fc.string(), fc.string())
+        properties: fc.dictionary(fc.string(), fc.string()),
       }),
       (model) => {
-        const result = generateAsyncAPI(model)
-        expect(result.components.schemas).toHaveProperty(model.name)
-      }
-    )
-  )
-})
+        const result = generateAsyncAPI(model);
+        expect(result.components.schemas).toHaveProperty(model.name);
+      },
+    ),
+  );
+});
 ```
 
 ##### 4. **chalk** for Better CLI Output
@@ -378,11 +373,11 @@ test('AsyncAPI emitter handles any valid TypeSpec model', () => {
 **Example:**
 
 ```typescript
-import chalk from 'chalk'
+import chalk from "chalk";
 
-console.log(chalk.green('✅ All tests passed'))
-console.log(chalk.red('❌ Compilation failed:'))
-console.log(chalk.yellow('⚠️  Warning: Optional property missing'))
+console.log(chalk.green("✅ All tests passed"));
+console.log(chalk.red("❌ Compilation failed:"));
+console.log(chalk.yellow("⚠️  Warning: Optional property missing"));
 ```
 
 ##### 5. **zod** (Alternative to @effect/schema)
@@ -402,20 +397,22 @@ console.log(chalk.yellow('⚠️  Warning: Optional property missing'))
 **Example:**
 
 ```typescript
-import { z } from 'zod'
+import { z } from "zod";
 
 const AsyncAPISchema = z.object({
-  asyncapi: z.literal('3.0.0'),
+  asyncapi: z.literal("3.0.0"),
   info: z.object({
     title: z.string(),
     version: z.string(),
   }),
-  channels: z.record(z.object({
-    address: z.string(),
-  })),
-})
+  channels: z.record(
+    z.object({
+      address: z.string(),
+    }),
+  ),
+});
 
-type AsyncAPI = z.infer<typeof AsyncAPISchema>
+type AsyncAPI = z.infer<typeof AsyncAPISchema>;
 ```
 
 ---
@@ -538,15 +535,15 @@ bun run build && bun test
 ```typescript
 // Should compile and validate
 const result = parseAsyncAPIDocument({
-  asyncapi: '3.0.0',
-  info: { title: 'Test', version: '1.0.0' },
-  channels: {}
-})
+  asyncapi: "3.0.0",
+  info: { title: "Test", version: "1.0.0" },
+  channels: {},
+});
 
 // Should fail with clear error
 const invalid = parseAsyncAPIDocument({
-  asyncapi: '2.0.0', // Wrong version
-})
+  asyncapi: "2.0.0", // Wrong version
+});
 // Error: Expected "3.0.0" but received "2.0.0"
 ```
 
@@ -613,15 +610,16 @@ bun test
 ```typescript
 // test/utils/custom-matchers.ts
 export function toHaveChannel(received: unknown, channelName: string) {
-  const channels = Object.keys((received as any)?.channels || {})
-  const pass = channels.includes(channelName)
+  const channels = Object.keys((received as any)?.channels || {});
+  const pass = channels.includes(channelName);
 
   return {
     pass,
-    message: () => pass
-      ? `Expected NOT to have channel "${channelName}"`
-      : `Expected to have channel "${channelName}"\nFound: ${channels.join(', ')}`
-  }
+    message: () =>
+      pass
+        ? `Expected NOT to have channel "${channelName}"`
+        : `Expected to have channel "${channelName}"\nFound: ${channels.join(", ")}`,
+  };
 }
 ```
 
@@ -653,25 +651,25 @@ export function toHaveChannel(received: unknown, channelName: string) {
 **Example:**
 
 ```typescript
-import * as fc from 'fast-check'
+import * as fc from "fast-check";
 
-test('AsyncAPI emitter handles any valid model name', () => {
+test("AsyncAPI emitter handles any valid model name", () => {
   fc.assert(
     fc.property(
-      fc.string().filter(s => s.length > 0 && /^[a-zA-Z]/.test(s)),
+      fc.string().filter((s) => s.length > 0 && /^[a-zA-Z]/.test(s)),
       (modelName) => {
         const typespec = `
           model ${modelName} {
             id: string;
           }
-        `
-        const result = compileWithCLI(typespec)
-        expect(result.asyncapiDoc?.components?.schemas).toHaveProperty(modelName)
-      }
+        `;
+        const result = compileWithCLI(typespec);
+        expect(result.asyncapiDoc?.components?.schemas).toHaveProperty(modelName);
+      },
     ),
-    { numRuns: 100 }
-  )
-})
+    { numRuns: 100 },
+  );
+});
 ```
 
 **Verification:**
@@ -704,10 +702,13 @@ bun test test/property/
 ```typescript
 function convertType(type: Type): JSONSchema {
   switch (type.kind) {
-    case 'Model': return convertModel(type)
-    case 'Scalar': return convertScalar(type)
+    case "Model":
+      return convertModel(type);
+    case "Scalar":
+      return convertScalar(type);
     // Forgot 'Operation'! Bug!
-    default: throw new Error('Unknown type')
+    default:
+      throw new Error("Unknown type");
   }
 }
 ```
@@ -715,14 +716,14 @@ function convertType(type: Type): JSONSchema {
 **After:**
 
 ```typescript
-import { match } from 'ts-pattern'
+import { match } from "ts-pattern";
 
 function convertType(type: Type): JSONSchema {
   return match(type)
-    .with({ kind: 'Model' }, convertModel)
-    .with({ kind: 'Scalar' }, convertScalar)
-    .with({ kind: 'Operation' }, convertOperation)
-    .exhaustive() // TypeScript error if case missing!
+    .with({ kind: "Model" }, convertModel)
+    .with({ kind: "Scalar" }, convertScalar)
+    .with({ kind: "Operation" }, convertOperation)
+    .exhaustive(); // TypeScript error if case missing!
 }
 ```
 

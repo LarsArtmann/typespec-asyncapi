@@ -56,7 +56,7 @@ if (!result.outputs || Object.keys(result.outputs).length === 0) {
   if (fallback) {
     return {
       asyncApiDoc: doc,
-      outputs: {[fallback.file]: content}, // Simulate result.outputs
+      outputs: { [fallback.file]: content }, // Simulate result.outputs
       outputFile: fallback.file,
     };
   }
@@ -75,13 +75,21 @@ if (!result.outputs || Object.keys(result.outputs).length === 0) {
 
 ```typescript
 export enum Protocol {
-  KAFKA = "kafka", AMQP = "amqp", WEBSOCKET = "websocket",
-  HTTP = "http", HTTPS = "https", WS = "ws", WSS = "wss"
+  KAFKA = "kafka",
+  AMQP = "amqp",
+  WEBSOCKET = "websocket",
+  HTTP = "http",
+  HTTPS = "https",
+  WS = "ws",
+  WSS = "wss",
 }
 
 export interface ServerConfig {
-  name: string; url: string; protocol: Protocol;
-  description?: string; [key: string]: unknown
+  name: string;
+  url: string;
+  protocol: Protocol;
+  description?: string;
+  [key: string]: unknown;
 }
 ```
 

@@ -34,19 +34,21 @@ Time Investment: 8+ hours systematic migration
 ```typescript
 // BROKEN approach (causes TS2683 errors)
 return Effect.gen(function* () {
-  yield* this.someMethod()  // 'this' implicitly has type 'any'
-})
+  yield* this.someMethod(); // 'this' implicitly has type 'any'
+});
 
 // WORKING approach - explicit binding
-return Effect.gen((function* () {
-  yield* this.someMethod()
-}).bind(this))
+return Effect.gen(
+  function* () {
+    yield* this.someMethod();
+  }.bind(this),
+);
 
 // BETTER approach - avoid this entirely
 return Effect.gen(function* () {
-  const result = yield* someServiceMethod()
-  return result
-})
+  const result = yield* someServiceMethod();
+  return result;
+});
 ```
 
 ### 2. Error Parameter Type Narrowing
@@ -98,12 +100,12 @@ executePipeline(): Effect.Effect<void, StandardizedError> {
 ```typescript
 async function process() {
   try {
-    const step1 = await doStep1()
-    const step2 = await doStep2(step1)
-    return await doStep3(step2)
+    const step1 = await doStep1();
+    const step2 = await doStep2(step1);
+    return await doStep3(step2);
   } catch (error) {
-    logger.error(error)
-    throw error
+    logger.error(error);
+    throw error;
   }
 }
 ```
@@ -117,8 +119,8 @@ function process() {
     Effect.flatMap(doStep1),
     Effect.flatMap(doStep2),
     Effect.flatMap(doStep3),
-    Effect.catchAll(handleError)
-  )
+    Effect.catchAll(handleError),
+  );
 }
 ```
 

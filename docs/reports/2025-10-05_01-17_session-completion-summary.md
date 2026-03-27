@@ -31,36 +31,36 @@
 ```typescript
 export const safeStringify = (value: unknown, fallback = "unknown"): string => {
   // Handle null/undefined
-  if (value === null) return "null"
-  if (value === undefined) return "undefined"
+  if (value === null) return "null";
+  if (value === undefined) return "undefined";
 
   // Handle primitives
-  if (typeof value === "string") return value
-  if (typeof value === "number") return String(value)
-  if (typeof value === "boolean") return String(value)
+  if (typeof value === "string") return value;
+  if (typeof value === "number") return String(value);
+  if (typeof value === "boolean") return String(value);
 
   // Handle StandardizedError
   if (isStandardizedError(value)) {
-    return `${value.what} (${value.code})`
+    return `${value.what} (${value.code})`;
   }
 
   // Handle Error objects
   if (value instanceof Error) {
-    return `${value.name}: ${value.message}`
+    return `${value.name}: ${value.message}`;
   }
 
   // Safe JSON handling with size limits
   if (typeof value === "object") {
     try {
-      const json = JSON.stringify(value)
-      return json.length > 200 ? `${json.substring(0, 200)}...` : json
+      const json = JSON.stringify(value);
+      return json.length > 200 ? `${json.substring(0, 200)}...` : json;
     } catch {
-      return fallback
+      return fallback;
     }
   }
 
-  return fallback
-}
+  return fallback;
+};
 ```
 
 ### ✅ **Files Successfully Updated** (15+)
