@@ -112,27 +112,27 @@
     "effect": "^3.21.0",
     "openid-client": "^6.8.2",
     "passport-oauth2": "^1.8.0",
-    "yaml": "^2.8.2"
+    "yaml": "^2.8.3"
   },
   "devDependencies": {
     "@asyncapi/cli": "^6.0.0",
     "@effect/eslint-plugin": "^0.3.2",
     "@eslint/js": "^10.0.1",
     "@types/node": "^25.5.0",
-    "@typescript-eslint/eslint-plugin": "^8.57.1",
-    "@typescript-eslint/parser": "^8.57.1",
+    "@typescript-eslint/eslint-plugin": "^8.57.2",
+    "@typescript-eslint/parser": "^8.57.2",
     "@typespec/http": "^1.10.0",
     "@typespec/openapi3": "^1.10.0",
     "@typespec/rest": "^0.80.0",
-    "@vitest/coverage-v8": "^4.1.0",
+    "@vitest/coverage-v8": "^4.1.2",
     "asyncapi-validator": "^5.1.1",
     "eslint": "^10.1.0",
     "glob": "^13.0.6",
     "husky": "^9.1.7",
     "lint-staged": "^16.4.0",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.57.1",
-    "vitest": "^4.1.0"
+    "typescript-eslint": "^8.57.2",
+    "vitest": "^4.1.2"
   },
   "peerDependencies": {
     "@typespec/versioning": ""

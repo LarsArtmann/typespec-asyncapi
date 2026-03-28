@@ -19,7 +19,7 @@ model UserEvent {
 
 @channel("user/events")
 @publish
-op publishUserEvent(event: UserEvent);
+op publishUserEvent(event: UserEvent): void;
 }
     `;
 

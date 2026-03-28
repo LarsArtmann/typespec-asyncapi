@@ -20,7 +20,7 @@ model UserEvent {
 
 @channel("user/events")
 @publish
-op publishUserEvent(event: UserEvent);
+op publishUserEvent(event: UserEvent): void;
 }`;
 
     const result = await tester.compile(source);
@@ -33,8 +33,9 @@ op publishUserEvent(event: UserEvent);
     // Test state consolidation directly
     if (result.program) {
       console.log("DEBUG: About to import consolidateAsyncAPIState");
+      let consolidatedState: ReturnType<typeof consolidateAsyncAPIState>;
       try {
-        const consolidatedState = consolidateAsyncAPIState(result.program);
+        consolidatedState = consolidateAsyncAPIState(result.program);
         console.log("DEBUG: consolidateAsyncAPIState executed successfully");
       } catch (error) {
         console.error("DEBUG: consolidateAsyncAPIState failed:", error);
