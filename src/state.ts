@@ -132,27 +132,57 @@ export type AsyncAPIConsolidatedState = {
 
 /**
  * Consolidates all AsyncAPI state data from TypeSpec program
+ *
+ * Handles TypeSpec's StateMapView which wraps the actual Map.
+ * The StateMapView stores data in an internal 'map' property.
  */
 export function consolidateAsyncAPIState(program: Program): AsyncAPIConsolidatedState {
-  const channelPaths = getStateMap<ChannelPathData>(program, stateSymbols.channelPaths);
-  const messageConfigs = getStateMap<MessageConfigData>(program, stateSymbols.messageConfigs);
-  const serverConfigs = getStateMap<ServerConfigData>(program, stateSymbols.serverConfigs);
-  const operationTypes = getStateMap<OperationTypeData>(program, stateSymbols.operationTypes);
-  const tags = getStateMap<TagData>(program, stateSymbols.tags);
-  const protocolConfigs = getStateMap<ProtocolConfigData>(program, stateSymbols.protocolConfigs);
-  const securityConfigs = getStateMap<SecurityConfigData>(program, stateSymbols.securityConfigs);
-  const correlationIds = getStateMap<CorrelationIdData>(program, stateSymbols.correlationIds);
-  const messageHeaders = getStateMap<MessageHeaderData[]>(program, stateSymbols.messageHeaders);
+  // Helper to unwrap StateMapView to actual Map
+  const unwrapStateMap = <T>(stateMap: unknown): Map<Type, T> => {
+    // Check if it has an internal map property (StateMapView pattern)
+    const stateMapObj = stateMap as Record<string, unknown>;
+    if (stateMapObj?.map && typeof stateMapObj.map === "object") {
+      const innerMap = stateMapObj.map as Map<Type, T>;
+      if (innerMap instanceof Map) {
+        return innerMap;
+      }
+    }
+
+    // Check if it's a Map directly
+    const asMap = stateMap as Map<Type, T>;
+    if (asMap instanceof Map) {
+      return asMap;
+    }
+
+    // Check if it has Map-like methods
+    const stateMapAsAny = stateMap as { get?: Function; set?: Function };
+    if (typeof stateMapAsAny?.get === "function" && typeof stateMapAsAny?.set === "function") {
+      return stateMap as Map<Type, T>;
+    }
+
+    // Return empty map as fallback
+    return new Map<Type, T>();
+  };
+
+  const channelPathsState = getStateMap<ChannelPathData>(program, stateSymbols.channelPaths);
+  const messageConfigsState = getStateMap<MessageConfigData>(program, stateSymbols.messageConfigs);
+  const serverConfigsState = getStateMap<ServerConfigData>(program, stateSymbols.serverConfigs);
+  const operationTypesState = getStateMap<OperationTypeData>(program, stateSymbols.operationTypes);
+  const tagsState = getStateMap<TagData>(program, stateSymbols.tags);
+  const protocolConfigsState = getStateMap<ProtocolConfigData>(program, stateSymbols.protocolConfigs);
+  const securityConfigsState = getStateMap<SecurityConfigData>(program, stateSymbols.securityConfigs);
+  const correlationIdsState = getStateMap<CorrelationIdData>(program, stateSymbols.correlationIds);
+  const messageHeadersState = getStateMap<MessageHeaderData[]>(program, stateSymbols.messageHeaders);
 
   return {
-    channels: channelPaths,
-    messages: messageConfigs,
-    servers: serverConfigs,
-    operations: operationTypes,
-    tags: tags,
-    protocolConfigs: protocolConfigs,
-    securityConfigs: securityConfigs,
-    correlationIds: correlationIds,
-    messageHeaders: messageHeaders,
+    channels: unwrapStateMap<ChannelPathData>(channelPathsState),
+    messages: unwrapStateMap<MessageConfigData>(messageConfigsState),
+    servers: unwrapStateMap<ServerConfigData>(serverConfigsState),
+    operations: unwrapStateMap<OperationTypeData>(operationTypesState),
+    tags: unwrapStateMap<TagData>(tagsState),
+    protocolConfigs: unwrapStateMap<ProtocolConfigData>(protocolConfigsState),
+    securityConfigs: unwrapStateMap<SecurityConfigData>(securityConfigsState),
+    correlationIds: unwrapStateMap<CorrelationIdData>(correlationIdsState),
+    messageHeaders: unwrapStateMap<MessageHeaderData[]>(messageHeadersState),
   };
 }

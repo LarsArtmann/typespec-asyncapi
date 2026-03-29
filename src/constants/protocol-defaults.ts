@@ -8,6 +8,8 @@
 export const SUPPORTED_PROTOCOLS = [
   "http",
   "ws",
+  "wss",
+  "websocket",
   "mqtt",
   "kafka",
   "amqp",
@@ -28,7 +30,20 @@ export const PROTOCOL_BINDING_DEFAULTS = {
     method: "POST",
     contentType: "application/json",
   },
+  https: {
+    version: "0.5.0",
+    method: "POST",
+    contentType: "application/json",
+  },
   ws: {
+    version: "0.5.0",
+    subprotocol: "asyncapi",
+  },
+  wss: {
+    version: "0.5.0",
+    subprotocol: "asyncapi",
+  },
+  websocket: {
     version: "0.5.0",
     subprotocol: "asyncapi",
   },
