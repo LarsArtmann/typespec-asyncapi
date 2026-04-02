@@ -158,17 +158,8 @@ export const railwayErrorRecovery = {
         { concurrency: "inherit" },
       );
 
-      // Separate successes and failures
-      const successes: A[] = [];
-      const failures: E[] = [];
-
-      results.forEach((result) => {
-        if (result._tag === "Right") {
-          successes.push(result.right);
-        } else {
-          failures.push(result.left);
-        }
-      });
+      // Separate successes and failures using helper
+      const { successes, failures } = separateEitherResults(results);
 
       // Log partial failure statistics
       yield* Effect.log("Batch operation completed with partial failures").pipe(
@@ -193,6 +184,27 @@ export const RETRY_DELAYS = {
   MIN: 100,
   MAX: 5000,
 } as const;
+
+/**
+ * Helper function to separate Either results into successes and failures
+ * Eliminates duplicate forEach + Right/Left pattern
+ */
+function separateEitherResults<A, E>(
+  results: Array<{ _tag: "Left" | "Right"; left: E; right: A }>,
+): { successes: A[]; failures: E[] } {
+  const successes: A[] = [];
+  const failures: E[] = [];
+
+  results.forEach((result) => {
+    if (result._tag === "Right") {
+      successes.push(result.right);
+    } else {
+      failures.push(result.left);
+    }
+  });
+
+  return { successes, failures };
+}
 
 /**
  * Effect utility functions
@@ -260,16 +272,8 @@ export const effectUtils = {
         { concurrency: "inherit" },
       );
 
-      const successes: Array<A> = [];
-      const errors: Array<E> = [];
-
-      results.forEach((result) => {
-        if (result._tag === "Right") {
-          successes.push(result.right);
-        } else {
-          errors.push(result.left);
-        }
-      });
+      // Separate successes and failures using helper
+      const { successes, errors } = separateEitherResults(results);
 
       // If there are errors, fail with all of them
       if (errors.length > 0) {

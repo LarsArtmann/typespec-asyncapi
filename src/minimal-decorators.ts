@@ -11,8 +11,10 @@ import type {
   Model,
   ModelProperty,
   DiagnosticTarget,
+  Program,
 } from "@typespec/compiler";
 import { stateSymbols } from "./lib.js";
+import { getStateMap } from "./state-compatibility.js";
 import type { MessageConfigData } from "./state.js";
 
 // Decorator logging utilities removed - use Effect.log for production logging
@@ -49,9 +51,8 @@ export const validateConfig = (
 };
 
 // State management utilities - eliminates duplicate state operations
-export const storeChannelState = (program: unknown, target: Operation, path: string) => {
-  const programTyped = program as { stateMap: (symbol: symbol) => Map<unknown, unknown> };
-  const channelPathsMap = programTyped.stateMap(stateSymbols.channelPaths);
+export const storeChannelState = (program: Program, target: Operation, path: string) => {
+  const channelPathsMap = getStateMap(program, stateSymbols.channelPaths);
   channelPathsMap.set(target, {
     path: path,
     hasParameters: path.includes("{"),
@@ -60,14 +61,13 @@ export const storeChannelState = (program: unknown, target: Operation, path: str
 };
 
 export const storeOperationType = (
-  program: unknown,
+  program: Program,
   target: Operation,
   type: "publish" | "subscribe",
   messageType?: string,
   description?: string,
 ) => {
-  const programTyped = program as { stateMap: (symbol: symbol) => Map<unknown, unknown> };
-  const operationTypesMap = programTyped.stateMap(stateSymbols.operationTypes);
+  const operationTypesMap = getStateMap(program, stateSymbols.operationTypes);
   operationTypesMap.set(target, {
     type,
     messageType,
@@ -77,12 +77,11 @@ export const storeOperationType = (
 };
 
 export const storeMessageConfig = (
-  program: unknown,
+  program: Program,
   target: Model,
   config: { title: string; description: string; contentType: string },
 ) => {
-  const programTyped = program as { stateMap: (symbol: symbol) => Map<unknown, unknown> };
-  const messageConfigsMap = programTyped.stateMap(stateSymbols.messageConfigs);
+  const messageConfigsMap = getStateMap(program, stateSymbols.messageConfigs);
   messageConfigsMap.set(target, {
     title: config.title ?? target.name,
     description: config.description ?? `Message ${target.name}`,
@@ -110,12 +109,11 @@ export function $channel(context: DecoratorContext, target: Operation, path: str
 
 // State management utilities - eliminates duplicate state operations
 export const storeServerConfig = (
-  program: unknown,
+  program: Program,
   target: Namespace,
   config: Record<string, unknown> & { name: string },
 ) => {
-  const programTyped = program as { stateMap: (symbol: symbol) => Map<unknown, unknown> };
-  const serverConfigsMap = programTyped.stateMap(stateSymbols.serverConfigs);
+  const serverConfigsMap = getStateMap(program, stateSymbols.serverConfigs);
   serverConfigsMap.set(target, {
     name: config.name,
     url: (config.url as string) ?? "http://localhost:3000",
@@ -128,12 +126,11 @@ export const storeServerConfig = (
  * Store security configuration in state for emitter to use
  */
 export const storeSecurityConfig = (
-  program: unknown,
+  program: Program,
   target: Operation | Namespace,
   config: { name: string; scheme: Record<string, unknown> },
 ) => {
-  const programTyped = program as { stateMap: (symbol: symbol) => Map<unknown, unknown> };
-  const securityConfigsMap = programTyped.stateMap(stateSymbols.securityConfigs);
+  const securityConfigsMap = getStateMap(program, stateSymbols.securityConfigs);
   securityConfigsMap.set(target, {
     name: config.name,
     scheme: config.scheme,
@@ -247,8 +244,7 @@ export function $publish(context: DecoratorContext, target: Operation, config?: 
 
   // If there's a message config, link it
   if (config) {
-    const programTyped = context.program as { stateMap: (symbol: symbol) => Map<unknown, unknown> };
-    const messageConfigsMap = programTyped.stateMap(stateSymbols.messageConfigs);
+    const messageConfigsMap = getStateMap(context.program, stateSymbols.messageConfigs);
     const existingConfig = messageConfigsMap.get(config) as MessageConfigData | undefined;
     if (existingConfig) {
       existingConfig.messageId = config.name;
@@ -318,8 +314,7 @@ export function $protocol(
   }
 
   // Store protocol configuration in state map
-  const programTyped = context.program as { stateMap: (symbol: symbol) => Map<unknown, unknown> };
-  const protocolConfigsMap = programTyped.stateMap(stateSymbols.protocolConfigs);
+  const protocolConfigsMap = getStateMap(context.program, stateSymbols.protocolConfigs);
   const configTyped = config as Record<string, unknown>;
 
   // Store protocol-specific configuration based on type
@@ -448,9 +443,8 @@ export function $subscribe(context: DecoratorContext, target: Operation): void {
 /**
  * Store tags in state for emitter to use
  */
-export const storeTags = (program: unknown, target: Operation | Model, tags: string[]) => {
-  const programTyped = program as { stateMap: (symbol: symbol) => Map<unknown, unknown> };
-  const tagsMap = programTyped.stateMap(stateSymbols.tags);
+export const storeTags = (program: Program, target: Operation | Model, tags: string[]) => {
+  const tagsMap = getStateMap(program, stateSymbols.tags);
   // Store as comma-separated string to match TagData interface
   const existingTags = (tagsMap.get(target) as { name: string } | undefined)?.name ?? "";
   const allTags = existingTags ? existingTags.split(",") : [];
@@ -487,13 +481,12 @@ export function $tags(context: DecoratorContext, target: DiagnosticTarget, value
  * Store correlation ID in state for emitter to use
  */
 export const storeCorrelationId = (
-  program: unknown,
+  program: Program,
   target: Model,
   location: string,
   property?: string,
 ) => {
-  const programTyped = program as { stateMap: (symbol: symbol) => Map<unknown, unknown> };
-  const correlationIdsMap = programTyped.stateMap(stateSymbols.correlationIds);
+  const correlationIdsMap = getStateMap(program, stateSymbols.correlationIds);
   correlationIdsMap.set(target, {
     location,
     property,
@@ -527,12 +520,11 @@ export function $correlationId(
  * Store bindings in state for emitter to use
  */
 export const storeBindings = (
-  program: unknown,
+  program: Program,
   target: Operation | Model,
   bindings: Record<string, unknown>,
 ) => {
-  const programTyped = program as { stateMap: (symbol: symbol) => Map<unknown, unknown> };
-  const bindingsMap = programTyped.stateMap(stateSymbols.protocolBindings);
+  const bindingsMap = getStateMap(program, stateSymbols.protocolBindings);
   const existingBindings = (bindingsMap.get(target) as Record<string, unknown> | undefined) ?? {};
   bindingsMap.set(target, { ...existingBindings, ...bindings });
 };
@@ -563,13 +555,12 @@ export function $bindings(
  * Store header in state for emitter to use
  */
 export const storeHeader = (
-  program: unknown,
+  program: Program,
   target: Model | ModelProperty,
   name: string,
   value?: unknown,
 ) => {
-  const programTyped = program as { stateMap: (symbol: symbol) => Map<unknown, unknown> };
-  const headersMap = programTyped.stateMap(stateSymbols.messageHeaders);
+  const headersMap = getStateMap(program, stateSymbols.messageHeaders);
 
   // Store headers on the property itself since parent model reference
   // may not be available at decorator execution time
