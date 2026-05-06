@@ -1,0 +1,91 @@
+title: {
+  label: TypeSpec AsyncAPI Emitter — TARGET Architecture
+  shape: text
+  near: top-center
+}
+
+typespec_source: {
+  shape: rectangle
+  label: TypeSpec Source (.tsp)
+}
+
+lib_main: {
+  shape: rectangle
+  label: lib/main.tsp
+  style.fill: "#E8F5E9"
+}
+
+decorator_registry: {
+  shape: rectangle
+  label: Decorator Registry\n(One module per domain)
+  style.fill: "#C8E6C9"
+
+  channel_dec: {label: channel.ts}
+  message_dec: {label: message.ts}
+  server_dec: {label: server.ts}
+  protocol_dec: {label: protocol.ts}
+  security_dec: {label: security.ts}
+  operation_dec: {label: operation.ts}
+}
+
+state_layer: {
+  shape: rectangle
+  label: State Layer\n(Single key system)
+  style.fill: "#E3F2FD"
+
+  state_store: {label: StateStore\n(typed get/set)}
+  state_consolidator: {label: Consolidator\n(domain-specific)}
+}
+
+config: {
+  shape: cylinder
+  label: config.ts\n(SINGLE SOURCE OF TRUTH)
+  style.fill: "#C8E6C9"
+}
+
+emitter_orchestrator: {
+  shape: rectangle
+  label: Emitter Orchestrator
+  style.fill: "#C8E6C9"
+
+  doc_builder: {label: DocumentBuilder}
+  schema_builder: {label: SchemaBuilder\n(recursive model traversal)}
+}
+
+protocol_handlers: {
+  shape: rectangle
+  label: Protocol Handler Registry
+  style.fill: "#E8F5E9"
+
+  kafka: {label: KafkaHandler}
+  ws: {label: WebSocketHandler}
+  mqtt: {label: MQTTHandler}
+  http: {label: HTTPHandler}
+  custom: {label: Custom Plugins..."}
+}
+
+output: {
+  shape: diamond
+  label: Output\n(YAML / JSON)
+}
+
+# Flow
+typespec_source -> lib_main: "compiles"
+lib_main -> decorator_registry: "resolves"
+decorator_registry -> state_layer: "typed state storage"
+state_layer -> emitter_orchestrator: "consolidated state"
+config -> emitter_orchestrator: "merged options"
+emitter_orchestrator -> protocol_handlers: "binding generation"
+protocol_handlers -> emitter_orchestrator: "protocol-specific output"
+emitter_orchestrator -> output: "serialize"
+
+# Clean boundaries
+decorator_registry -> state_layer: {
+  style.stroke: "#2E7D32"
+  label: "typed interface"
+}
+
+emitter_orchestrator -> protocol_handlers: {
+  style.stroke: "#2E7D32"
+  label: "strategy pattern"
+}

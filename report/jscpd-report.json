@@ -1,0 +1,445 @@
+{
+  "statistics": {
+    "detectionDate": "2026-05-06T10:47:50.710Z",
+    "formats": {
+      "typescript": {
+        "sources": {
+          "src/plugins/core/PluginSystem.ts": {
+            "lines": 42,
+            "tokens": 303,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/infrastructure/performance/PerformanceRegressionTester.ts": {
+            "lines": 133,
+            "tokens": 955,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/infrastructure/performance/PerformanceMonitor.ts": {
+            "lines": 39,
+            "tokens": 275,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/infrastructure/configuration/options.ts": {
+            "lines": 258,
+            "tokens": 1612,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/infrastructure/configuration/asyncAPIEmitterOptions.ts": {
+            "lines": 64,
+            "tokens": 287,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/domain/models/validation-result.ts": {
+            "lines": 73,
+            "tokens": 444,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/domain/models/serialization-format-option.ts": {
+            "lines": 72,
+            "tokens": 356,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/domain/models/path-templates.ts": {
+            "lines": 133,
+            "tokens": 900,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/domain/decorators/server.ts": {
+            "lines": 7,
+            "tokens": 14,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/domain/decorators/index.ts": {
+            "lines": 30,
+            "tokens": 116,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/domain/decorators/channel.ts": {
+            "lines": 21,
+            "tokens": 116,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/utils/standardized-errors.ts": {
+            "lines": 143,
+            "tokens": 983,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/utils/effect-helpers.ts": {
+            "lines": 284,
+            "tokens": 1872,
+            "sources": 1,
+            "clones": 2,
+            "duplicatedLines": 12,
+            "duplicatedTokens": 122,
+            "percentage": 4.23,
+            "percentageTokens": 6.52,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/shared/index.ts": {
+            "lines": 10,
+            "tokens": 7,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/constants/version.ts": {
+            "lines": 106,
+            "tokens": 637,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/constants/protocol-defaults.ts": {
+            "lines": 87,
+            "tokens": 444,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/constants/paths.ts": {
+            "lines": 166,
+            "tokens": 1036,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/constants/index.ts": {
+            "lines": 102,
+            "tokens": 613,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/constants/config.ts": {
+            "lines": 87,
+            "tokens": 518,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/tsp-index.ts": {
+            "lines": 11,
+            "tokens": 51,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/state.ts": {
+            "lines": 187,
+            "tokens": 1360,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/state-compatibility.ts": {
+            "lines": 49,
+            "tokens": 334,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/minimal-decorators.ts": {
+            "lines": 610,
+            "tokens": 4653,
+            "sources": 1,
+            "clones": 2,
+            "duplicatedLines": 6,
+            "duplicatedTokens": 114,
+            "percentage": 0.98,
+            "percentageTokens": 2.45,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/logger.ts": {
+            "lines": 106,
+            "tokens": 553,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/lib.ts": {
+            "lines": 456,
+            "tokens": 1595,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/index.ts": {
+            "lines": 14,
+            "tokens": 78,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/emitter.ts": {
+            "lines": 191,
+            "tokens": 1460,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/decorators.ts": {
+            "lines": 39,
+            "tokens": 161,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          }
+        },
+        "total": {
+          "lines": 3520,
+          "tokens": 21733,
+          "sources": 28,
+          "clones": 2,
+          "duplicatedLines": 9,
+          "duplicatedTokens": 118,
+          "percentage": 0.26,
+          "percentageTokens": 0.54,
+          "newDuplicatedLines": 0,
+          "newClones": 0
+        }
+      }
+    },
+    "total": {
+      "lines": 3520,
+      "tokens": 21733,
+      "sources": 28,
+      "clones": 2,
+      "duplicatedLines": 9,
+      "duplicatedTokens": 118,
+      "percentage": 0.26,
+      "percentageTokens": 0.54,
+      "newDuplicatedLines": 0,
+      "newClones": 0
+    }
+  },
+  "duplicates": [
+    {
+      "format": "typescript",
+      "lines": 7,
+      "fragment": "const results = yield* Effect.all(\n        effects.map((effect) => Effect.either(effect)),\n        { concurrency: \"inherit\" },\n      );\n\n      // Separate successes and failures using helper\n      const { successes, errors",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/utils/effect-helpers.ts",
+        "start": 270,
+        "end": 276,
+        "startLoc": {
+          "line": 270,
+          "column": 7,
+          "position": 1746
+        },
+        "endLoc": {
+          "line": 276,
+          "column": 7,
+          "position": 1807
+        }
+      },
+      "secondFile": {
+        "name": "src/utils/effect-helpers.ts",
+        "start": 156,
+        "end": 162,
+        "startLoc": {
+          "line": 156,
+          "column": 7,
+          "position": 800
+        },
+        "endLoc": {
+          "line": 162,
+          "column": 9,
+          "position": 861
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 4,
+      "fragment": "{\n  const property = model.properties.get(propertyName);\n  if (!property) return undefined;\n  const type = property.type as { kind: string; value?: unknown",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/minimal-decorators.ts",
+        "start": 359,
+        "end": 362,
+        "startLoc": {
+          "line": 359,
+          "column": 2,
+          "position": 2549
+        },
+        "endLoc": {
+          "line": 362,
+          "column": 8,
+          "position": 2606
+        }
+      },
+      "secondFile": {
+        "name": "src/minimal-decorators.ts",
+        "start": 259,
+        "end": 262,
+        "startLoc": {
+          "line": 259,
+          "column": 2,
+          "position": 1759
+        },
+        "endLoc": {
+          "line": 262,
+          "column": 7,
+          "position": 1816
+        }
+      }
+    }
+  ]
+}

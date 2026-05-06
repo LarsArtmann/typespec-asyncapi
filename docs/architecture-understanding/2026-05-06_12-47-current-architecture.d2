@@ -1,0 +1,110 @@
+title: {
+  label: TypeSpec AsyncAPI Emitter - CURRENT Architecture
+  shape: text
+  near: top-center
+}
+
+typespec_source: {
+  shape: rectangle
+  label: "TypeSpec Source (.tsp)"
+}
+
+lib_main: {
+  shape: rectangle
+  label: "lib/main.tsp"
+  style.fill: "#E8F5E9"
+}
+
+tsp_index: {
+  shape: rectangle
+  label: "dist/src/tsp-index.js"
+  style.fill: "#E8F5E9"
+}
+
+decorators_ts: {
+  shape: rectangle
+  label: "decorators.ts (decorators export)"
+  style.fill: "#FFF3E0"
+}
+
+minimal_decorators: {
+  shape: rectangle
+  label: "minimal-decorators.ts\n611 lines - GOD MODULE\n11 decorators + validation + state"
+  style.fill: "#FFCDD2"
+  style.bold: true
+}
+
+state_compat: {
+  shape: rectangle
+  label: "state-compatibility.ts\nStateMapView unwrapper"
+}
+
+state_ts: {
+  shape: rectangle
+  label: "state.ts (consolidation + types)"
+  style.fill: "#E3F2FD"
+}
+
+lib_ts: {
+  shape: rectangle
+  label: "lib.ts (lib def + stateSymbols)\n457 lines (90% comments)"
+  style.fill: "#FFCDD2"
+}
+
+emitter_simple: {
+  shape: rectangle
+  label: "emitter.ts (Simple YAML)\nEXPORTED"
+  style.fill: "#C8E6C9"
+}
+
+emitter_alloy: {
+  shape: rectangle
+  label: "emitter-alloy.tsx (Alloy JSX)\nDEAD CODE"
+  style.fill: "#FFCDD2"
+  style.stroke-dash: 3
+}
+
+output_yaml: {
+  shape: diamond
+  label: asyncapi.yaml
+}
+
+config_options: {label: "options.ts"}
+config_types: {label: "asyncAPIEmitterOptions.ts"}
+config_constants: {label: "config.ts (hardcoded paths!)"}
+
+logger: {label: "logger.ts"}
+effect_helpers: {label: "effect-helpers.ts"}
+errors: {label: "standardized-errors.ts"}
+
+plugin_system: {
+  label: "PluginSystem.ts (SKELETON)"
+  style.fill: "#FFCDD2"
+  style.stroke-dash: 3
+}
+
+performance: {
+  label: "PerformanceMonitor.ts (EXCLUDED)"
+  style.fill: "#FFCDD2"
+  style.stroke-dash: 3
+}
+
+typespec_source -> lib_main: "compiles"
+lib_main -> tsp_index: "imports JS"
+tsp_index -> decorators_ts: "resolves extern dec"
+decorators_ts -> minimal_decorators: "delegates all"
+
+minimal_decorators -> state_compat: "getStateMap()"
+state_compat -> lib_ts: "stateSymbols"
+state_compat -> state_ts: "unwraps StateMapView"
+lib_ts -> state_ts: "provides types"
+
+emitter_simple -> state_ts: "consolidateAsyncAPIState()"
+emitter_simple -> output_yaml: "emitFile()"
+emitter_alloy -> state_ts: "consolidateAsyncAPIState()"
+
+config_types -> config_options: "types"
+config_constants -> emitter_simple: "defaults"
+
+plugin_system -> minimal_decorators: "NOT CONNECTED" {style.stroke-dash: 3}
+performance -> emitter_simple: "NOT CONNECTED" {style.stroke-dash: 3}
