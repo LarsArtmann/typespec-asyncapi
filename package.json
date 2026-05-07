@@ -118,7 +118,7 @@
     "@asyncapi/cli": "^6.0.0",
     "@effect/eslint-plugin": "^0.3.2",
     "@eslint/js": "^10.0.1",
-    "@types/node": "^25.6.0",
+    "@types/node": "^25.6.1",
     "@typescript-eslint/eslint-plugin": "^8.59.2",
     "@typescript-eslint/parser": "^8.59.2",
     "@typespec/http": "^1.11.0",
