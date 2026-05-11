@@ -23,11 +23,11 @@ op publishUserEvent(event: UserEvent): void;
     console.log("🔍 Testing decorator state consolidation:");
     console.log("  📋 Has program:", !!result.program);
     console.log("  📋 Diagnostics count:", result.diagnostics.length);
-    
+
     // Check for compilation errors (excluding expected AsyncAPI validation)
-    const errors = result.diagnostics.filter(d => d.severity === "error");
+    const errors = result.diagnostics.filter((d) => d.severity === "error");
     console.log("  📋 Error count:", errors.length);
-    
+
     if (errors.length > 0) {
       console.log("  📋 Errors:");
       for (const error of errors) {

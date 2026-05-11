@@ -169,10 +169,19 @@ export function consolidateAsyncAPIState(program: Program): AsyncAPIConsolidated
   const serverConfigsState = getStateMap<ServerConfigData>(program, stateSymbols.serverConfigs);
   const operationTypesState = getStateMap<OperationTypeData>(program, stateSymbols.operationTypes);
   const tagsState = getStateMap<TagData>(program, stateSymbols.tags);
-  const protocolConfigsState = getStateMap<ProtocolConfigData>(program, stateSymbols.protocolConfigs);
-  const securityConfigsState = getStateMap<SecurityConfigData>(program, stateSymbols.securityConfigs);
+  const protocolConfigsState = getStateMap<ProtocolConfigData>(
+    program,
+    stateSymbols.protocolConfigs,
+  );
+  const securityConfigsState = getStateMap<SecurityConfigData>(
+    program,
+    stateSymbols.securityConfigs,
+  );
   const correlationIdsState = getStateMap<CorrelationIdData>(program, stateSymbols.correlationIds);
-  const messageHeadersState = getStateMap<MessageHeaderData[]>(program, stateSymbols.messageHeaders);
+  const messageHeadersState = getStateMap<MessageHeaderData[]>(
+    program,
+    stateSymbols.messageHeaders,
+  );
 
   return {
     channels: unwrapStateMap<ChannelPathData>(channelPathsState),

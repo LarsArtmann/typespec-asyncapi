@@ -6,20 +6,21 @@
 
 ## Executive Summary
 
-| Check | Result | Details |
-|-------|--------|---------|
-| TypeScript Build | FAIL (41 errors) | Missing @types/node, unresolved modules, implicit any |
-| ESLint | FAIL (runtime error) | `@eslint/js` module not found |
-| TypeCheck | FAIL (41 errors) | Same as build |
-| Tests | FAIL (88/100 failures) | 7 pass, 88 fail, 4 todo, 1 skip |
-| Code Duplication | PASS (0.26%) | 2 clones, 9 duplicated lines |
-| File sizes | PASS | Largest: `lib.ts` (457 lines) — under 350 line guideline with TODOs |
+| Check            | Result                 | Details                                                             |
+| ---------------- | ---------------------- | ------------------------------------------------------------------- |
+| TypeScript Build | FAIL (41 errors)       | Missing @types/node, unresolved modules, implicit any               |
+| ESLint           | FAIL (runtime error)   | `@eslint/js` module not found                                       |
+| TypeCheck        | FAIL (41 errors)       | Same as build                                                       |
+| Tests            | FAIL (88/100 failures) | 7 pass, 88 fail, 4 todo, 1 skip                                     |
+| Code Duplication | PASS (0.26%)           | 2 clones, 9 duplicated lines                                        |
+| File sizes       | PASS                   | Largest: `lib.ts` (457 lines) — under 350 line guideline with TODOs |
 
 ---
 
 ## Build Errors (41 total)
 
 ### Category: Missing Type Definitions (7 errors)
+
 - `src/constants/paths.ts` — `node:path`, `node:url`, `process`, `ImportMeta.url` not found
 - `src/constants/version.ts` — `process` not found
 - `src/logger.ts` — `console` not found (needs `dom` in lib)
@@ -27,20 +28,24 @@
 **Fix:** Add `"node"` to `types` in `tsconfig.json` and add `"dom"` to `lib`.
 
 ### Category: Unresolved Module Imports (14 errors)
+
 - `@effect/schema` imported but package may not be installed
 - All files importing from `effect` have type resolution issues
 
 **Fix:** Run `bun install` and verify `effect` package version.
 
 ### Category: Implicit Any (4 errors)
+
 - `src/emitter-alloy.tsx:97` — decorator args access
 - `src/emitter-alloy.tsx:500` — property schema building
 - `src/utils/effect-helpers.ts:29` — error cast
 
 ### Category: TSX/JSX Issues (1 error)
+
 - `src/emitter-alloy.tsx` uses JSX but may need `jsx` compiler option
 
 ### Category: Property Access on Unknown Types (15 errors)
+
 - Various `prop.type.scalar`, `prop.type.model`, etc. in `emitter-alloy.tsx`
 
 ---
@@ -51,7 +56,7 @@
 
 1. **Add `"node"` to tsconfig types** — Fixes 7 errors in paths/version/logger
 2. **Install/verify `effect` package** — Fixes 14 module resolution errors
-3. **Add `"dom"` to tsconfig lib** — Fixes console.* errors in logger.ts
+3. **Add `"dom"` to tsconfig lib** — Fixes console.\* errors in logger.ts
 4. **Fix `@eslint/js` resolution** — Reinstall ESLint dependencies
 
 ### P1 — High Impact
@@ -92,7 +97,9 @@ Dup Tokens: 118 (0.54%)
 ```
 
 ### Clone 1: `effect-helpers.ts` lines 156-162 ≈ 270-276
+
 Batch execute pattern duplicated in `partialFailureHandling` and `batchExecute`.
 
 ### Clone 2: `minimal-decorators.ts` lines 259-262 ≈ 359-362
+
 `getModelPropertySchema` helper duplicated for Model vs ModelProperty type extraction.

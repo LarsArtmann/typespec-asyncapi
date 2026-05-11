@@ -24,16 +24,17 @@
 
 ```typescript
 interface ProtocolHandler {
-  protocol: string
-  buildChannelBindings(config: ProtocolConfigData): Record<string, unknown>
-  buildOperationBindings(config: ProtocolConfigData): Record<string, unknown>
-  applyDefaults(config: Record<string, unknown>): ProtocolConfigData
+  protocol: string;
+  buildChannelBindings(config: ProtocolConfigData): Record<string, unknown>;
+  buildOperationBindings(config: ProtocolConfigData): Record<string, unknown>;
+  applyDefaults(config: Record<string, unknown>): ProtocolConfigData;
 }
 ```
 
 Register handlers in a `Map<string, ProtocolHandler>`. Each protocol becomes a self-contained module.
 
 **Benefits:**
+
 - **Locality:** Adding Kafka support = 1 new file, not 3 edits
 - **Leverage:** Emitter code shrinks; protocol complexity hidden behind seam
 - **Testability:** Each handler tested independently with focused unit tests
@@ -63,6 +64,7 @@ src/domain/decorators/
 ```
 
 **Benefits:**
+
 - **Depth:** Each module has a small interface (1-3 functions) hiding domain complexity
 - **Locality:** Change channel logic → edit 1 file
 - **Testability:** Test each decorator domain independently
@@ -87,6 +89,7 @@ export function validate(cfg: unknown): Effect.Effect<EmitterConfig, Error>  // 
 Delete the other three files. Export from single location.
 
 **Benefits:**
+
 - **Locality:** One place to change config behavior
 - **Deletion test:** Removing any of the 4 current files would force consolidation
 - **Type safety:** No more "which config source is canonical?"
@@ -102,6 +105,7 @@ Delete the other three files. Export from single location.
 **Solution:** Use TypeSpec's built-in state system exclusively. The `$lib.state` definition already provides the schema — use `$lib.stateKeys` (provided by `createTypeSpecLibrary`) instead of custom Symbol-based access.
 
 **Benefits:**
+
 - **Depth:** One state access pattern instead of two
 - **Locality:** Remove `state-compatibility.ts` entirely
 - **Type safety:** TypeSpec compiler validates state access patterns
@@ -117,6 +121,7 @@ Delete the other three files. Export from single location.
 **Solution:** Delete them. When the functionality is needed, implement it properly from scratch.
 
 **Benefits:**
+
 - **Locality:** Less code to understand
 - **Deletion test:** Deleting these files changes nothing about the working system
 - **Architecture clarity:** No false impressions of completeness

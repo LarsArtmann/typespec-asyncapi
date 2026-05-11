@@ -105,15 +105,15 @@
 
 ## Verification Status
 
-| Item | Verified Against Code | Status |
-|------|:--------------------:|--------|
-| T1-T8 | tsconfig.json, build output | Confirmed |
-| T9 | config.ts:16,17,43 | Confirmed |
-| T10 | minimal-decorators.ts:449,452 | Confirmed |
-| T11 | emitter.ts:139-189 | Confirmed |
-| T12 | emitter.ts:90-127 | Confirmed |
-| T13 | emitter.ts:167 | Confirmed |
-| T14 | emitter.ts:46-56 | Confirmed |
-| T15 | emitter.ts:72-84 | Confirmed |
-| T16-T20 | All source files read | Confirmed |
-| T21-T28 | Test output analyzed | Confirmed |
+| Item    |     Verified Against Code     | Status    |
+| ------- | :---------------------------: | --------- |
+| T1-T8   |  tsconfig.json, build output  | Confirmed |
+| T9      |      config.ts:16,17,43       | Confirmed |
+| T10     | minimal-decorators.ts:449,452 | Confirmed |
+| T11     |      emitter.ts:139-189       | Confirmed |
+| T12     |       emitter.ts:90-127       | Confirmed |
+| T13     |        emitter.ts:167         | Confirmed |
+| T14     |       emitter.ts:46-56        | Confirmed |
+| T15     |       emitter.ts:72-84        | Confirmed |
+| T16-T20 |     All source files read     | Confirmed |
+| T21-T28 |     Test output analyzed      | Confirmed |

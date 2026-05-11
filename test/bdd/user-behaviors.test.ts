@@ -5,10 +5,7 @@
  * "As a user defining TypeSpec, when I use @decorator, I get X in my AsyncAPI output"
  */
 import { expect, test, describe } from "bun:test";
-import {
-  SUPPORTED_PROTOCOLS,
-  isSupportedProtocol,
-} from "../../src/constants/protocol-defaults.js";
+import { SUPPORTED_PROTOCOLS, isSupportedProtocol } from "../../src/constants/protocol-defaults.js";
 import {
   parsePathTemplate,
   validatePathTemplate,
@@ -82,9 +79,7 @@ describe("BDD: User configures emitter options", () => {
       "file-type": "yaml",
       "asyncapi-version": "3.0.0",
     });
-    const validated = result.pipe(
-      (e: any) => e,
-    );
+    const validated = result.pipe((e: any) => e);
     // Effect should succeed
     expect(validated).toBeDefined();
   });

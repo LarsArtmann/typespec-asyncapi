@@ -90,6 +90,7 @@ All 11 decorators, validation, state management, and diagnostic reporting in one
 ### Problem 4: Configuration Explosion
 
 Four configuration sources with overlapping concerns:
+
 - `asyncAPIEmitterOptions.ts` — type definitions
 - `options.ts` — validation, defaults, schema
 - `config.ts` — hardcoded defaults with local paths
@@ -115,6 +116,7 @@ Four configuration sources with overlapping concerns:
 ### Medium-term (1-2 months)
 
 5. **Domain-driven module structure:**
+
    ```
    src/
      domain/
@@ -140,14 +142,14 @@ Four configuration sources with overlapping concerns:
 
 ## 5. Modularity Score
 
-| Dimension | Score (1-10) | Rationale |
-|-----------|:---:|-----------|
-| Separation of Concerns | 2 | All logic in 2-3 large files |
-| Coupling | 2 | Direct imports everywhere, no interfaces |
-| Cohesion | 3 | Decorators are cohesive; emitter is not |
-| Testability | 1 | 88% test failure rate |
-| Extensibility | 2 | Hardcoded protocols, no plugin system |
-| Composability | 2 | No pipeline/middleware pattern |
-| Type Safety | 4 | Types exist but heavily cast |
-| Documentation | 5 | Good docs, excessive historical noise |
-| **Overall** | **2.6/10** | Infrastructure recovery mode — needs deep restructuring |
+| Dimension              | Score (1-10) | Rationale                                               |
+| ---------------------- | :----------: | ------------------------------------------------------- |
+| Separation of Concerns |      2       | All logic in 2-3 large files                            |
+| Coupling               |      2       | Direct imports everywhere, no interfaces                |
+| Cohesion               |      3       | Decorators are cohesive; emitter is not                 |
+| Testability            |      1       | 88% test failure rate                                   |
+| Extensibility          |      2       | Hardcoded protocols, no plugin system                   |
+| Composability          |      2       | No pipeline/middleware pattern                          |
+| Type Safety            |      4       | Types exist but heavily cast                            |
+| Documentation          |      5       | Good docs, excessive historical noise                   |
+| **Overall**            |  **2.6/10**  | Infrastructure recovery mode — needs deep restructuring |
