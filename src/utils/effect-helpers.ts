@@ -7,7 +7,7 @@
  * ✅ COMPLETED: All TODOs resolved through proper migration
  */
 
-import { Effect, Schedule } from "effect";
+import { Effect, Either, Schedule } from "effect";
 
 /**
  * ✅ PROPER EFFECT.TS PATTERNS
@@ -149,8 +149,9 @@ export const railwayErrorRecovery = {
    */
   partialFailureHandling: <A, E>(
     effects: Array<Effect.Effect<A, E>>,
-    successThreshold: number = Math.floor(effects.length * 0.8),
+    successThreshold?: number,
   ): Effect.Effect<{ successes: A[]; failures: E[] }, never> => {
+    const threshold = successThreshold ?? Math.floor(effects.length * 0.8);
     return Effect.gen(function* () {
       // Execute all effects in parallel
       const results = yield* Effect.all(
@@ -159,7 +160,7 @@ export const railwayErrorRecovery = {
       );
 
       // Separate successes and failures using helper
-      const { successes, failures } = separateEitherResults(results);
+      const { successes, failures } = separateEitherResults<A, E>(results);
 
       // Log partial failure statistics
       yield* Effect.log("Batch operation completed with partial failures").pipe(
@@ -167,8 +168,8 @@ export const railwayErrorRecovery = {
           operation: "partial_failure_handling",
           successes: successes.length,
           failures: failures.length,
-          successThreshold,
-          metThreshold: successes.length >= successThreshold,
+          successThreshold: threshold,
+          metThreshold: successes.length >= threshold,
         }),
       );
 
@@ -190,7 +191,7 @@ export const RETRY_DELAYS = {
  * Eliminates duplicate forEach + Right/Left pattern
  */
 function separateEitherResults<A, E>(
-  results: Array<{ _tag: "Left" | "Right"; left: E; right: A }>,
+  results: Array<Either.Either<A, E>>,
 ): { successes: A[]; failures: E[] } {
   const successes: A[] = [];
   const failures: E[] = [];
@@ -273,11 +274,11 @@ export const effectUtils = {
       );
 
       // Separate successes and failures using helper
-      const { successes, errors } = separateEitherResults(results);
+      const { successes, failures } = separateEitherResults<A, E>(results);
 
-      // If there are errors, fail with all of them
-      if (errors.length > 0) {
-        return yield* Effect.fail(errors);
+      // If there are failures, fail with all of them
+      if (failures.length > 0) {
+        return yield* Effect.fail(failures);
       }
 
       return successes;

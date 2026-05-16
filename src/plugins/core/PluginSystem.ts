@@ -18,10 +18,8 @@ export type Plugin = {
 export class PluginRegistry {
   private readonly plugins = new Map<string, Plugin>();
 
-  register(plugin: Plugin): Effect.Effect<void, never> {
-    return Effect.sync(() => {
-      this.plugins.set(plugin.name, plugin);
-    });
+  register(plugin: Plugin): void {
+    this.plugins.set(plugin.name, plugin);
   }
 
   get(name: string): Plugin | undefined {
@@ -32,10 +30,8 @@ export class PluginRegistry {
     return Array.from(this.plugins.values());
   }
 
-  clear(): Effect.Effect<void, never> {
-    return Effect.sync(() => {
-      this.plugins.clear();
-    });
+  clear(): void {
+    this.plugins.clear();
   }
 }
 
