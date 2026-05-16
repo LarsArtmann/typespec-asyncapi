@@ -6,10 +6,11 @@
  */
 
 import { emitFile } from "@typespec/compiler";
-import type { EmitContext } from "@typespec/compiler";
+import type { EmitContext, Namespace, Type } from "@typespec/compiler";
 import { createAssetEmitter, TypeEmitter } from "@typespec/asset-emitter";
 import type { EmitEntity, EmitterOutput, Context, SourceFile, EmittedSourceFile } from "@typespec/asset-emitter";
 import { stringify as yamlStringify } from "yaml";
+import { isStdNamespace, getDoc } from "@typespec/compiler";
 import type { AsyncAPIEmitterOptions } from "./infrastructure/configuration/asyncAPIEmitterOptions.js";
 import { consolidateAsyncAPIState, type AsyncAPIConsolidatedState } from "./state.js";
 
@@ -20,6 +21,10 @@ type SchemaObject = Record<string, unknown>;
  * These are embedded into components.schemas of the AsyncAPI document.
  */
 class AsyncAPISchemaEmitter extends TypeEmitter<SchemaObject, AsyncAPIEmitterOptions> {
+  namespaceDeclaration(_namespace: Namespace): EmitterOutput<SchemaObject> {
+    return this.emitter.result.none();
+  }
+
   modelDeclaration(model: any): EmitterOutput<SchemaObject> {
     const properties: Record<string, unknown> = {};
     const required: string[] = [];
@@ -34,6 +39,11 @@ class AsyncAPISchemaEmitter extends TypeEmitter<SchemaObject, AsyncAPIEmitterOpt
       } else {
         properties[name] = extracted;
       }
+      // Add @doc description to property schema
+      const propDoc = getDoc(this.emitter.getProgram(), prop);
+      if (propDoc && typeof properties[name] === "object" && properties[name] !== null) {
+        (properties[name] as SchemaObject).description = propDoc;
+      }
       if (!prop.optional) {
         required.push(name);
       }
@@ -41,6 +51,9 @@ class AsyncAPISchemaEmitter extends TypeEmitter<SchemaObject, AsyncAPIEmitterOpt
 
     const schema: SchemaObject = { type: "object", properties };
     if (required.length > 0) schema.required = required;
+
+    const doc = getDoc(this.emitter.getProgram(), model);
+    if (doc) schema.description = doc;
 
     if (model.baseModel) {
       const ref = this.emitter.emitTypeReference(model.baseModel);
@@ -150,10 +163,6 @@ class AsyncAPISchemaEmitter extends TypeEmitter<SchemaObject, AsyncAPIEmitterOpt
     return { scope: sourceFile.globalScope };
   }
 
-  namespaceDeclaration(_namespace: any): EmitterOutput<SchemaObject> {
-    return this.emitter.result.none();
-  }
-
   operation(_operation: any): EmitterOutput<SchemaObject> {
     return this.emitter.result.none();
   }
@@ -164,7 +173,10 @@ class AsyncAPISchemaEmitter extends TypeEmitter<SchemaObject, AsyncAPIEmitterOpt
 
   enumDeclaration(en: any, name: string): EmitterOutput<SchemaObject> {
     const values = [...en.members.values()].map((m: any) => m.value ?? m.name);
-    return this.emitter.result.declaration(name, { type: "string", enum: values });
+    const schema: SchemaObject = { type: "string", enum: values };
+    const doc = getDoc(this.emitter.getProgram(), en);
+    if (doc) schema.description = doc;
+    return this.emitter.result.declaration(name, schema);
   }
 
   sourceFile(sourceFile: SourceFile<SchemaObject>): EmittedSourceFile {
@@ -206,8 +218,33 @@ function extractValue(entity: EmitEntity<SchemaObject> | undefined): SchemaObjec
 /**
  * Generate JSON Schema objects from all models in the program.
  */
+function isStdlibType(type: Type): boolean {
+  const ns = (type as any).namespace ?? (type as any).type?.namespace;
+  if (!ns) return false;
+  if (isStdNamespace(ns)) return true;
+  return false;
+}
+
+function collectAllStdlibNames(program: any): Set<string> {
+  const names = new Set<string>();
+  const globalNs = program.checker.getGlobalNamespaceType();
+  for (const ns of globalNs.namespaces.values()) {
+    if (isStdNamespace(ns)) {
+      function collectFrom(ns: any) {
+        for (const [name] of ns.models) names.add(name);
+        for (const [name] of ns.scalars) names.add(name);
+        for (const [name] of ns.enums) names.add(name);
+        for (const sub of ns.namespaces.values()) collectFrom(sub);
+      }
+      collectFrom(ns);
+    }
+  }
+  return names;
+}
+
 function generateSchemas(context: EmitContext<AsyncAPIEmitterOptions>): Record<string, SchemaObject> {
   const schemas: Record<string, SchemaObject> = {};
+  const stdlibNames = collectAllStdlibNames(context.program);
 
   try {
     const assetEmitter = createAssetEmitter<SchemaObject, AsyncAPIEmitterOptions>(
@@ -222,16 +259,24 @@ function generateSchemas(context: EmitContext<AsyncAPIEmitterOptions>): Record<s
       const scope = sourceFile.globalScope;
       for (const declaration of scope.declarations) {
         if (declaration.name && declaration.value) {
+          if (stdlibNames.has(declaration.name)) continue;
           schemas[declaration.name] = declaration.value as SchemaObject;
         }
       }
     }
   } catch {
     // Fall back to empty schemas if asset-emitter fails
-    // (e.g., no models to emit)
   }
 
   return schemas;
+}
+
+function inferActionFromName(name: string): "send" | "receive" {
+  const lower = name.toLowerCase();
+  if (lower.startsWith("publish") || lower.startsWith("send") || lower.startsWith("emit") || lower.startsWith("produce")) {
+    return "send";
+  }
+  return "receive";
 }
 
 /**
@@ -287,6 +332,21 @@ function buildAsyncAPIDocument(
       action: opData.type === "publish" ? "send" : "receive",
       channel: { $ref: `#/channels/${channelPath}` },
       messages: [{ $ref: `#/components/messages/${opData.messageType ?? typeWithName.name}` }],
+    };
+  }
+
+  // Auto-generate operations for channels that have @channel but no @publish/@subscribe
+  const opsWithType = new Set([...state.operations.keys()].map((t) => (t as { name: string }).name));
+  for (const [type, data] of state.channels) {
+    const typeWithName = type as { name: string };
+    if (opsWithType.has(typeWithName.name)) continue;
+    const channelData = data as { path?: string };
+    const channelPath = channelData.path ?? typeWithName.name;
+    const action = inferActionFromName(typeWithName.name);
+    operations[typeWithName.name] = {
+      action,
+      channel: { $ref: `#/channels/${channelPath}` },
+      messages: [{ $ref: `#/components/messages/${typeWithName.name}` }],
     };
   }
 

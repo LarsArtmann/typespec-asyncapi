@@ -1,19 +1,10 @@
 /**
- * 🏗️ UNIFIED ASYNCAPI EMITTER OPTIONS
+ * AsyncAPI Emitter Options
  *
- * Consolidated configuration system eliminating split-brain:
- * - Single source of truth for all configuration
- * - TypeScript-native type definitions
- * - Runtime schema validation
- * - Test compatibility maintained
- *
- * Replaces multiple scattered configuration definitions
- * with authoritative type system.
+ * Single source of truth for all configuration.
  */
 
-import type { EmitFileOptions } from "@typespec/compiler";
-
-export type AsyncAPIEmitterOptions = EmitFileOptions & {
+export type AsyncAPIEmitterOptions = {
   /** Target AsyncAPI specification version */
   version: string;
 

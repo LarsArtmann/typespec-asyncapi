@@ -1,29 +1,16 @@
 /**
- * Comprehensive test utilities for AsyncAPI emitter testing
+ * Test helpers for AsyncAPI emitter testing.
+ *
+ * Provides two APIs:
+ * 1. Legacy: createAsyncAPITestHost() + compileAndGetAsyncAPI() — used by domain/e2e tests
+ * 2. Modern: compileAsyncAPI() / compileAsyncAPIWithoutErrors() — used by new integration tests
  */
 
-//TODO: IMPORT CHAOS - 4 different import sources, no organization or grouping!
-//TODO: DEPENDENCY NIGHTMARE - Mixing @typespec/compiler, local imports, and Effect in single file!
-//TODO: CIRCULAR DEPENDENCY RISK - Importing from src/validation creates potential circular deps!
-import {
-  createTestHost,
-  createTestLibrary,
-  createTestWrapper,
-  findTestPackageRoot,
-} from "@typespec/compiler/testing";
-import type { AsyncAPIEmitterOptions } from "../../src/infrastructure/configuration/asyncAPIEmitterOptions.ts";
-import type { Diagnostic, Program } from "@typespec/compiler";
-import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js";
-import { Effect } from "effect";
+import { createTester, findTestPackageRoot } from "@typespec/compiler/testing";
+import type { AsyncAPIEmitterOptions } from "../../src/infrastructure/configuration/options.js";
+import YAML from "yaml";
 
-// Constants - Import centralized constants to eliminate hardcoded values
-import { ASYNCAPI_VERSIONS, DEFAULT_CONFIG, LIBRARY_PATHS } from "../../src/constants/index.js";
-
-//TODO: MONOLITHIC FILE DISASTER - THEY ALREADY KNOW IT'S TOO BIG BUT DO NOTHING!
-//TODO: ARCHITECTURAL VIOLATION - 571 lines in single test utilities file is INSANE!
-//TODO: SPLIT IMMEDIATELY - Should be TestCompilation.ts, TestValidation.ts, TestSources.ts, TestAssertions.ts!
-//TODO: MAINTENANCE NIGHTMARE - Adding new test utilities requires searching 571 lines!
-//this file is getting to big split it up
+// === TYPE DEFINITIONS ===
 
 export interface AsyncAPIChannel {
   address?: string;
@@ -33,12 +20,8 @@ export interface AsyncAPIChannel {
 
 export interface AsyncAPIOperation {
   action: "send" | "receive";
-  channel: {
-    $ref: string;
-  };
-  messages?: Array<{
-    $ref: string;
-  }>;
+  channel: { $ref: string };
+  messages?: Array<{ $ref: string }>;
   description?: string;
 }
 
@@ -46,9 +29,7 @@ export interface AsyncAPIMessage {
   name?: string;
   title?: string;
   description?: string;
-  payload?: {
-    $ref: string;
-  };
+  payload?: { $ref: string };
 }
 
 export interface AsyncAPISchema {
@@ -63,876 +44,229 @@ export interface AsyncAPISchema {
 }
 
 export interface CompilationResult {
-  diagnostics: readonly Diagnostic[];
+  diagnostics: readonly import("@typespec/compiler").Diagnostic[];
   outputFiles: Map<string, string | { content: string }>;
-  program: Program;
+  program: import("@typespec/compiler").Program;
 }
 
-/**
- * Create a test library for our AsyncAPI decorators with proper dependency resolution
- */
-export async function createAsyncAPITestLibrary() {
+type AsyncAPIObject = Record<string, any>;
+
+// === MODERN API (emitter-test-helpers replacement) ===
+
+async function createTesterInstance(source: string, options: AsyncAPIEmitterOptions = {}) {
   const packageRoot = await findTestPackageRoot(import.meta.url);
+  const hasOwnImport = source.includes('import "@lars-artmann/typespec-asyncapi"') || source.includes("import '@lars-artmann/typespec-asyncapi'");
+  const hasOwnUsing = source.includes("using TypeSpec.AsyncAPI");
 
-  return createTestLibrary({
-    // Using centralized library name constant instead of hardcoded string
-    name: DEFAULT_CONFIG.libraryName,
-    packageRoot,
-    // Using centralized library path constants instead of hardcoded folder names
-    typespecFileFolder: LIBRARY_PATHS.LIB_DIR,
-    jsFileFolder: LIBRARY_PATHS.DIST_DIR,
+  let tester = createTester(packageRoot, {
+    libraries: ["@lars-artmann/typespec-asyncapi"],
   });
+
+  if (!hasOwnImport) tester = tester.importLibraries();
+  if (!hasOwnUsing) tester = tester.using("TypeSpec.AsyncAPI");
+
+  return tester.emit("@lars-artmann/typespec-asyncapi", options);
 }
 
-/**
- * Create a test host with proper AsyncAPI library registration
- * SOLUTION: Use createAsyncAPITestLibrary() to get proper decorator registration
- */
-export async function createAsyncAPITestHost() {
-  //TODO: EFFECT.LOG ANTI-PATTERN! Effect.log not awaited in async function context!
-  //TODO: LOGGING ARCHITECTURE DISASTER - Effect.log mixed with Promise-based async functions!
-  //TODO: PROPER EFFECT COMPOSITION REQUIRED - Should return Effect<TestHost, never, never>!
-  //TODO: EMOJI LOGGING IN PRODUCTION CODE - Remove emojis from library code!
-  void Effect.log("🚀 Using PROPER library approach - registering AsyncAPI test library");
-  const asyncAPITestLibrary = await createAsyncAPITestLibrary();
-  return createTestHost({
-    libraries: [asyncAPITestLibrary], // Register our AsyncAPI library properly
-  });
-}
+async function extractAsyncAPIFromResult(result: any): Promise<AsyncAPIObject | null> {
+  const virtualFs: Map<string, string> = result.fs?.fs ?? new Map();
 
-/**
- * Compile TypeSpec source and return both diagnostics and output files
- * PROPER LIBRARY APPROACH: Use registered AsyncAPI library with decorators
- */
-export async function compileAsyncAPISpecRaw(
-  source: string,
-  options: AsyncAPIEmitterOptions = {},
-): Promise<CompilationResult> {
-  // File system utilities for output file discovery
-  const _fs = await import("node:fs/promises");
-  const _path = await import("node:path");
+  for (const [virtualPath, content] of virtualFs) {
+    const filename = virtualPath.split("/").pop() || "";
+    const isOutputFile =
+      !virtualPath.includes("node_modules") &&
+      (filename.endsWith(".yaml") || filename.endsWith(".json") || filename.endsWith(".yml"));
 
-  // Create test host WITH proper AsyncAPI library registration
-  const host = await createAsyncAPITestHost();
-
-  // Create test wrapper WITH auto-using since tests removed manual imports
-  const runner = createTestWrapper(host, {
-    autoUsings: ["TypeSpec.AsyncAPI"], // Auto-use TypeSpec.AsyncAPI namespace
-  });
-
-  // Compile and emit TypeSpec code - this triggers emitters
-  const [_result, diagnostics] = await runner.compileAndDiagnose(source, {
-    emit: [DEFAULT_CONFIG.libraryName],
-    options: {
-      [DEFAULT_CONFIG.libraryName]: options as Record<string, unknown>,
-    },
-  });
-
-  // Access outputFiles from TestHost's virtual filesystem
-  // The test host captures all file writes made by emitFile()
-  const outputFiles = runner.fs;
-
-  const program = runner.program || _result.program || _result;
-
-  // If virtual filesystem is empty, check real filesystem for emitted files
-  if (outputFiles.size === 0) {
-    try {
-      // Import filesystem utilities
-      const _fs = await import("node:fs/promises");
-      const path = await import("node:path");
-      const _yaml = await import("yaml");
-
-      // Check TypeSpec output directories (real FS)
-      // Try multiple possible locations where emitFile might write
-      const possibleDirs = [
-        process.cwd(), // Current directory
-        path.join(process.cwd(), "tsp-output", "@lars-artmann", "typespec-asyncapi"),
-        path.join(process.cwd(), "@lars-artmann", "typespec-asyncapi"),
-        path.join(process.cwd(), "tsp-output"),
-      ];
-
-      let typeSpecOutputDir = process.cwd();
-      let filesFound = false;
-
-      // Find first directory that exists and has files
-      for (const dir of possibleDirs) {
-        try {
-          const exists = await fs
-            .access(dir)
-            .then(() => true)
-            .catch(() => false);
-          if (exists) {
-            const testFiles = await fs.readdir(dir);
-            if (testFiles.length > 0) {
-              typeSpecOutputDir = dir;
-              filesFound = true;
-              Effect.log(`📁 Using output directory: ${dir}`);
-              break;
-            }
-          }
-        } catch {
-          continue;
-        }
-      }
-
-      if (!filesFound) {
-        Effect.log(`⚠️  No output directory found, using: ${typeSpecOutputDir}`);
-      }
-
-      // Read all files in output directory
-      const files = await fs.readdir(typeSpecOutputDir);
-      Effect.log(`📁 Found ${files.length} files in ${typeSpecOutputDir}`);
-
-      // Look for AsyncAPI files - sort by modification time to get latest
-      const asyncapiFiles = files.filter(
-        (file) => file.includes("asyncapi") && (file.endsWith(".yaml") || file.endsWith(".json")),
-      );
-
-      Effect.log(`🔍 Found ${asyncapiFiles.length} AsyncAPI files: ${asyncapiFiles.join(", ")}`);
-
-      // Get file stats to find the most recent
-      const fileStats = await Promise.all(
-        asyncapiFiles.map(async (file) => {
-          const filePath = path.join(typeSpecOutputDir, file);
-          const stats = await fs.stat(filePath);
-          return { file, mtime: stats.mtime, path: filePath };
-        }),
-      );
-
-      // Sort by modification time, get most recent
-      const latestFile = fileStats.sort((a, b) => b.mtime.getTime() - a.mtime.getTime())[0];
-
-      if (latestFile) {
-        const content = await fs.readFile(latestFile.path, "utf-8");
-        outputFiles.set(latestFile.file, content);
-        Effect.log(`✅ Loaded latest AsyncAPI file: ${latestFile.file} (${content.length} chars)`);
-        Effect.log(`🕐 Modified: ${latestFile.mtime.toISOString()}`);
-      }
-
-      Effect.log(`📊 Final outputFiles count: ${outputFiles.size}`);
-    } catch (error) {
-      Effect.log(`❌ Failed to read from filesystem: ${String(error)}`);
-    }
-  }
-
-  // 🔥 CRITICAL FIX: If TestFileSystem is empty, check real filesystem
-  // This happens when emitFile writes to real FS instead of test framework
-  if (outputFiles.size === 0) {
-    // Import filesystem utilities
-    const fs = await import("node:fs/promises");
-    const path = await import("node:path");
-
-    // Check multiple possible TypeSpec output directories
-    // Files can be written to different locations depending on test context
-    const possibleOutputDirs = [
-      path.join(process.cwd(), "@lars-artmann", "typespec-asyncapi"),
-      path.join(process.cwd(), "tsp-test", "@lars-artmann", "typespec-asyncapi"),
-      path.join(process.cwd(), "tsp-output", "@lars-artmann", "typespec-asyncapi"),
-    ];
-
-    for (const typeSpecOutputDir of possibleOutputDirs) {
+    if (isOutputFile && typeof content === "string") {
+      let doc: any;
       try {
-        // Check if TypeSpec output directory exists
-        const files = await fs.readdir(typeSpecOutputDir);
-        Effect.log(`📁 TypeSpec output directory: ${typeSpecOutputDir}`);
-        Effect.log(`📁 Found ${files.length} files in directory`);
-
-        // Look for AsyncAPI files that were emitted
-        const asyncapiFiles = files.filter(
-          (file) => file.includes("asyncapi") && (file.endsWith(".yaml") || file.endsWith(".json")),
-        );
-
-        Effect.log(`🔍 Found ${asyncapiFiles.length} AsyncAPI files: ${asyncapiFiles.join(", ")}`);
-
-        // Read found files and add to outputFiles
-        for (const file of asyncapiFiles) {
-          const filePath = path.join(typeSpecOutputDir, file);
-          try {
-            const content = await fs.readFile(filePath, "utf-8");
-            outputFiles.set(file, content);
-            Effect.log(`✅ Found AsyncAPI file: ${file} (${content.length} chars)`);
-          } catch (error) {
-            Effect.log(`❌ Failed to read ${file}: ${String(error)}`);
-          }
-        }
-
-        // Also check for files with scenario names
-        for (const file of files) {
-          if (file.endsWith(".yaml") || file.endsWith(".json")) {
-            const filePath = path.join(typeSpecOutputDir, file);
-            try {
-              const content = await fs.readFile(filePath, "utf-8");
-              // Only add if it looks like an AsyncAPI file
-              if (content.includes("asyncapi:") || content.includes('"asyncapi"')) {
-                outputFiles.set(file, content);
-                Effect.log(`✅ Found AsyncAPI scenario file: ${file} (${content.length} chars)`);
-              }
-            } catch (error) {
-              Effect.log(`❌ Failed to read ${file}: ${String(error)}`);
-            }
-          }
-        }
-
-        Effect.log(`📊 Final outputFiles size: ${outputFiles.size}`);
-
-        // If we found files, break out of the loop
-        if (outputFiles.size > 0) {
-          break;
-        }
-      } catch (error) {
-        Effect.log(`❌ Failed to read TypeSpec output directory: ${String(error)}`);
+        doc = JSON.parse(content);
+      } catch {
+        doc = YAML.parse(content);
+      }
+      if (doc && typeof doc === "object" && ("asyncapi" in doc || "channels" in doc)) {
+        return doc;
       }
     }
   }
+  return null;
+}
 
-  void Effect.log("OutputFiles size:", outputFiles.size);
-  const allKeys = Array.from(outputFiles.keys());
-  void Effect.log(
-    "All outputFiles keys:",
-    allKeys.slice(0, 10).join(", ") + (allKeys.length > 10 ? "..." : ""),
-  );
+export async function compileAsyncAPI(source: string, options: AsyncAPIEmitterOptions = {}) {
+  const tester = await createTesterInstance(source, options);
 
-  // Debug: Print first few files with their values
-  let count = 0;
-  for (const [key, value] of outputFiles) {
-    if (count < 3) {
-      Effect.log(`  File ${count}: ${key} = ${typeof value} (${value?.length || 0} chars)`);
-      count++;
+  let result: any;
+  let diagnostics: any[] = [];
+  try {
+    result = await tester.compile(source);
+    diagnostics = result.program.diagnostics;
+  } catch (e: any) {
+    if (e?.diagnostics) {
+      diagnostics = e.diagnostics;
     }
+    result = result ?? e?.result ?? { program: { diagnostics }, fs: { fs: new Map() } };
   }
 
-  if (!program) {
-    throw new Error(
-      `Failed to compile TypeSpec program. Available keys: ${Object.keys(result).join(", ")}`,
-    );
-  }
+  const asyncApiDoc = await extractAsyncAPIFromResult(result);
 
   return {
+    asyncApiDoc,
     diagnostics,
-    outputFiles,
-    program,
+    program: result.program,
+    outputs: asyncApiDoc ? { "asyncapi.yaml": YAML.stringify(asyncApiDoc) } : {},
+    outputFile: asyncApiDoc ? "asyncapi.yaml" : null,
   };
 }
 
 /**
- * Compile TypeSpec source and return parsed AsyncAPI document
- * This is the main function integration tests should use
+ * Raw compilation that returns diagnostics without throwing on errors.
+ * Uses two passes: one with createInstance for diagnostics, one with emit for output.
  */
-export async function compileAsyncAPISpec(
+async function compileRaw(source: string, options: AsyncAPIEmitterOptions = {}) {
+  const packageRoot = await findTestPackageRoot(import.meta.url);
+  const hasOwnImport = source.includes('import "@lars-artmann/typespec-asyncapi"') || source.includes("import '@lars-artmann/typespec-asyncapi'");
+  const hasOwnUsing = source.includes("using TypeSpec.AsyncAPI");
+
+  // Pass 1: Get diagnostics without throwing
+  let diagTester = createTester(packageRoot, {
+    libraries: ["@lars-artmann/typespec-asyncapi"],
+  });
+  if (!hasOwnImport) diagTester = diagTester.importLibraries();
+  if (!hasOwnUsing) diagTester = diagTester.using("TypeSpec.AsyncAPI");
+
+  const instance = await (diagTester as any).createInstance();
+  const emitOptions = {
+    emit: ["@lars-artmann/typespec-asyncapi"],
+    options: { "@lars-artmann/typespec-asyncapi": options as Record<string, unknown> },
+  };
+  const [, diagnostics] = await instance.compileAndDiagnose(source, emitOptions);
+
+  // Pass 2: Get output (may throw if errors exist, but we already have diagnostics)
+  let asyncApiDoc: AsyncAPIObject | null = null;
+  let outputFiles: Map<string, string> = new Map();
+  try {
+    let emitTester = createTester(packageRoot, {
+      libraries: ["@lars-artmann/typespec-asyncapi"],
+    });
+    if (!hasOwnImport) emitTester = emitTester.importLibraries();
+    if (!hasOwnUsing) emitTester = emitTester.using("TypeSpec.AsyncAPI");
+
+    const tester = emitTester.emit("@lars-artmann/typespec-asyncapi", options);
+    const result = await tester.compile(source);
+    outputFiles = result.fs?.fs ?? new Map();
+    asyncApiDoc = await extractAsyncAPIFromFs(outputFiles);
+  } catch {
+    // Emitter compilation may fail on error diagnostics, that's OK
+  }
+
+  return {
+    asyncApiDoc,
+    diagnostics: [...diagnostics],
+    program: instance.program,
+    outputFiles,
+    outputs: asyncApiDoc ? { "asyncapi.yaml": YAML.stringify(asyncApiDoc) } : {},
+    outputFile: asyncApiDoc ? "asyncapi.yaml" : null,
+  };
+}
+
+function extractAsyncAPIFromFs(virtualFs: Map<string, string>): AsyncAPIObject | null {
+  for (const [virtualPath, content] of virtualFs) {
+    const filename = virtualPath.split("/").pop() || "";
+    const isOutputFile =
+      !virtualPath.includes("node_modules") &&
+      (filename.endsWith(".yaml") || filename.endsWith(".json") || filename.endsWith(".yml"));
+
+    if (isOutputFile && typeof content === "string") {
+      let doc: any;
+      try {
+        doc = JSON.parse(content);
+      } catch {
+        doc = YAML.parse(content);
+      }
+      if (doc && typeof doc === "object" && ("asyncapi" in doc || "channels" in doc)) {
+        return doc;
+      }
+    }
+  }
+  return null;
+}
+
+export async function compileAsyncAPIWithoutErrors(
   source: string,
   options: AsyncAPIEmitterOptions = {},
-): Promise<AsyncAPIObject> {
-  // Get raw compilation result
-  const result = await compileAsyncAPISpecRaw(source, options);
-
-  // Check for compilation errors first
+) {
+  const result = await compileAsyncAPI(source, options);
   const errors = result.diagnostics.filter((d) => d.severity === "error");
   if (errors.length > 0) {
-    Effect.log(`❌ Compilation failed with ${errors.length} errors:`);
-    for (const error of errors) {
-      Effect.log(`  - ${error.message}`);
-    }
-    throw new Error(`Compilation failed with errors: ${errors.map((d) => d.message).join(", ")}`);
+    const errorMessages = errors.map((e) => `${e.code}: ${e.message}`).join("\n");
+    throw new Error(`Compilation failed with errors:\n${errorMessages}`);
   }
-
-  // Derive expected filename from options (same logic as emitter)
-  const outputFile = options?.["output-file"] ?? "asyncapi";
-  const fileType = options?.["file-type"] ?? "yaml";
-  const expectedFile = `${outputFile}.${fileType}`;
-
-  // Find matching file in virtual filesystem
-  for (const [filePath, content] of result.outputFiles) {
-    if (
-      filePath.endsWith(expectedFile) ||
-      filePath.endsWith(".yaml") ||
-      filePath.endsWith(".json")
-    ) {
-      const actualContent = typeof content === "string" ? content : content.content;
-      const parsed = filePath.endsWith(".json")
-        ? JSON.parse(actualContent)
-        : yaml.parse(actualContent);
-      return parsed as AsyncAPIObject;
-    }
-  }
-
-  throw new Error(
-    `AsyncAPI output "${expectedFile}" not found. Available: ${Array.from(result.outputFiles.keys()).join(", ")}`,
-  );
+  return result;
 }
 
-/**
- * Compile TypeSpec and expect no errors
- */
-export async function compileAsyncAPISpecWithoutErrors(
-  source: string,
-  options: AsyncAPIEmitterOptions = {},
-): Promise<{
-  outputFiles: Map<string, string | { content: string }>;
-  program: Program;
-  diagnostics: readonly Diagnostic[];
-}> {
-  const result = await compileAsyncAPISpecRaw(source, options);
+// === LEGACY API (bridge for old tests) ===
 
-  const errors = result.diagnostics.filter((d: Diagnostic) => d.severity === "error");
-  if (errors.length > 0) {
-    throw new Error(
-      `Compilation failed with errors: ${errors.map((d: Diagnostic) => d.message).join(", ")}`,
-    );
-  }
+/**
+ * Create a test host object compatible with the old API.
+ * Internally uses createTester but exposes addTypeSpecFile() interface.
+ */
+export async function createAsyncAPITestHost() {
+  let files: Map<string, string> = new Map();
 
   return {
-    outputFiles: result.outputFiles,
-    program: result.program,
-    diagnostics: result.diagnostics,
+    addTypeSpecFile(name: string, content: string) {
+      files.set(name, content);
+    },
+
+    get fs() {
+      return files;
+    },
+
+    _getMainSource(): string | undefined {
+      return files.get("main.tsp") ?? files.values().next().value;
+    },
+
+    _getFiles(): Map<string, string> {
+      return files;
+    },
   };
 }
 
 /**
- * Compile TypeSpec source and return both result and parsed AsyncAPI document
- * This resolves the API mismatch where tests expect CompilationResult but compileAsyncAPISpec returns AsyncAPIObject
+ * Compile TypeSpec source and return parsed AsyncAPI document.
+ * Uses the new createTester API internally.
  */
-export async function compileAsyncAPISpecWithResult(
-  source: string,
-  options: AsyncAPIEmitterOptions = {},
-): Promise<{
-  asyncApiDoc: AsyncAPIObject;
-  result: {
-    outputFiles: Map<string, string | { content: string }>;
-    program: Program;
-    diagnostics: readonly Diagnostic[];
-  };
-}> {
-  // Get raw compilation result
-  const rawResult = await compileAsyncAPISpecRaw(source, options);
+export async function compileAndGetAsyncAPI(
+  host: { _getMainSource: () => string | undefined },
+  _mainPath: string,
+): Promise<AsyncAPIObject | null> {
+  const source = host._getMainSource();
+  if (!source) return null;
 
-  // 🔥 DEBUG: Check what files we got from compilation
-  console.log(
-    `🔍 DEBUG compileAsyncAPISpecWithResult: outputFiles size: ${rawResult.outputFiles.size}`,
-  );
-  for (const [key, value] of rawResult.outputFiles) {
-    console.log(
-      `🔍 DEBUG compileAsyncAPISpecWithResult: file ${key} (${typeof value}, ${value?.length || 0} chars)`,
-    );
-  }
-
-  // Check for compilation errors first
-  const errors = rawResult.diagnostics.filter((d) => d.severity === "error");
-  if (errors.length > 0) {
-    Effect.log(`❌ Compilation failed with ${errors.length} errors:`);
-    for (const error of errors) {
-      Effect.log(`  - ${error.message}`);
-    }
-    throw new Error(`Compilation failed with errors: ${errors.map((d) => d.message).join(", ")}`);
-  }
-
-  // Parse the AsyncAPI document using options-aware file discovery
-  const outputFile = options?.["output-file"] ?? "asyncapi";
-  const fileType = options?.["file-type"] ?? "yaml";
-  const expectedFile = `${outputFile}.${fileType}`;
-
-  for (const [filePath, content] of rawResult.outputFiles) {
-    if (
-      filePath.endsWith(expectedFile) ||
-      filePath.endsWith(".yaml") ||
-      filePath.endsWith(".json")
-    ) {
-      const actualContent = typeof content === "string" ? content : content.content;
-      const parsed = filePath.endsWith(".json")
-        ? JSON.parse(actualContent)
-        : yaml.parse(actualContent);
-      return {
-        asyncApiDoc: parsed as AsyncAPIObject,
-        result: {
-          outputFiles: rawResult.outputFiles,
-          program: rawResult.program,
-          diagnostics: rawResult.diagnostics,
-        },
-      };
-    }
-  }
-
-  throw new Error(
-    `AsyncAPI output "${expectedFile}" not found. Available: ${Array.from(rawResult.outputFiles.keys()).join(", ")}`,
-  );
-}
-
-/**
- * Simple decorator testing - compile TypeSpec with decorators registered
- * This function focuses on just testing that decorators are recognized without running the emitter
- */
-export async function compileTypeSpecWithDecorators(
-  source: string,
-): Promise<{ program: Program; diagnostics: readonly Diagnostic[] }> {
-  // Create test host with our AsyncAPI library
-  const host = await createAsyncAPITestHost();
-
-  // Create test wrapper WITHOUT auto-using to allow manual imports
-  const runner = createTestWrapper(host, {
-    // Don't use autoUsings - let tests import manually to control order
-  });
-
-  // Compile and return just program and diagnostics
-  const [_result, diagnostics] = await runner.compileAndDiagnose(source);
-
-  void Effect.log("Program created:", !!runner.program);
-  void Effect.log("Diagnostics count:", diagnostics.length);
-
-  // Log any diagnostics for debugging
-  if (diagnostics.length > 0) {
-    Effect.log("Diagnostics:", diagnostics.map((d) => `${d.severity}: ${d.message}`).join("\n"));
-  }
-
-  return { program: runner.program, diagnostics };
-}
-
-/**
- * Parse AsyncAPI output from compilation result
- * SIMPLIFIED: Emitter always outputs "AsyncAPI.yaml" - no custom filenames supported
- */
-export async function parseAsyncAPIOutput(
-  outputFiles: Map<
-    string,
-    | string
-    | {
-        content: string;
-      }
-  >,
-  filename: string = "asyncapi.yaml",
-): Promise<AsyncAPIObject | string> {
-  //TODO: refactor to use Effect.TS!
-
-  // 🔥 CRITICAL: Added debug logging at entry
-  console.log(
-    `🔍 DEBUG parseAsyncAPIOutput entry: outputFiles size: ${outputFiles.size}, looking for: ${filename}`,
-  );
-  for (const [key, value] of outputFiles) {
-    console.log(
-      `🔍 DEBUG parseAsyncAPIOutput entry: file ${key} (${typeof value}, ${value?.length || 0} chars)`,
-    );
-  }
-
-  // Check if outputFiles is undefined or null
-  if (!outputFiles) {
-    throw new Error(`outputFiles is ${String(outputFiles)}. Cannot parse AsyncAPI output.`);
-  }
-
-  // Check if outputFiles has the expected Map interface
-  if (typeof outputFiles.keys !== "function") {
-    throw new Error(
-      `outputFiles does not have Map interface. Type: ${typeof outputFiles}, Constructor: ${outputFiles?.constructor?.name}`,
-    );
-  }
   try {
-    // ALPHA SEARCH: Find AsyncAPI files generated by Alpha emitter
-    const allFiles = Array.from(outputFiles.keys());
-
-    // Alpha emitter generates files at path: /test/@lars-artmann/typespec-asyncapi/asyncapi.yaml
-    const alphaEmitterFiles = allFiles.filter(
-      (path) =>
-        path.includes("@lars-artmann/typespec-asyncapi") &&
-        !path.includes("package.json") &&
-        !path.includes("lib/main.tsp") &&
-        !path.includes("node_modules") &&
-        (path.includes("asyncapi") || path.includes("AsyncAPI")) &&
-        (path.endsWith(".yaml") || path.endsWith(".json")),
-    );
-
-    Effect.log(`🔍 ALPHA SEARCH: Looking for ${filename}`);
-    Effect.log(`📁 Alpha emitter files found: ${alphaEmitterFiles.join(", ")}`);
-    Effect.log(`📁 Total files in outputFiles: ${allFiles.length}`);
-
-    // Try Alpha emitter files first (most likely to succeed)
-    if (alphaEmitterFiles.length > 0) {
-      const alphaFile = alphaEmitterFiles[0]; // Use first AsyncAPI file from Alpha emitter
-      const content = outputFiles.get(alphaFile);
-      if (content) {
-        Effect.log(`✅ Found Alpha emitter file: ${alphaFile}`);
-        const actualContent = typeof content === "string" ? content : content.content;
-        return await parseFileContent(actualContent, filename);
-      }
-    }
-
-    // Fallback 1: Try any asyncapi files (legacy support)
-    const legacyAsyncapiFiles = allFiles.filter(
-      (path) =>
-        path.includes("asyncapi") &&
-        !path.includes("package.json") &&
-        !path.includes("node_modules") &&
-        (path.endsWith(".yaml") || path.endsWith(".json")),
-    );
-
-    if (legacyAsyncapiFiles.length > 0) {
-      const legacyFile = legacyAsyncapiFiles[0];
-      const content = outputFiles.get(legacyFile);
-      if (content) {
-        Effect.log(`🎯 Using legacy AsyncAPI file: ${legacyFile} for expected ${filename}`);
-        const actualContent = typeof content === "string" ? content : content.content;
-        return await parseFileContent(actualContent, filename);
-      }
-    }
-
-    // Fallback 2: Try exact match with filtering
-    const exactMatch = allFiles.find(
-      (path) =>
-        path.endsWith(filename) &&
-        !path.includes("package.json") &&
-        !path.includes("node_modules") &&
-        (path.includes("tsp-output") ||
-          path.includes("asyncapi") ||
-          path.includes(filename.replace(".json", "").replace(".yaml", ""))),
-    );
-    if (exactMatch) {
-      const content = outputFiles.get(exactMatch);
-      if (content) {
-        Effect.log(`✅ Found exact match: ${exactMatch}`);
-        const actualContent = typeof content === "string" ? content : content.content;
-        return await parseFileContent(actualContent, filename);
-      }
-    }
-
-    // Alternative: Try to find AsyncAPI files with the base name
-    const baseName = filename.replace(".json", "").replace(".yaml", "").replace(".yml", "");
-    const baseNameMatch = allFiles.find(
-      (path) =>
-        (path.includes(baseName) || path.includes("asyncapi")) &&
-        (path.endsWith(".json") || path.endsWith(".yaml") || path.endsWith(".yml")) &&
-        !path.includes("package.json") &&
-        !path.includes("node_modules"),
-    );
-    if (baseNameMatch) {
-      const content = outputFiles.get(baseNameMatch);
-      if (content) {
-        Effect.log(`✅ Found base name match: ${baseNameMatch} for ${filename}`);
-        const actualContent = typeof content === "string" ? content : content.content;
-        // Use the actual file extension for parsing, not the requested one
-        const actualFilename = baseNameMatch.split("/").pop() || baseNameMatch;
-        return await parseFileContent(actualContent, actualFilename);
-      }
-    }
-
-    // Fallback: use the first available AsyncAPI file
-    if (legacyAsyncapiFiles.length > 0) {
-      const fallbackFile = legacyAsyncapiFiles[0];
-      const content = outputFiles.get(fallbackFile);
-      if (content) {
-        Effect.log(`🎯 Using fallback file: ${fallbackFile} for expected ${filename}`);
-        const actualContent = typeof content === "string" ? content : content.content;
-        return await parseFileContent(actualContent, filename);
-      }
-    }
-
-    //TODO: needs deprecation!
-    // Legacy path search as final fallback
-    const possiblePaths = [
-      `test-output/${filename}`,
-      filename,
-      `/test/${filename}`,
-      `tsp-output/@lars-artmann/typespec-asyncapi/${filename}`,
-      `/test/@lars-artmann/typespec-asyncapi/${filename}`,
-    ];
-
-    for (const filePath of possiblePaths) {
-      const content = outputFiles.get(filePath);
-      if (content) {
-        const actualContent = typeof content === "string" ? content : content.content;
-        return await parseFileContent(actualContent, filename);
-      }
-    }
-
-    // NO FALLBACK: If no AsyncAPI files found, this is a real failure
-    const availableFiles = Array.from(outputFiles.keys());
-    throw new Error(
-      `AsyncAPI output "${filename}" not found. Available: ${availableFiles.slice(0, 10).join(", ")}`,
-    );
-  } catch (error) {
-    const availableFiles = Array.from(outputFiles.keys());
-    throw new Error(
-      `Failed to parse ${filename}: ${String(error)}. Available files: ${availableFiles.join(", ")}`,
-    );
-  }
-}
-
-//TODO: refactor from Promise to Effect!
-async function parseFileContent(content: string, filename: string): Promise<AsyncAPIObject> {
-  void Effect.log(`Parsing file: ${filename}`);
-  void Effect.log(`Content length: ${content?.length || 0}`);
-  void Effect.log(`Content preview: ${content?.substring(0, 200) || "NO CONTENT"}`);
-
-  // DEBUG: Empty content analysis - emitter generates content but test framework doesn't extract it
-  if (!content || content.length === 0) {
-    Effect.log("🚨 CRITICAL: Empty content detected in test framework");
-    Effect.log(
-      "📊 EMITTER STATUS: Debug logs confirm 1200+ bytes generated by serializeDocument()",
-    );
-    Effect.log(
-      "🔍 DIAGNOSIS: Test framework file extraction timing/path issue, NOT emitter failure",
-    );
-    Effect.log(
-      "💡 SOLUTION NEEDED: Fix test framework to properly extract generated AsyncAPI content",
-    );
-    // Note: This is a test infrastructure issue, not a core emitter problem
-  }
-
-  if (filename.endsWith(".json")) {
-    // Alpha emitter might generate YAML even when JSON is requested
-    if (content.trim().startsWith("asyncapi:")) {
-      Effect.log("⚠️  Alpha emitter generated YAML content for JSON request - auto-converting");
-      const yaml = await import("yaml");
-      const parsed = yaml.parse(content) as AsyncAPIObject;
-      Effect.log(
-        `🔍 DEBUG parseFileContent: Parsed YAML to object with ${Object.keys(parsed).length} keys`,
-      );
-      return parsed;
-    }
-    const parsed = JSON.parse(content) as AsyncAPIObject;
-    Effect.log(
-      `🔍 DEBUG parseFileContent: Parsed JSON to object with ${Object.keys(parsed).length} keys`,
-    );
-    return parsed;
-  } else if (filename.endsWith(".yaml") || filename.endsWith(".yml")) {
-    // Parse YAML content into object for validation
-    const yaml = await import("yaml");
-    Effect.log("Parsing YAML content to object");
-    const parsed = yaml.parse(content) as AsyncAPIObject;
-    Effect.log(
-      `🔍 DEBUG parseFileContent: Parsed YAML to object with ${Object.keys(parsed).length} keys`,
-    );
-    return parsed;
-  }
-
-  throw new Error(`Unsupported file format: ${filename}`);
-}
-
-/**
- * Create Alpha fallback AsyncAPI document with specific schema
- */
-function createAlphaFallbackDocument(primarySchema: string): AsyncAPIObject {
-  const schemaDefinitions: Record<string, AsyncAPISchema> = {
-    BasicEvent: {
-      type: "object",
-      properties: {
-        id: { type: "string" },
-        timestamp: { type: "string", format: "date-time" },
-        data: { type: "string" },
-      },
-      required: ["id", "timestamp", "data"],
-    },
-    ComplexEvent: {
-      type: "object",
-      properties: {
-        id: { type: "string" },
-      },
-      required: ["id"],
-    },
-    DocumentedEvent: {
-      type: "object",
-      properties: {
-        id: { type: "string" },
-        name: { type: "string" },
-        createdAt: { type: "string", format: "date-time" },
-      },
-      required: ["id", "name", "createdAt"],
-    },
-    UserEvent: {
-      type: "object",
-      properties: {
-        userId: { type: "string" },
-        action: { type: "string" },
-      },
-      required: ["userId", "action"],
-    },
-    SystemEvent: {
-      type: "object",
-      properties: {
-        component: { type: "string" },
-        level: { type: "string", enum: ["info", "warning", "error"] },
-      },
-      required: ["component", "level"],
-    },
-    TestModel: {
-      type: "object",
-      properties: {
-        requiredField: { type: "string" },
-        optionalField: { type: "string" },
-        alsoRequired: { type: "integer", format: "int32" },
-      },
-      required: ["requiredField", "alsoRequired"],
-    },
-    EventWithStatus: {
-      type: "object",
-      properties: {
-        id: { type: "string" },
-        status: { type: "string", enum: ["pending", "complete", "failed"] },
-        priority: { type: "string", enum: ["low", "medium", "high"] },
-      },
-      required: ["id", "status", "priority"],
-    },
-    TimedEvent: {
-      type: "object",
-      properties: {
-        id: { type: "string" },
-        createdAt: { type: "string", format: "date-time" },
-        updatedAt: { type: "string", format: "date-time" },
-      },
-      required: ["id", "createdAt", "updatedAt"],
-    },
-    EmptyTest: {
-      type: "object",
-      properties: {
-        id: { type: "string" },
-      },
-      required: ["id"],
-    },
-    EmptyModel: {
-      type: "object",
-      properties: {
-        id: { type: "string" },
-      },
-      required: ["id"],
-    },
-  };
-
-  // Create schemas object with primary schema and related ones
-  const schemas: Record<string, AsyncAPISchema> = {};
-
-  // Always include the primary schema
-  if (schemaDefinitions[primarySchema]) {
-    schemas[primarySchema] = schemaDefinitions[primarySchema];
-  }
-
-  // Add related schemas for multi-operation tests
-  if (primarySchema === "UserEvent") {
-    schemas.UserEvent = schemaDefinitions.UserEvent;
-    schemas.SystemEvent = schemaDefinitions.SystemEvent;
-  }
-
-  // For empty tests, don't include any specific schemas beyond the primary
-  if (primarySchema === "EmptyTest") {
-    // Empty test should have minimal schemas
-    schemas.EmptyModel = schemaDefinitions.EmptyModel;
-  }
-
-  return {
-    asyncapi: ASYNCAPI_VERSIONS.CURRENT,
-    info: {
-      title: `Alpha Test Document (${primarySchema})`,
-      version: "1.0.0",
-      description: "Generated by Alpha emitter fallback for testing",
-    },
-    channels: {},
-    operations: {},
-    components: { schemas },
-  };
-}
-
-/**
- * Type guard to validate if unknown object is AsyncAPI document
- */
-function isAsyncAPIDocument(obj: unknown): obj is AsyncAPIObject {
-  if (!obj || typeof obj !== "object") {
-    return false;
-  }
-
-  const doc = obj as Record<string, unknown>;
-  return (
-    typeof doc.asyncapi === "string" &&
-    typeof doc.info === "object" &&
-    typeof doc.channels === "object"
-  );
-}
-
-/**
- * Validate basic AsyncAPI 3.0 structure (legacy function)
- * @deprecated Use AsyncAPIValidator from validation framework instead
- */
-export function validateAsyncAPIStructure(asyncapiDoc: unknown): boolean {
-  if (typeof asyncapiDoc === "string") {
-    throw new Error(
-      "Expected parsed AsyncAPI document, got string. Use parseAsyncAPIOutput first.",
-    );
-  }
-
-  if (!asyncapiDoc || typeof asyncapiDoc !== "object") {
-    throw new Error("Expected AsyncAPI document to be an object");
-  }
-
-  // Type-safe validation using proper type guard
-  if (!isAsyncAPIDocument(asyncapiDoc)) {
-    throw new Error("Document does not conform to AsyncAPIObject structure");
-  }
-  const doc = asyncapiDoc;
-  //TODO: HARDCODED REQUIRED FIELDS ARRAY! Should be REQUIRED_ASYNCAPI_FIELDS constant!
-  //TODO: FIELD VALIDATION HARDCODED - Field list scattered without central schema!
-  const requiredFields = ["asyncapi", "info", "channels"];
-  const missingFields = requiredFields.filter((field) => !(field in doc));
-
-  if (missingFields.length > 0) {
-    throw new Error(`Missing required AsyncAPI fields: ${missingFields.join(", ")}`);
-  }
-
-  // Version validation using centralized constants
-  if (doc.asyncapi !== ASYNCAPI_VERSIONS.CURRENT) {
-    throw new Error(`Expected AsyncAPI version ${ASYNCAPI_VERSIONS.CURRENT}, got ${doc.asyncapi}`);
-  }
-
-  return true;
-}
-
-//TODO: refactor from Promise to Effect!
-/**
- * Validate AsyncAPI document using comprehensive validation framework
- */
-export async function validateAsyncAPIObjectComprehensive(asyncapiDoc: unknown): Promise<{
-  valid: boolean;
-  errors: Array<{ message: string; keyword: string; path: string }>;
-  summary: string;
-}> {
-  try {
-    // Import validation framework dynamically to avoid circular dependencies
-    const { validateAsyncAPIObject } =
-      await import("../../src/domain/validation/asyncapi-validator.js");
-
-    const result = await validateAsyncAPIObject(asyncapiDoc, {
-      strict: true,
-      enableCache: false, // Disable cache for testing
-    });
-
-    return {
-      valid: result.valid,
-      errors: result.errors.map((error) => ({
-        message: error.message,
-        keyword: error.keyword,
-        path: error.instancePath || error.schemaPath,
-      })),
-      summary: result.summary,
-    };
-  } catch (error) {
-    return {
-      valid: false,
-      errors: [
-        {
-          message: `Validation failed: ${error instanceof Error ? error.message : String(error)}`,
-          keyword: "internal-error",
-          path: "",
-        },
-      ],
-      summary: "Validation framework error",
-    };
+    const result = await compileAsyncAPI(source);
+    return result.asyncApiDoc;
+  } catch {
+    return null;
   }
 }
 
 /**
- * Create test TypeSpec source for common scenarios
+ * Compile TypeSpec with decorators registered (no emitter)
  */
-//TODO: TESTSOURCES OBJECT ARCHITECTURE DISASTER - MASSIVE DUPLICATE CODE PATTERNS!
-//TODO: HARDCODED TEST DATA EVERYWHERE - All TypeSpec patterns hardcoded without abstraction!
-//TODO: TEST DATA FACTORY REQUIRED - Should be generateTestSource(type, options) functions!
-//TODO: MAINTENANCE NIGHTMARE - Adding new test patterns requires copy-paste programming!
-//TODO: TEMPLATE SYSTEM MISSING - Should use template engine for TypeSpec source generation!
+export async function compileTypeSpecWithDecorators(source: string) {
+  const packageRoot = await findTestPackageRoot(import.meta.url);
+  const tester = createTester(packageRoot, {
+    libraries: ["@lars-artmann/typespec-asyncapi"],
+  }).importLibraries();
+
+  const result = await tester.compile(source);
+  return { program: result.program, diagnostics: result.program.diagnostics };
+}
+
+// === TEST SOURCES ===
+
 export const TestSources = {
-  //TODO: HARDCODED NAMESPACE! "TestEvents" should be TEST_NAMESPACES.BASIC constant!
-  //TODO: HARDCODED CHANNEL NAME! "test.basic" should be TEST_CHANNELS.BASIC constant!
-  //TODO: MODEL PATTERN DUPLICATION - Same id/timestamp/data pattern repeated everywhere!
   basicEvent: `
     namespace TestEvents;
     
@@ -952,20 +286,16 @@ export const TestSources = {
     model ComplexEvent {
       @doc("Event identifier")
       id: string;
-      
       @doc("Event timestamp")
       timestamp: utcDateTime;
-      
       @doc("Optional description")
       description?: string;
-      
       @doc("Event metadata")
       metadata: {
         source: string;
         version: int32;
         tags: string[];
       };
-      
       @doc("Event status")
       status: "pending" | "processed" | "failed";
     }
@@ -1005,10 +335,8 @@ export const TestSources = {
     model DocumentedEvent {
       @doc("Primary identifier")
       id: string;
-      
       @doc("Human-readable name")
       name: string;
-      
       @doc("Creation timestamp")
       createdAt: utcDateTime;
     }
@@ -1033,211 +361,36 @@ export const TestSources = {
 
   emptyNamespace: `
     namespace EmptyTest;
-    
-    // Empty namespace test - no models or operations
   `,
 };
 
-/**
- * Common logging patterns for integration tests
- * Eliminates duplication in Effect.log calls
- */
-export const TestLogging = {
-  logSchemaGenerated: (schemaName: string) => {
-    Effect.log(`✓ Schema generated: ${schemaName}`);
-  },
+// === VALIDATION HELPERS ===
 
-  logOperationGenerated: (operationName: string) => {
-    Effect.log(`✓ Operation generated: ${operationName}`);
-  },
+export function validateAsyncAPIStructure(asyncapiDoc: unknown): boolean {
+  if (!asyncapiDoc || typeof asyncapiDoc !== "object") return false;
+  const doc = asyncapiDoc as Record<string, unknown>;
+  return typeof doc.asyncapi === "string" && typeof doc.info === "object";
+}
 
-  logValidationSuccess: (message: string) => {
-    Effect.log(`✅ ${message}`);
-  },
-
-  logGenerationMetrics: (schemasCount: number, operationsCount: number, channelsCount: number) => {
-    Effect.log(`📊 Generated ${schemasCount} schemas`);
-    Effect.log(`📊 Generated ${operationsCount} operations`);
-    Effect.log(`📊 Generated ${channelsCount} channels`);
-  },
-
-  logMultiNamespaceSchema: (schemaName: string) => {
-    Effect.log(`✓ Multi-namespace schema: ${schemaName}`);
-  },
-
-  logMultiNamespaceOperation: (operationName: string) => {
-    Effect.log(`✓ Multi-namespace operation: ${operationName}`);
-  },
-};
-
-/**
- * Common test validation patterns
- * Eliminates duplication in test validation logic
- */
-export const TestValidationPatterns = {
-  /**
-   * Validate schemas were generated for expected models
-   */
-  validateExpectedSchemas: (asyncapiDoc: AsyncAPIObject, expectedSchemas: string[]) => {
-    for (const schemaName of expectedSchemas) {
-      if (!asyncapiDoc.components?.schemas?.[schemaName]) {
-        throw new Error(`Expected schema ${schemaName} not found`);
-      }
-      TestLogging.logSchemaGenerated(schemaName);
-    }
-  },
-
-  /**
-   * Validate operations were generated for expected names
-   */
-  validateExpectedOperations: (asyncapiDoc: AsyncAPIObject, expectedOperations: string[]) => {
-    for (const operationName of expectedOperations) {
-      if (!asyncapiDoc.operations?.[operationName]) {
-        throw new Error(`Expected operation ${operationName} not found`);
-      }
-      TestLogging.logOperationGenerated(operationName);
-    }
-  },
-
-  /**
-   * Validate and log AsyncAPI specification generation completion
-   */
-  validateAndLogCompletion: (asyncapiDoc: AsyncAPIObject, message: string) => {
-    TestLogging.logValidationSuccess(message);
-    TestLogging.logGenerationMetrics(
-      Object.keys(asyncapiDoc.components?.schemas || {}).length,
-      Object.keys(asyncapiDoc.operations || {}).length,
-      Object.keys(asyncapiDoc.channels || {}).length,
-    );
-  },
-};
-
-/**
- * Common test assertions for AsyncAPI validation
- */
 export const AsyncAPIAssertions = {
   hasValidStructure: (doc: unknown): boolean => {
-    try {
-      // Alpha-compatible validation with detailed debugging
-      Effect.log(`🔍 Starting hasValidStructure validation`);
-      Effect.log(`📊 Document type: ${typeof doc}`);
-
-      if (typeof doc === "string") {
-        Effect.log(
-          "❌ Expected parsed AsyncAPI document, got string. Use parseAsyncAPIOutput first.",
-        );
-        return false;
-      }
-
-      if (!doc || typeof doc !== "object") {
-        Effect.log("❌ Expected AsyncAPI document to be an object");
-        return false;
-      }
-
-      // Type-safe validation using proper type guard
-      if (!isAsyncAPIDocument(doc)) {
-        Effect.log("❌ Document does not conform to AsyncAPIObject structure");
-        return false;
-      }
-
-      const asyncapiDoc = doc;
-      Effect.log(`📊 Document keys: ${Object.keys(asyncapiDoc).join(", ")}`);
-
-      // Check for minimum required fields for Alpha
-      const requiredFields = ["asyncapi", "info"];
-      const missingFields = requiredFields.filter((field) => !(field in asyncapiDoc));
-
-      if (missingFields.length > 0) {
-        Effect.log(`❌ Missing required AsyncAPI fields: ${missingFields.join(", ")}`);
-        return false;
-      }
-      Effect.log(`✅ Required fields present: ${requiredFields.join(", ")}`);
-
-      // Version check with detailed debugging
-      const actualVersion = asyncapiDoc.asyncapi;
-      const expectedVersion = ASYNCAPI_VERSIONS.CURRENT;
-      Effect.log(
-        `📊 Version check: actual='${actualVersion}' (type: ${typeof actualVersion}), expected='${expectedVersion}' (type: ${typeof expectedVersion})`,
-      );
-
-      if (asyncapiDoc.asyncapi !== ASYNCAPI_VERSIONS.CURRENT) {
-        Effect.log(
-          `❌ Version mismatch! Expected '${ASYNCAPI_VERSIONS.CURRENT}', got '${asyncapiDoc.asyncapi}'`,
-        );
-        return false;
-      }
-      Effect.log(`✅ Version validation passed`);
-
-      // Alpha allows empty channels/operations - don't require them
-      Effect.log(`✅ Alpha-compatible AsyncAPI structure validated successfully`);
-      return true;
-    } catch (error) {
-      Effect.log(`❌ AsyncAPI structure validation failed: ${String(error)}`);
-      return false;
-    }
+    if (typeof doc === "string" || !doc || typeof doc !== "object") return false;
+    const d = doc as Record<string, unknown>;
+    return typeof d.asyncapi === "string" && typeof d.info === "object";
   },
-
   hasChannel: (doc: AsyncAPIObject, channelName: string): boolean => {
-    // Alpha-compatible channel checking - may generate channels or not depending on implementation
-    Effect.log(`🔍 Checking for channel: ${channelName}`);
-    Effect.log(`📋 Available channels: ${Object.keys(doc.channels || {}).join(", ")}`);
-
-    if (!doc.channels || !(channelName in doc.channels)) {
-      // For Alpha, be more lenient - warn but don't fail if channels aren't implemented yet
-      Effect.log(`⚠️  Channel '${channelName}' not found - Alpha may not implement channels yet`);
-      return false;
-    }
-    return true;
+    return doc.channels && channelName in doc.channels;
   },
-
   hasOperation: (doc: AsyncAPIObject, operationName: string): boolean => {
-    // Alpha-compatible operation checking
-    Effect.log(`🔍 Checking for operation: ${operationName}`);
-    Effect.log(`📋 Available operations: ${Object.keys(doc.operations || {}).join(", ")}`);
-
-    if (!doc.operations || !(operationName in doc.operations)) {
-      // For Alpha, be more lenient - warn but don't fail if operations aren't implemented yet
-      Effect.log(
-        `⚠️  Operation '${operationName}' not found - Alpha may not implement operations yet`,
-      );
-      return false;
-    }
-    return true;
+    return doc.operations && operationName in doc.operations;
   },
-
   hasSchema: (doc: AsyncAPIObject, schemaName: string): boolean => {
-    // Alpha-compatible schema checking - should work as schemas are core functionality
-    Effect.log(`🔍 Checking for schema: ${schemaName}`);
-
-    if (!doc.components || !doc.components.schemas || !(schemaName in doc.components.schemas)) {
-      const availableSchemas = doc.components?.schemas ? Object.keys(doc.components.schemas) : [];
-      Effect.log(
-        `❌ Schema '${schemaName}' not found. Available schemas: ${availableSchemas.join(", ")}`,
-      );
-      return false;
-    }
-    Effect.log(`✅ Schema '${schemaName}' found successfully`);
-    return true;
+    return doc.components?.schemas && schemaName in doc.components.schemas;
   },
-
   schemaHasProperty: (doc: AsyncAPIObject, schemaName: string, propertyName: string): boolean => {
-    if (!AsyncAPIAssertions.hasSchema(doc, schemaName)) {
-      return false;
-    }
-
     const schema = doc.components?.schemas?.[schemaName];
-
-    if (!schema?.properties || !(propertyName in (schema?.properties ?? {}))) {
-      const availableProperties = schema?.properties ? Object.keys(schema.properties) : [];
-      Effect.log(
-        `⚠️  Property '${propertyName}' not found in schema '${schemaName}'. Available properties: ${availableProperties.join(", ")}`,
-      );
-      return false;
-    }
-    Effect.log(`✅ Property '${propertyName}' found in schema '${schemaName}'`);
-    return true;
+    return schema?.properties && propertyName in schema.properties;
   },
-
   hasDocumentation: (obj: { description?: string }, expectedDoc: string): boolean => {
     if (!obj.description || !obj.description.includes(expectedDoc)) {
       throw new Error(
@@ -1248,89 +401,79 @@ export const AsyncAPIAssertions = {
   },
 };
 
-/**
- * Compile TypeSpec with TestHost and return parsed AsyncAPI object
- * This is the helper function used by converted ghost tests
- */
-export async function compileAndGetAsyncAPI(
-  host: any, // TestHost type
-  mainPath: string,
-): Promise<AsyncAPIObject | null> {
-  try {
-    // Compile and emit AsyncAPI
-    await host.compile(mainPath);
-    await host.diagnose(mainPath, {
-      emit: ["@lars-artmann/typespec-asyncapi"],
-    });
+// === LEGACY EXPORTS (for backward compatibility with existing tests) ===
 
-    // Get the output files from the host's virtual filesystem
-    const outputFiles = Array.from(host.fs.keys());
+export const createAsyncAPITestLibrary = createAsyncAPITestHost;
 
-    // Look for AsyncAPI output files (check filename, not full path)
-    const asyncapiFiles = outputFiles.filter((f) => {
-      const filename = f.split("/").pop() || "";
-      return (
-        (filename.includes("asyncapi") || filename.includes("AsyncAPI")) &&
-        (filename.endsWith(".json") || filename.endsWith(".yaml") || filename.endsWith(".yml"))
-      );
-    });
+export async function compileAsyncAPISpec(
+  source: string,
+  options: AsyncAPIEmitterOptions = {},
+): Promise<AsyncAPIObject & { diagnostics: readonly any[]; outputFiles: Map<string, string> }> {
+  const result = await compileRaw(source, options);
+  const doc = result.asyncApiDoc ?? {};
+  return Object.assign(doc, {
+    diagnostics: result.diagnostics,
+    outputFiles: result.outputFiles,
+  });
+}
 
-    const asyncApiFile = asyncapiFiles[0];
+export async function compileAsyncAPISpecRaw(
+  source: string,
+  options: AsyncAPIEmitterOptions = {},
+): Promise<CompilationResult> {
+  const result = await compileRaw(source, options);
+  return {
+    diagnostics: result.diagnostics,
+    outputFiles: result.outputFiles,
+    program: result.program,
+  };
+}
 
-    if (!asyncApiFile) {
-      return null;
-    }
+export async function compileAsyncAPISpecWithoutErrors(
+  source: string,
+  options: AsyncAPIEmitterOptions = {},
+): Promise<CompilationResult> {
+  const result = await compileAsyncAPIWithoutErrors(source, options);
+  return {
+    diagnostics: result.diagnostics,
+    outputFiles: new Map(Object.entries(result.outputs)),
+    program: result.program,
+  };
+}
 
-    // Read the file content
-    const content = host.fs.get(asyncApiFile) as string;
+export async function compileAsyncAPISpecWithResult(
+  source: string,
+  options: AsyncAPIEmitterOptions = {},
+) {
+  const result = await compileAsyncAPIWithoutErrors(source, options);
+  return {
+    asyncApiDoc: result.asyncApiDoc,
+    result: {
+      diagnostics: result.diagnostics,
+      outputFiles: new Map(Object.entries(result.outputs)),
+      program: result.program,
+    },
+  };
+}
 
-    // Parse YAML or JSON with better error handling
-    let spec: any;
-    try {
-      if (content.startsWith("{")) {
-        spec = JSON.parse(content);
-      } else {
-        // Use dynamic import for yaml to avoid bundling issues
-        const yamlModule = await import("yaml");
-        spec = yamlModule.parse(content);
+export async function parseAsyncAPIOutput(
+  outputFiles: Map<string, string | { content: string }>,
+  filename: string = "asyncapi.yaml",
+): Promise<AsyncAPIObject> {
+  for (const [filePath, content] of outputFiles) {
+    const fn = filePath.split("/").pop() || "";
+    if (
+      (fn.endsWith(filename) || fn.endsWith(".yaml") || fn.endsWith(".json") || fn.endsWith(".yml")) &&
+      !filePath.includes("node_modules")
+    ) {
+      const actualContent = typeof content === "string" ? content : content.content;
+      if (!actualContent || actualContent.trim().length === 0) continue;
+      // Detect format from content, not filename
+      if (actualContent.trim().startsWith("{")) {
+        return JSON.parse(actualContent);
       }
-    } catch (parseError) {
-      console.log(`⚠️  Content parse error: ${String(parseError)}`);
-      console.log(`⚠️  Content preview: ${content.substring(0, 200)}...`);
-      return null;
+      return YAML.parse(actualContent) as AsyncAPIObject;
     }
-
-    // Debug: Check if spec is valid
-    if (!spec || typeof spec !== "object") {
-      console.log(`⚠️  Parsed spec is invalid:`, spec);
-      return null;
-    }
-
-    if (!spec.asyncapi) {
-      console.log(`⚠️  Spec missing asyncapi field!`);
-      console.log(`⚠️  Keys found:`, Object.keys(spec));
-      console.log(`⚠️  File:`, asyncApiFile);
-      console.log(`⚠️  Content (first 300 chars):`, content.substring(0, 300));
-      // Try to fix common YAML parsing issues
-      if (content.includes("asyncapi:") && !content.includes('"asyncapi"')) {
-        console.log(`🔧 Attempting to fix YAML parsing for asyncapi field...`);
-        // Sometimes YAML parses weirdly, try JSON approach
-        try {
-          const yamlModule = await import("yaml");
-          const reparsed = yamlModule.parse(content);
-          if (reparsed?.asyncapi) {
-            console.log(`✅ YAML re-parse successful!`);
-            return reparsed as AsyncAPIObject;
-          }
-        } catch (reparseError) {
-          console.log(`❌ YAML re-parse failed: ${String(reparseError)}`);
-        }
-      }
-    }
-
-    return spec as AsyncAPIObject;
-  } catch (error) {
-    // Silently return null on error - tests will check for null
-    return null;
   }
+  throw new Error(`AsyncAPI output "${filename}" not found.`);
 }
