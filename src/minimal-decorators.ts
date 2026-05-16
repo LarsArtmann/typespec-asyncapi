@@ -130,7 +130,7 @@ export function $server(
   if (!SUPPORTED_PROTOCOLS.has(protocol)) {
     reportDecoratorDiagnostic(
       context, "@lars-artmann/typespec-asyncapi/unsupported-protocol", target,
-      `Protocol '${String(configTyped.protocol as string)}' is not supported. Supported protocols: ${PROTOCOL_LIST.join(", ")}`,
+      `Protocol '${String(configTyped.protocol)}' is not supported. Supported protocols: ${PROTOCOL_LIST.join(", ")}`,
     );
     return;
   }
