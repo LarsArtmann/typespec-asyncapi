@@ -1,155 +1,287 @@
 /**
- * ASYNCAPI EMITTER - Minimal Working Version
+ * AsyncAPI 3.0 Emitter
  *
- * Simple AsyncAPI emitter without complex Effect.TS patterns
+ * Reads decorator state, generates JSON Schemas from TypeSpec models
+ * via @typespec/asset-emitter, and outputs AsyncAPI 3.0 YAML/JSON.
  */
 
 import { emitFile } from "@typespec/compiler";
-import type { EmitContext, EmitFileOptions } from "@typespec/compiler";
+import type { EmitContext } from "@typespec/compiler";
+import { createAssetEmitter, TypeEmitter } from "@typespec/asset-emitter";
+import type { AssetEmitter, EmitEntity, EmitterOutput, Context, SourceFile, EmittedSourceFile } from "@typespec/asset-emitter";
+import { stringify as yamlStringify } from "yaml";
 import type { AsyncAPIEmitterOptions } from "./infrastructure/configuration/asyncAPIEmitterOptions.js";
-import {
-  consolidateAsyncAPIState,
-  type AsyncAPIConsolidatedState,
-  type MessageConfigData,
-} from "./state.js";
+import { consolidateAsyncAPIState, type AsyncAPIConsolidatedState } from "./state.js";
+
+type SchemaObject = Record<string, unknown>;
 
 /**
- * Minimal AsyncAPI document type
+ * Minimal TypeEmitter that produces JSON Schema objects from TypeSpec models.
+ * These are embedded into components.schemas of the AsyncAPI document.
  */
-type AsyncAPIDocument = {
-  asyncapi: string;
-  info: {
-    title: string;
-    version: string;
-    description: string;
-  };
-  channels: Record<string, unknown>;
-  messages: Record<string, unknown>;
-  components: {
-    schemas: Record<string, unknown>;
-  };
-};
+class AsyncAPISchemaEmitter extends TypeEmitter<SchemaObject, AsyncAPIEmitterOptions> {
+  modelDeclaration(model: any): EmitterOutput<SchemaObject> {
+    const properties: Record<string, unknown> = {};
+    const required: string[] = [];
 
-/**
- * Generate basic AsyncAPI document from state
- */
-function generateBasicAsyncAPI(
-  state: AsyncAPIConsolidatedState,
-  options: AsyncAPIEmitterOptions,
-): AsyncAPIDocument {
-  const channels: Record<string, unknown> = {};
-  const messages: Record<string, unknown> = {};
-  const schemas: Record<string, unknown> = {};
-
-  // Simple channel conversion
-  if (state.channels) {
-    for (const [type, data] of state.channels) {
-      const channelData = data as { path?: string };
-      const typeWithName = type as { name: string };
-      const channelKey = channelData.path ?? typeWithName.name;
-      channels[channelKey] = {
-        path: channelKey,
-        description: `Generated channel for ${channelKey}`,
-      };
+    for (const [name, prop] of model.properties) {
+      const propSchema = this.emitter.emitTypeReference(prop.type);
+      properties[name] = extractValue(propSchema);
+      if (!prop.optional) {
+        required.push(name);
+      }
     }
+
+    const schema: SchemaObject = { type: "object", properties };
+    if (required.length > 0) schema.required = required;
+
+    if (model.baseModel) {
+      const ref = this.emitter.emitTypeReference(model.baseModel);
+      schema.allOf = [extractValue(ref)];
+    }
+
+    return this.emitter.result.declaration(model.name, schema);
   }
 
-  // Simple message conversion
-  if (state.messages) {
-    for (const [type, data] of state.messages) {
-      const messageData: MessageConfigData = data;
-      const typeWithName = type as { name: string };
-      const messageKey = messageData.messageId ?? `message${typeWithName.name}`;
-      messages[messageKey] = {
-        messageId: messageData.messageId ?? messageKey,
-        schemaName: messageData.messageId ?? typeWithName.name,
-        description: messageData.description ?? `Generated message ${messageKey}`,
-      };
+  modelLiteral(model: any): EmitterOutput<SchemaObject> {
+    const properties: Record<string, unknown> = {};
+    const required: string[] = [];
+
+    for (const [name, prop] of model.properties) {
+      const propSchema = this.emitter.emitTypeReference(prop.type);
+      properties[name] = extractValue(propSchema);
+      if (!prop.optional) required.push(name);
     }
+
+    const schema: SchemaObject = { type: "object", properties };
+    if (required.length > 0) schema.required = required;
+    return schema;
+  }
+
+  modelProperties(model: any): EmitterOutput<SchemaObject> {
+    const props: Record<string, unknown> = {};
+    for (const [name, prop] of model.properties) {
+      props[name] = this.emitter.emitModelProperty(prop);
+    }
+    return props;
+  }
+
+  modelProperty(prop: any): EmitterOutput<SchemaObject> {
+    return this.emitter.emitTypeReference(prop.type);
+  }
+
+  union(union: any): EmitterOutput<SchemaObject> {
+    const variants = [...union.variants.values()].map((v: any) =>
+      extractValue(this.emitter.emitTypeReference(v.type)),
+    );
+    return { anyOf: variants };
+  }
+
+  enum(en: any): EmitterOutput<SchemaObject> {
+    const values = [...en.members.values()].map((m: any) => m.value ?? m.name);
+    return { type: "string", enum: values };
+  }
+
+  intrinsic(intrinsic: any, name: string): EmitterOutput<SchemaObject> {
+    return intrinsicToSchema(intrinsic.name);
+  }
+
+  scalar(scalar: any): EmitterOutput<SchemaObject> {
+    return intrinsicToSchema(scalar.name);
+  }
+
+  stringLiteral(literal: any): EmitterOutput<SchemaObject> {
+    return { const: literal.value };
+  }
+
+  numericLiteral(literal: any): EmitterOutput<SchemaObject> {
+    return { const: literal.value };
+  }
+
+  booleanLiteral(literal: any): EmitterOutput<SchemaObject> {
+    return { const: literal.value };
+  }
+
+  tuple(tuple: any): EmitterOutput<SchemaObject> {
+    const items = tuple.values.map((v: any) => extractValue(this.emitter.emitTypeReference(v)));
+    return { type: "array", items };
+  }
+
+  arrayDeclaration(array: any, name: string, elementType: any): EmitterOutput<SchemaObject> {
+    return {
+      type: "array",
+      items: this.emitter.emitTypeReference(elementType),
+    };
+  }
+
+  arrayLiteral(array: any, elementType: any): EmitterOutput<SchemaObject> {
+    return {
+      type: "array",
+      items: this.emitter.emitTypeReference(elementType),
+    };
+  }
+
+  programContext(program: any): Context {
+    const sourceFile = this.emitter.createSourceFile("schemas.json");
+    return { scope: sourceFile.globalScope };
+  }
+
+  sourceFile(sourceFile: SourceFile<SchemaObject>): EmittedSourceFile {
+    return { contents: "", path: sourceFile.path };
+  }
+}
+
+function intrinsicToSchema(typeName: string): SchemaObject {
+  switch (typeName) {
+    case "string": return { type: "string" };
+    case "int32": case "integer": return { type: "integer", format: typeName === "int32" ? "int32" : undefined };
+    case "int64": return { type: "integer", format: "int64" };
+    case "float": return { type: "number", format: "float" };
+    case "numeric": return { type: "number" };
+    case "boolean": return { type: "boolean" };
+    case "utcDateTime": case "offsetDateTime": return { type: "string", format: "date-time" };
+    case "plainDate": return { type: "string", format: "date" };
+    case "plainTime": return { type: "string", format: "time" };
+    case "duration": return { type: "string", format: "duration" };
+    case "bytes": return { type: "string", format: "byte" };
+    case "url": return { type: "string", format: "uri" };
+    default: return { type: "string" };
+  }
+}
+
+function extractValue(entity: EmitEntity<SchemaObject> | undefined): SchemaObject {
+  if (!entity) return {};
+  if ("value" in entity && entity.value != null) return entity.value as SchemaObject;
+  return {};
+}
+
+/**
+ * Generate JSON Schema objects from all models in the program.
+ */
+function generateSchemas(context: EmitContext<AsyncAPIEmitterOptions>): Record<string, SchemaObject> {
+  const schemas: Record<string, SchemaObject> = {};
+
+  try {
+    const assetEmitter = createAssetEmitter<SchemaObject, AsyncAPIEmitterOptions>(
+      context.program,
+      AsyncAPISchemaEmitter,
+      context,
+    );
+
+    assetEmitter.emitProgram({ emitGlobalNamespace: true });
+
+    for (const sourceFile of assetEmitter.getSourceFiles()) {
+      const scope = sourceFile.globalScope;
+      for (const declaration of scope.declarations) {
+        if (declaration.name && declaration.value) {
+          schemas[declaration.name] = declaration.value as SchemaObject;
+        }
+      }
+    }
+  } catch {
+    // Fall back to empty schemas if asset-emitter fails
+    // (e.g., no models to emit)
+  }
+
+  return schemas;
+}
+
+/**
+ * Build AsyncAPI 3.0 document from decorator state and generated schemas.
+ */
+function buildAsyncAPIDocument(
+  state: AsyncAPIConsolidatedState,
+  schemas: Record<string, SchemaObject>,
+  options: AsyncAPIEmitterOptions,
+): Record<string, unknown> {
+  const channels: Record<string, unknown> = {};
+  const operations: Record<string, unknown> = {};
+  const servers: Record<string, unknown> = {};
+  const messages: Record<string, unknown> = {};
+
+  // Build channels from state
+  for (const [type, data] of state.channels) {
+    const channelData = data as { path?: string };
+    const typeWithName = type as { name: string };
+    const channelKey = channelData.path ?? typeWithName.name;
+    channels[channelKey] = { address: channelKey };
+  }
+
+  // Build messages from state
+  for (const [type, data] of state.messages) {
+    const msgData = data as { messageId?: string; title?: string; description?: string; contentType?: string };
+    const typeWithName = type as { name: string };
+    const msgKey = msgData.messageId ?? typeWithName.name;
+    messages[msgKey] = {
+      messageId: msgKey,
+      name: msgData.title ?? typeWithName.name,
+      summary: msgData.description,
+      contentType: msgData.contentType ?? "application/json",
+      payload: { $ref: `#/components/schemas/${typeWithName.name}` },
+    };
+  }
+
+  // Build operations from state
+  for (const [type, data] of state.operations) {
+    const opData = data as { type: string; messageType?: string; description?: string };
+    const typeWithName = type as { name: string };
+    operations[typeWithName.name] = {
+      action: opData.type === "publish" ? "receive" : "send",
+      channel: { $ref: `#/channels/${typeWithName.name}` },
+      messages: [{ $ref: `#/components/messages/${opData.messageType ?? typeWithName.name}` }],
+    };
+  }
+
+  // Build servers from state
+  for (const [type, data] of state.servers) {
+    const serverData = data as { name: string; url: string; protocol: string; description?: string };
+    servers[serverData.name] = {
+      host: serverData.url,
+      protocol: serverData.protocol,
+      description: serverData.description,
+    };
   }
 
   return {
-    asyncapi: "3.0.0",
+    asyncapi: options?.["asyncapi-version"] ?? "3.0.0",
     info: {
       title: options?.title ?? "Generated API",
       version: options?.version ?? "1.0.0",
-      description: options?.description ?? "API generated from TypeSpec",
+      description: options?.description,
     },
+    ...(Object.keys(servers).length > 0 ? { servers } : {}),
     channels,
-    messages,
+    operations: Object.keys(operations).length > 0 ? operations : undefined,
     components: {
-      schemas,
+      messages: Object.keys(messages).length > 0 ? messages : undefined,
+      schemas: Object.keys(schemas).length > 0 ? schemas : undefined,
     },
   };
 }
 
 /**
- * Generate YAML content from AsyncAPI document
- */
-function generateYAML(document: AsyncAPIDocument): string {
-  return `asyncapi: ${document.asyncapi}
-info:
-  title: ${document.info.title}
-  version: ${document.info.version}
-  description: ${document.info.description}
-
-channels:
-${Object.entries(document.channels)
-  .map(([name, channel]) => {
-    const channelData = channel as { path: string; description: string };
-    return `  ${name}:
-    path: ${channelData.path}
-    description: ${channelData.description}`;
-  })
-  .join("\n")}
-
-messages:
-${Object.entries(document.messages)
-  .map(([name, message]) => {
-    const messageData = message as { messageId: string; schemaName: string; description: string };
-    return `  ${name}:
-    messageId: ${messageData.messageId}
-    schemaName: ${messageData.schemaName}
-    description: ${messageData.description}`;
-  })
-  .join("\n")}
-
-components:
-  schemas:
-${Object.entries(document.components.schemas)
-  .map(([name]) => {
-    return `  ${name}:
-    type: object
-    properties: {}`;
-  })
-  .join("\n")}
-`;
-}
-
-/**
- * Generate AsyncAPI file from TypeSpec program
+ * TypeSpec AsyncAPI emitter entry point.
  */
 export async function $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): Promise<void> {
   const options = context.options;
-
-  // Extract decorator state from program
   const rawState = consolidateAsyncAPIState(context.program);
+  const schemas = generateSchemas(context);
+  const document = buildAsyncAPIDocument(rawState, schemas, options);
 
-  // Generate basic AsyncAPI document
-  const asyncapiDocument = generateBasicAsyncAPI(rawState, options);
-
-  // Generate YAML content
-  const content = generateYAML(asyncapiDocument);
-  const outputFile = options?.["output-file"] ?? "asyncapi";
   const rawFileType = options?.["file-type"] ?? "yaml";
-  const fileType = typeof rawFileType === "string" ? rawFileType : (rawFileType as Record<string, unknown>)?.format ?? "yaml";
+  const fileType = typeof rawFileType === "string"
+    ? rawFileType
+    : (rawFileType as Record<string, unknown>)?.format ?? "yaml";
+  const outputFile = options?.["output-file"] ?? "asyncapi";
   const outputPath = `${outputFile}.${fileType}`;
 
-  // Emit file to the emitter's output directory
-  const emitOptions: EmitFileOptions = {
+  const content =
+    fileType === "json"
+      ? JSON.stringify(document, null, 2)
+      : yamlStringify(document, { lineWidth: 0 });
+
+  await emitFile(context.program, {
     path: `${context.emitterOutputDir}/${outputPath}`,
     content,
-  };
-
-  await emitFile(context.program, emitOptions);
+  });
 }
