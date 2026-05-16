@@ -12,7 +12,6 @@ import {
   type AsyncAPIConsolidatedState,
   type MessageConfigData,
 } from "./state.js";
-import { Effect } from "effect";
 
 /**
  * Minimal AsyncAPI document type
@@ -133,60 +132,23 @@ ${Object.entries(document.components.schemas)
 export async function $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): Promise<void> {
   const options = context.options;
 
-  // Use Effect.runPromise to execute logging effects
-  await Effect.runPromise(
-    Effect.gen(function* () {
-      yield* Effect.log("🔍 EMITTER DEBUG: $onEmit called");
-      yield* Effect.log("🔍 EMITTER DEBUG: Options:").pipe(
-        Effect.annotateLogs({ options: JSON.stringify(options) }),
-      );
-      yield* Effect.log("🔍 EMITTER DEBUG: Has program:").pipe(
-        Effect.annotateLogs({ hasProgram: context.program !== undefined }),
-      );
+  // Extract decorator state from program
+  const rawState = consolidateAsyncAPIState(context.program);
 
-      // Extract decorator state from program
-      const rawState = consolidateAsyncAPIState(context.program);
+  // Generate basic AsyncAPI document
+  const asyncapiDocument = generateBasicAsyncAPI(rawState, options);
 
-      yield* Effect.log("🔍 EMITTER DEBUG: Raw state:").pipe(
-        Effect.annotateLogs({
-          rawState: JSON.stringify(rawState, (key: string, value: unknown): unknown =>
-            typeof value === "object" && value instanceof Map ? Object.fromEntries(value) : value,
-          ),
-        }),
-      );
+  // Generate YAML content
+  const content = generateYAML(asyncapiDocument);
+  const outputFile = options?.["output-file"] ?? "asyncapi";
+  const fileType = options?.["file-type"] ?? "yaml";
+  const outputPath = `${outputFile}.${fileType}`;
 
-      // Generate basic AsyncAPI document
-      const asyncapiDocument = generateBasicAsyncAPI(rawState, options);
+  // Emit file
+  const emitOptions: EmitFileOptions = {
+    path: outputPath,
+    content,
+  };
 
-      yield* Effect.log("🔍 EMITTER DEBUG: Generated document").pipe(
-        Effect.annotateLogs({ channelCount: Object.keys(asyncapiDocument.channels || {}).length }),
-      );
-
-      // Generate YAML content
-      const content = generateYAML(asyncapiDocument);
-      const outputPath = "asyncapi.yaml";
-
-      yield* Effect.log("🔍 EMITTER DEBUG: Generated YAML").pipe(
-        Effect.annotateLogs({ contentLength: content.length }),
-      );
-
-      // Emit file
-      const _emitOptions: EmitFileOptions = {
-        path: outputPath,
-        content: content,
-      };
-
-      yield* Effect.log("🔍 EMITTER DEBUG: About to call emitFile").pipe(
-        Effect.annotateLogs({ outputPath }),
-      );
-
-      // Use Effect.tryPromise for async operations
-      yield* Effect.tryPromise({
-        try: () => emitFile(context.program, _emitOptions),
-        catch: (error) => new Error(`emitFile failed: ${String(error)}`),
-      });
-
-      yield* Effect.log("🔍 EMITTER DEBUG: emitFile completed");
-    }),
-  );
+  await emitFile(context.program, emitOptions);
 }

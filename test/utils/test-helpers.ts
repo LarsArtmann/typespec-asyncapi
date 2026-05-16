@@ -127,6 +127,9 @@ export async function compileAsyncAPISpecRaw(
   // Compile and emit TypeSpec code - this triggers emitters
   const [result, diagnostics] = await runner.compileAndDiagnose(source, {
     emit: [DEFAULT_CONFIG.libraryName],
+    options: {
+      [DEFAULT_CONFIG.libraryName]: options as Record<string, unknown>,
+    },
   });
 
   // TypeSpec test runner automatically calls emitters - no manual invocation needed
@@ -751,27 +754,11 @@ export async function parseAsyncAPIOutput(
       }
     }
 
-    // ALPHA FALLBACK: If no AsyncAPI files found, the emitter doesn't write files yet
-    // Return a minimal document to allow tests to run
+    // NO FALLBACK: If no AsyncAPI files found, this is a real failure
     const availableFiles = Array.from(outputFiles.keys());
-    Effect.log(
-      `⚠️  Alpha parseAsyncAPIOutput fallback: ${filename} not found in ${availableFiles.length} files`,
+    throw new Error(
+      `AsyncAPI output "${filename}" not found. Available: ${availableFiles.slice(0, 10).join(", ")}`,
     );
-    Effect.log(`📁 File sample: ${availableFiles.slice(0, 5).join(", ")}...`);
-
-    // Check if this is requesting a schema we know about
-    // 🔥 CRITICAL FIX: Disable premature fallback - filesystem bridge now works correctly
-    // The fallback was triggering even when real 3.0.0 files were found
-    const schemaName = extractSchemaNameFromTest(filename);
-    console.log(`🔍 DEBUG: extractSchemaNameFromTest("${filename}") = "${schemaName}"`);
-    // Disabled premature fallback - let real file parsing work
-    // if (schemaName) {
-    //   console.log(`🔍 DEBUG: Would trigger fallback for schema: ${schemaName}`);
-    //   return createAlphaFallbackDocument(schemaName);
-    // }
-
-    // Generic fallback
-    return createAlphaFallbackDocument("BasicEvent");
   } catch (error) {
     const availableFiles = Array.from(outputFiles.keys());
     throw new Error(
@@ -831,20 +818,7 @@ async function parseFileContent(content: string, filename: string): Promise<Asyn
   throw new Error(`Unsupported file format: ${filename}`);
 }
 
-/**
- * Extract schema name from test filename for Alpha fallback
- */
-function extractSchemaNameFromTest(filename: string): string | null {
-  if (filename.includes("basic")) return "BasicEvent";
-  if (filename.includes("complex")) return "ComplexEvent";
-  if (filename.includes("documented")) return "DocumentedEvent";
-  if (filename.includes("multi")) return "UserEvent"; // Multi test uses UserEvent/SystemEvent
-  if (filename.includes("required")) return "TestModel";
-  if (filename.includes("union")) return "EventWithStatus";
-  if (filename.includes("datetime")) return "TimedEvent";
-  if (filename.includes("empty")) return "EmptyTest"; // Handle empty operations test
-  return null;
-}
+
 
 /**
  * Create Alpha fallback AsyncAPI document with specific schema
