@@ -120,45 +120,24 @@ export async function compileAsyncAPISpecRaw(
   // Create test wrapper WITH auto-using since tests removed manual imports
   const runner = createTestWrapper(host, {
     autoUsings: ["TypeSpec.AsyncAPI"], // Auto-use TypeSpec.AsyncAPI namespace
-    // Note: emitters config removed - TypeSpec createTestWrapper doesn't support it
-    // Emitter uses default options and outputs to "AsyncAPI.yaml"
   });
 
   // Compile and emit TypeSpec code - this triggers emitters
-  const [result, diagnostics] = await runner.compileAndDiagnose(source, {
+  const [_result, diagnostics] = await runner.compileAndDiagnose(source, {
     emit: [DEFAULT_CONFIG.libraryName],
     options: {
       [DEFAULT_CONFIG.libraryName]: options as Record<string, unknown>,
     },
   });
 
-  // TypeSpec test runner automatically calls emitters - no manual invocation needed
+  // Access outputFiles from TestHost's virtual filesystem
+  // The test host captures all file writes made by emitFile()
+  const outputFiles = host.fs.fs;
 
-  // Debug logging
-  void Effect.log("Compilation result:", typeof result, !!result);
+  const program = runner.program || _result.program || _result;
 
-  const program = result.program || result;
-
-  void Effect.log("Program created:", !!program);
-  void Effect.log("Diagnostics count:", diagnostics.length);
-
-  // Access outputFiles correctly from TestCompileResult structure
-  // TestCompileResult has: { program: Program, fs: TestFileSystem }
-  // TestFileSystem has: { fs: Map<string, string>, compilerHost: CompilerHost }
-
-  // 🔥 CRITICAL FIX: Handle both TestFileSystem AND real filesystem writes
-  // TypeSpec's emitFile API can write to either:
-  // 1. TestFileSystem (in-memory) during test framework capture
-  // 2. Real filesystem when not captured by test framework
-
-  let outputFiles = result.fs?.fs || new Map<string, string>();
-
-  void Effect.log(`🔍 DEBUG parseAsyncAPIOutput: outputFiles size: ${outputFiles.size}`);
-
-  // 🔥 CRITICAL FIX: If TestFileSystem is empty, check real filesystem
-  // This happens when emitFile writes to real FS instead of test framework
+  // If virtual filesystem is empty, check real filesystem for emitted files
   if (outputFiles.size === 0) {
-    Effect.log("🔍 TestFileSystem empty, reading from real filesystem");
 
     try {
       // Import filesystem utilities
@@ -359,82 +338,25 @@ export async function compileAsyncAPISpec(
     throw new Error(`Compilation failed with errors: ${errors.map((d) => d.message).join(", ")}`);
   }
 
-  // Try to find and parse the generated AsyncAPI document
-  try {
-    // Try different possible output file names
-    const possibleFiles = ["asyncapi.yaml", "asyncapi.json"];
+  // Derive expected filename from options (same logic as emitter)
+  const outputFile = options?.["output-file"] ?? "asyncapi";
+  const fileType = options?.["file-type"] ?? "yaml";
+  const expectedFile = `${outputFile}.${fileType}`;
 
-    for (const fileName of possibleFiles) {
-      try {
-        const parsed = await parseAsyncAPIOutput(result.outputFiles, fileName);
-        if (parsed && typeof parsed === "object") {
-          Effect.log(`✅ Successfully parsed AsyncAPI document from ${fileName}`);
-          return parsed as AsyncAPIObject;
-        }
-      } catch (error) {
-        Effect.log(`Failed to parse ${fileName}: ${String(error)}`);
-        continue;
-      }
+  // Find matching file in virtual filesystem
+  for (const [filePath, content] of result.outputFiles) {
+    if (filePath.endsWith(expectedFile) || filePath.endsWith(".yaml") || filePath.endsWith(".json")) {
+      const actualContent = typeof content === "string" ? content : content.content;
+      const parsed = filePath.endsWith(".json")
+        ? JSON.parse(actualContent)
+        : yaml.parse(actualContent);
+      return parsed as AsyncAPIObject;
     }
-
-    // If no standard file found, try to find any AsyncAPI file
-    const allFiles = Array.from(result.outputFiles.keys());
-    const asyncapiFiles = allFiles.filter(
-      (path) =>
-        (path.includes("asyncapi") || path.includes("AsyncAPI")) &&
-        (path.endsWith(".yaml") || path.endsWith(".json")),
-    );
-
-    if (asyncapiFiles.length > 0) {
-      const fileName = asyncapiFiles[0];
-      const parsed = await parseAsyncAPIOutput(result.outputFiles, fileName);
-      if (parsed && typeof parsed === "object") {
-        Effect.log(`✅ Successfully parsed AsyncAPI document from ${fileName}`);
-        return parsed as AsyncAPIObject;
-      }
-    }
-
-    // SIMPLIFIED APPROACH: Use standard TypeSpec test framework outputFiles
-    Effect.log(`📊 Total output files: ${allFiles.length}`);
-    Effect.log(`📊 Output file names: ${allFiles.join(", ")}`);
-
-    // Look for any AsyncAPI file (yaml or json) using standard framework
-    const outputFiles = result.outputFiles;
-    if (!outputFiles || outputFiles.size === 0) {
-      throw new Error("No output files found in test framework");
-    }
-
-    // Try to parse the first AsyncAPI file we find
-    for (const [fileName, content] of outputFiles) {
-      if (
-        (fileName.includes("asyncapi") || fileName.includes("AsyncAPI")) &&
-        (fileName.endsWith(".yaml") || fileName.endsWith(".json"))
-      ) {
-        Effect.log(`✅ Found AsyncAPI file: ${fileName}`);
-
-        try {
-          // Simple YAML/JSON parsing
-          const parsed = fileName.endsWith(".json")
-            ? JSON.parse(content as string)
-            : yaml.parse(content as string);
-
-          Effect.log(`✅ Parsed AsyncAPI document with version: ${parsed.asyncapi}`);
-          return parsed as AsyncAPIObject;
-        } catch (error) {
-          Effect.log(`❌ Failed to parse ${fileName}: ${String(error)}`);
-          continue;
-        }
-      }
-    }
-
-    // CRITICAL: Instead of fallback, throw meaningful error
-    throw new Error(
-      `No valid AsyncAPI files found in output. Found files: ${Array.from(outputFiles.keys()).join(", ")}`,
-    );
-  } catch (error) {
-    Effect.log(`🔥 parseAsyncAPIOutput error: ${String(error)}`);
-    throw error;
   }
+
+  throw new Error(
+    `AsyncAPI output "${expectedFile}" not found. Available: ${Array.from(result.outputFiles.keys()).join(", ")}`,
+  );
 }
 
 /**
