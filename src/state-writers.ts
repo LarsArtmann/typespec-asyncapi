@@ -5,7 +5,7 @@
  * Each function corresponds to a specific decorator's state storage.
  */
 
-import type { Program, Type, Operation, Model, ModelProperty, Namespace } from "@typespec/compiler";
+import type { Program, Operation, Model, ModelProperty, Namespace } from "@typespec/compiler";
 import { stateSymbols } from "./lib.js";
 import { getStateMap } from "./state-compatibility.js";
 import type { MessageConfigData } from "./state.js";

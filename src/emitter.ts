@@ -8,7 +8,7 @@
 import { emitFile } from "@typespec/compiler";
 import type { EmitContext } from "@typespec/compiler";
 import { createAssetEmitter, TypeEmitter } from "@typespec/asset-emitter";
-import type { AssetEmitter, EmitEntity, EmitterOutput, Context, SourceFile, EmittedSourceFile } from "@typespec/asset-emitter";
+import type { EmitEntity, EmitterOutput, Context, SourceFile, EmittedSourceFile } from "@typespec/asset-emitter";
 import { stringify as yamlStringify } from "yaml";
 import type { AsyncAPIEmitterOptions } from "./infrastructure/configuration/asyncAPIEmitterOptions.js";
 import { consolidateAsyncAPIState, type AsyncAPIConsolidatedState } from "./state.js";
@@ -97,7 +97,7 @@ class AsyncAPISchemaEmitter extends TypeEmitter<SchemaObject, AsyncAPIEmitterOpt
     return { type: "string", enum: values };
   }
 
-  intrinsic(intrinsic: any, name: string): EmitterOutput<SchemaObject> {
+  intrinsic(intrinsic: any, _name: string): EmitterOutput<SchemaObject> {
     return intrinsicToSchema(intrinsic.name);
   }
 
@@ -145,20 +145,20 @@ class AsyncAPISchemaEmitter extends TypeEmitter<SchemaObject, AsyncAPIEmitterOpt
     };
   }
 
-  programContext(program: any): Context {
+  programContext(_program: any): Context {
     const sourceFile = this.emitter.createSourceFile("schemas.json");
     return { scope: sourceFile.globalScope };
   }
 
-  namespaceDeclaration(namespace: any): EmitterOutput<SchemaObject> {
+  namespaceDeclaration(_namespace: any): EmitterOutput<SchemaObject> {
     return this.emitter.result.none();
   }
 
-  operation(operation: any): EmitterOutput<SchemaObject> {
+  operation(_operation: any): EmitterOutput<SchemaObject> {
     return this.emitter.result.none();
   }
 
-  interfaceDeclaration(iface: any): EmitterOutput<SchemaObject> {
+  interfaceDeclaration(_iface: any): EmitterOutput<SchemaObject> {
     return this.emitter.result.none();
   }
 
@@ -291,7 +291,7 @@ function buildAsyncAPIDocument(
   }
 
   // Build servers from state
-  for (const [type, data] of state.servers) {
+  for (const [_type, data] of state.servers) {
     const serverData = data as { name: string; url: string; protocol: string; description?: string };
     servers[serverData.name] = {
       host: serverData.url,
@@ -327,9 +327,9 @@ export async function $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): Pro
   const document = buildAsyncAPIDocument(rawState, schemas, options);
 
   const rawFileType = options?.["file-type"] ?? "yaml";
-  const fileType = typeof rawFileType === "string"
+  const fileType: string = typeof rawFileType === "string"
     ? rawFileType
-    : (rawFileType as Record<string, unknown>)?.format ?? "yaml";
+    : String((rawFileType as Record<string, unknown>)?.format ?? "yaml");
   const outputFile = options?.["output-file"] ?? "asyncapi";
   const outputPath = `${outputFile}.${fileType}`;
 
