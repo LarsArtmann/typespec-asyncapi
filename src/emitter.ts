@@ -144,9 +144,9 @@ export async function $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): Pro
   const fileType = options?.["file-type"] ?? "yaml";
   const outputPath = `${outputFile}.${fileType}`;
 
-  // Emit file
+  // Emit file to the emitter's output directory
   const emitOptions: EmitFileOptions = {
-    path: outputPath,
+    path: `${context.emitterOutputDir}/${outputPath}`,
     content,
   };
 

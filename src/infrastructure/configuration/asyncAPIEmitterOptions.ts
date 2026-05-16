@@ -57,6 +57,15 @@ export type AsyncAPIEmitterOptions = EmitFileOptions & {
 
   /** Whether to include source map information */
   "source-maps"?: boolean;
+
+  /** Whether to omit unreachable types from output */
+  "omit-unreachable-types"?: boolean;
+
+  /** Whether to include source information in output */
+  "include-source-info"?: boolean;
+
+  /** Whether to validate the generated spec */
+  "validate-spec"?: boolean;
 };
 
 /**

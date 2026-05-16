@@ -282,15 +282,29 @@ export function $message(context: DecoratorContext, target: Model, config: unkno
     return;
   }
 
-  // Extract config values from Model
-  const configModel = config as Model;
-  const title = getModelPropertyStringValue(configModel, "title") ?? target.name;
-  const description =
-    getModelPropertyStringValue(configModel, "description") ?? `Message ${target.name}`;
-  const contentType = getModelPropertyStringValue(configModel, "contentType") ?? "application/json";
+  // Extract config values from either Model type or plain object value
+  let title: string | undefined;
+  let description: string | undefined;
+  let contentType: string | undefined;
+
+  if (config && typeof config === "object" && "kind" in config && config.kind === "Model") {
+    const configModel = config as Model;
+    title = getModelPropertyStringValue(configModel, "title");
+    description = getModelPropertyStringValue(configModel, "description");
+    contentType = getModelPropertyStringValue(configModel, "contentType");
+  } else if (config && typeof config === "object") {
+    const configObj = config as Record<string, unknown>;
+    title = typeof configObj.title === "string" ? configObj.title : undefined;
+    description = typeof configObj.description === "string" ? configObj.description : undefined;
+    contentType = typeof configObj.contentType === "string" ? configObj.contentType : undefined;
+  }
 
   // Store message configuration in state
-  storeMessageConfig(context.program, target, { title, description, contentType });
+  storeMessageConfig(context.program, target, {
+    title: title ?? target.name as string,
+    description: description ?? `Message ${target.name}`,
+    contentType: contentType ?? "application/json",
+  });
 }
 
 /**
@@ -315,33 +329,49 @@ export function $protocol(
 
   // Store protocol configuration in state map
   const protocolConfigsMap = getStateMap(context.program, stateSymbols.protocolConfigs);
-  const configTyped = config as Record<string, unknown>;
+
+  // Handle both Model type and plain value object
+  let configRecord: Record<string, unknown>;
+  if (config && typeof config === "object" && "kind" in config && config.kind === "Model") {
+    const configModel = config as Model;
+    configRecord = {};
+    for (const [key, prop] of configModel.properties) {
+      const propType = prop.type as { kind: string; value?: unknown };
+      if (propType.kind === "String" && propType.value !== undefined) {
+        configRecord[key] = propType.value;
+      } else {
+        configRecord[key] = propType;
+      }
+    }
+  } else {
+    configRecord = config as Record<string, unknown>;
+  }
 
   // Store protocol-specific configuration based on type
-  const protocolType = (configTyped.protocol as string) ?? "kafka";
+  const protocolType = (configRecord.protocol as string) ?? "kafka";
   const protocolConfig = {
     protocol: protocolType,
-    ...configTyped,
+    ...configRecord,
     // Add protocol-specific defaults
     ...(protocolType === "kafka" && {
-      partitions: configTyped.partitions ?? 1,
-      replicationFactor: configTyped.replicationFactor ?? 1,
-      consumerGroup: configTyped.consumerGroup ?? "default",
-      sasl: configTyped.sasl ?? {
+      partitions: configRecord.partitions ?? 1,
+      replicationFactor: configRecord.replicationFactor ?? 1,
+      consumerGroup: configRecord.consumerGroup ?? "default",
+      sasl: configRecord.sasl ?? {
         mechanism: "plain",
         username: "",
         password: "",
       },
     }),
     ...(protocolType === "ws" && {
-      subprotocol: configTyped.subprotocol ?? "asyncapi",
-      queryParams: configTyped.queryParams ?? {},
-      headers: configTyped.headers ?? {},
+      subprotocol: configRecord.subprotocol ?? "asyncapi",
+      queryParams: configRecord.queryParams ?? {},
+      headers: configRecord.headers ?? {},
     }),
     ...(protocolType === "mqtt" && {
-      qos: configTyped.qos ?? 1,
-      retain: configTyped.retain ?? false,
-      lastWill: configTyped.lastWill ?? {
+      qos: configRecord.qos ?? 1,
+      retain: configRecord.retain ?? false,
+      lastWill: configRecord.lastWill ?? {
         topic: "",
         message: "",
         qos: 1,
@@ -547,8 +577,19 @@ export function $bindings(
     return;
   }
 
-  // Store bindings in state
-  storeBindings(context.program, target, value as Record<string, unknown>);
+  // Store bindings in state, handling both Model types and plain objects
+  let bindings: Record<string, unknown>;
+  if (value && typeof value === "object" && "kind" in value && value.kind === "Model") {
+    const model = value as Model;
+    bindings = {};
+    for (const [key, prop] of model.properties) {
+      const propType = prop.type as { kind: string; value?: unknown };
+      bindings[key] = propType.kind === "String" ? propType.value : propType;
+    }
+  } else {
+    bindings = value as Record<string, unknown>;
+  }
+  storeBindings(context.program, target, bindings);
 }
 
 /**

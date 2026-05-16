@@ -31,6 +31,9 @@ export const DEFAULT_OPTIONS: Partial<EmitterOptions> = {
     enabled: false,
     strategy: "semantic",
   },
+  "omit-unreachable-types": false,
+  "include-source-info": false,
+  "validate-spec": true,
 };
 
 export const DEFAULT_SERVER_OPTIONS: Partial<ServerOptions> = {
@@ -60,6 +63,82 @@ export const DEFAULT_SERVER_OPTIONS: Partial<ServerOptions> = {
 export const ASYNC_API_EMITTER_OPTIONS_SCHEMA = {
   type: "object",
   additionalProperties: false,
+  $defs: {
+    AsyncAPIEmitterOptions: {
+      type: "object",
+      additionalProperties: false,
+      properties: {
+        "output-file": {
+          type: "string",
+          description: "Output file name without extension",
+          default: "asyncapi",
+          nullable: true,
+        },
+        "file-type": {
+          type: "string",
+          enum: ["yaml", "json"],
+          description: "Output file format",
+          default: "yaml",
+          nullable: false,
+        },
+        "asyncapi-version": {
+          type: "string",
+          enum: ["3.0.0"],
+          description: "AsyncAPI version",
+          default: "3.0.0",
+          nullable: false,
+        },
+        "protocol-bindings": {
+          type: "array",
+          description: "Protocol bindings configuration",
+          items: {
+            type: "string",
+            enum: ["http", "ws", "mqtt", "kafka", "amqp", "nats", "redis", "stomp", "jms"],
+          },
+          default: ["http"],
+          minItems: 1,
+          maxItems: 10,
+          uniqueItems: true,
+          nullable: false,
+        },
+        versioning: {
+          type: "object",
+          additionalProperties: false,
+          description: "Versioning configuration",
+          properties: {
+            enabled: {
+              type: "boolean",
+              default: false,
+              description: "Enable versioning support",
+              nullable: true,
+            },
+            strategy: {
+              type: "string",
+              enum: ["semantic", "timestamp", "custom"],
+              default: "semantic",
+              description: "Versioning strategy",
+              nullable: false,
+            },
+          },
+          required: ["enabled"],
+          nullable: true,
+        },
+        "security-schemes": {
+          type: "array",
+          description: "Security scheme configurations",
+          items: {
+            type: "string",
+            enum: ["apiKey", "http", "oauth2", "openIdConnect"],
+          },
+          default: [],
+          uniqueItems: true,
+          nullable: true,
+        },
+      },
+      required: ["asyncapi-version"],
+    },
+  },
+  $ref: "#/$defs/AsyncAPIEmitterOptions",
   properties: {
     "output-file": {
       type: "string",
@@ -69,7 +148,7 @@ export const ASYNC_API_EMITTER_OPTIONS_SCHEMA = {
     },
     "file-type": {
       type: "string",
-      enum: ["json", "yaml"],
+      enum: ["yaml", "json"],
       description: "Output file format",
       default: "yaml",
       nullable: false,
@@ -136,8 +215,10 @@ export const ASYNC_API_EMITTER_OPTIONS_SCHEMA = {
  *
  * Factory function for creating properly typed emitter options
  */
-export function createAsyncAPIEmitterOptions(options?: Partial<EmitterOptions>): EmitterOptions {
-  return mergeWithDefaults(options);
+export function createAsyncAPIEmitterOptions(
+  options?: Partial<EmitterOptions>,
+): Effect.Effect<Required<EmitterOptions>, never, never> {
+  return Effect.succeed(mergeWithDefaults(options));
 }
 
 /**
@@ -163,8 +244,33 @@ export function parseAsyncAPIEmitterOptions(
   options: unknown,
 ): Effect.Effect<EmitterOptions, Error, never> {
   return Effect.gen(function* () {
+    if (!options || typeof options !== "object") {
+      return yield* Effect.fail(
+        new Error(`Schema validation failed: Invalid AsyncAPI emitter options - ${JSON.stringify(options)}`),
+      );
+    }
+    const opts = options as Record<string, unknown>;
+
+    // Validate path templates in output-file
+    if (typeof opts["output-file"] === "string") {
+      const supportedTemplates = ["cwd", "project-root", "output-dir", "cmd", "emitter-name"];
+      const templateMatches = opts["output-file"].match(/\{([^}]+)\}/g);
+      if (templateMatches) {
+        for (const match of templateMatches) {
+          const varName = match.slice(1, -1);
+          if (!supportedTemplates.includes(varName)) {
+            return yield* Effect.fail(
+              new Error(`Invalid path template variable: {${varName}} is not supported. Supported variables: ${supportedTemplates.join(", ")}`),
+            );
+          }
+        }
+      }
+    }
+
     if (!isAsyncAPIEmitterOptions(options)) {
-      return yield* Effect.fail(new Error("Invalid AsyncAPI emitter options"));
+      return yield* Effect.fail(
+        new Error(`Schema validation failed: Invalid AsyncAPI emitter options - ${JSON.stringify(options)}`),
+      );
     }
     return options;
   });
@@ -183,6 +289,23 @@ export function isAsyncAPIEmitterOptions(options: unknown): options is EmitterOp
   if ("file-type" in opts && opts["file-type"] !== undefined) {
     if (opts["file-type"] !== "yaml" && opts["file-type"] !== "json") {
       return false;
+    }
+  }
+
+  // Check optional output-file for valid path templates
+  if ("output-file" in opts && opts["output-file"] !== undefined) {
+    const outputFile = opts["output-file"];
+    if (typeof outputFile === "string") {
+      const supportedTemplates = ["cwd", "project-root", "output-dir", "cmd", "emitter-name"];
+      const templateMatches = outputFile.match(/\{([^}]+)\}/g);
+      if (templateMatches) {
+        for (const match of templateMatches) {
+          const varName = match.slice(1, -1);
+          if (!supportedTemplates.includes(varName)) {
+            return false;
+          }
+        }
+      }
     }
   }
 
@@ -224,6 +347,41 @@ export function isAsyncAPIEmitterOptions(options: unknown): options is EmitterOp
     ];
     for (const protocol of bindings) {
       if (typeof protocol !== "string" || !validProtocols.includes(protocol)) {
+        return false;
+      }
+    }
+  }
+
+  // Check optional security-schemes if present
+  if ("security-schemes" in opts && opts["security-schemes"] !== undefined) {
+    const schemes = opts["security-schemes"];
+    if (typeof schemes !== "object" || schemes === null || Array.isArray(schemes)) {
+      return false;
+    }
+    const validSecurityTypes = [
+      "userPassword",
+      "apiKey",
+      "X509",
+      "symmetricEncryption",
+      "asymmetricEncryption",
+      "httpApiKey",
+      "http",
+      "oauth2",
+      "openIdConnect",
+      "plain",
+      "scramSha256",
+      "scramSha512",
+      "gssapi",
+    ];
+    for (const [, scheme] of Object.entries(schemes as Record<string, unknown>)) {
+      if (typeof scheme !== "object" || scheme === null) {
+        return false;
+      }
+      const schemeObj = scheme as Record<string, unknown>;
+      if (!("type" in schemeObj) || typeof schemeObj.type !== "string") {
+        return false;
+      }
+      if (!validSecurityTypes.includes(schemeObj.type)) {
         return false;
       }
     }

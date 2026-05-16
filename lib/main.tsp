@@ -17,19 +17,19 @@ extern dec channel(target: Operation, address: valueof string, description?: val
  * Apply message metadata to a model representing an AsyncAPI message
  * @param config Message configuration object
  */
-extern dec message(target: Model, config: Model);
+extern dec message(target: Model, config: {} | valueof Record<unknown>);
 
 /**
  * Define protocol-specific binding configuration
  * @param config Protocol binding configuration object
  */
-extern dec protocol(target: Operation | Model, config: Model);
+extern dec protocol(target: Operation | Model, config: {} | valueof Record<unknown>);
 
 /**
  * Apply security scheme information
  * @param config Security configuration object containing name and scheme
  */
-extern dec security(target: Operation | Namespace, config: Model);
+extern dec security(target: Operation | Namespace, config: {} | valueof Record<unknown>);
 
 /**
  * Define server configuration
@@ -66,7 +66,7 @@ extern dec correlationId(target: Model, location: valueof string, property?: val
  * Define protocol bindings (generic)
  * @param value Bindings configuration object
  */
-extern dec bindings(target: Operation | Model, value: Model);
+extern dec bindings(target: Operation | Model, value: {} | valueof Record<unknown>);
 
 /**
  * Define message header
