@@ -138,7 +138,6 @@ export async function compileAsyncAPISpecRaw(
 
   // If virtual filesystem is empty, check real filesystem for emitted files
   if (outputFiles.size === 0) {
-
     try {
       // Import filesystem utilities
       const _fs = await import("node:fs/promises");
@@ -345,7 +344,11 @@ export async function compileAsyncAPISpec(
 
   // Find matching file in virtual filesystem
   for (const [filePath, content] of result.outputFiles) {
-    if (filePath.endsWith(expectedFile) || filePath.endsWith(".yaml") || filePath.endsWith(".json")) {
+    if (
+      filePath.endsWith(expectedFile) ||
+      filePath.endsWith(".yaml") ||
+      filePath.endsWith(".json")
+    ) {
       const actualContent = typeof content === "string" ? content : content.content;
       const parsed = filePath.endsWith(".json")
         ? JSON.parse(actualContent)
@@ -430,7 +433,11 @@ export async function compileAsyncAPISpecWithResult(
   const expectedFile = `${outputFile}.${fileType}`;
 
   for (const [filePath, content] of rawResult.outputFiles) {
-    if (filePath.endsWith(expectedFile) || filePath.endsWith(".yaml") || filePath.endsWith(".json")) {
+    if (
+      filePath.endsWith(expectedFile) ||
+      filePath.endsWith(".yaml") ||
+      filePath.endsWith(".json")
+    ) {
       const actualContent = typeof content === "string" ? content : content.content;
       const parsed = filePath.endsWith(".json")
         ? JSON.parse(actualContent)
@@ -697,8 +704,6 @@ async function parseFileContent(content: string, filename: string): Promise<Asyn
 
   throw new Error(`Unsupported file format: ${filename}`);
 }
-
-
 
 /**
  * Create Alpha fallback AsyncAPI document with specific schema
