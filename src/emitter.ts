@@ -26,7 +26,14 @@ class AsyncAPISchemaEmitter extends TypeEmitter<SchemaObject, AsyncAPIEmitterOpt
 
     for (const [name, prop] of model.properties) {
       const propSchema = this.emitter.emitTypeReference(prop.type);
-      properties[name] = extractValue(propSchema);
+      const extracted = extractValue(propSchema);
+      if (Object.keys(extracted).length === 0) {
+        // Fallback: generate schema from prop type directly
+        const propType = prop.type as { kind: string; name?: string };
+        properties[name] = intrinsicToSchema(propType.name ?? propType.kind);
+      } else {
+        properties[name] = extracted;
+      }
       if (!prop.optional) {
         required.push(name);
       }
@@ -49,7 +56,14 @@ class AsyncAPISchemaEmitter extends TypeEmitter<SchemaObject, AsyncAPIEmitterOpt
 
     for (const [name, prop] of model.properties) {
       const propSchema = this.emitter.emitTypeReference(prop.type);
-      properties[name] = extractValue(propSchema);
+      const extracted = extractValue(propSchema);
+      if (Object.keys(extracted).length === 0) {
+        // Fallback: generate schema from prop type directly
+        const propType = prop.type as { kind: string; name?: string };
+        properties[name] = intrinsicToSchema(propType.name ?? propType.kind);
+      } else {
+        properties[name] = extracted;
+      }
       if (!prop.optional) required.push(name);
     }
 
@@ -61,7 +75,8 @@ class AsyncAPISchemaEmitter extends TypeEmitter<SchemaObject, AsyncAPIEmitterOpt
   modelProperties(model: any): EmitterOutput<SchemaObject> {
     const props: Record<string, unknown> = {};
     for (const [name, prop] of model.properties) {
-      props[name] = this.emitter.emitModelProperty(prop);
+      const result = this.emitter.emitModelProperty(prop);
+      props[name] = extractValue(result as any);
     }
     return props;
   }
@@ -87,6 +102,15 @@ class AsyncAPISchemaEmitter extends TypeEmitter<SchemaObject, AsyncAPIEmitterOpt
   }
 
   scalar(scalar: any): EmitterOutput<SchemaObject> {
+    return intrinsicToSchema(scalar.name);
+  }
+
+  scalarDeclaration(scalar: any, name: string): EmitterOutput<SchemaObject> {
+    return this.emitter.result.declaration(name, intrinsicToSchema(scalar.name));
+  }
+
+  scalarInstantiation(scalar: any, name: string | undefined): EmitterOutput<SchemaObject> {
+    if (name) return this.scalarDeclaration(scalar, name);
     return intrinsicToSchema(scalar.name);
   }
 
@@ -126,6 +150,23 @@ class AsyncAPISchemaEmitter extends TypeEmitter<SchemaObject, AsyncAPIEmitterOpt
     return { scope: sourceFile.globalScope };
   }
 
+  namespaceDeclaration(namespace: any): EmitterOutput<SchemaObject> {
+    return this.emitter.result.none();
+  }
+
+  operation(operation: any): EmitterOutput<SchemaObject> {
+    return this.emitter.result.none();
+  }
+
+  interfaceDeclaration(iface: any): EmitterOutput<SchemaObject> {
+    return this.emitter.result.none();
+  }
+
+  enumDeclaration(en: any, name: string): EmitterOutput<SchemaObject> {
+    const values = [...en.members.values()].map((m: any) => m.value ?? m.name);
+    return this.emitter.result.declaration(name, { type: "string", enum: values });
+  }
+
   sourceFile(sourceFile: SourceFile<SchemaObject>): EmittedSourceFile {
     return { contents: "", path: sourceFile.path };
   }
@@ -151,7 +192,14 @@ function intrinsicToSchema(typeName: string): SchemaObject {
 
 function extractValue(entity: EmitEntity<SchemaObject> | undefined): SchemaObject {
   if (!entity) return {};
+  // Direct value access
   if ("value" in entity && entity.value != null) return entity.value as SchemaObject;
+  // Check kind-based extraction
+  const e = entity as unknown as Record<string, unknown>;
+  if (e.kind === "declaration" && e.value != null) return e.value as SchemaObject;
+  if (e.kind === "code" && e.value != null) return e.value as SchemaObject;
+  // If the entity IS a plain object schema (no wrapper), return it directly
+  if (!("kind" in entity) && typeof entity === "object") return entity as SchemaObject;
   return {};
 }
 
@@ -221,13 +269,23 @@ function buildAsyncAPIDocument(
     };
   }
 
-  // Build operations from state
+  // Build operations from state — link to channels by path
+  const channelMap = new Map<string, string>();
+  for (const [type, data] of state.channels) {
+    const channelData = data as { path?: string };
+    const typeWithName = type as { name: string };
+    const opName = typeWithName.name;
+    const channelPath = channelData.path ?? opName;
+    channelMap.set(opName, channelPath);
+  }
+
   for (const [type, data] of state.operations) {
     const opData = data as { type: string; messageType?: string; description?: string };
     const typeWithName = type as { name: string };
+    const channelPath = channelMap.get(typeWithName.name) ?? typeWithName.name;
     operations[typeWithName.name] = {
-      action: opData.type === "publish" ? "receive" : "send",
-      channel: { $ref: `#/channels/${typeWithName.name}` },
+      action: opData.type === "publish" ? "send" : "receive",
+      channel: { $ref: `#/channels/${channelPath}` },
       messages: [{ $ref: `#/components/messages/${opData.messageType ?? typeWithName.name}` }],
     };
   }
