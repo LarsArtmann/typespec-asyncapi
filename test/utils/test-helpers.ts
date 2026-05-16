@@ -132,7 +132,7 @@ export async function compileAsyncAPISpecRaw(
 
   // Access outputFiles from TestHost's virtual filesystem
   // The test host captures all file writes made by emitFile()
-  const outputFiles = host.fs.fs;
+  const outputFiles = runner.fs;
 
   const program = runner.program || _result.program || _result;
 
@@ -424,73 +424,31 @@ export async function compileAsyncAPISpecWithResult(
     throw new Error(`Compilation failed with errors: ${errors.map((d) => d.message).join(", ")}`);
   }
 
-  // Parse the AsyncAPI document using same logic as compileAsyncAPISpec
-  try {
-    // Try different possible output file names
-    const possibleFiles = ["asyncapi.yaml", "asyncapi.json"];
+  // Parse the AsyncAPI document using options-aware file discovery
+  const outputFile = options?.["output-file"] ?? "asyncapi";
+  const fileType = options?.["file-type"] ?? "yaml";
+  const expectedFile = `${outputFile}.${fileType}`;
 
-    for (const fileName of possibleFiles) {
-      try {
-        const parsed = await parseAsyncAPIOutput(rawResult.outputFiles, fileName);
-        console.log(
-          `🔍 DEBUG parsed result for ${fileName}: ${typeof parsed}, ${parsed ? "has value" : "null/undefined"}`,
-        );
-        if (parsed && typeof parsed === "object") {
-          console.log(`🔍 DEBUG parsed object has ${Object.keys(parsed).length} keys`);
-          Effect.log(`✅ Successfully parsed AsyncAPI document from ${fileName}`);
-          return {
-            asyncApiDoc: parsed as AsyncAPIObject,
-            result: {
-              outputFiles: rawResult.outputFiles,
-              program: rawResult.program,
-              diagnostics: rawResult.diagnostics,
-            },
-          };
-        } else if (typeof parsed === "string") {
-          console.log(`🔍 DEBUG got string instead of object: ${parsed}`);
-        }
-      } catch (error) {
-        Effect.log(`Failed to parse ${fileName}: ${String(error)}`);
-        continue;
-      }
+  for (const [filePath, content] of rawResult.outputFiles) {
+    if (filePath.endsWith(expectedFile) || filePath.endsWith(".yaml") || filePath.endsWith(".json")) {
+      const actualContent = typeof content === "string" ? content : content.content;
+      const parsed = filePath.endsWith(".json")
+        ? JSON.parse(actualContent)
+        : yaml.parse(actualContent);
+      return {
+        asyncApiDoc: parsed as AsyncAPIObject,
+        result: {
+          outputFiles: rawResult.outputFiles,
+          program: rawResult.program,
+          diagnostics: rawResult.diagnostics,
+        },
+      };
     }
-
-    // If no standard file found, try to find any AsyncAPI file
-    const allFiles = Array.from(rawResult.outputFiles.keys());
-    const asyncapiFiles = allFiles.filter(
-      (path) =>
-        (path.includes("asyncapi") || path.includes("AsyncAPI")) &&
-        (path.endsWith(".yaml") || path.endsWith(".json")),
-    );
-
-    if (asyncapiFiles.length > 0) {
-      const fileName = asyncapiFiles[0];
-      const parsed = await parseAsyncAPIOutput(rawResult.outputFiles, fileName);
-      if (parsed && typeof parsed === "object") {
-        Effect.log(`✅ Successfully parsed AsyncAPI document from ${fileName}`);
-        return {
-          asyncApiDoc: parsed as AsyncAPIObject,
-          result: {
-            outputFiles: rawResult.outputFiles,
-            program: rawResult.program,
-            diagnostics: rawResult.diagnostics,
-          },
-        };
-      }
-    }
-
-    // NO MORE ALPHA FALLBACK: Emitter works, so throw real error if file not found
-    Effect.log(`❌ No AsyncAPI files found in output`);
-    Effect.log(`📊 Total output files: ${allFiles.length}`);
-    for (const [key, value] of rawResult.outputFiles) {
-      Effect.log(`  📄 ${key}: ${typeof value} (${value?.length || 0} chars)`);
-    }
-
-    throw new Error(`No AsyncAPI files found in compilation output`);
-  } catch (error) {
-    Effect.log(`❌ Failed to parse AsyncAPI output: ${String(error)}`);
-    throw new Error(`Failed to parse AsyncAPI output: ${String(error)}`);
   }
+
+  throw new Error(
+    `AsyncAPI output "${expectedFile}" not found. Available: ${Array.from(rawResult.outputFiles.keys()).join(", ")}`,
+  );
 }
 
 /**
