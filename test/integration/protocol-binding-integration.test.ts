@@ -7,7 +7,7 @@
 
 import { describe, it, expect } from "bun:test";
 import { compileAsyncAPISpec } from "../utils/test-helpers";
-import { SUPPORTED_PROTOCOLS } from "../../src/constants/protocol-defaults.js";
+import { PROTOCOL_LIST } from "../../src/constants/protocols.js";
 
 describe("AsyncAPI Protocol Binding Integration", () => {
   describe("Kafka Protocol Integration", () => {
@@ -244,11 +244,11 @@ describe("AsyncAPI Protocol Binding Integration", () => {
 
     it("should validate supported protocols are properly handled", () => {
       // Test that supported protocols are defined correctly
-      expect(SUPPORTED_PROTOCOLS).toBeDefined();
-      expect(SUPPORTED_PROTOCOLS.length).toBeGreaterThan(0);
-      expect(SUPPORTED_PROTOCOLS).toContain("kafka");
-      expect(SUPPORTED_PROTOCOLS).toContain("http");
-      expect(SUPPORTED_PROTOCOLS).toContain("websocket");
+      expect(PROTOCOL_LIST).toBeDefined();
+      expect(PROTOCOL_LIST.length).toBeGreaterThan(0);
+      expect(PROTOCOL_LIST).toContain("kafka");
+      expect(PROTOCOL_LIST).toContain("http");
+      expect(PROTOCOL_LIST).toContain("websocket");
     });
   });
 

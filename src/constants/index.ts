@@ -1,103 +1,43 @@
 /**
- * CONSTANTS FOR TYPESPEC ASYNCAPI EMITTER
+ * Constants for TypeSpec AsyncAPI Emitter
  *
- * REFACTORED: Eliminated all TODOs through comprehensive system replacement
- * Consolidated version management, path handling, and configuration
+ * Re-exports from single-source-of-truth modules.
+ * No duplicate definitions in this file.
  */
 
-// Core constants
-import { CURRENT_ASYNCAPI_VERSION, SUPPORTED_ASYNCAPI_VERSIONS } from "./version.js";
-export const ASYNCAPI_VERSION = CURRENT_ASYNCAPI_VERSION;
-export const DEFAULT_CONTENT_TYPE = "application/json";
-export const DEFAULT_SERVER_URL = "http://localhost:3000";
-
-// Protocol constants
-export const PROTOCOL_DEFAULTS = {
-  HTTP: "http",
-  KAFKA: "kafka",
-  MQTT: "mqtt",
-  WEBSOCKET: "ws",
-  AMQP: "amqp",
-  NATS: "nats",
-  REDIS: "redis",
-} as const;
-
-export type ProtocolType = (typeof PROTOCOL_DEFAULTS)[keyof typeof PROTOCOL_DEFAULTS];
-
-// Binding constants
-export const BINDING_DEFAULTS = {
-  KAFKA: "kafka",
-  HTTP: "http",
-  WEBSOCKET: "ws",
-  MQTT: "mqtt",
-  AMQP: "amqp",
-  AMQP1: "amqp1",
-  AMQP091: "amqp091",
-  NATS: "nats",
-  REDIS: "redis",
-  STOMP: "stomp",
-  JMS: "jms",
-  SNS: "sns",
-  SQS: "sqs",
-  GOOGLE_PUBSUB: "googlepubsub",
-  PULSAR: "pulsar",
-} as const;
-
-export type BindingType = (typeof BINDING_DEFAULTS)[keyof typeof BINDING_DEFAULTS];
-
-// Re-export comprehensive systems (no more TODOs)
+// Protocol constants — single source of truth
 export {
-  versionUtils,
-  VERSION_INFO,
-  type AsyncAPIVersion,
-  type SemanticVersion,
-  type CompatibilityRange,
-} from "./version.js";
-export {
-  pathUtils,
-  pathValidation,
-  pathTransformation,
-  type ValidatedPath,
-  type AbsolutePath,
-  type RelativePath,
-  type FilePath,
-  type DirectoryPath,
-} from "./paths.js";
-export {
-  configUtils,
-  configurationUtils,
-  type Configuration,
-  type ConfigurationInput,
-} from "./config.js";
+  SUPPORTED_PROTOCOLS,
+  PROTOCOL_LIST,
+  isSupportedProtocol,
+  type AsyncAPIProtocol,
+} from "./protocols.js";
 
-// Legacy compatibility exports (maintained for test compatibility)
+// Version constants
+export const ASYNCAPI_VERSION = "3.0.0" as const;
+export const LIBRARY_NAME = "@lars-artmann/typespec-asyncapi" as const;
+
+// Legacy compatibility for tests
 export const ASYNCAPI_VERSIONS = {
-  CURRENT: CURRENT_ASYNCAPI_VERSION,
-  SUPPORTED: SUPPORTED_ASYNCAPI_VERSIONS,
-  LATEST: CURRENT_ASYNCAPI_VERSION,
-  COMPATIBILITY: {
-    MIN: CURRENT_ASYNCAPI_VERSION,
-    MAX: CURRENT_ASYNCAPI_VERSION,
-  },
+  CURRENT: "3.0.0" as const,
+  SUPPORTED: ["3.0.0"] as const,
+  LATEST: "3.0.0" as const,
 } as const;
 
 export const DEFAULT_CONFIG = {
-  version: CURRENT_ASYNCAPI_VERSION,
+  version: "3.0.0",
   title: "AsyncAPI Specification",
   description: "Generated AsyncAPI specification from TypeSpec",
-  contentType: DEFAULT_CONTENT_TYPE,
-  server: {
-    url: "http://localhost:3000",
-    protocol: "http",
-    description: "Default development server",
-  },
-  output: {
-    file: "asyncapi.yaml",
-    format: "yaml",
-  },
-  validation: {
-    strict: true,
-    warnings: true,
-  },
+  contentType: "application/json",
   libraryName: "@lars-artmann/typespec-asyncapi",
+} as const;
+
+// Output defaults
+export const DEFAULT_CONTENT_TYPE = "application/json" as const;
+export const DEFAULT_SERVER_URL = "http://localhost:3000" as const;
+
+// Library paths for test utilities
+export const LIBRARY_PATHS = {
+  LIB_DIR: "lib",
+  DIST_DIR: "dist/src",
 } as const;

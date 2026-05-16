@@ -17,9 +17,7 @@ import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js";
 import { Effect } from "effect";
 
 // Constants - Import centralized constants to eliminate hardcoded values
-import { ASYNCAPI_VERSIONS, DEFAULT_CONFIG } from "../../src/constants/index.js";
-
-import { LIBRARY_PATHS } from "../../src/constants/paths.js";
+import { ASYNCAPI_VERSIONS, DEFAULT_CONFIG, LIBRARY_PATHS } from "../../src/constants/index.js";
 
 //TODO: MONOLITHIC FILE DISASTER - THEY ALREADY KNOW IT'S TOO BIG BUT DO NOTHING!
 //TODO: ARCHITECTURAL VIOLATION - 571 lines in single test utilities file is INSANE!

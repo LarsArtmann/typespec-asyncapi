@@ -6,13 +6,13 @@
  */
 import { expect, test, describe } from "bun:test";
 import {
-  SUPPORTED_PROTOCOLS,
-  type AsyncAPIProtocolType,
-} from "../../src/constants/protocol-defaults.js";
+  PROTOCOL_LIST,
+  type AsyncAPIProtocol,
+} from "../../src/constants/protocols.js";
 
 // Standard AsyncAPI 3.0 binding format helpers
 const createStandardBinding = (
-  protocol: AsyncAPIProtocolType,
+  protocol: AsyncAPIProtocol,
   config: Record<string, unknown> = {},
 ) => {
   return {
@@ -117,11 +117,11 @@ describe("AsyncAPI 3.0 Standard Protocol Bindings", () => {
   });
 
   test("Supported protocols are properly defined", () => {
-    expect(SUPPORTED_PROTOCOLS).toBeDefined();
-    expect(SUPPORTED_PROTOCOLS.length).toBeGreaterThan(0);
-    expect(SUPPORTED_PROTOCOLS).toContain("kafka");
-    expect(SUPPORTED_PROTOCOLS).toContain("websocket");
-    expect(SUPPORTED_PROTOCOLS).toContain("http");
+    expect(PROTOCOL_LIST).toBeDefined();
+    expect(PROTOCOL_LIST.length).toBeGreaterThan(0);
+    expect(PROTOCOL_LIST).toContain("kafka");
+    expect(PROTOCOL_LIST).toContain("websocket");
+    expect(PROTOCOL_LIST).toContain("http");
   });
 
   test("Binding validation catches missing bindingVersion", () => {

@@ -5,7 +5,7 @@
  * "As a user defining TypeSpec, when I use @decorator, I get X in my AsyncAPI output"
  */
 import { expect, test, describe } from "bun:test";
-import { SUPPORTED_PROTOCOLS, isSupportedProtocol } from "../../src/constants/protocol-defaults.js";
+import { PROTOCOL_LIST, isSupportedProtocol } from "../../src/constants/protocols.js";
 import {
   parsePathTemplate,
   validatePathTemplate,
@@ -65,8 +65,8 @@ describe("BDD: User configures protocol bindings", () => {
     expect(isSupportedProtocol("unknown-protocol")).toBe(false);
   });
 
-  test("Given all supported protocols list, When counted, Then there are 11 protocols", () => {
-    expect(SUPPORTED_PROTOCOLS).toHaveLength(11);
+  test("Given all supported protocols list, When counted, Then there are 19 protocols", () => {
+    expect(PROTOCOL_LIST).toHaveLength(19);
   });
 });
 
@@ -74,39 +74,33 @@ describe("BDD: User configures protocol bindings", () => {
 // Feature: Emitter Configuration
 // ============================================================================
 describe("BDD: User configures emitter options", () => {
-  test("Given valid options with yaml file-type, When validated, Then options are valid", async () => {
-    const result = await validateAsyncAPIEmitterOptions({
+  test("Given valid options with yaml file-type, When validated, Then options are valid", () => {
+    const result = validateAsyncAPIEmitterOptions({
       "file-type": "yaml",
       "asyncapi-version": "3.0.0",
     });
-    const validated = result.pipe((e: any) => e);
-    // Effect should succeed
-    expect(validated).toBeDefined();
+    expect(result).toBeDefined();
   });
 
-  test("Given invalid file-type, When validated, Then validation fails", async () => {
-    const result = validateAsyncAPIEmitterOptions({
-      "file-type": "xml",
-    });
-    // Effect should fail
-    expect(result).toBeDefined();
+  test("Given invalid file-type, When validated, Then validation fails", () => {
+    expect(() =>
+      validateAsyncAPIEmitterOptions({ "file-type": "xml" }),
+    ).toThrow();
   });
 
   test("Given valid protocol-bindings, When validated, Then options are valid", () => {
-    const options = {
+    const result = validateAsyncAPIEmitterOptions({
       "protocol-bindings": ["kafka", "http"],
       "asyncapi-version": "3.0.0",
-    };
-    // Should not throw
-    expect(options["protocol-bindings"]).toContain("kafka");
-    expect(options["protocol-bindings"]).toContain("http");
+    });
+    expect(result["protocol-bindings"]).toContain("kafka");
+    expect(result["protocol-bindings"]).toContain("http");
   });
 
   test("Given invalid asyncapi-version, When validated, Then validation fails", () => {
-    const result = validateAsyncAPIEmitterOptions({
-      "asyncapi-version": "2.6.0",
-    });
-    expect(result).toBeDefined();
+    expect(() =>
+      validateAsyncAPIEmitterOptions({ "asyncapi-version": "2.6.0" }),
+    ).toThrow();
   });
 });
 

@@ -57,7 +57,7 @@ const IMPORT_MAPPINGS: Record<string, string> = {
 
   // Constants need updates for new paths
   "../constants/cloud-binding-type.js": "../../constants/cloud-binding-type.js",
-  "../constants/protocol-defaults.js": "../../constants/protocol-defaults.js",
+  "../constants/protocols.js": "../../constants/protocols.js",
   "../constants/": "../../constants/",
   "./constants/": "../constants/",
 

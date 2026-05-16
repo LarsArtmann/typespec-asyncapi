@@ -25,8 +25,6 @@
 // TypeSpec Core Imports - Library infrastructure and diagnostic system
 import {
   createTypeSpecLibrary,
-  type DecoratorContext,
-  type DiagnosticTarget,
   paramMessage,
 } from "@typespec/compiler";
 
@@ -65,49 +63,22 @@ import {
  */
 export const $lib = createTypeSpecLibrary({
   name: "@lars-artmann/typespec-asyncapi",
-  // TODO: Add library description, version, and other metadata fields
   diagnostics: {
-    // TODO: TYPE_SAFETY - Extract diagnostics to typed const with DiagnosticMap<string, DiagnosticDefinition> for reusability
-    // TODO: TYPE_SAFETY - Each diagnostic should have explicit severity type: "error" | "warning" | "info"
-    // TODO: TYPE_SAFETY - Add template parameter types for paramMessage template arguments
-    // TODO: ARCHITECTURE - Group related diagnostics with separating comments (version, channel, message, protocol, security)
-    // TODO: MAINTENANCE - Consider using enum for diagnostic codes to prevent typos and enable refactoring
-    // TODO: VALIDATION - Add runtime validation that all referenced template parameters exist in messages
-
-    // === VERSION VALIDATION DIAGNOSTICS ===
     "invalid-asyncapi-version": {
-      // TODO: TYPE_SAFETY - severity should use const assertion: "error" as const
       severity: "error",
-      // TODO: TYPE_SAFETY - Add multiple message variants for different contexts (CLI, IDE, programmatic)
-      // TODO: TYPE_SAFETY - Template parameters should be explicitly typed: version: string
       messages: {
-        // Using hardcoded AsyncAPI version instead of constant
-        // TODO: TYPE_SAFETY - paramMessage template should specify parameter types
         default: paramMessage`AsyncAPI version '${"version"}' is not supported. Only AsyncAPI 3.0.0 is supported. Update your emitter options to use "3.0.0".`,
       },
     },
-
-    // === CHANNEL VALIDATION DIAGNOSTICS ===
     "missing-channel-path": {
-      // TODO: TYPE_SAFETY - severity: "error" as const for better type inference
       severity: "error",
       messages: {
-        // TODO: TYPE_SAFETY - Template parameters should be typed: operationName: string
-        // TODO: UX - Add actionable examples in the error message for different channel patterns
-        // TODO: UX - Add link to documentation about channel path requirements
-        // TODO: UX - Include common channel patterns in the error message for immediate help
         default: paramMessage`Operation '${"operationName"}' missing @channel decorator. Add @channel("/your-channel-path") to specify the channel path.`,
       },
     },
     "invalid-channel-path": {
-      // TODO: TYPE_SAFETY - severity: "error" as const
       severity: "error",
       messages: {
-        // TODO: TYPE_SAFETY - Template parameters should be typed: path: string
-        // TODO: UX - Add specific validation rules documentation in the error message
-        // TODO: UX - Provide examples of valid channel path formats
-        // TODO: UX - Add suggestion for fixing common path format mistakes
-        // TODO: UX - Include regex pattern or validation function reference for developers
         default: paramMessage`Channel path '${"path"}' is not valid. Use format: /topic-name, /service/event-type, or {variable} syntax.`,
       },
     },
@@ -219,9 +190,6 @@ export const $lib = createTypeSpecLibrary({
         default: paramMessage`@asyncapi decorator can only be applied to namespaces, not '${"targetType"}'.`,
       },
     },
-    // TODO: Add more diagnostic codes for edge cases and advanced validations
-    // TODO: Consider adding info-level diagnostics for best practices
-    // TODO: Add diagnostic codes for performance warnings (large schemas, etc.)
   },
   /**
    * State Management Schema - Decorator data persistence during TypeSpec compilation
@@ -244,12 +212,9 @@ export const $lib = createTypeSpecLibrary({
    * 3. Emitter retrieves consolidated state for document generation
    * 4. State is cleaned up automatically after compilation completion
    *
-   * @see {@link stateKeys} Strongly-typed state key constants
+   * @see {@link stateSymbols} Symbol-based state keys used by decorators
    */
   state: {
-    // TODO: Add more detailed descriptions including data types and usage patterns
-    // TODO: Consider adding validation functions for state data integrity
-    // TODO: Group related state by functionality (channels, messages, servers, etc.)
     channelPaths: { description: "Map of operation to channel path" },
     messageSchemas: { description: "Map of message names to their schemas" },
     messageConfigs: { description: "Map of models to message configurations" },
@@ -278,152 +243,6 @@ export const $lib = createTypeSpecLibrary({
   },
   // NOTE: Decorators are auto-discovered through module exports, not registered in createTypeSpecLibrary
 } as const);
-
-/**
- * State Keys Constants - Strongly-typed keys for decorator state management
- *
- * This constant object provides strongly-typed string literals for accessing state data
- * stored by decorators during TypeSpec compilation. Using these constants instead of
- * raw strings ensures type safety and prevents runtime errors from typos.
- *
- * Usage Pattern:
- * ```typescript
- * // In decorators - storing data:
- * const stateMap = context.program.stateMap($lib.stateKeys.channelPaths);
- * stateMap.set(operation, "/users/{userId}/events");
- *
- * // In emitters - retrieving data:
- * const channelPaths = context.program.stateMap($lib.stateKeys.channelPaths);
- * const path = channelPaths.get(operation);
- * ```
- *
- * State Key Categories:
- * - channelPaths: Maps TypeSpec operations to AsyncAPI channel paths
- * - messageSchemas: Maps message names to their TypeSpec model schemas
- * - messageConfigs: Maps TypeSpec models to @message decorator configuration
- * - serverConfigs: Stores @server decorator configuration data
- * - protocolBindings: Maps protocol names to their binding configurations
- * - protocolConfigs: Maps TypeSpec targets to @protocol decorator settings
- * - securitySchemes: Stores security scheme definitions
- * - securityConfigs: Maps TypeSpec targets to @security decorator settings
- * - operationTypes: Maps operations to publish/subscribe classifications
- *
- * @constant {StateKeyMap} stateKeys - Type-safe state key constants
- * @readonly
- * @public
- *
- * @example Accessing state in decorators:
- * ```typescript
- * export function $channel(context: DecoratorContext, target: Operation, path: string) {
- *   const stateMap = context.program.stateMap($lib.stateKeys.channelPaths);
- *   stateMap.set(target, path);
- * }
- * ```
- *
- * @example Retrieving state in emitters:
- * ```typescript
- * function generateChannels(context: EmitContext) {
- *   const channelPaths = context.program.stateMap($lib.stateKeys.channelPaths);
- *   for (const [operation, path] of channelPaths) {
- *     // Generate AsyncAPI channel from operation and path
- *   }
- * }
- * ```
- *
- * @see {@link $lib.state} State schema definitions
- */
-export const stateKeys = {
-  channelPaths: "channelPaths", // Maps TypeSpec operations to AsyncAPI channel path strings
-  messageSchemas: "messageSchemas", // Maps message names to their TypeSpec model schema definitions
-  messageConfigs: "messageConfigs", // Maps TypeSpec models to @message decorator configuration objects
-  messageHeaders: "messageHeaders", // Maps model properties marked as headers with @header decorator
-  serverConfigs: "serverConfigs", // Stores @server decorator configuration data for AsyncAPI servers
-  protocolBindings: "protocolBindings", // Maps protocol names to their binding configuration objects
-  protocolConfigs: "protocolConfigs", // Maps TypeSpec targets to @protocol decorator settings
-  securitySchemes: "securitySchemes", // Stores security scheme definitions for authentication
-  securityConfigs: "securityConfigs", // Maps TypeSpec targets to @security decorator settings
-  operationTypes: "operationTypes", // Maps operations to publish/subscribe classifications
-  tags: "tags", // Maps targets to tag arrays for categorization and organization
-  correlationIds: "correlationIds", // Maps models to correlation ID configurations for message tracking
-  cloudBindings: "cloudBindings", // Maps targets to cloud provider specific binding configurations
-} as const;
-
-/**
- * TypeSpec Diagnostic Reporter Helper
- *
- * This is a standard TypeSpec emitter utility function that reports validation errors
- * and diagnostics during TypeSpec compilation. It's used by decorator implementations
- * to provide meaningful error messages when TypeSpec code doesn't conform to AsyncAPI requirements.
- *
- * TypeSpec emitters are expected to provide diagnostic reporting capabilities,
- * and this function follows the standard TypeSpec diagnostic pattern by:
- * 1. Accepting a context (from the TypeSpec compiler)
- * 2. Taking a target (the TypeSpec AST node being validated)
- * 3. Using a diagnostic code (prefixed with the emitter namespace)
- * 4. Including optional arguments for error message templating
- *
- * @param context - TypeSpec emitter context containing the program reference
- * @param target - The TypeSpec AST node that triggered the diagnostic
- * @param code - Diagnostic code (must be one of the codes defined in $lib.diagnostics)
- * @param args - Optional arguments for error message templating
- *
- * @returns {void} No return value - diagnostics are reported directly to TypeSpec compiler
- *
- * @throws {TypeError} When context parameter is null or undefined
- * @throws {Error} When target parameter is not a valid TypeSpec AST node
- * @throws {Error} When diagnostic code is empty or contains invalid characters
- * @throws {Error} When TypeSpec compiler fails to process the diagnostic
- *
- * @example Basic error reporting in decorator:
- * ```typescript
- * export function $channel(context: DecoratorContext, target: Operation, path?: string) {
- *   if (!path || path.length === 0) {
- *     reportDiagnostic(context, target, "missing-channel-path", {
- *       operationName: target.name
- *     });
- *     return;
- *   }
- *   // Process valid channel path...
- * }
- * ```
- *
- * @example Validation error with parameters:
- * ```typescript
- * if (!isValidAsyncAPIVersion(version)) {
- *   reportDiagnostic(context, target, "invalid-asyncapi-version", {
- *     version: version
- *   });
- * }
- * ```
- *
- * @example Complex validation with multiple parameters:
- * ```typescript
- * if (!isValidChannelPath(path)) {
- *   reportDiagnostic(context, target, "invalid-channel-path", {
- *     path: path,
- *     operation: target.name,
- *     suggestions: generatePathSuggestions(path)
- *   });
- * }
- * ```
- *
- * @since 0.1.0-alpha
- * @public
- */
-export function reportDiagnostic(
-  context: DecoratorContext,
-  target: DiagnosticTarget,
-  code: keyof typeof $lib.diagnostics,
-  args?: Record<string, never>,
-): void {
-  // Use TypeSpec library's diagnostic system which handles template resolution automatically
-  const resolvedDiagnostic = $lib.createDiagnostic({
-    code,
-    target,
-    format: args ?? {},
-  });
-  context.program.reportDiagnostic(resolvedDiagnostic);
-}
 
 /**
  * State Symbols - Unique symbols for TypeSpec state management
