@@ -141,7 +141,8 @@ export async function $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): Pro
   // Generate YAML content
   const content = generateYAML(asyncapiDocument);
   const outputFile = options?.["output-file"] ?? "asyncapi";
-  const fileType = options?.["file-type"] ?? "yaml";
+  const rawFileType = options?.["file-type"] ?? "yaml";
+  const fileType = typeof rawFileType === "string" ? rawFileType : (rawFileType as Record<string, unknown>)?.format ?? "yaml";
   const outputPath = `${outputFile}.${fileType}`;
 
   // Emit file to the emitter's output directory
