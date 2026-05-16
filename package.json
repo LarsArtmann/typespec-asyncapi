@@ -103,15 +103,11 @@
     "@asyncapi/specs": "^6.11.1",
     "@effect/schema": "^0.75.5",
     "@types/js-yaml": "^4.0.9",
-    "@types/passport-oauth2": "^1.8.0",
     "@typespec/asset-emitter": "^0.79.1",
     "@typespec/compiler": "^1.12.0",
     "@typespec/emitter-framework": "^0.17.0",
-    "@xmpp/sasl": "^0.14.0",
     "ajv": "^8.20.0",
     "effect": "^3.21.2",
-    "openid-client": "^6.8.4",
-    "passport-oauth2": "^1.8.0",
     "yaml": "^2.9.0"
   },
   "devDependencies": {

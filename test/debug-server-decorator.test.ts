@@ -4,7 +4,7 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { $server } from "../src/domain/decorators/server.js";
+import { $server } from "../src/minimal-decorators.js";
 import { $lib } from "../src/lib.js";
 
 describe("Server Decorator Debug", () => {
