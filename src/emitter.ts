@@ -29,34 +29,34 @@ class AsyncAPISchemaEmitter extends TypeEmitter<SchemaObject, AsyncAPIEmitterOpt
     const properties: Record<string, unknown> = {};
     const required: string[] = [];
 
-    for (const [name, prop] of model.properties) {
-      const propSchema = this.emitter.emitTypeReference(prop.type);
-      const extracted = extractValue(propSchema);
-      if (Object.keys(extracted).length === 0) {
-        properties[name] = this.typeToSchema(prop.type);
-      } else {
-        properties[name] = extracted;
+    // Collect properties from base models (inheritance chain)
+    const collectProperties = (m: any) => {
+      if (m.baseModel) collectProperties(m.baseModel);
+      for (const [name, prop] of m.properties) {
+        if (properties[name] !== undefined) continue; // derived overrides base
+        const propSchema = this.emitter.emitTypeReference(prop.type);
+        const extracted = extractValue(propSchema);
+        if (Object.keys(extracted).length === 0) {
+          properties[name] = this.typeToSchema(prop.type);
+        } else {
+          properties[name] = extracted;
+        }
+        const propDoc = getDoc(this.emitter.getProgram(), prop);
+        if (propDoc && typeof properties[name] === "object" && properties[name] !== null) {
+          (properties[name] as SchemaObject).description = propDoc;
+        }
+        if (!prop.optional) {
+          required.push(name);
+        }
       }
-      // Add @doc description to property schema
-      const propDoc = getDoc(this.emitter.getProgram(), prop);
-      if (propDoc && typeof properties[name] === "object" && properties[name] !== null) {
-        (properties[name] as SchemaObject).description = propDoc;
-      }
-      if (!prop.optional) {
-        required.push(name);
-      }
-    }
+    };
+    collectProperties(model);
 
     const schema: SchemaObject = { type: "object", properties };
     if (required.length > 0) schema.required = required;
 
     const doc = getDoc(this.emitter.getProgram(), model);
     if (doc) schema.description = doc;
-
-    if (model.baseModel) {
-      const ref = this.emitter.emitTypeReference(model.baseModel);
-      schema.allOf = [extractValue(ref)];
-    }
 
     return this.emitter.result.declaration(model.name, schema);
   }
@@ -335,6 +335,7 @@ function buildAsyncAPIDocument(
   const operations: Record<string, unknown> = {};
   const servers: Record<string, unknown> = {};
   const messages: Record<string, unknown> = {};
+  const securitySchemes: Record<string, unknown> = {};
 
   // Build channels from state
   for (const [type, data] of state.channels) {
@@ -437,6 +438,12 @@ function buildAsyncAPIDocument(
     }
   }
 
+  // Build security schemes from state
+  for (const [_type, data] of state.securityConfigs) {
+    const secData = data as { name: string; scheme: Record<string, unknown> };
+    securitySchemes[secData.name] = secData.scheme;
+  }
+
   return {
     asyncapi: options?.["asyncapi-version"] ?? "3.0.0",
     info: {
@@ -450,6 +457,7 @@ function buildAsyncAPIDocument(
     components: {
       messages: Object.keys(messages).length > 0 ? messages : undefined,
       schemas: Object.keys(schemas).length > 0 ? schemas : undefined,
+      securitySchemes: Object.keys(securitySchemes).length > 0 ? securitySchemes : undefined,
     },
   };
 }

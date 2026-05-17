@@ -37,7 +37,7 @@ describe("E2E: Real-World E-Commerce System", () => {
 				images: string[];
 				variants: {
 					sku: string;
-					attributes: Record<unknown>;
+					attributes: object;
 					price: float64;
 					inventory: int32;
 				}[];
@@ -170,8 +170,8 @@ describe("E2E: Real-World E-Commerce System", () => {
 						clientCredentials: #{
 							tokenUrl: "https://auth.ecommerce.com/oauth/token",
 							scopes: #{
-								"payments:read": "Read payment data",
-								"payments:write": "Process payments"
+								paymentsRead: "Read payment data",
+								paymentsWrite: "Process payments"
 							}
 						}
 					}
@@ -229,7 +229,7 @@ describe("E2E: Real-World E-Commerce System", () => {
 				type: "order_confirmed" | "payment_success" | "shipment_update" | "delivery_complete";
 				title: string;
 				message: string;
-				data: Record<unknown>;
+				data: object;
 				timestamp: utcDateTime;
 			}
 
@@ -245,7 +245,7 @@ describe("E2E: Real-World E-Commerce System", () => {
 				name: "webhookAuth",
 				scheme: #{
 					type: "apiKey",
-					in: "header",
+					location: "header",
 					name: "X-Webhook-Secret"
 				}
 			})
