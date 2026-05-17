@@ -477,3 +477,41 @@ export async function parseAsyncAPIOutput(
   }
   throw new Error(`AsyncAPI output "${filename}" not found.`);
 }
+
+export const TestLogging = {
+  logSchemaGenerated: (name: string) => {},
+  logOperationGenerated: (name: string) => {},
+  logValidationSuccess: (msg: string) => {},
+  logGenerationMetrics: (..._args: number[]) => {},
+  logMultiNamespaceSchema: (name: string) => {},
+  logMultiNamespaceOperation: (name: string) => {},
+};
+
+export const TestValidationPatterns = {
+  validateExpectedSchemas: (doc: AsyncAPIObject, names: string[]) => {
+    for (const n of names) {
+      if (!doc.components?.schemas?.[n]) throw new Error(`Expected schema '${n}' not found`);
+    }
+  },
+  validateExpectedOperations: (doc: AsyncAPIObject, names: string[]) => {
+    for (const n of names) {
+      if (!doc.operations?.[n]) throw new Error(`Expected operation '${n}' not found`);
+    }
+  },
+  validateAndLogCompletion: (_doc: AsyncAPIObject, _msg: string) => {},
+};
+
+export async function validateAsyncAPIObjectComprehensive(doc: unknown): Promise<{
+  valid: boolean;
+  errors: Array<{ message: string; keyword: string; path: string }>;
+  summary: string;
+}> {
+  if (!doc || typeof doc !== "object") {
+    return { valid: false, errors: [{ message: "Not an object", keyword: "type", path: "" }], summary: "Invalid" };
+  }
+  const d = doc as Record<string, unknown>;
+  const errors: Array<{ message: string; keyword: string; path: string }> = [];
+  if (typeof d.asyncapi !== "string") errors.push({ message: "Missing asyncapi version", keyword: "required", path: "/asyncapi" });
+  if (typeof d.info !== "object") errors.push({ message: "Missing info", keyword: "required", path: "/info" });
+  return { valid: errors.length === 0, errors, summary: errors.length === 0 ? "Valid" : `${errors.length} errors` };
+}

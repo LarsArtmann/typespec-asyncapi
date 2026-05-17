@@ -1338,8 +1338,8 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 								authorizationUrl: "https://auth.example.com/authorize",
 								tokenUrl: "https://auth.example.com/token",
 								scopes: #{
-									"read": "Read access",
-									"write": "Write access"
+									readAccess: "Read access",
+									writeAccess: "Write access"
 								}
 							}
 						}
@@ -1376,8 +1376,8 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 							clientCredentials: #{
 								tokenUrl: "https://auth.example.com/token",
 								scopes: #{
-									"api:read": "API read",
-									"api:write": "API write"
+									apiRead: "API read",
+									apiWrite: "API write"
 								}
 							}
 						}
@@ -1414,8 +1414,8 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 							implicit: #{
 								authorizationUrl: "https://auth.example.com/authorize",
 								scopes: #{
-									"profile": "User profile",
-									"email": "Email access"
+									profile: "User profile",
+									emailAccess: "Email access"
 								}
 							}
 						}
@@ -1452,7 +1452,7 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 							password: #{
 								tokenUrl: "https://auth.example.com/token",
 								scopes: #{
-									"user": "User scope"
+									user: "User scope"
 								}
 							}
 						}
@@ -1489,11 +1489,11 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 							authorizationCode: #{
 								authorizationUrl: "https://auth.example.com/authorize",
 								tokenUrl: "https://auth.example.com/token",
-								scopes: #{ "read": "Read" }
+								scopes: #{ readScope: "Read" }
 							},
 							clientCredentials: #{
 								tokenUrl: "https://auth.example.com/token",
-								scopes: #{ "admin": "Admin" }
+								scopes: #{ admin: "Admin" }
 							}
 						}
 					}
@@ -1530,7 +1530,7 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 								authorizationUrl: "https://auth.example.com/authorize",
 								tokenUrl: "https://auth.example.com/token",
 								pkce: true,
-								scopes: #{ "openid": "OpenID" }
+								scopes: #{ openid: "OpenID" }
 							}
 						}
 					}
@@ -1570,7 +1570,7 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 								authorizationUrl: "https://auth.example.com/authorize",
 								tokenUrl: "https://auth.example.com/token",
 								refreshUrl: "https://auth.example.com/refresh",
-								scopes: #{ "offline": "Offline access" }
+								scopes: #{ offlineAccess: "Offline access" }
 							}
 						}
 					}
@@ -1607,9 +1607,9 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 								authorizationUrl: "https://auth.example.com/authorize",
 								tokenUrl: "https://auth.example.com/token",
 								scopes: #{
-									"openid": "OpenID",
-									"profile": "Profile",
-									"email": "Email"
+									openid: "OpenID",
+									profile: "Profile",
+									emailScope: "Email"
 								}
 							}
 						}
@@ -1650,7 +1650,7 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 								authorizationUrl: "https://auth.example.com/authorize",
 								tokenUrl: "https://auth.example.com/token",
 								dynamicScopes: true,
-								scopes: #{ "resource:*": "Resource access" }
+								scopes: #{ resourceAll: "Resource access" }
 							}
 						}
 					}
@@ -1689,7 +1689,7 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 							clientCredentials: #{
 								tokenUrl: "https://auth.example.com/token",
 								audience: "api.example.com",
-								scopes: #{ "api": "API" }
+								scopes: #{ api: "API" }
 							}
 						}
 					}
@@ -1728,7 +1728,7 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 							deviceCode: #{
 								deviceAuthorizationUrl: "https://auth.example.com/device",
 								tokenUrl: "https://auth.example.com/token",
-								scopes: #{ "device": "Device" }
+								scopes: #{ device: "Device" }
 							}
 						}
 					}
@@ -1766,7 +1766,7 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 						flows: #{
 							tokenExchange: #{
 								tokenUrl: "https://auth.example.com/token",
-								scopes: #{ "exchange": "Exchange" }
+								scopes: #{ exchange: "Exchange" }
 							}
 						}
 					}
@@ -1804,7 +1804,7 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 						flows: #{
 							jwtBearer: #{
 								tokenUrl: "https://auth.example.com/token",
-								scopes: #{ "service": "Service" }
+								scopes: #{ service: "Service" }
 							}
 						}
 					}
@@ -1842,7 +1842,7 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 						flows: #{
 							samlBearer: #{
 								tokenUrl: "https://auth.example.com/token",
-								scopes: #{ "saml": "SAML" }
+								scopes: #{ saml: "SAML" }
 							}
 						}
 					}
@@ -1881,7 +1881,7 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 							clientCredentials: #{
 								tokenUrl: "https://auth.example.com/token",
 								introspectionUrl: "https://auth.example.com/introspect",
-								scopes: #{ "introspect": "Introspect" }
+								scopes: #{ introspect: "Introspect" }
 							}
 						}
 					}
@@ -1921,7 +1921,7 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 								authorizationUrl: "https://auth.example.com/authorize",
 								tokenUrl: "https://auth.example.com/token",
 								revocationUrl: "https://auth.example.com/revoke",
-								scopes: #{ "revoke": "Revoke" }
+								scopes: #{ revoke: "Revoke" }
 							}
 						}
 					}
@@ -1962,8 +1962,8 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 								tokenUrl: "https://auth.example.com/token",
 								scopeNegotiation: true,
 								scopes: #{
-									"basic": "Basic access",
-									"advanced": "Advanced access"
+									basic: "Basic access",
+									advanced: "Advanced access"
 								}
 							}
 						}
@@ -2004,7 +2004,7 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 								authorizationUrl: "https://auth.example.com/authorize",
 								tokenUrl: "https://auth.example.com/token",
 								consentUrl: "https://auth.example.com/consent",
-								scopes: #{ "consent": "Consent" }
+								scopes: #{ consent: "Consent" }
 							}
 						}
 					}
@@ -2044,7 +2044,7 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 								authorizationUrl: "https://auth.example.com/authorize",
 								tokenUrl: "https://auth.example.com/token",
 								sessionManagement: true,
-								scopes: #{ "session": "Session" }
+								scopes: #{ session: "Session" }
 							}
 						}
 					}
@@ -2780,7 +2780,7 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 						type: "apiKey",
 						in: "header",
 						name: "X-API-Key",
-						ipWhitelist: ["192.168.1.0/24", "10.0.0.0/8"]
+						ipWhitelist: #["192.168.1.0/24", "10.0.0.0/8"]
 					}
 				})
 				@publish
@@ -2815,7 +2815,7 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
 						type: "apiKey",
 						in: "header",
 						name: "X-API-Key",
-						allowedRegions: ["US", "EU", "APAC"]
+						allowedRegions: #["US", "EU", "APAC"]
 					}
 				})
 				@publish
