@@ -528,7 +528,7 @@ describe("Real-World AsyncAPI Scenarios", () => {
       const priceTickSchema = asyncapiDoc.components.schemas.PriceTick;
       expect(priceTickSchema.properties.bidPrice.type).toBe("number");
       expect(priceTickSchema.properties.askPrice.type).toBe("number");
-      expect(priceTickSchema.properties.volume.type).toBe("number");
+      expect(priceTickSchema.properties.volume.type).toBe("integer");
       expect(priceTickSchema.properties.timestamp.format).toBe("date-time");
 
       // Validate subscription channels

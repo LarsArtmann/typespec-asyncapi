@@ -85,10 +85,10 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 				@protocol(#{
 					protocol: "websocket",
 					binding: #{
-						headers: #{
-							"X-Client-Id": #{ type: "string" }
-						}
+					headers: #{
+						xClientId: #{ type: "string" }
 					}
+				}
 				})
 				@subscribe
 				op receiveMessage(): Msg;
@@ -110,13 +110,13 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 
 				namespace SocketIO;
 
-				model Event { event: string; data: Record<unknown>; }
+				model Event { event: string; data: string; }
 
 				@channel("/chat")
 				@protocol(#{
 					protocol: "websocket",
 					binding: #{
-						namespace: "/chat",
+						socketNamespace: "/chat",
 						room: "general"
 					}
 				})

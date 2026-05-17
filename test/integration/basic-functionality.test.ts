@@ -247,7 +247,8 @@ ${source}
 
     // Validate type mappings
     expect(schema.properties.stringField.type).toBe("string");
-    expect(schema.properties.intField.type).toBe("number");
+    expect(schema.properties.intField.type).toBe("integer");
+    expect(schema.properties.intField.format).toBe("int32");
     expect(schema.properties.boolField.type).toBe("boolean");
     expect(schema.properties.dateField.type).toBe("string");
     expect(schema.properties.dateField.format).toBe("date-time");

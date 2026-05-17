@@ -4,7 +4,7 @@
 
 import { stateSymbols } from "./lib.js";
 import { type Program, type Type } from "@typespec/compiler";
-import { getStateMap } from "./state-compatibility.js";
+import { getStateMap, getMultiState } from "./state-compatibility.js";
 
 // === STATE DATA INTERFACES ===
 
@@ -121,7 +121,7 @@ export type MessageHeaderData = {
 export type AsyncAPIConsolidatedState = {
   channels: Map<Type, ChannelPathData>;
   messages: Map<Type, MessageConfigData>;
-  servers: Map<Type, ServerConfigData>;
+  servers: Map<Type, ServerConfigData[]>;
   operations: Map<Type, OperationTypeData>;
   tags: Map<Type, TagData>;
   protocolConfigs: Map<Type, ProtocolConfigData>;
@@ -140,7 +140,7 @@ export function consolidateAsyncAPIState(program: Program): AsyncAPIConsolidated
   return {
     channels: getStateMap<ChannelPathData>(program, stateSymbols.channelPaths),
     messages: getStateMap<MessageConfigData>(program, stateSymbols.messageConfigs),
-    servers: getStateMap<ServerConfigData>(program, stateSymbols.serverConfigs),
+    servers: getMultiState<ServerConfigData>(program, stateSymbols.serverConfigs),
     operations: getStateMap<OperationTypeData>(program, stateSymbols.operationTypes),
     tags: getStateMap<TagData>(program, stateSymbols.tags),
     protocolConfigs: getStateMap<ProtocolConfigData>(program, stateSymbols.protocolConfigs),

@@ -54,12 +54,18 @@ export const storeServerConfig = (
   config: Record<string, unknown> & { name: string },
 ) => {
   const map = getStateMap(program, stateSymbols.serverConfigs);
-  map.set(target, {
+  const existing = map.get(target);
+  const newEntry = {
     name: config.name,
     url: (config.url as string) ?? "http://localhost:3000",
     protocol: (config.protocol as string) ?? "http",
     description: (config.description as string) ?? `Server for ${target.name}`,
-  });
+  };
+  if (Array.isArray(existing)) {
+    map.set(target, [...existing, newEntry]);
+  } else {
+    map.set(target, [newEntry]);
+  }
 };
 
 export const storeSecurityConfig = (

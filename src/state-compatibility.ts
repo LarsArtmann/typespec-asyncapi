@@ -39,3 +39,22 @@ export function getStateMap<T>(program: Program, symbol: symbol): Map<Type, T> {
     `Expected a Map-like object.`,
   );
 }
+
+/**
+ * Get a multi-value state map where each key maps to an array of values.
+ * Used for decorators that can be applied multiple times to the same target.
+ */
+export function getMultiState<T>(program: Program, symbol: symbol): Map<Type, T[]> {
+  const raw = getStateMap<unknown>(program, symbol);
+  const multiMap = new Map<Type, T[]>();
+
+  for (const [key, value] of raw) {
+    if (Array.isArray(value)) {
+      multiMap.set(key, value);
+    } else if (value !== undefined) {
+      multiMap.set(key, [value as T]);
+    }
+  }
+
+  return multiMap;
+}

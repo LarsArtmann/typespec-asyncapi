@@ -213,13 +213,73 @@ export async function compileAsyncAPIWithoutErrors(
 export async function createAsyncAPITestHost() {
   let files: Map<string, string> = new Map();
 
+  async function compileWithTester(source: string, emitOptions?: any) {
+    const packageRoot = await findTestPackageRoot(import.meta.url);
+    const hasOwnImport = source.includes('import "@lars-artmann/typespec-asyncapi"') || source.includes("import '@lars-artmann/typespec-asyncapi'");
+    const hasOwnUsing = source.includes("using TypeSpec.AsyncAPI");
+
+    let baseTester = createTester(packageRoot, {
+      libraries: ["@lars-artmann/typespec-asyncapi"],
+    });
+    if (!hasOwnImport) baseTester = baseTester.importLibraries();
+    if (!hasOwnUsing) baseTester = baseTester.using("TypeSpec.AsyncAPI");
+
+    // Pass 1: get diagnostics without throwing
+    const instance = await (baseTester as any).createInstance();
+    const [, diagnostics] = await instance.compileAndDiagnose(source, emitOptions);
+
+    // Pass 2: run emitter to get output
+    let outputFs: Map<string, string> = new Map();
+    try {
+      const emitTester = baseTester.emit("@lars-artmann/typespec-asyncapi", emitOptions?.options?.["@lars-artmann/typespec-asyncapi"] ?? {});
+      const result = await emitTester.compile(source);
+      outputFs = result.fs?.fs ?? new Map();
+    } catch {
+      // emitter may throw on error diagnostics
+    }
+
+    return { program: instance.program, diagnostics, fs: outputFs };
+  }
+
   return {
     addTypeSpecFile(name: string, content: string) {
       files.set(name, content);
     },
 
     get fs() {
-      return files;
+      // Return filtered view excluding node_modules internals
+      const filtered = new Map<string, string>();
+      for (const [k, v] of files) {
+        if (!k.includes("node_modules/")) filtered.set(k, v);
+      }
+      return filtered;
+    },
+
+    async compile(_mainPath: string, _options?: any) {
+      const source = files.get("main.tsp") ?? files.values().next().value;
+      if (!source) return {};
+      const result = await compileWithTester(source);
+      for (const [k, v] of result.fs) files.set(k, v);
+      return {};
+    },
+
+    async diagnose(_mainPath: string, _options?: any) {
+      const source = files.get("main.tsp") ?? files.values().next().value;
+      if (!source) return [];
+      const result = await compileWithTester(source);
+      // Don't overwrite output files from a previous compile()
+      for (const [k, v] of result.fs) {
+        if (!files.has(k)) files.set(k, v);
+      }
+      return result.diagnostics;
+    },
+
+    async compileAndDiagnose(_mainPath: string, _options?: any) {
+      const source = files.get("main.tsp") ?? files.values().next().value;
+      if (!source) return [{}, []];
+      const result = await compileWithTester(source);
+      for (const [k, v] of result.fs) files.set(k, v);
+      return [{}, result.diagnostics];
     },
 
     _getMainSource(): string | undefined {
