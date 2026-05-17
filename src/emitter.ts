@@ -337,12 +337,18 @@ function buildAsyncAPIDocument(
   const messages: Record<string, unknown> = {};
   const securitySchemes: Record<string, unknown> = {};
 
-  // Build channels from state
+  // Build channels from state with protocol bindings
   for (const [type, data] of state.channels) {
     const channelData = data as { path?: string };
     const typeWithName = type as { name: string };
     const channelKey = channelData.path ?? typeWithName.name;
-    channels[channelKey] = { address: channelKey };
+    const channelObj: Record<string, unknown> = { address: channelKey };
+    // Attach protocol binding if this operation has one
+    const protoConfig = state.protocolConfigs.get(type) as { protocol?: string; [k: string]: unknown } | undefined;
+    if (protoConfig?.protocol) {
+      channelObj.bindings = { [protoConfig.protocol]: protoConfig.binding ?? {} };
+    }
+    channels[channelKey] = channelObj;
   }
 
   // Build messages from state

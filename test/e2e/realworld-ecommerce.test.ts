@@ -37,7 +37,7 @@ describe("E2E: Real-World E-Commerce System", () => {
 				images: string[];
 				variants: {
 					sku: string;
-					attributes: object;
+					attributes: string;
 					price: float64;
 					inventory: int32;
 				}[];
@@ -229,7 +229,7 @@ describe("E2E: Real-World E-Commerce System", () => {
 				type: "order_confirmed" | "payment_success" | "shipment_update" | "delivery_complete";
 				title: string;
 				message: string;
-				data: object;
+				data: string;
 				timestamp: utcDateTime;
 			}
 

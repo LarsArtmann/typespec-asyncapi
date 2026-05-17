@@ -205,9 +205,9 @@ describe("Real Decorator Functionality Tests", () => {
           timestamp: utcDateTime;
         }
         
-        @protocol({
+        @protocol(#{
           protocol: "kafka",
-          binding: {
+          binding: #{
             topic: "user-events",
             key: "userId",
             schemaIdLocation: "header",
@@ -259,12 +259,10 @@ describe("Real Decorator Functionality Tests", () => {
           timestamp: utcDateTime;
         }
         
-        @protocol({
+        @protocol(#{
           protocol: "websocket",
-          binding: {
+          binding: #{
             method: "GET",
-            headers: { "Authorization": "Bearer token" },
-            query: { "room": "string" },
             subprotocol: "chat.v1"
           }
         })
@@ -307,9 +305,9 @@ describe("Real Decorator Functionality Tests", () => {
           data: string;
         }
         
-        @protocol({
+        @protocol(#{
           protocol: "amqp",
-          binding: {
+          binding: #{
             exchange: "events",
             routingKey: "user.created",
             deliveryMode: 2,
@@ -320,9 +318,9 @@ describe("Real Decorator Functionality Tests", () => {
         @publish
         op publishAMQPEvent(): EventMessage;
         
-        @protocol({
+        @protocol(#{
           protocol: "mqtt",
-          binding: {
+          binding: #{
             topic: "sensors/temperature",
             qos: 2,
             retain: true
@@ -408,30 +406,30 @@ describe("Real Decorator Functionality Tests", () => {
           scope: string[];
         }
         
-        @security({
+        @security(#{
           name: "oauth2Auth",
-          scheme: {
+          scheme: #{
             type: "oauth2",
-            flows: {
-              clientCredentials: {
+            flows: #{
+              clientCredentials: #{
                 tokenUrl: "https://auth.example.com/token",
-                scopes: {
-                  "read": "Read access",
-                  "write": "Write access",
-                  "admin": "Admin access"
+                scopes: #{
+                  read: "Read access",
+                  write: "Write access",
+                  admin: "Admin access"
                 }
               },
-              authorizationCode: {
+              authorizationCode: #{
                 authorizationUrl: "https://auth.example.com/authorize",
                 tokenUrl: "https://auth.example.com/token",
-                scopes: {
-                  "read": "Read access",
-                  "write": "Write access"
+                scopes: #{
+                  read: "Read access",
+                  write: "Write access"
                 }
               }
             }
           },
-          scopes: ["read", "write"]
+          scopes: #["read", "write"]
         })
         @channel("oauth2.protected.resources")
         @publish
@@ -468,16 +466,16 @@ describe("Real Decorator Functionality Tests", () => {
           producerId: string;
         }
         
-        @security({
+        @security(#{
           name: "kafkaSASL",
-          scheme: {
+          scheme: #{
             type: "sasl",
             mechanism: "SCRAM-SHA-256"
           }
         })
-        @protocol({
+        @protocol(#{
           protocol: "kafka",
-          binding: {
+          binding: #{
             topic: "secure-events",
             key: "messageId"
           }
@@ -550,25 +548,25 @@ describe("Real Decorator Functionality Tests", () => {
           };
         }
         
-        @security({
+        @security(#{
           name: "multiAuth",
-          scheme: {
+          scheme: #{
             type: "oauth2",
-            flows: {
-              clientCredentials: {
+            flows: #{
+              clientCredentials: #{
                 tokenUrl: "https://auth.company.com/token",
-                scopes: {
-                  "events:read": "Read events",
-                  "events:write": "Publish events"
+                scopes: #{
+                  eventsRead: "Read events",
+                  eventsWrite: "Publish events"
                 }
               }
             }
           },
-          scopes: ["events:write"]
+          scopes: #["events:write"]
         })
-        @protocol({
+        @protocol(#{
           protocol: "kafka",
-          binding: {
+          binding: #{
             topic: "secure-audit-events",
             key: "userId",
             schemaIdLocation: "header",
@@ -580,17 +578,17 @@ describe("Real Decorator Functionality Tests", () => {
         @publish
         op publishSecureAuditEvent(): SecureKafkaEvent;
         
-        @security({
+        @security(#{
           name: "readAuth",
-          scheme: {
+          scheme: #{
             type: "http",
             scheme: "bearer",
             bearerFormat: "JWT"
           }
         })
-        @protocol({
+        @protocol(#{
           protocol: "kafka", 
-          binding: {
+          binding: #{
             topic: "secure-audit-events",
             groupId: "audit-consumer",
             clientId: "audit-reader-v1"
