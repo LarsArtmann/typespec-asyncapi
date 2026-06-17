@@ -2,7 +2,7 @@
 
 **Project:** Transform TypeSpec models into AsyncAPI 3.0 specifications
 **Architecture:** AssetEmitter-based with custom TypeEmitter for schema generation
-**Status:** Active Recovery — 275/399 tests pass, build clean, core emitter functional
+**Status:** Active Recovery — build clean, core emitter functional
 
 ---
 
@@ -11,23 +11,10 @@
 ```bash
 bun install           # Install dependencies
 bun run build         # Build TypeScript → JavaScript (0 errors)
-bun test              # Run test suite (399 tests, 275 pass)
 bun run lint          # Run ESLint
 ```
 
 **Important:** `just` commands fail on NixOS (requires bash). Use `bun run` directly.
-
-## Test Results (Current)
-
-```
-275 pass | 95 fail | 25 skip | 4 todo | 67 files
-```
-
-The 95 failing tests are primarily **test infrastructure** issues:
-- Old `createTestHost`/`createTestWrapper` test helpers (not migrated to `createTester`)
-- Test sources missing `@publish`/`@subscribe` decorators
-- CLI tests use PLACEHOLDER templates
-- Security scheme tests use complex fixtures with old test framework
 
 ## Critical Constraints
 
@@ -101,32 +88,4 @@ extern dec bindings(target: Operation | Model, value: {} | valueof Record<unknow
 - `file-type` option can be string `"json"` or object `{ format: "json", pretty: true, indent: 2 }`
 - `extractValue` in emitter.ts handles `EmitEntity` unwrapping from `@typespec/asset-emitter`
 
-## Session History
 
-### Session 2026-05-16/17: Deep Architecture Cleanup
-
-**Phase 1 — DELETE:** Removed 623 LOC dead code (10 src files, 2 test files, 4 suspicious deps)
-
-**Phase 2 — CONSOLIDATE:** Eliminated 4 split brains:
-- Protocols: 4 different lists → single source of truth in `src/constants/protocols.ts`
-- Config: 3 duplicate config objects → 1
-- State keys: deleted dead `stateKeys`, kept only `stateSymbols`
-- Diagnostics: deleted dead `reportDiagnostic`, kept `reportDecoratorDiagnostic`
-
-**Phase 3 — File Size Compliance:**
-- Extracted `state-writers.ts` from `minimal-decorators.ts` (632→272 lines)
-- Deduplicated JSON schema in `options.ts` (391→165 lines)
-- Removed Effect.TS from `src/` completely
-- Fixed `state-compatibility.ts` (throws instead of silent empty Map)
-- Total src: 3,200 → 1,660 LOC
-
-**Phase 4 — Emitter Rewrite:**
-- Replaced string-concatenation emitter with `AsyncAPISchemaEmitter` extending `TypeEmitter`
-- Generates `components.schemas` from TypeSpec models via `@typespec/asset-emitter`
-- Handles scalars, enums, unions, arrays, tuples, namespaces
-- Uses `yaml` package for serialization
-- Test results: 250→275 pass (+25), 119→95 fail (-24)
-
----
-
-_Last updated: May 17, 2026_
