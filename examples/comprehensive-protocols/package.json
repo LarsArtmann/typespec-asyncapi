@@ -31,8 +31,8 @@
     "validate:http": "asyncapi validate http-output/@lars-artmann/typespec-asyncapi/asyncapi.json"
   },
   "devDependencies": {
-    "@asyncapi/cli": "^3.4.2",
+    "@asyncapi/cli": "^6.0.2",
     "@lars-artmann/typespec-asyncapi": "file:../..",
-    "@typespec/compiler": "^1.3.0"
+    "@typespec/compiler": "^1.13.0"
   }
 }
