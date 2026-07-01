@@ -1,4 +1,7 @@
-import { createAsyncAPITestHost, compileAndGetAsyncAPI } from "../test/utils/test-helpers.js";
+import {
+  createAsyncAPITestHost,
+  compileAndGetAsyncAPI,
+} from "../test/utils/test-helpers.js";
 
 async function testFixedFramework() {
   const sourceCode = `
@@ -18,8 +21,14 @@ op publishTest(): string;
 
     console.log("🎉 FRAMEWORK FIX SUCCESS!");
     console.log("📊 AsyncAPI version:", result?.asyncapi);
-    console.log("📊 Channels:", result?.channels ? Object.keys(result.channels).length : 0);
-    console.log("📊 Channel names:", result?.channels ? Object.keys(result.channels) : []);
+    console.log(
+      "📊 Channels:",
+      result?.channels ? Object.keys(result.channels).length : 0,
+    );
+    console.log(
+      "📊 Channel names:",
+      result?.channels ? Object.keys(result.channels) : [],
+    );
 
     if (result?.channels) {
       const channelName = Object.keys(result.channels)[0];

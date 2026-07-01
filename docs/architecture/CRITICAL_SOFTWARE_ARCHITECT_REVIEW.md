@@ -112,7 +112,9 @@ export type Document<Entity> = {
 
 ```typescript
 // 🚨 VIOLATION: Hardcoded types, no reuse
-export function executeEffect<T>(fn: () => Promise<T>): Promise<EffectResult<T>> {
+export function executeEffect<T>(
+  fn: () => Promise<T>,
+): Promise<EffectResult<T>> {
   // Only T, no constraints, no variance, no sophisticated usage
 }
 ```
@@ -565,7 +567,9 @@ export interface Plugin<Config = {}> {
   readonly dependencies: readonly string[];
   install(config: Config): Effect.Effect<PluginError, void>;
   activate(): Effect.Effect<PluginError, void>;
-  process(context: ProcessingContext): Effect.Effect<PluginError, ProcessingResult>;
+  process(
+    context: ProcessingContext,
+  ): Effect.Effect<PluginError, ProcessingResult>;
 }
 
 export class PluginManager {
@@ -678,10 +682,14 @@ import { fc } from "fast-check";
 describe("Channel Generation", () => {
   it("should generate valid channels for all valid inputs", () => {
     fc.assert(
-      fc.property(fc.string({ minLength: 1 }), fc.array(fc.string()), (path, parameters) => {
-        const channel = generateChannel(path, parameters);
-        return isValidChannel(channel);
-      }),
+      fc.property(
+        fc.string({ minLength: 1 }),
+        fc.array(fc.string()),
+        (path, parameters) => {
+          const channel = generateChannel(path, parameters);
+          return isValidChannel(channel);
+        },
+      ),
     );
   });
 });
@@ -836,7 +844,9 @@ export namespace Domain {
 
     // ✅ INVARIANTS: Business rule enforcement
     public validate(): ValidationResult {
-      return this._address.validate().combine(this._parameters.map((p) => p.validate()));
+      return this._address
+        .validate()
+        .combine(this._parameters.map((p) => p.validate()));
     }
   }
 
@@ -849,9 +859,13 @@ export namespace Domain {
     }
 
     // ✅ FACTORY: Validation on creation
-    public static parse(input: string): Result<AddressPattern, ValidationError> {
+    public static parse(
+      input: string,
+    ): Result<AddressPattern, ValidationError> {
       if (!AddressPattern.isValid(input)) {
-        return Result.fail(new ValidationError(`Invalid address pattern: ${input}`));
+        return Result.fail(
+          new ValidationError(`Invalid address pattern: ${input}`),
+        );
       }
       return Result.success(new AddressPattern(input));
     }
@@ -871,14 +885,18 @@ export namespace Domain {
 
   // ✅ DOMAIN SERVICES: Complex business operations
   export class ChannelService {
-    public createFromOperation(operation: TypeSpec.Operation): Result<Channel, Error> {
+    public createFromOperation(
+      operation: TypeSpec.Operation,
+    ): Result<Channel, Error> {
       return Channel.create({
         address: AddressPattern.parse(operation.path),
         parameters: this.extractParameters(operation),
       });
     }
 
-    public validateChannelIntegration(channels: readonly Channel[]): ValidationResult {
+    public validateChannelIntegration(
+      channels: readonly Channel[],
+    ): ValidationResult {
       // Complex domain validation logic
     }
   }
@@ -1021,7 +1039,9 @@ export namespace TypeSpec.AsyncAPI {
   export const compile = (options: Compile.Options): Promise<Compile.Result> =>
     Effect.runPromise(
       compileProgram(options).pipe(
-        Effect.catchAll((error) => Effect.succeed(Compile.Result.failure(error))),
+        Effect.catchAll((error) =>
+          Effect.succeed(Compile.Result.failure(error)),
+        ),
       ),
     );
 
@@ -1037,7 +1057,10 @@ export namespace TypeSpec.AsyncAPI {
 
     export type Result<T = AsyncAPI.Document> =
       | { readonly success: true; readonly document: T }
-      | { readonly success: false; readonly errors: readonly AsyncAPIError.Base[] };
+      | {
+          readonly success: false;
+          readonly errors: readonly AsyncAPIError.Base[];
+        };
   }
 
   // ✅ BUILDER API: Fluent, composable
@@ -1183,7 +1206,8 @@ export namespace TypeSpec.AsyncAPI {
         metrics.documentSize > Thresholds.maxDocumentSize ||
         metrics.processingTimeMs > Thresholds.maxProcessingTime,
 
-      suggestOptimization: (metrics: Metrics): Optimization[] => Optimization.analyze(metrics),
+      suggestOptimization: (metrics: Metrics): Optimization[] =>
+        Optimization.analyze(metrics),
     };
   }
 }
@@ -1262,7 +1286,9 @@ export namespace CodeGen {
 
   // ✅ OPTIMIZATION: Incremental, cached, parallel
   export namespace Optimizer {
-    export const incremental = (changes: Document.Change[]): Generation.Result => {
+    export const incremental = (
+      changes: Document.Change[],
+    ): Generation.Result => {
       const cache = Cache.load();
       const patches = Diff.create(cache.document, changes);
       const optimized = Patch.apply(cache.document, patches);
@@ -1274,7 +1300,9 @@ export namespace CodeGen {
       documents: readonly AsyncAPI.Document[],
     ): Promise<readonly Generation.Result[]> => {
       const chunks = Chunk.divide(documents, { size: 10, parallel: 4 });
-      const results = await Promise.all(chunks.map((chunk) => ProcessChunk(chunk)));
+      const results = await Promise.all(
+        chunks.map((chunk) => ProcessChunk(chunk)),
+      );
 
       return results.flat();
     };
@@ -1312,7 +1340,10 @@ export namespace TypeSpec.AsyncAPI {
 
   // ✅ NO BLOAT: Essential decorators only
   export namespace Decorators {
-    export const channel = (path: string): Decorator => ({ type: "channel", path });
+    export const channel = (path: string): Decorator => ({
+      type: "channel",
+      path,
+    });
     export const publish = (): Decorator => ({ type: "publish" });
     export const subscribe = (): Decorator => ({ type: "subscribe" });
   }

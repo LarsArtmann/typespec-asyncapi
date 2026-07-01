@@ -25,7 +25,12 @@ describe("Real Compilation Integration Test", () => {
   const tspFile = join(testDir, "main.tsp");
   // AssetEmitter writes to: ../tsp-test/@lars-artmann/typespec-asyncapi/
   // Relative to process.cwd(), not testDir
-  const outputDir = join(process.cwd(), "tsp-test", "@lars-artmann", "typespec-asyncapi");
+  const outputDir = join(
+    process.cwd(),
+    "tsp-test",
+    "@lars-artmann",
+    "typespec-asyncapi",
+  );
   const asyncapiFile = join(outputDir, "AsyncAPI.yaml");
 
   beforeAll(async () => {
@@ -111,7 +116,9 @@ op publishTestEvent(): TestEvent;
 
     // Verify schema properties
     expect(asyncapi.components.schemas.TestEvent.properties.id).toBeDefined();
-    expect(asyncapi.components.schemas.TestEvent.properties.timestamp).toBeDefined();
+    expect(
+      asyncapi.components.schemas.TestEvent.properties.timestamp,
+    ).toBeDefined();
     expect(asyncapi.components.schemas.TestEvent.properties.data).toBeDefined();
 
     console.log("✅ Integration test PASSED - emitter works perfectly!");

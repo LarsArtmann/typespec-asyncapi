@@ -69,3 +69,45 @@ tsp-test/
 test/temp-output/
 tmp/
 output/
+
+# >>> buildflow-managed (.gitignore) >>>
+# Auto-managed by buildflow. Edit outside these markers; this block is regenerated on `buildflow --fix`.
+
+## Secrets and environment
+.env.*.local
+*.pem
+*.key
+
+## Databases
+*.db
+*.db-shm
+*.db-wal
+
+## Operating systems
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+
+## Editors and ides
+*~
+
+## Reports and coverage
+reports/
+
+## Nix
+result
+result-*
+.envrc
+.direnv/
+
+## Javascript and typescript
+.next/
+.nuxt/
+.docusaurus/
+.parcel-cache/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+# <<< buildflow-managed (.gitignore) <<<

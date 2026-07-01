@@ -49,15 +49,33 @@ This document analyzes the TypeSpec AsyncAPI Emitter project to identify:
 
 ```typescript
 // Core utilities for TypeSpec decorator development
-export function reportDecoratorDiagnostic(context, code, target, message, severity);
-export function validateConfig(config, context, target, diagnosticCode, errorMessage);
+export function reportDecoratorDiagnostic(
+  context,
+  code,
+  target,
+  message,
+  severity,
+);
+export function validateConfig(
+  config,
+  context,
+  target,
+  diagnosticCode,
+  errorMessage,
+);
 export function createStoreState<T>(program, symbol);
 export function getStateMap<T>(program, symbol);
 
 // Decorator factory patterns
-export function createTypedDecorator<TConfig>(options: DecoratorOptions<TConfig>);
-export function createModelDecorator<TConfig>(options: ModelDecoratorOptions<TConfig>);
-export function createOperationDecorator<TConfig>(options: OperationDecoratorOptions<TConfig>);
+export function createTypedDecorator<TConfig>(
+  options: DecoratorOptions<TConfig>,
+);
+export function createModelDecorator<TConfig>(
+  options: ModelDecoratorOptions<TConfig>,
+);
+export function createOperationDecorator<TConfig>(
+  options: OperationDecoratorOptions<TConfig>,
+);
 ```
 
 **Alternatives:**
@@ -158,7 +176,10 @@ export function normalizePathTemplate(path: string): string;
 
 // Utilities
 export function pathToChannelName(path: string): string;
-export function interpolatePath(template: string, params: Record<string, string>): string;
+export function interpolatePath(
+  template: string,
+  params: Record<string, string>,
+): string;
 ```
 
 **Alternatives:**
@@ -220,7 +241,9 @@ export const KafkaDefaults = {
 };
 
 // Validation per protocol
-export function validateKafkaConfig(config: unknown): Result<KafkaProtocolConfig>;
+export function validateKafkaConfig(
+  config: unknown,
+): Result<KafkaProtocolConfig>;
 ```
 
 **Alternatives:**

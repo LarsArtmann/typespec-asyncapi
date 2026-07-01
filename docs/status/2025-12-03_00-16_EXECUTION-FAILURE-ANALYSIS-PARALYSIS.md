@@ -94,7 +94,10 @@
 
 ```typescript
 // CURRENT PROBLEM: Manual error handling everywhere
-const channelPaths = program.stateMap(stateSymbols.channelPaths) as Map<Type, ChannelPathData>;
+const channelPaths = program.stateMap(stateSymbols.channelPaths) as Map<
+  Type,
+  ChannelPathData
+>;
 // → CRASHES: TypeError: undefined is not an object
 
 // MISSED EFFECT.TS SOLUTION:
@@ -148,7 +151,9 @@ const ChannelPath = (path: string): ChannelPath => {
 
 ```typescript
 // CURRENT PROBLEM: Exception-based error handling
-export function consolidateAsyncAPIState(program: Program): AsyncAPIConsolidatedState {
+export function consolidateAsyncAPIState(
+  program: Program,
+): AsyncAPIConsolidatedState {
   const channelPaths = program.stateMap(stateSymbols.channelPaths); // CRASHES
   // ... rest of function never reached
 }
@@ -159,7 +164,10 @@ export const consolidateAsyncAPIState = (
 ): Effect.Effect<AsyncAPIConsolidatedState, StateMapError> =>
   Effect.gen(function* () {
     const channelPaths = yield* getStateMap(program, stateSymbols.channelPaths);
-    const messageConfigs = yield* getStateMap(program, stateSymbols.messageConfigs);
+    const messageConfigs = yield* getStateMap(
+      program,
+      stateSymbols.messageConfigs,
+    );
     // ... safe composition
   });
 ```

@@ -18,15 +18,15 @@ The project has undergone **massive architectural recovery** across two long ses
 
 ### Architecture Recovery (Phases 1-4)
 
-| Work Item | Before | After | Impact |
-|-----------|--------|-------|--------|
-| Dead code deletion (Phase 1) | 3,200 LOC | 1,464 LOC | **-54%** |
-| Protocol consolidation | 4 scattered lists | `constants/protocols.ts` | Single source of truth |
-| State key cleanup | String-based `stateKeys` | `Symbol()` keys in `lib.ts` | Collision-proof |
-| Effect.TS removal | `Effect.Effect<T>` everywhere | Plain functions | Simplicity |
-| State compatibility | `tryGetStateMap` + `unwrapStateMap` | `getStateMap` throws on error | Honest error handling |
-| File size compliance | `options.ts` 391 LOC | 165 LOC | Under 370 limit |
-| State writers extraction | Inside `minimal-decorators.ts` | `state-writers.ts` (171 LOC) | Separation of concerns |
+| Work Item                    | Before                              | After                         | Impact                 |
+| ---------------------------- | ----------------------------------- | ----------------------------- | ---------------------- |
+| Dead code deletion (Phase 1) | 3,200 LOC                           | 1,464 LOC                     | **-54%**               |
+| Protocol consolidation       | 4 scattered lists                   | `constants/protocols.ts`      | Single source of truth |
+| State key cleanup            | String-based `stateKeys`            | `Symbol()` keys in `lib.ts`   | Collision-proof        |
+| Effect.TS removal            | `Effect.Effect<T>` everywhere       | Plain functions               | Simplicity             |
+| State compatibility          | `tryGetStateMap` + `unwrapStateMap` | `getStateMap` throws on error | Honest error handling  |
+| File size compliance         | `options.ts` 391 LOC                | 165 LOC                       | Under 370 limit        |
+| State writers extraction     | Inside `minimal-decorators.ts`      | `state-writers.ts` (171 LOC)  | Separation of concerns |
 
 ### Emitter Rewrite (Phase 4)
 
@@ -62,18 +62,18 @@ The project has undergone **massive architectural recovery** across two long ses
 
 ### Test Suite Recovery (264/328 = 80.5%)
 
-| Category | Pass | Fail | Status |
-|----------|------|------|--------|
-| Security Schemes (OAuth2 flows) | 60 | 42 | 40 test sources have TypeSpec syntax errors (`"key": value` in `#{}` blocks) |
-| E2E: Error Handling & Edge Cases | 0 | 12 | Use old test helpers via bridge — work but assertions don't match output |
-| Protocol Binding Integration | 5 | 6 | Mostly passing, some assertions expect features not implemented |
-| WebSocket & MQTT Protocols | 48 | 4 | 92% pass rate |
-| E2E: Real-World Scenarios | 0 | 4 | Old test helpers bridge, but assertions too strict |
-| AsyncAPI Basic Functionality | 4 | 4 | 50/50 — some tests expect features without decorators |
-| Simple AsyncAPI Emitter | 2 | 2 | Tests expect auto-detection from bare operations |
-| E2E: Real-World E-Commerce | 0 | 2 | Old helpers bridge, complex fixtures |
-| E2E: Multi-Protocol | 0 | 2 | Same |
-| E2E: Complex Nested Schemas | 0 | 2 | Same |
+| Category                         | Pass | Fail | Status                                                                       |
+| -------------------------------- | ---- | ---- | ---------------------------------------------------------------------------- |
+| Security Schemes (OAuth2 flows)  | 60   | 42   | 40 test sources have TypeSpec syntax errors (`"key": value` in `#{}` blocks) |
+| E2E: Error Handling & Edge Cases | 0    | 12   | Use old test helpers via bridge — work but assertions don't match output     |
+| Protocol Binding Integration     | 5    | 6    | Mostly passing, some assertions expect features not implemented              |
+| WebSocket & MQTT Protocols       | 48   | 4    | 92% pass rate                                                                |
+| E2E: Real-World Scenarios        | 0    | 4    | Old test helpers bridge, but assertions too strict                           |
+| AsyncAPI Basic Functionality     | 4    | 4    | 50/50 — some tests expect features without decorators                        |
+| Simple AsyncAPI Emitter          | 2    | 2    | Tests expect auto-detection from bare operations                             |
+| E2E: Real-World E-Commerce       | 0    | 2    | Old helpers bridge, complex fixtures                                         |
+| E2E: Multi-Protocol              | 0    | 2    | Same                                                                         |
+| E2E: Complex Nested Schemas      | 0    | 2    | Same                                                                         |
 
 ### Emitter `any` Types
 
@@ -109,17 +109,20 @@ The project has undergone **massive architectural recovery** across two long ses
 ## E) WHAT WE SHOULD IMPROVE
 
 ### Code Quality
+
 - `src/emitter.ts` at 405 LOC is approaching the 370 LOC limit — needs extraction of `buildAsyncAPIDocument` (currently 75 LOC) into separate module
 - `extractValue()` function is fragile — relies on duck-typing `EmitEntity` internals
 - `intrinsicToSchema()` default case returns `{ type: "string" }` for unknown types — should log a warning
 - `collectAllStdlibNames()` does recursive namespace traversal on every emission — could be cached
 
 ### Architecture
+
 - `buildAsyncAPIDocument()` mixes data transformation with document construction — should separate
 - No output validation — generated AsyncAPI docs aren't validated against the AsyncAPI 3.0 JSON Schema
 - No source file tracking — emitter doesn't track which TypeSpec types were user-defined vs auto-generated
 
 ### Testing
+
 - `test/utils/test-helpers.ts` at 479 LOC still too big — `compileRaw` two-pass approach is complex
 - Tests should use `emitter-test-helpers.ts` (new API) exclusively — old bridge API in `test-helpers.ts` is complexity debt
 - No snapshot testing — should compare output against golden files
@@ -186,33 +189,33 @@ This affects the API surface of the decorator library (`lib/main.tsp`) and is a 
 
 ## Metrics Dashboard
 
-| Metric | Session Start | Now | Delta |
-|--------|---------------|-----|-------|
-| Source LOC | ~3,200 | 1,464 | **-54%** |
-| Test files | 66 | 28 | **-58%** |
-| Tests passing | 250 | 264 | **+5.6%** |
-| Tests failing | 95 | 41 | **-57%** |
-| Test errors | 12 | 2 | **-83%** |
-| Build errors | 0 | 0 | ✓ |
-| Files > 370 LOC | 3 | 1 | emitter.ts at 405 |
-| Effect.TS in src/ | Yes | **No** | ✓ |
-| Effect.TS in tests | Yes | Partial | Still in a few files |
-| `any` types in emitter | N/A | ~25 | Needs cleanup |
+| Metric                 | Session Start | Now     | Delta                |
+| ---------------------- | ------------- | ------- | -------------------- |
+| Source LOC             | ~3,200        | 1,464   | **-54%**             |
+| Test files             | 66            | 28      | **-58%**             |
+| Tests passing          | 250           | 264     | **+5.6%**            |
+| Tests failing          | 95            | 41      | **-57%**             |
+| Test errors            | 12            | 2       | **-83%**             |
+| Build errors           | 0             | 0       | ✓                    |
+| Files > 370 LOC        | 3             | 1       | emitter.ts at 405    |
+| Effect.TS in src/      | Yes           | **No**  | ✓                    |
+| Effect.TS in tests     | Yes           | Partial | Still in a few files |
+| `any` types in emitter | N/A           | ~25     | Needs cleanup        |
 
 ## Key Source Files
 
-| File | LOC | Role |
-|------|-----|------|
-| `src/emitter.ts` | 405 | TypeEmitter-based schema generation + document building |
-| `src/lib.ts` | 276 | Decorator symbol keys, library metadata |
-| `src/minimal-decorators.ts` | 272 | All decorator implementations |
-| `src/state-writers.ts` | 171 | State map write functions |
-| `src/state.ts` | 151 | State consolidation + type definitions |
-| `src/infrastructure/configuration/options.ts` | 165 | Options type, schema, validation |
-| `src/infrastructure/configuration/asyncAPIEmitterOptions.ts` | 65 | Core options type definition |
-| `src/constants/protocols.ts` | 38 | Protocol constants (single source of truth) |
-| `src/state-compatibility.ts` | 41 | State map access wrapper |
-| `src/constants/index.ts` | 43 | Thin re-exports |
+| File                                                         | LOC | Role                                                    |
+| ------------------------------------------------------------ | --- | ------------------------------------------------------- |
+| `src/emitter.ts`                                             | 405 | TypeEmitter-based schema generation + document building |
+| `src/lib.ts`                                                 | 276 | Decorator symbol keys, library metadata                 |
+| `src/minimal-decorators.ts`                                  | 272 | All decorator implementations                           |
+| `src/state-writers.ts`                                       | 171 | State map write functions                               |
+| `src/state.ts`                                               | 151 | State consolidation + type definitions                  |
+| `src/infrastructure/configuration/options.ts`                | 165 | Options type, schema, validation                        |
+| `src/infrastructure/configuration/asyncAPIEmitterOptions.ts` | 65  | Core options type definition                            |
+| `src/constants/protocols.ts`                                 | 38  | Protocol constants (single source of truth)             |
+| `src/state-compatibility.ts`                                 | 41  | State map access wrapper                                |
+| `src/constants/index.ts`                                     | 43  | Thin re-exports                                         |
 
 ---
 

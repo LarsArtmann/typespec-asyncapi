@@ -19,7 +19,9 @@ export type OperationName = string & { readonly __brand: "OperationName" };
 export type MessageName = string & { readonly __brand: "MessageName" };
 export type SchemaName = string & { readonly __brand: "SchemaName" };
 export type ServerName = string & { readonly __brand: "ServerName" };
-export type SecuritySchemeName = string & { readonly __brand: "SecuritySchemeName" };
+export type SecuritySchemeName = string & {
+  readonly __brand: "SecuritySchemeName";
+};
 
 // WHAT WE ACTUALLY USE: 20% - INVESTMENT WASTE
 function createChannel(id: string, path: string): Channel; // ❌ SHOULD BE ChannelName, ChannelPath

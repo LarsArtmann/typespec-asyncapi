@@ -14,8 +14,14 @@ op publishTest(): string;
     const result = await compileSimpleTest(sourceCode);
     console.log("✅ SUCCESS: Clean compilation");
     console.log("📊 AsyncAPI version:", result?.asyncapi);
-    console.log("📊 Channels:", result?.channels ? Object.keys(result.channels).length : 0);
-    console.log("📊 Channel names:", result?.channels ? Object.keys(result.channels) : []);
+    console.log(
+      "📊 Channels:",
+      result?.channels ? Object.keys(result.channels).length : 0,
+    );
+    console.log(
+      "📊 Channel names:",
+      result?.channels ? Object.keys(result.channels) : [],
+    );
   } catch (error) {
     console.log("❌ ERROR:", error.message);
   }

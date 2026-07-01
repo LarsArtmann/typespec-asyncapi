@@ -73,6 +73,8 @@ switch (mode) {
     break;
   default:
     // Execute usage logging in proper Effect context
-    Effect.runSync(Effect.logInfo("Usage: bun run-performance-tests.ts [ci|dev|prod|quick]"));
+    Effect.runSync(
+      Effect.logInfo("Usage: bun run-performance-tests.ts [ci|dev|prod|quick]"),
+    );
     process.exit(1);
 }

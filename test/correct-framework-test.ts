@@ -37,14 +37,25 @@ op publishTest(): string;
           const yaml = await import("yaml");
           const parsed = yaml.parse(value);
           console.log(`✅ AsyncAPI version: ${parsed.asyncapi}`);
-          console.log(`✅ Channels: ${parsed.channels ? Object.keys(parsed.channels).length : 0}`);
-          console.log(`✅ Channel names:`, parsed.channels ? Object.keys(parsed.channels) : []);
+          console.log(
+            `✅ Channels: ${parsed.channels ? Object.keys(parsed.channels).length : 0}`,
+          );
+          console.log(
+            `✅ Channel names:`,
+            parsed.channels ? Object.keys(parsed.channels) : [],
+          );
         }
       }
     }
 
-    console.log("📊 Errors:", diagnostics.filter((d) => d.severity === "error").length);
-    console.log("📊 Warnings:", diagnostics.filter((d) => d.severity === "warning").length);
+    console.log(
+      "📊 Errors:",
+      diagnostics.filter((d) => d.severity === "error").length,
+    );
+    console.log(
+      "📊 Warnings:",
+      diagnostics.filter((d) => d.severity === "warning").length,
+    );
 
     // Show actual errors for debugging
     const errors = diagnostics.filter((d) => d.severity === "error");

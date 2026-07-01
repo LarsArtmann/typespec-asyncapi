@@ -78,7 +78,10 @@ const validResult: ValidationResult = {
 };
 
 // AFTER:
-import { success, failure } from "../../../src/domain/models/validation-result.js";
+import {
+  success,
+  failure,
+} from "../../../src/domain/models/validation-result.js";
 
 const validResult: ValidationResult = {
   ...success(asyncApiDoc),

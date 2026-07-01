@@ -10,13 +10,13 @@ An honest audit of what a **consumer** (someone installing `@lars-artmann/typesp
 
 Six decorators accept data but the emitter never uses it. The consumer writes valid TypeSpec, gets no errors, and the data simply vanishes from the output:
 
-| Decorator | What's lost |
-|-----------|-------------|
-| `@tags` | Tags are stored in state but never read during emission — `components.tags` and inline tags are absent |
-| `@correlationId` | Correlation ID data stored but never emitted on messages |
-| `@header` | Message headers stored but never emitted |
-| `@bindings` (on Models) | Binding data stored but never emitted on messages |
-| Channel path parameters `{orderId}` | Parsed from paths but never emitted as `parameters` on channels |
+| Decorator                           | What's lost                                                                                            |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `@tags`                             | Tags are stored in state but never read during emission — `components.tags` and inline tags are absent |
+| `@correlationId`                    | Correlation ID data stored but never emitted on messages                                               |
+| `@header`                           | Message headers stored but never emitted                                                               |
+| `@bindings` (on Models)             | Binding data stored but never emitted on messages                                                      |
+| Channel path parameters `{orderId}` | Parsed from paths but never emitted as `parameters` on channels                                        |
 
 **Impact:** Consumers will write decorators following the docs, get no warnings, and wonder why their AsyncAPI output is incomplete.
 
@@ -51,16 +51,16 @@ There are zero golden files, snapshot tests, or example output files in the enti
 
 The emitter accepts 15+ options but only reads 6 of them. The rest are silently ignored:
 
-| Option | Claimed | Reality |
-|--------|---------|---------|
-| `protocol-bindings` | Protocol filter | Ignored |
-| `versioning` | Version strategy | Ignored |
-| `security-schemes` | Security filter | Ignored |
-| `validate-spec` | AsyncAPI validation | Ignored (no validation code exists) |
-| `omit-unreachable-types` | Schema pruning | Ignored |
-| `include-source-info` | Source metadata | Ignored |
-| `source-maps` | Source maps | Ignored |
-| `debug` | Debug output | Ignored |
+| Option                   | Claimed             | Reality                             |
+| ------------------------ | ------------------- | ----------------------------------- |
+| `protocol-bindings`      | Protocol filter     | Ignored                             |
+| `versioning`             | Version strategy    | Ignored                             |
+| `security-schemes`       | Security filter     | Ignored                             |
+| `validate-spec`          | AsyncAPI validation | Ignored (no validation code exists) |
+| `omit-unreachable-types` | Schema pruning      | Ignored                             |
+| `include-source-info`    | Source metadata     | Ignored                             |
+| `source-maps`            | Source maps         | Ignored                             |
+| `debug`                  | Debug output        | Ignored                             |
 
 **Impact:** Consumers will configure options, expect behavior changes, and get the same output regardless.
 

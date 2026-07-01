@@ -8,11 +8,20 @@
 import { emitFile } from "@typespec/compiler";
 import type { EmitContext, Namespace, Type, Program } from "@typespec/compiler";
 import { createAssetEmitter, TypeEmitter } from "@typespec/asset-emitter";
-import type { EmitEntity, EmitterOutput, Context, SourceFile, EmittedSourceFile } from "@typespec/asset-emitter";
+import type {
+  EmitEntity,
+  EmitterOutput,
+  Context,
+  SourceFile,
+  EmittedSourceFile,
+} from "@typespec/asset-emitter";
 import { stringify as yamlStringify } from "yaml";
 import { isStdNamespace, getDoc } from "@typespec/compiler";
 import type { AsyncAPIEmitterOptions } from "./infrastructure/configuration/asyncAPIEmitterOptions.js";
-import { consolidateAsyncAPIState, type AsyncAPIConsolidatedState } from "./state.js";
+import {
+  consolidateAsyncAPIState,
+  type AsyncAPIConsolidatedState,
+} from "./state.js";
 
 type SchemaObject = Record<string, unknown>;
 
@@ -20,7 +29,10 @@ type SchemaObject = Record<string, unknown>;
  * Minimal TypeEmitter that produces JSON Schema objects from TypeSpec models.
  * These are embedded into components.schemas of the AsyncAPI document.
  */
-class AsyncAPISchemaEmitter extends TypeEmitter<SchemaObject, AsyncAPIEmitterOptions> {
+class AsyncAPISchemaEmitter extends TypeEmitter<
+  SchemaObject,
+  AsyncAPIEmitterOptions
+> {
   namespaceDeclaration(_namespace: Namespace): EmitterOutput<SchemaObject> {
     return this.emitter.result.none();
   }
@@ -42,7 +54,11 @@ class AsyncAPISchemaEmitter extends TypeEmitter<SchemaObject, AsyncAPIEmitterOpt
           properties[name] = extracted;
         }
         const propDoc = getDoc(this.emitter.getProgram(), prop);
-        if (propDoc && typeof properties[name] === "object" && properties[name] !== null) {
+        if (
+          propDoc &&
+          typeof properties[name] === "object" &&
+          properties[name] !== null
+        ) {
           (properties[name] as SchemaObject).description = propDoc;
         }
         if (!prop.optional) {
@@ -99,7 +115,8 @@ class AsyncAPISchemaEmitter extends TypeEmitter<SchemaObject, AsyncAPIEmitterOpt
       const extracted = extractValue(this.emitter.emitTypeReference(v.type));
       if (Object.keys(extracted).length === 0) {
         const t = v.type as { kind: string; name?: string; value?: string };
-        if (t.kind === "String" && t.value !== undefined) return { const: t.value };
+        if (t.kind === "String" && t.value !== undefined)
+          return { const: t.value };
         return intrinsicToSchema(t.name ?? "string");
       }
       return extracted;
@@ -126,10 +143,16 @@ class AsyncAPISchemaEmitter extends TypeEmitter<SchemaObject, AsyncAPIEmitterOpt
   }
 
   scalarDeclaration(scalar: any, name: string): EmitterOutput<SchemaObject> {
-    return this.emitter.result.declaration(name, intrinsicToSchema(scalar.name));
+    return this.emitter.result.declaration(
+      name,
+      intrinsicToSchema(scalar.name),
+    );
   }
 
-  scalarInstantiation(scalar: any, name: string | undefined): EmitterOutput<SchemaObject> {
+  scalarInstantiation(
+    scalar: any,
+    name: string | undefined,
+  ): EmitterOutput<SchemaObject> {
     if (name) return this.scalarDeclaration(scalar, name);
     return intrinsicToSchema(scalar.name);
   }
@@ -147,15 +170,24 @@ class AsyncAPISchemaEmitter extends TypeEmitter<SchemaObject, AsyncAPIEmitterOpt
   }
 
   tuple(tuple: any): EmitterOutput<SchemaObject> {
-    const items = tuple.values.map((v: any) => extractValue(this.emitter.emitTypeReference(v)));
+    const items = tuple.values.map((v: any) =>
+      extractValue(this.emitter.emitTypeReference(v)),
+    );
     return { type: "array", items };
   }
 
-  arrayDeclaration(array: any, name: string, elementType: any): EmitterOutput<SchemaObject> {
+  arrayDeclaration(
+    array: any,
+    name: string,
+    elementType: any,
+  ): EmitterOutput<SchemaObject> {
     const extracted = extractValue(this.emitter.emitTypeReference(elementType));
     return {
       type: "array",
-      items: Object.keys(extracted).length > 0 ? extracted : intrinsicToSchema(elementType.name ?? "string"),
+      items:
+        Object.keys(extracted).length > 0
+          ? extracted
+          : intrinsicToSchema(elementType.name ?? "string"),
     };
   }
 
@@ -163,7 +195,10 @@ class AsyncAPISchemaEmitter extends TypeEmitter<SchemaObject, AsyncAPIEmitterOpt
     const extracted = extractValue(this.emitter.emitTypeReference(elementType));
     return {
       type: "array",
-      items: Object.keys(extracted).length > 0 ? extracted : intrinsicToSchema(elementType.name ?? "string"),
+      items:
+        Object.keys(extracted).length > 0
+          ? extracted
+          : intrinsicToSchema(elementType.name ?? "string"),
     };
   }
 
@@ -197,13 +232,18 @@ class AsyncAPISchemaEmitter extends TypeEmitter<SchemaObject, AsyncAPIEmitterOpt
     if (kind === "Union") {
       const variants = [...t.variants.values()].map((v: any) => {
         const inner = v.type;
-        if (inner.kind === "String" && inner.value !== undefined) return inner.value;
+        if (inner.kind === "String" && inner.value !== undefined)
+          return inner.value;
         const s = this.typeToSchema(inner);
         return Object.keys(s).length > 0 ? s : { type: "string" };
       });
       const allStrings = variants.every((v: any) => typeof v === "string");
       if (allStrings) return { type: "string", enum: variants };
-      return { anyOf: variants.map((v: any) => typeof v === "string" ? { const: v } : v) };
+      return {
+        anyOf: variants.map((v: any) =>
+          typeof v === "string" ? { const: v } : v,
+        ),
+      };
     }
     if (kind === "Model" && t.indexer) {
       return { type: "array", items: this.typeToSchema(t.indexer.value) };
@@ -211,11 +251,16 @@ class AsyncAPISchemaEmitter extends TypeEmitter<SchemaObject, AsyncAPIEmitterOpt
     if (kind === "Model" && t.name === "Array") {
       return { type: "array", items: { type: "string" } };
     }
-    if (kind === "Scalar" || kind === "Intrinsic") return intrinsicToSchema(t.name);
+    if (kind === "Scalar" || kind === "Intrinsic")
+      return intrinsicToSchema(t.name);
     if (kind === "String") return { const: t.value };
     if (kind === "Number") return { const: t.value };
     if (kind === "Boolean") return { const: t.value };
-    if (kind === "Tuple") return { type: "array", items: t.values.map((v: any) => this.typeToSchema(v)) };
+    if (kind === "Tuple")
+      return {
+        type: "array",
+        items: t.values.map((v: any) => this.typeToSchema(v)),
+      };
     if (kind === "Model") return { type: "object", properties: {} };
     return { type: "string" };
   }
@@ -223,38 +268,73 @@ class AsyncAPISchemaEmitter extends TypeEmitter<SchemaObject, AsyncAPIEmitterOpt
 
 function intrinsicToSchema(typeName: string): SchemaObject {
   switch (typeName) {
-    case "string": return { type: "string" };
-    case "int8": case "int16": case "int32": case "integer": return { type: "integer", format: typeName === "integer" ? undefined : typeName };
-    case "int64": return { type: "integer", format: "int64" };
-    case "uint8": case "uint16": case "uint32": return { type: "integer" };
-    case "uint64": return { type: "integer" };
-    case "safeint": return { type: "integer" };
-    case "float": case "float32": return { type: "number", format: "float" };
-    case "float64": return { type: "number", format: "double" };
-    case "numeric": return { type: "number" };
-    case "decimal": case "decimal128": return { type: "string", format: "decimal" };
-    case "boolean": return { type: "boolean" };
-    case "utcDateTime": case "offsetDateTime": return { type: "string", format: "date-time" };
-    case "unixTimestamp32": return { type: "integer", format: "unix-timestamp" };
-    case "plainDate": return { type: "string", format: "date" };
-    case "plainTime": return { type: "string", format: "time" };
-    case "duration": return { type: "string", format: "duration" };
-    case "bytes": return { type: "string", format: "byte" };
-    case "url": return { type: "string", format: "uri" };
-    default: return { type: "string" };
+    case "string":
+      return { type: "string" };
+    case "int8":
+    case "int16":
+    case "int32":
+    case "integer":
+      return {
+        type: "integer",
+        format: typeName === "integer" ? undefined : typeName,
+      };
+    case "int64":
+      return { type: "integer", format: "int64" };
+    case "uint8":
+    case "uint16":
+    case "uint32":
+      return { type: "integer" };
+    case "uint64":
+      return { type: "integer" };
+    case "safeint":
+      return { type: "integer" };
+    case "float":
+    case "float32":
+      return { type: "number", format: "float" };
+    case "float64":
+      return { type: "number", format: "double" };
+    case "numeric":
+      return { type: "number" };
+    case "decimal":
+    case "decimal128":
+      return { type: "string", format: "decimal" };
+    case "boolean":
+      return { type: "boolean" };
+    case "utcDateTime":
+    case "offsetDateTime":
+      return { type: "string", format: "date-time" };
+    case "unixTimestamp32":
+      return { type: "integer", format: "unix-timestamp" };
+    case "plainDate":
+      return { type: "string", format: "date" };
+    case "plainTime":
+      return { type: "string", format: "time" };
+    case "duration":
+      return { type: "string", format: "duration" };
+    case "bytes":
+      return { type: "string", format: "byte" };
+    case "url":
+      return { type: "string", format: "uri" };
+    default:
+      return { type: "string" };
   }
 }
 
-function extractValue(entity: EmitEntity<SchemaObject> | undefined): SchemaObject {
+function extractValue(
+  entity: EmitEntity<SchemaObject> | undefined,
+): SchemaObject {
   if (!entity) return {};
   // Direct value access
-  if ("value" in entity && entity.value != null) return entity.value as SchemaObject;
+  if ("value" in entity && entity.value != null)
+    return entity.value as SchemaObject;
   // Check kind-based extraction
   const e = entity as unknown as Record<string, unknown>;
-  if (e.kind === "declaration" && e.value != null) return e.value as SchemaObject;
+  if (e.kind === "declaration" && e.value != null)
+    return e.value as SchemaObject;
   if (e.kind === "code" && e.value != null) return e.value as SchemaObject;
   // If the entity IS a plain object schema (no wrapper), return it directly
-  if (!("kind" in entity) && typeof entity === "object") return entity as SchemaObject;
+  if (!("kind" in entity) && typeof entity === "object")
+    return entity as SchemaObject;
   return {};
 }
 
@@ -285,16 +365,17 @@ function collectAllStdlibNames(program: any): Set<string> {
   return names;
 }
 
-function generateSchemas(context: EmitContext<AsyncAPIEmitterOptions>): Record<string, SchemaObject> {
+function generateSchemas(
+  context: EmitContext<AsyncAPIEmitterOptions>,
+): Record<string, SchemaObject> {
   const schemas: Record<string, SchemaObject> = {};
   const stdlibNames = collectAllStdlibNames(context.program);
 
   try {
-    const assetEmitter = createAssetEmitter<SchemaObject, AsyncAPIEmitterOptions>(
-      context.program,
-      AsyncAPISchemaEmitter,
-      context,
-    );
+    const assetEmitter = createAssetEmitter<
+      SchemaObject,
+      AsyncAPIEmitterOptions
+    >(context.program, AsyncAPISchemaEmitter, context);
 
     assetEmitter.emitProgram({ emitGlobalNamespace: true });
 
@@ -316,7 +397,12 @@ function generateSchemas(context: EmitContext<AsyncAPIEmitterOptions>): Record<s
 
 function inferActionFromName(name: string): "send" | "receive" {
   const lower = name.toLowerCase();
-  if (lower.startsWith("publish") || lower.startsWith("send") || lower.startsWith("emit") || lower.startsWith("produce")) {
+  if (
+    lower.startsWith("publish") ||
+    lower.startsWith("send") ||
+    lower.startsWith("emit") ||
+    lower.startsWith("produce")
+  ) {
     return "send";
   }
   return "receive";
@@ -344,16 +430,25 @@ function buildAsyncAPIDocument(
     const channelKey = channelData.path ?? typeWithName.name;
     const channelObj: Record<string, unknown> = { address: channelKey };
     // Attach protocol binding if this operation has one
-    const protoConfig = state.protocolConfigs.get(type) as { protocol?: string; [k: string]: unknown } | undefined;
+    const protoConfig = state.protocolConfigs.get(type) as
+      | { protocol?: string; [k: string]: unknown }
+      | undefined;
     if (protoConfig?.protocol) {
-      channelObj.bindings = { [protoConfig.protocol]: protoConfig.binding ?? {} };
+      channelObj.bindings = {
+        [protoConfig.protocol]: protoConfig.binding ?? {},
+      };
     }
     channels[channelKey] = channelObj;
   }
 
   // Build messages from state
   for (const [type, data] of state.messages) {
-    const msgData = data as { messageId?: string; title?: string; description?: string; contentType?: string };
+    const msgData = data as {
+      messageId?: string;
+      title?: string;
+      description?: string;
+      contentType?: string;
+    };
     const typeWithName = type as { name: string };
     const msgKey = msgData.messageId ?? typeWithName.name;
     messages[msgKey] = {
@@ -376,18 +471,28 @@ function buildAsyncAPIDocument(
   }
 
   for (const [type, data] of state.operations) {
-    const opData = data as { type: string; messageType?: string; description?: string };
+    const opData = data as {
+      type: string;
+      messageType?: string;
+      description?: string;
+    };
     const typeWithName = type as { name: string };
     const channelPath = channelMap.get(typeWithName.name) ?? typeWithName.name;
     operations[typeWithName.name] = {
       action: opData.type === "publish" ? "send" : "receive",
       channel: { $ref: `#/channels/${channelPath}` },
-      messages: [{ $ref: `#/components/messages/${opData.messageType ?? typeWithName.name}` }],
+      messages: [
+        {
+          $ref: `#/components/messages/${opData.messageType ?? typeWithName.name}`,
+        },
+      ],
     };
   }
 
   // Auto-generate operations for channels that have @channel but no @publish/@subscribe
-  const opsWithType = new Set([...state.operations.keys()].map((t) => (t as { name: string }).name));
+  const opsWithType = new Set(
+    [...state.operations.keys()].map((t) => (t as { name: string }).name),
+  );
   for (const [type, data] of state.channels) {
     const typeWithName = type as { name: string };
     if (opsWithType.has(typeWithName.name)) continue;
@@ -402,10 +507,11 @@ function buildAsyncAPIDocument(
   }
 
   // Auto-discover bare operations (no @channel, @publish, or @subscribe decorators)
-  const allKnownOps = new Set([
-    ...state.operations.keys(),
-    ...state.channels.keys(),
-  ].map((t) => (t as { name: string }).name));
+  const allKnownOps = new Set(
+    [...state.operations.keys(), ...state.channels.keys()].map(
+      (t) => (t as { name: string }).name,
+    ),
+  );
 
   const globalNs = (program.checker as any).getGlobalNamespaceType();
   const namespaces = [globalNs, ...globalNs.namespaces.values()];
@@ -414,7 +520,9 @@ function buildAsyncAPIDocument(
     for (const [opName, op] of ns.operations) {
       if (allKnownOps.has(opName)) continue;
       const action = inferActionFromName(opName);
-      const returnType = op.returnType as { model?: { name?: string } } | undefined;
+      const returnType = op.returnType as
+        | { model?: { name?: string } }
+        | undefined;
       const msgName = returnType?.model?.name ?? opName;
       channels[opName] = { address: opName };
       operations[opName] = {
@@ -435,7 +543,12 @@ function buildAsyncAPIDocument(
   for (const [_type, data] of state.servers) {
     const serverEntries = Array.isArray(data) ? data : [data];
     for (const entry of serverEntries) {
-      const serverData = entry as { name: string; url: string; protocol: string; description?: string };
+      const serverData = entry as {
+        name: string;
+        url: string;
+        protocol: string;
+        description?: string;
+      };
       servers[serverData.name] = {
         host: serverData.url,
         protocol: serverData.protocol,
@@ -463,7 +576,8 @@ function buildAsyncAPIDocument(
     components: {
       messages: Object.keys(messages).length > 0 ? messages : undefined,
       schemas: Object.keys(schemas).length > 0 ? schemas : undefined,
-      securitySchemes: Object.keys(securitySchemes).length > 0 ? securitySchemes : undefined,
+      securitySchemes:
+        Object.keys(securitySchemes).length > 0 ? securitySchemes : undefined,
     },
   };
 }
@@ -471,16 +585,24 @@ function buildAsyncAPIDocument(
 /**
  * TypeSpec AsyncAPI emitter entry point.
  */
-export async function $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): Promise<void> {
+export async function $onEmit(
+  context: EmitContext<AsyncAPIEmitterOptions>,
+): Promise<void> {
   const options = context.options;
   const rawState = consolidateAsyncAPIState(context.program);
   const schemas = generateSchemas(context);
-  const document = buildAsyncAPIDocument(rawState, schemas, options, context.program);
+  const document = buildAsyncAPIDocument(
+    rawState,
+    schemas,
+    options,
+    context.program,
+  );
 
   const rawFileType = options?.["file-type"] ?? "yaml";
-  const fileType: string = typeof rawFileType === "string"
-    ? rawFileType
-    : String((rawFileType as Record<string, unknown>)?.format ?? "yaml");
+  const fileType: string =
+    typeof rawFileType === "string"
+      ? rawFileType
+      : String((rawFileType as Record<string, unknown>)?.format ?? "yaml");
   const outputFile = options?.["output-file"] ?? "asyncapi";
   const outputPath = `${outputFile}.${fileType}`;
 

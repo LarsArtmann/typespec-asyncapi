@@ -133,7 +133,9 @@ The TypeSpec AsyncAPI Emitter project is in a critical state. While the codebase
    - **Impact:** No compile-time safety, runtime type errors possible, difficult maintenance
    - **Examples:**
      ```typescript
-     const programTyped = program as { stateMap: (symbol: symbol) => Map<unknown, unknown> };
+     const programTyped = program as {
+       stateMap: (symbol: symbol) => Map<unknown, unknown>;
+     };
      const stateTyped = state as Record<string, unknown>;
      ```
    - **Consequences:** TypeScript provides zero protection, code will crash at runtime if assumptions wrong
@@ -249,7 +251,9 @@ The TypeSpec AsyncAPI Emitter project is in a critical state. While the codebase
 
 ```typescript
 // Found in multiple locations:
-const programTyped = program as { stateMap: (symbol: symbol) => Map<unknown, unknown> };
+const programTyped = program as {
+  stateMap: (symbol: symbol) => Map<unknown, unknown>;
+};
 const stateTyped = state as Record<string, unknown>;
 const channelData = data as { path?: string };
 ```
@@ -275,7 +279,10 @@ const channelData = data as { path?: string };
 ```typescript
 // Emitter directly accessing state:
 const rawState = consolidateAsyncAPIState(context.program);
-const channelPaths = getStateMap<ChannelPathData>(program, stateSymbols.channelPaths);
+const channelPaths = getStateMap<ChannelPathData>(
+  program,
+  stateSymbols.channelPaths,
+);
 ```
 
 **Impact:**
@@ -326,8 +333,13 @@ type OperationTypeData = {
 
 ```typescript
 // Should use generics but doesn't:
-export function consolidateAsyncAPIState(program: Program): AsyncAPIConsolidatedState {
-  const channelPaths = getStateMap<ChannelPathData>(program, stateSymbols.channelPaths);
+export function consolidateAsyncAPIState(
+  program: Program,
+): AsyncAPIConsolidatedState {
+  const channelPaths = getStateMap<ChannelPathData>(
+    program,
+    stateSymbols.channelPaths,
+  );
   // Multiple similar lines with hardcoded types
 }
 ```
@@ -507,7 +519,9 @@ TypeScript type assertions used throughout codebase, eliminating all type safety
 
 ```typescript
 // Throughout codebase:
-const programTyped = program as { stateMap: (symbol: symbol) => Map<unknown, unknown> };
+const programTyped = program as {
+  stateMap: (symbol: symbol) => Map<unknown, unknown>;
+};
 const stateTyped = state as Record<string, unknown>;
 const channelData = data as { path?: string };
 const configTyped = config as Record<string, unknown>;

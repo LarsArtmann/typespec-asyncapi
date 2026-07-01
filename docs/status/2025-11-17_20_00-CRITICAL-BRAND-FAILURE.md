@@ -68,7 +68,8 @@ function createChannelDefinition(
 ```typescript
 // FIX ALL UNSAFE ASSIGNMENTS WITH ASSERTIONS
 const channelPath = getChannelPath(op, program);
-const channelName: ChannelName = (channelPath ?? `/${op.name.toLowerCase()}`) as ChannelName;
+const channelName: ChannelName = (channelPath ??
+  `/${op.name.toLowerCase()}`) as ChannelName;
 
 const operationName: OperationName = op.name as OperationName;
 

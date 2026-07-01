@@ -5,12 +5,22 @@
  * Each function corresponds to a specific decorator's state storage.
  */
 
-import type { Program, Operation, Model, ModelProperty, Namespace } from "@typespec/compiler";
+import type {
+  Program,
+  Operation,
+  Model,
+  ModelProperty,
+  Namespace,
+} from "@typespec/compiler";
 import { stateSymbols } from "./lib.js";
 import { getStateMap } from "./state-compatibility.js";
 import type { MessageConfigData } from "./state.js";
 
-export const storeChannelState = (program: Program, target: Operation, path: string) => {
+export const storeChannelState = (
+  program: Program,
+  target: Operation,
+  path: string,
+) => {
   const map = getStateMap(program, stateSymbols.channelPaths);
   map.set(target, {
     path,
@@ -30,7 +40,8 @@ export const storeOperationType = (
   map.set(target, {
     type,
     messageType,
-    description: description ?? `${type} operation for ${target.name ?? "unnamed"}`,
+    description:
+      description ?? `${type} operation for ${target.name ?? "unnamed"}`,
     tags: [],
   });
 };
@@ -77,11 +88,18 @@ export const storeSecurityConfig = (
   map.set(target, { name: config.name, scheme: config.scheme });
 };
 
-export const storeTags = (program: Program, target: Operation | Model, tags: string[]) => {
+export const storeTags = (
+  program: Program,
+  target: Operation | Model,
+  tags: string[],
+) => {
   const map = getStateMap(program, stateSymbols.tags);
-  const existing = (map.get(target) as { name: string } | undefined)?.name ?? "";
+  const existing =
+    (map.get(target) as { name: string } | undefined)?.name ?? "";
   const allTags = existing ? existing.split(",") : [];
-  const unique = [...allTags, ...tags].filter((tag, i, arr) => arr.indexOf(tag) === i);
+  const unique = [...allTags, ...tags].filter(
+    (tag, i, arr) => arr.indexOf(tag) === i,
+  );
   map.set(target, { name: unique.join(",") });
 };
 
@@ -101,7 +119,8 @@ export const storeBindings = (
   bindings: Record<string, unknown>,
 ) => {
   const map = getStateMap(program, stateSymbols.protocolBindings);
-  const existing = (map.get(target) as Record<string, unknown> | undefined) ?? {};
+  const existing =
+    (map.get(target) as Record<string, unknown> | undefined) ?? {};
   map.set(target, { ...existing, ...bindings });
 };
 
@@ -117,7 +136,9 @@ export const storeHeader = (
   let description: string | undefined;
 
   if (target.kind === "ModelProperty") {
-    const propType = target.type as { kind?: string; name?: string } | undefined;
+    const propType = target.type as
+      | { kind?: string; name?: string }
+      | undefined;
     if (propType?.kind === "Scalar") {
       headerType = propType.name?.toLowerCase() ?? "string";
     }
@@ -125,8 +146,18 @@ export const storeHeader = (
   }
 
   const existing =
-    (map.get(target) as Array<{ name: string; value?: unknown; type?: string; description?: string }> | undefined) ?? [];
-  map.set(target, [...existing, { name, value, type: headerType, description }]);
+    (map.get(target) as
+      | Array<{
+          name: string;
+          value?: unknown;
+          type?: string;
+          description?: string;
+        }>
+      | undefined) ?? [];
+  map.set(target, [
+    ...existing,
+    { name, value, type: headerType, description },
+  ]);
 };
 
 export const storeProtocolConfig = (
@@ -154,7 +185,12 @@ export const storeProtocolConfig = (
     ...(protocolType === "mqtt" && {
       qos: config.qos ?? 1,
       retain: config.retain ?? false,
-      lastWill: config.lastWill ?? { topic: "", message: "", qos: 1, retain: false },
+      lastWill: config.lastWill ?? {
+        topic: "",
+        message: "",
+        qos: 1,
+        retain: false,
+      },
     }),
   };
 
@@ -167,7 +203,10 @@ export const linkPublishMessage = (
   config?: Model,
 ) => {
   if (config) {
-    const map = getStateMap<MessageConfigData>(program, stateSymbols.messageConfigs);
+    const map = getStateMap<MessageConfigData>(
+      program,
+      stateSymbols.messageConfigs,
+    );
     const existing = map.get(config);
     if (existing) {
       existing.messageId = config.name;

@@ -5,14 +5,20 @@
  * "As a user defining TypeSpec, when I use @decorator, I get X in my AsyncAPI output"
  */
 import { expect, test, describe } from "bun:test";
-import { PROTOCOL_LIST, isSupportedProtocol } from "../../src/constants/protocols.js";
+import {
+  PROTOCOL_LIST,
+  isSupportedProtocol,
+} from "../../src/constants/protocols.js";
 import {
   parsePathTemplate,
   validatePathTemplate,
   normalizePathTemplate,
   pathToChannelName,
 } from "../../src/domain/models/path-templates.js";
-import { consolidateAsyncAPIState, type AsyncAPIConsolidatedState } from "../../src/state.js";
+import {
+  consolidateAsyncAPIState,
+  type AsyncAPIConsolidatedState,
+} from "../../src/state.js";
 import { validateAsyncAPIEmitterOptions } from "../../src/infrastructure/configuration/options.js";
 
 // ============================================================================

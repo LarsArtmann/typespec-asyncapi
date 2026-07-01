@@ -177,11 +177,15 @@ This approach best aligns with **TypeSpec's core philosophy**:
 ### Core Algorithm
 
 ```typescript
-function buildServersFromNamespaces(program: Program): Record<string, AsyncAPIServer> {
+function buildServersFromNamespaces(
+  program: Program,
+): Record<string, AsyncAPIServer> {
   const servers: Record<string, AsyncAPIServer> = {};
 
   // Iterate through all namespaces with server configurations
-  for (const [namespace, serverConfigs] of program.stateMap($lib.stateKeys.serverConfigs)) {
+  for (const [namespace, serverConfigs] of program.stateMap(
+    $lib.stateKeys.serverConfigs,
+  )) {
     const namespaceName = getNamespaceName(namespace);
 
     // Process each server within the namespace

@@ -3,7 +3,10 @@
  * Debug script to understand what's happening with AsyncAPI generation
  */
 
-import { createAsyncAPITestHost, compileAndGetAsyncAPI } from "./test/utils/test-helpers.js";
+import {
+  createAsyncAPITestHost,
+  compileAndGetAsyncAPI,
+} from "./test/utils/test-helpers.js";
 
 async function debugGeneration() {
   console.log("🔍 DEBUG: Starting AsyncAPI generation debug");

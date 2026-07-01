@@ -14,7 +14,10 @@ import { Effect } from "effect";
 import { existsSync, readFileSync, writeFileSync, mkdirSync } from "fs";
 import { join } from "path";
 import { spawn } from "child_process";
-import { compileAsyncAPISpecWithoutErrors, parseAsyncAPIOutput } from "../utils/test-helpers";
+import {
+  compileAsyncAPISpecWithoutErrors,
+  parseAsyncAPIOutput,
+} from "../utils/test-helpers";
 
 describe("AsyncAPI Basic Functionality", () => {
   //TODO: HARDCODED PATH DISASTER! "test-output/integration-basic" should be TEST_PATHS.INTEGRATION_BASIC!
@@ -32,7 +35,10 @@ describe("AsyncAPI Basic Functionality", () => {
     mkdirSync(outputDir, { recursive: true });
   });
 
-  async function compileTypeSpecSource(source: string, filename: string): Promise<string[]> {
+  async function compileTypeSpecSource(
+    source: string,
+    filename: string,
+  ): Promise<string[]> {
     const testFile = join(testDir, `${filename}.tsp`);
 
     // Create TypeSpec file with proper imports
@@ -90,7 +96,9 @@ ${source}
           resolve();
         } else {
           reject(
-            new Error(`Compilation failed with code ${code}\nStdout: ${stdout}\nStderr: ${stderr}`),
+            new Error(
+              `Compilation failed with code ${code}\nStdout: ${stdout}\nStderr: ${stderr}`,
+            ),
           );
         }
       });
@@ -98,9 +106,18 @@ ${source}
 
     // Find generated AsyncAPI files
     // TypeSpec emitters output to {output-dir}/{emitter-package-name}/
-    const emitterOutputDir = join(outputDir, "@lars-artmann", "typespec-asyncapi");
+    const emitterOutputDir = join(
+      outputDir,
+      "@lars-artmann",
+      "typespec-asyncapi",
+    );
     const asyncapiFiles = [];
-    const files = ["AsyncAPI.yaml", "AsyncAPI.json", "asyncapi.yaml", "asyncapi.json"];
+    const files = [
+      "AsyncAPI.yaml",
+      "AsyncAPI.json",
+      "asyncapi.yaml",
+      "asyncapi.json",
+    ];
     for (const file of files) {
       const filepath = join(emitterOutputDir, file);
       if (existsSync(filepath)) {
@@ -203,7 +220,10 @@ ${source}
 
     const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
 
-    const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "multi-channel.json");
+    const asyncapiDoc = await parseAsyncAPIOutput(
+      outputFiles,
+      "multi-channel.json",
+    );
     const doc = asyncapiDoc as any;
 
     // Should have both operations
@@ -241,7 +261,10 @@ ${source}
 
     const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
 
-    const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "typed-test.json");
+    const asyncapiDoc = await parseAsyncAPIOutput(
+      outputFiles,
+      "typed-test.json",
+    );
     const doc = asyncapiDoc as any;
     const schema = doc.components.schemas.TypedEvent;
 
@@ -287,8 +310,12 @@ ${source}
 
     // Validate documentation is preserved
     expect(schema.description).toBe("A well-documented event model");
-    expect(schema.properties.id.description).toBe("Unique identifier for the event");
-    expect(schema.properties.description.description).toBe("Human-readable description");
+    expect(schema.properties.id.description).toBe(
+      "Unique identifier for the event",
+    );
+    expect(schema.properties.description.description).toBe(
+      "Human-readable description",
+    );
 
     Effect.log("✅ Documentation preservation works");
   });
@@ -311,7 +338,10 @@ ${source}
 
     const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
 
-    const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "param-test.json");
+    const asyncapiDoc = await parseAsyncAPIOutput(
+      outputFiles,
+      "param-test.json",
+    );
     const doc = asyncapiDoc as any;
 
     // Should have operation with parameters
@@ -340,10 +370,13 @@ ${source}
       op publishEvent3(): Event1; // Same model, different operation
     `;
 
-    const { outputFiles, program } = await compileAsyncAPISpecWithoutErrors(source);
+    const { outputFiles, program } =
+      await compileAsyncAPISpecWithoutErrors(source);
 
     // Debug: What files were generated?
-    Effect.log(`📄 Generated files: ${Array.from(outputFiles.keys()).join(", ")}`);
+    Effect.log(
+      `📄 Generated files: ${Array.from(outputFiles.keys()).join(", ")}`,
+    );
 
     // Debug: Check what file is actually being parsed
     const allFiles = Array.from(outputFiles.keys());
@@ -360,16 +393,22 @@ ${source}
     const fileName = Array.from(outputFiles.keys())[0];
     const fileContent = outputFiles.get(fileName);
     if (typeof fileContent === "string") {
-      console.log(`📄 File content preview:\n${fileContent.substring(0, 500)}...`);
+      console.log(
+        `📄 File content preview:\n${fileContent.substring(0, 500)}...`,
+      );
     } else if (fileContent && "content" in fileContent) {
-      console.log(`📄 File content preview:\n${fileContent.content.substring(0, 500)}...`);
+      console.log(
+        `📄 File content preview:\n${fileContent.content.substring(0, 500)}...`,
+      );
     }
 
     const asyncapiDoc = await parseAsyncAPIOutput(outputFiles);
     const doc = asyncapiDoc as any;
 
     // Debug: What operations were generated?
-    console.log(`🔧 Generated operations: ${Object.keys(doc.operations).join(", ")}`);
+    console.log(
+      `🔧 Generated operations: ${Object.keys(doc.operations).join(", ")}`,
+    );
 
     // Should have unique operation names
     const operationNames = Object.keys(doc.operations);

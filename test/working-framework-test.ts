@@ -1,4 +1,7 @@
-import { createAsyncAPITestHost, compileAndGetAsyncAPI } from "../test/utils/test-helpers.js";
+import {
+  createAsyncAPITestHost,
+  compileAndGetAsyncAPI,
+} from "../test/utils/test-helpers.js";
 
 async function testWorkingFramework() {
   const sourceCode = `
@@ -20,8 +23,14 @@ op publishTest(): string;
 
     console.log("✅ Working framework SUCCESS");
     console.log("📊 AsyncAPI version:", result?.asyncapi);
-    console.log("📊 Channels:", result?.channels ? Object.keys(result.channels).length : 0);
-    console.log("📊 Channel names:", result?.channels ? Object.keys(result.channels) : []);
+    console.log(
+      "📊 Channels:",
+      result?.channels ? Object.keys(result.channels).length : 0,
+    );
+    console.log(
+      "📊 Channel names:",
+      result?.channels ? Object.keys(result.channels) : [],
+    );
   } catch (error) {
     console.log("❌ ERROR:", error.message);
     console.log("❌ STACK:", error.stack);

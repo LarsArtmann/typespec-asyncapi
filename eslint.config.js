@@ -147,12 +147,14 @@ export default [
             "🚨 BANNED: try/catch blocks. Use Effect.gen() with proper error handling via Effect.catchAll() or Effect.orElse().",
         },
         {
-          selector: "CallExpression[callee.type='MemberExpression'][callee.property.name='then']",
+          selector:
+            "CallExpression[callee.type='MemberExpression'][callee.property.name='then']",
           message:
             "🚨 BANNED: .then() method. Use Effect.flatMap() or Effect.gen() for composable async operations.",
         },
         {
-          selector: "CallExpression[callee.type='MemberExpression'][callee.property.name='catch']",
+          selector:
+            "CallExpression[callee.type='MemberExpression'][callee.property.name='catch']",
           message:
             "🚨 BANNED: .catch() method. Use Effect.catchAll() or Effect.orElse() for proper error handling.",
         },
@@ -162,22 +164,26 @@ export default [
             "🚨 BANNED: new Promise(). Use Effect.async() or Effect.promise() for async operations with proper resource management.",
         },
         {
-          selector: "CallExpression[callee.object.name='Promise'][callee.property.name='resolve']",
+          selector:
+            "CallExpression[callee.object.name='Promise'][callee.property.name='resolve']",
           message:
             "🚨 BANNED: Promise.resolve(). Use Effect.succeed() for immediate success values.",
         },
         {
-          selector: "CallExpression[callee.object.name='Promise'][callee.property.name='reject']",
+          selector:
+            "CallExpression[callee.object.name='Promise'][callee.property.name='reject']",
           message:
             "🚨 BANNED: Promise.reject(). Use Effect.fail() for expected errors or Effect.die() for unexpected errors.",
         },
         {
-          selector: "CallExpression[callee.object.name='Promise'][callee.property.name='all']",
+          selector:
+            "CallExpression[callee.object.name='Promise'][callee.property.name='all']",
           message:
             "🚨 BANNED: Promise.all(). Use Effect.all() for concurrent execution with proper error handling.",
         },
         {
-          selector: "CallExpression[callee.object.name='Promise'][callee.property.name='race']",
+          selector:
+            "CallExpression[callee.object.name='Promise'][callee.property.name='race']",
           message:
             "🚨 BANNED: Promise.race(). Use Effect.race() for racing effects with resource cleanup.",
         },

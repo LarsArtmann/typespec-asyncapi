@@ -343,7 +343,9 @@ describe("GIVEN a TypeSpec service with @channel decorator", () => {
 ```typescript
 describe("ValidationService", () => {
   it("should validate AsyncAPI document with Effect.TS error handling", async () => {
-    const result = await Effect.runPromise(validationService.validateDocument(document));
+    const result = await Effect.runPromise(
+      validationService.validateDocument(document),
+    );
     expect(result.isValid).toBe(true);
   });
 });

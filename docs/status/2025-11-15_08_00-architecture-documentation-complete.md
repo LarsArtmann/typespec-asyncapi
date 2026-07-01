@@ -566,8 +566,10 @@ type ServerUrl = string & { readonly __brand: "ServerUrl" };
 
 const ChannelPath = {
   create: (value: string): Result<ChannelPath, ValidationError> => {
-    if (value.includes("//")) return Result.fail(new ValidationError("No double slashes"));
-    if (!value.startsWith("/")) return Result.fail(new ValidationError("Must start with /"));
+    if (value.includes("//"))
+      return Result.fail(new ValidationError("No double slashes"));
+    if (!value.startsWith("/"))
+      return Result.fail(new ValidationError("Must start with /"));
     return Result.ok(value as ChannelPath);
   },
 };

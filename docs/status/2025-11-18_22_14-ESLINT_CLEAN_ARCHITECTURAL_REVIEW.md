@@ -220,7 +220,11 @@ type RegressionStatus =
   | { _tag: "regression"; degradedMetrics: DegradedMetric[] }
   | { _tag: "improvement"; improvedMetrics: ImprovedMetric[] }
   | { _tag: "stable" }
-  | { _tag: "mixed"; degradedMetrics: DegradedMetric[]; improvedMetrics: ImprovedMetric[] };
+  | {
+      _tag: "mixed";
+      degradedMetrics: DegradedMetric[];
+      improvedMetrics: ImprovedMetric[];
+    };
 ```
 
 **Impact:** Makes impossible states unrepresentable ✅

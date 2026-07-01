@@ -58,12 +58,15 @@ describe("AsyncAPI Decorator Validation", () => {
 
       // Should have diagnostics for invalid channels but not for valid ones
       const _channelErrors = diagnostics.filter(
-        (d) => d.code === "@lars-artmann/typespec-asyncapi/invalid-channel-path",
+        (d) =>
+          d.code === "@lars-artmann/typespec-asyncapi/invalid-channel-path",
       );
 
       // Note: The exact validation depends on implementation
       // This test structure shows how to validate decorator constraints
-      expect(diagnostics.filter((d) => d.severity === "error").length).toBeGreaterThanOrEqual(0);
+      expect(
+        diagnostics.filter((d) => d.severity === "error").length,
+      ).toBeGreaterThanOrEqual(0);
     });
 
     it("should require @channel decorator for operations", async () => {
@@ -86,7 +89,8 @@ describe("AsyncAPI Decorator Validation", () => {
 
       // Check for missing channel diagnostic
       const _missingChannelErrors = diagnostics.filter(
-        (d) => d.code === "@lars-artmann/typespec-asyncapi/missing-channel-path",
+        (d) =>
+          d.code === "@lars-artmann/typespec-asyncapi/missing-channel-path",
       );
 
       // Structure shows validation - actual behavior depends on decorator implementation
@@ -149,7 +153,9 @@ describe("AsyncAPI Decorator Validation", () => {
 
       // Should detect the conflict
       const _conflictErrors = diagnostics.filter(
-        (d) => d.code === "@lars-artmann/typespec-asyncapi/conflicting-operation-type",
+        (d) =>
+          d.code ===
+          "@lars-artmann/typespec-asyncapi/conflicting-operation-type",
       );
 
       // The test structure shows how to validate - actual implementation may vary
@@ -235,7 +241,9 @@ describe("AsyncAPI Decorator Validation", () => {
       // Recursive models should not cause infinite loops
       const _errors = diagnostics.filter((d) => d.severity === "error");
       const _circularErrors = diagnostics.filter(
-        (d) => d.code === "@lars-artmann/typespec-asyncapi/circular-message-reference",
+        (d) =>
+          d.code ===
+          "@lars-artmann/typespec-asyncapi/circular-message-reference",
       );
 
       // Test structure - actual behavior depends on implementation
@@ -284,12 +292,20 @@ describe("AsyncAPI Decorator Validation", () => {
 
         // Validate documentation preservation
         const schema = asyncapiDoc.components?.schemas?.DocumentedEvent;
-        expect(schema?.description).toContain("Event model with comprehensive documentation");
+        expect(schema?.description).toContain(
+          "Event model with comprehensive documentation",
+        );
 
         if (schema?.properties) {
-          expect(schema.properties.id?.description).toContain("Unique event identifier");
-          expect(schema.properties.name?.description).toContain("Human-readable event name");
-          expect(schema.properties.createdAt?.description).toContain("Event creation timestamp");
+          expect(schema.properties.id?.description).toContain(
+            "Unique event identifier",
+          );
+          expect(schema.properties.name?.description).toContain(
+            "Human-readable event name",
+          );
+          expect(schema.properties.createdAt?.description).toContain(
+            "Event creation timestamp",
+          );
         }
 
         // Validate channel documentation

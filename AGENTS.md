@@ -74,6 +74,7 @@ const result = await tester.compile(source);
 ## Decorator Signatures
 
 Decorators accept BOTH `{}` (Model expression types) AND `#{}` (value literals):
+
 ```typescript
 extern dec security(target: Operation | Namespace, config: {} | valueof Record<unknown>);
 extern dec message(target: Model, config: {} | valueof Record<unknown>);
@@ -87,5 +88,3 @@ extern dec bindings(target: Operation | Model, value: {} | valueof Record<unknow
 - `emitFile` needs `emitterOutputDir` prefix or `mkdir ''` crashes in CLI mode
 - `file-type` option can be string `"json"` or object `{ format: "json", pretty: true, indent: 2 }`
 - `extractValue` in emitter.ts handles `EmitEntity` unwrapping from `@typespec/asset-emitter`
-
-

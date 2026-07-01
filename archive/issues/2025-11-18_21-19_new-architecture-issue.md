@@ -64,7 +64,9 @@ export class ChannelDomainService {
   static createChannelFromOperation(op: Operation): Channel {
     const name = new ChannelName(op.name);
     const validation = this.validateChannelName(name);
-    return validation.isSuccess ? new Channel(name, op) : Channel.invalid(validation.errors);
+    return validation.isSuccess
+      ? new Channel(name, op)
+      : Channel.invalid(validation.errors);
   }
 }
 

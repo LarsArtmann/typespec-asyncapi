@@ -313,7 +313,11 @@ graph LR
 // ✅ PERFECT - validation-result.ts
 export type ValidationResult<T> =
   | { _tag: "Success"; value: T; errors: readonly []; warnings: readonly [] }
-  | { _tag: "Failure"; errors: readonly ValidationError[]; warnings: readonly ValidationWarning[] };
+  | {
+      _tag: "Failure";
+      errors: readonly ValidationError[];
+      warnings: readonly ValidationWarning[];
+    };
 
 // ✅ NO SPLIT BRAIN - computed from source
 export function getChannelCount(doc: AsyncAPIObject): number {

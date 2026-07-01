@@ -47,7 +47,8 @@ const enhancedProgram = {
       operations: new Map(),
       namespaces: new Map(),
     })),
-  sourceFiles: program.sourceFiles || new Map([["main.tsp", { content: wrappedSource }]]),
+  sourceFiles:
+    program.sourceFiles || new Map([["main.tsp", { content: wrappedSource }]]),
 };
 ```
 

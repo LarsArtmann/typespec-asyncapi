@@ -83,7 +83,10 @@
 - **Target:**
   ```typescript
   // ✅ AFTER: Type-safe branded types
-  function createChannel(id: ChannelId, path: ChannelPath): Effect.Effect<Channel, ValidationError>;
+  function createChannel(
+    id: ChannelId,
+    path: ChannelPath,
+  ): Effect.Effect<Channel, ValidationError>;
   // Can't swap - compile error!
   createChannel(ChannelPath.create("/path"), ChannelId.create("channel-123")); // ✅
   ```
@@ -123,7 +126,10 @@
   // ✅ NO SPLIT BRAIN POSSIBLE
   type ValidationResult<T> =
     | { readonly status: "valid"; readonly data: T }
-    | { readonly status: "invalid"; readonly errors: readonly ValidationError[] };
+    | {
+        readonly status: "invalid";
+        readonly errors: readonly ValidationError[];
+      };
   ```
 - **Action:**
   1. Identify all split brains (15 min)

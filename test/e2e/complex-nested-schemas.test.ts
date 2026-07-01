@@ -176,21 +176,26 @@ describe("E2E: Complex Nested Schemas", () => {
 
     const outputFiles = Array.from(host.fs.keys());
     const asyncApiFile = outputFiles.find(
-      (f) => f.includes("asyncapi") && (f.endsWith(".json") || f.endsWith(".yaml")),
+      (f) =>
+        f.includes("asyncapi") && (f.endsWith(".json") || f.endsWith(".yaml")),
     );
 
     expect(asyncApiFile).toBeDefined();
 
     if (asyncApiFile) {
       const content = host.fs.get(asyncApiFile) as string;
-      const spec = content.startsWith("{") ? JSON.parse(content) : require("yaml").parse(content);
+      const spec = content.startsWith("{")
+        ? JSON.parse(content)
+        : require("yaml").parse(content);
 
       const schemas = spec.components?.schemas || {};
 
       // Validate deep nesting (5 levels)
       expect(schemas.UserProfile).toBeDefined();
       expect(schemas.UserProfile.properties.personalInfo.type).toBe("object");
-      expect(schemas.UserProfile.properties.personalInfo.properties.contact.type).toBe("object");
+      expect(
+        schemas.UserProfile.properties.personalInfo.properties.contact.type,
+      ).toBe("object");
       expect(schemas.Address).toBeDefined();
 
       // Validate arrays
@@ -203,7 +208,9 @@ describe("E2E: Complex Nested Schemas", () => {
       expect(schemas.ContactInfo.required).not.toContain("phone");
 
       // Validate union types in nested structures
-      expect(schemas.ProductVariant.properties.pricing.properties.discount).toBeDefined();
+      expect(
+        schemas.ProductVariant.properties.pricing.properties.discount,
+      ).toBeDefined();
 
       // Validate enums from union types
       expect(schemas.Order.properties.shipping.properties.method.enum).toEqual([
@@ -226,7 +233,9 @@ describe("E2E: Complex Nested Schemas", () => {
       expect(schemas.Order).toBeDefined();
 
       // Validate operations
-      expect(Object.keys(spec.operations || {}).length).toBeGreaterThanOrEqual(3);
+      expect(Object.keys(spec.operations || {}).length).toBeGreaterThanOrEqual(
+        3,
+      );
 
       Effect.log("✅ Complex nested schemas E2E test passed!");
     }

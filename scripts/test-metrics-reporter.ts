@@ -33,7 +33,10 @@ interface SessionHistory {
 }
 
 class TestMetricsReporter {
-  private readonly metricsFile = join(process.cwd(), "test-metrics-history.json");
+  private readonly metricsFile = join(
+    process.cwd(),
+    "test-metrics-history.json",
+  );
 
   /**
    * Extract test metrics from bun test output
@@ -48,13 +51,19 @@ class TestMetricsReporter {
       .reverse()
       .find(
         (line) =>
-          (line.includes("pass") && line.includes("skip") && line.includes("fail")) ||
-          (line.includes("Ran") && line.includes("tests") && line.includes("across")),
+          (line.includes("pass") &&
+            line.includes("skip") &&
+            line.includes("fail")) ||
+          (line.includes("Ran") &&
+            line.includes("tests") &&
+            line.includes("across")),
       );
 
     // Primary: Try to parse summary line
     if (summaryLine) {
-      const passSkipFailMatch = summaryLine.match(/(\d+)\s+pass\s+(\d+)\s+skip\s+(\d+)\s+fail/);
+      const passSkipFailMatch = summaryLine.match(
+        /(\d+)\s+pass\s+(\d+)\s+skip\s+(\d+)\s+fail/,
+      );
       if (passSkipFailMatch) {
         const passing = parseInt(passSkipFailMatch[1], 10);
         const skipped = parseInt(passSkipFailMatch[2], 10);
@@ -204,7 +213,11 @@ class TestMetricsReporter {
     }
 
     try {
-      writeFileSync(this.metricsFile, JSON.stringify(history, null, 2), "utf-8");
+      writeFileSync(
+        this.metricsFile,
+        JSON.stringify(history, null, 2),
+        "utf-8",
+      );
     } catch (error) {
       console.error(`Error saving metrics history: ${String(error)}`);
     }
@@ -220,7 +233,8 @@ class TestMetricsReporter {
     // Calculate delta from previous session
     if (history.length > 0) {
       const previousMetrics = history[history.length - 1].metrics;
-      currentMetrics.deltaPassing = currentMetrics.passing - previousMetrics.passing;
+      currentMetrics.deltaPassing =
+        currentMetrics.passing - previousMetrics.passing;
     }
 
     // Save current session
@@ -292,7 +306,9 @@ class TestMetricsReporter {
     if (metrics.passing >= 200) {
       console.log("   ✅ Absolute Passing Tests: Above 200 baseline");
     } else {
-      console.log(`   ❌ Absolute Passing Tests: Below 200 baseline (${metrics.passing})`);
+      console.log(
+        `   ❌ Absolute Passing Tests: Below 200 baseline (${metrics.passing})`,
+      );
     }
 
     // Pass rate gate (for production readiness)
@@ -310,7 +326,9 @@ class TestMetricsReporter {
     if (metrics.failures.critical === 0) {
       console.log("   ✅ Critical Failures: None (excellent!)");
     } else {
-      console.log(`   🔴 Critical Failures: ${metrics.failures.critical} (address immediately)`);
+      console.log(
+        `   🔴 Critical Failures: ${metrics.failures.critical} (address immediately)`,
+      );
     }
   }
 }

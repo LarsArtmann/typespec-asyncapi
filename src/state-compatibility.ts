@@ -19,7 +19,7 @@ export function getStateMap<T>(program: Program, symbol: symbol): Map<Type, T> {
   if (typeof programTyped.stateMap !== "function") {
     throw new Error(
       `getStateMap: program.stateMap is not available. ` +
-      `This typically means the TypeSpec compiler version is incompatible.`,
+        `This typically means the TypeSpec compiler version is incompatible.`,
     );
   }
 
@@ -36,7 +36,7 @@ export function getStateMap<T>(program: Program, symbol: symbol): Map<Type, T> {
 
   throw new Error(
     `getStateMap: stateMap(${String(symbol)}) returned unexpected type: ${typeof result}. ` +
-    `Expected a Map-like object.`,
+      `Expected a Map-like object.`,
   );
 }
 
@@ -44,7 +44,10 @@ export function getStateMap<T>(program: Program, symbol: symbol): Map<Type, T> {
  * Get a multi-value state map where each key maps to an array of values.
  * Used for decorators that can be applied multiple times to the same target.
  */
-export function getMultiState<T>(program: Program, symbol: symbol): Map<Type, T[]> {
+export function getMultiState<T>(
+  program: Program,
+  symbol: symbol,
+): Map<Type, T[]> {
   const raw = getStateMap<unknown>(program, symbol);
   const multiMap = new Map<Type, T[]>();
 

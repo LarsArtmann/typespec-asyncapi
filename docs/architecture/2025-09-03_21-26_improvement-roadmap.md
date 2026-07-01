@@ -151,7 +151,10 @@ export interface IEmissionPipeline {
 }
 
 export interface IDocumentGenerator {
-  serializeDocument(doc: AsyncAPIObject, format: FileType): Effect<string, SerializationError>;
+  serializeDocument(
+    doc: AsyncAPIObject,
+    format: FileType,
+  ): Effect<string, SerializationError>;
 }
 
 export interface IPerformanceMonitor {
@@ -169,8 +172,10 @@ export interface IPluginRegistry {
 
 ```typescript
 // src/di/Container.ts - Using Effect Context for DI
-export const EmissionPipelineService = Context.GenericTag<IEmissionPipeline>("EmissionPipeline");
-export const DocumentGeneratorService = Context.GenericTag<IDocumentGenerator>("DocumentGenerator");
+export const EmissionPipelineService =
+  Context.GenericTag<IEmissionPipeline>("EmissionPipeline");
+export const DocumentGeneratorService =
+  Context.GenericTag<IDocumentGenerator>("DocumentGenerator");
 // ... other services
 
 // DI Layer configuration
@@ -184,7 +189,10 @@ export const ProductionLayer = Layer.mergeAll(
 #### 2.1.3: Refactor AsyncAPIEmitter with DI
 
 ```typescript
-export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
+export class AsyncAPIEmitter extends TypeEmitter<
+  string,
+  AsyncAPIEmitterOptions
+> {
   constructor(
     emitter: AssetEmitter<string, AsyncAPIEmitterOptions>,
     private readonly services: {
@@ -373,7 +381,10 @@ export class InputValidator {
 ```typescript
 // src/plugins/security/PluginSandbox.ts
 export class PluginSandbox {
-  executeInSandbox<T>(plugin: IPlugin, operation: () => T): Effect<T, SandboxError>;
+  executeInSandbox<T>(
+    plugin: IPlugin,
+    operation: () => T,
+  ): Effect<T, SandboxError>;
   validatePluginPermissions(plugin: IPlugin): Effect<void, PermissionError>;
 }
 ```

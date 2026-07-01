@@ -45,10 +45,14 @@ This comprehensive research reveals critical opportunities to transform the Type
 
 ```typescript
 // ✅ GOOD PATTERN (Few instances):
-export const createChannelPath = (path: string): Effect.Effect<ChannelPath, Error> => {
+export const createChannelPath = (
+  path: string,
+): Effect.Effect<ChannelPath, Error> => {
   if (typeof path !== "string" || !path.trim()) {
     return Effect.fail(
-      new Error(`Channel path must be non-empty string, got: ${JSON.stringify(path)}`),
+      new Error(
+        `Channel path must be non-empty string, got: ${JSON.stringify(path)}`,
+      ),
     );
   }
   return Effect.succeed(path as ChannelPath);
@@ -70,10 +74,13 @@ From comprehensive Effect.TS research, here are the proven patterns:
 
 ```typescript
 // ✅ PRODUCTION-GRADE ERROR HIERARCHY
-class ExternalSyncError extends Schema.TaggedError<ExternalSyncError>()("ExternalSyncError", {
-  cause: Schema.optional(Schema.Unknown),
-  message: Schema.String,
-}) {}
+class ExternalSyncError extends Schema.TaggedError<ExternalSyncError>()(
+  "ExternalSyncError",
+  {
+    cause: Schema.optional(Schema.Unknown),
+    message: Schema.String,
+  },
+) {}
 
 class AgentError extends Data.TaggedError("AgentError")<{
   agentName: string;
@@ -125,7 +132,9 @@ yield* Effect.tryPromise({
 
 ```typescript
 // /src/types/domain/asyncapi-branded-types.ts
-export const createChannelPath = (path: string): Effect.Effect<ChannelPath, Error> => {
+export const createChannelPath = (
+  path: string,
+): Effect.Effect<ChannelPath, Error> => {
   if (!path.trim()) {
     return Effect.fail(new Error(`Channel path must be non-empty string`));
   }
@@ -136,7 +145,9 @@ export const createChannelPath = (path: string): Effect.Effect<ChannelPath, Erro
 **Enhanced Pattern (Production-Grade):**
 
 ```typescript
-export const createChannelPath = (path: string): Effect.Effect<ChannelPath, ChannelPathError> => {
+export const createChannelPath = (
+  path: string,
+): Effect.Effect<ChannelPath, ChannelPathError> => {
   if (!path.trim()) {
     return Effect.fail(
       new ChannelPathError({
@@ -184,11 +195,14 @@ class TypeSpecCompilationError extends Schema.TaggedError<TypeSpecCompilationErr
   },
 ) {}
 
-class FileSystemError extends Schema.TaggedError<FileSystemError>()("FileSystemError", {
-  operation: Schema.String,
-  path: Schema.String,
-  cause: Schema.optional(Schema.Unknown),
-}) {}
+class FileSystemError extends Schema.TaggedError<FileSystemError>()(
+  "FileSystemError",
+  {
+    operation: Schema.String,
+    path: Schema.String,
+    cause: Schema.optional(Schema.Unknown),
+  },
+) {}
 ```
 
 ---
@@ -255,8 +269,11 @@ console.log(`[DEBUG] ${message}`, data);
 
 // ✅ MODERN: Effect.TS logging with context
 export const effectLogging = {
-  logWithContext: (level: LogLevel, message: string, context: Record<string, unknown>) =>
-    Effect.log(message).pipe(Effect.annotateLogs(context)),
+  logWithContext: (
+    level: LogLevel,
+    message: string,
+    context: Record<string, unknown>,
+  ) => Effect.log(message).pipe(Effect.annotateLogs(context)),
 
   logError: (error: Schema.TaggedError<any>) =>
     Effect.logError(error.message).pipe(

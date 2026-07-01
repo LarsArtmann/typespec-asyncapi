@@ -340,7 +340,9 @@ const user2 = { is_confirmed: false, confirmed_at: 12345 }; // Not confirmed but
 **Good (Discriminated Union):**
 
 ```typescript
-type User = { status: "unconfirmed" } | { status: "confirmed"; confirmed_at: Date };
+type User =
+  | { status: "unconfirmed" }
+  | { status: "confirmed"; confirmed_at: Date };
 
 // ✅ INVALID STATES IMPOSSIBLE:
 // Can't have confirmed without timestamp

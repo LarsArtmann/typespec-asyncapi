@@ -23,10 +23,7 @@
  */
 
 // TypeSpec Core Imports - Library infrastructure and diagnostic system
-import {
-  createTypeSpecLibrary,
-  paramMessage,
-} from "@typespec/compiler";
+import { createTypeSpecLibrary, paramMessage } from "@typespec/compiler";
 
 /**
  * TypeSpec AsyncAPI Library Definition - Core library configuration and metadata
@@ -103,7 +100,8 @@ export const $lib = createTypeSpecLibrary({
     "missing-server-config": {
       severity: "warning",
       messages: {
-        default: "No server configuration found. Add @server decorator to define AsyncAPI servers.",
+        default:
+          "No server configuration found. Add @server decorator to define AsyncAPI servers.",
       },
     },
     "test-simple": {

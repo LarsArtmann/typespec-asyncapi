@@ -112,7 +112,9 @@ export interface ProtocolPlugin {
    * @param operation - TypeSpec operation to process
    * @returns Effect containing protocol bindings or error
    */
-  generateOperationBinding?: (operation: unknown) => Effect.Effect<Record<string, unknown>, Error>;
+  generateOperationBinding?: (
+    operation: unknown,
+  ) => Effect.Effect<Record<string, unknown>, Error>;
 }
 ````
 

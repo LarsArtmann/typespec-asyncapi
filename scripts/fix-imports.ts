@@ -21,9 +21,11 @@ const IMPORT_MAPPINGS: Record<string, string> = {
 
   // Core services moved to domain
   "./core/AsyncAPIEmitter.js": "../../domain/emitter/AsyncAPIEmitter.js",
-  "./PerformanceMonitor.js": "../../infrastructure/performance/PerformanceMonitor.js",
+  "./PerformanceMonitor.js":
+    "../../infrastructure/performance/PerformanceMonitor.js",
   "./PluginRegistry.js": "../../infrastructure/adapters/PluginRegistry.js",
-  "./serialization-format-option.js": "../models/serialization-format-option.js",
+  "./serialization-format-option.js":
+    "../models/serialization-format-option.js",
   "../core/": "../../domain/emitter/",
   "./core/": "../domain/emitter/",
 
@@ -50,7 +52,8 @@ const IMPORT_MAPPINGS: Record<string, string> = {
   "./performance/": "../infrastructure/performance/",
 
   // Plugins moved to infrastructure adapters
-  "./plugins/plugin-system.js": "../../infrastructure/adapters/plugin-system.js",
+  "./plugins/plugin-system.js":
+    "../../infrastructure/adapters/plugin-system.js",
   "../plugins/plugin-system.js": "../adapters/plugin-system.js",
   "../plugins/": "../../infrastructure/adapters/",
   "./plugins/": "../infrastructure/adapters/",
@@ -123,7 +126,10 @@ function fixImportsInFile(filePath: string) {
     const newImportStatement = `from "${newPath}"`;
 
     if (oldImportPattern.test(updatedContent)) {
-      updatedContent = updatedContent.replace(oldImportPattern, newImportStatement);
+      updatedContent = updatedContent.replace(
+        oldImportPattern,
+        newImportStatement,
+      );
       changeCount++;
     }
   }
@@ -163,7 +169,9 @@ async function main() {
   console.log(`   Total imports fixed: ${totalFixes}`);
 
   if (totalFixes > 0) {
-    console.log("\n<� Import paths updated for new domain-driven architecture!");
+    console.log(
+      "\n<� Import paths updated for new domain-driven architecture!",
+    );
     console.log("=� Run `just build` to verify all imports are resolved");
   } else {
     console.log("\n No import path fixes needed");

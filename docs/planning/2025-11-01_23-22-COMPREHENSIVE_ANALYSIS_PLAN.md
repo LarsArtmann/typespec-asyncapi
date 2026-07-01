@@ -134,7 +134,10 @@ import { ASYNCAPI_VERSIONS } from "./constants/asyncapi-constants.js";
 
 ```typescript
 // CURRENT DISASTROUS PATTERNS:
-export class AsyncAPIEmitter extends TypeEmitter<string, AsyncAPIEmitterOptions> {
+export class AsyncAPIEmitter extends TypeEmitter<
+  string,
+  AsyncAPIEmitterOptions
+> {
   private readonly pipeline: EmissionPipeline; // Could be undefined!
   private readonly documentGenerator: DocumentGenerator; // No null safety!
   // MISSING: Branded types, proper interfaces, null safety

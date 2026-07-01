@@ -55,10 +55,14 @@ These achieve full production readiness with comprehensive features.
 
 ```typescript
 // BEFORE (BROKEN):
-const outputFile = Object.keys(result.outputs).find((key) => key.endsWith(".json"));
+const outputFile = Object.keys(result.outputs).find((key) =>
+  key.endsWith(".json"),
+);
 
 // AFTER (FIXED):
-const outputFile = Array.from(result.outputs.keys()).find((key) => key.endsWith(".json"));
+const outputFile = Array.from(result.outputs.keys()).find((key) =>
+  key.endsWith(".json"),
+);
 ```
 
 **Expected Result:** 345+ tests immediately pass
