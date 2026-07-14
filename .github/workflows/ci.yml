@@ -27,3 +27,18 @@ jobs:
 
       - name: Test
         run: bun test
+
+      - name: Coverage
+        run: bun test --coverage
+
+      - name: Compile examples
+        run: |
+          for dir in examples/*/; do
+            dir=${dir%/}
+            [ "$dir" = "examples/comprehensive-protocols" ] && continue
+            for f in "$dir"/*.tsp; do
+              [ -f "$f" ] || continue
+              echo "Compiling $f..."
+              (cd "$dir" && bunx tsp compile "$(basename "$f")")
+            done
+          done

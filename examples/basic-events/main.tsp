@@ -1,29 +1,14 @@
 import "@lars-artmann/typespec-asyncapi";
 
-using AsyncAPI;
+using TypeSpec.AsyncAPI;
 
-/**
- * Simple Event-Driven Chat API
- * Demonstrates basic usage of TypeSpec AsyncAPI decorators
- */
-
-@asyncapi({
-  info: {
-    title: "Simple Chat Events API",
-    version: "1.0.0",
-    description: "Basic example showing TypeSpec AsyncAPI emitter usage"
-  },
-  servers: {
-    development: {
-      host: "localhost:9092",
-      protocol: "kafka",
-      description: "Local development Kafka"
-    }
-  }
+@server("development", #{
+  url: "localhost:9092",
+  protocol: "kafka",
+  description: "Local development Kafka"
 })
 namespace SimpleChatAPI;
 
-// Basic message payload
 model ChatMessagePayload {
   messageId: string;
   userId: string;
@@ -33,26 +18,14 @@ model ChatMessagePayload {
   channelId: string;
 }
 
-// Simple channel definition
 @channel("chat.messages")
-model ChatChannel {
-  @message({
-    name: "ChatMessage",
-    title: "Chat Message",
-    description: "A message sent in a chat channel"
-  })
-  payload: ChatMessagePayload;
-}
-
-// Basic publish operation
 @publish
-op sendChatMessage(): ChatChannel;
+op sendChatMessage(): ChatMessagePayload;
 
-// Basic subscribe operation
+@channel("chat.messages")
 @subscribe
-op receiveChatMessages(): ChatChannel;
+op receiveChatMessages(): ChatMessagePayload;
 
-// User events
 model UserJoinedPayload {
   userId: string;
   username: string;
@@ -61,17 +34,9 @@ model UserJoinedPayload {
 }
 
 @channel("chat.user.joined")
-model UserJoinedChannel {
-  @message({
-    name: "UserJoined",
-    title: "User Joined Channel", 
-    description: "Event when user joins a chat channel"
-  })
-  payload: UserJoinedPayload;
-}
-
 @publish
-op publishUserJoined(): UserJoinedChannel;
+op publishUserJoined(): UserJoinedPayload;
 
+@channel("chat.user.joined")
 @subscribe
-op subscribeUserJoined(): UserJoinedChannel;
+op subscribeUserJoined(): UserJoinedPayload;
