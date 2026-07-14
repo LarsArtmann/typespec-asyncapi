@@ -567,7 +567,7 @@ function buildAsyncAPIDocument(
     registerMessage(op.messageName, op.channelKey);
 
     // Build the operation with spec-compliant $ref chain
-    operations[op.opName] = {
+    const operationObj: OperationObject = {
       action: op.action,
       channel: { $ref: `#/channels/${op.channelKey}` },
       messages: [
@@ -576,9 +576,28 @@ function buildAsyncAPIDocument(
         },
       ],
     };
+
+    // Attach tags from state if this operation has them
+    const opType = [...state.operations.keys(), ...state.channels.keys()].find(
+      (t) => (t as { name: string }).name === op.opName,
+    );
+    if (opType) {
+      const tags = state.tags.get(opType) as { name: string }[] | undefined;
+      if (tags && tags.length > 0) {
+        operationObj.tags = tags;
+      }
+
+      const bindings = state.protocolBindings.get(opType) as Record<string, unknown> | undefined;
+      if (bindings && Object.keys(bindings).length > 0) {
+        operationObj.bindings = bindings;
+      }
+    }
+
+    operations[op.opName] = operationObj;
   }
 
   // 2b. Merge in explicit @message decorator data (overrides auto-generated)
+  // Also wire @correlationId and @header data into messages
   for (const [type, data] of state.messages) {
     const msgData = data as {
       messageId?: string;
@@ -588,12 +607,46 @@ function buildAsyncAPIDocument(
     };
     const typeWithName = type as { name: string };
     const msgKey = msgData.messageId ?? typeWithName.name;
-    messages[msgKey] = {
+    const msgObj: MessageObject = {
       name: msgData.title ?? typeWithName.name,
       contentType: msgData.contentType ?? "application/json",
       ...(msgData.description ? { summary: msgData.description } : {}),
       payload: { $ref: `#/components/schemas/${typeWithName.name}` },
     };
+
+    // Wire correlationId from state
+    const correlation = state.correlationIds.get(type) as
+      | { location: string; property?: string }
+      | undefined;
+    if (correlation) {
+      msgObj.correlationId = { location: correlation.location };
+    }
+
+    // Wire headers from state
+    const headers = state.messageHeaders.get(type) as
+      | Array<{ name: string; type?: string; description?: string }>
+      | undefined;
+    if (headers && headers.length > 0) {
+      const headerProps: Record<string, SchemaObject> = {};
+      for (const h of headers) {
+        headerProps[h.name] = {
+          type: h.type ?? "string",
+          ...(h.description ? { description: h.description } : {}),
+        };
+      }
+      msgObj.headers = {
+        type: "object",
+        properties: headerProps,
+      };
+    }
+
+    // Wire message bindings from state
+    const msgBindings = state.protocolBindings.get(type) as Record<string, unknown> | undefined;
+    if (msgBindings && Object.keys(msgBindings).length > 0) {
+      msgObj.bindings = msgBindings;
+    }
+
+    messages[msgKey] = msgObj;
   }
 
   // 2c. Attach protocol bindings to channels

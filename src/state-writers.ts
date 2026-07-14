@@ -93,14 +93,10 @@ export const storeTags = (
   target: Operation | Model,
   tags: string[],
 ) => {
-  const map = getStateMap(program, stateSymbols.tags);
-  const existing =
-    (map.get(target) as { name: string } | undefined)?.name ?? "";
-  const allTags = existing ? existing.split(",") : [];
-  const unique = [...allTags, ...tags].filter(
-    (tag, i, arr) => arr.indexOf(tag) === i,
-  );
-  map.set(target, { name: unique.join(",") });
+  const map = getStateMap<{ name: string }[]>(program, stateSymbols.tags);
+  const existing = map.get(target) ?? [];
+  const allNames = new Set([...existing.map((t) => t.name), ...tags]);
+  map.set(target, [...allNames].map((name) => ({ name })));
 };
 
 export const storeCorrelationId = (

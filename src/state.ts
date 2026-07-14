@@ -84,8 +84,7 @@ export type ProtocolConfigData = {
  */
 export type TagData = {
   name: string;
-  description?: string;
-};
+}[];
 
 /**
  * Security Configuration State Data
@@ -125,6 +124,7 @@ export type AsyncAPIConsolidatedState = {
   operations: Map<Type, OperationTypeData>;
   tags: Map<Type, TagData>;
   protocolConfigs: Map<Type, ProtocolConfigData>;
+  protocolBindings: Map<Type, Record<string, unknown>>;
   securityConfigs: Map<Type, SecurityConfigData>;
   correlationIds: Map<Type, CorrelationIdData>;
   messageHeaders: Map<Type, MessageHeaderData[]>;
@@ -157,6 +157,10 @@ export function consolidateAsyncAPIState(
     protocolConfigs: getStateMap<ProtocolConfigData>(
       program,
       stateSymbols.protocolConfigs,
+    ),
+    protocolBindings: getStateMap<Record<string, unknown>>(
+      program,
+      stateSymbols.protocolBindings,
     ),
     securityConfigs: getStateMap<SecurityConfigData>(
       program,
