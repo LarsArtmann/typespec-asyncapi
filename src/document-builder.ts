@@ -29,6 +29,11 @@ import type {
 
 export const ASYNCAPI_SPEC_VERSION = "3.0.0";
 
+/** Escape a string for safe use as a JSON Pointer reference token (RFC 6901). */
+function escapeRefToken(token: string): string {
+  return token.replaceAll("~", "~0").replaceAll("/", "~1");
+}
+
 function inferActionFromName(name: string): "send" | "receive" {
   const lower = name.toLowerCase();
   if (
@@ -106,12 +111,12 @@ export function buildAsyncAPIDocument(
         name: msgData?.title ?? messageName,
         contentType: msgData?.contentType ?? "application/json",
         ...(msgData?.description ? { summary: msgData.description } : {}),
-        payload: { $ref: `#/components/schemas/${messageName}` },
+        payload: { $ref: `#/components/schemas/${escapeRefToken(messageName)}` },
       };
     }
     const channel = ensureChannel(channelKey);
     const channelMsgs = channel.messages ?? {};
-    channelMsgs[messageName] = { $ref: `#/components/messages/${messageName}` };
+    channelMsgs[messageName] = { $ref: `#/components/messages/${escapeRefToken(messageName)}` };
     channel.messages = channelMsgs;
   }
 
@@ -189,10 +194,10 @@ export function buildAsyncAPIDocument(
 
     const operationObj: OperationObject = {
       action: op.action,
-      channel: { $ref: `#/channels/${op.channelKey}` },
+      channel: { $ref: `#/channels/${escapeRefToken(op.channelKey)}` },
       messages: [
         {
-          $ref: `#/channels/${op.channelKey}/messages/${op.messageName}`,
+          $ref: `#/channels/${escapeRefToken(op.channelKey)}/messages/${escapeRefToken(op.messageName)}`,
         },
       ],
     };
@@ -224,7 +229,7 @@ export function buildAsyncAPIDocument(
       name: msgData.title ?? typeWithName.name,
       contentType: msgData.contentType ?? "application/json",
       ...(msgData.description ? { summary: msgData.description } : {}),
-      payload: { $ref: `#/components/schemas/${typeWithName.name}` },
+      payload: { $ref: `#/components/schemas/${escapeRefToken(typeWithName.name)}` },
     };
 
     const correlation = state.correlationIds.get(type);

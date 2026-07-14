@@ -40,7 +40,7 @@ describe("$ref Chain Resolution", () => {
     expect(op.messages.length).toBe(1);
 
     const ref = op.messages[0].$ref;
-    expect(ref).toMatch(/^#\/channels\/orders\/events\/messages\/OrderCreated$/);
+    expect(ref).toBe("#/channels/orders~1events/messages/OrderCreated");
   });
 
   it("channel.messages[ref] should resolve to #/components/messages/{messageId}", async () => {
@@ -96,7 +96,7 @@ describe("$ref Chain Resolution", () => {
     const ops = Object.values(spec!.operations!);
     const op = ops[0] as { channel: { $ref: string } };
     expect(op.channel).toBeDefined();
-    expect(op.channel.$ref).toBe("#/channels/orders/events");
+    expect(op.channel.$ref).toBe("#/channels/orders~1events");
   });
 
   it("every $ref in a document with slash-free channel names should resolve", async () => {
@@ -118,9 +118,13 @@ describe("$ref Chain Resolution", () => {
     if (!doc) return;
     const unresolved: string[] = [];
 
+    function unescapeToken(token: string): string {
+      return token.replaceAll("~1", "/").replaceAll("~0", "~");
+    }
+
     function resolveRef(ref: string): unknown | null {
       if (!ref.startsWith("#/")) return null;
-      const parts = ref.slice(2).split("/");
+      const parts = ref.slice(2).split("/").map(unescapeToken);
       let current: unknown = doc;
       for (const part of parts) {
         if (current && typeof current === "object") {
@@ -158,24 +162,24 @@ describe("$ref Chain Resolution", () => {
     expect(unresolved).toEqual([]);
   });
 
-  it("KNOWN ISSUE: channel addresses containing slashes break $ref JSON pointer resolution", async () => {
+  it("channel addresses containing slashes produce JSON-pointer-escaped $refs that resolve correctly", async () => {
     const result = await compileAsyncAPIWithoutErrors(source);
     const spec = result.asyncApiDoc;
 
-    // The channel key "orders/events" works as a YAML/JSON object key
+    // The channel key "orders/events" works as a JSON object key
     expect(spec?.channels?.["orders/events"]).toBeDefined();
 
-    // But the $ref "#/channels/orders/events" is interpreted by JSON pointer
-    // as channels.orders.events (two-level path), not channels["orders/events"].
-    // This is a known emitter limitation — channel addresses with "/"
-    // produce $refs that standard JSON pointer resolvers cannot follow.
+    // The $ref must escape "/" as "~1" per RFC 6901
     const ref = spec!.operations!.publishOrder.channel.$ref;
-    expect(ref).toBe("#/channels/orders/events");
+    expect(ref).toBe("#/channels/orders~1events");
 
-    // A strict JSON pointer resolver would fail to resolve this
+    function unescapeToken(token: string): string {
+      return token.replaceAll("~1", "/").replaceAll("~0", "~");
+    }
+
     function resolveByJsonPointer(ref: string): unknown | null {
       if (!ref.startsWith("#/")) return null;
-      const parts = ref.slice(2).split("/");
+      const parts = ref.slice(2).split("/").map(unescapeToken);
       let current: unknown = spec;
       for (const part of parts) {
         if (current && typeof current === "object") {
@@ -187,8 +191,8 @@ describe("$ref Chain Resolution", () => {
       return current;
     }
 
-    // The ref does NOT resolve via standard JSON pointer because "/" in the
-    // channel address is ambiguous with JSON pointer path separators.
-    expect(resolveByJsonPointer(ref)).toBeNull();
+    // The escaped ref NOW resolves via standard JSON pointer
+    expect(resolveByJsonPointer(ref)).toBeDefined();
+    expect(resolveByJsonPointer(ref)).toBe(spec!.channels!["orders/events"]);
   });
 });
