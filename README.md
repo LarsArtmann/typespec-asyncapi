@@ -1,7 +1,7 @@
 # TypeSpec AsyncAPI Emitter
 
 [![Build Status](https://img.shields.io/badge/Build-PASSING-green)](https://github.com/LarsArtmann/typespec-asyncapi)
-[![Tests](https://img.shields.io/badge/Tests-283%20pass%2C%200%20fail-green)](https://github.com/LarsArtmann/typespec-asyncapi)
+[![Tests](https://img.shields.io/badge/Tests-294%20pass%2C%200%20fail-green)](https://github.com/LarsArtmann/typespec-asyncapi)
 [![AsyncAPI](https://img.shields.io/badge/AsyncAPI-3.0.0-blue)](https://www.asyncapi.com/)
 
 A TypeSpec emitter that transforms TypeSpec service definitions into [AsyncAPI 3.0](https://www.asyncapi.com/) specifications. Define your event schemas, channels, and operations in TypeSpec, then generate standards-compliant AsyncAPI YAML.
@@ -218,7 +218,7 @@ git clone https://github.com/LarsArtmann/typespec-asyncapi
 cd typespec-asyncapi
 bun install
 bun run build     # Build TypeScript (0 errors)
-bun test          # Run tests (283 pass, 0 fail)
+bun test          # Run tests (294 pass, 0 fail)
 bun run lint      # ESLint
 ```
 
@@ -227,7 +227,7 @@ bun run lint      # ESLint
 **Version:** 0.1.0-alpha
 **Build:** 0 TypeScript errors
 **Lint:** 0 errors, 0 warnings
-**Tests:** 283 pass, 0 fail (0 skip, 0 todo)
+**Tests:** 294 pass, 0 fail (0 skip, 0 todo)
 **Output:** Validates against AsyncAPI 3.0.0 JSON schema
 
 ## License

@@ -83,3 +83,35 @@ First alpha release. Full Pareto recovery from analysis paralysis.
 - Emitter uses strongly-typed interfaces (`AsyncAPIDocument`, `ChannelObject`, etc.) instead of `Record<string, unknown>`
 - AGENTS.md rewritten with verified facts and spec-compliance rules
 - CLI test helper rewritten from 336 lines of spawn/fs code to 68-line programmatic API wrapper
+
+### TypeSpec 1.13 Alignment & Quality Overhaul (2026-07-14)
+
+#### Added
+
+- `$ref` chain resolution tests (7 tests) verifying AsyncAPI 3.0 reference chain
+- Template spread and inheritance pattern tests (4 tests) for TypeSpec 1.13 compatibility
+- Security scheme output assertions to 16 representative tests (previously false-green)
+- `EmitEntity<T>` discriminated union pattern documentation in AGENTS.md
+- CI coverage reporting (`bun test --coverage`)
+- CI example smoke tests (`tsp compile` on all examples)
+- README.md for all example directories (kafka, basic-events, multi-channel, advanced, comprehensive-protocols)
+
+#### Changed
+
+- Split `emitter.ts` (831 lines) into 4 focused modules: `emitter.ts` (39 lines), `schema-emitter.ts` (356 lines), `document-builder.ts` (366 lines), `intrinsic-mapping.ts` (59 lines)
+- Split `security-comprehensive.test.ts` (2,784 lines) into 5 focused test files
+- `SecurityScheme.type` is now strictly `SecuritySchemeType` (no `string` escape hatch) with runtime validation in `$security` decorator emitting diagnostics for unsupported types
+- `ProtocolConfigData` no longer has `[key: string]: unknown` index signature — all fields explicit
+- `SecuritySchemeType` derived from const array (single source of truth, same pattern as `protocols.ts`)
+- Pre-commit hook fixed from `just` to `bun run`
+
+#### Removed
+
+- Unused devDependencies: `@typespec/http`, `@typespec/openapi3`, `glob`, `@asyncapi/cli`, `lint-staged`
+- `archive/` directory at repo root (46 files moved to `docs/_archive/root-archive/`)
+- Test-only modules moved from `src/domain/models/` to `test/utils/` (`path-templates.ts`, `serialization-format-option.ts`)
+
+#### Fixed
+
+- Two false-green security tests using non-existent scheme types ("asymmetricEncryption", "symmetricEncryption") converted to verify diagnostic rejection
+- Broken examples (`basic-events`, `advanced`) fixed to use correct decorator API and `#{}` value literal syntax
