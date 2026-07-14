@@ -27,7 +27,7 @@ import {
   storeProtocolConfig,
   linkPublishMessage,
 } from "./state-writers.js";
-import { isValidSchemeType, SCHEME_TYPE_LIST } from "./domain/models/asyncapi-document.js";
+import { isValidSchemeType, SCHEME_TYPE_LIST, type ProtocolBindings } from "./domain/models/asyncapi-document.js";
 import {
   reportDecoratorDiagnostic,
   validateConfig,
@@ -298,7 +298,7 @@ export function $bindings(
   }
 
   const bindings = extractConfigRecord(value);
-  storeBindings(context.program, target, bindings);
+  storeBindings(context.program, target, bindings as ProtocolBindings);
 }
 
 export function $header(

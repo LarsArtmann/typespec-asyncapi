@@ -5,7 +5,7 @@
 import { stateSymbols } from "./lib.js";
 import { type Program, type Type } from "@typespec/compiler";
 import { getStateMap, getMultiState } from "./state-compatibility.js";
-import type { SecurityScheme } from "./domain/models/asyncapi-document.js";
+import type { SecurityScheme, ProtocolBindings } from "./domain/models/asyncapi-document.js";
 
 // === STATE DATA INTERFACES ===
 
@@ -125,7 +125,7 @@ export type AsyncAPIConsolidatedState = {
   operations: Map<Type, OperationTypeData>;
   tags: Map<Type, TagData>;
   protocolConfigs: Map<Type, ProtocolConfigData>;
-  protocolBindings: Map<Type, Record<string, unknown>>;
+  protocolBindings: Map<Type, ProtocolBindings>;
   securityConfigs: Map<Type, SecurityConfigData>;
   correlationIds: Map<Type, CorrelationIdData>;
   messageHeaders: Map<Type, MessageHeaderData[]>;
@@ -145,7 +145,7 @@ export function consolidateAsyncAPIState(program: Program): AsyncAPIConsolidated
     operations: getStateMap<OperationTypeData>(program, stateSymbols.operationTypes),
     tags: getStateMap<TagData>(program, stateSymbols.tags),
     protocolConfigs: getStateMap<ProtocolConfigData>(program, stateSymbols.protocolConfigs),
-    protocolBindings: getStateMap<Record<string, unknown>>(program, stateSymbols.protocolBindings),
+    protocolBindings: getStateMap<ProtocolBindings>(program, stateSymbols.protocolBindings),
     securityConfigs: getStateMap<SecurityConfigData>(program, stateSymbols.securityConfigs),
     correlationIds: getStateMap<CorrelationIdData>(program, stateSymbols.correlationIds),
     messageHeaders: getStateMap<MessageHeaderData[]>(program, stateSymbols.messageHeaders),

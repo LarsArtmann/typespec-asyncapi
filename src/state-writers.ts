@@ -8,7 +8,7 @@
 import type { Program, Operation, Model, ModelProperty, Namespace } from "@typespec/compiler";
 import { stateSymbols } from "./lib.js";
 import { getStateMap } from "./state-compatibility.js";
-import type { SecurityScheme } from "./domain/models/asyncapi-document.js";
+import type { SecurityScheme, ProtocolBindings } from "./domain/models/asyncapi-document.js";
 import type { MessageConfigData, ProtocolConfigData } from "./state.js";
 
 export const storeChannelState = (program: Program, target: Operation, path: string) => {
@@ -108,10 +108,10 @@ export const storeCorrelationId = (
 export const storeBindings = (
   program: Program,
   target: Operation | Model,
-  bindings: Record<string, unknown>,
+  bindings: ProtocolBindings,
 ) => {
   const map = getStateMap(program, stateSymbols.protocolBindings);
-  const existing = (map.get(target) as Record<string, unknown> | undefined) ?? {};
+  const existing = (map.get(target) as ProtocolBindings | undefined) ?? {};
   map.set(target, { ...existing, ...bindings });
 };
 

@@ -8,6 +8,25 @@
 
 export type Ref = { $ref: string };
 
+/** Protocol-specific binding object keyed by protocol name. */
+export type ProtocolBindings = Record<string, Record<string, unknown>>;
+
+/** A single OAuth2 flow configuration. */
+export type OAuth2Flow = {
+  authorizationUrl?: string;
+  tokenUrl?: string;
+  refreshUrl?: string;
+  scopes: Record<string, string>;
+};
+
+/** OAuth2 flow configurations keyed by flow type. */
+export type OAuth2Flows = {
+  implicit?: OAuth2Flow;
+  password?: OAuth2Flow;
+  clientCredentials?: OAuth2Flow;
+  authorizationCode?: OAuth2Flow;
+};
+
 export type InfoObject = {
   title: string;
   version: string;
@@ -25,7 +44,7 @@ export type ServerObject = {
   variables?: Record<string, { enum?: string[]; default?: string; description?: string }>;
   security?: SecurityScheme[];
   tags?: Tag[];
-  bindings?: Record<string, unknown>;
+  bindings?: ProtocolBindings;
 };
 
 export type ChannelObject = {
@@ -37,7 +56,7 @@ export type ChannelObject = {
   servers?: Ref[];
   parameters?: Record<string, ParameterObject | Ref>;
   tags?: Tag[];
-  bindings?: Record<string, unknown>;
+  bindings?: ProtocolBindings;
 };
 
 export type OperationObject = {
@@ -70,7 +89,7 @@ export type MessageObject = {
   summary?: string;
   description?: string;
   tags?: Tag[];
-  bindings?: Record<string, unknown>;
+  bindings?: ProtocolBindings;
   traits?: Ref[];
   examples?: Array<{ headers?: unknown; payload?: unknown }>;
 };
@@ -141,10 +160,10 @@ export type SecurityScheme = {
   type: SecuritySchemeType;
   description?: string;
   name?: string;
-  in?: string;
+  in?: "query" | "header" | "cookie";
   scheme?: string;
   bearerFormat?: string;
-  flows?: Record<string, unknown>;
+  flows?: OAuth2Flows;
   openIdConnectUrl?: string;
 };
 
