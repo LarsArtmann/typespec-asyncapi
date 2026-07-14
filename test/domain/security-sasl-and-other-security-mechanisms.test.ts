@@ -73,6 +73,11 @@ describe("SASL & Other Security Mechanisms", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.saslScram1).toBeDefined();
+    expect(securitySchemes?.saslScram1.type).toBe("sasl");
   });
 
   it("should support SASL SCRAM-SHA-256", async () => {
@@ -278,6 +283,11 @@ describe("SASL & Other Security Mechanisms", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.saslCRAMMD5).toBeDefined();
+    expect(securitySchemes?.saslCRAMMD5.type).toBe("sasl");
   });
 
   it("should support SASL DIGEST-MD5", async () => {
@@ -308,6 +318,11 @@ describe("SASL & Other Security Mechanisms", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.saslDigestMD5).toBeDefined();
+    expect(securitySchemes?.saslDigestMD5.type).toBe("sasl");
   });
 
   it("should support SASL ANONYMOUS", async () => {
@@ -338,6 +353,11 @@ describe("SASL & Other Security Mechanisms", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.saslAnonymous).toBeDefined();
+    expect(securitySchemes?.saslAnonymous.type).toBe("sasl");
   });
 
   it("should support X.509 Client Certificates", async () => {
@@ -464,5 +484,10 @@ describe("SASL & Other Security Mechanisms", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.plain).toBeDefined();
+    expect(securitySchemes?.plain.type).toBe("plain");
   });
 });

@@ -111,6 +111,11 @@ describe("HTTP Authentication", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.customBearer).toBeDefined();
+    expect(securitySchemes?.customBearer.type).toBe("http");
   });
 
   it("should support HTTP Digest Auth", async () => {
@@ -141,6 +146,11 @@ describe("HTTP Authentication", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.digestAuth).toBeDefined();
+    expect(securitySchemes?.digestAuth.type).toBe("http");
   });
 
   it("should support HTTP Mutual TLS", async () => {
@@ -205,6 +215,11 @@ describe("HTTP Authentication", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.hobaAuth).toBeDefined();
+    expect(securitySchemes?.hobaAuth.type).toBe("http");
   });
 
   it("should support HTTP Negotiate (SPNEGO)", async () => {
@@ -235,6 +250,11 @@ describe("HTTP Authentication", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.negotiateAuth).toBeDefined();
+    expect(securitySchemes?.negotiateAuth.type).toBe("http");
   });
 
   it("should support HTTP SCRAM-SHA-1", async () => {
@@ -265,6 +285,11 @@ describe("HTTP Authentication", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.scram1).toBeDefined();
+    expect(securitySchemes?.scram1.type).toBe("http");
   });
 
   it("should support HTTP SCRAM-SHA-256", async () => {
@@ -295,6 +320,11 @@ describe("HTTP Authentication", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.scram256).toBeDefined();
+    expect(securitySchemes?.scram256.type).toBe("http");
   });
 
   it("should support HTTP AWS Signature V4", async () => {
@@ -325,6 +355,11 @@ describe("HTTP Authentication", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.awsSigV4).toBeDefined();
+    expect(securitySchemes?.awsSigV4.type).toBe("http");
   });
 
   it("should support HTTP MAC (Message Authentication Code)", async () => {
@@ -355,6 +390,11 @@ describe("HTTP Authentication", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.macAuth).toBeDefined();
+    expect(securitySchemes?.macAuth.type).toBe("http");
   });
 
   it("should support HTTP VAPID (Web Push)", async () => {
@@ -385,6 +425,11 @@ describe("HTTP Authentication", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.vapidAuth).toBeDefined();
+    expect(securitySchemes?.vapidAuth.type).toBe("http");
   });
 
   it("should support HTTP DPoP (Demonstrating Proof-of-Possession)", async () => {
@@ -415,6 +460,11 @@ describe("HTTP Authentication", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.dpopAuth).toBeDefined();
+    expect(securitySchemes?.dpopAuth.type).toBe("http");
   });
 
   it("should support HTTP PrivateToken", async () => {
@@ -445,6 +495,11 @@ describe("HTTP Authentication", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.privateToken).toBeDefined();
+    expect(securitySchemes?.privateToken.type).toBe("http");
   });
 
   it("should support HTTP GNAP (Grant Negotiation and Authorization Protocol)", async () => {
@@ -475,6 +530,11 @@ describe("HTTP Authentication", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.gnapAuth).toBeDefined();
+    expect(securitySchemes?.gnapAuth.type).toBe("http");
   });
 
   it("should support multiple HTTP auth schemes (OR)", async () => {
@@ -517,6 +577,11 @@ describe("HTTP Authentication", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.basicOrBearer).toBeDefined();
+    expect(securitySchemes?.basicOrBearer.type).toBe("http");
   });
 
   it("should support HTTP auth with realm", async () => {
@@ -548,6 +613,11 @@ describe("HTTP Authentication", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.realmAuth).toBeDefined();
+    expect(securitySchemes?.realmAuth.type).toBe("http");
   });
 
   it("should support HTTP auth with charset", async () => {
@@ -579,6 +649,11 @@ describe("HTTP Authentication", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.charsetAuth).toBeDefined();
+    expect(securitySchemes?.charsetAuth.type).toBe("http");
   });
 
   it("should support HTTP auth with nonce", async () => {
@@ -610,6 +685,11 @@ describe("HTTP Authentication", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.nonceAuth).toBeDefined();
+    expect(securitySchemes?.nonceAuth.type).toBe("http");
   });
 
   it("should support HTTP Hawk authentication", async () => {
@@ -640,5 +720,10 @@ describe("HTTP Authentication", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.hawkAuth).toBeDefined();
+    expect(securitySchemes?.hawkAuth.type).toBe("http");
   });
 });

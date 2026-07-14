@@ -47,6 +47,11 @@ describe("Combined & Advanced Security", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.apiKey).toBeDefined();
+    expect(securitySchemes?.apiKey.type).toBe("apiKey");
   });
 
   it("should support security with rate limiting", async () => {
@@ -83,6 +88,11 @@ describe("Combined & Advanced Security", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.rateLimited).toBeDefined();
+    expect(securitySchemes?.rateLimited.type).toBe("apiKey");
   });
 
   it("should support security with IP restrictions", async () => {
@@ -118,6 +128,11 @@ describe("Combined & Advanced Security", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.ipRestricted).toBeDefined();
+    expect(securitySchemes?.ipRestricted.type).toBe("apiKey");
   });
 
   it("should support security with geographic restrictions", async () => {
@@ -153,6 +168,11 @@ describe("Combined & Advanced Security", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.geoRestricted).toBeDefined();
+    expect(securitySchemes?.geoRestricted.type).toBe("apiKey");
   });
 
   it("should support security with time-based access", async () => {
@@ -188,6 +208,11 @@ describe("Combined & Advanced Security", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.timeBased).toBeDefined();
+    expect(securitySchemes?.timeBased.type).toBe("apiKey");
   });
 
   it("should support security with MFA requirements", async () => {
@@ -223,6 +248,11 @@ describe("Combined & Advanced Security", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.mfaRequired).toBeDefined();
+    expect(securitySchemes?.mfaRequired.type).toBe("http");
   });
 
   it("should support security with device fingerprinting", async () => {
@@ -258,6 +288,11 @@ describe("Combined & Advanced Security", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.deviceFingerprint).toBeDefined();
+    expect(securitySchemes?.deviceFingerprint.type).toBe("apiKey");
   });
 
   it("should support security with risk-based authentication", async () => {
@@ -294,5 +329,10 @@ describe("Combined & Advanced Security", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.riskBased).toBeDefined();
+    expect(securitySchemes?.riskBased.type).toBe("http");
   });
 });

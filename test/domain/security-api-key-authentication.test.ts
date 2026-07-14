@@ -110,6 +110,11 @@ describe("API Key Authentication", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.apiKeyCookie).toBeDefined();
+    expect(securitySchemes?.apiKeyCookie.type).toBe("apiKey");
   });
 
   it("should support multiple API keys", async () => {
@@ -153,6 +158,11 @@ describe("API Key Authentication", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.key1).toBeDefined();
+    expect(securitySchemes?.key1.type).toBe("apiKey");
   });
 
   it("should support API Key with prefix", async () => {
@@ -185,6 +195,11 @@ describe("API Key Authentication", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.prefixKey).toBeDefined();
+    expect(securitySchemes?.prefixKey.type).toBe("apiKey");
   });
 
   it("should support API Key rotation", async () => {
@@ -220,6 +235,11 @@ describe("API Key Authentication", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.rotatingKey).toBeDefined();
+    expect(securitySchemes?.rotatingKey.type).toBe("apiKey");
   });
 
   it("should support API Key scopes", async () => {
@@ -252,6 +272,11 @@ describe("API Key Authentication", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.scopedKey).toBeDefined();
+    expect(securitySchemes?.scopedKey.type).toBe("apiKey");
   });
 
   it("should support API Key rate limiting", async () => {
@@ -287,6 +312,11 @@ describe("API Key Authentication", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.rateLimitedKey).toBeDefined();
+    expect(securitySchemes?.rateLimitedKey.type).toBe("apiKey");
   });
 
   it("should support API Key expiration", async () => {
@@ -322,6 +352,11 @@ describe("API Key Authentication", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.expiringKey).toBeDefined();
+    expect(securitySchemes?.expiringKey.type).toBe("apiKey");
   });
 
   it("should support API Key IP whitelisting", async () => {
@@ -357,6 +392,11 @@ describe("API Key Authentication", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.ipWhitelistKey).toBeDefined();
+    expect(securitySchemes?.ipWhitelistKey.type).toBe("apiKey");
   });
 
   it("should support API Key usage tracking", async () => {
@@ -392,6 +432,11 @@ describe("API Key Authentication", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.trackedKey).toBeDefined();
+    expect(securitySchemes?.trackedKey.type).toBe("apiKey");
   });
 
   it("should support API Key with CORS", async () => {
@@ -424,6 +469,11 @@ describe("API Key Authentication", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.corsKey).toBeDefined();
+    expect(securitySchemes?.corsKey.type).toBe("apiKey");
   });
 
   it("should support API Key with environment (dev/staging/prod)", async () => {
@@ -459,6 +509,11 @@ describe("API Key Authentication", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.envKey).toBeDefined();
+    expect(securitySchemes?.envKey.type).toBe("apiKey");
   });
 
   it("should support API Key with request signing", async () => {
@@ -495,6 +550,11 @@ describe("API Key Authentication", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.signedKey).toBeDefined();
+    expect(securitySchemes?.signedKey.type).toBe("apiKey");
   });
 
   it("should support API Key with custom validation", async () => {
@@ -527,6 +587,11 @@ describe("API Key Authentication", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.validatedKey).toBeDefined();
+    expect(securitySchemes?.validatedKey.type).toBe("apiKey");
   });
 
   it("should support API Key with webhook verification", async () => {
@@ -563,6 +628,11 @@ describe("API Key Authentication", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.webhookKey).toBeDefined();
+    expect(securitySchemes?.webhookKey.type).toBe("apiKey");
   });
 
   it("should support API Key with tenant isolation", async () => {
@@ -598,6 +668,11 @@ describe("API Key Authentication", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.tenantKey).toBeDefined();
+    expect(securitySchemes?.tenantKey.type).toBe("apiKey");
   });
 
   it("should support API Key with fallback authentication", async () => {
@@ -630,6 +705,11 @@ describe("API Key Authentication", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.fallbackKey).toBeDefined();
+    expect(securitySchemes?.fallbackKey.type).toBe("apiKey");
   });
 
   it("should support API Key with conditional requirements", async () => {
@@ -665,6 +745,11 @@ describe("API Key Authentication", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.conditionalKey).toBeDefined();
+    expect(securitySchemes?.conditionalKey.type).toBe("apiKey");
   });
 
   it("should support API Key with audit logging", async () => {
@@ -700,5 +785,10 @@ describe("API Key Authentication", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.auditKey).toBeDefined();
+    expect(securitySchemes?.auditKey.type).toBe("apiKey");
   });
 });

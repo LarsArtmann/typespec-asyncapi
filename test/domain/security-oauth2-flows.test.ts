@@ -131,6 +131,11 @@ describe("OAuth2 Flows", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.oauth2Implicit).toBeDefined();
+    expect(securitySchemes?.oauth2Implicit.type).toBe("oauth2");
   });
 
   it("should support OAuth2 Password flow (Resource Owner)", async () => {
@@ -168,6 +173,11 @@ describe("OAuth2 Flows", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.oauth2Password).toBeDefined();
+    expect(securitySchemes?.oauth2Password.type).toBe("oauth2");
   });
 
   it("should support OAuth2 with multiple flows", async () => {
@@ -208,6 +218,11 @@ describe("OAuth2 Flows", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.oauth2Multi).toBeDefined();
+    expect(securitySchemes?.oauth2Multi.type).toBe("oauth2");
   });
 
   it("should support OAuth2 with PKCE", async () => {
@@ -336,6 +351,11 @@ describe("OAuth2 Flows", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.oauth2OIDC).toBeDefined();
+    expect(securitySchemes?.oauth2OIDC.type).toBe("oauth2");
   });
 
   it("should support OAuth2 with dynamic scopes", async () => {
@@ -421,6 +441,11 @@ describe("OAuth2 Flows", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.oauth2Aud).toBeDefined();
+    expect(securitySchemes?.oauth2Aud.type).toBe("oauth2");
   });
 
   it("should support OAuth2 Device Authorization Grant", async () => {
@@ -460,6 +485,11 @@ describe("OAuth2 Flows", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.oauth2Device).toBeDefined();
+    expect(securitySchemes?.oauth2Device.type).toBe("oauth2");
   });
 
   it("should support OAuth2 Token Exchange (RFC 8693)", async () => {
@@ -498,6 +528,11 @@ describe("OAuth2 Flows", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.oauth2Exchange).toBeDefined();
+    expect(securitySchemes?.oauth2Exchange.type).toBe("oauth2");
   });
 
   it("should support OAuth2 JWT Bearer Grant (RFC 7523)", async () => {
@@ -536,6 +571,11 @@ describe("OAuth2 Flows", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.oauth2JWTBearer).toBeDefined();
+    expect(securitySchemes?.oauth2JWTBearer.type).toBe("oauth2");
   });
 
   it("should support OAuth2 SAML Bearer Grant (RFC 7522)", async () => {
@@ -574,6 +614,11 @@ describe("OAuth2 Flows", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.oauth2SAMLBearer).toBeDefined();
+    expect(securitySchemes?.oauth2SAMLBearer.type).toBe("oauth2");
   });
 
   it("should support OAuth2 with token introspection", async () => {
@@ -613,6 +658,11 @@ describe("OAuth2 Flows", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.oauth2Introspect).toBeDefined();
+    expect(securitySchemes?.oauth2Introspect.type).toBe("oauth2");
   });
 
   it("should support OAuth2 with token revocation", async () => {
@@ -653,6 +703,11 @@ describe("OAuth2 Flows", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.oauth2Revoke).toBeDefined();
+    expect(securitySchemes?.oauth2Revoke.type).toBe("oauth2");
   });
 
   it("should support OAuth2 with scope negotiation", async () => {
@@ -696,6 +751,11 @@ describe("OAuth2 Flows", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.oauth2Negotiate).toBeDefined();
+    expect(securitySchemes?.oauth2Negotiate.type).toBe("oauth2");
   });
 
   it("should support OAuth2 with consent management", async () => {
@@ -736,6 +796,11 @@ describe("OAuth2 Flows", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.oauth2Consent).toBeDefined();
+    expect(securitySchemes?.oauth2Consent.type).toBe("oauth2");
   });
 
   it("should support OAuth2 with session management", async () => {
@@ -776,5 +841,10 @@ describe("OAuth2 Flows", () => {
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
+    // Assert actual security scheme output
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes).toBeDefined();
+    expect(securitySchemes?.oauth2Session).toBeDefined();
+    expect(securitySchemes?.oauth2Session.type).toBe("oauth2");
   });
 });
