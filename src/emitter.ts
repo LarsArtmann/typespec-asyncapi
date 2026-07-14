@@ -410,6 +410,11 @@ function inferActionFromName(name: string): "send" | "receive" {
 
 /**
  * Build AsyncAPI 3.0 document from decorator state and generated schemas.
+ *
+ * AsyncAPI 3.0 $ref chain (MUST follow this):
+ *   operations.{opId}.messages[] → #/channels/{channelId}/messages/{messageId}
+ *   channels.{channelId}.messages.{messageId} → #/components/messages/{messageId}
+ *   components.messages.{messageId}.payload → #/components/schemas/{schemaName}
  */
 function buildAsyncAPIDocument(
   state: AsyncAPIConsolidatedState,
@@ -423,25 +428,152 @@ function buildAsyncAPIDocument(
   const messages: Record<string, unknown> = {};
   const securitySchemes: Record<string, unknown> = {};
 
-  // Build channels from state with protocol bindings
+  // Helper: extract return type model name from a TypeSpec operation type
+  function getReturnModelName(type: unknown): string | undefined {
+    const t = type as {
+      returnType?:
+        | { name?: string; model?: { name?: string }; kind?: string }
+        | undefined;
+    };
+    const rt = t?.returnType;
+    if (!rt) return undefined;
+    // returnType is directly a Model for `op foo(): Bar`
+    if (rt.name && rt.kind !== "Operation") return rt.name;
+    // Some template/wrapper cases may nest under .model
+    return rt.model?.name;
+  }
+
+  // === Step 1: Discover all operations into a unified list ===
+
+  interface DiscoveredOp {
+    opName: string;
+    channelKey: string;
+    action: "send" | "receive";
+    messageName: string;
+  }
+
+  const discoveredOps: DiscoveredOp[] = [];
+  const channelKeys = new Set<string>();
+
+  // Helper: ensure a channel exists in the channels map
+  function ensureChannel(channelKey: string): Record<string, unknown> {
+    if (!channels[channelKey]) {
+      channels[channelKey] = { address: channelKey, messages: {} };
+    }
+    channelKeys.add(channelKey);
+    return channels[channelKey] as Record<string, unknown>;
+  }
+
+  // Helper: register a message in components and link it to a channel
+  function registerMessage(
+    messageName: string,
+    channelKey: string,
+    msgData?: { title?: string; description?: string; contentType?: string },
+  ): void {
+    if (!messages[messageName]) {
+      messages[messageName] = {
+        name: msgData?.title ?? messageName,
+        contentType: msgData?.contentType ?? "application/json",
+        ...(msgData?.description ? { summary: msgData.description } : {}),
+        payload: { $ref: `#/components/schemas/${messageName}` },
+      };
+    }
+    const channel = ensureChannel(channelKey);
+    const channelMsgs = (channel.messages ?? {}) as Record<string, unknown>;
+    channelMsgs[messageName] = { $ref: `#/components/messages/${messageName}` };
+    channel.messages = channelMsgs;
+  }
+
+  // 1a. Operations from @publish/@subscribe + @channel decorators
+  // Build channel map from @channel decorator state
+  const opToChannel = new Map<string, string>();
   for (const [type, data] of state.channels) {
     const channelData = data as { path?: string };
     const typeWithName = type as { name: string };
-    const channelKey = channelData.path ?? typeWithName.name;
-    const channelObj: Record<string, unknown> = { address: channelKey };
-    // Attach protocol binding if this operation has one
-    const protoConfig = state.protocolConfigs.get(type) as
-      | { protocol?: string; [k: string]: unknown }
-      | undefined;
-    if (protoConfig?.protocol) {
-      channelObj.bindings = {
-        [protoConfig.protocol]: protoConfig.binding ?? {},
-      };
-    }
-    channels[channelKey] = channelObj;
+    const channelPath = channelData.path ?? typeWithName.name;
+    opToChannel.set(typeWithName.name, channelPath);
   }
 
-  // Build messages from state
+  for (const [type, data] of state.operations) {
+    const opData = data as {
+      type: string;
+      messageType?: string;
+    };
+    const typeWithName = type as { name: string };
+    const channelKey = opToChannel.get(typeWithName.name) ?? typeWithName.name;
+    const messageName =
+      opData.messageType ?? getReturnModelName(type) ?? typeWithName.name;
+
+    discoveredOps.push({
+      opName: typeWithName.name,
+      channelKey,
+      action: opData.type === "publish" ? "send" : "receive",
+      messageName,
+    });
+  }
+
+  // 1b. Channels with @channel but no @publish/@subscribe — auto-generate operations
+  const opsWithType = new Set(
+    [...state.operations.keys()].map((t) => (t as { name: string }).name),
+  );
+  for (const [type, data] of state.channels) {
+    const typeWithName = type as { name: string };
+    if (opsWithType.has(typeWithName.name)) continue;
+    const channelData = data as { path?: string };
+    const channelKey = channelData.path ?? typeWithName.name;
+    const messageName = getReturnModelName(type) ?? typeWithName.name;
+    discoveredOps.push({
+      opName: typeWithName.name,
+      channelKey,
+      action: inferActionFromName(typeWithName.name),
+      messageName,
+    });
+  }
+
+  // 1c. Bare operations (no decorators at all) — auto-discover
+  const allKnownOps = new Set(
+    [...state.operations.keys(), ...state.channels.keys()].map(
+      (t) => (t as { name: string }).name,
+    ),
+  );
+  const globalNs = (program.checker as any).getGlobalNamespaceType();
+  const namespaces = [globalNs, ...globalNs.namespaces.values()];
+  for (const ns of namespaces) {
+    if (ns.name && isStdNamespace(ns)) continue;
+    for (const [opName, op] of ns.operations) {
+      if (allKnownOps.has(opName)) continue;
+      const returnType = op.returnType as
+        | { model?: { name?: string } }
+        | undefined;
+      const messageName = returnType?.model?.name ?? opName;
+      discoveredOps.push({
+        opName,
+        channelKey: opName,
+        action: inferActionFromName(opName),
+        messageName,
+      });
+    }
+  }
+
+  // === Step 2: Build channels, operations, and messages from discovered ops ===
+
+  for (const op of discoveredOps) {
+    // Register the message (auto-creates channel + components.messages entry)
+    registerMessage(op.messageName, op.channelKey);
+
+    // Build the operation with spec-compliant $ref chain
+    operations[op.opName] = {
+      action: op.action,
+      channel: { $ref: `#/channels/${op.channelKey}` },
+      messages: [
+        {
+          $ref: `#/channels/${op.channelKey}/messages/${op.messageName}`,
+        },
+      ],
+    };
+  }
+
+  // 2b. Merge in explicit @message decorator data (overrides auto-generated)
   for (const [type, data] of state.messages) {
     const msgData = data as {
       messageId?: string;
@@ -451,90 +583,24 @@ function buildAsyncAPIDocument(
     };
     const typeWithName = type as { name: string };
     const msgKey = msgData.messageId ?? typeWithName.name;
+    // Update existing message or create new one
     messages[msgKey] = {
-      messageId: msgKey,
       name: msgData.title ?? typeWithName.name,
-      summary: msgData.description,
       contentType: msgData.contentType ?? "application/json",
+      ...(msgData.description ? { summary: msgData.description } : {}),
       payload: { $ref: `#/components/schemas/${typeWithName.name}` },
     };
   }
 
-  // Build operations from state — link to channels by path
-  const channelMap = new Map<string, string>();
-  for (const [type, data] of state.channels) {
-    const channelData = data as { path?: string };
+  // 2c. Attach protocol bindings to channels
+  for (const [type, data] of state.protocolConfigs) {
     const typeWithName = type as { name: string };
-    const opName = typeWithName.name;
-    const channelPath = channelData.path ?? opName;
-    channelMap.set(opName, channelPath);
-  }
-
-  for (const [type, data] of state.operations) {
-    const opData = data as {
-      type: string;
-      messageType?: string;
-      description?: string;
-    };
-    const typeWithName = type as { name: string };
-    const channelPath = channelMap.get(typeWithName.name) ?? typeWithName.name;
-    operations[typeWithName.name] = {
-      action: opData.type === "publish" ? "send" : "receive",
-      channel: { $ref: `#/channels/${channelPath}` },
-      messages: [
-        {
-          $ref: `#/components/messages/${opData.messageType ?? typeWithName.name}`,
-        },
-      ],
-    };
-  }
-
-  // Auto-generate operations for channels that have @channel but no @publish/@subscribe
-  const opsWithType = new Set(
-    [...state.operations.keys()].map((t) => (t as { name: string }).name),
-  );
-  for (const [type, data] of state.channels) {
-    const typeWithName = type as { name: string };
-    if (opsWithType.has(typeWithName.name)) continue;
-    const channelData = data as { path?: string };
-    const channelPath = channelData.path ?? typeWithName.name;
-    const action = inferActionFromName(typeWithName.name);
-    operations[typeWithName.name] = {
-      action,
-      channel: { $ref: `#/channels/${channelPath}` },
-      messages: [{ $ref: `#/components/messages/${typeWithName.name}` }],
-    };
-  }
-
-  // Auto-discover bare operations (no @channel, @publish, or @subscribe decorators)
-  const allKnownOps = new Set(
-    [...state.operations.keys(), ...state.channels.keys()].map(
-      (t) => (t as { name: string }).name,
-    ),
-  );
-
-  const globalNs = (program.checker as any).getGlobalNamespaceType();
-  const namespaces = [globalNs, ...globalNs.namespaces.values()];
-  for (const ns of namespaces) {
-    if (ns.name && isStdNamespace(ns)) continue;
-    for (const [opName, op] of ns.operations) {
-      if (allKnownOps.has(opName)) continue;
-      const action = inferActionFromName(opName);
-      const returnType = op.returnType as
-        | { model?: { name?: string } }
-        | undefined;
-      const msgName = returnType?.model?.name ?? opName;
-      channels[opName] = { address: opName };
-      operations[opName] = {
-        action,
-        channel: { $ref: `#/channels/${opName}` },
-        messages: [{ $ref: `#/components/messages/${msgName}` }],
-      };
-      messages[msgName] = {
-        messageId: msgName,
-        name: msgName,
-        contentType: "application/json",
-        payload: { $ref: `#/components/schemas/${msgName}` },
+    const channelKey = opToChannel.get(typeWithName.name) ?? typeWithName.name;
+    const protoConfig = data as { protocol?: string; [k: string]: unknown };
+    if (protoConfig?.protocol && channels[channelKey]) {
+      const channel = channels[channelKey] as Record<string, unknown>;
+      channel.bindings = {
+        [protoConfig.protocol]: protoConfig.binding ?? {},
       };
     }
   }

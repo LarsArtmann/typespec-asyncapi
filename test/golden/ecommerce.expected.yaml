@@ -1,0 +1,77 @@
+asyncapi: 3.0.0
+info:
+  title: Generated API
+  version: 1.0.0
+servers:
+  production:
+    host: api.example.com
+    protocol: https
+    description: Production server
+channels:
+  orders.created:
+    address: orders.created
+    messages:
+      OrderCreated:
+        $ref: "#/components/messages/OrderCreated"
+  orders.shipped:
+    address: orders.shipped
+    messages:
+      OrderShipped:
+        $ref: "#/components/messages/OrderShipped"
+operations:
+  publishOrderCreated:
+    action: send
+    channel:
+      $ref: "#/channels/orders.created"
+    messages:
+      - $ref: "#/channels/orders.created/messages/OrderCreated"
+  subscribeOrderShipped:
+    action: receive
+    channel:
+      $ref: "#/channels/orders.shipped"
+    messages:
+      - $ref: "#/channels/orders.shipped/messages/OrderShipped"
+components:
+  messages:
+    OrderCreated:
+      name: OrderCreated
+      contentType: application/json
+      payload:
+        $ref: "#/components/schemas/OrderCreated"
+    OrderShipped:
+      name: OrderShipped
+      contentType: application/json
+      payload:
+        $ref: "#/components/schemas/OrderShipped"
+  schemas:
+    OrderCreated:
+      type: object
+      properties:
+        orderId:
+          type: string
+          description: Unique order identifier
+        customerId:
+          type: string
+        total:
+          type: string
+          format: decimal
+        items:
+          type: array
+          items:
+            type: string
+      required:
+        - orderId
+        - customerId
+        - total
+        - items
+      description: Event published when a new order is created.
+    OrderShipped:
+      type: object
+      properties:
+        orderId:
+          type: string
+        trackingNumber:
+          type: string
+      required:
+        - orderId
+        - trackingNumber
