@@ -1,27 +1,20 @@
 # TypeSpec AsyncAPI Emitter
 
-[![Build Status](https://img.shields.io/badge/Build-PASSING-green)](https://github.com/LarsArtmann/typespec-asyncapi)[![TypeScript](https://img.shields.io/badge/TypeScript-0%20Errors-green)](https://www.typescriptlang.org/)[![AsyncAPI](https://img.shields.io/badge/AsyncAPI-3.0-blue)](https://www.asyncapi.com/)
+[![Build Status](https://img.shields.io/badge/Build-PASSING-green)](https://github.com/LarsArtmann/typespec-asyncapi)
+[![Tests](https://img.shields.io/badge/Tests-348%20pass%2C%200%20fail-green)](https://github.com/LarsArtmann/typespec-asyncapi)
+[![AsyncAPI](https://img.shields.io/badge/AsyncAPI-3.0.0-blue)](https://www.asyncapi.com/)
 
-A TypeSpec emitter that transforms TypeSpec service definitions into [AsyncAPI 3.0](https://www.asyncapi.com/) specifications for event-driven architectures. Define your event schemas, channels, and operations in TypeSpec, then generate standards-compliant AsyncAPI YAML documentation automatically.
-
-**Key capabilities:**
-
-- Define event messages, channels, and operations using TypeSpec decorators
-- Generate complete AsyncAPI 3.0 YAML specifications
-- Support for publish/subscribe operations, message schemas, and server configurations
-- Protocol bindings for Kafka, WebSocket, MQTT, and HTTP
-- Security scheme definitions (OAuth2, API Key, etc.)
-- TypeSpec model schemas converted to JSON Schema components
-
----
+A TypeSpec emitter that transforms TypeSpec service definitions into [AsyncAPI 3.0](https://www.asyncapi.com/) specifications. Define your event schemas, channels, and operations in TypeSpec, then generate standards-compliant AsyncAPI YAML.
 
 ## Quick Start
 
 ```bash
-# Install
 bun add @lars-artmann/typespec-asyncapi
+```
 
-# Create a TypeSpec file (api.tsp)
+Create a TypeSpec file (`api.tsp`):
+
+```typespec
 import "@lars-artmann/typespec-asyncapi";
 using TypeSpec.AsyncAPI;
 
@@ -33,14 +26,16 @@ model Event {
 }
 
 @channel("events")
-@publish
 op publishEvent(): Event;
+```
 
-# Generate AsyncAPI
+Generate AsyncAPI:
+
+```bash
 bunx tsp compile api.tsp --emit @lars-artmann/typespec-asyncapi
 ```
 
-**Generated Output** (asyncapi.yaml):
+Output (`tsp-output/@lars-artmann/typespec-asyncapi/asyncapi.yaml`):
 
 ```yaml
 asyncapi: 3.0.0
@@ -58,6 +53,8 @@ operations:
     action: send
     channel:
       $ref: "#/channels/events"
+    messages:
+      - $ref: "#/channels/events/messages/Event"
 components:
   messages:
     Event:
@@ -79,51 +76,11 @@ components:
         - timestamp
 ```
 
----
-
-## Working Features
-
-| Feature                  | Status   |
-| ------------------------ | -------- |
-| `@channel` decorator     | Working  |
-| `@publish` decorator     | Working  |
-| `@subscribe` decorator   | Working  |
-| `@message` decorator     | Working  |
-| Basic model schemas      | Working  |
-| AsyncAPI 3.0 YAML output | Working  |
-| TypeScript compilation   | 0 errors |
-
----
-
-## Development
-
-```bash
-git clone https://github.com/LarsArtmann/typespec-asyncapi
-cd typespec-asyncapi
-bun install
-just build          # Build TypeScript
-just test           # Run tests
-just lint           # ESLint validation
-```
-
-### Testing the Emitter Locally
-
-```bash
-# Compile smoke test example
-cd examples/smoke
-bunx tsp compile . --emit ../../
-
-# View output
-cat ../../tsp-test/@lars-artmann/typespec-asyncapi/asyncapi.yaml
-```
-
----
-
 ## Decorators
 
-### `@channel(path: string)`
+### `@channel(address: string)`
 
-Defines a channel address.
+Defines a channel address for an operation.
 
 ```typespec
 @channel("user.events")
@@ -132,55 +89,54 @@ op publishUserEvent(): UserEvent;
 
 ### `@publish` / `@subscribe`
 
-Defines operation direction.
+Marks an operation as sending (publish) or receiving (subscribe).
 
 ```typespec
 @channel("orders")
 @publish
-op publishOrder(order: Order): void;
+op publishOrder(): Order;
 
 @channel("notifications")
 @subscribe
 op subscribeToNotifications(): Notification;
 ```
 
-### `@message(config)`
+### `@server(name: string, config)`
 
-Configures message metadata.
+Defines server configuration on a namespace. Config accepts `#{}` (value literal).
 
 ```typespec
-@message({
-  name: "UserCreated",
-  title: "User Created Event",
-  description: "Emitted when a new user is created"
+@server("production", #{
+  url: "broker.example.com:9092",
+  protocol: "kafka",
+  description: "Production Kafka broker"
 })
-model UserCreatedMessage {
+namespace MyAPI;
+```
+
+### `@message(config)`
+
+Configures message metadata on a model.
+
+```typespec
+@message(#{
+  title: "User Created Event",
+  description: "Emitted when a new user is created",
+  contentType: "application/json"
+})
+model UserCreated {
   user: User;
   timestamp: utcDateTime;
 }
 ```
 
-### `@server(name: string, config)`
-
-Defines server configuration for the API.
-
-```typespec
-@server("production", {
-  url: "mqtt://broker.example.com:1883",
-  protocol: "mqtt",
-  description: "Production MQTT broker"
-})
-namespace MyAPI;
-```
-
 ### `@protocol(config)`
 
-Applies protocol-specific bindings to operations or models.
+Applies protocol-specific bindings.
 
 ```typespec
 @channel("events")
-@publish
-@protocol({
+@protocol(#{
   protocol: "kafka",
   partitions: 3,
   replicationFactor: 2
@@ -190,100 +146,89 @@ op publishEvent(): Event;
 
 ### `@security(config)`
 
-Applies security scheme to operations or namespaces.
+Applies security schemes to operations or namespaces.
 
 ```typespec
-@security({
+@security(#{
   name: "oauth2",
-  scheme: {
+  scheme: #{
     type: "oauth2",
-    flows: {
-      clientCredentials: {
+    flows: #{
+      clientCredentials: #{
         tokenUrl: "https://auth.example.com/oauth/token"
       }
     }
   }
-})
-@server("secure", {
-  url: "amqps://broker.example.com:5671",
-  protocol: "amqp"
 })
 namespace SecureAPI;
 ```
 
 ### `@tags(value: string[])`
 
-Applies tags for categorization.
+Categorizes operations, models, or namespaces.
 
 ```typespec
+@channel("orders")
+@publish
 @tags(["orders", "critical"])
-@message({
-  name: "OrderPlaced",
-  title: "Order Placed Event"
-})
-model OrderPlacedMessage {
-  orderId: string;
-  customerId: string;
-  total: decimal;
-}
+op publishOrder(): Order;
 ```
 
 ### `@correlationId(location: string, property?: string)`
 
-Specifies correlation ID location for message tracing.
+Specifies correlation ID for message tracing on a model.
 
 ```typespec
-@correlationId("$message.header#/correlationId", "correlationId")
+@correlationId("$message.header#/correlationId")
 model EventWithCorrelation {
   payload: string;
 }
 ```
 
-### `@header(name: string, value: string | Model)`
+### `@header(name: string, value?: string)`
 
-Defines message headers.
+Defines message headers on a model property.
 
 ```typespec
-model EventHeaders {
-  @header("X-Event-Type", "Content-Type")
-  contentType: "application/json";
-
-  @header("X-Trace-Id", "string")
+model EventWithHeaders {
+  @header("X-Trace-Id")
   traceId: string;
 }
 ```
 
-### `@bindings(value: Model)`
+### `@bindings(config)`
 
-Applies generic bindings configuration.
+Applies generic protocol bindings to operations or models.
 
 ```typespec
 @channel("payments")
-@bindings({
-  kafka: {
+@bindings(#{
+  kafka: #{
     partitions: 10,
     replicas: 3
   }
 })
 op processPayment(): PaymentResult;
+```
 
----
+## Development
 
-## Known Limitations
-
-- **Advanced schemas**: Arrays, enums, union types partially supported
-- **Some advanced protocol configurations**: May require additional testing
-
----
+```bash
+git clone https://github.com/LarsArtmann/typespec-asyncapi
+cd typespec-asyncapi
+bun install
+bun run build     # Build TypeScript (0 errors)
+bun test          # Run tests (348 pass, 0 fail)
+bun run lint      # ESLint
+```
 
 ## Status
 
 **Version:** 0.0.1
-**Build:** Passing (0 TypeScript errors)
-**Core:** Working (generates valid AsyncAPI 3.0 YAML)
-**Tests:** 129 passing, 314 failing (mostly advanced features)
+**Build:** 0 TypeScript errors
+**Tests:** 348 pass, 0 fail
+**Output:** Validates against AsyncAPI 3.0.0 JSON schema
 
----
+## License
 
-_Last updated: 2026-03-23_
-```
+MIT

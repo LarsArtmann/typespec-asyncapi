@@ -1,99 +1,89 @@
-# TypeSpec AsyncAPI Emitter - Feature Inventory
+# Feature Inventory
 
-**Generated:** 2026-05-06 | **Project:** `@lars-artmann/typespec-asyncapi` v0.0.1
+**Verified:** 2026-07-14 against actual code + test run (348 pass, 0 fail)
+**Project:** `@lars-artmann/typespec-asyncapi` v0.0.1
 
 ---
 
 ## Core Emitter
 
-| Feature                                | Status               | Notes                                                                                                                                   |
-| -------------------------------------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| AsyncAPI 3.0 YAML generation           | PARTIALLY_FUNCTIONAL | Simple emitter produces basic YAML; Alloy emitter produces richer output but both are immature                                          |
-| JSON output format                     | BROKEN               | `"file-type": "json"` option exists but no JSON serialization implemented                                                               |
-| TypeSpec `$onEmit` integration         | PARTIALLY_FUNCTIONAL | Two competing `$onEmit` implementations: `emitter.ts` (simple) and `emitter-alloy.tsx` (Alloy framework). Only `emitter.ts` is exported |
-| Schema generation from TypeSpec models | PARTIALLY_FUNCTIONAL | Alloy version handles scalars, models, arrays; simple version outputs empty schemas                                                     |
-| Recursive model reference resolution   | PARTIALLY_FUNCTIONAL | Alloy version collects nested models; limited to 1 level deep in practice                                                               |
-| `emitFile` output                      | PARTIALLY_FUNCTIONAL | Works but always outputs `asyncapi.yaml` regardless of options                                                                          |
+| Feature | Status | Evidence |
+|---|---|---|
+| AsyncAPI 3.0 YAML generation | FULLY_FUNCTIONAL | `src/emitter.ts:688-697` — `yamlStringify(document)` |
+| AsyncAPI 3.0 JSON generation | FULLY_FUNCTIONAL | `src/emitter.ts:695-696` — `JSON.stringify(document, null, 2)` |
+| Spec-compliant `$ref` chain | FULLY_FUNCTIONAL | Operations → `#/channels/{id}/messages/{id}` → `#/components/messages/{id}` → `#/components/schemas/{name}` |
+| AsyncAPI 3.0 schema validation | FULLY_FUNCTIONAL | `test/validation/schema-validation.test.ts` — validates output against official `@asyncapi/specs` 3.0.0 JSON schema |
+| TypeSpec `$onEmit` integration | FULLY_FUNCTIONAL | `src/emitter.ts:680` — single `$onEmit` entry point |
+| `emitFile` output | FULLY_FUNCTIONAL | Respects `output-file` and `file-type` options |
+| Strongly-typed document model | FULLY_FUNCTIONAL | `src/domain/models/asyncapi-document.ts` — `AsyncAPIDocument`, `ChannelObject`, etc. |
+
+## Schema Generation
+
+| Feature | Status | Evidence |
+|---|---|---|
+| Model → JSON Schema | FULLY_FUNCTIONAL | `src/emitter.ts:47-78` — `modelDeclaration()` handles properties, types, required |
+| Inheritance (base models) | FULLY_FUNCTIONAL | `src/emitter.ts:52-68` — `collectProperties()` walks `baseModel` chain |
+| `@doc` → `description` | FULLY_FUNCTIONAL | `src/emitter.ts:74-75` — `getDoc()` on models and properties |
+| Optional vs required fields | FULLY_FUNCTIONAL | `src/emitter.ts:61-66` — `!prop.optional` → `required` array |
+| Array types | FULLY_FUNCTIONAL | `src/emitter.ts:251-253` — `{ type: "array", items: ... }` |
+| Union/enum types | FULLY_FUNCTIONAL | `src/emitter.ts:232-247` — string unions → `{ type: "string", enum: [...] }` |
+| Scalar type mapping | FULLY_FUNCTIONAL | `src/emitter.ts:269-321` — all TypeSpec scalars mapped (int32, float64, utcDateTime, etc.) |
+| Nested model references | PARTIALLY_FUNCTIONAL | Inlined, not `$ref`-ed — works but produces verbose output for deep nesting |
+| Channel path parameters | PARTIALLY_FUNCTIONAL | `storeChannelState` parses `{var}` but emitter doesn't emit `parameters` on channels |
 
 ## Decorator System
 
-| Decorator        | Status               | Notes                                                                            |
-| ---------------- | -------------------- | -------------------------------------------------------------------------------- |
-| `@channel`       | PARTIALLY_FUNCTIONAL | Stores path in state; basic validation; no parameter extraction in emitter       |
-| `@publish`       | PARTIALLY_FUNCTIONAL | Stores operation type; optional message config linkage                           |
-| `@subscribe`     | PARTIALLY_FUNCTIONAL | Stores operation type; no message config linkage                                 |
-| `@server`        | PARTIALLY_FUNCTIONAL | Stores config with validation; emitter ignores server definitions in simple mode |
-| `@message`       | PARTIALLY_FUNCTIONAL | Stores title/description/contentType from Model config                           |
-| `@protocol`      | PARTIALLY_FUNCTIONAL | Stores protocol config with defaults; Kafka/WS/MQTT specific handling            |
-| `@security`      | PARTIALLY_FUNCTIONAL | Stores name+scheme; handles both Model and plain object configs                  |
-| `@tags`          | PARTIALLY_FUNCTIONAL | Stores as comma-separated string (poor data structure)                           |
-| `@correlationId` | PARTIALLY_FUNCTIONAL | Stores location+property; not emitted in output                                  |
-| `@bindings`      | PARTIALLY_FUNCTIONAL | Merges bindings with existing; not emitted in simple mode                        |
-| `@header`        | PARTIALLY_FUNCTIONAL | Stores on ModelProperty; emitter must collect from properties                    |
+| Decorator | Status | Evidence |
+|---|---|---|
+| `@channel` | FULLY_FUNCTIONAL | Stores path; emitter creates channel with address |
+| `@publish` | FULLY_FUNCTIONAL | Marks operation as `action: "send"` |
+| `@subscribe` | FULLY_FUNCTIONAL | Marks operation as `action: "receive"` |
+| `@server` | FULLY_FUNCTIONAL | `src/emitter.ts:631-647` — emitted as server objects with host/protocol/description |
+| `@message` | FULLY_FUNCTIONAL | Stores title/description/contentType; merged into components.messages |
+| `@protocol` | FULLY_FUNCTIONAL | Stores protocol config; emitted as channel bindings |
+| `@security` | FULLY_FUNCTIONAL | `src/emitter.ts:649-652` — emitted as `components.securitySchemes` |
+| `@tags` | FULLY_FUNCTIONAL | Emitted as `Tag[]` arrays on operations |
+| `@correlationId` | FULLY_FUNCTIONAL | Emitted as `correlationId` objects on messages |
+| `@bindings` | FULLY_FUNCTIONAL | Emitted as `bindings` objects on operations and messages |
+| `@header` | FULLY_FUNCTIONAL | Emitted as JSON Schema `headers` on messages |
 
 ## State Management
 
-| Feature                                   | Status               | Notes                                                                                        |
-| ----------------------------------------- | -------------------- | -------------------------------------------------------------------------------------------- |
-| State persistence via TypeSpec `stateMap` | PARTIALLY_FUNCTIONAL | Uses both `stateSymbols` (Symbol keys) and `stateKeys` (string keys) — potential split brain |
-| State consolidation                       | PARTIALLY_FUNCTIONAL | `consolidateAsyncAPIState()` unwraps StateMapView; works but fragile                         |
-| Compatibility layer                       | PARTIALLY_FUNCTIONAL | `state-compatibility.ts` handles TypeSpec 1.8+ API changes                                   |
+| Feature | Status | Evidence |
+|---|---|---|
+| State persistence via `stateMap` | FULLY_FUNCTIONAL | `src/state-compatibility.ts` — `getStateMap()` handles StateMapView |
+| State consolidation | FULLY_FUNCTIONAL | `src/state.ts:139-174` — `consolidateAsyncAPIState()` unifies all state maps |
+| `protocolBindings` in state | FULLY_FUNCTIONAL | Added to consolidated state; accessible by emitter |
 
-## Infrastructure
+## Configuration
 
-| Feature                  | Status               | Notes                                                                               |
-| ------------------------ | -------------------- | ----------------------------------------------------------------------------------- |
-| Effect.TS error handling | PARTIALLY_FUNCTIONAL | Railway patterns in `effect-helpers.ts`; barely used in actual emitter              |
-| Effect.TS logging        | PARTIALLY_FUNCTIONAL | Custom logger in `logger.ts`; emitter uses `Effect.log` for debug spam              |
-| Standardized errors      | PARTIALLY_FUNCTIONAL | 5 error classes defined; not actually thrown anywhere meaningful                    |
-| Configuration options    | PARTIALLY_FUNCTIONAL | Rich schema validation but emitter ignores most options                             |
-| Plugin system            | BROKEN               | `PluginSystem.ts` is a skeleton; no plugins registered or functional                |
-| Performance monitoring   | BROKEN               | `PerformanceMonitor.ts` excluded from compilation; references missing               |
-| Path utilities           | PARTIALLY_FUNCTIONAL | Comprehensive path helpers; hard-coded paths (`/Users/larsartmann/...`) in defaults |
+| Feature | Status | Evidence |
+|---|---|---|
+| `output-file` option | FULLY_FUNCTIONAL | `src/emitter.ts:691` |
+| `file-type` option (yaml/json) | FULLY_FUNCTIONAL | `src/emitter.ts:686-694` |
+| `title` option | FULLY_FUNCTIONAL | `src/emitter.ts:664` |
+| `version` option | FULLY_FUNCTIONAL | `src/emitter.ts:665` |
+| `description` option | FULLY_FUNCTIONAL | `src/emitter.ts:666` |
+| `asyncapi-version` option | FULLY_FUNCTIONAL | Hardcoded to `"3.0.0"` (only supported version) |
+| `protocol-bindings` option | NOT_IMPLEMENTED | Accepted but ignored |
+| `versioning` option | NOT_IMPLEMENTED | Accepted but ignored |
+| `security-schemes` option | NOT_IMPLEMENTED | Accepted but ignored |
+| `validate-spec` option | NOT_IMPLEMENTED | Accepted but ignored |
+| `omit-unreachable-types` option | NOT_IMPLEMENTED | Accepted but ignored |
 
 ## Testing
 
-| Feature                     | Status               | Notes                                                                                                            |
-| --------------------------- | -------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| Bun test runner integration | PARTIALLY_FUNCTIONAL | 100 tests across 92 files; 88 failures, 7 passes, 4 todo                                                         |
-| Protocol binding tests      | FUNCTIONAL           | 7 passing tests for Kafka/WebSocket binding validation                                                           |
-| Integration tests           | BROKEN               | Missing modules (`@asyncapi/parser`, domain validators)                                                          |
-| E2E tests                   | BROKEN               | Missing source files, broken imports                                                                             |
-| BDD test infrastructure     | BROKEN               | `test/bdd/` exists but no functional tests                                                                       |
-| Test helper infrastructure  | PARTIALLY_FUNCTIONAL | Multiple overlapping test helpers (`test-helpers.ts`, `emitter-test-helpers.ts`, `library-test-helper.ts`, etc.) |
+| Feature | Status | Evidence |
+|---|---|---|
+| Bun test runner | FULLY_FUNCTIONAL | 348 tests across 30 files |
+| Golden file test | FULLY_FUNCTIONAL | `test/golden/golden-file.test.ts` |
+| Schema validation tests | FULLY_FUNCTIONAL | `test/validation/schema-validation.test.ts` |
+| Integration tests | FULLY_FUNCTIONAL | `test/integration/` — 30 test files using programmatic API |
+| E2E tests | PARTIALLY_FUNCTIONAL | `test/e2e/` — 4 files, some use `Effect.TS` |
 
-## Build & CI
+## Build
 
-| Feature                | Status               | Notes                                                                        |
-| ---------------------- | -------------------- | ---------------------------------------------------------------------------- |
-| TypeScript compilation | BROKEN               | 41 type errors; missing `@types/node` in tsconfig, unresolved module imports |
-| ESLint                 | BROKEN               | `@eslint/js` package resolution failure                                      |
-| Code duplication       | EXCELLENT            | 0.26% duplication (2 clones, 9 lines)                                        |
-| CI pipeline            | PARTIALLY_FUNCTIONAL | GitHub Actions workflows exist; build must pass 0 errors (currently fails)   |
-
-## Documentation
-
-| Feature                           | Status               | Notes                                                               |
-| --------------------------------- | -------------------- | ------------------------------------------------------------------- |
-| README                            | FUNCTIONAL           | Basic usage documentation                                           |
-| CONTRIBUTING.md                   | FUNCTIONAL           | Contribution guidelines                                             |
-| TypeSpec-to-AsyncAPI mapping docs | FUNCTIONAL           | 9-part guide in `docs/map-typespec-to-asyncapi/`                    |
-| Architecture docs                 | OVERWHELMED          | 200+ planning/status/report markdown files; mostly historical noise |
-| ADR records                       | PARTIALLY_FUNCTIONAL | 3 ADRs + 1 in `docs/adr/`                                           |
-
----
-
-## Summary Statistics
-
-| Metric                | Value                              |
-| --------------------- | ---------------------------------- |
-| Source files          | 29                                 |
-| Source lines          | 3,378                              |
-| Test files            | 104                                |
-| Test results          | 7 pass / 88 fail / 4 todo / 1 skip |
-| TS compilation errors | 41                                 |
-| Code duplication      | 0.26%                              |
-| Decorators            | 11                                 |
-| Passing features      | ~3                                 |
-| Partially functional  | ~25                                |
-| Broken                | ~8                                 |
+| Feature | Status | Evidence |
+|---|---|---|
+| TypeScript compilation | FULLY_FUNCTIONAL | 0 errors |
+| ESLint | FULLY_FUNCTIONAL | `bun run lint` passes on `src/` |

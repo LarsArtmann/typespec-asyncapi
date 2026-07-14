@@ -49,13 +49,13 @@ cd typespec-asyncapi
 bun install
 
 # 3. Build the project
-just build
+bun run build
 
 # 4. Run tests
-just test
+bun test
 
 # 5. Validate everything works
-just quality-check
+bun run check
 ```
 
 ### Development Tools
@@ -120,7 +120,7 @@ git checkout -b feature/your-feature-name
 # - Follow Effect.TS patterns
 
 # 3. Run quality checks
-just quality-check
+bun run check
 
 # 4. Commit with clear messages
 git add .
@@ -244,14 +244,14 @@ describe("Channel Decorator", () => {
 
 ```bash
 # Run all tests
-just test
+bun test
 
 # Run specific test categories
-just test-validation
-just test-asyncapi
+bun run test:validation
+bun run test:asyncapi
 
 # Run with coverage
-just test-coverage
+bun run test:coverage
 
 # Watch mode during development
 bun test --watch
