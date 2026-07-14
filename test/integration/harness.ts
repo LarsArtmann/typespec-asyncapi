@@ -7,7 +7,6 @@
 
 import type { Program } from "@typespec/compiler";
 import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js";
-import { Effect } from "effect";
 
 export interface CompilationResult {
   success: boolean;

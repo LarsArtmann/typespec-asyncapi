@@ -6,7 +6,6 @@
 
 import { describe, expect, it } from "bun:test";
 import { createAsyncAPITestHost } from "../utils/test-helpers.js";
-import { Effect } from "effect";
 
 describe("E2E: Complex Nested Schemas", () => {
   it("should handle deeply nested and complex schema structures", async () => {
@@ -172,8 +171,6 @@ describe("E2E: Complex Nested Schemas", () => {
       emit: ["@lars-artmann/typespec-asyncapi"],
     });
 
-    Effect.log(`Diagnostics: ${diagnostics.length}`);
-
     const outputFiles = Array.from(host.fs.keys());
     const asyncApiFile = outputFiles.find(
       (f) => f.includes("asyncapi") && (f.endsWith(".json") || f.endsWith(".yaml")),
@@ -190,7 +187,9 @@ describe("E2E: Complex Nested Schemas", () => {
       // Validate deep nesting (5 levels)
       expect(schemas.UserProfile).toBeDefined();
       expect(schemas.UserProfile.properties.personalInfo.type).toBe("object");
-      expect(schemas.UserProfile.properties.personalInfo.properties.contact.type).toBe("object");
+      expect(schemas.UserProfile.properties.personalInfo.properties.contact.$ref).toBe(
+        "#/components/schemas/ContactInfo",
+      );
       expect(schemas.Address).toBeDefined();
 
       // Validate arrays
@@ -227,8 +226,6 @@ describe("E2E: Complex Nested Schemas", () => {
 
       // Validate operations
       expect(Object.keys(spec.operations || {}).length).toBeGreaterThanOrEqual(3);
-
-      Effect.log("✅ Complex nested schemas E2E test passed!");
     }
   });
 });

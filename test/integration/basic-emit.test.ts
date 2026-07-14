@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { compileAsyncAPIWithoutErrors } from "../utils/emitter-test-helpers.js";
+import { compileAsyncAPIWithoutErrors } from "../utils/test-helpers.js";
 
 describe("AsyncAPI Emitter Integration", () => {
   it("should compile basic-events example and generate AsyncAPI", async () => {

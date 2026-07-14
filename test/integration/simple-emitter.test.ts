@@ -4,7 +4,6 @@
 
 import { describe, expect, it } from "bun:test";
 import { compileAsyncAPISpecWithoutErrors, parseAsyncAPIOutput } from "../utils/test-helpers.js";
-import { Effect } from "effect";
 
 describe("Simple AsyncAPI Emitter (No Decorators)", () => {
   it("should generate basic AsyncAPI from simple TypeSpec", async () => {
@@ -22,12 +21,9 @@ describe("Simple AsyncAPI Emitter (No Decorators)", () => {
 
     const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
 
-    Effect.log("Available output files:");
     for (const [path, file] of outputFiles.entries()) {
       if (path.includes("simple-test") || path.includes("asyncapi")) {
-        Effect.log(`  📄 ${path} (${file.content?.length || 0} chars)`);
         if (file.content) {
-          Effect.log(`     Preview: ${file.content.substring(0, 150)}...`);
         }
       }
     }
@@ -42,8 +38,6 @@ describe("Simple AsyncAPI Emitter (No Decorators)", () => {
     expect(asyncapiDoc.channels).toBeDefined();
     expect(asyncapiDoc.operations).toBeDefined();
     expect(asyncapiDoc.components).toBeDefined();
-
-    Effect.log("✅ Basic AsyncAPI generation works without decorators");
   });
 
   it("should handle multiple operations", async () => {
@@ -71,9 +65,6 @@ describe("Simple AsyncAPI Emitter (No Decorators)", () => {
     expect(asyncapiDoc.asyncapi).toBe("3.0.0");
     // Should have processed the operations and models
     expect(asyncapiDoc.info.title).toBeDefined();
-
-    Effect.log(`✅ Generated AsyncAPI with title: ${asyncapiDoc.info.title}`);
-    Effect.log(`✅ Info description: ${asyncapiDoc.info.description}`);
   });
 
   it("should generate YAML output", async () => {
@@ -93,7 +84,5 @@ describe("Simple AsyncAPI Emitter (No Decorators)", () => {
     const asyncapiDoc = await parseAsyncAPIOutput(outputFiles);
     expect(asyncapiDoc.asyncapi).toBe("3.0.0");
     expect(asyncapiDoc.info).toBeDefined();
-
-    Effect.log("✅ YAML generation works");
   });
 });

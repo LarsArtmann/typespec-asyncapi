@@ -6,7 +6,7 @@
  */
 
 import { describe, expect, it } from "bun:test";
-import { compileAsyncAPIWithoutErrors } from "../utils/emitter-test-helpers.js";
+import { compileAsyncAPIWithoutErrors } from "../utils/test-helpers.js";
 import { AsyncAPIAssertions, TestSources } from "../utils/test-helpers.js";
 import {
   SERIALIZATION_FORMAT_OPTION_JSON,

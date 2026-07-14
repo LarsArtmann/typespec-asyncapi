@@ -30,7 +30,6 @@ import {
   TestValidationPatterns,
   TestLogging,
 } from "../utils/test-helpers.js";
-import { Effect } from "effect";
 //TODO: this file is getting to big split it up
 
 describe("Real AsyncAPI Generation Tests", () => {
@@ -351,8 +350,12 @@ describe("Real AsyncAPI Generation Tests", () => {
       // Validate complex nested object handling
       const orderDetailsSchema = asyncapiDoc.components.schemas.OrderDetails;
       expect(orderDetailsSchema.properties?.items?.type).toBe("array");
-      expect(orderDetailsSchema.properties?.shippingAddress?.type).toBe("object");
-      expect(orderDetailsSchema.properties?.billingAddress?.type).toBe("object");
+      expect(orderDetailsSchema.properties?.shippingAddress?.$ref).toBe(
+        "#/components/schemas/Address",
+      );
+      expect(orderDetailsSchema.properties?.billingAddress?.$ref).toBe(
+        "#/components/schemas/Address",
+      );
 
       // Validate all operations were generated
       const expectedOperations = [
@@ -446,8 +449,6 @@ describe("Real AsyncAPI Generation Tests", () => {
       expect(flexibleEventSchema.required).not.toContain("status");
       expect(flexibleEventSchema.required).not.toContain("metadata");
       expect(flexibleEventSchema.required).not.toContain("mixedArray");
-
-      Effect.log("✅ Union types and optional fields processed correctly");
     });
 
     test("should generate valid AsyncAPI for multi-namespace TypeSpec", async () => {
@@ -629,8 +630,6 @@ describe("Real AsyncAPI Generation Tests", () => {
         });
         throw new Error(`AsyncAPI 3.0.0 compliance validation failed: ${validation.summary}`);
       }
-
-      Effect.log("✅ AsyncAPI 3.0.0 specification compliance validated successfully");
     });
 
     test("should handle complex schema references correctly", async () => {
@@ -695,8 +694,6 @@ describe("Real AsyncAPI Generation Tests", () => {
 
       // Validate nested object structures
       expect(modelWithRefsSchema.properties?.nested?.type).toBe("object");
-
-      Effect.log("✅ Complex schema references handled correctly");
     });
   });
 
@@ -775,10 +772,6 @@ describe("Real AsyncAPI Generation Tests", () => {
 
       // Performance assertion - should compile large document in reasonable time
       expect(compilationTime).toBeLessThan(30000); // 30 seconds max
-
-      Effect.log(`✅ Large scale AsyncAPI generation completed in ${compilationTime}ms`);
-      Effect.log(`📊 Generated ${Object.keys(asyncapiDoc.components.schemas).length} schemas`);
-      Effect.log(`📊 Generated ${Object.keys(asyncapiDoc.operations).length} operations`);
     });
   });
 });

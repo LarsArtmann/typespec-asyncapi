@@ -11,7 +11,6 @@
 
 import { describe, expect, it } from "bun:test";
 import { createAsyncAPITestHost } from "../utils/test-helpers.js";
-import { Effect } from "effect";
 
 describe("E2E: Error Handling and Edge Cases", () => {
   it("should handle empty models gracefully", async () => {
@@ -57,8 +56,6 @@ describe("E2E: Error Handling and Edge Cases", () => {
       // Empty model should still generate valid schema
       expect(spec.components?.schemas?.EmptyMessage).toBeDefined();
       expect(spec.components.schemas.EmptyMessage.type).toBe("object");
-
-      Effect.log("✅ Empty model handled correctly");
     }
   });
 
@@ -90,8 +87,6 @@ describe("E2E: Error Handling and Edge Cases", () => {
 
     // Should compile (might have warnings but not errors)
     expect(diagnostics.filter((d) => d.severity === "error").length).toBeLessThanOrEqual(1);
-
-    Effect.log("✅ Operations without decorators handled");
   });
 
   it("should handle edge case data types", async () => {
@@ -194,8 +189,6 @@ describe("E2E: Error Handling and Edge Cases", () => {
       // Validate optional fields
       expect(schema.required).not.toContain("optionalInt");
       expect(schema.required).not.toContain("optionalString");
-
-      Effect.log("✅ Edge case data types handled correctly");
     }
   });
 
@@ -231,8 +224,6 @@ describe("E2E: Error Handling and Edge Cases", () => {
 
     // Should handle recursion without infinite loops
     expect(diagnostics.filter((d) => d.severity === "error").length).toBeLessThanOrEqual(1);
-
-    Effect.log("✅ Recursive structures handled safely");
   });
 
   it("should validate required vs optional fields correctly", async () => {
@@ -304,8 +295,6 @@ describe("E2E: Error Handling and Edge Cases", () => {
       // Metadata and details should still have properties defined
       expect(schema.properties.metadata).toBeDefined();
       expect(schema.properties.details).toBeDefined();
-
-      Effect.log("✅ Required vs optional fields validated correctly");
     }
   });
 
@@ -354,8 +343,6 @@ describe("E2E: Error Handling and Edge Cases", () => {
       // Should have valid AsyncAPI without security
       expect(spec.asyncapi).toBe("3.0.0");
       expect(spec.channels).toBeDefined();
-
-      Effect.log("✅ Missing security handled gracefully");
     }
   });
 });

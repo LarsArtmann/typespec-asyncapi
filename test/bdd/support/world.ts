@@ -5,7 +5,6 @@
  */
 
 import { Before, Given, When, Then } from "@cucumber/cucumber";
-import { Effect } from "effect";
 import { $asyncApi } from "../../../src/index.js";
 import type { Program } from "@typespec/compiler";
 import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js";

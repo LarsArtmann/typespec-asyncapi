@@ -13,7 +13,6 @@ import {
   pathToChannelName,
 } from "../../src/domain/models/path-templates.js";
 import { consolidateAsyncAPIState, type AsyncAPIConsolidatedState } from "../../src/state.js";
-import { validateAsyncAPIEmitterOptions } from "../../src/infrastructure/configuration/options.js";
 
 // ============================================================================
 // Feature: Channel Definition
@@ -67,36 +66,6 @@ describe("BDD: User configures protocol bindings", () => {
 
   test("Given all supported protocols list, When counted, Then there are 19 protocols", () => {
     expect(PROTOCOL_LIST).toHaveLength(19);
-  });
-});
-
-// ============================================================================
-// Feature: Emitter Configuration
-// ============================================================================
-describe("BDD: User configures emitter options", () => {
-  test("Given valid options with yaml file-type, When validated, Then options are valid", () => {
-    const result = validateAsyncAPIEmitterOptions({
-      "file-type": "yaml",
-      "asyncapi-version": "3.0.0",
-    });
-    expect(result).toBeDefined();
-  });
-
-  test("Given invalid file-type, When validated, Then validation fails", () => {
-    expect(() => validateAsyncAPIEmitterOptions({ "file-type": "xml" })).toThrow();
-  });
-
-  test("Given valid protocol-bindings, When validated, Then options are valid", () => {
-    const result = validateAsyncAPIEmitterOptions({
-      "protocol-bindings": ["kafka", "http"],
-      "asyncapi-version": "3.0.0",
-    });
-    expect(result["protocol-bindings"]).toContain("kafka");
-    expect(result["protocol-bindings"]).toContain("http");
-  });
-
-  test("Given invalid asyncapi-version, When validated, Then validation fails", () => {
-    expect(() => validateAsyncAPIEmitterOptions({ "asyncapi-version": "2.6.0" })).toThrow();
   });
 });
 

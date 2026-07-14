@@ -11,7 +11,6 @@
 
 import { describe, expect, it } from "bun:test";
 import { createAsyncAPITestHost } from "../utils/test-helpers.js";
-import { Effect } from "effect";
 
 describe("E2E: Real-World E-Commerce System", () => {
   it("should generate complete e-commerce event system", async () => {
@@ -259,8 +258,6 @@ describe("E2E: Real-World E-Commerce System", () => {
       emit: ["@lars-artmann/typespec-asyncapi"],
     });
 
-    Effect.log(`Diagnostics: ${diagnostics.length}`);
-
     const outputFiles = Array.from(host.fs.keys());
     const asyncApiFile = outputFiles.find(
       (f) => f.includes("asyncapi") && (f.endsWith(".json") || f.endsWith(".yaml")),
@@ -322,8 +319,6 @@ describe("E2E: Real-World E-Commerce System", () => {
       const hasWebSocket = JSON.stringify(channelValues).includes("websocket");
       const hasHTTP = JSON.stringify(channelValues).includes("http");
       expect(hasKafka || hasWebSocket || hasHTTP).toBe(true);
-
-      Effect.log("✅ Real-world e-commerce E2E test passed!");
     }
   });
 });

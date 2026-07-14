@@ -109,15 +109,49 @@ export async function compileAsyncAPI(source: string, options: AsyncAPIEmitterOp
     result = result ?? e?.result ?? { program: { diagnostics }, fs: { fs: new Map() } };
   }
 
-  const asyncApiDoc = await extractAsyncAPIFromResult(result);
+  const virtualFs: Map<string, string> = result.fs?.fs ?? new Map();
+  let outputFile: string | null = null;
+  let outputContent: string | null = null;
+
+  for (const [virtualPath, content] of virtualFs) {
+    if (virtualPath.includes("node_modules")) continue;
+    if (typeof content !== "string") continue;
+    const filename = virtualPath.split("/").pop() || "";
+    if (filename.endsWith(".yaml") || filename.endsWith(".json") || filename.endsWith(".yml")) {
+      if (content.startsWith("asyncapi") || content.includes('"asyncapi"')) {
+        outputFile = filename;
+        outputContent = content;
+        break;
+      }
+    }
+  }
+
+  const asyncApiDoc = outputContent ? parseContent(outputContent) : null;
+
+  const outputs: Record<string, string> = {};
+  if (outputFile && outputContent) {
+    outputs[outputFile] = outputContent;
+  }
 
   return {
     asyncApiDoc,
     diagnostics,
     program: result.program,
-    outputs: asyncApiDoc ? { "asyncapi.yaml": YAML.stringify(asyncApiDoc) } : {},
-    outputFile: asyncApiDoc ? "asyncapi.yaml" : null,
+    outputs,
+    outputFile,
   };
+}
+
+function parseContent(content: string): Record<string, unknown> | null {
+  try {
+    return JSON.parse(content);
+  } catch {
+    try {
+      return YAML.parse(content);
+    } catch {
+      return null;
+    }
+  }
 }
 
 /**

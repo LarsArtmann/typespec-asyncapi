@@ -8,7 +8,7 @@
  */
 
 import { describe, expect, test } from "bun:test";
-import { compileAsyncAPIWithoutErrors } from "../utils/emitter-test-helpers.js";
+import { compileAsyncAPIWithoutErrors } from "../utils/test-helpers.js";
 import type { AsyncAPIObject } from "../utils/test-helpers.js";
 
 describe("@subscribe Decorator Tests", () => {

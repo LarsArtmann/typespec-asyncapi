@@ -7,7 +7,6 @@
 
 import { describe, expect, it } from "bun:test";
 import { createAsyncAPITestHost } from "../utils/test-helpers.js";
-import { Effect } from "effect";
 
 describe("E2E: Multi-Protocol Comprehensive Test", () => {
   it("should generate AsyncAPI 3.0 with all protocols", async () => {
@@ -149,9 +148,8 @@ describe("E2E: Multi-Protocol Comprehensive Test", () => {
       emit: ["@lars-artmann/typespec-asyncapi"],
     });
 
-    Effect.log(`Diagnostics count: ${diagnostics.length}`);
     if (diagnostics.length > 0) {
-      diagnostics.forEach((d) => Effect.log(`  - ${d.severity}: ${d.message}`));
+      // Diagnostics available for debugging if needed
     }
 
     // Find generated AsyncAPI file
@@ -201,8 +199,6 @@ describe("E2E: Multi-Protocol Comprehensive Test", () => {
       // Validate security schemes (all 4 different auth types)
       const securitySchemes = spec.components?.securitySchemes || {};
       expect(Object.keys(securitySchemes).length).toBeGreaterThanOrEqual(3);
-
-      Effect.log("✅ Multi-protocol E2E test passed!");
     }
   });
 });
