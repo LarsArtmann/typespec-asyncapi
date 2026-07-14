@@ -38,6 +38,13 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
       expect(spec?.asyncapi).toBe("3.0.0");
+      // Assert actual security scheme output
+      const securitySchemes = spec?.components?.securitySchemes;
+      expect(securitySchemes).toBeDefined();
+      expect(securitySchemes?.basicAuth).toEqual({
+        type: "http",
+        scheme: "basic",
+      });
     });
 
     it("should support HTTP Bearer JWT", async () => {
@@ -69,6 +76,14 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
       expect(spec?.asyncapi).toBe("3.0.0");
+      // Assert actual security scheme output
+      const securitySchemes = spec?.components?.securitySchemes;
+      expect(securitySchemes).toBeDefined();
+      expect(securitySchemes?.jwtBearer).toEqual({
+        type: "http",
+        scheme: "bearer",
+        bearerFormat: "JWT",
+      });
     });
 
     it("should support HTTP Bearer with custom format", async () => {
@@ -160,6 +175,10 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
       expect(spec?.asyncapi).toBe("3.0.0");
+      // Assert actual security scheme output
+      const securitySchemes = spec?.components?.securitySchemes;
+      expect(securitySchemes).toBeDefined();
+      expect(securitySchemes?.mutualTLS).toBeDefined();
     });
 
     it("should support HTTP HOBA (HTTP Origin-Bound Auth)", async () => {
@@ -659,6 +678,11 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
       expect(spec?.asyncapi).toBe("3.0.0");
+      // Assert actual security scheme output
+      const securitySchemes = spec?.components?.securitySchemes;
+      expect(securitySchemes).toBeDefined();
+      expect(securitySchemes?.apiKey).toBeDefined();
+      expect(securitySchemes?.apiKey.type).toBe("apiKey");
     });
 
     it("should support API Key in query parameter", async () => {
@@ -690,6 +714,14 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
       expect(spec?.asyncapi).toBe("3.0.0");
+      // Assert actual security scheme output
+      const securitySchemes = spec?.components?.securitySchemes;
+      expect(securitySchemes).toBeDefined();
+      expect(securitySchemes?.apiKeyQuery).toEqual({
+        type: "apiKey",
+        in: "query",
+        name: "api_key",
+      });
     });
 
     it("should support API Key in cookie", async () => {
@@ -1353,6 +1385,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
       expect(spec?.asyncapi).toBe("3.0.0");
+      // Assert actual security scheme output
+      const securitySchemes = spec?.components?.securitySchemes;
+      expect(securitySchemes).toBeDefined();
+      expect(securitySchemes?.oauth2).toBeDefined();
+      expect(securitySchemes?.oauth2.type).toBe("oauth2");
+      expect(securitySchemes?.oauth2.flows).toBeDefined();
     });
 
     it("should support OAuth2 Client Credentials flow", async () => {
@@ -1391,6 +1429,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
       expect(spec?.asyncapi).toBe("3.0.0");
+      // Assert actual security scheme output
+      const securitySchemes = spec?.components?.securitySchemes;
+      expect(securitySchemes).toBeDefined();
+      expect(securitySchemes?.oauth2Client).toBeDefined();
+      expect(securitySchemes?.oauth2Client.type).toBe("oauth2");
+      expect(securitySchemes?.oauth2Client.flows).toBeDefined();
     });
 
     it("should support OAuth2 Implicit flow", async () => {
@@ -1543,6 +1587,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
       expect(spec?.asyncapi).toBe("3.0.0");
+      // Assert actual security scheme output
+      const securitySchemes = spec?.components?.securitySchemes;
+      expect(securitySchemes).toBeDefined();
+      expect(securitySchemes?.oauth2PKCE).toBeDefined();
+      expect(securitySchemes?.oauth2PKCE.type).toBe("oauth2");
+      expect(securitySchemes?.oauth2PKCE.flows).toBeDefined();
     });
 
     it("should support OAuth2 with refresh tokens", async () => {
@@ -1583,6 +1633,11 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
       expect(spec?.asyncapi).toBe("3.0.0");
+      // Assert actual security scheme output
+      const securitySchemes = spec?.components?.securitySchemes;
+      expect(securitySchemes).toBeDefined();
+      expect(securitySchemes?.oauth2Refresh.type).toBe("oauth2");
+      expect(securitySchemes?.oauth2Refresh.flows?.authorizationCode).toBeDefined();
     });
 
     it("should support OAuth2 with OpenID Connect", async () => {
@@ -1663,6 +1718,12 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
       expect(spec?.asyncapi).toBe("3.0.0");
+      // Assert actual security scheme output
+      const securitySchemes = spec?.components?.securitySchemes;
+      expect(securitySchemes).toBeDefined();
+      expect(securitySchemes?.oauth2Dynamic).toBeDefined();
+      expect(securitySchemes?.oauth2Dynamic.type).toBe("oauth2");
+      expect(securitySchemes?.oauth2Dynamic.flows).toBeDefined();
     });
 
     it("should support OAuth2 with audience restriction", async () => {
@@ -2090,6 +2151,11 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
       expect(spec?.asyncapi).toBe("3.0.0");
+      // Assert actual security scheme output
+      const securitySchemes = spec?.components?.securitySchemes;
+      expect(securitySchemes).toBeDefined();
+      expect(securitySchemes?.saslPlain).toBeDefined();
+      expect(securitySchemes?.saslPlain.type).toBe("sasl");
     });
 
     it("should support SASL SCRAM-SHA-1", async () => {
@@ -2150,6 +2216,11 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
       expect(spec?.asyncapi).toBe("3.0.0");
+      // Assert actual security scheme output
+      const securitySchemes = spec?.components?.securitySchemes;
+      expect(securitySchemes).toBeDefined();
+      expect(securitySchemes?.saslScram256).toBeDefined();
+      expect(securitySchemes?.saslScram256.type).toBe("sasl");
     });
 
     it("should support SASL SCRAM-SHA-512", async () => {
@@ -2180,6 +2251,11 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
       expect(spec?.asyncapi).toBe("3.0.0");
+      // Assert actual security scheme output
+      const securitySchemes = spec?.components?.securitySchemes;
+      expect(securitySchemes).toBeDefined();
+      expect(securitySchemes?.saslScram512).toBeDefined();
+      expect(securitySchemes?.saslScram512.type).toBe("sasl");
     });
 
     it("should support SASL GSSAPI (Kerberos)", async () => {
@@ -2210,6 +2286,11 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
       expect(spec?.asyncapi).toBe("3.0.0");
+      // Assert actual security scheme output
+      const securitySchemes = spec?.components?.securitySchemes;
+      expect(securitySchemes).toBeDefined();
+      expect(securitySchemes?.saslGSSAPI).toBeDefined();
+      expect(securitySchemes?.saslGSSAPI.type).toBe("sasl");
     });
 
     it("should support SASL EXTERNAL", async () => {
@@ -2240,6 +2321,11 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
       expect(spec?.asyncapi).toBe("3.0.0");
+      // Assert actual security scheme output
+      const securitySchemes = spec?.components?.securitySchemes;
+      expect(securitySchemes).toBeDefined();
+      expect(securitySchemes?.saslExternal).toBeDefined();
+      expect(securitySchemes?.saslExternal.type).toBe("sasl");
     });
 
     it("should support SASL OAUTHBEARER", async () => {
@@ -2270,6 +2356,11 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
       expect(spec?.asyncapi).toBe("3.0.0");
+      // Assert actual security scheme output
+      const securitySchemes = spec?.components?.securitySchemes;
+      expect(securitySchemes).toBeDefined();
+      expect(securitySchemes?.saslOAuthBearer).toBeDefined();
+      expect(securitySchemes?.saslOAuthBearer.type).toBe("sasl");
     });
 
     it("should support SASL CRAM-MD5", async () => {
@@ -2390,6 +2481,11 @@ describe("Security Schemes - Comprehensive Domain Tests", () => {
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
       expect(spec?.asyncapi).toBe("3.0.0");
+      // Assert actual security scheme output
+      const securitySchemes = spec?.components?.securitySchemes;
+      expect(securitySchemes).toBeDefined();
+      expect(securitySchemes?.x509).toBeDefined();
+      expect(securitySchemes?.x509.type).toBe("X509");
     });
 
     it("should support Asymmetric Key Pairs", async () => {
