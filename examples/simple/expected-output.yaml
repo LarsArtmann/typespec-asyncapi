@@ -1,0 +1,50 @@
+asyncapi: 3.0.0
+info:
+  title: Generated API
+  version: 1.0.0
+servers:
+  production:
+    host: chat.example.com
+    protocol: wss
+    description: Production WebSocket server
+channels:
+  chat.messages:
+    address: chat.messages
+    messages:
+      ChatMessage:
+        $ref: "#/components/messages/ChatMessage"
+operations:
+  sendMessage:
+    action: send
+    channel:
+      $ref: "#/channels/chat.messages"
+    messages:
+      - $ref: "#/channels/chat.messages/messages/ChatMessage"
+  receiveMessage:
+    action: receive
+    channel:
+      $ref: "#/channels/chat.messages"
+    messages:
+      - $ref: "#/channels/chat.messages/messages/ChatMessage"
+components:
+  messages:
+    ChatMessage:
+      name: ChatMessage
+      contentType: application/json
+      payload:
+        $ref: "#/components/schemas/ChatMessage"
+  schemas:
+    ChatMessage:
+      type: object
+      properties:
+        userId:
+          type: string
+        text:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+      required:
+        - userId
+        - text
+        - timestamp

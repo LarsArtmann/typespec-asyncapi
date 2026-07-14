@@ -1,413 +1,106 @@
 # Contributing to TypeSpec AsyncAPI Emitter
 
-Thank you for your interest in contributing to the TypeSpec AsyncAPI Emitter! This project aims to become the definitive solution for generating AsyncAPI 3.0 specifications from TypeSpec definitions.
-
-## 🎯 Project Mission
-
-We're solving **[Microsoft TypeSpec Issue #2463](https://github.com/microsoft/typespec/issues/2463)** with a production-ready emitter that goes far beyond a simple POC. Our goal is to create a comprehensive, community-driven ecosystem for AsyncAPI generation.
-
-## 🤝 Ways to Contribute
-
-### 1. Code Contributions
-
-- **Core emitter improvements** - Enhance the main TypeSpec processing pipeline
-- **Plugin development** - Create new protocol bindings (MQTT, AMQP, Redis, etc.)
-- **Performance optimization** - Improve memory usage and processing speed
-- **Bug fixes** - Fix issues and edge cases
-- **Test improvements** - Expand test coverage and add edge case testing
-
-### 2. Documentation
-
-- **User guides** - Improve getting-started and usage documentation
-- **API documentation** - Enhance TypeScript API reference
-- **Examples** - Create real-world usage examples
-- **Tutorials** - Write step-by-step learning materials
-- **Architecture docs** - Document design decisions and patterns
-
-### 3. Community Support
-
-- **Issue triage** - Help classify and reproduce bug reports
-- **Code reviews** - Review pull requests and provide feedback
-- **Questions** - Help answer questions in GitHub Discussions
-- **Testing** - Test Alpha releases and provide feedback
-
-### 4. Ecosystem Development
-
-- **CI/CD templates** - Create deployment and automation templates
-- **Cloud bindings** - Add support for AWS, GCP, Azure services
-
-## 🚀 Getting Started
-
-### Development Setup
+## Development Setup
 
 ```bash
-# 1. Fork and clone the repository
-git clone https://github.com/YOUR_USERNAME/typespec-asyncapi
+git clone https://github.com/LarsArtmann/typespec-asyncapi
 cd typespec-asyncapi
-
-# 2. Install dependencies
 bun install
-
-# 3. Build the project
 bun run build
-
-# 4. Run tests
 bun test
-
-# 5. Validate everything works
-bun run check
 ```
 
-### Development Tools
-
-We use a modern development stack:
-
-- **Bun** - Fast JavaScript runtime and package manager
-- **TypeScript** - Strict mode for maximum type safety
-- **Effect.TS** - Functional programming with railway error handling
-- **ESLint** - Code quality and consistency
-- **Vitest/Bun** - Testing framework
-- **Just** - Command runner for development tasks
-
-### Project Structure
-
-```
-typespec-asyncapi/
-├── src/                     # TypeScript source code
-│   ├── decorators/          # TypeSpec decorator implementations
-│   ├── plugins/             # Built-in protocol plugins
-│   ├── performance/         # Performance monitoring
-│   ├── validation/          # AsyncAPI validation
-│   └── utils/               # Utility functions
-├── lib/                     # TypeSpec library definition
-├── test/                    # Test suites
-├── docs/                    # Documentation
-│   ├── architecture/        # ADRs and architecture docs
-│   ├── guides/              # User guides
-│   └── examples/            # Code examples
-├── examples/                # Real-world examples
-└── scripts/                 # Development and deployment scripts
-```
-
-## 📋 Contribution Process
-
-### 1. Issue First
-
-Before starting work, create or find a relevant GitHub issue:
-
-- **Bug reports** - Describe the problem, steps to reproduce, and expected behavior
-- **Feature requests** - Explain the use case, proposed solution, and acceptance criteria
-- **Plugin requests** - Specify the protocol, binding specification, and community need
-
-### 2. Discussion and Planning
-
-For significant changes:
-
-- Comment on the issue with your proposed approach
-- Get feedback from maintainers and community
-- Consider creating a design document for complex features
-
-### 3. Development Workflow
+## Commands
 
 ```bash
-# 1. Create a feature branch
-git checkout -b feature/your-feature-name
-
-# 2. Make your changes
-# - Follow TypeScript strict mode requirements
-# - Add comprehensive tests
-# - Update documentation
-# - Follow Effect.TS patterns
-
-# 3. Run quality checks
-bun run check
-
-# 4. Commit with clear messages
-git add .
-git commit -m "feat(decorators): add @mqtt protocol support
-
-- Implement MQTT protocol binding generation
-- Add support for QoS levels and retention
-- Include comprehensive test coverage
-- Update documentation with examples"
-
-# 5. Push and create pull request
-git push origin feature/your-feature-name
-# Create PR on GitHub
+bun run build         # TypeScript compilation (0 errors required)
+bun test              # Run test suite
+bun run lint          # ESLint on src/
+bun run typecheck     # Type check without emit
+bun run check         # typecheck + lint
 ```
 
-### 4. Pull Request Requirements
+## Project Structure
 
-Your PR must include:
-
-- ✅ **Comprehensive tests** - Unit tests for new functionality
-- ✅ **Type safety** - TypeScript strict mode compliance
-- ✅ **Documentation** - Updated docs for user-facing changes
-- ✅ **Examples** - Usage examples for new features
-- ✅ **Quality gates** - All ESLint checks pass (warnings acceptable)
-
-### 5. Code Review Process
-
-- **Automated checks** - GitHub Actions run tests and quality checks
-- **Maintainer review** - Core maintainers review code and approach
-- **Community feedback** - Community members may provide additional insights
-- **Iteration** - Address feedback and iterate on the solution
-
-## 🎨 Code Style and Standards
-
-### TypeScript Guidelines
-
-```typescript
-// ✅ Good: Explicit types and Effect.TS patterns
-export const processOperation = (operation: Operation): Effect.Effect<AsyncAPIOperation, Error> =>
-  Effect.gen(function* () {
-    const channelPath = yield* extractChannelPath(operation);
-    const operationType = yield* determineOperationType(operation);
-
-    return {
-      action: operationType,
-      channel: { $ref: `#/channels/${channelPath}` },
-    };
-  });
-
-// ❌ Avoid: Any types and imperative error handling
-export function processOperation(operation: any): any {
-  try {
-    const channelPath = getChannelPath(operation);
-    return { action: "send", channel: channelPath };
-  } catch (error) {
-    console.error(error);
-    return null;
-  }
-}
+```
+src/
+  emitter.ts                              Main AsyncAPI emitter (TypeEmitter-based)
+  lib.ts                                  TypeSpec library definition + state symbols
+  minimal-decorators.ts                   Decorator implementations
+  state.ts                                State consolidation
+  state-writers.ts                        State write functions
+  infrastructure/configuration/           Emitter options
+  domain/models/                          Typed document model, path templates
+  constants/                              Protocol definitions
+lib/
+  main.tsp                                TypeSpec decorator declarations
+test/
+  utils/test-helpers.ts                   Programmatic compilation API
+  golden/                                 Golden file tests (lock verified output)
+  validation/                             AsyncAPI 3.0 JSON Schema validation
+  integration/                            End-to-end compilation tests
+examples/
+  simple/                                 Working example with expected output
 ```
 
-### Error Handling Patterns
+## Architecture
 
-```typescript
-// ✅ Good: Effect.TS error handling
-const validateConfig = (config: unknown): Effect.Effect<ProtocolConfig, ValidationError> =>
-  Effect.gen(function* () {
-    if (typeof config !== "object") {
-      return yield* Effect.fail(new ValidationError("Config must be object"));
-    }
+The emitter extends `TypeEmitter` from `@typespec/asset-emitter` (same approach as `@typespec/openapi3`). The flow is:
 
-    const validConfig = yield* parseProtocolConfig(config);
-    return validConfig;
-  });
+1. `$onEmit(context)` entry point
+2. `consolidateAsyncAPIState(program)` reads decorator state into a typed `AsyncAPIConsolidatedState`
+3. `generateSchemas(context)` uses the AssetEmitter to produce JSON schemas for models
+4. `buildAsyncAPIDocument(state, schemas, options)` assembles the AsyncAPI 3.0 document
+5. `emitFile()` writes YAML or JSON output
 
-// ❌ Avoid: Throwing exceptions
-function validateConfig(config: unknown): ProtocolConfig {
-  if (typeof config !== "object") {
-    throw new Error("Config must be object");
-  }
-  return config as ProtocolConfig;
-}
+### AsyncAPI 3.0 `$ref` Chain
+
+The document MUST follow this reference chain for spec compliance:
+
+```
+operations → #/channels/{id}/messages/{id}
+channels → #/components/messages/{id}
+components.messages → #/components/schemas/{name}
 ```
 
-### Testing Standards
+Operations MUST NOT reference `#/components/messages/` directly.
 
-```typescript
-// ✅ Comprehensive test with real scenarios
-describe("Channel Decorator", () => {
-  it("should process parameterized channel paths", async () => {
-    const operation = createMockOperation("publishUserEvent");
-    const channelPath = "user.{userId}.events";
+## Testing
 
-    const result = await Effect.runPromise(processChannelDecorator(operation, channelPath));
+Tests use `bun:test` and the TypeSpec compiler testing API (`createTester`). All compilation is done programmatically via `test/utils/test-helpers.ts` — no process spawning.
 
-    expect(result.channelPath).toBe("user.{userId}.events");
-    expect(result.parameters).toEqual(["userId"]);
-  });
+### Golden File Test
 
-  it("should fail gracefully with invalid paths", async () => {
-    const operation = createMockOperation("invalidOp");
+`test/golden/golden-file.test.ts` locks verified-correct output. If your change alters output, update `test/golden/ecommerce.expected.yaml` and verify the new output is spec-compliant.
 
-    const result = await Effect.runPromise(Effect.either(processChannelDecorator(operation, "")));
+### Schema Validation
 
-    expect(result._tag).toBe("Left");
-    expect(result.left).toBeInstanceOf(ValidationError);
-  });
-});
+`test/validation/schema-validation.test.ts` validates emitter output against the official AsyncAPI 3.0.0 JSON Schema via AJV.
+
+## Pull Request Checklist
+
+- Build passes: `bun run build`
+- Tests pass: `bun test`
+- Lint passes: `bun run lint`
+- Output is spec-compliant (golden file test + schema validation)
+- New features include tests
+- Breaking changes are documented
+
+## Commit Messages
+
+Follow conventional commits:
+
+```
+feat: add @correlationId decorator support
+fix: correct $ref chain for multi-channel operations
+refactor: remove dead dependencies
+docs: update README with correct syntax
 ```
 
-## 🧪 Testing Guidelines
+## Code Style
 
-### Test Categories
-
-1. **Unit Tests** (`test/unit/`) - Individual function and class testing
-2. **Integration Tests** (`test/integration/`) - Component interaction testing
-3. **Validation Tests** (`test/validation/`) - AsyncAPI spec compliance testing
-4. **Performance Tests** (`test/performance/`) - Memory and speed validation
-
-### Running Tests
-
-```bash
-# Run all tests
-bun test
-
-# Run specific test categories
-bun run test:validation
-bun run test:asyncapi
-
-# Run with coverage
-bun run test:coverage
-
-# Watch mode during development
-bun test --watch
-```
-
-### Test Requirements
-
-- **Comprehensive coverage** - All public APIs must be tested
-- **Real scenarios** - Tests should reflect actual usage patterns
-- **Error cases** - Test failure paths and edge cases
-- **Performance validation** - Include performance assertions for critical paths
-
-## 📚 Documentation Standards
-
-### Code Documentation
-
-All public APIs must include JSDoc comments:
-
-````typescript
-/**
- * Generates AsyncAPI 3.0 channel object from TypeSpec operation
- *
- * Processes TypeSpec operations decorated with @channel to create
- * AsyncAPI channel definitions with proper message routing.
- *
- * @param operation - TypeSpec operation with @channel decorator
- * @param channelPath - Channel path string (may include parameters)
- * @returns Effect containing AsyncAPI channel object or validation error
- *
- * @example
- * ```typescript
- * const channel = await Effect.runPromise(
- *   generateChannel(operation, "user.{userId}.events")
- * );
- * // { path: "user.{userId}.events", parameters: { userId: {...} } }
- *
- *
- * @public
- */
-export const generateChannel = (
-		operation: Operation,
-		channelPath: string,
-    ): Effect.Effect<AsyncAPIChannel, ValidationError>
-````
-
-### User Documentation
-
-When adding user-facing features:
-
-1. **Update getting-started guide** if it affects basic usage
-2. **Add decorator reference** for new decorators
-3. **Create examples** showing real-world usage
-4. **Update README** if it's a major feature
-
-## 🏗️ Plugin Development
-
-Creating protocol plugins is a key way to contribute:
-
-### Plugin Checklist
-
-- ✅ **Follow AsyncAPI binding spec** - Implement official binding specifications
-- ✅ **Comprehensive type definitions** - Full TypeScript types for all bindings
-- ✅ **Effect.TS integration** - Use Effect patterns for error handling
-- ✅ **Validation** - Implement configuration validation
-- ✅ **Tests** - Unit and integration tests
-- ✅ **Documentation** - Usage examples and API docs
-- ✅ **Real-world examples** - Show practical usage patterns
-
-### Plugin Template
-
-See [Plugin Development Guide](docs/guides/plugin-development.md) for comprehensive examples and patterns.
-
-## 🚨 Security Considerations
-
-### Reporting Security Issues
-
-- **Email maintainers** for sensitive security issues
-- **Use GitHub Security Advisories** for coordinated disclosure
-- **Don't publish** security issues in public issues
-
-### Security Guidelines
-
-- **Input validation** - Validate all user inputs and configurations
-- **No secrets in code** - Use environment variables for sensitive data
-- **Dependency auditing** - Regular security audits of dependencies
-- **Safe defaults** - Secure-by-default configurations
-
-## 🎯 Release Process
-
-### Release Cycle
-
-- **Alpha releases** - Feature development and testing
-- **Beta releases** - Stability and performance improvements
-- **Stable releases** - Production-ready features with full documentation
-
-### Version Strategy
-
-We follow semantic versioning:
-
-- **Major** (1.0.0) - Breaking changes
-- **Minor** (0.1.0) - New features, backward compatible
-- **Patch** (0.1.1) - Bug fixes, backward compatible
-
-## 🏆 Recognition
-
-Contributors are recognized in:
-
-- **GitHub Contributors** section
-- **Release notes** acknowledgments
-- **Documentation** author attribution
-- **Community showcases** for significant contributions
-
-### Contribution Types
-
-- **Code** - Direct code contributions
-- **Documentation** - Documentation improvements
-- **Testing** - Bug reports and testing
-- **Community** - Support and mentoring
-- **Design** - UI/UX and design improvements
-
-## 📞 Communication
-
-### GitHub
-
-- **Issues** - Bug reports and feature requests
-- **Discussions** - Q&A, ideas, and community chat
-- **Pull Requests** - Code review and collaboration
-
-### Community Guidelines
-
-- **Be respectful** - Treat all community members with respect
-- **Be constructive** - Provide helpful feedback and suggestions
-- **Be patient** - Contributors volunteer their time
-- **Be inclusive** - Welcome diverse perspectives and backgrounds
-
-### Getting Help
-
-- **Documentation** - Check docs first
-- **Search issues** - Look for existing solutions
-- **Ask questions** - Use GitHub Discussions for help
-- **Join community** - Connect with other contributors
-
-## 🎉 Thank You
-
-Every contribution, no matter how small, helps make the TypeSpec AsyncAPI Emitter better for everyone. Whether you're:
-
-- Fixing a typo in documentation
-- Adding a new protocol plugin
-- Reporting a bug
-- Answering questions in discussions
-- Reviewing pull requests
-
-**You're helping solve a real community need and advancing the AsyncAPI ecosystem!**
-
----
-
-**Ready to contribute? Start by checking out [good first issues](https://github.com/LarsArtmann/typespec-asyncapi/labels/good%20first%20issue) and join the discussion!**
-
-_This project is built by the community, for the community. Welcome aboard!_
+- TypeScript strict mode
+- Source files under 370 lines (enforced)
+- No `any` types in source code
+- Functional style: pure functions, early returns, composition
+- Match existing patterns in the codebase

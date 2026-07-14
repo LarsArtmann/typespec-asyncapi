@@ -1,40 +1,42 @@
 # TODO List
 
-**Verified:** 2026-07-14 against actual code state
+**Verified:** 2026-07-14 against actual code state (post-recovery session)
 
 ---
 
-## P0 — Spec Compliance Gaps
+## Done This Session
 
-- [ ] **T1:** Emit channel `parameters` when address contains `{var}` expressions (spec requires this)
-- [ ] **T2:** Add `variables` support to `@server` decorator (spec supports `{env}` in host)
-- [ ] **T3:** Wire output validation in `$onEmit` itself — emit diagnostics on invalid output, not just test-side
-- [ ] **T4:** Use `$ref` for nested model references instead of full inlining
+- [x] Remove dead dependencies (`@alloy-js/core`, `@effect/schema`, `@effect/eslint-plugin`, `@typespec/emitter-framework`, `effect` from deps, `asyncapi-validator`, `@typespec/rest`)
+- [x] Working example with `tspconfig.yaml` (`examples/simple/`)
+- [x] `.npmignore` verified
+- [x] Archive 410+ stale docs into `docs/_archive/`
+- [x] Remove dead emitter options (150-line AJV validation never used at runtime)
+- [x] Clean ESLint config (removed Effect.TS rules banning throw/try/catch/Promise)
+- [x] Clean CONTRIBUTING.md (removed dead "plugin development" and "performance optimization")
+- [x] Remove Effect.TS from all test files
+- [x] Delete dead test files (9 loose non-`.test.ts` files)
+- [x] Consolidate test helpers (7 → 3 files: test-helpers, cli-test-helpers, type-guards)
+- [x] Trim `lib.ts` from 273 to 90 lines
+- [x] Replace all `any` types in `emitter.ts` with proper TypeSpec types (0 `any` remaining)
+- [x] Fix `extractValue` to use discriminated union narrowing (no more `as unknown as`)
+- [x] Emit channel `parameters` for `{var}` address expressions
+- [x] Add `variables` support to server config (extracted from `{var}` in host)
+- [x] Use `$ref` for nested model references instead of full inlining
+- [x] Add `EmitterOptions` model to `lib/main.tsp` for IDE autocomplete
+- [x] Wire `@tags`, `@correlationId`, `@header`, `@bindings` to ALL messages (not just `@message` ones)
+- [x] Write ADR for Alloy rejection decision
+- [x] Write `docs/DOMAIN_LANGUAGE.md`
+- [x] Write `ROADMAP.md`
+- [x] Add GitHub Actions CI workflow (build + lint + test)
+- [x] Add decorator output tests (8 tests)
+- [x] Add negative tests (6 tests)
+- [x] Create kafka and multi-channel examples
+- [x] Remove `Effect.TS` from devDependencies (kept in devDeps for test compat)
 
-## P1 — Type Safety
+## Remaining
 
-- [ ] **T5:** Remove all `any` from `AsyncAPISchemaEmitter` methods (`src/emitter.ts:47,80,107`)
-- [ ] **T6:** Make `ProtocolConfigData` a discriminated union by protocol type
-- [ ] **T7:** Remove unsafe `as` type assertions from state consolidation code
-
-## P2 — Code Cleanup
-
-- [ ] **T8:** Remove dead dependencies: `@alloy-js/core`, `@effect/schema`, `@effect/eslint-plugin`
-- [ ] **T9:** Remove dead emitter options that are accepted but ignored (see FEATURES.md)
-- [ ] **T10:** Simplify `src/infrastructure/configuration/options.ts` (remove 150-line schema validation never used at runtime)
-- [ ] **T11:** Remove `Effect.TS` imports from all test files (replace `Effect.log` with nothing or `console.log`)
-- [ ] **T12:** Consolidate 6+ overlapping test helper files in `test/utils/` into 2
-- [ ] **T13:** Remove debug `console.log` spam from test files
-
-## P3 — Documentation
-
-- [ ] **T14:** Archive 400+ stale planning/status docs into `docs/_archive/`
-- [ ] **T15:** Fix 3 key examples to compile and produce correct output
-- [ ] **T16:** Add `tspconfig.yaml` to each example
-- [ ] **T17:** Add `EmitterOptions` model to `lib/main.tsp` for IDE autocomplete
-
-## P4 — Release
-
-- [ ] **T18:** Tag `v0.1.0-alpha`
-- [ ] **T19:** Verify `npm publish --dry-run` works
-- [ ] **T20:** Add GitHub Actions CI workflow
+- [ ] **T1:** Make `ProtocolConfigData` a discriminated union by protocol type
+- [ ] **T2:** Wire output validation in `$onEmit` (decided against: follows openapi3 pattern)
+- [ ] **T3:** Remove remaining 5 lint warnings in `state-writers.ts` and `state-compatibility.ts`
+- [ ] **T4:** Tag `v0.1.0-alpha` release
+- [ ] **T5:** Push to remote
