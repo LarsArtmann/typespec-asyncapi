@@ -1,11 +1,11 @@
 /**
  * Test helpers for AsyncAPI emitter testing.
  *
- * PRIMARY API (use for new tests):
+ * PRIMARY API:
  *   compileAsyncAPI(source, options?) -> { asyncApiDoc, diagnostics, outputs, ... }
  *   compileAsyncAPIWithoutErrors(source, options?) -> same but throws on error diagnostics
  *
- * LEGACY WRAPPERS (thin delegates, safe to use in existing tests):
+ * LEGACY WRAPPERS (thin delegates):
  *   createAsyncAPITestHost() + compileAndGetAsyncAPI(host, path) -> asyncApiDoc
  *   compileAsyncAPISpecRaw / compileAsyncAPISpecWithoutErrors -> { diagnostics, outputFiles, program }
  *   compileAsyncAPISpec / parseAsyncAPIOutput -> asyncApiDoc
@@ -15,38 +15,9 @@ import { createTester, findTestPackageRoot } from "@typespec/compiler/testing";
 import type { AsyncAPIEmitterOptions } from "../../src/infrastructure/configuration/options.js";
 import YAML from "yaml";
 
-// === TYPE DEFINITIONS ===
+// === TYPES ===
 
-export interface AsyncAPIChannel {
-  address?: string;
-  description?: string;
-  messages?: Record<string, AsyncAPIMessage>;
-}
-
-export interface AsyncAPIOperation {
-  action: "send" | "receive";
-  channel: { $ref: string };
-  messages?: Array<{ $ref: string }>;
-  description?: string;
-}
-
-export interface AsyncAPIMessage {
-  name?: string;
-  title?: string;
-  description?: string;
-  payload?: { $ref: string };
-}
-
-export interface AsyncAPISchema {
-  type?: string;
-  properties?: Record<string, AsyncAPISchema>;
-  required?: string[];
-  description?: string;
-  format?: string;
-  enum?: string[];
-  items?: AsyncAPISchema;
-  additionalProperties?: boolean | AsyncAPISchema;
-}
+type AsyncAPIObject = Record<string, any>;
 
 export interface CompilationResult {
   diagnostics: readonly import("@typespec/compiler").Diagnostic[];
@@ -54,9 +25,7 @@ export interface CompilationResult {
   program: import("@typespec/compiler").Program;
 }
 
-type AsyncAPIObject = Record<string, any>;
-
-// === MODERN API (emitter-test-helpers replacement) ===
+// === CORE COMPILATION ===
 
 async function createTesterInstance(source: string, options: AsyncAPIEmitterOptions = {}) {
   const packageRoot = await findTestPackageRoot(import.meta.url);
@@ -75,28 +44,16 @@ async function createTesterInstance(source: string, options: AsyncAPIEmitterOpti
   return tester.emit("@lars-artmann/typespec-asyncapi", options);
 }
 
-async function extractAsyncAPIFromResult(result: any): Promise<AsyncAPIObject | null> {
-  const virtualFs: Map<string, string> = result.fs?.fs ?? new Map();
-
-  for (const [virtualPath, content] of virtualFs) {
-    const filename = virtualPath.split("/").pop() || "";
-    const isOutputFile =
-      !virtualPath.includes("node_modules") &&
-      (filename.endsWith(".yaml") || filename.endsWith(".json") || filename.endsWith(".yml"));
-
-    if (isOutputFile && typeof content === "string") {
-      let doc: any;
-      try {
-        doc = JSON.parse(content);
-      } catch {
-        doc = YAML.parse(content);
-      }
-      if (doc && typeof doc === "object" && ("asyncapi" in doc || "channels" in doc)) {
-        return doc;
-      }
+function parseContent(content: string): Record<string, unknown> | null {
+  try {
+    return JSON.parse(content);
+  } catch {
+    try {
+      return YAML.parse(content);
+    } catch {
+      return null;
     }
   }
-  return null;
 }
 
 export async function compileAsyncAPI(source: string, options: AsyncAPIEmitterOptions = {}) {
@@ -137,44 +94,21 @@ export async function compileAsyncAPI(source: string, options: AsyncAPIEmitterOp
   };
 }
 
-function parseContent(content: string): Record<string, unknown> | null {
-  try {
-    return JSON.parse(content);
-  } catch {
-    try {
-      return YAML.parse(content);
-    } catch {
-      return null;
-    }
+export async function compileAsyncAPIWithoutErrors(
+  source: string,
+  options: AsyncAPIEmitterOptions = {},
+) {
+  const result = await compileAsyncAPI(source, options);
+  const errors = result.diagnostics.filter((d) => d.severity === "error");
+  if (errors.length > 0) {
+    const errorMessages = errors.map((e) => `${e.code}: ${e.message}`).join("\n");
+    throw new Error(`Compilation failed with errors:\n${errorMessages}`);
   }
+  return result;
 }
 
-function extractAsyncAPIFromFs(virtualFs: Map<string, string>): AsyncAPIObject | null {
-  for (const [virtualPath, content] of virtualFs) {
-    const filename = virtualPath.split("/").pop() || "";
-    const isOutputFile =
-      !virtualPath.includes("node_modules") &&
-      (filename.endsWith(".yaml") || filename.endsWith(".json") || filename.endsWith(".yml"));
+// === LEGACY COMPILATION WRAPPERS ===
 
-    if (isOutputFile && typeof content === "string") {
-      let doc: any;
-      try {
-        doc = JSON.parse(content);
-      } catch {
-        doc = YAML.parse(content);
-      }
-      if (doc && typeof doc === "object" && ("asyncapi" in doc || "channels" in doc)) {
-        return doc;
-      }
-    }
-  }
-  return null;
-}
-
-/**
- * Raw compilation that returns diagnostics + output.
- * Delegates to compileAsyncAPI (now using compileAndDiagnose).
- */
 async function compileRaw(source: string, options: AsyncAPIEmitterOptions = {}) {
   const result = await compileAsyncAPI(source, options);
   const outputFiles = new Map<string, string>();
@@ -189,60 +123,73 @@ async function compileRaw(source: string, options: AsyncAPIEmitterOptions = {}) 
   };
 }
 
-export async function compileAsyncAPIWithoutErrors(
+export async function compileAsyncAPISpec(
   source: string,
   options: AsyncAPIEmitterOptions = {},
-) {
-  const result = await compileAsyncAPI(source, options);
-  const errors = result.diagnostics.filter((d) => d.severity === "error");
-  if (errors.length > 0) {
-    const errorMessages = errors.map((e) => `${e.code}: ${e.message}`).join("\n");
-    throw new Error(`Compilation failed with errors:\n${errorMessages}`);
-  }
-  return result;
+): Promise<AsyncAPIObject & {
+  diagnostics: readonly any[];
+  outputFiles: Map<string, string>;
+}> {
+  const result = await compileRaw(source, options);
+  const doc = result.asyncApiDoc ?? {};
+  return Object.assign(doc, {
+    diagnostics: result.diagnostics,
+    outputFiles: result.outputFiles,
+  });
 }
 
-// === LEGACY API (bridge for old tests) ===
+export async function compileAsyncAPISpecRaw(
+  source: string,
+  options: AsyncAPIEmitterOptions = {},
+): Promise<CompilationResult> {
+  const result = await compileRaw(source, options);
+  return {
+    diagnostics: result.diagnostics,
+    outputFiles: result.outputFiles,
+    program: result.program,
+  };
+}
 
-/**
- * Create a test host object compatible with the old API.
- * Internally uses createTester but exposes addTypeSpecFile() interface.
- */
+export async function compileAsyncAPISpecWithoutErrors(
+  source: string,
+  options: AsyncAPIEmitterOptions = {},
+): Promise<CompilationResult> {
+  const result = await compileAsyncAPIWithoutErrors(source, options);
+  return {
+    diagnostics: result.diagnostics,
+    outputFiles: new Map(Object.entries(result.outputs)),
+    program: result.program,
+  };
+}
+
+export async function parseAsyncAPIOutput(
+  outputFiles: Map<string, string | { content: string }>,
+  filename: string = "asyncapi.yaml",
+): Promise<AsyncAPIObject> {
+  for (const [filePath, content] of outputFiles) {
+    const fn = filePath.split("/").pop() || "";
+    if (
+      (fn.endsWith(filename) ||
+        fn.endsWith(".yaml") ||
+        fn.endsWith(".json") ||
+        fn.endsWith(".yml")) &&
+      !filePath.includes("node_modules")
+    ) {
+      const actualContent = typeof content === "string" ? content : content.content;
+      if (!actualContent || actualContent.trim().length === 0) continue;
+      if (actualContent.trim().startsWith("{")) {
+        return JSON.parse(actualContent);
+      }
+      return YAML.parse(actualContent) as AsyncAPIObject;
+    }
+  }
+  throw new Error(`AsyncAPI output "${filename}" not found.`);
+}
+
+// === LEGACY HOST API ===
+
 export async function createAsyncAPITestHost() {
   let files: Map<string, string> = new Map();
-
-  async function compileWithTester(source: string, emitOptions?: any) {
-    const packageRoot = await findTestPackageRoot(import.meta.url);
-    const hasOwnImport =
-      source.includes('import "@lars-artmann/typespec-asyncapi"') ||
-      source.includes("import '@lars-artmann/typespec-asyncapi'");
-    const hasOwnUsing = source.includes("using TypeSpec.AsyncAPI");
-
-    let baseTester = createTester(packageRoot, {
-      libraries: ["@lars-artmann/typespec-asyncapi"],
-    });
-    if (!hasOwnImport) baseTester = baseTester.importLibraries();
-    if (!hasOwnUsing) baseTester = baseTester.using("TypeSpec.AsyncAPI");
-
-    // Pass 1: get diagnostics without throwing
-    const instance = await (baseTester as any).createInstance();
-    const [, diagnostics] = await instance.compileAndDiagnose(source, emitOptions);
-
-    // Pass 2: run emitter to get output
-    let outputFs: Map<string, string> = new Map();
-    try {
-      const emitTester = baseTester.emit(
-        "@lars-artmann/typespec-asyncapi",
-        emitOptions?.options?.["@lars-artmann/typespec-asyncapi"] ?? {},
-      );
-      const result = await emitTester.compile(source);
-      outputFs = result.fs?.fs ?? new Map();
-    } catch {
-      // emitter may throw on error diagnostics
-    }
-
-    return { program: instance.program, diagnostics, fs: outputFs };
-  }
 
   return {
     addTypeSpecFile(name: string, content: string) {
@@ -250,7 +197,6 @@ export async function createAsyncAPITestHost() {
     },
 
     get fs() {
-      // Return filtered view excluding node_modules internals
       const filtered = new Map<string, string>();
       for (const [k, v] of files) {
         if (!k.includes("node_modules/")) filtered.set(k, v);
@@ -261,17 +207,16 @@ export async function createAsyncAPITestHost() {
     async compile(_mainPath: string, _options?: any) {
       const source = files.get("main.tsp") ?? files.values().next().value;
       if (!source) return {};
-      const result = await compileWithTester(source);
-      for (const [k, v] of result.fs) files.set(k, v);
+      const result = await compileAsyncAPI(source);
+      for (const [k, v] of Object.entries(result.outputs)) files.set(k, v);
       return {};
     },
 
     async diagnose(_mainPath: string, _options?: any) {
       const source = files.get("main.tsp") ?? files.values().next().value;
       if (!source) return [];
-      const result = await compileWithTester(source);
-      // Don't overwrite output files from a previous compile()
-      for (const [k, v] of result.fs) {
+      const result = await compileAsyncAPI(source);
+      for (const [k, v] of Object.entries(result.outputs)) {
         if (!files.has(k)) files.set(k, v);
       }
       return result.diagnostics;
@@ -280,8 +225,8 @@ export async function createAsyncAPITestHost() {
     async compileAndDiagnose(_mainPath: string, _options?: any) {
       const source = files.get("main.tsp") ?? files.values().next().value;
       if (!source) return [{}, []];
-      const result = await compileWithTester(source);
-      for (const [k, v] of result.fs) files.set(k, v);
+      const result = await compileAsyncAPI(source);
+      for (const [k, v] of Object.entries(result.outputs)) files.set(k, v);
       return [{}, result.diagnostics];
     },
 
@@ -295,10 +240,8 @@ export async function createAsyncAPITestHost() {
   };
 }
 
-/**
- * Compile TypeSpec source and return parsed AsyncAPI document.
- * Uses the new createTester API internally.
- */
+export const createAsyncAPITestLibrary = createAsyncAPITestHost;
+
 export async function compileAndGetAsyncAPI(
   host: { _getMainSource: () => string | undefined },
   _mainPath: string,
@@ -312,19 +255,6 @@ export async function compileAndGetAsyncAPI(
   } catch {
     return null;
   }
-}
-
-/**
- * Compile TypeSpec with decorators registered (no emitter)
- */
-export async function compileTypeSpecWithDecorators(source: string) {
-  const packageRoot = await findTestPackageRoot(import.meta.url);
-  const tester = createTester(packageRoot, {
-    libraries: ["@lars-artmann/typespec-asyncapi"],
-  }).importLibraries();
-
-  const result = await tester.compile(source);
-  return { program: result.program, diagnostics: result.program.diagnostics };
 }
 
 // === TEST SOURCES ===
@@ -427,13 +357,7 @@ export const TestSources = {
   `,
 };
 
-// === VALIDATION HELPERS ===
-
-export function validateAsyncAPIStructure(asyncapiDoc: unknown): boolean {
-  if (!asyncapiDoc || typeof asyncapiDoc !== "object") return false;
-  const doc = asyncapiDoc as Record<string, unknown>;
-  return typeof doc.asyncapi === "string" && typeof doc.info === "object";
-}
+// === ASSERTIONS & VALIDATION ===
 
 export const AsyncAPIAssertions = {
   hasValidStructure: (doc: unknown): boolean => {
@@ -464,101 +388,6 @@ export const AsyncAPIAssertions = {
   },
 };
 
-// === LEGACY EXPORTS (for backward compatibility with existing tests) ===
-
-// Deprecated: use createAsyncAPITestHost directly
-export const createAsyncAPITestLibrary = createAsyncAPITestHost;
-
-export async function compileAsyncAPISpec(
-  source: string,
-  options: AsyncAPIEmitterOptions = {},
-): Promise<
-  AsyncAPIObject & {
-    diagnostics: readonly any[];
-    outputFiles: Map<string, string>;
-  }
-> {
-  const result = await compileRaw(source, options);
-  const doc = result.asyncApiDoc ?? {};
-  return Object.assign(doc, {
-    diagnostics: result.diagnostics,
-    outputFiles: result.outputFiles,
-  });
-}
-
-export async function compileAsyncAPISpecRaw(
-  source: string,
-  options: AsyncAPIEmitterOptions = {},
-): Promise<CompilationResult> {
-  const result = await compileRaw(source, options);
-  return {
-    diagnostics: result.diagnostics,
-    outputFiles: result.outputFiles,
-    program: result.program,
-  };
-}
-
-export async function compileAsyncAPISpecWithoutErrors(
-  source: string,
-  options: AsyncAPIEmitterOptions = {},
-): Promise<CompilationResult> {
-  const result = await compileAsyncAPIWithoutErrors(source, options);
-  return {
-    diagnostics: result.diagnostics,
-    outputFiles: new Map(Object.entries(result.outputs)),
-    program: result.program,
-  };
-}
-
-export async function compileAsyncAPISpecWithResult(
-  source: string,
-  options: AsyncAPIEmitterOptions = {},
-) {
-  const result = await compileAsyncAPIWithoutErrors(source, options);
-  return {
-    asyncApiDoc: result.asyncApiDoc,
-    result: {
-      diagnostics: result.diagnostics,
-      outputFiles: new Map(Object.entries(result.outputs)),
-      program: result.program,
-    },
-  };
-}
-
-export async function parseAsyncAPIOutput(
-  outputFiles: Map<string, string | { content: string }>,
-  filename: string = "asyncapi.yaml",
-): Promise<AsyncAPIObject> {
-  for (const [filePath, content] of outputFiles) {
-    const fn = filePath.split("/").pop() || "";
-    if (
-      (fn.endsWith(filename) ||
-        fn.endsWith(".yaml") ||
-        fn.endsWith(".json") ||
-        fn.endsWith(".yml")) &&
-      !filePath.includes("node_modules")
-    ) {
-      const actualContent = typeof content === "string" ? content : content.content;
-      if (!actualContent || actualContent.trim().length === 0) continue;
-      // Detect format from content, not filename
-      if (actualContent.trim().startsWith("{")) {
-        return JSON.parse(actualContent);
-      }
-      return YAML.parse(actualContent) as AsyncAPIObject;
-    }
-  }
-  throw new Error(`AsyncAPI output "${filename}" not found.`);
-}
-
-export const TestLogging = {
-  logSchemaGenerated: (name: string) => {},
-  logOperationGenerated: (name: string) => {},
-  logValidationSuccess: (msg: string) => {},
-  logGenerationMetrics: (..._args: number[]) => {},
-  logMultiNamespaceSchema: (name: string) => {},
-  logMultiNamespaceOperation: (name: string) => {},
-};
-
 export const TestValidationPatterns = {
   validateExpectedSchemas: (doc: AsyncAPIObject, names: string[]) => {
     for (const n of names) {
@@ -571,6 +400,15 @@ export const TestValidationPatterns = {
     }
   },
   validateAndLogCompletion: (_doc: AsyncAPIObject, _msg: string) => {},
+};
+
+export const TestLogging = {
+  logSchemaGenerated: (_name: string) => {},
+  logOperationGenerated: (_name: string) => {},
+  logValidationSuccess: (_msg: string) => {},
+  logGenerationMetrics: (..._args: number[]) => {},
+  logMultiNamespaceSchema: (_name: string) => {},
+  logMultiNamespaceOperation: (_name: string) => {},
 };
 
 export async function validateAsyncAPIObjectComprehensive(doc: unknown): Promise<{
@@ -588,17 +426,9 @@ export async function validateAsyncAPIObjectComprehensive(doc: unknown): Promise
   const d = doc as Record<string, unknown>;
   const errors: Array<{ message: string; keyword: string; path: string }> = [];
   if (typeof d.asyncapi !== "string")
-    errors.push({
-      message: "Missing asyncapi version",
-      keyword: "required",
-      path: "/asyncapi",
-    });
+    errors.push({ message: "Missing asyncapi version", keyword: "required", path: "/asyncapi" });
   if (typeof d.info !== "object")
-    errors.push({
-      message: "Missing info",
-      keyword: "required",
-      path: "/info",
-    });
+    errors.push({ message: "Missing info", keyword: "required", path: "/info" });
   return {
     valid: errors.length === 0,
     errors,
