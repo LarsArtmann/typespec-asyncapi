@@ -11,7 +11,7 @@ import { AsyncAPIAssertions, TestSources } from "../utils/test-helpers.js";
 import {
   SERIALIZATION_FORMAT_OPTION_JSON,
   SERIALIZATION_FORMAT_OPTION_YAML,
-} from "../../src/domain/models/serialization-format-option.js";
+} from "../utils/serialization-format-option.js";
 
 describe("AsyncAPI Emitter Core (NEW API)", () => {
   describe("Basic Compilation", () => {

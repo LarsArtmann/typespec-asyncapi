@@ -9,7 +9,7 @@
 
 import { describe, expect, it } from "bun:test";
 import { compileAsyncAPI, compileAsyncAPIWithoutErrors } from "../utils/test-helpers.js";
-import { SERIALIZATION_FORMAT_OPTION_JSON } from "../../src/domain/models/serialization-format-option.js";
+import { SERIALIZATION_FORMAT_OPTION_JSON } from "../utils/serialization-format-option.js";
 
 describe("EmitterTester API Verification", () => {
   const simpleSource = `

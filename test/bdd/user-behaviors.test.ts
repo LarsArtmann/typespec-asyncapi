@@ -11,7 +11,7 @@ import {
   validatePathTemplate,
   normalizePathTemplate,
   pathToChannelName,
-} from "../../src/domain/models/path-templates.js";
+} from "../utils/path-templates.js";
 import { consolidateAsyncAPIState, type AsyncAPIConsolidatedState } from "../../src/state.js";
 
 // ============================================================================
