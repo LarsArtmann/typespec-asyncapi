@@ -102,18 +102,14 @@
     "yaml": "^2.9.0"
   },
   "devDependencies": {
-    "@asyncapi/cli": "^6.0.2",
     "@asyncapi/parser": "^3.6.0",
     "@asyncapi/specs": "^6.11.1",
     "@eslint/js": "^10.0.1",
     "@types/node": "^26.0.1",
     "@typescript-eslint/eslint-plugin": "^8.62.0",
     "@typescript-eslint/parser": "^8.62.0",
-    "@typespec/http": "^1.13.0",
-    "@typespec/openapi3": "^1.13.0",
     "ajv": "^8.20.0",
     "eslint": "^10.6.0",
-    "glob": "^13.0.6",
     "husky": "^9.1.7",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.62.0"
