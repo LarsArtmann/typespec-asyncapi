@@ -1,32 +1,25 @@
 #!/bin/sh
 
 # Pre-commit quality gate - ensures all changes pass build, lint, and tests
-# Prevents broken code from being committed
 
-echo "🔍 Running pre-commit quality checks..."
+echo "Running pre-commit quality checks..."
 
-echo "📦 Building TypeScript..."
-just build || {
-    echo "❌ Build failed! Fix TypeScript errors before committing."
+echo "Building TypeScript..."
+bun run build || {
+    echo "Build failed! Fix TypeScript errors before committing."
     exit 1
 }
 
-echo "🔎 Running ESLint..."
-just lint || {
-    echo "❌ Lint failed! Fix ESLint errors before committing."
+echo "Running ESLint..."
+bun run lint || {
+    echo "Lint failed! Fix ESLint errors before committing."
     exit 1
 }
 
-echo "🧪 Running critical tests..."
-# STRATEGY: Run only critical integration tests during commit
-# This ensures core emitter functionality is verified without blocking on
-# 314 tests for unimplemented advanced features (Kafka, WebSocket, MQTT, security)
-# 
-# To run full test suite: bun test
-# To run specific test categories: bun test test/integration/, bun test test/e2e/, etc.
+echo "Running critical tests..."
 bun test test/integration/real-compilation.test.ts || {
-    echo "❌ Critical tests failed! Fix failing tests before committing."
+    echo "Critical tests failed! Fix failing tests before committing."
     exit 1
 }
 
-echo "✅ All quality checks passed! Proceeding with commit..."
+echo "All quality checks passed."
