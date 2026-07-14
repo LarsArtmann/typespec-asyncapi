@@ -35,7 +35,6 @@ jobs:
         run: |
           for dir in examples/*/; do
             dir=${dir%/}
-            [ "$dir" = "examples/comprehensive-protocols" ] && continue
             for f in "$dir"/*.tsp; do
               [ -f "$f" ] || continue
               echo "Compiling $f..."

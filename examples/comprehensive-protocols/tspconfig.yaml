@@ -1,0 +1,6 @@
+emit:
+  - "@lars-artmann/typespec-asyncapi"
+options:
+  "@lars-artmann/typespec-asyncapi":
+    "output-file": "asyncapi"
+    "file-type": "yaml"
