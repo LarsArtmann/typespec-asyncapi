@@ -2,7 +2,7 @@
 
 **Project:** Transform TypeSpec models into AsyncAPI 3.0 specifications
 **Architecture:** AssetEmitter-based with custom TypeEmitter for schema generation
-**Status:** v0.1.0-alpha — build clean, 294 tests pass, 0 lint warnings
+
 
 ---
 
@@ -12,7 +12,8 @@
 bun install           # Install dependencies
 bun run build         # Build TypeScript → JavaScript (0 errors)
 bun run lint          # Run ESLint (0 errors, 0 warnings)
-bun test              # Run tests (294 pass, 0 fail, 0 skip, 0 todo)
+bun test              # Run tests (301 pass, 0 fail)
+bun run test:coverage:gate  # Run tests + enforce 75% per-file coverage
 ```
 
 **Important:** Use `bun` and `bunx`, never `npm` or `npx`.
@@ -23,6 +24,8 @@ bun test              # Run tests (294 pass, 0 fail, 0 skip, 0 todo)
 - **Build-before-test policy:** Tests won't run if TypeScript compilation fails
 - **git commit --no-verify:** Pre-commit hook requires bash (NixOS doesn't have /bin/bash)
 - **All source files under 370 lines** (enforced)
+- **Coverage gate at 75%** per-file minimum (scripts/coverage-gate.ts)
+- **Diagnostic pipeline unified:** All compilation APIs use `compileAndDiagnose()` — decorator diagnostics always surface
 - **Zero `any` types in emitter.ts** (achieved)
 - **ESLint config:** Clean, no Effect.TS-era rules (throw/try/catch/Promise allowed)
 
@@ -35,12 +38,12 @@ bun test              # Run tests (294 pass, 0 fail, 0 skip, 0 todo)
   - `src/document-builder.ts` (366 lines) — `buildAsyncAPIDocument()` assembles channels, operations, messages, schemas, security from TypeSpec state. Handles `$ref` chain construction
   - `src/intrinsic-mapping.ts` (59 lines) — `intrinsicToSchema()` maps TypeSpec scalar names to JSON Schema types (~30 cases)
 - **Decorators:** `lib/main.tsp` declares all decorators + `EmitterOptions` model for IDE autocomplete
-- **Decorator Implementations:** `src/minimal-decorators.ts` — thin wrappers with runtime validation, state writing delegated to `src/state-writers.ts`
+- **Decorator Implementations:** `src/minimal-decorators.ts` (321 lines) — thin wrappers with runtime validation, helpers in `src/decorator-helpers.ts`, state writing delegated to `src/state-writers.ts`
 - **State Management:** `src/state.ts` (consolidation), `src/state-compatibility.ts` (TypeSpec stateMap access)
 - **Configuration:** `src/infrastructure/configuration/` — simplified to just types, no runtime validation
 - **Protocols:** `src/constants/protocols.ts` — single source of truth for all AsyncAPI protocols (const array → derived type → runtime Set + type guard)
 - **Security Scheme Types:** `src/domain/models/asyncapi-document.ts` — same pattern as protocols: `SECURITY_SCHEME_TYPES` const array → `SecuritySchemeType` union → `isValidSchemeType` runtime guard
-- **Document Model:** `src/domain/models/asyncapi-document.ts` — strongly-typed AsyncAPI 3.0 interfaces, no index signatures
+- **Document Model:** `src/domain/models/asyncapi-document.ts` — strongly-typed AsyncAPI 3.0 interfaces with `OAuth2Flows`, `ProtocolBindings`, `SecuritySchemeType` types. No index signatures except `SchemaObject` (standard JSON Schema extension pattern)
 
 ## AsyncAPI 3.0 `$ref` Chain
 
@@ -120,6 +123,6 @@ Key points:
 - `SERIALIZATION_FORMAT_OPTION_JSON` is an object `{format, pretty, indent}`, not a string
 - `emitFile` needs `emitterOutputDir` prefix or crashes in CLI mode
 - `Placeholder<T>` values are detected by checking for `onValue` method (see `EmitEntity<T>` pattern above)
-- **Two compilation APIs produce different diagnostics:** `compileAsyncAPI` uses `tester.compile()` (may swallow error diagnostics), while `compileAsyncAPISpecRaw` uses `instance.compileAndDiagnose()` (surfaces all diagnostics). Use `compileAsyncAPISpecRaw` when you need to assert on diagnostics.
-- **Channel addresses with `/` break `$ref` resolution:** `$ref` values like `#/channels/orders/events` are ambiguous with JSON pointer separators. Known issue, unfixed.
+- **Two compilation APIs unified:** `compileAsyncAPI` now uses `tester.compileAndDiagnose()` (same as `compileRaw`). All compilation APIs consistently surface decorator-reported diagnostics. No more split-brain.
+- **Channel addresses with `/` are JSON-pointer-escaped:** `$ref` tokens use `~1` for `/` and `~0` for `~` per RFC 6901. Object keys stay raw.
 - `file-type` option can be string `"json"` or object `{ format: "json", pretty: true, indent: 2 }`
