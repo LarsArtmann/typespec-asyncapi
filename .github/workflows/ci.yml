@@ -29,7 +29,7 @@ jobs:
         run: bun test
 
       - name: Coverage
-        run: bun test --coverage
+        run: bun run build && bun test --coverage --coverage-reporter=lcov --coverage-dir=coverage && bun run scripts/coverage-gate.ts
 
       - name: Compile examples
         run: |
