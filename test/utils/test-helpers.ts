@@ -102,17 +102,7 @@ async function extractAsyncAPIFromResult(result: any): Promise<AsyncAPIObject | 
 export async function compileAsyncAPI(source: string, options: AsyncAPIEmitterOptions = {}) {
   const tester = await createTesterInstance(source, options);
 
-  let result: any;
-  let diagnostics: any[] = [];
-  try {
-    result = await tester.compile(source);
-    diagnostics = result.program.diagnostics;
-  } catch (e: any) {
-    if (e?.diagnostics) {
-      diagnostics = e.diagnostics;
-    }
-    result = result ?? e?.result ?? { program: { diagnostics }, fs: { fs: new Map() } };
-  }
+  const [result, diagnostics] = await tester.compileAndDiagnose(source);
 
   const virtualFs: Map<string, string> = result.fs?.fs ?? new Map();
   let outputFile: string | null = null;
@@ -182,52 +172,19 @@ function extractAsyncAPIFromFs(virtualFs: Map<string, string>): AsyncAPIObject |
 }
 
 /**
- * Two-pass compilation for diagnostic-focused tests.
- * Pass 1 gets diagnostics without throwing; Pass 2 gets output.
+ * Raw compilation that returns diagnostics + output.
+ * Delegates to compileAsyncAPI (now using compileAndDiagnose).
  */
 async function compileRaw(source: string, options: AsyncAPIEmitterOptions = {}) {
-  const packageRoot = await findTestPackageRoot(import.meta.url);
-  const hasOwnImport =
-    source.includes('import "@lars-artmann/typespec-asyncapi"') ||
-    source.includes("import '@lars-artmann/typespec-asyncapi'");
-  const hasOwnUsing = source.includes("using TypeSpec.AsyncAPI");
-
-  let diagTester = createTester(packageRoot, {
-    libraries: ["@lars-artmann/typespec-asyncapi"],
-  });
-  if (!hasOwnImport) diagTester = diagTester.importLibraries();
-  if (!hasOwnUsing) diagTester = diagTester.using("TypeSpec.AsyncAPI");
-
-  const instance = await (diagTester as any).createInstance();
-  const emitOptions = {
-    emit: ["@lars-artmann/typespec-asyncapi"],
-    options: {
-      "@lars-artmann/typespec-asyncapi": options as Record<string, unknown>,
-    },
-  };
-  const [, diagnostics] = await instance.compileAndDiagnose(source, emitOptions);
-
-  let asyncApiDoc: AsyncAPIObject | null = null;
-  let outputFiles: Map<string, string> = new Map();
-  try {
-    let emitTester = createTester(packageRoot, {
-      libraries: ["@lars-artmann/typespec-asyncapi"],
-    });
-    if (!hasOwnImport) emitTester = emitTester.importLibraries();
-    if (!hasOwnUsing) emitTester = emitTester.using("TypeSpec.AsyncAPI");
-
-    const tester = emitTester.emit("@lars-artmann/typespec-asyncapi", options);
-    const result = await tester.compile(source);
-    outputFiles = result.fs?.fs ?? new Map();
-    asyncApiDoc = await extractAsyncAPIFromFs(outputFiles);
-  } catch {
-    // Emitter compilation may fail on error diagnostics, that's OK
+  const result = await compileAsyncAPI(source, options);
+  const outputFiles = new Map<string, string>();
+  for (const [filename, content] of Object.entries(result.outputs)) {
+    outputFiles.set(filename, content);
   }
-
   return {
-    asyncApiDoc,
-    diagnostics: [...diagnostics],
-    program: instance.program,
+    asyncApiDoc: result.asyncApiDoc,
+    diagnostics: [...result.diagnostics],
+    program: result.program,
     outputFiles,
   };
 }
