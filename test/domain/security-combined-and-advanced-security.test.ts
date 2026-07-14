@@ -295,5 +295,4 @@ describe("Combined & Advanced Security", () => {
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
   });
-
 });

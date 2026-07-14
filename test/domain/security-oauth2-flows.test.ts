@@ -777,5 +777,4 @@ describe("OAuth2 Flows", () => {
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
   });
-
 });

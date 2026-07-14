@@ -111,6 +111,21 @@ export type Tag = {
   description?: string;
 };
 
+export type SecuritySchemeType =
+  | "http"
+  | "apiKey"
+  | "oauth2"
+  | "openIdConnect"
+  | "mutualTLS"
+  | "plain"
+  | "scramSha256"
+  | "scramSha512"
+  | "gssapi"
+  | "external"
+  | "oauthBearer"
+  | "X509"
+  | "sasl";
+
 export type SecurityScheme = {
   type: string;
   description?: string;

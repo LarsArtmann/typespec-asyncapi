@@ -8,6 +8,7 @@
 import type { Program, Operation, Model, ModelProperty, Namespace } from "@typespec/compiler";
 import { stateSymbols } from "./lib.js";
 import { getStateMap } from "./state-compatibility.js";
+import type { SecurityScheme } from "./domain/models/asyncapi-document.js";
 import type { MessageConfigData } from "./state.js";
 
 export const storeChannelState = (program: Program, target: Operation, path: string) => {
@@ -78,7 +79,7 @@ export const storeServerConfig = (
 export const storeSecurityConfig = (
   program: Program,
   target: Operation | Namespace,
-  config: { name: string; scheme: Record<string, unknown> },
+  config: { name: string; scheme: SecurityScheme },
 ) => {
   const map = getStateMap(program, stateSymbols.securityConfigs);
   map.set(target, { name: config.name, scheme: config.scheme });

@@ -27,6 +27,7 @@ import {
   storeProtocolConfig,
   linkPublishMessage,
 } from "./state-writers.js";
+import type { SecurityScheme } from "./domain/models/asyncapi-document.js";
 
 // === DIAGNOSTIC HELPERS ===
 
@@ -270,7 +271,10 @@ export function $security(
   }
 
   if (name && scheme && Object.keys(scheme).length > 0) {
-    storeSecurityConfig(context.program, target, { name, scheme });
+    storeSecurityConfig(context.program, target, {
+      name,
+      scheme: scheme as SecurityScheme,
+    });
   }
 }
 

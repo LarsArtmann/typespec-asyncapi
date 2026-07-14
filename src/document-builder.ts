@@ -23,6 +23,7 @@ import type {
   OperationObject,
   ParameterObject,
   SchemaObject,
+  SecurityScheme,
   ServerObject,
 } from "./domain/models/asyncapi-document.js";
 
@@ -51,7 +52,7 @@ export function buildAsyncAPIDocument(
   const operations: Record<string, OperationObject> = {};
   const servers: Record<string, ServerObject> = {};
   const messages: Record<string, MessageObject> = {};
-  const securitySchemes: Record<string, unknown> = {};
+  const securitySchemes: Record<string, SecurityScheme> = {};
 
   function getReturnModelName(type: unknown): string | undefined {
     const t = type as {
@@ -345,8 +346,7 @@ export function buildAsyncAPIDocument(
   const components: ComponentsObject = {};
   if (Object.keys(messages).length > 0) components.messages = messages;
   if (Object.keys(schemas).length > 0) components.schemas = schemas;
-  if (Object.keys(securitySchemes).length > 0)
-    components.securitySchemes = securitySchemes as ComponentsObject["securitySchemes"];
+  if (Object.keys(securitySchemes).length > 0) components.securitySchemes = securitySchemes;
 
   const document: AsyncAPIDocument = {
     asyncapi: ASYNCAPI_SPEC_VERSION,

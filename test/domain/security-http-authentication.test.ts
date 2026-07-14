@@ -641,5 +641,4 @@ describe("HTTP Authentication", () => {
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
   });
-
 });

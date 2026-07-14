@@ -465,5 +465,4 @@ describe("SASL & Other Security Mechanisms", () => {
     expect(spec).toBeDefined();
     expect(spec?.asyncapi).toBe("3.0.0");
   });
-
 });

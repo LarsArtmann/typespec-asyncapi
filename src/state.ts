@@ -5,6 +5,7 @@
 import { stateSymbols } from "./lib.js";
 import { type Program, type Type } from "@typespec/compiler";
 import { getStateMap, getMultiState } from "./state-compatibility.js";
+import type { SecurityScheme } from "./domain/models/asyncapi-document.js";
 
 // === STATE DATA INTERFACES ===
 
@@ -91,7 +92,7 @@ export type TagData = {
  */
 export type SecurityConfigData = {
   name: string;
-  scheme: Record<string, unknown>;
+  scheme: SecurityScheme;
 };
 
 /**
