@@ -3,7 +3,11 @@
  */
 
 import { describe, it, expect } from "bun:test";
-import { createAsyncAPITestHost, compileAndGetAsyncAPI } from "../utils/test-helpers.js";
+import {
+  createAsyncAPITestHost,
+  compileAndGetAsyncAPI,
+  compileAsyncAPISpecRaw,
+} from "../utils/test-helpers.js";
 
 describe("SASL & Other Security Mechanisms", () => {
   it("should support SASL PLAIN", async () => {
@@ -371,70 +375,66 @@ describe("SASL & Other Security Mechanisms", () => {
     expect(securitySchemes?.x509.type).toBe("X509");
   });
 
-  it("should support Asymmetric Key Pairs", async () => {
-    const host = await createAsyncAPITestHost();
-    host.addTypeSpecFile(
-      "main.tsp",
-      `
-				import "@lars-artmann/typespec-asyncapi";
-				using TypeSpec.AsyncAPI;
+  it("should reject unsupported security scheme type 'asymmetricEncryption'", async () => {
+    const { diagnostics } = await compileAsyncAPISpecRaw(`
+      import "@lars-artmann/typespec-asyncapi";
+      using TypeSpec.AsyncAPI;
 
-				namespace AsymmetricKey;
+      namespace AsymmetricKey;
 
-				model Msg {
-					publicKey: string;
-					signature: string;
-				}
+      model Msg {
+        publicKey: string;
+        signature: string;
+      }
 
-				@channel("asymmetric")
-				@security(#{
-					name: "asymKey",
-					scheme: #{
-						type: "asymmetricEncryption",
-						algorithm: "RSA-2048"
-					}
-				})
-				@publish
-				op publishMessage(): Msg;
-			`,
+      @channel("asymmetric")
+      @security(#{
+        name: "asymKey",
+        scheme: #{
+          type: "asymmetricEncryption",
+          algorithm: "RSA-2048"
+        }
+      })
+      @publish
+      op publishMessage(): Msg;
+    `);
+
+    const errors = diagnostics.filter(
+      (d) => d.severity === "error" && d.message.includes("Unsupported security scheme type"),
     );
-
-    const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
-    expect(spec).toBeDefined();
-    expect(spec?.asyncapi).toBe("3.0.0");
+    expect(errors.length).toBeGreaterThan(0);
+    expect(errors[0].message).toContain("asymmetricEncryption");
   });
 
-  it("should support Symmetric Keys", async () => {
-    const host = await createAsyncAPITestHost();
-    host.addTypeSpecFile(
-      "main.tsp",
-      `
-				import "@lars-artmann/typespec-asyncapi";
-				using TypeSpec.AsyncAPI;
+  it("should reject unsupported security scheme type 'symmetricEncryption'", async () => {
+    const { diagnostics } = await compileAsyncAPISpecRaw(`
+      import "@lars-artmann/typespec-asyncapi";
+      using TypeSpec.AsyncAPI;
 
-				namespace SymmetricKey;
+      namespace SymmetricKey;
 
-				model Msg {
-					keyId: string;
-					encryptedData: bytes;
-				}
+      model Msg {
+        keyId: string;
+        encryptedData: bytes;
+      }
 
-				@channel("symmetric")
-				@security(#{
-					name: "symKey",
-					scheme: #{
-						type: "symmetricEncryption",
-						algorithm: "AES-256-GCM"
-					}
-				})
-				@publish
-				op publishMessage(): Msg;
-			`,
+      @channel("symmetric")
+      @security(#{
+        name: "symKey",
+        scheme: #{
+          type: "symmetricEncryption",
+          algorithm: "AES-256-GCM"
+        }
+      })
+      @publish
+      op publishMessage(): Msg;
+    `);
+
+    const errors = diagnostics.filter(
+      (d) => d.severity === "error" && d.message.includes("Unsupported security scheme type"),
     );
-
-    const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
-    expect(spec).toBeDefined();
-    expect(spec?.asyncapi).toBe("3.0.0");
+    expect(errors.length).toBeGreaterThan(0);
+    expect(errors[0].message).toContain("symmetricEncryption");
   });
 
   it("should support Plain Text (No Authentication)", async () => {

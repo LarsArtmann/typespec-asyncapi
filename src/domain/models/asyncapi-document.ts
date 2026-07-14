@@ -111,23 +111,34 @@ export type Tag = {
   description?: string;
 };
 
-export type SecuritySchemeType =
-  | "http"
-  | "apiKey"
-  | "oauth2"
-  | "openIdConnect"
-  | "mutualTLS"
-  | "plain"
-  | "scramSha256"
-  | "scramSha512"
-  | "gssapi"
-  | "external"
-  | "oauthBearer"
-  | "X509"
-  | "sasl";
+const SECURITY_SCHEME_TYPES = [
+  "http",
+  "apiKey",
+  "oauth2",
+  "openIdConnect",
+  "mutualTLS",
+  "plain",
+  "scramSha256",
+  "scramSha512",
+  "gssapi",
+  "external",
+  "oauthBearer",
+  "X509",
+  "sasl",
+] as const;
+
+export type SecuritySchemeType = (typeof SECURITY_SCHEME_TYPES)[number];
+
+export const VALID_SCHEME_TYPES: ReadonlySet<string> = new Set(SECURITY_SCHEME_TYPES);
+
+export function isValidSchemeType(value: string): value is SecuritySchemeType {
+  return VALID_SCHEME_TYPES.has(value);
+}
+
+export const SCHEME_TYPE_LIST: readonly SecuritySchemeType[] = SECURITY_SCHEME_TYPES;
 
 export type SecurityScheme = {
-  type: string;
+  type: SecuritySchemeType;
   description?: string;
   name?: string;
   in?: string;

@@ -27,7 +27,7 @@ import {
   storeProtocolConfig,
   linkPublishMessage,
 } from "./state-writers.js";
-import type { SecurityScheme } from "./domain/models/asyncapi-document.js";
+import { isValidSchemeType, SCHEME_TYPE_LIST } from "./domain/models/asyncapi-document.js";
 
 // === DIAGNOSTIC HELPERS ===
 
@@ -271,9 +271,19 @@ export function $security(
   }
 
   if (name && scheme && Object.keys(scheme).length > 0) {
+    const schemeType = scheme.type;
+    if (typeof schemeType !== "string" || !isValidSchemeType(schemeType)) {
+      reportDecoratorDiagnostic(
+        context,
+        "invalid-security-scheme-type",
+        target,
+        `Unsupported security scheme type '${String(schemeType)}'. Valid types: ${SCHEME_TYPE_LIST.join(", ")}`,
+      );
+      return;
+    }
     storeSecurityConfig(context.program, target, {
       name,
-      scheme: scheme as SecurityScheme,
+      scheme: { ...scheme, type: schemeType },
     });
   }
 }
