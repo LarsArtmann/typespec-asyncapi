@@ -27,8 +27,7 @@ const DEPENDENCY_RULES = {
   domain: {
     allowed: ["domain", "shared"],
     forbidden: ["infrastructure", "application"],
-    description:
-      "Domain layer must not depend on infrastructure or application layers",
+    description: "Domain layer must not depend on infrastructure or application layers",
   },
 
   // Application layer: Can depend on domain and shared
@@ -84,11 +83,7 @@ function getImportLayer(importPath: string): string | null {
   return null;
 }
 
-function validateImport(
-  filePath: string,
-  importPath: string,
-  lineNumber: number,
-) {
+function validateImport(filePath: string, importPath: string, lineNumber: number) {
   const fileLayer = getLayerFromPath(filePath);
   const importLayer = getImportLayer(importPath);
 
@@ -142,9 +137,7 @@ async function main() {
     console.log(`\nL Found ${violations.length} architectural violations:\n`);
 
     const errorCount = violations.filter((v) => v.severity === "error").length;
-    const warningCount = violations.filter(
-      (v) => v.severity === "warning",
-    ).length;
+    const warningCount = violations.filter((v) => v.severity === "warning").length;
 
     violations.forEach((violation) => {
       const emoji = violation.severity === "error" ? "=�" : "�";
@@ -156,9 +149,7 @@ async function main() {
     console.log(`Summary: ${errorCount} errors, ${warningCount} warnings`);
 
     if (errorCount > 0) {
-      console.log(
-        "\n🔧 Fix architectural violations to maintain clean boundaries",
-      );
+      console.log("\n🔧 Fix architectural violations to maintain clean boundaries");
       process.exit(1);
     }
   }

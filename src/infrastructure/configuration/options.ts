@@ -6,10 +6,7 @@
  */
 
 import type { EmitterOptions } from "./asyncAPIEmitterOptions.js";
-import {
-  isSupportedProtocol,
-  PROTOCOL_LIST,
-} from "../../constants/protocols.js";
+import { isSupportedProtocol, PROTOCOL_LIST } from "../../constants/protocols.js";
 
 export type ServerOptions = {
   url?: string;
@@ -124,9 +121,7 @@ export function createAsyncAPIEmitterOptions(
   return { ...DEFAULT_OPTIONS, ...options } as Required<EmitterOptions>;
 }
 
-export function mergeWithDefaults(
-  options?: Partial<EmitterOptions>,
-): Required<EmitterOptions> {
+export function mergeWithDefaults(options?: Partial<EmitterOptions>): Required<EmitterOptions> {
   return createAsyncAPIEmitterOptions(options);
 }
 
@@ -141,13 +136,7 @@ export function parseAsyncAPIEmitterOptions(options: unknown): EmitterOptions {
 
   const opts = options as Record<string, unknown>;
   if (typeof opts["output-file"] === "string") {
-    const supportedTemplates = [
-      "cwd",
-      "project-root",
-      "output-dir",
-      "cmd",
-      "emitter-name",
-    ];
+    const supportedTemplates = ["cwd", "project-root", "output-dir", "cmd", "emitter-name"];
     const templateMatches = opts["output-file"].match(/\{([^}]+)\}/g);
     if (templateMatches) {
       for (const match of templateMatches) {
@@ -169,25 +158,16 @@ export function parseAsyncAPIEmitterOptions(options: unknown): EmitterOptions {
   return options;
 }
 
-export function isAsyncAPIEmitterOptions(
-  options: unknown,
-): options is EmitterOptions {
+export function isAsyncAPIEmitterOptions(options: unknown): options is EmitterOptions {
   if (!options || typeof options !== "object") return false;
   const opts = options as Record<string, unknown>;
 
   if ("file-type" in opts && opts["file-type"] !== undefined) {
-    if (opts["file-type"] !== "yaml" && opts["file-type"] !== "json")
-      return false;
+    if (opts["file-type"] !== "yaml" && opts["file-type"] !== "json") return false;
   }
 
   if ("output-file" in opts && typeof opts["output-file"] === "string") {
-    const supportedTemplates = [
-      "cwd",
-      "project-root",
-      "output-dir",
-      "cmd",
-      "emitter-name",
-    ];
+    const supportedTemplates = ["cwd", "project-root", "output-dir", "cmd", "emitter-name"];
     const templateMatches = opts["output-file"].match(/\{([^}]+)\}/g);
     if (templateMatches) {
       for (const match of templateMatches) {
@@ -197,10 +177,7 @@ export function isAsyncAPIEmitterOptions(
   }
 
   if ("asyncapi-version" in opts && opts["asyncapi-version"] !== undefined) {
-    if (
-      typeof opts["asyncapi-version"] !== "string" ||
-      opts["asyncapi-version"] !== "3.0.0"
-    )
+    if (typeof opts["asyncapi-version"] !== "string" || opts["asyncapi-version"] !== "3.0.0")
       return false;
   }
 
@@ -208,19 +185,13 @@ export function isAsyncAPIEmitterOptions(
     const bindings = opts["protocol-bindings"];
     if (!Array.isArray(bindings)) return false;
     for (const protocol of bindings) {
-      if (typeof protocol !== "string" || !isSupportedProtocol(protocol))
-        return false;
+      if (typeof protocol !== "string" || !isSupportedProtocol(protocol)) return false;
     }
   }
 
   if ("security-schemes" in opts && opts["security-schemes"] !== undefined) {
     const schemes = opts["security-schemes"];
-    if (
-      typeof schemes !== "object" ||
-      schemes === null ||
-      Array.isArray(schemes)
-    )
-      return false;
+    if (typeof schemes !== "object" || schemes === null || Array.isArray(schemes)) return false;
     const validSecurityTypes = [
       "userPassword",
       "apiKey",
@@ -236,9 +207,7 @@ export function isAsyncAPIEmitterOptions(
       "scramSha512",
       "gssapi",
     ];
-    for (const [, scheme] of Object.entries(
-      schemes as Record<string, unknown>,
-    )) {
+    for (const [, scheme] of Object.entries(schemes as Record<string, unknown>)) {
       if (typeof scheme !== "object" || scheme === null) return false;
       const schemeObj = scheme as Record<string, unknown>;
       if (
@@ -256,10 +225,7 @@ export function isAsyncAPIEmitterOptions(
     typeof opts["versioning"] === "object"
   ) {
     const versioningObj = opts["versioning"] as Record<string, unknown>;
-    if (
-      "file-naming" in versioningObj &&
-      versioningObj["file-naming"] !== undefined
-    ) {
+    if ("file-naming" in versioningObj && versioningObj["file-naming"] !== undefined) {
       const validFileNamings = ["suffix", "prefix", "directory"];
       if (
         typeof versioningObj["file-naming"] !== "string" ||
@@ -272,8 +238,6 @@ export function isAsyncAPIEmitterOptions(
   return true;
 }
 
-export function validateAsyncAPIEmitterOptions(
-  options: unknown,
-): EmitterOptions {
+export function validateAsyncAPIEmitterOptions(options: unknown): EmitterOptions {
   return parseAsyncAPIEmitterOptions(options);
 }

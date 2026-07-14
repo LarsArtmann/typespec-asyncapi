@@ -27,23 +27,14 @@ namespace Test {
       emit: ["@lars-artmann/typespec-asyncapi"],
     });
 
-    console.log(
-      "Compilation errors:",
-      diagnostics.filter((d) => d.severity === "error").length,
-    );
+    console.log("Compilation errors:", diagnostics.filter((d) => d.severity === "error").length);
     console.log("TestFileSystem files:", host.fs?.fs?.size || 0);
 
     // Use parseAsyncAPIOutput that handles both test framework and real FS
-    const parsed = await parseAsyncAPIOutput(
-      host.fs?.fs || new Map(),
-      "asyncapi.yaml",
-    );
+    const parsed = await parseAsyncAPIOutput(host.fs?.fs || new Map(), "asyncapi.yaml");
     console.log("Parsed result:", parsed?.asyncapi ? "SUCCESS" : "FAILED");
     console.log("AsyncAPI version:", parsed?.asyncapi);
-    console.log(
-      "Channels count:",
-      parsed?.channels ? Object.keys(parsed.channels).length : 0,
-    );
+    console.log("Channels count:", parsed?.channels ? Object.keys(parsed.channels).length : 0);
 
     if (parsed?.channels) {
       console.log("Channel details:", Object.keys(parsed.channels));

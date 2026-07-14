@@ -92,6 +92,11 @@ ehthumbs.db
 ## Editors and ides
 *~
 
+## Buildflow artifacts
+audit-log.*
+workflow-audit-log.*
+.buildflow-workflow-baseline.json
+
 ## Reports and coverage
 reports/
 

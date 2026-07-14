@@ -840,8 +840,7 @@ jobs:
   notify-status:
     name: Pipeline Status Notification
     runs-on: ["self-hosted", "linux", "x64"]
-    needs:
-      [build-validation, test-integration, security-audit, performance-tests]
+    needs: [build-validation, test-integration, security-audit, performance-tests]
     if: always()
     timeout-minutes: 5
 

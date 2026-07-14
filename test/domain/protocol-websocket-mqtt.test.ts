@@ -5,10 +5,7 @@
  */
 
 import { describe, it, expect } from "bun:test";
-import {
-  createAsyncAPITestHost,
-  compileAndGetAsyncAPI,
-} from "../utils/test-helpers.js";
+import { createAsyncAPITestHost, compileAndGetAsyncAPI } from "../utils/test-helpers.js";
 
 describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
   // WebSocket Protocol Tests (25 tests)

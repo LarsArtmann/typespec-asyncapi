@@ -148,10 +148,7 @@ export async function compileWithCLI(
   );
 
   // Read output
-  const outputPath = join(
-    workdir,
-    "tsp-output/@lars-artmann/typespec-asyncapi/AsyncAPI.yaml",
-  );
+  const outputPath = join(workdir, "tsp-output/@lars-artmann/typespec-asyncapi/AsyncAPI.yaml");
   let asyncapiDoc: AsyncAPIObject | undefined;
 
   try {

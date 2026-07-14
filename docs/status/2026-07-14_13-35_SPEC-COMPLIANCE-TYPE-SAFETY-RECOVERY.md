@@ -8,67 +8,67 @@
 
 ## a) FULLY DONE
 
-| # | Item | Commit | Verification |
-|---|---|---|---|
-| 1 | **Spec-compliant `$ref` chain** — operations now reference `#/channels/{id}/messages/{id}` instead of illegally pointing at `#/components/messages/{id}` directly | `85363e6` | Golden file test + schema validation test |
-| 2 | **Message names use model names** — `OrderCreated` not `publishOrderCreated`, so payload `$ref` resolves to an actual schema | `85363e6` | Golden file test assertion |
-| 3 | **All 8 previously-failing tests fixed** — replaced `npx tsp compile` child_process spawning with programmatic TypeSpec compiler API | `85363e6` | 348 pass, 0 fail |
-| 4 | **Golden file test** — `test/golden/golden-file.test.ts` locks in verified-correct output with structural + `$ref` pattern + message naming assertions | `85363e6` | 3 sub-tests pass |
-| 5 | **AsyncAPI 3.0.0 JSON Schema validation** — `test/validation/schema-validation.test.ts` validates emitter output against official `@asyncapi/specs` schema via AJV | `85363e6` | 3 scenarios pass (simple, servers, multi-op) |
-| 6 | **Strongly-typed AsyncAPI document model** — `src/domain/models/asyncapi-document.ts` with `AsyncAPIDocument`, `ChannelObject`, `OperationObject`, `MessageObject`, `ServerObject`, `ComponentsObject`, `SchemaObject` etc. | `f55c3af` | Build passes, emitter fully type-checked |
-| 7 | **`@tags` wired to output** — appears on operations as `Tag[]` arrays | `d178692` | State stores `Tag[]` not comma string |
-| 8 | **`@correlationId` wired to output** — appears on messages as `CorrelationId` objects | `d178692` | |
-| 9 | **`@header` wired to output** — appears on messages as JSON Schema `headers` objects | `d178692` | |
-| 10 | **`@bindings` wired to output** — appears on operations and messages | `d178692` | |
-| 11 | **`storeTags` data model fixed** — was `{ name: "tag1,tag2" }` (comma string), now `[{ name: "tag1" }, { name: "tag2" }]` (proper array) | `d178692` | |
-| 12 | **`protocolBindings` added to consolidated state** — was stored by decorators but never surfaced to emitter | `d178692` | |
-| 13 | **AGENTS.md rewritten** with verified facts, $ref chain documentation, test helper guidance, and anti-pattern rules | `5e59ba6` | |
-| 14 | **Post-mortem document** at `docs/POST-MORTEM-AND-RECOVERY-PLAN.md` — comprehensive root cause analysis and execution plan | `85363e6` | |
-| 15 | **CLI test helper rewritten** — `test/utils/cli-test-helpers.ts` replaced 336 lines of spawn/fs/race-condition code with 68-line programmatic API wrapper | `85363e6` | All CLI tests pass |
-| 16 | **All commits pushed to GitHub** | confirmed `5e59ba6` on origin/master | `gh api` verified |
+| #   | Item                                                                                                                                                                                                                        | Commit                               | Verification                                 |
+| --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ | -------------------------------------------- |
+| 1   | **Spec-compliant `$ref` chain** — operations now reference `#/channels/{id}/messages/{id}` instead of illegally pointing at `#/components/messages/{id}` directly                                                           | `85363e6`                            | Golden file test + schema validation test    |
+| 2   | **Message names use model names** — `OrderCreated` not `publishOrderCreated`, so payload `$ref` resolves to an actual schema                                                                                                | `85363e6`                            | Golden file test assertion                   |
+| 3   | **All 8 previously-failing tests fixed** — replaced `npx tsp compile` child_process spawning with programmatic TypeSpec compiler API                                                                                        | `85363e6`                            | 348 pass, 0 fail                             |
+| 4   | **Golden file test** — `test/golden/golden-file.test.ts` locks in verified-correct output with structural + `$ref` pattern + message naming assertions                                                                      | `85363e6`                            | 3 sub-tests pass                             |
+| 5   | **AsyncAPI 3.0.0 JSON Schema validation** — `test/validation/schema-validation.test.ts` validates emitter output against official `@asyncapi/specs` schema via AJV                                                          | `85363e6`                            | 3 scenarios pass (simple, servers, multi-op) |
+| 6   | **Strongly-typed AsyncAPI document model** — `src/domain/models/asyncapi-document.ts` with `AsyncAPIDocument`, `ChannelObject`, `OperationObject`, `MessageObject`, `ServerObject`, `ComponentsObject`, `SchemaObject` etc. | `f55c3af`                            | Build passes, emitter fully type-checked     |
+| 7   | **`@tags` wired to output** — appears on operations as `Tag[]` arrays                                                                                                                                                       | `d178692`                            | State stores `Tag[]` not comma string        |
+| 8   | **`@correlationId` wired to output** — appears on messages as `CorrelationId` objects                                                                                                                                       | `d178692`                            |                                              |
+| 9   | **`@header` wired to output** — appears on messages as JSON Schema `headers` objects                                                                                                                                        | `d178692`                            |                                              |
+| 10  | **`@bindings` wired to output** — appears on operations and messages                                                                                                                                                        | `d178692`                            |                                              |
+| 11  | **`storeTags` data model fixed** — was `{ name: "tag1,tag2" }` (comma string), now `[{ name: "tag1" }, { name: "tag2" }]` (proper array)                                                                                    | `d178692`                            |                                              |
+| 12  | **`protocolBindings` added to consolidated state** — was stored by decorators but never surfaced to emitter                                                                                                                 | `d178692`                            |                                              |
+| 13  | **AGENTS.md rewritten** with verified facts, $ref chain documentation, test helper guidance, and anti-pattern rules                                                                                                         | `5e59ba6`                            |                                              |
+| 14  | **Post-mortem document** at `docs/POST-MORTEM-AND-RECOVERY-PLAN.md` — comprehensive root cause analysis and execution plan                                                                                                  | `85363e6`                            |                                              |
+| 15  | **CLI test helper rewritten** — `test/utils/cli-test-helpers.ts` replaced 336 lines of spawn/fs/race-condition code with 68-line programmatic API wrapper                                                                   | `85363e6`                            | All CLI tests pass                           |
+| 16  | **All commits pushed to GitHub**                                                                                                                                                                                            | confirmed `5e59ba6` on origin/master | `gh api` verified                            |
 
 ---
 
 ## b) PARTIALLY DONE
 
-| # | Item | What's done | What's missing |
-|---|---|---|---|
-| 1 | **Channel parameters** | `storeChannelState` extracts path parameters from `{orderId}` patterns into `parameters` array | Emitter doesn't emit `parameters` on channel objects (spec requires this when address contains `{var}`) |
-| 2 | **`@server` variables** | Server config stored with url, protocol, description | No `variables` field in `ServerConfigData` type; emitter doesn't emit server variables |
-| 3 | **Schema generation** | Models → JSON Schema with types, properties, required, arrays, enums, inheritance, `@doc` descriptions | `decimal` maps to `{ type: "string", format: "decimal" }` (debatable); no `$ref` for nested model references (inlines everything) |
-| 4 | **`@message` decorator override** | Explicit `@message` data merged into auto-generated messages | Override only applies if the model has `@message` — auto-discovered messages from return types don't check for `@message` on the return type |
-| 5 | **Documentation cleanup** | AGENTS.md rewritten, post-mortem written | `FEATURES.md`, `TODO_LIST.md`, `PARTS.md`, `CONSUMER_PERSPECTIVE.md`, `README.md` all still stale/contradictory; 407 doc files in `docs/` untouched |
-| 6 | **Examples** | Identified all broken examples (ghost `@asyncapi` decorator, wrong namespaces, missing tspconfig) | None fixed yet |
+| #   | Item                              | What's done                                                                                            | What's missing                                                                                                                                      |
+| --- | --------------------------------- | ------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | **Channel parameters**            | `storeChannelState` extracts path parameters from `{orderId}` patterns into `parameters` array         | Emitter doesn't emit `parameters` on channel objects (spec requires this when address contains `{var}`)                                             |
+| 2   | **`@server` variables**           | Server config stored with url, protocol, description                                                   | No `variables` field in `ServerConfigData` type; emitter doesn't emit server variables                                                              |
+| 3   | **Schema generation**             | Models → JSON Schema with types, properties, required, arrays, enums, inheritance, `@doc` descriptions | `decimal` maps to `{ type: "string", format: "decimal" }` (debatable); no `$ref` for nested model references (inlines everything)                   |
+| 4   | **`@message` decorator override** | Explicit `@message` data merged into auto-generated messages                                           | Override only applies if the model has `@message` — auto-discovered messages from return types don't check for `@message` on the return type        |
+| 5   | **Documentation cleanup**         | AGENTS.md rewritten, post-mortem written                                                               | `FEATURES.md`, `TODO_LIST.md`, `PARTS.md`, `CONSUMER_PERSPECTIVE.md`, `README.md` all still stale/contradictory; 407 doc files in `docs/` untouched |
+| 6   | **Examples**                      | Identified all broken examples (ghost `@asyncapi` decorator, wrong namespaces, missing tspconfig)      | None fixed yet                                                                                                                                      |
 
 ---
 
 ## c) NOT STARTED
 
-| # | Item | Impact | Effort |
-|---|---|---|---|
-| 1 | Archive 400+ stale planning/status docs into `docs/_archive/` | Unblocks navigation | 30 min |
-| 2 | Delete stale `FEATURES.md`, `TODO_LIST.md`, `PARTS.md` (actively harmful) | Prevents confusion | 5 min |
-| 3 | Fix examples to compile and produce correct output | Consumer trust | 1h |
-| 4 | Remove dead emitter options (15+ defined, only 6 read) | Clean API surface | 30 min |
-| 5 | Remove dead dependencies (`@alloy-js/core`, `@effect/schema`, `@effect/eslint-plugin`) | Smaller install | 15 min |
-| 6 | Wire output validation in emitter itself (not just tests) — emit diagnostics on invalid output | Spec compliance guarantee | 30 min |
-| 7 | Add `EmitterOptions` model to `lib/main.tsp` for IDE autocomplete | Developer experience | 30 min |
-| 8 | Remove `any` types from emitter (still ~10 uses in modelDeclaration etc.) | Type safety | 1h |
-| 9 | Write proper README with working quickstart | Consumer onboarding | 1h |
-| 10 | Tag `v0.1.0-alpha` release | Milestone | 15 min |
-| 11 | Remove `Effect.TS` from test files (replace with plain code) | Dependency reduction | 2h |
-| 12 | Consolidate overlapping test helpers (6+ files in `test/utils/`) | Maintainability | 1h |
+| #   | Item                                                                                           | Impact                    | Effort |
+| --- | ---------------------------------------------------------------------------------------------- | ------------------------- | ------ |
+| 1   | Archive 400+ stale planning/status docs into `docs/_archive/`                                  | Unblocks navigation       | 30 min |
+| 2   | Delete stale `FEATURES.md`, `TODO_LIST.md`, `PARTS.md` (actively harmful)                      | Prevents confusion        | 5 min  |
+| 3   | Fix examples to compile and produce correct output                                             | Consumer trust            | 1h     |
+| 4   | Remove dead emitter options (15+ defined, only 6 read)                                         | Clean API surface         | 30 min |
+| 5   | Remove dead dependencies (`@alloy-js/core`, `@effect/schema`, `@effect/eslint-plugin`)         | Smaller install           | 15 min |
+| 6   | Wire output validation in emitter itself (not just tests) — emit diagnostics on invalid output | Spec compliance guarantee | 30 min |
+| 7   | Add `EmitterOptions` model to `lib/main.tsp` for IDE autocomplete                              | Developer experience      | 30 min |
+| 8   | Remove `any` types from emitter (still ~10 uses in modelDeclaration etc.)                      | Type safety               | 1h     |
+| 9   | Write proper README with working quickstart                                                    | Consumer onboarding       | 1h     |
+| 10  | Tag `v0.1.0-alpha` release                                                                     | Milestone                 | 15 min |
+| 11  | Remove `Effect.TS` from test files (replace with plain code)                                   | Dependency reduction      | 2h     |
+| 12  | Consolidate overlapping test helpers (6+ files in `test/utils/`)                               | Maintainability           | 1h     |
 
 ---
 
 ## d) TOTALLY FUCKED UP
 
-| # | What | Impact | Root Cause |
-|---|---|---|---|
-| 1 | **Project directory got deleted during session** | Near-catastrophic: all work nearly lost. Recovered from `~/.local/share/Trash/`. Committed work survived because git, but uncommitted scratch files (golden gen script in `/tmp/`) would have been lost. | Unknown — directory was trashed between turns. Possibly automated cleanup or user action. **Lesson: commit and push immediately after each logical unit, not at the end.** |
-| 2 | **AJV schema validation initially failed** with `"reference resolves to more than one schema"` error | Blocked validation tests for a turn | Used `3.0.0.json` schema which has `$id` conflicts with bundled draft-07. Fixed by switching to `3.0.0-without-$id.json` variant. |
-| 3 | **`storeTags` was storing tags as comma-separated strings** for the entire project lifetime | Tags were corrupted in state — any consumer reading `TagData` got `{ name: "tag1,tag2" }` instead of `[{ name: "tag1" }]` | Original implementation in `state-writers.ts` was a quick hack that was never corrected. Discovered during this session. |
-| 4 | **407 documentation files** (1 per 6 lines of source code) accumulated over 885 commits | Navigation impossible; every session re-reads and re-plans instead of executing | Analysis paralysis pattern documented in post-mortem — each session created new plans instead of executing existing ones |
+| #   | What                                                                                                 | Impact                                                                                                                                                                                                   | Root Cause                                                                                                                                                                 |
+| --- | ---------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | **Project directory got deleted during session**                                                     | Near-catastrophic: all work nearly lost. Recovered from `~/.local/share/Trash/`. Committed work survived because git, but uncommitted scratch files (golden gen script in `/tmp/`) would have been lost. | Unknown — directory was trashed between turns. Possibly automated cleanup or user action. **Lesson: commit and push immediately after each logical unit, not at the end.** |
+| 2   | **AJV schema validation initially failed** with `"reference resolves to more than one schema"` error | Blocked validation tests for a turn                                                                                                                                                                      | Used `3.0.0.json` schema which has `$id` conflicts with bundled draft-07. Fixed by switching to `3.0.0-without-$id.json` variant.                                          |
+| 3   | **`storeTags` was storing tags as comma-separated strings** for the entire project lifetime          | Tags were corrupted in state — any consumer reading `TagData` got `{ name: "tag1,tag2" }` instead of `[{ name: "tag1" }]`                                                                                | Original implementation in `state-writers.ts` was a quick hack that was never corrected. Discovered during this session.                                                   |
+| 4   | **407 documentation files** (1 per 6 lines of source code) accumulated over 885 commits              | Navigation impossible; every session re-reads and re-plans instead of executing                                                                                                                          | Analysis paralysis pattern documented in post-mortem — each session created new plans instead of executing existing ones                                                   |
 
 ---
 

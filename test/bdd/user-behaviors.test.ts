@@ -5,20 +5,14 @@
  * "As a user defining TypeSpec, when I use @decorator, I get X in my AsyncAPI output"
  */
 import { expect, test, describe } from "bun:test";
-import {
-  PROTOCOL_LIST,
-  isSupportedProtocol,
-} from "../../src/constants/protocols.js";
+import { PROTOCOL_LIST, isSupportedProtocol } from "../../src/constants/protocols.js";
 import {
   parsePathTemplate,
   validatePathTemplate,
   normalizePathTemplate,
   pathToChannelName,
 } from "../../src/domain/models/path-templates.js";
-import {
-  consolidateAsyncAPIState,
-  type AsyncAPIConsolidatedState,
-} from "../../src/state.js";
+import { consolidateAsyncAPIState, type AsyncAPIConsolidatedState } from "../../src/state.js";
 import { validateAsyncAPIEmitterOptions } from "../../src/infrastructure/configuration/options.js";
 
 // ============================================================================
@@ -89,9 +83,7 @@ describe("BDD: User configures emitter options", () => {
   });
 
   test("Given invalid file-type, When validated, Then validation fails", () => {
-    expect(() =>
-      validateAsyncAPIEmitterOptions({ "file-type": "xml" }),
-    ).toThrow();
+    expect(() => validateAsyncAPIEmitterOptions({ "file-type": "xml" })).toThrow();
   });
 
   test("Given valid protocol-bindings, When validated, Then options are valid", () => {
@@ -104,9 +96,7 @@ describe("BDD: User configures emitter options", () => {
   });
 
   test("Given invalid asyncapi-version, When validated, Then validation fails", () => {
-    expect(() =>
-      validateAsyncAPIEmitterOptions({ "asyncapi-version": "2.6.0" }),
-    ).toThrow();
+    expect(() => validateAsyncAPIEmitterOptions({ "asyncapi-version": "2.6.0" })).toThrow();
   });
 });
 

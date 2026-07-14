@@ -15,20 +15,21 @@ The emitter already produces AsyncAPI 3.0 output, but **the output is spec-inval
 ### 1. Analysis Paralysis (THE #1 killer)
 
 **Evidence:**
+
 - 407 markdown files in `docs/` — **1 doc per 6 lines of source code**
 - 150+ files in `docs/planning/` — nearly all titled "COMPREHENSIVE_EXECUTION_PLAN" or "PARETO_EXECUTION_PLAN"
-- The project's own status report admits: *"120+ minutes, 0 code changes"* (2025-12-03)
+- The project's own status report admits: _"120+ minutes, 0 code changes"_ (2025-12-03)
 - Every session created a new plan instead of executing the existing one
 
 ### 2. Over-Engineering & Chasing Perfection
 
-| Detour | Time invested | Outcome |
-|---|---|---|
-| Effect.TS (error handling, logging, schemas) | Weeks | Fully removed from src/ |
-| Plugin system (`PluginSystem.ts`) | Days | Deleted — skeleton never worked |
-| Performance monitoring (`PerformanceMonitor.ts`) | Days | Deleted — excluded from build |
-| Branded types / DDD domain models | Planning sessions | Never shipped |
-| Multiple emitter rewrites (string-concat → TypeEmitter → Alloy → back) | Weeks | Current TypeEmitter approach is correct |
+| Detour                                                                 | Time invested     | Outcome                                 |
+| ---------------------------------------------------------------------- | ----------------- | --------------------------------------- |
+| Effect.TS (error handling, logging, schemas)                           | Weeks             | Fully removed from src/                 |
+| Plugin system (`PluginSystem.ts`)                                      | Days              | Deleted — skeleton never worked         |
+| Performance monitoring (`PerformanceMonitor.ts`)                       | Days              | Deleted — excluded from build           |
+| Branded types / DDD domain models                                      | Planning sessions | Never shipped                           |
+| Multiple emitter rewrites (string-concat → TypeEmitter → Alloy → back) | Weeks             | Current TypeEmitter approach is correct |
 
 ### 3. Test Infrastructure Hell
 
@@ -54,13 +55,13 @@ The emitter already produces AsyncAPI 3.0 output, but **the output is spec-inval
 
 ## Part 2: Current State (Verified 2026-07-14)
 
-| Area | Status | Details |
-|---|---|---|
-| **Build** | WORKING | 0 TypeScript errors |
-| **Tests** | **319 pass, 0 fail** | All 8 previously-failing CLI tests fixed |
-| **Lint** | Not verified | Needs check |
-| **Source LOC** | 2,480 | 16 files |
-| **Doc files** | 407 | **PROBLEM: must be archived** |
+| Area           | Status               | Details                                  |
+| -------------- | -------------------- | ---------------------------------------- |
+| **Build**      | WORKING              | 0 TypeScript errors                      |
+| **Tests**      | **319 pass, 0 fail** | All 8 previously-failing CLI tests fixed |
+| **Lint**       | Not verified         | Needs check                              |
+| **Source LOC** | 2,480                | 16 files                                 |
+| **Doc files**  | 407                  | **PROBLEM: must be archived**            |
 
 ### What the emitter produces today
 
@@ -82,7 +83,7 @@ operations:
     channel:
       $ref: "#/channels/orders.created"
     messages:
-      - $ref: "#/components/messages/publishOrderCreated"  # ← WRONG per spec
+      - $ref: "#/components/messages/publishOrderCreated" # ← WRONG per spec
 components:
   messages:
     publishOrderCreated: ...
@@ -92,22 +93,23 @@ components:
 
 ### Spec compliance issues found
 
-| Issue | Severity | Details |
-|---|---|---|
-| **Operation message $ref targets wrong path** | CRITICAL | Spec requires `#/channels/{channelId}/messages/{messageId}`, we emit `#/components/messages/{messageId}` |
-| **Channels missing `messages` map** | CRITICAL | Channels must declare which messages can flow through them |
-| **Message names use operation name, not model name** | HIGH | `publishOrderCreated` should reference `OrderCreated` schema |
-| **`@tags` data stored but never emitted** | MEDIUM | Tags exist in state, never reach output |
-| **`@correlationId` data stored but never emitted** | MEDIUM | Same pattern |
-| **`@header` data stored but never emitted** | MEDIUM | Same pattern |
-| **`@bindings` data stored but never emitted** | MEDIUM | Same pattern |
-| **No output validation** | HIGH | `@asyncapi/specs` JSON schema available but never used |
+| Issue                                                | Severity | Details                                                                                                  |
+| ---------------------------------------------------- | -------- | -------------------------------------------------------------------------------------------------------- |
+| **Operation message $ref targets wrong path**        | CRITICAL | Spec requires `#/channels/{channelId}/messages/{messageId}`, we emit `#/components/messages/{messageId}` |
+| **Channels missing `messages` map**                  | CRITICAL | Channels must declare which messages can flow through them                                               |
+| **Message names use operation name, not model name** | HIGH     | `publishOrderCreated` should reference `OrderCreated` schema                                             |
+| **`@tags` data stored but never emitted**            | MEDIUM   | Tags exist in state, never reach output                                                                  |
+| **`@correlationId` data stored but never emitted**   | MEDIUM   | Same pattern                                                                                             |
+| **`@header` data stored but never emitted**          | MEDIUM   | Same pattern                                                                                             |
+| **`@bindings` data stored but never emitted**        | MEDIUM   | Same pattern                                                                                             |
+| **No output validation**                             | HIGH     | `@asyncapi/specs` JSON schema available but never used                                                   |
 
 ---
 
 ## Part 3: How to ACTUALLY Make It Work — Execution Plan
 
 ### Principles
+
 1. **No replanning.** Execute this plan. It is the only plan.
 2. **No new frameworks.** The architecture is fine. Improve incrementally.
 3. **No rewrites.** The emitter works. Fix the bugs.
@@ -115,12 +117,14 @@ components:
 5. **Verify before claiming.** Always run `bun run build && bun test`.
 
 ### Available tools (already installed, just need wiring)
+
 - `@asyncapi/specs` v6.11.1 — JSON Schema for AsyncAPI 3.0.0 validation
 - `@asyncapi/parser` v3.6.0 — AsyncAPI document parser/validator
 - `ajv` v8.20.0 — JSON Schema validator
 - `yaml` v2.9.0 — YAML serialization
 
 ### Dead dependencies to remove
+
 - `@alloy-js/core` — not imported in src/
 - `@effect/schema` — Effect.TS remnant
 - `effect` — only used in test/ (can be replaced)
@@ -131,6 +135,7 @@ components:
 ### Phase 0: Archive the Noise [Effort: 30 min | Impact: Unblocks everything]
 
 **Step 1:** Move `docs/planning/`, `docs/status/`, `docs/sessions/`, `docs/architecture/`, `docs/adr/`, `docs/analysis/`, `archive/` into a single `docs/_archive/` directory. Keep only:
+
 - This document
 - `docs/map-typespec-to-asyncapi/` (useful reference)
 - `docs/guides/getting-started.md` (fix later)
@@ -149,6 +154,7 @@ This is the single most important fix. Without correct `$ref` patterns, the outp
 **Step 4:** Fix the operation → message `$ref` chain.
 
 Current (WRONG):
+
 ```yaml
 operations:
   publishOrderCreated:
@@ -157,12 +163,13 @@ operations:
 ```
 
 Required (CORRECT):
+
 ```yaml
 channels:
   orders.created:
     address: orders.created
     messages:
-      publishOrderCreated:           # ← channel declares its messages
+      publishOrderCreated: # ← channel declares its messages
         $ref: "#/components/messages/publishOrderCreated"
 
 operations:
@@ -171,7 +178,7 @@ operations:
     channel:
       $ref: "#/channels/orders.created"
     messages:
-      - $ref: "#/channels/orders.created/messages/publishOrderCreated"  # ← via channel
+      - $ref: "#/channels/orders.created/messages/publishOrderCreated" # ← via channel
 ```
 
 **Step 5:** Add `messages` map to every channel that has operations.
@@ -222,6 +229,7 @@ This is the **single most valuable test in the project** — it catches regressi
 ### Phase 5: Fix Examples [Effort: 1h | Impact: MEDIUM]
 
 **Step 17:** Fix 3 key examples to compile and produce correct output:
+
 - `examples/basic-events/main.tsp` — remove ghost `@asyncapi` decorator, add `tspconfig.yaml`
 - `examples/real-world/kafka-events.tsp` — fix namespace
 - Create `examples/simple/main.tsp` — minimal working example with `tspconfig.yaml`
@@ -233,11 +241,13 @@ This is the **single most valuable test in the project** — it catches regressi
 ### Phase 6: Clean Dead Code & Dependencies [Effort: 30 min | Impact: MEDIUM]
 
 **Step 19:** Remove dead source files:
+
 - `src/domain/models/path-templates.ts` — not imported by emitter
 - `src/domain/models/serialization-format-option.ts` — not imported by emitter
 - `src/domain/` directory if empty after above
 
 **Step 20:** Remove dead emitter options that are never read:
+
 - `protocol-bindings`, `versioning`, `security-schemes`, `validate-spec`, `omit-unreachable-types`, `include-source-info`, `source-maps`, `debug`
 
 **Step 21:** Remove dead dependencies: `@alloy-js/core`, `@effect/schema`, `@effect/eslint-plugin`
@@ -249,6 +259,7 @@ This is the **single most valuable test in the project** — it catches regressi
 ### Phase 7: Type Safety Improvements [Effort: 2h | Impact: MEDIUM]
 
 **Step 23:** Define AsyncAPI 3.0 document types instead of `Record<string, unknown>`:
+
 ```typescript
 interface AsyncAPIDocument {
   asyncapi: "3.0.0";

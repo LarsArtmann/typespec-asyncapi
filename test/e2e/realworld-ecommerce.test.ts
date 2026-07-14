@@ -263,17 +263,14 @@ describe("E2E: Real-World E-Commerce System", () => {
 
     const outputFiles = Array.from(host.fs.keys());
     const asyncApiFile = outputFiles.find(
-      (f) =>
-        f.includes("asyncapi") && (f.endsWith(".json") || f.endsWith(".yaml")),
+      (f) => f.includes("asyncapi") && (f.endsWith(".json") || f.endsWith(".yaml")),
     );
 
     expect(asyncApiFile).toBeDefined();
 
     if (asyncApiFile) {
       const content = host.fs.get(asyncApiFile) as string;
-      const spec = content.startsWith("{")
-        ? JSON.parse(content)
-        : require("yaml").parse(content);
+      const spec = content.startsWith("{") ? JSON.parse(content) : require("yaml").parse(content);
 
       // Validate e-commerce event domains
       const schemas = spec.components?.schemas || {};
@@ -289,9 +286,7 @@ describe("E2E: Real-World E-Commerce System", () => {
       // Orders
       expect(schemas.OrderPlaced).toBeDefined();
       expect(schemas.OrderPlaced.properties.items.type).toBe("array");
-      expect(schemas.OrderPlaced.properties.shippingAddress.type).toBe(
-        "object",
-      );
+      expect(schemas.OrderPlaced.properties.shippingAddress.type).toBe("object");
 
       // Payments
       expect(schemas.PaymentProcessed).toBeDefined();
@@ -304,9 +299,7 @@ describe("E2E: Real-World E-Commerce System", () => {
       // Shipping
       expect(schemas.ShipmentCreated).toBeDefined();
       expect(schemas.ShipmentStatusUpdate).toBeDefined();
-      expect(schemas.ShipmentStatusUpdate.properties.status.enum).toContain(
-        "delivered",
-      );
+      expect(schemas.ShipmentStatusUpdate.properties.status.enum).toContain("delivered");
 
       // Notifications
       expect(schemas.CustomerNotification).toBeDefined();

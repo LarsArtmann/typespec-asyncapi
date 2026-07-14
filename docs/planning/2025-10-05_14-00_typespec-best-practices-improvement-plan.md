@@ -144,10 +144,7 @@ export function createAddChannelFix(operation: Operation) {
     label: "Add @channel decorator",
     fix: (context) => {
       const location = getSourceLocation(operation);
-      return context.insertText(
-        location.start,
-        `@channel("${operation.name}-channel")\n`,
-      );
+      return context.insertText(location.start, `@channel("${operation.name}-channel")\n`);
     },
   });
 }

@@ -150,9 +150,7 @@ type ConfigOptions = {
 
 ```typescript
 // Create tagged error classes
-export class EmitterConstructorError extends Data.TaggedError(
-  "EmitterConstructorError",
-)<{
+export class EmitterConstructorError extends Data.TaggedError("EmitterConstructorError")<{
   message: string;
   context?: Record<string, unknown>;
 }> {}
@@ -216,12 +214,8 @@ interface IAsyncAPIEmitter {
 }
 // BECOMES:
 interface IAsyncAPIEmitter {
-  programContext(
-    program: Program,
-  ): Effect.Effect<Record<string, unknown>, ProgramContextError>;
-  writeOutput(
-    sourceFiles: SourceFile<string>[],
-  ): Effect.Effect<void, WriteOutputError>;
+  programContext(program: Program): Effect.Effect<Record<string, unknown>, ProgramContextError>;
+  writeOutput(sourceFiles: SourceFile<string>[]): Effect.Effect<void, WriteOutputError>;
 }
 
 // Convert existing Promise chains to Effect composition
@@ -277,11 +271,8 @@ export function validateConfiguration(
 
 ```typescript
 // Convert async functions to Effect.gen
-export async function $onEmit(
-  context: EmitContext<AsyncAPIEmitterOptions>,
-): Promise<void> {
-  const { generateAsyncAPIWithEffect } =
-    await import("./emitter-with-effect.js");
+export async function $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): Promise<void> {
+  const { generateAsyncAPIWithEffect } = await import("./emitter-with-effect.js");
   await Effect.runPromise(generateAsyncAPIWithEffect(context));
 }
 // BECOMES:

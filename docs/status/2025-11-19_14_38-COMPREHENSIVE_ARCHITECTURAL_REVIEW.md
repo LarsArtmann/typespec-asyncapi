@@ -183,10 +183,7 @@ export function validateString(value: unknown): ValidationResult<string>;
 export function validateNumber(value: unknown): ValidationResult<number>;
 
 // CORRECT: Generic implementation
-export function validate<T>(
-  schema: Schema<T>,
-  value: unknown,
-): ValidationResult<T>;
+export function validate<T>(schema: Schema<T>, value: unknown): ValidationResult<T>;
 ```
 
 ### **Enums Over Booleans Missing:**

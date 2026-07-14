@@ -136,43 +136,17 @@ export type AsyncAPIConsolidatedState = {
  * Handles TypeSpec's StateMapView which wraps the actual Map.
  * The StateMapView stores data in an internal 'map' property.
  */
-export function consolidateAsyncAPIState(
-  program: Program,
-): AsyncAPIConsolidatedState {
+export function consolidateAsyncAPIState(program: Program): AsyncAPIConsolidatedState {
   return {
     channels: getStateMap<ChannelPathData>(program, stateSymbols.channelPaths),
-    messages: getStateMap<MessageConfigData>(
-      program,
-      stateSymbols.messageConfigs,
-    ),
-    servers: getMultiState<ServerConfigData>(
-      program,
-      stateSymbols.serverConfigs,
-    ),
-    operations: getStateMap<OperationTypeData>(
-      program,
-      stateSymbols.operationTypes,
-    ),
+    messages: getStateMap<MessageConfigData>(program, stateSymbols.messageConfigs),
+    servers: getMultiState<ServerConfigData>(program, stateSymbols.serverConfigs),
+    operations: getStateMap<OperationTypeData>(program, stateSymbols.operationTypes),
     tags: getStateMap<TagData>(program, stateSymbols.tags),
-    protocolConfigs: getStateMap<ProtocolConfigData>(
-      program,
-      stateSymbols.protocolConfigs,
-    ),
-    protocolBindings: getStateMap<Record<string, unknown>>(
-      program,
-      stateSymbols.protocolBindings,
-    ),
-    securityConfigs: getStateMap<SecurityConfigData>(
-      program,
-      stateSymbols.securityConfigs,
-    ),
-    correlationIds: getStateMap<CorrelationIdData>(
-      program,
-      stateSymbols.correlationIds,
-    ),
-    messageHeaders: getStateMap<MessageHeaderData[]>(
-      program,
-      stateSymbols.messageHeaders,
-    ),
+    protocolConfigs: getStateMap<ProtocolConfigData>(program, stateSymbols.protocolConfigs),
+    protocolBindings: getStateMap<Record<string, unknown>>(program, stateSymbols.protocolBindings),
+    securityConfigs: getStateMap<SecurityConfigData>(program, stateSymbols.securityConfigs),
+    correlationIds: getStateMap<CorrelationIdData>(program, stateSymbols.correlationIds),
+    messageHeaders: getStateMap<MessageHeaderData[]>(program, stateSymbols.messageHeaders),
   };
 }

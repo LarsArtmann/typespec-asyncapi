@@ -5,22 +5,12 @@
  * Each function corresponds to a specific decorator's state storage.
  */
 
-import type {
-  Program,
-  Operation,
-  Model,
-  ModelProperty,
-  Namespace,
-} from "@typespec/compiler";
+import type { Program, Operation, Model, ModelProperty, Namespace } from "@typespec/compiler";
 import { stateSymbols } from "./lib.js";
 import { getStateMap } from "./state-compatibility.js";
 import type { MessageConfigData } from "./state.js";
 
-export const storeChannelState = (
-  program: Program,
-  target: Operation,
-  path: string,
-) => {
+export const storeChannelState = (program: Program, target: Operation, path: string) => {
   const map = getStateMap(program, stateSymbols.channelPaths);
   map.set(target, {
     path,
@@ -40,8 +30,7 @@ export const storeOperationType = (
   map.set(target, {
     type,
     messageType,
-    description:
-      description ?? `${type} operation for ${target.name ?? "unnamed"}`,
+    description: description ?? `${type} operation for ${target.name ?? "unnamed"}`,
     tags: [],
   });
 };
@@ -88,15 +77,14 @@ export const storeSecurityConfig = (
   map.set(target, { name: config.name, scheme: config.scheme });
 };
 
-export const storeTags = (
-  program: Program,
-  target: Operation | Model,
-  tags: string[],
-) => {
+export const storeTags = (program: Program, target: Operation | Model, tags: string[]) => {
   const map = getStateMap<{ name: string }[]>(program, stateSymbols.tags);
   const existing = map.get(target) ?? [];
   const allNames = new Set([...existing.map((t) => t.name), ...tags]);
-  map.set(target, [...allNames].map((name) => ({ name })));
+  map.set(
+    target,
+    [...allNames].map((name) => ({ name })),
+  );
 };
 
 export const storeCorrelationId = (
@@ -115,8 +103,7 @@ export const storeBindings = (
   bindings: Record<string, unknown>,
 ) => {
   const map = getStateMap(program, stateSymbols.protocolBindings);
-  const existing =
-    (map.get(target) as Record<string, unknown> | undefined) ?? {};
+  const existing = (map.get(target) as Record<string, unknown> | undefined) ?? {};
   map.set(target, { ...existing, ...bindings });
 };
 
@@ -132,9 +119,7 @@ export const storeHeader = (
   let description: string | undefined;
 
   if (target.kind === "ModelProperty") {
-    const propType = target.type as
-      | { kind?: string; name?: string }
-      | undefined;
+    const propType = target.type as { kind?: string; name?: string } | undefined;
     if (propType?.kind === "Scalar") {
       headerType = propType.name?.toLowerCase() ?? "string";
     }
@@ -150,10 +135,7 @@ export const storeHeader = (
           description?: string;
         }>
       | undefined) ?? [];
-  map.set(target, [
-    ...existing,
-    { name, value, type: headerType, description },
-  ]);
+  map.set(target, [...existing, { name, value, type: headerType, description }]);
 };
 
 export const storeProtocolConfig = (
@@ -193,16 +175,9 @@ export const storeProtocolConfig = (
   map.set(target, protocolConfig);
 };
 
-export const linkPublishMessage = (
-  program: Program,
-  target: Operation,
-  config?: Model,
-) => {
+export const linkPublishMessage = (program: Program, target: Operation, config?: Model) => {
   if (config) {
-    const map = getStateMap<MessageConfigData>(
-      program,
-      stateSymbols.messageConfigs,
-    );
+    const map = getStateMap<MessageConfigData>(program, stateSymbols.messageConfigs);
     const existing = map.get(config);
     if (existing) {
       existing.messageId = config.name;

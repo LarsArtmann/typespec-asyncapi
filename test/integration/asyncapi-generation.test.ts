@@ -301,8 +301,7 @@ describe("Real AsyncAPI Generation Tests", () => {
         op subscribeOrdersByStatus(status: string): OrderEvent;
       `;
 
-      const { outputFiles, program } =
-        await compileAsyncAPISpecWithoutErrors(source);
+      const { outputFiles, program } = await compileAsyncAPISpecWithoutErrors(source);
 
       // Verify comprehensive compilation
       expect(program).toBeDefined();
@@ -340,10 +339,7 @@ describe("Real AsyncAPI Generation Tests", () => {
       for (const schemaName of expectedSchemas) {
         expect(asyncapiDoc.components.schemas[schemaName]).toBeDefined();
       }
-      TestValidationPatterns.validateExpectedSchemas(
-        asyncapiDoc,
-        expectedSchemas,
-      );
+      TestValidationPatterns.validateExpectedSchemas(asyncapiDoc, expectedSchemas);
 
       // Validate inheritance handling (OrderEvent extends BaseEvent)
       const orderEventSchema = asyncapiDoc.components.schemas.OrderEvent;
@@ -355,12 +351,8 @@ describe("Real AsyncAPI Generation Tests", () => {
       // Validate complex nested object handling
       const orderDetailsSchema = asyncapiDoc.components.schemas.OrderDetails;
       expect(orderDetailsSchema.properties?.items?.type).toBe("array");
-      expect(orderDetailsSchema.properties?.shippingAddress?.type).toBe(
-        "object",
-      );
-      expect(orderDetailsSchema.properties?.billingAddress?.type).toBe(
-        "object",
-      );
+      expect(orderDetailsSchema.properties?.shippingAddress?.type).toBe("object");
+      expect(orderDetailsSchema.properties?.billingAddress?.type).toBe("object");
 
       // Validate all operations were generated
       const expectedOperations = [
@@ -380,16 +372,11 @@ describe("Real AsyncAPI Generation Tests", () => {
       for (const operationName of expectedOperations) {
         expect(asyncapiDoc.operations[operationName]).toBeDefined();
       }
-      TestValidationPatterns.validateExpectedOperations(
-        asyncapiDoc,
-        expectedOperations,
-      );
+      TestValidationPatterns.validateExpectedOperations(asyncapiDoc, expectedOperations);
 
       // Validate publish vs subscribe actions
       expect(asyncapiDoc.operations.publishOrderCreated.action).toBe("send");
-      expect(asyncapiDoc.operations.subscribeCustomerOrderEvents.action).toBe(
-        "receive",
-      );
+      expect(asyncapiDoc.operations.subscribeCustomerOrderEvents.action).toBe("receive");
 
       // Run comprehensive AsyncAPI validation
       const validation = await validateAsyncAPIObjectComprehensive(asyncapiDoc);
@@ -537,13 +524,7 @@ describe("Real AsyncAPI Generation Tests", () => {
       )) as AsyncAPIObject;
 
       // Validate schemas from all namespaces using shared utility
-      const expectedSchemas = [
-        "User",
-        "UserProfile",
-        "Order",
-        "OrderItem",
-        "Notification",
-      ];
+      const expectedSchemas = ["User", "UserProfile", "Order", "OrderItem", "Notification"];
       for (const schemaName of expectedSchemas) {
         expect(asyncapiDoc.components.schemas[schemaName]).toBeDefined();
         TestLogging.logMultiNamespaceSchema(schemaName);
@@ -561,9 +542,7 @@ describe("Real AsyncAPI Generation Tests", () => {
         TestLogging.logMultiNamespaceOperation(operationName);
       }
 
-      TestLogging.logValidationSuccess(
-        "Multi-namespace TypeSpec processed successfully",
-      );
+      TestLogging.logValidationSuccess("Multi-namespace TypeSpec processed successfully");
     });
   });
 
@@ -648,14 +627,10 @@ describe("Real AsyncAPI Generation Tests", () => {
         validation.errors.forEach((error) => {
           console.error(`- ${error.path}: ${error.message}`);
         });
-        throw new Error(
-          `AsyncAPI 3.0.0 compliance validation failed: ${validation.summary}`,
-        );
+        throw new Error(`AsyncAPI 3.0.0 compliance validation failed: ${validation.summary}`);
       }
 
-      Effect.log(
-        "✅ AsyncAPI 3.0.0 specification compliance validated successfully",
-      );
+      Effect.log("✅ AsyncAPI 3.0.0 specification compliance validated successfully");
     });
 
     test("should handle complex schema references correctly", async () => {
@@ -713,8 +688,7 @@ describe("Real AsyncAPI Generation Tests", () => {
       expect(asyncapiDoc.components.schemas.RelatedModel).toBeDefined();
 
       // Validate inheritance in schema
-      const modelWithRefsSchema =
-        asyncapiDoc.components.schemas.ModelWithReferences;
+      const modelWithRefsSchema = asyncapiDoc.components.schemas.ModelWithReferences;
       expect(modelWithRefsSchema.properties?.id).toBeDefined(); // From BaseReference
       expect(modelWithRefsSchema.properties?.createdAt).toBeDefined(); // From BaseReference
       expect(modelWithRefsSchema.properties?.relatedModel).toBeDefined(); // Own property
@@ -782,13 +756,10 @@ describe("Real AsyncAPI Generation Tests", () => {
       const startTime = Date.now();
       const largeSource = generateLargeTypeSpecSource();
 
-      const { outputFiles } = await compileAsyncAPISpecWithoutErrors(
-        largeSource,
-        {
-          "output-file": "large-scale-test",
-          "file-type": "json",
-        },
-      );
+      const { outputFiles } = await compileAsyncAPISpecWithoutErrors(largeSource, {
+        "output-file": "large-scale-test",
+        "file-type": "json",
+      });
 
       const endTime = Date.now();
       const compilationTime = endTime - startTime;
@@ -805,15 +776,9 @@ describe("Real AsyncAPI Generation Tests", () => {
       // Performance assertion - should compile large document in reasonable time
       expect(compilationTime).toBeLessThan(30000); // 30 seconds max
 
-      Effect.log(
-        `✅ Large scale AsyncAPI generation completed in ${compilationTime}ms`,
-      );
-      Effect.log(
-        `📊 Generated ${Object.keys(asyncapiDoc.components.schemas).length} schemas`,
-      );
-      Effect.log(
-        `📊 Generated ${Object.keys(asyncapiDoc.operations).length} operations`,
-      );
+      Effect.log(`✅ Large scale AsyncAPI generation completed in ${compilationTime}ms`);
+      Effect.log(`📊 Generated ${Object.keys(asyncapiDoc.components.schemas).length} schemas`);
+      Effect.log(`📊 Generated ${Object.keys(asyncapiDoc.operations).length} operations`);
     });
   });
 });

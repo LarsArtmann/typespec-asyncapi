@@ -39,16 +39,19 @@ bun run lint          # Run ESLint
 ## AsyncAPI 3.0 $ref Chain (CRITICAL)
 
 The emitter MUST follow this $ref pattern per the AsyncAPI 3.0 spec:
+
 ```
 operations.{opId}.messages[] → #/channels/{channelId}/messages/{messageId}
 channels.{channelId}.messages.{messageId} → #/components/messages/{messageId}
 components.messages.{messageId}.payload → #/components/schemas/{schemaName}
 ```
+
 Operations MUST NOT reference `#/components/messages/` directly — they MUST go through the channel.
 
 ## Test Infrastructure
 
 Use these helpers from `test/utils/test-helpers.ts`:
+
 - `compileAsyncAPISpecWithoutErrors(source)` — compile + assert no errors
 - `compileAsyncAPISpecRaw(source)` — compile, return raw diagnostics + output files
 - `parseAsyncAPIOutput(outputFiles)` — find and parse the asyncapi YAML/JSON output
@@ -77,11 +80,11 @@ extern dec bindings(target: Operation | Model, value: {} | valueof Record<unknow
 
 ## Key Files
 
-| File | Purpose |
-|---|---|
-| `docs/POST-MORTEM-AND-RECOVERY-PLAN.md` | Root cause analysis + execution plan |
-| `test/golden/golden-file.test.ts` | Golden file test — locks in correct output |
-| `test/golden/ecommerce.expected.yaml` | Reference output for e-commerce example |
+| File                                        | Purpose                                             |
+| ------------------------------------------- | --------------------------------------------------- |
+| `docs/POST-MORTEM-AND-RECOVERY-PLAN.md`     | Root cause analysis + execution plan                |
+| `test/golden/golden-file.test.ts`           | Golden file test — locks in correct output          |
+| `test/golden/ecommerce.expected.yaml`       | Reference output for e-commerce example             |
 | `test/validation/schema-validation.test.ts` | Validates output against AsyncAPI 3.0.0 JSON schema |
 
 ## Rules for Future Sessions

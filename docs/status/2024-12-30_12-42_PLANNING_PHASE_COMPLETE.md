@@ -1181,9 +1181,7 @@ export type KafkaBinding = ProtocolBinding<Protocol.Kafka> & {
 };
 
 // Type guards for runtime safety
-export const isKafkaBinding = (
-  binding: ProtocolBinding<Protocol>,
-): binding is KafkaBinding => {
+export const isKafkaBinding = (binding: ProtocolBinding<Protocol>): binding is KafkaBinding => {
   return binding.protocol === Protocol.Kafka;
 };
 ```

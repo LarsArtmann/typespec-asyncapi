@@ -61,16 +61,11 @@ const validateConfig = (
 
 // === MODEL HELPERS ===
 
-function getModelPropertyStringValue(
-  model: Model,
-  propertyName: string,
-): string | undefined {
+function getModelPropertyStringValue(model: Model, propertyName: string): string | undefined {
   const property = model.properties.get(propertyName);
   if (!property) return undefined;
   const type = property.type as { kind: string; value?: string };
-  return type.kind === "String" && type.value !== undefined
-    ? type.value
-    : undefined;
+  return type.kind === "String" && type.value !== undefined ? type.value : undefined;
 }
 
 function getModelPropertyValue(model: Model, propertyName: string): unknown {
@@ -90,12 +85,7 @@ function modelToRecord(model: Model): Record<string, unknown> {
 }
 
 function extractConfigRecord(config: unknown): Record<string, unknown> {
-  if (
-    config &&
-    typeof config === "object" &&
-    "kind" in config &&
-    config.kind === "Model"
-  ) {
+  if (config && typeof config === "object" && "kind" in config && config.kind === "Model") {
     return modelToRecord(config as Model);
   }
   return config as Record<string, unknown>;
@@ -103,11 +93,7 @@ function extractConfigRecord(config: unknown): Record<string, unknown> {
 
 // === DECORATORS ===
 
-export function $channel(
-  context: DecoratorContext,
-  target: Operation,
-  path: string,
-): void {
+export function $channel(context: DecoratorContext, target: Operation, path: string): void {
   if (!path || path.length === 0) {
     reportDecoratorDiagnostic(
       context,
@@ -183,11 +169,7 @@ export function $server(
   storeServerConfig(context.program, target, { ...configTyped, name });
 }
 
-export function $publish(
-  context: DecoratorContext,
-  target: Operation,
-  config?: Model,
-): void {
+export function $publish(context: DecoratorContext, target: Operation, config?: Model): void {
   storeOperationType(
     context.program,
     target,
@@ -198,11 +180,7 @@ export function $publish(
   linkPublishMessage(context.program, target, config);
 }
 
-export function $message(
-  context: DecoratorContext,
-  target: Model,
-  config: unknown,
-): void {
+export function $message(context: DecoratorContext, target: Model, config: unknown): void {
   if (
     !validateConfig(
       config,
@@ -218,12 +196,7 @@ export function $message(
   let description: string | undefined;
   let contentType: string | undefined;
 
-  if (
-    config &&
-    typeof config === "object" &&
-    "kind" in config &&
-    config.kind === "Model"
-  ) {
+  if (config && typeof config === "object" && "kind" in config && config.kind === "Model") {
     const configModel = config as Model;
     title = getModelPropertyStringValue(configModel, "title");
     description = getModelPropertyStringValue(configModel, "description");
@@ -231,14 +204,8 @@ export function $message(
   } else if (config && typeof config === "object") {
     const configObj = config as Record<string, unknown>;
     title = typeof configObj.title === "string" ? configObj.title : undefined;
-    description =
-      typeof configObj.description === "string"
-        ? configObj.description
-        : undefined;
-    contentType =
-      typeof configObj.contentType === "string"
-        ? configObj.contentType
-        : undefined;
+    description = typeof configObj.description === "string" ? configObj.description : undefined;
+    contentType = typeof configObj.contentType === "string" ? configObj.contentType : undefined;
   }
 
   storeMessageConfig(context.program, target, {
@@ -287,20 +254,11 @@ export function $security(
   let name: string | undefined;
   let scheme: Record<string, unknown> | undefined;
 
-  if (
-    config &&
-    typeof config === "object" &&
-    "kind" in config &&
-    config.kind === "Model"
-  ) {
+  if (config && typeof config === "object" && "kind" in config && config.kind === "Model") {
     const configModel = config as Model;
     name = getModelPropertyStringValue(configModel, "name");
     const schemeValue = getModelPropertyValue(configModel, "scheme");
-    if (
-      schemeValue &&
-      typeof schemeValue === "object" &&
-      "properties" in schemeValue
-    ) {
+    if (schemeValue && typeof schemeValue === "object" && "properties" in schemeValue) {
       scheme = modelToRecord(schemeValue as Model);
     } else if (schemeValue && typeof schemeValue === "object") {
       scheme = schemeValue as Record<string, unknown>;
@@ -326,11 +284,7 @@ export function $subscribe(context: DecoratorContext, target: Operation): void {
   );
 }
 
-export function $tags(
-  context: DecoratorContext,
-  target: DiagnosticTarget,
-  value: unknown,
-): void {
+export function $tags(context: DecoratorContext, target: DiagnosticTarget, value: unknown): void {
   if (!value || !Array.isArray(value)) {
     reportDecoratorDiagnostic(
       context,
@@ -341,16 +295,9 @@ export function $tags(
     return;
   }
 
-  const stringTags = value.filter(
-    (tag): tag is string => typeof tag === "string",
-  );
+  const stringTags = value.filter((tag): tag is string => typeof tag === "string");
   if (stringTags.length !== value.length) {
-    reportDecoratorDiagnostic(
-      context,
-      "invalid-tags-config",
-      target,
-      "All tags must be strings.",
-    );
+    reportDecoratorDiagnostic(context, "invalid-tags-config", target, "All tags must be strings.");
     return;
   }
 
@@ -373,12 +320,7 @@ export function $correlationId(
     return;
   }
 
-  storeCorrelationId(
-    context.program,
-    target,
-    location,
-    property as string | undefined,
-  );
+  storeCorrelationId(context.program, target, location, property as string | undefined);
 }
 
 export function $bindings(

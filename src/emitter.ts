@@ -18,10 +18,7 @@ import type {
 import { stringify as yamlStringify } from "yaml";
 import { isStdNamespace, getDoc } from "@typespec/compiler";
 import type { AsyncAPIEmitterOptions } from "./infrastructure/configuration/asyncAPIEmitterOptions.js";
-import {
-  consolidateAsyncAPIState,
-  type AsyncAPIConsolidatedState,
-} from "./state.js";
+import { consolidateAsyncAPIState, type AsyncAPIConsolidatedState } from "./state.js";
 import type {
   AsyncAPIDocument,
   ChannelObject,
@@ -36,10 +33,7 @@ import type {
  * Minimal TypeEmitter that produces JSON Schema objects from TypeSpec models.
  * These are embedded into components.schemas of the AsyncAPI document.
  */
-class AsyncAPISchemaEmitter extends TypeEmitter<
-  SchemaObject,
-  AsyncAPIEmitterOptions
-> {
+class AsyncAPISchemaEmitter extends TypeEmitter<SchemaObject, AsyncAPIEmitterOptions> {
   namespaceDeclaration(_namespace: Namespace): EmitterOutput<SchemaObject> {
     return this.emitter.result.none();
   }
@@ -61,11 +55,7 @@ class AsyncAPISchemaEmitter extends TypeEmitter<
           properties[name] = extracted;
         }
         const propDoc = getDoc(this.emitter.getProgram(), prop);
-        if (
-          propDoc &&
-          typeof properties[name] === "object" &&
-          properties[name] !== null
-        ) {
+        if (propDoc && typeof properties[name] === "object" && properties[name] !== null) {
           properties[name].description = propDoc;
         }
         if (!prop.optional) {
@@ -122,8 +112,7 @@ class AsyncAPISchemaEmitter extends TypeEmitter<
       const extracted = extractValue(this.emitter.emitTypeReference(v.type));
       if (Object.keys(extracted).length === 0) {
         const t = v.type as { kind: string; name?: string; value?: string };
-        if (t.kind === "String" && t.value !== undefined)
-          return { const: t.value };
+        if (t.kind === "String" && t.value !== undefined) return { const: t.value };
         return intrinsicToSchema(t.name ?? "string");
       }
       return extracted;
@@ -150,16 +139,10 @@ class AsyncAPISchemaEmitter extends TypeEmitter<
   }
 
   scalarDeclaration(scalar: any, name: string): EmitterOutput<SchemaObject> {
-    return this.emitter.result.declaration(
-      name,
-      intrinsicToSchema(scalar.name),
-    );
+    return this.emitter.result.declaration(name, intrinsicToSchema(scalar.name));
   }
 
-  scalarInstantiation(
-    scalar: any,
-    name: string | undefined,
-  ): EmitterOutput<SchemaObject> {
+  scalarInstantiation(scalar: any, name: string | undefined): EmitterOutput<SchemaObject> {
     if (name) return this.scalarDeclaration(scalar, name);
     return intrinsicToSchema(scalar.name);
   }
@@ -177,17 +160,11 @@ class AsyncAPISchemaEmitter extends TypeEmitter<
   }
 
   tuple(tuple: any): EmitterOutput<SchemaObject> {
-    const items = tuple.values.map((v: any) =>
-      extractValue(this.emitter.emitTypeReference(v)),
-    );
+    const items = tuple.values.map((v: any) => extractValue(this.emitter.emitTypeReference(v)));
     return { type: "array", items };
   }
 
-  arrayDeclaration(
-    array: any,
-    name: string,
-    elementType: any,
-  ): EmitterOutput<SchemaObject> {
+  arrayDeclaration(array: any, name: string, elementType: any): EmitterOutput<SchemaObject> {
     const extracted = extractValue(this.emitter.emitTypeReference(elementType));
     return {
       type: "array",
@@ -239,17 +216,14 @@ class AsyncAPISchemaEmitter extends TypeEmitter<
     if (kind === "Union") {
       const variants = [...t.variants.values()].map((v: any) => {
         const inner = v.type;
-        if (inner.kind === "String" && inner.value !== undefined)
-          return inner.value;
+        if (inner.kind === "String" && inner.value !== undefined) return inner.value;
         const s = this.typeToSchema(inner);
         return Object.keys(s).length > 0 ? s : { type: "string" };
       });
       const allStrings = variants.every((v: any) => typeof v === "string");
       if (allStrings) return { type: "string", enum: variants };
       return {
-        anyOf: variants.map((v: any) =>
-          typeof v === "string" ? { const: v } : v,
-        ),
+        anyOf: variants.map((v: any) => (typeof v === "string" ? { const: v } : v)),
       };
     }
     if (kind === "Model" && t.indexer) {
@@ -258,8 +232,7 @@ class AsyncAPISchemaEmitter extends TypeEmitter<
     if (kind === "Model" && t.name === "Array") {
       return { type: "array", items: { type: "string" } };
     }
-    if (kind === "Scalar" || kind === "Intrinsic")
-      return intrinsicToSchema(t.name);
+    if (kind === "Scalar" || kind === "Intrinsic") return intrinsicToSchema(t.name);
     if (kind === "String") return { const: t.value };
     if (kind === "Number") return { const: t.value };
     if (kind === "Boolean") return { const: t.value };
@@ -327,21 +300,16 @@ function intrinsicToSchema(typeName: string): SchemaObject {
   }
 }
 
-function extractValue(
-  entity: EmitEntity<SchemaObject> | undefined,
-): SchemaObject {
+function extractValue(entity: EmitEntity<SchemaObject> | undefined): SchemaObject {
   if (!entity) return {};
   // Direct value access
-  if ("value" in entity && entity.value != null)
-    return entity.value as SchemaObject;
+  if ("value" in entity && entity.value != null) return entity.value as SchemaObject;
   // Check kind-based extraction
   const e = entity as unknown as Record<string, unknown>;
-  if (e.kind === "declaration" && e.value != null)
-    return e.value as SchemaObject;
+  if (e.kind === "declaration" && e.value != null) return e.value as SchemaObject;
   if (e.kind === "code" && e.value != null) return e.value as SchemaObject;
   // If the entity IS a plain object schema (no wrapper), return it directly
-  if (!("kind" in entity) && typeof entity === "object")
-    return entity as SchemaObject;
+  if (!("kind" in entity) && typeof entity === "object") return entity as SchemaObject;
   return {};
 }
 
@@ -379,10 +347,11 @@ function generateSchemas(
   const stdlibNames = collectAllStdlibNames(context.program);
 
   try {
-    const assetEmitter = createAssetEmitter<
-      SchemaObject,
-      AsyncAPIEmitterOptions
-    >(context.program, AsyncAPISchemaEmitter, context);
+    const assetEmitter = createAssetEmitter<SchemaObject, AsyncAPIEmitterOptions>(
+      context.program,
+      AsyncAPISchemaEmitter,
+      context,
+    );
 
     assetEmitter.emitProgram({ emitGlobalNamespace: true });
 
@@ -438,9 +407,7 @@ function buildAsyncAPIDocument(
   // Helper: extract return type model name from a TypeSpec operation type
   function getReturnModelName(type: unknown): string | undefined {
     const t = type as {
-      returnType?:
-        | { name?: string; model?: { name?: string }; kind?: string }
-        | undefined;
+      returnType?: { name?: string; model?: { name?: string }; kind?: string } | undefined;
     };
     const rt = t?.returnType;
     if (!rt) return undefined;
@@ -506,8 +473,7 @@ function buildAsyncAPIDocument(
     };
     const typeWithName = type as { name: string };
     const channelKey = opToChannel.get(typeWithName.name) ?? typeWithName.name;
-    const messageName =
-      opData.messageType ?? getReturnModelName(type) ?? typeWithName.name;
+    const messageName = opData.messageType ?? getReturnModelName(type) ?? typeWithName.name;
 
     discoveredOps.push({
       opName: typeWithName.name,
@@ -537,9 +503,7 @@ function buildAsyncAPIDocument(
 
   // 1c. Bare operations (no decorators at all) — auto-discover
   const allKnownOps = new Set(
-    [...state.operations.keys(), ...state.channels.keys()].map(
-      (t) => (t as { name: string }).name,
-    ),
+    [...state.operations.keys(), ...state.channels.keys()].map((t) => (t as { name: string }).name),
   );
   const globalNs = (program.checker as any).getGlobalNamespaceType();
   const namespaces = [globalNs, ...globalNs.namespaces.values()];
@@ -547,9 +511,7 @@ function buildAsyncAPIDocument(
     if (ns.name && isStdNamespace(ns)) continue;
     for (const [opName, op] of ns.operations) {
       if (allKnownOps.has(opName)) continue;
-      const returnType = op.returnType as
-        | { model?: { name?: string } }
-        | undefined;
+      const returnType = op.returnType as { model?: { name?: string } } | undefined;
       const messageName = returnType?.model?.name ?? opName;
       discoveredOps.push({
         opName,
@@ -653,7 +615,11 @@ function buildAsyncAPIDocument(
   for (const [type, data] of state.protocolConfigs) {
     const typeWithName = type as { name: string };
     const channelKey = opToChannel.get(typeWithName.name) ?? typeWithName.name;
-    const protoConfig = data as { protocol?: string; binding?: Record<string, unknown>; [k: string]: unknown };
+    const protoConfig = data as {
+      protocol?: string;
+      binding?: Record<string, unknown>;
+      [k: string]: unknown;
+    };
     if (protoConfig?.protocol && channels[channelKey]) {
       const channel = channels[channelKey];
       channel.bindings = {
@@ -711,18 +677,11 @@ function buildAsyncAPIDocument(
 /**
  * TypeSpec AsyncAPI emitter entry point.
  */
-export async function $onEmit(
-  context: EmitContext<AsyncAPIEmitterOptions>,
-): Promise<void> {
+export async function $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): Promise<void> {
   const options = context.options;
   const rawState = consolidateAsyncAPIState(context.program);
   const schemas = generateSchemas(context);
-  const document = buildAsyncAPIDocument(
-    rawState,
-    schemas,
-    options,
-    context.program,
-  );
+  const document = buildAsyncAPIDocument(rawState, schemas, options, context.program);
 
   const rawFileType = options?.["file-type"] ?? "yaml";
   const fileType: string =

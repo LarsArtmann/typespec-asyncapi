@@ -37,15 +37,9 @@ export type ProtocolPlugin = {
   readonly version: string;
 
   // Optional binding generators
-  generateOperationBinding?: (
-    operation: unknown,
-  ) => Effect.Effect<Record<string, unknown>, Error>;
-  generateMessageBinding?: (
-    message: unknown,
-  ) => Effect.Effect<Record<string, unknown>, Error>;
-  generateServerBinding?: (
-    server: unknown,
-  ) => Effect.Effect<Record<string, unknown>, Error>;
+  generateOperationBinding?: (operation: unknown) => Effect.Effect<Record<string, unknown>, Error>;
+  generateMessageBinding?: (message: unknown) => Effect.Effect<Record<string, unknown>, Error>;
+  generateServerBinding?: (server: unknown) => Effect.Effect<Record<string, unknown>, Error>;
 
   // Optional validation
   validateConfig?: (config: unknown) => Effect.Effect<boolean, Error>;
@@ -61,13 +55,9 @@ class SimplePluginRegistry {
   private readonly plugins = new Map<AsyncAPIProtocolType, ProtocolPlugin>();
 
   register(plugin: ProtocolPlugin): Effect.Effect<void, Error>;
-  getPlugin(
-    protocolName: AsyncAPIProtocolType,
-  ): Effect.Effect<ProtocolPlugin | null, never>;
+  getPlugin(protocolName: AsyncAPIProtocolType): Effect.Effect<ProtocolPlugin | null, never>;
   getAllPlugins(): Effect.Effect<ProtocolPlugin[], never>;
-  isSupported(
-    protocolName: AsyncAPIProtocolType,
-  ): Effect.Effect<boolean, never>;
+  isSupported(protocolName: AsyncAPIProtocolType): Effect.Effect<boolean, never>;
 }
 ```
 
@@ -161,15 +151,11 @@ export const registerBuiltInPlugins = (): Effect.Effect<void, Error> =>
     yield* Effect.log("🚀 Loading built-in protocol plugins...");
 
     // Lazy imports for performance
-    const { kafkaPlugin } = yield* Effect.promise(
-      () => import("./built-in/kafka-plugin.js"),
-    );
+    const { kafkaPlugin } = yield* Effect.promise(() => import("./built-in/kafka-plugin.js"));
     const { websocketPlugin } = yield* Effect.promise(
       () => import("./built-in/websocket-plugin.js"),
     );
-    const { httpPlugin } = yield* Effect.promise(
-      () => import("./built-in/http-plugin.js"),
-    );
+    const { httpPlugin } = yield* Effect.promise(() => import("./built-in/http-plugin.js"));
 
     yield* pluginRegistry.register(kafkaPlugin);
     yield* pluginRegistry.register(websocketPlugin);

@@ -29,21 +29,18 @@ describe("Security Validation", () => {
   });
 
   test("file-type enum is properly constrained", () => {
-    const fileTypeSchema =
-      ASYNC_API_EMITTER_OPTIONS_SCHEMA.properties["file-type"];
+    const fileTypeSchema = ASYNC_API_EMITTER_OPTIONS_SCHEMA.properties["file-type"];
     expect(fileTypeSchema.enum).toContain("yaml");
     expect(fileTypeSchema.enum).toContain("json");
   });
 
   test("asyncapi-version enum is properly constrained", () => {
-    const versionSchema =
-      ASYNC_API_EMITTER_OPTIONS_SCHEMA.properties["asyncapi-version"];
+    const versionSchema = ASYNC_API_EMITTER_OPTIONS_SCHEMA.properties["asyncapi-version"];
     expect(versionSchema.enum).toEqual(["3.0.0"]);
   });
 
   test("protocol-bindings enum is properly constrained", () => {
-    const bindingsSchema =
-      ASYNC_API_EMITTER_OPTIONS_SCHEMA.properties["protocol-bindings"];
+    const bindingsSchema = ASYNC_API_EMITTER_OPTIONS_SCHEMA.properties["protocol-bindings"];
     expect(bindingsSchema.items.enum).toContain("kafka");
     expect(bindingsSchema.items.enum).toContain("amqp");
     expect(bindingsSchema.items.enum).toContain("http");
@@ -54,8 +51,7 @@ describe("Security Validation", () => {
   });
 
   test("versioning sub-object prevents arbitrary properties", () => {
-    const versioningSchema =
-      ASYNC_API_EMITTER_OPTIONS_SCHEMA.properties["versioning"];
+    const versioningSchema = ASYNC_API_EMITTER_OPTIONS_SCHEMA.properties["versioning"];
     expect(versioningSchema.additionalProperties).toBe(false);
     // Properties may not be present in fallback schemas
     if (versioningSchema.properties !== undefined) {
@@ -71,8 +67,6 @@ describe("Security Validation", () => {
     expect(schemaString).not.toContain("{}");
 
     // Ensure we have actual validation rules
-    expect(
-      Object.keys(ASYNC_API_EMITTER_OPTIONS_SCHEMA.properties).length,
-    ).toBeGreaterThan(0);
+    expect(Object.keys(ASYNC_API_EMITTER_OPTIONS_SCHEMA.properties).length).toBeGreaterThan(0);
   });
 });

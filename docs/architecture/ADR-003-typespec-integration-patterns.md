@@ -25,11 +25,8 @@ We implemented a **Comprehensive TypeSpec Integration Strategy** that follows Ty
 
 ```typescript
 // src/index.ts - Standard TypeSpec emitter entry point
-export async function $onEmit(
-  context: EmitContext<AsyncAPIEmitterOptions>,
-): Promise<void> {
-  const { generateAsyncAPIWithEffect } =
-    await import("./emitter-with-effect.js");
+export async function $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): Promise<void> {
+  const { generateAsyncAPIWithEffect } = await import("./emitter-with-effect.js");
   await generateAsyncAPIWithEffect(context);
 }
 ```
@@ -130,12 +127,7 @@ export function $protocol(
   // Validation with diagnostics
   const validation = validateProtocolConfig(protocolConfig);
   if (!validation.valid) {
-    reportDiagnostic(
-      context,
-      target,
-      "invalid-protocol-config",
-      validation.errors,
-    );
+    reportDiagnostic(context, target, "invalid-protocol-config", validation.errors);
     return;
   }
 
@@ -191,9 +183,7 @@ const processTypeSpecProgram = (program: Program) =>
     const decoratedOps = operations.filter((op) => hasAsyncAPIDecorators(op));
 
     // Process each operation through Effect pipeline
-    const processedOps = yield* Effect.all(
-      decoratedOps.map((op) => processOperation(program, op)),
-    );
+    const processedOps = yield* Effect.all(decoratedOps.map((op) => processOperation(program, op)));
 
     return processedOps;
   });
@@ -205,15 +195,9 @@ const processTypeSpecProgram = (program: Program) =>
 const processOperation = (program: Program, operation: Operation) =>
   Effect.gen(function* () {
     // Retrieve decorator state
-    const channelPath = program
-      .stateMap($lib.stateKeys.channelPaths)
-      .get(operation);
-    const operationType = program
-      .stateMap($lib.stateKeys.operationTypes)
-      .get(operation);
-    const protocolConfig = program
-      .stateMap($lib.stateKeys.protocolConfigs)
-      .get(operation);
+    const channelPath = program.stateMap($lib.stateKeys.channelPaths).get(operation);
+    const operationType = program.stateMap($lib.stateKeys.operationTypes).get(operation);
+    const protocolConfig = program.stateMap($lib.stateKeys.protocolConfigs).get(operation);
 
     // Build AsyncAPI operation
     const asyncApiOp: OperationObject = {
@@ -234,15 +218,11 @@ const processModels = (program: Program) =>
     // Find models with @message decorator
     const messageModels = Array.from(program.sourceFiles.values())
       .flatMap((sf) => sf.models)
-      .filter((model) =>
-        program.stateMap($lib.stateKeys.messageConfigs).has(model),
-      );
+      .filter((model) => program.stateMap($lib.stateKeys.messageConfigs).has(model));
 
     // Convert TypeSpec models to AsyncAPI schemas
     const schemas = yield* Effect.all(
-      messageModels.map((model) =>
-        convertModelToAsyncAPISchema(program, model),
-      ),
+      messageModels.map((model) => convertModelToAsyncAPISchema(program, model)),
     );
 
     return schemas;
@@ -332,9 +312,7 @@ const validateTypeSpecInput = (program: Program) =>
     const diagnostics: Diagnostic[] = [];
 
     // Validate all decorated operations
-    for (const [operation, channelPath] of program.stateMap(
-      $lib.stateKeys.channelPaths,
-    )) {
+    for (const [operation, channelPath] of program.stateMap($lib.stateKeys.channelPaths)) {
       if (!channelPath) {
         diagnostics.push(createDiagnostic("missing-channel-path", operation));
       }
@@ -355,10 +333,7 @@ const validateTypeSpecInput = (program: Program) =>
 
 ```typescript
 // Only access state when needed
-const getChannelPath = (
-  program: Program,
-  operation: Operation,
-): string | undefined => {
+const getChannelPath = (program: Program, operation: Operation): string | undefined => {
   const channelMap = program.stateMap($lib.stateKeys.channelPaths);
   return channelMap.get(operation);
 };

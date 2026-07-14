@@ -4,10 +4,7 @@
  */
 
 import { describe, expect, it } from "bun:test";
-import {
-  compileAsyncAPISpecWithoutErrors,
-  parseAsyncAPIOutput,
-} from "../utils/test-helpers.js";
+import { compileAsyncAPISpecWithoutErrors, parseAsyncAPIOutput } from "../utils/test-helpers.js";
 
 describe("Real Compilation Integration Test", () => {
   it("should compile TypeSpec to AsyncAPI 3.0 using programmatic API", async () => {

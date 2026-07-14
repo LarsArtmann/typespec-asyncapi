@@ -83,10 +83,7 @@
 - **Target:**
   ```typescript
   // ✅ AFTER: Type-safe branded types
-  function createChannel(
-    id: ChannelId,
-    path: ChannelPath,
-  ): Effect.Effect<Channel, ValidationError>;
+  function createChannel(id: ChannelId, path: ChannelPath): Effect.Effect<Channel, ValidationError>;
   // Can't swap - compile error!
   createChannel(ChannelPath.create("/path"), ChannelId.create("channel-123")); // ✅
   ```

@@ -123,8 +123,7 @@ result.errors.forEach((error: ValidationError) =>
 **Should be:**
 
 ```typescript
-yield *
-  Effect.all(result.errors.map((error) => Effect.log(`  - ${error.message}`)));
+yield * Effect.all(result.errors.map((error) => Effect.log(`  - ${error.message}`)));
 ```
 
 ### 6. **FILES ARE STILL MASSIVE**

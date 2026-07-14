@@ -10,10 +10,7 @@
 //TODO: CHILD PROCESS SPAWNING ANTI-PATTERN - Using raw spawn() instead of proper test utilities!
 //TODO: IMPORT CHAOS - 6 different imports mixing testing, Effect, fs, and child_process!
 import { describe, it, expect } from "bun:test";
-import {
-  compileAsyncAPISpecWithoutErrors,
-  parseAsyncAPIOutput,
-} from "../utils/test-helpers";
+import { compileAsyncAPISpecWithoutErrors, parseAsyncAPIOutput } from "../utils/test-helpers";
 
 describe("AsyncAPI Basic Functionality", () => {
   async function compileAndParse(source: string) {
@@ -98,10 +95,7 @@ describe("AsyncAPI Basic Functionality", () => {
 
     const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
 
-    const asyncapiDoc = await parseAsyncAPIOutput(
-      outputFiles,
-      "multi-channel.json",
-    );
+    const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "multi-channel.json");
     const doc = asyncapiDoc as any;
 
     // Should have both operations
@@ -115,7 +109,6 @@ describe("AsyncAPI Basic Functionality", () => {
     // Should have both schemas
     expect(doc.components.schemas.UserEvent).toBeDefined();
     expect(doc.components.schemas.OrderEvent).toBeDefined();
-
   });
 
   it("should handle different TypeSpec data types", async () => {
@@ -138,10 +131,7 @@ describe("AsyncAPI Basic Functionality", () => {
 
     const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
 
-    const asyncapiDoc = await parseAsyncAPIOutput(
-      outputFiles,
-      "typed-test.json",
-    );
+    const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "typed-test.json");
     const doc = asyncapiDoc as any;
     const schema = doc.components.schemas.TypedEvent;
 
@@ -158,7 +148,6 @@ describe("AsyncAPI Basic Functionality", () => {
     expect(schema.required).toContain("intField");
     expect(schema.required).toContain("boolField");
     expect(schema.required).not.toContain("optionalField");
-
   });
 
   it("should preserve @doc annotations", async () => {
@@ -186,13 +175,8 @@ describe("AsyncAPI Basic Functionality", () => {
 
     // Validate documentation is preserved
     expect(schema.description).toBe("A well-documented event model");
-    expect(schema.properties.id.description).toBe(
-      "Unique identifier for the event",
-    );
-    expect(schema.properties.description.description).toBe(
-      "Human-readable description",
-    );
-
+    expect(schema.properties.id.description).toBe("Unique identifier for the event");
+    expect(schema.properties.description.description).toBe("Human-readable description");
   });
 
   it("should handle operations with parameters", async () => {
@@ -213,10 +197,7 @@ describe("AsyncAPI Basic Functionality", () => {
 
     const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
 
-    const asyncapiDoc = await parseAsyncAPIOutput(
-      outputFiles,
-      "param-test.json",
-    );
+    const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "param-test.json");
     const doc = asyncapiDoc as any;
 
     // Should have operation with parameters
@@ -224,7 +205,6 @@ describe("AsyncAPI Basic Functionality", () => {
 
     // Verify operation references the correct schema
     expect(doc.components.schemas.ParameterizedEvent).toBeDefined();
-
   });
 
   it("should generate unique operation and channel names", async () => {

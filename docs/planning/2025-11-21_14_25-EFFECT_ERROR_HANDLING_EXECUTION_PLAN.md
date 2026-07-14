@@ -161,27 +161,19 @@ export class TypeSpecCompilationError extends Schema.TaggedError<TypeSpecCompila
   },
 ) {}
 
-export class FileSystemError extends Schema.TaggedError<FileSystemError>()(
-  "FileSystemError",
-  {
-    message: Schema.String,
-    operation: Schema.String.pipe(
-      Schema.fromEnum(["read", "write", "delete", "mkdir", "exists"]),
-    ),
-    path: Schema.String,
-    originalError: Schema.optional(Schema.String),
-  },
-) {}
+export class FileSystemError extends Schema.TaggedError<FileSystemError>()("FileSystemError", {
+  message: Schema.String,
+  operation: Schema.String.pipe(Schema.fromEnum(["read", "write", "delete", "mkdir", "exists"])),
+  path: Schema.String,
+  originalError: Schema.optional(Schema.String),
+}) {}
 
 // RUNTIME ERRORS
-export class RuntimeError extends Schema.TaggedError<RuntimeError>()(
-  "RuntimeError",
-  {
-    message: Schema.String,
-    phase: Schema.optional(Schema.String),
-    context: Schema.optional(Schema.Unknown),
-  },
-) {}
+export class RuntimeError extends Schema.TaggedError<RuntimeError>()("RuntimeError", {
+  message: Schema.String,
+  phase: Schema.optional(Schema.String),
+  context: Schema.optional(Schema.Unknown),
+}) {}
 
 // Error union for comprehensive error handling
 export type AsyncAPIError =
@@ -257,10 +249,7 @@ export const effectLogging = {
       }),
     ),
 
-  logError: (
-    error: Schema.TaggedError<any>,
-    context?: Record<string, unknown>,
-  ) =>
+  logError: (error: Schema.TaggedError<any>, context?: Record<string, unknown>) =>
     Effect.logError(error.message).pipe(
       Effect.annotateLogs({
         errorType: error._tag,
@@ -269,11 +258,7 @@ export const effectLogging = {
       }),
     ),
 
-  logValidation: (
-    field: string,
-    value: unknown,
-    error: AsyncAPIValidationError,
-  ) =>
+  logValidation: (field: string, value: unknown, error: AsyncAPIValidationError) =>
     effectLogging.logError(error, {
       validationField: field,
       attemptedValue: value,
@@ -290,11 +275,7 @@ return Effect.fail(
     constraint: "nonempty_path_starting_with_slash",
     suggestion: 'Channel paths must start with "/" and not be empty',
   }),
-).pipe(
-  Effect.tapError((error) =>
-    effectLogging.logValidation("channelPath", path, error),
-  ),
-);
+).pipe(Effect.tapError((error) => effectLogging.logValidation("channelPath", path, error)));
 ```
 
 **VERIFICATION:** Logs appear in test output, structure is consistent
@@ -311,21 +292,14 @@ return Effect.fail(
 
 ```typescript
 // /src/types/domain/asyncapi-branded-types.ts
-export class ChannelPathError extends Schema.TaggedError<ChannelPathError>()(
-  "ChannelPathError",
-  {
-    message: Schema.String,
-    path: Schema.String,
-    reason: Schema.String.pipe(
-      Schema.fromEnum(["empty", "missing_slash", "invalid_format"]),
-    ),
-    suggestion: Schema.String,
-  },
-) {}
+export class ChannelPathError extends Schema.TaggedError<ChannelPathError>()("ChannelPathError", {
+  message: Schema.String,
+  path: Schema.String,
+  reason: Schema.String.pipe(Schema.fromEnum(["empty", "missing_slash", "invalid_format"])),
+  suggestion: Schema.String,
+}) {}
 
-export const createChannelPath = (
-  path: string,
-): Effect.Effect<ChannelPath, ChannelPathError> => {
+export const createChannelPath = (path: string): Effect.Effect<ChannelPath, ChannelPathError> => {
   if (!path || typeof path !== "string" || !path.trim()) {
     return Effect.fail(
       new ChannelPathError({
@@ -397,9 +371,7 @@ export const errorClassification = {
     }
   },
 
-  getSeverity: (
-    error: AsyncAPIError,
-  ): "low" | "medium" | "high" | "critical" => {
+  getSeverity: (error: AsyncAPIError): "low" | "medium" | "high" | "critical" => {
     switch (error._tag) {
       case "AsyncAPIValidationError":
         return "medium";
@@ -431,9 +403,7 @@ export const smartRetry = <A>(
       const strategy = errorClassification.getRetryStrategy(error);
       return strategy.shouldRetry && attempt < strategy.maxAttempts;
     },
-    schedule: Schedule.exponential("100 millis").pipe(
-      Schedule.upTo("5 seconds"),
-    ),
+    schedule: Schedule.exponential("100 millis").pipe(Schedule.upTo("5 seconds")),
   });
 ```
 
@@ -455,8 +425,7 @@ export const transformTypeSpecError = (
   diagnostic: any, // TypeSpec diagnostic type
 ): TypeSpecCompilationError =>
   new TypeSpecCompilationError({
-    message:
-      diagnostic.message || `TypeSpec compilation error: ${diagnostic.code}`,
+    message: diagnostic.message || `TypeSpec compilation error: ${diagnostic.code}`,
     source: diagnostic.file?.path || "unknown",
     line: diagnostic.pos?.line,
     diagnosticCode: diagnostic.code,
@@ -508,10 +477,7 @@ export const compileWithTypedErrors = (
 // /src/utils/error-recovery-patterns.ts
 export const recoveryPatterns = {
   // Resilient file operations with fallback
-  resilientFileWrite: (
-    path: string,
-    content: string,
-  ): Effect.Effect<void, never> =>
+  resilientFileWrite: (path: string, content: string): Effect.Effect<void, never> =>
     Effect.gen(function* () {
       // Try primary location
       const primaryWrite = Effect.tryPromise({
@@ -546,14 +512,10 @@ export const recoveryPatterns = {
                 }),
             });
 
-            yield* effectLogging.logWithContext(
-              "info",
-              `Fallback write succeeded to ${tempPath}`,
-              {
-                originalPath: path,
-                fallbackPath: tempPath,
-              },
-            );
+            yield* effectLogging.logWithContext("info", `Fallback write succeeded to ${tempPath}`, {
+              originalPath: path,
+              fallbackPath: tempPath,
+            });
           }),
         ),
       );

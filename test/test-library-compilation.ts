@@ -19,10 +19,7 @@ op publishTest(): string;
       emit: ["@lars-artmann/typespec-asyncapi"],
     });
 
-    console.log(
-      "Compilation errors:",
-      diagnostics.filter((d) => d.severity === "error").length,
-    );
+    console.log("Compilation errors:", diagnostics.filter((d) => d.severity === "error").length);
     console.log(
       "All diagnostics:",
       diagnostics.map((d) => `${d.severity}: ${d.message}`).join("\n"),
@@ -33,11 +30,7 @@ op publishTest(): string;
     const path = await import("node:path");
     const yaml = await import("yaml");
 
-    const typeSpecOutputDir = path.join(
-      process.cwd(),
-      "@lars-artmann",
-      "typespec-asyncapi",
-    );
+    const typeSpecOutputDir = path.join(process.cwd(), "@lars-artmann", "typespec-asyncapi");
     const asyncapiFile = path.join(typeSpecOutputDir, "asyncapi.yaml");
 
     try {
@@ -45,14 +38,8 @@ op publishTest(): string;
       const parsed = yaml.parse(content);
 
       console.log("✅ Parsed AsyncAPI version:", parsed.asyncapi);
-      console.log(
-        "✅ Parsed channels:",
-        parsed.channels ? Object.keys(parsed.channels) : 0,
-      );
-      console.log(
-        "✅ Channel names:",
-        parsed.channels ? Object.keys(parsed.channels) : [],
-      );
+      console.log("✅ Parsed channels:", parsed.channels ? Object.keys(parsed.channels) : 0);
+      console.log("✅ Channel names:", parsed.channels ? Object.keys(parsed.channels) : []);
     } catch (error) {
       console.log("❌ Failed to parse generated file:", error.message);
     }
@@ -68,10 +55,7 @@ op publishTest(): string;
         const yaml = await import("yaml");
         const parsed = yaml.parse(content as string);
         console.log("✅ Parsed AsyncAPI version:", parsed.asyncapi);
-        console.log(
-          "✅ Parsed channels:",
-          parsed.channels ? Object.keys(parsed.channels) : 0,
-        );
+        console.log("✅ Parsed channels:", parsed.channels ? Object.keys(parsed.channels) : 0);
 
         if (parsed.channels) {
           console.log("✅ Channel details:", Object.keys(parsed.channels));

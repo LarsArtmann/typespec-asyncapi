@@ -23,10 +23,7 @@ using TypeSpec.AsyncAPI;
   );
 
   // Add library to compiler search path
-  host.compilerHost.addAdditionalFile(
-    join(process.cwd(), "src", "index.js"),
-    "",
-  );
+  host.compilerHost.addAdditionalFile(join(process.cwd(), "src", "index.js"), "");
 
   return host;
 }

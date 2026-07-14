@@ -28,15 +28,7 @@ export type AsyncAPIEmitterOptions = {
 
   /** Protocol binding configurations */
   "protocol-bindings"?: Array<
-    | "http"
-    | "ws"
-    | "mqtt"
-    | "kafka"
-    | "amqp"
-    | "nats"
-    | "redis"
-    | "stomp"
-    | "jms"
+    "http" | "ws" | "mqtt" | "kafka" | "amqp" | "nats" | "redis" | "stomp" | "jms"
   >;
 
   /** Versioning configuration */

@@ -98,10 +98,7 @@ type ValidationFailure = {
   readonly warnings: readonly ValidationWarning[];
 };
 
-type ExtendedValidationResult<T> = (
-  | ValidationSuccess<T>
-  | ValidationFailure
-) & {
+type ExtendedValidationResult<T> = (ValidationSuccess<T> | ValidationFailure) & {
   metrics: {
     duration: number;
     channelCount: number;
@@ -315,8 +312,7 @@ result.errors.forEach((error: ValidationError) =>
 );
 
 // ✅ SHOULD BE:
-yield *
-  Effect.all(result.errors.map((error) => Effect.log(`  - ${error.message}`)));
+yield * Effect.all(result.errors.map((error) => Effect.log(`  - ${error.message}`)));
 ```
 
 ---

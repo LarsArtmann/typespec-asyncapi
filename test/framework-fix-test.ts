@@ -22,10 +22,7 @@ op publishTest(): string;
     console.log("✅ Test framework integration SUCCESS");
     console.log("📊 Result type:", typeof result);
     console.log("📊 Has outputs:", !!result.outputs);
-    console.log(
-      "📊 Output keys:",
-      result.outputs ? Object.keys(result.outputs) : "none",
-    );
+    console.log("📊 Output keys:", result.outputs ? Object.keys(result.outputs) : "none");
     console.log("📊 Has fs:", !!result.program);
 
     // Check outputs (the correct property!)
@@ -36,9 +33,7 @@ op publishTest(): string;
           const yaml = await import("yaml");
           const parsed = yaml.parse(value);
           console.log(`✅ AsyncAPI version: ${parsed.asyncapi}`);
-          console.log(
-            `✅ Channels: ${parsed.channels ? Object.keys(parsed.channels).length : 0}`,
-          );
+          console.log(`✅ Channels: ${parsed.channels ? Object.keys(parsed.channels).length : 0}`);
         }
       }
     }

@@ -159,9 +159,7 @@ Your PR must include:
 
 ```typescript
 // ✅ Good: Explicit types and Effect.TS patterns
-export const processOperation = (
-  operation: Operation,
-): Effect.Effect<AsyncAPIOperation, Error> =>
+export const processOperation = (operation: Operation): Effect.Effect<AsyncAPIOperation, Error> =>
   Effect.gen(function* () {
     const channelPath = yield* extractChannelPath(operation);
     const operationType = yield* determineOperationType(operation);
@@ -188,9 +186,7 @@ export function processOperation(operation: any): any {
 
 ```typescript
 // ✅ Good: Effect.TS error handling
-const validateConfig = (
-  config: unknown,
-): Effect.Effect<ProtocolConfig, ValidationError> =>
+const validateConfig = (config: unknown): Effect.Effect<ProtocolConfig, ValidationError> =>
   Effect.gen(function* () {
     if (typeof config !== "object") {
       return yield* Effect.fail(new ValidationError("Config must be object"));
@@ -218,9 +214,7 @@ describe("Channel Decorator", () => {
     const operation = createMockOperation("publishUserEvent");
     const channelPath = "user.{userId}.events";
 
-    const result = await Effect.runPromise(
-      processChannelDecorator(operation, channelPath),
-    );
+    const result = await Effect.runPromise(processChannelDecorator(operation, channelPath));
 
     expect(result.channelPath).toBe("user.{userId}.events");
     expect(result.parameters).toEqual(["userId"]);
@@ -229,9 +223,7 @@ describe("Channel Decorator", () => {
   it("should fail gracefully with invalid paths", async () => {
     const operation = createMockOperation("invalidOp");
 
-    const result = await Effect.runPromise(
-      Effect.either(processChannelDecorator(operation, "")),
-    );
+    const result = await Effect.runPromise(Effect.either(processChannelDecorator(operation, "")));
 
     expect(result._tag).toBe("Left");
     expect(result.left).toBeInstanceOf(ValidationError);

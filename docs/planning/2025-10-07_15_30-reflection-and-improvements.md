@@ -226,9 +226,7 @@ const AsyncAPIDocumentSchema = Schema.Struct({
 });
 
 // Type-safe parse
-const parseAsyncAPIDocument = Schema.decodeUnknownEither(
-  AsyncAPIDocumentSchema,
-);
+const parseAsyncAPIDocument = Schema.decodeUnknownEither(AsyncAPIDocumentSchema);
 
 // Usage in tests
 const result = parseAsyncAPIDocument(testResult.asyncapiDoc);
@@ -288,14 +286,8 @@ if (Effect.Either.isRight(result)) {
 import { Schema } from "@effect/schema";
 
 const ChannelSchema = Schema.Struct({
-  address: Schema.String.pipe(
-    Schema.minLength(1),
-    Schema.pattern(/^[a-zA-Z0-9.\-_]+$/),
-  ),
-  messages: Schema.NonEmptyRecord(
-    Schema.String,
-    Schema.Struct({ $ref: Schema.String }),
-  ),
+  address: Schema.String.pipe(Schema.minLength(1), Schema.pattern(/^[a-zA-Z0-9.\-_]+$/)),
+  messages: Schema.NonEmptyRecord(Schema.String, Schema.Struct({ $ref: Schema.String })),
 });
 
 // Parse with automatic validation
@@ -672,9 +664,7 @@ test("AsyncAPI emitter handles any valid model name", () => {
           }
         `;
         const result = compileWithCLI(typespec);
-        expect(result.asyncapiDoc?.components?.schemas).toHaveProperty(
-          modelName,
-        );
+        expect(result.asyncapiDoc?.components?.schemas).toHaveProperty(modelName);
       },
     ),
     { numRuns: 100 },

@@ -170,11 +170,7 @@ class Service {
 
 // PREFER: Functional composition
 const serviceMethod = (dependencies: Dependencies) => (input: Input) =>
-  pipe(
-    Effect.succeed(input),
-    Effect.flatMap(dependencies.helper),
-    Effect.map(transform),
-  );
+  pipe(Effect.succeed(input), Effect.flatMap(dependencies.helper), Effect.map(transform));
 ```
 
 ## Results Achieved

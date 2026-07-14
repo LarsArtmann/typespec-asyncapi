@@ -5,10 +5,7 @@
  * Replaces custom ProtocolBindingFactory with AsyncAPI specification compliance.
  */
 import { expect, test, describe } from "bun:test";
-import {
-  PROTOCOL_LIST,
-  type AsyncAPIProtocol,
-} from "../../src/constants/protocols.js";
+import { PROTOCOL_LIST, type AsyncAPIProtocol } from "../../src/constants/protocols.js";
 
 // Standard AsyncAPI 3.0 binding format helpers
 const createStandardBinding = (
@@ -62,9 +59,7 @@ describe("AsyncAPI 3.0 Standard Protocol Bindings", () => {
 
     expect(serverBindings).toBeDefined();
     expect(serverBindings.kafka).toBeDefined();
-    expect(serverBindings.kafka.schemaRegistryUrl).toBe(
-      "http://localhost:8081",
-    );
+    expect(serverBindings.kafka.schemaRegistryUrl).toBe("http://localhost:8081");
     expect(serverBindings.kafka.clientId).toBe("test-client");
     expect(serverBindings.kafka.bindingVersion).toBe("0.5.0");
 

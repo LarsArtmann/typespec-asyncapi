@@ -104,9 +104,7 @@ graph TD
 // Create: test/integration/harness.ts
 export class IntegrationTestHarness {
   async compileTypeSpec(source: string): Promise<CompilationResult>;
-  async generateAsyncAPI(
-    compilation: CompilationResult,
-  ): Promise<AsyncAPIObject>;
+  async generateAsyncAPI(compilation: CompilationResult): Promise<AsyncAPIObject>;
   async validateOutput(
     actual: AsyncAPIObject,
     expected: Partial<AsyncAPIObject>,
@@ -120,10 +118,7 @@ export class IntegrationTestHarness {
 // Create: test/integration/comparison.ts
 export class AsyncAPIComparator {
   compareChannels(actual: Channel[], expected: Channel[]): ComparisonResult;
-  compareOperations(
-    actual: Operation[],
-    expected: Operation[],
-  ): ComparisonResult;
+  compareOperations(actual: Operation[], expected: Operation[]): ComparisonResult;
   compareSchemas(actual: Schema[], expected: Schema[]): ComparisonResult;
 }
 ```
@@ -165,9 +160,7 @@ export class PipelineValidator {
 // Enhance: src/domain/decorators/security.ts
 export const $security = (context, target, config) => {
   // Access TypeSpec state map for security configs
-  const securityConfigs = context.program.stateMap(
-    $lib.stateKeys.securityConfigs,
-  );
+  const securityConfigs = context.program.stateMap($lib.stateKeys.securityConfigs);
 
   // Process into AsyncAPI document
   if (securityConfigs.has(target)) {

@@ -254,9 +254,7 @@ How do we safely migrate from old implementations to new library utilities **wit
 const USE_NEW_LIBRARY_UTILS = process.env.USE_NEW_LIBRARY_UTILS === "true";
 
 // Gradual rollout with safe fallback
-const result = USE_NEW_LIBRARY_UTILS
-  ? parseYaml(content)
-  : customParseYaml(content);
+const result = USE_NEW_LIBRARY_UTILS ? parseYaml(content) : customParseYaml(content);
 ```
 
 **Pros:** Safe rollout, easy rollback, A/B testing capability

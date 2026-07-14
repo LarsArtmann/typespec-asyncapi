@@ -30,13 +30,11 @@ describe("Options Integration", () => {
 
   test("schema rejects invalid enum values", () => {
     // Test that our enum constraints would catch invalid values
-    const fileTypeSchema =
-      ASYNC_API_EMITTER_OPTIONS_SCHEMA.properties["file-type"];
+    const fileTypeSchema = ASYNC_API_EMITTER_OPTIONS_SCHEMA.properties["file-type"];
     expect(fileTypeSchema.enum).toEqual(["yaml", "json"]);
     expect(fileTypeSchema.enum).not.toContain("xml"); // Invalid format
 
-    const versionSchema =
-      ASYNC_API_EMITTER_OPTIONS_SCHEMA.properties["asyncapi-version"];
+    const versionSchema = ASYNC_API_EMITTER_OPTIONS_SCHEMA.properties["asyncapi-version"];
     expect(versionSchema.enum).toEqual(["3.0.0"]);
     expect(versionSchema.enum).not.toContain("2.0.0"); // Unsupported version
   });
@@ -46,17 +44,11 @@ describe("Options Integration", () => {
     expect(ASYNC_API_EMITTER_OPTIONS_SCHEMA.additionalProperties).toBe(false);
 
     // Ensure all top-level properties are explicitly defined
-    const allowedProperties = Object.keys(
-      ASYNC_API_EMITTER_OPTIONS_SCHEMA.properties,
-    );
+    const allowedProperties = Object.keys(ASYNC_API_EMITTER_OPTIONS_SCHEMA.properties);
     expect(allowedProperties.length).toBeGreaterThan(5);
 
     // Ensure no arbitrary properties would be allowed
-    expect(ASYNC_API_EMITTER_OPTIONS_SCHEMA.additionalProperties).not.toBe(
-      true,
-    );
-    expect(
-      ASYNC_API_EMITTER_OPTIONS_SCHEMA.additionalProperties,
-    ).not.toBeUndefined();
+    expect(ASYNC_API_EMITTER_OPTIONS_SCHEMA.additionalProperties).not.toBe(true);
+    expect(ASYNC_API_EMITTER_OPTIONS_SCHEMA.additionalProperties).not.toBeUndefined();
   });
 });

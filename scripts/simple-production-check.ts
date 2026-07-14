@@ -69,17 +69,13 @@ class SimpleProductionChecker {
       const distFiles = await readdir(distPath);
 
       const requiredFiles = ["index.js", "lib.js"];
-      const missingFiles = requiredFiles.filter(
-        (file) => !distFiles.includes(file),
-      );
+      const missingFiles = requiredFiles.filter((file) => !distFiles.includes(file));
 
       if (missingFiles.length === 0) {
         console.log(`✅ Build artifacts: PASSED (${distFiles.length} files)`);
         this.passedChecks++;
       } else {
-        console.log(
-          `❌ Build artifacts: FAILED - Missing: ${missingFiles.join(", ")}`,
-        );
+        console.log(`❌ Build artifacts: FAILED - Missing: ${missingFiles.join(", ")}`);
         this.criticalFailures.push("Missing build artifacts");
       }
     } catch (error) {
@@ -97,16 +93,8 @@ class SimpleProductionChecker {
       const packageContent = await readFile(packagePath, "utf8");
       const packageJson = JSON.parse(packageContent);
 
-      const requiredFields = [
-        "name",
-        "version",
-        "description",
-        "main",
-        "types",
-      ];
-      const missingFields = requiredFields.filter(
-        (field) => !packageJson[field],
-      );
+      const requiredFields = ["name", "version", "description", "main", "types"];
+      const missingFields = requiredFields.filter((field) => !packageJson[field]);
 
       const hasTypeSpecDep =
         packageJson.peerDependencies?.["@typespec/compiler"] ||
@@ -126,9 +114,7 @@ class SimpleProductionChecker {
         }
       }
     } catch (error) {
-      console.log(
-        "❌ Package configuration: FAILED - Cannot read package.json",
-      );
+      console.log("❌ Package configuration: FAILED - Cannot read package.json");
       this.criticalFailures.push("Invalid package.json");
     }
   }
@@ -139,10 +125,7 @@ class SimpleProductionChecker {
 
     try {
       await access(join(this.rootPath, "README.md"));
-      const readmeContent = await readFile(
-        join(this.rootPath, "README.md"),
-        "utf8",
-      );
+      const readmeContent = await readFile(join(this.rootPath, "README.md"), "utf8");
 
       const qualityChecks = [
         readmeContent.length > 1000,
@@ -155,14 +138,10 @@ class SimpleProductionChecker {
       const passedQualityChecks = qualityChecks.filter(Boolean).length;
 
       if (passedQualityChecks >= 4) {
-        console.log(
-          `✅ Documentation: PASSED (${passedQualityChecks}/5 quality criteria)`,
-        );
+        console.log(`✅ Documentation: PASSED (${passedQualityChecks}/5 quality criteria)`);
         this.passedChecks++;
       } else {
-        console.log(
-          `⚠️ Documentation: PARTIAL (${passedQualityChecks}/5 quality criteria)`,
-        );
+        console.log(`⚠️ Documentation: PARTIAL (${passedQualityChecks}/5 quality criteria)`);
         this.passedChecks += 0.5;
       }
     } catch (error) {
@@ -229,9 +208,7 @@ class SimpleProductionChecker {
         this.criticalFailures.push("Missing essential AsyncAPI decorators");
       }
     } catch (error) {
-      console.log(
-        "❌ AsyncAPI compliance: FAILED - Decorators directory not found",
-      );
+      console.log("❌ AsyncAPI compliance: FAILED - Decorators directory not found");
       this.criticalFailures.push("AsyncAPI decorators not implemented");
     }
   }
@@ -245,16 +222,9 @@ class SimpleProductionChecker {
       await access(join(this.rootPath, "src", "plugins", "interfaces"));
 
       // Check for at least one cloud provider plugin
-      const cloudProvidersPath = join(
-        this.rootPath,
-        "src",
-        "plugins",
-        "cloud-providers",
-      );
+      const cloudProvidersPath = join(this.rootPath, "src", "plugins", "cloud-providers");
       const cloudProviders = await readdir(cloudProvidersPath);
-      const pluginFiles = cloudProviders.filter((file) =>
-        file.endsWith("-plugin.ts"),
-      );
+      const pluginFiles = cloudProviders.filter((file) => file.endsWith("-plugin.ts"));
 
       if (pluginFiles.length >= 2) {
         console.log(
@@ -288,9 +258,7 @@ class SimpleProductionChecker {
       console.log("🚀 All critical validations passed. Ready for deployment.");
     } else if (this.criticalFailures.length === 0 && successRate >= 70) {
       console.log("\n⚠️  MOSTLY READY");
-      console.log(
-        "👍 No critical failures, but some improvements recommended.",
-      );
+      console.log("👍 No critical failures, but some improvements recommended.");
     } else {
       console.log("\n❌ NOT PRODUCTION READY");
       console.log("🔧 Critical issues must be resolved before deployment.");

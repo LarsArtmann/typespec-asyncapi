@@ -22,15 +22,9 @@ export interface ProtocolPlugin {
   readonly version: string;
 
   // Optional binding generators
-  generateOperationBinding?: (
-    operation: unknown,
-  ) => Effect.Effect<Record<string, unknown>, Error>;
-  generateMessageBinding?: (
-    message: unknown,
-  ) => Effect.Effect<Record<string, unknown>, Error>;
-  generateServerBinding?: (
-    server: unknown,
-  ) => Effect.Effect<Record<string, unknown>, Error>;
+  generateOperationBinding?: (operation: unknown) => Effect.Effect<Record<string, unknown>, Error>;
+  generateMessageBinding?: (message: unknown) => Effect.Effect<Record<string, unknown>, Error>;
+  generateServerBinding?: (server: unknown) => Effect.Effect<Record<string, unknown>, Error>;
 
   // Optional validation
   validateConfig?: (config: unknown) => Effect.Effect<boolean, Error>;
@@ -350,9 +344,7 @@ interface PluginConfig {
   };
 }
 
-const validatePluginConfig = (
-  config: unknown,
-): Effect.Effect<PluginConfig, Error> =>
+const validatePluginConfig = (config: unknown): Effect.Effect<PluginConfig, Error> =>
   Effect.gen(function* () {
     // Type-safe configuration validation
     if (typeof config !== "object" || config === null) {
@@ -362,9 +354,7 @@ const validatePluginConfig = (
     const cfg = config as Record<string, unknown>;
 
     if (typeof cfg.endpoint !== "string") {
-      return yield* Effect.fail(
-        new Error("endpoint is required and must be a string"),
-      );
+      return yield* Effect.fail(new Error("endpoint is required and must be a string"));
     }
 
     // ... additional validation
@@ -415,9 +405,7 @@ describe("MQTT Plugin", () => {
   it("should generate operation binding", async () => {
     const mockOperation = { name: "publishMessage" };
 
-    const result = await Effect.runPromise(
-      mqttPlugin.generateOperationBinding!(mockOperation),
-    );
+    const result = await Effect.runPromise(mqttPlugin.generateOperationBinding!(mockOperation));
 
     expect(result).toEqual({
       mqtt: {
@@ -432,9 +420,7 @@ describe("MQTT Plugin", () => {
   it("should validate configuration", async () => {
     const validConfig = { qos: 1, retain: true };
 
-    const isValid = await Effect.runPromise(
-      mqttPlugin.validateConfig!(validConfig),
-    );
+    const isValid = await Effect.runPromise(mqttPlugin.validateConfig!(validConfig));
 
     expect(isValid).toBe(true);
   });

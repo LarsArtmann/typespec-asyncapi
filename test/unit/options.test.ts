@@ -70,9 +70,7 @@ describe("AsyncAPI Emitter Options", () => {
   });
 
   test("should reject invalid asyncapi-version", () => {
-    expect(() =>
-      parseAsyncAPIEmitterOptions({ "asyncapi-version": "2.0.0" }),
-    ).toThrow();
+    expect(() => parseAsyncAPIEmitterOptions({ "asyncapi-version": "2.0.0" })).toThrow();
   });
 
   test("should reject invalid protocol-bindings", () => {
@@ -139,9 +137,7 @@ describe("AsyncAPI Emitter Options", () => {
   });
 
   test("isAsyncAPIEmitterOptions should return true for valid options", () => {
-    expect(
-      isAsyncAPIEmitterOptions({ "output-file": "test", "file-type": "yaml" }),
-    ).toBe(true);
+    expect(isAsyncAPIEmitterOptions({ "output-file": "test", "file-type": "yaml" })).toBe(true);
   });
 
   test("isAsyncAPIEmitterOptions should return false for invalid options", () => {
@@ -157,19 +153,13 @@ describe("AsyncAPI Emitter Options", () => {
 
   test("AsyncAPIEmitterOptionsSchema should be compatible with TypeSpec", () => {
     expect(ASYNC_API_EMITTER_OPTIONS_SCHEMA).toHaveProperty("type", "object");
-    expect(ASYNC_API_EMITTER_OPTIONS_SCHEMA).toHaveProperty(
-      "additionalProperties",
-      false,
-    );
+    expect(ASYNC_API_EMITTER_OPTIONS_SCHEMA).toHaveProperty("additionalProperties", false);
     expect(ASYNC_API_EMITTER_OPTIONS_SCHEMA).toHaveProperty("$defs");
     expect(ASYNC_API_EMITTER_OPTIONS_SCHEMA).toHaveProperty("$ref");
 
     const defs = ASYNC_API_EMITTER_OPTIONS_SCHEMA.$defs as Record<string, any>;
     expect(defs).toHaveProperty("AsyncAPIEmitterOptions");
-    const properties = defs.AsyncAPIEmitterOptions.properties as Record<
-      string,
-      unknown
-    >;
+    const properties = defs.AsyncAPIEmitterOptions.properties as Record<string, unknown>;
     expect(properties).toHaveProperty("output-file");
     expect(properties).toHaveProperty("file-type");
     expect(properties).toHaveProperty("asyncapi-version");
@@ -181,10 +171,7 @@ describe("AsyncAPI Emitter Options", () => {
     expect(ASYNC_API_EMITTER_OPTIONS_SCHEMA.additionalProperties).toBe(false);
 
     const defs = ASYNC_API_EMITTER_OPTIONS_SCHEMA.$defs as Record<string, any>;
-    const properties = defs.AsyncAPIEmitterOptions.properties as Record<
-      string,
-      unknown
-    >;
+    const properties = defs.AsyncAPIEmitterOptions.properties as Record<string, unknown>;
     expect(properties["file-type"]).toHaveProperty("enum", ["yaml", "json"]);
     expect(properties["asyncapi-version"]).toHaveProperty("enum", ["3.0.0"]);
   });
@@ -330,8 +317,7 @@ describe("Path Template Validation Tests", () => {
 
   test("should validate all supported template variables", () => {
     const allVariablesOptions = {
-      "output-file":
-        "{cmd}/{project-root}/{emitter-name}/{output-dir}/complete.yaml",
+      "output-file": "{cmd}/{project-root}/{emitter-name}/{output-dir}/complete.yaml",
     };
 
     const result = parseAsyncAPIEmitterOptions(allVariablesOptions);
@@ -365,8 +351,7 @@ describe("Path Template Validation Tests", () => {
 
   test("should validate complex nested paths with templates", () => {
     const nestedPathOptions = {
-      "output-file":
-        "{project-root}/api-specs/{emitter-name}/v1/{cmd}-generated.yaml",
+      "output-file": "{project-root}/api-specs/{emitter-name}/v1/{cmd}-generated.yaml",
     };
 
     const result = parseAsyncAPIEmitterOptions(nestedPathOptions);

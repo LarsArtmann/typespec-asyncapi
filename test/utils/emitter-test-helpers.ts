@@ -17,9 +17,7 @@ import YAML from "yaml";
  * @param options - AsyncAPI emitter options (file-type, output-file, etc.)
  * @returns Configured EmitterTester instance
  */
-export async function createAsyncAPIEmitterTester(
-  options: AsyncAPIEmitterOptions = {},
-) {
+export async function createAsyncAPIEmitterTester(options: AsyncAPIEmitterOptions = {}) {
   const packageRoot = await findTestPackageRoot(import.meta.url);
 
   return createTester(packageRoot, {
@@ -46,10 +44,7 @@ export async function createAsyncAPIEmitterTester(
  * @param options - AsyncAPI emitter options
  * @returns AsyncAPI document, diagnostics, program, and outputs
  */
-export async function compileAsyncAPI(
-  source: string,
-  options: AsyncAPIEmitterOptions = {},
-) {
+export async function compileAsyncAPI(source: string, options: AsyncAPIEmitterOptions = {}) {
   const tester = await createAsyncAPIEmitterTester(options);
   const result = await tester.compile(source);
 
@@ -59,9 +54,7 @@ export async function compileAsyncAPI(
     const filename = virtualPath.split("/").pop() || "";
     const isOutputFile =
       !virtualPath.includes("node_modules") &&
-      (filename.endsWith(".yaml") ||
-        filename.endsWith(".json") ||
-        filename.endsWith(".yml"));
+      (filename.endsWith(".yaml") || filename.endsWith(".json") || filename.endsWith(".yml"));
 
     if (isOutputFile && typeof content === "string") {
       let doc: any;
@@ -70,11 +63,7 @@ export async function compileAsyncAPI(
       } catch {
         doc = YAML.parse(content);
       }
-      if (
-        doc &&
-        typeof doc === "object" &&
-        ("asyncapi" in doc || "channels" in doc)
-      ) {
+      if (doc && typeof doc === "object" && ("asyncapi" in doc || "channels" in doc)) {
         return {
           asyncApiDoc: doc,
           diagnostics: result.program.diagnostics,
@@ -112,9 +101,7 @@ export async function compileAsyncAPIWithoutErrors(
 
   const errors = result.diagnostics.filter((d) => d.severity === "error");
   if (errors.length > 0) {
-    const errorMessages = errors
-      .map((e) => `${e.code}: ${e.message}`)
-      .join("\n");
+    const errorMessages = errors.map((e) => `${e.code}: ${e.message}`).join("\n");
     throw new Error(`Compilation failed with errors:\n${errorMessages}`);
   }
 

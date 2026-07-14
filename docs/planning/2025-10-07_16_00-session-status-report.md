@@ -267,10 +267,7 @@ const AsyncAPIDocumentSchema = Schema.Struct({
     title: Schema.String,
     version: Schema.String,
   }),
-  channels: Schema.Record(
-    Schema.String.pipe(Schema.brand("ChannelName")),
-    ChannelSchema,
-  ),
+  channels: Schema.Record(Schema.String.pipe(Schema.brand("ChannelName")), ChannelSchema),
 });
 ```
 
