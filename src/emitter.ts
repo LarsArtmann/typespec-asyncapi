@@ -22,8 +22,15 @@ import {
   consolidateAsyncAPIState,
   type AsyncAPIConsolidatedState,
 } from "./state.js";
-
-type SchemaObject = Record<string, unknown>;
+import type {
+  AsyncAPIDocument,
+  ChannelObject,
+  ComponentsObject,
+  MessageObject,
+  OperationObject,
+  SchemaObject,
+  ServerObject,
+} from "./domain/models/asyncapi-document.js";
 
 /**
  * Minimal TypeEmitter that produces JSON Schema objects from TypeSpec models.
@@ -38,7 +45,7 @@ class AsyncAPISchemaEmitter extends TypeEmitter<
   }
 
   modelDeclaration(model: any): EmitterOutput<SchemaObject> {
-    const properties: Record<string, unknown> = {};
+    const properties: Record<string, SchemaObject> = {};
     const required: string[] = [];
 
     // Collect properties from base models (inheritance chain)
@@ -59,7 +66,7 @@ class AsyncAPISchemaEmitter extends TypeEmitter<
           typeof properties[name] === "object" &&
           properties[name] !== null
         ) {
-          (properties[name] as SchemaObject).description = propDoc;
+          properties[name].description = propDoc;
         }
         if (!prop.optional) {
           required.push(name);
@@ -78,7 +85,7 @@ class AsyncAPISchemaEmitter extends TypeEmitter<
   }
 
   modelLiteral(model: any): EmitterOutput<SchemaObject> {
-    const properties: Record<string, unknown> = {};
+    const properties: Record<string, SchemaObject> = {};
     const required: string[] = [];
 
     for (const [name, prop] of model.properties) {
@@ -421,11 +428,11 @@ function buildAsyncAPIDocument(
   schemas: Record<string, SchemaObject>,
   options: AsyncAPIEmitterOptions,
   program: Program,
-): Record<string, unknown> {
-  const channels: Record<string, unknown> = {};
-  const operations: Record<string, unknown> = {};
-  const servers: Record<string, unknown> = {};
-  const messages: Record<string, unknown> = {};
+): AsyncAPIDocument {
+  const channels: Record<string, ChannelObject> = {};
+  const operations: Record<string, OperationObject> = {};
+  const servers: Record<string, ServerObject> = {};
+  const messages: Record<string, MessageObject> = {};
   const securitySchemes: Record<string, unknown> = {};
 
   // Helper: extract return type model name from a TypeSpec operation type
@@ -453,15 +460,13 @@ function buildAsyncAPIDocument(
   }
 
   const discoveredOps: DiscoveredOp[] = [];
-  const channelKeys = new Set<string>();
 
   // Helper: ensure a channel exists in the channels map
-  function ensureChannel(channelKey: string): Record<string, unknown> {
+  function ensureChannel(channelKey: string): ChannelObject {
     if (!channels[channelKey]) {
       channels[channelKey] = { address: channelKey, messages: {} };
     }
-    channelKeys.add(channelKey);
-    return channels[channelKey] as Record<string, unknown>;
+    return channels[channelKey];
   }
 
   // Helper: register a message in components and link it to a channel
@@ -479,7 +484,7 @@ function buildAsyncAPIDocument(
       };
     }
     const channel = ensureChannel(channelKey);
-    const channelMsgs = (channel.messages ?? {}) as Record<string, unknown>;
+    const channelMsgs = channel.messages ?? {};
     channelMsgs[messageName] = { $ref: `#/components/messages/${messageName}` };
     channel.messages = channelMsgs;
   }
@@ -583,7 +588,6 @@ function buildAsyncAPIDocument(
     };
     const typeWithName = type as { name: string };
     const msgKey = msgData.messageId ?? typeWithName.name;
-    // Update existing message or create new one
     messages[msgKey] = {
       name: msgData.title ?? typeWithName.name,
       contentType: msgData.contentType ?? "application/json",
@@ -596,9 +600,9 @@ function buildAsyncAPIDocument(
   for (const [type, data] of state.protocolConfigs) {
     const typeWithName = type as { name: string };
     const channelKey = opToChannel.get(typeWithName.name) ?? typeWithName.name;
-    const protoConfig = data as { protocol?: string; [k: string]: unknown };
+    const protoConfig = data as { protocol?: string; binding?: Record<string, unknown>; [k: string]: unknown };
     if (protoConfig?.protocol && channels[channelKey]) {
-      const channel = channels[channelKey] as Record<string, unknown>;
+      const channel = channels[channelKey];
       channel.bindings = {
         [protoConfig.protocol]: protoConfig.binding ?? {},
       };
@@ -629,8 +633,14 @@ function buildAsyncAPIDocument(
     securitySchemes[secData.name] = secData.scheme;
   }
 
-  return {
-    asyncapi: options?.["asyncapi-version"] ?? "3.0.0",
+  const components: ComponentsObject = {};
+  if (Object.keys(messages).length > 0) components.messages = messages;
+  if (Object.keys(schemas).length > 0) components.schemas = schemas;
+  if (Object.keys(securitySchemes).length > 0)
+    components.securitySchemes = securitySchemes as ComponentsObject["securitySchemes"];
+
+  const document: AsyncAPIDocument = {
+    asyncapi: "3.0.0",
     info: {
       title: options?.title ?? "Generated API",
       version: options?.version ?? "1.0.0",
@@ -639,13 +649,10 @@ function buildAsyncAPIDocument(
     ...(Object.keys(servers).length > 0 ? { servers } : {}),
     channels,
     operations: Object.keys(operations).length > 0 ? operations : undefined,
-    components: {
-      messages: Object.keys(messages).length > 0 ? messages : undefined,
-      schemas: Object.keys(schemas).length > 0 ? schemas : undefined,
-      securitySchemes:
-        Object.keys(securitySchemes).length > 0 ? securitySchemes : undefined,
-    },
+    components: Object.keys(components).length > 0 ? components : undefined,
   };
+
+  return document;
 }
 
 /**
