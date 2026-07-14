@@ -1,9 +1,14 @@
 /**
  * Test helpers for AsyncAPI emitter testing.
  *
- * Provides two APIs:
- * 1. Legacy: createAsyncAPITestHost() + compileAndGetAsyncAPI() — used by domain/e2e tests
- * 2. Modern: compileAsyncAPI() / compileAsyncAPIWithoutErrors() — used by new integration tests
+ * PRIMARY API (use for new tests):
+ *   compileAsyncAPI(source, options?) -> { asyncApiDoc, diagnostics, outputs, ... }
+ *   compileAsyncAPIWithoutErrors(source, options?) -> same but throws on error diagnostics
+ *
+ * LEGACY WRAPPERS (thin delegates, safe to use in existing tests):
+ *   createAsyncAPITestHost() + compileAndGetAsyncAPI(host, path) -> asyncApiDoc
+ *   compileAsyncAPISpecRaw / compileAsyncAPISpecWithoutErrors -> { diagnostics, outputFiles, program }
+ *   compileAsyncAPISpec / parseAsyncAPIOutput -> asyncApiDoc
  */
 
 import { createTester, findTestPackageRoot } from "@typespec/compiler/testing";
@@ -154,9 +159,31 @@ function parseContent(content: string): Record<string, unknown> | null {
   }
 }
 
+function extractAsyncAPIFromFs(virtualFs: Map<string, string>): AsyncAPIObject | null {
+  for (const [virtualPath, content] of virtualFs) {
+    const filename = virtualPath.split("/").pop() || "";
+    const isOutputFile =
+      !virtualPath.includes("node_modules") &&
+      (filename.endsWith(".yaml") || filename.endsWith(".json") || filename.endsWith(".yml"));
+
+    if (isOutputFile && typeof content === "string") {
+      let doc: any;
+      try {
+        doc = JSON.parse(content);
+      } catch {
+        doc = YAML.parse(content);
+      }
+      if (doc && typeof doc === "object" && ("asyncapi" in doc || "channels" in doc)) {
+        return doc;
+      }
+    }
+  }
+  return null;
+}
+
 /**
- * Raw compilation that returns diagnostics without throwing on errors.
- * Uses two passes: one with createInstance for diagnostics, one with emit for output.
+ * Two-pass compilation for diagnostic-focused tests.
+ * Pass 1 gets diagnostics without throwing; Pass 2 gets output.
  */
 async function compileRaw(source: string, options: AsyncAPIEmitterOptions = {}) {
   const packageRoot = await findTestPackageRoot(import.meta.url);
@@ -165,7 +192,6 @@ async function compileRaw(source: string, options: AsyncAPIEmitterOptions = {}) 
     source.includes("import '@lars-artmann/typespec-asyncapi'");
   const hasOwnUsing = source.includes("using TypeSpec.AsyncAPI");
 
-  // Pass 1: Get diagnostics without throwing
   let diagTester = createTester(packageRoot, {
     libraries: ["@lars-artmann/typespec-asyncapi"],
   });
@@ -181,7 +207,6 @@ async function compileRaw(source: string, options: AsyncAPIEmitterOptions = {}) 
   };
   const [, diagnostics] = await instance.compileAndDiagnose(source, emitOptions);
 
-  // Pass 2: Get output (may throw if errors exist, but we already have diagnostics)
   let asyncApiDoc: AsyncAPIObject | null = null;
   let outputFiles: Map<string, string> = new Map();
   try {
@@ -204,31 +229,7 @@ async function compileRaw(source: string, options: AsyncAPIEmitterOptions = {}) 
     diagnostics: [...diagnostics],
     program: instance.program,
     outputFiles,
-    outputs: asyncApiDoc ? { "asyncapi.yaml": YAML.stringify(asyncApiDoc) } : {},
-    outputFile: asyncApiDoc ? "asyncapi.yaml" : null,
   };
-}
-
-function extractAsyncAPIFromFs(virtualFs: Map<string, string>): AsyncAPIObject | null {
-  for (const [virtualPath, content] of virtualFs) {
-    const filename = virtualPath.split("/").pop() || "";
-    const isOutputFile =
-      !virtualPath.includes("node_modules") &&
-      (filename.endsWith(".yaml") || filename.endsWith(".json") || filename.endsWith(".yml"));
-
-    if (isOutputFile && typeof content === "string") {
-      let doc: any;
-      try {
-        doc = JSON.parse(content);
-      } catch {
-        doc = YAML.parse(content);
-      }
-      if (doc && typeof doc === "object" && ("asyncapi" in doc || "channels" in doc)) {
-        return doc;
-      }
-    }
-  }
-  return null;
 }
 
 export async function compileAsyncAPIWithoutErrors(
@@ -508,6 +509,7 @@ export const AsyncAPIAssertions = {
 
 // === LEGACY EXPORTS (for backward compatibility with existing tests) ===
 
+// Deprecated: use createAsyncAPITestHost directly
 export const createAsyncAPITestLibrary = createAsyncAPITestHost;
 
 export async function compileAsyncAPISpec(
