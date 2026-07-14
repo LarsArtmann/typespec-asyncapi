@@ -9,7 +9,7 @@ import type { Program, Operation, Model, ModelProperty, Namespace } from "@types
 import { stateSymbols } from "./lib.js";
 import { getStateMap } from "./state-compatibility.js";
 import type { SecurityScheme } from "./domain/models/asyncapi-document.js";
-import type { MessageConfigData } from "./state.js";
+import type { MessageConfigData, ProtocolConfigData } from "./state.js";
 
 export const storeChannelState = (program: Program, target: Operation, path: string) => {
   const map = getStateMap(program, stateSymbols.channelPaths);
@@ -151,27 +151,32 @@ export const storeProtocolConfig = (
   target: Operation | Model,
   config: Record<string, unknown>,
 ) => {
-  const map = getStateMap(program, stateSymbols.protocolConfigs);
+  const map = getStateMap<ProtocolConfigData>(program, stateSymbols.protocolConfigs);
   const protocolType = (config.protocol as string) ?? "kafka";
 
-  const protocolConfig = {
+  const protocolConfig: ProtocolConfigData = {
     protocol: protocolType,
-    ...config,
+    version: config.version as string | undefined,
+    binding: config.binding as Record<string, unknown> | undefined,
     ...(protocolType === "kafka" && {
-      partitions: config.partitions ?? 1,
-      replicationFactor: config.replicationFactor ?? 1,
-      consumerGroup: config.consumerGroup ?? "default",
-      sasl: config.sasl ?? { mechanism: "plain", username: "", password: "" },
+      partitions: (config.partitions as number) ?? 1,
+      replicationFactor: (config.replicationFactor as number) ?? 1,
+      consumerGroup: (config.consumerGroup as string) ?? "default",
+      sasl: (config.sasl as ProtocolConfigData["sasl"]) ?? {
+        mechanism: "plain",
+        username: "",
+        password: "",
+      },
     }),
     ...(protocolType === "ws" && {
-      subprotocol: config.subprotocol ?? "asyncapi",
-      queryParams: config.queryParams ?? {},
-      headers: config.headers ?? {},
+      subprotocol: (config.subprotocol as string) ?? "asyncapi",
+      queryParams: (config.queryParams as Record<string, string>) ?? {},
+      headers: (config.headers as Record<string, string>) ?? {},
     }),
     ...(protocolType === "mqtt" && {
-      qos: config.qos ?? 1,
-      retain: config.retain ?? false,
-      lastWill: config.lastWill ?? {
+      qos: (config.qos as 0 | 1 | 2) ?? 1,
+      retain: (config.retain as boolean) ?? false,
+      lastWill: (config.lastWill as ProtocolConfigData["lastWill"]) ?? {
         topic: "",
         message: "",
         qos: 1,

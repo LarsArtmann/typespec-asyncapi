@@ -53,6 +53,7 @@ export type OperationTypeData = {
  */
 export type ProtocolConfigData = {
   protocol: string;
+  binding?: Record<string, unknown>;
   // Kafka specific
   partitions?: number;
   replicationFactor?: number;
@@ -77,7 +78,6 @@ export type ProtocolConfigData = {
   };
   // Generic protocol properties
   version?: string;
-  [key: string]: unknown;
 };
 
 /**

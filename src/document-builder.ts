@@ -299,15 +299,10 @@ export function buildAsyncAPIDocument(
   for (const [type, data] of state.protocolConfigs) {
     const typeWithName = type as { name: string };
     const channelKey = opToChannel.get(typeWithName.name) ?? typeWithName.name;
-    const protoConfig = data as {
-      protocol?: string;
-      binding?: Record<string, unknown>;
-      [k: string]: unknown;
-    };
-    if (protoConfig?.protocol && channels[channelKey]) {
+    if (data.protocol && channels[channelKey]) {
       const channel = channels[channelKey];
       channel.bindings = {
-        [protoConfig.protocol]: protoConfig.binding ?? {},
+        [data.protocol]: data.binding ?? {},
       };
     }
   }
