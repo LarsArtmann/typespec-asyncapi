@@ -53,9 +53,16 @@ export const storeServerConfig = (
   target: Namespace,
   config: Record<string, unknown> & { name: string },
 ) => {
-  const map = getStateMap(program, stateSymbols.serverConfigs);
+  type ServerConfigEntry = {
+    name: string;
+    url: string;
+    protocol: string;
+    description: string;
+  };
+
+  const map = getStateMap<ServerConfigEntry[]>(program, stateSymbols.serverConfigs);
   const existing = map.get(target);
-  const newEntry = {
+  const newEntry: ServerConfigEntry = {
     name: config.name,
     url: (config.url as string) ?? "http://localhost:3000",
     protocol: (config.protocol as string) ?? "http",

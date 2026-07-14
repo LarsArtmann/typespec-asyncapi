@@ -1,6 +1,6 @@
 {
   "name": "@lars-artmann/typespec-asyncapi",
-  "version": "0.0.1",
+  "version": "0.1.0-alpha",
   "private": false,
   "description": "TypeSpec emitter for AsyncAPI 3.0 specifications",
   "keywords": [
@@ -70,14 +70,13 @@
     "build:watch": "bunx tsc -p tsconfig.json --watch",
     "compile": "tsp compile .",
     "clean": "trash dist .tsbuildinfo 2>/dev/null || true",
-    "clean:test": "rm -rf tsp-test tsp-output test-output @lars-artmann output",
+    "clean:test": "trash tsp-test tsp-output test-output @lars-artmann output 2>/dev/null || true",
     "pretest": "bun run clean:test && bun run build",
     "test": "bun test",
     "test:watch": "bun test --watch",
     "test:coverage": "bun run build && bun test --coverage",
     "test:validation": "bun run build && bun test test/critical-validation.test.ts test/all-generated-specs-validation.test.ts",
     "test:asyncapi": "bun run build && bun test test/validation/",
-    "test:metrics": "bun run scripts/test-metrics-reporter.ts",
     "typecheck": "bunx tsc --noEmit",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
@@ -98,45 +97,27 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@alloy-js/core": "^0.24.1",
-    "@asyncapi/parser": "^3.6.0",
-    "@asyncapi/specs": "^6.11.1",
-    "@effect/schema": "^0.75.5",
-    "@types/js-yaml": "^4.0.9",
     "@typespec/asset-emitter": "^0.79.1",
     "@typespec/compiler": "^1.13.0",
-    "@typespec/emitter-framework": "^0.18.0",
-    "ajv": "^8.20.0",
-    "effect": "^3.21.4",
     "yaml": "^2.9.0"
   },
   "devDependencies": {
     "@asyncapi/cli": "^6.0.2",
-    "@effect/eslint-plugin": "^0.3.2",
+    "@asyncapi/parser": "^3.6.0",
+    "@asyncapi/specs": "^6.11.1",
     "@eslint/js": "^10.0.1",
     "@types/node": "^26.0.1",
     "@typescript-eslint/eslint-plugin": "^8.62.0",
     "@typescript-eslint/parser": "^8.62.0",
     "@typespec/http": "^1.13.0",
     "@typespec/openapi3": "^1.13.0",
-    "@typespec/rest": "^0.83.0",
-    "@vitest/coverage-v8": "^4.1.9",
-    "asyncapi-validator": "^5.1.1",
+    "ajv": "^8.20.0",
     "eslint": "^10.6.0",
     "glob": "^13.0.6",
     "husky": "^9.1.7",
     "lint-staged": "^17.0.8",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.62.0",
-    "vitest": "^4.1.9"
-  },
-  "peerDependencies": {
-    "@typespec/versioning": ""
-  },
-  "peerDependenciesMeta": {
-    "@typespec/versioning": {
-      "optional": true
-    }
+    "typescript-eslint": "^8.62.0"
   },
   "overrides": {
     "form-data": "^4.0.0",

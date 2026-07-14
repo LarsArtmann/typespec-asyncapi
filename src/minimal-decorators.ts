@@ -161,7 +161,7 @@ export function $server(
       context,
       "@lars-artmann/typespec-asyncapi/unsupported-protocol",
       target,
-      `Protocol '${String(configTyped.protocol)}' is not supported. Supported protocols: ${PROTOCOL_LIST.join(", ")}`,
+      `Protocol '${protocol}' is not supported. Supported protocols: ${PROTOCOL_LIST.join(", ")}`,
     );
     return;
   }
@@ -209,7 +209,7 @@ export function $message(context: DecoratorContext, target: Model, config: unkno
   }
 
   storeMessageConfig(context.program, target, {
-    title: title ?? (target.name as string),
+    title: title ?? target.name,
     description: description ?? `Message ${target.name}`,
     contentType: contentType ?? "application/json",
   });

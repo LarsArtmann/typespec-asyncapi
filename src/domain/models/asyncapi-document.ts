@@ -8,13 +8,13 @@
 
 export type Ref = { $ref: string };
 
-export interface InfoObject {
+export type InfoObject = {
   title: string;
   version: string;
   description?: string;
-}
+};
 
-export interface ServerObject {
+export type ServerObject = {
   host: string;
   protocol: string;
   protocolVersion?: string;
@@ -26,9 +26,9 @@ export interface ServerObject {
   security?: SecurityScheme[];
   tags?: Tag[];
   bindings?: Record<string, unknown>;
-}
+};
 
-export interface ChannelObject {
+export type ChannelObject = {
   address: string | null;
   messages?: Record<string, Ref>;
   title?: string;
@@ -38,9 +38,9 @@ export interface ChannelObject {
   parameters?: Record<string, ParameterObject | Ref>;
   tags?: Tag[];
   bindings?: Record<string, unknown>;
-}
+};
 
-export interface OperationObject {
+export type OperationObject = {
   action: "send" | "receive";
   channel: Ref;
   title?: string;
@@ -52,15 +52,15 @@ export interface OperationObject {
   traits?: Ref[];
   messages?: Ref[];
   reply?: OperationReply;
-}
+};
 
-export interface OperationReply {
+export type OperationReply = {
   address?: { location: string; description?: string } | Ref;
   channel?: Ref;
   messages?: Ref[];
-}
+};
 
-export interface MessageObject {
+export type MessageObject = {
   headers?: SchemaObject | Ref;
   payload?: SchemaObject | Ref;
   correlationId?: CorrelationIdObject | Ref;
@@ -73,9 +73,9 @@ export interface MessageObject {
   bindings?: Record<string, unknown>;
   traits?: Ref[];
   examples?: Array<{ headers?: unknown; payload?: unknown }>;
-}
+};
 
-export interface SchemaObject {
+export type SchemaObject = {
   type?: string;
   format?: string;
   properties?: Record<string, SchemaObject>;
@@ -90,28 +90,28 @@ export interface SchemaObject {
   const?: unknown;
   $ref?: string;
   [key: string]: unknown;
-}
+};
 
-export interface CorrelationIdObject {
+export type CorrelationIdObject = {
   location: string;
   description?: string;
-}
+};
 
-export interface ParameterObject {
+export type ParameterObject = {
   location?: string;
   description?: string;
   schema?: SchemaObject;
   enum?: unknown[];
   default?: unknown;
   examples?: unknown[];
-}
+};
 
-export interface Tag {
+export type Tag = {
   name: string;
   description?: string;
-}
+};
 
-export interface SecurityScheme {
+export type SecurityScheme = {
   type: string;
   description?: string;
   name?: string;
@@ -120,9 +120,9 @@ export interface SecurityScheme {
   bearerFormat?: string;
   flows?: Record<string, unknown>;
   openIdConnectUrl?: string;
-}
+};
 
-export interface ComponentsObject {
+export type ComponentsObject = {
   schemas?: Record<string, SchemaObject>;
   servers?: Record<string, ServerObject | Ref>;
   channels?: Record<string, ChannelObject | Ref>;
@@ -132,9 +132,9 @@ export interface ComponentsObject {
   parameters?: Record<string, ParameterObject | Ref>;
   correlationIds?: Record<string, CorrelationIdObject | Ref>;
   tags?: Record<string, Tag | Ref>;
-}
+};
 
-export interface AsyncAPIDocument {
+export type AsyncAPIDocument = {
   asyncapi: "3.0.0";
   info: InfoObject;
   id?: string;
@@ -143,4 +143,4 @@ export interface AsyncAPIDocument {
   channels: Record<string, ChannelObject>;
   operations?: Record<string, OperationObject>;
   components?: ComponentsObject;
-}
+};

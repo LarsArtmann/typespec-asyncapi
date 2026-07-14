@@ -32,7 +32,7 @@ export type AsyncAPIProtocol = (typeof PROTOCOLS)[number];
 export const SUPPORTED_PROTOCOLS: ReadonlySet<string> = new Set(PROTOCOLS);
 
 export function isSupportedProtocol(value: string): value is AsyncAPIProtocol {
-  return SUPPORTED_PROTOCOLS.has(value as AsyncAPIProtocol);
+  return SUPPORTED_PROTOCOLS.has(value);
 }
 
 export const PROTOCOL_LIST: readonly AsyncAPIProtocol[] = PROTOCOLS;

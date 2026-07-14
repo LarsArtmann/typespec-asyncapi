@@ -75,4 +75,32 @@ extern dec bindings(target: Operation | Model, value: {} | valueof Record<unknow
  */
 extern dec header(target: Model | ModelProperty, name: valueof string, value: valueof string | Model);
 
+/**
+ * Emitter options for `@lars-artmann/typespec-asyncapi`.
+ *
+ * Configure via tspconfig.yaml:
+ * ```yaml
+ * emit:
+ *   - "@lars-artmann/typespec-asyncapi"
+ * options:
+ *   "@lars-artmann/typespec-asyncapi":
+ *     output-file: "asyncapi"
+ *     file-type: "yaml"
+ * ```
+ */
+model EmitterOptions {
+  /** Output file name without extension (default: "asyncapi") */
+  "output-file"?: string;
 
+  /** Output format: "yaml" or "json" (default: "yaml") */
+  "file-type"?: "yaml" | "json";
+
+  /** Document title (default: "Generated API") */
+  title?: string;
+
+  /** Document version (default: "1.0.0") */
+  version?: string;
+
+  /** Document description */
+  description?: string;
+}

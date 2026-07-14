@@ -6,7 +6,24 @@
  */
 
 import { emitFile } from "@typespec/compiler";
-import type { EmitContext, Namespace, Type, Program } from "@typespec/compiler";
+import type {
+  EmitContext,
+  Namespace,
+  Type,
+  Program,
+  Model,
+  ModelProperty,
+  Union,
+  Enum,
+  EnumMember,
+  Scalar,
+  Tuple,
+  Operation,
+  Interface,
+  StringLiteral,
+  NumericLiteral,
+  BooleanLiteral,
+} from "@typespec/compiler";
 import { createAssetEmitter, TypeEmitter } from "@typespec/asset-emitter";
 import type {
   EmitEntity,
@@ -25,9 +42,12 @@ import type {
   ComponentsObject,
   MessageObject,
   OperationObject,
+  ParameterObject,
   SchemaObject,
   ServerObject,
 } from "./domain/models/asyncapi-document.js";
+
+const ASYNCAPI_SPEC_VERSION = "3.0.0";
 
 /**
  * Minimal TypeEmitter that produces JSON Schema objects from TypeSpec models.
@@ -38,22 +58,16 @@ class AsyncAPISchemaEmitter extends TypeEmitter<SchemaObject, AsyncAPIEmitterOpt
     return this.emitter.result.none();
   }
 
-  modelDeclaration(model: any): EmitterOutput<SchemaObject> {
+  modelDeclaration(model: Model): EmitterOutput<SchemaObject> {
     const properties: Record<string, SchemaObject> = {};
     const required: string[] = [];
 
     // Collect properties from base models (inheritance chain)
-    const collectProperties = (m: any) => {
+    const collectProperties = (m: Model) => {
       if (m.baseModel) collectProperties(m.baseModel);
       for (const [name, prop] of m.properties) {
         if (properties[name] !== undefined) continue; // derived overrides base
-        const propSchema = this.emitter.emitTypeReference(prop.type);
-        const extracted = extractValue(propSchema);
-        if (Object.keys(extracted).length === 0) {
-          properties[name] = this.typeToSchema(prop.type);
-        } else {
-          properties[name] = extracted;
-        }
+        properties[name] = this.propertyToSchema(prop);
         const propDoc = getDoc(this.emitter.getProgram(), prop);
         if (propDoc && typeof properties[name] === "object" && properties[name] !== null) {
           properties[name].description = propDoc;
@@ -74,18 +88,12 @@ class AsyncAPISchemaEmitter extends TypeEmitter<SchemaObject, AsyncAPIEmitterOpt
     return this.emitter.result.declaration(model.name, schema);
   }
 
-  modelLiteral(model: any): EmitterOutput<SchemaObject> {
+  modelLiteral(model: Model): EmitterOutput<SchemaObject> {
     const properties: Record<string, SchemaObject> = {};
     const required: string[] = [];
 
     for (const [name, prop] of model.properties) {
-      const propSchema = this.emitter.emitTypeReference(prop.type);
-      const extracted = extractValue(propSchema);
-      if (Object.keys(extracted).length === 0) {
-        properties[name] = this.typeToSchema(prop.type);
-      } else {
-        properties[name] = extracted;
-      }
+      properties[name] = this.propertyToSchema(prop);
       if (!prop.optional) required.push(name);
     }
 
@@ -94,21 +102,21 @@ class AsyncAPISchemaEmitter extends TypeEmitter<SchemaObject, AsyncAPIEmitterOpt
     return schema;
   }
 
-  modelProperties(model: any): EmitterOutput<SchemaObject> {
+  modelProperties(model: Model): EmitterOutput<SchemaObject> {
     const props: Record<string, unknown> = {};
     for (const [name, prop] of model.properties) {
       const result = this.emitter.emitModelProperty(prop);
-      props[name] = extractValue(result as any);
+      props[name] = extractValue(result);
     }
     return props;
   }
 
-  modelProperty(prop: any): EmitterOutput<SchemaObject> {
+  modelProperty(prop: ModelProperty): EmitterOutput<SchemaObject> {
     return this.emitter.emitTypeReference(prop.type);
   }
 
-  union(union: any): EmitterOutput<SchemaObject> {
-    const variants = [...union.variants.values()].map((v: any) => {
+  union(union: Union): EmitterOutput<SchemaObject> {
+    const variants = [...union.variants.values()].map((v) => {
       const extracted = extractValue(this.emitter.emitTypeReference(v.type));
       if (Object.keys(extracted).length === 0) {
         const t = v.type as { kind: string; name?: string; value?: string };
@@ -118,89 +126,92 @@ class AsyncAPISchemaEmitter extends TypeEmitter<SchemaObject, AsyncAPIEmitterOpt
       return extracted;
     });
     // If all variants are string literals, use enum instead of anyOf
-    const allConst = variants.every((v: any) => "const" in v);
+    const allConst = variants.every((v) => "const" in v);
     if (allConst) {
-      return { type: "string", enum: variants.map((v: any) => v.const) };
+      return {
+        type: "string",
+        enum: variants.map((v) => (v as { const: unknown }).const),
+      };
     }
     return { anyOf: variants };
   }
 
-  enum(en: any): EmitterOutput<SchemaObject> {
-    const values = [...en.members.values()].map((m: any) => m.value ?? m.name);
+  enum(en: Enum): EmitterOutput<SchemaObject> {
+    const values = [...en.members.values()].map((m: EnumMember) => m.value ?? m.name);
     return { type: "string", enum: values };
   }
 
-  intrinsic(intrinsic: any, _name: string): EmitterOutput<SchemaObject> {
-    return intrinsicToSchema(intrinsic.name);
+  intrinsic(intrinsic: Type, _name: string): EmitterOutput<SchemaObject> {
+    return intrinsicToSchema((intrinsic as { name?: string }).name ?? "string");
   }
 
-  scalar(scalar: any): EmitterOutput<SchemaObject> {
+  scalar(scalar: Scalar): EmitterOutput<SchemaObject> {
     return intrinsicToSchema(scalar.name);
   }
 
-  scalarDeclaration(scalar: any, name: string): EmitterOutput<SchemaObject> {
+  scalarDeclaration(scalar: Scalar, name: string): EmitterOutput<SchemaObject> {
     return this.emitter.result.declaration(name, intrinsicToSchema(scalar.name));
   }
 
-  scalarInstantiation(scalar: any, name: string | undefined): EmitterOutput<SchemaObject> {
+  scalarInstantiation(scalar: Scalar, name: string | undefined): EmitterOutput<SchemaObject> {
     if (name) return this.scalarDeclaration(scalar, name);
     return intrinsicToSchema(scalar.name);
   }
 
-  stringLiteral(literal: any): EmitterOutput<SchemaObject> {
+  stringLiteral(literal: StringLiteral): EmitterOutput<SchemaObject> {
     return { const: literal.value };
   }
 
-  numericLiteral(literal: any): EmitterOutput<SchemaObject> {
+  numericLiteral(literal: NumericLiteral): EmitterOutput<SchemaObject> {
     return { const: literal.value };
   }
 
-  booleanLiteral(literal: any): EmitterOutput<SchemaObject> {
+  booleanLiteral(literal: BooleanLiteral): EmitterOutput<SchemaObject> {
     return { const: literal.value };
   }
 
-  tuple(tuple: any): EmitterOutput<SchemaObject> {
-    const items = tuple.values.map((v: any) => extractValue(this.emitter.emitTypeReference(v)));
-    return { type: "array", items };
+  tuple(tuple: Tuple): EmitterOutput<SchemaObject> {
+    const items = tuple.values.map((v: Type) => extractValue(this.emitter.emitTypeReference(v)));
+    return { type: "array", items: { type: "array", enum: items } };
   }
 
-  arrayDeclaration(array: any, name: string, elementType: any): EmitterOutput<SchemaObject> {
+  arrayDeclaration(array: Type, name: string, elementType: Type): EmitterOutput<SchemaObject> {
     const extracted = extractValue(this.emitter.emitTypeReference(elementType));
     return {
       type: "array",
       items:
         Object.keys(extracted).length > 0
           ? extracted
-          : intrinsicToSchema(elementType.name ?? "string"),
+          : intrinsicToSchema((elementType as { name?: string }).name ?? "string"),
     };
   }
 
-  arrayLiteral(array: any, elementType: any): EmitterOutput<SchemaObject> {
+  arrayLiteral(array: Type, elementType: Type): EmitterOutput<SchemaObject> {
     const extracted = extractValue(this.emitter.emitTypeReference(elementType));
     return {
       type: "array",
       items:
         Object.keys(extracted).length > 0
           ? extracted
-          : intrinsicToSchema(elementType.name ?? "string"),
+          : intrinsicToSchema((elementType as { name?: string }).name ?? "string"),
     };
   }
 
-  programContext(_program: any): Context {
+  programContext(_program: Program): Context {
     const sourceFile = this.emitter.createSourceFile("schemas.json");
     return { scope: sourceFile.globalScope };
   }
 
-  operation(_operation: any): EmitterOutput<SchemaObject> {
+  operation(_operation: Operation): EmitterOutput<SchemaObject> {
     return this.emitter.result.none();
   }
 
-  interfaceDeclaration(_iface: any): EmitterOutput<SchemaObject> {
+  interfaceDeclaration(_iface: Interface): EmitterOutput<SchemaObject> {
     return this.emitter.result.none();
   }
 
-  enumDeclaration(en: any, name: string): EmitterOutput<SchemaObject> {
-    const values = [...en.members.values()].map((m: any) => m.value ?? m.name);
+  enumDeclaration(en: Enum, name: string): EmitterOutput<SchemaObject> {
+    const values = [...en.members.values()].map((m: EnumMember) => m.value ?? m.name);
     const schema: SchemaObject = { type: "string", enum: values };
     const doc = getDoc(this.emitter.getProgram(), en);
     if (doc) schema.description = doc;
@@ -211,35 +222,83 @@ class AsyncAPISchemaEmitter extends TypeEmitter<SchemaObject, AsyncAPIEmitterOpt
     return { contents: "", path: sourceFile.path };
   }
 
-  private typeToSchema(t: any): SchemaObject {
-    const kind = t.kind;
+  /**
+   * Convert a ModelProperty to a JSON Schema.
+   * Uses $ref for named user-defined models, enums, and scalars.
+   * Inlines primitives, arrays, unions, and anonymous types.
+   */
+  private propertyToSchema(prop: ModelProperty): SchemaObject {
+    const t = prop.type;
+    const kind = (t as { kind: string }).kind;
+
+    if (kind === "Model") {
+      const modelType = t as Model;
+      if (modelType.name && !modelType.indexer && !isStdlibType(t)) {
+        return { $ref: `#/components/schemas/${modelType.name}` };
+      }
+    }
+
+    if (kind === "Enum") {
+      const enumType = t as Enum;
+      if (enumType.name && !isStdlibType(t)) {
+        return { $ref: `#/components/schemas/${enumType.name}` };
+      }
+    }
+
+    if (kind === "Scalar") {
+      const scalarType = t as Scalar;
+      if (scalarType.name && !isStdlibType(t)) {
+        return { $ref: `#/components/schemas/${scalarType.name}` };
+      }
+    }
+
+    const propSchema = this.emitter.emitTypeReference(prop.type);
+    const extracted = extractValue(propSchema);
+    if (Object.keys(extracted).length === 0) {
+      return this.typeToSchema(prop.type);
+    }
+    return extracted;
+  }
+
+  private typeToSchema(t: Type): SchemaObject {
+    const kind = (t as { kind: string }).kind;
     if (kind === "Union") {
-      const variants = [...t.variants.values()].map((v: any) => {
+      const tUnion = t as Union;
+      const variants = [...tUnion.variants.values()].map((v) => {
         const inner = v.type;
-        if (inner.kind === "String" && inner.value !== undefined) return inner.value;
+        const innerKind = (inner as { kind: string }).kind;
+        if (innerKind === "String" && (inner as { value?: string }).value !== undefined)
+          return (inner as { value: string }).value;
         const s = this.typeToSchema(inner);
         return Object.keys(s).length > 0 ? s : { type: "string" };
       });
-      const allStrings = variants.every((v: any) => typeof v === "string");
+      const allStrings = variants.every((v) => typeof v === "string");
       if (allStrings) return { type: "string", enum: variants };
       return {
-        anyOf: variants.map((v: any) => (typeof v === "string" ? { const: v } : v)),
+        anyOf: variants.map((v) => (typeof v === "string" ? { const: v } : v)),
       };
     }
-    if (kind === "Model" && t.indexer) {
-      return { type: "array", items: this.typeToSchema(t.indexer.value) };
+    if (kind === "Model" && (t as { indexer?: unknown }).indexer) {
+      return {
+        type: "array",
+        items: this.typeToSchema((t as { indexer: { value: Type } }).indexer.value),
+      };
     }
-    if (kind === "Model" && t.name === "Array") {
+    if (kind === "Model" && (t as { name?: string }).name === "Array") {
       return { type: "array", items: { type: "string" } };
     }
-    if (kind === "Scalar" || kind === "Intrinsic") return intrinsicToSchema(t.name);
-    if (kind === "String") return { const: t.value };
-    if (kind === "Number") return { const: t.value };
-    if (kind === "Boolean") return { const: t.value };
+    if (kind === "Scalar" || kind === "Intrinsic")
+      return intrinsicToSchema((t as { name: string }).name);
+    if (kind === "String") return { const: (t as { value: string }).value };
+    if (kind === "Number") return { const: (t as { value: number }).value };
+    if (kind === "Boolean") return { const: (t as { value: boolean }).value };
     if (kind === "Tuple")
       return {
         type: "array",
-        items: t.values.map((v: any) => this.typeToSchema(v)),
+        items: {
+          type: "array",
+          enum: (t as Tuple).values.map((v: Type) => this.typeToSchema(v)),
+        },
       };
     if (kind === "Model") return { type: "object", properties: {} };
     return { type: "string" };
@@ -302,33 +361,39 @@ function intrinsicToSchema(typeName: string): SchemaObject {
 
 function extractValue(entity: EmitEntity<SchemaObject> | undefined): SchemaObject {
   if (!entity) return {};
-  // Direct value access
-  if ("value" in entity && entity.value != null) return entity.value as SchemaObject;
-  // Check kind-based extraction
-  const e = entity as unknown as Record<string, unknown>;
-  if (e.kind === "declaration" && e.value != null) return e.value as SchemaObject;
-  if (e.kind === "code" && e.value != null) return e.value as SchemaObject;
-  // If the entity IS a plain object schema (no wrapper), return it directly
-  if (!("kind" in entity) && typeof entity === "object") return entity as SchemaObject;
-  return {};
+  switch (entity.kind) {
+    case "declaration":
+    case "code": {
+      const v = entity.value;
+      if (!v || typeof v !== "object") return {};
+      if (typeof (v as { onValue?: unknown }).onValue === "function") return {};
+      return v as SchemaObject;
+    }
+    default:
+      return {};
+  }
 }
 
 /**
  * Generate JSON Schema objects from all models in the program.
  */
 function isStdlibType(type: Type): boolean {
-  const ns = (type as any).namespace ?? (type as any).type?.namespace;
+  const typeWithNs = type as Type & {
+    namespace?: Namespace;
+    type?: { namespace?: Namespace };
+  };
+  const ns = typeWithNs.namespace ?? typeWithNs.type?.namespace;
   if (!ns) return false;
   if (isStdNamespace(ns)) return true;
   return false;
 }
 
-function collectAllStdlibNames(program: any): Set<string> {
+function collectAllStdlibNames(program: Program): Set<string> {
   const names = new Set<string>();
-  const globalNs = (program.checker as any).getGlobalNamespaceType();
+  const globalNs = program.getGlobalNamespaceType();
   for (const ns of globalNs.namespaces.values()) {
     if (isStdNamespace(ns)) {
-      function collectFrom(ns: any) {
+      function collectFrom(ns: Namespace) {
         for (const [name] of ns.models) names.add(name);
         for (const [name] of ns.scalars) names.add(name);
         for (const [name] of ns.enums) names.add(name);
@@ -419,19 +484,36 @@ function buildAsyncAPIDocument(
 
   // === Step 1: Discover all operations into a unified list ===
 
-  interface DiscoveredOp {
+  type DiscoveredOp = {
     opName: string;
     channelKey: string;
     action: "send" | "receive";
     messageName: string;
-  }
+  };
 
   const discoveredOps: DiscoveredOp[] = [];
+
+  // Helper: extract {param} expressions from a channel address
+  function extractChannelParameters(address: string): Record<string, ParameterObject> | undefined {
+    const matches = address.match(/\{([^}]+)\}/g);
+    if (!matches || matches.length === 0) return undefined;
+    const params: Record<string, ParameterObject> = {};
+    for (const match of matches) {
+      const paramName = match.slice(1, -1);
+      params[paramName] = { description: `Channel parameter: ${paramName}` };
+    }
+    return params;
+  }
 
   // Helper: ensure a channel exists in the channels map
   function ensureChannel(channelKey: string): ChannelObject {
     if (!channels[channelKey]) {
-      channels[channelKey] = { address: channelKey, messages: {} };
+      const params = extractChannelParameters(channelKey);
+      channels[channelKey] = {
+        address: channelKey,
+        messages: {},
+        ...(params ? { parameters: params } : {}),
+      };
     }
     return channels[channelKey];
   }
@@ -503,9 +585,11 @@ function buildAsyncAPIDocument(
 
   // 1c. Bare operations (no decorators at all) — auto-discover
   const allKnownOps = new Set(
-    [...state.operations.keys(), ...state.channels.keys()].map((t) => (t as { name: string }).name),
+    [...state.operations.keys(), ...state.channels.keys()].map(
+      (t) => (t as Type & { name: string }).name,
+    ),
   );
-  const globalNs = (program.checker as any).getGlobalNamespaceType();
+  const globalNs = program.getGlobalNamespaceType();
   const namespaces = [globalNs, ...globalNs.namespaces.values()];
   for (const ns of namespaces) {
     if (ns.name && isStdNamespace(ns)) continue;
@@ -544,12 +628,12 @@ function buildAsyncAPIDocument(
       (t) => (t as { name: string }).name === op.opName,
     );
     if (opType) {
-      const tags = state.tags.get(opType) as { name: string }[] | undefined;
+      const tags = state.tags.get(opType);
       if (tags && tags.length > 0) {
         operationObj.tags = tags;
       }
 
-      const bindings = state.protocolBindings.get(opType) as Record<string, unknown> | undefined;
+      const bindings = state.protocolBindings.get(opType);
       if (bindings && Object.keys(bindings).length > 0) {
         operationObj.bindings = bindings;
       }
@@ -561,12 +645,7 @@ function buildAsyncAPIDocument(
   // 2b. Merge in explicit @message decorator data (overrides auto-generated)
   // Also wire @correlationId and @header data into messages
   for (const [type, data] of state.messages) {
-    const msgData = data as {
-      messageId?: string;
-      title?: string;
-      description?: string;
-      contentType?: string;
-    };
+    const msgData = data;
     const typeWithName = type as { name: string };
     const msgKey = msgData.messageId ?? typeWithName.name;
     const msgObj: MessageObject = {
@@ -577,17 +656,13 @@ function buildAsyncAPIDocument(
     };
 
     // Wire correlationId from state
-    const correlation = state.correlationIds.get(type) as
-      | { location: string; property?: string }
-      | undefined;
+    const correlation = state.correlationIds.get(type);
     if (correlation) {
       msgObj.correlationId = { location: correlation.location };
     }
 
     // Wire headers from state
-    const headers = state.messageHeaders.get(type) as
-      | Array<{ name: string; type?: string; description?: string }>
-      | undefined;
+    const headers = state.messageHeaders.get(type);
     if (headers && headers.length > 0) {
       const headerProps: Record<string, SchemaObject> = {};
       for (const h of headers) {
@@ -603,7 +678,7 @@ function buildAsyncAPIDocument(
     }
 
     // Wire message bindings from state
-    const msgBindings = state.protocolBindings.get(type) as Record<string, unknown> | undefined;
+    const msgBindings = state.protocolBindings.get(type);
     if (msgBindings && Object.keys(msgBindings).length > 0) {
       msgObj.bindings = msgBindings;
     }
@@ -611,7 +686,51 @@ function buildAsyncAPIDocument(
     messages[msgKey] = msgObj;
   }
 
-  // 2c. Attach protocol bindings to channels
+  // 2c. Apply decorators to auto-registered messages (models without @message)
+  for (const [type] of [
+    ...state.correlationIds,
+    ...state.messageHeaders,
+    ...state.protocolBindings,
+    ...state.tags,
+  ]) {
+    const typeName = (type as { name?: string }).name;
+    if (!typeName || !messages[typeName]) continue;
+
+    const msg = messages[typeName];
+
+    // Apply correlationId if not already set
+    const correlation = state.correlationIds.get(type);
+    if (correlation && !msg.correlationId) {
+      msg.correlationId = { location: correlation.location };
+    }
+
+    // Apply headers if not already set
+    const headers = state.messageHeaders.get(type);
+    if (headers && headers.length > 0 && !msg.headers) {
+      const headerProps: Record<string, SchemaObject> = {};
+      for (const h of headers) {
+        headerProps[h.name] = {
+          type: h.type ?? "string",
+          ...(h.description ? { description: h.description } : {}),
+        };
+      }
+      msg.headers = { type: "object", properties: headerProps };
+    }
+
+    // Apply message bindings if not already set
+    const msgBindings = state.protocolBindings.get(type);
+    if (msgBindings && Object.keys(msgBindings).length > 0 && !msg.bindings) {
+      msg.bindings = msgBindings;
+    }
+
+    // Apply tags if not already set
+    const msgTags = state.tags.get(type);
+    if (msgTags && msgTags.length > 0 && !msg.tags) {
+      msg.tags = msgTags;
+    }
+  }
+
+  // 2d. Attach protocol bindings to channels
   for (const [type, data] of state.protocolConfigs) {
     const typeWithName = type as { name: string };
     const channelKey = opToChannel.get(typeWithName.name) ?? typeWithName.name;
@@ -632,23 +751,31 @@ function buildAsyncAPIDocument(
   for (const [_type, data] of state.servers) {
     const serverEntries = Array.isArray(data) ? data : [data];
     for (const entry of serverEntries) {
-      const serverData = entry as {
-        name: string;
-        url: string;
-        protocol: string;
-        description?: string;
-      };
-      servers[serverData.name] = {
+      const serverData = entry;
+      const server: ServerObject = {
         host: serverData.url,
         protocol: serverData.protocol,
         description: serverData.description,
       };
+
+      // Extract {var} from host as server variables
+      const varMatches = serverData.url?.match(/\{([^}]+)\}/g);
+      if (varMatches && varMatches.length > 0) {
+        const vars: Record<string, { default?: string; description?: string }> = {};
+        for (const match of varMatches) {
+          const varName = match.slice(1, -1);
+          vars[varName] = { description: `Server variable: ${varName}` };
+        }
+        server.variables = vars;
+      }
+
+      servers[serverData.name] = server;
     }
   }
 
   // Build security schemes from state
   for (const [_type, data] of state.securityConfigs) {
-    const secData = data as { name: string; scheme: Record<string, unknown> };
+    const secData = data;
     securitySchemes[secData.name] = secData.scheme;
   }
 
@@ -659,7 +786,7 @@ function buildAsyncAPIDocument(
     components.securitySchemes = securitySchemes as ComponentsObject["securitySchemes"];
 
   const document: AsyncAPIDocument = {
-    asyncapi: "3.0.0",
+    asyncapi: ASYNCAPI_SPEC_VERSION,
     info: {
       title: options?.title ?? "Generated API",
       version: options?.version ?? "1.0.0",
@@ -687,7 +814,7 @@ export async function $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): Pro
   const fileType: string =
     typeof rawFileType === "string"
       ? rawFileType
-      : String((rawFileType as Record<string, unknown>)?.format ?? "yaml");
+      : (((rawFileType as Record<string, unknown>)?.format as string) ?? "yaml");
   const outputFile = options?.["output-file"] ?? "asyncapi";
   const outputPath = `${outputFile}.${fileType}`;
 
