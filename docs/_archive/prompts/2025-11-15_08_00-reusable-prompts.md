@@ -636,11 +636,12 @@ THE 20% CRITERIA (Architecture):
 - Documentation
 
 OUTPUT FORMAT:
-| Task | Impact | Effort | Leverage | Phase |
-|------|--------|--------|----------|-------|
-| Eliminate `any` types | CRITICAL | 90min | 🔥🔥🔥 | 1% |
-| Fix test flakiness | HIGH | 120min | 🔥🔥 | 4% |
-| Split large files | LOW | 180min | 🔥 | 20% |
+
+| Task                  | Impact   | Effort | Leverage | Phase |
+| --------------------- | -------- | ------ | -------- | ----- |
+| Eliminate `any` types | CRITICAL | 90min  | 🔥🔥🔥   | 1%    |
+| Fix test flakiness    | HIGH     | 120min | 🔥🔥     | 4%    |
+| Split large files     | LOW      | 180min | 🔥       | 20%   |
 
 RECOMMENDATION:
 Start with THE 1% tasks. These provide 51% of value with 1% of effort.

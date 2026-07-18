@@ -113,8 +113,7 @@ type ProtocolValidationResult = {
 ```typescript
 // NEW - Discriminated Union
 type ProtocolValidationResult =
-  | { _tag: "valid"; warnings: string[] }
-  | { _tag: "invalid"; errors: string[]; warnings: string[] };
+  { _tag: "valid"; warnings: string[] } | { _tag: "invalid"; errors: string[]; warnings: string[] };
 
 // Helper functions
 export const protocolValidationHelpers = {

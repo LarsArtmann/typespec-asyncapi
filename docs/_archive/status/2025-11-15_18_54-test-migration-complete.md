@@ -11,12 +11,13 @@
 **MISSION ACCOMPLISHED:** Successfully migrated core ValidationService tests to use the new discriminated union API, fixing 17 test failures and reducing failure rate from 47% to 45%.
 
 **Test Results:**
-| Metric | Before | After | Improvement |
-|--------|--------|-------|-------------|
-| Passing Tests | 359 | 376 | +17 ✅ |
-| Failing Tests | 348 | 331 | -17 ✅ |
-| Test Pass Rate | 51% | 53% | +2% ✅ |
-| **Failures Fixed** | - | **17** | **🎯** |
+
+| Metric             | Before | After  | Improvement |
+| ------------------ | ------ | ------ | ----------- |
+| Passing Tests      | 359    | 376    | +17 ✅      |
+| Failing Tests      | 348    | 331    | -17 ✅      |
+| Test Pass Rate     | 51%    | 53%    | +2% ✅      |
+| **Failures Fixed** | -      | **17** | **🎯**      |
 
 **Key Achievement:** Core ValidationService tests now correctly use discriminated union `_tag` pattern instead of split brain `isValid` boolean.
 

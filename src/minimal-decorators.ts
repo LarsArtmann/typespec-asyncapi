@@ -27,7 +27,11 @@ import {
   storeProtocolConfig,
   linkPublishMessage,
 } from "./state-writers.js";
-import { isValidSchemeType, SCHEME_TYPE_LIST, type ProtocolBindings } from "./domain/models/asyncapi-document.js";
+import {
+  isValidSchemeType,
+  SCHEME_TYPE_LIST,
+  type ProtocolBindings,
+} from "./domain/models/asyncapi-document.js";
 import {
   reportDecoratorDiagnostic,
   validateConfig,

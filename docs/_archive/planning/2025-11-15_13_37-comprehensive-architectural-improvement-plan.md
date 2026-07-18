@@ -88,8 +88,7 @@ This codebase has **EXCELLENT type safety** in isolated components, but **POOR i
 
    ```typescript
    export type ValidationResult<T> =
-     | { _tag: "Success"; value: T }
-     | { _tag: "Failure"; errors: readonly string[] };
+     { _tag: "Success"; value: T } | { _tag: "Failure"; errors: readonly string[] };
    ```
 
    - **Impact:** Unrepresentable invalid states

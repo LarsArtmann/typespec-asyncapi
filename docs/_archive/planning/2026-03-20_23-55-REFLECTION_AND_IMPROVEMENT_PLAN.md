@@ -249,10 +249,7 @@ export type ApiKeySecurityScheme = {
 };
 
 export type SecurityScheme =
-  | HttpSecurityScheme
-  | ApiKeySecurityScheme
-  | OAuth2SecurityScheme
-  | OpenIdConnectSecurityScheme;
+  HttpSecurityScheme | ApiKeySecurityScheme | OAuth2SecurityScheme | OpenIdConnectSecurityScheme;
 ```
 
 ---

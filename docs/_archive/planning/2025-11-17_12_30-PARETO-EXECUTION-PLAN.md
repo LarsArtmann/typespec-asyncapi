@@ -36,19 +36,20 @@
 - `mqtt-plugin.ts` - 3 clones
 
 **3. Large Files (11 files >350 lines)**
-| File | Lines | Over Limit | Clones |
-|------|-------|------------|--------|
-| ValidationService.ts | 644 | 84% | 2 |
-| effect-helpers.ts | 536 | 53% | 0 |
-| PluginRegistry.ts | 509 | 45% | 5 |
-| standardized-errors.ts | 471 | 35% | 0 |
-| lib.ts | 455 | 30% | 0 |
-| DocumentGenerator.ts | 445 | 27% | 0 |
-| schemas.ts | 441 | 26% | 10 |
-| ImmutableDocumentManager.ts | 438 | 25% | 10 |
-| schema-conversion.ts | 372 | 6% | 2 |
-| ErrorHandlingStandardization.ts | 366 | 5% | 0 |
-| security-ENHANCED.ts | 351 | 0.3% | 0 |
+
+| File                            | Lines | Over Limit | Clones |
+| ------------------------------- | ----- | ---------- | ------ |
+| ValidationService.ts            | 644   | 84%        | 2      |
+| effect-helpers.ts               | 536   | 53%        | 0      |
+| PluginRegistry.ts               | 509   | 45%        | 5      |
+| standardized-errors.ts          | 471   | 35%        | 0      |
+| lib.ts                          | 455   | 30%        | 0      |
+| DocumentGenerator.ts            | 445   | 27%        | 0      |
+| schemas.ts                      | 441   | 26%        | 10     |
+| ImmutableDocumentManager.ts     | 438   | 25%        | 10     |
+| schema-conversion.ts            | 372   | 6%         | 2      |
+| ErrorHandlingStandardization.ts | 366   | 5%         | 0      |
+| security-ENHANCED.ts            | 351   | 0.3%       | 0      |
 
 **4. Effect.runSync Misuse (~10 remaining instances)**
 

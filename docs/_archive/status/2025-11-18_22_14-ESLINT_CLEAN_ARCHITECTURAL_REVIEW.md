@@ -183,8 +183,7 @@ The codebase demonstrates **EXCEPTIONAL** architectural discipline by already us
 
 ```typescript
 type ValidationResult =
-  | { _tag: "success"; data: AsyncAPIObject }
-  | { _tag: "error"; errors: ValidationError[] };
+  { _tag: "success"; data: AsyncAPIObject } | { _tag: "error"; errors: ValidationError[] };
 
 // NOT: { isValid: boolean; data?: AsyncAPIObject; errors?: ValidationError[] }
 ```
@@ -250,8 +249,7 @@ export type ProtocolValidationResult = {
 
 ```typescript
 type ProtocolValidationResult =
-  | { _tag: "valid"; warnings: string[] }
-  | { _tag: "invalid"; errors: string[]; warnings: string[] };
+  { _tag: "valid"; warnings: string[] } | { _tag: "invalid"; errors: string[]; warnings: string[] };
 ```
 
 **Recommended Fix (Option B - Computed Property):**

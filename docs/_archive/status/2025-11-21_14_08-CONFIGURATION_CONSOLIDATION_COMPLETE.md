@@ -171,12 +171,8 @@ export const createEmitFileOptions = (
 
 ```typescript
 // ✅ BACKWARD COMPATIBILITY: Zero breaking changes
-export type EmitterOptions = {
-  /* Legacy interface preserved */
-};
-export const DEFAULT_OPTIONS: Partial<EmitterOptions> = {
-  /* Legacy defaults */
-};
+export type EmitterOptions = { /* Legacy interface preserved */ };
+export const DEFAULT_OPTIONS: Partial<EmitterOptions> = {/* Legacy defaults */};
 export function mergeWithDefaults(options?: Partial<EmitterOptions>) {
   /* Legacy merge */
 }

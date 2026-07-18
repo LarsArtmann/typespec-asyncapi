@@ -10,16 +10,16 @@
 
 ### **15-MINUTE CRITICAL SPRINTS (TASKS 1-8)**
 
-| Task  | ID                      | Description                                     | Files Impact                   | Success Criteria            |
+| Task | ID | Description | Files Impact | Success Criteria |
 | ----- | ----------------------- | ----------------------------------------------- | ------------------------------ | --------------------------- | --- | ------------------- |
-| ⚡ #1 | T001-FIX-SYNTAX-CLASS   | Fix PerformanceRegressionTester class structure | PerformanceRegressionTester.ts | TypeScript compiles         |
-| ⚡ #2 | T002-FIX-COMPILE-ERRORS | Fix remaining TypeScript syntax errors          | All failing files              | 0 TS errors                 |
-| ⚡ #3 | T003-REPLACE-THROW-1    | Replace throw statements in core files          | ImmutableDocumentManager.ts    | 0 throw statements          |
-| ⚡ #4 | T004-REPLACE-THROW-2    | Replace throw statements in infrastructure      | CentralizedErrorHandler.ts     | 0 throw statements          |
-| ⚡ #5 | T005-FIX-ANY-TYPES-1    | Fix any types in domain layer                   | Domain files                   | 50% any types removed       |
-| ⚡ #6 | T006-FIX-ANY-TYPES-2    | Fix any types in infrastructure                 | Infrastructure files           | 75% any types removed       |
-| ⚡ #7 | T007-FIX-NULLISH-1      | Fix nullish coalescing in metrics               | MetricsCollector.ts            | 0                           |     | operator violations |
-| ⚡ #8 | T008-FIX-NAMING-1       | Fix variable naming conventions                 | All files                      | 80% naming violations fixed |
+| ⚡ #1 | T001-FIX-SYNTAX-CLASS | Fix PerformanceRegressionTester class structure | PerformanceRegressionTester.ts | TypeScript compiles |
+| ⚡ #2 | T002-FIX-COMPILE-ERRORS | Fix remaining TypeScript syntax errors | All failing files | 0 TS errors |
+| ⚡ #3 | T003-REPLACE-THROW-1 | Replace throw statements in core files | ImmutableDocumentManager.ts | 0 throw statements |
+| ⚡ #4 | T004-REPLACE-THROW-2 | Replace throw statements in infrastructure | CentralizedErrorHandler.ts | 0 throw statements |
+| ⚡ #5 | T005-FIX-ANY-TYPES-1 | Fix any types in domain layer | Domain files | 50% any types removed |
+| ⚡ #6 | T006-FIX-ANY-TYPES-2 | Fix any types in infrastructure | Infrastructure files | 75% any types removed |
+| ⚡ #7 | T007-FIX-NULLISH-1 | Fix nullish coalescing in metrics | MetricsCollector.ts | 0 | | operator violations |
+| ⚡ #8 | T008-FIX-NAMING-1 | Fix variable naming conventions | All files | 80% naming violations fixed |
 
 ### **30-MINUTE CRITICAL SPRINTS (TASKS 9-12)**
 

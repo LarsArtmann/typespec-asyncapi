@@ -2,8 +2,6 @@
 
 **Project:** Transform TypeSpec models into AsyncAPI 3.0 specifications
 **Architecture:** AssetEmitter-based with custom TypeEmitter for schema generation
-
-
 ---
 
 ## Quick Start
@@ -13,7 +11,6 @@ bun install           # Install dependencies
 bun run build         # Build TypeScript → JavaScript (0 errors)
 bun run lint          # Run ESLint (0 errors, 0 warnings)
 bun test              # Run tests (301 pass, 0 fail)
-bun run test:coverage:gate  # Run tests + enforce 75% per-file coverage
 ```
 
 **Important:** Use `bun` and `bunx`, never `npm` or `npx`.
@@ -112,6 +109,7 @@ export function extractValue(entity: EmitEntity<SchemaObject> | undefined): Sche
 ```
 
 Key points:
+
 - `entity.kind` narrows the discriminated union: `"declaration"`, `"code"`, `"none"`, `"circular"`
 - Only `"declaration"` and `"code"` have a `.value` property
 - `Placeholder<T>` objects (lazy values) are detected by checking for an `onValue` function — they must NOT be treated as final values

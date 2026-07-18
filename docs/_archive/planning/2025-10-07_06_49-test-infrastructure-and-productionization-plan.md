@@ -243,11 +243,12 @@ graph TD
 ### T7-T9: Convert Test Files (30-60 min each)
 
 _Each test file conversion follows same pattern (3x15min blocks):_
-| # | Micro-Task | Time |
-|---|------------|------|
-| X.1 | Replace compilation approach | 15min |
+
+| #   | Micro-Task                       | Time  |
+| --- | -------------------------------- | ----- |
+| X.1 | Replace compilation approach     | 15min |
 | X.2 | Update assertions for CLI output | 15min |
-| X.3 | Run tests, fix failures | 15min |
+| X.3 | Run tests, fix failures          | 15min |
 
 ### T10: Update ADR (20 min)
 
@@ -259,12 +260,13 @@ _Each test file conversion follows same pattern (3x15min blocks):_
 ### T11: Convert Remaining 20 Tests (180 min = 12x15min)
 
 _Batch processing in groups of 3-4 files:_
-| # | Micro-Task | Time |
-|---|------------|------|
-| 11.1 | Batch 1: asyncapi-generation.test.ts (6 tests) | 45min |
-| 11.2 | Batch 2: real-world-scenarios.test.ts (4 tests) | 30min |
+
+| #    | Micro-Task                                                       | Time  |
+| ---- | ---------------------------------------------------------------- | ----- |
+| 11.1 | Batch 1: asyncapi-generation.test.ts (6 tests)                   | 45min |
+| 11.2 | Batch 2: real-world-scenarios.test.ts (4 tests)                  | 30min |
 | 11.3 | Batch 3: options-integration.test.ts, plugin-integration.test.ts | 45min |
-| 11.4 | Batch 4: Remaining test files | 60min |
+| 11.4 | Batch 4: Remaining test files                                    | 60min |
 
 ### T12: Version Compatibility (45 min = 3x15min)
 

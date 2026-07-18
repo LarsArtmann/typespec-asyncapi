@@ -179,13 +179,13 @@
 
 ### **Phase 8: More Code Quality (85% Value) - 45 minutes**
 
-| #   | Task                                    | Time  | Details        |
+| # | Task | Time | Details |
 | --- | --------------------------------------- | ----- | -------------- | --- | ------- |
-| 8.1 | Fix prefer-nullish-coalescing (batch 1) | 15min | Replace        |     | with ?? |
-| 8.2 | Fix prefer-nullish-coalescing (batch 2) | 15min | Replace        |     | with ?? |
-| 8.3 | Fix prefer-nullish-coalescing (batch 3) | 10min | Replace        |     | with ?? |
-| 8.4 | Verify with eslint                      | 3min  | Check warnings |
-| 8.5 | Commit changes                          | 2min  | git commit     |
+| 8.1 | Fix prefer-nullish-coalescing (batch 1) | 15min | Replace | | with ?? |
+| 8.2 | Fix prefer-nullish-coalescing (batch 2) | 15min | Replace | | with ?? |
+| 8.3 | Fix prefer-nullish-coalescing (batch 3) | 10min | Replace | | with ?? |
+| 8.4 | Verify with eslint | 3min | Check warnings |
+| 8.5 | Commit changes | 2min | git commit |
 
 ### **Phase 9: Type Safety (87% Value) - 60 minutes**
 

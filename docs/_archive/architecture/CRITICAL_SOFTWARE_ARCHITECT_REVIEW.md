@@ -974,8 +974,7 @@ export namespace AsyncAPIError {
 
   // ✅ ERROR RECOVERY: Railway programming
   export type Result<T, E extends Base = Base> =
-    | { readonly success: true; readonly data: T }
-    | { readonly success: false; readonly error: E };
+    { readonly success: true; readonly data: T } | { readonly success: false; readonly error: E };
 
   export const safeExecute = async <T>(
     operation: () => Promise<T>,

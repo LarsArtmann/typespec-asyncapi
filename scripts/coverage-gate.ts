@@ -55,13 +55,22 @@ for (const [file, cov] of files) {
 }
 
 if (failures.length > 0) {
-  console.error(`\nCoverage gate FAILED — ${failures.length} file(s) below ${MIN_LINE_COVERAGE * 100}%:\n`);
+  console.error(
+    `\nCoverage gate FAILED — ${failures.length} file(s) below ${MIN_LINE_COVERAGE * 100}%:\n`,
+  );
   for (const f of failures) console.error(f);
   console.error(`\nTotal source files checked: ${files.size}`);
   process.exit(1);
 }
 
-const avg = files.size > 0
-  ? ([...files.values()].reduce((sum, r) => sum + (r.total > 0 ? r.hit / r.total : 1), 0) / files.size * 100).toFixed(1)
-  : "100";
-console.log(`Coverage gate PASSED — ${files.size} source files, avg ${avg}% line coverage (min ${MIN_LINE_COVERAGE * 100}% per file)`);
+const avg =
+  files.size > 0
+    ? (
+        ([...files.values()].reduce((sum, r) => sum + (r.total > 0 ? r.hit / r.total : 1), 0) /
+          files.size) *
+        100
+      ).toFixed(1)
+    : "100";
+console.log(
+  `Coverage gate PASSED — ${files.size} source files, avg ${avg}% line coverage (min ${MIN_LINE_COVERAGE * 100}% per file)`,
+);

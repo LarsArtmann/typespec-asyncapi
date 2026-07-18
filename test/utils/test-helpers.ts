@@ -126,10 +126,12 @@ async function compileRaw(source: string, options: AsyncAPIEmitterOptions = {}) 
 export async function compileAsyncAPISpec(
   source: string,
   options: AsyncAPIEmitterOptions = {},
-): Promise<AsyncAPIObject & {
-  diagnostics: readonly any[];
-  outputFiles: Map<string, string>;
-}> {
+): Promise<
+  AsyncAPIObject & {
+    diagnostics: readonly any[];
+    outputFiles: Map<string, string>;
+  }
+> {
   const result = await compileRaw(source, options);
   const doc = result.asyncApiDoc ?? {};
   return Object.assign(doc, {

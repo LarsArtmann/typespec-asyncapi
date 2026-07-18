@@ -121,8 +121,7 @@ interface ValidationResult {
 
 // AFTER: INVALID STATES UNREPRESENTABLE
 type ValidationResult<T> =
-  | { _tag: "Success"; data: T }
-  | { _tag: "Failure"; errors: ValidationError[] };
+  { _tag: "Success"; data: T } | { _tag: "Failure"; errors: ValidationError[] };
 // Can't have valid=true AND errors non-empty - IMPOSSIBLE!
 ```
 

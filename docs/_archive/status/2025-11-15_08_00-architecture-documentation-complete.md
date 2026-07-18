@@ -533,8 +533,7 @@ type SecurityScheme = {
 ```typescript
 // ✅ SecurityScheme - Discriminated Union
 type SecurityScheme =
-  | { type: "oauth2"; flows: OAuth2Flows }
-  | { type: "apiKey"; name: string; in: Location };
+  { type: "oauth2"; flows: OAuth2Flows } | { type: "apiKey"; name: string; in: Location };
 
 // ✅ IMPOSSIBLE to have oauth2 without flows
 // ✅ IMPOSSIBLE to have apiKey without name

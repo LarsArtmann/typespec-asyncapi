@@ -129,13 +129,14 @@ yield * Effect.all(result.errors.map((error) => Effect.log(`  - ${error.message}
 ### 6. **FILES ARE STILL MASSIVE**
 
 **11 files >350 lines:**
-| File | Lines | Target | Over By |
-|------|-------|--------|---------|
-| ValidationService.ts | 634 | 350 | +284 |
-| effect-helpers.ts | 536 | 350 | +186 |
-| PluginRegistry.ts | 509 | 350 | +159 |
-| standardized-errors.ts | 477 | 350 | +127 |
-| lib.ts | 455 | 350 | +105 |
+
+| File                   | Lines | Target | Over By |
+| ---------------------- | ----- | ------ | ------- |
+| ValidationService.ts   | 634   | 350    | +284    |
+| effect-helpers.ts      | 536   | 350    | +186    |
+| PluginRegistry.ts      | 509   | 350    | +159    |
+| standardized-errors.ts | 477   | 350    | +127    |
+| lib.ts                 | 455   | 350    | +105    |
 
 **ValidationService.ts should be split into:**
 

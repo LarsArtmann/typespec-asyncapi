@@ -177,10 +177,7 @@ export class RuntimeError extends Schema.TaggedError<RuntimeError>()("RuntimeErr
 
 // Error union for comprehensive error handling
 export type AsyncAPIError =
-  | AsyncAPIValidationError
-  | TypeSpecCompilationError
-  | FileSystemError
-  | RuntimeError;
+  AsyncAPIValidationError | TypeSpecCompilationError | FileSystemError | RuntimeError;
 ```
 
 **VERIFICATION:** New error types compile, can be used with Effect.catchTags

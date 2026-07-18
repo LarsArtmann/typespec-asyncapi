@@ -37,7 +37,10 @@ export const validateConfig = (
 
 // === MODEL HELPERS ===
 
-export function getModelPropertyStringValue(model: Model, propertyName: string): string | undefined {
+export function getModelPropertyStringValue(
+  model: Model,
+  propertyName: string,
+): string | undefined {
   const property = model.properties.get(propertyName);
   if (!property) return undefined;
   const type = property.type as { kind: string; value?: string };
