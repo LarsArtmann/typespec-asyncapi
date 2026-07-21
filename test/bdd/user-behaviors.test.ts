@@ -64,8 +64,8 @@ describe("BDD: User configures protocol bindings", () => {
     expect(isSupportedProtocol("unknown-protocol")).toBe(false);
   });
 
-  test("Given all supported protocols list, When counted, Then there are 19 protocols", () => {
-    expect(PROTOCOL_LIST).toHaveLength(19);
+  test("Given all supported protocols list, When counted, Then there are 18 canonical protocols", () => {
+    expect(PROTOCOL_LIST).toHaveLength(18);
   });
 });
 
@@ -120,15 +120,15 @@ describe("BDD: State management produces empty state for programs without decora
 // ============================================================================
 // Feature: AsyncAPI Version Compliance
 // ============================================================================
-describe("BDD: Generated AsyncAPI spec uses version 3.0.0", () => {
-  test("Given the emitter, When generating output, Then asyncapi version is 3.0.0", () => {
+describe("BDD: Generated AsyncAPI spec uses version 3.1.0", () => {
+  test("Given the emitter, When generating output, Then asyncapi version is 3.1.0", () => {
     const document = {
-      asyncapi: "3.0.0",
+      asyncapi: "3.1.0",
       info: { title: "Test", version: "1.0.0" },
       channels: {},
       messages: {},
       components: { schemas: {} },
     };
-    expect(document.asyncapi).toBe("3.0.0");
+    expect(document.asyncapi).toBe("3.1.0");
   });
 });

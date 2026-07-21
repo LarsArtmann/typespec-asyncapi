@@ -1,20 +1,24 @@
 /**
  * AsyncAPI Standard Protocol Binding Tests
  *
- * Tests for AsyncAPI 3.0 compliant protocol bindings using standard format.
+ * Tests for AsyncAPI 3.1 compliant protocol bindings using standard format.
  * Replaces custom ProtocolBindingFactory with AsyncAPI specification compliance.
  */
 import { expect, test, describe } from "bun:test";
-import { PROTOCOL_LIST, type AsyncAPIProtocol } from "../../src/constants/protocols.js";
+import {
+  PROTOCOL_LIST,
+  isSupportedProtocol,
+  type AsyncAPIProtocol,
+} from "../../src/constants/protocols.js";
 
-// Standard AsyncAPI 3.0 binding format helpers
+// Standard AsyncAPI 3.1 binding format helpers
 const createStandardBinding = (
   protocol: AsyncAPIProtocol,
   config: Record<string, unknown> = {},
 ) => {
   return {
     [protocol]: {
-      bindingVersion: "0.5.0", // AsyncAPI 3.0 standard
+      bindingVersion: "0.5.0", // AsyncAPI 3.1 standard
       ...config,
     },
   };
@@ -50,7 +54,7 @@ const validateAsyncAPIBinding = (
   };
 };
 
-describe("AsyncAPI 3.0 Standard Protocol Bindings", () => {
+describe("AsyncAPI 3.1 Standard Protocol Bindings", () => {
   test("Kafka server bindings follow AsyncAPI standard format", () => {
     const serverBindings = createStandardBinding("kafka", {
       schemaRegistryUrl: "http://localhost:8081",
@@ -117,8 +121,14 @@ describe("AsyncAPI 3.0 Standard Protocol Bindings", () => {
     expect(PROTOCOL_LIST).toBeDefined();
     expect(PROTOCOL_LIST.length).toBeGreaterThan(0);
     expect(PROTOCOL_LIST).toContain("kafka");
-    expect(PROTOCOL_LIST).toContain("websocket");
+    expect(PROTOCOL_LIST).toContain("ws");
     expect(PROTOCOL_LIST).toContain("http");
+  });
+
+  test("Protocol aliases are accepted but not in the canonical list", () => {
+    expect(PROTOCOL_LIST).not.toContain("websocket");
+    expect(isSupportedProtocol("websocket")).toBe(true);
+    expect(isSupportedProtocol("ws")).toBe(true);
   });
 
   test("Binding validation catches missing bindingVersion", () => {

@@ -1,7 +1,7 @@
 /**
  * $ref Chain Resolution Test
  *
- * Verifies the core AsyncAPI 3.0 $ref chain works end-to-end:
+ * Verifies the core AsyncAPI 3.1 $ref chain works end-to-end:
  *   operations.{opId}.messages[] -> #/channels/{channelId}/messages/{messageId}
  *   channels.{channelId}.messages.{messageId} -> #/components/messages/{messageId}
  *   components.messages.{messageId}.payload -> #/components/schemas/{schemaName}

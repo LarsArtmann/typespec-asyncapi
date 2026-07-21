@@ -34,7 +34,7 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
-      expect(spec?.asyncapi).toBe("3.0.0");
+      expect(spec?.asyncapi).toBe("3.1.0");
     });
 
     it("should support WebSocket with query parameters", async () => {
@@ -66,7 +66,7 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
-      expect(spec?.asyncapi).toBe("3.0.0");
+      expect(spec?.asyncapi).toBe("3.1.0");
     });
 
     it("should support WebSocket with custom headers", async () => {
@@ -97,7 +97,7 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
-      expect(spec?.asyncapi).toBe("3.0.0");
+      expect(spec?.asyncapi).toBe("3.1.0");
     });
 
     it("should support Socket.IO namespace", async () => {
@@ -127,7 +127,7 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
-      expect(spec?.asyncapi).toBe("3.0.0");
+      expect(spec?.asyncapi).toBe("3.1.0");
     });
 
     it("should support WebSocket ping/pong heartbeat", async () => {
@@ -157,7 +157,7 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
-      expect(spec?.asyncapi).toBe("3.0.0");
+      expect(spec?.asyncapi).toBe("3.1.0");
     });
 
     it("should support WebSocket binary frames", async () => {
@@ -186,7 +186,7 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
-      expect(spec?.asyncapi).toBe("3.0.0");
+      expect(spec?.asyncapi).toBe("3.1.0");
     });
 
     it("should support WebSocket text frames", async () => {
@@ -215,7 +215,7 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
-      expect(spec?.asyncapi).toBe("3.0.0");
+      expect(spec?.asyncapi).toBe("3.1.0");
     });
 
     it("should support WebSocket compression (permessage-deflate)", async () => {
@@ -244,7 +244,7 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
-      expect(spec?.asyncapi).toBe("3.0.0");
+      expect(spec?.asyncapi).toBe("3.1.0");
     });
 
     it("should support WebSocket multiplexing", async () => {
@@ -277,7 +277,7 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
-      expect(spec?.asyncapi).toBe("3.0.0");
+      expect(spec?.asyncapi).toBe("3.1.0");
     });
 
     it("should support WebSocket broadcast to all clients", async () => {
@@ -306,7 +306,7 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
-      expect(spec?.asyncapi).toBe("3.0.0");
+      expect(spec?.asyncapi).toBe("3.1.0");
     });
 
     it("should support WebSocket room-based messaging", async () => {
@@ -338,7 +338,7 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
-      expect(spec?.asyncapi).toBe("3.0.0");
+      expect(spec?.asyncapi).toBe("3.1.0");
     });
 
     it("should support WebSocket acknowledgments", async () => {
@@ -371,7 +371,7 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
-      expect(spec?.asyncapi).toBe("3.0.0");
+      expect(spec?.asyncapi).toBe("3.1.0");
     });
 
     it("should support WebSocket reconnection strategy", async () => {
@@ -402,7 +402,7 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
-      expect(spec?.asyncapi).toBe("3.0.0");
+      expect(spec?.asyncapi).toBe("3.1.0");
     });
 
     it("should support WebSocket close codes", async () => {
@@ -435,7 +435,7 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
-      expect(spec?.asyncapi).toBe("3.0.0");
+      expect(spec?.asyncapi).toBe("3.1.0");
     });
 
     it("should support WebSocket subprotocols", async () => {
@@ -464,7 +464,7 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
-      expect(spec?.asyncapi).toBe("3.0.0");
+      expect(spec?.asyncapi).toBe("3.1.0");
     });
 
     it("should support WebSocket extensions", async () => {
@@ -493,7 +493,7 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
-      expect(spec?.asyncapi).toBe("3.0.0");
+      expect(spec?.asyncapi).toBe("3.1.0");
     });
 
     it("should support WebSocket max message size", async () => {
@@ -522,7 +522,7 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
-      expect(spec?.asyncapi).toBe("3.0.0");
+      expect(spec?.asyncapi).toBe("3.1.0");
     });
 
     it("should support WebSocket message ordering", async () => {
@@ -554,7 +554,7 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
-      expect(spec?.asyncapi).toBe("3.0.0");
+      expect(spec?.asyncapi).toBe("3.1.0");
     });
 
     it("should support WebSocket backpressure", async () => {
@@ -584,7 +584,7 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
-      expect(spec?.asyncapi).toBe("3.0.0");
+      expect(spec?.asyncapi).toBe("3.1.0");
     });
 
     it("should support WebSocket message batching", async () => {
@@ -615,7 +615,7 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
-      expect(spec?.asyncapi).toBe("3.0.0");
+      expect(spec?.asyncapi).toBe("3.1.0");
     });
 
     it("should support WebSocket presence tracking", async () => {
@@ -647,7 +647,7 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
-      expect(spec?.asyncapi).toBe("3.0.0");
+      expect(spec?.asyncapi).toBe("3.1.0");
     });
 
     it("should support WebSocket typing indicators", async () => {
@@ -673,7 +673,7 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
-      expect(spec?.asyncapi).toBe("3.0.0");
+      expect(spec?.asyncapi).toBe("3.1.0");
     });
 
     it("should support WebSocket read receipts", async () => {
@@ -700,7 +700,7 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
-      expect(spec?.asyncapi).toBe("3.0.0");
+      expect(spec?.asyncapi).toBe("3.1.0");
     });
 
     it("should support WebSocket file transfer", async () => {
@@ -728,7 +728,7 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
-      expect(spec?.asyncapi).toBe("3.0.0");
+      expect(spec?.asyncapi).toBe("3.1.0");
     });
 
     it("should support WebSocket voice/video streaming", async () => {
@@ -763,7 +763,7 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
-      expect(spec?.asyncapi).toBe("3.0.0");
+      expect(spec?.asyncapi).toBe("3.1.0");
     });
   });
 
@@ -799,7 +799,7 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
-      expect(spec?.asyncapi).toBe("3.0.0");
+      expect(spec?.asyncapi).toBe("3.1.0");
     });
 
     it("should support MQTT QoS 1 (at least once)", async () => {
@@ -828,7 +828,7 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
-      expect(spec?.asyncapi).toBe("3.0.0");
+      expect(spec?.asyncapi).toBe("3.1.0");
     });
 
     it("should support MQTT QoS 2 (exactly once)", async () => {
@@ -857,7 +857,7 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
-      expect(spec?.asyncapi).toBe("3.0.0");
+      expect(spec?.asyncapi).toBe("3.1.0");
     });
 
     it("should support MQTT retained messages", async () => {
@@ -886,7 +886,7 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
-      expect(spec?.asyncapi).toBe("3.0.0");
+      expect(spec?.asyncapi).toBe("3.1.0");
     });
 
     it("should support MQTT wildcard subscriptions (+)", async () => {
@@ -909,7 +909,7 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
-      expect(spec?.asyncapi).toBe("3.0.0");
+      expect(spec?.asyncapi).toBe("3.1.0");
     });
 
     it("should support MQTT multi-level wildcard (#)", async () => {
@@ -932,7 +932,7 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
-      expect(spec?.asyncapi).toBe("3.0.0");
+      expect(spec?.asyncapi).toBe("3.1.0");
     });
 
     it("should support MQTT last will and testament", async () => {
@@ -963,7 +963,7 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
-      expect(spec?.asyncapi).toBe("3.0.0");
+      expect(spec?.asyncapi).toBe("3.1.0");
     });
 
     it("should support MQTT clean session", async () => {
@@ -992,7 +992,7 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
-      expect(spec?.asyncapi).toBe("3.0.0");
+      expect(spec?.asyncapi).toBe("3.1.0");
     });
 
     it("should support MQTT persistent session", async () => {
@@ -1022,7 +1022,7 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
-      expect(spec?.asyncapi).toBe("3.0.0");
+      expect(spec?.asyncapi).toBe("3.1.0");
     });
 
     it("should support MQTT client ID", async () => {
@@ -1051,7 +1051,7 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
-      expect(spec?.asyncapi).toBe("3.0.0");
+      expect(spec?.asyncapi).toBe("3.1.0");
     });
 
     it("should support MQTT keep alive", async () => {
@@ -1080,7 +1080,7 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
-      expect(spec?.asyncapi).toBe("3.0.0");
+      expect(spec?.asyncapi).toBe("3.1.0");
     });
 
     it("should support MQTT v5 user properties", async () => {
@@ -1113,7 +1113,7 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
-      expect(spec?.asyncapi).toBe("3.0.0");
+      expect(spec?.asyncapi).toBe("3.1.0");
     });
 
     it("should support MQTT v5 response topic", async () => {
@@ -1146,7 +1146,7 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
-      expect(spec?.asyncapi).toBe("3.0.0");
+      expect(spec?.asyncapi).toBe("3.1.0");
     });
 
     it("should support MQTT v5 correlation data", async () => {
@@ -1179,7 +1179,7 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
-      expect(spec?.asyncapi).toBe("3.0.0");
+      expect(spec?.asyncapi).toBe("3.1.0");
     });
 
     it("should support MQTT v5 content type", async () => {
@@ -1212,7 +1212,7 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
-      expect(spec?.asyncapi).toBe("3.0.0");
+      expect(spec?.asyncapi).toBe("3.1.0");
     });
 
     it("should support MQTT v5 message expiry", async () => {
@@ -1245,7 +1245,7 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
-      expect(spec?.asyncapi).toBe("3.0.0");
+      expect(spec?.asyncapi).toBe("3.1.0");
     });
 
     it("should support MQTT v5 topic alias", async () => {
@@ -1275,7 +1275,7 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
-      expect(spec?.asyncapi).toBe("3.0.0");
+      expect(spec?.asyncapi).toBe("3.1.0");
     });
 
     it("should support MQTT v5 subscription identifiers", async () => {
@@ -1305,7 +1305,7 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
-      expect(spec?.asyncapi).toBe("3.0.0");
+      expect(spec?.asyncapi).toBe("3.1.0");
     });
 
     it("should support MQTT v5 flow control", async () => {
@@ -1335,7 +1335,7 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
-      expect(spec?.asyncapi).toBe("3.0.0");
+      expect(spec?.asyncapi).toBe("3.1.0");
     });
 
     it("should support MQTT v5 maximum packet size", async () => {
@@ -1365,7 +1365,7 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
-      expect(spec?.asyncapi).toBe("3.0.0");
+      expect(spec?.asyncapi).toBe("3.1.0");
     });
 
     it("should support MQTT over WebSocket", async () => {
@@ -1392,7 +1392,7 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
-      expect(spec?.asyncapi).toBe("3.0.0");
+      expect(spec?.asyncapi).toBe("3.1.0");
     });
 
     it("should support MQTT TLS/SSL", async () => {
@@ -1419,7 +1419,7 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
-      expect(spec?.asyncapi).toBe("3.0.0");
+      expect(spec?.asyncapi).toBe("3.1.0");
     });
 
     it("should support MQTT bridge configuration", async () => {
@@ -1453,7 +1453,7 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
-      expect(spec?.asyncapi).toBe("3.0.0");
+      expect(spec?.asyncapi).toBe("3.1.0");
     });
 
     it("should support MQTT shared subscriptions", async () => {
@@ -1483,7 +1483,7 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
-      expect(spec?.asyncapi).toBe("3.0.0");
+      expect(spec?.asyncapi).toBe("3.1.0");
     });
 
     it("should support MQTT system topics ($SYS)", async () => {
@@ -1510,7 +1510,7 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
 
       const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
       expect(spec).toBeDefined();
-      expect(spec?.asyncapi).toBe("3.0.0");
+      expect(spec?.asyncapi).toBe("3.1.0");
     });
   });
 });

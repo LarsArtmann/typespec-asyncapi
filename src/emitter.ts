@@ -1,8 +1,8 @@
 /**
- * AsyncAPI 3.0 Emitter Entry Point
+ * AsyncAPI 3.1 Emitter Entry Point
  *
  * Reads decorator state, generates JSON Schemas from TypeSpec models
- * via @typespec/asset-emitter, and outputs AsyncAPI 3.0 YAML/JSON.
+ * via @typespec/asset-emitter, and outputs AsyncAPI 3.1 YAML/JSON.
  */
 
 import { emitFile } from "@typespec/compiler";

@@ -27,9 +27,9 @@ import { expect } from "bun:test";
 import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js";
 
 /**
- * Type guard: Asserts value is AsyncAPI 3.0 document
+ * Type guard: Asserts value is AsyncAPI 3.1 document
  *
- * Validates required AsyncAPI 3.0 properties exist with correct structure.
+ * Validates required AsyncAPI 3.1 properties exist with correct structure.
  * After this assertion, TypeScript knows the value is AsyncAPIObject.
  *
  * @param value - Value to check
@@ -52,8 +52,8 @@ export function assertAsyncAPIDoc(value: unknown): asserts value is AsyncAPIObje
   const doc = value as Partial<AsyncAPIObject>;
 
   // Check AsyncAPI version
-  if (doc.asyncapi !== "3.0.0") {
-    throw new Error(`Expected AsyncAPI version "3.0.0", got "${doc.asyncapi}"`);
+  if (doc.asyncapi !== "3.1.0") {
+    throw new Error(`Expected AsyncAPI version "3.1.0", got "${doc.asyncapi}"`);
   }
 
   // Check required info section

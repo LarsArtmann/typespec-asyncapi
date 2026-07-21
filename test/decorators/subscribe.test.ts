@@ -35,7 +35,7 @@ describe("@subscribe Decorator Tests", () => {
     expect(asyncapiDoc).toBeDefined();
 
     // Validate AsyncAPI structure
-    expect(asyncapiDoc.asyncapi).toBe("3.0.0");
+    expect(asyncapiDoc.asyncapi).toBe("3.1.0");
     expect(asyncapiDoc.info).toBeDefined();
     expect(asyncapiDoc.channels).toBeDefined();
     expect(asyncapiDoc.operations).toBeDefined();

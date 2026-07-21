@@ -39,7 +39,7 @@ export class AsyncAPIWorld {
   }
 
   /**
-   * Check if document is valid AsyncAPI 3.0
+   * Check if document is valid AsyncAPI 3.1
    */
   public isValidAsyncAPI(): boolean {
     return (
@@ -92,9 +92,9 @@ When("I compile TypeSpec to AsyncAPI", async function (this: AsyncAPIWorld) {
   console.log("🚧 BDD: Compiling TypeSpec to AsyncAPI");
 });
 
-Then("I should receive a valid AsyncAPI 3.0 document", async function (this: AsyncAPIWorld) {
+Then("I should receive a valid AsyncAPI 3.1 document", async function (this: AsyncAPIWorld) {
   if (!world.isValidAsyncAPI()) {
-    throw new Error("Expected valid AsyncAPI 3.0 document, but got invalid or null document");
+    throw new Error("Expected valid AsyncAPI 3.1 document, but got invalid or null document");
   }
 });
 

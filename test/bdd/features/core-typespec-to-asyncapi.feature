@@ -1,13 +1,13 @@
 # language: en
 Feature: TypeSpec to AsyncAPI Emission
   As a developer using TypeSpec
-  I want to automatically generate AsyncAPI 3.0 specifications
+  I want to automatically generate AsyncAPI 3.1 specifications
   So that I can document my event-driven architecture consistently
 
   Scenario: Basic TypeSpec decorator to AsyncAPI channel generation
     Given I have a TypeSpec model with @channel decorator
     When I compile the TypeSpec to AsyncAPI
-    Then I should receive a valid AsyncAPI 3.0 document
+    Then I should receive a valid AsyncAPI 3.1 document
     And the document should contain the corresponding channel
     And the channel should have the correct operation bindings
 
@@ -23,7 +23,7 @@ Feature: TypeSpec to AsyncAPI Emission
     And the MQTT configuration is valid
     When I compile the TypeSpec to AsyncAPI
     Then the AsyncAPI document should contain MQTT operation bindings
-    And the bindings should conform to AsyncAPI 3.0 specification
+    And the bindings should conform to AsyncAPI 3.1 specification
 
   Scenario: Type safety validation
     Given I have invalid TypeSpec decorator configuration

@@ -6,7 +6,7 @@ export const $lib = createTypeSpecLibrary({
     "invalid-asyncapi-version": {
       severity: "error",
       messages: {
-        default: paramMessage`AsyncAPI version '${"version"}' is not supported. Only 3.0.0 is supported.`,
+        default: paramMessage`AsyncAPI version '${"version"}' is not supported. Only 3.1.0 is supported.`,
       },
     },
     "missing-channel-path": {

@@ -1,13 +1,13 @@
 /**
  * Integration tests for AsyncAPI Standard Protocol Bindings with Emitter
  *
- * Tests the integration of AsyncAPI 3.0 standard protocol bindings with the TypeSpec emitter.
+ * Tests the integration of AsyncAPI 3.1 standard protocol bindings with the TypeSpec emitter.
  * Focuses on emitter functionality rather than custom binding factories.
  */
 
 import { describe, it, expect } from "bun:test";
 import { compileAsyncAPISpec } from "../utils/test-helpers";
-import { PROTOCOL_LIST } from "../../src/constants/protocols.js";
+import { PROTOCOL_LIST, isSupportedProtocol } from "../../src/constants/protocols.js";
 
 describe("AsyncAPI Protocol Binding Integration", () => {
   describe("Kafka Protocol Integration", () => {
@@ -42,7 +42,7 @@ describe("AsyncAPI Protocol Binding Integration", () => {
       expect(spec.channels!["user-events"]).toBeDefined();
     });
 
-    it("should validate generated spec follows AsyncAPI 3.0 standard", async () => {
+    it("should validate generated spec follows AsyncAPI 3.1 standard", async () => {
       const source = `
         @server("kafka-broker", #{
           url: "kafka://localhost:9092",
@@ -62,8 +62,8 @@ describe("AsyncAPI Protocol Binding Integration", () => {
 
       const spec = await compileAsyncAPISpec(source);
 
-      // Verify AsyncAPI 3.0 compliance
-      expect(spec.asyncapi).toBe("3.0.0");
+      // Verify AsyncAPI 3.1 compliance
+      expect(spec.asyncapi).toBe("3.1.0");
       expect(spec.info).toBeDefined();
       expect(spec.servers).toBeDefined();
       expect(spec.channels).toBeDefined();
@@ -248,12 +248,15 @@ describe("AsyncAPI Protocol Binding Integration", () => {
       expect(PROTOCOL_LIST.length).toBeGreaterThan(0);
       expect(PROTOCOL_LIST).toContain("kafka");
       expect(PROTOCOL_LIST).toContain("http");
-      expect(PROTOCOL_LIST).toContain("websocket");
+      expect(PROTOCOL_LIST).toContain("ws");
+      // websocket is accepted as an alias but not in the canonical list
+      expect(PROTOCOL_LIST).not.toContain("websocket");
+      expect(isSupportedProtocol("websocket")).toBe(true);
     });
   });
 
   describe("AsyncAPI Specification Validation", () => {
-    it("should generate valid AsyncAPI 3.0 documents", async () => {
+    it("should generate valid AsyncAPI 3.1 documents", async () => {
       const source = `
         @server("test-server", #{
           url: "kafka://localhost:9092",
@@ -273,8 +276,8 @@ describe("AsyncAPI Protocol Binding Integration", () => {
 
       const spec = await compileAsyncAPISpec(source);
 
-      // Verify AsyncAPI 3.0 specification compliance
-      expect(spec.asyncapi).toBe("3.0.0");
+      // Verify AsyncAPI 3.1 specification compliance
+      expect(spec.asyncapi).toBe("3.1.0");
       expect(spec.info).toBeDefined();
       expect(spec.info.title).toBeDefined();
       expect(spec.info.version).toBeDefined();

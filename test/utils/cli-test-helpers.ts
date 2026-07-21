@@ -57,7 +57,7 @@ export function assertValidAsyncAPI(
   doc: AsyncAPIObject | undefined,
 ): asserts doc is AsyncAPIObject {
   if (!doc) throw new Error("AsyncAPI document is undefined");
-  if (doc.asyncapi !== "3.0.0") throw new Error(`Expected AsyncAPI 3.0.0, got ${doc.asyncapi}`);
+  if (doc.asyncapi !== "3.1.0") throw new Error(`Expected AsyncAPI 3.1.0, got ${doc.asyncapi}`);
   if (!doc.info) throw new Error("AsyncAPI document missing info section");
 }
 

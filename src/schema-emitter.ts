@@ -258,9 +258,10 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<SchemaObject, AsyncAPIEmi
     }
     if (kind === "Model" && (t as { indexer?: { key?: unknown; value?: Type } }).indexer) {
       const indexer = (t as { indexer: { key: Type; value: Type } }).indexer;
+      const valueRef = this.refForNamedType(indexer.value);
       return {
         type: "object",
-        additionalProperties: this.typeToSchema(indexer.value),
+        additionalProperties: valueRef ?? this.typeToSchema(indexer.value),
       };
     }
     if (kind === "Scalar" || kind === "Intrinsic")

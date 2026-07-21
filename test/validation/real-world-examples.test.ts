@@ -2,7 +2,7 @@
  * Real-World Example Files Validation
  *
  * Compiles every .tsp file under examples/real-world/ and validates the
- * generated output against the official AsyncAPI 3.0.0 JSON Schema.
+ * generated output against the official AsyncAPI 3.1.0 JSON Schema.
  *
  * This test guards against regressions in real-world scenarios that exercise
  * the full emitter pipeline: complex nested models, arrays of named models,
@@ -25,7 +25,7 @@ const asyncApiSchema = JSON.parse(
       "@asyncapi",
       "specs",
       "schemas",
-      "3.0.0-without-$id.json",
+      "3.1.0-without-$id.json",
     ),
     "utf-8",
   ),
@@ -50,7 +50,7 @@ function readExampleSpecs(): { name: string; source: string }[] {
 
 const specs = readExampleSpecs();
 
-describe("Real-World Examples → AsyncAPI 3.0 Validation", () => {
+describe("Real-World Examples → AsyncAPI 3.1 Validation", () => {
   if (specs.length === 0) {
     it("should find at least one real-world example", () => {
       expect(specs.length).toBeGreaterThan(0);
@@ -69,10 +69,10 @@ describe("Real-World Examples → AsyncAPI 3.0 Validation", () => {
       it("should produce an AsyncAPI document", async () => {
         const result = await compileAsyncAPI(spec.source);
         expect(result.asyncApiDoc).toBeTruthy();
-        expect((result.asyncApiDoc as Record<string, unknown>)?.asyncapi).toBe("3.0.0");
+        expect((result.asyncApiDoc as Record<string, unknown>)?.asyncapi).toBe("3.1.0");
       });
 
-      it("should validate against AsyncAPI 3.0.0 JSON Schema", async () => {
+      it("should validate against AsyncAPI 3.1.0 JSON Schema", async () => {
         const result = await compileAsyncAPI(spec.source);
         const doc = result.asyncApiDoc;
 

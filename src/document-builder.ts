@@ -1,11 +1,11 @@
 /**
- * AsyncAPI 3.0 Document Builder
+ * AsyncAPI 3.1 Document Builder
  *
  * Assembles the final AsyncAPI document from decorator state
  * and generated JSON schemas. Handles channel discovery, message
  * registration, operation mapping, and the $ref chain.
  *
- * AsyncAPI 3.0 $ref chain:
+ * AsyncAPI 3.1 $ref chain:
  *   operations.{opId}.messages[] -> #/channels/{channelId}/messages/{messageId}
  *   channels.{channelId}.messages.{messageId} -> #/components/messages/{messageId}
  *   components.messages.{messageId}.payload -> #/components/schemas/{schemaName}
@@ -14,6 +14,7 @@
 import type { Program, Type } from "@typespec/compiler";
 import { isStdNamespace } from "@typespec/compiler";
 import type { AsyncAPIEmitterOptions } from "./infrastructure/configuration/asyncAPIEmitterOptions.js";
+import { normalizeProtocol } from "./constants/protocols.js";
 import type { AsyncAPIConsolidatedState } from "./state.js";
 import type {
   AsyncAPIDocument,
@@ -27,7 +28,7 @@ import type {
   ServerObject,
 } from "./domain/models/asyncapi-document.js";
 
-export const ASYNCAPI_SPEC_VERSION = "3.0.0";
+export const ASYNCAPI_SPEC_VERSION = "3.1.0";
 
 /** Escape a string for safe use as a JSON Pointer reference token (RFC 6901). */
 function escapeRefToken(token: string): string {
@@ -306,8 +307,9 @@ export function buildAsyncAPIDocument(
     const channelKey = opToChannel.get(typeWithName.name) ?? typeWithName.name;
     if (data.protocol && channels[channelKey]) {
       const channel = channels[channelKey];
+      const canonicalProtocol = normalizeProtocol(data.protocol);
       channel.bindings = {
-        [data.protocol]: data.binding ?? {},
+        [canonicalProtocol]: data.binding ?? {},
       };
     }
   }
@@ -319,7 +321,7 @@ export function buildAsyncAPIDocument(
       const serverData = entry;
       const server: ServerObject = {
         host: serverData.url,
-        protocol: serverData.protocol,
+        protocol: normalizeProtocol(serverData.protocol),
         description: serverData.description,
       };
 

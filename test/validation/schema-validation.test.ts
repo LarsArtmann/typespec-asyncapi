@@ -1,7 +1,7 @@
 /**
- * AsyncAPI 3.0 Schema Validation Test
+ * AsyncAPI 3.1 Schema Validation Test
  *
- * Validates emitter output against the official AsyncAPI 3.0.0 JSON Schema
+ * Validates emitter output against the official AsyncAPI 3.1.0 JSON Schema
  * using @asyncapi/specs + ajv (both already dependencies).
  */
 
@@ -11,7 +11,7 @@ import { readFileSync } from "fs";
 import { join } from "path";
 import { compileAsyncAPISpecRaw } from "../utils/test-helpers";
 
-// Load the official AsyncAPI 3.0.0 JSON Schema
+// Load the official AsyncAPI 3.1.0 JSON Schema
 const schemaPath = join(
   import.meta.dir,
   "..",
@@ -20,7 +20,7 @@ const schemaPath = join(
   "@asyncapi",
   "specs",
   "schemas",
-  "3.0.0-without-$id.json",
+  "3.1.0-without-$id.json",
 );
 const asyncApiSchema = JSON.parse(readFileSync(schemaPath, "utf-8"));
 
@@ -43,8 +43,8 @@ async function getEmitterOutput(source: string): Promise<Record<string, unknown>
   throw new Error("No AsyncAPI output found");
 }
 
-describe("AsyncAPI 3.0 Schema Validation", () => {
-  it("should validate simple event output against AsyncAPI 3.0.0 schema", async () => {
+describe("AsyncAPI 3.1 Schema Validation", () => {
+  it("should validate simple event output against AsyncAPI 3.1.0 schema", async () => {
     const source = `
       namespace SimpleApp;
 
@@ -66,7 +66,7 @@ describe("AsyncAPI 3.0 Schema Validation", () => {
     expect(valid).toBe(true);
   });
 
-  it("should validate output with servers against AsyncAPI 3.0.0 schema", async () => {
+  it("should validate output with servers against AsyncAPI 3.1.0 schema", async () => {
     const source = `
       @server("prod", #{
         url: "broker.example.com:9092",
@@ -93,7 +93,7 @@ describe("AsyncAPI 3.0 Schema Validation", () => {
     expect(valid).toBe(true);
   });
 
-  it("should validate multi-operation output against AsyncAPI 3.0.0 schema", async () => {
+  it("should validate multi-operation output against AsyncAPI 3.1.0 schema", async () => {
     const source = `
       namespace MultiApp;
 

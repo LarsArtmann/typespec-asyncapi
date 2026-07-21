@@ -1,8 +1,8 @@
 /**
- * All Example Files → AsyncAPI 3.0 Validation
+ * All Example Files → AsyncAPI 3.1 Validation
  *
  * Compiles every .tsp file under examples/ (recursive) and validates
- * the generated output against the official AsyncAPI 3.0.0 JSON Schema.
+ * the generated output against the official AsyncAPI 3.1.0 JSON Schema.
  *
  * This test ensures the emitter produces spec-compliant output for every
  * example shipped with the project, catching regressions in:
@@ -28,7 +28,7 @@ const asyncApiSchema = JSON.parse(
       "@asyncapi",
       "specs",
       "schemas",
-      "3.0.0-without-$id.json",
+      "3.1.0-without-$id.json",
     ),
     "utf-8",
   ),
@@ -58,7 +58,7 @@ function findTspFiles(
 
 const exampleFiles = findTspFiles(examplesRoot);
 
-describe("All Example Files → AsyncAPI 3.0 Validation", () => {
+describe("All Example Files → AsyncAPI 3.1 Validation", () => {
   if (exampleFiles.length === 0) {
     it("should find at least one example file", () => {
       expect(exampleFiles.length).toBeGreaterThan(0);
@@ -76,13 +76,13 @@ describe("All Example Files → AsyncAPI 3.0 Validation", () => {
         expect(errors).toEqual([]);
       });
 
-      it("should produce an asyncapi: 3.0.0 document", async () => {
+      it("should produce an asyncapi: 3.1.0 document", async () => {
         const result = await compileAsyncAPI(source);
         expect(result.asyncApiDoc).toBeTruthy();
-        expect((result.asyncApiDoc as Record<string, unknown>)?.asyncapi).toBe("3.0.0");
+        expect((result.asyncApiDoc as Record<string, unknown>)?.asyncapi).toBe("3.1.0");
       });
 
-      it("should validate against AsyncAPI 3.0.0 JSON Schema", async () => {
+      it("should validate against AsyncAPI 3.1.0 JSON Schema", async () => {
         const result = await compileAsyncAPI(source);
         const doc = result.asyncApiDoc;
 

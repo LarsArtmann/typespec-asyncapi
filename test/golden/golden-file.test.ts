@@ -2,7 +2,7 @@
  * Golden File Test
  *
  * The single most valuable test in the project.
- * Locks in verified-correct AsyncAPI 3.0 output.
+ * Locks in verified-correct AsyncAPI 3.1 output.
  * Any change to the emitter that alters output will be caught immediately.
  */
 
@@ -48,7 +48,7 @@ op subscribeOrderShipped(): OrderShipped;
 `;
 
 describe("Golden File Test", () => {
-  it("should produce spec-compliant AsyncAPI 3.0 output matching golden file", async () => {
+  it("should produce spec-compliant AsyncAPI 3.1 output matching golden file", async () => {
     const raw = await compileAsyncAPISpecRaw(SOURCE);
 
     // No compilation errors

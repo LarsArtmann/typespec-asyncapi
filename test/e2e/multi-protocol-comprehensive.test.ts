@@ -9,7 +9,7 @@ import { describe, expect, it } from "bun:test";
 import { createAsyncAPITestHost } from "../utils/test-helpers.js";
 
 describe("E2E: Multi-Protocol Comprehensive Test", () => {
-  it("should generate AsyncAPI 3.0 with all protocols", async () => {
+  it("should generate AsyncAPI 3.1 with all protocols", async () => {
     const host = await createAsyncAPITestHost();
 
     host.addTypeSpecFile(
@@ -41,8 +41,9 @@ describe("E2E: Multi-Protocol Comprehensive Test", () => {
 			@security(#{
 				name: "kafkaAuth",
 				scheme: #{
-					type: "sasl",
-					mechanism: "SCRAM-SHA-256"
+					type: "scramSha256",
+					username: "user",
+					password: "pass"
 				}
 			})
 			@publish
@@ -164,8 +165,8 @@ describe("E2E: Multi-Protocol Comprehensive Test", () => {
       const content = host.fs.get(asyncApiFile) as string;
       const spec = content.startsWith("{") ? JSON.parse(content) : require("yaml").parse(content);
 
-      // Validate AsyncAPI 3.0
-      expect(spec.asyncapi).toBe("3.0.0");
+      // Validate AsyncAPI 3.1
+      expect(spec.asyncapi).toBe("3.1.0");
 
       // Validate all 4 channels exist
       expect(Object.keys(spec.channels || {}).length).toBeGreaterThanOrEqual(4);

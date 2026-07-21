@@ -452,8 +452,9 @@ describe("Real Decorator Functionality Tests", () => {
         @security(#{
           name: "kafkaSASL",
           scheme: #{
-            type: "sasl",
-            mechanism: "SCRAM-SHA-256"
+            type: "scramSha256",
+            username: "user",
+            password: "pass"
           }
         })
         @protocol(#{

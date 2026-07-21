@@ -341,7 +341,7 @@ describe("E2E: Error Handling and Edge Cases", () => {
       const spec = content.startsWith("{") ? JSON.parse(content) : require("yaml").parse(content);
 
       // Should have valid AsyncAPI without security
-      expect(spec.asyncapi).toBe("3.0.0");
+      expect(spec.asyncapi).toBe("3.1.0");
       expect(spec.channels).toBeDefined();
     }
   });

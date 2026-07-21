@@ -2,11 +2,11 @@
  * PRODUCTION TEST: Real AsyncAPI Document Generation Tests
  *
  * Tests complete TypeSpec → AsyncAPI document transformation process.
- * NO mocks - validates real AsyncAPI 3.0.0 generation including:
+ * NO mocks - validates real AsyncAPI 3.1.0 generation including:
  * - Full TypeSpec compilation and AST processing
  * - Complex nested schema generation and references
  * - Channel and operation creation from TypeSpec operations
- * - AsyncAPI 3.0.0 specification compliance validation
+ * - AsyncAPI 3.1.0 specification compliance validation
  * - Multi-namespace and inheritance handling
  *
  * TODO: MASSIVE TEST FILE - 749 lines violates maintainability
@@ -312,7 +312,7 @@ describe("Real AsyncAPI Generation Tests", () => {
       )) as AsyncAPIObject;
 
       // Validate AsyncAPI document structure
-      expect(asyncapiDoc.asyncapi).toBe("3.0.0");
+      expect(asyncapiDoc.asyncapi).toBe("3.1.0");
       expect(asyncapiDoc.info).toBeDefined();
       expect(asyncapiDoc.channels).toBeDefined();
       expect(asyncapiDoc.operations).toBeDefined();
@@ -547,8 +547,8 @@ describe("Real AsyncAPI Generation Tests", () => {
     });
   });
 
-  describe("AsyncAPI 3.0.0 Specification Compliance", () => {
-    test("should generate AsyncAPI document compliant with 3.0.0 specification", async () => {
+  describe("AsyncAPI 3.1.0 Specification Compliance", () => {
+    test("should generate AsyncAPI document compliant with 3.1.0 specification", async () => {
       const source = `
         namespace ComplianceTest;
         
@@ -589,8 +589,8 @@ describe("Real AsyncAPI Generation Tests", () => {
         "compliance-test.json",
       )) as AsyncAPIObject;
 
-      // Validate AsyncAPI 3.0.0 specification compliance
-      expect(asyncapiDoc.asyncapi).toBe("3.0.0");
+      // Validate AsyncAPI 3.1.0 specification compliance
+      expect(asyncapiDoc.asyncapi).toBe("3.1.0");
 
       // Validate required top-level fields
       expect(asyncapiDoc.info).toBeDefined();
@@ -624,11 +624,11 @@ describe("Real AsyncAPI Generation Tests", () => {
       expect(validation.valid).toBe(true);
 
       if (!validation.valid) {
-        console.error("AsyncAPI 3.0.0 compliance validation failed:");
+        console.error("AsyncAPI 3.1.0 compliance validation failed:");
         validation.errors.forEach((error) => {
           console.error(`- ${error.path}: ${error.message}`);
         });
-        throw new Error(`AsyncAPI 3.0.0 compliance validation failed: ${validation.summary}`);
+        throw new Error(`AsyncAPI 3.1.0 compliance validation failed: ${validation.summary}`);
       }
     });
 

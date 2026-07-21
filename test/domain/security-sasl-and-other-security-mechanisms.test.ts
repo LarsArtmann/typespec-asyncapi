@@ -1,5 +1,9 @@
 /**
- * Security Schemes Tests
+ * Security Schemes Tests — SASL and other security mechanisms
+ *
+ * Uses correct AsyncAPI 3.1 security scheme types:
+ * SASL mechanisms are the TYPE value directly (plain, scramSha256, scramSha512, gssapi).
+ * See https://www.asyncapi.com/docs/reference/specification/v3.1.0#securitySchemeObject
  */
 
 import { describe, it, expect } from "bun:test";
@@ -15,69 +19,34 @@ describe("SASL & Other Security Mechanisms", () => {
     host.addTypeSpecFile(
       "main.tsp",
       `
-				import "@lars-artmann/typespec-asyncapi";
-				using TypeSpec.AsyncAPI;
+			import "@lars-artmann/typespec-asyncapi";
+			using TypeSpec.AsyncAPI;
 
-				namespace SASLPlain;
+			namespace SASLPlain;
 
-				model Msg { data: string; }
+			model Msg { data: string; }
 
-				@channel("sasl")
-				@security(#{
-					name: "saslPlain",
-					scheme: #{
-						type: "sasl",
-						mechanism: "PLAIN"
-					}
-				})
-				@publish
-				op publishMessage(): Msg;
-			`,
+			@channel("sasl")
+			@security(#{
+				name: "saslPlain",
+				scheme: #{
+					type: "plain",
+					username: "user",
+					password: "pass"
+				}
+			})
+			@publish
+			op publishMessage(): Msg;
+		`,
     );
 
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
-    expect(spec?.asyncapi).toBe("3.0.0");
-    // Assert actual security scheme output
+    expect(spec?.asyncapi).toBe("3.1.0");
     const securitySchemes = spec?.components?.securitySchemes;
     expect(securitySchemes).toBeDefined();
     expect(securitySchemes?.saslPlain).toBeDefined();
-    expect(securitySchemes?.saslPlain.type).toBe("sasl");
-  });
-
-  it("should support SASL SCRAM-SHA-1", async () => {
-    const host = await createAsyncAPITestHost();
-    host.addTypeSpecFile(
-      "main.tsp",
-      `
-				import "@lars-artmann/typespec-asyncapi";
-				using TypeSpec.AsyncAPI;
-
-				namespace SASLSCRAM1;
-
-				model Msg { data: string; }
-
-				@channel("scram1")
-				@security(#{
-					name: "saslScram1",
-					scheme: #{
-						type: "sasl",
-						mechanism: "SCRAM-SHA-1"
-					}
-				})
-				@publish
-				op publishMessage(): Msg;
-			`,
-    );
-
-    const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
-    expect(spec).toBeDefined();
-    expect(spec?.asyncapi).toBe("3.0.0");
-    // Assert actual security scheme output
-    const securitySchemes = spec?.components?.securitySchemes;
-    expect(securitySchemes).toBeDefined();
-    expect(securitySchemes?.saslScram1).toBeDefined();
-    expect(securitySchemes?.saslScram1.type).toBe("sasl");
+    expect(securitySchemes?.saslPlain.type).toBe("plain");
   });
 
   it("should support SASL SCRAM-SHA-256", async () => {
@@ -85,34 +54,34 @@ describe("SASL & Other Security Mechanisms", () => {
     host.addTypeSpecFile(
       "main.tsp",
       `
-				import "@lars-artmann/typespec-asyncapi";
-				using TypeSpec.AsyncAPI;
+			import "@lars-artmann/typespec-asyncapi";
+			using TypeSpec.AsyncAPI;
 
-				namespace SASLSCRAM256;
+			namespace SASLSCRAM256;
 
-				model Msg { data: string; }
+			model Msg { data: string; }
 
-				@channel("scram256")
-				@security(#{
-					name: "saslScram256",
-					scheme: #{
-						type: "sasl",
-						mechanism: "SCRAM-SHA-256"
-					}
-				})
-				@publish
-				op publishMessage(): Msg;
-			`,
+			@channel("scram256")
+			@security(#{
+				name: "saslScram256",
+				scheme: #{
+					type: "scramSha256",
+					username: "user",
+					password: "pass"
+				}
+			})
+			@publish
+			op publishMessage(): Msg;
+		`,
     );
 
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
-    expect(spec?.asyncapi).toBe("3.0.0");
-    // Assert actual security scheme output
+    expect(spec?.asyncapi).toBe("3.1.0");
     const securitySchemes = spec?.components?.securitySchemes;
     expect(securitySchemes).toBeDefined();
     expect(securitySchemes?.saslScram256).toBeDefined();
-    expect(securitySchemes?.saslScram256.type).toBe("sasl");
+    expect(securitySchemes?.saslScram256.type).toBe("scramSha256");
   });
 
   it("should support SASL SCRAM-SHA-512", async () => {
@@ -120,34 +89,34 @@ describe("SASL & Other Security Mechanisms", () => {
     host.addTypeSpecFile(
       "main.tsp",
       `
-				import "@lars-artmann/typespec-asyncapi";
-				using TypeSpec.AsyncAPI;
+			import "@lars-artmann/typespec-asyncapi";
+			using TypeSpec.AsyncAPI;
 
-				namespace SASLSCRAM512;
+			namespace SASLSCRAM512;
 
-				model Msg { data: string; }
+			model Msg { data: string; }
 
-				@channel("scram512")
-				@security(#{
-					name: "saslScram512",
-					scheme: #{
-						type: "sasl",
-						mechanism: "SCRAM-SHA-512"
-					}
-				})
-				@publish
-				op publishMessage(): Msg;
-			`,
+			@channel("scram512")
+			@security(#{
+				name: "saslScram512",
+				scheme: #{
+					type: "scramSha512",
+					username: "user",
+					password: "pass"
+				}
+			})
+			@publish
+			op publishMessage(): Msg;
+		`,
     );
 
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
-    expect(spec?.asyncapi).toBe("3.0.0");
-    // Assert actual security scheme output
+    expect(spec?.asyncapi).toBe("3.1.0");
     const securitySchemes = spec?.components?.securitySchemes;
     expect(securitySchemes).toBeDefined();
     expect(securitySchemes?.saslScram512).toBeDefined();
-    expect(securitySchemes?.saslScram512.type).toBe("sasl");
+    expect(securitySchemes?.saslScram512.type).toBe("scramSha512");
   });
 
   it("should support SASL GSSAPI (Kerberos)", async () => {
@@ -155,209 +124,114 @@ describe("SASL & Other Security Mechanisms", () => {
     host.addTypeSpecFile(
       "main.tsp",
       `
-				import "@lars-artmann/typespec-asyncapi";
-				using TypeSpec.AsyncAPI;
+			import "@lars-artmann/typespec-asyncapi";
+			using TypeSpec.AsyncAPI;
 
-				namespace SASLGSSAPI;
+			namespace SASLGSSAPI;
 
-				model Msg { data: string; }
+			model Msg { data: string; }
 
-				@channel("gssapi")
-				@security(#{
-					name: "saslGSSAPI",
-					scheme: #{
-						type: "sasl",
-						mechanism: "GSSAPI"
-					}
-				})
-				@publish
-				op publishMessage(): Msg;
-			`,
+			@channel("gssapi")
+			@security(#{
+				name: "saslGSSAPI",
+				scheme: #{
+					type: "gssapi",
+					principal: "kafka/node1@EXAMPLE.COM"
+				}
+			})
+			@publish
+			op publishMessage(): Msg;
+		`,
     );
 
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
-    expect(spec?.asyncapi).toBe("3.0.0");
-    // Assert actual security scheme output
+    expect(spec?.asyncapi).toBe("3.1.0");
     const securitySchemes = spec?.components?.securitySchemes;
     expect(securitySchemes).toBeDefined();
     expect(securitySchemes?.saslGSSAPI).toBeDefined();
-    expect(securitySchemes?.saslGSSAPI.type).toBe("sasl");
+    expect(securitySchemes?.saslGSSAPI.type).toBe("gssapi");
   });
 
-  it("should support SASL EXTERNAL", async () => {
-    const host = await createAsyncAPITestHost();
-    host.addTypeSpecFile(
-      "main.tsp",
-      `
-				import "@lars-artmann/typespec-asyncapi";
-				using TypeSpec.AsyncAPI;
+  it("should reject invalid SASL type 'external' (not in AsyncAPI 3.1)", async () => {
+    const { diagnostics } = await compileAsyncAPISpecRaw(`
+      import "@lars-artmann/typespec-asyncapi";
+      using TypeSpec.AsyncAPI;
 
-				namespace SASLExternal;
+      namespace SASLExternal;
 
-				model Msg { data: string; }
+      model Msg { data: string; }
 
-				@channel("external")
-				@security(#{
-					name: "saslExternal",
-					scheme: #{
-						type: "sasl",
-						mechanism: "EXTERNAL"
-					}
-				})
-				@publish
-				op publishMessage(): Msg;
-			`,
+      @channel("external")
+      @security(#{
+        name: "saslExternal",
+        scheme: #{
+          type: "external"
+        }
+      })
+      @publish
+      op publishMessage(): Msg;
+    `);
+
+    const errors = diagnostics.filter(
+      (d) => d.severity === "error" && d.message.includes("Unsupported security scheme type"),
     );
-
-    const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
-    expect(spec).toBeDefined();
-    expect(spec?.asyncapi).toBe("3.0.0");
-    // Assert actual security scheme output
-    const securitySchemes = spec?.components?.securitySchemes;
-    expect(securitySchemes).toBeDefined();
-    expect(securitySchemes?.saslExternal).toBeDefined();
-    expect(securitySchemes?.saslExternal.type).toBe("sasl");
+    expect(errors.length).toBeGreaterThan(0);
+    expect(errors[0].message).toContain("external");
   });
 
-  it("should support SASL OAUTHBEARER", async () => {
-    const host = await createAsyncAPITestHost();
-    host.addTypeSpecFile(
-      "main.tsp",
-      `
-				import "@lars-artmann/typespec-asyncapi";
-				using TypeSpec.AsyncAPI;
+  it("should reject invalid SASL type 'oauthBearer' (not in AsyncAPI 3.1)", async () => {
+    const { diagnostics } = await compileAsyncAPISpecRaw(`
+      import "@lars-artmann/typespec-asyncapi";
+      using TypeSpec.AsyncAPI;
 
-				namespace SASLOAuthBearer;
+      namespace SASLOAuthBearer;
 
-				model Msg { data: string; }
+      model Msg { data: string; }
 
-				@channel("oauth")
-				@security(#{
-					name: "saslOAuthBearer",
-					scheme: #{
-						type: "sasl",
-						mechanism: "OAUTHBEARER"
-					}
-				})
-				@publish
-				op publishMessage(): Msg;
-			`,
+      @channel("oauth")
+      @security(#{
+        name: "saslOAuthBearer",
+        scheme: #{
+          type: "oauthBearer"
+        }
+      })
+      @publish
+      op publishMessage(): Msg;
+    `);
+
+    const errors = diagnostics.filter(
+      (d) => d.severity === "error" && d.message.includes("Unsupported security scheme type"),
     );
-
-    const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
-    expect(spec).toBeDefined();
-    expect(spec?.asyncapi).toBe("3.0.0");
-    // Assert actual security scheme output
-    const securitySchemes = spec?.components?.securitySchemes;
-    expect(securitySchemes).toBeDefined();
-    expect(securitySchemes?.saslOAuthBearer).toBeDefined();
-    expect(securitySchemes?.saslOAuthBearer.type).toBe("sasl");
+    expect(errors.length).toBeGreaterThan(0);
   });
 
-  it("should support SASL CRAM-MD5", async () => {
-    const host = await createAsyncAPITestHost();
-    host.addTypeSpecFile(
-      "main.tsp",
-      `
-				import "@lars-artmann/typespec-asyncapi";
-				using TypeSpec.AsyncAPI;
+  it("should reject invalid SASL type 'sasl' (generic — must specify mechanism as type)", async () => {
+    const { diagnostics } = await compileAsyncAPISpecRaw(`
+      import "@lars-artmann/typespec-asyncapi";
+      using TypeSpec.AsyncAPI;
 
-				namespace SASLCRAMMD5;
+      namespace SASLGeneric;
 
-				model Msg { data: string; }
+      model Msg { data: string; }
 
-				@channel("crammd5")
-				@security(#{
-					name: "saslCRAMMD5",
-					scheme: #{
-						type: "sasl",
-						mechanism: "CRAM-MD5"
-					}
-				})
-				@publish
-				op publishMessage(): Msg;
-			`,
+      @channel("generic-sasl")
+      @security(#{
+        name: "saslGeneric",
+        scheme: #{
+          type: "sasl",
+          mechanism: "PLAIN"
+        }
+      })
+      @publish
+      op publishMessage(): Msg;
+    `);
+
+    const errors = diagnostics.filter(
+      (d) => d.severity === "error" && d.message.includes("Unsupported security scheme type"),
     );
-
-    const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
-    expect(spec).toBeDefined();
-    expect(spec?.asyncapi).toBe("3.0.0");
-    // Assert actual security scheme output
-    const securitySchemes = spec?.components?.securitySchemes;
-    expect(securitySchemes).toBeDefined();
-    expect(securitySchemes?.saslCRAMMD5).toBeDefined();
-    expect(securitySchemes?.saslCRAMMD5.type).toBe("sasl");
-  });
-
-  it("should support SASL DIGEST-MD5", async () => {
-    const host = await createAsyncAPITestHost();
-    host.addTypeSpecFile(
-      "main.tsp",
-      `
-				import "@lars-artmann/typespec-asyncapi";
-				using TypeSpec.AsyncAPI;
-
-				namespace SASLDigestMD5;
-
-				model Msg { data: string; }
-
-				@channel("digest")
-				@security(#{
-					name: "saslDigestMD5",
-					scheme: #{
-						type: "sasl",
-						mechanism: "DIGEST-MD5"
-					}
-				})
-				@publish
-				op publishMessage(): Msg;
-			`,
-    );
-
-    const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
-    expect(spec).toBeDefined();
-    expect(spec?.asyncapi).toBe("3.0.0");
-    // Assert actual security scheme output
-    const securitySchemes = spec?.components?.securitySchemes;
-    expect(securitySchemes).toBeDefined();
-    expect(securitySchemes?.saslDigestMD5).toBeDefined();
-    expect(securitySchemes?.saslDigestMD5.type).toBe("sasl");
-  });
-
-  it("should support SASL ANONYMOUS", async () => {
-    const host = await createAsyncAPITestHost();
-    host.addTypeSpecFile(
-      "main.tsp",
-      `
-				import "@lars-artmann/typespec-asyncapi";
-				using TypeSpec.AsyncAPI;
-
-				namespace SASLAnonymous;
-
-				model Msg { data: string; }
-
-				@channel("anon")
-				@security(#{
-					name: "saslAnonymous",
-					scheme: #{
-						type: "sasl",
-						mechanism: "ANONYMOUS"
-					}
-				})
-				@publish
-				op publishMessage(): Msg;
-			`,
-    );
-
-    const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
-    expect(spec).toBeDefined();
-    expect(spec?.asyncapi).toBe("3.0.0");
-    // Assert actual security scheme output
-    const securitySchemes = spec?.components?.securitySchemes;
-    expect(securitySchemes).toBeDefined();
-    expect(securitySchemes?.saslAnonymous).toBeDefined();
-    expect(securitySchemes?.saslAnonymous.type).toBe("sasl");
+    expect(errors.length).toBeGreaterThan(0);
+    expect(errors[0].message).toContain("sasl");
   });
 
   it("should support X.509 Client Certificates", async () => {
@@ -365,96 +239,131 @@ describe("SASL & Other Security Mechanisms", () => {
     host.addTypeSpecFile(
       "main.tsp",
       `
-				import "@lars-artmann/typespec-asyncapi";
-				using TypeSpec.AsyncAPI;
+			import "@lars-artmann/typespec-asyncapi";
+			using TypeSpec.AsyncAPI;
 
-				namespace X509;
+			namespace X509;
 
-				model Msg { data: string; }
+			model Msg { data: string; }
 
-				@channel("cert")
-				@security(#{
-					name: "x509",
-					scheme: #{
-						type: "X509",
-						certificateValidation: true
-					}
-				})
-				@publish
-				op publishMessage(): Msg;
-			`,
+			@channel("cert")
+			@security(#{
+				name: "x509",
+				scheme: #{
+					type: "X509"
+				}
+			})
+			@publish
+			op publishMessage(): Msg;
+		`,
     );
 
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
-    expect(spec?.asyncapi).toBe("3.0.0");
-    // Assert actual security scheme output
+    expect(spec?.asyncapi).toBe("3.1.0");
     const securitySchemes = spec?.components?.securitySchemes;
     expect(securitySchemes).toBeDefined();
     expect(securitySchemes?.x509).toBeDefined();
     expect(securitySchemes?.x509.type).toBe("X509");
   });
 
-  it("should reject unsupported security scheme type 'asymmetricEncryption'", async () => {
-    const { diagnostics } = await compileAsyncAPISpecRaw(`
-      import "@lars-artmann/typespec-asyncapi";
-      using TypeSpec.AsyncAPI;
+  it("should support asymmetricEncryption security scheme", async () => {
+    const host = await createAsyncAPITestHost();
+    host.addTypeSpecFile(
+      "main.tsp",
+      `
+			import "@lars-artmann/typespec-asyncapi";
+			using TypeSpec.AsyncAPI;
 
-      namespace AsymmetricKey;
+			namespace AsymmetricKey;
 
-      model Msg {
-        publicKey: string;
-        signature: string;
-      }
+			model Msg {
+				publicKey: string;
+				signature: string;
+			}
 
-      @channel("asymmetric")
-      @security(#{
-        name: "asymKey",
-        scheme: #{
-          type: "asymmetricEncryption",
-          algorithm: "RSA-2048"
-        }
-      })
-      @publish
-      op publishMessage(): Msg;
-    `);
-
-    const errors = diagnostics.filter(
-      (d) => d.severity === "error" && d.message.includes("Unsupported security scheme type"),
+			@channel("asymmetric")
+			@security(#{
+				name: "asymKey",
+				scheme: #{
+					type: "asymmetricEncryption"
+				}
+			})
+			@publish
+			op publishMessage(): Msg;
+		`,
     );
-    expect(errors.length).toBeGreaterThan(0);
-    expect(errors[0].message).toContain("asymmetricEncryption");
+
+    const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+    expect(spec).toBeDefined();
+    expect(spec?.asyncapi).toBe("3.1.0");
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes?.asymKey).toBeDefined();
+    expect(securitySchemes?.asymKey.type).toBe("asymmetricEncryption");
   });
 
-  it("should reject unsupported security scheme type 'symmetricEncryption'", async () => {
-    const { diagnostics } = await compileAsyncAPISpecRaw(`
-      import "@lars-artmann/typespec-asyncapi";
-      using TypeSpec.AsyncAPI;
+  it("should support symmetricEncryption security scheme", async () => {
+    const host = await createAsyncAPITestHost();
+    host.addTypeSpecFile(
+      "main.tsp",
+      `
+			import "@lars-artmann/typespec-asyncapi";
+			using TypeSpec.AsyncAPI;
 
-      namespace SymmetricKey;
+			namespace SymmetricKey;
 
-      model Msg {
-        keyId: string;
-        encryptedData: bytes;
-      }
+			model Msg {
+				keyId: string;
+				encryptedData: bytes;
+			}
 
-      @channel("symmetric")
-      @security(#{
-        name: "symKey",
-        scheme: #{
-          type: "symmetricEncryption",
-          algorithm: "AES-256-GCM"
-        }
-      })
-      @publish
-      op publishMessage(): Msg;
-    `);
-
-    const errors = diagnostics.filter(
-      (d) => d.severity === "error" && d.message.includes("Unsupported security scheme type"),
+			@channel("symmetric")
+			@security(#{
+				name: "symKey",
+				scheme: #{
+					type: "symmetricEncryption"
+				}
+			})
+			@publish
+			op publishMessage(): Msg;
+		`,
     );
-    expect(errors.length).toBeGreaterThan(0);
-    expect(errors[0].message).toContain("symmetricEncryption");
+
+    const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+    expect(spec).toBeDefined();
+    expect(spec?.asyncapi).toBe("3.1.0");
+    const securitySchemes = spec?.components?.securitySchemes;
+    expect(securitySchemes?.symKey).toBeDefined();
+    expect(securitySchemes?.symKey.type).toBe("symmetricEncryption");
+  });
+
+  it("should support userPassword security scheme", async () => {
+    const host = await createAsyncAPITestHost();
+    host.addTypeSpecFile(
+      "main.tsp",
+      `
+			import "@lars-artmann/typespec-asyncapi";
+			using TypeSpec.AsyncAPI;
+
+			namespace UserPasswordTest;
+
+			model Msg { data: string; }
+
+			@channel("userpw")
+			@security(#{
+				name: "userPw",
+				scheme: #{
+					type: "userPassword"
+				}
+			})
+			@publish
+			op publishMessage(): Msg;
+		`,
+    );
+
+    const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+    expect(spec).toBeDefined();
+    expect(spec?.components?.securitySchemes?.userPw?.type).toBe("userPassword");
   });
 
   it("should support Plain Text (No Authentication)", async () => {
@@ -462,32 +371,21 @@ describe("SASL & Other Security Mechanisms", () => {
     host.addTypeSpecFile(
       "main.tsp",
       `
-				import "@lars-artmann/typespec-asyncapi";
-				using TypeSpec.AsyncAPI;
+			import "@lars-artmann/typespec-asyncapi";
+			using TypeSpec.AsyncAPI;
 
-				namespace PlainText;
+			namespace PlainText;
 
-				model Msg { data: string; }
+			model Msg { data: string; }
 
-				@channel("plain")
-				@security(#{
-					name: "plain",
-					scheme: #{
-						type: "plain"
-					}
-				})
-				@publish
-				op publishMessage(): Msg;
-			`,
+			@channel("plain")
+			@publish
+			op publishMessage(): Msg;
+		`,
     );
 
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
-    expect(spec?.asyncapi).toBe("3.0.0");
-    // Assert actual security scheme output
-    const securitySchemes = spec?.components?.securitySchemes;
-    expect(securitySchemes).toBeDefined();
-    expect(securitySchemes?.plain).toBeDefined();
-    expect(securitySchemes?.plain.type).toBe("plain");
+    expect(spec?.asyncapi).toBe("3.1.0");
   });
 });

@@ -9,11 +9,11 @@
 
 | Feature                        | Status           | Evidence                                                                                                     |
 | ------------------------------ | ---------------- | ------------------------------------------------------------------------------------------------------------ |
-| AsyncAPI 3.0 YAML generation   | FULLY_FUNCTIONAL | `src/emitter.ts` — `yamlStringify(document)`                                                                 |
-| AsyncAPI 3.0 JSON generation   | FULLY_FUNCTIONAL | `src/emitter.ts` — `JSON.stringify(document, null, 2)`                                                       |
+| AsyncAPI 3.1 YAML generation   | FULLY_FUNCTIONAL | `src/emitter.ts` — `yamlStringify(document)`                                                                 |
+| AsyncAPI 3.1 JSON generation   | FULLY_FUNCTIONAL | `src/emitter.ts` — `JSON.stringify(document, null, 2)`                                                       |
 | Spec-compliant `$ref` chain    | FULLY_FUNCTIONAL | Operations → `#/channels/{id}/messages/{id}` → `#/components/messages/{id}` → `#/components/schemas/{name}`  |
 | Nested model `$ref`            | FULLY_FUNCTIONAL | Named user models/enums/scalars use `$ref: "#/components/schemas/Name"`                                      |
-| AsyncAPI 3.0 schema validation | FULLY_FUNCTIONAL | `test/validation/schema-validation.test.ts` — validates against official `@asyncapi/specs` 3.0.0 JSON schema |
+| AsyncAPI 3.1 schema validation | FULLY_FUNCTIONAL | `test/validation/schema-validation.test.ts` — validates against official `@asyncapi/specs` 3.1.0 JSON schema |
 | TypeSpec `$onEmit` integration | FULLY_FUNCTIONAL | `src/emitter.ts` — single `$onEmit` entry point                                                              |
 | `emitFile` output              | FULLY_FUNCTIONAL | Respects `output-file` and `file-type` options                                                               |
 | Strongly-typed document model  | FULLY_FUNCTIONAL | `src/domain/models/asyncapi-document.ts` — `AsyncAPIDocument`, `ChannelObject`, etc.                         |

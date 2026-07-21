@@ -2,9 +2,9 @@
 
 [![Build Status](https://img.shields.io/badge/Build-PASSING-green)](https://github.com/LarsArtmann/typespec-asyncapi)
 [![Tests](https://img.shields.io/badge/Tests-294%20pass%2C%200%20fail-green)](https://github.com/LarsArtmann/typespec-asyncapi)
-[![AsyncAPI](https://img.shields.io/badge/AsyncAPI-3.0.0-blue)](https://www.asyncapi.com/)
+[![AsyncAPI](https://img.shields.io/badge/AsyncAPI-3.1.0-blue)](https://www.asyncapi.com/)
 
-A TypeSpec emitter that transforms TypeSpec service definitions into [AsyncAPI 3.0](https://www.asyncapi.com/) specifications. Define your event schemas, channels, and operations in TypeSpec, then generate standards-compliant AsyncAPI YAML.
+A TypeSpec emitter that transforms TypeSpec service definitions into [AsyncAPI 3.1](https://www.asyncapi.com/) specifications. Define your event schemas, channels, and operations in TypeSpec, then generate standards-compliant AsyncAPI YAML.
 
 ## Quick Start
 
@@ -38,7 +38,7 @@ bunx tsp compile api.tsp --emit @lars-artmann/typespec-asyncapi
 Output (`tsp-output/@lars-artmann/typespec-asyncapi/asyncapi.yaml`):
 
 ```yaml
-asyncapi: 3.0.0
+asyncapi: 3.1.0
 info:
   title: MyAPI
   version: 1.0.0
@@ -228,7 +228,7 @@ bun run lint      # ESLint
 **Build:** 0 TypeScript errors
 **Lint:** 0 errors, 0 warnings
 **Tests:** 294 pass, 0 fail (0 skip, 0 todo)
-**Output:** Validates against AsyncAPI 3.0.0 JSON schema
+**Output:** Validates against AsyncAPI 3.1.0 JSON schema
 
 ## License
 

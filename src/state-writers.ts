@@ -8,6 +8,7 @@
 import type { Program, Operation, Model, ModelProperty, Namespace } from "@typespec/compiler";
 import { stateSymbols } from "./lib.js";
 import { getStateMap } from "./state-compatibility.js";
+import { normalizeProtocol } from "./constants/protocols.js";
 import type { SecurityScheme, ProtocolBindings } from "./domain/models/asyncapi-document.js";
 import type { MessageConfigData, ProtocolConfigData } from "./state.js";
 
@@ -66,7 +67,7 @@ export const storeServerConfig = (
   const newEntry: ServerConfigEntry = {
     name: config.name,
     url: (config.url as string) ?? "http://localhost:3000",
-    protocol: (config.protocol as string) ?? "http",
+    protocol: normalizeProtocol((config.protocol as string) ?? "http"),
     description: (config.description as string) ?? `Server for ${target.name}`,
   };
   if (Array.isArray(existing)) {
@@ -152,38 +153,64 @@ export const storeProtocolConfig = (
   config: Record<string, unknown>,
 ) => {
   const map = getStateMap<ProtocolConfigData>(program, stateSymbols.protocolConfigs);
-  const protocolType = (config.protocol as string) ?? "kafka";
+  const rawProtocol = (config.protocol as string) ?? "kafka";
+  const protocolType = normalizeProtocol(rawProtocol);
 
-  const protocolConfig: ProtocolConfigData = {
-    protocol: protocolType,
+  const base = {
     version: config.version as string | undefined,
     binding: config.binding as Record<string, unknown> | undefined,
-    ...(protocolType === "kafka" && {
-      partitions: (config.partitions as number) ?? 1,
-      replicationFactor: (config.replicationFactor as number) ?? 1,
-      consumerGroup: (config.consumerGroup as string) ?? "default",
-      sasl: (config.sasl as ProtocolConfigData["sasl"]) ?? {
-        mechanism: "plain",
-        username: "",
-        password: "",
-      },
-    }),
-    ...(protocolType === "ws" && {
-      subprotocol: (config.subprotocol as string) ?? "asyncapi",
-      queryParams: (config.queryParams as Record<string, string>) ?? {},
-      headers: (config.headers as Record<string, string>) ?? {},
-    }),
-    ...(protocolType === "mqtt" && {
-      qos: (config.qos as 0 | 1 | 2) ?? 1,
-      retain: (config.retain as boolean) ?? false,
-      lastWill: (config.lastWill as ProtocolConfigData["lastWill"]) ?? {
-        topic: "",
-        message: "",
-        qos: 1,
-        retain: false,
-      },
-    }),
   };
+
+  let protocolConfig: ProtocolConfigData;
+
+  switch (protocolType) {
+    case "kafka":
+      protocolConfig = {
+        ...base,
+        protocol: "kafka",
+        partitions: (config.partitions as number) ?? 1,
+        replicationFactor: (config.replicationFactor as number) ?? 1,
+        consumerGroup: (config.consumerGroup as string) ?? "default",
+        sasl: (config.sasl as { mechanism: string; username: string; password: string }) ?? {
+          mechanism: "plain",
+          username: "",
+          password: "",
+        },
+      };
+      break;
+    case "ws":
+    case "wss":
+      protocolConfig = {
+        ...base,
+        protocol: protocolType,
+        subprotocol: (config.subprotocol as string) ?? "asyncapi",
+        queryParams: (config.queryParams as Record<string, string>) ?? {},
+        headers: (config.headers as Record<string, string>) ?? {},
+      };
+      break;
+    case "mqtt":
+    case "mqtt5":
+      protocolConfig = {
+        ...base,
+        protocol: protocolType,
+        qos: (config.qos as 0 | 1 | 2) ?? 1,
+        retain: (config.retain as boolean) ?? false,
+        lastWill: (config.lastWill as {
+          topic: string;
+          message: string;
+          qos: 0 | 1 | 2;
+          retain: boolean;
+        }) ?? {
+          topic: "",
+          message: "",
+          qos: 1,
+          retain: false,
+        },
+      };
+      break;
+    default:
+      protocolConfig = { ...base, protocol: protocolType };
+  }
 
   map.set(target, protocolConfig);
 };

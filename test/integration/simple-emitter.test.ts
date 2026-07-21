@@ -33,7 +33,7 @@ describe("Simple AsyncAPI Emitter (No Decorators)", () => {
 
     // Should be a valid AsyncAPI document structure
     expect(typeof asyncapiDoc).toBe("object");
-    expect(asyncapiDoc.asyncapi).toBe("3.0.0");
+    expect(asyncapiDoc.asyncapi).toBe("3.1.0");
     expect(asyncapiDoc.info).toBeDefined();
     expect(asyncapiDoc.channels).toBeDefined();
     expect(asyncapiDoc.operations).toBeDefined();
@@ -62,7 +62,7 @@ describe("Simple AsyncAPI Emitter (No Decorators)", () => {
 
     const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "multi-op.json");
 
-    expect(asyncapiDoc.asyncapi).toBe("3.0.0");
+    expect(asyncapiDoc.asyncapi).toBe("3.1.0");
     // Should have processed the operations and models
     expect(asyncapiDoc.info.title).toBeDefined();
   });
@@ -82,7 +82,7 @@ describe("Simple AsyncAPI Emitter (No Decorators)", () => {
     const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
 
     const asyncapiDoc = await parseAsyncAPIOutput(outputFiles);
-    expect(asyncapiDoc.asyncapi).toBe("3.0.0");
+    expect(asyncapiDoc.asyncapi).toBe("3.1.0");
     expect(asyncapiDoc.info).toBeDefined();
   });
 });

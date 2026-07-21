@@ -5,6 +5,7 @@
 import { stateSymbols } from "./lib.js";
 import { type Program, type Type } from "@typespec/compiler";
 import { getStateMap, getMultiState } from "./state-compatibility.js";
+import type { AsyncAPIProtocol } from "./constants/protocols.js";
 import type { SecurityScheme, ProtocolBindings } from "./domain/models/asyncapi-document.js";
 
 // === STATE DATA INTERFACES ===
@@ -33,7 +34,7 @@ export type MessageConfigData = {
  */
 export type ServerConfigData = {
   url: string;
-  protocol: string;
+  protocol: AsyncAPIProtocol;
   description?: string;
   name: string;
 };
@@ -49,36 +50,49 @@ export type OperationTypeData = {
 };
 
 /**
- * Protocol Configuration State Data
+ * Protocol Configuration State Data — discriminated union on `protocol`.
+ *
+ * Protocol-specific fields can only exist on the variant that owns them,
+ * making impossible states (e.g. `qos` on a Kafka config) unrepresentable.
+ * The `protocol` discriminant is always a canonical `AsyncAPIProtocol`
+ * (never an alias) because `storeProtocolConfig` normalizes before storing.
  */
-export type ProtocolConfigData = {
-  protocol: string;
+type ProtocolConfigBase = {
   binding?: Record<string, unknown>;
-  // Kafka specific
+  version?: string;
+};
+
+export type KafkaConfigData = ProtocolConfigBase & {
+  protocol: "kafka";
   partitions?: number;
   replicationFactor?: number;
   consumerGroup?: string;
-  sasl?: {
-    mechanism: string;
-    username: string;
-    password: string;
-  };
-  // WebSocket specific
+  sasl?: { mechanism: string; username: string; password: string };
+};
+
+export type WebSocketConfigData = ProtocolConfigBase & {
+  protocol: "ws" | "wss";
   subprotocol?: string;
   queryParams?: Record<string, string>;
   headers?: Record<string, string>;
-  // MQTT specific
+};
+
+export type MqttConfigData = ProtocolConfigBase & {
+  protocol: "mqtt" | "mqtt5";
   qos?: 0 | 1 | 2;
   retain?: boolean;
-  lastWill?: {
-    topic: string;
-    message: string;
-    qos: 0 | 1 | 2;
-    retain: boolean;
-  };
-  // Generic protocol properties
-  version?: string;
+  lastWill?: { topic: string; message: string; qos: 0 | 1 | 2; retain: boolean };
 };
+
+export type GenericProtocolConfigData = ProtocolConfigBase & {
+  protocol: Exclude<AsyncAPIProtocol, "kafka" | "ws" | "wss" | "mqtt" | "mqtt5">;
+};
+
+export type ProtocolConfigData =
+  | KafkaConfigData
+  | WebSocketConfigData
+  | MqttConfigData
+  | GenericProtocolConfigData;
 
 /**
  * Tag Configuration State Data

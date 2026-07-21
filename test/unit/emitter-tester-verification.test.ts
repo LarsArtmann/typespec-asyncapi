@@ -28,7 +28,7 @@ describe("EmitterTester API Verification", () => {
     const result = await compileAsyncAPIWithoutErrors(simpleSource);
 
     expect(result.asyncApiDoc).toBeDefined();
-    expect(result.asyncApiDoc.asyncapi).toBe("3.0.0");
+    expect(result.asyncApiDoc.asyncapi).toBe("3.1.0");
     expect(result.asyncApiDoc.info).toBeDefined();
   });
 
@@ -118,7 +118,7 @@ describe("EmitterTester API Verification", () => {
     expect(() => JSON.parse(content)).not.toThrow();
 
     // 3. Should be valid AsyncAPI document
-    expect(result.asyncApiDoc.asyncapi).toBe("3.0.0");
+    expect(result.asyncApiDoc.asyncapi).toBe("3.1.0");
 
     console.log("✅ OPTIONS PASSING VERIFIED - Options reached the emitter!");
   });

@@ -34,7 +34,7 @@ describe("API Key Authentication", () => {
 
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
-    expect(spec?.asyncapi).toBe("3.0.0");
+    expect(spec?.asyncapi).toBe("3.1.0");
     // Assert actual security scheme output
     const securitySchemes = spec?.components?.securitySchemes;
     expect(securitySchemes).toBeDefined();
@@ -70,7 +70,7 @@ describe("API Key Authentication", () => {
 
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
-    expect(spec?.asyncapi).toBe("3.0.0");
+    expect(spec?.asyncapi).toBe("3.1.0");
     // Assert actual security scheme output
     const securitySchemes = spec?.components?.securitySchemes;
     expect(securitySchemes).toBeDefined();
@@ -109,7 +109,7 @@ describe("API Key Authentication", () => {
 
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
-    expect(spec?.asyncapi).toBe("3.0.0");
+    expect(spec?.asyncapi).toBe("3.1.0");
     // Assert actual security scheme output
     const securitySchemes = spec?.components?.securitySchemes;
     expect(securitySchemes).toBeDefined();
@@ -157,7 +157,7 @@ describe("API Key Authentication", () => {
 
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
-    expect(spec?.asyncapi).toBe("3.0.0");
+    expect(spec?.asyncapi).toBe("3.1.0");
     // Assert actual security scheme output
     const securitySchemes = spec?.components?.securitySchemes;
     expect(securitySchemes).toBeDefined();
@@ -194,7 +194,7 @@ describe("API Key Authentication", () => {
 
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
-    expect(spec?.asyncapi).toBe("3.0.0");
+    expect(spec?.asyncapi).toBe("3.1.0");
     // Assert actual security scheme output
     const securitySchemes = spec?.components?.securitySchemes;
     expect(securitySchemes).toBeDefined();
@@ -234,7 +234,7 @@ describe("API Key Authentication", () => {
 
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
-    expect(spec?.asyncapi).toBe("3.0.0");
+    expect(spec?.asyncapi).toBe("3.1.0");
     // Assert actual security scheme output
     const securitySchemes = spec?.components?.securitySchemes;
     expect(securitySchemes).toBeDefined();
@@ -271,7 +271,7 @@ describe("API Key Authentication", () => {
 
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
-    expect(spec?.asyncapi).toBe("3.0.0");
+    expect(spec?.asyncapi).toBe("3.1.0");
     // Assert actual security scheme output
     const securitySchemes = spec?.components?.securitySchemes;
     expect(securitySchemes).toBeDefined();
@@ -311,7 +311,7 @@ describe("API Key Authentication", () => {
 
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
-    expect(spec?.asyncapi).toBe("3.0.0");
+    expect(spec?.asyncapi).toBe("3.1.0");
     // Assert actual security scheme output
     const securitySchemes = spec?.components?.securitySchemes;
     expect(securitySchemes).toBeDefined();
@@ -351,7 +351,7 @@ describe("API Key Authentication", () => {
 
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
-    expect(spec?.asyncapi).toBe("3.0.0");
+    expect(spec?.asyncapi).toBe("3.1.0");
     // Assert actual security scheme output
     const securitySchemes = spec?.components?.securitySchemes;
     expect(securitySchemes).toBeDefined();
@@ -391,7 +391,7 @@ describe("API Key Authentication", () => {
 
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
-    expect(spec?.asyncapi).toBe("3.0.0");
+    expect(spec?.asyncapi).toBe("3.1.0");
     // Assert actual security scheme output
     const securitySchemes = spec?.components?.securitySchemes;
     expect(securitySchemes).toBeDefined();
@@ -431,7 +431,7 @@ describe("API Key Authentication", () => {
 
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
-    expect(spec?.asyncapi).toBe("3.0.0");
+    expect(spec?.asyncapi).toBe("3.1.0");
     // Assert actual security scheme output
     const securitySchemes = spec?.components?.securitySchemes;
     expect(securitySchemes).toBeDefined();
@@ -468,7 +468,7 @@ describe("API Key Authentication", () => {
 
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
-    expect(spec?.asyncapi).toBe("3.0.0");
+    expect(spec?.asyncapi).toBe("3.1.0");
     // Assert actual security scheme output
     const securitySchemes = spec?.components?.securitySchemes;
     expect(securitySchemes).toBeDefined();
@@ -508,7 +508,7 @@ describe("API Key Authentication", () => {
 
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
-    expect(spec?.asyncapi).toBe("3.0.0");
+    expect(spec?.asyncapi).toBe("3.1.0");
     // Assert actual security scheme output
     const securitySchemes = spec?.components?.securitySchemes;
     expect(securitySchemes).toBeDefined();
@@ -549,7 +549,7 @@ describe("API Key Authentication", () => {
 
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
-    expect(spec?.asyncapi).toBe("3.0.0");
+    expect(spec?.asyncapi).toBe("3.1.0");
     // Assert actual security scheme output
     const securitySchemes = spec?.components?.securitySchemes;
     expect(securitySchemes).toBeDefined();
@@ -586,7 +586,7 @@ describe("API Key Authentication", () => {
 
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
-    expect(spec?.asyncapi).toBe("3.0.0");
+    expect(spec?.asyncapi).toBe("3.1.0");
     // Assert actual security scheme output
     const securitySchemes = spec?.components?.securitySchemes;
     expect(securitySchemes).toBeDefined();
@@ -627,7 +627,7 @@ describe("API Key Authentication", () => {
 
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
-    expect(spec?.asyncapi).toBe("3.0.0");
+    expect(spec?.asyncapi).toBe("3.1.0");
     // Assert actual security scheme output
     const securitySchemes = spec?.components?.securitySchemes;
     expect(securitySchemes).toBeDefined();
@@ -667,7 +667,7 @@ describe("API Key Authentication", () => {
 
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
-    expect(spec?.asyncapi).toBe("3.0.0");
+    expect(spec?.asyncapi).toBe("3.1.0");
     // Assert actual security scheme output
     const securitySchemes = spec?.components?.securitySchemes;
     expect(securitySchemes).toBeDefined();
@@ -704,7 +704,7 @@ describe("API Key Authentication", () => {
 
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
-    expect(spec?.asyncapi).toBe("3.0.0");
+    expect(spec?.asyncapi).toBe("3.1.0");
     // Assert actual security scheme output
     const securitySchemes = spec?.components?.securitySchemes;
     expect(securitySchemes).toBeDefined();
@@ -744,7 +744,7 @@ describe("API Key Authentication", () => {
 
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
-    expect(spec?.asyncapi).toBe("3.0.0");
+    expect(spec?.asyncapi).toBe("3.1.0");
     // Assert actual security scheme output
     const securitySchemes = spec?.components?.securitySchemes;
     expect(securitySchemes).toBeDefined();
@@ -784,7 +784,7 @@ describe("API Key Authentication", () => {
 
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
-    expect(spec?.asyncapi).toBe("3.0.0");
+    expect(spec?.asyncapi).toBe("3.1.0");
     // Assert actual security scheme output
     const securitySchemes = spec?.components?.securitySchemes;
     expect(securitySchemes).toBeDefined();

@@ -89,7 +89,7 @@ describe("AsyncAPI Emitter Core (NEW API)", () => {
       expect(() => JSON.parse(content)).not.toThrow();
 
       // Verify AsyncAPI structure
-      expect(result.asyncApiDoc.asyncapi).toBe("3.0.0");
+      expect(result.asyncApiDoc.asyncapi).toBe("3.1.0");
     });
 
     it("should generate valid YAML output", async () => {
@@ -104,7 +104,7 @@ describe("AsyncAPI Emitter Core (NEW API)", () => {
       // Verify YAML content
       const content = result.outputs["yaml-test.yaml"];
       expect(content).toBeDefined();
-      expect(content).toContain("asyncapi: 3.0.0");
+      expect(content).toContain("asyncapi: 3.1.0");
       expect(content).toContain("channels:");
       expect(content).toContain("operations:");
     });

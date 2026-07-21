@@ -34,7 +34,7 @@ describe("AsyncAPI Basic Functionality", () => {
 
     const doc = (await compileAndParse(source)) as any;
 
-    expect(doc.asyncapi).toBe("3.0.0");
+    expect(doc.asyncapi).toBe("3.1.0");
     expect(doc.operations.publishSimpleEvent).toBeDefined();
     expect(doc.components.schemas.SimpleEvent).toBeDefined();
     expect(doc.channels["simple.events"]).toBeDefined();
@@ -63,7 +63,7 @@ describe("AsyncAPI Basic Functionality", () => {
 
     const doc = (await compileAndParse(source)) as any;
 
-    expect(doc.asyncapi).toBe("3.0.0");
+    expect(doc.asyncapi).toBe("3.1.0");
     expect(doc.operations.publishUserEvent).toBeDefined();
     expect(doc.operations.publishOrderEvent).toBeDefined();
     expect(doc.channels["users.events"]).toBeDefined();
@@ -228,7 +228,7 @@ describe("AsyncAPI Basic Functionality", () => {
     const asyncapiDoc = await parseAsyncAPIOutput(outputFiles);
     const doc = asyncapiDoc as any;
 
-    expect(doc.asyncapi).toBe("3.0.0");
+    expect(doc.asyncapi).toBe("3.1.0");
     expect(doc.channels).toBeDefined();
     expect(doc.components?.schemas).toBeDefined();
 

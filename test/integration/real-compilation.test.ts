@@ -1,13 +1,13 @@
 /**
  * Integration test using programmatic TypeSpec compiler API
- * Verifies the emitter produces valid AsyncAPI 3.0 end-to-end.
+ * Verifies the emitter produces valid AsyncAPI 3.1 end-to-end.
  */
 
 import { describe, expect, it } from "bun:test";
 import { compileAsyncAPISpecWithoutErrors, parseAsyncAPIOutput } from "../utils/test-helpers.js";
 
 describe("Real Compilation Integration Test", () => {
-  it("should compile TypeSpec to AsyncAPI 3.0 using programmatic API", async () => {
+  it("should compile TypeSpec to AsyncAPI 3.1 using programmatic API", async () => {
     const source = `
       namespace IntegrationTest;
 
@@ -27,7 +27,7 @@ describe("Real Compilation Integration Test", () => {
     const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
     const asyncapi = (await parseAsyncAPIOutput(outputFiles)) as any;
 
-    expect(asyncapi.asyncapi).toBe("3.0.0");
+    expect(asyncapi.asyncapi).toBe("3.1.0");
     expect(asyncapi.info).toBeDefined();
     expect(asyncapi.info.title).toBeDefined();
     expect(asyncapi.info.version).toBeDefined();

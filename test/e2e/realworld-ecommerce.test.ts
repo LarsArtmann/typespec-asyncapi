@@ -10,7 +10,29 @@
  */
 
 import { describe, expect, it } from "bun:test";
+import Ajv from "ajv";
+import { readFileSync } from "fs";
+import { join } from "path";
 import { createAsyncAPITestHost } from "../utils/test-helpers.js";
+
+const asyncApiSchema = JSON.parse(
+  readFileSync(
+    join(
+      import.meta.dir,
+      "..",
+      "..",
+      "node_modules",
+      "@asyncapi",
+      "specs",
+      "schemas",
+      "3.1.0-without-$id.json",
+    ),
+    "utf-8",
+  ),
+);
+
+const ajv = new Ajv({ allErrors: true, strict: false, allowUnionTypes: true });
+const validate = ajv.compile(asyncApiSchema);
 
 describe("E2E: Real-World E-Commerce System", () => {
   it("should generate complete e-commerce event system", async () => {
@@ -47,8 +69,7 @@ describe("E2E: Real-World E-Commerce System", () => {
 				protocol: "kafka",
 				binding: #{
 					topic: "product-events",
-					key: "productId",
-					groupId: "catalog-service"
+					bindingVersion: "0.5.0"
 				}
 			})
 			@publish
@@ -57,7 +78,7 @@ describe("E2E: Real-World E-Commerce System", () => {
 			@channel("catalog.product.updated")
 			@protocol(#{
 				protocol: "kafka",
-				binding: #{ topic: "product-events", key: "productId" }
+				binding: #{ topic: "product-events", bindingVersion: "0.5.0" }
 			})
 			@publish
 			op publishProductUpdated(): Product;
@@ -78,8 +99,7 @@ describe("E2E: Real-World E-Commerce System", () => {
 				protocol: "kafka",
 				binding: #{
 					topic: "inventory-events",
-					key: "productId",
-					groupId: "inventory-service"
+					bindingVersion: "0.5.0"
 				}
 			})
 			@publish
@@ -87,8 +107,8 @@ describe("E2E: Real-World E-Commerce System", () => {
 
 			@channel("inventory.low-stock.alert")
 			@protocol(#{
-				protocol: "websocket",
-				binding: #{ method: "GET" }
+				protocol: "ws",
+				binding: #{ method: "GET", bindingVersion: "0.1.0" }
 			})
 			@subscribe
 			op subscribeLowStockAlerts(): {
@@ -125,8 +145,7 @@ describe("E2E: Real-World E-Commerce System", () => {
 				protocol: "kafka",
 				binding: #{
 					topic: "order-events",
-					key: "orderId",
-					groupId: "order-service"
+					bindingVersion: "0.5.0"
 				}
 			})
 			@security(#{
@@ -157,18 +176,17 @@ describe("E2E: Real-World E-Commerce System", () => {
 				protocol: "kafka",
 				binding: #{
 					topic: "payment-events",
-					key: "orderId",
-					groupId: "payment-service"
+					bindingVersion: "0.5.0"
 				}
 			})
 			@security(#{
 				name: "paymentAuth",
 				scheme: #{
 					type: "oauth2",
-					flows: #{
+				flows: #{
 						clientCredentials: #{
 							tokenUrl: "https://auth.ecommerce.com/oauth/token",
-							scopes: #{
+							availableScopes: #{
 								paymentsRead: "Read payment data",
 								paymentsWrite: "Process payments"
 							}
@@ -199,7 +217,7 @@ describe("E2E: Real-World E-Commerce System", () => {
 				protocol: "kafka",
 				binding: #{
 					topic: "shipment-events",
-					key: "orderId"
+					bindingVersion: "0.5.0"
 				}
 			})
 			@publish
@@ -215,8 +233,8 @@ describe("E2E: Real-World E-Commerce System", () => {
 
 			@channel("shipping.status.updated")
 			@protocol(#{
-				protocol: "websocket",
-				binding: #{ method: "GET" }
+				protocol: "ws",
+				binding: #{ method: "GET", bindingVersion: "0.1.0" }
 			})
 			@subscribe
 			op subscribeShipmentStatus(): ShipmentStatusUpdate;
@@ -243,8 +261,8 @@ describe("E2E: Real-World E-Commerce System", () => {
 			@security(#{
 				name: "webhookAuth",
 				scheme: #{
-					type: "apiKey",
-					location: "header",
+					type: "httpApiKey",
+					in: "header",
 					name: "X-Webhook-Secret"
 				}
 			})
@@ -315,10 +333,20 @@ describe("E2E: Real-World E-Commerce System", () => {
 
       // Validate protocol diversity (Kafka, WebSocket, HTTP)
       const channelValues = Object.values(channels);
-      const hasKafka = JSON.stringify(channelValues).includes("kafka");
-      const hasWebSocket = JSON.stringify(channelValues).includes("websocket");
-      const hasHTTP = JSON.stringify(channelValues).includes("http");
-      expect(hasKafka || hasWebSocket || hasHTTP).toBe(true);
+      const serialized = JSON.stringify(channelValues);
+      const hasKafka = serialized.includes("kafka");
+      const hasWebSocket = serialized.includes("ws");
+      const hasHTTP = serialized.includes("http");
+      expect(hasKafka).toBe(true);
+      expect(hasWebSocket).toBe(true);
+      expect(hasHTTP).toBe(true);
+
+      // Validate against AsyncAPI 3.1 JSON Schema
+      const valid = validate(spec);
+      if (!valid) {
+        console.error("Schema validation errors:", JSON.stringify(validate.errors, null, 2));
+      }
+      expect(valid).toBe(true);
     }
   });
 });

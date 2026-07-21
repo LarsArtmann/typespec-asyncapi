@@ -4,11 +4,11 @@
 
 ## Vision
 
-Become the standard way to define AsyncAPI 3.0 specifications using TypeSpec, with first-class IDE support, validation, and ecosystem integration.
+Become the standard way to define AsyncAPI 3.1 specifications using TypeSpec, with first-class IDE support, validation, and ecosystem integration.
 
 ## Current State: Pre-Alpha
 
-The emitter produces spec-compliant AsyncAPI 3.0 output for the core feature set. See FEATURES.md for the honest feature inventory.
+The emitter produces spec-compliant AsyncAPI 3.1 output for the core feature set. See FEATURES.md for the honest feature inventory.
 
 ## Near-Term (v0.1.0-alpha)
 
@@ -22,7 +22,7 @@ The emitter produces spec-compliant AsyncAPI 3.0 output for the core feature set
 ## Mid-Term (v0.2.0-beta)
 
 - [ ] Full protocol binding support (Kafka, AMQP, MQTT, WebSocket)
-- [ ] AsyncAPI 3.0 specification test suite compliance
+- [ ] AsyncAPI 3.1 specification test suite compliance
 - [ ] Performance optimization for large specifications
 - [ ] Visual studio code extension integration
 - [ ] AsyncAPI Studio compatibility
@@ -39,4 +39,4 @@ The emitter produces spec-compliant AsyncAPI 3.0 output for the core feature set
 
 - We do NOT aim to replace the AsyncAPI specification itself
 - We do NOT generate code (use AsyncAPI generator for that)
-- We do NOT support AsyncAPI 2.x output (3.0 only)
+- We do NOT support AsyncAPI 2.x output (3.1 only)

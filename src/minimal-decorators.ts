@@ -13,7 +13,7 @@ import type {
   ModelProperty,
   DiagnosticTarget,
 } from "@typespec/compiler";
-import { SUPPORTED_PROTOCOLS, PROTOCOL_LIST } from "./constants/protocols.js";
+import { PROTOCOL_LIST, isSupportedProtocol } from "./constants/protocols.js";
 import {
   storeChannelState,
   storeOperationType,
@@ -106,7 +106,7 @@ export function $server(
   }
 
   const protocol = (configTyped.protocol as string).toLowerCase();
-  if (!SUPPORTED_PROTOCOLS.has(protocol)) {
+  if (!isSupportedProtocol(protocol)) {
     reportDecoratorDiagnostic(
       context,
       "@lars-artmann/typespec-asyncapi/unsupported-protocol",
@@ -182,6 +182,16 @@ export function $protocol(
     return;
 
   const configRecord = extractConfigRecord(config);
+  const protocol = configRecord.protocol as string | undefined;
+  if (protocol && !isSupportedProtocol(protocol.toLowerCase())) {
+    reportDecoratorDiagnostic(
+      context,
+      "unsupported-protocol",
+      target,
+      `Protocol '${protocol}' is not supported. Supported protocols: ${PROTOCOL_LIST.join(", ")}`,
+    );
+    return;
+  }
   storeProtocolConfig(context.program, target, configRecord);
 }
 

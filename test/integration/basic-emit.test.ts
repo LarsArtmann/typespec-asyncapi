@@ -41,7 +41,7 @@ describe("AsyncAPI Emitter Integration", () => {
     const content = result.outputs[result.outputFile];
 
     // Validate AsyncAPI structure
-    expect(content).toContain("asyncapi: 3.0.0");
+    expect(content).toContain("asyncapi: 3.1.0");
     expect(content).toContain("publishUserSignup");
     expect(content).toContain("receiveUserMessage");
     expect(content).toContain("UserSignupEvent");
@@ -76,8 +76,8 @@ describe("AsyncAPI Emitter Integration", () => {
 
     const asyncapiDoc = result.asyncApiDoc;
 
-    // Validate AsyncAPI 3.0 structure
-    expect(asyncapiDoc.asyncapi).toBe("3.0.0");
+    // Validate AsyncAPI 3.1 structure
+    expect(asyncapiDoc.asyncapi).toBe("3.1.0");
     expect(asyncapiDoc.info).toBeDefined();
     expect(asyncapiDoc.channels).toBeDefined();
     expect(asyncapiDoc.operations).toBeDefined();

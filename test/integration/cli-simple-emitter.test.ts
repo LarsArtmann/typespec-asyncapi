@@ -82,7 +82,7 @@ describe("CLI Tests: Simple AsyncAPI Emitter", () => {
 
     expect(testResult.exitCode).toBe(0);
     assertAsyncAPIDoc(testResult.asyncapiDoc);
-    expect(testResult.asyncapiDoc.asyncapi).toBe("3.0.0");
+    expect(testResult.asyncapiDoc.asyncapi).toBe("3.1.0");
 
     const channelKeys = Object.keys(testResult.asyncapiDoc.channels);
     expect(channelKeys).toContain("test.events");

@@ -75,7 +75,7 @@ export class IntegrationTestHarness {
       // For now, return mock AsyncAPI object
       // In real implementation, would parse YAML content
       return {
-        asyncapi: "3.0.0",
+        asyncapi: "3.1.0",
         info: {
           title: "Test API",
           version: "1.0.0",

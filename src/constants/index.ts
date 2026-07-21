@@ -10,22 +10,25 @@ export {
   SUPPORTED_PROTOCOLS,
   PROTOCOL_LIST,
   isSupportedProtocol,
+  normalizeProtocol,
   type AsyncAPIProtocol,
+  type ProtocolAlias,
+  type AcceptedProtocol,
 } from "./protocols.js";
 
 // Version constants
-export const ASYNCAPI_VERSION = "3.0.0" as const;
+export const ASYNCAPI_VERSION = "3.1.0" as const;
 export const LIBRARY_NAME = "@lars-artmann/typespec-asyncapi" as const;
 
 // Legacy compatibility for tests
 export const ASYNCAPI_VERSIONS = {
-  CURRENT: "3.0.0" as const,
-  SUPPORTED: ["3.0.0"] as const,
-  LATEST: "3.0.0" as const,
+  CURRENT: "3.1.0" as const,
+  SUPPORTED: ["3.1.0"] as const,
+  LATEST: "3.1.0" as const,
 } as const;
 
 export const DEFAULT_CONFIG = {
-  version: "3.0.0",
+  version: "3.1.0",
   title: "AsyncAPI Specification",
   description: "Generated AsyncAPI specification from TypeSpec",
   contentType: "application/json",

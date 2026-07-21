@@ -1,9 +1,9 @@
 /**
- * AsyncAPI 3.0 Document Type Definitions
+ * AsyncAPI 3.1 Document Type Definitions
  *
- * Strongly-typed model for the AsyncAPI 3.0.0 specification.
+ * Strongly-typed model for the AsyncAPI 3.1.0 specification.
  * Replaces Record<string, unknown> throughout the emitter.
- * Based on https://www.asyncapi.com/docs/reference/specification/v3.0.0
+ * Based on https://www.asyncapi.com/docs/reference/specification/v3.1.0
  */
 
 export type Ref = { $ref: string };
@@ -131,27 +131,27 @@ export type Tag = {
 };
 
 const SECURITY_SCHEME_TYPES = [
-  "http",
   "apiKey",
+  "asymmetricEncryption",
+  "gssapi",
+  "http",
+  "httpApiKey",
   "oauth2",
   "openIdConnect",
-  "mutualTLS",
   "plain",
   "scramSha256",
   "scramSha512",
-  "gssapi",
-  "external",
-  "oauthBearer",
+  "symmetricEncryption",
+  "userPassword",
   "X509",
-  "sasl",
 ] as const;
 
 export type SecuritySchemeType = (typeof SECURITY_SCHEME_TYPES)[number];
 
-export const VALID_SCHEME_TYPES: ReadonlySet<string> = new Set(SECURITY_SCHEME_TYPES);
+export const VALID_SCHEME_TYPES: ReadonlySet<SecuritySchemeType> = new Set(SECURITY_SCHEME_TYPES);
 
 export function isValidSchemeType(value: string): value is SecuritySchemeType {
-  return VALID_SCHEME_TYPES.has(value);
+  return VALID_SCHEME_TYPES.has(value as SecuritySchemeType);
 }
 
 export const SCHEME_TYPE_LIST: readonly SecuritySchemeType[] = SECURITY_SCHEME_TYPES;
@@ -160,7 +160,7 @@ export type SecurityScheme = {
   type: SecuritySchemeType;
   description?: string;
   name?: string;
-  in?: "query" | "header" | "cookie";
+  in?: "user" | "password" | "query" | "header" | "cookie";
   scheme?: string;
   bearerFormat?: string;
   flows?: OAuth2Flows;
@@ -180,7 +180,7 @@ export type ComponentsObject = {
 };
 
 export type AsyncAPIDocument = {
-  asyncapi: "3.0.0";
+  asyncapi: "3.1.0";
   info: InfoObject;
   id?: string;
   servers?: Record<string, ServerObject>;
