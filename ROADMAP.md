@@ -12,12 +12,12 @@ The emitter produces spec-compliant AsyncAPI 3.0 output for the core feature set
 
 ## Near-Term (v0.1.0-alpha)
 
-- [ ] Channel parameters for `{var}` address expressions
-- [ ] Server variables support
-- [ ] Nested model `$ref` (instead of inlining)
-- [ ] `EmitterOptions` model in `lib/main.tsp` for IDE autocomplete
-- [ ] GitHub Actions CI
-- [ ] AJV validation wired in `$onEmit`
+- [x] Channel parameters for `{var}` address expressions
+- [x] Server variables support
+- [x] Nested model `$ref` (instead of inlining)
+- [x] `EmitterOptions` model in `lib/main.tsp` for IDE autocomplete
+- [x] GitHub Actions CI
+- [ ] AJV validation wired in `$onEmit` (decided against — follows the openapi3 emitter pattern; CI runs schema validation separately)
 
 ## Mid-Term (v0.2.0-beta)
 
