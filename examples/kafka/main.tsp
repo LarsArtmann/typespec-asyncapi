@@ -11,10 +11,7 @@ namespace KafkaEvents;
 
 @bindings(#{
   kafka: #{
-    topicConfiguration: #{
-      partitions: 6,
-      replicationFactor: 3
-    }
+    bindingVersion: "0.5.0"
   }
 })
 model OrderCreated {
@@ -27,7 +24,7 @@ model OrderCreated {
 
 @bindings(#{
   kafka: #{
-    groupId: "shipping-service"
+    bindingVersion: "0.5.0"
   }
 })
 @channel("orders.created")

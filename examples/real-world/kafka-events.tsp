@@ -92,11 +92,9 @@ model PaymentProcessed {
   protocol: "kafka",
   binding: #{
     topic: "user.registrations",
-    key: "userId",
     partitions: 6,
     replicas: 3,
-    acks: "all",
-    compression: "gzip"
+    bindingVersion: "0.5.0"
   }
 })
 @channel("user.registered")
@@ -110,11 +108,9 @@ op publishUserRegistered(): UserRegistered;
   protocol: "kafka",
   binding: #{
     topic: "orders.created",
-    key: "orderId",
     partitions: 12,
     replicas: 3,
-    acks: "all",
-    retentionMs: 604800000 // 7 days
+    bindingVersion: "0.5.0"
   }
 })
 @channel("order.created")

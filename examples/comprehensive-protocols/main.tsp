@@ -58,10 +58,7 @@ namespace KafkaShop {
 
   @bindings(#{
     kafka: #{
-      topicConfiguration: #{
-        partitions: 6,
-        replicationFactor: 3
-      }
+      bindingVersion: "0.5.0"
     }
   })
   @channel("users.registered")
@@ -70,7 +67,7 @@ namespace KafkaShop {
 
   @bindings(#{
     kafka: #{
-      groupId: "notification-service"
+      bindingVersion: "0.5.0"
     }
   })
   @channel("users.registered")

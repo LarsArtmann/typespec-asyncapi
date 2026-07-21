@@ -157,25 +157,21 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<SchemaObject, AsyncAPIEmi
   }
 
   arrayDeclaration(array: Type, name: string, elementType: Type): EmitterOutput<SchemaObject> {
-    const extracted = extractValue(this.emitter.emitTypeReference(elementType));
-    return {
-      type: "array",
-      items:
-        Object.keys(extracted).length > 0
-          ? extracted
-          : intrinsicToSchema((elementType as { name?: string }).name ?? "string"),
-    };
+    return { type: "array", items: this.elementTypeToSchema(elementType) };
   }
 
   arrayLiteral(array: Type, elementType: Type): EmitterOutput<SchemaObject> {
+    return { type: "array", items: this.elementTypeToSchema(elementType) };
+  }
+
+  private elementTypeToSchema(elementType: Type): SchemaObject {
+    const ref = this.refForNamedType(elementType);
+    if (ref) return ref;
+
     const extracted = extractValue(this.emitter.emitTypeReference(elementType));
-    return {
-      type: "array",
-      items:
-        Object.keys(extracted).length > 0
-          ? extracted
-          : intrinsicToSchema((elementType as { name?: string }).name ?? "string"),
-    };
+    if (Object.keys(extracted).length > 0) return extracted;
+
+    return this.typeToSchema(elementType);
   }
 
   programContext(_program: Program): Context {
@@ -203,8 +199,7 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<SchemaObject, AsyncAPIEmi
     return { contents: "", path: sourceFile.path };
   }
 
-  private propertyToSchema(prop: ModelProperty): SchemaObject {
-    const t = prop.type;
+  private refForNamedType(t: Type): SchemaObject | null {
     const kind = (t as { kind: string }).kind;
 
     if (kind === "Model") {
@@ -227,6 +222,13 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<SchemaObject, AsyncAPIEmi
         return { $ref: `#/components/schemas/${scalarType.name}` };
       }
     }
+
+    return null;
+  }
+
+  private propertyToSchema(prop: ModelProperty): SchemaObject {
+    const ref = this.refForNamedType(prop.type);
+    if (ref) return ref;
 
     const propSchema = this.emitter.emitTypeReference(prop.type);
     const extracted = extractValue(propSchema);
@@ -254,14 +256,12 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<SchemaObject, AsyncAPIEmi
         anyOf: variants.map((v) => (typeof v === "string" ? { const: v } : v)),
       };
     }
-    if (kind === "Model" && (t as { indexer?: unknown }).indexer) {
+    if (kind === "Model" && (t as { indexer?: { key?: unknown; value?: Type } }).indexer) {
+      const indexer = (t as { indexer: { key: Type; value: Type } }).indexer;
       return {
-        type: "array",
-        items: this.typeToSchema((t as { indexer: { value: Type } }).indexer.value),
+        type: "object",
+        additionalProperties: this.typeToSchema(indexer.value),
       };
-    }
-    if (kind === "Model" && (t as { name?: string }).name === "Array") {
-      return { type: "array", items: { type: "string" } };
     }
     if (kind === "Scalar" || kind === "Intrinsic")
       return intrinsicToSchema((t as { name: string }).name);

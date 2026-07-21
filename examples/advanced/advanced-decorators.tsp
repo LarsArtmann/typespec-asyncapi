@@ -55,11 +55,9 @@ model RegistrationMetadata {
   protocol: "kafka",
   binding: #{
     topic: "user.registrations",
-    key: "userId",
     partitions: 6,
     replicas: 3,
-    acks: "all",
-    compression: "gzip"
+    bindingVersion: "0.5.0"
   }
 })
 @channel("user.registered")
@@ -82,21 +80,28 @@ model UserAuthentication {
       authorizationCode: #{
         authorizationUrl: "https://auth.example.com/oauth/authorize",
         tokenUrl: "https://auth.example.com/oauth/token",
-        scopes: #["profile", "email"]
+        availableScopes: #{profile: "Access profile data", email: "Access email data"}
       }
     }
   }
 })
 @protocol(#{
-  protocol: "websocket",
+  protocol: "ws",
   binding: #{
-    method: "POST",
+    method: "GET",
     query: #{
-      type: "auth"
+      type: "object",
+      properties: #{
+        auth: #{type: "string"}
+      }
     },
     headers: #{
-      secWebSocketProtocol: "auth-v2"
-    }
+      type: "object",
+      properties: #{
+        secWebSocketProtocol: #{type: "string"}
+      }
+    },
+    bindingVersion: "0.1.0"
   }
 })
 @channel("user.authenticated")
@@ -154,10 +159,7 @@ model OrderEvent {
   protocol: "http",
   binding: #{
     method: "POST",
-    path: "/webhooks/orders",
-    headers: #{
-      xEventSource: "order-service"
-    }
+    bindingVersion: "0.3.0"
   }
 })
 @tags(#["order", "e-commerce", "payment"])
