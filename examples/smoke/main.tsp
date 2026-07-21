@@ -5,7 +5,7 @@ using TypeSpec.AsyncAPI;
  * Smoke Test: Minimal AsyncAPI Example
  *
  * This is the simplest possible TypeSpec file that should generate
- * a valid AsyncAPI 3.0 document. If this doesn't work, the emitter
+ * a valid AsyncAPI 3.1 document. If this doesn't work, the emitter
  * is fundamentally broken.
  */
 

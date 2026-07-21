@@ -5,7 +5,7 @@ using TypeSpec.AsyncAPI;
  * Real-World Kafka Events Example
  *
  * This example demonstrates a typical e-commerce platform event system
- * using Kafka as the message broker with proper AsyncAPI 3.0 specification.
+ * using Kafka as the message broker with proper AsyncAPI 3.1 specification.
  */
 
 namespace ECommerce;

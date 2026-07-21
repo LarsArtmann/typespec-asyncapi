@@ -1,6 +1,6 @@
 # Kafka Events Example
 
-AsyncAPI 3.0 specification for a Kafka-based event streaming service.
+AsyncAPI 3.1 specification for a Kafka-based event streaming service.
 
 ## Usage
 

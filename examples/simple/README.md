@@ -1,6 +1,6 @@
 # Simple Chat Example
 
-Minimal AsyncAPI 3.0 specification for a WebSocket chat service.
+Minimal AsyncAPI 3.1 specification for a WebSocket chat service.
 
 ## Usage
 

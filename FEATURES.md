@@ -1,6 +1,6 @@
 # Feature Inventory
 
-**Verified:** 2026-07-21 against actual code + test run (301 pass, 0 fail, 0 skip, 0 todo)
+**Verified:** 2026-07-21 against actual code + test run (406 pass, 0 fail, 0 skip, 0 todo)
 **Project:** `@lars-artmann/typespec-asyncapi` v0.1.0-alpha
 
 ---
@@ -74,7 +74,7 @@
 
 | Feature                 | Status           | Evidence                                                                    |
 | ----------------------- | ---------------- | --------------------------------------------------------------------------- |
-| Bun test runner         | FULLY_FUNCTIONAL | 301 tests across 34 files (0 skip, 0 todo)                                  |
+| Bun test runner         | FULLY_FUNCTIONAL | 406 tests across 38 files (0 skip, 0 todo)                                  |
 | Golden file test        | FULLY_FUNCTIONAL | `test/golden/golden-file.test.ts`                                           |
 | Schema validation tests | FULLY_FUNCTIONAL | `test/validation/schema-validation.test.ts`                                 |
 | Integration tests       | FULLY_FUNCTIONAL | `test/integration/` — decorator output, negative tests, asyncapi generation |

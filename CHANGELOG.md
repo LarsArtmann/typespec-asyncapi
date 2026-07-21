@@ -60,9 +60,9 @@ First alpha release. Full Pareto recovery from analysis paralysis.
 ### Added
 
 - Spec-compliant `$ref` chain: operations → channels → components.messages → components.schemas
-- Strongly-typed AsyncAPI 3.0 document model (`src/domain/models/asyncapi-document.ts`)
+- Strongly-typed AsyncAPI 3.1 document model (`src/domain/models/asyncapi-document.ts`)
 - Golden file test (`test/golden/golden-file.test.ts`) locking in verified-correct output
-- AsyncAPI 3.0.0 JSON Schema validation tests using `@asyncapi/specs`
+- AsyncAPI 3.1.0 JSON Schema validation tests using `@asyncapi/specs`
 - `@tags` decorator data now emitted as `Tag[]` arrays on operations
 - `@correlationId` decorator data now emitted as `CorrelationId` objects on messages
 - `@header` decorator data now emitted as JSON Schema `headers` on messages
@@ -88,7 +88,7 @@ First alpha release. Full Pareto recovery from analysis paralysis.
 
 #### Added
 
-- `$ref` chain resolution tests (7 tests) verifying AsyncAPI 3.0 reference chain
+- `$ref` chain resolution tests (7 tests) verifying AsyncAPI 3.1 reference chain
 - Template spread and inheritance pattern tests (4 tests) for TypeSpec 1.13 compatibility
 - Security scheme output assertions to 16 representative tests (previously false-green)
 - `EmitEntity<T>` discriminated union pattern documentation in AGENTS.md
@@ -115,3 +115,28 @@ First alpha release. Full Pareto recovery from analysis paralysis.
 
 - Two false-green security tests using non-existent scheme types ("asymmetricEncryption", "symmetricEncryption") converted to verify diagnostic rejection
 - Broken examples (`basic-events`, `advanced`) fixed to use correct decorator API and `#{}` value literal syntax
+
+### AsyncAPI 3.1.0 Upgrade (2026-07-21)
+
+#### Added
+
+- AsyncAPI spec target bumped from 3.0.0 to 3.1.0 (`ASYNCAPI_SPEC_VERSION` in `src/document-builder.ts`, type literal in `src/domain/models/asyncapi-document.ts`). The 3.1.0 delta is purely additive (ROS 2 bindings); no breaking changes.
+- Protocol alias normalization: friendly aliases (`websocket` → `ws`, `websockets` → `wss`) accepted as input and normalized to canonical AsyncAPI binding keys via `normalizeProtocol()`. Resolves the `websocket`/`ws` split-brain where the emitter accepted invalid binding keys.
+- `@protocol` decorator validation: unknown protocols now emit an `unsupported-protocol` diagnostic instead of silently producing invalid output.
+- `ProtocolConfigData` discriminated union (`KafkaConfigData | WebSocketConfigData | MqttConfigData | GenericProtocolConfigData`) on `protocol`, making impossible states (e.g. `qos` on a Kafka config) unrepresentable.
+- Regression test suite (`test/validation/schema-emitter-regression.test.ts`, 16 tests) covering `refForNamedType`, `Record<…>` mapping, and every `typeToSchema` branch.
+- Semantic `$ref` resolution test suite (`test/validation/semantic-ref-resolution.test.ts`, 22 tests) verifying every `$ref` in every example resolves to a real target.
+
+#### Changed
+
+- Security scheme types corrected to match AsyncAPI 3.1 spec exactly: removed 4 invalid types (`sasl`, `mutualTLS`, `external`, `oauthBearer`); added 4 valid types (`httpApiKey`, `userPassword`, `symmetricEncryption`, `asymmetricEncryption`).
+- Validator schema paths point at `3.1.0-without-$id.json` (was `3.0.0-without-$id.json`).
+- `normalizeProtocol()` and `SUPPORTED_PROTOCOLS` are now typed as `AsyncAPIProtocol` (was `string`).
+- Test count grew from 301 to 406.
+
+#### Fixed
+
+- Arrays of named models (`Item[]`) now emit `items: { $ref: "#/components/schemas/Item" }` instead of `items: { type: "string" }`.
+- `Record<string>` now emits `{ type: "object", additionalProperties: { type: "string" } }` instead of `{ type: "array" }`.
+- `Record<Item>` now emits `{ $ref: "..." }` in `additionalProperties`.
+- `test/e2e/realworld-ecommerce.test.ts` inline spec corrected: removed Kafka channel-binding fields in wrong location, `websocket` → `ws`, `apiKey` → `httpApiKey`, `location` → `in`, `scopes` → `availableScopes`, added AsyncAPI 3.1 JSON Schema validation.

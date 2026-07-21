@@ -5,7 +5,7 @@ This is the **minimal** TypeSpec AsyncAPI example. If this doesn't work, the emi
 ## What it tests
 
 - Basic TypeSpec compilation
-- AsyncAPI 3.0 generation
+- AsyncAPI 3.1 generation
 - Channel creation
 - Operation generation
 - Model conversion
@@ -27,7 +27,7 @@ Should create: `tsp-output/@lars-artmann/typespec-asyncapi/asyncapi.yaml`
 
 Content should have:
 
-- `asyncapi: "3.0.0"`
+- `asyncapi: "3.1.0"`
 - `channels.events`
 - `operations.publishEvent`
 

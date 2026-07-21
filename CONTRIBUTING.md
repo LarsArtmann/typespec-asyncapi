@@ -37,7 +37,7 @@ lib/
 test/
   utils/test-helpers.ts                   Programmatic compilation API
   golden/                                 Golden file tests (lock verified output)
-  validation/                             AsyncAPI 3.0 JSON Schema validation
+  validation/                             AsyncAPI 3.1 JSON Schema validation
   integration/                            End-to-end compilation tests
 examples/
   simple/                                 Working example with expected output
@@ -50,10 +50,10 @@ The emitter extends `TypeEmitter` from `@typespec/asset-emitter` (same approach 
 1. `$onEmit(context)` entry point
 2. `consolidateAsyncAPIState(program)` reads decorator state into a typed `AsyncAPIConsolidatedState`
 3. `generateSchemas(context)` uses the AssetEmitter to produce JSON schemas for models
-4. `buildAsyncAPIDocument(state, schemas, options)` assembles the AsyncAPI 3.0 document
+4. `buildAsyncAPIDocument(state, schemas, options)` assembles the AsyncAPI 3.1 document
 5. `emitFile()` writes YAML or JSON output
 
-### AsyncAPI 3.0 `$ref` Chain
+### AsyncAPI 3.1 `$ref` Chain
 
 The document MUST follow this reference chain for spec compliance:
 
@@ -75,7 +75,7 @@ Tests use `bun:test` and the TypeSpec compiler testing API (`createTester`). All
 
 ### Schema Validation
 
-`test/validation/schema-validation.test.ts` validates emitter output against the official AsyncAPI 3.0.0 JSON Schema via AJV.
+`test/validation/schema-validation.test.ts` validates emitter output against the official AsyncAPI 3.1.0 JSON Schema via AJV.
 
 ## Pull Request Checklist
 

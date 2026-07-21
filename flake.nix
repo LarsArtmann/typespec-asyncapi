@@ -1,5 +1,5 @@
 {
-  description = "TypeSpec emitter for AsyncAPI 3.0 specifications";
+  description = "TypeSpec emitter for AsyncAPI 3.1 specifications";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";

@@ -1,6 +1,6 @@
 # Multi-Channel Example
 
-AsyncAPI 3.0 specification with multiple channels and operations.
+AsyncAPI 3.1 specification with multiple channels and operations.
 
 ## Usage
 

@@ -10,7 +10,7 @@
 bun install           # Install dependencies
 bun run build         # Build TypeScript → JavaScript (0 errors)
 bun run lint          # Run ESLint (0 errors, 0 warnings)
-bun test              # Run tests (301 pass, 0 fail)
+bun test              # Run tests (406 pass, 0 fail)
 ```
 
 **Important:** Use `bun` and `bunx`, never `npm` or `npx`.

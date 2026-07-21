@@ -169,9 +169,9 @@ op publishOrderUpdate(orderId: string): OrderStatus;
 - **Nested Objects:** Proper $ref handling for complex models
 - **Optional Fields:** Correct required/optional property handling
 
-### AsyncAPI 3.0 Compliance
+### AsyncAPI 3.1 Compliance
 
-- **Specification:** Full AsyncAPI 3.0 compliance
+- **Specification:** Full AsyncAPI 3.1 compliance
 - **Validation:** Generated specs pass AsyncAPI parser validation
 - **Extensibility:** Proper component structure for extensibility
 
@@ -241,7 +241,7 @@ asyncapi validate tsp-test/@lars-artmann/typespec-asyncapi/AsyncAPI.yaml
 All examples are designed to:
 
 - ✅ Compile without errors
-- ✅ Generate valid AsyncAPI 3.0 specifications
+- ✅ Generate valid AsyncAPI 3.1 specifications
 - ✅ Support real-world event-driven architectures
 - ✅ Demonstrate protocol-specific patterns
 
@@ -250,7 +250,7 @@ All examples are designed to:
 ## 🔗 Related Resources
 
 - **TypeSpec Documentation:** https://typespec.io/docs/
-- **AsyncAPI Specification:** https://www.asyncapi.com/docs/specifications/v3.0.0
+- **AsyncAPI Specification:** https://www.asyncapi.com/docs/specifications/v3.1.0
 - **Main Project:** [../README.md](../README.md)
 - **Getting Started:** [getting-started.tsp](../getting-started.tsp)
 
