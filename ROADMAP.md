@@ -36,7 +36,6 @@ Raw ideas:
 - Coverage tooling that works with TypeSpec's `dist/*.js` loading pattern (vitest can't instrument opaque modules)
 - Consolidate ESLint and oxlint configs (two linters with potentially contradictory rules)
 - Performance profiling for large specifications (100+ channels)
-- `bunx` → `bun x` migration for NixOS compatibility
 
 ### 3. Architecture
 
