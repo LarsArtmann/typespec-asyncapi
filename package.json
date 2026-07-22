@@ -1,10 +1,10 @@
 {
   "name": "@lars-artmann/typespec-asyncapi",
-  "version": "0.1.0-alpha",
+  "version": "0.2.0-beta",
   "private": false,
   "description": "TypeSpec emitter for AsyncAPI 3.1 specifications",
   "keywords": [
-    "alpha",
+    "beta",
     "amqp",
     "api",
     "asyncapi",
