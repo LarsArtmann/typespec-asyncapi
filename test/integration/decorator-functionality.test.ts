@@ -1,3 +1,4 @@
+
 /**
  * PRODUCTION TEST: Real Decorator Functionality Integration Tests
  *
@@ -9,7 +10,6 @@
  * - All decorators integrated with TypeSpec compiler
  */
 
-import { describe, expect, test } from "vitest";
 import {
   type AsyncAPIObject,
   compileAsyncAPISpecWithoutErrors,
@@ -18,9 +18,9 @@ import {
 } from "../utils/test-helpers.js";
 //TODO: this file is getting to big split it up
 
-describe("Real Decorator Functionality Tests", () => {
+describe("real Decorator Functionality Tests", () => {
   describe("@message Decorator Real Processing", () => {
-    test("should process @message decorator with real TypeSpec model compilation", async () => {
+    it("should process @message decorator with real TypeSpec model compilation", async () => {
       const source = `
         namespace MessageDecoratorTest;
         
@@ -96,7 +96,7 @@ describe("Real Decorator Functionality Tests", () => {
       expect(operation?.channel?.$ref).toBeDefined();
     });
 
-    test("should validate @message decorator with different content types", async () => {
+    it("should validate @message decorator with different content types", async () => {
       const source = `
         namespace MessageContentTypeTest;
         
@@ -148,7 +148,7 @@ describe("Real Decorator Functionality Tests", () => {
       expect(protobufSchema.properties?.messageType?.type).toBe("string");
     });
 
-    test("should handle @message decorator with headers and correlation ID", async () => {
+    it("should handle @message decorator with headers and correlation ID", async () => {
       const source = `
         namespace MessageHeadersTest;
         
@@ -188,7 +188,7 @@ describe("Real Decorator Functionality Tests", () => {
   });
 
   describe("@protocol Decorator Real Processing", () => {
-    test("should process @protocol decorator with Kafka binding", async () => {
+    it("should process @protocol decorator with Kafka binding", async () => {
       const source = `
         namespace ProtocolKafkaTest;
         
@@ -239,7 +239,7 @@ describe("Real Decorator Functionality Tests", () => {
       expect(operation.action).toBe("send");
     });
 
-    test("should process @protocol decorator with WebSocket binding", async () => {
+    it("should process @protocol decorator with WebSocket binding", async () => {
       const source = `
         namespace ProtocolWebSocketTest;
         
@@ -284,7 +284,7 @@ describe("Real Decorator Functionality Tests", () => {
       expect(operation.action).toBe("receive");
     });
 
-    test("should process @protocol decorator with multiple protocols", async () => {
+    it("should process @protocol decorator with multiple protocols", async () => {
       const source = `
         namespace MultiProtocolTest;
         
@@ -337,7 +337,7 @@ describe("Real Decorator Functionality Tests", () => {
   });
 
   describe("@security Decorator Real Processing", () => {
-    test("should process @security decorator with JWT Bearer authentication", async () => {
+    it("should process @security decorator with JWT Bearer authentication", async () => {
       const source = `
         namespace SecurityJWTTest;
         
@@ -381,7 +381,7 @@ describe("Real Decorator Functionality Tests", () => {
       expect(asyncapiDoc.operations?.publishSecureMessage).toBeDefined();
     });
 
-    test("should process @security decorator with OAuth2 flows", async () => {
+    it("should process @security decorator with OAuth2 flows", async () => {
       const source = `
         namespace SecurityOAuth2Test;
         
@@ -439,7 +439,7 @@ describe("Real Decorator Functionality Tests", () => {
       expect(asyncapiDoc.operations?.publishOAuth2SecuredMessage).toBeDefined();
     });
 
-    test("should process @security decorator with SASL authentication for Kafka", async () => {
+    it("should process @security decorator with SASL authentication for Kafka", async () => {
       const source = `
         namespace SecuritySASLTest;
         
@@ -486,8 +486,8 @@ describe("Real Decorator Functionality Tests", () => {
     });
   });
 
-  describe("Combined Decorator Integration", () => {
-    test("should process all decorators together in complex scenario", async () => {
+  describe("combined Decorator Integration", () => {
+    it("should process all decorators together in complex scenario", async () => {
       const source = `
         namespace CombinedDecoratorsTest;
         
@@ -622,7 +622,7 @@ describe("Real Decorator Functionality Tests", () => {
 
       // Run comprehensive validation
       const validation = await validateAsyncAPIObjectComprehensive(asyncapiDoc);
-      expect(validation.valid).toBe(true);
+      expect(validation.valid).toBeTruthy();
     });
   });
 });

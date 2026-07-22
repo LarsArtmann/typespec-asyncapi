@@ -1,3 +1,4 @@
+
 /**
  * E2E Test 1: Multi-Protocol Comprehensive AsyncAPI Generation
  *
@@ -5,10 +6,9 @@
  * with proper bindings, security schemes, and message flows.
  */
 
-import { describe, expect, it } from "vitest";
 import { createAsyncAPITestHost } from "../utils/test-helpers.js";
 
-describe("E2E: Multi-Protocol Comprehensive Test", () => {
+describe("e2E: Multi-Protocol Comprehensive Test", () => {
   it("should generate AsyncAPI 3.1 with all protocols", async () => {
     const host = await createAsyncAPITestHost();
 
@@ -154,7 +154,7 @@ describe("E2E: Multi-Protocol Comprehensive Test", () => {
     }
 
     // Find generated AsyncAPI file
-    const outputFiles = Array.from(host.fs.keys());
+    const outputFiles = [...host.fs.keys()];
     const asyncApiFile = outputFiles.find(
       (f) => f.includes("asyncapi") && (f.endsWith(".json") || f.endsWith(".yaml")),
     );
@@ -182,12 +182,16 @@ describe("E2E: Multi-Protocol Comprehensive Test", () => {
       expect(schemas.DeviceStatus).toBeDefined();
 
       // Validate union types are converted to enums
-      expect(schemas.UserCreatedEvent.properties.accountType.enum).toEqual([
+      expect(schemas.UserCreatedEvent.properties.accountType.enum).toStrictEqual([
         "free",
         "premium",
         "enterprise",
       ]);
-      expect(schemas.DeviceStatus.properties.status.enum).toEqual(["online", "offline", "error"]);
+      expect(schemas.DeviceStatus.properties.status.enum).toStrictEqual([
+        "online",
+        "offline",
+        "error",
+      ]);
 
       // Validate optional fields
       expect(schemas.DeviceStatus.properties.batteryLevel).toBeDefined();

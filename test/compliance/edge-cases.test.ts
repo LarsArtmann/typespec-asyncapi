@@ -1,3 +1,4 @@
+
 /**
  * AsyncAPI 3.1.0 Spec Compliance: Edge Cases
  *
@@ -6,10 +7,9 @@
  * unions, Record types, optional/nullable fields.
  */
 
-import { describe, it, expect } from "vitest";
 import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
 
-describe("Spec Compliance: Edge Cases", () => {
+describe("spec Compliance: Edge Cases", () => {
   it("handles empty model (no properties)", async () => {
     const doc = await compileAndValidateOrThrow(`
       namespace Test;
@@ -44,7 +44,7 @@ describe("Spec Compliance: Edge Cases", () => {
 
     const operations = doc.operations as Record<string, Record<string, unknown>>;
     const op = Object.values(operations)[0] as Record<string, unknown>;
-    const messages = op.messages as Array<{ $ref: string }>;
+    const messages = op.messages as { $ref: string }[];
     expect(messages[0].$ref).toContain("~1");
   });
 
@@ -93,7 +93,7 @@ describe("Spec Compliance: Edge Cases", () => {
 
     const components = doc.components as Record<string, Record<string, Record<string, unknown>>>;
     const props = components.schemas.Event.properties as Record<string, Record<string, unknown>>;
-    expect(props.priority.enum).toEqual(["low", "medium", "high", "critical"]);
+    expect(props.priority.enum).toStrictEqual(["low", "medium", "high", "critical"]);
   });
 
   it("handles optional fields in required array", async () => {
@@ -109,7 +109,7 @@ describe("Spec Compliance: Edge Cases", () => {
     `);
 
     const components = doc.components as Record<string, Record<string, Record<string, unknown>>>;
-    expect(components.schemas.Event.required).toEqual(["id"]);
+    expect(components.schemas.Event.required).toStrictEqual(["id"]);
   });
 
   it("handles multiple operations on same channel", async () => {
@@ -167,7 +167,7 @@ describe("Spec Compliance: Edge Cases", () => {
 
     const operations = doc.operations as Record<string, Record<string, unknown>>;
     const op = Object.values(operations)[0] as Record<string, unknown>;
-    const tags = op.tags as Array<{ name: string }>;
+    const tags = op.tags as { name: string }[];
     expect(tags).toHaveLength(2);
     expect(tags[0].name).toBe("important");
   });

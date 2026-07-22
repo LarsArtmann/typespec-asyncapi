@@ -1,3 +1,4 @@
+
 /**
  * AsyncAPI 3.1.0 Spec Compliance: Schema Types
  *
@@ -5,7 +6,6 @@
  * output and that the document validates against the AsyncAPI 3.1.0 schema.
  */
 
-import { describe, it, expect } from "vitest";
 import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
 
 function getSchema(doc: Record<string, unknown>, name: string): Record<string, unknown> {
@@ -13,7 +13,7 @@ function getSchema(doc: Record<string, unknown>, name: string): Record<string, u
   return components.schemas[name];
 }
 
-describe("Spec Compliance: Schema Types", () => {
+describe("spec Compliance: Schema Types", () => {
   it("maps string type correctly", async () => {
     const doc = await compileAndValidateOrThrow(`
       namespace Test;
@@ -165,7 +165,7 @@ describe("Spec Compliance: Schema Types", () => {
     `);
     const schema = getSchema(doc, "Event");
     const props = schema.properties as Record<string, Record<string, unknown>>;
-    expect(props.status.enum).toEqual(["pending", "active", "closed"]);
+    expect(props.status.enum).toStrictEqual(["pending", "active", "closed"]);
   });
 
   it("maps optional fields correctly with required array", async () => {
@@ -179,7 +179,7 @@ describe("Spec Compliance: Schema Types", () => {
       op publish(): Event;
     `);
     const schema = getSchema(doc, "Event");
-    expect(schema.required).toEqual(["id"]);
+    expect(schema.required).toStrictEqual(["id"]);
   });
 
   it("maps nested model references as $ref", async () => {

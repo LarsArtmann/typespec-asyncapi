@@ -1,3 +1,4 @@
+
 /**
  * AsyncAPI 3.1 Schema Validation Test
  *
@@ -5,10 +6,9 @@
  * using @asyncapi/specs + ajv (both already dependencies).
  */
 
-import { describe, it, expect } from "vitest";
 import Ajv from "ajv";
-import { readFileSync } from "fs";
-import { join } from "path";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { compileAsyncAPISpecRaw } from "../utils/test-helpers";
 
 // Load the official AsyncAPI 3.1.0 JSON Schema
@@ -22,7 +22,7 @@ const schemaPath = join(
   "schemas",
   "3.1.0-without-$id.json",
 );
-const asyncApiSchema = JSON.parse(readFileSync(schemaPath, "utf-8"));
+const asyncApiSchema = JSON.parse(readFileSync(schemaPath, "utf8"));
 
 const ajv = new Ajv({ allErrors: true, strict: false });
 const validate = ajv.compile(asyncApiSchema);
@@ -31,7 +31,7 @@ async function getEmitterOutput(source: string): Promise<Record<string, unknown>
   const raw = await compileAsyncAPISpecRaw(source);
 
   const errors = raw.diagnostics.filter((d) => d.severity === "error");
-  expect(errors.length).toBe(0);
+  expect(errors).toHaveLength(0);
 
   for (const [, content] of raw.outputFiles) {
     if (typeof content === "string" && content.startsWith("asyncapi")) {
@@ -43,7 +43,7 @@ async function getEmitterOutput(source: string): Promise<Record<string, unknown>
   throw new Error("No AsyncAPI output found");
 }
 
-describe("AsyncAPI 3.1 Schema Validation", () => {
+describe("asyncAPI 3.1 Schema Validation", () => {
   it("should validate simple event output against AsyncAPI 3.1.0 schema", async () => {
     const source = `
       namespace SimpleApp;
@@ -63,7 +63,7 @@ describe("AsyncAPI 3.1 Schema Validation", () => {
     if (!valid) {
       console.error("Validation errors:", JSON.stringify(validate.errors, null, 2));
     }
-    expect(valid).toBe(true);
+    expect(valid).toBeTruthy();
   });
 
   it("should validate output with servers against AsyncAPI 3.1.0 schema", async () => {
@@ -90,7 +90,7 @@ describe("AsyncAPI 3.1 Schema Validation", () => {
     if (!valid) {
       console.error("Validation errors:", JSON.stringify(validate.errors, null, 2));
     }
-    expect(valid).toBe(true);
+    expect(valid).toBeTruthy();
   });
 
   it("should validate multi-operation output against AsyncAPI 3.1.0 schema", async () => {
@@ -113,6 +113,6 @@ describe("AsyncAPI 3.1 Schema Validation", () => {
     if (!valid) {
       console.error("Validation errors:", JSON.stringify(validate.errors, null, 2));
     }
-    expect(valid).toBe(true);
+    expect(valid).toBeTruthy();
   });
 });

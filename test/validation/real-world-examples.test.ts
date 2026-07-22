@@ -1,3 +1,4 @@
+
 /**
  * Real-World Example Files Validation
  *
@@ -9,10 +10,9 @@
  * protocol bindings, security schemes, multi-protocol setups, etc.
  */
 
-import { describe, it, expect } from "vitest";
 import Ajv from "ajv";
-import { readFileSync, readdirSync, statSync } from "fs";
-import { join } from "path";
+import { readFileSync, readdirSync, statSync } from "node:fs";
+import { join } from "node:path";
 import { compileAsyncAPI } from "../utils/test-helpers.js";
 
 const asyncApiSchema = JSON.parse(
@@ -27,11 +27,11 @@ const asyncApiSchema = JSON.parse(
       "schemas",
       "3.1.0-without-$id.json",
     ),
-    "utf-8",
+    "utf8",
   ),
 );
 
-const ajv = new Ajv({ allErrors: true, strict: false, allowUnionTypes: true });
+const ajv = new Ajv({ allErrors: true, allowUnionTypes: true, strict: false });
 const validate = ajv.compile(asyncApiSchema);
 
 const realWorldDir = join(import.meta.dirname, "..", "..", "examples", "real-world");
@@ -47,13 +47,13 @@ function readExampleSpecs(): { name: string; source: string }[] {
 
   return files.map((f) => ({
     name: f.name,
-    source: readFileSync(f.path, "utf-8"),
+    source: readFileSync(f.path, "utf8"),
   }));
 }
 
 const specs = readExampleSpecs();
 
-describe("Real-World Examples → AsyncAPI 3.1 Validation", () => {
+describe("real-World Examples → AsyncAPI 3.1 Validation", () => {
   if (specs.length === 0) {
     it("should find at least one real-world example", () => {
       expect(specs.length).toBeGreaterThan(0);
@@ -66,12 +66,12 @@ describe("Real-World Examples → AsyncAPI 3.1 Validation", () => {
       it("should compile without error diagnostics", async () => {
         const result = await compileAsyncAPI(spec.source);
         const errors = result.diagnostics.filter((d) => d.severity === "error");
-        expect(errors).toEqual([]);
+        expect(errors).toStrictEqual([]);
       });
 
       it("should produce an AsyncAPI document", async () => {
         const result = await compileAsyncAPI(spec.source);
-        expect(result.asyncApiDoc).toBeTruthy();
+        expect(result.asyncApiDoc).toBe(true);
         expect((result.asyncApiDoc as Record<string, unknown>)?.asyncapi).toBe("3.1.0");
       });
 
@@ -80,9 +80,9 @@ describe("Real-World Examples → AsyncAPI 3.1 Validation", () => {
         const doc = result.asyncApiDoc;
 
         const errors = result.diagnostics.filter((d) => d.severity === "error");
-        expect(errors).toEqual([]);
+        expect(errors).toStrictEqual([]);
 
-        expect(doc).toBeTruthy();
+        expect(doc).toBe(true);
         const valid = validate(doc);
         if (!valid) {
           console.error(
@@ -90,7 +90,7 @@ describe("Real-World Examples → AsyncAPI 3.1 Validation", () => {
             JSON.stringify(validate.errors, null, 2),
           );
         }
-        expect(valid).toBe(true);
+        expect(valid).toBeTruthy();
       });
 
       it("should generate operations with valid $ref chains", async () => {
@@ -105,7 +105,7 @@ describe("Real-World Examples → AsyncAPI 3.1 Validation", () => {
           const opObj = op as Record<string, any>;
           expect(opObj.action).toMatch(/^(send|receive)$/);
 
-          const channel = opObj.channel;
+          const { channel } = opObj;
           expect(channel?.$ref).toMatch(/^#\/channels\//);
 
           for (const msg of opObj.messages ?? []) {
@@ -123,8 +123,8 @@ describe("Real-World Examples → AsyncAPI 3.1 Validation", () => {
 
         for (const [, ch] of Object.entries(channels)) {
           const chObj = ch as Record<string, any>;
-          expect(chObj.address).toBeTruthy();
-          expect(typeof chObj.address).toBe("string");
+          expect(chObj.address).toBe(true);
+          expect(chObj.address).toBeTypeOf("string");
 
           const messages = chObj.messages ?? {};
           for (const [, msgRef] of Object.entries(messages)) {

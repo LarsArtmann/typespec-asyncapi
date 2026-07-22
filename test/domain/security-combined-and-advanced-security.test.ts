@@ -1,11 +1,11 @@
+
 /**
  * Security Schemes Tests
  */
 
-import { describe, it, expect } from "vitest";
-import { createAsyncAPITestHost, compileAndGetAsyncAPI } from "../utils/test-helpers.js";
+import { compileAndGetAsyncAPI, createAsyncAPITestHost } from "../utils/test-helpers.js";
 
-describe("Combined & Advanced Security", () => {
+describe("combined & Advanced Security", () => {
   it("should support multiple security schemes (AND)", async () => {
     const host = await createAsyncAPITestHost();
     host.addTypeSpecFile(

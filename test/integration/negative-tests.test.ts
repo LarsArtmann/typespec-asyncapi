@@ -1,13 +1,13 @@
+
 /**
  * Negative Tests
  *
  * Verify the emitter handles error cases gracefully.
  */
 
-import { describe, it, expect } from "vitest";
 import { compileAsyncAPISpecRaw } from "../utils/test-helpers";
 
-describe("Negative: missing @channel decorator", () => {
+describe("negative: missing @channel decorator", () => {
   it("should still produce output for operations without @channel", async () => {
     const result = await compileAsyncAPISpecRaw(`
       model Event { id: string; }
@@ -15,11 +15,11 @@ describe("Negative: missing @channel decorator", () => {
     `);
 
     const errors = result.diagnostics.filter((d) => d.severity === "error");
-    expect(errors.length).toBe(0);
+    expect(errors).toHaveLength(0);
   });
 });
 
-describe("Negative: empty model", () => {
+describe("negative: empty model", () => {
   it("should handle empty models without crashing", async () => {
     const result = await compileAsyncAPISpecRaw(`
       model EmptyEvent {}
@@ -29,11 +29,11 @@ describe("Negative: empty model", () => {
     `);
 
     const errors = result.diagnostics.filter((d) => d.severity === "error");
-    expect(errors.length).toBe(0);
+    expect(errors).toHaveLength(0);
   });
 });
 
-describe("Negative: deeply nested models", () => {
+describe("negative: deeply nested models", () => {
   it("should handle nested model references", async () => {
     const result = await compileAsyncAPISpecRaw(`
       model Address {
@@ -54,11 +54,11 @@ describe("Negative: deeply nested models", () => {
     `);
 
     const errors = result.diagnostics.filter((d) => d.severity === "error");
-    expect(errors.length).toBe(0);
+    expect(errors).toHaveLength(0);
   });
 });
 
-describe("Negative: unsupported protocol", () => {
+describe("negative: unsupported protocol", () => {
   it("should produce a diagnostic for unsupported protocol", async () => {
     const result = await compileAsyncAPISpecRaw(`
       @server("bad", #{
@@ -72,14 +72,14 @@ describe("Negative: unsupported protocol", () => {
       op publish(): Event;
     `);
 
-    const diagnostics = result.diagnostics;
+    const { diagnostics } = result;
     // Should produce some diagnostic about unsupported protocol
     // (may be warning or error depending on validation level)
     expect(diagnostics.length).toBeGreaterThanOrEqual(0);
   });
 });
 
-describe("Negative: conflicting decorators", () => {
+describe("negative: conflicting decorators", () => {
   it("should handle operations with both @publish and @subscribe", async () => {
     const result = await compileAsyncAPISpecRaw(`
       model Event { id: string; }
@@ -96,13 +96,13 @@ describe("Negative: conflicting decorators", () => {
   });
 });
 
-describe("Negative: no operations at all", () => {
+describe("negative: no operations at all", () => {
   it("should produce a valid document with empty channels", async () => {
     const result = await compileAsyncAPISpecRaw(`
       namespace Empty;
     `);
 
     const errors = result.diagnostics.filter((d) => d.severity === "error");
-    expect(errors.length).toBe(0);
+    expect(errors).toHaveLength(0);
   });
 });

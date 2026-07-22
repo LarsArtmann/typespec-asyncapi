@@ -1,3 +1,4 @@
+
 /**
  * AsyncAPI 3.1.0 Spec Compliance: Servers and Security Schemes
  *
@@ -9,10 +10,9 @@
  *   https://www.asyncapi.com/docs/reference/specification/v3.1.0#securitySchemeObject
  */
 
-import { describe, it, expect } from "vitest";
 import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
 
-describe("Spec Compliance: Servers", () => {
+describe("spec Compliance: Servers", () => {
   it("emits server with host and protocol (required fields)", async () => {
     const doc = await compileAndValidateOrThrow(`
       @server("prod", #{
@@ -86,7 +86,7 @@ describe("Spec Compliance: Servers", () => {
   });
 });
 
-describe("Spec Compliance: Security Schemes", () => {
+describe("spec Compliance: Security Schemes", () => {
   it("emits userPassword security scheme", async () => {
     const doc = await compileAndValidateOrThrow(`
       @security(#{ name: "user-pass", scheme: #{ type: "userPassword" } })

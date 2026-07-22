@@ -8,18 +8,18 @@
 /**
  * TypeSpec path template types
  */
-export type PathTemplate = {
+export interface PathTemplate {
   path: string;
   parameters: PathParameter[];
   segments: string[];
-};
+}
 
-export type PathParameter = {
+export interface PathParameter {
   name: string;
   type: string;
   required: boolean;
   description?: string;
-};
+}
 
 /**
  * Parse TypeSpec path template
@@ -28,24 +28,24 @@ export function parsePathTemplate(path: string): PathTemplate {
   const segments = path.split("/").filter((segment) => segment.length > 0);
   const parameters: PathParameter[] = [];
 
-  const pathWithParameters = path.replace(/\{([^}]+)\}/g, (match: string, paramStr: string) => {
+  const pathWithParameters = path.replaceAll(/\{([^}]+)\}/g, (match: string, paramStr: string) => {
     const parts = paramStr.split(":");
     const name = parts[0] ?? "";
     const type = parts[1] ?? "string";
 
     parameters.push({
-      name,
-      type,
-      required: true,
       description: `Path parameter: ${name}`,
+      name,
+      required: true,
+      type,
     });
 
     return `{${name}}`;
   });
 
   return {
-    path: pathWithParameters,
     parameters,
+    path: pathWithParameters,
     segments,
   };
 }
@@ -54,7 +54,7 @@ export function parsePathTemplate(path: string): PathTemplate {
  * Convert TypeSpec path template to AsyncAPI channel address
  */
 export function convertToAsyncAPIAddress(template: PathTemplate): string {
-  return template.path.replace(/\{([^}]+)\}/g, "{$1}");
+  return template.path.replaceAll(/\{([^}]+)\}/g, "{$1}");
 }
 
 /**
@@ -112,7 +112,7 @@ export function normalizePathTemplate(path: string): string {
 
   // Ensure leading slash
   if (!path.startsWith("/")) {
-    path = "/" + path;
+    path = `/${path}`;
   }
 
   return path;
@@ -127,7 +127,7 @@ export function pathToChannelName(path: string): string {
 
   // Convert path segments to channel name
   const segments = template.segments.map(
-    (segment) => segment.replace(/\{([^}]+)\}/g, "$1"), // Remove braces
+    (segment) => segment.replaceAll(/\{([^}]+)\}/g, "$1"), // Remove braces
   );
 
   return segments.join("-");

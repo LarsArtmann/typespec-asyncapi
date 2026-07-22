@@ -1,9 +1,10 @@
-import { describe, it, expect } from "vitest";
-import { getStateMap, getMultiState } from "../../src/state-compatibility.js";
+
+
+import { getMultiState, getStateMap } from "../../src/state-compatibility.js";
 import type { Program } from "@typespec/compiler";
 
 describe("state-compatibility", () => {
-  describe("getStateMap", () => {
+  describe(getStateMap, () => {
     it("should return the state map when program.stateMap is available", () => {
       const mockMap = new Map();
       const program = { stateMap: () => mockMap } as unknown as Program;
@@ -29,13 +30,13 @@ describe("state-compatibility", () => {
     });
   });
 
-  describe("getMultiState", () => {
+  describe(getMultiState, () => {
     it("should convert single values to arrays", () => {
       const typeKey = { kind: "Model" } as never;
       const mockMap = new Map([[typeKey, "single-value"]]);
       const program = { stateMap: () => mockMap } as unknown as Program;
       const result = getMultiState<string>(program, Symbol("test"));
-      expect(result.get(typeKey)).toEqual(["single-value"]);
+      expect(result.get(typeKey)).toStrictEqual(["single-value"]);
     });
 
     it("should pass through arrays as-is", () => {
@@ -43,7 +44,7 @@ describe("state-compatibility", () => {
       const mockMap = new Map([[typeKey, ["a", "b"]]]);
       const program = { stateMap: () => mockMap } as unknown as Program;
       const result = getMultiState<string>(program, Symbol("test"));
-      expect(result.get(typeKey)).toEqual(["a", "b"]);
+      expect(result.get(typeKey)).toStrictEqual(["a", "b"]);
     });
 
     it("should skip undefined values", () => {
@@ -51,7 +52,7 @@ describe("state-compatibility", () => {
       const mockMap = new Map([[typeKey, undefined]]);
       const program = { stateMap: () => mockMap } as unknown as Program;
       const result = getMultiState<string>(program, Symbol("test"));
-      expect(result.has(typeKey)).toBe(false);
+      expect(result.has(typeKey)).toBeFalsy();
     });
   });
 });

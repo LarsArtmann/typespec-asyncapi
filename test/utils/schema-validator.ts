@@ -13,8 +13,8 @@
  */
 
 import Ajv, { type ErrorObject } from "ajv";
-import { readFileSync } from "fs";
-import { join } from "path";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { parse as parseYAML } from "yaml";
 import { compileAsyncAPISpecRaw } from "./test-helpers.js";
 
@@ -29,17 +29,17 @@ const schemaPath = join(
   "3.1.0-without-$id.json",
 );
 
-const asyncApiSchema = JSON.parse(readFileSync(schemaPath, "utf-8"));
+const asyncApiSchema = JSON.parse(readFileSync(schemaPath, "utf8"));
 
 const ajv = new Ajv({ allErrors: true, strict: false });
 const validateSchema = ajv.compile(asyncApiSchema);
 
-export type ValidationResult = {
+export interface ValidationResult {
   valid: boolean;
   errors: ErrorObject[] | null;
   document: Record<string, unknown>;
   diagnostics: { severity: string; code: string; message: string }[];
-};
+}
 
 /**
  * Compile TypeSpec source through the emitter and validate the output
@@ -51,9 +51,9 @@ export async function compileAndValidate(source: string): Promise<ValidationResu
   const raw = await compileAsyncAPISpecRaw(source);
 
   const diagnostics = raw.diagnostics.map((d) => ({
-    severity: String(d.severity),
     code: String(d.code),
     message: String(d.message),
+    severity: String(d.severity),
   }));
 
   const errorDiagnostics = diagnostics.filter((d) => d.severity === "error");
@@ -75,10 +75,10 @@ export async function compileAndValidate(source: string): Promise<ValidationResu
   const valid = validateSchema(document);
 
   return {
-    valid: valid && errorDiagnostics.length === 0,
-    errors: validateSchema.errors,
-    document,
     diagnostics,
+    document,
+    errors: validateSchema.errors,
+    valid: valid && errorDiagnostics.length === 0,
   };
 }
 
@@ -111,7 +111,9 @@ export async function compileAndValidateOrThrow(source: string): Promise<Record<
  * Format AJV errors into a human-readable string for test output.
  */
 export function formatValidationErrors(errors: ErrorObject[] | null): string {
-  if (!errors || errors.length === 0) return "(no errors)";
+  if (!errors || errors.length === 0) {
+    return "(no errors)";
+  }
   return errors
     .map((e) => `  Path '${e.instancePath || "/"}': ${e.message ?? "unknown error"}`)
     .join("\n");

@@ -1,3 +1,4 @@
+
 /**
  * Type Guards for Test Assertions
  *
@@ -23,7 +24,6 @@
  * ```
  */
 
-import { expect } from "vitest";
 import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js";
 
 /**
@@ -196,7 +196,7 @@ export function assertHasProperties<T extends object>(
  */
 export function assertNonEmptyString(value: unknown, name = "value"): asserts value is string {
   if (typeof value !== "string") {
-    throw new Error(`Expected ${name} to be a string, got ${typeof value}`);
+    throw new TypeError(`Expected ${name} to be a string, got ${typeof value}`);
   }
 
   if (value.trim().length === 0) {
@@ -228,7 +228,7 @@ export function assertNonEmptyObject(
   }
 
   if (Array.isArray(value)) {
-    throw new Error(`Expected ${name} to be an object, got array`);
+    throw new TypeError(`Expected ${name} to be an object, got array`);
   }
 
   const keys = Object.keys(value);
@@ -319,7 +319,9 @@ export function getProperty<T extends object, K extends string>(
   obj: T | undefined | null,
   key: K,
 ): unknown {
-  if (!obj || typeof obj !== "object") return undefined;
+  if (!obj || typeof obj !== "object") {
+    return undefined;
+  }
   return (obj as Record<string, unknown>)[key];
 }
 
@@ -367,8 +369,8 @@ export function assertExactKeys<T extends object>(
   obj: T | undefined | null,
   expectedKeys: string[],
 ): void {
-  const actualKeys = getPropertyKeys(obj).sort();
-  const expected = [...expectedKeys].sort();
+  const actualKeys = getPropertyKeys(obj).toSorted();
+  const expected = [...expectedKeys].toSorted();
 
-  expect(actualKeys).toEqual(expected);
+  expect(actualKeys).toStrictEqual(expected);
 }

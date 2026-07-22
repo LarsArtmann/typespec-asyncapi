@@ -1,3 +1,4 @@
+
 /**
  * Decorator Output Tests
  *
@@ -5,7 +6,6 @@
  * actually produce correct output in the generated AsyncAPI document.
  */
 
-import { describe, it, expect } from "vitest";
 import { compileAsyncAPISpecWithoutErrors } from "../utils/test-helpers";
 import { parse as parseYAML } from "yaml";
 
@@ -19,7 +19,7 @@ async function compileAndGetDoc(source: string) {
   throw new Error("No AsyncAPI output found");
 }
 
-describe("Decorator Output: @tags", () => {
+describe("decorator Output: @tags", () => {
   it("should emit tags on operations", async () => {
     const doc = await compileAndGetDoc(`
       @tags(#["users", "events"])
@@ -57,7 +57,7 @@ describe("Decorator Output: @tags", () => {
   });
 });
 
-describe("Decorator Output: @correlationId", () => {
+describe("decorator Output: @correlationId", () => {
   it("should emit correlationId on messages", async () => {
     const doc = await compileAndGetDoc(`
       @correlationId("$message.header#/correlationId")
@@ -78,7 +78,7 @@ describe("Decorator Output: @correlationId", () => {
   });
 });
 
-describe("Decorator Output: @header", () => {
+describe("decorator Output: @header", () => {
   it("should emit headers schema on messages", async () => {
     const doc = await compileAndGetDoc(`
       @header("x-request-id", "string")
@@ -100,7 +100,7 @@ describe("Decorator Output: @header", () => {
   });
 });
 
-describe("Decorator Output: @bindings", () => {
+describe("decorator Output: @bindings", () => {
   it("should emit bindings on operations", async () => {
     const doc = await compileAndGetDoc(`
       @bindings(#{
@@ -146,7 +146,7 @@ describe("Decorator Output: @bindings", () => {
   });
 });
 
-describe("Decorator Output: @server with variables", () => {
+describe("decorator Output: @server with variables", () => {
   it("should emit server variables for {var} in host", async () => {
     const doc = await compileAndGetDoc(`
       @server("prod", #{
@@ -169,7 +169,7 @@ describe("Decorator Output: @server with variables", () => {
   });
 });
 
-describe("Decorator Output: channel parameters", () => {
+describe("decorator Output: channel parameters", () => {
   it("should emit channel parameters for {var} in address", async () => {
     const doc = await compileAndGetDoc(`
       model UserEvent { id: string; }

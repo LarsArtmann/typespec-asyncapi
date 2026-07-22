@@ -32,15 +32,15 @@ export default [
         "warn",
         {
           argsIgnorePattern: "^_",
-          varsIgnorePattern: "^_",
           ignoreRestSiblings: true,
+          varsIgnorePattern: "^_",
         },
       ],
       "@typescript-eslint/no-non-null-assertion": "warn",
-      "@typescript-eslint/consistent-type-definitions": ["error", "type"],
+      "@typescript-eslint/consistent-type-definitions": "off",
       "@typescript-eslint/consistent-type-imports": [
         "error",
-        { prefer: "type-imports", disallowTypeAnnotations: false },
+        { disallowTypeAnnotations: false, prefer: "type-imports" },
       ],
 
       // Disabled base rules

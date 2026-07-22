@@ -1,3 +1,4 @@
+
 /**
  * $ref Chain Resolution Test
  *
@@ -9,7 +10,7 @@
  * This test proves the emitted document is internally consistent
  * and every $ref resolves to a real target.
  */
-import { describe, it, expect } from "vitest";
+
 import { compileAsyncAPIWithoutErrors } from "../utils/test-helpers.js";
 
 const source = `
@@ -35,9 +36,9 @@ describe("$ref Chain Resolution", () => {
     const ops = Object.values(spec!.operations!);
     expect(ops.length).toBeGreaterThan(0);
 
-    const op = ops[0] as { messages: Array<{ $ref: string }> };
+    const op = ops[0] as { messages: { $ref: string }[] };
     expect(op.messages).toBeDefined();
-    expect(op.messages.length).toBe(1);
+    expect(op.messages).toHaveLength(1);
 
     const ref = op.messages[0].$ref;
     expect(ref).toBe("#/channels/orders~1events/messages/OrderCreated");
@@ -115,7 +116,9 @@ describe("$ref Chain Resolution", () => {
     const doc = spec as Record<string, unknown>;
 
     expect(doc).toBeDefined();
-    if (!doc) return;
+    if (!doc) {
+      return;
+    }
     const unresolved: string[] = [];
 
     function unescapeToken(token: string): string {
@@ -123,7 +126,9 @@ describe("$ref Chain Resolution", () => {
     }
 
     function resolveRef(ref: string): unknown | null {
-      if (!ref.startsWith("#/")) return null;
+      if (!ref.startsWith("#/")) {
+        return null;
+      }
       const parts = ref.slice(2).split("/").map(unescapeToken);
       let current: unknown = doc;
       for (const part of parts) {
@@ -138,11 +143,17 @@ describe("$ref Chain Resolution", () => {
 
     const seen = new WeakSet();
     function walk(obj: unknown) {
-      if (!obj || typeof obj !== "object") return;
-      if (seen.has(obj)) return;
+      if (!obj || typeof obj !== "object") {
+        return;
+      }
+      if (seen.has(obj)) {
+        return;
+      }
       seen.add(obj);
       if (Array.isArray(obj)) {
-        for (const item of obj) walk(item);
+        for (const item of obj) {
+          walk(item);
+        }
         return;
       }
       const record = obj as Record<string, unknown>;
@@ -159,7 +170,7 @@ describe("$ref Chain Resolution", () => {
     }
 
     walk(doc);
-    expect(unresolved).toEqual([]);
+    expect(unresolved).toStrictEqual([]);
   });
 
   it("channel addresses containing slashes produce JSON-pointer-escaped $refs that resolve correctly", async () => {
@@ -178,7 +189,9 @@ describe("$ref Chain Resolution", () => {
     }
 
     function resolveByJsonPointer(ref: string): unknown | null {
-      if (!ref.startsWith("#/")) return null;
+      if (!ref.startsWith("#/")) {
+        return null;
+      }
       const parts = ref.slice(2).split("/").map(unescapeToken);
       let current: unknown = spec;
       for (const part of parts) {

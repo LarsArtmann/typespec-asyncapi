@@ -6,9 +6,8 @@
  * Uses strongly-typed configuration throughout
  */
 
-import { createTestLibrary, createTestHost, type TestHost } from "@typespec/compiler/testing";
-import type { Program } from "@typespec/compiler";
-import { $lib } from "../../src/lib.js";
+import { type TestHost, createTestHost } from "@typespec/compiler/testing";
+import type { Diagnostic, Program } from "@typespec/compiler";
 import { createAsyncAPITestLibrary as createLibrary } from "../utils/test-helpers.js";
 
 /**
@@ -35,8 +34,8 @@ export async function createUnifiedAsyncAPITestHost(
 
   // Create test host with our library
   return createTestHost({
-    libraries: [asyncAPILibrary],
     compilerOptions: options.compilerOptions ?? {},
+    libraries: [asyncAPILibrary],
     ...options,
   });
 }
@@ -48,7 +47,7 @@ export async function createUnifiedAsyncAPITestHost(
  */
 export interface RealCompilationResult {
   readonly program: Program;
-  readonly diagnostics: readonly import("@typespec/compiler").Diagnostic[];
+  readonly diagnostics: readonly Diagnostic[];
   readonly asyncapi?: unknown;
   readonly outputs: ReadonlyMap<string, string>;
 }
@@ -86,16 +85,16 @@ export async function compileRealAsyncAPI(
   console.log("🔍 DEBUG: Raw program object:", program);
   console.log("🔍 DEBUG: Program constructor:", program?.constructor?.name);
   console.log("🔍 DEBUG: Program has stateMap:", typeof program?.stateMap);
-  console.log("🔍 DEBUG: Program has program property:", !!program?.program);
+  console.log("🔍 DEBUG: Program has program property:", Boolean(program?.program));
   console.log("🔍 DEBUG: Program keys (enumerable):", Object.keys(program || {}));
   console.log("🔍 DEBUG: Program symbols:", Object.getOwnPropertySymbols(program || {}));
 
   // Return strongly typed result
   return {
-    program,
-    diagnostics: program.diagnostics,
     asyncapi: undefined, // Will be populated by emitter
+    diagnostics: program.diagnostics,
     outputs: new Map(),
+    program,
   };
 }
 

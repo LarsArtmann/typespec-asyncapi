@@ -1,3 +1,4 @@
+
 /**
  * PRODUCTION TEST: Real AsyncAPI Document Generation Tests
  *
@@ -21,20 +22,19 @@
  * TODO: Implement test isolation - each test should be completely independent
  */
 
-import { describe, expect, test } from "vitest";
 import {
   type AsyncAPIObject,
+  TestLogging,
+  TestValidationPatterns,
   compileAsyncAPISpecWithoutErrors,
   parseAsyncAPIOutput,
   validateAsyncAPIObjectComprehensive,
-  TestValidationPatterns,
-  TestLogging,
 } from "../utils/test-helpers.js";
 //TODO: this file is getting to big split it up
 
-describe("Real AsyncAPI Generation Tests", () => {
-  describe("Complete TypeSpec → AsyncAPI Transformation", () => {
-    test("should transform complex TypeSpec namespace to valid AsyncAPI document", async () => {
+describe("real AsyncAPI Generation Tests", () => {
+  describe("complete TypeSpec → AsyncAPI Transformation", () => {
+    it("should transform complex TypeSpec namespace to valid AsyncAPI document", async () => {
       const source = `
         @doc("Enterprise event-driven microservice architecture")
         namespace EnterpriseEvents;
@@ -383,7 +383,7 @@ describe("Real AsyncAPI Generation Tests", () => {
 
       // Run comprehensive AsyncAPI validation
       const validation = await validateAsyncAPIObjectComprehensive(asyncapiDoc);
-      expect(validation.valid).toBe(true);
+      expect(validation.valid).toBeTruthy();
       if (!validation.valid) {
         console.error("Validation errors:", validation.errors);
         throw new Error(`AsyncAPI validation failed: ${validation.summary}`);
@@ -396,7 +396,7 @@ describe("Real AsyncAPI Generation Tests", () => {
       );
     });
 
-    test("should handle TypeSpec union types and optional fields correctly", async () => {
+    it("should handle TypeSpec union types and optional fields correctly", async () => {
       const source = `
         namespace UnionTypeTest;
         
@@ -451,7 +451,7 @@ describe("Real AsyncAPI Generation Tests", () => {
       expect(flexibleEventSchema.required).not.toContain("mixedArray");
     });
 
-    test("should generate valid AsyncAPI for multi-namespace TypeSpec", async () => {
+    it("should generate valid AsyncAPI for multi-namespace TypeSpec", async () => {
       const source = `
         @doc("User management namespace")
         namespace UserManagement {
@@ -547,8 +547,8 @@ describe("Real AsyncAPI Generation Tests", () => {
     });
   });
 
-  describe("AsyncAPI 3.1.0 Specification Compliance", () => {
-    test("should generate AsyncAPI document compliant with 3.1.0 specification", async () => {
+  describe("asyncAPI 3.1.0 Specification Compliance", () => {
+    it("should generate AsyncAPI document compliant with 3.1.0 specification", async () => {
       const source = `
         namespace ComplianceTest;
         
@@ -621,7 +621,7 @@ describe("Real AsyncAPI Generation Tests", () => {
 
       // Run comprehensive specification compliance validation
       const validation = await validateAsyncAPIObjectComprehensive(asyncapiDoc);
-      expect(validation.valid).toBe(true);
+      expect(validation.valid).toBeTruthy();
 
       if (!validation.valid) {
         console.error("AsyncAPI 3.1.0 compliance validation failed:");
@@ -632,7 +632,7 @@ describe("Real AsyncAPI Generation Tests", () => {
       }
     });
 
-    test("should handle complex schema references correctly", async () => {
+    it("should handle complex schema references correctly", async () => {
       const source = `
         namespace ReferenceTest;
         
@@ -697,8 +697,8 @@ describe("Real AsyncAPI Generation Tests", () => {
     });
   });
 
-  describe("Performance and Scale Testing", () => {
-    test("should generate large AsyncAPI document efficiently", async () => {
+  describe("performance and Scale Testing", () => {
+    it("should generate large AsyncAPI document efficiently", async () => {
       // Generate a large TypeSpec source with many models and operations
       const generateLargeTypeSpecSource = (): string => {
         const models = [];
@@ -754,8 +754,8 @@ describe("Real AsyncAPI Generation Tests", () => {
       const largeSource = generateLargeTypeSpecSource();
 
       const { outputFiles } = await compileAsyncAPISpecWithoutErrors(largeSource, {
-        "output-file": "large-scale-test",
         "file-type": "json",
+        "output-file": "large-scale-test",
       });
 
       const endTime = Date.now();
@@ -767,11 +767,11 @@ describe("Real AsyncAPI Generation Tests", () => {
       )) as AsyncAPIObject;
 
       // Validate scale - should have 20 schemas and 40 operations
-      expect(Object.keys(asyncapiDoc?.components?.schemas).length).toBe(20);
-      expect(Object.keys(asyncapiDoc?.operations).length).toBe(40);
+      expect(Object.keys(asyncapiDoc?.components?.schemas)).toHaveLength(20);
+      expect(Object.keys(asyncapiDoc?.operations)).toHaveLength(40);
 
       // Performance assertion - should compile large document in reasonable time
-      expect(compilationTime).toBeLessThan(30000); // 30 seconds max
+      expect(compilationTime).toBeLessThan(30_000); // 30 seconds max
     });
   });
 });

@@ -1,3 +1,4 @@
+
 /**
  * E2E Test 5: Error Handling and Edge Cases
  *
@@ -9,10 +10,9 @@
  * - Edge case data types
  */
 
-import { describe, expect, it } from "vitest";
 import { createAsyncAPITestHost } from "../utils/test-helpers.js";
 
-describe("E2E: Error Handling and Edge Cases", () => {
+describe("e2E: Error Handling and Edge Cases", () => {
   it("should handle empty models gracefully", async () => {
     const host = await createAsyncAPITestHost();
 
@@ -40,9 +40,9 @@ describe("E2E: Error Handling and Edge Cases", () => {
     });
 
     // Should compile without errors
-    expect(diagnostics.filter((d) => d.severity === "error").length).toBe(0);
+    expect(diagnostics.filter((d) => d.severity === "error")).toHaveLength(0);
 
-    const outputFiles = Array.from(host.fs.keys());
+    const outputFiles = [...host.fs.keys()];
     const asyncApiFile = outputFiles.find(
       (f) => f.includes("asyncapi") && (f.endsWith(".json") || f.endsWith(".yaml")),
     );
@@ -157,7 +157,7 @@ describe("E2E: Error Handling and Edge Cases", () => {
       emit: ["@lars-artmann/typespec-asyncapi"],
     });
 
-    const outputFiles = Array.from(host.fs.keys());
+    const outputFiles = [...host.fs.keys()];
     const asyncApiFile = outputFiles.find(
       (f) => f.includes("asyncapi") && (f.endsWith(".json") || f.endsWith(".yaml")),
     );
@@ -184,7 +184,7 @@ describe("E2E: Error Handling and Edge Cases", () => {
       expect(schema.properties.numbers.items.type).toBe("integer");
 
       // Validate unions become enums
-      expect(schema.properties.status.enum).toEqual(["active", "inactive", "pending"]);
+      expect(schema.properties.status.enum).toStrictEqual(["active", "inactive", "pending"]);
 
       // Validate optional fields
       expect(schema.required).not.toContain("optionalInt");
@@ -268,7 +268,7 @@ describe("E2E: Error Handling and Edge Cases", () => {
       emit: ["@lars-artmann/typespec-asyncapi"],
     });
 
-    const outputFiles = Array.from(host.fs.keys());
+    const outputFiles = [...host.fs.keys()];
     const asyncApiFile = outputFiles.find(
       (f) => f.includes("asyncapi") && (f.endsWith(".json") || f.endsWith(".yaml")),
     );
@@ -327,9 +327,9 @@ describe("E2E: Error Handling and Edge Cases", () => {
     });
 
     // Should compile successfully
-    expect(diagnostics.filter((d) => d.severity === "error").length).toBe(0);
+    expect(diagnostics.filter((d) => d.severity === "error")).toHaveLength(0);
 
-    const outputFiles = Array.from(host.fs.keys());
+    const outputFiles = [...host.fs.keys()];
     const asyncApiFile = outputFiles.find(
       (f) => f.includes("asyncapi") && (f.endsWith(".json") || f.endsWith(".yaml")),
     );

@@ -1,3 +1,4 @@
+
 /**
  * AsyncAPI 3.1.0 Spec Compliance: $ref Chain
  *
@@ -10,14 +11,13 @@
  * Spec reference: https://www.asyncapi.com/docs/reference/specification/v3.1.0#operationObject
  */
 
-import { describe, it, expect } from "vitest";
 import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
 
 function getDoc(source: string) {
   return compileAndValidateOrThrow(source);
 }
 
-describe("Spec Compliance: $ref Chain", () => {
+describe("spec Compliance: $ref Chain", () => {
   it("operation messages reference channels (not components directly)", async () => {
     const doc = await getDoc(`
       namespace Test;
@@ -28,7 +28,7 @@ describe("Spec Compliance: $ref Chain", () => {
 
     const operations = doc.operations as Record<string, Record<string, unknown>>;
     const op = operations.publishOrderCreated;
-    const messages = op.messages as Array<{ $ref: string }>;
+    const messages = op.messages as { $ref: string }[];
     expect(messages[0].$ref).toBe("#/channels/orders.created/messages/OrderCreated");
   });
 
@@ -41,7 +41,7 @@ describe("Spec Compliance: $ref Chain", () => {
     `);
 
     const operations = doc.operations as Record<string, Record<string, unknown>>;
-    expect(operations.publish.channel).toEqual({
+    expect(operations.publish.channel).toStrictEqual({
       $ref: "#/channels/my.channel",
     });
   });
@@ -69,7 +69,9 @@ describe("Spec Compliance: $ref Chain", () => {
 
     const components = doc.components as Record<string, Record<string, Record<string, unknown>>>;
     const msg = components.messages.OrderEvent;
-    expect(msg.payload).toEqual({ $ref: "#/components/schemas/OrderEvent" });
+    expect(msg.payload).toStrictEqual({
+      $ref: "#/components/schemas/OrderEvent",
+    });
   });
 
   it("nested model properties use $ref for named types", async () => {
@@ -107,7 +109,7 @@ describe("Spec Compliance: $ref Chain", () => {
     const components = doc.components as Record<string, Record<string, Record<string, unknown>>>;
     const cartProps = components.schemas.Cart.properties as Record<string, Record<string, unknown>>;
     expect(cartProps.items.type).toBe("array");
-    expect(cartProps.items.items).toEqual({
+    expect(cartProps.items.items).toStrictEqual({
       $ref: "#/components/schemas/LineItem",
     });
   });
@@ -122,7 +124,7 @@ describe("Spec Compliance: $ref Chain", () => {
 
     const operations = doc.operations as Record<string, Record<string, unknown>>;
     const op = Object.values(operations)[0] as Record<string, unknown>;
-    const messages = op.messages as Array<{ $ref: string }>;
+    const messages = op.messages as { $ref: string }[];
     expect(messages[0].$ref).toContain("~1");
     expect(messages[0].$ref).not.toContain("org/dept/events/messages");
   });
@@ -170,8 +172,12 @@ describe("Spec Compliance: $ref Chain", () => {
     `);
 
     const operations = doc.operations as Record<string, Record<string, unknown>>;
-    expect(operations.publishCreated.messages).not.toEqual(operations.publishUpdated.messages);
-    expect(operations.publishUpdated.messages).not.toEqual(operations.publishDeleted.messages);
+    expect(operations.publishCreated.messages).not.toStrictEqual(
+      operations.publishUpdated.messages,
+    );
+    expect(operations.publishUpdated.messages).not.toStrictEqual(
+      operations.publishDeleted.messages,
+    );
 
     const components = doc.components as Record<string, Record<string, unknown>>;
     expect(components.messages).toHaveProperty("Created");

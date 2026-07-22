@@ -1,3 +1,4 @@
+
 /**
  * Security Schemes Tests — SASL and other security mechanisms
  *
@@ -6,14 +7,13 @@
  * See https://www.asyncapi.com/docs/reference/specification/v3.1.0#securitySchemeObject
  */
 
-import { describe, it, expect } from "vitest";
 import {
-  createAsyncAPITestHost,
   compileAndGetAsyncAPI,
   compileAsyncAPISpecRaw,
+  createAsyncAPITestHost,
 } from "../utils/test-helpers.js";
 
-describe("SASL & Other Security Mechanisms", () => {
+describe("sASL & Other Security Mechanisms", () => {
   it("should support SASL PLAIN", async () => {
     const host = await createAsyncAPITestHost();
     host.addTypeSpecFile(

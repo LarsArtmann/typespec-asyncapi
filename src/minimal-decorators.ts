@@ -7,35 +7,35 @@
 
 import type {
   DecoratorContext,
-  Namespace,
-  Operation,
+  DiagnosticTarget,
   Model,
   ModelProperty,
-  DiagnosticTarget,
+  Namespace,
+  Operation,
 } from "@typespec/compiler";
 import { PROTOCOL_LIST, isSupportedProtocol } from "./constants/protocols.js";
 import {
-  storeChannelState,
-  storeOperationType,
-  storeMessageConfig,
-  storeServerConfig,
-  storeSecurityConfig,
-  storeTags,
-  storeCorrelationId,
-  storeBindings,
-  storeHeader,
-  storeProtocolConfig,
   linkPublishMessage,
+  storeBindings,
+  storeChannelState,
+  storeCorrelationId,
+  storeHeader,
+  storeMessageConfig,
+  storeOperationType,
+  storeProtocolConfig,
+  storeSecurityConfig,
+  storeServerConfig,
+  storeTags,
 } from "./state-writers.js";
-import { isValidSchemeType, SCHEME_TYPE_LIST } from "./domain/models/asyncapi-document.js";
+import { SCHEME_TYPE_LIST, isValidSchemeType } from "./domain/models/asyncapi-document.js";
 import {
-  reportDiagnostic,
-  validateConfig,
-  isValidUrl,
+  extractConfigRecord,
   getModelPropertyStringValue,
   getModelPropertyValue,
+  isValidUrl,
   modelToRecord,
-  extractConfigRecord,
+  reportDiagnostic,
+  validateConfig,
 } from "./decorator-helpers.js";
 import { processBindings } from "./validation/binding-validator.js";
 import type { BindingTargetKind } from "./constants/binding-versions.js";
@@ -67,8 +67,9 @@ export function $server(
     !validateConfig(config, context, target, "invalid-server-config", {
       serverName: name,
     })
-  )
+  ) {
     return;
+  }
 
   const configTyped = config as Record<string, unknown>;
 
@@ -111,8 +112,9 @@ export function $message(context: DecoratorContext, target: Model, config: unkno
     !validateConfig(config, context, target, "invalid-message-config", {
       modelName: target.name,
     })
-  )
+  ) {
     return;
+  }
 
   let title: string | undefined;
   let description: string | undefined;
@@ -131,9 +133,9 @@ export function $message(context: DecoratorContext, target: Model, config: unkno
   }
 
   storeMessageConfig(context.program, target, {
-    title: title ?? target.name,
-    description: description ?? `Message ${target.name}`,
     contentType: contentType ?? "application/json",
+    description: description ?? `Message ${target.name}`,
+    title: title ?? target.name,
   });
 }
 
@@ -146,8 +148,9 @@ export function $protocol(
     !validateConfig(config, context, target, "invalid-protocol-config", {
       targetKind: target.kind,
     })
-  )
+  ) {
     return;
+  }
 
   const configRecord = extractConfigRecord(config);
   const protocol = configRecord.protocol as string | undefined;
@@ -170,8 +173,9 @@ export function $security(
     !validateConfig(config, context, target, "invalid-security-config", {
       targetKind: target.kind,
     })
-  )
+  ) {
     return;
+  }
 
   let name: string | undefined;
   let scheme: Record<string, unknown> | undefined;
@@ -239,8 +243,12 @@ export function $correlationId(context: DecoratorContext, target: Model, locatio
 
 /** Map a TypeSpec target kind to the AsyncAPI binding target kind. */
 function bindingTargetKind(kind: string): BindingTargetKind | undefined {
-  if (kind === "Operation") return "operation";
-  if (kind === "Model") return "message";
+  if (kind === "Operation") {
+    return "operation";
+  }
+  if (kind === "Model") {
+    return "message";
+  }
   return undefined;
 }
 

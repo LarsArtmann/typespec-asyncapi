@@ -1,11 +1,11 @@
+
 /**
  * Security Schemes Tests
  */
 
-import { describe, it, expect } from "vitest";
-import { createAsyncAPITestHost, compileAndGetAsyncAPI } from "../utils/test-helpers.js";
+import { compileAndGetAsyncAPI, createAsyncAPITestHost } from "../utils/test-helpers.js";
 
-describe("API Key Authentication", () => {
+describe("aPI Key Authentication", () => {
   it("should support API Key in header", async () => {
     const host = await createAsyncAPITestHost();
     host.addTypeSpecFile(
@@ -74,10 +74,10 @@ describe("API Key Authentication", () => {
     // Assert actual security scheme output
     const securitySchemes = spec?.components?.securitySchemes;
     expect(securitySchemes).toBeDefined();
-    expect(securitySchemes?.apiKeyQuery).toEqual({
-      type: "apiKey",
+    expect(securitySchemes?.apiKeyQuery).toStrictEqual({
       in: "query",
       name: "api_key",
+      type: "apiKey",
     });
   });
 

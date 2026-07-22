@@ -1,11 +1,11 @@
+
 /**
  * Test AsyncAPI emitter without decorators - basic functionality
  */
 
-import { describe, expect, it } from "vitest";
 import { compileAsyncAPISpecWithoutErrors, parseAsyncAPIOutput } from "../utils/test-helpers.js";
 
-describe("Simple AsyncAPI Emitter (No Decorators)", () => {
+describe("simple AsyncAPI Emitter (No Decorators)", () => {
   it("should generate basic AsyncAPI from simple TypeSpec", async () => {
     const source = `
       namespace SimpleTest;
@@ -23,8 +23,7 @@ describe("Simple AsyncAPI Emitter (No Decorators)", () => {
 
     for (const [path, file] of outputFiles.entries()) {
       if (path.includes("simple-test") || path.includes("asyncapi")) {
-        if (file.content) {
-        }
+        if (file.content) {}
       }
     }
 
@@ -32,7 +31,7 @@ describe("Simple AsyncAPI Emitter (No Decorators)", () => {
     const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "simple-test.json");
 
     // Should be a valid AsyncAPI document structure
-    expect(typeof asyncapiDoc).toBe("object");
+    expect(asyncapiDoc).toBeTypeOf("object");
     expect(asyncapiDoc.asyncapi).toBe("3.1.0");
     expect(asyncapiDoc.info).toBeDefined();
     expect(asyncapiDoc.channels).toBeDefined();

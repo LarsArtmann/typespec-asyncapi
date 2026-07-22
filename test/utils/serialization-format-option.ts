@@ -6,11 +6,11 @@
 
 export type SerializationFormat = "json" | "yaml" | "yml";
 
-export type SerializationFormatOption = {
+export interface SerializationFormatOption {
   format: SerializationFormat;
   pretty: boolean;
   indent: number;
-};
+}
 
 /**
  * Create serialization format options
@@ -22,8 +22,8 @@ export function createSerializationFormatOption(
 ): SerializationFormatOption {
   return {
     format,
-    pretty,
     indent,
+    pretty,
   };
 }
 
@@ -39,14 +39,14 @@ export function isValidSerializationFormat(format: string): format is Serializat
  */
 export const SERIALIZATION_FORMAT_OPTION_JSON = {
   format: "json" as const,
-  pretty: true,
   indent: 2,
+  pretty: true,
 };
 
 export const SERIALIZATION_FORMAT_OPTION_YAML = {
   format: "yaml" as const,
-  pretty: true,
   indent: 2,
+  pretty: true,
 };
 
 /**
@@ -54,8 +54,8 @@ export const SERIALIZATION_FORMAT_OPTION_YAML = {
  */
 export const DEFAULT_SERIALIZATION_FORMAT_OPTION: SerializationFormatOption = {
   format: "yaml",
-  pretty: true,
   indent: 2,
+  pretty: true,
 };
 
 /**
@@ -67,7 +67,7 @@ export const SERIALIZATION_FORMAT_OPTIONS = ["json", "yaml", "yml"] as const;
  * Legacy object format for backward compatibility
  */
 export const SERIALIZATION_FORMAT_OPTION_OBJECTS = {
+  DEFAULT: DEFAULT_SERIALIZATION_FORMAT_OPTION,
   JSON: SERIALIZATION_FORMAT_OPTION_JSON,
   YAML: SERIALIZATION_FORMAT_OPTION_YAML,
-  DEFAULT: DEFAULT_SERIALIZATION_FORMAT_OPTION,
 };

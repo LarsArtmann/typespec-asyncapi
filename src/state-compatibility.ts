@@ -5,7 +5,7 @@
  * Handles StateMapView (TypeSpec 1.8.0+) which is Map-like but not instanceof Map.
  */
 
-import { type Program, type Type } from "@typespec/compiler";
+import type { Program, Type } from "@typespec/compiler";
 
 /**
  * Get the state map for a given symbol from the TypeSpec program.
@@ -17,7 +17,7 @@ export function getStateMap<T>(program: Program, symbol: symbol): Map<Type, T> {
   const programTyped = program as { stateMap?: (sym: symbol) => Map<Type, T> };
 
   if (typeof programTyped.stateMap !== "function") {
-    throw new Error(
+    throw new TypeError(
       `getStateMap: program.stateMap is not available. ` +
         `This typically means the TypeSpec compiler version is incompatible.`,
     );

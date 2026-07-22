@@ -1,4 +1,5 @@
-import { describe, test, expect } from "vitest";
+
+
 import { compileWithCLI } from "../utils/cli-test-helpers.js";
 import type { CLITestResult } from "../utils/cli-test-helpers.js";
 import {
@@ -7,10 +8,10 @@ import {
   getPropertyKeys,
 } from "../utils/type-guards.js";
 
-describe("CLI Tests: Simple AsyncAPI Emitter", () => {
+describe("cLI Tests: Simple AsyncAPI Emitter", () => {
   let testResult: CLITestResult | undefined;
 
-  test("should generate basic AsyncAPI from simple TypeSpec", async () => {
+  it("should generate basic AsyncAPI from simple TypeSpec", async () => {
     const source = `
       namespace SimpleTest;
 
@@ -33,7 +34,7 @@ describe("CLI Tests: Simple AsyncAPI Emitter", () => {
     expect(channelKeys).toContain("simple.event");
   });
 
-  test("should handle multiple operations", async () => {
+  it("should handle multiple operations", async () => {
     const source = `
       namespace MultiOp;
 
@@ -65,7 +66,7 @@ describe("CLI Tests: Simple AsyncAPI Emitter", () => {
     expect(testResult.asyncapiDoc.info.title).toBeDefined();
   });
 
-  test("should generate YAML output", async () => {
+  it("should generate YAML output", async () => {
     const source = `
       namespace YamlTest;
 
@@ -88,7 +89,7 @@ describe("CLI Tests: Simple AsyncAPI Emitter", () => {
     expect(channelKeys).toContain("test.events");
   });
 
-  test("should include schema components for models", async () => {
+  it("should include schema components for models", async () => {
     const source = `
       namespace SchemaTest;
 
@@ -112,7 +113,7 @@ describe("CLI Tests: Simple AsyncAPI Emitter", () => {
     expect(testResult.asyncapiDoc?.components?.schemas).toBeDefined();
   });
 
-  test("should handle namespaces correctly", async () => {
+  it("should handle namespaces correctly", async () => {
     const source = `
       namespace MyAPI.Events;
 

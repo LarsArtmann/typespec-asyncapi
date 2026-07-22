@@ -1,3 +1,4 @@
+
 /**
  * Template Spread & Late-Bound Member Resolution Tests
  *
@@ -7,10 +8,10 @@
  *
  * @see https://typespec.io/release-notes/typespec-1-13-0/
  */
-import { describe, it, expect } from "vitest";
+
 import { compileAsyncAPIWithoutErrors } from "../utils/test-helpers.js";
 
-describe("Template Spread Patterns (TypeSpec 1.13 Compatibility)", () => {
+describe("template Spread Patterns (TypeSpec 1.13 Compatibility)", () => {
   it("should generate schema for model using template spread", async () => {
     const source = `
       model BaseEntity {
@@ -155,7 +156,7 @@ describe("Template Spread Patterns (TypeSpec 1.13 Compatibility)", () => {
     expect(schema.properties.optional).toBeDefined();
     expect(schema.properties.own).toBeDefined();
 
-    // mandatory and own should be required; optional should not
+    // Mandatory and own should be required; optional should not
     expect(schema.required).toContain("mandatory");
     expect(schema.required).toContain("own");
     expect(schema.required).not.toContain("optional");

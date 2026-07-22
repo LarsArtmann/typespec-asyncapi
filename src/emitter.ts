@@ -14,7 +14,7 @@ import { generateSchemas } from "./schema-emitter.js";
 import { buildAsyncAPIDocument } from "./document-builder.js";
 
 export async function $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): Promise<void> {
-  const options = context.options;
+  const { options } = context;
   const rawState = consolidateAsyncAPIState(context.program);
   const schemas = generateSchemas(context);
   const document = buildAsyncAPIDocument(rawState, schemas, options, context.program);
@@ -33,7 +33,7 @@ export async function $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): Pro
       : yamlStringify(document, { lineWidth: 0 });
 
   await emitFile(context.program, {
-    path: `${context.emitterOutputDir}/${outputPath}`,
     content,
+    path: `${context.emitterOutputDir}/${outputPath}`,
   });
 }

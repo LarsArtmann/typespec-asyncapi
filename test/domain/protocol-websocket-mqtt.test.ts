@@ -1,15 +1,15 @@
+
 /**
  * Comprehensive WebSocket & MQTT Protocol Domain Tests
  *
  * Tests 50+ WebSocket and MQTT scenarios for AsyncAPI generation
  */
 
-import { describe, it, expect } from "vitest";
-import { createAsyncAPITestHost, compileAndGetAsyncAPI } from "../utils/test-helpers.js";
+import { compileAndGetAsyncAPI, createAsyncAPITestHost } from "../utils/test-helpers.js";
 
-describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
+describe("webSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
   // WebSocket Protocol Tests (25 tests)
-  describe("WebSocket Protocol", () => {
+  describe("webSocket Protocol", () => {
     it("should support basic WebSocket connection", async () => {
       const host = await createAsyncAPITestHost();
       host.addTypeSpecFile(
@@ -768,7 +768,7 @@ describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
   });
 
   // MQTT Protocol Tests (25 tests)
-  describe("MQTT Protocol", () => {
+  describe("mQTT Protocol", () => {
     it("should support MQTT QoS 0 (at most once)", async () => {
       const host = await createAsyncAPITestHost();
       host.addTypeSpecFile(

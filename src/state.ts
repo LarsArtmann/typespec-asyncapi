@@ -3,8 +3,8 @@
  */
 
 import { stateSymbols } from "./lib.js";
-import { type Program, type Type } from "@typespec/compiler";
-import { getStateMap, getMultiState } from "./state-compatibility.js";
+import type { Program, Type } from "@typespec/compiler";
+import { getMultiState, getStateMap } from "./state-compatibility.js";
 import type { AsyncAPIProtocol } from "./constants/protocols.js";
 import type { ProtocolBindings, SecurityScheme, Tag } from "./domain/models/asyncapi-document.js";
 
@@ -13,39 +13,39 @@ import type { ProtocolBindings, SecurityScheme, Tag } from "./domain/models/asyn
 /**
  * Channel Path State Data
  */
-export type ChannelPathData = {
+export interface ChannelPathData {
   path: string;
   hasParameters: boolean;
   parameters?: string[];
-};
+}
 
 /**
  * Message Configuration State Data
  */
-export type MessageConfigData = {
+export interface MessageConfigData {
   messageId?: string;
   description?: string;
   title?: string;
   contentType?: string;
-};
+}
 
 /**
  * Server Configuration State Data
  */
-export type ServerConfigData = {
+export interface ServerConfigData {
   url: string;
   protocol: AsyncAPIProtocol;
   description?: string;
   name: string;
-};
+}
 
 /**
  * Operation Type Classification State Data
  */
-export type OperationTypeData = {
+export interface OperationTypeData {
   type: "publish" | "subscribe";
   messageType?: string;
-};
+}
 
 /**
  * Protocol Configuration State Data — discriminated union on `protocol`.
@@ -55,10 +55,10 @@ export type OperationTypeData = {
  * The `protocol` discriminant is always a canonical `AsyncAPIProtocol`
  * (never an alias) because `storeProtocolConfig` normalizes before storing.
  */
-type ProtocolConfigBase = {
+interface ProtocolConfigBase {
   binding?: Record<string, unknown>;
   version?: string;
-};
+}
 
 export type KafkaConfigData = ProtocolConfigBase & {
   protocol: "kafka";
@@ -103,34 +103,34 @@ export type TagData = Tag[];
 /**
  * Security Configuration State Data
  */
-export type SecurityConfigData = {
+export interface SecurityConfigData {
   name: string;
   scheme: SecurityScheme;
-};
+}
 
 /**
  * Correlation ID Configuration State Data
  */
-export type CorrelationIdData = {
+export interface CorrelationIdData {
   location: string;
-};
+}
 
 /**
  * Message Header State Data
  */
-export type MessageHeaderData = {
+export interface MessageHeaderData {
   name: string;
   value?: unknown;
   description?: string;
   type?: string;
-};
+}
 
 // === STATE CONSOLIDATION UTILITIES ===
 
 /**
  * AsyncAPI Consolidated State Data
  */
-export type AsyncAPIConsolidatedState = {
+export interface AsyncAPIConsolidatedState {
   channels: Map<Type, ChannelPathData>;
   messages: Map<Type, MessageConfigData>;
   servers: Map<Type, ServerConfigData[]>;
@@ -141,7 +141,7 @@ export type AsyncAPIConsolidatedState = {
   securityConfigs: Map<Type, SecurityConfigData[]>;
   correlationIds: Map<Type, CorrelationIdData>;
   messageHeaders: Map<Type, MessageHeaderData[]>;
-};
+}
 
 /**
  * Consolidates all AsyncAPI state data from TypeSpec program
@@ -152,14 +152,14 @@ export type AsyncAPIConsolidatedState = {
 export function consolidateAsyncAPIState(program: Program): AsyncAPIConsolidatedState {
   return {
     channels: getStateMap<ChannelPathData>(program, stateSymbols.channelPaths),
-    messages: getStateMap<MessageConfigData>(program, stateSymbols.messageConfigs),
-    servers: getMultiState<ServerConfigData>(program, stateSymbols.serverConfigs),
-    operations: getStateMap<OperationTypeData>(program, stateSymbols.operationTypes),
-    tags: getStateMap<TagData>(program, stateSymbols.tags),
-    protocolConfigs: getStateMap<ProtocolConfigData>(program, stateSymbols.protocolConfigs),
-    protocolBindings: getStateMap<ProtocolBindings>(program, stateSymbols.protocolBindings),
-    securityConfigs: getMultiState<SecurityConfigData>(program, stateSymbols.securityConfigs),
     correlationIds: getStateMap<CorrelationIdData>(program, stateSymbols.correlationIds),
     messageHeaders: getStateMap<MessageHeaderData[]>(program, stateSymbols.messageHeaders),
+    messages: getStateMap<MessageConfigData>(program, stateSymbols.messageConfigs),
+    operations: getStateMap<OperationTypeData>(program, stateSymbols.operationTypes),
+    protocolBindings: getStateMap<ProtocolBindings>(program, stateSymbols.protocolBindings),
+    protocolConfigs: getStateMap<ProtocolConfigData>(program, stateSymbols.protocolConfigs),
+    securityConfigs: getMultiState<SecurityConfigData>(program, stateSymbols.securityConfigs),
+    servers: getMultiState<ServerConfigData>(program, stateSymbols.serverConfigs),
+    tags: getStateMap<TagData>(program, stateSymbols.tags),
   };
 }

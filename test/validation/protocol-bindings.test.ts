@@ -1,28 +1,27 @@
+
 /**
  * AsyncAPI Standard Protocol Binding Tests
  *
  * Tests for AsyncAPI 3.1 compliant protocol bindings using standard format.
  * Replaces custom ProtocolBindingFactory with AsyncAPI specification compliance.
  */
-import { expect, test, describe } from "vitest";
+
 import {
+  type AsyncAPIProtocol,
   PROTOCOL_LIST,
   isSupportedProtocol,
-  type AsyncAPIProtocol,
 } from "../../src/constants/protocols.js";
 
 // Standard AsyncAPI 3.1 binding format helpers
 const createStandardBinding = (
   protocol: AsyncAPIProtocol,
   config: Record<string, unknown> = {},
-) => {
-  return {
-    [protocol]: {
-      bindingVersion: "0.5.0", // AsyncAPI 3.1 standard
-      ...config,
-    },
-  };
-};
+) => ({
+  [protocol]: {
+    bindingVersion: "0.5.0", // AsyncAPI 3.1 standard
+    ...config,
+  },
+});
 
 // AsyncAPI JSON Schema validation helper
 const validateAsyncAPIBinding = (
@@ -32,7 +31,7 @@ const validateAsyncAPIBinding = (
 
   if (!binding || typeof binding !== "object") {
     errors.push("Binding must be an object");
-    return { valid: false, errors };
+    return { errors, valid: false };
   }
 
   // Check each protocol binding has required bindingVersion
@@ -49,16 +48,16 @@ const validateAsyncAPIBinding = (
   }
 
   return {
-    valid: errors.length === 0,
     errors,
+    valid: errors.length === 0,
   };
 };
 
-describe("AsyncAPI 3.1 Standard Protocol Bindings", () => {
-  test("Kafka server bindings follow AsyncAPI standard format", () => {
+describe("asyncAPI 3.1 Standard Protocol Bindings", () => {
+  it("kafka server bindings follow AsyncAPI standard format", () => {
     const serverBindings = createStandardBinding("kafka", {
-      schemaRegistryUrl: "http://localhost:8081",
       clientId: "test-client",
+      schemaRegistryUrl: "http://localhost:8081",
     });
 
     expect(serverBindings).toBeDefined();
@@ -69,11 +68,11 @@ describe("AsyncAPI 3.1 Standard Protocol Bindings", () => {
 
     // Validate AsyncAPI compliance
     const validation = validateAsyncAPIBinding(serverBindings);
-    expect(validation.valid).toBe(true);
+    expect(validation.valid).toBeTruthy();
     expect(validation.errors).toHaveLength(0);
   });
 
-  test("Minimal Kafka server bindings are valid", () => {
+  it("minimal Kafka server bindings are valid", () => {
     const serverBindings = createStandardBinding("kafka");
 
     expect(serverBindings).toBeDefined();
@@ -81,14 +80,14 @@ describe("AsyncAPI 3.1 Standard Protocol Bindings", () => {
     expect(serverBindings.kafka.bindingVersion).toBe("0.5.0");
 
     const validation = validateAsyncAPIBinding(serverBindings);
-    expect(validation.valid).toBe(true);
+    expect(validation.valid).toBeTruthy();
   });
 
-  test("Kafka channel bindings follow AsyncAPI standard", () => {
+  it("kafka channel bindings follow AsyncAPI standard", () => {
     const channelBindings = createStandardBinding("kafka", {
-      topic: "user-events",
       partitions: 3,
       replicas: 2,
+      topic: "user-events",
     });
 
     expect(channelBindings).toBeDefined();
@@ -99,13 +98,13 @@ describe("AsyncAPI 3.1 Standard Protocol Bindings", () => {
     expect(channelBindings.kafka.bindingVersion).toBe("0.5.0");
 
     const validation = validateAsyncAPIBinding(channelBindings);
-    expect(validation.valid).toBe(true);
+    expect(validation.valid).toBeTruthy();
   });
 
-  test("WebSocket channel bindings are AsyncAPI compliant", () => {
+  it("webSocket channel bindings are AsyncAPI compliant", () => {
     const channelBindings = createStandardBinding("websocket", {
-      method: "GET",
       headers: { type: "object" },
+      method: "GET",
     });
 
     expect(channelBindings).toBeDefined();
@@ -114,10 +113,10 @@ describe("AsyncAPI 3.1 Standard Protocol Bindings", () => {
     expect(channelBindings.websocket.bindingVersion).toBe("0.5.0");
 
     const validation = validateAsyncAPIBinding(channelBindings);
-    expect(validation.valid).toBe(true);
+    expect(validation.valid).toBeTruthy();
   });
 
-  test("Supported protocols are properly defined", () => {
+  it("supported protocols are properly defined", () => {
     expect(PROTOCOL_LIST).toBeDefined();
     expect(PROTOCOL_LIST.length).toBeGreaterThan(0);
     expect(PROTOCOL_LIST).toContain("kafka");
@@ -125,13 +124,13 @@ describe("AsyncAPI 3.1 Standard Protocol Bindings", () => {
     expect(PROTOCOL_LIST).toContain("http");
   });
 
-  test("Protocol aliases are accepted but not in the canonical list", () => {
+  it("protocol aliases are accepted but not in the canonical list", () => {
     expect(PROTOCOL_LIST).not.toContain("websocket");
-    expect(isSupportedProtocol("websocket")).toBe(true);
-    expect(isSupportedProtocol("ws")).toBe(true);
+    expect(isSupportedProtocol("websocket")).toBeTruthy();
+    expect(isSupportedProtocol("ws")).toBeTruthy();
   });
 
-  test("Binding validation catches missing bindingVersion", () => {
+  it("binding validation catches missing bindingVersion", () => {
     const invalidBinding = {
       kafka: {
         topic: "test",
@@ -140,18 +139,18 @@ describe("AsyncAPI 3.1 Standard Protocol Bindings", () => {
     };
 
     const validation = validateAsyncAPIBinding(invalidBinding);
-    expect(validation.valid).toBe(false);
+    expect(validation.valid).toBeFalsy();
     expect(validation.errors.length).toBeGreaterThan(0);
     expect(validation.errors[0]).toContain("bindingVersion");
   });
 
-  test("Binding validation catches invalid binding structure", () => {
+  it("binding validation catches invalid binding structure", () => {
     const invalidBinding = {
       kafka: null,
     };
 
     const validation = validateAsyncAPIBinding(invalidBinding);
-    expect(validation.valid).toBe(false);
+    expect(validation.valid).toBeFalsy();
     expect(validation.errors.length).toBeGreaterThan(0);
   });
 });

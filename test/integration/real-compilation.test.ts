@@ -1,12 +1,12 @@
+
 /**
  * Integration test using programmatic TypeSpec compiler API
  * Verifies the emitter produces valid AsyncAPI 3.1 end-to-end.
  */
 
-import { describe, expect, it } from "vitest";
 import { compileAsyncAPISpecWithoutErrors, parseAsyncAPIOutput } from "../utils/test-helpers.js";
 
-describe("Real Compilation Integration Test", () => {
+describe("real Compilation Integration Test", () => {
   it("should compile TypeSpec to AsyncAPI 3.1 using programmatic API", async () => {
     const source = `
       namespace IntegrationTest;

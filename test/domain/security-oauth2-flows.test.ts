@@ -1,11 +1,11 @@
+
 /**
  * Security Schemes Tests
  */
 
-import { describe, it, expect } from "vitest";
-import { createAsyncAPITestHost, compileAndGetAsyncAPI } from "../utils/test-helpers.js";
+import { compileAndGetAsyncAPI, createAsyncAPITestHost } from "../utils/test-helpers.js";
 
-describe("OAuth2 Flows", () => {
+describe("oAuth2 Flows", () => {
   it("should support OAuth2 Authorization Code flow", async () => {
     const host = await createAsyncAPITestHost();
     host.addTypeSpecFile(
@@ -887,7 +887,7 @@ describe("OAuth2 Flows", () => {
     expect(scheme).toBeDefined();
     const flow = scheme?.flows?.authorizationCode as Record<string, unknown> | undefined;
     expect(flow).toBeDefined();
-    expect(flow?.availableScopes).toEqual({ legacyRead: "Legacy read" });
+    expect(flow?.availableScopes).toStrictEqual({ legacyRead: "Legacy read" });
     expect(flow?.scopes).toBeUndefined();
   });
 
@@ -929,7 +929,7 @@ describe("OAuth2 Flows", () => {
     expect(scheme).toBeDefined();
     const flow = scheme?.flows?.clientCredentials as Record<string, unknown> | undefined;
     expect(flow).toBeDefined();
-    expect(flow?.availableScopes).toEqual({ modernRead: "Modern read" });
+    expect(flow?.availableScopes).toStrictEqual({ modernRead: "Modern read" });
     expect(flow?.scopes).toBeUndefined();
   });
 });

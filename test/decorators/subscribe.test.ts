@@ -1,3 +1,4 @@
+
 /**
  * @subscribe Decorator Integration Tests
  *
@@ -7,12 +8,11 @@
  * MIGRATED TO: TypeSpec 1.4.0 EmitterTester API
  */
 
-import { describe, expect, test } from "vitest";
 import { compileAsyncAPIWithoutErrors } from "../utils/test-helpers.js";
 import type { AsyncAPIObject } from "../utils/test-helpers.js";
 
 describe("@subscribe Decorator Tests", () => {
-  test("should compile @subscribe decorator successfully", async () => {
+  it("should compile @subscribe decorator successfully", async () => {
     const testSource = `
 			namespace TestApi;
 
@@ -27,8 +27,8 @@ describe("@subscribe Decorator Tests", () => {
 		`;
 
     const result = await compileAsyncAPIWithoutErrors(testSource, {
-      "output-file": "test-subscribe",
       "file-type": "json",
+      "output-file": "test-subscribe",
     });
 
     const asyncapiDoc = result.asyncApiDoc as AsyncAPIObject;
@@ -59,7 +59,7 @@ describe("@subscribe Decorator Tests", () => {
     expect(operation.channel?.$ref).toBe("#/channels/user.events");
   });
 
-  test("should handle multiple @subscribe operations", async () => {
+  it("should handle multiple @subscribe operations", async () => {
     const testSource = `
 			namespace MultiSubscribeTest;
 
@@ -83,8 +83,8 @@ describe("@subscribe Decorator Tests", () => {
 		`;
 
     const result = await compileAsyncAPIWithoutErrors(testSource, {
-      "output-file": "multi-subscribe-test",
       "file-type": "json",
+      "output-file": "multi-subscribe-test",
     });
 
     const asyncapiDoc = result.asyncApiDoc as AsyncAPIObject;
@@ -106,7 +106,7 @@ describe("@subscribe Decorator Tests", () => {
     expect(asyncapiDoc.operations.handleSystemEvent.action).toBe("receive");
   });
 
-  test("should handle @subscribe with complex message types", async () => {
+  it("should handle @subscribe with complex message types", async () => {
     const testSource = `
 			namespace ComplexSubscribeTest;
 
@@ -137,8 +137,8 @@ describe("@subscribe Decorator Tests", () => {
 		`;
 
     const result = await compileAsyncAPIWithoutErrors(testSource, {
-      "output-file": "complex-subscribe-test",
       "file-type": "json",
+      "output-file": "complex-subscribe-test",
     });
 
     const asyncapiDoc = result.asyncApiDoc as AsyncAPIObject;
@@ -164,7 +164,7 @@ describe("@subscribe Decorator Tests", () => {
     expect(asyncapiDoc.operations.handleComplexUserEvent.action).toBe("receive");
   });
 
-  test("should handle @subscribe with parameterized channels", async () => {
+  it("should handle @subscribe with parameterized channels", async () => {
     const testSource = `
 			namespace ParameterizedSubscribeTest;
 
@@ -181,8 +181,8 @@ describe("@subscribe Decorator Tests", () => {
 		`;
 
     const result = await compileAsyncAPIWithoutErrors(testSource, {
-      "output-file": "parameterized-subscribe-test",
       "file-type": "json",
+      "output-file": "parameterized-subscribe-test",
     });
 
     const asyncapiDoc = result.asyncApiDoc as AsyncAPIObject;

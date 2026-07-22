@@ -33,8 +33,8 @@ export class IntegrationTestHarness {
   private performanceMetrics: PerformanceMetrics = {
     compilationTime: 0,
     generationTime: 0,
-    validationTime: 0,
     totalTime: 0,
+    validationTime: 0,
   };
 
   /**
@@ -54,13 +54,13 @@ export class IntegrationTestHarness {
       this.performanceMetrics.compilationTime = Date.now() - startTime;
 
       return {
-        success: true,
         program: mockProgram,
+        success: true,
       };
     } catch (error) {
       return {
-        success: false,
         errors: [error instanceof Error ? error.message : String(error)],
+        success: false,
       };
     }
   }
@@ -76,19 +76,21 @@ export class IntegrationTestHarness {
       // In real implementation, would parse YAML content
       return {
         asyncapi: "3.1.0",
-        info: {
-          title: "Test API",
-          version: "1.0.0",
-        },
         channels: {},
-        operations: {},
         components: {
           messages: {},
           schemas: {},
         },
+        info: {
+          title: "Test API",
+          version: "1.0.0",
+        },
+        operations: {},
       } as AsyncAPIObject;
     } catch (error) {
-      throw new Error(`AsyncAPI generation failed: ${String(error)}`);
+      throw new Error(`AsyncAPI generation failed: ${String(error)}`, {
+        cause: error,
+      });
     }
   }
 
@@ -131,13 +133,13 @@ export class IntegrationTestHarness {
         this.performanceMetrics.validationTime;
 
       return {
-        valid: errors.length === 0,
         errors: errors.length > 0 ? errors : undefined,
+        valid: errors.length === 0,
       };
     } catch (error) {
       return {
-        valid: false,
         errors: [`Validation failed: ${String(error)}`],
+        valid: false,
       };
     }
   }
@@ -156,8 +158,8 @@ export class IntegrationTestHarness {
     this.performanceMetrics = {
       compilationTime: 0,
       generationTime: 0,
-      validationTime: 0,
       totalTime: 0,
+      validationTime: 0,
     };
   }
 
@@ -179,8 +181,8 @@ export class IntegrationTestHarness {
       const compilationResult = await this.compileTypeSpec(typeSpecSource);
       if (!compilationResult.success) {
         return {
-          success: false,
           compilationResult,
+          success: false,
         };
       }
 
@@ -191,16 +193,16 @@ export class IntegrationTestHarness {
       const validationResult = await this.validateOutput(asyncAPIObject, expectedOutput);
 
       return {
-        success: validationResult.valid,
-        compilationResult,
         asyncAPIObject,
-        validationResult,
+        compilationResult,
         performanceMetrics: this.getMetrics(),
+        success: validationResult.valid,
+        validationResult,
       };
     } catch (error) {
       return {
-        success: false,
         errors: [error instanceof Error ? error.message : String(error)],
+        success: false,
       };
     }
   }

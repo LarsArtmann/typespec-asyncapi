@@ -1,3 +1,4 @@
+
 /**
  * Semantic Validation: $ref Resolution & Document Coherence
  *
@@ -15,9 +16,8 @@
  * 5. No dangling references anywhere in the document
  */
 
-import { describe, it, expect } from "vitest";
-import { readFileSync, readdirSync, statSync } from "fs";
-import { join, dirname } from "path";
+import { readFileSync, readdirSync, statSync } from "node:fs";
+import { dirname, join } from "node:path";
 import { compileAsyncAPI } from "../utils/test-helpers.js";
 
 const examplesRoot = join(import.meta.dirname, "..", "..", "examples");
@@ -32,7 +32,7 @@ function findTspFiles(
     if (stat.isDirectory()) {
       findTspFiles(fullPath, acc);
     } else if (entry.endsWith(".tsp")) {
-      const relative = fullPath.replace(examplesRoot + "/", "").replace(/\.tsp$/, "");
+      const relative = fullPath.replace(`${examplesRoot}/`, "").replace(/\.tsp$/, "");
       acc.push({ name: relative, path: fullPath });
     }
   }
@@ -43,23 +43,33 @@ const exampleFiles = findTspFiles(examplesRoot);
 
 /** Resolve a JSON Pointer $ref against a document, return true if it exists. */
 function refExists(doc: unknown, ref: string): boolean {
-  if (!ref.startsWith("#/")) return false;
+  if (!ref.startsWith("#/")) {
+    return false;
+  }
   const parts = ref.slice(2).split("/");
   let current: unknown = doc;
   for (const part of parts) {
-    if (current == null || typeof current !== "object") return false;
+    if (current == null || typeof current !== "object") {
+      return false;
+    }
     const decoded = part.replaceAll("~1", "/").replaceAll("~0", "~");
     current = (current as Record<string, unknown>)[decoded];
-    if (current === undefined) return false;
+    if (current === undefined) {
+      return false;
+    }
   }
   return true;
 }
 
 /** Recursively find all $ref strings in a document. */
 function findAllRefs(obj: unknown, refs: string[] = []): string[] {
-  if (obj == null || typeof obj !== "object") return refs;
+  if (obj == null || typeof obj !== "object") {
+    return refs;
+  }
   if (Array.isArray(obj)) {
-    for (const item of obj) findAllRefs(item, refs);
+    for (const item of obj) {
+      findAllRefs(item, refs);
+    }
     return refs;
   }
   const record = obj as Record<string, unknown>;
@@ -77,17 +87,17 @@ function unescapeRefToken(token: string): string {
   return token.replaceAll("~1", "/").replaceAll("~0", "~");
 }
 
-describe("Semantic Validation: $ref Resolution", () => {
+describe("semantic Validation: $ref Resolution", () => {
   for (const file of exampleFiles) {
-    const source = readFileSync(file.path, "utf-8");
+    const source = readFileSync(file.path, "utf8");
 
     it(`all $refs resolve for: ${file.name}`, async () => {
       const result = await compileAsyncAPI(source);
       const doc = result.asyncApiDoc;
 
       const errors = result.diagnostics.filter((d) => d.severity === "error");
-      expect(errors).toEqual([]);
-      expect(doc).toBeTruthy();
+      expect(errors).toStrictEqual([]);
+      expect(doc).toBe(true);
 
       const allRefs = findAllRefs(doc);
       expect(allRefs.length).toBeGreaterThan(0);
@@ -96,13 +106,13 @@ describe("Semantic Validation: $ref Resolution", () => {
       if (dangling.length > 0) {
         console.error(`Dangling $refs in ${file.name}:`, dangling);
       }
-      expect(dangling).toEqual([]);
+      expect(dangling).toStrictEqual([]);
     });
 
     it(`operation → channel → message chain is coherent for: ${file.name}`, async () => {
       const result = await compileAsyncAPI(source);
       const doc = result.asyncApiDoc as Record<string, any>;
-      expect(doc).toBeTruthy();
+      expect(doc).toBe(true);
 
       const channels = doc.channels ?? {};
       const operations = doc.operations ?? {};
@@ -121,7 +131,7 @@ describe("Semantic Validation: $ref Resolution", () => {
         // Operation messages must reference channel messages
         for (const msg of op?.messages ?? []) {
           expect(msg?.$ref).toBeDefined();
-          expect(msg?.$ref.startsWith(channelRef + "/messages/")).toBe(true);
+          expect(msg?.$ref.startsWith(`${channelRef}/messages/`)).toBeTruthy();
         }
       }
 

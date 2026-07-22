@@ -1,3 +1,4 @@
+
 /**
  * AsyncAPI 3.1.0 Spec Compliance: Protocol Bindings
  *
@@ -10,7 +11,6 @@
  * Spec reference: https://github.com/asyncapi/bindings
  */
 
-import { describe, it, expect } from "vitest";
 import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
 import { compileAsyncAPISpecWithoutErrors } from "../utils/test-helpers.js";
 import { parse as parseYAML } from "yaml";
@@ -39,7 +39,7 @@ function getMsgBindings(doc: Record<string, unknown>, name: string): Record<stri
 // Kafka Bindings
 // ============================================================================
 
-describe("Spec Compliance: Kafka Bindings", () => {
+describe("spec Compliance: Kafka Bindings", () => {
   it("emits valid Kafka channel binding via @protocol", async () => {
     const doc = await compileAndValidateOrThrow(`
       namespace Test;
@@ -149,7 +149,7 @@ describe("Spec Compliance: Kafka Bindings", () => {
 // AMQP Bindings
 // ============================================================================
 
-describe("Spec Compliance: AMQP Bindings", () => {
+describe("spec Compliance: AMQP Bindings", () => {
   it("emits valid AMQP operation binding with priority and deliveryMode", async () => {
     const doc = await compileAndValidateOrThrow(`
       namespace Test;
@@ -200,7 +200,7 @@ describe("Spec Compliance: AMQP Bindings", () => {
 // MQTT Bindings
 // ============================================================================
 
-describe("Spec Compliance: MQTT Bindings", () => {
+describe("spec Compliance: MQTT Bindings", () => {
   it("emits valid MQTT operation binding with QoS", async () => {
     const doc = await compileAndValidateOrThrow(`
       namespace Test;
@@ -219,7 +219,7 @@ describe("Spec Compliance: MQTT Bindings", () => {
     const binding = op.bindings as Record<string, Record<string, unknown>>;
     expect(binding.mqtt).toBeDefined();
     expect(binding.mqtt.qos).toBe(2);
-    expect(binding.mqtt.retain).toBe(true);
+    expect(binding.mqtt.retain).toBeTruthy();
     expect(binding.mqtt.bindingVersion).toBe("0.2.0");
   });
 
@@ -261,7 +261,7 @@ describe("Spec Compliance: MQTT Bindings", () => {
 // WebSocket Bindings
 // ============================================================================
 
-describe("Spec Compliance: WebSocket Bindings", () => {
+describe("spec Compliance: WebSocket Bindings", () => {
   it("emits valid WebSocket channel binding via @protocol", async () => {
     const doc = await compileAndValidateOrThrow(`
       namespace Test;
@@ -346,7 +346,7 @@ describe("Spec Compliance: WebSocket Bindings", () => {
 // HTTP Bindings
 // ============================================================================
 
-describe("Spec Compliance: HTTP Bindings", () => {
+describe("spec Compliance: HTTP Bindings", () => {
   it("emits valid HTTP operation binding with method", async () => {
     const doc = await compileAndValidateOrThrow(`
       namespace Test;
@@ -397,7 +397,7 @@ describe("Spec Compliance: HTTP Bindings", () => {
 // Multi-Protocol Binding Integration
 // ============================================================================
 
-describe("Spec Compliance: Multi-Protocol Bindings", () => {
+describe("spec Compliance: Multi-Protocol Bindings", () => {
   it("supports multiple protocols in a single document", async () => {
     const doc = await compileAndValidateOrThrow(`
       @server("kafka-server", #{

@@ -26,8 +26,8 @@ import type {
   ChannelObject,
   ComponentsObject,
   MessageObject,
-  OperationObject,
   OperationAction,
+  OperationObject,
   ParameterObject,
   ProtocolBindings,
   SchemaObject,
@@ -35,11 +35,11 @@ import type {
   ServerObject,
 } from "./domain/models/asyncapi-document.js";
 import {
-  ref,
-  refSchema,
-  refMessage,
-  refChannel,
   escapeRefToken,
+  ref,
+  refChannel,
+  refMessage,
+  refSchema,
 } from "./domain/models/asyncapi-document.js";
 
 export const ASYNCAPI_SPEC_VERSION = "3.1.0";
@@ -56,12 +56,16 @@ const OAUTH2_FLOW_KEYS = [
  * Accept both as input; always output `availableScopes`.
  */
 function normalizeOAuth2Scopes(scheme: SecurityScheme): SecurityScheme {
-  if (!scheme.flows) return scheme;
+  if (!scheme.flows) {
+    return scheme;
+  }
   const flows = { ...scheme.flows };
   for (const key of OAUTH2_FLOW_KEYS) {
     const flow = flows[key];
-    if (!flow) continue;
-    const raw = flow as Record<string, unknown>;
+    if (!flow) {
+      continue;
+    }
+    const raw = flow as unknown as Record<string, unknown>;
     if ("scopes" in raw && !("availableScopes" in raw)) {
       const { scopes, ...rest } = raw;
       flows[key] = { ...rest, availableScopes: scopes } as typeof flow;
@@ -90,13 +94,17 @@ function operationAction(type: OperationTypeData["type"]): OperationAction {
 
 /** Extract the name from a TypeSpec Type, if it has one. */
 function nameOfType(type: Type): string | undefined {
-  if ("name" in type && typeof type.name === "string") return type.name;
+  if ("name" in type && typeof type.name === "string") {
+    return type.name;
+  }
   return undefined;
 }
 
 /** Extract the return model name from an Operation type, if any. */
 function returnModelName(type: Type): string | undefined {
-  if (type.kind !== "Operation") return undefined;
+  if (type.kind !== "Operation") {
+    return undefined;
+  }
   const rt = type.returnType;
   if ("name" in rt && typeof rt.name === "string" && rt.name && rt.kind !== "Operation") {
     return rt.name;
@@ -107,7 +115,9 @@ function returnModelName(type: Type): string | undefined {
 /** Extract channel path parameters from an address string. */
 function extractChannelParameters(address: string): Record<string, ParameterObject> | undefined {
   const matches = address.match(/\{([^}]+)\}/g);
-  if (!matches || matches.length === 0) return undefined;
+  if (!matches || matches.length === 0) {
+    return undefined;
+  }
   const params: Record<string, ParameterObject> = {};
   for (const match of matches) {
     const paramName = match.slice(1, -1);
@@ -138,12 +148,12 @@ export function buildAsyncAPIDocument(
   const messages: Record<string, MessageObject> = {};
   const securitySchemes: Record<string, SecurityScheme> = {};
 
-  type DiscoveredOp = {
+  interface DiscoveredOp {
     opName: string;
     channelKey: string;
     action: OperationAction;
     messageName: string;
-  };
+  }
 
   const discoveredOps: DiscoveredOp[] = [];
 
@@ -182,21 +192,25 @@ export function buildAsyncAPIDocument(
   const opToChannel = new Map<string, string>();
   for (const [type, data] of state.channels) {
     const name = nameOfType(type);
-    if (!name) continue;
+    if (!name) {
+      continue;
+    }
     opToChannel.set(name, data.path);
   }
 
   for (const [type, data] of state.operations) {
     const name = nameOfType(type);
-    if (!name) continue;
+    if (!name) {
+      continue;
+    }
     const channelKey = opToChannel.get(name) ?? name;
     const messageName = data.messageType ?? returnModelName(type) ?? name;
 
     discoveredOps.push({
-      opName: name,
-      channelKey,
       action: operationAction(data.type),
+      channelKey,
       messageName,
+      opName: name,
     });
   }
 
@@ -204,15 +218,19 @@ export function buildAsyncAPIDocument(
   const opsWithType = new Set([...state.operations.keys()].map((t) => nameOfType(t)));
   for (const [type, data] of state.channels) {
     const name = nameOfType(type);
-    if (!name) continue;
-    if (opsWithType.has(name)) continue;
+    if (!name) {
+      continue;
+    }
+    if (opsWithType.has(name)) {
+      continue;
+    }
     const channelKey = data.path;
     const messageName = returnModelName(type) ?? name;
     discoveredOps.push({
-      opName: name,
-      channelKey,
       action: inferActionFromName(name),
+      channelKey,
       messageName,
+      opName: name,
     });
   }
 
@@ -223,15 +241,19 @@ export function buildAsyncAPIDocument(
   const globalNs = program.getGlobalNamespaceType();
   const namespaces = [globalNs, ...globalNs.namespaces.values()];
   for (const ns of namespaces) {
-    if (ns.name && isStdNamespace(ns)) continue;
+    if (ns.name && isStdNamespace(ns)) {
+      continue;
+    }
     for (const [opName, op] of ns.operations) {
-      if (allKnownOps.has(opName)) continue;
+      if (allKnownOps.has(opName)) {
+        continue;
+      }
       const messageName = returnModelName(op) ?? opName;
       discoveredOps.push({
-        opName,
-        channelKey: opName,
         action: inferActionFromName(opName),
+        channelKey: opName,
         messageName,
+        opName,
       });
     }
   }
@@ -273,7 +295,9 @@ export function buildAsyncAPIDocument(
   for (const [type, data] of state.messages) {
     const msgData = data;
     const name = nameOfType(type);
-    if (!name) continue;
+    if (!name) {
+      continue;
+    }
     const msgKey = msgData.messageId ?? name;
     const msgObj: MessageObject = {
       name: msgData.title ?? name,
@@ -297,8 +321,8 @@ export function buildAsyncAPIDocument(
         };
       }
       msgObj.headers = {
-        type: "object",
         properties: headerProps,
+        type: "object",
       };
     }
 
@@ -318,7 +342,9 @@ export function buildAsyncAPIDocument(
     ...state.tags,
   ]) {
     const typeName = nameOfType(type);
-    if (!typeName || !messages[typeName]) continue;
+    if (!typeName || !messages[typeName]) {
+      continue;
+    }
 
     const msg = messages[typeName];
 
@@ -336,7 +362,7 @@ export function buildAsyncAPIDocument(
           ...(h.description ? { description: h.description } : {}),
         };
       }
-      msg.headers = { type: "object", properties: headerProps };
+      msg.headers = { properties: headerProps, type: "object" };
     }
 
     const msgBindings = state.protocolBindings.get(type);
@@ -353,7 +379,9 @@ export function buildAsyncAPIDocument(
   // 2d. Attach protocol bindings to channels
   for (const [type, data] of state.protocolConfigs) {
     const name = nameOfType(type);
-    if (!name) continue;
+    if (!name) {
+      continue;
+    }
     const channelKey = opToChannel.get(name) ?? name;
     if (data.protocol && channels[channelKey]) {
       channels[channelKey].bindings = buildProtocolBinding(data);
@@ -366,9 +394,9 @@ export function buildAsyncAPIDocument(
     for (const entry of serverEntries) {
       const serverData = entry;
       const server: ServerObject = {
+        description: serverData.description,
         host: serverData.url,
         protocol: normalizeProtocol(serverData.protocol),
-        description: serverData.description,
       };
 
       const varMatches = serverData.url?.match(/\{([^}]+)\}/g);
@@ -394,9 +422,15 @@ export function buildAsyncAPIDocument(
   }
 
   const components: ComponentsObject = {};
-  if (Object.keys(messages).length > 0) components.messages = messages;
-  if (Object.keys(schemas).length > 0) components.schemas = schemas;
-  if (Object.keys(securitySchemes).length > 0) components.securitySchemes = securitySchemes;
+  if (Object.keys(messages).length > 0) {
+    components.messages = messages;
+  }
+  if (Object.keys(schemas).length > 0) {
+    components.schemas = schemas;
+  }
+  if (Object.keys(securitySchemes).length > 0) {
+    components.securitySchemes = securitySchemes;
+  }
 
   // Read @service title from TypeSpec core state (OpenAPI/HTTP migration compat)
   const services = listServices(program);
@@ -405,9 +439,9 @@ export function buildAsyncAPIDocument(
   const document: AsyncAPIDocument = {
     asyncapi: ASYNCAPI_SPEC_VERSION,
     info: {
+      description: options?.description,
       title: options?.title ?? serviceTitle ?? "Generated API",
       version: options?.version ?? "1.0.0",
-      description: options?.description,
     },
     ...(Object.keys(servers).length > 0 ? { servers } : {}),
     channels,

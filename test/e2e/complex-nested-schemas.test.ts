@@ -1,13 +1,13 @@
+
 /**
  * E2E Test 3: Complex Nested Schemas
  *
  * Tests deep nesting, arrays, recursive types, and complex object structures
  */
 
-import { describe, expect, it } from "vitest";
 import { createAsyncAPITestHost } from "../utils/test-helpers.js";
 
-describe("E2E: Complex Nested Schemas", () => {
+describe("e2E: Complex Nested Schemas", () => {
   it("should handle deeply nested and complex schema structures", async () => {
     const host = await createAsyncAPITestHost();
 
@@ -171,7 +171,7 @@ describe("E2E: Complex Nested Schemas", () => {
       emit: ["@lars-artmann/typespec-asyncapi"],
     });
 
-    const outputFiles = Array.from(host.fs.keys());
+    const outputFiles = [...host.fs.keys()];
     const asyncApiFile = outputFiles.find(
       (f) => f.includes("asyncapi") && (f.endsWith(".json") || f.endsWith(".yaml")),
     );
@@ -205,12 +205,12 @@ describe("E2E: Complex Nested Schemas", () => {
       expect(schemas.ProductVariant.properties.pricing.properties.discount).toBeDefined();
 
       // Validate enums from union types
-      expect(schemas.Order.properties.shipping.properties.method.enum).toEqual([
+      expect(schemas.Order.properties.shipping.properties.method.enum).toStrictEqual([
         "standard",
         "express",
         "overnight",
       ]);
-      expect(schemas.UserEventPayload.properties.eventType.enum).toEqual([
+      expect(schemas.UserEventPayload.properties.eventType.enum).toStrictEqual([
         "created",
         "updated",
         "deleted",

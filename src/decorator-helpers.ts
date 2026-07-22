@@ -21,9 +21,9 @@ export const reportDiagnostic = (
 ): void => {
   $lib.reportDiagnostic(context.program, {
     code,
-    target: target as DiagnosticTarget,
     format,
     messageId: messageId as "default",
+    target: target as DiagnosticTarget,
   });
 };
 
@@ -58,13 +58,24 @@ export const validateConfig = (
  * - Strings containing spaces or control characters
  */
 export function isValidUrl(url: string): boolean {
-  if (!url || typeof url !== "string") return false;
+  if (!url || typeof url !== "string") {
+    return false;
+  }
   const trimmed = url.trim();
-  if (trimmed.length === 0) return false;
-  if (/\s/.test(trimmed)) return false;
+  if (trimmed.length === 0) {
+    return false;
+  }
+  if (/\s/.test(trimmed)) {
+    return false;
+  }
   for (let i = 0; i < trimmed.length; i++) {
-    const code = trimmed.charCodeAt(i);
-    if (code < 32 || code === 127) return false;
+    const code = trimmed.codePointAt(i);
+    if (code === undefined) {
+      return false;
+    }
+    if (code < 32 || code === 127) {
+      return false;
+    }
   }
   return true;
 }
@@ -76,14 +87,18 @@ export function getModelPropertyStringValue(
   propertyName: string,
 ): string | undefined {
   const property = model.properties.get(propertyName);
-  if (!property) return undefined;
+  if (!property) {
+    return undefined;
+  }
   const type = property.type as { kind: string; value?: string };
   return type.kind === "String" && type.value !== undefined ? type.value : undefined;
 }
 
 export function getModelPropertyValue(model: Model, propertyName: string): unknown {
   const property = model.properties.get(propertyName);
-  if (!property) return undefined;
+  if (!property) {
+    return undefined;
+  }
   const type = property.type as { kind: string; value?: unknown };
   return type.kind === "String" && type.value !== undefined ? type.value : type;
 }

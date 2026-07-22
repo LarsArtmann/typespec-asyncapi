@@ -1,3 +1,4 @@
+
 /**
  * Schema Emitter Regression Tests
  *
@@ -10,20 +11,19 @@
  * but never committed as permanent regression tests.
  */
 
-import { describe, it, expect } from "vitest";
 import { compileAsyncAPIWithoutErrors } from "../utils/test-helpers.js";
 
 describe("refForNamedType: arrays of named models", () => {
-  it("Item[] emits items: { $ref: #/components/schemas/Item }", async () => {
+  it("item[] emits items: { $ref: #/components/schemas/Item }", async () => {
     const source = `
       model Item { id: string; name: string; }
       model Cart { items: Item[]; }
     `;
     const result = await compileAsyncAPIWithoutErrors(source);
     const schemas = result.asyncApiDoc?.components?.schemas;
-    expect(schemas?.Cart?.properties?.items).toEqual({
-      type: "array",
+    expect(schemas?.Cart?.properties?.items).toStrictEqual({
       items: { $ref: "#/components/schemas/Item" },
+      type: "array",
     });
   });
 
@@ -46,24 +46,24 @@ describe("refForNamedType: arrays of named models", () => {
     `;
     const result = await compileAsyncAPIWithoutErrors(source);
     const addr = result.asyncApiDoc?.components?.schemas?.User?.properties?.address;
-    expect(addr).toEqual({ $ref: "#/components/schemas/Address" });
+    expect(addr).toStrictEqual({ $ref: "#/components/schemas/Address" });
   });
 });
 
-describe("Record<string> mapping", () => {
-  it("Record<string> emits { type: object, additionalProperties: { type: string } }", async () => {
+describe("record<string> mapping", () => {
+  it("record<string> emits { type: object, additionalProperties: { type: string } }", async () => {
     const source = `
       model Config { values: Record<string>; }
     `;
     const result = await compileAsyncAPIWithoutErrors(source);
     const values = result.asyncApiDoc?.components?.schemas?.Config?.properties?.values;
-    expect(values).toEqual({
-      type: "object",
+    expect(values).toStrictEqual({
       additionalProperties: { type: "string" },
+      type: "object",
     });
   });
 
-  it("Record<int32> emits additionalProperties with int32 mapping", async () => {
+  it("record<int32> emits additionalProperties with int32 mapping", async () => {
     const source = `
       model Counts { data: Record<int32>; }
     `;
@@ -73,7 +73,7 @@ describe("Record<string> mapping", () => {
     expect(data?.additionalProperties?.type).toBe("integer");
   });
 
-  it("Record of named model emits $ref in additionalProperties", async () => {
+  it("record of named model emits $ref in additionalProperties", async () => {
     const source = `
       model Item { id: string; }
       model Store { inventory: Record<Item>; }
@@ -86,19 +86,19 @@ describe("Record<string> mapping", () => {
 });
 
 describe("typeToSchema: every branch", () => {
-  it("Union of string literals → { type: string, enum: [...] }", async () => {
+  it("union of string literals → { type: string, enum: [...] }", async () => {
     const source = `
       model Event { status: "pending" | "active" | "closed"; }
     `;
     const result = await compileAsyncAPIWithoutErrors(source);
     const status = result.asyncApiDoc?.components?.schemas?.Event?.properties?.status;
-    expect(status).toEqual({
-      type: "string",
+    expect(status).toStrictEqual({
       enum: ["pending", "active", "closed"],
+      type: "string",
     });
   });
 
-  it("Union of mixed types → { anyOf: [...] }", async () => {
+  it("union of mixed types → { anyOf: [...] }", async () => {
     const source = `
       model Event { value: string | int32; }
     `;
@@ -108,7 +108,7 @@ describe("typeToSchema: every branch", () => {
     expect(value?.anyOf).toHaveLength(2);
   });
 
-  it("Scalar types map correctly (string, int32, float64, boolean)", async () => {
+  it("scalar types map correctly (string, int32, float64, boolean)", async () => {
     const source = `
       model Types {
         s: string;
@@ -125,7 +125,7 @@ describe("typeToSchema: every branch", () => {
     expect(props?.b?.type).toBe("boolean");
   });
 
-  it("Anonymous nested model → inline object schema", async () => {
+  it("anonymous nested model → inline object schema", async () => {
     const source = `
       model Outer {
         inner: { x: string; y: int32; };
@@ -138,7 +138,7 @@ describe("typeToSchema: every branch", () => {
     expect(inner?.properties?.y?.type).toBe("integer");
   });
 
-  it("Array of anonymous models → inline array with object items", async () => {
+  it("array of anonymous models → inline array with object items", async () => {
     const source = `
       model Outer {
         items: { sku: string; qty: int32; }[];
@@ -151,16 +151,16 @@ describe("typeToSchema: every branch", () => {
     expect(items?.items?.properties?.sku?.type).toBe("string");
   });
 
-  it("Array of scalar (string[]) → { type: array, items: { type: string } }", async () => {
+  it("array of scalar (string[]) → { type: array, items: { type: string } }", async () => {
     const source = `
       model List { tags: string[]; }
     `;
     const result = await compileAsyncAPIWithoutErrors(source);
     const tags = result.asyncApiDoc?.components?.schemas?.List?.properties?.tags;
-    expect(tags).toEqual({ type: "array", items: { type: "string" } });
+    expect(tags).toStrictEqual({ items: { type: "string" }, type: "array" });
   });
 
-  it("Optional properties are excluded from required[]", async () => {
+  it("optional properties are excluded from required[]", async () => {
     const source = `
       model Partial {
         required1: string;
@@ -169,11 +169,11 @@ describe("typeToSchema: every branch", () => {
     `;
     const result = await compileAsyncAPIWithoutErrors(source);
     const schema = result.asyncApiDoc?.components?.schemas?.Partial;
-    expect(schema?.required).toEqual(["required1"]);
+    expect(schema?.required).toStrictEqual(["required1"]);
     expect(schema?.properties?.optional1?.type).toBe("string");
   });
 
-  it("Enum declaration → { type: string, enum: [...] }", async () => {
+  it("enum declaration → { type: string, enum: [...] }", async () => {
     const source = `
       enum Color { Red, Green, Blue }
       model Item { color: Color; }
@@ -182,7 +182,7 @@ describe("typeToSchema: every branch", () => {
     const color = result.asyncApiDoc?.components?.schemas?.Item?.properties?.color;
     expect(color?.$ref).toBe("#/components/schemas/Color");
     const colorSchema = result.asyncApiDoc?.components?.schemas?.Color;
-    expect(colorSchema?.enum).toEqual(["Red", "Green", "Blue"]);
+    expect(colorSchema?.enum).toStrictEqual(["Red", "Green", "Blue"]);
   });
 
   it("bytes scalar → { type: string, format: byte }", async () => {

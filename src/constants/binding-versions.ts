@@ -12,10 +12,10 @@ import { normalizeProtocol } from "./protocols.js";
 
 /** Latest binding version for each protocol that has binding definitions. */
 export const LATEST_BINDING_VERSIONS = {
-  kafka: "0.5.0",
   amqp: "0.3.0",
-  mqtt: "0.2.0",
   http: "0.3.0",
+  kafka: "0.5.0",
+  mqtt: "0.2.0",
   ws: "0.1.0",
 } as const;
 
@@ -28,10 +28,10 @@ export const PROTOCOLS_WITH_BINDINGS: readonly ProtocolWithBindings[] = Object.k
 
 /** All valid binding versions per protocol (not just the latest). */
 export const VALID_BINDING_VERSIONS: Record<ProtocolWithBindings, readonly string[]> = {
-  kafka: ["0.5.0", "0.4.0", "0.3.0"],
   amqp: ["0.3.0"],
-  mqtt: ["0.2.0"],
   http: ["0.3.0", "0.2.0"],
+  kafka: ["0.5.0", "0.4.0", "0.3.0"],
+  mqtt: ["0.2.0"],
   ws: ["0.1.0"],
 } as const;
 
@@ -42,7 +42,9 @@ export const VALID_BINDING_VERSIONS: Record<ProtocolWithBindings, readonly strin
  * Server.protocol retains the distinction (ws vs wss).
  */
 export function normalizeBindingProtocol(protocol: string): string {
-  if (protocol === "wss") return "ws";
+  if (protocol === "wss") {
+    return "ws";
+  }
   return normalizeProtocol(protocol);
 }
 
@@ -94,11 +96,11 @@ export function getValidVersionsString(protocol: string): string | undefined {
 export type BindingTargetKind = "channel" | "operation" | "message" | "server";
 
 export const BINDING_PLACEMENT: Record<ProtocolWithBindings, Record<BindingTargetKind, boolean>> = {
-  amqp: { channel: true, operation: true, message: true, server: false },
-  http: { channel: false, operation: true, message: true, server: false },
-  kafka: { channel: true, operation: true, message: true, server: false },
-  mqtt: { channel: false, operation: true, message: true, server: true },
-  ws: { channel: true, operation: false, message: false, server: false },
+  amqp: { channel: true, message: true, operation: true, server: false },
+  http: { channel: false, message: true, operation: true, server: false },
+  kafka: { channel: true, message: true, operation: true, server: false },
+  mqtt: { channel: false, message: true, operation: true, server: true },
+  ws: { channel: true, message: false, operation: false, server: false },
 };
 
 /**
@@ -116,6 +118,8 @@ export function supportsBindingPlacement(protocol: string, kind: BindingTargetKi
  */
 export function getValidPlacements(protocol: string): BindingTargetKind[] {
   const placement = BINDING_PLACEMENT[protocol as ProtocolWithBindings];
-  if (!placement) return [];
+  if (!placement) {
+    return [];
+  }
   return (Object.keys(placement) as BindingTargetKind[]).filter((kind) => placement[kind]);
 }

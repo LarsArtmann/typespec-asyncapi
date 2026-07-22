@@ -1,3 +1,4 @@
+
 /**
  * Integration tests for AsyncAPI Standard Protocol Bindings with Emitter
  *
@@ -5,12 +6,11 @@
  * Focuses on emitter functionality rather than custom binding factories.
  */
 
-import { describe, it, expect } from "vitest";
 import { compileAsyncAPISpec } from "../utils/test-helpers";
 import { PROTOCOL_LIST, isSupportedProtocol } from "../../src/constants/protocols.js";
 
-describe("AsyncAPI Protocol Binding Integration", () => {
-  describe("Kafka Protocol Integration", () => {
+describe("asyncAPI Protocol Binding Integration", () => {
+  describe("kafka Protocol Integration", () => {
     it("should generate AsyncAPI spec with Kafka server bindings", async () => {
       const source = `
         @server("kafka-cluster", #{
@@ -70,7 +70,7 @@ describe("AsyncAPI Protocol Binding Integration", () => {
     });
   });
 
-  describe("WebSocket Protocol Integration", () => {
+  describe("webSocket Protocol Integration", () => {
     it("should generate AsyncAPI spec with WebSocket channel bindings", async () => {
       const source = `
         @server("websocket-server", #{
@@ -135,7 +135,7 @@ describe("AsyncAPI Protocol Binding Integration", () => {
     });
   });
 
-  describe("HTTP Protocol Integration", () => {
+  describe("hTTP Protocol Integration", () => {
     it("should generate AsyncAPI spec with HTTP operation bindings", async () => {
       const source = `
         @server("http-api", #{
@@ -194,7 +194,7 @@ describe("AsyncAPI Protocol Binding Integration", () => {
     });
   });
 
-  describe("Multi-Protocol Integration", () => {
+  describe("multi-Protocol Integration", () => {
     it("should handle multiple protocols in a single specification", async () => {
       const source = `
         @server("kafka-broker", #{
@@ -249,13 +249,13 @@ describe("AsyncAPI Protocol Binding Integration", () => {
       expect(PROTOCOL_LIST).toContain("kafka");
       expect(PROTOCOL_LIST).toContain("http");
       expect(PROTOCOL_LIST).toContain("ws");
-      // websocket is accepted as an alias but not in the canonical list
+      // Websocket is accepted as an alias but not in the canonical list
       expect(PROTOCOL_LIST).not.toContain("websocket");
-      expect(isSupportedProtocol("websocket")).toBe(true);
+      expect(isSupportedProtocol("websocket")).toBeTruthy();
     });
   });
 
-  describe("AsyncAPI Specification Validation", () => {
+  describe("asyncAPI Specification Validation", () => {
     it("should generate valid AsyncAPI 3.1 documents", async () => {
       const source = `
         @server("test-server", #{

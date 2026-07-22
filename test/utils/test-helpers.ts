@@ -38,8 +38,12 @@ async function createTesterInstance(source: string, options: AsyncAPIEmitterOpti
     libraries: ["@lars-artmann/typespec-asyncapi"],
   });
 
-  if (!hasOwnImport) tester = tester.importLibraries();
-  if (!hasOwnUsing) tester = tester.using("TypeSpec.AsyncAPI");
+  if (!hasOwnImport) {
+    tester = tester.importLibraries();
+  }
+  if (!hasOwnUsing) {
+    tester = tester.using("TypeSpec.AsyncAPI");
+  }
 
   return tester.emit("@lars-artmann/typespec-asyncapi", options);
 }
@@ -66,8 +70,12 @@ export async function compileAsyncAPI(source: string, options: AsyncAPIEmitterOp
   let outputContent: string | null = null;
 
   for (const [virtualPath, content] of virtualFs) {
-    if (virtualPath.includes("node_modules")) continue;
-    if (typeof content !== "string") continue;
+    if (virtualPath.includes("node_modules")) {
+      continue;
+    }
+    if (typeof content !== "string") {
+      continue;
+    }
     const filename = virtualPath.split("/").pop() || "";
     if (filename.endsWith(".yaml") || filename.endsWith(".json") || filename.endsWith(".yml")) {
       if (content.startsWith("asyncapi") || content.includes('"asyncapi"')) {
@@ -88,9 +96,9 @@ export async function compileAsyncAPI(source: string, options: AsyncAPIEmitterOp
   return {
     asyncApiDoc,
     diagnostics,
-    program: result.program,
-    outputs,
     outputFile,
+    outputs,
+    program: result.program,
   };
 }
 
@@ -118,8 +126,8 @@ async function compileRaw(source: string, options: AsyncAPIEmitterOptions = {}) 
   return {
     asyncApiDoc: result.asyncApiDoc,
     diagnostics: [...result.diagnostics],
-    program: result.program,
     outputFiles,
+    program: result.program,
   };
 }
 
@@ -178,7 +186,9 @@ export async function parseAsyncAPIOutput(
       !filePath.includes("node_modules")
     ) {
       const actualContent = typeof content === "string" ? content : content.content;
-      if (!actualContent || actualContent.trim().length === 0) continue;
+      if (!actualContent || actualContent.trim().length === 0) {
+        continue;
+      }
       if (actualContent.trim().startsWith("{")) {
         return JSON.parse(actualContent);
       }
@@ -191,53 +201,67 @@ export async function parseAsyncAPIOutput(
 // === LEGACY HOST API ===
 
 export async function createAsyncAPITestHost() {
-  let files: Map<string, string> = new Map();
+  const files = new Map<string, string>();
 
   return {
+    _getFiles(): Map<string, string> {
+      return files;
+    },
+
     addTypeSpecFile(name: string, content: string) {
       files.set(name, content);
+    },
+
+    async compile(_mainPath: string, _options?: any) {
+      const source = files.get("main.tsp") ?? files.values().next().value;
+      if (!source) {
+        return {};
+      }
+      const result = await compileAsyncAPI(source);
+      for (const [k, v] of Object.entries(result.outputs)) {
+        files.set(k, v);
+      }
+      return {};
+    },
+
+    async compileAndDiagnose(_mainPath: string, _options?: any) {
+      const source = files.get("main.tsp") ?? files.values().next().value;
+      if (!source) {
+        return [{}, []];
+      }
+      const result = await compileAsyncAPI(source);
+      for (const [k, v] of Object.entries(result.outputs)) {
+        files.set(k, v);
+      }
+      return [{}, result.diagnostics];
+    },
+
+    async diagnose(_mainPath: string, _options?: any) {
+      const source = files.get("main.tsp") ?? files.values().next().value;
+      if (!source) {
+        return [];
+      }
+      const result = await compileAsyncAPI(source);
+      for (const [k, v] of Object.entries(result.outputs)) {
+        if (!files.has(k)) {
+          files.set(k, v);
+        }
+      }
+      return result.diagnostics;
     },
 
     get fs() {
       const filtered = new Map<string, string>();
       for (const [k, v] of files) {
-        if (!k.includes("node_modules/")) filtered.set(k, v);
+        if (!k.includes("node_modules/")) {
+          filtered.set(k, v);
+        }
       }
       return filtered;
     },
 
-    async compile(_mainPath: string, _options?: any) {
-      const source = files.get("main.tsp") ?? files.values().next().value;
-      if (!source) return {};
-      const result = await compileAsyncAPI(source);
-      for (const [k, v] of Object.entries(result.outputs)) files.set(k, v);
-      return {};
-    },
-
-    async diagnose(_mainPath: string, _options?: any) {
-      const source = files.get("main.tsp") ?? files.values().next().value;
-      if (!source) return [];
-      const result = await compileAsyncAPI(source);
-      for (const [k, v] of Object.entries(result.outputs)) {
-        if (!files.has(k)) files.set(k, v);
-      }
-      return result.diagnostics;
-    },
-
-    async compileAndDiagnose(_mainPath: string, _options?: any) {
-      const source = files.get("main.tsp") ?? files.values().next().value;
-      if (!source) return [{}, []];
-      const result = await compileAsyncAPI(source);
-      for (const [k, v] of Object.entries(result.outputs)) files.set(k, v);
-      return [{}, result.diagnostics];
-    },
-
-    _getMainSource(): string | undefined {
+    getMainSource(): string | undefined {
       return files.get("main.tsp") ?? files.values().next().value;
-    },
-
-    _getFiles(): Map<string, string> {
-      return files;
     },
   };
 }
@@ -245,11 +269,13 @@ export async function createAsyncAPITestHost() {
 export const createAsyncAPITestLibrary = createAsyncAPITestHost;
 
 export async function compileAndGetAsyncAPI(
-  host: { _getMainSource: () => string | undefined },
+  host: { getMainSource: () => string | undefined },
   _mainPath: string,
 ): Promise<AsyncAPIObject | null> {
-  const source = host._getMainSource();
-  if (!source) return null;
+  const source = host.getMainSource();
+  if (!source) {
+    return null;
+  }
 
   try {
     const result = await compileAsyncAPI(source);
@@ -299,6 +325,10 @@ export const TestSources = {
     op publishComplexEvent(): ComplexEvent;
   `,
 
+  emptyNamespace: `
+    namespace EmptyTest;
+  `,
+
   multipleOperations: `
     namespace MultiOps;
     
@@ -322,6 +352,19 @@ export const TestSources = {
     op subscribeUserNotifications(userId: string): UserEvent;
   `,
 
+  unionTypes: `
+    namespace UnionTypeTest;
+    
+    model EventWithStatus {
+      id: string;
+      status: "pending" | "complete" | "failed";
+      priority: "low" | "medium" | "high";
+    }
+    
+    @channel("union-test")
+    op publishEvent(): EventWithStatus;
+  `,
+
   withDocumentation: `
     @doc("Test namespace with full documentation")
     namespace DocumentedEvents;
@@ -340,46 +383,13 @@ export const TestSources = {
     @doc("Channel for well-documented events")
     op publishDocumentedEvent(): DocumentedEvent;
   `,
-
-  unionTypes: `
-    namespace UnionTypeTest;
-    
-    model EventWithStatus {
-      id: string;
-      status: "pending" | "complete" | "failed";
-      priority: "low" | "medium" | "high";
-    }
-    
-    @channel("union-test")
-    op publishEvent(): EventWithStatus;
-  `,
-
-  emptyNamespace: `
-    namespace EmptyTest;
-  `,
 };
 
 // === ASSERTIONS & VALIDATION ===
 
 export const AsyncAPIAssertions = {
-  hasValidStructure: (doc: unknown): boolean => {
-    if (typeof doc === "string" || !doc || typeof doc !== "object") return false;
-    const d = doc as Record<string, unknown>;
-    return typeof d.asyncapi === "string" && typeof d.info === "object";
-  },
-  hasChannel: (doc: AsyncAPIObject, channelName: string): boolean => {
-    return doc.channels && channelName in doc.channels;
-  },
-  hasOperation: (doc: AsyncAPIObject, operationName: string): boolean => {
-    return doc.operations && operationName in doc.operations;
-  },
-  hasSchema: (doc: AsyncAPIObject, schemaName: string): boolean => {
-    return doc.components?.schemas && schemaName in doc.components.schemas;
-  },
-  schemaHasProperty: (doc: AsyncAPIObject, schemaName: string, propertyName: string): boolean => {
-    const schema = doc.components?.schemas?.[schemaName];
-    return schema?.properties && propertyName in schema.properties;
-  },
+  hasChannel: (doc: AsyncAPIObject, channelName: string): boolean =>
+    Boolean(doc.channels && channelName in doc.channels),
   hasDocumentation: (obj: { description?: string }, expectedDoc: string): boolean => {
     if (!obj.description || !obj.description.includes(expectedDoc)) {
       throw new Error(
@@ -388,60 +398,82 @@ export const AsyncAPIAssertions = {
     }
     return true;
   },
+  hasOperation: (doc: AsyncAPIObject, operationName: string): boolean =>
+    Boolean(doc.operations && operationName in doc.operations),
+  hasSchema: (doc: AsyncAPIObject, schemaName: string): boolean =>
+    Boolean(doc.components?.schemas && schemaName in doc.components.schemas),
+
+  hasValidStructure: (doc: unknown): boolean => {
+    if (typeof doc === "string" || !doc || typeof doc !== "object") {
+      return false;
+    }
+    const d = doc as Record<string, unknown>;
+    return typeof d.asyncapi === "string" && typeof d.info === "object";
+  },
+  schemaHasProperty: (doc: AsyncAPIObject, schemaName: string, propertyName: string): boolean => {
+    const schema = doc.components?.schemas?.[schemaName];
+    return schema?.properties && propertyName in schema.properties;
+  },
 };
 
 export const TestValidationPatterns = {
-  validateExpectedSchemas: (doc: AsyncAPIObject, names: string[]) => {
-    for (const n of names) {
-      if (!doc.components?.schemas?.[n]) throw new Error(`Expected schema '${n}' not found`);
-    }
-  },
+  validateAndLogCompletion: (_doc: AsyncAPIObject, _msg: string) => {},
   validateExpectedOperations: (doc: AsyncAPIObject, names: string[]) => {
     for (const n of names) {
-      if (!doc.operations?.[n]) throw new Error(`Expected operation '${n}' not found`);
+      if (!doc.operations?.[n]) {
+        throw new Error(`Expected operation '${n}' not found`);
+      }
     }
   },
-  validateAndLogCompletion: (_doc: AsyncAPIObject, _msg: string) => {},
+  validateExpectedSchemas: (doc: AsyncAPIObject, names: string[]) => {
+    for (const n of names) {
+      if (!doc.components?.schemas?.[n]) {
+        throw new Error(`Expected schema '${n}' not found`);
+      }
+    }
+  },
 };
 
 export const TestLogging = {
-  logSchemaGenerated: (_name: string) => {},
-  logOperationGenerated: (_name: string) => {},
-  logValidationSuccess: (_msg: string) => {},
   logGenerationMetrics: (..._args: number[]) => {},
-  logMultiNamespaceSchema: (_name: string) => {},
   logMultiNamespaceOperation: (_name: string) => {},
+  logMultiNamespaceSchema: (_name: string) => {},
+  logOperationGenerated: (_name: string) => {},
+  logSchemaGenerated: (_name: string) => {},
+  logValidationSuccess: (_msg: string) => {},
 };
 
 export async function validateAsyncAPIObjectComprehensive(doc: unknown): Promise<{
   valid: boolean;
-  errors: Array<{ message: string; keyword: string; path: string }>;
+  errors: { message: string; keyword: string; path: string }[];
   summary: string;
 }> {
   if (!doc || typeof doc !== "object") {
     return {
-      valid: false,
-      errors: [{ message: "Not an object", keyword: "type", path: "" }],
+      errors: [{ keyword: "type", message: "Not an object", path: "" }],
       summary: "Invalid",
+      valid: false,
     };
   }
   const d = doc as Record<string, unknown>;
-  const errors: Array<{ message: string; keyword: string; path: string }> = [];
-  if (typeof d.asyncapi !== "string")
+  const errors: { message: string; keyword: string; path: string }[] = [];
+  if (typeof d.asyncapi !== "string") {
     errors.push({
-      message: "Missing asyncapi version",
       keyword: "required",
+      message: "Missing asyncapi version",
       path: "/asyncapi",
     });
-  if (typeof d.info !== "object")
+  }
+  if (typeof d.info !== "object") {
     errors.push({
-      message: "Missing info",
       keyword: "required",
+      message: "Missing info",
       path: "/info",
     });
+  }
   return {
-    valid: errors.length === 0,
     errors,
     summary: errors.length === 0 ? "Valid" : `${errors.length} errors`,
+    valid: errors.length === 0,
   };
 }

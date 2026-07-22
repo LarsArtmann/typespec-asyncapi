@@ -6,31 +6,31 @@
  */
 
 import type {
-  Namespace,
-  Type,
-  Program,
-  Model,
-  ModelProperty,
-  Union,
+  BooleanLiteral,
   Enum,
   EnumMember,
-  Scalar,
-  Tuple,
-  Operation,
   Interface,
-  StringLiteral,
+  Model,
+  ModelProperty,
+  Namespace,
   NumericLiteral,
-  BooleanLiteral,
+  Operation,
+  Program,
+  Scalar,
+  StringLiteral,
+  Tuple,
+  Type,
+  Union,
 } from "@typespec/compiler";
-import { createAssetEmitter, TypeEmitter } from "@typespec/asset-emitter";
+import { TypeEmitter, createAssetEmitter } from "@typespec/asset-emitter";
 import type {
-  EmitEntity,
-  EmitterOutput,
   Context,
-  SourceFile,
+  EmitEntity,
   EmittedSourceFile,
+  EmitterOutput,
+  SourceFile,
 } from "@typespec/asset-emitter";
-import { isStdNamespace, getDoc } from "@typespec/compiler";
+import { getDoc, isStdNamespace } from "@typespec/compiler";
 import type { EmitContext } from "@typespec/compiler";
 import type { AsyncAPIEmitterOptions } from "./infrastructure/configuration/asyncAPIEmitterOptions.js";
 import type { SchemaObject } from "./domain/models/asyncapi-document.js";
@@ -46,9 +46,13 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<SchemaObject, AsyncAPIEmi
     const required: string[] = [];
 
     const collectProperties = (m: Model) => {
-      if (m.baseModel) collectProperties(m.baseModel);
+      if (m.baseModel) {
+        collectProperties(m.baseModel);
+      }
       for (const [name, prop] of m.properties) {
-        if (properties[name] !== undefined) continue;
+        if (properties[name] !== undefined) {
+          continue;
+        }
         properties[name] = this.propertyToSchema(prop);
         const propDoc = getDoc(this.emitter.getProgram(), prop);
         if (propDoc && typeof properties[name] === "object" && properties[name] !== null) {
@@ -61,11 +65,15 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<SchemaObject, AsyncAPIEmi
     };
     collectProperties(model);
 
-    const schema: SchemaObject = { type: "object", properties };
-    if (required.length > 0) schema.required = required;
+    const schema: SchemaObject = { properties, type: "object" };
+    if (required.length > 0) {
+      schema.required = required;
+    }
 
     const doc = getDoc(this.emitter.getProgram(), model);
-    if (doc) schema.description = doc;
+    if (doc) {
+      schema.description = doc;
+    }
 
     return this.emitter.result.declaration(model.name, schema);
   }
@@ -76,11 +84,15 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<SchemaObject, AsyncAPIEmi
 
     for (const [name, prop] of model.properties) {
       properties[name] = this.propertyToSchema(prop);
-      if (!prop.optional) required.push(name);
+      if (!prop.optional) {
+        required.push(name);
+      }
     }
 
-    const schema: SchemaObject = { type: "object", properties };
-    if (required.length > 0) schema.required = required;
+    const schema: SchemaObject = { properties, type: "object" };
+    if (required.length > 0) {
+      schema.required = required;
+    }
     return schema;
   }
 
@@ -102,7 +114,9 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<SchemaObject, AsyncAPIEmi
       const extracted = extractValue(this.emitter.emitTypeReference(v.type));
       if (Object.keys(extracted).length === 0) {
         const t = v.type as { kind: string; name?: string; value?: string };
-        if (t.kind === "String" && t.value !== undefined) return { const: t.value };
+        if (t.kind === "String" && t.value !== undefined) {
+          return { const: t.value };
+        }
         return intrinsicToSchema(t.name ?? "string");
       }
       return extracted;
@@ -110,8 +124,8 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<SchemaObject, AsyncAPIEmi
     const allConst = variants.every((v) => "const" in v);
     if (allConst) {
       return {
-        type: "string",
         enum: variants.map((v) => (v as { const: unknown }).const),
+        type: "string",
       };
     }
     return { anyOf: variants };
@@ -119,7 +133,7 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<SchemaObject, AsyncAPIEmi
 
   enum(en: Enum): EmitterOutput<SchemaObject> {
     const values = [...en.members.values()].map((m: EnumMember) => m.value ?? m.name);
-    return { type: "string", enum: values };
+    return { enum: values, type: "string" };
   }
 
   intrinsic(intrinsic: Type, _name: string): EmitterOutput<SchemaObject> {
@@ -135,7 +149,9 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<SchemaObject, AsyncAPIEmi
   }
 
   scalarInstantiation(scalar: Scalar, name: string | undefined): EmitterOutput<SchemaObject> {
-    if (name) return this.scalarDeclaration(scalar, name);
+    if (name) {
+      return this.scalarDeclaration(scalar, name);
+    }
     return intrinsicToSchema(scalar.name);
   }
 
@@ -153,23 +169,27 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<SchemaObject, AsyncAPIEmi
 
   tuple(tuple: Tuple): EmitterOutput<SchemaObject> {
     const items = tuple.values.map((v: Type) => extractValue(this.emitter.emitTypeReference(v)));
-    return { type: "array", items: { type: "array", enum: items } };
+    return { items: { enum: items, type: "array" }, type: "array" };
   }
 
   arrayDeclaration(array: Type, name: string, elementType: Type): EmitterOutput<SchemaObject> {
-    return { type: "array", items: this.elementTypeToSchema(elementType) };
+    return { items: this.elementTypeToSchema(elementType), type: "array" };
   }
 
   arrayLiteral(array: Type, elementType: Type): EmitterOutput<SchemaObject> {
-    return { type: "array", items: this.elementTypeToSchema(elementType) };
+    return { items: this.elementTypeToSchema(elementType), type: "array" };
   }
 
   private elementTypeToSchema(elementType: Type): SchemaObject {
     const ref = this.refForNamedType(elementType);
-    if (ref) return ref;
+    if (ref) {
+      return ref;
+    }
 
     const extracted = extractValue(this.emitter.emitTypeReference(elementType));
-    if (Object.keys(extracted).length > 0) return extracted;
+    if (Object.keys(extracted).length > 0) {
+      return extracted;
+    }
 
     return this.typeToSchema(elementType);
   }
@@ -189,9 +209,11 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<SchemaObject, AsyncAPIEmi
 
   enumDeclaration(en: Enum, name: string): EmitterOutput<SchemaObject> {
     const values = [...en.members.values()].map((m: EnumMember) => m.value ?? m.name);
-    const schema: SchemaObject = { type: "string", enum: values };
+    const schema: SchemaObject = { enum: values, type: "string" };
     const doc = getDoc(this.emitter.getProgram(), en);
-    if (doc) schema.description = doc;
+    if (doc) {
+      schema.description = doc;
+    }
     return this.emitter.result.declaration(name, schema);
   }
 
@@ -200,7 +222,7 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<SchemaObject, AsyncAPIEmi
   }
 
   private refForNamedType(t: Type): SchemaObject | null {
-    const kind = (t as { kind: string }).kind;
+    const { kind } = t as { kind: string };
 
     if (kind === "Model") {
       const modelType = t as Model;
@@ -228,7 +250,9 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<SchemaObject, AsyncAPIEmi
 
   private propertyToSchema(prop: ModelProperty): SchemaObject {
     const ref = this.refForNamedType(prop.type);
-    if (ref) return ref;
+    if (ref) {
+      return ref;
+    }
 
     const propSchema = this.emitter.emitTypeReference(prop.type);
     const extracted = extractValue(propSchema);
@@ -239,61 +263,81 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<SchemaObject, AsyncAPIEmi
   }
 
   private typeToSchema(t: Type): SchemaObject {
-    const kind = (t as { kind: string }).kind;
+    const { kind } = t as { kind: string };
     if (kind === "Union") {
       const tUnion = t as Union;
       const variants = [...tUnion.variants.values()].map((v) => {
         const inner = v.type;
         const innerKind = (inner as { kind: string }).kind;
-        if (innerKind === "String" && (inner as { value?: string }).value !== undefined)
+        if (innerKind === "String" && (inner as { value?: string }).value !== undefined) {
           return (inner as { value: string }).value;
+        }
         const s = this.typeToSchema(inner);
         return Object.keys(s).length > 0 ? s : { type: "string" };
       });
       const allStrings = variants.every((v) => typeof v === "string");
-      if (allStrings) return { type: "string", enum: variants };
+      if (allStrings) {
+        return { enum: variants, type: "string" };
+      }
       return {
         anyOf: variants.map((v) => (typeof v === "string" ? { const: v } : v)),
       };
     }
     if (kind === "Model" && (t as { indexer?: { key?: unknown; value?: Type } }).indexer) {
-      const indexer = (t as { indexer: { key: Type; value: Type } }).indexer;
+      const { indexer } = t as { indexer: { key: Type; value: Type } };
       const valueRef = this.refForNamedType(indexer.value);
       return {
-        type: "object",
         additionalProperties: valueRef ?? this.typeToSchema(indexer.value),
+        type: "object",
       };
     }
-    if (kind === "Scalar" || kind === "Intrinsic")
+    if (kind === "Scalar" || kind === "Intrinsic") {
       return intrinsicToSchema((t as { name: string }).name);
-    if (kind === "String") return { const: (t as { value: string }).value };
-    if (kind === "Number") return { const: (t as { value: number }).value };
-    if (kind === "Boolean") return { const: (t as { value: boolean }).value };
-    if (kind === "Tuple")
+    }
+    if (kind === "String") {
+      return { const: (t as { value: string }).value };
+    }
+    if (kind === "Number") {
+      return { const: (t as { value: number }).value };
+    }
+    if (kind === "Boolean") {
+      return { const: (t as { value: boolean }).value };
+    }
+    if (kind === "Tuple") {
       return {
-        type: "array",
         items: {
-          type: "array",
           enum: (t as Tuple).values.map((v: Type) => this.typeToSchema(v)),
+          type: "array",
         },
+        type: "array",
       };
-    if (kind === "Model") return { type: "object", properties: {} };
+    }
+    if (kind === "Model") {
+      return { properties: {}, type: "object" };
+    }
     return { type: "string" };
   }
 }
 
 export function extractValue(entity: EmitEntity<SchemaObject> | undefined): SchemaObject {
-  if (!entity) return {};
+  if (!entity) {
+    return {};
+  }
   switch (entity.kind) {
     case "declaration":
     case "code": {
       const v = entity.value;
-      if (!v || typeof v !== "object") return {};
-      if (typeof (v as { onValue?: unknown }).onValue === "function") return {};
+      if (!v || typeof v !== "object") {
+        return {};
+      }
+      if (typeof (v as { onValue?: unknown }).onValue === "function") {
+        return {};
+      }
       return v as SchemaObject;
     }
-    default:
+    default: {
       return {};
+    }
   }
 }
 
@@ -303,8 +347,12 @@ function isStdlibType(type: Type): boolean {
     type?: { namespace?: Namespace };
   };
   const ns = typeWithNs.namespace ?? typeWithNs.type?.namespace;
-  if (!ns) return false;
-  if (isStdNamespace(ns)) return true;
+  if (!ns) {
+    return false;
+  }
+  if (isStdNamespace(ns)) {
+    return true;
+  }
   return false;
 }
 
@@ -313,11 +361,19 @@ function collectAllStdlibNames(program: Program): Set<string> {
   const globalNs = program.getGlobalNamespaceType();
   for (const ns of globalNs.namespaces.values()) {
     if (isStdNamespace(ns)) {
-      function collectFrom(ns: Namespace) {
-        for (const [name] of ns.models) names.add(name);
-        for (const [name] of ns.scalars) names.add(name);
-        for (const [name] of ns.enums) names.add(name);
-        for (const sub of ns.namespaces.values()) collectFrom(sub);
+      function collectFrom(namespace: Namespace) {
+        for (const [name] of namespace.models) {
+          names.add(name);
+        }
+        for (const [name] of namespace.scalars) {
+          names.add(name);
+        }
+        for (const [name] of namespace.enums) {
+          names.add(name);
+        }
+        for (const sub of namespace.namespaces.values()) {
+          collectFrom(sub);
+        }
       }
       collectFrom(ns);
     }
@@ -344,13 +400,15 @@ export function generateSchemas(
       const scope = sourceFile.globalScope;
       for (const declaration of scope.declarations) {
         if (declaration.name && declaration.value) {
-          if (stdlibNames.has(declaration.name)) continue;
+          if (stdlibNames.has(declaration.name)) {
+            continue;
+          }
           schemas[declaration.name] = declaration.value as SchemaObject;
         }
       }
     }
-  } catch (err) {
-    console.error("[asyncapi-emitter] Schema generation failed:", err);
+  } catch (error) {
+    console.error("[asyncapi-emitter] Schema generation failed:", error);
   }
 
   return schemas;

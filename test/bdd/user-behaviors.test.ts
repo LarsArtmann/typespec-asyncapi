@@ -1,50 +1,51 @@
+
 /**
  * BDD Tests — User-Focused AsyncAPI Emitter Behaviors
  *
  * Tests written from the END USER's perspective:
  * "As a user defining TypeSpec, when I use @decorator, I get X in my AsyncAPI output"
  */
-import { expect, test, describe } from "vitest";
+
 import { PROTOCOL_LIST, isSupportedProtocol } from "../../src/constants/protocols.js";
 import {
-  parsePathTemplate,
-  validatePathTemplate,
   normalizePathTemplate,
+  parsePathTemplate,
   pathToChannelName,
+  validatePathTemplate,
 } from "../utils/path-templates.js";
-import { consolidateAsyncAPIState, type AsyncAPIConsolidatedState } from "../../src/state.js";
+import { type AsyncAPIConsolidatedState, consolidateAsyncAPIState } from "../../src/state.js";
 
 // ============================================================================
 // Feature: Channel Definition
 // ============================================================================
-describe("BDD: User defines a channel with @channel decorator", () => {
-  test("Given a valid channel path, When parsed, Then parameters are extracted correctly", () => {
+describe("bDD: User defines a channel with @channel decorator", () => {
+  it("given a valid channel path, When parsed, Then parameters are extracted correctly", () => {
     const template = parsePathTemplate("/users/{userId}/events");
     expect(template.path).toBe("/users/{userId}/events");
     expect(template.parameters).toHaveLength(1);
     expect(template.parameters[0].name).toBe("userId");
-    expect(template.parameters[0].required).toBe(true);
+    expect(template.parameters[0].required).toBeTruthy();
   });
 
-  test("Given a channel path without parameters, When parsed, Then no parameters exist", () => {
+  it("given a channel path without parameters, When parsed, Then no parameters exist", () => {
     const template = parsePathTemplate("/user-events");
     expect(template.path).toBe("/user-events");
     expect(template.parameters).toHaveLength(0);
   });
 
-  test("Given an invalid channel path (no leading /), When validated, Then it fails", () => {
-    expect(validatePathTemplate("no-slash")).toBe(false);
+  it("given an invalid channel path (no leading /), When validated, Then it fails", () => {
+    expect(validatePathTemplate("no-slash")).toBeFalsy();
   });
 
-  test("Given a valid channel path, When validated, Then it passes", () => {
-    expect(validatePathTemplate("/users/events")).toBe(true);
+  it("given a valid channel path, When validated, Then it passes", () => {
+    expect(validatePathTemplate("/users/events")).toBeTruthy();
   });
 
-  test("Given a channel path with unbalanced braces, When validated, Then it fails", () => {
-    expect(validatePathTemplate("/users/{userId/events")).toBe(false);
+  it("given a channel path with unbalanced braces, When validated, Then it fails", () => {
+    expect(validatePathTemplate("/users/{userId/events")).toBeFalsy();
   });
 
-  test("Given a channel path, When converted to channel name, Then segments are joined", () => {
+  it("given a channel path, When converted to channel name, Then segments are joined", () => {
     expect(pathToChannelName("/users/events")).toBe("users-events");
   });
 });
@@ -52,19 +53,19 @@ describe("BDD: User defines a channel with @channel decorator", () => {
 // ============================================================================
 // Feature: Protocol Binding Configuration
 // ============================================================================
-describe("BDD: User configures protocol bindings", () => {
-  test("Given all supported protocols, When checked, Then they include kafka, http, ws, mqtt", () => {
-    expect(isSupportedProtocol("kafka")).toBe(true);
-    expect(isSupportedProtocol("http")).toBe(true);
-    expect(isSupportedProtocol("ws")).toBe(true);
-    expect(isSupportedProtocol("mqtt")).toBe(true);
+describe("bDD: User configures protocol bindings", () => {
+  it("given all supported protocols, When checked, Then they include kafka, http, ws, mqtt", () => {
+    expect(isSupportedProtocol("kafka")).toBeTruthy();
+    expect(isSupportedProtocol("http")).toBeTruthy();
+    expect(isSupportedProtocol("ws")).toBeTruthy();
+    expect(isSupportedProtocol("mqtt")).toBeTruthy();
   });
 
-  test("Given an unsupported protocol, When checked, Then it returns false", () => {
-    expect(isSupportedProtocol("unknown-protocol")).toBe(false);
+  it("given an unsupported protocol, When checked, Then it returns false", () => {
+    expect(isSupportedProtocol("unknown-protocol")).toBeFalsy();
   });
 
-  test("Given all supported protocols list, When counted, Then there are 18 canonical protocols", () => {
+  it("given all supported protocols list, When counted, Then there are 18 canonical protocols", () => {
     expect(PROTOCOL_LIST).toHaveLength(18);
   });
 });
@@ -72,30 +73,30 @@ describe("BDD: User configures protocol bindings", () => {
 // ============================================================================
 // Feature: Path Template Utilities
 // ============================================================================
-describe("BDD: User defines path templates for channels", () => {
-  test("Given a path with multiple parameters, When parsed, Then all parameters are extracted", () => {
+describe("bDD: User defines path templates for channels", () => {
+  it("given a path with multiple parameters, When parsed, Then all parameters are extracted", () => {
     const template = parsePathTemplate("/orgs/{orgId}/users/{userId}/events");
     expect(template.parameters).toHaveLength(2);
     expect(template.parameters[0].name).toBe("orgId");
     expect(template.parameters[1].name).toBe("userId");
   });
 
-  test("Given a path with typed parameter, When parsed, Then type is extracted", () => {
+  it("given a path with typed parameter, When parsed, Then type is extracted", () => {
     const template = parsePathTemplate("/users/{userId:string}");
     expect(template.parameters).toHaveLength(1);
     expect(template.parameters[0].name).toBe("userId");
     expect(template.parameters[0].type).toBe("string");
   });
 
-  test("Given a path with trailing slash, When normalized, Then slash is removed", () => {
+  it("given a path with trailing slash, When normalized, Then slash is removed", () => {
     expect(normalizePathTemplate("/users/events/")).toBe("/users/events");
   });
 
-  test("Given root path, When normalized, Then slash is preserved", () => {
+  it("given root path, When normalized, Then slash is preserved", () => {
     expect(normalizePathTemplate("/")).toBe("/");
   });
 
-  test("Given a path without leading slash, When normalized, Then slash is added", () => {
+  it("given a path without leading slash, When normalized, Then slash is added", () => {
     expect(normalizePathTemplate("users/events")).toBe("/users/events");
   });
 });
@@ -103,8 +104,8 @@ describe("BDD: User defines path templates for channels", () => {
 // ============================================================================
 // Feature: State Consolidation
 // ============================================================================
-describe("BDD: State management produces empty state for programs without decorators", () => {
-  test("Given a program with no decorators, When state is consolidated, Then all maps are empty", () => {
+describe("bDD: State management produces empty state for programs without decorators", () => {
+  it("given a program with no decorators, When state is consolidated, Then all maps are empty", () => {
     const mockProgram = {
       stateMap: () => new Map(),
     } as any;
@@ -120,14 +121,14 @@ describe("BDD: State management produces empty state for programs without decora
 // ============================================================================
 // Feature: AsyncAPI Version Compliance
 // ============================================================================
-describe("BDD: Generated AsyncAPI spec uses version 3.1.0", () => {
-  test("Given the emitter, When generating output, Then asyncapi version is 3.1.0", () => {
+describe("bDD: Generated AsyncAPI spec uses version 3.1.0", () => {
+  it("given the emitter, When generating output, Then asyncapi version is 3.1.0", () => {
     const document = {
       asyncapi: "3.1.0",
-      info: { title: "Test", version: "1.0.0" },
       channels: {},
-      messages: {},
       components: { schemas: {} },
+      info: { title: "Test", version: "1.0.0" },
+      messages: {},
     };
     expect(document.asyncapi).toBe("3.1.0");
   });

@@ -4,7 +4,7 @@
  * Only the options the emitter actually reads at runtime.
  */
 
-export type EmitterOptions = {
+export interface EmitterOptions {
   /** Target AsyncAPI specification version */
   version?: string;
 
@@ -22,6 +22,6 @@ export type EmitterOptions = {
 
   /** Output directory for generated files */
   "output-dir"?: string;
-};
+}
 
 export type AsyncAPIEmitterOptions = EmitterOptions;

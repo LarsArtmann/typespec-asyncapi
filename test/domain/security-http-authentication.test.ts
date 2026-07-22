@@ -1,11 +1,11 @@
+
 /**
  * Security Schemes Tests
  */
 
-import { describe, it, expect } from "vitest";
-import { createAsyncAPITestHost, compileAndGetAsyncAPI } from "../utils/test-helpers.js";
+import { compileAndGetAsyncAPI, createAsyncAPITestHost } from "../utils/test-helpers.js";
 
-describe("HTTP Authentication", () => {
+describe("hTTP Authentication", () => {
   it("should support HTTP Basic Auth", async () => {
     const host = await createAsyncAPITestHost();
     host.addTypeSpecFile(
@@ -37,9 +37,9 @@ describe("HTTP Authentication", () => {
     // Assert actual security scheme output
     const securitySchemes = spec?.components?.securitySchemes;
     expect(securitySchemes).toBeDefined();
-    expect(securitySchemes?.basicAuth).toEqual({
-      type: "http",
+    expect(securitySchemes?.basicAuth).toStrictEqual({
       scheme: "basic",
+      type: "http",
     });
   });
 
@@ -75,10 +75,10 @@ describe("HTTP Authentication", () => {
     // Assert actual security scheme output
     const securitySchemes = spec?.components?.securitySchemes;
     expect(securitySchemes).toBeDefined();
-    expect(securitySchemes?.jwtBearer).toEqual({
-      type: "http",
-      scheme: "bearer",
+    expect(securitySchemes?.jwtBearer).toStrictEqual({
       bearerFormat: "JWT",
+      scheme: "bearer",
+      type: "http",
     });
   });
 

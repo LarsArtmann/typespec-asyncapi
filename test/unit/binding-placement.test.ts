@@ -1,3 +1,4 @@
+
 /**
  * Binding Placement Validation Tests
  *
@@ -7,98 +8,97 @@
  * Based on @asyncapi/specs binding definitions.
  */
 
-import { describe, it, expect } from "vitest";
 import {
-  supportsBindingPlacement,
   getValidPlacements,
+  supportsBindingPlacement,
 } from "../../src/constants/binding-versions.js";
 import { processBindings } from "../../src/validation/binding-validator.js";
 
 // ============================================================================
-// supportsBindingPlacement
+// SupportsBindingPlacement
 // ============================================================================
 
-describe("supportsBindingPlacement", () => {
-  describe("Kafka", () => {
+describe(supportsBindingPlacement, () => {
+  describe("kafka", () => {
     it("supports channel bindings", () => {
-      expect(supportsBindingPlacement("kafka", "channel")).toBe(true);
+      expect(supportsBindingPlacement("kafka", "channel")).toBeTruthy();
     });
     it("supports operation bindings", () => {
-      expect(supportsBindingPlacement("kafka", "operation")).toBe(true);
+      expect(supportsBindingPlacement("kafka", "operation")).toBeTruthy();
     });
     it("supports message bindings", () => {
-      expect(supportsBindingPlacement("kafka", "message")).toBe(true);
+      expect(supportsBindingPlacement("kafka", "message")).toBeTruthy();
     });
     it("does not support server bindings", () => {
-      expect(supportsBindingPlacement("kafka", "server")).toBe(false);
+      expect(supportsBindingPlacement("kafka", "server")).toBeFalsy();
     });
   });
 
-  describe("WebSocket (ws)", () => {
+  describe("webSocket (ws)", () => {
     it("supports channel bindings", () => {
-      expect(supportsBindingPlacement("ws", "channel")).toBe(true);
+      expect(supportsBindingPlacement("ws", "channel")).toBeTruthy();
     });
     it("does not support operation bindings", () => {
-      expect(supportsBindingPlacement("ws", "operation")).toBe(false);
+      expect(supportsBindingPlacement("ws", "operation")).toBeFalsy();
     });
     it("does not support message bindings", () => {
-      expect(supportsBindingPlacement("ws", "message")).toBe(false);
+      expect(supportsBindingPlacement("ws", "message")).toBeFalsy();
     });
   });
 
-  describe("HTTP", () => {
+  describe("hTTP", () => {
     it("does not support channel bindings", () => {
-      expect(supportsBindingPlacement("http", "channel")).toBe(false);
+      expect(supportsBindingPlacement("http", "channel")).toBeFalsy();
     });
     it("supports operation bindings", () => {
-      expect(supportsBindingPlacement("http", "operation")).toBe(true);
+      expect(supportsBindingPlacement("http", "operation")).toBeTruthy();
     });
     it("supports message bindings", () => {
-      expect(supportsBindingPlacement("http", "message")).toBe(true);
+      expect(supportsBindingPlacement("http", "message")).toBeTruthy();
     });
   });
 
-  describe("MQTT", () => {
+  describe("mQTT", () => {
     it("does not support channel bindings", () => {
-      expect(supportsBindingPlacement("mqtt", "channel")).toBe(false);
+      expect(supportsBindingPlacement("mqtt", "channel")).toBeFalsy();
     });
     it("supports operation bindings", () => {
-      expect(supportsBindingPlacement("mqtt", "operation")).toBe(true);
+      expect(supportsBindingPlacement("mqtt", "operation")).toBeTruthy();
     });
     it("supports message bindings", () => {
-      expect(supportsBindingPlacement("mqtt", "message")).toBe(true);
+      expect(supportsBindingPlacement("mqtt", "message")).toBeTruthy();
     });
     it("supports server bindings", () => {
-      expect(supportsBindingPlacement("mqtt", "server")).toBe(true);
+      expect(supportsBindingPlacement("mqtt", "server")).toBeTruthy();
     });
   });
 
-  describe("AMQP", () => {
+  describe("aMQP", () => {
     it("supports channel bindings", () => {
-      expect(supportsBindingPlacement("amqp", "channel")).toBe(true);
+      expect(supportsBindingPlacement("amqp", "channel")).toBeTruthy();
     });
     it("supports operation bindings", () => {
-      expect(supportsBindingPlacement("amqp", "operation")).toBe(true);
+      expect(supportsBindingPlacement("amqp", "operation")).toBeTruthy();
     });
     it("supports message bindings", () => {
-      expect(supportsBindingPlacement("amqp", "message")).toBe(true);
+      expect(supportsBindingPlacement("amqp", "message")).toBeTruthy();
     });
     it("does not support server bindings", () => {
-      expect(supportsBindingPlacement("amqp", "server")).toBe(false);
+      expect(supportsBindingPlacement("amqp", "server")).toBeFalsy();
     });
   });
 
   it("returns false for unknown protocols", () => {
-    expect(supportsBindingPlacement("unknown", "channel")).toBe(false);
-    expect(supportsBindingPlacement("unknown", "operation")).toBe(false);
+    expect(supportsBindingPlacement("unknown", "channel")).toBeFalsy();
+    expect(supportsBindingPlacement("unknown", "operation")).toBeFalsy();
   });
 });
 
 // ============================================================================
-// getValidPlacements
+// GetValidPlacements
 // ============================================================================
 
-describe("getValidPlacements", () => {
+describe(getValidPlacements, () => {
   it("returns all valid placements for Kafka", () => {
     const placements = getValidPlacements("kafka");
     expect(placements).toContain("channel");
@@ -109,7 +109,7 @@ describe("getValidPlacements", () => {
 
   it("returns only channel for WebSocket", () => {
     const placements = getValidPlacements("ws");
-    expect(placements).toEqual(["channel"]);
+    expect(placements).toStrictEqual(["channel"]);
   });
 
   it("returns message, operation, and server for MQTT", () => {
@@ -121,12 +121,12 @@ describe("getValidPlacements", () => {
   });
 
   it("returns empty array for unknown protocols", () => {
-    expect(getValidPlacements("unknown")).toEqual([]);
+    expect(getValidPlacements("unknown")).toStrictEqual([]);
   });
 });
 
 // ============================================================================
-// processBindings with targetKind
+// ProcessBindings with targetKind
 // ============================================================================
 
 describe("processBindings placement validation", () => {
@@ -180,8 +180,8 @@ describe("processBindings placement validation", () => {
   it("emits misplaced-binding for multiple misplaced protocols", () => {
     const { issues } = processBindings(
       {
-        ws: { bindingVersion: "0.1.0" },
         kafka: { bindingVersion: "0.5.0" },
+        ws: { bindingVersion: "0.1.0" },
       },
       "operation",
     );

@@ -8,7 +8,9 @@
 
 import type { AsyncAPIProtocol } from "../../constants/protocols.js";
 
-export type Ref = { $ref: string };
+export interface Ref {
+  $ref: string;
+}
 
 /** Construct a `$ref` object pointing into the AsyncAPI document. */
 export function ref(pointer: string): Ref {
@@ -48,26 +50,26 @@ export type ProtocolBindings = Record<string, Record<string, unknown>>;
  * scope name to human-readable description.
  * @see https://www.asyncapi.com/docs/reference/specification/v3.1.0#oauthFlowObject
  */
-export type OAuth2Flow = {
+export interface OAuth2Flow {
   authorizationUrl?: string;
   tokenUrl?: string;
   refreshUrl?: string;
   availableScopes: Record<string, string>;
-};
+}
 
 /** OAuth2 flow configurations keyed by flow type. */
-export type OAuth2Flows = {
+export interface OAuth2Flows {
   implicit?: OAuth2Flow;
   password?: OAuth2Flow;
   clientCredentials?: OAuth2Flow;
   authorizationCode?: OAuth2Flow;
-};
+}
 
-export type InfoObject = {
+export interface InfoObject {
   title: string;
   version: string;
   description?: string;
-};
+}
 
 /**
  * Security Requirement Object — maps a security scheme name (defined in
@@ -76,7 +78,7 @@ export type InfoObject = {
  */
 export type SecurityRequirement = Record<string, string[]>;
 
-export type ServerObject = {
+export interface ServerObject {
   host: string;
   protocol: AsyncAPIProtocol;
   protocolVersion?: string;
@@ -88,9 +90,9 @@ export type ServerObject = {
   security?: SecurityRequirement[];
   tags?: Tag[];
   bindings?: ProtocolBindings;
-};
+}
 
-export type ChannelObject = {
+export interface ChannelObject {
   address: string | null;
   messages?: Record<string, Ref>;
   title?: string;
@@ -100,9 +102,9 @@ export type ChannelObject = {
   parameters?: Record<string, ParameterObject | Ref>;
   tags?: Tag[];
   bindings?: ProtocolBindings;
-};
+}
 
-export type OperationObject = {
+export interface OperationObject {
   action: OperationAction;
   channel: Ref;
   title?: string;
@@ -114,15 +116,15 @@ export type OperationObject = {
   traits?: Ref[];
   messages?: Ref[];
   reply?: OperationReply;
-};
+}
 
-export type OperationReply = {
+export interface OperationReply {
   address?: { location: string; description?: string } | Ref;
   channel?: Ref;
   messages?: Ref[];
-};
+}
 
-export type MessageObject = {
+export interface MessageObject {
   headers?: SchemaObject | Ref;
   payload?: SchemaObject | Ref;
   correlationId?: CorrelationIdObject | Ref;
@@ -134,10 +136,10 @@ export type MessageObject = {
   tags?: Tag[];
   bindings?: ProtocolBindings;
   traits?: Ref[];
-  examples?: Array<{ headers?: unknown; payload?: unknown }>;
-};
+  examples?: { headers?: unknown; payload?: unknown }[];
+}
 
-export type SchemaObject = {
+export interface SchemaObject {
   type?: string;
   format?: string;
   properties?: Record<string, SchemaObject>;
@@ -152,26 +154,26 @@ export type SchemaObject = {
   const?: unknown;
   $ref?: string;
   [key: string]: unknown;
-};
+}
 
-export type CorrelationIdObject = {
+export interface CorrelationIdObject {
   location: string;
   description?: string;
-};
+}
 
-export type ParameterObject = {
+export interface ParameterObject {
   location?: string;
   description?: string;
   schema?: SchemaObject;
   enum?: unknown[];
   default?: unknown;
   examples?: unknown[];
-};
+}
 
-export type Tag = {
+export interface Tag {
   name: string;
   description?: string;
-};
+}
 
 const SECURITY_SCHEME_TYPES = [
   "apiKey",
@@ -199,7 +201,7 @@ export function isValidSchemeType(value: string): value is SecuritySchemeType {
 
 export const SCHEME_TYPE_LIST: readonly SecuritySchemeType[] = SECURITY_SCHEME_TYPES;
 
-export type SecurityScheme = {
+export interface SecurityScheme {
   type: SecuritySchemeType;
   description?: string;
   name?: string;
@@ -208,9 +210,9 @@ export type SecurityScheme = {
   bearerFormat?: string;
   flows?: OAuth2Flows;
   openIdConnectUrl?: string;
-};
+}
 
-export type ComponentsObject = {
+export interface ComponentsObject {
   schemas?: Record<string, SchemaObject>;
   servers?: Record<string, ServerObject | Ref>;
   channels?: Record<string, ChannelObject | Ref>;
@@ -220,9 +222,9 @@ export type ComponentsObject = {
   parameters?: Record<string, ParameterObject | Ref>;
   correlationIds?: Record<string, CorrelationIdObject | Ref>;
   tags?: Record<string, Tag | Ref>;
-};
+}
 
-export type AsyncAPIDocument = {
+export interface AsyncAPIDocument {
   asyncapi: "3.1.0";
   info: InfoObject;
   id?: string;
@@ -231,4 +233,4 @@ export type AsyncAPIDocument = {
   channels: Record<string, ChannelObject>;
   operations?: Record<string, OperationObject>;
   components?: ComponentsObject;
-};
+}

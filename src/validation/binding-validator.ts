@@ -14,7 +14,7 @@
  * - document-builder.ts (for @protocol-generated bindings)
  */
 
-import { normalizeProtocol, isSupportedProtocol } from "../constants/protocols.js";
+import { isSupportedProtocol, normalizeProtocol } from "../constants/protocols.js";
 import {
   getLatestBindingVersion,
   getValidPlacements,
@@ -33,12 +33,12 @@ export type BindingDiagnosticCode =
   | "invalid-binding-version"
   | "misplaced-binding";
 
-export type BindingValidationIssue = {
+export interface BindingValidationIssue {
   key: string;
   severity: "error" | "warning";
   code: BindingDiagnosticCode;
   format: Record<string, unknown>;
-};
+}
 
 /**
  * Normalize a single binding key to its canonical AsyncAPI protocol name.
@@ -82,13 +82,13 @@ export function processBindings(
 
     if (!canonical) {
       issues.push({
-        key,
-        severity: "warning",
         code: "unknown-binding-protocol",
         format: {
           protocol: key,
           validProtocols: "kafka, amqp, mqtt, http, ws, wss, nats, redis, etc.",
         },
+        key,
+        severity: "warning",
       });
       bindings[key] = value as Record<string, unknown>;
       continue;
@@ -96,14 +96,14 @@ export function processBindings(
 
     if (targetKind && !supportsBindingPlacement(canonical, targetKind)) {
       issues.push({
-        key: canonical,
-        severity: "warning",
         code: "misplaced-binding",
         format: {
           protocol: canonical,
           targetKind,
           validPlacements: getValidPlacements(canonical).join(", "),
         },
+        key: canonical,
+        severity: "warning",
       });
     }
 
@@ -114,28 +114,28 @@ export function processBindings(
 
     if (hasProtocolBindings(canonical)) {
       const declaredVersion = bindingObj.bindingVersion;
-      if (declaredVersion !== undefined) {
+      if (declaredVersion === undefined) {
+        bindingObj.bindingVersion = getLatestBindingVersion(canonical);
+      } else {
         const versionStr =
           typeof declaredVersion === "string"
             ? declaredVersion
-            : typeof declaredVersion === "number"
+            : (typeof declaredVersion === "number"
               ? String(declaredVersion)
-              : "[object]";
+              : "[object]");
         if (!isValidBindingVersion(canonical, versionStr)) {
           issues.push({
-            key: canonical,
-            severity: "warning",
             code: "invalid-binding-version",
             format: {
               protocol: canonical,
-              version: versionStr,
               validVersions:
                 getValidVersionsString(canonical) ?? getLatestBindingVersion(canonical) ?? "latest",
+              version: versionStr,
             },
+            key: canonical,
+            severity: "warning",
           });
         }
-      } else {
-        bindingObj.bindingVersion = getLatestBindingVersion(canonical);
       }
     }
 

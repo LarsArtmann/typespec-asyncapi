@@ -1,3 +1,4 @@
+
 /**
  * AsyncAPI 3.1.0 Spec Compliance: Document Structure
  *
@@ -7,10 +8,9 @@
  * Spec reference: https://www.asyncapi.com/docs/reference/specification/v3.1.0
  */
 
-import { describe, it, expect } from "vitest";
 import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
 
-describe("Spec Compliance: Document Structure", () => {
+describe("spec Compliance: Document Structure", () => {
   it("emits asyncapi version 3.1.0", async () => {
     const doc = await compileAndValidateOrThrow(`
       namespace Test;
@@ -32,8 +32,8 @@ describe("Spec Compliance: Document Structure", () => {
 
     const info = doc.info as Record<string, unknown>;
     expect(info).toBeDefined();
-    expect(typeof info.title).toBe("string");
-    expect(typeof info.version).toBe("string");
+    expect(info.title).toBeTypeOf("string");
+    expect(info.version).toBeTypeOf("string");
   });
 
   it("emits channels map (required field)", async () => {
@@ -45,7 +45,7 @@ describe("Spec Compliance: Document Structure", () => {
     `);
 
     expect(doc.channels).toBeDefined();
-    expect(typeof doc.channels).toBe("object");
+    expect(doc.channels).toBeTypeOf("object");
   });
 
   it("channel has address field matching decorator path", async () => {
@@ -90,7 +90,7 @@ describe("Spec Compliance: Document Structure", () => {
     const op = operations.publishEvent;
     expect(op).toBeDefined();
     expect(op.action).toBe("send");
-    expect(op.channel).toEqual({ $ref: "#/channels/events" });
+    expect(op.channel).toStrictEqual({ $ref: "#/channels/events" });
   });
 
   it("components.messages contain payload $ref to schemas", async () => {
@@ -106,7 +106,9 @@ describe("Spec Compliance: Document Structure", () => {
     expect(msg).toBeDefined();
     expect(msg.name).toBe("OrderEvent");
     expect(msg.contentType).toBe("application/json");
-    expect(msg.payload).toEqual({ $ref: "#/components/schemas/OrderEvent" });
+    expect(msg.payload).toStrictEqual({
+      $ref: "#/components/schemas/OrderEvent",
+    });
   });
 
   it("components.schemas contain typed properties", async () => {

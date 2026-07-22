@@ -1,3 +1,4 @@
+
 /**
  * Binding Placement Integration Tests
  *
@@ -12,16 +13,15 @@
  *   amqp:   channel, operation, message
  */
 
-import { describe, it, expect } from "vitest";
 import { compileAsyncAPISpecRaw } from "../utils/test-helpers";
 
 const LIB_PREFIX = "@lars-artmann/typespec-asyncapi";
 
-function findWarnings(diagnostics: Array<{ severity: string; code: string }>, code: string) {
+function findWarnings(diagnostics: { severity: string; code: string }[], code: string) {
   return diagnostics.filter((d) => d.severity === "warning" && d.code === `${LIB_PREFIX}/${code}`);
 }
 
-describe("Binding Placement: misplaced warnings", () => {
+describe("binding Placement: misplaced warnings", () => {
   it("warns when ws binding is placed on an Operation", async () => {
     const result = await compileAsyncAPISpecRaw(`
       model Event { id: string; }
@@ -79,7 +79,7 @@ describe("Binding Placement: misplaced warnings", () => {
   });
 });
 
-describe("Binding Placement: no false positives", () => {
+describe("binding Placement: no false positives", () => {
   it("does NOT warn when kafka binding is placed on an Operation", async () => {
     const result = await compileAsyncAPISpecRaw(`
       model Event { id: string; }

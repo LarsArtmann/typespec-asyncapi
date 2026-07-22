@@ -1,4 +1,5 @@
-import { describe, it, expect } from "vitest";
+
+
 import { compileAsyncAPI } from "../utils/test-helpers.js";
 
 describe("@service decorator (core TypeSpec compatibility)", () => {
@@ -16,8 +17,8 @@ describe("@service decorator (core TypeSpec compatibility)", () => {
     `;
 
     const { asyncApiDoc, diagnostics } = await compileAsyncAPI(source, {
-      "output-file": "service-title",
       "file-type": "json",
+      "output-file": "service-title",
     });
 
     const errors = diagnostics.filter((d) => d.severity === "error");
@@ -40,8 +41,8 @@ describe("@service decorator (core TypeSpec compatibility)", () => {
     `;
 
     const { asyncApiDoc } = await compileAsyncAPI(source, {
-      "output-file": "service-output",
       "file-type": "json",
+      "output-file": "service-output",
     });
 
     expect(asyncApiDoc).not.toBeNull();
@@ -63,8 +64,8 @@ describe("@service decorator (core TypeSpec compatibility)", () => {
     `;
 
     const { asyncApiDoc } = await compileAsyncAPI(source, {
-      "output-file": "service-precedence",
       "file-type": "json",
+      "output-file": "service-precedence",
       title: "Emitter Option Title",
     });
 
@@ -84,8 +85,8 @@ describe("@service decorator (core TypeSpec compatibility)", () => {
     `;
 
     const { asyncApiDoc } = await compileAsyncAPI(source, {
-      "output-file": "service-default",
       "file-type": "json",
+      "output-file": "service-default",
     });
 
     expect(asyncApiDoc?.info?.title).toBe("Generated API");
@@ -105,8 +106,8 @@ describe("@service decorator (core TypeSpec compatibility)", () => {
     `;
 
     const { diagnostics } = await compileAsyncAPI(source, {
-      "output-file": "service-no-errors",
       "file-type": "json",
+      "output-file": "service-no-errors",
     });
 
     const errors = diagnostics.filter((d) => d.severity === "error");
@@ -127,8 +128,8 @@ describe("@service decorator (core TypeSpec compatibility)", () => {
     `;
 
     const { asyncApiDoc } = await compileAsyncAPI(source, {
-      "output-file": "service-no-args",
       "file-type": "json",
+      "output-file": "service-no-args",
     });
 
     expect(asyncApiDoc).not.toBeNull();

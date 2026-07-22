@@ -1,3 +1,4 @@
+
 /**
  * External Spec Compilation Tests (T5)
  *
@@ -18,10 +19,9 @@
  * take precedence). See test/decorators/service.test.ts for coverage.
  */
 
-import { describe, it, expect } from "vitest";
 import { compileAsyncAPI, compileAsyncAPISpecRaw } from "../utils/test-helpers.js";
 
-describe("External Spec Compilation — Branded Types & Scalar Inheritance", () => {
+describe("external Spec Compilation — Branded Types & Scalar Inheritance", () => {
   it("should handle scalar extends string (Kernovia NanoID pattern)", async () => {
     const source = `
       namespace Kernovia.Base;
@@ -45,8 +45,8 @@ describe("External Spec Compilation — Branded Types & Scalar Inheritance", () 
     `;
 
     const { asyncApiDoc } = await compileAsyncAPI(source, {
-      "output-file": "branded-types",
       "file-type": "json",
+      "output-file": "branded-types",
     });
 
     expect(asyncApiDoc).toBeDefined();
@@ -79,8 +79,8 @@ describe("External Spec Compilation — Branded Types & Scalar Inheritance", () 
     `;
 
     const { asyncApiDoc } = await compileAsyncAPI(source, {
-      "output-file": "spread-test",
       "file-type": "json",
+      "output-file": "spread-test",
     });
 
     expect(asyncApiDoc).toBeDefined();
@@ -109,15 +109,15 @@ describe("External Spec Compilation — Branded Types & Scalar Inheritance", () 
     `;
 
     const { asyncApiDoc } = await compileAsyncAPI(source, {
-      "output-file": "generic-test",
       "file-type": "json",
+      "output-file": "generic-test",
     });
 
     expect(asyncApiDoc).toBeDefined();
   });
 });
 
-describe("External Spec Compilation — Complex Inheritance & Nesting", () => {
+describe("external Spec Compilation — Complex Inheritance & Nesting", () => {
   it("should handle deep model inheritance (blog DomainEvent pattern)", async () => {
     const source = `
       namespace AiContent.Common;
@@ -154,8 +154,8 @@ describe("External Spec Compilation — Complex Inheritance & Nesting", () => {
     `;
 
     const { asyncApiDoc } = await compileAsyncAPI(source, {
-      "output-file": "inheritance-test",
       "file-type": "json",
+      "output-file": "inheritance-test",
     });
 
     expect(asyncApiDoc).toBeDefined();
@@ -197,8 +197,8 @@ describe("External Spec Compilation — Complex Inheritance & Nesting", () => {
     `;
 
     const { asyncApiDoc } = await compileAsyncAPI(source, {
-      "output-file": "nested-test",
       "file-type": "json",
+      "output-file": "nested-test",
     });
 
     expect(asyncApiDoc).toBeDefined();
@@ -228,8 +228,8 @@ describe("External Spec Compilation — Complex Inheritance & Nesting", () => {
     `;
 
     const { asyncApiDoc } = await compileAsyncAPI(source, {
-      "output-file": "record-test",
       "file-type": "json",
+      "output-file": "record-test",
     });
 
     expect(asyncApiDoc).toBeDefined();
@@ -240,7 +240,7 @@ describe("External Spec Compilation — Complex Inheritance & Nesting", () => {
   });
 });
 
-describe("External Spec Compilation — Enums & Unions", () => {
+describe("external Spec Compilation — Enums & Unions", () => {
   it("should handle enum with string values (Kernovia ActorType pattern)", async () => {
     const source = `
       namespace Kernovia.Actors;
@@ -273,8 +273,8 @@ describe("External Spec Compilation — Enums & Unions", () => {
     `;
 
     const { asyncApiDoc } = await compileAsyncAPI(source, {
-      "output-file": "enum-test",
       "file-type": "json",
+      "output-file": "enum-test",
     });
 
     expect(asyncApiDoc).toBeDefined();
@@ -314,15 +314,15 @@ describe("External Spec Compilation — Enums & Unions", () => {
     `;
 
     const { asyncApiDoc } = await compileAsyncAPI(source, {
-      "output-file": "union-test",
       "file-type": "json",
+      "output-file": "union-test",
     });
 
     expect(asyncApiDoc).toBeDefined();
   });
 });
 
-describe("External Spec Compilation — Multi-message & Multi-server", () => {
+describe("external Spec Compilation — Multi-message & Multi-server", () => {
   it("should handle multiple message types on one channel (eventsourcing pattern)", async () => {
     const source = `
       namespace MultiMessage;
@@ -369,8 +369,8 @@ describe("External Spec Compilation — Multi-message & Multi-server", () => {
     `;
 
     const { asyncApiDoc } = await compileAsyncAPI(source, {
-      "output-file": "multi-message-test",
       "file-type": "json",
+      "output-file": "multi-message-test",
     });
 
     expect(asyncApiDoc).toBeDefined();
@@ -391,21 +391,21 @@ describe("External Spec Compilation — Multi-message & Multi-server", () => {
     `;
 
     const { asyncApiDoc } = await compileAsyncAPI(source, {
-      "output-file": "multi-protocol-test",
       "file-type": "json",
+      "output-file": "multi-protocol-test",
     });
 
     expect(asyncApiDoc).toBeDefined();
     const servers = (asyncApiDoc?.servers ?? {}) as Record<string, any>;
     const serverNames = Object.keys(servers);
-    expect(serverNames.length).toBe(3);
+    expect(serverNames).toHaveLength(3);
     expect(servers["kafka-prod"]).toBeDefined();
     expect(servers["mqtt-prod"]).toBeDefined();
     expect(servers["ws-prod"]).toBeDefined();
   });
 });
 
-describe("External Spec Compilation — Edge Cases from Real Specs", () => {
+describe("external Spec Compilation — Edge Cases from Real Specs", () => {
   it("should handle empty models (minimal definition pattern)", async () => {
     const source = `
       namespace EdgeCases;
@@ -426,8 +426,8 @@ describe("External Spec Compilation — Edge Cases from Real Specs", () => {
     `;
 
     const { asyncApiDoc } = await compileAsyncAPI(source, {
-      "output-file": "edge-empty",
       "file-type": "json",
+      "output-file": "edge-empty",
     });
 
     expect(asyncApiDoc).toBeDefined();
@@ -458,8 +458,8 @@ describe("External Spec Compilation — Edge Cases from Real Specs", () => {
     `;
 
     const { asyncApiDoc } = await compileAsyncAPI(source, {
-      "output-file": "array-test",
       "file-type": "json",
+      "output-file": "array-test",
     });
 
     expect(asyncApiDoc).toBeDefined();
@@ -493,8 +493,8 @@ describe("External Spec Compilation — Edge Cases from Real Specs", () => {
     `;
 
     const { asyncApiDoc } = await compileAsyncAPI(source, {
-      "output-file": "defaults-test",
       "file-type": "json",
+      "output-file": "defaults-test",
     });
 
     expect(asyncApiDoc).toBeDefined();
@@ -521,15 +521,15 @@ describe("External Spec Compilation — Edge Cases from Real Specs", () => {
     `;
 
     const { asyncApiDoc } = await compileAsyncAPI(source, {
-      "output-file": "nullable-test",
       "file-type": "json",
+      "output-file": "nullable-test",
     });
 
     expect(asyncApiDoc).toBeDefined();
   });
 });
 
-describe("External Spec Compilation — Failure Resilience", () => {
+describe("external Spec Compilation — Failure Resilience", () => {
   it("should not crash on extremely large models", async () => {
     const fields = Array.from({ length: 50 }, (_, i) => `field${i}: string;`).join("\n  ");
     const source = `
@@ -548,8 +548,8 @@ describe("External Spec Compilation — Failure Resilience", () => {
     `;
 
     const { asyncApiDoc } = await compileAsyncAPI(source, {
-      "output-file": "stress-test",
       "file-type": "json",
+      "output-file": "stress-test",
     });
 
     expect(asyncApiDoc).toBeDefined();
@@ -575,11 +575,11 @@ describe("External Spec Compilation — Failure Resilience", () => {
     `;
 
     const { diagnostics } = await compileAsyncAPISpecRaw(source, {
-      "output-file": "raw-test",
       "file-type": "json",
+      "output-file": "raw-test",
     });
 
     expect(diagnostics).toBeDefined();
-    expect(Array.isArray(diagnostics)).toBe(true);
+    expect(Array.isArray(diagnostics)).toBeTruthy();
   });
 });

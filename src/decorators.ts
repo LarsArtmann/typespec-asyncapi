@@ -9,32 +9,32 @@
 
 // Import decorator implementations with $ prefix
 import {
+  $bindings,
   $channel,
-  $server,
-  $publish,
+  $correlationId,
+  $header,
   $message,
   $protocol,
+  $publish,
   $security,
+  $server,
   $subscribe,
   $tags,
-  $correlationId,
-  $bindings,
-  $header,
 } from "./minimal-decorators.js";
 
 // CRITICAL: TypeSpec requires $decorators object export
 export const $decorators = {
   "TypeSpec.AsyncAPI": {
+    bindings: $bindings,
     channel: $channel,
-    server: $server,
-    publish: $publish,
+    correlationId: $correlationId,
+    header: $header,
     message: $message,
     protocol: $protocol,
+    publish: $publish,
     security: $security,
+    server: $server,
     subscribe: $subscribe,
     tags: $tags,
-    correlationId: $correlationId,
-    bindings: $bindings,
-    header: $header,
   },
 };

@@ -1,3 +1,4 @@
+
 /**
  * E2E Test 4: Real-World E-Commerce Event System
  *
@@ -9,10 +10,9 @@
  * - Shipping notifications
  */
 
-import { describe, expect, it } from "vitest";
 import Ajv from "ajv";
-import { readFileSync } from "fs";
-import { join } from "path";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { createAsyncAPITestHost } from "../utils/test-helpers.js";
 
 const asyncApiSchema = JSON.parse(
@@ -27,14 +27,14 @@ const asyncApiSchema = JSON.parse(
       "schemas",
       "3.1.0-without-$id.json",
     ),
-    "utf-8",
+    "utf8",
   ),
 );
 
-const ajv = new Ajv({ allErrors: true, strict: false, allowUnionTypes: true });
+const ajv = new Ajv({ allErrors: true, allowUnionTypes: true, strict: false });
 const validate = ajv.compile(asyncApiSchema);
 
-describe("E2E: Real-World E-Commerce System", () => {
+describe("e2E: Real-World E-Commerce System", () => {
   it("should generate complete e-commerce event system", async () => {
     const host = await createAsyncAPITestHost();
 
@@ -271,82 +271,83 @@ describe("E2E: Real-World E-Commerce System", () => {
 		`,
     );
 
-    const program = await host.compile("./main.tsp");
-    const diagnostics = await host.diagnose("./main.tsp", {
+    await host.compile("./main.tsp");
+    await host.diagnose("./main.tsp", {
       emit: ["@lars-artmann/typespec-asyncapi"],
     });
 
-    const outputFiles = Array.from(host.fs.keys());
+    const outputFiles = [...host.fs.keys()];
     const asyncApiFile = outputFiles.find(
       (f) => f.includes("asyncapi") && (f.endsWith(".json") || f.endsWith(".yaml")),
     );
 
     expect(asyncApiFile).toBeDefined();
 
-    if (asyncApiFile) {
-      const content = host.fs.get(asyncApiFile) as string;
-      const spec = content.startsWith("{") ? JSON.parse(content) : require("yaml").parse(content);
-
-      // Validate e-commerce event domains
-      const schemas = spec.components?.schemas || {};
-
-      // Product catalog
-      expect(schemas.Product).toBeDefined();
-      expect(schemas.Product.properties.variants.type).toBe("array");
-
-      // Inventory
-      expect(schemas.InventoryUpdate).toBeDefined();
-      expect(schemas.InventoryUpdate.properties.reason.enum).toContain("sale");
-
-      // Orders
-      expect(schemas.OrderPlaced).toBeDefined();
-      expect(schemas.OrderPlaced.properties.items.type).toBe("array");
-      expect(schemas.OrderPlaced.properties.shippingAddress.type).toBe("object");
-
-      // Payments
-      expect(schemas.PaymentProcessed).toBeDefined();
-      expect(schemas.PaymentProcessed.properties.status.enum).toEqual([
-        "success",
-        "failed",
-        "pending",
-      ]);
-
-      // Shipping
-      expect(schemas.ShipmentCreated).toBeDefined();
-      expect(schemas.ShipmentStatusUpdate).toBeDefined();
-      expect(schemas.ShipmentStatusUpdate.properties.status.enum).toContain("delivered");
-
-      // Notifications
-      expect(schemas.CustomerNotification).toBeDefined();
-
-      // Validate operations (at least 9 operations)
-      const operations = spec.operations || {};
-      expect(Object.keys(operations).length).toBeGreaterThanOrEqual(9);
-
-      // Validate channels
-      const channels = spec.channels || {};
-      expect(Object.keys(channels).length).toBeGreaterThanOrEqual(9);
-
-      // Validate security schemes (JWT, OAuth2, API Key)
-      const securitySchemes = spec.components?.securitySchemes || {};
-      expect(Object.keys(securitySchemes).length).toBeGreaterThanOrEqual(3);
-
-      // Validate protocol diversity (Kafka, WebSocket, HTTP)
-      const channelValues = Object.values(channels);
-      const serialized = JSON.stringify(channelValues);
-      const hasKafka = serialized.includes("kafka");
-      const hasWebSocket = serialized.includes("ws");
-      const hasHTTP = serialized.includes("http");
-      expect(hasKafka).toBe(true);
-      expect(hasWebSocket).toBe(true);
-      expect(hasHTTP).toBe(true);
-
-      // Validate against AsyncAPI 3.1 JSON Schema
-      const valid = validate(spec);
-      if (!valid) {
-        console.error("Schema validation errors:", JSON.stringify(validate.errors, null, 2));
-      }
-      expect(valid).toBe(true);
+    if (!asyncApiFile) {
+      throw new Error("AsyncAPI output file was not generated.");
     }
+    const content = host.fs.get(asyncApiFile) as string;
+    const spec = content.startsWith("{") ? JSON.parse(content) : require("yaml").parse(content);
+
+    // Validate e-commerce event domains
+    const schemas = spec.components?.schemas || {};
+
+    // Product catalog
+    expect(schemas.Product).toBeDefined();
+    expect(schemas.Product.properties.variants.type).toBe("array");
+
+    // Inventory
+    expect(schemas.InventoryUpdate).toBeDefined();
+    expect(schemas.InventoryUpdate.properties.reason.enum).toContain("sale");
+
+    // Orders
+    expect(schemas.OrderPlaced).toBeDefined();
+    expect(schemas.OrderPlaced.properties.items.type).toBe("array");
+    expect(schemas.OrderPlaced.properties.shippingAddress.type).toBe("object");
+
+    // Payments
+    expect(schemas.PaymentProcessed).toBeDefined();
+    expect(schemas.PaymentProcessed.properties.status.enum).toStrictEqual([
+      "success",
+      "failed",
+      "pending",
+    ]);
+
+    // Shipping
+    expect(schemas.ShipmentCreated).toBeDefined();
+    expect(schemas.ShipmentStatusUpdate).toBeDefined();
+    expect(schemas.ShipmentStatusUpdate.properties.status.enum).toContain("delivered");
+
+    // Notifications
+    expect(schemas.CustomerNotification).toBeDefined();
+
+    // Validate operations (at least 9 operations)
+    const operations = spec.operations || {};
+    expect(Object.keys(operations).length).toBeGreaterThanOrEqual(9);
+
+    // Validate channels
+    const channels = spec.channels || {};
+    expect(Object.keys(channels).length).toBeGreaterThanOrEqual(9);
+
+    // Validate security schemes (JWT, OAuth2, API Key)
+    const securitySchemes = spec.components?.securitySchemes || {};
+    expect(Object.keys(securitySchemes).length).toBeGreaterThanOrEqual(3);
+
+    // Validate protocol diversity (Kafka, WebSocket, HTTP)
+    const channelValues = Object.values(channels);
+    const serialized = JSON.stringify(channelValues);
+    const hasKafka = serialized.includes("kafka");
+    const hasWebSocket = serialized.includes("ws");
+    const hasHTTP = serialized.includes("http");
+    expect(hasKafka).toBeTruthy();
+    expect(hasWebSocket).toBeTruthy();
+    expect(hasHTTP).toBeTruthy();
+
+    // Validate against AsyncAPI 3.1 JSON Schema
+    const valid = validate(spec);
+    if (!valid) {
+      console.error("Schema validation errors:", JSON.stringify(validate.errors, null, 2));
+    }
+    expect(valid).toBeTruthy();
   });
 });

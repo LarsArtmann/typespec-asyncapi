@@ -1,3 +1,4 @@
+
 /**
  * Basic functionality integration tests for AsyncAPI emitter
  * Tests the actual working decorators and emitter functionality
@@ -9,10 +10,10 @@
 //TODO: FILE SYSTEM CHAOS - Raw fs operations scattered everywhere without abstraction!
 //TODO: CHILD PROCESS SPAWNING ANTI-PATTERN - Using raw spawn() instead of proper test utilities!
 //TODO: IMPORT CHAOS - 6 different imports mixing testing, Effect, fs, and child_process!
-import { describe, it, expect } from "vitest";
+
 import { compileAsyncAPISpecWithoutErrors, parseAsyncAPIOutput } from "../utils/test-helpers";
 
-describe("AsyncAPI Basic Functionality", () => {
+describe("asyncAPI Basic Functionality", () => {
   async function compileAndParse(source: string) {
     const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
     return await parseAsyncAPIOutput(outputFiles);
@@ -233,11 +234,11 @@ describe("AsyncAPI Basic Functionality", () => {
     expect(doc.components?.schemas).toBeDefined();
 
     const operationNames = Object.keys(doc.operations);
-    expect(operationNames.length).toBe(3);
+    expect(operationNames).toHaveLength(3);
     expect(new Set(operationNames).size).toBe(3);
 
     const channelNames = Object.keys(doc.channels);
-    expect(channelNames.length).toBe(3);
+    expect(channelNames).toHaveLength(3);
     expect(new Set(channelNames).size).toBe(3);
   });
 });

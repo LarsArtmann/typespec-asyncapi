@@ -3,7 +3,7 @@
  * Parses lcov.info and fails if any src/*.ts file falls below the threshold.
  */
 
-import { readFileSync, existsSync } from "fs";
+import { existsSync, readFileSync } from "node:fs";
 
 const MIN_LINE_COVERAGE = 0.75;
 const lcovPath = "coverage/lcov.info";
@@ -14,29 +14,31 @@ if (!existsSync(lcovPath)) {
   process.exit(1);
 }
 
-const lcov = readFileSync(lcovPath, "utf-8");
+const lcov = readFileSync(lcovPath, "utf8");
 
 const files = new Map<string, { total: number; hit: number }>();
 let current: { file: string; total: number; hit: number } | null = null;
 
 for (const line of lcov.split("\n")) {
   if (line.startsWith("SF:")) {
-    current = { file: line.slice(3), total: 0, hit: 0 };
+    current = { file: line.slice(3), hit: 0, total: 0 };
   } else if (line.startsWith("DA:")) {
-    const hits = parseInt(line.slice(3).split(",")[1] ?? "0", 10);
+    const hits = Number.parseInt(line.slice(3).split(",")[1] ?? "0", 10);
     if (current) {
       current.total++;
-      if (hits > 0) current.hit++;
+      if (hits > 0) {
+        current.hit++;
+      }
     }
   } else if (line === "end_of_record" && current && current.total > 0) {
     const isSrcTs = /^src\/.*\.ts$/.test(current.file);
     const isDistJs = /^dist\/src\/.*\.js$/.test(current.file);
     if (isSrcTs) {
-      files.set(current.file, { total: current.total, hit: current.hit });
+      files.set(current.file, { hit: current.hit, total: current.total });
     } else if (isDistJs) {
       const tsPath = current.file.replace(/^dist\//, "").replace(/\.js$/, ".ts");
       if (!files.has(tsPath)) {
-        files.set(current.file, { total: current.total, hit: current.hit });
+        files.set(current.file, { hit: current.hit, total: current.total });
       }
     }
     current = null;
@@ -58,7 +60,9 @@ if (failures.length > 0) {
   console.error(
     `\nCoverage gate FAILED — ${failures.length} file(s) below ${MIN_LINE_COVERAGE * 100}%:\n`,
   );
-  for (const f of failures) console.error(f);
+  for (const f of failures) {
+    console.error(f);
+  }
   console.error(`\nTotal source files checked: ${files.size}`);
   process.exit(1);
 }

@@ -5,7 +5,7 @@
  * Each function corresponds to a specific decorator's state storage.
  */
 
-import type { Program, Operation, Model, ModelProperty, Namespace } from "@typespec/compiler";
+import type { Model, ModelProperty, Namespace, Operation, Program } from "@typespec/compiler";
 import { stateSymbols } from "./lib.js";
 import { getStateMap } from "./state-compatibility.js";
 import { normalizeProtocol } from "./constants/protocols.js";
@@ -15,9 +15,9 @@ import type { MessageConfigData, ProtocolConfigData } from "./state.js";
 export const storeChannelState = (program: Program, target: Operation, path: string) => {
   const map = getStateMap(program, stateSymbols.channelPaths);
   map.set(target, {
-    path,
     hasParameters: path.includes("{"),
     parameters: path.match(/\{([^}]+)\}/g)?.map((p) => p.slice(1, -1)),
+    path,
   });
 };
 
@@ -29,8 +29,8 @@ export const storeOperationType = (
 ) => {
   const map = getStateMap(program, stateSymbols.operationTypes);
   map.set(target, {
-    type,
     messageType,
+    type,
   });
 };
 
@@ -41,9 +41,9 @@ export const storeMessageConfig = (
 ) => {
   const map = getStateMap(program, stateSymbols.messageConfigs);
   map.set(target, {
-    title: config.title ?? target.name,
-    description: config.description ?? `Message ${target.name}`,
     contentType: config.contentType ?? "application/json",
+    description: config.description ?? `Message ${target.name}`,
+    title: config.title ?? target.name,
   });
 };
 
@@ -52,20 +52,20 @@ export const storeServerConfig = (
   target: Namespace,
   config: Record<string, unknown> & { name: string },
 ) => {
-  type ServerConfigEntry = {
+  interface ServerConfigEntry {
     name: string;
     url: string;
     protocol: string;
     description: string;
-  };
+  }
 
   const map = getStateMap<ServerConfigEntry[]>(program, stateSymbols.serverConfigs);
   const existing = map.get(target);
   const newEntry: ServerConfigEntry = {
-    name: config.name,
-    url: (config.url as string) ?? "http://localhost:3000",
-    protocol: normalizeProtocol((config.protocol as string) ?? "http"),
     description: (config.description as string) ?? `Server for ${target.name}`,
+    name: config.name,
+    protocol: normalizeProtocol((config.protocol as string) ?? "http"),
+    url: (config.url as string) ?? "http://localhost:3000",
   };
   if (Array.isArray(existing)) {
     map.set(target, [...existing, newEntry]);
@@ -79,7 +79,10 @@ export const storeSecurityConfig = (
   target: Operation | Namespace,
   config: { name: string; scheme: SecurityScheme },
 ) => {
-  type SecurityConfigEntry = { name: string; scheme: SecurityScheme };
+  interface SecurityConfigEntry {
+    name: string;
+    scheme: SecurityScheme;
+  }
   const map = getStateMap<SecurityConfigEntry[]>(program, stateSymbols.securityConfigs);
   const existing = map.get(target);
   const newEntry: SecurityConfigEntry = {
@@ -139,14 +142,14 @@ export const storeHeader = (
 
   const existing =
     (map.get(target) as
-      | Array<{
+      | {
           name: string;
           value?: unknown;
           type?: string;
           description?: string;
-        }>
+        }[]
       | undefined) ?? [];
-  map.set(target, [...existing, { name, value, type: headerType, description }]);
+  map.set(target, [...existing, { description, name, type: headerType, value }]);
 };
 
 export const storeProtocolConfig = (
@@ -159,63 +162,67 @@ export const storeProtocolConfig = (
   const protocolType = normalizeProtocol(rawProtocol);
 
   const base = {
-    version: config.version as string | undefined,
     binding: config.binding as Record<string, unknown> | undefined,
+    version: config.version as string | undefined,
   };
 
   let protocolConfig: ProtocolConfigData;
 
   switch (protocolType) {
-    case "kafka":
+    case "kafka": {
       protocolConfig = {
         ...base,
-        protocol: "kafka",
-        partitions: (config.partitions as number) ?? 1,
-        replicationFactor: (config.replicationFactor as number) ?? 1,
         consumerGroup: (config.consumerGroup as string) ?? "default",
+        partitions: (config.partitions as number) ?? 1,
+        protocol: "kafka",
+        replicationFactor: (config.replicationFactor as number) ?? 1,
         sasl: (config.sasl as {
           mechanism: string;
           username: string;
           password: string;
         }) ?? {
           mechanism: "plain",
-          username: "",
           password: "",
+          username: "",
         },
       };
       break;
+    }
     case "ws":
-    case "wss":
+    case "wss": {
       protocolConfig = {
         ...base,
-        protocol: protocolType,
-        subprotocol: (config.subprotocol as string) ?? "asyncapi",
-        queryParams: (config.queryParams as Record<string, string>) ?? {},
         headers: (config.headers as Record<string, string>) ?? {},
+        protocol: protocolType,
+        queryParams: (config.queryParams as Record<string, string>) ?? {},
+        subprotocol: (config.subprotocol as string) ?? "asyncapi",
       };
       break;
+    }
     case "mqtt":
-    case "mqtt5":
+    case "mqtt5": {
       protocolConfig = {
         ...base,
-        protocol: protocolType,
-        qos: (config.qos as 0 | 1 | 2) ?? 1,
-        retain: (config.retain as boolean) ?? false,
         lastWill: (config.lastWill as {
           topic: string;
           message: string;
           qos: 0 | 1 | 2;
           retain: boolean;
         }) ?? {
-          topic: "",
           message: "",
           qos: 1,
           retain: false,
+          topic: "",
         },
+        protocol: protocolType,
+        qos: (config.qos as 0 | 1 | 2) ?? 1,
+        retain: (config.retain as boolean) ?? false,
       };
       break;
-    default:
+    }
+    default: {
       protocolConfig = { ...base, protocol: protocolType };
+    }
   }
 
   map.set(target, protocolConfig);

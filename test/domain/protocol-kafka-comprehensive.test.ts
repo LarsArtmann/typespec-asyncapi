@@ -1,3 +1,4 @@
+
 /**
  * Kafka Protocol Tests
  *
@@ -5,7 +6,6 @@
  * via the @protocol decorator.
  */
 
-import { describe, it, expect } from "vitest";
 import { compileAsyncAPISpecWithoutErrors } from "../utils/test-helpers";
 import { parse as parseYAML } from "yaml";
 
@@ -19,7 +19,7 @@ async function compileAndGetDoc(source: string) {
   throw new Error("No AsyncAPI output found");
 }
 
-describe("Kafka Protocol", () => {
+describe("kafka Protocol", () => {
   it("should emit Kafka channel bindings for operations with @protocol", async () => {
     const doc = await compileAndGetDoc(`
       @channel("kafka-events")

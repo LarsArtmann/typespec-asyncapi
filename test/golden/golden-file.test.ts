@@ -1,3 +1,4 @@
+
 /**
  * Golden File Test
  *
@@ -6,9 +7,8 @@
  * Any change to the emitter that alters output will be caught immediately.
  */
 
-import { describe, it, expect } from "vitest";
-import { readFileSync } from "fs";
-import { join } from "path";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import YAML from "yaml";
 import { compileAsyncAPISpecRaw } from "../utils/test-helpers";
 
@@ -47,13 +47,13 @@ op publishOrderCreated(): OrderCreated;
 op subscribeOrderShipped(): OrderShipped;
 `;
 
-describe("Golden File Test", () => {
+describe("golden File Test", () => {
   it("should produce spec-compliant AsyncAPI 3.1 output matching golden file", async () => {
     const raw = await compileAsyncAPISpecRaw(SOURCE);
 
     // No compilation errors
     const errors = raw.diagnostics.filter((d) => d.severity === "error");
-    expect(errors.length).toBe(0);
+    expect(errors).toHaveLength(0);
 
     // Find the asyncapi output
     let output = "";
@@ -72,17 +72,17 @@ describe("Golden File Test", () => {
     const actual = YAML.parse(output);
 
     // Load golden file
-    const goldenContent = readFileSync(GOLDEN_FILE, "utf-8");
+    const goldenContent = readFileSync(GOLDEN_FILE, "utf8");
     const golden = YAML.parse(goldenContent);
 
     // Structural comparison
     expect(actual.asyncapi).toBe(golden.asyncapi);
-    expect(actual.info).toEqual(golden.info);
-    expect(actual.servers).toEqual(golden.servers);
-    expect(actual.channels).toEqual(golden.channels);
-    expect(actual.operations).toEqual(golden.operations);
-    expect(actual.components.messages).toEqual(golden.components.messages);
-    expect(actual.components.schemas).toEqual(golden.components.schemas);
+    expect(actual.info).toStrictEqual(golden.info);
+    expect(actual.servers).toStrictEqual(golden.servers);
+    expect(actual.channels).toStrictEqual(golden.channels);
+    expect(actual.operations).toStrictEqual(golden.operations);
+    expect(actual.components.messages).toStrictEqual(golden.components.messages);
+    expect(actual.components.schemas).toStrictEqual(golden.components.schemas);
   });
 
   it("should use spec-compliant $ref chain (operation → channel → components)", async () => {

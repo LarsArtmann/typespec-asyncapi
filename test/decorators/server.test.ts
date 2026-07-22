@@ -1,8 +1,8 @@
+
 /**
  * Unit tests for @server decorator in TypeSpec AsyncAPI emitter
  */
 
-import { describe, it, expect } from "vitest";
 import { compileAsyncAPISpecRaw } from "../utils/test-helpers";
 
 //TODO: this file is getting to big split it up
@@ -25,8 +25,8 @@ describe("@server decorator", () => {
       `;
 
       const { diagnostics } = await compileAsyncAPISpecRaw(source, {
-        "output-file": "server-valid",
         "file-type": "json",
+        "output-file": "server-valid",
       });
 
       const errors = diagnostics.filter((d) => d.severity === "error");
@@ -58,8 +58,8 @@ describe("@server decorator", () => {
       `;
 
       const { diagnostics, outputFiles } = await compileAsyncAPISpecRaw(source, {
-        "output-file": "multi-server",
         "file-type": "json",
+        "output-file": "multi-server",
       });
 
       const errors = diagnostics.filter((d) => d.severity === "error");
@@ -84,8 +84,8 @@ describe("@server decorator", () => {
       `;
 
       const { diagnostics } = await compileAsyncAPISpecRaw(source, {
-        "output-file": "missing-url",
         "file-type": "json",
+        "output-file": "missing-url",
       });
 
       // Should have error for missing URL
@@ -108,8 +108,8 @@ describe("@server decorator", () => {
       `;
 
       const { diagnostics } = await compileAsyncAPISpecRaw(source, {
-        "output-file": "missing-protocol",
         "file-type": "json",
+        "output-file": "missing-protocol",
       });
 
       // Should have error for missing protocol
@@ -148,8 +148,8 @@ describe("@server decorator", () => {
         `;
 
         const { diagnostics } = await compileAsyncAPISpecRaw(source, {
-          "output-file": `protocol-${protocol.name}`,
           "file-type": "json",
+          "output-file": `protocol-${protocol.name}`,
         });
 
         const errors = diagnostics.filter((d) => d.severity === "error");
@@ -173,8 +173,8 @@ describe("@server decorator", () => {
       `;
 
       const { diagnostics } = await compileAsyncAPISpecRaw(source, {
-        "output-file": "unsupported-protocol",
         "file-type": "json",
+        "output-file": "unsupported-protocol",
       });
 
       // Should have error for unsupported protocol
@@ -201,8 +201,8 @@ describe("@server decorator", () => {
       `;
 
       const { diagnostics } = await compileAsyncAPISpecRaw(source, {
-        "output-file": "invalid-target",
         "file-type": "json",
+        "output-file": "invalid-target",
       });
 
       // Should have error for applying @server to operation instead of namespace
@@ -233,8 +233,8 @@ describe("@server decorator", () => {
       `;
 
       const { diagnostics, outputFiles } = await compileAsyncAPISpecRaw(source, {
-        "output-file": "minimal-server",
         "file-type": "json",
+        "output-file": "minimal-server",
       });
 
       const errors = diagnostics.filter((d) => d.severity === "error");
@@ -269,8 +269,8 @@ describe("@server decorator", () => {
       `;
 
       const { diagnostics, outputFiles } = await compileAsyncAPISpecRaw(source, {
-        "output-file": "documented-server",
         "file-type": "json",
+        "output-file": "documented-server",
       });
 
       const errors = diagnostics.filter((d) => d.severity === "error");
@@ -314,8 +314,8 @@ describe("@server decorator", () => {
       `;
 
       const { diagnostics, outputFiles } = await compileAsyncAPISpecRaw(source, {
-        "output-file": "integration-test",
         "file-type": "json",
+        "output-file": "integration-test",
       });
 
       const errors = diagnostics.filter((d) => d.severity === "error");
@@ -341,7 +341,7 @@ describe("@server decorator", () => {
     });
   });
 
-  describe("URL validation", () => {
+  describe("uRL validation", () => {
     it("should accept well-formed URLs with scheme and host", async () => {
       const source = `
         @server("valid", #{
@@ -357,8 +357,8 @@ describe("@server decorator", () => {
       `;
 
       const { diagnostics } = await compileAsyncAPISpecRaw(source, {
-        "output-file": "valid-url",
         "file-type": "json",
+        "output-file": "valid-url",
       });
 
       const urlErrors = diagnostics.filter(
@@ -382,8 +382,8 @@ describe("@server decorator", () => {
       `;
 
       const { diagnostics } = await compileAsyncAPISpecRaw(source, {
-        "output-file": "no-scheme-url",
         "file-type": "json",
+        "output-file": "no-scheme-url",
       });
 
       const urlErrors = diagnostics.filter(
@@ -407,8 +407,8 @@ describe("@server decorator", () => {
       `;
 
       const { diagnostics } = await compileAsyncAPISpecRaw(source, {
-        "output-file": "malformed-url",
         "file-type": "json",
+        "output-file": "malformed-url",
       });
 
       const urlErrors = diagnostics.filter(
@@ -432,8 +432,8 @@ describe("@server decorator", () => {
       `;
 
       const { diagnostics } = await compileAsyncAPISpecRaw(source, {
-        "output-file": "templated-url",
         "file-type": "json",
+        "output-file": "templated-url",
       });
 
       const urlErrors = diagnostics.filter(

@@ -1,3 +1,4 @@
+
 /**
  * All Example Files → AsyncAPI 3.1 Validation
  *
@@ -12,10 +13,9 @@
  * - $ref chain integrity (operations → channels → components)
  */
 
-import { describe, it, expect } from "vitest";
 import Ajv from "ajv";
-import { readFileSync, readdirSync, statSync } from "fs";
-import { join, dirname } from "path";
+import { readFileSync, readdirSync, statSync } from "node:fs";
+import { dirname, join } from "node:path";
 import { compileAsyncAPI } from "../utils/test-helpers.js";
 
 const asyncApiSchema = JSON.parse(
@@ -30,11 +30,11 @@ const asyncApiSchema = JSON.parse(
       "schemas",
       "3.1.0-without-$id.json",
     ),
-    "utf-8",
+    "utf8",
   ),
 );
 
-const ajv = new Ajv({ allErrors: true, strict: false, allowUnionTypes: true });
+const ajv = new Ajv({ allErrors: true, allowUnionTypes: true, strict: false });
 const validate = ajv.compile(asyncApiSchema);
 
 const examplesRoot = join(import.meta.dirname, "..", "..", "examples");
@@ -49,7 +49,7 @@ function findTspFiles(
     if (stat.isDirectory()) {
       findTspFiles(fullPath, acc);
     } else if (entry.endsWith(".tsp")) {
-      const relative = fullPath.replace(examplesRoot + "/", "").replace(/\.tsp$/, "");
+      const relative = fullPath.replace(`${examplesRoot}/`, "").replace(/\.tsp$/, "");
       acc.push({ name: relative, path: fullPath });
     }
   }
@@ -58,7 +58,7 @@ function findTspFiles(
 
 const exampleFiles = findTspFiles(examplesRoot);
 
-describe("All Example Files → AsyncAPI 3.1 Validation", () => {
+describe("all Example Files → AsyncAPI 3.1 Validation", () => {
   if (exampleFiles.length === 0) {
     it("should find at least one example file", () => {
       expect(exampleFiles.length).toBeGreaterThan(0);
@@ -67,18 +67,18 @@ describe("All Example Files → AsyncAPI 3.1 Validation", () => {
   }
 
   for (const file of exampleFiles) {
-    const source = readFileSync(file.path, "utf-8");
+    const source = readFileSync(file.path, "utf8");
 
     describe(`example: ${file.name}`, () => {
       it("should compile without error diagnostics", async () => {
         const result = await compileAsyncAPI(source);
         const errors = result.diagnostics.filter((d) => d.severity === "error");
-        expect(errors).toEqual([]);
+        expect(errors).toStrictEqual([]);
       });
 
       it("should produce an asyncapi: 3.1.0 document", async () => {
         const result = await compileAsyncAPI(source);
-        expect(result.asyncApiDoc).toBeTruthy();
+        expect(result.asyncApiDoc).toBe(true);
         expect((result.asyncApiDoc as Record<string, unknown>)?.asyncapi).toBe("3.1.0");
       });
 
@@ -87,9 +87,9 @@ describe("All Example Files → AsyncAPI 3.1 Validation", () => {
         const doc = result.asyncApiDoc;
 
         const errors = result.diagnostics.filter((d) => d.severity === "error");
-        expect(errors).toEqual([]);
+        expect(errors).toStrictEqual([]);
 
-        expect(doc).toBeTruthy();
+        expect(doc).toBe(true);
         const valid = validate(doc);
         if (!valid) {
           console.error(
@@ -97,7 +97,7 @@ describe("All Example Files → AsyncAPI 3.1 Validation", () => {
             JSON.stringify(validate.errors, null, 2),
           );
         }
-        expect(valid).toBe(true);
+        expect(valid).toBeTruthy();
       });
 
       it("should generate valid $ref chains for operations and channels", async () => {

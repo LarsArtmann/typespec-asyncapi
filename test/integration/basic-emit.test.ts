@@ -1,7 +1,8 @@
-import { describe, expect, it } from "vitest";
+
+
 import { compileAsyncAPIWithoutErrors } from "../utils/test-helpers.js";
 
-describe("AsyncAPI Emitter Integration", () => {
+describe("asyncAPI Emitter Integration", () => {
   it("should compile basic-events example and generate AsyncAPI", async () => {
     const source = `
       namespace UserEvents;
@@ -34,8 +35,8 @@ describe("AsyncAPI Emitter Integration", () => {
     `;
 
     const result = await compileAsyncAPIWithoutErrors(source, {
-      "output-file": "test-basic",
       "file-type": "yaml",
+      "output-file": "test-basic",
     });
 
     const content = result.outputs[result.outputFile];
@@ -70,8 +71,8 @@ describe("AsyncAPI Emitter Integration", () => {
     `;
 
     const result = await compileAsyncAPIWithoutErrors(source, {
-      "output-file": "complex-test",
       "file-type": "yaml",
+      "output-file": "complex-test",
     });
 
     const asyncapiDoc = result.asyncApiDoc;
@@ -93,7 +94,7 @@ describe("AsyncAPI Emitter Integration", () => {
     expect(complexEventSchema.required).toContain("id");
     expect(complexEventSchema.required).toContain("timestamp");
     expect(complexEventSchema.required).toContain("status");
-    expect(complexEventSchema.required).not.toContain("description"); // optional field
+    expect(complexEventSchema.required).not.toContain("description"); // Optional field
   });
 
   it("should handle multiple operations and channels", async () => {
@@ -123,8 +124,8 @@ describe("AsyncAPI Emitter Integration", () => {
     `;
 
     const result = await compileAsyncAPIWithoutErrors(source, {
-      "output-file": "multi-ops",
       "file-type": "yaml",
+      "output-file": "multi-ops",
     });
 
     const asyncapiDoc = result.asyncApiDoc;
@@ -167,8 +168,8 @@ describe("AsyncAPI Emitter Integration", () => {
     `;
 
     const result = await compileAsyncAPIWithoutErrors(source, {
-      "output-file": "doc-test",
       "file-type": "yaml",
+      "output-file": "doc-test",
     });
 
     const asyncapiDoc = result.asyncApiDoc;

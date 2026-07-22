@@ -1,11 +1,11 @@
+
 /**
  * Integration tests for TypeSpec decorator validation in AsyncAPI emitter
  */
 
-import { describe, it, expect } from "vitest";
 import { compileAsyncAPISpec } from "../utils/test-helpers.js";
 
-describe("AsyncAPI Decorator Validation", () => {
+describe("asyncAPI Decorator Validation", () => {
   describe("@channel decorator", () => {
     it("should accept valid channel paths", async () => {
       const source = `
@@ -27,8 +27,8 @@ describe("AsyncAPI Decorator Validation", () => {
       `;
 
       const { diagnostics } = await compileAsyncAPISpec(source, {
-        "output-file": "channel-valid",
         "file-type": "json",
+        "output-file": "channel-valid",
       });
 
       const errors = diagnostics.filter((d) => d.severity === "error");
@@ -52,8 +52,8 @@ describe("AsyncAPI Decorator Validation", () => {
       `;
 
       const { diagnostics } = await compileAsyncAPISpec(source, {
-        "output-file": "channel-validation",
         "file-type": "json",
+        "output-file": "channel-validation",
       });
 
       // Should have diagnostics for invalid channels but not for valid ones
@@ -80,8 +80,8 @@ describe("AsyncAPI Decorator Validation", () => {
       `;
 
       const { diagnostics } = await compileAsyncAPISpec(source, {
-        "output-file": "missing-channel",
         "file-type": "json",
+        "output-file": "missing-channel",
       });
 
       // Check for missing channel diagnostic
@@ -94,7 +94,7 @@ describe("AsyncAPI Decorator Validation", () => {
     });
   });
 
-  describe("Operation type validation", () => {
+  describe("operation type validation", () => {
     it("should handle @publish and @subscribe decorators", async () => {
       const source = `
         namespace OperationTypeTest;
@@ -115,8 +115,8 @@ describe("AsyncAPI Decorator Validation", () => {
       `;
 
       const { diagnostics, outputFiles } = await compileAsyncAPISpec(source, {
-        "output-file": "operation-types",
         "file-type": "json",
+        "output-file": "operation-types",
       });
 
       const errors = diagnostics.filter((d) => d.severity === "error");
@@ -143,8 +143,8 @@ describe("AsyncAPI Decorator Validation", () => {
       `;
 
       const { diagnostics } = await compileAsyncAPISpec(source, {
-        "output-file": "conflict-test",
         "file-type": "json",
+        "output-file": "conflict-test",
       });
 
       // Should detect the conflict
@@ -157,7 +157,7 @@ describe("AsyncAPI Decorator Validation", () => {
     });
   });
 
-  describe("Model validation", () => {
+  describe("model validation", () => {
     it("should handle models with all supported field types", async () => {
       const source = `
         namespace ModelValidationTest;
@@ -193,8 +193,8 @@ describe("AsyncAPI Decorator Validation", () => {
       `;
 
       const { diagnostics, outputFiles } = await compileAsyncAPISpec(source, {
-        "output-file": "model-validation",
         "file-type": "json",
+        "output-file": "model-validation",
       });
 
       const errors = diagnostics.filter((d) => d.severity === "error");
@@ -228,8 +228,8 @@ describe("AsyncAPI Decorator Validation", () => {
       `;
 
       const { diagnostics, outputFiles } = await compileAsyncAPISpec(source, {
-        "output-file": "recursive-test",
         "file-type": "json",
+        "output-file": "recursive-test",
       });
 
       // Recursive models should not cause infinite loops
@@ -244,7 +244,7 @@ describe("AsyncAPI Decorator Validation", () => {
     });
   });
 
-  describe("Documentation validation", () => {
+  describe("documentation validation", () => {
     it("should preserve @doc decorations", async () => {
       const source = `
         @doc("Documentation test namespace")
@@ -271,8 +271,8 @@ describe("AsyncAPI Decorator Validation", () => {
       `;
 
       const { diagnostics, outputFiles } = await compileAsyncAPISpec(source, {
-        "output-file": "doc-validation",
         "file-type": "json",
+        "output-file": "doc-validation",
       });
 
       const errors = diagnostics.filter((d) => d.severity === "error");
@@ -293,7 +293,7 @@ describe("AsyncAPI Decorator Validation", () => {
         }
 
         // Validate channel documentation
-        const channels = asyncapiDoc.channels;
+        const { channels } = asyncapiDoc;
         if (channels) {
           const channelKeys = Object.keys(channels);
           expect(channelKeys.length).toBeGreaterThan(0);
@@ -305,7 +305,7 @@ describe("AsyncAPI Decorator Validation", () => {
     });
   });
 
-  describe("Parameter validation", () => {
+  describe("parameter validation", () => {
     it("should handle operations with parameters", async () => {
       const source = `
         namespace ParameterTest;
@@ -332,8 +332,8 @@ describe("AsyncAPI Decorator Validation", () => {
       `;
 
       const { diagnostics, outputFiles } = await compileAsyncAPISpec(source, {
-        "output-file": "parameter-test",
         "file-type": "json",
+        "output-file": "parameter-test",
       });
 
       const errors = diagnostics.filter((d) => d.severity === "error");
