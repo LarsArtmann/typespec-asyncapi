@@ -29,12 +29,14 @@ import {
 } from "../constants/binding-versions.js";
 import type { BindingTargetKind } from "../constants/binding-versions.js";
 import type { ProtocolBindings } from "../domain/models/asyncapi-document.js";
+import { validateBindingFields } from "./binding-field-validator.js";
 
 /** Diagnostic codes that can be produced by binding validation. */
 export type BindingDiagnosticCode =
   | "unknown-binding-protocol"
   | "invalid-binding-version"
-  | "misplaced-binding";
+  | "misplaced-binding"
+  | "invalid-binding-field";
 
 export interface BindingValidationIssue {
   key: string;
@@ -141,6 +143,20 @@ export function processBindings(
             severity: "warning",
           });
         }
+      }
+
+      const fieldIssues = validateBindingFields(
+        canonical,
+        targetKind,
+        bindingObj,
+      );
+      for (const fi of fieldIssues) {
+        issues.push({
+          code: "invalid-binding-field",
+          format: fi.format,
+          key: fi.key,
+          severity: "warning",
+        });
       }
     }
 

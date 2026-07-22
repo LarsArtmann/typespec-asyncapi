@@ -155,7 +155,7 @@ export function validateBindingFields(
         continue;
       }
       issues.push({
-        code: "invalid-binding-version" as BindingDiagnosticCode,
+        code: "invalid-binding-version",
         key: field,
         format: {
           field,
@@ -169,7 +169,7 @@ export function validateBindingFields(
 
     if (rule.enum && !rule.enum.includes(value)) {
       issues.push({
-        code: "invalid-binding-version" as BindingDiagnosticCode,
+        code: "invalid-binding-version",
         key: field,
         format: {
           field,
@@ -183,7 +183,7 @@ export function validateBindingFields(
     if (typeof value === "number") {
       if (rule.min !== undefined && value < rule.min) {
         issues.push({
-          code: "invalid-binding-version" as BindingDiagnosticCode,
+          code: "invalid-binding-version",
           key: field,
           format: {
             field,
@@ -195,7 +195,7 @@ export function validateBindingFields(
       }
       if (rule.max !== undefined && value > rule.max) {
         issues.push({
-          code: "invalid-binding-version" as BindingDiagnosticCode,
+          code: "invalid-binding-version",
           key: field,
           format: {
             field,
