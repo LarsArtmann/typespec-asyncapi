@@ -367,9 +367,7 @@ RuntimeException: Not a valid effect: /user/events
 ```typescript
 // Before ❌
 const result = await Effect.runPromise(createChannelPath("/user/events"));
-const result = await Effect.runPromise(
-  Effect.flip(createChannelPath("user/events")),
-);
+const result = await Effect.runPromise(Effect.flip(createChannelPath("user/events")));
 
 // After ✅
 const result = createChannelPath("/user/events");

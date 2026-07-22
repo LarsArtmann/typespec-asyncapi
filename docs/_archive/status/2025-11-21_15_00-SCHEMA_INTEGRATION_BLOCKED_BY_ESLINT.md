@@ -46,8 +46,7 @@ export const createChannelPath = (
   Effect.gen(function* () {
     return yield* Effect.try({
       try: () => Schema.decodeSync(channelPathSchema)(path),
-      catch: (error) =>
-        new Error(`Channel path validation failed: ${String(error)}`),
+      catch: (error) => new Error(`Channel path validation failed: ${String(error)}`),
     });
   });
 ```

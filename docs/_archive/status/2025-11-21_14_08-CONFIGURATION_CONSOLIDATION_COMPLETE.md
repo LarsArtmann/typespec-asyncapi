@@ -150,9 +150,7 @@ export const createEmitFileOptions = (
   content: string,
 ): EmitFileOptions => {
   const filename = `${config.outputFile ?? "asyncapi"}.${config.fileType ?? "yaml"}`;
-  const fullPath = config.outputDir
-    ? `${config.outputDir}/${filename}`
-    : filename;
+  const fullPath = config.outputDir ? `${config.outputDir}/${filename}` : filename;
 
   return {
     path: fullPath,
@@ -173,12 +171,8 @@ export const createEmitFileOptions = (
 
 ```typescript
 // ✅ BACKWARD COMPATIBILITY: Zero breaking changes
-export type EmitterOptions = {
-  /* Legacy interface preserved */
-};
-export const DEFAULT_OPTIONS: Partial<EmitterOptions> = {
-  /* Legacy defaults */
-};
+export type EmitterOptions = {/* Legacy interface preserved */};
+export const DEFAULT_OPTIONS: Partial<EmitterOptions> = {/* Legacy defaults */};
 export function mergeWithDefaults(options?: Partial<EmitterOptions>) {
   /* Legacy merge */
 }
@@ -251,10 +245,7 @@ Error: { "_id": "Effect", "_op": "WithRuntime" }
 const emitProgram = Effect.gen(function* () {
   yield* Effect.tryPromise({
     try: () => emitFile(context.program, emitOptions),
-    catch: (error) =>
-      Effect.fail(
-        new Error(`Failed to generate ${outputPath}: ${String(error)}`),
-      ),
+    catch: (error) => Effect.fail(new Error(`Failed to generate ${outputPath}: ${String(error)}`)),
   });
 });
 

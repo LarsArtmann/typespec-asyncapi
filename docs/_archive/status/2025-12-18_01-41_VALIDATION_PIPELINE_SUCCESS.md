@@ -91,8 +91,7 @@ import type { EmitContext, EmitFileOptions, Type } from "@typespec/compiler";
 
 ```typescript
 // FIXED: Added actual file emission
-const emitResult =
-  yield * Effect.tryPromise(() => emitFile(context.program, _emitOptions));
+const emitResult = yield * Effect.tryPromise(() => emitFile(context.program, _emitOptions));
 ```
 
 **Impact:** Emitter now writes generated AsyncAPI files to filesystem

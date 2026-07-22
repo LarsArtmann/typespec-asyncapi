@@ -97,9 +97,7 @@ extern dec bindings(target: Operation | Model, value: {} | valueof Record<unknow
 The `@typespec/asset-emitter` API returns `EmitEntity<T>` objects that must be narrowed before extracting values. The `extractValue()` function in `schema-emitter.ts` handles this:
 
 ```typescript
-export function extractValue(
-  entity: EmitEntity<SchemaObject> | undefined,
-): SchemaObject {
+export function extractValue(entity: EmitEntity<SchemaObject> | undefined): SchemaObject {
   if (!entity) return {};
   switch (entity.kind) {
     case "declaration":

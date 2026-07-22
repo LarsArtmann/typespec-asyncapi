@@ -50,9 +50,7 @@
 ```typescript
 if (!messageConfig) {
   yield *
-    Effect.log(
-      `⏭️  Skipping message creation for ${messageModel.name} (no @message decorator)`,
-    );
+    Effect.log(`⏭️  Skipping message creation for ${messageModel.name} (no @message decorator)`);
   return "";
 }
 ```

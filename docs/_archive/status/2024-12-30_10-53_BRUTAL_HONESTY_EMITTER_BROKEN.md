@@ -279,10 +279,7 @@ const channelData = data as { path?: string };
 ```typescript
 // Emitter directly accessing state:
 const rawState = consolidateAsyncAPIState(context.program);
-const channelPaths = getStateMap<ChannelPathData>(
-  program,
-  stateSymbols.channelPaths,
-);
+const channelPaths = getStateMap<ChannelPathData>(program, stateSymbols.channelPaths);
 ```
 
 **Impact:**
@@ -333,13 +330,8 @@ type OperationTypeData = {
 
 ```typescript
 // Should use generics but doesn't:
-export function consolidateAsyncAPIState(
-  program: Program,
-): AsyncAPIConsolidatedState {
-  const channelPaths = getStateMap<ChannelPathData>(
-    program,
-    stateSymbols.channelPaths,
-  );
+export function consolidateAsyncAPIState(program: Program): AsyncAPIConsolidatedState {
+  const channelPaths = getStateMap<ChannelPathData>(program, stateSymbols.channelPaths);
   // Multiple similar lines with hardcoded types
 }
 ```

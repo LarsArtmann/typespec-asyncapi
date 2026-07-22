@@ -24,14 +24,12 @@ export const LATEST_BINDING_VERSIONS = {
 /** All protocol names that have official AsyncAPI binding definitions. */
 export type ProtocolWithBindings = keyof typeof LATEST_BINDING_VERSIONS;
 
-export const PROTOCOLS_WITH_BINDINGS: readonly ProtocolWithBindings[] =
-  Object.keys(LATEST_BINDING_VERSIONS) as ProtocolWithBindings[];
+export const PROTOCOLS_WITH_BINDINGS: readonly ProtocolWithBindings[] = Object.keys(
+  LATEST_BINDING_VERSIONS,
+) as ProtocolWithBindings[];
 
 /** All valid binding versions per protocol (not just the latest). */
-export const VALID_BINDING_VERSIONS: Record<
-  ProtocolWithBindings,
-  readonly string[]
-> = {
+export const VALID_BINDING_VERSIONS: Record<ProtocolWithBindings, readonly string[]> = {
   amqp: ["0.3.0"],
   googlepubsub: ["0.2.0", "0.1.0"],
   http: ["0.3.0", "0.2.0"],
@@ -66,9 +64,7 @@ export function getLatestBindingVersion(protocol: string): string | undefined {
 /**
  * Returns true if the protocol has official AsyncAPI binding definitions.
  */
-export function hasProtocolBindings(
-  protocol: string,
-): protocol is ProtocolWithBindings {
+export function hasProtocolBindings(protocol: string): protocol is ProtocolWithBindings {
   const bindingProtocol = normalizeBindingProtocol(protocol);
   return bindingProtocol in LATEST_BINDING_VERSIONS;
 }
@@ -76,10 +72,7 @@ export function hasProtocolBindings(
 /**
  * Returns true if the given binding version is valid for the protocol.
  */
-export function isValidBindingVersion(
-  protocol: string,
-  version: string,
-): boolean {
+export function isValidBindingVersion(protocol: string, version: string): boolean {
   const versions = VALID_BINDING_VERSIONS[protocol as ProtocolWithBindings];
   return versions ? versions.includes(version) : false;
 }
@@ -106,10 +99,7 @@ export function getValidVersionsString(protocol: string): string | undefined {
  */
 export type BindingTargetKind = "channel" | "operation" | "message" | "server";
 
-export const BINDING_PLACEMENT: Record<
-  ProtocolWithBindings,
-  Record<BindingTargetKind, boolean>
-> = {
+export const BINDING_PLACEMENT: Record<ProtocolWithBindings, Record<BindingTargetKind, boolean>> = {
   amqp: { channel: true, message: true, operation: true, server: false },
   googlepubsub: {
     channel: true,
@@ -128,10 +118,7 @@ export const BINDING_PLACEMENT: Record<
  * Returns true if the protocol has an official binding definition for the
  * given target kind (channel, operation, message, or server).
  */
-export function supportsBindingPlacement(
-  protocol: string,
-  kind: BindingTargetKind,
-): boolean {
+export function supportsBindingPlacement(protocol: string, kind: BindingTargetKind): boolean {
   const placement = BINDING_PLACEMENT[protocol as ProtocolWithBindings];
   return placement ? placement[kind] : false;
 }
@@ -145,7 +132,5 @@ export function getValidPlacements(protocol: string): BindingTargetKind[] {
   if (!placement) {
     return [];
   }
-  return (Object.keys(placement) as BindingTargetKind[]).filter(
-    (kind) => placement[kind],
-  );
+  return (Object.keys(placement) as BindingTargetKind[]).filter((kind) => placement[kind]);
 }

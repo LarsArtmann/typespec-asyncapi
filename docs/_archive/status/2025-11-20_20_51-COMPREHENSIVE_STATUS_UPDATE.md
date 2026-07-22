@@ -116,9 +116,7 @@ return Effect.try({
 const asyncapiDocument = generateAsyncAPI30Document(state, options);
 
 // CORRECT: Run Effect to get actual value
-const asyncapiDocument = await Effect.runPromise(
-  generateAsyncAPI30Document(state, options),
-);
+const asyncapiDocument = await Effect.runPromise(generateAsyncAPI30Document(state, options));
 ```
 
 **Impact:** 24 ESLint errors

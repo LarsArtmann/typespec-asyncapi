@@ -82,9 +82,7 @@
 // NEW: Safe state access pattern
 export function getStateMap<T>(program: Program, symbol: symbol): Map<Type, T> {
   // EMERGENCY FALLBACK: Return empty map for now
-  console.log(
-    `🔍 DEBUG: State access not implemented yet, returning empty map`,
-  );
+  console.log(`🔍 DEBUG: State access not implemented yet, returning empty map`);
   console.log(`🔍 DEBUG: program type: ${typeof program}`);
   console.log(`🔍 DEBUG: Looking for symbol: ${String(symbol)}`);
 

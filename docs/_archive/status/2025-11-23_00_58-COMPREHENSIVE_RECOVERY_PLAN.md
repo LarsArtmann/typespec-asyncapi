@@ -132,9 +132,7 @@ git push origin master
 ```typescript
 // Create shared logging utility
 const logDecoratorTarget = (target: string, message?: string) =>
-  Effect.runSync(Effect.log(message || `🔍 Target:`)).pipe(
-    Effect.annotateLogs({ target }),
-  );
+  Effect.runSync(Effect.log(message || `🔍 Target:`)).pipe(Effect.annotateLogs({ target }));
 
 // Replace 14+ duplicated patterns
 ```
