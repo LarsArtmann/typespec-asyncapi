@@ -46,9 +46,9 @@ describe("external Spec Compilation — Branded Types & Scalar Inheritance", () 
       "output-file": "branded-types",
     });
 
-    expect(asyncApiDoc).toBeDefined();
+    expect(asyncApiDoc).not.toBeNull();
     const schemas = (asyncApiDoc?.components?.schemas ?? {}) as Record<string, any>;
-    expect(schemas.Event).toBeDefined();
+    expect(schemas.Event).not.toBeNull();
     expect(schemas.Event.type).toBe("object");
   });
 
@@ -77,7 +77,7 @@ describe("external Spec Compilation — Branded Types & Scalar Inheritance", () 
       "output-file": "spread-test",
     });
 
-    expect(asyncApiDoc).toBeDefined();
+    expect(asyncApiDoc).not.toBeNull();
   });
 
   it("should handle generic models (eventsourcing BrandedId<Brand> pattern)", async () => {
@@ -105,7 +105,7 @@ describe("external Spec Compilation — Branded Types & Scalar Inheritance", () 
       "output-file": "generic-test",
     });
 
-    expect(asyncApiDoc).toBeDefined();
+    expect(asyncApiDoc).not.toBeNull();
   });
 });
 
@@ -148,9 +148,9 @@ describe("external Spec Compilation — Complex Inheritance & Nesting", () => {
       "output-file": "inheritance-test",
     });
 
-    expect(asyncApiDoc).toBeDefined();
+    expect(asyncApiDoc).not.toBeNull();
     const schemas = (asyncApiDoc?.components?.schemas ?? {}) as Record<string, any>;
-    expect(schemas.CampaignCreatedEvent).toBeDefined();
+    expect(schemas.CampaignCreatedEvent).not.toBeNull();
     expect(schemas.CampaignCreatedEvent.type).toBe("object");
   });
 
@@ -188,9 +188,9 @@ describe("external Spec Compilation — Complex Inheritance & Nesting", () => {
       "output-file": "nested-test",
     });
 
-    expect(asyncApiDoc).toBeDefined();
+    expect(asyncApiDoc).not.toBeNull();
     const schemas = (asyncApiDoc?.components?.schemas ?? {}) as Record<string, any>;
-    expect(schemas.Workflow).toBeDefined();
+    expect(schemas.Workflow).not.toBeNull();
     expect(schemas.Workflow.type).toBe("object");
   });
 
@@ -216,9 +216,9 @@ describe("external Spec Compilation — Complex Inheritance & Nesting", () => {
       "output-file": "record-test",
     });
 
-    expect(asyncApiDoc).toBeDefined();
+    expect(asyncApiDoc).not.toBeNull();
     const schemas = (asyncApiDoc?.components?.schemas ?? {}) as Record<string, any>;
-    expect(schemas.Command).toBeDefined();
+    expect(schemas.Command).not.toBeNull();
     expect(schemas.Command.type).toBe("object");
   });
 });
@@ -258,10 +258,10 @@ describe("external Spec Compilation — Enums & Unions", () => {
       "output-file": "enum-test",
     });
 
-    expect(asyncApiDoc).toBeDefined();
+    expect(asyncApiDoc).not.toBeNull();
     const schemas = (asyncApiDoc?.components?.schemas ?? {}) as Record<string, any>;
-    expect(schemas.ActorType).toBeDefined();
-    expect(schemas.ActorType.enum).toBeDefined();
+    expect(schemas.ActorType).not.toBeNull();
+    expect(schemas.ActorType.enum).not.toBeNull();
     expect(schemas.ActorType.enum.length).toBeGreaterThan(0);
   });
 
@@ -296,7 +296,7 @@ describe("external Spec Compilation — Enums & Unions", () => {
       "output-file": "union-test",
     });
 
-    expect(asyncApiDoc).toBeDefined();
+    expect(asyncApiDoc).not.toBeNull();
   });
 });
 
@@ -349,7 +349,7 @@ describe("external Spec Compilation — Multi-message & Multi-server", () => {
       "output-file": "multi-message-test",
     });
 
-    expect(asyncApiDoc).toBeDefined();
+    expect(asyncApiDoc).not.toBeNull();
   });
 
   it("should handle multiple @server decorators on one namespace", async () => {
@@ -371,13 +371,13 @@ describe("external Spec Compilation — Multi-message & Multi-server", () => {
       "output-file": "multi-protocol-test",
     });
 
-    expect(asyncApiDoc).toBeDefined();
+    expect(asyncApiDoc).not.toBeNull();
     const servers = (asyncApiDoc?.servers ?? {}) as Record<string, any>;
     const serverNames = Object.keys(servers);
     expect(serverNames).toHaveLength(3);
-    expect(servers["kafka-prod"]).toBeDefined();
-    expect(servers["mqtt-prod"]).toBeDefined();
-    expect(servers["ws-prod"]).toBeDefined();
+    expect(servers["kafka-prod"]).not.toBeNull();
+    expect(servers["mqtt-prod"]).not.toBeNull();
+    expect(servers["ws-prod"]).not.toBeNull();
   });
 });
 
@@ -404,7 +404,7 @@ describe("external Spec Compilation — Edge Cases from Real Specs", () => {
       "output-file": "edge-empty",
     });
 
-    expect(asyncApiDoc).toBeDefined();
+    expect(asyncApiDoc).not.toBeNull();
   });
 
   it("should handle arrays of named models (common pattern)", async () => {
@@ -434,9 +434,9 @@ describe("external Spec Compilation — Edge Cases from Real Specs", () => {
       "output-file": "array-test",
     });
 
-    expect(asyncApiDoc).toBeDefined();
+    expect(asyncApiDoc).not.toBeNull();
     const schemas = (asyncApiDoc?.components?.schemas ?? {}) as Record<string, any>;
-    expect(schemas.Order?.properties?.items).toBeDefined();
+    expect(schemas.Order?.properties?.items).not.toBeNull();
     const itemsProp = schemas.Order.properties.items;
     expect(itemsProp.items?.$ref).toContain("Item");
   });
@@ -464,7 +464,7 @@ describe("external Spec Compilation — Edge Cases from Real Specs", () => {
       "output-file": "defaults-test",
     });
 
-    expect(asyncApiDoc).toBeDefined();
+    expect(asyncApiDoc).not.toBeNull();
   });
 
   it("should handle nullable types and optional properties (ActaFlow pattern)", async () => {
@@ -490,7 +490,7 @@ describe("external Spec Compilation — Edge Cases from Real Specs", () => {
       "output-file": "nullable-test",
     });
 
-    expect(asyncApiDoc).toBeDefined();
+    expect(asyncApiDoc).not.toBeNull();
   });
 });
 
@@ -515,9 +515,9 @@ describe("external Spec Compilation — Failure Resilience", () => {
       "output-file": "stress-test",
     });
 
-    expect(asyncApiDoc).toBeDefined();
+    expect(asyncApiDoc).not.toBeNull();
     const schemas = (asyncApiDoc?.components?.schemas ?? {}) as Record<string, any>;
-    expect(schemas.LargeModel?.properties).toBeDefined();
+    expect(schemas.LargeModel?.properties).not.toBeNull();
     const propCount = Object.keys(schemas.LargeModel.properties).length;
     expect(propCount).toBe(50);
   });
@@ -539,7 +539,7 @@ describe("external Spec Compilation — Failure Resilience", () => {
       "output-file": "raw-test",
     });
 
-    expect(diagnostics).toBeDefined();
+    expect(diagnostics).not.toBeNull();
     expect(Array.isArray(diagnostics)).toBeTruthy();
   });
 });

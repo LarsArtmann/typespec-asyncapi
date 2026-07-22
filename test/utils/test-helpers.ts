@@ -21,7 +21,7 @@ type AsyncAPIObject = Record<string, any>;
 
 export interface CompilationResult {
   diagnostics: readonly import("@typespec/compiler").Diagnostic[];
-  outputFiles: Map<string, string | { content: string }>;
+  outputFiles: Map<string, string>;
   program: import("@typespec/compiler").Program;
 }
 
@@ -173,7 +173,7 @@ export async function compileAsyncAPISpecWithoutErrors(
 }
 
 export async function parseAsyncAPIOutput(
-  outputFiles: Map<string, string | { content: string }>,
+  outputFiles: Map<string, string>,
   filename: string = "asyncapi.yaml",
 ): Promise<AsyncAPIObject> {
   for (const [filePath, content] of outputFiles) {
@@ -185,7 +185,7 @@ export async function parseAsyncAPIOutput(
         fn.endsWith(".yml")) &&
       !filePath.includes("node_modules")
     ) {
-      const actualContent = typeof content === "string" ? content : content.content;
+      const actualContent = content;
       if (!actualContent || actualContent.trim().length === 0) {
         continue;
       }
