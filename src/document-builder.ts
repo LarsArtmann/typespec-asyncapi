@@ -98,6 +98,7 @@ function assembleDocument(
       title: options?.title ?? serviceTitle ?? "Generated API",
       version: options?.version ?? "1.0.0",
     },
+    ...(defaultContentType ? { defaultContentType } : {}),
     ...(Object.keys(ctx.servers).length > 0 ? { servers: ctx.servers } : {}),
     channels: ctx.channels,
     operations:
