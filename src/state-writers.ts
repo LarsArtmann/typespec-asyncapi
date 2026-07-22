@@ -281,3 +281,12 @@ export const linkPublishMessage = (
     }
   }
 };
+
+export const storeDefaultContentType = (
+  program: Program,
+  target: Namespace,
+  contentType: string,
+): void => {
+  const map = getStateMap(program, stateSymbols.defaultContentType);
+  map.set(target, { contentType });
+};

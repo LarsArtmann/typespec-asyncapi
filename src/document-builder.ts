@@ -58,12 +58,24 @@ export function buildAsyncAPIDocument(
   buildServers(state, ctx);
   buildSecuritySchemes(state, ctx);
 
-  return assembleDocument(ctx, options);
+  const defaultContentType = getDefaultContentType(state);
+
+  return assembleDocument(ctx, options, defaultContentType);
+}
+
+function getDefaultContentType(
+  state: AsyncAPIConsolidatedState,
+): string | undefined {
+  for (const [, data] of state.defaultContentType) {
+    return data.contentType;
+  }
+  return undefined;
 }
 
 function assembleDocument(
   ctx: DocumentBuildContext,
   options: AsyncAPIEmitterOptions,
+  defaultContentType?: string,
 ): AsyncAPIDocument {
   const components: ComponentsObject = {};
   if (Object.keys(ctx.messages).length > 0) {

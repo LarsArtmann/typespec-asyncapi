@@ -173,6 +173,10 @@ export function consolidateAsyncAPIState(
       program,
       stateSymbols.correlationIds,
     ),
+    defaultContentType: getStateMap<DefaultContentTypeData>(
+      program,
+      stateSymbols.defaultContentType,
+    ),
     messageHeaders: getStateMap<MessageHeaderData[]>(
       program,
       stateSymbols.messageHeaders,

@@ -19,6 +19,7 @@ import {
   storeBindings,
   storeChannelState,
   storeCorrelationId,
+  storeDefaultContentType,
   storeHeader,
   storeMessageConfig,
   storeOperationType,
@@ -340,4 +341,15 @@ export function $header(
   }
 
   storeHeader(context.program, target, name, value);
+}
+
+export function $defaultContentType(
+  context: DecoratorContext,
+  target: Namespace,
+  contentType: unknown,
+): void {
+  if (!contentType || typeof contentType !== "string") {
+    return;
+  }
+  storeDefaultContentType(context.program, target, contentType);
 }
