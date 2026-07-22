@@ -2,11 +2,11 @@
  * @fileoverview TypeSpec AsyncAPI State Management - Decorator data persistence
  */
 
-import { stateSymbols } from "./lib.js";
 import type { Program, Type } from "@typespec/compiler";
+import type { ProtocolBindings, SecurityScheme, Tag } from "./domain/models/asyncapi-document.js";
 import { getMultiState, getStateMap } from "./state-compatibility.js";
 import type { AsyncAPIProtocol } from "./constants/protocols.js";
-import type { ProtocolBindings, SecurityScheme, Tag } from "./domain/models/asyncapi-document.js";
+import { stateSymbols } from "./lib.js";
 
 // === STATE DATA INTERFACES ===
 

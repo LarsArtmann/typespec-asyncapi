@@ -5,13 +5,12 @@
  * via @typespec/asset-emitter, and outputs AsyncAPI 3.1 YAML/JSON.
  */
 
-import { emitFile } from "@typespec/compiler";
-import type { EmitContext } from "@typespec/compiler";
-import { stringify as yamlStringify } from "yaml";
+import { type EmitContext, emitFile } from "@typespec/compiler";
 import type { AsyncAPIEmitterOptions } from "./infrastructure/configuration/asyncAPIEmitterOptions.js";
+import { buildAsyncAPIDocument } from "./document-builder.js";
 import { consolidateAsyncAPIState } from "./state.js";
 import { generateSchemas } from "./schema-emitter.js";
-import { buildAsyncAPIDocument } from "./document-builder.js";
+import { stringify as yamlStringify } from "yaml";
 
 export async function $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): Promise<void> {
   const { options } = context;
