@@ -357,7 +357,7 @@ describe("real AsyncAPI Generation Tests", () => {
       const asyncapiDoc = (await parseAsyncAPIOutput(
         outputFiles,
         "enterprise-events.json",
-      )) as AsyncAPIObject;
+      ));
 
       // Validate AsyncAPI document structure
       expect(asyncapiDoc.asyncapi).toBe("3.1.0");
@@ -491,7 +491,7 @@ describe("real AsyncAPI Generation Tests", () => {
       const asyncapiDoc = (await parseAsyncAPIOutput(
         outputFiles,
         "union-type-test.json",
-      )) as AsyncAPIObject;
+      ));
 
       // Validate union type handling in schema
       const flexibleEventSchema = asyncapiDoc.components.schemas.FlexibleEvent;
@@ -578,7 +578,7 @@ describe("real AsyncAPI Generation Tests", () => {
       const asyncapiDoc = (await parseAsyncAPIOutput(
         outputFiles,
         "multi-namespace-test.json",
-      )) as AsyncAPIObject;
+      ));
 
       // Validate schemas from all namespaces using shared utility
       const expectedSchemas = [
@@ -651,7 +651,7 @@ describe("real AsyncAPI Generation Tests", () => {
       const asyncapiDoc = (await parseAsyncAPIOutput(
         outputFiles,
         "compliance-test.json",
-      )) as AsyncAPIObject;
+      ));
 
       // Validate AsyncAPI 3.1.0 specification compliance
       expect(asyncapiDoc.asyncapi).toBe("3.1.0");
@@ -745,7 +745,7 @@ describe("real AsyncAPI Generation Tests", () => {
       const asyncapiDoc = (await parseAsyncAPIOutput(
         outputFiles,
         "reference-test.json",
-      )) as AsyncAPIObject;
+      ));
 
       // Validate all referenced schemas are generated
       expect(asyncapiDoc.components.schemas.BaseReference).toBeDefined();
@@ -783,7 +783,7 @@ describe("real AsyncAPI Generation Tests", () => {
       const asyncapiDoc = (await parseAsyncAPIOutput(
         outputFiles,
         "large-scale-test.json",
-      )) as AsyncAPIObject;
+      ));
 
       // Validate scale - should have 20 schemas and 40 operations
       expect(Object.keys(asyncapiDoc?.components?.schemas)).toHaveLength(20);

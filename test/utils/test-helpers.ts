@@ -126,7 +126,15 @@ export async function compileAsyncAPIWithoutErrors(
       .join("\n");
     throw new Error(`Compilation failed with errors:\n${errorMessages}`);
   }
-  return result;
+  if (!result.asyncApiDoc) {
+    throw new Error(
+      "Compilation succeeded but produced no AsyncAPI output document",
+    );
+  }
+  return {
+    ...result,
+    asyncApiDoc: result.asyncApiDoc,
+  };
 }
 
 // === LEGACY COMPILATION WRAPPERS ===
