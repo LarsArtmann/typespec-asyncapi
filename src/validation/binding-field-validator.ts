@@ -151,20 +151,20 @@ export function validateBindingFields(
     }
 
     if (rule.type && typeof value !== rule.type) {
-      if (rule.type === "integer" && typeof value === "number" && Number.isInteger(value)) {
+      const isCoercibleInteger = rule.type === "integer" && typeof value === "number" && Number.isInteger(value);
+      if (!isCoercibleInteger) {
+        issues.push({
+          code: "invalid-binding-version",
+          key: field,
+          format: {
+            field,
+            expected: rule.type,
+            actual: typeof value,
+            protocol,
+          },
+        });
         continue;
       }
-      issues.push({
-        code: "invalid-binding-version",
-        key: field,
-        format: {
-          field,
-          expected: rule.type,
-          actual: typeof value,
-          protocol,
-        },
-      });
-      continue;
     }
 
     if (rule.enum && !rule.enum.includes(value)) {
