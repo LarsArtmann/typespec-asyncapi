@@ -7,19 +7,20 @@
 
 ## Executive Summary
 
-| Metric | Start | End |
-|--------|-------|-----|
-| Strict errors | 127 | **0** |
-| Warnings | ~4,011 | **0** |
-| `oxlint . --deny-warnings` exit code | non-zero | **0** |
-| Build (`tsc`) | green | **green** |
-| Tests (`vitest run`) | 551/551 | **551/551** |
+| Metric                               | Start    | End         |
+| ------------------------------------ | -------- | ----------- |
+| Strict errors                        | 127      | **0**       |
+| Warnings                             | ~4,011   | **0**       |
+| `oxlint . --deny-warnings` exit code | non-zero | **0**       |
+| Build (`tsc`)                        | green    | **green**   |
+| Tests (`vitest run`)                 | 551/551  | **551/551** |
 
 ---
 
 ## A) FULLY DONE
 
 ### Error Remediation (127 → 0)
+
 1. **Deleted dead test harness** (`test/integration/harness.ts`) — `IntegrationTestHarness` class with `compileTypeSpec(source)` that ignored its parameter and returned hardcoded mock objects. Never imported. Root cause of the entire `_source` fiasco.
 2. **Fixed conditional-expect pattern** across 12+ test files — `if (x) { expect(x.y).toBe(...) }` silently passes when `x` is undefined. Replaced with `expect(x).toBeDefined()` + `x!.y` non-null assertion.
 3. **Removed dead variables** — `const program = await host.compile(...)` where `program` was never read, `const diagnostics = await host.diagnose(...)` where diagnostics were never checked.
@@ -31,12 +32,14 @@
 9. **Removed unused imports** — `$asyncApi`, `AsyncAPIConsolidatedState`, `dirname`, unused `opName` in for-of loops.
 
 ### Test Bug Fixes Exposed by Error Remediation
+
 10. **`expect(object).toBe(true)` instead of `expect(object).toBeDefined()`** — found in `all-examples-validation.test.ts` and `semantic-ref-resolution.test.ts`. These tests were broken at the assertion level; the conditional guards were hiding the wrong matcher. Fixed both.
 11. **57 tests failed after unwrapping conditional guards** — all traced back to the `.toBe(true)` bug. Fixed in 2 files, all 57 tests green again.
 
 ### Warning Remediation (~4,011 → 0)
 
 #### Config Strategy (`.oxlintrc.json`)
+
 12. **Disabled counterproductive rules globally** (9 rules): `no-async-await`, `no-optional-chaining`, `no-rest-spread-properties`, `no-ternary`, `no-undefined`, `no-magic-numbers`, `func-style`, `id-length`, `sort-imports`. These ban core language features and produce noise without value.
 13. **Disabled more counterproductive rules globally** (8 rules): `class-methods-use-this`, `no-continue`, `no-use-before-define`, `init-declarations`, `sort-keys`, `no-inner-declarations`, `no-console`, `explicit-member-accessibility`.
 14. **Disabled more** (6 rules): `no-nested-ternary`, `unicorn/no-nested-ternary`, `no-plusplus`, `no-duplicate-imports`, `unicorn/no-process-exit`, `node/no-sync`.
@@ -45,6 +48,7 @@
 17. **Scripts/config overrides** — scoped `no-console`, `require-unicode-regexp`, `no-process-exit`, `no-sync`, `require-hook` off for `scripts/**` and `*.config.{js,ts}`.
 
 #### Code Fixes
+
 18. **Merged duplicate imports** — `import { emitFile } from "@typespec/compiler"` + `import type { EmitContext } from "@typespec/compiler"` → single `import { type EmitContext, emitFile }`.
 19. **Added unicode regex flags** — `/\s/` → `/\s/u` in `decorator-helpers.ts`.
 20. **Added named capture groups** — `/\{([^}]+)\}/g` → `/\{(?<param>[^}]+)\}/gu` in `document-builder.ts` and `state-writers.ts`.
@@ -53,6 +57,7 @@
 23. **Replaced import-then-re-export** with direct `export ... from` in `index.ts` and `tsp-index.ts`.
 
 ### Verification
+
 24. `bun x tsc -p tsconfig.json` — 0 errors
 25. `bun x vitest run` — 48 files, 551/551 tests pass
 26. `bun x oxlint . --deny-warnings` — exit code 0
