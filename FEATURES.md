@@ -1,7 +1,9 @@
 # Feature Inventory
 
-**Verified:** 2026-07-22 against actual code + test run (512 pass, 0 fail, 0 skip, 0 todo)
+**Verified:** 2026-07-22 against actual code + test run (551 pass, 0 fail, 0 skip, 0 todo)
 **Project:** `@lars-artmann/typespec-asyncapi` v0.1.0-alpha
+**Lint:** oxlint 0 errors / 0 warnings, ESLint 0 errors / 0 warnings
+**Diagnostics:** 17 codes (14 error + 3 warning), all compile-time validated via `$lib.reportDiagnostic()`
 
 ---
 
@@ -69,6 +71,7 @@
 | Binding key normalization | FULLY_FUNCTIONAL | `processBindings()` in `src/validation/binding-validator.ts`                 |
 | Version validation        | FULLY_FUNCTIONAL | Warns on invalid binding versions via `invalid-binding-version` diagnostic   |
 | Unknown protocol warning  | FULLY_FUNCTIONAL | Warns on unrecognized binding keys via `unknown-binding-protocol` diagnostic |
+| Placement validation      | FULLY_FUNCTIONAL | Warns when a binding is placed on a target kind the spec doesn't define (e.g. `ws` on an Operation) via `misplaced-binding` diagnostic. `BINDING_PLACEMENT` matrix in `binding-versions.ts` |
 
 ## State Management
 
@@ -95,20 +98,22 @@
 
 | Feature                 | Status           | Evidence                                                                          |
 | ----------------------- | ---------------- | --------------------------------------------------------------------------------- |
-| vitest test runner      | FULLY_FUNCTIONAL | 512 tests across 46 files (0 skip, 0 todo)                                        |
+| vitest test runner      | FULLY_FUNCTIONAL | 551 tests across 48 files (0 skip, 0 todo)                                        |
 | Golden file test        | FULLY_FUNCTIONAL | `test/golden/golden-file.test.ts`                                                 |
 | Schema validation tests | FULLY_FUNCTIONAL | `test/validation/schema-validation.test.ts`                                       |
 | Spec compliance suite   | FULLY_FUNCTIONAL | `test/compliance/` — 78 tests validated against official AsyncAPI 3.1 JSON Schema |
-| Integration tests       | FULLY_FUNCTIONAL | `test/integration/` — decorator output, negative tests, asyncapi generation       |
+| Integration tests       | FULLY_FUNCTIONAL | `test/integration/` — decorator output, negative tests, binding placement         |
 | E2E tests               | FULLY_FUNCTIONAL | `test/e2e/` — complex nested schemas                                              |
 | BDD tests               | FULLY_FUNCTIONAL | `test/bdd/` — user behavior scenarios                                             |
 | External spec tests     | FULLY_FUNCTIONAL | `test/external/` — 16 patterns from 5 external projects                           |
+| Unit tests              | FULLY_FUNCTIONAL | `test/unit/` — binding placement, emitter tester verification                     |
 | Negative tests          | FULLY_FUNCTIONAL | `test/integration/negative-tests.test.ts` — error handling                        |
 
 ## Build
 
 | Feature                | Status           | Evidence                                               |
 | ---------------------- | ---------------- | ------------------------------------------------------ |
-| TypeScript compilation | FULLY_FUNCTIONAL | 0 errors, strict mode                                  |
-| ESLint                 | FULLY_FUNCTIONAL | 0 errors, 0 warnings                                   |
-| GitHub Actions CI      | FULLY_FUNCTIONAL | `.github/workflows/ci.yml` — build + lint + test on PR |
+| TypeScript compilation | FULLY_FUNCTIONAL | 0 errors, strict mode                                    |
+| ESLint                 | FULLY_FUNCTIONAL | 0 errors, 0 warnings                                     |
+| Oxlint                 | FULLY_FUNCTIONAL | 0 errors, 0 warnings (`oxlint . --deny-warnings`)        |
+| GitHub Actions CI      | FULLY_FUNCTIONAL | `.github/workflows/ci.yml` — build + lint + test on PR   |
