@@ -132,6 +132,13 @@ export interface MessageHeaderData {
   type?: string;
 }
 
+/**
+ * Default Content Type State Data
+ */
+export interface DefaultContentTypeData {
+  contentType: string;
+}
+
 // === STATE CONSOLIDATION UTILITIES ===
 
 /**
@@ -148,6 +155,7 @@ export interface AsyncAPIConsolidatedState {
   securityConfigs: Map<Type, SecurityConfigData[]>;
   correlationIds: Map<Type, CorrelationIdData>;
   messageHeaders: Map<Type, MessageHeaderData[]>;
+  defaultContentType: Map<Type, DefaultContentTypeData>;
 }
 
 /**
