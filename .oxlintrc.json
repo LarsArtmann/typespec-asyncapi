@@ -18,6 +18,7 @@
     "eslint/func-style": "off",
     "eslint/id-length": "off",
     "eslint/no-magic-numbers": "off",
+    "eslint/sort-imports": "off",
     "eslint/class-methods-use-this": "off",
     "eslint/no-continue": "off",
     "eslint/no-use-before-define": "off",
