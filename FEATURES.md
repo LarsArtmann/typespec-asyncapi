@@ -66,11 +66,11 @@
 
 ## Binding Validation
 
-| Feature                   | Status           | Evidence                                                                     |
-| ------------------------- | ---------------- | ---------------------------------------------------------------------------- |
-| Binding key normalization | FULLY_FUNCTIONAL | `processBindings()` in `src/validation/binding-validator.ts`                 |
-| Version validation        | FULLY_FUNCTIONAL | Warns on invalid binding versions via `invalid-binding-version` diagnostic   |
-| Unknown protocol warning  | FULLY_FUNCTIONAL | Warns on unrecognized binding keys via `unknown-binding-protocol` diagnostic |
+| Feature                   | Status           | Evidence                                                                                                                                                                                    |
+| ------------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Binding key normalization | FULLY_FUNCTIONAL | `processBindings()` in `src/validation/binding-validator.ts`                                                                                                                                |
+| Version validation        | FULLY_FUNCTIONAL | Warns on invalid binding versions via `invalid-binding-version` diagnostic                                                                                                                  |
+| Unknown protocol warning  | FULLY_FUNCTIONAL | Warns on unrecognized binding keys via `unknown-binding-protocol` diagnostic                                                                                                                |
 | Placement validation      | FULLY_FUNCTIONAL | Warns when a binding is placed on a target kind the spec doesn't define (e.g. `ws` on an Operation) via `misplaced-binding` diagnostic. `BINDING_PLACEMENT` matrix in `binding-versions.ts` |
 
 ## State Management
@@ -113,7 +113,7 @@
 
 | Feature                | Status           | Evidence                                               |
 | ---------------------- | ---------------- | ------------------------------------------------------ |
-| TypeScript compilation | FULLY_FUNCTIONAL | 0 errors, strict mode                                    |
-| ESLint                 | FULLY_FUNCTIONAL | 0 errors, 0 warnings                                     |
-| Oxlint                 | FULLY_FUNCTIONAL | 0 errors, 0 warnings (`oxlint . --deny-warnings`)        |
-| GitHub Actions CI      | FULLY_FUNCTIONAL | `.github/workflows/ci.yml` — build + lint + test on PR   |
+| TypeScript compilation | FULLY_FUNCTIONAL | 0 errors, strict mode                                  |
+| ESLint                 | FULLY_FUNCTIONAL | 0 errors, 0 warnings                                   |
+| Oxlint                 | FULLY_FUNCTIONAL | 0 errors, 0 warnings (`oxlint . --deny-warnings`)      |
+| GitHub Actions CI      | FULLY_FUNCTIONAL | `.github/workflows/ci.yml` — build + lint + test on PR |

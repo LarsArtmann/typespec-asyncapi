@@ -11,7 +11,7 @@
 bun install           # Install dependencies
 bun run build         # Build TypeScript → JavaScript (0 errors)
 bun run lint          # Run ESLint (0 errors, 0 warnings)
-bun run test          # Run tests via vitest (512 pass, 0 fail)
+bun run test          # Run tests via vitest (551 pass, 0 fail)
 ```
 
 **Important:** Use `bun` and `bunx` for install/build, never `npm` or `npx`. Tests run via **vitest** (Node.js/V8) — not `bun test` — because Bun has documented memory leaks that cause OOM crashes with heavy test suites.
@@ -24,7 +24,7 @@ bun run test          # Run tests via vitest (512 pass, 0 fail)
 - **git commit --no-verify:** Pre-commit hook requires bash (NixOS doesn't have /bin/bash)
 - **All source files under 370 lines** (enforced)
 - **Coverage gate at 75%** per-file minimum (scripts/coverage-gate.ts)
-- **Diagnostic system:** `reportDiagnostic()` in `decorator-helpers.ts` uses `$lib.reportDiagnostic()` (TypeSpec library API), NOT raw `program.reportDiagnostic()`. All codes are declared in `src/lib.ts` and compile-time validated via `keyof typeof $lib.diagnostics`. The library name is auto-prefixed to diagnostic codes by the TypeSpec runtime. **18 codes** declared (15 error + 3 warning for binding validation). No split-brain.
+- **Diagnostic system:** `reportDiagnostic()` in `decorator-helpers.ts` uses `$lib.reportDiagnostic()` (TypeSpec library API), NOT raw `program.reportDiagnostic()`. All codes are declared in `src/lib.ts` and compile-time validated via `keyof typeof $lib.diagnostics`. The library name is auto-prefixed to diagnostic codes by the TypeSpec runtime. **17 codes** declared (14 error + 3 warning). No split-brain.
 - **Zero `any` types in emitter.ts** (achieved)
 - **ESLint config:** Clean, no Effect.TS-era rules (throw/try/catch/Promise allowed)
 

@@ -209,29 +209,29 @@ Right now the matrix is hand-maintained based on reading the AsyncAPI spec. The 
 
 ### Session 2 status
 
-| Item | Report claim | Resolution |
-| ---- | ------------ | ---------- |
-| Binding placement committed | "Session 2 is uncommitted" | DONE — committed as `5e78a76` |
-| FEATURES.md updated | "FEATURES.md test count is stale" | OPEN — FEATURES.md still says 512, actual is 551; binding placement not listed |
-| Coverage gate | "Not run" | OPEN — coverage tooling remains broken for this architecture (vitest can't instrument `dist/*.js`) |
+| Item                        | Report claim                      | Resolution                                                                                         |
+| --------------------------- | --------------------------------- | -------------------------------------------------------------------------------------------------- |
+| Binding placement committed | "Session 2 is uncommitted"        | DONE — committed as `5e78a76`                                                                      |
+| FEATURES.md updated         | "FEATURES.md test count is stale" | OPEN — FEATURES.md still says 512, actual is 551; binding placement not listed                     |
+| Coverage gate               | "Not run"                         | OPEN — coverage tooling remains broken for this architecture (vitest can't instrument `dist/*.js`) |
 
 ### Section (b) PARTIALLY DONE items
 
-| Item | Status |
-| ---- | ------ |
-| FEATURES.md not updated | OPEN — pending docs-health refresh |
-| Coverage gate not run | OPEN — pre-existing architecture limitation |
-| Oxlint diagnostics | RESOLVED — oxlint remediation session (`8063381` through `0cc727a`) achieved 0 errors / 0 warnings |
+| Item                    | Status                                                                                             |
+| ----------------------- | -------------------------------------------------------------------------------------------------- |
+| FEATURES.md not updated | OPEN — pending docs-health refresh                                                                 |
+| Coverage gate not run   | OPEN — pre-existing architecture limitation                                                        |
+| Oxlint diagnostics      | RESOLVED — oxlint remediation session (`8063381` through `0cc727a`) achieved 0 errors / 0 warnings |
 
 ### Section (e) open items carried forward
 
-| # | Item | Status |
-| -- | ---- | ------ |
-| 5 | `schema-emitter.ts:316` oxlint error | RESOLVED — fixed during oxlint remediation |
-| 6 | `test-helpers.ts:251` oxlint error | RESOLVED — fixed during oxlint remediation |
-| 7 | `as { kind: string }` casts in schema-emitter | OPEN — ROADMAP territory |
-| 10 | `BindingDiagnosticCode` compile-time enforcement | OPEN — ROADMAP territory |
-| 12 | `@bindings` support for `Namespace` target (server bindings) | OPEN — ROADMAP territory |
+| #   | Item                                                         | Status                                     |
+| --- | ------------------------------------------------------------ | ------------------------------------------ |
+| 5   | `schema-emitter.ts:316` oxlint error                         | RESOLVED — fixed during oxlint remediation |
+| 6   | `test-helpers.ts:251` oxlint error                           | RESOLVED — fixed during oxlint remediation |
+| 7   | `as { kind: string }` casts in schema-emitter                | OPEN — ROADMAP territory                   |
+| 10  | `BindingDiagnosticCode` compile-time enforcement             | OPEN — ROADMAP territory                   |
+| 12  | `@bindings` support for `Namespace` target (server bindings) | OPEN — ROADMAP territory                   |
 
 ### Questions
 
