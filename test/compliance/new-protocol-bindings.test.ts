@@ -16,7 +16,8 @@ describe("spec Compliance: Google Pub/Sub Bindings", () => {
       @protocol(#{
         protocol: "googlepubsub",
         binding: #{
-          messageRetentionDuration: "600s"
+          messageRetentionDuration: "600s",
+          schemaSettings: #{ encoding: "json", name: "projects/test/schemas/event" }
         }
       })
       op publish(): Event;
@@ -84,7 +85,7 @@ describe("spec Compliance: SNS Bindings", () => {
     const binding = doc.channels!.notifications.bindings!;
     expect(binding.sns).toBeDefined();
     expect(binding.sns.name).toBe("my-topic");
-    expect(binding.sns.bindingVersion).toBe("0.2.0");
+    expect(binding.sns.bindingVersion).toBe("0.1.0");
   });
 
   it("emits valid SNS operation binding", async () => {
@@ -93,7 +94,7 @@ describe("spec Compliance: SNS Bindings", () => {
       model Event { id: string; }
       @channel("notifications")
       @bindings(#{
-        sns: #{ topic: "arn:aws:sns:us-east-1:123456789012:my-topic" }
+        sns: #{ topic: "arn:aws:sns:us-east-1:123456789012:my-topic", consumers: #[] }
       })
       op publish(): Event;
     `);
@@ -104,7 +105,7 @@ describe("spec Compliance: SNS Bindings", () => {
     expect(op.bindings!.sns.topic).toBe(
       "arn:aws:sns:us-east-1:123456789012:my-topic",
     );
-    expect(op.bindings!.sns.bindingVersion).toBe("0.2.0");
+    expect(op.bindings!.sns.bindingVersion).toBe("0.1.0");
   });
 
   it("accepts SNS as server protocol", async () => {

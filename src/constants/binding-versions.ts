@@ -17,7 +17,7 @@ export const LATEST_BINDING_VERSIONS = {
   http: "0.3.0",
   kafka: "0.5.0",
   mqtt: "0.2.0",
-  sns: "0.2.0",
+  sns: "0.1.0",
   ws: "0.1.0",
 } as const;
 
@@ -37,7 +37,7 @@ export const VALID_BINDING_VERSIONS: Record<
   http: ["0.3.0", "0.2.0"],
   kafka: ["0.5.0", "0.4.0", "0.3.0"],
   mqtt: ["0.2.0"],
-  sns: ["0.2.0", "0.1.0"],
+  sns: ["0.1.0"],
   ws: ["0.1.0"],
 } as const;
 
