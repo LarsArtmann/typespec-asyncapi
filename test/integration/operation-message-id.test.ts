@@ -152,7 +152,9 @@ describe("integration: @operationId + @messageId together", () => {
       "#/components/messages/user.created.event",
     );
 
-    const createdMsg = doc.components!.messages!["user.created.event"] as MessageObject;
+    const createdMsg = doc.components!.messages![
+      "user.created.event"
+    ] as MessageObject;
     expect(createdMsg.payload).toStrictEqual({
       $ref: "#/components/schemas/UserCreated",
     });

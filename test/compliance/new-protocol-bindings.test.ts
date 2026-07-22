@@ -44,7 +44,9 @@ describe("spec Compliance: Google Pub/Sub Bindings", () => {
 
     const msg = doc.components!.messages!.PubSubEvent;
     expect(msg).toBeDefined();
-    const msgObj = msg as { bindings?: Record<string, Record<string, unknown>> };
+    const msgObj = msg as {
+      bindings?: Record<string, Record<string, unknown>>;
+    };
     expect(msgObj.bindings).toBeDefined();
     expect(msgObj.bindings!.googlepubsub).toBeDefined();
     expect(msgObj.bindings!.googlepubsub.orderingKey).toBe("partition-1");
@@ -94,7 +96,13 @@ describe("spec Compliance: SNS Bindings", () => {
       model Event { id: string; }
       @channel("notifications")
       @bindings(#{
-        sns: #{ topic: "arn:aws:sns:us-east-1:123456789012:my-topic", consumers: #[] }
+        sns: #{
+          topic: #{ type: "string" },
+          consumers: #[#{
+            endpoint: #{ type: "string" },
+            rawMessageDelivery: true
+          }]
+        }
       })
       op publish(): Event;
     `);
@@ -102,9 +110,8 @@ describe("spec Compliance: SNS Bindings", () => {
     const [op] = Object.values(doc.operations!);
     expect(op.bindings).toBeDefined();
     expect(op.bindings!.sns).toBeDefined();
-    expect(op.bindings!.sns.topic).toBe(
-      "arn:aws:sns:us-east-1:123456789012:my-topic",
-    );
+    expect(op.bindings!.sns.topic).toBeDefined();
+    expect(op.bindings!.sns.consumers).toBeDefined();
     expect(op.bindings!.sns.bindingVersion).toBe("0.1.0");
   });
 

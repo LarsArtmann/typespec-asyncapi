@@ -33,13 +33,7 @@ const asyncApiSchema = JSON.parse(
 const ajv = new Ajv({ allErrors: true, allowUnionTypes: true, strict: false });
 const validate = ajv.compile(asyncApiSchema);
 
-const realWorldDir = join(
-  import.meta.dirname,
-  "..",
-  "..",
-  "examples",
-  "real-world",
-);
+const realWorldDir = join(import.meta.dirname, "..", "..", "examples", "real-world");
 
 function readExampleSpecs(): { name: string; source: string }[] {
   const files = readdirSync(realWorldDir)
@@ -138,14 +132,10 @@ describe("real-World Examples → AsyncAPI 3.1 Validation", () => {
         const schemas = doc?.components?.schemas ?? {};
 
         for (const [, schema] of Object.entries(schemas)) {
-          expect(schema.items?.$ref ?? "").toMatch(
-            /^$|^#\/components\/schemas\//,
-          );
+          expect(schema.items?.$ref ?? "").toMatch(/^$|^#\/components\/schemas\//);
           const props = schema.properties ?? {};
           for (const [, prop] of Object.entries(props)) {
-            expect(prop.items?.$ref ?? "").toMatch(
-              /^$|^#\/components\/schemas\//,
-            );
+            expect(prop.items?.$ref ?? "").toMatch(/^$|^#\/components\/schemas\//);
           }
         }
       });
