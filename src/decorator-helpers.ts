@@ -3,37 +3,71 @@
  */
 
 import type { DecoratorContext, DiagnosticTarget, Model } from "@typespec/compiler";
+import { $lib } from "./lib.js";
 
 // === DIAGNOSTIC HELPERS ===
 
-export const reportDecoratorDiagnostic = (
+/**
+ * Report a decorator diagnostic using the library's registered diagnostic codes.
+ * The code must be declared in $lib.diagnostics (src/lib.ts) — TypeScript enforces this at compile time.
+ * The library name is auto-prefixed to the code by the TypeSpec runtime.
+ */
+export const reportDiagnostic = (
   context: DecoratorContext,
-  code: string,
+  code: keyof typeof $lib.diagnostics,
   target: unknown,
-  message: string,
-  severity: "error" | "warning" = "error",
-) => {
-  context.program.reportDiagnostic({
+  format?: Record<string, unknown>,
+  messageId?: string,
+): void => {
+  $lib.reportDiagnostic(context.program, {
     code,
-    message,
-    severity,
     target: target as DiagnosticTarget,
+    format,
+    messageId: messageId as "default",
   });
 };
 
+/**
+ * Validate that a config value is present; if not, report the given diagnostic and return false.
+ */
 export const validateConfig = (
   config: unknown,
   context: DecoratorContext,
   target: unknown,
-  diagnosticCode: string,
-  errorMessage: string,
+  diagnosticCode: keyof typeof $lib.diagnostics,
+  format?: Record<string, unknown>,
 ): boolean => {
   if (!config) {
-    reportDecoratorDiagnostic(context, diagnosticCode, target, errorMessage);
+    reportDiagnostic(context, diagnosticCode, target, format);
     return false;
   }
   return true;
 };
+
+// === URL VALIDATION ===
+
+/**
+ * Validate a server URL for obvious malformation.
+ *
+ * AsyncAPI server URLs are host/path strings, NOT full RFC 3986 URLs —
+ * the protocol is specified separately via the `protocol` field.
+ * Template variables like `{host}` are valid AsyncAPI patterns.
+ *
+ * Returns false only for clearly broken values:
+ * - Empty or whitespace-only strings
+ * - Strings containing spaces or control characters
+ */
+export function isValidUrl(url: string): boolean {
+  if (!url || typeof url !== "string") return false;
+  const trimmed = url.trim();
+  if (trimmed.length === 0) return false;
+  if (/\s/.test(trimmed)) return false;
+  for (let i = 0; i < trimmed.length; i++) {
+    const code = trimmed.charCodeAt(i);
+    if (code < 32 || code === 127) return false;
+  }
+  return true;
+}
 
 // === MODEL HELPERS ===
 

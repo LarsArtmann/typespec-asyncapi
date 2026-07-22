@@ -21,7 +21,7 @@
  * TODO: Implement test isolation - each test should be completely independent
  */
 
-import { describe, expect, test } from "bun:test";
+import { describe, expect, test } from "vitest";
 import {
   type AsyncAPIObject,
   compileAsyncAPISpecWithoutErrors,

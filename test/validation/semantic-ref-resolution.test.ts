@@ -15,12 +15,12 @@
  * 5. No dangling references anywhere in the document
  */
 
-import { describe, it, expect } from "bun:test";
+import { describe, it, expect } from "vitest";
 import { readFileSync, readdirSync, statSync } from "fs";
 import { join, dirname } from "path";
 import { compileAsyncAPI } from "../utils/test-helpers.js";
 
-const examplesRoot = join(import.meta.dir, "..", "..", "examples");
+const examplesRoot = join(import.meta.dirname, "..", "..", "examples");
 
 function findTspFiles(
   dir: string,

@@ -1,4 +1,4 @@
-import { describe, test, expect } from "bun:test";
+import { describe, test, expect } from "vitest";
 import { compileWithCLI } from "../utils/cli-test-helpers.js";
 import type { CLITestResult } from "../utils/cli-test-helpers.js";
 import {

@@ -9,7 +9,7 @@
  * - Shipping notifications
  */
 
-import { describe, expect, it } from "bun:test";
+import { describe, expect, it } from "vitest";
 import Ajv from "ajv";
 import { readFileSync } from "fs";
 import { join } from "path";
@@ -18,7 +18,7 @@ import { createAsyncAPITestHost } from "../utils/test-helpers.js";
 const asyncApiSchema = JSON.parse(
   readFileSync(
     join(
-      import.meta.dir,
+      import.meta.dirname,
       "..",
       "..",
       "node_modules",

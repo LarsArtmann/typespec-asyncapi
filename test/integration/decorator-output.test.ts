@@ -5,7 +5,7 @@
  * actually produce correct output in the generated AsyncAPI document.
  */
 
-import { describe, it, expect } from "bun:test";
+import { describe, it, expect } from "vitest";
 import { compileAsyncAPISpecWithoutErrors } from "../utils/test-helpers";
 import { parse as parseYAML } from "yaml";
 

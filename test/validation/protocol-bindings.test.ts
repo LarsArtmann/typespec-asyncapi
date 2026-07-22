@@ -4,7 +4,7 @@
  * Tests for AsyncAPI 3.1 compliant protocol bindings using standard format.
  * Replaces custom ProtocolBindingFactory with AsyncAPI specification compliance.
  */
-import { expect, test, describe } from "bun:test";
+import { expect, test, describe } from "vitest";
 import {
   PROTOCOL_LIST,
   isSupportedProtocol,

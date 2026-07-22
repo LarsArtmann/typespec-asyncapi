@@ -9,7 +9,7 @@
  * - Edge case data types
  */
 
-import { describe, expect, it } from "bun:test";
+import { describe, expect, it } from "vitest";
 import { createAsyncAPITestHost } from "../utils/test-helpers.js";
 
 describe("E2E: Error Handling and Edge Cases", () => {

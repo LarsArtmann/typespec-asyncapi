@@ -9,7 +9,7 @@
  * protocol bindings, security schemes, multi-protocol setups, etc.
  */
 
-import { describe, it, expect } from "bun:test";
+import { describe, it, expect } from "vitest";
 import Ajv from "ajv";
 import { readFileSync, readdirSync, statSync } from "fs";
 import { join } from "path";
@@ -18,7 +18,7 @@ import { compileAsyncAPI } from "../utils/test-helpers.js";
 const asyncApiSchema = JSON.parse(
   readFileSync(
     join(
-      import.meta.dir,
+      import.meta.dirname,
       "..",
       "..",
       "node_modules",
@@ -34,7 +34,7 @@ const asyncApiSchema = JSON.parse(
 const ajv = new Ajv({ allErrors: true, strict: false, allowUnionTypes: true });
 const validate = ajv.compile(asyncApiSchema);
 
-const realWorldDir = join(import.meta.dir, "..", "..", "examples", "real-world");
+const realWorldDir = join(import.meta.dirname, "..", "..", "examples", "real-world");
 
 function readExampleSpecs(): { name: string; source: string }[] {
   const files = readdirSync(realWorldDir)

@@ -5,7 +5,7 @@
  * with proper bindings, security schemes, and message flows.
  */
 
-import { describe, expect, it } from "bun:test";
+import { describe, expect, it } from "vitest";
 import { createAsyncAPITestHost } from "../utils/test-helpers.js";
 
 describe("E2E: Multi-Protocol Comprehensive Test", () => {

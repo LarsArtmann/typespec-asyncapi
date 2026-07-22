@@ -17,11 +17,11 @@ The emitter works: 406 tests pass, build is clean, lint is clean, output validat
 
 `src/lib.ts` declares 9 diagnostic codes. `src/minimal-decorators.ts` fires 14 codes. Only **3 overlap**.
 
-| Category | Count | Codes |
-|----------|-------|-------|
-| **Declared AND fired (correct)** | 3 | `invalid-server-config`, `missing-channel-path`, `unsupported-protocol` |
-| **Fired but NOT declared (bug)** | 11 | `invalid-bindings-config`, `invalid-correlationId-config`, `invalid-header-config`, `invalid-message-config`, `invalid-protocol-config`, `invalid-security-config`, `invalid-security-scheme-type`, `invalid-tags-config`, `server-protocol-required`, `server-target-invalid`, `server-url-required` |
-| **Declared but NOT fired (dead)** | 6 | `duplicate-server-name`, `invalid-asyncapi-version`, `invalid-message-target`, `invalid-protocol-type`, `missing-protocol-type`, `missing-security-config` |
+| Category                          | Count | Codes                                                                                                                                                                                                                                                                                                 |
+| --------------------------------- | ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Declared AND fired (correct)**  | 3     | `invalid-server-config`, `missing-channel-path`, `unsupported-protocol`                                                                                                                                                                                                                               |
+| **Fired but NOT declared (bug)**  | 11    | `invalid-bindings-config`, `invalid-correlationId-config`, `invalid-header-config`, `invalid-message-config`, `invalid-protocol-config`, `invalid-security-config`, `invalid-security-scheme-type`, `invalid-tags-config`, `server-protocol-required`, `server-target-invalid`, `server-url-required` |
+| **Declared but NOT fired (dead)** | 6     | `duplicate-server-name`, `invalid-asyncapi-version`, `invalid-message-target`, `invalid-protocol-type`, `missing-protocol-type`, `missing-security-config`                                                                                                                                            |
 
 **Secondary bug — prefix inconsistency:** 5 codes in `$server` are passed WITH the full library prefix (`"@lars-artmann/typespec-asyncapi/invalid-server-config"`) while all other codes are passed bare (`"missing-channel-path"`). The `reportDecoratorDiagnostic` helper uses raw `program.reportDiagnostic` which accepts any string, so this doesn't crash — but the prefixed codes display double-wrapped in diagnostic output.
 
@@ -88,16 +88,16 @@ These are feature work and investigation — valuable but not correctness-critic
 
 Sorted by: Impact (correctness first) → Effort → Customer value. Dependencies noted.
 
-| #   | Task                                                   | Impact     | Effort | Value   | Deps | Phase         |
-| --- | ------------------------------------------------------ | ---------- | ------ | ------- | ---- | ------------- |
-| T1  | **Fix diagnostic registry split-brain**                | CRITICAL   | 60min  | Every error path works correctly | None | Correctness   |
-| T2  | **Delete dead version constants**                      | HIGH       | 20min  | Prevent next version drift | None | Correctness   |
-| T3  | **Tighten `ServerObject.protocol` → `AsyncAPIProtocol`** | MEDIUM     | 30min  | Document model type safety | None | Type Safety   |
-| T4  | **Tighten `OperationObject.bindings` → `ProtocolBindings`** | MEDIUM     | 30min  | Document model consistency | None | Type Safety   |
-| T5  | **Compile external `.tsp` specs, report failure modes** | HIGH       | 90min  | Surface unknown bugs | None | Investigation |
-| T6  | **Add RFC 3986 URL validation to `@server`**           | MEDIUM     | 45min  | Catch malformed URLs at compile time | T1   | Feature Gap   |
-| T7  | **Error type hierarchy review (decide: YAGNI or not)** | LOW        | 30min  | Close issue #54 with decision | None | Feature Gap   |
-| T8  | **Full verification: build + lint + test + coverage**  | CRITICAL   | 30min  | Prove everything works | T1-T7 | Verification  |
+| #   | Task                                                        | Impact   | Effort | Value                                | Deps  | Phase         |
+| --- | ----------------------------------------------------------- | -------- | ------ | ------------------------------------ | ----- | ------------- |
+| T1  | **Fix diagnostic registry split-brain**                     | CRITICAL | 60min  | Every error path works correctly     | None  | Correctness   |
+| T2  | **Delete dead version constants**                           | HIGH     | 20min  | Prevent next version drift           | None  | Correctness   |
+| T3  | **Tighten `ServerObject.protocol` → `AsyncAPIProtocol`**    | MEDIUM   | 30min  | Document model type safety           | None  | Type Safety   |
+| T4  | **Tighten `OperationObject.bindings` → `ProtocolBindings`** | MEDIUM   | 30min  | Document model consistency           | None  | Type Safety   |
+| T5  | **Compile external `.tsp` specs, report failure modes**     | HIGH     | 90min  | Surface unknown bugs                 | None  | Investigation |
+| T6  | **Add RFC 3986 URL validation to `@server`**                | MEDIUM   | 45min  | Catch malformed URLs at compile time | T1    | Feature Gap   |
+| T7  | **Error type hierarchy review (decide: YAGNI or not)**      | LOW      | 30min  | Close issue #54 with decision        | None  | Feature Gap   |
+| T8  | **Full verification: build + lint + test + coverage**       | CRITICAL | 30min  | Prove everything works               | T1-T7 | Verification  |
 
 **Total estimated effort:** ~5.5 hours (335 min)
 
@@ -109,63 +109,63 @@ Sorted by execution order within each phase. Each subtask is independently verif
 
 ### Phase 1: Correctness — T1 + T2 (the 4%)
 
-| Sub | Action                                                                  | File(s)                  | Est.  |
-| --- | ----------------------------------------------------------------------- | ------------------------ | ----- |
-| 1.1 | Add 11 missing diagnostic declarations to `$lib.diagnostics`            | `src/lib.ts`             | 10min |
-| 1.2 | Remove 6 dead diagnostic declarations                                   | `src/lib.ts`             | 5min  |
-| 1.3 | Strip `@lars-artmann/typespec-asyncapi/` prefix from 5 codes in `$server` | `src/minimal-decorators.ts` | 5min  |
+| Sub | Action                                                                              | File(s)                                  | Est.  |
+| --- | ----------------------------------------------------------------------------------- | ---------------------------------------- | ----- |
+| 1.1 | Add 11 missing diagnostic declarations to `$lib.diagnostics`                        | `src/lib.ts`                             | 10min |
+| 1.2 | Remove 6 dead diagnostic declarations                                               | `src/lib.ts`                             | 5min  |
+| 1.3 | Strip `@lars-artmann/typespec-asyncapi/` prefix from 5 codes in `$server`           | `src/minimal-decorators.ts`              | 5min  |
 | 1.4 | Type `code` param in `reportDecoratorDiagnostic` as `keyof typeof $lib.diagnostics` | `src/decorator-helpers.ts`, `src/lib.ts` | 10min |
-| 1.5 | Fix any compile errors from the tightened `code` type                   | `src/minimal-decorators.ts` | 8min |
-| 1.6 | Build + test — verify 0 failures                                        | N/A                      | 10min |
-| 2.1 | Verify `constants/index.ts` is fully unimported (grep `src/` `test/`)   | N/A                      | 3min  |
-| 2.2 | Delete dead exports (`ASYNCAPI_VERSION`, `ASYNCAPI_VERSIONS`, `DEFAULT_CONFIG`) | `src/constants/index.ts` | 5min  |
-| 2.3 | Build + lint — verify no regressions                                    | N/A                      | 5min  |
+| 1.5 | Fix any compile errors from the tightened `code` type                               | `src/minimal-decorators.ts`              | 8min  |
+| 1.6 | Build + test — verify 0 failures                                                    | N/A                                      | 10min |
+| 2.1 | Verify `constants/index.ts` is fully unimported (grep `src/` `test/`)               | N/A                                      | 3min  |
+| 2.2 | Delete dead exports (`ASYNCAPI_VERSION`, `ASYNCAPI_VERSIONS`, `DEFAULT_CONFIG`)     | `src/constants/index.ts`                 | 5min  |
+| 2.3 | Build + lint — verify no regressions                                                | N/A                                      | 5min  |
 
 ### Phase 2: Type Safety — T3 + T4 (the 20%)
 
-| Sub | Action                                                                  | File(s)                              | Est.  |
-| --- | ----------------------------------------------------------------------- | ------------------------------------ | ----- |
-| 3.1 | Change `ServerObject.protocol: string` → `AsyncAPIProtocol`             | `src/domain/models/asyncapi-document.ts:38` | 3min  |
-| 3.2 | Add `AsyncAPIProtocol` import if not present                             | `src/domain/models/asyncapi-document.ts` | 2min  |
-| 3.3 | Fix any compile errors from tightening (check document-builder.ts consumers) | `src/document-builder.ts` | 8min |
-| 3.4 | Build + test                                                             | N/A                                  | 5min  |
-| 4.1 | Change `OperationObject.bindings: Record<string, unknown>` → `ProtocolBindings` | `src/domain/models/asyncapi-document.ts:70` | 3min  |
-| 4.2 | Fix any compile errors from tightening                                   | `src/document-builder.ts` | 8min |
-| 4.3 | Build + test                                                             | N/A                                  | 5min  |
+| Sub | Action                                                                          | File(s)                                     | Est. |
+| --- | ------------------------------------------------------------------------------- | ------------------------------------------- | ---- |
+| 3.1 | Change `ServerObject.protocol: string` → `AsyncAPIProtocol`                     | `src/domain/models/asyncapi-document.ts:38` | 3min |
+| 3.2 | Add `AsyncAPIProtocol` import if not present                                    | `src/domain/models/asyncapi-document.ts`    | 2min |
+| 3.3 | Fix any compile errors from tightening (check document-builder.ts consumers)    | `src/document-builder.ts`                   | 8min |
+| 3.4 | Build + test                                                                    | N/A                                         | 5min |
+| 4.1 | Change `OperationObject.bindings: Record<string, unknown>` → `ProtocolBindings` | `src/domain/models/asyncapi-document.ts:70` | 3min |
+| 4.2 | Fix any compile errors from tightening                                          | `src/document-builder.ts`                   | 8min |
+| 4.3 | Build + test                                                                    | N/A                                         | 5min |
 
 ### Phase 3: Investigation — T5 (external specs)
 
-| Sub | Action                                                                  | File(s)                  | Est.  |
-| --- | ----------------------------------------------------------------------- | ------------------------ | ----- |
-| 5.1 | Identify 10-20 representative `.tsp` files from external projects        | N/A                      | 10min |
-| 5.2 | Create a compilation test harness (reuse `compileAsyncAPI` helper)       | `test/external/` (new)   | 10min |
-| 5.3 | Compile batch 1 (Kernovia, typespec-eventsourcing), record results       | N/A                      | 12min |
-| 5.4 | Compile batch 2 (blog, ActaFlow, accountability-system), record results  | N/A                      | 12min |
-| 5.5 | Categorize failure modes (emitter bugs vs. unsupported features vs. non-AsyncAPI specs) | N/A | 10min |
-| 5.6 | Write findings report (what broke, what's a real bug, what's expected)   | session report           | 10min |
+| Sub | Action                                                                                  | File(s)                | Est.  |
+| --- | --------------------------------------------------------------------------------------- | ---------------------- | ----- |
+| 5.1 | Identify 10-20 representative `.tsp` files from external projects                       | N/A                    | 10min |
+| 5.2 | Create a compilation test harness (reuse `compileAsyncAPI` helper)                      | `test/external/` (new) | 10min |
+| 5.3 | Compile batch 1 (Kernovia, typespec-eventsourcing), record results                      | N/A                    | 12min |
+| 5.4 | Compile batch 2 (blog, ActaFlow, accountability-system), record results                 | N/A                    | 12min |
+| 5.5 | Categorize failure modes (emitter bugs vs. unsupported features vs. non-AsyncAPI specs) | N/A                    | 10min |
+| 5.6 | Write findings report (what broke, what's a real bug, what's expected)                  | session report         | 10min |
 
 ### Phase 4: Feature Gaps — T6 + T7 (to 100%)
 
-| Sub | Action                                                                  | File(s)                  | Est.  |
-| --- | ----------------------------------------------------------------------- | ------------------------ | ----- |
-| 6.1 | Add `isValidUrl(url: string): boolean` helper using `new URL()`         | `src/decorator-helpers.ts` | 8min  |
-| 6.2 | Wire URL validation into `$server` decorator (after URL is extracted)   | `src/minimal-decorators.ts` | 8min |
-| 6.3 | Add `"invalid-server-url"` diagnostic to `$lib.diagnostics`             | `src/lib.ts`             | 3min  |
-| 6.4 | Add tests: valid URL, missing scheme, malformed host, port edge cases   | `test/integration/` | 10min |
-| 6.5 | Build + test                                                             | N/A                      | 5min  |
-| 7.1 | Read GitHub issue #54 body and comments                                  | N/A                      | 5min  |
-| 7.2 | Survey current error surface (2 throw calls, decorator diagnostics)      | N/A                      | 7min  |
-| 7.3 | Decision: document why YAGNI (or implement minimal hierarchy if needed) | issue #54 comment or ADR | 8min  |
+| Sub | Action                                                                  | File(s)                     | Est.  |
+| --- | ----------------------------------------------------------------------- | --------------------------- | ----- |
+| 6.1 | Add `isValidUrl(url: string): boolean` helper using `new URL()`         | `src/decorator-helpers.ts`  | 8min  |
+| 6.2 | Wire URL validation into `$server` decorator (after URL is extracted)   | `src/minimal-decorators.ts` | 8min  |
+| 6.3 | Add `"invalid-server-url"` diagnostic to `$lib.diagnostics`             | `src/lib.ts`                | 3min  |
+| 6.4 | Add tests: valid URL, missing scheme, malformed host, port edge cases   | `test/integration/`         | 10min |
+| 6.5 | Build + test                                                            | N/A                         | 5min  |
+| 7.1 | Read GitHub issue #54 body and comments                                 | N/A                         | 5min  |
+| 7.2 | Survey current error surface (2 throw calls, decorator diagnostics)     | N/A                         | 7min  |
+| 7.3 | Decision: document why YAGNI (or implement minimal hierarchy if needed) | issue #54 comment or ADR    | 8min  |
 
 ### Phase 5: Final Verification — T8
 
-| Sub | Action                                | File(s) | Est.  |
-| --- | ------------------------------------- | ------- | ----- |
-| 8.1 | `bun run build` — 0 TypeScript errors | N/A     | 3min  |
-| 8.2 | `bun run lint` — 0 ESLint warnings    | N/A     | 3min  |
-| 8.3 | `bun test` — all tests pass           | N/A     | 5min  |
-| 8.4 | `bun run scripts/coverage-gate.ts` — 75% per-file minimum | N/A | 5min |
-| 8.5 | `git status` — verify clean working tree state | N/A | 2min |
+| Sub | Action                                                    | File(s) | Est. |
+| --- | --------------------------------------------------------- | ------- | ---- |
+| 8.1 | `bun run build` — 0 TypeScript errors                     | N/A     | 3min |
+| 8.2 | `bun run lint` — 0 ESLint warnings                        | N/A     | 3min |
+| 8.3 | `bun test` — all tests pass                               | N/A     | 5min |
+| 8.4 | `bun run scripts/coverage-gate.ts` — 75% per-file minimum | N/A     | 5min |
+| 8.5 | `git status` — verify clean working tree state            | N/A     | 2min |
 
 **Total: 36 subtasks, each ≤12 min. Grand total: ~335 min (~5.5 hours)**
 

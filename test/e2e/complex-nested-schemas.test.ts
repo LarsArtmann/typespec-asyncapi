@@ -4,7 +4,7 @@
  * Tests deep nesting, arrays, recursive types, and complex object structures
  */
 
-import { describe, expect, it } from "bun:test";
+import { describe, expect, it } from "vitest";
 import { createAsyncAPITestHost } from "../utils/test-helpers.js";
 
 describe("E2E: Complex Nested Schemas", () => {

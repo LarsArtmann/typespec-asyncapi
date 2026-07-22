@@ -5,7 +5,7 @@
  * Focuses on emitter functionality rather than custom binding factories.
  */
 
-import { describe, it, expect } from "bun:test";
+import { describe, it, expect } from "vitest";
 import { compileAsyncAPISpec } from "../utils/test-helpers";
 import { PROTOCOL_LIST, isSupportedProtocol } from "../../src/constants/protocols.js";
 

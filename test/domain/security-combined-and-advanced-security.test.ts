@@ -2,7 +2,7 @@
  * Security Schemes Tests
  */
 
-import { describe, it, expect } from "bun:test";
+import { describe, it, expect } from "vitest";
 import { createAsyncAPITestHost, compileAndGetAsyncAPI } from "../utils/test-helpers.js";
 
 describe("Combined & Advanced Security", () => {

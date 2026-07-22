@@ -2,7 +2,7 @@
  * Unit tests for @server decorator in TypeSpec AsyncAPI emitter
  */
 
-import { describe, it, expect } from "bun:test";
+import { describe, it, expect } from "vitest";
 import { compileAsyncAPISpecRaw } from "../utils/test-helpers";
 
 //TODO: this file is getting to big split it up
@@ -338,6 +338,108 @@ describe("@server decorator", () => {
         // Should have operations defined
         expect(asyncapiDoc.operations || asyncapiDoc.channels).toBeDefined();
       }
+    });
+  });
+
+  describe("URL validation", () => {
+    it("should accept well-formed URLs with scheme and host", async () => {
+      const source = `
+        @server("valid", #{
+          url: "kafka://broker.example.com:9092",
+          protocol: "kafka"
+        })
+        namespace ValidUrlTest;
+
+        model Event { id: string; }
+
+        @channel("events")
+        op publishEvent(): Event;
+      `;
+
+      const { diagnostics } = await compileAsyncAPISpecRaw(source, {
+        "output-file": "valid-url",
+        "file-type": "json",
+      });
+
+      const urlErrors = diagnostics.filter(
+        (d) => d.code === "@lars-artmann/typespec-asyncapi/invalid-server-url",
+      );
+      expect(urlErrors).toHaveLength(0);
+    });
+
+    it("should accept schemeless hostnames (valid AsyncAPI pattern)", async () => {
+      const source = `
+        @server("no-scheme", #{
+          url: "broker.example.com:9092",
+          protocol: "kafka"
+        })
+        namespace NoSchemeTest;
+
+        model Event { id: string; }
+
+        @channel("events")
+        op publishEvent(): Event;
+      `;
+
+      const { diagnostics } = await compileAsyncAPISpecRaw(source, {
+        "output-file": "no-scheme-url",
+        "file-type": "json",
+      });
+
+      const urlErrors = diagnostics.filter(
+        (d) => d.code === "@lars-artmann/typespec-asyncapi/invalid-server-url",
+      );
+      expect(urlErrors).toHaveLength(0);
+    });
+
+    it("should reject URLs containing spaces", async () => {
+      const source = `
+        @server("malformed", #{
+          url: "not a url at all",
+          protocol: "kafka"
+        })
+        namespace MalformedUrlTest;
+
+        model Event { id: string; }
+
+        @channel("events")
+        op publishEvent(): Event;
+      `;
+
+      const { diagnostics } = await compileAsyncAPISpecRaw(source, {
+        "output-file": "malformed-url",
+        "file-type": "json",
+      });
+
+      const urlErrors = diagnostics.filter(
+        (d) => d.code === "@lars-artmann/typespec-asyncapi/invalid-server-url",
+      );
+      expect(urlErrors.length).toBeGreaterThan(0);
+    });
+
+    it("should accept URLs with template variables", async () => {
+      const source = `
+        @server("templated", #{
+          url: "kafka://{host}:{port}",
+          protocol: "kafka"
+        })
+        namespace TemplatedUrlTest;
+
+        model Event { id: string; }
+
+        @channel("events")
+        op publishEvent(): Event;
+      `;
+
+      const { diagnostics } = await compileAsyncAPISpecRaw(source, {
+        "output-file": "templated-url",
+        "file-type": "json",
+      });
+
+      const urlErrors = diagnostics.filter(
+        (d) => d.code === "@lars-artmann/typespec-asyncapi/invalid-server-url",
+      );
+      expect(urlErrors).toHaveLength(0);
     });
   });
 });

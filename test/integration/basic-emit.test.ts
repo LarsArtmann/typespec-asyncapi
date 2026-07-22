@@ -1,4 +1,4 @@
-import { describe, expect, it } from "bun:test";
+import { describe, expect, it } from "vitest";
 import { compileAsyncAPIWithoutErrors } from "../utils/test-helpers.js";
 
 describe("AsyncAPI Emitter Integration", () => {

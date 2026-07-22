@@ -3,58 +3,95 @@ import { createTypeSpecLibrary, paramMessage } from "@typespec/compiler";
 export const $lib = createTypeSpecLibrary({
   name: "@lars-artmann/typespec-asyncapi",
   diagnostics: {
-    "invalid-asyncapi-version": {
-      severity: "error",
-      messages: {
-        default: paramMessage`AsyncAPI version '${"version"}' is not supported. Only 3.1.0 is supported.`,
-      },
-    },
     "missing-channel-path": {
       severity: "error",
       messages: {
-        default: paramMessage`Operation '${"operationName"}' missing @channel decorator.`,
+        default: paramMessage`Operation '${"operationName"}' missing @channel decorator path.`,
       },
     },
     "unsupported-protocol": {
       severity: "error",
       messages: {
-        default: paramMessage`Protocol '${"protocol"}' is not supported.`,
+        default: paramMessage`Protocol '${"protocol"}' is not supported. Supported protocols: ${"validProtocols"}.`,
+      },
+    },
+    "server-target-invalid": {
+      severity: "error",
+      messages: {
+        default: "@server can only be applied to namespaces.",
       },
     },
     "invalid-server-config": {
       severity: "error",
       messages: {
-        default: paramMessage`Server configuration '${"serverName"}' is not valid. ${"error"} Must include url and protocol.`,
+        default: paramMessage`Server '${"serverName"}' configuration is missing. Must include url and protocol.`,
       },
     },
-    "duplicate-server-name": {
+    "server-url-required": {
       severity: "error",
       messages: {
-        default: paramMessage`Server name '${"serverName"}' is already defined.`,
+        default: "Server URL is required.",
       },
     },
-    "invalid-message-target": {
+    "invalid-server-url": {
       severity: "error",
       messages: {
-        default: paramMessage`@message can only be applied to models, not '${"targetType"}'.`,
+        default: paramMessage`Server URL '${"url"}' is not valid. URL must not be empty or contain spaces/control characters.`,
       },
     },
-    "missing-protocol-type": {
+    "server-protocol-required": {
       severity: "error",
       messages: {
-        default: "Protocol configuration must specify a protocol type.",
+        default: "Server protocol is required.",
       },
     },
-    "invalid-protocol-type": {
+    "invalid-message-config": {
       severity: "error",
       messages: {
-        default: paramMessage`Protocol type '${"protocol"}' is not supported. Supported: ${"validProtocols"}.`,
+        default: paramMessage`Message model '${"modelName"}' missing configuration. Use @message with configuration object.`,
       },
     },
-    "missing-security-config": {
+    "invalid-protocol-config": {
       severity: "error",
       messages: {
-        default: "Security configuration must specify a name and scheme.",
+        default: paramMessage`Protocol configuration missing for '${"targetKind"}'. Use @protocol with configuration object.`,
+      },
+    },
+    "invalid-security-config": {
+      severity: "error",
+      messages: {
+        default: paramMessage`Security configuration missing for '${"targetKind"}'. Use @security with configuration object.`,
+      },
+    },
+    "invalid-security-scheme-type": {
+      severity: "error",
+      messages: {
+        default: paramMessage`Unsupported security scheme type '${"schemeType"}'. Valid types: ${"validTypes"}.`,
+      },
+    },
+    "invalid-tags-config": {
+      severity: "error",
+      messages: {
+        default: "Tags configuration missing or invalid. Use @tags with string array.",
+        "non-string": "All tags must be strings.",
+      },
+    },
+    "invalid-correlationId-config": {
+      severity: "error",
+      messages: {
+        default: paramMessage`Correlation ID location missing for model '${"modelName"}'. Use @correlationId with location path.`,
+      },
+    },
+    "invalid-bindings-config": {
+      severity: "error",
+      messages: {
+        default: paramMessage`Protocol bindings missing for '${"targetKind"}'. Use @bindings with configuration object.`,
+      },
+    },
+    "invalid-header-config": {
+      severity: "error",
+      messages: {
+        default: paramMessage`Header name missing for '${"targetKind"}'. Use @header with name and value.`,
       },
     },
   },

@@ -9,7 +9,7 @@
  * This test proves the emitted document is internally consistent
  * and every $ref resolves to a real target.
  */
-import { describe, it, expect } from "bun:test";
+import { describe, it, expect } from "vitest";
 import { compileAsyncAPIWithoutErrors } from "../utils/test-helpers.js";
 
 const source = `

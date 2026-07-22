@@ -7,7 +7,7 @@
  * 3. Output files are generated with correct names
  */
 
-import { describe, expect, it } from "bun:test";
+import { describe, expect, it } from "vitest";
 import { compileAsyncAPI, compileAsyncAPIWithoutErrors } from "../utils/test-helpers.js";
 import { SERIALIZATION_FORMAT_OPTION_JSON } from "../utils/serialization-format-option.js";
 

@@ -6,7 +6,7 @@
  * See https://www.asyncapi.com/docs/reference/specification/v3.1.0#securitySchemeObject
  */
 
-import { describe, it, expect } from "bun:test";
+import { describe, it, expect } from "vitest";
 import {
   createAsyncAPITestHost,
   compileAndGetAsyncAPI,

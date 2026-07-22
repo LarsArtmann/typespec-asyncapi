@@ -4,7 +4,7 @@
  * Tests written from the END USER's perspective:
  * "As a user defining TypeSpec, when I use @decorator, I get X in my AsyncAPI output"
  */
-import { expect, test, describe } from "bun:test";
+import { expect, test, describe } from "vitest";
 import { PROTOCOL_LIST, isSupportedProtocol } from "../../src/constants/protocols.js";
 import {
   parsePathTemplate,

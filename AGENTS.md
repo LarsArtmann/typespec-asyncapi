@@ -10,19 +10,20 @@
 bun install           # Install dependencies
 bun run build         # Build TypeScript → JavaScript (0 errors)
 bun run lint          # Run ESLint (0 errors, 0 warnings)
-bun test              # Run tests (406 pass, 0 fail)
+bun run test          # Run tests via vitest (426 pass, 0 fail)
 ```
 
-**Important:** Use `bun` and `bunx`, never `npm` or `npx`.
+**Important:** Use `bun` and `bunx` for install/build, never `npm` or `npx`. Tests run via **vitest** (Node.js/V8) — not `bun test` — because Bun has documented memory leaks that cause OOM crashes with heavy test suites.
 
 ## Critical Constraints
 
-- **Use `bun`**, never `npm` or `npx` (use `bunx` instead)
+- **Use `bun`/`bunx` for install/build**, never `npm` or `npx`
 - **Build-before-test policy:** Tests won't run if TypeScript compilation fails
+- **Tests run via vitest** (not `bun test`): `bun run test` executes `vitest run`. Bun's test runner has documented OOM crashes — vitest uses Node.js/V8 GC which is stable under heavy compilation workloads.
 - **git commit --no-verify:** Pre-commit hook requires bash (NixOS doesn't have /bin/bash)
 - **All source files under 370 lines** (enforced)
 - **Coverage gate at 75%** per-file minimum (scripts/coverage-gate.ts)
-- **Diagnostic pipeline unified:** All compilation APIs use `compileAndDiagnose()` — decorator diagnostics always surface
+- **Diagnostic system:** `reportDiagnostic()` in `decorator-helpers.ts` uses `$lib.reportDiagnostic()` (TypeSpec library API), NOT raw `program.reportDiagnostic()`. All codes are declared in `src/lib.ts` and compile-time validated via `keyof typeof $lib.diagnostics`. The library name is auto-prefixed to diagnostic codes by the TypeSpec runtime. **14 codes declared = 14 codes fired** (no split-brain).
 - **Zero `any` types in emitter.ts** (achieved)
 - **ESLint config:** Clean, no Effect.TS-era rules (throw/try/catch/Promise allowed)
 
@@ -60,7 +61,7 @@ components.schemas.User.properties.address → #/components/schemas/Address
 
 ## TypeSpec Test Framework
 
-Tests use `bun:test` with the TypeSpec compiler testing API (`createTester`). All compilation is programmatic via `test/utils/test-helpers.ts` — no process spawning.
+Tests use **vitest** with the TypeSpec compiler testing API (`createTester`). All compilation is programmatic via `test/utils/test-helpers.ts` — no process spawning. Test files import `{ describe, it, expect, test }` from `"vitest"`.
 
 ### Test Helpers (3 files, consolidated from 7)
 

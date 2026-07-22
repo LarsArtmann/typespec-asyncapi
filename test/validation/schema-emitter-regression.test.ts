@@ -10,7 +10,7 @@
  * but never committed as permanent regression tests.
  */
 
-import { describe, it, expect } from "bun:test";
+import { describe, it, expect } from "vitest";
 import { compileAsyncAPIWithoutErrors } from "../utils/test-helpers.js";
 
 describe("refForNamedType: arrays of named models", () => {

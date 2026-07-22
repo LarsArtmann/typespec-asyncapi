@@ -33,8 +33,9 @@ import {
   type ProtocolBindings,
 } from "./domain/models/asyncapi-document.js";
 import {
-  reportDecoratorDiagnostic,
+  reportDiagnostic,
   validateConfig,
+  isValidUrl,
   getModelPropertyStringValue,
   getModelPropertyValue,
   modelToRecord,
@@ -45,12 +46,9 @@ import {
 
 export function $channel(context: DecoratorContext, target: Operation, path: string): void {
   if (!path || path.length === 0) {
-    reportDecoratorDiagnostic(
-      context,
-      "missing-channel-path",
-      target,
-      `Operation '${target.name}' missing @channel decorator path`,
-    );
+    reportDiagnostic(context, "missing-channel-path", target, {
+      operationName: target.name,
+    });
     return;
   }
   storeChannelState(context.program, target, path);
@@ -63,56 +61,42 @@ export function $server(
   config: unknown,
 ): void {
   if (target.kind !== "Namespace") {
-    reportDecoratorDiagnostic(
-      context,
-      "@lars-artmann/typespec-asyncapi/server-target-invalid",
-      target,
-      "@server can only be applied to namespaces",
-    );
+    reportDiagnostic(context, "server-target-invalid", target);
     return;
   }
 
   if (
-    !validateConfig(
-      config,
-      context,
-      target,
-      "@lars-artmann/typespec-asyncapi/invalid-server-config",
-      "Server configuration is missing",
-    )
+    !validateConfig(config, context, target, "invalid-server-config", {
+      serverName: name,
+    })
   )
     return;
 
   const configTyped = config as Record<string, unknown>;
 
   if (!configTyped.url) {
-    reportDecoratorDiagnostic(
-      context,
-      "@lars-artmann/typespec-asyncapi/server-url-required",
-      target,
-      "Server URL is required",
-    );
+    reportDiagnostic(context, "server-url-required", target);
+    return;
+  }
+
+  if (!isValidUrl(configTyped.url as string)) {
+    reportDiagnostic(context, "invalid-server-url", target, {
+      url: configTyped.url,
+    });
     return;
   }
 
   if (!configTyped.protocol) {
-    reportDecoratorDiagnostic(
-      context,
-      "@lars-artmann/typespec-asyncapi/server-protocol-required",
-      target,
-      "Server protocol is required",
-    );
+    reportDiagnostic(context, "server-protocol-required", target);
     return;
   }
 
   const protocol = (configTyped.protocol as string).toLowerCase();
   if (!isSupportedProtocol(protocol)) {
-    reportDecoratorDiagnostic(
-      context,
-      "@lars-artmann/typespec-asyncapi/unsupported-protocol",
-      target,
-      `Protocol '${protocol}' is not supported. Supported protocols: ${PROTOCOL_LIST.join(", ")}`,
-    );
+    reportDiagnostic(context, "unsupported-protocol", target, {
+      protocol,
+      validProtocols: PROTOCOL_LIST.join(", "),
+    });
     return;
   }
 
@@ -132,13 +116,9 @@ export function $publish(context: DecoratorContext, target: Operation, config?: 
 
 export function $message(context: DecoratorContext, target: Model, config: unknown): void {
   if (
-    !validateConfig(
-      config,
-      context,
-      target,
-      "invalid-message-config",
-      `Message model '${target.name}' missing configuration. Use @message with configuration object.`,
-    )
+    !validateConfig(config, context, target, "invalid-message-config", {
+      modelName: target.name,
+    })
   )
     return;
 
@@ -171,25 +151,19 @@ export function $protocol(
   config: unknown,
 ): void {
   if (
-    !validateConfig(
-      config,
-      context,
-      target,
-      "invalid-protocol-config",
-      `Protocol configuration missing for '${target.kind}'. Use @protocol with configuration object.`,
-    )
+    !validateConfig(config, context, target, "invalid-protocol-config", {
+      targetKind: target.kind,
+    })
   )
     return;
 
   const configRecord = extractConfigRecord(config);
   const protocol = configRecord.protocol as string | undefined;
   if (protocol && !isSupportedProtocol(protocol.toLowerCase())) {
-    reportDecoratorDiagnostic(
-      context,
-      "unsupported-protocol",
-      target,
-      `Protocol '${protocol}' is not supported. Supported protocols: ${PROTOCOL_LIST.join(", ")}`,
-    );
+    reportDiagnostic(context, "unsupported-protocol", target, {
+      protocol,
+      validProtocols: PROTOCOL_LIST.join(", "),
+    });
     return;
   }
   storeProtocolConfig(context.program, target, configRecord);
@@ -201,13 +175,9 @@ export function $security(
   config: unknown,
 ): void {
   if (
-    !validateConfig(
-      config,
-      context,
-      target,
-      "invalid-security-config",
-      `Security configuration missing for '${target.kind}'. Use @security with configuration object.`,
-    )
+    !validateConfig(config, context, target, "invalid-security-config", {
+      targetKind: target.kind,
+    })
   )
     return;
 
@@ -232,12 +202,10 @@ export function $security(
   if (name && scheme && Object.keys(scheme).length > 0) {
     const schemeType = scheme.type;
     if (typeof schemeType !== "string" || !isValidSchemeType(schemeType)) {
-      reportDecoratorDiagnostic(
-        context,
-        "invalid-security-scheme-type",
-        target,
-        `Unsupported security scheme type '${String(schemeType)}'. Valid types: ${SCHEME_TYPE_LIST.join(", ")}`,
-      );
+      reportDiagnostic(context, "invalid-security-scheme-type", target, {
+        schemeType: String(schemeType),
+        validTypes: SCHEME_TYPE_LIST.join(", "),
+      });
       return;
     }
     storeSecurityConfig(context.program, target, {
@@ -259,18 +227,13 @@ export function $subscribe(context: DecoratorContext, target: Operation): void {
 
 export function $tags(context: DecoratorContext, target: DiagnosticTarget, value: unknown): void {
   if (!value || !Array.isArray(value)) {
-    reportDecoratorDiagnostic(
-      context,
-      "invalid-tags-config",
-      target,
-      "Tags configuration missing or invalid. Use @tags with string array.",
-    );
+    reportDiagnostic(context, "invalid-tags-config", target);
     return;
   }
 
   const stringTags = value.filter((tag): tag is string => typeof tag === "string");
   if (stringTags.length !== value.length) {
-    reportDecoratorDiagnostic(context, "invalid-tags-config", target, "All tags must be strings.");
+    reportDiagnostic(context, "invalid-tags-config", target, undefined, "non-string");
     return;
   }
 
@@ -284,12 +247,9 @@ export function $correlationId(
   property?: unknown,
 ): void {
   if (!location || typeof location !== "string") {
-    reportDecoratorDiagnostic(
-      context,
-      "invalid-correlationId-config",
-      target,
-      `Correlation ID location missing for model '${target.name}'. Use @correlationId with location path.`,
-    );
+    reportDiagnostic(context, "invalid-correlationId-config", target, {
+      modelName: target.name,
+    });
     return;
   }
 
@@ -302,12 +262,9 @@ export function $bindings(
   value: unknown,
 ): void {
   if (!value || typeof value !== "object") {
-    reportDecoratorDiagnostic(
-      context,
-      "invalid-bindings-config",
-      target,
-      `Protocol bindings missing for '${target.kind}'. Use @bindings with configuration object.`,
-    );
+    reportDiagnostic(context, "invalid-bindings-config", target, {
+      targetKind: target.kind,
+    });
     return;
   }
 
@@ -322,12 +279,9 @@ export function $header(
   value?: unknown,
 ): void {
   if (!name || typeof name !== "string") {
-    reportDecoratorDiagnostic(
-      context,
-      "invalid-header-config",
-      target,
-      `Header name missing for '${target.kind}'. Use @header with name and value.`,
-    );
+    reportDiagnostic(context, "invalid-header-config", target, {
+      targetKind: target.kind,
+    });
     return;
   }
 

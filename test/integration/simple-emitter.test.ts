@@ -2,7 +2,7 @@
  * Test AsyncAPI emitter without decorators - basic functionality
  */
 
-import { describe, expect, it } from "bun:test";
+import { describe, expect, it } from "vitest";
 import { compileAsyncAPISpecWithoutErrors, parseAsyncAPIOutput } from "../utils/test-helpers.js";
 
 describe("Simple AsyncAPI Emitter (No Decorators)", () => {

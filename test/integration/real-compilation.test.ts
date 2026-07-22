@@ -3,7 +3,7 @@
  * Verifies the emitter produces valid AsyncAPI 3.1 end-to-end.
  */
 
-import { describe, expect, it } from "bun:test";
+import { describe, expect, it } from "vitest";
 import { compileAsyncAPISpecWithoutErrors, parseAsyncAPIOutput } from "../utils/test-helpers.js";
 
 describe("Real Compilation Integration Test", () => {

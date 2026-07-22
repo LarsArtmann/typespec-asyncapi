@@ -9,7 +9,7 @@
  * - All decorators integrated with TypeSpec compiler
  */
 
-import { describe, expect, test } from "bun:test";
+import { describe, expect, test } from "vitest";
 import {
   type AsyncAPIObject,
   compileAsyncAPISpecWithoutErrors,

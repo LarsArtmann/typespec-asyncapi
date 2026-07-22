@@ -7,7 +7,7 @@
  * MIGRATED TO: TypeSpec 1.4.0 EmitterTester API
  */
 
-import { describe, expect, test } from "bun:test";
+import { describe, expect, test } from "vitest";
 import { compileAsyncAPIWithoutErrors } from "../utils/test-helpers.js";
 import type { AsyncAPIObject } from "../utils/test-helpers.js";
 

@@ -23,7 +23,7 @@
  * ```
  */
 
-import { expect } from "bun:test";
+import { expect } from "vitest";
 import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js";
 
 /**

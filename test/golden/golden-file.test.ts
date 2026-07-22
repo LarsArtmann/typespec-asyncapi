@@ -6,13 +6,13 @@
  * Any change to the emitter that alters output will be caught immediately.
  */
 
-import { describe, it, expect } from "bun:test";
+import { describe, it, expect } from "vitest";
 import { readFileSync } from "fs";
 import { join } from "path";
 import YAML from "yaml";
 import { compileAsyncAPISpecRaw } from "../utils/test-helpers";
 
-const GOLDEN_FILE = join(import.meta.dir, "ecommerce.expected.yaml");
+const GOLDEN_FILE = join(import.meta.dirname, "ecommerce.expected.yaml");
 
 const SOURCE = `
 @server("production", #{

@@ -1,4 +1,4 @@
-import { describe, it, expect } from "bun:test";
+import { describe, it, expect } from "vitest";
 import { getStateMap, getMultiState } from "../../src/state-compatibility.js";
 import type { Program } from "@typespec/compiler";
 

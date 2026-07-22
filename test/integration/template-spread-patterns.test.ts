@@ -7,7 +7,7 @@
  *
  * @see https://typespec.io/release-notes/typespec-1-13-0/
  */
-import { describe, it, expect } from "bun:test";
+import { describe, it, expect } from "vitest";
 import { compileAsyncAPIWithoutErrors } from "../utils/test-helpers.js";
 
 describe("Template Spread Patterns (TypeSpec 1.13 Compatibility)", () => {

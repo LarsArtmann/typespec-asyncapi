@@ -4,7 +4,7 @@
  * Tests 50+ WebSocket and MQTT scenarios for AsyncAPI generation
  */
 
-import { describe, it, expect } from "bun:test";
+import { describe, it, expect } from "vitest";
 import { createAsyncAPITestHost, compileAndGetAsyncAPI } from "../utils/test-helpers.js";
 
 describe("WebSocket & MQTT Protocols - Comprehensive Domain Tests", () => {

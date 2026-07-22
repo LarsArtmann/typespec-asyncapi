@@ -9,7 +9,7 @@
 //TODO: FILE SYSTEM CHAOS - Raw fs operations scattered everywhere without abstraction!
 //TODO: CHILD PROCESS SPAWNING ANTI-PATTERN - Using raw spawn() instead of proper test utilities!
 //TODO: IMPORT CHAOS - 6 different imports mixing testing, Effect, fs, and child_process!
-import { describe, it, expect } from "bun:test";
+import { describe, it, expect } from "vitest";
 import { compileAsyncAPISpecWithoutErrors, parseAsyncAPIOutput } from "../utils/test-helpers";
 
 describe("AsyncAPI Basic Functionality", () => {

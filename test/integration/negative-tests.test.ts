@@ -4,7 +4,7 @@
  * Verify the emitter handles error cases gracefully.
  */
 
-import { describe, it, expect } from "bun:test";
+import { describe, it, expect } from "vitest";
 import { compileAsyncAPISpecRaw } from "../utils/test-helpers";
 
 describe("Negative: missing @channel decorator", () => {

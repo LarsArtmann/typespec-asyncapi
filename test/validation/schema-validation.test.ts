@@ -5,7 +5,7 @@
  * using @asyncapi/specs + ajv (both already dependencies).
  */
 
-import { describe, it, expect } from "bun:test";
+import { describe, it, expect } from "vitest";
 import Ajv from "ajv";
 import { readFileSync } from "fs";
 import { join } from "path";
@@ -13,7 +13,7 @@ import { compileAsyncAPISpecRaw } from "../utils/test-helpers";
 
 // Load the official AsyncAPI 3.1.0 JSON Schema
 const schemaPath = join(
-  import.meta.dir,
+  import.meta.dirname,
   "..",
   "..",
   "node_modules",

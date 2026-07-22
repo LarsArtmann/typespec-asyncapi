@@ -10,7 +10,7 @@ const lcovPath = "coverage/lcov.info";
 
 if (!existsSync(lcovPath)) {
   console.error(`Coverage file not found: ${lcovPath}`);
-  console.error("Run: bun test --coverage --coverage-reporter=lcov --coverage-dir=coverage");
+  console.error("Run: vitest run --coverage");
   process.exit(1);
 }
 

@@ -6,6 +6,8 @@
  * Based on https://www.asyncapi.com/docs/reference/specification/v3.1.0
  */
 
+import type { AsyncAPIProtocol } from "../../constants/protocols.js";
+
 export type Ref = { $ref: string };
 
 /** Protocol-specific binding object keyed by protocol name. */
@@ -35,7 +37,7 @@ export type InfoObject = {
 
 export type ServerObject = {
   host: string;
-  protocol: string;
+  protocol: AsyncAPIProtocol;
   protocolVersion?: string;
   pathname?: string;
   description?: string;
@@ -67,7 +69,7 @@ export type OperationObject = {
   description?: string;
   security?: SecurityScheme[];
   tags?: Tag[];
-  bindings?: Record<string, unknown>;
+  bindings?: ProtocolBindings;
   traits?: Ref[];
   messages?: Ref[];
   reply?: OperationReply;
