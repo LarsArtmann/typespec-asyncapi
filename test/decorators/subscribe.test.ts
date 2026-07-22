@@ -30,7 +30,7 @@ describe("@subscribe Decorator Tests", () => {
       "output-file": "test-subscribe",
     });
 
-    const asyncapiDoc = result.asyncApiDoc as AsyncAPIObject;
+    const asyncapiDoc = result.asyncApiDoc;
     expect(asyncapiDoc).toBeDefined();
 
     // Validate AsyncAPI structure
@@ -86,7 +86,7 @@ describe("@subscribe Decorator Tests", () => {
       "output-file": "multi-subscribe-test",
     });
 
-    const asyncapiDoc = result.asyncApiDoc as AsyncAPIObject;
+    const asyncapiDoc = result.asyncApiDoc;
 
     // Validate both schemas were created
     expect(asyncapiDoc.components?.schemas?.UserEvent).toBeDefined();
@@ -140,7 +140,7 @@ describe("@subscribe Decorator Tests", () => {
       "output-file": "complex-subscribe-test",
     });
 
-    const asyncapiDoc = result.asyncApiDoc as AsyncAPIObject;
+    const asyncapiDoc = result.asyncApiDoc;
 
     // Validate complex schema structure
     expect(asyncapiDoc.components?.schemas?.ComplexUserEvent).toBeDefined();
@@ -186,7 +186,7 @@ describe("@subscribe Decorator Tests", () => {
       "output-file": "parameterized-subscribe-test",
     });
 
-    const asyncapiDoc = result.asyncApiDoc as AsyncAPIObject;
+    const asyncapiDoc = result.asyncApiDoc;
 
     // Validate schema
     expect(asyncapiDoc.components?.schemas?.UserNotification).toBeDefined();
