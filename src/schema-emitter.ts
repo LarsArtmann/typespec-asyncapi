@@ -349,8 +349,8 @@ export function generateSchemas(
         }
       }
     }
-  } catch {
-    // Fall back to empty schemas if asset-emitter fails
+  } catch (err) {
+    console.error("[asyncapi-emitter] Schema generation failed:", err);
   }
 
   return schemas;

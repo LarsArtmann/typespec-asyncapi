@@ -91,6 +91,15 @@ export function isValidBindingVersion(protocol: string, version: string): boolea
 }
 
 /**
+ * Returns a comma-separated string of valid binding versions for a protocol,
+ * or undefined if the protocol has no binding definitions.
+ */
+export function getValidVersionsString(protocol: string): string | undefined {
+  const versions = VALID_BINDING_VERSIONS[protocol as ProtocolWithBindings];
+  return versions ? versions.join(", ") : undefined;
+}
+
+/**
  * Returns true if the protocol supports bindings on the given target kind.
  */
 export function supportsBindingPlacement(protocol: string, kind: BindingTargetKind): boolean {

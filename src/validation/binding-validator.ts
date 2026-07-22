@@ -17,6 +17,7 @@
 import { normalizeProtocol, isSupportedProtocol } from "../constants/protocols.js";
 import {
   getLatestBindingVersion,
+  getValidVersionsString,
   hasProtocolBindings,
   isValidBindingVersion,
   normalizeBindingProtocol,
@@ -112,16 +113,4 @@ export function processBindings(raw: Record<string, unknown>): {
   }
 
   return { bindings, issues };
-}
-
-function getValidVersionsString(protocol: string): string | undefined {
-  const versions: Record<string, readonly string[]> = {
-    kafka: ["0.5.0", "0.4.0", "0.3.0"],
-    amqp: ["0.3.0"],
-    mqtt: ["0.2.0"],
-    http: ["0.3.0", "0.2.0"],
-    ws: ["0.1.0"],
-  };
-  const list = versions[protocol];
-  return list ? list.join(", ") : undefined;
 }

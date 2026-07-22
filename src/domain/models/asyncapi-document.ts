@@ -10,15 +10,49 @@ import type { AsyncAPIProtocol } from "../../constants/protocols.js";
 
 export type Ref = { $ref: string };
 
+/** Construct a `$ref` object pointing into the AsyncAPI document. */
+export function ref(pointer: string): Ref {
+  return { $ref: pointer };
+}
+
+/** Construct a `$ref` into `#/components/schemas/{name}` (RFC 6901-escaped). */
+export function refSchema(name: string): Ref {
+  return { $ref: `#/components/schemas/${escapeRefToken(name)}` };
+}
+
+/** Construct a `$ref` into `#/components/messages/{name}` (RFC 6901-escaped). */
+export function refMessage(name: string): Ref {
+  return { $ref: `#/components/messages/${escapeRefToken(name)}` };
+}
+
+/** Construct a `$ref` into `#/channels/{name}` (RFC 6901-escaped). */
+export function refChannel(name: string): Ref {
+  return { $ref: `#/channels/${escapeRefToken(name)}` };
+}
+
+/** Escape a string for safe use as a JSON Pointer reference token (RFC 6901). */
+export function escapeRefToken(token: string): string {
+  return token.replaceAll("~", "~0").replaceAll("/", "~1");
+}
+
+/** AsyncAPI 3.1 operation action — the direction of message flow. */
+export type OperationAction = "send" | "receive";
+
 /** Protocol-specific binding object keyed by protocol name. */
 export type ProtocolBindings = Record<string, Record<string, unknown>>;
 
-/** A single OAuth2 flow configuration. */
+/**
+ * A single OAuth2 flow configuration.
+ *
+ * AsyncAPI 3.1 uses `availableScopes` (not `scopes`) — a map of
+ * scope name to human-readable description.
+ * @see https://www.asyncapi.com/docs/reference/specification/v3.1.0#oauthFlowObject
+ */
 export type OAuth2Flow = {
   authorizationUrl?: string;
   tokenUrl?: string;
   refreshUrl?: string;
-  scopes: Record<string, string>;
+  availableScopes: Record<string, string>;
 };
 
 /** OAuth2 flow configurations keyed by flow type. */
@@ -35,6 +69,13 @@ export type InfoObject = {
   description?: string;
 };
 
+/**
+ * Security Requirement Object — maps a security scheme name (defined in
+ * `components.securitySchemes`) to the list of scopes required.
+ * @see https://www.asyncapi.com/docs/reference/specification/v3.1.0#securityRequirementObject
+ */
+export type SecurityRequirement = Record<string, string[]>;
+
 export type ServerObject = {
   host: string;
   protocol: AsyncAPIProtocol;
@@ -44,7 +85,7 @@ export type ServerObject = {
   title?: string;
   summary?: string;
   variables?: Record<string, { enum?: string[]; default?: string; description?: string }>;
-  security?: SecurityScheme[];
+  security?: SecurityRequirement[];
   tags?: Tag[];
   bindings?: ProtocolBindings;
 };
@@ -62,12 +103,12 @@ export type ChannelObject = {
 };
 
 export type OperationObject = {
-  action: "send" | "receive";
+  action: OperationAction;
   channel: Ref;
   title?: string;
   summary?: string;
   description?: string;
-  security?: SecurityScheme[];
+  security?: SecurityRequirement[];
   tags?: Tag[];
   bindings?: ProtocolBindings;
   traits?: Ref[];

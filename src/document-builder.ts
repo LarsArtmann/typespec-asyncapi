@@ -12,7 +12,7 @@
  */
 
 import type { Program, Type } from "@typespec/compiler";
-import { isStdNamespace } from "@typespec/compiler";
+import { isStdNamespace, listServices } from "@typespec/compiler";
 import type { AsyncAPIEmitterOptions } from "./infrastructure/configuration/asyncAPIEmitterOptions.js";
 import { normalizeProtocol } from "./constants/protocols.js";
 import {
@@ -27,20 +27,23 @@ import type {
   ComponentsObject,
   MessageObject,
   OperationObject,
+  OperationAction,
   ParameterObject,
   SchemaObject,
   SecurityScheme,
   ServerObject,
 } from "./domain/models/asyncapi-document.js";
+import {
+  ref,
+  refSchema,
+  refMessage,
+  refChannel,
+  escapeRefToken,
+} from "./domain/models/asyncapi-document.js";
 
 export const ASYNCAPI_SPEC_VERSION = "3.1.0";
 
-/** Escape a string for safe use as a JSON Pointer reference token (RFC 6901). */
-function escapeRefToken(token: string): string {
-  return token.replaceAll("~", "~0").replaceAll("/", "~1");
-}
-
-function inferActionFromName(name: string): "send" | "receive" {
+function inferActionFromName(name: string): OperationAction {
   const lower = name.toLowerCase();
   if (
     lower.startsWith("publish") ||
@@ -78,7 +81,7 @@ export function buildAsyncAPIDocument(
   type DiscoveredOp = {
     opName: string;
     channelKey: string;
-    action: "send" | "receive";
+    action: OperationAction;
     messageName: string;
   };
 
@@ -117,12 +120,12 @@ export function buildAsyncAPIDocument(
         name: msgData?.title ?? messageName,
         contentType: msgData?.contentType ?? "application/json",
         ...(msgData?.description ? { summary: msgData.description } : {}),
-        payload: { $ref: `#/components/schemas/${escapeRefToken(messageName)}` },
+        payload: refSchema(messageName),
       };
     }
     const channel = ensureChannel(channelKey);
     const channelMsgs = channel.messages ?? {};
-    channelMsgs[messageName] = { $ref: `#/components/messages/${escapeRefToken(messageName)}` };
+    channelMsgs[messageName] = refMessage(messageName);
     channel.messages = channelMsgs;
   }
 
@@ -200,11 +203,11 @@ export function buildAsyncAPIDocument(
 
     const operationObj: OperationObject = {
       action: op.action,
-      channel: { $ref: `#/channels/${escapeRefToken(op.channelKey)}` },
+      channel: refChannel(op.channelKey),
       messages: [
-        {
-          $ref: `#/channels/${escapeRefToken(op.channelKey)}/messages/${escapeRefToken(op.messageName)}`,
-        },
+        ref(
+          `#/channels/${escapeRefToken(op.channelKey)}/messages/${escapeRefToken(op.messageName)}`,
+        ),
       ],
     };
 
@@ -235,7 +238,7 @@ export function buildAsyncAPIDocument(
       name: msgData.title ?? typeWithName.name,
       contentType: msgData.contentType ?? "application/json",
       ...(msgData.description ? { summary: msgData.description } : {}),
-      payload: { $ref: `#/components/schemas/${escapeRefToken(typeWithName.name)}` },
+      payload: refSchema(typeWithName.name),
     };
 
     const correlation = state.correlationIds.get(type);
@@ -361,10 +364,14 @@ export function buildAsyncAPIDocument(
   if (Object.keys(schemas).length > 0) components.schemas = schemas;
   if (Object.keys(securitySchemes).length > 0) components.securitySchemes = securitySchemes;
 
+  // Read @service title from TypeSpec core state (OpenAPI/HTTP migration compat)
+  const services = listServices(program);
+  const serviceTitle = services.length > 0 ? services[0]?.title : undefined;
+
   const document: AsyncAPIDocument = {
     asyncapi: ASYNCAPI_SPEC_VERSION,
     info: {
-      title: options?.title ?? "Generated API",
+      title: options?.title ?? serviceTitle ?? "Generated API",
       version: options?.version ?? "1.0.0",
       description: options?.description,
     },

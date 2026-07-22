@@ -11,10 +11,11 @@
  * - accountability-system (enum-heavy, Record types)
  * - ActaFlow (union types, complex property graphs)
  *
- * FINDING: @service({}) (common TypeSpec pattern from OpenAPI/HTTP emitters)
- * causes a silent compilation failure — "Is a model expression type, but is
- * being used as a value." No AsyncAPI output is produced. This emitter does
- * NOT register @service; users must use @server + namespace directly.
+ * NOTE: @service is a core TypeSpec decorator (not AsyncAPI-specific). It
+ * requires value-literal syntax: @service(#{title: "My API"}), NOT model
+ * expression syntax @service({title: "My API"}). The emitter reads the
+ * @service title and uses it for the document info.title (emitter options
+ * take precedence). See test/decorators/service.test.ts for coverage.
  */
 
 import { describe, it, expect } from "vitest";
