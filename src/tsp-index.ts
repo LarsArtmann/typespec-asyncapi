@@ -5,8 +5,6 @@
  * This file is imported by lib/main.tsp to complete TypeSpec library setup.
  */
 
-import { $decorators } from "./decorators.js";
-import { $lib } from "./lib.js";
-
-export { $decorators, $lib };
+export { $decorators } from "./decorators.js";
+export { $lib } from "./lib.js";
 export const namespace = "TypeSpec.AsyncAPI";
