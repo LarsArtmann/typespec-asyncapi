@@ -74,7 +74,7 @@ describe("all Example Files → AsyncAPI 3.1 Validation", () => {
 
       it("should produce an asyncapi: 3.1.0 document", async () => {
         const result = await compileAsyncAPI(source);
-        expect(result.asyncApiDoc).toBe(true);
+        expect(result.asyncApiDoc).toBeDefined();
         expect((result.asyncApiDoc as Record<string, unknown>)?.asyncapi).toBe("3.1.0");
       });
 
@@ -85,7 +85,7 @@ describe("all Example Files → AsyncAPI 3.1 Validation", () => {
         const errors = result.diagnostics.filter((d) => d.severity === "error");
         expect(errors).toStrictEqual([]);
 
-        expect(doc).toBe(true);
+        expect(doc).toBeDefined();
         const valid = validate(doc);
         if (!valid) {
           console.error(

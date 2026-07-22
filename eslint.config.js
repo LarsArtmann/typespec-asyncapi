@@ -5,7 +5,10 @@ import tseslint from "typescript-eslint";
 export default [
   js.configs.recommended,
   ...tseslint.configs.recommended,
-  ...tseslint.configs.recommendedTypeChecked,
+  ...tseslint.configs.recommendedTypeChecked.map((config) => ({
+    ...config,
+    files: ["src/**/*.ts", "src/**/*.tsx"],
+  })),
 
   {
     files: ["src/**/*.ts"],

@@ -96,7 +96,7 @@ describe("semantic Validation: $ref Resolution", () => {
 
       const errors = result.diagnostics.filter((d) => d.severity === "error");
       expect(errors).toStrictEqual([]);
-      expect(doc).toBe(true);
+      expect(doc).toBeDefined();
 
       const allRefs = findAllRefs(doc);
       expect(allRefs.length).toBeGreaterThan(0);
@@ -111,7 +111,7 @@ describe("semantic Validation: $ref Resolution", () => {
     it(`operation → channel → message chain is coherent for: ${file.name}`, async () => {
       const result = await compileAsyncAPI(source);
       const doc = result.asyncApiDoc as Record<string, any>;
-      expect(doc).toBe(true);
+      expect(doc).toBeDefined();
 
       const channels = doc.channels ?? {};
       const operations = doc.operations ?? {};
