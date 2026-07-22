@@ -1,0 +1,77 @@
+direction: right
+
+# Tier containers
+tier_1: "Tier 1 - 1% Effort, 51% Value (Foundation)" {
+  style.fill: "#0e0e10"
+  style.font-color: "#f4f4f0"
+  t1_refactor: "Refactor buildAsyncAPIDocument" {
+    label: "Refactor buildAsyncAPIDocument\n371 lines to focused builders"
+    style.fill: "#ff6b6b"
+    style.font-color: "#0e0e10"
+  }
+  t1_default_ct: "defaultContentType\non document root"
+  t1_doc_prop: "@doc propagation\nto channels"
+}
+
+tier_2: "Tier 2 - 4% Effort, 64% Value (Core Features)" {
+  style.fill: "#0e0e10"
+  style.font-color: "#f4f4f0"
+  t2_reply: "Operation reply\nsupport"
+  t2_multi_msg: "Multi-message\noperations"
+  t2_casts: "Remove as-AsyncAPIObject\ncasts (22 instances)"
+  t2_records: "Clean Record casts\nin compliance tests"
+  t2_validator: "Fix schema-validator.ts\nand type-guards.ts types"
+  t2_studio: "AsyncAPI Studio\nround-trip verification"
+}
+
+tier_3: "Tier 3 - 20% Effort, 80% Value (Completeness)" {
+  style.fill: "#0e0e10"
+  style.font-color: "#f4f4f0"
+  t3_server_bind: "Server binding\nsupport"
+  t3_ids: "operationId and messageId\ndecorators"
+  t3_field_val: "Binding field-level\nvalidation"
+  t3_redis: "Redis protocol\nbinding"
+  t3_gcp: "Google Pub/Sub\nbinding"
+  t3_sns: "AWS SNS\nbinding"
+  t3_ns_bind: "bindings for\nNamespace target"
+  t3_lint: "Consolidate ESLint\nand oxlint"
+  t3_coverage: "Coverage tooling\nfix"
+}
+
+tier_4: "Tier 4 - Strategic and Ecosystem" {
+  style.fill: "#0e0e10"
+  style.font-color: "#f4f4f0"
+  t4_framework: "Binding validation\nframework from specs"
+  t4_plugin: "Plugin and hook system\n(RFC 32)"
+  t4_multifile_in: "Multi-file TypeSpec\ninput support"
+  t4_generator: "AsyncAPI generator\ncompatibility"
+  t4_versioning: "typespec versioning\nsupport (RFC 163)"
+  t4_multifile_out: "Multi-file\noutput (RFC 78)"
+  t4_openapi: "OpenAPI 3.x cross-\nemitter sharing"
+  t4_perf: "Performance profiling\n100+ channels"
+}
+
+# Key dependencies
+t1_refactor -> t2_reply: "unblocks"
+t1_refactor -> t2_multi_msg: "unblocks"
+t1_refactor -> t1_default_ct: "unblocks"
+t1_refactor -> t1_doc_prop: "unblocks"
+t1_refactor -> t3_server_bind: "unblocks"
+
+t2_reply -> t2_studio: "needed for"
+t2_multi_msg -> t2_studio: "needed for"
+
+t2_casts -> t2_validator: "enables"
+t2_records -> t2_validator: "enables"
+
+t3_field_val -> t3_redis: "unblocks"
+t3_field_val -> t3_gcp: "unblocks"
+t3_field_val -> t3_sns: "unblocks"
+
+t3_ns_bind -> t3_server_bind: "enables"
+t3_field_val -> t4_framework: "foundation for"
+
+# Tier flow
+tier_1 -> tier_2: "next"
+tier_2 -> tier_3: "next"
+tier_3 -> tier_4: "next"
