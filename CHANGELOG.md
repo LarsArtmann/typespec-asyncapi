@@ -8,30 +8,77 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
-- **Binding placement validation:** `@bindings` decorator now warns when a protocol binding is placed on a target kind where the AsyncAPI spec doesn't define that binding type (e.g., `ws` on an Operation or Message). New `misplaced-binding` diagnostic (warning), `BINDING_PLACEMENT` matrix, `supportsBindingPlacement()`, and `getValidPlacements()` in `binding-versions.ts`
-- New test files: `test/unit/binding-placement.test.ts` (29 unit tests), `test/integration/binding-placement.test.ts` (6 integration tests)
+- **AsyncAPI 3.1.0 spec target** — bumped from 3.0.0 (`ASYNCAPI_SPEC_VERSION` in `document-builder.ts`, type literal in `asyncapi-document.ts`). The 3.1.0 delta is purely additive (ROS 2 bindings); no breaking changes.
+- **Full protocol binding support** (Kafka, AMQP, MQTT, WebSocket, HTTP) — typed binding version constants (`src/constants/binding-versions.ts`), `normalizeBindingProtocol()` mapping `wss`→`ws` for binding keys, `VALID_BINDING_VERSIONS` with validation.
+- **Binding validation** (`src/validation/binding-validator.ts`) — `processBindings()` normalizes binding keys, validates versions, auto-injects `bindingVersion` when missing. Three warning diagnostics: `unknown-binding-protocol`, `invalid-binding-version`, `misplaced-binding`.
+- **Binding placement validation** — `BINDING_PLACEMENT` matrix (5 protocols × 4 target kinds) warns when a binding is placed on a target kind the AsyncAPI spec doesn't define (e.g., `ws` on an Operation). `misplaced-binding` diagnostic. `supportsBindingPlacement()` and `getValidPlacements()` in `binding-versions.ts`.
+- **Protocol alias normalization** — friendly aliases (`websocket`→`ws`, `websockets`→`wss`) accepted as input and normalized to canonical AsyncAPI binding keys via `normalizeProtocol()`. Resolves the `websocket`/`ws` split-brain.
+- **`@protocol` decorator validation** — unknown protocols now emit an `unsupported-protocol` diagnostic instead of silently producing invalid output.
+- **URL validation for `@server`** — `isValidUrl()` helper and `invalid-server-url` diagnostic. Pragmatic validation (rejects empty/whitespace/control chars; accepts AsyncAPI host-string format).
+- **`@service` decorator compatibility** — emitter now reads `@service` title via `listServices()` for `info.title` (emitter options take precedence). Resolves UX trap for OpenAPI migrants.
+- **OAuth2 `scopes`→`availableScopes` runtime transformation** — `normalizeOAuth2Scopes()` in `document-builder.ts` transforms legacy `scopes` input key to `availableScopes` at output time. Both keys accepted as input.
+- **AsyncAPI 3.1 spec compliance test suite** (78 tests across 6 files in `test/compliance/`) — document structure, schema types, `$ref` chain, servers/security, protocol bindings, edge cases. All validated against official AsyncAPI 3.1.0 JSON Schema via AJV.
+- **Reusable AJV schema validation harness** (`test/utils/schema-validator.ts`) — `compileAndValidateOrThrow()` validates emitter output against official AsyncAPI 3.1.0 JSON Schema.
+- **External `.tsp` compilation tests** (16 patterns from 5 projects covering branded types, generics, spread, deep inheritance, enums, unions, multi-server).
+- **Regression test suite** (`test/validation/schema-emitter-regression.test.ts`, 16 tests) covering `refForNamedType`, `Record<>` mapping, and every `typeToSchema` branch.
+- **Semantic `$ref` resolution tests** (`test/validation/semantic-ref-resolution.test.ts`, 22 tests) verifying every `$ref` in every example resolves to a real target.
+- **Binding placement tests** — `test/unit/binding-placement.test.ts` (29 unit tests), `test/integration/binding-placement.test.ts` (6 integration tests).
+- **Oxlint integration** — `.oxlintrc.json` configured for strict-mode linting (`oxlint . --deny-warnings` passes with 0 errors, 0 warnings). Sensible thresholds for size-limit rules, test-scoped overrides.
+- **Diagnostic registry unified** — all 17 codes declared in `src/lib.ts` via `$lib.reportDiagnostic()` with compile-time validation (`code: keyof typeof $lib.diagnostics`). Split-brain structurally impossible to reintroduce.
+- **`OperationAction` named type** (`"send" | "receive"`) extracted from inline string literals.
+- **`SecurityRequirement` type** (`Record<string, string[]>`) — distinguishes security scheme definitions from security requirements.
+- **`$ref` construction helpers** centralized in domain model (`ref()`, `refSchema()`, `refMessage()`, `refChannel()`).
+- **`nameOfType()` helper** — type-safe replacement for `as { name: string }` casts, using `"name" in type` narrowing.
+- **`operationAction()` named function** — replaces inline `opData.type === "publish" ? "send" : "receive"` ternary.
+- **`buildProtocolBinding()` helper** — properly consumes `ProtocolConfigData` discriminated union instead of generic bag access.
+- **Domain Language glossary** (`docs/DOMAIN_LANGUAGE.md`).
 
 ### Changed
 
-- `engines.node` set to `>=20.11` (requires `import.meta.dirname`)
-- Removed dead state fields: `CorrelationIdData.property`, `OperationTypeData.tags`, `OperationTypeData.description` (never read by the emitter)
-- Consolidated `TagData` type alias with `Tag[]` from the domain model (eliminates duplicate type)
-- `ProtocolConfigData` discriminated union narrowed via `buildProtocolBinding()` helper in document-builder (proper union consumption instead of generic bag access)
-- Replaced all `type as { name: string }` casts in `document-builder.ts` with type-safe `nameOfType()` helper using `"name" in type` narrowing
-- Replaced inline `opData.type === "publish" ? "send" : "receive"` ternary with named `operationAction()` function
-- `intrinsicToSchema()` now emits `format` for all integer subtypes (`uint8`–`uint64`, `safeint`) for consistency with `int8`–`int64`
-- Moved `getReturnModelName` and `extractChannelParameters` to module scope (fixes `unicorn/consistent-function-scoping` errors)
+- **`ProtocolConfigData` is now a discriminated union** (`KafkaConfigData | WebSocketConfigData | MqttConfigData | GenericProtocolConfigData`) on `protocol`, making impossible states (e.g., `qos` on a Kafka config) unrepresentable.
+- **Document model type-tightened:** `ServerObject.protocol: string` → `AsyncAPIProtocol`, `OperationObject.bindings: Record<string, unknown>` → `ProtocolBindings`.
+- **Security scheme types corrected** to match AsyncAPI 3.1 spec exactly: removed 4 invalid types (`sasl`, `mutualTLS`, `external`, `oauthBearer`); added 4 valid types (`httpApiKey`, `userPassword`, `symmetricEncryption`, `asymmetricEncryption`).
+- **`SecurityScheme.in` type tightened** from `"user" | "password" | "query" | "header" | "cookie"` to `"query" | "header" | "cookie"` per AsyncAPI 3.1 spec (API key locations only).
+- **`OAuth2Flow.scopes` renamed to `availableScopes`** per AsyncAPI 3.1 spec.
+- **`ServerObject.security` and `OperationObject.security`** changed from `SecurityScheme[]` to `SecurityRequirement[]`.
+- **`intrinsicToSchema()` now emits `format`** for all integer subtypes (`uint8`–`uint64`, `safeint`) for consistency with `int8`–`int64`.
+- **`normalizeProtocol()` and `SUPPORTED_PROTOCOLS`** typed as `AsyncAPIProtocol` (was `string`).
+- **`TagData` consolidated** with `Tag[]` from the domain model (eliminates duplicate type).
+- **`engines.node` set to `>=20.11`** (requires `import.meta.dirname`).
+- **Test runner migrated** from `bun:test` to `vitest` (Bun OOM crashes with large test suites — documented memory leaks).
+- **Test count grew** from 301 to 551 (78 compliance tests + 16 external spec tests + 37 binding placement tests + 19 regression/semantic tests).
+- **`extractValue` uses discriminated union narrowing** on `EmitEntity.kind` instead of unsafe casts.
+- **Regex unicode safety** — all regexes use `/u` flag and named capture groups.
+- **Explicit return types** added to all `storeXxx` functions and `collectProperties`.
+- **Import-then-re-export** replaced with direct `export ... from` in `index.ts` and `tsp-index.ts`.
+- **`buildAsyncAPIDocument()` flattened** — reduced nesting depth in `generateSchemas()` via guard clauses.
+
+### Fixed
+
+- **Multi-security overwrite bug** — `storeSecurityConfig` was overwriting on second `@security` call; changed to array accumulation so multiple security schemes on one namespace work correctly.
+- **Arrays of named models** (`Item[]`) now emit `items: { $ref: "#/components/schemas/Item" }` instead of `items: { type: "string" }`.
+- **`Record<string>`** now emits `{ type: "object", additionalProperties: { type: "string" } }` instead of `{ type: "array" }`.
+- **`Record<Item>`** now emits `{ $ref: "..." }` in `additionalProperties`.
+- **`test/e2e/realworld-ecommerce.test.ts`** inline spec corrected: removed Kafka channel-binding fields in wrong location, `websocket`→`ws`, `apiKey`→`httpApiKey`, `location`→`in`, `scopes`→`availableScopes`, added AsyncAPI 3.1 JSON Schema validation.
+- **`compileAsyncAPI` test helper** now extracts actual output filename from virtual FS instead of hardcoding "asyncapi.yaml".
+- **`storeTags` data model** — was storing as comma-separated string, now stores as proper `Tag[]`.
+- **Silent error swallowing** — `generateSchemas()` catch block now logs errors via `console.error` instead of bare `catch {}`.
+- **13 failing tests fixed** — multiple-blockless-namespace errors in external specs, `outputFiles` map key access patterns, `compileAsyncAPIWithoutErrors` error handling.
 
 ### Removed
 
-- `@correlationId` decorator `property` parameter (dead — only `location` is used in output)
-- `storeOperationType` `description` parameter (dead — never emitted)
-- `storeCorrelationId` `property` parameter (dead — never emitted)
+- **Dead coverage devDependencies** — `@vitest/coverage-v8`, `@vitest/coverage-istanbul`, `c8` (non-functional — TypeSpec loads emitter from `dist/*.js` as opaque modules).
+- **`src/domain/models/bindings.ts`** deleted (177 lines, zero imports) — dead code, runtime uses `ProtocolBindings` type alias.
+- **`src/constants/index.ts`** deleted entirely — all exports (`ASYNCAPI_VERSION`, `ASYNCAPI_VERSIONS`, `DEFAULT_CONFIG`, etc.) had zero importers. Single version source of truth: `ASYNCAPI_SPEC_VERSION` in `document-builder.ts`.
+- **Dead state fields removed** — `CorrelationIdData.property`, `OperationTypeData.tags`, `OperationTypeData.description` (never read by the emitter).
+- **`@correlationId` decorator `property` parameter** removed (dead — only `location` is used in output).
+- **Dead test harness** (`test/integration/harness.ts`) — `IntegrationTestHarness` class that ignored its parameter and returned hardcoded mock objects. Never imported.
 
 ### Closed
 
-- GitHub #160: "Bun-Compatible Test Patterns" — moot after vitest migration
-- GitHub #229: "RFC 3986 URL Validation" — partially addressed via pragmatic `isValidUrl()`
+- GitHub #54: Error type hierarchy — closed as YAGNI (2 throw calls, 14 diagnostics, 5-class hierarchy is overengineering)
+- GitHub #160: Bun-Compatible Test Patterns — moot after vitest migration
+- GitHub #229: RFC 3986 URL Validation — partially addressed via pragmatic `isValidUrl()`
 
 ## [0.1.0-alpha] - 2026-07-14
 
@@ -83,116 +130,3 @@ First alpha release. Full Pareto recovery from analysis paralysis.
 - `compileAsyncAPI` test helper now extracts actual output filename from virtual FS instead of hardcoding "asyncapi.yaml"
 - `clean:test` script uses `trash` instead of `rm`
 - All 5 lint warnings resolved (0 errors, 0 warnings)
-
-## [Unreleased]
-
-### Added
-
-- Full protocol binding support: Kafka, AMQP, MQTT, WebSocket, HTTP with typed binding constants (`src/constants/binding-versions.ts`)
-- Binding version constants (`src/constants/binding-versions.ts`): latest version per protocol with `normalizeBindingProtocol()` mapping `wss`→`ws` for binding keys
-- Binding validation module (`src/validation/binding-validator.ts`): normalizes binding keys, validates versions, auto-injects `bindingVersion` when missing
-- Two new warning diagnostics: `unknown-binding-protocol`, `invalid-binding-version`
-- AsyncAPI 3.1.0 spec compliance test suite (78 tests across 6 files in `test/compliance/`): document structure, schema types, $ref chain, servers/security, protocol bindings, edge cases
-- Reusable AJV schema validation harness (`test/utils/schema-validator.ts`): `compileAndValidateOrThrow()` validates emitter output against official AsyncAPI 3.1.0 JSON Schema
-- External `.tsp` compilation tests (16 patterns from 5 projects covering branded types, generics, spread, deep inheritance, enums, unions, multi-server)
-- URL validation for `@server` decorator with `isValidUrl()` helper and `invalid-server-url` diagnostic
-- Diagnostic registry unified: all codes declared in `src/lib.ts` via `$lib.reportDiagnostic()` with compile-time validation. 17 codes total (15 error + 2 warning).
-
-### Changed
-
-- Document model type-tightened: `ServerObject.protocol: string` → `AsyncAPIProtocol`, `OperationObject.bindings: Record<string, unknown>` → `ProtocolBindings`
-- Document-builder auto-injects `bindingVersion` for `@protocol`-generated channel bindings
-- Test runner migrated from bun:test to vitest (Bun OOM crashes with large test suites)
-- Test count grew from 406 to 504 (78 new compliance tests + 16 external spec tests)
-- `@service` decorator compatibility: emitter now reads `@service` title via `listServices()` for `info.title` (emitter options take precedence). Test count grew from 504 to 510.
-- OAuth2 `OAuth2Flow.scopes` renamed to `availableScopes` per AsyncAPI 3.1 spec — `normalizeOAuth2Scopes()` in `document-builder.ts` now transforms legacy `scopes` input key to `availableScopes` at output time. Both keys accepted as input.
-- `SecurityScheme.in` type tightened from `"user" | "password" | "query" | "header" | "cookie"` to `"query" | "header" | "cookie"` per AsyncAPI 3.1 spec (API key locations only)
-- `OperationAction` named type extracted (`"send" | "receive"`)
-- `$ref` construction centralized in domain model (`ref()`, `refSchema()`, `refMessage()`, `refChannel()` helpers)
-- `SecurityRequirement` type added; `ServerObject.security` and `OperationObject.security` changed from `SecurityScheme[]` to `SecurityRequirement[]`
-- Test count grew from 510 to 512 (2 new `scopes`→`availableScopes` normalization tests)
-
-### Fixed
-
-- Multi-security overwrite bug: `storeSecurityConfig` was overwriting on second `@security` call; changed to array accumulation so multiple security schemes on one namespace work correctly
-
-### Removed
-
-- `src/domain/models/bindings.ts` deleted (177 lines, zero imports from `src/`) — dead code, runtime uses `ProtocolBindings` type alias
-- `BINDING_PLACEMENT` const, `BindingTargetKind` type, and `supportsBindingPlacement()` deleted from `src/constants/binding-versions.ts` (defined but never called)
-- Dead coverage devDependencies removed: `@vitest/coverage-v8`, `@vitest/coverage-istanbul`, `c8` (non-functional — TypeSpec loads emitter from `dist/*.js` as opaque modules)
-
-### Earlier unreleased work
-
-- Spec-compliant `$ref` chain: operations → channels → components.messages → components.schemas
-- Strongly-typed AsyncAPI 3.1 document model (`src/domain/models/asyncapi-document.ts`)
-- Golden file test (`test/golden/golden-file.test.ts`) locking in verified-correct output
-- AsyncAPI 3.1.0 JSON Schema validation tests using `@asyncapi/specs`
-- `@tags` decorator data now emitted as `Tag[]` arrays on operations
-- `@correlationId` decorator data now emitted as `CorrelationId` objects on messages
-- `@header` decorator data now emitted as JSON Schema `headers` on messages
-- `@bindings` decorator data now emitted on operations and messages
-- `protocolBindings` added to consolidated state for emitter access
-- Critical: operations referenced `#/components/messages/{id}` directly instead of the spec-required `#/channels/{channelId}/messages/{messageId}` path
-- Critical: message names used operation names instead of model names, causing broken payload `$ref`s
-- All 8 failing tests that spawned `npx tsp compile` (replaced with programmatic TypeSpec compiler API)
-- `storeTags` data model: was storing as comma-separated string, now stores as proper `Tag[]`
-- Emitter uses strongly-typed interfaces (`AsyncAPIDocument`, `ChannelObject`, etc.) instead of `Record<string, unknown>`
-- CLI test helper rewritten from 336 lines of spawn/fs code to 68-line programmatic API wrapper
-
-### TypeSpec 1.13 Alignment & Quality Overhaul (2026-07-14)
-
-#### Added
-
-- `$ref` chain resolution tests (7 tests) verifying AsyncAPI 3.1 reference chain
-- Template spread and inheritance pattern tests (4 tests) for TypeSpec 1.13 compatibility
-- Security scheme output assertions to 16 representative tests (previously false-green)
-- `EmitEntity<T>` discriminated union pattern documentation in AGENTS.md
-- CI coverage reporting (`bun test --coverage`)
-- CI example smoke tests (`tsp compile` on all examples)
-- README.md for all example directories (kafka, basic-events, multi-channel, advanced, comprehensive-protocols)
-
-#### Changed
-
-- Split `emitter.ts` (831 lines) into 4 focused modules: `emitter.ts` (39 lines), `schema-emitter.ts` (356 lines), `document-builder.ts` (366 lines), `intrinsic-mapping.ts` (59 lines)
-- Split `security-comprehensive.test.ts` (2,784 lines) into 5 focused test files
-- `SecurityScheme.type` is now strictly `SecuritySchemeType` (no `string` escape hatch) with runtime validation in `$security` decorator emitting diagnostics for unsupported types
-- `ProtocolConfigData` no longer has `[key: string]: unknown` index signature — all fields explicit
-- `SecuritySchemeType` derived from const array (single source of truth, same pattern as `protocols.ts`)
-- Pre-commit hook fixed from `just` to `bun run`
-
-#### Removed
-
-- Unused devDependencies: `@typespec/http`, `@typespec/openapi3`, `glob`, `@asyncapi/cli`, `lint-staged`
-- `archive/` directory at repo root (46 files moved to `docs/_archive/root-archive/`)
-- Test-only modules moved from `src/domain/models/` to `test/utils/` (`path-templates.ts`, `serialization-format-option.ts`)
-
-#### Fixed
-
-- Two false-green security tests using non-existent scheme types ("asymmetricEncryption", "symmetricEncryption") converted to verify diagnostic rejection
-- Broken examples (`basic-events`, `advanced`) fixed to use correct decorator API and `#{}` value literal syntax
-
-### AsyncAPI 3.1.0 Upgrade (2026-07-21)
-
-#### Added
-
-- AsyncAPI spec target bumped from 3.0.0 to 3.1.0 (`ASYNCAPI_SPEC_VERSION` in `src/document-builder.ts`, type literal in `src/domain/models/asyncapi-document.ts`). The 3.1.0 delta is purely additive (ROS 2 bindings); no breaking changes.
-- Protocol alias normalization: friendly aliases (`websocket` → `ws`, `websockets` → `wss`) accepted as input and normalized to canonical AsyncAPI binding keys via `normalizeProtocol()`. Resolves the `websocket`/`ws` split-brain where the emitter accepted invalid binding keys.
-- `@protocol` decorator validation: unknown protocols now emit an `unsupported-protocol` diagnostic instead of silently producing invalid output.
-- `ProtocolConfigData` discriminated union (`KafkaConfigData | WebSocketConfigData | MqttConfigData | GenericProtocolConfigData`) on `protocol`, making impossible states (e.g. `qos` on a Kafka config) unrepresentable.
-- Regression test suite (`test/validation/schema-emitter-regression.test.ts`, 16 tests) covering `refForNamedType`, `Record<…>` mapping, and every `typeToSchema` branch.
-- Semantic `$ref` resolution test suite (`test/validation/semantic-ref-resolution.test.ts`, 22 tests) verifying every `$ref` in every example resolves to a real target.
-
-#### Changed
-
-- Security scheme types corrected to match AsyncAPI 3.1 spec exactly: removed 4 invalid types (`sasl`, `mutualTLS`, `external`, `oauthBearer`); added 4 valid types (`httpApiKey`, `userPassword`, `symmetricEncryption`, `asymmetricEncryption`).
-- Validator schema paths point at `3.1.0-without-$id.json` (was `3.0.0-without-$id.json`).
-- `normalizeProtocol()` and `SUPPORTED_PROTOCOLS` are now typed as `AsyncAPIProtocol` (was `string`).
-- Test count grew from 301 to 406.
-
-#### Fixed
-
-- Arrays of named models (`Item[]`) now emit `items: { $ref: "#/components/schemas/Item" }` instead of `items: { type: "string" }`.
-- `Record<string>` now emits `{ type: "object", additionalProperties: { type: "string" } }` instead of `{ type: "array" }`.
-- `Record<Item>` now emits `{ $ref: "..." }` in `additionalProperties`.
-- `test/e2e/realworld-ecommerce.test.ts` inline spec corrected: removed Kafka channel-binding fields in wrong location, `websocket` → `ws`, `apiKey` → `httpApiKey`, `location` → `in`, `scopes` → `availableScopes`, added AsyncAPI 3.1 JSON Schema validation.
