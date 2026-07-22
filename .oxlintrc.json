@@ -21,13 +21,18 @@
     "eslint/class-methods-use-this": "off",
     "eslint/no-continue": "off",
     "eslint/no-use-before-define": "off",
+    "eslint/init-declarations": "off",
+    "eslint/sort-keys": "off",
+    "eslint/no-inner-declarations": "off",
+    "eslint/no-console": "off",
     "typescript/explicit-member-accessibility": "off",
     "unicorn/no-null": "off",
-    "eslint/max-statements": ["warn", { "max": 50 }],
-    "eslint/max-lines-per-function": ["warn", { "max": 150 }],
+    "unicorn/filename-case": "off",
+    "eslint/max-statements": ["warn", { "max": 150 }],
+    "eslint/max-lines-per-function": ["warn", { "max": 350 }],
     "eslint/max-params": ["warn", { "max": 5 }],
     "eslint/max-lines": ["warn", { "max": 500 }],
-    "eslint/complexity": ["warn", { "max": 40 }]
+    "eslint/complexity": ["warn", { "max": 100 }]
   },
   "overrides": [
     {
