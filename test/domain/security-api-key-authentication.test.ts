@@ -2,7 +2,10 @@
  * Security Schemes Tests
  */
 
-import { compileAndGetAsyncAPI, createAsyncAPITestHost } from "../utils/test-helpers.js";
+import {
+  compileAndGetAsyncAPI,
+  createAsyncAPITestHost,
+} from "../utils/test-helpers.js";
 
 describe("aPI Key Authentication", () => {
   it("should support API Key in header", async () => {

@@ -5,7 +5,10 @@
  * "As a user defining TypeSpec, when I use @decorator, I get X in my AsyncAPI output"
  */
 
-import { PROTOCOL_LIST, isSupportedProtocol } from "../../src/constants/protocols.js";
+import {
+  PROTOCOL_LIST,
+  isSupportedProtocol,
+} from "../../src/constants/protocols.js";
 import {
   normalizePathTemplate,
   parsePathTemplate,

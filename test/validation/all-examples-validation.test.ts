@@ -48,7 +48,9 @@ function findTspFiles(
     if (stat.isDirectory()) {
       findTspFiles(fullPath, acc);
     } else if (entry.endsWith(".tsp")) {
-      const relative = fullPath.replace(`${examplesRoot}/`, "").replace(/\.tsp$/, "");
+      const relative = fullPath
+        .replace(`${examplesRoot}/`, "")
+        .replace(/\.tsp$/, "");
       acc.push({ name: relative, path: fullPath });
     }
   }
@@ -75,7 +77,7 @@ describe("all Example Files → AsyncAPI 3.1 Validation", () => {
       it("should produce an asyncapi: 3.1.0 document", async () => {
         const result = await compileAsyncAPI(source);
         expect(result.asyncApiDoc).toBeDefined();
-        expect((result.asyncApiDoc as Record<string, unknown>)?.asyncapi).toBe("3.1.0");
+        expect(result.asyncApiDoc?.asyncapi).toBe("3.1.0");
       });
 
       it("should validate against AsyncAPI 3.1.0 JSON Schema", async () => {
@@ -98,24 +100,22 @@ describe("all Example Files → AsyncAPI 3.1 Validation", () => {
 
       it("should generate valid $ref chains for operations and channels", async () => {
         const result = await compileAsyncAPI(source);
-        const doc = result.asyncApiDoc as Record<string, any>;
+        const doc = result.asyncApiDoc;
 
-        const channels = doc.channels ?? {};
-        const operations = doc.operations ?? {};
+        const channels = doc?.channels ?? {};
+        const operations = doc?.operations ?? {};
 
         for (const [, op] of Object.entries(operations)) {
-          const opObj = op as Record<string, any>;
-          expect(opObj.channel?.$ref).toMatch(/^#\/channels\//);
-          for (const msg of opObj.messages ?? []) {
-            expect((msg as any)?.$ref).toMatch(/^#\/channels\//);
+          expect(op.channel?.$ref).toMatch(/^#\/channels\//);
+          for (const msg of op.messages ?? []) {
+            expect(msg.$ref).toMatch(/^#\/channels\//);
           }
         }
 
         for (const [, ch] of Object.entries(channels)) {
-          const chObj = ch as Record<string, any>;
-          const messages = chObj.messages ?? {};
+          const messages = ch.messages ?? {};
           for (const [, ref] of Object.entries(messages)) {
-            expect((ref as any)?.$ref).toMatch(/^#\/components\/messages\//);
+            expect(ref.$ref).toMatch(/^#\/components\/messages\//);
           }
         }
       });

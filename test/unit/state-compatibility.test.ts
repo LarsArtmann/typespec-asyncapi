@@ -19,12 +19,16 @@ describe("state-compatibility", () => {
 
     it("should throw when stateMap returns a non-Map-like value", () => {
       const program = { stateMap: () => "not a map" } as unknown as Program;
-      expect(() => getStateMap(program, Symbol("test"))).toThrow("returned unexpected type");
+      expect(() => getStateMap(program, Symbol("test"))).toThrow(
+        "returned unexpected type",
+      );
     });
 
     it("should throw when stateMap returns null", () => {
       const program = { stateMap: () => null } as unknown as Program;
-      expect(() => getStateMap(program, Symbol("test"))).toThrow("returned unexpected type");
+      expect(() => getStateMap(program, Symbol("test"))).toThrow(
+        "returned unexpected type",
+      );
     });
   });
 

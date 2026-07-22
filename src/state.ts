@@ -3,7 +3,11 @@
  */
 
 import type { Program, Type } from "@typespec/compiler";
-import type { ProtocolBindings, SecurityScheme, Tag } from "./domain/models/asyncapi-document.js";
+import type {
+  ProtocolBindings,
+  SecurityScheme,
+  Tag,
+} from "./domain/models/asyncapi-document.js";
 import { getMultiState, getStateMap } from "./state-compatibility.js";
 import type { AsyncAPIProtocol } from "./constants/protocols.js";
 import { stateSymbols } from "./lib.js";
@@ -88,7 +92,10 @@ export type MqttConfigData = ProtocolConfigBase & {
 };
 
 export type GenericProtocolConfigData = ProtocolConfigBase & {
-  protocol: Exclude<AsyncAPIProtocol, "kafka" | "ws" | "wss" | "mqtt" | "mqtt5">;
+  protocol: Exclude<
+    AsyncAPIProtocol,
+    "kafka" | "ws" | "wss" | "mqtt" | "mqtt5"
+  >;
 };
 
 export type ProtocolConfigData =
@@ -149,17 +156,43 @@ export interface AsyncAPIConsolidatedState {
  * Handles TypeSpec's StateMapView which wraps the actual Map.
  * The StateMapView stores data in an internal 'map' property.
  */
-export function consolidateAsyncAPIState(program: Program): AsyncAPIConsolidatedState {
+export function consolidateAsyncAPIState(
+  program: Program,
+): AsyncAPIConsolidatedState {
   return {
     channels: getStateMap<ChannelPathData>(program, stateSymbols.channelPaths),
-    correlationIds: getStateMap<CorrelationIdData>(program, stateSymbols.correlationIds),
-    messageHeaders: getStateMap<MessageHeaderData[]>(program, stateSymbols.messageHeaders),
-    messages: getStateMap<MessageConfigData>(program, stateSymbols.messageConfigs),
-    operations: getStateMap<OperationTypeData>(program, stateSymbols.operationTypes),
-    protocolBindings: getStateMap<ProtocolBindings>(program, stateSymbols.protocolBindings),
-    protocolConfigs: getStateMap<ProtocolConfigData>(program, stateSymbols.protocolConfigs),
-    securityConfigs: getMultiState<SecurityConfigData>(program, stateSymbols.securityConfigs),
-    servers: getMultiState<ServerConfigData>(program, stateSymbols.serverConfigs),
+    correlationIds: getStateMap<CorrelationIdData>(
+      program,
+      stateSymbols.correlationIds,
+    ),
+    messageHeaders: getStateMap<MessageHeaderData[]>(
+      program,
+      stateSymbols.messageHeaders,
+    ),
+    messages: getStateMap<MessageConfigData>(
+      program,
+      stateSymbols.messageConfigs,
+    ),
+    operations: getStateMap<OperationTypeData>(
+      program,
+      stateSymbols.operationTypes,
+    ),
+    protocolBindings: getStateMap<ProtocolBindings>(
+      program,
+      stateSymbols.protocolBindings,
+    ),
+    protocolConfigs: getStateMap<ProtocolConfigData>(
+      program,
+      stateSymbols.protocolConfigs,
+    ),
+    securityConfigs: getMultiState<SecurityConfigData>(
+      program,
+      stateSymbols.securityConfigs,
+    ),
+    servers: getMultiState<ServerConfigData>(
+      program,
+      stateSymbols.serverConfigs,
+    ),
     tags: getStateMap<TagData>(program, stateSymbols.tags),
   };
 }

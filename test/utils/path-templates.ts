@@ -28,20 +28,23 @@ export function parsePathTemplate(path: string): PathTemplate {
   const segments = path.split("/").filter((segment) => segment.length > 0);
   const parameters: PathParameter[] = [];
 
-  const pathWithParameters = path.replaceAll(/\{([^}]+)\}/g, (match: string, paramStr: string) => {
-    const parts = paramStr.split(":");
-    const name = parts[0] ?? "";
-    const type = parts[1] ?? "string";
+  const pathWithParameters = path.replaceAll(
+    /\{([^}]+)\}/g,
+    (match: string, paramStr: string) => {
+      const parts = paramStr.split(":");
+      const name = parts[0] ?? "";
+      const type = parts[1] ?? "string";
 
-    parameters.push({
-      description: `Path parameter: ${name}`,
-      name,
-      required: true,
-      type,
-    });
+      parameters.push({
+        description: `Path parameter: ${name}`,
+        name,
+        required: true,
+        type,
+      });
 
-    return `{${name}}`;
-  });
+      return `{${name}}`;
+    },
+  );
 
   return {
     parameters,
@@ -92,7 +95,10 @@ export function validatePathTemplate(path: string): boolean {
   if (invalidParams) {
     for (const param of invalidParams) {
       const paramName = param.slice(1, -1);
-      if (!paramName.trim() || (paramName.includes(":") && paramName.split(":")[0].trim() === "")) {
+      if (
+        !paramName.trim() ||
+        (paramName.includes(":") && paramName.split(":")[0].trim() === "")
+      ) {
         return false;
       }
     }

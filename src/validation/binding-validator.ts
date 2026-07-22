@@ -14,7 +14,10 @@
  * - document-builder.ts (for @protocol-generated bindings)
  */
 
-import { isSupportedProtocol, normalizeProtocol } from "../constants/protocols.js";
+import {
+  isSupportedProtocol,
+  normalizeProtocol,
+} from "../constants/protocols.js";
 import {
   getLatestBindingVersion,
   getValidPlacements,
@@ -129,7 +132,9 @@ export function processBindings(
             format: {
               protocol: canonical,
               validVersions:
-                getValidVersionsString(canonical) ?? getLatestBindingVersion(canonical) ?? "latest",
+                getValidVersionsString(canonical) ??
+                getLatestBindingVersion(canonical) ??
+                "latest",
               version: versionStr,
             },
             key: canonical,

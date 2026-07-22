@@ -43,8 +43,9 @@
   <body>
     <h1>Oxlint Remediation Plan</h1>
     <p>
-      <strong>Snapshot:</strong> 2026-07-22 07:43. Strict configuration is restored. Current
-      baseline after safe autofix: 127 errors, 4011 warnings. Build passes and 550 tests pass.
+      <strong>Snapshot:</strong> 2026-07-22 07:43. Strict configuration is
+      restored. Current baseline after safe autofix: 127 errors, 4011 warnings.
+      Build passes and 550 tests pass.
     </p>
     <h2>Pareto priorities</h2>
     <table>
@@ -60,7 +61,10 @@
       </tr>
       <tr class="p2">
         <td>4%</td>
-        <td>Remove duplicated test anti-patterns and high-volume mechanical defects</td>
+        <td>
+          Remove duplicated test anti-patterns and high-volume mechanical
+          defects
+        </td>
         <td>9-22</td>
       </tr>
       <tr class="p3">
@@ -83,7 +87,9 @@
       <tr class="p1">
         <td>1</td>
         <td>P0</td>
-        <td>Record baseline and separate pre-existing changes from task changes</td>
+        <td>
+          Record baseline and separate pre-existing changes from task changes
+        </td>
         <td>High</td>
         <td>Low</td>
         <td>Protects user work</td>
@@ -92,7 +98,10 @@
       <tr class="p1">
         <td>2</td>
         <td>P0</td>
-        <td>Keep strict <code>.oxlintrc.json</code>; no category or rule suppression</td>
+        <td>
+          Keep strict <code>.oxlintrc.json</code>; no category or rule
+          suppression
+        </td>
         <td>High</td>
         <td>Low</td>
         <td>Trustworthy quality gate</td>
@@ -119,7 +128,10 @@
       <tr class="p1">
         <td>5</td>
         <td>P0</td>
-        <td>Remove unused imports, variables, and parameters from test infrastructure</td>
+        <td>
+          Remove unused imports, variables, and parameters from test
+          infrastructure
+        </td>
         <td>High</td>
         <td>Low</td>
         <td>Cleaner CI signal</td>
@@ -137,7 +149,9 @@
       <tr class="p1">
         <td>7</td>
         <td>P0</td>
-        <td>Fix invalid dynamic test titles and conditional test registration</td>
+        <td>
+          Fix invalid dynamic test titles and conditional test registration
+        </td>
         <td>High</td>
         <td>Medium</td>
         <td>Stable test reporting</td>
@@ -164,7 +178,10 @@
       <tr class="p2">
         <td>10</td>
         <td>P1</td>
-        <td>Fix <code>no-shadow</code> and function-scoping findings in ref-chain tests</td>
+        <td>
+          Fix <code>no-shadow</code> and function-scoping findings in ref-chain
+          tests
+        </td>
         <td>Medium</td>
         <td>Low</td>
         <td>Safer test helpers</td>
@@ -182,7 +199,10 @@
       <tr class="p2">
         <td>12</td>
         <td>P1</td>
-        <td>Replace unsafe <code>any</code> in touched test utilities with explicit types</td>
+        <td>
+          Replace unsafe <code>any</code> in touched test utilities with
+          explicit types
+        </td>
         <td>Medium</td>
         <td>Medium</td>
         <td>Better refactor safety</td>
@@ -191,7 +211,10 @@
       <tr class="p2">
         <td>13</td>
         <td>P1</td>
-        <td>Resolve optional chaining and async-await restrictions in one test family</td>
+        <td>
+          Resolve optional chaining and async-await restrictions in one test
+          family
+        </td>
         <td>Medium</td>
         <td>Medium</td>
         <td>Consistent style</td>
@@ -200,7 +223,9 @@
       <tr class="p2">
         <td>14</td>
         <td>P1</td>
-        <td>Add required assertions and timeouts to one large security test family</td>
+        <td>
+          Add required assertions and timeouts to one large security test family
+        </td>
         <td>Medium</td>
         <td>Medium</td>
         <td>Less flaky tests</td>
@@ -255,7 +280,8 @@
         <td>20</td>
         <td>P1</td>
         <td>
-          Review autofix diff for semantic changes and revert only task-introduced regressions
+          Review autofix diff for semantic changes and revert only
+          task-introduced regressions
         </td>
         <td>High</td>
         <td>Medium</td>
@@ -293,7 +319,8 @@
         <td>24</td>
         <td>P2</td>
         <td>
-          Convert function declarations to project-required function expressions where appropriate
+          Convert function declarations to project-required function expressions
+          where appropriate
         </td>
         <td>Low</td>
         <td>High</td>
@@ -312,7 +339,9 @@
       <tr class="p3">
         <td>26</td>
         <td>P2</td>
-        <td>Replace ternaries and nested ternaries in touched production code</td>
+        <td>
+          Replace ternaries and nested ternaries in touched production code
+        </td>
         <td>Low</td>
         <td>Medium</td>
         <td>Readable control flow</td>
@@ -339,7 +368,9 @@
       <tr class="p3">
         <td>29</td>
         <td>P2</td>
-        <td>Replace optional chaining only where rule intent improves safety</td>
+        <td>
+          Replace optional chaining only where rule intent improves safety
+        </td>
         <td>Low</td>
         <td>High</td>
         <td>Explicit failure behavior</td>
@@ -348,7 +379,10 @@
       <tr class="p3">
         <td>30</td>
         <td>P2</td>
-        <td>Address no-console/no-sync findings in scripts without changing CLI behavior</td>
+        <td>
+          Address no-console/no-sync findings in scripts without changing CLI
+          behavior
+        </td>
         <td>Low</td>
         <td>Medium</td>
         <td>Cleaner automation</td>
@@ -384,7 +418,9 @@
       <tr class="p3">
         <td>34</td>
         <td>P2</td>
-        <td>Address no-undefined/no-null findings with intentional domain types</td>
+        <td>
+          Address no-undefined/no-null findings with intentional domain types
+        </td>
         <td>Medium</td>
         <td>High</td>
         <td>Stronger invariants</td>
@@ -420,7 +456,10 @@
       <tr class="p3">
         <td>38</td>
         <td>P2</td>
-        <td>Document intentional rule exceptions only if a real invariant requires them</td>
+        <td>
+          Document intentional rule exceptions only if a real invariant requires
+          them
+        </td>
         <td>Medium</td>
         <td>Medium</td>
         <td>Auditable policy</td>
@@ -449,11 +488,13 @@
     <ul>
       <li>Strict baseline remains large: 127 errors and 4011 warnings.</li>
       <li>
-        The autofix touched 50 files and must be reviewed against the pre-existing working tree.
+        The autofix touched 50 files and must be reviewed against the
+        pre-existing working tree.
       </li>
       <li>
-        The Vitest global configuration fix restored execution, exposing invalid assertions in
-        validation tests; those were corrected in the targeted family.
+        The Vitest global configuration fix restored execution, exposing invalid
+        assertions in validation tests; those were corrected in the targeted
+        family.
       </li>
     </ul>
   </body>

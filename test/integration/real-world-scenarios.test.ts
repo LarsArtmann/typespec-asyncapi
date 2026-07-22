@@ -151,7 +151,10 @@ describe("real-World AsyncAPI Scenarios", () => {
 
       const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
 
-      const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "ecommerce-system.json");
+      const asyncapiDoc = await parseAsyncAPIOutput(
+        outputFiles,
+        "ecommerce-system.json",
+      );
 
       // Validate overall structure
       expect(AsyncAPIAssertions.hasValidStructure(asyncapiDoc)).toBeTruthy();
@@ -160,22 +163,42 @@ describe("real-World AsyncAPI Scenarios", () => {
       expect(AsyncAPIAssertions.hasSchema(asyncapiDoc, "User")).toBeTruthy();
       expect(AsyncAPIAssertions.hasSchema(asyncapiDoc, "Product")).toBeTruthy();
       expect(AsyncAPIAssertions.hasSchema(asyncapiDoc, "Order")).toBeTruthy();
-      expect(AsyncAPIAssertions.hasSchema(asyncapiDoc, "OrderItem")).toBeTruthy();
+      expect(
+        AsyncAPIAssertions.hasSchema(asyncapiDoc, "OrderItem"),
+      ).toBeTruthy();
       expect(AsyncAPIAssertions.hasSchema(asyncapiDoc, "Payment")).toBeTruthy();
 
       // Validate key operations
-      expect(AsyncAPIAssertions.hasOperation(asyncapiDoc, "publishUserRegistered")).toBeTruthy();
-      expect(AsyncAPIAssertions.hasOperation(asyncapiDoc, "publishOrderPlaced")).toBeTruthy();
-      expect(AsyncAPIAssertions.hasOperation(asyncapiDoc, "publishPaymentProcessed")).toBeTruthy();
-      expect(AsyncAPIAssertions.hasOperation(asyncapiDoc, "subscribeUserOrders")).toBeTruthy();
-
-      // Validate complex schema properties
-      expect(AsyncAPIAssertions.schemaHasProperty(asyncapiDoc, "Order", "items")).toBeTruthy();
       expect(
-        AsyncAPIAssertions.schemaHasProperty(asyncapiDoc, "Order", "totalAmountInCents"),
+        AsyncAPIAssertions.hasOperation(asyncapiDoc, "publishUserRegistered"),
       ).toBeTruthy();
       expect(
-        AsyncAPIAssertions.schemaHasProperty(asyncapiDoc, "Payment", "paymentMethod"),
+        AsyncAPIAssertions.hasOperation(asyncapiDoc, "publishOrderPlaced"),
+      ).toBeTruthy();
+      expect(
+        AsyncAPIAssertions.hasOperation(asyncapiDoc, "publishPaymentProcessed"),
+      ).toBeTruthy();
+      expect(
+        AsyncAPIAssertions.hasOperation(asyncapiDoc, "subscribeUserOrders"),
+      ).toBeTruthy();
+
+      // Validate complex schema properties
+      expect(
+        AsyncAPIAssertions.schemaHasProperty(asyncapiDoc, "Order", "items"),
+      ).toBeTruthy();
+      expect(
+        AsyncAPIAssertions.schemaHasProperty(
+          asyncapiDoc,
+          "Order",
+          "totalAmountInCents",
+        ),
+      ).toBeTruthy();
+      expect(
+        AsyncAPIAssertions.schemaHasProperty(
+          asyncapiDoc,
+          "Payment",
+          "paymentMethod",
+        ),
       ).toBeTruthy();
 
       // Validate required fields
@@ -322,30 +345,56 @@ describe("real-World AsyncAPI Scenarios", () => {
 
       const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
 
-      const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "iot-system.json");
+      const asyncapiDoc = await parseAsyncAPIOutput(
+        outputFiles,
+        "iot-system.json",
+      );
 
       // Validate IoT-specific structures
       expect(AsyncAPIAssertions.hasValidStructure(asyncapiDoc)).toBeTruthy();
 
       // Validate IoT schemas
-      expect(AsyncAPIAssertions.hasSchema(asyncapiDoc, "Location")).toBeTruthy();
-      expect(AsyncAPIAssertions.hasSchema(asyncapiDoc, "SensorDevice")).toBeTruthy();
-      expect(AsyncAPIAssertions.hasSchema(asyncapiDoc, "SensorReading")).toBeTruthy();
-      expect(AsyncAPIAssertions.hasSchema(asyncapiDoc, "SystemAlert")).toBeTruthy();
+      expect(
+        AsyncAPIAssertions.hasSchema(asyncapiDoc, "Location"),
+      ).toBeTruthy();
+      expect(
+        AsyncAPIAssertions.hasSchema(asyncapiDoc, "SensorDevice"),
+      ).toBeTruthy();
+      expect(
+        AsyncAPIAssertions.hasSchema(asyncapiDoc, "SensorReading"),
+      ).toBeTruthy();
+      expect(
+        AsyncAPIAssertions.hasSchema(asyncapiDoc, "SystemAlert"),
+      ).toBeTruthy();
 
       // Validate nested properties
       expect(
-        AsyncAPIAssertions.schemaHasProperty(asyncapiDoc, "SensorDevice", "location"),
+        AsyncAPIAssertions.schemaHasProperty(
+          asyncapiDoc,
+          "SensorDevice",
+          "location",
+        ),
       ).toBeTruthy();
       expect(
-        AsyncAPIAssertions.schemaHasProperty(asyncapiDoc, "SensorReading", "metadata"),
+        AsyncAPIAssertions.schemaHasProperty(
+          asyncapiDoc,
+          "SensorReading",
+          "metadata",
+        ),
       ).toBeTruthy();
 
       // Validate parameterized subscriptions
-      expect(AsyncAPIAssertions.hasOperation(asyncapiDoc, "subscribeDeviceReadings")).toBeTruthy();
-      expect(AsyncAPIAssertions.hasOperation(asyncapiDoc, "subscribeZoneSensors")).toBeTruthy();
       expect(
-        AsyncAPIAssertions.hasOperation(asyncapiDoc, "subscribeAlertsBySeverity"),
+        AsyncAPIAssertions.hasOperation(asyncapiDoc, "subscribeDeviceReadings"),
+      ).toBeTruthy();
+      expect(
+        AsyncAPIAssertions.hasOperation(asyncapiDoc, "subscribeZoneSensors"),
+      ).toBeTruthy();
+      expect(
+        AsyncAPIAssertions.hasOperation(
+          asyncapiDoc,
+          "subscribeAlertsBySeverity",
+        ),
       ).toBeTruthy();
 
       // Validate data type handling
@@ -509,16 +558,27 @@ describe("real-World AsyncAPI Scenarios", () => {
 
       const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
 
-      const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "trading-system.json");
+      const asyncapiDoc = await parseAsyncAPIOutput(
+        outputFiles,
+        "trading-system.json",
+      );
 
       // Validate trading system structure
       expect(AsyncAPIAssertions.hasValidStructure(asyncapiDoc)).toBeTruthy();
 
       // Validate financial schemas
-      expect(AsyncAPIAssertions.hasSchema(asyncapiDoc, "Instrument")).toBeTruthy();
-      expect(AsyncAPIAssertions.hasSchema(asyncapiDoc, "PriceTick")).toBeTruthy();
-      expect(AsyncAPIAssertions.hasSchema(asyncapiDoc, "TradeExecution")).toBeTruthy();
-      expect(AsyncAPIAssertions.hasSchema(asyncapiDoc, "RiskAlert")).toBeTruthy();
+      expect(
+        AsyncAPIAssertions.hasSchema(asyncapiDoc, "Instrument"),
+      ).toBeTruthy();
+      expect(
+        AsyncAPIAssertions.hasSchema(asyncapiDoc, "PriceTick"),
+      ).toBeTruthy();
+      expect(
+        AsyncAPIAssertions.hasSchema(asyncapiDoc, "TradeExecution"),
+      ).toBeTruthy();
+      expect(
+        AsyncAPIAssertions.hasSchema(asyncapiDoc, "RiskAlert"),
+      ).toBeTruthy();
 
       // Validate high-frequency data structures
       const priceTickSchema = asyncapiDoc.components.schemas.PriceTick;
@@ -528,13 +588,26 @@ describe("real-World AsyncAPI Scenarios", () => {
       expect(priceTickSchema.properties.timestamp.format).toBe("date-time");
 
       // Validate subscription channels
-      expect(AsyncAPIAssertions.hasOperation(asyncapiDoc, "subscribeLevel1Data")).toBeTruthy();
-      expect(AsyncAPIAssertions.hasOperation(asyncapiDoc, "subscribeTradeFeeds")).toBeTruthy();
-      expect(AsyncAPIAssertions.hasOperation(asyncapiDoc, "subscribeUserRiskAlerts")).toBeTruthy();
+      expect(
+        AsyncAPIAssertions.hasOperation(asyncapiDoc, "subscribeLevel1Data"),
+      ).toBeTruthy();
+      expect(
+        AsyncAPIAssertions.hasOperation(asyncapiDoc, "subscribeTradeFeeds"),
+      ).toBeTruthy();
+      expect(
+        AsyncAPIAssertions.hasOperation(asyncapiDoc, "subscribeUserRiskAlerts"),
+      ).toBeTruthy();
 
       // Validate critical operations
-      expect(AsyncAPIAssertions.hasOperation(asyncapiDoc, "publishCriticalRiskAlert")).toBeTruthy();
-      expect(AsyncAPIAssertions.hasOperation(asyncapiDoc, "publishTradeExecuted")).toBeTruthy();
+      expect(
+        AsyncAPIAssertions.hasOperation(
+          asyncapiDoc,
+          "publishCriticalRiskAlert",
+        ),
+      ).toBeTruthy();
+      expect(
+        AsyncAPIAssertions.hasOperation(asyncapiDoc, "publishTradeExecuted"),
+      ).toBeTruthy();
     });
   });
 
@@ -661,21 +734,36 @@ describe("real-World AsyncAPI Scenarios", () => {
 
       const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
 
-      const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "saas-platform.json");
+      const asyncapiDoc = await parseAsyncAPIOutput(
+        outputFiles,
+        "saas-platform.json",
+      );
 
       // Validate SaaS platform structure
       expect(AsyncAPIAssertions.hasValidStructure(asyncapiDoc)).toBeTruthy();
 
       // Validate multi-tenant schemas
       expect(AsyncAPIAssertions.hasSchema(asyncapiDoc, "Tenant")).toBeTruthy();
-      expect(AsyncAPIAssertions.hasSchema(asyncapiDoc, "TenantUser")).toBeTruthy();
-      expect(AsyncAPIAssertions.hasSchema(asyncapiDoc, "UsageMetrics")).toBeTruthy();
-      expect(AsyncAPIAssertions.hasSchema(asyncapiDoc, "FeatureUsage")).toBeTruthy();
+      expect(
+        AsyncAPIAssertions.hasSchema(asyncapiDoc, "TenantUser"),
+      ).toBeTruthy();
+      expect(
+        AsyncAPIAssertions.hasSchema(asyncapiDoc, "UsageMetrics"),
+      ).toBeTruthy();
+      expect(
+        AsyncAPIAssertions.hasSchema(asyncapiDoc, "FeatureUsage"),
+      ).toBeTruthy();
 
       // Validate tenant isolation in channels
-      expect(AsyncAPIAssertions.hasOperation(asyncapiDoc, "subscribeTenantEvents")).toBeTruthy();
-      expect(AsyncAPIAssertions.hasOperation(asyncapiDoc, "subscribeUserActivity")).toBeTruthy();
-      expect(AsyncAPIAssertions.hasOperation(asyncapiDoc, "subscribeTenantUsage")).toBeTruthy();
+      expect(
+        AsyncAPIAssertions.hasOperation(asyncapiDoc, "subscribeTenantEvents"),
+      ).toBeTruthy();
+      expect(
+        AsyncAPIAssertions.hasOperation(asyncapiDoc, "subscribeUserActivity"),
+      ).toBeTruthy();
+      expect(
+        AsyncAPIAssertions.hasOperation(asyncapiDoc, "subscribeTenantUsage"),
+      ).toBeTruthy();
 
       // Validate schema relationships
       const tenantUserSchema = asyncapiDoc.components.schemas.TenantUser;

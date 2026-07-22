@@ -6,13 +6,27 @@
  */
 
 import type { MessageConfigData, ProtocolConfigData } from "./state.js";
-import type { Model, ModelProperty, Namespace, Operation, Program } from "@typespec/compiler";
-import type { ProtocolBindings, SecurityScheme, Tag } from "./domain/models/asyncapi-document.js";
+import type {
+  Model,
+  ModelProperty,
+  Namespace,
+  Operation,
+  Program,
+} from "@typespec/compiler";
+import type {
+  ProtocolBindings,
+  SecurityScheme,
+  Tag,
+} from "./domain/models/asyncapi-document.js";
 import { getStateMap } from "./state-compatibility.js";
 import { normalizeProtocol } from "./constants/protocols.js";
 import { stateSymbols } from "./lib.js";
 
-export const storeChannelState = (program: Program, target: Operation, path: string): void => {
+export const storeChannelState = (
+  program: Program,
+  target: Operation,
+  path: string,
+): void => {
   const map = getStateMap(program, stateSymbols.channelPaths);
   map.set(target, {
     hasParameters: path.includes("{"),
@@ -59,7 +73,10 @@ export const storeServerConfig = (
     description: string;
   }
 
-  const map = getStateMap<ServerConfigEntry[]>(program, stateSymbols.serverConfigs);
+  const map = getStateMap<ServerConfigEntry[]>(
+    program,
+    stateSymbols.serverConfigs,
+  );
   const existing = map.get(target);
   const newEntry: ServerConfigEntry = {
     description: (config.description as string) ?? `Server for ${target.name}`,
@@ -83,7 +100,10 @@ export const storeSecurityConfig = (
     name: string;
     scheme: SecurityScheme;
   }
-  const map = getStateMap<SecurityConfigEntry[]>(program, stateSymbols.securityConfigs);
+  const map = getStateMap<SecurityConfigEntry[]>(
+    program,
+    stateSymbols.securityConfigs,
+  );
   const existing = map.get(target);
   const newEntry: SecurityConfigEntry = {
     name: config.name,
@@ -96,7 +116,11 @@ export const storeSecurityConfig = (
   }
 };
 
-export const storeTags = (program: Program, target: Operation | Model, tags: string[]): void => {
+export const storeTags = (
+  program: Program,
+  target: Operation | Model,
+  tags: string[],
+): void => {
   const map = getStateMap<Tag[]>(program, stateSymbols.tags);
   const existing = map.get(target) ?? [];
   const allNames = new Set([...existing.map((t) => t.name), ...tags]);
@@ -106,7 +130,11 @@ export const storeTags = (program: Program, target: Operation | Model, tags: str
   );
 };
 
-export const storeCorrelationId = (program: Program, target: Model, location: string): void => {
+export const storeCorrelationId = (
+  program: Program,
+  target: Model,
+  location: string,
+): void => {
   const map = getStateMap(program, stateSymbols.correlationIds);
   map.set(target, { location });
 };
@@ -133,7 +161,9 @@ export const storeHeader = (
   let description: string | undefined;
 
   if (target.kind === "ModelProperty") {
-    const propType = target.type as { kind?: string; name?: string } | undefined;
+    const propType = target.type as
+      | { kind?: string; name?: string }
+      | undefined;
     if (propType?.kind === "Scalar") {
       headerType = propType.name?.toLowerCase() ?? "string";
     }
@@ -149,7 +179,10 @@ export const storeHeader = (
           description?: string;
         }[]
       | undefined) ?? [];
-  map.set(target, [...existing, { description, name, type: headerType, value }]);
+  map.set(target, [
+    ...existing,
+    { description, name, type: headerType, value },
+  ]);
 };
 
 export const storeProtocolConfig = (
@@ -157,7 +190,10 @@ export const storeProtocolConfig = (
   target: Operation | Model,
   config: Record<string, unknown>,
 ): void => {
-  const map = getStateMap<ProtocolConfigData>(program, stateSymbols.protocolConfigs);
+  const map = getStateMap<ProtocolConfigData>(
+    program,
+    stateSymbols.protocolConfigs,
+  );
   const rawProtocol = (config.protocol as string) ?? "kafka";
   const protocolType = normalizeProtocol(rawProtocol);
 
@@ -228,9 +264,16 @@ export const storeProtocolConfig = (
   map.set(target, protocolConfig);
 };
 
-export const linkPublishMessage = (program: Program, target: Operation, config?: Model): void => {
+export const linkPublishMessage = (
+  program: Program,
+  target: Operation,
+  config?: Model,
+): void => {
   if (config) {
-    const map = getStateMap<MessageConfigData>(program, stateSymbols.messageConfigs);
+    const map = getStateMap<MessageConfigData>(
+      program,
+      stateSymbols.messageConfigs,
+    );
     const existing = map.get(config);
     if (existing) {
       existing.messageId = config.name;

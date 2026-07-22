@@ -36,7 +36,9 @@ for (const line of lcov.split("\n")) {
     if (isSrcTs) {
       files.set(current.file, { hit: current.hit, total: current.total });
     } else if (isDistJs) {
-      const tsPath = current.file.replace(/^dist\//, "").replace(/\.js$/, ".ts");
+      const tsPath = current.file
+        .replace(/^dist\//, "")
+        .replace(/\.js$/, ".ts");
       if (!files.has(tsPath)) {
         files.set(current.file, { hit: current.hit, total: current.total });
       }
@@ -52,7 +54,9 @@ for (const [file, cov] of files) {
   const pctStr = (pct * 100).toFixed(1);
   if (pct < MIN_LINE_COVERAGE) {
     const shortName = file.replace(/.*\//, "");
-    failures.push(`  ${shortName}: ${pctStr}% (min ${MIN_LINE_COVERAGE * 100}%)`);
+    failures.push(
+      `  ${shortName}: ${pctStr}% (min ${MIN_LINE_COVERAGE * 100}%)`,
+    );
   }
 }
 
@@ -70,7 +74,10 @@ if (failures.length > 0) {
 const avg =
   files.size > 0
     ? (
-        ([...files.values()].reduce((sum, r) => sum + (r.total > 0 ? r.hit / r.total : 1), 0) /
+        ([...files.values()].reduce(
+          (sum, r) => sum + (r.total > 0 ? r.hit / r.total : 1),
+          0,
+        ) /
           files.size) *
         100
       ).toFixed(1)

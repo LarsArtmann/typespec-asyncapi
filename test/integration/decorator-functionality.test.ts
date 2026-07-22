@@ -56,7 +56,8 @@ describe("real Decorator Functionality Tests", () => {
         op publishUserRegistered(): UserRegisteredMessage;
       `;
 
-      const { outputFiles, program } = await compileAsyncAPISpecWithoutErrors(source);
+      const { outputFiles, program } =
+        await compileAsyncAPISpecWithoutErrors(source);
 
       // Verify the compilation actually processed the decorator
       expect(program).toBeDefined();
@@ -69,7 +70,9 @@ describe("real Decorator Functionality Tests", () => {
       expect(asyncapiDoc).toBeDefined();
 
       // Validate the message decorator was processed correctly
-      expect(asyncapiDoc.components?.schemas?.UserRegisteredMessage).toBeDefined();
+      expect(
+        asyncapiDoc.components?.schemas?.UserRegisteredMessage,
+      ).toBeDefined();
 
       const userSchema = asyncapiDoc.components.schemas.UserRegisteredMessage;
       expect(userSchema.type).toBe("object");
@@ -88,7 +91,9 @@ describe("real Decorator Functionality Tests", () => {
       expect(userSchema.required).toContain("preferences");
 
       // Validate operations were created
-      expect(Object.keys(asyncapiDoc.operations || {})).toContain("publishUserRegistered");
+      expect(Object.keys(asyncapiDoc.operations || {})).toContain(
+        "publishUserRegistered",
+      );
 
       const operation = asyncapiDoc.operations?.publishUserRegistered;
       expect(operation?.action).toBe("send");
@@ -213,7 +218,8 @@ describe("real Decorator Functionality Tests", () => {
         op publishKafkaUserEvent(): KafkaMessage;
       `;
 
-      const { outputFiles, program } = await compileAsyncAPISpecWithoutErrors(source);
+      const { outputFiles, program } =
+        await compileAsyncAPISpecWithoutErrors(source);
 
       // Verify real compilation occurred
       expect(program).toBeDefined();
@@ -359,7 +365,8 @@ describe("real Decorator Functionality Tests", () => {
         op publishSecureMessage(): SecureMessage;
       `;
 
-      const { outputFiles, program } = await compileAsyncAPISpecWithoutErrors(source);
+      const { outputFiles, program } =
+        await compileAsyncAPISpecWithoutErrors(source);
 
       // Verify compilation occurred
       expect(program).toBeDefined();
@@ -428,7 +435,9 @@ describe("real Decorator Functionality Tests", () => {
       )) as AsyncAPIObject;
 
       // Validate OAuth2 secured message schema
-      expect(asyncapiDoc.components?.schemas?.OAuth2SecuredMessage).toBeDefined();
+      expect(
+        asyncapiDoc.components?.schemas?.OAuth2SecuredMessage,
+      ).toBeDefined();
 
       const oauth2Schema = asyncapiDoc.components.schemas.OAuth2SecuredMessage;
       expect(oauth2Schema.properties?.resourceId?.type).toBe("string");
@@ -580,7 +589,8 @@ describe("real Decorator Functionality Tests", () => {
         op subscribeUserAuditEvents(userId: string): SecureKafkaEvent;
       `;
 
-      const { outputFiles, program } = await compileAsyncAPISpecWithoutErrors(source);
+      const { outputFiles, program } =
+        await compileAsyncAPISpecWithoutErrors(source);
 
       // Verify comprehensive compilation
       expect(program).toBeDefined();

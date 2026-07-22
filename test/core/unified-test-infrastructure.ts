@@ -85,9 +85,18 @@ export async function compileRealAsyncAPI(
   console.log("🔍 DEBUG: Raw program object:", program);
   console.log("🔍 DEBUG: Program constructor:", program?.constructor?.name);
   console.log("🔍 DEBUG: Program has stateMap:", typeof program?.stateMap);
-  console.log("🔍 DEBUG: Program has program property:", Boolean(program?.program));
-  console.log("🔍 DEBUG: Program keys (enumerable):", Object.keys(program || {}));
-  console.log("🔍 DEBUG: Program symbols:", Object.getOwnPropertySymbols(program || {}));
+  console.log(
+    "🔍 DEBUG: Program has program property:",
+    Boolean(program?.program),
+  );
+  console.log(
+    "🔍 DEBUG: Program keys (enumerable):",
+    Object.keys(program || {}),
+  );
+  console.log(
+    "🔍 DEBUG: Program symbols:",
+    Object.getOwnPropertySymbols(program || {}),
+  );
 
   // Return strongly typed result
   return {

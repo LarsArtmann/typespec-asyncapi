@@ -64,7 +64,8 @@ export const $lib = createTypeSpecLibrary({
     },
     "invalid-tags-config": {
       messages: {
-        default: "Tags configuration missing or invalid. Use @tags with string array.",
+        default:
+          "Tags configuration missing or invalid. Use @tags with string array.",
         "non-string": "All tags must be strings.",
       },
       severity: "error",
@@ -80,6 +81,12 @@ export const $lib = createTypeSpecLibrary({
         default: paramMessage`Operation '${"operationName"}' missing @channel decorator path.`,
       },
       severity: "error",
+    },
+    "schema-generation-failed": {
+      messages: {
+        default: paramMessage`Schema generation failed: ${"error"}.`,
+      },
+      severity: "warning",
     },
     "server-protocol-required": {
       messages: {

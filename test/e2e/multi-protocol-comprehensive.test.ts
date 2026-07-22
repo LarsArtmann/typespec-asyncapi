@@ -155,13 +155,16 @@ describe("e2E: Multi-Protocol Comprehensive Test", () => {
     // Find generated AsyncAPI file
     const outputFiles = [...host.fs.keys()];
     const asyncApiFile = outputFiles.find(
-      (f) => f.includes("asyncapi") && (f.endsWith(".json") || f.endsWith(".yaml")),
+      (f) =>
+        f.includes("asyncapi") && (f.endsWith(".json") || f.endsWith(".yaml")),
     );
 
     expect(asyncApiFile).toBeDefined();
 
     const content = host.fs.get(asyncApiFile!) as string;
-    const spec = content.startsWith("{") ? JSON.parse(content) : require("yaml").parse(content);
+    const spec = content.startsWith("{")
+      ? JSON.parse(content)
+      : require("yaml").parse(content);
 
     // Validate AsyncAPI 3.1
     expect(spec.asyncapi).toBe("3.1.0");

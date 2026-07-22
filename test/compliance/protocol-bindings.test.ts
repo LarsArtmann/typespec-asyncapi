@@ -14,7 +14,9 @@ import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
 import { compileAsyncAPISpecWithoutErrors } from "../utils/test-helpers.js";
 import { parse as parseYAML } from "yaml";
 
-async function compileAndGetDoc(source: string): Promise<Record<string, unknown>> {
+async function compileAndGetDoc(
+  source: string,
+): Promise<Record<string, unknown>> {
   const result = await compileAsyncAPISpecWithoutErrors(source);
   for (const [, content] of result.outputFiles) {
     if (typeof content === "string" && content.startsWith("asyncapi")) {
@@ -29,8 +31,14 @@ function getOp(doc: Record<string, unknown>): Record<string, unknown> {
   return Object.values(operations)[0];
 }
 
-function getMsgBindings(doc: Record<string, unknown>, name: string): Record<string, unknown> {
-  const components = doc.components as Record<string, Record<string, Record<string, unknown>>>;
+function getMsgBindings(
+  doc: Record<string, unknown>,
+  name: string,
+): Record<string, unknown> {
+  const components = doc.components as Record<
+    string,
+    Record<string, Record<string, unknown>>
+  >;
   return components.messages[name].bindings as Record<string, unknown>;
 }
 
@@ -56,7 +64,10 @@ describe("spec Compliance: Kafka Bindings", () => {
     `);
 
     const channels = doc.channels as Record<string, Record<string, unknown>>;
-    const binding = channels["events"].bindings as Record<string, Record<string, unknown>>;
+    const binding = channels["events"].bindings as Record<
+      string,
+      Record<string, unknown>
+    >;
     expect(binding.kafka).toBeDefined();
     expect(binding.kafka.topic).toBe("events-topic");
     expect(binding.kafka.partitions).toBe(3);
@@ -77,7 +88,10 @@ describe("spec Compliance: Kafka Bindings", () => {
     `);
 
     const channels = doc.channels as Record<string, Record<string, unknown>>;
-    const binding = channels["events"].bindings as Record<string, Record<string, unknown>>;
+    const binding = channels["events"].bindings as Record<
+      string,
+      Record<string, unknown>
+    >;
     expect(binding.kafka.bindingVersion).toBe("0.5.0");
   });
 
@@ -276,7 +290,10 @@ describe("spec Compliance: WebSocket Bindings", () => {
     `);
 
     const channels = doc.channels as Record<string, Record<string, unknown>>;
-    const binding = channels["ws-channel"].bindings as Record<string, Record<string, unknown>>;
+    const binding = channels["ws-channel"].bindings as Record<
+      string,
+      Record<string, unknown>
+    >;
     expect(binding.ws).toBeDefined();
     expect(binding.ws.method).toBe("GET");
     expect(binding.ws.bindingVersion).toBe("0.1.0");
@@ -295,7 +312,10 @@ describe("spec Compliance: WebSocket Bindings", () => {
     `);
 
     const channels = doc.channels as Record<string, Record<string, unknown>>;
-    const binding = channels["ws-channel"].bindings as Record<string, Record<string, unknown>>;
+    const binding = channels["ws-channel"].bindings as Record<
+      string,
+      Record<string, unknown>
+    >;
     expect(binding.ws).toBeDefined();
     expect(binding.websocket).toBeUndefined();
     expect(binding.ws.method).toBe("GET");
@@ -315,7 +335,10 @@ describe("spec Compliance: WebSocket Bindings", () => {
     `);
 
     const channels = doc.channels as Record<string, Record<string, unknown>>;
-    const binding = channels["ws-channel"].bindings as Record<string, Record<string, unknown>>;
+    const binding = channels["ws-channel"].bindings as Record<
+      string,
+      Record<string, unknown>
+    >;
     expect(binding.ws.method).toBe("POST");
     expect(binding.ws.bindingVersion).toBe("0.1.0");
   });
@@ -431,8 +454,12 @@ describe("spec Compliance: Multi-Protocol Bindings", () => {
     expect(servers["ws-server"].protocol).toBe("ws");
 
     const channels = doc.channels as Record<string, Record<string, unknown>>;
-    expect((channels["kafka-topic"].bindings as Record<string, unknown>).kafka).toBeDefined();
-    expect((channels["ws-channel"].bindings as Record<string, unknown>).ws).toBeDefined();
+    expect(
+      (channels["kafka-topic"].bindings as Record<string, unknown>).kafka,
+    ).toBeDefined();
+    expect(
+      (channels["ws-channel"].bindings as Record<string, unknown>).ws,
+    ).toBeDefined();
   });
 
   it("all binding versions auto-injected correctly per protocol", async () => {
@@ -456,10 +483,16 @@ describe("spec Compliance: Multi-Protocol Bindings", () => {
     `);
 
     const channels = doc.channels as Record<string, Record<string, unknown>>;
-    const kBinding = channels["kafka-ch"].bindings as Record<string, Record<string, unknown>>;
+    const kBinding = channels["kafka-ch"].bindings as Record<
+      string,
+      Record<string, unknown>
+    >;
     expect(kBinding.kafka?.bindingVersion).toBe("0.5.0");
 
-    const wsBinding = channels["ws-ch"].bindings as Record<string, Record<string, unknown>>;
+    const wsBinding = channels["ws-ch"].bindings as Record<
+      string,
+      Record<string, unknown>
+    >;
     expect(wsBinding.ws?.bindingVersion).toBe("0.1.0");
   });
 });

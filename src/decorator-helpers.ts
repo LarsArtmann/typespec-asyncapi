@@ -2,7 +2,11 @@
  * Helper functions for decorators: diagnostic reporting and model property extraction.
  */
 
-import type { DecoratorContext, DiagnosticTarget, Model } from "@typespec/compiler";
+import type {
+  DecoratorContext,
+  DiagnosticTarget,
+  Model,
+} from "@typespec/compiler";
 import { $lib } from "./lib.js";
 
 // === DIAGNOSTIC HELPERS ===
@@ -91,10 +95,15 @@ export function getModelPropertyStringValue(
     return undefined;
   }
   const type = property.type as { kind: string; value?: string };
-  return type.kind === "String" && type.value !== undefined ? type.value : undefined;
+  return type.kind === "String" && type.value !== undefined
+    ? type.value
+    : undefined;
 }
 
-export function getModelPropertyValue(model: Model, propertyName: string): unknown {
+export function getModelPropertyValue(
+  model: Model,
+  propertyName: string,
+): unknown {
   const property = model.properties.get(propertyName);
   if (!property) {
     return undefined;
@@ -113,7 +122,12 @@ export function modelToRecord(model: Model): Record<string, unknown> {
 }
 
 export function extractConfigRecord(config: unknown): Record<string, unknown> {
-  if (config && typeof config === "object" && "kind" in config && config.kind === "Model") {
+  if (
+    config &&
+    typeof config === "object" &&
+    "kind" in config &&
+    config.kind === "Model"
+  ) {
     return modelToRecord(config as Model);
   }
   return config as Record<string, unknown>;

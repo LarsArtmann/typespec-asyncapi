@@ -95,7 +95,10 @@ describe("spec Compliance: Security Schemes", () => {
       op publish(): Event;
     `);
 
-    const components = doc.components as Record<string, Record<string, Record<string, unknown>>>;
+    const components = doc.components as Record<
+      string,
+      Record<string, Record<string, unknown>>
+    >;
     const scheme = components.securitySchemes["user-pass"];
     expect(scheme.type).toBe("userPassword");
   });
@@ -109,7 +112,10 @@ describe("spec Compliance: Security Schemes", () => {
       op publish(): Event;
     `);
 
-    const components = doc.components as Record<string, Record<string, Record<string, unknown>>>;
+    const components = doc.components as Record<
+      string,
+      Record<string, Record<string, unknown>>
+    >;
     const scheme = components.securitySchemes["api-key"];
     expect(scheme.type).toBe("httpApiKey");
     expect(scheme.in).toBe("header");
@@ -125,7 +131,10 @@ describe("spec Compliance: Security Schemes", () => {
       op publish(): Event;
     `);
 
-    const components = doc.components as Record<string, Record<string, Record<string, unknown>>>;
+    const components = doc.components as Record<
+      string,
+      Record<string, Record<string, unknown>>
+    >;
     const scheme = components.securitySchemes["jwt"];
     expect(scheme.type).toBe("http");
     expect(scheme.scheme).toBe("bearer");
@@ -141,7 +150,10 @@ describe("spec Compliance: Security Schemes", () => {
       op publish(): Event;
     `);
 
-    const components = doc.components as Record<string, Record<string, Record<string, unknown>>>;
+    const components = doc.components as Record<
+      string,
+      Record<string, Record<string, unknown>>
+    >;
     expect(components.securitySchemes["scram"].type).toBe("scramSha256");
   });
 
@@ -168,7 +180,10 @@ describe("spec Compliance: Security Schemes", () => {
       op publish(): Event;
     `);
 
-    const components = doc.components as Record<string, Record<string, Record<string, unknown>>>;
+    const components = doc.components as Record<
+      string,
+      Record<string, Record<string, unknown>>
+    >;
     const scheme = components.securitySchemes.oauth;
     expect(scheme.type).toBe("oauth2");
     expect(scheme.flows).toBeDefined();
@@ -183,7 +198,10 @@ describe("spec Compliance: Security Schemes", () => {
       op publish(): Event;
     `);
 
-    const components = doc.components as Record<string, Record<string, Record<string, unknown>>>;
+    const components = doc.components as Record<
+      string,
+      Record<string, Record<string, unknown>>
+    >;
     expect(components.securitySchemes.cert.type).toBe("X509");
   });
 
@@ -197,7 +215,10 @@ describe("spec Compliance: Security Schemes", () => {
       op publish(): Event;
     `);
 
-    const components = doc.components as Record<string, Record<string, unknown>>;
+    const components = doc.components as Record<
+      string,
+      Record<string, unknown>
+    >;
     const schemes = components.securitySchemes as Record<string, unknown>;
     expect(Object.keys(schemes)).toHaveLength(2);
     expect(schemes.cert).toBeDefined();

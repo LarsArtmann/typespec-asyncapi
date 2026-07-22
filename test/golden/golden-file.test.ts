@@ -10,6 +10,10 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import YAML from "yaml";
 import { compileAsyncAPISpecRaw } from "../utils/test-helpers";
+import type {
+  MessageObject,
+  ParsedAsyncAPIDocument,
+} from "../../src/domain/models/asyncapi-document.js";
 
 const GOLDEN_FILE = join(import.meta.dirname, "ecommerce.expected.yaml");
 
@@ -80,7 +84,9 @@ describe("golden File Test", () => {
     expect(actual.servers).toStrictEqual(golden.servers);
     expect(actual.channels).toStrictEqual(golden.channels);
     expect(actual.operations).toStrictEqual(golden.operations);
-    expect(actual.components.messages).toStrictEqual(golden.components.messages);
+    expect(actual.components.messages).toStrictEqual(
+      golden.components.messages,
+    );
     expect(actual.components.schemas).toStrictEqual(golden.components.schemas);
   });
 
@@ -97,25 +103,27 @@ describe("golden File Test", () => {
         break;
       }
     }
-    const doc = YAML.parse(output) as any;
+    const doc = YAML.parse(output) as ParsedAsyncAPIDocument;
 
     // Every operation message $ref MUST go through channels, NOT directly to components
-    for (const [, op] of Object.entries<any>(doc.operations ?? {})) {
+    for (const [, op] of Object.entries(doc.operations ?? {})) {
       for (const msgRef of op.messages ?? []) {
         expect(msgRef.$ref).toMatch(/^#\/channels\/[^/]+\/messages\/[^/]+$/);
       }
     }
 
     // Every channel message $ref MUST point to components/messages
-    for (const [, channel] of Object.entries<any>(doc.channels ?? {})) {
-      for (const [, msgRef] of Object.entries<any>(channel.messages ?? {})) {
+    for (const [, channel] of Object.entries(doc.channels ?? {})) {
+      for (const [, msgRef] of Object.entries(channel.messages ?? {})) {
         expect(msgRef.$ref).toMatch(/^#\/components\/messages\/.+$/);
       }
     }
 
     // Every component message payload MUST point to components/schemas
-    for (const [, msg] of Object.entries<any>(doc.components?.messages ?? {})) {
-      expect(msg.payload.$ref).toMatch(/^#\/components\/schemas\/.+$/);
+    for (const [, msg] of Object.entries(doc.components?.messages ?? {})) {
+      expect((msg as MessageObject).payload?.$ref).toMatch(
+        /^#\/components\/schemas\/.+$/,
+      );
     }
   });
 
@@ -132,13 +140,13 @@ describe("golden File Test", () => {
         break;
       }
     }
-    const doc = YAML.parse(output) as any;
+    const doc = YAML.parse(output) as ParsedAsyncAPIDocument;
 
     // Message names should be model names (OrderCreated, OrderShipped)
     // NOT operation names (publishOrderCreated, subscribeOrderShipped)
-    expect(doc.components.messages.OrderCreated).toBeDefined();
-    expect(doc.components.messages.OrderShipped).toBeDefined();
-    expect(doc.components.messages.publishOrderCreated).toBeUndefined();
-    expect(doc.components.messages.subscribeOrderShipped).toBeUndefined();
+    expect(doc.components?.messages?.OrderCreated).toBeDefined();
+    expect(doc.components?.messages?.OrderShipped).toBeDefined();
+    expect(doc.components?.messages?.publishOrderCreated).toBeUndefined();
+    expect(doc.components?.messages?.subscribeOrderShipped).toBeUndefined();
   });
 });

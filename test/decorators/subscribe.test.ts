@@ -160,7 +160,9 @@ describe("@subscribe Decorator Tests", () => {
 
     // Validate subscribe operation
     expect(asyncapiDoc.operations?.handleComplexUserEvent).toBeDefined();
-    expect(asyncapiDoc.operations.handleComplexUserEvent.action).toBe("receive");
+    expect(asyncapiDoc.operations.handleComplexUserEvent.action).toBe(
+      "receive",
+    );
   });
 
   it("should handle @subscribe with parameterized channels", async () => {
@@ -200,6 +202,8 @@ describe("@subscribe Decorator Tests", () => {
     expect(asyncapiDoc.operations?.subscribeUserNotifications).toBeDefined();
     const operation = asyncapiDoc.operations.subscribeUserNotifications;
     expect(operation.action).toBe("receive");
-    expect(operation.channel?.$ref).toBe("#/channels/user.notifications.{userId}");
+    expect(operation.channel?.$ref).toBe(
+      "#/channels/user.notifications.{userId}",
+    );
   });
 });

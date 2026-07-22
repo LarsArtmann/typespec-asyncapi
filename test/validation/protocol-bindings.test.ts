@@ -61,7 +61,9 @@ describe("asyncAPI 3.1 Standard Protocol Bindings", () => {
 
     expect(serverBindings).toBeDefined();
     expect(serverBindings.kafka).toBeDefined();
-    expect(serverBindings.kafka.schemaRegistryUrl).toBe("http://localhost:8081");
+    expect(serverBindings.kafka.schemaRegistryUrl).toBe(
+      "http://localhost:8081",
+    );
     expect(serverBindings.kafka.clientId).toBe("test-client");
     expect(serverBindings.kafka.bindingVersion).toBe("0.5.0");
 

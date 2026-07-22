@@ -25,5 +25,12 @@
     "jsxImportSource": "@alloy-js/core"
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"],
-  "exclude": ["node_modules", "dist", "test", "**/*.test.ts", "**/*.spec.ts", "**/*-broken.ts"]
+  "exclude": [
+    "node_modules",
+    "dist",
+    "test",
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "**/*-broken.ts"
+  ]
 }

@@ -56,10 +56,13 @@ describe("@server decorator", () => {
         op publishEvent(): Event;
       `;
 
-      const { diagnostics, outputFiles } = await compileAsyncAPISpecRaw(source, {
-        "file-type": "json",
-        "output-file": "multi-server",
-      });
+      const { diagnostics, outputFiles } = await compileAsyncAPISpecRaw(
+        source,
+        {
+          "file-type": "json",
+          "output-file": "multi-server",
+        },
+      );
 
       const errors = diagnostics.filter((d) => d.severity === "error");
       expect(errors).toHaveLength(0);
@@ -88,7 +91,9 @@ describe("@server decorator", () => {
       });
 
       // Should have error for missing URL
-      const urlErrors = diagnostics.filter((d) => d.message?.includes("Server URL is required"));
+      const urlErrors = diagnostics.filter((d) =>
+        d.message?.includes("Server URL is required"),
+      );
       expect(urlErrors.length).toBeGreaterThan(0);
     });
 
@@ -152,7 +157,10 @@ describe("@server decorator", () => {
         });
 
         const errors = diagnostics.filter((d) => d.severity === "error");
-        expect(errors, `Protocol ${protocol.name} should be supported`).toHaveLength(0);
+        expect(
+          errors,
+          `Protocol ${protocol.name} should be supported`,
+        ).toHaveLength(0);
       }
     });
 
@@ -178,7 +186,8 @@ describe("@server decorator", () => {
 
       // Should have error for unsupported protocol
       const protocolErrors = diagnostics.filter(
-        (d) => d.code === "@lars-artmann/typespec-asyncapi/unsupported-protocol",
+        (d) =>
+          d.code === "@lars-artmann/typespec-asyncapi/unsupported-protocol",
       );
       expect(protocolErrors.length).toBeGreaterThan(0);
     });
@@ -231,10 +240,13 @@ describe("@server decorator", () => {
         op publishEvent(): Event;
       `;
 
-      const { diagnostics, outputFiles } = await compileAsyncAPISpecRaw(source, {
-        "file-type": "json",
-        "output-file": "minimal-server",
-      });
+      const { diagnostics, outputFiles } = await compileAsyncAPISpecRaw(
+        source,
+        {
+          "file-type": "json",
+          "output-file": "minimal-server",
+        },
+      );
 
       const errors = diagnostics.filter((d) => d.severity === "error");
       expect(errors).toHaveLength(0);
@@ -266,10 +278,13 @@ describe("@server decorator", () => {
         op publishEvent(): Event;
       `;
 
-      const { diagnostics, outputFiles } = await compileAsyncAPISpecRaw(source, {
-        "file-type": "json",
-        "output-file": "documented-server",
-      });
+      const { diagnostics, outputFiles } = await compileAsyncAPISpecRaw(
+        source,
+        {
+          "file-type": "json",
+          "output-file": "documented-server",
+        },
+      );
 
       const errors = diagnostics.filter((d) => d.severity === "error");
       expect(errors).toHaveLength(0);
@@ -278,7 +293,9 @@ describe("@server decorator", () => {
       expect(outputFile).toBeDefined();
       const asyncapiDoc = JSON.parse(outputFile!);
       const server = asyncapiDoc.servers?.documented;
-      expect(server?.description).toBe("Main production Kafka cluster with high availability");
+      expect(server?.description).toBe(
+        "Main production Kafka cluster with high availability",
+      );
     });
   });
 
@@ -310,10 +327,13 @@ describe("@server decorator", () => {
         op handleSystemAlert(): UserEvent;
       `;
 
-      const { diagnostics, outputFiles } = await compileAsyncAPISpecRaw(source, {
-        "file-type": "json",
-        "output-file": "integration-test",
-      });
+      const { diagnostics, outputFiles } = await compileAsyncAPISpecRaw(
+        source,
+        {
+          "file-type": "json",
+          "output-file": "integration-test",
+        },
+      );
 
       const errors = diagnostics.filter((d) => d.severity === "error");
       expect(errors).toHaveLength(0);

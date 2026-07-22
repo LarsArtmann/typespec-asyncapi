@@ -86,7 +86,10 @@ export interface ServerObject {
   description?: string;
   title?: string;
   summary?: string;
-  variables?: Record<string, { enum?: string[]; default?: string; description?: string }>;
+  variables?: Record<
+    string,
+    { enum?: string[]; default?: string; description?: string }
+  >;
   security?: SecurityRequirement[];
   tags?: Tag[];
   bindings?: ProtocolBindings;
@@ -193,13 +196,16 @@ const SECURITY_SCHEME_TYPES = [
 
 export type SecuritySchemeType = (typeof SECURITY_SCHEME_TYPES)[number];
 
-export const VALID_SCHEME_TYPES: ReadonlySet<SecuritySchemeType> = new Set(SECURITY_SCHEME_TYPES);
+export const VALID_SCHEME_TYPES: ReadonlySet<SecuritySchemeType> = new Set(
+  SECURITY_SCHEME_TYPES,
+);
 
 export function isValidSchemeType(value: string): value is SecuritySchemeType {
   return VALID_SCHEME_TYPES.has(value as SecuritySchemeType);
 }
 
-export const SCHEME_TYPE_LIST: readonly SecuritySchemeType[] = SECURITY_SCHEME_TYPES;
+export const SCHEME_TYPE_LIST: readonly SecuritySchemeType[] =
+  SECURITY_SCHEME_TYPES;
 
 export interface SecurityScheme {
   type: SecuritySchemeType;
@@ -233,4 +239,23 @@ export interface AsyncAPIDocument {
   channels: Record<string, ChannelObject>;
   operations?: Record<string, OperationObject>;
   components?: ComponentsObject;
+}
+
+/**
+ * Parsed AsyncAPI 3.1 document from YAML/JSON output.
+ *
+ * Relaxed version of `AsyncAPIDocument` for use with deserialized output
+ * where literal types are widened (e.g. `asyncapi` is `string`, not `"3.1.0"`).
+ * Eliminates `as any` casts in test assertions.
+ */
+export interface ParsedAsyncAPIDocument {
+  asyncapi: string;
+  info: InfoObject;
+  id?: string;
+  servers?: Record<string, ServerObject>;
+  defaultContentType?: string;
+  channels?: Record<string, ChannelObject>;
+  operations?: Record<string, OperationObject>;
+  components?: ComponentsObject;
+  tags?: Tag[];
 }

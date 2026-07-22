@@ -33,7 +33,13 @@ const asyncApiSchema = JSON.parse(
 const ajv = new Ajv({ allErrors: true, allowUnionTypes: true, strict: false });
 const validate = ajv.compile(asyncApiSchema);
 
-const realWorldDir = join(import.meta.dirname, "..", "..", "examples", "real-world");
+const realWorldDir = join(
+  import.meta.dirname,
+  "..",
+  "..",
+  "examples",
+  "real-world",
+);
 
 function readExampleSpecs(): { name: string; source: string }[] {
   const files = readdirSync(realWorldDir)
@@ -68,7 +74,7 @@ describe("real-World Examples → AsyncAPI 3.1 Validation", () => {
       it("should produce an AsyncAPI document", async () => {
         const result = await compileAsyncAPI(spec.source);
         expect(result.asyncApiDoc).toBeDefined();
-        expect((result.asyncApiDoc as Record<string, unknown>)?.asyncapi).toBe("3.1.0");
+        expect(result.asyncApiDoc?.asyncapi).toBe("3.1.0");
       });
 
       it("should validate against AsyncAPI 3.1.0 JSON Schema", async () => {
@@ -91,57 +97,55 @@ describe("real-World Examples → AsyncAPI 3.1 Validation", () => {
 
       it("should generate operations with valid $ref chains", async () => {
         const result = await compileAsyncAPI(spec.source);
-        const doc = result.asyncApiDoc as Record<string, any>;
+        const doc = result.asyncApiDoc;
 
-        const operations = doc.operations ?? {};
+        const operations = doc?.operations ?? {};
         const opCount = Object.keys(operations).length;
         expect(opCount).toBeGreaterThan(0);
 
         for (const [, op] of Object.entries(operations)) {
-          const opObj = op as Record<string, any>;
-          expect(opObj.action).toMatch(/^(send|receive)$/);
+          expect(op.action).toMatch(/^(send|receive)$/);
+          expect(op.channel?.$ref).toMatch(/^#\/channels\//);
 
-          const { channel } = opObj;
-          expect(channel?.$ref).toMatch(/^#\/channels\//);
-
-          for (const msg of opObj.messages ?? []) {
-            expect(msg?.$ref).toMatch(/^#\/channels\//);
+          for (const msg of op.messages ?? []) {
+            expect(msg.$ref).toMatch(/^#\/channels\//);
           }
         }
       });
 
       it("should generate channels with message $refs to components", async () => {
         const result = await compileAsyncAPI(spec.source);
-        const doc = result.asyncApiDoc as Record<string, any>;
+        const doc = result.asyncApiDoc;
 
-        const channels = doc.channels ?? {};
+        const channels = doc?.channels ?? {};
         expect(Object.keys(channels).length).toBeGreaterThan(0);
 
         for (const [, ch] of Object.entries(channels)) {
-          const chObj = ch as Record<string, any>;
-          expect(chObj.address).toBeDefined();
-          expect(chObj.address).toBeTypeOf("string");
+          expect(ch.address).toBeDefined();
+          expect(ch.address).toBeTypeOf("string");
 
-          const messages = chObj.messages ?? {};
+          const messages = ch.messages ?? {};
           for (const [, msgRef] of Object.entries(messages)) {
-            expect((msgRef as any)?.$ref).toMatch(/^#\/components\/messages\//);
+            expect(msgRef.$ref).toMatch(/^#\/components\/messages\//);
           }
         }
       });
 
       it("should generate schemas with correct array $refs for named models", async () => {
         const result = await compileAsyncAPI(spec.source);
-        const doc = result.asyncApiDoc as Record<string, any>;
+        const doc = result.asyncApiDoc;
 
-        const schemas = doc.components?.schemas ?? {};
+        const schemas = doc?.components?.schemas ?? {};
 
         for (const [, schema] of Object.entries(schemas)) {
-          const schemaObj = schema as Record<string, any>;
-          expect(schemaObj.items?.$ref ?? "").toMatch(/^$|^#\/components\/schemas\//);
-          const props = schemaObj.properties ?? {};
+          expect(schema.items?.$ref ?? "").toMatch(
+            /^$|^#\/components\/schemas\//,
+          );
+          const props = schema.properties ?? {};
           for (const [, prop] of Object.entries(props)) {
-            const propObj = prop as Record<string, any>;
-            expect(propObj.items?.$ref ?? "").toMatch(/^$|^#\/components\/schemas\//);
+            expect(prop.items?.$ref ?? "").toMatch(
+              /^$|^#\/components\/schemas\//,
+            );
           }
         }
       });

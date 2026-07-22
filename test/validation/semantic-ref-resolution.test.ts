@@ -31,7 +31,9 @@ function findTspFiles(
     if (stat.isDirectory()) {
       findTspFiles(fullPath, acc);
     } else if (entry.endsWith(".tsp")) {
-      const relative = fullPath.replace(`${examplesRoot}/`, "").replace(/\.tsp$/, "");
+      const relative = fullPath
+        .replace(`${examplesRoot}/`, "")
+        .replace(/\.tsp$/, "");
       acc.push({ name: relative, path: fullPath });
     }
   }
@@ -124,7 +126,9 @@ describe("semantic Validation: $ref Resolution", () => {
         expect(channelRef).toMatch(/^#\/channels\//);
 
         // Channel must exist
-        const channelId = unescapeRefToken(channelRef.replace("#/channels/", ""));
+        const channelId = unescapeRefToken(
+          channelRef.replace("#/channels/", ""),
+        );
         expect(channels[channelId]).toBeDefined();
 
         // Operation messages must reference channel messages
@@ -138,7 +142,9 @@ describe("semantic Validation: $ref Resolution", () => {
       for (const [, channel] of Object.entries<any>(channels)) {
         for (const [, msgRef] of Object.entries<any>(channel?.messages ?? {})) {
           expect(msgRef?.$ref).toMatch(/^#\/components\/messages\//);
-          const msgId = unescapeRefToken(msgRef.$ref.replace("#/components/messages/", ""));
+          const msgId = unescapeRefToken(
+            msgRef.$ref.replace("#/components/messages/", ""),
+          );
           expect(componentMessages[msgId]).toBeDefined();
         }
       }
@@ -147,7 +153,9 @@ describe("semantic Validation: $ref Resolution", () => {
       for (const [, msg] of Object.entries<any>(componentMessages)) {
         const payloadRef = msg?.payload?.$ref;
         expect(payloadRef).toMatch(/^#\/components\/schemas\//);
-        const schemaId = unescapeRefToken(payloadRef.replace("#/components/schemas/", ""));
+        const schemaId = unescapeRefToken(
+          payloadRef.replace("#/components/schemas/", ""),
+        );
         expect(componentSchemas[schemaId]).toBeDefined();
       }
     });

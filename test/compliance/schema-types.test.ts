@@ -7,8 +7,14 @@
 
 import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
 
-function getSchema(doc: Record<string, unknown>, name: string): Record<string, unknown> {
-  const components = doc.components as Record<string, Record<string, Record<string, unknown>>>;
+function getSchema(
+  doc: Record<string, unknown>,
+  name: string,
+): Record<string, unknown> {
+  const components = doc.components as Record<
+    string,
+    Record<string, Record<string, unknown>>
+  >;
   return components.schemas[name];
 }
 
@@ -213,6 +219,8 @@ describe("spec Compliance: Schema Types", () => {
     const schema = getSchema(doc, "Order");
     const props = schema.properties as Record<string, Record<string, unknown>>;
     expect(props.items.type).toBe("array");
-    expect((props.items.items as Record<string, unknown>).$ref).toBe("#/components/schemas/Item");
+    expect((props.items.items as Record<string, unknown>).$ref).toBe(
+      "#/components/schemas/Item",
+    );
   });
 });

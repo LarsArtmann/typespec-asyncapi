@@ -130,7 +130,10 @@ describe("getValidPlacements", () => {
 
 describe("processBindings placement validation", () => {
   it("emits misplaced-binding when ws is placed on an operation", () => {
-    const { issues } = processBindings({ ws: { bindingVersion: "0.1.0" } }, "operation");
+    const { issues } = processBindings(
+      { ws: { bindingVersion: "0.1.0" } },
+      "operation",
+    );
     const misplaced = issues.filter((i) => i.code === "misplaced-binding");
     expect(misplaced).toHaveLength(1);
     expect(misplaced[0].format.protocol).toBe("ws");
@@ -139,25 +142,37 @@ describe("processBindings placement validation", () => {
   });
 
   it("emits misplaced-binding when ws is placed on a message", () => {
-    const { issues } = processBindings({ ws: { bindingVersion: "0.1.0" } }, "message");
+    const { issues } = processBindings(
+      { ws: { bindingVersion: "0.1.0" } },
+      "message",
+    );
     const misplaced = issues.filter((i) => i.code === "misplaced-binding");
     expect(misplaced).toHaveLength(1);
   });
 
   it("does NOT emit misplaced-binding when kafka is placed on an operation", () => {
-    const { issues } = processBindings({ kafka: { bindingVersion: "0.5.0" } }, "operation");
+    const { issues } = processBindings(
+      { kafka: { bindingVersion: "0.5.0" } },
+      "operation",
+    );
     const misplaced = issues.filter((i) => i.code === "misplaced-binding");
     expect(misplaced).toHaveLength(0);
   });
 
   it("does NOT emit misplaced-binding when kafka is placed on a message", () => {
-    const { issues } = processBindings({ kafka: { bindingVersion: "0.5.0" } }, "message");
+    const { issues } = processBindings(
+      { kafka: { bindingVersion: "0.5.0" } },
+      "message",
+    );
     const misplaced = issues.filter((i) => i.code === "misplaced-binding");
     expect(misplaced).toHaveLength(0);
   });
 
   it("does NOT emit misplaced-binding when mqtt is placed on an operation", () => {
-    const { issues } = processBindings({ mqtt: { bindingVersion: "0.2.0" } }, "operation");
+    const { issues } = processBindings(
+      { mqtt: { bindingVersion: "0.2.0" } },
+      "operation",
+    );
     const misplaced = issues.filter((i) => i.code === "misplaced-binding");
     expect(misplaced).toHaveLength(0);
   });
@@ -171,7 +186,10 @@ describe("processBindings placement validation", () => {
   });
 
   it("still passes through the binding even when misplaced", () => {
-    const { bindings } = processBindings({ ws: { bindingVersion: "0.1.0" } }, "operation");
+    const { bindings } = processBindings(
+      { ws: { bindingVersion: "0.1.0" } },
+      "operation",
+    );
     expect(bindings.ws).toBeDefined();
     expect(bindings.ws.bindingVersion).toBe("0.1.0");
   });

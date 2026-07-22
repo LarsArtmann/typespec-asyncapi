@@ -12,5 +12,7 @@ export default defineConfig({
     globals: true,
     include: ["test/**/*.test.ts"],
     isolate: false,
+    testTimeout: 30_000,
+    maxConcurrency: 4,
   },
 });

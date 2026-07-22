@@ -10,7 +10,10 @@
 //TODO: CHILD PROCESS SPAWNING ANTI-PATTERN - Using raw spawn() instead of proper test utilities!
 //TODO: IMPORT CHAOS - 6 different imports mixing testing, Effect, fs, and child_process!
 
-import { compileAsyncAPISpecWithoutErrors, parseAsyncAPIOutput } from "../utils/test-helpers";
+import {
+  compileAsyncAPISpecWithoutErrors,
+  parseAsyncAPIOutput,
+} from "../utils/test-helpers";
 
 async function compileAndParse(source: string) {
   const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
@@ -32,11 +35,11 @@ describe("asyncAPI Basic Functionality", () => {
       op publishSimpleEvent(): SimpleEvent;
     `;
 
-    const doc = (await compileAndParse(source)) as any;
+    const doc = await compileAndParse(source);
 
     expect(doc.asyncapi).toBe("3.1.0");
     expect(doc.operations.publishSimpleEvent).toBeDefined();
-    expect(doc.components.schemas.SimpleEvent).toBeDefined();
+    expect(doc.components.schemas?.SimpleEvent).toBeDefined();
     expect(doc.channels["simple.events"]).toBeDefined();
   });
 
@@ -61,15 +64,15 @@ describe("asyncAPI Basic Functionality", () => {
       op publishOrderEvent(): OrderEvent;
     `;
 
-    const doc = (await compileAndParse(source)) as any;
+    const doc = await compileAndParse(source);
 
     expect(doc.asyncapi).toBe("3.1.0");
     expect(doc.operations.publishUserEvent).toBeDefined();
     expect(doc.operations.publishOrderEvent).toBeDefined();
     expect(doc.channels["users.events"]).toBeDefined();
     expect(doc.channels["orders.events"]).toBeDefined();
-    expect(doc.components.schemas.UserEvent).toBeDefined();
-    expect(doc.components.schemas.OrderEvent).toBeDefined();
+    expect(doc.components.schemas?.UserEvent).toBeDefined();
+    expect(doc.components.schemas?.OrderEvent).toBeDefined();
   });
 
   it("should handle multiple operations with different channels", async () => {
@@ -95,8 +98,7 @@ describe("asyncAPI Basic Functionality", () => {
 
     const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
 
-    const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "multi-channel.json");
-    const doc = asyncapiDoc as any;
+    const doc = await parseAsyncAPIOutput(outputFiles, "multi-channel.json");
 
     // Should have both operations
     expect(doc.operations.publishUserEvent).toBeDefined();
@@ -107,8 +109,8 @@ describe("asyncAPI Basic Functionality", () => {
     expect(doc.channels["orders.events"]).toBeDefined();
 
     // Should have both schemas
-    expect(doc.components.schemas.UserEvent).toBeDefined();
-    expect(doc.components.schemas.OrderEvent).toBeDefined();
+    expect(doc.components.schemas?.UserEvent).toBeDefined();
+    expect(doc.components.schemas?.OrderEvent).toBeDefined();
   });
 
   it("should handle different TypeSpec data types", async () => {
@@ -131,23 +133,22 @@ describe("asyncAPI Basic Functionality", () => {
 
     const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
 
-    const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "typed-test.json");
-    const doc = asyncapiDoc as any;
-    const schema = doc.components.schemas.TypedEvent;
+    const doc = await parseAsyncAPIOutput(outputFiles, "typed-test.json");
+    const schema = doc.components.schemas?.TypedEvent;
 
     // Validate type mappings
-    expect(schema.properties.stringField.type).toBe("string");
-    expect(schema.properties.intField.type).toBe("integer");
-    expect(schema.properties.intField.format).toBe("int32");
-    expect(schema.properties.boolField.type).toBe("boolean");
-    expect(schema.properties.dateField.type).toBe("string");
-    expect(schema.properties.dateField.format).toBe("date-time");
+    expect(schema?.properties?.stringField?.type).toBe("string");
+    expect(schema?.properties?.intField?.type).toBe("integer");
+    expect(schema?.properties?.intField?.format).toBe("int32");
+    expect(schema?.properties?.boolField?.type).toBe("boolean");
+    expect(schema?.properties?.dateField?.type).toBe("string");
+    expect(schema?.properties?.dateField?.format).toBe("date-time");
 
     // Validate required vs optional fields
-    expect(schema.required).toContain("stringField");
-    expect(schema.required).toContain("intField");
-    expect(schema.required).toContain("boolField");
-    expect(schema.required).not.toContain("optionalField");
+    expect(schema?.required).toContain("stringField");
+    expect(schema?.required).toContain("intField");
+    expect(schema?.required).toContain("boolField");
+    expect(schema?.required).not.toContain("optionalField");
   });
 
   it("should preserve @doc annotations", async () => {
@@ -169,14 +170,17 @@ describe("asyncAPI Basic Functionality", () => {
 
     const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
 
-    const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "doc-test.json");
-    const doc = asyncapiDoc as any;
-    const schema = doc.components.schemas.DocumentedEvent;
+    const doc = await parseAsyncAPIOutput(outputFiles, "doc-test.json");
+    const schema = doc.components.schemas?.DocumentedEvent;
 
     // Validate documentation is preserved
-    expect(schema.description).toBe("A well-documented event model");
-    expect(schema.properties.id.description).toBe("Unique identifier for the event");
-    expect(schema.properties.description.description).toBe("Human-readable description");
+    expect(schema?.description).toBe("A well-documented event model");
+    expect(schema?.properties?.id?.description).toBe(
+      "Unique identifier for the event",
+    );
+    expect(schema?.properties?.description?.description).toBe(
+      "Human-readable description",
+    );
   });
 
   it("should handle operations with parameters", async () => {
@@ -197,14 +201,13 @@ describe("asyncAPI Basic Functionality", () => {
 
     const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
 
-    const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "param-test.json");
-    const doc = asyncapiDoc as any;
+    const doc = await parseAsyncAPIOutput(outputFiles, "param-test.json");
 
     // Should have operation with parameters
     expect(doc.operations.publishParameterizedEvent).toBeDefined();
 
     // Verify operation references the correct schema
-    expect(doc.components.schemas.ParameterizedEvent).toBeDefined();
+    expect(doc.components.schemas?.ParameterizedEvent).toBeDefined();
   });
 
   it("should generate unique operation and channel names", async () => {
@@ -225,8 +228,7 @@ describe("asyncAPI Basic Functionality", () => {
     `;
 
     const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
-    const asyncapiDoc = await parseAsyncAPIOutput(outputFiles);
-    const doc = asyncapiDoc as any;
+    const doc = await parseAsyncAPIOutput(outputFiles);
 
     expect(doc.asyncapi).toBe("3.1.0");
     expect(doc.channels).toBeDefined();

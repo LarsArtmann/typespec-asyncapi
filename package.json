@@ -4,11 +4,11 @@
   "private": false,
   "description": "TypeSpec emitter for AsyncAPI 3.1 specifications",
   "keywords": [
-    "beta",
     "amqp",
     "api",
     "asyncapi",
     "asyncapi3",
+    "beta",
     "code-generation",
     "emitter",
     "event-driven",

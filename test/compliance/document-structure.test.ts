@@ -85,7 +85,10 @@ describe("spec Compliance: Document Structure", () => {
       op publishEvent(): Event;
     `);
 
-    const operations = doc.operations as Record<string, Record<string, unknown>>;
+    const operations = doc.operations as Record<
+      string,
+      Record<string, unknown>
+    >;
     const op = operations.publishEvent;
     expect(op).toBeDefined();
     expect(op.action).toBe("send");
@@ -100,7 +103,10 @@ describe("spec Compliance: Document Structure", () => {
       op publishOrder(): OrderEvent;
     `);
 
-    const components = doc.components as Record<string, Record<string, Record<string, unknown>>>;
+    const components = doc.components as Record<
+      string,
+      Record<string, Record<string, unknown>>
+    >;
     const msg = components.messages.OrderEvent;
     expect(msg).toBeDefined();
     expect(msg.name).toBe("OrderEvent");
@@ -122,7 +128,10 @@ describe("spec Compliance: Document Structure", () => {
       op publish(): MyEvent;
     `);
 
-    const components = doc.components as Record<string, Record<string, Record<string, unknown>>>;
+    const components = doc.components as Record<
+      string,
+      Record<string, Record<string, unknown>>
+    >;
     const schema = components.schemas.MyEvent;
     expect(schema.type).toBe("object");
     const props = schema.properties as Record<string, Record<string, unknown>>;
@@ -139,7 +148,10 @@ describe("spec Compliance: Document Structure", () => {
       op publishEvent(): Event;
     `);
 
-    const operations = doc.operations as Record<string, Record<string, unknown>>;
+    const operations = doc.operations as Record<
+      string,
+      Record<string, unknown>
+    >;
     expect(operations.publishEvent.action).toBe("send");
   });
 
@@ -151,7 +163,10 @@ describe("spec Compliance: Document Structure", () => {
       op subscribeToEvent(): Event;
     `);
 
-    const operations = doc.operations as Record<string, Record<string, unknown>>;
+    const operations = doc.operations as Record<
+      string,
+      Record<string, unknown>
+    >;
     expect(operations.subscribeToEvent.action).toBe("receive");
   });
 

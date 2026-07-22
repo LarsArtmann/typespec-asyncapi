@@ -16,8 +16,13 @@ import { compileAsyncAPISpecRaw } from "../utils/test-helpers";
 
 const LIB_PREFIX = "@lars-artmann/typespec-asyncapi";
 
-function findWarnings(diagnostics: { severity: string; code: string }[], code: string) {
-  return diagnostics.filter((d) => d.severity === "warning" && d.code === `${LIB_PREFIX}/${code}`);
+function findWarnings(
+  diagnostics: { severity: string; code: string }[],
+  code: string,
+) {
+  return diagnostics.filter(
+    (d) => d.severity === "warning" && d.code === `${LIB_PREFIX}/${code}`,
+  );
 }
 
 describe("binding Placement: misplaced warnings", () => {

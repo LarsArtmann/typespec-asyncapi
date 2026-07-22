@@ -25,10 +25,15 @@ describe("spec Compliance: $ref Chain", () => {
       op publishOrderCreated(): OrderCreated;
     `);
 
-    const operations = doc.operations as Record<string, Record<string, unknown>>;
+    const operations = doc.operations as Record<
+      string,
+      Record<string, unknown>
+    >;
     const op = operations.publishOrderCreated;
     const messages = op.messages as { $ref: string }[];
-    expect(messages[0].$ref).toBe("#/channels/orders.created/messages/OrderCreated");
+    expect(messages[0].$ref).toBe(
+      "#/channels/orders.created/messages/OrderCreated",
+    );
   });
 
   it("operation channel references the channels object", async () => {
@@ -39,7 +44,10 @@ describe("spec Compliance: $ref Chain", () => {
       op publish(): Event;
     `);
 
-    const operations = doc.operations as Record<string, Record<string, unknown>>;
+    const operations = doc.operations as Record<
+      string,
+      Record<string, unknown>
+    >;
     expect(operations.publish.channel).toStrictEqual({
       $ref: "#/channels/my.channel",
     });
@@ -54,7 +62,10 @@ describe("spec Compliance: $ref Chain", () => {
     `);
 
     const channels = doc.channels as Record<string, Record<string, unknown>>;
-    const messages = channels["users"].messages as Record<string, { $ref: string }>;
+    const messages = channels["users"].messages as Record<
+      string,
+      { $ref: string }
+    >;
     expect(messages.UserEvent.$ref).toBe("#/components/messages/UserEvent");
   });
 
@@ -66,7 +77,10 @@ describe("spec Compliance: $ref Chain", () => {
       op publishOrder(): OrderEvent;
     `);
 
-    const components = doc.components as Record<string, Record<string, Record<string, unknown>>>;
+    const components = doc.components as Record<
+      string,
+      Record<string, Record<string, unknown>>
+    >;
     const msg = components.messages.OrderEvent;
     expect(msg.payload).toStrictEqual({
       $ref: "#/components/schemas/OrderEvent",
@@ -85,7 +99,10 @@ describe("spec Compliance: $ref Chain", () => {
       op publish(): Customer;
     `);
 
-    const components = doc.components as Record<string, Record<string, Record<string, unknown>>>;
+    const components = doc.components as Record<
+      string,
+      Record<string, Record<string, unknown>>
+    >;
     const customerProps = components.schemas.Customer.properties as Record<
       string,
       Record<string, unknown>
@@ -105,8 +122,14 @@ describe("spec Compliance: $ref Chain", () => {
       op publish(): Cart;
     `);
 
-    const components = doc.components as Record<string, Record<string, Record<string, unknown>>>;
-    const cartProps = components.schemas.Cart.properties as Record<string, Record<string, unknown>>;
+    const components = doc.components as Record<
+      string,
+      Record<string, Record<string, unknown>>
+    >;
+    const cartProps = components.schemas.Cart.properties as Record<
+      string,
+      Record<string, unknown>
+    >;
     expect(cartProps.items.type).toBe("array");
     expect(cartProps.items.items).toStrictEqual({
       $ref: "#/components/schemas/LineItem",
@@ -121,7 +144,10 @@ describe("spec Compliance: $ref Chain", () => {
       op publish(): Event;
     `);
 
-    const operations = doc.operations as Record<string, Record<string, unknown>>;
+    const operations = doc.operations as Record<
+      string,
+      Record<string, unknown>
+    >;
     const op = Object.values(operations)[0] as Record<string, unknown>;
     const messages = op.messages as { $ref: string }[];
     expect(messages[0].$ref).toContain("~1");
@@ -149,7 +175,10 @@ describe("spec Compliance: $ref Chain", () => {
 
     for (const ref of refValues) {
       expect(ref).toMatch(refPattern);
-      const components = doc.components as Record<string, Record<string, unknown>>;
+      const components = doc.components as Record<
+        string,
+        Record<string, unknown>
+      >;
       expect(components.schemas).toBeDefined();
     }
   });
@@ -168,7 +197,10 @@ describe("spec Compliance: $ref Chain", () => {
       op publishDeleted(): Deleted;
     `);
 
-    const operations = doc.operations as Record<string, Record<string, unknown>>;
+    const operations = doc.operations as Record<
+      string,
+      Record<string, unknown>
+    >;
     expect(operations.publishCreated.messages).not.toStrictEqual(
       operations.publishUpdated.messages,
     );
@@ -176,7 +208,10 @@ describe("spec Compliance: $ref Chain", () => {
       operations.publishDeleted.messages,
     );
 
-    const components = doc.components as Record<string, Record<string, unknown>>;
+    const components = doc.components as Record<
+      string,
+      Record<string, unknown>
+    >;
     expect(components.messages).toHaveProperty("Created");
     expect(components.messages).toHaveProperty("Updated");
     expect(components.messages).toHaveProperty("Deleted");

@@ -6,7 +6,10 @@
  */
 
 import { compileAsyncAPISpec } from "../utils/test-helpers";
-import { PROTOCOL_LIST, isSupportedProtocol } from "../../src/constants/protocols.js";
+import {
+  PROTOCOL_LIST,
+  isSupportedProtocol,
+} from "../../src/constants/protocols.js";
 
 describe("asyncAPI Protocol Binding Integration", () => {
   describe("kafka Protocol Integration", () => {

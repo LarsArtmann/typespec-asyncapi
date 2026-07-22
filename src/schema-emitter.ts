@@ -34,9 +34,13 @@ import { getDoc, isStdNamespace } from "@typespec/compiler";
 import type { EmitContext } from "@typespec/compiler";
 import type { AsyncAPIEmitterOptions } from "./infrastructure/configuration/asyncAPIEmitterOptions.js";
 import type { SchemaObject } from "./domain/models/asyncapi-document.js";
+import { $lib } from "./lib.js";
 import { intrinsicToSchema } from "./intrinsic-mapping.js";
 
-export class AsyncAPISchemaEmitter extends TypeEmitter<SchemaObject, AsyncAPIEmitterOptions> {
+export class AsyncAPISchemaEmitter extends TypeEmitter<
+  SchemaObject,
+  AsyncAPIEmitterOptions
+> {
   namespaceDeclaration(_namespace: Namespace): EmitterOutput<SchemaObject> {
     return this.emitter.result.none();
   }
@@ -55,7 +59,11 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<SchemaObject, AsyncAPIEmi
         }
         properties[name] = this.propertyToSchema(prop);
         const propDoc = getDoc(this.emitter.getProgram(), prop);
-        if (propDoc && typeof properties[name] === "object" && properties[name] !== null) {
+        if (
+          propDoc &&
+          typeof properties[name] === "object" &&
+          properties[name] !== null
+        ) {
           properties[name].description = propDoc;
         }
         if (!prop.optional) {
@@ -132,7 +140,9 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<SchemaObject, AsyncAPIEmi
   }
 
   enum(en: Enum): EmitterOutput<SchemaObject> {
-    const values = [...en.members.values()].map((m: EnumMember) => m.value ?? m.name);
+    const values = [...en.members.values()].map(
+      (m: EnumMember) => m.value ?? m.name,
+    );
     return { enum: values, type: "string" };
   }
 
@@ -145,10 +155,16 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<SchemaObject, AsyncAPIEmi
   }
 
   scalarDeclaration(scalar: Scalar, name: string): EmitterOutput<SchemaObject> {
-    return this.emitter.result.declaration(name, intrinsicToSchema(scalar.name));
+    return this.emitter.result.declaration(
+      name,
+      intrinsicToSchema(scalar.name),
+    );
   }
 
-  scalarInstantiation(scalar: Scalar, name: string | undefined): EmitterOutput<SchemaObject> {
+  scalarInstantiation(
+    scalar: Scalar,
+    name: string | undefined,
+  ): EmitterOutput<SchemaObject> {
     if (name) {
       return this.scalarDeclaration(scalar, name);
     }
@@ -168,11 +184,17 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<SchemaObject, AsyncAPIEmi
   }
 
   tuple(tuple: Tuple): EmitterOutput<SchemaObject> {
-    const items = tuple.values.map((v: Type) => extractValue(this.emitter.emitTypeReference(v)));
+    const items = tuple.values.map((v: Type) =>
+      extractValue(this.emitter.emitTypeReference(v)),
+    );
     return { items: { enum: items, type: "array" }, type: "array" };
   }
 
-  arrayDeclaration(array: Type, name: string, elementType: Type): EmitterOutput<SchemaObject> {
+  arrayDeclaration(
+    array: Type,
+    name: string,
+    elementType: Type,
+  ): EmitterOutput<SchemaObject> {
     return { items: this.elementTypeToSchema(elementType), type: "array" };
   }
 
@@ -208,7 +230,9 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<SchemaObject, AsyncAPIEmi
   }
 
   enumDeclaration(en: Enum, name: string): EmitterOutput<SchemaObject> {
-    const values = [...en.members.values()].map((m: EnumMember) => m.value ?? m.name);
+    const values = [...en.members.values()].map(
+      (m: EnumMember) => m.value ?? m.name,
+    );
     const schema: SchemaObject = { enum: values, type: "string" };
     const doc = getDoc(this.emitter.getProgram(), en);
     if (doc) {
@@ -269,7 +293,10 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<SchemaObject, AsyncAPIEmi
       const variants = [...tUnion.variants.values()].map((v) => {
         const inner = v.type;
         const innerKind = (inner as { kind: string }).kind;
-        if (innerKind === "String" && (inner as { value?: string }).value !== undefined) {
+        if (
+          innerKind === "String" &&
+          (inner as { value?: string }).value !== undefined
+        ) {
           return (inner as { value: string }).value;
         }
         const s = this.typeToSchema(inner);
@@ -283,7 +310,10 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<SchemaObject, AsyncAPIEmi
         anyOf: variants.map((v) => (typeof v === "string" ? { const: v } : v)),
       };
     }
-    if (kind === "Model" && (t as { indexer?: { key?: unknown; value?: Type } }).indexer) {
+    if (
+      kind === "Model" &&
+      (t as { indexer?: { key?: unknown; value?: Type } }).indexer
+    ) {
       const { indexer } = t as { indexer: { key: Type; value: Type } };
       const valueRef = this.refForNamedType(indexer.value);
       return {
@@ -319,7 +349,9 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<SchemaObject, AsyncAPIEmi
   }
 }
 
-export function extractValue(entity: EmitEntity<SchemaObject> | undefined): SchemaObject {
+export function extractValue(
+  entity: EmitEntity<SchemaObject> | undefined,
+): SchemaObject {
   if (!entity) {
     return {};
   }
@@ -388,25 +420,33 @@ export function generateSchemas(
   const stdlibNames = collectAllStdlibNames(context.program);
 
   try {
-    const assetEmitter = createAssetEmitter<SchemaObject, AsyncAPIEmitterOptions>(
-      context.program,
-      AsyncAPISchemaEmitter,
-      context,
-    );
+    const assetEmitter = createAssetEmitter<
+      SchemaObject,
+      AsyncAPIEmitterOptions
+    >(context.program, AsyncAPISchemaEmitter, context);
 
     assetEmitter.emitProgram({ emitGlobalNamespace: true });
 
     for (const sourceFile of assetEmitter.getSourceFiles()) {
       const scope = sourceFile.globalScope;
       for (const declaration of scope.declarations) {
-        if (!declaration.name || !declaration.value || stdlibNames.has(declaration.name)) {
+        if (
+          !declaration.name ||
+          !declaration.value ||
+          stdlibNames.has(declaration.name)
+        ) {
           continue;
         }
         schemas[declaration.name] = declaration.value as SchemaObject;
       }
     }
   } catch (error) {
-    console.error("[asyncapi-emitter] Schema generation failed:", error);
+    $lib.reportDiagnostic(context.program, {
+      code: "schema-generation-failed",
+      messageId: "default",
+      target: context.program.getGlobalNamespaceType(),
+      format: { error: String(error) },
+    });
   }
 
   return schemas;

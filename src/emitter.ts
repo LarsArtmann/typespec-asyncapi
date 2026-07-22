@@ -12,17 +12,25 @@ import { consolidateAsyncAPIState } from "./state.js";
 import { generateSchemas } from "./schema-emitter.js";
 import { stringify as yamlStringify } from "yaml";
 
-export async function $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): Promise<void> {
+export async function $onEmit(
+  context: EmitContext<AsyncAPIEmitterOptions>,
+): Promise<void> {
   const { options } = context;
   const rawState = consolidateAsyncAPIState(context.program);
   const schemas = generateSchemas(context);
-  const document = buildAsyncAPIDocument(rawState, schemas, options, context.program);
+  const document = buildAsyncAPIDocument(
+    rawState,
+    schemas,
+    options,
+    context.program,
+  );
 
   const rawFileType = options?.["file-type"] ?? "yaml";
   const fileType: string =
     typeof rawFileType === "string"
       ? rawFileType
-      : (((rawFileType as Record<string, unknown>)?.format as string) ?? "yaml");
+      : (((rawFileType as Record<string, unknown>)?.format as string) ??
+        "yaml");
   const outputFile = options?.["output-file"] ?? "asyncapi";
   const outputPath = `${outputFile}.${fileType}`;
 

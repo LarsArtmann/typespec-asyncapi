@@ -17,7 +17,10 @@ describe("spec Compliance: Edge Cases", () => {
       op publish(): EmptyEvent;
     `);
 
-    const components = doc.components as Record<string, Record<string, Record<string, unknown>>>;
+    const components = doc.components as Record<
+      string,
+      Record<string, Record<string, unknown>>
+    >;
     expect(components.schemas.EmptyEvent).toBeDefined();
   });
 
@@ -41,7 +44,10 @@ describe("spec Compliance: Edge Cases", () => {
       op publish(): Event;
     `);
 
-    const operations = doc.operations as Record<string, Record<string, unknown>>;
+    const operations = doc.operations as Record<
+      string,
+      Record<string, unknown>
+    >;
     const op = Object.values(operations)[0] as Record<string, unknown>;
     const messages = op.messages as { $ref: string }[];
     expect(messages[0].$ref).toContain("~1");
@@ -73,7 +79,10 @@ describe("spec Compliance: Edge Cases", () => {
       op publish(): Employee;
     `);
 
-    const components = doc.components as Record<string, Record<string, Record<string, unknown>>>;
+    const components = doc.components as Record<
+      string,
+      Record<string, Record<string, unknown>>
+    >;
     expect(components.schemas.Employee).toBeDefined();
     expect(components.schemas.Company).toBeDefined();
     expect(components.schemas.Address).toBeDefined();
@@ -90,9 +99,20 @@ describe("spec Compliance: Edge Cases", () => {
       op publish(): Event;
     `);
 
-    const components = doc.components as Record<string, Record<string, Record<string, unknown>>>;
-    const props = components.schemas.Event.properties as Record<string, Record<string, unknown>>;
-    expect(props.priority.enum).toStrictEqual(["low", "medium", "high", "critical"]);
+    const components = doc.components as Record<
+      string,
+      Record<string, Record<string, unknown>>
+    >;
+    const props = components.schemas.Event.properties as Record<
+      string,
+      Record<string, unknown>
+    >;
+    expect(props.priority.enum).toStrictEqual([
+      "low",
+      "medium",
+      "high",
+      "critical",
+    ]);
   });
 
   it("handles optional fields in required array", async () => {
@@ -107,7 +127,10 @@ describe("spec Compliance: Edge Cases", () => {
       op publish(): Event;
     `);
 
-    const components = doc.components as Record<string, Record<string, Record<string, unknown>>>;
+    const components = doc.components as Record<
+      string,
+      Record<string, Record<string, unknown>>
+    >;
     expect(components.schemas.Event.required).toStrictEqual(["id"]);
   });
 
@@ -151,7 +174,10 @@ describe("spec Compliance: Edge Cases", () => {
       op publish(): Event;
     `);
 
-    const components = doc.components as Record<string, Record<string, Record<string, unknown>>>;
+    const components = doc.components as Record<
+      string,
+      Record<string, Record<string, unknown>>
+    >;
     expect(components.schemas.Event.description).toBe("This is a test event");
   });
 
@@ -164,7 +190,10 @@ describe("spec Compliance: Edge Cases", () => {
       op publish(): Event;
     `);
 
-    const operations = doc.operations as Record<string, Record<string, unknown>>;
+    const operations = doc.operations as Record<
+      string,
+      Record<string, unknown>
+    >;
     const op = Object.values(operations)[0] as Record<string, unknown>;
     const tags = op.tags as { name: string }[];
     expect(tags).toHaveLength(2);
@@ -180,7 +209,10 @@ describe("spec Compliance: Edge Cases", () => {
       op publish(): TrackedEvent;
     `);
 
-    const components = doc.components as Record<string, Record<string, Record<string, unknown>>>;
+    const components = doc.components as Record<
+      string,
+      Record<string, Record<string, unknown>>
+    >;
     const msg = components.messages.TrackedEvent;
     expect(msg.correlationId).toBeDefined();
     expect((msg.correlationId as Record<string, unknown>).location).toBe(
@@ -197,7 +229,10 @@ describe("spec Compliance: Edge Cases", () => {
       op publish(): ApiEvent;
     `);
 
-    const components = doc.components as Record<string, Record<string, Record<string, unknown>>>;
+    const components = doc.components as Record<
+      string,
+      Record<string, Record<string, unknown>>
+    >;
     const msg = components.messages.ApiEvent;
     expect(msg.headers).toBeDefined();
     const headers = msg.headers as Record<string, unknown>;
@@ -214,9 +249,17 @@ describe("spec Compliance: Edge Cases", () => {
       op publish(): Sensor;
     `);
 
-    const components = doc.components as Record<string, Record<string, Record<string, unknown>>>;
-    const props = components.schemas.Sensor.properties as Record<string, Record<string, unknown>>;
+    const components = doc.components as Record<
+      string,
+      Record<string, Record<string, unknown>>
+    >;
+    const props = components.schemas.Sensor.properties as Record<
+      string,
+      Record<string, unknown>
+    >;
     expect(props.readings.type).toBe("array");
-    expect((props.readings.items as Record<string, unknown>).type).toBe("number");
+    expect((props.readings.items as Record<string, unknown>).type).toBe(
+      "number",
+    );
   });
 });

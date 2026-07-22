@@ -14,10 +14,12 @@
 import { createTester, findTestPackageRoot } from "@typespec/compiler/testing";
 import type { AsyncAPIEmitterOptions } from "../../src/infrastructure/configuration/options.js";
 import YAML from "yaml";
+import type { ParsedAsyncAPIDocument } from "../../src/domain/models/asyncapi-document.js";
 
 // === TYPES ===
 
-type AsyncAPIObject = Record<string, any>;
+type AsyncAPIObject = ParsedAsyncAPIDocument;
+export type { ParsedAsyncAPIDocument } from "../../src/domain/models/asyncapi-document.js";
 
 export interface CompilationResult {
   diagnostics: readonly import("@typespec/compiler").Diagnostic[];
@@ -27,7 +29,10 @@ export interface CompilationResult {
 
 // === CORE COMPILATION ===
 
-async function createTesterInstance(source: string, options: AsyncAPIEmitterOptions = {}) {
+async function createTesterInstance(
+  source: string,
+  options: AsyncAPIEmitterOptions = {},
+) {
   const packageRoot = await findTestPackageRoot(import.meta.url);
   const hasOwnImport =
     source.includes('import "@lars-artmann/typespec-asyncapi"') ||
@@ -48,19 +53,22 @@ async function createTesterInstance(source: string, options: AsyncAPIEmitterOpti
   return tester.emit("@lars-artmann/typespec-asyncapi", options);
 }
 
-function parseContent(content: string): Record<string, unknown> | null {
+function parseContent(content: string): ParsedAsyncAPIDocument | null {
   try {
-    return JSON.parse(content);
+    return JSON.parse(content) as ParsedAsyncAPIDocument;
   } catch {
     try {
-      return YAML.parse(content);
+      return YAML.parse(content) as ParsedAsyncAPIDocument;
     } catch {
       return null;
     }
   }
 }
 
-export async function compileAsyncAPI(source: string, options: AsyncAPIEmitterOptions = {}) {
+export async function compileAsyncAPI(
+  source: string,
+  options: AsyncAPIEmitterOptions = {},
+) {
   const tester = await createTesterInstance(source, options);
 
   const [result, diagnostics] = await tester.compileAndDiagnose(source);
@@ -77,7 +85,11 @@ export async function compileAsyncAPI(source: string, options: AsyncAPIEmitterOp
       continue;
     }
     const filename = virtualPath.split("/").pop() || "";
-    if (filename.endsWith(".yaml") || filename.endsWith(".json") || filename.endsWith(".yml")) {
+    if (
+      filename.endsWith(".yaml") ||
+      filename.endsWith(".json") ||
+      filename.endsWith(".yml")
+    ) {
       if (content.startsWith("asyncapi") || content.includes('"asyncapi"')) {
         outputFile = filename;
         outputContent = content;
@@ -109,7 +121,9 @@ export async function compileAsyncAPIWithoutErrors(
   const result = await compileAsyncAPI(source, options);
   const errors = result.diagnostics.filter((d) => d.severity === "error");
   if (errors.length > 0) {
-    const errorMessages = errors.map((e) => `${e.code}: ${e.message}`).join("\n");
+    const errorMessages = errors
+      .map((e) => `${e.code}: ${e.message}`)
+      .join("\n");
     throw new Error(`Compilation failed with errors:\n${errorMessages}`);
   }
   return result;
@@ -117,7 +131,10 @@ export async function compileAsyncAPIWithoutErrors(
 
 // === LEGACY COMPILATION WRAPPERS ===
 
-async function compileRaw(source: string, options: AsyncAPIEmitterOptions = {}) {
+async function compileRaw(
+  source: string,
+  options: AsyncAPIEmitterOptions = {},
+) {
   const result = await compileAsyncAPI(source, options);
   const outputFiles = new Map<string, string>();
   for (const [filename, content] of Object.entries(result.outputs)) {
@@ -390,7 +407,10 @@ export const TestSources = {
 export const AsyncAPIAssertions = {
   hasChannel: (doc: AsyncAPIObject, channelName: string): boolean =>
     Boolean(doc.channels && channelName in doc.channels),
-  hasDocumentation: (obj: { description?: string }, expectedDoc: string): boolean => {
+  hasDocumentation: (
+    obj: { description?: string },
+    expectedDoc: string,
+  ): boolean => {
     if (!obj.description || !obj.description.includes(expectedDoc)) {
       throw new Error(
         `Expected documentation containing '${expectedDoc}', got: ${obj.description || "no description"}`,
@@ -410,7 +430,11 @@ export const AsyncAPIAssertions = {
     const d = doc as Record<string, unknown>;
     return typeof d.asyncapi === "string" && typeof d.info === "object";
   },
-  schemaHasProperty: (doc: AsyncAPIObject, schemaName: string, propertyName: string): boolean => {
+  schemaHasProperty: (
+    doc: AsyncAPIObject,
+    schemaName: string,
+    propertyName: string,
+  ): boolean => {
     const schema = doc.components?.schemas?.[schemaName];
     return schema?.properties && propertyName in schema.properties;
   },
@@ -443,7 +467,9 @@ export const TestLogging = {
   logValidationSuccess: (_msg: string) => {},
 };
 
-export async function validateAsyncAPIObjectComprehensive(doc: unknown): Promise<{
+export async function validateAsyncAPIObjectComprehensive(
+  doc: unknown,
+): Promise<{
   valid: boolean;
   errors: { message: string; keyword: string; path: string }[];
   summary: string;

@@ -20,7 +20,11 @@ import {
   hasProtocolBindings,
   normalizeBindingProtocol,
 } from "./constants/binding-versions.js";
-import type { AsyncAPIConsolidatedState, OperationTypeData, ProtocolConfigData } from "./state.js";
+import type {
+  AsyncAPIConsolidatedState,
+  OperationTypeData,
+  ProtocolConfigData,
+} from "./state.js";
 import type {
   AsyncAPIDocument,
   ChannelObject,
@@ -106,14 +110,21 @@ function returnModelName(type: Type): string | undefined {
     return undefined;
   }
   const rt = type.returnType;
-  if ("name" in rt && typeof rt.name === "string" && rt.name && rt.kind !== "Operation") {
+  if (
+    "name" in rt &&
+    typeof rt.name === "string" &&
+    rt.name &&
+    rt.kind !== "Operation"
+  ) {
     return rt.name;
   }
   return undefined;
 }
 
 /** Extract channel path parameters from an address string. */
-function extractChannelParameters(address: string): Record<string, ParameterObject> | undefined {
+function extractChannelParameters(
+  address: string,
+): Record<string, ParameterObject> | undefined {
   const matches = address.match(/\{(?<param>[^}]+)\}/gu);
   if (!matches || matches.length === 0) {
     return undefined;
@@ -130,7 +141,10 @@ function extractChannelParameters(address: string): Record<string, ParameterObje
 function buildProtocolBinding(data: ProtocolConfigData): ProtocolBindings {
   const bindingKey = normalizeBindingProtocol(data.protocol);
   const bindingData: Record<string, unknown> = { ...data.binding };
-  if (hasProtocolBindings(bindingKey) && bindingData.bindingVersion === undefined) {
+  if (
+    hasProtocolBindings(bindingKey) &&
+    bindingData.bindingVersion === undefined
+  ) {
     bindingData.bindingVersion = getLatestBindingVersion(bindingKey);
   }
   return { [bindingKey]: bindingData };
@@ -220,7 +234,9 @@ export function buildAsyncAPIDocument(
   }
 
   // 1b. Channels with @channel but no @publish/@subscribe
-  const opsWithType = new Set([...state.operations.keys()].map((t) => nameOfType(t)));
+  const opsWithType = new Set(
+    [...state.operations.keys()].map((t) => nameOfType(t)),
+  );
   for (const [type, data] of state.channels) {
     const name = nameOfType(type);
     if (!name) {
@@ -241,7 +257,9 @@ export function buildAsyncAPIDocument(
 
   // 1c. Bare operations (no decorators at all)
   const allKnownOps = new Set(
-    [...state.operations.keys(), ...state.channels.keys()].map((t) => nameOfType(t)),
+    [...state.operations.keys(), ...state.channels.keys()].map((t) =>
+      nameOfType(t),
+    ),
   );
   const globalNs = program.getGlobalNamespaceType();
   const namespaces = [globalNs, ...globalNs.namespaces.values()];
@@ -414,7 +432,8 @@ export function buildAsyncAPIDocument(
 
       const varMatches = serverData.url?.match(/\{(?<var>[^}]+)\}/gu);
       if (varMatches && varMatches.length > 0) {
-        const vars: Record<string, { default?: string; description?: string }> = {};
+        const vars: Record<string, { default?: string; description?: string }> =
+          {};
         for (const match of varMatches) {
           const varName = match.slice(1, -1);
           vars[varName] = { description: `Server variable: ${varName}` };
