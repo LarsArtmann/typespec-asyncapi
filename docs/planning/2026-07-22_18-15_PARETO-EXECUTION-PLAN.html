@@ -1,0 +1,1322 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pareto Execution Plan — TypeSpec AsyncAPI Emitter</title>
+    <style>
+      :root {
+        --color-graphite: #0e0e10;
+        --color-graphite-2: #18181d;
+        --color-graphite-3: #16161a;
+        --color-bone: #f4f4f0;
+        --color-red: #ff6b6b;
+        --color-blue: #6eb5ff;
+        --color-yellow: #f4d35e;
+        --color-amber: #ffb347;
+        --color-hairline: rgba(244, 244, 240, 0.12);
+        --color-hairline-strong: rgba(244, 244, 240, 0.25);
+
+        --surface: var(--color-graphite);
+        --surface-raised: var(--color-graphite-2);
+        --surface-sunken: var(--color-graphite-3);
+        --text: var(--color-bone);
+        --text-muted: rgba(244, 244, 240, 0.72);
+        --text-faint: rgba(244, 244, 240, 0.45);
+        --border: var(--color-hairline);
+        --border-strong: var(--color-hairline-strong);
+        --accent: var(--color-amber);
+        --problem: var(--color-red);
+        --solution: var(--color-blue);
+        --warning: var(--color-yellow);
+        --radius: 0px;
+        --radius-sm: 0px;
+
+        --font-heading: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        --font-body: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        --font-mono: ui-monospace, "Cascadia Code", "Source Code Pro", "JetBrains Mono", Menlo, Consolas, monospace;
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html { scroll-behavior: smooth; }
+      section[id], [id] { scroll-margin-top: 60px; }
+      body {
+        background: var(--surface);
+        color: var(--text);
+        font-family: var(--font-body);
+        font-size: 15px;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+      a:focus-visible { outline-offset: -1px; }
+
+      .top-bar {
+        background: var(--text);
+        color: var(--surface);
+        padding: 0.6rem 2rem;
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .layout {
+        display: flex;
+        gap: 2.5rem;
+        padding: 2rem;
+        max-width: 1600px;
+        margin: 0 auto;
+      }
+      .sidebar {
+        width: 220px;
+        flex-shrink: 0;
+        position: sticky;
+        top: 1rem;
+        align-self: flex-start;
+        height: calc(100vh - 2rem);
+        overflow-y: auto;
+        display: none;
+      }
+      .sidebar nav { display: flex; flex-direction: column; gap: 0; }
+      .sidebar .label {
+        font-family: var(--font-mono);
+        font-size: 0.68rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--accent);
+        margin-bottom: 0.75rem;
+        padding-bottom: 0.4rem;
+        border-bottom: 2px solid var(--border-strong);
+      }
+      .sidebar a {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        text-decoration: none;
+        padding: 0.45rem 0.75rem;
+        border-left: 2px solid transparent;
+        transition: all 0.15s ease;
+        line-height: 1.4;
+        font-weight: 500;
+      }
+      .sidebar a:hover, .sidebar a.active {
+        color: var(--accent);
+        border-left-color: var(--accent);
+        background: color-mix(in srgb, var(--accent) 8%, transparent);
+      }
+      .main { flex: 1; min-width: 0; }
+
+      h1, h2, h3, h4 {
+        font-family: var(--font-heading);
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+      h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); line-height: 1.1; margin: 0 0 0.6rem; }
+      h2 {
+        font-size: 1.4rem;
+        margin: 2.5rem 0 1rem;
+        padding-bottom: 0.4rem;
+        border-bottom: 2px solid var(--border-strong);
+        display: flex;
+        align-items: baseline;
+        gap: 0.6rem;
+      }
+      h2 .num {
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+        color: var(--accent);
+        font-weight: 700;
+        letter-spacing: 0.06em;
+      }
+      h3 { font-size: 1.1rem; margin: 0 0 0.4rem; font-weight: 700; }
+      h4 { font-size: 0.98rem; margin: 0 0 0.3rem; font-weight: 700; }
+      p { margin: 0 0 1rem; }
+
+      .hero {
+        padding: 1.5rem 0 1.5rem;
+        margin-bottom: 1.5rem;
+        border-bottom: 2px solid var(--border-strong);
+      }
+      .hero-badge {
+        display: inline-block;
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--surface);
+        background: var(--accent);
+        padding: 0.3rem 0.7rem;
+        margin-bottom: 0.9rem;
+      }
+      .hero-subtitle {
+        font-size: 1.05rem;
+        color: var(--text-muted);
+        max-width: 70ch;
+        margin: 0;
+      }
+      .hero-shapes { position: relative; height: 80px; margin-bottom: 1rem; }
+      .hero-shapes .circle { position: absolute; top: 0; left: 0; width: 56px; height: 56px; background: var(--problem); border-radius: 50%; }
+      .hero-shapes .square { position: absolute; top: 24px; left: 72px; width: 48px; height: 48px; background: var(--solution); }
+      .hero-shapes .tri { position: absolute; top: 8px; left: 140px; width: 0; height: 0; border-left: 28px solid transparent; border-right: 28px solid transparent; border-bottom: 48px solid var(--warning); }
+
+      .card {
+        background: var(--surface-raised);
+        border: 1px solid var(--border);
+        padding: 1.1rem 1.3rem;
+        margin-bottom: 1rem;
+        border-left: 4px solid var(--border-strong);
+      }
+      .card-problem { border-left-color: var(--problem); background: color-mix(in srgb, var(--problem) 8%, var(--surface-raised)); }
+      .card-solution { border-left-color: var(--solution); background: color-mix(in srgb, var(--solution) 8%, var(--surface-raised)); }
+      .card-warning { border-left-color: var(--warning); background: color-mix(in srgb, var(--warning) 8%, var(--surface-raised)); }
+
+      .stat-grid, .scorecard {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 0.75rem;
+        margin: 1rem 0 1.5rem;
+      }
+      .stat-card, .score-card {
+        background: var(--surface-raised);
+        border: 1px solid var(--border);
+        padding: 1.1rem 1rem;
+        position: relative;
+      }
+      .stat-card::before, .score-card::before {
+        content: "";
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 2px;
+        background: var(--border-strong);
+      }
+      .stat-bad::before, .score-bad::before { background: var(--problem); }
+      .stat-good::before, .score-good::before { background: var(--solution); }
+      .stat-warn::before, .score-warn::before { background: var(--warning); }
+      .stat-value, .score {
+        font-family: var(--font-heading);
+        font-size: 2rem;
+        font-weight: 800;
+        line-height: 1;
+        letter-spacing: -0.03em;
+        color: var(--text);
+      }
+      .stat-bad .stat-value, .score-bad .score { color: var(--problem); }
+      .stat-good .stat-value, .score-good .score { color: var(--solution); }
+      .stat-warn .stat-value, .score-warn .score { color: var(--warning); }
+      .stat-label, .score-card .label {
+        font-family: var(--font-mono);
+        font-size: 0.65rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--text-faint);
+        margin-top: 0.5rem;
+      }
+
+      .badge {
+        display: inline-block;
+        font-family: var(--font-mono);
+        font-size: 0.62rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        padding: 0.18rem 0.5rem;
+        border: 1px solid var(--border-strong);
+        color: var(--text-muted);
+      }
+      .badge-critical { color: var(--problem); border-color: var(--problem); }
+      .badge-high { color: var(--warning); border-color: var(--warning); }
+      .badge-medium { color: var(--accent); border-color: var(--accent); }
+      .badge-low { color: var(--text-muted); }
+      .badge-fixed { color: var(--solution); border-color: var(--solution); }
+
+      .table-wrap { overflow-x: auto; }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1rem 0 1.5rem;
+        font-size: 0.9rem;
+      }
+      th {
+        text-align: left;
+        padding: 0.6rem 0.9rem;
+        background: var(--surface-raised);
+        color: var(--text-faint);
+        font-family: var(--font-mono);
+        font-size: 0.66rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        border-bottom: 1px solid var(--border-strong);
+      }
+      td {
+        padding: 0.6rem 0.9rem;
+        border-bottom: 1px solid var(--border);
+        vertical-align: top;
+      }
+      tr:hover td { background: var(--surface-raised); }
+
+      .toc {
+        background: var(--surface-raised);
+        border: 1px solid var(--border);
+        border-left: 3px solid var(--accent);
+        padding: 1rem 1.3rem;
+        margin: 1rem 0 1.5rem;
+      }
+      .toc h3 { margin-bottom: 0.5rem; }
+      .toc ul { list-style: none; padding: 0; }
+      .toc li { margin: 0.25rem 0; }
+      .toc a { color: var(--text-muted); text-decoration: none; font-size: 0.9rem; }
+      .toc a:hover { color: var(--accent); }
+
+      .migration-step {
+        display: grid;
+        grid-template-columns: 48px 1fr;
+        gap: 1rem;
+        margin: 1rem 0;
+        padding: 1rem;
+        background: var(--surface-raised);
+        border: 1px solid var(--border);
+        border-left: 3px solid var(--accent);
+      }
+      .migration-num {
+        font-family: var(--font-mono);
+        font-weight: 800;
+        font-size: 1.5rem;
+        color: var(--accent);
+        line-height: 1;
+      }
+      .migration-content h4 { margin-bottom: 0.2rem; }
+      .migration-content p { margin-bottom: 0; color: var(--text-muted); font-size: 0.92rem; }
+
+      .callout {
+        margin: 0.8rem 0 0;
+        padding: 0.7rem 0.9rem;
+        border-left: 3px solid var(--border-strong);
+        background: color-mix(in srgb, var(--text) 5%, transparent);
+        font-size: 0.9rem;
+      }
+      .callout strong { display: inline-block; margin-right: 0.4rem; }
+      .callout-solution { border-left-color: var(--solution); background: color-mix(in srgb, var(--solution) 10%, transparent); }
+      .callout-warning { border-left-color: var(--warning); background: color-mix(in srgb, var(--warning) 10%, transparent); }
+
+      .d2-graph {
+        margin: 1.5rem 0;
+        background: var(--surface-raised);
+        border: 1px solid var(--border);
+        padding: 1rem;
+        overflow-x: auto;
+      }
+      .d2-graph svg { max-width: 100%; height: auto; }
+
+      .footer {
+        margin-top: 2rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border);
+        font-size: 0.8rem;
+        color: var(--text-faint);
+        font-family: var(--font-mono);
+      }
+
+      .tier-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin: 2rem 0 0.5rem;
+      }
+      .tier-badge {
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        padding: 0.3rem 0.7rem;
+        color: var(--surface);
+      }
+      .tier-1-badge { background: var(--problem); }
+      .tier-2-badge { background: var(--warning); }
+      .tier-3-badge { background: var(--solution); }
+      .tier-4-badge { background: var(--text-faint); }
+
+      .subtask-list {
+        list-style: none;
+        padding: 0;
+        margin: 0.5rem 0;
+      }
+      .subtask-list li {
+        padding: 0.25rem 0;
+        padding-left: 1.5rem;
+        position: relative;
+        font-size: 0.88rem;
+        color: var(--text-muted);
+      }
+      .subtask-list li::before {
+        content: "▸";
+        position: absolute;
+        left: 0;
+        color: var(--accent);
+        font-family: var(--font-mono);
+      }
+
+      @media (min-width: 1024px) {
+        .sidebar { display: block; }
+      }
+      @media (max-width: 768px) {
+        .layout { flex-direction: column; padding: 1rem; }
+        .top-bar { padding: 0.6rem 1rem; flex-wrap: wrap; gap: 0.3rem; }
+        .stat-grid, .scorecard { grid-template-columns: repeat(2, 1fr); }
+        .migration-step { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="top-bar">
+      <span>PARETO EXECUTION PLAN</span>
+      <span>2026-07-22</span>
+      <span>typespec-asyncapi v0.2.0-beta</span>
+    </div>
+
+    <div class="layout">
+      <aside class="sidebar" data-nav>
+        <nav>
+          <div class="label">Contents</div>
+          <a href="#summary">Summary</a>
+          <a href="#pareto">Pareto Breakdown</a>
+          <a href="#tier1">Tier 1: Foundation</a>
+          <a href="#tier2">Tier 2: Core Features</a>
+          <a href="#tier3">Tier 3: Completeness</a>
+          <a href="#tier4">Tier 4: Strategic</a>
+          <a href="#graph">Execution Graph</a>
+          <a href="#detailed">Detailed Breakdown</a>
+          <a href="#risks">Risks</a>
+        </nav>
+      </aside>
+
+      <main class="main">
+        <div class="hero">
+          <div class="hero-shapes">
+            <div class="circle"></div>
+            <div class="square"></div>
+            <div class="tri"></div>
+          </div>
+          <div class="hero-badge">Pareto Plan</div>
+          <h1>Roadmap Execution Plan</h1>
+          <p class="hero-subtitle">
+            26 medium-granularity tasks and 150 fine-grained subtasks across 4 Pareto tiers.
+            Ranked by impact, effort, and customer value. The 1% that delivers 51% of the result comes first.
+          </p>
+        </div>
+
+        <nav class="toc">
+          <h3>Contents</h3>
+          <ul>
+            <li><a href="#summary">Summary</a></li>
+            <li><a href="#pareto">Pareto Breakdown</a></li>
+            <li><a href="#tier1">Tier 1 — Foundation (1% → 51%)</a></li>
+            <li><a href="#tier2">Tier 2 — Core Features (4% → 64%)</a></li>
+            <li><a href="#tier3">Tier 3 — Completeness (20% → 80%)</a></li>
+            <li><a href="#tier4">Tier 4 — Strategic (80% → 100%)</a></li>
+            <li><a href="#graph">Execution Dependency Graph</a></li>
+            <li><a href="#detailed">Detailed Breakdown (Fine Granularity)</a></li>
+            <li><a href="#risks">Risks and Mitigations</a></li>
+          </ul>
+        </nav>
+
+        <!-- ========== SUMMARY ========== -->
+        <h2 id="summary"><span class="num">00</span>Summary</h2>
+
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-value">26</div>
+            <div class="stat-label">Medium Tasks</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">150</div>
+            <div class="stat-label">Fine Subtasks</div>
+          </div>
+          <div class="stat-card stat-bad">
+            <div class="stat-value">3</div>
+            <div class="stat-label">Tier 1 (Critical)</div>
+          </div>
+          <div class="stat-card stat-warn">
+            <div class="stat-value">6</div>
+            <div class="stat-label">Tier 2 (High)</div>
+          </div>
+          <div class="stat-card stat-good">
+            <div class="stat-value">9</div>
+            <div class="stat-label">Tier 3 (Medium)</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">8</div>
+            <div class="stat-label">Tier 4 (Low)</div>
+          </div>
+        </div>
+
+        <div class="card card-problem">
+          <h4>The #1 Bottleneck</h4>
+          <p>
+            <code>buildAsyncAPIDocument()</code> is 371 lines, complexity 84, with 161 statements.
+            ESLint already warns: <code>max-lines-per-function</code>, <code>max-statements</code>,
+            <code>max-lines</code>. Every future feature — reply, multi-message, server bindings,
+            new protocols — touches this function. Refactoring it first is the single highest-leverage
+            action. It unblocks ALL Tier 2 and Tier 3 document-builder work.
+          </p>
+        </div>
+
+        <!-- ========== PARETO BREAKDOWN ========== -->
+        <h2 id="pareto"><span class="num">01</span>Pareto Breakdown</h2>
+
+        <p>The ROADMAP contains 25 raw ideas across 4 themes. Here is the Pareto distribution:</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Tier</th>
+                <th>Effort</th>
+                <th>Value Delivered</th>
+                <th>Tasks</th>
+                <th>Strategy</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="badge badge-critical">Tier 1</span></td>
+                <td>~1%</td>
+                <td>~51%</td>
+                <td>3</td>
+                <td>Refactor the bottleneck + trivial wins that unlock everything</td>
+              </tr>
+              <tr>
+                <td><span class="badge badge-high">Tier 2</span></td>
+                <td>~4%</td>
+                <td>~64%</td>
+                <td>6</td>
+                <td>High-value features + type safety cleanup + trust verification</td>
+              </tr>
+              <tr>
+                <td><span class="badge badge-medium">Tier 3</span></td>
+                <td>~20%</td>
+                <td>~80%</td>
+                <td>9</td>
+                <td>Protocol completeness, validation depth, DX polish</td>
+              </tr>
+              <tr>
+                <td><span class="badge badge-low">Tier 4</span></td>
+                <td>~80%</td>
+                <td>~100%</td>
+                <td>8</td>
+                <td>Strategic bets, ecosystem integration, performance</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- ========== COMPREHENSIVE PLAN TABLE ========== -->
+        <h2><span class="num">02</span>Comprehensive Plan — Medium Granularity</h2>
+        <p>26 tasks, each 30–100 minutes. Sorted by impact/effort/customer-value within each tier.</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Tier</th>
+                <th>Task</th>
+                <th>Impact</th>
+                <th>Effort</th>
+                <th>Theme</th>
+                <th>Est. Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td><span class="badge badge-critical">T1</span></td>
+                <td><strong>Refactor buildAsyncAPIDocument()</strong> — extract channel/operation/message/server/security builders</td>
+                <td><span class="badge badge-critical">Critical</span></td>
+                <td>High</td>
+                <td>Architecture</td>
+                <td>100 min</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td><span class="badge badge-critical">T1</span></td>
+                <td><strong>defaultContentType</strong> on document root</td>
+                <td><span class="badge badge-medium">Medium</span></td>
+                <td>Low</td>
+                <td>Spec Compliance</td>
+                <td>30 min</td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td><span class="badge badge-critical">T1</span></td>
+                <td><strong>@doc propagation to channels</strong> — currently silently dropped</td>
+                <td><span class="badge badge-medium">Medium</span></td>
+                <td>Low</td>
+                <td>Spec Compliance</td>
+                <td>30 min</td>
+              </tr>
+              <tr>
+                <td>4</td>
+                <td><span class="badge badge-high">T2</span></td>
+                <td><strong>Operation reply support</strong> — type exists, never populated</td>
+                <td><span class="badge badge-high">High</span></td>
+                <td>Medium</td>
+                <td>Spec Compliance</td>
+                <td>90 min</td>
+              </tr>
+              <tr>
+                <td>5</td>
+                <td><span class="badge badge-high">T2</span></td>
+                <td><strong>Multi-message operations</strong> — one operation → multiple message types</td>
+                <td><span class="badge badge-high">High</span></td>
+                <td>Medium</td>
+                <td>Spec Compliance</td>
+                <td>90 min</td>
+              </tr>
+              <tr>
+                <td>6</td>
+                <td><span class="badge badge-high">T2</span></td>
+                <td><strong>Remove 22 as-AsyncAPIObject casts</strong> in tests</td>
+                <td><span class="badge badge-low">Low</span></td>
+                <td>Low</td>
+                <td>Dev Experience</td>
+                <td>45 min</td>
+              </tr>
+              <tr>
+                <td>7</td>
+                <td><span class="badge badge-high">T2</span></td>
+                <td><strong>Clean 111+ Record casts</strong> in compliance tests</td>
+                <td><span class="badge badge-low">Low</span></td>
+                <td>Low</td>
+                <td>Dev Experience</td>
+                <td>60 min</td>
+              </tr>
+              <tr>
+                <td>8</td>
+                <td><span class="badge badge-high">T2</span></td>
+                <td><strong>Fix schema-validator.ts & type-guards.ts</strong> return types</td>
+                <td><span class="badge badge-low">Low</span></td>
+                <td>Low</td>
+                <td>Dev Experience</td>
+                <td>45 min</td>
+              </tr>
+              <tr>
+                <td>9</td>
+                <td><span class="badge badge-high">T2</span></td>
+                <td><strong>AsyncAPI Studio round-trip</strong> compatibility verification</td>
+                <td><span class="badge badge-high">High</span></td>
+                <td>Low</td>
+                <td>Ecosystem</td>
+                <td>60 min</td>
+              </tr>
+              <tr>
+                <td>10</td>
+                <td><span class="badge badge-medium">T3</span></td>
+                <td><strong>Server binding support</strong> — @server currently emits no bindings</td>
+                <td><span class="badge badge-medium">Medium</span></td>
+                <td>Medium</td>
+                <td>Spec Compliance</td>
+                <td>60 min</td>
+              </tr>
+              <tr>
+                <td>11</td>
+                <td><span class="badge badge-medium">T3</span></td>
+                <td><strong>@operationId / @messageId</strong> decorators for explicit naming</td>
+                <td><span class="badge badge-medium">Medium</span></td>
+                <td>Low</td>
+                <td>Spec Compliance</td>
+                <td>45 min</td>
+              </tr>
+              <tr>
+                <td>12</td>
+                <td><span class="badge badge-medium">T3</span></td>
+                <td><strong>Binding field-level validation</strong> against specs JSON Schemas</td>
+                <td><span class="badge badge-medium">Medium</span></td>
+                <td>Medium</td>
+                <td>Spec Compliance</td>
+                <td>90 min</td>
+              </tr>
+              <tr>
+                <td>13</td>
+                <td><span class="badge badge-medium">T3</span></td>
+                <td><strong>Redis protocol binding</strong></td>
+                <td><span class="badge badge-low">Low</span></td>
+                <td>Medium</td>
+                <td>Spec Compliance</td>
+                <td>60 min</td>
+              </tr>
+              <tr>
+                <td>14</td>
+                <td><span class="badge badge-medium">T3</span></td>
+                <td><strong>Google Cloud Pub/Sub binding</strong></td>
+                <td><span class="badge badge-low">Low</span></td>
+                <td>Medium</td>
+                <td>Spec Compliance</td>
+                <td>60 min</td>
+              </tr>
+              <tr>
+                <td>15</td>
+                <td><span class="badge badge-medium">T3</span></td>
+                <td><strong>AWS SNS binding</strong></td>
+                <td><span class="badge badge-low">Low</span></td>
+                <td>Medium</td>
+                <td>Spec Compliance</td>
+                <td>60 min</td>
+              </tr>
+              <tr>
+                <td>16</td>
+                <td><span class="badge badge-medium">T3</span></td>
+                <td><strong>@bindings for Namespace target</strong> — enables server bindings</td>
+                <td><span class="badge badge-medium">Medium</span></td>
+                <td>Low</td>
+                <td>Architecture</td>
+                <td>45 min</td>
+              </tr>
+              <tr>
+                <td>17</td>
+                <td><span class="badge badge-medium">T3</span></td>
+                <td><strong>Consolidate ESLint and oxlint</strong> configs</td>
+                <td><span class="badge badge-low">Low</span></td>
+                <td>Medium</td>
+                <td>Dev Experience</td>
+                <td>60 min</td>
+              </tr>
+              <tr>
+                <td>18</td>
+                <td><span class="badge badge-medium">T3</span></td>
+                <td><strong>Coverage tooling</strong> fix for dist/*.js loading</td>
+                <td><span class="badge badge-low">Low</span></td>
+                <td>Medium</td>
+                <td>Dev Experience</td>
+                <td>90 min</td>
+              </tr>
+              <tr>
+                <td>19</td>
+                <td><span class="badge badge-low">T4</span></td>
+                <td><strong>Binding validation framework</strong> — derive matrix from specs at build time</td>
+                <td><span class="badge badge-medium">Medium</span></td>
+                <td>High</td>
+                <td>Architecture</td>
+                <td>100 min</td>
+              </tr>
+              <tr>
+                <td>20</td>
+                <td><span class="badge badge-low">T4</span></td>
+                <td><strong>Plugin/hook system</strong> for custom bindings (#32 RFC)</td>
+                <td><span class="badge badge-low">Low</span></td>
+                <td>High</td>
+                <td>Architecture</td>
+                <td>100 min</td>
+              </tr>
+              <tr>
+                <td>21</td>
+                <td><span class="badge badge-low">T4</span></td>
+                <td><strong>Multi-file TypeSpec input</strong> support</td>
+                <td><span class="badge badge-medium">Medium</span></td>
+                <td>Medium</td>
+                <td>Ecosystem</td>
+                <td>90 min</td>
+              </tr>
+              <tr>
+                <td>22</td>
+                <td><span class="badge badge-low">T4</span></td>
+                <td><strong>AsyncAPI generator</strong> ecosystem compatibility</td>
+                <td><span class="badge badge-medium">Medium</span></td>
+                <td>Medium</td>
+                <td>Ecosystem</td>
+                <td>90 min</td>
+              </tr>
+              <tr>
+                <td>23</td>
+                <td><span class="badge badge-low">T4</span></td>
+                <td><strong>@typespec/versioning</strong> support (#163)</td>
+                <td><span class="badge badge-low">Low</span></td>
+                <td>High</td>
+                <td>Ecosystem</td>
+                <td>100 min</td>
+              </tr>
+              <tr>
+                <td>24</td>
+                <td><span class="badge badge-low">T4</span></td>
+                <td><strong>Multi-file output</strong> (#78)</td>
+                <td><span class="badge badge-medium">Medium</span></td>
+                <td>Medium</td>
+                <td>Ecosystem</td>
+                <td>90 min</td>
+              </tr>
+              <tr>
+                <td>25</td>
+                <td><span class="badge badge-low">T4</span></td>
+                <td><strong>OpenAPI 3.x cross-emitter</strong> type sharing</td>
+                <td><span class="badge badge-low">Low</span></td>
+                <td>High</td>
+                <td>Ecosystem</td>
+                <td>100 min</td>
+              </tr>
+              <tr>
+                <td>26</td>
+                <td><span class="badge badge-low">T4</span></td>
+                <td><strong>Performance profiling</strong> for 100+ channel specs</td>
+                <td><span class="badge badge-low">Low</span></td>
+                <td>Medium</td>
+                <td>Dev Experience</td>
+                <td>90 min</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- ========== TIER DETAILS ========== -->
+        <h2 id="tier1"><span class="num">03</span>Tier 1 — Foundation (1% → 51%)</h2>
+        <div class="tier-header"><span class="tier-badge tier-1-badge">Critical Path</span></div>
+
+        <p>Three tasks that deliver disproportionate value. The refactor unblocks ALL future document-builder work. The other two are trivial gaps that users notice immediately.</p>
+
+        <div class="card card-problem">
+          <h4>Task 1: Refactor buildAsyncAPIDocument()</h4>
+          <p>
+            <strong>Current state:</strong> 371 lines, 161 statements, complexity 84. ESLint violations:
+            <code>max-lines-per-function</code> (limit 350), <code>max-statements</code> (limit 150),
+            <code>max-lines</code> (limit 500). The function handles channel creation, operation discovery,
+            message registration, server building, security schemes, schema ref wiring, and $ref chain
+            construction — all in one function.
+          </p>
+          <p>
+            <strong>Target state:</strong> Extract into <code>src/builders/</code> modules —
+            <code>channel-builder.ts</code>, <code>operation-builder.ts</code>, <code>message-builder.ts</code>,
+            <code>server-builder.ts</code>, <code>security-builder.ts</code>. The main function becomes
+            a thin orchestrator. Each builder receives a shared <code>BuilderContext</code>.
+          </p>
+          <div class="callout callout-warning">
+            <strong>Risk</strong> This is the most invasive refactor. Must be done BEFORE any Tier 2
+            document-builder work. Full test suite must pass with zero regressions.
+          </div>
+        </div>
+
+        <div class="card card-solution">
+          <h4>Task 2: defaultContentType on document root</h4>
+          <p>
+            The field <code>defaultContentType?: string</code> already exists in the document model
+            (<code>asyncapi-document.ts:238</code>) but is never populated. Add a <code>@defaultContentType</code>
+            decorator, wire it into state, and emit it on the root document. Trivial — 30 minutes.
+          </p>
+        </div>
+
+        <div class="card card-solution">
+          <h4>Task 3: @doc propagation to channels</h4>
+          <p>
+            <code>@doc</code> already works for models, properties, operations, and messages. Channels
+            silently drop it. Fix: add <code>getDoc()</code> call when building <code>ChannelObject</code>
+            in document-builder. 30 minutes including test.
+          </p>
+        </div>
+
+        <h2 id="tier2"><span class="num">04</span>Tier 2 — Core Features (4% → 64%)</h2>
+        <div class="tier-header"><span class="tier-badge tier-2-badge">High Value</span></div>
+
+        <p>High-impact features that unblock real-world use cases, plus type safety cleanup that improves the entire test suite.</p>
+
+        <div class="card card-warning">
+          <h4>Task 4: Operation reply support</h4>
+          <p>
+            The <code>OperationReply</code> interface exists (<code>asyncapi-document.ts:124</code>) and
+            the <code>reply?</code> field is on <code>OperationObject</code> — but it's never populated.
+            Request-reply is a fundamental messaging pattern. Add a <code>@reply</code> decorator that
+            specifies the reply message model. Wire into the operation builder. Must validate against the
+            AsyncAPI 3.1 JSON Schema.
+          </p>
+        </div>
+
+        <div class="card card-warning">
+          <h4>Task 5: Multi-message operations</h4>
+          <p>
+            Currently each operation maps 1:1 to one message. AsyncAPI supports operations referencing
+            multiple message types (e.g., an event stream with different event schemas). Design: accept
+            a union of Models on the operation, or a <code>@messages</code> decorator accepting an array.
+            Update <code>DiscoveredOp</code> and the operation builder to emit a <code>messages</code>
+            array instead of a single message reference.
+          </p>
+        </div>
+
+        <div class="card card-solution">
+          <h4>Tasks 6–8: Type Safety Cleanup</h4>
+          <ul>
+            <li><strong>Task 6:</strong> Remove 22 <code>as AsyncAPIObject</code> casts across 5 test files (test-helpers.ts, subscribe.test.ts, cli-test-helpers.ts, asyncapi-generation.test.ts, decorator-functionality.test.ts)</li>
+            <li><strong>Task 7:</strong> Clean 111+ <code>Record&lt;string, unknown&gt;</code> casts in 6 compliance test files (protocol-bindings: 35, edge-cases: 21, schema-types: 19, servers-security: 13, ref-chain: 13, document-structure: 10)</li>
+            <li><strong>Task 8:</strong> Fix <code>schema-validator.ts</code> and <code>type-guards.ts</code> to return/assert <code>ParsedAsyncAPIDocument</code> instead of <code>Record&lt;string, unknown&gt;</code></li>
+          </ul>
+          <div class="callout callout-solution">
+            <strong>Why now</strong> These are pure type-safety improvements. They make the test suite
+            self-documenting and catch type mismatches at compile time instead of runtime.
+          </div>
+        </div>
+
+        <div class="card card-solution">
+          <h4>Task 9: AsyncAPI Studio round-trip verification</h4>
+          <p>
+            If the emitter's output doesn't work in AsyncAPI Studio (the primary consumer tool), users
+            lose trust immediately. Write a round-trip test: emit a representative spec with all features,
+            parse it back with <code>@asyncapi/parser</code>, and verify structural integrity. Note:
+            <code>@asyncapi/parser</code> v3.6.0 has Bun incompatibility (AJV <code>new Function()</code>
+            codegen) — use Node.js for this test, or manual $ref resolution tests.
+          </p>
+        </div>
+
+        <h2 id="tier3"><span class="num">05</span>Tier 3 — Completeness (20% → 80%)</h2>
+        <div class="tier-header"><span class="tier-badge tier-3-badge">Important</span></div>
+
+        <p>Protocol coverage, validation depth, and DX polish. These make the emitter "complete" for the 80% use case.</p>
+
+        <div class="card">
+          <h4>Tasks 10–11: Server Bindings &amp; Explicit IDs</h4>
+          <p>
+            <strong>Task 10:</strong> <code>@server</code> currently emits host/protocol/description but
+            no bindings. The binding framework already exists — extend it to server targets. Depends on
+            Task 16 (<code>@bindings</code> for Namespace).
+          </p>
+          <p>
+            <strong>Task 11:</strong> <code>@operationId</code> and <code>@messageId</code> decorators
+            for explicit naming control. Currently IDs are auto-generated from TypeSpec type names.
+            Users need deterministic names for cross-file references and documentation.
+          </p>
+        </div>
+
+        <div class="card">
+          <h4>Task 12: Binding field-level validation</h4>
+          <p>
+            Currently <code>processBindings()</code> validates keys and versions structurally. It does
+            NOT validate individual field values against the AsyncAPI spec. Load
+            <code>@asyncapi/specs/bindings/{protocol}/</code> JSON Schemas and validate field values
+            at decorator time. This catches errors like <code>qos: 99</code> (MQTT allows 0–2) before
+            the user sees a cryptic JSON Schema validation failure.
+          </p>
+          <div class="callout callout-warning">
+            <strong>Foundation for</strong> Tasks 13–15 (new protocols). Do this before adding Redis,
+            GCP Pub/Sub, and SNS so the validation framework is in place.
+          </div>
+        </div>
+
+        <div class="card">
+          <h4>Tasks 13–15: New Protocol Bindings</h4>
+          <p>
+            Redis, Google Cloud Pub/Sub, and AWS SNS. Each follows the established pattern:
+            add protocol constant, binding version, placement matrix entries, compliance tests.
+            Specs available in <code>node_modules/@asyncapi/specs/bindings/</code>.
+          </p>
+        </div>
+
+        <div class="card">
+          <h4>Tasks 16–18: Architecture &amp; DX</h4>
+          <ul>
+            <li><strong>Task 16:</strong> <code>@bindings</code> for Namespace target — enables server binding placement validation</li>
+            <li><strong>Task 17:</strong> Consolidate ESLint and oxlint — resolve contradictory rules, document strategy</li>
+            <li><strong>Task 18:</strong> Coverage tooling — vitest can't instrument <code>dist/*.js</code>; research and fix</li>
+          </ul>
+        </div>
+
+        <h2 id="tier4"><span class="num">06</span>Tier 4 — Strategic &amp; Ecosystem (80% → 100%)</h2>
+        <div class="tier-header"><span class="tier-badge tier-4-badge">Strategic Bets</span></div>
+
+        <p>Lower priority for pre-alpha. These are strategic investments for ecosystem integration and long-term scalability.</p>
+
+        <div class="card">
+          <h4>Tasks 19–26</h4>
+          <ul class="subtask-list">
+            <li><strong>19. Binding validation framework</strong> — derive BINDING_PLACEMENT matrix from specs at build time instead of hand-maintaining</li>
+            <li><strong>20. Plugin/hook system</strong> — custom binding extensions (#32 RFC). Premature for pre-alpha but strategically important</li>
+            <li><strong>21. Multi-file TypeSpec input</strong> — import across .tsp files. May partially work via TypeSpec compiler already</li>
+            <li><strong>22. AsyncAPI generator compatibility</strong> — verify code generation from emitter output works with @asyncapi/generator</li>
+            <li><strong>23. @typespec/versioning</strong> — API versioning support (#163)</li>
+            <li><strong>24. Multi-file output</strong> — split large specs into multiple files (#78)</li>
+            <li><strong>25. OpenAPI cross-emitter sharing</strong> — share types between AsyncAPI and OpenAPI emitters</li>
+            <li><strong>26. Performance profiling</strong> — ensure no O(n²) for 100+ channel specs</li>
+          </ul>
+        </div>
+
+        <!-- ========== D2 GRAPH ========== -->
+        <h2 id="graph"><span class="num">07</span>Execution Dependency Graph</h2>
+        <p>Key dependencies between tasks. Arrows show what unblocks what.</p>
+
+        <div class="d2-graph">
+          <!--SVG_PLACEHOLDER-->
+        </div>
+
+        <!-- ========== DETAILED BREAKDOWN ========== -->
+        <h2 id="detailed"><span class="num">08</span>Detailed Breakdown — Fine Granularity</h2>
+        <p>150 subtasks, each ≤15 minutes. Grouped by parent task. Sorted by execution order within each task.</p>
+
+        <!-- Task 1 -->
+        <h3>Task 1: Refactor buildAsyncAPIDocument() — 15 subtasks</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Subtask</th><th>Est.</th></tr></thead>
+            <tbody>
+              <tr><td>1.1</td><td>Map all responsibilities of buildAsyncAPIDocument (channels, ops, messages, servers, security, refs)</td><td>10 min</td></tr>
+              <tr><td>1.2</td><td>Design BuilderContext interface to pass shared mutable state</td><td>10 min</td></tr>
+              <tr><td>1.3</td><td>Create <code>src/builders/channel-builder.ts</code> — extract ensureChannel, extractChannelParameters, channel $ref wiring</td><td>15 min</td></tr>
+              <tr><td>1.4</td><td>Create <code>src/builders/operation-builder.ts</code> — extract DiscoveredOp, operation discovery loop, operation object assembly</td><td>15 min</td></tr>
+              <tr><td>1.5</td><td>Create <code>src/builders/message-builder.ts</code> — extract registerMessage, message assembly, contentType logic</td><td>15 min</td></tr>
+              <tr><td>1.6</td><td>Create <code>src/builders/server-builder.ts</code> — extract server object assembly from state</td><td>15 min</td></tr>
+              <tr><td>1.7</td><td>Create <code>src/builders/security-builder.ts</code> — extract securitySchemes assembly, OAuth2 scope normalization</td><td>15 min</td></tr>
+              <tr><td>1.8</td><td>Rewrite buildAsyncAPIDocument as thin orchestrator calling extracted builders</td><td>15 min</td></tr>
+              <tr><td>1.9</td><td>Move helper functions (refSchema, escapeJsonPointer, etc.) to shared utils</td><td>10 min</td></tr>
+              <tr><td>1.10</td><td>Update all imports across src/</td><td>10 min</td></tr>
+              <tr><td>1.11</td><td>Run build, fix any type errors</td><td>10 min</td></tr>
+              <tr><td>1.12</td><td>Run full test suite (555 tests), fix any regressions</td><td>15 min</td></tr>
+              <tr><td>1.13</td><td>Run lint — verify max-lines-per-function, max-statements, max-lines warnings are gone</td><td>10 min</td></tr>
+              <tr><td>1.14</td><td>Verify all compliance tests pass against AsyncAPI 3.1 JSON Schema</td><td>10 min</td></tr>
+              <tr><td>1.15</td><td>Update AGENTS.md with new builder architecture</td><td>10 min</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Task 2 -->
+        <h3>Task 2: defaultContentType — 6 subtasks</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Subtask</th><th>Est.</th></tr></thead>
+            <tbody>
+              <tr><td>2.1</td><td>Add <code>@defaultContentType</code> decorator declaration to <code>lib/main.tsp</code></td><td>5 min</td></tr>
+              <tr><td>2.2</td><td>Implement decorator in <code>minimal-decorators.ts</code> with validation</td><td>10 min</td></tr>
+              <tr><td>2.3</td><td>Add state key in <code>state.ts</code> and writer in <code>state-writers.ts</code></td><td>10 min</td></tr>
+              <tr><td>2.4</td><td>Wire into root document assembly in document-builder</td><td>5 min</td></tr>
+              <tr><td>2.5</td><td>Add compliance test validating defaultContentType appears in output</td><td>10 min</td></tr>
+              <tr><td>2.6</td><td>Add negative test (invalid content type value warning)</td><td>5 min</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Task 3 -->
+        <h3>Task 3: @doc propagation to channels — 5 subtasks</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Subtask</th><th>Est.</th></tr></thead>
+            <tbody>
+              <tr><td>3.1</td><td>Identify channel creation point in document-builder</td><td>5 min</td></tr>
+              <tr><td>3.2</td><td>Add <code>getDoc()</code> call on the namespace or operation that owns the channel</td><td>10 min</td></tr>
+              <tr><td>3.3</td><td>Wire description into <code>ChannelObject.description</code></td><td>5 min</td></tr>
+              <tr><td>3.4</td><td>Add integration test for <code>@doc</code> on channel</td><td>10 min</td></tr>
+              <tr><td>3.5</td><td>Run existing tests to verify no regressions</td><td>5 min</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Task 4 -->
+        <h3>Task 4: Operation reply support — 8 subtasks</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Subtask</th><th>Est.</th></tr></thead>
+            <tbody>
+              <tr><td>4.1</td><td>Add <code>@reply</code> decorator declaration to <code>lib/main.tsp</code> targeting Operation</td><td>10 min</td></tr>
+              <tr><td>4.2</td><td>Implement decorator in <code>minimal-decorators.ts</code> — accept reply Model type</td><td>15 min</td></tr>
+              <tr><td>4.3</td><td>Add <code>ReplyData</code> to state types in <code>state.ts</code></td><td>10 min</td></tr>
+              <tr><td>4.4</td><td>Wire reply into operation building — populate <code>OperationObject.reply</code></td><td>15 min</td></tr>
+              <tr><td>4.5</td><td>Register reply message in components.messages with $ref chain</td><td>15 min</td></tr>
+              <tr><td>4.6</td><td>Add compliance test for reply pattern validated against AsyncAPI 3.1 schema</td><td>15 min</td></tr>
+              <tr><td>4.7</td><td>Add integration test with request-reply TypeSpec example</td><td>15 min</td></tr>
+              <tr><td>4.8</td><td>Add BDD test for user-facing reply scenario</td><td>10 min</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Task 5 -->
+        <h3>Task 5: Multi-message operations — 7 subtasks</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Subtask</th><th>Est.</th></tr></thead>
+            <tbody>
+              <tr><td>5.1</td><td>Design multi-message mapping: union of Models or <code>@messages</code> array decorator</td><td>15 min</td></tr>
+              <tr><td>5.2</td><td>Update <code>DiscoveredOp</code> type to support multiple message names</td><td>10 min</td></tr>
+              <tr><td>5.3</td><td>Update operation builder to emit <code>messages</code> array on operation</td><td>15 min</td></tr>
+              <tr><td>5.4</td><td>Update channel message registration for multi-message pattern</td><td>15 min</td></tr>
+              <tr><td>5.5</td><td>Add compliance test for multi-message operation</td><td>15 min</td></tr>
+              <tr><td>5.6</td><td>Add integration test with event-stream TypeSpec example</td><td>15 min</td></tr>
+              <tr><td>5.7</td><td>Verify $ref chain integrity for all messages</td><td>10 min</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Task 6 -->
+        <h3>Task 6: Remove as-AsyncAPIObject casts — 6 subtasks</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Subtask</th><th>Est.</th></tr></thead>
+            <tbody>
+              <tr><td>6.1</td><td>Audit <code>compileAsyncAPI</code> return type — should already be <code>AsyncAPIDocument</code></td><td>10 min</td></tr>
+              <tr><td>6.2</td><td>Remove cast in <code>test-helpers.ts:211</code></td><td>5 min</td></tr>
+              <tr><td>6.3</td><td>Remove 4 casts in <code>subscribe.test.ts</code></td><td>10 min</td></tr>
+              <tr><td>6.4</td><td>Remove cast in <code>cli-test-helpers.ts:44</code></td><td>5 min</td></tr>
+              <tr><td>6.5</td><td>Remove 6 casts in <code>asyncapi-generation.test.ts</code></td><td>10 min</td></tr>
+              <tr><td>6.6</td><td>Remove 10 casts in <code>decorator-functionality.test.ts</code></td><td>10 min</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Task 7 -->
+        <h3>Task 7: Clean Record casts in compliance tests — 6 subtasks</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Subtask</th><th>Est.</th></tr></thead>
+            <tbody>
+              <tr><td>7.1</td><td>Fix <code>protocol-bindings.test.ts</code> — 35 Record casts → typed assertions</td><td>15 min</td></tr>
+              <tr><td>7.2</td><td>Fix <code>schema-types.test.ts</code> — 19 casts</td><td>15 min</td></tr>
+              <tr><td>7.3</td><td>Fix <code>edge-cases.test.ts</code> — 21 casts</td><td>15 min</td></tr>
+              <tr><td>7.4</td><td>Fix <code>servers-security.test.ts</code> — 13 casts</td><td>10 min</td></tr>
+              <tr><td>7.5</td><td>Fix <code>ref-chain.test.ts</code> — 13 casts</td><td>10 min</td></tr>
+              <tr><td>7.6</td><td>Fix <code>document-structure.test.ts</code> — 10 casts</td><td>10 min</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Task 8 -->
+        <h3>Task 8: Fix schema-validator.ts and type-guards.ts — 4 subtasks</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Subtask</th><th>Est.</th></tr></thead>
+            <tbody>
+              <tr><td>8.1</td><td>Update <code>schema-validator.ts</code> <code>compileAndValidate()</code> return type to <code>ParsedAsyncAPIDocument</code></td><td>15 min</td></tr>
+              <tr><td>8.2</td><td>Update <code>type-guards.ts</code> to assert <code>ParsedAsyncAPIDocument</code></td><td>10 min</td></tr>
+              <tr><td>8.3</td><td>Update all test consumers of these utilities</td><td>10 min</td></tr>
+              <tr><td>8.4</td><td>Run full test suite to verify</td><td>10 min</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Task 9 -->
+        <h3>Task 9: AsyncAPI Studio round-trip — 5 subtasks</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Subtask</th><th>Est.</th></tr></thead>
+            <tbody>
+              <tr><td>9.1</td><td>Generate representative spec exercising all features (channels, ops, messages, servers, security, bindings)</td><td>15 min</td></tr>
+              <tr><td>9.2</td><td>Write round-trip test: emit → parse with @asyncapi/parser (Node.js, not Bun)</td><td>15 min</td></tr>
+              <tr><td>9.3</td><td>Verify structural integrity: all $refs resolve, no missing components</td><td>15 min</td></tr>
+              <tr><td>9.4</td><td>Document any compatibility issues found</td><td>10 min</td></tr>
+              <tr><td>9.5</td><td>Fix issues if found, or add known-limitation docs</td><td>15 min</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Task 10 -->
+        <h3>Task 10: Server binding support — 5 subtasks</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Subtask</th><th>Est.</th></tr></thead>
+            <tbody>
+              <tr><td>10.1</td><td>Add <code>bindings</code> field to <code>ServerObject</code> in document model</td><td>10 min</td></tr>
+              <tr><td>10.2</td><td>Wire <code>@bindings</code> on Namespace → server binding processing</td><td>15 min</td></tr>
+              <tr><td>10.3</td><td>Process server bindings in document-builder with normalization</td><td>15 min</td></tr>
+              <tr><td>10.4</td><td>Add compliance test for server bindings validated against AsyncAPI 3.1 schema</td><td>15 min</td></tr>
+              <tr><td>10.5</td><td>Add integration test with MQTT server bindings (clientId, cleanSession)</td><td>10 min</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Task 11 -->
+        <h3>Task 11: @operationId / @messageId decorators — 5 subtasks</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Subtask</th><th>Est.</th></tr></thead>
+            <tbody>
+              <tr><td>11.1</td><td>Add <code>@operationId</code> and <code>@messageId</code> declarations to <code>lib/main.tsp</code></td><td>10 min</td></tr>
+              <tr><td>11.2</td><td>Implement decorators in <code>minimal-decorators.ts</code></td><td>15 min</td></tr>
+              <tr><td>11.3</td><td>Wire operationId into operation naming (override auto-generated name)</td><td>10 min</td></tr>
+              <tr><td>11.4</td><td>Wire messageId into message naming and $ref chain</td><td>10 min</td></tr>
+              <tr><td>11.5</td><td>Add integration tests for both decorators</td><td>15 min</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Task 12 -->
+        <h3>Task 12: Binding field-level validation — 6 subtasks</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Subtask</th><th>Est.</th></tr></thead>
+            <tbody>
+              <tr><td>12.1</td><td>Load <code>@asyncapi/specs/bindings/{protocol}/</code> JSON Schemas at build time</td><td>15 min</td></tr>
+              <tr><td>12.2</td><td>Create AJV validator per protocol + target kind (channel/operation/message/server)</td><td>15 min</td></tr>
+              <tr><td>12.3</td><td>Wire into <code>processBindings()</code> — validate after structural checks pass</td><td>15 min</td></tr>
+              <tr><td>12.4</td><td>Add diagnostic code <code>invalid-binding-field</code> for field validation errors</td><td>15 min</td></tr>
+              <tr><td>12.5</td><td>Add diagnostic code declaration to <code>lib.ts</code></td><td>10 min</td></tr>
+              <tr><td>12.6</td><td>Add tests: invalid MQTT qos, invalid Kafka partitions, invalid HTTP method</td><td>15 min</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Tasks 13-15 -->
+        <h3>Tasks 13–15: New Protocol Bindings (Redis, GCP Pub/Sub, SNS) — 5 subtasks each</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Subtask (per protocol)</th><th>Est.</th></tr></thead>
+            <tbody>
+              <tr><td>13.1/14.1/15.1</td><td>Add protocol constant + alias to <code>constants/protocols.ts</code></td><td>5 min</td></tr>
+              <tr><td>13.2/14.2/15.2</td><td>Add binding version + placement matrix entries to <code>binding-versions.ts</code></td><td>10 min</td></tr>
+              <tr><td>13.3/14.3/15.3</td><td>Add protocol-specific config data variant to <code>state.ts</code> discriminated union</td><td>10 min</td></tr>
+              <tr><td>13.4/14.4/15.4</td><td>Add compliance test validated against AsyncAPI 3.1 JSON Schema</td><td>15 min</td></tr>
+              <tr><td>13.5/14.5/15.5</td><td>Add integration test with realistic TypeSpec example</td><td>15 min</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Task 16 -->
+        <h3>Task 16: @bindings for Namespace target — 4 subtasks</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Subtask</th><th>Est.</th></tr></thead>
+            <tbody>
+              <tr><td>16.1</td><td>Update <code>@bindings</code> decorator target type to include Namespace</td><td>10 min</td></tr>
+              <tr><td>16.2</td><td>Add Namespace handling in <code>processBindings()</code></td><td>15 min</td></tr>
+              <tr><td>16.3</td><td>Wire into server building in document-builder</td><td>10 min</td></tr>
+              <tr><td>16.4</td><td>Add integration test for Namespace-scoped bindings</td><td>15 min</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Task 17 -->
+        <h3>Task 17: Consolidate ESLint and oxlint — 5 subtasks</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Subtask</th><th>Est.</th></tr></thead>
+            <tbody>
+              <tr><td>17.1</td><td>Audit overlapping rules between ESLint config and oxlint config</td><td>15 min</td></tr>
+              <tr><td>17.2</td><td>Resolve contradictions — pick authoritative config per rule</td><td>15 min</td></tr>
+              <tr><td>17.3</td><td>Document strategy: oxlint for fast feedback, ESLint for deep type-aware rules</td><td>10 min</td></tr>
+              <tr><td>17.4</td><td>Update CI to run both without contradiction</td><td>10 min</td></tr>
+              <tr><td>17.5</td><td>Verify 0 errors / 0 warnings from both linters</td><td>10 min</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Task 18 -->
+        <h3>Task 18: Coverage tooling fix — 6 subtasks</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Subtask</th><th>Est.</th></tr></thead>
+            <tbody>
+              <tr><td>18.1</td><td>Research vitest coverage limitations with TypeSpec dist/*.js loading</td><td>15 min</td></tr>
+              <tr><td>18.2</td><td>Try istanbul/nyc approach as alternative coverage provider</td><td>15 min</td></tr>
+              <tr><td>18.3</td><td>Try mapping dist/*.js back to src/*.ts via sourcemaps</td><td>15 min</td></tr>
+              <tr><td>18.4</td><td>Document working approach (or document why coverage gate is best-effort)</td><td>10 min</td></tr>
+              <tr><td>18.5</td><td>Update <code>scripts/coverage-gate.ts</code> if approach changes</td><td>10 min</td></tr>
+              <tr><td>18.6</td><td>Update CI to use correct coverage command</td><td>10 min</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Tasks 19-26 -->
+        <h3>Tasks 19–26: Strategic Items — 3 subtasks each</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Task</th><th>Subtasks (3 each)</th><th>Est.</th></tr></thead>
+            <tbody>
+              <tr><td>19. Binding framework</td><td>19.1 Design build-time spec loader · 19.2 Generate BINDING_PLACEMENT from specs · 19.3 Replace hand-maintained matrix</td><td>100 min</td></tr>
+              <tr><td>20. Plugin system</td><td>20.1 Design hook interface (pre-emit, post-schema, post-document) · 20.2 Implement hook registration · 20.3 Write RFC doc</td><td>100 min</td></tr>
+              <tr><td>21. Multi-file input</td><td>21.1 Test if TypeSpec import already works · 21.2 Fix state scoping if broken · 21.3 Add multi-file test fixture</td><td>90 min</td></tr>
+              <tr><td>22. Generator compat</td><td>22.1 Install @asyncapi/generator · 22.2 Generate code from emitter output · 22.3 Document template compatibility</td><td>90 min</td></tr>
+              <tr><td>23. Versioning</td><td>23.1 Research @typespec/versioning API · 23.2 Wire version into info field · 23.3 Add version-aware $ref generation</td><td>100 min</td></tr>
+              <tr><td>24. Multi-file output</td><td>24.1 Design output file splitting strategy · 24.2 Implement multi-file emitFile · 24.3 Add config option for split threshold</td><td>90 min</td></tr>
+              <tr><td>25. OpenAPI sharing</td><td>25.1 Extract shared schema types · 25.2 Design cross-emitter interface · 25.3 Prototype with OpenAPI emitter</td><td>100 min</td></tr>
+              <tr><td>26. Performance</td><td>26.1 Create 100+ channel benchmark fixture · 26.2 Profile with node --cpu-prof · 26.3 Optimize hot paths if found</td><td>90 min</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- ========== RISKS ========== -->
+        <h2 id="risks"><span class="num">09</span>Risks and Mitigations</h2>
+
+        <div class="card card-problem">
+          <h4>Risk: Refactor introduces regressions</h4>
+          <p>
+            The <code>buildAsyncAPIDocument()</code> refactor (Task 1) touches the core path. 555 tests
+            must all pass. The $ref chain construction is subtle.
+          </p>
+          <div class="callout callout-solution">
+            <strong>Mitigation</strong> Do the refactor as pure extraction — move code, don't change logic.
+            Run the full compliance suite (78 tests against official JSON Schema) after each subtask.
+            Golden file tests lock verified-correct output.
+          </div>
+        </div>
+
+        <div class="card card-warning">
+          <h4>Risk: @asyncapi/parser Bun incompatibility</h4>
+          <p>
+            The AsyncAPI Studio round-trip test (Task 9) needs <code>@asyncapi/parser</code>, which
+            fails under Bun due to AJV <code>new Function()</code> codegen.
+          </p>
+          <div class="callout callout-solution">
+            <strong>Mitigation</strong> Run the round-trip test under Node.js, or use manual $ref
+            resolution tests (as already done in <code>semantic-ref-resolution.test.ts</code>).
+          </div>
+        </div>
+
+        <div class="card card-warning">
+          <h4>Risk: Multi-message design ambiguity</h4>
+          <p>
+            How should multiple messages map from TypeSpec? Union of models? Array decorator? The wrong
+            choice creates a maintenance burden.
+          </p>
+          <div class="callout callout-solution">
+            <strong>Mitigation</strong> Prefer TypeSpec-native patterns: a <code>union</code> of message
+            Models is the idiomatic way. Only add a <code>@messages</code> decorator if the union approach
+            can't express the needed semantics.
+          </div>
+        </div>
+
+        <div class="card">
+          <h4>Risk: Coverage gate reliability</h4>
+          <p>
+            If vitest can't instrument <code>dist/*.js</code>, the 75% coverage gate may be unreliable,
+            giving false confidence.
+          </p>
+          <div class="callout callout-solution">
+            <strong>Mitigation</strong> Task 18 explicitly addresses this. Until fixed, treat coverage
+            numbers as directional, not authoritative.
+          </div>
+        </div>
+
+        <footer class="footer">
+          Generated 2026-07-22 · Based on ROADMAP.md with 25 raw ideas across 4 themes · Validated against source code (555 tests, 19 source files, 56 test files)
+        </footer>
+      </main>
+    </div>
+
+    <script>
+      (function () {
+        if (!("IntersectionObserver" in window)) return;
+        var nav = document.querySelector("[data-nav]");
+        if (!nav) return;
+        var links = nav.querySelectorAll('a[href^="#"]');
+        var ids = Array.from(links).map(function (l) {
+          return l.getAttribute("href").slice(1);
+        });
+        var sections = ids
+          .map(function (id) { return document.getElementById(id); })
+          .filter(Boolean);
+        if (!sections.length) return;
+        var observer = new IntersectionObserver(
+          function (entries) {
+            entries.forEach(function (entry) {
+              if (entry.isIntersecting) {
+                links.forEach(function (link) {
+                  link.classList.toggle(
+                    "active",
+                    link.getAttribute("href") === "#" + entry.target.id,
+                  );
+                });
+              }
+            });
+          },
+          { rootMargin: "-80px 0px -60% 0px", threshold: 0 },
+        );
+        sections.forEach(function (s) { observer.observe(s); });
+      })();
+    </script>
+  </body>
+</html>
