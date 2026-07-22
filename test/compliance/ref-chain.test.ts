@@ -137,7 +137,10 @@ describe("spec Compliance: $ref Chain", () => {
     const refPattern = /^#\/(channels|components)\/(.+)$/;
     const json = JSON.stringify(doc);
     const refs = json.match(/"\$ref":\s*"([^"]+)"/g) ?? [];
-    const refValues = refs.map((r) => r.match(/"\$ref":\s*"([^"]+)"/)![1]);
+    const refValues = refs.map((r) => {
+      const [, value] = r.match(/"\$ref":\s*"([^"]+)"/)!;
+      return value;
+    });
 
     expect(refValues.length).toBeGreaterThan(0);
 
