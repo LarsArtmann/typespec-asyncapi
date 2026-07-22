@@ -130,6 +130,12 @@ export const $lib = createTypeSpecLibrary({
       },
       severity: "error",
     },
+    "invalid-binding-field": {
+      messages: {
+        default: paramMessage`Binding field '${"field"}' has invalid value. ${"detail"}`,
+      },
+      severity: "warning",
+    },
   },
   name: "@lars-artmann/typespec-asyncapi",
   state: {
