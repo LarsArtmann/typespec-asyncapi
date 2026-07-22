@@ -38,6 +38,7 @@ import {
   extractConfigRecord,
 } from "./decorator-helpers.js";
 import { processBindings } from "./validation/binding-validator.js";
+import type { BindingTargetKind } from "./constants/binding-versions.js";
 
 // === DECORATORS ===
 
@@ -236,6 +237,13 @@ export function $correlationId(context: DecoratorContext, target: Model, locatio
   storeCorrelationId(context.program, target, location);
 }
 
+/** Map a TypeSpec target kind to the AsyncAPI binding target kind. */
+function bindingTargetKind(kind: string): BindingTargetKind | undefined {
+  if (kind === "Operation") return "operation";
+  if (kind === "Model") return "message";
+  return undefined;
+}
+
 export function $bindings(
   context: DecoratorContext,
   target: Operation | Model,
@@ -249,10 +257,11 @@ export function $bindings(
   }
 
   const rawBindings = extractConfigRecord(value);
-  const { bindings, issues } = processBindings(rawBindings);
+  const targetKind = bindingTargetKind(target.kind);
+  const { bindings, issues } = processBindings(rawBindings, targetKind);
 
   for (const issue of issues) {
-    reportDiagnostic(context, issue.code as "unknown-binding-protocol", target, issue.format);
+    reportDiagnostic(context, issue.code, target, issue.format);
   }
 
   storeBindings(context.program, target, bindings);

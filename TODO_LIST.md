@@ -5,6 +5,4 @@ Long-term ideas and RFCs live in ROADMAP, not here.
 
 ---
 
-## P2 — Validation Hardening
-
-- [ ] **Add binding placement validation:** `BINDING_PLACEMENT` and `supportsBindingPlacement()` were deleted as dead code. If binding placement enforcement is needed in the future (warn when a binding is placed on the wrong target kind), re-introduce a placement matrix wired into `processBindings()` with proper diagnostics and test coverage. **Not actionable now** — no current use case. Revisit if users report misplaced bindings.
+_No open items. All P1 type-safety and P2 validation-hardening work is complete._

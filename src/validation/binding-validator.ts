@@ -17,17 +17,26 @@
 import { normalizeProtocol, isSupportedProtocol } from "../constants/protocols.js";
 import {
   getLatestBindingVersion,
+  getValidPlacements,
   getValidVersionsString,
   hasProtocolBindings,
   isValidBindingVersion,
   normalizeBindingProtocol,
+  supportsBindingPlacement,
 } from "../constants/binding-versions.js";
+import type { BindingTargetKind } from "../constants/binding-versions.js";
 import type { ProtocolBindings } from "../domain/models/asyncapi-document.js";
+
+/** Diagnostic codes that can be produced by binding validation. */
+export type BindingDiagnosticCode =
+  | "unknown-binding-protocol"
+  | "invalid-binding-version"
+  | "misplaced-binding";
 
 export type BindingValidationIssue = {
   key: string;
   severity: "error" | "warning";
-  code: string;
+  code: BindingDiagnosticCode;
   format: Record<string, unknown>;
 };
 
@@ -48,12 +57,20 @@ export function normalizeBindingKey(key: string): string | undefined {
  * Process a raw bindings object:
  * - Normalize all keys to canonical protocol names
  * - Auto-inject bindingVersion where missing
- * - Collect validation issues for unknown keys / bad versions
+ * - Validate binding placement against the target kind
+ * - Collect validation issues for unknown keys / bad versions / misplaced bindings
+ *
+ * When `targetKind` is provided, protocols that lack a binding definition for
+ * that target kind generate a `misplaced-binding` warning. The binding is still
+ * passed through so the output remains usable.
  *
  * Returns the cleaned bindings object and a list of issues.
  * Issues should be reported as diagnostics by the caller.
  */
-export function processBindings(raw: Record<string, unknown>): {
+export function processBindings(
+  raw: Record<string, unknown>,
+  targetKind?: BindingTargetKind,
+): {
   bindings: ProtocolBindings;
   issues: BindingValidationIssue[];
 } {
@@ -75,6 +92,19 @@ export function processBindings(raw: Record<string, unknown>): {
       });
       bindings[key] = value as Record<string, unknown>;
       continue;
+    }
+
+    if (targetKind && !supportsBindingPlacement(canonical, targetKind)) {
+      issues.push({
+        key: canonical,
+        severity: "warning",
+        code: "misplaced-binding",
+        format: {
+          protocol: canonical,
+          targetKind,
+          validPlacements: getValidPlacements(canonical).join(", "),
+        },
+      });
     }
 
     const bindingObj =

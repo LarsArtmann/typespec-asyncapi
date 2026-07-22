@@ -106,6 +106,12 @@ export const $lib = createTypeSpecLibrary({
         default: paramMessage`Binding version '${"version"}' is not valid for protocol '${"protocol"}'. Valid versions: ${"validVersions"}.`,
       },
     },
+    "misplaced-binding": {
+      severity: "warning",
+      messages: {
+        default: paramMessage`Binding protocol '${"protocol"}' is not defined for ${"targetKind"} bindings in the AsyncAPI specification. Valid placements: ${"validPlacements"}.`,
+      },
+    },
   },
   state: {
     channelPaths: { description: "Operation to channel path" },

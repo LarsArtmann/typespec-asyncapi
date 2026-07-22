@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- **Binding placement validation:** `@bindings` decorator now warns when a protocol binding is placed on a target kind where the AsyncAPI spec doesn't define that binding type (e.g., `ws` on an Operation or Message). New `misplaced-binding` diagnostic (warning), `BINDING_PLACEMENT` matrix, `supportsBindingPlacement()`, and `getValidPlacements()` in `binding-versions.ts`
+- New test files: `test/unit/binding-placement.test.ts` (29 unit tests), `test/integration/binding-placement.test.ts` (6 integration tests)
+
 ### Changed
 
 - `engines.node` set to `>=20.11` (requires `import.meta.dirname`)

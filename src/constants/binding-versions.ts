@@ -79,3 +79,43 @@ export function getValidVersionsString(protocol: string): string | undefined {
   const versions = VALID_BINDING_VERSIONS[protocol as ProtocolWithBindings];
   return versions ? versions.join(", ") : undefined;
 }
+
+// === BINDING PLACEMENT ===
+
+/**
+ * Which AsyncAPI object types have binding definitions for each protocol.
+ *
+ * Based on the @asyncapi/specs binding definitions:
+ * - `true` means the protocol has an official binding definition for that object kind.
+ * - `false` means no binding definition exists — placing one generates a warning.
+ *
+ * @see https://github.com/asyncapi/spec/blob/master/spec/asyncapi/3.1.0/schema.json
+ */
+export type BindingTargetKind = "channel" | "operation" | "message" | "server";
+
+export const BINDING_PLACEMENT: Record<ProtocolWithBindings, Record<BindingTargetKind, boolean>> = {
+  amqp: { channel: true, operation: true, message: true, server: false },
+  http: { channel: false, operation: true, message: true, server: false },
+  kafka: { channel: true, operation: true, message: true, server: false },
+  mqtt: { channel: false, operation: true, message: true, server: true },
+  ws: { channel: true, operation: false, message: false, server: false },
+};
+
+/**
+ * Returns true if the protocol has an official binding definition for the
+ * given target kind (channel, operation, message, or server).
+ */
+export function supportsBindingPlacement(protocol: string, kind: BindingTargetKind): boolean {
+  const placement = BINDING_PLACEMENT[protocol as ProtocolWithBindings];
+  return placement ? placement[kind] : false;
+}
+
+/**
+ * Returns the list of target kinds where the protocol has binding definitions.
+ * Used in diagnostic messages to guide users toward valid placement.
+ */
+export function getValidPlacements(protocol: string): BindingTargetKind[] {
+  const placement = BINDING_PLACEMENT[protocol as ProtocolWithBindings];
+  if (!placement) return [];
+  return (Object.keys(placement) as BindingTargetKind[]).filter((kind) => placement[kind]);
+}
