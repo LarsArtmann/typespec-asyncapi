@@ -12,7 +12,7 @@
  */
 
 import type { Program, Type } from "@typespec/compiler";
-import { isStdNamespace, listServices } from "@typespec/compiler";
+import { getDoc, isStdNamespace, listServices } from "@typespec/compiler";
 import type { AsyncAPIEmitterOptions } from "./infrastructure/configuration/asyncAPIEmitterOptions.js";
 import { normalizeProtocol } from "./constants/protocols.js";
 import {
@@ -190,12 +190,17 @@ export function buildAsyncAPIDocument(
 
   // 1a. Operations from @publish/@subscribe + @channel decorators
   const opToChannel = new Map<string, string>();
+  const channelDocs = new Map<string, string>();
   for (const [type, data] of state.channels) {
     const name = nameOfType(type);
     if (!name) {
       continue;
     }
     opToChannel.set(name, data.path);
+    const doc = getDoc(program, type);
+    if (doc) {
+      channelDocs.set(data.path, doc);
+    }
   }
 
   for (const [type, data] of state.operations) {
@@ -289,6 +294,14 @@ export function buildAsyncAPIDocument(
     }
 
     operations[op.opName] = operationObj;
+  }
+
+  // 2a-b. Apply @doc descriptions to channels
+  for (const [channelKey, doc] of channelDocs) {
+    const channel = channels[channelKey];
+    if (channel && !channel.description) {
+      channel.description = doc;
+    }
   }
 
   // 2b. Merge in explicit @message decorator data

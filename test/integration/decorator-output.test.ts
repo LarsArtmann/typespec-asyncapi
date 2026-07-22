@@ -184,3 +184,35 @@ describe("decorator Output: channel parameters", () => {
     expect(channel.parameters.userId).toBeDefined();
   });
 });
+
+describe("decorator Output: @doc on channels", () => {
+  it("should propagate @doc to channel description", async () => {
+    const doc = await compileAndGetDoc(`
+      @doc("User lifecycle events for the platform")
+      @channel("users.events")
+      @publish
+      op publishUserEvent(): UserEvent;
+
+      model UserEvent { id: string; }
+    `);
+
+    const channel = doc.channels?.["users.events"];
+    expect(channel).toBeDefined();
+    expect(channel.description).toBe("User lifecycle events for the platform");
+  });
+
+  it("should not override channel description if already set", async () => {
+    const doc = await compileAndGetDoc(`
+      @doc("Should not appear")
+      @channel("custom.events")
+      @publish
+      op publishCustomEvent(): CustomEvent;
+
+      model CustomEvent { id: string; }
+    `);
+
+    const channel = doc.channels?.["custom.events"];
+    expect(channel).toBeDefined();
+    expect(channel.description).toBe("Should not appear");
+  });
+});
