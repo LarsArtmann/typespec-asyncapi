@@ -8,7 +8,6 @@
  */
 
 import { compileAsyncAPIWithoutErrors } from "../utils/test-helpers.js";
-import type { AsyncAPIObject } from "../utils/test-helpers.js";
 
 describe("@subscribe Decorator Tests", () => {
   it("should compile @subscribe decorator successfully", async () => {

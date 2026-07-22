@@ -10,7 +10,6 @@
  */
 
 import {
-  type AsyncAPIObject,
   compileAsyncAPISpecWithoutErrors,
   parseAsyncAPIOutput,
   validateAsyncAPIObjectComprehensive,

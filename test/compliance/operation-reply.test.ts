@@ -19,14 +19,13 @@ describe("spec Compliance: Operation Reply", () => {
       op sendRequest(): Request;
     `);
 
-    const op = doc.operations?.sendRequest as Record<string, unknown> | undefined;
+    const op = doc.operations?.sendRequest;
     expect(op).toBeDefined();
-    const reply = op?.reply as Record<string, unknown> | undefined;
+    const reply = op?.reply;
     expect(reply).toBeDefined();
-    const messages = reply?.messages as { $ref: string }[] | undefined;
-    expect(messages).toBeDefined();
-    expect(messages).toHaveLength(1);
-    expect(messages?.[0].$ref).toContain("Response");
+    expect(reply?.messages).toBeDefined();
+    expect(reply?.messages).toHaveLength(1);
+    expect(reply?.messages?.[0].$ref).toContain("Response");
   });
 
   it("emits reply with address when provided", async () => {
@@ -40,11 +39,12 @@ describe("spec Compliance: Operation Reply", () => {
       op sendRequest(): Request;
     `);
 
-    const op = doc.operations?.sendRequest as Record<string, unknown> | undefined;
-    const reply = op?.reply as Record<string, unknown> | undefined;
-    const address = reply?.address as Record<string, unknown> | undefined;
+    const reply = doc.operations?.sendRequest?.reply;
+    const address = reply?.address;
     expect(address).toBeDefined();
-    expect(address?.location).toBe("$message.header#/replyTo");
+    if (address && typeof address === "object" && "location" in address) {
+      expect(address.location).toBe("$message.header#/replyTo");
+    }
   });
 
   it("registers reply message in components.messages", async () => {
@@ -58,8 +58,7 @@ describe("spec Compliance: Operation Reply", () => {
       op sendRequest(): Request;
     `);
 
-    const messages = doc.components?.messages as Record<string, unknown> | undefined;
-    expect(messages?.Response).toBeDefined();
+    expect(doc.components?.messages?.Response).toBeDefined();
   });
 
   it("registers reply message schema in components.schemas", async () => {
@@ -73,7 +72,6 @@ describe("spec Compliance: Operation Reply", () => {
       op sendRequest(): Request;
     `);
 
-    const schemas = doc.components?.schemas as Record<string, unknown> | undefined;
-    expect(schemas?.Response).toBeDefined();
+    expect(doc.components?.schemas?.Response).toBeDefined();
   });
 });

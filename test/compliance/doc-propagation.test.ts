@@ -18,7 +18,7 @@ describe("spec Compliance: @doc propagation", () => {
       model UserEvent { id: string; }
     `);
 
-    const channel = doc.channels?.["users.events"] as Record<string, unknown> | undefined;
+    const channel = doc.channels?.["users.events"];
     expect(channel).toBeDefined();
     expect(channel?.description).toBe("User lifecycle events");
   });
@@ -33,7 +33,7 @@ describe("spec Compliance: @doc propagation", () => {
       model Event { id: string; }
     `);
 
-    const op = doc.operations?.publishEvent as Record<string, unknown> | undefined;
+    const op = doc.operations?.publishEvent;
     expect(op).toBeDefined();
     expect(op?.description).toBe("Publishes events");
   });

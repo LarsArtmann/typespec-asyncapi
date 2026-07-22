@@ -22,7 +22,6 @@
  */
 
 import {
-  type AsyncAPIObject,
   TestLogging,
   TestValidationPatterns,
   compileAsyncAPISpecWithoutErrors,
