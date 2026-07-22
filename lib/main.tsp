@@ -74,6 +74,13 @@ extern dec bindings(target: Operation | Model, value: {} | valueof Record<unknow
 extern dec defaultContentType(target: Namespace, contentType: valueof string);
 
 /**
+ * Define the reply for a request-reply operation
+ * @param replyModel The model representing the reply message payload
+ * @param address Optional address location for the reply (e.g., "$message.header#/replyTo")
+ */
+extern dec reply(target: Operation, replyModel: Model, address?: valueof string);
+
+/**
  * Define message header
  * @param name Header name
  * @param value Header value or configuration
