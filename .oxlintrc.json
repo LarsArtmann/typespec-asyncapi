@@ -29,6 +29,14 @@
     "typescript/explicit-member-accessibility": "off",
     "unicorn/no-null": "off",
     "unicorn/filename-case": "off",
+    "eslint/no-nested-ternary": "off",
+    "unicorn/no-nested-ternary": "off",
+    "eslint/no-plusplus": "off",
+    "eslint/no-duplicate-imports": "off",
+    "unicorn/no-process-exit": "off",
+    "node/no-sync": "off",
+    "oxc/no-map-spread": "off",
+    "unicorn/prefer-number-coercion": "off",
     "eslint/max-statements": ["warn", { "max": 150 }],
     "eslint/max-lines-per-function": ["warn", { "max": 350 }],
     "eslint/max-params": ["warn", { "max": 5 }],
@@ -36,6 +44,17 @@
     "eslint/complexity": ["warn", { "max": 100 }]
   },
   "overrides": [
+    {
+      "files": ["scripts/**", "*.config.js", "*.config.ts"],
+      "rules": {
+        "vitest/require-hook": "off",
+        "eslint/no-console": "off",
+        "eslint/require-unicode-regexp": "off",
+        "unicorn/no-process-exit": "off",
+        "node/no-sync": "off",
+        "unicorn/no-null": "off"
+      }
+    },
     {
       "files": ["test/**"],
       "rules": {
