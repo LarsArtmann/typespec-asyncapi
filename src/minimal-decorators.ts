@@ -27,11 +27,7 @@ import {
   storeProtocolConfig,
   linkPublishMessage,
 } from "./state-writers.js";
-import {
-  isValidSchemeType,
-  SCHEME_TYPE_LIST,
-  type ProtocolBindings,
-} from "./domain/models/asyncapi-document.js";
+import { isValidSchemeType, SCHEME_TYPE_LIST } from "./domain/models/asyncapi-document.js";
 import {
   reportDiagnostic,
   validateConfig,
@@ -41,6 +37,7 @@ import {
   modelToRecord,
   extractConfigRecord,
 } from "./decorator-helpers.js";
+import { processBindings } from "./validation/binding-validator.js";
 
 // === DECORATORS ===
 
@@ -268,8 +265,14 @@ export function $bindings(
     return;
   }
 
-  const bindings = extractConfigRecord(value);
-  storeBindings(context.program, target, bindings as ProtocolBindings);
+  const rawBindings = extractConfigRecord(value);
+  const { bindings, issues } = processBindings(rawBindings);
+
+  for (const issue of issues) {
+    reportDiagnostic(context, issue.code as "unknown-binding-protocol", target, issue.format);
+  }
+
+  storeBindings(context.program, target, bindings);
 }
 
 export function $header(

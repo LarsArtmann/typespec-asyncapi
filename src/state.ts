@@ -140,7 +140,7 @@ export type AsyncAPIConsolidatedState = {
   tags: Map<Type, TagData>;
   protocolConfigs: Map<Type, ProtocolConfigData>;
   protocolBindings: Map<Type, ProtocolBindings>;
-  securityConfigs: Map<Type, SecurityConfigData>;
+  securityConfigs: Map<Type, SecurityConfigData[]>;
   correlationIds: Map<Type, CorrelationIdData>;
   messageHeaders: Map<Type, MessageHeaderData[]>;
 };
@@ -160,7 +160,7 @@ export function consolidateAsyncAPIState(program: Program): AsyncAPIConsolidated
     tags: getStateMap<TagData>(program, stateSymbols.tags),
     protocolConfigs: getStateMap<ProtocolConfigData>(program, stateSymbols.protocolConfigs),
     protocolBindings: getStateMap<ProtocolBindings>(program, stateSymbols.protocolBindings),
-    securityConfigs: getStateMap<SecurityConfigData>(program, stateSymbols.securityConfigs),
+    securityConfigs: getMultiState<SecurityConfigData>(program, stateSymbols.securityConfigs),
     correlationIds: getStateMap<CorrelationIdData>(program, stateSymbols.correlationIds),
     messageHeaders: getStateMap<MessageHeaderData[]>(program, stateSymbols.messageHeaders),
   };

@@ -82,8 +82,15 @@ export const storeSecurityConfig = (
   target: Operation | Namespace,
   config: { name: string; scheme: SecurityScheme },
 ) => {
-  const map = getStateMap(program, stateSymbols.securityConfigs);
-  map.set(target, { name: config.name, scheme: config.scheme });
+  type SecurityConfigEntry = { name: string; scheme: SecurityScheme };
+  const map = getStateMap<SecurityConfigEntry[]>(program, stateSymbols.securityConfigs);
+  const existing = map.get(target);
+  const newEntry: SecurityConfigEntry = { name: config.name, scheme: config.scheme };
+  if (Array.isArray(existing)) {
+    map.set(target, [...existing, newEntry]);
+  } else {
+    map.set(target, [newEntry]);
+  }
 };
 
 export const storeTags = (program: Program, target: Operation | Model, tags: string[]) => {

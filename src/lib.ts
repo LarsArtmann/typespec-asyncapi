@@ -94,6 +94,18 @@ export const $lib = createTypeSpecLibrary({
         default: paramMessage`Header name missing for '${"targetKind"}'. Use @header with name and value.`,
       },
     },
+    "unknown-binding-protocol": {
+      severity: "warning",
+      messages: {
+        default: paramMessage`Binding key '${"protocol"}' is not a recognized AsyncAPI protocol. Valid protocols: ${"validProtocols"}.`,
+      },
+    },
+    "invalid-binding-version": {
+      severity: "warning",
+      messages: {
+        default: paramMessage`Binding version '${"version"}' is not valid for protocol '${"protocol"}'. Valid versions: ${"validVersions"}.`,
+      },
+    },
   },
   state: {
     channelPaths: { description: "Operation to channel path" },

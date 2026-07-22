@@ -15,6 +15,11 @@ import type { Program, Type } from "@typespec/compiler";
 import { isStdNamespace } from "@typespec/compiler";
 import type { AsyncAPIEmitterOptions } from "./infrastructure/configuration/asyncAPIEmitterOptions.js";
 import { normalizeProtocol } from "./constants/protocols.js";
+import {
+  getLatestBindingVersion,
+  hasProtocolBindings,
+  normalizeBindingProtocol,
+} from "./constants/binding-versions.js";
 import type { AsyncAPIConsolidatedState } from "./state.js";
 import type {
   AsyncAPIDocument,
@@ -307,9 +312,13 @@ export function buildAsyncAPIDocument(
     const channelKey = opToChannel.get(typeWithName.name) ?? typeWithName.name;
     if (data.protocol && channels[channelKey]) {
       const channel = channels[channelKey];
-      const canonicalProtocol = normalizeProtocol(data.protocol);
+      const bindingKey = normalizeBindingProtocol(data.protocol);
+      const bindingData = { ...(data.binding ?? {}) };
+      if (hasProtocolBindings(bindingKey) && bindingData.bindingVersion === undefined) {
+        bindingData.bindingVersion = getLatestBindingVersion(bindingKey);
+      }
       channel.bindings = {
-        [canonicalProtocol]: data.binding ?? {},
+        [bindingKey]: bindingData,
       };
     }
   }
@@ -341,8 +350,10 @@ export function buildAsyncAPIDocument(
 
   // Build security schemes from state
   for (const [_type, data] of state.securityConfigs) {
-    const secData = data;
-    securitySchemes[secData.name] = secData.scheme;
+    const entries = Array.isArray(data) ? data : [data];
+    for (const secData of entries) {
+      securitySchemes[secData.name] = secData.scheme;
+    }
   }
 
   const components: ComponentsObject = {};
