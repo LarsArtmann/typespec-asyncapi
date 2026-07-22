@@ -33,6 +33,8 @@
 | Pre-commit ESLint blocks all commits (#241)                                                                                                                                          | ESLint **clean** (0 errors, 0 warnings)                                      |
 | `@asyncapi/specs` security advisory (#245)                                                                                                                                           | Locked at **6.11.1** (last safe version)                                     |
 
+> **Update 2026-07-22:** Categories A+B (26 issues) were bulk-closed as recommended. Category C (11 stale/low-value issues — #30, #94, #131, #136, #153, #160, #167, #170, #199, #242, #243) were **NOT** closed and remain open. Category D #54 (error hierarchy) was closed as YAGNI. Test count grew from 301 to **510**. Full item-by-item status in [Resolution](#resolution-2026-07-22) below.
+
 ---
 
 ## Category A — OBSOLETE (13 issues) — Close
@@ -137,3 +139,37 @@ Real feature gaps / RFCs, not tied to removed architecture.
 - Read project context: `AGENTS.md`, `FEATURES.md`, `TODO_LIST.md`, `ROADMAP.md`, `package.json`, recent commit history.
 - Verified each issue's claims against the live codebase: `rg` for removed files/imports, `wc -l` on `src/`, TODO counts, protocol enum, decorator list, coverage gate, CI workflow, `tsconfig` source-map settings, lockfile security pin.
 - Ran the full suite: `bun install` → `bun run build` (0 errors) → `bun run lint` (0 warnings) → `bun test` (**301 pass, 0 fail, ~9s**).
+
+---
+
+## Resolution (2026-07-22)
+
+### Issue closure status
+
+| Category                    | Recommended    | Actually done       | Still open                                                              |
+| --------------------------- | -------------- | ------------------- | ----------------------------------------------------------------------- |
+| A — OBSOLETE (13)           | Close          | **13 closed**       | 0                                                                       |
+| B — ALREADY DONE (13)       | Close          | **13 closed**       | 0                                                                       |
+| C — STALE / LOW-VALUE (11)  | Close or defer | **0 closed**        | All 11 (#30, #94, #131, #136, #153, #160, #167, #170, #199, #242, #243) |
+| D — GENUINELY RELEVANT (11) | Keep           | #54 closed as YAGNI | 10 kept                                                                 |
+
+**22 issues remain open** (down from 48). The Category C cleanup — the judgment-call closures — was never executed.
+
+### Optional follow-ups status
+
+| Follow-up                                             | Status                                                                                |
+| ----------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| Tighten `@asyncapi/specs` pin (`^6.11.1` → `~6.11.1`) | OPEN — still `^6.11.1` in `package.json`                                              |
+| Remove dead `tsconfig.json` exclude paths             | DONE — dead paths removed during cleanup                                              |
+| Fix FEATURES.md test count ("283" → actual)           | DONE — FEATURES.md updated (now says 504; actual is 510, pending docs-health refresh) |
+| Check off ROADMAP near-term items                     | DONE — all checked off in ROADMAP.md "Shipped (v0.1.0-alpha)" section                 |
+
+### Category C issues still worth closing
+
+These 11 issues reference premises invalidated by the rewrite and should still be closed:
+
+- **#160** (Bun test patterns) — moot; project migrated to vitest
+- **#131** (Convert 284 TODOs) — 0 TODOs remain in `src/`
+- **#136** (Type caching) — cites deleted `src/utils/type-cache.ts`
+- **#167** (Performance benchmark) — cites deleted caching infra
+- **#242** (Structured logging) — 0 `console.log` in `src/` (1 `console.error` in schema-emitter for error path)

@@ -4,6 +4,8 @@
 **Session Goal:** "Test this project against real TypeSpec Specs!"
 **Outcome:** Found and fixed 2 systemic emitter bugs + 5 example spec-compliance bugs; added 68 new tests (301 → 369). But **critical scope missed**: only tested the project's OWN examples, never the 452 external `.tsp` files discovered across 20 projects.
 
+> **Update 2026-07-22:** Both "TOTALLY FUCKED UP" items were resolved in subsequent sessions. The `websocket`/`ws` split-brain (section d) was fixed at the root — `normalizeProtocol()` now maps aliases, `@protocol` validates with `isSupportedProtocol()` (commit `f5088c4`). The e2e `realworld-ecommerce.test.ts` "time bomb" was fully fixed with AsyncAPI 3.1 JSON Schema validation added (same commit). External `.tsp` testing: 16 patterns from 5 projects now compiled (`test/external/`, commit `42ad7ac`). Test count grew from 369 to **510**. Item-by-item status in [Resolution](#resolution-2026-07-22) below.
+
 ---
 
 ## a) FULLY DONE
@@ -222,3 +224,28 @@ Right now, invalid binding fields (like `key`, `acks` on Kafka channel bindings)
 | External specs tested                         | 0 of 452                     | 0 of 452 | —     |
 
 **Verdict:** Solid emitter bug fixes and example cleanup, but the session's core mandate — "test against REAL TypeSpec specs" — was only partially fulfilled because I tested the project's own examples, not external real-world specs. The `websocket` split-brain is an unforced error I introduced and left in place.
+
+---
+
+## Resolution (2026-07-22)
+
+### High-priority items (section f, items 1-10)
+
+| #   | Item                                               | Status            | Evidence                                                                                            |
+| --- | -------------------------------------------------- | ----------------- | --------------------------------------------------------------------------------------------------- |
+| 1   | Fix `websocket`/`ws` split-brain                   | DONE              | `normalizeProtocol()` maps aliases; commit `f5088c4`                                                |
+| 2   | Diagnostic for invalid protocol binding keys       | DONE              | `unsupported-protocol` diagnostic; `isSupportedProtocol()`                                          |
+| 3   | Fix e2e `realworld-ecommerce.test.ts` binding bugs | DONE              | All 8 binding blocks corrected; commit `f5088c4`                                                    |
+| 4   | Add AsyncAPI schema validation to e2e test         | DONE              | AJV validation added; commit `f5088c4`                                                              |
+| 5   | Test against external `.tsp` files                 | PARTIALLY DONE    | 16 patterns from 5 projects in `test/external/`; commit `42ad7ac`                                   |
+| 6   | Run `@asyncapi/parser` for semantic validation     | CLOSED AS BLOCKED | Parser crashes under Bun/vitest (AJV `new Function()` codegen); manual `$ref` resolver used instead |
+| 7   | Unit test for `refForNamedType()`                  | DONE              | `test/validation/schema-emitter-regression.test.ts` (16 tests)                                      |
+| 8   | Unit test for `Record<string>` mapping             | DONE              | Same file                                                                                           |
+| 9   | Unit test for `typeToSchema()` branches            | DONE              | Same file                                                                                           |
+| 10  | Golden file capture for validated outputs          | DONE              | `test/golden/golden-file.test.ts` (3 tests)                                                         |
+
+### Questions resolved
+
+- **Q1 (external specs):** Partially answered — 16 patterns tested from 5 projects. Full 452-file sweep not done (most are non-AsyncAPI domain models).
+- **Q2 (`websocket` alias):** Resolved — it IS an alias, now mapped to `ws` via `normalizeProtocol()`.
+- **Q3 (binding field validation at compile time):** Still open — bindings are structurally validated (key normalization, version injection) but field-level validation against AsyncAPI binding schemas is not implemented.

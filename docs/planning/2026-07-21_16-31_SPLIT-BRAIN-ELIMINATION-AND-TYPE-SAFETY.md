@@ -1,7 +1,7 @@
 # Split-Brain Elimination & Type Safety Completion
 
 **Date:** 2026-07-21 16:31
-**Status:** PLANNED (awaiting execution approval)
+**Status:** ~~PLANNED (awaiting execution approval)~~ EXECUTED 2026-07-22 (commit `42ad7ac`). All 8 tasks completed; results in `docs/status/2026-07-22_03-46_SPLIT-BRAIN-FIX-VITEST-MIGRATION.md`.
 **Scope:** 7 TODO items from `TODO_LIST.md`, verified against code this session
 **Risk:** Low — 4 of 7 items are dead-code deletion or type tightening; 1 is investigation; only 2 touch live behavior
 
@@ -236,3 +236,23 @@ Before each change, verify:
 - [ ] **Does the type tightening break any consumer?** → Check `document-builder.ts` construction sites
 - [ ] **Am I changing behavior or just honesty?** → All Phase 1-2 tasks are honesty-only (types/dead code); Phase 4 T6 is the only behavior change
 - [ ] **Did I run ALL 406 tests after each change?** → Non-negotiable
+
+---
+
+## Resolution (2026-07-22)
+
+All 8 tasks executed in commit `42ad7ac` ("eliminate diagnostic drift and stabilize test execution"). Final test count: 426 pass (up from 406 baseline). Full results documented in `docs/status/2026-07-22_03-46_SPLIT-BRAIN-FIX-VITEST-MIGRATION.md`.
+
+| Task       | Plan claim                          | Outcome                                                                                |
+| ---------- | ----------------------------------- | -------------------------------------------------------------------------------------- |
+| T1         | Fix diagnostic registry split-brain | DONE — 14 codes declared = 14 fired, `$lib.reportDiagnostic()` enforced                |
+| T2         | Delete dead version constants       | DONE — `src/constants/index.ts` deleted entirely                                       |
+| T3         | Tighten `ServerObject.protocol`     | DONE — changed to `AsyncAPIProtocol`                                                   |
+| T4         | Tighten `OperationObject.bindings`  | DONE — changed to `ProtocolBindings`                                                   |
+| T5         | External `.tsp` compilation         | DONE — 16 patterns from 5 projects (`test/external/`)                                  |
+| T6         | URL validation for `@server`        | DONE — `isValidUrl()` + `invalid-server-url` diagnostic (pragmatic, not full RFC 3986) |
+| T7         | Error type hierarchy review         | DONE — GitHub #54 closed as YAGNI (2 throw sites, 14 diagnostic codes suffice)         |
+| T8         | Full verification                   | DONE — build/lint/test/coverage all pass                                               |
+| T9 (bonus) | vitest migration                    | DONE — Bun OOM crash forced emergency migration from `bun:test` to `vitest`            |
+
+**Still open** (extracted to TODO_LIST.md): dead coverage devDeps removal, `engines.node` bump to `>=20.11`, GitHub #229/#160 closure.

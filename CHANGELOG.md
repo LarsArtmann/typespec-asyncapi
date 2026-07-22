@@ -75,6 +75,12 @@ First alpha release. Full Pareto recovery from analysis paralysis.
 - Document-builder auto-injects `bindingVersion` for `@protocol`-generated channel bindings
 - Test runner migrated from bun:test to vitest (Bun OOM crashes with large test suites)
 - Test count grew from 406 to 504 (78 new compliance tests + 16 external spec tests)
+- `@service` decorator compatibility: emitter now reads `@service` title via `listServices()` for `info.title` (emitter options take precedence). Test count grew from 504 to 510.
+- OAuth2 `OAuth2Flow.scopes` renamed to `availableScopes` per AsyncAPI 3.1 spec (type-level only; runtime transformation still pending)
+- `SecurityRequirement` type added; `ServerObject.security` and `OperationObject.security` changed from `SecurityScheme[]` to `SecurityRequirement[]`
+- `OperationAction` named type extracted (`"send" | "receive"`)
+- `$ref` construction centralized in domain model (`ref()`, `refSchema()`, `refMessage()`, `refChannel()` helpers)
+- `getValidVersionsString()` moved to `binding-versions.ts` (single source of truth, eliminated duplication)
 
 ### Fixed
 

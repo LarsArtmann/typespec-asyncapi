@@ -8,7 +8,7 @@ Become the standard way to define AsyncAPI 3.1 specifications using TypeSpec, wi
 
 ## Current State: Pre-Alpha
 
-The emitter produces spec-compliant AsyncAPI 3.1 output for the core feature set. Diagnostic registry is fully type-safe (17 codes, compile-time validated). Full protocol binding support with auto-versioning and key normalization. Test suite runs on vitest (504 tests, 95% coverage). See FEATURES.md for the honest feature inventory.
+The emitter produces spec-compliant AsyncAPI 3.1 output for the core feature set. Diagnostic registry is fully type-safe (17 codes, compile-time validated). Full protocol binding support with auto-versioning and key normalization. Test suite runs on vitest (510 tests, 95% coverage). See FEATURES.md for the honest feature inventory.
 
 ## Shipped (v0.1.0-alpha)
 

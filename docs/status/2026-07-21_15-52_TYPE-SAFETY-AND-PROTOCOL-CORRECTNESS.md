@@ -4,6 +4,8 @@
 **Session Goal:** "Test this project against real TypeSpec Specs!" (continuation) — then pivoted to type-safety hardening + protocol correctness after user asked "Can we be more typesafe?"
 **Outcome:** Fixed the `websocket`/`ws` split-brain (root cause, not symptom), made `ProtocolConfigData` impossible-to-misuse via discriminated union, corrected AsyncAPI 3.0 security scheme types (4 invalid removed, 4 valid added), added 38 new regression/semantic tests. **406 pass / 0 fail** (up from 190/190 at session start). But the original mandate — testing against EXTERNAL `.tsp` files — remains untouched.
 
+> **Update 2026-07-22:** The "half-propagated" type-safety items from section (b) were completed: `ServerObject.protocol` → `AsyncAPIProtocol` and `OperationObject.bindings` → `ProtocolBindings` (commit `42ad7ac`). External `.tsp` testing: 16 patterns from 5 projects now compiled (`test/external/`). Binding version auto-injection shipped (commit `60b526c`). Test count grew from 406 to **510**. Q3 below ("should I tighten output types?") was answered YES and executed. Item-by-item status in [Resolution](#resolution-2026-07-22) below.
+
 ---
 
 ## a) FULLY DONE
@@ -279,3 +281,35 @@ I made `ProtocolConfigData` a discriminated union and `normalizeProtocol()` retu
 | `@asyncapi/parser` semantic validation | not attempted                | attempted, failed (Bun incompat), workaround implemented | partial    |
 
 **Verdict:** Solid type-safety and correctness work — the `websocket` split-brain is properly fixed at the root, `ProtocolConfigData` is now impossible to misuse, security scheme types match the spec. But the session's original mandate (external spec testing) remains completely unaddressed, and the type-safety improvements are half-propagated (internal state is tight, output document types are still loose). The `@asyncapi/parser` detour was wasted time that a 5-second smoke test would have prevented.
+
+---
+
+## Resolution (2026-07-22)
+
+### Section (b) "PARTIALLY DONE" items — all resolved
+
+| Item                                     | Report status   | Resolution                                                                        |
+| ---------------------------------------- | --------------- | --------------------------------------------------------------------------------- |
+| `ServerObject.protocol` still `string`   | Half-propagated | DONE — tightened to `AsyncAPIProtocol` (commit `42ad7ac`)                         |
+| `OperationObject.bindings` loose         | Half-propagated | DONE — tightened to `ProtocolBindings` (commit `42ad7ac`)                         |
+| External `.tsp` testing (0/452)          | Not started     | PARTIALLY DONE — 16 patterns from 5 projects (`test/external/`, commit `42ad7ac`) |
+| `bindingVersion` defaulting per protocol | Not done        | DONE — auto-injected by `processBindings()` + document-builder (commit `60b526c`) |
+
+### Section (f) high-priority items (1-10)
+
+| #   | Item                                        | Status                                     |
+| --- | ------------------------------------------- | ------------------------------------------ |
+| 1   | Test against external `.tsp` files          | PARTIALLY DONE — 16 patterns               |
+| 2   | Tighten `ServerObject.protocol`             | DONE                                       |
+| 3   | Tighten `ProtocolBindings` key type         | DONE                                       |
+| 4   | Tighten `OperationObject.bindings`          | DONE                                       |
+| 5   | Grep ALL examples for `apiKey`→`httpApiKey` | DONE — examples synced in commit `7376d34` |
+| 6   | Grep ALL tests for `type: "sasl"`           | DONE — rewritten in this session           |
+| 9   | Default `bindingVersion` per protocol       | DONE — commit `60b526c`                    |
+| 10  | Test `Map<T>` in `typeToSchema()`           | OPEN — still untested                      |
+
+### Questions resolved
+
+- **Q1 (external specs):** 16 patterns from 5 projects compiled. Full sweep not done.
+- **Q2 (binding validation):** Structural validation done (key normalization, version injection). Field-level validation against AsyncAPI binding schemas still open.
+- **Q3 (tighten output types):** YES — executed in commit `42ad7ac`. `ServerObject.protocol` and `OperationObject.bindings` both tightened.

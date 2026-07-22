@@ -6,6 +6,8 @@
 **Final State:** 504 tests pass, 0 build errors, 0 lint warnings
 **Files Changed:** 5 files, +67 lines, -33 lines
 
+> **Update 2026-07-22:** Test count grew from 504 to **510**. The `getValidVersionsString()` duplication (section e, item 3) was fixed — `binding-validator.ts` now imports from `binding-versions.ts`. The critical `availableScopes` half-measure (section b/d) is **STILL OPEN**: the type says `availableScopes` but the runtime passes through whatever key the user wrote (`scopes` or `availableScopes`). Of the 15 type-system issues in section (c), 12 remain open — see [Resolution](#resolution-2026-07-22) below for item-by-item status. These open items have been extracted to TODO_LIST.md.
+
 ---
 
 ## a) FULLY DONE (This Session)
@@ -260,3 +262,37 @@ JSON Schema is extensible by design, so SchemaObject needs to accept arbitrary k
 - (C) Keep it but add a strict override type for known fields (complex)
 
 I lean (A) but want confirmation this is the permanent decision.
+
+---
+
+## Resolution (2026-07-22)
+
+### Section (b) — `availableScopes` half-measure: STILL OPEN
+
+The type was changed to `availableScopes` but the emitter does NOT rename `scopes` → `availableScopes` at runtime. If a user writes `scopes:` in their `@security` decorator, the emitted document contains `scopes:`, which FAILS AsyncAPI 3.1 JSON Schema validation. This is the highest-priority open item — extracted to TODO_LIST.md P0.
+
+### Section (c) — 15 type-system issues
+
+| #   | Issue                                                                                      | Status     | Notes                                                   |
+| --- | ------------------------------------------------------------------------------------------ | ---------- | ------------------------------------------------------- |
+| 1   | `bindings.ts` 100% dead code (177 lines, 0 imports)                                        | OPEN       | Extracted to TODO_LIST                                  |
+| 2   | `supportsBindingPlacement()` / `BINDING_PLACEMENT` never called                            | OPEN       | Extracted to TODO_LIST                                  |
+| 3   | `SchemaObject` has `[key: string]: unknown`                                                | DELIBERATE | JSON Schema extension pattern — documented in AGENTS.md |
+| 4   | `as { name: string }` type assertions (7+ in document-builder)                             | OPEN       | Extracted to TODO_LIST                                  |
+| 5   | `ProtocolConfigData` union created but never narrowed                                      | OPEN       | Extracted to TODO_LIST                                  |
+| 6   | `OperationTypeData.type` is `"publish"\|"subscribe"` but AsyncAPI uses `"send"\|"receive"` | OPEN       | Extracted to TODO_LIST                                  |
+| 7   | `MessageHeaderData.value` untyped `unknown`                                                | OPEN       | Low priority                                            |
+| 8   | `SecurityScheme.in` has invalid `"user"\|"password"`                                       | OPEN       | Spec compliance bug — extracted to TODO_LIST P0         |
+| 9   | No branded/opaque types                                                                    | DELIBERATE | Design choice, not a bug                                |
+| 10  | `storeServerConfig` type mismatch                                                          | OPEN       | Low priority                                            |
+| 11  | `ProtocolConfigBase.binding` is `Record<string, unknown>`                                  | OPEN       | Blocked by #1 (bindings.ts dead)                        |
+| 12  | `CorrelationIdData.property` dead field                                                    | OPEN       | Extracted to TODO_LIST                                  |
+| 13  | `OperationTypeData.tags/description` dead fields                                           | OPEN       | Extracted to TODO_LIST                                  |
+| 14  | `intrinsicToSchema()` format inconsistency (uint*)                                         | OPEN       | Extracted to TODO_LIST                                  |
+| 15  | `TagData` vs `Tag[]` duplicate definition                                                  | OPEN       | Extracted to TODO_LIST                                  |
+
+### Section (e) items resolved since this report
+
+| #   | Item                                   | Status                                        |
+| --- | -------------------------------------- | --------------------------------------------- |
+| 5   | `getValidVersionsString()` duplication | DONE — imports from `binding-versions.ts` now |

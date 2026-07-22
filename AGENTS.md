@@ -11,7 +11,7 @@
 bun install           # Install dependencies
 bun run build         # Build TypeScript → JavaScript (0 errors)
 bun run lint          # Run ESLint (0 errors, 0 warnings)
-bun run test          # Run tests via vitest (504 pass, 0 fail)
+bun run test          # Run tests via vitest (510 pass, 0 fail)
 ```
 
 **Important:** Use `bun` and `bunx` for install/build, never `npm` or `npx`. Tests run via **vitest** (Node.js/V8) — not `bun test` — because Bun has documented memory leaks that cause OOM crashes with heavy test suites.

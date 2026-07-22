@@ -4,6 +4,8 @@
 **Session scope:** Execute the full Pareto plan from `docs/planning/2026-07-21_16-31_SPLIT-BRAIN-ELIMINATION-AND-TYPE-SAFETY.md` (8 tasks, 36 subtasks) + emergency vitest migration after Bun OOM crash
 **Result:** 9/9 tasks completed. All quality gates pass. **Nothing committed yet.**
 
+> **Update 2026-07-22:** The work was committed across `42ad7ac` (diagnostic drift + test stabilization), `60b526c` (protocol binding enforcement), and `28bed42` (data model + `@service` compat). The `@service` UX trap (section d) is fixed — `listServices()` now reads the title for `info.title`. Test count grew from 426 to **510**. Still open: dead coverage devDeps (3 packages), `engines.node` bump, GitHub #229/#160 closure. Item-by-item status in [Resolution](#resolution-2026-07-22) below.
+
 ---
 
 ## Quality Gates (verified this session)
@@ -291,3 +293,33 @@ You mentioned matching microsoft/typespec. This would change `bun install` → `
 ### 3. Is the pragmatic URL validation acceptable for closing #229?
 
 Issue #229 asks for "RFC 3986 URL Format Validation." What I built rejects empty/whitespace/control-character URLs but accepts schemeless hostnames like `{region}.example.com` (which are valid AsyncAPI). This is less strict than RFC 3986 but correct for AsyncAPI's format. Should I close #229 as done, or do you want stricter validation that combines `url` + `protocol` into a full URI before validating?
+
+---
+
+## Resolution (2026-07-22)
+
+### Immediate items (section f, items 1-6)
+
+| #   | Item                                        | Status | Evidence                                                                         |
+| --- | ------------------------------------------- | ------ | -------------------------------------------------------------------------------- |
+| 1   | Commit the work                             | DONE   | Commits `42ad7ac`, `60b526c`, `28bed42`, `83e3917`, `fa6857d`                    |
+| 2   | Update planning doc status                  | DONE   | Both planning docs annotated                                                     |
+| 3   | Close GitHub #229                           | OPEN   | Still open; pragmatic validation shipped, full RFC 3986 not done                 |
+| 4   | Close GitHub #160                           | OPEN   | Still open; moot after vitest migration but never closed                         |
+| 5   | Remove dead coverage devDeps                | OPEN   | `@vitest/coverage-v8`, `@vitest/coverage-istanbul`, `c8` still in `package.json` |
+| 6   | Clean up `vitest.config.ts` coverage config | OPEN   | Still references non-functional coverage settings                                |
+
+### Section (d) "TOTALLY FUCKED UP" items
+
+| Item                           | Status                                                                     |
+| ------------------------------ | -------------------------------------------------------------------------- |
+| Three useless coverage devDeps | OPEN — still installed                                                     |
+| Coverage strategy compromise   | OPEN — vitest for tests, bun for coverage split remains                    |
+| URL validation weakened        | KEPT AS-IS — pragmatic approach is correct for AsyncAPI host-string format |
+| `@service` UX trap             | DONE — `listServices()` reads title for `info.title` (commit `28bed42`)    |
+
+### Questions resolved
+
+- **Q1 (commit strategy):** Work was committed in logical units across 5 commits, not one mega-commit.
+- **Q2 (pnpm migration):** Not done — project still uses bun for install/build.
+- **Q3 (URL validation for #229):** Pragmatic approach kept as the correct design for AsyncAPI. #229 still open.

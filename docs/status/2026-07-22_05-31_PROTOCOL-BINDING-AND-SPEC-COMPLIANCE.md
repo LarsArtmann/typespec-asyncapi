@@ -3,6 +3,8 @@
 **Date:** 2026-07-22 05:31
 **Session scope:** Implement full protocol binding support (Kafka, AMQP, MQTT, WebSocket, HTTP) + AsyncAPI 3.1 specification test suite compliance + docs-health audit
 
+> **Update 2026-07-22:** The 5 uncommitted doc files were committed in `83e3917` and `fa6857d`. Test count grew from 504 to **510**. `@service` compatibility (section c) was resolved — `listServices()` integration shipped in commit `28bed42`. The `getValidVersionsString()` duplication (section e, item 3) was fixed — now imports from `binding-versions.ts`. Still open: dead coverage devDeps, `engines.node` bump, binding placement enforcement, GitHub #229/#160. Item-by-item status in [Resolution](#resolution-2026-07-22) below.
+
 ---
 
 ## a) FULLY DONE
@@ -224,3 +226,33 @@ ROADMAP says "95% coverage" but coverage hasn't been measured this session. The 
 - (a) Remove the "95%" claim from ROADMAP, say "coverage tracked manually via `bun test --coverage` on core dirs"
 - (b) Invest time in making vitest coverage work (may require `nyc` instrumenting `src/` before `tsc` runs)
 - (c) Delete the 3 dead devDeps and drop coverage tracking entirely for now
+
+---
+
+## Resolution (2026-07-22)
+
+### Section (c) NOT STARTED items
+
+| Item                             | Status | Evidence                                                         |
+| -------------------------------- | ------ | ---------------------------------------------------------------- |
+| `@service` decorator diagnostic  | DONE   | `listServices()` reads title for `info.title` (commit `28bed42`) |
+| Dead coverage devDeps removal    | OPEN   | Still in `package.json`                                          |
+| `engines.node` bump to `>=20.11` | OPEN   | Still `>=20.0.0`                                                 |
+| Commit 5 doc-health files        | DONE   | Commits `83e3917`, `fa6857d`                                     |
+| GitHub #229 closure              | OPEN   | Still open                                                       |
+| GitHub #160 closure              | OPEN   | Still open                                                       |
+
+### Section (e) architectural items
+
+| #   | Item                                               | Status                                        |
+| --- | -------------------------------------------------- | --------------------------------------------- |
+| 1   | Binding placement enforcement                      | OPEN — `BINDING_PLACEMENT` still dead code    |
+| 2   | Binding field-level validation                     | OPEN — structural validation only             |
+| 3   | `getValidVersionsString()` duplication             | DONE — now imports from `binding-versions.ts` |
+| 4   | `storeSecurityConfig` getStateMap vs getMultiState | OPEN — still uses manual accumulation         |
+
+### Questions resolved
+
+- **Q1 (commit strategy):** Docs committed separately in `83e3917` / `fa6857d`.
+- **Q2 (binding placement enforcement):** Not done — left as TODO.
+- **Q3 (coverage approach):** Not resolved — dead devDeps still installed, ROADMAP still claims 95%.
