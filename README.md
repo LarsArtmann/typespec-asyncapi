@@ -1,7 +1,7 @@
 # TypeSpec AsyncAPI Emitter
 
 [![Build Status](https://img.shields.io/badge/Build-PASSING-green)](https://github.com/LarsArtmann/typespec-asyncapi)
-[![Tests](https://img.shields.io/badge/Tests-406%20pass%2C%200%20fail-green)](https://github.com/LarsArtmann/typespec-asyncapi)
+[![Tests](https://img.shields.io/badge/Tests-504%20pass%2C%200%20fail-green)](https://github.com/LarsArtmann/typespec-asyncapi)
 [![AsyncAPI](https://img.shields.io/badge/AsyncAPI-3.1.0-blue)](https://www.asyncapi.com/)
 
 A TypeSpec emitter that transforms TypeSpec service definitions into [AsyncAPI 3.1](https://www.asyncapi.com/) specifications. Define your event schemas, channels, and operations in TypeSpec, then generate standards-compliant AsyncAPI YAML.
@@ -198,7 +198,7 @@ model EventWithHeaders {
 
 ### `@bindings(config)`
 
-Applies generic protocol bindings to operations or models.
+Applies generic protocol bindings to operations or models. Binding keys are normalized (`websocket`→`ws`) and `bindingVersion` is auto-injected.
 
 ```typespec
 @channel("payments")
@@ -211,6 +211,20 @@ Applies generic protocol bindings to operations or models.
 op processPayment(): PaymentResult;
 ```
 
+Supported protocols for bindings: Kafka (0.5.0), AMQP (0.3.0), MQTT (0.2.0), HTTP (0.3.0), WebSocket (0.1.0).
+
+## Supported Protocols
+
+| Protocol | Server | Channel Bindings | Operation Bindings | Message Bindings |
+|----------|--------|-----------------|-------------------|-----------------|
+| Kafka    | Yes    | Yes (topic, partitions, replicas) | Yes (groupId, clientId) | Yes (key, schemaIdLocation) |
+| AMQP     | —      | Yes (exchange, queue) | Yes (priority, deliveryMode) | Yes (contentEncoding) |
+| MQTT     | Yes    | — | Yes (qos, retain) | Yes |
+| WebSocket | Yes   | Yes (method, query, headers) | — | — |
+| HTTP     | —      | — | Yes (method, query) | Yes (headers) |
+
+Binding versions are auto-injected when omitted. Protocol aliases (`websocket`→`ws`, `websockets`→`ws`) are normalized automatically.
+
 ## Development
 
 ```bash
@@ -218,7 +232,7 @@ git clone https://github.com/LarsArtmann/typespec-asyncapi
 cd typespec-asyncapi
 bun install
 bun run build     # Build TypeScript (0 errors)
-bun test          # Run tests (406 pass, 0 fail)
+bun test          # Run tests (504 pass, 0 fail)
 bun run lint      # ESLint
 ```
 
@@ -227,8 +241,9 @@ bun run lint      # ESLint
 **Version:** 0.1.0-alpha
 **Build:** 0 TypeScript errors
 **Lint:** 0 errors, 0 warnings
-**Tests:** 406 pass, 0 fail (0 skip, 0 todo)
-**Output:** Validates against AsyncAPI 3.1.0 JSON schema
+**Tests:** 504 pass, 0 fail (0 skip, 0 todo)
+**Output:** Validates against AsyncAPI 3.1.0 JSON schema (78 compliance tests)
+**Bindings:** Full support for Kafka, AMQP, MQTT, WebSocket, HTTP with auto-versioning
 
 ## License
 

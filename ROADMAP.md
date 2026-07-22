@@ -8,7 +8,7 @@ Become the standard way to define AsyncAPI 3.1 specifications using TypeSpec, wi
 
 ## Current State: Pre-Alpha
 
-The emitter produces spec-compliant AsyncAPI 3.1 output for the core feature set. Diagnostic registry is fully type-safe (14 codes, compile-time validated). Test suite runs on vitest (426 tests, 95% coverage). See FEATURES.md for the honest feature inventory.
+The emitter produces spec-compliant AsyncAPI 3.1 output for the core feature set. Diagnostic registry is fully type-safe (17 codes, compile-time validated). Full protocol binding support with auto-versioning and key normalization. Test suite runs on vitest (504 tests, 95% coverage). See FEATURES.md for the honest feature inventory.
 
 ## Shipped (v0.1.0-alpha)
 
@@ -25,12 +25,18 @@ The emitter produces spec-compliant AsyncAPI 3.1 output for the core feature set
 - [x] Dead code eliminated (`src/constants/index.ts` deleted, single version constant)
 - [~] AJV validation wired in `$onEmit` (decided against — follows the openapi3 emitter pattern; CI runs schema validation separately)
 
-## Mid-Term (v0.2.0-beta)
+## Shipped (v0.2.0-beta)
 
-- [ ] Full protocol binding support (Kafka, AMQP, MQTT, WebSocket)
-- [ ] AsyncAPI 3.1 specification test suite compliance
+- [x] **Full protocol binding support** (Kafka, AMQP, MQTT, WebSocket, HTTP) — typed binding definitions, binding version constants, auto-versioning, key normalization (`wss`→`ws`, `websocket`→`ws`)
+- [x] **Binding validation** — normalizes keys, validates versions, auto-injects `bindingVersion`, warns on unknown protocols
+- [x] **AsyncAPI 3.1 specification test suite compliance** — 78 tests across 6 compliance files, all validated against official AsyncAPI 3.1.0 JSON Schema via AJV
+- [x] **Multi-security bug fix** — multiple `@security` decorators on one namespace now accumulate instead of overwriting
+
+## Mid-Term (v0.3.0)
+
 - [ ] Performance optimization for large specifications
 - [ ] AsyncAPI Studio compatibility
+- [ ] `@service` decorator diagnostic (prevent silent no-op for OpenAPI migrants)
 
 ## Long-Term (v1.0.0)
 
