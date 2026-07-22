@@ -18,6 +18,7 @@ export interface DiscoveredOp {
   action: OperationAction;
   channelKey: string;
   messageNames: string[];
+  messageSchemaNames: string[];
   opName: string;
 }
 

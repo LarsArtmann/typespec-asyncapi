@@ -4,12 +4,10 @@
 
 import type { Type } from "@typespec/compiler";
 import type {
-  OperationAction,
-  ParameterObject,
-  ProtocolBindings,
-  SecurityScheme,
-} from "../domain/models/asyncapi-document.js";
-import type { OperationTypeData, ProtocolConfigData } from "../state.js";
+  MessageConfigData,
+  OperationTypeData,
+  ProtocolConfigData,
+} from "../state.js";
 import {
   getLatestBindingVersion,
   hasProtocolBindings,
