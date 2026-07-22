@@ -139,6 +139,14 @@ export interface DefaultContentTypeData {
   contentType: string;
 }
 
+/**
+ * Operation Reply State Data
+ */
+export interface OperationReplyData {
+  messageName: string;
+  address?: string;
+}
+
 // === STATE CONSOLIDATION UTILITIES ===
 
 /**
@@ -156,6 +164,7 @@ export interface AsyncAPIConsolidatedState {
   correlationIds: Map<Type, CorrelationIdData>;
   messageHeaders: Map<Type, MessageHeaderData[]>;
   defaultContentType: Map<Type, DefaultContentTypeData>;
+  operationReplies: Map<Type, OperationReplyData>;
 }
 
 /**
@@ -176,6 +185,10 @@ export function consolidateAsyncAPIState(
     defaultContentType: getStateMap<DefaultContentTypeData>(
       program,
       stateSymbols.defaultContentType,
+    ),
+    operationReplies: getStateMap<OperationReplyData>(
+      program,
+      stateSymbols.operationReplies,
     ),
     messageHeaders: getStateMap<MessageHeaderData[]>(
       program,
