@@ -5,7 +5,7 @@
  * Each function corresponds to a specific decorator's state storage.
  */
 
-import type { MessageConfigData, ProtocolConfigData } from "./state.js";
+import type { MessageConfigData, OperationReplyData, ProtocolConfigData } from "./state.js";
 import type {
   Model,
   ModelProperty,
@@ -289,4 +289,13 @@ export const storeDefaultContentType = (
 ): void => {
   const map = getStateMap(program, stateSymbols.defaultContentType);
   map.set(target, { contentType });
+};
+
+export const storeOperationReply = (
+  program: Program,
+  target: Operation,
+  replyData: OperationReplyData,
+): void => {
+  const map = getStateMap(program, stateSymbols.operationReplies);
+  map.set(target, replyData);
 };

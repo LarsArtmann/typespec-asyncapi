@@ -22,6 +22,7 @@ import {
   storeDefaultContentType,
   storeHeader,
   storeMessageConfig,
+  storeOperationReply,
   storeOperationType,
   storeProtocolConfig,
   storeSecurityConfig,
@@ -352,4 +353,19 @@ export function $defaultContentType(
     return;
   }
   storeDefaultContentType(context.program, target, contentType);
+}
+
+export function $reply(
+  context: DecoratorContext,
+  target: Operation,
+  replyModel: Model,
+  address?: unknown,
+): void {
+  if (!replyModel || !replyModel.name) {
+    return;
+  }
+  storeOperationReply(context.program, target, {
+    address: typeof address === "string" ? address : undefined,
+    messageName: replyModel.name,
+  });
 }

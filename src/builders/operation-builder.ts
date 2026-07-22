@@ -7,8 +7,12 @@
 
 import { getDoc } from "@typespec/compiler";
 import type { AsyncAPIConsolidatedState } from "../state.js";
-import type { OperationObject } from "../domain/models/asyncapi-document.js";
-import { refChannel } from "../domain/models/asyncapi-document.js";
+import type { OperationObject, OperationReply } from "../domain/models/asyncapi-document.js";
+import {
+  escapeRefToken,
+  ref,
+  refChannel,
+} from "../domain/models/asyncapi-document.js";
 import type { DocumentBuildContext } from "./types.js";
 import { nameOfType } from "./types.js";
 import {
@@ -16,7 +20,7 @@ import {
   registerMessage,
 } from "./channel-builder.js";
 
-/** Build all operations from discovered ops, applying decorators. */
+/** Build all operations from discovered ops, applying decorators and replies. */
 export function buildOperations(
   state: AsyncAPIConsolidatedState,
   ctx: DocumentBuildContext,
@@ -48,6 +52,24 @@ export function buildOperations(
       const bindings = state.protocolBindings.get(opType);
       if (bindings && Object.keys(bindings).length > 0) {
         operationObj.bindings = bindings;
+      }
+
+      const replyData = state.operationReplies.get(opType);
+      if (replyData) {
+        registerMessage(ctx, replyData.messageName, op.channelKey);
+        const reply: OperationReply = {
+          messages: [
+            ref(
+              `#/channels/${escapeRefToken(op.channelKey)}/messages/${escapeRefToken(replyData.messageName)}`,
+            ),
+          ],
+        };
+        if (replyData.address) {
+          reply.address = {
+            location: replyData.address,
+          };
+        }
+        operationObj.reply = reply;
       }
     }
 
