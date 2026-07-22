@@ -112,12 +112,35 @@ const WsRules: Record<string, TargetRules> = {
   },
 };
 
+const GooglePubSubRules: Record<string, TargetRules> = {
+  channel: {
+    messageRetentionDuration: { type: "string" },
+    bindingVersion: { type: "string" },
+  },
+  message: {
+    orderingKey: { type: "string" },
+    bindingVersion: { type: "string" },
+  },
+};
+
+const SnsRules: Record<string, TargetRules> = {
+  channel: {
+    name: { type: "string" },
+    bindingVersion: { type: "string" },
+  },
+  operation: {
+    bindingVersion: { type: "string" },
+  },
+};
+
 const PROTOCOL_RULES: Record<string, Record<string, TargetRules>> = {
   mqtt: MqttRules,
   kafka: KafkaRules,
   amqp: AmqpRules,
   http: HttpRules,
   ws: WsRules,
+  googlepubsub: GooglePubSubRules,
+  sns: SnsRules,
 };
 
 /**

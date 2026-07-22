@@ -26,6 +26,7 @@ const PROTOCOLS = [
   "sqs",
   "stomp",
   "redis",
+  "googlepubsub",
   "mercure",
   "ibmmq",
   "pulsar",

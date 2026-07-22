@@ -13,9 +13,11 @@ import { normalizeProtocol } from "./protocols.js";
 /** Latest binding version for each protocol that has binding definitions. */
 export const LATEST_BINDING_VERSIONS = {
   amqp: "0.3.0",
+  googlepubsub: "0.2.0",
   http: "0.3.0",
   kafka: "0.5.0",
   mqtt: "0.2.0",
+  sns: "0.2.0",
   ws: "0.1.0",
 } as const;
 
@@ -31,9 +33,11 @@ export const VALID_BINDING_VERSIONS: Record<
   readonly string[]
 > = {
   amqp: ["0.3.0"],
+  googlepubsub: ["0.2.0", "0.1.0"],
   http: ["0.3.0", "0.2.0"],
   kafka: ["0.5.0", "0.4.0", "0.3.0"],
   mqtt: ["0.2.0"],
+  sns: ["0.2.0", "0.1.0"],
   ws: ["0.1.0"],
 } as const;
 
@@ -107,9 +111,11 @@ export const BINDING_PLACEMENT: Record<
   Record<BindingTargetKind, boolean>
 > = {
   amqp: { channel: true, message: true, operation: true, server: false },
+  googlepubsub: { channel: true, message: true, operation: false, server: false },
   http: { channel: false, message: true, operation: true, server: false },
   kafka: { channel: true, message: true, operation: true, server: false },
   mqtt: { channel: false, message: true, operation: true, server: true },
+  sns: { channel: true, message: false, operation: true, server: false },
   ws: { channel: true, message: false, operation: false, server: false },
 };
 
