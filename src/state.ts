@@ -81,7 +81,12 @@ export type MqttConfigData = ProtocolConfigBase & {
   protocol: "mqtt" | "mqtt5";
   qos?: 0 | 1 | 2;
   retain?: boolean;
-  lastWill?: { topic: string; message: string; qos: 0 | 1 | 2; retain: boolean };
+  lastWill?: {
+    topic: string;
+    message: string;
+    qos: 0 | 1 | 2;
+    retain: boolean;
+  };
 };
 
 export type GenericProtocolConfigData = ProtocolConfigBase & {

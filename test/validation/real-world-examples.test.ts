@@ -39,7 +39,10 @@ const realWorldDir = join(import.meta.dirname, "..", "..", "examples", "real-wor
 function readExampleSpecs(): { name: string; source: string }[] {
   const files = readdirSync(realWorldDir)
     .filter((f) => f.endsWith(".tsp"))
-    .map((f) => ({ name: f.replace(/\.tsp$/, ""), path: join(realWorldDir, f) }))
+    .map((f) => ({
+      name: f.replace(/\.tsp$/, ""),
+      path: join(realWorldDir, f),
+    }))
     .filter((f) => statSync(f.path).isFile());
 
   return files.map((f) => ({

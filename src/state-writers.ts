@@ -85,7 +85,10 @@ export const storeSecurityConfig = (
   type SecurityConfigEntry = { name: string; scheme: SecurityScheme };
   const map = getStateMap<SecurityConfigEntry[]>(program, stateSymbols.securityConfigs);
   const existing = map.get(target);
-  const newEntry: SecurityConfigEntry = { name: config.name, scheme: config.scheme };
+  const newEntry: SecurityConfigEntry = {
+    name: config.name,
+    scheme: config.scheme,
+  };
   if (Array.isArray(existing)) {
     map.set(target, [...existing, newEntry]);
   } else {
@@ -178,7 +181,11 @@ export const storeProtocolConfig = (
         partitions: (config.partitions as number) ?? 1,
         replicationFactor: (config.replicationFactor as number) ?? 1,
         consumerGroup: (config.consumerGroup as string) ?? "default",
-        sasl: (config.sasl as { mechanism: string; username: string; password: string }) ?? {
+        sasl: (config.sasl as {
+          mechanism: string;
+          username: string;
+          password: string;
+        }) ?? {
           mechanism: "plain",
           username: "",
           password: "",

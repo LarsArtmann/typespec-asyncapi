@@ -2,6 +2,7 @@
 
 **Project:** Transform TypeSpec models into AsyncAPI 3.1 specifications
 **Architecture:** AssetEmitter-based with custom TypeEmitter for schema generation
+
 ---
 
 ## Quick Start

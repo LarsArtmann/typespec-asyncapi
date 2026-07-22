@@ -1,0 +1,21 @@
+{
+  "plugins": ["node", "oxc", "typescript", "unicorn", "vitest"],
+  "categories": {
+    "perf": "warn",
+    "style": "warn",
+    "restriction": "warn",
+    "nursery": "off",
+    "correctness": "error",
+    "suspicious": "error",
+    "pedantic": "warn"
+  },
+  "settings": {
+    "vitest": {
+      "typecheck": false
+    }
+  },
+  "env": {
+    "node": true,
+    "builtin": true
+  }
+}

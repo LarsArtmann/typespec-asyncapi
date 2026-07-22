@@ -41,7 +41,9 @@ describe("Spec Compliance: $ref Chain", () => {
     `);
 
     const operations = doc.operations as Record<string, Record<string, unknown>>;
-    expect(operations.publish.channel).toEqual({ $ref: "#/channels/my.channel" });
+    expect(operations.publish.channel).toEqual({
+      $ref: "#/channels/my.channel",
+    });
   });
 
   it("channel messages reference components/messages", async () => {
@@ -105,7 +107,9 @@ describe("Spec Compliance: $ref Chain", () => {
     const components = doc.components as Record<string, Record<string, Record<string, unknown>>>;
     const cartProps = components.schemas.Cart.properties as Record<string, Record<string, unknown>>;
     expect(cartProps.items.type).toBe("array");
-    expect(cartProps.items.items).toEqual({ $ref: "#/components/schemas/LineItem" });
+    expect(cartProps.items.items).toEqual({
+      $ref: "#/components/schemas/LineItem",
+    });
   });
 
   it("escapes forward slashes in channel addresses in $ref tokens", async () => {

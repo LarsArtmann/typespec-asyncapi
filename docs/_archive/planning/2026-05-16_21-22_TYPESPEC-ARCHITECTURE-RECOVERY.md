@@ -233,17 +233,17 @@ After C07-S38, refactor `src/emitter.ts:133-192` from `Effect.runPromise(Effect.
 ### C11: Make Emitter.ts Emit Full AsyncAPI Document (90min → 10 sub-tasks)
 
 | Sub-ID | Title | Duration | Impact | Effort | CV | File(s):Line | Description | Prerequisites | Status |
-| ------- | ----------------------------------- | -------- | ------ | ------ | --- | ---------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ------------- | ------- | ---- |
+| ------- | ----------------------------------- | -------- | ------ | ------ | --- | ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ------------- | ------- | ---- |
 | C11-S53 | Read serverConfigs state | 9min | 2 | 1 | 2 | `src/emitter.ts:148` | After `consolidateAsyncAPIState`, read `serverConfigs` map from program state. | C01, C02 | OPEN |
 | C11-S54 | Add servers to AsyncAPIDocument | 9min | 2 | 1 | 2 | `src/emitter.ts:20-32` | Add `servers?: Record<string, ServerObject>` to type. | C19 | OPEN |
-| C11-S55 | Read operationTypes state | 9min | 2 | 1 | 2 | `src/emitter.ts:148` | Read `operationTypes` map. Map each operation to AsyncAPI operation with `action: "send"                                            | "receive"`. | C11-S53 | OPEN |
+| C11-S55 | Read operationTypes state | 9min | 2 | 1 | 2 | `src/emitter.ts:148` | Read `operationTypes` map. Map each operation to AsyncAPI operation with `action: "send"                                          | "receive"`. | C11-S53 | OPEN |
 | C11-S56 | Add operations to document | 9min | 2 | 1 | 2 | `src/emitter.ts:20-32` | Add `operations?: Record<string, OperationObject>` to type. Build from operationTypes. | C11-S55 | OPEN |
 | C11-S57 | Read securityConfigs state | 9min | 2 | 1 | 2 | `src/emitter.ts:148` | Read `securityConfigs` map. | C11-S56 | OPEN |
 | C11-S58 | Add securitySchemes to components | 9min | 2 | 1 | 2 | `src/emitter.ts:29-31` | Extend `components` type with `securitySchemes?: Record<string, SecuritySchemeObject>`. | C11-S57 | OPEN |
 | C11-S59 | Read protocolConfigs state | 9min | 2 | 1 | 2 | `src/emitter.ts:148` | Read `protocolConfigs` map for bindings. | C11-S58 | OPEN |
 | C11-S60 | Add protocol bindings to channels | 9min | 2 | 1 | 2 | `src/emitter.ts:51-55` | When building channel object, lookup `protocolConfigs` for target. Add `bindings` property if found. | C11-S59 | OPEN |
 | C11-S61 | Generate $ref patterns for messages | 9min     | 2      | 1      | 2   | `src/emitter.ts:59-70`                   | Link messages in operations via `$ref`to channel messages. Ensure message IDs are properly namespaced under`components.messages`. | C11-S60       | OPEN    |
-| C11-S62 | Integration test for full document  | 9min     | 3      | 1      | 3   | `test/integration/full-document.test.ts`| Compile a spec with`@server`, `@publish`, `@security`, `@protocol`. Assert all sections exist in output. | C11-S61 | OPEN |
+| C11-S62 | Integration test for full document  | 9min     | 3      | 1      | 3   | `test/integration/full-document.test.ts` | Compile a spec with`@server`, `@publish`, `@security`, `@protocol`. Assert all sections exist in output. | C11-S61 | OPEN |
 
 ### C12: Extract Decorators to Domain Modules (90min → 12 sub-tasks)
 

@@ -428,9 +428,17 @@ export async function validateAsyncAPIObjectComprehensive(doc: unknown): Promise
   const d = doc as Record<string, unknown>;
   const errors: Array<{ message: string; keyword: string; path: string }> = [];
   if (typeof d.asyncapi !== "string")
-    errors.push({ message: "Missing asyncapi version", keyword: "required", path: "/asyncapi" });
+    errors.push({
+      message: "Missing asyncapi version",
+      keyword: "required",
+      path: "/asyncapi",
+    });
   if (typeof d.info !== "object")
-    errors.push({ message: "Missing info", keyword: "required", path: "/info" });
+    errors.push({
+      message: "Missing info",
+      keyword: "required",
+      path: "/info",
+    });
   return {
     valid: errors.length === 0,
     errors,
