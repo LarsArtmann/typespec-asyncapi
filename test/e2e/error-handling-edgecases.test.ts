@@ -33,7 +33,7 @@ describe("e2E: Error Handling and Edge Cases", () => {
 		`,
     );
 
-    const program = await host.compile("./main.tsp");
+    await host.compile("./main.tsp");
     const diagnostics = await host.diagnose("./main.tsp", {
       emit: ["@lars-artmann/typespec-asyncapi"],
     });
@@ -48,14 +48,12 @@ describe("e2E: Error Handling and Edge Cases", () => {
 
     expect(asyncApiFile).toBeDefined();
 
-    if (asyncApiFile) {
-      const content = host.fs.get(asyncApiFile) as string;
-      const spec = content.startsWith("{") ? JSON.parse(content) : require("yaml").parse(content);
+    const content1 = host.fs.get(asyncApiFile!) as string;
+    const spec1 = content1.startsWith("{") ? JSON.parse(content1) : require("yaml").parse(content1);
 
-      // Empty model should still generate valid schema
-      expect(spec.components?.schemas?.EmptyMessage).toBeDefined();
-      expect(spec.components.schemas.EmptyMessage.type).toBe("object");
-    }
+    // Empty model should still generate valid schema
+    expect(spec1.components?.schemas?.EmptyMessage).toBeDefined();
+    expect(spec1.components.schemas.EmptyMessage.type).toBe("object");
   });
 
   it("should handle operations without decorators", async () => {
@@ -79,7 +77,7 @@ describe("e2E: Error Handling and Edge Cases", () => {
 		`,
     );
 
-    const program = await host.compile("./main.tsp");
+    await host.compile("./main.tsp");
     const diagnostics = await host.diagnose("./main.tsp", {
       emit: ["@lars-artmann/typespec-asyncapi"],
     });
@@ -151,10 +149,7 @@ describe("e2E: Error Handling and Edge Cases", () => {
 		`,
     );
 
-    const program = await host.compile("./main.tsp");
-    const diagnostics = await host.diagnose("./main.tsp", {
-      emit: ["@lars-artmann/typespec-asyncapi"],
-    });
+    await host.compile("./main.tsp");
 
     const outputFiles = [...host.fs.keys()];
     const asyncApiFile = outputFiles.find(
@@ -163,32 +158,30 @@ describe("e2E: Error Handling and Edge Cases", () => {
 
     expect(asyncApiFile).toBeDefined();
 
-    if (asyncApiFile) {
-      const content = host.fs.get(asyncApiFile) as string;
-      const spec = content.startsWith("{") ? JSON.parse(content) : require("yaml").parse(content);
+    const content3 = host.fs.get(asyncApiFile!) as string;
+    const spec3 = content3.startsWith("{") ? JSON.parse(content3) : require("yaml").parse(content3);
 
-      const schema = spec.components?.schemas?.EdgeCaseMessage;
-      expect(schema).toBeDefined();
+    const schema = spec3.components?.schemas?.EdgeCaseMessage;
+    expect(schema).toBeDefined();
 
-      // Validate numeric types mapped correctly
-      expect(schema.properties.int32Val.type).toBe("integer");
-      expect(schema.properties.float64Val.type).toBe("number");
+    // Validate numeric types mapped correctly
+    expect(schema.properties.int32Val.type).toBe("integer");
+    expect(schema.properties.float64Val.type).toBe("number");
 
-      // Validate date/time types
-      expect(schema.properties.dateTime.type).toBe("string");
-      expect(schema.properties.dateTime.format).toBe("date-time");
+    // Validate date/time types
+    expect(schema.properties.dateTime.type).toBe("string");
+    expect(schema.properties.dateTime.format).toBe("date-time");
 
-      // Validate arrays
-      expect(schema.properties.numbers.type).toBe("array");
-      expect(schema.properties.numbers.items.type).toBe("integer");
+    // Validate arrays
+    expect(schema.properties.numbers.type).toBe("array");
+    expect(schema.properties.numbers.items.type).toBe("integer");
 
-      // Validate unions become enums
-      expect(schema.properties.status.enum).toStrictEqual(["active", "inactive", "pending"]);
+    // Validate unions become enums
+    expect(schema.properties.status.enum).toStrictEqual(["active", "inactive", "pending"]);
 
-      // Validate optional fields
-      expect(schema.required).not.toContain("optionalInt");
-      expect(schema.required).not.toContain("optionalString");
-    }
+    // Validate optional fields
+    expect(schema.required).not.toContain("optionalInt");
+    expect(schema.required).not.toContain("optionalString");
   });
 
   it("should handle deeply recursive structures safely", async () => {
@@ -216,7 +209,7 @@ describe("e2E: Error Handling and Edge Cases", () => {
 		`,
     );
 
-    const program = await host.compile("./main.tsp");
+    await host.compile("./main.tsp");
     const diagnostics = await host.diagnose("./main.tsp", {
       emit: ["@lars-artmann/typespec-asyncapi"],
     });
@@ -262,10 +255,7 @@ describe("e2E: Error Handling and Edge Cases", () => {
 		`,
     );
 
-    const program = await host.compile("./main.tsp");
-    const diagnostics = await host.diagnose("./main.tsp", {
-      emit: ["@lars-artmann/typespec-asyncapi"],
-    });
+    await host.compile("./main.tsp");
 
     const outputFiles = [...host.fs.keys()];
     const asyncApiFile = outputFiles.find(
@@ -274,27 +264,25 @@ describe("e2E: Error Handling and Edge Cases", () => {
 
     expect(asyncApiFile).toBeDefined();
 
-    if (asyncApiFile) {
-      const content = host.fs.get(asyncApiFile) as string;
-      const spec = content.startsWith("{") ? JSON.parse(content) : require("yaml").parse(content);
+    const content5 = host.fs.get(asyncApiFile!) as string;
+    const spec5 = content5.startsWith("{") ? JSON.parse(content5) : require("yaml").parse(content5);
 
-      const schema = spec.components?.schemas?.StrictMessage;
-      expect(schema).toBeDefined();
+    const schema = spec5.components?.schemas?.StrictMessage;
+    expect(schema).toBeDefined();
 
-      // Validate required fields
-      expect(schema.required).toContain("id");
-      expect(schema.required).toContain("timestamp");
-      expect(schema.required).toContain("eventType");
+    // Validate required fields
+    expect(schema.required).toContain("id");
+    expect(schema.required).toContain("timestamp");
+    expect(schema.required).toContain("eventType");
 
-      // Validate optional fields are NOT in required
-      expect(schema.required).not.toContain("description");
-      expect(schema.required).not.toContain("metadata");
-      expect(schema.required).not.toContain("details");
+    // Validate optional fields are NOT in required
+    expect(schema.required).not.toContain("description");
+    expect(schema.required).not.toContain("metadata");
+    expect(schema.required).not.toContain("details");
 
-      // Metadata and details should still have properties defined
-      expect(schema.properties.metadata).toBeDefined();
-      expect(schema.properties.details).toBeDefined();
-    }
+    // Metadata and details should still have properties defined
+    expect(schema.properties.metadata).toBeDefined();
+    expect(schema.properties.details).toBeDefined();
   });
 
   it("should handle missing security gracefully", async () => {
@@ -320,7 +308,7 @@ describe("e2E: Error Handling and Edge Cases", () => {
 		`,
     );
 
-    const program = await host.compile("./main.tsp");
+    await host.compile("./main.tsp");
     const diagnostics = await host.diagnose("./main.tsp", {
       emit: ["@lars-artmann/typespec-asyncapi"],
     });
@@ -335,13 +323,11 @@ describe("e2E: Error Handling and Edge Cases", () => {
 
     expect(asyncApiFile).toBeDefined();
 
-    if (asyncApiFile) {
-      const content = host.fs.get(asyncApiFile) as string;
-      const spec = content.startsWith("{") ? JSON.parse(content) : require("yaml").parse(content);
+    const content6 = host.fs.get(asyncApiFile!) as string;
+    const spec6 = content6.startsWith("{") ? JSON.parse(content6) : require("yaml").parse(content6);
 
-      // Should have valid AsyncAPI without security
-      expect(spec.asyncapi).toBe("3.1.0");
-      expect(spec.channels).toBeDefined();
-    }
+    // Should have valid AsyncAPI without security
+    expect(spec6.asyncapi).toBe("3.1.0");
+    expect(spec6.channels).toBeDefined();
   });
 });

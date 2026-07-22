@@ -2,7 +2,7 @@ import { getMultiState, getStateMap } from "../../src/state-compatibility.js";
 import type { Program } from "@typespec/compiler";
 
 describe("state-compatibility", () => {
-  describe(getStateMap, () => {
+  describe("getStateMap", () => {
     it("should return the state map when program.stateMap is available", () => {
       const mockMap = new Map();
       const program = { stateMap: () => mockMap } as unknown as Program;
@@ -28,7 +28,7 @@ describe("state-compatibility", () => {
     });
   });
 
-  describe(getMultiState, () => {
+  describe("getMultiState", () => {
     it("should convert single values to arrays", () => {
       const typeKey = { kind: "Model" } as never;
       const mockMap = new Map([[typeKey, "single-value"]]);

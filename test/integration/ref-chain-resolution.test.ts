@@ -12,6 +12,10 @@
 
 import { compileAsyncAPIWithoutErrors } from "../utils/test-helpers.js";
 
+function unescapeToken(token: string): string {
+  return token.replaceAll("~1", "/").replaceAll("~0", "~");
+}
+
 const source = `
   model OrderCreated {
     orderId: string;
@@ -120,15 +124,11 @@ describe("$ref Chain Resolution", () => {
     }
     const unresolved: string[] = [];
 
-    function unescapeToken(token: string): string {
-      return token.replaceAll("~1", "/").replaceAll("~0", "~");
-    }
-
-    function resolveRef(ref: string): unknown | null {
-      if (!ref.startsWith("#/")) {
+    function resolveRef(refPath: string): unknown | null {
+      if (!refPath.startsWith("#/")) {
         return null;
       }
-      const parts = ref.slice(2).split("/").map(unescapeToken);
+      const parts = refPath.slice(2).split("/").map(unescapeToken);
       let current: unknown = doc;
       for (const part of parts) {
         if (current && typeof current === "object") {
@@ -183,15 +183,11 @@ describe("$ref Chain Resolution", () => {
     const ref = spec!.operations!.publishOrder.channel.$ref;
     expect(ref).toBe("#/channels/orders~1events");
 
-    function unescapeToken(token: string): string {
-      return token.replaceAll("~1", "/").replaceAll("~0", "~");
-    }
-
-    function resolveByJsonPointer(ref: string): unknown | null {
-      if (!ref.startsWith("#/")) {
+    function resolveByJsonPointer(refPath: string): unknown | null {
+      if (!refPath.startsWith("#/")) {
         return null;
       }
-      const parts = ref.slice(2).split("/").map(unescapeToken);
+      const parts = refPath.slice(2).split("/").map(unescapeToken);
       let current: unknown = spec;
       for (const part of parts) {
         if (current && typeof current === "object") {

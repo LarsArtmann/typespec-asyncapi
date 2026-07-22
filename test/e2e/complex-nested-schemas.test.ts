@@ -166,9 +166,6 @@ describe("e2E: Complex Nested Schemas", () => {
     );
 
     await host.compile("./main.tsp");
-    const diagnostics = await host.diagnose("./main.tsp", {
-      emit: ["@lars-artmann/typespec-asyncapi"],
-    });
 
     const outputFiles = [...host.fs.keys()];
     const asyncApiFile = outputFiles.find(
@@ -177,54 +174,52 @@ describe("e2E: Complex Nested Schemas", () => {
 
     expect(asyncApiFile).toBeDefined();
 
-    if (asyncApiFile) {
-      const content = host.fs.get(asyncApiFile) as string;
-      const spec = content.startsWith("{") ? JSON.parse(content) : require("yaml").parse(content);
+    const content = host.fs.get(asyncApiFile!) as string;
+    const spec = content.startsWith("{") ? JSON.parse(content) : require("yaml").parse(content);
 
-      const schemas = spec.components?.schemas || {};
+    const schemas = spec.components?.schemas || {};
 
-      // Validate deep nesting (5 levels)
-      expect(schemas.UserProfile).toBeDefined();
-      expect(schemas.UserProfile.properties.personalInfo.type).toBe("object");
-      expect(schemas.UserProfile.properties.personalInfo.properties.contact.$ref).toBe(
-        "#/components/schemas/ContactInfo",
-      );
-      expect(schemas.Address).toBeDefined();
+    // Validate deep nesting (5 levels)
+    expect(schemas.UserProfile).toBeDefined();
+    expect(schemas.UserProfile.properties.personalInfo.type).toBe("object");
+    expect(schemas.UserProfile.properties.personalInfo.properties.contact.$ref).toBe(
+      "#/components/schemas/ContactInfo",
+    );
+    expect(schemas.Address).toBeDefined();
 
-      // Validate arrays
-      expect(schemas.Order.properties.items.type).toBe("array");
-      expect(schemas.Order.properties.items.items.type).toBe("object");
-      expect(schemas.ProductVariant.properties.attributes.type).toBe("array");
+    // Validate arrays
+    expect(schemas.Order.properties.items.type).toBe("array");
+    expect(schemas.Order.properties.items.items.type).toBe("object");
+    expect(schemas.ProductVariant.properties.attributes.type).toBe("array");
 
-      // Validate optional fields in nested structures
-      expect(schemas.ContactInfo.properties.phone).toBeDefined();
-      expect(schemas.ContactInfo.required).not.toContain("phone");
+    // Validate optional fields in nested structures
+    expect(schemas.ContactInfo.properties.phone).toBeDefined();
+    expect(schemas.ContactInfo.required).not.toContain("phone");
 
-      // Validate union types in nested structures
-      expect(schemas.ProductVariant.properties.pricing.properties.discount).toBeDefined();
+    // Validate union types in nested structures
+    expect(schemas.ProductVariant.properties.pricing.properties.discount).toBeDefined();
 
-      // Validate enums from union types
-      expect(schemas.Order.properties.shipping.properties.method.enum).toStrictEqual([
-        "standard",
-        "express",
-        "overnight",
-      ]);
-      expect(schemas.UserEventPayload.properties.eventType.enum).toStrictEqual([
-        "created",
-        "updated",
-        "deleted",
-      ]);
+    // Validate enums from union types
+    expect(schemas.Order.properties.shipping.properties.method.enum).toStrictEqual([
+      "standard",
+      "express",
+      "overnight",
+    ]);
+    expect(schemas.UserEventPayload.properties.eventType.enum).toStrictEqual([
+      "created",
+      "updated",
+      "deleted",
+    ]);
 
-      // Validate all required schemas exist
-      expect(schemas.Address).toBeDefined();
-      expect(schemas.ContactInfo).toBeDefined();
-      expect(schemas.EmploymentHistory).toBeDefined();
-      expect(schemas.UserProfile).toBeDefined();
-      expect(schemas.ProductVariant).toBeDefined();
-      expect(schemas.Order).toBeDefined();
+    // Validate all required schemas exist
+    expect(schemas.Address).toBeDefined();
+    expect(schemas.ContactInfo).toBeDefined();
+    expect(schemas.EmploymentHistory).toBeDefined();
+    expect(schemas.UserProfile).toBeDefined();
+    expect(schemas.ProductVariant).toBeDefined();
+    expect(schemas.Order).toBeDefined();
 
-      // Validate operations
-      expect(Object.keys(spec.operations || {}).length).toBeGreaterThanOrEqual(3);
-    }
+    // Validate operations
+    expect(Object.keys(spec.operations || {}).length).toBeGreaterThanOrEqual(3);
   });
 });

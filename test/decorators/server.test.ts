@@ -243,13 +243,12 @@ describe("@server decorator", () => {
       expect(outputFiles.size).toBeGreaterThan(0);
 
       const outputFile = outputFiles.get("/minimal-server.json");
-      if (outputFile) {
-        const asyncapiDoc = JSON.parse(outputFile.content);
-        expect(asyncapiDoc.servers).toBeDefined();
-        expect(asyncapiDoc.servers.minimal).toBeDefined();
-        expect(asyncapiDoc.servers.minimal.url).toBe("kafka://broker:9092");
-        expect(asyncapiDoc.servers.minimal.protocol).toBe("kafka");
-      }
+      expect(outputFile).toBeDefined();
+      const asyncapiDoc = JSON.parse(outputFile!.content);
+      expect(asyncapiDoc.servers).toBeDefined();
+      expect(asyncapiDoc.servers.minimal).toBeDefined();
+      expect(asyncapiDoc.servers.minimal.url).toBe("kafka://broker:9092");
+      expect(asyncapiDoc.servers.minimal.protocol).toBe("kafka");
     });
 
     it("should preserve server descriptions", async () => {
@@ -276,11 +275,10 @@ describe("@server decorator", () => {
       expect(errors).toHaveLength(0);
 
       const outputFile = outputFiles.get("/documented-server.json");
-      if (outputFile) {
-        const asyncapiDoc = JSON.parse(outputFile.content);
-        const server = asyncapiDoc.servers?.documented;
-        expect(server?.description).toBe("Main production Kafka cluster with high availability");
-      }
+      expect(outputFile).toBeDefined();
+      const asyncapiDoc = JSON.parse(outputFile!.content);
+      const server = asyncapiDoc.servers?.documented;
+      expect(server?.description).toBe("Main production Kafka cluster with high availability");
     });
   });
 
@@ -324,19 +322,18 @@ describe("@server decorator", () => {
       expect(outputFiles.size).toBeGreaterThan(0);
 
       const outputFile = outputFiles.get("/integration-test.json");
-      if (outputFile) {
-        const asyncapiDoc = JSON.parse(outputFile.content);
+      expect(outputFile).toBeDefined();
+      const asyncapiDoc = JSON.parse(outputFile!.content);
 
-        // Validate server configuration
-        expect(asyncapiDoc.servers?.integration).toBeDefined();
-        expect(asyncapiDoc.servers.integration.protocol).toBe("kafka");
+      // Validate server configuration
+      expect(asyncapiDoc.servers?.integration).toBeDefined();
+      expect(asyncapiDoc.servers.integration.protocol).toBe("kafka");
 
-        // Validate channels are present
-        expect(asyncapiDoc.channels).toBeDefined();
+      // Validate channels are present
+      expect(asyncapiDoc.channels).toBeDefined();
 
-        // Should have operations defined
-        expect(asyncapiDoc.operations || asyncapiDoc.channels).toBeDefined();
-      }
+      // Should have operations defined
+      expect(asyncapiDoc.operations || asyncapiDoc.channels).toBeDefined();
     });
   });
 

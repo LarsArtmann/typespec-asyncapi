@@ -90,14 +90,9 @@ describe("emitterTester API Verification", () => {
     `;
 
     // Should either throw or return error diagnostics
-    try {
-      const result = await compileAsyncAPIWithoutErrors(invalidSource);
-      // If it didn't throw, check for error diagnostics
-      const errors = result.diagnostics.filter((d: any) => d.severity === "error");
-      expect(errors.length).toBeGreaterThanOrEqual(0);
-    } catch (error) {
-      expect(error).toBeInstanceOf(Error);
-    }
+    const result = await compileAsyncAPIWithoutErrors(invalidSource);
+    const errors = result.diagnostics.filter((d: any) => d.severity === "error");
+    expect(errors.length).toBeGreaterThanOrEqual(0);
   });
 
   it("cRITICAL: should pass options to emitter (OPTIONS PASSING VERIFICATION)", async () => {

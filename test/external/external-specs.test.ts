@@ -50,9 +50,8 @@ describe("external Spec Compilation — Branded Types & Scalar Inheritance", () 
 
     expect(asyncApiDoc).toBeDefined();
     const schemas = (asyncApiDoc?.components?.schemas ?? {}) as Record<string, any>;
-    if (schemas.Event) {
-      expect(schemas.Event.type).toBe("object");
-    }
+    expect(schemas.Event).toBeDefined();
+    expect(schemas.Event.type).toBe("object");
   });
 
   it("should handle model spread (eventsourcing BrandedId pattern)", async () => {
@@ -159,9 +158,8 @@ describe("external Spec Compilation — Complex Inheritance & Nesting", () => {
 
     expect(asyncApiDoc).toBeDefined();
     const schemas = (asyncApiDoc?.components?.schemas ?? {}) as Record<string, any>;
-    if (schemas.CampaignCreatedEvent) {
-      expect(schemas.CampaignCreatedEvent.type).toBe("object");
-    }
+    expect(schemas.CampaignCreatedEvent).toBeDefined();
+    expect(schemas.CampaignCreatedEvent.type).toBe("object");
   });
 
   it("should handle deeply nested anonymous models (ActaFlow pattern)", async () => {
@@ -202,9 +200,8 @@ describe("external Spec Compilation — Complex Inheritance & Nesting", () => {
 
     expect(asyncApiDoc).toBeDefined();
     const schemas = (asyncApiDoc?.components?.schemas ?? {}) as Record<string, any>;
-    if (schemas.Workflow) {
-      expect(schemas.Workflow.type).toBe("object");
-    }
+    expect(schemas.Workflow).toBeDefined();
+    expect(schemas.Workflow.type).toBe("object");
   });
 
   it("should handle Record types (eventsourcing Record<unknown> pattern)", async () => {
@@ -233,9 +230,8 @@ describe("external Spec Compilation — Complex Inheritance & Nesting", () => {
 
     expect(asyncApiDoc).toBeDefined();
     const schemas = (asyncApiDoc?.components?.schemas ?? {}) as Record<string, any>;
-    if (schemas.Command) {
-      expect(schemas.Command.type).toBe("object");
-    }
+    expect(schemas.Command).toBeDefined();
+    expect(schemas.Command.type).toBe("object");
   });
 });
 
@@ -278,10 +274,9 @@ describe("external Spec Compilation — Enums & Unions", () => {
 
     expect(asyncApiDoc).toBeDefined();
     const schemas = (asyncApiDoc?.components?.schemas ?? {}) as Record<string, any>;
-    if (schemas.ActorType) {
-      expect(schemas.ActorType.enum).toBeDefined();
-      expect(schemas.ActorType.enum.length).toBeGreaterThan(0);
-    }
+    expect(schemas.ActorType).toBeDefined();
+    expect(schemas.ActorType.enum).toBeDefined();
+    expect(schemas.ActorType.enum.length).toBeGreaterThan(0);
   });
 
   it("should handle discriminated unions (eventsourcing result pattern)", async () => {
@@ -463,12 +458,9 @@ describe("external Spec Compilation — Edge Cases from Real Specs", () => {
 
     expect(asyncApiDoc).toBeDefined();
     const schemas = (asyncApiDoc?.components?.schemas ?? {}) as Record<string, any>;
-    if (schemas.Order?.properties?.items) {
-      const itemsProp = schemas.Order.properties.items;
-      if (itemsProp.items?.$ref) {
-        expect(itemsProp.items.$ref).toContain("Item");
-      }
-    }
+    expect(schemas.Order?.properties?.items).toBeDefined();
+    const itemsProp = schemas.Order.properties.items;
+    expect(itemsProp.items?.$ref).toContain("Item");
   });
 
   it("should handle models with default values (Kernovia BaseCommand pattern)", async () => {
@@ -553,10 +545,9 @@ describe("external Spec Compilation — Failure Resilience", () => {
 
     expect(asyncApiDoc).toBeDefined();
     const schemas = (asyncApiDoc?.components?.schemas ?? {}) as Record<string, any>;
-    if (schemas.LargeModel?.properties) {
-      const propCount = Object.keys(schemas.LargeModel.properties).length;
-      expect(propCount).toBe(50);
-    }
+    expect(schemas.LargeModel?.properties).toBeDefined();
+    const propCount = Object.keys(schemas.LargeModel.properties).length;
+    expect(propCount).toBe(50);
   });
 
   it("should produce diagnostics array on raw compilation (not crash)", async () => {

@@ -160,49 +160,47 @@ describe("e2E: Multi-Protocol Comprehensive Test", () => {
 
     expect(asyncApiFile).toBeDefined();
 
-    if (asyncApiFile) {
-      const content = host.fs.get(asyncApiFile) as string;
-      const spec = content.startsWith("{") ? JSON.parse(content) : require("yaml").parse(content);
+    const content = host.fs.get(asyncApiFile!) as string;
+    const spec = content.startsWith("{") ? JSON.parse(content) : require("yaml").parse(content);
 
-      // Validate AsyncAPI 3.1
-      expect(spec.asyncapi).toBe("3.1.0");
+    // Validate AsyncAPI 3.1
+    expect(spec.asyncapi).toBe("3.1.0");
 
-      // Validate all 4 channels exist
-      expect(Object.keys(spec.channels || {}).length).toBeGreaterThanOrEqual(4);
+    // Validate all 4 channels exist
+    expect(Object.keys(spec.channels || {}).length).toBeGreaterThanOrEqual(4);
 
-      // Validate all 4 operations exist
-      expect(Object.keys(spec.operations || {}).length).toBeGreaterThanOrEqual(4);
+    // Validate all 4 operations exist
+    expect(Object.keys(spec.operations || {}).length).toBeGreaterThanOrEqual(4);
 
-      // Validate all 4 message schemas exist
-      const schemas = spec.components?.schemas || {};
-      expect(schemas.UserCreatedEvent).toBeDefined();
-      expect(schemas.LiveNotification).toBeDefined();
-      expect(schemas.WebhookPayload).toBeDefined();
-      expect(schemas.DeviceStatus).toBeDefined();
+    // Validate all 4 message schemas exist
+    const schemas = spec.components?.schemas || {};
+    expect(schemas.UserCreatedEvent).toBeDefined();
+    expect(schemas.LiveNotification).toBeDefined();
+    expect(schemas.WebhookPayload).toBeDefined();
+    expect(schemas.DeviceStatus).toBeDefined();
 
-      // Validate union types are converted to enums
-      expect(schemas.UserCreatedEvent.properties.accountType.enum).toStrictEqual([
-        "free",
-        "premium",
-        "enterprise",
-      ]);
-      expect(schemas.DeviceStatus.properties.status.enum).toStrictEqual([
-        "online",
-        "offline",
-        "error",
-      ]);
+    // Validate union types are converted to enums
+    expect(schemas.UserCreatedEvent.properties.accountType.enum).toStrictEqual([
+      "free",
+      "premium",
+      "enterprise",
+    ]);
+    expect(schemas.DeviceStatus.properties.status.enum).toStrictEqual([
+      "online",
+      "offline",
+      "error",
+    ]);
 
-      // Validate optional fields
-      expect(schemas.DeviceStatus.properties.batteryLevel).toBeDefined();
-      expect(schemas.DeviceStatus.required).not.toContain("batteryLevel");
+    // Validate optional fields
+    expect(schemas.DeviceStatus.properties.batteryLevel).toBeDefined();
+    expect(schemas.DeviceStatus.required).not.toContain("batteryLevel");
 
-      // Validate nested objects
-      expect(schemas.DeviceStatus.properties.location.type).toBe("object");
-      expect(schemas.WebhookPayload.properties.data.type).toBe("object");
+    // Validate nested objects
+    expect(schemas.DeviceStatus.properties.location.type).toBe("object");
+    expect(schemas.WebhookPayload.properties.data.type).toBe("object");
 
-      // Validate security schemes (all 4 different auth types)
-      const securitySchemes = spec.components?.securitySchemes || {};
-      expect(Object.keys(securitySchemes).length).toBeGreaterThanOrEqual(3);
-    }
+    // Validate security schemes (all 4 different auth types)
+    const securitySchemes = spec.components?.securitySchemes || {};
+    expect(Object.keys(securitySchemes).length).toBeGreaterThanOrEqual(3);
   });
 });

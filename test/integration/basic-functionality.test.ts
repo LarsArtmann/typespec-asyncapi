@@ -12,12 +12,12 @@
 
 import { compileAsyncAPISpecWithoutErrors, parseAsyncAPIOutput } from "../utils/test-helpers";
 
-describe("asyncAPI Basic Functionality", () => {
-  async function compileAndParse(source: string) {
-    const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
-    return await parseAsyncAPIOutput(outputFiles);
-  }
+async function compileAndParse(source: string) {
+  const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
+  return await parseAsyncAPIOutput(outputFiles);
+}
 
+describe("asyncAPI Basic Functionality", () => {
   it("should compile simple TypeSpec to AsyncAPI using @channel decorator", async () => {
     const source = `
       namespace BasicTest;

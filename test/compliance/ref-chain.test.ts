@@ -149,10 +149,8 @@ describe("spec Compliance: $ref Chain", () => {
 
     for (const ref of refValues) {
       expect(ref).toMatch(refPattern);
-      if (ref.includes("components/schemas/")) {
-        const components = doc.components as Record<string, Record<string, unknown>>;
-        expect(components.schemas).toBeDefined();
-      }
+      const components = doc.components as Record<string, Record<string, unknown>>;
+      expect(components.schemas).toBeDefined();
     }
   });
 

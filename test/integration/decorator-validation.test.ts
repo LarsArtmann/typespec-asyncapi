@@ -56,13 +56,10 @@ describe("asyncAPI Decorator Validation", () => {
       });
 
       // Should have diagnostics for invalid channels but not for valid ones
-      const _channelErrors = diagnostics.filter(
+      const channelErrors = diagnostics.filter(
         (d) => d.code === "@lars-artmann/typespec-asyncapi/invalid-channel-path",
       );
-
-      // Note: The exact validation depends on implementation
-      // This test structure shows how to validate decorator constraints
-      expect(diagnostics.filter((d) => d.severity === "error").length).toBeGreaterThanOrEqual(0);
+      expect(channelErrors).toBeDefined();
     });
 
     it("should require @channel decorator for operations", async () => {
@@ -84,12 +81,10 @@ describe("asyncAPI Decorator Validation", () => {
       });
 
       // Check for missing channel diagnostic
-      const _missingChannelErrors = diagnostics.filter(
+      const missingChannelErrors = diagnostics.filter(
         (d) => d.code === "@lars-artmann/typespec-asyncapi/missing-channel-path",
       );
-
-      // Structure shows validation - actual behavior depends on decorator implementation
-      expect(diagnostics).toBeDefined();
+      expect(missingChannelErrors).toBeDefined();
     });
   });
 
@@ -147,12 +142,10 @@ describe("asyncAPI Decorator Validation", () => {
       });
 
       // Should detect the conflict
-      const _conflictErrors = diagnostics.filter(
+      const conflictErrors = diagnostics.filter(
         (d) => d.code === "@lars-artmann/typespec-asyncapi/conflicting-operation-type",
       );
-
-      // The test structure shows how to validate - actual implementation may vary
-      expect(diagnostics.length).toBeGreaterThanOrEqual(0);
+      expect(conflictErrors).toBeDefined();
     });
   });
 
@@ -203,13 +196,12 @@ describe("asyncAPI Decorator Validation", () => {
       expect(outputFiles.size).toBeGreaterThan(0);
 
       const outputFile = outputFiles.get("/model-validation.json");
-      if (outputFile) {
-        const asyncapiDoc = JSON.parse(outputFile.content);
-        const schema = asyncapiDoc.components?.schemas?.CompleteEvent;
-        expect(schema).toBeDefined();
-        expect(schema.properties).toBeDefined();
-        expect(schema.required).toBeDefined();
-      }
+      expect(outputFile).toBeDefined();
+      const asyncapiDoc = JSON.parse(outputFile!.content);
+      const schema = asyncapiDoc.components?.schemas?.CompleteEvent;
+      expect(schema).toBeDefined();
+      expect(schema.properties).toBeDefined();
+      expect(schema.required).toBeDefined();
     });
 
     it("should handle recursive models appropriately", async () => {
@@ -226,20 +218,18 @@ describe("asyncAPI Decorator Validation", () => {
         op publishTreeEvent(): TreeNode;
       `;
 
-      const { diagnostics, outputFiles } = await compileAsyncAPISpec(source, {
+      const { diagnostics } = await compileAsyncAPISpec(source, {
         "file-type": "json",
         "output-file": "recursive-test",
       });
 
       // Recursive models should not cause infinite loops
-      const _errors = diagnostics.filter((d) => d.severity === "error");
-      const _circularErrors = diagnostics.filter(
+      const errors = diagnostics.filter((d) => d.severity === "error");
+      expect(errors).toBeDefined();
+      const circularErrors = diagnostics.filter(
         (d) => d.code === "@lars-artmann/typespec-asyncapi/circular-message-reference",
       );
-
-      // Test structure - actual behavior depends on implementation
-      expect(diagnostics).toBeDefined();
-      expect(outputFiles.size).toBeGreaterThanOrEqual(0);
+      expect(circularErrors).toBeDefined();
     });
   });
 
@@ -278,29 +268,24 @@ describe("asyncAPI Decorator Validation", () => {
       expect(errors).toHaveLength(0);
 
       const outputFile = outputFiles.get("/doc-validation.json");
-      if (outputFile) {
-        const asyncapiDoc = JSON.parse(outputFile.content);
+      expect(outputFile).toBeDefined();
+      const asyncapiDoc = JSON.parse(outputFile!.content);
 
-        // Validate documentation preservation
-        const schema = asyncapiDoc.components?.schemas?.DocumentedEvent;
-        expect(schema?.description).toContain("Event model with comprehensive documentation");
+      // Validate documentation preservation
+      const schema = asyncapiDoc.components?.schemas?.DocumentedEvent;
+      expect(schema?.description).toContain("Event model with comprehensive documentation");
+      expect(schema?.properties).toBeDefined();
+      expect(schema!.properties!.id?.description).toContain("Unique event identifier");
+      expect(schema!.properties!.name?.description).toContain("Human-readable event name");
+      expect(schema!.properties!.createdAt?.description).toContain("Event creation timestamp");
 
-        if (schema?.properties) {
-          expect(schema.properties.id?.description).toContain("Unique event identifier");
-          expect(schema.properties.name?.description).toContain("Human-readable event name");
-          expect(schema.properties.createdAt?.description).toContain("Event creation timestamp");
-        }
-
-        // Validate channel documentation
-        const { channels } = asyncapiDoc;
-        if (channels) {
-          const channelKeys = Object.keys(channels);
-          expect(channelKeys.length).toBeGreaterThan(0);
-
-          const firstChannel = channels[channelKeys[0]];
-          expect(firstChannel?.description).toContain("Channel for publishing");
-        }
-      }
+      // Validate channel documentation
+      const { channels } = asyncapiDoc;
+      expect(channels).toBeDefined();
+      const channelKeys = Object.keys(channels!);
+      expect(channelKeys.length).toBeGreaterThan(0);
+      const firstChannel = channels![channelKeys[0]];
+      expect(firstChannel?.description).toContain("Channel for publishing");
     });
   });
 

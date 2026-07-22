@@ -17,7 +17,7 @@ import { processBindings } from "../../src/validation/binding-validator.js";
 // SupportsBindingPlacement
 // ============================================================================
 
-describe(supportsBindingPlacement, () => {
+describe("supportsBindingPlacement", () => {
   describe("kafka", () => {
     it("supports channel bindings", () => {
       expect(supportsBindingPlacement("kafka", "channel")).toBeTruthy();
@@ -97,7 +97,7 @@ describe(supportsBindingPlacement, () => {
 // GetValidPlacements
 // ============================================================================
 
-describe(getValidPlacements, () => {
+describe("getValidPlacements", () => {
   it("returns all valid placements for Kafka", () => {
     const placements = getValidPlacements("kafka");
     expect(placements).toContain("channel");

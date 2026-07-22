@@ -14,7 +14,7 @@
 
 import Ajv from "ajv";
 import { readFileSync, readdirSync, statSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { join } from "node:path";
 import { compileAsyncAPI } from "../utils/test-helpers.js";
 
 const asyncApiSchema = JSON.parse(
@@ -58,12 +58,9 @@ function findTspFiles(
 const exampleFiles = findTspFiles(examplesRoot);
 
 describe("all Example Files → AsyncAPI 3.1 Validation", () => {
-  if (exampleFiles.length === 0) {
-    it("should find at least one example file", () => {
-      expect(exampleFiles.length).toBeGreaterThan(0);
-    });
-    return;
-  }
+  it("should find at least one example file", () => {
+    expect(exampleFiles.length).toBeGreaterThan(0);
+  });
 
   for (const file of exampleFiles) {
     const source = readFileSync(file.path, "utf8");

@@ -31,6 +31,54 @@ import {
 } from "../utils/test-helpers.js";
 //TODO: this file is getting to big split it up
 
+function generateLargeTypeSpecSource(): string {
+  const models = [];
+  const operations = [];
+
+  for (let i = 1; i <= 20; i++) {
+    models.push(`
+            @doc("Generated model ${i}")
+            model GeneratedModel${i} {
+              @doc("Model ${i} ID")
+              id${i}: string;
+              
+              @doc("Model ${i} name")
+              name${i}: string;
+              
+              @doc("Model ${i} timestamp")
+              timestamp${i}: utcDateTime;
+              
+              @doc("Model ${i} data")
+              data${i}: {
+                value: int32;
+                label: string;
+                active: boolean;
+                metadata: Record<string>;
+              };
+              
+              @doc("Model ${i} status")
+              status${i}: "pending" | "active" | "inactive" | "archived";
+            }
+          `);
+
+    operations.push(`
+            @channel("generated.model${i}.events")
+            @publish
+            op publishGeneratedModel${i}Event(): GeneratedModel${i};
+            
+            @channel("generated.model${i}.subscribe")
+            @subscribe
+            op subscribeGeneratedModel${i}Events(): GeneratedModel${i};
+          `);
+  }
+
+  return `
+          namespace LargeScaleTest;
+          ${models.join("\n")}
+          ${operations.join("\n")}
+        `;
+}
+
 describe("real AsyncAPI Generation Tests", () => {
   describe("complete TypeSpec → AsyncAPI Transformation", () => {
     it("should transform complex TypeSpec namespace to valid AsyncAPI document", async () => {
@@ -698,57 +746,6 @@ describe("real AsyncAPI Generation Tests", () => {
 
   describe("performance and Scale Testing", () => {
     it("should generate large AsyncAPI document efficiently", async () => {
-      // Generate a large TypeSpec source with many models and operations
-      const generateLargeTypeSpecSource = (): string => {
-        const models = [];
-        const operations = [];
-
-        // Generate 20 models with multiple properties each
-        for (let i = 1; i <= 20; i++) {
-          models.push(`
-            @doc("Generated model ${i}")
-            model GeneratedModel${i} {
-              @doc("Model ${i} ID")
-              id${i}: string;
-              
-              @doc("Model ${i} name")
-              name${i}: string;
-              
-              @doc("Model ${i} timestamp")
-              timestamp${i}: utcDateTime;
-              
-              @doc("Model ${i} data")
-              data${i}: {
-                value: int32;
-                label: string;
-                active: boolean;
-                metadata: Record<string>;
-              };
-              
-              @doc("Model ${i} status")
-              status${i}: "pending" | "active" | "inactive" | "archived";
-            }
-          `);
-
-          // Generate publish and subscribe operations for each model
-          operations.push(`
-            @channel("generated.model${i}.events")
-            @publish
-            op publishGeneratedModel${i}Event(): GeneratedModel${i};
-            
-            @channel("generated.model${i}.subscribe")
-            @subscribe
-            op subscribeGeneratedModel${i}Events(): GeneratedModel${i};
-          `);
-        }
-
-        return `
-          namespace LargeScaleTest;
-          ${models.join("\n")}
-          ${operations.join("\n")}
-        `;
-      };
-
       const startTime = Date.now();
       const largeSource = generateLargeTypeSpecSource();
 

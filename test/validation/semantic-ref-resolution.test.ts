@@ -16,7 +16,7 @@
  */
 
 import { readFileSync, readdirSync, statSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { join } from "node:path";
 import { compileAsyncAPI } from "../utils/test-helpers.js";
 
 const examplesRoot = join(import.meta.dirname, "..", "..", "examples");
@@ -118,7 +118,7 @@ describe("semantic Validation: $ref Resolution", () => {
       const componentMessages = doc.components?.messages ?? {};
       const componentSchemas = doc.components?.schemas ?? {};
 
-      for (const [opName, op] of Object.entries<any>(operations)) {
+      for (const [, op] of Object.entries<any>(operations)) {
         // Operation must reference a channel
         const channelRef = op?.channel?.$ref;
         expect(channelRef).toMatch(/^#\/channels\//);
@@ -146,11 +146,9 @@ describe("semantic Validation: $ref Resolution", () => {
       // Component message payloads must reference schemas
       for (const [, msg] of Object.entries<any>(componentMessages)) {
         const payloadRef = msg?.payload?.$ref;
-        if (payloadRef) {
-          expect(payloadRef).toMatch(/^#\/components\/schemas\//);
-          const schemaId = unescapeRefToken(payloadRef.replace("#/components/schemas/", ""));
-          expect(componentSchemas[schemaId]).toBeDefined();
-        }
+        expect(payloadRef).toMatch(/^#\/components\/schemas\//);
+        const schemaId = unescapeRefToken(payloadRef.replace("#/components/schemas/", ""));
+        expect(componentSchemas[schemaId]).toBeDefined();
       }
     });
   }

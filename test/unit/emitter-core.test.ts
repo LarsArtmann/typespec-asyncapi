@@ -187,13 +187,12 @@ describe("asyncAPI Emitter Core (NEW API)", () => {
 
       const asyncapiDoc = result.asyncApiDoc;
 
-      if (AsyncAPIAssertions.hasSchema(asyncapiDoc, "TestModel")) {
-        const schema = asyncapiDoc.components.schemas.TestModel;
+      expect(AsyncAPIAssertions.hasSchema(asyncapiDoc, "TestModel")).toBe(true);
+      const schema = asyncapiDoc.components.schemas.TestModel;
 
-        expect(schema.required).toContain("requiredField");
-        expect(schema.required).toContain("alsoRequired");
-        expect(schema.required).not.toContain("optionalField");
-      }
+      expect(schema.required).toContain("requiredField");
+      expect(schema.required).toContain("alsoRequired");
+      expect(schema.required).not.toContain("optionalField");
     });
 
     it("should handle union types", async () => {
@@ -247,19 +246,16 @@ describe("asyncAPI Emitter Core (NEW API)", () => {
 
       const asyncapiDoc = result.asyncApiDoc;
 
-      if (AsyncAPIAssertions.hasSchema(asyncapiDoc, "TimedEvent")) {
-        const schema = asyncapiDoc.components.schemas.TimedEvent;
+      expect(AsyncAPIAssertions.hasSchema(asyncapiDoc, "TimedEvent")).toBe(true);
+      const schema = asyncapiDoc.components.schemas.TimedEvent;
 
-        if (schema?.properties?.createdAt) {
-          expect(schema.properties.createdAt.type).toBe("string");
-          expect(schema.properties.createdAt.format).toBe("date-time");
-        }
+      expect(schema?.properties?.createdAt).toBeDefined();
+      expect(schema!.properties!.createdAt.type).toBe("string");
+      expect(schema!.properties!.createdAt.format).toBe("date-time");
 
-        if (schema?.properties?.updatedAt) {
-          expect(schema.properties.updatedAt.type).toBe("string");
-          expect(schema.properties.updatedAt.format).toBe("date-time");
-        }
-      }
+      expect(schema?.properties?.updatedAt).toBeDefined();
+      expect(schema!.properties!.updatedAt.type).toBe("string");
+      expect(schema!.properties!.updatedAt.format).toBe("date-time");
     });
   });
 
