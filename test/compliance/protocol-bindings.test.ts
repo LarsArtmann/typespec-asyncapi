@@ -13,33 +13,35 @@
 import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
 import { compileAsyncAPISpecWithoutErrors } from "../utils/test-helpers.js";
 import { parse as parseYAML } from "yaml";
+import type {
+  MessageObject,
+  OperationObject,
+  ParsedAsyncAPIDocument,
+  ProtocolBindings,
+} from "../../src/domain/models/asyncapi-document.js";
 
 async function compileAndGetDoc(
   source: string,
-): Promise<Record<string, unknown>> {
+): Promise<ParsedAsyncAPIDocument> {
   const result = await compileAsyncAPISpecWithoutErrors(source);
   for (const [, content] of result.outputFiles) {
     if (typeof content === "string" && content.startsWith("asyncapi")) {
-      return parseYAML(content);
+      return parseYAML(content) as ParsedAsyncAPIDocument;
     }
   }
   throw new Error("No AsyncAPI output found");
 }
 
-function getOp(doc: Record<string, unknown>): Record<string, unknown> {
-  const operations = doc.operations as Record<string, Record<string, unknown>>;
-  return Object.values(operations)[0];
+function getOp(doc: ParsedAsyncAPIDocument): OperationObject {
+  return Object.values(doc.operations!)[0];
 }
 
 function getMsgBindings(
-  doc: Record<string, unknown>,
+  doc: ParsedAsyncAPIDocument,
   name: string,
-): Record<string, unknown> {
-  const components = doc.components as Record<
-    string,
-    Record<string, Record<string, unknown>>
-  >;
-  return components.messages[name].bindings as Record<string, unknown>;
+): ProtocolBindings {
+  const msg = doc.components!.messages![name] as MessageObject;
+  return msg.bindings!;
 }
 
 // ============================================================================
@@ -63,11 +65,7 @@ describe("spec Compliance: Kafka Bindings", () => {
       op publish(): Event;
     `);
 
-    const channels = doc.channels as Record<string, Record<string, unknown>>;
-    const binding = channels["events"].bindings as Record<
-      string,
-      Record<string, unknown>
-    >;
+    const binding = doc.channels!["events"].bindings!;
     expect(binding.kafka).toBeDefined();
     expect(binding.kafka.topic).toBe("events-topic");
     expect(binding.kafka.partitions).toBe(3);
@@ -87,11 +85,7 @@ describe("spec Compliance: Kafka Bindings", () => {
       op publish(): Event;
     `);
 
-    const channels = doc.channels as Record<string, Record<string, unknown>>;
-    const binding = channels["events"].bindings as Record<
-      string,
-      Record<string, unknown>
-    >;
+    const binding = doc.channels!["events"].bindings!;
     expect(binding.kafka.bindingVersion).toBe("0.5.0");
   });
 
@@ -110,7 +104,7 @@ describe("spec Compliance: Kafka Bindings", () => {
     `);
 
     const op = getOp(doc);
-    const binding = op.bindings as Record<string, Record<string, unknown>>;
+    const binding = op.bindings!;
     expect(binding.kafka).toBeDefined();
     expect(binding.kafka.groupId).toBeDefined();
     expect(binding.kafka.clientId).toBeDefined();
@@ -132,7 +126,7 @@ describe("spec Compliance: Kafka Bindings", () => {
     `);
 
     const binding = getMsgBindings(doc, "OrderEvent");
-    const kafka = binding.kafka as Record<string, unknown>;
+    const { kafka } = binding;
     expect(kafka).toBeDefined();
     expect(kafka.schemaIdLocation).toBe("header");
     expect(kafka.bindingVersion).toBe("0.5.0");
@@ -153,7 +147,7 @@ describe("spec Compliance: Kafka Bindings", () => {
     `);
 
     const op = getOp(doc);
-    const binding = op.bindings as Record<string, Record<string, unknown>>;
+    const binding = op.bindings!;
     expect(binding.kafka.bindingVersion).toBe("0.4.0");
   });
 });
@@ -180,7 +174,7 @@ describe("spec Compliance: AMQP Bindings", () => {
     `);
 
     const op = getOp(doc);
-    const binding = op.bindings as Record<string, Record<string, unknown>>;
+    const binding = op.bindings!;
     expect(binding.amqp).toBeDefined();
     expect(binding.amqp.priority).toBe(5);
     expect(binding.amqp.deliveryMode).toBe(2);
@@ -202,7 +196,7 @@ describe("spec Compliance: AMQP Bindings", () => {
     `);
 
     const binding = getMsgBindings(doc, "AmqpEvent");
-    const amqp = binding.amqp as Record<string, unknown>;
+    const { amqp } = binding;
     expect(amqp).toBeDefined();
     expect(amqp.contentEncoding).toBe("application/octet-stream");
     expect(amqp.bindingVersion).toBe("0.3.0");
@@ -229,7 +223,7 @@ describe("spec Compliance: MQTT Bindings", () => {
     `);
 
     const op = getOp(doc);
-    const binding = op.bindings as Record<string, Record<string, unknown>>;
+    const binding = op.bindings!;
     expect(binding.mqtt).toBeDefined();
     expect(binding.mqtt.qos).toBe(2);
     expect(binding.mqtt.retain).toBeTruthy();
@@ -248,8 +242,7 @@ describe("spec Compliance: MQTT Bindings", () => {
       op publish(): Event;
     `);
 
-    const servers = doc.servers as Record<string, Record<string, unknown>>;
-    expect(servers["mqtt-broker"].protocol).toBe("mqtt");
+    expect(doc.servers!["mqtt-broker"].protocol).toBe("mqtt");
   });
 
   it("emits QoS 0 for fire-and-forget pattern", async () => {
@@ -264,7 +257,7 @@ describe("spec Compliance: MQTT Bindings", () => {
     `);
 
     const op = getOp(doc);
-    const binding = op.bindings as Record<string, Record<string, unknown>>;
+    const binding = op.bindings!;
     expect(binding.mqtt.qos).toBe(0);
     expect(binding.mqtt.bindingVersion).toBe("0.2.0");
   });
@@ -289,11 +282,7 @@ describe("spec Compliance: WebSocket Bindings", () => {
       op subscribe(): Message;
     `);
 
-    const channels = doc.channels as Record<string, Record<string, unknown>>;
-    const binding = channels["ws-channel"].bindings as Record<
-      string,
-      Record<string, unknown>
-    >;
+    const binding = doc.channels!["ws-channel"].bindings!;
     expect(binding.ws).toBeDefined();
     expect(binding.ws.method).toBe("GET");
     expect(binding.ws.bindingVersion).toBe("0.1.0");
@@ -311,11 +300,7 @@ describe("spec Compliance: WebSocket Bindings", () => {
       op subscribe(): Event;
     `);
 
-    const channels = doc.channels as Record<string, Record<string, unknown>>;
-    const binding = channels["ws-channel"].bindings as Record<
-      string,
-      Record<string, unknown>
-    >;
+    const binding = doc.channels!["ws-channel"].bindings!;
     expect(binding.ws).toBeDefined();
     expect(binding.websocket).toBeUndefined();
     expect(binding.ws.method).toBe("GET");
@@ -334,11 +319,7 @@ describe("spec Compliance: WebSocket Bindings", () => {
       op subscribe(): Event;
     `);
 
-    const channels = doc.channels as Record<string, Record<string, unknown>>;
-    const binding = channels["ws-channel"].bindings as Record<
-      string,
-      Record<string, unknown>
-    >;
+    const binding = doc.channels!["ws-channel"].bindings!;
     expect(binding.ws.method).toBe("POST");
     expect(binding.ws.bindingVersion).toBe("0.1.0");
   });
@@ -359,8 +340,7 @@ describe("spec Compliance: WebSocket Bindings", () => {
       op subscribe(): Event;
     `);
 
-    const servers = doc.servers as Record<string, Record<string, unknown>>;
-    expect(servers["secure-ws"].protocol).toBe("wss");
+    expect(doc.servers!["secure-ws"].protocol).toBe("wss");
   });
 });
 
@@ -383,7 +363,7 @@ describe("spec Compliance: HTTP Bindings", () => {
     `);
 
     const op = getOp(doc);
-    const binding = op.bindings as Record<string, Record<string, unknown>>;
+    const binding = op.bindings!;
     expect(binding.http).toBeDefined();
     expect(binding.http.method).toBe("POST");
     expect(binding.http.bindingVersion).toBe("0.3.0");
@@ -408,7 +388,7 @@ describe("spec Compliance: HTTP Bindings", () => {
     `);
 
     const binding = getMsgBindings(doc, "HttpEvent");
-    const http = binding.http as Record<string, unknown>;
+    const { http } = binding;
     expect(http).toBeDefined();
     expect(http.headers).toBeDefined();
     expect(http.bindingVersion).toBe("0.3.0");
@@ -449,17 +429,12 @@ describe("spec Compliance: Multi-Protocol Bindings", () => {
       op subscribeWs(): WsMessage;
     `);
 
-    const servers = doc.servers as Record<string, Record<string, unknown>>;
-    expect(servers["kafka-server"].protocol).toBe("kafka");
-    expect(servers["ws-server"].protocol).toBe("ws");
+    expect(doc.servers!["kafka-server"].protocol).toBe("kafka");
+    expect(doc.servers!["ws-server"].protocol).toBe("ws");
 
-    const channels = doc.channels as Record<string, Record<string, unknown>>;
-    expect(
-      (channels["kafka-topic"].bindings as Record<string, unknown>).kafka,
-    ).toBeDefined();
-    expect(
-      (channels["ws-channel"].bindings as Record<string, unknown>).ws,
-    ).toBeDefined();
+    const channels = doc.channels!;
+    expect(channels["kafka-topic"].bindings!.kafka).toBeDefined();
+    expect(channels["ws-channel"].bindings!.ws).toBeDefined();
   });
 
   it("all binding versions auto-injected correctly per protocol", async () => {
@@ -482,17 +457,11 @@ describe("spec Compliance: Multi-Protocol Bindings", () => {
       op subscribeWs(): Event;
     `);
 
-    const channels = doc.channels as Record<string, Record<string, unknown>>;
-    const kBinding = channels["kafka-ch"].bindings as Record<
-      string,
-      Record<string, unknown>
-    >;
+    const channels = doc.channels!;
+    const kBinding = channels["kafka-ch"].bindings!;
     expect(kBinding.kafka?.bindingVersion).toBe("0.5.0");
 
-    const wsBinding = channels["ws-ch"].bindings as Record<
-      string,
-      Record<string, unknown>
-    >;
+    const wsBinding = channels["ws-ch"].bindings!;
     expect(wsBinding.ws?.bindingVersion).toBe("0.1.0");
   });
 });
