@@ -6,6 +6,23 @@
  */
 
 import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
+import { compileAsyncAPISpecWithoutErrors } from "../utils/test-helpers.js";
+import { parse as parseYAML } from "yaml";
+import type { OperationObject } from "../../src/domain/models/asyncapi-document.js";
+
+async function compileAndGetOp(source: string): Promise<OperationObject> {
+  const result = await compileAsyncAPISpecWithoutErrors(source);
+  for (const [, content] of result.outputFiles) {
+    if (typeof content === "string" && content.startsWith("asyncapi")) {
+      const doc = parseYAML(content) as {
+        operations: Record<string, OperationObject>;
+      };
+      const [firstOp] = Object.values(doc.operations);
+      return firstOp;
+    }
+  }
+  throw new Error("No output");
+}
 
 describe("spec Compliance: Google Pub/Sub Bindings", () => {
   it("emits valid Google Pub/Sub channel binding", async () => {
@@ -90,8 +107,8 @@ describe("spec Compliance: SNS Bindings", () => {
     expect(binding.sns.bindingVersion).toBe("0.1.0");
   });
 
-  it("emits valid SNS operation binding", async () => {
-    const doc = await compileAndValidateOrThrow(`
+  it("emits SNS operation binding with topic and consumers", async () => {
+    const op = await compileAndGetOp(`
       namespace Test;
       model Event { id: string; }
       @channel("notifications")
@@ -99,6 +116,7 @@ describe("spec Compliance: SNS Bindings", () => {
         sns: #{
           topic: #{ type: "string" },
           consumers: #[#{
+            protocol: "sqs",
             endpoint: #{ type: "string" },
             rawMessageDelivery: true
           }]
@@ -107,7 +125,6 @@ describe("spec Compliance: SNS Bindings", () => {
       op publish(): Event;
     `);
 
-    const [op] = Object.values(doc.operations!);
     expect(op.bindings).toBeDefined();
     expect(op.bindings!.sns).toBeDefined();
     expect(op.bindings!.sns.topic).toBeDefined();
