@@ -1,9 +1,9 @@
 # Feature Inventory
 
 **Verified:** 2026-07-22 against actual code + test run (551 pass, 0 fail, 0 skip, 0 todo)
-**Project:** `@lars-artmann/typespec-asyncapi` v0.1.0-alpha
+**Project:** `@lars-artmann/typespec-asyncapi` v0.2.0-beta
 **Lint:** oxlint 0 errors / 0 warnings, ESLint 0 errors / 0 warnings
-**Diagnostics:** 17 codes (14 error + 3 warning), all compile-time validated via `$lib.reportDiagnostic()`
+**Diagnostics:** 18 codes (15 error + 3 warning), all compile-time validated via `$lib.reportDiagnostic()`
 
 ---
 

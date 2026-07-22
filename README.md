@@ -174,7 +174,7 @@ Categorizes operations, models, or namespaces.
 op publishOrder(): Order;
 ```
 
-### `@correlationId(location: string, property?: string)`
+### `@correlationId(location: string)`
 
 Specifies correlation ID for message tracing on a model.
 
@@ -238,7 +238,7 @@ bun run lint      # ESLint
 
 ## Status
 
-**Version:** 0.1.0-alpha
+**Version:** 0.2.0-beta
 **Build:** 0 TypeScript errors
 **Lint:** 0 errors, 0 warnings
 **Tests:** 551 pass, 0 fail (0 skip, 0 todo)
