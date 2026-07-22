@@ -203,7 +203,7 @@ export type SecurityScheme = {
   type: SecuritySchemeType;
   description?: string;
   name?: string;
-  in?: "user" | "password" | "query" | "header" | "cookie";
+  in?: "query" | "header" | "cookie";
   scheme?: string;
   bearerFormat?: string;
   flows?: OAuth2Flows;

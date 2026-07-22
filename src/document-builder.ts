@@ -43,6 +43,32 @@ import {
 
 export const ASYNCAPI_SPEC_VERSION = "3.1.0";
 
+const OAUTH2_FLOW_KEYS = [
+  "implicit",
+  "password",
+  "clientCredentials",
+  "authorizationCode",
+] as const;
+
+/**
+ * Normalize OAuth2 flows: AsyncAPI 3.1 uses `availableScopes` (not `scopes`).
+ * Accept both as input; always output `availableScopes`.
+ */
+function normalizeOAuth2Scopes(scheme: SecurityScheme): SecurityScheme {
+  if (!scheme.flows) return scheme;
+  const flows = { ...scheme.flows };
+  for (const key of OAUTH2_FLOW_KEYS) {
+    const flow = flows[key];
+    if (!flow) continue;
+    const raw = flow as Record<string, unknown>;
+    if ("scopes" in raw && !("availableScopes" in raw)) {
+      const { scopes, ...rest } = raw;
+      flows[key] = { ...rest, availableScopes: scopes } as typeof flow;
+    }
+  }
+  return { ...scheme, flows };
+}
+
 function inferActionFromName(name: string): OperationAction {
   const lower = name.toLowerCase();
   if (
@@ -355,7 +381,7 @@ export function buildAsyncAPIDocument(
   for (const [_type, data] of state.securityConfigs) {
     const entries = Array.isArray(data) ? data : [data];
     for (const secData of entries) {
-      securitySchemes[secData.name] = secData.scheme;
+      securitySchemes[secData.name] = normalizeOAuth2Scopes(secData.scheme);
     }
   }
 

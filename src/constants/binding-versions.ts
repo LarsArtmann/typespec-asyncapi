@@ -36,25 +36,6 @@ export const VALID_BINDING_VERSIONS: Record<ProtocolWithBindings, readonly strin
 } as const;
 
 /**
- * Binding placement: which binding types are valid for each protocol
- * on each AsyncAPI object kind.
- *
- * `true` means the protocol has a binding definition for that object kind.
- */
-export const BINDING_PLACEMENT: Record<
-  ProtocolWithBindings,
-  { channel: boolean; operation: boolean; message: boolean; server: boolean }
-> = {
-  kafka: { channel: true, operation: true, message: true, server: false },
-  amqp: { channel: true, operation: true, message: true, server: false },
-  mqtt: { channel: false, operation: true, message: true, server: true },
-  http: { channel: false, operation: true, message: true, server: false },
-  ws: { channel: true, operation: false, message: false, server: false },
-};
-
-export type BindingTargetKind = "channel" | "operation" | "message" | "server";
-
-/**
  * Normalize a protocol name for use as a binding key.
  * The AsyncAPI binding schema uses `ws` for both WebSocket and secure WebSocket,
  * so `wss` MUST be mapped to `ws` when used as a binding key.
@@ -97,12 +78,4 @@ export function isValidBindingVersion(protocol: string, version: string): boolea
 export function getValidVersionsString(protocol: string): string | undefined {
   const versions = VALID_BINDING_VERSIONS[protocol as ProtocolWithBindings];
   return versions ? versions.join(", ") : undefined;
-}
-
-/**
- * Returns true if the protocol supports bindings on the given target kind.
- */
-export function supportsBindingPlacement(protocol: string, kind: BindingTargetKind): boolean {
-  const placement = BINDING_PLACEMENT[protocol as ProtocolWithBindings];
-  return placement ? placement[kind] : false;
 }

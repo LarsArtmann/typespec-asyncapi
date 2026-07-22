@@ -847,4 +847,89 @@ describe("OAuth2 Flows", () => {
     expect(securitySchemes?.oauth2Session).toBeDefined();
     expect(securitySchemes?.oauth2Session.type).toBe("oauth2");
   });
+
+  it("should transform legacy 'scopes' key to 'availableScopes' in output", async () => {
+    const host = await createAsyncAPITestHost();
+    host.addTypeSpecFile(
+      "main.tsp",
+      `
+				import "@lars-artmann/typespec-asyncapi";
+				using TypeSpec.AsyncAPI;
+
+				namespace OAuth2ScopesNormalization;
+
+				model Msg { data: string; }
+
+				@channel("scopes-norm")
+				@security(#{
+					name: "oauth2LegacyScopes",
+					scheme: #{
+						type: "oauth2",
+						flows: #{
+							authorizationCode: #{
+								authorizationUrl: "https://auth.example.com/authorize",
+								tokenUrl: "https://auth.example.com/token",
+								scopes: #{
+									legacyRead: "Legacy read"
+								}
+							}
+						}
+					}
+				})
+				@publish
+				op publishMessage(): Msg;
+			`,
+    );
+
+    const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+    expect(spec).toBeDefined();
+    const scheme = spec?.components?.securitySchemes?.oauth2LegacyScopes;
+    expect(scheme).toBeDefined();
+    const flow = scheme?.flows?.authorizationCode as Record<string, unknown> | undefined;
+    expect(flow).toBeDefined();
+    expect(flow?.availableScopes).toEqual({ legacyRead: "Legacy read" });
+    expect(flow?.scopes).toBeUndefined();
+  });
+
+  it("should pass through 'availableScopes' key unchanged in output", async () => {
+    const host = await createAsyncAPITestHost();
+    host.addTypeSpecFile(
+      "main.tsp",
+      `
+				import "@lars-artmann/typespec-asyncapi";
+				using TypeSpec.AsyncAPI;
+
+				namespace OAuth2AvailableScopesPassthrough;
+
+				model Msg { data: string; }
+
+				@channel("avail-scopes")
+				@security(#{
+					name: "oauth2AvailScopes",
+					scheme: #{
+						type: "oauth2",
+						flows: #{
+							clientCredentials: #{
+								tokenUrl: "https://auth.example.com/token",
+								availableScopes: #{
+									modernRead: "Modern read"
+								}
+							}
+						}
+					}
+				})
+				@publish
+				op publishMessage(): Msg;
+			`,
+    );
+
+    const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
+    expect(spec).toBeDefined();
+    const scheme = spec?.components?.securitySchemes?.oauth2AvailScopes;
+    expect(scheme).toBeDefined();
+    const flow = scheme?.flows?.clientCredentials as Record<string, unknown> | undefined;
+    expect(flow).toBeDefined();
+    expect(flow?.availableScopes).toEqual({ modernRead: "Modern read" });
+    expect(flow?.scopes).toBeUndefined();
+  });
 });

@@ -59,7 +59,7 @@ First alpha release. Full Pareto recovery from analysis paralysis.
 
 ### Added
 
-- Full protocol binding support: Kafka, AMQP, MQTT, WebSocket, HTTP with typed binding definitions (`src/domain/models/bindings.ts`)
+- Full protocol binding support: Kafka, AMQP, MQTT, WebSocket, HTTP with typed binding constants (`src/constants/binding-versions.ts`)
 - Binding version constants (`src/constants/binding-versions.ts`): latest version per protocol with `normalizeBindingProtocol()` mapping `wss`→`ws` for binding keys
 - Binding validation module (`src/validation/binding-validator.ts`): normalizes binding keys, validates versions, auto-injects `bindingVersion` when missing
 - Two new warning diagnostics: `unknown-binding-protocol`, `invalid-binding-version`
@@ -76,11 +76,12 @@ First alpha release. Full Pareto recovery from analysis paralysis.
 - Test runner migrated from bun:test to vitest (Bun OOM crashes with large test suites)
 - Test count grew from 406 to 504 (78 new compliance tests + 16 external spec tests)
 - `@service` decorator compatibility: emitter now reads `@service` title via `listServices()` for `info.title` (emitter options take precedence). Test count grew from 504 to 510.
-- OAuth2 `OAuth2Flow.scopes` renamed to `availableScopes` per AsyncAPI 3.1 spec (type-level only; runtime transformation still pending)
-- `SecurityRequirement` type added; `ServerObject.security` and `OperationObject.security` changed from `SecurityScheme[]` to `SecurityRequirement[]`
+- OAuth2 `OAuth2Flow.scopes` renamed to `availableScopes` per AsyncAPI 3.1 spec — `normalizeOAuth2Scopes()` in `document-builder.ts` now transforms legacy `scopes` input key to `availableScopes` at output time. Both keys accepted as input.
+- `SecurityScheme.in` type tightened from `"user" | "password" | "query" | "header" | "cookie"` to `"query" | "header" | "cookie"` per AsyncAPI 3.1 spec (API key locations only)
 - `OperationAction` named type extracted (`"send" | "receive"`)
 - `$ref` construction centralized in domain model (`ref()`, `refSchema()`, `refMessage()`, `refChannel()` helpers)
-- `getValidVersionsString()` moved to `binding-versions.ts` (single source of truth, eliminated duplication)
+- `SecurityRequirement` type added; `ServerObject.security` and `OperationObject.security` changed from `SecurityScheme[]` to `SecurityRequirement[]`
+- Test count grew from 510 to 512 (2 new `scopes`→`availableScopes` normalization tests)
 
 ### Fixed
 
@@ -88,7 +89,9 @@ First alpha release. Full Pareto recovery from analysis paralysis.
 
 ### Removed
 
-- `src/constants/index.ts` deleted entirely (all 7 exports had zero importers)
+- `src/domain/models/bindings.ts` deleted (177 lines, zero imports from `src/`) — dead code, runtime uses `ProtocolBindings` type alias
+- `BINDING_PLACEMENT` const, `BindingTargetKind` type, and `supportsBindingPlacement()` deleted from `src/constants/binding-versions.ts` (defined but never called)
+- Dead coverage devDependencies removed: `@vitest/coverage-v8`, `@vitest/coverage-istanbul`, `c8` (non-functional — TypeSpec loads emitter from `dist/*.js` as opaque modules)
 
 ### Earlier unreleased work
 
