@@ -65,7 +65,7 @@ extern dec correlationId(target: Model, location: valueof string);
  * Define protocol bindings (generic)
  * @param value Bindings configuration object
  */
-extern dec bindings(target: Operation | Model, value: {} | valueof Record<unknown>);
+extern dec bindings(target: Operation | Model | Namespace, value: {} | valueof Record<unknown>);
 
 /**
  * Specify the default content type for all messages in the document

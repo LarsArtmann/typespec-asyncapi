@@ -296,7 +296,6 @@ export function $correlationId(
   storeCorrelationId(context.program, target, location);
 }
 
-/** Map a TypeSpec target kind to the AsyncAPI binding target kind. */
 function bindingTargetKind(kind: string): BindingTargetKind | undefined {
   if (kind === "Operation") {
     return "operation";
@@ -304,12 +303,15 @@ function bindingTargetKind(kind: string): BindingTargetKind | undefined {
   if (kind === "Model") {
     return "message";
   }
+  if (kind === "Namespace") {
+    return "server";
+  }
   return undefined;
 }
 
 export function $bindings(
   context: DecoratorContext,
-  target: Operation | Model,
+  target: Operation | Model | Namespace,
   value: unknown,
 ): void {
   if (!value || typeof value !== "object") {

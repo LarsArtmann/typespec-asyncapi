@@ -168,7 +168,7 @@ export const storeCorrelationId = (
 
 export const storeBindings = (
   program: Program,
-  target: Operation | Model,
+  target: Operation | Model | Namespace,
   bindings: ProtocolBindings,
 ): void => {
   const map = getStateMap(program, stateSymbols.protocolBindings);

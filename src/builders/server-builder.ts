@@ -14,8 +14,9 @@ export function buildServers(
   state: AsyncAPIConsolidatedState,
   ctx: DocumentBuildContext,
 ): void {
-  for (const [_type, data] of state.servers) {
+  for (const [type, data] of state.servers) {
     const serverEntries = Array.isArray(data) ? data : [data];
+    const namespaceBindings = state.protocolBindings.get(type);
     for (const entry of serverEntries) {
       const server: ServerObject = {
         description: entry.description,
@@ -32,6 +33,13 @@ export function buildServers(
           vars[varName] = { description: `Server variable: ${varName}` };
         }
         server.variables = vars;
+      }
+
+      if (
+        namespaceBindings &&
+        Object.keys(namespaceBindings).length > 0
+      ) {
+        server.bindings = namespaceBindings;
       }
 
       ctx.servers[entry.name] = server;
