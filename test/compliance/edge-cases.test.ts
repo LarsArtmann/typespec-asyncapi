@@ -7,6 +7,11 @@
  */
 
 import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
+import type {
+  CorrelationIdObject,
+  MessageObject,
+  SchemaObject,
+} from "../../src/domain/models/asyncapi-document.js";
 
 describe("spec Compliance: Edge Cases", () => {
   it("handles empty model (no properties)", async () => {
@@ -17,11 +22,7 @@ describe("spec Compliance: Edge Cases", () => {
       op publish(): EmptyEvent;
     `);
 
-    const components = doc.components as Record<
-      string,
-      Record<string, Record<string, unknown>>
-    >;
-    expect(components.schemas.EmptyEvent).toBeDefined();
+    expect(doc.components!.schemas!.EmptyEvent).toBeDefined();
   });
 
   it("handles channel address with dots", async () => {
@@ -32,8 +33,7 @@ describe("spec Compliance: Edge Cases", () => {
       op publish(): Event;
     `);
 
-    const channels = doc.channels as Record<string, unknown>;
-    expect(channels["user.events.created.v2"]).toBeDefined();
+    expect(doc.channels!["user.events.created.v2"]).toBeDefined();
   });
 
   it("handles channel address with forward slashes (escaped in $ref)", async () => {
@@ -44,12 +44,9 @@ describe("spec Compliance: Edge Cases", () => {
       op publish(): Event;
     `);
 
-    const operations = doc.operations as Record<
-      string,
-      Record<string, unknown>
-    >;
-    const op = Object.values(operations)[0] as Record<string, unknown>;
-    const messages = op.messages as { $ref: string }[];
+    const operations = doc.operations!;
+    const [op] = Object.values(operations);
+    const messages = op.messages!;
     expect(messages[0].$ref).toContain("~1");
   });
 
@@ -61,10 +58,9 @@ describe("spec Compliance: Edge Cases", () => {
       op publish(): Event;
     `);
 
-    const channels = doc.channels as Record<string, Record<string, unknown>>;
-    const channel = channels["users/{userId}/events"];
+    const channel = doc.channels!["users/{userId}/events"];
     expect(channel).toBeDefined();
-    const params = channel.parameters as Record<string, unknown>;
+    const params = channel.parameters!;
     expect(params.userId).toBeDefined();
   });
 
@@ -79,14 +75,11 @@ describe("spec Compliance: Edge Cases", () => {
       op publish(): Employee;
     `);
 
-    const components = doc.components as Record<
-      string,
-      Record<string, Record<string, unknown>>
-    >;
-    expect(components.schemas.Employee).toBeDefined();
-    expect(components.schemas.Company).toBeDefined();
-    expect(components.schemas.Address).toBeDefined();
-    expect(components.schemas.Country).toBeDefined();
+    const schemas = doc.components!.schemas!;
+    expect(schemas.Employee).toBeDefined();
+    expect(schemas.Company).toBeDefined();
+    expect(schemas.Address).toBeDefined();
+    expect(schemas.Country).toBeDefined();
   });
 
   it("handles union types (enums)", async () => {
@@ -99,14 +92,7 @@ describe("spec Compliance: Edge Cases", () => {
       op publish(): Event;
     `);
 
-    const components = doc.components as Record<
-      string,
-      Record<string, Record<string, unknown>>
-    >;
-    const props = components.schemas.Event.properties as Record<
-      string,
-      Record<string, unknown>
-    >;
+    const props = doc.components!.schemas!.Event.properties!;
     expect(props.priority.enum).toStrictEqual([
       "low",
       "medium",
@@ -127,11 +113,7 @@ describe("spec Compliance: Edge Cases", () => {
       op publish(): Event;
     `);
 
-    const components = doc.components as Record<
-      string,
-      Record<string, Record<string, unknown>>
-    >;
-    expect(components.schemas.Event.required).toStrictEqual(["id"]);
+    expect(doc.components!.schemas!.Event.required).toStrictEqual(["id"]);
   });
 
   it("handles multiple operations on same channel", async () => {
@@ -145,8 +127,7 @@ describe("spec Compliance: Edge Cases", () => {
       op receiveResponse(): Response;
     `);
 
-    const channels = doc.channels as Record<string, unknown>;
-    expect(channels["rpc"]).toBeDefined();
+    expect(doc.channels!["rpc"]).toBeDefined();
   });
 
   it("handles document with only servers (no channels)", async () => {
@@ -174,11 +155,9 @@ describe("spec Compliance: Edge Cases", () => {
       op publish(): Event;
     `);
 
-    const components = doc.components as Record<
-      string,
-      Record<string, Record<string, unknown>>
-    >;
-    expect(components.schemas.Event.description).toBe("This is a test event");
+    expect(doc.components!.schemas!.Event.description).toBe(
+      "This is a test event",
+    );
   });
 
   it("handles tags on operations", async () => {
@@ -190,14 +169,12 @@ describe("spec Compliance: Edge Cases", () => {
       op publish(): Event;
     `);
 
-    const operations = doc.operations as Record<
-      string,
-      Record<string, unknown>
-    >;
-    const op = Object.values(operations)[0] as Record<string, unknown>;
-    const tags = op.tags as { name: string }[];
+    const operations = doc.operations!;
+    const [op] = Object.values(operations);
+    const tags = op.tags!;
     expect(tags).toHaveLength(2);
     expect(tags[0].name).toBe("important");
+    expect(tags[1].name).toBe("realtime");
   });
 
   it("handles correlationId on messages", async () => {
@@ -209,13 +186,9 @@ describe("spec Compliance: Edge Cases", () => {
       op publish(): TrackedEvent;
     `);
 
-    const components = doc.components as Record<
-      string,
-      Record<string, Record<string, unknown>>
-    >;
-    const msg = components.messages.TrackedEvent;
+    const msg = doc.components!.messages!.TrackedEvent as MessageObject;
     expect(msg.correlationId).toBeDefined();
-    expect((msg.correlationId as Record<string, unknown>).location).toBe(
+    expect((msg.correlationId as CorrelationIdObject).location).toBe(
       "$message.header#/correlationId",
     );
   });
@@ -229,13 +202,9 @@ describe("spec Compliance: Edge Cases", () => {
       op publish(): ApiEvent;
     `);
 
-    const components = doc.components as Record<
-      string,
-      Record<string, Record<string, unknown>>
-    >;
-    const msg = components.messages.ApiEvent;
+    const msg = doc.components!.messages!.ApiEvent as MessageObject;
     expect(msg.headers).toBeDefined();
-    const headers = msg.headers as Record<string, unknown>;
+    const headers = msg.headers as SchemaObject;
     expect(headers.type).toBe("object");
   });
 
@@ -249,17 +218,8 @@ describe("spec Compliance: Edge Cases", () => {
       op publish(): Sensor;
     `);
 
-    const components = doc.components as Record<
-      string,
-      Record<string, Record<string, unknown>>
-    >;
-    const props = components.schemas.Sensor.properties as Record<
-      string,
-      Record<string, unknown>
-    >;
+    const props = doc.components!.schemas!.Sensor.properties!;
     expect(props.readings.type).toBe("array");
-    expect((props.readings.items as Record<string, unknown>).type).toBe(
-      "number",
-    );
+    expect(props.readings.items!.type).toBe("number");
   });
 });

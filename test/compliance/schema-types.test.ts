@@ -6,16 +6,13 @@
  */
 
 import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
+import type {
+  ParsedAsyncAPIDocument,
+  SchemaObject,
+} from "../../src/domain/models/asyncapi-document.js";
 
-function getSchema(
-  doc: Record<string, unknown>,
-  name: string,
-): Record<string, unknown> {
-  const components = doc.components as Record<
-    string,
-    Record<string, Record<string, unknown>>
-  >;
-  return components.schemas[name];
+function getSchema(doc: ParsedAsyncAPIDocument, name: string): SchemaObject {
+  return doc.components!.schemas![name];
 }
 
 describe("spec Compliance: Schema Types", () => {
@@ -27,7 +24,7 @@ describe("spec Compliance: Schema Types", () => {
       op publish(): Event;
     `);
     const schema = getSchema(doc, "Event");
-    const props = schema.properties as Record<string, Record<string, unknown>>;
+    const props = schema.properties!;
     expect(props.value.type).toBe("string");
   });
 
@@ -39,7 +36,7 @@ describe("spec Compliance: Schema Types", () => {
       op publish(): Event;
     `);
     const schema = getSchema(doc, "Event");
-    const props = schema.properties as Record<string, Record<string, unknown>>;
+    const props = schema.properties!;
     expect(props.active.type).toBe("boolean");
   });
 
@@ -51,7 +48,7 @@ describe("spec Compliance: Schema Types", () => {
       op publish(): Event;
     `);
     const schema = getSchema(doc, "Event");
-    const props = schema.properties as Record<string, Record<string, unknown>>;
+    const props = schema.properties!;
     expect(props.count.type).toBe("integer");
   });
 
@@ -63,7 +60,7 @@ describe("spec Compliance: Schema Types", () => {
       op publish(): Event;
     `);
     const schema = getSchema(doc, "Event");
-    const props = schema.properties as Record<string, Record<string, unknown>>;
+    const props = schema.properties!;
     expect(props.count?.type ?? props.timestamp.type).toBe("integer");
     expect(props.timestamp.format).toBe("int64");
   });
@@ -76,7 +73,7 @@ describe("spec Compliance: Schema Types", () => {
       op publish(): Event;
     `);
     const schema = getSchema(doc, "Event");
-    const props = schema.properties as Record<string, Record<string, unknown>>;
+    const props = schema.properties!;
     expect(props.score.type).toBe("number");
     expect(props.score.format).toBe("float");
   });
@@ -89,7 +86,7 @@ describe("spec Compliance: Schema Types", () => {
       op publish(): Event;
     `);
     const schema = getSchema(doc, "Event");
-    const props = schema.properties as Record<string, Record<string, unknown>>;
+    const props = schema.properties!;
     expect(props.value.type).toBe("number");
     expect(props.value.format).toBe("double");
   });
@@ -102,7 +99,7 @@ describe("spec Compliance: Schema Types", () => {
       op publish(): Event;
     `);
     const schema = getSchema(doc, "Event");
-    const props = schema.properties as Record<string, Record<string, unknown>>;
+    const props = schema.properties!;
     expect(props.amount.type).toBe("string");
     expect(props.amount.format).toBe("decimal");
   });
@@ -115,7 +112,7 @@ describe("spec Compliance: Schema Types", () => {
       op publish(): Event;
     `);
     const schema = getSchema(doc, "Event");
-    const props = schema.properties as Record<string, Record<string, unknown>>;
+    const props = schema.properties!;
     expect(props.data.type).toBe("string");
     expect(props.data.format).toBe("byte");
   });
@@ -128,7 +125,7 @@ describe("spec Compliance: Schema Types", () => {
       op publish(): Event;
     `);
     const schema = getSchema(doc, "Event");
-    const props = schema.properties as Record<string, Record<string, unknown>>;
+    const props = schema.properties!;
     expect(props.createdAt.type).toBe("string");
     expect(props.createdAt.format).toBe("date-time");
   });
@@ -141,7 +138,7 @@ describe("spec Compliance: Schema Types", () => {
       op publish(): Event;
     `);
     const schema = getSchema(doc, "Event");
-    const props = schema.properties as Record<string, Record<string, unknown>>;
+    const props = schema.properties!;
     expect(props.link.type).toBe("string");
     expect(props.link.format).toBe("uri");
   });
@@ -154,9 +151,9 @@ describe("spec Compliance: Schema Types", () => {
       op publish(): Event;
     `);
     const schema = getSchema(doc, "Event");
-    const props = schema.properties as Record<string, Record<string, unknown>>;
+    const props = schema.properties!;
     expect(props.tags.type).toBe("array");
-    expect((props.tags.items as Record<string, unknown>).type).toBe("string");
+    expect(props.tags.items!.type).toBe("string");
   });
 
   it("maps enum unions correctly", async () => {
@@ -169,7 +166,7 @@ describe("spec Compliance: Schema Types", () => {
       op publish(): Event;
     `);
     const schema = getSchema(doc, "Event");
-    const props = schema.properties as Record<string, Record<string, unknown>>;
+    const props = schema.properties!;
     expect(props.status.enum).toStrictEqual(["pending", "active", "closed"]);
   });
 
@@ -199,7 +196,7 @@ describe("spec Compliance: Schema Types", () => {
       op publish(): User;
     `);
     const schema = getSchema(doc, "User");
-    const props = schema.properties as Record<string, Record<string, unknown>>;
+    const props = schema.properties!;
     expect(props.address.$ref).toBe("#/components/schemas/Address");
 
     const addressSchema = getSchema(doc, "Address");
@@ -217,10 +214,8 @@ describe("spec Compliance: Schema Types", () => {
       op publish(): Order;
     `);
     const schema = getSchema(doc, "Order");
-    const props = schema.properties as Record<string, Record<string, unknown>>;
+    const props = schema.properties!;
     expect(props.items.type).toBe("array");
-    expect((props.items.items as Record<string, unknown>).$ref).toBe(
-      "#/components/schemas/Item",
-    );
+    expect(props.items.items!.$ref).toBe("#/components/schemas/Item");
   });
 });
