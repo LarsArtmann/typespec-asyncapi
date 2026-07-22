@@ -288,7 +288,7 @@ The type was changed to `availableScopes` but the emitter does NOT rename `scope
 | 11  | `ProtocolConfigBase.binding` is `Record<string, unknown>`                                  | OPEN       | Blocked by #1 (bindings.ts dead)                        |
 | 12  | `CorrelationIdData.property` dead field                                                    | OPEN       | Extracted to TODO_LIST                                  |
 | 13  | `OperationTypeData.tags/description` dead fields                                           | OPEN       | Extracted to TODO_LIST                                  |
-| 14  | `intrinsicToSchema()` format inconsistency (uint*)                                         | OPEN       | Extracted to TODO_LIST                                  |
+| 14  | `intrinsicToSchema()` format inconsistency (uint\*)                                        | OPEN       | Extracted to TODO_LIST                                  |
 | 15  | `TagData` vs `Tag[]` duplicate definition                                                  | OPEN       | Extracted to TODO_LIST                                  |
 
 ### Section (e) items resolved since this report

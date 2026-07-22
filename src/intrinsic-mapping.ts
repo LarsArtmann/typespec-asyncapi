@@ -19,13 +19,15 @@ export function intrinsicToSchema(typeName: string): SchemaObject {
     case "int64":
       return { type: "integer", format: "int64" };
     case "uint8":
+      return { type: "integer", format: "uint8" };
     case "uint16":
+      return { type: "integer", format: "uint16" };
     case "uint32":
-      return { type: "integer" };
+      return { type: "integer", format: "uint32" };
     case "uint64":
-      return { type: "integer" };
+      return { type: "integer", format: "uint64" };
     case "safeint":
-      return { type: "integer" };
+      return { type: "integer", format: "safeint" };
     case "float":
     case "float32":
       return { type: "number", format: "float" };

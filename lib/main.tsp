@@ -58,9 +58,8 @@ extern dec tags(target: Model | Operation | Namespace, value: valueof string[]);
 /**
  * Specify correlation ID configuration
  * @param location Location of the correlation ID (e.g., "$message.header#/correlationId")
- * @param property Optional property path
  */
-extern dec correlationId(target: Model, location: valueof string, property?: valueof string);
+extern dec correlationId(target: Model, location: valueof string);
 
 /**
  * Define protocol bindings (generic)

@@ -20,7 +20,7 @@ import {
   hasProtocolBindings,
   normalizeBindingProtocol,
 } from "./constants/binding-versions.js";
-import type { AsyncAPIConsolidatedState } from "./state.js";
+import type { AsyncAPIConsolidatedState, OperationTypeData, ProtocolConfigData } from "./state.js";
 import type {
   AsyncAPIDocument,
   ChannelObject,
@@ -29,6 +29,7 @@ import type {
   OperationObject,
   OperationAction,
   ParameterObject,
+  ProtocolBindings,
   SchemaObject,
   SecurityScheme,
   ServerObject,
@@ -82,6 +83,49 @@ function inferActionFromName(name: string): OperationAction {
   return "receive";
 }
 
+/** Map a decorator-declared operation type to an AsyncAPI OperationAction. */
+function operationAction(type: OperationTypeData["type"]): OperationAction {
+  return type === "publish" ? "send" : "receive";
+}
+
+/** Extract the name from a TypeSpec Type, if it has one. */
+function nameOfType(type: Type): string | undefined {
+  if ("name" in type && typeof type.name === "string") return type.name;
+  return undefined;
+}
+
+/** Extract the return model name from an Operation type, if any. */
+function returnModelName(type: Type): string | undefined {
+  if (type.kind !== "Operation") return undefined;
+  const rt = type.returnType;
+  if ("name" in rt && typeof rt.name === "string" && rt.name && rt.kind !== "Operation") {
+    return rt.name;
+  }
+  return undefined;
+}
+
+/** Extract channel path parameters from an address string. */
+function extractChannelParameters(address: string): Record<string, ParameterObject> | undefined {
+  const matches = address.match(/\{([^}]+)\}/g);
+  if (!matches || matches.length === 0) return undefined;
+  const params: Record<string, ParameterObject> = {};
+  for (const match of matches) {
+    const paramName = match.slice(1, -1);
+    params[paramName] = { description: `Channel parameter: ${paramName}` };
+  }
+  return params;
+}
+
+/** Build protocol-specific channel bindings from a ProtocolConfigData entry. */
+function buildProtocolBinding(data: ProtocolConfigData): ProtocolBindings {
+  const bindingKey = normalizeBindingProtocol(data.protocol);
+  const bindingData: Record<string, unknown> = { ...data.binding };
+  if (hasProtocolBindings(bindingKey) && bindingData.bindingVersion === undefined) {
+    bindingData.bindingVersion = getLatestBindingVersion(bindingKey);
+  }
+  return { [bindingKey]: bindingData };
+}
+
 export function buildAsyncAPIDocument(
   state: AsyncAPIConsolidatedState,
   schemas: Record<string, SchemaObject>,
@@ -94,16 +138,6 @@ export function buildAsyncAPIDocument(
   const messages: Record<string, MessageObject> = {};
   const securitySchemes: Record<string, SecurityScheme> = {};
 
-  function getReturnModelName(type: unknown): string | undefined {
-    const t = type as {
-      returnType?: { name?: string; model?: { name?: string }; kind?: string } | undefined;
-    };
-    const rt = t?.returnType;
-    if (!rt) return undefined;
-    if (rt.name && rt.kind !== "Operation") return rt.name;
-    return rt.model?.name;
-  }
-
   type DiscoveredOp = {
     opName: string;
     channelKey: string;
@@ -112,17 +146,6 @@ export function buildAsyncAPIDocument(
   };
 
   const discoveredOps: DiscoveredOp[] = [];
-
-  function extractChannelParameters(address: string): Record<string, ParameterObject> | undefined {
-    const matches = address.match(/\{([^}]+)\}/g);
-    if (!matches || matches.length === 0) return undefined;
-    const params: Record<string, ParameterObject> = {};
-    for (const match of matches) {
-      const paramName = match.slice(1, -1);
-      params[paramName] = { description: `Channel parameter: ${paramName}` };
-    }
-    return params;
-  }
 
   function ensureChannel(channelKey: string): ChannelObject {
     if (!channels[channelKey]) {
@@ -158,52 +181,44 @@ export function buildAsyncAPIDocument(
   // 1a. Operations from @publish/@subscribe + @channel decorators
   const opToChannel = new Map<string, string>();
   for (const [type, data] of state.channels) {
-    const channelData = data as { path?: string };
-    const typeWithName = type as { name: string };
-    const channelPath = channelData.path ?? typeWithName.name;
-    opToChannel.set(typeWithName.name, channelPath);
+    const name = nameOfType(type);
+    if (!name) continue;
+    opToChannel.set(name, data.path);
   }
 
   for (const [type, data] of state.operations) {
-    const opData = data as {
-      type: string;
-      messageType?: string;
-    };
-    const typeWithName = type as { name: string };
-    const channelKey = opToChannel.get(typeWithName.name) ?? typeWithName.name;
-    const messageName = opData.messageType ?? getReturnModelName(type) ?? typeWithName.name;
+    const name = nameOfType(type);
+    if (!name) continue;
+    const channelKey = opToChannel.get(name) ?? name;
+    const messageName = data.messageType ?? returnModelName(type) ?? name;
 
     discoveredOps.push({
-      opName: typeWithName.name,
+      opName: name,
       channelKey,
-      action: opData.type === "publish" ? "send" : "receive",
+      action: operationAction(data.type),
       messageName,
     });
   }
 
   // 1b. Channels with @channel but no @publish/@subscribe
-  const opsWithType = new Set(
-    [...state.operations.keys()].map((t) => (t as { name: string }).name),
-  );
+  const opsWithType = new Set([...state.operations.keys()].map((t) => nameOfType(t)));
   for (const [type, data] of state.channels) {
-    const typeWithName = type as { name: string };
-    if (opsWithType.has(typeWithName.name)) continue;
-    const channelData = data as { path?: string };
-    const channelKey = channelData.path ?? typeWithName.name;
-    const messageName = getReturnModelName(type) ?? typeWithName.name;
+    const name = nameOfType(type);
+    if (!name) continue;
+    if (opsWithType.has(name)) continue;
+    const channelKey = data.path;
+    const messageName = returnModelName(type) ?? name;
     discoveredOps.push({
-      opName: typeWithName.name,
+      opName: name,
       channelKey,
-      action: inferActionFromName(typeWithName.name),
+      action: inferActionFromName(name),
       messageName,
     });
   }
 
   // 1c. Bare operations (no decorators at all)
   const allKnownOps = new Set(
-    [...state.operations.keys(), ...state.channels.keys()].map(
-      (t) => (t as Type & { name: string }).name,
-    ),
+    [...state.operations.keys(), ...state.channels.keys()].map((t) => nameOfType(t)),
   );
   const globalNs = program.getGlobalNamespaceType();
   const namespaces = [globalNs, ...globalNs.namespaces.values()];
@@ -211,8 +226,7 @@ export function buildAsyncAPIDocument(
     if (ns.name && isStdNamespace(ns)) continue;
     for (const [opName, op] of ns.operations) {
       if (allKnownOps.has(opName)) continue;
-      const returnType = op.returnType as { model?: { name?: string } } | undefined;
-      const messageName = returnType?.model?.name ?? opName;
+      const messageName = returnModelName(op) ?? opName;
       discoveredOps.push({
         opName,
         channelKey: opName,
@@ -238,7 +252,7 @@ export function buildAsyncAPIDocument(
     };
 
     const opType = [...state.operations.keys(), ...state.channels.keys()].find(
-      (t) => (t as { name: string }).name === op.opName,
+      (t) => nameOfType(t) === op.opName,
     );
     if (opType) {
       const tags = state.tags.get(opType);
@@ -258,13 +272,14 @@ export function buildAsyncAPIDocument(
   // 2b. Merge in explicit @message decorator data
   for (const [type, data] of state.messages) {
     const msgData = data;
-    const typeWithName = type as { name: string };
-    const msgKey = msgData.messageId ?? typeWithName.name;
+    const name = nameOfType(type);
+    if (!name) continue;
+    const msgKey = msgData.messageId ?? name;
     const msgObj: MessageObject = {
-      name: msgData.title ?? typeWithName.name,
+      name: msgData.title ?? name,
       contentType: msgData.contentType ?? "application/json",
       ...(msgData.description ? { summary: msgData.description } : {}),
-      payload: refSchema(typeWithName.name),
+      payload: refSchema(name),
     };
 
     const correlation = state.correlationIds.get(type);
@@ -302,7 +317,7 @@ export function buildAsyncAPIDocument(
     ...state.protocolBindings,
     ...state.tags,
   ]) {
-    const typeName = (type as { name?: string }).name;
+    const typeName = nameOfType(type);
     if (!typeName || !messages[typeName]) continue;
 
     const msg = messages[typeName];
@@ -337,18 +352,11 @@ export function buildAsyncAPIDocument(
 
   // 2d. Attach protocol bindings to channels
   for (const [type, data] of state.protocolConfigs) {
-    const typeWithName = type as { name: string };
-    const channelKey = opToChannel.get(typeWithName.name) ?? typeWithName.name;
+    const name = nameOfType(type);
+    if (!name) continue;
+    const channelKey = opToChannel.get(name) ?? name;
     if (data.protocol && channels[channelKey]) {
-      const channel = channels[channelKey];
-      const bindingKey = normalizeBindingProtocol(data.protocol);
-      const bindingData = { ...(data.binding ?? {}) };
-      if (hasProtocolBindings(bindingKey) && bindingData.bindingVersion === undefined) {
-        bindingData.bindingVersion = getLatestBindingVersion(bindingKey);
-      }
-      channel.bindings = {
-        [bindingKey]: bindingData,
-      };
+      channels[channelKey].bindings = buildProtocolBinding(data);
     }
   }
 

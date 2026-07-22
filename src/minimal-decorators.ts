@@ -101,13 +101,7 @@ export function $server(
 }
 
 export function $publish(context: DecoratorContext, target: Operation, config?: Model): void {
-  storeOperationType(
-    context.program,
-    target,
-    "publish",
-    config?.name,
-    `Publish operation for ${target.name ?? "unnamed"}`,
-  );
+  storeOperationType(context.program, target, "publish", config?.name);
   linkPublishMessage(context.program, target, config);
 }
 
@@ -213,13 +207,7 @@ export function $security(
 }
 
 export function $subscribe(context: DecoratorContext, target: Operation): void {
-  storeOperationType(
-    context.program,
-    target,
-    "subscribe",
-    undefined,
-    `Subscribe operation for ${target.name ?? "unnamed"}`,
-  );
+  storeOperationType(context.program, target, "subscribe");
 }
 
 export function $tags(context: DecoratorContext, target: DiagnosticTarget, value: unknown): void {
@@ -237,12 +225,7 @@ export function $tags(context: DecoratorContext, target: DiagnosticTarget, value
   storeTags(context.program, target as Operation, stringTags);
 }
 
-export function $correlationId(
-  context: DecoratorContext,
-  target: Model,
-  location: unknown,
-  property?: unknown,
-): void {
+export function $correlationId(context: DecoratorContext, target: Model, location: unknown): void {
   if (!location || typeof location !== "string") {
     reportDiagnostic(context, "invalid-correlationId-config", target, {
       modelName: target.name,
@@ -250,7 +233,7 @@ export function $correlationId(
     return;
   }
 
-  storeCorrelationId(context.program, target, location, property as string | undefined);
+  storeCorrelationId(context.program, target, location);
 }
 
 export function $bindings(

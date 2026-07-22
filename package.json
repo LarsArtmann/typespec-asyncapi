@@ -122,7 +122,7 @@
     "tough-cookie": "^4.1.4"
   },
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=20.11"
   },
   "tspMain": "lib/main.tsp",
   "typespec": {

@@ -4,6 +4,30 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased]
+
+### Changed
+
+- `engines.node` set to `>=20.11` (requires `import.meta.dirname`)
+- Removed dead state fields: `CorrelationIdData.property`, `OperationTypeData.tags`, `OperationTypeData.description` (never read by the emitter)
+- Consolidated `TagData` type alias with `Tag[]` from the domain model (eliminates duplicate type)
+- `ProtocolConfigData` discriminated union narrowed via `buildProtocolBinding()` helper in document-builder (proper union consumption instead of generic bag access)
+- Replaced all `type as { name: string }` casts in `document-builder.ts` with type-safe `nameOfType()` helper using `"name" in type` narrowing
+- Replaced inline `opData.type === "publish" ? "send" : "receive"` ternary with named `operationAction()` function
+- `intrinsicToSchema()` now emits `format` for all integer subtypes (`uint8`–`uint64`, `safeint`) for consistency with `int8`–`int64`
+- Moved `getReturnModelName` and `extractChannelParameters` to module scope (fixes `unicorn/consistent-function-scoping` errors)
+
+### Removed
+
+- `@correlationId` decorator `property` parameter (dead — only `location` is used in output)
+- `storeOperationType` `description` parameter (dead — never emitted)
+- `storeCorrelationId` `property` parameter (dead — never emitted)
+
+### Closed
+
+- GitHub #160: "Bun-Compatible Test Patterns" — moot after vitest migration
+- GitHub #229: "RFC 3986 URL Validation" — partially addressed via pragmatic `isValidUrl()`
+
 ## [0.1.0-alpha] - 2026-07-14
 
 First alpha release. Full Pareto recovery from analysis paralysis.

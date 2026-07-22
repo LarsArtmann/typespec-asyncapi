@@ -9,7 +9,7 @@ import type { Program, Operation, Model, ModelProperty, Namespace } from "@types
 import { stateSymbols } from "./lib.js";
 import { getStateMap } from "./state-compatibility.js";
 import { normalizeProtocol } from "./constants/protocols.js";
-import type { SecurityScheme, ProtocolBindings } from "./domain/models/asyncapi-document.js";
+import type { ProtocolBindings, SecurityScheme, Tag } from "./domain/models/asyncapi-document.js";
 import type { MessageConfigData, ProtocolConfigData } from "./state.js";
 
 export const storeChannelState = (program: Program, target: Operation, path: string) => {
@@ -26,14 +26,11 @@ export const storeOperationType = (
   target: Operation,
   type: "publish" | "subscribe",
   messageType?: string,
-  description?: string,
 ) => {
   const map = getStateMap(program, stateSymbols.operationTypes);
   map.set(target, {
     type,
     messageType,
-    description: description ?? `${type} operation for ${target.name ?? "unnamed"}`,
-    tags: [],
   });
 };
 
@@ -97,7 +94,7 @@ export const storeSecurityConfig = (
 };
 
 export const storeTags = (program: Program, target: Operation | Model, tags: string[]) => {
-  const map = getStateMap<{ name: string }[]>(program, stateSymbols.tags);
+  const map = getStateMap<Tag[]>(program, stateSymbols.tags);
   const existing = map.get(target) ?? [];
   const allNames = new Set([...existing.map((t) => t.name), ...tags]);
   map.set(
@@ -106,14 +103,9 @@ export const storeTags = (program: Program, target: Operation | Model, tags: str
   );
 };
 
-export const storeCorrelationId = (
-  program: Program,
-  target: Model,
-  location: string,
-  property?: string,
-) => {
+export const storeCorrelationId = (program: Program, target: Model, location: string) => {
   const map = getStateMap(program, stateSymbols.correlationIds);
-  map.set(target, { location, property });
+  map.set(target, { location });
 };
 
 export const storeBindings = (

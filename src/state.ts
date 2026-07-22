@@ -6,7 +6,7 @@ import { stateSymbols } from "./lib.js";
 import { type Program, type Type } from "@typespec/compiler";
 import { getStateMap, getMultiState } from "./state-compatibility.js";
 import type { AsyncAPIProtocol } from "./constants/protocols.js";
-import type { SecurityScheme, ProtocolBindings } from "./domain/models/asyncapi-document.js";
+import type { ProtocolBindings, SecurityScheme, Tag } from "./domain/models/asyncapi-document.js";
 
 // === STATE DATA INTERFACES ===
 
@@ -45,8 +45,6 @@ export type ServerConfigData = {
 export type OperationTypeData = {
   type: "publish" | "subscribe";
   messageType?: string;
-  description?: string;
-  tags?: string[];
 };
 
 /**
@@ -99,12 +97,8 @@ export type ProtocolConfigData =
   | MqttConfigData
   | GenericProtocolConfigData;
 
-/**
- * Tag Configuration State Data
- */
-export type TagData = {
-  name: string;
-}[];
+/** Tag Configuration State Data — identical to Tag[] from the domain model. */
+export type TagData = Tag[];
 
 /**
  * Security Configuration State Data
@@ -119,7 +113,6 @@ export type SecurityConfigData = {
  */
 export type CorrelationIdData = {
   location: string;
-  property?: string;
 };
 
 /**
