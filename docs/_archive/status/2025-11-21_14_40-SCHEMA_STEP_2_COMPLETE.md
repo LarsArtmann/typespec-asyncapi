@@ -27,7 +27,9 @@ export const ChannelPath = Schema.String.pipe(
 );
 
 // ✅ Type-safe constructors with schema validation
-export const createChannelPath = (path: string): Effect.Effect<typeof ChannelPath.Type, Error> =>
+export const createChannelPath = (
+  path: string,
+): Effect.Effect<typeof ChannelPath.Type, Error> =>
   Effect.try({
     try: () => Schema.decodeSync(ChannelPath)(path),
     catch: (error) => new Error(`Channel path validation failed: ${error}`),
