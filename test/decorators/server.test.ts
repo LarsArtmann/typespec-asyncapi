@@ -242,12 +242,12 @@ describe("@server decorator", () => {
       // Should generate valid AsyncAPI spec
       expect(outputFiles.size).toBeGreaterThan(0);
 
-      const outputFile = outputFiles.get("/minimal-server.json");
+      const outputFile = outputFiles.get("minimal-server.json");
       expect(outputFile).toBeDefined();
-      const asyncapiDoc = JSON.parse(outputFile!.content);
+      const asyncapiDoc = JSON.parse(outputFile!);
       expect(asyncapiDoc.servers).toBeDefined();
       expect(asyncapiDoc.servers.minimal).toBeDefined();
-      expect(asyncapiDoc.servers.minimal.url).toBe("kafka://broker:9092");
+      expect(asyncapiDoc.servers.minimal.host).toBe("kafka://broker:9092");
       expect(asyncapiDoc.servers.minimal.protocol).toBe("kafka");
     });
 
@@ -274,9 +274,9 @@ describe("@server decorator", () => {
       const errors = diagnostics.filter((d) => d.severity === "error");
       expect(errors).toHaveLength(0);
 
-      const outputFile = outputFiles.get("/documented-server.json");
+      const outputFile = outputFiles.get("documented-server.json");
       expect(outputFile).toBeDefined();
-      const asyncapiDoc = JSON.parse(outputFile!.content);
+      const asyncapiDoc = JSON.parse(outputFile!);
       const server = asyncapiDoc.servers?.documented;
       expect(server?.description).toBe("Main production Kafka cluster with high availability");
     });
@@ -321,9 +321,9 @@ describe("@server decorator", () => {
       // Should generate complete AsyncAPI spec with servers, channels, and operations
       expect(outputFiles.size).toBeGreaterThan(0);
 
-      const outputFile = outputFiles.get("/integration-test.json");
+      const outputFile = outputFiles.get("integration-test.json");
       expect(outputFile).toBeDefined();
-      const asyncapiDoc = JSON.parse(outputFile!.content);
+      const asyncapiDoc = JSON.parse(outputFile!);
 
       // Validate server configuration
       expect(asyncapiDoc.servers?.integration).toBeDefined();
