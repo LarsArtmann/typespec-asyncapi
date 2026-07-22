@@ -7,7 +7,10 @@
 
 import { getDoc } from "@typespec/compiler";
 import type { AsyncAPIConsolidatedState } from "../state.js";
-import type { OperationObject, OperationReply } from "../domain/models/asyncapi-document.js";
+import type {
+  OperationObject,
+  OperationReply,
+} from "../domain/models/asyncapi-document.js";
 import {
   escapeRefToken,
   ref,
@@ -28,7 +31,13 @@ export function buildOperations(
   for (const op of ctx.discoveredOps) {
     for (let i = 0; i < op.messageNames.length; i++) {
       const schemaName = op.messageSchemaNames[i] ?? op.messageNames[i];
-      registerMessage(ctx, op.messageNames[i], op.channelKey, undefined, schemaName);
+      registerMessage(
+        ctx,
+        op.messageNames[i],
+        op.channelKey,
+        undefined,
+        schemaName,
+      );
     }
 
     const operationObj: OperationObject = {
@@ -39,10 +48,9 @@ export function buildOperations(
       ),
     };
 
-    const opType = [
-      ...state.operations.keys(),
-      ...state.channels.keys(),
-    ].find((t) => nameOfType(t) === op.opName);
+    const opType = [...state.operations.keys(), ...state.channels.keys()].find(
+      (t) => nameOfType(t) === op.opName,
+    );
     if (opType) {
       const doc = getDoc(ctx.program, opType);
       if (doc) {
@@ -61,7 +69,10 @@ export function buildOperations(
 
       const replyData = state.operationReplies.get(opType);
       if (replyData) {
-        const { replyKey, schemaName } = resolveReplyKey(state, replyData.messageName);
+        const { replyKey, schemaName } = resolveReplyKey(
+          state,
+          replyData.messageName,
+        );
         registerMessage(ctx, replyKey, op.channelKey, undefined, schemaName);
         const reply: OperationReply = {
           messages: [

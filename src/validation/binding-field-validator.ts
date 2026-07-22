@@ -91,7 +91,17 @@ const HttpRules: Record<string, TargetRules> = {
   operation: {
     method: {
       type: "string",
-      enum: ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS", "TRACE", "CONNECT"],
+      enum: [
+        "GET",
+        "POST",
+        "PUT",
+        "PATCH",
+        "DELETE",
+        "HEAD",
+        "OPTIONS",
+        "TRACE",
+        "CONNECT",
+      ],
     },
     bindingVersion: { type: "string" },
   },
@@ -174,7 +184,10 @@ export function validateBindingFields(
     }
 
     if (rule.type && typeof value !== rule.type) {
-      const isCoercibleInteger = rule.type === "integer" && typeof value === "number" && Number.isInteger(value);
+      const isCoercibleInteger =
+        rule.type === "integer" &&
+        typeof value === "number" &&
+        Number.isInteger(value);
       if (!isCoercibleInteger) {
         issues.push({
           code: "invalid-binding-version",

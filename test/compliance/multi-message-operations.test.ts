@@ -30,12 +30,8 @@ describe("multi-message operations", () => {
     expect(op?.messages).toHaveLength(2);
 
     const refs = op?.messages?.map((m: { $ref?: string }) => m.$ref);
-    expect(refs).toContain(
-      "#/channels/user.events/messages/UserCreated",
-    );
-    expect(refs).toContain(
-      "#/channels/user.events/messages/UserDeleted",
-    );
+    expect(refs).toContain("#/channels/user.events/messages/UserCreated");
+    expect(refs).toContain("#/channels/user.events/messages/UserDeleted");
   });
 
   it("should register all union messages in the channel", async () => {

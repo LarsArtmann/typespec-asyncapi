@@ -111,7 +111,12 @@ export const BINDING_PLACEMENT: Record<
   Record<BindingTargetKind, boolean>
 > = {
   amqp: { channel: true, message: true, operation: true, server: false },
-  googlepubsub: { channel: true, message: true, operation: false, server: false },
+  googlepubsub: {
+    channel: true,
+    message: true,
+    operation: false,
+    server: false,
+  },
   http: { channel: false, message: true, operation: true, server: false },
   kafka: { channel: true, message: true, operation: true, server: false },
   mqtt: { channel: false, message: true, operation: true, server: true },

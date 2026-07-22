@@ -9,10 +9,7 @@ import { processBindings } from "../../src/validation/binding-validator.js";
 
 describe("binding field validation", () => {
   it("catches invalid MQTT qos value", () => {
-    const { issues } = processBindings(
-      { mqtt: { qos: 99 } },
-      "operation",
-    );
+    const { issues } = processBindings({ mqtt: { qos: 99 } }, "operation");
     const qosIssue = issues.find((i) => i.format.field === "qos");
     expect(qosIssue).toBeDefined();
     expect(qosIssue!.code).toBe("invalid-binding-field");
@@ -20,10 +17,7 @@ describe("binding field validation", () => {
 
   it("accepts valid MQTT qos values", () => {
     for (const qos of [0, 1, 2]) {
-      const { issues } = processBindings(
-        { mqtt: { qos } },
-        "operation",
-      );
+      const { issues } = processBindings({ mqtt: { qos } }, "operation");
       const qosIssue = issues.find((i) => i.format.field === "qos");
       expect(qosIssue).toBeUndefined();
     }
@@ -41,10 +35,7 @@ describe("binding field validation", () => {
 
   it("accepts valid HTTP methods", () => {
     for (const method of ["GET", "POST", "PUT", "DELETE"]) {
-      const { issues } = processBindings(
-        { http: { method } },
-        "operation",
-      );
+      const { issues } = processBindings({ http: { method } }, "operation");
       const methodIssue = issues.find((i) => i.format.field === "method");
       expect(methodIssue).toBeUndefined();
     }
@@ -101,9 +92,7 @@ describe("binding field validation", () => {
   });
 
   it("does not validate when targetKind is undefined", () => {
-    const { issues } = processBindings(
-      { mqtt: { qos: 999 } },
-    );
+    const { issues } = processBindings({ mqtt: { qos: 999 } });
     const qosIssue = issues.find((i) => i.format.field === "qos");
     expect(qosIssue).toBeUndefined();
   });

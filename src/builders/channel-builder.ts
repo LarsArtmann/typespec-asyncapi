@@ -6,10 +6,7 @@
  */
 
 import type { AsyncAPIConsolidatedState } from "../state.js";
-import type {
-  ChannelObject,
-  Ref,
-} from "../domain/models/asyncapi-document.js";
+import type { ChannelObject, Ref } from "../domain/models/asyncapi-document.js";
 import {
   escapeRefToken,
   ref,

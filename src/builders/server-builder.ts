@@ -35,10 +35,7 @@ export function buildServers(
         server.variables = vars;
       }
 
-      if (
-        namespaceBindings &&
-        Object.keys(namespaceBindings).length > 0
-      ) {
+      if (namespaceBindings && Object.keys(namespaceBindings).length > 0) {
         server.bindings = namespaceBindings;
       }
 

@@ -65,7 +65,9 @@ export function inferActionFromName(name: string): OperationAction {
 }
 
 /** Map a decorator-declared operation type to an AsyncAPI OperationAction. */
-export function operationAction(type: OperationTypeData["type"]): OperationAction {
+export function operationAction(
+  type: OperationTypeData["type"],
+): OperationAction {
   return type === "publish" ? "send" : "receive";
 }
 
@@ -161,7 +163,9 @@ export function extractChannelParameters(
 }
 
 /** Build protocol-specific channel bindings from a ProtocolConfigData entry. */
-export function buildProtocolBinding(data: ProtocolConfigData): ProtocolBindings {
+export function buildProtocolBinding(
+  data: ProtocolConfigData,
+): ProtocolBindings {
   const bindingKey = normalizeBindingProtocol(data.protocol);
   const bindingData: Record<string, unknown> = { ...data.binding };
   if (

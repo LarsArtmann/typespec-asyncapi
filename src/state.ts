@@ -220,9 +220,6 @@ export function consolidateAsyncAPIState(
       stateSymbols.serverConfigs,
     ),
     tags: getStateMap<TagData>(program, stateSymbols.tags),
-    operationIds: getStateMap<string>(
-      program,
-      stateSymbols.operationIds,
-    ),
+    operationIds: getStateMap<string>(program, stateSymbols.operationIds),
   };
 }

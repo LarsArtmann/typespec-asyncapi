@@ -353,10 +353,10 @@ describe("real AsyncAPI Generation Tests", () => {
       expect(program).toBeDefined();
       expect(outputFiles.size).toBeGreaterThan(0);
 
-      const asyncapiDoc = (await parseAsyncAPIOutput(
+      const asyncapiDoc = await parseAsyncAPIOutput(
         outputFiles,
         "enterprise-events.json",
-      ));
+      );
 
       // Validate AsyncAPI document structure
       expect(asyncapiDoc.asyncapi).toBe("3.1.0");
@@ -487,10 +487,10 @@ describe("real AsyncAPI Generation Tests", () => {
 
       const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
 
-      const asyncapiDoc = (await parseAsyncAPIOutput(
+      const asyncapiDoc = await parseAsyncAPIOutput(
         outputFiles,
         "union-type-test.json",
-      ));
+      );
 
       // Validate union type handling in schema
       const flexibleEventSchema = asyncapiDoc.components.schemas.FlexibleEvent;
@@ -574,10 +574,10 @@ describe("real AsyncAPI Generation Tests", () => {
 
       const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
 
-      const asyncapiDoc = (await parseAsyncAPIOutput(
+      const asyncapiDoc = await parseAsyncAPIOutput(
         outputFiles,
         "multi-namespace-test.json",
-      ));
+      );
 
       // Validate schemas from all namespaces using shared utility
       const expectedSchemas = [
@@ -647,10 +647,10 @@ describe("real AsyncAPI Generation Tests", () => {
 
       const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
 
-      const asyncapiDoc = (await parseAsyncAPIOutput(
+      const asyncapiDoc = await parseAsyncAPIOutput(
         outputFiles,
         "compliance-test.json",
-      ));
+      );
 
       // Validate AsyncAPI 3.1.0 specification compliance
       expect(asyncapiDoc.asyncapi).toBe("3.1.0");
@@ -741,10 +741,10 @@ describe("real AsyncAPI Generation Tests", () => {
 
       const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
 
-      const asyncapiDoc = (await parseAsyncAPIOutput(
+      const asyncapiDoc = await parseAsyncAPIOutput(
         outputFiles,
         "reference-test.json",
-      ));
+      );
 
       // Validate all referenced schemas are generated
       expect(asyncapiDoc.components.schemas.BaseReference).toBeDefined();
@@ -779,10 +779,10 @@ describe("real AsyncAPI Generation Tests", () => {
       const endTime = Date.now();
       const compilationTime = endTime - startTime;
 
-      const asyncapiDoc = (await parseAsyncAPIOutput(
+      const asyncapiDoc = await parseAsyncAPIOutput(
         outputFiles,
         "large-scale-test.json",
-      ));
+      );
 
       // Validate scale - should have 20 schemas and 40 operations
       expect(Object.keys(asyncapiDoc?.components?.schemas)).toHaveLength(20);

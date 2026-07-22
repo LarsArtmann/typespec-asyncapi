@@ -22,7 +22,10 @@ import type {
 } from "./domain/models/asyncapi-document.js";
 import type { DocumentBuildContext } from "./builders/types.js";
 import { discoverOperations } from "./builders/operation-discovery.js";
-import { applyChannelDocs, attachChannelBindings } from "./builders/channel-builder.js";
+import {
+  applyChannelDocs,
+  attachChannelBindings,
+} from "./builders/channel-builder.js";
 import { buildOperations } from "./builders/operation-builder.js";
 import { mergeExplicitMessages } from "./builders/message-builder.js";
 import { buildServers } from "./builders/server-builder.js";
@@ -103,7 +106,6 @@ function assembleDocument(
     channels: ctx.channels,
     operations:
       Object.keys(ctx.operations).length > 0 ? ctx.operations : undefined,
-    components:
-      Object.keys(components).length > 0 ? components : undefined,
+    components: Object.keys(components).length > 0 ? components : undefined,
   };
 }

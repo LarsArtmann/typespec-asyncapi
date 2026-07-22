@@ -5,7 +5,11 @@
  * Each function corresponds to a specific decorator's state storage.
  */
 
-import type { MessageConfigData, OperationReplyData, ProtocolConfigData } from "./state.js";
+import type {
+  MessageConfigData,
+  OperationReplyData,
+  ProtocolConfigData,
+} from "./state.js";
 import type {
   Model,
   ModelProperty,
