@@ -9,6 +9,27 @@
     "suspicious": "error",
     "pedantic": "warn"
   },
+  "rules": {
+    "oxc/no-async-await": "off",
+    "oxc/no-optional-chaining": "off",
+    "oxc/no-rest-spread-properties": "off",
+    "eslint/no-ternary": "off",
+    "eslint/no-undefined": "off",
+    "eslint/func-style": "off",
+    "eslint/id-length": "off",
+    "typescript/explicit-member-accessibility": "off",
+    "unicorn/no-null": "off"
+  },
+  "overrides": [
+    {
+      "files": ["test/**"],
+      "categories": {
+        "pedantic": "off",
+        "style": "off",
+        "restriction": "off"
+      }
+    }
+  ],
   "settings": {
     "vitest": {
       "typecheck": false
