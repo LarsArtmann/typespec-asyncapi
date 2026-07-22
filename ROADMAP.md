@@ -6,7 +6,7 @@
 
 ## Current State
 
-Pre-alpha (`0.1.0-alpha`). The emitter produces spec-compliant AsyncAPI 3.1 output validated against the official JSON Schema. 551 tests pass across 48 files. Oxlint and ESLint both clean (0 errors, 0 warnings). 17 diagnostic codes, all compile-time validated. Full protocol binding support (Kafka, AMQP, MQTT, WebSocket, HTTP) with auto-versioning and key normalization. Binding placement validation with `misplaced-binding` warnings.
+Pre-alpha (`0.1.0-alpha`). The emitter produces spec-compliant AsyncAPI 3.1 output validated against the official JSON Schema. 553 tests pass across 48 files. Oxlint and ESLint both clean (0 errors, 0 warnings). 18 diagnostic codes, all compile-time validated. Full protocol binding support (Kafka, AMQP, MQTT, WebSocket, HTTP) with auto-versioning and key normalization. Binding placement validation with `misplaced-binding` warnings.
 
 ## Themes
 
@@ -32,7 +32,10 @@ Make the emitter a joy to use and maintain.
 Raw ideas:
 
 - AsyncAPI Studio compatibility verification (round-trip: emit → import → validate)
-- `ParsedAsyncAPIDocument` type to eliminate `as any` in test assertions
+- ~~`ParsedAsyncAPIDocument` type to eliminate `as any` in test assertions~~ **DONE** (14 `as any` → 1, 553 tests pass)
+- Remove 20 redundant `as AsyncAPIObject` casts now that the alias is properly typed
+- Clean up 60+ `Record<string, unknown>` casts in compliance tests (`compliance/protocol-bindings.test.ts`, `compliance/ref-chain.test.ts`, `compliance/schema-types.test.ts`, `compliance/servers-security.test.ts`)
+- Fix `schema-validator.ts` and `type-guards.ts` to return/assert `ParsedAsyncAPIDocument` instead of `Record<string, unknown>`
 - Coverage tooling that works with TypeSpec's `dist/*.js` loading pattern (vitest can't instrument opaque modules)
 - Consolidate ESLint and oxlint configs (two linters with potentially contradictory rules)
 - Performance profiling for large specifications (100+ channels)

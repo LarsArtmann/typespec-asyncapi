@@ -135,7 +135,11 @@ export class AsyncAPIValidationError extends Error {
 ```typescript
 export const createChannelPath = (path: string): ChannelPath => {
   if (!path.startsWith("/")) {
-    throw new AsyncAPIValidationError("Channel path must start with '/'", "path", path);
+    throw new AsyncAPIValidationError(
+      "Channel path must start with '/'",
+      "path",
+      path,
+    );
   }
   return path as ChannelPath;
 };

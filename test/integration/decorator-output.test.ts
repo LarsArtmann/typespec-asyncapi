@@ -215,4 +215,33 @@ describe("decorator Output: @doc on channels", () => {
     expect(channel).toBeDefined();
     expect(channel.description).toBe("Should not appear");
   });
+
+  it("should propagate @doc to operation description", async () => {
+    const doc = await compileAndGetDoc(`
+      @doc("Publishes user events to the platform")
+      @channel("users.events")
+      @publish
+      op publishUserEvent(): UserEvent;
+
+      model UserEvent { id: string; }
+    `);
+
+    const op = doc.operations?.publishUserEvent;
+    expect(op).toBeDefined();
+    expect(op.description).toBe("Publishes user events to the platform");
+  });
+
+  it("should propagate @doc to message summary when no @message description", async () => {
+    const doc = await compileAndGetDoc(`
+      @doc("Represents a user lifecycle event")
+      model UserEvent { id: string; }
+
+      @channel("users.events")
+      @publish
+      op publishUserEvent(): UserEvent;
+    `);
+
+    const msg = doc.channels?.["users.events"]?.messages?.UserEvent;
+    expect(msg).toBeDefined();
+  });
 });

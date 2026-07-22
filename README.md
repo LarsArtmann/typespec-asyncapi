@@ -1,7 +1,7 @@
 # TypeSpec AsyncAPI Emitter
 
 [![Build Status](https://img.shields.io/badge/Build-PASSING-green)](https://github.com/LarsArtmann/typespec-asyncapi)
-[![Tests](https://img.shields.io/badge/Tests-551%20pass%2C%200%20fail-green)](https://github.com/LarsArtmann/typespec-asyncapi)
+[![Tests](https://img.shields.io/badge/Tests-555%20pass%2C%200%20fail-green)](https://github.com/LarsArtmann/typespec-asyncapi)
 [![AsyncAPI](https://img.shields.io/badge/AsyncAPI-3.1.0-blue)](https://www.asyncapi.com/)
 
 A TypeSpec emitter that transforms TypeSpec service definitions into [AsyncAPI 3.1](https://www.asyncapi.com/) specifications. Define your event schemas, channels, and operations in TypeSpec, then generate standards-compliant AsyncAPI YAML.
@@ -232,7 +232,7 @@ git clone https://github.com/LarsArtmann/typespec-asyncapi
 cd typespec-asyncapi
 bun install
 bun run build     # Build TypeScript (0 errors)
-bun run test      # Run tests via vitest (551 pass, 0 fail)
+bun run test      # Run tests via vitest (555 pass, 0 fail)
 bun run lint      # ESLint
 ```
 
@@ -241,7 +241,7 @@ bun run lint      # ESLint
 **Version:** 0.2.0-beta
 **Build:** 0 TypeScript errors
 **Lint:** 0 errors, 0 warnings
-**Tests:** 551 pass, 0 fail (0 skip, 0 todo)
+**Tests:** 555 pass, 0 fail (0 skip, 0 todo)
 **Output:** Validates against AsyncAPI 3.1.0 JSON schema (78 compliance tests)
 **Bindings:** Full support for Kafka, AMQP, MQTT, WebSocket, HTTP with auto-versioning
 

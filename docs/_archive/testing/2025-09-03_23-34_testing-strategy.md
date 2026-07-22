@@ -68,7 +68,9 @@ describe("ValidationService", () => {
     const document = createValidAsyncApiDoc();
 
     // Act & Assert: Effect.TS composition
-    const result = await Effect.runPromise(validationService.validateDocument(document));
+    const result = await Effect.runPromise(
+      validationService.validateDocument(document),
+    );
 
     expect(result.isValid).toBe(true);
     expect(result.errors).toHaveLength(0);
@@ -201,7 +203,10 @@ export const When = (action: string, actionFn: (context: any) => any) => ({
   execute: actionFn,
 });
 
-export const Then = (expectation: string, assertionFn: (result: any) => void) => ({
+export const Then = (
+  expectation: string,
+  assertionFn: (result: any) => void,
+) => ({
   expectation,
   assert: assertionFn,
 });
@@ -219,11 +224,15 @@ export const BDDScenario = (given: any, when: any, then: any) => {
 
 ```typescript
 // test/helpers/effect-test-utils.ts
-export const runEffectTest = <A, E>(effect: Effect.Effect<A, E>): Promise<A> => {
+export const runEffectTest = <A, E>(
+  effect: Effect.Effect<A, E>,
+): Promise<A> => {
   return Effect.runPromise(effect);
 };
 
-export const expectEffectSuccess = async <A, E>(effect: Effect.Effect<A, E>): Promise<A> => {
+export const expectEffectSuccess = async <A, E>(
+  effect: Effect.Effect<A, E>,
+): Promise<A> => {
   const result = await Effect.runPromise(Effect.either(effect));
   if (Effect.isLeft(result)) {
     throw new Error(`Expected success but got error: ${result.left}`);
@@ -231,7 +240,9 @@ export const expectEffectSuccess = async <A, E>(effect: Effect.Effect<A, E>): Pr
   return result.right;
 };
 
-export const expectEffectFailure = async <A, E>(effect: Effect.Effect<A, E>): Promise<E> => {
+export const expectEffectFailure = async <A, E>(
+  effect: Effect.Effect<A, E>,
+): Promise<E> => {
   const result = await Effect.runPromise(Effect.either(effect));
   if (Effect.isRight(result)) {
     throw new Error(`Expected failure but got success: ${result.right}`);

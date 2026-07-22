@@ -242,7 +242,11 @@ test("should create multiple channels", async () => {
   expect(channelKeys).toContain("notification.events");
 
   // Or check array equality if order matters
-  expect(channelKeys.sort()).toEqual(["notification.events", "system.events", "user.events"]);
+  expect(channelKeys.sort()).toEqual([
+    "notification.events",
+    "system.events",
+    "user.events",
+  ]);
 });
 ```
 
@@ -296,7 +300,8 @@ export function assertHasProperty<T extends object>(
   const keys = Object.keys(obj || {});
   if (!keys.includes(key)) {
     throw new Error(
-      message || `Expected object to have property "${key}". Found: ${keys.join(", ")}`,
+      message ||
+        `Expected object to have property "${key}". Found: ${keys.join(", ")}`,
     );
   }
 }
@@ -312,7 +317,9 @@ export function assertHasProperties<T extends object>(
   const missing = keys.filter((k) => !objectKeys.includes(k));
 
   if (missing.length > 0) {
-    throw new Error(`Missing properties: ${missing.join(", ")}. Found: ${objectKeys.join(", ")}`);
+    throw new Error(
+      `Missing properties: ${missing.join(", ")}. Found: ${objectKeys.join(", ")}`,
+    );
   }
 }
 
@@ -335,7 +342,9 @@ export function assertAsyncAPIDoc(doc: unknown): asserts doc is AsyncAPIObject {
 /**
  * Get property keys safely with type narrowing
  */
-export function getPropertyKeys<T extends object>(obj: T | undefined | null): string[] {
+export function getPropertyKeys<T extends object>(
+  obj: T | undefined | null,
+): string[] {
   return Object.keys(obj || {});
 }
 ```
@@ -355,7 +364,11 @@ test("my test", async () => {
   // Use helpers instead of toHaveProperty
   const channelKeys = getPropertyKeys(result.asyncapiDoc?.channels);
   assertHasProperty(result.asyncapiDoc?.channels, "user.events");
-  assertHasProperties(result.asyncapiDoc?.operations, "publishUserEvent", "subscribeUserEvent");
+  assertHasProperties(
+    result.asyncapiDoc?.operations,
+    "publishUserEvent",
+    "subscribeUserEvent",
+  );
 });
 ```
 
@@ -391,7 +404,10 @@ When a test fails:
 
    ```typescript
    console.log("Type:", typeof asyncapiDoc.channels);
-   console.log("Is Object:", Object.prototype.toString.call(asyncapiDoc.channels));
+   console.log(
+     "Is Object:",
+     Object.prototype.toString.call(asyncapiDoc.channels),
+   );
    ```
 
 3. **Verify Property Exists:**

@@ -11,7 +11,7 @@
 bun install           # Install dependencies
 bun run build         # Build TypeScript → JavaScript (0 errors)
 bun run lint          # Run ESLint (0 errors, 0 warnings)
-bun run test          # Run tests via vitest (551 pass, 0 fail)
+bun run test          # Run tests via vitest (555 pass, 0 fail)
 ```
 
 **Important:** Use `bun` and `bunx` for install/build, never `npm` or `npx`. Tests run via **vitest** (Node.js/V8) — not `bun test` — because Bun has documented memory leaks that cause OOM crashes with heavy test suites.
@@ -97,7 +97,9 @@ extern dec bindings(target: Operation | Model, value: {} | valueof Record<unknow
 The `@typespec/asset-emitter` API returns `EmitEntity<T>` objects that must be narrowed before extracting values. The `extractValue()` function in `schema-emitter.ts` handles this:
 
 ```typescript
-export function extractValue(entity: EmitEntity<SchemaObject> | undefined): SchemaObject {
+export function extractValue(
+  entity: EmitEntity<SchemaObject> | undefined,
+): SchemaObject {
   if (!entity) return {};
   switch (entity.kind) {
     case "declaration":

@@ -205,6 +205,7 @@ export function buildAsyncAPIDocument(
   // 1a. Operations from @publish/@subscribe + @channel decorators
   const opToChannel = new Map<string, string>();
   const channelDocs = new Map<string, string>();
+  const opDocs = new Map<string, string>();
   for (const [type, data] of state.channels) {
     const name = nameOfType(type);
     if (!name) {
@@ -224,6 +225,11 @@ export function buildAsyncAPIDocument(
     }
     const channelKey = opToChannel.get(name) ?? name;
     const messageName = data.messageType ?? returnModelName(type) ?? name;
+
+    const doc = getDoc(program, type);
+    if (doc) {
+      opDocs.set(name, doc);
+    }
 
     discoveredOps.push({
       action: operationAction(data.type),
@@ -272,6 +278,10 @@ export function buildAsyncAPIDocument(
         continue;
       }
       const messageName = returnModelName(op) ?? opName;
+      const bareDoc = getDoc(program, op);
+      if (bareDoc) {
+        opDocs.set(opName, bareDoc);
+      }
       discoveredOps.push({
         action: inferActionFromName(opName),
         channelKey: opName,
@@ -300,6 +310,11 @@ export function buildAsyncAPIDocument(
       (t) => nameOfType(t) === op.opName,
     );
     if (opType) {
+      const doc = getDoc(program, opType);
+      if (doc) {
+        opDocs.set(op.opName, doc);
+      }
+
       const tags = state.tags.get(opType);
       if (tags && tags.length > 0) {
         operationObj.tags = tags;
@@ -319,6 +334,14 @@ export function buildAsyncAPIDocument(
     const channel = channels[channelKey];
     if (channel && !channel.description) {
       channel.description = doc;
+    }
+  }
+
+  // 2a-c. Apply @doc descriptions to operations
+  for (const [opName, doc] of opDocs) {
+    const op = operations[opName];
+    if (op && !op.description) {
+      op.description = doc;
     }
   }
 
@@ -363,6 +386,21 @@ export function buildAsyncAPIDocument(
     }
 
     messages[msgKey] = msgObj;
+  }
+
+  // 2c-b. Apply @doc to messages without explicit @message description
+  for (const [type] of state.messages) {
+    const name = nameOfType(type);
+    if (!name || !messages[name]) {
+      continue;
+    }
+    const msg = messages[name];
+    if (!msg.summary) {
+      const doc = getDoc(program, type);
+      if (doc) {
+        msg.summary = doc;
+      }
+    }
   }
 
   // 2c. Apply decorators to auto-registered messages

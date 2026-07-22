@@ -88,9 +88,11 @@ await Effect.runPromise(emitterProgram);
 
 ```typescript
 // Define custom logger
-export const ConsoleLogger = Logger.make(({ logLevel, message, annotations }) => {
-  // Custom formatting and output
-});
+export const ConsoleLogger = Logger.make(
+  ({ logLevel, message, annotations }) => {
+    // Custom formatting and output
+  },
+);
 
 // Create Layer
 export const LoggerLive = Logger.replace(Logger.defaultLogger, ConsoleLogger);

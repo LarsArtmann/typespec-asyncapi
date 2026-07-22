@@ -1,6 +1,6 @@
 # Feature Inventory
 
-**Verified:** 2026-07-22 against actual code + test run (551 pass, 0 fail, 0 skip, 0 todo)
+**Verified:** 2026-07-22 against actual code + test run (555 pass, 0 fail, 0 skip, 0 todo)
 **Project:** `@lars-artmann/typespec-asyncapi` v0.2.0-beta
 **Lint:** oxlint 0 errors / 0 warnings, ESLint 0 errors / 0 warnings
 **Diagnostics:** 18 codes (15 error + 3 warning), all compile-time validated via `$lib.reportDiagnostic()`
@@ -98,7 +98,7 @@
 
 | Feature                 | Status           | Evidence                                                                          |
 | ----------------------- | ---------------- | --------------------------------------------------------------------------------- |
-| vitest test runner      | FULLY_FUNCTIONAL | 551 tests across 48 files (0 skip, 0 todo)                                        |
+| vitest test runner      | FULLY_FUNCTIONAL | 555 tests across 48 files (0 skip, 0 todo)                                        |
 | Golden file test        | FULLY_FUNCTIONAL | `test/golden/golden-file.test.ts`                                                 |
 | Schema validation tests | FULLY_FUNCTIONAL | `test/validation/schema-validation.test.ts`                                       |
 | Spec compliance suite   | FULLY_FUNCTIONAL | `test/compliance/` — 78 tests validated against official AsyncAPI 3.1 JSON Schema |

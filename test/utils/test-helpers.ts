@@ -153,7 +153,7 @@ export async function compileAsyncAPISpec(
   options: AsyncAPIEmitterOptions = {},
 ): Promise<
   AsyncAPIObject & {
-    diagnostics: readonly any[];
+    diagnostics: readonly import("@typespec/compiler").Diagnostic[];
     outputFiles: Map<string, string>;
   }
 > {
@@ -202,14 +202,13 @@ export async function parseAsyncAPIOutput(
         fn.endsWith(".yml")) &&
       !filePath.includes("node_modules")
     ) {
-      const actualContent = content;
-      if (!actualContent || actualContent.trim().length === 0) {
+      if (!content || content.trim().length === 0) {
         continue;
       }
-      if (actualContent.trim().startsWith("{")) {
-        return JSON.parse(actualContent);
+      if (content.trim().startsWith("{")) {
+        return JSON.parse(content);
       }
-      return YAML.parse(actualContent) as AsyncAPIObject;
+      return YAML.parse(content) as AsyncAPIObject;
     }
   }
   throw new Error(`AsyncAPI output "${filename}" not found.`);
@@ -229,7 +228,7 @@ export async function createAsyncAPITestHost() {
       files.set(name, content);
     },
 
-    async compile(_mainPath: string, _options?: any) {
+    async compile(_mainPath: string, _options?: AsyncAPIEmitterOptions) {
       const source = files.get("main.tsp") ?? files.values().next().value;
       if (!source) {
         return {};
@@ -241,7 +240,10 @@ export async function createAsyncAPITestHost() {
       return {};
     },
 
-    async compileAndDiagnose(_mainPath: string, _options?: any) {
+    async compileAndDiagnose(
+      _mainPath: string,
+      _options?: AsyncAPIEmitterOptions,
+    ) {
       const source = files.get("main.tsp") ?? files.values().next().value;
       if (!source) {
         return [{}, []];
@@ -253,7 +255,7 @@ export async function createAsyncAPITestHost() {
       return [{}, result.diagnostics];
     },
 
-    async diagnose(_mainPath: string, _options?: any) {
+    async diagnose(_mainPath: string, _options?: AsyncAPIEmitterOptions) {
       const source = files.get("main.tsp") ?? files.values().next().value;
       if (!source) {
         return [];

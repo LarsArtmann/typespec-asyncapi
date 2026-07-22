@@ -113,7 +113,8 @@ type ProtocolValidationResult = {
 ```typescript
 // NEW - Discriminated Union
 type ProtocolValidationResult =
-  { _tag: "valid"; warnings: string[] } | { _tag: "invalid"; errors: string[]; warnings: string[] };
+  | { _tag: "valid"; warnings: string[] }
+  | { _tag: "invalid"; errors: string[]; warnings: string[] };
 
 // Helper functions
 export const protocolValidationHelpers = {
@@ -191,10 +192,14 @@ export const templateValidationHelpers = {
 yield * Effect.logInfo(`option: ${context.options["output-file"]}`);
 
 // NEW - Explicit type conversion
-yield * Effect.logInfo(`option: ${String(context.options["output-file"] ?? "undefined")}`);
+yield *
+  Effect.logInfo(
+    `option: ${String(context.options["output-file"] ?? "undefined")}`,
+  );
 
 // NEW - Proper type assertion
-const outputFile = (context.options["output-file"] as string | undefined) ?? "asyncapi";
+const outputFile =
+  (context.options["output-file"] as string | undefined) ?? "asyncapi";
 ```
 
 #### B) Banned try/catch Block (Line 159)
@@ -202,7 +207,8 @@ const outputFile = (context.options["output-file"] as string | undefined) ?? "as
 ```typescript
 // OLD - Banned by ESLint (should use Effect.gen)
 try {
-  const programFs = (context.program as any).fs || (context.program as any).virtualFs;
+  const programFs =
+    (context.program as any).fs || (context.program as any).virtualFs;
   programFs.add(path, content);
 } catch (error) {
   console.log(error);
@@ -221,7 +227,11 @@ yield *
     if (programFs?.add && typeof programFs.add === "function") {
       programFs.add(tspOutputPath, content);
     }
-  }).pipe(Effect.catchAll((error) => Effect.logInfo(`bridging failed: ${String(error)}`)));
+  }).pipe(
+    Effect.catchAll((error) =>
+      Effect.logInfo(`bridging failed: ${String(error)}`),
+    ),
+  );
 ```
 
 #### C) Unsafe 'any' Type Assignments (Line 161)
