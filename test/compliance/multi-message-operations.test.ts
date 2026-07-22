@@ -1,7 +1,7 @@
 import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
 
 describe("multi-message operations", () => {
-  it("should emit multiple messages for a union return type", () => {
+  it("should emit multiple messages for a union return type", async () => {
     const spec = `
       @service(#{title: "Multi-Message Test"})
       @defaultContentType("application/json")
@@ -22,7 +22,7 @@ describe("multi-message operations", () => {
       op publishUserEvent(): UserCreated | UserDeleted;
     `;
 
-    const doc = compileAndValidateOrThrow(spec);
+    const doc = await compileAndValidateOrThrow(spec);
 
     const op = doc.operations?.["publishUserEvent"];
     expect(op).toBeDefined();
@@ -38,7 +38,7 @@ describe("multi-message operations", () => {
     );
   });
 
-  it("should register all union messages in the channel", () => {
+  it("should register all union messages in the channel", async () => {
     const spec = `
       @service(#{title: "Channel Messages Test"})
       @defaultContentType("application/json")
@@ -59,7 +59,7 @@ describe("multi-message operations", () => {
       op publishOrderEvents(): OrderPlaced | OrderShipped;
     `;
 
-    const doc = compileAndValidateOrThrow(spec);
+    const doc = await compileAndValidateOrThrow(spec);
 
     const channel = doc.channels?.["orders"];
     expect(channel).toBeDefined();
@@ -69,7 +69,7 @@ describe("multi-message operations", () => {
     expect(channel?.messages).toHaveProperty("OrderShipped");
   });
 
-  it("should register all message schemas in components", () => {
+  it("should register all message schemas in components", async () => {
     const spec = `
       @service(#{title: "Schema Registration Test"})
       @defaultContentType("application/json")
@@ -92,14 +92,14 @@ describe("multi-message operations", () => {
       op publishEvents(): EventA | EventB | EventC;
     `;
 
-    const doc = compileAndValidateOrThrow(spec);
+    const doc = await compileAndValidateOrThrow(spec);
 
     expect(doc.components?.schemas).toHaveProperty("EventA");
     expect(doc.components?.schemas).toHaveProperty("EventB");
     expect(doc.components?.schemas).toHaveProperty("EventC");
   });
 
-  it("should still work with a single return type (backward compatible)", () => {
+  it("should still work with a single return type (backward compatible)", async () => {
     const spec = `
       @service(#{title: "Single Message Test"})
       @defaultContentType("application/json")
@@ -114,7 +114,7 @@ describe("multi-message operations", () => {
       op publishSimple(): SimpleMessage;
     `;
 
-    const doc = compileAndValidateOrThrow(spec);
+    const doc = await compileAndValidateOrThrow(spec);
 
     const op = doc.operations?.["publishSimple"];
     expect(op).toBeDefined();
