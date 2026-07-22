@@ -9,7 +9,12 @@ import { getDoc, isStdNamespace } from "@typespec/compiler";
 import type { AsyncAPIConsolidatedState } from "../state.js";
 import type { DocumentBuildContext } from "./types.js";
 import { nameOfType } from "./types.js";
-import { inferActionFromName, operationAction, returnModelNames } from "./shared-utils.js";
+import {
+  inferActionFromName,
+  operationAction,
+  resolveMessageKey,
+  returnModelTypes,
+} from "./shared-utils.js";
 
 /**
  * Discover all operations from three sources:
@@ -27,6 +32,25 @@ export function discoverOperations(
   discoverDecoratedOps(state, ctx);
   discoverChannelOnlyOps(state, ctx);
   discoverBareOps(state, ctx);
+}
+
+/** Resolve message names and schema names from an operation's return type. */
+function resolveMessageInfo(
+  type: { kind: string },
+  state: AsyncAPIConsolidatedState,
+  fallbackName: string,
+): { messageNames: string[]; messageSchemaNames: string[] } {
+  const models = returnModelTypes(type as never);
+  if (models.length === 0) {
+    return {
+      messageNames: [fallbackName],
+      messageSchemaNames: [fallbackName],
+    };
+  }
+  return {
+    messageNames: models.map((m) => resolveMessageKey(m, state.messages)),
+    messageSchemaNames: models.map((m) => nameOfType(m) ?? fallbackName),
+  };
 }
 
 /** 1a. Operations from @publish/@subscribe + @channel decorators. */
@@ -51,24 +75,31 @@ function discoverDecoratedOps(
     if (!name) {
       continue;
     }
+    const opId = state.operationIds.get(type);
+    const opName = opId ?? name;
     const channelKey = ctx.opToChannel.get(name) ?? name;
-    const returnNames = returnModelNames(type);
-    const messageNames = data.messageType
-      ? [data.messageType]
-      : returnNames.length > 0
-        ? returnNames
-        : [name];
+
+    let { messageNames, messageSchemaNames } = resolveMessageInfo(
+      type,
+      state,
+      opName,
+    );
+    if (data.messageType) {
+      messageNames = [data.messageType];
+      messageSchemaNames = [data.messageType];
+    }
 
     const doc = getDoc(ctx.program, type);
     if (doc) {
-      ctx.opDocs.set(name, doc);
+      ctx.opDocs.set(opName, doc);
     }
 
     ctx.discoveredOps.push({
       action: operationAction(data.type),
       channelKey,
       messageNames,
-      opName: name,
+      messageSchemaNames,
+      opName,
     });
   }
 }
@@ -86,14 +117,16 @@ function discoverChannelOnlyOps(
     if (!name || opsWithType.has(name)) {
       continue;
     }
+    const opId = state.operationIds.get(type);
+    const opName = opId ?? name;
     const channelKey = data.path;
-    const returnNames = returnModelNames(type);
-    const messageNames = returnNames.length > 0 ? returnNames : [name];
+    const info = resolveMessageInfo(type, state, opName);
     ctx.discoveredOps.push({
       action: inferActionFromName(name),
       channelKey,
-      messageNames,
-      opName: name,
+      messageNames: info.messageNames,
+      messageSchemaNames: info.messageSchemaNames,
+      opName,
     });
   }
 }
@@ -118,17 +151,19 @@ function discoverBareOps(
       if (allKnownOps.has(opName)) {
         continue;
       }
-      const returnNames = returnModelNames(op);
-      const messageNames = returnNames.length > 0 ? returnNames : [opName];
+      const opId = state.operationIds.get(op);
+      const effectiveName = opId ?? opName;
+      const info = resolveMessageInfo(op, state, effectiveName);
       const bareDoc = getDoc(ctx.program, op);
       if (bareDoc) {
-        ctx.opDocs.set(opName, bareDoc);
+        ctx.opDocs.set(effectiveName, bareDoc);
       }
       ctx.discoveredOps.push({
         action: inferActionFromName(opName),
         channelKey: opName,
-        messageNames,
-        opName,
+        messageNames: info.messageNames,
+        messageSchemaNames: info.messageSchemaNames,
+        opName: effectiveName,
       });
     }
   }

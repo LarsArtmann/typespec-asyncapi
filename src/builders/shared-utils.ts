@@ -4,6 +4,12 @@
 
 import type { Type } from "@typespec/compiler";
 import type {
+  OperationAction,
+  ParameterObject,
+  ProtocolBindings,
+  SecurityScheme,
+} from "../domain/models/asyncapi-document.js";
+import type {
   MessageConfigData,
   OperationTypeData,
   ProtocolConfigData,
@@ -97,7 +103,48 @@ export function returnModelNames(type: Type): string[] {
   return [];
 }
 
-/** Extract channel path parameters from an address string. */
+/** Extract message model Type objects from an Operation type's return type. */
+export function returnModelTypes(type: Type): Type[] {
+  if (type.kind !== "Operation") {
+    return [];
+  }
+  const rt = type.returnType;
+
+  if (rt.kind === "Union") {
+    const types: Type[] = [];
+    for (const variant of rt.variants.values()) {
+      const v = variant.type;
+      if ("name" in v && typeof v.name === "string" && v.name) {
+        types.push(v);
+      }
+    }
+    return types;
+  }
+
+  if (
+    "name" in rt &&
+    typeof rt.name === "string" &&
+    rt.name &&
+    rt.kind !== "Operation"
+  ) {
+    return [rt];
+  }
+
+  return [];
+}
+
+/** Resolve the effective message key for a model type, checking @messageId overrides. */
+export function resolveMessageKey(
+  modelType: Type,
+  stateMessages: Map<Type, MessageConfigData>,
+): string {
+  const name =
+    "name" in modelType && typeof modelType.name === "string"
+      ? modelType.name
+      : "";
+  const msgData = stateMessages.get(modelType);
+  return msgData?.messageId ?? name;
+}
 export function extractChannelParameters(
   address: string,
 ): Record<string, ParameterObject> | undefined {

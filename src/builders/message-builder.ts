@@ -49,12 +49,16 @@ function applyExplicitMessageDocs(
   state: AsyncAPIConsolidatedState,
   ctx: DocumentBuildContext,
 ): void {
-  for (const [type] of state.messages) {
+  for (const [type, data] of state.messages) {
     const name = nameOfType(type);
-    if (!name || !ctx.messages[name]) {
+    if (!name) {
       continue;
     }
-    const msg = ctx.messages[name];
+    const key = data.messageId ?? name;
+    const msg = ctx.messages[key];
+    if (!msg) {
+      continue;
+    }
     if (!msg.summary) {
       const doc = getDoc(ctx.program, type);
       if (doc) {
@@ -76,11 +80,15 @@ function applyAutoMessageDecorators(
     ...state.tags,
   ]) {
     const typeName = nameOfType(type);
-    if (!typeName || !ctx.messages[typeName]) {
+    if (!typeName) {
       continue;
     }
-
-    const msg = ctx.messages[typeName];
+    const msgData = state.messages.get(type);
+    const key = msgData?.messageId ?? typeName;
+    const msg = ctx.messages[key];
+    if (!msg) {
+      continue;
+    }
     applyCorrelationId(state, type, msg, true);
     applyHeaders(state, type, msg, true);
     applyMessageBindings(state, type, msg, true);

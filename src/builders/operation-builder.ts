@@ -26,8 +26,9 @@ export function buildOperations(
   ctx: DocumentBuildContext,
 ): void {
   for (const op of ctx.discoveredOps) {
-    for (const msgName of op.messageNames) {
-      registerMessage(ctx, msgName, op.channelKey);
+    for (let i = 0; i < op.messageNames.length; i++) {
+      const schemaName = op.messageSchemaNames[i] ?? op.messageNames[i];
+      registerMessage(ctx, op.messageNames[i], op.channelKey, undefined, schemaName);
     }
 
     const operationObj: OperationObject = {
@@ -60,11 +61,12 @@ export function buildOperations(
 
       const replyData = state.operationReplies.get(opType);
       if (replyData) {
-        registerMessage(ctx, replyData.messageName, op.channelKey);
+        const { replyKey, schemaName } = resolveReplyKey(state, replyData.messageName);
+        registerMessage(ctx, replyKey, op.channelKey, undefined, schemaName);
         const reply: OperationReply = {
           messages: [
             ref(
-              `#/channels/${escapeRefToken(op.channelKey)}/messages/${escapeRefToken(replyData.messageName)}`,
+              `#/channels/${escapeRefToken(op.channelKey)}/messages/${escapeRefToken(replyKey)}`,
             ),
           ],
         };
@@ -91,4 +93,17 @@ function applyOperationDocs(ctx: DocumentBuildContext): void {
       op.description = doc;
     }
   }
+}
+
+/** Resolve the effective reply message key, checking @messageId overrides. */
+function resolveReplyKey(
+  state: AsyncAPIConsolidatedState,
+  modelName: string,
+): { replyKey: string; schemaName: string } {
+  for (const [modelType, msgData] of state.messages) {
+    if (nameOfType(modelType) === modelName && msgData.messageId) {
+      return { replyKey: msgData.messageId, schemaName: modelName };
+    }
+  }
+  return { replyKey: modelName, schemaName: modelName };
 }

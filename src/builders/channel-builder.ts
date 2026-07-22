@@ -45,13 +45,15 @@ export function registerMessage(
   messageName: string,
   channelKey: string,
   msgData?: { title?: string; description?: string; contentType?: string },
+  schemaName?: string,
 ): void {
   if (!ctx.messages[messageName]) {
+    const schema = schemaName ?? messageName;
     ctx.messages[messageName] = {
       name: msgData?.title ?? messageName,
       contentType: msgData?.contentType ?? "application/json",
       ...(msgData?.description ? { summary: msgData.description } : {}),
-      payload: refSchema(messageName),
+      payload: refSchema(schema),
     };
   }
   const channel = ensureChannel(ctx, channelKey);
