@@ -40,11 +40,11 @@ describe("spec Compliance: Operation Reply", () => {
     `);
 
     const reply = doc.operations?.sendRequest?.reply;
-    const address = reply?.address;
-    expect(address).toBeDefined();
-    if (address && typeof address === "object" && "location" in address) {
-      expect(address.location).toBe("$message.header#/replyTo");
-    }
+    expect(reply?.address).toBeDefined();
+    expect(reply?.address).toHaveProperty(
+      "location",
+      "$message.header#/replyTo",
+    );
   });
 
   it("registers reply message in components.messages", async () => {

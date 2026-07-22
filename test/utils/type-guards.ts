@@ -23,7 +23,7 @@
  * ```
  */
 
-import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js";
+import type { ParsedAsyncAPIDocument } from "../../src/domain/models/asyncapi-document.js";
 
 /**
  * Type guard: Asserts value is AsyncAPI 3.1 document
@@ -44,7 +44,7 @@ import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js";
  */
 export function assertAsyncAPIDoc(
   value: unknown,
-): asserts value is AsyncAPIObject {
+): asserts value is ParsedAsyncAPIDocument {
   // Check value exists and is object
   if (!value || typeof value !== "object") {
     throw new Error(
@@ -52,7 +52,7 @@ export function assertAsyncAPIDoc(
     );
   }
 
-  const doc = value as Partial<AsyncAPIObject>;
+  const doc = value as Partial<ParsedAsyncAPIDocument>;
 
   // Check AsyncAPI version
   if (doc.asyncapi !== "3.1.0") {

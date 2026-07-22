@@ -16,6 +16,7 @@ import Ajv, { type ErrorObject } from "ajv";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { parse as parseYAML } from "yaml";
+import type { ParsedAsyncAPIDocument } from "../../src/domain/models/asyncapi-document.js";
 import { compileAsyncAPISpecRaw } from "./test-helpers.js";
 
 const schemaPath = join(
@@ -37,7 +38,7 @@ const validateSchema = ajv.compile(asyncApiSchema);
 export interface ValidationResult {
   valid: boolean;
   errors: ErrorObject[] | null;
-  document: Record<string, unknown>;
+  document: ParsedAsyncAPIDocument;
   diagnostics: { severity: string; code: string; message: string }[];
 }
 
@@ -60,10 +61,10 @@ export async function compileAndValidate(
 
   const errorDiagnostics = diagnostics.filter((d) => d.severity === "error");
 
-  let document: Record<string, unknown> | undefined;
+  let document: ParsedAsyncAPIDocument | undefined;
   for (const [, content] of raw.outputFiles) {
     if (typeof content === "string" && content.startsWith("asyncapi")) {
-      document = parseYAML(content) as Record<string, unknown>;
+      document = parseYAML(content) as ParsedAsyncAPIDocument;
       break;
     }
   }
@@ -92,7 +93,7 @@ export async function compileAndValidate(
  */
 export async function compileAndValidateOrThrow(
   source: string,
-): Promise<Record<string, unknown>> {
+): Promise<ParsedAsyncAPIDocument> {
   const result = await compileAndValidate(source);
 
   if (!result.valid) {
