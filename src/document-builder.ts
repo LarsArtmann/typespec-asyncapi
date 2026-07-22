@@ -114,7 +114,7 @@ function returnModelName(type: Type): string | undefined {
 
 /** Extract channel path parameters from an address string. */
 function extractChannelParameters(address: string): Record<string, ParameterObject> | undefined {
-  const matches = address.match(/\{([^}]+)\}/g);
+  const matches = address.match(/\{(?<param>[^}]+)\}/gu);
   if (!matches || matches.length === 0) {
     return undefined;
   }
@@ -399,7 +399,7 @@ export function buildAsyncAPIDocument(
         protocol: normalizeProtocol(serverData.protocol),
       };
 
-      const varMatches = serverData.url?.match(/\{([^}]+)\}/g);
+      const varMatches = serverData.url?.match(/\{(?<var>[^}]+)\}/gu);
       if (varMatches && varMatches.length > 0) {
         const vars: Record<string, { default?: string; description?: string }> = {};
         for (const match of varMatches) {

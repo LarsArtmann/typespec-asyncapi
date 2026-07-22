@@ -65,7 +65,7 @@ export function isValidUrl(url: string): boolean {
   if (trimmed.length === 0) {
     return false;
   }
-  if (/\s/.test(trimmed)) {
+  if (/\s/u.test(trimmed)) {
     return false;
   }
   for (let i = 0; i < trimmed.length; i++) {

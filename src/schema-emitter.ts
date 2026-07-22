@@ -45,7 +45,7 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<SchemaObject, AsyncAPIEmi
     const properties: Record<string, SchemaObject> = {};
     const required: string[] = [];
 
-    const collectProperties = (m: Model) => {
+    const collectProperties = (m: Model): void => {
       if (m.baseModel) {
         collectProperties(m.baseModel);
       }
@@ -361,7 +361,7 @@ function collectAllStdlibNames(program: Program): Set<string> {
   const globalNs = program.getGlobalNamespaceType();
   for (const ns of globalNs.namespaces.values()) {
     if (isStdNamespace(ns)) {
-      function collectFrom(namespace: Namespace) {
+      function collectFrom(namespace: Namespace): void {
         for (const [name] of namespace.models) {
           names.add(name);
         }
@@ -399,12 +399,10 @@ export function generateSchemas(
     for (const sourceFile of assetEmitter.getSourceFiles()) {
       const scope = sourceFile.globalScope;
       for (const declaration of scope.declarations) {
-        if (declaration.name && declaration.value) {
-          if (stdlibNames.has(declaration.name)) {
-            continue;
-          }
-          schemas[declaration.name] = declaration.value as SchemaObject;
+        if (!declaration.name || !declaration.value || stdlibNames.has(declaration.name)) {
+          continue;
         }
+        schemas[declaration.name] = declaration.value as SchemaObject;
       }
     }
   } catch (error) {
