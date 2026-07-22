@@ -10,8 +10,8 @@ import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
 describe("spec Compliance: defaultContentType", () => {
   it("emits defaultContentType when @defaultContentType is set", async () => {
     const doc = await compileAndValidateOrThrow(`
-      namespace Test;
       @defaultContentType("application/avro")
+      namespace Test;
       model Event { id: string; }
       @channel("events")
       op publish(): Event;
