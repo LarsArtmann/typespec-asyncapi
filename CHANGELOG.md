@@ -59,6 +59,33 @@ First alpha release. Full Pareto recovery from analysis paralysis.
 
 ### Added
 
+- Full protocol binding support: Kafka, AMQP, MQTT, WebSocket, HTTP with typed binding definitions (`src/domain/models/bindings.ts`)
+- Binding version constants (`src/constants/binding-versions.ts`): latest version per protocol with `normalizeBindingProtocol()` mapping `wss`→`ws` for binding keys
+- Binding validation module (`src/validation/binding-validator.ts`): normalizes binding keys, validates versions, auto-injects `bindingVersion` when missing
+- Two new warning diagnostics: `unknown-binding-protocol`, `invalid-binding-version`
+- AsyncAPI 3.1.0 spec compliance test suite (78 tests across 6 files in `test/compliance/`): document structure, schema types, $ref chain, servers/security, protocol bindings, edge cases
+- Reusable AJV schema validation harness (`test/utils/schema-validator.ts`): `compileAndValidateOrThrow()` validates emitter output against official AsyncAPI 3.1.0 JSON Schema
+- External `.tsp` compilation tests (16 patterns from 5 projects covering branded types, generics, spread, deep inheritance, enums, unions, multi-server)
+- URL validation for `@server` decorator with `isValidUrl()` helper and `invalid-server-url` diagnostic
+- Diagnostic registry unified: all codes declared in `src/lib.ts` via `$lib.reportDiagnostic()` with compile-time validation. 17 codes total (15 error + 2 warning).
+
+### Changed
+
+- Document model type-tightened: `ServerObject.protocol: string` → `AsyncAPIProtocol`, `OperationObject.bindings: Record<string, unknown>` → `ProtocolBindings`
+- Document-builder auto-injects `bindingVersion` for `@protocol`-generated channel bindings
+- Test runner migrated from bun:test to vitest (Bun OOM crashes with large test suites)
+- Test count grew from 406 to 504 (78 new compliance tests + 16 external spec tests)
+
+### Fixed
+
+- Multi-security overwrite bug: `storeSecurityConfig` was overwriting on second `@security` call; changed to array accumulation so multiple security schemes on one namespace work correctly
+
+### Removed
+
+- `src/constants/index.ts` deleted entirely (all 7 exports had zero importers)
+
+### Earlier unreleased work
+
 - Spec-compliant `$ref` chain: operations → channels → components.messages → components.schemas
 - Strongly-typed AsyncAPI 3.1 document model (`src/domain/models/asyncapi-document.ts`)
 - Golden file test (`test/golden/golden-file.test.ts`) locking in verified-correct output
@@ -68,20 +95,11 @@ First alpha release. Full Pareto recovery from analysis paralysis.
 - `@header` decorator data now emitted as JSON Schema `headers` on messages
 - `@bindings` decorator data now emitted on operations and messages
 - `protocolBindings` added to consolidated state for emitter access
-- Post-mortem analysis at `docs/POST-MORTEM-AND-RECOVERY-PLAN.md`
-
-### Fixed
-
 - Critical: operations referenced `#/components/messages/{id}` directly instead of the spec-required `#/channels/{channelId}/messages/{messageId}` path
 - Critical: message names used operation names instead of model names, causing broken payload `$ref`s
 - All 8 failing tests that spawned `npx tsp compile` (replaced with programmatic TypeSpec compiler API)
 - `storeTags` data model: was storing as comma-separated string, now stores as proper `Tag[]`
-- CONTRIBUTING.md referenced `just` commands that don't exist (now `bun run`)
-
-### Changed
-
 - Emitter uses strongly-typed interfaces (`AsyncAPIDocument`, `ChannelObject`, etc.) instead of `Record<string, unknown>`
-- AGENTS.md rewritten with verified facts and spec-compliance rules
 - CLI test helper rewritten from 336 lines of spawn/fs code to 68-line programmatic API wrapper
 
 ### TypeSpec 1.13 Alignment & Quality Overhaul (2026-07-14)

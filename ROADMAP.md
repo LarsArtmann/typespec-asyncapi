@@ -36,7 +36,6 @@ The emitter produces spec-compliant AsyncAPI 3.1 output for the core feature set
 
 - [ ] Performance optimization for large specifications
 - [ ] AsyncAPI Studio compatibility
-- [ ] `@service` decorator diagnostic (prevent silent no-op for OpenAPI migrants)
 
 ## Long-Term (v1.0.0)
 

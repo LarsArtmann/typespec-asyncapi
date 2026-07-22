@@ -215,13 +215,13 @@ Supported protocols for bindings: Kafka (0.5.0), AMQP (0.3.0), MQTT (0.2.0), HTT
 
 ## Supported Protocols
 
-| Protocol | Server | Channel Bindings | Operation Bindings | Message Bindings |
-|----------|--------|-----------------|-------------------|-----------------|
-| Kafka    | Yes    | Yes (topic, partitions, replicas) | Yes (groupId, clientId) | Yes (key, schemaIdLocation) |
-| AMQP     | —      | Yes (exchange, queue) | Yes (priority, deliveryMode) | Yes (contentEncoding) |
-| MQTT     | Yes    | — | Yes (qos, retain) | Yes |
-| WebSocket | Yes   | Yes (method, query, headers) | — | — |
-| HTTP     | —      | — | Yes (method, query) | Yes (headers) |
+| Protocol  | Server | Channel Bindings                  | Operation Bindings           | Message Bindings            |
+| --------- | ------ | --------------------------------- | ---------------------------- | --------------------------- |
+| Kafka     | Yes    | Yes (topic, partitions, replicas) | Yes (groupId, clientId)      | Yes (key, schemaIdLocation) |
+| AMQP      | —      | Yes (exchange, queue)             | Yes (priority, deliveryMode) | Yes (contentEncoding)       |
+| MQTT      | Yes    | —                                 | Yes (qos, retain)            | Yes                         |
+| WebSocket | Yes    | Yes (method, query, headers)      | —                            | —                           |
+| HTTP      | —      | —                                 | Yes (method, query)          | Yes (headers)               |
 
 Binding versions are auto-injected when omitted. Protocol aliases (`websocket`→`ws`, `websockets`→`ws`) are normalized automatically.
 
@@ -232,7 +232,7 @@ git clone https://github.com/LarsArtmann/typespec-asyncapi
 cd typespec-asyncapi
 bun install
 bun run build     # Build TypeScript (0 errors)
-bun test          # Run tests (504 pass, 0 fail)
+bun run test      # Run tests via vitest (504 pass, 0 fail)
 bun run lint      # ESLint
 ```
 
