@@ -116,7 +116,7 @@ describe("spec Compliance: $ref Chain", () => {
     `);
 
     const operations = doc.operations!;
-    const op = Object.values(operations)[0];
+    const [op] = Object.values(operations);
     const messages = op.messages!;
     expect(messages[0].$ref).toContain("~1");
     expect(messages[0].$ref).not.toContain("org/dept/events/messages");
