@@ -66,8 +66,8 @@
     "registry": "https://registry.npmjs.org/"
   },
   "scripts": {
-    "build": "bunx tsc -p tsconfig.json",
-    "build:watch": "bunx tsc -p tsconfig.json --watch",
+    "build": "bun x tsc -p tsconfig.json",
+    "build:watch": "bun x tsc -p tsconfig.json --watch",
     "compile": "tsp compile .",
     "clean": "trash dist .tsbuildinfo 2>/dev/null || true",
     "clean:test": "trash tsp-test tsp-output test-output @lars-artmann output 2>/dev/null || true",
@@ -78,7 +78,7 @@
     "test:coverage:gate": "bun run test:coverage && bun run scripts/coverage-gate.ts",
     "test:validation": "bun run build && vitest run test/critical-validation.test.ts test/all-generated-specs-validation.test.ts",
     "test:asyncapi": "bun run build && vitest run test/validation/",
-    "typecheck": "bunx tsc --noEmit",
+    "typecheck": "bun x tsc --noEmit",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "check": "bun run typecheck && bun run lint",
