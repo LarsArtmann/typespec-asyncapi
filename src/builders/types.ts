@@ -17,7 +17,7 @@ import type {
 export interface DiscoveredOp {
   action: OperationAction;
   channelKey: string;
-  messageName: string;
+  messageNames: string[];
   opName: string;
 }
 

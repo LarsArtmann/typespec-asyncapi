@@ -26,12 +26,16 @@ export function buildOperations(
   ctx: DocumentBuildContext,
 ): void {
   for (const op of ctx.discoveredOps) {
-    registerMessage(ctx, op.messageName, op.channelKey);
+    for (const msgName of op.messageNames) {
+      registerMessage(ctx, msgName, op.channelKey);
+    }
 
     const operationObj: OperationObject = {
       action: op.action,
       channel: refChannel(op.channelKey),
-      messages: [buildOperationMessageRef(op.channelKey, op.messageName)],
+      messages: op.messageNames.map((name) =>
+        buildOperationMessageRef(op.channelKey, name),
+      ),
     };
 
     const opType = [

@@ -9,7 +9,7 @@ import { getDoc, isStdNamespace } from "@typespec/compiler";
 import type { AsyncAPIConsolidatedState } from "../state.js";
 import type { DocumentBuildContext } from "./types.js";
 import { nameOfType } from "./types.js";
-import { inferActionFromName, operationAction, returnModelName } from "./shared-utils.js";
+import { inferActionFromName, operationAction, returnModelNames } from "./shared-utils.js";
 
 /**
  * Discover all operations from three sources:
@@ -52,7 +52,12 @@ function discoverDecoratedOps(
       continue;
     }
     const channelKey = ctx.opToChannel.get(name) ?? name;
-    const messageName = data.messageType ?? returnModelName(type) ?? name;
+    const returnNames = returnModelNames(type);
+    const messageNames = data.messageType
+      ? [data.messageType]
+      : returnNames.length > 0
+        ? returnNames
+        : [name];
 
     const doc = getDoc(ctx.program, type);
     if (doc) {
@@ -62,7 +67,7 @@ function discoverDecoratedOps(
     ctx.discoveredOps.push({
       action: operationAction(data.type),
       channelKey,
-      messageName,
+      messageNames,
       opName: name,
     });
   }
@@ -82,11 +87,12 @@ function discoverChannelOnlyOps(
       continue;
     }
     const channelKey = data.path;
-    const messageName = returnModelName(type) ?? name;
+    const returnNames = returnModelNames(type);
+    const messageNames = returnNames.length > 0 ? returnNames : [name];
     ctx.discoveredOps.push({
       action: inferActionFromName(name),
       channelKey,
-      messageName,
+      messageNames,
       opName: name,
     });
   }
@@ -112,7 +118,8 @@ function discoverBareOps(
       if (allKnownOps.has(opName)) {
         continue;
       }
-      const messageName = returnModelName(op) ?? opName;
+      const returnNames = returnModelNames(op);
+      const messageNames = returnNames.length > 0 ? returnNames : [opName];
       const bareDoc = getDoc(ctx.program, op);
       if (bareDoc) {
         ctx.opDocs.set(opName, bareDoc);
@@ -120,7 +127,7 @@ function discoverBareOps(
       ctx.discoveredOps.push({
         action: inferActionFromName(opName),
         channelKey: opName,
-        messageName,
+        messageNames,
         opName,
       });
     }

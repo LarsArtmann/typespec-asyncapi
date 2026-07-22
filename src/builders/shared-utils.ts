@@ -65,21 +65,38 @@ export function operationAction(type: OperationTypeData["type"]): OperationActio
   return type === "publish" ? "send" : "receive";
 }
 
-/** Extract the return model name from an Operation type, if any. */
-export function returnModelName(type: Type): string | undefined {
+/** Extract message model names from an Operation type's return type.
+ *
+ * Supports single model returns (`op foo(): Bar`) and union returns
+ * (`op foo(): Bar | Baz`) for multi-message operations.
+ */
+export function returnModelNames(type: Type): string[] {
   if (type.kind !== "Operation") {
-    return undefined;
+    return [];
   }
   const rt = type.returnType;
+
+  if (rt.kind === "Union") {
+    const names: string[] = [];
+    for (const variant of rt.variants.values()) {
+      const v = variant.type;
+      if ("name" in v && typeof v.name === "string" && v.name) {
+        names.push(v.name);
+      }
+    }
+    return names;
+  }
+
   if (
     "name" in rt &&
     typeof rt.name === "string" &&
     rt.name &&
     rt.kind !== "Operation"
   ) {
-    return rt.name;
+    return [rt.name];
   }
-  return undefined;
+
+  return [];
 }
 
 /** Extract channel path parameters from an address string. */
