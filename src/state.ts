@@ -165,6 +165,7 @@ export interface AsyncAPIConsolidatedState {
   messageHeaders: Map<Type, MessageHeaderData[]>;
   defaultContentType: Map<Type, DefaultContentTypeData>;
   operationReplies: Map<Type, OperationReplyData>;
+  operationIds: Map<Type, string>;
 }
 
 /**
@@ -219,5 +220,9 @@ export function consolidateAsyncAPIState(
       stateSymbols.serverConfigs,
     ),
     tags: getStateMap<TagData>(program, stateSymbols.tags),
+    operationIds: getStateMap<string>(
+      program,
+      stateSymbols.operationIds,
+    ),
   };
 }

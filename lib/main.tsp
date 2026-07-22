@@ -88,6 +88,18 @@ extern dec reply(target: Operation, replyModel: Model, address?: valueof string)
 extern dec header(target: Model | ModelProperty, name: valueof string, value: valueof string | Model);
 
 /**
+ * Override the auto-generated operation name in the AsyncAPI document
+ * @param id The custom operation identifier
+ */
+extern dec operationId(target: Operation, id: valueof string);
+
+/**
+ * Override the auto-generated message name in the AsyncAPI document
+ * @param id The custom message identifier
+ */
+extern dec messageId(target: Model, id: valueof string);
+
+/**
  * Emitter options for `@lars-artmann/typespec-asyncapi`.
  *
  * Configure via tspconfig.yaml:
