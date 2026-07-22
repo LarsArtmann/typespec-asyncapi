@@ -22,6 +22,8 @@ import {
   storeDefaultContentType,
   storeHeader,
   storeMessageConfig,
+  storeMessageId,
+  storeOperationId,
   storeOperationReply,
   storeOperationType,
   storeProtocolConfig,
@@ -368,4 +370,32 @@ export function $reply(
     address: typeof address === "string" ? address : undefined,
     messageName: replyModel.name,
   });
+}
+
+export function $operationId(
+  context: DecoratorContext,
+  target: Operation,
+  id: unknown,
+): void {
+  if (!id || typeof id !== "string") {
+    reportDiagnostic(context, "invalid-operation-id", target, {
+      operationName: target.name,
+    });
+    return;
+  }
+  storeOperationId(context.program, target, id);
+}
+
+export function $messageId(
+  context: DecoratorContext,
+  target: Model,
+  id: unknown,
+): void {
+  if (!id || typeof id !== "string") {
+    reportDiagnostic(context, "invalid-message-id", target, {
+      modelName: target.name,
+    });
+    return;
+  }
+  storeMessageId(context.program, target, id);
 }

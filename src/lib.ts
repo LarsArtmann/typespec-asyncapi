@@ -118,6 +118,18 @@ export const $lib = createTypeSpecLibrary({
       },
       severity: "error",
     },
+    "invalid-operation-id": {
+      messages: {
+        default: paramMessage`@operationId on operation '${"operationName"}' must be a non-empty string.`,
+      },
+      severity: "error",
+    },
+    "invalid-message-id": {
+      messages: {
+        default: paramMessage`@messageId on model '${"modelName"}' must be a non-empty string.`,
+      },
+      severity: "error",
+    },
   },
   name: "@lars-artmann/typespec-asyncapi",
   state: {

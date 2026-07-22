@@ -61,6 +61,33 @@ export const storeMessageConfig = (
   });
 };
 
+export const storeOperationId = (
+  program: Program,
+  target: Operation,
+  operationId: string,
+): void => {
+  const map = getStateMap<string>(program, stateSymbols.operationIds);
+  map.set(target, operationId);
+};
+
+export const storeMessageId = (
+  program: Program,
+  target: Model,
+  messageId: string,
+): void => {
+  const map = getStateMap<MessageConfigData>(
+    program,
+    stateSymbols.messageConfigs,
+  );
+  const existing = map.get(target) ?? {
+    contentType: "application/json",
+    description: `Message ${target.name}`,
+    title: target.name,
+  };
+  existing.messageId = messageId;
+  map.set(target, existing);
+};
+
 export const storeServerConfig = (
   program: Program,
   target: Namespace,
