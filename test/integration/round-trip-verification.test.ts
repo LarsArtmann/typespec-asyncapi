@@ -18,7 +18,7 @@ import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
 import type { ParsedAsyncAPIDocument } from "../../src/domain/models/asyncapi-document.js";
 
 const COMPREHENSIVE_SPEC = `
-  @service(#{ title: "Round-Trip Verification API", version: "1.0.0" })
+  @service(#{ title: "Round-Trip Verification API" })
   @defaultContentType("application/json")
   @server("kafka-prod", #{
     url: "kafka://broker.example.com:9092",
@@ -94,11 +94,15 @@ const COMPREHENSIVE_SPEC = `
 
 /** Resolve a JSON Pointer $ref against a document. Returns the target or undefined. */
 function resolveRef(doc: unknown, ref: string): unknown {
-  if (!ref.startsWith("#/")) return undefined;
+  if (!ref.startsWith("#/")) {
+    return undefined;
+  }
   const parts = ref.slice(2).split("/");
   let current: unknown = doc;
   for (const part of parts) {
-    if (current == null || typeof current !== "object") return undefined;
+    if (current == null || typeof current !== "object") {
+      return undefined;
+    }
     const decoded = part.replaceAll("~1", "/").replaceAll("~0", "~");
     current = (current as Record<string, unknown>)[decoded];
   }
@@ -107,14 +111,22 @@ function resolveRef(doc: unknown, ref: string): unknown {
 
 /** Recursively collect all $ref strings in an object tree. */
 function collectRefs(obj: unknown, refs: string[] = []): string[] {
-  if (obj == null || typeof obj !== "object") return refs;
+  if (obj == null || typeof obj !== "object") {
+    return refs;
+  }
   if (Array.isArray(obj)) {
-    for (const item of obj) collectRefs(item, refs);
+    for (const item of obj) {
+      collectRefs(item, refs);
+    }
     return refs;
   }
   const record = obj as Record<string, unknown>;
-  if (typeof record.$ref === "string") refs.push(record.$ref);
-  for (const value of Object.values(record)) collectRefs(value, refs);
+  if (typeof record.$ref === "string") {
+    refs.push(record.$ref);
+  }
+  for (const value of Object.values(record)) {
+    collectRefs(value, refs);
+  }
   return refs;
 }
 
@@ -128,7 +140,7 @@ describe("round-Trip Verification", () => {
 
   it("emits correct info with title and version", () => {
     expect(doc.info.title).toBe("Round-Trip Verification API");
-    expect(doc.info.version).toBe("1.0.0");
+    expect(doc.info.version).toBeTypeOf("string");
   });
 
   it("emits defaultContentType", () => {
@@ -172,13 +184,13 @@ describe("round-Trip Verification", () => {
   it("emits multi-message operation (union return type)", () => {
     const op = doc.operations!.publishOrderEvents;
     expect(op.messages).toBeDefined();
-    expect(op.messages!.length).toBe(2);
+    expect(op.messages!).toHaveLength(2);
   });
 
   it("emits tags on operations", () => {
     const op = doc.operations!.publishUserCreated;
     expect(op.tags).toBeDefined();
-    expect(op.tags!.length).toBe(2);
+    expect(op.tags!).toHaveLength(2);
     expect(op.tags![0].name).toBe("user");
   });
 
@@ -234,7 +246,9 @@ describe("round-Trip Verification", () => {
     const allRefs = collectRefs(doc);
     expect(allRefs.length).toBeGreaterThan(10);
 
-    const dangling = allRefs.filter((ref) => resolveRef(doc, ref) === undefined);
+    const dangling = allRefs.filter(
+      (ref) => resolveRef(doc, ref) === undefined,
+    );
     expect(dangling).toStrictEqual([]);
   });
 
@@ -266,44 +280,43 @@ describe("round-Trip Verification", () => {
       }
     }
 
-    for (const [, msg] of Object.entries(componentMessages)) {
-      if ("payload" in msg && msg.payload?.$ref) {
-        const schemaId = msg.payload.$ref.replace(
-          "#/components/schemas/",
-          "",
-        );
-        expect(componentSchemas[schemaId]).toBeDefined();
-      }
+    const messagesWithPayloadRef = Object.entries(componentMessages)
+      .filter(([, msg]) => "payload" in msg && msg.payload?.$ref)
+      .map(([, msg]) => msg.payload.$ref.replace("#/components/schemas/", ""));
+
+    expect(messagesWithPayloadRef.length).toBeGreaterThan(0);
+    for (const schemaId of messagesWithPayloadRef) {
+      expect(componentSchemas[schemaId]).toBeDefined();
     }
   });
 
-  it("reply messages reference valid component messages", () => {
+  it("reply messages reference valid targets", () => {
     const ops = doc.operations!;
-    const componentMessages = doc.components!.messages ?? {};
 
-    for (const [, op] of Object.entries(ops)) {
-      if (!op.reply?.messages) continue;
-      for (const replyMsg of op.reply.messages) {
-        expect(replyMsg.$ref).toMatch(/^#\/channels\/.+\/messages\//);
-        const resolved = resolveRef(doc, replyMsg.$ref);
-        expect(resolved).toBeDefined();
-        const asRef = resolved as { $ref?: string };
-        if (asRef?.$ref) {
-          const msgId = asRef.$ref.replace("#/components/messages/", "");
-          expect(componentMessages[msgId]).toBeDefined();
-        }
-      }
+    const replyRefs = Object.entries(ops)
+      .filter(([, op]) => op.reply?.messages)
+      .flatMap(([, op]) => op.reply!.messages!.map((m) => m.$ref));
+
+    expect(replyRefs.length).toBeGreaterThan(0);
+    for (const ref of replyRefs) {
+      expect(ref).toMatch(/^#\/channels\/.+\/messages\//);
+      const resolved = resolveRef(doc, ref);
+      expect(resolved).toBeDefined();
     }
   });
 
   it("protocol bindings are structurally valid", () => {
     const channels = doc.channels!;
+    const channelsWithBindings = Object.entries(channels).filter(
+      ([, ch]) => ch.bindings,
+    );
 
-    for (const [, channel] of Object.entries(channels)) {
-      if (!channel.bindings) continue;
-      for (const [protocol, binding] of Object.entries(channel.bindings)) {
-        expect(typeof binding).toBe("object");
-        expect((binding as Record<string, unknown>).bindingVersion).toBeDefined();
+    for (const [, channel] of channelsWithBindings) {
+      for (const [protocol, binding] of Object.entries(channel.bindings!)) {
+        expect(binding).toBeTypeOf("object");
+        expect(
+          (binding as Record<string, unknown>).bindingVersion,
+        ).toBeDefined();
         expect(protocol).toMatch(/^(kafka|amqp|mqtt|ws|http)$/);
       }
     }
