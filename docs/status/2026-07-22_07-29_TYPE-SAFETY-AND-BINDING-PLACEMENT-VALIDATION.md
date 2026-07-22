@@ -3,8 +3,10 @@
 > **Session scope:** Execute TODO_LIST.md items (P1 type safety + P2 validation hardening),
 > then implement binding placement validation from scratch.
 >
-> **Method:** Two back-to-back sessions. Session 1 was committed as `07f8b10`. Session 2
-> (binding placement) is uncommitted.
+> **Method:** Two back-to-back sessions. Session 1 was committed as `07f8b10`. ~~Session 2
+> (binding placement) is uncommitted.~~ Session 2 committed as `5e78a76`. Test count grew
+> from 549 to **551** after the subsequent oxlint remediation and test-suite fix sessions.
+> Full resolution in [Resolution](#resolution-2026-07-22) below.
 
 ---
 
@@ -200,3 +202,39 @@ The `@protocol` decorator generates channel-level bindings via `document-builder
 ### 3. Should the `BINDING_PLACEMENT` matrix data come from the `@asyncapi/specs` JSON Schema at build time?
 
 Right now the matrix is hand-maintained based on reading the AsyncAPI spec. The `@asyncapi/specs` package (already a devDependency) contains the official JSON Schema, which implicitly defines which protocols have bindings for which object types (via `properties.channels.additionalProperties.properties.bindings.properties.{protocol}`). I could write a script that extracts this automatically, ensuring the matrix never drifts. Is this worth the complexity, or is the hand-maintained matrix with a spec-version comment sufficient?
+
+---
+
+## Resolution (2026-07-22)
+
+### Session 2 status
+
+| Item | Report claim | Resolution |
+| ---- | ------------ | ---------- |
+| Binding placement committed | "Session 2 is uncommitted" | DONE — committed as `5e78a76` |
+| FEATURES.md updated | "FEATURES.md test count is stale" | OPEN — FEATURES.md still says 512, actual is 551; binding placement not listed |
+| Coverage gate | "Not run" | OPEN — coverage tooling remains broken for this architecture (vitest can't instrument `dist/*.js`) |
+
+### Section (b) PARTIALLY DONE items
+
+| Item | Status |
+| ---- | ------ |
+| FEATURES.md not updated | OPEN — pending docs-health refresh |
+| Coverage gate not run | OPEN — pre-existing architecture limitation |
+| Oxlint diagnostics | RESOLVED — oxlint remediation session (`8063381` through `0cc727a`) achieved 0 errors / 0 warnings |
+
+### Section (e) open items carried forward
+
+| # | Item | Status |
+| -- | ---- | ------ |
+| 5 | `schema-emitter.ts:316` oxlint error | RESOLVED — fixed during oxlint remediation |
+| 6 | `test-helpers.ts:251` oxlint error | RESOLVED — fixed during oxlint remediation |
+| 7 | `as { kind: string }` casts in schema-emitter | OPEN — ROADMAP territory |
+| 10 | `BindingDiagnosticCode` compile-time enforcement | OPEN — ROADMAP territory |
+| 12 | `@bindings` support for `Namespace` target (server bindings) | OPEN — ROADMAP territory |
+
+### Questions
+
+- **Q1 (warning vs error):** Still open — `misplaced-binding` remains a warning.
+- **Q2 (`@protocol` placement validation):** Still open — `@protocol` path bypasses placement checks by design.
+- **Q3 (matrix from spec):** Still open — hand-maintained matrix with spec-version comment remains sufficient.
