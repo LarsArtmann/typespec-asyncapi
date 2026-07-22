@@ -68,6 +68,12 @@ extern dec correlationId(target: Model, location: valueof string);
 extern dec bindings(target: Operation | Model, value: {} | valueof Record<unknown>);
 
 /**
+ * Specify the default content type for all messages in the document
+ * @param contentType The default content type (e.g., "application/json")
+ */
+extern dec defaultContentType(target: Namespace, contentType: valueof string);
+
+/**
  * Define message header
  * @param name Header name
  * @param value Header value or configuration

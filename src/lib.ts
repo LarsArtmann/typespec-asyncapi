@@ -123,6 +123,7 @@ export const $lib = createTypeSpecLibrary({
   state: {
     channelPaths: { description: "Operation to channel path" },
     correlationIds: { description: "Models to correlation ID configs" },
+    defaultContentType: { description: "Namespace to default content type" },
     messageConfigs: { description: "Models to message configs" },
     messageHeaders: { description: "Model properties marked as headers" },
     messageSchemas: { description: "Message names to schemas" },
@@ -139,6 +140,7 @@ export const $lib = createTypeSpecLibrary({
 export const stateSymbols = {
   channelPaths: Symbol("channelPaths"),
   correlationIds: Symbol("correlationIds"),
+  defaultContentType: Symbol("defaultContentType"),
   messageConfigs: Symbol("messageConfigs"),
   messageHeaders: Symbol("messageHeaders"),
   messageSchemas: Symbol("messageSchemas"),
