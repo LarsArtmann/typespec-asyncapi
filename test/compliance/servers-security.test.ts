@@ -24,10 +24,9 @@ describe("spec Compliance: Servers", () => {
       op publish(): Event;
     `);
 
-    const servers = doc.servers as Record<string, Record<string, unknown>>;
-    expect(servers.prod).toBeDefined();
-    expect(servers.prod.host).toBe("kafka.broker.com:9092");
-    expect(servers.prod.protocol).toBe("kafka");
+    expect(doc.servers!.prod).toBeDefined();
+    expect(doc.servers!.prod.host).toBe("kafka.broker.com:9092");
+    expect(doc.servers!.prod.protocol).toBe("kafka");
   });
 
   it("normalizes websocket alias to ws", async () => {
@@ -42,8 +41,7 @@ describe("spec Compliance: Servers", () => {
       op publish(): Event;
     `);
 
-    const servers = doc.servers as Record<string, Record<string, unknown>>;
-    expect(servers.ws.protocol).toBe("ws");
+    expect(doc.servers!.ws.protocol).toBe("ws");
   });
 
   it("supports multiple servers", async () => {
@@ -62,8 +60,7 @@ describe("spec Compliance: Servers", () => {
       op publish(): Event;
     `);
 
-    const servers = doc.servers as Record<string, unknown>;
-    expect(Object.keys(servers)).toHaveLength(2);
+    expect(Object.keys(doc.servers!)).toHaveLength(2);
   });
 
   it("extracts server variables from {var} pattern in host", async () => {
@@ -78,10 +75,8 @@ describe("spec Compliance: Servers", () => {
       op publish(): Event;
     `);
 
-    const servers = doc.servers as Record<string, Record<string, unknown>>;
-    expect(servers.prod.variables).toBeDefined();
-    const vars = servers.prod.variables as Record<string, unknown>;
-    expect(vars.region).toBeDefined();
+    expect(doc.servers!.prod.variables).toBeDefined();
+    expect(doc.servers!.prod.variables!.region).toBeDefined();
   });
 });
 
@@ -95,11 +90,7 @@ describe("spec Compliance: Security Schemes", () => {
       op publish(): Event;
     `);
 
-    const components = doc.components as Record<
-      string,
-      Record<string, Record<string, unknown>>
-    >;
-    const scheme = components.securitySchemes["user-pass"];
+    const scheme = doc.components!.securitySchemes!["user-pass"];
     expect(scheme.type).toBe("userPassword");
   });
 
@@ -112,11 +103,7 @@ describe("spec Compliance: Security Schemes", () => {
       op publish(): Event;
     `);
 
-    const components = doc.components as Record<
-      string,
-      Record<string, Record<string, unknown>>
-    >;
-    const scheme = components.securitySchemes["api-key"];
+    const scheme = doc.components!.securitySchemes!["api-key"];
     expect(scheme.type).toBe("httpApiKey");
     expect(scheme.in).toBe("header");
     expect(scheme.name).toBe("X-API-Key");
@@ -131,11 +118,7 @@ describe("spec Compliance: Security Schemes", () => {
       op publish(): Event;
     `);
 
-    const components = doc.components as Record<
-      string,
-      Record<string, Record<string, unknown>>
-    >;
-    const scheme = components.securitySchemes["jwt"];
+    const scheme = doc.components!.securitySchemes!.jwt;
     expect(scheme.type).toBe("http");
     expect(scheme.scheme).toBe("bearer");
     expect(scheme.bearerFormat).toBe("JWT");
@@ -150,11 +133,7 @@ describe("spec Compliance: Security Schemes", () => {
       op publish(): Event;
     `);
 
-    const components = doc.components as Record<
-      string,
-      Record<string, Record<string, unknown>>
-    >;
-    expect(components.securitySchemes["scram"].type).toBe("scramSha256");
+    expect(doc.components!.securitySchemes!.scram.type).toBe("scramSha256");
   });
 
   it("emits oauth2 security scheme with flows", async () => {
@@ -180,11 +159,7 @@ describe("spec Compliance: Security Schemes", () => {
       op publish(): Event;
     `);
 
-    const components = doc.components as Record<
-      string,
-      Record<string, Record<string, unknown>>
-    >;
-    const scheme = components.securitySchemes.oauth;
+    const scheme = doc.components!.securitySchemes!.oauth;
     expect(scheme.type).toBe("oauth2");
     expect(scheme.flows).toBeDefined();
   });
@@ -198,11 +173,7 @@ describe("spec Compliance: Security Schemes", () => {
       op publish(): Event;
     `);
 
-    const components = doc.components as Record<
-      string,
-      Record<string, Record<string, unknown>>
-    >;
-    expect(components.securitySchemes.cert.type).toBe("X509");
+    expect(doc.components!.securitySchemes!.cert.type).toBe("X509");
   });
 
   it("emits multiple security schemes on one target", async () => {
@@ -215,11 +186,7 @@ describe("spec Compliance: Security Schemes", () => {
       op publish(): Event;
     `);
 
-    const components = doc.components as Record<
-      string,
-      Record<string, unknown>
-    >;
-    const schemes = components.securitySchemes as Record<string, unknown>;
+    const schemes = doc.components!.securitySchemes!;
     expect(Object.keys(schemes)).toHaveLength(2);
     expect(schemes.cert).toBeDefined();
     expect(schemes.jwt).toBeDefined();

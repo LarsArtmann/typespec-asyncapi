@@ -8,6 +8,7 @@
  */
 
 import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
+import type { MessageObject } from "../../src/domain/models/asyncapi-document.js";
 
 describe("spec Compliance: Document Structure", () => {
   it("emits asyncapi version 3.1.0", async () => {
@@ -29,10 +30,9 @@ describe("spec Compliance: Document Structure", () => {
       op publish(): Event;
     `);
 
-    const info = doc.info as Record<string, unknown>;
-    expect(info).toBeDefined();
-    expect(info.title).toBeTypeOf("string");
-    expect(info.version).toBeTypeOf("string");
+    expect(doc.info).toBeDefined();
+    expect(doc.info.title).toBeTypeOf("string");
+    expect(doc.info.version).toBeTypeOf("string");
   });
 
   it("emits channels map (required field)", async () => {
@@ -55,8 +55,7 @@ describe("spec Compliance: Document Structure", () => {
       op publish(): Event;
     `);
 
-    const channels = doc.channels as Record<string, Record<string, unknown>>;
-    const channel = channels["user.events.created"];
+    const channel = doc.channels!["user.events.created"];
     expect(channel).toBeDefined();
     expect(channel.address).toBe("user.events.created");
   });
@@ -69,9 +68,7 @@ describe("spec Compliance: Document Structure", () => {
       op publish(): UserEvent;
     `);
 
-    const channels = doc.channels as Record<string, Record<string, unknown>>;
-    const channel = channels["users"];
-    const messages = channel.messages as Record<string, { $ref: string }>;
+    const messages = doc.channels!["users"].messages!;
     expect(messages).toBeDefined();
     expect(messages.UserEvent).toBeDefined();
     expect(messages.UserEvent.$ref).toBe("#/components/messages/UserEvent");
@@ -85,11 +82,7 @@ describe("spec Compliance: Document Structure", () => {
       op publishEvent(): Event;
     `);
 
-    const operations = doc.operations as Record<
-      string,
-      Record<string, unknown>
-    >;
-    const op = operations.publishEvent;
+    const op = doc.operations!.publishEvent;
     expect(op).toBeDefined();
     expect(op.action).toBe("send");
     expect(op.channel).toStrictEqual({ $ref: "#/channels/events" });
@@ -103,11 +96,7 @@ describe("spec Compliance: Document Structure", () => {
       op publishOrder(): OrderEvent;
     `);
 
-    const components = doc.components as Record<
-      string,
-      Record<string, Record<string, unknown>>
-    >;
-    const msg = components.messages.OrderEvent;
+    const msg = doc.components!.messages!.OrderEvent as MessageObject;
     expect(msg).toBeDefined();
     expect(msg.name).toBe("OrderEvent");
     expect(msg.contentType).toBe("application/json");
@@ -128,13 +117,9 @@ describe("spec Compliance: Document Structure", () => {
       op publish(): MyEvent;
     `);
 
-    const components = doc.components as Record<
-      string,
-      Record<string, Record<string, unknown>>
-    >;
-    const schema = components.schemas.MyEvent;
+    const schema = doc.components!.schemas!.MyEvent;
     expect(schema.type).toBe("object");
-    const props = schema.properties as Record<string, Record<string, unknown>>;
+    const props = schema.properties!;
     expect(props.id.type).toBe("string");
     expect(props.count.type).toBe("integer");
     expect(props.active.type).toBe("boolean");
@@ -148,11 +133,7 @@ describe("spec Compliance: Document Structure", () => {
       op publishEvent(): Event;
     `);
 
-    const operations = doc.operations as Record<
-      string,
-      Record<string, unknown>
-    >;
-    expect(operations.publishEvent.action).toBe("send");
+    expect(doc.operations!.publishEvent.action).toBe("send");
   });
 
   it("infers action receive from subscribe operation names", async () => {
@@ -163,11 +144,7 @@ describe("spec Compliance: Document Structure", () => {
       op subscribeToEvent(): Event;
     `);
 
-    const operations = doc.operations as Record<
-      string,
-      Record<string, unknown>
-    >;
-    expect(operations.subscribeToEvent.action).toBe("receive");
+    expect(doc.operations!.subscribeToEvent.action).toBe("receive");
   });
 
   it("supports multiple channels in a single document", async () => {
@@ -181,7 +158,7 @@ describe("spec Compliance: Document Structure", () => {
       op publishDeleted(): Deleted;
     `);
 
-    const channels = doc.channels as Record<string, unknown>;
+    const channels = doc.channels!;
     expect(Object.keys(channels)).toHaveLength(2);
     expect(channels["created"]).toBeDefined();
     expect(channels["deleted"]).toBeDefined();

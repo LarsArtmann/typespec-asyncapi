@@ -11,6 +11,7 @@
  */
 
 import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
+import type { MessageObject } from "../../src/domain/models/asyncapi-document.js";
 
 function getDoc(source: string) {
   return compileAndValidateOrThrow(source);
@@ -25,12 +26,8 @@ describe("spec Compliance: $ref Chain", () => {
       op publishOrderCreated(): OrderCreated;
     `);
 
-    const operations = doc.operations as Record<
-      string,
-      Record<string, unknown>
-    >;
-    const op = operations.publishOrderCreated;
-    const messages = op.messages as { $ref: string }[];
+    const op = doc.operations!.publishOrderCreated;
+    const messages = op.messages!;
     expect(messages[0].$ref).toBe(
       "#/channels/orders.created/messages/OrderCreated",
     );
@@ -44,11 +41,7 @@ describe("spec Compliance: $ref Chain", () => {
       op publish(): Event;
     `);
 
-    const operations = doc.operations as Record<
-      string,
-      Record<string, unknown>
-    >;
-    expect(operations.publish.channel).toStrictEqual({
+    expect(doc.operations!.publish.channel).toStrictEqual({
       $ref: "#/channels/my.channel",
     });
   });
@@ -61,11 +54,7 @@ describe("spec Compliance: $ref Chain", () => {
       op publish(): UserEvent;
     `);
 
-    const channels = doc.channels as Record<string, Record<string, unknown>>;
-    const messages = channels["users"].messages as Record<
-      string,
-      { $ref: string }
-    >;
+    const messages = doc.channels!["users"].messages!;
     expect(messages.UserEvent.$ref).toBe("#/components/messages/UserEvent");
   });
 
@@ -77,11 +66,7 @@ describe("spec Compliance: $ref Chain", () => {
       op publishOrder(): OrderEvent;
     `);
 
-    const components = doc.components as Record<
-      string,
-      Record<string, Record<string, unknown>>
-    >;
-    const msg = components.messages.OrderEvent;
+    const msg = doc.components!.messages!.OrderEvent as MessageObject;
     expect(msg.payload).toStrictEqual({
       $ref: "#/components/schemas/OrderEvent",
     });
@@ -99,14 +84,7 @@ describe("spec Compliance: $ref Chain", () => {
       op publish(): Customer;
     `);
 
-    const components = doc.components as Record<
-      string,
-      Record<string, Record<string, unknown>>
-    >;
-    const customerProps = components.schemas.Customer.properties as Record<
-      string,
-      Record<string, unknown>
-    >;
+    const customerProps = doc.components!.schemas!.Customer.properties!;
     expect(customerProps.address.$ref).toBe("#/components/schemas/Address");
   });
 
@@ -122,14 +100,7 @@ describe("spec Compliance: $ref Chain", () => {
       op publish(): Cart;
     `);
 
-    const components = doc.components as Record<
-      string,
-      Record<string, Record<string, unknown>>
-    >;
-    const cartProps = components.schemas.Cart.properties as Record<
-      string,
-      Record<string, unknown>
-    >;
+    const cartProps = doc.components!.schemas!.Cart.properties!;
     expect(cartProps.items.type).toBe("array");
     expect(cartProps.items.items).toStrictEqual({
       $ref: "#/components/schemas/LineItem",
@@ -144,12 +115,9 @@ describe("spec Compliance: $ref Chain", () => {
       op publish(): Event;
     `);
 
-    const operations = doc.operations as Record<
-      string,
-      Record<string, unknown>
-    >;
-    const op = Object.values(operations)[0] as Record<string, unknown>;
-    const messages = op.messages as { $ref: string }[];
+    const operations = doc.operations!;
+    const op = Object.values(operations)[0];
+    const messages = op.messages!;
     expect(messages[0].$ref).toContain("~1");
     expect(messages[0].$ref).not.toContain("org/dept/events/messages");
   });
@@ -175,11 +143,7 @@ describe("spec Compliance: $ref Chain", () => {
 
     for (const ref of refValues) {
       expect(ref).toMatch(refPattern);
-      const components = doc.components as Record<
-        string,
-        Record<string, unknown>
-      >;
-      expect(components.schemas).toBeDefined();
+      expect(doc.components!.schemas).toBeDefined();
     }
   });
 
@@ -197,10 +161,7 @@ describe("spec Compliance: $ref Chain", () => {
       op publishDeleted(): Deleted;
     `);
 
-    const operations = doc.operations as Record<
-      string,
-      Record<string, unknown>
-    >;
+    const operations = doc.operations!;
     expect(operations.publishCreated.messages).not.toStrictEqual(
       operations.publishUpdated.messages,
     );
@@ -208,10 +169,7 @@ describe("spec Compliance: $ref Chain", () => {
       operations.publishDeleted.messages,
     );
 
-    const components = doc.components as Record<
-      string,
-      Record<string, unknown>
-    >;
+    const components = doc.components!;
     expect(components.messages).toHaveProperty("Created");
     expect(components.messages).toHaveProperty("Updated");
     expect(components.messages).toHaveProperty("Deleted");
