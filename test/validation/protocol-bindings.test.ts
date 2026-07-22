@@ -1,4 +1,3 @@
-
 /**
  * AsyncAPI Standard Protocol Binding Tests
  *

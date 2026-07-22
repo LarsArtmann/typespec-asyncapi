@@ -1,4 +1,3 @@
-
 /**
  * Real-World Example Files Validation
  *
@@ -54,12 +53,9 @@ function readExampleSpecs(): { name: string; source: string }[] {
 const specs = readExampleSpecs();
 
 describe("real-World Examples → AsyncAPI 3.1 Validation", () => {
-  if (specs.length === 0) {
-    it("should find at least one real-world example", () => {
-      expect(specs.length).toBeGreaterThan(0);
-    });
-    return;
-  }
+  it("should find at least one real-world example", () => {
+    expect(specs.length).toBeGreaterThan(0);
+  });
 
   for (const spec of specs) {
     describe(`example: ${spec.name}`, () => {
@@ -71,7 +67,7 @@ describe("real-World Examples → AsyncAPI 3.1 Validation", () => {
 
       it("should produce an AsyncAPI document", async () => {
         const result = await compileAsyncAPI(spec.source);
-        expect(result.asyncApiDoc).toBe(true);
+        expect(result.asyncApiDoc).toBeDefined();
         expect((result.asyncApiDoc as Record<string, unknown>)?.asyncapi).toBe("3.1.0");
       });
 
@@ -82,7 +78,7 @@ describe("real-World Examples → AsyncAPI 3.1 Validation", () => {
         const errors = result.diagnostics.filter((d) => d.severity === "error");
         expect(errors).toStrictEqual([]);
 
-        expect(doc).toBe(true);
+        expect(doc).toBeDefined();
         const valid = validate(doc);
         if (!valid) {
           console.error(
@@ -101,7 +97,7 @@ describe("real-World Examples → AsyncAPI 3.1 Validation", () => {
         const opCount = Object.keys(operations).length;
         expect(opCount).toBeGreaterThan(0);
 
-        for (const [opName, op] of Object.entries(operations)) {
+        for (const [, op] of Object.entries(operations)) {
           const opObj = op as Record<string, any>;
           expect(opObj.action).toMatch(/^(send|receive)$/);
 
@@ -123,7 +119,7 @@ describe("real-World Examples → AsyncAPI 3.1 Validation", () => {
 
         for (const [, ch] of Object.entries(channels)) {
           const chObj = ch as Record<string, any>;
-          expect(chObj.address).toBe(true);
+          expect(chObj.address).toBeDefined();
           expect(chObj.address).toBeTypeOf("string");
 
           const messages = chObj.messages ?? {};
@@ -141,15 +137,11 @@ describe("real-World Examples → AsyncAPI 3.1 Validation", () => {
 
         for (const [, schema] of Object.entries(schemas)) {
           const schemaObj = schema as Record<string, any>;
-          if (schemaObj.type === "array" && schemaObj.items?.$ref) {
-            expect(schemaObj.items.$ref).toMatch(/^#\/components\/schemas\//);
-          }
+          expect(schemaObj.items?.$ref ?? "").toMatch(/^$|^#\/components\/schemas\//);
           const props = schemaObj.properties ?? {};
           for (const [, prop] of Object.entries(props)) {
             const propObj = prop as Record<string, any>;
-            if (propObj.type === "array" && propObj.items?.$ref) {
-              expect(propObj.items.$ref).toMatch(/^#\/components\/schemas\//);
-            }
+            expect(propObj.items?.$ref ?? "").toMatch(/^$|^#\/components\/schemas\//);
           }
         }
       });

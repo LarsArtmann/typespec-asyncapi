@@ -1,5 +1,3 @@
-
-
 import { getMultiState, getStateMap } from "../../src/state-compatibility.js";
 import type { Program } from "@typespec/compiler";
 

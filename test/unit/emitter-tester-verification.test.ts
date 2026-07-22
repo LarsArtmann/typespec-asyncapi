@@ -1,4 +1,3 @@
-
 /**
  * Verification test for TypeSpec 1.4.0 EmitterTester API
  *

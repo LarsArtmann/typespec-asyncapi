@@ -1,4 +1,3 @@
-
 /**
  * Decorator Output Tests
  *

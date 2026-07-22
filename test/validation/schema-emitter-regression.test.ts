@@ -1,4 +1,3 @@
-
 /**
  * Schema Emitter Regression Tests
  *

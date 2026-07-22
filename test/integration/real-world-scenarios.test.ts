@@ -1,4 +1,3 @@
-
 /**
  * Real-world scenario integration tests for AsyncAPI emitter
  */
@@ -172,8 +171,12 @@ describe("real-World AsyncAPI Scenarios", () => {
 
       // Validate complex schema properties
       expect(AsyncAPIAssertions.schemaHasProperty(asyncapiDoc, "Order", "items")).toBeTruthy();
-      expect(AsyncAPIAssertions.schemaHasProperty(asyncapiDoc, "Order", "totalAmountInCents")).toBeTruthy();
-      expect(AsyncAPIAssertions.schemaHasProperty(asyncapiDoc, "Payment", "paymentMethod")).toBeTruthy();
+      expect(
+        AsyncAPIAssertions.schemaHasProperty(asyncapiDoc, "Order", "totalAmountInCents"),
+      ).toBeTruthy();
+      expect(
+        AsyncAPIAssertions.schemaHasProperty(asyncapiDoc, "Payment", "paymentMethod"),
+      ).toBeTruthy();
 
       // Validate required fields
       const orderSchema = asyncapiDoc.components.schemas.Order;
@@ -331,13 +334,19 @@ describe("real-World AsyncAPI Scenarios", () => {
       expect(AsyncAPIAssertions.hasSchema(asyncapiDoc, "SystemAlert")).toBeTruthy();
 
       // Validate nested properties
-      expect(AsyncAPIAssertions.schemaHasProperty(asyncapiDoc, "SensorDevice", "location")).toBeTruthy();
-      expect(AsyncAPIAssertions.schemaHasProperty(asyncapiDoc, "SensorReading", "metadata")).toBeTruthy();
+      expect(
+        AsyncAPIAssertions.schemaHasProperty(asyncapiDoc, "SensorDevice", "location"),
+      ).toBeTruthy();
+      expect(
+        AsyncAPIAssertions.schemaHasProperty(asyncapiDoc, "SensorReading", "metadata"),
+      ).toBeTruthy();
 
       // Validate parameterized subscriptions
       expect(AsyncAPIAssertions.hasOperation(asyncapiDoc, "subscribeDeviceReadings")).toBeTruthy();
       expect(AsyncAPIAssertions.hasOperation(asyncapiDoc, "subscribeZoneSensors")).toBeTruthy();
-      expect(AsyncAPIAssertions.hasOperation(asyncapiDoc, "subscribeAlertsBySeverity")).toBeTruthy();
+      expect(
+        AsyncAPIAssertions.hasOperation(asyncapiDoc, "subscribeAlertsBySeverity"),
+      ).toBeTruthy();
 
       // Validate data type handling
       const sensorReadingSchema = asyncapiDoc.components.schemas.SensorReading;

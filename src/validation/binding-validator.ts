@@ -120,9 +120,9 @@ export function processBindings(
         const versionStr =
           typeof declaredVersion === "string"
             ? declaredVersion
-            : (typeof declaredVersion === "number"
+            : typeof declaredVersion === "number"
               ? String(declaredVersion)
-              : "[object]");
+              : "[object]";
         if (!isValidBindingVersion(canonical, versionStr)) {
           issues.push({
             code: "invalid-binding-version",

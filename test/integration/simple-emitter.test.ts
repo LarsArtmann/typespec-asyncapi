@@ -1,4 +1,3 @@
-
 /**
  * Test AsyncAPI emitter without decorators - basic functionality
  */
@@ -23,7 +22,8 @@ describe("simple AsyncAPI Emitter (No Decorators)", () => {
 
     for (const [path, file] of outputFiles.entries()) {
       if (path.includes("simple-test") || path.includes("asyncapi")) {
-        if (file.content) {}
+        if (file.content) {
+        }
       }
     }
 

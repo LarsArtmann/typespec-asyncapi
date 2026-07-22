@@ -1,4 +1,3 @@
-
 /**
  * Template Spread & Late-Bound Member Resolution Tests
  *

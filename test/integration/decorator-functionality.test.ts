@@ -1,4 +1,3 @@
-
 /**
  * PRODUCTION TEST: Real Decorator Functionality Integration Tests
  *

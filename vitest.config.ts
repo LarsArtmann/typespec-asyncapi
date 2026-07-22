@@ -9,6 +9,7 @@ export default defineConfig({
       reporter: ["text", "json", "lcov"],
     },
     environment: "node",
+    globals: true,
     include: ["test/**/*.test.ts"],
     isolate: false,
   },

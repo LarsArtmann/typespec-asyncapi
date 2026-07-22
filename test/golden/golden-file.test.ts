@@ -1,4 +1,3 @@
-
 /**
  * Golden File Test
  *
@@ -101,7 +100,7 @@ describe("golden File Test", () => {
     const doc = YAML.parse(output) as any;
 
     // Every operation message $ref MUST go through channels, NOT directly to components
-    for (const [opName, op] of Object.entries<any>(doc.operations ?? {})) {
+    for (const [, op] of Object.entries<any>(doc.operations ?? {})) {
       for (const msgRef of op.messages ?? []) {
         expect(msgRef.$ref).toMatch(/^#\/channels\/[^/]+\/messages\/[^/]+$/);
       }

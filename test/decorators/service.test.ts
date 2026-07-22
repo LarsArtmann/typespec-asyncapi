@@ -1,5 +1,3 @@
-
-
 import { compileAsyncAPI } from "../utils/test-helpers.js";
 
 describe("@service decorator (core TypeSpec compatibility)", () => {

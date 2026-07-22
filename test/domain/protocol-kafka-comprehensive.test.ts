@@ -1,4 +1,3 @@
-
 /**
  * Kafka Protocol Tests
  *

@@ -1,4 +1,3 @@
-
 /**
  * E2E Test 1: Multi-Protocol Comprehensive AsyncAPI Generation
  *

@@ -1,4 +1,3 @@
-
 /**
  * Unit tests for @server decorator in TypeSpec AsyncAPI emitter
  */

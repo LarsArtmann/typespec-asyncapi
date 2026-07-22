@@ -1,4 +1,3 @@
-
 /**
  * Binding Placement Integration Tests
  *

@@ -5,7 +5,6 @@
  */
 
 import { Before, Given, Then, When } from "@cucumber/cucumber";
-import { $asyncApi } from "../../../src/index.js";
 import type { Program } from "@typespec/compiler";
 import type { AsyncAPIObject } from "@asyncapi/parser/esm/spec-types/v3.js";
 
@@ -52,14 +51,12 @@ export class AsyncAPIWorld {
 }
 
 // Create world instance for cucumber
-let world: AsyncAPIWorld;
+// Note: Cucumber's Before/Given/Then/When hooks use `function(this: World)` syntax,
+// Which intentionally binds `this`. Steps access state via `this` directly.
 
 Before(function (this: AsyncAPIWorld) {
-  world = this;
-  world.reset();
+  this.reset();
 });
-
-export { world };
 
 /**
  * Step definitions for TypeSpec compilation
@@ -93,13 +90,13 @@ When("I compile TypeSpec to AsyncAPI", async function (this: AsyncAPIWorld) {
 });
 
 Then("I should receive a valid AsyncAPI 3.1 document", async function (this: AsyncAPIWorld) {
-  if (!world.isValidAsyncAPI()) {
+  if (!this.isValidAsyncAPI()) {
     throw new Error("Expected valid AsyncAPI 3.1 document, but got invalid or null document");
   }
 });
 
 Then("document should contain be corresponding channel", async function (this: AsyncAPIWorld) {
-  const doc = world.getAsyncAPIDocument();
+  const doc = this.getAsyncAPIDocument();
   if (!("channels" in doc) || Object.keys(doc.channels || {}).length === 0) {
     throw new Error("Expected AsyncAPI document to contain channels");
   }

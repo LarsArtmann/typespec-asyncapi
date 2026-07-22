@@ -1,5 +1,3 @@
-
-
 import { compileWithCLI } from "../utils/cli-test-helpers.js";
 import type { CLITestResult } from "../utils/cli-test-helpers.js";
 import {

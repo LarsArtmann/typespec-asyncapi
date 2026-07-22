@@ -1,4 +1,3 @@
-
 /**
  * Security Schemes Tests — SASL and other security mechanisms
  *

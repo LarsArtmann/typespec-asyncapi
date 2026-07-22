@@ -1,4 +1,3 @@
-
 /**
  * Integration tests for AsyncAPI Standard Protocol Bindings with Emitter
  *

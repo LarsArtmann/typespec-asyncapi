@@ -1,4 +1,3 @@
-
 /**
  * Unit tests for AsyncAPI emitter core functionality - TypeSpec 1.4.0 API
  *
@@ -41,8 +40,12 @@ describe("asyncAPI Emitter Core (NEW API)", () => {
       expect(AsyncAPIAssertions.hasValidStructure(asyncapiDoc)).toBeTruthy();
       expect(AsyncAPIAssertions.hasSchema(asyncapiDoc, "ComplexEvent")).toBeTruthy();
       expect(AsyncAPIAssertions.schemaHasProperty(asyncapiDoc, "ComplexEvent", "id")).toBeTruthy();
-      expect(AsyncAPIAssertions.schemaHasProperty(asyncapiDoc, "ComplexEvent", "metadata")).toBeTruthy();
-      expect(AsyncAPIAssertions.schemaHasProperty(asyncapiDoc, "ComplexEvent", "status")).toBeTruthy();
+      expect(
+        AsyncAPIAssertions.schemaHasProperty(asyncapiDoc, "ComplexEvent", "metadata"),
+      ).toBeTruthy();
+      expect(
+        AsyncAPIAssertions.schemaHasProperty(asyncapiDoc, "ComplexEvent", "status"),
+      ).toBeTruthy();
     });
 
     it("should preserve TypeSpec documentation", async () => {
@@ -138,7 +141,9 @@ describe("asyncAPI Emitter Core (NEW API)", () => {
       expect(AsyncAPIAssertions.hasSchema(asyncapiDoc, "SystemEvent")).toBeTruthy();
       expect(AsyncAPIAssertions.hasOperation(asyncapiDoc, "publishUserEvent")).toBeTruthy();
       expect(AsyncAPIAssertions.hasOperation(asyncapiDoc, "publishSystemEvent")).toBeTruthy();
-      expect(AsyncAPIAssertions.hasOperation(asyncapiDoc, "subscribeUserNotifications")).toBeTruthy();
+      expect(
+        AsyncAPIAssertions.hasOperation(asyncapiDoc, "subscribeUserNotifications"),
+      ).toBeTruthy();
     });
 
     it("should create unique channels for each operation", async () => {
@@ -213,8 +218,12 @@ describe("asyncAPI Emitter Core (NEW API)", () => {
       const asyncapiDoc = result.asyncApiDoc;
 
       expect(AsyncAPIAssertions.hasSchema(asyncapiDoc, "EventWithStatus")).toBeTruthy();
-      expect(AsyncAPIAssertions.schemaHasProperty(asyncapiDoc, "EventWithStatus", "status")).toBeTruthy();
-      expect(AsyncAPIAssertions.schemaHasProperty(asyncapiDoc, "EventWithStatus", "priority")).toBeTruthy();
+      expect(
+        AsyncAPIAssertions.schemaHasProperty(asyncapiDoc, "EventWithStatus", "status"),
+      ).toBeTruthy();
+      expect(
+        AsyncAPIAssertions.schemaHasProperty(asyncapiDoc, "EventWithStatus", "priority"),
+      ).toBeTruthy();
     });
 
     it("should handle utcDateTime types", async () => {

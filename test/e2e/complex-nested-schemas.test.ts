@@ -1,4 +1,3 @@
-
 /**
  * E2E Test 3: Complex Nested Schemas
  *

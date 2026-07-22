@@ -1,4 +1,3 @@
-
 /**
  * Basic functionality integration tests for AsyncAPI emitter
  * Tests the actual working decorators and emitter functionality

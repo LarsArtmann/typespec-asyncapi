@@ -1,4 +1,3 @@
-
 /**
  * AsyncAPI 3.1.0 Spec Compliance: $ref Chain
  *

@@ -1,4 +1,3 @@
-
 /**
  * Integration tests for TypeSpec decorator validation in AsyncAPI emitter
  */

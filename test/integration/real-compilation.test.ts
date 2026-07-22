@@ -1,4 +1,3 @@
-
 /**
  * Integration test using programmatic TypeSpec compiler API
  * Verifies the emitter produces valid AsyncAPI 3.1 end-to-end.

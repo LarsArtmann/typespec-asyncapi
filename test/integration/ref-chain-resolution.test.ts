@@ -1,4 +1,3 @@
-
 /**
  * $ref Chain Resolution Test
  *

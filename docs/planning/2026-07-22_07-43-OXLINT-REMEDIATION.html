@@ -1,0 +1,460 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Oxlint Remediation Plan</title>
+    <style>
+      body {
+        font: 16px system-ui;
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 0 20px;
+        color: #17202a;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin: 20px 0;
+      }
+      th,
+      td {
+        border: 1px solid #ccd;
+        padding: 8px;
+        text-align: left;
+      }
+      th {
+        background: #eaf2f8;
+      }
+      .p1 {
+        background: #fdebd0;
+      }
+      .p2 {
+        background: #e8f8f5;
+      }
+      .p3 {
+        background: #f4ecf7;
+      }
+      code {
+        background: #f4f6f7;
+        padding: 2px 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Oxlint Remediation Plan</h1>
+    <p>
+      <strong>Snapshot:</strong> 2026-07-22 07:43. Strict configuration is restored. Current
+      baseline after safe autofix: 127 errors, 4011 warnings. Build passes and 550 tests pass.
+    </p>
+    <h2>Pareto priorities</h2>
+    <table>
+      <tr>
+        <th>Tier</th>
+        <th>Outcome</th>
+        <th>Tasks</th>
+      </tr>
+      <tr class="p1">
+        <td>1%</td>
+        <td>Restore trustworthy gates and eliminate correctness failures</td>
+        <td>1-8</td>
+      </tr>
+      <tr class="p2">
+        <td>4%</td>
+        <td>Remove duplicated test anti-patterns and high-volume mechanical defects</td>
+        <td>9-22</td>
+      </tr>
+      <tr class="p3">
+        <td>20%</td>
+        <td>Improve maintainability warnings across source and tests</td>
+        <td>23-40</td>
+      </tr>
+    </table>
+    <h2>Execution tasks, each max 12 minutes</h2>
+    <table>
+      <tr>
+        <th>#</th>
+        <th>Priority</th>
+        <th>Task</th>
+        <th>Impact</th>
+        <th>Effort</th>
+        <th>Customer value</th>
+        <th>Verification</th>
+      </tr>
+      <tr class="p1">
+        <td>1</td>
+        <td>P0</td>
+        <td>Record baseline and separate pre-existing changes from task changes</td>
+        <td>High</td>
+        <td>Low</td>
+        <td>Protects user work</td>
+        <td>git diff/status</td>
+      </tr>
+      <tr class="p1">
+        <td>2</td>
+        <td>P0</td>
+        <td>Keep strict <code>.oxlintrc.json</code>; no category or rule suppression</td>
+        <td>High</td>
+        <td>Low</td>
+        <td>Trustworthy quality gate</td>
+        <td>Config review</td>
+      </tr>
+      <tr class="p1">
+        <td>3</td>
+        <td>P0</td>
+        <td>Fix Vitest configuration so global test APIs are available</td>
+        <td>High</td>
+        <td>Low</td>
+        <td>Tests execute reliably</td>
+        <td>Targeted test</td>
+      </tr>
+      <tr class="p1">
+        <td>4</td>
+        <td>P0</td>
+        <td>Fix false boolean assertions in real-world validation tests</td>
+        <td>High</td>
+        <td>Low</td>
+        <td>Tests validate behavior</td>
+        <td>25 targeted tests</td>
+      </tr>
+      <tr class="p1">
+        <td>5</td>
+        <td>P0</td>
+        <td>Remove unused imports, variables, and parameters from test infrastructure</td>
+        <td>High</td>
+        <td>Low</td>
+        <td>Cleaner CI signal</td>
+        <td>Oxlint file run</td>
+      </tr>
+      <tr class="p1">
+        <td>6</td>
+        <td>P0</td>
+        <td>Fix conditional test assertions without weakening rules</td>
+        <td>High</td>
+        <td>Medium</td>
+        <td>Deterministic tests</td>
+        <td>Relevant test files</td>
+      </tr>
+      <tr class="p1">
+        <td>7</td>
+        <td>P0</td>
+        <td>Fix invalid dynamic test titles and conditional test registration</td>
+        <td>High</td>
+        <td>Medium</td>
+        <td>Stable test reporting</td>
+        <td>Unit/validation tests</td>
+      </tr>
+      <tr class="p1">
+        <td>8</td>
+        <td>P0</td>
+        <td>Run full build, test, and strict error-only Oxlint gate</td>
+        <td>High</td>
+        <td>Low</td>
+        <td>Release confidence</td>
+        <td>All commands pass</td>
+      </tr>
+      <tr class="p2">
+        <td>9</td>
+        <td>P1</td>
+        <td>Fix unused identifiers across validation and golden tests</td>
+        <td>Medium</td>
+        <td>Low</td>
+        <td>Reduced noise</td>
+        <td>Oxlint targeted</td>
+      </tr>
+      <tr class="p2">
+        <td>10</td>
+        <td>P1</td>
+        <td>Fix <code>no-shadow</code> and function-scoping findings in ref-chain tests</td>
+        <td>Medium</td>
+        <td>Low</td>
+        <td>Safer test helpers</td>
+        <td>Targeted tests</td>
+      </tr>
+      <tr class="p2">
+        <td>11</td>
+        <td>P1</td>
+        <td>Fix BDD world aliasing and unused library imports</td>
+        <td>Medium</td>
+        <td>Medium</td>
+        <td>Maintainable BDD support</td>
+        <td>BDD tests</td>
+      </tr>
+      <tr class="p2">
+        <td>12</td>
+        <td>P1</td>
+        <td>Replace unsafe <code>any</code> in touched test utilities with explicit types</td>
+        <td>Medium</td>
+        <td>Medium</td>
+        <td>Better refactor safety</td>
+        <td>Typecheck</td>
+      </tr>
+      <tr class="p2">
+        <td>13</td>
+        <td>P1</td>
+        <td>Resolve optional chaining and async-await restrictions in one test family</td>
+        <td>Medium</td>
+        <td>Medium</td>
+        <td>Consistent style</td>
+        <td>Family tests</td>
+      </tr>
+      <tr class="p2">
+        <td>14</td>
+        <td>P1</td>
+        <td>Add required assertions and timeouts to one large security test family</td>
+        <td>Medium</td>
+        <td>Medium</td>
+        <td>Less flaky tests</td>
+        <td>Security tests</td>
+      </tr>
+      <tr class="p2">
+        <td>15</td>
+        <td>P1</td>
+        <td>Split oversized security test file into cohesive files</td>
+        <td>Medium</td>
+        <td>High</td>
+        <td>Faster maintenance</td>
+        <td>Full tests</td>
+      </tr>
+      <tr class="p2">
+        <td>16</td>
+        <td>P1</td>
+        <td>Fix test helper return types and no-undefined findings</td>
+        <td>Medium</td>
+        <td>Medium</td>
+        <td>Clear contracts</td>
+        <td>Typecheck/Oxlint</td>
+      </tr>
+      <tr class="p2">
+        <td>17</td>
+        <td>P1</td>
+        <td>Fix integration harness unused values and methods</td>
+        <td>Medium</td>
+        <td>Low</td>
+        <td>Cleaner integration layer</td>
+        <td>Integration tests</td>
+      </tr>
+      <tr class="p2">
+        <td>18</td>
+        <td>P1</td>
+        <td>Fix schema/ref validation test assertions</td>
+        <td>Medium</td>
+        <td>Medium</td>
+        <td>Reliable compliance signal</td>
+        <td>Validation tests</td>
+      </tr>
+      <tr class="p2">
+        <td>19</td>
+        <td>P1</td>
+        <td>Fix valid-title and conditional-test issues in unit suites</td>
+        <td>Medium</td>
+        <td>Medium</td>
+        <td>Stable test discovery</td>
+        <td>Unit tests</td>
+      </tr>
+      <tr class="p2">
+        <td>20</td>
+        <td>P1</td>
+        <td>
+          Review autofix diff for semantic changes and revert only task-introduced regressions
+        </td>
+        <td>High</td>
+        <td>Medium</td>
+        <td>Prevents silent behavior drift</td>
+        <td>Diff plus tests</td>
+      </tr>
+      <tr class="p2">
+        <td>21</td>
+        <td>P1</td>
+        <td>Run source-only strict Oxlint and fix production errors</td>
+        <td>High</td>
+        <td>Medium</td>
+        <td>Protects emitted specs</td>
+        <td>src Oxlint</td>
+      </tr>
+      <tr class="p2">
+        <td>22</td>
+        <td>P1</td>
+        <td>Run full suite after each completed warning family</td>
+        <td>High</td>
+        <td>Low</td>
+        <td>Prevents accumulated breakage</td>
+        <td>Build/tests</td>
+      </tr>
+      <tr class="p3">
+        <td>23</td>
+        <td>P2</td>
+        <td>Normalize import ordering and duplicate imports</td>
+        <td>Low</td>
+        <td>Medium</td>
+        <td>Readable code</td>
+        <td>Oxlint</td>
+      </tr>
+      <tr class="p3">
+        <td>24</td>
+        <td>P2</td>
+        <td>
+          Convert function declarations to project-required function expressions where appropriate
+        </td>
+        <td>Low</td>
+        <td>High</td>
+        <td>Consistent style</td>
+        <td>Oxlint/tests</td>
+      </tr>
+      <tr class="p3">
+        <td>25</td>
+        <td>P2</td>
+        <td>Remove magic numbers using domain constants</td>
+        <td>Low</td>
+        <td>High</td>
+        <td>Clearer behavior</td>
+        <td>Tests</td>
+      </tr>
+      <tr class="p3">
+        <td>26</td>
+        <td>P2</td>
+        <td>Replace ternaries and nested ternaries in touched production code</td>
+        <td>Low</td>
+        <td>Medium</td>
+        <td>Readable control flow</td>
+        <td>Tests</td>
+      </tr>
+      <tr class="p3">
+        <td>27</td>
+        <td>P2</td>
+        <td>Refactor oversized production functions into focused helpers</td>
+        <td>Medium</td>
+        <td>High</td>
+        <td>Lower defect risk</td>
+        <td>Unit/integration tests</td>
+      </tr>
+      <tr class="p3">
+        <td>28</td>
+        <td>P2</td>
+        <td>Refactor oversized test files by domain</td>
+        <td>Low</td>
+        <td>High</td>
+        <td>Faster navigation</td>
+        <td>Full tests</td>
+      </tr>
+      <tr class="p3">
+        <td>29</td>
+        <td>P2</td>
+        <td>Replace optional chaining only where rule intent improves safety</td>
+        <td>Low</td>
+        <td>High</td>
+        <td>Explicit failure behavior</td>
+        <td>Tests</td>
+      </tr>
+      <tr class="p3">
+        <td>30</td>
+        <td>P2</td>
+        <td>Address no-console/no-sync findings in scripts without changing CLI behavior</td>
+        <td>Low</td>
+        <td>Medium</td>
+        <td>Cleaner automation</td>
+        <td>Script execution</td>
+      </tr>
+      <tr class="p3">
+        <td>31</td>
+        <td>P2</td>
+        <td>Fix naming and identifier-length findings in shared utilities</td>
+        <td>Low</td>
+        <td>Medium</td>
+        <td>Better readability</td>
+        <td>Typecheck</td>
+      </tr>
+      <tr class="p3">
+        <td>32</td>
+        <td>P2</td>
+        <td>Fix regex Unicode and named-capture findings</td>
+        <td>Low</td>
+        <td>Medium</td>
+        <td>Safer parsing</td>
+        <td>Tests</td>
+      </tr>
+      <tr class="p3">
+        <td>33</td>
+        <td>P2</td>
+        <td>Replace object spread where restrictions are meaningful</td>
+        <td>Low</td>
+        <td>Medium</td>
+        <td>Explicit object construction</td>
+        <td>Tests</td>
+      </tr>
+      <tr class="p3">
+        <td>34</td>
+        <td>P2</td>
+        <td>Address no-undefined/no-null findings with intentional domain types</td>
+        <td>Medium</td>
+        <td>High</td>
+        <td>Stronger invariants</td>
+        <td>Typecheck/tests</td>
+      </tr>
+      <tr class="p3">
+        <td>35</td>
+        <td>P2</td>
+        <td>Add test timeouts and assertion counts systematically</td>
+        <td>Medium</td>
+        <td>High</td>
+        <td>Fewer hangs/flakes</td>
+        <td>Full tests</td>
+      </tr>
+      <tr class="p3">
+        <td>36</td>
+        <td>P2</td>
+        <td>Fix max-expects and max-lines by extracting behavioral helpers</td>
+        <td>Low</td>
+        <td>High</td>
+        <td>Focused tests</td>
+        <td>Full tests</td>
+      </tr>
+      <tr class="p3">
+        <td>37</td>
+        <td>P2</td>
+        <td>Review all generated diff formatting and trailing whitespace</td>
+        <td>Low</td>
+        <td>Low</td>
+        <td>Clean patches</td>
+        <td>git diff --check</td>
+      </tr>
+      <tr class="p3">
+        <td>38</td>
+        <td>P2</td>
+        <td>Document intentional rule exceptions only if a real invariant requires them</td>
+        <td>Medium</td>
+        <td>Medium</td>
+        <td>Auditable policy</td>
+        <td>Config review</td>
+      </tr>
+      <tr class="p3">
+        <td>39</td>
+        <td>P2</td>
+        <td>Integrate strict Oxlint into package scripts after it is clean</td>
+        <td>Medium</td>
+        <td>Medium</td>
+        <td>Prevents regression</td>
+        <td>CI command</td>
+      </tr>
+      <tr class="p3">
+        <td>40</td>
+        <td>P2</td>
+        <td>Final full verification and table report</td>
+        <td>High</td>
+        <td>Low</td>
+        <td>Clear handoff</td>
+        <td>All gates</td>
+      </tr>
+    </table>
+    <h2>Current blockers</h2>
+    <ul>
+      <li>Strict baseline remains large: 127 errors and 4011 warnings.</li>
+      <li>
+        The autofix touched 50 files and must be reviewed against the pre-existing working tree.
+      </li>
+      <li>
+        The Vitest global configuration fix restored execution, exposing invalid assertions in
+        validation tests; those were corrected in the targeted family.
+      </li>
+    </ul>
+  </body>
+</html>

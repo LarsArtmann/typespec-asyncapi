@@ -1,4 +1,3 @@
-
 /**
  * E2E Test 4: Real-World E-Commerce Event System
  *

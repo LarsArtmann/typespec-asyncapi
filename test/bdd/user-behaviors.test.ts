@@ -1,4 +1,3 @@
-
 /**
  * BDD Tests — User-Focused AsyncAPI Emitter Behaviors
  *
@@ -13,7 +12,7 @@ import {
   pathToChannelName,
   validatePathTemplate,
 } from "../utils/path-templates.js";
-import { type AsyncAPIConsolidatedState, consolidateAsyncAPIState } from "../../src/state.js";
+import { consolidateAsyncAPIState } from "../../src/state.js";
 
 // ============================================================================
 // Feature: Channel Definition

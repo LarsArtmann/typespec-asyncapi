@@ -1,4 +1,3 @@
-
 /**
  * Security Schemes Tests
  */

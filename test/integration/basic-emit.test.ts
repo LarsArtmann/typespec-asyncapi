@@ -1,5 +1,3 @@
-
-
 import { compileAsyncAPIWithoutErrors } from "../utils/test-helpers.js";
 
 describe("asyncAPI Emitter Integration", () => {

@@ -1,4 +1,3 @@
-
 /**
  * AsyncAPI 3.1 Schema Validation Test
  *

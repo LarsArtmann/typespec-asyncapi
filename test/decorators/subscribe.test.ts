@@ -1,4 +1,3 @@
-
 /**
  * @subscribe Decorator Integration Tests
  *

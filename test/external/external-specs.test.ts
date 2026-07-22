@@ -1,4 +1,3 @@
-
 /**
  * External Spec Compilation Tests (T5)
  *

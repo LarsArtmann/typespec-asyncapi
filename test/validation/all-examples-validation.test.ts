@@ -1,4 +1,3 @@
-
 /**
  * All Example Files → AsyncAPI 3.1 Validation
  *
