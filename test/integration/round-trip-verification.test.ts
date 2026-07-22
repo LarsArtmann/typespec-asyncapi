@@ -85,8 +85,8 @@ const COMPREHENSIVE_SPEC = `
   op publishOrder(): OrderPlaced;
 
   @channel("orders")
-  @reply(#{ messages: [OrderConfirmed] })
-  op submitOrder(): OrderPlaced;
+  @reply(OrderConfirmed)
+  op sendOrder(): OrderPlaced;
 
   @channel("orders.events")
   op publishOrderEvents(): OrderConfirmed | PaymentFailed;
@@ -170,12 +170,12 @@ describe("round-Trip Verification", () => {
   it("emits operations with correct actions", () => {
     const ops = doc.operations!;
     expect(ops.publishUserCreated.action).toBe("send");
-    expect(ops.submitOrder.action).toBe("send");
+    expect(ops.sendOrder.action).toBe("send");
     expect(ops.publishOrderEvents.action).toBe("send");
   });
 
   it("emits operation with reply", () => {
-    const op = doc.operations!.submitOrder;
+    const op = doc.operations!.sendOrder;
     expect(op.reply).toBeDefined();
     expect(op.reply!.messages).toBeDefined();
     expect(op.reply!.messages!.length).toBeGreaterThan(0);
