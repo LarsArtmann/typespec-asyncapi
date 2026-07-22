@@ -27,6 +27,7 @@ bun run test          # Run tests via vitest (555 pass, 0 fail)
 - **Diagnostic system:** `reportDiagnostic()` in `decorator-helpers.ts` uses `$lib.reportDiagnostic()` (TypeSpec library API), NOT raw `program.reportDiagnostic()`. All codes are declared in `src/lib.ts` and compile-time validated via `keyof typeof $lib.diagnostics`. The library name is auto-prefixed to diagnostic codes by the TypeSpec runtime. **18 codes** declared (15 error + 3 warning). No split-brain.
 - **Zero `any` types in emitter.ts** (achieved)
 - **ESLint config:** Clean, no Effect.TS-era rules (throw/try/catch/Promise allowed)
+- **Linting strategy (dual linter):** ESLint handles type-aware rules on `src/` only (floating promises, unsafe operations, unnecessary type assertions, consistent-type-imports). oxlint handles non-type-aware rules on ALL files (style, perf, complexity metrics, suspicious patterns). Configs are complementary with zero rule conflicts. `bun run lint` runs both sequentially. Use `bun run lint:eslint` or `bun run lint:ox` individually for faster iteration.
 
 ## Architecture
 
