@@ -45,7 +45,12 @@
   },
   "overrides": [
     {
-      "files": ["scripts/**", "*.config.js", "*.config.ts", "src/constants/generated-bindings.ts"],
+      "files": [
+        "scripts/**",
+        "*.config.js",
+        "*.config.ts",
+        "src/constants/generated-bindings.ts"
+      ],
       "rules": {
         "vitest/require-hook": "off",
         "eslint/no-console": "off",
