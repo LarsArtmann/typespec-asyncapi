@@ -31,21 +31,21 @@ import type {
 } from "@typespec/asset-emitter";
 import { getDoc } from "@typespec/compiler";
 import type { AsyncAPIEmitterOptions } from "./infrastructure/configuration/asyncAPIEmitterOptions.js";
-import type { SchemaObject } from "./domain/models/asyncapi-document.js";
+import type { JsonSchema } from "./domain/models/asyncapi-document.js";
 import { intrinsicToSchema } from "./intrinsic-mapping.js";
 import { extractValue } from "./extract-value.js";
 import { isStdlibType } from "./stdlib-helpers.js";
 
 export class AsyncAPISchemaEmitter extends TypeEmitter<
-  SchemaObject,
+  JsonSchema,
   AsyncAPIEmitterOptions
 > {
-  namespaceDeclaration(_namespace: Namespace): EmitterOutput<SchemaObject> {
+  namespaceDeclaration(_namespace: Namespace): EmitterOutput<JsonSchema> {
     return this.emitter.result.none();
   }
 
-  modelDeclaration(model: Model): EmitterOutput<SchemaObject> {
-    const properties: Record<string, SchemaObject> = {};
+  modelDeclaration(model: Model): EmitterOutput<JsonSchema> {
+    const properties: Record<string, JsonSchema> = {};
     const required: string[] = [];
 
     const collectProperties = (m: Model): void => {
@@ -72,7 +72,7 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
     };
     collectProperties(model);
 
-    const schema: SchemaObject = { properties, type: "object" };
+    const schema: JsonSchema = { properties, type: "object" };
     if (required.length > 0) {
       schema.required = required;
     }
@@ -85,8 +85,8 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
     return this.emitter.result.declaration(model.name, schema);
   }
 
-  modelLiteral(model: Model): EmitterOutput<SchemaObject> {
-    const properties: Record<string, SchemaObject> = {};
+  modelLiteral(model: Model): EmitterOutput<JsonSchema> {
+    const properties: Record<string, JsonSchema> = {};
     const required: string[] = [];
 
     for (const [name, prop] of model.properties) {
@@ -96,14 +96,14 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
       }
     }
 
-    const schema: SchemaObject = { properties, type: "object" };
+    const schema: JsonSchema = { properties, type: "object" };
     if (required.length > 0) {
       schema.required = required;
     }
     return schema;
   }
 
-  modelProperties(model: Model): EmitterOutput<SchemaObject> {
+  modelProperties(model: Model): EmitterOutput<JsonSchema> {
     const props: Record<string, unknown> = {};
     for (const [name, prop] of model.properties) {
       const result = this.emitter.emitModelProperty(prop);
@@ -112,11 +112,11 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
     return props;
   }
 
-  modelProperty(prop: ModelProperty): EmitterOutput<SchemaObject> {
+  modelProperty(prop: ModelProperty): EmitterOutput<JsonSchema> {
     return this.emitter.emitTypeReference(prop.type);
   }
 
-  union(union: Union): EmitterOutput<SchemaObject> {
+  union(union: Union): EmitterOutput<JsonSchema> {
     const variants = [...union.variants.values()].map((v) => {
       const extracted = extractValue(this.emitter.emitTypeReference(v.type));
       if (Object.keys(extracted).length === 0) {
@@ -138,22 +138,22 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
     return { anyOf: variants };
   }
 
-  enum(en: Enum): EmitterOutput<SchemaObject> {
+  enum(en: Enum): EmitterOutput<JsonSchema> {
     const values = [...en.members.values()].map(
       (m: EnumMember) => m.value ?? m.name,
     );
     return { enum: values, type: "string" };
   }
 
-  intrinsic(intrinsic: Type, _name: string): EmitterOutput<SchemaObject> {
+  intrinsic(intrinsic: Type, _name: string): EmitterOutput<JsonSchema> {
     return intrinsicToSchema((intrinsic as { name?: string }).name ?? "string");
   }
 
-  scalar(scalar: Scalar): EmitterOutput<SchemaObject> {
+  scalar(scalar: Scalar): EmitterOutput<JsonSchema> {
     return intrinsicToSchema(scalar.name);
   }
 
-  scalarDeclaration(scalar: Scalar, name: string): EmitterOutput<SchemaObject> {
+  scalarDeclaration(scalar: Scalar, name: string): EmitterOutput<JsonSchema> {
     return this.emitter.result.declaration(
       name,
       intrinsicToSchema(scalar.name),
@@ -163,26 +163,26 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
   scalarInstantiation(
     scalar: Scalar,
     name: string | undefined,
-  ): EmitterOutput<SchemaObject> {
+  ): EmitterOutput<JsonSchema> {
     if (name) {
       return this.scalarDeclaration(scalar, name);
     }
     return intrinsicToSchema(scalar.name);
   }
 
-  stringLiteral(literal: StringLiteral): EmitterOutput<SchemaObject> {
+  stringLiteral(literal: StringLiteral): EmitterOutput<JsonSchema> {
     return { const: literal.value };
   }
 
-  numericLiteral(literal: NumericLiteral): EmitterOutput<SchemaObject> {
+  numericLiteral(literal: NumericLiteral): EmitterOutput<JsonSchema> {
     return { const: literal.value };
   }
 
-  booleanLiteral(literal: BooleanLiteral): EmitterOutput<SchemaObject> {
+  booleanLiteral(literal: BooleanLiteral): EmitterOutput<JsonSchema> {
     return { const: literal.value };
   }
 
-  tuple(tuple: Tuple): EmitterOutput<SchemaObject> {
+  tuple(tuple: Tuple): EmitterOutput<JsonSchema> {
     const items = tuple.values.map((v: Type) =>
       extractValue(this.emitter.emitTypeReference(v)),
     );
@@ -193,15 +193,15 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
     array: Type,
     name: string,
     elementType: Type,
-  ): EmitterOutput<SchemaObject> {
+  ): EmitterOutput<JsonSchema> {
     return { items: this.elementTypeToSchema(elementType), type: "array" };
   }
 
-  arrayLiteral(array: Type, elementType: Type): EmitterOutput<SchemaObject> {
+  arrayLiteral(array: Type, elementType: Type): EmitterOutput<JsonSchema> {
     return { items: this.elementTypeToSchema(elementType), type: "array" };
   }
 
-  private elementTypeToSchema(elementType: Type): SchemaObject {
+  private elementTypeToSchema(elementType: Type): JsonSchema {
     const ref = this.refForNamedType(elementType);
     if (ref) {
       return ref;
@@ -220,19 +220,19 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
     return { scope: sourceFile.globalScope };
   }
 
-  operation(_operation: Operation): EmitterOutput<SchemaObject> {
+  operation(_operation: Operation): EmitterOutput<JsonSchema> {
     return this.emitter.result.none();
   }
 
-  interfaceDeclaration(_iface: Interface): EmitterOutput<SchemaObject> {
+  interfaceDeclaration(_iface: Interface): EmitterOutput<JsonSchema> {
     return this.emitter.result.none();
   }
 
-  enumDeclaration(en: Enum, name: string): EmitterOutput<SchemaObject> {
+  enumDeclaration(en: Enum, name: string): EmitterOutput<JsonSchema> {
     const values = [...en.members.values()].map(
       (m: EnumMember) => m.value ?? m.name,
     );
-    const schema: SchemaObject = { enum: values, type: "string" };
+    const schema: JsonSchema = { enum: values, type: "string" };
     const doc = getDoc(this.emitter.getProgram(), en);
     if (doc) {
       schema.description = doc;
@@ -240,11 +240,11 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
     return this.emitter.result.declaration(name, schema);
   }
 
-  sourceFile(sourceFile: SourceFile<SchemaObject>): EmittedSourceFile {
+  sourceFile(sourceFile: SourceFile<JsonSchema>): EmittedSourceFile {
     return { contents: "", path: sourceFile.path };
   }
 
-  private refForNamedType(t: Type): SchemaObject | null {
+  private refForNamedType(t: Type): JsonSchema | null {
     const { kind } = t as { kind: string };
 
     if (kind === "Model") {
@@ -271,7 +271,7 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
     return null;
   }
 
-  private propertyToSchema(prop: ModelProperty): SchemaObject {
+  private propertyToSchema(prop: ModelProperty): JsonSchema {
     const ref = this.refForNamedType(prop.type);
     if (ref) {
       return ref;
@@ -285,7 +285,7 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
     return extracted;
   }
 
-  private typeToSchema(t: Type): SchemaObject {
+  private typeToSchema(t: Type): JsonSchema {
     const { kind } = t as { kind: string };
     if (kind === "Union") {
       const tUnion = t as Union;

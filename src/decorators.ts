@@ -24,7 +24,7 @@ import {
   $subscribe,
   $tags,
 } from "./minimal-decorators.js";
-import { $server, $defaultContentType } from "./server-decorators.js";
+import { $server, $defaultContentType } from "./namespace-decorators.js";
 
 // CRITICAL: TypeSpec requires $decorators object export
 export const $decorators = {

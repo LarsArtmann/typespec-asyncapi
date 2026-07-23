@@ -128,8 +128,8 @@ export interface OperationReply {
 }
 
 export interface MessageObject {
-  headers?: SchemaObject | Ref;
-  payload?: SchemaObject | Ref;
+  headers?: JsonSchema | Ref;
+  payload?: JsonSchema | Ref;
   correlationId?: CorrelationIdObject | Ref;
   contentType?: string;
   name?: string;
@@ -142,20 +142,47 @@ export interface MessageObject {
   examples?: { headers?: unknown; payload?: unknown }[];
 }
 
-export interface SchemaObject {
+/**
+ * A JSON Schema object following draft-07 / OpenAPI 3.x conventions.
+ *
+ * Structurally compatible with AsyncAPI Schema Object and OpenAPI Schema Object.
+ * The index signature allows specification extensions (`x-*` keys).
+ */
+export interface JsonSchema {
   type?: string;
   format?: string;
-  properties?: Record<string, SchemaObject>;
+  properties?: Record<string, JsonSchema>;
   required?: string[];
   description?: string;
-  items?: SchemaObject;
+  items?: JsonSchema;
   enum?: unknown[];
-  anyOf?: SchemaObject[];
-  allOf?: SchemaObject[];
-  oneOf?: SchemaObject[];
-  additionalProperties?: boolean | SchemaObject;
+  anyOf?: JsonSchema[];
+  allOf?: JsonSchema[];
+  oneOf?: JsonSchema[];
+  additionalProperties?: boolean | JsonSchema;
   const?: unknown;
   $ref?: string;
+  title?: string;
+  default?: unknown;
+  nullable?: boolean;
+  readOnly?: boolean;
+  writeOnly?: boolean;
+  deprecated?: boolean;
+  minimum?: number;
+  maximum?: number;
+  exclusiveMinimum?: number;
+  exclusiveMaximum?: number;
+  minLength?: number;
+  maxLength?: number;
+  minItems?: number;
+  maxItems?: number;
+  pattern?: string;
+  uniqueItems?: boolean;
+  example?: unknown;
+  examples?: unknown[];
+  discriminator?: string;
+  xml?: Record<string, unknown>;
+  externalDocs?: { url: string; description?: string };
   [key: string]: unknown;
 }
 
@@ -167,7 +194,7 @@ export interface CorrelationIdObject {
 export interface ParameterObject {
   location?: string;
   description?: string;
-  schema?: SchemaObject;
+  schema?: JsonSchema;
   enum?: unknown[];
   default?: unknown;
   examples?: unknown[];
@@ -219,7 +246,7 @@ export interface SecurityScheme {
 }
 
 export interface ComponentsObject {
-  schemas?: Record<string, SchemaObject>;
+  schemas?: Record<string, JsonSchema>;
   servers?: Record<string, ServerObject | Ref>;
   channels?: Record<string, ChannelObject | Ref>;
   operations?: Record<string, OperationObject | Ref>;

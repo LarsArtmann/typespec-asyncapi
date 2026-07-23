@@ -12,14 +12,14 @@
 
 import type {
   AsyncAPIDocument,
-  SchemaObject,
+  JsonSchema,
 } from "./domain/models/asyncapi-document.js";
 
 const SCHEMA_REF_PREFIX = "#/components/schemas/";
 
 export interface SplitResult {
   mainDocument: AsyncAPIDocument;
-  schemaFiles: Map<string, SchemaObject>;
+  schemaFiles: Map<string, JsonSchema>;
 }
 
 export function splitSchemas(
@@ -31,7 +31,7 @@ export function splitSchemas(
     return { mainDocument: doc, schemaFiles: new Map() };
   }
 
-  const schemaFiles = new Map<string, SchemaObject>();
+  const schemaFiles = new Map<string, JsonSchema>();
   const cloned = structuredClone(doc);
 
   const clonedSchemas = cloned.components?.schemas ?? {};

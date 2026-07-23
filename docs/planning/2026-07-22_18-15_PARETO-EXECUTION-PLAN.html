@@ -1073,7 +1073,8 @@
           <p>
             The field <code>defaultContentType?: string</code> already exists in
             the document model (<code>asyncapi-document.ts:238</code>) but is
-            never populated. Add a <code>@defaultContentType</code>
+            never populated. Add a
+            <code>@defaultContentType</code>
             decorator, wire it into state, and emit it on the root document.
             Trivial — 30 minutes.
           </p>
@@ -1084,7 +1085,8 @@
           <p>
             <code>@doc</code> already works for models, properties, operations,
             and messages. Channels silently drop it. Fix: add
-            <code>getDoc()</code> call when building <code>ChannelObject</code>
+            <code>getDoc()</code> call when building
+            <code>ChannelObject</code>
             in document-builder. 30 minutes including test.
           </p>
         </div>
@@ -1122,7 +1124,8 @@
             with different event schemas). Design: accept a union of Models on
             the operation, or a <code>@messages</code> decorator accepting an
             array. Update <code>DiscoveredOp</code> and the operation builder to
-            emit a <code>messages</code>
+            emit a
+            <code>messages</code>
             array instead of a single message reference.
           </p>
         </div>
@@ -1164,7 +1167,8 @@
             test: emit a representative spec with all features, parse it back
             with <code>@asyncapi/parser</code>, and verify structural integrity.
             Note: <code>@asyncapi/parser</code> v3.6.0 has Bun incompatibility
-            (AJV <code>new Function()</code>
+            (AJV
+            <code>new Function()</code>
             codegen) — use Node.js for this test, or manual $ref resolution
             tests.
           </p>
@@ -3449,7 +3453,8 @@
                 <td>6.1</td>
                 <td>
                   Audit <code>compileAsyncAPI</code> return type — should
-                  already be <code>AsyncAPIDocument</code>
+                  already be
+                  <code>AsyncAPIDocument</code>
                 </td>
                 <td>10 min</td>
               </tr>

@@ -2,9 +2,9 @@
  * Scalar type name to JSON Schema type mapping.
  */
 
-import type { SchemaObject } from "./domain/models/asyncapi-document.js";
+import type { JsonSchema } from "./domain/models/asyncapi-document.js";
 
-export function intrinsicToSchema(typeName: string): SchemaObject {
+export function intrinsicToSchema(typeName: string): JsonSchema {
   switch (typeName) {
     case "string": {
       return { type: "string" };

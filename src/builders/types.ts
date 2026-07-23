@@ -8,7 +8,7 @@ import type {
   MessageObject,
   OperationAction,
   OperationObject,
-  SchemaObject,
+  JsonSchema,
   SecurityScheme,
   ServerObject,
 } from "../domain/models/asyncapi-document.js";
@@ -29,7 +29,7 @@ export interface DocumentBuildContext {
   messages: Record<string, MessageObject>;
   servers: Record<string, ServerObject>;
   securitySchemes: Record<string, SecurityScheme>;
-  schemas: Record<string, SchemaObject>;
+  schemas: Record<string, JsonSchema>;
   discoveredOps: DiscoveredOp[];
   opToChannel: Map<string, string>;
   channelDocs: Map<string, string>;

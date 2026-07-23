@@ -85,38 +85,6 @@ export function generateFixture(options: FixtureOptions): string {
   return lines.join("\n");
 }
 
-export function generateFixtureMultiFile(
-  options: FixtureOptions,
-): Record<string, string> {
-  const { channelCount, propertiesPerModel, sharedModelCount } = options;
-  const shared: string[] = [`namespace BenchmarkShared;`, ""];
-
-  const sharedNames: string[] = [];
-  for (let i = 0; i < sharedModelCount; i++) {
-    const name = `SharedModel${i}`;
-    sharedNames.push(name);
-    shared.push(generateModel(name, propertiesPerModel, false, []));
-  }
-
-  const main: string[] = [
-    'import "./shared.tsp";',
-    'import "@lars-artmann/typespec-asyncapi";',
-    "using TypeSpec.AsyncAPI;",
-    `namespace BenchmarkSpec;`,
-    "",
-  ];
-
-  for (let i = 0; i < channelCount; i++) {
-    const modelName = `BenchmarkShared.SharedModel${i % sharedModelCount}`;
-    main.push(generateChannel(i, modelName));
-  }
-
-  return {
-    "main.tsp": main.join("\n"),
-    "shared.tsp": shared.join("\n"),
-  };
-}
-
 export function estimateSpecSize(source: string): {
   bytes: number;
   lines: number;

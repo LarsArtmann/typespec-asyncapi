@@ -5,7 +5,7 @@
 export * from "./lib.js";
 export * from "./decorators.js";
 export * from "./minimal-decorators.js";
-export * from "./server-decorators.js";
+export * from "./namespace-decorators.js";
 
 // Emitter exports - use simple emitter (JSX emitter temporarily disabled)
 export { $onEmit } from "./emitter.js";

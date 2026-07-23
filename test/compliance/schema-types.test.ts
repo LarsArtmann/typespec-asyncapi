@@ -8,10 +8,10 @@
 import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
 import type {
   ParsedAsyncAPIDocument,
-  SchemaObject,
+  JsonSchema,
 } from "../../src/domain/models/asyncapi-document.js";
 
-function getSchema(doc: ParsedAsyncAPIDocument, name: string): SchemaObject {
+function getSchema(doc: ParsedAsyncAPIDocument, name: string): JsonSchema {
   return doc.components!.schemas![name];
 }
 

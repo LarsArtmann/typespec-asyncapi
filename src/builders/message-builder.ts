@@ -9,7 +9,7 @@ import { getDoc } from "@typespec/compiler";
 import type { AsyncAPIConsolidatedState } from "../state.js";
 import type {
   MessageObject,
-  SchemaObject,
+  JsonSchema,
 } from "../domain/models/asyncapi-document.js";
 import { refSchema } from "../domain/models/asyncapi-document.js";
 import type { DocumentBuildContext } from "./types.js";
@@ -128,7 +128,7 @@ function applyHeaders(
   }
   const headers = state.messageHeaders.get(type as never);
   if (headers && headers.length > 0) {
-    const headerProps: Record<string, SchemaObject> = {};
+    const headerProps: Record<string, JsonSchema> = {};
     for (const h of headers) {
       headerProps[h.name] = {
         type: h.type ?? "string",

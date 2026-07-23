@@ -10,7 +10,7 @@ import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
 import type {
   CorrelationIdObject,
   MessageObject,
-  SchemaObject,
+  JsonSchema,
 } from "../../src/domain/models/asyncapi-document.js";
 
 describe("spec Compliance: Edge Cases", () => {
@@ -204,7 +204,7 @@ describe("spec Compliance: Edge Cases", () => {
 
     const msg = doc.components!.messages!.ApiEvent as MessageObject;
     expect(msg.headers).toBeDefined();
-    const headers = msg.headers as SchemaObject;
+    const headers = msg.headers as JsonSchema;
     expect(headers.type).toBe("object");
   });
 

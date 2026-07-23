@@ -1,9 +1,9 @@
 import type { EmitEntity } from "@typespec/asset-emitter";
-import type { SchemaObject } from "./domain/models/asyncapi-document.js";
+import type { JsonSchema } from "./domain/models/asyncapi-document.js";
 
 export function extractValue(
-  entity: EmitEntity<SchemaObject> | undefined,
-): SchemaObject {
+  entity: EmitEntity<JsonSchema> | undefined,
+): JsonSchema {
   if (!entity) {
     return {};
   }
@@ -17,7 +17,7 @@ export function extractValue(
       if (typeof (v as { onValue?: unknown }).onValue === "function") {
         return {};
       }
-      return v as SchemaObject;
+      return v as JsonSchema;
     }
     default: {
       return {};

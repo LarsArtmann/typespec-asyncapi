@@ -34,7 +34,7 @@ bun run test          # Run tests via vitest (555 pass, 0 fail)
 - **Entry Point:** `src/index.ts` → exports `$onEmit` for TypeSpec compiler
 - **Emitter (7 files, split from original 831-line monolith):**
   - `src/emitter.ts` (91 lines) — `$onEmit` entry point, writes output file, handles `split-schemas` option
-  - `src/schema-emitter.ts` (349 lines) — `AsyncAPISchemaEmitter` class extends `TypeEmitter<SchemaObject, AsyncAPIEmitterOptions>`, overrides `modelDeclaration`, `union`, `enum`, `intrinsic`, `scalar`, etc.
+  - `src/schema-emitter.ts` (349 lines) — `AsyncAPISchemaEmitter` class extends `TypeEmitter<JsonSchema, AsyncAPIEmitterOptions>`, overrides `modelDeclaration`, `union`, `enum`, `intrinsic`, `scalar`, etc.
   - `src/schema-generator.ts` (46 lines) — `generateSchemas()` entry point, creates asset emitter and collects declarations
   - `src/extract-value.ts` (26 lines) — `extractValue()` narrows `EmitEntity<T>` discriminated union, filters `Placeholder<T>` lazy values
   - `src/stdlib-helpers.ts` (39 lines) — `isStdlibType()` and `collectAllStdlibNames()` utilities
@@ -42,14 +42,14 @@ bun run test          # Run tests via vitest (555 pass, 0 fail)
   - `src/intrinsic-mapping.ts` (82 lines) — `intrinsicToSchema()` maps TypeSpec scalar names to JSON Schema types (~30 cases)
   - `src/schema-splitter.ts` (83 lines) — `splitSchemas()` extracts schemas into individual files, rewrites `$ref` pointers to external paths
 - **Decorators:** `lib/main.tsp` declares all decorators + `EmitterOptions` model for IDE autocomplete
-- **Decorator Implementations:** `src/minimal-decorators.ts` (351 lines) and `src/server-decorators.ts` (69 lines) — thin wrappers with runtime validation, helpers in `src/decorator-helpers.ts`, state writing delegated to `src/state-writers.ts`
+- **Decorator Implementations:** `src/minimal-decorators.ts` (351 lines) and `src/namespace-decorators.ts` (73 lines) — thin wrappers with runtime validation, helpers in `src/decorator-helpers.ts`, state writing delegated to `src/state-writers.ts`. The namespace-decorators file contains `$server` and `$defaultContentType` (both target `Namespace`).
 - **State Management:** `src/state.ts` (consolidation), `src/state-compatibility.ts` (TypeSpec stateMap access)
 - **Configuration:** `src/infrastructure/configuration/` — simplified to just types, no runtime validation
 - **Protocols:** `src/constants/protocols.ts` — single source of truth for all AsyncAPI protocols (const array → derived type → runtime Set + type guard). Accepts aliases (`websocket` → `ws`) via `normalizeProtocol()`. Canonical names only in `PROTOCOL_LIST`; `isSupportedProtocol()` narrows to `AcceptedProtocol` (canonical | alias).
 - **Binding Versions:** `src/constants/binding-versions.ts` — single source of truth for binding versions per protocol (Kafka 0.5.0, AMQP 0.3.0, MQTT 0.2.0, HTTP 0.3.0, WS 0.1.0). `normalizeBindingProtocol()` maps `wss` → `ws` for binding keys (AsyncAPI schema uses `ws` for both). Auto-injects `bindingVersion` when missing. `BINDING_PLACEMENT` matrix maps each protocol to which target kinds (channel/operation/message/server) have binding definitions. `supportsBindingPlacement()` and `getValidPlacements()` consume the matrix.
 - **Binding Validation:** `src/validation/binding-validator.ts` — `processBindings()` accepts an optional `targetKind` parameter (mapped from TypeSpec target: `Operation` → `"operation"`, `Model` → `"message"`). Normalizes binding keys (websockets→ws), validates versions, auto-injects missing `bindingVersion`, and warns on misplaced bindings. Three diagnostics: `unknown-binding-protocol` (warning), `invalid-binding-version` (warning), `misplaced-binding` (warning). `BindingDiagnosticCode` union type replaces the previous `string` code field.
 - **Security Scheme Types:** `src/domain/models/asyncapi-document.ts` — `SECURITY_SCHEME_TYPES` const array → `SecuritySchemeType` union → `isValidSchemeType` runtime guard. Matches AsyncAPI 3.1 spec exactly (no invalid types like `sasl`/`mutualTLS`/`external`/`oauthBearer`). Multi-security on one namespace supported (array accumulation). `SecurityScheme.in` only allows `"query" | "header" | "cookie"` (AsyncAPI 3.1 API key locations).
-- **Document Model:** `src/domain/models/asyncapi-document.ts` — strongly-typed AsyncAPI 3.1 interfaces with `OAuth2Flows`, `ProtocolBindings`, `SecuritySchemeType` types. No index signatures except `SchemaObject` (standard JSON Schema extension pattern)
+- **Document Model:** `src/domain/models/asyncapi-document.ts` — strongly-typed AsyncAPI 3.1 interfaces with `OAuth2Flows`, `ProtocolBindings`, `SecuritySchemeType` types. No index signatures except `JsonSchema` (standard JSON Schema extension pattern)
 - **Cross-emitter Shared Module:** `src/shared/` — exports `JsonSchema`, `SchemaRef`, `SchemaMap` types and `generateSchemas`, `extractValue`, `intrinsicToSchema`, `AsyncAPISchemaEmitter` for reuse by other TypeSpec emitters (OpenAPI, JSON Schema). Accessible via `@lars-artmann/typespec-asyncapi/shared` subpath export.
 - **Multi-file Output:** `split-schemas` emitter option splits schemas into individual files under `schemas/` directory. All `$ref` values rewritten from `#/components/schemas/Name` to `schemas/Name.{ext}`. Both main document and schema files have refs rewritten.
 - **tsconfig:** `"types": ["node"]` added to make `structuredClone` available (used in `schema-splitter.ts`). Without this, `structuredClone` is unavailable because it's not in the ES2022 type library.
@@ -108,7 +108,7 @@ extern dec bindings(target: Operation | Model, value: {} | valueof Record<unknow
 The `@typespec/asset-emitter` API returns `EmitEntity<T>` objects that must be narrowed before extracting values. The `extractValue()` function in `src/extract-value.ts` handles this:
 
 ```typescript
-export function extractValue(entity: EmitEntity<SchemaObject> | undefined): SchemaObject {
+export function extractValue(entity: EmitEntity<JsonSchema> | undefined): JsonSchema {
   if (!entity) return {};
   switch (entity.kind) {
     case "declaration":
@@ -117,7 +117,7 @@ export function extractValue(entity: EmitEntity<SchemaObject> | undefined): Sche
       // Must filter out Placeholder<T> — detected via duck-typing onValue
       if (!v || typeof v !== "object") return {};
       if (typeof (v as { onValue?: unknown }).onValue === "function") return {};
-      return v as SchemaObject;
+      return v as JsonSchema;
     }
     default:
       return {};

@@ -19,10 +19,7 @@ import {
  * Overrides where the AsyncAPI 3.1 JSON Schema accepts fewer versions
  * than the @asyncapi/specs bindings directory contains.
  */
-const SCHEMA_VERSION_OVERRIDES: Record<
-  string,
-  { latest: string; valid: string[] }
-> = {
+const SCHEMA_VERSION_OVERRIDES: Record<string, { latest: string; valid: string[] }> = {
   sns: { latest: "0.1.0", valid: ["0.1.0"] },
 };
 
@@ -61,15 +58,11 @@ function buildPlacement(): Record<string, Record<string, boolean>> {
   return result;
 }
 
-export const LATEST_BINDING_VERSIONS = buildLatestVersions() as Readonly<
-  Record<string, string>
->;
+export const LATEST_BINDING_VERSIONS = buildLatestVersions() as Readonly<Record<string, string>>;
 
 export type ProtocolWithBindings = keyof typeof LATEST_BINDING_VERSIONS;
 
-export const PROTOCOLS_WITH_BINDINGS: readonly string[] = Object.keys(
-  LATEST_BINDING_VERSIONS,
-);
+export const PROTOCOLS_WITH_BINDINGS: readonly string[] = Object.keys(LATEST_BINDING_VERSIONS);
 
 export const VALID_BINDING_VERSIONS = buildValidVersions();
 
@@ -96,10 +89,7 @@ export function hasProtocolBindings(protocol: string): boolean {
   return bindingProtocol in LATEST_BINDING_VERSIONS;
 }
 
-export function isValidBindingVersion(
-  protocol: string,
-  version: string,
-): boolean {
+export function isValidBindingVersion(protocol: string, version: string): boolean {
   const versions = VALID_BINDING_VERSIONS[protocol];
   return versions ? versions.includes(version) : false;
 }
@@ -109,10 +99,7 @@ export function getValidVersionsString(protocol: string): string | undefined {
   return versions ? versions.join(", ") : undefined;
 }
 
-export function supportsBindingPlacement(
-  protocol: string,
-  kind: BindingTargetKind,
-): boolean {
+export function supportsBindingPlacement(protocol: string, kind: BindingTargetKind): boolean {
   const placement = BINDING_PLACEMENT[protocol];
   return placement ? placement[kind] === true : false;
 }
@@ -122,7 +109,5 @@ export function getValidPlacements(protocol: string): BindingTargetKind[] {
   if (!placement) {
     return [];
   }
-  return (Object.keys(placement) as BindingTargetKind[]).filter(
-    (kind) => placement[kind] === true,
-  );
+  return (Object.keys(placement) as BindingTargetKind[]).filter((kind) => placement[kind] === true);
 }

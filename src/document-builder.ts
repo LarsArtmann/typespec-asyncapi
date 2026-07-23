@@ -18,7 +18,7 @@ import type { AsyncAPIConsolidatedState } from "./state.js";
 import type {
   AsyncAPIDocument,
   ComponentsObject,
-  SchemaObject,
+  JsonSchema,
 } from "./domain/models/asyncapi-document.js";
 import type { DocumentBuildContext } from "./builders/types.js";
 import { discoverOperations } from "./builders/operation-discovery.js";
@@ -35,7 +35,7 @@ export const ASYNCAPI_SPEC_VERSION = "3.1.0";
 
 export function buildAsyncAPIDocument(
   state: AsyncAPIConsolidatedState,
-  schemas: Record<string, SchemaObject>,
+  schemas: Record<string, JsonSchema>,
   options: AsyncAPIEmitterOptions,
   program: Program,
 ): AsyncAPIDocument {
