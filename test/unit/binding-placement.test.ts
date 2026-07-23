@@ -28,8 +28,8 @@ describe("supportsBindingPlacement", () => {
     it("supports message bindings", () => {
       expect(supportsBindingPlacement("kafka", "message")).toBeTruthy();
     });
-    it("does not support server bindings", () => {
-      expect(supportsBindingPlacement("kafka", "server")).toBeFalsy();
+    it("supports server bindings", () => {
+      expect(supportsBindingPlacement("kafka", "server")).toBeTruthy();
     });
   });
 
@@ -103,7 +103,7 @@ describe("getValidPlacements", () => {
     expect(placements).toContain("channel");
     expect(placements).toContain("operation");
     expect(placements).toContain("message");
-    expect(placements).not.toContain("server");
+    expect(placements).toContain("server");
   });
 
   it("returns only channel for WebSocket", () => {

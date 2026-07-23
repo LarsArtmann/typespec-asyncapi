@@ -84,7 +84,11 @@ Successfully migrated entire codebase from `console.log` to Effect.TS structured
 
 ```typescript
 // Decorator context - MUST be synchronous
-export function $channel(context: DecoratorContext, target: Operation, path: string): void {
+export function $channel(
+  context: DecoratorContext,
+  target: Operation,
+  path: string,
+): void {
   Effect.runSync(Effect.log(`Processing channel: ${path}`));
   // ... decorator logic
 }

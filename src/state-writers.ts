@@ -193,8 +193,7 @@ export const storeHeader = (
 
   if (target.kind === "ModelProperty") {
     const propType = target.type as
-      | { kind?: string; name?: string }
-      | undefined;
+      { kind?: string; name?: string } | undefined;
     if (propType?.kind === "Scalar") {
       headerType = propType.name?.toLowerCase() ?? "string";
     }
@@ -329,4 +328,13 @@ export const storeOperationReply = (
 ): void => {
   const map = getStateMap(program, stateSymbols.operationReplies);
   map.set(target, replyData);
+};
+
+export const storeApiVersion = (
+  program: Program,
+  target: Namespace,
+  version: string,
+): void => {
+  const map = getStateMap(program, stateSymbols.apiVersion);
+  map.set(target, version);
 };

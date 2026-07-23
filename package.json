@@ -66,7 +66,7 @@
     "registry": "https://registry.npmjs.org/"
   },
   "scripts": {
-    "build": "bun x tsc -p tsconfig.json",
+    "build": "bun run scripts/generate-binding-specs.ts && bun x tsc -p tsconfig.json",
     "build:watch": "bun x tsc -p tsconfig.json --watch",
     "compile": "tsp compile .",
     "clean": "trash dist .tsbuildinfo 2>/dev/null || true",
@@ -74,7 +74,7 @@
     "pretest": "bun run clean:test && bun run build",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "bun run build && vitest run --coverage",
+    "test:coverage": "bun run build && bun test --coverage --coverage-reporter=lcov --coverage-dir=coverage",
     "test:coverage:gate": "bun run test:coverage && bun run scripts/coverage-gate.ts",
     "test:validation": "bun run build && vitest run test/critical-validation.test.ts test/all-generated-specs-validation.test.ts",
     "test:asyncapi": "bun run build && vitest run test/validation/",

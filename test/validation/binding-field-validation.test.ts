@@ -96,4 +96,95 @@ describe("binding field validation", () => {
     const qosIssue = issues.find((i) => i.format.field === "qos");
     expect(qosIssue).toBeUndefined();
   });
+
+  it("warns on unknown binding protocol", () => {
+    const { issues, bindings } = processBindings({ fakeproto: { foo: "bar" } });
+    const unknownIssue = issues.find(
+      (i) => i.code === "unknown-binding-protocol",
+    );
+    expect(unknownIssue).toBeDefined();
+    expect(bindings.fakeproto).toStrictEqual({ foo: "bar" });
+  });
+
+  it("warns on misplaced binding", () => {
+    const { issues } = processBindings({ sns: { topic: "test" } }, "message");
+    const misplaced = issues.find((i) => i.code === "misplaced-binding");
+    expect(misplaced).toBeDefined();
+    expect(misplaced!.format.protocol).toBe("sns");
+    expect(misplaced!.format.targetKind).toBe("message");
+  });
+
+  it("warns on invalid binding version string", () => {
+    const { issues } = processBindings(
+      { kafka: { bindingVersion: "99.0.0" } },
+      "channel",
+    );
+    const versionIssue = issues.find(
+      (i) => i.code === "invalid-binding-version",
+    );
+    expect(versionIssue).toBeDefined();
+    expect(versionIssue!.format.version).toBe("99.0.0");
+  });
+
+  it("coerces numeric bindingVersion to string", () => {
+    const { issues } = processBindings(
+      { kafka: { bindingVersion: 99 } },
+      "channel",
+    );
+    const versionIssue = issues.find(
+      (i) => i.code === "invalid-binding-version",
+    );
+    expect(versionIssue).toBeDefined();
+    expect(versionIssue!.format.version).toBe("99");
+  });
+
+  it("handles non-object binding value gracefully", () => {
+    const { bindings, issues } = processBindings(
+      { kafka: "not-an-object" },
+      "channel",
+    );
+    expect(bindings.kafka).toBeDefined();
+    expect(bindings.kafka.bindingVersion).toBeDefined();
+    const fieldIssues = issues.filter(
+      (i) => i.code === "invalid-binding-field",
+    );
+    expect(fieldIssues).toHaveLength(0);
+  });
+
+  it("handles object bindingVersion (non-string, non-number)", () => {
+    const { issues } = processBindings(
+      { kafka: { bindingVersion: { nested: true } } },
+      "channel",
+    );
+    const versionIssue = issues.find(
+      (i) => i.code === "invalid-binding-version",
+    );
+    expect(versionIssue).toBeDefined();
+    expect(versionIssue!.format.version).toBe("[object]");
+  });
+
+  it("normalizes websocket alias to ws binding key", () => {
+    const { bindings } = processBindings(
+      { websockets: { bindingVersion: "0.1.0" } },
+      "channel",
+    );
+    expect(bindings.ws).toBeDefined();
+    expect(bindings.ws.bindingVersion).toBe("0.1.0");
+  });
+
+  it("auto-injects bindingVersion when missing", () => {
+    const { bindings } = processBindings(
+      { kafka: { topic: "events" } },
+      "channel",
+    );
+    expect(bindings.kafka.bindingVersion).toBe("0.5.0");
+  });
+
+  it("normalizes wss to ws binding key", () => {
+    const { bindings } = processBindings(
+      { wss: { bindingVersion: "0.1.0" } },
+      "channel",
+    );
+    expect(bindings.ws).toBeDefined();
+  });
 });

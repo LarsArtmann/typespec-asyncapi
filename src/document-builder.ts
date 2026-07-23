@@ -62,8 +62,9 @@ export function buildAsyncAPIDocument(
   buildSecuritySchemes(state, ctx);
 
   const defaultContentType = getDefaultContentType(state);
+  const apiVersion = getApiVersion(state);
 
-  return assembleDocument(ctx, options, defaultContentType);
+  return assembleDocument(ctx, options, defaultContentType, apiVersion);
 }
 
 function getDefaultContentType(
@@ -75,10 +76,18 @@ function getDefaultContentType(
   return undefined;
 }
 
+function getApiVersion(state: AsyncAPIConsolidatedState): string | undefined {
+  if (state.apiVersion.size > 0) {
+    return [...state.apiVersion.values()][0];
+  }
+  return undefined;
+}
+
 function assembleDocument(
   ctx: DocumentBuildContext,
   options: AsyncAPIEmitterOptions,
   defaultContentType?: string,
+  apiVersion?: string,
 ): AsyncAPIDocument {
   const components: ComponentsObject = {};
   if (Object.keys(ctx.messages).length > 0) {
@@ -94,12 +103,14 @@ function assembleDocument(
   const services = listServices(ctx.program);
   const serviceTitle = services.length > 0 ? services[0]?.title : undefined;
 
+  const stateApiVersion = apiVersion;
+
   return {
     asyncapi: ASYNCAPI_SPEC_VERSION,
     info: {
       description: options?.description,
       title: options?.title ?? serviceTitle ?? "Generated API",
-      version: options?.version ?? "1.0.0",
+      version: options?.version ?? stateApiVersion ?? "1.0.0",
     },
     ...(defaultContentType ? { defaultContentType } : {}),
     ...(Object.keys(ctx.servers).length > 0 ? { servers: ctx.servers } : {}),

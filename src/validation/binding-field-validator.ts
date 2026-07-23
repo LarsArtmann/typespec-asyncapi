@@ -1,15 +1,14 @@
 /**
  * Binding Field Validator
  *
- * Validates individual binding field values against known constraints
- * derived from the @asyncapi/specs binding definitions.
+ * Validates individual binding field values against constraints
+ * AUTO-GENERATED from @asyncapi/specs/bindings/ JSON Schemas.
  *
- * This catches common errors like invalid qos values, wrong types for
- * numeric fields, or unknown binding keys — at decorator time, before
- * the full document validation.
+ * To regenerate: bun run scripts/generate-binding-specs.ts
  */
 
 import type { BindingDiagnosticCode } from "./binding-validator.js";
+import { GENERATED_FIELD_RULES } from "../constants/generated-bindings.js";
 
 export interface BindingFieldIssue {
   code: BindingDiagnosticCode;
@@ -17,144 +16,13 @@ export interface BindingFieldIssue {
   format: Record<string, unknown>;
 }
 
-interface FieldRule {
-  type?: "string" | "number" | "integer" | "boolean";
-  enum?: unknown[];
-  min?: number;
-  max?: number;
-}
-
-type TargetRules = Record<string, FieldRule>;
-
-const MqttRules: Record<string, TargetRules> = {
-  operation: {
-    qos: { type: "integer", enum: [0, 1, 2] },
-    retain: { type: "boolean" },
-    messageExpiryInterval: { type: "integer", min: 0 },
-  },
-  server: {
-    clientId: { type: "string" },
-    cleanSession: { type: "boolean" },
-    lastWill: { type: "string" },
-    keepAlive: { type: "integer", min: 0 },
-    bindingVersion: { type: "string" },
-  },
-  message: {
-    correlationData: { type: "string" },
-    correlationDataContentType: { type: "string" },
-    payloadFormatIndicator: { type: "integer", enum: [0, 1] },
-    bindingVersion: { type: "string" },
-  },
-};
-
-const KafkaRules: Record<string, TargetRules> = {
-  channel: {
-    topic: { type: "string" },
-    partitions: { type: "integer", min: 1 },
-    replicas: { type: "integer", min: 1 },
-    bindingVersion: { type: "string" },
-  },
-  operation: {
-    groupId: { type: "string" },
-    clientId: { type: "string" },
-    bindingVersion: { type: "string" },
-  },
-  message: {
-    key: { type: "string" },
-    schemaIdLocation: { type: "string" },
-    bindingVersion: { type: "string" },
-  },
-};
-
-const AmqpRules: Record<string, TargetRules> = {
-  operation: {
-    priority: { type: "integer", min: 0 },
-    deliveryMode: { type: "integer", enum: [1, 2] },
-    timestamp: { type: "boolean" },
-    ack: { type: "boolean" },
-    bindingVersion: { type: "string" },
-  },
-  message: {
-    contentEncoding: { type: "string" },
-    messageType: { type: "string" },
-    bindingVersion: { type: "string" },
-  },
-  channel: {
-    is: { type: "string", enum: ["routingKey", "queue"] },
-    exchange: { type: "string" },
-    queue: { type: "string" },
-    bindingVersion: { type: "string" },
-  },
-};
-
-const HttpRules: Record<string, TargetRules> = {
-  operation: {
-    method: {
-      type: "string",
-      enum: [
-        "GET",
-        "POST",
-        "PUT",
-        "PATCH",
-        "DELETE",
-        "HEAD",
-        "OPTIONS",
-        "TRACE",
-        "CONNECT",
-      ],
-    },
-    bindingVersion: { type: "string" },
-  },
-  message: {
-    headers: { type: "string" },
-    bindingVersion: { type: "string" },
-  },
-};
-
-const WsRules: Record<string, TargetRules> = {
-  channel: {
-    method: {
-      type: "string",
-      enum: ["GET", "POST"],
-    },
-    query: { type: "string" },
-    bindingVersion: { type: "string" },
-  },
-};
-
-const GooglePubSubRules: Record<string, TargetRules> = {
-  channel: {
-    messageRetentionDuration: { type: "string" },
-    bindingVersion: { type: "string" },
-  },
-  message: {
-    orderingKey: { type: "string" },
-    bindingVersion: { type: "string" },
-  },
-};
-
-const SnsRules: Record<string, TargetRules> = {
-  channel: {
-    name: { type: "string" },
-    bindingVersion: { type: "string" },
-  },
-  operation: {
-    bindingVersion: { type: "string" },
-  },
-};
-
-const PROTOCOL_RULES: Record<string, Record<string, TargetRules>> = {
-  mqtt: MqttRules,
-  kafka: KafkaRules,
-  amqp: AmqpRules,
-  http: HttpRules,
-  ws: WsRules,
-  googlepubsub: GooglePubSubRules,
-  sns: SnsRules,
-};
+type TargetRules = Record<
+  string,
+  { type: string; enum?: unknown[]; min?: number; max?: number }
+>;
 
 /**
- * Validate binding field values against known constraints.
+ * Validate binding field values against spec-derived constraints.
  * Returns an array of issues for invalid fields.
  */
 export function validateBindingFields(
@@ -164,12 +32,15 @@ export function validateBindingFields(
 ): BindingFieldIssue[] {
   const issues: BindingFieldIssue[] = [];
 
-  const protocolRules = PROTOCOL_RULES[protocol];
+  const protocolRules = GENERATED_FIELD_RULES[protocol] as
+    Record<string, TargetRules> | undefined;
   if (!protocolRules) {
     return issues;
   }
 
-  const rules = targetKind ? protocolRules[targetKind] : undefined;
+  const rules = targetKind
+    ? (protocolRules[targetKind] as TargetRules | undefined)
+    : undefined;
   if (!rules) {
     return issues;
   }
@@ -183,19 +54,24 @@ export function validateBindingFields(
       continue;
     }
 
-    if (rule.type && typeof value !== rule.type) {
+    if (
+      rule.type !== "any" &&
+      rule.type !== "object" &&
+      rule.type !== "array" &&
+      typeof value !== rule.type
+    ) {
       const isCoercibleInteger =
         rule.type === "integer" &&
         typeof value === "number" &&
         Number.isInteger(value);
       if (!isCoercibleInteger) {
         issues.push({
-          code: "invalid-binding-version",
+          code: "invalid-binding-field",
           key: field,
           format: {
-            field,
-            expected: rule.type,
             actual: typeof value,
+            expected: rule.type,
+            field,
             protocol,
           },
         });
@@ -205,13 +81,13 @@ export function validateBindingFields(
 
     if (rule.enum && !rule.enum.includes(value)) {
       issues.push({
-        code: "invalid-binding-version",
+        code: "invalid-binding-field",
         key: field,
         format: {
-          field,
-          validValues: rule.enum.join(", "),
           actual: String(value),
+          field,
           protocol,
+          validValues: rule.enum.join(", "),
         },
       });
     }
@@ -219,24 +95,24 @@ export function validateBindingFields(
     if (typeof value === "number") {
       if (rule.min !== undefined && value < rule.min) {
         issues.push({
-          code: "invalid-binding-version",
+          code: "invalid-binding-field",
           key: field,
           format: {
+            actual: value,
             field,
             min: rule.min,
-            actual: value,
             protocol,
           },
         });
       }
       if (rule.max !== undefined && value > rule.max) {
         issues.push({
-          code: "invalid-binding-version",
+          code: "invalid-binding-field",
           key: field,
           format: {
+            actual: value,
             field,
             max: rule.max,
-            actual: value,
             protocol,
           },
         });

@@ -23,6 +23,7 @@ import {
   storeHeader,
   storeMessageConfig,
   storeMessageId,
+  storeApiVersion,
   storeOperationId,
   storeOperationReply,
   storeOperationType,
@@ -400,4 +401,15 @@ export function $messageId(
     return;
   }
   storeMessageId(context.program, target, id);
+}
+
+export function $apiVersion(
+  context: DecoratorContext,
+  target: Namespace,
+  version: unknown,
+): void {
+  if (!version || typeof version !== "string") {
+    return;
+  }
+  storeApiVersion(context.program, target, version);
 }

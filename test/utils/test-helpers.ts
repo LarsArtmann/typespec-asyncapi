@@ -29,15 +29,25 @@ export interface CompilationResult {
 
 // === CORE COMPILATION ===
 
+type MultiFileSource = string | Record<string, string>;
+
+function getMainContent(source: MultiFileSource): string {
+  if (typeof source === "string") {
+    return source;
+  }
+  return source["main.tsp"] ?? "";
+}
+
 async function createTesterInstance(
-  source: string,
+  source: MultiFileSource,
   options: AsyncAPIEmitterOptions = {},
 ) {
   const packageRoot = await findTestPackageRoot(import.meta.url);
+  const mainContent = getMainContent(source);
   const hasOwnImport =
-    source.includes('import "@lars-artmann/typespec-asyncapi"') ||
-    source.includes("import '@lars-artmann/typespec-asyncapi'");
-  const hasOwnUsing = source.includes("using TypeSpec.AsyncAPI");
+    mainContent.includes('import "@lars-artmann/typespec-asyncapi"') ||
+    mainContent.includes("import '@lars-artmann/typespec-asyncapi'");
+  const hasOwnUsing = mainContent.includes("using TypeSpec.AsyncAPI");
 
   let tester = createTester(packageRoot, {
     libraries: ["@lars-artmann/typespec-asyncapi"],
@@ -66,12 +76,14 @@ function parseContent(content: string): ParsedAsyncAPIDocument | null {
 }
 
 export async function compileAsyncAPI(
-  source: string,
+  source: MultiFileSource,
   options: AsyncAPIEmitterOptions = {},
 ) {
   const tester = await createTesterInstance(source, options);
 
-  const [result, diagnostics] = await tester.compileAndDiagnose(source);
+  const [result, diagnostics] = await tester.compileAndDiagnose(
+    source as never,
+  );
 
   const virtualFs: Map<string, string> = result.fs?.fs ?? new Map();
   let outputFile: string | null = null;

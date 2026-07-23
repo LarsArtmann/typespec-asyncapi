@@ -64,6 +64,7 @@ export default [
       "*.config.js",
       "*.config.ts",
       "vitest.config.ts",
+      "src/constants/generated-bindings.ts",
       ".tsbuildinfo",
       "**/*.d.ts",
     ],

@@ -45,14 +45,16 @@
   },
   "overrides": [
     {
-      "files": ["scripts/**", "*.config.js", "*.config.ts"],
+      "files": ["scripts/**", "*.config.js", "*.config.ts", "src/constants/generated-bindings.ts"],
       "rules": {
         "vitest/require-hook": "off",
         "eslint/no-console": "off",
         "eslint/require-unicode-regexp": "off",
+        "eslint/max-lines": "off",
         "unicorn/no-process-exit": "off",
         "node/no-sync": "off",
-        "unicorn/no-null": "off"
+        "unicorn/no-null": "off",
+        "unicorn/numeric-separators-style": "off"
       }
     },
     {

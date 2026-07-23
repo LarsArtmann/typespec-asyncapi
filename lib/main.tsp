@@ -100,6 +100,12 @@ extern dec operationId(target: Operation, id: valueof string);
 extern dec messageId(target: Model, id: valueof string);
 
 /**
+ * Set the API version for the AsyncAPI document's info.version field
+ * @param version The version string (e.g., "2.1.0")
+ */
+extern dec apiVersion(target: Namespace, version: valueof string);
+
+/**
  * Emitter options for `@lars-artmann/typespec-asyncapi`.
  *
  * Configure via tspconfig.yaml:
@@ -127,4 +133,7 @@ model EmitterOptions {
 
   /** Document description */
   description?: string;
+
+  /** Split schemas into individual files under schemas/ (default: false) */
+  "split-schemas"?: boolean;
 }

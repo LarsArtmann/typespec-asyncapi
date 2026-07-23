@@ -23,7 +23,7 @@ bun run test          # Run tests via vitest (555 pass, 0 fail)
 - **Tests run via vitest** (not `bun test`): `bun run test` executes `vitest run`. Bun's test runner has documented OOM crashes — vitest uses Node.js/V8 GC which is stable under heavy compilation workloads.
 - **git commit --no-verify:** Pre-commit hook requires bash (NixOS doesn't have /bin/bash)
 - **All source files under 370 lines** (enforced)
-- **Coverage gate at 75%** per-file minimum (scripts/coverage-gate.ts)
+- **Coverage gate at 75%** per-file minimum (scripts/coverage-gate.ts). Coverage runs via `bun test --coverage` (NOT vitest) because Bun's native coverage captures dynamically-loaded `dist/*.js` files that vitest/istanbul can't instrument (the TypeSpec compiler loads the emitter from `dist/`, bypassing vitest's module transform). The gate script remaps `dist/src/*.js` back to `src/*.ts` paths and merges coverage, preferring the higher-coverage entry. Average: ~96%.
 - **Diagnostic system:** `reportDiagnostic()` in `decorator-helpers.ts` uses `$lib.reportDiagnostic()` (TypeSpec library API), NOT raw `program.reportDiagnostic()`. All codes are declared in `src/lib.ts` and compile-time validated via `keyof typeof $lib.diagnostics`. The library name is auto-prefixed to diagnostic codes by the TypeSpec runtime. **18 codes** declared (15 error + 3 warning). No split-brain.
 - **Zero `any` types in emitter.ts** (achieved)
 - **ESLint config:** Clean, no Effect.TS-era rules (throw/try/catch/Promise allowed)
@@ -98,7 +98,9 @@ extern dec bindings(target: Operation | Model, value: {} | valueof Record<unknow
 The `@typespec/asset-emitter` API returns `EmitEntity<T>` objects that must be narrowed before extracting values. The `extractValue()` function in `schema-emitter.ts` handles this:
 
 ```typescript
-export function extractValue(entity: EmitEntity<SchemaObject> | undefined): SchemaObject {
+export function extractValue(
+  entity: EmitEntity<SchemaObject> | undefined,
+): SchemaObject {
   if (!entity) return {};
   switch (entity.kind) {
     case "declaration":

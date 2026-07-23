@@ -22,6 +22,9 @@ export interface EmitterOptions {
 
   /** Output directory for generated files */
   "output-dir"?: string;
+
+  /** Split schemas into individual files under a schemas/ subdirectory */
+  "split-schemas"?: boolean;
 }
 
 export type AsyncAPIEmitterOptions = EmitterOptions;

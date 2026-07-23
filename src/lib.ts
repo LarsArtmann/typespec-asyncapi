@@ -64,7 +64,8 @@ export const $lib = createTypeSpecLibrary({
     },
     "invalid-tags-config": {
       messages: {
-        default: "Tags configuration missing or invalid. Use @tags with string array.",
+        default:
+          "Tags configuration missing or invalid. Use @tags with string array.",
         "non-string": "All tags must be strings.",
       },
       severity: "error",
@@ -153,6 +154,7 @@ export const $lib = createTypeSpecLibrary({
     securitySchemes: { description: "Security scheme configurations" },
     serverConfigs: { description: "Server configurations" },
     tags: { description: "Targets to tag arrays" },
+    apiVersion: { description: "Namespace to API version string" },
   },
 } as const);
 
@@ -172,4 +174,5 @@ export const stateSymbols = {
   securitySchemes: Symbol("securitySchemes"),
   serverConfigs: Symbol("serverConfigs"),
   tags: Symbol("tags"),
+  apiVersion: Symbol("apiVersion"),
 } as const;
