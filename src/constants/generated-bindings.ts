@@ -190,7 +190,13 @@ export const GENERATED_PLACEMENT: Record<string, Record<string, boolean>> = {
 
 export const GENERATED_FIELD_RULES: Record<
   string,
-  Record<string, Record<string, { type: string; enum?: unknown[]; min?: number; max?: number }>>
+  Record<
+    string,
+    Record<
+      string,
+      { type: string; enum?: unknown[]; min?: number; max?: number }
+    >
+  >
 > = {
   amqp: {
     channel: {
@@ -301,7 +307,17 @@ export const GENERATED_FIELD_RULES: Record<
     operation: {
       method: {
         type: "string",
-        enum: ["GET", "PUT", "POST", "PATCH", "DELETE", "HEAD", "OPTIONS", "CONNECT", "TRACE"],
+        enum: [
+          "GET",
+          "PUT",
+          "POST",
+          "PATCH",
+          "DELETE",
+          "HEAD",
+          "OPTIONS",
+          "CONNECT",
+          "TRACE",
+        ],
       },
       query: {
         type: "any",

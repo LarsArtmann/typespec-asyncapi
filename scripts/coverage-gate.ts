@@ -80,7 +80,9 @@ for (const [file, cov] of srcFiles) {
   const pctStr = (pct * 100).toFixed(1);
   if (pct < MIN_LINE_COVERAGE) {
     const shortName = file.replace(/.*\//, "");
-    failures.push(`  ${shortName}: ${pctStr}% (min ${MIN_LINE_COVERAGE * 100}%)`);
+    failures.push(
+      `  ${shortName}: ${pctStr}% (min ${MIN_LINE_COVERAGE * 100}%)`,
+    );
   }
 }
 
@@ -98,7 +100,10 @@ if (failures.length > 0) {
 const avg =
   srcFiles.size > 0
     ? (
-        ([...srcFiles.values()].reduce((sum, r) => sum + (r.total > 0 ? r.hit / r.total : 1), 0) /
+        ([...srcFiles.values()].reduce(
+          (sum, r) => sum + (r.total > 0 ? r.hit / r.total : 1),
+          0,
+        ) /
           srcFiles.size) *
         100
       ).toFixed(1)
