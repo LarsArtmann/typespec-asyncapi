@@ -890,7 +890,8 @@ describe("oAuth2 Flows", () => {
     const scheme = spec?.components?.securitySchemes?.oauth2LegacyScopes;
     expect(scheme).toBeDefined();
     const flow = scheme?.flows?.authorizationCode as
-      Record<string, unknown> | undefined;
+      | Record<string, unknown>
+      | undefined;
     expect(flow).toBeDefined();
     expect(flow?.availableScopes).toStrictEqual({ legacyRead: "Legacy read" });
     expect(flow?.scopes).toBeUndefined();
@@ -933,7 +934,8 @@ describe("oAuth2 Flows", () => {
     const scheme = spec?.components?.securitySchemes?.oauth2AvailScopes;
     expect(scheme).toBeDefined();
     const flow = scheme?.flows?.clientCredentials as
-      Record<string, unknown> | undefined;
+      | Record<string, unknown>
+      | undefined;
     expect(flow).toBeDefined();
     expect(flow?.availableScopes).toStrictEqual({ modernRead: "Modern read" });
     expect(flow?.scopes).toBeUndefined();
