@@ -22,20 +22,19 @@ import type {
   Type,
   Union,
 } from "@typespec/compiler";
-import { TypeEmitter, createAssetEmitter } from "@typespec/asset-emitter";
+import { TypeEmitter } from "@typespec/asset-emitter";
 import type {
   Context,
-  EmitEntity,
   EmittedSourceFile,
   EmitterOutput,
   SourceFile,
 } from "@typespec/asset-emitter";
-import { getDoc, isStdNamespace } from "@typespec/compiler";
-import type { EmitContext } from "@typespec/compiler";
+import { getDoc } from "@typespec/compiler";
 import type { AsyncAPIEmitterOptions } from "./infrastructure/configuration/asyncAPIEmitterOptions.js";
 import type { SchemaObject } from "./domain/models/asyncapi-document.js";
-import { $lib } from "./lib.js";
 import { intrinsicToSchema } from "./intrinsic-mapping.js";
+import { extractValue } from "./extract-value.js";
+import { isStdlibType } from "./stdlib-helpers.js";
 
 export class AsyncAPISchemaEmitter extends TypeEmitter<
   SchemaObject,
@@ -347,107 +346,4 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
     }
     return { type: "string" };
   }
-}
-
-export function extractValue(
-  entity: EmitEntity<SchemaObject> | undefined,
-): SchemaObject {
-  if (!entity) {
-    return {};
-  }
-  switch (entity.kind) {
-    case "declaration":
-    case "code": {
-      const v = entity.value;
-      if (!v || typeof v !== "object") {
-        return {};
-      }
-      if (typeof (v as { onValue?: unknown }).onValue === "function") {
-        return {};
-      }
-      return v as SchemaObject;
-    }
-    default: {
-      return {};
-    }
-  }
-}
-
-function isStdlibType(type: Type): boolean {
-  const typeWithNs = type as Type & {
-    namespace?: Namespace;
-    type?: { namespace?: Namespace };
-  };
-  const ns = typeWithNs.namespace ?? typeWithNs.type?.namespace;
-  if (!ns) {
-    return false;
-  }
-  if (isStdNamespace(ns)) {
-    return true;
-  }
-  return false;
-}
-
-function collectAllStdlibNames(program: Program): Set<string> {
-  const names = new Set<string>();
-  const globalNs = program.getGlobalNamespaceType();
-  for (const ns of globalNs.namespaces.values()) {
-    if (isStdNamespace(ns)) {
-      function collectFrom(namespace: Namespace): void {
-        for (const [name] of namespace.models) {
-          names.add(name);
-        }
-        for (const [name] of namespace.scalars) {
-          names.add(name);
-        }
-        for (const [name] of namespace.enums) {
-          names.add(name);
-        }
-        for (const sub of namespace.namespaces.values()) {
-          collectFrom(sub);
-        }
-      }
-      collectFrom(ns);
-    }
-  }
-  return names;
-}
-
-export function generateSchemas(
-  context: EmitContext<AsyncAPIEmitterOptions>,
-): Record<string, SchemaObject> {
-  const schemas: Record<string, SchemaObject> = {};
-  const stdlibNames = collectAllStdlibNames(context.program);
-
-  try {
-    const assetEmitter = createAssetEmitter<
-      SchemaObject,
-      AsyncAPIEmitterOptions
-    >(context.program, AsyncAPISchemaEmitter, context);
-
-    assetEmitter.emitProgram({ emitGlobalNamespace: true });
-
-    for (const sourceFile of assetEmitter.getSourceFiles()) {
-      const scope = sourceFile.globalScope;
-      for (const declaration of scope.declarations) {
-        if (
-          !declaration.name ||
-          !declaration.value ||
-          stdlibNames.has(declaration.name)
-        ) {
-          continue;
-        }
-        schemas[declaration.name] = declaration.value as SchemaObject;
-      }
-    }
-  } catch (error) {
-    $lib.reportDiagnostic(context.program, {
-      code: "schema-generation-failed",
-      messageId: "default",
-      target: context.program.getGlobalNamespaceType(),
-      format: { error: String(error) },
-    });
-  }
-
-  return schemas;
 }

@@ -12,7 +12,6 @@ import {
   $bindings,
   $channel,
   $correlationId,
-  $defaultContentType,
   $header,
   $message,
   $messageId,
@@ -22,10 +21,10 @@ import {
   $publish,
   $reply,
   $security,
-  $server,
   $subscribe,
   $tags,
 } from "./minimal-decorators.js";
+import { $server, $defaultContentType } from "./server-decorators.js";
 
 // CRITICAL: TypeSpec requires $decorators object export
 export const $decorators = {

@@ -59,6 +59,10 @@
       "typespec": "./lib/main.tsp",
       "default": "./dist/src/index.js"
     },
+    "./shared": {
+      "types": "./dist/src/shared/index.d.ts",
+      "default": "./dist/src/shared/index.js"
+    },
     "./package.json": "./package.json"
   },
   "publishConfig": {

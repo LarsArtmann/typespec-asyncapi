@@ -117,11 +117,30 @@ export async function compileAsyncAPI(
     outputs[outputFile] = outputContent;
   }
 
+  const allOutputFiles = new Map<string, string>();
+  for (const [virtualPath, content] of virtualFs) {
+    if (virtualPath.includes("node_modules")) {
+      continue;
+    }
+    if (typeof content !== "string") {
+      continue;
+    }
+    const filename = virtualPath.split("/").pop() || "";
+    if (
+      filename.endsWith(".yaml") ||
+      filename.endsWith(".json") ||
+      filename.endsWith(".yml")
+    ) {
+      allOutputFiles.set(filename, content);
+    }
+  }
+
   return {
     asyncApiDoc,
     diagnostics,
     outputFile,
     outputs,
+    allOutputFiles,
     program: result.program,
   };
 }

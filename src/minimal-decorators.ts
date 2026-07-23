@@ -19,7 +19,6 @@ import {
   storeBindings,
   storeChannelState,
   storeCorrelationId,
-  storeDefaultContentType,
   storeHeader,
   storeMessageConfig,
   storeMessageId,
@@ -29,7 +28,6 @@ import {
   storeOperationType,
   storeProtocolConfig,
   storeSecurityConfig,
-  storeServerConfig,
   storeTags,
 } from "./state-writers.js";
 import {
@@ -40,7 +38,6 @@ import {
   extractConfigRecord,
   getModelPropertyStringValue,
   getModelPropertyValue,
-  isValidUrl,
   modelToRecord,
   reportDiagnostic,
   validateConfig,
@@ -62,56 +59,6 @@ export function $channel(
     return;
   }
   storeChannelState(context.program, target, path);
-}
-
-export function $server(
-  context: DecoratorContext,
-  target: Namespace | Operation,
-  name: string,
-  config: unknown,
-): void {
-  if (target.kind !== "Namespace") {
-    reportDiagnostic(context, "server-target-invalid", target);
-    return;
-  }
-
-  if (
-    !validateConfig(config, context, target, "invalid-server-config", {
-      serverName: name,
-    })
-  ) {
-    return;
-  }
-
-  const configTyped = config as Record<string, unknown>;
-
-  if (!configTyped.url) {
-    reportDiagnostic(context, "server-url-required", target);
-    return;
-  }
-
-  if (!isValidUrl(configTyped.url as string)) {
-    reportDiagnostic(context, "invalid-server-url", target, {
-      url: configTyped.url,
-    });
-    return;
-  }
-
-  if (!configTyped.protocol) {
-    reportDiagnostic(context, "server-protocol-required", target);
-    return;
-  }
-
-  const protocol = (configTyped.protocol as string).toLowerCase();
-  if (!isSupportedProtocol(protocol)) {
-    reportDiagnostic(context, "unsupported-protocol", target, {
-      protocol,
-      validProtocols: PROTOCOL_LIST.join(", "),
-    });
-    return;
-  }
-
-  storeServerConfig(context.program, target, { ...configTyped, name });
 }
 
 export function $publish(
@@ -347,17 +294,6 @@ export function $header(
   }
 
   storeHeader(context.program, target, name, value);
-}
-
-export function $defaultContentType(
-  context: DecoratorContext,
-  target: Namespace,
-  contentType: unknown,
-): void {
-  if (!contentType || typeof contentType !== "string") {
-    return;
-  }
-  storeDefaultContentType(context.program, target, contentType);
 }
 
 export function $reply(
