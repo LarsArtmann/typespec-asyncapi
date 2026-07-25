@@ -109,19 +109,19 @@ The `@typespec/asset-emitter` API returns `EmitEntity<T>` objects that must be n
 
 ```typescript
 export function extractValue(entity: EmitEntity<JsonSchema> | undefined): JsonSchema {
-  if (!entity) return {};
-  switch (entity.kind) {
-    case "declaration":
-    case "code": {
-      const v = entity.value;
-      // Must filter out Placeholder<T> — detected via duck-typing onValue
-      if (!v || typeof v !== "object") return {};
-      if (typeof (v as { onValue?: unknown }).onValue === "function") return {};
-      return v as JsonSchema;
-    }
-    default:
-      return {};
-  }
+	if (!entity) return {};
+	switch (entity.kind) {
+		case "declaration":
+		case "code": {
+			const v = entity.value;
+			// Must filter out Placeholder<T> — detected via duck-typing onValue
+			if (!v || typeof v !== "object") return {};
+			if (typeof (v as { onValue?: unknown }).onValue === "function") return {};
+			return v as JsonSchema;
+		}
+		default:
+			return {};
+	}
 }
 ```
 
