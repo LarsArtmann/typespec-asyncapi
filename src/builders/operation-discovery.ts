@@ -6,8 +6,7 @@
  */
 
 import { isStdNamespace } from "@typespec/compiler";
-import { getDoc, nameOfType } from "./_imports.js";
-import type { AsyncAPIConsolidatedState, BuilderFn, DocumentBuildContext } from "./_imports.js";
+import { getDoc, nameOfType, type AsyncAPIConsolidatedState, type BuilderFn, type DocumentBuildContext } from "./_imports.js";
 import {
   inferActionFromName,
   iterNamedTypes,
