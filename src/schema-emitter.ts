@@ -31,7 +31,7 @@ import type {
   SourceFile,
 } from "@typespec/asset-emitter";
 import { getDoc } from "@typespec/compiler";
-import { applyConstraints } from "./constraint-mapper.js";
+import { applyConstraints, applyDeprecated } from "./constraint-mapper.js";
 import type { AsyncAPIEmitterOptions } from "./infrastructure/configuration/asyncAPIEmitterOptions.js";
 import type { JsonSchema } from "./domain/models/asyncapi-document.js";
 import { intrinsicToSchema } from "./intrinsic-mapping.js";
@@ -44,7 +44,9 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<JsonSchema, AsyncAPIEmitt
   }
   modelDeclaration(model: Model): EmitterOutput<JsonSchema> {
     const schema = this.collectPropertiesSchema(model, true);
-    applyDocDescription(this.emitter.getProgram(), model, schema);
+    const program = this.emitter.getProgram();
+    applyDocDescription(program, model, schema);
+    applyDeprecated(program, model, schema);
     return this.emitter.result.declaration(model.name, schema);
   }
   modelLiteral(model: Model): EmitterOutput<JsonSchema> {
@@ -153,7 +155,9 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<JsonSchema, AsyncAPIEmitt
   interfaceDeclaration = (_iface: Interface): EmitterOutput<JsonSchema> => this.returnNone();
   enumDeclaration(en: Enum, name: string): EmitterOutput<JsonSchema> {
     const schema = this.buildEnumSchema(en.members);
-    applyDocDescription(this.emitter.getProgram(), en, schema);
+    const program = this.emitter.getProgram();
+    applyDocDescription(program, en, schema);
+    applyDeprecated(program, en, schema);
     return this.emitter.result.declaration(name, schema);
   }
 

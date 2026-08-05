@@ -13,7 +13,7 @@
  * sibling by `collectModelProperties` in `schema-emitter.ts`.
  */
 
-import type { ModelProperty, Program } from "@typespec/compiler";
+import type { ModelProperty, Program, Type } from "@typespec/compiler";
 import {
   getFormat,
   getMaxLength,
@@ -29,14 +29,23 @@ import {
 } from "@typespec/compiler";
 import type { JsonSchema } from "./domain/models/asyncapi-document.js";
 
+/**
+ * Apply `#deprecated` directive state to a schema's `deprecated` keyword.
+ * Works on any Type (model, property, enum, scalar) since `isDeprecated`
+ * checks compiler-level deprecation state set by the `#deprecated` directive.
+ */
+export function applyDeprecated(program: Program, target: Type, schema: JsonSchema): void {
+  if (isDeprecated(program, target)) {
+    schema.deprecated = true;
+  }
+}
+
 export function applyConstraints(
   program: Program,
   prop: ModelProperty,
   schema: JsonSchema,
 ): JsonSchema {
-  if (isDeprecated(program, prop)) {
-    schema.deprecated = true;
-  }
+  applyDeprecated(program, prop, schema);
 
   if (schema.$ref) {
     return schema;

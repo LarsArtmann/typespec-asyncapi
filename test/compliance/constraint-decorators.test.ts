@@ -10,7 +10,7 @@
  *   @minValueExclusive → exclusiveMinimum   @maxValueExclusive → exclusiveMaximum
  *   @minLength → minLength       @maxLength → maxLength
  *   @pattern → pattern           @format → format
- *   @deprecated → deprecated     @minItems → minItems     @maxItems → maxItems
+ *   #deprecated → deprecated     @minItems → minItems     @maxItems → maxItems
  */
 
 import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
@@ -160,12 +160,12 @@ describe("spec Compliance: Constraint Decorators", () => {
     });
   });
 
-  describe("metadata decorators", () => {
-    it("@deprecated maps to deprecated: true", async () => {
+  describe("deprecation directive", () => {
+    it("#deprecated on a property sets deprecated: true", async () => {
       const doc = await compileAndValidateOrThrow(`
         namespace Test;
         model Event {
-          @deprecated("use newName instead")
+          #deprecated "use newName instead"
           oldName: string;
         }
         @channel("events")
@@ -174,57 +174,60 @@ describe("spec Compliance: Constraint Decorators", () => {
       expect(propSchema(doc, "Event", "oldName").deprecated).toBe(true);
     });
 
-    it("@deprecated without message still sets deprecated: true", async () => {
+    it("#deprecated on a model sets deprecated: true on the schema", async () => {
       const doc = await compileAndValidateOrThrow(`
         namespace Test;
+        #deprecated "use EventV2 instead"
         model Event {
-          @deprecated("")
-          legacy: string;
+          name: string;
         }
         @channel("events")
         op publish(): Event;
       `);
-      expect(propSchema(doc, "Event", "legacy").deprecated).toBe(true);
+      const schema = (doc.components as { schemas: Record<string, JsonSchema> }).schemas.Event;
+      expect(schema.deprecated).toBe(true);
     });
   });
 
   describe("multiple constraints on a single property", () => {
-    it("applies all numeric and string constraints simultaneously", async () => {
+    it("applies all string constraints simultaneously", async () => {
       const doc = await compileAndValidateOrThrow(`
         namespace Test;
         model Event {
-          @minValue(1)
-          @maxValue(999)
           @minLength(1)
           @maxLength(3)
+          @pattern("^[0-9]+$")
+          @format("code")
           code: string;
         }
         @channel("events")
         op publish(): Event;
       `);
       const code = propSchema(doc, "Event", "code");
-      expect(code.minimum).toBe(1);
-      expect(code.maximum).toBe(999);
       expect(code.minLength).toBe(1);
       expect(code.maxLength).toBe(3);
+      expect(code.pattern).toBe("^[0-9]+$");
+      expect(code.format).toBe("code");
     });
 
     it("applies deprecated alongside validation constraints", async () => {
       const doc = await compileAndValidateOrThrow(`
         namespace Test;
         model Event {
-          @deprecated("migrating to v2")
-          @minValue(0)
-          @pattern("^[0-9]+$")
-          oldAmount: int32;
+          #deprecated "migrating to v2"
+          @minLength(2)
+          @maxLength(20)
+          @pattern("^[A-Z]")
+          oldLabel: string;
         }
         @channel("events")
         op publish(): Event;
       `);
-      const oldAmount = propSchema(doc, "Event", "oldAmount");
-      expect(oldAmount.deprecated).toBe(true);
-      expect(oldAmount.minimum).toBe(0);
-      expect(oldAmount.pattern).toBe("^[0-9]+$");
+      const oldLabel = propSchema(doc, "Event", "oldLabel");
+      expect(oldLabel.deprecated).toBe(true);
+      expect(oldLabel.minLength).toBe(2);
+      expect(oldLabel.maxLength).toBe(20);
+      expect(oldLabel.pattern).toBe("^[A-Z]");
     });
   });
 
