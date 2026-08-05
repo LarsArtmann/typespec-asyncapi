@@ -6,7 +6,7 @@
 
 ## Current State
 
-Pre-release (`0.2.0-beta`). The emitter produces spec-compliant AsyncAPI 3.1 output validated against the official JSON Schema. 679 tests pass across 64 files. Oxlint and ESLint both clean (0 errors, 0 warnings). 18 diagnostic codes, all compile-time validated. Full protocol binding support for all 19 AsyncAPI protocols (auto-generated from `@asyncapi/specs`) with auto-versioning, key normalization, field-level validation, and placement validation via `misplaced-binding` warnings.
+Pre-release (`0.2.0-beta`). The emitter produces spec-compliant AsyncAPI 3.1 output validated against the official JSON Schema. 713 tests pass across 68 files. Oxlint and ESLint both clean (0 errors, 0 warnings). 18 diagnostic codes, all compile-time validated. Full protocol binding support for all 19 AsyncAPI protocols (auto-generated from `@asyncapi/specs`) with auto-versioning, key normalization, field-level validation, and placement validation via `misplaced-binding` warnings. `@typespec/versioning` integrated for `info.version` fallback.
 
 ## Themes
 
@@ -69,9 +69,12 @@ Connect to the broader TypeSpec and AsyncAPI ecosystems.
 
 Raw ideas:
 
-- AsyncAPI generator ecosystem compatibility (code generation from emitter output)
-- `@typespec/versioning` support (#163)
 - OpenAPI 3.x cross-emitter type sharing (cross-emitter shared module at `src/shared/`)
+
+Recently completed:
+
+- ~~AsyncAPI generator ecosystem compatibility~~ — `test/validation/generator-compatibility.test.ts` (8 structural tests), `test/validation/studio-compatibility.test.ts` (9 parser tests)
+- ~~`@typespec/versioning` support (#163)~~ — `getVersion()` reads `@versioned` enum for `info.version`, `test/integration/versioning.test.ts` (5 tests)
 
 Recently completed:
 

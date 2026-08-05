@@ -81,7 +81,11 @@ components.schemas.User.properties.address → #/components/schemas/Address
 
 ## TypeSpec Test Framework
 
-Tests use **vitest** with the TypeSpec compiler testing API (`createTester`). All compilation is programmatic via `test/utils/test-helpers.ts` — no process spawning. Test files use vitest globals (no explicit import needed; `globals: true` in vitest config). `compileAsyncAPI()` now returns `allOutputFiles: Map<string, string>` for multi-file output testing.
+Tests use **vitest** with the TypeSpec compiler testing API (`createTester`). All compilation is programmatic via `test/utils/test-helpers.ts` — no process spawning. Test files use vitest globals (no explicit import needed; `globals: true` in vitest config). `compileAsyncAPI()` now returns `allOutputFiles: Map<string, string>` for multi-file output testing. Test helpers auto-detect `@typespec/versioning` imports and add the library to the virtual filesystem.
+
+### `@typespec/versioning` Integration
+
+`src/document-builder.ts` imports `getVersion()` from `@typespec/versioning`. When a namespace is `@versioned`, the latest version enum value is used for `info.version` as a fallback (precedence: emitter `version` option > `@apiVersion` decorator > `@versioned` enum > `"1.0.0"`).
 
 ### Test Helpers (3 files, consolidated from 7)
 

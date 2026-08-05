@@ -6,6 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- **`@typespec/versioning` integration** — `src/document-builder.ts` now reads `@versioned` enum values from `@typespec/versioning` for `info.version`. Precedence: emitter `version` option > `@apiVersion` decorator > `@versioned` latest enum value > `"1.0.0"`. Test infrastructure auto-detects versioning imports.
+- **AsyncAPI Studio compatibility tests** (`test/validation/studio-compatibility.test.ts`) — 9 tests verifying emitter output parses cleanly via `@asyncapi/parser` (the same parser used by AsyncAPI Studio). Validates $ref resolution, channel/operation/message/schema accessibility, and zero-diagnostic parsing for servers, security, Kafka bindings, reply operations, and complex multi-feature documents.
+- **AsyncAPI generator compatibility tests** (`test/validation/generator-compatibility.test.ts`) — 8 tests verifying structural requirements the `@asyncapi/generator` depends on: $ref resolution, channel addresses, message payloads, operation actions, schema type definitions, server transport info, and multi-message operations.
+- **Linter strategy verification** (`test/unit/linter-strategy.test.ts`) — 3 tests documenting the dual-linter (ESLint + oxlint) strategy and verifying both linters pass cleanly.
+
+### Changed
+
+- **BDD tests rewritten** — Dead Cucumber infrastructure (`test/bdd/support/world.ts`, `test/bdd/features/`, `test/bdd/package.json`, `test/bdd/tsconfig.json`) removed. `user-behaviors.test.ts` rewritten with 23 real end-to-end behavior tests covering channels, protocol bindings, path templates, security, servers, messages, invalid config, document structure, and namespace bindings.
+- **`@typespec/versioning`** added as a runtime dependency.
+
+### Removed
+
+- **Dead Cucumber BDD infrastructure** — `test/bdd/support/world.ts` (6 unimplemented stubs), `test/bdd/features/core-typespec-to-asyncapi.feature`, `test/bdd/package.json`, `test/bdd/tsconfig.json`. `@cucumber/cucumber` was never installed; all step definitions were stubs.
+
 ## [0.2.0-beta] - 2026-07-22
 
 ### Added
