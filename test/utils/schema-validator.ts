@@ -48,9 +48,7 @@ export interface ValidationResult {
  *
  * Throws if no AsyncAPI output file is produced by the emitter.
  */
-export async function compileAndValidate(
-  source: string,
-): Promise<ValidationResult> {
+export async function compileAndValidate(source: string): Promise<ValidationResult> {
   const raw = await compileAsyncAPISpecRaw(source);
 
   const diagnostics = raw.diagnostics.map((d) => ({
@@ -91,9 +89,7 @@ export async function compileAndValidate(
  *
  * Throws with a detailed error message if validation fails.
  */
-export async function compileAndValidateOrThrow(
-  source: string,
-): Promise<ParsedAsyncAPIDocument> {
+export async function compileAndValidateOrThrow(source: string): Promise<ParsedAsyncAPIDocument> {
   const result = await compileAndValidate(source);
 
   if (!result.valid) {
@@ -120,9 +116,6 @@ export function formatValidationErrors(errors: ErrorObject[] | null): string {
     return "(no errors)";
   }
   return errors
-    .map(
-      (e) =>
-        `  Path '${e.instancePath || "/"}': ${e.message ?? "unknown error"}`,
-    )
+    .map((e) => `  Path '${e.instancePath || "/"}': ${e.message ?? "unknown error"}`)
     .join("\n");
 }

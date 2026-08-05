@@ -14,10 +14,7 @@
  * - document-builder.ts (for @protocol-generated bindings)
  */
 
-import {
-  isSupportedProtocol,
-  normalizeProtocol,
-} from "../constants/protocols.js";
+import { isSupportedProtocol, normalizeProtocol } from "../constants/protocols.js";
 import {
   getLatestBindingVersion,
   getValidPlacements,
@@ -134,9 +131,7 @@ export function processBindings(
             format: {
               protocol: canonical,
               validVersions:
-                getValidVersionsString(canonical) ??
-                getLatestBindingVersion(canonical) ??
-                "latest",
+                getValidVersionsString(canonical) ?? getLatestBindingVersion(canonical) ?? "latest",
               version: versionStr,
             },
             key: canonical,
@@ -145,11 +140,7 @@ export function processBindings(
         }
       }
 
-      const fieldIssues = validateBindingFields(
-        canonical,
-        targetKind,
-        bindingObj,
-      );
+      const fieldIssues = validateBindingFields(canonical, targetKind, bindingObj);
       for (const fi of fieldIssues) {
         issues.push({
           code: "invalid-binding-field",

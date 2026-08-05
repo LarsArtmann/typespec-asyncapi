@@ -16,10 +16,7 @@ export interface BindingFieldIssue {
   format: Record<string, unknown>;
 }
 
-type TargetRules = Record<
-  string,
-  { type: string; enum?: unknown[]; min?: number; max?: number }
->;
+type TargetRules = Record<string, { type: string; enum?: unknown[]; min?: number; max?: number }>;
 
 /**
  * Validate binding field values against spec-derived constraints.
@@ -32,15 +29,12 @@ export function validateBindingFields(
 ): BindingFieldIssue[] {
   const issues: BindingFieldIssue[] = [];
 
-  const protocolRules = GENERATED_FIELD_RULES[protocol] as
-    Record<string, TargetRules> | undefined;
+  const protocolRules = GENERATED_FIELD_RULES[protocol] as Record<string, TargetRules> | undefined;
   if (!protocolRules) {
     return issues;
   }
 
-  const rules = targetKind
-    ? (protocolRules[targetKind] as TargetRules | undefined)
-    : undefined;
+  const rules = targetKind ? (protocolRules[targetKind] as TargetRules | undefined) : undefined;
   if (!rules) {
     return issues;
   }
@@ -61,9 +55,7 @@ export function validateBindingFields(
       typeof value !== rule.type
     ) {
       const isCoercibleInteger =
-        rule.type === "integer" &&
-        typeof value === "number" &&
-        Number.isInteger(value);
+        rule.type === "integer" && typeof value === "number" && Number.isInteger(value);
       if (!isCoercibleInteger) {
         issues.push({
           code: "invalid-binding-field",

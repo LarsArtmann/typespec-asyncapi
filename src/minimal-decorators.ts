@@ -30,10 +30,7 @@ import {
   storeSecurityConfig,
   storeTags,
 } from "./state-writers.js";
-import {
-  SCHEME_TYPE_LIST,
-  isValidSchemeType,
-} from "./domain/models/asyncapi-document.js";
+import { SCHEME_TYPE_LIST, isValidSchemeType } from "./domain/models/asyncapi-document.js";
 import {
   extractConfigRecord,
   getModelPropertyStringValue,
@@ -47,11 +44,7 @@ import type { BindingTargetKind } from "./constants/binding-versions.js";
 
 // === DECORATORS ===
 
-export function $channel(
-  context: DecoratorContext,
-  target: Operation,
-  path: string,
-): void {
+export function $channel(context: DecoratorContext, target: Operation, path: string): void {
   if (!path || path.length === 0) {
     reportDiagnostic(context, "missing-channel-path", target, {
       operationName: target.name,
@@ -61,20 +54,12 @@ export function $channel(
   storeChannelState(context.program, target, path);
 }
 
-export function $publish(
-  context: DecoratorContext,
-  target: Operation,
-  config?: Model,
-): void {
+export function $publish(context: DecoratorContext, target: Operation, config?: Model): void {
   storeOperationType(context.program, target, "publish", config?.name);
   linkPublishMessage(context.program, target, config);
 }
 
-export function $message(
-  context: DecoratorContext,
-  target: Model,
-  config: unknown,
-): void {
+export function $message(context: DecoratorContext, target: Model, config: unknown): void {
   if (
     !validateConfig(config, context, target, "invalid-message-config", {
       modelName: target.name,
@@ -87,12 +72,7 @@ export function $message(
   let description: string | undefined;
   let contentType: string | undefined;
 
-  if (
-    config &&
-    typeof config === "object" &&
-    "kind" in config &&
-    config.kind === "Model"
-  ) {
+  if (config && typeof config === "object" && "kind" in config && config.kind === "Model") {
     const configModel = config as Model;
     title = getModelPropertyStringValue(configModel, "title");
     description = getModelPropertyStringValue(configModel, "description");
@@ -100,14 +80,8 @@ export function $message(
   } else if (config && typeof config === "object") {
     const configObj = config as Record<string, unknown>;
     title = typeof configObj.title === "string" ? configObj.title : undefined;
-    description =
-      typeof configObj.description === "string"
-        ? configObj.description
-        : undefined;
-    contentType =
-      typeof configObj.contentType === "string"
-        ? configObj.contentType
-        : undefined;
+    description = typeof configObj.description === "string" ? configObj.description : undefined;
+    contentType = typeof configObj.contentType === "string" ? configObj.contentType : undefined;
   }
 
   storeMessageConfig(context.program, target, {
@@ -158,20 +132,11 @@ export function $security(
   let name: string | undefined;
   let scheme: Record<string, unknown> | undefined;
 
-  if (
-    config &&
-    typeof config === "object" &&
-    "kind" in config &&
-    config.kind === "Model"
-  ) {
+  if (config && typeof config === "object" && "kind" in config && config.kind === "Model") {
     const configModel = config as Model;
     name = getModelPropertyStringValue(configModel, "name");
     const schemeValue = getModelPropertyValue(configModel, "scheme");
-    if (
-      schemeValue &&
-      typeof schemeValue === "object" &&
-      "properties" in schemeValue
-    ) {
+    if (schemeValue && typeof schemeValue === "object" && "properties" in schemeValue) {
       scheme = modelToRecord(schemeValue as Model);
     } else if (schemeValue && typeof schemeValue === "object") {
       scheme = schemeValue as Record<string, unknown>;
@@ -202,38 +167,22 @@ export function $subscribe(context: DecoratorContext, target: Operation): void {
   storeOperationType(context.program, target, "subscribe");
 }
 
-export function $tags(
-  context: DecoratorContext,
-  target: DiagnosticTarget,
-  value: unknown,
-): void {
+export function $tags(context: DecoratorContext, target: DiagnosticTarget, value: unknown): void {
   if (!value || !Array.isArray(value)) {
     reportDiagnostic(context, "invalid-tags-config", target);
     return;
   }
 
-  const stringTags = value.filter(
-    (tag): tag is string => typeof tag === "string",
-  );
+  const stringTags = value.filter((tag): tag is string => typeof tag === "string");
   if (stringTags.length !== value.length) {
-    reportDiagnostic(
-      context,
-      "invalid-tags-config",
-      target,
-      undefined,
-      "non-string",
-    );
+    reportDiagnostic(context, "invalid-tags-config", target, undefined, "non-string");
     return;
   }
 
   storeTags(context.program, target as Operation, stringTags);
 }
 
-export function $correlationId(
-  context: DecoratorContext,
-  target: Model,
-  location: unknown,
-): void {
+export function $correlationId(context: DecoratorContext, target: Model, location: unknown): void {
   if (!location || typeof location !== "string") {
     reportDiagnostic(context, "invalid-correlationId-config", target, {
       modelName: target.name,
@@ -311,11 +260,7 @@ export function $reply(
   });
 }
 
-export function $operationId(
-  context: DecoratorContext,
-  target: Operation,
-  id: unknown,
-): void {
+export function $operationId(context: DecoratorContext, target: Operation, id: unknown): void {
   if (!id || typeof id !== "string") {
     reportDiagnostic(context, "invalid-operation-id", target, {
       operationName: target.name,
@@ -325,11 +270,7 @@ export function $operationId(
   storeOperationId(context.program, target, id);
 }
 
-export function $messageId(
-  context: DecoratorContext,
-  target: Model,
-  id: unknown,
-): void {
+export function $messageId(context: DecoratorContext, target: Model, id: unknown): void {
   if (!id || typeof id !== "string") {
     reportDiagnostic(context, "invalid-message-id", target, {
       modelName: target.name,
@@ -339,11 +280,7 @@ export function $messageId(
   storeMessageId(context.program, target, id);
 }
 
-export function $apiVersion(
-  context: DecoratorContext,
-  target: Namespace,
-  version: unknown,
-): void {
+export function $apiVersion(context: DecoratorContext, target: Namespace, version: unknown): void {
   if (!version || typeof version !== "string") {
     return;
   }

@@ -1,15 +1,7 @@
-import type {
-  DecoratorContext,
-  Namespace,
-  Operation,
-} from "@typespec/compiler";
+import type { DecoratorContext, Namespace, Operation } from "@typespec/compiler";
 import { PROTOCOL_LIST, isSupportedProtocol } from "./constants/protocols.js";
 import { storeDefaultContentType, storeServerConfig } from "./state-writers.js";
-import {
-  isValidUrl,
-  reportDiagnostic,
-  validateConfig,
-} from "./decorator-helpers.js";
+import { isValidUrl, reportDiagnostic, validateConfig } from "./decorator-helpers.js";
 
 export function $server(
   context: DecoratorContext,
