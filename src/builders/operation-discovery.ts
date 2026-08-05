@@ -95,6 +95,15 @@ function discoverDecoratedOps(
   }
 }
 
+/** Resolve the operation name from `@operationId` if present, else fall back to the type name. */
+function resolveOpName(
+  state: AsyncAPIConsolidatedState,
+  type: unknown,
+  fallback: string,
+): string {
+  return state.operationIds.get(type as never) ?? fallback;
+}
+
 /** 1b. Channels with @channel but no @publish/@subscribe. */
 function discoverChannelOnlyOps(
   state: AsyncAPIConsolidatedState,
@@ -105,8 +114,7 @@ function discoverChannelOnlyOps(
     if (opsWithType.has(name)) {
       continue;
     }
-    const opId = state.operationIds.get(type);
-    const opName = opId ?? name;
+    const opName = resolveOpName(state, type, name);
     const channelKey = data.path;
     const info = resolveMessageInfo(type, state, opName);
     ctx.discoveredOps.push({
@@ -138,8 +146,7 @@ function discoverBareOps(
       if (allKnownOps.has(opName)) {
         continue;
       }
-      const opId = state.operationIds.get(op);
-      const effectiveName = opId ?? opName;
+      const effectiveName = resolveOpName(state, op, opName);
       const info = resolveMessageInfo(op, state, effectiveName);
       const bareDoc = getDoc(ctx.program, op);
       if (bareDoc) {

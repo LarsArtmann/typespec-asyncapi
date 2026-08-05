@@ -46,22 +46,18 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
   }
 
   modelDeclaration(model: Model): EmitterOutput<JsonSchema> {
-    const collected = this.collectModelProperties(model, true);
-    const schema: JsonSchema = { properties: collected.properties, type: "object" };
-    if (collected.required.length > 0) {
-      schema.required = collected.required;
-    }
-
-    const doc = getDoc(this.emitter.getProgram(), model);
-    if (doc) {
-      schema.description = doc;
-    }
-
+    const schema = this.collectPropertiesSchema(model, true);
+    applyDocDescription(this.emitter.getProgram(), model, schema);
     return this.emitter.result.declaration(model.name, schema);
   }
 
   modelLiteral(model: Model): EmitterOutput<JsonSchema> {
-    const collected = this.collectModelProperties(model, false);
+    return this.collectPropertiesSchema(model, false);
+  }
+
+  /** Build `{ properties, type: "object" }` (plus required if any) from a model's properties. */
+  private collectPropertiesSchema(model: Model, includeRequired: boolean): JsonSchema {
+    const collected = this.collectModelProperties(model, includeRequired);
     const schema: JsonSchema = { properties: collected.properties, type: "object" };
     if (collected.required.length > 0) {
       schema.required = collected.required;
@@ -184,10 +180,7 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
 
   enumDeclaration(en: Enum, name: string): EmitterOutput<JsonSchema> {
     const schema = this.buildEnumSchema(en.members);
-    const doc = getDoc(this.emitter.getProgram(), en);
-    if (doc) {
-      schema.description = doc;
-    }
+    applyDocDescription(this.emitter.getProgram(), en, schema);
     return this.emitter.result.declaration(name, schema);
   }
 
@@ -361,5 +354,13 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
       return { properties: {}, type: "object" };
     }
     return { type: "string" };
+  }
+}
+
+/** Copy `@doc` text from a TypeSpec target onto a JSON Schema's `description`. */
+function applyDocDescription(program: Program, target: unknown, schema: JsonSchema): void {
+  const doc = getDoc(program, target as Parameters<typeof getDoc>[1]);
+  if (doc) {
+    schema.description = doc;
   }
 }

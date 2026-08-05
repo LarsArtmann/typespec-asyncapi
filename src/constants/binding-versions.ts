@@ -27,23 +27,38 @@ const SCHEMA_VERSION_OVERRIDES: Record<
 };
 
 function buildLatestVersions(): Record<string, string> {
-  const result: Record<string, string> = {};
-  for (const [proto, version] of Object.entries(GENERATED_LATEST_VERSIONS)) {
+  return applyOverrides(GENERATED_LATEST_VERSIONS, (proto, version) => {
     if (!version) {
-      continue;
+      return null;
     }
-    result[proto] = SCHEMA_VERSION_OVERRIDES[proto]?.latest ?? version;
-  }
-  return result;
+    return SCHEMA_VERSION_OVERRIDES[proto]?.latest ?? version;
+  });
 }
 
 function buildValidVersions(): Record<string, readonly string[]> {
-  const result: Record<string, readonly string[]> = {};
-  for (const [proto, versions] of Object.entries(GENERATED_ALL_VERSIONS)) {
+  return applyOverrides(GENERATED_ALL_VERSIONS, (proto, versions) => {
     if (versions.length === 0) {
-      continue;
+      return null;
     }
-    result[proto] = SCHEMA_VERSION_OVERRIDES[proto]?.valid ?? versions;
+    return SCHEMA_VERSION_OVERRIDES[proto]?.valid ?? versions;
+  });
+}
+
+/**
+ * Walk an `iterable` of `[proto, value]` pairs, applying `pick` to produce the
+ * output value (or skip with `null`). Shared by `buildLatestVersions`
+ * and `buildValidVersions` to eliminate the override-lookup duplication.
+ */
+function applyOverrides<V>(
+  iterable: Record<string, V>,
+  pick: (proto: string, value: V) => V | null,
+): Record<string, V> {
+  const result: Record<string, V> = {};
+  for (const [proto, value] of Object.entries(iterable)) {
+    const picked = pick(proto, value);
+    if (picked !== null) {
+      result[proto] = picked;
+    }
   }
   return result;
 }

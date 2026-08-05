@@ -12,7 +12,9 @@ import type {
   ModelProperty,
   Namespace,
   Operation,
+  Program,
 } from "@typespec/compiler";
+import { $lib } from "./lib.js";
 import { PROTOCOL_LIST, isSupportedProtocol } from "./constants/protocols.js";
 import {
   linkPublishMessage,
@@ -322,14 +324,14 @@ export function $operationId(
   target: Operation,
   id: unknown,
 ): void {
-  if (
-    !validateNonEmptyString(id, context, target, "invalid-operation-id", {
-      operationName: target.name,
-    })
-  ) {
-    return;
-  }
-  storeOperationId(context.program, target, id);
+  applyStringIdDecorator({
+    context,
+    target,
+    id,
+    diagnosticCode: "invalid-operation-id",
+    format: { operationName: target.name },
+    store: (program) => storeOperationId(program, target, id),
+  });
 }
 
 export function $messageId(
@@ -337,14 +339,34 @@ export function $messageId(
   target: Model,
   id: unknown,
 ): void {
+  applyStringIdDecorator({
+    context,
+    target,
+    id,
+    diagnosticCode: "invalid-message-id",
+    format: { modelName: target.name },
+    store: (program) => storeMessageId(program, target, id),
+  });
+}
+
+/**
+ * Shared body for decorators that take a single non-empty string ID argument
+ * and store it. Used by `@operationId` and `@messageId`.
+ */
+function applyStringIdDecorator(opts: {
+  context: DecoratorContext;
+  target: unknown;
+  id: unknown;
+  diagnosticCode: keyof typeof $lib.diagnostics;
+  format?: Record<string, unknown>;
+  store: (program: Program) => void;
+}): void {
   if (
-    !validateNonEmptyString(id, context, target, "invalid-message-id", {
-      modelName: target.name,
-    })
+    !validateNonEmptyString(opts.id, opts.context, opts.target, opts.diagnosticCode, opts.format)
   ) {
     return;
   }
-  storeMessageId(context.program, target, id);
+  opts.store(opts.context.program);
 }
 
 export function $apiVersion(

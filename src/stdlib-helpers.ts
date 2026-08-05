@@ -19,15 +19,9 @@ export function collectAllStdlibNames(program: Program): Set<string> {
   for (const ns of globalNs.namespaces.values()) {
     if (isStdNamespace(ns)) {
       function collectFrom(namespace: Namespace): void {
-        for (const [name] of namespace.models) {
-          names.add(name);
-        }
-        for (const [name] of namespace.scalars) {
-          names.add(name);
-        }
-        for (const [name] of namespace.enums) {
-          names.add(name);
-        }
+        collectNamesInto(names, namespace.models);
+        collectNamesInto(names, namespace.scalars);
+        collectNamesInto(names, namespace.enums);
         for (const sub of namespace.namespaces.values()) {
           collectFrom(sub);
         }
@@ -36,4 +30,11 @@ export function collectAllStdlibNames(program: Program): Set<string> {
     }
   }
   return names;
+}
+
+/** Add every map key into `names`. Shared by the three `models/scalars/enums` iterations. */
+function collectNamesInto<K, V>(names: Set<string>, items: ReadonlyMap<K, V> | Iterable<[K, V]>): void {
+  for (const [name] of items) {
+    names.add(String(name));
+  }
 }

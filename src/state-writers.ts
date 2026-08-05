@@ -80,6 +80,20 @@ export const storeMessageId = (
   target: Model,
   messageId: string,
 ): void => {
+  updateMessageConfig(program, target, (existing) => {
+    existing.messageId = messageId;
+  });
+};
+
+/**
+ * Read the message config entry for `target`, create a default if absent,
+ * apply `update`, then write it back to the state map.
+ */
+function updateMessageConfig(
+  program: Program,
+  target: Model,
+  update: (existing: MessageConfigData) => void,
+): void {
   const map = getStateMap<MessageConfigData>(
     program,
     stateSymbols.messageConfigs,
@@ -89,9 +103,9 @@ export const storeMessageId = (
     description: `Message ${target.name}`,
     title: target.name,
   };
-  existing.messageId = messageId;
+  update(existing);
   map.set(target, existing);
-};
+}
 
 export const storeServerConfig = (
   program: Program,
@@ -287,17 +301,19 @@ export const linkPublishMessage = (
   target: Operation,
   config?: Model,
 ): void => {
-  if (config) {
-    const map = getStateMap<MessageConfigData>(
-      program,
-      stateSymbols.messageConfigs,
-    );
-    const existing = map.get(config);
-    if (existing) {
-      existing.messageId = config.name;
-      map.set(config, existing);
-    }
+  if (!config) {
+    return;
   }
+  const map = getStateMap<MessageConfigData>(
+    program,
+    stateSymbols.messageConfigs,
+  );
+  const existing = map.get(config);
+  if (!existing) {
+    return;
+  }
+  existing.messageId = config.name;
+  map.set(config, existing);
 };
 
 export const storeDefaultContentType = (
