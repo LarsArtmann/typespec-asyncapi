@@ -5,7 +5,6 @@
  * applies @doc descriptions, and attaches protocol bindings.
  */
 
-import type { AsyncAPIConsolidatedState } from "../state.js";
 import type { ChannelObject, Ref } from "../domain/models/asyncapi-document.js";
 import {
   escapeRefToken,
@@ -13,7 +12,7 @@ import {
   refMessage,
   refSchema,
 } from "../domain/models/asyncapi-document.js";
-import type { DocumentBuildContext } from "./types.js";
+import type { BuilderFn, DocumentBuildContext } from "./types.js";
 import { nameOfType } from "./types.js";
 import {
   buildProtocolBinding,
@@ -80,10 +79,7 @@ export function applyChannelDocs(ctx: DocumentBuildContext): void {
 }
 
 /** Attach protocol bindings to channels from protocolConfigs state. */
-export function attachChannelBindings(
-  state: AsyncAPIConsolidatedState,
-  ctx: DocumentBuildContext,
-): void {
+export const attachChannelBindings: BuilderFn = (state, ctx) => {
   for (const [type, data] of state.protocolConfigs) {
     const name = nameOfType(type);
     if (!name) {
@@ -94,4 +90,4 @@ export function attachChannelBindings(
       ctx.channels[channelKey].bindings = buildProtocolBinding(data);
     }
   }
-}
+};

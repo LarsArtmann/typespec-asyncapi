@@ -16,7 +16,7 @@ import {
   ref,
   refChannel,
 } from "../domain/models/asyncapi-document.js";
-import type { DocumentBuildContext } from "./types.js";
+import type { BuilderFn, DocumentBuildContext } from "./types.js";
 import { nameOfType } from "./types.js";
 import {
   buildOperationMessageRef,
@@ -24,10 +24,7 @@ import {
 } from "./channel-builder.js";
 
 /** Build all operations from discovered ops, applying decorators and replies. */
-export function buildOperations(
-  state: AsyncAPIConsolidatedState,
-  ctx: DocumentBuildContext,
-): void {
+export const buildOperations: BuilderFn = (state, ctx) => {
   for (const op of ctx.discoveredOps) {
     for (let i = 0; i < op.messageNames.length; i++) {
       const schemaName = op.messageSchemaNames[i] ?? op.messageNames[i];

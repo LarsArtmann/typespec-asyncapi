@@ -4,16 +4,12 @@
  * Builds AsyncAPI server objects from @server decorator state.
  */
 
-import type { AsyncAPIConsolidatedState } from "../state.js";
 import type { ServerObject } from "../domain/models/asyncapi-document.js";
 import { normalizeProtocol } from "../constants/protocols.js";
-import type { DocumentBuildContext } from "./types.js";
+import type { BuilderFn } from "./types.js";
 
 /** Build all servers from state. */
-export function buildServers(
-  state: AsyncAPIConsolidatedState,
-  ctx: DocumentBuildContext,
-): void {
+export const buildServers: BuilderFn = (state, ctx) => {
   for (const [type, data] of state.servers) {
     const serverEntries = Array.isArray(data) ? data : [data];
     const namespaceBindings = state.protocolBindings.get(type);

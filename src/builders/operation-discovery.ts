@@ -7,7 +7,7 @@
 
 import { getDoc, isStdNamespace } from "@typespec/compiler";
 import type { AsyncAPIConsolidatedState } from "../state.js";
-import type { DocumentBuildContext } from "./types.js";
+import type { BuilderFn, DocumentBuildContext } from "./types.js";
 import { nameOfType } from "./types.js";
 import {
   inferActionFromName,
@@ -25,14 +25,11 @@ import {
  * Populates context.discoveredOps, context.opToChannel, context.channelDocs,
  * and context.opDocs.
  */
-export function discoverOperations(
-  state: AsyncAPIConsolidatedState,
-  ctx: DocumentBuildContext,
-): void {
+export const discoverOperations: BuilderFn = (state, ctx) => {
   discoverDecoratedOps(state, ctx);
   discoverChannelOnlyOps(state, ctx);
   discoverBareOps(state, ctx);
-}
+};
 
 /** Resolve message names and schema names from an operation's return type. */
 function resolveMessageInfo(

@@ -19,6 +19,7 @@ import {
   hasProtocolBindings,
   normalizeBindingProtocol,
 } from "../constants/binding-versions.js";
+import { nameOfType } from "./types.js";
 
 const OAUTH2_FLOW_KEYS = [
   "implicit",
@@ -26,6 +27,25 @@ const OAUTH2_FLOW_KEYS = [
   "clientCredentials",
   "authorizationCode",
 ] as const;
+
+/**
+ * Iterate a `state.<map>` (Type → Data) skipping entries whose type has no name.
+ * Consolidates the recurring `for (const [type, data] of map) { const name = nameOfType(type); if (!name) continue; ... }`
+ * pattern across all builders.
+ */
+// oxlint-disable-next-line node/callback-return
+export function forEachNamedType<K, V>(
+  map: Map<K, V>,
+  cb: (type: K & Type, name: string, data: V) => void,
+): void {
+  for (const [type, data] of map) {
+    const name = nameOfType(type as Type);
+    if (!name) {
+      continue;
+    }
+    cb(type as K & Type, name, data);
+  }
+}
 
 /**
  * Normalize OAuth2 flows: AsyncAPI 3.1 uses `availableScopes` (not `scopes`).
