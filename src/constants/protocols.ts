@@ -30,6 +30,9 @@ const PROTOCOLS = [
   "mercure",
   "ibmmq",
   "pulsar",
+  "solace",
+  "anypointmq",
+  "ros2",
 ] as const;
 
 export type AsyncAPIProtocol = (typeof PROTOCOLS)[number];
