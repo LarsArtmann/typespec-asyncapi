@@ -87,6 +87,7 @@
     "lint:eslint": "eslint src",
     "lint:ox": "oxlint . --deny-warnings",
     "lint:fix": "eslint src --fix",
+    "duplicate": "bun x jscpd src test scripts",
     "check": "bun run typecheck && bun run lint",
     "validate": "bun run check && bun run test",
     "dev": "bun run --watch src/index.ts",
