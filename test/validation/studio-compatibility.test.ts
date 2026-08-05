@@ -17,12 +17,8 @@ import { compileAsyncAPI } from "../utils/test-helpers.js";
 import type { ParsedAsyncAPIDocument } from "../../src/domain/models/asyncapi-document.js";
 
 async function parseWithAsyncAPIParser(source: string): Promise<{
-  document: ReturnType<
-    ReturnType<InstanceType<typeof Parser>["parse"]>["then"]
-  >["document"];
-  diagnostics: ReturnType<
-    ReturnType<InstanceType<typeof Parser>["parse"]>["then"]
-  >["diagnostics"];
+  document: ReturnType<ReturnType<InstanceType<typeof Parser>["parse"]>["then"]>["document"];
+  diagnostics: ReturnType<ReturnType<InstanceType<typeof Parser>["parse"]>["then"]>["diagnostics"];
 }> {
   const result = await compileAsyncAPI(source);
   if (!result.asyncApiDoc) {
@@ -37,16 +33,12 @@ async function parseWithAsyncAPIParser(source: string): Promise<{
 }
 
 function expectZeroErrors(
-  diagnostics: Awaited<
-    ReturnType<typeof parseWithAsyncAPIParser>
-  >["diagnostics"],
+  diagnostics: Awaited<ReturnType<typeof parseWithAsyncAPIParser>>["diagnostics"],
 ) {
   const errors = diagnostics?.filter((d) => d.severity === "error") ?? [];
   if (errors.length > 0) {
     const messages = errors.map((e) => `${e.code}: ${e.message}`).join("\n");
-    throw new Error(
-      `AsyncAPI parser reported ${errors.length} error(s):\n${messages}`,
-    );
+    throw new Error(`AsyncAPI parser reported ${errors.length} error(s):\n${messages}`);
   }
 }
 

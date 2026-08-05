@@ -54,10 +54,7 @@ function resolveMessageInfo(
 }
 
 /** 1a. Operations from @publish/@subscribe + @channel decorators. */
-function discoverDecoratedOps(
-  state: AsyncAPIConsolidatedState,
-  ctx: DocumentBuildContext,
-): void {
+function discoverDecoratedOps(state: AsyncAPIConsolidatedState, ctx: DocumentBuildContext): void {
   for (const [type, data] of state.channels) {
     const name = nameOfType(type);
     if (!name) {
@@ -79,11 +76,7 @@ function discoverDecoratedOps(
     const opName = opId ?? name;
     const channelKey = ctx.opToChannel.get(name) ?? name;
 
-    let { messageNames, messageSchemaNames } = resolveMessageInfo(
-      type,
-      state,
-      opName,
-    );
+    let { messageNames, messageSchemaNames } = resolveMessageInfo(type, state, opName);
     if (data.messageType) {
       messageNames = [data.messageType];
       messageSchemaNames = [data.messageType];
@@ -105,13 +98,8 @@ function discoverDecoratedOps(
 }
 
 /** 1b. Channels with @channel but no @publish/@subscribe. */
-function discoverChannelOnlyOps(
-  state: AsyncAPIConsolidatedState,
-  ctx: DocumentBuildContext,
-): void {
-  const opsWithType = new Set(
-    [...state.operations.keys()].map((t) => nameOfType(t)),
-  );
+function discoverChannelOnlyOps(state: AsyncAPIConsolidatedState, ctx: DocumentBuildContext): void {
+  const opsWithType = new Set([...state.operations.keys()].map((t) => nameOfType(t)));
   for (const [type, data] of state.channels) {
     const name = nameOfType(type);
     if (!name || opsWithType.has(name)) {
@@ -132,14 +120,9 @@ function discoverChannelOnlyOps(
 }
 
 /** 1c. Bare operations (no decorators at all). */
-function discoverBareOps(
-  state: AsyncAPIConsolidatedState,
-  ctx: DocumentBuildContext,
-): void {
+function discoverBareOps(state: AsyncAPIConsolidatedState, ctx: DocumentBuildContext): void {
   const allKnownOps = new Set(
-    [...state.operations.keys(), ...state.channels.keys()].map((t) =>
-      nameOfType(t),
-    ),
+    [...state.operations.keys(), ...state.channels.keys()].map((t) => nameOfType(t)),
   );
   const globalNs = ctx.program.getGlobalNamespaceType();
   const namespaces = [globalNs, ...globalNs.namespaces.values()];
