@@ -18,7 +18,7 @@
  *
  * // After (type-safe, clean):
  * assertAsyncAPIDoc(result.asyncapiDoc)
- * // TypeScript now knows asyncapiDoc is AsyncAPIObject
+ * // TypeScript now knows asyncapiDoc is ParsedAsyncAPIDocument
  * expect(Object.keys(result.asyncapiDoc.channels)).toContain('events')
  * ```
  */
@@ -29,7 +29,7 @@ import type { ParsedAsyncAPIDocument } from "../../src/domain/models/asyncapi-do
  * Type guard: Asserts value is AsyncAPI 3.1 document
  *
  * Validates required AsyncAPI 3.1 properties exist with correct structure.
- * After this assertion, TypeScript knows the value is AsyncAPIObject.
+ * After this assertion, TypeScript knows the value is ParsedAsyncAPIDocument.
  *
  * @param value - Value to check
  * @throws {Error} If value is not valid AsyncAPI document
@@ -38,7 +38,7 @@ import type { ParsedAsyncAPIDocument } from "../../src/domain/models/asyncapi-do
  * ```typescript
  * const doc: unknown = await parseAsyncAPIFile()
  * assertAsyncAPIDoc(doc)
- * // Now TypeScript knows doc is AsyncAPIObject
+ * // Now TypeScript knows doc is ParsedAsyncAPIDocument
  * console.log(doc.asyncapi) // No error, no optional chaining needed
  * ```
  */
@@ -77,7 +77,7 @@ export function assertAsyncAPIDoc(
     throw new Error('AsyncAPI document missing "channels" section');
   }
 
-  // All checks passed - TypeScript now knows value is AsyncAPIObject
+  // All checks passed - TypeScript now knows value is ParsedAsyncAPIDocument
 }
 
 /**
@@ -92,9 +92,9 @@ export function assertAsyncAPIDoc(
  *
  * @example
  * ```typescript
- * const doc: AsyncAPIObject | undefined = getDoc()
+ * const doc: ParsedAsyncAPIDocument | undefined = getDoc()
  * assertDefined(doc, 'AsyncAPI document not generated')
- * // Now TypeScript knows doc is AsyncAPIObject (not undefined)
+ * // Now TypeScript knows doc is ParsedAsyncAPIDocument (not undefined)
  * ```
  */
 export function assertDefined<T>(
@@ -263,7 +263,7 @@ export function assertCompilationSuccess(result: {
   exitCode: number;
   errors?: string[];
   asyncapiDoc?: unknown;
-}): asserts result is { exitCode: 0; errors: []; asyncapiDoc: AsyncAPIObject } {
+}): asserts result is { exitCode: 0; errors: []; asyncapiDoc: ParsedAsyncAPIDocument } {
   if (result.exitCode !== 0) {
     throw new Error(
       `Compilation failed with exit code ${result.exitCode}. Errors: ${result.errors?.join(", ") || "none"}`,

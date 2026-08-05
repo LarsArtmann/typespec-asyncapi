@@ -22,12 +22,15 @@ describe("supportsBindingPlacement", () => {
     it("supports channel bindings", () => {
       expect(supportsBindingPlacement("kafka", "channel")).toBeTruthy();
     });
+
     it("supports operation bindings", () => {
       expect(supportsBindingPlacement("kafka", "operation")).toBeTruthy();
     });
+
     it("supports message bindings", () => {
       expect(supportsBindingPlacement("kafka", "message")).toBeTruthy();
     });
+
     it("supports server bindings", () => {
       expect(supportsBindingPlacement("kafka", "server")).toBeTruthy();
     });
@@ -37,9 +40,11 @@ describe("supportsBindingPlacement", () => {
     it("supports channel bindings", () => {
       expect(supportsBindingPlacement("ws", "channel")).toBeTruthy();
     });
+
     it("does not support operation bindings", () => {
       expect(supportsBindingPlacement("ws", "operation")).toBeFalsy();
     });
+
     it("does not support message bindings", () => {
       expect(supportsBindingPlacement("ws", "message")).toBeFalsy();
     });
@@ -49,9 +54,11 @@ describe("supportsBindingPlacement", () => {
     it("does not support channel bindings", () => {
       expect(supportsBindingPlacement("http", "channel")).toBeFalsy();
     });
+
     it("supports operation bindings", () => {
       expect(supportsBindingPlacement("http", "operation")).toBeTruthy();
     });
+
     it("supports message bindings", () => {
       expect(supportsBindingPlacement("http", "message")).toBeTruthy();
     });
@@ -61,12 +68,15 @@ describe("supportsBindingPlacement", () => {
     it("does not support channel bindings", () => {
       expect(supportsBindingPlacement("mqtt", "channel")).toBeFalsy();
     });
+
     it("supports operation bindings", () => {
       expect(supportsBindingPlacement("mqtt", "operation")).toBeTruthy();
     });
+
     it("supports message bindings", () => {
       expect(supportsBindingPlacement("mqtt", "message")).toBeTruthy();
     });
+
     it("supports server bindings", () => {
       expect(supportsBindingPlacement("mqtt", "server")).toBeTruthy();
     });
@@ -76,12 +86,15 @@ describe("supportsBindingPlacement", () => {
     it("supports channel bindings", () => {
       expect(supportsBindingPlacement("amqp", "channel")).toBeTruthy();
     });
+
     it("supports operation bindings", () => {
       expect(supportsBindingPlacement("amqp", "operation")).toBeTruthy();
     });
+
     it("supports message bindings", () => {
       expect(supportsBindingPlacement("amqp", "message")).toBeTruthy();
     });
+
     it("does not support server bindings", () => {
       expect(supportsBindingPlacement("amqp", "server")).toBeFalsy();
     });
