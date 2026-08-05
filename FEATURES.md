@@ -1,6 +1,6 @@
 # Feature Inventory
 
-**Verified:** 2026-08-05 against actual code + test run (679 pass, 0 fail, 0 skip, 0 todo)
+**Verified:** 2026-08-05 against actual code + test run (713 pass, 0 fail, 0 skip, 0 todo)
 **Project:** `@lars-artmann/typespec-asyncapi` v0.2.0-beta
 **Lint:** oxlint 0 errors / 0 warnings, ESLint 0 errors / 0 warnings
 **Diagnostics:** 18 codes (15 error + 3 warning), all compile-time validated via `$lib.reportDiagnostic()`
@@ -58,6 +58,7 @@
 | `@operationId`        | FULLY_FUNCTIONAL | Overrides auto-generated operation key with explicit name (`operation-discovery.ts`)                                                                                   |
 | `@messageId`          | FULLY_FUNCTIONAL | Overrides auto-generated message key with explicit name (`message-builder.ts`, `shared-utils.ts`)                                                                      |
 | `@apiVersion`         | FULLY_FUNCTIONAL | Sets `info.version` on document root from Namespace (`document-builder.ts`)                                                                                            |
+| `@versioned` (ext)    | FULLY_FUNCTIONAL | Reads `@typespec/versioning` `@versioned` enum for `info.version` fallback (`document-builder.ts`). `@apiVersion` takes precedence |
 
 ## Protocol Bindings
 
@@ -110,14 +111,18 @@ All 19 AsyncAPI protocols auto-generated from `@asyncapi/specs/bindings/` via `s
 
 | Feature                 | Status               | Evidence                                                                                                  |
 | ----------------------- | -------------------- | --------------------------------------------------------------------------------------------------------- |
-| vitest test runner      | FULLY_FUNCTIONAL     | 679 tests across 64 files (0 skip, 0 todo)                                                                |
+| vitest test runner      | FULLY_FUNCTIONAL | 713 tests across 68 files (0 skip, 0 todo)                                        |
 | Golden file test        | FULLY_FUNCTIONAL     | `test/golden/golden-file.test.ts`                                                                         |
 | Schema validation tests | FULLY_FUNCTIONAL     | `test/validation/schema-validation.test.ts`                                                               |
 | Spec compliance suite   | FULLY_FUNCTIONAL     | `test/compliance/` — 98 tests validated against official AsyncAPI 3.1 JSON Schema                         |
 | Integration tests       | FULLY_FUNCTIONAL     | `test/integration/` — decorator output, negative tests, binding placement                                 |
 | E2E tests               | FULLY_FUNCTIONAL     | `test/e2e/` — complex nested schemas                                                                      |
-| BDD tests               | PARTIALLY_FUNCTIONAL | `test/bdd/user-behaviors.test.ts` — 12 tests. Step infrastructure in `world.ts` has 6 unimplemented stubs |
-| External spec tests     | FULLY_FUNCTIONAL     | `test/external/` — 16 patterns from 5 external projects                                                   |
+| BDD tests               | FULLY_FUNCTIONAL | `test/bdd/user-behaviors.test.ts` — 23 end-to-end behavior tests                  |
+| External spec tests     | FULLY_FUNCTIONAL | `test/external/` — 16 patterns from 5 external projects                           |
+| Studio compatibility     | FULLY_FUNCTIONAL | `test/validation/studio-compatibility.test.ts` — 9 tests using `@asyncapi/parser` |
+| Generator compatibility  | FULLY_FUNCTIONAL | `test/validation/generator-compatibility.test.ts` — 8 structural requirement tests |
+| Versioning integration   | FULLY_FUNCTIONAL | `test/integration/versioning.test.ts` — 5 tests for `@typespec/versioning` support |
+| Linter strategy          | FULLY_FUNCTIONAL | `test/unit/linter-strategy.test.ts` — 3 tests verifying dual-linter config         |
 | Unit tests              | FULLY_FUNCTIONAL     | `test/unit/` — binding placement, emitter tester verification                                             |
 | Negative tests          | FULLY_FUNCTIONAL     | `test/integration/negative-tests.test.ts` — error handling                                                |
 

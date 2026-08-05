@@ -107,13 +107,14 @@ describe("versioning: @versioned namespace integration", () => {
       model Event { id: string; }
 
       @added(Versions.v2)
+      @channel("new-events")
+      op publishNew(): NewEvent;
+
+      @added(Versions.v2)
       model NewEvent { id: string; type: string; }
 
       @channel("events")
       op publish(): Event;
-
-      @channel("new-events")
-      op publishNew(): NewEvent;
     `);
     expect(doc.components?.schemas?.NewEvent).toBeDefined();
   });
