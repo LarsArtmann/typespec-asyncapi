@@ -19,6 +19,12 @@ The code is healthy; the _documentation archive_ is the thing that's structurall
 fucked up.** My session's main gap was scope: I ran `vitest` only and skipped
 lint, typecheck, and the coverage gate on the first pass.
 
+> **Update (21:12+ same day):** Test count grew from 713 → 869. All living docs
+> (README, FEATURES, ROADMAP, TODO_LIST, CHANGELOG) have been rewritten with
+> accurate counts and current state. Documentation drift is resolved. The
+> `docs/_archive/` entropy flagged as D.1 remains an open cleanup item (ROADMAP
+> "Developer Experience" section).
+
 ---
 
 ## Verified This Session (hard evidence)

@@ -17,6 +17,8 @@
 **Best result achieved this session:** 17 clones / 1.59% (well below the original Phase-2 <20/<2% target).
 **Current file state:** Build is green, tests pass, but a partial rollback left some code in a half-converted state with 21 clones / 2.10%.
 
+> **Resolution (20:46 report):** The 21/2.10% broken state was recovered. Final Phase-3 result: **10 clones / 1.00%**. All Q1-Q3 questions resolved (see Q1-Q3 section below). Phase-4 (`21:12` report) then pushed to **0 clones / 0%**.
+
 ---
 
 ## (a) Fully Done
@@ -105,7 +107,9 @@ Jscpd counts literal duplicated lines, not logical duplication. `applyOverrides`
 
 ### 5. The user's previous question implied sub-1% was achievable — it isn't without invasive type-system gymnastics
 
-The Phase-2 status report claimed the Pareto floor was ~4%. The current session showed it's actually closer to 1.5-2%. To get below 1% (i.e. eliminate the remaining 70-90 duplicated lines), we need to either:
+~~The Phase-2 status report claimed the Pareto floor was ~4%. The current session showed it's actually closer to 1.5-2%. To get below 1% (i.e. eliminate the remaining 70-90 duplicated lines), we need to either:~~
+
+**WRONG — Phase-4 (21:12) achieved 0 clones / 0% via structural refactors (HOF factories, interface extension, import splitting).** No type-system gymnastics needed. The "Pareto floor" was a failure of imagination, not a TypeScript limitation.
 
 - Convert schema-emitter class methods to a registration map (breaks `@typespec/asset-emitter`'s override pattern)
 - Accept multi-line 5-param signatures as "intentional" and tune `minLines` in `.jscpd.json` (cheating)

@@ -23,6 +23,8 @@
 
 **Net result:** 13 planned tasks executed, 6 atomic commits landed via auto-git daemon, plan acceptance criteria **partially met** (clone count target <20 missed, % target <2% missed — see Section 5).
 
+> **Update (21:12):** The <20/<2% target was eventually met and exceeded. Phase-3 (20:46) reached 10/1.00%, then Phase-4 (21:12) reached **0 clones / 0%** with a 0% threshold. This report's "diminishing returns" assessment was overcautious.
+
 ---
 
 ## 2. What Was Fully Done

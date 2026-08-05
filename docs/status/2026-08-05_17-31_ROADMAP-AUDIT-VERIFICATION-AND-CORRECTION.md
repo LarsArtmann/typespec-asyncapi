@@ -3,6 +3,8 @@
 **Session goal:** Verify and execute the ROADMAP audit plan from `docs/planning/2026-08-05_05-34_ROADMAP-AUDIT-AND-CLEANUP.md`.
 **Outcome:** Found and fixed critical accuracy errors in the previous session's "complete" work. Build/lint/test green. But multiple systemic issues remain.
 
+> **Update (later sessions same day):** Most issues below were addressed. CHANGELOG `[Unreleased]` populated (18:01 session). Dead BDD infrastructure removed (18:01 session). Test count grew to 869 (19:01 session). Documentation drift corrected across all living docs. The remaining open items are harvested into the current TODO_LIST.md.
+
 ---
 
 ## A) FULLY DONE (This Session)

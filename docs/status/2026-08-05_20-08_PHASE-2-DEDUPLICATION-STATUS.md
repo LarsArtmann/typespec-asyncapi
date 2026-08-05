@@ -15,7 +15,7 @@
 | Threshold        | 8%                     | 5%            | **5%**    | tighter         |
 
 **Phase-2 target:** <20 clones, <2% — **NOT MET** (hit 38 clones / 4.06%).
-**Pareto-driven floor reached:** remaining clones are mostly TypeScript signature/structural patterns that resist clean consolidation without breaking semantics or the 5-param lint rule.
+~~**Pareto-driven floor reached:** remaining clones are mostly TypeScript signature/structural patterns that resist clean consolidation without breaking semantics or the 5-param lint rule.~~ **This claim was WRONG** — Phase-3 (20:46) pushed to 10 / 1.00% and Phase-4 (21:12) reached **0 clones / 0%**. The floor was not structural; it was a lack of creative refactoring (HOF factories, interface extension, import splitting).
 
 ---
 

@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-05 19:55 CEST
 **Baseline:** 44 clones, 4.61% duplication, 199 lines, 1563 tokens across 13 source files
-**Target:** <20 clones, <2% duplication (per prior plan acceptance criteria)
+**Target:** ~~<20 clones, <2% duplication (per prior plan acceptance criteria)~~ **Target missed in Phase-2 (38 clones / 4.06%), but Phase-4 achieved 0 clones / 0%.** See `docs/status/2026-08-05_21-12_PHASE-4-ZERO-CLONES.md`.
 **Approach:** Pareto-driven, smallest-possible-surface helpers, ZERO behavioral change
 
 ---

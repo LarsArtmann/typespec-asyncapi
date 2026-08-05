@@ -147,6 +147,8 @@ See section F for the full list.
 
 ## E) WHAT WE SHOULD IMPROVE
 
+> **Resolution (19:01 session):** Items 1 and 2 below were both fixed in the next session. Bug 1 (binding protocol gap) committed as `49b4241`. Bug 2 (tuple of named models) committed as `0226deb`. See `docs/status/2026-08-05_19-01_BUG-FIXES-AND-TEST-HARDENING-SESSION.md`.
+
 1. **Binding protocol set is a superset of server protocol set.** Protocols like `solace`, `ros2`, `anypointmq`, `solace`, `pulsar`, `googlepubsub`, `ibmmq`, `jms`, `mercure` exist in `GENERATED_FIELD_RULES` and `GENERATED_PLACEMENT` but NOT in `PROTOCOL_LIST` (the server protocol list). `normalizeBindingKey()` calls `isSupportedProtocol()` which checks `PROTOCOL_LIST` — so all these binding-only protocols are rejected as `unknown-binding-protocol`. This means `processBindings({ solace: { priority: 999 } })` silently fails validation. The fix is to separate "server protocols" from "binding protocols" or make `normalizeBindingKey` check the binding set independently.
 
 2. **Schema emitter tuple handling needs fixing.** Tuples of named models produce `{ items: { enum: [{}, {}] } }` which is invalid JSON Schema. The `tuple()` and `typeToSchema()` methods need to handle named model elements via `$ref`.

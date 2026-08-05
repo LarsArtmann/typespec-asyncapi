@@ -3,6 +3,8 @@
 **Session goal:** Execute the entire TODO_LIST (7 items) and verify everything works.
 **Outcome:** 6 of 7 TODO items fully resolved (the 7th is genuinely out of scope). 713 tests pass. But significant issues remain.
 
+> **Update (later sessions same day):** Test count grew from 713 → 821 (18:33 session) → 869 (19:01 session). Duplication driven to 0% (21:12 session). Many items in section F below were addressed.
+
 ---
 
 ## A) FULLY DONE (This Session)

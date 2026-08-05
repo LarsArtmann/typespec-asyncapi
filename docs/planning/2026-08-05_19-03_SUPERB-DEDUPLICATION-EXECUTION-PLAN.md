@@ -3,7 +3,7 @@
 **Date:** 2026-08-05
 **Baseline:** 67 clones, 7.61% duplication (324 lines, 2641 tokens) across 37 production files
 **Tool:** jscpd (minTokens: 15, minLines: 3, threshold: 8%)
-**Goal:** Zero harmful duplication. Every remaining clone has a defensible reason to exist.
+**Goal:** ~~Zero harmful duplication. Every remaining clone has a defensible reason to exist.~~ **Achieved.** Phase-1 (this plan) reduced 68→44 clones. Phase-2 (20:08) reduced to 38. Phase-3 (20:46) reduced to 10. Phase-4 (21:12) reached **0 clones / 0%** with threshold ratcheted to 0%.
 
 ---
 

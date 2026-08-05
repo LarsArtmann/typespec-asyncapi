@@ -1,10 +1,13 @@
 # TypeSpec AsyncAPI Emitter
 
 [![Build Status](https://img.shields.io/badge/Build-PASSING-green)](https://github.com/LarsArtmann/typespec-asyncapi)
-[![Tests](https://img.shields.io/badge/Tests-555%20pass%2C%200%20fail-green)](https://github.com/LarsArtmann/typespec-asyncapi)
+[![Tests](https://img.shields.io/badge/Tests-869%20pass%2C%200%20fail-green)](https://github.com/LarsArtmann/typespec-asyncapi)
 [![AsyncAPI](https://img.shields.io/badge/AsyncAPI-3.1.0-blue)](https://www.asyncapi.com/)
+[![Protocols](https://img.shields.io/badge/Protocols-19-blue)](https://www.asyncapi.com/)
 
-A TypeSpec emitter that transforms TypeSpec service definitions into [AsyncAPI 3.1](https://www.asyncapi.com/) specifications. Define your event schemas, channels, and operations in TypeSpec, then generate standards-compliant AsyncAPI YAML.
+A TypeSpec emitter that transforms TypeSpec service definitions into [AsyncAPI 3.1](https://www.asyncapi.com/) specifications. Define your event schemas, channels, and operations in TypeSpec, then generate standards-compliant AsyncAPI YAML or JSON.
+
+Every byte of output is validated against the official AsyncAPI 3.1.0 JSON Schema (AJV). All 19 AsyncAPI protocol bindings are auto-generated from `@asyncapi/specs` with version auto-injection, field-level validation, and placement checking.
 
 ## Quick Start
 
@@ -76,34 +79,80 @@ components:
         - timestamp
 ```
 
-## Decorators
+## Features
 
-### `@channel(address: string)`
+### 16 Decorators
 
-Defines a channel address for an operation.
+| Decorator | Target | Purpose |
+| --- | --- | --- |
+| `@channel(address, description?)` | Operation | Defines a channel address |
+| `@publish` / `@subscribe` | Operation | Marks operation as send / receive |
+| `@server(name, config)` | Namespace | Defines server (host, protocol, description) |
+| `@message(config)` | Model | Configures message metadata (title, contentType) |
+| `@protocol(config)` | Operation / Model | Applies protocol-specific channel bindings |
+| `@security(config)` | Operation / Namespace | Applies security schemes |
+| `@bindings(config)` | Operation / Model / Namespace | Applies generic protocol bindings (auto-versioned) |
+| `@tags(value)` | Model / Operation / Namespace | Categorizes with tag arrays |
+| `@correlationId(location)` | Model | Specifies correlation ID for message tracing |
+| `@header(name, value?)` | Model / ModelProperty | Defines message headers |
+| `@reply(replyModel, address?)` | Operation | Operation reply with message reference |
+| `@defaultContentType(type)` | Namespace | Sets `defaultContentType` on document root |
+| `@operationId(id)` | Operation | Overrides auto-generated operation key |
+| `@messageId(id)` | Model | Overrides auto-generated message key |
+| `@apiVersion(version)` | Namespace | Sets `info.version` on document root |
 
-```typespec
-@channel("user.events")
-op publishUserEvent(): UserEvent;
+Decorators accept both `{}` (model expression) and `#{}` (value literal) syntax.
+
+### 19 Protocol Bindings
+
+All protocols auto-generated from `@asyncapi/specs/bindings/`:
+
+| Protocol | Binding Version | Highlights |
+| --- | --- | --- |
+| Kafka | 0.5.0 | Channel (topic, partitions, replicas), Operation (groupId, clientId), Message (key) |
+| AMQP | 0.3.0 | Channel (exchange, queue), Operation (priority, deliveryMode), Message |
+| MQTT | 0.2.0 | Server (clientId, cleanSession, lastWill), Operation (qos, retain) |
+| HTTP | 0.3.0 | Operation (method, query), Message (headers) |
+| WebSocket | 0.1.0 | Channel (method, query, headers). `ws`/`wss` normalized |
+| AMQP1, AnypointMQ, GooglePubSub, IBMMQ, JMS, Mercure, NATS, Pulsar, Redis, ROS2, SNS, Solace, SQS, STOMP | Per spec | All auto-generated with field-level validation |
+
+Binding versions are auto-injected when omitted. Protocol aliases (`websocket`→`ws`) are normalized automatically. Binding placement is validated against the spec (e.g., Kafka channel bindings on a message trigger a `misplaced-binding` warning).
+
+### Schema Generation
+
+Every TypeSpec scalar maps to the correct JSON Schema type and format (int8-64, uint8-64, float32/64, decimal, dateTime, duration, bytes, url, and more). Named models, enums, and scalars use `$ref` for clean component reuse. Inheritance, unions, tuples, records, and multi-message operations are all supported.
+
+### Multi-File Output
+
+```bash
+bunx tsp compile api.tsp --emit @lars-artmann/typespec-asyncapi --option @lars-artmann/typespec-asyncapi.split-schemas=true
 ```
 
-### `@publish` / `@subscribe`
+Splits schemas into individual files under `schemas/` with all `$ref` pointers rewritten to external paths.
 
-Marks an operation as sending (publish) or receiving (subscribe).
+### Versioning
+
+Integrates with [`@typespec/versioning`](https://typespec.io/docs/libraries/versioning/overview/):
 
 ```typespec
-@channel("orders")
-@publish
-op publishOrder(): Order;
+import "@typespec/versioning";
+using TypeSpec.Versioning;
 
-@channel("notifications")
-@subscribe
-op subscribeToNotifications(): Notification;
+@versioned(Versions)
+namespace MyAPI;
+
+enum Versions { v1: "1.0.0", v2: "2.0.0"; }
 ```
 
-### `@server(name: string, config)`
+The emitter reads the latest version enum value for `info.version`. Precedence: emitter `version` option > `@apiVersion` decorator > `@versioned` enum > `"1.0.0"`.
 
-Defines server configuration on a namespace. Config accepts `#{}` (value literal).
+### Validation
+
+The emitter provides 22 compile-time diagnostics (17 error + 5 warning) that catch invalid configurations before they reach your AsyncAPI output — unsupported protocols, invalid binding versions, missing channel paths, malformed server URLs, and more.
+
+## Examples
+
+### Kafka with Bindings
 
 ```typespec
 @server("production", #{
@@ -111,42 +160,17 @@ Defines server configuration on a namespace. Config accepts `#{}` (value literal
   protocol: "kafka",
   description: "Production Kafka broker"
 })
-namespace MyAPI;
-```
-
-### `@message(config)`
-
-Configures message metadata on a model.
-
-```typespec
-@message(#{
-  title: "User Created Event",
-  description: "Emitted when a new user is created",
-  contentType: "application/json"
-})
-model UserCreated {
-  user: User;
-  timestamp: utcDateTime;
-}
-```
-
-### `@protocol(config)`
-
-Applies protocol-specific bindings.
-
-```typespec
-@channel("events")
+@channel("orders")
 @protocol(#{
   protocol: "kafka",
   partitions: 3,
   replicationFactor: 2
 })
-op publishEvent(): Event;
+@publish
+op publishOrder(): Order;
 ```
 
-### `@security(config)`
-
-Applies security schemes to operations or namespaces.
+### Security
 
 ```typespec
 @security(#{
@@ -155,7 +179,8 @@ Applies security schemes to operations or namespaces.
     type: "oauth2",
     flows: #{
       clientCredentials: #{
-        tokenUrl: "https://auth.example.com/oauth/token"
+        tokenUrl: "https://auth.example.com/oauth/token",
+        availableScopes: #{ read: "Read access", write: "Write access" }
       }
     }
   }
@@ -163,67 +188,14 @@ Applies security schemes to operations or namespaces.
 namespace SecureAPI;
 ```
 
-### `@tags(value: string[])`
-
-Categorizes operations, models, or namespaces.
+### Reply Pattern
 
 ```typespec
 @channel("orders")
 @publish
-@tags(["orders", "critical"])
-op publishOrder(): Order;
+@reply(OrderConfirmation, "orders/replies")
+op placeOrder(order: Order): OrderConfirmation;
 ```
-
-### `@correlationId(location: string)`
-
-Specifies correlation ID for message tracing on a model.
-
-```typespec
-@correlationId("$message.header#/correlationId")
-model EventWithCorrelation {
-  payload: string;
-}
-```
-
-### `@header(name: string, value?: string)`
-
-Defines message headers on a model property.
-
-```typespec
-model EventWithHeaders {
-  @header("X-Trace-Id")
-  traceId: string;
-}
-```
-
-### `@bindings(config)`
-
-Applies generic protocol bindings to operations or models. Binding keys are normalized (`websocket`→`ws`) and `bindingVersion` is auto-injected.
-
-```typespec
-@channel("payments")
-@bindings(#{
-  kafka: #{
-    partitions: 10,
-    replicas: 3
-  }
-})
-op processPayment(): PaymentResult;
-```
-
-Supported protocols for bindings: Kafka (0.5.0), AMQP (0.3.0), MQTT (0.2.0), HTTP (0.3.0), WebSocket (0.1.0).
-
-## Supported Protocols
-
-| Protocol  | Server | Channel Bindings                  | Operation Bindings           | Message Bindings            |
-| --------- | ------ | --------------------------------- | ---------------------------- | --------------------------- |
-| Kafka     | Yes    | Yes (topic, partitions, replicas) | Yes (groupId, clientId)      | Yes (key, schemaIdLocation) |
-| AMQP      | —      | Yes (exchange, queue)             | Yes (priority, deliveryMode) | Yes (contentEncoding)       |
-| MQTT      | Yes    | —                                 | Yes (qos, retain)            | Yes                         |
-| WebSocket | Yes    | Yes (method, query, headers)      | —                            | —                           |
-| HTTP      | —      | —                                 | Yes (method, query)          | Yes (headers)               |
-
-Binding versions are auto-injected when omitted. Protocol aliases (`websocket`→`ws`, `websockets`→`ws`) are normalized automatically.
 
 ## Development
 
@@ -232,18 +204,24 @@ git clone https://github.com/LarsArtmann/typespec-asyncapi
 cd typespec-asyncapi
 bun install
 bun run build     # Build TypeScript (0 errors)
-bun run test      # Run tests via vitest (555 pass, 0 fail)
-bun run lint      # ESLint
+bun run test      # Run tests via vitest (869 pass, 0 fail)
+bun run lint      # ESLint + oxlint (0 errors, 0 warnings)
 ```
+
+**Important:** Use `bun` and `bunx` for install/build, never `npm` or `npx`. Tests run via **vitest** (Node.js/V8), not `bun test`, because Bun has documented memory leaks with heavy test suites.
 
 ## Status
 
-**Version:** 0.2.0-beta
-**Build:** 0 TypeScript errors
-**Lint:** 0 errors, 0 warnings
-**Tests:** 555 pass, 0 fail (0 skip, 0 todo)
-**Output:** Validates against AsyncAPI 3.1.0 JSON schema (78 compliance tests)
-**Bindings:** Full support for Kafka, AMQP, MQTT, WebSocket, HTTP with auto-versioning
+| Metric | Value |
+| --- | --- |
+| Version | 0.2.0-beta |
+| Tests | 869 pass, 0 fail across 76 files |
+| Build | 0 TypeScript errors (strict mode) |
+| Lint | 0 errors, 0 warnings (ESLint + oxlint) |
+| Diagnostics | 22 codes (17 error + 5 warning) |
+| Protocols | 19 (auto-generated from `@asyncapi/specs`) |
+| Duplication | 0% (jscpd, 0% threshold) |
+| Output | Validates against official AsyncAPI 3.1.0 JSON Schema |
 
 ## License
 

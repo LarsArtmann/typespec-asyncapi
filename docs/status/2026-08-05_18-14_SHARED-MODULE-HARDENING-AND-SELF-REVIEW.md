@@ -5,6 +5,8 @@
 **Commit:** `4445c06` — `test(shared): add barrel public API contract tests and refine shared module docs`
 **Verified at report time:** 717 tests pass / 0 fail, lint 0/0, build 0 errors, coverage gate PASSED (95.3% avg line, 33 files, min 75% per file)
 
+> **Update (later sessions same day):** Test count grew to 869. The shared module barrel remains as-is — `SchemaRef`/`SchemaMap` kept as forward-looking public API (TODO_LIST item #13). The `./shared` subpath split into neutral/bound entry points remains a ROADMAP raw idea.
+
 ---
 
 ## What triggered this session

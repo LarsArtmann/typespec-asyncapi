@@ -8,19 +8,44 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
-- **`@typespec/versioning` integration** — `src/document-builder.ts` now reads `@versioned` enum values from `@typespec/versioning` for `info.version`. Precedence: emitter `version` option > `@apiVersion` decorator > `@versioned` latest enum value > `"1.0.0"`. Test infrastructure auto-detects versioning imports.
-- **AsyncAPI Studio compatibility tests** (`test/validation/studio-compatibility.test.ts`) — 9 tests verifying emitter output parses cleanly via `@asyncapi/parser` (the same parser used by AsyncAPI Studio). Validates $ref resolution, channel/operation/message/schema accessibility, and zero-diagnostic parsing for servers, security, Kafka bindings, reply operations, and complex multi-feature documents.
-- **AsyncAPI generator compatibility tests** (`test/validation/generator-compatibility.test.ts`) — 8 tests verifying structural requirements the `@asyncapi/generator` depends on: $ref resolution, channel addresses, message payloads, operation actions, schema type definitions, server transport info, and multi-message operations.
-- **Linter strategy verification** (`test/unit/linter-strategy.test.ts`) — 3 tests documenting the dual-linter (ESLint + oxlint) strategy and verifying both linters pass cleanly.
+- **`@typespec/versioning` integration** — `src/document-builder.ts` reads `@versioned` enum values from `@typespec/versioning` for `info.version`. Precedence: emitter `version` option > `@apiVersion` decorator > `@versioned` latest enum value > `"1.0.0"`. Test infrastructure auto-detects versioning imports. (`test/integration/versioning.test.ts`, 5 tests)
+- **AsyncAPI Studio compatibility tests** (`test/validation/studio-compatibility.test.ts`, 9 tests) — verifies emitter output parses cleanly via `@asyncapi/parser` (the same parser used by AsyncAPI Studio). Validates `$ref` resolution, channel/operation/message/schema accessibility, and zero-diagnostic parsing for servers, security, Kafka bindings, reply operations, and complex multi-feature documents.
+- **AsyncAPI generator compatibility tests** (`test/validation/generator-compatibility.test.ts`, 8 tests) — verifies structural requirements the `@asyncapi/generator` depends on: `$ref` resolution, channel addresses, message payloads, operation actions, schema type definitions, server transport info, and multi-message operations.
+- **Type mapping completeness suite** (`test/compliance/type-mapping-completeness.test.ts`, 35 tests) — every TypeSpec scalar type now has a dedicated compilation test asserting correct JSON Schema `type` and `format` output. Covers all integer subtypes, floats, decimals, date/time types, bytes, url, tuples, literals, records, and edge cases.
+- **Shared builder utilities tests** (`test/unit/shared-utils.test.ts`, 33 tests) — direct unit tests for `inferActionFromName`, `operationAction`, `extractChannelParameters`, `normalizeOAuth2Scopes`, `buildProtocolBinding`, `escapeRefToken`, and `$ref` construction helpers.
+- **Idempotency tests** (`test/integration/idempotency.test.ts`, 4 tests) — verifies deterministic output: same input always produces byte-identical JSON and YAML, with deterministic key ordering.
+- **Model composition & documentation propagation tests** (`test/compliance/model-composition.test.ts`, 15 tests) — multi-level inheritance, `@doc` propagation to models/properties/enums, nested `$ref` chains, `Record<NamedModel>`, union of string literals.
+- **Decorator negative tests** (`test/integration/decorator-negative.test.ts`, 12 tests) — diagnostic error paths for `invalid-security-scheme-type`, `invalid-server-url`, `server-url-required`, `server-protocol-required`, `missing-channel-path`, `unsupported-protocol`, and emitter `description` option.
+- **`splitSchemas` unit tests** (14 tests) — empty components, single schema extraction, `$ref` rewriting (main doc + schema files), non-schema `$ref` preservation, YAML extension, immutability, nested refs inside arrays.
+- **`extractValue` edge case tests** (5 tests) — `circular` kind, `code` kind, null/non-object values, complex nested schemas.
+- **Binding protocol fix regression tests** (10 tests) — solace (priority validation, range/type checks, server target, misplaced binding), anypointmq normalization, ros2 normalization, binding-only protocol acceptance.
+- **Tuple fix regression tests** (2 tests) — tuple of named models and mixed primitives + named models validated against AsyncAPI 3.1 JSON Schema.
+- **Binding field validation extensions** (7 tests) — max/min constraint violations, protocol without rules, target kind without rules.
+- **Decorator combination tests** (11 tests) — `@defaultContentType`, multiple `@server`, void operations, enum explicit values, `@channel` + `@doc`, `@operationId`, `@messageId`.
+- **Shared module barrel public-API contract tests** (4 tests) — verifies all exports exist, no unexpected runtime leaks, prototype overrides present, type-only exports compile.
+- **Zero-clone duplication baseline** — `jscpd` threshold lowered from 8% to **0%** after a four-phase structural deduplication campaign (68 clones / 7.67% → 0 clones / 0%). Future regressions fail the gate immediately.
+- **Structural deduplication helpers** — `DocumentBody` interface, `DiagnosticContext` interface, `makeConfigDecorator<T>` factory, `makeStringIdDecorator<T>` factory, `messageDecorator<K>` factory, `checkBound` HOF, `validatedDecorator` HOF, `iterNamedTypes` generator, `BuilderFn` type alias, `refOrFallback` / `returnConst` / `returnNone` private methods on `AsyncAPISchemaEmitter`.
+- **Linter strategy verification** (`test/unit/linter-strategy.test.ts`, 3 tests) — documents the dual-linter (ESLint + oxlint) strategy and verifies both pass cleanly.
+- **Diagnostic code count corrected to 22** — 17 error + 5 warning codes, all compile-time validated via `$lib.reportDiagnostic()`. (Was documented as 18; `invalid-operation-id`, `invalid-message-id`, `invalid-binding-field`, and `invalid-bindings-config` were undercounted.)
 
 ### Changed
 
-- **BDD tests rewritten** — Dead Cucumber infrastructure (`test/bdd/support/world.ts`, `test/bdd/features/`, `test/bdd/package.json`, `test/bdd/tsconfig.json`) removed. `user-behaviors.test.ts` rewritten with 23 real end-to-end behavior tests covering channels, protocol bindings, path templates, security, servers, messages, invalid config, document structure, and namespace bindings.
+- **BDD tests rewritten** — Dead Cucumber infrastructure removed. `user-behaviors.test.ts` rewritten with 23 real end-to-end behavior tests covering channels, protocol bindings, path templates, security, servers, messages, invalid config, document structure, and namespace bindings.
 - **`@typespec/versioning`** added as a runtime dependency.
+- **Shared module JSDoc rewritten** — honest two-tier split: protocol-neutral exports (`JsonSchema`, `SchemaRef`, `SchemaMap`, `extractValue`, `intrinsicToSchema`) vs AsyncAPI-bound convenience (`generateSchemas`, `AsyncAPISchemaEmitter`). Old doc falsely claimed "without pulling in AsyncAPI-specific types."
+- **Test imports redirected through public barrel** — all shared-module test imports now go through `src/shared/index.js`, exercising the barrel rather than internal module paths.
+- **`JsonSchema.items` type broadened** from `JsonSchema` to `JsonSchema | JsonSchema[]` to support JSON Schema tuple validation.
+- **Builder architecture** — `buildAsyncAPIDocument()` split into 8 builder files under `src/builders/` (operation-discovery, message-builder, operation-builder, channel-builder, server-builder, security-builder, shared-utils, types). Was a 315-line monolith.
+
+### Fixed
+
+- **Binding protocol gap** (critical bug) — `normalizeBindingKey()` only checked `isSupportedProtocol()` (19 server protocols). Three binding-only protocols (`solace`, `anypointmq`, `ros2`) were rejected as `unknown-binding-protocol`. Added `hasProtocolBindings()` fallback check in `binding-validator.ts`. (`49b4241`)
+- **Tuple of named models** (critical bug) — `tuple()` and `typeToSchema()` used `extractValue(emitTypeReference())` which returns identical `{ properties: {}, type: "object" }` objects for named models, producing invalid JSON Schema with duplicate enum entries. Both now use `refForNamedType()` for named model elements. (`0226deb`)
 
 ### Removed
 
 - **Dead Cucumber BDD infrastructure** — `test/bdd/support/world.ts` (6 unimplemented stubs), `test/bdd/features/core-typespec-to-asyncapi.feature`, `test/bdd/package.json`, `test/bdd/tsconfig.json`. `@cucumber/cucumber` was never installed; all step definitions were stubs.
+- **Dead test harness** — `test/core/unified-test-infrastructure.ts` (108 lines, zero imports). Abandoned migration artifact.
 
 ## [0.2.0-beta] - 2026-07-22
 
