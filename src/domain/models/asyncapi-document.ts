@@ -154,7 +154,7 @@ export interface JsonSchema {
   properties?: Record<string, JsonSchema>;
   required?: string[];
   description?: string;
-  items?: JsonSchema;
+  items?: JsonSchema | JsonSchema[];
   enum?: unknown[];
   anyOf?: JsonSchema[];
   allOf?: JsonSchema[];

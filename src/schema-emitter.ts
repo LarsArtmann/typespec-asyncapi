@@ -183,10 +183,18 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
   }
 
   tuple(tuple: Tuple): EmitterOutput<JsonSchema> {
-    const items = tuple.values.map((v: Type) =>
-      extractValue(this.emitter.emitTypeReference(v)),
-    );
-    return { items: { enum: items, type: "array" }, type: "array" };
+    const items = tuple.values.map((v: Type) => {
+      const ref = this.refForNamedType(v);
+      if (ref) {
+        return ref;
+      }
+      const extracted = extractValue(this.emitter.emitTypeReference(v));
+      if (Object.keys(extracted).length > 0) {
+        return extracted;
+      }
+      return this.typeToSchema(v);
+    });
+    return { items, type: "array" };
   }
 
   arrayDeclaration(
@@ -334,10 +342,13 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
     }
     if (kind === "Tuple") {
       return {
-        items: {
-          enum: (t as Tuple).values.map((v: Type) => this.typeToSchema(v)),
-          type: "array",
-        },
+        items: (t as Tuple).values.map((v: Type) => {
+          const ref = this.refForNamedType(v);
+          if (ref) {
+            return ref;
+          }
+          return this.typeToSchema(v);
+        }),
         type: "array",
       };
     }
