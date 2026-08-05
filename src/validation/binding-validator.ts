@@ -55,6 +55,9 @@ export function normalizeBindingKey(key: string): string | undefined {
   if (isSupportedProtocol(lower)) {
     return normalizeBindingProtocol(normalizeProtocol(lower));
   }
+  if (hasProtocolBindings(lower)) {
+    return normalizeBindingProtocol(lower);
+  }
   return undefined;
 }
 
