@@ -474,4 +474,74 @@ describe("spec Compliance: Constraint Decorators", () => {
       expect(address.title).toBe("Mailing Address");
     });
   });
+
+  describe("@example → examples", () => {
+    it("maps @example on a string property to examples array", async () => {
+      const doc = await compileAndValidateOrThrow(`
+        namespace Test;
+        model Event {
+          @example("hello world")
+          message: string;
+        }
+        @channel("events")
+        op publish(): Event;
+      `);
+      expect(propSchema(doc, "Event", "message").examples).toStrictEqual(["hello world"]);
+    });
+
+    it("maps @example on a numeric property to examples array", async () => {
+      const doc = await compileAndValidateOrThrow(`
+        namespace Test;
+        model Event {
+          @example(42)
+          count: int32;
+        }
+        @channel("events")
+        op publish(): Event;
+      `);
+      expect(propSchema(doc, "Event", "count").examples).toStrictEqual([42]);
+    });
+
+    it("maps @example with object value", async () => {
+      const doc = await compileAndValidateOrThrow(`
+        namespace Test;
+        model Event {
+          name: string;
+          @example(#{name: "Alice", age: 30})
+          data: string;
+        }
+        @channel("events")
+        op publish(): Event;
+      `);
+      expect(propSchema(doc, "Event", "data").examples).toStrictEqual([{ name: "Alice", age: 30 }]);
+    });
+
+    it("maps multiple @example decorators", async () => {
+      const doc = await compileAndValidateOrThrow(`
+        namespace Test;
+        model Event {
+          @example("first")
+          @example("second")
+          name: string;
+        }
+        @channel("events")
+        op publish(): Event;
+      `);
+      expect(propSchema(doc, "Event", "name").examples).toStrictEqual(["first", "second"]);
+    });
+
+    it("maps @example on a model to examples on the schema", async () => {
+      const doc = await compileAndValidateOrThrow(`
+        namespace Test;
+        @example(#{name: "Test Event"})
+        model Event {
+          name: string;
+        }
+        @channel("events")
+        op publish(): Event;
+      `);
+      const schema = (doc.components as { schemas: Record<string, JsonSchema> }).schemas.Event;
+      expect(schema.examples).toStrictEqual([{ name: "Test Event" }]);
+    });
+  });
 });

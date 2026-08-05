@@ -13,8 +13,9 @@
  * sibling by `collectModelProperties` in `schema-emitter.ts`.
  */
 
-import type { ModelProperty, Program, Type } from "@typespec/compiler";
+import type { Enum, Model, ModelProperty, Program, Scalar, Type, Union } from "@typespec/compiler";
 import {
+  getExamples,
   getFormat,
   getMaxLength,
   getMaxItems,
@@ -27,8 +28,12 @@ import {
   getPattern,
   getSummary,
   isDeprecated,
+  serializeValueAsJson,
 } from "@typespec/compiler";
 import type { JsonSchema } from "./domain/models/asyncapi-document.js";
+
+/** Types that accept `@example` per TypeSpec stdlib. */
+type ExampleTarget = Model | Scalar | Enum | Union | ModelProperty;
 
 /**
  * Apply `#deprecated` directive state to a schema's `deprecated` keyword.
@@ -52,6 +57,19 @@ export function applySummary(program: Program, target: Type, schema: JsonSchema)
   }
 }
 
+/**
+ * Apply `@example` decorator values to a schema's `examples` keyword.
+ * Uses `serializeValueAsJson` to convert TypeSpec Value types to plain JSON.
+ */
+export function applyExamples(program: Program, target: ExampleTarget, schema: JsonSchema): void {
+  const examples = getExamples(program, target);
+  if (examples.length > 0) {
+    schema.examples = examples.map((ex) =>
+      serializeValueAsJson(program, ex.value, ex.value.type),
+    );
+  }
+}
+
 export function applyConstraints(
   program: Program,
   prop: ModelProperty,
@@ -59,6 +77,7 @@ export function applyConstraints(
 ): JsonSchema {
   applyDeprecated(program, prop, schema);
   applySummary(program, prop, schema);
+  applyExamples(program, prop, schema);
 
   if (schema.$ref) {
     return schema;

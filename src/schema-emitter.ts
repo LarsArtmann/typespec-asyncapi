@@ -31,7 +31,7 @@ import type {
   SourceFile,
 } from "@typespec/asset-emitter";
 import { getDoc } from "@typespec/compiler";
-import { applyConstraints, applyDeprecated, applySummary } from "./constraint-mapper.js";
+import { applyConstraints, applyDeprecated, applyExamples, applySummary } from "./constraint-mapper.js";
 import type { AsyncAPIEmitterOptions } from "./infrastructure/configuration/asyncAPIEmitterOptions.js";
 import type { JsonSchema } from "./domain/models/asyncapi-document.js";
 import { intrinsicToSchema } from "./intrinsic-mapping.js";
@@ -48,6 +48,7 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<JsonSchema, AsyncAPIEmitt
     applyDocDescription(program, model, schema);
     applyDeprecated(program, model, schema);
     applySummary(program, model, schema);
+    applyExamples(program, model, schema);
     return this.emitter.result.declaration(model.name, schema);
   }
   modelLiteral(model: Model): EmitterOutput<JsonSchema> {
@@ -160,6 +161,7 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<JsonSchema, AsyncAPIEmitt
     applyDocDescription(program, en, schema);
     applyDeprecated(program, en, schema);
     applySummary(program, en, schema);
+    applyExamples(program, en, schema);
     return this.emitter.result.declaration(name, schema);
   }
 
