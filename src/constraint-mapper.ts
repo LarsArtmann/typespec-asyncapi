@@ -39,6 +39,17 @@ import type { JsonSchema } from "./domain/models/asyncapi-document.js";
 type ExampleTarget = Model | Scalar | Enum | Union | ModelProperty;
 
 /**
+ * Apply `@doc` decorator value to a schema's `description` keyword.
+ * Works on any Type (model, property, enum, scalar).
+ */
+export function applyDocDescription(program: Program, target: Type, schema: JsonSchema): void {
+  const doc = getDoc(program, target);
+  if (doc) {
+    schema.description = doc;
+  }
+}
+
+/**
  * Apply `#deprecated` directive state to a schema's `deprecated` keyword.
  * Works on any Type (model, property, enum, scalar) since `isDeprecated`
  * checks compiler-level deprecation state set by the `#deprecated` directive.
