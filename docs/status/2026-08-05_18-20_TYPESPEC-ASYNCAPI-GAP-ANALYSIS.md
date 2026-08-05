@@ -9,11 +9,13 @@
 ## What This Session Did
 
 Performed a systematic gap analysis comparing the project's current capabilities against:
+
 1. **Latest TypeSpec compiler** (1.14.0 — we're on 1.13.0)
 2. **Latest AsyncAPI spec** (3.1.0 — we target this, but miss many fields)
 3. **TypeSpec built-in stdlib decorators** (16 constraint/metadata decorators — none handled)
 
 Methodology:
+
 - Read `package.json`, all emitter source files, all builders, domain models, state management
 - Extracted the full AsyncAPI 3.1.0 JSON Schema from `@asyncapi/specs` to enumerate every field
 - Enumerated all TypeSpec stdlib decorators from `@typespec/compiler` internals
@@ -42,71 +44,80 @@ Methodology:
 ## PARTIALLY DONE (Code Exists But Incomplete)
 
 ### Schema Object (`JsonSchema` interface in `asyncapi-document.ts`)
+
 The `JsonSchema` interface **declares** 30+ fields, but the emitter only **generates** a subset:
 
-| Field | In Type? | Actually Generated? | Notes |
-|---|---|---|---|
-| `type`, `properties`, `required` | YES | YES | Core functionality |
-| `description` | YES | YES | Via `@doc` |
-| `items` | YES | YES | Arrays |
-| `enum` | YES | YES | Enums and string unions |
-| `anyOf` | YES | YES | Non-const unions |
-| `additionalProperties` | YES | YES | `Record<>` types |
-| `$ref` | YES | YES | Named model references |
-| `format` | YES | PARTIAL | Only hardcoded scalar formats (int32, date-time, etc.). `@format` decorator ignored |
-| `allOf` | YES | **NO** | Declared but never generated |
-| `oneOf` | YES | **NO** | Declared but never generated |
-| `nullable` | YES | **NO** | Declared but AsyncAPI 3.1 (Draft-07) doesn't use `nullable` — this is an OpenAPI 3.0 concept. Dead field. |
-| `readOnly` / `writeOnly` | YES | **NO** | Could map to TypeSpec visibility but never checked |
-| `deprecated` | YES | **NO** | `@deprecated` decorator exists in TypeSpec but we never call `isDeprecated()` |
-| `default` | YES | **NO** | TypeSpec default values not extracted |
-| `minimum` / `maximum` | YES | **NO** | `@minValue` / `@maxValue` not handled |
-| `exclusiveMinimum` / `exclusiveMaximum` | YES | **NO** | `@minValueExclusive` / `@maxValueExclusive` not handled |
-| `minLength` / `maxLength` | YES | **NO** | `@minLength` / `@maxLength` not handled |
-| `minItems` / `maxItems` | YES | **NO** | `@minItems` / `@maxItems` not handled |
-| `pattern` | YES | **NO** | `@pattern` not handled |
-| `uniqueItems` | YES | **NO** | Never generated |
-| `example` / `examples` | YES | **NO** | `@example` not handled |
-| `discriminator` | YES | **NO** | `@discriminator` not handled |
-| `xml` | YES | **NO** | Never generated |
-| `externalDocs` | YES | **NO** | Never generated |
-| `const` | YES | YES | String/numeric/boolean literals |
-| `title` | YES | **NO** | `@summary` not handled for schema properties |
+| Field                                   | In Type? | Actually Generated? | Notes                                                                                                     |
+| --------------------------------------- | -------- | ------------------- | --------------------------------------------------------------------------------------------------------- |
+| `type`, `properties`, `required`        | YES      | YES                 | Core functionality                                                                                        |
+| `description`                           | YES      | YES                 | Via `@doc`                                                                                                |
+| `items`                                 | YES      | YES                 | Arrays                                                                                                    |
+| `enum`                                  | YES      | YES                 | Enums and string unions                                                                                   |
+| `anyOf`                                 | YES      | YES                 | Non-const unions                                                                                          |
+| `additionalProperties`                  | YES      | YES                 | `Record<>` types                                                                                          |
+| `$ref`                                  | YES      | YES                 | Named model references                                                                                    |
+| `format`                                | YES      | PARTIAL             | Only hardcoded scalar formats (int32, date-time, etc.). `@format` decorator ignored                       |
+| `allOf`                                 | YES      | **NO**              | Declared but never generated                                                                              |
+| `oneOf`                                 | YES      | **NO**              | Declared but never generated                                                                              |
+| `nullable`                              | YES      | **NO**              | Declared but AsyncAPI 3.1 (Draft-07) doesn't use `nullable` — this is an OpenAPI 3.0 concept. Dead field. |
+| `readOnly` / `writeOnly`                | YES      | **NO**              | Could map to TypeSpec visibility but never checked                                                        |
+| `deprecated`                            | YES      | **NO**              | `@deprecated` decorator exists in TypeSpec but we never call `isDeprecated()`                             |
+| `default`                               | YES      | **NO**              | TypeSpec default values not extracted                                                                     |
+| `minimum` / `maximum`                   | YES      | **NO**              | `@minValue` / `@maxValue` not handled                                                                     |
+| `exclusiveMinimum` / `exclusiveMaximum` | YES      | **NO**              | `@minValueExclusive` / `@maxValueExclusive` not handled                                                   |
+| `minLength` / `maxLength`               | YES      | **NO**              | `@minLength` / `@maxLength` not handled                                                                   |
+| `minItems` / `maxItems`                 | YES      | **NO**              | `@minItems` / `@maxItems` not handled                                                                     |
+| `pattern`                               | YES      | **NO**              | `@pattern` not handled                                                                                    |
+| `uniqueItems`                           | YES      | **NO**              | Never generated                                                                                           |
+| `example` / `examples`                  | YES      | **NO**              | `@example` not handled                                                                                    |
+| `discriminator`                         | YES      | **NO**              | `@discriminator` not handled                                                                              |
+| `xml`                                   | YES      | **NO**              | Never generated                                                                                           |
+| `externalDocs`                          | YES      | **NO**              | Never generated                                                                                           |
+| `const`                                 | YES      | YES                 | String/numeric/boolean literals                                                                           |
+| `title`                                 | YES      | **NO**              | `@summary` not handled for schema properties                                                              |
 
 ### Server Object
+
 - `server.protocolVersion` — **declared in type, never populated** from `@server` config
 - `server.tags` — **declared in type, never populated**
 - `server.externalDocs` — **not in type, not generated**
 - `server.title` / `server.summary` — **declared in type, never populated**
 
 ### Channel Object
+
 - `channel.servers` — **declared in type, never populated** (no channel→server linking)
 - `channel.parameters` — only auto-extracted from `{param}` in addresses; no explicit `@parameter` decorator
 - `channel.externalDocs` — **not in type, not generated**
 
 ### Operation Object
+
 - `operation.security` — **declared in type, never populated** (security only at namespace/component level)
 - `operation.traits` — **declared in type, never populated**
 - `operation.externalDocs` — **not in type, not generated**
 
 ### Message Object
+
 - `message.examples` — **declared in type, never populated** (`@example` ignored)
 - `message.deprecated` — **not in type, not generated** (`@deprecated` ignored)
 - `message.traits` — **declared in type, never populated**
 - `message.externalDocs` — **not in type, not generated**
 
 ### Tag Object
+
 - `tag.externalDocs` — **not in type, not generated**
 - `tag.description` — **generated** (from `@tags` string arrays, but only as `{ name: string }` — descriptions never set)
 
 ### Components Object
+
 Only **4 of 18** component types are populated:
+
 - `components.schemas` — YES
 - `components.messages` — YES
 - `components.securitySchemes` — YES
 - `components.servers` — YES (when servers exist)
 
 **Never populated (12):**
+
 - `components.channels` — declared, never used
 - `components.operations` — declared, never used
 - `components.parameters` — declared, never used
@@ -128,45 +139,45 @@ Only **4 of 18** component types are populated:
 
 The compiler provides `getPattern()`, `getMinValue()`, `getMaxValue()`, `getMinLength()`, `getMaxLength()`, `getMinItems()`, `getMaxItems()`, `getFormat()`, `getDeprecated()`, `getExamples()`, `getSummary()`, `getDiscriminator()`, `getEncode()`, `isErrorModel()`, `getMediaTypeHint()` — **zero of these are called anywhere in the emitter**.
 
-| Decorator | Compiler API | JSON Schema Output | Impact |
-|---|---|---|---|
-| `@pattern` | `getPattern()` | `pattern` | HIGH — validation rules silently dropped |
-| `@minValue` | `getMinValue()` | `minimum` | HIGH |
-| `@maxValue` | `getMaxValue()` | `maximum` | HIGH |
-| `@minValueExclusive` | `getMinValueExclusive()` | `exclusiveMinimum` | HIGH |
-| `@maxValueExclusive` | `getMaxValueExclusive()` | `exclusiveMaximum` | HIGH |
-| `@minLength` | `getMinLength()` | `minLength` | HIGH |
-| `@maxLength` | `getMaxLength()` | `maxLength` | HIGH |
-| `@minItems` | `getMinItems()` | `minItems` | MEDIUM |
-| `@maxItems` | `getMaxItems()` | `maxItems` | MEDIUM |
-| `@format` | `getFormat()` | `format` (override) | MEDIUM |
-| `@deprecated` | `getDeprecated()` / `isDeprecated()` | `deprecated: true` | MEDIUM |
-| `@example` | `getExamples()` | `examples` / `example` | MEDIUM |
-| `@summary` | `getSummary()` | `summary` | LOW |
-| `@discriminator` | `getDiscriminator()` | `discriminator` | MEDIUM (polymorphism) |
-| `@encode` | `getEncode()` | Custom encoding | LOW |
-| `@secret` | (no getter, stored as state) | Should flag sensitive fields | LOW |
+| Decorator            | Compiler API                         | JSON Schema Output           | Impact                                   |
+| -------------------- | ------------------------------------ | ---------------------------- | ---------------------------------------- |
+| `@pattern`           | `getPattern()`                       | `pattern`                    | HIGH — validation rules silently dropped |
+| `@minValue`          | `getMinValue()`                      | `minimum`                    | HIGH                                     |
+| `@maxValue`          | `getMaxValue()`                      | `maximum`                    | HIGH                                     |
+| `@minValueExclusive` | `getMinValueExclusive()`             | `exclusiveMinimum`           | HIGH                                     |
+| `@maxValueExclusive` | `getMaxValueExclusive()`             | `exclusiveMaximum`           | HIGH                                     |
+| `@minLength`         | `getMinLength()`                     | `minLength`                  | HIGH                                     |
+| `@maxLength`         | `getMaxLength()`                     | `maxLength`                  | HIGH                                     |
+| `@minItems`          | `getMinItems()`                      | `minItems`                   | MEDIUM                                   |
+| `@maxItems`          | `getMaxItems()`                      | `maxItems`                   | MEDIUM                                   |
+| `@format`            | `getFormat()`                        | `format` (override)          | MEDIUM                                   |
+| `@deprecated`        | `getDeprecated()` / `isDeprecated()` | `deprecated: true`           | MEDIUM                                   |
+| `@example`           | `getExamples()`                      | `examples` / `example`       | MEDIUM                                   |
+| `@summary`           | `getSummary()`                       | `summary`                    | LOW                                      |
+| `@discriminator`     | `getDiscriminator()`                 | `discriminator`              | MEDIUM (polymorphism)                    |
+| `@encode`            | `getEncode()`                        | Custom encoding              | LOW                                      |
+| `@secret`            | (no getter, stored as state)         | Should flag sensitive fields | LOW                                      |
 
 ### AsyncAPI Info Object Fields
 
-| Field | Description | Status |
-|---|---|---|
-| `info.contact` | `{ name, email, url }` | **Not generated** — no decorator, no emitter option |
-| `info.license` | `{ name, url }` | **Not generated** — no decorator, no emitter option |
-| `info.termsOfService` | URL string | **Not generated** |
-| `info.externalDocs` | `{ url, description }` | **Not generated** |
-| `info.tags` | Document-level tags | **Not generated** |
+| Field                 | Description            | Status                                              |
+| --------------------- | ---------------------- | --------------------------------------------------- |
+| `info.contact`        | `{ name, email, url }` | **Not generated** — no decorator, no emitter option |
+| `info.license`        | `{ name, url }`        | **Not generated** — no decorator, no emitter option |
+| `info.termsOfService` | URL string             | **Not generated**                                   |
+| `info.externalDocs`   | `{ url, description }` | **Not generated**                                   |
+| `info.tags`           | Document-level tags    | **Not generated**                                   |
 
 ### JSON Schema Draft-07 Keywords
 
-| Keyword | Status |
-|---|---|
-| `not` | **Never generated** (schema negation) |
-| `contains` | **Never generated** (array contains) |
-| `propertyNames` | **Never generated** |
-| `patternProperties` | **Never generated** |
-| `multipleOf` | **Never generated** |
-| `$id` | **Never generated** (schema identification) |
+| Keyword             | Status                                      |
+| ------------------- | ------------------------------------------- |
+| `not`               | **Never generated** (schema negation)       |
+| `contains`          | **Never generated** (array contains)        |
+| `propertyNames`     | **Never generated**                         |
+| `patternProperties` | **Never generated**                         |
+| `multipleOf`        | **Never generated**                         |
+| `$id`               | **Never generated** (schema identification) |
 
 ### Other Missing Features
 

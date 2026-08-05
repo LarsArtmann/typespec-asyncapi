@@ -82,7 +82,9 @@ describe("model inheritance and composition", () => {
       @channel("events") op publish(): Employee;
     `);
     const employee = getSchema(doc, "Employee");
-    expect(employee.properties!.company.$ref).toBe("#/components/schemas/Company");
+    expect(employee.properties!.company.$ref).toBe(
+      "#/components/schemas/Company",
+    );
 
     const company = getSchema(doc, "Company");
     expect(company.properties!.hq.$ref).toBe("#/components/schemas/Address");
@@ -140,7 +142,12 @@ describe("documentation propagation", () => {
     `);
     const s = getSchema(doc, "OrderStatus");
     expect(s.description).toBe("Order status values");
-    expect(s.enum).toStrictEqual(["Pending", "Shipped", "Delivered", "Cancelled"]);
+    expect(s.enum).toStrictEqual([
+      "Pending",
+      "Shipped",
+      "Delivered",
+      "Cancelled",
+    ]);
   });
 
   it("combines model-level and property-level @doc", async () => {
@@ -208,7 +215,11 @@ describe("complex model patterns", () => {
       @channel("events") op publish(): Event;
     `);
     const s = getSchema(doc, "Event");
-    expect(s.properties!.priority.enum).toStrictEqual(["low", "medium", "high"]);
+    expect(s.properties!.priority.enum).toStrictEqual([
+      "low",
+      "medium",
+      "high",
+    ]);
     expect(s.properties!.priority.type).toBe("string");
   });
 

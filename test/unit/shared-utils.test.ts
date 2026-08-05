@@ -111,7 +111,9 @@ describe("normalizeOAuth2Scopes", () => {
     expect(result.flows!.implicit!.availableScopes).toStrictEqual({
       read: "read access",
     });
-    expect((result.flows!.implicit as Record<string, unknown>).scopes).toBeUndefined();
+    expect(
+      (result.flows!.implicit as Record<string, unknown>).scopes,
+    ).toBeUndefined();
   });
 
   it("renames scopes in all four flow types", () => {
@@ -131,8 +133,12 @@ describe("normalizeOAuth2Scopes", () => {
     const result = normalizeOAuth2Scopes(scheme);
     expect(result.flows!.implicit!.availableScopes).toStrictEqual({ a: "a" });
     expect(result.flows!.password!.availableScopes).toStrictEqual({ b: "b" });
-    expect(result.flows!.clientCredentials!.availableScopes).toStrictEqual({ c: "c" });
-    expect(result.flows!.authorizationCode!.availableScopes).toStrictEqual({ d: "d" });
+    expect(result.flows!.clientCredentials!.availableScopes).toStrictEqual({
+      c: "c",
+    });
+    expect(result.flows!.authorizationCode!.availableScopes).toStrictEqual({
+      d: "d",
+    });
   });
 
   it("preserves already-normalized availableScopes", () => {
@@ -146,7 +152,9 @@ describe("normalizeOAuth2Scopes", () => {
       },
     };
     const result = normalizeOAuth2Scopes(scheme);
-    expect(result.flows!.implicit!.availableScopes).toStrictEqual({ read: "read" });
+    expect(result.flows!.implicit!.availableScopes).toStrictEqual({
+      read: "read",
+    });
   });
 
   it("returns scheme unchanged when no flows", () => {
@@ -166,7 +174,9 @@ describe("normalizeOAuth2Scopes", () => {
       },
     };
     normalizeOAuth2Scopes(scheme);
-    expect((scheme.flows!.implicit as Record<string, unknown>).scopes).toBeDefined();
+    expect(
+      (scheme.flows!.implicit as Record<string, unknown>).scopes,
+    ).toBeDefined();
   });
 });
 
