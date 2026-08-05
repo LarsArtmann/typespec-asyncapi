@@ -6,7 +6,6 @@
   "min-lines": 5,
   "min-tokens": 50,
   "absolute": true,
-  "gitignore": true,
   "ignore": [
     "**/dist/**",
     "**/node_modules/**",

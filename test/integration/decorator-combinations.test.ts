@@ -51,9 +51,9 @@ describe("decorator combinations and edge cases", () => {
       expect(asyncApiDoc?.servers).toBeDefined();
       const serverKeys = Object.keys(asyncApiDoc?.servers ?? {});
       expect(serverKeys).toHaveLength(3);
-      expect(asyncApiDoc?.servers?.production?.host).toBe("prod:9092");
-      expect(asyncApiDoc?.servers?.staging?.host).toBe("stage:3000");
-      expect(asyncApiDoc?.servers?.dev?.host).toBe("localhost:5672");
+      expect(asyncApiDoc?.servers?.production?.host).toBe("kafka://prod:9092");
+      expect(asyncApiDoc?.servers?.staging?.host).toBe("ws://stage:3000");
+      expect(asyncApiDoc?.servers?.dev?.host).toBe("amqp://localhost:5672");
     });
 
     it("preserves server descriptions", async () => {

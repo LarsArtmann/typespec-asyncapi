@@ -18,7 +18,10 @@ function makeDoc(schemas: Record<string, unknown>): AsyncAPIDocument {
 
 describe("splitSchemas", () => {
   it("returns empty schemaFiles when components.schemas is missing", () => {
-    const doc = { asyncapi: "3.1.0", info: { title: "T", version: "1" } } as unknown as AsyncAPIDocument;
+    const doc = {
+      asyncapi: "3.1.0",
+      info: { title: "T", version: "1" },
+    } as unknown as AsyncAPIDocument;
     const result = splitSchemas(doc, "json");
     expect(result.schemaFiles.size).toBe(0);
     expect(result.mainDocument).toBe(doc);
@@ -192,10 +195,8 @@ describe("splitSchemas", () => {
       },
     } as unknown as AsyncAPIDocument;
     const result = splitSchemas(doc, "json");
-    const msg = result.mainDocument.components?.messages?.MultiMessage as Record<
-      string,
-      unknown
-    >;
+    const msg = result.mainDocument.components?.messages
+      ?.MultiMessage as Record<string, unknown>;
     const payload = msg?.payload as Record<string, unknown[]>;
     const anyOf = payload?.anyOf;
     expect(anyOf?.[0]).toStrictEqual({ $ref: "schemas/User.json" });

@@ -14,23 +14,25 @@ Starting from 713 tests across 68 files, this session identified 5 major categor
 ## A) FULLY DONE
 
 ### 1. Comprehensive Type Mapping Through Compilation (35 tests)
+
 **File:** `test/compliance/type-mapping-completeness.test.ts`
 
 Every TypeSpec scalar type now has a dedicated compilation test asserting the correct JSON Schema `type` and `format` output:
 
-| Category | Types Tested | Previously |
-|----------|-------------|------------|
-| Integer | int8, int16, int32, int64, uint8, uint16, uint32, uint64, safeint | 4/9 had assertions |
-| Float | float32, float64 | Already covered |
-| Decimal | decimal, decimal128 | 1/2 covered |
-| Date/Time | utcDateTime, offsetDateTime, unixTimestamp32, plainDate, plainTime, duration | 1/6 covered |
-| Other | string, boolean, bytes, url | Covered |
-| Tuples | `[string, int32]`, `[A, B]` | **0 covered** |
-| Literals | string const, numeric const, boolean const | **0 covered** |
-| Edge cases | all-optional model (no `required`), arrays of primitives | **0 covered** |
-| Records | `Record<string>`, `Record<int32>` | Partially |
+| Category   | Types Tested                                                                 | Previously         |
+| ---------- | ---------------------------------------------------------------------------- | ------------------ |
+| Integer    | int8, int16, int32, int64, uint8, uint16, uint32, uint64, safeint            | 4/9 had assertions |
+| Float      | float32, float64                                                             | Already covered    |
+| Decimal    | decimal, decimal128                                                          | 1/2 covered        |
+| Date/Time  | utcDateTime, offsetDateTime, unixTimestamp32, plainDate, plainTime, duration | 1/6 covered        |
+| Other      | string, boolean, bytes, url                                                  | Covered            |
+| Tuples     | `[string, int32]`, `[A, B]`                                                  | **0 covered**      |
+| Literals   | string const, numeric const, boolean const                                   | **0 covered**      |
+| Edge cases | all-optional model (no `required`), arrays of primitives                     | **0 covered**      |
+| Records    | `Record<string>`, `Record<int32>`                                            | Partially          |
 
 ### 2. Shared Builder Utilities Unit Tests (33 tests)
+
 **File:** `test/unit/shared-utils.test.ts`
 
 Pure functions that had zero dedicated unit tests are now covered:
@@ -44,15 +46,18 @@ Pure functions that had zero dedicated unit tests are now covered:
 - `ref`/`refSchema`/`refMessage`/`refChannel` — 6 tests (construction + escaping)
 
 ### 3. Idempotency Tests (4 tests)
+
 **File:** `test/integration/idempotency.test.ts`
 
 Verifies deterministic output — same input always produces same output:
+
 - YAML output byte-for-byte identical on repeated compilation
 - JSON output byte-for-byte identical on repeated compilation
 - Deterministic key ordering in components (schemas, messages, channels, operations)
 - Identical output for specs with security schemes
 
 ### 4. Model Composition & Documentation Propagation (15 tests)
+
 **File:** `test/compliance/model-composition.test.ts`
 
 - Multi-level `extends` chains (3 levels deep)
@@ -70,6 +75,7 @@ Verifies deterministic output — same input always produces same output:
 - Optional enum properties
 
 ### 5. Decorator Negative Tests (12 tests)
+
 **File:** `test/integration/decorator-negative.test.ts`
 
 Diagnostic error paths that were declared in `lib.ts` but never tested through compilation:
@@ -87,6 +93,7 @@ Diagnostic error paths that were declared in `lib.ts` but never tested through c
 - Emitter `description` option absence omits field
 
 ### 6. Binding Field Validation Extensions (+7 tests)
+
 **File:** `test/validation/binding-field-validation.test.ts` (extended)
 
 - Max constraint violation (IBM MQ `maxMsgLength` > 104857600)
@@ -100,10 +107,13 @@ Diagnostic error paths that were declared in `lib.ts` but never tested through c
 ## B) PARTIALLY DONE
 
 ### Coverage Gate Status
+
 The `bun test --coverage` run (Bun native, not vitest) was not fully analyzed in this session. The vitest coverage showed low numbers for `schema-emitter.ts` (12.6%), `schema-generator.ts` (9.76%), and `stdlib-helpers.ts` (6.06%) — but these files are exercised through the TypeSpec compiler loading `dist/*.js`, which vitest cannot instrument. The coverage gate script (`scripts/coverage-gate.ts`) remaps `dist/` paths and merges them. This session did not re-run the full coverage gate to verify the gate still passes with the new files.
 
 ### Some Diagnostic Codes Still Untested
+
 The following error diagnostics are declared in `lib.ts` and fired in source but have no test asserting their specific code:
+
 - `invalid-message-config` — fired by `$message` when config is null
 - `invalid-protocol-config` — fired by `$protocol` when config is null
 - `invalid-security-config` — fired by `$security` when config is null
@@ -152,6 +162,7 @@ See section F for the full list.
 ## F) Up to 50 Things to Do Next
 
 ### High Priority (P0)
+
 1. Fix binding protocol set gap — `normalizeBindingKey` should accept all 19 binding protocols, not just the 20 server protocols
 2. Fix tuple-of-named-models producing invalid JSON Schema in `schema-emitter.ts`
 3. Fix pre-existing lint errors in `test/unit/shared-schema-types.test.ts` (lines 194, 200)
@@ -159,6 +170,7 @@ See section F for the full list.
 5. Run full coverage gate (`bun run test:coverage:gate`) and verify it passes with new tests
 
 ### Medium Priority (P1)
+
 6. Test `splitSchemas()` unit-level: empty components, single schema, nested `$ref` rewriting
 7. Test `extractValue()` with `"circular"` kind entity (only `"none"` is tested)
 8. Test `stdlib-helpers.ts` (`isStdlibType`, `collectAllStdlibNames`) — 6% coverage
@@ -181,6 +193,7 @@ See section F for the full list.
 25. Test enum with explicit values (`enum Color { Red = "red" }`)
 
 ### Lower Priority (P2)
+
 26. Property test: generate random valid specs and verify they compile without errors
 27. Snapshot test: compare output against golden files for all example specs
 28. Test `output-file` option changes the filename
@@ -221,12 +234,12 @@ See section F for the full list.
 
 ## Session Metrics
 
-| Metric | Before | After | Delta |
-|--------|--------|-------|-------|
-| Test files | 68 | 73 | +5 |
-| Tests | 713 | 821 | +108 |
-| Lint errors | 0 | 0 | — |
-| TypeScript errors | 0 | 0 | — |
-| Test failures | 0 | 0 | — |
-| New test files | — | 5 | — |
-| Extended test files | — | 1 | — |
+| Metric              | Before | After | Delta |
+| ------------------- | ------ | ----- | ----- |
+| Test files          | 68     | 73    | +5    |
+| Tests               | 713    | 821   | +108  |
+| Lint errors         | 0      | 0     | —     |
+| TypeScript errors   | 0      | 0     | —     |
+| Test failures       | 0      | 0     | —     |
+| New test files      | —      | 5     | —     |
+| Extended test files | —      | 1     | —     |

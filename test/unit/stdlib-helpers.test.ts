@@ -28,7 +28,8 @@ describe("stdlib-helpers via compilation", () => {
       @channel("events")
       op publish(): Event;
     `);
-    const addrProp = asyncApiDoc?.components?.schemas?.Event?.properties?.address;
+    const addrProp =
+      asyncApiDoc?.components?.schemas?.Event?.properties?.address;
     expect(addrProp?.$ref).toBe("#/components/schemas/Address");
   });
 
