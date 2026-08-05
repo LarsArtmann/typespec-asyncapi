@@ -24,5 +24,6 @@ Long-term ideas and RFCs live in ROADMAP, not here.
 | # | Task | Impact | Effort | Evidence |
 | --- | ---- | ------ | ------ | -------- |
 | 5 | `@typespec/versioning` library support (#163) — custom `@apiVersion` decorator exists but the TypeSpec versioning library is not integrated | Low | 3-5h | `@apiVersion` implemented (`src/minimal-decorators.ts:283`, tested in `test/decorators/api-version.test.ts`). `@typespec/versioning` library integration would enable API evolution tracking. |
-| 6 | Plugin/hook system for custom binding extensions (#32 RFC) | Low | 4-8h | Design RFC needed. Protocol bindings currently defined in code, not extensible at runtime (Non-Goal in ROADMAP). |
-| 7 | OpenAPI 3.x cross-emitter type sharing — `src/shared/` module exists but no OpenAPI emitter consumes it yet | Low | 4-6h | `src/shared/` exports `JsonSchema`, `SchemaMap`, `generateSchemas`, `extractValue`, `intrinsicToSchema`, `AsyncAPISchemaEmitter`. No external consumer. |
+| 6 | OpenAPI 3.x cross-emitter type sharing — `src/shared/` module exists but no OpenAPI emitter consumes it yet | Low | 4-6h | `src/shared/` exports `JsonSchema`, `SchemaMap`, `generateSchemas`, `extractValue`, `intrinsicToSchema`, `AsyncAPISchemaEmitter`. No external consumer. |
+
+> **Removed:** Plugin/hook system for custom binding extensions (#32 RFC) — explicitly listed as a Non-Goal in ROADMAP.md. Protocol bindings are defined in code, not extensible at runtime.
