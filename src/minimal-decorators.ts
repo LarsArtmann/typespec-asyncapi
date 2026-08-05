@@ -248,7 +248,7 @@ export function $correlationId(
   target: Model,
   location: unknown,
 ): void {
-  if (!location || typeof location !== "string") {
+  if (typeof location !== "string" || location.length === 0) {
     reportDiagnostic(context, "invalid-correlationId-config", target, {
       modelName: target.name,
     });
@@ -300,7 +300,7 @@ export function $header(
   name: unknown,
   value?: unknown,
 ): void {
-  if (!name || typeof name !== "string") {
+  if (typeof name !== "string" || name.length === 0) {
     reportDiagnostic(context, "invalid-header-config", target, {
       targetKind: target.kind,
     });
@@ -330,7 +330,7 @@ export function $operationId(
   target: Operation,
   id: unknown,
 ): void {
-  if (!id || typeof id !== "string") {
+  if (typeof id !== "string" || id.length === 0) {
     reportDiagnostic(context, "invalid-operation-id", target, {
       operationName: target.name,
     });
@@ -344,7 +344,7 @@ export function $messageId(
   target: Model,
   id: unknown,
 ): void {
-  if (!id || typeof id !== "string") {
+  if (typeof id !== "string" || id.length === 0) {
     reportDiagnostic(context, "invalid-message-id", target, {
       modelName: target.name,
     });

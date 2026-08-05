@@ -6,8 +6,8 @@
  */
 
 import type {
-  KafkaSaslConfig,
   MessageConfigData,
+  MessageHeaderData,
   MqttLastWillConfig,
   OperationReplyData,
   ProtocolConfigData,
@@ -206,19 +206,11 @@ export const storeHeader = (
     description = typeof value === "string" ? value : undefined;
   }
 
-  const existing =
-    (map.get(target) as
-      | {
-          name: string;
-          value?: unknown;
-          type?: string;
-          description?: string;
-        }[]
-      | undefined) ?? [];
-  map.set(target, [
-    ...existing,
+  appendToStateArray<MessageHeaderData, typeof target>(
+    map as Map<typeof target, MessageHeaderData[]>,
+    target,
     { description, name, type: headerType, value },
-  ]);
+  );
 };
 
 export const storeProtocolConfig = (

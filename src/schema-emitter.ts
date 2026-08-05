@@ -200,6 +200,11 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
     return { const: value };
   }
 
+  /** Build an intrinsic type schema. Falls back to `"string"` when name is undefined. */
+  private intrinsicSchema(name: string | undefined): JsonSchema {
+    return intrinsicToSchema(name ?? "string");
+  }
+
   /** Build an enum schema `{ enum: values, type: "string" }` from a map of `EnumMember`. */
   private buildEnumSchema(members: Map<string, EnumMember>): JsonSchema {
     const values = [...members.values()].map((m) => m.value ?? m.name);
