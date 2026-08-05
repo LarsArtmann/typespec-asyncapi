@@ -1,4 +1,8 @@
-import type { DecoratorContext, Namespace, Operation } from "@typespec/compiler";
+import type {
+  DecoratorContext,
+  Namespace,
+  Operation,
+} from "@typespec/compiler";
 import { isSupportedProtocol } from "./constants/protocols.js";
 import { storeDefaultContentType, storeServerConfig } from "./state-writers.js";
 import {

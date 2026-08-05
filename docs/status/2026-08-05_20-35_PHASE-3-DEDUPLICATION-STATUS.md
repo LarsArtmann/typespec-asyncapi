@@ -7,12 +7,12 @@
 
 ## Current Clone State
 
-| Metric          | Phase-2 end | Now (best) | Now (current, broken rollback) |
-| --------------- | ----------- | ---------- | ------------------------------ |
-| Clones          | 38          | **17**     | 21                             |
-| Duplication %   | 4.06%       | **1.59%**  | 2.10%                          |
-| Duplicated lines| 177         | 70         | 94                             |
-| Threshold       | 5%          | 5%         | 5%                             |
+| Metric           | Phase-2 end | Now (best) | Now (current, broken rollback) |
+| ---------------- | ----------- | ---------- | ------------------------------ |
+| Clones           | 38          | **17**     | 21                             |
+| Duplication %    | 4.06%       | **1.59%**  | 2.10%                          |
+| Duplicated lines | 177         | 70         | 94                             |
+| Threshold        | 5%          | 5%         | 5%                             |
 
 **Best result achieved this session:** 17 clones / 1.59% (well below the original Phase-2 <20/<2% target).
 **Current file state:** Build is green, tests pass, but a partial rollback left some code in a half-converted state with 21 clones / 2.10%.
@@ -21,26 +21,26 @@
 
 ## (a) Fully Done
 
-| # | Refactor                                                                                              | Impact |
-| - | ----------------------------------------------------------------------------------------------------- | ------ |
-| 1 | `applyStringIdDecorator` HOF consolidating `$operationId` and `$messageId`                             | -1 clone, ~12 lines saved |
-| 2 | `isModelConfig(config): config is Model` type guard, used in `decorator-helpers` and `minimal-decorators` ×2 | -1 clone, ~6 lines saved |
-| 3 | `resolveOpName(state, type, fallback)` helper eliminating self-clone in `operation-discovery`        | -1 clone, ~4 lines saved |
-| 4 | `applyDocDescription(program, target, schema)` module function replacing inline `getDoc+if` blocks in `schema-emitter` ×2 | -2 clones |
-| 5 | `collectPropertiesSchema(model, includeRequired)` consolidating `modelDeclaration` and `modelLiteral`  | -1 clone, ~8 lines saved |
-| 6 | `applyOverrides<V>(iterable, pick)` factory replacing the override-lookup pattern in `buildLatestVersions` and `buildValidVersions` | -1 clone, ~6 lines saved |
-| 7 | `collectNamesInto(names, items)` helper in `stdlib-helpers` replacing 3 `for-of` loops                  | -1 clone, ~6 lines saved |
-| 8 | `applyStringIdDecorator` signature normalization for the `id: unknown` → string narrowing              | -1 clone |
-| 9 | `reportAndReturnFalse` extracted, then INLINED (see (d))                                              | net 0 — see below |
-| 10 | `reportUnsupportedProtocol(context, target, protocol)` helper used in `minimal-decorators` and `namespace-decorators` | -1 clone (cross-file) |
-| 11 | `pushIssue` exported from `binding-validator.ts`, used by `binding-field-validator` (`pushFieldError`)  | -1 clone, ~5 lines saved |
-| 12 | `getMessageConfigsMap(program)` private helper in `state-writers.ts`                                    | -1 clone |
-| 13 | Builders share `src/builders/_imports.ts` re-export module (getDoc, nameOfType, AsyncAPIConsolidatedState, BuilderFn, DocumentBuildContext) | -2 import-block clones |
-| 14 | Multi-line builder type imports collapsed to one-liners (operation-builder, operation-discovery, message-builder, channel-builder) | -2 clones |
-| 15 | `applyExplicitMessageDocs` and `applyAutoMessageDecorators` and `discoverChannelOnlyOps` and `discoverBareOps` use the `BuilderFn` type alias | -2 clones |
-| 16 | Blank lines removed between adjacent short class methods in `schema-emitter` (`stringLiteral`/`numericLiteral`/`booleanLiteral`, `arrayDeclaration`/`arrayLiteral`, `operation`/`interfaceDeclaration`) | -2 clones |
-| 17 | `binding-field-validator` min/max checks collapsed with inline object-spread                       | -1 clone |
-| 18 | Multi-line `@typespec/compiler` import in `minimal-decorators` collapsed to one-liner                  | -1 clone (cross-file with state-writers) |
+| #   | Refactor                                                                                                                                                                                                | Impact                                   |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------- |
+| 1   | `applyStringIdDecorator` HOF consolidating `$operationId` and `$messageId`                                                                                                                              | -1 clone, ~12 lines saved                |
+| 2   | `isModelConfig(config): config is Model` type guard, used in `decorator-helpers` and `minimal-decorators` ×2                                                                                            | -1 clone, ~6 lines saved                 |
+| 3   | `resolveOpName(state, type, fallback)` helper eliminating self-clone in `operation-discovery`                                                                                                           | -1 clone, ~4 lines saved                 |
+| 4   | `applyDocDescription(program, target, schema)` module function replacing inline `getDoc+if` blocks in `schema-emitter` ×2                                                                               | -2 clones                                |
+| 5   | `collectPropertiesSchema(model, includeRequired)` consolidating `modelDeclaration` and `modelLiteral`                                                                                                   | -1 clone, ~8 lines saved                 |
+| 6   | `applyOverrides<V>(iterable, pick)` factory replacing the override-lookup pattern in `buildLatestVersions` and `buildValidVersions`                                                                     | -1 clone, ~6 lines saved                 |
+| 7   | `collectNamesInto(names, items)` helper in `stdlib-helpers` replacing 3 `for-of` loops                                                                                                                  | -1 clone, ~6 lines saved                 |
+| 8   | `applyStringIdDecorator` signature normalization for the `id: unknown` → string narrowing                                                                                                               | -1 clone                                 |
+| 9   | `reportAndReturnFalse` extracted, then INLINED (see (d))                                                                                                                                                | net 0 — see below                        |
+| 10  | `reportUnsupportedProtocol(context, target, protocol)` helper used in `minimal-decorators` and `namespace-decorators`                                                                                   | -1 clone (cross-file)                    |
+| 11  | `pushIssue` exported from `binding-validator.ts`, used by `binding-field-validator` (`pushFieldError`)                                                                                                  | -1 clone, ~5 lines saved                 |
+| 12  | `getMessageConfigsMap(program)` private helper in `state-writers.ts`                                                                                                                                    | -1 clone                                 |
+| 13  | Builders share `src/builders/_imports.ts` re-export module (getDoc, nameOfType, AsyncAPIConsolidatedState, BuilderFn, DocumentBuildContext)                                                             | -2 import-block clones                   |
+| 14  | Multi-line builder type imports collapsed to one-liners (operation-builder, operation-discovery, message-builder, channel-builder)                                                                      | -2 clones                                |
+| 15  | `applyExplicitMessageDocs` and `applyAutoMessageDecorators` and `discoverChannelOnlyOps` and `discoverBareOps` use the `BuilderFn` type alias                                                           | -2 clones                                |
+| 16  | Blank lines removed between adjacent short class methods in `schema-emitter` (`stringLiteral`/`numericLiteral`/`booleanLiteral`, `arrayDeclaration`/`arrayLiteral`, `operation`/`interfaceDeclaration`) | -2 clones                                |
+| 17  | `binding-field-validator` min/max checks collapsed with inline object-spread                                                                                                                            | -1 clone                                 |
+| 18  | Multi-line `@typespec/compiler` import in `minimal-decorators` collapsed to one-liner                                                                                                                   | -1 clone (cross-file with state-writers) |
 
 **Final stable state at 17/1.59% (then broken by over-zealous rollback — see (d)):**
 
@@ -92,6 +92,7 @@ I added `reportAndReturnFalse(valid, context, code, target, format)` to share th
 ### 3. The 17/1.59% was a fragile local optimum
 
 Most of the 17-clone state relied on:
+
 - Inline `const applyCorrelationId: MessageDecoratorFn = (state, type, msg, skipExisting = false) =>` (shorter signatures, type alias hides param types)
 - The `applyOverrides<V>` factory being the right shape (it adds a new clone target too — saved 1, added 1, net 0)
 - Single-line import blocks
@@ -105,6 +106,7 @@ Jscpd counts literal duplicated lines, not logical duplication. `applyOverrides`
 ### 5. The user's previous question implied sub-1% was achievable — it isn't without invasive type-system gymnastics
 
 The Phase-2 status report claimed the Pareto floor was ~4%. The current session showed it's actually closer to 1.5-2%. To get below 1% (i.e. eliminate the remaining 70-90 duplicated lines), we need to either:
+
 - Convert schema-emitter class methods to a registration map (breaks `@typespec/asset-emitter`'s override pattern)
 - Accept multi-line 5-param signatures as "intentional" and tune `minLines` in `.jscpd.json` (cheating)
 - Restructure the `AsyncAPISchemaEmitter` to use composition (over-engineering for 5 lines)
@@ -242,6 +244,7 @@ The schema-emitter restructure is invasive but might be the right call long-term
 ### Q3: Should I commit the current state or rollback?
 
 The current file state has:
+
 - Build green
 - 869/869 tests passing
 - 21 clones / 2.10% (not the best 17/1.59% achieved this session, but better than Phase-2 baseline)

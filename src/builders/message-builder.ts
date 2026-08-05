@@ -135,7 +135,12 @@ function applyMessageDecorator<K extends keyof MessageObject>(opts: {
 }
 
 /** Apply correlation ID to a message if present in state. */
-const applyCorrelationId: MessageDecoratorFn = (state, type, msg, skipExisting = false) =>
+const applyCorrelationId: MessageDecoratorFn = (
+  state,
+  type,
+  msg,
+  skipExisting = false,
+) =>
   applyMessageDecorator({
     state,
     type,
@@ -149,7 +154,12 @@ const applyCorrelationId: MessageDecoratorFn = (state, type, msg, skipExisting =
   });
 
 /** Apply headers to a message if present in state. */
-const applyHeaders: MessageDecoratorFn = (state, type, msg, skipExisting = false) =>
+const applyHeaders: MessageDecoratorFn = (
+  state,
+  type,
+  msg,
+  skipExisting = false,
+) =>
   applyMessageDecorator({
     state,
     type,
@@ -173,7 +183,12 @@ const applyHeaders: MessageDecoratorFn = (state, type, msg, skipExisting = false
   });
 
 /** Apply protocol bindings to a message if present in state. */
-const applyMessageBindings: MessageDecoratorFn = (state, type, msg, skipExisting = false) =>
+const applyMessageBindings: MessageDecoratorFn = (
+  state,
+  type,
+  msg,
+  skipExisting = false,
+) =>
   applyMessageDecorator({
     state,
     type,

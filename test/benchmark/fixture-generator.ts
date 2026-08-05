@@ -19,7 +19,14 @@ export const DEFAULT_OPTIONS: FixtureOptions = {
   sharedModelCount: 10,
 };
 
-const PROPERTY_TYPES = ["string", "int32", "int64", "float64", "boolean", "utcDateTime"];
+const PROPERTY_TYPES = [
+  "string",
+  "int32",
+  "int64",
+  "float64",
+  "boolean",
+  "utcDateTime",
+];
 
 function generateModel(
   name: string,
@@ -49,7 +56,9 @@ function generateModel(
 function generateChannel(index: number, modelName: string): string {
   const address = `events.channel.${index}`;
   const opName = `publishEvent${index}`;
-  return [`  @channel("${address}")`, `  op ${opName}(): ${modelName};`].join("\n");
+  return [`  @channel("${address}")`, `  op ${opName}(): ${modelName};`].join(
+    "\n",
+  );
 }
 
 export function generateFixture(options: FixtureOptions): string {

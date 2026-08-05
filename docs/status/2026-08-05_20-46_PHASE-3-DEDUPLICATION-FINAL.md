@@ -7,13 +7,13 @@
 
 ## Current Clone State
 
-| Metric          | Phase-2 end | Phase-3 best | **Phase-3 final** |
-| --------------- | ----------- | ------------ | ----------------- |
-| Clones          | 38          | 17           | **10**            |
-| Duplication %   | 4.06%       | 1.59%        | **1.00%**         |
-| Duplicated lines| 177         | 70           | **41**            |
-| Tokens          | —           | —            | **1.05%**         |
-| Threshold       | 5%          | 5%           | **2%**            |
+| Metric           | Phase-2 end | Phase-3 best | **Phase-3 final** |
+| ---------------- | ----------- | ------------ | ----------------- |
+| Clones           | 38          | 17           | **10**            |
+| Duplication %    | 4.06%       | 1.59%        | **1.00%**         |
+| Duplicated lines | 177         | 70           | **41**            |
+| Tokens           | —           | —            | **1.05%**         |
+| Threshold        | 5%          | 5%           | **2%**            |
 
 **Original Phase-3 (per 20:35 report):** Achieved 17 clones / 1.59% transiently, regressed to 21 / 2.10% on a mid-session rollback. Status report flagged three open questions (Q1-Q3).
 **Final Phase-3 result:** **10 clones / 1.00% lines / 1.05% tokens**. The Q1-Q3 questions are resolved:
@@ -60,16 +60,16 @@ The report's "totally fucked up" section correctly identified that several extra
 
 ## Remaining 10 Clones (Final)
 
-| #  | Location                                         | Lines | Why it stays                                                                                                                                                 |
-| -- | ------------------------------------------------ | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 1  | `src/domain/models/asyncapi-document.ts:257-264` | 4-5   | Structural `AsyncAPIDocument` vs `ParsedAsyncAPIDocument` interface fields (overlapping members). Could be eliminated by `DocumentBody` mixin, but the two types have additional divergent fields. |
-| 2  | `src/validation/binding-field-validator.ts:44-48` | 5     | Same 5-line `if (field === "bindingVersion") { continue; } const rule = ...` pattern in src/ and scripts/. Cross-scope duplication.                            |
-| 3  | `src/validation/binding-field-validator.ts:78-87` | 4     | Two validator functions with overlapping `pushFieldError(issues, field, protocol, { actual, max, min })` shape.                                              |
-| 4  | `src/builders/message-builder.ts:138-181`        | 5-8   | Three `applyCorrelationId`/`applyHeaders`/`applyMessageBindings` arrow functions still share a 5-line opening pattern. The `applyMessageDecorator` HOF made this 5 lines from 8 — fundamental limit. |
-| 5  | `src/schema-emitter.ts:33-36` ↔ `schema-generator.ts:2-5` | 4 | Same `import type { AsyncAPIEmitterOptions } ... import type { JsonSchema } ...` block in both files. Hard to consolidate without restructuring the import order in both. |
-| 6  | `src/minimal-decorators.ts:111-115` ↔ `namespace-decorators.ts:50-54` | 5 | Same `if (protocol && !isSupportedProtocol(protocol)) { reportUnsupportedProtocol(...); return; }` pattern in `$protocol` and `$server`. Could be extracted but the helper creates a new clone target. |
-| 7  | `src/minimal-decorators.ts:248-263`              | 5     | `$operationId` and `$messageId` share 5-line opening (`applyStringIdDecorator({ context, target, id, diagnosticCode, ... })`). Two params differ per call.  |
-| 8  | `src/decorator-helpers.ts:33-50`                 | 5-6   | `validateNonEmptyString` and `validateConfig` share 5-line signature. Different return types and body, but same `(unknown, context, target, code, format)` shape. |
+| #   | Location                                                              | Lines | Why it stays                                                                                                                                                                                           |
+| --- | --------------------------------------------------------------------- | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1   | `src/domain/models/asyncapi-document.ts:257-264`                      | 4-5   | Structural `AsyncAPIDocument` vs `ParsedAsyncAPIDocument` interface fields (overlapping members). Could be eliminated by `DocumentBody` mixin, but the two types have additional divergent fields.     |
+| 2   | `src/validation/binding-field-validator.ts:44-48`                     | 5     | Same 5-line `if (field === "bindingVersion") { continue; } const rule = ...` pattern in src/ and scripts/. Cross-scope duplication.                                                                    |
+| 3   | `src/validation/binding-field-validator.ts:78-87`                     | 4     | Two validator functions with overlapping `pushFieldError(issues, field, protocol, { actual, max, min })` shape.                                                                                        |
+| 4   | `src/builders/message-builder.ts:138-181`                             | 5-8   | Three `applyCorrelationId`/`applyHeaders`/`applyMessageBindings` arrow functions still share a 5-line opening pattern. The `applyMessageDecorator` HOF made this 5 lines from 8 — fundamental limit.   |
+| 5   | `src/schema-emitter.ts:33-36` ↔ `schema-generator.ts:2-5`             | 4     | Same `import type { AsyncAPIEmitterOptions } ... import type { JsonSchema } ...` block in both files. Hard to consolidate without restructuring the import order in both.                              |
+| 6   | `src/minimal-decorators.ts:111-115` ↔ `namespace-decorators.ts:50-54` | 5     | Same `if (protocol && !isSupportedProtocol(protocol)) { reportUnsupportedProtocol(...); return; }` pattern in `$protocol` and `$server`. Could be extracted but the helper creates a new clone target. |
+| 7   | `src/minimal-decorators.ts:248-263`                                   | 5     | `$operationId` and `$messageId` share 5-line opening (`applyStringIdDecorator({ context, target, id, diagnosticCode, ... })`). Two params differ per call.                                             |
+| 8   | `src/decorator-helpers.ts:33-50`                                      | 5-6   | `validateNonEmptyString` and `validateConfig` share 5-line signature. Different return types and body, but same `(unknown, context, target, code, format)` shape.                                      |
 
 ---
 
@@ -82,6 +82,7 @@ The report's "totally fucked up" section correctly identified that several extra
 ### Q2: Is the 1% target worth the complexity?
 
 **Yes, and it was reachable without invasive restructuring.** Three classes of refactor did the work:
+
 - Single-line signatures where the call fits on one line.
 - Arrow-form class methods where the body fits on one line.
 - Inline type-modifier imports.

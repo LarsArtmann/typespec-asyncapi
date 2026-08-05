@@ -32,7 +32,10 @@ import {
   storeSecurityConfig,
   storeTags,
 } from "./state-writers.js";
-import { SCHEME_TYPE_LIST, isValidSchemeType } from "./domain/models/asyncapi-document.js";
+import {
+  SCHEME_TYPE_LIST,
+  isValidSchemeType,
+} from "./domain/models/asyncapi-document.js";
 import {
   extractConfigRecord,
   getModelPropertyStringValue,
@@ -49,7 +52,11 @@ import type { BindingTargetKind } from "./constants/binding-versions.js";
 
 // === DECORATORS ===
 
-export function $channel(context: DecoratorContext, target: Operation, path: string): void {
+export function $channel(
+  context: DecoratorContext,
+  target: Operation,
+  path: string,
+): void {
   if (!path || path.length === 0) {
     reportDiagnostic(context, "missing-channel-path", target, {
       operationName: target.name,
@@ -59,16 +66,29 @@ export function $channel(context: DecoratorContext, target: Operation, path: str
   storeChannelState(context.program, target, path);
 }
 
-export function $publish(context: DecoratorContext, target: Operation, config?: Model): void {
+export function $publish(
+  context: DecoratorContext,
+  target: Operation,
+  config?: Model,
+): void {
   storeOperationType(context.program, target, "publish", config?.name);
   linkPublishMessage(context.program, target, config);
 }
 
-export function $message(context: DecoratorContext, target: Model, config: unknown): void {
+export function $message(
+  context: DecoratorContext,
+  target: Model,
+  config: unknown,
+): void {
   validatedDecorator(context, target, config, {
     code: "invalid-message-config",
     format: { modelName: target.name },
-    run: () => storeMessageConfig(context.program, target, extractMessageConfig(config, target)),
+    run: () =>
+      storeMessageConfig(
+        context.program,
+        target,
+        extractMessageConfig(config, target),
+      ),
   });
 }
 
@@ -91,8 +111,14 @@ function extractMessageConfig(
   } else if (config && typeof config === "object") {
     const configObj = config as Record<string, unknown>;
     title = typeof configObj.title === "string" ? configObj.title : undefined;
-    description = typeof configObj.description === "string" ? configObj.description : undefined;
-    contentType = typeof configObj.contentType === "string" ? configObj.contentType : undefined;
+    description =
+      typeof configObj.description === "string"
+        ? configObj.description
+        : undefined;
+    contentType =
+      typeof configObj.contentType === "string"
+        ? configObj.contentType
+        : undefined;
   }
 
   return {
@@ -102,7 +128,11 @@ function extractMessageConfig(
   };
 }
 
-export function $protocol(context: DecoratorContext, target: Operation | Model, config: unknown): void {
+export function $protocol(
+  context: DecoratorContext,
+  target: Operation | Model,
+  config: unknown,
+): void {
   validatedDecorator(context, target, config, {
     code: "invalid-protocol-config",
     format: { targetKind: target.kind },
@@ -118,7 +148,11 @@ export function $protocol(context: DecoratorContext, target: Operation | Model, 
   });
 }
 
-export function $security(context: DecoratorContext, target: Operation | Namespace, config: unknown): void {
+export function $security(
+  context: DecoratorContext,
+  target: Operation | Namespace,
+  config: unknown,
+): void {
   validatedDecorator(context, target, config, {
     code: "invalid-security-config",
     format: { targetKind: target.kind },
@@ -126,14 +160,22 @@ export function $security(context: DecoratorContext, target: Operation | Namespa
   });
 }
 
-function applySecurity(context: DecoratorContext, target: Operation | Namespace, config: unknown): void {
+function applySecurity(
+  context: DecoratorContext,
+  target: Operation | Namespace,
+  config: unknown,
+): void {
   let name: string | undefined;
   let scheme: Record<string, unknown> | undefined;
 
   if (isModelConfig(config)) {
     name = getModelPropertyStringValue(config, "name");
     const schemeValue = getModelPropertyValue(config, "scheme");
-    if (schemeValue && typeof schemeValue === "object" && "properties" in schemeValue) {
+    if (
+      schemeValue &&
+      typeof schemeValue === "object" &&
+      "properties" in schemeValue
+    ) {
       scheme = modelToRecord(schemeValue as Model);
     } else if (schemeValue && typeof schemeValue === "object") {
       scheme = schemeValue as Record<string, unknown>;
@@ -164,26 +206,48 @@ export function $subscribe(context: DecoratorContext, target: Operation): void {
   storeOperationType(context.program, target, "subscribe");
 }
 
-export function $tags(context: DecoratorContext, target: DiagnosticTarget, value: unknown): void {
+export function $tags(
+  context: DecoratorContext,
+  target: DiagnosticTarget,
+  value: unknown,
+): void {
   if (!value || !Array.isArray(value)) {
     reportDiagnostic(context, "invalid-tags-config", target);
     return;
   }
 
-  const stringTags = value.filter((tag): tag is string => typeof tag === "string");
+  const stringTags = value.filter(
+    (tag): tag is string => typeof tag === "string",
+  );
   if (stringTags.length !== value.length) {
-    reportDiagnostic(context, "invalid-tags-config", target, undefined, "non-string");
+    reportDiagnostic(
+      context,
+      "invalid-tags-config",
+      target,
+      undefined,
+      "non-string",
+    );
     return;
   }
 
   storeTags(context.program, target as Operation, stringTags);
 }
 
-export function $correlationId(context: DecoratorContext, target: Model, location: unknown): void {
+export function $correlationId(
+  context: DecoratorContext,
+  target: Model,
+  location: unknown,
+): void {
   if (
-    !validateNonEmptyString(location, context, target, "invalid-correlationId-config", {
-      modelName: target.name,
-    })
+    !validateNonEmptyString(
+      location,
+      context,
+      target,
+      "invalid-correlationId-config",
+      {
+        modelName: target.name,
+      },
+    )
   ) {
     return;
   }
@@ -204,7 +268,11 @@ function bindingTargetKind(kind: string): BindingTargetKind | undefined {
   return undefined;
 }
 
-export function $bindings(context: DecoratorContext, target: Operation | Model | Namespace, value: unknown): void {
+export function $bindings(
+  context: DecoratorContext,
+  target: Operation | Model | Namespace,
+  value: unknown,
+): void {
   if (!value || typeof value !== "object") {
     reportDiagnostic(context, "invalid-bindings-config", target, {
       targetKind: target.kind,
@@ -223,7 +291,12 @@ export function $bindings(context: DecoratorContext, target: Operation | Model |
   storeBindings(context.program, target, bindings);
 }
 
-export function $header(context: DecoratorContext, target: Model | ModelProperty, name: unknown, value?: unknown): void {
+export function $header(
+  context: DecoratorContext,
+  target: Model | ModelProperty,
+  name: unknown,
+  value?: unknown,
+): void {
   if (
     !validateNonEmptyString(name, context, target, "invalid-header-config", {
       targetKind: target.kind,
@@ -235,7 +308,12 @@ export function $header(context: DecoratorContext, target: Model | ModelProperty
   storeHeader(context.program, target, name, value);
 }
 
-export function $reply(context: DecoratorContext, target: Operation, replyModel: Model, address?: unknown): void {
+export function $reply(
+  context: DecoratorContext,
+  target: Operation,
+  replyModel: Model,
+  address?: unknown,
+): void {
   if (!replyModel || !replyModel.name) {
     return;
   }
@@ -245,7 +323,11 @@ export function $reply(context: DecoratorContext, target: Operation, replyModel:
   });
 }
 
-export function $operationId(context: DecoratorContext, target: Operation, id: unknown): void {
+export function $operationId(
+  context: DecoratorContext,
+  target: Operation,
+  id: unknown,
+): void {
   applyStringIdDecorator({
     context,
     target,
@@ -256,7 +338,11 @@ export function $operationId(context: DecoratorContext, target: Operation, id: u
   });
 }
 
-export function $messageId(context: DecoratorContext, target: Model, id: unknown): void {
+export function $messageId(
+  context: DecoratorContext,
+  target: Model,
+  id: unknown,
+): void {
   applyStringIdDecorator({
     context,
     target,
@@ -280,14 +366,24 @@ function applyStringIdDecorator(opts: {
   store: (program: Program, id: string) => void;
 }): void {
   if (
-    !validateNonEmptyString(opts.id, opts.context, opts.target, opts.diagnosticCode, opts.format)
+    !validateNonEmptyString(
+      opts.id,
+      opts.context,
+      opts.target,
+      opts.diagnosticCode,
+      opts.format,
+    )
   ) {
     return;
   }
   opts.store(opts.context.program, opts.id);
 }
 
-export function $apiVersion(context: DecoratorContext, target: Namespace, version: unknown): void {
+export function $apiVersion(
+  context: DecoratorContext,
+  target: Namespace,
+  version: unknown,
+): void {
   if (!version || typeof version !== "string") {
     return;
   }
