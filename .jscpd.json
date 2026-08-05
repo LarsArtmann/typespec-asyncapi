@@ -1,5 +1,5 @@
 {
-  "threshold": 8,
+  "threshold": 5,
   "format": ["typescript", "javascript"],
   "output": "./jscpd-report",
   "reporters": ["html", "json", "console", "markdown"],

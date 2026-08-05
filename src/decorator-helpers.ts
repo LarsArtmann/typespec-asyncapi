@@ -114,20 +114,18 @@ export function getModelPropertyStringValue(
   model: Model,
   propertyName: string,
 ): string | undefined {
-  const property = model.properties.get(propertyName);
-  if (!property) {
-    return undefined;
-  }
-  const type = property.type as { kind: string; value?: string };
-  return type.kind === "String" && type.value !== undefined
-    ? type.value
-    : undefined;
+  return readModelProperty(model, propertyName) as string | undefined;
 }
 
 export function getModelPropertyValue(
   model: Model,
   propertyName: string,
 ): unknown {
+  return readModelProperty(model, propertyName);
+}
+
+/** Read a `Model` property's underlying value if it exists, else `undefined`. */
+function readModelProperty(model: Model, propertyName: string): unknown {
   const property = model.properties.get(propertyName);
   if (!property) {
     return undefined;
