@@ -1,6 +1,6 @@
 # Feature Inventory
 
-**Verified:** 2026-08-05 against actual code + test run (869 pass, 0 fail, 0 skip, 0 todo)
+**Verified:** 2026-08-05 against actual code + test run (881 pass, 0 fail, 0 skip, 0 todo)
 **Project:** `@lars-artmann/typespec-asyncapi` v0.2.0-beta
 **Lint:** oxlint 0 errors / 0 warnings, ESLint 0 errors / 0 warnings
 **Diagnostics:** 22 codes (17 error + 5 warning), all compile-time validated via `$lib.reportDiagnostic()`
@@ -39,8 +39,8 @@
 | Server variables            | FULLY_FUNCTIONAL       | `{var}` in host → `variables` object on server                       |
 | Multi-message operations    | FULLY_FUNCTIONAL       | Union return types produce multiple message refs in one operation    |
 | Operation reply             | FULLY_FUNCTIONAL       | `@reply` decorator emits reply with message ref and optional address |
-| `@deprecated` → `deprecated` | PARTIALLY_FUNCTIONAL  | TypeSpec decorator exists; `isDeprecated()` not yet called by emitter |
-| `@pattern`, `@minValue`, etc. | PARTIALLY_FUNCTIONAL | 16 TypeSpec constraint decorators exist in stdlib; none mapped to JSON Schema keywords yet |
+| `#deprecated` → `deprecated`  | FULLY_FUNCTIONAL    | `src/constraint-mapper.ts` — `applyDeprecated()` on properties, models, enums via `isDeprecated()` |
+| Constraint decorators        | FULLY_FUNCTIONAL    | `src/constraint-mapper.ts` — 11 decorators mapped: `@minValue`→`minimum`, `@maxValue`→`maximum`, `@minValueExclusive`→`exclusiveMinimum`, `@maxValueExclusive`→`exclusiveMaximum`, `@minLength`→`minLength`, `@maxLength`→`maxLength`, `@pattern`→`pattern`, `@format`→`format`, `@minItems`→`minItems`, `@maxItems`→`maxItems`, `#deprecated`→`deprecated`. `test/compliance/constraint-decorators.test.ts` (15 tests) |
 
 ## Decorator System
 
@@ -115,18 +115,18 @@ All 19 AsyncAPI protocols auto-generated from `@asyncapi/specs/bindings/` via `s
 
 | Feature                 | Status           | Evidence                                                                           |
 | ----------------------- | ---------------- | ---------------------------------------------------------------------------------- |
-| vitest test runner      | FULLY_FUNCTIONAL | 869 tests across 76 files (0 skip, 0 todo)                                         |
+| vitest test runner      | FULLY_FUNCTIONAL | 881 tests across 76 files (0 skip, 0 todo)                                         |
 | Golden file test        | FULLY_FUNCTIONAL | `test/golden/golden-file.test.ts`                                                  |
 | Schema validation tests | FULLY_FUNCTIONAL | `test/validation/schema-validation.test.ts`                                        |
-| Spec compliance suite   | FULLY_FUNCTIONAL | `test/compliance/` — 13 files, ~149 tests validated against official AsyncAPI 3.1 JSON Schema |
+| Spec compliance suite   | FULLY_FUNCTIONAL | `test/compliance/` — 14 files, ~164 tests validated against official AsyncAPI 3.1 JSON Schema |
 | Integration tests       | FULLY_FUNCTIONAL | `test/integration/` — decorator output, negative tests, binding placement          |
 | E2E tests               | FULLY_FUNCTIONAL | `test/e2e/` — complex nested schemas                                               |
 | BDD tests               | FULLY_FUNCTIONAL | `test/bdd/user-behaviors.test.ts` — 23 end-to-end behavior tests (dead Cucumber infra removed) |
 | External spec tests     | FULLY_FUNCTIONAL | `test/external/` — 16 patterns from 5 external projects                            |
 | Studio compatibility    | FULLY_FUNCTIONAL | `test/validation/studio-compatibility.test.ts` — 9 tests using `@asyncapi/parser`  |
-| Generator compatibility | FULLY_FUNCTIONAL | `test/validation/generator-compatibility.test.ts` — 8 structural requirement tests |
+| Document structure      | FULLY_FUNCTIONAL | `test/validation/document-structure.test.ts` — 8 structural requirement tests     |
 | Versioning integration  | FULLY_FUNCTIONAL | `test/integration/versioning.test.ts` — 5 tests for `@typespec/versioning` support |
-| Linter strategy         | FULLY_FUNCTIONAL | `test/unit/linter-strategy.test.ts` — 3 tests verifying dual-linter config         |
+| Constraint decorators   | FULLY_FUNCTIONAL | `test/compliance/constraint-decorators.test.ts` — 15 tests, AJV-validated          |
 | Unit tests              | FULLY_FUNCTIONAL | `test/unit/` — binding placement, emitter tester verification                      |
 | Performance benchmark   | FULLY_FUNCTIONAL | `test/benchmark/` — 5 tests measuring compilation time + scaling metrics            |
 | Deduplication gate      | FULLY_FUNCTIONAL | `jscpd src scripts` — 0% threshold, 0% duplication enforced                          |

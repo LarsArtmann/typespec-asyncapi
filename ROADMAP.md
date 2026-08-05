@@ -6,7 +6,7 @@
 
 ## Current State
 
-Pre-release (`0.2.0-beta`). The emitter produces spec-compliant AsyncAPI 3.1 output validated against the official JSON Schema. **869 tests** pass across 76 files. Oxlint and ESLint both clean (0 errors, 0 warnings). **22 diagnostic codes** (17 error + 5 warning), all compile-time validated. Full protocol binding support for all **19 AsyncAPI protocols** (auto-generated from `@asyncapi/specs`) with auto-versioning, key normalization, field-level validation, and placement validation. `@typespec/versioning` integrated for `info.version` fallback. **Zero code duplication** (jscpd 0% threshold, structural enforcement via HOFs and mixin interfaces). Cross-emitter shared module (`src/shared/`) exports `JsonSchema`, `extractValue`, `intrinsicToSchema`, and `AsyncAPISchemaEmitter` for reuse.
+Pre-release (`0.2.0-beta`). The emitter produces spec-compliant AsyncAPI 3.1 output validated against the official JSON Schema. **881 tests** pass across 76 files. Oxlint and ESLint both clean (0 errors, 0 warnings). **22 diagnostic codes** (17 error + 5 warning), all compile-time validated. Full protocol binding support for all **19 AsyncAPI protocols** (auto-generated from `@asyncapi/specs`) with auto-versioning, key normalization, field-level validation, and placement validation. **11 constraint decorators** mapped (`@minValue`, `@maxValue`, `@pattern`, `@minLength`, `@maxLength`, `@format`, `@minItems`, `@maxItems`, `#deprecated`, and exclusive variants). `@typespec/versioning` integrated for `info.version` fallback. **Zero code duplication** (jscpd 0% threshold, structural enforcement via HOFs and mixin interfaces). **97% coverage** average. Cross-emitter shared module (`src/shared/`) exports `JsonSchema`, `extractValue`, `intrinsicToSchema`, and `AsyncAPISchemaEmitter` for reuse.
 
 ---
 
@@ -18,7 +18,6 @@ Push toward complete AsyncAPI 3.1 coverage — every field, every binding, every
 
 Raw ideas:
 
-- Map TypeSpec constraint decorators to JSON Schema validation keywords (`@pattern` → `pattern`, `@minValue` → `minimum`, `@maxLength` → `maxLength`, etc.) — 16 decorators, all currently unmapped. **Highest single-PR impact for schema correctness.**
 - Populate `info.contact`, `info.license`, `info.termsOfService`, `info.externalDocs` — no decorators or emitter options exist yet
 - Support `allOf` / `oneOf` / `not` schema composition keywords (declared in `JsonSchema` type but never generated)
 - Support `@discriminator` → JSON Schema `discriminator` for polymorphic type handling
@@ -28,6 +27,8 @@ Raw ideas:
 
 Recently completed:
 
+- ~~11 constraint decorators mapped~~ — `src/constraint-mapper.ts`: `@minValue`→`minimum`, `@maxValue`→`maximum`, exclusive variants, `@minLength`/`@maxLength`, `@pattern`, `@format`, `@minItems`/`@maxItems`, `#deprecated`. 15 compliance tests.
+- ~~Dead `nullable`/`xml` removed from `JsonSchema`~~ — OpenAPI 3.0 / never-generated fields
 - ~~AsyncAPI Studio compatibility~~ — `test/validation/studio-compatibility.test.ts` (9 tests via `@asyncapi/parser`)
 - ~~Server binding support~~ — `@server` + `@bindings` on Namespace → `server.bindings`
 - ~~`@operationId` / `@messageId` decorators~~ — explicit naming control
@@ -55,7 +56,7 @@ Recently completed:
 
 - ~~AsyncAPI generator ecosystem compatibility~~ — structural requirement tests
 - ~~`ParsedAsyncAPIDocument` type~~ — eliminated `as any` in test assertions
-- ~~Coverage tooling for `dist/*.js` loading pattern~~ — `bun test --coverage` + `coverage-gate.ts`, ~96% average
+- ~~Coverage tooling for `dist/*.js` loading pattern~~ — `bun test --coverage` + `coverage-gate.ts`, 97% average
 - ~~Performance profiling~~ — `test/benchmark/` suite (5 tests)
 - ~~Dead Cucumber BDD infrastructure removed~~ — 23 real end-to-end tests
 - ~~ESLint + oxlint dual-linter consolidation~~ — complementary configs, zero rule conflicts

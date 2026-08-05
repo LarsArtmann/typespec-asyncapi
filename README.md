@@ -1,7 +1,7 @@
 # TypeSpec AsyncAPI Emitter
 
 [![Build Status](https://img.shields.io/badge/Build-PASSING-green)](https://github.com/LarsArtmann/typespec-asyncapi)
-[![Tests](https://img.shields.io/badge/Tests-869%20pass%2C%200%20fail-green)](https://github.com/LarsArtmann/typespec-asyncapi)
+[![Tests](https://img.shields.io/badge/Tests-881%20pass%2C%200%20fail-green)](https://github.com/LarsArtmann/typespec-asyncapi)
 [![AsyncAPI](https://img.shields.io/badge/AsyncAPI-3.1.0-blue)](https://www.asyncapi.com/)
 [![Protocols](https://img.shields.io/badge/Protocols-19-blue)](https://www.asyncapi.com/)
 
@@ -204,7 +204,7 @@ git clone https://github.com/LarsArtmann/typespec-asyncapi
 cd typespec-asyncapi
 bun install
 bun run build     # Build TypeScript (0 errors)
-bun run test      # Run tests via vitest (869 pass, 0 fail)
+bun run test      # Run tests via vitest (881 pass, 0 fail)
 bun run lint      # ESLint + oxlint (0 errors, 0 warnings)
 ```
 
@@ -215,7 +215,7 @@ bun run lint      # ESLint + oxlint (0 errors, 0 warnings)
 | Metric | Value |
 | --- | --- |
 | Version | 0.2.0-beta |
-| Tests | 869 pass, 0 fail across 76 files |
+| Tests | 881 pass, 0 fail across 76 files |
 | Build | 0 TypeScript errors (strict mode) |
 | Lint | 0 errors, 0 warnings (ESLint + oxlint) |
 | Diagnostics | 22 codes (17 error + 5 warning) |

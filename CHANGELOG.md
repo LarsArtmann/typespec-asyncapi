@@ -8,9 +8,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- **Constraint decorator mapping** (`src/constraint-mapper.ts`) — 11 TypeSpec stdlib constraint/metadata decorators are now correctly mapped to JSON Schema keywords: `@minValue`→`minimum`, `@maxValue`→`maximum`, `@minValueExclusive`→`exclusiveMinimum`, `@maxValueExclusive`→`exclusiveMaximum`, `@minLength`→`minLength`, `@maxLength`→`maxLength`, `@pattern`→`pattern`, `@format`→`format`, `@minItems`→`minItems`, `@maxItems`→`maxItems`, `#deprecated`→`deprecated`. Validation keywords are applied to inline schemas only (skipped on `$ref` schemas where siblings are ignored). `deprecated` is applied at both property and model/enum level.
+- **Constraint decorator compliance tests** (`test/compliance/constraint-decorators.test.ts`, 15 tests) — numeric constraints, string constraints, array constraints, deprecation directive (property + model level), multiple constraints, absent decorators. All AJV-validated against AsyncAPI 3.1.0 JSON Schema.
 - **`@typespec/versioning` integration** — `src/document-builder.ts` reads `@versioned` enum values from `@typespec/versioning` for `info.version`. Precedence: emitter `version` option > `@apiVersion` decorator > `@versioned` latest enum value > `"1.0.0"`. Test infrastructure auto-detects versioning imports. (`test/integration/versioning.test.ts`, 5 tests)
 - **AsyncAPI Studio compatibility tests** (`test/validation/studio-compatibility.test.ts`, 9 tests) — verifies emitter output parses cleanly via `@asyncapi/parser` (the same parser used by AsyncAPI Studio). Validates `$ref` resolution, channel/operation/message/schema accessibility, and zero-diagnostic parsing for servers, security, Kafka bindings, reply operations, and complex multi-feature documents.
-- **AsyncAPI generator compatibility tests** (`test/validation/generator-compatibility.test.ts`, 8 tests) — verifies structural requirements the `@asyncapi/generator` depends on: `$ref` resolution, channel addresses, message payloads, operation actions, schema type definitions, server transport info, and multi-message operations.
+- **Document structure constraint tests** (`test/validation/document-structure.test.ts`, 8 tests) — verifies structural requirements downstream tools depend on: `$ref` resolution, channel addresses, message payloads, operation actions, schema type definitions, server transport info, and multi-message operations. (Renamed from `generator-compatibility.test.ts`.)
 - **Type mapping completeness suite** (`test/compliance/type-mapping-completeness.test.ts`, 35 tests) — every TypeSpec scalar type now has a dedicated compilation test asserting correct JSON Schema `type` and `format` output. Covers all integer subtypes, floats, decimals, date/time types, bytes, url, tuples, literals, records, and edge cases.
 - **Shared builder utilities tests** (`test/unit/shared-utils.test.ts`, 33 tests) — direct unit tests for `inferActionFromName`, `operationAction`, `extractChannelParameters`, `normalizeOAuth2Scopes`, `buildProtocolBinding`, `escapeRefToken`, and `$ref` construction helpers.
 - **Idempotency tests** (`test/integration/idempotency.test.ts`, 4 tests) — verifies deterministic output: same input always produces byte-identical JSON and YAML, with deterministic key ordering.
@@ -25,7 +27,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - **Shared module barrel public-API contract tests** (4 tests) — verifies all exports exist, no unexpected runtime leaks, prototype overrides present, type-only exports compile.
 - **Zero-clone duplication baseline** — `jscpd` threshold lowered from 8% to **0%** after a four-phase structural deduplication campaign (68 clones / 7.67% → 0 clones / 0%). Future regressions fail the gate immediately.
 - **Structural deduplication helpers** — `DocumentBody` interface, `DiagnosticContext` interface, `makeConfigDecorator<T>` factory, `makeStringIdDecorator<T>` factory, `messageDecorator<K>` factory, `checkBound` HOF, `validatedDecorator` HOF, `iterNamedTypes` generator, `BuilderFn` type alias, `refOrFallback` / `returnConst` / `returnNone` private methods on `AsyncAPISchemaEmitter`.
-- **Linter strategy verification** (`test/unit/linter-strategy.test.ts`, 3 tests) — documents the dual-linter (ESLint + oxlint) strategy and verifies both pass cleanly.
 - **Diagnostic code count corrected to 22** — 17 error + 5 warning codes, all compile-time validated via `$lib.reportDiagnostic()`. (Was documented as 18; `invalid-operation-id`, `invalid-message-id`, `invalid-binding-field`, and `invalid-bindings-config` were undercounted.)
 
 ### Changed
@@ -44,6 +45,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Removed
 
+- **`nullable` and `xml` fields from `JsonSchema`** — dead code. `nullable` is an OpenAPI 3.0 concept not in JSON Schema Draft-07 / AsyncAPI 3.1; `xml` was declared but never generated or read by any decorator.
+- **Linter strategy verification test** (`test/unit/linter-strategy.test.ts`) — anti-pattern: nested `execSync` process spawning inside vitest, tautological (tests that the linter passes by running the linter), added 4.3s overhead.
 - **Dead Cucumber BDD infrastructure** — `test/bdd/support/world.ts` (6 unimplemented stubs), `test/bdd/features/core-typespec-to-asyncapi.feature`, `test/bdd/package.json`, `test/bdd/tsconfig.json`. `@cucumber/cucumber` was never installed; all step definitions were stubs.
 - **Dead test harness** — `test/core/unified-test-infrastructure.ts` (108 lines, zero imports). Abandoned migration artifact.
 
