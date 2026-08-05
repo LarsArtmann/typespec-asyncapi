@@ -36,7 +36,7 @@ import type { AsyncAPIEmitterOptions } from "./infrastructure/configuration/asyn
 import type { JsonSchema } from "./domain/models/asyncapi-document.js";
 import { intrinsicToSchema } from "./intrinsic-mapping.js";
 import { extractValue } from "./extract-value.js";
-import { isStdlibType } from "./stdlib-helpers.js";
+import { refForNamedType } from "./schema-ref.js";
 
 export class AsyncAPISchemaEmitter extends TypeEmitter<
   JsonSchema,
@@ -48,7 +48,7 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
   modelDeclaration(model: Model): EmitterOutput<JsonSchema> {
     const program = this.emitter.getProgram();
     const baseRef = model.baseModel
-      ? this.refForNamedType(model.baseModel)
+      ? refForNamedType(model.baseModel)
       : null;
     const schema = this.collectPropertiesSchema(model, baseRef === null);
     if (baseRef) {
@@ -97,7 +97,7 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
     const program = this.emitter.getProgram();
     const variantEntries = [...union.variants.values()];
     const variants = variantEntries.map((v) => {
-      const ref = this.refForNamedType(v.type);
+      const ref = refForNamedType(v.type);
       if (ref) {
         return ref;
       }
@@ -233,7 +233,7 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
     elementType: Type,
     fallback: (t: Type) => JsonSchema,
   ): JsonSchema {
-    const ref = this.refForNamedType(elementType);
+    const ref = refForNamedType(elementType);
     if (ref) {
       return ref;
     }
@@ -275,34 +275,7 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
     return { properties, required };
   }
 
-  private refForNamedType(t: Type): JsonSchema | null {
-    const { kind } = t as { kind: string };
-
-    if (kind === "Model") {
-      const modelType = t as Model;
-      if (modelType.name && !modelType.indexer && !isStdlibType(t)) {
-        return { $ref: `#/components/schemas/${modelType.name}` };
-      }
-    }
-
-    if (kind === "Enum") {
-      const enumType = t as Enum;
-      if (enumType.name && !isStdlibType(t)) {
-        return { $ref: `#/components/schemas/${enumType.name}` };
-      }
-    }
-
-    if (kind === "Scalar") {
-      const scalarType = t as Scalar;
-      if (scalarType.name && !isStdlibType(t)) {
-        return { $ref: `#/components/schemas/${scalarType.name}` };
-      }
-    }
-
-    return null;
-  }
-
-  private propertyToSchema(prop: ModelProperty): JsonSchema {
+private propertyToSchema(prop: ModelProperty): JsonSchema {
     const schema = this.refOrFallback(prop.type, (t) => this.typeToSchema(t));
     return applyConstraints(this.emitter.getProgram(), prop, schema);
   }
@@ -321,7 +294,7 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
         ) {
           return (inner as { value: string }).value;
         }
-        const ref = this.refForNamedType(inner);
+        const ref = refForNamedType(inner);
         if (ref) {
           return ref;
         }
@@ -352,7 +325,7 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
       (t as { indexer?: { key?: unknown; value?: Type } }).indexer
     ) {
       const { indexer } = t as { indexer: { key: Type; value: Type } };
-      const valueRef = this.refForNamedType(indexer.value);
+      const valueRef = refForNamedType(indexer.value);
       return {
         additionalProperties: valueRef ?? this.typeToSchema(indexer.value),
         type: "object",
