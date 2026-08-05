@@ -1,6 +1,6 @@
 # Feature Inventory
 
-**Verified:** 2026-08-05 against actual code + test run (915 pass, 0 fail, 0 skip, 0 todo)
+**Verified:** 2026-08-05 against actual code + test run (928 pass, 0 fail, 0 skip, 0 todo)
 **Project:** `@lars-artmann/typespec-asyncapi` v0.2.0-beta
 **Lint:** oxlint 0 errors / 0 warnings, ESLint 0 errors / 0 warnings
 **Diagnostics:** 22 codes (17 error + 5 warning), all compile-time validated via `$lib.reportDiagnostic()`
@@ -27,11 +27,13 @@
 | Feature                      | Status           | Evidence                                                                                                                                                                                                                   |
 | ---------------------------- | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Model → JSON Schema          | FULLY_FUNCTIONAL | `modelDeclaration()` handles properties, types, required                                                                                                                                                                   |
-| Inheritance (base models)    | FULLY_FUNCTIONAL | `collectProperties()` walks `baseModel` chain                                                                                                                                                                              |
+| Inheritance via `allOf`       | FULLY_FUNCTIONAL | `modelDeclaration()` emits `allOf: [{ $ref: "..." }]` for base models. Own properties only.                                                                                                                               |
+| `@discriminator`              | FULLY_FUNCTIONAL | `getDiscriminator()` → `discriminator` keyword on models. Polymorphic pattern with `allOf` subtypes.                                                                                                                       |
+| Union of models → `oneOf`     | FULLY_FUNCTIONAL | Unions with all-Model variants emit `oneOf` with `$ref`s. Mixed types stay `anyOf`, string literals stay `enum`.                                                                                                            |
 | `@doc` → `description`       | FULLY_FUNCTIONAL | `getDoc()` on models and properties                                                                                                                                                                                        |
 | Optional vs required fields  | FULLY_FUNCTIONAL | `!prop.optional` → `required` array                                                                                                                                                                                        |
 | Array types                  | FULLY_FUNCTIONAL | `{ type: "array", items: ... }`                                                                                                                                                                                            |
-| Union/enum types             | FULLY_FUNCTIONAL | String unions → `{ type: "string", enum: [...] }`                                                                                                                                                                          |
+| Union/enum types             | FULLY_FUNCTIONAL | String unions → `{ type: "string", enum: [...] }`; Model unions → `{ oneOf: [...] }`                                                                                                                                      |
 | Scalar type mapping          | FULLY_FUNCTIONAL | All TypeSpec scalars mapped (int32, float64, utcDateTime, etc.)                                                                                                                                                            |
 | Nested model references      | FULLY_FUNCTIONAL | `$ref: "#/components/schemas/ModelName"` for named models                                                                                                                                                                  |
 | Tuple types                  | FULLY_FUNCTIONAL | Named model tuples use `$ref`; primitives use per-position `items`                                                                                                                                                         |

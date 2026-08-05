@@ -1,13 +1,13 @@
 # TypeSpec AsyncAPI Emitter
 
 [![Build Status](https://img.shields.io/badge/Build-PASSING-green)](https://github.com/LarsArtmann/typespec-asyncapi)
-[![Tests](https://img.shields.io/badge/Tests-915%20pass%2C%200%20fail-green)](https://github.com/LarsArtmann/typespec-asyncapi)
+[![Tests](https://img.shields.io/badge/Tests-928%20pass%2C%200%20fail-green)](https://github.com/LarsArtmann/typespec-asyncapi)
 [![AsyncAPI](https://img.shields.io/badge/AsyncAPI-3.1.0-blue)](https://www.asyncapi.com/)
-[![Protocols](https://img.shields.io/badge/Protocols-19-blue)](https://www.asyncapi.com/)
+[![Protocols](https://img.shields.io/badge/Protocols-22-blue)](https://www.asyncapi.com/)
 
 A TypeSpec emitter that transforms TypeSpec service definitions into [AsyncAPI 3.1](https://www.asyncapi.com/) specifications. Define your event schemas, channels, and operations in TypeSpec, then generate standards-compliant AsyncAPI YAML or JSON.
 
-Every byte of output is validated against the official AsyncAPI 3.1.0 JSON Schema (AJV). All 19 AsyncAPI protocol bindings are auto-generated from `@asyncapi/specs` with version auto-injection, field-level validation, and placement checking.
+Every byte of output is validated against the official AsyncAPI 3.1.0 JSON Schema (AJV). All 19 AsyncAPI protocol bindings are auto-generated from `@asyncapi/specs` with version auto-injection, field-level validation, and placement checking. Model inheritance emits `allOf`, unions of models emit `oneOf`, and `@discriminator` enables polymorphic type patterns.
 
 ## Quick Start
 

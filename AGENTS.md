@@ -11,7 +11,7 @@
 bun install           # Install dependencies
 bun run build         # Build TypeScript → JavaScript (0 errors)
 bun run lint          # Run ESLint (0 errors, 0 warnings)
-bun run test          # Run tests via vitest (915 pass, 0 fail)
+bun run test          # Run tests via vitest (928 pass, 0 fail)
 ```
 
 **Important:** Use `bun` and `bunx` for install/build, never `npm` or `npx`. Tests run via **vitest** (Node.js/V8) — not `bun test` — because Bun has documented memory leaks that cause OOM crashes with heavy test suites.
@@ -23,7 +23,7 @@ bun run test          # Run tests via vitest (915 pass, 0 fail)
 - **Tests run via vitest** (not `bun test`): `bun run test` executes `vitest run`. Bun's test runner has documented OOM crashes — vitest uses Node.js/V8 GC which is stable under heavy compilation workloads.
 - **git commit --no-verify:** Pre-commit hook requires bash (NixOS doesn't have /bin/bash)
 - **All source files under 370 lines** (enforced, excluding auto-generated `generated-bindings.ts`)
-- **Coverage gate at 75%** per-file minimum (scripts/coverage-gate.ts). Coverage runs via `bun test --coverage` (NOT vitest) because Bun's native coverage captures dynamically-loaded `dist/*.js` files that vitest/istanbul can't instrument (the TypeSpec compiler loads the emitter from `dist/`, bypassing vitest's module transform). The gate script remaps `dist/src/*.js` back to `src/*.ts` paths and merges coverage, preferring the higher-coverage entry. Average: 96.9%.
+- **Coverage gate at 75%** per-file minimum (scripts/coverage-gate.ts). Coverage runs via `bun test --coverage` (NOT vitest) because Bun's native coverage captures dynamically-loaded `dist/*.js` files that vitest/istanbul can't instrument (the TypeSpec compiler loads the emitter from `dist/`, bypassing vitest's module transform). The gate script remaps `dist/src/*.js` back to `src/*.ts` paths and merges coverage, preferring the higher-coverage entry. Average: ~96.8%.
 - **Duplication budget:** jscpd threshold ratcheted to 0% (`.jscpd.json`). Current baseline: **0 clones / 0% / 0% tokens** (Phase-4 end; down from Phase-3 end 10 / 1.00% / 1.05%, Phase-2 end 38 / 4.06%, Phase-1 44 / 4.61%). Zero-clone baseline reached through: `DocumentBody` extraction in `asyncapi-document.ts` (consumed via `extends DocumentBody` in `AsyncAPIDocument`), `AsyncAPIEmitterOptions` re-export via `asyncapi-document.ts`, `DiagnosticContext` interface shared between `decorator-helpers.ts` and `minimal-decorators.ts`, `makeStringIdDecorator<T>` factory replacing duplicated `$operationId`/`$messageId` boilerplate, `messageDecorator<K>` factory in `src/builders/message-builder.ts`, `applySecurity` options-object signature, `checkBound` HOF in `validation/binding-field-validator.ts`. Remaining structural patterns (e.g. `(context, target, config): void` decorator signatures) are intrinsic to TypeSpec's decorator API. Run `bun run duplicate` to verify zero clones. See `docs/status/2026-08-05_20-46_PHASE-3-DEDUPLICATION-FINAL.md` for the Phase-3 history.
 - **Diagnostic system:** `reportDiagnostic()` in `decorator-helpers.ts` uses `$lib.reportDiagnostic()` (TypeSpec library API), NOT raw `program.reportDiagnostic()`. All codes are declared in `src/lib.ts` and compile-time validated via `keyof typeof $lib.diagnostics`. The library name is auto-prefixed to diagnostic codes by the TypeSpec runtime. **22 codes** declared (17 error + 5 warning). All actively referenced — no dead codes. No split-brain.
 - **Zero `any` types in emitter.ts** (achieved)
@@ -33,9 +33,10 @@ bun run test          # Run tests via vitest (915 pass, 0 fail)
 ## Architecture
 
 - **Entry Point:** `src/index.ts` → exports `$onEmit` for TypeSpec compiler
-- **Emitter (8 core files, split from original 831-line monolith):**
+- **Emitter (9 core files, split from original 831-line monolith):**
   - `src/emitter.ts` (68 lines) — `$onEmit` entry point, writes output file, handles `split-schemas` option
-  - `src/schema-emitter.ts` (314 lines) — `AsyncAPISchemaEmitter` class extends `TypeEmitter<JsonSchema, AsyncAPIEmitterOptions>`, overrides `modelDeclaration`, `union`, `enum`, `intrinsic`, `scalar`, etc.
+  - `src/schema-emitter.ts` (359 lines) — `AsyncAPISchemaEmitter` class extends `TypeEmitter<JsonSchema, AsyncAPIEmitterOptions>`, overrides `modelDeclaration` (emits `allOf` for inheritance, `discriminator` for polymorphic models), `union` (emits `oneOf` for all-Model variants, `anyOf` for mixed), `enum`, `intrinsic`, `scalar`, etc.
+  - `src/schema-ref.ts` (43 lines) — `refForNamedType()` resolves named TypeSpec types to `$ref` pointers. Pure function, no instance dependencies.
   - `src/schema-generator.ts` (47 lines) — `generateSchemas()` entry point, creates asset emitter and collects declarations
   - `src/extract-value.ts` (24 lines) — `extractValue()` narrows `EmitEntity<T>` discriminated union, filters `Placeholder<T>` lazy values
   - `src/stdlib-helpers.ts` (39 lines) — `isStdlibType()` and `collectAllStdlibNames()` utilities
@@ -101,7 +102,7 @@ Tests use **vitest** with the TypeSpec compiler testing API (`createTester`). Al
 - `test/validation/schema-validation.test.ts` — Validates against AsyncAPI 3.1 JSON Schema via AJV
 - `test/integration/decorator-output.test.ts` — Verifies @tags, @correlationId, @header, @bindings in output
 - `test/integration/negative-tests.test.ts` — Error handling edge cases
-- `test/compliance/` — **AsyncAPI 3.1.0 spec compliance suite** (~181 tests across 16 files): document structure, schema types, $ref chain, servers/security, protocol bindings (all 22 protocols), operation reply, multi-message operations, defaultContentType, @doc propagation, constraint decorators (38 tests), info object fields (6 tests), edge cases. All validated against official AsyncAPI 3.1.0 JSON Schema via `compileAndValidateOrThrow()`.
+- `test/compliance/` — **AsyncAPI 3.1.0 spec compliance suite** (~194 tests across 17 files): document structure, schema types, $ref chain, servers/security, protocol bindings (all 22 protocols), operation reply, multi-message operations, defaultContentType, @doc propagation, constraint decorators (38 tests), info object fields (6 tests), polymorphism/allOf/oneOf/discriminator (13 tests), edge cases. All validated against official AsyncAPI 3.1.0 JSON Schema via `compileAndValidateOrThrow()`.
 - `test/utils/schema-validator.ts` — Reusable AJV harness: `compileAndValidate()`, `compileAndValidateOrThrow()`, `formatValidationErrors()`
 - `test/integration/multi-file-output.test.ts` — Schema splitting tests (9 tests): multi-file output, $ref rewriting, nested refs in schema files
 - `test/unit/shared-schema-types.test.ts` — Cross-emitter shared API tests (25 tests): JsonSchema, SchemaRef, SchemaMap types, extractValue, intrinsicToSchema, plus barrel public-API contract checks
@@ -176,3 +177,7 @@ Key points:
 - **`$ref` constraint siblings:** Validation keywords (`minimum`, `pattern`, etc.) are only applied to inline schemas in `applyConstraints()` — when the schema is a `$ref`, these are skipped (Draft-07 ignores `$ref` siblings). Metadata (`deprecated`, `description`, `title`, `examples`, `readOnly`, `writeOnly`) IS applied as `$ref` siblings, which AJV accepts for AsyncAPI 3.1 validation.
 - **`@summary`/`@example`/`@visibility` are stdlib decorators:** These are NOT declared in `lib/main.tsp` — they come from `@typespec/compiler`. `@summary` → `title` via `getSummary()`, `@example` → `examples` via `getExamples()` + `serializeValueAsJson()`, `@visibility` → `readOnly`/`writeOnly` via `getVisibilityForClass()` with Lifecycle enum. All applied as metadata in `constraint-mapper.ts`.
 - **Protocol count is 22 in `protocols.ts`:** The binding specs (`generated-bindings.ts`) have 19 binding protocols (no separate entries for https/wss/mqtt5). The protocol validation list (`protocols.ts`) has 22 entries (includes https, wss, mqtt5 as separate from http, ws, mqtt). This was a split-brain bug: solace/anypointmq/ros2 were in bindings but missing from protocols.
+- **Model inheritance uses `allOf`:** `model Derived extends Base` emits `allOf: [{ $ref: "#/components/schemas/Base" }]` instead of flattening base properties. Each model only has its own `properties` and `required`. Multi-level chains produce linked refs (C → B → A). This is a breaking change from the previous flattening behavior.
+- **`@discriminator` targets Model only:** The TypeSpec stdlib decorator `@discriminator("propertyName")` can only be applied to models, NOT unions. The compiler rejects it on unions with `decorator-wrong-target`. `getDiscriminator(program, type)` returns `{ propertyName: string }` or `undefined`. The emitter calls it in `modelDeclaration()` and `union()` (for future-proofing, but it always returns `undefined` for unions in this TypeSpec version).
+- **`oneOf` vs `anyOf` for unions:** Unions where ALL variants are Model types emit `oneOf` (exclusive composition, matching TypeSpec's exclusive union semantics). Mixed-type unions (`string | int32`) still emit `anyOf`. String-literal unions still emit `enum`. The check is `(v.type as { kind: string }).kind === "Model"` for each variant.
+- **Union variant `$ref` fix:** Named model variants in unions previously emitted empty `{ properties: {}, type: "object" }` objects. Fixed by calling `refForNamedType(v.type)` before `emitTypeReference` in `union()` and `typeToSchema()`. Now emits proper `{ $ref: "#/components/schemas/ModelName" }`.

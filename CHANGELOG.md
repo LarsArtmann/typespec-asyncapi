@@ -8,6 +8,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- **`allOf` for model inheritance** — `model Derived extends Base` now emits `allOf: [{ $ref: "#/components/schemas/Base" }]` instead of flattening base properties into the derived model. Each model only has its own `properties` and `required` fields. Multi-level chains produce linked `allOf` refs (A → B → C). Enables proper polymorphic inheritance patterns.
+- **`@discriminator` → `discriminator` mapping** — `getDiscriminator()` from TypeSpec compiler mapped to JSON Schema `discriminator` keyword on models. Full polymorphic pattern supported: `@discriminator("kind")` on base model + `allOf` on subtypes with discriminator value override (`kind: "dog"` → `{ const: "dog" }`).
+- **`oneOf` for model-variant unions** — Unions where all variants are Model types now emit `oneOf` instead of `anyOf` (exclusive composition, matching TypeSpec's exclusive union semantics). Mixed-type unions (`string | int32`) and string-literal unions retain `anyOf` and `enum` respectively. Named model variants now emit proper `$ref` pointers (was a pre-existing bug emitting empty `{}` objects).
+- **`not` keyword** — Added `not?: JsonSchema` to the `JsonSchema` interface for JSON Schema negation support.
+- **Polymorphism compliance tests** (`test/compliance/polymorphism.test.ts`, 13 tests) — allOf inheritance (empty body, property override, metadata, 4-level chain), discriminator models (basic, full polymorphic pattern, absence verification), oneOf unions (inline, named, mixed stays anyOf, string-literal stays enum, 3-model), `not` type availability. All AJV-validated.
+- **Schema reference resolver extracted** (`src/schema-ref.ts`, 43 lines) — `refForNamedType()` moved from private method in `schema-emitter.ts` to standalone module. Resolves named TypeSpec types to `$ref` pointers.
 - **`@summary` → `title` mapping** — `getSummary()` from TypeSpec compiler mapped to JSON Schema `title` keyword. Works on properties, models, and enums.
 - **`@example` → `examples` mapping** — `getExamples()` + `serializeValueAsJson()` from TypeSpec compiler mapped to JSON Schema `examples` array. Handles string, numeric, boolean, array, and object example values.
 - **`@visibility` → `readOnly`/`writeOnly` mapping** — `getVisibilityForClass()` with Lifecycle enum mapped to JSON Schema: `Read` only → `readOnly: true`, `Create`/`Update` only → `writeOnly: true`, both or neither → no keyword.
@@ -39,6 +45,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- **BREAKING: Model inheritance uses `allOf` instead of property flattening** — `model Derived extends Base` previously flattened all base properties into the derived schema. Now emits `allOf: [{ $ref: "#/components/schemas/Base" }]` with only the derived model's own properties. Consumers parsing flattened output must update to resolve `allOf` refs.
+- **BREAKING: Union of model types emits `oneOf` instead of `anyOf`** — TypeSpec unions are exclusive; `oneOf` correctly reflects this. Mixed-type unions (`string | int32`) still use `anyOf`.
 - **`@typespec/*` moved to `peerDependencies`** — `@typespec/compiler`, `@typespec/asset-emitter`, `@typespec/versioning` are now peer dependencies (matching TypeSpec emitter convention). Only `yaml` remains as a regular dependency. All three are also in `devDependencies` for local development.
 - **Metadata application consolidated** — `applyDocDescription` moved from `schema-emitter.ts` to `constraint-mapper.ts`. New `applyMetadata()` convenience function calls doc, deprecated, summary, and examples in one call. `modelDeclaration` and `enumDeclaration` now use single `applyMetadata` call instead of 4 separate calls. `collectModelProperties` inline doc code removed (handled by `applyConstraints`). `schema-emitter.ts` reduced from 335 to 314 lines.
 - **`ParsedAsyncAPIDocument.asyncapi` tightened** from `string` to `"3.1.0"` literal type — makes impossible states unrepresentable.

@@ -6,7 +6,7 @@
 
 ## Current State
 
-Pre-release (`0.2.0-beta`). The emitter produces spec-compliant AsyncAPI 3.1 output validated against the official JSON Schema. **915 tests** pass across 78 files. Oxlint and ESLint both clean (0 errors, 0 warnings). **22 diagnostic codes** (17 error + 5 warning), all compile-time validated. Full protocol binding support for all **22 AsyncAPI protocols** (auto-generated from `@asyncapi/specs`) with auto-versioning, key normalization, field-level validation, and placement validation. **14 constraint decorators** mapped (`@minValue`, `@maxValue`, `@pattern`, `@minLength`, `@maxLength`, `@format`, `@minItems`, `@maxItems`, `#deprecated`, and exclusive variants). `@typespec/versioning` integrated for `info.version` fallback. **Zero code duplication** (jscpd 0% threshold, structural enforcement via HOFs and mixin interfaces). **96.9% coverage** average. Cross-emitter shared module (`src/shared/`) exports `JsonSchema`, `extractValue`, `intrinsicToSchema`, and `AsyncAPISchemaEmitter` for reuse.
+Pre-release (`0.2.0-beta`). The emitter produces spec-compliant AsyncAPI 3.1 output validated against the official JSON Schema. **928 tests** pass across 79 files. Oxlint and ESLint both clean (0 errors, 0 warnings). **22 diagnostic codes** (17 error + 5 warning), all compile-time validated. Full protocol binding support for all **22 AsyncAPI protocols** (auto-generated from `@asyncapi/specs`) with auto-versioning, key normalization, field-level validation, and placement validation. **14 constraint decorators** mapped (`@minValue`, `@maxValue`, `@pattern`, `@minLength`, `@maxLength`, `@format`, `@minItems`, `@maxItems`, `#deprecated`, and exclusive variants). Model inheritance emits `allOf`, model-variant unions emit `oneOf`, `@discriminator` enables polymorphic patterns. `@typespec/versioning` integrated for `info.version` fallback. **Zero code duplication** (jscpd 0% threshold, structural enforcement via HOFs and mixin interfaces). **96.8% coverage** average. Cross-emitter shared module (`src/shared/`) exports `JsonSchema`, `extractValue`, `intrinsicToSchema`, and `AsyncAPISchemaEmitter` for reuse.
 
 ---
 
@@ -18,16 +18,16 @@ Push toward complete AsyncAPI 3.1 coverage — every field, every binding, every
 
 Raw ideas:
 
-- Populate `info.contact`, `info.license`, `info.termsOfService`, `info.externalDocs` — no decorators or emitter options exist yet
-- Support `allOf` / `oneOf` / `not` schema composition keywords (declared in `JsonSchema` type but never generated)
-- Support `@discriminator` → JSON Schema `discriminator` for polymorphic type handling
-- Support `@example` → JSON Schema `examples` / `example`
+- Populate `info.contact`, `info.license`, `info.termsOfService`, `info.externalDocs` — emitter options exist; could add TypeSpec decorators for source-level control
 - Support multi-format schemas (`schemaFormat`, Avro/Protobuf payload) per AsyncAPI 3.1
 - Populate remaining components types (parameters, correlationIds, tags, operationTraits, messageTraits, reusable bindings)
 
 Recently completed:
 
 - ~~14 constraint decorators mapped~~ — `src/constraint-mapper.ts`: `@minValue`→`minimum`, `@maxValue`→`maximum`, exclusive variants, `@minLength`/`@maxLength`, `@pattern`, `@format`, `@minItems`/`@maxItems`, `#deprecated`, `@summary`→`title`, `@example`→`examples`, `@visibility`→`readOnly`/`writeOnly`. 38 compliance tests.
+- ~~`allOf` for model inheritance~~ — `modelDeclaration()` emits `allOf: [{ $ref: "..." }]` for base models instead of flattening. Multi-level chains produce linked refs.
+- ~~`oneOf` for model-variant unions~~ — All-Model unions emit `oneOf` (exclusive). Mixed types stay `anyOf`, string literals stay `enum`.
+- ~~`@discriminator` → `discriminator`~~ — `getDiscriminator()` on models emits `discriminator` keyword. Full polymorphic pattern supported.
 - ~~Dead `nullable`/`xml` removed from `JsonSchema`~~ — OpenAPI 3.0 / never-generated fields
 - ~~AsyncAPI Studio compatibility~~ — `test/validation/studio-compatibility.test.ts` (9 tests via `@asyncapi/parser`)
 - ~~Server binding support~~ — `@server` + `@bindings` on Namespace → `server.bindings`

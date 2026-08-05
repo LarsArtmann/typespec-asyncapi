@@ -5,28 +5,21 @@ Long-term ideas and RFCs live in ROADMAP, not here.
 
 ---
 
-## High Impact
-
-| #   | Task                                                                                     | Impact | Effort | Evidence                                                                          |
-| --- | ---------------------------------------------------------------------------------------- | ------ | ------ | --------------------------------------------------------------------------------- |
-| 1   | Add `allOf` support for model inheritance (declared in `JsonSchema` but never generated) | Medium | 1-2h   | `src/schema-emitter.ts` — `allOf` field exists in type but emitter never emits it |
-
-## Medium Impact
-
-| #   | Task                                                                                         | Impact | Effort | Evidence                                                                          |
-| --- | -------------------------------------------------------------------------------------------- | ------ | ------ | --------------------------------------------------------------------------------- |
-| 2   | Implement `oneOf` / `not` for union types — some unions should be `oneOf` instead of `anyOf` | Medium | 1-2h   | `src/schema-emitter.ts` — `union()` always emits `anyOf`                          |
-| 3   | Add `@discriminator` → `discriminator` mapping — polymorphic type handling                   | Medium | 2-4h   | TypeSpec `getDiscriminator()` available; polymorphism infrastructure needed first |
-
 ## Low Impact / Long-term
 
 | #   | Task                                                                                                                                                                         | Impact | Effort | Evidence                                                                                                                                                                                       |
 | --- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 4   | OpenAPI 3.x cross-emitter type sharing — `src/shared/` module exports are complete and tested (25 tests, incl. barrel public-API contract). No external consumer exists yet. | Low    | 4-6h   | `src/shared/index.ts` exports `JsonSchema`, `SchemaMap`, `generateSchemas`, `extractValue`, `intrinsicToSchema`, `AsyncAPISchemaEmitter`. Building a separate OpenAPI emitter is out of scope. |
-| 5   | Populate remaining `components.*` — parameters, correlationIds, tags, operationTraits, messageTraits, reusable bindings                                                      | Low    | 4-6h   | AsyncAPI 3.1 spec supports these; emitter doesn't populate them yet                                                                                                                            |
-| 6   | Channel `summary` and `description` fields — currently only address is populated                                                                                             | Low    | 1h     | `src/builders/channel-builder.ts` — CommonMetadata fields not populated from `@doc`                                                                                                            |
+| 1   | OpenAPI 3.x cross-emitter type sharing — `src/shared/` module exports are complete and tested (25 tests, incl. barrel public-API contract). No external consumer exists yet. | Low    | 4-6h   | `src/shared/index.ts` exports `JsonSchema`, `SchemaMap`, `generateSchemas`, `extractValue`, `intrinsicToSchema`, `AsyncAPISchemaEmitter`. Building a separate OpenAPI emitter is out of scope. |
+| 2   | Populate remaining `components.*` — parameters, correlationIds, tags, operationTraits, messageTraits, reusable bindings                                                      | Low    | 4-6h   | AsyncAPI 3.1 spec supports these; emitter doesn't populate them yet                                                                                                                            |
+| 3   | Channel `summary` and `description` fields — currently only address is populated                                                                                             | Low    | 1h     | `src/builders/channel-builder.ts` — CommonMetadata fields not populated from `@doc`                                                                                                            |
 
 > **Completed items (see CHANGELOG [Unreleased]):**
+>
+> - ~~Add `allOf` support for model inheritance~~ — emits `allOf: [{ $ref: "..." }]` for `extends`
+> - ~~Implement `oneOf` / `not` for union types~~ — model-variant unions emit `oneOf`; `not` field added to type
+> - ~~Add `@discriminator` → `discriminator` mapping~~ — polymorphic type handling via `getDiscriminator()`
+> - ~~Fix union variant `$ref` for named models~~ — was emitting empty `{}` objects instead of `$ref`
+> - ~~Extract `refForNamedType` to `schema-ref.ts`~~ — schema-emitter.ts reduced from 386→359 lines
 >
 > - ~~Map 14 TypeSpec constraint/metadata decorators to JSON Schema keywords~~ — `src/constraint-mapper.ts` (@minValue, @maxValue, exclusive variants, @minLength/@maxLength, @pattern, @format, @minItems/@maxItems, #deprecated, @summary→title, @example→examples, @visibility→readOnly/writeOnly)
 > - ~~Add info.contact, info.license, info.termsOfService, info.externalDocs~~ — emitter options wired
