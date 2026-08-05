@@ -11,7 +11,7 @@
 bun install           # Install dependencies
 bun run build         # Build TypeScript → JavaScript (0 errors)
 bun run lint          # Run ESLint (0 errors, 0 warnings)
-bun run test          # Run tests via vitest (713 pass, 0 fail)
+bun run test          # Run tests via vitest (717 pass, 0 fail)
 ```
 
 **Important:** Use `bun` and `bunx` for install/build, never `npm` or `npx`. Tests run via **vitest** (Node.js/V8) — not `bun test` — because Bun has documented memory leaks that cause OOM crashes with heavy test suites.
@@ -102,7 +102,7 @@ Tests use **vitest** with the TypeSpec compiler testing API (`createTester`). Al
 - `test/compliance/` — **AsyncAPI 3.1.0 spec compliance suite** (98 tests across 11 files): document structure, schema types, $ref chain, servers/security, protocol bindings (all 19 protocols), operation reply, multi-message operations, defaultContentType, @doc propagation, edge cases. All validated against official AsyncAPI 3.1.0 JSON Schema via `compileAndValidateOrThrow()`.
 - `test/utils/schema-validator.ts` — Reusable AJV harness: `compileAndValidate()`, `compileAndValidateOrThrow()`, `formatValidationErrors()`
 - `test/integration/multi-file-output.test.ts` — Schema splitting tests (9 tests): multi-file output, $ref rewriting, nested refs in schema files
-- `test/unit/shared-schema-types.test.ts` — Cross-emitter shared API tests (19 tests): JsonSchema type, SchemaMap, extractValue, intrinsicToSchema
+- `test/unit/shared-schema-types.test.ts` — Cross-emitter shared API tests (25 tests): JsonSchema, SchemaRef, SchemaMap types, extractValue, intrinsicToSchema, plus barrel public-API contract checks
 - `test/benchmark/` — Performance benchmark suite: `fixture-generator.ts` generates 10-200 channel specs programmatically; `performance.test.ts` (5 tests) measures compilation time and reports scaling metrics
 
 ## Decorator Signatures

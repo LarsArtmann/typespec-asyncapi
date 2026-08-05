@@ -2,11 +2,14 @@ import type {
   JsonSchema,
   SchemaMap,
   SchemaRef,
-} from "../../src/shared/json-schema.js";
-import { extractValue } from "../../src/extract-value.js";
-import { intrinsicToSchema } from "../../src/intrinsic-mapping.js";
-import { generateSchemas } from "../../src/schema-generator.js";
-import { AsyncAPISchemaEmitter } from "../../src/schema-emitter.js";
+} from "../../src/shared/index.js";
+import {
+  AsyncAPISchemaEmitter,
+  extractValue,
+  generateSchemas,
+  intrinsicToSchema,
+} from "../../src/shared/index.js";
+import * as sharedBarrel from "../../src/shared/index.js";
 import type { EmitEntity } from "@typespec/asset-emitter";
 
 describe("jsonSchema type", () => {
@@ -176,5 +179,40 @@ describe("shared module exports", () => {
 
   it("asyncAPI schema emitter is a class (constructor)", () => {
     expect(AsyncAPISchemaEmitter).toBeTypeOf("function");
+  });
+});
+
+describe("shared barrel public API surface", () => {
+  const expectedKeys = [
+    "AsyncAPISchemaEmitter",
+    "extractValue",
+    "generateSchemas",
+    "intrinsicToSchema",
+  ].toSorted();
+
+  it("exports all four value members", () => {
+    expect(sharedBarrel.generateSchemas).toBeTypeOf("function");
+    expect(sharedBarrel.extractValue).toBeTypeOf("function");
+    expect(sharedBarrel.intrinsicToSchema).toBeTypeOf("function");
+    expect(sharedBarrel.AsyncAPISchemaEmitter).toBeTypeOf("function");
+  });
+
+  it("exports no unexpected runtime members", () => {
+    expect(Object.keys(sharedBarrel).toSorted()).toStrictEqual(expectedKeys);
+  });
+
+  it("exposes expected TypeEmitter overrides", () => {
+    expect(AsyncAPISchemaEmitter.prototype.modelDeclaration).toBeTypeOf(
+      "function",
+    );
+    expect(AsyncAPISchemaEmitter.prototype.union).toBeTypeOf("function");
+    expect(AsyncAPISchemaEmitter.prototype.enum).toBeTypeOf("function");
+  });
+
+  it("type exports are usable at compile time", () => {
+    const ref: SchemaRef = { $ref: "#/components/schemas/X" };
+    const map: SchemaMap = { X: { type: "string" } };
+    const schema: JsonSchema = { ...ref, ...map.X };
+    expect(schema.$ref).toBe("#/components/schemas/X");
   });
 });
