@@ -13,6 +13,7 @@
 
 import { listServices } from "@typespec/compiler";
 import type { Program } from "@typespec/compiler";
+import { getVersion } from "@typespec/versioning";
 import type { AsyncAPIEmitterOptions } from "./infrastructure/configuration/asyncAPIEmitterOptions.js";
 import type { AsyncAPIConsolidatedState } from "./state.js";
 import type {
@@ -60,8 +61,9 @@ export function buildAsyncAPIDocument(
 
   const defaultContentType = getDefaultContentType(state);
   const apiVersion = getApiVersion(state);
+  const versionedVersion = getVersionedApiVersion(program);
 
-  return assembleDocument(ctx, options, defaultContentType, apiVersion);
+  return assembleDocument(ctx, options, defaultContentType, apiVersion ?? versionedVersion);
 }
 
 function getDefaultContentType(state: AsyncAPIConsolidatedState): string | undefined {
@@ -74,6 +76,19 @@ function getDefaultContentType(state: AsyncAPIConsolidatedState): string | undef
 function getApiVersion(state: AsyncAPIConsolidatedState): string | undefined {
   if (state.apiVersion.size > 0) {
     return [...state.apiVersion.values()][0];
+  }
+  return undefined;
+}
+
+function getVersionedApiVersion(program: Program): string | undefined {
+  const globalNs = program.getGlobalNamespaceType();
+  for (const ns of globalNs.namespaces.values()) {
+    const versionMap = getVersion(program, ns);
+    if (versionMap && versionMap.size > 0) {
+      const versions = versionMap.getVersions();
+      const latest = versions.at(-1);
+      return latest?.value;
+    }
   }
   return undefined;
 }

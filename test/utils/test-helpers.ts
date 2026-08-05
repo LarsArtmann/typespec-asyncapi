@@ -48,13 +48,20 @@ async function createTesterInstance(
     mainContent.includes('import "@lars-artmann/typespec-asyncapi"') ||
     mainContent.includes("import '@lars-artmann/typespec-asyncapi'");
   const hasOwnUsing = mainContent.includes("using TypeSpec.AsyncAPI");
+  const usesVersioning = mainContent.includes("@typespec/versioning");
 
-  let tester = createTester(packageRoot, {
-    libraries: ["@lars-artmann/typespec-asyncapi"],
-  });
+  const libraries = ["@lars-artmann/typespec-asyncapi"];
+  if (usesVersioning) {
+    libraries.push("@typespec/versioning");
+  }
+
+  let tester = createTester(packageRoot, { libraries });
 
   if (!hasOwnImport) {
     tester = tester.importLibraries();
+  }
+  if (usesVersioning) {
+    tester = tester.import("@typespec/versioning");
   }
   if (!hasOwnUsing) {
     tester = tester.using("TypeSpec.AsyncAPI");
