@@ -13,10 +13,10 @@ import {
   refSchema,
 } from "../domain/models/asyncapi-document.js";
 import type { BuilderFn, DocumentBuildContext } from "./types.js";
-import { nameOfType } from "./types.js";
 import {
   buildProtocolBinding,
   extractChannelParameters,
+  iterNamedTypes,
 } from "./shared-utils.js";
 
 /** Get or create a channel in the context. */
@@ -80,11 +80,7 @@ export function applyChannelDocs(ctx: DocumentBuildContext): void {
 
 /** Attach protocol bindings to channels from protocolConfigs state. */
 export const attachChannelBindings: BuilderFn = (state, ctx) => {
-  for (const [type, data] of state.protocolConfigs) {
-    const name = nameOfType(type);
-    if (!name) {
-      continue;
-    }
+  for (const { name, data } of iterNamedTypes(state.protocolConfigs)) {
     const channelKey = ctx.opToChannel.get(name) ?? name;
     if (data.protocol && ctx.channels[channelKey]) {
       ctx.channels[channelKey].bindings = buildProtocolBinding(data);

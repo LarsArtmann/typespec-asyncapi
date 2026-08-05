@@ -33,17 +33,15 @@ const OAUTH2_FLOW_KEYS = [
  * Consolidates the recurring `for (const [type, data] of map) { const name = nameOfType(type); if (!name) continue; ... }`
  * pattern across all builders.
  */
-// oxlint-disable-next-line node/callback-return
-export function forEachNamedType<K, V>(
+export function* iterNamedTypes<K, V>(
   map: Map<K, V>,
-  cb: (type: K & Type, name: string, data: V) => void,
-): void {
+): Generator<{ type: K & Type; name: string; data: V }> {
   for (const [type, data] of map) {
     const name = nameOfType(type as Type);
     if (!name) {
       continue;
     }
-    cb(type as K & Type, name, data);
+    yield { data, name, type: type as K & Type };
   }
 }
 

@@ -11,6 +11,7 @@ import type { BuilderFn, DocumentBuildContext } from "./types.js";
 import { nameOfType } from "./types.js";
 import {
   inferActionFromName,
+  iterNamedTypes,
   operationAction,
   resolveMessageKey,
   returnModelTypes,
@@ -55,11 +56,7 @@ function discoverDecoratedOps(
   state: AsyncAPIConsolidatedState,
   ctx: DocumentBuildContext,
 ): void {
-  for (const [type, data] of state.channels) {
-    const name = nameOfType(type);
-    if (!name) {
-      continue;
-    }
+  for (const { type, name, data } of iterNamedTypes(state.channels)) {
     ctx.opToChannel.set(name, data.path);
     const doc = getDoc(ctx.program, type);
     if (doc) {
@@ -67,11 +64,7 @@ function discoverDecoratedOps(
     }
   }
 
-  for (const [type, data] of state.operations) {
-    const name = nameOfType(type);
-    if (!name) {
-      continue;
-    }
+  for (const { type, name, data } of iterNamedTypes(state.operations)) {
     const opId = state.operationIds.get(type);
     const opName = opId ?? name;
     const channelKey = ctx.opToChannel.get(name) ?? name;
@@ -109,9 +102,8 @@ function discoverChannelOnlyOps(
   const opsWithType = new Set(
     [...state.operations.keys()].map((t) => nameOfType(t)),
   );
-  for (const [type, data] of state.channels) {
-    const name = nameOfType(type);
-    if (!name || opsWithType.has(name)) {
+  for (const { type, name, data } of iterNamedTypes(state.channels)) {
+    if (opsWithType.has(name)) {
       continue;
     }
     const opId = state.operationIds.get(type);

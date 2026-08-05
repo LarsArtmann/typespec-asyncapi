@@ -41,7 +41,7 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
   AsyncAPIEmitterOptions
 > {
   namespaceDeclaration(_namespace: Namespace): EmitterOutput<JsonSchema> {
-    return this.emitter.result.none();
+    return this.returnNone();
   }
 
   modelDeclaration(model: Model): EmitterOutput<JsonSchema> {
@@ -171,29 +171,21 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
   }
 
   stringLiteral(literal: StringLiteral): EmitterOutput<JsonSchema> {
-    return { const: literal.value };
+    return this.returnConst(literal.value);
   }
 
   numericLiteral(literal: NumericLiteral): EmitterOutput<JsonSchema> {
-    return { const: literal.value };
+    return this.returnConst(literal.value);
   }
 
   booleanLiteral(literal: BooleanLiteral): EmitterOutput<JsonSchema> {
-    return { const: literal.value };
+    return this.returnConst(literal.value);
   }
 
   tuple(tuple: Tuple): EmitterOutput<JsonSchema> {
-    const items = tuple.values.map((v: Type) => {
-      const ref = this.refForNamedType(v);
-      if (ref) {
-        return ref;
-      }
-      const extracted = extractValue(this.emitter.emitTypeReference(v));
-      if (Object.keys(extracted).length > 0) {
-        return extracted;
-      }
-      return this.typeToSchema(v);
-    });
+    const items = tuple.values.map((v: Type) =>
+      this.refOrFallback(v, (t) => this.typeToSchema(t)),
+    );
     return { items, type: "array" };
   }
 
@@ -210,17 +202,7 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
   }
 
   private elementTypeToSchema(elementType: Type): JsonSchema {
-    const ref = this.refForNamedType(elementType);
-    if (ref) {
-      return ref;
-    }
-
-    const extracted = extractValue(this.emitter.emitTypeReference(elementType));
-    if (Object.keys(extracted).length > 0) {
-      return extracted;
-    }
-
-    return this.typeToSchema(elementType);
+    return this.refOrFallback(elementType, (t) => this.typeToSchema(t));
   }
 
   programContext(_program: Program): Context {
@@ -229,11 +211,11 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
   }
 
   operation(_operation: Operation): EmitterOutput<JsonSchema> {
-    return this.emitter.result.none();
+    return this.returnNone();
   }
 
   interfaceDeclaration(_iface: Interface): EmitterOutput<JsonSchema> {
-    return this.emitter.result.none();
+    return this.returnNone();
   }
 
   enumDeclaration(en: Enum, name: string): EmitterOutput<JsonSchema> {
@@ -250,6 +232,32 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
 
   sourceFile(sourceFile: SourceFile<JsonSchema>): EmittedSourceFile {
     return { contents: "", path: sourceFile.path };
+  }
+
+  /** Build a `{ const: value }` literal schema. */
+  private returnConst(value: unknown): JsonSchema {
+    return { const: value };
+  }
+
+  /** Return the AssetEmitter `none()` result for "no schema output". */
+  private returnNone(): ReturnType<ReturnType<this["emitter"]["result"]["none"]>> {
+    return this.emitter.result.none();
+  }
+
+  /** Resolve a type to a JSON Schema: prefer named-type `$ref`, fall back to extraction, then `typeToSchema`. */
+  private refOrFallback(
+    elementType: Type,
+    fallback: (t: Type) => JsonSchema,
+  ): JsonSchema {
+    const ref = this.refForNamedType(elementType);
+    if (ref) {
+      return ref;
+    }
+    const extracted = extractValue(this.emitter.emitTypeReference(elementType));
+    if (Object.keys(extracted).length > 0) {
+      return extracted;
+    }
+    return fallback(elementType);
   }
 
   private refForNamedType(t: Type): JsonSchema | null {
@@ -280,17 +288,7 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
   }
 
   private propertyToSchema(prop: ModelProperty): JsonSchema {
-    const ref = this.refForNamedType(prop.type);
-    if (ref) {
-      return ref;
-    }
-
-    const propSchema = this.emitter.emitTypeReference(prop.type);
-    const extracted = extractValue(propSchema);
-    if (Object.keys(extracted).length === 0) {
-      return this.typeToSchema(prop.type);
-    }
-    return extracted;
+    return this.refOrFallback(prop.type, (t) => this.typeToSchema(t));
   }
 
   private typeToSchema(t: Type): JsonSchema {

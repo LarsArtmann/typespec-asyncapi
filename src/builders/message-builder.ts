@@ -14,14 +14,11 @@ import type {
 import { refSchema } from "../domain/models/asyncapi-document.js";
 import type { BuilderFn, DocumentBuildContext } from "./types.js";
 import { nameOfType } from "./types.js";
+import { iterNamedTypes } from "./shared-utils.js";
 
 /** Merge explicit @message decorator data into the messages map. */
 export const mergeExplicitMessages: BuilderFn = (state, ctx) => {
-  for (const [type, data] of state.messages) {
-    const name = nameOfType(type);
-    if (!name) {
-      continue;
-    }
+  for (const { type, name, data } of iterNamedTypes(state.messages)) {
     const msgKey = data.messageId ?? name;
     const msgObj: MessageObject = {
       name: data.title ?? name,
@@ -39,18 +36,14 @@ export const mergeExplicitMessages: BuilderFn = (state, ctx) => {
 
   applyExplicitMessageDocs(state, ctx);
   applyAutoMessageDecorators(state, ctx);
-}
+};
 
 /** Apply @doc to messages without explicit @message description. */
 function applyExplicitMessageDocs(
   state: AsyncAPIConsolidatedState,
   ctx: DocumentBuildContext,
 ): void {
-  for (const [type, data] of state.messages) {
-    const name = nameOfType(type);
-    if (!name) {
-      continue;
-    }
+  for (const { type, name, data } of iterNamedTypes(state.messages)) {
     const key = data.messageId ?? name;
     const msg = ctx.messages[key];
     if (!msg) {
@@ -70,12 +63,12 @@ function applyAutoMessageDecorators(
   state: AsyncAPIConsolidatedState,
   ctx: DocumentBuildContext,
 ): void {
-  for (const [type] of [
-    ...state.correlationIds,
-    ...state.messageHeaders,
-    ...state.protocolBindings,
-    ...state.tags,
-  ]) {
+  for (const type of new Set([
+    ...state.correlationIds.keys(),
+    ...state.messageHeaders.keys(),
+    ...state.protocolBindings.keys(),
+    ...state.tags.keys(),
+  ])) {
     const typeName = nameOfType(type);
     if (!typeName) {
       continue;
