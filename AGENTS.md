@@ -11,7 +11,7 @@
 bun install           # Install dependencies
 bun run build         # Build TypeScript → JavaScript (0 errors)
 bun run lint          # Run ESLint (0 errors, 0 warnings)
-bun run test          # Run tests via vitest (869 pass, 0 fail)
+bun run test          # Run tests via vitest (881 pass, 0 fail)
 ```
 
 **Important:** Use `bun` and `bunx` for install/build, never `npm` or `npx`. Tests run via **vitest** (Node.js/V8) — not `bun test` — because Bun has documented memory leaks that cause OOM crashes with heavy test suites.
@@ -23,7 +23,7 @@ bun run test          # Run tests via vitest (869 pass, 0 fail)
 - **Tests run via vitest** (not `bun test`): `bun run test` executes `vitest run`. Bun's test runner has documented OOM crashes — vitest uses Node.js/V8 GC which is stable under heavy compilation workloads.
 - **git commit --no-verify:** Pre-commit hook requires bash (NixOS doesn't have /bin/bash)
 - **All source files under 370 lines** (enforced, excluding auto-generated `generated-bindings.ts`)
-- **Coverage gate at 75%** per-file minimum (scripts/coverage-gate.ts). Coverage runs via `bun test --coverage` (NOT vitest) because Bun's native coverage captures dynamically-loaded `dist/*.js` files that vitest/istanbul can't instrument (the TypeSpec compiler loads the emitter from `dist/`, bypassing vitest's module transform). The gate script remaps `dist/src/*.js` back to `src/*.ts` paths and merges coverage, preferring the higher-coverage entry. Average: ~96.8%.
+- **Coverage gate at 75%** per-file minimum (scripts/coverage-gate.ts). Coverage runs via `bun test --coverage` (NOT vitest) because Bun's native coverage captures dynamically-loaded `dist/*.js` files that vitest/istanbul can't instrument (the TypeSpec compiler loads the emitter from `dist/`, bypassing vitest's module transform). The gate script remaps `dist/src/*.js` back to `src/*.ts` paths and merges coverage, preferring the higher-coverage entry. Average: 97.0%.
 - **Duplication budget:** jscpd threshold ratcheted to 0% (`.jscpd.json`). Current baseline: **0 clones / 0% / 0% tokens** (Phase-4 end; down from Phase-3 end 10 / 1.00% / 1.05%, Phase-2 end 38 / 4.06%, Phase-1 44 / 4.61%). Zero-clone baseline reached through: `DocumentBody` extraction in `asyncapi-document.ts` (consumed via `extends DocumentBody` in `AsyncAPIDocument`), `AsyncAPIEmitterOptions` re-export via `asyncapi-document.ts`, `DiagnosticContext` interface shared between `decorator-helpers.ts` and `minimal-decorators.ts`, `makeStringIdDecorator<T>` factory replacing duplicated `$operationId`/`$messageId` boilerplate, `messageDecorator<K>` factory in `src/builders/message-builder.ts`, `applySecurity` options-object signature, `checkBound` HOF in `validation/binding-field-validator.ts`. Remaining structural patterns (e.g. `(context, target, config): void` decorator signatures) are intrinsic to TypeSpec's decorator API. Run `bun run duplicate` to verify zero clones. See `docs/status/2026-08-05_20-46_PHASE-3-DEDUPLICATION-FINAL.md` for the Phase-3 history.
 - **Diagnostic system:** `reportDiagnostic()` in `decorator-helpers.ts` uses `$lib.reportDiagnostic()` (TypeSpec library API), NOT raw `program.reportDiagnostic()`. All codes are declared in `src/lib.ts` and compile-time validated via `keyof typeof $lib.diagnostics`. The library name is auto-prefixed to diagnostic codes by the TypeSpec runtime. **22 codes** declared (17 error + 5 warning). All actively referenced — no dead codes. No split-brain.
 - **Zero `any` types in emitter.ts** (achieved)
@@ -33,12 +33,13 @@ bun run test          # Run tests via vitest (869 pass, 0 fail)
 ## Architecture
 
 - **Entry Point:** `src/index.ts` → exports `$onEmit` for TypeSpec compiler
-- **Emitter (7 core files, split from original 831-line monolith):**
+- **Emitter (8 core files, split from original 831-line monolith):**
   - `src/emitter.ts` (68 lines) — `$onEmit` entry point, writes output file, handles `split-schemas` option
-  - `src/schema-emitter.ts` (320 lines) — `AsyncAPISchemaEmitter` class extends `TypeEmitter<JsonSchema, AsyncAPIEmitterOptions>`, overrides `modelDeclaration`, `union`, `enum`, `intrinsic`, `scalar`, etc.
+  - `src/schema-emitter.ts` (327 lines) — `AsyncAPISchemaEmitter` class extends `TypeEmitter<JsonSchema, AsyncAPIEmitterOptions>`, overrides `modelDeclaration`, `union`, `enum`, `intrinsic`, `scalar`, etc.
   - `src/schema-generator.ts` (47 lines) — `generateSchemas()` entry point, creates asset emitter and collects declarations
   - `src/extract-value.ts` (24 lines) — `extractValue()` narrows `EmitEntity<T>` discriminated union, filters `Placeholder<T>` lazy values
   - `src/stdlib-helpers.ts` (39 lines) — `isStdlibType()` and `collectAllStdlibNames()` utilities
+  - `src/constraint-mapper.ts` (96 lines) — `applyConstraints()` and `applyDeprecated()`: maps 11 TypeSpec stdlib constraint decorators to JSON Schema keywords
   - `src/document-builder.ts` (116 lines) — `buildAsyncAPIDocument()` entry point; delegates to `src/builders/` for assembly. Handles `$ref` chain construction
   - `src/intrinsic-mapping.ts` (82 lines) — `intrinsicToSchema()` maps TypeSpec scalar names to JSON Schema types (~30 cases)
   - `src/schema-splitter.ts` (79 lines) — `splitSchemas()` extracts schemas into individual files, rewrites `$ref` pointers to external paths
@@ -170,3 +171,6 @@ Key points:
 - **`@asyncapi/parser` Bun incompatibility:** The `@asyncapi/parser` package (v3.6.0) fails under Bun due to AJV `new Function()` codegen issues in its Spectral ruleset. Use manual `$ref` resolution tests instead (see `test/validation/semantic-ref-resolution.test.ts`).
 - **Record of named models:** `Record<Item>` must emit `{ type: "object", additionalProperties: { $ref: "#/components/schemas/Item" } }`. The `typeToSchema()` indexed-model branch calls `refForNamedType()` on the indexer value before falling back to inline schema.
 - **`@service` decorator (core TypeSpec):** `@service` is a built-in TypeSpec decorator (in the `TypeSpec` namespace, not `TypeSpec.AsyncAPI`). It requires value-literal syntax: `@service(#{title: "My API"})`, NOT model-expression syntax `@service({title: "My API"})` (which produces a compiler `expect-value` error). The emitter reads the `@service` title via `listServices(program)` and uses it for `info.title` as a fallback (emitter options take precedence). OpenAPI migrants should use `#{}` not `{}`.
+- **`#deprecated` is a compiler directive, NOT a decorator:** Use `#deprecated "message"` (hash prefix) before a declaration, NOT `@deprecated("message")`. There is no `@deprecated` decorator in TypeSpec stdlib. The compiler sets deprecation state internally; `isDeprecated(program, type)` checks it. The emitter calls `applyDeprecated()` in `constraint-mapper.ts` for both properties and model/enum declarations.
+- **Constraint decorators target specific types:** `@pattern` only works on `string | ModelProperty` of string type. `@minValue`/`@maxValue` work on numeric scalars. `@minItems`/`@maxItems` work on arrays. TypeSpec compiler validates target types at compile time and errors on mismatch.
+- **`$ref` constraint siblings:** Validation keywords (`minimum`, `pattern`, etc.) are only applied to inline schemas in `applyConstraints()` — when the schema is a `$ref`, these are skipped (Draft-07 ignores `$ref` siblings). Metadata (`deprecated`, `description`) IS applied as `$ref` siblings, which AJV accepts for AsyncAPI 3.1 validation.

@@ -122,6 +122,8 @@ Binding versions are auto-injected when omitted. Protocol aliases (`websocket`â†
 
 Every TypeSpec scalar maps to the correct JSON Schema type and format (int8-64, uint8-64, float32/64, decimal, dateTime, duration, bytes, url, and more). Named models, enums, and scalars use `$ref` for clean component reuse. Inheritance, unions, tuples, records, and multi-message operations are all supported.
 
+**Constraint decorators** are fully mapped: `@minValue`, `@maxValue`, `@minValueExclusive`, `@maxValueExclusive`, `@minLength`, `@maxLength`, `@pattern`, `@format`, `@minItems`, `@maxItems`, and `#deprecated` all produce the correct JSON Schema keywords.
+
 ### Multi-File Output
 
 ```bash
