@@ -51,10 +51,13 @@
 | `@security`      | FULLY_FUNCTIONAL | Emitted as `components.securitySchemes`; multiple schemes per namespace               |
 | `@tags`          | FULLY_FUNCTIONAL | Emitted as `Tag[]` arrays on operations and messages                                  |
 | `@correlationId` | FULLY_FUNCTIONAL | Emitted as `correlationId` objects on all messages                                    |
-| `@bindings`      | FULLY_FUNCTIONAL | Emitted as `bindings` on operations/messages; keys normalized, versions auto-injected |
+| `@bindings`      | FULLY_FUNCTIONAL | Emitted as `bindings` on operations/messages/servers; keys normalized, versions auto-injected. Namespace target enables server bindings (`namespace-bindings.test.ts`) |
 | `@header`        | FULLY_FUNCTIONAL | Emitted as JSON Schema `headers` on messages                                          |
 | `@reply`         | FULLY_FUNCTIONAL | Operation reply with message reference and optional address (`operation-builder.ts`)  |
 | `@defaultContentType` | FULLY_FUNCTIONAL | Sets `defaultContentType` on document root (`namespace-decorators.ts`)          |
+| `@operationId`   | FULLY_FUNCTIONAL | Overrides auto-generated operation key with explicit name (`operation-discovery.ts`) |
+| `@messageId`     | FULLY_FUNCTIONAL | Overrides auto-generated message key with explicit name (`message-builder.ts`, `shared-utils.ts`) |
+| `@apiVersion`    | FULLY_FUNCTIONAL | Sets `info.version` on document root from Namespace (`document-builder.ts`)            |
 
 ## Protocol Bindings
 
@@ -113,7 +116,7 @@ All 19 AsyncAPI protocols auto-generated from `@asyncapi/specs/bindings/` via `s
 | Spec compliance suite   | FULLY_FUNCTIONAL | `test/compliance/` — 98 tests validated against official AsyncAPI 3.1 JSON Schema |
 | Integration tests       | FULLY_FUNCTIONAL | `test/integration/` — decorator output, negative tests, binding placement         |
 | E2E tests               | FULLY_FUNCTIONAL | `test/e2e/` — complex nested schemas                                              |
-| BDD tests               | FULLY_FUNCTIONAL | `test/bdd/` — user behavior scenarios                                             |
+| BDD tests               | PARTIALLY_FUNCTIONAL | `test/bdd/user-behaviors.test.ts` — 12 tests. Step infrastructure in `world.ts` has 6 unimplemented stubs |
 | External spec tests     | FULLY_FUNCTIONAL | `test/external/` — 16 patterns from 5 external projects                           |
 | Unit tests              | FULLY_FUNCTIONAL | `test/unit/` — binding placement, emitter tester verification                     |
 | Negative tests          | FULLY_FUNCTIONAL | `test/integration/negative-tests.test.ts` — error handling                        |

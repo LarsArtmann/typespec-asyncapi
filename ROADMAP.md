@@ -16,12 +16,12 @@ Push toward complete AsyncAPI 3.1 coverage — every field, every binding, every
 
 Raw ideas:
 
-- Server binding support (`@server` currently emits host/protocol/description, no bindings)
-- `@operationId` / `@messageId` decorators for explicit naming control
 - AsyncAPI Studio compatibility verification (round-trip: emit → import → validate)
 
 Recently completed:
 
+- ~~Server binding support (`@server` + `@bindings` on Namespace → server.bindings)~~ — `server-builder.ts` reads `state.protocolBindings`, `test/integration/namespace-bindings.test.ts`
+- ~~`@operationId` / `@messageId` decorators for explicit naming control~~ — `src/minimal-decorators.ts`, `test/integration/operation-message-id.test.ts`
 - ~~Additional protocol bindings: Redis, Google Cloud Pub/Sub, AWS SNS, and 11 more~~ — 19 protocols auto-generated from `@asyncapi/specs`
 - ~~Binding field-level validation against `@asyncapi/specs/bindings/` JSON Schemas at decorator time~~ — `binding-field-validator.ts`, auto-generated field rules
 - ~~Full `@doc` propagation to all AsyncAPI object types~~ — channels, operations, messages
@@ -53,11 +53,12 @@ Keep the codebase honest as it grows.
 
 Raw ideas:
 
-- `@bindings` support for `Namespace` target (enables server binding placement validation)
 - Plugin/hook system for custom binding extensions (#32 RFC)
 
 Recently completed:
 
+- ~~`@bindings` support for `Namespace` target (enables server binding placement validation)~~ — decorator targets `Operation | Model | Namespace`, `bindingTargetKind` maps Namespace → `"server"`
+- ~~`@apiVersion` decorator for document-level versioning~~ — `src/minimal-decorators.ts:283`, `test/decorators/api-version.test.ts`
 - ~~Refactor `buildAsyncAPIDocument()` (was 315 lines, complexity 84)~~ — split to 116 lines + `src/builders/` directory (server, channel, operation, message builders, operation discovery, shared utils)
 - ~~Protocol binding validation framework: derive `BINDING_PLACEMENT` from `@asyncapi/specs`~~ — auto-generated at build time
 - ~~Multi-file TypeSpec input support~~ — external `.tsp` compilation tests (16 patterns from 5 projects)

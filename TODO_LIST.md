@@ -9,23 +9,20 @@ Long-term ideas and RFCs live in ROADMAP, not here.
 
 | # | Task | Impact | Effort | Evidence |
 | --- | ---- | ------ | ------ | -------- |
-| 1 | Server binding support — `@server` currently emits host/protocol/description but no bindings. Enable `@bindings` on server target, wire through `server-builder.ts` | High | 2-4h | `src/builders/server-builder.ts` (41 lines) has no binding handling. `@bindings` decorator targets `Operation \| Model` only (`src/minimal-decorators.ts`). `BINDING_PLACEMENT` already supports `server` kind for applicable protocols. |
-| 2 | `@operationId` / `@messageId` decorators for explicit naming control — currently auto-generated from TypeSpec names | Medium | 2-3h | `src/builders/operation-builder.ts` uses `opType.name` for operation key. `src/builders/message-builder.ts:28` uses `data.messageId ?? name`. No decorator to override. |
-| 3 | `@bindings` support for `Namespace` target — enables server binding placement validation (dependency for #1) | Medium | 1-2h | `src/minimal-decorators.ts` `@bindings` targets `Operation \| Model`. Namespace target needed for server bindings. `src/namespace-decorators.ts` already handles `@server` and `@defaultContentType` on Namespace. |
+| 1 | AsyncAPI Studio compatibility verification — round-trip: emit → import into Studio → validate | High | 2-3h | No test exists. `@asyncapi/parser` has Bun incompatibility (AJV `new Function()` issue, see AGENTS.md Gotchas). Manual verification or alternative parser needed. |
+| 2 | BDD test step definitions — `test/bdd/support/world.ts` has 6 unimplemented TODO stubs (channel, security, protocol, compilation, binding validation) | Medium | 2-3h | `test/bdd/support/world.ts:65,72,78,83,88,106` — all marked `// TODO: Implement`. BDD infrastructure exists but step definitions are stubs. `user-behaviors.test.ts` tests utilities directly, bypassing the step infrastructure. |
 
 ## Medium Impact
 
 | # | Task | Impact | Effort | Evidence |
 | --- | ---- | ------ | ------ | -------- |
-| 4 | AsyncAPI Studio compatibility verification — round-trip: emit → import into Studio → validate | Medium | 2-3h | No test exists. `@asyncapi/parser` has Bun incompatibility (AJV `new Function()` issue, see AGENTS.md Gotchas). Manual verification or alternative parser needed. |
-| 5 | Consolidate ESLint and oxlint configs if rule conflicts emerge — currently complementary with zero conflicts | Low | 1h | `bun run lint` runs `eslint src && oxlint . --deny-warnings`. AGENTS.md documents dual-linter strategy. Monitor for contradictions. |
-| 6 | BDD test step definitions — `test/bdd/support/world.ts` has 6 unimplemented TODO stubs (channel, security, protocol, compilation, binding validation) | Medium | 2-3h | `test/bdd/support/world.ts:65,72,78,83,88,106` — all marked `// TODO: Implement`. BDD infrastructure exists but steps are stubs. |
+| 3 | Consolidate ESLint and oxlint configs if rule conflicts emerge — currently complementary with zero conflicts | Low | 1h | `bun run lint` runs `eslint src && oxlint . --deny-warnings`. AGENTS.md documents dual-linter strategy. Monitor for contradictions. |
+| 4 | AsyncAPI generator ecosystem compatibility — verify emitter output works with `@asyncapi/generator` for code generation | Medium | 2-4h | No integration test against `@asyncapi/generator`. Output validates against AsyncAPI 3.1 JSON Schema but generator compatibility is unverified. |
 
 ## Low Impact / Long-term
 
 | # | Task | Impact | Effort | Evidence |
 | --- | ---- | ------ | ------ | -------- |
-| 7 | Plugin/hook system for custom binding extensions (#32 RFC) | Low | 4-8h | Design RFC needed. Protocol bindings currently defined in code, not extensible at runtime (Non-Goal in ROADMAP). |
-| 8 | `@typespec/versioning` support (#163) | Low | 3-5h | TypeSpec versioning decorator not integrated. Would enable API versioning in AsyncAPI output. |
-| 9 | AsyncAPI generator ecosystem compatibility | Low | 2-4h | Verify emitter output works with `@asyncapi/generator` for code generation. |
-| 10 | OpenAPI 3.x cross-emitter type sharing | Low | 4-6h | `src/shared/` module exists but no OpenAPI emitter consumes it yet. |
+| 5 | `@typespec/versioning` library support (#163) — custom `@apiVersion` decorator exists but the TypeSpec versioning library is not integrated | Low | 3-5h | `@apiVersion` implemented (`src/minimal-decorators.ts:283`, tested in `test/decorators/api-version.test.ts`). `@typespec/versioning` library integration would enable API evolution tracking. |
+| 6 | Plugin/hook system for custom binding extensions (#32 RFC) | Low | 4-8h | Design RFC needed. Protocol bindings currently defined in code, not extensible at runtime (Non-Goal in ROADMAP). |
+| 7 | OpenAPI 3.x cross-emitter type sharing — `src/shared/` module exists but no OpenAPI emitter consumes it yet | Low | 4-6h | `src/shared/` exports `JsonSchema`, `SchemaMap`, `generateSchemas`, `extractValue`, `intrinsicToSchema`, `AsyncAPISchemaEmitter`. No external consumer. |

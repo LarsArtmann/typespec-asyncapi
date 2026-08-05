@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-05
 **Trigger:** `ROADMAP.md` review — user asked to break into actionable steps and execute
-**Status:** Executing
+**Status:** Complete
 
 ---
 
@@ -229,8 +229,8 @@ graph TD
 
 ## Verschlimmbessern Checklist
 
-- [ ] NOT splitting test files (high risk, low value, tests pass)
-- [ ] NOT consolidating AsyncAPIObject beyond the bug fix (design decision)
-- [ ] NOT removing Record<string, unknown> casts (functional, not broken)
-- [ ] NOT implementing new features (requires design input)
-- [ ] Every change verified with build + lint + test
+- [x] NOT splitting test files (high risk, low value, tests pass)
+- [x] NOT consolidating AsyncAPIObject beyond the bug fix (design decision)
+- [x] NOT removing Record<string, unknown> casts (functional, not broken)
+- [x] NOT implementing new features (requires design input)
+- [x] Every change verified with build + lint + test
