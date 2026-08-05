@@ -41,16 +41,17 @@ bun run test          # Run tests via vitest (679 pass, 0 fail)
   - `src/document-builder.ts` (116 lines) — `buildAsyncAPIDocument()` entry point; delegates to `src/builders/` for assembly. Handles `$ref` chain construction
   - `src/intrinsic-mapping.ts` (82 lines) — `intrinsicToSchema()` maps TypeSpec scalar names to JSON Schema types (~30 cases)
   - `src/schema-splitter.ts` (79 lines) — `splitSchemas()` extracts schemas into individual files, rewrites `$ref` pointers to external paths
-- **Document Builders (`src/builders/`, 7 files):**
+- **Document Builders (`src/builders/`, 8 files):**
   - `src/builders/operation-discovery.ts` (153 lines) — discovers channel-decorated operations from TypeSpec namespace
   - `src/builders/message-builder.ts` (156 lines) — builds message objects with `$ref` registration
   - `src/builders/shared-utils.ts` (154 lines) — shared helpers: `ref()`, `escapeRefToken()`, `registerMessage()`, `resolveReplyKey()`
   - `src/builders/operation-builder.ts` (94 lines) — builds operation objects with action, channel ref, messages, and reply
   - `src/builders/channel-builder.ts` (81 lines) — builds channel objects with address, messages, bindings
-  - `src/builders/server-builder.ts` (41 lines) — builds server objects with host, protocol, variables
+  - `src/builders/server-builder.ts` (41 lines) — builds server objects with host, protocol, variables, and namespace-scoped bindings
+  - `src/builders/security-builder.ts` (23 lines) — builds `components.securitySchemes` from `@security` state
   - `src/builders/types.ts` (46 lines) — shared builder context and result types
 - **Decorators:** `lib/main.tsp` declares all decorators + `EmitterOptions` model for IDE autocomplete
-- **Decorator Implementations:** `src/decorators.ts` (49 lines, unified registry), `src/minimal-decorators.ts` (288 lines) and `src/namespace-decorators.ts` (65 lines) — thin wrappers with runtime validation, helpers in `src/decorator-helpers.ts`, state writing delegated to `src/state-writers.ts`. The namespace-decorators file contains `$server` and `$defaultContentType` (both target `Namespace`).
+- **Decorator Implementations:** `src/decorators.ts` (49 lines, unified registry), `src/minimal-decorators.ts` (288 lines) and `src/namespace-decorators.ts` (65 lines) — thin wrappers with runtime validation, helpers in `src/decorator-helpers.ts`, state writing delegated to `src/state-writers.ts`. The namespace-decorators file contains `$server` and `$defaultContentType` (both target `Namespace`). `$bindings` targets `Operation | Model | Namespace` (Namespace → server bindings via `bindingTargetKind`). `$operationId`, `$messageId`, and `$apiVersion` also implemented in `minimal-decorators.ts`.
 - **State Management:** `src/state.ts` (consolidation), `src/state-compatibility.ts` (TypeSpec stateMap access)
 - **Configuration:** `src/infrastructure/configuration/` — simplified to just types, no runtime validation
 - **Protocols:** `src/constants/protocols.ts` — single source of truth for all AsyncAPI protocols (const array → derived type → runtime Set + type guard). **19 protocols** auto-generated from `@asyncapi/specs` (Kafka, AMQP, AMQP1, AnypointMQ, GooglePubSub, HTTP, IBMMQ, JMS, Mercure, MQTT, NATS, Pulsar, Redis, ROS2, SNS, Solace, SQS, STOMP, WS). Accepts aliases (`websocket` → `ws`) via `normalizeProtocol()`. Canonical names only in `PROTOCOL_LIST`; `isSupportedProtocol()` narrows to `AcceptedProtocol` (canonical | alias).
@@ -108,7 +109,7 @@ Decorators accept BOTH `{}` (Model expression types) AND `#{}` (value literals):
 extern dec security(target: Operation | Namespace, config: {} | valueof Record<unknown>);
 extern dec message(target: Model, config: {} | valueof Record<unknown>);
 extern dec protocol(target: Operation | Model, config: {} | valueof Record<unknown>);
-extern dec bindings(target: Operation | Model, value: {} | valueof Record<unknown>);
+extern dec bindings(target: Operation | Model | Namespace, value: {} | valueof Record<unknown>);
 ```
 
 ## `EmitEntity<T>` Discriminated Union Pattern
