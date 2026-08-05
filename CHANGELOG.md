@@ -8,6 +8,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- **`@summary` → `title` mapping** — `getSummary()` from TypeSpec compiler mapped to JSON Schema `title` keyword. Works on properties, models, and enums.
+- **`@example` → `examples` mapping** — `getExamples()` + `serializeValueAsJson()` from TypeSpec compiler mapped to JSON Schema `examples` array. Handles string, numeric, boolean, array, and object example values.
+- **`@visibility` → `readOnly`/`writeOnly` mapping** — `getVisibilityForClass()` with Lifecycle enum mapped to JSON Schema: `Read` only → `readOnly: true`, `Create`/`Update` only → `writeOnly: true`, both or neither → no keyword.
+- **Info object spec compliance fields** — `info.contact`, `info.license`, `info.termsOfService`, `info.externalDocs` now supported via emitter options. Added `ContactObject`, `LicenseObject`, `ExternalDocumentationObject` types.
+- **Constraint decorator tests expanded** (`test/compliance/constraint-decorators.test.ts`, 38 tests total, was 15) — added `$ref` constraint-skipping tests, `#deprecated` on `$ref` properties, negative constraint values, `@format` override, enum deprecation, pattern with special regex chars, multiple deprecated models cross-contamination, `@summary` (4 tests), `@example` (5 tests), `@visibility` (5 tests).
+- **Info object compliance tests** (`test/compliance/info-object.test.ts`, 6 tests) — contact, license, termsOfService, externalDocs, absent fields, all-fields-simultaneously.
+- **New protocol bindings integration tests** (`test/integration/new-protocol-bindings.test.ts`, 5 tests) — solace, anypointmq, ros2 bindings compiled through the full emitter pipeline.
+- **`compileAndValidate` and `compileAndValidateOrThrow` accept emitter options** — enables testing emitter-option-driven features.
 - **Constraint decorator mapping** (`src/constraint-mapper.ts`) — 11 TypeSpec stdlib constraint/metadata decorators are now correctly mapped to JSON Schema keywords: `@minValue`→`minimum`, `@maxValue`→`maximum`, `@minValueExclusive`→`exclusiveMinimum`, `@maxValueExclusive`→`exclusiveMaximum`, `@minLength`→`minLength`, `@maxLength`→`maxLength`, `@pattern`→`pattern`, `@format`→`format`, `@minItems`→`minItems`, `@maxItems`→`maxItems`, `#deprecated`→`deprecated`. Validation keywords are applied to inline schemas only (skipped on `$ref` schemas where siblings are ignored). `deprecated` is applied at both property and model/enum level.
 - **Constraint decorator compliance tests** (`test/compliance/constraint-decorators.test.ts`, 15 tests) — numeric constraints, string constraints, array constraints, deprecation directive (property + model level), multiple constraints, absent decorators. All AJV-validated against AsyncAPI 3.1.0 JSON Schema.
 - **`@typespec/versioning` integration** — `src/document-builder.ts` reads `@versioned` enum values from `@typespec/versioning` for `info.version`. Precedence: emitter `version` option > `@apiVersion` decorator > `@versioned` latest enum value > `"1.0.0"`. Test infrastructure auto-detects versioning imports. (`test/integration/versioning.test.ts`, 5 tests)
@@ -31,6 +39,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- **`@typespec/*` moved to `peerDependencies`** — `@typespec/compiler`, `@typespec/asset-emitter`, `@typespec/versioning` are now peer dependencies (matching TypeSpec emitter convention). Only `yaml` remains as a regular dependency. All three are also in `devDependencies` for local development.
+- **Metadata application consolidated** — `applyDocDescription` moved from `schema-emitter.ts` to `constraint-mapper.ts`. New `applyMetadata()` convenience function calls doc, deprecated, summary, and examples in one call. `modelDeclaration` and `enumDeclaration` now use single `applyMetadata` call instead of 4 separate calls. `collectModelProperties` inline doc code removed (handled by `applyConstraints`). `schema-emitter.ts` reduced from 335 to 314 lines.
+- **`ParsedAsyncAPIDocument.asyncapi` tightened** from `string` to `"3.1.0"` literal type — makes impossible states unrepresentable.
+- **Protocol count updated to 22** — `solace`, `anypointmq`, `ros2` added to `PROTOCOLS` array in `constants/protocols.ts` (were already in `generated-bindings.ts` but missing from the protocol validation list).
 - **BDD tests rewritten** — Dead Cucumber infrastructure removed. `user-behaviors.test.ts` rewritten with 23 real end-to-end behavior tests covering channels, protocol bindings, path templates, security, servers, messages, invalid config, document structure, and namespace bindings.
 - **`@typespec/versioning`** added as a runtime dependency.
 - **Shared module JSDoc rewritten** — honest two-tier split: protocol-neutral exports (`JsonSchema`, `SchemaRef`, `SchemaMap`, `extractValue`, `intrinsicToSchema`) vs AsyncAPI-bound convenience (`generateSchemas`, `AsyncAPISchemaEmitter`). Old doc falsely claimed "without pulling in AsyncAPI-specific types."
@@ -40,6 +52,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
+- **Protocol split-brain bug** (critical) — `solace`, `anypointmq`, `ros2` existed in `generated-bindings.ts` (binding specs) but were missing from `PROTOCOLS` in `constants/protocols.ts`. The `@protocol` decorator rejected them as `unsupported-protocol` while the binding validator accepted them. Fixed by adding all three to the `PROTOCOLS` array.
 - **Binding protocol gap** (critical bug) — `normalizeBindingKey()` only checked `isSupportedProtocol()` (19 server protocols). Three binding-only protocols (`solace`, `anypointmq`, `ros2`) were rejected as `unknown-binding-protocol`. Added `hasProtocolBindings()` fallback check in `binding-validator.ts`. (`49b4241`)
 - **Tuple of named models** (critical bug) — `tuple()` and `typeToSchema()` used `extractValue(emitTypeReference())` which returns identical `{ properties: {}, type: "object" }` objects for named models, producing invalid JSON Schema with duplicate enum entries. Both now use `refForNamedType()` for named model elements. (`0226deb`)
 
