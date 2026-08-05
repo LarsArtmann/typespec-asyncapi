@@ -132,7 +132,6 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
   booleanLiteral(literal: BooleanLiteral): EmitterOutput<JsonSchema> {
     return this.returnConst(literal.value);
   }
-
   tuple(tuple: Tuple): EmitterOutput<JsonSchema> {
     const items = tuple.values.map((v: Type) =>
       this.refOrFallback(v, (t) => this.typeToSchema(t)),
@@ -140,17 +139,12 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
     return { items, type: "array" };
   }
 
-  arrayDeclaration(
-    array: Type,
-    name: string,
-    elementType: Type,
-  ): EmitterOutput<JsonSchema> {
+  arrayDeclaration(_array: Type, _name: string, elementType: Type): EmitterOutput<JsonSchema> {
     return this.arraySchema(elementType);
   }
-  arrayLiteral(array: Type, elementType: Type): EmitterOutput<JsonSchema> {
+  arrayLiteral(_array: Type, elementType: Type): EmitterOutput<JsonSchema> {
     return this.arraySchema(elementType);
   }
-
   private arraySchema(elementType: Type): JsonSchema {
     return { items: this.elementTypeToSchema(elementType), type: "array" };
   }
@@ -170,7 +164,6 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
   interfaceDeclaration(_iface: Interface): EmitterOutput<JsonSchema> {
     return this.returnNone();
   }
-
   enumDeclaration(en: Enum, name: string): EmitterOutput<JsonSchema> {
     const schema = this.buildEnumSchema(en.members);
     applyDocDescription(this.emitter.getProgram(), en, schema);

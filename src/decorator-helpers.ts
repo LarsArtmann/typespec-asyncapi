@@ -38,13 +38,10 @@ export const validateNonEmptyString = (
   target: unknown,
   diagnosticCode: keyof typeof $lib.diagnostics,
   format?: Record<string, unknown>,
-): value is string => {
-  if (typeof value === "string" && value.length > 0) {
-    return true;
-  }
-  reportDiagnostic(context, diagnosticCode, target, format);
-  return false;
-};
+): value is string =>
+  typeof value === "string" && value.length > 0
+    ? true
+    : (reportDiagnostic(context, diagnosticCode, target, format), false);
 
 /** Validate that a config value is present; if not, report and return false. */
 export const validateConfig = (

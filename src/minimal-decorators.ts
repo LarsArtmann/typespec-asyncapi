@@ -5,15 +5,7 @@
  * State writing is delegated to state-writers.ts.
  */
 
-import type {
-  DecoratorContext,
-  DiagnosticTarget,
-  Model,
-  ModelProperty,
-  Namespace,
-  Operation,
-  Program,
-} from "@typespec/compiler";
+import type { DecoratorContext, DiagnosticTarget, Model, ModelProperty, Namespace, Operation, Program } from "@typespec/compiler";
 import type { $lib } from "./lib.js";
 import { PROTOCOL_LIST, isSupportedProtocol } from "./constants/protocols.js";
 import {
