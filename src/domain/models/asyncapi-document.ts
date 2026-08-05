@@ -303,6 +303,6 @@ interface DocumentBody {
  * Eliminates `as any` casts in test assertions.
  */
 export interface ParsedAsyncAPIDocument extends DocumentBody {
-  asyncapi: string;
+  asyncapi: "3.1.0";
   channels?: Record<string, ChannelObject>;
 }

@@ -17,6 +17,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { parse as parseYAML } from "yaml";
 import type { ParsedAsyncAPIDocument } from "../../src/domain/models/asyncapi-document.js";
+import type { AsyncAPIEmitterOptions } from "../../src/infrastructure/configuration/asyncAPIEmitterOptions.js";
 import { compileAsyncAPISpecRaw } from "./test-helpers.js";
 
 const schemaPath = join(
@@ -50,8 +51,9 @@ export interface ValidationResult {
  */
 export async function compileAndValidate(
   source: string,
+  options: AsyncAPIEmitterOptions = {},
 ): Promise<ValidationResult> {
-  const raw = await compileAsyncAPISpecRaw(source);
+  const raw = await compileAsyncAPISpecRaw(source, options);
 
   const diagnostics = raw.diagnostics.map((d) => ({
     code: String(d.code),
@@ -93,8 +95,9 @@ export async function compileAndValidate(
  */
 export async function compileAndValidateOrThrow(
   source: string,
+  options: AsyncAPIEmitterOptions = {},
 ): Promise<ParsedAsyncAPIDocument> {
-  const result = await compileAndValidate(source);
+  const result = await compileAndValidate(source, options);
 
   if (!result.valid) {
     const errorDetails = result.errors

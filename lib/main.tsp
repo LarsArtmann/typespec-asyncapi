@@ -134,6 +134,18 @@ model EmitterOptions {
   /** Document description */
   description?: string;
 
+  /** Contact information: name, email, url */
+  contact?: { name?: string; email?: string; url?: string };
+
+  /** License information: name (required), url */
+  license?: { name: string; url?: string };
+
+  /** URL to the Terms of Service */
+  termsOfService?: string;
+
+  /** External documentation: url (required), description */
+  externalDocs?: { url: string; description?: string };
+
   /** Split schemas into individual files under schemas/ (default: false) */
   "split-schemas"?: boolean;
 }
