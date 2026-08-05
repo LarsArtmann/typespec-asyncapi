@@ -1,14 +1,8 @@
 /**
  * Basic functionality integration tests for AsyncAPI emitter
  * Tests the actual working decorators and emitter functionality
- * Using CLI compilation approach that bypasses test framework issues
+ * Uses programmatic compilation via test-helpers.
  */
-
-//TODO: TEST INFRASTRUCTURE ANTI-PATTERN HELL - THIS FILE REPRESENTS EVERYTHING WRONG WITH TEST ARCHITECTURE!
-//TODO: CLI DEPENDENCY DISASTER - Tests depend on external TypeSpec CLI instead of programmatic API!
-//TODO: FILE SYSTEM CHAOS - Raw fs operations scattered everywhere without abstraction!
-//TODO: CHILD PROCESS SPAWNING ANTI-PATTERN - Using raw spawn() instead of proper test utilities!
-//TODO: IMPORT CHAOS - 6 different imports mixing testing, Effect, fs, and child_process!
 
 import {
   compileAsyncAPISpecWithoutErrors,

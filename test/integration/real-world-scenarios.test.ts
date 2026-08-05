@@ -7,7 +7,6 @@ import {
   compileAsyncAPISpecWithoutErrors,
   parseAsyncAPIOutput,
 } from "../utils/test-helpers";
-//TODO: this file is getting to big split it up
 
 describe("real-World AsyncAPI Scenarios", () => {
   describe("e-commerce Event System", () => {

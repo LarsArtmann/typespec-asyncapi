@@ -14,7 +14,6 @@ import {
   parseAsyncAPIOutput,
   validateAsyncAPIObjectComprehensive,
 } from "../utils/test-helpers.js";
-//TODO: this file is getting to big split it up
 
 describe("real Decorator Functionality Tests", () => {
   describe("@message Decorator Real Processing", () => {
