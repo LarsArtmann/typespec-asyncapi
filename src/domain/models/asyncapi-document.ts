@@ -264,20 +264,31 @@ export interface AsyncAPIDocument {
 }
 
 /**
- * Parsed AsyncAPI 3.1 document from YAML/JSON output.
+ * Shared body fields of an AsyncAPI document (everything except the
+ * `asyncapi` version literal and the required `channels` map).
  *
- * Relaxed version of `AsyncAPIDocument` for use with deserialized output
- * where literal types are widened (e.g. `asyncapi` is `string`, not `"3.1.0"`).
- * Eliminates `as any` casts in test assertions.
+ * Both `AsyncAPIDocument` and `ParsedAsyncAPIDocument` extend this so the
+ * field set stays in sync.
  */
-export interface ParsedAsyncAPIDocument {
-  asyncapi: string;
+interface DocumentBody {
   info: InfoObject;
   id?: string;
   servers?: Record<string, ServerObject>;
   defaultContentType?: string;
-  channels?: Record<string, ChannelObject>;
   operations?: Record<string, OperationObject>;
   components?: ComponentsObject;
   tags?: Tag[];
+}
+
+/**
+ * Parsed AsyncAPI 3.1 document from YAML/JSON output.
+ *
+ * Relaxed version of `AsyncAPIDocument` for use with deserialized output
+ * where literal types are widened (e.g. `asyncapi` is `string`, not `"3.1.0"`)
+ * and `channels` is optional (deserialized output may be missing it).
+ * Eliminates `as any` casts in test assertions.
+ */
+export interface ParsedAsyncAPIDocument extends DocumentBody {
+  asyncapi: string;
+  channels?: Record<string, ChannelObject>;
 }

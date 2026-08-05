@@ -90,6 +90,15 @@ function applyAutoMessageDecorators(
   }
 }
 
+/** Skip applying a decorator to a message if `skip` is true and the property is already set. */
+function shouldSkip(
+  msg: MessageObject,
+  prop: keyof MessageObject,
+  skip: boolean,
+): boolean {
+  return skip && msg[prop] !== undefined;
+}
+
 /** Apply correlation ID to a message if present in state. */
 function applyCorrelationId(
   state: AsyncAPIConsolidatedState,
@@ -97,7 +106,7 @@ function applyCorrelationId(
   msg: MessageObject,
   skipExisting = false,
 ): void {
-  if (skipExisting && msg.correlationId) {
+  if (shouldSkip(msg, "correlationId", skipExisting)) {
     return;
   }
   const correlation = state.correlationIds.get(type as never);
@@ -113,7 +122,7 @@ function applyHeaders(
   msg: MessageObject,
   skipExisting = false,
 ): void {
-  if (skipExisting && msg.headers) {
+  if (shouldSkip(msg, "headers", skipExisting)) {
     return;
   }
   const headers = state.messageHeaders.get(type as never);
@@ -136,7 +145,7 @@ function applyMessageBindings(
   msg: MessageObject,
   skipExisting = false,
 ): void {
-  if (skipExisting && msg.bindings) {
+  if (shouldSkip(msg, "bindings", skipExisting)) {
     return;
   }
   const msgBindings = state.protocolBindings.get(type as never);
