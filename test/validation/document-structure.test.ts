@@ -1,12 +1,8 @@
 /**
- * AsyncAPI Generator Compatibility Tests
+ * Document Structure Constraints
  *
- * The @asyncapi/generator CLI cannot be installed via Bun due to
- * dependency resolution issues with @asyncapi/generator-hooks.
- * However, the generator uses @asyncapi/parser internally to parse
- * documents before rendering templates. Our studio-compatibility tests
- * already verify parser-clean output. These tests verify the additional
- * structural requirements the generator depends on for code generation:
+ * Verifies the structural requirements that downstream tools (generators,
+ * parsers, code generators) depend on when consuming AsyncAPI 3.1 documents:
  *
  * 1. info.title and info.version present (used for output file naming)
  * 2. All $ref pointers resolve to real targets (generator dereferences during rendering)
@@ -65,7 +61,7 @@ function collectAllRefs(obj: unknown, refs: string[] = []): string[] {
   return refs;
 }
 
-describe("asyncAPI generator compatibility", () => {
+describe("document structure constraints", () => {
   it("info.title and info.version are present for output file naming", async () => {
     const doc = await compileAndGetDoc(`
       namespace Test;

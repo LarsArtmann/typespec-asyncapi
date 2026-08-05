@@ -160,7 +160,6 @@ export interface JsonSchema {
   $ref?: string;
   title?: string;
   default?: unknown;
-  nullable?: boolean;
   readOnly?: boolean;
   writeOnly?: boolean;
   deprecated?: boolean;
@@ -177,7 +176,6 @@ export interface JsonSchema {
   example?: unknown;
   examples?: unknown[];
   discriminator?: string;
-  xml?: Record<string, unknown>;
   externalDocs?: { url: string; description?: string };
   [key: string]: unknown;
 }

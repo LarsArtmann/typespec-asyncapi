@@ -1,8 +1,9 @@
 /**
- * Tests: Stdlib Helpers
+ * Tests: Stdlib Helpers — behavioral effect on emitter output
  *
- * Tests isStdlibType and collectAllStdlibNames through real TypeSpec
- * compilation, since these functions require Type objects from a Program.
+ * Verifies the effect of stdlib type handling through real TypeSpec compilation:
+ * stdlib types (string, int32, Record, array) emit inline schemas, while
+ * user-defined models, enums, and scalars emit `$ref` pointers.
  */
 
 import { compileAsyncAPI } from "../utils/test-helpers.js";
