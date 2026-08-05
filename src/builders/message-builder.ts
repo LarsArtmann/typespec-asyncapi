@@ -12,14 +12,11 @@ import type {
   JsonSchema,
 } from "../domain/models/asyncapi-document.js";
 import { refSchema } from "../domain/models/asyncapi-document.js";
-import type { DocumentBuildContext } from "./types.js";
+import type { BuilderFn, DocumentBuildContext } from "./types.js";
 import { nameOfType } from "./types.js";
 
 /** Merge explicit @message decorator data into the messages map. */
-export function mergeExplicitMessages(
-  state: AsyncAPIConsolidatedState,
-  ctx: DocumentBuildContext,
-): void {
+export const mergeExplicitMessages: BuilderFn = (state, ctx) => {
   for (const [type, data] of state.messages) {
     const name = nameOfType(type);
     if (!name) {

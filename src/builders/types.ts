@@ -12,6 +12,7 @@ import type {
   SecurityScheme,
   ServerObject,
 } from "../domain/models/asyncapi-document.js";
+import type { AsyncAPIConsolidatedState } from "../state.js";
 
 /** A discovered operation from decorator state or bare namespace scanning. */
 export interface DiscoveredOp {
@@ -36,6 +37,12 @@ export interface DocumentBuildContext {
   opDocs: Map<string, string>;
   program: Program;
 }
+
+/** Standard signature shared by every document builder function. */
+export type BuilderFn = (
+  state: AsyncAPIConsolidatedState,
+  ctx: DocumentBuildContext,
+) => void;
 
 /** Extract the name from a TypeSpec Type, if it has one. */
 export function nameOfType(type: Type): string | undefined {
