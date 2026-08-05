@@ -70,11 +70,7 @@
 `test/validation/studio-compatibility.test.ts` uses a complex return type for `parseWithAsyncAPIParser`:
 
 ```typescript
-document: ReturnType <
-  ReturnType <
-  (InstanceType<typeof Parser>)["parse"] >
-  ["then"] >
-  ["document"];
+document: ReturnType < (ReturnType<InstanceType<typeof Parser>["parse"]>)["then"] > ["document"];
 ```
 
 This is unreadable and fragile — if the parser API changes, this type expression breaks in a confusing way. I should have used `Awaited<ReturnType<Parser["parse"]>>["document"]` or just `any` with a comment.

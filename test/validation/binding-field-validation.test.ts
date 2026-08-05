@@ -6,6 +6,7 @@
  */
 
 import { processBindings } from "../../src/validation/binding-validator.js";
+import { validateBindingFields } from "../../src/validation/binding-field-validator.js";
 
 describe("binding field validation", () => {
   it("catches invalid MQTT qos value", () => {
@@ -186,5 +187,49 @@ describe("binding field validation", () => {
       "channel",
     );
     expect(bindings.ws).toBeDefined();
+  });
+
+  it("catches value exceeding max constraint (IBM MQ maxMsgLength)", () => {
+    const { issues } = processBindings(
+      { ibmmq: { maxMsgLength: 104_857_601 } },
+      "channel",
+    );
+    const maxIssue = issues.find((i) => i.format.field === "maxMsgLength");
+    expect(maxIssue).toBeDefined();
+    expect(maxIssue!.code).toBe("invalid-binding-field");
+    expect(maxIssue!.format.max).toBe(104_857_600);
+  });
+
+  it("accepts value within max constraint (IBM MQ maxMsgLength)", () => {
+    const { issues } = processBindings(
+      { ibmmq: { maxMsgLength: 1024 } },
+      "channel",
+    );
+    const maxIssue = issues.find((i) => i.format.field === "maxMsgLength");
+    expect(maxIssue).toBeUndefined();
+  });
+
+  it("catches value below min constraint (IBM MQ maxMsgLength)", () => {
+    const { issues } = processBindings(
+      { ibmmq: { maxMsgLength: -1 } },
+      "channel",
+    );
+    const minIssue = issues.find((i) => i.format.field === "maxMsgLength");
+    expect(minIssue).toBeDefined();
+    expect(minIssue!.format.min).toBe(0);
+  });
+
+  it("returns no issues for protocol not in field rules (direct call)", () => {
+    const issues = validateBindingFields("fakeProto", "channel", {
+      someField: "value",
+    });
+    expect(issues).toStrictEqual([]);
+  });
+
+  it("returns no issues for target kind without rules (direct call)", () => {
+    const issues = validateBindingFields("kafka", "server", {
+      groupId: "test",
+    });
+    expect(issues).toStrictEqual([]);
   });
 });
