@@ -66,60 +66,50 @@ export function validateBindingFields(
         typeof value === "number" &&
         Number.isInteger(value);
       if (!isCoercibleInteger) {
-        issues.push({
-          code: "invalid-binding-field",
-          key: field,
-          format: {
-            actual: typeof value,
-            expected: rule.type,
-            field,
-            protocol,
-          },
+        pushFieldError(issues, field, protocol, {
+          actual: typeof value,
+          expected: rule.type,
         });
         continue;
       }
     }
 
     if (rule.enum && !rule.enum.includes(value)) {
-      issues.push({
-        code: "invalid-binding-field",
-        key: field,
-        format: {
-          actual: String(value),
-          field,
-          protocol,
-          validValues: rule.enum.join(", "),
-        },
+      pushFieldError(issues, field, protocol, {
+        actual: String(value),
+        validValues: rule.enum.join(", "),
       });
     }
 
     if (typeof value === "number") {
       if (rule.min !== undefined && value < rule.min) {
-        issues.push({
-          code: "invalid-binding-field",
-          key: field,
-          format: {
-            actual: value,
-            field,
-            min: rule.min,
-            protocol,
-          },
+        pushFieldError(issues, field, protocol, {
+          actual: value,
+          min: rule.min,
         });
       }
       if (rule.max !== undefined && value > rule.max) {
-        issues.push({
-          code: "invalid-binding-field",
-          key: field,
-          format: {
-            actual: value,
-            field,
-            max: rule.max,
-            protocol,
-          },
+        pushFieldError(issues, field, protocol, {
+          actual: value,
+          max: rule.max,
         });
       }
     }
   }
 
   return issues;
+}
+
+/** Append an `invalid-binding-field` issue to the issues array. */
+function pushFieldError(
+  issues: BindingFieldIssue[],
+  field: string,
+  protocol: string,
+  format: Record<string, unknown>,
+): void {
+  issues.push({
+    code: "invalid-binding-field",
+    format: { field, protocol, ...format },
+    key: field,
+  });
 }

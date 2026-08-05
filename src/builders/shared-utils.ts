@@ -89,26 +89,29 @@ export function operationAction(
   return type === "publish" ? "send" : "receive";
 }
 
-/** Extract message model names from an Operation type's return type.
+/**
+ * Extract message model `selector(type)` values from an Operation's return type.
  *
  * Supports single model returns (`op foo(): Bar`) and union returns
- * (`op foo(): Bar | Baz`) for multi-message operations.
+ * (`op foo(): Bar | Baz`) for multi-message operations. The `selector` is
+ * applied to each named model type; use `t => t.name` for string names or
+ * `t => t` to collect the Type objects themselves.
  */
-export function returnModelNames(type: Type): string[] {
+export function returnModels<T>(type: Type, selector: (t: Type) => T): T[] {
   if (type.kind !== "Operation") {
     return [];
   }
   const rt = type.returnType;
 
   if (rt.kind === "Union") {
-    const names: string[] = [];
+    const out: T[] = [];
     for (const variant of rt.variants.values()) {
       const v = variant.type;
       if ("name" in v && typeof v.name === "string" && v.name) {
-        names.push(v.name);
+        out.push(selector(v));
       }
     }
-    return names;
+    return out;
   }
 
   if (
@@ -117,40 +120,20 @@ export function returnModelNames(type: Type): string[] {
     rt.name &&
     rt.kind !== "Operation"
   ) {
-    return [rt.name];
+    return [selector(rt)];
   }
 
   return [];
 }
 
+/** Extract message model names from an Operation type's return type. */
+export function returnModelNames(type: Type): string[] {
+  return returnModels(type, (t) => (t as { name: string }).name);
+}
+
 /** Extract message model Type objects from an Operation type's return type. */
 export function returnModelTypes(type: Type): Type[] {
-  if (type.kind !== "Operation") {
-    return [];
-  }
-  const rt = type.returnType;
-
-  if (rt.kind === "Union") {
-    const types: Type[] = [];
-    for (const variant of rt.variants.values()) {
-      const v = variant.type;
-      if ("name" in v && typeof v.name === "string" && v.name) {
-        types.push(v);
-      }
-    }
-    return types;
-  }
-
-  if (
-    "name" in rt &&
-    typeof rt.name === "string" &&
-    rt.name &&
-    rt.kind !== "Operation"
-  ) {
-    return [rt];
-  }
-
-  return [];
+  return returnModels(type, (t) => t);
 }
 
 /** Resolve the effective message key for a model type, checking @messageId overrides. */

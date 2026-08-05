@@ -46,36 +46,10 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
   }
 
   modelDeclaration(model: Model): EmitterOutput<JsonSchema> {
-    const properties: Record<string, JsonSchema> = {};
-    const required: string[] = [];
-
-    const collectProperties = (m: Model): void => {
-      if (m.baseModel) {
-        collectProperties(m.baseModel);
-      }
-      for (const [name, prop] of m.properties) {
-        if (properties[name] !== undefined) {
-          continue;
-        }
-        properties[name] = this.propertyToSchema(prop);
-        const propDoc = getDoc(this.emitter.getProgram(), prop);
-        if (
-          propDoc &&
-          typeof properties[name] === "object" &&
-          properties[name] !== null
-        ) {
-          properties[name].description = propDoc;
-        }
-        if (!prop.optional) {
-          required.push(name);
-        }
-      }
-    };
-    collectProperties(model);
-
-    const schema: JsonSchema = { properties, type: "object" };
-    if (required.length > 0) {
-      schema.required = required;
+    const collected = this.collectModelProperties(model, true);
+    const schema: JsonSchema = { properties: collected.properties, type: "object" };
+    if (collected.required.length > 0) {
+      schema.required = collected.required;
     }
 
     const doc = getDoc(this.emitter.getProgram(), model);
@@ -87,19 +61,10 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
   }
 
   modelLiteral(model: Model): EmitterOutput<JsonSchema> {
-    const properties: Record<string, JsonSchema> = {};
-    const required: string[] = [];
-
-    for (const [name, prop] of model.properties) {
-      properties[name] = this.propertyToSchema(prop);
-      if (!prop.optional) {
-        required.push(name);
-      }
-    }
-
-    const schema: JsonSchema = { properties, type: "object" };
-    if (required.length > 0) {
-      schema.required = required;
+    const collected = this.collectModelProperties(model, false);
+    const schema: JsonSchema = { properties: collected.properties, type: "object" };
+    if (collected.required.length > 0) {
+      schema.required = collected.required;
     }
     return schema;
   }
@@ -195,10 +160,14 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
     name: string,
     elementType: Type,
   ): EmitterOutput<JsonSchema> {
-    return { items: this.elementTypeToSchema(elementType), type: "array" };
+    return this.arraySchema(elementType);
   }
 
   arrayLiteral(array: Type, elementType: Type): EmitterOutput<JsonSchema> {
+    return this.arraySchema(elementType);
+  }
+
+  private arraySchema(elementType: Type): JsonSchema {
     return { items: this.elementTypeToSchema(elementType), type: "array" };
   }
 
@@ -259,6 +228,45 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
       return extracted;
     }
     return fallback(elementType);
+  }
+
+  /**
+   * Walk a Model's properties (and optionally its baseModel chain), producing
+   * the JSON Schema `properties` map and `required` array. Used by both
+   * `modelDeclaration` and `modelLiteral`.
+   */
+  private collectModelProperties(
+    model: Model,
+    includeBase: boolean,
+  ): { properties: Record<string, JsonSchema>; required: string[] } {
+    const properties: Record<string, JsonSchema> = {};
+    const required: string[] = [];
+
+    const visit = (m: Model): void => {
+      if (includeBase && m.baseModel) {
+        visit(m.baseModel);
+      }
+      for (const [name, prop] of m.properties) {
+        if (properties[name] !== undefined) {
+          continue;
+        }
+        properties[name] = this.propertyToSchema(prop);
+        const propDoc = getDoc(this.emitter.getProgram(), prop);
+        if (
+          propDoc &&
+          typeof properties[name] === "object" &&
+          properties[name] !== null
+        ) {
+          properties[name].description = propDoc;
+        }
+        if (!prop.optional) {
+          required.push(name);
+        }
+      }
+    };
+    visit(model);
+
+    return { properties, required };
   }
 
   private refForNamedType(t: Type): JsonSchema | null {

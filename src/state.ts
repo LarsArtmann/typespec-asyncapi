@@ -64,14 +64,6 @@ interface ProtocolConfigBase {
   version?: string;
 }
 
-export type KafkaConfigData = ProtocolConfigBase & {
-  protocol: "kafka";
-  partitions?: number;
-  replicationFactor?: number;
-  consumerGroup?: string;
-  sasl?: { mechanism: string; username: string; password: string };
-};
-
 export type WebSocketConfigData = ProtocolConfigBase & {
   protocol: "ws" | "wss";
   subprotocol?: string;
@@ -79,16 +71,44 @@ export type WebSocketConfigData = ProtocolConfigBase & {
   headers?: Record<string, string>;
 };
 
+/**
+ * MQTT last-will-and-testament configuration.
+ */
+export interface MqttLastWillConfig {
+  topic: string;
+  message: string;
+  qos: 0 | 1 | 2;
+  retain: boolean;
+}
+
+/**
+ * Kafka SASL authentication configuration.
+ */
+export interface KafkaSaslConfig {
+  mechanism: string;
+  username: string;
+  password: string;
+}
+
+/**
+ * Kafka Configuration State Data
+ */
+export type KafkaConfigData = ProtocolConfigBase & {
+  protocol: "kafka";
+  partitions?: number;
+  replicationFactor?: number;
+  consumerGroup?: string;
+  sasl?: KafkaSaslConfig;
+};
+
+/**
+ * MQTT Configuration State Data
+ */
 export type MqttConfigData = ProtocolConfigBase & {
   protocol: "mqtt" | "mqtt5";
   qos?: 0 | 1 | 2;
   retain?: boolean;
-  lastWill?: {
-    topic: string;
-    message: string;
-    qos: 0 | 1 | 2;
-    retain: boolean;
-  };
+  lastWill?: MqttLastWillConfig;
 };
 
 export type GenericProtocolConfigData = ProtocolConfigBase & {

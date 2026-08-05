@@ -6,7 +6,9 @@
  */
 
 import type {
+  KafkaSaslConfig,
   MessageConfigData,
+  MqttLastWillConfig,
   OperationReplyData,
   ProtocolConfigData,
 } from "./state.js";
@@ -108,18 +110,13 @@ export const storeServerConfig = (
     program,
     stateSymbols.serverConfigs,
   );
-  const existing = map.get(target);
   const newEntry: ServerConfigEntry = {
     description: (config.description as string) ?? `Server for ${target.name}`,
     name: config.name,
     protocol: normalizeProtocol((config.protocol as string) ?? "http"),
     url: (config.url as string) ?? "http://localhost:3000",
   };
-  if (Array.isArray(existing)) {
-    map.set(target, [...existing, newEntry]);
-  } else {
-    map.set(target, [newEntry]);
-  }
+  appendToStateArray(map, target, newEntry);
 };
 
 export const storeSecurityConfig = (
@@ -135,17 +132,25 @@ export const storeSecurityConfig = (
     program,
     stateSymbols.securityConfigs,
   );
-  const existing = map.get(target);
-  const newEntry: SecurityConfigEntry = {
-    name: config.name,
-    scheme: config.scheme,
-  };
-  if (Array.isArray(existing)) {
-    map.set(target, [...existing, newEntry]);
-  } else {
-    map.set(target, [newEntry]);
-  }
+  appendToStateArray(map, target, { name: config.name, scheme: config.scheme });
 };
+
+/**
+ * Append `entry` to the array stored under `key` in `map`, initializing the
+ * entry to `[entry]` if the key has no existing value.
+ */
+function appendToStateArray<K, V>(
+  map: Map<K, V[]>,
+  key: K,
+  entry: V,
+): void {
+  const existing = map.get(key);
+  if (Array.isArray(existing)) {
+    map.set(key, [...existing, entry]);
+  } else {
+    map.set(key, [entry]);
+  }
+}
 
 export const storeTags = (
   program: Program,
@@ -243,11 +248,7 @@ export const storeProtocolConfig = (
         partitions: (config.partitions as number) ?? 1,
         protocol: "kafka",
         replicationFactor: (config.replicationFactor as number) ?? 1,
-        sasl: (config.sasl as {
-          mechanism: string;
-          username: string;
-          password: string;
-        }) ?? {
+        sasl: (config.sasl as KafkaSaslConfig) ?? {
           mechanism: "plain",
           password: "",
           username: "",
@@ -270,12 +271,7 @@ export const storeProtocolConfig = (
     case "mqtt5": {
       protocolConfig = {
         ...base,
-        lastWill: (config.lastWill as {
-          topic: string;
-          message: string;
-          qos: 0 | 1 | 2;
-          retain: boolean;
-        }) ?? {
+        lastWill: (config.lastWill as MqttLastWillConfig) ?? {
           message: "",
           qos: 1,
           retain: false,
