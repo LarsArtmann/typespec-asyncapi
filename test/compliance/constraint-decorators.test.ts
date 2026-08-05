@@ -548,4 +548,74 @@ describe("spec Compliance: Constraint Decorators", () => {
       expect(schema.examples).toStrictEqual([{ name: "Test Event" }]);
     });
   });
+
+  describe("@visibility → readOnly/writeOnly", () => {
+    it("maps @visibility(Lifecycle.Read) to readOnly", async () => {
+      const doc = await compileAndValidateOrThrow(`
+        namespace Test;
+        model Event {
+          @visibility(Lifecycle.Read)
+          createdAt: string;
+        }
+        @channel("events")
+        op publish(): Event;
+      `);
+      expect(propSchema(doc, "Event", "createdAt").readOnly).toBe(true);
+      expect(propSchema(doc, "Event", "createdAt").writeOnly).toBeUndefined();
+    });
+
+    it("maps @visibility(Lifecycle.Create) to writeOnly", async () => {
+      const doc = await compileAndValidateOrThrow(`
+        namespace Test;
+        model Event {
+          @visibility(Lifecycle.Create)
+          writeOnlyField: string;
+        }
+        @channel("events")
+        op publish(): Event;
+      `);
+      expect(propSchema(doc, "Event", "writeOnlyField").writeOnly).toBe(true);
+      expect(propSchema(doc, "Event", "writeOnlyField").readOnly).toBeUndefined();
+    });
+
+    it("maps @visibility(Lifecycle.Update) to writeOnly", async () => {
+      const doc = await compileAndValidateOrThrow(`
+        namespace Test;
+        model Event {
+          @visibility(Lifecycle.Update)
+          updatedAt: string;
+        }
+        @channel("events")
+        op publish(): Event;
+      `);
+      expect(propSchema(doc, "Event", "updatedAt").writeOnly).toBe(true);
+    });
+
+    it("does not set readOnly or writeOnly when both Read and Write visible", async () => {
+      const doc = await compileAndValidateOrThrow(`
+        namespace Test;
+        model Event {
+          @visibility(Lifecycle.Read, Lifecycle.Create)
+          name: string;
+        }
+        @channel("events")
+        op publish(): Event;
+      `);
+      expect(propSchema(doc, "Event", "name").readOnly).toBeUndefined();
+      expect(propSchema(doc, "Event", "name").writeOnly).toBeUndefined();
+    });
+
+    it("does not set readOnly or writeOnly when no visibility decorator", async () => {
+      const doc = await compileAndValidateOrThrow(`
+        namespace Test;
+        model Event {
+          name: string;
+        }
+        @channel("events")
+        op publish(): Event;
+      `);
+      expect(propSchema(doc, "Event", "name").readOnly).toBeUndefined();
+      expect(propSchema(doc, "Event", "name").writeOnly).toBeUndefined();
+    });
+  });
 });

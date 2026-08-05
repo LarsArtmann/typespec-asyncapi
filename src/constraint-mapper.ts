@@ -17,6 +17,7 @@ import type { Enum, Model, ModelProperty, Program, Scalar, Type, Union } from "@
 import {
   getExamples,
   getFormat,
+  getLifecycleVisibilityEnum,
   getMaxLength,
   getMaxItems,
   getMaxValue,
@@ -27,6 +28,7 @@ import {
   getMinValueExclusive,
   getPattern,
   getSummary,
+  getVisibilityForClass,
   isDeprecated,
   serializeValueAsJson,
 } from "@typespec/compiler";
@@ -68,6 +70,35 @@ export function applyExamples(program: Program, target: ExampleTarget, schema: J
   }
 }
 
+/**
+ * Apply `@visibility` decorator to `readOnly`/`writeOnly` keywords.
+ * Maps TypeSpec Lifecycle visibility to JSON Schema:
+ *   Read only → `readOnly: true`
+ *   Create/Update only → `writeOnly: true`
+ *   Both or neither → no keyword (fully visible)
+ */
+export function applyVisibility(program: Program, prop: ModelProperty, schema: JsonSchema): void {
+  const lifecycle = getLifecycleVisibilityEnum(program);
+  if (!lifecycle) {
+    return;
+  }
+
+  const modifiers = getVisibilityForClass(program, prop, lifecycle);
+  if (modifiers.size === 0) {
+    return;
+  }
+
+  const names = new Set([...modifiers.values()].map((m) => m.name));
+  const hasRead = names.has("Read");
+  const hasWrite = names.has("Create") || names.has("Update");
+
+  if (hasRead && !hasWrite) {
+    schema.readOnly = true;
+  } else if (hasWrite && !hasRead) {
+    schema.writeOnly = true;
+  }
+}
+
 export function applyConstraints(
   program: Program,
   prop: ModelProperty,
@@ -76,6 +107,7 @@ export function applyConstraints(
   applyDeprecated(program, prop, schema);
   applySummary(program, prop, schema);
   applyExamples(program, prop, schema);
+  applyVisibility(program, prop, schema);
 
   if (schema.$ref) {
     return schema;
