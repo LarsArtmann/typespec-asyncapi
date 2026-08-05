@@ -2,10 +2,7 @@
  * Security Schemes Tests
  */
 
-import {
-  compileAndGetAsyncAPI,
-  createAsyncAPITestHost,
-} from "../utils/test-helpers.js";
+import { compileAndGetAsyncAPI, createAsyncAPITestHost } from "../utils/test-helpers.js";
 
 describe("oAuth2 Flows", () => {
   it("should support OAuth2 Authorization Code flow", async () => {
@@ -312,9 +309,7 @@ describe("oAuth2 Flows", () => {
     const securitySchemes = spec?.components?.securitySchemes;
     expect(securitySchemes).toBeDefined();
     expect(securitySchemes?.oauth2Refresh.type).toBe("oauth2");
-    expect(
-      securitySchemes?.oauth2Refresh.flows?.authorizationCode,
-    ).toBeDefined();
+    expect(securitySchemes?.oauth2Refresh.flows?.authorizationCode).toBeDefined();
   });
 
   it("should support OAuth2 with OpenID Connect", async () => {
@@ -889,8 +884,7 @@ describe("oAuth2 Flows", () => {
     expect(spec).toBeDefined();
     const scheme = spec?.components?.securitySchemes?.oauth2LegacyScopes;
     expect(scheme).toBeDefined();
-    const flow = scheme?.flows?.authorizationCode as
-      Record<string, unknown> | undefined;
+    const flow = scheme?.flows?.authorizationCode as Record<string, unknown> | undefined;
     expect(flow).toBeDefined();
     expect(flow?.availableScopes).toStrictEqual({ legacyRead: "Legacy read" });
     expect(flow?.scopes).toBeUndefined();
@@ -932,8 +926,7 @@ describe("oAuth2 Flows", () => {
     expect(spec).toBeDefined();
     const scheme = spec?.components?.securitySchemes?.oauth2AvailScopes;
     expect(scheme).toBeDefined();
-    const flow = scheme?.flows?.clientCredentials as
-      Record<string, unknown> | undefined;
+    const flow = scheme?.flows?.clientCredentials as Record<string, unknown> | undefined;
     expect(flow).toBeDefined();
     expect(flow?.availableScopes).toStrictEqual({ modernRead: "Modern read" });
     expect(flow?.scopes).toBeUndefined();
