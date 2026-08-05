@@ -15,6 +15,7 @@
 
 import type { Enum, Model, ModelProperty, Program, Scalar, Type, Union } from "@typespec/compiler";
 import {
+  getDoc,
   getExamples,
   getFormat,
   getLifecycleVisibilityEnum,

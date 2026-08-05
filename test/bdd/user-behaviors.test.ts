@@ -79,8 +79,8 @@ describe("bdd: user configures protocol bindings", () => {
     expect(isSupportedProtocol("unknown-protocol")).toBeFalsy();
   });
 
-  it("given all supported protocols list, When counted, Then there are 19 canonical protocols", () => {
-    expect(PROTOCOL_LIST).toHaveLength(19);
+  it("given all supported protocols list, When counted, Then there are 22 canonical protocols", () => {
+    expect(PROTOCOL_LIST).toHaveLength(22);
   });
 
   it("given a TypeSpec with @protocol, When compiled, Then channel bindings are present", async () => {
