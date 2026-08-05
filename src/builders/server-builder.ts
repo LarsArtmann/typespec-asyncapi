@@ -22,7 +22,8 @@ export const buildServers: BuilderFn = (state, ctx) => {
 
       const varMatches = entry.url?.match(/\{(?<var>[^}]+)\}/gu);
       if (varMatches && varMatches.length > 0) {
-        const vars: Record<string, { default?: string; description?: string }> = {};
+        const vars: Record<string, { default?: string; description?: string }> =
+          {};
         for (const match of varMatches) {
           const varName = match.slice(1, -1);
           vars[varName] = { description: `Server variable: ${varName}` };

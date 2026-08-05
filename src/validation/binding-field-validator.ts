@@ -35,7 +35,8 @@ export function validateBindingFields(
   const issues: BindingFieldIssue[] = [];
 
   const protocolRules = GENERATED_FIELD_RULES[protocol] as
-    Record<string, TargetRules> | undefined;
+    | Record<string, TargetRules>
+    | undefined;
   if (!protocolRules) {
     return issues;
   }

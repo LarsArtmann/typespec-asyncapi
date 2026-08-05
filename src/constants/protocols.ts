@@ -50,7 +50,9 @@ export type ProtocolAlias = keyof typeof PROTOCOL_ALIASES;
 /** Any protocol value that the emitter accepts as user input. */
 export type AcceptedProtocol = AsyncAPIProtocol | ProtocolAlias;
 
-export const SUPPORTED_PROTOCOLS: ReadonlySet<AsyncAPIProtocol> = new Set(PROTOCOLS);
+export const SUPPORTED_PROTOCOLS: ReadonlySet<AsyncAPIProtocol> = new Set(
+  PROTOCOLS,
+);
 
 export const PROTOCOL_LIST: readonly AsyncAPIProtocol[] = PROTOCOLS;
 
@@ -62,7 +64,9 @@ const ALIAS_KEYS = new Set<string>(Object.keys(PROTOCOL_ALIASES));
  */
 export function isSupportedProtocol(value: string): value is AcceptedProtocol {
   const lower = value.toLowerCase();
-  return SUPPORTED_PROTOCOLS.has(lower as AsyncAPIProtocol) || ALIAS_KEYS.has(lower);
+  return (
+    SUPPORTED_PROTOCOLS.has(lower as AsyncAPIProtocol) || ALIAS_KEYS.has(lower)
+  );
 }
 
 /**
