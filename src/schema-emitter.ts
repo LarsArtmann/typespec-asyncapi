@@ -31,6 +31,7 @@ import type {
   SourceFile,
 } from "@typespec/asset-emitter";
 import { getDoc } from "@typespec/compiler";
+import { applyConstraints } from "./constraint-mapper.js";
 import type { AsyncAPIEmitterOptions } from "./infrastructure/configuration/asyncAPIEmitterOptions.js";
 import type { JsonSchema } from "./domain/models/asyncapi-document.js";
 import { intrinsicToSchema } from "./intrinsic-mapping.js";
@@ -257,7 +258,8 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<JsonSchema, AsyncAPIEmitt
   }
 
   private propertyToSchema(prop: ModelProperty): JsonSchema {
-    return this.refOrFallback(prop.type, (t) => this.typeToSchema(t));
+    const schema = this.refOrFallback(prop.type, (t) => this.typeToSchema(t));
+    return applyConstraints(this.emitter.getProgram(), prop, schema);
   }
 
   private typeToSchema(t: Type): JsonSchema {

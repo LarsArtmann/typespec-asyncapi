@@ -1,0 +1,96 @@
+/**
+ * Constraint Mapper — bridges TypeSpec stdlib decorators to JSON Schema keywords.
+ *
+ * TypeSpec provides 11 constraint/metadata decorators (`@minValue`, `@pattern`,
+ * `@deprecated`, etc.) that users write on model properties. The compiler exposes
+ * getter functions for each. This module reads those getters and merges the values
+ * onto a `JsonSchema` object, producing the correct JSON Schema keywords.
+ *
+ * Validation keywords (minimum, pattern, etc.) are only applied to inline schemas.
+ * When the schema is a `$ref`, validation siblings are semantically ignored by
+ * JSON Schema Draft-07, so they are skipped. Metadata (`deprecated`) is always
+ * applied, matching the existing pattern where `description` is set as a `$ref`
+ * sibling by `collectModelProperties` in `schema-emitter.ts`.
+ */
+
+import type { ModelProperty, Program } from "@typespec/compiler";
+import {
+  getFormat,
+  getMaxLength,
+  getMaxItems,
+  getMaxValue,
+  getMaxValueExclusive,
+  getMinLength,
+  getMinItems,
+  getMinValue,
+  getMinValueExclusive,
+  getPattern,
+  isDeprecated,
+} from "@typespec/compiler";
+import type { JsonSchema } from "./domain/models/asyncapi-document.js";
+
+export function applyConstraints(
+  program: Program,
+  prop: ModelProperty,
+  schema: JsonSchema,
+): JsonSchema {
+  if (isDeprecated(program, prop)) {
+    schema.deprecated = true;
+  }
+
+  if (schema.$ref) {
+    return schema;
+  }
+
+  const minVal = getMinValue(program, prop);
+  if (minVal !== undefined) {
+    schema.minimum = minVal;
+  }
+
+  const maxVal = getMaxValue(program, prop);
+  if (maxVal !== undefined) {
+    schema.maximum = maxVal;
+  }
+
+  const minExc = getMinValueExclusive(program, prop);
+  if (minExc !== undefined) {
+    schema.exclusiveMinimum = minExc;
+  }
+
+  const maxExc = getMaxValueExclusive(program, prop);
+  if (maxExc !== undefined) {
+    schema.exclusiveMaximum = maxExc;
+  }
+
+  const minLen = getMinLength(program, prop);
+  if (minLen !== undefined) {
+    schema.minLength = minLen;
+  }
+
+  const maxLen = getMaxLength(program, prop);
+  if (maxLen !== undefined) {
+    schema.maxLength = maxLen;
+  }
+
+  const pattern = getPattern(program, prop);
+  if (pattern !== undefined) {
+    schema.pattern = pattern;
+  }
+
+  const format = getFormat(program, prop);
+  if (format !== undefined) {
+    schema.format = format;
+  }
+
+  const minItems = getMinItems(program, prop);
+  if (minItems !== undefined) {
+    schema.minItems = minItems;
+  }
+
+  const maxItems = getMaxItems(program, prop);
+  if (maxItems !== undefined) {
+    schema.maxItems = maxItems;
+  }
+
+  return schema;
+}
