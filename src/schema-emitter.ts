@@ -30,13 +30,7 @@ import type {
   NoEmit,
   SourceFile,
 } from "@typespec/asset-emitter";
-import { getDoc } from "@typespec/compiler";
-import {
-  applyConstraints,
-  applyDeprecated,
-  applyExamples,
-  applySummary,
-} from "./constraint-mapper.js";
+import { applyConstraints, applyMetadata } from "./constraint-mapper.js";
 import type { AsyncAPIEmitterOptions } from "./infrastructure/configuration/asyncAPIEmitterOptions.js";
 import type { JsonSchema } from "./domain/models/asyncapi-document.js";
 import { intrinsicToSchema } from "./intrinsic-mapping.js";
@@ -49,11 +43,7 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<JsonSchema, AsyncAPIEmitt
   }
   modelDeclaration(model: Model): EmitterOutput<JsonSchema> {
     const schema = this.collectPropertiesSchema(model, true);
-    const program = this.emitter.getProgram();
-    applyDocDescription(program, model, schema);
-    applyDeprecated(program, model, schema);
-    applySummary(program, model, schema);
-    applyExamples(program, model, schema);
+    applyMetadata(this.emitter.getProgram(), model, schema);
     return this.emitter.result.declaration(model.name, schema);
   }
   modelLiteral(model: Model): EmitterOutput<JsonSchema> {
@@ -162,11 +152,7 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<JsonSchema, AsyncAPIEmitt
   interfaceDeclaration = (_iface: Interface): EmitterOutput<JsonSchema> => this.returnNone();
   enumDeclaration(en: Enum, name: string): EmitterOutput<JsonSchema> {
     const schema = this.buildEnumSchema(en.members);
-    const program = this.emitter.getProgram();
-    applyDocDescription(program, en, schema);
-    applyDeprecated(program, en, schema);
-    applySummary(program, en, schema);
-    applyExamples(program, en, schema);
+    applyMetadata(this.emitter.getProgram(), en, schema);
     return this.emitter.result.declaration(name, schema);
   }
 
@@ -229,10 +215,6 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<JsonSchema, AsyncAPIEmitt
           continue;
         }
         properties[name] = this.propertyToSchema(prop);
-        const propDoc = getDoc(this.emitter.getProgram(), prop);
-        if (propDoc && typeof properties[name] === "object" && properties[name] !== null) {
-          properties[name].description = propDoc;
-        }
         if (!prop.optional) {
           required.push(name);
         }
@@ -328,13 +310,5 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<JsonSchema, AsyncAPIEmitt
       return { properties: {}, type: "object" };
     }
     return { type: "string" };
-  }
-}
-
-/** Copy `@doc` text from a TypeSpec target onto a JSON Schema's `description`. */
-function applyDocDescription(program: Program, target: unknown, schema: JsonSchema): void {
-  const doc = getDoc(program, target as Parameters<typeof getDoc>[1]);
-  if (doc) {
-    schema.description = doc;
   }
 }

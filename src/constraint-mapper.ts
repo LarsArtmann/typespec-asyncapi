@@ -111,11 +111,27 @@ export function applyVisibility(program: Program, prop: ModelProperty, schema: J
   }
 }
 
+/**
+ * Apply all metadata decorators/directives (doc, deprecated, summary, examples)
+ * to a schema in one call. Used for model and enum declarations.
+ */
+export function applyMetadata(
+  program: Program,
+  target: ExampleTarget,
+  schema: JsonSchema,
+): void {
+  applyDocDescription(program, target, schema);
+  applyDeprecated(program, target, schema);
+  applySummary(program, target, schema);
+  applyExamples(program, target, schema);
+}
+
 export function applyConstraints(
   program: Program,
   prop: ModelProperty,
   schema: JsonSchema,
 ): JsonSchema {
+  applyDocDescription(program, prop, schema);
   applyDeprecated(program, prop, schema);
   applySummary(program, prop, schema);
   applyExamples(program, prop, schema);
