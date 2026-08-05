@@ -8,11 +8,13 @@
  */
 
 import type { BindingDiagnosticCode } from "./binding-validator.js";
+import { pushIssue } from "./binding-validator.js";
 import { GENERATED_FIELD_RULES } from "../constants/generated-bindings.js";
 
 export interface BindingFieldIssue {
   code: BindingDiagnosticCode;
   key: string;
+  severity: "error" | "warning";
   format: Record<string, unknown>;
 }
 
@@ -83,16 +85,10 @@ export function validateBindingFields(
 
     if (typeof value === "number") {
       if (rule.min !== undefined && value < rule.min) {
-        pushFieldError(issues, field, protocol, {
-          actual: value,
-          min: rule.min,
-        });
+        pushFieldError(issues, field, protocol, { actual: value, min: rule.min });
       }
       if (rule.max !== undefined && value > rule.max) {
-        pushFieldError(issues, field, protocol, {
-          actual: value,
-          max: rule.max,
-        });
+        pushFieldError(issues, field, protocol, { actual: value, max: rule.max });
       }
     }
   }
@@ -107,9 +103,9 @@ function pushFieldError(
   protocol: string,
   format: Record<string, unknown>,
 ): void {
-  issues.push({
-    code: "invalid-binding-field",
-    format: { field, protocol, ...format },
-    key: field,
+  pushIssue(issues, field, "invalid-binding-field", "warning", {
+    field,
+    protocol,
+    ...format,
   });
 }

@@ -31,57 +31,35 @@ export const reportDiagnostic = (
   });
 };
 
-/**
- * If `valid` is false, report the given diagnostic and return false; else return true.
- * Shared body used by `validateConfig` and `validateNonEmptyString`.
- */
-function reportAndReturnFalse(
-  valid: boolean,
-  context: DecoratorContext,
-  diagnosticCode: keyof typeof $lib.diagnostics,
-  target: unknown,
-  format?: Record<string, unknown>,
-): boolean {
-  if (!valid) {
-    reportDiagnostic(context, diagnosticCode, target, format);
-    return false;
-  }
-  return true;
-}
-
-/**
- * Validate that a config value is present; if not, report the given diagnostic and return false.
- */
-export const validateConfig = (
-  config: unknown,
-  context: DecoratorContext,
-  target: unknown,
-  diagnosticCode: keyof typeof $lib.diagnostics,
-  format?: Record<string, unknown>,
-): boolean =>
-  reportAndReturnFalse(Boolean(config), context, diagnosticCode, target, format);
-
-/**
- * Validate that a value is a non-empty string; if not, report the given diagnostic and return false.
- *
- * Used by string-argument decorators (`@operationId`, `@messageId`, `@header`,
- * `@correlationId`) to eliminate the repeated `typeof !== "string" || length === 0`
- * guard + `reportDiagnostic` + `return` boilerplate.
- */
+/** Validate that a value is a non-empty string; if not, report and return false. */
 export const validateNonEmptyString = (
   value: unknown,
   context: DecoratorContext,
   target: unknown,
   diagnosticCode: keyof typeof $lib.diagnostics,
   format?: Record<string, unknown>,
-): value is string =>
-  reportAndReturnFalse(
-    typeof value === "string" && value.length > 0,
-    context,
-    diagnosticCode,
-    target,
-    format,
-  );
+): value is string => {
+  if (typeof value === "string" && value.length > 0) {
+    return true;
+  }
+  reportDiagnostic(context, diagnosticCode, target, format);
+  return false;
+};
+
+/** Validate that a config value is present; if not, report and return false. */
+export const validateConfig = (
+  config: unknown,
+  context: DecoratorContext,
+  target: unknown,
+  diagnosticCode: keyof typeof $lib.diagnostics,
+  format?: Record<string, unknown>,
+): boolean => {
+  if (config) {
+    return true;
+  }
+  reportDiagnostic(context, diagnosticCode, target, format);
+  return false;
+};
 
 /**
  * Higher-order decorator factory: validate config presence, then if valid, invoke `run`.

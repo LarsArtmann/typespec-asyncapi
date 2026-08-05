@@ -156,7 +156,7 @@ function stringifyBindingVersion(value: unknown): string {
 }
 
 /** Push a `BindingValidationIssue` onto the issues array. */
-function pushIssue(
+export function pushIssue(
   issues: BindingValidationIssue[],
   key: string,
   code: BindingDiagnosticCode,
