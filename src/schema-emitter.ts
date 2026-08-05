@@ -36,7 +36,10 @@ import { intrinsicToSchema } from "./intrinsic-mapping.js";
 import { extractValue } from "./extract-value.js";
 import { isStdlibType } from "./stdlib-helpers.js";
 
-export class AsyncAPISchemaEmitter extends TypeEmitter<JsonSchema, AsyncAPIEmitterOptions> {
+export class AsyncAPISchemaEmitter extends TypeEmitter<
+  JsonSchema,
+  AsyncAPIEmitterOptions
+> {
   namespaceDeclaration(_namespace: Namespace): EmitterOutput<JsonSchema> {
     return this.emitter.result.none();
   }
@@ -55,7 +58,11 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<JsonSchema, AsyncAPIEmitt
         }
         properties[name] = this.propertyToSchema(prop);
         const propDoc = getDoc(this.emitter.getProgram(), prop);
-        if (propDoc && typeof properties[name] === "object" && properties[name] !== null) {
+        if (
+          propDoc &&
+          typeof properties[name] === "object" &&
+          properties[name] !== null
+        ) {
           properties[name].description = propDoc;
         }
         if (!prop.optional) {
@@ -132,7 +139,9 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<JsonSchema, AsyncAPIEmitt
   }
 
   enum(en: Enum): EmitterOutput<JsonSchema> {
-    const values = [...en.members.values()].map((m: EnumMember) => m.value ?? m.name);
+    const values = [...en.members.values()].map(
+      (m: EnumMember) => m.value ?? m.name,
+    );
     return { enum: values, type: "string" };
   }
 
@@ -145,10 +154,16 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<JsonSchema, AsyncAPIEmitt
   }
 
   scalarDeclaration(scalar: Scalar, name: string): EmitterOutput<JsonSchema> {
-    return this.emitter.result.declaration(name, intrinsicToSchema(scalar.name));
+    return this.emitter.result.declaration(
+      name,
+      intrinsicToSchema(scalar.name),
+    );
   }
 
-  scalarInstantiation(scalar: Scalar, name: string | undefined): EmitterOutput<JsonSchema> {
+  scalarInstantiation(
+    scalar: Scalar,
+    name: string | undefined,
+  ): EmitterOutput<JsonSchema> {
     if (name) {
       return this.scalarDeclaration(scalar, name);
     }
@@ -168,11 +183,17 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<JsonSchema, AsyncAPIEmitt
   }
 
   tuple(tuple: Tuple): EmitterOutput<JsonSchema> {
-    const items = tuple.values.map((v: Type) => extractValue(this.emitter.emitTypeReference(v)));
+    const items = tuple.values.map((v: Type) =>
+      extractValue(this.emitter.emitTypeReference(v)),
+    );
     return { items: { enum: items, type: "array" }, type: "array" };
   }
 
-  arrayDeclaration(array: Type, name: string, elementType: Type): EmitterOutput<JsonSchema> {
+  arrayDeclaration(
+    array: Type,
+    name: string,
+    elementType: Type,
+  ): EmitterOutput<JsonSchema> {
     return { items: this.elementTypeToSchema(elementType), type: "array" };
   }
 
@@ -208,7 +229,9 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<JsonSchema, AsyncAPIEmitt
   }
 
   enumDeclaration(en: Enum, name: string): EmitterOutput<JsonSchema> {
-    const values = [...en.members.values()].map((m: EnumMember) => m.value ?? m.name);
+    const values = [...en.members.values()].map(
+      (m: EnumMember) => m.value ?? m.name,
+    );
     const schema: JsonSchema = { enum: values, type: "string" };
     const doc = getDoc(this.emitter.getProgram(), en);
     if (doc) {
@@ -269,7 +292,10 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<JsonSchema, AsyncAPIEmitt
       const variants = [...tUnion.variants.values()].map((v) => {
         const inner = v.type;
         const innerKind = (inner as { kind: string }).kind;
-        if (innerKind === "String" && (inner as { value?: string }).value !== undefined) {
+        if (
+          innerKind === "String" &&
+          (inner as { value?: string }).value !== undefined
+        ) {
           return (inner as { value: string }).value;
         }
         const s = this.typeToSchema(inner);
@@ -283,7 +309,10 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<JsonSchema, AsyncAPIEmitt
         anyOf: variants.map((v) => (typeof v === "string" ? { const: v } : v)),
       };
     }
-    if (kind === "Model" && (t as { indexer?: { key?: unknown; value?: Type } }).indexer) {
+    if (
+      kind === "Model" &&
+      (t as { indexer?: { key?: unknown; value?: Type } }).indexer
+    ) {
       const { indexer } = t as { indexer: { key: Type; value: Type } };
       const valueRef = this.refForNamedType(indexer.value);
       return {

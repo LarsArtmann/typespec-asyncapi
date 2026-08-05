@@ -263,7 +263,11 @@ export function assertCompilationSuccess(result: {
   exitCode: number;
   errors?: string[];
   asyncapiDoc?: unknown;
-}): asserts result is { exitCode: 0; errors: []; asyncapiDoc: ParsedAsyncAPIDocument } {
+}): asserts result is {
+  exitCode: 0;
+  errors: [];
+  asyncapiDoc: ParsedAsyncAPIDocument;
+} {
   if (result.exitCode !== 0) {
     throw new Error(
       `Compilation failed with exit code ${result.exitCode}. Errors: ${result.errors?.join(", ") || "none"}`,

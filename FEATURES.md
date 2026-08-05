@@ -23,41 +23,41 @@
 
 ## Schema Generation
 
-| Feature                     | Status           | Evidence                                                        |
-| --------------------------- | ---------------- | --------------------------------------------------------------- |
-| Model → JSON Schema         | FULLY_FUNCTIONAL | `modelDeclaration()` handles properties, types, required        |
-| Inheritance (base models)   | FULLY_FUNCTIONAL | `collectProperties()` walks `baseModel` chain                   |
-| `@doc` → `description`      | FULLY_FUNCTIONAL | `getDoc()` on models and properties                             |
-| Optional vs required fields | FULLY_FUNCTIONAL | `!prop.optional` → `required` array                             |
-| Array types                 | FULLY_FUNCTIONAL | `{ type: "array", items: ... }`                                 |
-| Union/enum types            | FULLY_FUNCTIONAL | String unions → `{ type: "string", enum: [...] }`               |
-| Scalar type mapping         | FULLY_FUNCTIONAL | All TypeSpec scalars mapped (int32, float64, utcDateTime, etc.) |
-| Nested model references     | FULLY_FUNCTIONAL | `$ref: "#/components/schemas/ModelName"` for named models       |
-| Channel path parameters     | FULLY_FUNCTIONAL | `{var}` in address → `parameters` object on channel             |
-| Server variables            | FULLY_FUNCTIONAL | `{var}` in host → `variables` object on server                  |
-| Multi-message operations    | FULLY_FUNCTIONAL | Union return types produce multiple message refs in one operation |
+| Feature                     | Status           | Evidence                                                             |
+| --------------------------- | ---------------- | -------------------------------------------------------------------- |
+| Model → JSON Schema         | FULLY_FUNCTIONAL | `modelDeclaration()` handles properties, types, required             |
+| Inheritance (base models)   | FULLY_FUNCTIONAL | `collectProperties()` walks `baseModel` chain                        |
+| `@doc` → `description`      | FULLY_FUNCTIONAL | `getDoc()` on models and properties                                  |
+| Optional vs required fields | FULLY_FUNCTIONAL | `!prop.optional` → `required` array                                  |
+| Array types                 | FULLY_FUNCTIONAL | `{ type: "array", items: ... }`                                      |
+| Union/enum types            | FULLY_FUNCTIONAL | String unions → `{ type: "string", enum: [...] }`                    |
+| Scalar type mapping         | FULLY_FUNCTIONAL | All TypeSpec scalars mapped (int32, float64, utcDateTime, etc.)      |
+| Nested model references     | FULLY_FUNCTIONAL | `$ref: "#/components/schemas/ModelName"` for named models            |
+| Channel path parameters     | FULLY_FUNCTIONAL | `{var}` in address → `parameters` object on channel                  |
+| Server variables            | FULLY_FUNCTIONAL | `{var}` in host → `variables` object on server                       |
+| Multi-message operations    | FULLY_FUNCTIONAL | Union return types produce multiple message refs in one operation    |
 | Operation reply             | FULLY_FUNCTIONAL | `@reply` decorator emits reply with message ref and optional address |
 
 ## Decorator System
 
-| Decorator        | Status           | Evidence                                                                              |
-| ---------------- | ---------------- | ------------------------------------------------------------------------------------- |
-| `@channel`       | FULLY_FUNCTIONAL | Stores path; emitter creates channel with address                                     |
-| `@publish`       | FULLY_FUNCTIONAL | Marks operation as `action: "send"`                                                   |
-| `@subscribe`     | FULLY_FUNCTIONAL | Marks operation as `action: "receive"`                                                |
-| `@server`        | FULLY_FUNCTIONAL | Emitted as server objects with host/protocol/description; URL validation              |
-| `@message`       | FULLY_FUNCTIONAL | Stores title/description/contentType; merged into components.messages                 |
-| `@protocol`      | FULLY_FUNCTIONAL | Stores protocol config; emitted as channel bindings with auto-versioning              |
-| `@security`      | FULLY_FUNCTIONAL | Emitted as `components.securitySchemes`; multiple schemes per namespace               |
-| `@tags`          | FULLY_FUNCTIONAL | Emitted as `Tag[]` arrays on operations and messages                                  |
-| `@correlationId` | FULLY_FUNCTIONAL | Emitted as `correlationId` objects on all messages                                    |
-| `@bindings`      | FULLY_FUNCTIONAL | Emitted as `bindings` on operations/messages/servers; keys normalized, versions auto-injected. Namespace target enables server bindings (`namespace-bindings.test.ts`) |
-| `@header`        | FULLY_FUNCTIONAL | Emitted as JSON Schema `headers` on messages                                          |
-| `@reply`         | FULLY_FUNCTIONAL | Operation reply with message reference and optional address (`operation-builder.ts`)  |
-| `@defaultContentType` | FULLY_FUNCTIONAL | Sets `defaultContentType` on document root (`namespace-decorators.ts`)          |
-| `@operationId`   | FULLY_FUNCTIONAL | Overrides auto-generated operation key with explicit name (`operation-discovery.ts`) |
-| `@messageId`     | FULLY_FUNCTIONAL | Overrides auto-generated message key with explicit name (`message-builder.ts`, `shared-utils.ts`) |
-| `@apiVersion`    | FULLY_FUNCTIONAL | Sets `info.version` on document root from Namespace (`document-builder.ts`)            |
+| Decorator             | Status           | Evidence                                                                                                                                                               |
+| --------------------- | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@channel`            | FULLY_FUNCTIONAL | Stores path; emitter creates channel with address                                                                                                                      |
+| `@publish`            | FULLY_FUNCTIONAL | Marks operation as `action: "send"`                                                                                                                                    |
+| `@subscribe`          | FULLY_FUNCTIONAL | Marks operation as `action: "receive"`                                                                                                                                 |
+| `@server`             | FULLY_FUNCTIONAL | Emitted as server objects with host/protocol/description; URL validation                                                                                               |
+| `@message`            | FULLY_FUNCTIONAL | Stores title/description/contentType; merged into components.messages                                                                                                  |
+| `@protocol`           | FULLY_FUNCTIONAL | Stores protocol config; emitted as channel bindings with auto-versioning                                                                                               |
+| `@security`           | FULLY_FUNCTIONAL | Emitted as `components.securitySchemes`; multiple schemes per namespace                                                                                                |
+| `@tags`               | FULLY_FUNCTIONAL | Emitted as `Tag[]` arrays on operations and messages                                                                                                                   |
+| `@correlationId`      | FULLY_FUNCTIONAL | Emitted as `correlationId` objects on all messages                                                                                                                     |
+| `@bindings`           | FULLY_FUNCTIONAL | Emitted as `bindings` on operations/messages/servers; keys normalized, versions auto-injected. Namespace target enables server bindings (`namespace-bindings.test.ts`) |
+| `@header`             | FULLY_FUNCTIONAL | Emitted as JSON Schema `headers` on messages                                                                                                                           |
+| `@reply`              | FULLY_FUNCTIONAL | Operation reply with message reference and optional address (`operation-builder.ts`)                                                                                   |
+| `@defaultContentType` | FULLY_FUNCTIONAL | Sets `defaultContentType` on document root (`namespace-decorators.ts`)                                                                                                 |
+| `@operationId`        | FULLY_FUNCTIONAL | Overrides auto-generated operation key with explicit name (`operation-discovery.ts`)                                                                                   |
+| `@messageId`          | FULLY_FUNCTIONAL | Overrides auto-generated message key with explicit name (`message-builder.ts`, `shared-utils.ts`)                                                                      |
+| `@apiVersion`         | FULLY_FUNCTIONAL | Sets `info.version` on document root from Namespace (`document-builder.ts`)                                                                                            |
 
 ## Protocol Bindings
 
@@ -76,13 +76,13 @@ All 19 AsyncAPI protocols auto-generated from `@asyncapi/specs/bindings/` via `s
 
 ## Binding Validation
 
-| Feature                   | Status           | Evidence                                                                                                                                                                                    |
-| ------------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Binding key normalization | FULLY_FUNCTIONAL | `processBindings()` in `src/validation/binding-validator.ts`                                                                                                                                |
-| Version validation        | FULLY_FUNCTIONAL | Warns on invalid binding versions via `invalid-binding-version` diagnostic                                                                                                                  |
-| Unknown protocol warning  | FULLY_FUNCTIONAL | Warns on unrecognized binding keys via `unknown-binding-protocol` diagnostic                                                                                                                |
+| Feature                   | Status           | Evidence                                                                                                                                                                                     |
+| ------------------------- | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Binding key normalization | FULLY_FUNCTIONAL | `processBindings()` in `src/validation/binding-validator.ts`                                                                                                                                 |
+| Version validation        | FULLY_FUNCTIONAL | Warns on invalid binding versions via `invalid-binding-version` diagnostic                                                                                                                   |
+| Unknown protocol warning  | FULLY_FUNCTIONAL | Warns on unrecognized binding keys via `unknown-binding-protocol` diagnostic                                                                                                                 |
 | Placement validation      | FULLY_FUNCTIONAL | Warns when a binding is placed on a target kind the spec doesn't define (e.g. `ws` on an Operation) via `misplaced-binding` diagnostic. `BINDING_PLACEMENT` matrix auto-generated from specs |
-| Field-level validation     | FULLY_FUNCTIONAL | Validates individual binding field values against spec-derived constraints via `binding-field-validator.ts`. Auto-generated field rules |
+| Field-level validation    | FULLY_FUNCTIONAL | Validates individual binding field values against spec-derived constraints via `binding-field-validator.ts`. Auto-generated field rules                                                      |
 
 ## State Management
 
@@ -95,31 +95,31 @@ All 19 AsyncAPI protocols auto-generated from `@asyncapi/specs/bindings/` via `s
 
 ## Configuration
 
-| Feature                           | Status           | Evidence                                                      |
-| --------------------------------- | ---------------- | ------------------------------------------------------------- |
-| `output-file` option              | FULLY_FUNCTIONAL | Controls output filename                                      |
-| `file-type` option (yaml/json)    | FULLY_FUNCTIONAL | Supports `"yaml"` and `"json"` with pretty/indent sub-options |
-| `title` option                    | FULLY_FUNCTIONAL | Sets `info.title` on document                                 |
-| `version` option                  | FULLY_FUNCTIONAL | Sets `info.version` on document                               |
-| `description` option              | FULLY_FUNCTIONAL | Sets `info.description` on document                           |
-| `output-dir` option               | FULLY_FUNCTIONAL | Sets emitter output directory                                 |
+| Feature                           | Status           | Evidence                                                                                                                 |
+| --------------------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `output-file` option              | FULLY_FUNCTIONAL | Controls output filename                                                                                                 |
+| `file-type` option (yaml/json)    | FULLY_FUNCTIONAL | Supports `"yaml"` and `"json"` with pretty/indent sub-options                                                            |
+| `title` option                    | FULLY_FUNCTIONAL | Sets `info.title` on document                                                                                            |
+| `version` option                  | FULLY_FUNCTIONAL | Sets `info.version` on document                                                                                          |
+| `description` option              | FULLY_FUNCTIONAL | Sets `info.description` on document                                                                                      |
+| `output-dir` option               | FULLY_FUNCTIONAL | Sets emitter output directory                                                                                            |
 | `split-schemas` option            | FULLY_FUNCTIONAL | Splits schemas into individual files under `schemas/`; rewrites `$ref` pointers to external paths (`schema-splitter.ts`) |
-| `EmitterOptions` IDE autocomplete | FULLY_FUNCTIONAL | `lib/main.tsp` — `EmitterOptions` model for TypeSpec IDE      |
+| `EmitterOptions` IDE autocomplete | FULLY_FUNCTIONAL | `lib/main.tsp` — `EmitterOptions` model for TypeSpec IDE                                                                 |
 
 ## Testing
 
-| Feature                 | Status           | Evidence                                                                          |
-| ----------------------- | ---------------- | --------------------------------------------------------------------------------- |
-| vitest test runner      | FULLY_FUNCTIONAL | 679 tests across 64 files (0 skip, 0 todo)                                        |
-| Golden file test        | FULLY_FUNCTIONAL | `test/golden/golden-file.test.ts`                                                 |
-| Schema validation tests | FULLY_FUNCTIONAL | `test/validation/schema-validation.test.ts`                                       |
-| Spec compliance suite   | FULLY_FUNCTIONAL | `test/compliance/` — 98 tests validated against official AsyncAPI 3.1 JSON Schema |
-| Integration tests       | FULLY_FUNCTIONAL | `test/integration/` — decorator output, negative tests, binding placement         |
-| E2E tests               | FULLY_FUNCTIONAL | `test/e2e/` — complex nested schemas                                              |
+| Feature                 | Status               | Evidence                                                                                                  |
+| ----------------------- | -------------------- | --------------------------------------------------------------------------------------------------------- |
+| vitest test runner      | FULLY_FUNCTIONAL     | 679 tests across 64 files (0 skip, 0 todo)                                                                |
+| Golden file test        | FULLY_FUNCTIONAL     | `test/golden/golden-file.test.ts`                                                                         |
+| Schema validation tests | FULLY_FUNCTIONAL     | `test/validation/schema-validation.test.ts`                                                               |
+| Spec compliance suite   | FULLY_FUNCTIONAL     | `test/compliance/` — 98 tests validated against official AsyncAPI 3.1 JSON Schema                         |
+| Integration tests       | FULLY_FUNCTIONAL     | `test/integration/` — decorator output, negative tests, binding placement                                 |
+| E2E tests               | FULLY_FUNCTIONAL     | `test/e2e/` — complex nested schemas                                                                      |
 | BDD tests               | PARTIALLY_FUNCTIONAL | `test/bdd/user-behaviors.test.ts` — 12 tests. Step infrastructure in `world.ts` has 6 unimplemented stubs |
-| External spec tests     | FULLY_FUNCTIONAL | `test/external/` — 16 patterns from 5 external projects                           |
-| Unit tests              | FULLY_FUNCTIONAL | `test/unit/` — binding placement, emitter tester verification                     |
-| Negative tests          | FULLY_FUNCTIONAL | `test/integration/negative-tests.test.ts` — error handling                        |
+| External spec tests     | FULLY_FUNCTIONAL     | `test/external/` — 16 patterns from 5 external projects                                                   |
+| Unit tests              | FULLY_FUNCTIONAL     | `test/unit/` — binding placement, emitter tester verification                                             |
+| Negative tests          | FULLY_FUNCTIONAL     | `test/integration/negative-tests.test.ts` — error handling                                                |
 
 ## Build
 

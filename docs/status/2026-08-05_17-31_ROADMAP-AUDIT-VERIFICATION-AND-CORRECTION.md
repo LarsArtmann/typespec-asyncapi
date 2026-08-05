@@ -9,12 +9,12 @@
 
 ### Verified Working
 
-| Item | Evidence |
-|------|----------|
-| Build passes (0 errors) | `bun run build` — tsc strict mode |
+| Item                               | Evidence                                           |
+| ---------------------------------- | -------------------------------------------------- |
+| Build passes (0 errors)            | `bun run build` — tsc strict mode                  |
 | Lint passes (0 errors, 0 warnings) | `bun run lint` — eslint + oxlint `--deny-warnings` |
-| All 679 tests pass across 64 files | `bun run test` — vitest run, ~4s |
-| Git clean | 2 new commits this session, working tree clean |
+| All 679 tests pass across 64 files | `bun run test` — vitest run, ~4s                   |
+| Git clean                          | 2 new commits this session, working tree clean     |
 
 ### Fixed This Session
 
@@ -28,11 +28,11 @@
 
 ## B) PARTIALLY DONE
 
-| Item | State | Gap |
-|------|-------|-----|
-| **CHANGELOG.md** | `[Unreleased]` section is **EMPTY** | All work since `0.2.0-beta` (19 protocols, field-level validation, multi-file output, `@operationId`, `@messageId`, `@apiVersion`, server bindings, `split-schemas`, `ParsedAsyncAPIDocument`, BDD stubs, builders refactor, 98→679 tests) is undocumented in the changelog. The `[0.2.0-beta]` section also has stale claims ("5 protocols", "78 tests across 6 files"). |
-| **BDD test infrastructure** | `test/bdd/user-behaviors.test.ts` has 12 working tests | `test/bdd/support/world.ts` has 6 unimplemented method stubs (`createChannelSpec`, `setupSecurityScheme`, `setupMQTTBinding`, `setupInvalidConfig`, `compileAsyncAPISpecFromModel`, `validateOperationBindings`). These methods are **never called by any test** — confirmed via ripgrep. The BDD step infrastructure is dead code. |
-| **FEATURES.md accuracy** | Most rows now correct | The `[0.2.0-beta]` section still says "78 tests across 6 files" — actual is 98 tests across 11 files. The "5 protocols" claim is stale (19 now). These are in the released section so may be intentionally historical. |
+| Item                        | State                                                  | Gap                                                                                                                                                                                                                                                                                                                                                                       |
+| --------------------------- | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **CHANGELOG.md**            | `[Unreleased]` section is **EMPTY**                    | All work since `0.2.0-beta` (19 protocols, field-level validation, multi-file output, `@operationId`, `@messageId`, `@apiVersion`, server bindings, `split-schemas`, `ParsedAsyncAPIDocument`, BDD stubs, builders refactor, 98→679 tests) is undocumented in the changelog. The `[0.2.0-beta]` section also has stale claims ("5 protocols", "78 tests across 6 files"). |
+| **BDD test infrastructure** | `test/bdd/user-behaviors.test.ts` has 12 working tests | `test/bdd/support/world.ts` has 6 unimplemented method stubs (`createChannelSpec`, `setupSecurityScheme`, `setupMQTTBinding`, `setupInvalidConfig`, `compileAsyncAPISpecFromModel`, `validateOperationBindings`). These methods are **never called by any test** — confirmed via ripgrep. The BDD step infrastructure is dead code.                                       |
+| **FEATURES.md accuracy**    | Most rows now correct                                  | The `[0.2.0-beta]` section still says "78 tests across 6 files" — actual is 98 tests across 11 files. The "5 protocols" claim is stale (19 now). These are in the released section so may be intentionally historical.                                                                                                                                                    |
 
 ---
 
