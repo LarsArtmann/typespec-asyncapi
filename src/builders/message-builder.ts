@@ -5,7 +5,10 @@
  * messages. Applies correlation IDs, headers, bindings, tags, and @doc.
  */
 
-import type { JsonSchema, MessageObject } from "../domain/models/asyncapi-document.js";
+import type {
+  JsonSchema,
+  MessageObject,
+} from "../domain/models/asyncapi-document.js";
 import { refSchema } from "../domain/models/asyncapi-document.js";
 import { getDoc, nameOfType } from "./_imports.js";
 import type { AsyncAPIConsolidatedState, BuilderFn } from "./_imports.js";
@@ -83,6 +86,10 @@ const applyAutoMessageDecorators: BuilderFn = (state, ctx) => {
  * Apply a decorator to a message, skipping if `skipExisting` is true and the
  * property is already set. Returns the value if it should be applied, or null.
  */
+/**
+ * Apply a decorator to a message, skipping if `skipExisting` is true and the
+ * property is already set. Returns the value if it should be applied, or null.
+ */
 function readDecoratorValue<T>(
   state: AsyncAPIConsolidatedState,
   type: unknown,
@@ -110,28 +117,13 @@ type MessageDecoratorFn = (
   skipExisting?: boolean,
 ) => void;
 
-/**
- * Apply a decorator to a message, skipping if `skipExisting` is true and the
- * property is already set. Returns the value if it should be applied, or null.
- */
-function readDecoratorValue<T>(
-  state: AsyncAPIConsolidatedState,
-  type: unknown,
-  msg: MessageObject,
-  opts: {
-    prop: keyof MessageObject;
-    skipExisting: boolean;
-    read: (s: AsyncAPIConsolidatedState, t: unknown) => T | null;
-  },
-): T | null {
-  if (opts.skipExisting && msg[opts.prop] !== undefined) {
-    return null;
-  }
-  return opts.read(state, type);
-}
-
 /** Apply correlation ID to a message if present in state. */
-const applyCorrelationId: MessageDecoratorFn = (state, type, msg, skipExisting = false) => {
+const applyCorrelationId: MessageDecoratorFn = (
+  state,
+  type,
+  msg,
+  skipExisting = false,
+) => {
   const value = readDecoratorValue(state, type, msg, {
     prop: "correlationId",
     skipExisting,
@@ -146,7 +138,12 @@ const applyCorrelationId: MessageDecoratorFn = (state, type, msg, skipExisting =
 };
 
 /** Apply headers to a message if present in state. */
-const applyHeaders: MessageDecoratorFn = (state, type, msg, skipExisting = false) => {
+const applyHeaders: MessageDecoratorFn = (
+  state,
+  type,
+  msg,
+  skipExisting = false,
+) => {
   const value = readDecoratorValue(state, type, msg, {
     prop: "headers",
     skipExisting,
@@ -171,7 +168,12 @@ const applyHeaders: MessageDecoratorFn = (state, type, msg, skipExisting = false
 };
 
 /** Apply protocol bindings to a message if present in state. */
-const applyMessageBindings: MessageDecoratorFn = (state, type, msg, skipExisting = false) => {
+const applyMessageBindings: MessageDecoratorFn = (
+  state,
+  type,
+  msg,
+  skipExisting = false,
+) => {
   const value = readDecoratorValue(state, type, msg, {
     prop: "bindings",
     skipExisting,

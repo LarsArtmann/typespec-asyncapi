@@ -2,11 +2,7 @@
  * Helper functions for decorators: diagnostic reporting and model property extraction.
  */
 
-import type {
-  DecoratorContext,
-  DiagnosticTarget,
-  Model,
-} from "@typespec/compiler";
+import type { DecoratorContext, DiagnosticTarget, Model } from "@typespec/compiler";
 import { $lib } from "./lib.js";
 import { PROTOCOL_LIST } from "./constants/protocols.js";
 
@@ -140,10 +136,7 @@ export function getModelPropertyStringValue(
   return readModelProperty(model, propertyName) as string | undefined;
 }
 
-export function getModelPropertyValue(
-  model: Model,
-  propertyName: string,
-): unknown {
+export function getModelPropertyValue(model: Model, propertyName: string): unknown {
   return readModelProperty(model, propertyName);
 }
 
