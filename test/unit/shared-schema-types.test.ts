@@ -113,6 +113,55 @@ describe("extractValue", () => {
     };
     expect(extractValue(entity as EmitEntity<JsonSchema>)).toStrictEqual({});
   });
+
+  it("returns empty object for circular kind", () => {
+    const entity = { kind: "circular" as const };
+    expect(extractValue(entity as EmitEntity<JsonSchema>)).toStrictEqual({});
+  });
+
+  it("extracts value from code kind entity", () => {
+    const entity = {
+      kind: "code" as const,
+      value: { type: "integer" },
+    };
+    expect(extractValue(entity as EmitEntity<JsonSchema>)).toStrictEqual({
+      type: "integer",
+    });
+  });
+
+  it("returns empty object for declaration with null value", () => {
+    const entity = {
+      kind: "declaration" as const,
+      value: null,
+    };
+    expect(extractValue(entity as EmitEntity<JsonSchema>)).toStrictEqual({});
+  });
+
+  it("returns empty object for declaration with non-object value", () => {
+    const entity = {
+      kind: "declaration" as const,
+      value: "not-an-object",
+    };
+    expect(extractValue(entity as EmitEntity<JsonSchema>)).toStrictEqual({});
+  });
+
+  it("extracts complex nested schema from declaration", () => {
+    const entity = {
+      kind: "declaration" as const,
+      value: {
+        type: "object",
+        properties: {
+          name: { type: "string" },
+          age: { type: "integer" },
+        },
+        required: ["name"],
+      },
+    };
+    const result = extractValue(entity as EmitEntity<JsonSchema>);
+    expect(result.type).toBe("object");
+    expect(result.properties?.name).toStrictEqual({ type: "string" });
+    expect(result.required).toStrictEqual(["name"]);
+  });
 });
 
 describe("intrinsicToSchema", () => {
