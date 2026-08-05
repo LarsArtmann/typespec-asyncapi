@@ -10,25 +10,30 @@ Long-term ideas and RFCs live in ROADMAP, not here.
 | #   | Task                                                                                                                | Impact | Effort | Evidence                                                                                                   |
 | --- | ------------------------------------------------------------------------------------------------------------------- | ------ | ------ | ---------------------------------------------------------------------------------------------------------- |
 | 1   | Add `allOf` support for model inheritance (declared in `JsonSchema` but never generated)                            | Medium | 1-2h   | `src/schema-emitter.ts` — `allOf` field exists in type but emitter never emits it                          |
-| 2   | Audit `JsonSchema.items` consumers for array-form safety (tuple fix broadened type to `JsonSchema \| JsonSchema[]`) | Medium | 30min  | `src/domain/models/asyncapi-document.ts` — downstream code accessing `.items.type` may break on array form |
 
 ## Medium Impact
 
 | #   | Task                                                                                                            | Impact | Effort | Evidence                                                                                                                          |
 | --- | --------------------------------------------------------------------------------------------------------------- | ------ | ------ | --------------------------------------------------------------------------------------------------------------------------------- |
-| 3   | Check whether `@typespec/versioning` should be `peerDependency` instead of `dependency`                         | Medium | 15min  | `package.json` — TypeSpec plugins typically use peer deps for `@typespec/*` packages                                              |
-| 4   | Write integration test: compile `@bindings(#{solace: #{priority: 5}})` through full TypeSpec → emitter pipeline | Medium | 30min  | Binding protocol fix only has unit tests calling `processBindings()` directly. No end-to-end test. `docs/status/2026-08-05_19-01` |
+| 2   | Implement `oneOf` / `not` for union types — some unions should be `oneOf` instead of `anyOf`                    | Medium | 1-2h   | `src/schema-emitter.ts` — `union()` always emits `anyOf`                                                                          |
+| 3   | Add `@discriminator` → `discriminator` mapping — polymorphic type handling                                      | Medium | 2-4h   | TypeSpec `getDiscriminator()` available; polymorphism infrastructure needed first                                                 |
 
 ## Low Impact / Long-term
 
 | #   | Task                                                                                                                                                                         | Impact | Effort | Evidence                                                                                                                                                                                       |
 | --- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 5   | Verify whether `typeToSchema()` Tuple branch (line ~335) is reachable or dead code after `tuple()` override fix                                                              | Low    | 15min  | `src/schema-emitter.ts` — `tuple()` method override may make the `typeToSchema` Tuple branch unreachable                                                                                       |
-| 6   | OpenAPI 3.x cross-emitter type sharing — `src/shared/` module exports are complete and tested (25 tests, incl. barrel public-API contract). No external consumer exists yet. | Low    | 4-6h   | `src/shared/index.ts` exports `JsonSchema`, `SchemaMap`, `generateSchemas`, `extractValue`, `intrinsicToSchema`, `AsyncAPISchemaEmitter`. Building a separate OpenAPI emitter is out of scope. |
+| 4   | OpenAPI 3.x cross-emitter type sharing — `src/shared/` module exports are complete and tested (25 tests, incl. barrel public-API contract). No external consumer exists yet. | Low    | 4-6h   | `src/shared/index.ts` exports `JsonSchema`, `SchemaMap`, `generateSchemas`, `extractValue`, `intrinsicToSchema`, `AsyncAPISchemaEmitter`. Building a separate OpenAPI emitter is out of scope. |
+| 5   | Populate remaining `components.*` — parameters, correlationIds, tags, operationTraits, messageTraits, reusable bindings                                                       | Low    | 4-6h   | AsyncAPI 3.1 spec supports these; emitter doesn't populate them yet                                                                                                                            |
+| 6   | Channel `summary` and `description` fields — currently only address is populated                                                                                              | Low    | 1h     | `src/builders/channel-builder.ts` — CommonMetadata fields not populated from `@doc`                                                                                                             |
 
 > **Completed items (see CHANGELOG [Unreleased]):**
 >
-> - ~~Map 11 TypeSpec constraint decorators to JSON Schema keywords~~ — `src/constraint-mapper.ts`
+> - ~~Map 14 TypeSpec constraint/metadata decorators to JSON Schema keywords~~ — `src/constraint-mapper.ts` (@minValue, @maxValue, exclusive variants, @minLength/@maxLength, @pattern, @format, @minItems/@maxItems, #deprecated, @summary→title, @example→examples, @visibility→readOnly/writeOnly)
+> - ~~Add info.contact, info.license, info.termsOfService, info.externalDocs~~ — emitter options wired
+> - ~~Consolidate metadata application~~ — `applyMetadata()` in `constraint-mapper.ts`
+> - ~~Fix protocol split-brain bug~~ — solace/anypointmq/ros2 added to `PROTOCOLS`
+> - ~~Move @typespec/* to peerDependencies~~
+> - ~~Make `ParsedAsyncAPIDocument.asyncapi` a literal type~~
 > - ~~Delete `linter-strategy.test.ts`~~ — anti-pattern removed
 > - ~~Rename `generator-compatibility.test.ts` → `document-structure.test.ts`~~
 > - ~~Remove dead `nullable` and `xml` from `JsonSchema`~~

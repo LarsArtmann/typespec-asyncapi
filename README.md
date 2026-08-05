@@ -1,7 +1,7 @@
 # TypeSpec AsyncAPI Emitter
 
 [![Build Status](https://img.shields.io/badge/Build-PASSING-green)](https://github.com/LarsArtmann/typespec-asyncapi)
-[![Tests](https://img.shields.io/badge/Tests-881%20pass%2C%200%20fail-green)](https://github.com/LarsArtmann/typespec-asyncapi)
+[![Tests](https://img.shields.io/badge/Tests-915%20pass%2C%200%20fail-green)](https://github.com/LarsArtmann/typespec-asyncapi)
 [![AsyncAPI](https://img.shields.io/badge/AsyncAPI-3.1.0-blue)](https://www.asyncapi.com/)
 [![Protocols](https://img.shields.io/badge/Protocols-19-blue)](https://www.asyncapi.com/)
 
@@ -122,7 +122,7 @@ Binding versions are auto-injected when omitted. Protocol aliases (`websocket`�
 
 Every TypeSpec scalar maps to the correct JSON Schema type and format (int8-64, uint8-64, float32/64, decimal, dateTime, duration, bytes, url, and more). Named models, enums, and scalars use `$ref` for clean component reuse. Inheritance, unions, tuples, records, and multi-message operations are all supported.
 
-**Constraint decorators** are fully mapped: `@minValue`, `@maxValue`, `@minValueExclusive`, `@maxValueExclusive`, `@minLength`, `@maxLength`, `@pattern`, `@format`, `@minItems`, `@maxItems`, and `#deprecated` all produce the correct JSON Schema keywords.
+**Constraint decorators** are fully mapped: `@minValue`, `@maxValue`, `@minValueExclusive`, `@maxValueExclusive`, `@minLength`, `@maxLength`, `@pattern`, `@format`, `@minItems`, `@maxItems`, `#deprecated`, `@summary` (→`title`), `@example` (→`examples`), and `@visibility` (→`readOnly`/`writeOnly`) all produce the correct JSON Schema keywords.
 
 ### Multi-File Output
 
@@ -206,7 +206,7 @@ git clone https://github.com/LarsArtmann/typespec-asyncapi
 cd typespec-asyncapi
 bun install
 bun run build     # Build TypeScript (0 errors)
-bun run test      # Run tests via vitest (881 pass, 0 fail)
+bun run test      # Run tests via vitest (915 pass, 0 fail)
 bun run lint      # ESLint + oxlint (0 errors, 0 warnings)
 ```
 
@@ -217,7 +217,7 @@ bun run lint      # ESLint + oxlint (0 errors, 0 warnings)
 | Metric      | Value                                                 |
 | ----------- | ----------------------------------------------------- |
 | Version     | 0.2.0-beta                                            |
-| Tests       | 881 pass, 0 fail across 76 files                      |
+| Tests       | 915 pass, 0 fail across 76 files                      |
 | Build       | 0 TypeScript errors (strict mode)                     |
 | Lint        | 0 errors, 0 warnings (ESLint + oxlint)                |
 | Diagnostics | 22 codes (17 error + 5 warning)                       |
