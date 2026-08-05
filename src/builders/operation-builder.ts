@@ -5,19 +5,15 @@
  * applying tags, bindings, and @doc descriptions.
  */
 
-import { getDoc } from "@typespec/compiler";
-import type { AsyncAPIConsolidatedState } from "../state.js";
-import type {
-  OperationObject,
-  OperationReply,
-} from "../domain/models/asyncapi-document.js";
 import {
   escapeRefToken,
   ref,
   refChannel,
+  type OperationObject,
+  type OperationReply,
 } from "../domain/models/asyncapi-document.js";
-import type { BuilderFn, DocumentBuildContext } from "./types.js";
-import { nameOfType } from "./types.js";
+import { getDoc, nameOfType } from "./_imports.js";
+import type { AsyncAPIConsolidatedState, BuilderFn, DocumentBuildContext } from "./_imports.js";
 import {
   buildOperationMessageRef,
   registerMessage,

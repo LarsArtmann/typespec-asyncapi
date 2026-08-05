@@ -94,10 +94,7 @@ function updateMessageConfig(
   target: Model,
   update: (existing: MessageConfigData) => void,
 ): void {
-  const map = getStateMap<MessageConfigData>(
-    program,
-    stateSymbols.messageConfigs,
-  );
+  const map = getMessageConfigsMap(program);
   const existing = map.get(target) ?? {
     contentType: "application/json",
     description: `Message ${target.name}`,
@@ -105,6 +102,11 @@ function updateMessageConfig(
   };
   update(existing);
   map.set(target, existing);
+}
+
+/** Get the state map for message configs. Shared by writers that mutate it. */
+function getMessageConfigsMap(program: Program): ReturnType<typeof getStateMap<MessageConfigData>> {
+  return getStateMap<MessageConfigData>(program, stateSymbols.messageConfigs);
 }
 
 export const storeServerConfig = (
@@ -304,10 +306,7 @@ export const linkPublishMessage = (
   if (!config) {
     return;
   }
-  const map = getStateMap<MessageConfigData>(
-    program,
-    stateSymbols.messageConfigs,
-  );
+  const map = getMessageConfigsMap(program);
   const existing = map.get(config);
   if (!existing) {
     return;

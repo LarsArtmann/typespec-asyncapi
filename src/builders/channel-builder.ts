@@ -12,7 +12,10 @@ import {
   refMessage,
   refSchema,
 } from "../domain/models/asyncapi-document.js";
-import type { BuilderFn, DocumentBuildContext } from "./types.js";
+import type {
+  BuilderFn,
+  DocumentBuildContext,
+} from "./_imports.js";
 import {
   buildProtocolBinding,
   extractChannelParameters,

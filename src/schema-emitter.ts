@@ -44,17 +44,14 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
   namespaceDeclaration(_namespace: Namespace): EmitterOutput<JsonSchema> {
     return this.returnNone();
   }
-
   modelDeclaration(model: Model): EmitterOutput<JsonSchema> {
     const schema = this.collectPropertiesSchema(model, true);
     applyDocDescription(this.emitter.getProgram(), model, schema);
     return this.emitter.result.declaration(model.name, schema);
   }
-
   modelLiteral(model: Model): EmitterOutput<JsonSchema> {
     return this.collectPropertiesSchema(model, false);
   }
-
   /** Build `{ properties, type: "object" }` (plus required if any) from a model's properties. */
   private collectPropertiesSchema(model: Model, includeRequired: boolean): JsonSchema {
     const collected = this.collectModelProperties(model, includeRequired);
@@ -129,11 +126,9 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
   stringLiteral(literal: StringLiteral): EmitterOutput<JsonSchema> {
     return this.returnConst(literal.value);
   }
-
   numericLiteral(literal: NumericLiteral): EmitterOutput<JsonSchema> {
     return this.returnConst(literal.value);
   }
-
   booleanLiteral(literal: BooleanLiteral): EmitterOutput<JsonSchema> {
     return this.returnConst(literal.value);
   }
@@ -152,7 +147,6 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
   ): EmitterOutput<JsonSchema> {
     return this.arraySchema(elementType);
   }
-
   arrayLiteral(array: Type, elementType: Type): EmitterOutput<JsonSchema> {
     return this.arraySchema(elementType);
   }
@@ -173,7 +167,6 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
   operation(_operation: Operation): EmitterOutput<JsonSchema> {
     return this.returnNone();
   }
-
   interfaceDeclaration(_iface: Interface): EmitterOutput<JsonSchema> {
     return this.returnNone();
   }

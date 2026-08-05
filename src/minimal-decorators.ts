@@ -14,7 +14,7 @@ import type {
   Operation,
   Program,
 } from "@typespec/compiler";
-import { $lib } from "./lib.js";
+import type { $lib } from "./lib.js";
 import { PROTOCOL_LIST, isSupportedProtocol } from "./constants/protocols.js";
 import {
   linkPublishMessage,
@@ -330,7 +330,7 @@ export function $operationId(
     id,
     diagnosticCode: "invalid-operation-id",
     format: { operationName: target.name },
-    store: (program) => storeOperationId(program, target, id),
+    store: (program) => storeOperationId(program, target, id as string),
   });
 }
 
@@ -345,7 +345,7 @@ export function $messageId(
     id,
     diagnosticCode: "invalid-message-id",
     format: { modelName: target.name },
-    store: (program) => storeMessageId(program, target, id),
+    store: (program) => storeMessageId(program, target, id as string),
   });
 }
 
@@ -359,14 +359,14 @@ function applyStringIdDecorator(opts: {
   id: unknown;
   diagnosticCode: keyof typeof $lib.diagnostics;
   format?: Record<string, unknown>;
-  store: (program: Program) => void;
+  store: (program: Program, id: string) => void;
 }): void {
   if (
     !validateNonEmptyString(opts.id, opts.context, opts.target, opts.diagnosticCode, opts.format)
   ) {
     return;
   }
-  opts.store(opts.context.program);
+  opts.store(opts.context.program, opts.id);
 }
 
 export function $apiVersion(

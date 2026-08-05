@@ -5,15 +5,13 @@
  * messages. Applies correlation IDs, headers, bindings, tags, and @doc.
  */
 
-import { getDoc } from "@typespec/compiler";
-import type { AsyncAPIConsolidatedState } from "../state.js";
 import type {
-  MessageObject,
   JsonSchema,
+  MessageObject,
 } from "../domain/models/asyncapi-document.js";
 import { refSchema } from "../domain/models/asyncapi-document.js";
-import type { BuilderFn, DocumentBuildContext } from "./types.js";
-import { nameOfType } from "./types.js";
+import { getDoc, nameOfType } from "./_imports.js";
+import type { AsyncAPIConsolidatedState, BuilderFn } from "./_imports.js";
 import { iterNamedTypes } from "./shared-utils.js";
 
 /** Merge explicit @message decorator data into the messages map. */
@@ -39,10 +37,7 @@ export const mergeExplicitMessages: BuilderFn = (state, ctx) => {
 };
 
 /** Apply @doc to messages without explicit @message description. */
-function applyExplicitMessageDocs(
-  state: AsyncAPIConsolidatedState,
-  ctx: DocumentBuildContext,
-): void {
+const applyExplicitMessageDocs: BuilderFn = (state, ctx) => {
   for (const { type, name, data } of iterNamedTypes(state.messages)) {
     const key = data.messageId ?? name;
     const msg = ctx.messages[key];
@@ -59,10 +54,7 @@ function applyExplicitMessageDocs(
 }
 
 /** Apply decorators (correlation, headers, bindings, tags) to auto-registered messages. */
-function applyAutoMessageDecorators(
-  state: AsyncAPIConsolidatedState,
-  ctx: DocumentBuildContext,
-): void {
+const applyAutoMessageDecorators: BuilderFn = (state, ctx) => {
   for (const type of new Set([
     ...state.correlationIds.keys(),
     ...state.messageHeaders.keys(),

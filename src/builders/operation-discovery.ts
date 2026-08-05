@@ -5,10 +5,9 @@
  * all AsyncAPI operations, their channels, and message types.
  */
 
-import { getDoc, isStdNamespace } from "@typespec/compiler";
-import type { AsyncAPIConsolidatedState } from "../state.js";
-import type { BuilderFn, DocumentBuildContext } from "./types.js";
-import { nameOfType } from "./types.js";
+import { isStdNamespace } from "@typespec/compiler";
+import { getDoc, nameOfType } from "./_imports.js";
+import type { AsyncAPIConsolidatedState, BuilderFn, DocumentBuildContext } from "./_imports.js";
 import {
   inferActionFromName,
   iterNamedTypes,
@@ -105,10 +104,7 @@ function resolveOpName(
 }
 
 /** 1b. Channels with @channel but no @publish/@subscribe. */
-function discoverChannelOnlyOps(
-  state: AsyncAPIConsolidatedState,
-  ctx: DocumentBuildContext,
-): void {
+const discoverChannelOnlyOps: BuilderFn = (state, ctx) => {
   const opsWithType = namesOfTypes(state.operations);
   for (const { type, name, data } of iterNamedTypes(state.channels)) {
     if (opsWithType.has(name)) {
@@ -128,10 +124,7 @@ function discoverChannelOnlyOps(
 }
 
 /** 1c. Bare operations (no decorators at all). */
-function discoverBareOps(
-  state: AsyncAPIConsolidatedState,
-  ctx: DocumentBuildContext,
-): void {
+const discoverBareOps: BuilderFn = (state, ctx) => {
   const allKnownOps = new Set([
     ...namesOfTypes(state.operations),
     ...namesOfTypes(state.channels),
