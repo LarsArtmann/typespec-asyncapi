@@ -90,66 +90,91 @@ function applyAutoMessageDecorators(
   }
 }
 
-/** Skip applying a decorator to a message if `skip` is true and the property is already set. */
-function shouldSkip(
+/**
+ * Common signature for functions that apply a single decorator to a message.
+ * Used by `applyCorrelationId`, `applyHeaders`, and `applyMessageBindings`.
+ */
+type MessageDecoratorFn = (
+  state: AsyncAPIConsolidatedState,
+  type: unknown,
   msg: MessageObject,
-  prop: keyof MessageObject,
-  skip: boolean,
-): boolean {
-  return skip && msg[prop] !== undefined;
+  skipExisting?: boolean,
+) => void;
+
+/**
+ * Apply a decorator to a message, skipping if `skipExisting` is true and the
+ * property is already set. Returns the value if it should be applied, or null.
+ */
+function readDecoratorValue<T>(
+  state: AsyncAPIConsolidatedState,
+  type: unknown,
+  msg: MessageObject,
+  opts: {
+    prop: keyof MessageObject;
+    skipExisting: boolean;
+    read: (s: AsyncAPIConsolidatedState, t: unknown) => T | null;
+  },
+): T | null {
+  if (opts.skipExisting && msg[opts.prop] !== undefined) {
+    return null;
+  }
+  return opts.read(state, type);
 }
 
 /** Apply correlation ID to a message if present in state. */
-function applyCorrelationId(
-  state: AsyncAPIConsolidatedState,
-  type: unknown,
-  msg: MessageObject,
-  skipExisting = false,
-): void {
-  if (shouldSkip(msg, "correlationId", skipExisting)) {
-    return;
+const applyCorrelationId: MessageDecoratorFn = (state, type, msg, skipExisting = false) => {
+  const value = readDecoratorValue(state, type, msg, {
+    prop: "correlationId",
+    skipExisting,
+    read: (s, t) => {
+      const correlation = s.correlationIds.get(t as never);
+      return correlation ? { location: correlation.location } : null;
+    },
+  });
+  if (value) {
+    msg.correlationId = value;
   }
-  const correlation = state.correlationIds.get(type as never);
-  if (correlation) {
-    msg.correlationId = { location: correlation.location };
-  }
-}
+};
 
 /** Apply headers to a message if present in state. */
-function applyHeaders(
-  state: AsyncAPIConsolidatedState,
-  type: unknown,
-  msg: MessageObject,
-  skipExisting = false,
-): void {
-  if (shouldSkip(msg, "headers", skipExisting)) {
-    return;
+const applyHeaders: MessageDecoratorFn = (state, type, msg, skipExisting = false) => {
+  const value = readDecoratorValue(state, type, msg, {
+    prop: "headers",
+    skipExisting,
+    read: (s, t) => {
+      const headers = s.messageHeaders.get(t as never);
+      if (!headers || headers.length === 0) {
+        return null;
+      }
+      const headerProps: Record<string, JsonSchema> = {};
+      for (const h of headers) {
+        headerProps[h.name] = {
+          type: h.type ?? "string",
+          ...(h.description ? { description: h.description } : {}),
+        };
+      }
+      return { properties: headerProps, type: "object" as const };
+    },
+  });
+  if (value) {
+    msg.headers = value;
   }
-  const headers = state.messageHeaders.get(type as never);
-  if (headers && headers.length > 0) {
-    const headerProps: Record<string, JsonSchema> = {};
-    for (const h of headers) {
-      headerProps[h.name] = {
-        type: h.type ?? "string",
-        ...(h.description ? { description: h.description } : {}),
-      };
-    }
-    msg.headers = { properties: headerProps, type: "object" };
-  }
-}
+};
 
 /** Apply protocol bindings to a message if present in state. */
-function applyMessageBindings(
-  state: AsyncAPIConsolidatedState,
-  type: unknown,
-  msg: MessageObject,
-  skipExisting = false,
-): void {
-  if (shouldSkip(msg, "bindings", skipExisting)) {
-    return;
+const applyMessageBindings: MessageDecoratorFn = (state, type, msg, skipExisting = false) => {
+  const value = readDecoratorValue(state, type, msg, {
+    prop: "bindings",
+    skipExisting,
+    read: (s, t) => {
+      const msgBindings = s.protocolBindings.get(t as never);
+      if (msgBindings && Object.keys(msgBindings).length > 0) {
+        return msgBindings;
+      }
+      return null;
+    },
+  });
+  if (value) {
+    msg.bindings = value;
   }
-  const msgBindings = state.protocolBindings.get(type as never);
-  if (msgBindings && Object.keys(msgBindings).length > 0) {
-    msg.bindings = msgBindings;
-  }
-}
+};

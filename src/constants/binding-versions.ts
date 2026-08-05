@@ -32,8 +32,7 @@ function buildLatestVersions(): Record<string, string> {
     if (!version) {
       continue;
     }
-    const override = SCHEMA_VERSION_OVERRIDES[proto];
-    result[proto] = override?.latest ?? version;
+    result[proto] = SCHEMA_VERSION_OVERRIDES[proto]?.latest ?? version;
   }
   return result;
 }
@@ -44,8 +43,7 @@ function buildValidVersions(): Record<string, readonly string[]> {
     if (versions.length === 0) {
       continue;
     }
-    const override = SCHEMA_VERSION_OVERRIDES[proto];
-    result[proto] = override?.valid ?? versions;
+    result[proto] = SCHEMA_VERSION_OVERRIDES[proto]?.valid ?? versions;
   }
   return result;
 }

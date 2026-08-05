@@ -32,6 +32,24 @@ export const reportDiagnostic = (
 };
 
 /**
+ * If `valid` is false, report the given diagnostic and return false; else return true.
+ * Shared body used by `validateConfig` and `validateNonEmptyString`.
+ */
+function reportAndReturnFalse(
+  valid: boolean,
+  context: DecoratorContext,
+  diagnosticCode: keyof typeof $lib.diagnostics,
+  target: unknown,
+  format?: Record<string, unknown>,
+): boolean {
+  if (!valid) {
+    reportDiagnostic(context, diagnosticCode, target, format);
+    return false;
+  }
+  return true;
+}
+
+/**
  * Validate that a config value is present; if not, report the given diagnostic and return false.
  */
 export const validateConfig = (
@@ -40,13 +58,8 @@ export const validateConfig = (
   target: unknown,
   diagnosticCode: keyof typeof $lib.diagnostics,
   format?: Record<string, unknown>,
-): boolean => {
-  if (!config) {
-    reportDiagnostic(context, diagnosticCode, target, format);
-    return false;
-  }
-  return true;
-};
+): boolean =>
+  reportAndReturnFalse(Boolean(config), context, diagnosticCode, target, format);
 
 /**
  * Validate that a value is a non-empty string; if not, report the given diagnostic and return false.
@@ -61,13 +74,14 @@ export const validateNonEmptyString = (
   target: unknown,
   diagnosticCode: keyof typeof $lib.diagnostics,
   format?: Record<string, unknown>,
-): value is string => {
-  if (typeof value !== "string" || value.length === 0) {
-    reportDiagnostic(context, diagnosticCode, target, format);
-    return false;
-  }
-  return true;
-};
+): value is string =>
+  reportAndReturnFalse(
+    typeof value === "string" && value.length > 0,
+    context,
+    diagnosticCode,
+    target,
+    format,
+  );
 
 /**
  * Higher-order decorator factory: validate config presence, then if valid, invoke `run`.
@@ -165,13 +179,22 @@ export function modelToRecord(model: Model): Record<string, unknown> {
 }
 
 export function extractConfigRecord(config: unknown): Record<string, unknown> {
-  if (
-    config &&
+  if (isModelConfig(config)) {
+    return modelToRecord(config);
+  }
+  return config as Record<string, unknown>;
+}
+
+/**
+ * Type guard: check if an unknown decorator argument is a TypeSpec `Model`
+ * expression (model-expression syntax `{}` passed to a decorator).
+ */
+export function isModelConfig(config: unknown): config is Model {
+  return (
+    config !== null &&
+    config !== undefined &&
     typeof config === "object" &&
     "kind" in config &&
     config.kind === "Model"
-  ) {
-    return modelToRecord(config as Model);
-  }
-  return config as Record<string, unknown>;
+  );
 }

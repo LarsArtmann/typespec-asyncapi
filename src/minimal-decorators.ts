@@ -38,6 +38,7 @@ import {
   extractConfigRecord,
   getModelPropertyStringValue,
   getModelPropertyValue,
+  isModelConfig,
   modelToRecord,
   reportDiagnostic,
   validateNonEmptyString,
@@ -100,16 +101,10 @@ function extractMessageConfig(
   let description: string | undefined;
   let contentType: string | undefined;
 
-  if (
-    config &&
-    typeof config === "object" &&
-    "kind" in config &&
-    config.kind === "Model"
-  ) {
-    const configModel = config as Model;
-    title = getModelPropertyStringValue(configModel, "title");
-    description = getModelPropertyStringValue(configModel, "description");
-    contentType = getModelPropertyStringValue(configModel, "contentType");
+  if (isModelConfig(config)) {
+    title = getModelPropertyStringValue(config, "title");
+    description = getModelPropertyStringValue(config, "description");
+    contentType = getModelPropertyStringValue(config, "contentType");
   } else if (config && typeof config === "object") {
     const configObj = config as Record<string, unknown>;
     title = typeof configObj.title === "string" ? configObj.title : undefined;
@@ -173,15 +168,9 @@ function applySecurity(
   let name: string | undefined;
   let scheme: Record<string, unknown> | undefined;
 
-  if (
-    config &&
-    typeof config === "object" &&
-    "kind" in config &&
-    config.kind === "Model"
-  ) {
-    const configModel = config as Model;
-    name = getModelPropertyStringValue(configModel, "name");
-    const schemeValue = getModelPropertyValue(configModel, "scheme");
+  if (isModelConfig(config)) {
+    name = getModelPropertyStringValue(config, "name");
+    const schemeValue = getModelPropertyValue(config, "scheme");
     if (
       schemeValue &&
       typeof schemeValue === "object" &&
