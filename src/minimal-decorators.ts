@@ -102,11 +102,7 @@ function extractMessageConfig(
   };
 }
 
-export function $protocol(
-  context: DecoratorContext,
-  target: Operation | Model,
-  config: unknown,
-): void {
+export function $protocol(context: DecoratorContext, target: Operation | Model, config: unknown): void {
   validatedDecorator(context, target, config, {
     code: "invalid-protocol-config",
     format: { targetKind: target.kind },
@@ -122,11 +118,7 @@ export function $protocol(
   });
 }
 
-export function $security(
-  context: DecoratorContext,
-  target: Operation | Namespace,
-  config: unknown,
-): void {
+export function $security(context: DecoratorContext, target: Operation | Namespace, config: unknown): void {
   validatedDecorator(context, target, config, {
     code: "invalid-security-config",
     format: { targetKind: target.kind },
@@ -134,11 +126,7 @@ export function $security(
   });
 }
 
-function applySecurity(
-  context: DecoratorContext,
-  target: Operation | Namespace,
-  config: unknown,
-): void {
+function applySecurity(context: DecoratorContext, target: Operation | Namespace, config: unknown): void {
   let name: string | undefined;
   let scheme: Record<string, unknown> | undefined;
 
@@ -216,11 +204,7 @@ function bindingTargetKind(kind: string): BindingTargetKind | undefined {
   return undefined;
 }
 
-export function $bindings(
-  context: DecoratorContext,
-  target: Operation | Model | Namespace,
-  value: unknown,
-): void {
+export function $bindings(context: DecoratorContext, target: Operation | Model | Namespace, value: unknown): void {
   if (!value || typeof value !== "object") {
     reportDiagnostic(context, "invalid-bindings-config", target, {
       targetKind: target.kind,
@@ -239,12 +223,7 @@ export function $bindings(
   storeBindings(context.program, target, bindings);
 }
 
-export function $header(
-  context: DecoratorContext,
-  target: Model | ModelProperty,
-  name: unknown,
-  value?: unknown,
-): void {
+export function $header(context: DecoratorContext, target: Model | ModelProperty, name: unknown, value?: unknown): void {
   if (
     !validateNonEmptyString(name, context, target, "invalid-header-config", {
       targetKind: target.kind,
@@ -256,12 +235,7 @@ export function $header(
   storeHeader(context.program, target, name, value);
 }
 
-export function $reply(
-  context: DecoratorContext,
-  target: Operation,
-  replyModel: Model,
-  address?: unknown,
-): void {
+export function $reply(context: DecoratorContext, target: Operation, replyModel: Model, address?: unknown): void {
   if (!replyModel || !replyModel.name) {
     return;
   }

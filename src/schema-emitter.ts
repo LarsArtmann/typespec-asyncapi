@@ -120,26 +120,16 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<JsonSchema, AsyncAPIEmitt
     return this.intrinsicSchema(scalar.name);
   }
 
-  stringLiteral(literal: StringLiteral): EmitterOutput<JsonSchema> {
-    return this.returnConst(literal.value);
-  }
-  numericLiteral(literal: NumericLiteral): EmitterOutput<JsonSchema> {
-    return this.returnConst(literal.value);
-  }
-  booleanLiteral(literal: BooleanLiteral): EmitterOutput<JsonSchema> {
-    return this.returnConst(literal.value);
-  }
+  stringLiteral = (literal: StringLiteral): EmitterOutput<JsonSchema> => this.returnConst(literal.value);
+  numericLiteral = (literal: NumericLiteral): EmitterOutput<JsonSchema> => this.returnConst(literal.value);
+  booleanLiteral = (literal: BooleanLiteral): EmitterOutput<JsonSchema> => this.returnConst(literal.value);
   tuple(tuple: Tuple): EmitterOutput<JsonSchema> {
     const items = tuple.values.map((v: Type) => this.refOrFallback(v, (t) => this.typeToSchema(t)));
     return { items, type: "array" };
   }
 
-  arrayDeclaration(_array: Type, _name: string, elementType: Type): EmitterOutput<JsonSchema> {
-    return this.arraySchema(elementType);
-  }
-  arrayLiteral(_array: Type, elementType: Type): EmitterOutput<JsonSchema> {
-    return this.arraySchema(elementType);
-  }
+  arrayDeclaration = (_array: Type, _name: string, elementType: Type): EmitterOutput<JsonSchema> => this.arraySchema(elementType);
+  arrayLiteral = (_array: Type, elementType: Type): EmitterOutput<JsonSchema> => this.arraySchema(elementType);
   private arraySchema(elementType: Type): JsonSchema {
     return { items: this.elementTypeToSchema(elementType), type: "array" };
   }
@@ -153,12 +143,8 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<JsonSchema, AsyncAPIEmitt
     return { scope: sourceFile.globalScope };
   }
 
-  operation(_operation: Operation): EmitterOutput<JsonSchema> {
-    return this.returnNone();
-  }
-  interfaceDeclaration(_iface: Interface): EmitterOutput<JsonSchema> {
-    return this.returnNone();
-  }
+  operation = (_operation: Operation): EmitterOutput<JsonSchema> => this.returnNone();
+  interfaceDeclaration = (_iface: Interface): EmitterOutput<JsonSchema> => this.returnNone();
   enumDeclaration(en: Enum, name: string): EmitterOutput<JsonSchema> {
     const schema = this.buildEnumSchema(en.members);
     applyDocDescription(this.emitter.getProgram(), en, schema);

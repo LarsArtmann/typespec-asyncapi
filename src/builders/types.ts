@@ -48,3 +48,15 @@ export function nameOfType(type: Type): string | undefined {
   }
   return undefined;
 }
+
+/** Apply `fn` to the message at `key` if it exists in the context. */
+export function withMessage(
+  ctx: DocumentBuildContext,
+  key: string,
+  fn: (msg: MessageObject) => void,
+): void {
+  const msg = ctx.messages[key];
+  if (msg) {
+    fn(msg);
+  }
+}

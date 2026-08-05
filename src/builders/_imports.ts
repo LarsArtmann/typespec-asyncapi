@@ -11,4 +11,4 @@
 export { getDoc } from "@typespec/compiler";
 export type { AsyncAPIConsolidatedState } from "../state.js";
 export type { BuilderFn, DocumentBuildContext } from "./types.js";
-export { nameOfType } from "./types.js";
+export { nameOfType, withMessage } from "./types.js";
