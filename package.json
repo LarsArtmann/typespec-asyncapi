@@ -108,27 +108,27 @@
   "dependencies": {
     "yaml": "^2.9.0"
   },
-  "peerDependencies": {
-    "@typespec/asset-emitter": "^0.79.1",
-    "@typespec/compiler": "^1.13.0",
-    "@typespec/versioning": "^0.84.0"
-  },
   "devDependencies": {
     "@asyncapi/parser": "^3.6.0",
     "@asyncapi/specs": "6.11.1",
     "@eslint/js": "^10.0.1",
-    "@typespec/asset-emitter": "^0.79.1",
-    "@typespec/compiler": "^1.13.0",
-    "@typespec/versioning": "^0.84.0",
     "@types/node": "^26.0.1",
     "@typescript-eslint/eslint-plugin": "^8.62.0",
     "@typescript-eslint/parser": "^8.62.0",
+    "@typespec/asset-emitter": "^0.79.1",
+    "@typespec/compiler": "^1.13.0",
+    "@typespec/versioning": "^0.84.0",
     "ajv": "^8.20.0",
     "eslint": "^10.6.0",
     "husky": "^9.1.7",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.62.0",
     "vitest": "^4.1.10"
+  },
+  "peerDependencies": {
+    "@typespec/asset-emitter": "^0.79.1",
+    "@typespec/compiler": "^1.13.0",
+    "@typespec/versioning": "^0.84.0"
   },
   "overrides": {
     "@asyncapi/specs": "6.11.1",

@@ -4,7 +4,11 @@
  * Only the options the emitter actually reads at runtime.
  */
 
-import type { ContactObject, LicenseObject, ExternalDocumentationObject } from "../../domain/models/asyncapi-document.js";
+import type {
+  ContactObject,
+  LicenseObject,
+  ExternalDocumentationObject,
+} from "../../domain/models/asyncapi-document.js";
 
 export interface EmitterOptions {
   /** Target AsyncAPI specification version */

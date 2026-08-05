@@ -18,7 +18,11 @@ const baseSpec = `
 describe("spec Compliance: Info Object Fields", () => {
   it("emits info.contact from emitter options", async () => {
     const doc = await compileAndValidateOrThrow(baseSpec, {
-      contact: { name: "API Team", email: "api@test.com", url: "https://test.com" },
+      contact: {
+        name: "API Team",
+        email: "api@test.com",
+        url: "https://test.com",
+      },
     });
     const { info } = doc as ParsedAsyncAPIDocument;
     expect(info.contact).toStrictEqual({
@@ -33,7 +37,10 @@ describe("spec Compliance: Info Object Fields", () => {
       license: { name: "MIT", url: "https://opensource.org/licenses/MIT" },
     });
     const { info } = doc as ParsedAsyncAPIDocument;
-    expect(info.license).toStrictEqual({ name: "MIT", url: "https://opensource.org/licenses/MIT" });
+    expect(info.license).toStrictEqual({
+      name: "MIT",
+      url: "https://opensource.org/licenses/MIT",
+    });
   });
 
   it("emits info.termsOfService from emitter options", async () => {
@@ -46,7 +53,10 @@ describe("spec Compliance: Info Object Fields", () => {
 
   it("emits info.externalDocs from emitter options", async () => {
     const doc = await compileAndValidateOrThrow(baseSpec, {
-      externalDocs: { url: "https://docs.test.com", description: "Full documentation" },
+      externalDocs: {
+        url: "https://docs.test.com",
+        description: "Full documentation",
+      },
     });
     const { info } = doc as ParsedAsyncAPIDocument;
     expect(info.externalDocs).toStrictEqual({

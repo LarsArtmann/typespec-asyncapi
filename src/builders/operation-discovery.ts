@@ -57,7 +57,10 @@ function resolveMessageInfo(
 }
 
 /** 1a. Operations from @publish/@subscribe + @channel decorators. */
-function discoverDecoratedOps(state: AsyncAPIConsolidatedState, ctx: DocumentBuildContext): void {
+function discoverDecoratedOps(
+  state: AsyncAPIConsolidatedState,
+  ctx: DocumentBuildContext,
+): void {
   for (const { type, name, data } of iterNamedTypes(state.channels)) {
     ctx.opToChannel.set(name, data.path);
     const doc = getDoc(ctx.program, type);
@@ -71,7 +74,11 @@ function discoverDecoratedOps(state: AsyncAPIConsolidatedState, ctx: DocumentBui
     const opName = opId ?? name;
     const channelKey = ctx.opToChannel.get(name) ?? name;
 
-    let { messageNames, messageSchemaNames } = resolveMessageInfo(type, state, opName);
+    let { messageNames, messageSchemaNames } = resolveMessageInfo(
+      type,
+      state,
+      opName,
+    );
     if (data.messageType) {
       messageNames = [data.messageType];
       messageSchemaNames = [data.messageType];
@@ -93,7 +100,11 @@ function discoverDecoratedOps(state: AsyncAPIConsolidatedState, ctx: DocumentBui
 }
 
 /** Resolve the operation name from `@operationId` if present, else fall back to the type name. */
-function resolveOpName(state: AsyncAPIConsolidatedState, type: unknown, fallback: string): string {
+function resolveOpName(
+  state: AsyncAPIConsolidatedState,
+  type: unknown,
+  fallback: string,
+): string {
   return state.operationIds.get(type as never) ?? fallback;
 }
 
@@ -119,7 +130,10 @@ const discoverChannelOnlyOps: BuilderFn = (state, ctx) => {
 
 /** 1c. Bare operations (no decorators at all). */
 const discoverBareOps: BuilderFn = (state, ctx) => {
-  const allKnownOps = new Set([...namesOfTypes(state.operations), ...namesOfTypes(state.channels)]);
+  const allKnownOps = new Set([
+    ...namesOfTypes(state.operations),
+    ...namesOfTypes(state.channels),
+  ]);
   const globalNs = ctx.program.getGlobalNamespaceType();
   const namespaces = [globalNs, ...globalNs.namespaces.values()];
   for (const ns of namespaces) {
