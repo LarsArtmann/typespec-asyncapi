@@ -11,7 +11,7 @@
 bun install           # Install dependencies
 bun run build         # Build TypeScript → JavaScript (0 errors)
 bun run lint          # Run ESLint (0 errors, 0 warnings)
-bun run test          # Run tests via vitest (555 pass, 0 fail)
+bun run test          # Run tests via vitest (679 pass, 0 fail)
 ```
 
 **Important:** Use `bun` and `bunx` for install/build, never `npm` or `npx`. Tests run via **vitest** (Node.js/V8) — not `bun test` — because Bun has documented memory leaks that cause OOM crashes with heavy test suites.
@@ -32,22 +32,30 @@ bun run test          # Run tests via vitest (555 pass, 0 fail)
 ## Architecture
 
 - **Entry Point:** `src/index.ts` → exports `$onEmit` for TypeSpec compiler
-- **Emitter (7 files, split from original 831-line monolith):**
-  - `src/emitter.ts` (91 lines) — `$onEmit` entry point, writes output file, handles `split-schemas` option
-  - `src/schema-emitter.ts` (349 lines) — `AsyncAPISchemaEmitter` class extends `TypeEmitter<JsonSchema, AsyncAPIEmitterOptions>`, overrides `modelDeclaration`, `union`, `enum`, `intrinsic`, `scalar`, etc.
-  - `src/schema-generator.ts` (46 lines) — `generateSchemas()` entry point, creates asset emitter and collects declarations
-  - `src/extract-value.ts` (26 lines) — `extractValue()` narrows `EmitEntity<T>` discriminated union, filters `Placeholder<T>` lazy values
+- **Emitter (7 core files, split from original 831-line monolith):**
+  - `src/emitter.ts` (68 lines) — `$onEmit` entry point, writes output file, handles `split-schemas` option
+  - `src/schema-emitter.ts` (320 lines) — `AsyncAPISchemaEmitter` class extends `TypeEmitter<JsonSchema, AsyncAPIEmitterOptions>`, overrides `modelDeclaration`, `union`, `enum`, `intrinsic`, `scalar`, etc.
+  - `src/schema-generator.ts` (47 lines) — `generateSchemas()` entry point, creates asset emitter and collects declarations
+  - `src/extract-value.ts` (24 lines) — `extractValue()` narrows `EmitEntity<T>` discriminated union, filters `Placeholder<T>` lazy values
   - `src/stdlib-helpers.ts` (39 lines) — `isStdlibType()` and `collectAllStdlibNames()` utilities
-  - `src/document-builder.ts` (122 lines) — `buildAsyncAPIDocument()` assembles channels, operations, messages, schemas, security from TypeSpec state. Handles `$ref` chain construction
+  - `src/document-builder.ts` (116 lines) — `buildAsyncAPIDocument()` entry point; delegates to `src/builders/` for assembly. Handles `$ref` chain construction
   - `src/intrinsic-mapping.ts` (82 lines) — `intrinsicToSchema()` maps TypeSpec scalar names to JSON Schema types (~30 cases)
-  - `src/schema-splitter.ts` (83 lines) — `splitSchemas()` extracts schemas into individual files, rewrites `$ref` pointers to external paths
+  - `src/schema-splitter.ts` (79 lines) — `splitSchemas()` extracts schemas into individual files, rewrites `$ref` pointers to external paths
+- **Document Builders (`src/builders/`, 7 files):**
+  - `src/builders/operation-discovery.ts` (153 lines) — discovers channel-decorated operations from TypeSpec namespace
+  - `src/builders/message-builder.ts` (156 lines) — builds message objects with `$ref` registration
+  - `src/builders/shared-utils.ts` (154 lines) — shared helpers: `ref()`, `escapeRefToken()`, `registerMessage()`, `resolveReplyKey()`
+  - `src/builders/operation-builder.ts` (94 lines) — builds operation objects with action, channel ref, messages, and reply
+  - `src/builders/channel-builder.ts` (81 lines) — builds channel objects with address, messages, bindings
+  - `src/builders/server-builder.ts` (41 lines) — builds server objects with host, protocol, variables
+  - `src/builders/types.ts` (46 lines) — shared builder context and result types
 - **Decorators:** `lib/main.tsp` declares all decorators + `EmitterOptions` model for IDE autocomplete
-- **Decorator Implementations:** `src/minimal-decorators.ts` (351 lines) and `src/namespace-decorators.ts` (73 lines) — thin wrappers with runtime validation, helpers in `src/decorator-helpers.ts`, state writing delegated to `src/state-writers.ts`. The namespace-decorators file contains `$server` and `$defaultContentType` (both target `Namespace`).
+- **Decorator Implementations:** `src/decorators.ts` (49 lines, unified registry), `src/minimal-decorators.ts` (288 lines) and `src/namespace-decorators.ts` (65 lines) — thin wrappers with runtime validation, helpers in `src/decorator-helpers.ts`, state writing delegated to `src/state-writers.ts`. The namespace-decorators file contains `$server` and `$defaultContentType` (both target `Namespace`).
 - **State Management:** `src/state.ts` (consolidation), `src/state-compatibility.ts` (TypeSpec stateMap access)
 - **Configuration:** `src/infrastructure/configuration/` — simplified to just types, no runtime validation
-- **Protocols:** `src/constants/protocols.ts` — single source of truth for all AsyncAPI protocols (const array → derived type → runtime Set + type guard). Accepts aliases (`websocket` → `ws`) via `normalizeProtocol()`. Canonical names only in `PROTOCOL_LIST`; `isSupportedProtocol()` narrows to `AcceptedProtocol` (canonical | alias).
-- **Binding Versions:** `src/constants/binding-versions.ts` — single source of truth for binding versions per protocol (Kafka 0.5.0, AMQP 0.3.0, MQTT 0.2.0, HTTP 0.3.0, WS 0.1.0). `normalizeBindingProtocol()` maps `wss` → `ws` for binding keys (AsyncAPI schema uses `ws` for both). Auto-injects `bindingVersion` when missing. `BINDING_PLACEMENT` matrix maps each protocol to which target kinds (channel/operation/message/server) have binding definitions. `supportsBindingPlacement()` and `getValidPlacements()` consume the matrix.
-- **Binding Validation:** `src/validation/binding-validator.ts` — `processBindings()` accepts an optional `targetKind` parameter (mapped from TypeSpec target: `Operation` → `"operation"`, `Model` → `"message"`). Normalizes binding keys (websockets→ws), validates versions, auto-injects missing `bindingVersion`, and warns on misplaced bindings. Three diagnostics: `unknown-binding-protocol` (warning), `invalid-binding-version` (warning), `misplaced-binding` (warning). `BindingDiagnosticCode` union type replaces the previous `string` code field.
+- **Protocols:** `src/constants/protocols.ts` — single source of truth for all AsyncAPI protocols (const array → derived type → runtime Set + type guard). **19 protocols** auto-generated from `@asyncapi/specs` (Kafka, AMQP, AMQP1, AnypointMQ, GooglePubSub, HTTP, IBMMQ, JMS, Mercure, MQTT, NATS, Pulsar, Redis, ROS2, SNS, Solace, SQS, STOMP, WS). Accepts aliases (`websocket` → `ws`) via `normalizeProtocol()`. Canonical names only in `PROTOCOL_LIST`; `isSupportedProtocol()` narrows to `AcceptedProtocol` (canonical | alias).
+- **Binding Versions:** `src/constants/binding-versions.ts` — single source of truth for binding versions per protocol. **19 protocols** with versions auto-generated from `@asyncapi/specs/bindings/` via `scripts/generate-binding-specs.ts`. `normalizeBindingProtocol()` maps `wss` → `ws` for binding keys (AsyncAPI schema uses `ws` for both). Auto-injects `bindingVersion` when missing. `BINDING_PLACEMENT` matrix is auto-generated from specs (`GENERATED_PLACEMENT`); `supportsBindingPlacement()` and `getValidPlacements()` consume it.
+- **Binding Validation:** `src/validation/binding-validator.ts` (158 lines) and `src/validation/binding-field-validator.ts` (116 lines) — `processBindings()` accepts an optional `targetKind` parameter (mapped from TypeSpec target: `Operation` → `"operation"`, `Model` → `"message"`). Normalizes binding keys (websockets→ws), validates versions, auto-injects missing `bindingVersion`, and warns on misplaced bindings. Field-level validation via `validateBindingFields()` checks individual field values against spec-derived constraints (auto-generated field rules in `generated-bindings.ts`). Three diagnostics: `unknown-binding-protocol` (warning), `invalid-binding-version` (warning), `misplaced-binding` (warning). `BindingDiagnosticCode` union type replaces the previous `string` code field.
 - **Security Scheme Types:** `src/domain/models/asyncapi-document.ts` — `SECURITY_SCHEME_TYPES` const array → `SecuritySchemeType` union → `isValidSchemeType` runtime guard. Matches AsyncAPI 3.1 spec exactly (no invalid types like `sasl`/`mutualTLS`/`external`/`oauthBearer`). Multi-security on one namespace supported (array accumulation). `SecurityScheme.in` only allows `"query" | "header" | "cookie"` (AsyncAPI 3.1 API key locations).
 - **Document Model:** `src/domain/models/asyncapi-document.ts` — strongly-typed AsyncAPI 3.1 interfaces with `OAuth2Flows`, `ProtocolBindings`, `SecuritySchemeType` types. No index signatures except `JsonSchema` (standard JSON Schema extension pattern)
 - **Cross-emitter Shared Module:** `src/shared/` — exports `JsonSchema`, `SchemaRef`, `SchemaMap` types and `generateSchemas`, `extractValue`, `intrinsicToSchema`, `AsyncAPISchemaEmitter` for reuse by other TypeSpec emitters (OpenAPI, JSON Schema). Accessible via `@lars-artmann/typespec-asyncapi/shared` subpath export.
@@ -86,7 +94,7 @@ Tests use **vitest** with the TypeSpec compiler testing API (`createTester`). Al
 - `test/validation/schema-validation.test.ts` — Validates against AsyncAPI 3.1 JSON Schema via AJV
 - `test/integration/decorator-output.test.ts` — Verifies @tags, @correlationId, @header, @bindings in output
 - `test/integration/negative-tests.test.ts` — Error handling edge cases
-- `test/compliance/` — **AsyncAPI 3.1.0 spec compliance suite** (78 tests across 6 files): document structure, schema types, $ref chain, servers/security, protocol bindings (Kafka/AMQP/MQTT/WS/HTTP), edge cases. All validated against official AsyncAPI 3.1.0 JSON Schema via `compileAndValidateOrThrow()`.
+- `test/compliance/` — **AsyncAPI 3.1.0 spec compliance suite** (98 tests across 11 files): document structure, schema types, $ref chain, servers/security, protocol bindings (all 19 protocols), operation reply, multi-message operations, defaultContentType, @doc propagation, edge cases. All validated against official AsyncAPI 3.1.0 JSON Schema via `compileAndValidateOrThrow()`.
 - `test/utils/schema-validator.ts` — Reusable AJV harness: `compileAndValidate()`, `compileAndValidateOrThrow()`, `formatValidationErrors()`
 - `test/integration/multi-file-output.test.ts` — Schema splitting tests (9 tests): multi-file output, $ref rewriting, nested refs in schema files
 - `test/unit/shared-schema-types.test.ts` — Cross-emitter shared API tests (19 tests): JsonSchema type, SchemaMap, extractValue, intrinsicToSchema

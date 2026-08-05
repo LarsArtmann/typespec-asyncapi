@@ -1,6 +1,6 @@
 # Feature Inventory
 
-**Verified:** 2026-07-22 against actual code + test run (555 pass, 0 fail, 0 skip, 0 todo)
+**Verified:** 2026-08-05 against actual code + test run (679 pass, 0 fail, 0 skip, 0 todo)
 **Project:** `@lars-artmann/typespec-asyncapi` v0.2.0-beta
 **Lint:** oxlint 0 errors / 0 warnings, ESLint 0 errors / 0 warnings
 **Diagnostics:** 18 codes (15 error + 3 warning), all compile-time validated via `$lib.reportDiagnostic()`
@@ -35,6 +35,8 @@
 | Nested model references     | FULLY_FUNCTIONAL | `$ref: "#/components/schemas/ModelName"` for named models       |
 | Channel path parameters     | FULLY_FUNCTIONAL | `{var}` in address → `parameters` object on channel             |
 | Server variables            | FULLY_FUNCTIONAL | `{var}` in host → `variables` object on server                  |
+| Multi-message operations    | FULLY_FUNCTIONAL | Union return types produce multiple message refs in one operation |
+| Operation reply             | FULLY_FUNCTIONAL | `@reply` decorator emits reply with message ref and optional address |
 
 ## Decorator System
 
@@ -51,8 +53,12 @@
 | `@correlationId` | FULLY_FUNCTIONAL | Emitted as `correlationId` objects on all messages                                    |
 | `@bindings`      | FULLY_FUNCTIONAL | Emitted as `bindings` on operations/messages; keys normalized, versions auto-injected |
 | `@header`        | FULLY_FUNCTIONAL | Emitted as JSON Schema `headers` on messages                                          |
+| `@reply`         | FULLY_FUNCTIONAL | Operation reply with message reference and optional address (`operation-builder.ts`)  |
+| `@defaultContentType` | FULLY_FUNCTIONAL | Sets `defaultContentType` on document root (`namespace-decorators.ts`)          |
 
 ## Protocol Bindings
+
+All 19 AsyncAPI protocols auto-generated from `@asyncapi/specs/bindings/` via `scripts/generate-binding-specs.ts`.
 
 | Protocol          | Status           | Evidence                                                                                                                      |
 | ----------------- | ---------------- | ----------------------------------------------------------------------------------------------------------------------------- |
@@ -61,6 +67,7 @@
 | MQTT              | FULLY_FUNCTIONAL | Server (clientId, cleanSession, lastWill), Operation (qos, retain), Message. Binding version 0.2.0.                           |
 | WebSocket         | FULLY_FUNCTIONAL | Channel (method, query, headers). Binding version 0.1.0. `ws`/`wss` normalized to `ws` binding key.                           |
 | HTTP              | FULLY_FUNCTIONAL | Operation (method, query), Message (headers). Binding version 0.3.0.                                                          |
+| 14 additional     | FULLY_FUNCTIONAL | AMQP1, AnypointMQ, GooglePubSub, IBMMQ, JMS, Mercure, NATS, Pulsar, Redis, ROS2, SNS, Solace, SQS, STOMP — all auto-generated |
 | Auto-versioning   | FULLY_FUNCTIONAL | `bindingVersion` auto-injected when missing via `processBindings()` and document-builder                                      |
 | Key normalization | FULLY_FUNCTIONAL | `websocket`→`ws`, `wss`→`ws` for binding keys. Server.protocol retains `wss`. `normalizeBindingProtocol()`                    |
 
@@ -71,7 +78,8 @@
 | Binding key normalization | FULLY_FUNCTIONAL | `processBindings()` in `src/validation/binding-validator.ts`                                                                                                                                |
 | Version validation        | FULLY_FUNCTIONAL | Warns on invalid binding versions via `invalid-binding-version` diagnostic                                                                                                                  |
 | Unknown protocol warning  | FULLY_FUNCTIONAL | Warns on unrecognized binding keys via `unknown-binding-protocol` diagnostic                                                                                                                |
-| Placement validation      | FULLY_FUNCTIONAL | Warns when a binding is placed on a target kind the spec doesn't define (e.g. `ws` on an Operation) via `misplaced-binding` diagnostic. `BINDING_PLACEMENT` matrix in `binding-versions.ts` |
+| Placement validation      | FULLY_FUNCTIONAL | Warns when a binding is placed on a target kind the spec doesn't define (e.g. `ws` on an Operation) via `misplaced-binding` diagnostic. `BINDING_PLACEMENT` matrix auto-generated from specs |
+| Field-level validation     | FULLY_FUNCTIONAL | Validates individual binding field values against spec-derived constraints via `binding-field-validator.ts`. Auto-generated field rules |
 
 ## State Management
 
@@ -92,16 +100,17 @@
 | `version` option                  | FULLY_FUNCTIONAL | Sets `info.version` on document                               |
 | `description` option              | FULLY_FUNCTIONAL | Sets `info.description` on document                           |
 | `output-dir` option               | FULLY_FUNCTIONAL | Sets emitter output directory                                 |
+| `split-schemas` option            | FULLY_FUNCTIONAL | Splits schemas into individual files under `schemas/`; rewrites `$ref` pointers to external paths (`schema-splitter.ts`) |
 | `EmitterOptions` IDE autocomplete | FULLY_FUNCTIONAL | `lib/main.tsp` — `EmitterOptions` model for TypeSpec IDE      |
 
 ## Testing
 
 | Feature                 | Status           | Evidence                                                                          |
 | ----------------------- | ---------------- | --------------------------------------------------------------------------------- |
-| vitest test runner      | FULLY_FUNCTIONAL | 555 tests across 48 files (0 skip, 0 todo)                                        |
+| vitest test runner      | FULLY_FUNCTIONAL | 679 tests across 64 files (0 skip, 0 todo)                                        |
 | Golden file test        | FULLY_FUNCTIONAL | `test/golden/golden-file.test.ts`                                                 |
 | Schema validation tests | FULLY_FUNCTIONAL | `test/validation/schema-validation.test.ts`                                       |
-| Spec compliance suite   | FULLY_FUNCTIONAL | `test/compliance/` — 78 tests validated against official AsyncAPI 3.1 JSON Schema |
+| Spec compliance suite   | FULLY_FUNCTIONAL | `test/compliance/` — 98 tests validated against official AsyncAPI 3.1 JSON Schema |
 | Integration tests       | FULLY_FUNCTIONAL | `test/integration/` — decorator output, negative tests, binding placement         |
 | E2E tests               | FULLY_FUNCTIONAL | `test/e2e/` — complex nested schemas                                              |
 | BDD tests               | FULLY_FUNCTIONAL | `test/bdd/` — user behavior scenarios                                             |
