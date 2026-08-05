@@ -10,48 +10,58 @@
 ## a) FULLY DONE
 
 ### T1 — Binding Protocol Gap Fix (CRITICAL BUG)
+
 - **Root cause:** `normalizeBindingKey()` in `binding-validator.ts` only checked `isSupportedProtocol()` (19 server protocols). Three binding-only protocols (`solace`, `anypointmq`, `ros2`) exist in `GENERATED_FIELD_RULES` and `GENERATED_PLACEMENT` but were rejected as `unknown-binding-protocol`.
 - **Fix:** Added `hasProtocolBindings()` fallback check in `normalizeBindingKey()` (`src/validation/binding-validator.ts:58-60`).
 - **Status:** Code committed (`49b4241`), built, tested, verified.
 
 ### T2 — Tuple of Named Models Fix (CRITICAL BUG)
+
 - **Root cause:** `tuple()` in `schema-emitter.ts` used `extractValue(emitTypeReference(v))` for each element. For named models, this returns `{ properties: {}, type: "object" }`, producing identical enum entries. AJV rejects with "must NOT have duplicate items".
 - **Fix:** Both `tuple()` and `typeToSchema()` Tuple branch now use `refForNamedType()` for named models before falling back to `extractValue`. Output changed from invalid `{ items: { enum: [...] } }` to correct `{ items: [...] }` array format.
 - **Type change:** `JsonSchema.items` updated from `JsonSchema` to `JsonSchema | JsonSchema[]` to support JSON Schema tuple validation.
 - **Status:** Code committed (`0226deb`), built, tested, verified.
 
 ### T3 — Binding Protocol Fix Regression Tests (10 tests)
+
 - Tests for solace (priority validation, range checks, type checks, server target, misplaced binding), anypointmq normalization, ros2 normalization, invalid version detection, and binding-only protocol acceptance.
 - **Status:** Committed, passing.
 
 ### T4 — Tuple Fix Regression Tests (2 tests)
+
 - Tuple of named models validated against AsyncAPI 3.1 JSON Schema via `compileAndValidateOrThrow`.
 - Tuple of mixed primitives + named models, also AJV-validated.
 - Existing primitive tuple test updated to assert per-position `items` array format.
 - **Status:** Committed, passing.
 
 ### T5 — Coverage Gate Verification
+
 - **Result:** PASSED — 33 source files, avg 96.0% line coverage (min 75% per file).
 - **Status:** Verified.
 
 ### T6 — splitSchemas Unit Tests (14 tests)
+
 - Tests: empty components, missing components, single schema extraction, component removal, component preservation (messages/securitySchemes), $ref rewriting (main doc + schema files), non-schema $ref preservation, YAML extension, immutability, multiple schemas, $ref inside arrays, empty schemas object.
 - **Status:** Committed, passing.
 
 ### T7 — extractValue Edge Cases (5 tests added)
+
 - Added to existing `shared-schema-types.test.ts`: circular kind, code kind, null value, non-object value, complex nested schema.
 - **Status:** Committed, passing.
 
 ### T8 — Dead Diagnostic Code Audit
+
 - Investigated all 22 diagnostic codes. All are actively referenced in source code — **zero dead codes**.
 - Updated AGENTS.md to correct stale count (18 → 22 codes).
 - **Status:** Committed, verified.
 
 ### T9 — Decorator Combination Tests (11 tests)
+
 - Tests: `@defaultContentType` present/absent, multiple `@server` decorators, server descriptions, void operations, enum explicit values, enum member names, `@channel` + `@doc`, `@operationId`, `@messageId`.
 - **Status:** Committed, passing.
 
 ### T10 — Commit & Push
+
 - All work committed by auto-git daemon across multiple commits.
 - Branch is up to date with `origin/master`.
 
@@ -60,11 +70,13 @@
 ## b) PARTIALLY DONE
 
 ### Stdlib Helpers Tests
+
 - **What was done:** 7 compilation-based tests verifying the EFFECT of `isStdlibType()` (stdlib types → inline, user types → `$ref`).
 - **What was NOT done:** `collectAllStdlibNames()` is completely untested. The test file comment claims to test it, but no test actually calls it. `isStdlibType()` itself is only tested indirectly through compilation, not as a direct unit test.
 - **Impact:** Low. The indirect tests are actually more valuable since they test real behavior.
 
 ### T9 Decorator Combinations
+
 - **What was done:** 11 tests covering individual decorator patterns and some basic combinations.
 - **What was NOT done:** Cross-decorator combinations like `@protocol` + `@bindings` on same target, `@security` + `@server` on same namespace, `@message` + `@messageId` + `@correlationId` triple stack, error cases in combinations.
 
@@ -73,13 +85,16 @@
 ## c) NOT STARTED
 
 ### Integration Test for Binding Protocol Fix
+
 - The binding fix (T1) was tested via unit tests calling `processBindings()` directly. There is NO integration test that compiles `@bindings(#{solace: #{priority: 5}})` through the full TypeSpec compiler → emitter → AsyncAPI output pipeline.
 - **Risk:** The unit test verifies `processBindings()` in isolation. It doesn't verify the decorator → state → document-builder chain works end-to-end for solace/anypointmq/ros2 bindings.
 
 ### splitSchemas End-to-End Tests with Tuples
+
 - splitSchemas unit tests use manually constructed documents. There's no test that compiles a spec with tuples AND split-schemas enabled to verify the combined behavior.
 
 ### Performance Regression Check
+
 - Tuple fix changed the output structure. The benchmark tests passed, but I didn't compare before/after timing to detect regressions.
 
 ---
@@ -99,12 +114,14 @@ However, two issues worth calling out:
 ## e) WHAT WE SHOULD IMPROVE
 
 ### Process Improvements
+
 1. **Update planning docs with completion status** — The Pareto plan has zero completion markers despite all 10 tasks being done. This is a docs-health violation per our own AGENTS.md rules.
 2. **Test comments must be accurate** — The stdlib-helpers test comment claims coverage it doesn't provide.
 3. **Integration tests for bug fixes** — Both bugs were fixed and unit-tested, but neither has an end-to-end integration test through the full compilation pipeline.
 4. **Commit messages** — The auto-git daemon commits with generic messages. The critical fixes (T1 binding, T2 tuple) deserve human-authored commit messages explaining the "why".
 
 ### Code Quality Observations
+
 5. **`typeToSchema()` Tuple branch reachability** — I fixed the Tuple branch in `typeToSchema()` (line 335-348) alongside the `tuple()` method override (line 185-199). But `typeToSchema()` is a private fallback method — I didn't verify whether the Tuple branch in it is actually reachable when `tuple()` is overridden. It may be dead code now.
 6. **`JsonSchema.items` type broadened** — Changed from `JsonSchema` to `JsonSchema | JsonSchema[]`. All consumers should be checked — array form is valid JSON Schema for tuples, but downstream code that accesses `.items.type` would break on the array form. No consumer audit was done.
 7. **Coverage gap in `stdlib-helpers.ts`** — `src/` lcov shows 2/33 lines covered (6%). The `dist/` path shows 29/30 (97%). The coverage gate merges these and passes, but this means our direct unit tests barely cover the file — we're relying entirely on the compiled output being instrumented.
@@ -114,6 +131,7 @@ However, two issues worth calling out:
 ## f) Up to 50 Things to Get Done Next
 
 #### Bug Fix Hardening (P0)
+
 1. Write integration test: compile `@bindings(#{solace: #{priority: 5}})` through full pipeline, verify output contains solace binding
 2. Write integration test: compile `@bindings(#{anypointmq: #{...}})` end-to-end
 3. Write integration test: compile `@bindings(#{ros2: #{...}})` end-to-end
@@ -122,6 +140,7 @@ However, two issues worth calling out:
 6. Write test compiling tuple + split-schemas option together
 
 #### Coverage Gaps (P1)
+
 7. Write direct unit test for `collectAllStdlibNames()` with a mock Program
 8. Write direct unit test for `isStdlibType()` with mock Type objects
 9. Check `intrinsic-mapping.ts` coverage (41/74 from src path — 55%)
@@ -131,6 +150,7 @@ However, two issues worth calling out:
 13. Test `rewriteRefs()` with deeply nested objects (5+ levels)
 
 #### Decorator & Combination Tests (P1-P2)
+
 14. Test `@protocol` + `@bindings` on same operation
 15. Test `@security` + `@server` on same namespace
 16. Test `@message` + `@messageId` + `@correlationId` triple stack
@@ -142,6 +162,7 @@ However, two issues worth calling out:
 22. Test `@channel` with path parameters + `@protocol`
 
 #### AsyncAPI Compliance Tests (P2)
+
 23. Test operation reply with reply address
 24. Test multi-message operations (one operation, multiple messages)
 25. Test `$ref` chains deeper than 3 levels
@@ -152,6 +173,7 @@ However, two issues worth calling out:
 30. Test model with default values (`@default`)
 
 #### Infrastructure & Tooling (P2)
+
 31. Update Pareto plan document with completion status
 32. Fix misleading comment in `test/unit/stdlib-helpers.test.ts`
 33. Add pre-push hook that runs `bun run lint` (currently only pre-commit)
@@ -160,6 +182,7 @@ However, two issues worth calling out:
 36. Add a `test:quick` script that skips coverage and slow tests
 
 #### Emitter Output Quality (P2-P3)
+
 37. Test YAML output format (not just JSON)
 38. Test `description` emitter option end-to-end
 39. Test `output-file` option with custom names
@@ -172,6 +195,7 @@ However, two issues worth calling out:
 46. Test `title` field on schemas
 
 #### Code Cleanup (P3)
+
 47. Remove `typeToSchema()` Tuple branch if confirmed unreachable
 48. Add JSDoc to `splitSchemas()` explaining the `structuredClone` choice
 49. Consider extracting `refForNamedType` as a standalone utility (used in 4+ places)
