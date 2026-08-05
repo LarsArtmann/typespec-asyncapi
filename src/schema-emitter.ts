@@ -47,9 +47,7 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
   }
   modelDeclaration(model: Model): EmitterOutput<JsonSchema> {
     const program = this.emitter.getProgram();
-    const baseRef = model.baseModel
-      ? refForNamedType(model.baseModel)
-      : null;
+    const baseRef = model.baseModel ? refForNamedType(model.baseModel) : null;
     const schema = this.collectPropertiesSchema(model, baseRef === null);
     if (baseRef) {
       schema.allOf = [baseRef];
@@ -275,7 +273,7 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
     return { properties, required };
   }
 
-private propertyToSchema(prop: ModelProperty): JsonSchema {
+  private propertyToSchema(prop: ModelProperty): JsonSchema {
     const schema = this.refOrFallback(prop.type, (t) => this.typeToSchema(t));
     return applyConstraints(this.emitter.getProgram(), prop, schema);
   }

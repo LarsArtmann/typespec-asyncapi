@@ -20,7 +20,6 @@ Long-term ideas and RFCs live in ROADMAP, not here.
 > - ~~Add `@discriminator` → `discriminator` mapping~~ — polymorphic type handling via `getDiscriminator()`
 > - ~~Fix union variant `$ref` for named models~~ — was emitting empty `{}` objects instead of `$ref`
 > - ~~Extract `refForNamedType` to `schema-ref.ts`~~ — schema-emitter.ts reduced from 386→359 lines
->
 > - ~~Map 14 TypeSpec constraint/metadata decorators to JSON Schema keywords~~ — `src/constraint-mapper.ts` (@minValue, @maxValue, exclusive variants, @minLength/@maxLength, @pattern, @format, @minItems/@maxItems, #deprecated, @summary→title, @example→examples, @visibility→readOnly/writeOnly)
 > - ~~Add info.contact, info.license, info.termsOfService, info.externalDocs~~ — emitter options wired
 > - ~~Consolidate metadata application~~ — `applyMetadata()` in `constraint-mapper.ts`

@@ -275,6 +275,7 @@ The question: **Should we switch to `allOf`?** It's more spec-compliant (preserv
 ### 2. Should `@visibility(Lifecycle.Delete)` and `@visibility(Lifecycle.Query)` be mapped to anything?
 
 Currently they're silently ignored. JSON Schema has no equivalent for "visible only during delete" or "visible only during query." Options:
+
 - (a) Keep ignoring them (current behavior)
 - (b) Map Delete+Update → `writeOnly`, Query+Read → `readOnly`
 - (c) Map any write operation (Create/Update/Delete) → `writeOnly`, any read (Read/Query) → `readOnly`
@@ -289,19 +290,19 @@ Same question as last session. The auto-git daemon committed 18 intermediate com
 
 ## Session Metrics
 
-| Metric                 | Before                | After           | Delta                                |
-| ---------------------- | --------------------- | --------------- | ------------------------------------ |
-| Tests                  | 881                   | 915             | +34                                  |
-| Test files             | 76                    | 78              | +2 (info-object, new-protocol-bindings) |
-| Source files           | 35                    | 35              | 0                                    |
-| Source lines (emitter) | 327                   | 314             | -13 (metadata consolidation)         |
-| Source lines (mapper)  | 96                    | 195             | +99 (3 new functions)                |
-| Coverage               | 97.0%                 | 96.9%           | -0.1%                                |
-| Duplication            | 0.09% (1 clone)       | 0.09% (1 clone) | 0                                    |
-| Decorators mapped      | 11                    | 14              | +3 (@summary, @example, @visibility) |
-| Protocols              | 19                    | 22              | +3 (solace, anypointmq, ros2)        |
-| Commits this session   | —                     | 18              | —                                    |
-| Files changed          | —                     | 41              | —                                    |
+| Metric                 | Before          | After           | Delta                                   |
+| ---------------------- | --------------- | --------------- | --------------------------------------- |
+| Tests                  | 881             | 915             | +34                                     |
+| Test files             | 76              | 78              | +2 (info-object, new-protocol-bindings) |
+| Source files           | 35              | 35              | 0                                       |
+| Source lines (emitter) | 327             | 314             | -13 (metadata consolidation)            |
+| Source lines (mapper)  | 96              | 195             | +99 (3 new functions)                   |
+| Coverage               | 97.0%           | 96.9%           | -0.1%                                   |
+| Duplication            | 0.09% (1 clone) | 0.09% (1 clone) | 0                                       |
+| Decorators mapped      | 11              | 14              | +3 (@summary, @example, @visibility)    |
+| Protocols              | 19              | 22              | +3 (solace, anypointmq, ros2)           |
+| Commits this session   | —               | 18              | —                                       |
+| Files changed          | —               | 41              | —                                       |
 
 ---
 

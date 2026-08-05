@@ -130,7 +130,9 @@ extern dec bindings(target: Operation | Model | Namespace, value: {} | valueof R
 The `@typespec/asset-emitter` API returns `EmitEntity<T>` objects that must be narrowed before extracting values. The `extractValue()` function in `src/extract-value.ts` handles this:
 
 ```typescript
-export function extractValue(entity: EmitEntity<JsonSchema> | undefined): JsonSchema {
+export function extractValue(
+  entity: EmitEntity<JsonSchema> | undefined,
+): JsonSchema {
   if (!entity) return {};
   switch (entity.kind) {
     case "declaration":
