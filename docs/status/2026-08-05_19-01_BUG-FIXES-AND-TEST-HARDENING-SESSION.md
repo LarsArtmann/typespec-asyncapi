@@ -5,6 +5,8 @@
 **Starting State:** 821 tests, 73 files
 **Ending State:** 869 tests, 76 files, all passing
 
+> **Update (21:12 same day):** Test count remains at 869. The deduplication campaign (19:50–21:12) then drove code duplication from 68 clones / 7.67% to 0 clones / 0% without changing behavior. The misleading `stdlib-helpers.test.ts` comment (item 2 in section D) and stale Pareto plan document (item 1 in section D) remain as minor TODO items.
+
 ---
 
 ## a) FULLY DONE

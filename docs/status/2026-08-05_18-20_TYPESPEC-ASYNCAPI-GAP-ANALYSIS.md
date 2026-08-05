@@ -8,6 +8,8 @@
 
 ## What This Session Did
 
+> **Update (later sessions same day):** This gap analysis drove the current TODO_LIST.md and ROADMAP.md. The 16 unhandled TypeSpec stdlib constraint decorators (`@pattern`, `@minValue`, etc.) are now TODO_LIST item #1 (highest impact). The dead `nullable` field is TODO_LIST item #4. Tuple of named models bug was fixed (`0226deb`). Binding protocol gap was fixed (`49b4241`).
+
 Performed a systematic gap analysis comparing the project's current capabilities against:
 
 1. **Latest TypeSpec compiler** (1.14.0 — we're on 1.13.0)
