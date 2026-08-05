@@ -25,6 +25,7 @@ import {
   getMinValue,
   getMinValueExclusive,
   getPattern,
+  getSummary,
   isDeprecated,
 } from "@typespec/compiler";
 import type { JsonSchema } from "./domain/models/asyncapi-document.js";
@@ -40,12 +41,24 @@ export function applyDeprecated(program: Program, target: Type, schema: JsonSche
   }
 }
 
+/**
+ * Apply `@summary` decorator value to a schema's `title` keyword.
+ * Works on any Type (model, property, enum, scalar, union).
+ */
+export function applySummary(program: Program, target: Type, schema: JsonSchema): void {
+  const summary = getSummary(program, target);
+  if (summary !== undefined) {
+    schema.title = summary;
+  }
+}
+
 export function applyConstraints(
   program: Program,
   prop: ModelProperty,
   schema: JsonSchema,
 ): JsonSchema {
   applyDeprecated(program, prop, schema);
+  applySummary(program, prop, schema);
 
   if (schema.$ref) {
     return schema;

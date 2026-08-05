@@ -409,4 +409,69 @@ describe("spec Compliance: Constraint Decorators", () => {
       expect(schemas.NewEvent.deprecated).toBeUndefined();
     });
   });
+
+  describe("@summary → title", () => {
+    it("maps @summary on a property to title", async () => {
+      const doc = await compileAndValidateOrThrow(`
+        namespace Test;
+        model Event {
+          @summary("User Name")
+          name: string;
+        }
+        @channel("events")
+        op publish(): Event;
+      `);
+      expect(propSchema(doc, "Event", "name").title).toBe("User Name");
+    });
+
+    it("maps @summary on a model to title", async () => {
+      const doc = await compileAndValidateOrThrow(`
+        namespace Test;
+        @summary("Event Schema")
+        model Event {
+          name: string;
+        }
+        @channel("events")
+        op publish(): Event;
+      `);
+      const schema = (doc.components as { schemas: Record<string, JsonSchema> }).schemas.Event;
+      expect(schema.title).toBe("Event Schema");
+    });
+
+    it("maps @summary on an enum to title", async () => {
+      const doc = await compileAndValidateOrThrow(`
+        namespace Test;
+        @summary("Status Codes")
+        enum Status {
+          Active: "active";
+          Inactive: "inactive";
+        }
+        model Event {
+          status: Status;
+        }
+        @channel("events")
+        op publish(): Event;
+      `);
+      const schema = (doc.components as { schemas: Record<string, JsonSchema> }).schemas.Status;
+      expect(schema.title).toBe("Status Codes");
+    });
+
+    it("applies title as a $ref sibling", async () => {
+      const doc = await compileAndValidateOrThrow(`
+        namespace Test;
+        model Address {
+          street: string;
+        }
+        model Event {
+          @summary("Mailing Address")
+          address: Address;
+        }
+        @channel("events")
+        op publish(): Event;
+      `);
+      const address = propSchema(doc, "Event", "address");
+      expect(address.$ref).toBe("#/components/schemas/Address");
+      expect(address.title).toBe("Mailing Address");
+    });
+  });
 });
