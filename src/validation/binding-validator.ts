@@ -89,29 +89,19 @@ export function processBindings(
     const canonical = normalizeBindingKey(key);
 
     if (!canonical) {
-      issues.push({
-        code: "unknown-binding-protocol",
-        format: {
-          protocol: key,
-          validProtocols: "kafka, amqp, mqtt, http, ws, wss, nats, redis, etc.",
-        },
-        key,
-        severity: "warning",
+      pushIssue(issues, key, "unknown-binding-protocol", "warning", {
+        protocol: key,
+        validProtocols: "kafka, amqp, mqtt, http, ws, wss, nats, redis, etc.",
       });
       bindings[key] = value as Record<string, unknown>;
       continue;
     }
 
     if (targetKind && !supportsBindingPlacement(canonical, targetKind)) {
-      issues.push({
-        code: "misplaced-binding",
-        format: {
-          protocol: canonical,
-          targetKind,
-          validPlacements: getValidPlacements(canonical).join(", "),
-        },
-        key: canonical,
-        severity: "warning",
+      pushIssue(issues, canonical, "misplaced-binding", "warning", {
+        protocol: canonical,
+        targetKind,
+        validPlacements: getValidPlacements(canonical).join(", "),
       });
     }
 
@@ -125,25 +115,15 @@ export function processBindings(
       if (declaredVersion === undefined) {
         bindingObj.bindingVersion = getLatestBindingVersion(canonical);
       } else {
-        const versionStr =
-          typeof declaredVersion === "string"
-            ? declaredVersion
-            : typeof declaredVersion === "number"
-              ? String(declaredVersion)
-              : "[object]";
+        const versionStr = stringifyBindingVersion(declaredVersion);
         if (!isValidBindingVersion(canonical, versionStr)) {
-          issues.push({
-            code: "invalid-binding-version",
-            format: {
-              protocol: canonical,
-              validVersions:
-                getValidVersionsString(canonical) ??
-                getLatestBindingVersion(canonical) ??
-                "latest",
-              version: versionStr,
-            },
-            key: canonical,
-            severity: "warning",
+          pushIssue(issues, canonical, "invalid-binding-version", "warning", {
+            protocol: canonical,
+            validVersions:
+              getValidVersionsString(canonical) ??
+              getLatestBindingVersion(canonical) ??
+              "latest",
+            version: versionStr,
           });
         }
       }
@@ -154,12 +134,7 @@ export function processBindings(
         bindingObj,
       );
       for (const fi of fieldIssues) {
-        issues.push({
-          code: "invalid-binding-field",
-          format: fi.format,
-          key: fi.key,
-          severity: "warning",
-        });
+        pushIssue(issues, fi.key, "invalid-binding-field", "warning", fi.format);
       }
     }
 
@@ -167,4 +142,26 @@ export function processBindings(
   }
 
   return { bindings, issues };
+}
+
+/** Coerce an arbitrary `bindingVersion` value to its string form for comparison. */
+function stringifyBindingVersion(value: unknown): string {
+  if (typeof value === "string") {
+    return value;
+  }
+  if (typeof value === "number") {
+    return String(value);
+  }
+  return "[object]";
+}
+
+/** Push a `BindingValidationIssue` onto the issues array. */
+function pushIssue(
+  issues: BindingValidationIssue[],
+  key: string,
+  code: BindingDiagnosticCode,
+  severity: "error" | "warning",
+  format: Record<string, unknown>,
+): void {
+  issues.push({ code, format, key, severity });
 }

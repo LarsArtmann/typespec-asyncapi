@@ -40,6 +40,7 @@ import {
   getModelPropertyValue,
   modelToRecord,
   reportDiagnostic,
+  validateNonEmptyString,
   validatedDecorator,
 } from "./decorator-helpers.js";
 import { processBindings } from "./validation/binding-validator.js";
@@ -248,10 +249,11 @@ export function $correlationId(
   target: Model,
   location: unknown,
 ): void {
-  if (typeof location !== "string" || location.length === 0) {
-    reportDiagnostic(context, "invalid-correlationId-config", target, {
+  if (
+    !validateNonEmptyString(location, context, target, "invalid-correlationId-config", {
       modelName: target.name,
-    });
+    })
+  ) {
     return;
   }
 
@@ -300,10 +302,11 @@ export function $header(
   name: unknown,
   value?: unknown,
 ): void {
-  if (typeof name !== "string" || name.length === 0) {
-    reportDiagnostic(context, "invalid-header-config", target, {
+  if (
+    !validateNonEmptyString(name, context, target, "invalid-header-config", {
       targetKind: target.kind,
-    });
+    })
+  ) {
     return;
   }
 
@@ -330,10 +333,11 @@ export function $operationId(
   target: Operation,
   id: unknown,
 ): void {
-  if (typeof id !== "string" || id.length === 0) {
-    reportDiagnostic(context, "invalid-operation-id", target, {
+  if (
+    !validateNonEmptyString(id, context, target, "invalid-operation-id", {
       operationName: target.name,
-    });
+    })
+  ) {
     return;
   }
   storeOperationId(context.program, target, id);
@@ -344,10 +348,11 @@ export function $messageId(
   target: Model,
   id: unknown,
 ): void {
-  if (typeof id !== "string" || id.length === 0) {
-    reportDiagnostic(context, "invalid-message-id", target, {
+  if (
+    !validateNonEmptyString(id, context, target, "invalid-message-id", {
       modelName: target.name,
-    });
+    })
+  ) {
     return;
   }
   storeMessageId(context.program, target, id);

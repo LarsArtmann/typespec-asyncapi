@@ -49,6 +49,27 @@ export const validateConfig = (
 };
 
 /**
+ * Validate that a value is a non-empty string; if not, report the given diagnostic and return false.
+ *
+ * Used by string-argument decorators (`@operationId`, `@messageId`, `@header`,
+ * `@correlationId`) to eliminate the repeated `typeof !== "string" || length === 0`
+ * guard + `reportDiagnostic` + `return` boilerplate.
+ */
+export const validateNonEmptyString = (
+  value: unknown,
+  context: DecoratorContext,
+  target: unknown,
+  diagnosticCode: keyof typeof $lib.diagnostics,
+  format?: Record<string, unknown>,
+): value is string => {
+  if (typeof value !== "string" || value.length === 0) {
+    reportDiagnostic(context, diagnosticCode, target, format);
+    return false;
+  }
+  return true;
+};
+
+/**
  * Higher-order decorator factory: validate config presence, then if valid, invoke `run`.
  * Returns `true` if validation passed (and `run` ran), `false` if validation failed.
  *

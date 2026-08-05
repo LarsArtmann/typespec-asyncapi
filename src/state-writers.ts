@@ -11,7 +11,10 @@ import type {
   MessageHeaderData,
   MqttLastWillConfig,
   OperationReplyData,
+  ProtocolBindings,
   ProtocolConfigData,
+  SecurityScheme,
+  Tag,
 } from "./state.js";
 import type {
   Model,
@@ -20,11 +23,6 @@ import type {
   Operation,
   Program,
 } from "@typespec/compiler";
-import type {
-  ProtocolBindings,
-  SecurityScheme,
-  Tag,
-} from "./domain/models/asyncapi-document.js";
 import { getStateMap } from "./state-compatibility.js";
 import { normalizeProtocol } from "./constants/protocols.js";
 import { stateSymbols } from "./lib.js";
