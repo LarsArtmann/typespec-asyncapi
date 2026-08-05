@@ -22,6 +22,7 @@ import type {
   Type,
   Union,
 } from "@typespec/compiler";
+import { getDiscriminator } from "@typespec/compiler";
 import { TypeEmitter } from "@typespec/asset-emitter";
 import type {
   Context,
@@ -45,8 +46,19 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
     return this.returnNone();
   }
   modelDeclaration(model: Model): EmitterOutput<JsonSchema> {
-    const schema = this.collectPropertiesSchema(model, true);
-    applyMetadata(this.emitter.getProgram(), model, schema);
+    const program = this.emitter.getProgram();
+    const baseRef = model.baseModel
+      ? this.refForNamedType(model.baseModel)
+      : null;
+    const schema = this.collectPropertiesSchema(model, baseRef === null);
+    if (baseRef) {
+      schema.allOf = [baseRef];
+    }
+    const disc = getDiscriminator(program, model);
+    if (disc) {
+      schema.discriminator = disc.propertyName;
+    }
+    applyMetadata(program, model, schema);
     return this.emitter.result.declaration(model.name, schema);
   }
   modelLiteral(model: Model): EmitterOutput<JsonSchema> {
@@ -82,7 +94,9 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
   }
 
   union(union: Union): EmitterOutput<JsonSchema> {
-    const variants = [...union.variants.values()].map((v) => {
+    const program = this.emitter.getProgram();
+    const variantEntries = [...union.variants.values()];
+    const variants = variantEntries.map((v) => {
       const extracted = extractValue(this.emitter.emitTypeReference(v.type));
       if (Object.keys(extracted).length === 0) {
         const t = v.type as { kind: string; name?: string; value?: string };
@@ -99,6 +113,16 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
         enum: variants.map((v) => (v as { const: unknown }).const),
         type: "string",
       };
+    }
+    const allModelVariants = variantEntries.every(
+      (v) => (v.type as { kind: string }).kind === "Model",
+    );
+    if (allModelVariants) {
+      const disc = getDiscriminator(program, union);
+      if (disc) {
+        return { oneOf: variants, discriminator: disc.propertyName };
+      }
+      return { oneOf: variants };
     }
     return { anyOf: variants };
   }
@@ -283,7 +307,8 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
     const { kind } = t as { kind: string };
     if (kind === "Union") {
       const tUnion = t as Union;
-      const variants = [...tUnion.variants.values()].map((v) => {
+      const variantEntries = [...tUnion.variants.values()];
+      const variants = variantEntries.map((v) => {
         const inner = v.type;
         const innerKind = (inner as { kind: string }).kind;
         if (
@@ -299,9 +324,20 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
       if (allStrings) {
         return { enum: variants, type: "string" };
       }
-      return {
-        anyOf: variants.map((v) => (typeof v === "string" ? { const: v } : v)),
-      };
+      const schemaVariants = variants.map((v) =>
+        typeof v === "string" ? { const: v } : v,
+      );
+      const allModelVariants = variantEntries.every(
+        (v) => (v.type as { kind: string }).kind === "Model",
+      );
+      if (allModelVariants) {
+        const disc = getDiscriminator(this.emitter.getProgram(), tUnion);
+        if (disc) {
+          return { oneOf: schemaVariants, discriminator: disc.propertyName };
+        }
+        return { oneOf: schemaVariants };
+      }
+      return { anyOf: schemaVariants };
     }
     if (
       kind === "Model" &&

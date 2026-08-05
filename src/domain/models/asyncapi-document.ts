@@ -176,6 +176,7 @@ export interface JsonSchema {
   anyOf?: JsonSchema[];
   allOf?: JsonSchema[];
   oneOf?: JsonSchema[];
+  not?: JsonSchema;
   additionalProperties?: boolean | JsonSchema;
   const?: unknown;
   $ref?: string;
