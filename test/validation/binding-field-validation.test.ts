@@ -232,4 +232,109 @@ describe("binding field validation", () => {
     });
     expect(issues).toStrictEqual([]);
   });
+
+  describe("binding-only protocols (solace, anypointmq, ros2)", () => {
+    it("accepts solace binding on operation target", () => {
+      const { issues, bindings } = processBindings(
+        { solace: { priority: 5 } },
+        "operation",
+      );
+      const solaceIssues = issues.filter((i) => i.format.protocol === "solace");
+      expect(solaceIssues).toHaveLength(0);
+      expect(bindings.solace).toBeDefined();
+      expect(bindings.solace.bindingVersion).toBe("0.4.0");
+    });
+
+    it("catches solace priority exceeding max (255)", () => {
+      const { issues } = processBindings(
+        { solace: { priority: 999 } },
+        "operation",
+      );
+      const priorityIssue = issues.find((i) => i.format.field === "priority");
+      expect(priorityIssue).toBeDefined();
+      expect(priorityIssue!.code).toBe("invalid-binding-field");
+      expect(priorityIssue!.format.max).toBe(255);
+    });
+
+    it("catches solace priority below min (0)", () => {
+      const { issues } = processBindings(
+        { solace: { priority: -1 } },
+        "operation",
+      );
+      const priorityIssue = issues.find((i) => i.format.field === "priority");
+      expect(priorityIssue).toBeDefined();
+      expect(priorityIssue!.format.min).toBe(0);
+    });
+
+    it("catches solace priority wrong type", () => {
+      const { issues } = processBindings(
+        { solace: { priority: "high" } },
+        "operation",
+      );
+      const priorityIssue = issues.find((i) => i.format.field === "priority");
+      expect(priorityIssue).toBeDefined();
+    });
+
+    it("accepts solace on server target", () => {
+      const { issues, bindings } = processBindings(
+        { solace: { msgVpn: "my-vpn", clientName: "client-1" } },
+        "server",
+      );
+      expect(issues).toHaveLength(0);
+      expect(bindings.solace.msgVpn).toBe("my-vpn");
+    });
+
+    it("normalizes and auto-injects bindingVersion for anypointmq", () => {
+      const { issues, bindings } = processBindings(
+        { anypointmq: { destination: "queue-1" } },
+        "channel",
+      );
+      expect(issues).toHaveLength(0);
+      expect(bindings.anypointmq).toBeDefined();
+      expect(bindings.anypointmq.bindingVersion).toBe("0.0.1");
+    });
+
+    it("normalizes and auto-injects bindingVersion for ros2", () => {
+      const { issues, bindings } = processBindings(
+        { ros2: { topic: "cmd_vel" } },
+        "operation",
+      );
+      expect(issues).toHaveLength(0);
+      expect(bindings.ros2).toBeDefined();
+      expect(bindings.ros2.bindingVersion).toBe("0.1.0");
+    });
+
+    it("catches invalid bindingVersion for solace", () => {
+      const { issues } = processBindings(
+        { solace: { bindingVersion: "99.0.0" } },
+        "operation",
+      );
+      const versionIssue = issues.find(
+        (i) => i.code === "invalid-binding-version",
+      );
+      expect(versionIssue).toBeDefined();
+      expect(versionIssue!.format.version).toBe("99.0.0");
+    });
+
+    it("warns on misplaced solace binding (channel not supported)", () => {
+      const { issues } = processBindings(
+        { solace: { priority: 5 } },
+        "channel",
+      );
+      const misplaced = issues.find((i) => i.code === "misplaced-binding");
+      expect(misplaced).toBeDefined();
+      expect(misplaced!.format.protocol).toBe("solace");
+    });
+
+    it("does not reject binding-only protocols as unknown", () => {
+      const { issues } = processBindings(
+        { solace: {}, anypointmq: {}, ros2: {} },
+        "operation",
+      );
+      const unknown = issues.filter(
+        (i) => i.code === "unknown-binding-protocol",
+      );
+      expect(unknown).toHaveLength(0);
+    });
+  });
 });

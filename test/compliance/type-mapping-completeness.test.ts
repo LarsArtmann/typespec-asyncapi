@@ -185,15 +185,16 @@ describe("comprehensive type mapping through compilation", () => {
   });
 
   describe("tuple types", () => {
-    it("maps a tuple of primitives to array with enum items", async () => {
+    it("maps a tuple of primitives to array with per-position items", async () => {
       const s = await compileField("pair", "[string, int32]");
       expect(s.type).toBe("array");
-      expect(s.items).toBeDefined();
+      expect(Array.isArray(s.items)).toBe(true);
+      const items = s.items as unknown[];
+      expect(items).toHaveLength(2);
     });
 
-    it("compiles a tuple of named models without compiler errors", async () => {
-      const { compileAsyncAPI } = await import("../utils/test-helpers.js");
-      const result = await compileAsyncAPI(`
+    it("produces valid output for tuple of named models", async () => {
+      const doc = await compileAndValidateOrThrow(`
         namespace Test;
         model A { x: string; }
         model B { y: int32; }
@@ -203,11 +204,38 @@ describe("comprehensive type mapping through compilation", () => {
         @channel("events")
         op publish(): Event;
       `);
-      const errors = result.diagnostics.filter((d) => d.severity === "error");
-      expect(errors).toHaveLength(0);
-      const s =
-        result.asyncApiDoc?.components?.schemas?.Event?.properties?.pair;
-      expect(s?.type).toBe("array");
+      const pair = doc?.components?.schemas?.Event?.properties?.pair as Record<
+        string,
+        unknown
+      >;
+      expect(pair?.type).toBe("array");
+      const items = pair?.items as Record<string, unknown>[];
+      expect(Array.isArray(items)).toBe(true);
+      expect(items).toHaveLength(2);
+      expect(items[0]).toStrictEqual({ $ref: "#/components/schemas/A" });
+      expect(items[1]).toStrictEqual({ $ref: "#/components/schemas/B" });
+    });
+
+    it("produces valid output for tuple of mixed primitives and named models", async () => {
+      const doc = await compileAndValidateOrThrow(`
+        namespace Test;
+        model Address { street: string; }
+        model Event {
+          triple: [string, int32, Address];
+        }
+        @channel("events")
+        op publish(): Event;
+      `);
+      const triple = doc?.components?.schemas?.Event?.properties
+        ?.triple as Record<string, unknown>;
+      expect(triple?.type).toBe("array");
+      const items = triple?.items as Record<string, unknown>[];
+      expect(items).toHaveLength(3);
+      expect(items[0]).toStrictEqual({ type: "string" });
+      expect(items[1]).toStrictEqual({ format: "int32", type: "integer" });
+      expect(items[2]).toStrictEqual({
+        $ref: "#/components/schemas/Address",
+      });
     });
   });
 
