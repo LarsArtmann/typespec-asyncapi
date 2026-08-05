@@ -17,8 +17,12 @@ import { compileAsyncAPI } from "../utils/test-helpers.js";
 import type { ParsedAsyncAPIDocument } from "../../src/domain/models/asyncapi-document.js";
 
 async function parseWithAsyncAPIParser(source: string): Promise<{
-  document: ReturnType<ReturnType<InstanceType<typeof Parser>["parse"]>["then"]>["document"];
-  diagnostics: ReturnType<ReturnType<InstanceType<typeof Parser>["parse"]>["then"]>["diagnostics"];
+  document: ReturnType<
+    ReturnType<InstanceType<typeof Parser>["parse"]>["then"]
+  >["document"];
+  diagnostics: ReturnType<
+    ReturnType<InstanceType<typeof Parser>["parse"]>["then"]
+  >["diagnostics"];
 }> {
   const result = await compileAsyncAPI(source);
   if (!result.asyncApiDoc) {
@@ -33,12 +37,16 @@ async function parseWithAsyncAPIParser(source: string): Promise<{
 }
 
 function expectZeroErrors(
-  diagnostics: Awaited<ReturnType<typeof parseWithAsyncAPIParser>>["diagnostics"],
+  diagnostics: Awaited<
+    ReturnType<typeof parseWithAsyncAPIParser>
+  >["diagnostics"],
 ) {
   const errors = diagnostics?.filter((d) => d.severity === "error") ?? [];
   if (errors.length > 0) {
     const messages = errors.map((e) => `${e.code}: ${e.message}`).join("\n");
-    throw new Error(`AsyncAPI parser reported ${errors.length} error(s):\n${messages}`);
+    throw new Error(
+      `AsyncAPI parser reported ${errors.length} error(s):\n${messages}`,
+    );
   }
 }
 
@@ -193,6 +201,7 @@ describe("asyncAPI Studio compatibility (@asyncapi/parser)", () => {
       @security(#{ name: "sasl", scheme: #{ type: "scramSha256" } })
       namespace ECommerce;
 
+      @message(#{title: "Order Created", description: "Emitted when an order is placed"})
       model OrderCreated {
         orderId: string;
         customerId: string;
@@ -200,20 +209,19 @@ describe("asyncAPI Studio compatibility (@asyncapi/parser)", () => {
         timestamp: utcDateTime;
       }
 
+      @message(#{title: "Order Shipped", description: "Emitted when an order ships"})
       model OrderShipped {
         orderId: string;
         trackingNumber: string;
         carrier: string;
       }
 
-      @message(#{title: "Order Created", description: "Emitted when an order is placed"})
       @channel("orders/created")
-      @tags(["orders", "events"])
+      @tags(#["orders", "events"])
       op publishOrderCreated(): OrderCreated;
 
-      @message(#{title: "Order Shipped", description: "Emitted when an order ships"})
       @channel("orders/shipped")
-      @tags(["orders", "shipping"])
+      @tags(#["orders", "shipping"])
       op publishOrderShipped(): OrderShipped;
     `);
     expectZeroErrors(diagnostics);

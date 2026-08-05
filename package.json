@@ -106,6 +106,7 @@
   "dependencies": {
     "@typespec/asset-emitter": "^0.79.1",
     "@typespec/compiler": "^1.13.0",
+    "@typespec/versioning": "^0.84.0",
     "yaml": "^2.9.0"
   },
   "devDependencies": {
