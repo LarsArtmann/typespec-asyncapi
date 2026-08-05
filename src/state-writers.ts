@@ -16,22 +16,12 @@ import type {
   SecurityScheme,
   Tag,
 } from "./state.js";
-import type {
-  Model,
-  ModelProperty,
-  Namespace,
-  Operation,
-  Program,
-} from "@typespec/compiler";
+import type { Model, ModelProperty, Namespace, Operation, Program } from "@typespec/compiler";
 import { getStateMap } from "./state-compatibility.js";
 import { normalizeProtocol } from "./constants/protocols.js";
 import { stateSymbols } from "./lib.js";
 
-export const storeChannelState = (
-  program: Program,
-  target: Operation,
-  path: string,
-): void => {
+export const storeChannelState = (program: Program, target: Operation, path: string): void => {
   const map = getStateMap(program, stateSymbols.channelPaths);
   map.set(target, {
     hasParameters: path.includes("{"),
@@ -75,11 +65,7 @@ export const storeOperationId = (
   map.set(target, operationId);
 };
 
-export const storeMessageId = (
-  program: Program,
-  target: Model,
-  messageId: string,
-): void => {
+export const storeMessageId = (program: Program, target: Model, messageId: string): void => {
   updateMessageConfig(program, target, (existing) => {
     existing.messageId = messageId;
   });
@@ -105,9 +91,7 @@ function updateMessageConfig(
 }
 
 /** Get the state map for message configs. Shared by writers that mutate it. */
-function getMessageConfigsMap(
-  program: Program,
-): ReturnType<typeof getStateMap<MessageConfigData>> {
+function getMessageConfigsMap(program: Program): ReturnType<typeof getStateMap<MessageConfigData>> {
   return getStateMap<MessageConfigData>(program, stateSymbols.messageConfigs);
 }
 
@@ -123,10 +107,7 @@ export const storeServerConfig = (
     description: string;
   }
 
-  const map = getStateMap<ServerConfigEntry[]>(
-    program,
-    stateSymbols.serverConfigs,
-  );
+  const map = getStateMap<ServerConfigEntry[]>(program, stateSymbols.serverConfigs);
   const newEntry: ServerConfigEntry = {
     description: (config.description as string) ?? `Server for ${target.name}`,
     name: config.name,
@@ -145,10 +126,7 @@ export const storeSecurityConfig = (
     name: string;
     scheme: SecurityScheme;
   }
-  const map = getStateMap<SecurityConfigEntry[]>(
-    program,
-    stateSymbols.securityConfigs,
-  );
+  const map = getStateMap<SecurityConfigEntry[]>(program, stateSymbols.securityConfigs);
   appendToStateArray(map, target, { name: config.name, scheme: config.scheme });
 };
 
@@ -165,11 +143,7 @@ function appendToStateArray<K, V>(map: Map<K, V[]>, key: K, entry: V): void {
   }
 }
 
-export const storeTags = (
-  program: Program,
-  target: Operation | Model,
-  tags: string[],
-): void => {
+export const storeTags = (program: Program, target: Operation | Model, tags: string[]): void => {
   const map = getStateMap<Tag[]>(program, stateSymbols.tags);
   const existing = map.get(target) ?? [];
   const allNames = new Set([...existing.map((t) => t.name), ...tags]);
@@ -179,11 +153,7 @@ export const storeTags = (
   );
 };
 
-export const storeCorrelationId = (
-  program: Program,
-  target: Model,
-  location: string,
-): void => {
+export const storeCorrelationId = (program: Program, target: Model, location: string): void => {
   const map = getStateMap(program, stateSymbols.correlationIds);
   map.set(target, { location });
 };
@@ -210,9 +180,7 @@ export const storeHeader = (
   let description: string | undefined;
 
   if (target.kind === "ModelProperty") {
-    const propType = target.type as
-      | { kind?: string; name?: string }
-      | undefined;
+    const propType = target.type as { kind?: string; name?: string } | undefined;
     if (propType?.kind === "Scalar") {
       headerType = propType.name?.toLowerCase() ?? "string";
     }
@@ -231,10 +199,7 @@ export const storeProtocolConfig = (
   target: Operation | Model,
   config: Record<string, unknown>,
 ): void => {
-  const map = getStateMap<ProtocolConfigData>(
-    program,
-    stateSymbols.protocolConfigs,
-  );
+  const map = getStateMap<ProtocolConfigData>(program, stateSymbols.protocolConfigs);
   const rawProtocol = (config.protocol as string) ?? "kafka";
   const protocolType = normalizeProtocol(rawProtocol);
 
@@ -296,11 +261,7 @@ export const storeProtocolConfig = (
   map.set(target, protocolConfig);
 };
 
-export const linkPublishMessage = (
-  program: Program,
-  target: Operation,
-  config?: Model,
-): void => {
+export const linkPublishMessage = (program: Program, target: Operation, config?: Model): void => {
   if (!config) {
     return;
   }
@@ -331,11 +292,7 @@ export const storeOperationReply = (
   map.set(target, replyData);
 };
 
-export const storeApiVersion = (
-  program: Program,
-  target: Namespace,
-  version: string,
-): void => {
+export const storeApiVersion = (program: Program, target: Namespace, version: string): void => {
   const map = getStateMap(program, stateSymbols.apiVersion);
   map.set(target, version);
 };

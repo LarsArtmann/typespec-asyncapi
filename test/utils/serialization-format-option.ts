@@ -30,9 +30,7 @@ export function createSerializationFormatOption(
 /**
  * Validate serialization format
  */
-export function isValidSerializationFormat(
-  format: string,
-): format is SerializationFormat {
+export function isValidSerializationFormat(format: string): format is SerializationFormat {
   return ["json", "yaml", "yml"].includes(format);
 }
 

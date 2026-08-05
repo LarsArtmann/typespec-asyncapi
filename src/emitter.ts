@@ -13,25 +13,17 @@ import { generateSchemas } from "./schema-generator.js";
 import { splitSchemas } from "./schema-splitter.js";
 import { stringify as yamlStringify } from "yaml";
 
-export async function $onEmit(
-  context: EmitContext<AsyncAPIEmitterOptions>,
-): Promise<void> {
+export async function $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): Promise<void> {
   const { options } = context;
   const rawState = consolidateAsyncAPIState(context.program);
   const schemas = generateSchemas(context);
-  const document = buildAsyncAPIDocument(
-    rawState,
-    schemas,
-    options,
-    context.program,
-  );
+  const document = buildAsyncAPIDocument(rawState, schemas, options, context.program);
 
   const rawFileType = options?.["file-type"] ?? "yaml";
   const fileType: string =
     typeof rawFileType === "string"
       ? rawFileType
-      : (((rawFileType as Record<string, unknown>)?.format as string) ??
-        "yaml");
+      : (((rawFileType as Record<string, unknown>)?.format as string) ?? "yaml");
   const outputFile = options?.["output-file"] ?? "asyncapi";
   const outputPath = `${outputFile}.${fileType}`;
   const splitSchemasEnabled = options?.["split-schemas"] === true;
@@ -39,13 +31,7 @@ export async function $onEmit(
   if (splitSchemasEnabled) {
     const { mainDocument, schemaFiles } = splitSchemas(document, fileType);
     const writePromises: Promise<void>[] = [
-      writeDocument(
-        context.program,
-        mainDocument,
-        fileType,
-        outputPath,
-        context.emitterOutputDir,
-      ),
+      writeDocument(context.program, mainDocument, fileType, outputPath, context.emitterOutputDir),
     ];
     for (const [filename, schema] of schemaFiles) {
       writePromises.push(
@@ -62,13 +48,7 @@ export async function $onEmit(
     return;
   }
 
-  await writeDocument(
-    context.program,
-    document,
-    fileType,
-    outputPath,
-    context.emitterOutputDir,
-  );
+  await writeDocument(context.program, document, fileType, outputPath, context.emitterOutputDir);
 }
 
 function writeDocument(
@@ -79,9 +59,7 @@ function writeDocument(
   emitterOutputDir: string,
 ): Promise<void> {
   const content =
-    fileType === "json"
-      ? JSON.stringify(data, null, 2)
-      : yamlStringify(data, { lineWidth: 0 });
+    fileType === "json" ? JSON.stringify(data, null, 2) : yamlStringify(data, { lineWidth: 0 });
 
   return emitFile(program, {
     content,

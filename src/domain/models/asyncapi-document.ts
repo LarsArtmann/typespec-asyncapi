@@ -120,10 +120,7 @@ export interface ServerObject extends CommonMetadata {
   protocol: AsyncAPIProtocol;
   protocolVersion?: string;
   pathname?: string;
-  variables?: Record<
-    string,
-    { enum?: string[]; default?: string; description?: string }
-  >;
+  variables?: Record<string, { enum?: string[]; default?: string; description?: string }>;
   security?: SecurityRequirement[];
 }
 
@@ -239,16 +236,13 @@ const SECURITY_SCHEME_TYPES = [
 
 export type SecuritySchemeType = (typeof SECURITY_SCHEME_TYPES)[number];
 
-export const VALID_SCHEME_TYPES: ReadonlySet<SecuritySchemeType> = new Set(
-  SECURITY_SCHEME_TYPES,
-);
+export const VALID_SCHEME_TYPES: ReadonlySet<SecuritySchemeType> = new Set(SECURITY_SCHEME_TYPES);
 
 export function isValidSchemeType(value: string): value is SecuritySchemeType {
   return VALID_SCHEME_TYPES.has(value as SecuritySchemeType);
 }
 
-export const SCHEME_TYPE_LIST: readonly SecuritySchemeType[] =
-  SECURITY_SCHEME_TYPES;
+export const SCHEME_TYPE_LIST: readonly SecuritySchemeType[] = SECURITY_SCHEME_TYPES;
 
 export interface SecurityScheme {
   type: SecuritySchemeType;

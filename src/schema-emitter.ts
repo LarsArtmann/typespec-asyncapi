@@ -38,10 +38,7 @@ import { intrinsicToSchema } from "./intrinsic-mapping.js";
 import { extractValue } from "./extract-value.js";
 import { refForNamedType } from "./schema-ref.js";
 
-export class AsyncAPISchemaEmitter extends TypeEmitter<
-  JsonSchema,
-  AsyncAPIEmitterOptions
-> {
+export class AsyncAPISchemaEmitter extends TypeEmitter<JsonSchema, AsyncAPIEmitterOptions> {
   namespaceDeclaration(_namespace: Namespace): EmitterOutput<JsonSchema> {
     return this.returnNone();
   }
@@ -63,10 +60,7 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
     return this.collectPropertiesSchema(model, false);
   }
   /** Build `{ properties, type: "object" }` (plus required if any) from a model's properties. */
-  private collectPropertiesSchema(
-    model: Model,
-    includeRequired: boolean,
-  ): JsonSchema {
+  private collectPropertiesSchema(model: Model, includeRequired: boolean): JsonSchema {
     const collected = this.collectModelProperties(model, includeRequired);
     const schema: JsonSchema = {
       properties: collected.properties,
@@ -142,16 +136,10 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
   }
 
   scalarDeclaration(scalar: Scalar, name: string): EmitterOutput<JsonSchema> {
-    return this.emitter.result.declaration(
-      name,
-      this.intrinsicSchema(scalar.name),
-    );
+    return this.emitter.result.declaration(name, this.intrinsicSchema(scalar.name));
   }
 
-  scalarInstantiation(
-    scalar: Scalar,
-    name: string | undefined,
-  ): EmitterOutput<JsonSchema> {
+  scalarInstantiation(scalar: Scalar, name: string | undefined): EmitterOutput<JsonSchema> {
     if (name) {
       return this.scalarDeclaration(scalar, name);
     }
@@ -165,17 +153,12 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
   booleanLiteral = (literal: BooleanLiteral): EmitterOutput<JsonSchema> =>
     this.returnConst(literal.value);
   tuple(tuple: Tuple): EmitterOutput<JsonSchema> {
-    const items = tuple.values.map((v: Type) =>
-      this.refOrFallback(v, (t) => this.typeToSchema(t)),
-    );
+    const items = tuple.values.map((v: Type) => this.refOrFallback(v, (t) => this.typeToSchema(t)));
     return { items, type: "array" };
   }
 
-  arrayDeclaration = (
-    _array: Type,
-    _name: string,
-    elementType: Type,
-  ): EmitterOutput<JsonSchema> => this.arraySchema(elementType);
+  arrayDeclaration = (_array: Type, _name: string, elementType: Type): EmitterOutput<JsonSchema> =>
+    this.arraySchema(elementType);
   arrayLiteral = (_array: Type, elementType: Type): EmitterOutput<JsonSchema> =>
     this.arraySchema(elementType);
   private arraySchema(elementType: Type): JsonSchema {
@@ -191,10 +174,8 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
     return { scope: sourceFile.globalScope };
   }
 
-  operation = (_operation: Operation): EmitterOutput<JsonSchema> =>
-    this.returnNone();
-  interfaceDeclaration = (_iface: Interface): EmitterOutput<JsonSchema> =>
-    this.returnNone();
+  operation = (_operation: Operation): EmitterOutput<JsonSchema> => this.returnNone();
+  interfaceDeclaration = (_iface: Interface): EmitterOutput<JsonSchema> => this.returnNone();
   enumDeclaration(en: Enum, name: string): EmitterOutput<JsonSchema> {
     const schema = this.buildEnumSchema(en.members);
     applyMetadata(this.emitter.getProgram(), en, schema);
@@ -227,10 +208,7 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
   }
 
   /** Resolve a type to a JSON Schema: prefer named-type `$ref`, fall back to extraction, then `typeToSchema`. */
-  private refOrFallback(
-    elementType: Type,
-    fallback: (t: Type) => JsonSchema,
-  ): JsonSchema {
+  private refOrFallback(elementType: Type, fallback: (t: Type) => JsonSchema): JsonSchema {
     const ref = refForNamedType(elementType);
     if (ref) {
       return ref;
@@ -286,10 +264,7 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
       const variants = variantEntries.map((v) => {
         const inner = v.type;
         const innerKind = (inner as { kind: string }).kind;
-        if (
-          innerKind === "String" &&
-          (inner as { value?: string }).value !== undefined
-        ) {
+        if (innerKind === "String" && (inner as { value?: string }).value !== undefined) {
           return (inner as { value: string }).value;
         }
         const ref = refForNamedType(inner);
@@ -303,9 +278,7 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
       if (allStrings) {
         return { enum: variants, type: "string" };
       }
-      const schemaVariants = variants.map((v) =>
-        typeof v === "string" ? { const: v } : v,
-      );
+      const schemaVariants = variants.map((v) => (typeof v === "string" ? { const: v } : v));
       const allModelVariants = variantEntries.every(
         (v) => (v.type as { kind: string }).kind === "Model",
       );
@@ -318,10 +291,7 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
       }
       return { anyOf: schemaVariants };
     }
-    if (
-      kind === "Model" &&
-      (t as { indexer?: { key?: unknown; value?: Type } }).indexer
-    ) {
+    if (kind === "Model" && (t as { indexer?: { key?: unknown; value?: Type } }).indexer) {
       const { indexer } = t as { indexer: { key: Type; value: Type } };
       const valueRef = refForNamedType(indexer.value);
       return {

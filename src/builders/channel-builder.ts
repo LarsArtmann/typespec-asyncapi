@@ -6,24 +6,12 @@
  */
 
 import type { ChannelObject, Ref } from "../domain/models/asyncapi-document.js";
-import {
-  escapeRefToken,
-  ref,
-  refMessage,
-  refSchema,
-} from "../domain/models/asyncapi-document.js";
+import { escapeRefToken, ref, refMessage, refSchema } from "../domain/models/asyncapi-document.js";
 import type { BuilderFn, DocumentBuildContext } from "./_imports.js";
-import {
-  buildProtocolBinding,
-  extractChannelParameters,
-  iterNamedTypes,
-} from "./shared-utils.js";
+import { buildProtocolBinding, extractChannelParameters, iterNamedTypes } from "./shared-utils.js";
 
 /** Get or create a channel in the context. */
-export function ensureChannel(
-  ctx: DocumentBuildContext,
-  channelKey: string,
-): ChannelObject {
+export function ensureChannel(ctx: DocumentBuildContext, channelKey: string): ChannelObject {
   if (!ctx.channels[channelKey]) {
     const params = extractChannelParameters(channelKey);
     ctx.channels[channelKey] = {
@@ -59,13 +47,8 @@ export function registerMessage(
 }
 
 /** Build the messages ref array for an operation's channel. */
-export function buildOperationMessageRef(
-  channelKey: string,
-  messageName: string,
-): Ref {
-  return ref(
-    `#/channels/${escapeRefToken(channelKey)}/messages/${escapeRefToken(messageName)}`,
-  );
+export function buildOperationMessageRef(channelKey: string, messageName: string): Ref {
+  return ref(`#/channels/${escapeRefToken(channelKey)}/messages/${escapeRefToken(messageName)}`);
 }
 
 /** Apply @doc descriptions to channels from the channelDocs map. */
