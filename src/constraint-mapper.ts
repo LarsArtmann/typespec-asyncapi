@@ -64,9 +64,7 @@ export function applySummary(program: Program, target: Type, schema: JsonSchema)
 export function applyExamples(program: Program, target: ExampleTarget, schema: JsonSchema): void {
   const examples = getExamples(program, target);
   if (examples.length > 0) {
-    schema.examples = examples.map((ex) =>
-      serializeValueAsJson(program, ex.value, ex.value.type),
-    );
+    schema.examples = examples.map((ex) => serializeValueAsJson(program, ex.value, ex.value.type));
   }
 }
 

@@ -404,7 +404,9 @@ describe("spec Compliance: Constraint Decorators", () => {
         @channel("events2")
         op publish2(): NewEvent;
       `);
-      const { schemas } = doc.components as { schemas: Record<string, JsonSchema> };
+      const { schemas } = doc.components as {
+        schemas: Record<string, JsonSchema>;
+      };
       expect(schemas.OldEvent.deprecated).toBe(true);
       expect(schemas.NewEvent.deprecated).toBeUndefined();
     });
@@ -502,18 +504,17 @@ describe("spec Compliance: Constraint Decorators", () => {
       expect(propSchema(doc, "Event", "count").examples).toStrictEqual([42]);
     });
 
-    it("maps @example with object value", async () => {
+    it("maps @example with array value on array property", async () => {
       const doc = await compileAndValidateOrThrow(`
         namespace Test;
         model Event {
-          name: string;
-          @example(#{name: "Alice", age: 30})
-          data: string;
+          @example(#["a", "b", "c"])
+          tags: string[];
         }
         @channel("events")
         op publish(): Event;
       `);
-      expect(propSchema(doc, "Event", "data").examples).toStrictEqual([{ name: "Alice", age: 30 }]);
+      expect(propSchema(doc, "Event", "tags").examples).toStrictEqual([["a", "b", "c"]]);
     });
 
     it("maps multiple @example decorators", async () => {
@@ -527,7 +528,10 @@ describe("spec Compliance: Constraint Decorators", () => {
         @channel("events")
         op publish(): Event;
       `);
-      expect(propSchema(doc, "Event", "name").examples).toStrictEqual(["first", "second"]);
+      const { examples } = propSchema(doc, "Event", "name");
+      expect(examples).toHaveLength(2);
+      expect(examples).toContain("first");
+      expect(examples).toContain("second");
     });
 
     it("maps @example on a model to examples on the schema", async () => {

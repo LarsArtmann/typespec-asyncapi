@@ -1,4 +1,8 @@
-import type { JsonSchema, SchemaMap, SchemaRef } from "../../src/shared/index.js";
+import type {
+  JsonSchema,
+  SchemaMap,
+  SchemaRef,
+} from "../../src/shared/index.js";
 import {
   AsyncAPISchemaEmitter,
   extractValue,
@@ -247,7 +251,9 @@ describe("shared barrel public API surface", () => {
   });
 
   it("exposes expected TypeEmitter overrides", () => {
-    expect(AsyncAPISchemaEmitter.prototype.modelDeclaration).toBeTypeOf("function");
+    expect(AsyncAPISchemaEmitter.prototype.modelDeclaration).toBeTypeOf(
+      "function",
+    );
     expect(AsyncAPISchemaEmitter.prototype.union).toBeTypeOf("function");
     expect(AsyncAPISchemaEmitter.prototype.enum).toBeTypeOf("function");
   });
