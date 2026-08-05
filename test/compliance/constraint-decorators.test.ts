@@ -253,4 +253,70 @@ describe("spec Compliance: Constraint Decorators", () => {
       expect(name.pattern).toBeUndefined();
     });
   });
+
+  describe("$ref property edge cases", () => {
+    it("skips validation constraints on $ref properties (Draft-07 ignores $ref siblings)", async () => {
+      const doc = await compileAndValidateOrThrow(`
+        namespace Test;
+        model Address {
+          street: string;
+        }
+        model Event {
+          @minValue(0)
+          @maxValue(100)
+          @minLength(1)
+          @pattern(".*")
+          address: Address;
+        }
+        @channel("events")
+        op publish(): Event;
+      `);
+      const address = propSchema(doc, "Event", "address");
+      expect(address.$ref).toBe("#/components/schemas/Address");
+      expect(address.minimum).toBeUndefined();
+      expect(address.maximum).toBeUndefined();
+      expect(address.minLength).toBeUndefined();
+      expect(address.pattern).toBeUndefined();
+    });
+
+    it("applies deprecated as a $ref sibling", async () => {
+      const doc = await compileAndValidateOrThrow(`
+        namespace Test;
+        model Address {
+          street: string;
+        }
+        model Event {
+          #deprecated "use newAddress instead"
+          address: Address;
+        }
+        @channel("events")
+        op publish(): Event;
+      `);
+      const address = propSchema(doc, "Event", "address");
+      expect(address.$ref).toBe("#/components/schemas/Address");
+      expect(address.deprecated).toBe(true);
+    });
+
+    it("applies deprecated on $ref property but skips validation constraints", async () => {
+      const doc = await compileAndValidateOrThrow(`
+        namespace Test;
+        model Address {
+          street: string;
+        }
+        model Event {
+          #deprecated "old field"
+          @minValue(0)
+          @maxLength(10)
+          address: Address;
+        }
+        @channel("events")
+        op publish(): Event;
+      `);
+      const address = propSchema(doc, "Event", "address");
+      expect(address.$ref).toBe("#/components/schemas/Address");
+      expect(address.deprecated).toBe(true);
+      expect(address.minimum).toBeUndefined();
+      expect(address.maxLength).toBeUndefined();
+    });
+  });
 });
