@@ -10,43 +10,43 @@
 
 ### Living Docs Rebuilt (code-verified, cross-checked)
 
-| Doc           | What changed                                                                                                  | Key fact corrections                                              |
-| ------------- | ------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
-| `CHANGELOG.md`| `[Unreleased]` expanded from 4 → 20+ entries. All post-`0.2.0-beta` work documented with test counts, file paths, commit hashes where known. | Added: type mapping suite (35 tests), shared builder utils (33), idempotency (4), model composition (15), decorator negatives (12), splitSchemas (14), extractValue edge cases (5), binding regression (10), tuple regression (2), binding field extensions (7), decorator combos (11), barrel contract (4), zero-clone dedup, structural helpers, diagnostic count correction (18→22). Fixed bugs documented with commit hashes (`49b4241`, `0226deb`). |
-| `FEATURES.md` | Verification header updated. Test count 713→869, files 68→76. Diagnostics 18→22 (17 error + 5 warning). Added tuple types row, `@deprecated`/constraint decorators as PARTIALLY_FUNCTIONAL (honest). Added performance benchmark + deduplication gate rows. | Compliance suite count corrected from "98 tests" to "~149 tests across 13 files" (35+15 new tests added by 18:33 session). BDD description updated. |
-| `ROADMAP.md`  | Complete rewrite. Current State reflects 869 tests / 22 diagnostics / 19 protocols / 0% duplication. All "Recently completed" sections updated. New raw ideas: 16 unmapped constraint decorators (highest-impact next feature), `allOf`/`oneOf`/`not`, `info.contact`/`license`, `@discriminator`, `@example`, multi-format schemas. | Previous roadmap claimed "713 tests across 68 files" and "18 diagnostic codes" — both stale. |
-| `TODO_LIST.md`| Complete rewrite. Harvested 13 actionable items from 16 status reports. Sorted High/Medium/Low impact. Top item: map 16 TypeSpec constraint decorators to JSON Schema keywords (highest single-PR impact for schema correctness). | Previous TODO had 1 item (OpenAPI cross-emitter). Now 13 items with evidence citations. |
-| `README.md`   | Complete rewrite as user-facing sales page. Badges updated (869 tests, 19 protocols). All 16 decorators in a table. 19 protocol bindings table with versions. Examples for Kafka/security/reply/versioning. Multi-file output documented. Status table with 8 metrics. | Previous README claimed "555 pass" in badges, "555 pass, 0 fail" in Development section, "5 protocols" in bindings table — all severely stale. |
+| Doc            | What changed                                                                                                                                                                                                                                                                                                                         | Key fact corrections                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `CHANGELOG.md` | `[Unreleased]` expanded from 4 → 20+ entries. All post-`0.2.0-beta` work documented with test counts, file paths, commit hashes where known.                                                                                                                                                                                         | Added: type mapping suite (35 tests), shared builder utils (33), idempotency (4), model composition (15), decorator negatives (12), splitSchemas (14), extractValue edge cases (5), binding regression (10), tuple regression (2), binding field extensions (7), decorator combos (11), barrel contract (4), zero-clone dedup, structural helpers, diagnostic count correction (18→22). Fixed bugs documented with commit hashes (`49b4241`, `0226deb`). |
+| `FEATURES.md`  | Verification header updated. Test count 713→869, files 68→76. Diagnostics 18→22 (17 error + 5 warning). Added tuple types row, `@deprecated`/constraint decorators as PARTIALLY_FUNCTIONAL (honest). Added performance benchmark + deduplication gate rows.                                                                          | Compliance suite count corrected from "98 tests" to "~149 tests across 13 files" (35+15 new tests added by 18:33 session). BDD description updated.                                                                                                                                                                                                                                                                                                      |
+| `ROADMAP.md`   | Complete rewrite. Current State reflects 869 tests / 22 diagnostics / 19 protocols / 0% duplication. All "Recently completed" sections updated. New raw ideas: 16 unmapped constraint decorators (highest-impact next feature), `allOf`/`oneOf`/`not`, `info.contact`/`license`, `@discriminator`, `@example`, multi-format schemas. | Previous roadmap claimed "713 tests across 68 files" and "18 diagnostic codes" — both stale.                                                                                                                                                                                                                                                                                                                                                             |
+| `TODO_LIST.md` | Complete rewrite. Harvested 13 actionable items from 16 status reports. Sorted High/Medium/Low impact. Top item: map 16 TypeSpec constraint decorators to JSON Schema keywords (highest single-PR impact for schema correctness).                                                                                                    | Previous TODO had 1 item (OpenAPI cross-emitter). Now 13 items with evidence citations.                                                                                                                                                                                                                                                                                                                                                                  |
+| `README.md`    | Complete rewrite as user-facing sales page. Badges updated (869 tests, 19 protocols). All 16 decorators in a table. 19 protocol bindings table with versions. Examples for Kafka/security/reply/versioning. Multi-file output documented. Status table with 8 metrics.                                                               | Previous README claimed "555 pass" in badges, "555 pass, 0 fail" in Development section, "5 protocols" in bindings table — all severely stale.                                                                                                                                                                                                                                                                                                           |
 
 ### Historical Reports Annotated (16 files, inline non-destructive)
 
-| File | Annotation type |
-| --- | --- |
-| `docs/planning/2026-08-05_05-34_ROADMAP-AUDIT-AND-CLEANUP.md` | Status updated: "Complete" → "Executed and superseded" with session references |
-| `docs/planning/2026-08-05_18-36_PARETO-BUG-FIXES-AND-TEST-HARDENING.md` | Status updated: "Planning → Execution" → "Fully executed" with all T1-T10 marked done |
-| `docs/planning/2026-08-05_19-03_SUPERB-DEDUPLICATION-EXECUTION-PLAN.md` | Goal updated: 0-clone outcome documented, phases linked |
-| `docs/planning/2026-08-05_19-55_SUPERB-PHASE-2-DEDUPLICATION-PLAN.md` | Target updated: "missed in Phase-2, achieved in Phase-4" |
-| `docs/status/2026-08-05_17-31_ROADMAP-AUDIT-VERIFICATION-AND-CORRECTION.md` | Header + "50 Things" annotated with resolution routing |
-| `docs/status/2026-08-05_18-01_TODO-EXECUTION-SESSION.md` | Header + "50 Things" annotated |
-| `docs/status/2026-08-05_18-08_VITEST-RUN-AND-QUALITY-VERIFICATION.md` | TL;DR annotated: doc entropy flagged, update notes added |
-| `docs/status/2026-08-05_18-14_SHARED-MODULE-HARDENING-AND-SELF-REVIEW.md` | Header + "50 Things" annotated |
-| `docs/status/2026-08-05_18-20_TYPESPEC-ASYNCAPI-GAP-ANALYSIS.md` | "What This Session Did" annotated: findings routed to TODO/ROADMAP |
-| `docs/status/2026-08-05_18-33_TEST-GAP-ANALYSIS-AND-COVERAGE-EXPANSION.md` | Section E + "50 Things" annotated: both bugs fixed with commit hashes |
-| `docs/status/2026-08-05_19-01_BUG-FIXES-AND-TEST-HARDENING-SESSION.md` | Header + "50 Things" annotated |
-| `docs/status/2026-08-05_19-50_DEDUPLICATION-EXECUTION-COMPLETE.md` | Header + section 7 annotated: 0-clone outcome documented |
-| `docs/status/2026-08-05_20-08_PHASE-2-DEDUPLICATION-STATUS.md` | "Pareto floor" claim corrected inline + "50 Things" annotated |
-| `docs/status/2026-08-05_20-35_PHASE-3-DEDUPLICATION-STATUS.md` | Open questions resolved inline + "Pareto floor" claim corrected + "50 Things" annotated |
-| `docs/status/2026-08-05_20-46_PHASE-3-DEDUPLICATION-FINAL.md` | Appended resolution: all 10 "remaining" clones eliminated in Phase-4 with specific refactor mapping |
-| `docs/status/2026-08-05_21-12_PHASE-4-ZERO-CLONES.md` | Not annotated (this is the most recent, already accurate) |
+| File                                                                        | Annotation type                                                                                     |
+| --------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `docs/planning/2026-08-05_05-34_ROADMAP-AUDIT-AND-CLEANUP.md`               | Status updated: "Complete" → "Executed and superseded" with session references                      |
+| `docs/planning/2026-08-05_18-36_PARETO-BUG-FIXES-AND-TEST-HARDENING.md`     | Status updated: "Planning → Execution" → "Fully executed" with all T1-T10 marked done               |
+| `docs/planning/2026-08-05_19-03_SUPERB-DEDUPLICATION-EXECUTION-PLAN.md`     | Goal updated: 0-clone outcome documented, phases linked                                             |
+| `docs/planning/2026-08-05_19-55_SUPERB-PHASE-2-DEDUPLICATION-PLAN.md`       | Target updated: "missed in Phase-2, achieved in Phase-4"                                            |
+| `docs/status/2026-08-05_17-31_ROADMAP-AUDIT-VERIFICATION-AND-CORRECTION.md` | Header + "50 Things" annotated with resolution routing                                              |
+| `docs/status/2026-08-05_18-01_TODO-EXECUTION-SESSION.md`                    | Header + "50 Things" annotated                                                                      |
+| `docs/status/2026-08-05_18-08_VITEST-RUN-AND-QUALITY-VERIFICATION.md`       | TL;DR annotated: doc entropy flagged, update notes added                                            |
+| `docs/status/2026-08-05_18-14_SHARED-MODULE-HARDENING-AND-SELF-REVIEW.md`   | Header + "50 Things" annotated                                                                      |
+| `docs/status/2026-08-05_18-20_TYPESPEC-ASYNCAPI-GAP-ANALYSIS.md`            | "What This Session Did" annotated: findings routed to TODO/ROADMAP                                  |
+| `docs/status/2026-08-05_18-33_TEST-GAP-ANALYSIS-AND-COVERAGE-EXPANSION.md`  | Section E + "50 Things" annotated: both bugs fixed with commit hashes                               |
+| `docs/status/2026-08-05_19-01_BUG-FIXES-AND-TEST-HARDENING-SESSION.md`      | Header + "50 Things" annotated                                                                      |
+| `docs/status/2026-08-05_19-50_DEDUPLICATION-EXECUTION-COMPLETE.md`          | Header + section 7 annotated: 0-clone outcome documented                                            |
+| `docs/status/2026-08-05_20-08_PHASE-2-DEDUPLICATION-STATUS.md`              | "Pareto floor" claim corrected inline + "50 Things" annotated                                       |
+| `docs/status/2026-08-05_20-35_PHASE-3-DEDUPLICATION-STATUS.md`              | Open questions resolved inline + "Pareto floor" claim corrected + "50 Things" annotated             |
+| `docs/status/2026-08-05_20-46_PHASE-3-DEDUPLICATION-FINAL.md`               | Appended resolution: all 10 "remaining" clones eliminated in Phase-4 with specific refactor mapping |
+| `docs/status/2026-08-05_21-12_PHASE-4-ZERO-CLONES.md`                       | Not annotated (this is the most recent, already accurate)                                           |
 
 ### Verification Gates
 
-| Check | Command | Result |
-| --- | --- | --- |
-| Build | `bun run build` | 0 errors, 19 protocols generated |
-| Lint | `bun run lint` (ESLint + oxlint `--deny-warnings`) | 0 errors, 0 warnings |
-| Tests | `bun run test` (vitest) | **869 passed / 0 failed / 76 files** |
-| Cross-file consistency | grep for stale counts (555, 713, 679, 821, "18 codes") | Zero hits in all living docs |
+| Check                  | Command                                                | Result                               |
+| ---------------------- | ------------------------------------------------------ | ------------------------------------ |
+| Build                  | `bun run build`                                        | 0 errors, 19 protocols generated     |
+| Lint                   | `bun run lint` (ESLint + oxlint `--deny-warnings`)     | 0 errors, 0 warnings                 |
+| Tests                  | `bun run test` (vitest)                                | **869 passed / 0 failed / 76 files** |
+| Cross-file consistency | grep for stale counts (555, 713, 679, 821, "18 codes") | Zero hits in all living docs         |
 
 ---
 

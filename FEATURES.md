@@ -24,23 +24,23 @@
 
 ## Schema Generation
 
-| Feature                     | Status                 | Evidence                                                             |
-| --------------------------- | ---------------------- | -------------------------------------------------------------------- |
-| Model → JSON Schema         | FULLY_FUNCTIONAL       | `modelDeclaration()` handles properties, types, required             |
-| Inheritance (base models)   | FULLY_FUNCTIONAL       | `collectProperties()` walks `baseModel` chain                        |
-| `@doc` → `description`      | FULLY_FUNCTIONAL       | `getDoc()` on models and properties                                  |
-| Optional vs required fields | FULLY_FUNCTIONAL       | `!prop.optional` → `required` array                                  |
-| Array types                 | FULLY_FUNCTIONAL       | `{ type: "array", items: ... }`                                      |
-| Union/enum types            | FULLY_FUNCTIONAL       | String unions → `{ type: "string", enum: [...] }`                    |
-| Scalar type mapping         | FULLY_FUNCTIONAL       | All TypeSpec scalars mapped (int32, float64, utcDateTime, etc.)      |
-| Nested model references     | FULLY_FUNCTIONAL       | `$ref: "#/components/schemas/ModelName"` for named models            |
-| Tuple types                 | FULLY_FUNCTIONAL       | Named model tuples use `$ref`; primitives use per-position `items`   |
-| Channel path parameters     | FULLY_FUNCTIONAL       | `{var}` in address → `parameters` object on channel                  |
-| Server variables            | FULLY_FUNCTIONAL       | `{var}` in host → `variables` object on server                       |
-| Multi-message operations    | FULLY_FUNCTIONAL       | Union return types produce multiple message refs in one operation    |
-| Operation reply             | FULLY_FUNCTIONAL       | `@reply` decorator emits reply with message ref and optional address |
-| `#deprecated` → `deprecated`  | FULLY_FUNCTIONAL    | `src/constraint-mapper.ts` — `applyDeprecated()` on properties, models, enums via `isDeprecated()` |
-| Constraint decorators        | FULLY_FUNCTIONAL    | `src/constraint-mapper.ts` — 11 decorators mapped: `@minValue`→`minimum`, `@maxValue`→`maximum`, `@minValueExclusive`→`exclusiveMinimum`, `@maxValueExclusive`→`exclusiveMaximum`, `@minLength`→`minLength`, `@maxLength`→`maxLength`, `@pattern`→`pattern`, `@format`→`format`, `@minItems`→`minItems`, `@maxItems`→`maxItems`, `#deprecated`→`deprecated`. `test/compliance/constraint-decorators.test.ts` (15 tests) |
+| Feature                      | Status           | Evidence                                                                                                                                                                                                                                                                                                                                                                                                                |
+| ---------------------------- | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Model → JSON Schema          | FULLY_FUNCTIONAL | `modelDeclaration()` handles properties, types, required                                                                                                                                                                                                                                                                                                                                                                |
+| Inheritance (base models)    | FULLY_FUNCTIONAL | `collectProperties()` walks `baseModel` chain                                                                                                                                                                                                                                                                                                                                                                           |
+| `@doc` → `description`       | FULLY_FUNCTIONAL | `getDoc()` on models and properties                                                                                                                                                                                                                                                                                                                                                                                     |
+| Optional vs required fields  | FULLY_FUNCTIONAL | `!prop.optional` → `required` array                                                                                                                                                                                                                                                                                                                                                                                     |
+| Array types                  | FULLY_FUNCTIONAL | `{ type: "array", items: ... }`                                                                                                                                                                                                                                                                                                                                                                                         |
+| Union/enum types             | FULLY_FUNCTIONAL | String unions → `{ type: "string", enum: [...] }`                                                                                                                                                                                                                                                                                                                                                                       |
+| Scalar type mapping          | FULLY_FUNCTIONAL | All TypeSpec scalars mapped (int32, float64, utcDateTime, etc.)                                                                                                                                                                                                                                                                                                                                                         |
+| Nested model references      | FULLY_FUNCTIONAL | `$ref: "#/components/schemas/ModelName"` for named models                                                                                                                                                                                                                                                                                                                                                               |
+| Tuple types                  | FULLY_FUNCTIONAL | Named model tuples use `$ref`; primitives use per-position `items`                                                                                                                                                                                                                                                                                                                                                      |
+| Channel path parameters      | FULLY_FUNCTIONAL | `{var}` in address → `parameters` object on channel                                                                                                                                                                                                                                                                                                                                                                     |
+| Server variables             | FULLY_FUNCTIONAL | `{var}` in host → `variables` object on server                                                                                                                                                                                                                                                                                                                                                                          |
+| Multi-message operations     | FULLY_FUNCTIONAL | Union return types produce multiple message refs in one operation                                                                                                                                                                                                                                                                                                                                                       |
+| Operation reply              | FULLY_FUNCTIONAL | `@reply` decorator emits reply with message ref and optional address                                                                                                                                                                                                                                                                                                                                                    |
+| `#deprecated` → `deprecated` | FULLY_FUNCTIONAL | `src/constraint-mapper.ts` — `applyDeprecated()` on properties, models, enums via `isDeprecated()`                                                                                                                                                                                                                                                                                                                      |
+| Constraint decorators        | FULLY_FUNCTIONAL | `src/constraint-mapper.ts` — 11 decorators mapped: `@minValue`→`minimum`, `@maxValue`→`maximum`, `@minValueExclusive`→`exclusiveMinimum`, `@maxValueExclusive`→`exclusiveMaximum`, `@minLength`→`minLength`, `@maxLength`→`maxLength`, `@pattern`→`pattern`, `@format`→`format`, `@minItems`→`minItems`, `@maxItems`→`maxItems`, `#deprecated`→`deprecated`. `test/compliance/constraint-decorators.test.ts` (15 tests) |
 
 ## Decorator System
 
@@ -113,24 +113,24 @@ All 19 AsyncAPI protocols auto-generated from `@asyncapi/specs/bindings/` via `s
 
 ## Testing
 
-| Feature                 | Status           | Evidence                                                                           |
-| ----------------------- | ---------------- | ---------------------------------------------------------------------------------- |
-| vitest test runner      | FULLY_FUNCTIONAL | 881 tests across 76 files (0 skip, 0 todo)                                         |
-| Golden file test        | FULLY_FUNCTIONAL | `test/golden/golden-file.test.ts`                                                  |
-| Schema validation tests | FULLY_FUNCTIONAL | `test/validation/schema-validation.test.ts`                                        |
-| Spec compliance suite   | FULLY_FUNCTIONAL | `test/compliance/` — 14 files, ~164 tests validated against official AsyncAPI 3.1 JSON Schema |
-| Integration tests       | FULLY_FUNCTIONAL | `test/integration/` — decorator output, negative tests, binding placement          |
-| E2E tests               | FULLY_FUNCTIONAL | `test/e2e/` — complex nested schemas                                               |
+| Feature                 | Status           | Evidence                                                                                       |
+| ----------------------- | ---------------- | ---------------------------------------------------------------------------------------------- |
+| vitest test runner      | FULLY_FUNCTIONAL | 881 tests across 76 files (0 skip, 0 todo)                                                     |
+| Golden file test        | FULLY_FUNCTIONAL | `test/golden/golden-file.test.ts`                                                              |
+| Schema validation tests | FULLY_FUNCTIONAL | `test/validation/schema-validation.test.ts`                                                    |
+| Spec compliance suite   | FULLY_FUNCTIONAL | `test/compliance/` — 14 files, ~164 tests validated against official AsyncAPI 3.1 JSON Schema  |
+| Integration tests       | FULLY_FUNCTIONAL | `test/integration/` — decorator output, negative tests, binding placement                      |
+| E2E tests               | FULLY_FUNCTIONAL | `test/e2e/` — complex nested schemas                                                           |
 | BDD tests               | FULLY_FUNCTIONAL | `test/bdd/user-behaviors.test.ts` — 23 end-to-end behavior tests (dead Cucumber infra removed) |
-| External spec tests     | FULLY_FUNCTIONAL | `test/external/` — 16 patterns from 5 external projects                            |
-| Studio compatibility    | FULLY_FUNCTIONAL | `test/validation/studio-compatibility.test.ts` — 9 tests using `@asyncapi/parser`  |
-| Document structure      | FULLY_FUNCTIONAL | `test/validation/document-structure.test.ts` — 8 structural requirement tests     |
-| Versioning integration  | FULLY_FUNCTIONAL | `test/integration/versioning.test.ts` — 5 tests for `@typespec/versioning` support |
-| Constraint decorators   | FULLY_FUNCTIONAL | `test/compliance/constraint-decorators.test.ts` — 15 tests, AJV-validated          |
-| Unit tests              | FULLY_FUNCTIONAL | `test/unit/` — binding placement, emitter tester verification                      |
-| Performance benchmark   | FULLY_FUNCTIONAL | `test/benchmark/` — 5 tests measuring compilation time + scaling metrics            |
-| Deduplication gate      | FULLY_FUNCTIONAL | `jscpd src scripts` — 0% threshold, 0% duplication enforced                          |
-| Negative tests          | FULLY_FUNCTIONAL | `test/integration/negative-tests.test.ts` — error handling                         |
+| External spec tests     | FULLY_FUNCTIONAL | `test/external/` — 16 patterns from 5 external projects                                        |
+| Studio compatibility    | FULLY_FUNCTIONAL | `test/validation/studio-compatibility.test.ts` — 9 tests using `@asyncapi/parser`              |
+| Document structure      | FULLY_FUNCTIONAL | `test/validation/document-structure.test.ts` — 8 structural requirement tests                  |
+| Versioning integration  | FULLY_FUNCTIONAL | `test/integration/versioning.test.ts` — 5 tests for `@typespec/versioning` support             |
+| Constraint decorators   | FULLY_FUNCTIONAL | `test/compliance/constraint-decorators.test.ts` — 15 tests, AJV-validated                      |
+| Unit tests              | FULLY_FUNCTIONAL | `test/unit/` — binding placement, emitter tester verification                                  |
+| Performance benchmark   | FULLY_FUNCTIONAL | `test/benchmark/` — 5 tests measuring compilation time + scaling metrics                       |
+| Deduplication gate      | FULLY_FUNCTIONAL | `jscpd src scripts` — 0% threshold, 0% duplication enforced                                    |
+| Negative tests          | FULLY_FUNCTIONAL | `test/integration/negative-tests.test.ts` — error handling                                     |
 
 ## Build
 

@@ -94,12 +94,8 @@ describe("idempotency: same input produces same output", () => {
     expect(Object.keys(doc1.components?.messages ?? {})).toStrictEqual(
       Object.keys(doc2.components?.messages ?? {}),
     );
-    expect(Object.keys(doc1.channels)).toStrictEqual(
-      Object.keys(doc2.channels),
-    );
-    expect(Object.keys(doc1.operations ?? {})).toStrictEqual(
-      Object.keys(doc2.operations ?? {}),
-    );
+    expect(Object.keys(doc1.channels)).toStrictEqual(Object.keys(doc2.channels));
+    expect(Object.keys(doc1.operations ?? {})).toStrictEqual(Object.keys(doc2.operations ?? {}));
   });
 
   it("produces identical output for a spec with security schemes", async () => {

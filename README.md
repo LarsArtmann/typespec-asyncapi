@@ -83,23 +83,23 @@ components:
 
 ### 16 Decorators
 
-| Decorator | Target | Purpose |
-| --- | --- | --- |
-| `@channel(address, description?)` | Operation | Defines a channel address |
-| `@publish` / `@subscribe` | Operation | Marks operation as send / receive |
-| `@server(name, config)` | Namespace | Defines server (host, protocol, description) |
-| `@message(config)` | Model | Configures message metadata (title, contentType) |
-| `@protocol(config)` | Operation / Model | Applies protocol-specific channel bindings |
-| `@security(config)` | Operation / Namespace | Applies security schemes |
-| `@bindings(config)` | Operation / Model / Namespace | Applies generic protocol bindings (auto-versioned) |
-| `@tags(value)` | Model / Operation / Namespace | Categorizes with tag arrays |
-| `@correlationId(location)` | Model | Specifies correlation ID for message tracing |
-| `@header(name, value?)` | Model / ModelProperty | Defines message headers |
-| `@reply(replyModel, address?)` | Operation | Operation reply with message reference |
-| `@defaultContentType(type)` | Namespace | Sets `defaultContentType` on document root |
-| `@operationId(id)` | Operation | Overrides auto-generated operation key |
-| `@messageId(id)` | Model | Overrides auto-generated message key |
-| `@apiVersion(version)` | Namespace | Sets `info.version` on document root |
+| Decorator                         | Target                        | Purpose                                            |
+| --------------------------------- | ----------------------------- | -------------------------------------------------- |
+| `@channel(address, description?)` | Operation                     | Defines a channel address                          |
+| `@publish` / `@subscribe`         | Operation                     | Marks operation as send / receive                  |
+| `@server(name, config)`           | Namespace                     | Defines server (host, protocol, description)       |
+| `@message(config)`                | Model                         | Configures message metadata (title, contentType)   |
+| `@protocol(config)`               | Operation / Model             | Applies protocol-specific channel bindings         |
+| `@security(config)`               | Operation / Namespace         | Applies security schemes                           |
+| `@bindings(config)`               | Operation / Model / Namespace | Applies generic protocol bindings (auto-versioned) |
+| `@tags(value)`                    | Model / Operation / Namespace | Categorizes with tag arrays                        |
+| `@correlationId(location)`        | Model                         | Specifies correlation ID for message tracing       |
+| `@header(name, value?)`           | Model / ModelProperty         | Defines message headers                            |
+| `@reply(replyModel, address?)`    | Operation                     | Operation reply with message reference             |
+| `@defaultContentType(type)`       | Namespace                     | Sets `defaultContentType` on document root         |
+| `@operationId(id)`                | Operation                     | Overrides auto-generated operation key             |
+| `@messageId(id)`                  | Model                         | Overrides auto-generated message key               |
+| `@apiVersion(version)`            | Namespace                     | Sets `info.version` on document root               |
 
 Decorators accept both `{}` (model expression) and `#{}` (value literal) syntax.
 
@@ -107,14 +107,14 @@ Decorators accept both `{}` (model expression) and `#{}` (value literal) syntax.
 
 All protocols auto-generated from `@asyncapi/specs/bindings/`:
 
-| Protocol | Binding Version | Highlights |
-| --- | --- | --- |
-| Kafka | 0.5.0 | Channel (topic, partitions, replicas), Operation (groupId, clientId), Message (key) |
-| AMQP | 0.3.0 | Channel (exchange, queue), Operation (priority, deliveryMode), Message |
-| MQTT | 0.2.0 | Server (clientId, cleanSession, lastWill), Operation (qos, retain) |
-| HTTP | 0.3.0 | Operation (method, query), Message (headers) |
-| WebSocket | 0.1.0 | Channel (method, query, headers). `ws`/`wss` normalized |
-| AMQP1, AnypointMQ, GooglePubSub, IBMMQ, JMS, Mercure, NATS, Pulsar, Redis, ROS2, SNS, Solace, SQS, STOMP | Per spec | All auto-generated with field-level validation |
+| Protocol                                                                                                 | Binding Version | Highlights                                                                          |
+| -------------------------------------------------------------------------------------------------------- | --------------- | ----------------------------------------------------------------------------------- |
+| Kafka                                                                                                    | 0.5.0           | Channel (topic, partitions, replicas), Operation (groupId, clientId), Message (key) |
+| AMQP                                                                                                     | 0.3.0           | Channel (exchange, queue), Operation (priority, deliveryMode), Message              |
+| MQTT                                                                                                     | 0.2.0           | Server (clientId, cleanSession, lastWill), Operation (qos, retain)                  |
+| HTTP                                                                                                     | 0.3.0           | Operation (method, query), Message (headers)                                        |
+| WebSocket                                                                                                | 0.1.0           | Channel (method, query, headers). `ws`/`wss` normalized                             |
+| AMQP1, AnypointMQ, GooglePubSub, IBMMQ, JMS, Mercure, NATS, Pulsar, Redis, ROS2, SNS, Solace, SQS, STOMP | Per spec        | All auto-generated with field-level validation                                      |
 
 Binding versions are auto-injected when omitted. Protocol aliases (`websocket`→`ws`) are normalized automatically. Binding placement is validated against the spec (e.g., Kafka channel bindings on a message trigger a `misplaced-binding` warning).
 
@@ -214,16 +214,16 @@ bun run lint      # ESLint + oxlint (0 errors, 0 warnings)
 
 ## Status
 
-| Metric | Value |
-| --- | --- |
-| Version | 0.2.0-beta |
-| Tests | 881 pass, 0 fail across 76 files |
-| Build | 0 TypeScript errors (strict mode) |
-| Lint | 0 errors, 0 warnings (ESLint + oxlint) |
-| Diagnostics | 22 codes (17 error + 5 warning) |
-| Protocols | 19 (auto-generated from `@asyncapi/specs`) |
-| Duplication | 0% (jscpd, 0% threshold) |
-| Output | Validates against official AsyncAPI 3.1.0 JSON Schema |
+| Metric      | Value                                                 |
+| ----------- | ----------------------------------------------------- |
+| Version     | 0.2.0-beta                                            |
+| Tests       | 881 pass, 0 fail across 76 files                      |
+| Build       | 0 TypeScript errors (strict mode)                     |
+| Lint        | 0 errors, 0 warnings (ESLint + oxlint)                |
+| Diagnostics | 22 codes (17 error + 5 warning)                       |
+| Protocols   | 19 (auto-generated from `@asyncapi/specs`)            |
+| Duplication | 0% (jscpd, 0% threshold)                              |
+| Output      | Validates against official AsyncAPI 3.1.0 JSON Schema |
 
 ## License
 
