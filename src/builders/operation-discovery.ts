@@ -12,6 +12,7 @@ import { nameOfType } from "./types.js";
 import {
   inferActionFromName,
   iterNamedTypes,
+  namesOfTypes,
   operationAction,
   resolveMessageKey,
   returnModelTypes,
@@ -99,9 +100,7 @@ function discoverChannelOnlyOps(
   state: AsyncAPIConsolidatedState,
   ctx: DocumentBuildContext,
 ): void {
-  const opsWithType = new Set(
-    [...state.operations.keys()].map((t) => nameOfType(t)),
-  );
+  const opsWithType = namesOfTypes(state.operations);
   for (const { type, name, data } of iterNamedTypes(state.channels)) {
     if (opsWithType.has(name)) {
       continue;
@@ -125,11 +124,10 @@ function discoverBareOps(
   state: AsyncAPIConsolidatedState,
   ctx: DocumentBuildContext,
 ): void {
-  const allKnownOps = new Set(
-    [...state.operations.keys(), ...state.channels.keys()].map((t) =>
-      nameOfType(t),
-    ),
-  );
+  const allKnownOps = new Set([
+    ...namesOfTypes(state.operations),
+    ...namesOfTypes(state.channels),
+  ]);
   const globalNs = ctx.program.getGlobalNamespaceType();
   const namespaces = [globalNs, ...globalNs.namespaces.values()];
   for (const ns of namespaces) {

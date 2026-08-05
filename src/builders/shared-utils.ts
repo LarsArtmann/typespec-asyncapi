@@ -46,6 +46,22 @@ export function* iterNamedTypes<K, V>(
 }
 
 /**
+ * Build a `Set` of the named-type names from a `state.<map>`. Unnamed types
+ * are filtered out. Used to test membership in the set of already-discovered
+ * operations.
+ */
+export function namesOfTypes<K>(map: Map<K, unknown>): Set<string> {
+  const out = new Set<string>();
+  for (const key of map.keys()) {
+    const n = nameOfType(key as Type);
+    if (n) {
+      out.add(n);
+    }
+  }
+  return out;
+}
+
+/**
  * Normalize OAuth2 flows: AsyncAPI 3.1 uses `availableScopes` (not `scopes`).
  * Accept both as input; always output `availableScopes`.
  */

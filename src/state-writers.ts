@@ -6,6 +6,7 @@
  */
 
 import type {
+  KafkaSaslConfig,
   MessageConfigData,
   MessageHeaderData,
   MqttLastWillConfig,
@@ -206,7 +207,7 @@ export const storeHeader = (
     description = typeof value === "string" ? value : undefined;
   }
 
-  appendToStateArray<MessageHeaderData, typeof target>(
+  appendToStateArray<typeof target, MessageHeaderData>(
     map as Map<typeof target, MessageHeaderData[]>,
     target,
     { description, name, type: headerType, value },
