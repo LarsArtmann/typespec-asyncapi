@@ -70,6 +70,27 @@ export interface InfoObject {
   title: string;
   version: string;
   description?: string;
+  contact?: ContactObject;
+  license?: LicenseObject;
+  termsOfService?: string;
+  externalDocs?: ExternalDocumentationObject;
+  tags?: Tag[];
+}
+
+export interface ContactObject {
+  name?: string;
+  email?: string;
+  url?: string;
+}
+
+export interface LicenseObject {
+  name: string;
+  url?: string;
+}
+
+export interface ExternalDocumentationObject {
+  url: string;
+  description?: string;
 }
 
 /**
