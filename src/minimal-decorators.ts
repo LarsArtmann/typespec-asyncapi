@@ -46,6 +46,7 @@ import {
   reportUnsupportedProtocol,
   validateNonEmptyString,
   validatedDecorator,
+  type DiagnosticContext,
 } from "./decorator-helpers.js";
 import { processBindings } from "./validation/binding-validator.js";
 import type { BindingTargetKind } from "./constants/binding-versions.js";
@@ -91,7 +92,6 @@ export function $message(
       ),
   });
 }
-
 function extractMessageConfig(
   config: unknown,
   target: Model,
@@ -128,37 +128,36 @@ function extractMessageConfig(
   };
 }
 
-export function $protocol(
-  context: DecoratorContext,
+export const $protocol: (
+  ctx: DecoratorContext,
   target: Operation | Model,
   config: unknown,
-): void {
-  validatedDecorator(context, target, config, {
-    code: "invalid-protocol-config",
-    format: { targetKind: target.kind },
-    run: () => {
-      const configRecord = extractConfigRecord(config);
-      const protocol = configRecord.protocol as string | undefined;
-      if (protocol && !isSupportedProtocol(protocol.toLowerCase())) {
-        reportUnsupportedProtocol(context, target, protocol);
-        return;
-      }
-      storeProtocolConfig(context.program, target, configRecord);
-    },
-  });
-}
+) => void = (ctx, target, cfg) => {
+  const code = "invalid-protocol-config";
+  const format = { targetKind: target.kind };
+  const run = (): void => {
+    const configRecord = extractConfigRecord(cfg);
+    const protocol = configRecord.protocol as string | undefined;
+    if (protocol && !isSupportedProtocol(protocol.toLowerCase())) {
+      reportUnsupportedProtocol(ctx, target, protocol);
+      return;
+    }
+    storeProtocolConfig(ctx.program, target, configRecord);
+  };
+  validatedDecorator(ctx, target, cfg, { code, format, run });
+};
 
-export function $security(
-  context: DecoratorContext,
+export const $security: (
+  ctx: DecoratorContext,
   target: Operation | Namespace,
   config: unknown,
-): void {
-  validatedDecorator(context, target, config, {
+) => void = (ctx, target, cfg) => {
+  validatedDecorator(ctx, target, cfg, {
     code: "invalid-security-config",
     format: { targetKind: target.kind },
-    run: () => applySecurity({ context, target, config }),
+    run: () => applySecurity({ context: ctx, target, config: cfg }),
   });
-}
+};
 
 function applySecurity(args: {
   context: DecoratorContext;
@@ -324,60 +323,53 @@ export function $reply(
   });
 }
 
-export function $operationId(
-  context: DecoratorContext,
-  target: Operation,
-  id: unknown,
-): void {
-  applyStringIdDecorator({
-    context,
-    target,
-    id,
-    diagnosticCode: "invalid-operation-id",
-    format: { operationName: target.name },
-    store: (program) => storeOperationId(program, target, id as string),
-  });
-}
+export const $operationId = makeStringIdDecorator<Operation>(
+  "invalid-operation-id",
+  (target) => ({ operationName: target.name }),
+  (program, target, id) => storeOperationId(program, target, id),
+);
 
-export function $messageId(
-  context: DecoratorContext,
-  target: Model,
-  id: unknown,
-): void {
-  applyStringIdDecorator({
-    context,
-    target,
-    id,
-    diagnosticCode: "invalid-message-id",
-    format: { modelName: target.name },
-    store: (program) => storeMessageId(program, target, id as string),
-  });
-}
+export const $messageId = makeStringIdDecorator<Model>(
+  "invalid-message-id",
+  (target) => ({ modelName: target.name }),
+  (program, target, id) => storeMessageId(program, target, id),
+);
 
 /**
  * Shared body for decorators that take a single non-empty string ID argument
  * and store it. Used by `@operationId` and `@messageId`.
  */
-function applyStringIdDecorator(opts: {
-  context: DecoratorContext;
-  target: unknown;
-  id: unknown;
-  diagnosticCode: keyof typeof $lib.diagnostics;
-  format?: Record<string, unknown>;
-  store: (program: Program, id: string) => void;
-}): void {
-  if (
-    !validateNonEmptyString(
-      opts.id,
-      opts.context,
-      opts.target,
-      opts.diagnosticCode,
-      opts.format,
-    )
-  ) {
+function applyStringIdDecorator(
+  opts: {
+    id: unknown;
+    store: (program: Program, id: string) => void;
+  } & DiagnosticContext,
+): void {
+  const { context, target, diagnosticCode, format, id, store } = opts;
+  if (!validateNonEmptyString(id, context, target, diagnosticCode, format)) {
     return;
   }
-  opts.store(opts.context.program, opts.id);
+  store(context.program, id);
+}
+
+/**
+ * Build a decorator that wraps `applyStringIdDecorator` with fixed
+ * diagnostic code, format, and store callback.
+ */
+function makeStringIdDecorator<T>(
+  diagnosticCode: keyof typeof $lib.diagnostics,
+  format: (target: T) => Record<string, unknown>,
+  store: (program: Program, target: T, id: string) => void,
+): (context: DecoratorContext, target: T, id: unknown) => void {
+  return (context, target, id) =>
+    applyStringIdDecorator({
+      context,
+      target,
+      id,
+      diagnosticCode,
+      format: format(target),
+      store: (program) => store(program, target, id as string),
+    });
 }
 
 export function $apiVersion(

@@ -32,6 +32,14 @@ export const reportDiagnostic = (
   });
 };
 
+/** Shared diagnostic context shape for validate* guards. */
+export interface DiagnosticContext {
+  context: DecoratorContext;
+  target: unknown;
+  diagnosticCode: keyof typeof $lib.diagnostics;
+  format?: Record<string, unknown>;
+}
+
 /** Validate that a value is a non-empty string; if not, report and return false. */
 export const validateNonEmptyString = (
   value: unknown,
@@ -47,12 +55,7 @@ export const validateNonEmptyString = (
 /** Validate that a config value is present; if not, report and return false. */
 export const validateConfig = (
   config: unknown,
-  ctx: {
-    context: DecoratorContext;
-    target: unknown;
-    diagnosticCode: keyof typeof $lib.diagnostics;
-    format?: Record<string, unknown>;
-  },
+  ctx: DiagnosticContext,
 ): boolean =>
   config
     ? true
