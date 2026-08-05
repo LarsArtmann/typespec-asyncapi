@@ -5,6 +5,8 @@ import type {
 } from "../../src/shared/json-schema.js";
 import { extractValue } from "../../src/extract-value.js";
 import { intrinsicToSchema } from "../../src/intrinsic-mapping.js";
+import { generateSchemas } from "../../src/schema-generator.js";
+import { AsyncAPISchemaEmitter } from "../../src/schema-emitter.js";
 import type { EmitEntity } from "@typespec/asset-emitter";
 
 describe("jsonSchema type", () => {
@@ -164,5 +166,15 @@ describe("intrinsicToSchema", () => {
     const url = intrinsicToSchema("url");
     expect(url.type).toBe("string");
     expect(url.format).toBe("uri");
+  });
+});
+
+describe("shared module exports", () => {
+  it("generateSchemas is a function", () => {
+    expect(generateSchemas).toBeTypeOf("function");
+  });
+
+  it("asyncAPI schema emitter is a class (constructor)", () => {
+    expect(AsyncAPISchemaEmitter).toBeTypeOf("function");
   });
 });
