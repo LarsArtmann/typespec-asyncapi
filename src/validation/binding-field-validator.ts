@@ -35,8 +35,7 @@ export function validateBindingFields(
   const issues: BindingFieldIssue[] = [];
 
   const protocolRules = GENERATED_FIELD_RULES[protocol] as
-    | Record<string, TargetRules>
-    | undefined;
+    Record<string, TargetRules> | undefined;
   if (!protocolRules) {
     return issues;
   }
@@ -84,8 +83,9 @@ export function validateBindingFields(
     }
 
     if (typeof value === "number") {
-      checkBound(issues, field, protocol, value, rule, "min", (v, r) => v < r);
-      checkBound(issues, field, protocol, value, rule, "max", (v, r) => v > r);
+      const ctx = { field, protocol, rule, value };
+      checkBound(issues, ctx, "min", (v, r) => v < r);
+      checkBound(issues, ctx, "max", (v, r) => v > r);
     }
   }
 
@@ -104,4 +104,25 @@ function pushFieldError(
     protocol,
     ...format,
   });
+}
+
+/** Append a min/max bound violation when `predicate(value, rule.bound)` is true. */
+function checkBound(
+  issues: BindingFieldIssue[],
+  ctx: {
+    field: string;
+    protocol: string;
+    value: number;
+    rule: { min?: number; max?: number };
+  },
+  bound: "min" | "max",
+  predicate: (value: number, bound: number) => boolean,
+): void {
+  const limit = ctx.rule[bound];
+  if (limit !== undefined && predicate(ctx.value, limit)) {
+    pushFieldError(issues, ctx.field, ctx.protocol, {
+      actual: ctx.value,
+      [bound]: limit,
+    });
+  }
 }

@@ -24,8 +24,11 @@ export function $server(
   }
 
   if (
-    !validateConfig(config, context, target, "invalid-server-config", {
-      serverName: name,
+    !validateConfig(config, {
+      context,
+      target,
+      diagnosticCode: "invalid-server-config",
+      format: { serverName: name },
     })
   ) {
     return;

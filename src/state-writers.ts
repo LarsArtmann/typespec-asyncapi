@@ -211,8 +211,7 @@ export const storeHeader = (
 
   if (target.kind === "ModelProperty") {
     const propType = target.type as
-      | { kind?: string; name?: string }
-      | undefined;
+      { kind?: string; name?: string } | undefined;
     if (propType?.kind === "Scalar") {
       headerType = propType.name?.toLowerCase() ?? "string";
     }

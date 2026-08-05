@@ -134,72 +134,42 @@ function applyMessageDecorator<K extends keyof MessageObject>(opts: {
   }
 }
 
+/** Build a `MessageDecoratorFn` from a property name and a read callback. */
+function messageDecorator<K extends keyof MessageObject>(
+  prop: K,
+  read: (s: AsyncAPIConsolidatedState, t: unknown) => MessageObject[K] | null,
+): MessageDecoratorFn {
+  return (state, type, msg, skipExisting = false) =>
+    applyMessageDecorator({ state, type, msg, prop, skipExisting, read });
+}
+
 /** Apply correlation ID to a message if present in state. */
-const applyCorrelationId: MessageDecoratorFn = (
-  state,
-  type,
-  msg,
-  skipExisting = false,
-) =>
-  applyMessageDecorator({
-    state,
-    type,
-    msg,
-    prop: "correlationId",
-    skipExisting,
-    read: (s, t) => {
-      const correlation = s.correlationIds.get(t as never);
-      return correlation ? { location: correlation.location } : null;
-    },
-  });
+const applyCorrelationId = messageDecorator("correlationId", (s, t) => {
+  const correlation = s.correlationIds.get(t as never);
+  return correlation ? { location: correlation.location } : null;
+});
 
 /** Apply headers to a message if present in state. */
-const applyHeaders: MessageDecoratorFn = (
-  state,
-  type,
-  msg,
-  skipExisting = false,
-) =>
-  applyMessageDecorator({
-    state,
-    type,
-    msg,
-    prop: "headers",
-    skipExisting,
-    read: (s, t) => {
-      const headers = s.messageHeaders.get(t as never);
-      if (!headers || headers.length === 0) {
-        return null;
-      }
-      const headerProps: Record<string, JsonSchema> = {};
-      for (const h of headers) {
-        headerProps[h.name] = {
-          type: h.type ?? "string",
-          ...(h.description ? { description: h.description } : {}),
-        };
-      }
-      return { properties: headerProps, type: "object" as const };
-    },
-  });
+const applyHeaders = messageDecorator("headers", (s, t) => {
+  const headers = s.messageHeaders.get(t as never);
+  if (!headers || headers.length === 0) {
+    return null;
+  }
+  const headerProps: Record<string, JsonSchema> = {};
+  for (const h of headers) {
+    headerProps[h.name] = {
+      type: h.type ?? "string",
+      ...(h.description ? { description: h.description } : {}),
+    };
+  }
+  return { properties: headerProps, type: "object" as const };
+});
 
 /** Apply protocol bindings to a message if present in state. */
-const applyMessageBindings: MessageDecoratorFn = (
-  state,
-  type,
-  msg,
-  skipExisting = false,
-) =>
-  applyMessageDecorator({
-    state,
-    type,
-    msg,
-    prop: "bindings",
-    skipExisting,
-    read: (s, t) => {
-      const msgBindings = s.protocolBindings.get(t as never);
-      if (msgBindings && Object.keys(msgBindings).length > 0) {
-        return msgBindings;
-      }
-      return null;
-    },
-  });
+const applyMessageBindings = messageDecorator("bindings", (s, t) => {
+  const msgBindings = s.protocolBindings.get(t as never);
+  if (msgBindings && Object.keys(msgBindings).length > 0) {
+    return msgBindings;
+  }
+  return null;
+});

@@ -14,7 +14,13 @@ import {
   resolveMessageKey,
   returnModelTypes,
 } from "./shared-utils.js";
-import { getDoc, nameOfType, type AsyncAPIConsolidatedState, type BuilderFn, type DocumentBuildContext } from "./_imports.js";
+import {
+  getDoc,
+  nameOfType,
+  type AsyncAPIConsolidatedState,
+  type BuilderFn,
+  type DocumentBuildContext,
+} from "./_imports.js";
 
 /**
  * Discover all operations from three sources:

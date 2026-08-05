@@ -31,7 +31,10 @@ import type {
   SourceFile,
 } from "@typespec/asset-emitter";
 import { getDoc } from "@typespec/compiler";
-import type { AsyncAPIEmitterOptions, JsonSchema } from "./domain/models/asyncapi-document.js";
+import type {
+  AsyncAPIEmitterOptions,
+  JsonSchema,
+} from "./domain/models/asyncapi-document.js";
 import { intrinsicToSchema } from "./intrinsic-mapping.js";
 import { extractValue } from "./extract-value.js";
 import { isStdlibType } from "./stdlib-helpers.js";

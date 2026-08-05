@@ -12,7 +12,13 @@ import {
   type OperationObject,
   type OperationReply,
 } from "../domain/models/asyncapi-document.js";
-import { getDoc, nameOfType, type AsyncAPIConsolidatedState, type BuilderFn, type DocumentBuildContext } from "./_imports.js";
+import {
+  getDoc,
+  nameOfType,
+  type AsyncAPIConsolidatedState,
+  type BuilderFn,
+  type DocumentBuildContext,
+} from "./_imports.js";
 import {
   buildOperationMessageRef,
   registerMessage,
