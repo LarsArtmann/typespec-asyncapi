@@ -258,28 +258,22 @@ describe("spec Compliance: Constraint Decorators", () => {
     it("skips validation constraints on $ref properties (Draft-07 ignores $ref siblings)", async () => {
       const doc = await compileAndValidateOrThrow(`
         namespace Test;
-        model Address {
-          street: string;
-        }
+        scalar MyId extends int32;
         model Event {
           @minValue(0)
-          @maxValue(100)
-          @minLength(1)
-          @pattern(".*")
-          address: Address;
+          @maxValue(999)
+          id: MyId;
         }
         @channel("events")
         op publish(): Event;
       `);
-      const address = propSchema(doc, "Event", "address");
-      expect(address.$ref).toBe("#/components/schemas/Address");
-      expect(address.minimum).toBeUndefined();
-      expect(address.maximum).toBeUndefined();
-      expect(address.minLength).toBeUndefined();
-      expect(address.pattern).toBeUndefined();
+      const id = propSchema(doc, "Event", "id");
+      expect(id.$ref).toBe("#/components/schemas/MyId");
+      expect(id.minimum).toBeUndefined();
+      expect(id.maximum).toBeUndefined();
     });
 
-    it("applies deprecated as a $ref sibling", async () => {
+    it("applies deprecated as a $ref sibling on model-typed property", async () => {
       const doc = await compileAndValidateOrThrow(`
         namespace Test;
         model Address {
@@ -297,26 +291,122 @@ describe("spec Compliance: Constraint Decorators", () => {
       expect(address.deprecated).toBe(true);
     });
 
-    it("applies deprecated on $ref property but skips validation constraints", async () => {
+    it("applies deprecated on scalar $ref property but skips validation constraints", async () => {
       const doc = await compileAndValidateOrThrow(`
         namespace Test;
-        model Address {
-          street: string;
-        }
+        scalar MyId extends int32;
         model Event {
           #deprecated "old field"
           @minValue(0)
-          @maxLength(10)
-          address: Address;
+          @maxValue(999)
+          id: MyId;
         }
         @channel("events")
         op publish(): Event;
       `);
-      const address = propSchema(doc, "Event", "address");
-      expect(address.$ref).toBe("#/components/schemas/Address");
-      expect(address.deprecated).toBe(true);
-      expect(address.minimum).toBeUndefined();
-      expect(address.maxLength).toBeUndefined();
+      const id = propSchema(doc, "Event", "id");
+      expect(id.$ref).toBe("#/components/schemas/MyId");
+      expect(id.deprecated).toBe(true);
+      expect(id.minimum).toBeUndefined();
+      expect(id.maximum).toBeUndefined();
+    });
+  });
+
+  describe("edge cases", () => {
+    it("handles negative numeric constraint values", async () => {
+      const doc = await compileAndValidateOrThrow(`
+        namespace Test;
+        model Event {
+          @minValue(-100)
+          @maxValue(-1)
+          temperature: int32;
+        }
+        @channel("events")
+        op publish(): Event;
+      `);
+      const temp = propSchema(doc, "Event", "temperature");
+      expect(temp.minimum).toBe(-100);
+      expect(temp.maximum).toBe(-1);
+    });
+
+    it("handles exclusive constraints with negative values", async () => {
+      const doc = await compileAndValidateOrThrow(`
+        namespace Test;
+        model Event {
+          @minValueExclusive(-0.5)
+          @maxValueExclusive(0.5)
+          offset: float32;
+        }
+        @channel("events")
+        op publish(): Event;
+      `);
+      const offset = propSchema(doc, "Event", "offset");
+      expect(offset.exclusiveMinimum).toBe(-0.5);
+      expect(offset.exclusiveMaximum).toBe(0.5);
+    });
+
+    it("handles @pattern with special regex characters", async () => {
+      const doc = await compileAndValidateOrThrow(`
+        namespace Test;
+        model Event {
+          @pattern("^[a-z]{1,3}/[0-9]+$")
+          code: string;
+        }
+        @channel("events")
+        op publish(): Event;
+      `);
+      expect(propSchema(doc, "Event", "code").pattern).toBe("^[a-z]{1,3}/[0-9]+$");
+    });
+
+    it("handles @format override on uri type", async () => {
+      const doc = await compileAndValidateOrThrow(`
+        namespace Test;
+        model Event {
+          @format("uuid")
+          resourceId: string;
+        }
+        @channel("events")
+        op publish(): Event;
+      `);
+      expect(propSchema(doc, "Event", "resourceId").format).toBe("uuid");
+    });
+
+    it("sets deprecated: true on an enum schema", async () => {
+      const doc = await compileAndValidateOrThrow(`
+        namespace Test;
+        #deprecated "use StatusV2"
+        enum Status {
+          Active: "active";
+          Inactive: "inactive";
+        }
+        model Event {
+          status: Status;
+        }
+        @channel("events")
+        op publish(): Event;
+      `);
+      const schema = (doc.components as { schemas: Record<string, JsonSchema> }).schemas.Status;
+      expect(schema.deprecated).toBe(true);
+    });
+
+    it("does not cross-contaminate deprecated state between models", async () => {
+      const doc = await compileAndValidateOrThrow(`
+        namespace Test;
+        #deprecated "old model"
+        model OldEvent {
+          name: string;
+        }
+        model NewEvent {
+          name: string;
+        }
+        @channel("events")
+        op publish(): OldEvent;
+        @channel("events2")
+        op publish2(): NewEvent;
+      `);
+      const { schemas } = doc.components as { schemas: Record<string, JsonSchema> };
+      expect(schemas.OldEvent.deprecated).toBe(true);
+      expect(schemas.NewEvent.deprecated).toBeUndefined();
     });
   });
 });
