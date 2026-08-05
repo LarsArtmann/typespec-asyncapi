@@ -105,10 +105,7 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
   }
 
   enum(en: Enum): EmitterOutput<JsonSchema> {
-    const values = [...en.members.values()].map(
-      (m: EnumMember) => m.value ?? m.name,
-    );
-    return { enum: values, type: "string" };
+    return this.buildEnumSchema(en.members);
   }
 
   intrinsic(intrinsic: Type, _name: string): EmitterOutput<JsonSchema> {
@@ -189,10 +186,7 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
   }
 
   enumDeclaration(en: Enum, name: string): EmitterOutput<JsonSchema> {
-    const values = [...en.members.values()].map(
-      (m: EnumMember) => m.value ?? m.name,
-    );
-    const schema: JsonSchema = { enum: values, type: "string" };
+    const schema = this.buildEnumSchema(en.members);
     const doc = getDoc(this.emitter.getProgram(), en);
     if (doc) {
       schema.description = doc;
@@ -207,6 +201,12 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
   /** Build a `{ const: value }` literal schema. */
   private returnConst(value: unknown): JsonSchema {
     return { const: value };
+  }
+
+  /** Build an enum schema `{ enum: values, type: "string" }` from a map of `EnumMember`. */
+  private buildEnumSchema(members: Map<string, EnumMember>): JsonSchema {
+    const values = [...members.values()].map((m) => m.value ?? m.name);
+    return { enum: values, type: "string" };
   }
 
   /** Return the AssetEmitter `none()` result for "no schema output". */
