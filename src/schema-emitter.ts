@@ -109,18 +109,15 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
   }
 
   intrinsic(intrinsic: Type, _name: string): EmitterOutput<JsonSchema> {
-    return intrinsicToSchema((intrinsic as { name?: string }).name ?? "string");
+    return this.intrinsicSchema((intrinsic as { name?: string }).name);
   }
 
   scalar(scalar: Scalar): EmitterOutput<JsonSchema> {
-    return intrinsicToSchema(scalar.name);
+    return this.intrinsicSchema(scalar.name);
   }
 
   scalarDeclaration(scalar: Scalar, name: string): EmitterOutput<JsonSchema> {
-    return this.emitter.result.declaration(
-      name,
-      intrinsicToSchema(scalar.name),
-    );
+    return this.emitter.result.declaration(name, this.intrinsicSchema(scalar.name));
   }
 
   scalarInstantiation(
@@ -130,7 +127,7 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
     if (name) {
       return this.scalarDeclaration(scalar, name);
     }
-    return intrinsicToSchema(scalar.name);
+    return this.intrinsicSchema(scalar.name);
   }
 
   stringLiteral(literal: StringLiteral): EmitterOutput<JsonSchema> {
@@ -336,7 +333,7 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
       };
     }
     if (kind === "Scalar" || kind === "Intrinsic") {
-      return intrinsicToSchema((t as { name: string }).name);
+      return this.intrinsicSchema((t as { name?: string }).name);
     }
     if (kind === "String") {
       return this.returnConst((t as { value: string }).value);

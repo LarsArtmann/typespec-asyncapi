@@ -78,44 +78,44 @@ export interface InfoObject {
  */
 export type SecurityRequirement = Record<string, string[]>;
 
-export interface ServerObject {
+/**
+ * Common metadata fields that AsyncAPI 3.1 spec mandates or permits on
+ * Server, Channel, Operation, and Message objects. Extracted as a shared
+ * interface to eliminate structural duplication across these object types.
+ *
+ * @see https://www.asyncapi.com/docs/reference/specification/v3.1.0
+ */
+export interface CommonMetadata {
+  title?: string;
+  summary?: string;
+  description?: string;
+  tags?: Tag[];
+  bindings?: ProtocolBindings;
+}
+
+export interface ServerObject extends CommonMetadata {
   host: string;
   protocol: AsyncAPIProtocol;
   protocolVersion?: string;
   pathname?: string;
-  description?: string;
-  title?: string;
-  summary?: string;
   variables?: Record<
     string,
     { enum?: string[]; default?: string; description?: string }
   >;
   security?: SecurityRequirement[];
-  tags?: Tag[];
-  bindings?: ProtocolBindings;
 }
 
-export interface ChannelObject {
+export interface ChannelObject extends CommonMetadata {
   address: string | null;
   messages?: Record<string, Ref>;
-  title?: string;
-  summary?: string;
-  description?: string;
   servers?: Ref[];
   parameters?: Record<string, ParameterObject | Ref>;
-  tags?: Tag[];
-  bindings?: ProtocolBindings;
 }
 
-export interface OperationObject {
+export interface OperationObject extends CommonMetadata {
   action: OperationAction;
   channel: Ref;
-  title?: string;
-  summary?: string;
-  description?: string;
   security?: SecurityRequirement[];
-  tags?: Tag[];
-  bindings?: ProtocolBindings;
   traits?: Ref[];
   messages?: Ref[];
   reply?: OperationReply;
@@ -127,17 +127,12 @@ export interface OperationReply {
   messages?: Ref[];
 }
 
-export interface MessageObject {
+export interface MessageObject extends CommonMetadata {
   headers?: JsonSchema | Ref;
   payload?: JsonSchema | Ref;
   correlationId?: CorrelationIdObject | Ref;
   contentType?: string;
   name?: string;
-  title?: string;
-  summary?: string;
-  description?: string;
-  tags?: Tag[];
-  bindings?: ProtocolBindings;
   traits?: Ref[];
   examples?: { headers?: unknown; payload?: unknown }[];
 }
