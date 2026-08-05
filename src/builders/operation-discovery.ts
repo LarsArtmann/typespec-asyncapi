@@ -7,7 +7,11 @@
 
 import { isStdNamespace } from "@typespec/compiler";
 import { getDoc, nameOfType } from "./_imports.js";
-import type { AsyncAPIConsolidatedState, BuilderFn, DocumentBuildContext } from "./_imports.js";
+import type {
+  AsyncAPIConsolidatedState,
+  BuilderFn,
+  DocumentBuildContext,
+} from "./_imports.js";
 import {
   inferActionFromName,
   iterNamedTypes,
@@ -121,7 +125,7 @@ const discoverChannelOnlyOps: BuilderFn = (state, ctx) => {
       opName,
     });
   }
-}
+};
 
 /** 1c. Bare operations (no decorators at all). */
 const discoverBareOps: BuilderFn = (state, ctx) => {
@@ -154,4 +158,4 @@ const discoverBareOps: BuilderFn = (state, ctx) => {
       });
     }
   }
-}
+};

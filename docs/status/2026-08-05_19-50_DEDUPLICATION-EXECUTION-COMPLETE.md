@@ -9,17 +9,17 @@
 
 ## 1. Headline Numbers
 
-| Metric | Before | After | Delta |
-|---|---|---|---|
-| Clone count | 68 | 44 | **-24 (-35%)** |
-| Duplication % | 7.67% | 4.61% | **-3.06pp** |
-| Duplicated tokens | 2682 | 1563 | **-1119 (-42%)** |
-| Duplicated lines | 330 | 199 | **-131 (-40%)** |
-| jscpd threshold | 8% | 5% | **ratcheted down** |
-| Tests passing | 869 | 869 | **0 regressions** |
-| Lint (eslint + oxlint) | clean | clean | **0 errors, 0 warnings** |
-| Coverage | 96.7% | 96.7% | **held** |
-| Source files over 370 lines | 0 | 0 | **held** |
+| Metric                      | Before | After | Delta                    |
+| --------------------------- | ------ | ----- | ------------------------ |
+| Clone count                 | 68     | 44    | **-24 (-35%)**           |
+| Duplication %               | 7.67%  | 4.61% | **-3.06pp**              |
+| Duplicated tokens           | 2682   | 1563  | **-1119 (-42%)**         |
+| Duplicated lines            | 330    | 199   | **-131 (-40%)**          |
+| jscpd threshold             | 8%     | 5%    | **ratcheted down**       |
+| Tests passing               | 869    | 869   | **0 regressions**        |
+| Lint (eslint + oxlint)      | clean  | clean | **0 errors, 0 warnings** |
+| Coverage                    | 96.7%  | 96.7% | **held**                 |
+| Source files over 370 lines | 0      | 0     | **held**                 |
 
 **Net result:** 13 planned tasks executed, 6 atomic commits landed via auto-git daemon, plan acceptance criteria **partially met** (clone count target <20 missed, % target <2% missed — see Section 5).
 
@@ -29,46 +29,46 @@
 
 ### Phase 1: Builders (51% impact) — 2/2 tasks
 
-| Task | Status | Helpers Added | Clones Removed |
-|---|---|---|---|
-| **P1-T1** Extract `BuilderFn` type alias | DONE | `BuilderFn` type in `src/builders/types.ts`; all 5 builders (`message`, `operation`, `channel`, `security`, `server`, `operation-discovery`) converted to `const X: BuilderFn = (state, ctx) => {...}` form | ~4 |
-| **P1-T2** Extract `iterNamedTypes` guard helper | DONE | `iterNamedTypes<K,V>(map)` generator in `src/builders/shared-utils.ts` consolidating `nameOfType + continue` pattern; applied in `mergeExplicitMessages`, `applyExplicitMessageDocs`, `discoverDecoratedOps`, `discoverChannelOnlyOps`, `attachChannelBindings` | ~5 |
+| Task                                            | Status | Helpers Added                                                                                                                                                                                                                                                   | Clones Removed |
+| ----------------------------------------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------- |
+| **P1-T1** Extract `BuilderFn` type alias        | DONE   | `BuilderFn` type in `src/builders/types.ts`; all 5 builders (`message`, `operation`, `channel`, `security`, `server`, `operation-discovery`) converted to `const X: BuilderFn = (state, ctx) => {...}` form                                                     | ~4             |
+| **P1-T2** Extract `iterNamedTypes` guard helper | DONE   | `iterNamedTypes<K,V>(map)` generator in `src/builders/shared-utils.ts` consolidating `nameOfType + continue` pattern; applied in `mergeExplicitMessages`, `applyExplicitMessageDocs`, `discoverDecoratedOps`, `discoverChannelOnlyOps`, `attachChannelBindings` | ~5             |
 
 ### Phase 2: Schema Emitter (+13% impact) — 2/2 tasks
 
-| Task | Status | Helpers Added |
-|---|---|---|
-| **P2-T3** Extract `returnConst` + `returnNone` | DONE | `returnConst(value)` and `returnNone()` private methods on `AsyncAPISchemaEmitter`; applied in `stringLiteral`, `numericLiteral`, `booleanLiteral`, `namespaceDeclaration`, `operation`, `interfaceDeclaration`, and 3 callsites in `typeToSchema` |
-| **P2-T4** Extract `refOrFallback` helper | DONE | `refOrFallback(elementType, fallbackFn)` private method; applied in `propertyToSchema`, `elementTypeToSchema`, `tuple`, and `typeToSchema` Tuple branch. **Plus bonus:** extracted `arraySchema(elementType)` for `arrayDeclaration`/`arrayLiteral` and `buildEnumSchema(members)` for `enum`/`enumDeclaration`, and `collectModelProperties(model, includeBase)` for `modelDeclaration`/`modelLiteral` |
+| Task                                           | Status | Helpers Added                                                                                                                                                                                                                                                                                                                                                                                           |
+| ---------------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **P2-T3** Extract `returnConst` + `returnNone` | DONE   | `returnConst(value)` and `returnNone()` private methods on `AsyncAPISchemaEmitter`; applied in `stringLiteral`, `numericLiteral`, `booleanLiteral`, `namespaceDeclaration`, `operation`, `interfaceDeclaration`, and 3 callsites in `typeToSchema`                                                                                                                                                      |
+| **P2-T4** Extract `refOrFallback` helper       | DONE   | `refOrFallback(elementType, fallbackFn)` private method; applied in `propertyToSchema`, `elementTypeToSchema`, `tuple`, and `typeToSchema` Tuple branch. **Plus bonus:** extracted `arraySchema(elementType)` for `arrayDeclaration`/`arrayLiteral` and `buildEnumSchema(members)` for `enum`/`enumDeclaration`, and `collectModelProperties(model, includeBase)` for `modelDeclaration`/`modelLiteral` |
 
 ### Phase 3: Decorators (+16% impact) — 1/2 tasks
 
-| Task | Status | Notes |
-|---|---|---|
-| **P3-T5** Extract `validatedDecorator` HOF | DONE | `validatedDecorator(context, target, config, options)` in `src/decorator-helpers.ts`; applied to `$message`, `$protocol`, `$security`. Had to use options object (6-param → 5-param) and rename `then` → `run` (oxlint `unicorn/no-thenable`). Net reduction: 0 clones but cleaner structure |
-| **P3-T6** Extract `reportAndReturn` helper | **ABANDONED** | Designed helper but realized the pattern `reportDiagnostic(...); return;` inside a guard is 2 lines per site — wrapping saves nothing while adding a function call. **Decision: net negative ROI, removed the helper** |
+| Task                                       | Status        | Notes                                                                                                                                                                                                                                                                                        |
+| ------------------------------------------ | ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **P3-T5** Extract `validatedDecorator` HOF | DONE          | `validatedDecorator(context, target, config, options)` in `src/decorator-helpers.ts`; applied to `$message`, `$protocol`, `$security`. Had to use options object (6-param → 5-param) and rename `then` → `run` (oxlint `unicorn/no-thenable`). Net reduction: 0 clones but cleaner structure |
+| **P3-T6** Extract `reportAndReturn` helper | **ABANDONED** | Designed helper but realized the pattern `reportDiagnostic(...); return;` inside a guard is 2 lines per site — wrapping saves nothing while adding a function call. **Decision: net negative ROI, removed the helper**                                                                       |
 
 ### Phase 4: Validation (+5% impact) — 1/1 task
 
-| Task | Status | Helpers Added |
-|---|---|---|
-| **P4-T7** Extract `pushFieldError` helper | DONE | `pushFieldError(issues, field, protocol, format)` in `src/validation/binding-field-validator.ts`; eliminates 3 inline `issues.push({code: "invalid-binding-field", key: field, format: {actual, expected, field, protocol}})` blocks |
+| Task                                      | Status | Helpers Added                                                                                                                                                                                                                        |
+| ----------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **P4-T7** Extract `pushFieldError` helper | DONE   | `pushFieldError(issues, field, protocol, format)` in `src/validation/binding-field-validator.ts`; eliminates 3 inline `issues.push({code: "invalid-binding-field", key: field, format: {actual, expected, field, protocol}})` blocks |
 
 ### Phase 5: Utils + State (+10% impact) — 3/3 tasks
 
-| Task | Status | Helpers Added |
-|---|---|---|
-| **P5-T8** Unify `returnModelNames` + `returnModelTypes` | DONE | `returnModels<T>(type, selector)` generic in `src/builders/shared-utils.ts`; old functions now 1-liners delegating to it with `t => t.name` and `t => t` selectors |
-| **P5-T9** Extract `appendToStateArray` helper | DONE | `appendToStateArray<K,V>(map, key, entry)` generic in `src/state-writers.ts`; applied in `storeServerConfig` and `storeSecurityConfig` |
-| **P5-T10** Consolidate `state.ts` type definitions | DONE | Extracted `KafkaSaslConfig` and `MqttLastWillConfig` interfaces to `src/state.ts`; `storeProtocolConfig` now uses them via single import |
+| Task                                                    | Status | Helpers Added                                                                                                                                                      |
+| ------------------------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **P5-T8** Unify `returnModelNames` + `returnModelTypes` | DONE   | `returnModels<T>(type, selector)` generic in `src/builders/shared-utils.ts`; old functions now 1-liners delegating to it with `t => t.name` and `t => t` selectors |
+| **P5-T9** Extract `appendToStateArray` helper           | DONE   | `appendToStateArray<K,V>(map, key, entry)` generic in `src/state-writers.ts`; applied in `storeServerConfig` and `storeSecurityConfig`                             |
+| **P5-T10** Consolidate `state.ts` type definitions      | DONE   | Extracted `KafkaSaslConfig` and `MqttLastWillConfig` interfaces to `src/state.ts`; `storeProtocolConfig` now uses them via single import                           |
 
 ### Phase 6: Verify + Ratchet — 3/3 tasks
 
-| Task | Status | Outcome |
-|---|---|---|
-| **P6-T11** Run jscpd, verify reduction | DONE | Confirmed 44 clones / 4.61% (well under old 8% threshold) |
-| **P6-T12** Ratchet threshold | DONE | `.jscpd.json` threshold lowered from 8 → 5 |
-| **P6-T13** Run full test + lint suite | DONE | 869/869 tests pass, 0 lint errors, coverage gate passed (96.7%) |
+| Task                                   | Status | Outcome                                                         |
+| -------------------------------------- | ------ | --------------------------------------------------------------- |
+| **P6-T11** Run jscpd, verify reduction | DONE   | Confirmed 44 clones / 4.61% (well under old 8% threshold)       |
+| **P6-T12** Ratchet threshold           | DONE   | `.jscpd.json` threshold lowered from 8 → 5                      |
+| **P6-T13** Run full test + lint suite  | DONE   | 869/869 tests pass, 0 lint errors, coverage gate passed (96.7%) |
 
 ### Bonus Work (not in plan)
 
@@ -87,10 +87,10 @@ The **partial** label would apply to **plan acceptance criteria** (Section 5) �
 ## 4. What Was Not Started
 
 | Item | Reason |
-|---|---|
+| ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- | --- | ---------------------------------------------- |
 | Reaching <20 clones target | Plan called this the acceptance criteria, but practical ROI dropped sharply after 44 — see Section 5 |
 | Reaching <2% duplication | Same — remaining clones are mostly spec-mandated or have defensive reasons |
-| `extractBindingsConfigFromValue` helper | Never explicitly listed; would clean up `$bindings` 5-line inline validation, but pattern differs from the others (uses `!value || typeof value !== "object"` not `validateConfig`) |
+| `extractBindingsConfigFromValue` helper | Never explicitly listed; would clean up `$bindings` 5-line inline validation, but pattern differs from the others (uses `!value |     | typeof value !== "object"`not`validateConfig`) |
 | Pushing the `validatedDecorator` HOF further (apply to `$server`, `$channel`, `$operationId`, `$messageId`, etc.) | Marginal — the HOF only fits 3 of 7 candidate decorators cleanly |
 | Refactoring `asyncapi-document.ts` interface property repetition (7 clones ACCEPTED in plan) | Plan said "ACCEPT — AsyncAPI 3.1 spec mandates same properties on multiple interfaces". Could investigate if mixin types help |
 
@@ -108,11 +108,13 @@ The plan stated:
 > - [ ] `.jscpd.json` threshold ratcheted to new baseline
 
 **Actual:**
+
 - Clones: 44 (target <20) — **missed by 24**
 - Duplication: 4.61% (target <2%) — **missed by 2.61pp**
 - Threshold ratcheted: 8 → 5 — **done** (but this is a free pass since we didn't go below 5%)
 
 **Root cause:** Plan was over-optimistic. After the first 24-clone reduction, the remaining 44 clones are mostly:
+
 - **7 spec-mandated clones in `asyncapi-document.ts`** — `tags`/`bindings`/`security` repeated across Channel/Operation/Message/Server interfaces per AsyncAPI 3.1
 - **8 builder signature clones** — different signatures than what `BuilderFn` unifies (e.g., `applyAutoMessageDecorators` has multi-map union iteration that can't reuse `iterNamedTypes`)
 - **6 minimal-decorators guard pattern clones** — the `validatedDecorator` HOF only fits 3 sites, others use different validation idioms
@@ -162,7 +164,7 @@ I updated AGENTS.md to document the new duplication budget and helpers, but the 
 ### 6.4 Testing / Verification
 
 16. **No tests for new helpers themselves.** `iterNamedTypes`, `validatedDecorator`, `pushFieldError`, `appendToStateArray`, `returnModels` — all have behavior worth testing. Currently they're covered indirectly via the integration tests.
-17. **No benchmark for build time before/after.** Plan claimed Pareto impact but didn't measure. The new helpers add tiny indirection that *might* slow hot paths in `modelDeclaration`/`enumDeclaration`. Should profile.
+17. **No benchmark for build time before/after.** Plan claimed Pareto impact but didn't measure. The new helpers add tiny indirection that _might_ slow hot paths in `modelDeclaration`/`enumDeclaration`. Should profile.
 18. **Golden file tests** — I trust them but didn't manually verify output specs are byte-identical. The 869/869 test pass implies they are, but a `git diff` against the pre-refactor golden files would be definitive.
 
 ---
@@ -259,24 +261,24 @@ AGENTS.md has an uncommitted change (the duplication budget documentation). The 
 
 ## 9. Summary Table
 
-| Category | Count |
-|---|---|
-| Tasks planned | 13 |
-| Tasks fully done | 12 |
-| Tasks abandoned (negative ROI) | 1 (P3-T6) |
-| Bonus work | 1 (`readModelProperty`) |
-| Clones eliminated | 24 |
-| Helper functions added | 11 |
-| Helper functions abandoned | 1 (`reportAndReturn`) |
-| Source lines added (helpers) | ~80 |
-| Source lines removed (deduped code) | ~130 |
-| Net source change | -50 lines |
-| Test regressions | 0 |
-| Lint regressions | 0 |
-| Coverage regressions | 0 |
-| Atomic commits landed | 6 |
-| Files touched | 13 |
-| Files over 370 lines after | 0 |
+| Category                            | Count                   |
+| ----------------------------------- | ----------------------- |
+| Tasks planned                       | 13                      |
+| Tasks fully done                    | 12                      |
+| Tasks abandoned (negative ROI)      | 1 (P3-T6)               |
+| Bonus work                          | 1 (`readModelProperty`) |
+| Clones eliminated                   | 24                      |
+| Helper functions added              | 11                      |
+| Helper functions abandoned          | 1 (`reportAndReturn`)   |
+| Source lines added (helpers)        | ~80                     |
+| Source lines removed (deduped code) | ~130                    |
+| Net source change                   | -50 lines               |
+| Test regressions                    | 0                       |
+| Lint regressions                    | 0                       |
+| Coverage regressions                | 0                       |
+| Atomic commits landed               | 6                       |
+| Files touched                       | 13                      |
+| Files over 370 lines after          | 0                       |
 
 **Overall verdict: solid execution, fell short of stretch goals, no functional regressions, clear path forward.**
 

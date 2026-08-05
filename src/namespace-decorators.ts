@@ -3,11 +3,12 @@ import type {
   Namespace,
   Operation,
 } from "@typespec/compiler";
-import { PROTOCOL_LIST, isSupportedProtocol } from "./constants/protocols.js";
+import { isSupportedProtocol } from "./constants/protocols.js";
 import { storeDefaultContentType, storeServerConfig } from "./state-writers.js";
 import {
   isValidUrl,
   reportDiagnostic,
+  reportUnsupportedProtocol,
   validateConfig,
 } from "./decorator-helpers.js";
 
@@ -51,10 +52,7 @@ export function $server(
 
   const protocol = (configTyped.protocol as string).toLowerCase();
   if (!isSupportedProtocol(protocol)) {
-    reportDiagnostic(context, "unsupported-protocol", target, {
-      protocol,
-      validProtocols: PROTOCOL_LIST.join(", "),
-    });
+    reportUnsupportedProtocol(context, target, protocol);
     return;
   }
 

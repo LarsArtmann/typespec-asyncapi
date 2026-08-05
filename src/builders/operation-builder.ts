@@ -13,7 +13,11 @@ import {
   type OperationReply,
 } from "../domain/models/asyncapi-document.js";
 import { getDoc, nameOfType } from "./_imports.js";
-import type { AsyncAPIConsolidatedState, BuilderFn, DocumentBuildContext } from "./_imports.js";
+import type {
+  AsyncAPIConsolidatedState,
+  BuilderFn,
+  DocumentBuildContext,
+} from "./_imports.js";
 import {
   buildOperationMessageRef,
   registerMessage,
@@ -87,7 +91,7 @@ export const buildOperations: BuilderFn = (state, ctx) => {
   }
 
   applyOperationDocs(ctx);
-}
+};
 
 /** Apply @doc descriptions to operations from the opDocs map. */
 function applyOperationDocs(ctx: DocumentBuildContext): void {

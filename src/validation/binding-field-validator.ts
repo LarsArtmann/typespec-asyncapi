@@ -35,8 +35,7 @@ export function validateBindingFields(
   const issues: BindingFieldIssue[] = [];
 
   const protocolRules = GENERATED_FIELD_RULES[protocol] as
-    | Record<string, TargetRules>
-    | undefined;
+    Record<string, TargetRules> | undefined;
   if (!protocolRules) {
     return issues;
   }
@@ -85,10 +84,16 @@ export function validateBindingFields(
 
     if (typeof value === "number") {
       if (rule.min !== undefined && value < rule.min) {
-        pushFieldError(issues, field, protocol, { actual: value, min: rule.min });
+        pushFieldError(issues, field, protocol, {
+          actual: value,
+          min: rule.min,
+        });
       }
       if (rule.max !== undefined && value > rule.max) {
-        pushFieldError(issues, field, protocol, { actual: value, max: rule.max });
+        pushFieldError(issues, field, protocol, {
+          actual: value,
+          max: rule.max,
+        });
       }
     }
   }

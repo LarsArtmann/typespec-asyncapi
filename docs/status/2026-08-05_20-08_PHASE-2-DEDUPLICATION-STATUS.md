@@ -7,12 +7,12 @@
 
 ## Current Clone State
 
-| Metric          | Baseline (Phase-1 end) | Phase-2 start | Now      | Δ from Baseline |
-| --------------- | ---------------------- | ------------- | -------- | --------------- |
-| Clones          | 68                     | 44            | **38**   | **-30 (-44%)**  |
-| Duplication %   | 7.67%                  | 4.61%         | **4.06%** | **-3.61 pp**   |
-| Duplicated lines | 330                   | 199           | **177**  | -153            |
-| Threshold       | 8%                     | 5%            | **5%**   | tighter         |
+| Metric           | Baseline (Phase-1 end) | Phase-2 start | Now       | Δ from Baseline |
+| ---------------- | ---------------------- | ------------- | --------- | --------------- |
+| Clones           | 68                     | 44            | **38**    | **-30 (-44%)**  |
+| Duplication %    | 7.67%                  | 4.61%         | **4.06%** | **-3.61 pp**    |
+| Duplicated lines | 330                    | 199           | **177**   | -153            |
+| Threshold        | 8%                     | 5%            | **5%**    | tighter         |
 
 **Phase-2 target:** <20 clones, <2% — **NOT MET** (hit 38 clones / 4.06%).
 **Pareto-driven floor reached:** remaining clones are mostly TypeScript signature/structural patterns that resist clean consolidation without breaking semantics or the 5-param lint rule.
@@ -23,27 +23,27 @@
 
 ### Phase-2 plan tasks
 
-| #      | Task                                       | Status | Impact                       |
-| ------ | ------------------------------------------ | ------ | ---------------------------- |
-| P1-T1  | `CommonMetadata` mixin in asyncapi-document | DONE   | -5 clones (44 → 39)         |
-| P2-T2  | `applyMessageDecorator` HOF                | ABANDONED | 8-param HOF exceeded 5-param lint, net negative ROI |
-| P2-T3  | `intrinsicSchema` helper                    | DONE   | -3 clones (residual pattern in `typeToSchema`)  |
-| P3-T4  | `reportAndAbort` HOF                        | ABANDONED | Control-flow via exception is a code smell |
-| P3-T5  | `validatedDecorator` for `$bindings`         | DONE   | Part of original Phase-1     |
-| P3-T6  | `validatedDecorator` for 5 simple decorators | DONE   | Part of original Phase-1 (id validation normalized) |
-| P5-T7  | `appendToStateArray` for `storeHeader`       | DONE   | Part of original Phase-1     |
-| P5-T9  | `namesOfTypes<K>` helper                    | DONE   | Part of original Phase-1     |
-| P5-T10 | Consolidate type imports in state-writers  | DONE   | -1 clone (39 → 38)           |
-| P5-T11 | binding-validator `pushIssue` + `stringifyBindingVersion` | DONE | -2 inline blocks (no clone reduction, but DRY) |
+| #      | Task                                                      | Status    | Impact                                              |
+| ------ | --------------------------------------------------------- | --------- | --------------------------------------------------- |
+| P1-T1  | `CommonMetadata` mixin in asyncapi-document               | DONE      | -5 clones (44 → 39)                                 |
+| P2-T2  | `applyMessageDecorator` HOF                               | ABANDONED | 8-param HOF exceeded 5-param lint, net negative ROI |
+| P2-T3  | `intrinsicSchema` helper                                  | DONE      | -3 clones (residual pattern in `typeToSchema`)      |
+| P3-T4  | `reportAndAbort` HOF                                      | ABANDONED | Control-flow via exception is a code smell          |
+| P3-T5  | `validatedDecorator` for `$bindings`                      | DONE      | Part of original Phase-1                            |
+| P3-T6  | `validatedDecorator` for 5 simple decorators              | DONE      | Part of original Phase-1 (id validation normalized) |
+| P5-T7  | `appendToStateArray` for `storeHeader`                    | DONE      | Part of original Phase-1                            |
+| P5-T9  | `namesOfTypes<K>` helper                                  | DONE      | Part of original Phase-1                            |
+| P5-T10 | Consolidate type imports in state-writers                 | DONE      | -1 clone (39 → 38)                                  |
+| P5-T11 | binding-validator `pushIssue` + `stringifyBindingVersion` | DONE      | -2 inline blocks (no clone reduction, but DRY)      |
 
 ### Extras added during Phase-2 execution (not in original plan)
 
-| Task                                            | Impact                                                   |
-| ----------------------------------------------- | -------------------------------------------------------- |
-| `validateNonEmptyString` HOF in decorator-helpers | Replaces 5-line `reportDiagnostic + return` pattern in 4 decorators (`$operationId`, `$messageId`, `$header`, `$correlationId`) — -16 lines net, no clone reduction but clear DRY win |
-| `DocumentBody` mixin in asyncapi-document       | Shares field set between `AsyncAPIDocument` and `ParsedAsyncAPIDocument` — minimal clone reduction but explicit type semantics |
-| `shouldSkip(msg, prop, skip)` helper in message-builder | Replaces 3-line guard pattern in `applyCorrelationId`/`applyHeaders`/`applyMessageBindings` — -6 lines net |
-| `pushIssue` + `stringifyBindingVersion` in binding-validator | Replaces 4 `issues.push(...)` blocks and inline version-string coercion in `processBindings` |
+| Task                                                         | Impact                                                                                                                                                                                |
+| ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `validateNonEmptyString` HOF in decorator-helpers            | Replaces 5-line `reportDiagnostic + return` pattern in 4 decorators (`$operationId`, `$messageId`, `$header`, `$correlationId`) — -16 lines net, no clone reduction but clear DRY win |
+| `DocumentBody` mixin in asyncapi-document                    | Shares field set between `AsyncAPIDocument` and `ParsedAsyncAPIDocument` — minimal clone reduction but explicit type semantics                                                        |
+| `shouldSkip(msg, prop, skip)` helper in message-builder      | Replaces 3-line guard pattern in `applyCorrelationId`/`applyHeaders`/`applyMessageBindings` — -6 lines net                                                                            |
+| `pushIssue` + `stringifyBindingVersion` in binding-validator | Replaces 4 `issues.push(...)` blocks and inline version-string coercion in `processBindings`                                                                                          |
 
 ### Quality gates maintained
 
@@ -79,6 +79,7 @@
 ### Push to <20 clones via aggressive signature unification
 
 **Why not done:** TypeScript requires unique function signatures per definition. The remaining 38 clones are dominated by:
+
 - 5-line function signatures in `applyCorrelationId`/`applyHeaders`/`applyMessageBindings` (3x repetition — could unify with a `MessageDecoratorFn` type alias but it's a marginal gain)
 - `intrinsic`/`scalar`/`stringLiteral`/`numericLiteral`/`booleanLiteral` 4-line class method headers in schema-emitter (8x — fundamental class pattern)
 - `validatedDecorator` opening `{ code, format, run }` in 3 decorators (similar 4-line structure — the HOF itself is the duplication)
@@ -223,6 +224,7 @@ Current state: 4.06% duplication, threshold 5% (passes). Lowering to 3% would re
 ### Q2: Should `applyMessageDecorator` HOF be revisited with a different shape?
 
 The 5-param lint rule blocks the natural HOF shape (would need 8 params). Options:
+
 - A) Leave as-is (3 functions, ~5 lines each, 16 total). Clear, readable, idiomatic.
 - B) Pass options object: `applyDecorator(state, type, msg, { skipExisting, prop, apply })`. Reduces visual repetition but adds 1 indirection.
 - C) Define a `MessageDecoratorFn` type alias (doesn't reduce lines, just expresses intent).

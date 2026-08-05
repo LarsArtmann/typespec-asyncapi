@@ -53,9 +53,15 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
     return this.collectPropertiesSchema(model, false);
   }
   /** Build `{ properties, type: "object" }` (plus required if any) from a model's properties. */
-  private collectPropertiesSchema(model: Model, includeRequired: boolean): JsonSchema {
+  private collectPropertiesSchema(
+    model: Model,
+    includeRequired: boolean,
+  ): JsonSchema {
     const collected = this.collectModelProperties(model, includeRequired);
-    const schema: JsonSchema = { properties: collected.properties, type: "object" };
+    const schema: JsonSchema = {
+      properties: collected.properties,
+      type: "object",
+    };
     if (collected.required.length > 0) {
       schema.required = collected.required;
     }
@@ -110,7 +116,10 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
   }
 
   scalarDeclaration(scalar: Scalar, name: string): EmitterOutput<JsonSchema> {
-    return this.emitter.result.declaration(name, this.intrinsicSchema(scalar.name));
+    return this.emitter.result.declaration(
+      name,
+      this.intrinsicSchema(scalar.name),
+    );
   }
 
   scalarInstantiation(
@@ -139,7 +148,11 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
     return { items, type: "array" };
   }
 
-  arrayDeclaration(_array: Type, _name: string, elementType: Type): EmitterOutput<JsonSchema> {
+  arrayDeclaration(
+    _array: Type,
+    _name: string,
+    elementType: Type,
+  ): EmitterOutput<JsonSchema> {
     return this.arraySchema(elementType);
   }
   arrayLiteral(_array: Type, elementType: Type): EmitterOutput<JsonSchema> {
@@ -344,7 +357,11 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
 }
 
 /** Copy `@doc` text from a TypeSpec target onto a JSON Schema's `description`. */
-function applyDocDescription(program: Program, target: unknown, schema: JsonSchema): void {
+function applyDocDescription(
+  program: Program,
+  target: unknown,
+  schema: JsonSchema,
+): void {
   const doc = getDoc(program, target as Parameters<typeof getDoc>[1]);
   if (doc) {
     schema.description = doc;

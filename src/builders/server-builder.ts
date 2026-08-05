@@ -38,4 +38,4 @@ export const buildServers: BuilderFn = (state, ctx) => {
       ctx.servers[entry.name] = server;
     }
   }
-}
+};

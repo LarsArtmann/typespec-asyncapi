@@ -9,16 +9,16 @@
 
 ## Current State (44 clones, grouped by file)
 
-| Rank | File | Clones | Pattern |
-|---|---|---|---|
-| 1 | `src/minimal-decorators.ts` | 10 | `validatedDecorator(context, target, config, { code, format, run })` opening (5L each, 3 sites); 3 inline `reportDiagnostic → return` guard patterns (5-6L each, 5 sites); 1 `extractConfigRecord` block (8L) |
-| 2 | `src/schema-emitter.ts` | 8 | `intrinsic`/`scalar`/`scalarInstantiation` delegate to `intrinsicToSchema(name)` (5L x 3); `enum`/`enumDeclaration` + `intrinsicToSchema(name)` pattern in `typeToSchema` (5L x 3); `arrayDeclaration`/`arrayLiteral` (5L x 2 — ALREADY EXTRACTED to `arraySchema`, residual is the function signature wrapper) |
-| 3 | `src/builders/message-builder.ts` | 7 | `applyCorrelationId`/`applyHeaders`/`applyMessageBindings` body (7L x 3); 4L signature clones shared with `operation-builder.ts` |
-| 4 | `src/domain/models/asyncapi-document.ts` | 7 | `tags?: Tag[]` and `bindings?: ProtocolBindings` repeated on 4-5 interfaces (5-6L each) |
-| 5 | `src/builders/operation-builder.ts` | 2 | `(state, ctx)` signature matches `message-builder`/`operation-discovery` |
-| 6 | `src/state-writers.ts` | 2 | `getStateMap<T[]>` + `appendToStateArray` block repeated; type imports duplicated with `state.ts` |
-| 7 | `src/validation/binding-field-validator.ts` | 2 | `for...of Object.entries(binding)` boilerplate matches `scripts/generate-binding-specs.ts` (template-derived); minor internal |
-| 8 | Other 6 files | 1 each | One-off clones, mostly small (4-7L) |
+| Rank | File                                        | Clones | Pattern                                                                                                                                                                                                                                                                                                         |
+| ---- | ------------------------------------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1    | `src/minimal-decorators.ts`                 | 10     | `validatedDecorator(context, target, config, { code, format, run })` opening (5L each, 3 sites); 3 inline `reportDiagnostic → return` guard patterns (5-6L each, 5 sites); 1 `extractConfigRecord` block (8L)                                                                                                   |
+| 2    | `src/schema-emitter.ts`                     | 8      | `intrinsic`/`scalar`/`scalarInstantiation` delegate to `intrinsicToSchema(name)` (5L x 3); `enum`/`enumDeclaration` + `intrinsicToSchema(name)` pattern in `typeToSchema` (5L x 3); `arrayDeclaration`/`arrayLiteral` (5L x 2 — ALREADY EXTRACTED to `arraySchema`, residual is the function signature wrapper) |
+| 3    | `src/builders/message-builder.ts`           | 7      | `applyCorrelationId`/`applyHeaders`/`applyMessageBindings` body (7L x 3); 4L signature clones shared with `operation-builder.ts`                                                                                                                                                                                |
+| 4    | `src/domain/models/asyncapi-document.ts`    | 7      | `tags?: Tag[]` and `bindings?: ProtocolBindings` repeated on 4-5 interfaces (5-6L each)                                                                                                                                                                                                                         |
+| 5    | `src/builders/operation-builder.ts`         | 2      | `(state, ctx)` signature matches `message-builder`/`operation-discovery`                                                                                                                                                                                                                                        |
+| 6    | `src/state-writers.ts`                      | 2      | `getStateMap<T[]>` + `appendToStateArray` block repeated; type imports duplicated with `state.ts`                                                                                                                                                                                                               |
+| 7    | `src/validation/binding-field-validator.ts` | 2      | `for...of Object.entries(binding)` boilerplate matches `scripts/generate-binding-specs.ts` (template-derived); minor internal                                                                                                                                                                                   |
+| 8    | Other 6 files                               | 1 each | One-off clones, mostly small (4-7L)                                                                                                                                                                                                                                                                             |
 
 ---
 
@@ -97,23 +97,23 @@ graph TD
 
 ## Comprehensive Task Table (30-100 min tasks, sorted by impact)
 
-| # | Task | Impact | Effort | Customer Value | Clones Removed | Dependencies |
-|---|---|---|---|---|---|---|
-| **P1-T1** | Extract `CommonMetadata` mixin in `asyncapi-document.ts` | HIGH | 30min | HIGH (type safety) | -7 | none |
-| **P2-T2** | Extract `applyMessageDecorator` HOF in `message-builder.ts` | HIGH | 45min | MED (DRY) | -3 | none |
-| **P2-T3** | Extract `intrinsicSchema` helper in `schema-emitter.ts` | HIGH | 30min | MED (DRY) | -3 | none |
-| **P3-T4** | Extract `reportAndAbort` HOF in `decorator-helpers.ts` | MED | 20min | MED (DRY) | -5 | none |
-| **P3-T5** | Apply `validatedDecorator` HOF to `$bindings` | MED | 15min | LOW | -1 | T4 |
-| **P3-T6** | Apply `validatedDecorator` HOF to `$operationId`, `$messageId`, `$header`, `$correlationId`, `$channel` | MED | 30min | LOW | -5 | T4 |
-| **P4-T7** | Apply `appendToStateArray` to `storeHeader` and `storeTags` | MED | 20min | LOW | -2 | none |
-| **P4-T8** | Extract `getStateMapOrInit<K,V>` in `state-writers.ts` | LOW | 20min | LOW | -2 | none |
-| **P5-T9** | Extract `setOfNames<K,V>(map)` in `operation-discovery.ts` | LOW | 10min | LOW | -1 | none |
-| **P5-T10** | Move shared type imports from `state-writers.ts` to `state.ts` re-exports | LOW | 15min | LOW | -1 | none |
-| **P5-T11** | Refactor `binding-validator.ts:143-149 ↔ 111-118` to extract common logic | LOW | 30min | LOW | -1 | none |
-| **P6-T12** | Run jscpd, verify clone reduction to <20 | CRITICAL | 10min | CRITICAL | 0 (verify) | T1-T11 |
-| **P6-T13** | Ratchet `.jscpd.json` threshold from 5% to 3% | HIGH | 5min | HIGH | 0 (config) | T12 |
-| **P6-T14** | Run full test suite (869 tests), lint, coverage gate | CRITICAL | 10min | CRITICAL | 0 (verify) | T13 |
-| **P6-T15** | Commit + push | HIGH | 10min | HIGH | 0 (meta) | T14 |
+| #          | Task                                                                                                    | Impact   | Effort | Customer Value     | Clones Removed | Dependencies |
+| ---------- | ------------------------------------------------------------------------------------------------------- | -------- | ------ | ------------------ | -------------- | ------------ |
+| **P1-T1**  | Extract `CommonMetadata` mixin in `asyncapi-document.ts`                                                | HIGH     | 30min  | HIGH (type safety) | -7             | none         |
+| **P2-T2**  | Extract `applyMessageDecorator` HOF in `message-builder.ts`                                             | HIGH     | 45min  | MED (DRY)          | -3             | none         |
+| **P2-T3**  | Extract `intrinsicSchema` helper in `schema-emitter.ts`                                                 | HIGH     | 30min  | MED (DRY)          | -3             | none         |
+| **P3-T4**  | Extract `reportAndAbort` HOF in `decorator-helpers.ts`                                                  | MED      | 20min  | MED (DRY)          | -5             | none         |
+| **P3-T5**  | Apply `validatedDecorator` HOF to `$bindings`                                                           | MED      | 15min  | LOW                | -1             | T4           |
+| **P3-T6**  | Apply `validatedDecorator` HOF to `$operationId`, `$messageId`, `$header`, `$correlationId`, `$channel` | MED      | 30min  | LOW                | -5             | T4           |
+| **P4-T7**  | Apply `appendToStateArray` to `storeHeader` and `storeTags`                                             | MED      | 20min  | LOW                | -2             | none         |
+| **P4-T8**  | Extract `getStateMapOrInit<K,V>` in `state-writers.ts`                                                  | LOW      | 20min  | LOW                | -2             | none         |
+| **P5-T9**  | Extract `setOfNames<K,V>(map)` in `operation-discovery.ts`                                              | LOW      | 10min  | LOW                | -1             | none         |
+| **P5-T10** | Move shared type imports from `state-writers.ts` to `state.ts` re-exports                               | LOW      | 15min  | LOW                | -1             | none         |
+| **P5-T11** | Refactor `binding-validator.ts:143-149 ↔ 111-118` to extract common logic                               | LOW      | 30min  | LOW                | -1             | none         |
+| **P6-T12** | Run jscpd, verify clone reduction to <20                                                                | CRITICAL | 10min  | CRITICAL           | 0 (verify)     | T1-T11       |
+| **P6-T13** | Ratchet `.jscpd.json` threshold from 5% to 3%                                                           | HIGH     | 5min   | HIGH               | 0 (config)     | T12          |
+| **P6-T14** | Run full test suite (869 tests), lint, coverage gate                                                    | CRITICAL | 10min  | CRITICAL           | 0 (verify)     | T13          |
+| **P6-T15** | Commit + push                                                                                           | HIGH     | 10min  | HIGH               | 0 (meta)       | T14          |
 
 **Total estimated effort:** ~5 hours
 **Estimated clone reduction:** 31 clones (44 → 13)
@@ -123,75 +123,75 @@ graph TD
 
 ## Phase-2 Granular Subtask Table (max 12 min each, ALL TODOs)
 
-| # | Sub-task | Effort | Depends on |
-|---|---|---|---|
-| **P1-T1** | Extract `CommonMetadata` mixin in `asyncapi-document.ts` | | |
-| 1a | Identify all 4-5 interfaces with `tags?`/`bindings?`/`security?` | 5min | — |
-| 1b | Create `CommonMetadata` interface with shared fields | 5min | 1a |
-| 1c | Refactor each interface to `extends CommonMetadata` | 10min | 1b |
-| 1d | Run build + test + jscpd to verify | 5min | 1c |
-| **P2-T2** | Extract `applyMessageDecorator` HOF | | |
-| 2a | Design `applyMessageDecorator<K>` signature with `get`/`set`/`key` callbacks | 10min | — |
-| 2b | Implement HOF in `message-builder.ts` | 8min | 2a |
-| 2c | Refactor `applyCorrelationId` to use HOF | 5min | 2b |
-| 2d | Refactor `applyHeaders` to use HOF | 5min | 2b |
-| 2e | Refactor `applyMessageBindings` to use HOF | 5min | 2b |
-| 2f | Run build + test + jscpd | 5min | 2e |
-| **P2-T3** | Extract `intrinsicSchema` helper | | |
-| 3a | Add `private intrinsicSchema(name: string \| undefined): JsonSchema` | 5min | — |
-| 3b | Refactor `intrinsic()`, `scalar()`, `scalarInstantiation()`, `typeToSchema()` Scalar/Intrinsic branch | 10min | 3a |
-| 3c | Run build + test + jscpd | 5min | 3b |
-| **P3-T4** | Extract `reportAndAbort` HOF | | |
-| 4a | Add `reportAndAbort(context, code, target, format?, messageId?): never` to `decorator-helpers.ts` | 8min | — |
-| 4b | Refactor 5 `reportDiagnostic + return` sites in `minimal-decorators.ts` | 10min | 4a |
-| 4c | Run build + test + jscpd | 5min | 4b |
-| **P3-T5** | Apply `validatedDecorator` to `$bindings` | | |
-| 5a | Refactor `$bindings` to use `validatedDecorator` (keep inline value-not-object check) | 10min | T4 |
-| 5b | Run build + test + jscpd | 5min | 5a |
-| **P3-T6** | Apply `validatedDecorator` to 5 simple decorators | | |
-| 6a | Refactor `$operationId` to use `validatedDecorator` | 5min | T4 |
-| 6b | Refactor `$messageId` to use `validatedDecorator` | 5min | T4 |
-| 6c | Refactor `$header` to use `validatedDecorator` | 5min | T4 |
-| 6d | Refactor `$correlationId` to use `validatedDecorator` | 5min | T4 |
-| 6e | Refactor `$channel` to use `validatedDecorator` | 5min | T4 |
-| 6f | Run build + test + jscpd | 5min | 6e |
-| **P4-T7** | Apply `appendToStateArray` to `storeHeader` and `storeTags` | | |
-| 7a | Refactor `storeHeader` body | 5min | — |
-| 7b | Refactor `storeTags` body | 5min | 7a |
-| 7c | Run build + test + jscpd | 5min | 7b |
-| **P4-T8** | Extract `getStateMapOrInit` | | |
-| 8a | Add `getStateMapOrInit<K,V>(program, symbol): Map<K, V[]>` | 8min | — |
-| 8b | Refactor `storeServerConfig`, `storeSecurityConfig`, `storeHeader`, `storeTags` | 10min | 8a |
-| 8c | Run build + test + jscpd | 5min | 8b |
-| **P5-T9** | Extract `setOfNames` in `operation-discovery.ts` | | |
-| 9a | Add `setOfNames<K>(map: Map<K, unknown>): Set<string>` to `shared-utils.ts` | 8min | — |
-| 9b | Refactor 2 `new Set(...keys().map(nameOfType))` sites in `operation-discovery.ts` | 5min | 9a |
-| 9c | Run build + test + jscpd | 5min | 9b |
-| **P5-T10** | Consolidate type imports in `state-writers.ts` and `state.ts` | | |
-| 10a | Identify duplicate type imports between `state.ts` and `state-writers.ts` | 5min | — |
-| 10b | Re-export shared types from `state.ts`, import from there in `state-writers.ts` | 10min | 10a |
-| 10c | Run build + test + jscpd | 5min | 10b |
-| **P5-T11** | Refactor `binding-validator.ts` internal clones | | |
-| 11a | Read both clone blocks (143-149, 111-118) and identify the shared logic | 8min | — |
-| 11b | Extract helper or merge branches | 10min | 11a |
-| 11c | Run build + test + jscpd | 5min | 11b |
-| **P6-T12** | Run jscpd, verify clone reduction | | |
-| 12a | Run `bun run duplicate` and capture new count | 3min | T1-T11 |
-| 12b | Investigate any remaining clones — classify as eliminate or accept | 7min | 12a |
-| **P6-T13** | Ratchet threshold to 3% | | |
-| 13a | Update `.jscpd.json` threshold to 3 | 3min | T12 |
-| 13b | Verify `bun run duplicate` still passes | 2min | 13a |
-| **P6-T14** | Run full test suite | | |
-| 14a | Run `bun run build` | 2min | T13 |
-| 14b | Run `bun run test` (must pass 869 tests) | 5min | 14a |
-| 14c | Run `bun run lint` (must be clean) | 2min | 14b |
-| 14d | Run `bun run test:coverage:gate` (must pass 75% per file) | 5min | 14c |
-| **P6-T15** | Commit + push | | |
-| 15a | `git status` to confirm all changes | 1min | T14 |
-| 15b | `git add` relevant files | 1min | 15a |
-| 15c | `git commit` with detailed message (per `git_commits` rules in AGENTS.md) | 2min | 15b |
-| 15d | `git push` | 2min | 15c |
-| 15e | Verify `git status` clean | 1min | 15d |
+| #          | Sub-task                                                                                              | Effort | Depends on |
+| ---------- | ----------------------------------------------------------------------------------------------------- | ------ | ---------- |
+| **P1-T1**  | Extract `CommonMetadata` mixin in `asyncapi-document.ts`                                              |        |            |
+| 1a         | Identify all 4-5 interfaces with `tags?`/`bindings?`/`security?`                                      | 5min   | —          |
+| 1b         | Create `CommonMetadata` interface with shared fields                                                  | 5min   | 1a         |
+| 1c         | Refactor each interface to `extends CommonMetadata`                                                   | 10min  | 1b         |
+| 1d         | Run build + test + jscpd to verify                                                                    | 5min   | 1c         |
+| **P2-T2**  | Extract `applyMessageDecorator` HOF                                                                   |        |            |
+| 2a         | Design `applyMessageDecorator<K>` signature with `get`/`set`/`key` callbacks                          | 10min  | —          |
+| 2b         | Implement HOF in `message-builder.ts`                                                                 | 8min   | 2a         |
+| 2c         | Refactor `applyCorrelationId` to use HOF                                                              | 5min   | 2b         |
+| 2d         | Refactor `applyHeaders` to use HOF                                                                    | 5min   | 2b         |
+| 2e         | Refactor `applyMessageBindings` to use HOF                                                            | 5min   | 2b         |
+| 2f         | Run build + test + jscpd                                                                              | 5min   | 2e         |
+| **P2-T3**  | Extract `intrinsicSchema` helper                                                                      |        |            |
+| 3a         | Add `private intrinsicSchema(name: string \| undefined): JsonSchema`                                  | 5min   | —          |
+| 3b         | Refactor `intrinsic()`, `scalar()`, `scalarInstantiation()`, `typeToSchema()` Scalar/Intrinsic branch | 10min  | 3a         |
+| 3c         | Run build + test + jscpd                                                                              | 5min   | 3b         |
+| **P3-T4**  | Extract `reportAndAbort` HOF                                                                          |        |            |
+| 4a         | Add `reportAndAbort(context, code, target, format?, messageId?): never` to `decorator-helpers.ts`     | 8min   | —          |
+| 4b         | Refactor 5 `reportDiagnostic + return` sites in `minimal-decorators.ts`                               | 10min  | 4a         |
+| 4c         | Run build + test + jscpd                                                                              | 5min   | 4b         |
+| **P3-T5**  | Apply `validatedDecorator` to `$bindings`                                                             |        |            |
+| 5a         | Refactor `$bindings` to use `validatedDecorator` (keep inline value-not-object check)                 | 10min  | T4         |
+| 5b         | Run build + test + jscpd                                                                              | 5min   | 5a         |
+| **P3-T6**  | Apply `validatedDecorator` to 5 simple decorators                                                     |        |            |
+| 6a         | Refactor `$operationId` to use `validatedDecorator`                                                   | 5min   | T4         |
+| 6b         | Refactor `$messageId` to use `validatedDecorator`                                                     | 5min   | T4         |
+| 6c         | Refactor `$header` to use `validatedDecorator`                                                        | 5min   | T4         |
+| 6d         | Refactor `$correlationId` to use `validatedDecorator`                                                 | 5min   | T4         |
+| 6e         | Refactor `$channel` to use `validatedDecorator`                                                       | 5min   | T4         |
+| 6f         | Run build + test + jscpd                                                                              | 5min   | 6e         |
+| **P4-T7**  | Apply `appendToStateArray` to `storeHeader` and `storeTags`                                           |        |            |
+| 7a         | Refactor `storeHeader` body                                                                           | 5min   | —          |
+| 7b         | Refactor `storeTags` body                                                                             | 5min   | 7a         |
+| 7c         | Run build + test + jscpd                                                                              | 5min   | 7b         |
+| **P4-T8**  | Extract `getStateMapOrInit`                                                                           |        |            |
+| 8a         | Add `getStateMapOrInit<K,V>(program, symbol): Map<K, V[]>`                                            | 8min   | —          |
+| 8b         | Refactor `storeServerConfig`, `storeSecurityConfig`, `storeHeader`, `storeTags`                       | 10min  | 8a         |
+| 8c         | Run build + test + jscpd                                                                              | 5min   | 8b         |
+| **P5-T9**  | Extract `setOfNames` in `operation-discovery.ts`                                                      |        |            |
+| 9a         | Add `setOfNames<K>(map: Map<K, unknown>): Set<string>` to `shared-utils.ts`                           | 8min   | —          |
+| 9b         | Refactor 2 `new Set(...keys().map(nameOfType))` sites in `operation-discovery.ts`                     | 5min   | 9a         |
+| 9c         | Run build + test + jscpd                                                                              | 5min   | 9b         |
+| **P5-T10** | Consolidate type imports in `state-writers.ts` and `state.ts`                                         |        |            |
+| 10a        | Identify duplicate type imports between `state.ts` and `state-writers.ts`                             | 5min   | —          |
+| 10b        | Re-export shared types from `state.ts`, import from there in `state-writers.ts`                       | 10min  | 10a        |
+| 10c        | Run build + test + jscpd                                                                              | 5min   | 10b        |
+| **P5-T11** | Refactor `binding-validator.ts` internal clones                                                       |        |            |
+| 11a        | Read both clone blocks (143-149, 111-118) and identify the shared logic                               | 8min   | —          |
+| 11b        | Extract helper or merge branches                                                                      | 10min  | 11a        |
+| 11c        | Run build + test + jscpd                                                                              | 5min   | 11b        |
+| **P6-T12** | Run jscpd, verify clone reduction                                                                     |        |            |
+| 12a        | Run `bun run duplicate` and capture new count                                                         | 3min   | T1-T11     |
+| 12b        | Investigate any remaining clones — classify as eliminate or accept                                    | 7min   | 12a        |
+| **P6-T13** | Ratchet threshold to 3%                                                                               |        |            |
+| 13a        | Update `.jscpd.json` threshold to 3                                                                   | 3min   | T12        |
+| 13b        | Verify `bun run duplicate` still passes                                                               | 2min   | 13a        |
+| **P6-T14** | Run full test suite                                                                                   |        |            |
+| 14a        | Run `bun run build`                                                                                   | 2min   | T13        |
+| 14b        | Run `bun run test` (must pass 869 tests)                                                              | 5min   | 14a        |
+| 14c        | Run `bun run lint` (must be clean)                                                                    | 2min   | 14b        |
+| 14d        | Run `bun run test:coverage:gate` (must pass 75% per file)                                             | 5min   | 14c        |
+| **P6-T15** | Commit + push                                                                                         |        |            |
+| 15a        | `git status` to confirm all changes                                                                   | 1min   | T14        |
+| 15b        | `git add` relevant files                                                                              | 1min   | 15a        |
+| 15c        | `git commit` with detailed message (per `git_commits` rules in AGENTS.md)                             | 2min   | 15b        |
+| 15d        | `git push`                                                                                            | 2min   | 15c        |
+| 15e        | Verify `git status` clean                                                                             | 1min   | 15d        |
 
 **Total subtasks:** 56 (each ≤12 min)
 **Total estimated effort:** ~5.5 hours
@@ -215,14 +215,14 @@ graph TD
 
 ## Risk Assessment
 
-| Risk | Likelihood | Impact | Mitigation |
-|---|---|---|---|
-| `CommonMetadata` mixin breaks type consumers | LOW | HIGH | All fields stay identical; tests should pass unchanged; `extends` is structurally equivalent to inline fields |
-| `applyMessageDecorator` HOF changes call order | LOW | MED | The HOF preserves exact control flow; one site calls all 3 sequentially in a known order |
-| `reportAndAbort` with `never` return type confuses TS | LOW | LOW | Use `assertNever`-style trick; tested pattern |
-| Threshold ratchet too aggressive (3% breaks PRs) | MED | MED | If 3% is too tight, accept 4% — but try 3% first per plan |
-| Auto-git daemon commits mid-refactor and creates noisy history | MED | LOW | Use `git commit --no-verify` to avoid pre-commit hook, or accept daemon commits (they're useful) |
-| Refactor introduces regression in edge case | MED | HIGH | Run full test suite after EACH subtask; golden file tests catch output diffs |
+| Risk                                                           | Likelihood | Impact | Mitigation                                                                                                    |
+| -------------------------------------------------------------- | ---------- | ------ | ------------------------------------------------------------------------------------------------------------- |
+| `CommonMetadata` mixin breaks type consumers                   | LOW        | HIGH   | All fields stay identical; tests should pass unchanged; `extends` is structurally equivalent to inline fields |
+| `applyMessageDecorator` HOF changes call order                 | LOW        | MED    | The HOF preserves exact control flow; one site calls all 3 sequentially in a known order                      |
+| `reportAndAbort` with `never` return type confuses TS          | LOW        | LOW    | Use `assertNever`-style trick; tested pattern                                                                 |
+| Threshold ratchet too aggressive (3% breaks PRs)               | MED        | MED    | If 3% is too tight, accept 4% — but try 3% first per plan                                                     |
+| Auto-git daemon commits mid-refactor and creates noisy history | MED        | LOW    | Use `git commit --no-verify` to avoid pre-commit hook, or accept daemon commits (they're useful)              |
+| Refactor introduces regression in edge case                    | MED        | HIGH   | Run full test suite after EACH subtask; golden file tests catch output diffs                                  |
 
 ---
 

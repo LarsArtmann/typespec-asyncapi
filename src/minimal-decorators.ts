@@ -5,9 +5,17 @@
  * State writing is delegated to state-writers.ts.
  */
 
-import type { DecoratorContext, DiagnosticTarget, Model, ModelProperty, Namespace, Operation, Program } from "@typespec/compiler";
+import type {
+  DecoratorContext,
+  DiagnosticTarget,
+  Model,
+  ModelProperty,
+  Namespace,
+  Operation,
+  Program,
+} from "@typespec/compiler";
 import type { $lib } from "./lib.js";
-import { PROTOCOL_LIST, isSupportedProtocol } from "./constants/protocols.js";
+import { isSupportedProtocol } from "./constants/protocols.js";
 import {
   linkPublishMessage,
   storeBindings,
@@ -35,6 +43,7 @@ import {
   isModelConfig,
   modelToRecord,
   reportDiagnostic,
+  reportUnsupportedProtocol,
   validateNonEmptyString,
   validatedDecorator,
 } from "./decorator-helpers.js";
@@ -131,10 +140,7 @@ export function $protocol(
       const configRecord = extractConfigRecord(config);
       const protocol = configRecord.protocol as string | undefined;
       if (protocol && !isSupportedProtocol(protocol.toLowerCase())) {
-        reportDiagnostic(context, "unsupported-protocol", target, {
-          protocol,
-          validProtocols: PROTOCOL_LIST.join(", "),
-        });
+        reportUnsupportedProtocol(context, target, protocol);
         return;
       }
       storeProtocolConfig(context.program, target, configRecord);
@@ -233,9 +239,15 @@ export function $correlationId(
   location: unknown,
 ): void {
   if (
-    !validateNonEmptyString(location, context, target, "invalid-correlationId-config", {
-      modelName: target.name,
-    })
+    !validateNonEmptyString(
+      location,
+      context,
+      target,
+      "invalid-correlationId-config",
+      {
+        modelName: target.name,
+      },
+    )
   ) {
     return;
   }
@@ -354,7 +366,13 @@ function applyStringIdDecorator(opts: {
   store: (program: Program, id: string) => void;
 }): void {
   if (
-    !validateNonEmptyString(opts.id, opts.context, opts.target, opts.diagnosticCode, opts.format)
+    !validateNonEmptyString(
+      opts.id,
+      opts.context,
+      opts.target,
+      opts.diagnosticCode,
+      opts.format,
+    )
   ) {
     return;
   }

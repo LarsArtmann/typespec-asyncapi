@@ -33,7 +33,10 @@ export function collectAllStdlibNames(program: Program): Set<string> {
 }
 
 /** Add every map key into `names`. Shared by the three `models/scalars/enums` iterations. */
-function collectNamesInto<K, V>(names: Set<string>, items: ReadonlyMap<K, V> | Iterable<[K, V]>): void {
+function collectNamesInto<K, V>(
+  names: Set<string>,
+  items: ReadonlyMap<K, V> | Iterable<[K, V]>,
+): void {
   for (const [name] of items) {
     names.add(String(name));
   }

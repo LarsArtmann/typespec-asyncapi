@@ -134,7 +134,13 @@ export function processBindings(
         bindingObj,
       );
       for (const fi of fieldIssues) {
-        pushIssue(issues, fi.key, "invalid-binding-field", "warning", fi.format);
+        pushIssue(
+          issues,
+          fi.key,
+          "invalid-binding-field",
+          "warning",
+          fi.format,
+        );
       }
     }
 

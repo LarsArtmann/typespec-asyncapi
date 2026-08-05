@@ -8,6 +8,7 @@ import type {
   Model,
 } from "@typespec/compiler";
 import { $lib } from "./lib.js";
+import { PROTOCOL_LIST } from "./constants/protocols.js";
 
 // === DIAGNOSTIC HELPERS ===
 
@@ -56,6 +57,18 @@ export const validateConfig = (
   }
   reportDiagnostic(context, diagnosticCode, target, format);
   return false;
+};
+
+/** Report a `unsupported-protocol` diagnostic. Shared by all protocol-accepting decorators. */
+export const reportUnsupportedProtocol = (
+  context: DecoratorContext,
+  target: unknown,
+  protocol: string,
+): void => {
+  reportDiagnostic(context, "unsupported-protocol", target, {
+    protocol,
+    validProtocols: PROTOCOL_LIST.join(", "),
+  });
 };
 
 /**

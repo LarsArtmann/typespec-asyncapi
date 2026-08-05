@@ -105,7 +105,9 @@ function updateMessageConfig(
 }
 
 /** Get the state map for message configs. Shared by writers that mutate it. */
-function getMessageConfigsMap(program: Program): ReturnType<typeof getStateMap<MessageConfigData>> {
+function getMessageConfigsMap(
+  program: Program,
+): ReturnType<typeof getStateMap<MessageConfigData>> {
   return getStateMap<MessageConfigData>(program, stateSymbols.messageConfigs);
 }
 
@@ -154,11 +156,7 @@ export const storeSecurityConfig = (
  * Append `entry` to the array stored under `key` in `map`, initializing the
  * entry to `[entry]` if the key has no existing value.
  */
-function appendToStateArray<K, V>(
-  map: Map<K, V[]>,
-  key: K,
-  entry: V,
-): void {
+function appendToStateArray<K, V>(map: Map<K, V[]>, key: K, entry: V): void {
   const existing = map.get(key);
   if (Array.isArray(existing)) {
     map.set(key, [...existing, entry]);
@@ -213,8 +211,7 @@ export const storeHeader = (
 
   if (target.kind === "ModelProperty") {
     const propType = target.type as
-      | { kind?: string; name?: string }
-      | undefined;
+      { kind?: string; name?: string } | undefined;
     if (propType?.kind === "Scalar") {
       headerType = propType.name?.toLowerCase() ?? "string";
     }

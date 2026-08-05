@@ -14,7 +14,11 @@ import { stateSymbols } from "./lib.js";
 
 // === DOMAIN TYPE RE-EXPORTS ===
 // Re-export domain types so consumers can import all state-related types from one place.
-export type { ProtocolBindings, SecurityScheme, Tag } from "./domain/models/asyncapi-document.js";
+export type {
+  ProtocolBindings,
+  SecurityScheme,
+  Tag,
+} from "./domain/models/asyncapi-document.js";
 
 // === STATE DATA INTERFACES ===
 

@@ -11,7 +11,7 @@ import type {
 } from "../domain/models/asyncapi-document.js";
 import { refSchema } from "../domain/models/asyncapi-document.js";
 import { getDoc, nameOfType } from "./_imports.js";
-import type { AsyncAPIConsolidatedState, BuilderFn } from "./_imports.js";
+import type { AsyncAPIConsolidatedState, BuilderFn, DocumentBuildContext } from "./_imports.js";
 import { iterNamedTypes } from "./shared-utils.js";
 
 /** Merge explicit @message decorator data into the messages map. */
@@ -36,11 +36,22 @@ export const mergeExplicitMessages: BuilderFn = (state, ctx) => {
   applyAutoMessageDecorators(state, ctx);
 };
 
+/**
+ * Look up the message for `key` in `ctx.messages`. Returns the message if
+ * present and non-nullish, else `null` (callers `continue` on null).
+ */
+function getMessageOrNull(
+  ctx: DocumentBuildContext,
+  key: string,
+): MessageObject | null {
+  return ctx.messages[key] ?? null;
+}
+
 /** Apply @doc to messages without explicit @message description. */
 const applyExplicitMessageDocs: BuilderFn = (state, ctx) => {
   for (const { type, name, data } of iterNamedTypes(state.messages)) {
     const key = data.messageId ?? name;
-    const msg = ctx.messages[key];
+    const msg = getMessageOrNull(ctx, key);
     if (!msg) {
       continue;
     }
@@ -51,7 +62,7 @@ const applyExplicitMessageDocs: BuilderFn = (state, ctx) => {
       }
     }
   }
-}
+};
 
 /** Apply decorators (correlation, headers, bindings, tags) to auto-registered messages. */
 const applyAutoMessageDecorators: BuilderFn = (state, ctx) => {
@@ -67,7 +78,7 @@ const applyAutoMessageDecorators: BuilderFn = (state, ctx) => {
     }
     const msgData = state.messages.get(type);
     const key = msgData?.messageId ?? typeName;
-    const msg = ctx.messages[key];
+    const msg = getMessageOrNull(ctx, key);
     if (!msg) {
       continue;
     }
@@ -80,7 +91,7 @@ const applyAutoMessageDecorators: BuilderFn = (state, ctx) => {
       msg.tags = msgTags;
     }
   }
-}
+};
 
 /**
  * Common signature for functions that apply a single decorator to a message.
@@ -114,7 +125,12 @@ function readDecoratorValue<T>(
 }
 
 /** Apply correlation ID to a message if present in state. */
-const applyCorrelationId: MessageDecoratorFn = (state, type, msg, skipExisting = false) => {
+const applyCorrelationId: MessageDecoratorFn = (
+  state,
+  type,
+  msg,
+  skipExisting = false,
+) => {
   const value = readDecoratorValue(state, type, msg, {
     prop: "correlationId",
     skipExisting,
@@ -129,7 +145,12 @@ const applyCorrelationId: MessageDecoratorFn = (state, type, msg, skipExisting =
 };
 
 /** Apply headers to a message if present in state. */
-const applyHeaders: MessageDecoratorFn = (state, type, msg, skipExisting = false) => {
+const applyHeaders: MessageDecoratorFn = (
+  state,
+  type,
+  msg,
+  skipExisting = false,
+) => {
   const value = readDecoratorValue(state, type, msg, {
     prop: "headers",
     skipExisting,
@@ -154,7 +175,12 @@ const applyHeaders: MessageDecoratorFn = (state, type, msg, skipExisting = false
 };
 
 /** Apply protocol bindings to a message if present in state. */
-const applyMessageBindings: MessageDecoratorFn = (state, type, msg, skipExisting = false) => {
+const applyMessageBindings: MessageDecoratorFn = (
+  state,
+  type,
+  msg,
+  skipExisting = false,
+) => {
   const value = readDecoratorValue(state, type, msg, {
     prop: "bindings",
     skipExisting,
