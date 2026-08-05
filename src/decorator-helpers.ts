@@ -48,6 +48,30 @@ export const validateConfig = (
   return true;
 };
 
+/**
+ * Higher-order decorator factory: validate config presence, then if valid, invoke `run`.
+ * Returns `true` if validation passed (and `run` ran), `false` if validation failed.
+ *
+ * Used by `@protocol`, `@security`, `@message`, and `@bindings` to eliminate
+ * the repeated `validateConfig → ... → storeXxx` boilerplate.
+ */
+export function validatedDecorator(
+  context: DecoratorContext,
+  target: unknown,
+  config: unknown,
+  options: {
+    code: keyof typeof $lib.diagnostics;
+    format?: Record<string, unknown>;
+    run: () => void;
+  },
+): boolean {
+  if (!validateConfig(config, context, target, options.code, options.format)) {
+    return false;
+  }
+  options.run();
+  return true;
+}
+
 // === URL VALIDATION ===
 
 /**

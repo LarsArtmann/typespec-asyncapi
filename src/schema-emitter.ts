@@ -27,6 +27,7 @@ import type {
   Context,
   EmittedSourceFile,
   EmitterOutput,
+  NoEmit,
   SourceFile,
 } from "@typespec/asset-emitter";
 import { getDoc } from "@typespec/compiler";
@@ -240,7 +241,7 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
   }
 
   /** Return the AssetEmitter `none()` result for "no schema output". */
-  private returnNone(): ReturnType<ReturnType<this["emitter"]["result"]["none"]>> {
+  private returnNone(): NoEmit {
     return this.emitter.result.none();
   }
 
@@ -330,23 +331,19 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
       return intrinsicToSchema((t as { name: string }).name);
     }
     if (kind === "String") {
-      return { const: (t as { value: string }).value };
+      return this.returnConst((t as { value: string }).value);
     }
     if (kind === "Number") {
-      return { const: (t as { value: number }).value };
+      return this.returnConst((t as { value: number }).value);
     }
     if (kind === "Boolean") {
-      return { const: (t as { value: boolean }).value };
+      return this.returnConst((t as { value: boolean }).value);
     }
     if (kind === "Tuple") {
       return {
-        items: (t as Tuple).values.map((v: Type) => {
-          const ref = this.refForNamedType(v);
-          if (ref) {
-            return ref;
-          }
-          return this.typeToSchema(v);
-        }),
+        items: (t as Tuple).values.map((v: Type) =>
+          this.refOrFallback(v, (inner) => this.typeToSchema(inner)),
+        ),
         type: "array",
       };
     }

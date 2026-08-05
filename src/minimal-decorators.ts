@@ -40,7 +40,7 @@ import {
   getModelPropertyValue,
   modelToRecord,
   reportDiagnostic,
-  validateConfig,
+  validatedDecorator,
 } from "./decorator-helpers.js";
 import { processBindings } from "./validation/binding-validator.js";
 import type { BindingTargetKind } from "./constants/binding-versions.js";
@@ -75,14 +75,18 @@ export function $message(
   target: Model,
   config: unknown,
 ): void {
-  if (
-    !validateConfig(config, context, target, "invalid-message-config", {
-      modelName: target.name,
-    })
-  ) {
-    return;
-  }
+  validatedDecorator(context, target, config, {
+    code: "invalid-message-config",
+    format: { modelName: target.name },
+    run: () => storeMessageConfig(context.program, target, extractMessageConfig(config)),
+  });
+}
 
+function extractMessageConfig(config: unknown): {
+  title: string;
+  description: string;
+  contentType: string;
+} {
   let title: string | undefined;
   let description: string | undefined;
   let contentType: string | undefined;
@@ -110,11 +114,11 @@ export function $message(
         : undefined;
   }
 
-  storeMessageConfig(context.program, target, {
+  return {
     contentType: contentType ?? "application/json",
-    description: description ?? `Message ${target.name}`,
-    title: title ?? target.name,
-  });
+    description: description ?? "Message",
+    title: title ?? "",
+  };
 }
 
 export function $protocol(
@@ -123,23 +127,25 @@ export function $protocol(
   config: unknown,
 ): void {
   if (
-    !validateConfig(config, context, target, "invalid-protocol-config", {
-      targetKind: target.kind,
+    !validatedDecorator(context, target, config, {
+      code: "invalid-protocol-config",
+      format: { targetKind: target.kind },
+      run: () => {
+        const configRecord = extractConfigRecord(config);
+        const protocol = configRecord.protocol as string | undefined;
+        if (protocol && !isSupportedProtocol(protocol.toLowerCase())) {
+          reportDiagnostic(context, "unsupported-protocol", target, {
+            protocol,
+            validProtocols: PROTOCOL_LIST.join(", "),
+          });
+          return;
+        }
+        storeProtocolConfig(context.program, target, configRecord);
+      },
     })
   ) {
     return;
   }
-
-  const configRecord = extractConfigRecord(config);
-  const protocol = configRecord.protocol as string | undefined;
-  if (protocol && !isSupportedProtocol(protocol.toLowerCase())) {
-    reportDiagnostic(context, "unsupported-protocol", target, {
-      protocol,
-      validProtocols: PROTOCOL_LIST.join(", "),
-    });
-    return;
-  }
-  storeProtocolConfig(context.program, target, configRecord);
 }
 
 export function $security(
@@ -148,13 +154,21 @@ export function $security(
   config: unknown,
 ): void {
   if (
-    !validateConfig(config, context, target, "invalid-security-config", {
-      targetKind: target.kind,
+    !validatedDecorator(context, target, config, {
+      code: "invalid-security-config",
+      format: { targetKind: target.kind },
+      run: () => applySecurity(context, target, config),
     })
   ) {
     return;
   }
+}
 
+function applySecurity(
+  context: DecoratorContext,
+  target: Operation | Namespace,
+  config: unknown,
+): void {
   let name: string | undefined;
   let scheme: Record<string, unknown> | undefined;
 
