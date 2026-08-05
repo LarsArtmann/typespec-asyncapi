@@ -7,6 +7,9 @@
  */
 
 import type { AsyncAPIProtocol } from "../../constants/protocols.js";
+import type { AsyncAPIEmitterOptions } from "../../infrastructure/configuration/asyncAPIEmitterOptions.js";
+
+export type { AsyncAPIEmitterOptions };
 
 export interface Ref {
   $ref: string;
@@ -252,15 +255,9 @@ export interface ComponentsObject {
   tags?: Record<string, Tag | Ref>;
 }
 
-export interface AsyncAPIDocument {
+export interface AsyncAPIDocument extends DocumentBody {
   asyncapi: "3.1.0";
-  info: InfoObject;
-  id?: string;
-  servers?: Record<string, ServerObject>;
-  defaultContentType?: string;
   channels: Record<string, ChannelObject>;
-  operations?: Record<string, OperationObject>;
-  components?: ComponentsObject;
 }
 
 /**
