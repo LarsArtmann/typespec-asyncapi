@@ -84,18 +84,8 @@ export function validateBindingFields(
     }
 
     if (typeof value === "number") {
-      if (rule.min !== undefined && value < rule.min) {
-        pushFieldError(issues, field, protocol, {
-          actual: value,
-          min: rule.min,
-        });
-      }
-      if (rule.max !== undefined && value > rule.max) {
-        pushFieldError(issues, field, protocol, {
-          actual: value,
-          max: rule.max,
-        });
-      }
+      checkBound(issues, field, protocol, value, rule, "min", (v, r) => v < r);
+      checkBound(issues, field, protocol, value, rule, "max", (v, r) => v > r);
     }
   }
 

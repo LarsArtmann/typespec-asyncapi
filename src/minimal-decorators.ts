@@ -12,8 +12,8 @@ import type {
   ModelProperty,
   Namespace,
   Operation,
-  Program,
 } from "@typespec/compiler";
+import type { Program } from "@typespec/compiler";
 import type { $lib } from "./lib.js";
 import { isSupportedProtocol } from "./constants/protocols.js";
 import {

@@ -7,9 +7,7 @@
  */
 
 import type { AsyncAPIProtocol } from "../../constants/protocols.js";
-import type { AsyncAPIEmitterOptions } from "../../infrastructure/configuration/asyncAPIEmitterOptions.js";
-
-export type { AsyncAPIEmitterOptions };
+export type { AsyncAPIEmitterOptions } from "../../infrastructure/configuration/asyncAPIEmitterOptions.js";
 
 export interface Ref {
   $ref: string;
