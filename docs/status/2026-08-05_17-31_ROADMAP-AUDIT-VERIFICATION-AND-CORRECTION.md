@@ -95,6 +95,8 @@ During this session, I found `@apiVersion` by accident while looking up `@operat
 
 ## F) Up to 50 Things to Get Done Next
 
+> **Resolution:** Items 1–4 (documentation truth) were addressed in subsequent sessions. Items 5–9 (testing) were addressed — test count grew to 869. Items 10–14 (features) — versioning and generator compat done; constraint decorators remain TODO_LIST #1. Items 15–50 (code quality, DX, polish) were partially addressed. Harvested actionable items now live in the current TODO_LIST.md.
+
 ### High Impact (Documentation Truth)
 
 1. **Populate CHANGELOG `[Unreleased]`** — Document all post-`0.2.0-beta` features: 14 additional protocols, field-level binding validation, `@operationId`, `@messageId`, `@apiVersion`, server bindings, `split-schemas`, multi-file output, `ParsedAsyncAPIDocument`, builders refactor, BDD tests, compliance suite expansion (78→98).

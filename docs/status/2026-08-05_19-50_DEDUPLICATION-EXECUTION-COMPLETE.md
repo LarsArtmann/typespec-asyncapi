@@ -173,6 +173,8 @@ I updated AGENTS.md to document the new duplication budget and helpers, but the 
 
 ## 7. Up to 50 Things We Should Get Done Next
 
+> **Resolution:** Items 1–7 (quick wins) were addressed in Phase-2/3/4 sessions. Items 8–10 (process/tooling) were partially addressed — jscpd threshold reached 0%. Items 11–20 (medium effort) were partially addressed. Items 21–50 (lower priority) remain as ROADMAP ideas or were superseded by Phase-4 structural refactors. The overall clone target (<20/<2%) was exceeded by Phase-4 (0/0%).
+
 Prioritized by Pareto (impact / effort).
 
 ### Quick wins (≤15min each, high impact)

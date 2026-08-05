@@ -132,6 +132,8 @@ However, two issues worth calling out:
 
 ## f) Up to 50 Things to Get Done Next
 
+> **Resolution:** Items 1–6 (P0 bug fix hardening) — integration tests for binding fixes remain in TODO_LIST #10. Items 7–13 (P1 coverage gaps) — partially addressed. Items 14–22 (P1-P2 decorator tests) — many addressed (11 combination tests added). Items 23–50 (P2-P3) — partially addressed; remaining items harvested into TODO_LIST.md.
+
 #### Bug Fix Hardening (P0)
 
 1. Write integration test: compile `@bindings(#{solace: #{priority: 5}})` through full pipeline, verify output contains solace binding

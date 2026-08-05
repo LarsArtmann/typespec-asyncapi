@@ -120,6 +120,8 @@ I named the file `generator-compatibility.test.ts` but it tests **structural pro
 
 ## F) Up to 50 Things to Get Done Next
 
+> **Resolution:** Items 1–5 (fix this session's mistakes) — linter-strategy test remains (TODO_LIST #2), generator-compatibility test rename remains (TODO_LIST #3), versioning dependency check remains (TODO_LIST #6). Items 6–10 (high impact) — coverage gate passed, README audited. Items 11–25 (medium impact testing) — many addressed by 18:33 session (108 new tests). Items 26–50 (lower impact) — partially addressed; harvested items now in TODO_LIST.md.
+
 ### Critical (Fix This Session's Mistakes)
 
 1. **Delete or rewrite `test/unit/linter-strategy.test.ts`** — Nested process spawning is an anti-pattern. CI already verifies `bun run lint`.

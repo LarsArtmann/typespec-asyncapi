@@ -163,6 +163,8 @@ See section F for the full list.
 
 ## F) Up to 50 Things to Do Next
 
+> **Resolution:** Items 1–2 (P0 bugs) were fixed in the 19:01 session (`49b4241`, `0226deb`). Items 3–5 (P0) — lint errors fixed, coverage gate verified. Items 6–13 (P1) — splitSchemas, extractValue, decorator tests all added. Items 14–25 (P1-P2) — many decorator combination tests added (19:01 session). Items 26–50 (P2-P3) — partially addressed; remaining items harvested into TODO_LIST.md.
+
 ### High Priority (P0)
 
 1. Fix binding protocol set gap — `normalizeBindingKey` should accept all 19 binding protocols, not just the 20 server protocols

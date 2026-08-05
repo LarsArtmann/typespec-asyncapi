@@ -150,6 +150,8 @@ I should have communicated this HONESTLY up front instead of pretending each ref
 
 ## (f) Up to 50 Things to Get Done Next
 
+> **Resolution (20:46 + 21:12 sessions):** Items 1–5 (recover state, threshold, tests, AGENTS.md) were addressed in the 20:46 final report. Items 6–13 (type safety) remain in ROADMAP as raw ideas. Items 14–25 (test coverage) were partially addressed by later sessions — test count grew to 869. Items 26–38 (code quality refactors) were superseded by Phase-4 structural refactors that eliminated all remaining clones. Items 39–50 (schema emitter cleanups) remain as low-priority ROADMAP ideas.
+
 ### Top priority (recover what was lost)
 
 1. **Restore the 17-clone state from git history.** `git log --oneline -- src/builders/message-builder.ts | head -20` to find the most recent green state.

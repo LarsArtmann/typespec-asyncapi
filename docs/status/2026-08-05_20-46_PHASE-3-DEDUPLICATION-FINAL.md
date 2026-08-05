@@ -139,3 +139,7 @@ Found 10 clones.
 ---
 
 _End of final status report._
+
+---
+
+> **Resolution (21:12 session):** All 10 "remaining" clones listed above were eliminated in Phase-4 via structural refactors: `DocumentBody` interface (clone #1), `AsyncAPIEmitterOptions` re-export (clones #2/#5), `DiagnosticContext` interface + `validateConfig` options object (clones #4/#8), `makeConfigDecorator`/`makeStringIdDecorator` factories (clones #6/#7), `messageDecorator<K>` factory (clone #4), `checkBound` HOF (clone #3), import splitting (clone #5/#6). Final state: **0 clones / 0%** with threshold ratcheted to **0%**. See `docs/status/2026-08-05_21-12_PHASE-4-ZERO-CLONES.md`.

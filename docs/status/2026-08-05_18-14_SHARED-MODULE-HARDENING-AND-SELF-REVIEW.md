@@ -65,6 +65,8 @@ Nothing irreversible. Two process mistakes worth naming:
 
 ## f) Up to 50 things we should get done next
 
+> **Resolution:** Items 1–5 (high value) — barrel contract tests added, SchemaRef/SchemaMap kept as forward-looking API (TODO_LIST #13). Items 6–12 (medium value) — barrel split remains a ROADMAP raw idea. Items 13–20 (low value/process) — partially addressed.
+
 Scoped to the shared module + immediate surroundings (this session's area).
 
 ### High value

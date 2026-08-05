@@ -163,6 +163,8 @@ bug, not a code bug.**
 
 ## f) Up to 50 Things to Get Done Next (brainstorm, impact-sorted)
 
+> **Resolution:** Items 1–10 (documentation hygiene) — living docs rewritten with accurate counts; `docs/_archive/` pruning remains a ROADMAP item. Items 11–20 (quality-gate completeness) — coverage gate verified, CI confirmed. Items 21–25 (testing depth) — test count grew to 869. Items 26–50 (code/architecture, DX, release readiness, ecosystem) — partially addressed; harvested items now in TODO_LIST.md or ROADMAP.md.
+
 Grounded only in what I observed this session (package.json, directory listing,
 AGENTS.md). Higher = more certain value; lower = roadmap fuel.
 

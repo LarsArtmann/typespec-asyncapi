@@ -128,6 +128,8 @@ The `config && typeof config === "object" && "kind" in config && config.kind ===
 
 ## (f) 50 Next Things (Phase-3 candidates, Pareto-sorted)
 
+> **Resolution:** Items 1–5 (top tier quick wins) were addressed in Phase-3 (20:46 report) and Phase-4 (21:12 report). Items 6–10 (middle tier) were partially done. Items 11–19 (long tail + infrastructure) were partially addressed — jscpd threshold reached 0%. Items 20–24 (type safety) remain in ROADMAP. Items 25–29 (test coverage) were addressed — test count grew to 869. Items 30–50 (documentation + schema emitter + operation discovery) remain as low-priority ROADMAP ideas. The overall 0-clone target was met by Phase-4.
+
 ### Top tier (highest impact, easiest wins)
 
 1. **Apply `validatedDecorator` to `$channel`** — the one decorator that still has the 5-line `reportDiagnostic + return` pattern that `validateNonEmptyString` doesn't fit (different signature: `string` not `unknown`).
