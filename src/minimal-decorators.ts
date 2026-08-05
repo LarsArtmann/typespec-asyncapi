@@ -156,15 +156,16 @@ export function $security(
   validatedDecorator(context, target, config, {
     code: "invalid-security-config",
     format: { targetKind: target.kind },
-    run: () => applySecurity(context, target, config),
+    run: () => applySecurity({ context, target, config }),
   });
 }
 
-function applySecurity(
-  context: DecoratorContext,
-  target: Operation | Namespace,
-  config: unknown,
-): void {
+function applySecurity(args: {
+  context: DecoratorContext;
+  target: Operation | Namespace;
+  config: unknown;
+}): void {
+  const { context, target, config } = args;
   let name: string | undefined;
   let scheme: Record<string, unknown> | undefined;
 

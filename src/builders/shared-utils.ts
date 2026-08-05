@@ -9,7 +9,11 @@ import type {
   ProtocolBindings,
   SecurityScheme,
 } from "../domain/models/asyncapi-document.js";
-import type { MessageConfigData, OperationTypeData, ProtocolConfigData } from "../state.js";
+import type {
+  MessageConfigData,
+  OperationTypeData,
+  ProtocolConfigData,
+} from "../state.js";
 import {
   getLatestBindingVersion,
   hasProtocolBindings,
@@ -95,7 +99,9 @@ export function inferActionFromName(name: string): OperationAction {
 }
 
 /** Map a decorator-declared operation type to an AsyncAPI OperationAction. */
-export function operationAction(type: OperationTypeData["type"]): OperationAction {
+export function operationAction(
+  type: OperationTypeData["type"],
+): OperationAction {
   return type === "publish" ? "send" : "receive";
 }
 
@@ -124,7 +130,12 @@ export function returnModels<T>(type: Type, selector: (t: Type) => T): T[] {
     return out;
   }
 
-  if ("name" in rt && typeof rt.name === "string" && rt.name && rt.kind !== "Operation") {
+  if (
+    "name" in rt &&
+    typeof rt.name === "string" &&
+    rt.name &&
+    rt.kind !== "Operation"
+  ) {
     return [selector(rt)];
   }
 
@@ -146,7 +157,10 @@ export function resolveMessageKey(
   modelType: Type,
   stateMessages: Map<Type, MessageConfigData>,
 ): string {
-  const name = "name" in modelType && typeof modelType.name === "string" ? modelType.name : "";
+  const name =
+    "name" in modelType && typeof modelType.name === "string"
+      ? modelType.name
+      : "";
   const msgData = stateMessages.get(modelType);
   return msgData?.messageId ?? name;
 }
@@ -166,10 +180,15 @@ export function extractChannelParameters(
 }
 
 /** Build protocol-specific channel bindings from a ProtocolConfigData entry. */
-export function buildProtocolBinding(data: ProtocolConfigData): ProtocolBindings {
+export function buildProtocolBinding(
+  data: ProtocolConfigData,
+): ProtocolBindings {
   const bindingKey = normalizeBindingProtocol(data.protocol);
   const bindingData: Record<string, unknown> = { ...data.binding };
-  if (hasProtocolBindings(bindingKey) && bindingData.bindingVersion === undefined) {
+  if (
+    hasProtocolBindings(bindingKey) &&
+    bindingData.bindingVersion === undefined
+  ) {
     bindingData.bindingVersion = getLatestBindingVersion(bindingKey);
   }
   return { [bindingKey]: bindingData };

@@ -47,11 +47,22 @@ export const validateNonEmptyString = (
 /** Validate that a config value is present; if not, report and return false. */
 export const validateConfig = (
   config: unknown,
-  ctx: { context: DecoratorContext; target: unknown; diagnosticCode: keyof typeof $lib.diagnostics; format?: Record<string, unknown> },
+  ctx: {
+    context: DecoratorContext;
+    target: unknown;
+    diagnosticCode: keyof typeof $lib.diagnostics;
+    format?: Record<string, unknown>;
+  },
 ): boolean =>
   config
     ? true
-    : (reportDiagnostic(ctx.context, ctx.diagnosticCode, ctx.target, ctx.format), false);
+    : (reportDiagnostic(
+        ctx.context,
+        ctx.diagnosticCode,
+        ctx.target,
+        ctx.format,
+      ),
+      false);
 
 /** Report a `unsupported-protocol` diagnostic. Shared by all protocol-accepting decorators. */
 export const reportUnsupportedProtocol = (
@@ -82,7 +93,14 @@ export function validatedDecorator(
     run: () => void;
   },
 ): boolean {
-  if (!validateConfig(config, { context, target, diagnosticCode: options.code, format: options.format })) {
+  if (
+    !validateConfig(config, {
+      context,
+      target,
+      diagnosticCode: options.code,
+      format: options.format,
+    })
+  ) {
     return false;
   }
   options.run();
