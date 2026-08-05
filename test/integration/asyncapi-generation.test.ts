@@ -378,12 +378,17 @@ describe("real AsyncAPI Generation Tests", () => {
         expectedSchemas,
       );
 
-      // Validate inheritance handling (OrderEvent extends BaseEvent)
+      // Validate inheritance handling (OrderEvent extends BaseEvent via allOf)
       const orderEventSchema = asyncapiDoc.components.schemas.OrderEvent;
-      expect(orderEventSchema.properties?.eventId).toBeDefined(); // From BaseEvent
-      expect(orderEventSchema.properties?.timestamp).toBeDefined(); // From BaseEvent
-      expect(orderEventSchema.properties?.orderId).toBeDefined(); // From OrderEvent
-      expect(orderEventSchema.properties?.customerId).toBeDefined(); // From OrderEvent
+      expect(orderEventSchema.allOf?.[0]?.$ref).toBe(
+        "#/components/schemas/BaseEvent",
+      );
+      expect(orderEventSchema.properties?.orderId).toBeDefined(); // Own property
+      expect(orderEventSchema.properties?.customerId).toBeDefined(); // Own property
+      // BaseEvent properties are in BaseEvent, not flattened
+      const baseEventSchema = asyncapiDoc.components.schemas.BaseEvent;
+      expect(baseEventSchema.properties?.eventId).toBeDefined();
+      expect(baseEventSchema.properties?.timestamp).toBeDefined();
 
       // Validate complex nested object handling
       const orderDetailsSchema = asyncapiDoc.components.schemas.OrderDetails;
@@ -739,12 +744,17 @@ describe("real AsyncAPI Generation Tests", () => {
       expect(asyncapiDoc.components.schemas.ModelWithReferences).toBeDefined();
       expect(asyncapiDoc.components.schemas.RelatedModel).toBeDefined();
 
-      // Validate inheritance in schema
+      // Validate inheritance in schema (ModelWithReferences extends BaseReference)
       const modelWithRefsSchema =
         asyncapiDoc.components.schemas.ModelWithReferences;
-      expect(modelWithRefsSchema.properties?.id).toBeDefined(); // From BaseReference
-      expect(modelWithRefsSchema.properties?.createdAt).toBeDefined(); // From BaseReference
-      expect(modelWithRefsSchema.properties?.relatedModel).toBeDefined(); // Own property
+      expect(modelWithRefsSchema.allOf?.[0]?.$ref).toBe(
+        "#/components/schemas/BaseReference",
+      );
+      expect(modelWithRefsSchema.properties?.relatedModel).toBeDefined(); // Own
+      // BaseReference properties are in BaseReference, not flattened
+      const baseRefSchema = asyncapiDoc.components.schemas.BaseReference;
+      expect(baseRefSchema.properties?.id).toBeDefined();
+      expect(baseRefSchema.properties?.createdAt).toBeDefined();
 
       // Validate nested object structures
       expect(modelWithRefsSchema.properties?.nested?.type).toBe("object");

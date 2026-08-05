@@ -97,6 +97,10 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
     const program = this.emitter.getProgram();
     const variantEntries = [...union.variants.values()];
     const variants = variantEntries.map((v) => {
+      const ref = this.refForNamedType(v.type);
+      if (ref) {
+        return ref;
+      }
       const extracted = extractValue(this.emitter.emitTypeReference(v.type));
       if (Object.keys(extracted).length === 0) {
         const t = v.type as { kind: string; name?: string; value?: string };
@@ -316,6 +320,10 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
           (inner as { value?: string }).value !== undefined
         ) {
           return (inner as { value: string }).value;
+        }
+        const ref = this.refForNamedType(inner);
+        if (ref) {
+          return ref;
         }
         const s = this.typeToSchema(inner);
         return Object.keys(s).length > 0 ? s : { type: "string" };

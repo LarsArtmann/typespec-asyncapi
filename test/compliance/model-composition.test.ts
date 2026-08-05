@@ -17,7 +17,7 @@ function getSchema(doc: ParsedAsyncAPIDocument, name: string): JsonSchema {
 }
 
 describe("model inheritance and composition", () => {
-  it("collects properties from base model via extends", async () => {
+  it("emits allOf for base model inheritance", async () => {
     const doc = await compileAndValidateOrThrow(`
       namespace Test;
       model Base { id: string; createdAt: utcDateTime; }
@@ -25,13 +25,18 @@ describe("model inheritance and composition", () => {
       @channel("events") op publish(): Derived;
     `);
     const s = getSchema(doc, "Derived");
-    expect(s.properties!.id).toBeDefined();
-    expect(s.properties!.createdAt).toBeDefined();
+    expect(s.allOf).toHaveLength(1);
+    expect(s.allOf![0].$ref).toBe("#/components/schemas/Base");
     expect(s.properties!.name).toBeDefined();
+    expect(s.properties!.id).toBeUndefined();
+    expect(s.properties!.createdAt).toBeUndefined();
     expect(s.type).toBe("object");
+    const base = getSchema(doc, "Base");
+    expect(base.properties!.id).toBeDefined();
+    expect(base.properties!.createdAt).toBeDefined();
   });
 
-  it("collects required fields from base and derived models", async () => {
+  it("separates required fields: base in base, derived in derived", async () => {
     const doc = await compileAndValidateOrThrow(`
       namespace Test;
       model Base { id: string; }
@@ -39,12 +44,15 @@ describe("model inheritance and composition", () => {
       @channel("events") op publish(): Derived;
     `);
     const s = getSchema(doc, "Derived");
-    expect(s.required).toContain("id");
+    expect(s.allOf).toBeDefined();
     expect(s.required).toContain("name");
+    expect(s.required).not.toContain("id");
     expect(s.required).not.toContain("optional");
+    const base = getSchema(doc, "Base");
+    expect(base.required).toContain("id");
   });
 
-  it("supports multi-level inheritance chain", async () => {
+  it("supports multi-level inheritance chain with chained allOf", async () => {
     const doc = await compileAndValidateOrThrow(`
       namespace Test;
       model A { a: string; }
@@ -52,13 +60,22 @@ describe("model inheritance and composition", () => {
       model C extends B { c: boolean; }
       @channel("events") op publish(): C;
     `);
-    const s = getSchema(doc, "C");
-    expect(s.properties!.a).toBeDefined();
-    expect(s.properties!.b).toBeDefined();
-    expect(s.properties!.c).toBeDefined();
+    const c = getSchema(doc, "C");
+    expect(c.allOf![0].$ref).toBe("#/components/schemas/B");
+    expect(c.properties!.c).toBeDefined();
+    expect(c.properties!.a).toBeUndefined();
+    expect(c.properties!.b).toBeUndefined();
+
+    const b = getSchema(doc, "B");
+    expect(b.allOf![0].$ref).toBe("#/components/schemas/A");
+    expect(b.properties!.b).toBeDefined();
+
+    const a = getSchema(doc, "A");
+    expect(a.allOf).toBeUndefined();
+    expect(a.properties!.a).toBeDefined();
   });
 
-  it("base model property @doc is preserved in derived model", async () => {
+  it("base model property @doc is preserved in base schema", async () => {
     const doc = await compileAndValidateOrThrow(`
       namespace Test;
       model Base {
@@ -68,9 +85,12 @@ describe("model inheritance and composition", () => {
       model Derived extends Base { extra: int32; }
       @channel("events") op publish(): Derived;
     `);
+    const base = getSchema(doc, "Base");
+    expect(base.properties!.value.description).toBe("Base value");
     const s = getSchema(doc, "Derived");
-    expect(s.properties!.value.description).toBe("Base value");
+    expect(s.allOf![0].$ref).toBe("#/components/schemas/Base");
     expect(s.properties!.extra).toBeDefined();
+    expect(s.properties!.value).toBeUndefined();
   });
 
   it("references base model schema when used as property type", async () => {
