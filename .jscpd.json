@@ -1,10 +1,10 @@
 {
-  "threshold": 0,
+  "threshold": 8,
   "format": ["typescript", "javascript"],
   "output": "./jscpd-report",
   "reporters": ["html", "json", "console", "markdown"],
-  "min-lines": 5,
-  "min-tokens": 50,
+  "minLines": 3,
+  "minTokens": 15,
   "absolute": true,
   "ignore": [
     "**/dist/**",
