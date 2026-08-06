@@ -97,7 +97,6 @@ function pickStringFields(
 }
 
 const PARAMETER_EXTRA_FIELDS = [
-  "schema",
   "enum",
   "default",
   "examples",
@@ -113,7 +112,7 @@ function pickDefined(
 }
 
 function namedConfigDecorator(
-  code: "invalid-trait-config" | "invalid-parameter-config",
+  code: "invalid-trait-config",
   formatKey: string,
   fields: string[],
   symbol: symbol,

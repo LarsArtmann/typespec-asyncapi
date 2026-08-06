@@ -134,7 +134,7 @@ extern dec useMessageTrait(target: Model, name: valueof string);
 /**
  * Define a reusable channel parameter
  * @param name Parameter name (used as key in components.parameters)
- * @param config Parameter configuration (description, location, schema, enum, default, examples)
+ * @param config Parameter configuration (description, location, enum, default, examples)
  */
 extern dec parameter(target: Namespace, name: valueof string, config: {} | valueof Record<unknown>);
 

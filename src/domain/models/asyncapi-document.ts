@@ -230,10 +230,9 @@ export interface CorrelationIdObject {
 export interface ParameterObject {
   location?: string;
   description?: string;
-  schema?: JsonSchema;
-  enum?: unknown[];
-  default?: unknown;
-  examples?: unknown[];
+  enum?: string[];
+  default?: string;
+  examples?: string[];
 }
 
 export interface Tag {

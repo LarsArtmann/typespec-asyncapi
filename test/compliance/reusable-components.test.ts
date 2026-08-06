@@ -166,11 +166,10 @@ describe("components.parameters compliance", () => {
     expect(doc.components?.parameters).toBeUndefined();
   });
 
-  it("extracts schema, default, and examples from @parameter config", async () => {
+  it("extracts default and examples from @parameter config", async () => {
     const doc = await compileAndValidateOrThrow(`
       @parameter("status", #{
         description: "Filter by status",
-        schema: #{ type: "string" },
         default: "active",
         examples: #["active"]
       })
@@ -182,7 +181,6 @@ describe("components.parameters compliance", () => {
 
     const param = doc.components?.parameters?.status as ParameterObject;
     expect(param.description).toBe("Filter by status");
-    expect(param.schema).toStrictEqual({ type: "string" });
     expect(param.default).toBe("active");
     expect(param.examples).toStrictEqual(["active"]);
   });
