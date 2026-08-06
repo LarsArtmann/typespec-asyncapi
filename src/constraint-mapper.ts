@@ -142,7 +142,21 @@ export function applyConstraints(
     );
   }
 
-  mapVisibility(program, prop, schema);
+  // @visibility → readOnly/writeOnly (annotation keywords, survive as $ref siblings)
+  const lifecycle = getLifecycleVisibilityEnum(program);
+  if (lifecycle) {
+    const modifiers = getVisibilityForClass(program, prop, lifecycle);
+    if (modifiers.size > 0) {
+      const names = new Set([...modifiers.values()].map((m) => m.name));
+      const hasRead = names.has("Read");
+      const hasWrite = names.has("Create") || names.has("Update");
+      if (hasRead && !hasWrite) {
+        schema.readOnly = true;
+      } else if (hasWrite && !hasRead) {
+        schema.writeOnly = true;
+      }
+    }
+  }
 
   if (schema.$ref) {
     return schema;
@@ -156,41 +170,4 @@ export function applyConstraints(
   }
 
   return schema;
-}
-
-/**
- * Map `@visibility` decorator to `readOnly`/`writeOnly` keywords.
- *
- * TypeSpec Lifecycle → JSON Schema:
- *   Read only → readOnly: true
- *   Create/Update only → writeOnly: true
- *   Both or neither → no keyword (fully visible)
- *
- * Delete and Query lifecycle values have no JSON Schema equivalent and are
- * silently ignored.
- */
-function mapVisibility(
-  program: Program,
-  prop: ModelProperty,
-  schema: JsonSchema,
-): void {
-  const lifecycle = getLifecycleVisibilityEnum(program);
-  if (!lifecycle) {
-    return;
-  }
-
-  const modifiers = getVisibilityForClass(program, prop, lifecycle);
-  if (modifiers.size === 0) {
-    return;
-  }
-
-  const names = new Set([...modifiers.values()].map((m) => m.name));
-  const hasRead = names.has("Read");
-  const hasWrite = names.has("Create") || names.has("Update");
-
-  if (hasRead && !hasWrite) {
-    schema.readOnly = true;
-  } else if (hasWrite && !hasRead) {
-    schema.writeOnly = true;
-  }
 }

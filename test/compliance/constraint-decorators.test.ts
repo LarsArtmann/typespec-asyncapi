@@ -5,12 +5,15 @@
  * mapped to JSON Schema keywords in the emitter output. All output is validated
  * against the official AsyncAPI 3.1.0 JSON Schema via AJV.
  *
- * Decorators tested:
+ * Decorators/mappings tested (16 total):
  *   @minValue → minimum          @maxValue → maximum
  *   @minValueExclusive → exclusiveMinimum   @maxValueExclusive → exclusiveMaximum
  *   @minLength → minLength       @maxLength → maxLength
  *   @pattern → pattern           @format → format
- *   #deprecated → deprecated     @minItems → minItems     @maxItems → maxItems
+ *   @minItems → minItems         @maxItems → maxItems
+ *   @doc → description           #deprecated → deprecated
+ *   @summary → title             @example → examples
+ *   @visibility → readOnly/writeOnly   = syntax → default
  */
 
 import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
