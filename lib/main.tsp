@@ -33,10 +33,25 @@ extern dec message(target: Model, config: {} | valueof Record<unknown>);
 extern dec protocol(target: Operation | Model, config: {} | valueof Record<unknown>);
 
 /**
- * Apply security scheme information
- * @param config Security configuration object containing name and scheme
+ * Apply security scheme information. When applied to a Namespace, registers
+ * a `SecurityScheme` in `components.securitySchemes`. When applied to an
+ * Operation, also registers the scheme so it can be referenced via
+ * `@operationSecurity`.
+ *
+ * @param config Security configuration: `{name, scheme}` where `scheme` is
+ *               the SecurityScheme object.
  */
 extern dec security(target: Operation | Namespace, config: {} | valueof Record<unknown>);
+
+/**
+ * Apply a Security Requirement (a reference to an existing
+ * `components.securitySchemes` entry) to an operation. The named scheme
+ * must be defined elsewhere via `@security`. The requirement can include
+ * optional OAuth2 scopes.
+ *
+ * @param config Security requirement: `{name, scopes?}`.
+ */
+extern dec operationSecurity(target: Operation, config: {} | valueof Record<unknown>);
 
 /**
  * Define server configuration

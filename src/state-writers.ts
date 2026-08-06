@@ -125,7 +125,7 @@ export const storeServerConfig = (
     name: config.name,
     protocol: normalizeProtocol(
       (config.protocol as string | undefined) ?? "http",
-    ) as ServerConfigData["protocol"],
+    ),
     url: (config.url as string | undefined) ?? "http://localhost:3000",
     ...(typeof config.protocolVersion === "string"
       ? { protocolVersion: config.protocolVersion }
@@ -376,9 +376,7 @@ function multiRefStore(symbol: symbol): MultiStore {
   };
 }
 
-export const storeOperationTraitRef: MultiStore = multiRefStore(
-  stateSymbols.operationTraitRefs,
-);
+export const storeOperationTraitRef: MultiStore = multiRefStore(stateSymbols.operationTraitRefs);
 export const storeMessageTraitRef: MultiStore = multiRefStore(stateSymbols.messageTraitRefs);
 
 export const storeCorrelationIdRef = (
@@ -391,9 +389,13 @@ export const storeCorrelationIdRef = (
 };
 
 export const storeBindingRef: MultiStore = multiRefStore(stateSymbols.bindingRefs);
-export const storeChannelBindingRef: MultiStore = multiRefStore(
-  stateSymbols.channelBindingRefs,
-);
-export const storeChannelServerRef: MultiStore = multiRefStore(
-  stateSymbols.channelServerRefs,
-);
+export const storeChannelBindingRef: MultiStore = multiRefStore(stateSymbols.channelBindingRefs);
+export const storeChannelServerRef: MultiStore = multiRefStore(stateSymbols.channelServerRefs);
+
+export const storeOperationSecurityRef = (
+  program: Program,
+  target: Type,
+  ref: { name: string; scopes?: string[] },
+): void =>
+  // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
+  storeMulti(program, stateSymbols.operationSecurityRefs, target, ref);

@@ -27,6 +27,7 @@ import {
   storeApiVersion,
   storeOperationId,
   storeOperationReply,
+  storeOperationSecurityRef,
   storeOperationType,
   storeProtocolConfig,
   storeSecurityConfig,
@@ -360,4 +361,26 @@ export function $apiVersion(
     return;
   }
   storeApiVersion(context.program, target, version);
+}
+
+export function $operationSecurity(
+  context: DecoratorContext,
+  target: Operation,
+  config: unknown,
+): void {
+  if (!config || typeof config !== "object") {
+    return;
+  }
+  const c = config as Record<string, unknown>;
+  const name = typeof c.name === "string" ? c.name : undefined;
+  if (!name) {
+    return;
+  }
+  const scopes = Array.isArray(c.scopes)
+    ? c.scopes.filter((s): s is string => typeof s === "string")
+    : undefined;
+  storeOperationSecurityRef(context.program, target, {
+    name,
+    ...(scopes ? { scopes } : {}),
+  });
 }

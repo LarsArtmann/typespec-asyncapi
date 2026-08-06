@@ -93,6 +93,12 @@ export function $defaultContentType(
   if (!contentType || typeof contentType !== "string") {
     return;
   }
+  if (!/^[a-zA-Z0-9!#$&^_.+-]+\/[a-zA-Z0-9!#$&^_.+-]+(?:\s*;\s*.+)?$/u.test(contentType)) {
+    reportDiagnostic(context, "invalid-default-content-type", target, {
+      contentType,
+    });
+    return;
+  }
   storeDefaultContentType(context.program, target, contentType);
 }
 

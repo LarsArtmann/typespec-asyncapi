@@ -160,6 +160,12 @@ export const $lib = createTypeSpecLibrary({
       },
       severity: "error",
     },
+    "invalid-default-content-type": {
+      messages: {
+        default: paramMessage`@defaultContentType value '${"contentType"}' is not a valid MIME type (expected e.g. 'application/json').`,
+      },
+      severity: "warning",
+    },
   },
   name: "@lars-artmann/typespec-asyncapi",
   state: {
@@ -204,6 +210,9 @@ export const $lib = createTypeSpecLibrary({
     channelServerRefs: {
       description: "Operations to referenced server names for channel.servers",
     },
+    operationSecurityRefs: {
+      description: "Operations to security requirement references",
+    },
   },
 } as const);
 
@@ -235,4 +244,5 @@ export const stateSymbols = {
   bindingRefs: Symbol("bindingRefs"),
   channelBindingRefs: Symbol("channelBindingRefs"),
   channelServerRefs: Symbol("channelServerRefs"),
+  operationSecurityRefs: Symbol("operationSecurityRefs"),
 } as const;

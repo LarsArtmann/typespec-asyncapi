@@ -266,6 +266,13 @@ export interface AsyncAPIConsolidatedState {
   bindingRefs: Map<Type, string[]>;
   channelBindingRefs: Map<Type, string[]>;
   channelServerRefs: Map<Type, string[]>;
+  operationSecurityRefs: Map<Type, OperationSecurityRef[]>;
+}
+
+/** Operation Security Requirement — references an existing scheme by name with optional scopes. */
+export interface OperationSecurityRef {
+  name: string;
+  scopes?: string[];
 }
 
 /**
@@ -362,6 +369,10 @@ export function consolidateAsyncAPIState(
     channelServerRefs: getMultiState<string>(
       program,
       stateSymbols.channelServerRefs,
+    ),
+    operationSecurityRefs: getMultiState<OperationSecurityRef>(
+      program,
+      stateSymbols.operationSecurityRefs,
     ),
   };
 }

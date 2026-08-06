@@ -67,6 +67,13 @@ export const buildOperations: BuilderFn = (state, ctx) => {
         operationObj.bindings = bindings;
       }
 
+      const opSecRefs = state.operationSecurityRefs.get(opType);
+      if (opSecRefs && opSecRefs.length > 0) {
+        operationObj.security = opSecRefs.map((r) => ({
+          [r.name]: r.scopes ?? [],
+        }));
+      }
+
       const replyData = state.operationReplies.get(opType);
       if (replyData) {
         const { replyKey, schemaName } = resolveReplyKey(
