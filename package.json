@@ -91,6 +91,7 @@
     "duplicate:all": "mkdir -p jscpd-report/html && chmod 755 jscpd-report/html && jscpd src test scripts --threshold 15",
     "check": "bun run typecheck && bun run lint",
     "validate": "bun run check && bun run test",
+    "verify": "bun run build && bun run lint && bun run test && bun run test:coverage:gate && bun run duplicate",
     "dev": "bun run --watch src/index.ts",
     "debug": "node --inspect-brk ./dist/index.js",
     "debug:test": "vitest run --inspect-brk",
