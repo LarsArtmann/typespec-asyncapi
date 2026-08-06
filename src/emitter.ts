@@ -19,14 +19,14 @@ export async function $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): Pro
   const schemas = generateSchemas(context);
   const document = buildAsyncAPIDocument(rawState, schemas, options, context.program);
 
-  const rawFileType = options?.["file-type"] ?? "yaml";
+  const rawFileType = options["file-type"] ?? "yaml";
   const fileType: string =
     typeof rawFileType === "string"
       ? rawFileType
-      : (((rawFileType as Record<string, unknown>)?.format as string) ?? "yaml");
-  const outputFile = options?.["output-file"] ?? "asyncapi";
+      : (rawFileType.format ?? "yaml");
+  const outputFile = options["output-file"] ?? "asyncapi";
   const outputPath = `${outputFile}.${fileType}`;
-  const splitSchemasEnabled = options?.["split-schemas"] === true;
+  const splitSchemasEnabled = options["split-schemas"] === true;
 
   if (splitSchemasEnabled) {
     const { mainDocument, schemaFiles } = splitSchemas(document, fileType);

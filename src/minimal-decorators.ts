@@ -321,7 +321,7 @@ export function $reply(
   replyModel: Model,
   address?: unknown,
 ): void {
-  if (!replyModel || !replyModel.name) {
+  if (!replyModel.name) {
     return;
   }
   storeOperationReply(context.program, target, {

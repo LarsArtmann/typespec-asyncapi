@@ -5,6 +5,7 @@
 import type { Program, Type } from "@typespec/compiler";
 import type {
   ProtocolBindings,
+  SecurityRequirement,
   SecurityScheme,
   Tag,
 } from "./domain/models/asyncapi-document.js";
@@ -175,6 +176,45 @@ export interface OperationReplyData {
   address?: string;
 }
 
+// === REUSABLE COMPONENT STATE DATA ===
+
+/** Operation trait definition stored from @operationTrait. */
+export interface OperationTraitData {
+  name: string;
+  description?: string;
+  summary?: string;
+  title?: string;
+  security?: SecurityRequirement[];
+}
+
+/** Message trait definition stored from @messageTrait. */
+export interface MessageTraitData {
+  name: string;
+  contentType?: string;
+  description?: string;
+  title?: string;
+}
+
+/** Reusable parameter definition stored from @parameter. */
+export interface ParameterConfigData {
+  name: string;
+  description?: string;
+  location?: string;
+}
+
+/** Reusable correlation ID definition stored from @reusableCorrelationId. */
+export interface ReusableCorrelationIdData {
+  name: string;
+  location: string;
+  description?: string;
+}
+
+/** Reusable binding definition stored from @reusableBinding. */
+export interface ReusableBindingData {
+  name: string;
+  bindings: ProtocolBindings;
+}
+
 // === STATE CONSOLIDATION UTILITIES ===
 
 /**
@@ -195,6 +235,15 @@ export interface AsyncAPIConsolidatedState {
   operationReplies: Map<Type, OperationReplyData>;
   operationIds: Map<Type, string>;
   apiVersion: Map<Type, string>;
+  operationTraits: Map<Type, OperationTraitData[]>;
+  messageTraits: Map<Type, MessageTraitData[]>;
+  reusableParameters: Map<Type, ParameterConfigData[]>;
+  reusableCorrelationIds: Map<Type, ReusableCorrelationIdData[]>;
+  reusableBindings: Map<Type, ReusableBindingData[]>;
+  operationTraitRefs: Map<Type, string[]>;
+  messageTraitRefs: Map<Type, string[]>;
+  correlationIdRefs: Map<Type, string>;
+  bindingRefs: Map<Type, string[]>;
 }
 
 /**

@@ -72,8 +72,9 @@ export function applyChannelDocs(ctx: DocumentBuildContext): void {
 export const attachChannelBindings: BuilderFn = (state, ctx) => {
   for (const { name, data } of iterNamedTypes(state.protocolConfigs)) {
     const channelKey = ctx.opToChannel.get(name) ?? name;
-    if (data.protocol && ctx.channels[channelKey]) {
-      ctx.channels[channelKey].bindings = buildProtocolBinding(data);
+    const channel = ctx.channels[channelKey];
+    if (data.protocol && channel) {
+      channel.bindings = buildProtocolBinding(data);
     }
   }
 };

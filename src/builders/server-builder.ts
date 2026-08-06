@@ -20,7 +20,7 @@ export const buildServers: BuilderFn = (state, ctx) => {
         protocol: normalizeProtocol(entry.protocol),
       };
 
-      const varMatches = entry.url?.match(/\{(?<var>[^}]+)\}/gu);
+      const varMatches = entry.url.match(/\{(?<var>[^}]+)\}/gu);
       if (varMatches && varMatches.length > 0) {
         const vars: Record<string, { default?: string; description?: string }> = {};
         for (const match of varMatches) {
