@@ -21,7 +21,7 @@ export const mergeExplicitMessages: BuilderFn = (state, ctx) => {
     const msgObj: MessageObject = {
       name: data.title ?? name,
       contentType: data.contentType ?? "application/json",
-      title: data.title,
+      title: data.title ?? name,
       ...(data.description ? { summary: data.description } : {}),
       payload: refSchema(name),
     };

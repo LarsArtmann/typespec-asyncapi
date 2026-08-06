@@ -125,4 +125,17 @@ describe("spec Compliance: @doc propagation", () => {
     expect(msg).toBeDefined();
     expect(msg?.title).toBe("UserSignup");
   });
+
+  it("sets message title on auto-registered messages without @message decorator", async () => {
+    const doc = await compileAndValidateOrThrow(`
+      model AutoRegistered { id: string; }
+      @channel("events")
+      @publish
+      op publishEvent(): AutoRegistered;
+    `);
+
+    const msg = doc.components?.messages?.AutoRegistered;
+    expect(msg).toBeDefined();
+    expect(msg?.title).toBe("AutoRegistered");
+  });
 });

@@ -238,6 +238,7 @@ export interface ParameterObject {
 export interface Tag {
   name: string;
   description?: string;
+  externalDocs?: ExternalDocumentationObject;
 }
 
 /** Shared metadata fields available on both trait types and their parent objects. */
@@ -340,7 +341,6 @@ interface DocumentBody {
   defaultContentType?: string;
   operations?: Record<string, OperationObject>;
   components?: ComponentsObject;
-  tags?: Tag[];
 }
 
 /**

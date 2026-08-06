@@ -36,11 +36,13 @@ components:
     OrderCreated:
       name: OrderCreated
       contentType: application/json
+      title: OrderCreated
       payload:
         $ref: "#/components/schemas/OrderCreated"
     OrderShipped:
       name: OrderShipped
       contentType: application/json
+      title: OrderShipped
       payload:
         $ref: "#/components/schemas/OrderShipped"
   schemas:
