@@ -4,10 +4,7 @@ import { join } from "node:path";
 import YAML from "yaml";
 import type { ParsedAsyncAPIDocument } from "../../src/domain/models/asyncapi-document.js";
 
-const GOLDEN_FILE = join(
-  import.meta.dirname,
-  "reusable-components.expected.yaml",
-);
+const GOLDEN_FILE = join(import.meta.dirname, "reusable-components.expected.yaml");
 
 const SOURCE = `
 @operationTrait("standardOps", #{
@@ -67,22 +64,12 @@ describe("golden File Test: Reusable Components", () => {
     const goldenContent = readFileSync(GOLDEN_FILE, "utf8");
     const golden = YAML.parse(goldenContent);
 
-    expect(actual.components.operationTraits).toStrictEqual(
-      golden.components.operationTraits,
-    );
-    expect(actual.components.messageTraits).toStrictEqual(
-      golden.components.messageTraits,
-    );
-    expect(actual.components.correlationIds).toStrictEqual(
-      golden.components.correlationIds,
-    );
-    expect(actual.components.operationBindings).toStrictEqual(
-      golden.components.operationBindings,
-    );
+    expect(actual.components.operationTraits).toStrictEqual(golden.components.operationTraits);
+    expect(actual.components.messageTraits).toStrictEqual(golden.components.messageTraits);
+    expect(actual.components.correlationIds).toStrictEqual(golden.components.correlationIds);
+    expect(actual.components.operationBindings).toStrictEqual(golden.components.operationBindings);
     expect(actual.components.tags).toStrictEqual(golden.components.tags);
-    expect(actual.components.channelBindings).toStrictEqual(
-      golden.components.channelBindings,
-    );
+    expect(actual.components.channelBindings).toStrictEqual(golden.components.channelBindings);
     expect(actual.info.tags).toStrictEqual(golden.info.tags);
   });
 
@@ -102,9 +89,7 @@ describe("golden File Test: Reusable Components", () => {
     const doc = YAML.parse(output) as ParsedAsyncAPIDocument;
 
     const op = doc.operations?.publishUserEvent;
-    expect(op?.traits?.[0]?.$ref).toBe(
-      "#/components/operationTraits/standardOps",
-    );
+    expect(op?.traits?.[0]?.$ref).toBe("#/components/operationTraits/standardOps");
     expect(op?.bindings?.$ref).toBe("#/components/operationBindings/stdKafka");
   });
 

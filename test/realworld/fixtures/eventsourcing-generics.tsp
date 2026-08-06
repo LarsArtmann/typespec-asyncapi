@@ -2,8 +2,7 @@
 // Pattern Source: typespec-eventsourcing (src/types/branded-ids.tsp, events.tsp)
 // Pattern: Generic models with constrained type parameters, spread of generic
 //          with string literal argument, phantom brand fields, named unions,
-//          3-level inheritance chains with eventType narrowing, generic event
-//          data parameterization
+//          3-level inheritance chains with eventType narrowing
 // =============================================================================
 
 @service(#{ title: "Event Sourcing Domain" })
@@ -58,81 +57,85 @@ union CommandResult {
   failure: CommandFailure,
 }
 
-// --- Generic base event with typed event data ---
-model BaseEvent<TData> {
+// --- 3-level event hierarchy ---
+model BaseEvent {
   eventId: EventId;
   aggregateId: AggregateId;
   eventType: string;
   eventVersion: int32 = 1;
   timestamp: utcDateTime;
   correlationId: CorrelationId;
-  eventData: TData;
+  eventData: Record<unknown>;
 }
 
-// --- Concrete domain events (instantiate generic with specific data type) ---
-model UserCreatedEvent extends BaseEvent<{
-  entityName: "User";
-  initialData: {
-    email: string;
-    name: string;
-    roles: string[];
-    isActive: boolean = true;
-  };
-}> {
-  eventType: "user.created";
-}
-
-model UserUpdatedEvent extends BaseEvent<{
-  entityName: "User";
-  fieldsChanged: string[];
-  transitionContext: Record<string>;
-}> {
-  eventType: "user.updated";
-}
-
-model UserDeletedEvent extends BaseEvent<{
-  entityName: "User";
-  deletionReason: "self-initiated" | "admin-action" | "gdpr-request" | "inactivity";
-  softDelete: boolean;
-}> {
-  eventType: "user.deleted";
-}
-
-// --- Snapshot event (extends BaseEvent with snapshot data) ---
-model AggregateSnapshotEvent extends BaseEvent<{
-  aggregateType: string;
-  aggregateVersion: int64;
-  eventsSinceLastSnapshot: int32;
-  snapshotData: unknown;
-  compressionType: "gzip" | "lz4" | "none" = "none";
-}> {
-  eventType: "aggregate.snapshot";
-}
-
-// --- Command base model ---
-model BaseCommand {
-  commandId: CommandId;
-  commandType: string;
-  commandVersion: string = "1.0.0";
-  timestamp: utcDateTime;
-  correlationId: CorrelationId;
-  commandData: Record<unknown>;
-}
-
-model CreateUserCommand extends BaseCommand {
-  commandType: "user.create";
-  commandData: {
-    email: string;
-    name: string;
-    roles: string[];
+model BaseCreatedEvent extends BaseEvent {
+  eventType: "entity.created";
+  eventData: {
+    entityName: string;
+    initialData: Record<unknown>;
   };
 }
 
-model UpdateUserCommand extends BaseCommand {
-  commandType: "user.update";
-  commandData: {
-    userId: string;
+model BaseUpdatedEvent extends BaseEvent {
+  eventType: "entity.updated";
+  eventData: {
+    entityName: string;
+    previousValue: unknown;
+    newValue: unknown;
     fieldsToUpdate: Record<unknown>;
+  };
+}
+
+model BaseDeletedEvent extends BaseEvent {
+  eventType: "entity.deleted";
+  eventData: {
+    entityName: string;
+    deletionReason: string;
+    softDelete: boolean = true;
+  };
+}
+
+// --- Concrete domain events (3rd level) ---
+model UserCreatedEvent extends BaseCreatedEvent {
+  eventType: "user.created";
+  eventData: {
+    entityName: "User";
+    initialData: {
+      email: string;
+      name: string;
+      roles: string[];
+      isActive: boolean = true;
+    };
+  };
+}
+
+model UserUpdatedEvent extends BaseUpdatedEvent {
+  eventType: "user.updated";
+  eventData: {
+    entityName: "User";
+    fieldsChanged: string[];
+    transitionContext: Record<string>;
+  };
+}
+
+model UserDeletedEvent extends BaseDeletedEvent {
+  eventType: "user.deleted";
+  eventData: {
+    entityName: "User";
+    deletionReason: "self-initiated" | "admin-action" | "gdpr-request" | "inactivity";
+    softDelete: boolean;
+  };
+}
+
+// --- Snapshot event ---
+model AggregateSnapshotEvent extends BaseEvent {
+  eventType: "aggregate.snapshot";
+  eventData: {
+    aggregateType: string;
+    aggregateVersion: int64;
+    eventsSinceLastSnapshot: int32;
+    snapshotData: unknown;
+    compressionType: "gzip" | "lz4" | "none" = "none";
   };
 }
 
@@ -141,6 +144,7 @@ model ErrorDetails {
   code: string;
   message: string;
   details: Record<string>;
+  stackTrace: string;
 }
 
 // --- Validation result ---
@@ -190,8 +194,3 @@ op publishValidationResult(): CommandValidationResult;
 @channel("commands.process")
 @subscribe
 op subscribeCommandProcessing(commandId: string): CommandResult;
-
-@doc("Subscribe to create user commands")
-@channel("commands.user.create")
-@subscribe
-op subscribeCreateUserCommand(): CreateUserCommand;
