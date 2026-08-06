@@ -6,7 +6,7 @@
 
 ## Current State
 
-Pre-release (`0.2.0-beta`). The emitter produces spec-compliant AsyncAPI 3.1 output validated against the official JSON Schema. **938 tests** pass across 79 files. Oxlint and ESLint both clean (0 errors, 0 warnings). **22 diagnostic codes** (17 error + 5 warning), all compile-time validated. Full protocol binding support for all **22 AsyncAPI protocols** (auto-generated from `@asyncapi/specs`) with auto-versioning, key normalization, field-level validation, and placement validation. **15 constraint decorators** mapped (`@minValue`, `@maxValue`, `@pattern`, `@minLength`, `@maxLength`, `@format`, `@minItems`, `@maxItems`, `#deprecated`, default values, and exclusive variants). Model inheritance emits `allOf`, model-variant unions emit `oneOf`, `@discriminator` enables polymorphic patterns. `@typespec/versioning` integrated for `info.version` fallback. **Zero code duplication** (jscpd 0% threshold, structural enforcement via HOFs and mixin interfaces). **96.7% coverage** average. Cross-emitter shared module (`src/shared/`) exports `JsonSchema`, `extractValue`, `intrinsicToSchema`, and `AsyncAPISchemaEmitter` for reuse.
+Pre-release (`0.2.0-beta`). The emitter produces spec-compliant AsyncAPI 3.1 output validated against the official JSON Schema. **938 tests** pass across 79 files. Oxlint and ESLint both clean (0 errors, 0 warnings). **22 diagnostic codes** (17 error + 5 warning), all compile-time validated. Full protocol binding support for all **22 AsyncAPI protocols** (auto-generated from `@asyncapi/specs`) with auto-versioning, key normalization, field-level validation, and placement validation. **15 constraint decorators** mapped (`@minValue`, `@maxValue`, exclusive variants, `@minLength`/`@maxLength`, `@pattern`, `@format`, `@minItems`/`@maxItems`, `#deprecated`, `@summary`→`title`, `@example`→`examples`, `@visibility`→`readOnly`/`writeOnly`, default values→`default`). Model inheritance emits `allOf`, model-variant unions emit `oneOf`, `@discriminator` enables polymorphic patterns. `@typespec/versioning` integrated for `info.version` fallback. **Zero code duplication** (jscpd 0% threshold, structural enforcement via HOFs and mixin interfaces). **96.9% coverage** average. Cross-emitter shared module (`src/shared/`) exports `JsonSchema`, `extractValue`, `intrinsicToSchema`, and `AsyncAPISchemaEmitter` for reuse.
 
 ---
 
@@ -18,13 +18,16 @@ Push toward complete AsyncAPI 3.1 coverage — every field, every binding, every
 
 Raw ideas:
 
-- Populate `info.contact`, `info.license`, `info.termsOfService`, `info.externalDocs` — emitter options exist; could add TypeSpec decorators for source-level control
+- Populate `info.contact`, `info.license`, `info.termsOfService`, `info.externalDocs` via TypeSpec decorators for source-level control (emitter options already wired)
+- Populate message `title`, operation `summary`, channel `summary`/`description` from decorators
 - Support multi-format schemas (`schemaFormat`, Avro/Protobuf payload) per AsyncAPI 3.1
 - Populate remaining components types (parameters, correlationIds, tags, operationTraits, messageTraits, reusable bindings)
 
 Recently completed:
 
 - ~~15 constraint decorators mapped~~ — `src/constraint-mapper.ts`: `@minValue`→`minimum`, `@maxValue`→`maximum`, exclusive variants, `@minLength`/`@maxLength`, `@pattern`, `@format`, `@minItems`/`@maxItems`, `#deprecated`, `@summary`→`title`, `@example`→`examples`, `@visibility`→`readOnly`/`writeOnly`, default values (`=` syntax)→`default`. 48 compliance tests.
+- ~~`scalarDeclaration` metadata support~~ — `@summary`/`#deprecated`/`@doc`/`@example` now applied to user-defined scalar declarations via extracted `declareSchema()` helper
+- ~~Duplication baseline restored~~ — 3 regression clones from allOf/oneOf/discriminator work fixed via `composeUnionVariants()` extraction and `.filter()` pre-filtering
 - ~~`allOf` for model inheritance~~ — `modelDeclaration()` emits `allOf: [{ $ref: "..." }]` for base models instead of flattening. Multi-level chains produce linked refs.
 - ~~`oneOf` for model-variant unions~~ — All-Model unions emit `oneOf` (exclusive). Mixed types stay `anyOf`, string literals stay `enum`.
 - ~~`@discriminator` → `discriminator`~~ — `getDiscriminator()` on models emits `discriminator` keyword. Full polymorphic pattern supported.
@@ -69,7 +72,7 @@ Keep the codebase honest as it grows.
 Raw ideas:
 
 - TypeSpec 1.14.0 upgrade (we're on 1.13.0) — includes auto decorators, `.ts` module imports, memory leak fix, entrypoint resolution fix
-- Type safety: tighten `OperationObject.action` to required, add `SecurityScheme.description`, make `ParsedAsyncAPIDocument.asyncapi` a literal union
+- Type safety: tighten `OperationObject.action` to required, add `SecurityScheme.description`
 - Move generic utilities (`applyOverrides`, `collectNamesInto`) to a shared `src/util/` module
 
 Recently completed:

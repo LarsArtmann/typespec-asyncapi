@@ -22,14 +22,17 @@ The duplication gate was **failing** (3 clones, 0.27%) when I started — a regr
 The jscpd duplication gate was **failing** with 3 clones (0.27%) when the session started. This was a regression from the `allOf`/`oneOf`/`@discriminator` work committed after Self-Review II. AGENTS.md claimed "0 clones" — the gate was red but nobody noticed.
 
 **Clone 1: `schema-emitter.ts:212 ↔ schema-emitter.ts:92` (5 lines)**
+
 - `union()` and `typeToSchema()` both had identical `refForNamedType → extractValue → fallback` variant mapping logic
 - **Fix:** Refactored `union()` to use `refOrFallback()` (the existing private method), eliminating the duplicate mapping code entirely
 
 **Clone 2: `schema-emitter.ts:282 ↔ schema-emitter.ts:113` (5 lines)**
+
 - `union()` and `typeToSchema()` both had identical `allModelVariants` check + `getDiscriminator` + `oneOf`/`anyOf` branching
 - **Fix:** Extracted `composeUnionVariants(variants, union)` private method. Both `union()` and `typeToSchema()` now call it.
 
 **Clone 3: `binding-field-validator.ts:44 ↔ generate-binding-specs.ts:70` (5 lines)**
+
 - Both files had identical `for...of` + `if (field === "bindingVersion") { continue; }` pattern
 - **Fix:** Replaced with `.filter(([f]) => f !== "bindingVersion")` pre-filtering before the loop
 
@@ -251,18 +254,18 @@ The header JSDoc in `constraint-mapper.ts` has gone stale multiple times (said 1
 
 ## Session Metrics
 
-| Metric                 | Before          | After           | Delta                                         |
-| ---------------------- | --------------- | --------------- | --------------------------------------------- |
-| Tests                  | 928             | 938             | +10                                           |
-| Test files             | 79              | 79              | 0                                             |
-| Source files           | 36              | 36              | 0                                             |
-| Source lines (emitter) | 359             | 320             | -39 (composeUnionVariants + declareSchema)    |
-| Source lines (mapper)  | 195             | 203             | +8 (applyDefault)                             |
-| Coverage               | 96.9%           | 96.9%           | 0                                             |
-| Duplication            | 3 clones (0.27%)| 0 clones (0%)   | -3 clones (**GATE WAS RED → GREEN**)         |
-| Decorators mapped      | 14              | 15              | +1 (default values via `=` syntax)            |
-| Commits this session   | —               | 3 (auto-git)    | —                                             |
-| Files changed          | —               | ~10             | —                                             |
+| Metric                 | Before           | After         | Delta                                      |
+| ---------------------- | ---------------- | ------------- | ------------------------------------------ |
+| Tests                  | 928              | 938           | +10                                        |
+| Test files             | 79               | 79            | 0                                          |
+| Source files           | 36               | 36            | 0                                          |
+| Source lines (emitter) | 359              | 320           | -39 (composeUnionVariants + declareSchema) |
+| Source lines (mapper)  | 195              | 203           | +8 (applyDefault)                          |
+| Coverage               | 96.9%            | 96.9%         | 0                                          |
+| Duplication            | 3 clones (0.27%) | 0 clones (0%) | -3 clones (**GATE WAS RED → GREEN**)       |
+| Decorators mapped      | 14               | 15            | +1 (default values via `=` syntax)         |
+| Commits this session   | —                | 3 (auto-git)  | —                                          |
+| Files changed          | —                | ~10           | —                                          |
 
 ---
 

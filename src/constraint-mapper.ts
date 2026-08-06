@@ -13,7 +13,15 @@
  * sibling by `collectModelProperties` in `schema-emitter.ts`.
  */
 
-import type { Enum, Model, ModelProperty, Program, Scalar, Type, Union } from "@typespec/compiler";
+import type {
+  Enum,
+  Model,
+  ModelProperty,
+  Program,
+  Scalar,
+  Type,
+  Union,
+} from "@typespec/compiler";
 import {
   getDoc,
   getExamples,
@@ -42,7 +50,11 @@ type ExampleTarget = Model | Scalar | Enum | Union | ModelProperty;
  * Apply `@doc` decorator value to a schema's `description` keyword.
  * Works on any Type (model, property, enum, scalar).
  */
-export function applyDocDescription(program: Program, target: Type, schema: JsonSchema): void {
+export function applyDocDescription(
+  program: Program,
+  target: Type,
+  schema: JsonSchema,
+): void {
   const doc = getDoc(program, target);
   if (doc) {
     schema.description = doc;
@@ -54,7 +66,11 @@ export function applyDocDescription(program: Program, target: Type, schema: Json
  * Works on any Type (model, property, enum, scalar) since `isDeprecated`
  * checks compiler-level deprecation state set by the `#deprecated` directive.
  */
-export function applyDeprecated(program: Program, target: Type, schema: JsonSchema): void {
+export function applyDeprecated(
+  program: Program,
+  target: Type,
+  schema: JsonSchema,
+): void {
   if (isDeprecated(program, target)) {
     schema.deprecated = true;
   }
@@ -64,7 +80,11 @@ export function applyDeprecated(program: Program, target: Type, schema: JsonSche
  * Apply `@summary` decorator value to a schema's `title` keyword.
  * Works on any Type (model, property, enum, scalar, union).
  */
-export function applySummary(program: Program, target: Type, schema: JsonSchema): void {
+export function applySummary(
+  program: Program,
+  target: Type,
+  schema: JsonSchema,
+): void {
   const summary = getSummary(program, target);
   if (summary !== undefined) {
     schema.title = summary;
@@ -75,10 +95,16 @@ export function applySummary(program: Program, target: Type, schema: JsonSchema)
  * Apply `@example` decorator values to a schema's `examples` keyword.
  * Uses `serializeValueAsJson` to convert TypeSpec Value types to plain JSON.
  */
-export function applyExamples(program: Program, target: ExampleTarget, schema: JsonSchema): void {
+export function applyExamples(
+  program: Program,
+  target: ExampleTarget,
+  schema: JsonSchema,
+): void {
   const examples = getExamples(program, target);
   if (examples.length > 0) {
-    schema.examples = examples.map((ex) => serializeValueAsJson(program, ex.value, ex.value.type));
+    schema.examples = examples.map((ex) =>
+      serializeValueAsJson(program, ex.value, ex.value.type),
+    );
   }
 }
 
@@ -89,7 +115,11 @@ export function applyExamples(program: Program, target: ExampleTarget, schema: J
  *   Create/Update only → `writeOnly: true`
  *   Both or neither → no keyword (fully visible)
  */
-export function applyVisibility(program: Program, prop: ModelProperty, schema: JsonSchema): void {
+export function applyVisibility(
+  program: Program,
+  prop: ModelProperty,
+  schema: JsonSchema,
+): void {
   const lifecycle = getLifecycleVisibilityEnum(program);
   if (!lifecycle) {
     return;
@@ -116,9 +146,17 @@ export function applyVisibility(program: Program, prop: ModelProperty, schema: J
  * Uses `serializeValueAsJson` to convert TypeSpec Value to plain JSON.
  * `default` is an annotation keyword in JSON Schema, so it is applied even on `$ref` schemas.
  */
-export function applyDefault(program: Program, prop: ModelProperty, schema: JsonSchema): void {
+export function applyDefault(
+  program: Program,
+  prop: ModelProperty,
+  schema: JsonSchema,
+): void {
   if (prop.defaultValue) {
-    schema.default = serializeValueAsJson(program, prop.defaultValue, prop.defaultValue.type);
+    schema.default = serializeValueAsJson(
+      program,
+      prop.defaultValue,
+      prop.defaultValue.type,
+    );
   }
 }
 
@@ -126,7 +164,11 @@ export function applyDefault(program: Program, prop: ModelProperty, schema: Json
  * Apply all metadata decorators/directives (doc, deprecated, summary, examples)
  * to a schema in one call. Used for model and enum declarations.
  */
-export function applyMetadata(program: Program, target: ExampleTarget, schema: JsonSchema): void {
+export function applyMetadata(
+  program: Program,
+  target: ExampleTarget,
+  schema: JsonSchema,
+): void {
   applyDocDescription(program, target, schema);
   applyDeprecated(program, target, schema);
   applySummary(program, target, schema);

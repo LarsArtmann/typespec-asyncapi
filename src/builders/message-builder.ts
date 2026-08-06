@@ -5,7 +5,10 @@
  * messages. Applies correlation IDs, headers, bindings, tags, and @doc.
  */
 
-import type { JsonSchema, MessageObject } from "../domain/models/asyncapi-document.js";
+import type {
+  JsonSchema,
+  MessageObject,
+} from "../domain/models/asyncapi-document.js";
 import { refSchema } from "../domain/models/asyncapi-document.js";
 import { getDoc, nameOfType, withMessage } from "./_imports.js";
 import type { AsyncAPIConsolidatedState, BuilderFn } from "./_imports.js";
