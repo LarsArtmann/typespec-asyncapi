@@ -141,7 +141,7 @@ function messageDecorator<K extends keyof MessageObject>(
   read: (s: AsyncAPIConsolidatedState, t: unknown) => MessageObject[K] | null,
 ): MessageDecoratorFn {
   return (state, type, msg, skipExisting = false) =>
-    applyMessageDecorator({ state, type, msg, prop, skipExisting, read });
+    { applyMessageDecorator({ state, type, msg, prop, skipExisting, read }); };
 }
 
 /** Apply correlation ID to a message if present in state. */

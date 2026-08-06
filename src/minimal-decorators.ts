@@ -85,11 +85,11 @@ export function $message(
     code: "invalid-message-config",
     format: { modelName: target.name },
     run: () =>
-      storeMessageConfig(
+      { storeMessageConfig(
         context.program,
         target,
         extractMessageConfig(config, target),
-      ),
+      ); },
   });
 }
 function extractMessageConfig(
@@ -142,7 +142,7 @@ function makeConfigDecorator<T>(
     validatedDecorator(ctx, target, config, {
       code,
       format: format(target),
-      run: () => run(ctx, target, config),
+      run: () => { run(ctx, target, config); },
     });
 }
 
@@ -163,7 +163,7 @@ export const $protocol = makeConfigDecorator<Operation | Model>(
 export const $security = makeConfigDecorator<Operation | Namespace>(
   "invalid-security-config",
   (target) => ({ targetKind: target.kind }),
-  (ctx, target, cfg) => applySecurity({ context: ctx, target, config: cfg }),
+  (ctx, target, cfg) => { applySecurity({ context: ctx, target, config: cfg }); },
 );
 
 function applySecurity(args: {
@@ -333,13 +333,13 @@ export function $reply(
 export const $operationId = makeStringIdDecorator<Operation>(
   "invalid-operation-id",
   (target) => ({ operationName: target.name }),
-  (program, target, id) => storeOperationId(program, target, id),
+  (program, target, id) => { storeOperationId(program, target, id); },
 );
 
 export const $messageId = makeStringIdDecorator<Model>(
   "invalid-message-id",
   (target) => ({ modelName: target.name }),
-  (program, target, id) => storeMessageId(program, target, id),
+  (program, target, id) => { storeMessageId(program, target, id); },
 );
 
 /**
@@ -369,14 +369,14 @@ function makeStringIdDecorator<T>(
   store: (program: Program, target: T, id: string) => void,
 ): (context: DecoratorContext, target: T, id: unknown) => void {
   return (context, target, id) =>
-    applyStringIdDecorator({
+    { applyStringIdDecorator({
       context,
       target,
       id,
       diagnosticCode,
       format: format(target),
-      store: (program) => store(program, target, id as string),
-    });
+      store: (program) => { store(program, target, id as string); },
+    }); };
 }
 
 export function $apiVersion(

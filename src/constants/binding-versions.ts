@@ -114,7 +114,7 @@ export function getValidVersionsString(protocol: string): string | undefined {
 
 export function supportsBindingPlacement(protocol: string, kind: BindingTargetKind): boolean {
   const placement = BINDING_PLACEMENT[protocol];
-  return placement ? placement[kind] === true : false;
+  return placement ? placement[kind] : false;
 }
 
 export function getValidPlacements(protocol: string): BindingTargetKind[] {
@@ -122,5 +122,5 @@ export function getValidPlacements(protocol: string): BindingTargetKind[] {
   if (!placement) {
     return [];
   }
-  return (Object.keys(placement) as BindingTargetKind[]).filter((kind) => placement[kind] === true);
+  return (Object.keys(placement) as BindingTargetKind[]).filter((kind) => placement[kind]);
 }
