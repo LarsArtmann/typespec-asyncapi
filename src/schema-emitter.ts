@@ -279,7 +279,7 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<JsonSchema, AsyncAPIEmitt
         return Object.keys(s).length > 0 ? s : { type: "string" };
       });
       if (variants.every((v) => typeof v === "string")) {
-        return { enum: variants as string[], type: "string" };
+        return { enum: variants, type: "string" };
       }
       const schemaVariants = variants.map((v) => (typeof v === "string" ? { const: v } : v));
       return this.composeUnionVariants(schemaVariants, tUnion);

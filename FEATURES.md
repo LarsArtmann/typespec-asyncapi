@@ -1,6 +1,6 @@
 # Feature Inventory
 
-**Verified:** 2026-08-05 against actual code + test run (928 pass, 0 fail, 0 skip, 0 todo)
+**Verified:** 2026-08-06 against actual code + test run (938 pass, 0 fail, 0 skip, 0 todo)
 **Project:** `@lars-artmann/typespec-asyncapi` v0.2.0-beta
 **Lint:** oxlint 0 errors / 0 warnings, ESLint 0 errors / 0 warnings
 **Diagnostics:** 22 codes (17 error + 5 warning), all compile-time validated via `$lib.reportDiagnostic()`
@@ -42,7 +42,7 @@
 | Multi-message operations     | FULLY_FUNCTIONAL | Union return types produce multiple message refs in one operation                                                                                                                                                          |
 | Operation reply              | FULLY_FUNCTIONAL | `@reply` decorator emits reply with message ref and optional address                                                                                                                                                       |
 | `#deprecated` → `deprecated` | FULLY_FUNCTIONAL | `src/constraint-mapper.ts` — `applyDeprecated()` on properties, models, enums via `isDeprecated()`                                                                                                                         |
-| Constraint decorators        | FULLY_FUNCTIONAL | `src/constraint-mapper.ts` — 14 decorators mapped: @minValue to @maxValue (and exclusive variants), @minLength/@maxLength, @pattern, @format, @minItems/@maxItems, #deprecated, @summary, @example, @visibility. 38 tests) |
+| Constraint decorators        | FULLY_FUNCTIONAL | `src/constraint-mapper.ts` — 15 decorators mapped: @minValue to @maxValue (and exclusive variants), @minLength/@maxLength, @pattern, @format, @minItems/@maxItems, #deprecated, @summary, @example, @visibility, default values (`=` syntax). 48 tests) |
 
 ## Decorator System
 
@@ -117,7 +117,7 @@ All 19 AsyncAPI protocols auto-generated from `@asyncapi/specs/bindings/` via `s
 
 | Feature                 | Status           | Evidence                                                                                       |
 | ----------------------- | ---------------- | ---------------------------------------------------------------------------------------------- |
-| vitest test runner      | FULLY_FUNCTIONAL | 915 tests across 78 files (0 skip, 0 todo)                                                     |
+| vitest test runner      | FULLY_FUNCTIONAL | 938 tests across 79 files (0 skip, 0 todo)                                                     |
 | Golden file test        | FULLY_FUNCTIONAL | `test/golden/golden-file.test.ts`                                                              |
 | Schema validation tests | FULLY_FUNCTIONAL | `test/validation/schema-validation.test.ts`                                                    |
 | Spec compliance suite   | FULLY_FUNCTIONAL | `test/compliance/` — 16 files, ~181 tests validated against official AsyncAPI 3.1 JSON Schema  |
@@ -128,7 +128,7 @@ All 19 AsyncAPI protocols auto-generated from `@asyncapi/specs/bindings/` via `s
 | Studio compatibility    | FULLY_FUNCTIONAL | `test/validation/studio-compatibility.test.ts` — 9 tests using `@asyncapi/parser`              |
 | Document structure      | FULLY_FUNCTIONAL | `test/validation/document-structure.test.ts` — 8 structural requirement tests                  |
 | Versioning integration  | FULLY_FUNCTIONAL | `test/integration/versioning.test.ts` — 5 tests for `@typespec/versioning` support             |
-| Constraint decorators   | FULLY_FUNCTIONAL | `test/compliance/constraint-decorators.test.ts` — 15 tests, AJV-validated                      |
+| Constraint decorators   | FULLY_FUNCTIONAL | `test/compliance/constraint-decorators.test.ts` — 48 tests, AJV-validated                      |
 | Unit tests              | FULLY_FUNCTIONAL | `test/unit/` — binding placement, emitter tester verification                                  |
 | Performance benchmark   | FULLY_FUNCTIONAL | `test/benchmark/` — 5 tests measuring compilation time + scaling metrics                       |
 | Deduplication gate      | FULLY_FUNCTIONAL | `jscpd src scripts` — 0% threshold, 0% duplication enforced                                    |
