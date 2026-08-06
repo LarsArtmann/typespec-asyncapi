@@ -30,6 +30,7 @@ Before writing any code, I read every source file in the builder pipeline to und
 ### 2. Implemented TODO #4: Richer trait field extraction
 
 **What changed:**
+
 - `src/state.ts` — Extended `OperationTraitData` with `security?`, `tags?`, `bindings?`. Extended `MessageTraitData` with `summary?`, `tags?`, `bindings?`, `headers?`, `correlationId?`. Added `CorrelationIdObject` and `JsonSchema` imports.
 - `src/namespace-decorators.ts` — Added `OPERATION_TRAIT_EXTRA` and `MESSAGE_TRAIT_EXTRA` constant arrays. `$operationTrait` now picks security/tags/bindings via `extraPicker`. `$messageTrait` now picks summary/tags/bindings/headers/correlationId.
 - `src/builders/components-builder.ts` — `buildReusableComponents` now emits the richer fields via expanded `pickOpt` key lists.
@@ -39,6 +40,7 @@ Before writing any code, I read every source file in the builder pipeline to und
 ### 3. Implemented TODO #9: `@parameter` location validation
 
 **What changed:**
+
 - `src/lib.ts` — Added `invalid-parameter-location` diagnostic (warning severity). Total diagnostic codes: 25 (19 error + 6 warning).
 - `src/namespace-decorators.ts` — `$parameter` refactored from `namedConfigDecorator` factory to a standalone function (to add validation without exceeding max-params of 5). Added `validateParameterLocation()` that warns when `location` doesn't start with `$message.` or lacks a `#` JSON pointer.
 
@@ -47,6 +49,7 @@ Before writing any code, I read every source file in the builder pipeline to und
 ### 4. Implemented TODO #2: `@useChannelBinding` — `components.channelBindings` population
 
 **What changed (10 files wired end-to-end):**
+
 - `lib/main.tsp` — Declared `@useChannelBinding(target: Operation, name: valueof string)`. Decorator count: 26.
 - `src/lib.ts` — Added `channelBindingRefs` state symbol.
 - `src/state.ts` — Added `channelBindingRefs: Map<Type, string[]>` to consolidated state.
@@ -62,6 +65,7 @@ Before writing any code, I read every source file in the builder pipeline to und
 ### 5. Implemented TODO #8: `@tags` rich tag objects with `externalDocs`
 
 **What changed:**
+
 - `lib/main.tsp` — Broadened `@tags` signature from `valueof string[]` to `valueof (string | Record<unknown>)[]`.
 - `src/minimal-decorators.ts` — Rewrote `$tags` to handle mixed arrays of strings and tag objects. Added `normalizeTagItem()` that extracts `name`, `description`, `externalDocs` from value-literal objects. Imported `Tag` type.
 - `src/state-writers.ts` — Rewrote `storeTags` to accept `Tag[]` instead of `string[]`. Now merges by name instead of set-deduplicating strings.
@@ -77,13 +81,13 @@ Before writing any code, I read every source file in the builder pipeline to und
 
 ### 7. All quality gates green
 
-| Gate | Result |
-|------|--------|
-| Build (`tsc`) | 0 errors |
-| Lint (ESLint + oxlint) | 0 errors, 0 warnings |
-| Tests (vitest) | **1010 pass / 0 fail** / 83 files |
+| Gate                           | Result                                         |
+| ------------------------------ | ---------------------------------------------- |
+| Build (`tsc`)                  | 0 errors                                       |
+| Lint (ESLint + oxlint)         | 0 errors, 0 warnings                           |
+| Tests (vitest)                 | **1010 pass / 0 fail** / 83 files              |
 | Coverage (bun test --coverage) | 97.3% avg, 39 files, 75% per-file min — PASSED |
-| Duplication (jscpd) | 0 clones / 0% |
+| Duplication (jscpd)            | 0 clones / 0%                                  |
 
 ---
 
@@ -94,7 +98,7 @@ Before writing any code, I read every source file in the builder pipeline to und
 I updated 4 living docs (TODO_LIST, CHANGELOG, FEATURES, ROADMAP) but did NOT update AGENTS.md. The prior session's status report explicitly called this out (item #6 in section e), and I even put "AGENTS.md freshness pass" as TODO item #3. But I didn't actually DO it. AGENTS.md now has the following drift:
 
 | Claim in AGENTS.md | Real value | Source |
-|---|---|---|
+| ---------------------------------------------- | -------------------------------------------- | ------------------------------------------ | ----------------- |
 | "25 decorators" | **26** | `grep -cE 'extern dec' lib/main.tsp` |
 | "24 codes (19 error + 5 warning)" | **25 (19 error + 6 warning)** | `src/lib.ts` |
 | "9 reusable-component decorators" | **10** | added `@useChannelBinding` |
@@ -109,7 +113,7 @@ I updated 4 living docs (TODO_LIST, CHANGELOG, FEATURES, ROADMAP) but did NOT up
 | No mention of `channelBindings` context | New field | `src/builders/types.ts:47` |
 | No mention of trait richer fields | security/tags/bindings/headers/correlationId | `src/namespace-decorators.ts` |
 | No mention of `@parameter` location validation | `invalid-parameter-location` diagnostic | `src/lib.ts` |
-| No mention of `@tags` rich objects | Accepts `(string | Record<unknown>)[]` | `lib/main.tsp:56` |
+| No mention of `@tags` rich objects | Accepts `(string                             | Record<unknown>)[]` | `lib/main.tsp:56` |
 
 ### `pnpm run verify` not run as a single command
 
@@ -122,18 +126,21 @@ I ran build, lint, test, coverage:gate, and duplicate as **5 separate commands**
 ### 1. Negative tests for `@useChannelBinding`
 
 Every other reusable component decorator has negative tests in `test/integration/reusable-components-negative.test.ts`:
+
 - `@useOperationTrait` — empty name test, undefined reference test
 - `@useMessageTrait` — empty name test, empty useMessageTrait test
 - `@useCorrelationId` — empty name, empty location, undefined reference
 - `@useBinding` — empty name, empty useBinding, undefined reference
 
 `@useChannelBinding` has **zero negative tests**. Should test:
+
 - Empty name: `@useChannelBinding("")` → should emit `invalid-bindings-config`
 - Undefined reference: `@useChannelBinding("nonexistent")` → should silently skip (already tested in compliance suite, but not in the negative test file)
 
 ### 2. Negative test for rich tag objects
 
 `@tags` now accepts tag objects, but there's no test for:
+
 - Tag object missing `name` field → should emit `invalid-tags-config` with `"non-string"` messageId
 - Non-array value → should emit `invalid-tags-config`
 - Object that is neither string nor valid tag → should emit `invalid-tags-config`
@@ -291,14 +298,14 @@ The AsyncAPI 3.1 JSON Schema rejects `{ userPassword: [] }` in operation trait `
 
 ## Session Metrics
 
-| Metric | Before | After | Delta |
-|--------|--------|-------|-------|
-| Tests | 982 | **1010** | +28 |
-| Test files | 82 | **83** | +1 |
-| Decorators | 25 | **26** | +1 (`@useChannelBinding`) |
-| Diagnostic codes | 24 | **25** | +1 (`invalid-parameter-location`) |
-| TODO_LIST open items | 12 | **5** | -7 (all real items resolved) |
-| New compliance tests | — | 10 | +10 |
-| `components.*` maps populated | 9 of 12 | **12 of 12** | All now have population paths |
-| AGENTS.md drift items | ~3 | **~15** | +12 (significantly worse) |
-| Gates | — | build, lint, test, coverage, duplicate all green | Verified |
+| Metric                        | Before  | After                                            | Delta                             |
+| ----------------------------- | ------- | ------------------------------------------------ | --------------------------------- |
+| Tests                         | 982     | **1010**                                         | +28                               |
+| Test files                    | 82      | **83**                                           | +1                                |
+| Decorators                    | 25      | **26**                                           | +1 (`@useChannelBinding`)         |
+| Diagnostic codes              | 24      | **25**                                           | +1 (`invalid-parameter-location`) |
+| TODO_LIST open items          | 12      | **5**                                            | -7 (all real items resolved)      |
+| New compliance tests          | —       | 10                                               | +10                               |
+| `components.*` maps populated | 9 of 12 | **12 of 12**                                     | All now have population paths     |
+| AGENTS.md drift items         | ~3      | **~15**                                          | +12 (significantly worse)         |
+| Gates                         | —       | build, lint, test, coverage, duplicate all green | Verified                          |

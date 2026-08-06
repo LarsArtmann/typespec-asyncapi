@@ -4,7 +4,10 @@ import { join } from "node:path";
 import YAML from "yaml";
 import type { ParsedAsyncAPIDocument } from "../../src/domain/models/asyncapi-document.js";
 
-const GOLDEN_FILE = join(import.meta.dirname, "reusable-components.expected.yaml");
+const GOLDEN_FILE = join(
+  import.meta.dirname,
+  "reusable-components.expected.yaml",
+);
 
 const SOURCE = `
 @operationTrait("standardOps", #{
@@ -94,7 +97,9 @@ describe("golden File Test: Reusable Components", () => {
     const doc = YAML.parse(output) as ParsedAsyncAPIDocument;
 
     const op = doc.operations?.publishUserEvent;
-    expect(op?.traits?.[0]?.$ref).toBe("#/components/operationTraits/standardOps");
+    expect(op?.traits?.[0]?.$ref).toBe(
+      "#/components/operationTraits/standardOps",
+    );
     expect(op?.bindings?.$ref).toBe("#/components/operationBindings/stdKafka");
   });
 

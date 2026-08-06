@@ -2,7 +2,11 @@
  * Helper functions for decorators: diagnostic reporting and model property extraction.
  */
 
-import type { DecoratorContext, DiagnosticTarget, Model } from "@typespec/compiler";
+import type {
+  DecoratorContext,
+  DiagnosticTarget,
+  Model,
+} from "@typespec/compiler";
 import { $lib } from "./lib.js";
 import { PROTOCOL_LIST } from "./constants/protocols.js";
 
@@ -49,10 +53,19 @@ export const validateNonEmptyString = (
     : (reportDiagnostic(context, diagnosticCode, target, format), false);
 
 /** Validate that a config value is present; if not, report and return false. */
-export const validateConfig = (config: unknown, ctx: DiagnosticContext): boolean =>
+export const validateConfig = (
+  config: unknown,
+  ctx: DiagnosticContext,
+): boolean =>
   config
     ? true
-    : (reportDiagnostic(ctx.context, ctx.diagnosticCode, ctx.target, ctx.format), false);
+    : (reportDiagnostic(
+        ctx.context,
+        ctx.diagnosticCode,
+        ctx.target,
+        ctx.format,
+      ),
+      false);
 
 /** Report a `unsupported-protocol` diagnostic. Shared by all protocol-accepting decorators. */
 export const reportUnsupportedProtocol = (
@@ -166,7 +179,10 @@ export function getModelPropertyStringValue(
   return readModelProperty(model, propertyName) as string | undefined;
 }
 
-export function getModelPropertyValue(model: Model, propertyName: string): unknown {
+export function getModelPropertyValue(
+  model: Model,
+  propertyName: string,
+): unknown {
   return readModelProperty(model, propertyName);
 }
 

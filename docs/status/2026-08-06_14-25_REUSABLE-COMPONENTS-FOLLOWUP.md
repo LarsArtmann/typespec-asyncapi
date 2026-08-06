@@ -9,6 +9,7 @@ negative tests, parameter extraction, serverBindings, AGENTS.md update.
 ## a) FULLY DONE
 
 ### 1. AGENTS.md Updated
+
 - Decorator count: **25** (16 core + 9 reusable-component)
 - Diagnostic codes: **24** (19 error + 5 warning)
 - Builder file list: **10 files** (added `components-builder.ts`, `tag-builder.ts`)
@@ -19,19 +20,19 @@ negative tests, parameter extraction, serverBindings, AGENTS.md update.
 
 **11 tests**, all passing, covering every error path:
 
-| Decorator | Test | Diagnostic Code |
-|-----------|------|-----------------|
-| `@operationTrait("")` | Empty name | `invalid-trait-config` |
-| `@useOperationTrait("nonexistent")` | Undefined ref silently skipped | (no error) |
-| `@messageTrait("")` | Empty name | `invalid-trait-config` |
-| `@useMessageTrait("")` | Empty ref name | `invalid-trait-config` |
-| `@parameter("", ...)` | Empty name | `invalid-parameter-config` |
-| `@reusableCorrelationId("", ...)` | Empty name | `invalid-correlationId-config` |
-| `@reusableCorrelationId("x", "")` | Empty location | `invalid-correlationId-config` |
-| `@useCorrelationId("nonexistent")` | Undefined ref silently skipped | (no error) |
-| `@reusableBinding("", ...)` | Empty name | `invalid-bindings-config` |
-| `@useBinding("")` | Empty ref name | `invalid-bindings-config` |
-| `@useBinding("nonexistent")` | Undefined ref silently skipped | (no error) |
+| Decorator                           | Test                           | Diagnostic Code                |
+| ----------------------------------- | ------------------------------ | ------------------------------ |
+| `@operationTrait("")`               | Empty name                     | `invalid-trait-config`         |
+| `@useOperationTrait("nonexistent")` | Undefined ref silently skipped | (no error)                     |
+| `@messageTrait("")`                 | Empty name                     | `invalid-trait-config`         |
+| `@useMessageTrait("")`              | Empty ref name                 | `invalid-trait-config`         |
+| `@parameter("", ...)`               | Empty name                     | `invalid-parameter-config`     |
+| `@reusableCorrelationId("", ...)`   | Empty name                     | `invalid-correlationId-config` |
+| `@reusableCorrelationId("x", "")`   | Empty location                 | `invalid-correlationId-config` |
+| `@useCorrelationId("nonexistent")`  | Undefined ref silently skipped | (no error)                     |
+| `@reusableBinding("", ...)`         | Empty name                     | `invalid-bindings-config`      |
+| `@useBinding("")`                   | Empty ref name                 | `invalid-bindings-config`      |
+| `@useBinding("nonexistent")`        | Undefined ref silently skipped | (no error)                     |
 
 Key discovery: TypeSpec diagnostic codes are **library-name-prefixed** at runtime
 (`@lars-artmann/typespec-asyncapi/invalid-trait-config`), not bare. Tests use
@@ -64,27 +65,28 @@ Key discovery: TypeSpec diagnostic codes are **library-name-prefixed** at runtim
 
 Two files exceeded the 400-line ESLint `max-lines` limit from the prior session's work:
 
-| File | Before | After | How |
-|------|--------|-------|-----|
-| `src/state-writers.ts` | 434 | **329** | Removed 5 dead `storeOperationTrait`/`storeMessageTrait`/etc. functions (never called — `storeMulti` is used directly) + cleaned 5 unused type imports |
-| `src/minimal-decorators.ts` | 409 | **328** | Inlined `applyStringIdDecorator` into `makeStringIdDecorator` (removed intermediate function + `DiagnosticContext` import) |
+| File                        | Before | After   | How                                                                                                                                                    |
+| --------------------------- | ------ | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `src/state-writers.ts`      | 434    | **329** | Removed 5 dead `storeOperationTrait`/`storeMessageTrait`/etc. functions (never called — `storeMulti` is used directly) + cleaned 5 unused type imports |
+| `src/minimal-decorators.ts` | 409    | **328** | Inlined `applyStringIdDecorator` into `makeStringIdDecorator` (removed intermediate function + `DiagnosticContext` import)                             |
 
 ### 6. Duplication Elimination
 
 5 jscpd clones introduced by the parameter/binding refactor → **0 clones** through:
+
 - `ParameterConfigData extends ParameterObject` (eliminates 6 duplicated field declarations)
 - `namedConfigDecorator` regains `"invalid-parameter-config"` in its union (no standalone `$parameter` function)
 - `$reusableBinding` extracts `{ targetKind: target.kind }` into `fmt` variable (used twice)
 
 ### 7. Full Verification Gate — ALL PASS
 
-| Gate | Result |
-|------|--------|
-| TypeScript build (`tsc -p tsconfig.json`) | 0 errors |
-| ESLint + oxlint (`--deny-warnings`) | 0 errors, 0 warnings |
-| Tests (vitest, 82 files) | **982 pass / 0 fail** |
-| Coverage gate (bun, 39 files) | PASSED — avg 97.3%, min 75% per-file |
-| jscpd duplication | **0 clones / 0% / 0% tokens** |
+| Gate                                      | Result                               |
+| ----------------------------------------- | ------------------------------------ |
+| TypeScript build (`tsc -p tsconfig.json`) | 0 errors                             |
+| ESLint + oxlint (`--deny-warnings`)       | 0 errors, 0 warnings                 |
+| Tests (vitest, 82 files)                  | **982 pass / 0 fail**                |
+| Coverage gate (bun, 39 files)             | PASSED — avg 97.3%, min 75% per-file |
+| jscpd duplication                         | **0 clones / 0% / 0% tokens**        |
 
 ---
 
@@ -93,6 +95,7 @@ Two files exceeded the 400-line ESLint `max-lines` limit from the prior session'
 ### `components.channelBindings` — Type Exists, No Population
 
 The `ComponentsObject` type includes `channelBindings?: Record<string, ProtocolBindings>` (line 318 of `asyncapi-document.ts`), but there is no decorator or builder code to populate it. This requires either:
+
 - A new decorator targeting channel addresses (which are strings, not Type types), or
 - Extending `@useBinding` to accept a channel-key string parameter
 
@@ -196,6 +199,7 @@ I created `debug-diagnostic.test.ts` and `debug-param.test.ts` during developmen
 ### 1. Should `components.channelBindings` be implemented via a new decorator or by extending `@useBinding`?
 
 The fundamental problem: channels are not first-class TypeSpec types — they're derived from `@channel("address")` on operations. There's no Type target to attach a `@useBinding` to. Options:
+
 - **A:** New `@channelBinding(name, addressPattern)` decorator on Namespace that matches channels by address glob
 - **B:** Extend `@useBinding` to accept a string second parameter (the channel address)
 - **C:** Add a `bindings` parameter to `@channel` itself (inline, not reusable)

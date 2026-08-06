@@ -104,8 +104,7 @@ describe("document structure constraints", () => {
       op publish(): Event;
     `);
     const channels = doc.channels as
-      | Record<string, Record<string, unknown>>
-      | undefined;
+      Record<string, Record<string, unknown>> | undefined;
     expect(channels).toBeDefined();
     for (const channel of Object.values(channels!)) {
       expect(channel.address).toBeDefined();
@@ -121,12 +120,10 @@ describe("document structure constraints", () => {
       op publish(): UserEvent;
     `);
     const components = doc.components as
-      | Record<string, Record<string, unknown>>
-      | undefined;
+      Record<string, Record<string, unknown>> | undefined;
     expect(components).toBeDefined();
     const messages = components!.messages as
-      | Record<string, Record<string, unknown>>
-      | undefined;
+      Record<string, Record<string, unknown>> | undefined;
     expect(messages).toBeDefined();
     for (const message of Object.values(messages!)) {
       expect(message.payload).toBeDefined();
@@ -143,8 +140,7 @@ describe("document structure constraints", () => {
       op subscribe(): Event;
     `);
     const operations = doc.operations as
-      | Record<string, Record<string, unknown>>
-      | undefined;
+      Record<string, Record<string, unknown>> | undefined;
     expect(operations).toBeDefined();
     const opValues = Object.values(operations!);
     expect(opValues).toHaveLength(2);
@@ -166,11 +162,9 @@ describe("document structure constraints", () => {
       op publish(): UserEvent;
     `);
     const components = doc.components as
-      | Record<string, Record<string, unknown>>
-      | undefined;
+      Record<string, Record<string, unknown>> | undefined;
     const schemas = components!.schemas as
-      | Record<string, Record<string, unknown>>
-      | undefined;
+      Record<string, Record<string, unknown>> | undefined;
     expect(schemas).toBeDefined();
     const userEvent = schemas!.UserEvent;
     expect(userEvent).toBeDefined();
@@ -190,8 +184,7 @@ describe("document structure constraints", () => {
       op publish(): Event;
     `);
     const servers = doc.servers as
-      | Record<string, Record<string, unknown>>
-      | undefined;
+      Record<string, Record<string, unknown>> | undefined;
     expect(servers).toBeDefined();
     for (const server of Object.values(servers!)) {
       expect(server.protocol).toBeDefined();
@@ -208,8 +201,7 @@ describe("document structure constraints", () => {
       op multi(): CreatedEvent | DeletedEvent;
     `);
     const operations = doc.operations as
-      | Record<string, Record<string, unknown>>
-      | undefined;
+      Record<string, Record<string, unknown>> | undefined;
     const op = Object.values(operations!)[0]!;
     const messages = op.messages as unknown[];
     expect(messages).toHaveLength(2);

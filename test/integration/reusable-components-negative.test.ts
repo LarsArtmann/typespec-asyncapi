@@ -11,7 +11,8 @@ import { compileAsyncAPISpecRaw } from "../utils/test-helpers";
 const hasErrorCode = (
   diagnostics: readonly { severity: string; code: string }[],
   suffix: string,
-): boolean => diagnostics.some((d) => d.severity === "error" && d.code.endsWith(suffix));
+): boolean =>
+  diagnostics.some((d) => d.severity === "error" && d.code.endsWith(suffix));
 
 const hasNoErrors = (diagnostics: readonly { severity: string }[]): boolean =>
   diagnostics.every((d) => d.severity !== "error");
@@ -19,7 +20,8 @@ const hasNoErrors = (diagnostics: readonly { severity: string }[]): boolean =>
 const hasWarningCode = (
   diagnostics: readonly { severity: string; code: string }[],
   suffix: string,
-): boolean => diagnostics.some((d) => d.severity === "warning" && d.code.endsWith(suffix));
+): boolean =>
+  diagnostics.some((d) => d.severity === "warning" && d.code.endsWith(suffix));
 
 describe("negative: operationTrait", () => {
   it("reports invalid-trait-config for empty name", async () => {
@@ -67,7 +69,9 @@ describe("negative: parameter", () => {
       @parameter("", #{ description: "test" })
       namespace Test;
     `);
-    expect(hasErrorCode(result.diagnostics, "invalid-parameter-config")).toBe(true);
+    expect(hasErrorCode(result.diagnostics, "invalid-parameter-config")).toBe(
+      true,
+    );
   });
 
   it("warns invalid-parameter-location for malformed location", async () => {
@@ -75,7 +79,9 @@ describe("negative: parameter", () => {
       @parameter("userId", #{ description: "User", location: "invalid-path" })
       namespace Test;
     `);
-    expect(hasWarningCode(result.diagnostics, "invalid-parameter-location")).toBe(true);
+    expect(
+      hasWarningCode(result.diagnostics, "invalid-parameter-location"),
+    ).toBe(true);
   });
 
   it("does not warn for valid $message runtime expression", async () => {
@@ -83,7 +89,9 @@ describe("negative: parameter", () => {
       @parameter("userId", #{ description: "User", location: "$message.payload#/userId" })
       namespace Test;
     `);
-    expect(hasWarningCode(result.diagnostics, "invalid-parameter-location")).toBeFalsy();
+    expect(
+      hasWarningCode(result.diagnostics, "invalid-parameter-location"),
+    ).toBeFalsy();
   });
 });
 
@@ -93,7 +101,9 @@ describe("negative: reusableCorrelationId", () => {
       @reusableCorrelationId("", "$message.header#/correlationId")
       namespace Test;
     `);
-    expect(hasErrorCode(result.diagnostics, "invalid-correlationId-config")).toBe(true);
+    expect(
+      hasErrorCode(result.diagnostics, "invalid-correlationId-config"),
+    ).toBe(true);
   });
 
   it("reports invalid-correlationId-config for empty location", async () => {
@@ -101,7 +111,9 @@ describe("negative: reusableCorrelationId", () => {
       @reusableCorrelationId("default", "")
       namespace Test;
     `);
-    expect(hasErrorCode(result.diagnostics, "invalid-correlationId-config")).toBe(true);
+    expect(
+      hasErrorCode(result.diagnostics, "invalid-correlationId-config"),
+    ).toBe(true);
   });
 
   it("silently skips undefined correlationId reference", async () => {
@@ -122,7 +134,9 @@ describe("negative: reusableBinding", () => {
       @reusableBinding("", #{ kafka: #{ bindingVersion: "0.5.0" } })
       namespace Test;
     `);
-    expect(hasErrorCode(result.diagnostics, "invalid-bindings-config")).toBe(true);
+    expect(hasErrorCode(result.diagnostics, "invalid-bindings-config")).toBe(
+      true,
+    );
   });
 
   it("reports invalid-bindings-config for empty useBinding name", async () => {
@@ -133,7 +147,9 @@ describe("negative: reusableBinding", () => {
       @useBinding("")
       op publish(): Event;
     `);
-    expect(hasErrorCode(result.diagnostics, "invalid-bindings-config")).toBe(true);
+    expect(hasErrorCode(result.diagnostics, "invalid-bindings-config")).toBe(
+      true,
+    );
   });
 
   it("silently skips undefined binding reference", async () => {

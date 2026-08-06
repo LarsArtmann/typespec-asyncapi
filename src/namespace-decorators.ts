@@ -161,7 +161,9 @@ function validateParameterLocation(
     return;
   }
   if (!location.startsWith("$message.") || !location.includes("#")) {
-    reportDiagnostic(context, "invalid-parameter-location", target, { location });
+    reportDiagnostic(context, "invalid-parameter-location", target, {
+      location,
+    });
   }
 }
 

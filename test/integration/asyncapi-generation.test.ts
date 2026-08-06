@@ -334,13 +334,17 @@ describe("real AsyncAPI Generation Tests", () => {
         op subscribeOrdersByStatus(status: string): OrderEvent;
       `;
 
-      const { outputFiles, program } = await compileAsyncAPISpecWithoutErrors(source);
+      const { outputFiles, program } =
+        await compileAsyncAPISpecWithoutErrors(source);
 
       // Verify comprehensive compilation
       expect(program).toBeDefined();
       expect(outputFiles.size).toBeGreaterThan(0);
 
-      const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "enterprise-events.json");
+      const asyncapiDoc = await parseAsyncAPIOutput(
+        outputFiles,
+        "enterprise-events.json",
+      );
 
       // Validate AsyncAPI document structure
       expect(asyncapiDoc.asyncapi).toBe("3.1.0");
@@ -369,11 +373,16 @@ describe("real AsyncAPI Generation Tests", () => {
       for (const schemaName of expectedSchemas) {
         expect(asyncapiDoc.components.schemas[schemaName]).toBeDefined();
       }
-      TestValidationPatterns.validateExpectedSchemas(asyncapiDoc, expectedSchemas);
+      TestValidationPatterns.validateExpectedSchemas(
+        asyncapiDoc,
+        expectedSchemas,
+      );
 
       // Validate inheritance handling (OrderEvent extends BaseEvent via allOf)
       const orderEventSchema = asyncapiDoc.components.schemas.OrderEvent;
-      expect(orderEventSchema.allOf?.[0]?.$ref).toBe("#/components/schemas/BaseEvent");
+      expect(orderEventSchema.allOf?.[0]?.$ref).toBe(
+        "#/components/schemas/BaseEvent",
+      );
       expect(orderEventSchema.properties?.orderId).toBeDefined(); // Own property
       expect(orderEventSchema.properties?.customerId).toBeDefined(); // Own property
       // BaseEvent properties are in BaseEvent, not flattened
@@ -409,11 +418,16 @@ describe("real AsyncAPI Generation Tests", () => {
       for (const operationName of expectedOperations) {
         expect(asyncapiDoc.operations[operationName]).toBeDefined();
       }
-      TestValidationPatterns.validateExpectedOperations(asyncapiDoc, expectedOperations);
+      TestValidationPatterns.validateExpectedOperations(
+        asyncapiDoc,
+        expectedOperations,
+      );
 
       // Validate publish vs subscribe actions
       expect(asyncapiDoc.operations.publishOrderCreated.action).toBe("send");
-      expect(asyncapiDoc.operations.subscribeCustomerOrderEvents.action).toBe("receive");
+      expect(asyncapiDoc.operations.subscribeCustomerOrderEvents.action).toBe(
+        "receive",
+      );
 
       // Run comprehensive AsyncAPI validation
       const validation = await validateAsyncAPIObjectComprehensive(asyncapiDoc);
@@ -466,7 +480,10 @@ describe("real AsyncAPI Generation Tests", () => {
 
       const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
 
-      const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "union-type-test.json");
+      const asyncapiDoc = await parseAsyncAPIOutput(
+        outputFiles,
+        "union-type-test.json",
+      );
 
       // Validate union type handling in schema
       const flexibleEventSchema = asyncapiDoc.components.schemas.FlexibleEvent;
@@ -550,10 +567,19 @@ describe("real AsyncAPI Generation Tests", () => {
 
       const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
 
-      const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "multi-namespace-test.json");
+      const asyncapiDoc = await parseAsyncAPIOutput(
+        outputFiles,
+        "multi-namespace-test.json",
+      );
 
       // Validate schemas from all namespaces using shared utility
-      const expectedSchemas = ["User", "UserProfile", "Order", "OrderItem", "Notification"];
+      const expectedSchemas = [
+        "User",
+        "UserProfile",
+        "Order",
+        "OrderItem",
+        "Notification",
+      ];
       for (const schemaName of expectedSchemas) {
         expect(asyncapiDoc.components.schemas[schemaName]).toBeDefined();
         TestLogging.logMultiNamespaceSchema(schemaName);
@@ -571,7 +597,9 @@ describe("real AsyncAPI Generation Tests", () => {
         TestLogging.logMultiNamespaceOperation(operationName);
       }
 
-      TestLogging.logValidationSuccess("Multi-namespace TypeSpec processed successfully");
+      TestLogging.logValidationSuccess(
+        "Multi-namespace TypeSpec processed successfully",
+      );
     });
   });
 
@@ -612,7 +640,10 @@ describe("real AsyncAPI Generation Tests", () => {
 
       const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
 
-      const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "compliance-test.json");
+      const asyncapiDoc = await parseAsyncAPIOutput(
+        outputFiles,
+        "compliance-test.json",
+      );
 
       // Validate AsyncAPI 3.1.0 specification compliance
       expect(asyncapiDoc.asyncapi).toBe("3.1.0");
@@ -653,7 +684,9 @@ describe("real AsyncAPI Generation Tests", () => {
         validation.errors.forEach((error) => {
           console.error(`- ${error.path}: ${error.message}`);
         });
-        throw new Error(`AsyncAPI 3.1.0 compliance validation failed: ${validation.summary}`);
+        throw new Error(
+          `AsyncAPI 3.1.0 compliance validation failed: ${validation.summary}`,
+        );
       }
     });
 
@@ -701,7 +734,10 @@ describe("real AsyncAPI Generation Tests", () => {
 
       const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
 
-      const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "reference-test.json");
+      const asyncapiDoc = await parseAsyncAPIOutput(
+        outputFiles,
+        "reference-test.json",
+      );
 
       // Validate all referenced schemas are generated
       expect(asyncapiDoc.components.schemas.BaseReference).toBeDefined();
@@ -709,8 +745,11 @@ describe("real AsyncAPI Generation Tests", () => {
       expect(asyncapiDoc.components.schemas.RelatedModel).toBeDefined();
 
       // Validate inheritance in schema (ModelWithReferences extends BaseReference)
-      const modelWithRefsSchema = asyncapiDoc.components.schemas.ModelWithReferences;
-      expect(modelWithRefsSchema.allOf?.[0]?.$ref).toBe("#/components/schemas/BaseReference");
+      const modelWithRefsSchema =
+        asyncapiDoc.components.schemas.ModelWithReferences;
+      expect(modelWithRefsSchema.allOf?.[0]?.$ref).toBe(
+        "#/components/schemas/BaseReference",
+      );
       expect(modelWithRefsSchema.properties?.relatedModel).toBeDefined(); // Own
       // BaseReference properties are in BaseReference, not flattened
       const baseRefSchema = asyncapiDoc.components.schemas.BaseReference;
@@ -727,15 +766,21 @@ describe("real AsyncAPI Generation Tests", () => {
       const startTime = Date.now();
       const largeSource = generateLargeTypeSpecSource();
 
-      const { outputFiles } = await compileAsyncAPISpecWithoutErrors(largeSource, {
-        "file-type": "json",
-        "output-file": "large-scale-test",
-      });
+      const { outputFiles } = await compileAsyncAPISpecWithoutErrors(
+        largeSource,
+        {
+          "file-type": "json",
+          "output-file": "large-scale-test",
+        },
+      );
 
       const endTime = Date.now();
       const compilationTime = endTime - startTime;
 
-      const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "large-scale-test.json");
+      const asyncapiDoc = await parseAsyncAPIOutput(
+        outputFiles,
+        "large-scale-test.json",
+      );
 
       // Validate scale - should have 20 schemas and 40 operations
       expect(Object.keys(asyncapiDoc?.components?.schemas)).toHaveLength(20);

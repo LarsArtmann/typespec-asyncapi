@@ -21,6 +21,7 @@ Rebuilt all 4 living docs from ground-truth code state (ran build + test + cover
 Read every `docs/status/2026-08-06_*` and `docs/planning/2026-08-06_*` file. Extracted forward-looking items, verified each against current code before routing to TODO/ROADMAP/drop.
 
 Files read:
+
 - `2026-08-06_00-44_ALLOF-ONEOF-DISCRIMINATOR-IMPLEMENTATION.md`
 - `2026-08-06_09-02_CONSTRAINT-EXPANSION-CONTINUATION.md`
 - `2026-08-06_09-46_CONSTRAINT-EXPANSION-CONTINUATION-II.md`
@@ -35,25 +36,26 @@ Files read:
 
 Ran the actual gates inside `nix develop .#default` to get real numbers (not trusting doc claims):
 
-| Metric | Verified value |
-|--------|---------------|
-| Tests | **982 pass / 0 fail** (82 files) |
-| Coverage | **97.3% avg** (39 source files, 75% per-file min gate — PASSED) |
-| Duplication | **0 clones / 0%** |
-| Source files | **42** in `src/` |
-| Test files | **82** in `test/` |
-| Decorators | **25** in `lib/main.tsp` |
-| Diagnostic codes | **24** (19 error + 5 warning) in `src/lib.ts` |
-| Compliance tests | **18 files, ~249 tests** |
-| Builder files | **10** in `src/builders/` |
+| Metric           | Verified value                                                  |
+| ---------------- | --------------------------------------------------------------- |
+| Tests            | **982 pass / 0 fail** (82 files)                                |
+| Coverage         | **97.3% avg** (39 source files, 75% per-file min gate — PASSED) |
+| Duplication      | **0 clones / 0%**                                               |
+| Source files     | **42** in `src/`                                                |
+| Test files       | **82** in `test/`                                               |
+| Decorators       | **25** in `lib/main.tsp`                                        |
+| Diagnostic codes | **24** (19 error + 5 warning) in `src/lib.ts`                   |
+| Compliance tests | **18 files, ~249 tests**                                        |
+| Builder files    | **10** in `src/builders/`                                       |
 
 ### 3. Rebuilt TODO_LIST.md
 
-**Before:** 3 open items, 2 of which (components.tags, remaining components.*) were **already shipped**. Carried a 25-line "Completed items" trophy section.
+**Before:** 3 open items, 2 of which (components.tags, remaining components.\*) were **already shipped**. Carried a 25-line "Completed items" trophy section.
 
 **After:** 12 open items, all verified-undone against code with `file:line` evidence. Ranked High/Medium/Low impact. Trophy section deleted (completed work lives in CHANGELOG). Items harvested from the most recent reports' "next steps" sections.
 
 Key harvested items:
+
 - `info.tags` / top-level `tags` not populated (only `components.tags` is)
 - `components.channelBindings` has no population path
 - `@discriminator` required-validation missing
@@ -63,7 +65,7 @@ Key harvested items:
 
 ### 4. Rebuilt ROADMAP.md
 
-**Before:** "Current State" said 949 tests / 22 codes. Three theme sections each had 10-20 line "Recently completed" trophy blocks. Raw ideas included already-done work (components.*, verify alias).
+**Before:** "Current State" said 949 tests / 22 codes. Three theme sections each had 10-20 line "Recently completed" trophy blocks. Raw ideas included already-done work (components.\*, verify alias).
 
 **After:** Current State → 982 tests / 24 codes / 25 decorators. All trophy sections deleted. 4 themes with genuine raw ideas only. Non-goals preserved.
 
@@ -80,6 +82,7 @@ Key harvested items:
 Appended to `[Unreleased]`:
 
 **Added:**
+
 - Reusable AsyncAPI 3.1 components (9 decorators, components-builder, use-decorators)
 - `components.tags` population
 - Parameter `enum`/`default`/`examples` extraction
@@ -89,9 +92,11 @@ Appended to `[Unreleased]`:
 - Diagnostic codes 22→24, decorator count 25
 
 **Changed:**
+
 - Dead code remediation (state-writers 434→329, minimal-decorators 409→328)
 
 **Fixed:**
+
 - CI workflow broken by pnpm migration
 
 ### 7. Fixed broken CI workflow
@@ -283,14 +288,14 @@ I touched AGENTS.md's builder section (8→10 files) as a "fix on sight" but lef
 
 ## Session Metrics
 
-| Metric | Before | After | Delta |
-|--------|--------|-------|-------|
-| TODO_LIST open items | 3 (2 already done!) | 12 (all verified open) | +9 real items |
-| TODO_LIST trophy items | ~25 struck-through | 0 | -25 (deleted, live in CHANGELOG) |
-| ROADMAP trophy sections | 4 sections (~40 lines) | 0 | -40 lines |
-| FEATURES.md test count | 949 | 982 | +33 |
-| FEATURES.md diagnostic codes | 22 | 24 | +2 |
-| FEATURES.md sections | No reusable components | New section added | +1 section |
-| CHANGELOG [Unreleased] entries | Missing Aug 6 PM work | 7 Added + 1 Changed + 1 Fixed | +9 entries |
-| CI workflow | Broken (bun.lock missing) | Rewritten to pnpm | Critical fix |
-| Gates | — | build, lint, test, coverage, duplicate all green | Verified |
+| Metric                         | Before                    | After                                            | Delta                            |
+| ------------------------------ | ------------------------- | ------------------------------------------------ | -------------------------------- |
+| TODO_LIST open items           | 3 (2 already done!)       | 12 (all verified open)                           | +9 real items                    |
+| TODO_LIST trophy items         | ~25 struck-through        | 0                                                | -25 (deleted, live in CHANGELOG) |
+| ROADMAP trophy sections        | 4 sections (~40 lines)    | 0                                                | -40 lines                        |
+| FEATURES.md test count         | 949                       | 982                                              | +33                              |
+| FEATURES.md diagnostic codes   | 22                        | 24                                               | +2                               |
+| FEATURES.md sections           | No reusable components    | New section added                                | +1 section                       |
+| CHANGELOG [Unreleased] entries | Missing Aug 6 PM work     | 7 Added + 1 Changed + 1 Fixed                    | +9 entries                       |
+| CI workflow                    | Broken (bun.lock missing) | Rewritten to pnpm                                | Critical fix                     |
+| Gates                          | —                         | build, lint, test, coverage, duplicate all green | Verified                         |
