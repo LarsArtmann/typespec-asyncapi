@@ -97,6 +97,26 @@ export function validatedDecorator(
   return true;
 }
 
+/**
+ * Validate a non-empty `name` argument, then if valid invoke `onValid(name)`.
+ *
+ * This consolidates the validate-name-then-act pattern shared by all
+ * reusable-component decorators (`@use*`, `@operationTrait`, etc.).
+ */
+export function validateNameAndRun(opts: {
+  context: DecoratorContext;
+  target: unknown;
+  name: unknown;
+  code: keyof typeof $lib.diagnostics;
+  formatKey: string;
+  onValid: (name: string) => void;
+}): void {
+  if (!validateNonEmptyString(opts.name, opts.context, opts.target, opts.code, { [opts.formatKey]: String(opts.name) })) {
+    return;
+  }
+  opts.onValid(opts.name);
+}
+
 // === URL VALIDATION ===
 
 /**

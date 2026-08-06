@@ -1,8 +1,8 @@
 /**
  * Reference decorators for reusable components.
  *
- * Each decorator validates a non-empty string name and stores it as a
- * reference via a shared implementation driven by a data config object.
+ * Each decorator validates a non-empty string name via `validateNameAndRun`
+ * and stores it as a reference. No hand-written validation boilerplate.
  */
 
 import type { DecoratorContext } from "@typespec/compiler";
@@ -13,37 +13,20 @@ import {
   storeMessageTraitRef,
   storeOperationTraitRef,
 } from "./state-writers.js";
-import { validateNonEmptyString } from "./decorator-helpers.js";
-import type { $lib } from "./lib.js";
+import { validateNameAndRun } from "./decorator-helpers.js";
 
-type RefStore = (program: DecoratorContext["program"], target: Type, name: string) => void;
-
-function refDecorator(code: keyof typeof $lib.diagnostics, formatKey: string, store: RefStore) {
-  return (context: DecoratorContext, target: Type, name: unknown): void => {
-    if (
-      !validateNonEmptyString(name, context, target, code, {
-        [formatKey]: String(name),
-      })
-    ) {
-      return;
-    }
-    store(context.program, target, name);
-  };
+export function $useOperationTrait(context: DecoratorContext, target: Type, name: unknown): void {
+  validateNameAndRun({ context, target, name, code: "invalid-trait-config", formatKey: "traitName", onValid: (n) => storeOperationTraitRef(context.program, target, n) });
 }
 
-export const $useOperationTrait = refDecorator(
-  "invalid-trait-config",
-  "traitName",
-  storeOperationTraitRef,
-);
-export const $useMessageTrait = refDecorator(
-  "invalid-trait-config",
-  "traitName",
-  storeMessageTraitRef,
-);
-export const $useCorrelationId = refDecorator(
-  "invalid-correlationId-config",
-  "modelName",
-  storeCorrelationIdRef,
-);
-export const $useBinding = refDecorator("invalid-bindings-config", "targetKind", storeBindingRef);
+export function $useMessageTrait(context: DecoratorContext, target: Type, name: unknown): void {
+  validateNameAndRun({ context, target, name, code: "invalid-trait-config", formatKey: "traitName", onValid: (n) => storeMessageTraitRef(context.program, target, n) });
+}
+
+export function $useCorrelationId(context: DecoratorContext, target: Type, name: unknown): void {
+  validateNameAndRun({ context, target, name, code: "invalid-correlationId-config", formatKey: "modelName", onValid: (n) => storeCorrelationIdRef(context.program, target, n) });
+}
+
+export function $useBinding(context: DecoratorContext, target: Type, name: unknown): void {
+  validateNameAndRun({ context, target, name, code: "invalid-bindings-config", formatKey: "targetKind", onValid: (n) => storeBindingRef(context.program, target, n) });
+}

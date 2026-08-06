@@ -52,12 +52,8 @@ function resolveMessage(
   ctx: Ctx,
   type: Type,
 ): MessageObject | undefined {
-  const typeName = nameOfType(type);
-  if (!typeName) {
-    return undefined;
-  }
   const override = state.messages.get(type)?.messageId;
-  return ctx.messages[override ?? typeName];
+  return ctx.messages[override ?? (nameOfType(type) ?? "")];
 }
 
 /** Build reusable component maps from namespace-level decorator state. */
