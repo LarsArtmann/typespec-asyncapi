@@ -1,0 +1,61 @@
+asyncapi: 3.1.0
+info:
+  title: Generated API
+  version: 1.0.0
+channels:
+  animals:
+    address: animals
+    messages:
+      Animal:
+        $ref: "#/components/messages/Animal"
+operations:
+  publish:
+    action: send
+    channel:
+      $ref: "#/channels/animals"
+    messages:
+      - $ref: "#/channels/animals/messages/Animal"
+components:
+  messages:
+    Animal:
+      name: Animal
+      contentType: application/json
+      title: Animal
+      payload:
+        $ref: "#/components/schemas/Animal"
+  schemas:
+    Animal:
+      type: object
+      properties:
+        type:
+          type: string
+        name:
+          type: string
+      required:
+        - type
+        - name
+      discriminator: type
+    Dog:
+      type: object
+      properties:
+        type:
+          const: dog
+        breed:
+          type: string
+      required:
+        - type
+        - breed
+      allOf:
+        - $ref: "#/components/schemas/Animal"
+    Cat:
+      type: object
+      properties:
+        type:
+          const: cat
+        indoor:
+          type: boolean
+      required:
+        - type
+        - indoor
+      allOf:
+        - $ref: "#/components/schemas/Animal"
