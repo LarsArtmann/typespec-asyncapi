@@ -304,4 +304,18 @@ describe("reusable bindings compliance", () => {
       $ref: "#/components/serverBindings/srvKafka",
     });
   });
+
+  it("does not crash when @useBinding targets namespace with no servers", async () => {
+    const doc = await compileAndValidateOrThrow(`
+      @reusableBinding("orphan", #{ kafka: #{ bindingVersion: "0.5.0" } })
+      @useBinding("orphan")
+      namespace Test;
+      model Event { id: string; }
+      @channel("events")
+      op publish(): Event;
+    `);
+
+    expect(doc.servers).toBeUndefined();
+    expect(doc.components?.serverBindings?.orphan).toBeDefined();
+  });
 });

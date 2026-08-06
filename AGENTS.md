@@ -11,7 +11,7 @@
 pnpm install         # Install dependencies
 pnpm run build       # Build TypeScript → JavaScript (0 errors)
 pnpm run lint        # Run ESLint (0 errors, 0 warnings)
-pnpm run test        # Run tests via vitest (982 pass, 0 fail)
+pnpm run test        # Run tests via vitest (997 pass, 0 fail)
 pnpm run verify      # Full gate: build + lint + test + coverage:gate + duplicate
 
 ```
@@ -20,7 +20,7 @@ pnpm run verify      # Full gate: build + lint + test + coverage:gate + duplicat
 
 ## Critical Constraints
 
-- **Use `pnpm` for package management and scripts**. TypeScript scripts run via `tsx`. Never use `npm` or `npx`.
+- **Use `pnpm` for package management and scripts**. TypeScript scripts run via `bun run` (NOT `tsx` — `tsx` requires real Node.js which is unavailable on NixOS where `node` is actually a Bun wrapper). Never use `npm` or `npx`.
 - **Build-before-test policy:** Tests won't run if TypeScript compilation fails
 - **Tests run via vitest** (`pnpm run test` executes `vitest run`). vitest uses Node.js/V8 GC which is stable under heavy compilation workloads.
 - **Coverage runs via `bun test --coverage`** (NOT vitest or c8). The TypeSpec compiler loads the emitter from `dist/` through a virtual filesystem, bypassing vitest's module transform. Only Bun's native runtime-level coverage captures these dynamically-loaded `dist/*.js` files — vitest V8, istanbul, and c8 all fail to see them. The gate script (`scripts/coverage-gate.ts`) remaps `dist/src/*.js` back to `src/*.ts` paths and merges coverage, preferring the higher-coverage entry. **Bun is kept in `flake.nix` solely for this purpose.** Average: ~97.0%, gate at 75% per-file minimum.

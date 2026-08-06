@@ -138,4 +138,49 @@ describe("spec Compliance: @doc propagation", () => {
     expect(msg).toBeDefined();
     expect(msg?.title).toBe("AutoRegistered");
   });
+
+  it("populates message examples from @example on @message model", async () => {
+    const doc = await compileAndValidateOrThrow(`
+      @message(#{title: "User Event"})
+      @example(#{id: "user-123", name: "Alice"})
+      model UserEvent { id: string; name: string; }
+      @channel("users")
+      @publish
+      op publishUser(): UserEvent;
+    `);
+
+    const msg = doc.components?.messages?.UserEvent;
+    expect(msg?.examples).toBeDefined();
+    expect(msg?.examples).toHaveLength(1);
+    expect(msg?.examples?.[0]?.payload).toStrictEqual({
+      id: "user-123",
+      name: "Alice",
+    });
+  });
+
+  it("propagates @doc and @summary on channel-only operations (no @publish/@subscribe)", async () => {
+    const doc = await compileAndValidateOrThrow(`
+      @doc("Channel-only documentation")
+      @summary("Channel Summary")
+      @channel("events")
+      op handleEvents(): Event;
+
+      model Event { id: string; }
+    `);
+
+    const channel = doc.channels?.events;
+    expect(channel?.description).toBe("Channel-only documentation");
+    expect(channel?.summary).toBe("Channel Summary");
+  });
+
+  it("works correctly with bare operations (no decorators except namespace)", async () => {
+    const doc = await compileAndValidateOrThrow(`
+      namespace Test;
+      model Event { id: string; }
+      op publishEvent(): Event;
+    `);
+
+    expect(doc.channels?.publishEvent).toBeDefined();
+    expect(doc.operations?.publishEvent).toBeDefined();
+  });
 });

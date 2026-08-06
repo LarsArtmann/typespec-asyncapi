@@ -10,6 +10,7 @@ import type {
   MessageObject,
 } from "../domain/models/asyncapi-document.js";
 import { refSchema } from "../domain/models/asyncapi-document.js";
+import type { Program, Type } from "@typespec/compiler";
 import { getDoc, getExamples, nameOfType, serializeValueAsJson, withMessage } from "./_imports.js";
 import type { AsyncAPIConsolidatedState, BuilderFn } from "./_imports.js";
 import { iterNamedTypes } from "./shared-utils.js";
@@ -29,6 +30,7 @@ export const mergeExplicitMessages: BuilderFn = (state, ctx) => {
     applyCorrelationId(state, type, msgObj);
     applyHeaders(state, type, msgObj);
     applyMessageBindings(state, type, msgObj);
+    applyMessageExamples(ctx.program, type, msgObj);
 
     ctx.messages[msgKey] = msgObj;
   }
@@ -175,3 +177,17 @@ const applyMessageBindings = messageDecorator("bindings", (s, t) => {
   }
   return null;
 });
+
+/**
+ * Populate `MessageObject.examples` from `@example` on the message model.
+ * Each example value is serialized to JSON and wrapped as `{ payload: value }`.
+ */
+function applyMessageExamples(program: Program, type: Type, msg: MessageObject): void {
+  const examples = getExamples(program, type as never);
+  if (examples.length === 0) {
+    return;
+  }
+  msg.examples = examples.map((ex) => ({
+    payload: serializeValueAsJson(program, ex.value, ex.value.type),
+  }));
+}

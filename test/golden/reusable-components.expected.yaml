@@ -1,0 +1,79 @@
+asyncapi: 3.1.0
+info:
+  title: Generated API
+  version: 1.0.0
+  tags:
+    - name: user
+    - name: events
+channels:
+  user.events:
+    address: user.events
+    messages:
+      UserEvent:
+        $ref: "#/components/messages/UserEvent"
+    tags:
+      - name: user
+      - name: events
+operations:
+  publishUserEvent:
+    action: send
+    channel:
+      $ref: "#/channels/user.events"
+    messages:
+      - $ref: "#/channels/user.events/messages/UserEvent"
+    tags:
+      - name: user
+      - name: events
+    traits:
+      - $ref: "#/components/operationTraits/standardOps"
+    bindings:
+      $ref: "#/components/operationBindings/stdKafka"
+  subscribeUserEvent:
+    action: receive
+    channel:
+      $ref: "#/channels/user.events"
+    messages:
+      - $ref: "#/channels/user.events/messages/UserEvent"
+    traits:
+      - $ref: "#/components/operationTraits/standardOps"
+components:
+  messages:
+    UserEvent:
+      name: UserEvent
+      contentType: application/json
+      title: UserEvent
+      payload:
+        $ref: "#/components/schemas/UserEvent"
+  schemas:
+    UserEvent:
+      properties:
+        userId:
+          type: string
+          description: User identifier
+        event:
+          type: string
+      type: object
+      required:
+        - userId
+        - event
+  tags:
+    user:
+      name: user
+    events:
+      name: events
+  operationTraits:
+    standardOps:
+      summary: Standard
+      description: Standard operation trait
+  messageTraits:
+    defaultMsg:
+      name: defaultMsg
+      contentType: application/json
+      description: Default message trait
+  correlationIds:
+    defaultCorrelation:
+      location: $message.header#/correlationId
+  operationBindings:
+    stdKafka:
+      kafka:
+        bindingVersion: "0.5.0"
