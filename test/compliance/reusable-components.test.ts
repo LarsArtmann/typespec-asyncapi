@@ -12,6 +12,7 @@
 
 import { compileAndValidateOrThrow, compileAndValidate } from "../utils/schema-validator.js";
 import type {
+  ChannelObject,
   CorrelationIdObject,
   MessageObject,
   MessageTraitObject,
@@ -414,5 +415,67 @@ describe("message trait richer fields", () => {
 
     const trait = doc.components?.messageTraits?.summarized as MessageTraitObject;
     expect(trait.summary).toBe("Short description");
+  });
+});
+
+describe("components.channelBindings compliance", () => {
+  it("populates components.channelBindings from @useChannelBinding", async () => {
+    const doc = await compileAndValidateOrThrow(`
+      @reusableBinding("kafkaChan", #{ kafka: #{ bindingVersion: "0.5.0" } })
+      namespace Test;
+      model Event { id: string; }
+      @channel("events")
+      @useChannelBinding("kafkaChan")
+      op publish(): Event;
+    `);
+
+    expect(doc.components?.channelBindings?.kafkaChan).toBeDefined();
+    expect(
+      (doc.components!.channelBindings!.kafkaChan as Record<string, unknown>).kafka,
+    ).toBeDefined();
+
+    const channel = doc.channels!.events as ChannelObject;
+    expect(channel.bindings).toStrictEqual({
+      $ref: "#/components/channelBindings/kafkaChan",
+    });
+  });
+
+  it("does not crash when @useChannelBinding references undefined binding", async () => {
+    const doc = await compileAndValidateOrThrow(`
+      namespace Test;
+      model Event { id: string; }
+      @channel("events")
+      @useChannelBinding("nonexistent")
+      op publish(): Event;
+    `);
+
+    expect(doc.components?.channelBindings).toBeUndefined();
+  });
+
+  it("applies different channel bindings to different channels", async () => {
+    const doc = await compileAndValidateOrThrow(`
+      @reusableBinding("eventsBinding", #{ kafka: #{ bindingVersion: "0.5.0" } })
+      @reusableBinding("ordersBinding", #{ kafka: #{ bindingVersion: "0.5.0" } })
+      namespace Test;
+      model Event { id: string; }
+      model Order { orderId: string; }
+      @channel("events")
+      @useChannelBinding("eventsBinding")
+      op publish(): Event;
+      @channel("orders")
+      @useChannelBinding("ordersBinding")
+      op publishOrder(): Order;
+    `);
+
+    expect(Object.keys(doc.components!.channelBindings!).toSorted()).toStrictEqual([
+      "eventsBinding",
+      "ordersBinding",
+    ]);
+    expect((doc.channels!.events as ChannelObject).bindings).toStrictEqual({
+      $ref: "#/components/channelBindings/eventsBinding",
+    });
+    expect((doc.channels!.orders as ChannelObject).bindings).toStrictEqual({
+      $ref: "#/components/channelBindings/ordersBinding",
+    });
   });
 });

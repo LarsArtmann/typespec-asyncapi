@@ -134,6 +134,7 @@ export const applyReusableRefs: BuilderFn = (state, ctx) => {
   }
 
   applyBindingRefs(state, ctx);
+  applyChannelBindingRefs(state, ctx);
 };
 
 function pickOpt(data: object, keys: string[]): DataRecord {
@@ -206,6 +207,33 @@ function applyBindingToTarget(
     const target = resolveMessage(state, ctx, type);
     if (target) {
       target.bindings = bindingRef;
+    }
+  }
+}
+
+/** Apply @useChannelBinding refs: populate components.channelBindings and set channel.bindings to $ref. */
+function applyChannelBindingRefs(state: AsyncAPIConsolidatedState, ctx: Ctx): void {
+  if (state.channelBindingRefs.size === 0) {
+    return;
+  }
+  const bindingDefinitions = collectBindingDefinitions(state);
+  for (const [type, names] of state.channelBindingRefs) {
+    const opName = nameOfType(type);
+    if (!opName) {
+      continue;
+    }
+    const channelKey = ctx.opToChannel.get(opName) ?? opName;
+    const channel = ctx.channels[channelKey];
+    if (!channel) {
+      continue;
+    }
+    for (const bindingName of names) {
+      const definition = bindingDefinitions.get(bindingName);
+      if (!definition) {
+        continue;
+      }
+      ctx.channelBindings[bindingName] = definition;
+      channel.bindings = ref(`#/components/channelBindings/${bindingName}`);
     }
   }
 }

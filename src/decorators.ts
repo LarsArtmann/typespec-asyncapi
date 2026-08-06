@@ -35,6 +35,7 @@ import {
 } from "./namespace-decorators.js";
 import {
   $useBinding,
+  $useChannelBinding,
   $useCorrelationId,
   $useMessageTrait,
   $useOperationTrait,
@@ -65,6 +66,7 @@ export const $decorators = {
     subscribe: $subscribe,
     tags: $tags,
     useBinding: $useBinding,
+    useChannelBinding: $useChannelBinding,
     useCorrelationId: $useCorrelationId,
     useMessageTrait: $useMessageTrait,
     useOperationTrait: $useOperationTrait,

@@ -165,6 +165,12 @@ extern dec reusableBinding(target: Namespace, name: valueof string, config: {} |
 extern dec useBinding(target: Operation | Model | Namespace, name: valueof string);
 
 /**
+ * Apply a reusable binding to an operation's channel (populates components.channelBindings)
+ * @param name The binding name defined via @reusableBinding
+ */
+extern dec useChannelBinding(target: Operation, name: valueof string);
+
+/**
  * Emitter options for `@lars-artmann/typespec-asyncapi`.
  *
  * Configure via tspconfig.yaml:
