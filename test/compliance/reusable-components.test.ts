@@ -10,7 +10,7 @@
  *   - operationBindings / messageBindings (@reusableBinding + @useBinding)
  */
 
-import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
+import { compileAndValidateOrThrow, compileAndValidate } from "../utils/schema-validator.js";
 import type {
   CorrelationIdObject,
   MessageObject,
@@ -322,10 +322,10 @@ describe("reusable bindings compliance", () => {
 
 describe("operation trait richer fields", () => {
   it("extracts security from @operationTrait config", async () => {
-    const doc = await compileAndValidateOrThrow(`
+    const result = await compileAndValidate(`
       @operationTrait("secure", #{
         description: "Secured operation",
-        security: [{ userPassword: [] }]
+        security: #[#{ userPassword: #[] }]
       })
       namespace Test;
       model Event { id: string; }
@@ -333,7 +333,7 @@ describe("operation trait richer fields", () => {
       op publish(): Event;
     `);
 
-    const trait = doc.components?.operationTraits?.secure as OperationTraitObject;
+    const trait = result.document.components?.operationTraits?.secure as OperationTraitObject;
     expect(trait.description).toBe("Secured operation");
     expect(trait.security).toStrictEqual([{ userPassword: [] }]);
   });
@@ -342,7 +342,7 @@ describe("operation trait richer fields", () => {
     const doc = await compileAndValidateOrThrow(`
       @operationTrait("rich", #{
         summary: "Rich trait",
-        tags: [{ name: "production" }],
+        tags: #[#{ name: "production" }],
         bindings: #{ kafka: #{ bindingVersion: "0.5.0" } }
       })
       namespace Test;

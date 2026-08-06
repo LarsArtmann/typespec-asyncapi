@@ -147,6 +147,12 @@ export const $lib = createTypeSpecLibrary({
       },
       severity: "error",
     },
+    "invalid-parameter-location": {
+      messages: {
+        default: paramMessage`Parameter location '${"location"}' should be a runtime expression starting with '$message.' and containing a '#' JSON pointer (e.g., '$message.header#/correlationId').`,
+      },
+      severity: "warning",
+    },
   },
   name: "@lars-artmann/typespec-asyncapi",
   state: {
