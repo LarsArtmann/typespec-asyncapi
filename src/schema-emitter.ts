@@ -86,23 +86,15 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<JsonSchema, AsyncAPIEmitt
   }
 
   union(union: Union): EmitterOutput<JsonSchema> {
-    const program = this.emitter.getProgram();
-    const variantEntries = [...union.variants.values()];
-    const variants = variantEntries.map((v) => {
-      const ref = refForNamedType(v.type);
-      if (ref) {
-        return ref;
-      }
-      const extracted = extractValue(this.emitter.emitTypeReference(v.type));
-      if (Object.keys(extracted).length === 0) {
-        const t = v.type as { kind: string; name?: string; value?: string };
-        if (t.kind === "String" && t.value !== undefined) {
-          return { const: t.value };
+    const variants = [...union.variants.values()].map((v) =>
+      this.refOrFallback(v.type, (t) => {
+        const tt = t as { kind: string; name?: string; value?: string };
+        if (tt.kind === "String" && tt.value !== undefined) {
+          return { const: tt.value };
         }
-        return intrinsicToSchema(t.name ?? "string");
-      }
-      return extracted;
-    });
+        return intrinsicToSchema(tt.name ?? "string");
+      }),
+    );
     const allConst = variants.every((v) => "const" in v);
     if (allConst) {
       return {
@@ -110,17 +102,7 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<JsonSchema, AsyncAPIEmitt
         type: "string",
       };
     }
-    const allModelVariants = variantEntries.every(
-      (v) => (v.type as { kind: string }).kind === "Model",
-    );
-    if (allModelVariants) {
-      const disc = getDiscriminator(program, union);
-      if (disc) {
-        return { oneOf: variants, discriminator: disc.propertyName };
-      }
-      return { oneOf: variants };
-    }
-    return { anyOf: variants };
+    return this.composeUnionVariants(variants, union);
   }
 
   enum(en: Enum): EmitterOutput<JsonSchema> {
@@ -207,6 +189,21 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<JsonSchema, AsyncAPIEmitt
     return this.emitter.result.none();
   }
 
+  /** Decide oneOf vs anyOf for union variants, applying discriminator when all variants are models. */
+  private composeUnionVariants(variants: JsonSchema[], union: Union): JsonSchema {
+    const allModelVariants = [...union.variants.values()].every(
+      (v) => (v.type as { kind: string }).kind === "Model",
+    );
+    if (allModelVariants) {
+      const disc = getDiscriminator(this.emitter.getProgram(), union);
+      if (disc) {
+        return { oneOf: variants, discriminator: disc.propertyName };
+      }
+      return { oneOf: variants };
+    }
+    return { anyOf: variants };
+  }
+
   /** Resolve a type to a JSON Schema: prefer named-type `$ref`, fall back to extraction, then `typeToSchema`. */
   private refOrFallback(elementType: Type, fallback: (t: Type) => JsonSchema): JsonSchema {
     const ref = refForNamedType(elementType);
@@ -260,8 +257,7 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<JsonSchema, AsyncAPIEmitt
     const { kind } = t as { kind: string };
     if (kind === "Union") {
       const tUnion = t as Union;
-      const variantEntries = [...tUnion.variants.values()];
-      const variants = variantEntries.map((v) => {
+      const variants = [...tUnion.variants.values()].map((v): string | JsonSchema => {
         const inner = v.type;
         const innerKind = (inner as { kind: string }).kind;
         if (innerKind === "String" && (inner as { value?: string }).value !== undefined) {
@@ -274,22 +270,11 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<JsonSchema, AsyncAPIEmitt
         const s = this.typeToSchema(inner);
         return Object.keys(s).length > 0 ? s : { type: "string" };
       });
-      const allStrings = variants.every((v) => typeof v === "string");
-      if (allStrings) {
-        return { enum: variants, type: "string" };
+      if (variants.every((v) => typeof v === "string")) {
+        return { enum: variants as string[], type: "string" };
       }
       const schemaVariants = variants.map((v) => (typeof v === "string" ? { const: v } : v));
-      const allModelVariants = variantEntries.every(
-        (v) => (v.type as { kind: string }).kind === "Model",
-      );
-      if (allModelVariants) {
-        const disc = getDiscriminator(this.emitter.getProgram(), tUnion);
-        if (disc) {
-          return { oneOf: schemaVariants, discriminator: disc.propertyName };
-        }
-        return { oneOf: schemaVariants };
-      }
-      return { anyOf: schemaVariants };
+      return this.composeUnionVariants(schemaVariants, tUnion);
     }
     if (kind === "Model" && (t as { indexer?: { key?: unknown; value?: Type } }).indexer) {
       const { indexer } = t as { indexer: { key: Type; value: Type } };

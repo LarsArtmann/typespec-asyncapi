@@ -41,10 +41,8 @@ export function validateBindingFields(
     return issues;
   }
 
-  for (const [field, value] of Object.entries(binding)) {
-    if (field === "bindingVersion") {
-      continue;
-    }
+  const fieldEntries = Object.entries(binding).filter(([f]) => f !== "bindingVersion");
+  for (const [field, value] of fieldEntries) {
     const rule = rules[field];
     if (!rule) {
       continue;
