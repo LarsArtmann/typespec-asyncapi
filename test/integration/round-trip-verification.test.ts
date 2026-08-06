@@ -205,12 +205,8 @@ describe("round-Trip Verification", () => {
   });
 
   it("emits @doc descriptions on schemas", () => {
-    expect(doc.components!.schemas!.UserCreated.description).toBe(
-      "User account lifecycle events",
-    );
-    expect(doc.components!.schemas!.UserProfile.description).toBe(
-      "Embedded user profile",
-    );
+    expect(doc.components!.schemas!.UserCreated.description).toBe("User account lifecycle events");
+    expect(doc.components!.schemas!.UserProfile.description).toBe("Embedded user profile");
   });
 
   it("emits nested model $ref in properties", () => {
@@ -226,19 +222,12 @@ describe("round-Trip Verification", () => {
 
   it("emits enum union types", () => {
     const orderProps = doc.components!.schemas!.OrderPlaced.properties!;
-    expect(orderProps.status.enum).toStrictEqual([
-      "pending",
-      "confirmed",
-      "cancelled",
-    ]);
+    expect(orderProps.status.enum).toStrictEqual(["pending", "confirmed", "cancelled"]);
   });
 
   it("emits optional fields in required array", () => {
     const failedProps = doc.components!.schemas!.PaymentFailed.properties!;
-    expect(doc.components!.schemas!.PaymentFailed.required).toStrictEqual([
-      "orderId",
-      "reason",
-    ]);
+    expect(doc.components!.schemas!.PaymentFailed.required).toStrictEqual(["orderId", "reason"]);
     expect(failedProps.retryAfter).toBeDefined();
   });
 
@@ -246,9 +235,7 @@ describe("round-Trip Verification", () => {
     const allRefs = collectRefs(doc);
     expect(allRefs.length).toBeGreaterThan(10);
 
-    const dangling = allRefs.filter(
-      (ref) => resolveRef(doc, ref) === undefined,
-    );
+    const dangling = allRefs.filter((ref) => resolveRef(doc, ref) === undefined);
     expect(dangling).toStrictEqual([]);
   });
 
@@ -307,16 +294,12 @@ describe("round-Trip Verification", () => {
 
   it("protocol bindings are structurally valid", () => {
     const channels = doc.channels!;
-    const channelsWithBindings = Object.entries(channels).filter(
-      ([, ch]) => ch.bindings,
-    );
+    const channelsWithBindings = Object.entries(channels).filter(([, ch]) => ch.bindings);
 
     for (const [, channel] of channelsWithBindings) {
       for (const [protocol, binding] of Object.entries(channel.bindings!)) {
         expect(binding).toBeTypeOf("object");
-        expect(
-          (binding as Record<string, unknown>).bindingVersion,
-        ).toBeDefined();
+        expect((binding as Record<string, unknown>).bindingVersion).toBeDefined();
         expect(protocol).toMatch(/^(kafka|amqp|mqtt|ws|http)$/);
       }
     }

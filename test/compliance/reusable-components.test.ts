@@ -65,9 +65,10 @@ describe("components.operationTraits compliance", () => {
       op publish(): Event;
     `);
 
-    expect(
-      Object.keys(doc.components!.operationTraits!).toSorted(),
-    ).toStrictEqual(["monitored", "secure"]);
+    expect(Object.keys(doc.components!.operationTraits!).toSorted()).toStrictEqual([
+      "monitored",
+      "secure",
+    ]);
     const op = doc.operations!.publish as OperationObject;
     expect(op.traits).toHaveLength(2);
   });
@@ -248,12 +249,7 @@ describe("reusable bindings compliance", () => {
     expect(doc.components?.operationBindings?.kafkaStd).toBeDefined();
     expect(doc.components!.operationBindings!.kafkaStd.kafka).toBeDefined();
     expect(
-      (
-        doc.components!.operationBindings!.kafkaStd.kafka as Record<
-          string,
-          unknown
-        >
-      ).clientId,
+      (doc.components!.operationBindings!.kafkaStd.kafka as Record<string, unknown>).clientId,
     ).toStrictEqual({ type: "string" });
 
     const op = doc.operations!.publish as OperationObject;

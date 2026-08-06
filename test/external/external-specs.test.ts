@@ -18,10 +18,7 @@
  * take precedence). See test/decorators/service.test.ts for coverage.
  */
 
-import {
-  compileAsyncAPI,
-  compileAsyncAPISpecRaw,
-} from "../utils/test-helpers.js";
+import { compileAsyncAPI, compileAsyncAPISpecRaw } from "../utils/test-helpers.js";
 
 describe("external Spec Compilation — Branded Types & Scalar Inheritance", () => {
   it("should handle scalar extends string (Kernovia NanoID pattern)", async () => {
@@ -50,10 +47,7 @@ describe("external Spec Compilation — Branded Types & Scalar Inheritance", () 
     });
 
     expect(asyncApiDoc).not.toBeNull();
-    const schemas = (asyncApiDoc?.components?.schemas ?? {}) as Record<
-      string,
-      any
-    >;
+    const schemas = (asyncApiDoc?.components?.schemas ?? {}) as Record<string, any>;
     expect(schemas.Event).not.toBeNull();
     expect(schemas.Event.type).toBe("object");
   });
@@ -155,10 +149,7 @@ describe("external Spec Compilation — Complex Inheritance & Nesting", () => {
     });
 
     expect(asyncApiDoc).not.toBeNull();
-    const schemas = (asyncApiDoc?.components?.schemas ?? {}) as Record<
-      string,
-      any
-    >;
+    const schemas = (asyncApiDoc?.components?.schemas ?? {}) as Record<string, any>;
     expect(schemas.CampaignCreatedEvent).not.toBeNull();
     expect(schemas.CampaignCreatedEvent.type).toBe("object");
   });
@@ -198,10 +189,7 @@ describe("external Spec Compilation — Complex Inheritance & Nesting", () => {
     });
 
     expect(asyncApiDoc).not.toBeNull();
-    const schemas = (asyncApiDoc?.components?.schemas ?? {}) as Record<
-      string,
-      any
-    >;
+    const schemas = (asyncApiDoc?.components?.schemas ?? {}) as Record<string, any>;
     expect(schemas.Workflow).not.toBeNull();
     expect(schemas.Workflow.type).toBe("object");
   });
@@ -229,10 +217,7 @@ describe("external Spec Compilation — Complex Inheritance & Nesting", () => {
     });
 
     expect(asyncApiDoc).not.toBeNull();
-    const schemas = (asyncApiDoc?.components?.schemas ?? {}) as Record<
-      string,
-      any
-    >;
+    const schemas = (asyncApiDoc?.components?.schemas ?? {}) as Record<string, any>;
     expect(schemas.Command).not.toBeNull();
     expect(schemas.Command.type).toBe("object");
   });
@@ -274,10 +259,7 @@ describe("external Spec Compilation — Enums & Unions", () => {
     });
 
     expect(asyncApiDoc).not.toBeNull();
-    const schemas = (asyncApiDoc?.components?.schemas ?? {}) as Record<
-      string,
-      any
-    >;
+    const schemas = (asyncApiDoc?.components?.schemas ?? {}) as Record<string, any>;
     expect(schemas.ActorType).not.toBeNull();
     expect(schemas.ActorType.enum).not.toBeNull();
     expect(schemas.ActorType.enum.length).toBeGreaterThan(0);
@@ -453,10 +435,7 @@ describe("external Spec Compilation — Edge Cases from Real Specs", () => {
     });
 
     expect(asyncApiDoc).not.toBeNull();
-    const schemas = (asyncApiDoc?.components?.schemas ?? {}) as Record<
-      string,
-      any
-    >;
+    const schemas = (asyncApiDoc?.components?.schemas ?? {}) as Record<string, any>;
     expect(schemas.Order?.properties?.items).not.toBeNull();
     const itemsProp = schemas.Order.properties.items;
     expect(itemsProp.items?.$ref).toContain("Item");
@@ -517,10 +496,7 @@ describe("external Spec Compilation — Edge Cases from Real Specs", () => {
 
 describe("external Spec Compilation — Failure Resilience", () => {
   it("should not crash on extremely large models", async () => {
-    const fields = Array.from(
-      { length: 50 },
-      (_, i) => `field${i}: string;`,
-    ).join("\n    ");
+    const fields = Array.from({ length: 50 }, (_, i) => `field${i}: string;`).join("\n    ");
     const source = `
       @server("test", #{ url: "kafka://broker:9092", protocol: "kafka" })
       namespace Test {
@@ -540,10 +516,7 @@ describe("external Spec Compilation — Failure Resilience", () => {
     });
 
     expect(asyncApiDoc).not.toBeNull();
-    const schemas = (asyncApiDoc?.components?.schemas ?? {}) as Record<
-      string,
-      any
-    >;
+    const schemas = (asyncApiDoc?.components?.schemas ?? {}) as Record<string, any>;
     expect(schemas.LargeModel?.properties).not.toBeNull();
     const propCount = Object.keys(schemas.LargeModel.properties).length;
     expect(propCount).toBe(50);

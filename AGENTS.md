@@ -11,7 +11,7 @@
 pnpm install         # Install dependencies
 pnpm run build       # Build TypeScript → JavaScript (0 errors)
 pnpm run lint        # Run ESLint (0 errors, 0 warnings)
-pnpm run test        # Run tests via vitest (969 pass, 0 fail)
+pnpm run test        # Run tests via vitest (982 pass, 0 fail)
 pnpm run verify      # Full gate: build + lint + test + coverage:gate + duplicate
 
 ```

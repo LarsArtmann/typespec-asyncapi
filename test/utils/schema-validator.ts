@@ -123,9 +123,6 @@ export function formatValidationErrors(errors: ErrorObject[] | null): string {
     return "(no errors)";
   }
   return errors
-    .map(
-      (e) =>
-        `  Path '${e.instancePath || "/"}': ${e.message ?? "unknown error"}`,
-    )
+    .map((e) => `  Path '${e.instancePath || "/"}': ${e.message ?? "unknown error"}`)
     .join("\n");
 }

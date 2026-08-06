@@ -64,12 +64,7 @@ describe("components.tags compliance", () => {
 
     const tagNames = Object.keys(doc.components!.tags!);
     expect(tagNames).toHaveLength(4);
-    expect(tagNames.toSorted()).toStrictEqual([
-      "model-level",
-      "ns-level",
-      "op-level",
-      "shared",
-    ]);
+    expect(tagNames.toSorted()).toStrictEqual(["model-level", "ns-level", "op-level", "shared"]);
   });
 
   it("does not emit components.tags when no tags are used", async () => {
