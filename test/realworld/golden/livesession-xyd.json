@@ -1,0 +1,1644 @@
+{
+  "asyncapi": "3.1.0",
+  "info": {
+    "title": "Generated API",
+    "version": "1.0.0"
+  },
+  "channels": {},
+  "components": {
+    "schemas": {
+      "ApiVersion": {
+        "properties": {
+          "version": {
+            "type": "string"
+          },
+          "specUrl": {
+            "type": "string"
+          },
+          "updatedAt": {
+            "type": "string"
+          },
+          "current": {
+            "type": "boolean"
+          }
+        },
+        "type": "object",
+        "required": [
+          "version",
+          "specUrl",
+          "updatedAt",
+          "current"
+        ]
+      },
+      "DistTag": {
+        "properties": {
+          "tag": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          }
+        },
+        "type": "object",
+        "required": [
+          "tag",
+          "version"
+        ],
+        "description": "A named, movable pointer to a version (npm-style). `latest` is auto-managed\n(set to the newest version on register); others (`canary`, `beta`, …) are set\nby hand. A version ref anywhere may be a concrete version OR a dist-tag name."
+      },
+      "RegistryEntryCore": {
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "format": {
+            "$ref": "#/components/schemas/ApiFormat"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/EntryKind",
+            "description": "`api` (OpenAPI/GraphQL/AsyncAPI) or `schema` (standalone JSON Schema)."
+          },
+          "ns": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string"
+          },
+          "versions": {
+            "items": {
+              "$ref": "#/components/schemas/ApiVersion"
+            },
+            "type": "array"
+          },
+          "distTags": {
+            "items": {
+              "$ref": "#/components/schemas/DistTag"
+            },
+            "type": "array",
+            "description": "dist-tags for this API (always includes `latest`)."
+          },
+          "registryUrl": {
+            "type": "string",
+            "description": "Canonical resolvable URL served by registry-api: `/@{ns}/apis/{id}@latest`."
+          },
+          "updatedAt": {
+            "type": "string"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "description",
+          "format",
+          "kind",
+          "ns",
+          "source",
+          "versions",
+          "distTags",
+          "registryUrl",
+          "updatedAt"
+        ],
+        "description": "Registry-api's shape: the core registered API, without platform rollups."
+      },
+      "RegistryEntry": {
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "format": {
+            "$ref": "#/components/schemas/ApiFormat"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/EntryKind",
+            "description": "`api` (OpenAPI/GraphQL/AsyncAPI) or `schema` (standalone JSON Schema)."
+          },
+          "ns": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string"
+          },
+          "versions": {
+            "items": {
+              "$ref": "#/components/schemas/ApiVersion"
+            },
+            "type": "array"
+          },
+          "distTags": {
+            "items": {
+              "$ref": "#/components/schemas/DistTag"
+            },
+            "type": "array",
+            "description": "dist-tags for this API (always includes `latest`)."
+          },
+          "registryUrl": {
+            "type": "string",
+            "description": "Canonical resolvable URL served by registry-api: `/@{ns}/apis/{id}@latest`."
+          },
+          "updatedAt": {
+            "type": "string"
+          },
+          "sdkTargetCount": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "docsProjectCount": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "mcpServerCount": {
+            "format": "int32",
+            "type": "integer"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "description",
+          "format",
+          "kind",
+          "ns",
+          "source",
+          "versions",
+          "distTags",
+          "registryUrl",
+          "updatedAt",
+          "sdkTargetCount",
+          "docsProjectCount",
+          "mcpServerCount"
+        ],
+        "description": "The gateway shape the frontend consumes: core + cross-section rollups."
+      },
+      "Sdk": {
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "apiId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "ns": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "registryRef": {
+            "type": "string"
+          },
+          "targetCount": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "updatedAt": {
+            "type": "string"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "apiId",
+          "name",
+          "description",
+          "ns",
+          "version",
+          "registryRef",
+          "targetCount",
+          "createdAt",
+          "updatedAt"
+        ],
+        "description": "A named SDK project tied to one API — a collection of per-language targets."
+      },
+      "SdkTarget": {
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string",
+            "description": "Human display title, fixed at creation (\"<API title> <language>\", e.g.\n\"LiveSession OpenAPI Python\") — decoupled from the slug `id` and the\npublished package name."
+          },
+          "sdkId": {
+            "type": "string",
+            "description": "The parent SDK this target belongs to."
+          },
+          "apiId": {
+            "type": "string"
+          },
+          "apiVersion": {
+            "type": "string",
+            "description": "The API spec version this target was last built from — decoupled from the\ntarget's own package `version`."
+          },
+          "language": {
+            "$ref": "#/components/schemas/SdkLanguage"
+          },
+          "packageName": {
+            "type": "string"
+          },
+          "output": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/BuildStatus"
+          },
+          "buildLogs": {
+            "type": "string",
+            "description": "The target's own generation log (`[<lang>] …` lines) — reset each build and\nappended live, so the dashboard can tail the current (re)generation."
+          },
+          "lastPublishedAt": {
+            "type": "string"
+          },
+          "registryUrl": {
+            "type": "string"
+          },
+          "sdkJson": {
+            "type": "string",
+            "description": "The custom sdk.json applied at generation (the \"wizard\" config), serialized;\nempty when the target used the auto-derived config."
+          },
+          "configPending": {
+            "type": "boolean",
+            "description": "The saved sdk.json config has UNBUILT changes — set when the config is edited\n(the wizard \"Save\"), cleared when a build applies it. Drives the persistent\n\"pending changes, waiting for a build\" status in the UI."
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "sdkId",
+          "apiId",
+          "apiVersion",
+          "language",
+          "packageName",
+          "output",
+          "version",
+          "status",
+          "buildLogs",
+          "configPending"
+        ]
+      },
+      "SdkBuild": {
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "sdkId": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string",
+            "description": "The SDK version this build produced."
+          },
+          "apiVersion": {
+            "type": "string",
+            "description": "The API spec version every target was built from."
+          },
+          "status": {
+            "type": "string",
+            "description": "building | ready | error"
+          },
+          "targets": {
+            "items": {
+              "$ref": "#/components/schemas/SdkBuildTarget"
+            },
+            "type": "array",
+            "description": "Point-in-time snapshot of the targets that went into the build."
+          },
+          "logs": {
+            "type": "string",
+            "description": "Accumulated build log — step lines from each target generation."
+          },
+          "createdAt": {
+            "type": "string"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "sdkId",
+          "version",
+          "apiVersion",
+          "status",
+          "targets",
+          "logs",
+          "createdAt"
+        ],
+        "description": "One SDK build — a produced SDK version, kept as history (the Versions tab).\nRegenerates every target from one API spec version; decoupled from each\ntarget's published package version."
+      },
+      "SdkBuildTarget": {
+        "properties": {
+          "language": {
+            "type": "string"
+          },
+          "packageName": {
+            "type": "string"
+          }
+        },
+        "type": "object",
+        "required": [
+          "language",
+          "packageName"
+        ]
+      },
+      "DocsProject": {
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "apiId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "theme": {
+            "type": "string"
+          },
+          "sourceSpec": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/BuildStatus"
+          },
+          "lastBuiltAt": {
+            "type": "string"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "apiId",
+          "name",
+          "theme",
+          "sourceSpec",
+          "url",
+          "status"
+        ]
+      },
+      "McpServer": {
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "apiId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "sourceSpec": {
+            "type": "string"
+          },
+          "toolsCount": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "transport": {
+            "$ref": "#/components/schemas/McpTransport"
+          },
+          "status": {
+            "$ref": "#/components/schemas/BuildStatus"
+          },
+          "url": {
+            "type": "string"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "apiId",
+          "name",
+          "sourceSpec",
+          "toolsCount",
+          "transport",
+          "status"
+        ]
+      },
+      "Notification": {
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "severity": {
+            "$ref": "#/components/schemas/NotificationSeverity"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "read": {
+            "type": "boolean"
+          },
+          "source": {
+            "$ref": "#/components/schemas/NotificationSource"
+          },
+          "apiId": {
+            "type": "string"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "severity",
+          "title",
+          "body",
+          "createdAt",
+          "read",
+          "source"
+        ]
+      },
+      "UsagePoint": {
+        "properties": {
+          "t": {
+            "type": "string"
+          },
+          "value": {
+            "format": "double",
+            "type": "number"
+          }
+        },
+        "type": "object",
+        "required": [
+          "t",
+          "value"
+        ]
+      },
+      "UsageSeries": {
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "unit": {
+            "type": "string"
+          },
+          "total": {
+            "format": "double",
+            "type": "number"
+          },
+          "range": {
+            "$ref": "#/components/schemas/UsageRange"
+          },
+          "points": {
+            "items": {
+              "$ref": "#/components/schemas/UsagePoint"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "label",
+          "unit",
+          "total",
+          "range",
+          "points"
+        ]
+      },
+      "OverviewStats": {
+        "properties": {
+          "apis": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "sdkTargets": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "docsProjects": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "mcpServers": {
+            "format": "int32",
+            "type": "integer"
+          }
+        },
+        "type": "object",
+        "required": [
+          "apis",
+          "sdkTargets",
+          "docsProjects",
+          "mcpServers"
+        ]
+      },
+      "Organization": {
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "plan": {
+            "type": "string"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "plan"
+        ]
+      },
+      "Project": {
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "orgId": {
+            "type": "string"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "orgId"
+        ]
+      },
+      "CurrentContext": {
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/User",
+            "description": "The signed-in account."
+          },
+          "org": {
+            "$ref": "#/components/schemas/Organization"
+          },
+          "project": {
+            "$ref": "#/components/schemas/Project",
+            "description": "The caller's current project."
+          },
+          "projects": {
+            "items": {
+              "$ref": "#/components/schemas/Project"
+            },
+            "type": "array",
+            "description": "Every project in the current org (for the switcher)."
+          }
+        },
+        "type": "object",
+        "required": [
+          "user",
+          "org",
+          "project",
+          "projects"
+        ]
+      },
+      "User": {
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "email",
+          "name",
+          "createdAt"
+        ],
+        "description": "An authenticated account. The password hash never leaves the server."
+      },
+      "AuthSession": {
+        "properties": {
+          "token": {
+            "type": "string"
+          },
+          "user": {
+            "$ref": "#/components/schemas/User"
+          }
+        },
+        "type": "object",
+        "required": [
+          "token",
+          "user"
+        ],
+        "description": "Login/register response — the opaque session token + the user it belongs to."
+      },
+      "Member": {
+        "properties": {
+          "userId": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          }
+        },
+        "type": "object",
+        "required": [
+          "userId",
+          "email",
+          "name",
+          "role"
+        ],
+        "description": "A user's membership in the current org."
+      },
+      "GitProvider": {
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/GitProviderKind"
+          },
+          "name": {
+            "type": "string"
+          },
+          "baseUrl": {
+            "type": "string"
+          },
+          "connectedAs": {
+            "type": "string",
+            "description": "The username the token authenticated as (from the provider's whoami)."
+          },
+          "createdAt": {
+            "type": "string"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "name",
+          "baseUrl",
+          "connectedAs",
+          "createdAt"
+        ],
+        "description": "A connected git-provider account (the token lives server-side only)."
+      },
+      "GitRepoOption": {
+        "properties": {
+          "fullName": {
+            "type": "string"
+          },
+          "defaultBranch": {
+            "type": "string"
+          },
+          "htmlUrl": {
+            "type": "string"
+          },
+          "private": {
+            "type": "boolean"
+          }
+        },
+        "type": "object",
+        "required": [
+          "fullName",
+          "defaultBranch",
+          "htmlUrl",
+          "private"
+        ],
+        "description": "A git repo option surfaced by a provider (for the connect picker)."
+      },
+      "RepoConnection": {
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "providerId": {
+            "type": "string"
+          },
+          "targetKind": {
+            "$ref": "#/components/schemas/RepoTargetKind"
+          },
+          "targetId": {
+            "type": "string",
+            "description": "The API id (spec) or SDK target id (sdk) this connection syncs."
+          },
+          "ref": {
+            "type": "string",
+            "description": "Optional version/dist-tag ref for spec targets (defaults to current)."
+          },
+          "repo": {
+            "type": "string",
+            "description": "\"owner/name\" on the provider."
+          },
+          "branch": {
+            "type": "string"
+          },
+          "prefix": {
+            "type": "string",
+            "description": "Repo subdirectory the files land under (e.g. `specs/` or `sdk/go/`)."
+          },
+          "lastSyncedAt": {
+            "type": "string"
+          },
+          "lastSyncStatus": {
+            "$ref": "#/components/schemas/BuildStatus"
+          },
+          "lastSyncError": {
+            "type": "string"
+          },
+          "releaseMode": {
+            "type": "string",
+            "description": "`push` = legacy direct-push sync; `release` = PR-based release pipeline."
+          },
+          "autoRelease": {
+            "type": "boolean",
+            "description": "Open/force-update a release PR on every new spec version."
+          },
+          "baseBranch": {
+            "type": "string",
+            "description": "PR target branch for release mode (distinct from `branch`)."
+          },
+          "prerelease": {
+            "type": "boolean"
+          },
+          "distTags": {
+            "type": "string",
+            "description": "Comma-separated dist-tags this connection reacts to (default `latest`;\n`*` = all)."
+          },
+          "lastReleasedVersion": {
+            "type": "string",
+            "description": "SDK semver of the last merged release."
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "providerId",
+          "targetKind",
+          "targetId",
+          "repo",
+          "branch",
+          "prefix"
+        ],
+        "description": "Links an API spec or SDK target to a repo; `sync` pushes it there."
+      },
+      "PackageRegistry": {
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/PackageRegistryKind"
+          },
+          "name": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "description": "Registry URL, or a local file-feed path (maven/nuget/go)."
+          },
+          "connectedAs": {
+            "type": "string",
+            "description": "Account/scope the token publishes as (informational)."
+          },
+          "createdAt": {
+            "type": "string"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "name",
+          "url",
+          "connectedAs",
+          "createdAt"
+        ],
+        "description": "A connected package registry account (token is server-side only)."
+      },
+      "RegistryConnection": {
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "registryId": {
+            "type": "string"
+          },
+          "targetId": {
+            "type": "string",
+            "description": "The SDK target id this connection publishes."
+          },
+          "language": {
+            "type": "string",
+            "description": "The target's language (must match the registry kind's ecosystem)."
+          },
+          "packageName": {
+            "type": "string",
+            "description": "Package name as published (defaults to the SDK's own package name)."
+          },
+          "autoPublish": {
+            "type": "boolean",
+            "description": "Publish automatically when a release for this target is merged."
+          },
+          "publishLogs": {
+            "type": "string",
+            "description": "The PUBLISHER's own log (extract → apply name → push → result) — reset each\npublish + appended live, so the dashboard can tail it."
+          },
+          "lastPublishedVersion": {
+            "type": "string"
+          },
+          "lastPublishedAt": {
+            "type": "string"
+          },
+          "lastPublishStatus": {
+            "$ref": "#/components/schemas/BuildStatus"
+          },
+          "lastPublishError": {
+            "type": "string"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "registryId",
+          "targetId",
+          "language",
+          "packageName",
+          "autoPublish",
+          "publishLogs"
+        ],
+        "description": "Links ONE SDK target (a language) to a package registry it publishes into."
+      },
+      "Release": {
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "connectionId": {
+            "type": "string"
+          },
+          "state": {
+            "$ref": "#/components/schemas/ReleaseState"
+          },
+          "baseSpecVersion": {
+            "type": "string"
+          },
+          "headSpecVersion": {
+            "type": "string"
+          },
+          "bumpType": {
+            "type": "string"
+          },
+          "fromVersion": {
+            "type": "string"
+          },
+          "toVersion": {
+            "type": "string"
+          },
+          "changelog": {
+            "type": "string"
+          },
+          "changeCount": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "breakingCount": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "headBranch": {
+            "type": "string"
+          },
+          "baseBranch": {
+            "type": "string"
+          },
+          "prNumber": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "prUrl": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "releaseUrl": {
+            "type": "string"
+          },
+          "error": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "updatedAt": {
+            "type": "string"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "connectionId",
+          "state",
+          "baseSpecVersion",
+          "headSpecVersion",
+          "bumpType",
+          "fromVersion",
+          "toVersion",
+          "changelog",
+          "changeCount",
+          "breakingCount",
+          "headBranch",
+          "baseBranch",
+          "prNumber",
+          "prUrl",
+          "tag",
+          "releaseUrl",
+          "error",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "UpdateApiInput": {
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "type": "object",
+        "description": "Editable presentation metadata for an existing registry entry. The id/slug,\nnamespace, format, and kind are IMMUTABLE — they're baked into URLs, the\n`apis/<ns>/<api>@<ver>` registry refs, and already-generated SDKs — so only\nthe display name + description can change (a partial update; omit to keep)."
+      },
+      "RegisterApiInput": {
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string",
+            "description": "Explicit id/slug for the entry. Slugified server-side; defaults to a slug\nof `name`. Lets the display title (`name`) be decoupled from the stable id."
+          },
+          "format": {
+            "$ref": "#/components/schemas/ApiFormat"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/EntryKind",
+            "description": "`api` (default) or `schema` — classifies the uploaded document."
+          },
+          "ns": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string"
+          },
+          "specText": {
+            "type": "string",
+            "description": "Inline spec text (yaml/json/graphql SDL). One of specText | url required."
+          },
+          "url": {
+            "type": "string",
+            "description": "URL to fetch the spec from (server-side)."
+          },
+          "version": {
+            "type": "string",
+            "description": "Explicit version label; defaults to the spec's info.version."
+          },
+          "distTag": {
+            "type": "string",
+            "description": "Dist-tag to publish this version under (default `latest`). `latest` makes\nit the current/default version; any other tag (`canary`, `beta`, …) is a\nside-channel — added without moving `latest`/current off the stable one."
+          },
+          "projectId": {
+            "type": "string",
+            "description": "The project the API belongs to. Set server-side by the platform gateway\nfrom the caller's current project; defaults to the seeded project."
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ]
+      },
+      "SetDistTagInput": {
+        "properties": {
+          "tag": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          }
+        },
+        "type": "object",
+        "required": [
+          "tag",
+          "version"
+        ],
+        "description": "Set (create or move) a dist-tag to point at an existing version."
+      },
+      "CreateSdkInput": {
+        "properties": {
+          "apiId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string",
+            "description": "Explicit id/slug for the SDK. Slugified server-side; defaults to a slug of\n`name`. Lets the display title (`name`) be decoupled from the stable id."
+          },
+          "description": {
+            "type": "string"
+          },
+          "ns": {
+            "type": "string"
+          }
+        },
+        "type": "object",
+        "required": [
+          "apiId"
+        ],
+        "description": "Create a named SDK for an API."
+      },
+      "AddSdkTargetInput": {
+        "properties": {
+          "language": {
+            "$ref": "#/components/schemas/SdkLanguage"
+          },
+          "packageName": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string",
+            "description": "API version to generate from; defaults to the API's current version."
+          },
+          "sdkJson": {
+            "type": "string",
+            "description": "A full custom sdk.json (behavior + per-language emitter options), serialized.\nWhen set it's applied over the derived defaults during generation (the\n\"wizard\" flow); empty → the auto-derived config."
+          }
+        },
+        "type": "object",
+        "required": [
+          "language"
+        ],
+        "description": "Add a language target to an SDK (kicks off generation)."
+      },
+      "BuildSdkInput": {
+        "properties": {
+          "apiVersion": {
+            "type": "string",
+            "description": "API version to build every target from; defaults to the API's current."
+          }
+        },
+        "type": "object",
+        "description": "Rebuild every target of an SDK from one API spec version."
+      },
+      "CreateSdkVersionInput": {
+        "properties": {
+          "version": {
+            "type": "string",
+            "description": "The new SDK version (e.g. \"0.2.0\")."
+          },
+          "apiVersion": {
+            "type": "string",
+            "description": "API version to build from; defaults to the API's current."
+          }
+        },
+        "type": "object",
+        "required": [
+          "version"
+        ],
+        "description": "Create a new SDK version: bump the SDK's version and rebuild every target\nfrom one API spec version, recorded as a build in the history."
+      },
+      "CreateDocsProjectInput": {
+        "properties": {
+          "apiId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "theme": {
+            "type": "string"
+          }
+        },
+        "type": "object",
+        "required": [
+          "apiId",
+          "name"
+        ]
+      },
+      "CreateMcpServerInput": {
+        "properties": {
+          "apiId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "transport": {
+            "$ref": "#/components/schemas/McpTransport"
+          },
+          "url": {
+            "type": "string"
+          }
+        },
+        "type": "object",
+        "required": [
+          "apiId",
+          "name"
+        ]
+      },
+      "MarkReadInput": {
+        "properties": {
+          "ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "all": {
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "UpdateContextInput": {
+        "properties": {
+          "orgName": {
+            "type": "string"
+          },
+          "projectName": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "RegisterInput": {
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "LoginInput": {
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        },
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "CreateProjectInput": {
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ]
+      },
+      "ApiKey": {
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "prefix": {
+            "type": "string",
+            "description": "Public prefix shown in the list to tell keys apart (e.g. `atk_live_a1b2`)."
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "lastUsedAt": {
+            "type": "string"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "prefix",
+          "createdAt"
+        ],
+        "description": "A workspace API key. Only its SHA-256 hash is stored; the secret is returned\nonce, at creation (see CreatedApiKey)."
+      },
+      "CreateApiKeyInput": {
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ]
+      },
+      "CreatedApiKey": {
+        "properties": {
+          "key": {
+            "$ref": "#/components/schemas/ApiKey"
+          },
+          "secret": {
+            "type": "string"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "secret"
+        ],
+        "description": "The created key plus its plaintext secret — the ONLY time the secret is\nreturned. Store it now; it can't be retrieved again."
+      },
+      "UpdateProjectInput": {
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ]
+      },
+      "SelectProjectInput": {
+        "properties": {
+          "projectId": {
+            "type": "string"
+          }
+        },
+        "type": "object",
+        "required": [
+          "projectId"
+        ]
+      },
+      "InviteMemberInput": {
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          }
+        },
+        "type": "object",
+        "required": [
+          "email"
+        ]
+      },
+      "UpdateMemberRoleInput": {
+        "properties": {
+          "role": {
+            "type": "string"
+          }
+        },
+        "type": "object",
+        "required": [
+          "role"
+        ]
+      },
+      "ConnectGitProviderInput": {
+        "properties": {
+          "kind": {
+            "$ref": "#/components/schemas/GitProviderKind"
+          },
+          "name": {
+            "type": "string"
+          },
+          "baseUrl": {
+            "type": "string",
+            "description": "Provider base URL; optional for github.com/gitlab.com, required for self-hosted."
+          },
+          "token": {
+            "type": "string"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kind",
+          "token"
+        ],
+        "description": "Connect a git provider (validated via the provider's whoami)."
+      },
+      "CreateRepoConnectionInput": {
+        "properties": {
+          "providerId": {
+            "type": "string"
+          },
+          "targetKind": {
+            "$ref": "#/components/schemas/RepoTargetKind"
+          },
+          "targetId": {
+            "type": "string"
+          },
+          "ref": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string",
+            "description": "For an existing repo: \"owner/name\". For a new repo: just the name."
+          },
+          "createRepo": {
+            "type": "boolean",
+            "description": "When true, create `repo` (a name) under the account before connecting."
+          },
+          "makePrivate": {
+            "type": "boolean",
+            "description": "Visibility for a newly-created repo."
+          },
+          "branch": {
+            "type": "string"
+          },
+          "prefix": {
+            "type": "string"
+          },
+          "releaseMode": {
+            "type": "string"
+          },
+          "autoRelease": {
+            "type": "boolean"
+          },
+          "baseBranch": {
+            "type": "string"
+          },
+          "distTags": {
+            "type": "string",
+            "description": "Comma-separated dist-tags to react to (default `latest`; `*` = all)."
+          }
+        },
+        "type": "object",
+        "required": [
+          "providerId",
+          "targetKind",
+          "targetId",
+          "repo"
+        ],
+        "description": "Link an API spec or SDK target to a repo."
+      },
+      "ConnectRegistryInput": {
+        "properties": {
+          "kind": {
+            "$ref": "#/components/schemas/PackageRegistryKind"
+          },
+          "name": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "description": "Registry URL, or a local file-feed path."
+          },
+          "token": {
+            "type": "string",
+            "description": "Auth token; may be empty for an anonymous/local registry."
+          }
+        },
+        "type": "object",
+        "required": [
+          "kind",
+          "url"
+        ],
+        "description": "Connect a package registry account."
+      },
+      "CreateRegistryConnectionInput": {
+        "properties": {
+          "registryId": {
+            "type": "string"
+          },
+          "targetId": {
+            "type": "string"
+          },
+          "packageName": {
+            "type": "string",
+            "description": "Override the published package name (defaults to the SDK's own name)."
+          },
+          "autoPublish": {
+            "type": "boolean"
+          }
+        },
+        "type": "object",
+        "required": [
+          "registryId",
+          "targetId"
+        ],
+        "description": "Link an SDK target to a package registry."
+      },
+      "PrepareReleaseInput": {
+        "properties": {
+          "connectionId": {
+            "type": "string"
+          },
+          "versionOverride": {
+            "type": "string"
+          }
+        },
+        "type": "object",
+        "required": [
+          "connectionId"
+        ]
+      },
+      "SetReleaseConfigInput": {
+        "properties": {
+          "releaseMode": {
+            "type": "string"
+          },
+          "autoRelease": {
+            "type": "boolean"
+          },
+          "baseBranch": {
+            "type": "string"
+          },
+          "prerelease": {
+            "type": "boolean"
+          },
+          "distTags": {
+            "type": "string",
+            "description": "Comma-separated dist-tags this connection reacts to (default `latest`);\n`*` = all. Only a version published under a matching tag triggers a\nrelease."
+          }
+        },
+        "type": "object",
+        "required": [
+          "releaseMode",
+          "autoRelease"
+        ]
+      },
+      "ApiFormat": {
+        "enum": [
+          "openapi",
+          "graphql",
+          "asyncapi",
+          "jsonschema"
+        ],
+        "type": "string"
+      },
+      "EntryKind": {
+        "enum": [
+          "api",
+          "schema"
+        ],
+        "type": "string",
+        "description": "What kind of document a registry entry holds: a full API spec or a schema."
+      },
+      "BuildStatus": {
+        "enum": [
+          "ready",
+          "building",
+          "error",
+          "draft"
+        ],
+        "type": "string"
+      },
+      "SdkLanguage": {
+        "enum": [
+          "go",
+          "python",
+          "node",
+          "ruby",
+          "java",
+          "dotnet"
+        ],
+        "type": "string"
+      },
+      "McpTransport": {
+        "enum": [
+          "http",
+          "sse",
+          "stdio"
+        ],
+        "type": "string"
+      },
+      "NotificationSeverity": {
+        "enum": [
+          "info",
+          "success",
+          "warning",
+          "error"
+        ],
+        "type": "string"
+      },
+      "NotificationSource": {
+        "enum": [
+          "sdk",
+          "docs",
+          "mcp",
+          "registry",
+          "system",
+          "git"
+        ],
+        "type": "string"
+      },
+      "GitProviderKind": {
+        "enum": [
+          "github",
+          "gitlab",
+          "bitbucket",
+          "gitea"
+        ],
+        "type": "string",
+        "description": "The git platforms the gitprovider service can connect to."
+      },
+      "RepoTargetKind": {
+        "enum": [
+          "spec",
+          "sdk"
+        ],
+        "type": "string",
+        "description": "What a repo connection syncs into a repo."
+      },
+      "UsageRange": {
+        "enum": [
+          "24h",
+          "7d",
+          "30d",
+          "90d"
+        ],
+        "type": "string"
+      },
+      "PackageRegistryKind": {
+        "enum": [
+          "npm",
+          "pypi",
+          "gems",
+          "maven",
+          "nuget",
+          "goproxy"
+        ],
+        "type": "string",
+        "description": "Package registry flavour — the language ecosystem an SDK publishes into."
+      },
+      "ReleaseState": {
+        "enum": [
+          "preparing",
+          "pr_open",
+          "merging",
+          "released",
+          "failed",
+          "superseded"
+        ],
+        "type": "string",
+        "description": "A versioned release cycle for an SDK connection (the rolling PR + its state)."
+      }
+    }
+  }
+}
