@@ -46,7 +46,6 @@ import {
   reportUnsupportedProtocol,
   validateNonEmptyString,
   validatedDecorator,
-  type DiagnosticContext,
 } from "./decorator-helpers.js";
 import { processBindings } from "./validation/binding-validator.js";
 import type { BindingTargetKind } from "./constants/binding-versions.js";
@@ -358,25 +357,8 @@ export const $messageId = makeStringIdDecorator<Model>(
 );
 
 /**
- * Shared body for decorators that take a single non-empty string ID argument
- * and store it. Used by `@operationId` and `@messageId`.
- */
-function applyStringIdDecorator(
-  opts: {
-    id: unknown;
-    store: (program: Program, id: string) => void;
-  } & DiagnosticContext,
-): void {
-  const { context, target, diagnosticCode, format, id, store } = opts;
-  if (!validateNonEmptyString(id, context, target, diagnosticCode, format)) {
-    return;
-  }
-  store(context.program, id);
-}
-
-/**
- * Build a decorator that wraps `applyStringIdDecorator` with fixed
- * diagnostic code, format, and store callback.
+ * Build a decorator that validates a non-empty string ID and stores it.
+ * Used by `@operationId` and `@messageId`.
  */
 function makeStringIdDecorator<T>(
   diagnosticCode: keyof typeof $lib.diagnostics,
@@ -384,16 +366,12 @@ function makeStringIdDecorator<T>(
   store: (program: Program, target: T, id: string) => void,
 ): (context: DecoratorContext, target: T, id: unknown) => void {
   return (context, target, id) => {
-    applyStringIdDecorator({
-      context,
-      target,
-      id,
-      diagnosticCode,
-      format: format(target),
-      store: (program) => {
-        store(program, target, id as string);
-      },
-    });
+    if (
+      !validateNonEmptyString(id, context, target, diagnosticCode, format(target))
+    ) {
+      return;
+    }
+    store(context.program, target, id);
   };
 }
 
