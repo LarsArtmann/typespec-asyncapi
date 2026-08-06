@@ -1,0 +1,45 @@
+asyncapi: 3.1.0
+info:
+  title: Generated API
+  version: 1.0.0
+servers:
+  prod:
+    description: Production Kafka broker
+    host: broker.example.com:9092
+    protocol: kafka
+channels:
+  events:
+    address: events
+    messages:
+      Event:
+        $ref: "#/components/messages/Event"
+operations:
+  publish:
+    action: send
+    channel:
+      $ref: "#/channels/events"
+    messages:
+      - $ref: "#/channels/events/messages/Event"
+components:
+  messages:
+    Event:
+      name: Event
+      contentType: application/json
+      title: Event
+      payload:
+        $ref: "#/components/schemas/Event"
+  schemas:
+    Event:
+      properties:
+        id:
+          type: string
+      type: object
+      required:
+        - id
+  securitySchemes:
+    scramAuth:
+      type: scramSha256
+      description: SCRAM authentication
+    brokerAuth:
+      type: userPassword
+      description: Broker credentials
