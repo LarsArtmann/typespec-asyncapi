@@ -23,7 +23,10 @@ import type {
 } from "./domain/models/asyncapi-document.js";
 import type { DocumentBuildContext } from "./builders/types.js";
 import { discoverOperations } from "./builders/operation-discovery.js";
-import { applyChannelDocs, attachChannelBindings } from "./builders/channel-builder.js";
+import {
+  applyChannelDocs,
+  attachChannelBindings,
+} from "./builders/channel-builder.js";
 import { buildOperations } from "./builders/operation-builder.js";
 import { mergeExplicitMessages } from "./builders/message-builder.js";
 import { buildServers } from "./builders/server-builder.js";
@@ -67,10 +70,17 @@ export function buildAsyncAPIDocument(
   const apiVersion = getApiVersion(state);
   const versionedVersion = getVersionedApiVersion(program);
 
-  return assembleDocument(ctx, options, defaultContentType, apiVersion ?? versionedVersion);
+  return assembleDocument(
+    ctx,
+    options,
+    defaultContentType,
+    apiVersion ?? versionedVersion,
+  );
 }
 
-function getDefaultContentType(state: AsyncAPIConsolidatedState): string | undefined {
+function getDefaultContentType(
+  state: AsyncAPIConsolidatedState,
+): string | undefined {
   for (const [, data] of state.defaultContentType) {
     return data.contentType;
   }
@@ -130,13 +140,16 @@ function assembleDocument(
       version: options?.version ?? stateApiVersion ?? "1.0.0",
       ...(options?.contact ? { contact: options.contact } : {}),
       ...(options?.license ? { license: options.license } : {}),
-      ...(options?.termsOfService ? { termsOfService: options.termsOfService } : {}),
+      ...(options?.termsOfService
+        ? { termsOfService: options.termsOfService }
+        : {}),
       ...(options?.externalDocs ? { externalDocs: options.externalDocs } : {}),
     },
     ...(defaultContentType ? { defaultContentType } : {}),
     ...(Object.keys(ctx.servers).length > 0 ? { servers: ctx.servers } : {}),
     channels: ctx.channels,
-    operations: Object.keys(ctx.operations).length > 0 ? ctx.operations : undefined,
+    operations:
+      Object.keys(ctx.operations).length > 0 ? ctx.operations : undefined,
     components: Object.keys(components).length > 0 ? components : undefined,
   };
 }

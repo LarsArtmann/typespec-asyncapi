@@ -33,14 +33,14 @@
         --radius-sm: 0px;
 
         --font-heading:
-          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          Helvetica, Arial, sans-serif;
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         --font-body:
-          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          Helvetica, Arial, sans-serif;
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         --font-mono:
-          ui-monospace, "Cascadia Code", "Source Code Pro", "JetBrains Mono", Menlo, Consolas,
-          monospace;
+          ui-monospace, "Cascadia Code", "Source Code Pro", "JetBrains Mono",
+          Menlo, Consolas, monospace;
       }
       * {
         box-sizing: border-box;
@@ -246,15 +246,27 @@
       }
       .card-problem {
         border-left-color: var(--problem);
-        background: color-mix(in srgb, var(--problem) 8%, var(--surface-raised));
+        background: color-mix(
+          in srgb,
+          var(--problem) 8%,
+          var(--surface-raised)
+        );
       }
       .card-solution {
         border-left-color: var(--solution);
-        background: color-mix(in srgb, var(--solution) 8%, var(--surface-raised));
+        background: color-mix(
+          in srgb,
+          var(--solution) 8%,
+          var(--surface-raised)
+        );
       }
       .card-warning {
         border-left-color: var(--warning);
-        background: color-mix(in srgb, var(--warning) 8%, var(--surface-raised));
+        background: color-mix(
+          in srgb,
+          var(--warning) 8%,
+          var(--surface-raised)
+        );
       }
 
       .stat-grid,
@@ -585,9 +597,9 @@
           <div class="hero-badge">Pareto Plan</div>
           <h1>Roadmap Execution Plan</h1>
           <p class="hero-subtitle">
-            26 medium-granularity tasks and 150 fine-grained subtasks across 4 Pareto tiers. Ranked
-            by impact, effort, and customer value. The 1% that delivers 51% of the result comes
-            first.
+            26 medium-granularity tasks and 150 fine-grained subtasks across 4
+            Pareto tiers. Ranked by impact, effort, and customer value. The 1%
+            that delivers 51% of the result comes first.
           </p>
         </div>
 
@@ -641,18 +653,23 @@
         <div class="card card-problem">
           <h4>The #1 Bottleneck</h4>
           <p>
-            <code>buildAsyncAPIDocument()</code> is 371 lines, complexity 84, with 161 statements.
-            ESLint already warns: <code>max-lines-per-function</code>, <code>max-statements</code>,
-            <code>max-lines</code>. Every future feature — reply, multi-message, server bindings,
-            new protocols — touches this function. Refactoring it first is the single
-            highest-leverage action. It unblocks ALL Tier 2 and Tier 3 document-builder work.
+            <code>buildAsyncAPIDocument()</code> is 371 lines, complexity 84,
+            with 161 statements. ESLint already warns:
+            <code>max-lines-per-function</code>, <code>max-statements</code>,
+            <code>max-lines</code>. Every future feature — reply, multi-message,
+            server bindings, new protocols — touches this function. Refactoring
+            it first is the single highest-leverage action. It unblocks ALL Tier
+            2 and Tier 3 document-builder work.
           </p>
         </div>
 
         <!-- ========== PARETO BREAKDOWN ========== -->
         <h2 id="pareto"><span class="num">01</span>Pareto Breakdown</h2>
 
-        <p>The ROADMAP contains 25 raw ideas across 4 themes. Here is the Pareto distribution:</p>
+        <p>
+          The ROADMAP contains 25 raw ideas across 4 themes. Here is the Pareto
+          distribution:
+        </p>
 
         <div class="table-wrap">
           <table>
@@ -671,14 +688,18 @@
                 <td>~1%</td>
                 <td>~51%</td>
                 <td>3</td>
-                <td>Refactor the bottleneck + trivial wins that unlock everything</td>
+                <td>
+                  Refactor the bottleneck + trivial wins that unlock everything
+                </td>
               </tr>
               <tr>
                 <td><span class="badge badge-high">Tier 2</span></td>
                 <td>~4%</td>
                 <td>~64%</td>
                 <td>6</td>
-                <td>High-value features + type safety cleanup + trust verification</td>
+                <td>
+                  High-value features + type safety cleanup + trust verification
+                </td>
               </tr>
               <tr>
                 <td><span class="badge badge-medium">Tier 3</span></td>
@@ -699,9 +720,12 @@
         </div>
 
         <!-- ========== COMPREHENSIVE PLAN TABLE ========== -->
-        <h2><span class="num">02</span>Comprehensive Plan — Medium Granularity</h2>
+        <h2>
+          <span class="num">02</span>Comprehensive Plan — Medium Granularity
+        </h2>
         <p>
-          26 tasks, each 30–100 minutes. Sorted by impact/effort/customer-value within each tier.
+          26 tasks, each 30–100 minutes. Sorted by impact/effort/customer-value
+          within each tier.
         </p>
 
         <div class="table-wrap">
@@ -742,7 +766,10 @@
               <tr>
                 <td>3</td>
                 <td><span class="badge badge-critical">T1</span></td>
-                <td><strong>@doc propagation to channels</strong> — currently silently dropped</td>
+                <td>
+                  <strong>@doc propagation to channels</strong> — currently
+                  silently dropped
+                </td>
                 <td><span class="badge badge-medium">Medium</span></td>
                 <td>Low</td>
                 <td>Spec Compliance</td>
@@ -751,7 +778,10 @@
               <tr>
                 <td>4</td>
                 <td><span class="badge badge-high">T2</span></td>
-                <td><strong>Operation reply support</strong> — type exists, never populated</td>
+                <td>
+                  <strong>Operation reply support</strong> — type exists, never
+                  populated
+                </td>
                 <td><span class="badge badge-high">High</span></td>
                 <td>Medium</td>
                 <td>Spec Compliance</td>
@@ -761,7 +791,8 @@
                 <td>5</td>
                 <td><span class="badge badge-high">T2</span></td>
                 <td>
-                  <strong>Multi-message operations</strong> — one operation → multiple message types
+                  <strong>Multi-message operations</strong> — one operation →
+                  multiple message types
                 </td>
                 <td><span class="badge badge-high">High</span></td>
                 <td>Medium</td>
@@ -771,7 +802,9 @@
               <tr>
                 <td>6</td>
                 <td><span class="badge badge-high">T2</span></td>
-                <td><strong>Remove 22 as-AsyncAPIObject casts</strong> in tests</td>
+                <td>
+                  <strong>Remove 22 as-AsyncAPIObject casts</strong> in tests
+                </td>
                 <td><span class="badge badge-low">Low</span></td>
                 <td>Low</td>
                 <td>Dev Experience</td>
@@ -780,7 +813,9 @@
               <tr>
                 <td>7</td>
                 <td><span class="badge badge-high">T2</span></td>
-                <td><strong>Clean 111+ Record casts</strong> in compliance tests</td>
+                <td>
+                  <strong>Clean 111+ Record casts</strong> in compliance tests
+                </td>
                 <td><span class="badge badge-low">Low</span></td>
                 <td>Low</td>
                 <td>Dev Experience</td>
@@ -801,7 +836,10 @@
               <tr>
                 <td>9</td>
                 <td><span class="badge badge-high">T2</span></td>
-                <td><strong>AsyncAPI Studio round-trip</strong> compatibility verification</td>
+                <td>
+                  <strong>AsyncAPI Studio round-trip</strong> compatibility
+                  verification
+                </td>
                 <td><span class="badge badge-high">High</span></td>
                 <td>Low</td>
                 <td>Ecosystem</td>
@@ -811,7 +849,8 @@
                 <td>10</td>
                 <td><span class="badge badge-medium">T3</span></td>
                 <td>
-                  <strong>Server binding support</strong> — @server currently emits no bindings
+                  <strong>Server binding support</strong> — @server currently
+                  emits no bindings
                 </td>
                 <td><span class="badge badge-medium">Medium</span></td>
                 <td>Medium</td>
@@ -821,7 +860,10 @@
               <tr>
                 <td>11</td>
                 <td><span class="badge badge-medium">T3</span></td>
-                <td><strong>@operationId / @messageId</strong> decorators for explicit naming</td>
+                <td>
+                  <strong>@operationId / @messageId</strong> decorators for
+                  explicit naming
+                </td>
                 <td><span class="badge badge-medium">Medium</span></td>
                 <td>Low</td>
                 <td>Spec Compliance</td>
@@ -830,7 +872,10 @@
               <tr>
                 <td>12</td>
                 <td><span class="badge badge-medium">T3</span></td>
-                <td><strong>Binding field-level validation</strong> against specs JSON Schemas</td>
+                <td>
+                  <strong>Binding field-level validation</strong> against specs
+                  JSON Schemas
+                </td>
                 <td><span class="badge badge-medium">Medium</span></td>
                 <td>Medium</td>
                 <td>Spec Compliance</td>
@@ -866,7 +911,10 @@
               <tr>
                 <td>16</td>
                 <td><span class="badge badge-medium">T3</span></td>
-                <td><strong>@bindings for Namespace target</strong> — enables server bindings</td>
+                <td>
+                  <strong>@bindings for Namespace target</strong> — enables
+                  server bindings
+                </td>
                 <td><span class="badge badge-medium">Medium</span></td>
                 <td>Low</td>
                 <td>Architecture</td>
@@ -884,7 +932,9 @@
               <tr>
                 <td>18</td>
                 <td><span class="badge badge-medium">T3</span></td>
-                <td><strong>Coverage tooling</strong> fix for dist/*.js loading</td>
+                <td>
+                  <strong>Coverage tooling</strong> fix for dist/*.js loading
+                </td>
                 <td><span class="badge badge-low">Low</span></td>
                 <td>Medium</td>
                 <td>Dev Experience</td>
@@ -894,8 +944,8 @@
                 <td>19</td>
                 <td><span class="badge badge-low">T4</span></td>
                 <td>
-                  <strong>Binding validation framework</strong> — derive matrix from specs at build
-                  time
+                  <strong>Binding validation framework</strong> — derive matrix
+                  from specs at build time
                 </td>
                 <td><span class="badge badge-medium">Medium</span></td>
                 <td>High</td>
@@ -905,7 +955,10 @@
               <tr>
                 <td>20</td>
                 <td><span class="badge badge-low">T4</span></td>
-                <td><strong>Plugin/hook system</strong> for custom bindings (#32 RFC)</td>
+                <td>
+                  <strong>Plugin/hook system</strong> for custom bindings (#32
+                  RFC)
+                </td>
                 <td><span class="badge badge-low">Low</span></td>
                 <td>High</td>
                 <td>Architecture</td>
@@ -923,7 +976,9 @@
               <tr>
                 <td>22</td>
                 <td><span class="badge badge-low">T4</span></td>
-                <td><strong>AsyncAPI generator</strong> ecosystem compatibility</td>
+                <td>
+                  <strong>AsyncAPI generator</strong> ecosystem compatibility
+                </td>
                 <td><span class="badge badge-medium">Medium</span></td>
                 <td>Medium</td>
                 <td>Ecosystem</td>
@@ -959,7 +1014,9 @@
               <tr>
                 <td>26</td>
                 <td><span class="badge badge-low">T4</span></td>
-                <td><strong>Performance profiling</strong> for 100+ channel specs</td>
+                <td>
+                  <strong>Performance profiling</strong> for 100+ channel specs
+                </td>
                 <td><span class="badge badge-low">Low</span></td>
                 <td>Medium</td>
                 <td>Dev Experience</td>
@@ -970,87 +1027,104 @@
         </div>
 
         <!-- ========== TIER DETAILS ========== -->
-        <h2 id="tier1"><span class="num">03</span>Tier 1 — Foundation (1% → 51%)</h2>
+        <h2 id="tier1">
+          <span class="num">03</span>Tier 1 — Foundation (1% → 51%)
+        </h2>
         <div class="tier-header">
           <span class="tier-badge tier-1-badge">Critical Path</span>
         </div>
 
         <p>
-          Three tasks that deliver disproportionate value. The refactor unblocks ALL future
-          document-builder work. The other two are trivial gaps that users notice immediately.
+          Three tasks that deliver disproportionate value. The refactor unblocks
+          ALL future document-builder work. The other two are trivial gaps that
+          users notice immediately.
         </p>
 
         <div class="card card-problem">
           <h4>Task 1: Refactor buildAsyncAPIDocument()</h4>
           <p>
-            <strong>Current state:</strong> 371 lines, 161 statements, complexity 84. ESLint
-            violations: <code>max-lines-per-function</code> (limit 350),
-            <code>max-statements</code> (limit 150), <code>max-lines</code> (limit 500). The
-            function handles channel creation, operation discovery, message registration, server
-            building, security schemes, schema ref wiring, and $ref chain construction — all in one
-            function.
+            <strong>Current state:</strong> 371 lines, 161 statements,
+            complexity 84. ESLint violations:
+            <code>max-lines-per-function</code> (limit 350),
+            <code>max-statements</code> (limit 150),
+            <code>max-lines</code> (limit 500). The function handles channel
+            creation, operation discovery, message registration, server
+            building, security schemes, schema ref wiring, and $ref chain
+            construction — all in one function.
           </p>
           <p>
-            <strong>Target state:</strong> Extract into <code>src/builders/</code> modules —
+            <strong>Target state:</strong> Extract into
+            <code>src/builders/</code> modules —
             <code>channel-builder.ts</code>, <code>operation-builder.ts</code>,
             <code>message-builder.ts</code>, <code>server-builder.ts</code>,
-            <code>security-builder.ts</code>. The main function becomes a thin orchestrator. Each
-            builder receives a shared <code>BuilderContext</code>.
+            <code>security-builder.ts</code>. The main function becomes a thin
+            orchestrator. Each builder receives a shared
+            <code>BuilderContext</code>.
           </p>
           <div class="callout callout-warning">
-            <strong>Risk</strong> This is the most invasive refactor. Must be done BEFORE any Tier 2
-            document-builder work. Full test suite must pass with zero regressions.
+            <strong>Risk</strong> This is the most invasive refactor. Must be
+            done BEFORE any Tier 2 document-builder work. Full test suite must
+            pass with zero regressions.
           </div>
         </div>
 
         <div class="card card-solution">
           <h4>Task 2: defaultContentType on document root</h4>
           <p>
-            The field <code>defaultContentType?: string</code> already exists in the document model
-            (<code>asyncapi-document.ts:238</code>) but is never populated. Add a
+            The field <code>defaultContentType?: string</code> already exists in
+            the document model (<code>asyncapi-document.ts:238</code>) but is
+            never populated. Add a
             <code>@defaultContentType</code>
-            decorator, wire it into state, and emit it on the root document. Trivial — 30 minutes.
+            decorator, wire it into state, and emit it on the root document.
+            Trivial — 30 minutes.
           </p>
         </div>
 
         <div class="card card-solution">
           <h4>Task 3: @doc propagation to channels</h4>
           <p>
-            <code>@doc</code> already works for models, properties, operations, and messages.
-            Channels silently drop it. Fix: add <code>getDoc()</code> call when building
+            <code>@doc</code> already works for models, properties, operations,
+            and messages. Channels silently drop it. Fix: add
+            <code>getDoc()</code> call when building
             <code>ChannelObject</code>
             in document-builder. 30 minutes including test.
           </p>
         </div>
 
-        <h2 id="tier2"><span class="num">04</span>Tier 2 — Core Features (4% → 64%)</h2>
+        <h2 id="tier2">
+          <span class="num">04</span>Tier 2 — Core Features (4% → 64%)
+        </h2>
         <div class="tier-header">
           <span class="tier-badge tier-2-badge">High Value</span>
         </div>
 
         <p>
-          High-impact features that unblock real-world use cases, plus type safety cleanup that
-          improves the entire test suite.
+          High-impact features that unblock real-world use cases, plus type
+          safety cleanup that improves the entire test suite.
         </p>
 
         <div class="card card-warning">
           <h4>Task 4: Operation reply support</h4>
           <p>
-            The <code>OperationReply</code> interface exists (<code>asyncapi-document.ts:124</code>)
-            and the <code>reply?</code> field is on <code>OperationObject</code> — but it's never
-            populated. Request-reply is a fundamental messaging pattern. Add a
-            <code>@reply</code> decorator that specifies the reply message model. Wire into the
-            operation builder. Must validate against the AsyncAPI 3.1 JSON Schema.
+            The <code>OperationReply</code> interface exists
+            (<code>asyncapi-document.ts:124</code>) and the
+            <code>reply?</code> field is on <code>OperationObject</code> — but
+            it's never populated. Request-reply is a fundamental messaging
+            pattern. Add a <code>@reply</code> decorator that specifies the
+            reply message model. Wire into the operation builder. Must validate
+            against the AsyncAPI 3.1 JSON Schema.
           </p>
         </div>
 
         <div class="card card-warning">
           <h4>Task 5: Multi-message operations</h4>
           <p>
-            Currently each operation maps 1:1 to one message. AsyncAPI supports operations
-            referencing multiple message types (e.g., an event stream with different event schemas).
-            Design: accept a union of Models on the operation, or a <code>@messages</code> decorator
-            accepting an array. Update <code>DiscoveredOp</code> and the operation builder to emit a
+            Currently each operation maps 1:1 to one message. AsyncAPI supports
+            operations referencing multiple message types (e.g., an event stream
+            with different event schemas). Design: accept a union of Models on
+            the operation, or a <code>@messages</code> decorator accepting an
+            array. Update <code>DiscoveredOp</code> and the operation builder to
+            emit a
             <code>messages</code>
             array instead of a single message reference.
           </p>
@@ -1060,14 +1134,16 @@
           <h4>Tasks 6–8: Type Safety Cleanup</h4>
           <ul>
             <li>
-              <strong>Task 6:</strong> Remove 22 <code>as AsyncAPIObject</code> casts across 5 test
-              files (test-helpers.ts, subscribe.test.ts, cli-test-helpers.ts,
+              <strong>Task 6:</strong> Remove 22
+              <code>as AsyncAPIObject</code> casts across 5 test files
+              (test-helpers.ts, subscribe.test.ts, cli-test-helpers.ts,
               asyncapi-generation.test.ts, decorator-functionality.test.ts)
             </li>
             <li>
-              <strong>Task 7:</strong> Clean 111+ <code>Record&lt;string, unknown&gt;</code> casts
-              in 6 compliance test files (protocol-bindings: 35, edge-cases: 21, schema-types: 19,
-              servers-security: 13, ref-chain: 13, document-structure: 10)
+              <strong>Task 7:</strong> Clean 111+
+              <code>Record&lt;string, unknown&gt;</code> casts in 6 compliance
+              test files (protocol-bindings: 35, edge-cases: 21, schema-types:
+              19, servers-security: 13, ref-chain: 13, document-structure: 10)
             </li>
             <li>
               <strong>Task 8:</strong> Fix <code>schema-validator.ts</code> and
@@ -1077,69 +1153,80 @@
             </li>
           </ul>
           <div class="callout callout-solution">
-            <strong>Why now</strong> These are pure type-safety improvements. They make the test
-            suite self-documenting and catch type mismatches at compile time instead of runtime.
+            <strong>Why now</strong> These are pure type-safety improvements.
+            They make the test suite self-documenting and catch type mismatches
+            at compile time instead of runtime.
           </div>
         </div>
 
         <div class="card card-solution">
           <h4>Task 9: AsyncAPI Studio round-trip verification</h4>
           <p>
-            If the emitter's output doesn't work in AsyncAPI Studio (the primary consumer tool),
-            users lose trust immediately. Write a round-trip test: emit a representative spec with
-            all features, parse it back with <code>@asyncapi/parser</code>, and verify structural
-            integrity. Note: <code>@asyncapi/parser</code> v3.6.0 has Bun incompatibility (AJV
+            If the emitter's output doesn't work in AsyncAPI Studio (the primary
+            consumer tool), users lose trust immediately. Write a round-trip
+            test: emit a representative spec with all features, parse it back
+            with <code>@asyncapi/parser</code>, and verify structural integrity.
+            Note: <code>@asyncapi/parser</code> v3.6.0 has Bun incompatibility
+            (AJV
             <code>new Function()</code>
-            codegen) — use Node.js for this test, or manual $ref resolution tests.
+            codegen) — use Node.js for this test, or manual $ref resolution
+            tests.
           </p>
         </div>
 
-        <h2 id="tier3"><span class="num">05</span>Tier 3 — Completeness (20% → 80%)</h2>
+        <h2 id="tier3">
+          <span class="num">05</span>Tier 3 — Completeness (20% → 80%)
+        </h2>
         <div class="tier-header">
           <span class="tier-badge tier-3-badge">Important</span>
         </div>
 
         <p>
-          Protocol coverage, validation depth, and DX polish. These make the emitter "complete" for
-          the 80% use case.
+          Protocol coverage, validation depth, and DX polish. These make the
+          emitter "complete" for the 80% use case.
         </p>
 
         <div class="card">
           <h4>Tasks 10–11: Server Bindings &amp; Explicit IDs</h4>
           <p>
-            <strong>Task 10:</strong> <code>@server</code> currently emits host/protocol/description
-            but no bindings. The binding framework already exists — extend it to server targets.
-            Depends on Task 16 (<code>@bindings</code> for Namespace).
+            <strong>Task 10:</strong> <code>@server</code> currently emits
+            host/protocol/description but no bindings. The binding framework
+            already exists — extend it to server targets. Depends on Task 16
+            (<code>@bindings</code> for Namespace).
           </p>
           <p>
             <strong>Task 11:</strong> <code>@operationId</code> and
-            <code>@messageId</code> decorators for explicit naming control. Currently IDs are
-            auto-generated from TypeSpec type names. Users need deterministic names for cross-file
-            references and documentation.
+            <code>@messageId</code> decorators for explicit naming control.
+            Currently IDs are auto-generated from TypeSpec type names. Users
+            need deterministic names for cross-file references and
+            documentation.
           </p>
         </div>
 
         <div class="card">
           <h4>Task 12: Binding field-level validation</h4>
           <p>
-            Currently <code>processBindings()</code> validates keys and versions structurally. It
-            does NOT validate individual field values against the AsyncAPI spec. Load
-            <code>@asyncapi/specs/bindings/{protocol}/</code> JSON Schemas and validate field values
-            at decorator time. This catches errors like <code>qos: 99</code> (MQTT allows 0–2)
-            before the user sees a cryptic JSON Schema validation failure.
+            Currently <code>processBindings()</code> validates keys and versions
+            structurally. It does NOT validate individual field values against
+            the AsyncAPI spec. Load
+            <code>@asyncapi/specs/bindings/{protocol}/</code> JSON Schemas and
+            validate field values at decorator time. This catches errors like
+            <code>qos: 99</code> (MQTT allows 0–2) before the user sees a
+            cryptic JSON Schema validation failure.
           </p>
           <div class="callout callout-warning">
-            <strong>Foundation for</strong> Tasks 13–15 (new protocols). Do this before adding
-            Redis, GCP Pub/Sub, and SNS so the validation framework is in place.
+            <strong>Foundation for</strong> Tasks 13–15 (new protocols). Do this
+            before adding Redis, GCP Pub/Sub, and SNS so the validation
+            framework is in place.
           </div>
         </div>
 
         <div class="card">
           <h4>Tasks 13–15: New Protocol Bindings</h4>
           <p>
-            Redis, Google Cloud Pub/Sub, and AWS SNS. Each follows the established pattern: add
-            protocol constant, binding version, placement matrix entries, compliance tests. Specs
-            available in
+            Redis, Google Cloud Pub/Sub, and AWS SNS. Each follows the
+            established pattern: add protocol constant, binding version,
+            placement matrix entries, compliance tests. Specs available in
             <code>node_modules/@asyncapi/specs/bindings/</code>.
           </p>
         </div>
@@ -1148,67 +1235,77 @@
           <h4>Tasks 16–18: Architecture &amp; DX</h4>
           <ul>
             <li>
-              <strong>Task 16:</strong> <code>@bindings</code> for Namespace target — enables server
-              binding placement validation
+              <strong>Task 16:</strong> <code>@bindings</code> for Namespace
+              target — enables server binding placement validation
             </li>
             <li>
-              <strong>Task 17:</strong> Consolidate ESLint and oxlint — resolve contradictory rules,
-              document strategy
+              <strong>Task 17:</strong> Consolidate ESLint and oxlint — resolve
+              contradictory rules, document strategy
             </li>
             <li>
-              <strong>Task 18:</strong> Coverage tooling — vitest can't instrument
-              <code>dist/*.js</code>; research and fix
+              <strong>Task 18:</strong> Coverage tooling — vitest can't
+              instrument <code>dist/*.js</code>; research and fix
             </li>
           </ul>
         </div>
 
         <h2 id="tier4">
-          <span class="num">06</span>Tier 4 — Strategic &amp; Ecosystem (80% → 100%)
+          <span class="num">06</span>Tier 4 — Strategic &amp; Ecosystem (80% →
+          100%)
         </h2>
         <div class="tier-header">
           <span class="tier-badge tier-4-badge">Strategic Bets</span>
         </div>
 
         <p>
-          Lower priority for pre-alpha. These are strategic investments for ecosystem integration
-          and long-term scalability.
+          Lower priority for pre-alpha. These are strategic investments for
+          ecosystem integration and long-term scalability.
         </p>
 
         <div class="card">
           <h4>Tasks 19–26</h4>
           <ul class="subtask-list">
             <li>
-              <strong>19. Binding validation framework</strong> — derive BINDING_PLACEMENT matrix
-              from specs at build time instead of hand-maintaining
+              <strong>19. Binding validation framework</strong> — derive
+              BINDING_PLACEMENT matrix from specs at build time instead of
+              hand-maintaining
             </li>
             <li>
-              <strong>20. Plugin/hook system</strong> — custom binding extensions (#32 RFC).
-              Premature for pre-alpha but strategically important
+              <strong>20. Plugin/hook system</strong> — custom binding
+              extensions (#32 RFC). Premature for pre-alpha but strategically
+              important
             </li>
             <li>
-              <strong>21. Multi-file TypeSpec input</strong> — import across .tsp files. May
-              partially work via TypeSpec compiler already
+              <strong>21. Multi-file TypeSpec input</strong> — import across
+              .tsp files. May partially work via TypeSpec compiler already
             </li>
             <li>
-              <strong>22. AsyncAPI generator compatibility</strong> — verify code generation from
-              emitter output works with @asyncapi/generator
-            </li>
-            <li><strong>23. @typespec/versioning</strong> — API versioning support (#163)</li>
-            <li>
-              <strong>24. Multi-file output</strong> — split large specs into multiple files (#78)
+              <strong>22. AsyncAPI generator compatibility</strong> — verify
+              code generation from emitter output works with @asyncapi/generator
             </li>
             <li>
-              <strong>25. OpenAPI cross-emitter sharing</strong> — share types between AsyncAPI and
-              OpenAPI emitters
+              <strong>23. @typespec/versioning</strong> — API versioning support
+              (#163)
             </li>
             <li>
-              <strong>26. Performance profiling</strong> — ensure no O(n²) for 100+ channel specs
+              <strong>24. Multi-file output</strong> — split large specs into
+              multiple files (#78)
+            </li>
+            <li>
+              <strong>25. OpenAPI cross-emitter sharing</strong> — share types
+              between AsyncAPI and OpenAPI emitters
+            </li>
+            <li>
+              <strong>26. Performance profiling</strong> — ensure no O(n²) for
+              100+ channel specs
             </li>
           </ul>
         </div>
 
         <!-- ========== D2 GRAPH ========== -->
-        <h2 id="graph"><span class="num">07</span>Execution Dependency Graph</h2>
+        <h2 id="graph">
+          <span class="num">07</span>Execution Dependency Graph
+        </h2>
         <p>Key dependencies between tasks. Arrows show what unblocks what.</p>
 
         <div class="d2-graph">
@@ -1826,8 +1923,12 @@
                   class="text-bold"
                   style="text-anchor: middle; font-size: 16px"
                 >
-                  <tspan x="209.500000" dy="0.000000">Refactor buildAsyncAPIDocument</tspan>
-                  <tspan x="209.500000" dy="18.500000">371 lines to focused builders</tspan>
+                  <tspan x="209.500000" dy="0.000000">
+                    Refactor buildAsyncAPIDocument
+                  </tspan>
+                  <tspan x="209.500000" dy="18.500000">
+                    371 lines to focused builders
+                  </tspan>
                 </text>
               </g>
               <g class="dGllcl8xLnQxX2RlZmF1bHRfY3Q=">
@@ -1946,8 +2047,12 @@
                   class="text-bold fill-N1"
                   style="text-anchor: middle; font-size: 16px"
                 >
-                  <tspan x="838.000000" dy="0.000000">Remove as-AsyncAPIObject</tspan>
-                  <tspan x="838.000000" dy="18.500000">casts (22 instances)</tspan>
+                  <tspan x="838.000000" dy="0.000000">
+                    Remove as-AsyncAPIObject
+                  </tspan>
+                  <tspan x="838.000000" dy="18.500000">
+                    casts (22 instances)
+                  </tspan>
                 </text>
               </g>
               <g class="dGllcl8yLnQyX3JlY29yZHM=">
@@ -1971,7 +2076,9 @@
                   style="text-anchor: middle; font-size: 16px"
                 >
                   <tspan x="838.000000" dy="0.000000">Clean Record casts</tspan>
-                  <tspan x="838.000000" dy="18.500000">in compliance tests</tspan>
+                  <tspan x="838.000000" dy="18.500000">
+                    in compliance tests
+                  </tspan>
                 </text>
               </g>
               <g class="dGllcl8yLnQyX3ZhbGlkYXRvcg==">
@@ -1994,8 +2101,12 @@
                   class="text-bold fill-N1"
                   style="text-anchor: middle; font-size: 16px"
                 >
-                  <tspan x="838.000000" dy="0.000000">Fix schema-validator.ts</tspan>
-                  <tspan x="838.000000" dy="18.500000">and type-guards.ts types</tspan>
+                  <tspan x="838.000000" dy="0.000000">
+                    Fix schema-validator.ts
+                  </tspan>
+                  <tspan x="838.000000" dy="18.500000">
+                    and type-guards.ts types
+                  </tspan>
                 </text>
               </g>
               <g class="dGllcl8yLnQyX3N0dWRpbw==">
@@ -2019,7 +2130,9 @@
                   style="text-anchor: middle; font-size: 16px"
                 >
                   <tspan x="838.500000" dy="0.000000">AsyncAPI Studio</tspan>
-                  <tspan x="838.500000" dy="18.500000">round-trip verification</tspan>
+                  <tspan x="838.500000" dy="18.500000">
+                    round-trip verification
+                  </tspan>
                 </text>
               </g>
               <g class="dGllcl8zLnQzX3NlcnZlcl9iaW5k">
@@ -2066,7 +2179,9 @@
                   class="text-bold fill-N1"
                   style="text-anchor: middle; font-size: 16px"
                 >
-                  <tspan x="1420.000000" dy="0.000000">operationId and messageId</tspan>
+                  <tspan x="1420.000000" dy="0.000000">
+                    operationId and messageId
+                  </tspan>
                   <tspan x="1420.000000" dy="18.500000">decorators</tspan>
                 </text>
               </g>
@@ -2090,7 +2205,9 @@
                   class="text-bold fill-N1"
                   style="text-anchor: middle; font-size: 16px"
                 >
-                  <tspan x="1420.500000" dy="0.000000">Binding field-level</tspan>
+                  <tspan x="1420.500000" dy="0.000000">
+                    Binding field-level
+                  </tspan>
                   <tspan x="1420.500000" dy="18.500000">validation</tspan>
                 </text>
               </g>
@@ -2210,7 +2327,9 @@
                   class="text-bold fill-N1"
                   style="text-anchor: middle; font-size: 16px"
                 >
-                  <tspan x="1420.500000" dy="0.000000">Consolidate ESLint</tspan>
+                  <tspan x="1420.500000" dy="0.000000">
+                    Consolidate ESLint
+                  </tspan>
                   <tspan x="1420.500000" dy="18.500000">and oxlint</tspan>
                 </text>
               </g>
@@ -2258,8 +2377,12 @@
                   class="text-bold fill-N1"
                   style="text-anchor: middle; font-size: 16px"
                 >
-                  <tspan x="1946.000000" dy="0.000000">Binding validation</tspan>
-                  <tspan x="1946.000000" dy="18.500000">framework from specs</tspan>
+                  <tspan x="1946.000000" dy="0.000000">
+                    Binding validation
+                  </tspan>
+                  <tspan x="1946.000000" dy="18.500000">
+                    framework from specs
+                  </tspan>
                 </text>
               </g>
               <g class="dGllcl80LnQ0X3BsdWdpbg==">
@@ -2282,7 +2405,9 @@
                   class="text-bold fill-N1"
                   style="text-anchor: middle; font-size: 16px"
                 >
-                  <tspan x="1946.000000" dy="0.000000">Plugin and hook system</tspan>
+                  <tspan x="1946.000000" dy="0.000000">
+                    Plugin and hook system
+                  </tspan>
                   <tspan x="1946.000000" dy="18.500000">(RFC 32)</tspan>
                 </text>
               </g>
@@ -2306,7 +2431,9 @@
                   class="text-bold fill-N1"
                   style="text-anchor: middle; font-size: 16px"
                 >
-                  <tspan x="1946.000000" dy="0.000000">Multi-file TypeSpec</tspan>
+                  <tspan x="1946.000000" dy="0.000000">
+                    Multi-file TypeSpec
+                  </tspan>
                   <tspan x="1946.000000" dy="18.500000">input support</tspan>
                 </text>
               </g>
@@ -2330,7 +2457,9 @@
                   class="text-bold fill-N1"
                   style="text-anchor: middle; font-size: 16px"
                 >
-                  <tspan x="1946.000000" dy="0.000000">AsyncAPI generator</tspan>
+                  <tspan x="1946.000000" dy="0.000000">
+                    AsyncAPI generator
+                  </tspan>
                   <tspan x="1946.000000" dy="18.500000">compatibility</tspan>
                 </text>
               </g>
@@ -2354,8 +2483,12 @@
                   class="text-bold fill-N1"
                   style="text-anchor: middle; font-size: 16px"
                 >
-                  <tspan x="1946.000000" dy="0.000000">typespec versioning</tspan>
-                  <tspan x="1946.000000" dy="18.500000">support (RFC 163)</tspan>
+                  <tspan x="1946.000000" dy="0.000000">
+                    typespec versioning
+                  </tspan>
+                  <tspan x="1946.000000" dy="18.500000">
+                    support (RFC 163)
+                  </tspan>
                 </text>
               </g>
               <g class="dGllcl80LnQ0X211bHRpZmlsZV9vdXQ=">
@@ -2402,7 +2535,9 @@
                   class="text-bold fill-N1"
                   style="text-anchor: middle; font-size: 16px"
                 >
-                  <tspan x="1946.000000" dy="0.000000">OpenAPI 3.x cross-</tspan>
+                  <tspan x="1946.000000" dy="0.000000">
+                    OpenAPI 3.x cross-
+                  </tspan>
                   <tspan x="1946.000000" dy="18.500000">emitter sharing</tspan>
                 </text>
               </g>
@@ -2426,7 +2561,9 @@
                   class="text-bold fill-N1"
                   style="text-anchor: middle; font-size: 16px"
                 >
-                  <tspan x="1946.500000" dy="0.000000">Performance profiling</tspan>
+                  <tspan x="1946.500000" dy="0.000000">
+                    Performance profiling
+                  </tspan>
                   <tspan x="1946.500000" dy="18.500000">100+ channels</tspan>
                 </text>
               </g>
@@ -2795,34 +2932,144 @@
                 width="2364"
                 height="2908"
               >
-                <rect x="-132" y="-85" width="2364" height="2908" fill="white"></rect>
-                <rect x="431.000000" y="1380.000000" width="64" height="21" fill="black"></rect>
-                <rect x="471.000000" y="1506.000000" width="64" height="21" fill="black"></rect>
-                <rect x="489.000000" y="1632.000000" width="64" height="21" fill="black"></rect>
-                <rect x="474.000000" y="1758.000000" width="64" height="21" fill="black"></rect>
-                <rect x="506.000000" y="1913.000000" width="64" height="21" fill="black"></rect>
-                <rect x="1090.000000" y="1380.000000" width="76" height="21" fill="black"></rect>
-                <rect x="1106.000000" y="1503.000000" width="76" height="21" fill="black"></rect>
-                <rect x="493.000000" y="1987.000000" width="56" height="21" fill="black"></rect>
-                <rect x="542.000000" y="2102.000000" width="56" height="21" fill="black"></rect>
-                <rect x="508.000000" y="2194.000000" width="64" height="21" fill="black"></rect>
-                <rect x="531.000000" y="2248.000000" width="64" height="21" fill="black"></rect>
-                <rect x="549.000000" y="2338.000000" width="64" height="21" fill="black"></rect>
-                <rect x="566.000000" y="2466.000000" width="56" height="21" fill="black"></rect>
-                <rect x="539.000000" y="2427.000000" width="100" height="21" fill="black"></rect>
-                <rect x="519.000000" y="777.000000" width="33" height="21" fill="black"></rect>
-                <rect x="1113.000000" y="731.000000" width="33" height="21" fill="black"></rect>
-                <rect x="1673.000000" y="685.000000" width="33" height="21" fill="black"></rect>
+                <rect
+                  x="-132"
+                  y="-85"
+                  width="2364"
+                  height="2908"
+                  fill="white"
+                ></rect>
+                <rect
+                  x="431.000000"
+                  y="1380.000000"
+                  width="64"
+                  height="21"
+                  fill="black"
+                ></rect>
+                <rect
+                  x="471.000000"
+                  y="1506.000000"
+                  width="64"
+                  height="21"
+                  fill="black"
+                ></rect>
+                <rect
+                  x="489.000000"
+                  y="1632.000000"
+                  width="64"
+                  height="21"
+                  fill="black"
+                ></rect>
+                <rect
+                  x="474.000000"
+                  y="1758.000000"
+                  width="64"
+                  height="21"
+                  fill="black"
+                ></rect>
+                <rect
+                  x="506.000000"
+                  y="1913.000000"
+                  width="64"
+                  height="21"
+                  fill="black"
+                ></rect>
+                <rect
+                  x="1090.000000"
+                  y="1380.000000"
+                  width="76"
+                  height="21"
+                  fill="black"
+                ></rect>
+                <rect
+                  x="1106.000000"
+                  y="1503.000000"
+                  width="76"
+                  height="21"
+                  fill="black"
+                ></rect>
+                <rect
+                  x="493.000000"
+                  y="1987.000000"
+                  width="56"
+                  height="21"
+                  fill="black"
+                ></rect>
+                <rect
+                  x="542.000000"
+                  y="2102.000000"
+                  width="56"
+                  height="21"
+                  fill="black"
+                ></rect>
+                <rect
+                  x="508.000000"
+                  y="2194.000000"
+                  width="64"
+                  height="21"
+                  fill="black"
+                ></rect>
+                <rect
+                  x="531.000000"
+                  y="2248.000000"
+                  width="64"
+                  height="21"
+                  fill="black"
+                ></rect>
+                <rect
+                  x="549.000000"
+                  y="2338.000000"
+                  width="64"
+                  height="21"
+                  fill="black"
+                ></rect>
+                <rect
+                  x="566.000000"
+                  y="2466.000000"
+                  width="56"
+                  height="21"
+                  fill="black"
+                ></rect>
+                <rect
+                  x="539.000000"
+                  y="2427.000000"
+                  width="100"
+                  height="21"
+                  fill="black"
+                ></rect>
+                <rect
+                  x="519.000000"
+                  y="777.000000"
+                  width="33"
+                  height="21"
+                  fill="black"
+                ></rect>
+                <rect
+                  x="1113.000000"
+                  y="731.000000"
+                  width="33"
+                  height="21"
+                  fill="black"
+                ></rect>
+                <rect
+                  x="1673.000000"
+                  y="685.000000"
+                  width="33"
+                  height="21"
+                  fill="black"
+                ></rect>
               </mask>
             </svg>
           </svg>
         </div>
 
         <!-- ========== DETAILED BREAKDOWN ========== -->
-        <h2 id="detailed"><span class="num">08</span>Detailed Breakdown — Fine Granularity</h2>
+        <h2 id="detailed">
+          <span class="num">08</span>Detailed Breakdown — Fine Granularity
+        </h2>
         <p>
-          150 subtasks, each ≤15 minutes. Grouped by parent task. Sorted by execution order within
-          each task.
+          150 subtasks, each ≤15 minutes. Grouped by parent task. Sorted by
+          execution order within each task.
         </p>
 
         <!-- Task 1 -->
@@ -2840,66 +3087,73 @@
               <tr>
                 <td>1.1</td>
                 <td>
-                  Map all responsibilities of buildAsyncAPIDocument (channels, ops, messages,
-                  servers, security, refs)
+                  Map all responsibilities of buildAsyncAPIDocument (channels,
+                  ops, messages, servers, security, refs)
                 </td>
                 <td>10 min</td>
               </tr>
               <tr>
                 <td>1.2</td>
-                <td>Design BuilderContext interface to pass shared mutable state</td>
+                <td>
+                  Design BuilderContext interface to pass shared mutable state
+                </td>
                 <td>10 min</td>
               </tr>
               <tr>
                 <td>1.3</td>
                 <td>
-                  Create <code>src/builders/channel-builder.ts</code> — extract ensureChannel,
-                  extractChannelParameters, channel $ref wiring
+                  Create <code>src/builders/channel-builder.ts</code> — extract
+                  ensureChannel, extractChannelParameters, channel $ref wiring
                 </td>
                 <td>15 min</td>
               </tr>
               <tr>
                 <td>1.4</td>
                 <td>
-                  Create <code>src/builders/operation-builder.ts</code> — extract DiscoveredOp,
-                  operation discovery loop, operation object assembly
+                  Create <code>src/builders/operation-builder.ts</code> —
+                  extract DiscoveredOp, operation discovery loop, operation
+                  object assembly
                 </td>
                 <td>15 min</td>
               </tr>
               <tr>
                 <td>1.5</td>
                 <td>
-                  Create <code>src/builders/message-builder.ts</code> — extract registerMessage,
-                  message assembly, contentType logic
+                  Create <code>src/builders/message-builder.ts</code> — extract
+                  registerMessage, message assembly, contentType logic
                 </td>
                 <td>15 min</td>
               </tr>
               <tr>
                 <td>1.6</td>
                 <td>
-                  Create <code>src/builders/server-builder.ts</code> — extract server object
-                  assembly from state
+                  Create <code>src/builders/server-builder.ts</code> — extract
+                  server object assembly from state
                 </td>
                 <td>15 min</td>
               </tr>
               <tr>
                 <td>1.7</td>
                 <td>
-                  Create <code>src/builders/security-builder.ts</code> — extract securitySchemes
-                  assembly, OAuth2 scope normalization
+                  Create <code>src/builders/security-builder.ts</code> — extract
+                  securitySchemes assembly, OAuth2 scope normalization
                 </td>
                 <td>15 min</td>
               </tr>
               <tr>
                 <td>1.8</td>
                 <td>
-                  Rewrite buildAsyncAPIDocument as thin orchestrator calling extracted builders
+                  Rewrite buildAsyncAPIDocument as thin orchestrator calling
+                  extracted builders
                 </td>
                 <td>15 min</td>
               </tr>
               <tr>
                 <td>1.9</td>
-                <td>Move helper functions (refSchema, escapeJsonPointer, etc.) to shared utils</td>
+                <td>
+                  Move helper functions (refSchema, escapeJsonPointer, etc.) to
+                  shared utils
+                </td>
                 <td>10 min</td>
               </tr>
               <tr>
@@ -2920,14 +3174,17 @@
               <tr>
                 <td>1.13</td>
                 <td>
-                  Run lint — verify max-lines-per-function, max-statements, max-lines warnings are
-                  gone
+                  Run lint — verify max-lines-per-function, max-statements,
+                  max-lines warnings are gone
                 </td>
                 <td>10 min</td>
               </tr>
               <tr>
                 <td>1.14</td>
-                <td>Verify all compliance tests pass against AsyncAPI 3.1 JSON Schema</td>
+                <td>
+                  Verify all compliance tests pass against AsyncAPI 3.1 JSON
+                  Schema
+                </td>
                 <td>10 min</td>
               </tr>
               <tr>
@@ -2961,7 +3218,10 @@
               </tr>
               <tr>
                 <td>2.2</td>
-                <td>Implement decorator in <code>minimal-decorators.ts</code> with validation</td>
+                <td>
+                  Implement decorator in <code>minimal-decorators.ts</code> with
+                  validation
+                </td>
                 <td>10 min</td>
               </tr>
               <tr>
@@ -2979,7 +3239,10 @@
               </tr>
               <tr>
                 <td>2.5</td>
-                <td>Add compliance test validating defaultContentType appears in output</td>
+                <td>
+                  Add compliance test validating defaultContentType appears in
+                  output
+                </td>
                 <td>10 min</td>
               </tr>
               <tr>
@@ -3011,13 +3274,16 @@
               <tr>
                 <td>3.2</td>
                 <td>
-                  Add <code>getDoc()</code> call on the namespace or operation that owns the channel
+                  Add <code>getDoc()</code> call on the namespace or operation
+                  that owns the channel
                 </td>
                 <td>10 min</td>
               </tr>
               <tr>
                 <td>3.3</td>
-                <td>Wire description into <code>ChannelObject.description</code></td>
+                <td>
+                  Wire description into <code>ChannelObject.description</code>
+                </td>
                 <td>5 min</td>
               </tr>
               <tr>
@@ -3057,8 +3323,8 @@
               <tr>
                 <td>4.2</td>
                 <td>
-                  Implement decorator in <code>minimal-decorators.ts</code> — accept reply Model
-                  type
+                  Implement decorator in <code>minimal-decorators.ts</code> —
+                  accept reply Model type
                 </td>
                 <td>15 min</td>
               </tr>
@@ -3080,17 +3346,24 @@
               </tr>
               <tr>
                 <td>4.5</td>
-                <td>Register reply message in components.messages with $ref chain</td>
+                <td>
+                  Register reply message in components.messages with $ref chain
+                </td>
                 <td>15 min</td>
               </tr>
               <tr>
                 <td>4.6</td>
-                <td>Add compliance test for reply pattern validated against AsyncAPI 3.1 schema</td>
+                <td>
+                  Add compliance test for reply pattern validated against
+                  AsyncAPI 3.1 schema
+                </td>
                 <td>15 min</td>
               </tr>
               <tr>
                 <td>4.7</td>
-                <td>Add integration test with request-reply TypeSpec example</td>
+                <td>
+                  Add integration test with request-reply TypeSpec example
+                </td>
                 <td>15 min</td>
               </tr>
               <tr>
@@ -3124,17 +3397,25 @@
               </tr>
               <tr>
                 <td>5.2</td>
-                <td>Update <code>DiscoveredOp</code> type to support multiple message names</td>
+                <td>
+                  Update <code>DiscoveredOp</code> type to support multiple
+                  message names
+                </td>
                 <td>10 min</td>
               </tr>
               <tr>
                 <td>5.3</td>
-                <td>Update operation builder to emit <code>messages</code> array on operation</td>
+                <td>
+                  Update operation builder to emit <code>messages</code> array
+                  on operation
+                </td>
                 <td>15 min</td>
               </tr>
               <tr>
                 <td>5.4</td>
-                <td>Update channel message registration for multi-message pattern</td>
+                <td>
+                  Update channel message registration for multi-message pattern
+                </td>
                 <td>15 min</td>
               </tr>
               <tr>
@@ -3171,7 +3452,8 @@
               <tr>
                 <td>6.1</td>
                 <td>
-                  Audit <code>compileAsyncAPI</code> return type — should already be
+                  Audit <code>compileAsyncAPI</code> return type — should
+                  already be
                   <code>AsyncAPIDocument</code>
                 </td>
                 <td>10 min</td>
@@ -3193,7 +3475,9 @@
               </tr>
               <tr>
                 <td>6.5</td>
-                <td>Remove 6 casts in <code>asyncapi-generation.test.ts</code></td>
+                <td>
+                  Remove 6 casts in <code>asyncapi-generation.test.ts</code>
+                </td>
                 <td>10 min</td>
               </tr>
               <tr>
@@ -3223,7 +3507,8 @@
               <tr>
                 <td>7.1</td>
                 <td>
-                  Fix <code>protocol-bindings.test.ts</code> — 35 Record casts → typed assertions
+                  Fix <code>protocol-bindings.test.ts</code> — 35 Record casts →
+                  typed assertions
                 </td>
                 <td>15 min</td>
               </tr>
@@ -3271,8 +3556,8 @@
               <tr>
                 <td>8.1</td>
                 <td>
-                  Update <code>schema-validator.ts</code> <code>compileAndValidate()</code> return
-                  type to
+                  Update <code>schema-validator.ts</code>
+                  <code>compileAndValidate()</code> return type to
                   <code>ParsedAsyncAPIDocument</code>
                 </td>
                 <td>15 min</td>
@@ -3314,21 +3599,25 @@
               <tr>
                 <td>9.1</td>
                 <td>
-                  Generate representative spec exercising all features (channels, ops, messages,
-                  servers, security, bindings)
+                  Generate representative spec exercising all features
+                  (channels, ops, messages, servers, security, bindings)
                 </td>
                 <td>15 min</td>
               </tr>
               <tr>
                 <td>9.2</td>
                 <td>
-                  Write round-trip test: emit → parse with @asyncapi/parser (Node.js, not Bun)
+                  Write round-trip test: emit → parse with @asyncapi/parser
+                  (Node.js, not Bun)
                 </td>
                 <td>15 min</td>
               </tr>
               <tr>
                 <td>9.3</td>
-                <td>Verify structural integrity: all $refs resolve, no missing components</td>
+                <td>
+                  Verify structural integrity: all $refs resolve, no missing
+                  components
+                </td>
                 <td>15 min</td>
               </tr>
               <tr>
@@ -3360,30 +3649,40 @@
               <tr>
                 <td>10.1</td>
                 <td>
-                  Add <code>bindings</code> field to <code>ServerObject</code> in document model
+                  Add <code>bindings</code> field to
+                  <code>ServerObject</code> in document model
                 </td>
                 <td>10 min</td>
               </tr>
               <tr>
                 <td>10.2</td>
-                <td>Wire <code>@bindings</code> on Namespace → server binding processing</td>
+                <td>
+                  Wire <code>@bindings</code> on Namespace → server binding
+                  processing
+                </td>
                 <td>15 min</td>
               </tr>
               <tr>
                 <td>10.3</td>
-                <td>Process server bindings in document-builder with normalization</td>
+                <td>
+                  Process server bindings in document-builder with normalization
+                </td>
                 <td>15 min</td>
               </tr>
               <tr>
                 <td>10.4</td>
                 <td>
-                  Add compliance test for server bindings validated against AsyncAPI 3.1 schema
+                  Add compliance test for server bindings validated against
+                  AsyncAPI 3.1 schema
                 </td>
                 <td>15 min</td>
               </tr>
               <tr>
                 <td>10.5</td>
-                <td>Add integration test with MQTT server bindings (clientId, cleanSession)</td>
+                <td>
+                  Add integration test with MQTT server bindings (clientId,
+                  cleanSession)
+                </td>
                 <td>10 min</td>
               </tr>
             </tbody>
@@ -3405,19 +3704,25 @@
               <tr>
                 <td>11.1</td>
                 <td>
-                  Add <code>@operationId</code> and <code>@messageId</code> declarations to
+                  Add <code>@operationId</code> and
+                  <code>@messageId</code> declarations to
                   <code>lib/main.tsp</code>
                 </td>
                 <td>10 min</td>
               </tr>
               <tr>
                 <td>11.2</td>
-                <td>Implement decorators in <code>minimal-decorators.ts</code></td>
+                <td>
+                  Implement decorators in <code>minimal-decorators.ts</code>
+                </td>
                 <td>15 min</td>
               </tr>
               <tr>
                 <td>11.3</td>
-                <td>Wire operationId into operation naming (override auto-generated name)</td>
+                <td>
+                  Wire operationId into operation naming (override
+                  auto-generated name)
+                </td>
                 <td>10 min</td>
               </tr>
               <tr>
@@ -3449,28 +3754,32 @@
               <tr>
                 <td>12.1</td>
                 <td>
-                  Load <code>@asyncapi/specs/bindings/{protocol}/</code> JSON Schemas at build time
+                  Load <code>@asyncapi/specs/bindings/{protocol}/</code> JSON
+                  Schemas at build time
                 </td>
                 <td>15 min</td>
               </tr>
               <tr>
                 <td>12.2</td>
                 <td>
-                  Create AJV validator per protocol + target kind (channel/operation/message/server)
+                  Create AJV validator per protocol + target kind
+                  (channel/operation/message/server)
                 </td>
                 <td>15 min</td>
               </tr>
               <tr>
                 <td>12.3</td>
                 <td>
-                  Wire into <code>processBindings()</code> — validate after structural checks pass
+                  Wire into <code>processBindings()</code> — validate after
+                  structural checks pass
                 </td>
                 <td>15 min</td>
               </tr>
               <tr>
                 <td>12.4</td>
                 <td>
-                  Add diagnostic code <code>invalid-binding-field</code> for field validation errors
+                  Add diagnostic code <code>invalid-binding-field</code> for
+                  field validation errors
                 </td>
                 <td>15 min</td>
               </tr>
@@ -3481,7 +3790,10 @@
               </tr>
               <tr>
                 <td>12.6</td>
-                <td>Add tests: invalid MQTT qos, invalid Kafka partitions, invalid HTTP method</td>
+                <td>
+                  Add tests: invalid MQTT qos, invalid Kafka partitions, invalid
+                  HTTP method
+                </td>
                 <td>15 min</td>
               </tr>
             </tbody>
@@ -3489,7 +3801,10 @@
         </div>
 
         <!-- Tasks 13-15 -->
-        <h3>Tasks 13–15: New Protocol Bindings (Redis, GCP Pub/Sub, SNS) — 5 subtasks each</h3>
+        <h3>
+          Tasks 13–15: New Protocol Bindings (Redis, GCP Pub/Sub, SNS) — 5
+          subtasks each
+        </h3>
         <div class="table-wrap">
           <table>
             <thead>
@@ -3526,7 +3841,9 @@
               </tr>
               <tr>
                 <td>13.4/14.4/15.4</td>
-                <td>Add compliance test validated against AsyncAPI 3.1 JSON Schema</td>
+                <td>
+                  Add compliance test validated against AsyncAPI 3.1 JSON Schema
+                </td>
                 <td>15 min</td>
               </tr>
               <tr>
@@ -3552,12 +3869,17 @@
             <tbody>
               <tr>
                 <td>16.1</td>
-                <td>Update <code>@bindings</code> decorator target type to include Namespace</td>
+                <td>
+                  Update <code>@bindings</code> decorator target type to include
+                  Namespace
+                </td>
                 <td>10 min</td>
               </tr>
               <tr>
                 <td>16.2</td>
-                <td>Add Namespace handling in <code>processBindings()</code></td>
+                <td>
+                  Add Namespace handling in <code>processBindings()</code>
+                </td>
                 <td>15 min</td>
               </tr>
               <tr>
@@ -3588,18 +3910,24 @@
             <tbody>
               <tr>
                 <td>17.1</td>
-                <td>Audit overlapping rules between ESLint config and oxlint config</td>
+                <td>
+                  Audit overlapping rules between ESLint config and oxlint
+                  config
+                </td>
                 <td>15 min</td>
               </tr>
               <tr>
                 <td>17.2</td>
-                <td>Resolve contradictions — pick authoritative config per rule</td>
+                <td>
+                  Resolve contradictions — pick authoritative config per rule
+                </td>
                 <td>15 min</td>
               </tr>
               <tr>
                 <td>17.3</td>
                 <td>
-                  Document strategy: oxlint for fast feedback, ESLint for deep type-aware rules
+                  Document strategy: oxlint for fast feedback, ESLint for deep
+                  type-aware rules
                 </td>
                 <td>10 min</td>
               </tr>
@@ -3631,12 +3959,17 @@
             <tbody>
               <tr>
                 <td>18.1</td>
-                <td>Research vitest coverage limitations with TypeSpec dist/*.js loading</td>
+                <td>
+                  Research vitest coverage limitations with TypeSpec dist/*.js
+                  loading
+                </td>
                 <td>15 min</td>
               </tr>
               <tr>
                 <td>18.2</td>
-                <td>Try istanbul/nyc approach as alternative coverage provider</td>
+                <td>
+                  Try istanbul/nyc approach as alternative coverage provider
+                </td>
                 <td>15 min</td>
               </tr>
               <tr>
@@ -3646,12 +3979,18 @@
               </tr>
               <tr>
                 <td>18.4</td>
-                <td>Document working approach (or document why coverage gate is best-effort)</td>
+                <td>
+                  Document working approach (or document why coverage gate is
+                  best-effort)
+                </td>
                 <td>10 min</td>
               </tr>
               <tr>
                 <td>18.5</td>
-                <td>Update <code>scripts/coverage-gate.ts</code> if approach changes</td>
+                <td>
+                  Update <code>scripts/coverage-gate.ts</code> if approach
+                  changes
+                </td>
                 <td>10 min</td>
               </tr>
               <tr>
@@ -3678,64 +4017,67 @@
               <tr>
                 <td>19. Binding framework</td>
                 <td>
-                  19.1 Design build-time spec loader · 19.2 Generate BINDING_PLACEMENT from specs ·
-                  19.3 Replace hand-maintained matrix
+                  19.1 Design build-time spec loader · 19.2 Generate
+                  BINDING_PLACEMENT from specs · 19.3 Replace hand-maintained
+                  matrix
                 </td>
                 <td>100 min</td>
               </tr>
               <tr>
                 <td>20. Plugin system</td>
                 <td>
-                  20.1 Design hook interface (pre-emit, post-schema, post-document) · 20.2 Implement
-                  hook registration · 20.3 Write RFC doc
+                  20.1 Design hook interface (pre-emit, post-schema,
+                  post-document) · 20.2 Implement hook registration · 20.3 Write
+                  RFC doc
                 </td>
                 <td>100 min</td>
               </tr>
               <tr>
                 <td>21. Multi-file input</td>
                 <td>
-                  21.1 Test if TypeSpec import already works · 21.2 Fix state scoping if broken ·
-                  21.3 Add multi-file test fixture
+                  21.1 Test if TypeSpec import already works · 21.2 Fix state
+                  scoping if broken · 21.3 Add multi-file test fixture
                 </td>
                 <td>90 min</td>
               </tr>
               <tr>
                 <td>22. Generator compat</td>
                 <td>
-                  22.1 Install @asyncapi/generator · 22.2 Generate code from emitter output · 22.3
-                  Document template compatibility
+                  22.1 Install @asyncapi/generator · 22.2 Generate code from
+                  emitter output · 22.3 Document template compatibility
                 </td>
                 <td>90 min</td>
               </tr>
               <tr>
                 <td>23. Versioning</td>
                 <td>
-                  23.1 Research @typespec/versioning API · 23.2 Wire version into info field · 23.3
-                  Add version-aware $ref generation
+                  23.1 Research @typespec/versioning API · 23.2 Wire version
+                  into info field · 23.3 Add version-aware $ref generation
                 </td>
                 <td>100 min</td>
               </tr>
               <tr>
                 <td>24. Multi-file output</td>
                 <td>
-                  24.1 Design output file splitting strategy · 24.2 Implement multi-file emitFile ·
-                  24.3 Add config option for split threshold
+                  24.1 Design output file splitting strategy · 24.2 Implement
+                  multi-file emitFile · 24.3 Add config option for split
+                  threshold
                 </td>
                 <td>90 min</td>
               </tr>
               <tr>
                 <td>25. OpenAPI sharing</td>
                 <td>
-                  25.1 Extract shared schema types · 25.2 Design cross-emitter interface · 25.3
-                  Prototype with OpenAPI emitter
+                  25.1 Extract shared schema types · 25.2 Design cross-emitter
+                  interface · 25.3 Prototype with OpenAPI emitter
                 </td>
                 <td>100 min</td>
               </tr>
               <tr>
                 <td>26. Performance</td>
                 <td>
-                  26.1 Create 100+ channel benchmark fixture · 26.2 Profile with node --cpu-prof ·
-                  26.3 Optimize hot paths if found
+                  26.1 Create 100+ channel benchmark fixture · 26.2 Profile with
+                  node --cpu-prof · 26.3 Optimize hot paths if found
                 </td>
                 <td>90 min</td>
               </tr>
@@ -3749,13 +4091,15 @@
         <div class="card card-problem">
           <h4>Risk: Refactor introduces regressions</h4>
           <p>
-            The <code>buildAsyncAPIDocument()</code> refactor (Task 1) touches the core path. 555
-            tests must all pass. The $ref chain construction is subtle.
+            The <code>buildAsyncAPIDocument()</code> refactor (Task 1) touches
+            the core path. 555 tests must all pass. The $ref chain construction
+            is subtle.
           </p>
           <div class="callout callout-solution">
-            <strong>Mitigation</strong> Do the refactor as pure extraction — move code, don't change
-            logic. Run the full compliance suite (78 tests against official JSON Schema) after each
-            subtask. Golden file tests lock verified-correct output.
+            <strong>Mitigation</strong> Do the refactor as pure extraction —
+            move code, don't change logic. Run the full compliance suite (78
+            tests against official JSON Schema) after each subtask. Golden file
+            tests lock verified-correct output.
           </div>
         </div>
 
@@ -3767,39 +4111,42 @@
             <code>new Function()</code> codegen.
           </p>
           <div class="callout callout-solution">
-            <strong>Mitigation</strong> Run the round-trip test under Node.js, or use manual $ref
-            resolution tests (as already done in <code>semantic-ref-resolution.test.ts</code>).
+            <strong>Mitigation</strong> Run the round-trip test under Node.js,
+            or use manual $ref resolution tests (as already done in
+            <code>semantic-ref-resolution.test.ts</code>).
           </div>
         </div>
 
         <div class="card card-warning">
           <h4>Risk: Multi-message design ambiguity</h4>
           <p>
-            How should multiple messages map from TypeSpec? Union of models? Array decorator? The
-            wrong choice creates a maintenance burden.
+            How should multiple messages map from TypeSpec? Union of models?
+            Array decorator? The wrong choice creates a maintenance burden.
           </p>
           <div class="callout callout-solution">
-            <strong>Mitigation</strong> Prefer TypeSpec-native patterns: a <code>union</code> of
-            message Models is the idiomatic way. Only add a <code>@messages</code> decorator if the
-            union approach can't express the needed semantics.
+            <strong>Mitigation</strong> Prefer TypeSpec-native patterns: a
+            <code>union</code> of message Models is the idiomatic way. Only add
+            a <code>@messages</code> decorator if the union approach can't
+            express the needed semantics.
           </div>
         </div>
 
         <div class="card">
           <h4>Risk: Coverage gate reliability</h4>
           <p>
-            If vitest can't instrument <code>dist/*.js</code>, the 75% coverage gate may be
-            unreliable, giving false confidence.
+            If vitest can't instrument <code>dist/*.js</code>, the 75% coverage
+            gate may be unreliable, giving false confidence.
           </p>
           <div class="callout callout-solution">
-            <strong>Mitigation</strong> Task 18 explicitly addresses this. Until fixed, treat
-            coverage numbers as directional, not authoritative.
+            <strong>Mitigation</strong> Task 18 explicitly addresses this. Until
+            fixed, treat coverage numbers as directional, not authoritative.
           </div>
         </div>
 
         <footer class="footer">
-          Generated 2026-07-22 · Based on ROADMAP.md with 25 raw ideas across 4 themes · Validated
-          against source code (555 tests, 19 source files, 56 test files)
+          Generated 2026-07-22 · Based on ROADMAP.md with 25 raw ideas across 4
+          themes · Validated against source code (555 tests, 19 source files, 56
+          test files)
         </footer>
       </main>
     </div>

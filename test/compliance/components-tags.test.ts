@@ -19,7 +19,9 @@ describe("components.tags compliance", () => {
     `);
 
     expect(doc.components?.tags).toBeDefined();
-    expect(doc.components!.tags!.important).toStrictEqual({ name: "important" });
+    expect(doc.components!.tags!.important).toStrictEqual({
+      name: "important",
+    });
     expect(doc.components!.tags!.realtime).toStrictEqual({ name: "realtime" });
   });
 
@@ -44,7 +46,9 @@ describe("components.tags compliance", () => {
       op publish(): Event;
     `);
 
-    expect(doc.components?.tags?.production).toStrictEqual({ name: "production" });
+    expect(doc.components?.tags?.production).toStrictEqual({
+      name: "production",
+    });
   });
 
   it("deduplicates overlapping tags from multiple sources", async () => {
@@ -60,7 +64,12 @@ describe("components.tags compliance", () => {
 
     const tagNames = Object.keys(doc.components!.tags!);
     expect(tagNames).toHaveLength(4);
-    expect(tagNames.toSorted()).toStrictEqual(["model-level", "ns-level", "op-level", "shared"]);
+    expect(tagNames.toSorted()).toStrictEqual([
+      "model-level",
+      "ns-level",
+      "op-level",
+      "shared",
+    ]);
   });
 
   it("does not emit components.tags when no tags are used", async () => {
