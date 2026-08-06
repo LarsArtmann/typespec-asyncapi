@@ -221,7 +221,7 @@ Run all commands inside `nix develop .#default` to get the right toolchain (pnpm
 
 | Build | 0 TypeScript errors (strict mode) |
 | Lint | 0 errors, 0 warnings (ESLint + oxlint) |
-| Diagnostics | 22 codes (17 error + 5 warning) |
+| Diagnostics | 24 codes (19 error + 5 warning) |
 | Protocols | 22 (auto-generated from `@asyncapi/specs`) |
 | Duplication | 0% (jscpd, 0% threshold) |
 | Output | Validates against official AsyncAPI 3.1.0 JSON Schema |

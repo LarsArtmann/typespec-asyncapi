@@ -1,24 +1,11 @@
 #!/bin/sh
 
-# Pre-commit quality gate - ensures all changes pass build, lint, and tests
+# Pre-commit quality gate — full verify: build, lint, test, coverage, duplication
 
-echo "Running pre-commit quality checks..."
+echo "Running full quality gate (pnpm run verify)..."
 
-echo "Building TypeScript..."
-pnpm run build || {
-    echo "Build failed! Fix TypeScript errors before committing."
-    exit 1
-}
-
-echo "Running ESLint..."
-pnpm run lint || {
-    echo "Lint failed! Fix ESLint errors before committing."
-    exit 1
-}
-
-echo "Running critical tests..."
-pnpm exec vitest run test/integration/real-compilation.test.ts || {
-    echo "Critical tests failed! Fix failing tests before committing."
+pnpm run verify || {
+    echo "Quality gate failed! Fix errors before committing."
     exit 1
 }
 
