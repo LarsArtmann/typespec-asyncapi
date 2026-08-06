@@ -89,7 +89,9 @@ describe("real-world Pattern: 3-Level Model Inheritance (Blog Campaign)", () => 
     const campaign = schemas.Campaign;
     expect(campaign?.allOf).toBeDefined();
     const allOf = campaign?.allOf ?? [];
-    expect(allOf.some((r: any) => r.$ref?.includes("AggregateRoot"))).toBe(true);
+    expect(allOf.some((r: any) => r.$ref?.includes("AggregateRoot"))).toBe(
+      true,
+    );
   });
 
   it("should emit deeply nested anonymous objects (4+ levels)", async () => {

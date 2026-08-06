@@ -120,7 +120,7 @@ Tests use **vitest** with the TypeSpec compiler testing API (`createTester`). Al
 - `test/integration/multi-file-output.test.ts` — Schema splitting tests: multi-file output, $ref rewriting, nested refs in schema files
 - `test/unit/shared-schema-types.test.ts` — Cross-emitter shared API tests (30+ tests): JsonSchema, SchemaRef, SchemaMap types, extractValue, intrinsicToSchema, plus barrel public-API contract checks
 - `test/benchmark/` — Performance benchmark suite: `fixture-generator.ts` generates 10-200 channel specs programmatically; `performance.test.ts` measures compilation time and reports scaling metrics
-- `test/realworld/` — **Real-world testing against external project patterns** (146 tests across 3 files): 
+- `test/realworld/` — **Real-world testing against external project patterns** (146 tests across 3 files):
   - `fixtures/` contains 10 `.tsp` files faithfully recreating model patterns from sibling projects (Kernovia, typespec-eventsourcing, blog/content-spec, accountability-system, superb-gh-milestone-extention) and canonical AsyncAPI specs (Streetlights MQTT, WebSocket Chat, Sensor IoT multi-protocol, Enterprise Notifications)
   - `external-model-patterns.test.ts` — Compiles each external fixture through the emitter, validates against AsyncAPI 3.1.0 JSON Schema, checks $ref chains, operations, channels, schemas
   - `canonical-asyncapi-specs.test.ts` — Validates canonical AsyncAPI spec ports with detailed structural assertions (enums, constraints, formats, defaults, nested objects, $ref arrays)
