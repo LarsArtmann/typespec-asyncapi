@@ -9,15 +9,10 @@ import type {
   KafkaSaslConfig,
   MessageConfigData,
   MessageHeaderData,
-  MessageTraitData,
   MqttLastWillConfig,
   OperationReplyData,
-  OperationTraitData,
-  ParameterConfigData,
   ProtocolBindings,
   ProtocolConfigData,
-  ReusableBindingData,
-  ReusableCorrelationIdData,
   SecurityScheme,
   Tag,
 } from "./state.js";
@@ -362,46 +357,6 @@ export function storeMulti(
   const map = getStateMap<unknown[]>(program, symbol);
   appendToStateArray(map, target, data);
 }
-
-export const storeOperationTrait = (
-  program: Program,
-  target: Namespace,
-  data: OperationTraitData,
-): void => {
-  storeMulti(program, stateSymbols.operationTraits, target, data);
-};
-
-export const storeMessageTrait = (
-  program: Program,
-  target: Namespace,
-  data: MessageTraitData,
-): void => {
-  storeMulti(program, stateSymbols.messageTraits, target, data);
-};
-
-export const storeReusableParameter = (
-  program: Program,
-  target: Namespace,
-  data: ParameterConfigData,
-): void => {
-  storeMulti(program, stateSymbols.reusableParameters, target, data);
-};
-
-export const storeReusableCorrelationId = (
-  program: Program,
-  target: Namespace,
-  data: ReusableCorrelationIdData,
-): void => {
-  storeMulti(program, stateSymbols.reusableCorrelationIds, target, data);
-};
-
-export const storeReusableBinding = (
-  program: Program,
-  target: Namespace,
-  data: ReusableBindingData,
-): void => {
-  storeMulti(program, stateSymbols.reusableBindings, target, data);
-};
 
 // === REFERENCE STATE WRITERS ===
 

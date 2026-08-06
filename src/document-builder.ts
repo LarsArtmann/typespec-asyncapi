@@ -65,6 +65,7 @@ export function buildAsyncAPIDocument(
     reusableCorrelationIds: {},
     operationBindings: {},
     messageBindings: {},
+    serverBindings: {},
   };
 
   discoverOperations(state, ctx);
@@ -155,6 +156,9 @@ function assembleDocument(
   }
   if (Object.keys(ctx.messageBindings).length > 0) {
     components.messageBindings = ctx.messageBindings;
+  }
+  if (Object.keys(ctx.serverBindings).length > 0) {
+    components.serverBindings = ctx.serverBindings;
   }
 
   const services = listServices(ctx.program);

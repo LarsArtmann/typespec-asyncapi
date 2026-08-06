@@ -159,10 +159,10 @@ extern dec useCorrelationId(target: Model, name: valueof string);
 extern dec reusableBinding(target: Namespace, name: valueof string, config: {} | valueof Record<unknown>);
 
 /**
- * Reference a reusable binding by name on an operation or model
+ * Reference a reusable binding by name on an operation, model, or namespace (server bindings)
  * @param name The binding name defined via @reusableBinding
  */
-extern dec useBinding(target: Operation | Model, name: valueof string);
+extern dec useBinding(target: Operation | Model | Namespace, name: valueof string);
 
 /**
  * Emitter options for `@lars-artmann/typespec-asyncapi`.

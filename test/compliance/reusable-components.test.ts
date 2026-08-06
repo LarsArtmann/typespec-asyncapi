@@ -289,5 +289,23 @@ describe("reusable bindings compliance", () => {
 
     expect(doc.components?.operationBindings).toBeUndefined();
     expect(doc.components?.messageBindings).toBeUndefined();
+    expect(doc.components?.serverBindings).toBeUndefined();
+  });
+
+  it("populates components.serverBindings from @useBinding on namespace", async () => {
+    const doc = await compileAndValidateOrThrow(`
+      @reusableBinding("srvKafka", #{ kafka: #{ bindingVersion: "0.5.0" } })
+      @server("prod", #{ url: "kafka://broker:9092", protocol: "kafka" })
+      @useBinding("srvKafka")
+      namespace Test;
+      model Event { id: string; }
+      @channel("events")
+      op publish(): Event;
+    `);
+
+    expect(doc.components?.serverBindings?.srvKafka).toBeDefined();
+    expect(doc.servers?.prod.bindings).toStrictEqual({
+      $ref: "#/components/serverBindings/srvKafka",
+    });
   });
 });

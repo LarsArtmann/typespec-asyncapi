@@ -44,6 +44,7 @@ export interface DocumentBuildContext {
   reusableCorrelationIds: Record<string, CorrelationIdObject>;
   operationBindings: Record<string, ProtocolBindings>;
   messageBindings: Record<string, ProtocolBindings>;
+  serverBindings: Record<string, ProtocolBindings>;
   discoveredOps: DiscoveredOp[];
   opToChannel: Map<string, string>;
   channelDocs: Map<string, string>;

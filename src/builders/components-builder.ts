@@ -153,8 +153,13 @@ function applyBindingRefs(state: AsyncAPIConsolidatedState, ctx: Ctx): void {
   const bindingDefinitions = collectBindingDefinitions(state);
 
   for (const [type, names] of state.bindingRefs) {
-    const isOperation = (type as { kind: string }).kind === "Operation";
-    const section = isOperation ? "operationBindings" : "messageBindings";
+    const { kind } = type as { kind: string };
+    const section =
+      kind === "Operation"
+        ? "operationBindings"
+        : kind === "Namespace"
+          ? "serverBindings"
+          : "messageBindings";
 
     for (const bindingName of names) {
       const definition = bindingDefinitions.get(bindingName);
@@ -163,17 +168,37 @@ function applyBindingRefs(state: AsyncAPIConsolidatedState, ctx: Ctx): void {
       }
       ctx[section][bindingName] = definition;
       const refPointer = `#/components/${section}/${bindingName}`;
-      if (isOperation) {
-        const opName = nameOfType(type);
-        if (opName && ctx.operations[opName]) {
-          ctx.operations[opName].bindings = { $ref: refPointer };
-        }
-      } else {
-        const target = resolveMessage(state, ctx, type);
-        if (target) {
-          target.bindings = { $ref: refPointer };
+      applyBindingToTarget(state, ctx, type, kind, refPointer);
+    }
+  }
+}
+
+function applyBindingToTarget(
+  state: AsyncAPIConsolidatedState,
+  ctx: Ctx,
+  type: Type,
+  kind: string,
+  refPointer: string,
+): void {
+  const bindingRef = { $ref: refPointer };
+  if (kind === "Operation") {
+    const opName = nameOfType(type);
+    if (opName && ctx.operations[opName]) {
+      ctx.operations[opName].bindings = bindingRef;
+    }
+  } else if (kind === "Namespace") {
+    const serverEntries = state.servers.get(type);
+    if (serverEntries) {
+      for (const { name } of serverEntries) {
+        if (ctx.servers[name]) {
+          ctx.servers[name].bindings = bindingRef;
         }
       }
+    }
+  } else {
+    const target = resolveMessage(state, ctx, type);
+    if (target) {
+      target.bindings = bindingRef;
     }
   }
 }
