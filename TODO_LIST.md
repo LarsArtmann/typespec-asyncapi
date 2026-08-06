@@ -27,7 +27,7 @@ Long-term ideas and RFCs live in ROADMAP, not here.
 > - ~~Populate operation `summary`~~ — from `@summary` decorator via `getSummary()`
 > - ~~Channel `summary` and `description` fields~~ — `@summary` → channel `summary`, `@doc` already → channel `description`
 > - ~~Update stale source file header comments~~ — constraint-mapper (11→16 mappings), test file (full decorator list)
-> - ~~Add `bun run verify` alias~~ — build + lint + test + coverage:gate + duplicate in one command
+> - ~~Add `pnpm run verify` alias~~ — build + lint + test + coverage:gate + duplicate in one command
 > - ~~Duplication baseline restored to 0 clones~~ — 6 clones eliminated (5 in constraint-mapper, 1 in binding-field-validator)
 > - ~~Add `allOf` support for model inheritance~~ — emits `allOf: [{ $ref: "..." }]` for `extends`
 > - ~~Implement `oneOf` / `not` for union types~~ — model-variant unions emit `oneOf`; `not` field added to type

@@ -55,7 +55,7 @@ Make the emitter a joy to use and maintain.
 Raw ideas:
 
 - Split `./shared` subpath into neutral (`./shared`) vs AsyncAPI-bound (`./asyncapi`) entry points so neutral consumers pay zero AsyncAPI runtime cost
-- Add `bun run verify` alias = `validate` + coverage gate (currently separate commands)
+- Add `pnpm run verify` alias = `validate` + coverage gate (currently separate commands)
 - Add a docs-entropy CI guard (flag when living docs drift from code counts)
 
 Recently completed:
