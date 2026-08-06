@@ -70,7 +70,7 @@ export const buildOperations: BuilderFn = (state, ctx) => {
       const opSecRefs = state.operationSecurityRefs.get(opType);
       if (opSecRefs && opSecRefs.length > 0) {
         operationObj.security = opSecRefs.map((r) => ({
-          [r.name]: r.scopes ?? [],
+          $ref: `#/components/securitySchemes/${r.name}`,
         }));
       }
 

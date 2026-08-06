@@ -114,11 +114,11 @@ export interface ExternalDocumentationObject {
 }
 
 /**
- * Security Requirement Object — maps a security scheme name (defined in
- * `components.securitySchemes`) to the list of scopes required.
+ * Security Requirement — each item is either a `$ref` to a security scheme
+ * defined in `components.securitySchemes`, or an inline SecurityScheme object.
  * @see https://www.asyncapi.com/docs/reference/specification/v3.1.0#securityRequirementObject
  */
-export type SecurityRequirement = Record<string, string[]>;
+export type SecurityRequirement = Ref | Partial<SecurityScheme>;
 
 /**
  * Common metadata fields that AsyncAPI 3.1 spec mandates or permits on

@@ -53,7 +53,7 @@ function normalizeSecurity(
     return security as SecurityRequirement[];
   }
   if (security && typeof security === "object") {
-    return [security as SecurityRequirement];
+    return [security] as SecurityRequirement[];
   }
   return undefined;
 }
@@ -76,9 +76,7 @@ export const buildServers: BuilderFn = (state, ctx) => {
         const vars: Record<string, ServerVar> = {};
         for (const match of varMatches) {
           const varName = match.slice(1, -1);
-          const rawVar = entry.variables?.[varName] as
-            | Record<string, unknown>
-            | undefined;
+          const rawVar = entry.variables?.[varName];
           vars[varName] = buildServerVar(rawVar, varName);
         }
         server.variables = vars;

@@ -81,7 +81,7 @@ describe("asyncAPI 3.1: server.protocolVersion + server.pathname + variables", (
       @server("kafka", #{
         url: "secure.example.com:9092",
         protocol: "kafka",
-        security: #{ sasl: #["scramSha512"] }
+        security: #[ #{ type: "scramSha512" } ]
       })
       namespace SecureBroker;
       @channel("events")
@@ -89,7 +89,7 @@ describe("asyncAPI 3.1: server.protocolVersion + server.pathname + variables", (
     `;
     const result = await compileAsyncAPI(source);
     expect(result.asyncApiDoc?.servers?.kafka?.security).toStrictEqual([
-      { sasl: ["scramSha512"] },
+      { type: "scramSha512" },
     ]);
   });
 });
@@ -213,8 +213,8 @@ describe("@operationSecurity: operation-level Security Requirements", () => {
     const result = await compileAsyncAPI(source);
     const op = result.asyncApiDoc?.operations?.publishEvent;
     expect(op?.security).toStrictEqual([
-      { jwt: [] },
-      { apiKey: ["read", "write"] },
+      { $ref: "#/components/securitySchemes/jwt" },
+      { $ref: "#/components/securitySchemes/apiKey" },
     ]);
   });
 });
@@ -288,6 +288,10 @@ describe("model property reference unwrapping", () => {
 describe("combined: full AsyncAPI 3.1 surface", () => {
   it("emits a complete server/channel/message/operation graph that passes AsyncAPI 3.1 schema validation", async () => {
     const source = `
+      @security(#{
+        name: "jwt",
+        scheme: #{ type: "http", scheme: "bearer", bearerFormat: "JWT" }
+      })
       @server("production", #{
         url: "{broker}.kafka.example.com:9092",
         protocol: "kafka",
@@ -323,7 +327,7 @@ describe("combined: full AsyncAPI 3.1 surface", () => {
     expect(doc.asyncapi).toBe("3.1.0");
     expect(doc.servers?.production?.protocolVersion).toBe("3.0.0");
     expect(doc.operations?.publishOrderPlaced?.security).toStrictEqual([
-      { jwt: [] },
+      { $ref: "#/components/securitySchemes/jwt" },
     ]);
   });
 });
