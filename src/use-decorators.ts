@@ -4,6 +4,9 @@
  * These decorators reference reusable component definitions by name.
  * They store the reference in state; the builders resolve the name
  * to a `$ref` pointer during document assembly.
+ *
+ * All four decorators share the same validate-and-store pattern, so a
+ * single factory eliminates the duplication.
  */
 
 import type {
@@ -11,6 +14,7 @@ import type {
   Model,
   Operation,
 } from "@typespec/compiler";
+import type { Type } from "@typespec/compiler";
 import {
   storeBindingRef,
   storeCorrelationIdRef,
@@ -18,79 +22,44 @@ import {
   storeOperationTraitRef,
 } from "./state-writers.js";
 import { validateNonEmptyString } from "./decorator-helpers.js";
+import type { $lib } from "./lib.js";
 
-export function $useOperationTrait(
-  context: DecoratorContext,
-  target: Operation,
-  name: unknown,
-): void {
-  if (
-    !validateNonEmptyString(
-      name,
-      context,
-      target,
-      "invalid-trait-config",
-      { traitName: String(name) },
-    )
-  ) {
-    return;
-  }
-  storeOperationTraitRef(context.program, target, name);
+type StoreRef = (program: DecoratorContext["program"], target: Type, name: string) => void;
+
+function makeRefDecorator(
+  diagnosticCode: keyof typeof $lib.diagnostics,
+  formatKey: string,
+  store: StoreRef,
+): (context: DecoratorContext, target: Type, name: unknown) => void {
+  return (context, target, name) => {
+    const format = { [formatKey]: target.kind === "Model" ? (target as Model).name : String(name) };
+    if (!validateNonEmptyString(name, context, target, diagnosticCode, format)) {
+      return;
+    }
+    store(context.program, target, name);
+  };
 }
 
-export function $useMessageTrait(
-  context: DecoratorContext,
-  target: Model,
-  name: unknown,
-): void {
-  if (
-    !validateNonEmptyString(
-      name,
-      context,
-      target,
-      "invalid-trait-config",
-      { traitName: String(name) },
-    )
-  ) {
-    return;
-  }
-  storeMessageTraitRef(context.program, target, name);
-}
+export const $useOperationTrait = makeRefDecorator(
+  "invalid-trait-config",
+  "traitName",
+  (program, target, name) => storeOperationTraitRef(program, target as Operation, name),
+);
 
-export function $useCorrelationId(
-  context: DecoratorContext,
-  target: Model,
-  name: unknown,
-): void {
-  if (
-    !validateNonEmptyString(
-      name,
-      context,
-      target,
-      "invalid-correlationId-config",
-      { modelName: target.name },
-    )
-  ) {
-    return;
-  }
-  storeCorrelationIdRef(context.program, target, name);
-}
+export const $useMessageTrait = makeRefDecorator(
+  "invalid-trait-config",
+  "traitName",
+  (program, target, name) => storeMessageTraitRef(program, target as Model, name),
+);
 
-export function $useBinding(
-  context: DecoratorContext,
-  target: Operation | Model,
-  name: unknown,
-): void {
-  if (
-    !validateNonEmptyString(
-      name,
-      context,
-      target,
-      "invalid-bindings-config",
-      { targetKind: target.kind },
-    )
-  ) {
-    return;
-  }
-  storeBindingRef(context.program, target, name);
-}
+export const $useCorrelationId = makeRefDecorator(
+  "invalid-correlationId-config",
+  "modelName",
+  (program, target, name) => storeCorrelationIdRef(program, target as Model, name),
+);
+
+export const $useBinding = makeRefDecorator(
+  "invalid-bindings-config",
+  "targetKind",
+  (program, target, name) => storeBindingRef(program, target as Operation | Model, name),
+);

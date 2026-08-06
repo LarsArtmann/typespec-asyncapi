@@ -21,7 +21,7 @@ import type {
   SecurityScheme,
   Tag,
 } from "./state.js";
-import type { Model, ModelProperty, Namespace, Operation, Program } from "@typespec/compiler";
+import type { Model, ModelProperty, Namespace, Operation, Program, Type } from "@typespec/compiler";
 import { getStateMap } from "./state-compatibility.js";
 import { normalizeProtocol } from "./constants/protocols.js";
 import { stateSymbols } from "./lib.js";
@@ -304,53 +304,45 @@ export const storeApiVersion = (program: Program, target: Namespace, version: st
 
 // === REUSABLE COMPONENT STATE WRITERS ===
 
+function storeMulti<T>(
+  program: Program,
+  symbol: symbol,
+  target: Type,
+  data: T,
+): void {
+  const map = getStateMap<T[]>(program, symbol);
+  appendToStateArray(map, target, data);
+}
+
 export const storeOperationTrait = (
   program: Program,
   target: Namespace,
   data: OperationTraitData,
-): void => {
-  const map = getStateMap<OperationTraitData[]>(program, stateSymbols.operationTraits);
-  appendToStateArray(map, target, data);
-};
+): void => storeMulti(program, stateSymbols.operationTraits, target, data);
 
 export const storeMessageTrait = (
   program: Program,
   target: Namespace,
   data: MessageTraitData,
-): void => {
-  const map = getStateMap<MessageTraitData[]>(program, stateSymbols.messageTraits);
-  appendToStateArray(map, target, data);
-};
+): void => storeMulti(program, stateSymbols.messageTraits, target, data);
 
 export const storeReusableParameter = (
   program: Program,
   target: Namespace,
   data: ParameterConfigData,
-): void => {
-  const map = getStateMap<ParameterConfigData[]>(program, stateSymbols.reusableParameters);
-  appendToStateArray(map, target, data);
-};
+): void => storeMulti(program, stateSymbols.reusableParameters, target, data);
 
 export const storeReusableCorrelationId = (
   program: Program,
   target: Namespace,
   data: ReusableCorrelationIdData,
-): void => {
-  const map = getStateMap<ReusableCorrelationIdData[]>(
-    program,
-    stateSymbols.reusableCorrelationIds,
-  );
-  appendToStateArray(map, target, data);
-};
+): void => storeMulti(program, stateSymbols.reusableCorrelationIds, target, data);
 
 export const storeReusableBinding = (
   program: Program,
   target: Namespace,
   data: ReusableBindingData,
-): void => {
-  const map = getStateMap<ReusableBindingData[]>(program, stateSymbols.reusableBindings);
-  appendToStateArray(map, target, data);
-};
+): void => storeMulti(program, stateSymbols.reusableBindings, target, data);
 
 // === REFERENCE STATE WRITERS ===
 
@@ -358,19 +350,13 @@ export const storeOperationTraitRef = (
   program: Program,
   target: Operation,
   traitName: string,
-): void => {
-  const map = getStateMap<string[]>(program, stateSymbols.operationTraitRefs);
-  appendToStateArray(map, target, traitName);
-};
+): void => storeMulti(program, stateSymbols.operationTraitRefs, target, traitName);
 
 export const storeMessageTraitRef = (
   program: Program,
   target: Model,
   traitName: string,
-): void => {
-  const map = getStateMap<string[]>(program, stateSymbols.messageTraitRefs);
-  appendToStateArray(map, target, traitName);
-};
+): void => storeMulti(program, stateSymbols.messageTraitRefs, target, traitName);
 
 export const storeCorrelationIdRef = (
   program: Program,
@@ -385,7 +371,4 @@ export const storeBindingRef = (
   program: Program,
   target: Operation | Model,
   bindingName: string,
-): void => {
-  const map = getStateMap<string[]>(program, stateSymbols.bindingRefs);
-  appendToStateArray(map, target, bindingName);
-};
+): void => storeMulti(program, stateSymbols.bindingRefs, target, bindingName);

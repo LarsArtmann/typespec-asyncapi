@@ -86,58 +86,54 @@ export function $defaultContentType(
 
 // === REUSABLE COMPONENT DEFINITION DECORATORS ===
 
-export function $operationTrait(
-  context: DecoratorContext,
-  target: Namespace,
-  name: unknown,
-  config: unknown,
-): void {
-  if (!validateNonEmptyString(name, context, target, "invalid-trait-config", { traitName: String(name) })) {
-    return;
+type StoreFn = (program: DecoratorContext["program"], target: Namespace, data: Record<string, unknown>) => void;
+
+function pickStringFields(cfg: Record<string, unknown>, keys: string[]): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  for (const key of keys) {
+    if (typeof cfg[key] === "string") {
+      out[key] = cfg[key];
+    }
   }
-  const cfg = extractConfigRecord(config);
-  storeOperationTrait(context.program, target, {
-    name,
-    ...(typeof cfg.description === "string" ? { description: cfg.description } : {}),
-    ...(typeof cfg.summary === "string" ? { summary: cfg.summary } : {}),
-    ...(typeof cfg.title === "string" ? { title: cfg.title } : {}),
-  });
+  return out;
 }
 
-export function $messageTrait(
-  context: DecoratorContext,
-  target: Namespace,
-  name: unknown,
-  config: unknown,
-): void {
-  if (!validateNonEmptyString(name, context, target, "invalid-trait-config", { traitName: String(name) })) {
-    return;
-  }
-  const cfg = extractConfigRecord(config);
-  storeMessageTrait(context.program, target, {
-    name,
-    ...(typeof cfg.contentType === "string" ? { contentType: cfg.contentType } : {}),
-    ...(typeof cfg.description === "string" ? { description: cfg.description } : {}),
-    ...(typeof cfg.title === "string" ? { title: cfg.title } : {}),
-  });
+function makeNamedConfigDecorator(
+  diagnosticCode: "invalid-trait-config" | "invalid-parameter-config",
+  formatKey: string,
+  fields: string[],
+  store: StoreFn,
+): (context: DecoratorContext, target: Namespace, name: unknown, config: unknown) => void {
+  return (context, target, name, config) => {
+    const format = { [formatKey]: String(name) };
+    if (!validateNonEmptyString(name, context, target, diagnosticCode, format)) {
+      return;
+    }
+    const cfg = extractConfigRecord(config);
+    store(context.program, target, { name, ...pickStringFields(cfg, fields) });
+  };
 }
 
-export function $parameter(
-  context: DecoratorContext,
-  target: Namespace,
-  name: unknown,
-  config: unknown,
-): void {
-  if (!validateNonEmptyString(name, context, target, "invalid-parameter-config", { parameterName: String(name) })) {
-    return;
-  }
-  const cfg = extractConfigRecord(config);
-  storeReusableParameter(context.program, target, {
-    name,
-    ...(typeof cfg.description === "string" ? { description: cfg.description } : {}),
-    ...(typeof cfg.location === "string" ? { location: cfg.location } : {}),
-  });
-}
+export const $operationTrait = makeNamedConfigDecorator(
+  "invalid-trait-config",
+  "traitName",
+  ["description", "summary", "title"],
+  (program, target, data) => storeOperationTrait(program, target, data as never),
+);
+
+export const $messageTrait = makeNamedConfigDecorator(
+  "invalid-trait-config",
+  "traitName",
+  ["contentType", "description", "title"],
+  (program, target, data) => storeMessageTrait(program, target, data as never),
+);
+
+export const $parameter = makeNamedConfigDecorator(
+  "invalid-parameter-config",
+  "parameterName",
+  ["description", "location"],
+  (program, target, data) => storeReusableParameter(program, target, data as never),
+);
 
 export function $reusableCorrelationId(
   context: DecoratorContext,
@@ -145,16 +141,14 @@ export function $reusableCorrelationId(
   name: unknown,
   location: unknown,
 ): void {
-  if (!validateNonEmptyString(name, context, target, "invalid-correlationId-config", { modelName: String(name) })) {
+  const format = { modelName: String(name) };
+  if (!validateNonEmptyString(name, context, target, "invalid-correlationId-config", format)) {
     return;
   }
-  if (!validateNonEmptyString(location, context, target, "invalid-correlationId-config", { modelName: name })) {
+  if (!validateNonEmptyString(location, context, target, "invalid-correlationId-config", format)) {
     return;
   }
-  storeReusableCorrelationId(context.program, target, {
-    location,
-    name,
-  });
+  storeReusableCorrelationId(context.program, target, { location, name });
 }
 
 export function $reusableBinding(
@@ -170,10 +164,6 @@ export function $reusableBinding(
     reportDiagnostic(context, "invalid-bindings-config", target, { targetKind: target.kind });
     return;
   }
-  const rawBindings = extractConfigRecord(config);
-  const { bindings } = processBindings(rawBindings);
-  storeReusableBinding(context.program, target, {
-    bindings,
-    name,
-  });
+  const { bindings } = processBindings(extractConfigRecord(config));
+  storeReusableBinding(context.program, target, { bindings, name });
 }

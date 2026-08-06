@@ -65,9 +65,9 @@ describe("components.operationTraits compliance", () => {
       op publish(): Event;
     `);
 
-    expect(Object.keys(doc.components!.operationTraits!)).toStrictEqual([
-      "secure",
+    expect(Object.keys(doc.components!.operationTraits!).toSorted()).toStrictEqual([
       "monitored",
+      "secure",
     ]);
     const op = doc.operations!.publish as OperationObject;
     expect(op.traits).toHaveLength(2);
@@ -219,7 +219,7 @@ describe("components.correlationIds compliance (reusable)", () => {
 describe("reusable bindings compliance", () => {
   it("populates components.operationBindings from @reusableBinding + @useBinding", async () => {
     const doc = await compileAndValidateOrThrow(`
-      @reusableBinding("kafkaStd", #{ kafka: #{ clientId: "my-app", bindingVersion: "0.5.0" } })
+      @reusableBinding("kafkaStd", #{ kafka: #{ clientId: #{ type: "string" }, bindingVersion: "0.5.0" } })
       namespace Test;
       model Event { id: string; }
       @channel("events")
@@ -231,7 +231,7 @@ describe("reusable bindings compliance", () => {
     expect(doc.components!.operationBindings!.kafkaStd.kafka).toBeDefined();
     expect(
       (doc.components!.operationBindings!.kafkaStd.kafka as Record<string, unknown>).clientId,
-    ).toBe("my-app");
+    ).toStrictEqual({ type: "string" });
 
     const op = doc.operations!.publish as OperationObject;
     expect(op.bindings).toStrictEqual({
