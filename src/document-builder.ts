@@ -48,6 +48,7 @@ export function buildAsyncAPIDocument(
     opDocs: new Map(),
     opToChannel: new Map(),
     channelDocs: new Map(),
+    channelSummaries: new Map(),
     program,
     schemas,
     securitySchemes: {},

@@ -51,12 +51,18 @@ export function buildOperationMessageRef(channelKey: string, messageName: string
   return ref(`#/channels/${escapeRefToken(channelKey)}/messages/${escapeRefToken(messageName)}`);
 }
 
-/** Apply @doc descriptions to channels from the channelDocs map. */
+/** Apply @doc descriptions and @summary summaries to channels from the context maps. */
 export function applyChannelDocs(ctx: DocumentBuildContext): void {
   for (const [channelKey, doc] of ctx.channelDocs) {
     const channel = ctx.channels[channelKey];
     if (channel && !channel.description) {
       channel.description = doc;
+    }
+  }
+  for (const [channelKey, summary] of ctx.channelSummaries) {
+    const channel = ctx.channels[channelKey];
+    if (channel && !channel.summary) {
+      channel.summary = summary;
     }
   }
 }

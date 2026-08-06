@@ -16,6 +16,7 @@ import {
 } from "./shared-utils.js";
 import {
   getDoc,
+  getSummary,
   nameOfType,
   type AsyncAPIConsolidatedState,
   type BuilderFn,
@@ -63,6 +64,10 @@ function discoverDecoratedOps(state: AsyncAPIConsolidatedState, ctx: DocumentBui
     const doc = getDoc(ctx.program, type);
     if (doc) {
       ctx.channelDocs.set(data.path, doc);
+    }
+    const channelSummary = getSummary(ctx.program, type);
+    if (channelSummary !== undefined) {
+      ctx.channelSummaries.set(data.path, channelSummary);
     }
   }
 

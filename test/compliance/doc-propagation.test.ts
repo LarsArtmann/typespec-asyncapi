@@ -1,8 +1,9 @@
 /**
- * AsyncAPI 3.1.0 Spec Compliance: @doc propagation
+ * AsyncAPI 3.1.0 Spec Compliance: @doc and @summary propagation
  *
  * Validates that @doc on channel-decorated operations produces
- * channel descriptions that validate against the AsyncAPI 3.1.0 JSON Schema.
+ * channel descriptions, and @summary produces operation/channel summaries.
+ * All output validates against the AsyncAPI 3.1.0 JSON Schema.
  */
 
 import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
@@ -49,5 +50,51 @@ describe("spec Compliance: @doc propagation", () => {
 
     expect(doc.channels?.events).toBeDefined();
     expect(doc.operations?.publishUserEvent).toBeDefined();
+  });
+
+  it("maps @summary on operation to operation summary", async () => {
+    const doc = await compileAndValidateOrThrow(`
+      @summary("Publish Event Op")
+      @channel("events")
+      @publish
+      op publishEvent(): Event;
+
+      model Event { id: string; }
+    `);
+
+    const op = doc.operations?.publishEvent;
+    expect(op).toBeDefined();
+    expect(op?.summary).toBe("Publish Event Op");
+  });
+
+  it("maps @summary on channel-decorated operation to channel summary", async () => {
+    const doc = await compileAndValidateOrThrow(`
+      @summary("Event Channel")
+      @channel("events")
+      @publish
+      op publishEvent(): Event;
+
+      model Event { id: string; }
+    `);
+
+    const channel = doc.channels?.events;
+    expect(channel).toBeDefined();
+    expect(channel?.summary).toBe("Event Channel");
+  });
+
+  it("sets both description and summary when both @doc and @summary are present", async () => {
+    const doc = await compileAndValidateOrThrow(`
+      @doc("Detailed operation description")
+      @summary("Short Op Summary")
+      @channel("events")
+      @publish
+      op publishEvent(): Event;
+
+      model Event { id: string; }
+    `);
+
+    const op = doc.operations?.publishEvent;
+    expect(op?.description).toBe("Detailed operation description");
+    expect(op?.summary).toBe("Short Op Summary");
   });
 });

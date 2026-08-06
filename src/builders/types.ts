@@ -34,6 +34,7 @@ export interface DocumentBuildContext {
   discoveredOps: DiscoveredOp[];
   opToChannel: Map<string, string>;
   channelDocs: Map<string, string>;
+  channelSummaries: Map<string, string>;
   opDocs: Map<string, string>;
   program: Program;
 }
