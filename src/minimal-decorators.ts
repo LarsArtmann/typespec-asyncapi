@@ -15,7 +15,6 @@ import type {
 } from "@typespec/compiler";
 import type { Program } from "@typespec/compiler";
 import type { $lib } from "./lib.js";
-import { appendFileSync } from "node:fs";
 import { isSupportedProtocol } from "./constants/protocols.js";
 import {
   linkPublishMessage,
@@ -85,10 +84,6 @@ export function $message(
   target: Model,
   config: unknown,
 ): void {
-  appendFileSync(
-    "/tmp/typespec-debug.log",
-    `$message target=${target.name} config=${JSON.stringify(config)}\n`,
-  );
   validatedDecorator(context, target, config, {
     code: "invalid-message-config",
     format: { modelName: target.name },

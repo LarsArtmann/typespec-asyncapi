@@ -185,7 +185,6 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
   }
 
   programContext(_program: Program): Context {
-    console.error("DEBUG programContext called");
     const sourceFile = this.emitter.createSourceFile("schemas.json");
     return { scope: sourceFile.globalScope };
   }
