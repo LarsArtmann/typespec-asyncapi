@@ -52,6 +52,9 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<JsonSchema, AsyncAPIEmitt
     const disc = getDiscriminator(program, model);
     if (disc) {
       schema.discriminator = disc.propertyName;
+      if (!(schema.required ??= []).includes(disc.propertyName)) {
+        schema.required.push(disc.propertyName);
+      }
     }
     applyMetadata(program, model, schema);
     return this.emitter.result.declaration(model.name, schema);

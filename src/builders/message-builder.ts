@@ -10,7 +10,7 @@ import type {
   MessageObject,
 } from "../domain/models/asyncapi-document.js";
 import { refSchema } from "../domain/models/asyncapi-document.js";
-import { getDoc, nameOfType, withMessage } from "./_imports.js";
+import { getDoc, getExamples, nameOfType, serializeValueAsJson, withMessage } from "./_imports.js";
 import type { AsyncAPIConsolidatedState, BuilderFn } from "./_imports.js";
 import { iterNamedTypes } from "./shared-utils.js";
 

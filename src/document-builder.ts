@@ -20,6 +20,7 @@ import type {
   AsyncAPIDocument,
   ComponentsObject,
   JsonSchema,
+  Tag,
 } from "./domain/models/asyncapi-document.js";
 import type { DocumentBuildContext } from "./builders/types.js";
 import { discoverOperations } from "./builders/operation-discovery.js";
@@ -48,6 +49,7 @@ export function buildAsyncAPIDocument(
     opToChannel: new Map(),
     channelDocs: new Map(),
     channelSummaries: new Map(),
+    channelTags: new Map(),
     program,
     schemas,
     securitySchemes: {},
@@ -153,6 +155,9 @@ function assembleDocument(
 
   const stateApiVersion = apiVersion;
 
+  const infoTags: Tag[] | undefined =
+    Object.keys(ctx.tags).length > 0 ? Object.values(ctx.tags) : undefined;
+
   return {
     asyncapi: ASYNCAPI_SPEC_VERSION,
     info: {
@@ -163,6 +168,7 @@ function assembleDocument(
       ...(options.license ? { license: options.license } : {}),
       ...(options.termsOfService ? { termsOfService: options.termsOfService } : {}),
       ...(options.externalDocs ? { externalDocs: options.externalDocs } : {}),
+      ...(infoTags ? { tags: infoTags } : {}),
     },
     ...(defaultContentType ? { defaultContentType } : {}),
     ...(Object.keys(ctx.servers).length > 0 ? { servers: ctx.servers } : {}),

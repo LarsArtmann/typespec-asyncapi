@@ -69,6 +69,10 @@ function discoverDecoratedOps(state: AsyncAPIConsolidatedState, ctx: DocumentBui
     if (channelSummary !== undefined) {
       ctx.channelSummaries.set(data.path, channelSummary);
     }
+    const channelTags = state.tags.get(type);
+    if (channelTags && channelTags.length > 0) {
+      ctx.channelTags.set(data.path, channelTags);
+    }
   }
 
   for (const { type, name, data } of iterNamedTypes(state.operations)) {

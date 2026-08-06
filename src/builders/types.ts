@@ -49,6 +49,7 @@ export interface DocumentBuildContext {
   opToChannel: Map<string, string>;
   channelDocs: Map<string, string>;
   channelSummaries: Map<string, string>;
+  channelTags: Map<string, Tag[]>;
   opDocs: Map<string, string>;
   program: Program;
 }

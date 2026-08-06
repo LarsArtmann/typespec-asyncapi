@@ -148,6 +148,36 @@ describe("@discriminator on models", () => {
     const plain = getSchema(doc, "Plain");
     expect(plain.discriminator).toBeUndefined();
   });
+
+  it("auto-adds discriminator property to required array", async () => {
+    const doc = await compileAndValidateOrThrow(`
+      namespace Test;
+      @discriminator("kind")
+      model Animal {
+        kind: string;
+        name: string;
+      }
+      @channel("events") op publish(): Animal;
+    `);
+    const animal = getSchema(doc, "Animal");
+    expect(animal.discriminator).toBe("kind");
+    expect(animal.required).toContain("kind");
+  });
+
+  it("adds discriminator to required even when property is optional", async () => {
+    const doc = await compileAndValidateOrThrow(`
+      namespace Test;
+      @discriminator("type")
+      model Event {
+        type?: string;
+        data: string;
+      }
+      @channel("events") op publish(): Event;
+    `);
+    const schema = getSchema(doc, "Event");
+    expect(schema.discriminator).toBe("type");
+    expect(schema.required).toContain("type");
+  });
 });
 
 describe("oneOf for model-variant unions", () => {

@@ -1,9 +1,9 @@
 /**
- * AsyncAPI 3.1.0 Spec Compliance: components.tags
+ * AsyncAPI 3.1.0 Spec Compliance: components.tags and info.tags
  *
  * Tests that @tags decorator state is collected into the reusable
  * components.tags map with proper deduplication across operations,
- * models, and namespaces.
+ * models, and namespaces. Also verifies info.tags population.
  */
 
 import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
@@ -91,5 +91,82 @@ describe("components.tags compliance", () => {
     expect(op.tags).toHaveLength(2);
     expect(doc.components?.tags?.alpha).toStrictEqual({ name: "alpha" });
     expect(doc.components?.tags?.beta).toStrictEqual({ name: "beta" });
+  });
+});
+
+describe("info.tags compliance", () => {
+  it("populates info.tags with all unique tags", async () => {
+    const doc = await compileAndValidateOrThrow(`
+      namespace Test;
+      model Event { id: string; }
+      @channel("events")
+      @tags(#["alpha", "beta"])
+      op publish(): Event;
+    `);
+
+    expect(doc.info.tags).toBeDefined();
+    expect(doc.info.tags).toHaveLength(2);
+    const names = doc.info.tags!.map((t) => t.name).toSorted();
+    expect(names).toStrictEqual(["alpha", "beta"]);
+  });
+
+  it("deduplicates info.tags from multiple sources", async () => {
+    const doc = await compileAndValidateOrThrow(`
+      @tags(#["shared", "ns"])
+      namespace Test;
+      @tags(#["shared", "model"])
+      model Event { id: string; }
+      @channel("events")
+      @tags(#["shared", "op"])
+      op publish(): Event;
+    `);
+
+    expect(doc.info.tags).toBeDefined();
+    const names = doc.info.tags!.map((t) => t.name).toSorted();
+    expect(names).toStrictEqual(["model", "ns", "op", "shared"]);
+  });
+
+  it("omits info.tags when no tags are used", async () => {
+    const doc = await compileAndValidateOrThrow(`
+      namespace Test;
+      model Event { id: string; }
+      @channel("events")
+      op publish(): Event;
+    `);
+
+    expect(doc.info.tags).toBeUndefined();
+  });
+});
+
+describe("channel and server tags", () => {
+  it("applies @tags from operation to its channel", async () => {
+    const doc = await compileAndValidateOrThrow(`
+      namespace Test;
+      model Event { id: string; }
+      @channel("events")
+      @tags(#["realtime"])
+      op publish(): Event;
+    `);
+
+    const channel = doc.channels?.events;
+    expect(channel?.tags).toBeDefined();
+    expect(channel?.tags?.[0]?.name).toBe("realtime");
+  });
+
+  it("applies @tags from namespace to servers", async () => {
+    const doc = await compileAndValidateOrThrow(`
+      @tags(#["production"])
+      @server("prod", #{
+        url: "broker.example.com",
+        protocol: "kafka"
+      })
+      namespace Test;
+      model Event { id: string; }
+      @channel("events") op publish(): Event;
+    `);
+
+    const server = doc.servers?.prod;
+    expect(server?.tags).toBeDefined();
+    expect(server?.tags?.[0]?.name).toBe("production");
   });
 });
