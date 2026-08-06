@@ -118,9 +118,7 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<JsonSchema, AsyncAPIEmitt
   }
 
   scalarDeclaration(scalar: Scalar, name: string): EmitterOutput<JsonSchema> {
-    const schema = this.intrinsicSchema(scalar.name);
-    applyMetadata(this.emitter.getProgram(), scalar, schema);
-    return this.emitter.result.declaration(name, schema);
+    return this.declareSchema(name, scalar, this.intrinsicSchema(scalar.name));
   }
 
   scalarInstantiation(scalar: Scalar, name: string | undefined): EmitterOutput<JsonSchema> {
@@ -161,9 +159,7 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<JsonSchema, AsyncAPIEmitt
   operation = (_operation: Operation): EmitterOutput<JsonSchema> => this.returnNone();
   interfaceDeclaration = (_iface: Interface): EmitterOutput<JsonSchema> => this.returnNone();
   enumDeclaration(en: Enum, name: string): EmitterOutput<JsonSchema> {
-    const schema = this.buildEnumSchema(en.members);
-    applyMetadata(this.emitter.getProgram(), en, schema);
-    return this.emitter.result.declaration(name, schema);
+    return this.declareSchema(name, en, this.buildEnumSchema(en.members));
   }
 
   sourceFile(sourceFile: SourceFile<JsonSchema>): EmittedSourceFile {
@@ -184,6 +180,16 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<JsonSchema, AsyncAPIEmitt
   private buildEnumSchema(members: Map<string, EnumMember>): JsonSchema {
     const values = [...members.values()].map((m) => m.value ?? m.name);
     return { enum: values, type: "string" };
+  }
+
+  /** Apply metadata decorators to a schema and register it as a named declaration. */
+  private declareSchema(
+    name: string,
+    type: Scalar | Enum,
+    schema: JsonSchema,
+  ): EmitterOutput<JsonSchema> {
+    applyMetadata(this.emitter.getProgram(), type, schema);
+    return this.emitter.result.declaration(name, schema);
   }
 
   /** Return the AssetEmitter `none()` result for "no schema output". */

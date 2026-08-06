@@ -11,7 +11,7 @@
 bun install           # Install dependencies
 bun run build         # Build TypeScript → JavaScript (0 errors)
 bun run lint          # Run ESLint (0 errors, 0 warnings)
-bun run test          # Run tests via vitest (928 pass, 0 fail)
+bun run test          # Run tests via vitest (938 pass, 0 fail)
 ```
 
 **Important:** Use `bun` and `bunx` for install/build, never `npm` or `npx`. Tests run via **vitest** (Node.js/V8) — not `bun test` — because Bun has documented memory leaks that cause OOM crashes with heavy test suites.
@@ -35,12 +35,12 @@ bun run test          # Run tests via vitest (928 pass, 0 fail)
 - **Entry Point:** `src/index.ts` → exports `$onEmit` for TypeSpec compiler
 - **Emitter (9 core files, split from original 831-line monolith):**
   - `src/emitter.ts` (68 lines) — `$onEmit` entry point, writes output file, handles `split-schemas` option
-  - `src/schema-emitter.ts` (359 lines) — `AsyncAPISchemaEmitter` class extends `TypeEmitter<JsonSchema, AsyncAPIEmitterOptions>`, overrides `modelDeclaration` (emits `allOf` for inheritance, `discriminator` for polymorphic models), `union` (emits `oneOf` for all-Model variants, `anyOf` for mixed), `enum`, `intrinsic`, `scalar`, etc.
+  - `src/schema-emitter.ts` (320 lines) — `AsyncAPISchemaEmitter` class extends `TypeEmitter<JsonSchema, AsyncAPIEmitterOptions>`, overrides `modelDeclaration` (emits `allOf` for inheritance, `discriminator` for polymorphic models), `union` (emits `oneOf` for all-Model variants, `anyOf` for mixed), `enum`, `intrinsic`, `scalar`, etc.
   - `src/schema-ref.ts` (43 lines) — `refForNamedType()` resolves named TypeSpec types to `$ref` pointers. Pure function, no instance dependencies.
   - `src/schema-generator.ts` (47 lines) — `generateSchemas()` entry point, creates asset emitter and collects declarations
   - `src/extract-value.ts` (24 lines) — `extractValue()` narrows `EmitEntity<T>` discriminated union, filters `Placeholder<T>` lazy values
   - `src/stdlib-helpers.ts` (39 lines) — `isStdlibType()` and `collectAllStdlibNames()` utilities
-  - `src/constraint-mapper.ts` (195 lines) — `applyConstraints()`, `applyMetadata()`, `applyDeprecated()`, `applyDocDescription()`, `applySummary()`, `applyExamples()`, `applyVisibility()`: maps 14 TypeSpec stdlib constraint/metadata decorators to JSON Schema keywords. Validation keywords skipped on `$ref` schemas.
+  - `src/constraint-mapper.ts` (203 lines) — `applyConstraints()`, `applyMetadata()`, `applyDeprecated()`, `applyDocDescription()`, `applySummary()`, `applyExamples()`, `applyDefault()`, `applyVisibility()`: maps 15 TypeSpec stdlib constraint/metadata decorators to JSON Schema keywords. Validation keywords skipped on `$ref` schemas.
   - `src/document-builder.ts` (116 lines) — `buildAsyncAPIDocument()` entry point; delegates to `src/builders/` for assembly. Handles `$ref` chain construction
   - `src/intrinsic-mapping.ts` (82 lines) — `intrinsicToSchema()` maps TypeSpec scalar names to JSON Schema types (~30 cases)
   - `src/schema-splitter.ts` (79 lines) — `splitSchemas()` extracts schemas into individual files, rewrites `$ref` pointers to external paths
@@ -182,6 +182,8 @@ Key points:
 - **Constraint decorators target specific types:** `@pattern` only works on `string | ModelProperty` of string type. `@minValue`/`@maxValue` work on numeric scalars. `@minItems`/`@maxItems` work on arrays. TypeSpec compiler validates target types at compile time and errors on mismatch.
 - **`$ref` constraint siblings:** Validation keywords (`minimum`, `pattern`, etc.) are only applied to inline schemas in `applyConstraints()` — when the schema is a `$ref`, these are skipped (Draft-07 ignores `$ref` siblings). Metadata (`deprecated`, `description`, `title`, `examples`, `readOnly`, `writeOnly`) IS applied as `$ref` siblings, which AJV accepts for AsyncAPI 3.1 validation.
 - **`@summary`/`@example`/`@visibility` are stdlib decorators:** These are NOT declared in `lib/main.tsp` — they come from `@typespec/compiler`. `@summary` → `title` via `getSummary()`, `@example` → `examples` via `getExamples()` + `serializeValueAsJson()`, `@visibility` → `readOnly`/`writeOnly` via `getVisibilityForClass()` with Lifecycle enum. All applied as metadata in `constraint-mapper.ts`.
+- **Default values use core `=` syntax, NOT `@default`:** TypeSpec has no `@default` decorator. Default values are set via `prop: Type = value` syntax (e.g. `name: string = "anonymous"`). The compiler stores the value on `prop.defaultValue` (a `Value` type). The emitter calls `applyDefault()` in `constraint-mapper.ts` which uses `serializeValueAsJson()` to convert to JSON Schema `default`. Applied as an annotation keyword (before the `$ref` skip), so it appears as a `$ref` sibling.
+- **`@visibility` mapping is lossy (5 Lifecycle values → 2 JSON Schema booleans):** TypeSpec has 5 visibility values (Create, Read, Update, Delete, Query); JSON Schema has only `readOnly` and `writeOnly`. The emitter maps Read-only → `readOnly`, Create/Update-only → `writeOnly`. Both or neither → no keyword (fully visible). **Delete and Query are silently ignored** — JSON Schema has no equivalent for "visible only during delete" or "visible only during query". AsyncAPI 3.1 does not prescribe specific semantics for `readOnly`/`writeOnly` in message payloads.
 - **Protocol count is 22 in `protocols.ts`:** The binding specs (`generated-bindings.ts`) have 19 binding protocols (no separate entries for https/wss/mqtt5). The protocol validation list (`protocols.ts`) has 22 entries (includes https, wss, mqtt5 as separate from http, ws, mqtt). This was a split-brain bug: solace/anypointmq/ros2 were in bindings but missing from protocols.
 - **Model inheritance uses `allOf`:** `model Derived extends Base` emits `allOf: [{ $ref: "#/components/schemas/Base" }]` instead of flattening base properties. Each model only has its own `properties` and `required`. Multi-level chains produce linked refs (C → B → A). This is a breaking change from the previous flattening behavior.
 - **`@discriminator` targets Model only:** The TypeSpec stdlib decorator `@discriminator("propertyName")` can only be applied to models, NOT unions. The compiler rejects it on unions with `decorator-wrong-target`. `getDiscriminator(program, type)` returns `{ propertyName: string }` or `undefined`. The emitter calls it in `modelDeclaration()` and `union()` (for future-proofing, but it always returns `undefined` for unions in this TypeSpec version).

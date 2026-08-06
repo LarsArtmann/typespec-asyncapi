@@ -617,5 +617,146 @@ describe("spec Compliance: Constraint Decorators", () => {
       expect(propSchema(doc, "Event", "name").readOnly).toBeUndefined();
       expect(propSchema(doc, "Event", "name").writeOnly).toBeUndefined();
     });
+
+    it("silently ignores Lifecycle.Delete (no JSON Schema equivalent)", async () => {
+      const doc = await compileAndValidateOrThrow(`
+        namespace Test;
+        model Event {
+          @visibility(Lifecycle.Delete)
+          tombstone: string;
+        }
+        @channel("events")
+        op publish(): Event;
+      `);
+      const tombstone = propSchema(doc, "Event", "tombstone");
+      expect(tombstone.readOnly).toBeUndefined();
+      expect(tombstone.writeOnly).toBeUndefined();
+    });
+
+    it("silently ignores Lifecycle.Query (no JSON Schema equivalent)", async () => {
+      const doc = await compileAndValidateOrThrow(`
+        namespace Test;
+        model Event {
+          @visibility(Lifecycle.Query)
+          filter: string;
+        }
+        @channel("events")
+        op publish(): Event;
+      `);
+      const filter = propSchema(doc, "Event", "filter");
+      expect(filter.readOnly).toBeUndefined();
+      expect(filter.writeOnly).toBeUndefined();
+    });
+
+    it("maps @visibility(Lifecycle.Create, Lifecycle.Update) to writeOnly", async () => {
+      const doc = await compileAndValidateOrThrow(`
+        namespace Test;
+        model Event {
+          @visibility(Lifecycle.Create, Lifecycle.Update)
+          writableOnly: string;
+        }
+        @channel("events")
+        op publish(): Event;
+      `);
+      expect(propSchema(doc, "Event", "writableOnly").writeOnly).toBe(true);
+      expect(propSchema(doc, "Event", "writableOnly").readOnly).toBeUndefined();
+    });
+  });
+
+  describe("default values (TypeSpec = syntax)", () => {
+    it("maps string default to default keyword", async () => {
+      const doc = await compileAndValidateOrThrow(`
+        namespace Test;
+        model Event {
+          name: string = "anonymous";
+        }
+        @channel("events")
+        op publish(): Event;
+      `);
+      expect(propSchema(doc, "Event", "name").default).toBe("anonymous");
+    });
+
+    it("maps numeric default to default keyword", async () => {
+      const doc = await compileAndValidateOrThrow(`
+        namespace Test;
+        model Event {
+          count: int32 = 42;
+        }
+        @channel("events")
+        op publish(): Event;
+      `);
+      expect(propSchema(doc, "Event", "count").default).toBe(42);
+    });
+
+    it("maps boolean default to default keyword", async () => {
+      const doc = await compileAndValidateOrThrow(`
+        namespace Test;
+        model Event {
+          active: boolean = true;
+        }
+        @channel("events")
+        op publish(): Event;
+      `);
+      expect(propSchema(doc, "Event", "active").default).toBe(true);
+    });
+
+    it("applies default as a $ref sibling on scalar property", async () => {
+      const doc = await compileAndValidateOrThrow(`
+        namespace Test;
+        scalar Priority extends int32;
+        model Event {
+          priority: Priority = 5;
+        }
+        @channel("events")
+        op publish(): Event;
+      `);
+      const priority = propSchema(doc, "Event", "priority");
+      expect(priority.$ref).toBe("#/components/schemas/Priority");
+      expect(priority.default).toBe(5);
+    });
+
+    it("does not set default when no default value is provided", async () => {
+      const doc = await compileAndValidateOrThrow(`
+        namespace Test;
+        model Event {
+          name: string;
+        }
+        @channel("events")
+        op publish(): Event;
+      `);
+      expect(propSchema(doc, "Event", "name").default).toBeUndefined();
+    });
+  });
+
+  describe("@summary and #deprecated on scalar declarations", () => {
+    it("maps @summary on a scalar declaration to title", async () => {
+      const doc = await compileAndValidateOrThrow(`
+        namespace Test;
+        @summary("User Identifier")
+        scalar UserId extends int32;
+        model Event {
+          userId: UserId;
+        }
+        @channel("events")
+        op publish(): Event;
+      `);
+      const schema = (doc.components as { schemas: Record<string, JsonSchema> }).schemas.UserId;
+      expect(schema.title).toBe("User Identifier");
+    });
+
+    it("maps #deprecated on a scalar declaration to deprecated", async () => {
+      const doc = await compileAndValidateOrThrow(`
+        namespace Test;
+        #deprecated "use UserIdV2"
+        scalar OldId extends string;
+        model Event {
+          oldId: OldId;
+        }
+        @channel("events")
+        op publish(): Event;
+      `);
+      const schema = (doc.components as { schemas: Record<string, JsonSchema> }).schemas.OldId;
+      expect(schema.deprecated).toBe(true);
+    });
   });
 });
