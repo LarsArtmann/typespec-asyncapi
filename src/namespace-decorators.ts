@@ -22,7 +22,6 @@ import {
   validateNonEmptyString,
 } from "./decorator-helpers.js";
 import { processBindings } from "./validation/binding-validator.js";
-import type { ProtocolBindings } from "./domain/models/asyncapi-document.js";
 
 export function $server(
   context: DecoratorContext,
@@ -98,7 +97,7 @@ export function $operationTrait(
   }
   const cfg = extractConfigRecord(config);
   storeOperationTrait(context.program, target, {
-    name: name,
+    name,
     ...(typeof cfg.description === "string" ? { description: cfg.description } : {}),
     ...(typeof cfg.summary === "string" ? { summary: cfg.summary } : {}),
     ...(typeof cfg.title === "string" ? { title: cfg.title } : {}),
@@ -116,7 +115,7 @@ export function $messageTrait(
   }
   const cfg = extractConfigRecord(config);
   storeMessageTrait(context.program, target, {
-    name: name,
+    name,
     ...(typeof cfg.contentType === "string" ? { contentType: cfg.contentType } : {}),
     ...(typeof cfg.description === "string" ? { description: cfg.description } : {}),
     ...(typeof cfg.title === "string" ? { title: cfg.title } : {}),
@@ -134,7 +133,7 @@ export function $parameter(
   }
   const cfg = extractConfigRecord(config);
   storeReusableParameter(context.program, target, {
-    name: name,
+    name,
     ...(typeof cfg.description === "string" ? { description: cfg.description } : {}),
     ...(typeof cfg.location === "string" ? { location: cfg.location } : {}),
   });
@@ -153,8 +152,8 @@ export function $reusableCorrelationId(
     return;
   }
   storeReusableCorrelationId(context.program, target, {
-    location: location,
-    name: name,
+    location,
+    name,
   });
 }
 
@@ -174,7 +173,7 @@ export function $reusableBinding(
   const rawBindings = extractConfigRecord(config);
   const { bindings } = processBindings(rawBindings);
   storeReusableBinding(context.program, target, {
-    bindings: bindings,
-    name: name,
+    bindings,
+    name,
   });
 }
