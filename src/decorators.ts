@@ -36,6 +36,7 @@ import {
 import {
   $useBinding,
   $useChannelBinding,
+  $useChannelServer,
   $useCorrelationId,
   $useMessageTrait,
   $useOperationTrait,
@@ -67,6 +68,7 @@ export const $decorators = {
     tags: $tags,
     useBinding: $useBinding,
     useChannelBinding: $useChannelBinding,
+    useChannelServer: $useChannelServer,
     useCorrelationId: $useCorrelationId,
     useMessageTrait: $useMessageTrait,
     useOperationTrait: $useOperationTrait,

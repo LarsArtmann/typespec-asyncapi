@@ -11,6 +11,7 @@ import type { Program } from "@typespec/compiler";
 import {
   storeBindingRef,
   storeChannelBindingRef,
+  storeChannelServerRef,
   storeCorrelationIdRef,
   storeMessageTraitRef,
   storeOperationTraitRef,
@@ -63,4 +64,9 @@ export const $useChannelBinding = makeUseDecorator(
   "invalid-bindings-config",
   "targetKind",
   storeChannelBindingRef,
+);
+export const $useChannelServer = makeUseDecorator(
+  "invalid-channel-server-config",
+  "serverName",
+  storeChannelServerRef,
 );

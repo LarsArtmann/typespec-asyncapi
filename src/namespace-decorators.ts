@@ -67,6 +67,21 @@ export function $server(
     return;
   }
 
+  if (
+    (configTyped.protocolVersion !== undefined &&
+      typeof configTyped.protocolVersion !== "string") ||
+    (configTyped.pathname !== undefined &&
+      typeof configTyped.pathname !== "string") ||
+    (configTyped.variables !== undefined &&
+      (typeof configTyped.variables !== "object" ||
+        Array.isArray(configTyped.variables)))
+  ) {
+    reportDiagnostic(context, "invalid-server-config", target, {
+      serverName: name,
+    });
+    return;
+  }
+
   storeServerConfig(context.program, target, { ...configTyped, name });
 }
 

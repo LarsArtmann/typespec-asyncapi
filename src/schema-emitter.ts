@@ -114,6 +114,22 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
     return this.composeUnionVariants(variants, union);
   }
 
+  unionDeclaration(union: Union, name: string): EmitterOutput<JsonSchema> {
+    const schema = this.composeUnionVariants(
+      [...union.variants.values()].map((v) =>
+        this.refOrFallback(v.type, (t) => {
+          const tt = t as { kind: string; name?: string; value?: string };
+          if (tt.kind === "String" && tt.value !== undefined) {
+            return { const: tt.value };
+          }
+          return intrinsicToSchema(tt.name ?? "string");
+        }),
+      ),
+      union,
+    );
+    return this.emitter.result.declaration(name, schema);
+  }
+
   enum(en: Enum): EmitterOutput<JsonSchema> {
     return this.buildEnumSchema(en.members);
   }
@@ -288,6 +304,9 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
 
   private typeToSchema(t: Type): JsonSchema {
     const { kind } = t as { kind: string };
+    if (kind === "ModelProperty") {
+      return this.typeToSchema((t as { type: Type }).type);
+    }
     if (kind === "Union") {
       const tUnion = t as Union;
       const variants = [...tUnion.variants.values()].map(

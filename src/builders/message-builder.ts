@@ -33,6 +33,13 @@ export const mergeExplicitMessages: BuilderFn = (state, ctx) => {
       payload: refSchema(name),
     };
 
+    if (data.schemaFormat !== undefined) {
+      msgObj.schemaFormat = data.schemaFormat;
+    }
+    if (data.examples !== undefined && data.examples.length > 0) {
+      msgObj.examples = data.examples;
+    }
+
     applyCorrelationId(state, type, msgObj);
     applyHeaders(state, type, msgObj);
     applyMessageBindings(state, type, msgObj);

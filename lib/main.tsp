@@ -15,7 +15,14 @@ extern dec channel(target: Operation, address: valueof string, description?: val
 
 /**
  * Apply message metadata to a model representing an AsyncAPI message
- * @param config Message configuration object
+ * @param config Message configuration object:
+ *   - `title`: Message display name (also becomes `name`)
+ *   - `description`: Human-readable summary
+ *   - `contentType`: e.g., `"application/json"`, `"application/avro"`
+ *   - `schemaFormat`: e.g., `"application/schema+json"`,
+ *     `"application/vnd.apache.avro+json"`, `"application/vnd.google.protobuf"`.
+ *     When non-JSON, the payload reference points to an external schema.
+ *   - `examples`: Array of `{name?, summary?, headers?, payload?}` example objects
  */
 extern dec message(target: Model, config: {} | valueof Record<unknown>);
 
@@ -34,7 +41,10 @@ extern dec security(target: Operation | Namespace, config: {} | valueof Record<u
 /**
  * Define server configuration
  * @param name Server name (used as key in AsyncAPI servers object)
- * @param config Server configuration object containing url and protocol
+ * @param config Server configuration: `url`, `protocol`, optional `protocolVersion`,
+ *               `pathname`, `description`, `variables` (map of var name to
+ *               `{enum?, default?, description?, examples?}`), and `security`
+ *               (array of Security Requirement Objects)
  */
 extern dec server(target: Namespace, name: valueof string, config: valueof Record<unknown>);
 
@@ -173,6 +183,14 @@ extern dec useBinding(target: Operation | Model | Namespace, name: valueof strin
  * @param name The binding name defined via @reusableBinding
  */
 extern dec useChannelBinding(target: Operation, name: valueof string);
+
+/**
+ * Reference a server by name on an operation's channel.
+ * Populates the channel's `servers` field with `$ref` pointers to `components.servers[name]`.
+ * The named server must be defined via `@server` on the namespace.
+ * @param name The server name defined via @server
+ */
+extern dec useChannelServer(target: Operation, name: valueof string);
 
 /**
  * Emitter options for `@lars-artmann/typespec-asyncapi`.

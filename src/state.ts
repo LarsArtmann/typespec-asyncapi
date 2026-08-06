@@ -20,6 +20,7 @@ import { stateSymbols } from "./lib.js";
 // Re-export domain types so consumers can import all state-related types from one place.
 export type {
   ProtocolBindings,
+  SecurityRequirement,
   SecurityScheme,
   Tag,
 } from "./domain/models/asyncapi-document.js";
@@ -43,6 +44,8 @@ export interface MessageConfigData {
   description?: string;
   title?: string;
   contentType?: string;
+  schemaFormat?: string;
+  examples?: { name?: string; summary?: string; headers?: unknown; payload?: unknown }[];
 }
 
 /**
@@ -53,6 +56,15 @@ export interface ServerConfigData {
   protocol: AsyncAPIProtocol;
   description?: string;
   name: string;
+  protocolVersion?: string;
+  pathname?: string;
+  /** Server variables: maps variable name to enum/default/description. */
+  variables?: Record<
+    string,
+    { enum?: string[]; default?: string; description?: string; examples?: string[] }
+  >;
+  /** Server-level security requirements (AsyncAPI 3.1 server.security). */
+  security?: SecurityRequirement[];
 }
 
 /**
@@ -253,6 +265,7 @@ export interface AsyncAPIConsolidatedState {
   correlationIdRefs: Map<Type, string>;
   bindingRefs: Map<Type, string[]>;
   channelBindingRefs: Map<Type, string[]>;
+  channelServerRefs: Map<Type, string[]>;
 }
 
 /**
@@ -345,6 +358,10 @@ export function consolidateAsyncAPIState(
     channelBindingRefs: getMultiState<string>(
       program,
       stateSymbols.channelBindingRefs,
+    ),
+    channelServerRefs: getMultiState<string>(
+      program,
+      stateSymbols.channelServerRefs,
     ),
   };
 }

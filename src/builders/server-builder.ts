@@ -23,13 +23,27 @@ export const buildServers: BuilderFn = (state, ctx) => {
 
       const varMatches = entry.url.match(/\{(?<var>[^}]+)\}/gu);
       if (varMatches && varMatches.length > 0) {
-        const vars: Record<string, { default?: string; description?: string }> =
-          {};
+        const vars: Record<
+          string,
+          { enum?: string[]; default?: string; description?: string; examples?: string[] }
+        > = {};
         for (const match of varMatches) {
           const varName = match.slice(1, -1);
-          vars[varName] = { description: `Server variable: ${varName}` };
+          vars[varName] = entry.variables?.[varName] ?? {
+            description: `Server variable: ${varName}`,
+          };
         }
         server.variables = vars;
+      }
+
+      if (entry.protocolVersion !== undefined) {
+        server.protocolVersion = entry.protocolVersion;
+      }
+      if (entry.pathname !== undefined) {
+        server.pathname = entry.pathname;
+      }
+      if (entry.security && entry.security.length > 0) {
+        server.security = entry.security;
       }
 
       if (namespaceBindings && Object.keys(namespaceBindings).length > 0) {

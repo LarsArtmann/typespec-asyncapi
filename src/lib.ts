@@ -154,6 +154,12 @@ export const $lib = createTypeSpecLibrary({
       },
       severity: "warning",
     },
+    "invalid-channel-server-config": {
+      messages: {
+        default: paramMessage`@channelServer requires a non-empty server name string.`,
+      },
+      severity: "error",
+    },
   },
   name: "@lars-artmann/typespec-asyncapi",
   state: {
@@ -195,6 +201,9 @@ export const $lib = createTypeSpecLibrary({
     channelBindingRefs: {
       description: "Operations to referenced channel binding names",
     },
+    channelServerRefs: {
+      description: "Operations to referenced server names for channel.servers",
+    },
   },
 } as const);
 
@@ -225,4 +234,5 @@ export const stateSymbols = {
   correlationIdRefs: Symbol("correlationIdRefs"),
   bindingRefs: Symbol("bindingRefs"),
   channelBindingRefs: Symbol("channelBindingRefs"),
+  channelServerRefs: Symbol("channelServerRefs"),
 } as const;

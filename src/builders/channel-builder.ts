@@ -101,3 +101,26 @@ export const attachChannelBindings: BuilderFn = (state, ctx) => {
     }
   }
 };
+
+/** Apply @useChannelServer refs: attach server $refs to each channel's `servers` field. */
+export const attachChannelServerRefs: BuilderFn = (state, ctx) => {
+  if (state.channelServerRefs.size === 0) {
+    return;
+  }
+  for (const { name, data } of iterNamedTypes(state.channelServerRefs)) {
+    const channelKey = ctx.opToChannel.get(name) ?? name;
+    const channel = ctx.channels[channelKey];
+    if (!channel) {
+      continue;
+    }
+    const refs: Ref[] = [];
+    for (const serverName of data) {
+      if (serverName in ctx.servers) {
+        refs.push({ $ref: `#/servers/${serverName}` });
+      }
+    }
+    if (refs.length > 0) {
+      channel.servers = refs;
+    }
+  }
+};

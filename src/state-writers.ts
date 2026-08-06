@@ -13,7 +13,9 @@ import type {
   OperationReplyData,
   ProtocolBindings,
   ProtocolConfigData,
+  SecurityRequirement,
   SecurityScheme,
+  ServerConfigData,
   Tag,
 } from "./state.js";
 import type {
@@ -117,26 +119,29 @@ export const storeServerConfig = (
   target: Namespace,
   config: Record<string, unknown> & { name: string },
 ): void => {
-  interface ServerConfigEntry {
-    name: string;
-    url: string;
-    protocol: string;
-    description: string;
-  }
-
-  const map = getStateMap<ServerConfigEntry[]>(
-    program,
-    stateSymbols.serverConfigs,
-  );
-  const newEntry: ServerConfigEntry = {
+  const newEntry: ServerConfigData = {
     description:
       (config.description as string | undefined) ?? `Server for ${target.name}`,
     name: config.name,
     protocol: normalizeProtocol(
       (config.protocol as string | undefined) ?? "http",
-    ),
+    ) as ServerConfigData["protocol"],
     url: (config.url as string | undefined) ?? "http://localhost:3000",
+    ...(typeof config.protocolVersion === "string"
+      ? { protocolVersion: config.protocolVersion }
+      : {}),
+    ...(typeof config.pathname === "string" ? { pathname: config.pathname } : {}),
+    ...(config.variables && typeof config.variables === "object"
+      ? { variables: config.variables as ServerConfigData["variables"] }
+      : {}),
+    ...(Array.isArray(config.security)
+      ? { security: config.security as SecurityRequirement[] }
+      : {}),
   };
+  const map = getStateMap<ServerConfigData[]>(
+    program,
+    stateSymbols.serverConfigs,
+  );
   appendToStateArray(map, target, newEntry);
 };
 
@@ -374,9 +379,7 @@ function multiRefStore(symbol: symbol): MultiStore {
 export const storeOperationTraitRef: MultiStore = multiRefStore(
   stateSymbols.operationTraitRefs,
 );
-export const storeMessageTraitRef: MultiStore = multiRefStore(
-  stateSymbols.messageTraitRefs,
-);
+export const storeMessageTraitRef: MultiStore = multiRefStore(stateSymbols.messageTraitRefs);
 
 export const storeCorrelationIdRef = (
   program: Program,
@@ -387,9 +390,10 @@ export const storeCorrelationIdRef = (
   map.set(target, correlationIdName);
 };
 
-export const storeBindingRef: MultiStore = multiRefStore(
-  stateSymbols.bindingRefs,
-);
+export const storeBindingRef: MultiStore = multiRefStore(stateSymbols.bindingRefs);
 export const storeChannelBindingRef: MultiStore = multiRefStore(
   stateSymbols.channelBindingRefs,
+);
+export const storeChannelServerRef: MultiStore = multiRefStore(
+  stateSymbols.channelServerRefs,
 );

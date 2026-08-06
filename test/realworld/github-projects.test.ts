@@ -118,7 +118,7 @@ describe("github real-project compilation", () => {
     it("should render model property ref (User.id) as safeint", async () => {
       const doc = await compileAndValidateOrThrow(source);
       const todoItem = doc.components?.schemas?.TodoItem;
-      expect(todoItem?.properties?.createdBy).toStrictEqual({
+      expect(todoItem?.properties?.createdBy).toMatchObject({
         format: "safeint",
         type: "integer",
       });

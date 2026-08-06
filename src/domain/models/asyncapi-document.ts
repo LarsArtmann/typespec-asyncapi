@@ -176,7 +176,8 @@ export interface MessageObject extends CommonMetadata {
   contentType?: string;
   name?: string;
   traits?: Ref[];
-  examples?: { headers?: unknown; payload?: unknown }[];
+  schemaFormat?: string;
+  examples?: { headers?: unknown; payload?: unknown; name?: string; summary?: string }[];
 }
 
 /**

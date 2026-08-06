@@ -259,3 +259,64 @@ export function normalizeTagItem(item: unknown): Tag | null {
   }
   return null;
 }
+
+/**
+ * Extract message configuration from `@message` config: title, description,
+ * contentType, schemaFormat, and examples. Supports both model-expression and
+ * value-literal config shapes.
+ */
+export function extractMessageConfig(
+  config: unknown,
+  target: Model,
+): {
+  title: string;
+  description: string;
+  contentType: string;
+  schemaFormat?: string;
+  examples?: {
+    name?: string;
+    summary?: string;
+    headers?: unknown;
+    payload?: unknown;
+  }[];
+} {
+  let title: string | undefined;
+  let description: string | undefined;
+  let contentType: string | undefined;
+  let schemaFormat: string | undefined;
+  let examples:
+    | {
+        name?: string;
+        summary?: string;
+        headers?: unknown;
+        payload?: unknown;
+      }[]
+    | undefined;
+
+  if (isModelConfig(config)) {
+    title = getModelPropertyStringValue(config, "title");
+    description = getModelPropertyStringValue(config, "description");
+    contentType = getModelPropertyStringValue(config, "contentType");
+    schemaFormat = getModelPropertyStringValue(config, "schemaFormat");
+  } else if (config && typeof config === "object") {
+    const configObj = config as Record<string, unknown>;
+    title = typeof configObj.title === "string" ? configObj.title : undefined;
+    description =
+      typeof configObj.description === "string" ? configObj.description : undefined;
+    contentType =
+      typeof configObj.contentType === "string" ? configObj.contentType : undefined;
+    schemaFormat =
+      typeof configObj.schemaFormat === "string" ? configObj.schemaFormat : undefined;
+    if (Array.isArray(configObj.examples)) {
+      examples = configObj.examples as typeof examples;
+    }
+  }
+
+  return {
+    contentType: contentType ?? "application/json",
+    description: description ?? `Message ${target.name}`,
+    title: title ?? target.name,
+    ...(schemaFormat ? { schemaFormat } : {}),
+    ...(examples ? { examples } : {}),
+  };
+}

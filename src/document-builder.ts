@@ -27,6 +27,7 @@ import { discoverOperations } from "./builders/operation-discovery.js";
 import {
   applyChannelDocs,
   attachChannelBindings,
+  attachChannelServerRefs,
 } from "./builders/channel-builder.js";
 import { buildOperations } from "./builders/operation-builder.js";
 import { mergeExplicitMessages } from "./builders/message-builder.js";
@@ -76,6 +77,7 @@ export function buildAsyncAPIDocument(
   applyChannelDocs(ctx);
   mergeExplicitMessages(state, ctx);
   attachChannelBindings(state, ctx);
+  attachChannelServerRefs(state, ctx);
   buildServers(state, ctx);
   buildSecuritySchemes(state, ctx);
   buildTags(state, ctx);

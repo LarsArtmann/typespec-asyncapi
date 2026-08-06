@@ -39,6 +39,7 @@ import {
 import type { Tag } from "./domain/models/asyncapi-document.js";
 import {
   extractConfigRecord,
+  extractMessageConfig,
   getModelPropertyStringValue,
   getModelPropertyValue,
   isModelConfig,
@@ -93,41 +94,6 @@ export function $message(
       );
     },
   });
-}
-function extractMessageConfig(
-  config: unknown,
-  target: Model,
-): {
-  title: string;
-  description: string;
-  contentType: string;
-} {
-  let title: string | undefined;
-  let description: string | undefined;
-  let contentType: string | undefined;
-
-  if (isModelConfig(config)) {
-    title = getModelPropertyStringValue(config, "title");
-    description = getModelPropertyStringValue(config, "description");
-    contentType = getModelPropertyStringValue(config, "contentType");
-  } else if (config && typeof config === "object") {
-    const configObj = config as Record<string, unknown>;
-    title = typeof configObj.title === "string" ? configObj.title : undefined;
-    description =
-      typeof configObj.description === "string"
-        ? configObj.description
-        : undefined;
-    contentType =
-      typeof configObj.contentType === "string"
-        ? configObj.contentType
-        : undefined;
-  }
-
-  return {
-    contentType: contentType ?? "application/json",
-    description: description ?? `Message ${target.name}`,
-    title: title ?? target.name,
-  };
 }
 
 /**
