@@ -11,9 +11,6 @@ export function extractValue(
     case "declaration":
     case "code": {
       const v = entity.value;
-      if (!v || typeof v !== "object") {
-        return {};
-      }
       if (typeof (v as { onValue?: unknown }).onValue === "function") {
         return {};
       }

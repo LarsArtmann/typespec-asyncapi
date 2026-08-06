@@ -32,6 +32,10 @@ import { mergeExplicitMessages } from "./builders/message-builder.js";
 import { buildServers } from "./builders/server-builder.js";
 import { buildSecuritySchemes } from "./builders/security-builder.js";
 import { buildTags } from "./builders/tag-builder.js";
+import {
+  applyReusableRefs,
+  buildReusableComponents,
+} from "./builders/components-builder.js";
 
 export const ASYNCAPI_SPEC_VERSION = "3.1.0";
 
@@ -55,6 +59,12 @@ export function buildAsyncAPIDocument(
     securitySchemes: {},
     servers: {},
     tags: {},
+    operationTraits: {},
+    messageTraits: {},
+    reusableParameters: {},
+    reusableCorrelationIds: {},
+    operationBindings: {},
+    messageBindings: {},
   };
 
   discoverOperations(state, ctx);
@@ -65,6 +75,8 @@ export function buildAsyncAPIDocument(
   buildServers(state, ctx);
   buildSecuritySchemes(state, ctx);
   buildTags(state, ctx);
+  buildReusableComponents(state, ctx);
+  applyReusableRefs(state, ctx);
 
   const defaultContentType = getDefaultContentType(state);
   const apiVersion = getApiVersion(state);

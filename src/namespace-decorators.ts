@@ -148,7 +148,7 @@ export function $reusableCorrelationId(
   if (!validateNonEmptyString(name, context, target, "invalid-correlationId-config", { modelName: String(name) })) {
     return;
   }
-  if (!validateNonEmptyString(location, context, target, "invalid-correlationId-config", { modelName: String(name) })) {
+  if (!validateNonEmptyString(location, context, target, "invalid-correlationId-config", { modelName: name })) {
     return;
   }
   storeReusableCorrelationId(context.program, target, {

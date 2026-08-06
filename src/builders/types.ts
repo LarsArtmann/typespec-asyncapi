@@ -5,10 +5,15 @@
 import type { Program, Type } from "@typespec/compiler";
 import type {
   ChannelObject,
+  CorrelationIdObject,
   MessageObject,
   OperationAction,
   OperationObject,
+  OperationTraitObject,
+  MessageTraitObject,
   JsonSchema,
+  ParameterObject,
+  ProtocolBindings,
   SecurityScheme,
   ServerObject,
   Tag,
@@ -33,6 +38,12 @@ export interface DocumentBuildContext {
   securitySchemes: Record<string, SecurityScheme>;
   schemas: Record<string, JsonSchema>;
   tags: Record<string, Tag>;
+  operationTraits: Record<string, OperationTraitObject>;
+  messageTraits: Record<string, MessageTraitObject>;
+  reusableParameters: Record<string, ParameterObject>;
+  reusableCorrelationIds: Record<string, CorrelationIdObject>;
+  operationBindings: Record<string, ProtocolBindings>;
+  messageBindings: Record<string, ProtocolBindings>;
   discoveredOps: DiscoveredOp[];
   opToChannel: Map<string, string>;
   channelDocs: Map<string, string>;

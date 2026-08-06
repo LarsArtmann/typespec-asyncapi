@@ -135,6 +135,18 @@ export const $lib = createTypeSpecLibrary({
       },
       severity: "warning",
     },
+    "invalid-trait-config": {
+      messages: {
+        default: paramMessage`Trait name missing or invalid for '${"traitName"}'. Use @operationTrait or @messageTrait with a name and configuration object.`,
+      },
+      severity: "error",
+    },
+    "invalid-parameter-config": {
+      messages: {
+        default: paramMessage`Parameter name missing or invalid for '${"parameterName"}'. Use @parameter with a name and configuration object.`,
+      },
+      severity: "error",
+    },
   },
   name: "@lars-artmann/typespec-asyncapi",
   state: {
