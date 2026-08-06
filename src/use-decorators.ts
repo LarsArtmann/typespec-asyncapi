@@ -1,12 +1,9 @@
 /**
  * Reference decorators for reusable components.
  *
- * These decorators reference reusable component definitions by name.
- * They store the reference in state; the builders resolve the name
- * to a `$ref` pointer during document assembly.
- *
- * All four decorators share the same validate-and-store pattern, so a
- * single factory eliminates the duplication.
+ * Each decorator validates a non-empty string name and stores it as a
+ * reference. A shared implementation eliminates duplication; the per-decorator
+ * configuration is a data object, not hand-written boilerplate.
  */
 
 import type {
@@ -24,42 +21,43 @@ import {
 import { validateNonEmptyString } from "./decorator-helpers.js";
 import type { $lib } from "./lib.js";
 
-type StoreRef = (program: DecoratorContext["program"], target: Type, name: string) => void;
+type RefStore = (program: DecoratorContext["program"], target: Type, name: string) => void;
 
-function makeRefDecorator(
-  diagnosticCode: keyof typeof $lib.diagnostics,
-  formatKey: string,
-  store: StoreRef,
-): (context: DecoratorContext, target: Type, name: unknown) => void {
-  return (context, target, name) => {
-    const format = { [formatKey]: target.kind === "Model" ? (target).name : String(name) };
-    if (!validateNonEmptyString(name, context, target, diagnosticCode, format)) {
+interface RefDecoratorConfig {
+  code: keyof typeof $lib.diagnostics;
+  formatKey: string;
+  store: RefStore;
+}
+
+function refDecorator(config: RefDecoratorConfig) {
+  return (context: DecoratorContext, target: Type, name: unknown): void => {
+    if (!validateNonEmptyString(name, context, target, config.code, { [config.formatKey]: String(name) })) {
       return;
     }
-    store(context.program, target, name);
+    config.store(context.program, target, name);
   };
 }
 
-export const $useOperationTrait = makeRefDecorator(
-  "invalid-trait-config",
-  "traitName",
-  (program, target, name) => { storeOperationTraitRef(program, target as Operation, name); },
-);
+export const $useOperationTrait = refDecorator({
+  code: "invalid-trait-config",
+  formatKey: "traitName",
+  store: (p, t, n) => { storeOperationTraitRef(p, t as Operation, n); },
+});
 
-export const $useMessageTrait = makeRefDecorator(
-  "invalid-trait-config",
-  "traitName",
-  (program, target, name) => { storeMessageTraitRef(program, target as Model, name); },
-);
+export const $useMessageTrait = refDecorator({
+  code: "invalid-trait-config",
+  formatKey: "traitName",
+  store: (p, t, n) => { storeMessageTraitRef(p, t as Model, n); },
+});
 
-export const $useCorrelationId = makeRefDecorator(
-  "invalid-correlationId-config",
-  "modelName",
-  (program, target, name) => { storeCorrelationIdRef(program, target as Model, name); },
-);
+export const $useCorrelationId = refDecorator({
+  code: "invalid-correlationId-config",
+  formatKey: "modelName",
+  store: (p, t, n) => { storeCorrelationIdRef(p, t as Model, n); },
+});
 
-export const $useBinding = makeRefDecorator(
-  "invalid-bindings-config",
-  "targetKind",
-  (program, target, name) => { storeBindingRef(program, target as Operation | Model, name); },
-);
+export const $useBinding = refDecorator({
+  code: "invalid-bindings-config",
+  formatKey: "targetKind",
+  store: (p, t, n) => { storeBindingRef(p, t as Operation | Model, n); },
+});

@@ -245,30 +245,24 @@ export interface Tag {
  * Operation Trait Object — fields shared across operations.
  * @see https://www.asyncapi.com/docs/reference/specification/v3.1.0#operationTraitObject
  */
-export interface OperationTraitObject {
-  title?: string;
-  summary?: string;
-  description?: string;
-  tags?: Tag[];
-  bindings?: ProtocolBindings;
-  security?: SecurityRequirement[];
-}
+export type OperationTraitObject = Pick<
+  CommonMetadata,
+  "title" | "summary" | "description" | "tags" | "bindings"
+> & { security?: SecurityRequirement[] };
 
 /**
  * Message Trait Object — fields shared across messages.
  * @see https://www.asyncapi.com/docs/reference/specification/v3.1.0#messageTraitObject
  */
-export interface MessageTraitObject {
+export type MessageTraitObject = Pick<
+  CommonMetadata,
+  "title" | "summary" | "description" | "tags" | "bindings"
+> & {
   headers?: JsonSchema | Ref;
   correlationId?: CorrelationIdObject | Ref;
   contentType?: string;
   name?: string;
-  title?: string;
-  summary?: string;
-  description?: string;
-  tags?: Tag[];
-  bindings?: ProtocolBindings;
-}
+};
 
 /** Security Requirement Object — defined later, forward-declared here. */
 

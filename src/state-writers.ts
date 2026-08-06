@@ -304,7 +304,7 @@ export const storeApiVersion = (program: Program, target: Namespace, version: st
 
 // === REUSABLE COMPONENT STATE WRITERS ===
 
-function storeMulti(
+export function storeMulti(
   program: Program,
   symbol: symbol,
   target: Type,

@@ -6,13 +6,10 @@ import type {
 import { isSupportedProtocol } from "./constants/protocols.js";
 import {
   storeDefaultContentType,
-  storeMessageTrait,
-  storeOperationTrait,
-  storeReusableBinding,
-  storeReusableCorrelationId,
-  storeReusableParameter,
+  storeMulti,
   storeServerConfig,
 } from "./state-writers.js";
+import { stateSymbols } from "./lib.js";
 import {
   extractConfigRecord,
   isValidUrl,
@@ -86,8 +83,6 @@ export function $defaultContentType(
 
 // === REUSABLE COMPONENT DEFINITION DECORATORS ===
 
-type StoreFn = (program: DecoratorContext["program"], target: Namespace, data: Record<string, unknown>) => void;
-
 function pickStringFields(cfg: Record<string, unknown>, keys: string[]): Record<string, unknown> {
   const out: Record<string, unknown> = {};
   for (const key of keys) {
@@ -102,15 +97,14 @@ function makeNamedConfigDecorator(
   diagnosticCode: "invalid-trait-config" | "invalid-parameter-config",
   formatKey: string,
   fields: string[],
-  store: StoreFn,
+  symbol: symbol,
 ): (context: DecoratorContext, target: Namespace, name: unknown, config: unknown) => void {
   return (context, target, name, config) => {
-    const format = { [formatKey]: String(name) };
-    if (!validateNonEmptyString(name, context, target, diagnosticCode, format)) {
+    if (!validateNonEmptyString(name, context, target, diagnosticCode, { [formatKey]: String(name) })) {
       return;
     }
     const cfg = extractConfigRecord(config);
-    store(context.program, target, { name, ...pickStringFields(cfg, fields) });
+    storeMulti(context.program, symbol, target, { name, ...pickStringFields(cfg, fields) });
   };
 }
 
@@ -118,21 +112,21 @@ export const $operationTrait = makeNamedConfigDecorator(
   "invalid-trait-config",
   "traitName",
   ["description", "summary", "title"],
-  (program, target, data) => { storeOperationTrait(program, target, data as never); },
+  stateSymbols.operationTraits,
 );
 
 export const $messageTrait = makeNamedConfigDecorator(
   "invalid-trait-config",
   "traitName",
   ["contentType", "description", "title"],
-  (program, target, data) => { storeMessageTrait(program, target, data as never); },
+  stateSymbols.messageTraits,
 );
 
 export const $parameter = makeNamedConfigDecorator(
   "invalid-parameter-config",
   "parameterName",
   ["description", "location"],
-  (program, target, data) => { storeReusableParameter(program, target, data as never); },
+  stateSymbols.reusableParameters,
 );
 
 export function $reusableCorrelationId(
@@ -148,7 +142,7 @@ export function $reusableCorrelationId(
   if (!validateNonEmptyString(location, context, target, "invalid-correlationId-config", format)) {
     return;
   }
-  storeReusableCorrelationId(context.program, target, { location, name });
+  storeMulti(context.program, stateSymbols.reusableCorrelationIds, target, { location, name });
 }
 
 export function $reusableBinding(
@@ -165,5 +159,5 @@ export function $reusableBinding(
     return;
   }
   const { bindings } = processBindings(extractConfigRecord(config));
-  storeReusableBinding(context.program, target, { bindings, name });
+  storeMulti(context.program, stateSymbols.reusableBindings, target, { bindings, name });
 }

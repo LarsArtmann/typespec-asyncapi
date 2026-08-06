@@ -43,7 +43,7 @@ export const buildReusableComponents: BuilderFn = (state, ctx) => {
   }
   for (const { data } of iterNamedTypes(state.reusableParameters)) {
     for (const param of data) {
-      ctx.reusableParameters[param.name] = pickOpt(param, ["description", "location"]) as Record<string, unknown> as never;
+      ctx.reusableParameters[param.name] = pickOpt(param, ["description", "location"]);
       upgradeChannelParameterRefs(ctx, param.name);
     }
   }
