@@ -29,6 +29,7 @@ import type {
 import { getStateMap } from "./state-compatibility.js";
 import { normalizeProtocol } from "./constants/protocols.js";
 import { stateSymbols } from "./lib.js";
+import { extractNestedConfig } from "./extract-nested-config.js";
 
 export const storeChannelState = (
   program: Program,
@@ -127,117 +128,25 @@ export const storeServerConfig = (
       (config.protocol as string | undefined) ?? "http",
     ),
     url: (config.url as string | undefined) ?? "http://localhost:3000",
-    ...(typeof config.protocolVersion === "string"
-      ? { protocolVersion: config.protocolVersion }
-      : {}),
-    ...(typeof config.pathname === "string" ? { pathname: config.pathname } : {}),
-    ...(config.variables !== undefined
-      ? {
-          variables: extractVariables(
-            config.variables,
-          ) as ServerConfigData["variables"],
-        }
-      : {}),
-    ...(config.security !== undefined
-      ? { security: extractSecurity(config.security) }
-      : {}),
   };
+  if (typeof config.protocolVersion === "string") {
+    newEntry.protocolVersion = config.protocolVersion;
+  }
+  if (typeof config.pathname === "string") {
+    newEntry.pathname = config.pathname;
+  }
+  if (config.variables) {
+    newEntry.variables = extractNestedConfig(config.variables) as ServerConfigData["variables"];
+  }
+  if (config.security) {
+    newEntry.security = extractNestedConfig(config.security) as SecurityRequirement[];
+  }
   const map = getStateMap<ServerConfigData[]>(
     program,
     stateSymbols.serverConfigs,
   );
   appendToStateArray(map, target, newEntry);
 };
-
-/** Extract variables from either a plain object or a Model instance. */
-function extractVariables(
-  raw: unknown,
-): Record<string, { enum?: string[]; default?: string; description?: string }> {
-  if (raw && typeof raw === "object" && "properties" in raw) {
-    const model = raw as { properties: Map<string, { type: unknown }> };
-    const out: Record<string, { enum?: string[]; default?: string; description?: string }> = {};
-    for (const [name, prop] of model.properties) {
-      out[name] = extractVariableValue(prop.type);
-    }
-    return out;
-  }
-  return raw as never;
-}
-
-function extractVariableValue(type: unknown): {
-  enum?: string[];
-  default?: string;
-  description?: string;
-} {
-  if (!type || typeof type !== "object") {
-    return {};
-  }
-  const t = type as { kind?: string; value?: unknown; properties?: Map<string, { type: unknown }> };
-  if (t.kind === "String" || t.kind === "Number") {
-    return { default: String(t.value) };
-  }
-  if (t.kind === "Model" && t.properties) {
-    const out: { enum?: string[]; default?: string; description?: string } = {};
-    for (const [name, prop] of t.properties) {
-      const v = extractVariableValue(prop.type);
-      if (name === "enum" && Array.isArray(v.default)) {
-        out.enum = v.default as string[];
-      } else if (name === "default" && typeof v.default === "string") {
-        out.default = v.default;
-      } else if (name === "description" && typeof v.default === "string") {
-        out.description = v.default;
-      }
-    }
-    return out;
-  }
-  if (t.kind === "Tuple" || Array.isArray(t.value)) {
-    return { default: (t.value as unknown[]).map(String) as never };
-  }
-  return {};
-}
-
-function extractSecurity(raw: unknown): SecurityRequirement[] {
-  if (Array.isArray(raw)) {
-    return raw as SecurityRequirement[];
-  }
-  if (raw && typeof raw === "object" && "properties" in raw) {
-    const model = raw as { properties: Map<string, { type: unknown }> };
-    const out: SecurityRequirement = {};
-    for (const [name, prop] of model.properties) {
-      if (name === "scopes" || name === "availableScopes") {
-        const scopes = extractScopesValue(prop.type);
-        if (scopes) {
-          out[name] = scopes;
-        }
-      } else {
-        const v = extractVariableValue(prop.type);
-        if (typeof v.default === "string") {
-          out[name] = [v.default];
-        }
-      }
-    }
-    return [out];
-  }
-  return raw as never;
-}
-
-function extractScopesValue(type: unknown): string[] | undefined {
-  if (!type || typeof type !== "object") {
-    return undefined;
-  }
-  const t = type as {
-    kind?: string;
-    values?: unknown[];
-    elementType?: unknown;
-  };
-  if (t.kind === "Tuple" && Array.isArray(t.values)) {
-    return t.values.map(String);
-  }
-  if (t.kind === "Model") {
-    return undefined;
-  }
-  return undefined;
-}
 
 export const storeSecurityConfig = (
   program: Program,
@@ -354,12 +263,10 @@ export const storeProtocolConfig = (
     case "kafka": {
       protocolConfig = {
         ...base,
-        consumerGroup:
-          (config.consumerGroup as string | undefined) ?? "default",
+        consumerGroup: (config.consumerGroup as string | undefined) ?? "default",
         partitions: (config.partitions as number | undefined) ?? 1,
         protocol: "kafka",
-        replicationFactor:
-          (config.replicationFactor as number | undefined) ?? 1,
+        replicationFactor: (config.replicationFactor as number | undefined) ?? 1,
         sasl: (config.sasl as KafkaSaslConfig | undefined) ?? {
           mechanism: "plain",
           password: "",
@@ -374,8 +281,7 @@ export const storeProtocolConfig = (
         ...base,
         headers: (config.headers as Record<string, string> | undefined) ?? {},
         protocol: protocolType,
-        queryParams:
-          (config.queryParams as Record<string, string> | undefined) ?? {},
+        queryParams: (config.queryParams as Record<string, string> | undefined) ?? {},
         subprotocol: (config.subprotocol as string | undefined) ?? "asyncapi",
       };
       break;
