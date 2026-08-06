@@ -34,16 +34,12 @@ export function validateBindingFields(
     return issues;
   }
 
-  const rules = targetKind
-    ? protocolRules[targetKind]
-    : undefined;
+  const rules = targetKind ? protocolRules[targetKind] : undefined;
   if (!rules) {
     return issues;
   }
 
-  const fieldEntries = Object.entries(binding).filter(
-    ([f]) => f !== "bindingVersion",
-  );
+  const fieldEntries = Object.entries(binding).filter(([f]) => f !== "bindingVersion");
   for (const [field, value] of fieldEntries) {
     const rule = rules[field];
     if (!rule) {
@@ -57,9 +53,7 @@ export function validateBindingFields(
       typeof value !== rule.type
     ) {
       const isCoercibleInteger =
-        rule.type === "integer" &&
-        typeof value === "number" &&
-        Number.isInteger(value);
+        rule.type === "integer" && typeof value === "number" && Number.isInteger(value);
       if (!isCoercibleInteger) {
         pushFieldError(issues, field, protocol, {
           actual: typeof value,

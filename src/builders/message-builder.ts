@@ -5,10 +5,7 @@
  * messages. Applies correlation IDs, headers, bindings, tags, and @doc.
  */
 
-import type {
-  JsonSchema,
-  MessageObject,
-} from "../domain/models/asyncapi-document.js";
+import type { JsonSchema, MessageObject } from "../domain/models/asyncapi-document.js";
 import { refSchema } from "../domain/models/asyncapi-document.js";
 import { getDoc, nameOfType, withMessage } from "./_imports.js";
 import type { AsyncAPIConsolidatedState, BuilderFn } from "./_imports.js";
@@ -140,8 +137,9 @@ function messageDecorator<K extends keyof MessageObject>(
   prop: K,
   read: (s: AsyncAPIConsolidatedState, t: unknown) => MessageObject[K] | null,
 ): MessageDecoratorFn {
-  return (state, type, msg, skipExisting = false) =>
-    { applyMessageDecorator({ state, type, msg, prop, skipExisting, read }); };
+  return (state, type, msg, skipExisting = false) => {
+    applyMessageDecorator({ state, type, msg, prop, skipExisting, read });
+  };
 }
 
 /** Apply correlation ID to a message if present in state. */

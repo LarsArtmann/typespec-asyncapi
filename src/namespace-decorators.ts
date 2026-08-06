@@ -1,14 +1,6 @@
-import type {
-  DecoratorContext,
-  Namespace,
-  Operation,
-} from "@typespec/compiler";
+import type { DecoratorContext, Namespace, Operation } from "@typespec/compiler";
 import { isSupportedProtocol } from "./constants/protocols.js";
-import {
-  storeDefaultContentType,
-  storeMulti,
-  storeServerConfig,
-} from "./state-writers.js";
+import { storeDefaultContentType, storeMulti, storeServerConfig } from "./state-writers.js";
 import { stateSymbols } from "./lib.js";
 import {
   extractConfigRecord,
@@ -100,11 +92,18 @@ function makeNamedConfigDecorator(
   symbol: symbol,
 ): (context: DecoratorContext, target: Namespace, name: unknown, config: unknown) => void {
   return (context, target, name, config) => {
-    if (!validateNonEmptyString(name, context, target, diagnosticCode, { [formatKey]: String(name) })) {
+    if (
+      !validateNonEmptyString(name, context, target, diagnosticCode, {
+        [formatKey]: String(name),
+      })
+    ) {
       return;
     }
     const cfg = extractConfigRecord(config);
-    storeMulti(context.program, symbol, target, { name, ...pickStringFields(cfg, fields) });
+    storeMulti(context.program, symbol, target, {
+      name,
+      ...pickStringFields(cfg, fields),
+    });
   };
 }
 
@@ -142,7 +141,10 @@ export function $reusableCorrelationId(
   if (!validateNonEmptyString(location, context, target, "invalid-correlationId-config", format)) {
     return;
   }
-  storeMulti(context.program, stateSymbols.reusableCorrelationIds, target, { location, name });
+  storeMulti(context.program, stateSymbols.reusableCorrelationIds, target, {
+    location,
+    name,
+  });
 }
 
 export function $reusableBinding(
@@ -151,13 +153,22 @@ export function $reusableBinding(
   name: unknown,
   config: unknown,
 ): void {
-  if (!validateNonEmptyString(name, context, target, "invalid-bindings-config", { targetKind: target.kind })) {
+  if (
+    !validateNonEmptyString(name, context, target, "invalid-bindings-config", {
+      targetKind: target.kind,
+    })
+  ) {
     return;
   }
   if (!config || typeof config !== "object") {
-    reportDiagnostic(context, "invalid-bindings-config", target, { targetKind: target.kind });
+    reportDiagnostic(context, "invalid-bindings-config", target, {
+      targetKind: target.kind,
+    });
     return;
   }
   const { bindings } = processBindings(extractConfigRecord(config));
-  storeMulti(context.program, stateSymbols.reusableBindings, target, { bindings, name });
+  storeMulti(context.program, stateSymbols.reusableBindings, target, {
+    bindings,
+    name,
+  });
 }

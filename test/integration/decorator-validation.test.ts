@@ -57,8 +57,7 @@ describe("asyncAPI Decorator Validation", () => {
 
       // Should have diagnostics for invalid channels but not for valid ones
       const channelErrors = diagnostics.filter(
-        (d) =>
-          d.code === "@lars-artmann/typespec-asyncapi/invalid-channel-path",
+        (d) => d.code === "@lars-artmann/typespec-asyncapi/invalid-channel-path",
       );
       expect(channelErrors).toBeDefined();
     });
@@ -83,8 +82,7 @@ describe("asyncAPI Decorator Validation", () => {
 
       // Check for missing channel diagnostic
       const missingChannelErrors = diagnostics.filter(
-        (d) =>
-          d.code === "@lars-artmann/typespec-asyncapi/missing-channel-path",
+        (d) => d.code === "@lars-artmann/typespec-asyncapi/missing-channel-path",
       );
       expect(missingChannelErrors).toBeDefined();
     });
@@ -145,9 +143,7 @@ describe("asyncAPI Decorator Validation", () => {
 
       // Should detect the conflict
       const conflictErrors = diagnostics.filter(
-        (d) =>
-          d.code ===
-          "@lars-artmann/typespec-asyncapi/conflicting-operation-type",
+        (d) => d.code === "@lars-artmann/typespec-asyncapi/conflicting-operation-type",
       );
       expect(conflictErrors).toBeDefined();
     });
@@ -231,9 +227,7 @@ describe("asyncAPI Decorator Validation", () => {
       const errors = diagnostics.filter((d) => d.severity === "error");
       expect(errors).toBeDefined();
       const circularErrors = diagnostics.filter(
-        (d) =>
-          d.code ===
-          "@lars-artmann/typespec-asyncapi/circular-message-reference",
+        (d) => d.code === "@lars-artmann/typespec-asyncapi/circular-message-reference",
       );
       expect(circularErrors).toBeDefined();
     });
@@ -279,19 +273,11 @@ describe("asyncAPI Decorator Validation", () => {
 
       // Validate documentation preservation
       const schema = asyncapiDoc.components?.schemas?.DocumentedEvent;
-      expect(schema?.description).toContain(
-        "Event model with comprehensive documentation",
-      );
+      expect(schema?.description).toContain("Event model with comprehensive documentation");
       expect(schema?.properties).toBeDefined();
-      expect(schema!.properties!.id?.description).toContain(
-        "Unique event identifier",
-      );
-      expect(schema!.properties!.name?.description).toContain(
-        "Human-readable event name",
-      );
-      expect(schema!.properties!.createdAt?.description).toContain(
-        "Event creation timestamp",
-      );
+      expect(schema!.properties!.id?.description).toContain("Unique event identifier");
+      expect(schema!.properties!.name?.description).toContain("Human-readable event name");
+      expect(schema!.properties!.createdAt?.description).toContain("Event creation timestamp");
 
       // Validate channel documentation
       const { channels } = asyncapiDoc;

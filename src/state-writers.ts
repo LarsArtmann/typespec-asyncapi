@@ -304,12 +304,7 @@ export const storeApiVersion = (program: Program, target: Namespace, version: st
 
 // === REUSABLE COMPONENT STATE WRITERS ===
 
-export function storeMulti(
-  program: Program,
-  symbol: symbol,
-  target: Type,
-  data: unknown,
-): void {
+export function storeMulti(program: Program, symbol: symbol, target: Type, data: unknown): void {
   const map = getStateMap<unknown[]>(program, symbol);
   appendToStateArray(map, target, data);
 }
@@ -318,57 +313,62 @@ export const storeOperationTrait = (
   program: Program,
   target: Namespace,
   data: OperationTraitData,
-): void => { storeMulti(program, stateSymbols.operationTraits, target, data); };
+): void => {
+  storeMulti(program, stateSymbols.operationTraits, target, data);
+};
 
 export const storeMessageTrait = (
   program: Program,
   target: Namespace,
   data: MessageTraitData,
-): void => { storeMulti(program, stateSymbols.messageTraits, target, data); };
+): void => {
+  storeMulti(program, stateSymbols.messageTraits, target, data);
+};
 
 export const storeReusableParameter = (
   program: Program,
   target: Namespace,
   data: ParameterConfigData,
-): void => { storeMulti(program, stateSymbols.reusableParameters, target, data); };
+): void => {
+  storeMulti(program, stateSymbols.reusableParameters, target, data);
+};
 
 export const storeReusableCorrelationId = (
   program: Program,
   target: Namespace,
   data: ReusableCorrelationIdData,
-): void => { storeMulti(program, stateSymbols.reusableCorrelationIds, target, data); };
+): void => {
+  storeMulti(program, stateSymbols.reusableCorrelationIds, target, data);
+};
 
 export const storeReusableBinding = (
   program: Program,
   target: Namespace,
   data: ReusableBindingData,
-): void => { storeMulti(program, stateSymbols.reusableBindings, target, data); };
+): void => {
+  storeMulti(program, stateSymbols.reusableBindings, target, data);
+};
 
 // === REFERENCE STATE WRITERS ===
 
-export const storeOperationTraitRef = (
-  program: Program,
-  target: Operation,
-  traitName: string,
-): void => { storeMulti(program, stateSymbols.operationTraitRefs, target, traitName); };
+type MultiStore = (program: Program, target: Type, name: string) => void;
 
-export const storeMessageTraitRef = (
-  program: Program,
-  target: Model,
-  traitName: string,
-): void => { storeMulti(program, stateSymbols.messageTraitRefs, target, traitName); };
+function multiRefStore(symbol: symbol): MultiStore {
+  return (program, target, name) => {
+    storeMulti(program, symbol, target, name);
+  };
+}
+
+export const storeOperationTraitRef: MultiStore = multiRefStore(stateSymbols.operationTraitRefs);
+export const storeMessageTraitRef: MultiStore = multiRefStore(stateSymbols.messageTraitRefs);
 
 export const storeCorrelationIdRef = (
   program: Program,
-  target: Model,
+  target: Type,
   correlationIdName: string,
 ): void => {
   const map = getStateMap<string>(program, stateSymbols.correlationIdRefs);
   map.set(target, correlationIdName);
 };
 
-export const storeBindingRef = (
-  program: Program,
-  target: Operation | Model,
-  bindingName: string,
-): void => { storeMulti(program, stateSymbols.bindingRefs, target, bindingName); };
+export const storeBindingRef: MultiStore = multiRefStore(stateSymbols.bindingRefs);
