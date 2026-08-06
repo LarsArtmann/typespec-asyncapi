@@ -367,7 +367,13 @@ function makeStringIdDecorator<T>(
 ): (context: DecoratorContext, target: T, id: unknown) => void {
   return (context, target, id) => {
     if (
-      !validateNonEmptyString(id, context, target, diagnosticCode, format(target))
+      !validateNonEmptyString(
+        id,
+        context,
+        target,
+        diagnosticCode,
+        format(target),
+      )
     ) {
       return;
     }

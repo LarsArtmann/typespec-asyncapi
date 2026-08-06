@@ -4,6 +4,7 @@
 
 import type { Program, Type } from "@typespec/compiler";
 import type {
+  ParameterObject,
   ProtocolBindings,
   SecurityRequirement,
   SecurityScheme,
@@ -196,13 +197,8 @@ export interface MessageTraitData {
 }
 
 /** Reusable parameter definition stored from @parameter. */
-export interface ParameterConfigData {
+export interface ParameterConfigData extends ParameterObject {
   name: string;
-  description?: string;
-  location?: string;
-  enum?: string[];
-  default?: string;
-  examples?: string[];
 }
 
 /** Reusable correlation ID definition stored from @reusableCorrelationId. */

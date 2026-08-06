@@ -12,13 +12,9 @@ const hasErrorCode = (
   diagnostics: readonly { severity: string; code: string }[],
   suffix: string,
 ): boolean =>
-  diagnostics.some(
-    (d) => d.severity === "error" && d.code.endsWith(suffix),
-  );
+  diagnostics.some((d) => d.severity === "error" && d.code.endsWith(suffix));
 
-const hasNoErrors = (
-  diagnostics: readonly { severity: string }[],
-): boolean =>
+const hasNoErrors = (diagnostics: readonly { severity: string }[]): boolean =>
   diagnostics.every((d) => d.severity !== "error");
 
 describe("negative: operationTrait", () => {
@@ -27,9 +23,7 @@ describe("negative: operationTrait", () => {
       @operationTrait("", #{ description: "test" })
       namespace Test;
     `);
-    expect(
-      hasErrorCode(result.diagnostics, "invalid-trait-config"),
-    ).toBe(true);
+    expect(hasErrorCode(result.diagnostics, "invalid-trait-config")).toBe(true);
   });
 
   it("silently skips undefined trait reference", async () => {
@@ -50,9 +44,7 @@ describe("negative: messageTrait", () => {
       @messageTrait("", #{ description: "test" })
       namespace Test;
     `);
-    expect(
-      hasErrorCode(result.diagnostics, "invalid-trait-config"),
-    ).toBe(true);
+    expect(hasErrorCode(result.diagnostics, "invalid-trait-config")).toBe(true);
   });
 
   it("reports invalid-trait-config for empty useMessageTrait name", async () => {
@@ -61,9 +53,7 @@ describe("negative: messageTrait", () => {
       @useMessageTrait("")
       model Event { id: string; }
     `);
-    expect(
-      hasErrorCode(result.diagnostics, "invalid-trait-config"),
-    ).toBe(true);
+    expect(hasErrorCode(result.diagnostics, "invalid-trait-config")).toBe(true);
   });
 });
 
@@ -73,9 +63,9 @@ describe("negative: parameter", () => {
       @parameter("", #{ description: "test" })
       namespace Test;
     `);
-    expect(
-      hasErrorCode(result.diagnostics, "invalid-parameter-config"),
-    ).toBe(true);
+    expect(hasErrorCode(result.diagnostics, "invalid-parameter-config")).toBe(
+      true,
+    );
   });
 });
 
@@ -118,9 +108,9 @@ describe("negative: reusableBinding", () => {
       @reusableBinding("", #{ kafka: #{ bindingVersion: "0.5.0" } })
       namespace Test;
     `);
-    expect(
-      hasErrorCode(result.diagnostics, "invalid-bindings-config"),
-    ).toBe(true);
+    expect(hasErrorCode(result.diagnostics, "invalid-bindings-config")).toBe(
+      true,
+    );
   });
 
   it("reports invalid-bindings-config for empty useBinding name", async () => {
@@ -131,9 +121,9 @@ describe("negative: reusableBinding", () => {
       @useBinding("")
       op publish(): Event;
     `);
-    expect(
-      hasErrorCode(result.diagnostics, "invalid-bindings-config"),
-    ).toBe(true);
+    expect(hasErrorCode(result.diagnostics, "invalid-bindings-config")).toBe(
+      true,
+    );
   });
 
   it("silently skips undefined binding reference", async () => {

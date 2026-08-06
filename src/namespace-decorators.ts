@@ -1,14 +1,6 @@
-import type {
-  DecoratorContext,
-  Namespace,
-  Operation,
-} from "@typespec/compiler";
+import type { DecoratorContext, Namespace, Operation } from "@typespec/compiler";
 import { isSupportedProtocol } from "./constants/protocols.js";
-import {
-  storeDefaultContentType,
-  storeMulti,
-  storeServerConfig,
-} from "./state-writers.js";
+import { storeDefaultContentType, storeMulti, storeServerConfig } from "./state-writers.js";
 import { stateSymbols } from "./lib.js";
 import {
   extractConfigRecord,
@@ -83,10 +75,7 @@ export function $defaultContentType(
 
 // === REUSABLE COMPONENT DEFINITION DECORATORS ===
 
-function pickStringFields(
-  cfg: Record<string, unknown>,
-  keys: string[],
-): Record<string, unknown> {
+function pickStringFields(cfg: Record<string, unknown>, keys: string[]): Record<string, unknown> {
   const out: Record<string, unknown> = {};
   for (const key of keys) {
     if (typeof cfg[key] === "string") {
@@ -96,32 +85,22 @@ function pickStringFields(
   return out;
 }
 
-const PARAMETER_EXTRA_FIELDS = [
-  "enum",
-  "default",
-  "examples",
-] as const;
+const PARAMETER_EXTRA_FIELDS = ["enum", "default", "examples"] as const;
 
 function pickDefined(
   source: Record<string, unknown>,
   keys: readonly string[],
 ): Record<string, unknown> {
-  return Object.fromEntries(
-    keys.filter((k) => source[k] !== undefined).map((k) => [k, source[k]]),
-  );
+  return Object.fromEntries(keys.filter((k) => source[k] !== undefined).map((k) => [k, source[k]]));
 }
 
 function namedConfigDecorator(
-  code: "invalid-trait-config",
+  code: "invalid-trait-config" | "invalid-parameter-config",
   formatKey: string,
   fields: string[],
   symbol: symbol,
-): (
-  context: DecoratorContext,
-  target: Namespace,
-  name: unknown,
-  config: unknown,
-) => void {
+  extraPicker?: (cfg: Record<string, unknown>) => Record<string, unknown>,
+): (context: DecoratorContext, target: Namespace, name: unknown, config: unknown) => void {
   return (context, target, name, config) => {
     const valid = validateNonEmptyString(name, context, target, code, {
       [formatKey]: String(name),
@@ -133,6 +112,7 @@ function namedConfigDecorator(
     storeMulti(context.program, symbol, target, {
       name,
       ...pickStringFields(cfg, fields),
+      ...extraPicker?.(cfg),
     });
   };
 }
@@ -149,26 +129,13 @@ export const $messageTrait = namedConfigDecorator(
   ["contentType", "description", "title"],
   stateSymbols.messageTraits,
 );
-export function $parameter(
-  context: DecoratorContext,
-  target: Namespace,
-  name: unknown,
-  config: unknown,
-): void {
-  if (
-    !validateNonEmptyString(name, context, target, "invalid-parameter-config", {
-      parameterName: String(name),
-    })
-  ) {
-    return;
-  }
-  const cfg = extractConfigRecord(config);
-  storeMulti(context.program, stateSymbols.reusableParameters, target, {
-    name,
-    ...pickStringFields(cfg, ["description", "location"]),
-    ...pickDefined(cfg, PARAMETER_EXTRA_FIELDS),
-  });
-}
+export const $parameter = namedConfigDecorator(
+  "invalid-parameter-config",
+  "parameterName",
+  ["description", "location"],
+  stateSymbols.reusableParameters,
+  (cfg) => pickDefined(cfg, PARAMETER_EXTRA_FIELDS),
+);
 
 export function $reusableCorrelationId(
   context: DecoratorContext,
@@ -178,20 +145,8 @@ export function $reusableCorrelationId(
 ): void {
   const fmt = { modelName: String(name) };
   const ok =
-    validateNonEmptyString(
-      name,
-      context,
-      target,
-      "invalid-correlationId-config",
-      fmt,
-    ) &&
-    validateNonEmptyString(
-      location,
-      context,
-      target,
-      "invalid-correlationId-config",
-      fmt,
-    );
+    validateNonEmptyString(name, context, target, "invalid-correlationId-config", fmt) &&
+    validateNonEmptyString(location, context, target, "invalid-correlationId-config", fmt);
   if (ok) {
     storeMulti(context.program, stateSymbols.reusableCorrelationIds, target, {
       location,
@@ -206,20 +161,11 @@ export function $reusableBinding(
   name: unknown,
   bindingConfig: unknown,
 ): void {
-  const nameOk = validateNonEmptyString(
-    name,
-    context,
-    target,
-    "invalid-bindings-config",
-    {
-      targetKind: target.kind,
-    },
-  );
+  const fmt = { targetKind: target.kind };
+  const nameOk = validateNonEmptyString(name, context, target, "invalid-bindings-config", fmt);
   if (!nameOk || !bindingConfig || typeof bindingConfig !== "object") {
     if (nameOk) {
-      reportDiagnostic(context, "invalid-bindings-config", target, {
-        targetKind: target.kind,
-      });
+      reportDiagnostic(context, "invalid-bindings-config", target, fmt);
     }
     return;
   }

@@ -60,9 +60,7 @@ function resolveMessage(
 export const buildReusableComponents: BuilderFn = (state, ctx) => {
   Object.assign(
     ctx.operationTraits,
-    populateNamed(state.operationTraits, (t) =>
-      pickOpt(t, ["title", "summary", "description"]),
-    ),
+    populateNamed(state.operationTraits, (t) => pickOpt(t, ["title", "summary", "description"])),
   );
   Object.assign(
     ctx.messageTraits,
@@ -116,9 +114,7 @@ export const applyReusableRefs: BuilderFn = (state, ctx) => {
     }
     const traitNames = state.messageTraitRefs.get(type);
     if (traitNames) {
-      msg.traits = traitNames
-        .filter((n) => n in ctx.messageTraits)
-        .map((n) => refMessageTrait(n));
+      msg.traits = traitNames.filter((n) => n in ctx.messageTraits).map((n) => refMessageTrait(n));
     }
     const corrIdName = state.correlationIdRefs.get(type);
     if (corrIdName && corrIdName in ctx.reusableCorrelationIds) {
