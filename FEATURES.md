@@ -1,10 +1,10 @@
 # Feature Inventory
 
-**Verified:** 2026-08-06 against actual code + test run (997 pass, 0 fail, 0 skip, 0 todo)
+**Verified:** 2026-08-06 against actual code + test run (1010 pass, 0 fail, 0 skip, 0 todo)
 **Project:** `@lars-artmann/typespec-asyncapi` v0.2.0-beta
 **Lint:** oxlint 0 errors / 0 warnings, ESLint 0 errors / 0 warnings
-**Diagnostics:** 24 codes (19 error + 5 warning), all compile-time validated via `$lib.reportDiagnostic()`
-**Decorators:** 25 declared in `lib/main.tsp` (16 emitter decorators + 9 reusable-component decorators); plus 16 TypeSpec stdlib constraint/metadata mappings in `src/constraint-mapper.ts`
+**Diagnostics:** 25 codes (19 error + 6 warning), all compile-time validated via `$lib.reportDiagnostic()`
+**Decorators:** 26 declared in `lib/main.tsp` (16 emitter decorators + 10 reusable-component decorators); plus 16 TypeSpec stdlib constraint/metadata mappings in `src/constraint-mapper.ts`
 **Duplication:** 0% threshold enforced via jscpd (source files only), 0 clones
 **Coverage:** 97.3% average (39 source files, 75% per-file minimum gate)
 
@@ -72,21 +72,22 @@
 
 ## Reusable Components (`components.*`)
 
-9 decorators for reusable AsyncAPI 3.1 component definitions and references (`src/builders/components-builder.ts`, `src/use-decorators.ts`). Inline approaches continue to work; these add the reusable option.
+10 decorators for reusable AsyncAPI 3.1 component definitions and references (`src/builders/components-builder.ts`, `src/use-decorators.ts`). Inline approaches continue to work; these add the reusable option.
 
 | Decorator                | Status           | Evidence                                                                                                                                            |
 | ------------------------ | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `@operationTrait`        | FULLY_FUNCTIONAL | Defines a named trait in `components.operationTraits` (Namespace target). `@useOperationTrait` references it from an Operation                      |
-| `@messageTrait`          | FULLY_FUNCTIONAL | Defines a named trait in `components.messageTraits` (Namespace target). `@useMessageTrait` references it from a Model                               |
+| `@operationTrait`        | FULLY_FUNCTIONAL | Defines a named trait in `components.operationTraits` (Namespace target). Extracts `security`, `tags`, `bindings`. `@useOperationTrait` references it from an Operation |
+| `@messageTrait`          | FULLY_FUNCTIONAL | Defines a named trait in `components.messageTraits` (Namespace target). Extracts `headers`, `correlationId`, `summary`, `tags`, `bindings`. `@useMessageTrait` references it from a Model |
 | `@useOperationTrait`     | FULLY_FUNCTIONAL | Applies a `$ref` to a defined operation trait on an Operation                                                                                       |
 | `@useMessageTrait`       | FULLY_FUNCTIONAL | Applies a `$ref` to a defined message trait on a Model                                                                                              |
-| `@parameter`             | FULLY_FUNCTIONAL | Defines a reusable parameter in `components.parameters`; auto-referenced from `{name}` tokens in channel addresses. Extracts `enum`/`default`/`examples` |
+| `@parameter`             | FULLY_FUNCTIONAL | Defines a reusable parameter in `components.parameters`; auto-referenced from `{name}` tokens in channel addresses. Extracts `enum`/`default`/`examples`. Validates `location` against `$message.#` runtime-expression pattern |
 | `@reusableCorrelationId` | FULLY_FUNCTIONAL | Defines a named correlation ID in `components.correlationIds` (Namespace target). `@useCorrelationId` references it from a Model                    |
 | `@useCorrelationId`      | FULLY_FUNCTIONAL | Applies a `$ref` to a defined correlation ID on a Model                                                                                             |
-| `@reusableBinding`       | FULLY_FUNCTIONAL | Defines a named binding in `components.operationBindings`/`messageBindings`/`serverBindings` (Namespace target)                                     |
+| `@reusableBinding`       | FULLY_FUNCTIONAL | Defines a named binding in `components.operationBindings`/`messageBindings`/`serverBindings`/`channelBindings` (Namespace target)                   |
 | `@useBinding`            | FULLY_FUNCTIONAL | Applies a binding `$ref` to an Operation, Model, or Namespace (Namespace → all servers on that namespace)                                           |
+| `@useChannelBinding`     | FULLY_FUNCTIONAL | Applies a binding `$ref` to an Operation's channel, populating `components.channelBindings` (Operation target)                                      |
 
-**Known gaps:** `components.channelBindings` type exists but has no population path (channels are derived from operation `@channel` addresses, not first-class TypeSpec types — a design problem, not a missing decorator). Operation trait `security` and message trait `headers`/`correlationId` fields are typed but not extracted by their decorators. Top-level document `tags` and `info.tags` are declared but not populated (only `components.tags` is).
+**Known gaps:** None — all `components.*` maps now have population paths. `@tags` accepts both string arrays and rich tag objects (with `description` and `externalDocs`).
 
 ## Protocol Bindings
 
@@ -139,10 +140,10 @@ All 19 AsyncAPI protocols auto-generated from `@asyncapi/specs/bindings/` via `s
 
 | Feature                 | Status           | Evidence                                                                                       |
 | ----------------------- | ---------------- | ---------------------------------------------------------------------------------------------- |
-| vitest test runner      | FULLY_FUNCTIONAL | 997 tests across 83 files (0 skip, 0 todo)                                                     |
+| vitest test runner      | FULLY_FUNCTIONAL | 1010 tests across 83 files (0 skip, 0 todo)                                                    |
 | Golden file test        | FULLY_FUNCTIONAL | `test/golden/golden-file.test.ts`                                                              |
 | Schema validation tests | FULLY_FUNCTIONAL | `test/validation/schema-validation.test.ts`                                                    |
-| Spec compliance suite   | FULLY_FUNCTIONAL | `test/compliance/` — 18 files, ~249 tests validated against official AsyncAPI 3.1 JSON Schema  |
+| Spec compliance suite   | FULLY_FUNCTIONAL | `test/compliance/` — 18 files, ~257 tests validated against official AsyncAPI 3.1 JSON Schema  |
 | Integration tests       | FULLY_FUNCTIONAL | `test/integration/` — decorator output, negative tests, binding placement                      |
 | E2E tests               | FULLY_FUNCTIONAL | `test/e2e/` — complex nested schemas                                                           |
 | BDD tests               | FULLY_FUNCTIONAL | `test/bdd/user-behaviors.test.ts` — 23 end-to-end behavior tests (dead Cucumber infra removed) |
