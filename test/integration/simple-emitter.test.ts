@@ -2,7 +2,10 @@
  * Test AsyncAPI emitter without decorators - basic functionality
  */
 
-import { compileAsyncAPISpecWithoutErrors, parseAsyncAPIOutput } from "../utils/test-helpers.js";
+import {
+  compileAsyncAPISpecWithoutErrors,
+  parseAsyncAPIOutput,
+} from "../utils/test-helpers.js";
 
 describe("simple AsyncAPI Emitter (No Decorators)", () => {
   it("should generate basic AsyncAPI from simple TypeSpec", async () => {
@@ -28,7 +31,10 @@ describe("simple AsyncAPI Emitter (No Decorators)", () => {
     }
 
     // Should have generated an output file
-    const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "simple-test.json");
+    const asyncapiDoc = await parseAsyncAPIOutput(
+      outputFiles,
+      "simple-test.json",
+    );
 
     // Should be a valid AsyncAPI document structure
     expect(asyncapiDoc).toBeTypeOf("object");

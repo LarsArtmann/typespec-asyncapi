@@ -9,7 +9,8 @@
 // templates, delivery status tracking, retry/failure handling, webhooks.
 // =============================================================================
 
-@service(#{ title: "Notification Service", version: "3.1.0" })
+@service(#{ title: "Notification Service" })
+@apiVersion("3.1.0")
 @server("amqp", #{ url: "amqp://notification-queue:5672", protocol: "amqp" })
 @server("api", #{ url: "https://api.notifications.example.com", protocol: "https" })
 @defaultContentType("application/json")
@@ -50,7 +51,7 @@ model NotificationRequest {
   recipient: string;
   templateId: string;
   templateData: Record<string>;
-  priority: NotificationPriority = "normal";
+  priority: NotificationPriority = NotificationPriority.normal;
   scheduledAt: string;
   metadata: Record<string>;
   tags: string[];

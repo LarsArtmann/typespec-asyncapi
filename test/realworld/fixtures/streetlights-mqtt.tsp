@@ -8,7 +8,8 @@
 // message types per channel, parameterized channel addresses, enums.
 // =============================================================================
 
-@service(#{ title: "Streetlights API", version: "1.0.0" })
+@service(#{ title: "Streetlights API" })
+@apiVersion("1.0.0")
 @server("production", #{ url: "api.streetlights.smartcity.com:8883", protocol: "mqtt" })
 @server("staging", #{ url: "staging.streetlights.smartcity.com:1883", protocol: "mqtt" })
 @defaultContentType("application/json")

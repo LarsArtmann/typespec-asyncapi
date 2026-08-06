@@ -9,7 +9,8 @@
 // Kafka bindings, MQTT bindings, sensor data models, batch readings.
 // =============================================================================
 
-@service(#{ title: "Sensor Telemetry Platform", version: "2.0.0" })
+@service(#{ title: "Sensor Telemetry Platform" })
+@apiVersion("2.0.0")
 @server("kafka-broker", #{ url: "kafka://telemetry-broker:9092", protocol: "kafka" })
 @server("mqtt-broker", #{ url: "mqtt://edge-mqtt:1883", protocol: "mqtt" })
 @server("realtime", #{ url: "ws://dashboard.realtime:8080", protocol: "ws" })
@@ -96,7 +97,7 @@ model DeviceRegistration {
   deviceId: string;
   serialNumber: string;
   manufacturer: string;
-  model: string;
+  modelName: string;
   firmwareVersion: string;
   sensors: Sensor[];
   registeredAt: string;

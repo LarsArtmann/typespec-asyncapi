@@ -4,7 +4,10 @@
  * Uses programmatic compilation via test-helpers.
  */
 
-import { compileAsyncAPISpecWithoutErrors, parseAsyncAPIOutput } from "../utils/test-helpers";
+import {
+  compileAsyncAPISpecWithoutErrors,
+  parseAsyncAPIOutput,
+} from "../utils/test-helpers";
 
 async function compileAndParse(source: string) {
   const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
@@ -166,8 +169,12 @@ describe("asyncAPI Basic Functionality", () => {
 
     // Validate documentation is preserved
     expect(schema?.description).toBe("A well-documented event model");
-    expect(schema?.properties?.id?.description).toBe("Unique identifier for the event");
-    expect(schema?.properties?.description?.description).toBe("Human-readable description");
+    expect(schema?.properties?.id?.description).toBe(
+      "Unique identifier for the event",
+    );
+    expect(schema?.properties?.description?.description).toBe(
+      "Human-readable description",
+    );
   });
 
   it("should handle operations with parameters", async () => {

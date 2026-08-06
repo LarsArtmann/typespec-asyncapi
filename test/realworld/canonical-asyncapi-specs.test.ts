@@ -184,9 +184,7 @@ describe("canonical AsyncAPI Spec Ports", () => {
         loadFixture("sensor-iot-multi-protocol"),
       );
       const servers = result.asyncApiDoc?.servers ?? {};
-      const protocols = new Set(
-        Object.values(servers).map((s) => s.protocol),
-      );
+      const protocols = new Set(Object.values(servers).map((s) => s.protocol));
       expect(protocols.size).toBeGreaterThanOrEqual(3);
       expect(protocols.has("kafka")).toBeTruthy();
       expect(protocols.has("mqtt")).toBeTruthy();

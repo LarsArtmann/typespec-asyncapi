@@ -8,7 +8,8 @@
 // presence, message arrays, timestamped events, soft-delete messages.
 // =============================================================================
 
-@service(#{ title: "Real-Time Chat API", version: "1.0.0" })
+@service(#{ title: "Real-Time Chat API" })
+@apiVersion("1.0.0")
 @server("production", #{ url: "chat.example.com", protocol: "wss" })
 @defaultContentType("application/json")
 namespace ChatAPI;
