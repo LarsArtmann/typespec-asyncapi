@@ -8,6 +8,8 @@ info:
 channels:
   user.events:
     address: user.events
+    bindings:
+      $ref: "#/components/channelBindings/chanKafka"
     messages:
       UserEvent:
         $ref: "#/components/messages/UserEvent"
@@ -37,6 +39,10 @@ operations:
     traits:
       - $ref: "#/components/operationTraits/standardOps"
 components:
+  channelBindings:
+    chanKafka:
+      kafka:
+        bindingVersion: "0.5.0"
   messages:
     UserEvent:
       name: UserEvent

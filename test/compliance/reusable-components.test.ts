@@ -12,7 +12,6 @@
 
 import {
   compileAndValidateOrThrow,
-  compileAndValidate,
 } from "../utils/schema-validator.js";
 import type {
   ChannelObject,
@@ -330,10 +329,10 @@ describe("reusable bindings compliance", () => {
 
 describe("operation trait richer fields", () => {
   it("extracts security from @operationTrait config", async () => {
-    const result = await compileAndValidate(`
+    const doc = await compileAndValidateOrThrow(`
       @operationTrait("secure", #{
         description: "Secured operation",
-        security: #[#{ userPassword: #[] }]
+        security: #[#{ type: "userPassword" }]
       })
       namespace Test;
       model Event { id: string; }
@@ -341,10 +340,10 @@ describe("operation trait richer fields", () => {
       op publish(): Event;
     `);
 
-    const trait = result.document.components?.operationTraits
+    const trait = doc.components?.operationTraits
       ?.secure as OperationTraitObject;
     expect(trait.description).toBe("Secured operation");
-    expect(trait.security).toStrictEqual([{ userPassword: [] }]);
+    expect(trait.security).toStrictEqual([{ type: "userPassword" }]);
   });
 
   it("extracts tags and bindings from @operationTrait config", async () => {
@@ -485,6 +484,23 @@ describe("components.channelBindings compliance", () => {
     });
     expect((doc.channels!.orders as ChannelObject).bindings).toStrictEqual({
       $ref: "#/components/channelBindings/ordersBinding",
+    });
+  });
+
+  it("works with explicit @publish decorator", async () => {
+    const doc = await compileAndValidateOrThrow(`
+      @reusableBinding("pubBinding", #{ kafka: #{ bindingVersion: "0.5.0" } })
+      namespace Test;
+      model Event { id: string; }
+      @channel("events")
+      @publish
+      @useChannelBinding("pubBinding")
+      op sendEvent(): Event;
+    `);
+
+    expect(doc.components?.channelBindings?.pubBinding).toBeDefined();
+    expect((doc.channels!.events as ChannelObject).bindings).toStrictEqual({
+      $ref: "#/components/channelBindings/pubBinding",
     });
   });
 });

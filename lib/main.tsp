@@ -52,6 +52,10 @@ extern dec subscribe(target: Operation);
 /**
  * Apply tags metadata for categorization
  * @param value Array of tag strings or tag objects (with name, description, externalDocs)
+ * Examples:
+ *   @tags(#["user", "events"])                                    // simple strings
+ *   @tags(#[#{ name: "user", description: "User operations" }])   // rich objects
+ *   @tags(#["events", #{ name: "kafka", externalDocs: #{ url: "https://kafka.apache.org" } }]) // mixed
  */
 extern dec tags(target: Model | Operation | Namespace, value: valueof (string | Record<unknown>)[]);
 
