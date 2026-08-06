@@ -354,8 +354,7 @@ export const storeApiVersion = (
   map.set(target, version);
 };
 
-// === REUSABLE COMPONENT STATE WRITERS ===
-
+// REUSABLE COMPONENT STATE WRITERS
 export function storeMulti(
   program: Program,
   symbol: symbol,
@@ -366,8 +365,7 @@ export function storeMulti(
   appendToStateArray(map, target, data);
 }
 
-// === REFERENCE STATE WRITERS ===
-
+// REFERENCE STATE WRITERS
 type MultiStore = (program: Program, target: Type, name: string) => void;
 
 function multiRefStore(symbol: symbol): MultiStore {
