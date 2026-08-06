@@ -12,7 +12,7 @@ import {
   type OperationObject,
   type OperationReply,
 } from "../domain/models/asyncapi-document.js";
-import { getDoc, nameOfType } from "./_imports.js";
+import { getDoc, getSummary, nameOfType } from "./_imports.js";
 import type { AsyncAPIConsolidatedState, BuilderFn, DocumentBuildContext } from "./_imports.js";
 import { buildOperationMessageRef, registerMessage } from "./channel-builder.js";
 
@@ -37,6 +37,11 @@ export const buildOperations: BuilderFn = (state, ctx) => {
       const doc = getDoc(ctx.program, opType);
       if (doc) {
         ctx.opDocs.set(op.opName, doc);
+      }
+
+      const summary = getSummary(ctx.program, opType);
+      if (summary !== undefined) {
+        operationObj.summary = summary;
       }
 
       const tags = state.tags.get(opType);

@@ -781,4 +781,51 @@ describe("spec Compliance: Constraint Decorators", () => {
       expect(schema.deprecated).toBe(true);
     });
   });
+
+  describe("@encode serialization", () => {
+    it("does not break @example when @encode(string) is applied to numeric type", async () => {
+      const doc = await compileAndValidateOrThrow(`
+        namespace Test;
+        model Event {
+          @encode(string)
+          @example(42)
+          count: int32;
+        }
+        @channel("events")
+        op publish(): Event;
+      `);
+      const schema = propSchema(doc, "Event", "count");
+      expect(schema.examples).toBeDefined();
+      expect(schema.examples![0]).toBe(42);
+    });
+
+    it("does not break @default when @encode(string) is applied to numeric type", async () => {
+      const doc = await compileAndValidateOrThrow(`
+        namespace Test;
+        model Event {
+          @encode(string)
+          count: int32 = 7;
+        }
+        @channel("events")
+        op publish(): Event;
+      `);
+      const schema = propSchema(doc, "Event", "count");
+      expect(schema.default).toBe(7);
+    });
+
+    it("serializes @example without @encode as native type (number)", async () => {
+      const doc = await compileAndValidateOrThrow(`
+        namespace Test;
+        model Event {
+          @example(42)
+          count: int32;
+        }
+        @channel("events")
+        op publish(): Event;
+      `);
+      const schema = propSchema(doc, "Event", "count");
+      expect(schema.examples).toBeDefined();
+      expect(schema.examples![0]).toBe(42);
+    });
+  });
 });

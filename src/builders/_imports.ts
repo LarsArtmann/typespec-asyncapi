@@ -8,7 +8,7 @@
  * Builders then import from `./_imports.js` instead of repeating the same
  * 4-line import block across files.
  */
-export { getDoc } from "@typespec/compiler";
+export { getDoc, getSummary } from "@typespec/compiler";
 export type { AsyncAPIConsolidatedState } from "../state.js";
 export type { BuilderFn, DocumentBuildContext } from "./types.js";
 export { nameOfType, withMessage } from "./types.js";
