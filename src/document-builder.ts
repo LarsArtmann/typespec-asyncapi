@@ -14,7 +14,6 @@
 import { listServices } from "@typespec/compiler";
 import type { Program } from "@typespec/compiler";
 import { getVersion } from "@typespec/versioning";
-import { appendFileSync } from "node:fs";
 import type { AsyncAPIEmitterOptions } from "./infrastructure/configuration/asyncAPIEmitterOptions.js";
 import type { AsyncAPIConsolidatedState } from "./state.js";
 import type {
@@ -76,7 +75,6 @@ export function buildAsyncAPIDocument(
   discoverOperations(state, ctx);
   buildOperations(state, ctx);
   applyChannelDocs(ctx);
-  appendFileSync("debug-output.log", "document-builder calling mergeExplicitMessages\n");
   mergeExplicitMessages(state, ctx);
   attachChannelBindings(state, ctx);
   attachChannelServerRefs(state, ctx);

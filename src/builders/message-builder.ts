@@ -11,6 +11,7 @@ import type {
 } from "../domain/models/asyncapi-document.js";
 import { refSchema } from "../domain/models/asyncapi-document.js";
 import type { Program, Type } from "@typespec/compiler";
+import { appendFileSync } from "node:fs";
 import {
   getDoc,
   getExamples,
@@ -23,7 +24,15 @@ import { iterNamedTypes } from "./shared-utils.js";
 
 /** Merge explicit @message decorator data into the messages map. */
 export const mergeExplicitMessages: BuilderFn = (state, ctx) => {
+  appendFileSync(
+    "/tmp/typespec-debug.log",
+    `mergeExplicitMessages size=${state.messages.size}\n`,
+  );
   for (const { type, name, data } of iterNamedTypes(state.messages)) {
+    appendFileSync(
+      "/tmp/typespec-debug.log",
+      `mergeExplicitMessages name=${name}\n`,
+    );
     const msgKey = data.messageId ?? name;
     const msgObj: MessageObject = {
       name: data.title ?? name,

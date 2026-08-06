@@ -280,7 +280,6 @@ export function extractMessageConfig(
     payload?: unknown;
   }[];
 } {
-  process.stderr.write(`DEBUG extractMessageConfig isModelConfig=${isModelConfig(config)}\n`);
   let title: string | undefined;
   let description: string | undefined;
   let contentType: string | undefined;
@@ -301,7 +300,6 @@ export function extractMessageConfig(
     schemaFormat = getModelPropertyStringValue(config, "schemaFormat");
   } else if (config && typeof config === "object") {
     const configObj = config as Record<string, unknown>;
-    process.stderr.write(`DEBUG extractMessageConfig configObj=${JSON.stringify(configObj)}\n`);
     title = typeof configObj.title === "string" ? configObj.title : undefined;
     description =
       typeof configObj.description === "string" ? configObj.description : undefined;
@@ -314,15 +312,11 @@ export function extractMessageConfig(
     }
   }
 
-  const result = {
+  return {
     contentType: contentType ?? "application/json",
     description: description ?? `Message ${target.name}`,
     title: title ?? target.name,
     ...(schemaFormat ? { schemaFormat } : {}),
     ...(examples ? { examples } : {}),
   };
-  process.stderr.write(
-    `DEBUG extractMessageConfig result=${JSON.stringify(result)}\n`,
-  );
-  return result;
 }
