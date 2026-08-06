@@ -6,7 +6,7 @@
 
 ## Current State
 
-Pre-release (`0.2.0-beta`). The emitter produces spec-compliant AsyncAPI 3.1 output validated against the official JSON Schema. **938 tests** pass across 79 files. Oxlint and ESLint both clean (0 errors, 0 warnings). **22 diagnostic codes** (17 error + 5 warning), all compile-time validated. Full protocol binding support for all **22 AsyncAPI protocols** (auto-generated from `@asyncapi/specs`) with auto-versioning, key normalization, field-level validation, and placement validation. **15 constraint decorators** mapped (`@minValue`, `@maxValue`, exclusive variants, `@minLength`/`@maxLength`, `@pattern`, `@format`, `@minItems`/`@maxItems`, `#deprecated`, `@summary`→`title`, `@example`→`examples`, `@visibility`→`readOnly`/`writeOnly`, default values→`default`). Model inheritance emits `allOf`, model-variant unions emit `oneOf`, `@discriminator` enables polymorphic patterns. `@typespec/versioning` integrated for `info.version` fallback. **Zero code duplication** (jscpd 0% threshold, structural enforcement via HOFs and mixin interfaces). **96.9% coverage** average. Cross-emitter shared module (`src/shared/`) exports `JsonSchema`, `extractValue`, `intrinsicToSchema`, and `AsyncAPISchemaEmitter` for reuse.
+Pre-release (`0.2.0-beta`). The emitter produces spec-compliant AsyncAPI 3.1 output validated against the official JSON Schema. **949 tests** pass across 79 files. Oxlint and ESLint both clean (0 errors, 0 warnings). **22 diagnostic codes** (17 error + 5 warning), all compile-time validated. Full protocol binding support for all **22 AsyncAPI protocols** (auto-generated from `@asyncapi/specs`) with auto-versioning, key normalization, field-level validation, and placement validation. **16 constraint/metadata mappings** (table-driven via `CONSTRAINT_TABLE`): `@minValue`, `@maxValue`, exclusive variants, `@minLength`/`@maxLength`, `@pattern`, `@format`, `@minItems`/`@maxItems`, `#deprecated`, `@summary`→`title`, `@example`→`examples`, `@visibility`→`readOnly`/`writeOnly`, default values (`=` syntax)→`default`, `@doc`→`description`. Model inheritance emits `allOf`, model-variant unions emit `oneOf`, `@discriminator` enables polymorphic patterns. `@typespec/versioning` integrated for `info.version` fallback. Operation/channel `@summary` and message `title` populated. **Zero code duplication** (jscpd 0% threshold, structural enforcement via table-driven mappings, HOFs, and mixin interfaces). **97.0% coverage** average. Cross-emitter shared module (`src/shared/`) exports `JsonSchema`, `extractValue`, `intrinsicToSchema`, and `AsyncAPISchemaEmitter` for reuse.
 
 ---
 
@@ -19,13 +19,16 @@ Push toward complete AsyncAPI 3.1 coverage — every field, every binding, every
 Raw ideas:
 
 - Populate `info.contact`, `info.license`, `info.termsOfService`, `info.externalDocs` via TypeSpec decorators for source-level control (emitter options already wired)
-- Populate message `title`, operation `summary`, channel `summary`/`description` from decorators
 - Support multi-format schemas (`schemaFormat`, Avro/Protobuf payload) per AsyncAPI 3.1
-- Populate remaining components types (parameters, correlationIds, tags, operationTraits, messageTraits, reusable bindings)
+- Populate remaining components types (parameters, correlationIds, tags, operationTraits, messageTraits, reusable bindings) — requires new decorator infrastructure
 
 Recently completed:
 
-- ~~15 constraint decorators mapped~~ — `src/constraint-mapper.ts`: `@minValue`→`minimum`, `@maxValue`→`maximum`, exclusive variants, `@minLength`/`@maxLength`, `@pattern`, `@format`, `@minItems`/`@maxItems`, `#deprecated`, `@summary`→`title`, `@example`→`examples`, `@visibility`→`readOnly`/`writeOnly`, default values (`=` syntax)→`default`. 48 compliance tests.
+- ~~Table-driven constraint mapping~~ — 10 if-blocks → `CONSTRAINT_TABLE` + single loop
+- ~~`encodeAs` parameter wired~~ — `resolveEncode()` helper passes `@encode` data to `serializeValueAsJson`
+- ~~Operation/channel `summary`~~ — `@summary` → `summary` on operations and channels
+- ~~Message `title`~~ — `@message(#{title})` → message `title` field
+- ~~16 constraint/metadata mappings~~ — `src/constraint-mapper.ts`: `@minValue`→`minimum`, `@maxValue`→`maximum`, exclusive variants, `@minLength`/`@maxLength`, `@pattern`, `@format`, `@minItems`/`@maxItems`, `#deprecated`, `@summary`→`title`, `@example`→`examples`, `@visibility`→`readOnly`/`writeOnly`, default values (`=` syntax)→`default`, `@doc`→`description`. 57 compliance tests.
 - ~~`scalarDeclaration` metadata support~~ — `@summary`/`#deprecated`/`@doc`/`@example` now applied to user-defined scalar declarations via extracted `declareSchema()` helper
 - ~~Duplication baseline restored~~ — 3 regression clones from allOf/oneOf/discriminator work fixed via `composeUnionVariants()` extraction and `.filter()` pre-filtering
 - ~~`allOf` for model inheritance~~ — `modelDeclaration()` emits `allOf: [{ $ref: "..." }]` for base models instead of flattening. Multi-level chains produce linked refs.
