@@ -227,13 +227,9 @@ function applyChannelBindingRefs(state: AsyncAPIConsolidatedState, ctx: Ctx): vo
     if (!channel) {
       continue;
     }
-    for (const bindingName of names) {
-      const definition = bindingDefinitions.get(bindingName);
-      if (!definition) {
-        continue;
-      }
-      ctx.channelBindings[bindingName] = definition;
-      channel.bindings = ref(`#/components/channelBindings/${bindingName}`);
+    const applied = applyBindingNamesToSection(names, bindingDefinitions, ctx.channelBindings);
+    if (applied.length > 0) {
+      channel.bindings = ref(`#/components/channelBindings/${applied[0]}`);
     }
   }
 }
