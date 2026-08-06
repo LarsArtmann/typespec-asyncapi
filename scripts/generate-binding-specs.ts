@@ -69,10 +69,10 @@ function extractFieldRules(
     return rules;
   }
 
-  const propEntries = Object.entries(schema.properties).filter(
-    ([f]) => f !== "bindingVersion",
-  );
-  for (const [field, prop] of propEntries) {
+  for (const [field, prop] of Object.entries(schema.properties)) {
+    if (field === "bindingVersion") {
+      continue;
+    }
     const rule: FieldRule = { type: extractType(prop) };
     if (prop.enum) {
       rule.enum = prop.enum;
