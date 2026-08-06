@@ -48,7 +48,7 @@
 
 ## Decorator System
 
-25 decorators declared in `lib/main.tsp` (16 emitter + 9 reusable-component). Plus 16 TypeSpec stdlib constraint/metadata mappings in `src/constraint-mapper.ts`.
+26 decorators declared in `lib/main.tsp` (16 emitter + 10 reusable-component). Plus 16 TypeSpec stdlib constraint/metadata mappings in `src/constraint-mapper.ts`.
 
 | Decorator             | Status           | Evidence                                                                                                                                                               |
 | --------------------- | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
