@@ -8,6 +8,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- **Table-driven constraint mapping** — Replaced 10 structurally identical `if (val !== undefined) schema.xxx = val` blocks in `applyConstraints()` with a single `CONSTRAINT_TABLE` array + loop. Adding a new validation constraint now requires one table entry instead of a 4-line if-block. Also eliminated the last duplication clone source.
+- **`encodeAs` parameter wired** — `serializeValueAsJson()` now receives `@encode` data via `resolveEncode()` helper in both `applyMetadata` (examples) and `applyConstraints` (defaults). Ensures correct serialization for `@encode`-decorated types. 3 smoke tests.
+- **Operation `summary` from `@summary`** — `getSummary()` on operation types now maps to the operation's `summary` field (previously only `description` was set from `@doc`). 1 test.
+- **Channel `summary` from `@summary`** — `@summary` on channel-decorated operations now populates the channel's `summary` field via a new `channelSummaries` context map. 1 test.
+- **Message `title` from `@message` decorator** — The `@message(#{title: "..."})` decorator's `title` value now populates the message's `title` field (in addition to `name`). 2 tests.
+- **Complex default value tests** — `@default` now tested with array (`#["a", "b"]`), enum member (`Status.Active`), and object (`#{ key: "val" }`) defaults. 3 tests.
+- **`bun run verify` alias** — Single command runs `build + lint + test + coverage:gate + duplicate` in sequence. Prevents the duplication-gate-was-red problem.
+- **@encode serialization smoke tests** — 3 tests verifying `@encode(string)` on numeric types doesn't break example/default serialization.
+- **Duplication gate restored to 0 clones** — Fixed 6 jscpd clones: 5 in `constraint-mapper.ts` (function signature duplication from `apply*` helpers — eliminated by consolidating into `applyMetadata`/`applyConstraints` with table-driven validation), 1 in `binding-field-validator.ts` (`.filter()` pattern — replaced with `for...of` + `continue`).
 - **Default value (`=` syntax) → `default` mapping** — TypeSpec core `=` syntax (`prop: Type = value`) now maps to JSON Schema `default` keyword via `applyDefault()` in `constraint-mapper.ts`. Uses `serializeValueAsJson()` for correct serialization. Applied as an annotation keyword (before the `$ref` skip), so it appears as a `$ref` sibling. 5 tests.
 - **`scalarDeclaration` metadata support** — `@summary`, `#deprecated`, `@doc`, `@example` now correctly applied to user-defined scalar declarations (`scalar UserId extends int32`). Extracted `declareSchema()` helper to eliminate duplication between `scalarDeclaration` and `enumDeclaration`. 2 tests.
 - **`@visibility` edge-case tests** — `Lifecycle.Delete` and `Lifecycle.Query` confirmed silently ignored (no JSON Schema equivalent). `@visibility(Lifecycle.Create, Lifecycle.Update)` confirmed maps to `writeOnly`. 3 tests.
