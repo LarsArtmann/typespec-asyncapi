@@ -12,7 +12,8 @@ Every byte of output is validated against the official AsyncAPI 3.1.0 JSON Schem
 ## Quick Start
 
 ```bash
-bun add @lars-artmann/typespec-asyncapi
+npm install @lars-artmann/typespec-asyncapi
+# or: pnpm add @lars-artmann/typespec-asyncapi
 ```
 
 Create a TypeSpec file (`api.tsp`):
@@ -127,7 +128,7 @@ Every TypeSpec scalar maps to the correct JSON Schema type and format (int8-64, 
 ### Multi-File Output
 
 ```bash
-bunx tsp compile api.tsp --emit @lars-artmann/typespec-asyncapi --option @lars-artmann/typespec-asyncapi.split-schemas=true
+npx tsp compile api.tsp --emit @lars-artmann/typespec-asyncapi --option @lars-artmann/typespec-asyncapi.split-schemas=true
 ```
 
 Splits schemas into individual files under `schemas/` with all `$ref` pointers rewritten to external paths.
@@ -204,13 +205,13 @@ op placeOrder(order: Order): OrderConfirmation;
 ```bash
 git clone https://github.com/LarsArtmann/typespec-asyncapi
 cd typespec-asyncapi
-bun install
-bun run build     # Build TypeScript (0 errors)
+pnpm install
+pnpm run build     # Build TypeScript (0 errors)
 
-bun run lint      # ESLint + oxlint (0 errors, 0 warnings)
+pnpm run lint      # ESLint + oxlint (0 errors, 0 warnings)
 ```
 
-**Important:** Use `bun` and `bunx` for install/build, never `npm` or `npx`. Tests run via **vitest** (Node.js/V8), not `bun test`, because Bun has documented memory leaks with heavy test suites.
+Run all commands inside `nix develop .#default` to get the right toolchain (pnpm + bun + Node.js). Use `pnpm` for package management and scripts. Coverage runs via `bun test --coverage` (only Bun's native coverage captures dynamically-loaded `dist/*.js` files).
 
 ## Status
 

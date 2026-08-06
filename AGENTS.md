@@ -8,29 +8,30 @@
 ## Quick Start
 
 ```bash
-bun install           # Install dependencies
-bun run build         # Build TypeScript → JavaScript (0 errors)
-bun run lint          # Run ESLint (0 errors, 0 warnings)
-bun run test          # Run tests via vitest (949 pass, 0 fail)
-bun run verify        # Full gate: build + lint + test + coverage:gate + duplicate
+pnpm install         # Install dependencies
+pnpm run build       # Build TypeScript → JavaScript (0 errors)
+pnpm run lint        # Run ESLint (0 errors, 0 warnings)
+pnpm run test        # Run tests via vitest (949 pass, 0 fail)
+pnpm run verify      # Full gate: build + lint + test + coverage:gate + duplicate
 
 ```
 
-**Important:** Use `bun` and `bunx` for install/build, never `npm` or `npx`. Tests run via **vitest** (Node.js/V8) — not `bun test` — because Bun has documented memory leaks that cause OOM crashes with heavy test suites.
+**Important:** Use `pnpm` for package management and scripts. Tests run via **vitest** (Node.js/V8). Coverage runs via `bun test --coverage` (Bun's native coverage is the only tool that captures dynamically-loaded `dist/*.js` files — see Coverage section below). Run all commands inside `nix develop .#default` to get the right toolchain.
 
 ## Critical Constraints
 
-- **Use `bun`/`bunx` for install/build**, never `npm` or `npx`
+- **Use `pnpm` for package management and scripts**. TypeScript scripts run via `tsx`. Never use `npm` or `npx`.
 - **Build-before-test policy:** Tests won't run if TypeScript compilation fails
-- **Tests run via vitest** (not `bun test`): `bun run test` executes `vitest run`. Bun's test runner has documented OOM crashes — vitest uses Node.js/V8 GC which is stable under heavy compilation workloads.
+- **Tests run via vitest** (`pnpm run test` executes `vitest run`). vitest uses Node.js/V8 GC which is stable under heavy compilation workloads.
+- **Coverage runs via `bun test --coverage`** (NOT vitest or c8). The TypeSpec compiler loads the emitter from `dist/` through a virtual filesystem, bypassing vitest's module transform. Only Bun's native runtime-level coverage captures these dynamically-loaded `dist/*.js` files — vitest V8, istanbul, and c8 all fail to see them. The gate script (`scripts/coverage-gate.ts`) remaps `dist/src/*.js` back to `src/*.ts` paths and merges coverage, preferring the higher-coverage entry. **Bun is kept in `flake.nix` solely for this purpose.** Average: ~97.0%, gate at 75% per-file minimum.
 - **git commit --no-verify:** Pre-commit hook requires bash (NixOS doesn't have /bin/bash)
 - **All source files under 370 lines** (enforced, excluding auto-generated `generated-bindings.ts`)
-- **Coverage gate at 75%** per-file minimum (scripts/coverage-gate.ts). Coverage runs via `bun test --coverage` (NOT vitest) because Bun's native coverage captures dynamically-loaded `dist/*.js` files that vitest/istanbul can't instrument (the TypeSpec compiler loads the emitter from `dist/`, bypassing vitest's module transform). The gate script remaps `dist/src/*.js` back to `src/*.ts` paths and merges coverage, preferring the higher-coverage entry. Average: ~97.0%.
-- **Duplication budget:** jscpd threshold ratcheted to 0% (`.jscpd.json`). Current baseline: **0 clones / 0% / 0% tokens** (Phase-4 end; down from Phase-3 end 10 / 1.00% / 1.05%, Phase-2 end 38 / 4.06%, Phase-1 44 / 4.61%). Zero-clone baseline reached through: `DocumentBody` extraction in `asyncapi-document.ts` (consumed via `extends DocumentBody` in `AsyncAPIDocument`), `AsyncAPIEmitterOptions` re-export via `asyncapi-document.ts`, `DiagnosticContext` interface shared between `decorator-helpers.ts` and `minimal-decorators.ts`, `makeStringIdDecorator<T>` factory replacing duplicated `$operationId`/`$messageId` boilerplate, `messageDecorator<K>` factory in `src/builders/message-builder.ts`, `applySecurity` options-object signature, `checkBound` HOF in `validation/binding-field-validator.ts`. Remaining structural patterns (e.g. `(context, target, config): void` decorator signatures) are intrinsic to TypeSpec's decorator API. Run `bun run duplicate` to verify zero clones. See `docs/status/2026-08-05_20-46_PHASE-3-DEDUPLICATION-FINAL.md` for the Phase-3 history.
+- **Coverage gate at 75%** per-file minimum (scripts/coverage-gate.ts). Coverage runs via `bun test --coverage` (NOT vitest) because Bun's native coverage captures dynamically-loaded `dist/*.js` files that vitest/istanbul/c8 can't instrument (the TypeSpec compiler loads the emitter from `dist/` via its virtual filesystem, bypassing vitest's module transform and V8's script tracking). The gate script remaps `dist/src/*.js` back to `src/*.ts` paths and merges coverage, preferring the higher-coverage entry. Average: ~97.0%.
+- **Duplication budget:** jscpd threshold ratcheted to 0% (`.jscpd.json`). Current baseline: **0 clones / 0% / 0% tokens** (Phase-4 end; down from Phase-3 end 10 / 1.00% / 1.05%, Phase-2 end 38 / 4.06%, Phase-1 44 / 4.61%). Zero-clone baseline reached through: `DocumentBody` extraction in `asyncapi-document.ts` (consumed via `extends DocumentBody` in `AsyncAPIDocument`), `AsyncAPIEmitterOptions` re-export via `asyncapi-document.ts`, `DiagnosticContext` interface shared between `decorator-helpers.ts` and `minimal-decorators.ts`, `makeStringIdDecorator<T>` factory replacing duplicated `$operationId`/`$messageId` boilerplate, `messageDecorator<K>` factory in `src/builders/message-builder.ts`, `applySecurity` options-object signature, `checkBound` HOF in `validation/binding-field-validator.ts`. Remaining structural patterns (e.g. `(context, target, config): void` decorator signatures) are intrinsic to TypeSpec's decorator API. Run `pnpm run duplicate` to verify zero clones. See `docs/status/2026-08-05_20-46_PHASE-3-DEDUPLICATION-FINAL.md` for the Phase-3 history.
 - **Diagnostic system:** `reportDiagnostic()` in `decorator-helpers.ts` uses `$lib.reportDiagnostic()` (TypeSpec library API), NOT raw `program.reportDiagnostic()`. All codes are declared in `src/lib.ts` and compile-time validated via `keyof typeof $lib.diagnostics`. The library name is auto-prefixed to diagnostic codes by the TypeSpec runtime. **22 codes** declared (17 error + 5 warning). All actively referenced — no dead codes. No split-brain.
 - **Zero `any` types in emitter.ts** (achieved)
 - **ESLint config:** Clean, no Effect.TS-era rules (throw/try/catch/Promise allowed)
-- **Linting strategy (dual linter):** ESLint handles type-aware rules on `src/` only (floating promises, unsafe operations, unnecessary type assertions, consistent-type-imports). oxlint handles non-type-aware rules on ALL files (style, perf, complexity metrics, suspicious patterns). Configs are complementary with zero rule conflicts. `bun run lint` runs both sequentially. Use `bun run lint:eslint` or `bun run lint:ox` individually for faster iteration.
+- **Linting strategy (dual linter):** ESLint handles type-aware rules on `src/` only (floating promises, unsafe operations, unnecessary type assertions, consistent-type-imports). oxlint handles non-type-aware rules on ALL files (style, perf, complexity metrics, suspicious patterns). Configs are complementary with zero rule conflicts. `pnpm run lint` runs both sequentially. Use `pnpm run lint:eslint` or `pnpm run lint:ox` individually for faster iteration.
 
 ## Architecture
 

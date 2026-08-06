@@ -4,7 +4,7 @@
  * Validates individual binding field values against constraints
  * AUTO-GENERATED from @asyncapi/specs/bindings/ JSON Schemas.
  *
- * To regenerate: bun run scripts/generate-binding-specs.ts
+ * To regenerate: pnpm run build (or: tsx scripts/generate-binding-specs.ts)
  */
 
 import type { BindingDiagnosticCode } from "./binding-validator.js";

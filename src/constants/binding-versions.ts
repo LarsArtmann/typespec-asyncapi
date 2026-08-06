@@ -5,7 +5,7 @@
  * A small SCHEMA_OVERRIDES map patches values where the AsyncAPI 3.1 JSON Schema
  * only accepts a subset of versions (e.g. SNS 0.1.0, not 0.2.0).
  *
- * To regenerate: bun run scripts/generate-binding-specs.ts
+ * To regenerate: pnpm run build (or: tsx scripts/generate-binding-specs.ts)
  */
 
 import { normalizeProtocol } from "./protocols.js";

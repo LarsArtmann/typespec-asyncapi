@@ -19,7 +19,17 @@ The codebase uses **zero Bun-specific runtime APIs** — all imports are `node:f
 
 `bun test --coverage` runs Bun's **native test runner** (not vitest) with V8 coverage. This captures `dist/src/*.js` files that the TypeSpec compiler loads dynamically — files that vitest's istanbul provider can't instrument. The tests work under both Bun's test runner and vitest because both provide Jest-compatible globals (`describe`, `it`, `expect`) and the tests use `globals: true` (no explicit imports).
 
-**Solution:** Use vitest's built-in V8 coverage provider (`@vitest/coverage-v8`). V8 coverage captures all code the V8 engine executes, regardless of how it's loaded — same as Bun's approach. This produces `lcov.info` that `coverage-gate.ts` can parse without changes.
+**Investigated solutions:**
+
+1. **vitest V8 coverage (`@vitest/coverage-v8`)** — FAILED. vitest's V8 provider filters coverage through its module graph. The TypeSpec compiler loads `dist/` via its own virtual filesystem (eval/Function), which is invisible to vitest. Result: 12 of 33 files fell below the 75% gate.
+
+2. **c8 wrapping vitest** (`c8 vitest run`) — FAILED. c8 uses `NODE_V8_COVERAGE` which captures all executed JavaScript at the V8 engine level. BUT vitest's worker threads and forks transform code via Vite/esbuild before execution, so source files never appear as `file://` URLs in V8 coverage data. The raw V8 coverage JSON contained zero project `src/` or `dist/src/` files.
+
+3. **vitest with `--pool=forks`** (child processes) — FAILED. Same root cause: vitest still uses Vite to transform modules, masking file:// URLs from V8 coverage.
+
+**Root cause:** The TypeSpec compiler's testing API (`createTester` from `@typespec/compiler/testing`) loads the emitter from `dist/` through a virtual filesystem using `eval()`/`new Function()`. V8's script tracking cannot see code loaded this way — only Bun's native runtime-level coverage (which hooks at the transpiler/execution layer, not V8's script registry) can capture it.
+
+**Final solution:** Keep `bun test --coverage` for the coverage gate only. pnpm handles everything else. Bun stays in `flake.nix` alongside pnpm. This is NOT a compromise — it's the only technically correct approach given the TypeSpec compiler's virtual filesystem architecture.
 
 ---
 
