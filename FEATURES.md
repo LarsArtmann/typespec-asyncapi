@@ -1,12 +1,12 @@
 # Feature Inventory
 
-**Verified:** 2026-08-06 against actual code + test run (1017 pass, 0 fail, 0 skip, 0 todo)
+**Verified:** 2026-08-06 against actual code + test run (1000+ pass, 0 fail, 0 skip, 0 todo)
 **Project:** `@lars-artmann/typespec-asyncapi` v0.2.0-beta
 **Lint:** oxlint 0 errors / 0 warnings, ESLint 0 errors / 0 warnings
 **Diagnostics:** 25 codes (19 error + 6 warning), all compile-time validated via `$lib.reportDiagnostic()`
 **Decorators:** 26 declared in `lib/main.tsp` (16 emitter decorators + 10 reusable-component decorators); plus 16 TypeSpec stdlib constraint/metadata mappings in `src/constraint-mapper.ts`
 **Duplication:** 0% threshold enforced via jscpd (source files only), 0 clones
-**Coverage:** 97.4% average (39 source files, 75% per-file minimum gate)
+**Coverage:** ~97% average (39 source files, 75% per-file minimum gate)
 
 ---
 
@@ -44,7 +44,7 @@
 | Multi-message operations     | FULLY_FUNCTIONAL | Union return types produce multiple message refs in one operation                                                                                                                                                                                                                                                                                                                                                                                                 |
 | Operation reply              | FULLY_FUNCTIONAL | `@reply` decorator emits reply with message ref and optional address                                                                                                                                                                                                                                                                                                                                                                                              |
 | `#deprecated` → `deprecated` | FULLY_FUNCTIONAL | `src/constraint-mapper.ts` — `applyDeprecated()` on properties, models, enums via `isDeprecated()`                                                                                                                                                                                                                                                                                                                                                                |
-| Constraint decorators        | FULLY_FUNCTIONAL | `src/constraint-mapper.ts` — 16 TypeSpec stdlib constraint/metadata mappings via table-driven `CONSTRAINT_TABLE`: `@minValue`/`@maxValue` (+ exclusive variants), `@minLength`/`@maxLength`, `@pattern`, `@format`, `@minItems`/`@maxItems`, `#deprecated`, `@summary`→`title`, `@example`→`examples`, `@visibility`→`readOnly`/`writeOnly`, default values (`=` syntax)→`default`, `@doc`→`description`. Validation keywords skipped on `$ref` schemas. 48 tests |
+| Constraint decorators        | FULLY_FUNCTIONAL | `src/constraint-mapper.ts` — 16 TypeSpec stdlib constraint/metadata mappings via table-driven `CONSTRAINT_TABLE`: `@minValue`/`@maxValue` (+ exclusive variants), `@minLength`/`@maxLength`, `@pattern`, `@format`, `@minItems`/`@maxItems`, `#deprecated`, `@summary`→`title`, `@example`→`examples`, `@visibility`→`readOnly`/`writeOnly`, default values (`=` syntax)→`default`, `@doc`→`description`. Validation keywords skipped on `$ref` schemas. |
 
 ## Decorator System
 
@@ -140,20 +140,20 @@ All 19 AsyncAPI protocols auto-generated from `@asyncapi/specs/bindings/` via `s
 
 | Feature                 | Status           | Evidence                                                                                       |
 | ----------------------- | ---------------- | ---------------------------------------------------------------------------------------------- |
-| vitest test runner      | FULLY_FUNCTIONAL | 1010 tests across 83 files (0 skip, 0 todo)                                                    |
+| vitest test runner      | FULLY_FUNCTIONAL | 1000+ tests across 85+ files (0 skip, 0 todo)                                                    |
 | Golden file test        | FULLY_FUNCTIONAL | `test/golden/golden-file.test.ts`                                                              |
 | Schema validation tests | FULLY_FUNCTIONAL | `test/validation/schema-validation.test.ts`                                                    |
-| Spec compliance suite   | FULLY_FUNCTIONAL | `test/compliance/` — 18 files, ~257 tests validated against official AsyncAPI 3.1 JSON Schema  |
+| Spec compliance suite   | FULLY_FUNCTIONAL | `test/compliance/` — 18+ files, ~270++ tests validated against official AsyncAPI 3.1 JSON Schema  |
 | Integration tests       | FULLY_FUNCTIONAL | `test/integration/` — decorator output, negative tests, binding placement                      |
 | E2E tests               | FULLY_FUNCTIONAL | `test/e2e/` — complex nested schemas                                                           |
-| BDD tests               | FULLY_FUNCTIONAL | `test/bdd/user-behaviors.test.ts` — 23 end-to-end behavior tests (dead Cucumber infra removed) |
+| BDD tests               | FULLY_FUNCTIONAL | `test/bdd/user-behaviors.test.ts` — end-to-end behavior tests (dead Cucumber infra removed) |
 | External spec tests     | FULLY_FUNCTIONAL | `test/external/` — 16 patterns from 5 external projects                                        |
-| Studio compatibility    | FULLY_FUNCTIONAL | `test/validation/studio-compatibility.test.ts` — 9 tests using `@asyncapi/parser`              |
-| Document structure      | FULLY_FUNCTIONAL | `test/validation/document-structure.test.ts` — 8 structural requirement tests                  |
-| Versioning integration  | FULLY_FUNCTIONAL | `test/integration/versioning.test.ts` — 5 tests for `@typespec/versioning` support             |
-| Constraint decorators   | FULLY_FUNCTIONAL | `test/compliance/constraint-decorators.test.ts` — 48 tests, AJV-validated                      |
+| Studio compatibility    | FULLY_FUNCTIONAL | `test/validation/studio-compatibility.test.ts` — using `@asyncapi/parser`              |
+| Document structure      | FULLY_FUNCTIONAL | `test/validation/document-structure.test.ts` — structural requirement tests                  |
+| Versioning integration  | FULLY_FUNCTIONAL | `test/integration/versioning.test.ts` — `@typespec/versioning` support             |
+| Constraint decorators   | FULLY_FUNCTIONAL | `test/compliance/constraint-decorators.test.ts` — AJV-validated                      |
 | Unit tests              | FULLY_FUNCTIONAL | `test/unit/` — binding placement, emitter tester verification                                  |
-| Performance benchmark   | FULLY_FUNCTIONAL | `test/benchmark/` — 5 tests measuring compilation time + scaling metrics                       |
+| Performance benchmark   | FULLY_FUNCTIONAL | `test/benchmark/` — measures compilation time + scaling metrics                       |
 | Deduplication gate      | FULLY_FUNCTIONAL | `jscpd src scripts` — 0% threshold, 0% duplication enforced                                    |
 | Negative tests          | FULLY_FUNCTIONAL | `test/integration/negative-tests.test.ts` — error handling                                     |
 
