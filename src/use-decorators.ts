@@ -24,15 +24,16 @@ function makeUseDecorator(
   formatKey: string,
   store: RefStore,
 ): (context: DecoratorContext, target: Type, name: unknown) => void {
-  return (context, target, name) =>
+  return (context, target, name) => {
     validateNameAndRun({
       context,
       target,
       name,
       code,
       formatKey,
-      onValid: (n) => store(context.program, target, n),
+      onValid: (n) => { store(context.program, target, n); },
     });
+  };
 }
 
 export const $useOperationTrait = makeUseDecorator("invalid-trait-config", "traitName", storeOperationTraitRef);
