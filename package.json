@@ -70,7 +70,7 @@
     "registry": "https://registry.npmjs.org/"
   },
   "scripts": {
-    "build": "tsx scripts/generate-binding-specs.ts && pnpm exec tsc -p tsconfig.json",
+    "build": "bun run scripts/generate-binding-specs.ts && pnpm exec tsc -p tsconfig.json",
     "build:watch": "pnpm exec tsc -p tsconfig.json --watch",
     "compile": "tsp compile .",
     "clean": "trash dist .tsbuildinfo 2>/dev/null || true",
@@ -79,7 +79,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "pnpm run build && bun test --coverage --coverage-reporter=lcov --coverage-dir=coverage",
-    "test:coverage:gate": "pnpm run test:coverage && tsx scripts/coverage-gate.ts",
+    "test:coverage:gate": "pnpm run test:coverage && bun run scripts/coverage-gate.ts",
     "test:validation": "pnpm run build && vitest run test/critical-validation.test.ts test/all-generated-specs-validation.test.ts",
     "test:asyncapi": "pnpm run build && vitest run test/validation/",
     "typecheck": "pnpm exec tsc --noEmit",
@@ -92,7 +92,7 @@
     "check": "pnpm run typecheck && pnpm run lint",
     "validate": "pnpm run check && pnpm run test",
     "verify": "pnpm run build && pnpm run lint && pnpm run test && pnpm run test:coverage:gate && pnpm run duplicate",
-    "dev": "tsx watch src/index.ts",
+    "dev": "bun run --watch src/index.ts",
     "debug": "node --inspect-brk ./dist/index.js",
     "debug:test": "vitest run --inspect-brk",
     "audit": "pnpm audit",
