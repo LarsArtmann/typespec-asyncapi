@@ -60,6 +60,7 @@
             ci = pkgs.mkShellNoCC {
               packages = [
                 pkgs.pnpm
+                pkgs.nodejs_22
               ];
             };
           };
