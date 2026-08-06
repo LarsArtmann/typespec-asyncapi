@@ -51,7 +51,7 @@
               name = "typespec-asyncapi-dev";
 
               packages = [
-                pkgs.bun
+                pkgs.pnpm
                 pkgs.nodejs_22
                 pkgs.typescript
               ];
@@ -59,7 +59,7 @@
 
             ci = pkgs.mkShellNoCC {
               packages = [
-                pkgs.bun
+                pkgs.pnpm
               ];
             };
           };

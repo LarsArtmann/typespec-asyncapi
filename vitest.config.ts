@@ -8,5 +8,11 @@ export default defineConfig({
     isolate: false,
     testTimeout: 30_000,
     maxConcurrency: 4,
+    coverage: {
+      provider: "v8",
+      reporter: ["lcov"],
+      reportsDirectory: "coverage",
+      include: ["src/**/*.ts", "dist/src/**/*.js"],
+    },
   },
 });

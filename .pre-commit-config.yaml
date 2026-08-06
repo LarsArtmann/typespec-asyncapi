@@ -32,7 +32,7 @@ repos:
     hooks:
       - id: eslint
         name: eslint
-        entry: bunx eslint
+        entry: pnpm exec eslint
         language: system
         types: [javascript, jsx, ts, tsx]
         args: [--fix, --max-warnings=105]
@@ -41,7 +41,7 @@ repos:
       # TypeScript type checking
       - id: typescript
         name: typescript
-        entry: bunx tsc
+        entry: pnpm exec tsc
         language: system
         types: [ts, tsx]
         args: [--noEmit]
@@ -51,7 +51,7 @@ repos:
       # Run tests on staged files
       - id: test
         name: test
-        entry: bun test
+        entry: pnpm test
         language: system
         types: [ts, tsx, js, jsx]
         pass_filenames: false
@@ -63,7 +63,7 @@ repos:
     hooks:
       - id: detect-secrets
         args: ["--baseline", ".secrets.baseline"]
-        exclude: '\.lock$|package-lock\.json$|bun\.lockb$'
+        exclude: '\.lock$|package-lock\.json$|pnpm-lock\.yaml$'
 
   # Markdown linting
   - repo: https://github.com/igorshubovych/markdownlint-cli
@@ -83,7 +83,7 @@ exclude: |
     node_modules/.*|
     \.git/.*|
     .*\.lock$|
-    bun\.lockb$|
+    pnpm-lock\.yaml$|
     coverage/.*|
     jscpd-report/.*|
     tsp-output/.*|
