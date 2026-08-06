@@ -1,10 +1,12 @@
 # Feature Inventory
 
-**Verified:** 2026-08-06 against actual code + test run (949 pass, 0 fail, 0 skip, 0 todo)
+**Verified:** 2026-08-06 against actual code + test run (982 pass, 0 fail, 0 skip, 0 todo)
 **Project:** `@lars-artmann/typespec-asyncapi` v0.2.0-beta
 **Lint:** oxlint 0 errors / 0 warnings, ESLint 0 errors / 0 warnings
-**Diagnostics:** 22 codes (17 error + 5 warning), all compile-time validated via `$lib.reportDiagnostic()`
-**Duplication:** 0% threshold enforced via jscpd (source files only)
+**Diagnostics:** 24 codes (19 error + 5 warning), all compile-time validated via `$lib.reportDiagnostic()`
+**Decorators:** 25 declared in `lib/main.tsp` (16 emitter decorators + 9 reusable-component decorators); plus 16 TypeSpec stdlib constraint/metadata mappings in `src/constraint-mapper.ts`
+**Duplication:** 0% threshold enforced via jscpd (source files only), 0 clones
+**Coverage:** 97.3% average (39 source files, 75% per-file minimum gate)
 
 ---
 
@@ -42,9 +44,11 @@
 | Multi-message operations     | FULLY_FUNCTIONAL | Union return types produce multiple message refs in one operation                                                                                                                                                                                       |
 | Operation reply              | FULLY_FUNCTIONAL | `@reply` decorator emits reply with message ref and optional address                                                                                                                                                                                    |
 | `#deprecated` → `deprecated` | FULLY_FUNCTIONAL | `src/constraint-mapper.ts` — `applyDeprecated()` on properties, models, enums via `isDeprecated()`                                                                                                                                                      |
-| Constraint decorators        | FULLY_FUNCTIONAL | `src/constraint-mapper.ts` — 15 decorators mapped: @minValue to @maxValue (and exclusive variants), @minLength/@maxLength, @pattern, @format, @minItems/@maxItems, #deprecated, @summary, @example, @visibility, default values (`=` syntax). 48 tests) |
+| Constraint decorators        | FULLY_FUNCTIONAL | `src/constraint-mapper.ts` — 16 TypeSpec stdlib constraint/metadata mappings via table-driven `CONSTRAINT_TABLE`: `@minValue`/`@maxValue` (+ exclusive variants), `@minLength`/`@maxLength`, `@pattern`, `@format`, `@minItems`/`@maxItems`, `#deprecated`, `@summary`→`title`, `@example`→`examples`, `@visibility`→`readOnly`/`writeOnly`, default values (`=` syntax)→`default`, `@doc`→`description`. Validation keywords skipped on `$ref` schemas. 48 tests |
 
 ## Decorator System
+
+25 decorators declared in `lib/main.tsp` (16 emitter + 9 reusable-component). Plus 16 TypeSpec stdlib constraint/metadata mappings in `src/constraint-mapper.ts`.
 
 | Decorator             | Status           | Evidence                                                                                                                                                               |
 | --------------------- | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -55,7 +59,7 @@
 | `@message`            | FULLY_FUNCTIONAL | Stores title/description/contentType; merged into components.messages                                                                                                  |
 | `@protocol`           | FULLY_FUNCTIONAL | Stores protocol config; emitted as channel bindings with auto-versioning                                                                                               |
 | `@security`           | FULLY_FUNCTIONAL | Emitted as `components.securitySchemes`; multiple schemes per namespace                                                                                                |
-| `@tags`               | FULLY_FUNCTIONAL | Emitted as `Tag[]` arrays on operations and messages                                                                                                                   |
+| `@tags`               | FULLY_FUNCTIONAL | Emitted as `Tag[]` arrays on operations/messages AND collected into reusable `components.tags` map (`src/builders/tag-builder.ts`)                                     |
 | `@correlationId`      | FULLY_FUNCTIONAL | Emitted as `correlationId` objects on all messages                                                                                                                     |
 | `@bindings`           | FULLY_FUNCTIONAL | Emitted as `bindings` on operations/messages/servers; keys normalized, versions auto-injected. Namespace target enables server bindings (`namespace-bindings.test.ts`) |
 | `@header`             | FULLY_FUNCTIONAL | Emitted as JSON Schema `headers` on messages                                                                                                                           |
@@ -65,6 +69,24 @@
 | `@messageId`          | FULLY_FUNCTIONAL | Overrides auto-generated message key with explicit name (`message-builder.ts`, `shared-utils.ts`)                                                                      |
 | `@apiVersion`         | FULLY_FUNCTIONAL | Sets `info.version` on document root from Namespace (`document-builder.ts`)                                                                                            |
 | `@versioned` (ext)    | FULLY_FUNCTIONAL | Reads `@typespec/versioning` `@versioned` enum for `info.version` fallback (`document-builder.ts`). `@apiVersion` takes precedence                                     |
+
+## Reusable Components (`components.*`)
+
+9 decorators for reusable AsyncAPI 3.1 component definitions and references (`src/builders/components-builder.ts`, `src/use-decorators.ts`). Inline approaches continue to work; these add the reusable option.
+
+| Decorator                | Status           | Evidence                                                                                                                                            |
+| ------------------------ | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@operationTrait`        | FULLY_FUNCTIONAL | Defines a named trait in `components.operationTraits` (Namespace target). `@useOperationTrait` references it from an Operation                      |
+| `@messageTrait`          | FULLY_FUNCTIONAL | Defines a named trait in `components.messageTraits` (Namespace target). `@useMessageTrait` references it from a Model                               |
+| `@useOperationTrait`     | FULLY_FUNCTIONAL | Applies a `$ref` to a defined operation trait on an Operation                                                                                       |
+| `@useMessageTrait`       | FULLY_FUNCTIONAL | Applies a `$ref` to a defined message trait on a Model                                                                                              |
+| `@parameter`             | FULLY_FUNCTIONAL | Defines a reusable parameter in `components.parameters`; auto-referenced from `{name}` tokens in channel addresses. Extracts `enum`/`default`/`examples` |
+| `@reusableCorrelationId` | FULLY_FUNCTIONAL | Defines a named correlation ID in `components.correlationIds` (Namespace target). `@useCorrelationId` references it from a Model                    |
+| `@useCorrelationId`      | FULLY_FUNCTIONAL | Applies a `$ref` to a defined correlation ID on a Model                                                                                             |
+| `@reusableBinding`       | FULLY_FUNCTIONAL | Defines a named binding in `components.operationBindings`/`messageBindings`/`serverBindings` (Namespace target)                                     |
+| `@useBinding`            | FULLY_FUNCTIONAL | Applies a binding `$ref` to an Operation, Model, or Namespace (Namespace → all servers on that namespace)                                           |
+
+**Known gaps:** `components.channelBindings` type exists but has no population path (channels are derived from operation `@channel` addresses, not first-class TypeSpec types — a design problem, not a missing decorator). Operation trait `security` and message trait `headers`/`correlationId` fields are typed but not extracted by their decorators. Top-level document `tags` and `info.tags` are declared but not populated (only `components.tags` is).
 
 ## Protocol Bindings
 
@@ -117,10 +139,10 @@ All 19 AsyncAPI protocols auto-generated from `@asyncapi/specs/bindings/` via `s
 
 | Feature                 | Status           | Evidence                                                                                       |
 | ----------------------- | ---------------- | ---------------------------------------------------------------------------------------------- |
-| vitest test runner      | FULLY_FUNCTIONAL | 949 tests across 79 files (0 skip, 0 todo)                                                     |
+| vitest test runner      | FULLY_FUNCTIONAL | 982 tests across 82 files (0 skip, 0 todo)                                                     |
 | Golden file test        | FULLY_FUNCTIONAL | `test/golden/golden-file.test.ts`                                                              |
 | Schema validation tests | FULLY_FUNCTIONAL | `test/validation/schema-validation.test.ts`                                                    |
-| Spec compliance suite   | FULLY_FUNCTIONAL | `test/compliance/` — 16 files, ~181 tests validated against official AsyncAPI 3.1 JSON Schema  |
+| Spec compliance suite   | FULLY_FUNCTIONAL | `test/compliance/` — 18 files, ~249 tests validated against official AsyncAPI 3.1 JSON Schema  |
 | Integration tests       | FULLY_FUNCTIONAL | `test/integration/` — decorator output, negative tests, binding placement                      |
 | E2E tests               | FULLY_FUNCTIONAL | `test/e2e/` — complex nested schemas                                                           |
 | BDD tests               | FULLY_FUNCTIONAL | `test/bdd/user-behaviors.test.ts` — 23 end-to-end behavior tests (dead Cucumber infra removed) |

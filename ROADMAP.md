@@ -6,7 +6,7 @@
 
 ## Current State
 
-Pre-release (`0.2.0-beta`). The emitter produces spec-compliant AsyncAPI 3.1 output validated against the official JSON Schema. **949 tests** pass across 79 files. Oxlint and ESLint both clean (0 errors, 0 warnings). **22 diagnostic codes** (17 error + 5 warning), all compile-time validated. Full protocol binding support for all **22 AsyncAPI protocols** (auto-generated from `@asyncapi/specs`) with auto-versioning, key normalization, field-level validation, and placement validation. **16 constraint/metadata mappings** (table-driven via `CONSTRAINT_TABLE`): `@minValue`, `@maxValue`, exclusive variants, `@minLength`/`@maxLength`, `@pattern`, `@format`, `@minItems`/`@maxItems`, `#deprecated`, `@summary`→`title`, `@example`→`examples`, `@visibility`→`readOnly`/`writeOnly`, default values (`=` syntax)→`default`, `@doc`→`description`. Model inheritance emits `allOf`, model-variant unions emit `oneOf`, `@discriminator` enables polymorphic patterns. `@typespec/versioning` integrated for `info.version` fallback. Operation/channel `@summary` and message `title` populated. **Zero code duplication** (jscpd 0% threshold, structural enforcement via table-driven mappings, HOFs, and mixin interfaces). **97.0% coverage** average. Cross-emitter shared module (`src/shared/`) exports `JsonSchema`, `extractValue`, `intrinsicToSchema`, and `AsyncAPISchemaEmitter` for reuse.
+Pre-release (`0.2.0-beta`). The emitter produces spec-compliant AsyncAPI 3.1 output validated against the official JSON Schema. **982 tests** pass across 82 files (0 skip, 0 todo). Oxlint and ESLint both clean (0 errors, 0 warnings). **24 diagnostic codes** (19 error + 5 warning), all compile-time validated. **25 decorators** declared in `lib/main.tsp` (16 emitter + 9 reusable-component), plus **16 TypeSpec stdlib constraint/metadata mappings** in `src/constraint-mapper.ts`. Full protocol binding support for all **22 AsyncAPI protocols** (auto-generated from `@asyncapi/specs`) with auto-versioning, key normalization, field-level validation, and placement validation. Model inheritance emits `allOf`, model-variant unions emit `oneOf`, `@discriminator` enables polymorphic patterns. `@typespec/versioning` integrated for `info.version`. Operation/channel `@summary`, message `title`, and reusable `components.*` (operationTraits, messageTraits, parameters, correlationIds, operation/message/server bindings, tags) all populated. **Zero code duplication** (jscpd 0% threshold). **97.3% coverage** average. Cross-emitter shared module (`src/shared/`) exports `JsonSchema`, `extractValue`, `intrinsicToSchema`, and `AsyncAPISchemaEmitter` for reuse.
 
 ---
 
@@ -18,35 +18,11 @@ Push toward complete AsyncAPI 3.1 coverage — every field, every binding, every
 
 Raw ideas:
 
-- Populate `info.contact`, `info.license`, `info.termsOfService`, `info.externalDocs` via TypeSpec decorators for source-level control (emitter options already wired)
 - Support multi-format schemas (`schemaFormat`, Avro/Protobuf payload) per AsyncAPI 3.1
-- Populate remaining components types (parameters, correlationIds, tags, operationTraits, messageTraits, reusable bindings) — requires new decorator infrastructure
-
-Recently completed:
-
-- ~~Table-driven constraint mapping~~ — 10 if-blocks → `CONSTRAINT_TABLE` + single loop
-- ~~`encodeAs` parameter wired~~ — `resolveEncode()` helper passes `@encode` data to `serializeValueAsJson`
-- ~~Operation/channel `summary`~~ — `@summary` → `summary` on operations and channels
-- ~~Message `title`~~ — `@message(#{title})` → message `title` field
-- ~~16 constraint/metadata mappings~~ — `src/constraint-mapper.ts`: `@minValue`→`minimum`, `@maxValue`→`maximum`, exclusive variants, `@minLength`/`@maxLength`, `@pattern`, `@format`, `@minItems`/`@maxItems`, `#deprecated`, `@summary`→`title`, `@example`→`examples`, `@visibility`→`readOnly`/`writeOnly`, default values (`=` syntax)→`default`, `@doc`→`description`. 57 compliance tests.
-- ~~`scalarDeclaration` metadata support~~ — `@summary`/`#deprecated`/`@doc`/`@example` now applied to user-defined scalar declarations via extracted `declareSchema()` helper
-- ~~Duplication baseline restored~~ — 3 regression clones from allOf/oneOf/discriminator work fixed via `composeUnionVariants()` extraction and `.filter()` pre-filtering
-- ~~`allOf` for model inheritance~~ — `modelDeclaration()` emits `allOf: [{ $ref: "..." }]` for base models instead of flattening. Multi-level chains produce linked refs.
-- ~~`oneOf` for model-variant unions~~ — All-Model unions emit `oneOf` (exclusive). Mixed types stay `anyOf`, string literals stay `enum`.
-- ~~`@discriminator` → `discriminator`~~ — `getDiscriminator()` on models emits `discriminator` keyword. Full polymorphic pattern supported.
-- ~~Dead `nullable`/`xml` removed from `JsonSchema`~~ — OpenAPI 3.0 / never-generated fields
-- ~~AsyncAPI Studio compatibility~~ — `test/validation/studio-compatibility.test.ts` (9 tests via `@asyncapi/parser`)
-- ~~Server binding support~~ — `@server` + `@bindings` on Namespace → `server.bindings`
-- ~~`@operationId` / `@messageId` decorators~~ — explicit naming control
-- ~~19 protocol bindings~~ — auto-generated from `@asyncapi/specs`
-- ~~Binding field-level validation~~ — `binding-field-validator.ts`, auto-generated field rules
-- ~~Full `@doc` propagation~~ — channels, operations, messages, schemas
-- ~~Operation `reply` support~~ — `@reply` decorator
-- ~~`defaultContentType` on document root~~ — `@defaultContentType` decorator
-- ~~Multi-message operations~~ — union return types
-- ~~Binding placement matrix~~ — `GENERATED_PLACEMENT` auto-generated
-- ~~Tuple of named models~~ — fixed to produce valid JSON Schema with `$ref`
-- ~~Binding protocol gap~~ — solace/anypointmq/ros2 now accepted as valid binding protocols
+- Richer trait extraction — `@operationTrait` security, `@messageTrait` headers/correlationId (fields are typed but decorators don't extract them yet)
+- Richer `@tags` decorator accepting name + description + externalDocs objects (current API accepts only string arrays)
+- Populate `components.channelBindings` — blocked on a design decision: channels are derived from `@channel` addresses, not first-class TypeSpec types, so there is no Type target to attach a reusable-binding decorator to
+- Validate `@discriminator` properties are required (AsyncAPI 3.1 spec requirement, currently unchecked)
 
 ### 2. Developer Experience
 
@@ -54,19 +30,9 @@ Make the emitter a joy to use and maintain.
 
 Raw ideas:
 
+- Add a docs-entropy CI guard that flags when living docs drift from code counts (e.g. test count in FEATURES.md vs `vitest run` output)
 - Split `./shared` subpath into neutral (`./shared`) vs AsyncAPI-bound (`./asyncapi`) entry points so neutral consumers pay zero AsyncAPI runtime cost
-- Add `pnpm run verify` alias = `validate` + coverage gate (currently separate commands)
-- Add a docs-entropy CI guard (flag when living docs drift from code counts)
-
-Recently completed:
-
-- ~~AsyncAPI generator ecosystem compatibility~~ — structural requirement tests
-- ~~`ParsedAsyncAPIDocument` type~~ — eliminated `as any` in test assertions
-- ~~Coverage tooling for `dist/*.js` loading pattern~~ — `bun test --coverage` + `coverage-gate.ts`, 97% average
-- ~~Performance profiling~~ — `test/benchmark/` suite (5 tests)
-- ~~Dead Cucumber BDD infrastructure removed~~ — 23 real end-to-end tests
-- ~~ESLint + oxlint dual-linter consolidation~~ — complementary configs, zero rule conflicts
-- ~~Cross-emitter shared module barrel~~ — honest two-tier JSDoc, public-API contract tests
+- Document which `@parameter`/`@reusableBinding` config fields are unreachable via TypeSpec `#{}` syntax (`enum`, `const`, and other reserved keywords cannot be property keys in value literals)
 
 ### 3. Architecture
 
@@ -74,18 +40,10 @@ Keep the codebase honest as it grows.
 
 Raw ideas:
 
-- TypeSpec 1.14.0 upgrade (we're on 1.13.0) — includes auto decorators, `.ts` module imports, memory leak fix, entrypoint resolution fix
+- TypeSpec 1.14.0 upgrade (currently on 1.13.0) — includes auto decorators, `.ts` module imports, memory leak fix, entrypoint resolution fix
 - Type safety: tighten `OperationObject.action` to required, add `SecurityScheme.description`
 - Move generic utilities (`applyOverrides`, `collectNamesInto`) to a shared `src/util/` module
-
-Recently completed:
-
-- ~~Zero-clone duplication baseline~~ — four-phase campaign: 68 clones / 7.67% → 0 clones / 0%, enforced via 0% jscpd threshold
-- ~~Structural deduplication helpers~~ — `DocumentBody`, `DiagnosticContext`, `makeConfigDecorator`, `makeStringIdDecorator`, `messageDecorator`, `checkBound`, `validatedDecorator`, `iterNamedTypes`
-- ~~`@bindings` support for `Namespace` target~~ — server binding placement validation
-- ~~`@apiVersion` decorator~~ — document-level versioning
-- ~~Refactor `buildAsyncAPIDocument()`~~ — 315-line monolith → 116 lines + 8 builder files
-- ~~Builder architecture~~ — operation-discovery, message-builder, operation-builder, channel-builder, server-builder, security-builder, shared-utils, types
+- Property-based and snapshot testing infrastructure — generate random constraint combinations and verify AJV always passes; lock exact JSON Schema per decorator
 
 ### 4. Ecosystem Integration
 
@@ -93,16 +51,9 @@ Connect to the broader TypeSpec and AsyncAPI ecosystems.
 
 Raw ideas:
 
-- OpenAPI 3.x cross-emitter type sharing — `src/shared/` module is complete and tested; no external consumer yet
-- `@asyncapi/generator` actual CLI testing — structural tests exist but never ran the real generator (Bun incompatibility)
+- OpenAPI 3.x cross-emitter type sharing — `src/shared/` module is complete and tested; no external consumer exists yet. Building a separate OpenAPI emitter would be a multi-day project.
+- `@asyncapi/generator` actual CLI testing — structural tests exist but the real generator has never been run against emitter output (Bun incompatibility with `@asyncapi/parser`'s Spectral ruleset)
 - `--version` projection support — emitter currently always emits the latest version, ignoring TypeSpec's version projection flag
-
-Recently completed:
-
-- ~~`@typespec/versioning` support~~ — `getVersion()` reads `@versioned` enum for `info.version`
-- ~~`@service` decorator integration~~ — `listServices()` → `info.title` fallback
-- ~~Multi-file output~~ — `split-schemas` option, `schema-splitter.ts`
-- ~~Cross-emitter shared module~~ — `src/shared/` exports with barrel contract tests
 
 ---
 

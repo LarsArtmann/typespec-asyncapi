@@ -13,23 +13,35 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
 
-      - run: bun install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile
 
       - name: Build
-        run: bun run build
+        run: pnpm run build
 
       - name: Lint
-        run: bun run lint
+        run: pnpm run lint
 
       - name: Test
-        run: bun test
+        run: pnpm run test
 
-      - name: Coverage
-        run: bun run build && bun test --coverage --coverage-reporter=lcov --coverage-dir=coverage && bun run scripts/coverage-gate.ts
+      - name: Coverage gate
+        run: pnpm run test:coverage:gate
+
+      - name: Duplication gate
+        run: pnpm run duplicate
 
       - name: Compile examples
         run: |
@@ -38,6 +50,6 @@ jobs:
             for f in "$dir"/*.tsp; do
               [ -f "$f" ] || continue
               echo "Compiling $f..."
-              (cd "$dir" && bunx tsp compile "$(basename "$f")")
+              (cd "$dir" && pnpm exec tsp compile "$(basename "$f")")
             done
           done

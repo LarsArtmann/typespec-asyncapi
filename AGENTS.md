@@ -47,15 +47,17 @@ pnpm run verify      # Full gate: build + lint + test + coverage:gate + duplicat
   - `src/document-builder.ts` (116 lines) — `buildAsyncAPIDocument()` entry point; delegates to `src/builders/` for assembly. Handles `$ref` chain construction
   - `src/intrinsic-mapping.ts` (82 lines) — `intrinsicToSchema()` maps TypeSpec scalar names to JSON Schema types (~30 cases)
   - `src/schema-splitter.ts` (79 lines) — `splitSchemas()` extracts schemas into individual files, rewrites `$ref` pointers to external paths
-- **Document Builders (`src/builders/`, 8 files):**
+- **Document Builders (`src/builders/`, 10 files):**
   - `src/builders/operation-discovery.ts` (153 lines) — discovers channel-decorated operations from TypeSpec namespace
-  - `src/builders/message-builder.ts` (156 lines) — builds message objects with `$ref` registration
-  - `src/builders/shared-utils.ts` (154 lines) — shared helpers: `ref()`, `escapeRefToken()`, `registerMessage()`, `resolveReplyKey()`
-  - `src/builders/operation-builder.ts` (94 lines) — builds operation objects with action, channel ref, messages, and reply
-  - `src/builders/channel-builder.ts` (81 lines) — builds channel objects with address, messages, bindings
-  - `src/builders/server-builder.ts` (41 lines) — builds server objects with host, protocol, variables, and namespace-scoped bindings
-  - `src/builders/security-builder.ts` (23 lines) — builds `components.securitySchemes` from `@security` state
-  - `src/builders/types.ts` (46 lines) — shared builder context and result types
+  - `src/builders/message-builder.ts` (177 lines) — builds message objects with `$ref` registration
+  - `src/builders/shared-utils.ts` (176 lines) — shared helpers: `ref()`, `escapeRefToken()`, `registerMessage()`, `resolveReplyKey()`
+  - `src/builders/operation-builder.ts` (106 lines) — builds operation objects with action, channel ref, messages, and reply
+  - `src/builders/channel-builder.ts` (80 lines) — builds channel objects with address, messages, bindings
+  - `src/builders/server-builder.ts` (40 lines) — builds server objects with host, protocol, variables, and namespace-scoped bindings
+  - `src/builders/security-builder.ts` (19 lines) — builds `components.securitySchemes` from `@security` state
+  - `src/builders/tag-builder.ts` (17 lines) — collects `@tags` state into reusable `components.tags` map (dedup by name)
+  - `src/builders/components-builder.ts` (212 lines) — builds reusable `components.*` (operationTraits, messageTraits, parameters, correlationIds, operation/message/server bindings) and applies `$ref` references via 3-way binding dispatch
+  - `src/builders/types.ts` (77 lines) — shared builder context and result types
 - **Decorators:** `lib/main.tsp` declares all **25 decorators** + `EmitterOptions` model for IDE autocomplete. Decorator count: 16 core + 9 reusable-component (5 definition on Namespace + 4 reference on Operation/Model).
 - **Decorator Implementations:** `src/decorators.ts` (72 lines, unified registry), `src/minimal-decorators.ts` (288 lines) and `src/namespace-decorators.ts` (201 lines) — thin wrappers with runtime validation, helpers in `src/decorator-helpers.ts`, state writing delegated to `src/state-writers.ts`. The namespace-decorators file contains `$server`, `$defaultContentType`, and 5 reusable-component definition decorators (`$operationTrait`, `$messageTrait`, `$parameter`, `$reusableCorrelationId`, `$reusableBinding`) via `namedConfigDecorator` factory. `src/use-decorators.ts` (61 lines) contains 4 reference decorators (`$useOperationTrait`, `$useMessageTrait`, `$useCorrelationId`, `$useBinding`) via `makeUseDecorator` factory. `$bindings` targets `Operation | Model | Namespace` (Namespace → server bindings via `bindingTargetKind`). `$operationId`, `$messageId`, and `$apiVersion` also implemented in `minimal-decorators.ts`.
 - **Reusable Components:** 9 decorators populate `components.operationTraits`, `components.messageTraits`, `components.parameters`, `components.correlationIds`, `components.operationBindings`, and `components.messageBindings`. Definition decorators (`@operationTrait`, `@messageTrait`, `@parameter`, `@reusableCorrelationId`, `@reusableBinding`) target Namespace. Reference decorators (`@useOperationTrait`, `@useMessageTrait`, `@useCorrelationId`, `@useBinding`) target Operation/Model. Channel address parameters (`{paramName}`) auto-upgrade to `$ref` when a matching `@parameter` exists. Inline `@correlationId` still works without populating `components.correlationIds`.
