@@ -10,7 +10,10 @@
  * - All $ref values rewritten from #/components/schemas/Name to schemas/Name.{ext}
  */
 
-import type { AsyncAPIDocument, JsonSchema } from "./domain/models/asyncapi-document.js";
+import type {
+  AsyncAPIDocument,
+  JsonSchema,
+} from "./domain/models/asyncapi-document.js";
 
 const SCHEMA_REF_PREFIX = "#/components/schemas/";
 
@@ -19,7 +22,10 @@ export interface SplitResult {
   schemaFiles: Map<string, JsonSchema>;
 }
 
-export function splitSchemas(doc: AsyncAPIDocument, fileExtension: string): SplitResult {
+export function splitSchemas(
+  doc: AsyncAPIDocument,
+  fileExtension: string,
+): SplitResult {
   const schemas = doc.components?.schemas;
   if (!schemas) {
     return { mainDocument: doc, schemaFiles: new Map() };
@@ -37,7 +43,10 @@ export function splitSchemas(doc: AsyncAPIDocument, fileExtension: string): Spli
 
   if (cloned.components) {
     delete cloned.components.schemas;
-    if (!cloned.components.messages && !cloned.components.securitySchemes) {
+    if (
+      !cloned.components.messages &&
+      !cloned.components.securitySchemes
+    ) {
       delete cloned.components;
     }
   }

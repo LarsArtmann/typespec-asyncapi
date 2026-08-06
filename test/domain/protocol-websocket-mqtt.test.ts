@@ -4,7 +4,10 @@
  * Tests 50+ WebSocket and MQTT scenarios for AsyncAPI generation
  */
 
-import { compileAndGetAsyncAPI, createAsyncAPITestHost } from "../utils/test-helpers.js";
+import {
+  compileAndGetAsyncAPI,
+  createAsyncAPITestHost,
+} from "../utils/test-helpers.js";
 
 describe("webSocket & MQTT Protocols - Comprehensive Domain Tests", () => {
   // WebSocket Protocol Tests (25 tests)

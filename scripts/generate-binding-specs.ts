@@ -53,7 +53,9 @@ function sortVersions(versions: string[]): string[] {
   });
 }
 
-function extractFieldRules(schemaPath: string): Record<string, FieldRule> | null {
+function extractFieldRules(
+  schemaPath: string,
+): Record<string, FieldRule> | null {
   if (!existsSync(schemaPath)) {
     return null;
   }
@@ -111,7 +113,10 @@ function generate(): void {
   const latestVersions: Record<string, string> = {};
   const allVersions: Record<string, string[]> = {};
   const placements: Record<string, Record<string, boolean>> = {};
-  const fieldRules: Record<string, Record<string, Record<string, FieldRule>>> = {};
+  const fieldRules: Record<
+    string,
+    Record<string, Record<string, FieldRule>>
+  > = {};
 
   for (const protoDir of protocols) {
     const key = toBindingKey(protoDir);
