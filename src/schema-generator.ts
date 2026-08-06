@@ -11,6 +11,7 @@ import { AsyncAPISchemaEmitter } from "./schema-emitter.js";
 export function generateSchemas(
   context: EmitContext<AsyncAPIEmitterOptions>,
 ): Record<string, JsonSchema> {
+  console.error("DEBUG generateSchemas called");
   const schemas: Record<string, JsonSchema> = {};
   const stdlibNames = collectAllStdlibNames(context.program);
 
@@ -37,6 +38,7 @@ export function generateSchemas(
       }
     }
   } catch (error) {
+    process.stderr.write(`DEBUG generateSchemas error: ${error}\n`);
     $lib.reportDiagnostic(context.program, {
       code: "schema-generation-failed",
       messageId: "default",
