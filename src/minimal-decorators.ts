@@ -33,6 +33,7 @@ import {
   storeTags,
 } from "./state-writers.js";
 import { SCHEME_TYPE_LIST, isValidSchemeType } from "./domain/models/asyncapi-document.js";
+import type { Tag } from "./domain/models/asyncapi-document.js";
 import {
   extractConfigRecord,
   getModelPropertyStringValue,

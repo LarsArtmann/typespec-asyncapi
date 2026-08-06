@@ -170,3 +170,60 @@ describe("channel and server tags", () => {
     expect(server?.tags?.[0]?.name).toBe("production");
   });
 });
+
+describe("rich tag objects with description and externalDocs", () => {
+  it("accepts tag objects with name and description", async () => {
+    const doc = await compileAndValidateOrThrow(`
+      namespace Test;
+      model Event { id: string; }
+      @channel("events")
+      @tags(#[#{ name: "orders", description: "Order management" }])
+      op publish(): Event;
+    `);
+
+    expect(doc.components?.tags?.orders).toStrictEqual({
+      name: "orders",
+      description: "Order management",
+    });
+  });
+
+  it("accepts tag objects with externalDocs", async () => {
+    const doc = await compileAndValidateOrThrow(`
+      namespace Test;
+      model Event { id: string; }
+      @channel("events")
+      @tags(#[#{
+        name: "docs",
+        externalDocs: #{
+          url: "https://example.com/docs",
+          description: "External documentation"
+        }
+      }])
+      op publish(): Event;
+    `);
+
+    expect(doc.components?.tags?.docs).toStrictEqual({
+      name: "docs",
+      externalDocs: {
+        url: "https://example.com/docs",
+        description: "External documentation",
+      },
+    });
+  });
+
+  it("accepts mixed string and object tags", async () => {
+    const doc = await compileAndValidateOrThrow(`
+      namespace Test;
+      model Event { id: string; }
+      @channel("events")
+      @tags(#["simple", #{ name: "rich", description: "Rich tag" }])
+      op publish(): Event;
+    `);
+
+    expect(doc.components?.tags?.simple).toStrictEqual({ name: "simple" });
+    expect(doc.components?.tags?.rich).toStrictEqual({
+      name: "rich",
+      description: "Rich tag",
+    });
+  });
+});
