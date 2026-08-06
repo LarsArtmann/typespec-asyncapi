@@ -18,105 +18,35 @@ import {
   refOperationTrait,
   type CorrelationIdObject,
   type MessageObject,
-  type MessageTraitObject,
-  type OperationTraitObject,
-  type ParameterObject,
   type ProtocolBindings,
 } from "../domain/models/asyncapi-document.js";
 import type { BuilderFn } from "./_imports.js";
 import { nameOfType, withMessage } from "./_imports.js";
 import { iterNamedTypes } from "./shared-utils.js";
 import type { AsyncAPIConsolidatedState } from "../state.js";
+import type { DocumentBuildContext } from "./types.js";
 
-type Ctx = Parameters<BuilderFn>[1];
+type Ctx = DocumentBuildContext;
+type DataRecord = Record<string, unknown>;
 
 /** Build reusable component maps from namespace-level decorator state. */
 export const buildReusableComponents: BuilderFn = (state, ctx) => {
-  buildOperationTraits(state, ctx);
-  buildMessageTraits(state, ctx);
-  buildReusableParameters(state, ctx);
-  buildReusableCorrelationIds(state, ctx);
-};
-
-/** Apply @useOperationTrait, @useMessageTrait, @useCorrelationId, @useBinding refs. */
-export const applyReusableRefs: BuilderFn = (state, ctx) => {
-  applyOperationTraitRefs(state, ctx);
-  applyMessageTraitRefs(state, ctx);
-  applyCorrelationIdRefs(state, ctx);
-  applyBindingRefs(state, ctx);
-};
-
-function buildOperationTraits(state: AsyncAPIConsolidatedState, ctx: Ctx): void {
   for (const { data } of iterNamedTypes(state.operationTraits)) {
     for (const trait of data) {
-      const obj: OperationTraitObject = {};
-      if (trait.title) {
-        obj.title = trait.title;
-      }
-      if (trait.summary) {
-        obj.summary = trait.summary;
-      }
-      if (trait.description) {
-        obj.description = trait.description;
-      }
-      ctx.operationTraits[trait.name] = obj;
+      ctx.operationTraits[trait.name] = pickOpt(trait, ["title", "summary", "description"]);
     }
   }
-}
-
-function buildMessageTraits(state: AsyncAPIConsolidatedState, ctx: Ctx): void {
   for (const { data } of iterNamedTypes(state.messageTraits)) {
     for (const trait of data) {
-      const obj: MessageTraitObject = { name: trait.name };
-      if (trait.contentType) {
-        obj.contentType = trait.contentType;
-      }
-      if (trait.description) {
-        obj.description = trait.description;
-      }
-      if (trait.title) {
-        obj.title = trait.title;
-      }
-      ctx.messageTraits[trait.name] = obj;
+      ctx.messageTraits[trait.name] = { name: trait.name, ...pickOpt(trait, ["contentType", "description", "title"]) };
     }
   }
-}
-
-function buildReusableParameters(
-  state: AsyncAPIConsolidatedState,
-  ctx: Ctx,
-): void {
   for (const { data } of iterNamedTypes(state.reusableParameters)) {
     for (const param of data) {
-      const obj: ParameterObject = {};
-      if (param.description) {
-        obj.description = param.description;
-      }
-      if (param.location) {
-        obj.location = param.location;
-      }
-      ctx.reusableParameters[param.name] = obj;
+      ctx.reusableParameters[param.name] = pickOpt(param, ["description", "location"]) as Record<string, unknown> as never;
       upgradeChannelParameterRefs(ctx, param.name);
     }
   }
-}
-
-/** Replace inline channel parameters matching `paramName` with `$ref`s. */
-function upgradeChannelParameterRefs(ctx: Ctx, paramName: string): void {
-  for (const channel of Object.values(ctx.channels)) {
-    if (!channel.parameters || !(paramName in channel.parameters)) {
-      continue;
-    }
-    channel.parameters[paramName] = ref(
-      `#/components/parameters/${paramName}`,
-    );
-  }
-}
-
-function buildReusableCorrelationIds(
-  state: AsyncAPIConsolidatedState,
-  ctx: Ctx,
-): void {
   for (const { data } of iterNamedTypes(state.reusableCorrelationIds)) {
     for (const corrId of data) {
       const obj: CorrelationIdObject = { location: corrId.location };
@@ -126,13 +56,11 @@ function buildReusableCorrelationIds(
       ctx.reusableCorrelationIds[corrId.name] = obj;
     }
   }
-}
+};
 
-function applyOperationTraitRefs(
-  state: AsyncAPIConsolidatedState,
-  ctx: Ctx,
-): void {
-  for (const [type, traitNames] of state.operationTraitRefs) {
+/** Apply @useOperationTrait, @useMessageTrait, @useCorrelationId, @useBinding refs. */
+export const applyReusableRefs: BuilderFn = (state, ctx) => {
+  for (const [type, names] of state.operationTraitRefs) {
     const opName = nameOfType(type);
     if (!opName) {
       continue;
@@ -141,82 +69,89 @@ function applyOperationTraitRefs(
     if (!op) {
       continue;
     }
-    op.traits = traitNames
-      .filter((name) => name in ctx.operationTraits)
-      .map((name) => refOperationTrait(name));
+    op.traits = names.filter((n) => n in ctx.operationTraits).map((n) => refOperationTrait(n));
   }
-}
 
-function applyMessageTraitRefs(
-  state: AsyncAPIConsolidatedState,
-  ctx: Ctx,
-): void {
-  for (const [type, traitNames] of state.messageTraitRefs) {
-    const typeName = nameOfType(type);
-    if (!typeName) {
-      continue;
-    }
-    const msgData = state.messages.get(type);
-    const key = msgData?.messageId ?? typeName;
-    withMessage(ctx, key, (msg: MessageObject) => {
-      msg.traits = traitNames
-        .filter((name) => name in ctx.messageTraits)
-        .map((name) => refMessageTrait(name));
+  for (const [type, names] of state.messageTraitRefs) {
+    applyToMessage(state, ctx, type, (msg) => {
+      msg.traits = names.filter((n) => n in ctx.messageTraits).map((n) => refMessageTrait(n));
     });
   }
-}
 
-function applyCorrelationIdRefs(
-  state: AsyncAPIConsolidatedState,
-  ctx: Ctx,
-): void {
   for (const [type, corrIdName] of state.correlationIdRefs) {
-    if (!(corrIdName in ctx.reusableCorrelationIds)) {
+    if (corrIdName in ctx.reusableCorrelationIds) {
+      applyToMessage(state, ctx, type, (msg) => {
+        msg.correlationId = refCorrelationId(corrIdName);
+      });
+    }
+  }
+
+  applyBindingRefs(state, ctx);
+};
+
+function pickOpt(data: object, keys: string[]): DataRecord {
+  const src = data as DataRecord;
+  const out: DataRecord = {};
+  for (const key of keys) {
+    if (src[key] !== undefined) {
+      out[key] = src[key];
+    }
+  }
+  return out;
+}
+
+function resolveMessageKey(state: AsyncAPIConsolidatedState, type: unknown): string | undefined {
+  const typeName = nameOfType(type as never);
+  if (!typeName) {
+    return undefined;
+  }
+  const msgData = state.messages.get(type as never);
+  return msgData?.messageId ?? typeName;
+}
+
+function applyToMessage(
+  state: AsyncAPIConsolidatedState,
+  ctx: Ctx,
+  type: unknown,
+  fn: (msg: MessageObject) => void,
+): void {
+  const key = resolveMessageKey(state, type);
+  if (key) {
+    withMessage(ctx, key, fn);
+  }
+}
+
+function upgradeChannelParameterRefs(ctx: Ctx, paramName: string): void {
+  for (const channel of Object.values(ctx.channels)) {
+    if (!channel.parameters || !(paramName in channel.parameters)) {
       continue;
     }
-    const typeName = nameOfType(type);
-    if (!typeName) {
-      continue;
-    }
-    const msgData = state.messages.get(type);
-    const key = msgData?.messageId ?? typeName;
-    withMessage(ctx, key, (msg: MessageObject) => {
-      msg.correlationId = refCorrelationId(corrIdName);
-    });
+    channel.parameters[paramName] = ref(`#/components/parameters/${paramName}`);
   }
 }
 
 function applyBindingRefs(state: AsyncAPIConsolidatedState, ctx: Ctx): void {
   const bindingDefinitions = collectBindingDefinitions(state);
 
-  for (const [type, bindingNames] of state.bindingRefs) {
-    const typeName = nameOfType(type);
-    if (!typeName) {
-      continue;
-    }
-
+  for (const [type, names] of state.bindingRefs) {
     const targetKind = (type as { kind: string }).kind;
     const isOperation = targetKind === "Operation";
-    const componentSection = isOperation ? "operationBindings" : "messageBindings";
+    const section = isOperation ? "operationBindings" : "messageBindings";
 
-    for (const bindingName of bindingNames) {
+    for (const bindingName of names) {
       const definition = bindingDefinitions.get(bindingName);
       if (!definition) {
         continue;
       }
-
-      ctx[componentSection][bindingName] = definition;
-      const refPointer = `#/components/${componentSection}/${bindingName}`;
-
+      ctx[section][bindingName] = definition;
+      const refPointer = `#/components/${section}/${bindingName}`;
       if (isOperation) {
-        const op = ctx.operations[typeName];
-        if (op) {
-          op.bindings = { $ref: refPointer };
+        const typeName = nameOfType(type);
+        if (typeName && ctx.operations[typeName]) {
+          ctx.operations[typeName].bindings = { $ref: refPointer };
         }
       } else {
-        const msgData = state.messages.get(type);
-        const key = msgData?.messageId ?? typeName;
-        withMessage(ctx, key, (msg: MessageObject) => {
+        applyToMessage(state, ctx, type, (msg) => {
           msg.bindings = { $ref: refPointer };
         });
       }
@@ -224,10 +159,7 @@ function applyBindingRefs(state: AsyncAPIConsolidatedState, ctx: Ctx): void {
   }
 }
 
-/** Collect all reusable binding definitions keyed by name. */
-function collectBindingDefinitions(
-  state: AsyncAPIConsolidatedState,
-): Map<string, ProtocolBindings> {
+function collectBindingDefinitions(state: AsyncAPIConsolidatedState): Map<string, ProtocolBindings> {
   const out = new Map<string, ProtocolBindings>();
   for (const { data } of iterNamedTypes(state.reusableBindings)) {
     for (const binding of data) {

@@ -118,21 +118,21 @@ export const $operationTrait = makeNamedConfigDecorator(
   "invalid-trait-config",
   "traitName",
   ["description", "summary", "title"],
-  (program, target, data) => storeOperationTrait(program, target, data as never),
+  (program, target, data) => { storeOperationTrait(program, target, data as never); },
 );
 
 export const $messageTrait = makeNamedConfigDecorator(
   "invalid-trait-config",
   "traitName",
   ["contentType", "description", "title"],
-  (program, target, data) => storeMessageTrait(program, target, data as never),
+  (program, target, data) => { storeMessageTrait(program, target, data as never); },
 );
 
 export const $parameter = makeNamedConfigDecorator(
   "invalid-parameter-config",
   "parameterName",
   ["description", "location"],
-  (program, target, data) => storeReusableParameter(program, target, data as never),
+  (program, target, data) => { storeReusableParameter(program, target, data as never); },
 );
 
 export function $reusableCorrelationId(

@@ -32,7 +32,7 @@ function makeRefDecorator(
   store: StoreRef,
 ): (context: DecoratorContext, target: Type, name: unknown) => void {
   return (context, target, name) => {
-    const format = { [formatKey]: target.kind === "Model" ? (target as Model).name : String(name) };
+    const format = { [formatKey]: target.kind === "Model" ? (target).name : String(name) };
     if (!validateNonEmptyString(name, context, target, diagnosticCode, format)) {
       return;
     }
@@ -43,23 +43,23 @@ function makeRefDecorator(
 export const $useOperationTrait = makeRefDecorator(
   "invalid-trait-config",
   "traitName",
-  (program, target, name) => storeOperationTraitRef(program, target as Operation, name),
+  (program, target, name) => { storeOperationTraitRef(program, target as Operation, name); },
 );
 
 export const $useMessageTrait = makeRefDecorator(
   "invalid-trait-config",
   "traitName",
-  (program, target, name) => storeMessageTraitRef(program, target as Model, name),
+  (program, target, name) => { storeMessageTraitRef(program, target as Model, name); },
 );
 
 export const $useCorrelationId = makeRefDecorator(
   "invalid-correlationId-config",
   "modelName",
-  (program, target, name) => storeCorrelationIdRef(program, target as Model, name),
+  (program, target, name) => { storeCorrelationIdRef(program, target as Model, name); },
 );
 
 export const $useBinding = makeRefDecorator(
   "invalid-bindings-config",
   "targetKind",
-  (program, target, name) => storeBindingRef(program, target as Operation | Model, name),
+  (program, target, name) => { storeBindingRef(program, target as Operation | Model, name); },
 );

@@ -10,7 +10,10 @@ export function extractValue(
   switch (entity.kind) {
     case "declaration":
     case "code": {
-      const v = entity.value;
+      const v: unknown = entity.value;
+      if (!v || typeof v !== "object") {
+        return {};
+      }
       if (typeof (v as { onValue?: unknown }).onValue === "function") {
         return {};
       }
