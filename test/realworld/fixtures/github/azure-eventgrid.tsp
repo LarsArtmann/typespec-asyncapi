@@ -20,7 +20,11 @@ using TypeSpec.AsyncAPI;
 
 @service(#{ title: "Azure Messaging EventGrid Client" })
 @apiVersion("2024-06-01")
-@server("main", "eventgrid.azure.net:9093", "kafka", "Azure EventGrid Namespace broker")
+@server("main", #{
+  url: "eventgrid.azure.net:9093",
+  protocol: "kafka",
+  description: "Azure EventGrid Namespace broker"
+})
 namespace Microsoft.EventGrid;
 
 model CloudEvent {

@@ -17,11 +17,15 @@ using TypeSpec.AsyncAPI;
 
 @service(#{ title: "Todo App" })
 @apiVersion("1.0.0")
-@server("main", "todo.example.com", "https", "Todo API server")
+@server("main", #{
+  url: "todo.example.com",
+  protocol: "https",
+  description: "Todo API server"
+})
 namespace Todo;
 
 model User {
-  @visibility("read")
+  @visibility(Lifecycle.Read)
   id: safeint;
 
   @minLength(2)
@@ -30,21 +34,21 @@ model User {
 
   email: string;
 
-  @visibility("create")
+  @visibility(Lifecycle.Create)
   password: string;
 
-  @visibility("none")
+  @visibility(Lifecycle.None)
   validated: boolean;
 }
 
 model TodoItem {
-  @visibility("read")
+  @visibility(Lifecycle.Read)
   id: safeint;
 
   @maxLength(255)
   title: string;
 
-  @visibility("read")
+  @visibility(Lifecycle.Read)
   createdBy: User.id;
 
   assignedTo?: User.id;
@@ -53,13 +57,13 @@ model TodoItem {
 
   status: "NotStarted" | "InProgress" | "Completed";
 
-  @visibility("read")
+  @visibility(Lifecycle.Read)
   createdAt: utcDateTime;
 
-  @visibility("read")
+  @visibility(Lifecycle.Read)
   updatedAt: utcDateTime;
 
-  @visibility("read")
+  @visibility(Lifecycle.Read)
   completedAt?: utcDateTime;
 
   labels?: TodoLabels;

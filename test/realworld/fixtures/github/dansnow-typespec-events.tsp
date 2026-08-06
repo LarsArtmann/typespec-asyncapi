@@ -10,7 +10,11 @@ using TypeSpec.AsyncAPI;
 
 @service(#{ title: "Event Tracking API" })
 @apiVersion("1.0.0")
-@server("main", "events.example.com", "kafka", "Event tracking broker")
+@server("main", #{
+  url: "events.example.com",
+  protocol: "kafka",
+  description: "Event tracking broker"
+})
 namespace EventTracking;
 
 model UserSignedUpEvent {

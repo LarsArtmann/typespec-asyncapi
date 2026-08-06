@@ -7,7 +7,8 @@
  * compile correctly through THIS emitter.
  *
  * STRIPPED: Custom Kafka decorators (@Kafka.key, @Kafka.topicConfig, @Kafka.schemaRegistry),
- *           @securityScheme/@serverSecurity (different emitter's API), "kafka-secure" protocol
+ *           @securityScheme/@serverSecurity (different emitter's API), "kafka-secure" protocol,
+ *           @header/@correlationId on properties (this emitter targets Model not ModelProperty)
  *
  * KEPT (verbatim): OrderItem, ShippingAddress, OrderStatus enum, OrderPlaced,
  *                  OrderStatusUpdated, OrderCancellation models, @header, @correlationId,
@@ -18,7 +19,11 @@ using TypeSpec.AsyncAPI;
 
 @service(#{ title: "Order Events API" })
 @apiVersion("1.0.0")
-@server("main", "broker.example.com:9092", "kafka", "Primary Kafka broker for order events")
+@server("main", #{
+  url: "broker.example.com:9092",
+  protocol: "kafka",
+  description: "Primary Kafka broker for order events"
+})
 namespace OrderEvents;
 
 model OrderItem {
@@ -43,8 +48,6 @@ enum OrderStatus {
 }
 
 model OrderPlaced {
-  @header
-  @correlationId
   orderId: string;
 
   customerId: string;
@@ -55,18 +58,14 @@ model OrderPlaced {
 }
 
 model OrderStatusUpdated {
-  @header
-  @correlationId
   orderId: string;
 
   status: OrderStatus;
   updatedAt: utcDateTime;
 }
 
-@message("order.cancelled")
+@message(#{ title: "order.cancelled" })
 model OrderCancellation {
-  @header
-  @correlationId
   orderId: string;
 
   reason?: string;

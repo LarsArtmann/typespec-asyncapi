@@ -12,7 +12,11 @@ using TypeSpec.AsyncAPI;
 
 @service(#{ title: "API Toolchain Events" })
 @apiVersion("1.0.0")
-@server("main", "apitoolchain.example.com", "kafka", "API toolchain event broker")
+@server("main", #{
+  url: "apitoolchain.example.com",
+  protocol: "kafka",
+  description: "API toolchain event broker"
+})
 namespace Apitoolchain;
 
 enum ApiFormat {
