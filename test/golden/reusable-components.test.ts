@@ -20,6 +20,7 @@ const SOURCE = `
 })
 @reusableCorrelationId("defaultCorrelation", "$message.header#/correlationId")
 @reusableBinding("stdKafka", #{ kafka: #{ bindingVersion: "0.5.0" } })
+@reusableBinding("chanKafka", #{ kafka: #{ bindingVersion: "0.5.0" } })
 namespace Test;
 
 model UserEvent {
@@ -31,6 +32,7 @@ model UserEvent {
 @channel("user.events")
 @useOperationTrait("standardOps")
 @useBinding("stdKafka")
+@useChannelBinding("chanKafka")
 @tags(#["user", "events"])
 op publishUserEvent(): UserEvent;
 
@@ -78,6 +80,9 @@ describe("golden File Test: Reusable Components", () => {
       golden.components.operationBindings,
     );
     expect(actual.components.tags).toStrictEqual(golden.components.tags);
+    expect(actual.components.channelBindings).toStrictEqual(
+      golden.components.channelBindings,
+    );
     expect(actual.info.tags).toStrictEqual(golden.info.tags);
   });
 

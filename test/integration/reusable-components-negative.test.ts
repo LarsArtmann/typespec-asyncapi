@@ -163,3 +163,39 @@ describe("negative: reusableBinding", () => {
     expect(hasNoErrors(result.diagnostics)).toBe(true);
   });
 });
+
+describe("negative: useChannelBinding", () => {
+  it("reports invalid-bindings-config for empty name", async () => {
+    const result = await compileAsyncAPISpecRaw(`
+      namespace Test;
+      model Event { id: string; }
+      @channel("events")
+      @useChannelBinding("")
+      op publish(): Event;
+    `);
+    expect(hasErrorCode(result.diagnostics, "invalid-bindings-config")).toBe(
+      true,
+    );
+  });
+
+  it("silently skips undefined channel binding reference", async () => {
+    const result = await compileAsyncAPISpecRaw(`
+      namespace Test;
+      model Event { id: string; }
+      @channel("events")
+      @useChannelBinding("nonexistent")
+      op publish(): Event;
+    `);
+    expect(hasNoErrors(result.diagnostics)).toBe(true);
+  });
+});
+
+describe("negative: tags rich objects", () => {
+  it("reports invalid-tags-config for tag object without name", async () => {
+    const result = await compileAsyncAPISpecRaw(`
+      @tags(#[#{ description: "no name here" }])
+      namespace Test;
+    `);
+    expect(hasErrorCode(result.diagnostics, "invalid-tags-config")).toBe(true);
+  });
+});

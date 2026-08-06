@@ -143,11 +143,18 @@ function appendToStateArray<K, V>(map: Map<K, V[]>, key: K, entry: V): void {
   }
 }
 
-export const storeTags = (program: Program, target: Operation | Model, tags: Tag[]): void => {
+export const storeTags = (
+  program: Program,
+  target: Operation | Model,
+  tags: (string | Tag)[],
+): void => {
+  const normalized: Tag[] = tags.map((t) =>
+    typeof t === "string" ? { name: t } : t,
+  );
   const map = getStateMap<Tag[]>(program, stateSymbols.tags);
   const existing = map.get(target) ?? [];
   const byName = new Map(existing.map((t) => [t.name, t]));
-  for (const tag of tags) {
+  for (const tag of normalized) {
     byName.set(tag.name, { ...byName.get(tag.name), ...tag });
   }
   map.set(target, [...byName.values()]);
