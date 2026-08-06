@@ -52,6 +52,7 @@
 
               packages = [
                 pkgs.pnpm
+                pkgs.bun
                 pkgs.nodejs_22
                 pkgs.typescript
               ];
@@ -60,6 +61,7 @@
             ci = pkgs.mkShellNoCC {
               packages = [
                 pkgs.pnpm
+                pkgs.bun
                 pkgs.nodejs_22
               ];
             };

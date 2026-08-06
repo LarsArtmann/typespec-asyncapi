@@ -1,7 +1,0 @@
-{
-  "reporter": ["lcov", "text-summary"],
-  "report-dir": "coverage",
-  "include": ["src/**", "dist/src/**"],
-  "exclude": ["test/**", "scripts/**", "node_modules/**", "coverage/**"],
-  "all": false
-}
