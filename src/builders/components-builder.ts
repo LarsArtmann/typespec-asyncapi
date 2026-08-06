@@ -75,7 +75,7 @@ export const buildReusableComponents: BuilderFn = (state, ctx) => {
     ctx.reusableParameters,
     populateNamed(
       state.reusableParameters,
-      (p) => pickOpt(p, ["description", "location"]),
+      (p) => pickOpt(p, ["description", "location", "schema", "enum", "default", "examples"]),
       (p) => {
         upgradeChannelParameterRefs(ctx, p.name);
       },

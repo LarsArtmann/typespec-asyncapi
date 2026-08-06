@@ -96,6 +96,22 @@ function pickStringFields(
   return out;
 }
 
+const PARAMETER_EXTRA_FIELDS = [
+  "schema",
+  "enum",
+  "default",
+  "examples",
+] as const;
+
+function pickDefined(
+  source: Record<string, unknown>,
+  keys: readonly string[],
+): Record<string, unknown> {
+  return Object.fromEntries(
+    keys.filter((k) => source[k] !== undefined).map((k) => [k, source[k]]),
+  );
+}
+
 function namedConfigDecorator(
   code: "invalid-trait-config" | "invalid-parameter-config",
   formatKey: string,
@@ -134,12 +150,26 @@ export const $messageTrait = namedConfigDecorator(
   ["contentType", "description", "title"],
   stateSymbols.messageTraits,
 );
-export const $parameter = namedConfigDecorator(
-  "invalid-parameter-config",
-  "parameterName",
-  ["description", "location"],
-  stateSymbols.reusableParameters,
-);
+export function $parameter(
+  context: DecoratorContext,
+  target: Namespace,
+  name: unknown,
+  config: unknown,
+): void {
+  if (
+    !validateNonEmptyString(name, context, target, "invalid-parameter-config", {
+      parameterName: String(name),
+    })
+  ) {
+    return;
+  }
+  const cfg = extractConfigRecord(config);
+  storeMulti(context.program, stateSymbols.reusableParameters, target, {
+    name,
+    ...pickStringFields(cfg, ["description", "location"]),
+    ...pickDefined(cfg, PARAMETER_EXTRA_FIELDS),
+  });
+}
 
 export function $reusableCorrelationId(
   context: DecoratorContext,
