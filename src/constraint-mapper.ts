@@ -144,17 +144,15 @@ export function applyConstraints(
 
   // @visibility → readOnly/writeOnly (annotation keywords, survive as $ref siblings)
   const lifecycle = getLifecycleVisibilityEnum(program);
-  if (lifecycle) {
-    const modifiers = getVisibilityForClass(program, prop, lifecycle);
-    if (modifiers.size > 0) {
-      const names = new Set([...modifiers.values()].map((m) => m.name));
-      const hasRead = names.has("Read");
-      const hasWrite = names.has("Create") || names.has("Update");
-      if (hasRead && !hasWrite) {
-        schema.readOnly = true;
-      } else if (hasWrite && !hasRead) {
-        schema.writeOnly = true;
-      }
+  const modifiers = getVisibilityForClass(program, prop, lifecycle);
+  if (modifiers.size > 0) {
+    const names = new Set([...modifiers.values()].map((m) => m.name));
+    const hasRead = names.has("Read");
+    const hasWrite = names.has("Create") || names.has("Update");
+    if (hasRead && !hasWrite) {
+      schema.readOnly = true;
+    } else if (hasWrite && !hasRead) {
+      schema.writeOnly = true;
     }
   }
 

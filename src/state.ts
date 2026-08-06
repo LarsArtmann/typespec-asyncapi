@@ -300,5 +300,38 @@ export function consolidateAsyncAPIState(
     tags: getStateMap<TagData>(program, stateSymbols.tags),
     operationIds: getStateMap<string>(program, stateSymbols.operationIds),
     apiVersion: getStateMap<string>(program, stateSymbols.apiVersion),
+    operationTraits: getMultiState<OperationTraitData>(
+      program,
+      stateSymbols.operationTraits,
+    ),
+    messageTraits: getMultiState<MessageTraitData>(
+      program,
+      stateSymbols.messageTraits,
+    ),
+    reusableParameters: getMultiState<ParameterConfigData>(
+      program,
+      stateSymbols.reusableParameters,
+    ),
+    reusableCorrelationIds: getMultiState<ReusableCorrelationIdData>(
+      program,
+      stateSymbols.reusableCorrelationIds,
+    ),
+    reusableBindings: getMultiState<ReusableBindingData>(
+      program,
+      stateSymbols.reusableBindings,
+    ),
+    operationTraitRefs: getMultiState<string>(
+      program,
+      stateSymbols.operationTraitRefs,
+    ),
+    messageTraitRefs: getMultiState<string>(
+      program,
+      stateSymbols.messageTraitRefs,
+    ),
+    correlationIdRefs: getStateMap<string>(
+      program,
+      stateSymbols.correlationIdRefs,
+    ),
+    bindingRefs: getMultiState<string>(program, stateSymbols.bindingRefs),
   };
 }

@@ -45,8 +45,7 @@ export function splitSchemas(
     delete cloned.components.schemas;
     if (
       !cloned.components.messages &&
-      !cloned.components.securitySchemes &&
-      !cloned.components.schemas
+      !cloned.components.securitySchemes
     ) {
       delete cloned.components;
     }

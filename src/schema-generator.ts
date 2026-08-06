@@ -28,7 +28,7 @@ export function generateSchemas(
       for (const declaration of scope.declarations) {
         if (
           !declaration.name ||
-          !declaration.value ||
+          !(declaration.value as object | undefined) ||
           stdlibNames.has(declaration.name)
         ) {
           continue;

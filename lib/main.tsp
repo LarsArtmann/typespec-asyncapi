@@ -106,6 +106,65 @@ extern dec messageId(target: Model, id: valueof string);
 extern dec apiVersion(target: Namespace, version: valueof string);
 
 /**
+ * Define a reusable operation trait
+ * @param name Trait name (used as key in components.operationTraits)
+ * @param config Trait configuration (description, summary, title)
+ */
+extern dec operationTrait(target: Namespace, name: valueof string, config: {} | valueof Record<unknown>);
+
+/**
+ * Define a reusable message trait
+ * @param name Trait name (used as key in components.messageTraits)
+ * @param config Trait configuration (contentType, description, title)
+ */
+extern dec messageTrait(target: Namespace, name: valueof string, config: {} | valueof Record<unknown>);
+
+/**
+ * Reference an operation trait by name on an operation
+ * @param name The trait name defined via @operationTrait
+ */
+extern dec useOperationTrait(target: Operation, name: valueof string);
+
+/**
+ * Reference a message trait by name on a model
+ * @param name The trait name defined via @messageTrait
+ */
+extern dec useMessageTrait(target: Model, name: valueof string);
+
+/**
+ * Define a reusable channel parameter
+ * @param name Parameter name (used as key in components.parameters)
+ * @param config Parameter configuration (description, location)
+ */
+extern dec parameter(target: Namespace, name: valueof string, config: {} | valueof Record<unknown>);
+
+/**
+ * Define a reusable correlation ID
+ * @param name Correlation ID name (used as key in components.correlationIds)
+ * @param location Location path (e.g., "$message.header#/correlationId")
+ */
+extern dec reusableCorrelationId(target: Namespace, name: valueof string, location: valueof string);
+
+/**
+ * Reference a reusable correlation ID by name on a model
+ * @param name The correlation ID name defined via @reusableCorrelationId
+ */
+extern dec useCorrelationId(target: Model, name: valueof string);
+
+/**
+ * Define a reusable protocol binding
+ * @param name Binding name (used as key in components.*Bindings)
+ * @param config Binding configuration keyed by protocol
+ */
+extern dec reusableBinding(target: Namespace, name: valueof string, config: {} | valueof Record<unknown>);
+
+/**
+ * Reference a reusable binding by name on an operation or model
+ * @param name The binding name defined via @reusableBinding
+ */
+extern dec useBinding(target: Operation | Model, name: valueof string);
+
+/**
  * Emitter options for `@lars-artmann/typespec-asyncapi`.
  *
  * Configure via tspconfig.yaml:

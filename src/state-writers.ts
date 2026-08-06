@@ -9,10 +9,15 @@ import type {
   KafkaSaslConfig,
   MessageConfigData,
   MessageHeaderData,
+  MessageTraitData,
   MqttLastWillConfig,
   OperationReplyData,
+  OperationTraitData,
+  ParameterConfigData,
   ProtocolBindings,
   ProtocolConfigData,
+  ReusableBindingData,
+  ReusableCorrelationIdData,
   SecurityScheme,
   Tag,
 } from "./state.js";
@@ -295,4 +300,92 @@ export const storeOperationReply = (
 export const storeApiVersion = (program: Program, target: Namespace, version: string): void => {
   const map = getStateMap(program, stateSymbols.apiVersion);
   map.set(target, version);
+};
+
+// === REUSABLE COMPONENT STATE WRITERS ===
+
+export const storeOperationTrait = (
+  program: Program,
+  target: Namespace,
+  data: OperationTraitData,
+): void => {
+  const map = getStateMap<OperationTraitData[]>(program, stateSymbols.operationTraits);
+  appendToStateArray(map, target, data);
+};
+
+export const storeMessageTrait = (
+  program: Program,
+  target: Namespace,
+  data: MessageTraitData,
+): void => {
+  const map = getStateMap<MessageTraitData[]>(program, stateSymbols.messageTraits);
+  appendToStateArray(map, target, data);
+};
+
+export const storeReusableParameter = (
+  program: Program,
+  target: Namespace,
+  data: ParameterConfigData,
+): void => {
+  const map = getStateMap<ParameterConfigData[]>(program, stateSymbols.reusableParameters);
+  appendToStateArray(map, target, data);
+};
+
+export const storeReusableCorrelationId = (
+  program: Program,
+  target: Namespace,
+  data: ReusableCorrelationIdData,
+): void => {
+  const map = getStateMap<ReusableCorrelationIdData[]>(
+    program,
+    stateSymbols.reusableCorrelationIds,
+  );
+  appendToStateArray(map, target, data);
+};
+
+export const storeReusableBinding = (
+  program: Program,
+  target: Namespace,
+  data: ReusableBindingData,
+): void => {
+  const map = getStateMap<ReusableBindingData[]>(program, stateSymbols.reusableBindings);
+  appendToStateArray(map, target, data);
+};
+
+// === REFERENCE STATE WRITERS ===
+
+export const storeOperationTraitRef = (
+  program: Program,
+  target: Operation,
+  traitName: string,
+): void => {
+  const map = getStateMap<string[]>(program, stateSymbols.operationTraitRefs);
+  appendToStateArray(map, target, traitName);
+};
+
+export const storeMessageTraitRef = (
+  program: Program,
+  target: Model,
+  traitName: string,
+): void => {
+  const map = getStateMap<string[]>(program, stateSymbols.messageTraitRefs);
+  appendToStateArray(map, target, traitName);
+};
+
+export const storeCorrelationIdRef = (
+  program: Program,
+  target: Model,
+  correlationIdName: string,
+): void => {
+  const map = getStateMap<string>(program, stateSymbols.correlationIdRefs);
+  map.set(target, correlationIdName);
+};
+
+export const storeBindingRef = (
+  program: Program,
+  target: Operation | Model,
+  bindingName: string,
+): void => {
+  const map = getStateMap<string[]>(program, stateSymbols.bindingRefs);
+  appendToStateArray(map, target, bindingName);
 };

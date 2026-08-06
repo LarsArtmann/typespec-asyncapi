@@ -73,7 +73,7 @@ export const attachChannelBindings: BuilderFn = (state, ctx) => {
   for (const { name, data } of iterNamedTypes(state.protocolConfigs)) {
     const channelKey = ctx.opToChannel.get(name) ?? name;
     const channel = ctx.channels[channelKey];
-    if (data.protocol && channel) {
+    if (channel) {
       channel.bindings = buildProtocolBinding(data);
     }
   }

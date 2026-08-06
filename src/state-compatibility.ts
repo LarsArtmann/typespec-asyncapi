@@ -23,7 +23,7 @@ export function getStateMap<T>(program: Program, symbol: symbol): Map<Type, T> {
     );
   }
 
-  const result = programTyped.stateMap(symbol);
+  const result = programTyped.stateMap(symbol) as Map<Type, T> | undefined;
 
   if (
     result &&

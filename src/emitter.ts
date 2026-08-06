@@ -23,7 +23,7 @@ export async function $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): Pro
   const fileType: string =
     typeof rawFileType === "string"
       ? rawFileType
-      : (rawFileType.format ?? "yaml");
+      : rawFileType.format;
   const outputFile = options["output-file"] ?? "asyncapi";
   const outputPath = `${outputFile}.${fileType}`;
   const splitSchemasEnabled = options["split-schemas"] === true;
