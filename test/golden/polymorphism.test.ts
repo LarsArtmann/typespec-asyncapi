@@ -3,10 +3,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import YAML from "yaml";
 
-const GOLDEN_FILE = join(
-  import.meta.dirname,
-  "polymorphism.expected.yaml",
-);
+const GOLDEN_FILE = join(import.meta.dirname, "polymorphism.expected.yaml");
 
 const SOURCE = `
 namespace Test;

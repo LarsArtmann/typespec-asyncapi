@@ -148,9 +148,7 @@ export const storeTags = (
   target: Operation | Model,
   tags: (string | Tag)[],
 ): void => {
-  const normalized: Tag[] = tags.map((t) =>
-    typeof t === "string" ? { name: t } : t,
-  );
+  const normalized: Tag[] = tags.map((t) => (typeof t === "string" ? { name: t } : t));
   const map = getStateMap<Tag[]>(program, stateSymbols.tags);
   const existing = map.get(target) ?? [];
   const byName = new Map(existing.map((t) => [t.name, t]));

@@ -34,9 +34,7 @@ describe("decorator negative tests: @security", () => {
       @channel("events")
       op secureEvent(): Event;
     `);
-    expect(
-      hasDiagnostic(result.diagnostics, "invalid-security-scheme-type"),
-    ).toBeTruthy();
+    expect(hasDiagnostic(result.diagnostics, "invalid-security-scheme-type")).toBeTruthy();
   });
 
   it("reports invalid-security-scheme-type for 'mutualTLS'", async () => {
@@ -48,9 +46,7 @@ describe("decorator negative tests: @security", () => {
       @channel("events")
       op secureEvent(): Event;
     `);
-    expect(
-      hasDiagnostic(result.diagnostics, "invalid-security-scheme-type"),
-    ).toBeTruthy();
+    expect(hasDiagnostic(result.diagnostics, "invalid-security-scheme-type")).toBeTruthy();
   });
 
   it("accepts valid security scheme type 'apiKey'", async () => {
@@ -65,9 +61,7 @@ describe("decorator negative tests: @security", () => {
       @channel("events")
       op secureEvent(): Event;
     `);
-    expect(
-      hasDiagnostic(result.diagnostics, "invalid-security-scheme-type"),
-    ).toBeFalsy();
+    expect(hasDiagnostic(result.diagnostics, "invalid-security-scheme-type")).toBeFalsy();
   });
 });
 
@@ -79,9 +73,7 @@ describe("decorator negative tests: @server", () => {
       model Event { id: string; }
       @channel("events") op publish(): Event;
     `);
-    expect(
-      hasDiagnostic(result.diagnostics, "invalid-server-url"),
-    ).toBeTruthy();
+    expect(hasDiagnostic(result.diagnostics, "invalid-server-url")).toBeTruthy();
   });
 
   it("reports server-url-required when url is missing", async () => {
@@ -91,9 +83,7 @@ describe("decorator negative tests: @server", () => {
       model Event { id: string; }
       @channel("events") op publish(): Event;
     `);
-    expect(
-      hasDiagnostic(result.diagnostics, "server-url-required"),
-    ).toBeTruthy();
+    expect(hasDiagnostic(result.diagnostics, "server-url-required")).toBeTruthy();
   });
 
   it("reports server-protocol-required when protocol is missing", async () => {
@@ -103,9 +93,7 @@ describe("decorator negative tests: @server", () => {
       model Event { id: string; }
       @channel("events") op publish(): Event;
     `);
-    expect(
-      hasDiagnostic(result.diagnostics, "server-protocol-required"),
-    ).toBeTruthy();
+    expect(hasDiagnostic(result.diagnostics, "server-protocol-required")).toBeTruthy();
   });
 });
 
@@ -116,9 +104,7 @@ describe("decorator negative tests: @channel", () => {
       model Event { id: string; }
       @channel("") op publish(): Event;
     `);
-    expect(
-      hasDiagnostic(result.diagnostics, "missing-channel-path"),
-    ).toBeTruthy();
+    expect(hasDiagnostic(result.diagnostics, "missing-channel-path")).toBeTruthy();
   });
 
   it("does not report missing-channel-path for valid path", async () => {
@@ -127,9 +113,7 @@ describe("decorator negative tests: @channel", () => {
       model Event { id: string; }
       @channel("events") op publish(): Event;
     `);
-    expect(
-      hasDiagnostic(result.diagnostics, "missing-channel-path"),
-    ).toBeFalsy();
+    expect(hasDiagnostic(result.diagnostics, "missing-channel-path")).toBeFalsy();
   });
 });
 
@@ -141,9 +125,7 @@ describe("decorator negative tests: @protocol", () => {
       @protocol(#{protocol: "carrier-pigeon"})
       @channel("events") op publish(): Event;
     `);
-    expect(
-      hasDiagnostic(result.diagnostics, "unsupported-protocol"),
-    ).toBeTruthy();
+    expect(hasDiagnostic(result.diagnostics, "unsupported-protocol")).toBeTruthy();
   });
 
   it("accepts valid protocol 'kafka'", async () => {
@@ -153,9 +135,7 @@ describe("decorator negative tests: @protocol", () => {
       @protocol(#{protocol: "kafka"})
       @channel("events") op publish(): Event;
     `);
-    expect(
-      hasDiagnostic(result.diagnostics, "unsupported-protocol"),
-    ).toBeFalsy();
+    expect(hasDiagnostic(result.diagnostics, "unsupported-protocol")).toBeFalsy();
   });
 });
 
@@ -169,9 +149,7 @@ describe("emitter description option", () => {
       `,
       { description: "My custom API description" },
     );
-    expect(result.asyncApiDoc?.info?.description).toBe(
-      "My custom API description",
-    );
+    expect(result.asyncApiDoc?.info?.description).toBe("My custom API description");
   });
 
   it("omits info.description when option not provided", async () => {

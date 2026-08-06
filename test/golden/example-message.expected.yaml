@@ -1,0 +1,50 @@
+asyncapi: 3.1.0
+info:
+  title: Generated API
+  version: 1.0.0
+channels:
+  users:
+    address: users
+    messages:
+      UserEvent:
+        $ref: "#/components/messages/UserEvent"
+operations:
+  publishUser:
+    action: send
+    channel:
+      $ref: "#/channels/users"
+    messages:
+      - $ref: "#/channels/users/messages/UserEvent"
+components:
+  messages:
+    UserEvent:
+      name: User Event
+      contentType: application/json
+      title: User Event
+      summary: Message UserEvent
+      payload:
+        $ref: "#/components/schemas/UserEvent"
+      examples:
+        - payload:
+            id: 1
+            name: Alice
+            email: alice@example.com
+  schemas:
+    UserEvent:
+      properties:
+        id:
+          format: int32
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+      type: object
+      required:
+        - id
+        - name
+        - email
+      examples:
+        - id: 1
+          name: Alice
+          email: alice@example.com

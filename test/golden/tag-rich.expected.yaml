@@ -1,0 +1,69 @@
+asyncapi: 3.1.0
+info:
+  title: Generated API
+  version: 1.0.0
+  tags:
+    - name: production
+    - name: orders
+      description: Order management
+      externalDocs:
+        url: https://example.com/docs
+        description: More info
+    - name: urgent
+    - name: realtime
+channels:
+  orders/{orderId}:
+    address: orders/{orderId}
+    messages:
+      Order:
+        $ref: "#/components/messages/Order"
+    parameters:
+      orderId:
+        description: "Channel parameter: orderId"
+    tags:
+      - name: realtime
+      - name: urgent
+operations:
+  publishOrder:
+    action: send
+    channel:
+      $ref: "#/channels/orders~1{orderId}"
+    messages:
+      - $ref: "#/channels/orders~1{orderId}/messages/Order"
+    tags:
+      - name: realtime
+      - name: urgent
+components:
+  messages:
+    Order:
+      name: Order
+      contentType: application/json
+      title: Order
+      payload:
+        $ref: "#/components/schemas/Order"
+      tags:
+        - name: urgent
+  schemas:
+    Order:
+      properties:
+        orderId:
+          type: string
+        code:
+          type: string
+      type: object
+      required:
+        - orderId
+        - code
+  tags:
+    production:
+      name: production
+    orders:
+      name: orders
+      description: Order management
+      externalDocs:
+        url: https://example.com/docs
+        description: More info
+    urgent:
+      name: urgent
+    realtime:
+      name: realtime

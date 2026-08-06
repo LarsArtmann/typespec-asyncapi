@@ -41,6 +41,7 @@ Prior session changed `storeTags` from `string[]` to `Tag[]` — a silently brea
 ### 5. Added negative tests for `@useChannelBinding` and rich tags (NOT STARTED #1, #2)
 
 Every other reusable-component decorator had negative tests. `@useChannelBinding` had zero. Added 3 tests to `reusable-components-negative.test.ts`:
+
 - `@useChannelBinding("")` → `invalid-bindings-config`
 - `@useChannelBinding("nonexistent")` → silently skipped (no error)
 - `@tags(#[#{description: "no name"}])` → `invalid-tags-config`
@@ -56,6 +57,7 @@ Existing tests only used bare operations (`op publish(): Event`). Added test wit
 ### 8. Added `@tags` JSDoc examples (TODO #5)
 
 Added 3 usage examples to `lib/main.tsp`:
+
 - Simple strings: `@tags(#["user", "events"])`
 - Rich objects: `@tags(#[#{ name: "user", description: "User operations" }])`
 - Mixed: `@tags(#["events", #{ name: "kafka", externalDocs: #{ url: "..." } }])`
@@ -63,6 +65,7 @@ Added 3 usage examples to `lib/main.tsp`:
 ### 9. Added golden file test for `@discriminator` polymorphism
 
 New file `test/golden/polymorphism.test.ts` (3 tests) + `polymorphism.expected.yaml`. Locks the `allOf`/`discriminator`/auto-required output format for:
+
 - Base model with `@discriminator("type")` → `discriminator: type`, `type` in `required`
 - Derived models → `allOf: [{ $ref: "#/components/schemas/Base" }]`
 - Literal type narrowing → `{ const: "dog" }` for discriminator property
@@ -88,6 +91,7 @@ The prior session had already updated most AGENTS.md line counts, decorator coun
 ### CHANGELOG.md not updated for this session's work
 
 CHANGELOG.md `[Unreleased] > Added` has entries from prior sessions but NOT this session's work. Missing entries:
+
 - `normalizeTagItem` extraction to `decorator-helpers.ts`
 - `storeTags` union type `(string | Tag)[]`
 - Golden file fixture for `@useChannelBinding`
@@ -97,6 +101,7 @@ CHANGELOG.md `[Unreleased] > Added` has entries from prior sessions but NOT this
 - `@tags` JSDoc examples
 
 Additionally, CHANGELOG has **historical entries with stale counts** that were correct at time of writing but are now superseded:
+
 - Line 33: "Diagnostic codes increased to 24" (now 25)
 - Line 34: "Decorator count increased to 25" (now 26)
 - Line 27: "9 new decorators" (now 10 with `@useChannelBinding`)
@@ -272,15 +277,15 @@ The 18:13 report covers the prior session's implementation work. The 18:50 repor
 
 ## Session Metrics
 
-| Metric | Session start | Session end | Delta |
-|--------|--------------|-------------|-------|
-| Tests | 1010 | **1017** | +7 |
-| Test files | 83 | **84** | +1 (`polymorphism.test.ts`) |
-| Coverage | 97.3% | **97.4%** | +0.1% |
-| TODO_LIST items | 5 | **0** | -5 (all resolved) |
-| Lint violations | 1 (max-lines) | **0** | Fixed `normalizeTagItem` extraction |
-| `pnpm run verify` runs | 0 (prior sessions) | **2** (start + end) | Process fixed |
-| CHANGELOG entries added | — | **0** | **Forgot entirely** |
-| AJV workarounds | 1 (`compileAndValidate`) | **0** | Fixed root cause (2.x→3.1 format) |
-| Golden file fixtures | 1 | **3** | +2 (`@useChannelBinding`, `@discriminator`) |
-| Negative tests | 11 | **14** | +3 (`@useChannelBinding` × 2, rich tags × 1) |
+| Metric                  | Session start            | Session end         | Delta                                        |
+| ----------------------- | ------------------------ | ------------------- | -------------------------------------------- |
+| Tests                   | 1010                     | **1017**            | +7                                           |
+| Test files              | 83                       | **84**              | +1 (`polymorphism.test.ts`)                  |
+| Coverage                | 97.3%                    | **97.4%**           | +0.1%                                        |
+| TODO_LIST items         | 5                        | **0**               | -5 (all resolved)                            |
+| Lint violations         | 1 (max-lines)            | **0**               | Fixed `normalizeTagItem` extraction          |
+| `pnpm run verify` runs  | 0 (prior sessions)       | **2** (start + end) | Process fixed                                |
+| CHANGELOG entries added | —                        | **0**               | **Forgot entirely**                          |
+| AJV workarounds         | 1 (`compileAndValidate`) | **0**               | Fixed root cause (2.x→3.1 format)            |
+| Golden file fixtures    | 1                        | **3**               | +2 (`@useChannelBinding`, `@discriminator`)  |
+| Negative tests          | 11                       | **14**              | +3 (`@useChannelBinding` × 2, rich tags × 1) |

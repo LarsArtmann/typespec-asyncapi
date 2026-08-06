@@ -10,9 +10,7 @@
  *   - operationBindings / messageBindings (@reusableBinding + @useBinding)
  */
 
-import {
-  compileAndValidateOrThrow,
-} from "../utils/schema-validator.js";
+import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
 import type {
   ChannelObject,
   CorrelationIdObject,

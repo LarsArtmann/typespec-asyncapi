@@ -10,22 +10,22 @@
 
 ### Doc drift fixed (committed in `ea74c8a`)
 
-| Doc | What was stale | Fixed to |
-|-----|---------------|----------|
-| `AGENTS.md` | "25 decorators" | **26** (16 core + 10 reusable-component) |
-| `AGENTS.md` | "24 codes (19 error + 5 warning)" | **25 codes (19 error + 6 warning)** |
-| `AGENTS.md` | "9 reusable-component decorators" | **10** (5 definition + 5 reference, added `@useChannelBinding`) |
-| `AGENTS.md` | "4 reference decorators" in `use-decorators.ts` | **5** (added `$useChannelBinding`) |
-| `AGENTS.md` | Builder file count "10 files" | **11 files** (added `_imports.ts`) |
-| `AGENTS.md` | 8 stale line counts (emitter.ts, schema-emitter.ts, constraint-mapper.ts, document-builder.ts, etc.) | All corrected to actual `wc -l` values |
-| `AGENTS.md` | "~208 tests across 18 files" (compliance suite) | **~272 tests** across 18 files |
-| `AGENTS.md` | "38 tests" constraint decorators | **54 tests** |
-| `AGENTS.md` | "13 tests" polymorphism | **15 tests** |
-| `AGENTS.md` | "14 tests" reusable components | **41 tests** (added channelBindings) |
-| `AGENTS.md` | "components.messageBindings" only | Added **components.channelBindings** |
-| `FEATURES.md` | Split-brain: line 7 said "26 decorators" but line 51 said "25 decorators" and "9 reusable-component" | Line 51 corrected to **26** and **10** |
-| `README.md` | "22 compile-time diagnostics (17 error + 5 warning)" | **25 (19 error + 6 warning)** |
-| `README.md` | "24 codes (19 error + 5 warning)" in metrics table | **25 codes (19 error + 6 warning)** |
+| Doc           | What was stale                                                                                       | Fixed to                                                        |
+| ------------- | ---------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| `AGENTS.md`   | "25 decorators"                                                                                      | **26** (16 core + 10 reusable-component)                        |
+| `AGENTS.md`   | "24 codes (19 error + 5 warning)"                                                                    | **25 codes (19 error + 6 warning)**                             |
+| `AGENTS.md`   | "9 reusable-component decorators"                                                                    | **10** (5 definition + 5 reference, added `@useChannelBinding`) |
+| `AGENTS.md`   | "4 reference decorators" in `use-decorators.ts`                                                      | **5** (added `$useChannelBinding`)                              |
+| `AGENTS.md`   | Builder file count "10 files"                                                                        | **11 files** (added `_imports.ts`)                              |
+| `AGENTS.md`   | 8 stale line counts (emitter.ts, schema-emitter.ts, constraint-mapper.ts, document-builder.ts, etc.) | All corrected to actual `wc -l` values                          |
+| `AGENTS.md`   | "~208 tests across 18 files" (compliance suite)                                                      | **~272 tests** across 18 files                                  |
+| `AGENTS.md`   | "38 tests" constraint decorators                                                                     | **54 tests**                                                    |
+| `AGENTS.md`   | "13 tests" polymorphism                                                                              | **15 tests**                                                    |
+| `AGENTS.md`   | "14 tests" reusable components                                                                       | **41 tests** (added channelBindings)                            |
+| `AGENTS.md`   | "components.messageBindings" only                                                                    | Added **components.channelBindings**                            |
+| `FEATURES.md` | Split-brain: line 7 said "26 decorators" but line 51 said "25 decorators" and "9 reusable-component" | Line 51 corrected to **26** and **10**                          |
+| `README.md`   | "22 compile-time diagnostics (17 error + 5 warning)"                                                 | **25 (19 error + 6 warning)**                                   |
+| `README.md`   | "24 codes (19 error + 5 warning)" in metrics table                                                   | **25 codes (19 error + 6 warning)**                             |
 
 ### Verification performed
 
@@ -45,6 +45,7 @@
 ### TODO_LIST.md rewrite — overwritten by auto-git daemon
 
 I rewrote TODO_LIST.md with 4 verified items. The auto-git daemon then committed `ffa5a10` which:
+
 - **Resolved TODO #1** (golden channelBindings) — added `channelBindings` to `reusable-components.expected.yaml`
 - **Resolved TODO #2** (AJV security strictness) — fixed test data from AsyncAPI 2.x format to 3.1 `SecurityScheme` format, switched to `compileAndValidateOrThrow`
 - **Resolved TODO #4** (@tags JSDoc) — added 3 usage examples in `lib/main.tsp`
@@ -55,6 +56,7 @@ My carefully verified TODO_LIST lasted ~7 minutes before being overwritten. The 
 ### AGENTS.md line counts — partially re-staled by concurrent changes
 
 The daemon's commit `ea74c8a` also:
+
 - Added 34 lines to `decorator-helpers.ts` (extracted `normalizeTagItem`) — I didn't update this count
 - Changed `minimal-decorators.ts` formatting (357→425→397 lines) — I caught the final value
 
@@ -80,6 +82,7 @@ The daemon's commit `ea74c8a` also:
 3. The daemon committed `ffa5a10` (resolved TODO #1, #2, #4; rewrote TODO_LIST.md)
 
 My TODO_LIST.md write was based on a snapshot that was already stale. I should have:
+
 - Checked `git log` immediately before writing to see if new commits landed
 - Re-read TODO_LIST.md after the daemon committed to see if it was overwritten
 - Recognized the pattern: any manual doc edit to a file the daemon also touches is a race
@@ -191,17 +194,17 @@ Currently tags are inline `Tag[]` objects on `info.tags`. The AsyncAPI 3.1 spec 
 
 ## Session metrics
 
-| Metric | Session start | Session end | Delta |
-|--------|--------------|-------------|-------|
-| Tests | 1010 | 1017 | +7 (daemon) |
-| Compliance tests | ~208 (reported) | ~272+ (actual) | +64 (was miscounted) |
-| Coverage | 97.3% | 97.4% | +0.1% |
-| Diagnostic codes | 24 (reported) | 25 (actual) | was miscounted |
-| Decorators | 25 (reported) | 26 (actual) | was miscounted |
-| Clones | 0 | 0 | — |
-| Lint warnings | 0 | 0 | — |
-| Build errors | 0 | 0 | — |
-| Commits this session | — | 4 (`ea74c8a`, `beb6ac1`, `ffa5a10`, + my doc fixes inside `ea74c8a`) | — |
+| Metric               | Session start   | Session end                                                          | Delta                |
+| -------------------- | --------------- | -------------------------------------------------------------------- | -------------------- |
+| Tests                | 1010            | 1017                                                                 | +7 (daemon)          |
+| Compliance tests     | ~208 (reported) | ~272+ (actual)                                                       | +64 (was miscounted) |
+| Coverage             | 97.3%           | 97.4%                                                                | +0.1%                |
+| Diagnostic codes     | 24 (reported)   | 25 (actual)                                                          | was miscounted       |
+| Decorators           | 25 (reported)   | 26 (actual)                                                          | was miscounted       |
+| Clones               | 0               | 0                                                                    | —                    |
+| Lint warnings        | 0               | 0                                                                    | —                    |
+| Build errors         | 0               | 0                                                                    | —                    |
+| Commits this session | —               | 4 (`ea74c8a`, `beb6ac1`, `ffa5a10`, + my doc fixes inside `ea74c8a`) | —                    |
 
 ## Key lesson
 
