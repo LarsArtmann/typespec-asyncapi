@@ -5,19 +5,19 @@
 echo "Running pre-commit quality checks..."
 
 echo "Building TypeScript..."
-bun run build || {
+pnpm run build || {
     echo "Build failed! Fix TypeScript errors before committing."
     exit 1
 }
 
 echo "Running ESLint..."
-bun run lint || {
+pnpm run lint || {
     echo "Lint failed! Fix ESLint errors before committing."
     exit 1
 }
 
 echo "Running critical tests..."
-bun test test/integration/real-compilation.test.ts || {
+pnpm exec vitest run test/integration/real-compilation.test.ts || {
     echo "Critical tests failed! Fix failing tests before committing."
     exit 1
 }

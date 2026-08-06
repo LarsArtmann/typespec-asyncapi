@@ -19,13 +19,13 @@ import {
   type CorrelationIdObject,
   type MessageObject,
   type MessageTraitObject,
-  type OperationObject,
   type OperationTraitObject,
   type ParameterObject,
   type ProtocolBindings,
 } from "../domain/models/asyncapi-document.js";
 import type { BuilderFn } from "./_imports.js";
-import { iterNamedTypes, nameOfType, withMessage } from "./_imports.js";
+import { nameOfType, withMessage } from "./_imports.js";
+import { iterNamedTypes } from "./shared-utils.js";
 import type { AsyncAPIConsolidatedState } from "../state.js";
 
 type Ctx = Parameters<BuilderFn>[1];
@@ -137,7 +137,7 @@ function applyOperationTraitRefs(
     if (!opName) {
       continue;
     }
-    const op = ctx.operations[opName] as OperationObject | undefined;
+    const op = ctx.operations[opName];
     if (!op) {
       continue;
     }
@@ -209,7 +209,7 @@ function applyBindingRefs(state: AsyncAPIConsolidatedState, ctx: Ctx): void {
       const refPointer = `#/components/${componentSection}/${bindingName}`;
 
       if (isOperation) {
-        const op = ctx.operations[typeName] as OperationObject | undefined;
+        const op = ctx.operations[typeName];
         if (op) {
           op.bindings = { $ref: refPointer };
         }

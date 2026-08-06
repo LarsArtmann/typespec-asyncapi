@@ -138,6 +138,24 @@ function assembleDocument(
   if (Object.keys(ctx.tags).length > 0) {
     components.tags = ctx.tags;
   }
+  if (Object.keys(ctx.operationTraits).length > 0) {
+    components.operationTraits = ctx.operationTraits;
+  }
+  if (Object.keys(ctx.messageTraits).length > 0) {
+    components.messageTraits = ctx.messageTraits;
+  }
+  if (Object.keys(ctx.reusableParameters).length > 0) {
+    components.parameters = ctx.reusableParameters;
+  }
+  if (Object.keys(ctx.reusableCorrelationIds).length > 0) {
+    components.correlationIds = ctx.reusableCorrelationIds;
+  }
+  if (Object.keys(ctx.operationBindings).length > 0) {
+    components.operationBindings = ctx.operationBindings;
+  }
+  if (Object.keys(ctx.messageBindings).length > 0) {
+    components.messageBindings = ctx.messageBindings;
+  }
 
   const services = listServices(ctx.program);
   const serviceTitle = services.length > 0 ? services[0]?.title : undefined;

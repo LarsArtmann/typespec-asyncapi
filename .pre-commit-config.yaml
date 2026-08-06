@@ -5,7 +5,7 @@
 repos:
   # Built-in hooks
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
+    rev: v5.0.0
     hooks:
       - id: trailing-whitespace
         exclude: '\.md$'
@@ -23,7 +23,7 @@ repos:
 
   # GitLeaks - Secret detection
   - repo: https://github.com/gitleaks/gitleaks
-    rev: v8.18.0
+    rev: v8.21.2
     hooks:
       - id: gitleaks
 
@@ -35,7 +35,7 @@ repos:
         entry: pnpm exec eslint
         language: system
         types: [javascript, jsx, ts, tsx]
-        args: [--fix, --max-warnings=105]
+        args: [--fix, --max-warnings=0]
         require_serial: false
 
       # TypeScript type checking
@@ -59,7 +59,7 @@ repos:
 
   # Package.json validation
   - repo: https://github.com/Yelp/detect-secrets
-    rev: v1.4.0
+    rev: v1.5.0
     hooks:
       - id: detect-secrets
         args: ["--baseline", ".secrets.baseline"]
@@ -67,14 +67,10 @@ repos:
 
   # Markdown linting
   - repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: v0.37.0
+    rev: v0.42.0
     hooks:
       - id: markdownlint
         args: [--fix]
-
-# Global configuration
-default_language_version:
-  node: "18.17.0"
 
 # Exclude patterns
 exclude: |
