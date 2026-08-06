@@ -75,6 +75,23 @@ describe("model inheritance and composition", () => {
     expect(a.properties!.a).toBeDefined();
   });
 
+  it("required arrays only include own properties in multi-level chain", async () => {
+    const doc = await compileAndValidateOrThrow(`
+      namespace Test;
+      model A { a: string; }
+      model B extends A { b: string; }
+      model C extends B { c: string; }
+      @channel("events") op publish(): C;
+    `);
+    const a = getSchema(doc, "A");
+    const b = getSchema(doc, "B");
+    const c = getSchema(doc, "C");
+
+    expect(a.required).toStrictEqual(["a"]);
+    expect(b.required).toStrictEqual(["b"]);
+    expect(c.required).toStrictEqual(["c"]);
+  });
+
   it("base model property @doc is preserved in base schema", async () => {
     const doc = await compileAndValidateOrThrow(`
       namespace Test;
