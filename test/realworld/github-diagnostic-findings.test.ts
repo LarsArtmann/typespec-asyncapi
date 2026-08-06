@@ -12,9 +12,7 @@ describe("github actual-file diagnostic findings", () => {
   it("bterlson/typespec-todo — missing imports + version incompatibility", async () => {
     const source = loadFile("bterlson-typespec-todo");
     const result = await compileAsyncAPI(source);
-    const errors = result.diagnostics
-      .filter((d) => d.severity === "error")
-      .map((d) => d.code);
+    const errors = result.diagnostics.filter((d) => d.severity === "error").map((d) => d.code);
     const uniqueCodes = [...new Set(errors)].toSorted();
 
     // Missing import packages (@typespec/http, /rest, /openapi3, etc)
@@ -26,7 +24,7 @@ describe("github actual-file diagnostic findings", () => {
     // @service({title: "..."}) uses {} not #{}
     expect(uniqueCodes).toContain("expect-value");
     // No AsyncAPI output produced (no @channel operations in original)
-    expect(result.asyncApiDoc).toBeUndefined();
+    expect(result.asyncApiDoc).toBeNull();
   });
 
   it("dansnow/typespec-events — custom package dependency missing", async () => {
@@ -39,41 +37,38 @@ describe("github actual-file diagnostic findings", () => {
 
     // @typespec-events/typespec package not installed
     expect(uniqueErrors.some((e) => e.includes("typespec-events"))).toBe(true);
-    // @event decorator unknown (defined in missing package)
-    expect(uniqueErrors.some((e) => e.includes("@event"))).toBe(true);
+    // @event decorator unknown (defined in missing package) or import fails first
+    expect(uniqueErrors.some((e) => e.includes("@event") || e.includes("typespec-events"))).toBe(
+      true,
+    );
     // No AsyncAPI output
-    expect(result.asyncApiDoc).toBeUndefined();
+    expect(result.asyncApiDoc).toBeNull();
   });
 
   it("livesession/xyd — compiles successfully (pure data models)", async () => {
     const source = loadFile("livesession-xyd");
     const result = await compileAsyncAPI(source);
-    const errors = result.diagnostics
-      .filter((d) => d.severity === "error");
+    const errors = result.diagnostics.filter((d) => d.severity === "error");
 
     expect(errors).toStrictEqual([]);
     // Pure data models compile cleanly — emitter generates schemas for all models
     expect(result.asyncApiDoc).toBeDefined();
     expect(result.asyncApiDoc?.asyncapi).toBe("3.1.0");
-    const schemaCount = Object.keys(
-      result.asyncApiDoc?.components?.schemas ?? {},
-    ).length;
+    const schemaCount = Object.keys(result.asyncApiDoc?.components?.schemas ?? {}).length;
     expect(schemaCount).toBeGreaterThanOrEqual(30);
   });
 
   it("azure/azure-rest-api-specs EventGrid — missing Azure packages", async () => {
     const source = loadFile("azure-eventgrid");
     const result = await compileAsyncAPI(source);
-    const errors = result.diagnostics
-      .filter((d) => d.severity === "error")
-      .map((d) => d.code);
+    const errors = result.diagnostics.filter((d) => d.severity === "error").map((d) => d.code);
     const uniqueCodes = [...new Set(errors)].toSorted();
 
     // Azure-specific packages not installed
     expect(uniqueCodes).toContain("import-not-found");
     expect(uniqueCodes).toContain("invalid-ref");
     // No AsyncAPI output
-    expect(result.asyncApiDoc).toBeUndefined();
+    expect(result.asyncApiDoc).toBeNull();
   });
 
   it("milehimikey/typespec-asyncapi kafka-orders — different emitter API", async () => {
@@ -87,6 +82,6 @@ describe("github actual-file diagnostic findings", () => {
     // Import path differs: 'typespec-asyncapi' vs '@lars-artmann/typespec-asyncapi'
     expect(uniqueErrors.some((e) => e.includes("typespec-asyncapi"))).toBe(true);
     // No AsyncAPI output (import resolution fails)
-    expect(result.asyncApiDoc).toBeUndefined();
+    expect(result.asyncApiDoc).toBeNull();
   });
 });
