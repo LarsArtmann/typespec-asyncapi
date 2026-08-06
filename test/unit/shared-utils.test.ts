@@ -111,9 +111,7 @@ describe("normalizeOAuth2Scopes", () => {
     expect(result.flows!.implicit!.availableScopes).toStrictEqual({
       read: "read access",
     });
-    expect(
-      (result.flows!.implicit as Record<string, unknown>).scopes,
-    ).toBeUndefined();
+    expect((result.flows!.implicit as Record<string, unknown>).scopes).toBeUndefined();
   });
 
   it("renames scopes in all four flow types", () => {
@@ -174,9 +172,7 @@ describe("normalizeOAuth2Scopes", () => {
       },
     };
     normalizeOAuth2Scopes(scheme);
-    expect(
-      (scheme.flows!.implicit as Record<string, unknown>).scopes,
-    ).toBeDefined();
+    expect((scheme.flows!.implicit as Record<string, unknown>).scopes).toBeDefined();
   });
 });
 

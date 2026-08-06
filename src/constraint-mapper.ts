@@ -14,15 +14,7 @@
  * applied as `$ref` siblings.
  */
 
-import type {
-  Enum,
-  Model,
-  ModelProperty,
-  Program,
-  Scalar,
-  Type,
-  Union,
-} from "@typespec/compiler";
+import type { Enum, Model, ModelProperty, Program, Scalar, Type, Union } from "@typespec/compiler";
 import {
   getDoc,
   getEncode,
@@ -76,10 +68,7 @@ const CONSTRAINT_TABLE: readonly ConstraintEntry[] = [
  * `ModelProperty | Scalar`, so non-encodable types (Model, Enum, Union) return
  * `undefined`.
  */
-function resolveEncode(
-  program: Program,
-  target: Type,
-): ReturnType<typeof getEncode> {
+function resolveEncode(program: Program, target: Type): ReturnType<typeof getEncode> {
   return target.kind === "ModelProperty" || target.kind === "Scalar"
     ? getEncode(program, target)
     : undefined;
@@ -89,11 +78,7 @@ function resolveEncode(
  * Apply all metadata decorators/directives (doc, deprecated, summary, examples)
  * to a schema in one call. Used for model, enum, and scalar declarations.
  */
-export function applyMetadata(
-  program: Program,
-  target: ExampleTarget,
-  schema: JsonSchema,
-): void {
+export function applyMetadata(program: Program, target: ExampleTarget, schema: JsonSchema): void {
   const doc = getDoc(program, target);
   if (doc) {
     schema.description = doc;

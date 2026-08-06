@@ -2,10 +2,7 @@
  * Security Schemes Tests
  */
 
-import {
-  compileAndGetAsyncAPI,
-  createAsyncAPITestHost,
-} from "../utils/test-helpers.js";
+import { compileAndGetAsyncAPI, createAsyncAPITestHost } from "../utils/test-helpers.js";
 
 describe("combined & Advanced Security", () => {
   it("should support multiple security schemes (AND)", async () => {

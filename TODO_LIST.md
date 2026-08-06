@@ -7,16 +7,16 @@ Long-term ideas and RFCs live in ROADMAP, not here.
 
 ## Medium Impact / Short-term
 
-| # | Task | Impact | Effort | Evidence |
-|---|------|--------|--------|----------|
-| 1 | Populate `components.tags` from `@tag` state — collect unique tags into reusable `components.tags` map | Medium | 2-3h | `src/document-builder.ts` — `ComponentsObject` type supports `tags?: Record<string, Tag \| Ref>` but `assembleDocument()` doesn't populate it. `@tag` decorator state exists in `state.tags`. |
+| #   | Task                                                                                                   | Impact | Effort | Evidence                                                                                                                                                                                      |
+| --- | ------------------------------------------------------------------------------------------------------ | ------ | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Populate `components.tags` from `@tag` state — collect unique tags into reusable `components.tags` map | Medium | 2-3h   | `src/document-builder.ts` — `ComponentsObject` type supports `tags?: Record<string, Tag \| Ref>` but `assembleDocument()` doesn't populate it. `@tag` decorator state exists in `state.tags`. |
 
 ## Low Impact / Long-term
 
-| # | Task | Impact | Effort | Evidence |
-|---|------|--------|--------|----------|
-| 2 | Populate remaining `components.*` — parameters, correlationIds, operationTraits, messageTraits, reusable bindings. Current inline approach (correlation IDs on messages, tags on operations) is valid AsyncAPI 3.1. Reusable components require new decorator infrastructure (e.g. `@trait`, `@reusableCorrelationId`) or an extraction strategy. | Low | 4-6h | AsyncAPI 3.1 spec supports these; emitter uses inline placement instead |
-| 3 | OpenAPI 3.x cross-emitter type sharing — `src/shared/` module exports are complete and tested (25 tests, incl. barrel public-API contract). No external consumer exists yet. Building a separate OpenAPI emitter is out of scope. | Low | 4-6h+ | `src/shared/index.ts` exports `JsonSchema`, `SchemaMap`, `generateSchemas`, `extractValue`, `intrinsicToSchema`, `AsyncAPISchemaEmitter`. |
+| #   | Task                                                                                                                                                                                                                                                                                                                                              | Impact | Effort | Evidence                                                                                                                                  |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | ------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| 2   | Populate remaining `components.*` — parameters, correlationIds, operationTraits, messageTraits, reusable bindings. Current inline approach (correlation IDs on messages, tags on operations) is valid AsyncAPI 3.1. Reusable components require new decorator infrastructure (e.g. `@trait`, `@reusableCorrelationId`) or an extraction strategy. | Low    | 4-6h   | AsyncAPI 3.1 spec supports these; emitter uses inline placement instead                                                                   |
+| 3   | OpenAPI 3.x cross-emitter type sharing — `src/shared/` module exports are complete and tested (25 tests, incl. barrel public-API contract). No external consumer exists yet. Building a separate OpenAPI emitter is out of scope.                                                                                                                 | Low    | 4-6h+  | `src/shared/index.ts` exports `JsonSchema`, `SchemaMap`, `generateSchemas`, `extractValue`, `intrinsicToSchema`, `AsyncAPISchemaEmitter`. |
 
 > **Completed items (see CHANGELOG [Unreleased]):**
 >

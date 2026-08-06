@@ -16,11 +16,7 @@ function getSchema(doc: ParsedAsyncAPIDocument, name: string): JsonSchema {
   return doc.components!.schemas![name];
 }
 
-function getProp(
-  doc: ParsedAsyncAPIDocument,
-  model: string,
-  field: string,
-): JsonSchema {
+function getProp(doc: ParsedAsyncAPIDocument, model: string, field: string): JsonSchema {
   return getSchema(doc, model).properties![field];
 }
 
@@ -204,10 +200,7 @@ describe("comprehensive type mapping through compilation", () => {
         @channel("events")
         op publish(): Event;
       `);
-      const pair = doc?.components?.schemas?.Event?.properties?.pair as Record<
-        string,
-        unknown
-      >;
+      const pair = doc?.components?.schemas?.Event?.properties?.pair as Record<string, unknown>;
       expect(pair?.type).toBe("array");
       const items = pair?.items as Record<string, unknown>[];
       expect(Array.isArray(items)).toBe(true);
@@ -226,8 +219,7 @@ describe("comprehensive type mapping through compilation", () => {
         @channel("events")
         op publish(): Event;
       `);
-      const triple = doc?.components?.schemas?.Event?.properties
-        ?.triple as Record<string, unknown>;
+      const triple = doc?.components?.schemas?.Event?.properties?.triple as Record<string, unknown>;
       expect(triple?.type).toBe("array");
       const items = triple?.items as Record<string, unknown>[];
       expect(items).toHaveLength(3);

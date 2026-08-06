@@ -15,9 +15,9 @@ Executed 8 of the 10 TODO items from the updated `TODO_LIST.md`. All 6 quality g
 ## a) FULLY DONE (8 of 10 items)
 
 | # | Task | What Was Done | Files Changed |
-|---|------|---------------|---------------|
+| --- | ----------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | -------------------------- |
 | 1 | Table-driven constraint mapping | Replaced 10 sequential if-blocks in `applyConstraints()` with a `CONSTRAINT_TABLE` array of `{ getter, keyword }` entries iterated in a single loop. Consolidated `applyDocDescription`, `applyDeprecated`, `applySummary`, `applyExamples` into `applyMetadata()`. Inlined `applyVisibility`. Eliminated 5 of 6 jscpd clones as a side effect. | `src/constraint-mapper.ts` (203→173 lines) |
-| 2 | `encodeAs` parameter passing | Added `resolveEncode()` helper that safely wraps `getEncode()` — returns `undefined` for non-encodable types (`Model | Enum | Union`). Wired into both `applyMetadata` (examples) and `applyConstraints` (defaults) via the `encodeAs` parameter of `serializeValueAsJson()`. | `src/constraint-mapper.ts` |
+| 2 | `encodeAs` parameter passing | Added `resolveEncode()` helper that safely wraps `getEncode()` — returns `undefined` for non-encodable types (`Model                                                                                                                                                                                                                            | Enum                                                                                                                         | Union`). Wired into both `applyMetadata`(examples) and`applyConstraints`(defaults) via the`encodeAs`parameter of`serializeValueAsJson()`. | `src/constraint-mapper.ts` |
 | 3 | Complex `@default` tests | Added 3 tests: array default (`#["urgent", "important"]`), enum member default (`Priority.High` → `"high"`), Record object default (`#{region: "us-east-1"}`). | `test/compliance/constraint-decorators.test.ts` |
 | 4 | Message `title` population | `@message(#{title: "..."})` decorator's `title` value now populates the message's `title` field (from `CommonMetadata`). Previously only `name` was set. Both `mergeExplicitMessages` in `message-builder.ts` and `registerMessage` in `channel-builder.ts` updated. | `src/builders/message-builder.ts`, `src/builders/channel-builder.ts` |
 | 5 | Operation `summary` population | `@summary` on operations now maps to `operationObj.summary` via `getSummary()` from `@typespec/compiler`. Added `getSummary` to `_imports.ts` re-export. | `src/builders/operation-builder.ts`, `src/builders/_imports.ts` |
@@ -27,47 +27,47 @@ Executed 8 of the 10 TODO items from the updated `TODO_LIST.md`. All 6 quality g
 
 ### Bonus work (not in original TODO list)
 
-| Task | What Was Done |
-|------|---------------|
-| Fixed 6 duplication clones (gate was RED) | The `verify` script discovered the jscpd gate was silently failing with 6 clones (0.58%). 5 clones in `constraint-mapper.ts` (repeated function signatures from `apply*` helpers), 1 in `binding-field-validator.ts` ↔ `generate-binding-specs.ts` (`.filter()` bindingVersion skip pattern). Fixed all 6 → 0 clones. |
-| `@encode` serialization smoke tests | 3 tests verifying `@encode(string)` on numeric types doesn't break example/default serialization. |
-| Tests for operation/channel `@summary` + message `title` | 5 new tests in `doc-propagation.test.ts` (3→8 tests). |
+| Task                                                     | What Was Done                                                                                                                                                                                                                                                                                                         |
+| -------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Fixed 6 duplication clones (gate was RED)                | The `verify` script discovered the jscpd gate was silently failing with 6 clones (0.58%). 5 clones in `constraint-mapper.ts` (repeated function signatures from `apply*` helpers), 1 in `binding-field-validator.ts` ↔ `generate-binding-specs.ts` (`.filter()` bindingVersion skip pattern). Fixed all 6 → 0 clones. |
+| `@encode` serialization smoke tests                      | 3 tests verifying `@encode(string)` on numeric types doesn't break example/default serialization.                                                                                                                                                                                                                     |
+| Tests for operation/channel `@summary` + message `title` | 5 new tests in `doc-propagation.test.ts` (3→8 tests).                                                                                                                                                                                                                                                                 |
 
 ### Gate metrics
 
-| Gate | Before (session start) | After |
-|------|------------------------|-------|
-| Build | 0 errors | 0 errors |
-| Lint | 0 warnings | 0 warnings |
-| Tests | 938 pass | 949 pass (+11) |
-| Coverage | 96.9% avg | 97.0% avg |
-| Duplication | **6 clones / 0.58% (RED)** | 0 clones / 0% |
-| `bun run verify` | Did not exist | Passes end-to-end |
+| Gate             | Before (session start)     | After             |
+| ---------------- | -------------------------- | ----------------- |
+| Build            | 0 errors                   | 0 errors          |
+| Lint             | 0 warnings                 | 0 warnings        |
+| Tests            | 938 pass                   | 949 pass (+11)    |
+| Coverage         | 96.9% avg                  | 97.0% avg         |
+| Duplication      | **6 clones / 0.58% (RED)** | 0 clones / 0%     |
+| `bun run verify` | Did not exist              | Passes end-to-end |
 
 ---
 
 ## b) PARTIALLY DONE
 
-| Task | Status | What's Missing |
-|------|--------|----------------|
-| (none) | — | All 8 attempted items are fully done with tests |
+| Task   | Status | What's Missing                                  |
+| ------ | ------ | ----------------------------------------------- |
+| (none) | —      | All 8 attempted items are fully done with tests |
 
 ---
 
 ## c) NOT STARTED (2 of 10 items)
 
-| # | Task | Why Not Started | Effort Estimate |
-|---|------|-----------------|-----------------|
-| 8 | OpenAPI 3.x cross-emitter type sharing | Explicitly out of scope per the TODO list description. `src/shared/` module exports are complete and tested (25 tests). Building a separate OpenAPI emitter would be a multi-day project. | 4-6h+ |
-| 9 | Populate remaining `components.*` (parameters, correlationIds, tags, operationTraits, messageTraits, reusable bindings) | Assessed and documented. The inline approach (correlation IDs on messages, tags on operations) is valid AsyncAPI 3.1. Reusable components would require new decorator infrastructure (`@trait`, `@reusableCorrelationId`) or an extraction strategy — this is a design decision, not just implementation work. | 4-6h (design + implementation) |
+| #   | Task                                                                                                                    | Why Not Started                                                                                                                                                                                                                                                                                                | Effort Estimate                |
+| --- | ----------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------ |
+| 8   | OpenAPI 3.x cross-emitter type sharing                                                                                  | Explicitly out of scope per the TODO list description. `src/shared/` module exports are complete and tested (25 tests). Building a separate OpenAPI emitter would be a multi-day project.                                                                                                                      | 4-6h+                          |
+| 9   | Populate remaining `components.*` (parameters, correlationIds, tags, operationTraits, messageTraits, reusable bindings) | Assessed and documented. The inline approach (correlation IDs on messages, tags on operations) is valid AsyncAPI 3.1. Reusable components would require new decorator infrastructure (`@trait`, `@reusableCorrelationId`) or an extraction strategy — this is a design decision, not just implementation work. | 4-6h (design + implementation) |
 
 ---
 
 ## d) TOTALLY FUCKED UP
 
-| Issue | Severity | Root Cause | Resolution |
-|-------|----------|------------|------------|
-| `@encode` tests initially asserted string output for `@encode(string)` on int32 | Low | I assumed `@encode(string)` would serialize numbers as strings. TypeSpec's `@encode(string)` on numeric types means "use the base10 decimal representation as a string when encoding" — but `serializeValueAsJson` without `encodeAs` still serializes as native JSON number. With `encodeAs` passed, it still serializes as a number for `@example(42)` because the example value IS already a number literal. The serialization transformation happens at a different layer. | Fixed tests to be smoke tests asserting no-breakage rather than asserting transformed output. The `encodeAs` parameter is correctly wired — the tests just validate it doesn't crash, not that it transforms the value. This is a testing gap: we don't have a test case where `encodeAs` actually changes the output. |
+| Issue                                                                           | Severity | Root Cause                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | Resolution                                                                                                                                                                                                                                                                                                             |
+| ------------------------------------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@encode` tests initially asserted string output for `@encode(string)` on int32 | Low      | I assumed `@encode(string)` would serialize numbers as strings. TypeSpec's `@encode(string)` on numeric types means "use the base10 decimal representation as a string when encoding" — but `serializeValueAsJson` without `encodeAs` still serializes as native JSON number. With `encodeAs` passed, it still serializes as a number for `@example(42)` because the example value IS already a number literal. The serialization transformation happens at a different layer. | Fixed tests to be smoke tests asserting no-breakage rather than asserting transformed output. The `encodeAs` parameter is correctly wired — the tests just validate it doesn't crash, not that it transforms the value. This is a testing gap: we don't have a test case where `encodeAs` actually changes the output. |
 
 ---
 
@@ -77,7 +77,7 @@ Executed 8 of the 10 TODO items from the updated `TODO_LIST.md`. All 6 quality g
 
 1. **The duplication gate was RED for the entire previous session** — The previous session (2026-08-06 09:02) claimed "0 clones" but had actually introduced clones via the `applyDefault`/`applyExamples`/`applyVisibility` function signatures in `constraint-mapper.ts`. The `verify` script didn't exist, so the duplication gate was never run during that session. **Lesson: `bun run verify` should ALWAYS be run before claiming gates are green. Now it exists.**
 
-2. **`applyConstraints` grew to 6+ exported helper functions that were structurally identical** — `applyDocDescription`, `applyDeprecated`, `applySummary`, `applyExamples` all had the signature `(program: Program, target: Type, schema: JsonSchema): void`. This was a duplication time bomb. The table-driven rewrite + `applyMetadata` consolidation eliminates this class of issue. **Lesson: when adding a new "apply*" helper, ask if it can be a table entry or a consolidation instead.**
+2. **`applyConstraints` grew to 6+ exported helper functions that were structurally identical** — `applyDocDescription`, `applyDeprecated`, `applySummary`, `applyExamples` all had the signature `(program: Program, target: Type, schema: JsonSchema): void`. This was a duplication time bomb. The table-driven rewrite + `applyMetadata` consolidation eliminates this class of issue. _*Lesson: when adding a new "apply*" helper, ask if it can be a table entry or a consolidation instead._\*
 
 3. **No test validates that `encodeAs` actually transforms serialization output** — The 3 `@encode` smoke tests verify no-breakage but don't verify the `encodeAs` parameter actually changes the output. This is because finding a TypeSpec type where `serializeValueAsJson(program, value, type, encodeData)` produces a DIFFERENT result than `serializeValueAsJson(program, value, type)` is non-trivial within the compiler's type system. **This is a real coverage gap.**
 
@@ -134,7 +134,7 @@ Executed 8 of the 10 TODO items from the updated `TODO_LIST.md`. All 6 quality g
 29. **Consider renaming `CONSTRAINT_TABLE` to `VALIDATION_CONSTRAINTS`** — The current name is slightly misleading: it only contains validation keywords, not metadata.
 30. **Add inline JSDoc to `CONSTRAINT_TABLE` entries** — Each entry could document which TypeSpec type it applies to (numeric, string, array).
 
-### Spec compliance depth (components.*)
+### Spec compliance depth (components.\*)
 
 31. **Design `@trait` decorator for reusable operation/message traits** — AsyncAPI 3.1 `OperationTrait`, `MessageTrait`.
 32. **Design `@reusable` marker for auto-extracting repeated patterns** — If the same correlation ID location is used on 5 messages, auto-extract to `components.correlationIds`.

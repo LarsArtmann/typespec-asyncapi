@@ -26,9 +26,7 @@ const asyncApiSchema = JSON.parse(readFileSync(schemaPath, "utf8"));
 const ajv = new Ajv({ allErrors: true, strict: false });
 const validate = ajv.compile(asyncApiSchema);
 
-async function getEmitterOutput(
-  source: string,
-): Promise<Record<string, unknown>> {
+async function getEmitterOutput(source: string): Promise<Record<string, unknown>> {
   const raw = await compileAsyncAPISpecRaw(source);
 
   const errors = raw.diagnostics.filter((d) => d.severity === "error");
@@ -62,10 +60,7 @@ describe("asyncAPI 3.1 Schema Validation", () => {
     const valid = validate(doc);
 
     if (!valid) {
-      console.error(
-        "Validation errors:",
-        JSON.stringify(validate.errors, null, 2),
-      );
+      console.error("Validation errors:", JSON.stringify(validate.errors, null, 2));
     }
     expect(valid).toBeTruthy();
   });
@@ -92,10 +87,7 @@ describe("asyncAPI 3.1 Schema Validation", () => {
     const valid = validate(doc);
 
     if (!valid) {
-      console.error(
-        "Validation errors:",
-        JSON.stringify(validate.errors, null, 2),
-      );
+      console.error("Validation errors:", JSON.stringify(validate.errors, null, 2));
     }
     expect(valid).toBeTruthy();
   });
@@ -118,10 +110,7 @@ describe("asyncAPI 3.1 Schema Validation", () => {
     const valid = validate(doc);
 
     if (!valid) {
-      console.error(
-        "Validation errors:",
-        JSON.stringify(validate.errors, null, 2),
-      );
+      console.error("Validation errors:", JSON.stringify(validate.errors, null, 2));
     }
     expect(valid).toBeTruthy();
   });
