@@ -4,6 +4,8 @@
 
 import type { Program, Type } from "@typespec/compiler";
 import type {
+  CorrelationIdObject,
+  JsonSchema,
   ParameterObject,
   ProtocolBindings,
   SecurityRequirement,
@@ -179,6 +181,8 @@ export interface OperationTraitData {
   summary?: string;
   title?: string;
   security?: SecurityRequirement[];
+  tags?: Tag[];
+  bindings?: ProtocolBindings;
 }
 
 /** Message trait definition stored from @messageTrait. */
@@ -187,6 +191,11 @@ export interface MessageTraitData {
   contentType?: string;
   description?: string;
   title?: string;
+  summary?: string;
+  tags?: Tag[];
+  bindings?: ProtocolBindings;
+  headers?: JsonSchema;
+  correlationId?: CorrelationIdObject;
 }
 
 /** Reusable parameter definition stored from @parameter. */

@@ -86,6 +86,8 @@ function pickStringFields(cfg: Record<string, unknown>, keys: string[]): Record<
 }
 
 const PARAMETER_EXTRA_FIELDS = ["enum", "default", "examples"] as const;
+const OPERATION_TRAIT_EXTRA = ["security", "tags", "bindings"] as const;
+const MESSAGE_TRAIT_EXTRA = ["summary", "tags", "bindings", "headers", "correlationId"] as const;
 
 function pickDefined(
   source: Record<string, unknown>,
@@ -122,12 +124,14 @@ export const $operationTrait = namedConfigDecorator(
   "traitName",
   ["description", "summary", "title"],
   stateSymbols.operationTraits,
+  (cfg) => pickDefined(cfg, OPERATION_TRAIT_EXTRA),
 );
 export const $messageTrait = namedConfigDecorator(
   "invalid-trait-config",
   "traitName",
   ["contentType", "description", "title"],
   stateSymbols.messageTraits,
+  (cfg) => pickDefined(cfg, MESSAGE_TRAIT_EXTRA),
 );
 export const $parameter = namedConfigDecorator(
   "invalid-parameter-config",

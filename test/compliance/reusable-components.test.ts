@@ -319,3 +319,100 @@ describe("reusable bindings compliance", () => {
     expect(doc.components?.serverBindings?.orphan).toBeDefined();
   });
 });
+
+describe("operation trait richer fields", () => {
+  it("extracts security from @operationTrait config", async () => {
+    const doc = await compileAndValidateOrThrow(`
+      @operationTrait("secure", #{
+        description: "Secured operation",
+        security: [{ userPassword: [] }]
+      })
+      namespace Test;
+      model Event { id: string; }
+      @channel("events")
+      op publish(): Event;
+    `);
+
+    const trait = doc.components?.operationTraits?.secure as OperationTraitObject;
+    expect(trait.description).toBe("Secured operation");
+    expect(trait.security).toStrictEqual([{ userPassword: [] }]);
+  });
+
+  it("extracts tags and bindings from @operationTrait config", async () => {
+    const doc = await compileAndValidateOrThrow(`
+      @operationTrait("rich", #{
+        summary: "Rich trait",
+        tags: [{ name: "production" }],
+        bindings: #{ kafka: #{ bindingVersion: "0.5.0" } }
+      })
+      namespace Test;
+      model Event { id: string; }
+      @channel("events")
+      op publish(): Event;
+    `);
+
+    const trait = doc.components?.operationTraits?.rich as OperationTraitObject;
+    expect(trait.summary).toBe("Rich trait");
+    expect(trait.tags).toStrictEqual([{ name: "production" }]);
+    expect(trait.bindings).toBeDefined();
+  });
+});
+
+describe("message trait richer fields", () => {
+  it("extracts headers from @messageTrait config", async () => {
+    const doc = await compileAndValidateOrThrow(`
+      @messageTrait("common", #{
+        contentType: "application/json",
+        headers: #{
+          type: "object",
+          properties: #{
+            traceId: #{ type: "string" }
+          }
+        }
+      })
+      namespace Test;
+      model Event { id: string; }
+      @channel("events")
+      op publish(): Event;
+    `);
+
+    const trait = doc.components?.messageTraits?.common as MessageTraitObject;
+    expect(trait.contentType).toBe("application/json");
+    expect(trait.headers).toBeDefined();
+    expect((trait.headers as Record<string, unknown>).type).toBe("object");
+  });
+
+  it("extracts correlationId from @messageTrait config", async () => {
+    const doc = await compileAndValidateOrThrow(`
+      @messageTrait("tracked", #{
+        correlationId: #{
+          location: "$message.header#/correlationId"
+        }
+      })
+      namespace Test;
+      model Event { id: string; }
+      @channel("events")
+      op publish(): Event;
+    `);
+
+    const trait = doc.components?.messageTraits?.tracked as MessageTraitObject;
+    expect(trait.correlationId).toStrictEqual({
+      location: "$message.header#/correlationId",
+    });
+  });
+
+  it("extracts summary from @messageTrait config", async () => {
+    const doc = await compileAndValidateOrThrow(`
+      @messageTrait("summarized", #{
+        summary: "Short description"
+      })
+      namespace Test;
+      model Event { id: string; }
+      @channel("events")
+      op publish(): Event;
+    `);
+
+    const trait = doc.components?.messageTraits?.summarized as MessageTraitObject;
+    expect(trait.summary).toBe("Short description");
+  });
+});

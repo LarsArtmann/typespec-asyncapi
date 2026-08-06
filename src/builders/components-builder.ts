@@ -60,13 +60,24 @@ function resolveMessage(
 export const buildReusableComponents: BuilderFn = (state, ctx) => {
   Object.assign(
     ctx.operationTraits,
-    populateNamed(state.operationTraits, (t) => pickOpt(t, ["title", "summary", "description"])),
+    populateNamed(state.operationTraits, (t) =>
+      pickOpt(t, ["title", "summary", "description", "security", "tags", "bindings"]),
+    ),
   );
   Object.assign(
     ctx.messageTraits,
     populateNamed(state.messageTraits, (t) => ({
       name: t.name,
-      ...pickOpt(t, ["contentType", "description", "title"]),
+      ...pickOpt(t, [
+        "contentType",
+        "description",
+        "title",
+        "summary",
+        "tags",
+        "bindings",
+        "headers",
+        "correlationId",
+      ]),
     })),
   );
   Object.assign(
