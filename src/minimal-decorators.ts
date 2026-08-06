@@ -84,6 +84,7 @@ export function $message(
   target: Model,
   config: unknown,
 ): void {
+  process.stderr.write(`DEBUG $message target=${target.name} config=${JSON.stringify(config)}\n`);
   validatedDecorator(context, target, config, {
     code: "invalid-message-config",
     format: { modelName: target.name },

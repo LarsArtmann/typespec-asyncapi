@@ -1,7 +1,9 @@
 /**
- * Integration tests for AsyncAPI 3.1 features added in v0.2.x:
+ * Integration tests for AsyncAPI 3.1 features added in v0.2.x.
  *
+ * Coverage:
  * - AsyncAPI 3.1 server.protocolVersion + server.pathname + server.variables
+ * - AsyncAPI 3.1 server.security via @server config
  * - AsyncAPI 3.1 channel.servers via @useChannelServer
  * - AsyncAPI 3.1 message.schemaFormat (Avro/Protobuf)
  * - AsyncAPI 3.1 message.examples via @message config
@@ -12,37 +14,35 @@
  */
 
 import { compileAsyncAPI } from "../utils/test-helpers.js";
-import {
-  compileAndValidateOrThrow,
-} from "../utils/schema-validator.js";
+import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
 
 describe("asyncAPI 3.1: server.protocolVersion + server.pathname + variables", () => {
   it("emits server.protocolVersion from @server config", async () => {
     const source = `
-      namespace KafkaApi;
-
       @server("production", #{
         url: "kafka.example.com:9092",
         protocol: "kafka",
         protocolVersion: "3.0.0",
         description: "Kafka 3.0 broker"
       })
+      namespace KafkaApi;
       @channel("events")
       op publishEvent(): string;
     `;
     const result = await compileAsyncAPI(source);
-    expect(result.asyncApiDoc?.servers?.production?.protocolVersion).toBe("3.0.0");
+    expect(result.asyncApiDoc?.servers?.production?.protocolVersion).toBe(
+      "3.0.0",
+    );
   });
 
   it("emits server.pathname from @server config", async () => {
     const source = `
-      namespace WsApi;
-
       @server("ws", #{
         url: "api.example.com",
         protocol: "ws",
         pathname: "/v1/ws"
       })
+      namespace WsApi;
       @channel("events")
       op publishEvent(): string;
     `;
@@ -52,8 +52,6 @@ describe("asyncAPI 3.1: server.protocolVersion + server.pathname + variables", (
 
   it("emits server.variables enum + default + description from @server config", async () => {
     const source = `
-      namespace Brokered;
-
       @server("kafka", #{
         url: "{broker}.example.com:9092",
         protocol: "kafka",
@@ -65,6 +63,7 @@ describe("asyncAPI 3.1: server.protocolVersion + server.pathname + variables", (
           }
         }
       })
+      namespace Brokered;
       @channel("events")
       op publishEvent(): string;
     `;
@@ -77,13 +76,12 @@ describe("asyncAPI 3.1: server.protocolVersion + server.pathname + variables", (
 
   it("emits server.security from @server config", async () => {
     const source = `
-      namespace SecureBroker;
-
       @server("kafka", #{
         url: "secure.example.com:9092",
         protocol: "kafka-secure",
         security: #{ sasl: #["scramSha512"] }
       })
+      namespace SecureBroker;
       @channel("events")
       op publishEvent(): string;
     `;
@@ -97,10 +95,9 @@ describe("asyncAPI 3.1: server.protocolVersion + server.pathname + variables", (
 describe("asyncAPI 3.1: channel.servers via @useChannelServer", () => {
   it("attaches server $refs to channel.servers", async () => {
     const source = `
-      namespace MultiServer;
-
       @server("primary", #{ url: "primary.example.com", protocol: "kafka" })
       @server("backup", #{ url: "backup.example.com", protocol: "kafka" })
+      namespace MultiServer;
       @channel("events")
       @useChannelServer("primary")
       @useChannelServer("backup")
@@ -118,8 +115,6 @@ describe("asyncAPI 3.1: channel.servers via @useChannelServer", () => {
 describe("asyncAPI 3.1: message.schemaFormat (Avro/Protobuf)", () => {
   it("emits schemaFormat on message when set via @message", async () => {
     const source = `
-      namespace AvroEvents;
-
       @message(#{
         title: "UserCreated",
         schemaFormat: "application/vnd.apache.avro+json;version=1.9.0"
@@ -128,7 +123,7 @@ describe("asyncAPI 3.1: message.schemaFormat (Avro/Protobuf)", () => {
         id: int64;
         name: string;
       }
-
+      namespace AvroEvents;
       @channel("users.created")
       op publish(): UserCreated;
     `;
@@ -140,11 +135,9 @@ describe("asyncAPI 3.1: message.schemaFormat (Avro/Protobuf)", () => {
 
   it("emits Protobuf schemaFormat", async () => {
     const source = `
-      namespace PbEvents;
-
       @message(#{ schemaFormat: "application/vnd.google.protobuf" })
       model OrderEvent { id: string; }
-
+      namespace PbEvents;
       @channel("orders")
       op publish(): OrderEvent;
     `;
@@ -158,8 +151,6 @@ describe("asyncAPI 3.1: message.schemaFormat (Avro/Protobuf)", () => {
 describe("asyncAPI 3.1: message.examples", () => {
   it("emits message.examples from @message config", async () => {
     const source = `
-      namespace ExampleEvents;
-
       @message(#{
         title: "OrderPlaced",
         examples: #[
@@ -180,7 +171,7 @@ describe("asyncAPI 3.1: message.examples", () => {
         total: int32;
         currency?: string;
       }
-
+      namespace ExampleEvents;
       @channel("orders.placed")
       op publish(): OrderPlaced;
     `;
@@ -188,7 +179,10 @@ describe("asyncAPI 3.1: message.examples", () => {
     const msg = result.asyncApiDoc?.components?.messages?.OrderPlaced;
     expect(msg?.examples).toHaveLength(2);
     expect(msg?.examples?.[0]?.name).toBe("minimal");
-    expect(msg?.examples?.[0]?.payload).toStrictEqual({ orderId: "abc", total: 100 });
+    expect(msg?.examples?.[0]?.payload).toStrictEqual({
+      orderId: "abc",
+      total: 100,
+    });
     expect(msg?.examples?.[1]?.payload).toStrictEqual({
       orderId: "xyz",
       total: 250,
@@ -200,8 +194,6 @@ describe("asyncAPI 3.1: message.examples", () => {
 describe("@operationSecurity: operation-level Security Requirements", () => {
   it("attaches SecurityRequirement to operation.security array", async () => {
     const source = `
-      namespace SecuredOps;
-
       @security(#{
         name: "jwt",
         scheme: #{ type: "http", scheme: "bearer", bearerFormat: "JWT" }
@@ -211,7 +203,6 @@ describe("@operationSecurity: operation-level Security Requirements", () => {
         scheme: #{ type: "apiKey", in: "header", name: "X-API-Key" }
       })
       namespace SecuredOps;
-
       @channel("events")
       @operationSecurity(#{ name: "jwt" })
       @operationSecurity(#{ name: "apiKey", scopes: #["read", "write"] })
@@ -229,9 +220,8 @@ describe("@operationSecurity: operation-level Security Requirements", () => {
 describe("@defaultContentType: MIME type validation", () => {
   it("accepts a valid MIME type", async () => {
     const source = `
-      namespace MimeOk;
-
       @defaultContentType("application/json")
+      namespace MimeOk;
       @channel("events")
       op publishEvent(): string;
     `;
@@ -241,9 +231,8 @@ describe("@defaultContentType: MIME type validation", () => {
 
   it("accepts a vendor MIME type", async () => {
     const source = `
-      namespace VendorMime;
-
       @defaultContentType("application/vnd.apache.avro+json")
+      namespace VendorMime;
       @channel("events")
       op publishEvent(): string;
     `;
@@ -255,9 +244,8 @@ describe("@defaultContentType: MIME type validation", () => {
 
   it("warns on an invalid MIME type", async () => {
     const source = `
-      namespace BadMime;
-
       @defaultContentType("not a mime")
+      namespace BadMime;
       @channel("events")
       op publishEvent(): string;
     `;
@@ -273,14 +261,12 @@ describe("@defaultContentType: MIME type validation", () => {
 describe("named unions registered in components.schemas", () => {
   it("emits named union as a top-level schema", async () => {
     const source = `
-      namespace UnionsApi;
-
       union Color {
         red: "red",
         green: "green",
         blue: "blue",
       }
-
+      namespace UnionsApi;
       @channel("events")
       op publish(): Color;
     `;
@@ -293,37 +279,34 @@ describe("named unions registered in components.schemas", () => {
 
   it("emits mixed-type named union as anyOf", async () => {
     const source = `
-      namespace MixedUnion;
-
       union AnyValue {
         stringValue: string,
         intValue: int32,
       }
-
+      namespace MixedUnion;
       @channel("events")
       op publish(): AnyValue;
     `;
     const result = await compileAsyncAPI(source);
     expect(result.asyncApiDoc?.components?.schemas?.AnyValue).toBeDefined();
-    expect(result.asyncApiDoc?.components?.schemas?.AnyValue?.anyOf).toBeDefined();
+    expect(
+      result.asyncApiDoc?.components?.schemas?.AnyValue?.anyOf,
+    ).toBeDefined();
   });
 });
 
 describe("model property reference unwrapping", () => {
   it("resolves User.id property reference to the underlying scalar type", async () => {
     const source = `
-      namespace RefApi;
-
       model User {
         id: safeint;
         username: string;
       }
-
       model Profile {
         user: User;
         createdBy: User.id;
       }
-
+      namespace RefApi;
       @channel("profiles")
       op publish(): Profile;
     `;
@@ -339,21 +322,17 @@ describe("model property reference unwrapping", () => {
 describe("combined: full AsyncAPI 3.1 surface", () => {
   it("emits a complete server/channel/message/operation graph that passes AsyncAPI 3.1 schema validation", async () => {
     const source = `
-      namespace Complete;
-
       model OrderPlaced {
         orderId: string;
         total: float64;
         @visibility(Lifecycle.Read)
         createdAt: utcDateTime;
       }
-
       union Status {
         pending: "pending",
         confirmed: "confirmed",
         shipped: "shipped",
       }
-
       @server("production", #{
         url: "{broker}.kafka.example.com:9092",
         protocol: "kafka",
@@ -368,6 +347,7 @@ describe("combined: full AsyncAPI 3.1 surface", () => {
       })
       @defaultContentType("application/json")
       @useChannelServer("production")
+      namespace Complete;
       @channel("orders.placed")
       @publish
       @operationSecurity(#{ name: "jwt" })

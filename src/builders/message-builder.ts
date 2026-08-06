@@ -23,6 +23,7 @@ import { iterNamedTypes } from "./shared-utils.js";
 
 /** Merge explicit @message decorator data into the messages map. */
 export const mergeExplicitMessages: BuilderFn = (state, ctx) => {
+  process.stderr.write(`DEBUG mergeExplicitMessages state.messages.size=${state.messages.size}\n`);
   for (const { type, name, data } of iterNamedTypes(state.messages)) {
     const msgKey = data.messageId ?? name;
     const msgObj: MessageObject = {
@@ -34,6 +35,7 @@ export const mergeExplicitMessages: BuilderFn = (state, ctx) => {
     };
 
     if (data.schemaFormat !== undefined) {
+      process.stderr.write(`DEBUG msgBuilder msgKey=${msgKey} schemaFormat=${data.schemaFormat}\n`);
       msgObj.schemaFormat = data.schemaFormat;
     }
     if (data.examples !== undefined && data.examples.length > 0) {
