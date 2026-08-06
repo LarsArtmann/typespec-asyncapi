@@ -36,6 +36,7 @@ export function registerMessage(
     ctx.messages[messageName] = {
       name: msgData?.title ?? messageName,
       contentType: msgData?.contentType ?? "application/json",
+      ...(msgData?.title ? { title: msgData.title } : {}),
       ...(msgData?.description ? { summary: msgData.description } : {}),
       payload: refSchema(schema),
     };

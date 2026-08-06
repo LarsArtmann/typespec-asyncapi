@@ -748,6 +748,50 @@ describe("spec Compliance: Constraint Decorators", () => {
     });
   });
 
+  describe("complex default values", () => {
+    it("maps array default (string[]) to default keyword", async () => {
+      const doc = await compileAndValidateOrThrow(`
+        namespace Test;
+        model Event {
+          tags: string[] = #["urgent", "important"];
+        }
+        @channel("events")
+        op publish(): Event;
+      `);
+      expect(propSchema(doc, "Event", "tags").default).toStrictEqual([
+        "urgent",
+        "important",
+      ]);
+    });
+
+    it("maps enum member default to default keyword", async () => {
+      const doc = await compileAndValidateOrThrow(`
+        namespace Test;
+        enum Priority { Low: "low", High: "high" }
+        model Event {
+          priority: Priority = Priority.High;
+        }
+        @channel("events")
+        op publish(): Event;
+      `);
+      expect(propSchema(doc, "Event", "priority").default).toBe("high");
+    });
+
+    it("maps Record<string> object default to default keyword", async () => {
+      const doc = await compileAndValidateOrThrow(`
+        namespace Test;
+        model Event {
+          defaults: Record<string> = #{ region: "us-east-1" };
+        }
+        @channel("events")
+        op publish(): Event;
+      `);
+      expect(propSchema(doc, "Event", "defaults").default).toStrictEqual({
+        region: "us-east-1",
+      });
+    });
+  });
+
   describe("@summary and #deprecated on scalar declarations", () => {
     it("maps @summary on a scalar declaration to title", async () => {
       const doc = await compileAndValidateOrThrow(`

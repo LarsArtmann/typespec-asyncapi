@@ -97,4 +97,32 @@ describe("spec Compliance: @doc propagation", () => {
     expect(op?.description).toBe("Detailed operation description");
     expect(op?.summary).toBe("Short Op Summary");
   });
+
+  it("maps @message title to message title field", async () => {
+    const doc = await compileAndValidateOrThrow(`
+      @message(#{title: "Order Created"})
+      model OrderCreated { orderId: string; }
+      @channel("orders")
+      @publish
+      op publishOrder(): OrderCreated;
+    `);
+
+    const msg = doc.components?.messages?.OrderCreated;
+    expect(msg).toBeDefined();
+    expect(msg?.title).toBe("Order Created");
+  });
+
+  it("sets message title from model name when @message has no explicit title", async () => {
+    const doc = await compileAndValidateOrThrow(`
+      @message(#{description: "User signup event"})
+      model UserSignup { userId: string; }
+      @channel("users")
+      @publish
+      op publishSignup(): UserSignup;
+    `);
+
+    const msg = doc.components?.messages?.UserSignup;
+    expect(msg).toBeDefined();
+    expect(msg?.title).toBe("UserSignup");
+  });
 });
