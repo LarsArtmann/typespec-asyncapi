@@ -2,7 +2,10 @@
  * Security Schemes Tests
  */
 
-import { compileAndGetAsyncAPI, createAsyncAPITestHost } from "../utils/test-helpers.js";
+import {
+  compileAndGetAsyncAPI,
+  createAsyncAPITestHost,
+} from "../utils/test-helpers.js";
 
 describe("hTTP Authentication", () => {
   it("should support HTTP Basic Auth", async () => {

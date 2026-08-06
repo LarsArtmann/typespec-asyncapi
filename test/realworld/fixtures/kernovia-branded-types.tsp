@@ -151,7 +151,7 @@ op publishLoadPluginCommand(): LoadPluginCommand;
 @publish
 op publishUnloadPluginCommand(): UnloadPluginCommand;
 
-@doc Notify when plugin loaded
+@doc("Notify when plugin loaded")
 @channel("events.plugin.loaded")
 @publish
 op publishPluginLoadedEvent(): PluginLoadedEvent;

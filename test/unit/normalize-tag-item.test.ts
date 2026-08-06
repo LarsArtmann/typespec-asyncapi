@@ -50,14 +50,18 @@ describe("normalizeTagItem: object inputs", () => {
   });
 
   it("preserves description when present", () => {
-    expect(normalizeTagItem({ name: "orders", description: "Order management" })).toStrictEqual({
+    expect(
+      normalizeTagItem({ name: "orders", description: "Order management" }),
+    ).toStrictEqual({
       name: "orders",
       description: "Order management",
     });
   });
 
   it("ignores non-string description", () => {
-    expect(normalizeTagItem({ name: "orders", description: 123 })).toStrictEqual({
+    expect(
+      normalizeTagItem({ name: "orders", description: 123 }),
+    ).toStrictEqual({
       name: "orders",
     });
   });
@@ -102,7 +106,9 @@ describe("normalizeTagItem: object inputs", () => {
   });
 
   it("omits externalDocs when it is not an object", () => {
-    expect(normalizeTagItem({ name: "docs", externalDocs: "not-an-object" })).toStrictEqual({
+    expect(
+      normalizeTagItem({ name: "docs", externalDocs: "not-an-object" }),
+    ).toStrictEqual({
       name: "docs",
     });
   });

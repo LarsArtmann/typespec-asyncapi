@@ -8,15 +8,15 @@
 
 ## Metrics: Before → After
 
-| Metric | Before (Session Start) | After (Session End) | Delta |
-|--------|----------------------|---------------------|-------|
-| Tests | 1017 | 1059 | +42 |
-| Test files | 84 | 89 | +5 |
-| Coverage | 97.4% | 97.4% | — |
-| Duplication (clones) | 0 | 0 | — |
-| Lint errors | 0 | 0 | — |
-| Build errors | 0 | 0 | — |
-| Commits pushed | — | all pushed to origin/master | — |
+| Metric               | Before (Session Start) | After (Session End)         | Delta |
+| -------------------- | ---------------------- | --------------------------- | ----- |
+| Tests                | 1017                   | 1059                        | +42   |
+| Test files           | 84                     | 89                          | +5    |
+| Coverage             | 97.4%                  | 97.4%                       | —     |
+| Duplication (clones) | 0                      | 0                           | —     |
+| Lint errors          | 0                      | 0                           | —     |
+| Build errors         | 0                      | 0                           | —     |
+| Commits pushed       | —                      | all pushed to origin/master | —     |
 
 ---
 
@@ -24,43 +24,43 @@
 
 ### Phase 1: Critical Fixes (T1-T4)
 
-| Task | What Was Done | Verification |
-|------|---------------|--------------|
-| T1 | Fixed `normalizeTagItem("")` — now returns `null` instead of `{ name: "" }`. Added `item.length > 0` guard to both string and object-name branches in `src/decorator-helpers.ts:234-240` | Build 0 errors, lint 0 warnings |
-| T2 | Added 2 negative tests: `@tags(#[""])` and `@tags(#[#{ name: "" }])` — both produce `invalid-tags-config` diagnostic. Written to `test/integration/reusable-components-negative.test.ts` | 18 tests pass |
-| T3 | Added 5 CHANGELOG entries: normalizeTagItem fix, channel binding golden tests, security format 3.1 fix, @tags JSDoc, polymorphism golden file | Committed `84ec7bb` |
-| T4 | Replaced 5 separate CI steps (Build, Lint, Test, Coverage, Duplicate) with single `pnpm run verify` in `.github/workflows/ci.yml`. Examples step kept separate | Committed `7de3d94`, verified locally |
+| Task | What Was Done                                                                                                                                                                            | Verification                          |
+| ---- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
+| T1   | Fixed `normalizeTagItem("")` — now returns `null` instead of `{ name: "" }`. Added `item.length > 0` guard to both string and object-name branches in `src/decorator-helpers.ts:234-240` | Build 0 errors, lint 0 warnings       |
+| T2   | Added 2 negative tests: `@tags(#[""])` and `@tags(#[#{ name: "" }])` — both produce `invalid-tags-config` diagnostic. Written to `test/integration/reusable-components-negative.test.ts` | 18 tests pass                         |
+| T3   | Added 5 CHANGELOG entries: normalizeTagItem fix, channel binding golden tests, security format 3.1 fix, @tags JSDoc, polymorphism golden file                                            | Committed `84ec7bb`                   |
+| T4   | Replaced 5 separate CI steps (Build, Lint, Test, Coverage, Duplicate) with single `pnpm run verify` in `.github/workflows/ci.yml`. Examples step kept separate                           | Committed `7de3d94`, verified locally |
 
 ### Phase 2: Regression Prevention (T5-T12)
 
-| Task | What Was Done | Verification |
-|------|---------------|--------------|
-| T5 | Created `test/unit/normalize-tag-item.test.ts` with 19 exhaustive unit tests: string inputs (valid, empty, whitespace, single-char), object inputs (valid name, empty name, non-string name, missing name, description preservation, non-string description, externalDocs with/without url, non-object externalDocs), invalid inputs (null, undefined, number, boolean, array) | 19 tests pass, 0 lint warnings |
-| T6 | Added mixed string/object `@tags` propagation test in `test/compliance/components-tags.test.ts` — verifies both `info.tags` and `operation.tags` receive the correct shapes, and rich tag structure is preserved in `components.tags` | 16 tests pass |
-| T7 | Added cross-contamination prevention test in `test/compliance/reusable-components.test.ts` — bound and unbound channels in same spec, verifying no binding leakage | 27 tests pass |
-| T8 | Added tag dedup test: same tag name as both string `#["shared"]` and rich object `#{ name: "shared", description: "..." }` — verifies single entry in components.tags and info.tags | 16 tests pass |
-| T9 | Created `test/golden/tag-rich.expected.yaml` + `test/golden/tag-rich.test.ts` (3 tests): exact-match golden output, components.tags rich objects, info.tags dedup | 3 tests pass |
-| T10 | Created `test/golden/example-message.expected.yaml` + `test/golden/example-message.test.ts` (3 tests): exact-match golden, message-level examples from @example, schema-level examples | 3 tests pass |
-| T11 | Created `test/golden/server-security.expected.yaml` + `test/golden/server-security.test.ts` (3 tests): exact-match golden, components.securitySchemes population, correct scheme types | 3 tests pass |
-| T12 | Full verify gate passed at 1050 tests | All gates green |
+| Task | What Was Done                                                                                                                                                                                                                                                                                                                                                                  | Verification                   |
+| ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------ |
+| T5   | Created `test/unit/normalize-tag-item.test.ts` with 19 exhaustive unit tests: string inputs (valid, empty, whitespace, single-char), object inputs (valid name, empty name, non-string name, missing name, description preservation, non-string description, externalDocs with/without url, non-object externalDocs), invalid inputs (null, undefined, number, boolean, array) | 19 tests pass, 0 lint warnings |
+| T6   | Added mixed string/object `@tags` propagation test in `test/compliance/components-tags.test.ts` — verifies both `info.tags` and `operation.tags` receive the correct shapes, and rich tag structure is preserved in `components.tags`                                                                                                                                          | 16 tests pass                  |
+| T7   | Added cross-contamination prevention test in `test/compliance/reusable-components.test.ts` — bound and unbound channels in same spec, verifying no binding leakage                                                                                                                                                                                                             | 27 tests pass                  |
+| T8   | Added tag dedup test: same tag name as both string `#["shared"]` and rich object `#{ name: "shared", description: "..." }` — verifies single entry in components.tags and info.tags                                                                                                                                                                                            | 16 tests pass                  |
+| T9   | Created `test/golden/tag-rich.expected.yaml` + `test/golden/tag-rich.test.ts` (3 tests): exact-match golden output, components.tags rich objects, info.tags dedup                                                                                                                                                                                                              | 3 tests pass                   |
+| T10  | Created `test/golden/example-message.expected.yaml` + `test/golden/example-message.test.ts` (3 tests): exact-match golden, message-level examples from @example, schema-level examples                                                                                                                                                                                         | 3 tests pass                   |
+| T11  | Created `test/golden/server-security.expected.yaml` + `test/golden/server-security.test.ts` (3 tests): exact-match golden, components.securitySchemes population, correct scheme types                                                                                                                                                                                         | 3 tests pass                   |
+| T12  | Full verify gate passed at 1050 tests                                                                                                                                                                                                                                                                                                                                          | All gates green                |
 
 ### Phase 3: Testing & Docs (T13-T25)
 
-| Task | What Was Done | Verification |
-|------|---------------|--------------|
-| T13 | Added `required` array isolation test in `test/compliance/model-composition.test.ts` — 3-level chain (A→B→C), each model's `required` only includes own properties | 16 tests pass |
-| T14 | Created `test/integration/multi-namespace-isolation.test.ts` (3 tests): server bindings isolated per namespace, security schemes isolated, operation tags isolated. Used block namespaces (`namespace X { ... }`) not blockless — blockless namespaces cause `multiple-blockless-namespace` compiler error | 3 tests pass |
-| T15 | Added emitter `version` option precedence test in `test/integration/versioning.test.ts` — `@versioned(Versions)` with `{ version: "5.0.0-beta" }` emitter option overrides enum | 6 tests pass |
-| T16 | Added 2 `@encode` constraint tests in `test/compliance/constraint-decorators.test.ts`: boolean default with @encode, and multiple @encode properties serialized independently | 56 tests pass |
-| T17 | Added 2 package.json exports contract tests in `test/unit/shared-schema-types.test.ts`: `./shared` subpath types/default conditions, `.` main entry typespec/default | 32 tests pass |
-| T18 | Benchmark profile verified: 200 channels compile in 120ms. Sub-linear scaling (20x channels → 0.6x time). No regression from session changes | 5 tests pass |
-| T19 | Removed all 23 exact line count references from AGENTS.md. Replaced `(N lines)` annotations with nothing — the descriptions stand on their own | 0 lint warnings |
-| T20 | Replaced exact test/coverage counts in FEATURES.md and ROADMAP.md with ranges ("1000+ tests", "~97% coverage", "18+ files"). Eliminates the #1 source of documentation drift | Build clean |
-| T21 | Enhanced `normalizeTagItem` documentation in AGENTS.md — now documents empty-string rejection for both string and object inputs | — |
-| T22 | Expanded `#{}` unreachable fields documentation — now lists reserved words (`const`, `enum`, `default`, etc.) and explains camelCase/PascalCase alternative for dot-separated keys | — |
-| T23 | **Already correct** — `OperationObject.action: OperationAction` (no `?`) was already required at `src/domain/models/asyncapi-document.ts:155`. No change needed. | — |
-| T24 | **Already correct** — `SecurityScheme.description?: string` already exists at `src/domain/models/asyncapi-document.ts:292`. No change needed. | — |
-| T25 | Full verify gate passed at 1059 tests. Committed documentation changes. | All gates green |
+| Task | What Was Done                                                                                                                                                                                                                                                                                              | Verification    |
+| ---- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------- |
+| T13  | Added `required` array isolation test in `test/compliance/model-composition.test.ts` — 3-level chain (A→B→C), each model's `required` only includes own properties                                                                                                                                         | 16 tests pass   |
+| T14  | Created `test/integration/multi-namespace-isolation.test.ts` (3 tests): server bindings isolated per namespace, security schemes isolated, operation tags isolated. Used block namespaces (`namespace X { ... }`) not blockless — blockless namespaces cause `multiple-blockless-namespace` compiler error | 3 tests pass    |
+| T15  | Added emitter `version` option precedence test in `test/integration/versioning.test.ts` — `@versioned(Versions)` with `{ version: "5.0.0-beta" }` emitter option overrides enum                                                                                                                            | 6 tests pass    |
+| T16  | Added 2 `@encode` constraint tests in `test/compliance/constraint-decorators.test.ts`: boolean default with @encode, and multiple @encode properties serialized independently                                                                                                                              | 56 tests pass   |
+| T17  | Added 2 package.json exports contract tests in `test/unit/shared-schema-types.test.ts`: `./shared` subpath types/default conditions, `.` main entry typespec/default                                                                                                                                       | 32 tests pass   |
+| T18  | Benchmark profile verified: 200 channels compile in 120ms. Sub-linear scaling (20x channels → 0.6x time). No regression from session changes                                                                                                                                                               | 5 tests pass    |
+| T19  | Removed all 23 exact line count references from AGENTS.md. Replaced `(N lines)` annotations with nothing — the descriptions stand on their own                                                                                                                                                             | 0 lint warnings |
+| T20  | Replaced exact test/coverage counts in FEATURES.md and ROADMAP.md with ranges ("1000+ tests", "~97% coverage", "18+ files"). Eliminates the #1 source of documentation drift                                                                                                                               | Build clean     |
+| T21  | Enhanced `normalizeTagItem` documentation in AGENTS.md — now documents empty-string rejection for both string and object inputs                                                                                                                                                                            | —               |
+| T22  | Expanded `#{}` unreachable fields documentation — now lists reserved words (`const`, `enum`, `default`, etc.) and explains camelCase/PascalCase alternative for dot-separated keys                                                                                                                         | —               |
+| T23  | **Already correct** — `OperationObject.action: OperationAction` (no `?`) was already required at `src/domain/models/asyncapi-document.ts:155`. No change needed.                                                                                                                                           | —               |
+| T24  | **Already correct** — `SecurityScheme.description?: string` already exists at `src/domain/models/asyncapi-document.ts:292`. No change needed.                                                                                                                                                              | —               |
+| T25  | Full verify gate passed at 1059 tests. Committed documentation changes.                                                                                                                                                                                                                                    | All gates green |
 
 ### Additional Work (Auto-Git Daemon)
 
@@ -148,7 +148,11 @@ Every golden test file (`polymorphism.test.ts`, `reusable-components.test.ts`, `
 ```typescript
 function extractOutput(raw): string {
   for (const [path, content] of raw.outputFiles) {
-    if (path.includes("asyncapi") && typeof content === "string" && content.startsWith("asyncapi")) {
+    if (
+      path.includes("asyncapi") &&
+      typeof content === "string" &&
+      content.startsWith("asyncapi")
+    ) {
       return content;
     }
   }
@@ -193,6 +197,7 @@ The plan identified this as a design decision needing user input. Tags in `info.
 ## f) 50 Things to Get Done Next
 
 ### Spec Compliance (High Impact)
+
 1. `@schemaFormat` decorator support
 2. Reusable server definitions (`@reusableServer` + `@useServer`)
 3. `@correlationId` on operations (not just models)
@@ -210,6 +215,7 @@ The plan identified this as a design decision needing user input. Tags in `info.
 15. WebSocket subprotocol validation (`Sec-WebSocket-Protocol`)
 
 ### Architecture & DX (Medium Impact)
+
 16. TypeSpec 1.14.0 upgrade (auto decorators, `.ts` module imports, memory leak fix)
 17. Doc-entropy CI guard (fail CI on hardcoded counts in docs)
 18. Extract `extractAsyncAPIOutput()` helper to `test/utils/test-helpers.ts`
@@ -227,6 +233,7 @@ The plan identified this as a design decision needing user input. Tags in `info.
 30. Remove stale "24 diagnostic codes" CHANGELOG entry
 
 ### Testing Gaps (Medium Impact)
+
 31. Test `@correlationId` on models with `location` field
 32. Test multi-level discriminator chains (A → B → C with discriminator at A)
 33. Test `@format` with all AsyncAPI-recognized format values
@@ -244,6 +251,7 @@ The plan identified this as a design decision needing user input. Tags in `info.
 45. Test YAML vs JSON output format differences
 
 ### Ecosystem & Polish (Lower Impact)
+
 46. `@asyncapi/generator` CLI integration testing
 47. OpenAPI cross-emitter proof of concept
 48. AsyncAPI Studio live preview testing

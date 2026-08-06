@@ -5,10 +5,19 @@
  * messages. Applies correlation IDs, headers, bindings, tags, and @doc.
  */
 
-import type { JsonSchema, MessageObject } from "../domain/models/asyncapi-document.js";
+import type {
+  JsonSchema,
+  MessageObject,
+} from "../domain/models/asyncapi-document.js";
 import { refSchema } from "../domain/models/asyncapi-document.js";
 import type { Program, Type } from "@typespec/compiler";
-import { getDoc, getExamples, nameOfType, serializeValueAsJson, withMessage } from "./_imports.js";
+import {
+  getDoc,
+  getExamples,
+  nameOfType,
+  serializeValueAsJson,
+  withMessage,
+} from "./_imports.js";
 import type { AsyncAPIConsolidatedState, BuilderFn } from "./_imports.js";
 import { iterNamedTypes } from "./shared-utils.js";
 
@@ -179,7 +188,11 @@ const applyMessageBindings = messageDecorator("bindings", (s, t) => {
  * Populate `MessageObject.examples` from `@example` on the message model.
  * Each example value is serialized to JSON and wrapped as `{ payload: value }`.
  */
-function applyMessageExamples(program: Program, type: Type, msg: MessageObject): void {
+function applyMessageExamples(
+  program: Program,
+  type: Type,
+  msg: MessageObject,
+): void {
   const examples = getExamples(program, type as never);
   if (examples.length === 0) {
     return;

@@ -51,19 +51,6 @@ function loadFixtures(): Fixture[] {
 
 const fixtures = loadFixtures();
 
-function assertNoErrorDiagnostics(
-  diagnostics: { severity: string; code: string; message: string }[],
-  fixtureName: string,
-): void {
-  const errors = diagnostics.filter((d) => d.severity === "error");
-  const formatted = errors.map((e) => `[${e.code}] ${e.message}`).join("\n");
-  expect(errors).toStrictEqual([])
-    ? undefined
-    : (() => {
-        throw new Error(`${fixtureName} produced error diagnostics:\n${formatted}`);
-      })();
-}
-
 describe("real-World External Model Patterns", () => {
   it("should have at least 5 real-world fixtures", () => {
     expect(fixtures.length).toBeGreaterThanOrEqual(5);
@@ -73,7 +60,8 @@ describe("real-World External Model Patterns", () => {
     describe(`fixture: ${fixture.name}`, () => {
       it("should compile without error diagnostics", async () => {
         const result = await compileAsyncAPI(fixture.source);
-        assertNoErrorDiagnostics(result.diagnostics, fixture.name);
+        const errors = result.diagnostics.filter((d) => d.severity === "error");
+        expect(errors).toStrictEqual([]);
       });
 
       it("should produce an AsyncAPI 3.1.0 document", async () => {
@@ -84,18 +72,21 @@ describe("real-World External Model Patterns", () => {
 
       it("should validate against the official AsyncAPI 3.1.0 JSON Schema", async () => {
         const validation = await compileAndValidate(fixture.source);
-        if (!validation.valid) {
-          const schemaErrors = validation.errors
-            ? validation.errors.map((e) => `  ${e.instancePath}: ${e.message}`)
-            : [];
-          const diagErrors = validation.diagnostics
-            .filter((d) => d.severity === "error")
-            .map((d) => `  [${d.code}] ${d.message}`);
-          throw new Error(
-            `${fixture.name} validation failed:\nSchema:\n${schemaErrors.join("\n")}\nDiagnostics:\n${diagErrors.join("\n")}`,
-          );
-        }
-        expect(validation.valid).toBe(true);
+        const schemaErrors = validation.errors
+          ? validation.errors.map((e) => `${e.instancePath}: ${e.message}`)
+          : [];
+        const diagErrors = validation.diagnostics
+          .filter((d) => d.severity === "error")
+          .map((d) => `[${d.code}] ${d.message}`);
+        expect({
+          valid: validation.valid,
+          schemaErrors,
+          diagErrors,
+        }).toStrictEqual({
+          valid: true,
+          schemaErrors: [],
+          diagErrors: [],
+        });
       });
 
       it("should have at least 2 operations", async () => {
@@ -121,17 +112,25 @@ describe("real-World External Model Patterns", () => {
         const doc = result.asyncApiDoc;
         expect(doc).toBeDefined();
 
+        const opRefs: string[] = [];
         for (const [, op] of Object.entries(doc?.operations ?? {})) {
-          expect(op.channel?.$ref).toMatch(/^#\/channels\//);
+          opRefs.push(op.channel?.$ref ?? "");
           for (const msg of op.messages ?? []) {
-            expect(msg.$ref).toMatch(/^#\/channels\//);
+            opRefs.push(msg.$ref ?? "");
           }
         }
+        for (const ref of opRefs) {
+          expect(ref).toMatch(/^#\/channels\//);
+        }
 
+        const channelMsgRefs: string[] = [];
         for (const [, ch] of Object.entries(doc?.channels ?? {})) {
           for (const [, msgRef] of Object.entries(ch.messages ?? {})) {
-            expect(msgRef.$ref).toMatch(/^#\/components\/messages\//);
+            channelMsgRefs.push(msgRef.$ref ?? "");
           }
+        }
+        for (const ref of channelMsgRefs) {
+          expect(ref).toMatch(/^#\/components\/messages\//);
         }
       });
 
@@ -157,7 +156,6 @@ describe("real-World External Model Patterns", () => {
         const messages = result.asyncApiDoc?.components?.messages ?? {};
         expect(Object.keys(messages).length).toBeGreaterThan(0);
         for (const [, msg] of Object.entries(messages)) {
-          expect(msg.contentType).toBeDefined();
           expect(msg.contentType).toBeTypeOf("string");
         }
       });

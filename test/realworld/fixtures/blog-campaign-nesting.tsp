@@ -96,7 +96,7 @@ model Campaign extends AggregateRoot {
   audienceSegments: AudienceSegment[];
   goals: CampaignGoal[];
   contentStrategy: ContentStrategy;
-  tags: string[] = [];
+  tags: string[];
 }
 
 // --- Campaign events (extends DomainEvent, deeply nested eventData) ---
