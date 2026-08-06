@@ -133,13 +133,42 @@ export const $messageTrait = namedConfigDecorator(
   stateSymbols.messageTraits,
   (cfg) => pickDefined(cfg, MESSAGE_TRAIT_EXTRA),
 );
-export const $parameter = namedConfigDecorator(
-  "invalid-parameter-config",
-  "parameterName",
-  ["description", "location"],
-  stateSymbols.reusableParameters,
-  (cfg) => pickDefined(cfg, PARAMETER_EXTRA_FIELDS),
-);
+export function $parameter(
+  context: DecoratorContext,
+  target: Namespace,
+  name: unknown,
+  config: unknown,
+): void {
+  if (
+    !validateNonEmptyString(name, context, target, "invalid-parameter-config", {
+      parameterName: String(name),
+    })
+  ) {
+    return;
+  }
+  const cfg = extractConfigRecord(config);
+  validateParameterLocation(cfg, context, target);
+  storeMulti(context.program, stateSymbols.reusableParameters, target, {
+    name,
+    ...pickStringFields(cfg, ["description", "location"]),
+    ...pickDefined(cfg, PARAMETER_EXTRA_FIELDS),
+  });
+}
+
+/** Warn if `location` is not a valid AsyncAPI runtime expression. */
+function validateParameterLocation(
+  cfg: Record<string, unknown>,
+  context: DecoratorContext,
+  target: Namespace,
+): void {
+  const { location } = cfg;
+  if (typeof location !== "string" || location.length === 0) {
+    return;
+  }
+  if (!location.startsWith("$message.") || !location.includes("#")) {
+    reportDiagnostic(context, "invalid-parameter-location", target, { location });
+  }
+}
 
 export function $reusableCorrelationId(
   context: DecoratorContext,

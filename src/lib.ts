@@ -191,6 +191,9 @@ export const $lib = createTypeSpecLibrary({
       description: "Models to referenced correlation ID names",
     },
     bindingRefs: { description: "Targets to referenced binding names" },
+    channelBindingRefs: {
+      description: "Operations to referenced channel binding names",
+    },
   },
 } as const);
 
@@ -220,4 +223,5 @@ export const stateSymbols = {
   messageTraitRefs: Symbol("messageTraitRefs"),
   correlationIdRefs: Symbol("correlationIdRefs"),
   bindingRefs: Symbol("bindingRefs"),
+  channelBindingRefs: Symbol("channelBindingRefs"),
 } as const;

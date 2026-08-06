@@ -62,6 +62,7 @@ export function buildAsyncAPIDocument(
     operationBindings: {},
     messageBindings: {},
     serverBindings: {},
+    channelBindings: {},
   };
 
   discoverOperations(state, ctx);
@@ -148,6 +149,9 @@ function assembleDocument(
   }
   if (Object.keys(ctx.serverBindings).length > 0) {
     components.serverBindings = ctx.serverBindings;
+  }
+  if (Object.keys(ctx.channelBindings).length > 0) {
+    components.channelBindings = ctx.channelBindings;
   }
 
   const services = listServices(ctx.program);

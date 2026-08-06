@@ -245,6 +245,7 @@ export interface AsyncAPIConsolidatedState {
   messageTraitRefs: Map<Type, string[]>;
   correlationIdRefs: Map<Type, string>;
   bindingRefs: Map<Type, string[]>;
+  channelBindingRefs: Map<Type, string[]>;
 }
 
 /**
@@ -287,5 +288,6 @@ export function consolidateAsyncAPIState(program: Program): AsyncAPIConsolidated
     messageTraitRefs: getMultiState<string>(program, stateSymbols.messageTraitRefs),
     correlationIdRefs: getStateMap<string>(program, stateSymbols.correlationIdRefs),
     bindingRefs: getMultiState<string>(program, stateSymbols.bindingRefs),
+    channelBindingRefs: getMultiState<string>(program, stateSymbols.channelBindingRefs),
   };
 }

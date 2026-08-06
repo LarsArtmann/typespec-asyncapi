@@ -45,6 +45,7 @@ export interface DocumentBuildContext {
   operationBindings: Record<string, ProtocolBindings>;
   messageBindings: Record<string, ProtocolBindings>;
   serverBindings: Record<string, ProtocolBindings>;
+  channelBindings: Record<string, ProtocolBindings>;
   discoveredOps: DiscoveredOp[];
   opToChannel: Map<string, string>;
   channelDocs: Map<string, string>;

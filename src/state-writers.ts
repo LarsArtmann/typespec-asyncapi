@@ -327,3 +327,4 @@ export const storeCorrelationIdRef = (
 };
 
 export const storeBindingRef: MultiStore = multiRefStore(stateSymbols.bindingRefs);
+export const storeChannelBindingRef: MultiStore = multiRefStore(stateSymbols.channelBindingRefs);

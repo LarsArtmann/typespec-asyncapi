@@ -16,6 +16,11 @@ const hasErrorCode = (
 const hasNoErrors = (diagnostics: readonly { severity: string }[]): boolean =>
   diagnostics.every((d) => d.severity !== "error");
 
+const hasWarningCode = (
+  diagnostics: readonly { severity: string; code: string }[],
+  suffix: string,
+): boolean => diagnostics.some((d) => d.severity === "warning" && d.code.endsWith(suffix));
+
 describe("negative: operationTrait", () => {
   it("reports invalid-trait-config for empty name", async () => {
     const result = await compileAsyncAPISpecRaw(`
@@ -63,6 +68,22 @@ describe("negative: parameter", () => {
       namespace Test;
     `);
     expect(hasErrorCode(result.diagnostics, "invalid-parameter-config")).toBe(true);
+  });
+
+  it("warns invalid-parameter-location for malformed location", async () => {
+    const result = await compileAsyncAPISpecRaw(`
+      @parameter("userId", #{ description: "User", location: "invalid-path" })
+      namespace Test;
+    `);
+    expect(hasWarningCode(result.diagnostics, "invalid-parameter-location")).toBe(true);
+  });
+
+  it("does not warn for valid $message runtime expression", async () => {
+    const result = await compileAsyncAPISpecRaw(`
+      @parameter("userId", #{ description: "User", location: "$message.payload#/userId" })
+      namespace Test;
+    `);
+    expect(hasWarningCode(result.diagnostics, "invalid-parameter-location")).toBeFalsy();
   });
 });
 
