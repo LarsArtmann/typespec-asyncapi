@@ -8,7 +8,6 @@ import {
   reportDiagnostic,
   reportUnsupportedProtocol,
   validateConfig,
-  validateNameAndRun,
   validateNonEmptyString,
 } from "./decorator-helpers.js";
 import { processBindings } from "./validation/binding-validator.js";
@@ -92,18 +91,14 @@ function namedConfigDecorator(
   fields: string[],
   symbol: symbol,
 ): (context: DecoratorContext, target: Namespace, name: unknown, config: unknown) => void {
-  return (context, target, name, config) =>
-    validateNameAndRun({
-      context,
-      target,
-      name,
-      code,
-      formatKey,
-      onValid: (n) => {
-        const cfg = extractConfigRecord(config);
-        storeMulti(context.program, symbol, target, { name: n, ...pickStringFields(cfg, fields) });
-      },
-    });
+  return (context, target, name, config) => {
+    const valid = validateNonEmptyString(name, context, target, code, { [formatKey]: String(name) });
+    if (!valid) {
+      return;
+    }
+    const cfg = extractConfigRecord(config);
+    storeMulti(context.program, symbol, target, { name, ...pickStringFields(cfg, fields) });
+  };
 }
 
 export const $operationTrait = namedConfigDecorator(
@@ -122,41 +117,27 @@ export function $reusableCorrelationId(
   name: unknown,
   location: unknown,
 ): void {
-  validateNameAndRun({
-    context,
-    target,
-    name,
-    code: "invalid-correlationId-config",
-    formatKey: "modelName",
-    onValid: (n) => {
-      const format = { modelName: n };
-      if (!validateNonEmptyString(location, context, target, "invalid-correlationId-config", format)) {
-        return;
-      }
-      storeMulti(context.program, stateSymbols.reusableCorrelationIds, target, { location, name: n });
-    },
-  });
+  const fmt = { modelName: String(name) };
+  const ok = validateNonEmptyString(name, context, target, "invalid-correlationId-config", fmt)
+    && validateNonEmptyString(location, context, target, "invalid-correlationId-config", fmt);
+  if (ok) {
+    storeMulti(context.program, stateSymbols.reusableCorrelationIds, target, { location, name });
+  }
 }
 
 export function $reusableBinding(
   context: DecoratorContext,
   target: Namespace,
   name: unknown,
-  config: unknown,
+  bindingConfig: unknown,
 ): void {
-  validateNameAndRun({
-    context,
-    target,
-    name,
-    code: "invalid-bindings-config",
-    formatKey: "targetKind",
-    onValid: (n) => {
-      if (!config || typeof config !== "object") {
-        reportDiagnostic(context, "invalid-bindings-config", target, { targetKind: target.kind });
-        return;
-      }
-      const { bindings } = processBindings(extractConfigRecord(config));
-      storeMulti(context.program, stateSymbols.reusableBindings, target, { bindings, name: n });
-    },
-  });
+  const nameOk = validateNonEmptyString(name, context, target, "invalid-bindings-config", { targetKind: target.kind });
+  if (!nameOk || !bindingConfig || typeof bindingConfig !== "object") {
+    if (nameOk) {
+      reportDiagnostic(context, "invalid-bindings-config", target, { targetKind: target.kind });
+    }
+    return;
+  }
+  const { bindings } = processBindings(extractConfigRecord(bindingConfig));
+  storeMulti(context.program, stateSymbols.reusableBindings, target, { bindings, name });
 }

@@ -101,19 +101,19 @@ export const applyReusableRefs: BuilderFn = (state, ctx) => {
       .map((n) => refOperationTrait(n));
   }
 
-  for (const [type, names] of state.messageTraitRefs) {
+  const refTypes = new Set<Type>([...state.messageTraitRefs.keys(), ...state.correlationIdRefs.keys()]);
+  for (const type of refTypes) {
     const msg = resolveMessage(state, ctx, type);
-    if (msg) {
-      msg.traits = names.filter((n) => n in ctx.messageTraits).map((n) => refMessageTrait(n));
+    if (!msg) {
+      continue;
     }
-  }
-
-  for (const [type, corrIdName] of state.correlationIdRefs) {
-    if (corrIdName in ctx.reusableCorrelationIds) {
-      const msg = resolveMessage(state, ctx, type);
-      if (msg) {
-        msg.correlationId = refCorrelationId(corrIdName);
-      }
+    const traitNames = state.messageTraitRefs.get(type);
+    if (traitNames) {
+      msg.traits = traitNames.filter((n) => n in ctx.messageTraits).map((n) => refMessageTrait(n));
+    }
+    const corrIdName = state.correlationIdRefs.get(type);
+    if (corrIdName && corrIdName in ctx.reusableCorrelationIds) {
+      msg.correlationId = refCorrelationId(corrIdName);
     }
   }
 

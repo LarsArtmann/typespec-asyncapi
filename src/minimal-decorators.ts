@@ -124,9 +124,11 @@ function makeConfigDecorator<T>(
     });
 }
 
+const targetKindFormat = (target: { kind: string }): Record<string, unknown> => ({ targetKind: target.kind });
+
 export const $protocol = makeConfigDecorator<Operation | Model>(
   "invalid-protocol-config",
-  (target) => ({ targetKind: target.kind }),
+  targetKindFormat,
   (ctx, target, cfg) => {
     const configRecord = extractConfigRecord(cfg);
     const protocol = configRecord.protocol as string | undefined;
@@ -140,7 +142,7 @@ export const $protocol = makeConfigDecorator<Operation | Model>(
 
 export const $security = makeConfigDecorator<Operation | Namespace>(
   "invalid-security-config",
-  (target) => ({ targetKind: target.kind }),
+  targetKindFormat,
   (ctx, target, cfg) => {
     applySecurity({ context: ctx, target, config: cfg });
   },
