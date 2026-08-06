@@ -118,7 +118,9 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<JsonSchema, AsyncAPIEmitt
   }
 
   scalarDeclaration(scalar: Scalar, name: string): EmitterOutput<JsonSchema> {
-    return this.emitter.result.declaration(name, this.intrinsicSchema(scalar.name));
+    const schema = this.intrinsicSchema(scalar.name);
+    applyMetadata(this.emitter.getProgram(), scalar, schema);
+    return this.emitter.result.declaration(name, schema);
   }
 
   scalarInstantiation(scalar: Scalar, name: string | undefined): EmitterOutput<JsonSchema> {

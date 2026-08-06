@@ -112,6 +112,17 @@ export function applyVisibility(program: Program, prop: ModelProperty, schema: J
 }
 
 /**
+ * Apply TypeSpec default value (`prop: Type = value` syntax) to a schema's `default` keyword.
+ * Uses `serializeValueAsJson` to convert TypeSpec Value to plain JSON.
+ * `default` is an annotation keyword in JSON Schema, so it is applied even on `$ref` schemas.
+ */
+export function applyDefault(program: Program, prop: ModelProperty, schema: JsonSchema): void {
+  if (prop.defaultValue) {
+    schema.default = serializeValueAsJson(program, prop.defaultValue, prop.defaultValue.type);
+  }
+}
+
+/**
  * Apply all metadata decorators/directives (doc, deprecated, summary, examples)
  * to a schema in one call. Used for model and enum declarations.
  */
@@ -131,6 +142,7 @@ export function applyConstraints(
   applyDeprecated(program, prop, schema);
   applySummary(program, prop, schema);
   applyExamples(program, prop, schema);
+  applyDefault(program, prop, schema);
   applyVisibility(program, prop, schema);
 
   if (schema.$ref) {
