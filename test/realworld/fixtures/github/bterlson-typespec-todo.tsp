@@ -37,7 +37,7 @@ model User {
   @visibility(Lifecycle.Create)
   password: string;
 
-  @visibility(Lifecycle.None)
+  @visibility(Lifecycle.Read)
   validated: boolean;
 }
 

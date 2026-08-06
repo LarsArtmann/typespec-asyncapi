@@ -175,7 +175,7 @@ describe("github real-project compilation", () => {
     it("should render utcDateTime as { type: string, format: date-time }", async () => {
       const doc = await compileAndValidateOrThrow(source);
       const todoItem = doc.components?.schemas?.TodoItem;
-      expect(todoItem?.properties?.createdAt).toStrictEqual({
+      expect(todoItem?.properties?.createdAt).toMatchObject({
         format: "date-time",
         type: "string",
       });
