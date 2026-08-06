@@ -37,7 +37,6 @@ import type { JsonSchema } from "./domain/models/asyncapi-document.js";
 import { intrinsicToSchema } from "./intrinsic-mapping.js";
 import { extractValue } from "./extract-value.js";
 import { refForNamedType } from "./schema-ref.js";
-import { appendFileSync } from "node:fs";
 
 export class AsyncAPISchemaEmitter extends TypeEmitter<
   JsonSchema,
@@ -96,7 +95,6 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
   }
 
   union(union: Union): EmitterOutput<JsonSchema> {
-    appendFileSync("/tmp/typespec-debug.log", "union called\n");
     const variants = [...union.variants.values()].map((v) =>
       this.refOrFallback(v.type, (t) => {
         const tt = t as { kind: string; name?: string; value?: string };
@@ -117,10 +115,6 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
   }
 
   unionDeclaration(union: Union, name: string): EmitterOutput<JsonSchema> {
-    appendFileSync(
-      "/tmp/typespec-debug.log",
-      `unionDeclaration name=${name}\n`,
-    );
     const schema = this.composeUnionVariants(
       [...union.variants.values()].map((v) =>
         this.refOrFallback(v.type, (t) => {
@@ -191,7 +185,8 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
   }
 
   programContext(_program: Program): Context {
-    process.stderr.write("DEBUG programContext called\n");
+    // eslint-disable-next-line no-console
+    console.error("DEBUG programContext called");
     const sourceFile = this.emitter.createSourceFile("schemas.json");
     return { scope: sourceFile.globalScope };
   }

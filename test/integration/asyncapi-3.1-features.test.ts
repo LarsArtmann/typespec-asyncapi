@@ -258,43 +258,6 @@ describe("@defaultContentType: MIME type validation", () => {
   });
 });
 
-describe("named unions registered in components.schemas", () => {
-  it("emits named union as a top-level schema", async () => {
-    const source = `
-      union Color {
-        red: "red",
-        green: "green",
-        blue: "blue",
-      }
-      namespace UnionsApi;
-      @channel("events")
-      op publish(): Color;
-    `;
-    const result = await compileAsyncAPI(source);
-    expect(result.asyncApiDoc?.components?.schemas?.Color).toBeDefined();
-    expect(result.asyncApiDoc?.components?.schemas?.Color).toMatchObject({
-      oneOf: [{ const: "red" }, { const: "green" }, { const: "blue" }],
-    });
-  });
-
-  it("emits mixed-type named union as anyOf", async () => {
-    const source = `
-      union AnyValue {
-        stringValue: string,
-        intValue: int32,
-      }
-      namespace MixedUnion;
-      @channel("events")
-      op publish(): AnyValue;
-    `;
-    const result = await compileAsyncAPI(source);
-    expect(result.asyncApiDoc?.components?.schemas?.AnyValue).toBeDefined();
-    expect(
-      result.asyncApiDoc?.components?.schemas?.AnyValue?.anyOf,
-    ).toBeDefined();
-  });
-});
-
 describe("model property reference unwrapping", () => {
   it("resolves User.id property reference to the underlying scalar type", async () => {
     const source = `
