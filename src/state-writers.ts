@@ -143,14 +143,14 @@ function appendToStateArray<K, V>(map: Map<K, V[]>, key: K, entry: V): void {
   }
 }
 
-export const storeTags = (program: Program, target: Operation | Model, tags: string[]): void => {
+export const storeTags = (program: Program, target: Operation | Model, tags: Tag[]): void => {
   const map = getStateMap<Tag[]>(program, stateSymbols.tags);
   const existing = map.get(target) ?? [];
-  const allNames = new Set([...existing.map((t) => t.name), ...tags]);
-  map.set(
-    target,
-    [...allNames].map((name) => ({ name })),
-  );
+  const byName = new Map(existing.map((t) => [t.name, t]));
+  for (const tag of tags) {
+    byName.set(tag.name, { ...byName.get(tag.name), ...tag });
+  }
+  map.set(target, [...byName.values()]);
 };
 
 export const storeCorrelationId = (program: Program, target: Model, location: string): void => {

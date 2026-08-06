@@ -101,7 +101,11 @@ function namedConfigDecorator(
   formatKey: string,
   fields: string[],
   symbol: symbol,
-  extraPicker?: (cfg: Record<string, unknown>) => Record<string, unknown>,
+  extraPicker?: (
+    cfg: Record<string, unknown>,
+    context?: DecoratorContext,
+    target?: Namespace,
+  ) => Record<string, unknown>,
 ): (context: DecoratorContext, target: Namespace, name: unknown, config: unknown) => void {
   return (context, target, name, config) => {
     const valid = validateNonEmptyString(name, context, target, code, {
@@ -114,7 +118,7 @@ function namedConfigDecorator(
     storeMulti(context.program, symbol, target, {
       name,
       ...pickStringFields(cfg, fields),
-      ...extraPicker?.(cfg),
+      ...extraPicker?.(cfg, context, target),
     });
   };
 }
@@ -133,27 +137,18 @@ export const $messageTrait = namedConfigDecorator(
   stateSymbols.messageTraits,
   (cfg) => pickDefined(cfg, MESSAGE_TRAIT_EXTRA),
 );
-export function $parameter(
-  context: DecoratorContext,
-  target: Namespace,
-  name: unknown,
-  config: unknown,
-): void {
-  if (
-    !validateNonEmptyString(name, context, target, "invalid-parameter-config", {
-      parameterName: String(name),
-    })
-  ) {
-    return;
-  }
-  const cfg = extractConfigRecord(config);
-  validateParameterLocation(cfg, context, target);
-  storeMulti(context.program, stateSymbols.reusableParameters, target, {
-    name,
-    ...pickStringFields(cfg, ["description", "location"]),
-    ...pickDefined(cfg, PARAMETER_EXTRA_FIELDS),
-  });
-}
+export const $parameter = namedConfigDecorator(
+  "invalid-parameter-config",
+  "parameterName",
+  ["description", "location"],
+  stateSymbols.reusableParameters,
+  (cfg, context, target) => {
+    if (context && target) {
+      validateParameterLocation(cfg, context, target);
+    }
+    return pickDefined(cfg, PARAMETER_EXTRA_FIELDS);
+  },
+);
 
 /** Warn if `location` is not a valid AsyncAPI runtime expression. */
 function validateParameterLocation(

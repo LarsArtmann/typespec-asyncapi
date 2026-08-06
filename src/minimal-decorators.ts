@@ -198,13 +198,41 @@ export function $tags(context: DecoratorContext, target: DiagnosticTarget, value
     return;
   }
 
-  const stringTags = value.filter((tag): tag is string => typeof tag === "string");
-  if (stringTags.length !== value.length) {
-    reportDiagnostic(context, "invalid-tags-config", target, undefined, "non-string");
-    return;
+  const tags: Tag[] = [];
+  for (const item of value) {
+    const tag = normalizeTagItem(item);
+    if (!tag) {
+      reportDiagnostic(context, "invalid-tags-config", target, undefined, "non-string");
+      return;
+    }
+    tags.push(tag);
   }
 
-  storeTags(context.program, target as Operation, stringTags);
+  storeTags(context.program, target as Operation, tags);
+}
+
+function normalizeTagItem(item: unknown): Tag | null {
+  if (typeof item === "string") {
+    return { name: item };
+  }
+  if (item && typeof item === "object") {
+    const obj = item as Record<string, unknown>;
+    if (typeof obj.name === "string") {
+      const tag: Tag = { name: obj.name };
+      if (typeof obj.description === "string") {
+        tag.description = obj.description;
+      }
+      const extDocs = obj.externalDocs;
+      if (extDocs && typeof extDocs === "object") {
+        const ed = extDocs as Record<string, unknown>;
+        if (typeof ed.url === "string") {
+          tag.externalDocs = { url: ed.url, ...(typeof ed.description === "string" ? { description: ed.description } : {}) };
+        }
+      }
+      return tag;
+    }
+  }
+  return null;
 }
 
 export function $correlationId(context: DecoratorContext, target: Model, location: unknown): void {

@@ -169,16 +169,29 @@ function applyBindingRefs(state: AsyncAPIConsolidatedState, ctx: Ctx): void {
           ? "serverBindings"
           : "messageBindings";
 
-    for (const bindingName of names) {
-      const definition = bindingDefinitions.get(bindingName);
-      if (!definition) {
-        continue;
-      }
-      ctx[section][bindingName] = definition;
-      const refPointer = `#/components/${section}/${bindingName}`;
+    const applied = applyBindingNamesToSection(names, bindingDefinitions, ctx[section]);
+    if (applied.length > 0) {
+      const refPointer = `#/components/${section}/${applied[0] ?? ""}`;
       applyBindingToTarget(state, ctx, type, kind, refPointer);
     }
   }
+}
+
+/** Look up binding definitions by name and assign to a section map. Returns the names that were applied. */
+function applyBindingNamesToSection(
+  names: string[],
+  definitions: Map<string, ProtocolBindings>,
+  section: Record<string, ProtocolBindings>,
+): string[] {
+  const applied: string[] = [];
+  for (const name of names) {
+    const def = definitions.get(name);
+    if (def) {
+      section[name] = def;
+      applied.push(name);
+    }
+  }
+  return applied;
 }
 
 function applyBindingToTarget(
@@ -229,7 +242,7 @@ function applyChannelBindingRefs(state: AsyncAPIConsolidatedState, ctx: Ctx): vo
     }
     const applied = applyBindingNamesToSection(names, bindingDefinitions, ctx.channelBindings);
     if (applied.length > 0) {
-      channel.bindings = ref(`#/components/channelBindings/${applied[0]}`);
+      channel.bindings = ref(`#/components/channelBindings/${applied[0] ?? ""}`);
     }
   }
 }

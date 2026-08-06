@@ -51,9 +51,9 @@ extern dec subscribe(target: Operation);
 
 /**
  * Apply tags metadata for categorization
- * @param value Array of tag strings
+ * @param value Array of tag strings or tag objects (with name, description, externalDocs)
  */
-extern dec tags(target: Model | Operation | Namespace, value: valueof string[]);
+extern dec tags(target: Model | Operation | Namespace, value: valueof (string | Record<unknown>)[]);
 
 /**
  * Specify correlation ID configuration
