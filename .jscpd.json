@@ -4,7 +4,7 @@
   "output": "./jscpd-report",
   "reporters": ["html", "json", "console", "markdown"],
   "minLines": 3,
-  "minTokens": 30,
+  "minTokens": 15,
   "absolute": true,
   "ignore": [
     "**/dist/**",
