@@ -503,4 +503,29 @@ describe("components.channelBindings compliance", () => {
       $ref: "#/components/channelBindings/pubBinding",
     });
   });
+
+  it("does not cross-contaminate bindings across channels", async () => {
+    const doc = await compileAndValidateOrThrow(`
+      @reusableBinding("kafkaBinding", #{ kafka: #{ bindingVersion: "0.5.0" } })
+      namespace Test;
+      model Event { id: string; }
+      model Order { orderId: string; }
+      @channel("bound")
+      @useChannelBinding("kafkaBinding")
+      op publishBound(): Event;
+      @channel("unbound")
+      op publishUnbound(): Order;
+    `);
+
+    // Bound channel has the binding ref
+    expect((doc.channels!.bound as ChannelObject).bindings).toStrictEqual({
+      $ref: "#/components/channelBindings/kafkaBinding",
+    });
+    // Unbound channel has NO binding ref (no cross-contamination)
+    expect((doc.channels!.unbound as ChannelObject).bindings).toBeUndefined();
+    // Only one binding in components
+    expect(Object.keys(doc.components!.channelBindings!)).toStrictEqual([
+      "kafkaBinding",
+    ]);
+  });
 });

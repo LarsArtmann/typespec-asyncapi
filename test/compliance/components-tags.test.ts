@@ -83,6 +83,24 @@ describe("components.tags compliance", () => {
     expect(doc.components?.tags).toBeUndefined();
   });
 
+  it("deduplicates same tag name used as both string and rich object", async () => {
+    const doc = await compileAndValidateOrThrow(`
+      @tags(#["shared"])
+      namespace Test;
+      model Event { id: string; }
+      @channel("events")
+      @tags(#[#{ name: "shared", description: "Rich description" }])
+      op publish(): Event;
+    `);
+
+    // Only one "shared" entry in components.tags
+    expect(Object.keys(doc.components!.tags!)).toStrictEqual(["shared"]);
+
+    // Only one "shared" entry in info.tags
+    expect(doc.info.tags).toHaveLength(1);
+    expect(doc.info.tags![0].name).toBe("shared");
+  });
+
   it("preserves inline operation tags alongside components.tags", async () => {
     const doc = await compileAndValidateOrThrow(`
       namespace Test;
@@ -229,6 +247,34 @@ describe("rich tag objects with description and externalDocs", () => {
     expect(doc.components?.tags?.rich).toStrictEqual({
       name: "rich",
       description: "Rich tag",
+    });
+  });
+
+  it("propagates mixed string/object tags to info.tags and operation.tags", async () => {
+    const doc = await compileAndValidateOrThrow(`
+      namespace Test;
+      model Event { id: string; }
+      @channel("events")
+      @tags(#["basic", #{ name: "detailed", description: "Detailed", externalDocs: #{ url: "https://example.com" } }])
+      op publish(): Event;
+    `);
+
+    // Info tags should contain both
+    expect(doc.info.tags).toHaveLength(2);
+    const infoNames = doc.info.tags!.map((t) => t.name).toSorted();
+    expect(infoNames).toStrictEqual(["basic", "detailed"]);
+
+    // Operation tags should contain both
+    const [op] = Object.values(doc.operations!);
+    expect(op.tags).toHaveLength(2);
+    const opTagNames = op.tags!.map((t) => t.name).toSorted();
+    expect(opTagNames).toStrictEqual(["basic", "detailed"]);
+
+    // The rich tag should have full structure in components
+    expect(doc.components?.tags?.detailed).toStrictEqual({
+      name: "detailed",
+      description: "Detailed",
+      externalDocs: { url: "https://example.com" },
     });
   });
 });
