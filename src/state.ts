@@ -200,6 +200,10 @@ export interface ParameterConfigData {
   name: string;
   description?: string;
   location?: string;
+  schema?: unknown;
+  enum?: unknown[];
+  default?: unknown;
+  examples?: unknown[];
 }
 
 /** Reusable correlation ID definition stored from @reusableCorrelationId. */

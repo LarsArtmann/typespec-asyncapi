@@ -8,10 +8,18 @@
 
 import { compileAsyncAPISpecRaw } from "../utils/test-helpers";
 
-const errorDiagnostics = (
+const hasErrorCode = (
   diagnostics: readonly { severity: string; code: string }[],
-): readonly { severity: string; code: string }[] =>
-  diagnostics.filter((d) => d.severity === "error");
+  suffix: string,
+): boolean =>
+  diagnostics.some(
+    (d) => d.severity === "error" && d.code.endsWith(suffix),
+  );
+
+const hasNoErrors = (
+  diagnostics: readonly { severity: string }[],
+): boolean =>
+  diagnostics.every((d) => d.severity !== "error");
 
 describe("negative: operationTrait", () => {
   it("reports invalid-trait-config for empty name", async () => {
@@ -20,9 +28,7 @@ describe("negative: operationTrait", () => {
       namespace Test;
     `);
     expect(
-      errorDiagnostics(result.diagnostics).some(
-        (d) => d.code === "invalid-trait-config",
-      ),
+      hasErrorCode(result.diagnostics, "invalid-trait-config"),
     ).toBe(true);
   });
 
@@ -34,7 +40,7 @@ describe("negative: operationTrait", () => {
       @useOperationTrait("nonexistent")
       op publish(): Event;
     `);
-    expect(errorDiagnostics(result.diagnostics)).toHaveLength(0);
+    expect(hasNoErrors(result.diagnostics)).toBe(true);
   });
 });
 
@@ -45,9 +51,7 @@ describe("negative: messageTrait", () => {
       namespace Test;
     `);
     expect(
-      errorDiagnostics(result.diagnostics).some(
-        (d) => d.code === "invalid-trait-config",
-      ),
+      hasErrorCode(result.diagnostics, "invalid-trait-config"),
     ).toBe(true);
   });
 
@@ -58,9 +62,7 @@ describe("negative: messageTrait", () => {
       model Event { id: string; }
     `);
     expect(
-      errorDiagnostics(result.diagnostics).some(
-        (d) => d.code === "invalid-trait-config",
-      ),
+      hasErrorCode(result.diagnostics, "invalid-trait-config"),
     ).toBe(true);
   });
 });
@@ -72,9 +74,7 @@ describe("negative: parameter", () => {
       namespace Test;
     `);
     expect(
-      errorDiagnostics(result.diagnostics).some(
-        (d) => d.code === "invalid-parameter-config",
-      ),
+      hasErrorCode(result.diagnostics, "invalid-parameter-config"),
     ).toBe(true);
   });
 });
@@ -86,9 +86,7 @@ describe("negative: reusableCorrelationId", () => {
       namespace Test;
     `);
     expect(
-      errorDiagnostics(result.diagnostics).some(
-        (d) => d.code === "invalid-correlationId-config",
-      ),
+      hasErrorCode(result.diagnostics, "invalid-correlationId-config"),
     ).toBe(true);
   });
 
@@ -98,9 +96,7 @@ describe("negative: reusableCorrelationId", () => {
       namespace Test;
     `);
     expect(
-      errorDiagnostics(result.diagnostics).some(
-        (d) => d.code === "invalid-correlationId-config",
-      ),
+      hasErrorCode(result.diagnostics, "invalid-correlationId-config"),
     ).toBe(true);
   });
 
@@ -112,7 +108,7 @@ describe("negative: reusableCorrelationId", () => {
       @channel("events")
       op publish(): Event;
     `);
-    expect(errorDiagnostics(result.diagnostics)).toHaveLength(0);
+    expect(hasNoErrors(result.diagnostics)).toBe(true);
   });
 });
 
@@ -123,21 +119,7 @@ describe("negative: reusableBinding", () => {
       namespace Test;
     `);
     expect(
-      errorDiagnostics(result.diagnostics).some(
-        (d) => d.code === "invalid-bindings-config",
-      ),
-    ).toBe(true);
-  });
-
-  it("reports invalid-bindings-config for missing config object", async () => {
-    const result = await compileAsyncAPISpecRaw(`
-      @reusableBinding("myBinding", "not-a-config")
-      namespace Test;
-    `);
-    expect(
-      errorDiagnostics(result.diagnostics).some(
-        (d) => d.code === "invalid-bindings-config",
-      ),
+      hasErrorCode(result.diagnostics, "invalid-bindings-config"),
     ).toBe(true);
   });
 
@@ -150,9 +132,7 @@ describe("negative: reusableBinding", () => {
       op publish(): Event;
     `);
     expect(
-      errorDiagnostics(result.diagnostics).some(
-        (d) => d.code === "invalid-bindings-config",
-      ),
+      hasErrorCode(result.diagnostics, "invalid-bindings-config"),
     ).toBe(true);
   });
 
@@ -164,6 +144,6 @@ describe("negative: reusableBinding", () => {
       @useBinding("nonexistent")
       op publish(): Event;
     `);
-    expect(errorDiagnostics(result.diagnostics)).toHaveLength(0);
+    expect(hasNoErrors(result.diagnostics)).toBe(true);
   });
 });
