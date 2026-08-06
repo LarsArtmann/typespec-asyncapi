@@ -198,4 +198,26 @@ describe("negative: tags rich objects", () => {
     `);
     expect(hasErrorCode(result.diagnostics, "invalid-tags-config")).toBe(true);
   });
+
+  it("reports invalid-tags-config for empty-string tag", async () => {
+    const result = await compileAsyncAPISpecRaw(`
+      namespace Test;
+      model Event { id: string; }
+      @channel("events")
+      @tags(#[""])
+      op publish(): Event;
+    `);
+    expect(hasErrorCode(result.diagnostics, "invalid-tags-config")).toBe(true);
+  });
+
+  it("reports invalid-tags-config for tag object with empty name", async () => {
+    const result = await compileAsyncAPISpecRaw(`
+      namespace Test;
+      model Event { id: string; }
+      @channel("events")
+      @tags(#[#{ name: "" }])
+      op publish(): Event;
+    `);
+    expect(hasErrorCode(result.diagnostics, "invalid-tags-config")).toBe(true);
+  });
 });

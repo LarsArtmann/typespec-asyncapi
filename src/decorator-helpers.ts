@@ -233,11 +233,11 @@ export function isModelConfig(config: unknown): config is Model {
  */
 export function normalizeTagItem(item: unknown): Tag | null {
   if (typeof item === "string") {
-    return { name: item };
+    return item.length > 0 ? { name: item } : null;
   }
   if (item && typeof item === "object") {
     const obj = item as Record<string, unknown>;
-    if (typeof obj.name === "string") {
+    if (typeof obj.name === "string" && obj.name.length > 0) {
       const tag: Tag = { name: obj.name };
       if (typeof obj.description === "string") {
         tag.description = obj.description;
