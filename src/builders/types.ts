@@ -11,6 +11,7 @@ import type {
   JsonSchema,
   SecurityScheme,
   ServerObject,
+  Tag,
 } from "../domain/models/asyncapi-document.js";
 import type { AsyncAPIConsolidatedState } from "../state.js";
 
@@ -31,6 +32,7 @@ export interface DocumentBuildContext {
   servers: Record<string, ServerObject>;
   securitySchemes: Record<string, SecurityScheme>;
   schemas: Record<string, JsonSchema>;
+  tags: Record<string, Tag>;
   discoveredOps: DiscoveredOp[];
   opToChannel: Map<string, string>;
   channelDocs: Map<string, string>;

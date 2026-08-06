@@ -28,6 +28,7 @@ import { buildOperations } from "./builders/operation-builder.js";
 import { mergeExplicitMessages } from "./builders/message-builder.js";
 import { buildServers } from "./builders/server-builder.js";
 import { buildSecuritySchemes } from "./builders/security-builder.js";
+import { buildTags } from "./builders/tag-builder.js";
 
 export const ASYNCAPI_SPEC_VERSION = "3.1.0";
 
@@ -50,6 +51,7 @@ export function buildAsyncAPIDocument(
     schemas,
     securitySchemes: {},
     servers: {},
+    tags: {},
   };
 
   discoverOperations(state, ctx);
@@ -59,6 +61,7 @@ export function buildAsyncAPIDocument(
   attachChannelBindings(state, ctx);
   buildServers(state, ctx);
   buildSecuritySchemes(state, ctx);
+  buildTags(state, ctx);
 
   const defaultContentType = getDefaultContentType(state);
   const apiVersion = getApiVersion(state);
@@ -109,6 +112,9 @@ function assembleDocument(
   }
   if (Object.keys(ctx.securitySchemes).length > 0) {
     components.securitySchemes = ctx.securitySchemes;
+  }
+  if (Object.keys(ctx.tags).length > 0) {
+    components.tags = ctx.tags;
   }
 
   const services = listServices(ctx.program);
