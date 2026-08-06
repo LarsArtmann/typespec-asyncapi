@@ -11,7 +11,7 @@
 pnpm install         # Install dependencies
 pnpm run build       # Build TypeScript → JavaScript (0 errors)
 pnpm run lint        # Run ESLint (0 errors, 0 warnings)
-pnpm run test        # Run tests via vitest (1000+ pass, 0 fail)
+pnpm run test        # Run tests via vitest (1200+ pass, 0 fail)
 pnpm run verify      # Full gate: build + lint + test + coverage:gate + duplicate
 
 ```
@@ -120,6 +120,11 @@ Tests use **vitest** with the TypeSpec compiler testing API (`createTester`). Al
 - `test/integration/multi-file-output.test.ts` — Schema splitting tests: multi-file output, $ref rewriting, nested refs in schema files
 - `test/unit/shared-schema-types.test.ts` — Cross-emitter shared API tests (30+ tests): JsonSchema, SchemaRef, SchemaMap types, extractValue, intrinsicToSchema, plus barrel public-API contract checks
 - `test/benchmark/` — Performance benchmark suite: `fixture-generator.ts` generates 10-200 channel specs programmatically; `performance.test.ts` measures compilation time and reports scaling metrics
+- `test/realworld/` — **Real-world testing against external project patterns** (146 tests across 3 files): 
+  - `fixtures/` contains 10 `.tsp` files faithfully recreating model patterns from sibling projects (Kernovia, typespec-eventsourcing, blog/content-spec, accountability-system, superb-gh-milestone-extention) and canonical AsyncAPI specs (Streetlights MQTT, WebSocket Chat, Sensor IoT multi-protocol, Enterprise Notifications)
+  - `external-model-patterns.test.ts` — Compiles each external fixture through the emitter, validates against AsyncAPI 3.1.0 JSON Schema, checks $ref chains, operations, channels, schemas
+  - `canonical-asyncapi-specs.test.ts` — Validates canonical AsyncAPI spec ports with detailed structural assertions (enums, constraints, formats, defaults, nested objects, $ref arrays)
+  - `pattern-assertions.test.ts` — Verifies specific type patterns render correctly (scalar inheritance, generic spread, 3-level allOf, deeply nested anonymous objects, enums with/without values, uint types, decimal format, named unions)
 
 ## Decorator Signatures
 
@@ -203,3 +208,11 @@ Key points:
 - **`@tags` accepts rich tag objects:** The decorator accepts an array of strings AND/OR tag objects `#{name: "...", description: "...", externalDocs: #{url: "...", description: "..."}}`. The `normalizeTagItem()` helper in `decorator-helpers.ts` parses each item into a `Tag` type. Objects without a `name` field, empty strings (`""`), and objects with `name: ""` all trigger `invalid-tags-config` with messageId `"non-string"`. The `storeTags()` function in `state-writers.ts` accepts `Tag[]` (NOT raw `string[]`) — all input must be pre-normalized.
 - **`@parameter` location validation:** The `$parameter` decorator validates that the `location` field (if present) starts with `$message.` and contains a `#` JSON pointer separator. Malformed locations emit `invalid-parameter-location` (warning). This catches runtime-expression typos like `headers.x-custom` (missing `$message.` prefix).
 - **Operation/message trait richer fields:** `@operationTrait` extracts `security`, `tags`, and `bindings` in addition to `summary` and `description`. `@messageTrait` extracts `headers`, `correlationId`, `summary`, `tags`, and `bindings` in addition to `name` and `description`. These are emitted into `components.operationTraits` and `components.messageTraits` respectively. The trait `extraPicker` callbacks in `namespace-decorators.ts` define which non-string fields each trait type extracts.
+- **Real-world testing gotchas (from `test/realworld/`):**
+  - **`@service` does NOT accept `version`:** Core TypeSpec `@service(#{title: "..."})` only accepts `title`. Use `@apiVersion("1.0.0")` for `info.version`. Using `@service(#{title: "...", version: "..."})` causes `invalid-argument` error.
+  - **`model` is a reserved keyword:** Cannot be used as a property name (e.g., `model: string;` in a model definition). The parser interprets `model` as the model declaration keyword and fails with `token-expected`.
+  - **`decimal` type renders as `type: "string"` with `format: "decimal"`** (NOT `type: "number"`). This is correct — decimal values in JSON lose precision as floating point, so JSON Schema convention is string representation.
+  - **Enum defaults require enum member reference:** `priority: MyEnum = MyEnum.value` (correct), NOT `priority: MyEnum = "value"` (causes `unassignable` error). String literal unions allow literal defaults: `priority: "a" | "b" = "a"` (correct).
+  - **Property override narrowing:** In inheritance chains, a derived model can narrow `eventType: "specific.literal"` only if the base property type is `string` (not another literal). Overriding `"base.literal"` with `"derived.literal"` causes `override-property-mismatch`.
+  - **Generic model instantiation:** `model Foo<T extends string>` with spread `...Bar<"value">` resolves correctly — TypeSpec instantiates generics at compile time. Derived models `extends BaseEvent<{...}>` produce `allOf` with `$ref` to the base schema. Inherited properties are NOT in the derived model's `properties`.
+  - **Named unions:** `union Foo { a: A, b: B }` produces `oneOf` in JSON Schema output. Union member models (A, B) are emitted as separate component schemas. The union type itself may appear inline in messages rather than as a top-level schema.
