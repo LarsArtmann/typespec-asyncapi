@@ -265,10 +265,7 @@ describe("shared barrel public API surface", () => {
 describe("shared subpath export contract", () => {
   it("package.json exports ./shared with types and default conditions", () => {
     const pkg = JSON.parse(
-      readFileSync(
-        join(import.meta.dirname, "..", "..", "package.json"),
-        "utf8",
-      ),
+      readFileSync(join(import.meta.dirname, "..", "..", "package.json"), "utf8"),
     ) as { exports: Record<string, { types: string; default: string }> };
 
     expect(pkg.exports["./shared"]).toBeDefined();
@@ -278,10 +275,7 @@ describe("shared subpath export contract", () => {
 
   it("package.json exports . as the main entry point", () => {
     const pkg = JSON.parse(
-      readFileSync(
-        join(import.meta.dirname, "..", "..", "package.json"),
-        "utf8",
-      ),
+      readFileSync(join(import.meta.dirname, "..", "..", "package.json"), "utf8"),
     ) as { exports: Record<string, { typespec: string; default: string }> };
 
     expect(pkg.exports["."]).toBeDefined();
