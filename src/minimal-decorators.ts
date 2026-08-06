@@ -43,6 +43,7 @@ import {
   getModelPropertyValue,
   isModelConfig,
   modelToRecord,
+  normalizeTagItem,
   reportDiagnostic,
   reportUnsupportedProtocol,
   validateNonEmptyString,
@@ -251,35 +252,6 @@ export function $tags(
   }
 
   storeTags(context.program, target as Operation, tags);
-}
-
-function normalizeTagItem(item: unknown): Tag | null {
-  if (typeof item === "string") {
-    return { name: item };
-  }
-  if (item && typeof item === "object") {
-    const obj = item as Record<string, unknown>;
-    if (typeof obj.name === "string") {
-      const tag: Tag = { name: obj.name };
-      if (typeof obj.description === "string") {
-        tag.description = obj.description;
-      }
-      const extDocs = obj.externalDocs;
-      if (extDocs && typeof extDocs === "object") {
-        const ed = extDocs as Record<string, unknown>;
-        if (typeof ed.url === "string") {
-          tag.externalDocs = {
-            url: ed.url,
-            ...(typeof ed.description === "string"
-              ? { description: ed.description }
-              : {}),
-          };
-        }
-      }
-      return tag;
-    }
-  }
-  return null;
 }
 
 export function $correlationId(

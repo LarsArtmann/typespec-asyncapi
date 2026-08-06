@@ -9,6 +9,7 @@ import type {
 } from "@typespec/compiler";
 import { $lib } from "./lib.js";
 import { PROTOCOL_LIST } from "./constants/protocols.js";
+import type { Tag } from "./domain/models/asyncapi-document.js";
 
 // === DIAGNOSTIC HELPERS ===
 
@@ -224,4 +225,37 @@ export function isModelConfig(config: unknown): config is Model {
     "kind" in config &&
     config.kind === "Model"
   );
+}
+
+/**
+ * Normalize a single tag item (string or tag object) into a `Tag`.
+ * Returns `null` if the item is neither a valid string nor a tag object with a `name` field.
+ */
+export function normalizeTagItem(item: unknown): Tag | null {
+  if (typeof item === "string") {
+    return { name: item };
+  }
+  if (item && typeof item === "object") {
+    const obj = item as Record<string, unknown>;
+    if (typeof obj.name === "string") {
+      const tag: Tag = { name: obj.name };
+      if (typeof obj.description === "string") {
+        tag.description = obj.description;
+      }
+      const extDocs = obj.externalDocs;
+      if (extDocs && typeof extDocs === "object") {
+        const ed = extDocs as Record<string, unknown>;
+        if (typeof ed.url === "string") {
+          tag.externalDocs = {
+            url: ed.url,
+            ...(typeof ed.description === "string"
+              ? { description: ed.description }
+              : {}),
+          };
+        }
+      }
+      return tag;
+    }
+  }
+  return null;
 }
