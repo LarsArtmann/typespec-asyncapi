@@ -7,6 +7,8 @@ import {
 } from "../../src/shared/index.js";
 import * as sharedBarrel from "../../src/shared/index.js";
 import type { EmitEntity } from "@typespec/asset-emitter";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 
 describe("jsonSchema type", () => {
   it("accepts standard JSON Schema properties", () => {
@@ -257,5 +259,33 @@ describe("shared barrel public API surface", () => {
     const map: SchemaMap = { X: { type: "string" } };
     const schema: JsonSchema = { ...ref, ...map.X };
     expect(schema.$ref).toBe("#/components/schemas/X");
+  });
+});
+
+describe("shared subpath export contract", () => {
+  it("package.json exports ./shared with types and default conditions", () => {
+    const pkg = JSON.parse(
+      readFileSync(
+        join(import.meta.dirname, "..", "..", "package.json"),
+        "utf8",
+      ),
+    ) as { exports: Record<string, { types: string; default: string }> };
+
+    expect(pkg.exports["./shared"]).toBeDefined();
+    expect(pkg.exports["./shared"].types).toContain("shared/index.d.ts");
+    expect(pkg.exports["./shared"].default).toContain("shared/index.js");
+  });
+
+  it("package.json exports . as the main entry point", () => {
+    const pkg = JSON.parse(
+      readFileSync(
+        join(import.meta.dirname, "..", "..", "package.json"),
+        "utf8",
+      ),
+    ) as { exports: Record<string, { typespec: string; default: string }> };
+
+    expect(pkg.exports["."]).toBeDefined();
+    expect(pkg.exports["."].typespec).toBe("./lib/main.tsp");
+    expect(pkg.exports["."].default).toContain("index.js");
   });
 });

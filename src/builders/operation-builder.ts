@@ -13,15 +13,8 @@ import {
   type OperationReply,
 } from "../domain/models/asyncapi-document.js";
 import { getDoc, getSummary, nameOfType } from "./_imports.js";
-import type {
-  AsyncAPIConsolidatedState,
-  BuilderFn,
-  DocumentBuildContext,
-} from "./_imports.js";
-import {
-  buildOperationMessageRef,
-  registerMessage,
-} from "./channel-builder.js";
+import type { AsyncAPIConsolidatedState, BuilderFn, DocumentBuildContext } from "./_imports.js";
+import { buildOperationMessageRef, registerMessage } from "./channel-builder.js";
 
 /** Build all operations from discovered ops, applying decorators and replies. */
 export const buildOperations: BuilderFn = (state, ctx) => {
@@ -38,9 +31,7 @@ export const buildOperations: BuilderFn = (state, ctx) => {
     const operationObj: OperationObject = {
       action: op.action,
       channel: refChannel(op.channelKey),
-      messages: op.messageNames.map((name) =>
-        buildOperationMessageRef(op.channelKey, name),
-      ),
+      messages: op.messageNames.map((name) => buildOperationMessageRef(op.channelKey, name)),
     };
 
     const opType = [...state.operations.keys(), ...state.channels.keys()].find(
@@ -69,16 +60,11 @@ export const buildOperations: BuilderFn = (state, ctx) => {
 
       const replyData = state.operationReplies.get(opType);
       if (replyData) {
-        const { replyKey, schemaName } = resolveReplyKey(
-          state,
-          replyData.messageName,
-        );
+        const { replyKey, schemaName } = resolveReplyKey(state, replyData.messageName);
         registerMessage(ctx, replyKey, op.channelKey, undefined, schemaName);
         const reply: OperationReply = {
           messages: [
-            ref(
-              `#/channels/${escapeRefToken(op.channelKey)}/messages/${escapeRefToken(replyKey)}`,
-            ),
+            ref(`#/channels/${escapeRefToken(op.channelKey)}/messages/${escapeRefToken(replyKey)}`),
           ],
         };
         if (replyData.address) {

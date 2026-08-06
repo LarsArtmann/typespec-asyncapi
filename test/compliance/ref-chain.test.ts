@@ -28,9 +28,7 @@ describe("spec Compliance: $ref Chain", () => {
 
     const op = doc.operations!.publishOrderCreated;
     const messages = op.messages!;
-    expect(messages[0].$ref).toBe(
-      "#/channels/orders.created/messages/OrderCreated",
-    );
+    expect(messages[0].$ref).toBe("#/channels/orders.created/messages/OrderCreated");
   });
 
   it("operation channel references the channels object", async () => {

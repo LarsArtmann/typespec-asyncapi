@@ -31,10 +31,7 @@ export async function compileWithCLI(
 ): Promise<CLITestResult> {
   const workdir = options.workdir || "/virtual/test";
 
-  const result = await compileAsyncAPI(
-    sourceFileOrContent,
-    options.emitterOptions ?? {},
-  );
+  const result = await compileAsyncAPI(sourceFileOrContent, options.emitterOptions ?? {});
 
   const errors = result.diagnostics
     .filter((d) => d.severity === "error")
@@ -52,9 +49,7 @@ export async function compileWithCLI(
 
 export async function cleanupTestDir(_workdir: string): Promise<void> {}
 
-export async function createTestFixture(
-  _files: Record<string, string>,
-): Promise<string> {
+export async function createTestFixture(_files: Record<string, string>): Promise<string> {
   return "/virtual/test";
 }
 

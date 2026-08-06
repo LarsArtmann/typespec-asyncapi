@@ -128,4 +128,31 @@ describe("versioning: @versioned namespace integration", () => {
     `);
     expect(doc.info.version).toBe("1.0.0");
   });
+
+  it("emitter version option overrides @versioned enum value", async () => {
+    const doc = await compileAndValidateOrThrow(
+      `
+      import "@typespec/versioning";
+      import "@lars-artmann/typespec-asyncapi";
+
+      using TypeSpec.Versioning;
+      using TypeSpec.AsyncAPI;
+
+      @versioned(Versions)
+      namespace MyService;
+
+      enum Versions {
+        v1: "1.0.0",
+        v2: "2.0.0",
+      }
+
+      model Event { id: string; }
+
+      @channel("events")
+      op publish(): Event;
+    `,
+      { version: "5.0.0-beta" },
+    );
+    expect(doc.info.version).toBe("5.0.0-beta");
+  });
 });

@@ -849,5 +849,38 @@ describe("spec Compliance: Constraint Decorators", () => {
       expect(schema.examples).toBeDefined();
       expect(schema.examples![0]).toBe(42);
     });
+
+    it("serializes @default with @encode as correct type", async () => {
+      const doc = await compileAndValidateOrThrow(`
+        namespace Test;
+        model Event {
+          @encode(string)
+          active: boolean = true;
+        }
+        @channel("events")
+        op publish(): Event;
+      `);
+      const schema = propSchema(doc, "Event", "active");
+      expect(schema.default).toBe(true);
+    });
+
+    it("handles @encode on multiple properties independently", async () => {
+      const doc = await compileAndValidateOrThrow(`
+        namespace Test;
+        model Event {
+          @encode(string)
+          @example(100)
+          count: int32;
+          @example(3.14)
+          ratio: float64;
+        }
+        @channel("events")
+        op publish(): Event;
+      `);
+      const countSchema = propSchema(doc, "Event", "count");
+      const ratioSchema = propSchema(doc, "Event", "ratio");
+      expect(countSchema.examples![0]).toBe(100);
+      expect(ratioSchema.examples![0]).toBe(3.14);
+    });
   });
 });
