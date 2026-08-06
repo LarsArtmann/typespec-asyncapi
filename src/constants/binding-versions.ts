@@ -114,7 +114,7 @@ export function getValidVersionsString(protocol: string): string | undefined {
 
 export function supportsBindingPlacement(protocol: string, kind: BindingTargetKind): boolean {
   const placement = BINDING_PLACEMENT[protocol];
-  return placement ? placement[kind] : false;
+  return placement ? (placement[kind] ?? false) : false;
 }
 
 export function getValidPlacements(protocol: string): BindingTargetKind[] {

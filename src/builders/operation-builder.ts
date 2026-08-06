@@ -27,10 +27,12 @@ import {
 export const buildOperations: BuilderFn = (state, ctx) => {
   for (const op of ctx.discoveredOps) {
     for (let i = 0; i < op.messageNames.length; i++) {
-      const schemaName = op.messageSchemaNames[i] ?? op.messageNames[i];
+      const messageName = op.messageNames[i];
+      if (!messageName) { continue; }
+      const schemaName = op.messageSchemaNames[i] ?? messageName;
       registerMessage(
         ctx,
-        op.messageNames[i],
+        messageName,
         op.channelKey,
         undefined,
         schemaName,

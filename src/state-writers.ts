@@ -50,9 +50,9 @@ export const storeMessageConfig = (
 ): void => {
   const map = getStateMap(program, stateSymbols.messageConfigs);
   map.set(target, {
-    contentType: config.contentType ?? "application/json",
-    description: config.description ?? `Message ${target.name}`,
-    title: config.title ?? target.name,
+    contentType: config.contentType,
+    description: config.description,
+    title: config.title,
   });
 };
 
@@ -109,10 +109,10 @@ export const storeServerConfig = (
 
   const map = getStateMap<ServerConfigEntry[]>(program, stateSymbols.serverConfigs);
   const newEntry: ServerConfigEntry = {
-    description: (config.description as string) ?? `Server for ${target.name}`,
+    description: (config.description as string | undefined) ?? `Server for ${target.name}`,
     name: config.name,
-    protocol: normalizeProtocol((config.protocol as string) ?? "http"),
-    url: (config.url as string) ?? "http://localhost:3000",
+    protocol: normalizeProtocol((config.protocol as string | undefined) ?? "http"),
+    url: (config.url as string | undefined) ?? "http://localhost:3000",
   };
   appendToStateArray(map, target, newEntry);
 };
@@ -200,7 +200,7 @@ export const storeProtocolConfig = (
   config: Record<string, unknown>,
 ): void => {
   const map = getStateMap<ProtocolConfigData>(program, stateSymbols.protocolConfigs);
-  const rawProtocol = (config.protocol as string) ?? "kafka";
+  const rawProtocol = (config.protocol as string | undefined) ?? "kafka";
   const protocolType = normalizeProtocol(rawProtocol);
 
   const base = {
@@ -214,11 +214,11 @@ export const storeProtocolConfig = (
     case "kafka": {
       protocolConfig = {
         ...base,
-        consumerGroup: (config.consumerGroup as string) ?? "default",
-        partitions: (config.partitions as number) ?? 1,
+        consumerGroup: (config.consumerGroup as string | undefined) ?? "default",
+        partitions: (config.partitions as number | undefined) ?? 1,
         protocol: "kafka",
-        replicationFactor: (config.replicationFactor as number) ?? 1,
-        sasl: (config.sasl as KafkaSaslConfig) ?? {
+        replicationFactor: (config.replicationFactor as number | undefined) ?? 1,
+        sasl: (config.sasl as KafkaSaslConfig | undefined) ?? {
           mechanism: "plain",
           password: "",
           username: "",
@@ -230,10 +230,10 @@ export const storeProtocolConfig = (
     case "wss": {
       protocolConfig = {
         ...base,
-        headers: (config.headers as Record<string, string>) ?? {},
+        headers: (config.headers as Record<string, string> | undefined) ?? {},
         protocol: protocolType,
-        queryParams: (config.queryParams as Record<string, string>) ?? {},
-        subprotocol: (config.subprotocol as string) ?? "asyncapi",
+        queryParams: (config.queryParams as Record<string, string> | undefined) ?? {},
+        subprotocol: (config.subprotocol as string | undefined) ?? "asyncapi",
       };
       break;
     }
@@ -241,15 +241,15 @@ export const storeProtocolConfig = (
     case "mqtt5": {
       protocolConfig = {
         ...base,
-        lastWill: (config.lastWill as MqttLastWillConfig) ?? {
+        lastWill: (config.lastWill as MqttLastWillConfig | undefined) ?? {
           message: "",
           qos: 1,
           retain: false,
           topic: "",
         },
         protocol: protocolType,
-        qos: (config.qos as 0 | 1 | 2) ?? 1,
-        retain: (config.retain as boolean) ?? false,
+        qos: (config.qos as 0 | 1 | 2 | undefined) ?? 1,
+        retain: (config.retain as boolean | undefined) ?? false,
       };
       break;
     }

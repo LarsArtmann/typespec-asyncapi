@@ -28,6 +28,26 @@ export function refMessage(name: string): Ref {
   return { $ref: `#/components/messages/${escapeRefToken(name)}` };
 }
 
+/** Construct a `$ref` into `#/components/operationTraits/{name}` (RFC 6901-escaped). */
+export function refOperationTrait(name: string): Ref {
+  return { $ref: `#/components/operationTraits/${escapeRefToken(name)}` };
+}
+
+/** Construct a `$ref` into `#/components/messageTraits/{name}` (RFC 6901-escaped). */
+export function refMessageTrait(name: string): Ref {
+  return { $ref: `#/components/messageTraits/${escapeRefToken(name)}` };
+}
+
+/** Construct a `$ref` into `#/components/parameters/{name}` (RFC 6901-escaped). */
+export function refParameter(name: string): Ref {
+  return { $ref: `#/components/parameters/${escapeRefToken(name)}` };
+}
+
+/** Construct a `$ref` into `#/components/correlationIds/{name}` (RFC 6901-escaped). */
+export function refCorrelationId(name: string): Ref {
+  return { $ref: `#/components/correlationIds/${escapeRefToken(name)}` };
+}
+
 /** Construct a `$ref` into `#/channels/{name}` (RFC 6901-escaped). */
 export function refChannel(name: string): Ref {
   return { $ref: `#/channels/${escapeRefToken(name)}` };
@@ -112,7 +132,7 @@ export interface CommonMetadata {
   summary?: string;
   description?: string;
   tags?: Tag[];
-  bindings?: ProtocolBindings;
+  bindings?: ProtocolBindings | Ref;
 }
 
 export interface ServerObject extends CommonMetadata {
@@ -221,6 +241,37 @@ export interface Tag {
   description?: string;
 }
 
+/**
+ * Operation Trait Object — fields shared across operations.
+ * @see https://www.asyncapi.com/docs/reference/specification/v3.1.0#operationTraitObject
+ */
+export interface OperationTraitObject {
+  title?: string;
+  summary?: string;
+  description?: string;
+  tags?: Tag[];
+  bindings?: ProtocolBindings;
+  security?: SecurityRequirement[];
+}
+
+/**
+ * Message Trait Object — fields shared across messages.
+ * @see https://www.asyncapi.com/docs/reference/specification/v3.1.0#messageTraitObject
+ */
+export interface MessageTraitObject {
+  headers?: JsonSchema | Ref;
+  correlationId?: CorrelationIdObject | Ref;
+  contentType?: string;
+  name?: string;
+  title?: string;
+  summary?: string;
+  description?: string;
+  tags?: Tag[];
+  bindings?: ProtocolBindings;
+}
+
+/** Security Requirement Object — defined later, forward-declared here. */
+
 const SECURITY_SCHEME_TYPES = [
   "apiKey",
   "asymmetricEncryption",
@@ -270,6 +321,12 @@ export interface ComponentsObject {
   securitySchemes?: Record<string, SecurityScheme | Ref>;
   parameters?: Record<string, ParameterObject | Ref>;
   correlationIds?: Record<string, CorrelationIdObject | Ref>;
+  operationTraits?: Record<string, OperationTraitObject | Ref>;
+  messageTraits?: Record<string, MessageTraitObject | Ref>;
+  serverBindings?: Record<string, ProtocolBindings>;
+  channelBindings?: Record<string, ProtocolBindings>;
+  operationBindings?: Record<string, ProtocolBindings>;
+  messageBindings?: Record<string, ProtocolBindings>;
   tags?: Record<string, Tag | Ref>;
 }
 

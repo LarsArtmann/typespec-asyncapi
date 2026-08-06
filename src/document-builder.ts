@@ -135,15 +135,15 @@ function assembleDocument(
   return {
     asyncapi: ASYNCAPI_SPEC_VERSION,
     info: {
-      description: options?.description,
-      title: options?.title ?? serviceTitle ?? "Generated API",
-      version: options?.version ?? stateApiVersion ?? "1.0.0",
-      ...(options?.contact ? { contact: options.contact } : {}),
-      ...(options?.license ? { license: options.license } : {}),
-      ...(options?.termsOfService
+      description: options.description,
+      title: options.title ?? serviceTitle ?? "Generated API",
+      version: options.version ?? stateApiVersion ?? "1.0.0",
+      ...(options.contact ? { contact: options.contact } : {}),
+      ...(options.license ? { license: options.license } : {}),
+      ...(options.termsOfService
         ? { termsOfService: options.termsOfService }
         : {}),
-      ...(options?.externalDocs ? { externalDocs: options.externalDocs } : {}),
+      ...(options.externalDocs ? { externalDocs: options.externalDocs } : {}),
     },
     ...(defaultContentType ? { defaultContentType } : {}),
     ...(Object.keys(ctx.servers).length > 0 ? { servers: ctx.servers } : {}),
