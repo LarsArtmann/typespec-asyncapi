@@ -36,7 +36,8 @@ export interface EmitterOptions {
   "output-file"?: string;
 
   /** Output file format (json, yaml) or detailed format config */
-  "file-type"?: "json" | "yaml" | { format: string; pretty?: boolean; indent?: number };
+  "file-type"?:
+    "json" | "yaml" | { format: string; pretty?: boolean; indent?: number };
 
   /** Output directory for generated files */
   "output-dir"?: string;

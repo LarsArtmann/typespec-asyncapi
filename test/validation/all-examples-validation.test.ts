@@ -48,7 +48,9 @@ function findTspFiles(
     if (stat.isDirectory()) {
       findTspFiles(fullPath, acc);
     } else if (entry.endsWith(".tsp")) {
-      const relative = fullPath.replace(`${examplesRoot}/`, "").replace(/\.tsp$/, "");
+      const relative = fullPath
+        .replace(`${examplesRoot}/`, "")
+        .replace(/\.tsp$/, "");
       acc.push({ name: relative, path: fullPath });
     }
   }

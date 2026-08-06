@@ -31,12 +31,30 @@ function makeUseDecorator(
       name,
       code,
       formatKey,
-      onValid: (n) => { store(context.program, target, n); },
+      onValid: (n) => {
+        store(context.program, target, n);
+      },
     });
   };
 }
 
-export const $useOperationTrait = makeUseDecorator("invalid-trait-config", "traitName", storeOperationTraitRef);
-export const $useMessageTrait = makeUseDecorator("invalid-trait-config", "traitName", storeMessageTraitRef);
-export const $useCorrelationId = makeUseDecorator("invalid-correlationId-config", "modelName", storeCorrelationIdRef);
-export const $useBinding = makeUseDecorator("invalid-bindings-config", "targetKind", storeBindingRef);
+export const $useOperationTrait = makeUseDecorator(
+  "invalid-trait-config",
+  "traitName",
+  storeOperationTraitRef,
+);
+export const $useMessageTrait = makeUseDecorator(
+  "invalid-trait-config",
+  "traitName",
+  storeMessageTraitRef,
+);
+export const $useCorrelationId = makeUseDecorator(
+  "invalid-correlationId-config",
+  "modelName",
+  storeCorrelationIdRef,
+);
+export const $useBinding = makeUseDecorator(
+  "invalid-bindings-config",
+  "targetKind",
+  storeBindingRef,
+);

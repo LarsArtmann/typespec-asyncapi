@@ -20,7 +20,9 @@ import type {
   ProtocolBindings,
 } from "../../src/domain/models/asyncapi-document.js";
 
-async function compileAndGetDoc(source: string): Promise<ParsedAsyncAPIDocument> {
+async function compileAndGetDoc(
+  source: string,
+): Promise<ParsedAsyncAPIDocument> {
   const result = await compileAsyncAPISpecWithoutErrors(source);
   for (const [, content] of result.outputFiles) {
     if (typeof content === "string" && content.startsWith("asyncapi")) {
@@ -34,7 +36,10 @@ function getOp(doc: ParsedAsyncAPIDocument): OperationObject {
   return Object.values(doc.operations!)[0];
 }
 
-function getMsgBindings(doc: ParsedAsyncAPIDocument, name: string): ProtocolBindings {
+function getMsgBindings(
+  doc: ParsedAsyncAPIDocument,
+  name: string,
+): ProtocolBindings {
   const msg = doc.components!.messages![name] as MessageObject;
   return msg.bindings!;
 }

@@ -53,7 +53,10 @@ export interface DocumentBuildContext {
 }
 
 /** Standard signature shared by every document builder function. */
-export type BuilderFn = (state: AsyncAPIConsolidatedState, ctx: DocumentBuildContext) => void;
+export type BuilderFn = (
+  state: AsyncAPIConsolidatedState,
+  ctx: DocumentBuildContext,
+) => void;
 
 /** Extract the name from a TypeSpec Type, if it has one. */
 export function nameOfType(type: Type): string | undefined {

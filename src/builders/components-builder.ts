@@ -53,14 +53,16 @@ function resolveMessage(
   type: Type,
 ): MessageObject | undefined {
   const override = state.messages.get(type)?.messageId;
-  return ctx.messages[override ?? (nameOfType(type) ?? "")];
+  return ctx.messages[override ?? nameOfType(type) ?? ""];
 }
 
 /** Build reusable component maps from namespace-level decorator state. */
 export const buildReusableComponents: BuilderFn = (state, ctx) => {
   Object.assign(
     ctx.operationTraits,
-    populateNamed(state.operationTraits, (t) => pickOpt(t, ["title", "summary", "description"])),
+    populateNamed(state.operationTraits, (t) =>
+      pickOpt(t, ["title", "summary", "description"]),
+    ),
   );
   Object.assign(
     ctx.messageTraits,
@@ -74,7 +76,9 @@ export const buildReusableComponents: BuilderFn = (state, ctx) => {
     populateNamed(
       state.reusableParameters,
       (p) => pickOpt(p, ["description", "location"]),
-      (p) => { upgradeChannelParameterRefs(ctx, p.name); },
+      (p) => {
+        upgradeChannelParameterRefs(ctx, p.name);
+      },
     ),
   );
   Object.assign(
@@ -101,7 +105,10 @@ export const applyReusableRefs: BuilderFn = (state, ctx) => {
       .map((n) => refOperationTrait(n));
   }
 
-  const refTypes = new Set<Type>([...state.messageTraitRefs.keys(), ...state.correlationIdRefs.keys()]);
+  const refTypes = new Set<Type>([
+    ...state.messageTraitRefs.keys(),
+    ...state.correlationIdRefs.keys(),
+  ]);
   for (const type of refTypes) {
     const msg = resolveMessage(state, ctx, type);
     if (!msg) {
@@ -109,7 +116,9 @@ export const applyReusableRefs: BuilderFn = (state, ctx) => {
     }
     const traitNames = state.messageTraitRefs.get(type);
     if (traitNames) {
-      msg.traits = traitNames.filter((n) => n in ctx.messageTraits).map((n) => refMessageTrait(n));
+      msg.traits = traitNames
+        .filter((n) => n in ctx.messageTraits)
+        .map((n) => refMessageTrait(n));
     }
     const corrIdName = state.correlationIdRefs.get(type);
     if (corrIdName && corrIdName in ctx.reusableCorrelationIds) {

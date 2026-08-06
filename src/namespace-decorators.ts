@@ -1,6 +1,14 @@
-import type { DecoratorContext, Namespace, Operation } from "@typespec/compiler";
+import type {
+  DecoratorContext,
+  Namespace,
+  Operation,
+} from "@typespec/compiler";
 import { isSupportedProtocol } from "./constants/protocols.js";
-import { storeDefaultContentType, storeMulti, storeServerConfig } from "./state-writers.js";
+import {
+  storeDefaultContentType,
+  storeMulti,
+  storeServerConfig,
+} from "./state-writers.js";
 import { stateSymbols } from "./lib.js";
 import {
   extractConfigRecord,
@@ -75,7 +83,10 @@ export function $defaultContentType(
 
 // === REUSABLE COMPONENT DEFINITION DECORATORS ===
 
-function pickStringFields(cfg: Record<string, unknown>, keys: string[]): Record<string, unknown> {
+function pickStringFields(
+  cfg: Record<string, unknown>,
+  keys: string[],
+): Record<string, unknown> {
   const out: Record<string, unknown> = {};
   for (const key of keys) {
     if (typeof cfg[key] === "string") {
@@ -90,25 +101,44 @@ function namedConfigDecorator(
   formatKey: string,
   fields: string[],
   symbol: symbol,
-): (context: DecoratorContext, target: Namespace, name: unknown, config: unknown) => void {
+): (
+  context: DecoratorContext,
+  target: Namespace,
+  name: unknown,
+  config: unknown,
+) => void {
   return (context, target, name, config) => {
-    const valid = validateNonEmptyString(name, context, target, code, { [formatKey]: String(name) });
+    const valid = validateNonEmptyString(name, context, target, code, {
+      [formatKey]: String(name),
+    });
     if (!valid) {
       return;
     }
     const cfg = extractConfigRecord(config);
-    storeMulti(context.program, symbol, target, { name, ...pickStringFields(cfg, fields) });
+    storeMulti(context.program, symbol, target, {
+      name,
+      ...pickStringFields(cfg, fields),
+    });
   };
 }
 
 export const $operationTrait = namedConfigDecorator(
-  "invalid-trait-config", "traitName", ["description", "summary", "title"], stateSymbols.operationTraits,
+  "invalid-trait-config",
+  "traitName",
+  ["description", "summary", "title"],
+  stateSymbols.operationTraits,
 );
 export const $messageTrait = namedConfigDecorator(
-  "invalid-trait-config", "traitName", ["contentType", "description", "title"], stateSymbols.messageTraits,
+  "invalid-trait-config",
+  "traitName",
+  ["contentType", "description", "title"],
+  stateSymbols.messageTraits,
 );
 export const $parameter = namedConfigDecorator(
-  "invalid-parameter-config", "parameterName", ["description", "location"], stateSymbols.reusableParameters,
+  "invalid-parameter-config",
+  "parameterName",
+  ["description", "location"],
+  stateSymbols.reusableParameters,
 );
 
 export function $reusableCorrelationId(
@@ -118,10 +148,26 @@ export function $reusableCorrelationId(
   location: unknown,
 ): void {
   const fmt = { modelName: String(name) };
-  const ok = validateNonEmptyString(name, context, target, "invalid-correlationId-config", fmt)
-    && validateNonEmptyString(location, context, target, "invalid-correlationId-config", fmt);
+  const ok =
+    validateNonEmptyString(
+      name,
+      context,
+      target,
+      "invalid-correlationId-config",
+      fmt,
+    ) &&
+    validateNonEmptyString(
+      location,
+      context,
+      target,
+      "invalid-correlationId-config",
+      fmt,
+    );
   if (ok) {
-    storeMulti(context.program, stateSymbols.reusableCorrelationIds, target, { location, name });
+    storeMulti(context.program, stateSymbols.reusableCorrelationIds, target, {
+      location,
+      name,
+    });
   }
 }
 
@@ -131,13 +177,26 @@ export function $reusableBinding(
   name: unknown,
   bindingConfig: unknown,
 ): void {
-  const nameOk = validateNonEmptyString(name, context, target, "invalid-bindings-config", { targetKind: target.kind });
+  const nameOk = validateNonEmptyString(
+    name,
+    context,
+    target,
+    "invalid-bindings-config",
+    {
+      targetKind: target.kind,
+    },
+  );
   if (!nameOk || !bindingConfig || typeof bindingConfig !== "object") {
     if (nameOk) {
-      reportDiagnostic(context, "invalid-bindings-config", target, { targetKind: target.kind });
+      reportDiagnostic(context, "invalid-bindings-config", target, {
+        targetKind: target.kind,
+      });
     }
     return;
   }
   const { bindings } = processBindings(extractConfigRecord(bindingConfig));
-  storeMulti(context.program, stateSymbols.reusableBindings, target, { bindings, name });
+  storeMulti(context.program, stateSymbols.reusableBindings, target, {
+    bindings,
+    name,
+  });
 }
