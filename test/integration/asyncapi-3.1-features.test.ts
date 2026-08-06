@@ -252,7 +252,8 @@ describe("@defaultContentType: MIME type validation", () => {
     const result = await compileAsyncAPI(source);
     const warnings = result.diagnostics.filter(
       (d) =>
-        d.code === "@lars-artmann/typespec-asyncapi/invalid-default-content-type",
+        d.code ===
+        "@lars-artmann/typespec-asyncapi/invalid-default-content-type",
     );
     expect(warnings.length).toBeGreaterThan(0);
   });

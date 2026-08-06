@@ -25,7 +25,12 @@ export const buildServers: BuilderFn = (state, ctx) => {
       if (varMatches && varMatches.length > 0) {
         const vars: Record<
           string,
-          { enum?: string[]; default?: string; description?: string; examples?: string[] }
+          {
+            enum?: string[];
+            default?: string;
+            description?: string;
+            examples?: string[];
+          }
         > = {};
         for (const match of varMatches) {
           const varName = match.slice(1, -1);

@@ -302,11 +302,17 @@ export function extractMessageConfig(
     const configObj = config as Record<string, unknown>;
     title = typeof configObj.title === "string" ? configObj.title : undefined;
     description =
-      typeof configObj.description === "string" ? configObj.description : undefined;
+      typeof configObj.description === "string"
+        ? configObj.description
+        : undefined;
     contentType =
-      typeof configObj.contentType === "string" ? configObj.contentType : undefined;
+      typeof configObj.contentType === "string"
+        ? configObj.contentType
+        : undefined;
     schemaFormat =
-      typeof configObj.schemaFormat === "string" ? configObj.schemaFormat : undefined;
+      typeof configObj.schemaFormat === "string"
+        ? configObj.schemaFormat
+        : undefined;
     if (Array.isArray(configObj.examples)) {
       examples = configObj.examples as typeof examples;
     }

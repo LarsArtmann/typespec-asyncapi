@@ -45,7 +45,12 @@ export interface MessageConfigData {
   title?: string;
   contentType?: string;
   schemaFormat?: string;
-  examples?: { name?: string; summary?: string; headers?: unknown; payload?: unknown }[];
+  examples?: {
+    name?: string;
+    summary?: string;
+    headers?: unknown;
+    payload?: unknown;
+  }[];
 }
 
 /**
@@ -61,7 +66,12 @@ export interface ServerConfigData {
   /** Server variables: maps variable name to enum/default/description. */
   variables?: Record<
     string,
-    { enum?: string[]; default?: string; description?: string; examples?: string[] }
+    {
+      enum?: string[];
+      default?: string;
+      description?: string;
+      examples?: string[];
+    }
   >;
   /** Server-level security requirements (AsyncAPI 3.1 server.security). */
   security?: SecurityRequirement[];

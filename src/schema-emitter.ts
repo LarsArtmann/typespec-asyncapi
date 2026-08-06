@@ -185,7 +185,7 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
   }
 
   programContext(_program: Program): Context {
-    // eslint-disable-next-line no-console
+     
     console.error("DEBUG programContext called");
     const sourceFile = this.emitter.createSourceFile("schemas.json");
     return { scope: sourceFile.globalScope };

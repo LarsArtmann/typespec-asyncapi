@@ -136,10 +136,14 @@ export const storeServerConfig = (
     newEntry.pathname = config.pathname;
   }
   if (config.variables) {
-    newEntry.variables = extractNestedConfig(config.variables) as ServerConfigData["variables"];
+    newEntry.variables = extractNestedConfig(
+      config.variables,
+    ) as ServerConfigData["variables"];
   }
   if (config.security) {
-    newEntry.security = extractNestedConfig(config.security) as SecurityRequirement[];
+    newEntry.security = extractNestedConfig(
+      config.security,
+    ) as SecurityRequirement[];
   }
   const map = getStateMap<ServerConfigData[]>(
     program,
@@ -263,10 +267,12 @@ export const storeProtocolConfig = (
     case "kafka": {
       protocolConfig = {
         ...base,
-        consumerGroup: (config.consumerGroup as string | undefined) ?? "default",
+        consumerGroup:
+          (config.consumerGroup as string | undefined) ?? "default",
         partitions: (config.partitions as number | undefined) ?? 1,
         protocol: "kafka",
-        replicationFactor: (config.replicationFactor as number | undefined) ?? 1,
+        replicationFactor:
+          (config.replicationFactor as number | undefined) ?? 1,
         sasl: (config.sasl as KafkaSaslConfig | undefined) ?? {
           mechanism: "plain",
           password: "",
@@ -281,7 +287,8 @@ export const storeProtocolConfig = (
         ...base,
         headers: (config.headers as Record<string, string> | undefined) ?? {},
         protocol: protocolType,
-        queryParams: (config.queryParams as Record<string, string> | undefined) ?? {},
+        queryParams:
+          (config.queryParams as Record<string, string> | undefined) ?? {},
         subprotocol: (config.subprotocol as string | undefined) ?? "asyncapi",
       };
       break;
@@ -374,8 +381,12 @@ function multiRefStore(symbol: symbol): MultiStore {
   };
 }
 
-export const storeOperationTraitRef: MultiStore = multiRefStore(stateSymbols.operationTraitRefs);
-export const storeMessageTraitRef: MultiStore = multiRefStore(stateSymbols.messageTraitRefs);
+export const storeOperationTraitRef: MultiStore = multiRefStore(
+  stateSymbols.operationTraitRefs,
+);
+export const storeMessageTraitRef: MultiStore = multiRefStore(
+  stateSymbols.messageTraitRefs,
+);
 
 export const storeCorrelationIdRef = (
   program: Program,
@@ -386,9 +397,15 @@ export const storeCorrelationIdRef = (
   map.set(target, correlationIdName);
 };
 
-export const storeBindingRef: MultiStore = multiRefStore(stateSymbols.bindingRefs);
-export const storeChannelBindingRef: MultiStore = multiRefStore(stateSymbols.channelBindingRefs);
-export const storeChannelServerRef: MultiStore = multiRefStore(stateSymbols.channelServerRefs);
+export const storeBindingRef: MultiStore = multiRefStore(
+  stateSymbols.bindingRefs,
+);
+export const storeChannelBindingRef: MultiStore = multiRefStore(
+  stateSymbols.channelBindingRefs,
+);
+export const storeChannelServerRef: MultiStore = multiRefStore(
+  stateSymbols.channelServerRefs,
+);
 
 export const storeOperationSecurityRef = (
   program: Program,
