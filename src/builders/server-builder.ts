@@ -5,8 +5,58 @@
  */
 
 import type { ServerObject } from "../domain/models/asyncapi-document.js";
+import type { SecurityRequirement } from "../domain/models/asyncapi-document.js";
 import { normalizeProtocol } from "../constants/protocols.js";
 import type { BuilderFn } from "./types.js";
+
+interface ServerVar {
+  enum?: string[];
+  default?: string;
+  description?: string;
+  examples?: string[];
+}
+
+/** Extract a server variable from raw config, mapping `values` → `enum` (TypeSpec reserves `enum`). */
+function buildServerVar(
+  rawVar: Record<string, unknown> | undefined,
+  varName: string,
+): ServerVar {
+  if (!rawVar) {
+    return { description: `Server variable: ${varName}` };
+  }
+  const result: ServerVar = {};
+  const enumSource = Array.isArray(rawVar.values)
+    ? (rawVar.values as string[])
+    : Array.isArray(rawVar.enum)
+      ? (rawVar.enum as string[])
+      : undefined;
+  if (enumSource) {
+    result.enum = enumSource;
+  }
+  if (rawVar.default !== undefined) {
+    result.default = rawVar.default as string;
+  }
+  if (rawVar.description !== undefined) {
+    result.description = rawVar.description as string;
+  }
+  if (rawVar.examples !== undefined) {
+    result.examples = rawVar.examples as string[];
+  }
+  return result;
+}
+
+/** Normalize security to an array of SecurityRequirement objects. */
+function normalizeSecurity(
+  security: unknown,
+): SecurityRequirement[] | undefined {
+  if (Array.isArray(security)) {
+    return security as SecurityRequirement[];
+  }
+  if (security && typeof security === "object") {
+    return [security as SecurityRequirement];
+  }
+  return undefined;
+}
 
 /** Build all servers from state. */
 export const buildServers: BuilderFn = (state, ctx) => {
@@ -23,20 +73,13 @@ export const buildServers: BuilderFn = (state, ctx) => {
 
       const varMatches = entry.url.match(/\{(?<var>[^}]+)\}/gu);
       if (varMatches && varMatches.length > 0) {
-        const vars: Record<
-          string,
-          {
-            enum?: string[];
-            default?: string;
-            description?: string;
-            examples?: string[];
-          }
-        > = {};
+        const vars: Record<string, ServerVar> = {};
         for (const match of varMatches) {
           const varName = match.slice(1, -1);
-          vars[varName] = entry.variables?.[varName] ?? {
-            description: `Server variable: ${varName}`,
-          };
+          const rawVar = entry.variables?.[varName] as
+            | Record<string, unknown>
+            | undefined;
+          vars[varName] = buildServerVar(rawVar, varName);
         }
         server.variables = vars;
       }
@@ -47,8 +90,9 @@ export const buildServers: BuilderFn = (state, ctx) => {
       if (entry.pathname !== undefined) {
         server.pathname = entry.pathname;
       }
-      if (entry.security && entry.security.length > 0) {
-        server.security = entry.security;
+      const security = normalizeSecurity(entry.security);
+      if (security && security.length > 0) {
+        server.security = security;
       }
 
       if (namespaceBindings && Object.keys(namespaceBindings).length > 0) {

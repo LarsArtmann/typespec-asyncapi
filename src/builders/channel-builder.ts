@@ -105,18 +105,11 @@ export const attachChannelBindings: BuilderFn = (state, ctx) => {
 /** Apply @useChannelServer refs: attach server $refs to each channel's `servers` field. */
 export const attachChannelServerRefs: BuilderFn = (state, ctx) => {
   if (state.channelServerRefs.size === 0) {
-    console.error("DEBUG: channelServerRefs is empty");
     return;
   }
-  console.error("DEBUG: channelServerRefs size:", state.channelServerRefs.size);
-  console.error("DEBUG: opToChannel:", [...ctx.opToChannel.entries()].map(([k,v]) => `${k}=>${v}`));
-  console.error("DEBUG: servers keys:", Object.keys(ctx.servers));
   for (const { name, data } of iterNamedTypes(state.channelServerRefs)) {
-    console.error(`DEBUG: channelServerRef entry: name=${name}, data=${JSON.stringify(data)}`);
     const channelKey = ctx.opToChannel.get(name) ?? name;
-    console.error(`DEBUG: channelKey=${channelKey}`);
     const channel = ctx.channels[channelKey];
-    console.error(`DEBUG: channel found=${!!channel}`);
     if (!channel) {
       continue;
     }

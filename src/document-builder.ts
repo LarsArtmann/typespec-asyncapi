@@ -76,9 +76,9 @@ export function buildAsyncAPIDocument(
   buildOperations(state, ctx);
   applyChannelDocs(ctx);
   mergeExplicitMessages(state, ctx);
+  buildServers(state, ctx);
   attachChannelBindings(state, ctx);
   attachChannelServerRefs(state, ctx);
-  buildServers(state, ctx);
   buildSecuritySchemes(state, ctx);
   buildTags(state, ctx);
   buildReusableComponents(state, ctx);

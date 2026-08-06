@@ -60,14 +60,10 @@ export const storeOperationType = (
 export const storeMessageConfig = (
   program: Program,
   target: Model,
-  config: { title: string; description: string; contentType: string },
+  config: MessageConfigData,
 ): void => {
   const map = getStateMap(program, stateSymbols.messageConfigs);
-  map.set(target, {
-    contentType: config.contentType,
-    description: config.description,
-    title: config.title,
-  });
+  map.set(target, config);
 };
 
 export const storeOperationId = (
