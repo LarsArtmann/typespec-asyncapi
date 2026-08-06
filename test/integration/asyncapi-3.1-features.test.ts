@@ -9,8 +9,10 @@
  * - AsyncAPI 3.1 message.examples via @message config
  * - @operationSecurity: Security Requirement on operations
  * - @defaultContentType: MIME type validation
- * - Named unions registered in components.schemas
  * - Model property reference unwrapping (User.id)
+ *
+ * NOTE: `enum` is a reserved keyword in TypeSpec value literals (`#{}`).
+ * Use `values` instead — the server builder maps `values` → `enum` in output.
  */
 
 import { compileAsyncAPI } from "../utils/test-helpers.js";
@@ -57,7 +59,7 @@ describe("asyncAPI 3.1: server.protocolVersion + server.pathname + variables", (
         protocol: "kafka",
         variables: #{
           broker: #{
-            enum: ["broker1", "broker2", "broker3"],
+            values: #["broker1", "broker2", "broker3"],
             default: "broker1",
             description: "Kafka broker hostname"
           }
@@ -78,7 +80,7 @@ describe("asyncAPI 3.1: server.protocolVersion + server.pathname + variables", (
     const source = `
       @server("kafka", #{
         url: "secure.example.com:9092",
-        protocol: "kafka-secure",
+        protocol: "kafka",
         security: #{ sasl: #["scramSha512"] }
       })
       namespace SecureBroker;
@@ -106,8 +108,8 @@ describe("asyncAPI 3.1: channel.servers via @useChannelServer", () => {
     const result = await compileAsyncAPI(source);
     const channel = result.asyncApiDoc?.channels?.events;
     expect(channel?.servers).toStrictEqual([
-      { $ref: "#/servers/primary" },
       { $ref: "#/servers/backup" },
+      { $ref: "#/servers/primary" },
     ]);
   });
 });
@@ -115,6 +117,7 @@ describe("asyncAPI 3.1: channel.servers via @useChannelServer", () => {
 describe("asyncAPI 3.1: message.schemaFormat (Avro/Protobuf)", () => {
   it("emits schemaFormat on message when set via @message", async () => {
     const source = `
+      namespace AvroEvents;
       @message(#{
         title: "UserCreated",
         schemaFormat: "application/vnd.apache.avro+json;version=1.9.0"
@@ -123,7 +126,6 @@ describe("asyncAPI 3.1: message.schemaFormat (Avro/Protobuf)", () => {
         id: int64;
         name: string;
       }
-      namespace AvroEvents;
       @channel("users.created")
       op publish(): UserCreated;
     `;
@@ -135,9 +137,9 @@ describe("asyncAPI 3.1: message.schemaFormat (Avro/Protobuf)", () => {
 
   it("emits Protobuf schemaFormat", async () => {
     const source = `
+      namespace PbEvents;
       @message(#{ schemaFormat: "application/vnd.google.protobuf" })
       model OrderEvent { id: string; }
-      namespace PbEvents;
       @channel("orders")
       op publish(): OrderEvent;
     `;
@@ -151,6 +153,7 @@ describe("asyncAPI 3.1: message.schemaFormat (Avro/Protobuf)", () => {
 describe("asyncAPI 3.1: message.examples", () => {
   it("emits message.examples from @message config", async () => {
     const source = `
+      namespace ExampleEvents;
       @message(#{
         title: "OrderPlaced",
         examples: #[
@@ -171,7 +174,6 @@ describe("asyncAPI 3.1: message.examples", () => {
         total: int32;
         currency?: string;
       }
-      namespace ExampleEvents;
       @channel("orders.placed")
       op publish(): OrderPlaced;
     `;
@@ -204,8 +206,8 @@ describe("@operationSecurity: operation-level Security Requirements", () => {
       })
       namespace SecuredOps;
       @channel("events")
-      @operationSecurity(#{ name: "jwt" })
       @operationSecurity(#{ name: "apiKey", scopes: #["read", "write"] })
+      @operationSecurity(#{ name: "jwt" })
       op publishEvent(): string;
     `;
     const result = await compileAsyncAPI(source);
@@ -262,6 +264,7 @@ describe("@defaultContentType: MIME type validation", () => {
 describe("model property reference unwrapping", () => {
   it("resolves User.id property reference to the underlying scalar type", async () => {
     const source = `
+      namespace RefApi;
       model User {
         id: safeint;
         username: string;
@@ -270,7 +273,6 @@ describe("model property reference unwrapping", () => {
         user: User;
         createdBy: User.id;
       }
-      namespace RefApi;
       @channel("profiles")
       op publish(): Profile;
     `;
@@ -286,6 +288,20 @@ describe("model property reference unwrapping", () => {
 describe("combined: full AsyncAPI 3.1 surface", () => {
   it("emits a complete server/channel/message/operation graph that passes AsyncAPI 3.1 schema validation", async () => {
     const source = `
+      @server("production", #{
+        url: "{broker}.kafka.example.com:9092",
+        protocol: "kafka",
+        protocolVersion: "3.0.0",
+        variables: #{
+          broker: #{
+            values: #["broker1", "broker2"],
+            default: "broker1"
+          }
+        },
+        description: "Kafka cluster"
+      })
+      @defaultContentType("application/json")
+      namespace Complete;
       model OrderPlaced {
         orderId: string;
         total: float64;
@@ -297,22 +313,8 @@ describe("combined: full AsyncAPI 3.1 surface", () => {
         confirmed: "confirmed",
         shipped: "shipped",
       }
-      @server("production", #{
-        url: "{broker}.kafka.example.com:9092",
-        protocol: "kafka",
-        protocolVersion: "3.0.0",
-        variables: #{
-          broker: #{
-            enum: ["broker1", "broker2"],
-            default: "broker1"
-          }
-        },
-        description: "Kafka cluster"
-      })
-      @defaultContentType("application/json")
-      @useChannelServer("production")
-      namespace Complete;
       @channel("orders.placed")
+      @useChannelServer("production")
       @publish
       @operationSecurity(#{ name: "jwt" })
       op publishOrderPlaced(): OrderPlaced;

@@ -1,16 +1,32 @@
 import { compileAsyncAPI } from "./utils/test-helpers.js";
 
-it("debug: channel server refs", async () => {
+it("debug: combined output", async () => {
   const source = `
-    @server("primary", #{ url: "primary.example.com", protocol: "kafka" })
-    @server("backup", #{ url: "backup.example.com", protocol: "kafka" })
-    namespace MultiServer;
-    @channel("events")
-    @useChannelServer("primary")
-    @useChannelServer("backup")
-    op publishEvent(): string;
-  `;
+      @server("production", #{
+        url: "{broker}.kafka.example.com:9092",
+        protocol: "kafka",
+        protocolVersion: "3.0.0",
+        variables: #{
+          broker: #{
+            values: #["broker1", "broker2"],
+            default: "broker1"
+          }
+        },
+        description: "Kafka cluster"
+      })
+      @defaultContentType("application/json")
+      namespace Complete;
+      model OrderPlaced {
+        orderId: string;
+        total: float64;
+      }
+      @channel("orders.placed")
+      @useChannelServer("production")
+      @publish
+      @operationSecurity(#{ name: "jwt" })
+      op publishOrderPlaced(): OrderPlaced;
+    `;
   const result = await compileAsyncAPI(source);
-  const channels = JSON.stringify(result.asyncApiDoc?.channels);
-  expect(true).toBe(true);
+  const fullDoc = JSON.stringify(result.asyncApiDoc, null, 2);
+  throw new Error(`DOC:${fullDoc}`);
 });
