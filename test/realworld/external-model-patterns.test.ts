@@ -56,10 +56,12 @@ function assertNoErrorDiagnostics(
   fixtureName: string,
 ): void {
   const errors = diagnostics.filter((d) => d.severity === "error");
-  if (errors.length > 0) {
-    const formatted = errors.map((e) => `  [${e.code}] ${e.message}`).join("\n");
-    throw new Error(`${fixtureName} produced error diagnostics:\n${formatted}`);
-  }
+  const formatted = errors.map((e) => `[${e.code}] ${e.message}`).join("\n");
+  expect(errors).toStrictEqual([])
+    ? undefined
+    : (() => {
+        throw new Error(`${fixtureName} produced error diagnostics:\n${formatted}`);
+      })();
 }
 
 describe("real-World External Model Patterns", () => {
@@ -136,15 +138,17 @@ describe("real-World External Model Patterns", () => {
       it("should produce valid $ref for named model arrays", async () => {
         const result = await compileAsyncAPI(fixture.source);
         const schemas = result.asyncApiDoc?.components?.schemas ?? {};
+        const allItemRefs: string[] = [];
         for (const [, schema] of Object.entries(schemas)) {
-          if (!schema.properties) {
-            continue;
-          }
-          for (const [, prop] of Object.entries(schema.properties)) {
-            if (prop.items?.$ref) {
-              expect(prop.items.$ref).toMatch(/^#\/components\/schemas\//);
+          for (const [, prop] of Object.entries(schema.properties ?? {})) {
+            const ref = prop.items?.$ref;
+            if (typeof ref === "string") {
+              allItemRefs.push(ref);
             }
           }
+        }
+        for (const ref of allItemRefs) {
+          expect(ref).toMatch(/^#\/components\/schemas\//);
         }
       });
 
@@ -154,7 +158,7 @@ describe("real-World External Model Patterns", () => {
         expect(Object.keys(messages).length).toBeGreaterThan(0);
         for (const [, msg] of Object.entries(messages)) {
           expect(msg.contentType).toBeDefined();
-          expect(typeof msg.contentType).toBe("string");
+          expect(msg.contentType).toBeTypeOf("string");
         }
       });
     });
