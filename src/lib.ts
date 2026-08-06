@@ -166,14 +166,24 @@ export const $lib = createTypeSpecLibrary({
     serverConfigs: { description: "Server configurations" },
     tags: { description: "Targets to tag arrays" },
     apiVersion: { description: "Namespace to API version string" },
-    operationTraits: { description: "Namespace to operation trait definitions" },
+    operationTraits: {
+      description: "Namespace to operation trait definitions",
+    },
     messageTraits: { description: "Namespace to message trait definitions" },
-    reusableParameters: { description: "Namespace to reusable parameter definitions" },
-    reusableCorrelationIds: { description: "Namespace to reusable correlation ID definitions" },
-    reusableBindings: { description: "Namespace to reusable binding definitions" },
+    reusableParameters: {
+      description: "Namespace to reusable parameter definitions",
+    },
+    reusableCorrelationIds: {
+      description: "Namespace to reusable correlation ID definitions",
+    },
+    reusableBindings: {
+      description: "Namespace to reusable binding definitions",
+    },
     operationTraitRefs: { description: "Operations to referenced trait names" },
     messageTraitRefs: { description: "Models to referenced trait names" },
-    correlationIdRefs: { description: "Models to referenced correlation ID names" },
+    correlationIdRefs: {
+      description: "Models to referenced correlation ID names",
+    },
     bindingRefs: { description: "Targets to referenced binding names" },
   },
 } as const);
