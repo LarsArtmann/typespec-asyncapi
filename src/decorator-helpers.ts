@@ -2,11 +2,7 @@
  * Helper functions for decorators: diagnostic reporting and model property extraction.
  */
 
-import type {
-  DecoratorContext,
-  DiagnosticTarget,
-  Model,
-} from "@typespec/compiler";
+import type { DecoratorContext, DiagnosticTarget, Model } from "@typespec/compiler";
 import { $lib } from "./lib.js";
 import { PROTOCOL_LIST } from "./constants/protocols.js";
 import type { Tag } from "./domain/models/asyncapi-document.js";
@@ -54,19 +50,10 @@ export const validateNonEmptyString = (
     : (reportDiagnostic(context, diagnosticCode, target, format), false);
 
 /** Validate that a config value is present; if not, report and return false. */
-export const validateConfig = (
-  config: unknown,
-  ctx: DiagnosticContext,
-): boolean =>
+export const validateConfig = (config: unknown, ctx: DiagnosticContext): boolean =>
   config
     ? true
-    : (reportDiagnostic(
-        ctx.context,
-        ctx.diagnosticCode,
-        ctx.target,
-        ctx.format,
-      ),
-      false);
+    : (reportDiagnostic(ctx.context, ctx.diagnosticCode, ctx.target, ctx.format), false);
 
 /** Report a `unsupported-protocol` diagnostic. Shared by all protocol-accepting decorators. */
 export const reportUnsupportedProtocol = (
@@ -180,10 +167,7 @@ export function getModelPropertyStringValue(
   return readModelProperty(model, propertyName) as string | undefined;
 }
 
-export function getModelPropertyValue(
-  model: Model,
-  propertyName: string,
-): unknown {
+export function getModelPropertyValue(model: Model, propertyName: string): unknown {
   return readModelProperty(model, propertyName);
 }
 
@@ -248,9 +232,7 @@ export function normalizeTagItem(item: unknown): Tag | null {
         if (typeof ed.url === "string") {
           tag.externalDocs = {
             url: ed.url,
-            ...(typeof ed.description === "string"
-              ? { description: ed.description }
-              : {}),
+            ...(typeof ed.description === "string" ? { description: ed.description } : {}),
           };
         }
       }
@@ -301,18 +283,9 @@ export function extractMessageConfig(
   } else if (config && typeof config === "object") {
     const configObj = config as Record<string, unknown>;
     title = typeof configObj.title === "string" ? configObj.title : undefined;
-    description =
-      typeof configObj.description === "string"
-        ? configObj.description
-        : undefined;
-    contentType =
-      typeof configObj.contentType === "string"
-        ? configObj.contentType
-        : undefined;
-    schemaFormat =
-      typeof configObj.schemaFormat === "string"
-        ? configObj.schemaFormat
-        : undefined;
+    description = typeof configObj.description === "string" ? configObj.description : undefined;
+    contentType = typeof configObj.contentType === "string" ? configObj.contentType : undefined;
+    schemaFormat = typeof configObj.schemaFormat === "string" ? configObj.schemaFormat : undefined;
     if (Array.isArray(configObj.examples)) {
       examples = configObj.examples as typeof examples;
     }

@@ -17,10 +17,7 @@ interface ServerVar {
 }
 
 /** Extract a server variable from raw config, mapping `values` → `enum` (TypeSpec reserves `enum`). */
-function buildServerVar(
-  rawVar: Record<string, unknown> | undefined,
-  varName: string,
-): ServerVar {
+function buildServerVar(rawVar: Record<string, unknown> | undefined, varName: string): ServerVar {
   if (!rawVar) {
     return { description: `Server variable: ${varName}` };
   }
@@ -46,9 +43,7 @@ function buildServerVar(
 }
 
 /** Normalize security to an array of SecurityRequirement objects. */
-function normalizeSecurity(
-  security: unknown,
-): SecurityRequirement[] | undefined {
+function normalizeSecurity(security: unknown): SecurityRequirement[] | undefined {
   if (Array.isArray(security)) {
     return security as SecurityRequirement[];
   }

@@ -18,10 +18,7 @@ import { compileAsyncAPI } from "../../utils/test-helpers.js";
 const reposDir = join(import.meta.dirname, "..", "repos");
 const goldenDir = join(import.meta.dirname);
 
-const source = readFileSync(
-  join(reposDir, "livesession-xyd.tsp"),
-  "utf8",
-);
+const source = readFileSync(join(reposDir, "livesession-xyd.tsp"), "utf8");
 const golden = JSON.parse(
   readFileSync(join(goldenDir, "livesession-xyd.json"), "utf8"),
 ) as Record<string, unknown>;

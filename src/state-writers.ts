@@ -15,24 +15,13 @@ import type {
   ServerConfigData,
   Tag,
 } from "./state.js";
-import type {
-  Model,
-  ModelProperty,
-  Namespace,
-  Operation,
-  Program,
-  Type,
-} from "@typespec/compiler";
+import type { Model, ModelProperty, Namespace, Operation, Program, Type } from "@typespec/compiler";
 import { getStateMap } from "./state-compatibility.js";
 import { normalizeProtocol } from "./constants/protocols.js";
 import { stateSymbols } from "./lib.js";
 import { extractNestedConfig } from "./extract-nested-config.js";
 
-export const storeChannelState = (
-  program: Program,
-  target: Operation,
-  path: string,
-): void => {
+export const storeChannelState = (program: Program, target: Operation, path: string): void => {
   const map = getStateMap(program, stateSymbols.channelPaths);
   map.set(target, {
     hasParameters: path.includes("{"),
@@ -72,11 +61,7 @@ export const storeOperationId = (
   map.set(target, operationId);
 };
 
-export const storeMessageId = (
-  program: Program,
-  target: Model,
-  messageId: string,
-): void => {
+export const storeMessageId = (program: Program, target: Model, messageId: string): void => {
   updateMessageConfig(program, target, (existing) => {
     existing.messageId = messageId;
   });
@@ -102,9 +87,7 @@ function updateMessageConfig(
 }
 
 /** Get the state map for message configs. Shared by writers that mutate it. */
-function getMessageConfigsMap(
-  program: Program,
-): ReturnType<typeof getStateMap<MessageConfigData>> {
+function getMessageConfigsMap(program: Program): ReturnType<typeof getStateMap<MessageConfigData>> {
   return getStateMap<MessageConfigData>(program, stateSymbols.messageConfigs);
 }
 
@@ -114,12 +97,9 @@ export const storeServerConfig = (
   config: Record<string, unknown> & { name: string },
 ): void => {
   const newEntry: ServerConfigData = {
-    description:
-      (config.description as string | undefined) ?? `Server for ${target.name}`,
+    description: (config.description as string | undefined) ?? `Server for ${target.name}`,
     name: config.name,
-    protocol: normalizeProtocol(
-      (config.protocol as string | undefined) ?? "http",
-    ),
+    protocol: normalizeProtocol((config.protocol as string | undefined) ?? "http"),
     url: (config.url as string | undefined) ?? "http://localhost:3000",
   };
   if (typeof config.protocolVersion === "string") {
@@ -129,19 +109,12 @@ export const storeServerConfig = (
     newEntry.pathname = config.pathname;
   }
   if (config.variables) {
-    newEntry.variables = extractNestedConfig(
-      config.variables,
-    ) as ServerConfigData["variables"];
+    newEntry.variables = extractNestedConfig(config.variables) as ServerConfigData["variables"];
   }
   if (config.security) {
-    newEntry.security = extractNestedConfig(
-      config.security,
-    ) as SecurityRequirement[];
+    newEntry.security = extractNestedConfig(config.security) as SecurityRequirement[];
   }
-  const map = getStateMap<ServerConfigData[]>(
-    program,
-    stateSymbols.serverConfigs,
-  );
+  const map = getStateMap<ServerConfigData[]>(program, stateSymbols.serverConfigs);
   appendToStateArray(map, target, newEntry);
 };
 
@@ -154,10 +127,7 @@ export const storeSecurityConfig = (
     name: string;
     scheme: SecurityScheme;
   }
-  const map = getStateMap<SecurityConfigEntry[]>(
-    program,
-    stateSymbols.securityConfigs,
-  );
+  const map = getStateMap<SecurityConfigEntry[]>(program, stateSymbols.securityConfigs);
   appendToStateArray(map, target, { name: config.name, scheme: config.scheme });
 };
 
@@ -179,9 +149,7 @@ export const storeTags = (
   target: Operation | Model,
   tags: (string | Tag)[],
 ): void => {
-  const normalized: Tag[] = tags.map((t) =>
-    typeof t === "string" ? { name: t } : t,
-  );
+  const normalized: Tag[] = tags.map((t) => (typeof t === "string" ? { name: t } : t));
   const map = getStateMap<Tag[]>(program, stateSymbols.tags);
   const existing = map.get(target) ?? [];
   const byName = new Map(existing.map((t) => [t.name, t]));
@@ -191,11 +159,7 @@ export const storeTags = (
   map.set(target, [...byName.values()]);
 };
 
-export const storeCorrelationId = (
-  program: Program,
-  target: Model,
-  location: string,
-): void => {
+export const storeCorrelationId = (program: Program, target: Model, location: string): void => {
   const map = getStateMap(program, stateSymbols.correlationIds);
   map.set(target, { location });
 };
@@ -222,8 +186,7 @@ export const storeHeader = (
   let description: string | undefined;
 
   if (target.kind === "ModelProperty") {
-    const propType = target.type as
-      { kind?: string; name?: string } | undefined;
+    const propType = target.type as { kind?: string; name?: string } | undefined;
     if (propType?.kind === "Scalar") {
       headerType = propType.name?.toLowerCase() ?? "string";
     }
@@ -239,11 +202,7 @@ export const storeHeader = (
 
 export { storeProtocolConfig } from "./store-protocol-config.js";
 
-export const linkPublishMessage = (
-  program: Program,
-  target: Operation,
-  config?: Model,
-): void => {
+export const linkPublishMessage = (program: Program, target: Operation, config?: Model): void => {
   if (!config) {
     return;
   }
@@ -274,22 +233,13 @@ export const storeOperationReply = (
   map.set(target, replyData);
 };
 
-export const storeApiVersion = (
-  program: Program,
-  target: Namespace,
-  version: string,
-): void => {
+export const storeApiVersion = (program: Program, target: Namespace, version: string): void => {
   const map = getStateMap(program, stateSymbols.apiVersion);
   map.set(target, version);
 };
 
 // REUSABLE COMPONENT STATE WRITERS
-export function storeMulti(
-  program: Program,
-  symbol: symbol,
-  target: Type,
-  data: unknown,
-): void {
+export function storeMulti(program: Program, symbol: symbol, target: Type, data: unknown): void {
   const map = getStateMap<unknown[]>(program, symbol);
   appendToStateArray(map, target, data);
 }
@@ -303,12 +253,8 @@ function multiRefStore(symbol: symbol): MultiStore {
   };
 }
 
-export const storeOperationTraitRef: MultiStore = multiRefStore(
-  stateSymbols.operationTraitRefs,
-);
-export const storeMessageTraitRef: MultiStore = multiRefStore(
-  stateSymbols.messageTraitRefs,
-);
+export const storeOperationTraitRef: MultiStore = multiRefStore(stateSymbols.operationTraitRefs);
+export const storeMessageTraitRef: MultiStore = multiRefStore(stateSymbols.messageTraitRefs);
 
 export const storeCorrelationIdRef = (
   program: Program,
@@ -319,15 +265,9 @@ export const storeCorrelationIdRef = (
   map.set(target, correlationIdName);
 };
 
-export const storeBindingRef: MultiStore = multiRefStore(
-  stateSymbols.bindingRefs,
-);
-export const storeChannelBindingRef: MultiStore = multiRefStore(
-  stateSymbols.channelBindingRefs,
-);
-export const storeChannelServerRef: MultiStore = multiRefStore(
-  stateSymbols.channelServerRefs,
-);
+export const storeBindingRef: MultiStore = multiRefStore(stateSymbols.bindingRefs);
+export const storeChannelBindingRef: MultiStore = multiRefStore(stateSymbols.channelBindingRefs);
+export const storeChannelServerRef: MultiStore = multiRefStore(stateSymbols.channelServerRefs);
 
 export const storeOperationSecurityRef = (
   program: Program,

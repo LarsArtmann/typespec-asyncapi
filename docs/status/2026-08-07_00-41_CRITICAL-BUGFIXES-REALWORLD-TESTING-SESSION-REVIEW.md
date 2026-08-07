@@ -18,18 +18,19 @@ Fixed all 9 remaining test failures from the previous session, completed all pla
 
 Root causes identified and fixed:
 
-| # | Failure | Root Cause | Fix |
-|---|---------|-----------|-----|
-| 1 | `server.variables enum` | `enum` is a reserved keyword in TypeSpec `#{}` value literals | Added `values` → `enum` mapping in `server-builder.ts` |
-| 2 | `server.security` | Object `{ sasl: [...] }` not wrapped in array | Added `normalizeSecurity()` to wrap single objects |
-| 3 | `channel.servers` | `buildServers` ran AFTER `attachChannelServerRefs` — servers map empty | Reordered pipeline in `document-builder.ts` |
-| 4-5 | `message.schemaFormat` | `storeMessageConfig` stripped `schemaFormat` from stored config | Changed to store full `MessageConfigData` |
-| 6 | `message.examples` | Same root cause as schemaFormat — examples stripped | Same fix |
-| 7 | `operation.security` | Emitted `{ jwt: [] }` (OpenAPI style), AsyncAPI 3.1 needs `$ref` | Changed to `{ $ref: "#/components/securitySchemes/jwt" }` |
-| 8 | `User.id property ref` | Test placed `model` before `namespace` (syntax error) | Moved namespace before models |
-| 9 | `combined full graph` | Namespace-level decorators inside namespace body + syntax errors | Moved decorators before `namespace` keyword |
+| #   | Failure                 | Root Cause                                                             | Fix                                                       |
+| --- | ----------------------- | ---------------------------------------------------------------------- | --------------------------------------------------------- |
+| 1   | `server.variables enum` | `enum` is a reserved keyword in TypeSpec `#{}` value literals          | Added `values` → `enum` mapping in `server-builder.ts`    |
+| 2   | `server.security`       | Object `{ sasl: [...] }` not wrapped in array                          | Added `normalizeSecurity()` to wrap single objects        |
+| 3   | `channel.servers`       | `buildServers` ran AFTER `attachChannelServerRefs` — servers map empty | Reordered pipeline in `document-builder.ts`               |
+| 4-5 | `message.schemaFormat`  | `storeMessageConfig` stripped `schemaFormat` from stored config        | Changed to store full `MessageConfigData`                 |
+| 6   | `message.examples`      | Same root cause as schemaFormat — examples stripped                    | Same fix                                                  |
+| 7   | `operation.security`    | Emitted `{ jwt: [] }` (OpenAPI style), AsyncAPI 3.1 needs `$ref`       | Changed to `{ $ref: "#/components/securitySchemes/jwt" }` |
+| 8   | `User.id property ref`  | Test placed `model` before `namespace` (syntax error)                  | Moved namespace before models                             |
+| 9   | `combined full graph`   | Namespace-level decorators inside namespace body + syntax errors       | Moved decorators before `namespace` keyword               |
 
 **Files changed:**
+
 - `src/builders/server-builder.ts` — `buildServerVar()` + `normalizeSecurity()` extracted
 - `src/builders/operation-builder.ts` — Security refs emit `$ref` format
 - `src/document-builder.ts` — Pipeline reordered (servers before channel refs)
@@ -57,6 +58,7 @@ Root causes identified and fixed:
 ### 5. Updated AGENTS.md
 
 Added 14 new gotcha entries documenting:
+
 - `enum` keyword workaround
 - AsyncAPI 3.1 security `$ref` format
 - Blockless namespace ordering
@@ -91,6 +93,7 @@ The plan at `docs/planning/2026-08-06_22-41_FIX-CRITICAL-BUGS-AND-SOLIDIFY-REAL-
 ### 3. Real-World Test Coverage
 
 The adapted fixtures test schema generation patterns, but none of them test:
+
 - Protocol bindings output
 - Server configuration output
 - Security scheme output
@@ -137,6 +140,7 @@ I created `test/debug-dump.test.ts` multiple times with different debugging cont
 ### 4. Commit Hygiene
 
 The auto-commit daemon committed intermediate work multiple times during the session:
+
 - `767a224 test(emitter): add debug dump test`
 - `279216c chore(channel-builder): add debug logging`
 
@@ -264,16 +268,16 @@ Commits `767a224` (debug dump test) and `279216c` (debug logging in channel-buil
 
 ## Session Metrics
 
-| Metric | Value |
-|--------|-------|
-| Tests at start | 1256 (9 failing) |
-| Tests at end | 1282 (0 failing) |
-| New tests added | 26 (3 adapted suites + 3 golden file) |
-| Bug fixes | 9 test failures resolved |
-| Files created | 5 (adapted tests + golden file + store-protocol-config.ts) |
-| Files modified | 7 (source + test + AGENTS.md) |
-| Commits | 6 |
-| Pushed | 0 |
-| Coverage verified | No |
-| Duplicate analysis run | No |
-| Debug code left in git history | Yes (2 commits) |
+| Metric                         | Value                                                      |
+| ------------------------------ | ---------------------------------------------------------- |
+| Tests at start                 | 1256 (9 failing)                                           |
+| Tests at end                   | 1282 (0 failing)                                           |
+| New tests added                | 26 (3 adapted suites + 3 golden file)                      |
+| Bug fixes                      | 9 test failures resolved                                   |
+| Files created                  | 5 (adapted tests + golden file + store-protocol-config.ts) |
+| Files modified                 | 7 (source + test + AGENTS.md)                              |
+| Commits                        | 6                                                          |
+| Pushed                         | 0                                                          |
+| Coverage verified              | No                                                         |
+| Duplicate analysis run         | No                                                         |
+| Debug code left in git history | Yes (2 commits)                                            |

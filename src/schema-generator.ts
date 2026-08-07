@@ -1,9 +1,6 @@
 import { createAssetEmitter } from "@typespec/asset-emitter";
 import type { EmitContext } from "@typespec/compiler";
-import type {
-  AsyncAPIEmitterOptions,
-  JsonSchema,
-} from "./domain/models/asyncapi-document.js";
+import type { AsyncAPIEmitterOptions, JsonSchema } from "./domain/models/asyncapi-document.js";
 import { $lib } from "./lib.js";
 import { collectAllStdlibNames } from "./stdlib-helpers.js";
 import { AsyncAPISchemaEmitter } from "./schema-emitter.js";

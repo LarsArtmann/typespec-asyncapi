@@ -7,21 +7,14 @@ import type { Model, Operation, Program } from "@typespec/compiler";
 import { getStateMap } from "./state-compatibility.js";
 import { stateSymbols } from "./lib.js";
 import { normalizeProtocol } from "./constants/protocols.js";
-import type {
-  KafkaSaslConfig,
-  MqttLastWillConfig,
-  ProtocolConfigData,
-} from "./state.js";
+import type { KafkaSaslConfig, MqttLastWillConfig, ProtocolConfigData } from "./state.js";
 
 export const storeProtocolConfig = (
   program: Program,
   target: Operation | Model,
   config: Record<string, unknown>,
 ): void => {
-  const map = getStateMap<ProtocolConfigData>(
-    program,
-    stateSymbols.protocolConfigs,
-  );
+  const map = getStateMap<ProtocolConfigData>(program, stateSymbols.protocolConfigs);
   const rawProtocol = (config.protocol as string | undefined) ?? "kafka";
   const protocolType = normalizeProtocol(rawProtocol);
 
@@ -36,12 +29,10 @@ export const storeProtocolConfig = (
     case "kafka": {
       protocolConfig = {
         ...base,
-        consumerGroup:
-          (config.consumerGroup as string | undefined) ?? "default",
+        consumerGroup: (config.consumerGroup as string | undefined) ?? "default",
         partitions: (config.partitions as number | undefined) ?? 1,
         protocol: "kafka",
-        replicationFactor:
-          (config.replicationFactor as number | undefined) ?? 1,
+        replicationFactor: (config.replicationFactor as number | undefined) ?? 1,
         sasl: (config.sasl as KafkaSaslConfig | undefined) ?? {
           mechanism: "plain",
           password: "",
@@ -56,8 +47,7 @@ export const storeProtocolConfig = (
         ...base,
         headers: (config.headers as Record<string, string> | undefined) ?? {},
         protocol: protocolType,
-        queryParams:
-          (config.queryParams as Record<string, string> | undefined) ?? {},
+        queryParams: (config.queryParams as Record<string, string> | undefined) ?? {},
         subprotocol: (config.subprotocol as string | undefined) ?? "asyncapi",
       };
       break;
