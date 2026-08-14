@@ -194,7 +194,7 @@ The `validateAsyncAPIObjectComprehensive()` helper only checks `asyncapi` versio
 | 20  | **Add proper diagnostic reporting** in emitter (not silent catch)            | Medium | Medium | Quality        |
 | 21  | **Write usage documentation** (README, getting started guide)                | Medium | Medium | Docs           |
 | 22  | **Add integration test with `@typespec/http`** library                       | Low    | Medium | Integration    |
-| 23  | **pnpm publish pipeline** (semantic release or manual)                        | Low    | Low    | Infrastructure |
+| 23  | **pnpm publish pipeline** (semantic release or manual)                       | Low    | Low    | Infrastructure |
 | 24  | **Performance benchmarks** — measure emitter time on large specs             | Low    | Low    | Quality        |
 | 25  | **Plugin system re-enablement**                                              | Low    | High   | Feature        |
 

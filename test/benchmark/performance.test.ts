@@ -1,5 +1,9 @@
 import { performance } from "node:perf_hooks";
-import { generateFixture, estimateSpecSize, type FixtureOptions } from "./fixture-generator.js";
+import {
+  generateFixture,
+  estimateSpecSize,
+  type FixtureOptions,
+} from "./fixture-generator.js";
 import { compileAsyncAPI } from "../utils/test-helpers.js";
 
 interface BenchmarkResult {
@@ -65,13 +69,17 @@ describe("performance benchmarks", () => {
       } as never);
       const elapsed = performance.now() - start;
 
-      expect(elapsed).toBeLessThan(options.channelCount >= 200 ? 30_000 : 15_000);
+      expect(elapsed).toBeLessThan(
+        options.channelCount >= 200 ? 30_000 : 15_000,
+      );
 
       const errors = result.diagnostics.filter((d) => d.severity === "error");
       expect(errors).toStrictEqual([]);
 
       const outputJson = JSON.stringify(result.asyncApiDoc);
-      const schemaCount = Object.keys(result.asyncApiDoc?.components?.schemas ?? {}).length;
+      const schemaCount = Object.keys(
+        result.asyncApiDoc?.components?.schemas ?? {},
+      ).length;
 
       results.push({
         label,

@@ -277,7 +277,8 @@ describe("e2E: Real-World E-Commerce System", () => {
 
     const outputFiles = [...host.fs.keys()];
     const asyncApiFile = outputFiles.find(
-      (f) => f.includes("asyncapi") && (f.endsWith(".json") || f.endsWith(".yaml")),
+      (f) =>
+        f.includes("asyncapi") && (f.endsWith(".json") || f.endsWith(".yaml")),
     );
 
     expect(asyncApiFile).toBeDefined();
@@ -286,7 +287,9 @@ describe("e2E: Real-World E-Commerce System", () => {
       throw new Error("AsyncAPI output file was not generated.");
     }
     const content = host.fs.get(asyncApiFile) as string;
-    const spec = content.startsWith("{") ? JSON.parse(content) : require("yaml").parse(content);
+    const spec = content.startsWith("{")
+      ? JSON.parse(content)
+      : require("yaml").parse(content);
 
     // Validate e-commerce event domains
     const schemas = spec.components?.schemas || {};
@@ -315,7 +318,9 @@ describe("e2E: Real-World E-Commerce System", () => {
     // Shipping
     expect(schemas.ShipmentCreated).toBeDefined();
     expect(schemas.ShipmentStatusUpdate).toBeDefined();
-    expect(schemas.ShipmentStatusUpdate.properties.status.enum).toContain("delivered");
+    expect(schemas.ShipmentStatusUpdate.properties.status.enum).toContain(
+      "delivered",
+    );
 
     // Notifications
     expect(schemas.CustomerNotification).toBeDefined();
@@ -345,7 +350,10 @@ describe("e2E: Real-World E-Commerce System", () => {
     // Validate against AsyncAPI 3.1 JSON Schema
     const valid = validate(spec);
     if (!valid) {
-      console.error("Schema validation errors:", JSON.stringify(validate.errors, null, 2));
+      console.error(
+        "Schema validation errors:",
+        JSON.stringify(validate.errors, null, 2),
+      );
     }
     expect(valid).toBeTruthy();
   });

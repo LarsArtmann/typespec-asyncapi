@@ -324,7 +324,7 @@ _Batch processing in groups of 3-4 files:_
 | #    | Micro-Task                               | Time  |
 | ---- | ---------------------------------------- | ----- |
 | 18.1 | Create release workflow YAML             | 15min |
-| 18.2 | Set up pnpm tokens and secrets            | 15min |
+| 18.2 | Set up pnpm tokens and secrets           | 15min |
 | 18.3 | Test release process on test branch      | 15min |
 | 18.4 | Document release process for maintainers | 15min |
 

@@ -66,10 +66,9 @@ describe("components.operationTraits compliance", () => {
       op publish(): Event;
     `);
 
-    expect(Object.keys(doc.components!.operationTraits!).toSorted()).toStrictEqual([
-      "monitored",
-      "secure",
-    ]);
+    expect(
+      Object.keys(doc.components!.operationTraits!).toSorted(),
+    ).toStrictEqual(["monitored", "secure"]);
     const op = doc.operations!.publish as OperationObject;
     expect(op.traits).toHaveLength(2);
   });
@@ -250,7 +249,12 @@ describe("reusable bindings compliance", () => {
     expect(doc.components?.operationBindings?.kafkaStd).toBeDefined();
     expect(doc.components!.operationBindings!.kafkaStd.kafka).toBeDefined();
     expect(
-      (doc.components!.operationBindings!.kafkaStd.kafka as Record<string, unknown>).clientId,
+      (
+        doc.components!.operationBindings!.kafkaStd.kafka as Record<
+          string,
+          unknown
+        >
+      ).clientId,
     ).toStrictEqual({ type: "string" });
 
     const op = doc.operations!.publish as OperationObject;
@@ -334,7 +338,8 @@ describe("operation trait richer fields", () => {
       op publish(): Event;
     `);
 
-    const trait = doc.components?.operationTraits?.secure as OperationTraitObject;
+    const trait = doc.components?.operationTraits
+      ?.secure as OperationTraitObject;
     expect(trait.description).toBe("Secured operation");
     expect(trait.security).toStrictEqual([{ type: "userPassword" }]);
   });
@@ -413,7 +418,8 @@ describe("message trait richer fields", () => {
       op publish(): Event;
     `);
 
-    const trait = doc.components?.messageTraits?.summarized as MessageTraitObject;
+    const trait = doc.components?.messageTraits
+      ?.summarized as MessageTraitObject;
     expect(trait.summary).toBe("Short description");
   });
 });
@@ -431,7 +437,8 @@ describe("components.channelBindings compliance", () => {
 
     expect(doc.components?.channelBindings?.kafkaChan).toBeDefined();
     expect(
-      (doc.components!.channelBindings!.kafkaChan as Record<string, unknown>).kafka,
+      (doc.components!.channelBindings!.kafkaChan as Record<string, unknown>)
+        .kafka,
     ).toBeDefined();
 
     const channel = doc.channels!.events as ChannelObject;
@@ -467,10 +474,9 @@ describe("components.channelBindings compliance", () => {
       op publishOrder(): Order;
     `);
 
-    expect(Object.keys(doc.components!.channelBindings!).toSorted()).toStrictEqual([
-      "eventsBinding",
-      "ordersBinding",
-    ]);
+    expect(
+      Object.keys(doc.components!.channelBindings!).toSorted(),
+    ).toStrictEqual(["eventsBinding", "ordersBinding"]);
     expect((doc.channels!.events as ChannelObject).bindings).toStrictEqual({
       $ref: "#/components/channelBindings/eventsBinding",
     });
@@ -516,6 +522,8 @@ describe("components.channelBindings compliance", () => {
     // Unbound channel has NO binding ref (no cross-contamination)
     expect((doc.channels!.unbound as ChannelObject).bindings).toBeUndefined();
     // Only one binding in components
-    expect(Object.keys(doc.components!.channelBindings!)).toStrictEqual(["kafkaBinding"]);
+    expect(Object.keys(doc.components!.channelBindings!)).toStrictEqual([
+      "kafkaBinding",
+    ]);
   });
 });

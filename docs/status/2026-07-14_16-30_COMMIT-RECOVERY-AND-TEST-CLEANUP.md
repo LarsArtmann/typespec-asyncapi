@@ -195,7 +195,7 @@ After committing, ran `git status --short | wc -l` and got 94 — panicked think
 | 36  | Extract TypeEmitter schema methods from `emitter.ts` into `src/schema-emitter.ts`              | HIGH   | 45 min |
 | 37  | Clean up `lint-staged` config — verify it references correct files                             | LOW    | 5 min  |
 | 38  | Add `.editorconfig` for consistent formatting                                                  | LOW    | 5 min  |
-| 39  | Consider provenance for pnpm publish (supply chain security)                                    | LOW    | 15 min |
+| 39  | Consider provenance for pnpm publish (supply chain security)                                   | LOW    | 15 min |
 | 40  | Remove `test/templates/` directory if empty                                                    | LOW    | 1 min  |
 | 41  | Update golden file test to cover nested `$ref` output                                          | MEDIUM | 15 min |
 | 42  | Add test for `@bindings` with HTTP protocol                                                    | LOW    | 10 min |

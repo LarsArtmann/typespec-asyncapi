@@ -189,7 +189,7 @@ The user manually deleted some docs. I noticed the `git mv` failures but didn't 
 | 46  | Clean up `test/fixtures/` and `test/templates/` directories                                      | LOW      | 10 min |
 | 47  | Add `.editorconfig` for consistent formatting                                                    | LOW      | 5 min  |
 | 48  | Add `LICENSE` to `.npmignore` exceptions (already in `files` but check)                          | LOW      | 2 min  |
-| 49  | Consider adding `provenance` to pnpm publish for supply chain security                            | LOW      | 15 min |
+| 49  | Consider adding `provenance` to pnpm publish for supply chain security                           | LOW      | 15 min |
 | 50  | Write integration test that compiles ALL examples and validates output                           | MEDIUM   | 30 min |
 
 ---

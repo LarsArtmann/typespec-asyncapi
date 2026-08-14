@@ -125,67 +125,26 @@ earlier on 2026-08-14 (which was ~40% done at session start, after commits
 ## f) NEXT — up to 50 things (ranked, Pareto tiers first)
 
 **Do immediately (this working tree):**
+
 1. Re-run full `pnpm run verify` end-to-end post-repair
 2. Commit: negative-tests repair + TODO_LIST + AGENTS.md + planning/review
    HTML + CHANGELOG entries for both commits
 3. (Optional, needs your call) push and watch GitHub CI go green for the
    first time ever
 
-**Tier 1% → 51% of value:**
-4. Kafka `@protocol` fields stored but never emitted — emit or diagnose
-   (`store-protocol-config.ts:32` / `shared-utils.ts:181`)
-5. Rewrite `test/domain/protocol-websocket-mqtt.test.ts` — 50 tests, 0
-   binding assertions, `websocket→ws` normalization untested
-6. Tighten 4 `security-*.test.ts` suites — ~60/80 tests assert only base
-   type; "AWS SigV4"/"MAC"/"Hawk" fixtures are bearer clones
+**Tier 1% → 51% of value:** 4. Kafka `@protocol` fields stored but never emitted — emit or diagnose
+(`store-protocol-config.ts:32` / `shared-utils.ts:181`) 5. Rewrite `test/domain/protocol-websocket-mqtt.test.ts` — 50 tests, 0
+binding assertions, `websocket→ws` normalization untested 6. Tighten 4 `security-*.test.ts` suites — ~60/80 tests assert only base
+type; "AWS SigV4"/"MAC"/"Hawk" fixtures are bearer clones
 
-**Tier 4% → 64% (consolidation multiplier):**
-7. Promote `resolveRef`/`collectRefs` to `test/utils/` (5 divergent copies;
-   `generator-compatibility` copy lacks `~1`/`~0` unescape → latent false pass)
-8. Replace 4+ `compileAndGetDoc` copies with `compileAndValidateOrThrow`
-9. Delete `test/compliance/schema-types.test.ts` (90% dup of
-   type-mapping-completeness)
-10. Delete `test/validation/real-world-examples.test.ts` (subsumed)
-11. Delete/delegate `test/validation/schema-validation.test.ts` (copy of utils)
-12. Delete `test/integration/cli-simple-emitter.test.ts` (fake CLI wrapper)
-13. **Decision:** named-union metadata (new since `7f6c9b1`) — lock in with
-    compliance test or revert
-14. Import `LATEST_BINDING_VERSIONS` instead of ~20 hardcoded strings
-15. `asyncapi-generation.test.ts:679` "spec compliance" stub → real AJV
-16. Investigate `error-handling-edgecases` `≤1 error` masks → tighten to 0
+**Tier 4% → 64% (consolidation multiplier):** 7. Promote `resolveRef`/`collectRefs` to `test/utils/` (5 divergent copies;
+`generator-compatibility` copy lacks `~1`/`~0` unescape → latent false pass) 8. Replace 4+ `compileAndGetDoc` copies with `compileAndValidateOrThrow` 9. Delete `test/compliance/schema-types.test.ts` (90% dup of
+type-mapping-completeness) 10. Delete `test/validation/real-world-examples.test.ts` (subsumed) 11. Delete/delegate `test/validation/schema-validation.test.ts` (copy of utils) 12. Delete `test/integration/cli-simple-emitter.test.ts` (fake CLI wrapper) 13. **Decision:** named-union metadata (new since `7f6c9b1`) — lock in with
+compliance test or revert 14. Import `LATEST_BINDING_VERSIONS` instead of ~20 hardcoded strings 15. `asyncapi-generation.test.ts:679` "spec compliance" stub → real AJV 16. Investigate `error-handling-edgecases` `≤1 error` masks → tighten to 0
 
-**Tier 20% → 80%:**
-17. O(n²) op-type lookup → Map (`operation-builder.ts:37`)
-18. Unify `registerMessage` vs `mergeExplicitMessages`
-19. Collapse 7 `ref*` constructors in shared-utils
-20. Warn on conflicting multi-namespace `defaultContentType`/`apiVersion`
-21. Remove `as never` casts (`resolveOpName`, `returnModelTypes`)
-22. Type the 9 option casts in `multi-file-output.test.ts`
-23. Fix dual export `SCHEME_TYPE_LIST`/`VALID_SCHEME_TYPES`
-24. Remove orphan comment `asyncapi-document.ts:268`
-25. `round-trip-verification` order-coupled `doc` → `beforeAll`
-26. Compile-once fixtures (~90 redundant compiles in examples validation)
-27. `require("yaml")` → ESM imports (7 sites)
-28. Substring protocol-diversity check → `servers[*].protocol`
-29. Remove unreachable fallbacks in `storeServerConfig`
-30. Remove dead `modelsPerChannel` benchmark option
-31. Tighten 7 `external-specs` smoke tests
-32. Tighten 3 `studio-compatibility` under-assertions
-33. Document tag-dedup last-wins semantics
-34. Generalize `pickOpt<T, K>`
-35. Fix `ParsedAsyncAPIDocument.asyncapi` comment/type contradiction
-36. `e2e/multi-protocol-comprehensive` — add binding assertions; remove
-    empty `if (diagnostics.length > 0) {}` block
-37. `decorator-functionality.test.ts` — no decorator config ever asserted
-    (worst integration file)
-38. `protocol-binding-integration.test.ts` — zero bindings asserted anywhere
-39. `reusable-components-negative` duplicate test names
-40. `decorators/server.test.ts` hardcoded protocol list → `PROTOCOL_LIST`
-41. `emitter-core` doc-preservation test conditional-swallow fix
-42. Re-verify AGENTS.md "25 diagnostic codes" claim
-43. Root-cause the transient `bun test` exit-1
-44. Reduce editor diagnostic noise (test/ tsconfig or tsserver scoping)
-45. Consider golden-file tests for the 4 worst suites after rewrite
+**Tier 20% → 80%:** 17. O(n²) op-type lookup → Map (`operation-builder.ts:37`) 18. Unify `registerMessage` vs `mergeExplicitMessages` 19. Collapse 7 `ref*` constructors in shared-utils 20. Warn on conflicting multi-namespace `defaultContentType`/`apiVersion` 21. Remove `as never` casts (`resolveOpName`, `returnModelTypes`) 22. Type the 9 option casts in `multi-file-output.test.ts` 23. Fix dual export `SCHEME_TYPE_LIST`/`VALID_SCHEME_TYPES` 24. Remove orphan comment `asyncapi-document.ts:268` 25. `round-trip-verification` order-coupled `doc` → `beforeAll` 26. Compile-once fixtures (~90 redundant compiles in examples validation) 27. `require("yaml")` → ESM imports (7 sites) 28. Substring protocol-diversity check → `servers[*].protocol` 29. Remove unreachable fallbacks in `storeServerConfig` 30. Remove dead `modelsPerChannel` benchmark option 31. Tighten 7 `external-specs` smoke tests 32. Tighten 3 `studio-compatibility` under-assertions 33. Document tag-dedup last-wins semantics 34. Generalize `pickOpt<T, K>` 35. Fix `ParsedAsyncAPIDocument.asyncapi` comment/type contradiction 36. `e2e/multi-protocol-comprehensive` — add binding assertions; remove
+empty `if (diagnostics.length > 0) {}` block 37. `decorator-functionality.test.ts` — no decorator config ever asserted
+(worst integration file) 38. `protocol-binding-integration.test.ts` — zero bindings asserted anywhere 39. `reusable-components-negative` duplicate test names 40. `decorators/server.test.ts` hardcoded protocol list → `PROTOCOL_LIST` 41. `emitter-core` doc-preservation test conditional-swallow fix 42. Re-verify AGENTS.md "25 diagnostic codes" claim 43. Root-cause the transient `bun test` exit-1 44. Reduce editor diagnostic noise (test/ tsconfig or tsserver scoping) 45. Consider golden-file tests for the 4 worst suites after rewrite
 
 ## g) OPEN QUESTIONS — RESOLUTIONS APPLIED
 

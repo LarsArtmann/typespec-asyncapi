@@ -75,7 +75,8 @@ describe("negative: unsupported protocol", () => {
     // Unsupported server protocols are rejected with an error diagnostic
     expect(
       diagnostics.some(
-        (d) => d.code === "@lars-artmann/typespec-asyncapi/unsupported-protocol",
+        (d) =>
+          d.code === "@lars-artmann/typespec-asyncapi/unsupported-protocol",
       ),
     ).toBe(true);
   });

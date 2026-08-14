@@ -231,7 +231,11 @@ result.outputs = {}; // Empty Map!
 function findGeneratedFilesOnFilesystem(
   outputFile: string,
 ): { file: string; content: string } | null {
-  const possiblePaths = ["./", "./tsp-output/", "./tsp-output/@lars-artmann/typespec-asyncapi/"];
+  const possiblePaths = [
+    "./",
+    "./tsp-output/",
+    "./tsp-output/@lars-artmann/typespec-asyncapi/",
+  ];
   const extensions = [".json", ".yaml"];
 
   // Search filesystem for emitted files
@@ -249,7 +253,9 @@ function findGeneratedFilesOnFilesystem(
 
 // Integrated into compileAsyncAPI:
 if (!outputFile) {
-  const fallback = findGeneratedFilesOnFilesystem(options["output-file"] || "asyncapi");
+  const fallback = findGeneratedFilesOnFilesystem(
+    options["output-file"] || "asyncapi",
+  );
   if (fallback) {
     return {
       asyncApiDoc: doc,

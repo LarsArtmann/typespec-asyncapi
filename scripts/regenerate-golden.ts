@@ -26,7 +26,11 @@ async function main(): Promise<void> {
     throw new Error("emitter produced no AsyncAPI document");
   }
   const target = join(goldenDir, "livesession-xyd.json");
-  writeFileSync(target, `${JSON.stringify(result.asyncApiDoc, null, 2)}\n`, "utf8");
+  writeFileSync(
+    target,
+    `${JSON.stringify(result.asyncApiDoc, null, 2)}\n`,
+    "utf8",
+  );
   console.log(`Regenerated ${target}`);
 }
 

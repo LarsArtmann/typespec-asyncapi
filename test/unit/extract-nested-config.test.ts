@@ -38,19 +38,26 @@ describe("extractNestedConfig", () => {
   it("recurses into nested Model nodes", () => {
     const inner = {
       kind: "Model",
-      properties: new Map([["scopes", { type: { kind: "String", value: "read" } }]]),
+      properties: new Map([
+        ["scopes", { type: { kind: "String", value: "read" } }],
+      ]),
     };
     const outer = {
       kind: "Model",
       properties: new Map([["scheme", { type: inner }]]),
     };
-    expect(extractNestedConfig(outer)).toStrictEqual({ scheme: { scopes: "read" } });
+    expect(extractNestedConfig(outer)).toStrictEqual({
+      scheme: { scopes: "read" },
+    });
   });
 
   it("extracts a Tuple node into an array", () => {
     const tupleNode = {
       kind: "Tuple",
-      values: [{ kind: "String", value: "canary" }, { kind: "String", value: "beta" }],
+      values: [
+        { kind: "String", value: "canary" },
+        { kind: "String", value: "beta" },
+      ],
     };
     expect(extractNestedConfig(tupleNode)).toStrictEqual(["canary", "beta"]);
   });

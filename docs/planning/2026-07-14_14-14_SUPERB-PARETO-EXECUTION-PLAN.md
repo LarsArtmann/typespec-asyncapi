@@ -33,7 +33,7 @@ Channel parameters, server variables, nested `$ref`, domain language docs, ADRs.
 | 1.1 | Remove dead dependencies from package.json (`@alloy-js/core`, `@effect/schema`, `@effect/eslint-plugin`, `@typespec/emitter-framework`) | CRITICAL | 15 min | None         |
 | 1.2 | Verify `bun install && bun run build && bun test` passes after dep removal                                                              | CRITICAL | 10 min | 1.1          |
 | 1.3 | Create one working example with `tspconfig.yaml` that compiles and produces correct output                                              | CRITICAL | 30 min | 1.2          |
-| 1.4 | Verify `pnpm publish --dry-run` works and package size is reasonable                                                                     | HIGH     | 20 min | 1.1          |
+| 1.4 | Verify `pnpm publish --dry-run` works and package size is reasonable                                                                    | HIGH     | 20 min | 1.1          |
 | 1.5 | Add `.npmignore` to exclude test/docs/scripts from published package                                                                    | HIGH     | 10 min | None         |
 
 **Phase 1 total: ~85 min**
@@ -106,7 +106,7 @@ Channel parameters, server variables, nested `$ref`, domain language docs, ADRs.
 | 4     | 2.5  | Clean CONTRIBUTING.md               | MEDIUM   | 15     | 5.3   |
 | 5     | 2.1  | Archive 410 docs                    | HIGH     | 30     | 5.0   |
 | 6     | 3.5  | Remove dead source files            | MEDIUM   | 20     | 4.0   |
-| 7     | 1.4  | Verify pnpm publish dry-run          | HIGH     | 20     | 4.0   |
+| 7     | 1.4  | Verify pnpm publish dry-run         | HIGH     | 20     | 4.0   |
 | 8     | 2.6  | Remove console.log spam from tests  | MEDIUM   | 20     | 3.5   |
 | 9     | 1.3  | Create working example              | CRITICAL | 30     | 3.3   |
 | 10    | 4.1  | Channel parameters                  | HIGH     | 45     | 3.1   |
@@ -223,10 +223,10 @@ graph TD
 | M1.3b | Create `examples/simple/tspconfig.yaml` pointing to emitter                               | 1.3    | 5 min  |
 | M1.3c | Run `bunx tsp compile examples/simple/main.tsp --emit .` and verify output                | 1.3    | 10 min |
 | M1.3d | Commit expected output alongside example                                                  | 1.3    | 5 min  |
-| M1.4a | Run `pnpm publish --dry-run` and check output size                                         | 1.4    | 10 min |
+| M1.4a | Run `pnpm publish --dry-run` and check output size                                        | 1.4    | 10 min |
 | M1.4b | Fix any issues (missing files, wrong paths in package.json)                               | 1.4    | 10 min |
 | M1.5a | Create `.npmignore` excluding test/, docs/, scripts/, examples/                           | 1.5    | 5 min  |
-| M1.5b | Verify `pnpm pack` output only includes dist/, lib/, README, LICENSE                       | 1.5    | 5 min  |
+| M1.5b | Verify `pnpm pack` output only includes dist/, lib/, README, LICENSE                      | 1.5    | 5 min  |
 
 ### Phase 2 Micro-Tasks
 

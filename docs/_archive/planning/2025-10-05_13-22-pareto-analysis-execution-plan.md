@@ -544,7 +544,7 @@ See next section for breakdown of each 30-100min task into 15min actionable step
 
 | #    | Micro-Task                      | Time  | Impact |
 | ---- | ------------------------------- | ----- | ------ |
-| 11.1 | Add `test:coverage` pnpm script  | 15min | Setup  |
+| 11.1 | Add `test:coverage` pnpm script | 15min | Setup  |
 | 11.2 | Test coverage reporting locally | 15min | Verify |
 
 #### Task 12: CI/CD quality gates (60min → 4×15min)
@@ -568,7 +568,7 @@ See next section for breakdown of each 30-100min task into 15min actionable step
 | #    | Micro-Task                                                     | Time  | Impact    |
 | ---- | -------------------------------------------------------------- | ----- | --------- |
 | 14.1 | Create scripts/test-metrics.ts with absolute/relative tracking | 15min | Script    |
-| 14.2 | Update test pnpm scripts to use metrics reporter                | 15min | Integrate |
+| 14.2 | Update test pnpm scripts to use metrics reporter               | 15min | Integrate |
 
 #### Task 15: Categorize failures (90min → 6×15min)
 

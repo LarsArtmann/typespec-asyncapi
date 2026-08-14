@@ -173,7 +173,9 @@ describe("sASL & Other Security Mechanisms", () => {
     `);
 
     const errors = diagnostics.filter(
-      (d) => d.severity === "error" && d.message.includes("Unsupported security scheme type"),
+      (d) =>
+        d.severity === "error" &&
+        d.message.includes("Unsupported security scheme type"),
     );
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].message).toContain("external");
@@ -200,7 +202,9 @@ describe("sASL & Other Security Mechanisms", () => {
     `);
 
     const errors = diagnostics.filter(
-      (d) => d.severity === "error" && d.message.includes("Unsupported security scheme type"),
+      (d) =>
+        d.severity === "error" &&
+        d.message.includes("Unsupported security scheme type"),
     );
     expect(errors.length).toBeGreaterThan(0);
   });
@@ -227,7 +231,9 @@ describe("sASL & Other Security Mechanisms", () => {
     `);
 
     const errors = diagnostics.filter(
-      (d) => d.severity === "error" && d.message.includes("Unsupported security scheme type"),
+      (d) =>
+        d.severity === "error" &&
+        d.message.includes("Unsupported security scheme type"),
     );
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].message).toContain("sasl");
@@ -362,7 +368,9 @@ describe("sASL & Other Security Mechanisms", () => {
 
     const spec = await compileAndGetAsyncAPI(host, "./main.tsp");
     expect(spec).toBeDefined();
-    expect(spec?.components?.securitySchemes?.userPw?.type).toBe("userPassword");
+    expect(spec?.components?.securitySchemes?.userPw?.type).toBe(
+      "userPassword",
+    );
   });
 
   it("should support Plain Text (No Authentication)", async () => {

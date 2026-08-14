@@ -10,7 +10,10 @@
 
 import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
 import { compileAsyncAPI } from "../utils/test-helpers.js";
-import { PROTOCOL_LIST, isSupportedProtocol } from "../../src/constants/protocols.js";
+import {
+  PROTOCOL_LIST,
+  isSupportedProtocol,
+} from "../../src/constants/protocols.js";
 import {
   normalizePathTemplate,
   parsePathTemplate,
@@ -212,7 +215,9 @@ describe("bdd: user provides invalid configuration", () => {
     `);
     const warnings = result.diagnostics.filter((d) => d.severity === "warning");
     expect(warnings.length).toBeGreaterThan(0);
-    expect(warnings.some((d) => d.code.includes("unknown-binding-protocol"))).toBe(true);
+    expect(
+      warnings.some((d) => d.code.includes("unknown-binding-protocol")),
+    ).toBe(true);
   });
 });
 

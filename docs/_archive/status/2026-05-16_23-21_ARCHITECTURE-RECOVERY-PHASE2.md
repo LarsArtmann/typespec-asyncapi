@@ -142,7 +142,7 @@ Comprehensive rewrite with current architecture, test framework patterns, gotcha
 | C6  | Fix OAuth2 test syntax                     | 21 tests use `"api:read": "API read"` which is invalid TypeSpec (colons in property names) | 21 tests       |
 | C7  | Split `minimal-decorators.ts` (611 lines)  | Violates 370-line limit, needs extraction to domain modules                                | Code quality   |
 | C8  | Split `lib.ts` (457 lines)                 | Violates 370-line limit, JSDoc bloat                                                       | Code quality   |
-| C9  | CLI test infrastructure                    | CLI tests depend on `pnpm dlx tsp compile` which requires bash                                  | ~18 tests      |
+| C9  | CLI test infrastructure                    | CLI tests depend on `pnpm dlx tsp compile` which requires bash                             | ~18 tests      |
 | C10 | Real-World scenario tests                  | Tests expect full emitter features (schemas, operations, security)                         | ~30 tests      |
 
 ---

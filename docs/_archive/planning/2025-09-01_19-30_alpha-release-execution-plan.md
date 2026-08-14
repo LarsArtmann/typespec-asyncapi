@@ -290,7 +290,7 @@ graph TD
 
 | #      | Micro-Task                                      | Time  | Owner   |
 | ------ | ----------------------------------------------- | ----- | ------- |
-| M24-01 | Prepare pnpm package for potential publishing    | 15min | Agent-2 |
+| M24-01 | Prepare pnpm package for potential publishing   | 15min | Agent-2 |
 | M24-02 | Create deployment documentation and procedures  | 15min | Agent-2 |
 | M24-03 | Validate package.json metadata and dependencies | 10min | Agent-2 |
 

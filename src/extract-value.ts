@@ -1,7 +1,9 @@
 import type { EmitEntity } from "@typespec/asset-emitter";
 import type { JsonSchema } from "./domain/models/asyncapi-document.js";
 
-export function extractValue(entity: EmitEntity<JsonSchema> | undefined): JsonSchema {
+export function extractValue(
+  entity: EmitEntity<JsonSchema> | undefined,
+): JsonSchema {
   if (!entity) {
     return {};
   }

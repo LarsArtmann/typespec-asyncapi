@@ -13,20 +13,36 @@ import { generateSchemas } from "./schema-generator.js";
 import { splitSchemas } from "./schema-splitter.js";
 import { stringify as yamlStringify } from "yaml";
 
-export async function $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): Promise<void> {
+export async function $onEmit(
+  context: EmitContext<AsyncAPIEmitterOptions>,
+): Promise<void> {
   const { options } = context;
   const rawState = consolidateAsyncAPIState(context.program);
   const schemas = generateSchemas(context);
-  const document = buildAsyncAPIDocument(rawState, schemas, options, context.program);
+  const document = buildAsyncAPIDocument(
+    rawState,
+    schemas,
+    options,
+    context.program,
+  );
 
   const format = resolveFileFormat(options["file-type"]);
   const outputFile = options["output-file"] ?? "asyncapi";
   const outputPath = `${outputFile}.${format.extension}`;
 
   if (options["split-schemas"] === true) {
-    const { mainDocument, schemaFiles } = splitSchemas(document, format.extension);
+    const { mainDocument, schemaFiles } = splitSchemas(
+      document,
+      format.extension,
+    );
     const writePromises: Promise<void>[] = [
-      writeDocument(context.program, mainDocument, format, outputPath, context.emitterOutputDir),
+      writeDocument(
+        context.program,
+        mainDocument,
+        format,
+        outputPath,
+        context.emitterOutputDir,
+      ),
     ];
     for (const [filename, schema] of schemaFiles) {
       writePromises.push(
@@ -43,7 +59,13 @@ export async function $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): Pro
     return;
   }
 
-  await writeDocument(context.program, document, format, outputPath, context.emitterOutputDir);
+  await writeDocument(
+    context.program,
+    document,
+    format,
+    outputPath,
+    context.emitterOutputDir,
+  );
 }
 
 /** Fully resolved output format: extension plus serialization settings. */
@@ -53,9 +75,15 @@ interface ResolvedFileFormat {
   pretty: boolean;
 }
 
-function resolveFileFormat(raw: AsyncAPIEmitterOptions["file-type"]): ResolvedFileFormat {
+function resolveFileFormat(
+  raw: AsyncAPIEmitterOptions["file-type"],
+): ResolvedFileFormat {
   if (typeof raw === "object") {
-    return { extension: raw.format, indent: raw.indent ?? 2, pretty: raw.pretty ?? true };
+    return {
+      extension: raw.format,
+      indent: raw.indent ?? 2,
+      pretty: raw.pretty ?? true,
+    };
   }
   return { extension: raw ?? "yaml", indent: 2, pretty: true };
 }

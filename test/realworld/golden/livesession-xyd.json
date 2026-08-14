@@ -23,12 +23,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "version",
-          "specUrl",
-          "updatedAt",
-          "current"
-        ]
+        "required": ["version", "specUrl", "updatedAt", "current"]
       },
       "DistTag": {
         "properties": {
@@ -40,10 +35,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "tag",
-          "version"
-        ],
+        "required": ["tag", "version"],
         "description": "A named, movable pointer to a version (npm-style). `latest` is auto-managed\n(set to the newest version on register); others (`canary`, `beta`, …) are set\nby hand. A version ref anywhere may be a concrete version OR a dist-tag name."
       },
       "RegistryEntryCore": {
@@ -360,10 +352,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "language",
-          "packageName"
-        ]
+        "required": ["language", "packageName"]
       },
       "DocsProject": {
         "properties": {
@@ -491,10 +480,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "t",
-          "value"
-        ]
+        "required": ["t", "value"]
       },
       "UsageSeries": {
         "properties": {
@@ -522,14 +508,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id",
-          "label",
-          "unit",
-          "total",
-          "range",
-          "points"
-        ]
+        "required": ["id", "label", "unit", "total", "range", "points"]
       },
       "OverviewStats": {
         "properties": {
@@ -551,12 +530,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "apis",
-          "sdkTargets",
-          "docsProjects",
-          "mcpServers"
-        ]
+        "required": ["apis", "sdkTargets", "docsProjects", "mcpServers"]
       },
       "Organization": {
         "properties": {
@@ -571,11 +545,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id",
-          "name",
-          "plan"
-        ]
+        "required": ["id", "name", "plan"]
       },
       "Project": {
         "properties": {
@@ -590,11 +560,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id",
-          "name",
-          "orgId"
-        ]
+        "required": ["id", "name", "orgId"]
       },
       "CurrentContext": {
         "properties": {
@@ -618,12 +584,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "user",
-          "org",
-          "project",
-          "projects"
-        ]
+        "required": ["user", "org", "project", "projects"]
       },
       "User": {
         "properties": {
@@ -641,12 +602,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id",
-          "email",
-          "name",
-          "createdAt"
-        ],
+        "required": ["id", "email", "name", "createdAt"],
         "description": "An authenticated account. The password hash never leaves the server."
       },
       "AuthSession": {
@@ -659,10 +615,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "token",
-          "user"
-        ],
+        "required": ["token", "user"],
         "description": "Login/register response — the opaque session token + the user it belongs to."
       },
       "Member": {
@@ -681,12 +634,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "userId",
-          "email",
-          "name",
-          "role"
-        ],
+        "required": ["userId", "email", "name", "role"],
         "description": "A user's membership in the current org."
       },
       "GitProvider": {
@@ -738,12 +686,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "fullName",
-          "defaultBranch",
-          "htmlUrl",
-          "private"
-        ],
+        "required": ["fullName", "defaultBranch", "htmlUrl", "private"],
         "description": "A git repo option surfaced by a provider (for the connect picker)."
       },
       "RepoConnection": {
@@ -845,14 +788,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id",
-          "kind",
-          "name",
-          "url",
-          "connectedAs",
-          "createdAt"
-        ],
+        "required": ["id", "kind", "name", "url", "connectedAs", "createdAt"],
         "description": "A connected package registry account (token is server-side only)."
       },
       "RegistryConnection": {
@@ -1054,9 +990,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "name"
-        ]
+        "required": ["name"]
       },
       "SetDistTagInput": {
         "properties": {
@@ -1068,10 +1002,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "tag",
-          "version"
-        ],
+        "required": ["tag", "version"],
         "description": "Set (create or move) a dist-tag to point at an existing version."
       },
       "CreateSdkInput": {
@@ -1094,9 +1025,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "apiId"
-        ],
+        "required": ["apiId"],
         "description": "Create a named SDK for an API."
       },
       "AddSdkTargetInput": {
@@ -1117,9 +1046,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "language"
-        ],
+        "required": ["language"],
         "description": "Add a language target to an SDK (kicks off generation)."
       },
       "BuildSdkInput": {
@@ -1144,9 +1071,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "version"
-        ],
+        "required": ["version"],
         "description": "Create a new SDK version: bump the SDK's version and rebuild every target\nfrom one API spec version, recorded as a build in the history."
       },
       "CreateDocsProjectInput": {
@@ -1162,10 +1087,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "apiId",
-          "name"
-        ]
+        "required": ["apiId", "name"]
       },
       "CreateMcpServerInput": {
         "properties": {
@@ -1183,10 +1105,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "apiId",
-          "name"
-        ]
+        "required": ["apiId", "name"]
       },
       "MarkReadInput": {
         "properties": {
@@ -1226,10 +1145,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "email",
-          "password"
-        ]
+        "required": ["email", "password"]
       },
       "LoginInput": {
         "properties": {
@@ -1241,10 +1157,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "email",
-          "password"
-        ]
+        "required": ["email", "password"]
       },
       "CreateProjectInput": {
         "properties": {
@@ -1253,9 +1166,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "name"
-        ]
+        "required": ["name"]
       },
       "ApiKey": {
         "properties": {
@@ -1277,12 +1188,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id",
-          "name",
-          "prefix",
-          "createdAt"
-        ],
+        "required": ["id", "name", "prefix", "createdAt"],
         "description": "A workspace API key. Only its SHA-256 hash is stored; the secret is returned\nonce, at creation (see CreatedApiKey)."
       },
       "CreateApiKeyInput": {
@@ -1292,9 +1198,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "name"
-        ]
+        "required": ["name"]
       },
       "CreatedApiKey": {
         "properties": {
@@ -1306,10 +1210,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "key",
-          "secret"
-        ],
+        "required": ["key", "secret"],
         "description": "The created key plus its plaintext secret — the ONLY time the secret is\nreturned. Store it now; it can't be retrieved again."
       },
       "UpdateProjectInput": {
@@ -1319,9 +1220,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "name"
-        ]
+        "required": ["name"]
       },
       "SelectProjectInput": {
         "properties": {
@@ -1330,9 +1229,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "projectId"
-        ]
+        "required": ["projectId"]
       },
       "InviteMemberInput": {
         "properties": {
@@ -1344,9 +1241,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "email"
-        ]
+        "required": ["email"]
       },
       "UpdateMemberRoleInput": {
         "properties": {
@@ -1355,9 +1250,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "role"
-        ]
+        "required": ["role"]
       },
       "ConnectGitProviderInput": {
         "properties": {
@@ -1376,10 +1269,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "kind",
-          "token"
-        ],
+        "required": ["kind", "token"],
         "description": "Connect a git provider (validated via the provider's whoami)."
       },
       "CreateRepoConnectionInput": {
@@ -1429,12 +1319,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "providerId",
-          "targetKind",
-          "targetId",
-          "repo"
-        ],
+        "required": ["providerId", "targetKind", "targetId", "repo"],
         "description": "Link an API spec or SDK target to a repo."
       },
       "ConnectRegistryInput": {
@@ -1455,10 +1340,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "kind",
-          "url"
-        ],
+        "required": ["kind", "url"],
         "description": "Connect a package registry account."
       },
       "CreateRegistryConnectionInput": {
@@ -1478,10 +1360,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "registryId",
-          "targetId"
-        ],
+        "required": ["registryId", "targetId"],
         "description": "Link an SDK target to a package registry."
       },
       "PrepareReleaseInput": {
@@ -1494,9 +1373,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "connectionId"
-        ]
+        "required": ["connectionId"]
       },
       "SetReleaseConfigInput": {
         "properties": {
@@ -1518,112 +1395,53 @@
           }
         },
         "type": "object",
-        "required": [
-          "releaseMode",
-          "autoRelease"
-        ]
+        "required": ["releaseMode", "autoRelease"]
       },
       "ApiFormat": {
-        "enum": [
-          "openapi",
-          "graphql",
-          "asyncapi",
-          "jsonschema"
-        ],
+        "enum": ["openapi", "graphql", "asyncapi", "jsonschema"],
         "type": "string"
       },
       "EntryKind": {
-        "enum": [
-          "api",
-          "schema"
-        ],
+        "enum": ["api", "schema"],
         "type": "string",
         "description": "What kind of document a registry entry holds: a full API spec or a schema."
       },
       "BuildStatus": {
-        "enum": [
-          "ready",
-          "building",
-          "error",
-          "draft"
-        ],
+        "enum": ["ready", "building", "error", "draft"],
         "type": "string"
       },
       "SdkLanguage": {
-        "enum": [
-          "go",
-          "python",
-          "node",
-          "ruby",
-          "java",
-          "dotnet"
-        ],
+        "enum": ["go", "python", "node", "ruby", "java", "dotnet"],
         "type": "string"
       },
       "McpTransport": {
-        "enum": [
-          "http",
-          "sse",
-          "stdio"
-        ],
+        "enum": ["http", "sse", "stdio"],
         "type": "string"
       },
       "NotificationSeverity": {
-        "enum": [
-          "info",
-          "success",
-          "warning",
-          "error"
-        ],
+        "enum": ["info", "success", "warning", "error"],
         "type": "string"
       },
       "NotificationSource": {
-        "enum": [
-          "sdk",
-          "docs",
-          "mcp",
-          "registry",
-          "system",
-          "git"
-        ],
+        "enum": ["sdk", "docs", "mcp", "registry", "system", "git"],
         "type": "string"
       },
       "GitProviderKind": {
-        "enum": [
-          "github",
-          "gitlab",
-          "bitbucket",
-          "gitea"
-        ],
+        "enum": ["github", "gitlab", "bitbucket", "gitea"],
         "type": "string",
         "description": "The git platforms the gitprovider service can connect to."
       },
       "RepoTargetKind": {
-        "enum": [
-          "spec",
-          "sdk"
-        ],
+        "enum": ["spec", "sdk"],
         "type": "string",
         "description": "What a repo connection syncs into a repo."
       },
       "UsageRange": {
-        "enum": [
-          "24h",
-          "7d",
-          "30d",
-          "90d"
-        ],
+        "enum": ["24h", "7d", "30d", "90d"],
         "type": "string"
       },
       "PackageRegistryKind": {
-        "enum": [
-          "npm",
-          "pypi",
-          "gems",
-          "maven",
-          "nuget",
-          "goproxy"
-        ],
+        "enum": ["npm", "pypi", "gems", "maven", "nuget", "goproxy"],
         "type": "string",
         "description": "Package registry flavour — the language ecosystem an SDK publishes into."
       },

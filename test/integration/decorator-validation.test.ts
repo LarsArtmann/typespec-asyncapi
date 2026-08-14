@@ -223,10 +223,12 @@ describe("asyncAPI Decorator Validation", () => {
       expect(errors).toHaveLength(0);
 
       const doc = JSON.parse(outputFiles.get("recursive-test.json")!);
-      expect(doc.components.schemas.TreeNode.properties.children).toStrictEqual({
-        type: "array",
-        items: { $ref: "#/components/schemas/TreeNode" },
-      });
+      expect(doc.components.schemas.TreeNode.properties.children).toStrictEqual(
+        {
+          type: "array",
+          items: { $ref: "#/components/schemas/TreeNode" },
+        },
+      );
     });
   });
 

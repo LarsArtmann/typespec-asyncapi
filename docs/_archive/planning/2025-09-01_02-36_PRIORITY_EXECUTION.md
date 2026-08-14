@@ -128,7 +128,7 @@
 | **1.11.3** | Setup test automation           | 10min | 1.11   | Config | Automated tests working     |
 | **1.11.4** | Setup quality gates             | 10min | 1.11   | Config | Quality checks automated    |
 | **1.11.5** | Test CI/CD pipeline             | 15min | 1.11   | Test   | Pipeline working end-to-end |
-| **1.12.1** | Update package.json for release | 10min | 1.12   | Config | Package ready for pnpm       |
+| **1.12.1** | Update package.json for release | 10min | 1.12   | Config | Package ready for pnpm      |
 | **1.12.2** | Generate CHANGELOG.md           | 15min | 1.12   | Doc    | Release notes complete      |
 | **1.12.3** | Create release tag and notes    | 10min | 1.12   | Config | v1.0.0 tagged               |
 | **1.12.4** | Validate release readiness      | 5min  | 1.12   | Test   | All gates pass              |
