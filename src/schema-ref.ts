@@ -8,6 +8,7 @@
 
 import type { Enum, Model, Scalar, Type } from "@typespec/compiler";
 import { isStdlibType } from "./stdlib-helpers.js";
+import { refSchema } from "./domain/models/asyncapi-document.js";
 import type { JsonSchema } from "./domain/models/asyncapi-document.js";
 
 /**
@@ -21,21 +22,21 @@ export function refForNamedType(t: Type): JsonSchema | null {
   if (kind === "Model") {
     const modelType = t as Model;
     if (modelType.name && !modelType.indexer && !isStdlibType(t)) {
-      return { $ref: `#/components/schemas/${modelType.name}` };
+      return { ...refSchema(modelType.name) };
     }
   }
 
   if (kind === "Enum") {
     const enumType = t as Enum;
     if (enumType.name && !isStdlibType(t)) {
-      return { $ref: `#/components/schemas/${enumType.name}` };
+      return { ...refSchema(enumType.name) };
     }
   }
 
   if (kind === "Scalar") {
     const scalarType = t as Scalar;
     if (scalarType.name && !isStdlibType(t)) {
-      return { $ref: `#/components/schemas/${scalarType.name}` };
+      return { ...refSchema(scalarType.name) };
     }
   }
 

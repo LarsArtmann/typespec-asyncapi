@@ -37,7 +37,7 @@ export function splitSchemas(doc: AsyncAPIDocument, fileExtension: string): Spli
 
   if (cloned.components) {
     delete cloned.components.schemas;
-    if (!cloned.components.messages && !cloned.components.securitySchemes) {
+    if (Object.keys(cloned.components).length === 0) {
       delete cloned.components;
     }
   }

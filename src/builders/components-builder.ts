@@ -23,7 +23,7 @@ import {
 import type { Type } from "@typespec/compiler";
 import type { BuilderFn } from "./_imports.js";
 import { nameOfType } from "./_imports.js";
-import { iterNamedTypes } from "./shared-utils.js";
+import { iterNamedTypes, channelForName } from "./shared-utils.js";
 import type { AsyncAPIConsolidatedState } from "../state.js";
 import type { DocumentBuildContext } from "./types.js";
 
@@ -235,8 +235,7 @@ function applyChannelBindingRefs(state: AsyncAPIConsolidatedState, ctx: Ctx): vo
     if (!opName) {
       continue;
     }
-    const channelKey = ctx.opToChannel.get(opName) ?? opName;
-    const channel = ctx.channels[channelKey];
+    const channel = channelForName(ctx, opName);
     if (!channel) {
       continue;
     }

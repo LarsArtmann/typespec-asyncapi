@@ -6,6 +6,7 @@ import type { DecoratorContext, DiagnosticTarget, Model } from "@typespec/compil
 import { $lib } from "./lib.js";
 import { PROTOCOL_LIST } from "./constants/protocols.js";
 import type { Tag } from "./domain/models/asyncapi-document.js";
+import type { MessageConfigData } from "./state.js";
 
 // === DIAGNOSTIC HELPERS ===
 
@@ -245,35 +246,14 @@ export function normalizeTagItem(item: unknown): Tag | null {
 /**
  * Extract message configuration from `@message` config: title, description,
  * contentType, schemaFormat, and examples. Supports both model-expression and
- * value-literal config shapes.
+ * value-literal config shapes. Returns the shared `MessageConfigData` shape.
  */
-export function extractMessageConfig(
-  config: unknown,
-  target: Model,
-): {
-  title: string;
-  description: string;
-  contentType: string;
-  schemaFormat?: string;
-  examples?: {
-    name?: string;
-    summary?: string;
-    headers?: unknown;
-    payload?: unknown;
-  }[];
-} {
+export function extractMessageConfig(config: unknown, target: Model): MessageConfigData {
   let title: string | undefined;
   let description: string | undefined;
   let contentType: string | undefined;
   let schemaFormat: string | undefined;
-  let examples:
-    | {
-        name?: string;
-        summary?: string;
-        headers?: unknown;
-        payload?: unknown;
-      }[]
-    | undefined;
+  let examples: MessageConfigData["examples"];
 
   if (isModelConfig(config)) {
     title = getModelPropertyStringValue(config, "title");

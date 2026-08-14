@@ -162,8 +162,6 @@ function assembleDocument(
   const services = listServices(ctx.program);
   const serviceTitle = services.length > 0 ? services[0]?.title : undefined;
 
-  const stateApiVersion = apiVersion;
-
   const infoTags: Tag[] | undefined =
     Object.keys(ctx.tags).length > 0 ? Object.values(ctx.tags) : undefined;
 
@@ -172,7 +170,7 @@ function assembleDocument(
     info: {
       description: options.description,
       title: options.title ?? serviceTitle ?? "Generated API",
-      version: options.version ?? stateApiVersion ?? "1.0.0",
+      version: options.version ?? apiVersion ?? "1.0.0",
       ...(options.contact ? { contact: options.contact } : {}),
       ...(options.license ? { license: options.license } : {}),
       ...(options.termsOfService ? { termsOfService: options.termsOfService } : {}),

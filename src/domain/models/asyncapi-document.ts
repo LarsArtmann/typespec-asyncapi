@@ -135,12 +135,20 @@ export interface CommonMetadata {
   bindings?: ProtocolBindings | Ref;
 }
 
+/** A server variable substitution entry for `{var}` templates in `ServerObject.host`. */
+export interface ServerVariable {
+  enum?: string[];
+  default?: string;
+  description?: string;
+  examples?: string[];
+}
+
 export interface ServerObject extends CommonMetadata {
   host: string;
   protocol: AsyncAPIProtocol;
   protocolVersion?: string;
   pathname?: string;
-  variables?: Record<string, { enum?: string[]; default?: string; description?: string }>;
+  variables?: Record<string, ServerVariable>;
   security?: SecurityRequirement[];
 }
 

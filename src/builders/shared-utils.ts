@@ -4,6 +4,7 @@
 
 import type { Type } from "@typespec/compiler";
 import type {
+  ChannelObject,
   OperationAction,
   ParameterObject,
   ProtocolBindings,
@@ -16,6 +17,7 @@ import {
   normalizeBindingProtocol,
 } from "../constants/binding-versions.js";
 import { nameOfType } from "./types.js";
+import type { DocumentBuildContext } from "./types.js";
 
 const OAUTH2_FLOW_KEYS = [
   "implicit",
@@ -129,6 +131,17 @@ export function returnModels<T>(type: Type, selector: (t: Type) => T): T[] {
   }
 
   return [];
+}
+
+/**
+ * Resolve the channel object for a named operation/channel type, following
+ * `@channel` path overrides recorded during discovery.
+ */
+export function channelForName(
+  ctx: DocumentBuildContext,
+  name: string,
+): ChannelObject | undefined {
+  return ctx.channels[ctx.opToChannel.get(name) ?? name];
 }
 
 /** Extract message model names from an Operation type's return type. */

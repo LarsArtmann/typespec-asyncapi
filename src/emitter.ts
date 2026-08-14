@@ -19,23 +19,21 @@ export async function $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): Pro
   const schemas = generateSchemas(context);
   const document = buildAsyncAPIDocument(rawState, schemas, options, context.program);
 
-  const rawFileType = options["file-type"] ?? "yaml";
-  const fileType: string = typeof rawFileType === "string" ? rawFileType : rawFileType.format;
+  const format = resolveFileFormat(options["file-type"]);
   const outputFile = options["output-file"] ?? "asyncapi";
-  const outputPath = `${outputFile}.${fileType}`;
-  const splitSchemasEnabled = options["split-schemas"] === true;
+  const outputPath = `${outputFile}.${format.extension}`;
 
-  if (splitSchemasEnabled) {
-    const { mainDocument, schemaFiles } = splitSchemas(document, fileType);
+  if (options["split-schemas"] === true) {
+    const { mainDocument, schemaFiles } = splitSchemas(document, format.extension);
     const writePromises: Promise<void>[] = [
-      writeDocument(context.program, mainDocument, fileType, outputPath, context.emitterOutputDir),
+      writeDocument(context.program, mainDocument, format, outputPath, context.emitterOutputDir),
     ];
     for (const [filename, schema] of schemaFiles) {
       writePromises.push(
         writeDocument(
           context.program,
           schema,
-          fileType,
+          format,
           `schemas/${filename}`,
           context.emitterOutputDir,
         ),
@@ -45,18 +43,36 @@ export async function $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): Pro
     return;
   }
 
-  await writeDocument(context.program, document, fileType, outputPath, context.emitterOutputDir);
+  await writeDocument(context.program, document, format, outputPath, context.emitterOutputDir);
+}
+
+/** Fully resolved output format: extension plus serialization settings. */
+interface ResolvedFileFormat {
+  extension: string;
+  indent: number;
+  pretty: boolean;
+}
+
+function resolveFileFormat(raw: AsyncAPIEmitterOptions["file-type"]): ResolvedFileFormat {
+  if (typeof raw === "object") {
+    return { extension: raw.format, indent: raw.indent ?? 2, pretty: raw.pretty ?? true };
+  }
+  return { extension: raw ?? "yaml", indent: 2, pretty: true };
 }
 
 function writeDocument(
   program: Program,
   data: unknown,
-  fileType: string,
+  format: ResolvedFileFormat,
   relativePath: string,
   emitterOutputDir: string,
 ): Promise<void> {
   const content =
-    fileType === "json" ? JSON.stringify(data, null, 2) : yamlStringify(data, { lineWidth: 0 });
+    format.extension === "json"
+      ? format.pretty
+        ? JSON.stringify(data, null, format.indent)
+        : JSON.stringify(data)
+      : yamlStringify(data, { indent: format.indent, lineWidth: 0 });
 
   return emitFile(program, {
     content,

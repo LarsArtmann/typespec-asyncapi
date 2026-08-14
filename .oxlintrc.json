@@ -42,7 +42,8 @@
     "eslint/max-params": ["warn", { "max": 5 }],
     "eslint/max-lines": ["warn", { "max": 400 }],
     "eslint/complexity": ["warn", { "max": 50 }],
-    "eslint/eqeqeq": ["error", "always"]
+    "eslint/eqeqeq": ["error", "always"],
+    "eslint/one-var": "off"
   },
   "overrides": [
     {
@@ -55,7 +56,8 @@
         "unicorn/no-process-exit": "off",
         "node/no-sync": "off",
         "unicorn/no-null": "off",
-        "unicorn/numeric-separators-style": "off"
+        "unicorn/numeric-separators-style": "off",
+        "node/no-top-level-await": "off"
       }
     },
     {

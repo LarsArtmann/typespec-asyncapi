@@ -10,8 +10,8 @@ import type {
   MessageHeaderData,
   OperationReplyData,
   ProtocolBindings,
+  SecurityConfigData,
   SecurityRequirement,
-  SecurityScheme,
   ServerConfigData,
   Tag,
 } from "./state.js";
@@ -121,13 +121,9 @@ export const storeServerConfig = (
 export const storeSecurityConfig = (
   program: Program,
   target: Operation | Namespace,
-  config: { name: string; scheme: SecurityScheme },
+  config: SecurityConfigData,
 ): void => {
-  interface SecurityConfigEntry {
-    name: string;
-    scheme: SecurityScheme;
-  }
-  const map = getStateMap<SecurityConfigEntry[]>(program, stateSymbols.securityConfigs);
+  const map = getStateMap<SecurityConfigData[]>(program, stateSymbols.securityConfigs);
   appendToStateArray(map, target, { name: config.name, scheme: config.scheme });
 };
 

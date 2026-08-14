@@ -89,15 +89,7 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<JsonSchema, AsyncAPIEmitt
   }
 
   union(union: Union): EmitterOutput<JsonSchema> {
-    const variants = [...union.variants.values()].map((v) =>
-      this.refOrFallback(v.type, (t) => {
-        const tt = t as { kind: string; name?: string; value?: string };
-        if (tt.kind === "String" && tt.value !== undefined) {
-          return { const: tt.value };
-        }
-        return intrinsicToSchema(tt.name ?? "string");
-      }),
-    );
+    const variants = this.mapUnionVariants(union);
     const allConst = variants.every((v) => "const" in v);
     if (allConst) {
       return {
@@ -109,19 +101,8 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<JsonSchema, AsyncAPIEmitt
   }
 
   unionDeclaration(union: Union, name: string): EmitterOutput<JsonSchema> {
-    const schema = this.composeUnionVariants(
-      [...union.variants.values()].map((v) =>
-        this.refOrFallback(v.type, (t) => {
-          const tt = t as { kind: string; name?: string; value?: string };
-          if (tt.kind === "String" && tt.value !== undefined) {
-            return { const: tt.value };
-          }
-          return intrinsicToSchema(tt.name ?? "string");
-        }),
-      ),
-      union,
-    );
-    return this.emitter.result.declaration(name, schema);
+    const schema = this.composeUnionVariants(this.mapUnionVariants(union), union);
+    return this.declareSchema(name, union, schema);
   }
 
   enum(en: Enum): EmitterOutput<JsonSchema> {
@@ -204,7 +185,7 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<JsonSchema, AsyncAPIEmitt
   /** Apply metadata decorators to a schema and register it as a named declaration. */
   private declareSchema(
     name: string,
-    type: Scalar | Enum,
+    type: Scalar | Enum | Union,
     schema: JsonSchema,
   ): EmitterOutput<JsonSchema> {
     applyMetadata(this.emitter.getProgram(), type, schema);
@@ -214,6 +195,19 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<JsonSchema, AsyncAPIEmitt
   /** Return the AssetEmitter `none()` result for "no schema output". */
   private returnNone(): NoEmit {
     return this.emitter.result.none();
+  }
+
+  /** Map union variants to schemas: named types → `$ref`, string literals → `const`, else intrinsic fallback. */
+  private mapUnionVariants(union: Union): JsonSchema[] {
+    return [...union.variants.values()].map((v) =>
+      this.refOrFallback(v.type, (t) => {
+        const tt = t as { kind: string; name?: string; value?: string };
+        if (tt.kind === "String" && tt.value !== undefined) {
+          return { const: tt.value };
+        }
+        return intrinsicToSchema(tt.name ?? "string");
+      }),
+    );
   }
 
   /** Decide oneOf vs anyOf for union variants, applying discriminator when all variants are models. */

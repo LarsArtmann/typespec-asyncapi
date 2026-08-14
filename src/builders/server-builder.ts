@@ -4,40 +4,34 @@
  * Builds AsyncAPI server objects from @server decorator state.
  */
 
-import type { ServerObject } from "../domain/models/asyncapi-document.js";
+import type { ServerObject, ServerVariable } from "../domain/models/asyncapi-document.js";
 import type { SecurityRequirement } from "../domain/models/asyncapi-document.js";
 import { normalizeProtocol } from "../constants/protocols.js";
 import type { BuilderFn } from "./types.js";
 
-interface ServerVar {
-  enum?: string[];
-  default?: string;
-  description?: string;
-  examples?: string[];
-}
-
 /** Extract a server variable from raw config, mapping `values` → `enum` (TypeSpec reserves `enum`). */
-function buildServerVar(rawVar: Record<string, unknown> | undefined, varName: string): ServerVar {
-  if (!rawVar) {
+function buildServerVar(rawVar: unknown, varName: string): ServerVariable {
+  if (!rawVar || typeof rawVar !== "object") {
     return { description: `Server variable: ${varName}` };
   }
-  const result: ServerVar = {};
-  const enumSource = Array.isArray(rawVar.values)
-    ? (rawVar.values as string[])
-    : Array.isArray(rawVar.enum)
-      ? (rawVar.enum as string[])
+  const raw = rawVar as Record<string, unknown>;
+  const result: ServerVariable = {};
+  const enumSource = Array.isArray(raw.values)
+    ? (raw.values as string[])
+    : Array.isArray(raw.enum)
+      ? (raw.enum as string[])
       : undefined;
   if (enumSource) {
     result.enum = enumSource;
   }
-  if (rawVar.default !== undefined) {
-    result.default = rawVar.default as string;
+  if (raw.default !== undefined) {
+    result.default = raw.default as string;
   }
-  if (rawVar.description !== undefined) {
-    result.description = rawVar.description as string;
+  if (raw.description !== undefined) {
+    result.description = raw.description as string;
   }
-  if (rawVar.examples !== undefined) {
-    result.examples = rawVar.examples as string[];
+  if (raw.examples !== undefined) {
+    result.examples = raw.examples as string[];
   }
   return result;
 }
@@ -68,7 +62,7 @@ export const buildServers: BuilderFn = (state, ctx) => {
 
       const varMatches = entry.url.match(/\{(?<var>[^}]+)\}/gu);
       if (varMatches && varMatches.length > 0) {
-        const vars: Record<string, ServerVar> = {};
+        const vars: Record<string, ServerVariable> = {};
         for (const match of varMatches) {
           const varName = match.slice(1, -1);
           const rawVar = entry.variables?.[varName];

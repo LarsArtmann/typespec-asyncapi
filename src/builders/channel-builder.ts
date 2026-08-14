@@ -8,7 +8,7 @@
 import type { ChannelObject, Ref } from "../domain/models/asyncapi-document.js";
 import { escapeRefToken, ref, refMessage, refSchema } from "../domain/models/asyncapi-document.js";
 import type { BuilderFn, DocumentBuildContext } from "./_imports.js";
-import { buildProtocolBinding, extractChannelParameters, iterNamedTypes } from "./shared-utils.js";
+import { buildProtocolBinding, channelForName, extractChannelParameters, iterNamedTypes } from "./shared-utils.js";
 
 /** Get or create a channel in the context. */
 export function ensureChannel(ctx: DocumentBuildContext, channelKey: string): ChannelObject {
@@ -77,8 +77,7 @@ export function applyChannelDocs(ctx: DocumentBuildContext): void {
 /** Attach protocol bindings to channels from protocolConfigs state. */
 export const attachChannelBindings: BuilderFn = (state, ctx) => {
   for (const { name, data } of iterNamedTypes(state.protocolConfigs)) {
-    const channelKey = ctx.opToChannel.get(name) ?? name;
-    const channel = ctx.channels[channelKey];
+    const channel = channelForName(ctx, name);
     if (channel) {
       channel.bindings = buildProtocolBinding(data);
     }
@@ -91,8 +90,7 @@ export const attachChannelServerRefs: BuilderFn = (state, ctx) => {
     return;
   }
   for (const { name, data } of iterNamedTypes(state.channelServerRefs)) {
-    const channelKey = ctx.opToChannel.get(name) ?? name;
-    const channel = ctx.channels[channelKey];
+    const channel = channelForName(ctx, name);
     if (!channel) {
       continue;
     }

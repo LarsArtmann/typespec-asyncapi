@@ -81,6 +81,34 @@ describe("splitSchemas", () => {
     expect(result.mainDocument.components?.schemas).toBeUndefined();
   });
 
+  it("preserves components when only tags remain after schema extraction", () => {
+    const doc = {
+      asyncapi: "3.1.0",
+      info: { title: "T", version: "1" },
+      components: {
+        schemas: { User: { type: "object" } },
+        tags: { inventory: { name: "inventory" } },
+      },
+    } as unknown as AsyncAPIDocument;
+    const result = splitSchemas(doc, "json");
+    expect(result.mainDocument.components).toBeDefined();
+    expect(result.mainDocument.components?.tags).toBeDefined();
+    expect(result.mainDocument.components?.schemas).toBeUndefined();
+  });
+
+  it("preserves components when only operationTraits remain after schema extraction", () => {
+    const doc = {
+      asyncapi: "3.1.0",
+      info: { title: "T", version: "1" },
+      components: {
+        schemas: { User: { type: "object" } },
+        operationTraits: { standard: { bindings: {} } },
+      },
+    } as unknown as AsyncAPIDocument;
+    const result = splitSchemas(doc, "json");
+    expect(result.mainDocument.components?.operationTraits).toBeDefined();
+  });
+
   it("rewrites $ref pointers in main document from internal to external", () => {
     const doc = {
       asyncapi: "3.1.0",
