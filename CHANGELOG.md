@@ -8,6 +8,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- **Named-union metadata as public contract** — Named unions now emit `@doc`/`@summary` as `description`/`title`, consistent with enums/scalars via the shared `declareSchema` path. Locked in by the "named union metadata propagation" compliance suite in `test/compliance/polymorphism.test.ts` (2 tests). Previously silently dropped; no test pinned the old behavior. (`7f6c9b1`, `2e2ef0b`)
+- **`scripts/regenerate-golden.ts`** — one-command golden-file regeneration for all golden fixtures; documented in AGENTS.md gotchas. (`7f6c9b1`)
+- **`test/unit/extract-nested-config.test.ts`** (9 tests) — closes the coverage-gate gap on `extract-nested-config.ts` (63.6% → gate-passing). (`b6da64c`)
+- **Benchmark time budget** — `test/benchmark/performance.test.ts` now fails on compile-time regressions (15s/30s tiers) instead of running unbounded. (`b6da64c`)
+- **Split-schemas regression tests** — 2 tests locking that `split-schemas` keeps `components.tags`/`operationTraits`/`bindings` when extracting schemas. (`7f6c9b1`)
+- **Review artifacts** — `docs/reviews/2026-08-14_full-code-review.html`, `docs/planning/2026-08-14_21-20_POST-REVIEW-PARETO-PLAN.html`, rewritten `TODO_LIST.md` (33 ranked items). (`2e2ef0b`)
 - **`normalizeTagItem` empty-string rejection** — `normalizeTagItem("")` and `normalizeTagItem(#{ name: "" })` now return `null` (producing `invalid-tags-config` diagnostic) instead of silently emitting `{ name: "" }` in AsyncAPI output. 2 negative tests.
 - **Golden file for channel binding output** — `test/golden/channel-bindings.test.ts` + `channel-bindings.expected.yaml` — locks the output format for `@useChannelBinding` `$ref` chains and `components.channelBindings` population.
 - **Golden file for polymorphism output** — `test/golden/polymorphism.test.ts` + `polymorphism.expected.yaml` — locks `allOf` inheritance, `discriminator`, and `oneOf` union output format.
@@ -85,6 +91,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- **Lint tools pinned as devDependencies** — oxlint 1.78.0 and jscpd 4.0.9 now resolve from `node_modules/.bin`, not unpinned system binaries. GitHub CI (`ubuntu-latest`) previously failed `pnpm run verify` with `command not found`; local gates were exposed to host tool drift. (`b6da64c`)
+- **`file-type` emitter option narrowed** — accepts `"json" | "yaml" | "yml"` string or `{ format, pretty, indent }` object; `pretty`/`indent` are now honored instead of silently ignored. (`7f6c9b1`)
 - **Dead code remediation** — `src/state-writers.ts` reduced from 434→329 lines (removed 5 never-called `store*Trait`/`store*Parameter` wrappers; `storeMulti` is used directly) and `src/minimal-decorators.ts` from 409→328 lines (inlined `applyStringIdDecorator` into `makeStringIdDecorator`). 5 unused type imports cleaned.
 - **BREAKING: Model inheritance uses `allOf` instead of property flattening** — `model Derived extends Base` previously flattened all base properties into the derived schema. Now emits `allOf: [{ $ref: "#/components/schemas/Base" }]` with only the derived model's own properties. Consumers parsing flattened output must update to resolve `allOf` refs.
 - **BREAKING: Union of model types emits `oneOf` instead of `anyOf`** — TypeSpec unions are exclusive; `oneOf` correctly reflects this. Mixed-type unions (`string | int32`) still use `anyOf`.
@@ -101,6 +109,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
+- **Split-schemas no longer drops non-schema components** — `splitSchemas()` deleted the whole `components` object when only `schemas` was extracted, losing `tags`/`operationTraits`/`bindings` from split output. (`7f6c9b1`)
+- **Stale livesession/xyd golden file** — fixture was synced with an upstream rename but the golden never regenerated; test had failed since Aug 6. Regenerated via new `scripts/regenerate-golden.ts`. (`7f6c9b1`)
+- **Schema `$ref` RFC 6901 escaping** — `refForNamedType()` reuses `refSchema()` so `~` and `/` in names escape consistently (`~0`/`~1`). (`7f6c9b1`)
+- **5 tautological tests + 1 tautological suite** — `test/validation/protocol-bindings.test.ts` deleted (tested its own helper with factually wrong claims: `bindingVersion "0.5.0 standard"` on all protocols, invalid `websocket` binding key); remaining tautologies rewritten with real, empirically verified assertions. (`b6da64c`)
 - **Security scheme format corrected to AsyncAPI 3.1** — `components.securitySchemes` entries now use the 3.1 format (`type` field with correct scheme types) instead of the deprecated 2.x format.
 - **CI workflow broken by pnpm migration** — `.github/workflows/ci.yml` still used `bun install`/`bun run`/`bun test` after the project migrated to pnpm and deleted `bun.lock`, so every CI run failed at `bun install --frozen-lockfile`. Rewritten to install via pnpm, run `build`/`lint`/`test`/`coverage:gate`/`duplicate` through pnpm, and keep Bun only for the coverage step (which requires Bun's native runtime coverage). Added `pnpm/action-setup` + `actions/setup-node` (cache: pnpm) alongside the existing `oven-sh/setup-bun`.
 - **Protocol split-brain bug** (critical) — `solace`, `anypointmq`, `ros2` existed in `generated-bindings.ts` (binding specs) but were missing from `PROTOCOLS` in `constants/protocols.ts`. The `@protocol` decorator rejected them as `unsupported-protocol` while the binding validator accepted them. Fixed by adding all three to the `PROTOCOLS` array.

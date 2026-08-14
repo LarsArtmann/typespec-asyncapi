@@ -86,14 +86,12 @@ that was not fixed on the spot is listed below, most impactful first.
 - [ ] `test/benchmark/fixture-generator.ts` — dead `modelsPerChannel` option;
   remove or implement.
 
-## Decisions Needed
-
-- [ ] **Named-union metadata behavior change** (introduced by union-dedup fix
-  in commit 7f6c9b1): named unions now emit `@doc`/`@summary` as
-  `description`/`title`; previously silently dropped. Lock in with a
-  compliance test, or revert for output compatibility.
-
 ## Recently Completed
+
+- Named-union metadata decision (2026-08-15): **locked in** as public
+  contract — named unions emit `@doc`/`@summary` as `description`/`title`
+  via the shared `declareSchema` path; 2 compliance tests in
+  `test/compliance/polymorphism.test.ts` (commit `2e2ef0b`)
 
 - Full code review of all 40 src/ files, lib/main.tsp, scripts/, configs,
   and 102 test files (4 sub-agents + personal review of bdd/golden/utils) —
