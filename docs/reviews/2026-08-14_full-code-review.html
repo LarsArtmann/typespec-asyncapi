@@ -1,0 +1,1074 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Full Code Review — 2026-08-14</title>
+    <style>
+    <style>
+      /* =========================================================================
+         BAUHAUS DARK — Dashboard template
+         Design language: form follows function. Primary colors on graphite.
+         Zero external dependencies: system fonts, no CDN, no build step.
+         Token architecture: see references/bauhaus-tokens.md
+         ========================================================================= */
+
+      :root {
+        /* --- Primitive palette (Bauhaus Dark) --- */
+        --color-graphite: #0e0e10;
+        --color-graphite-2: #18181d;
+        --color-graphite-3: #16161a;
+        --color-bone: #f4f4f0;
+        --color-red: #ff6b6b;
+        --color-blue: #6eb5ff;
+        --color-yellow: #f4d35e;
+        --color-amber: #ffb347;
+        --color-hairline: rgba(244, 244, 240, 0.12);
+        --color-hairline-strong: rgba(244, 244, 240, 0.25);
+
+        /* --- Semantic layer (shared vocabulary with editorial template) --- */
+        --surface: var(--color-graphite);
+        --surface-raised: var(--color-graphite-2);
+        --surface-sunken: var(--color-graphite-3);
+        --text: var(--color-bone);
+        --text-muted: rgba(244, 244, 240, 0.72);
+        --text-faint: rgba(244, 244, 240, 0.45);
+        --border: var(--color-hairline);
+        --border-strong: var(--color-hairline-strong);
+        --accent: var(--color-amber);
+        --problem: var(--color-red);
+        --solution: var(--color-blue);
+        --warning: var(--color-yellow);
+
+        /* --- Backward-compatible aliases (do not break consumer skills) --- */
+        --bg: var(--surface);
+        --bg-elevated: var(--surface-raised);
+        --bg-sunken: var(--surface-sunken);
+        --bg-card: var(--surface-raised);
+        --bg-code: var(--surface-sunken);
+        --ink: var(--text);
+        --ink-secondary: var(--text-muted);
+        --ink-muted: var(--text-faint);
+        --rose: var(--problem);
+        --rose-glow: color-mix(in srgb, var(--problem) 15%, transparent);
+        --emerald: var(--solution);
+        --emerald-glow: color-mix(in srgb, var(--solution) 15%, transparent);
+        --amber-glow: color-mix(in srgb, var(--warning) 15%, transparent);
+        --coral: var(--problem);
+        --coral-light: color-mix(in srgb, var(--problem) 15%, transparent);
+        --teal: var(--solution);
+        --teal-light: color-mix(in srgb, var(--solution) 15%, transparent);
+        --amber-light: color-mix(in srgb, var(--warning) 20%, transparent);
+
+        /* --- Shape --- */
+        --radius: 0px; /* Bauhaus default: sharp corners */
+        --radius-sm: 0px;
+
+        /* --- Type stacks (system only — zero external fonts) --- */
+        --font-heading:
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        --font-body:
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        --font-mono:
+          ui-monospace, "Cascadia Code", "Source Code Pro", "JetBrains Mono",
+          Menlo, Consolas, monospace;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      /* Sticky-header offset for anchor jumps */
+      section[id],
+      [id] {
+        scroll-margin-top: 60px;
+      }
+
+      body {
+        background: var(--surface);
+        color: var(--text);
+        font-family: var(--font-body);
+        font-size: 15px;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      /* --- Accessibility: keyboard focus --- */
+      :focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+      a:focus-visible {
+        outline-offset: -1px;
+      }
+
+      /* --- Full-bleed top bar --- */
+      .top-bar {
+        background: var(--text);
+        color: var(--surface);
+        padding: 0.6rem 2rem;
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      /* --- Layout: optional sticky sidebar TOC --- */
+      .layout {
+        display: flex;
+        gap: 2.5rem;
+        padding: 2rem;
+      }
+      .sidebar {
+        width: 220px;
+        flex-shrink: 0;
+        position: sticky;
+        top: 1rem;
+        align-self: flex-start;
+        height: calc(100vh - 2rem);
+        overflow-y: auto;
+        display: none;
+      }
+      .sidebar nav {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+      }
+      .sidebar .label {
+        font-family: var(--font-mono);
+        font-size: 0.68rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--accent);
+        margin-bottom: 0.75rem;
+        padding-bottom: 0.4rem;
+        border-bottom: 2px solid var(--border-strong);
+      }
+      .sidebar a {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        text-decoration: none;
+        padding: 0.45rem 0.75rem;
+        border-left: 2px solid transparent;
+        transition: all 0.15s ease;
+        line-height: 1.4;
+        font-weight: 500;
+      }
+      .sidebar a:hover,
+      .sidebar a.active {
+        color: var(--accent);
+        border-left-color: var(--accent);
+        background: color-mix(in srgb, var(--accent) 8%, transparent);
+      }
+      .main {
+        flex: 1;
+        min-width: 0;
+      }
+
+      /* --- Headings --- */
+      h1,
+      h2,
+      h3,
+      h4 {
+        font-family: var(--font-heading);
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+      h1 {
+        font-size: clamp(1.8rem, 4vw, 2.6rem);
+        line-height: 1.1;
+        margin: 0 0 0.6rem;
+      }
+      h2 {
+        font-size: 1.4rem;
+        margin: 2.5rem 0 1rem;
+        padding-bottom: 0.4rem;
+        border-bottom: 2px solid var(--border-strong);
+        display: flex;
+        align-items: baseline;
+        gap: 0.6rem;
+      }
+      h2 .num {
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+        color: var(--accent);
+        font-weight: 700;
+        letter-spacing: 0.06em;
+      }
+      h3 {
+        font-size: 1.1rem;
+        margin: 0 0 0.4rem;
+        font-weight: 700;
+      }
+      h4 {
+        font-size: 0.98rem;
+        margin: 0 0 0.3rem;
+        font-weight: 700;
+      }
+      p {
+        margin: 0 0 1rem;
+      }
+
+      /* --- Hero --- */
+      .hero {
+        padding: 1.5rem 0 1.5rem;
+        margin-bottom: 1.5rem;
+        border-bottom: 2px solid var(--border-strong);
+      }
+      .hero-badge {
+        display: inline-block;
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--surface);
+        background: var(--accent);
+        padding: 0.3rem 0.7rem;
+        margin-bottom: 0.9rem;
+      }
+      .hero-subtitle {
+        font-size: 1.05rem;
+        color: var(--text-muted);
+        max-width: 70ch;
+        margin: 0;
+      }
+
+      /* Bauhaus signature: geometric shape cluster (optional) */
+      .hero-shapes {
+        position: relative;
+        height: 80px;
+        margin-bottom: 1rem;
+      }
+      .hero-shapes .circle {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 56px;
+        height: 56px;
+        background: var(--problem);
+        border-radius: 50%;
+      }
+      .hero-shapes .square {
+        position: absolute;
+        top: 24px;
+        left: 72px;
+        width: 48px;
+        height: 48px;
+        background: var(--solution);
+      }
+      .hero-shapes .tri {
+        position: absolute;
+        top: 8px;
+        left: 140px;
+        width: 0;
+        height: 0;
+        border-left: 28px solid transparent;
+        border-right: 28px solid transparent;
+        border-bottom: 48px solid var(--warning);
+      }
+
+      /* --- General cards --- */
+      .card {
+        background: var(--surface-raised);
+        border: 1px solid var(--border);
+        padding: 1.1rem 1.3rem;
+        margin-bottom: 1rem;
+        border-left: 4px solid var(--border-strong);
+      }
+      .card-problem {
+        border-left-color: var(--problem);
+        background: color-mix(
+          in srgb,
+          var(--problem) 8%,
+          var(--surface-raised)
+        );
+      }
+      .card-solution {
+        border-left-color: var(--solution);
+        background: color-mix(
+          in srgb,
+          var(--solution) 8%,
+          var(--surface-raised)
+        );
+      }
+      .card-warning {
+        border-left-color: var(--warning);
+        background: color-mix(
+          in srgb,
+          var(--warning) 8%,
+          var(--surface-raised)
+        );
+      }
+
+      /* --- Issue cards --- */
+      .issue {
+        background: var(--surface-raised);
+        border: 1px solid var(--border);
+        padding: 1.1rem 1.3rem;
+        margin-bottom: 1rem;
+        border-left: 4px solid var(--border-strong);
+      }
+      .issue-critical {
+        border-left-color: var(--problem);
+        background: color-mix(
+          in srgb,
+          var(--problem) 8%,
+          var(--surface-raised)
+        );
+      }
+      .issue-important {
+        border-left-color: var(--warning);
+        background: color-mix(
+          in srgb,
+          var(--warning) 8%,
+          var(--surface-raised)
+        );
+      }
+      .issue-nice {
+        border-left-color: var(--solution);
+        background: color-mix(
+          in srgb,
+          var(--solution) 8%,
+          var(--surface-raised)
+        );
+      }
+      .issue h3 {
+        margin-bottom: 0.3rem;
+      }
+      .issue .where {
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+        color: var(--text-faint);
+        margin: 0.2rem 0 0.6rem;
+      }
+      .issue p:last-child {
+        margin-bottom: 0;
+      }
+
+      /* --- Severity badges (used inside issue cards) --- */
+      .severity {
+        display: inline-block;
+        font-family: var(--font-mono);
+        font-size: 0.62rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        padding: 0.2rem 0.55rem;
+        margin-bottom: 0.6rem;
+        color: var(--surface);
+      }
+      .severity-critical {
+        background: var(--problem);
+      }
+      .severity-important {
+        background: var(--warning);
+      }
+      .severity-nice {
+        background: var(--solution);
+      }
+
+      /* --- Inline badges (used in tables) --- */
+      .badge {
+        display: inline-block;
+        font-family: var(--font-mono);
+        font-size: 0.62rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        padding: 0.18rem 0.5rem;
+        border: 1px solid var(--border-strong);
+        color: var(--text-muted);
+      }
+      .badge-critical {
+        color: var(--problem);
+        border-color: var(--problem);
+      }
+      .badge-high {
+        color: var(--warning);
+        border-color: var(--warning);
+      }
+      .badge-medium {
+        color: var(--accent);
+        border-color: var(--accent);
+      }
+      .badge-low {
+        color: var(--text-muted);
+      }
+      .badge-fixed {
+        color: var(--solution);
+        border-color: var(--solution);
+      }
+
+      /* --- Callouts (used inside issues or standalone) --- */
+      .callout {
+        margin: 0.8rem 0 0;
+        padding: 0.7rem 0.9rem;
+        border-left: 3px solid var(--border-strong);
+        background: color-mix(in srgb, var(--text) 5%, transparent);
+        font-size: 0.9rem;
+      }
+      .callout strong {
+        display: inline-block;
+        margin-right: 0.4rem;
+      }
+      .callout-solution {
+        border-left-color: var(--solution);
+        background: color-mix(in srgb, var(--solution) 10%, transparent);
+      }
+      .callout-warning {
+        border-left-color: var(--warning);
+        background: color-mix(in srgb, var(--warning) 10%, transparent);
+      }
+
+      /* --- Stat cards / scorecards (aliased vocabulary) --- */
+      .stat-grid,
+      .scorecard {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 0.75rem;
+        margin: 1rem 0 1.5rem;
+      }
+      .stat-card,
+      .score-card {
+        background: var(--surface-raised);
+        border: 1px solid var(--border);
+        padding: 1.1rem 1rem;
+        position: relative;
+      }
+      .stat-card::before,
+      .score-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: var(--border-strong);
+      }
+      .stat-bad,
+      .score-bad {
+        /* default top bar already set */
+      }
+      .stat-bad::before,
+      .score-bad::before {
+        background: var(--problem);
+      }
+      .stat-good::before,
+      .score-good::before {
+        background: var(--solution);
+      }
+      .stat-warn::before,
+      .score-warn::before {
+        background: var(--warning);
+      }
+      .stat-value,
+      .score {
+        font-family: var(--font-heading);
+        font-size: 2rem;
+        font-weight: 800;
+        line-height: 1;
+        letter-spacing: -0.03em;
+        color: var(--text);
+      }
+      .stat-bad .stat-value,
+      .score-bad .score {
+        color: var(--problem);
+      }
+      .stat-good .stat-value,
+      .score-good .score {
+        color: var(--solution);
+      }
+      .stat-warn .stat-value,
+      .score-warn .score {
+        color: var(--warning);
+      }
+      .stat-label,
+      .score-card .label {
+        font-family: var(--font-mono);
+        font-size: 0.65rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--text-faint);
+        margin-top: 0.5rem;
+      }
+
+      /* --- Strengths list --- */
+      .strengths {
+        display: grid;
+        gap: 0.5rem;
+        margin: 1rem 0 1.5rem;
+      }
+      .strength {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 0.8rem;
+        padding: 0.7rem 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .strength .check {
+        font-family: var(--font-mono);
+        font-weight: 700;
+        color: var(--solution);
+        font-size: 1.1rem;
+        line-height: 1.4;
+      }
+      .strength .text strong {
+        display: block;
+        margin-bottom: 0.15rem;
+      }
+      .strength .text span {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+      }
+
+      /* --- Tables --- */
+      .table-wrap {
+        overflow-x: auto;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1rem 0 1.5rem;
+        font-size: 0.9rem;
+      }
+      th {
+        text-align: left;
+        padding: 0.6rem 0.9rem;
+        background: var(--surface-raised);
+        color: var(--text-faint);
+        font-family: var(--font-mono);
+        font-size: 0.66rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        border-bottom: 1px solid var(--border-strong);
+      }
+      td {
+        padding: 0.6rem 0.9rem;
+        border-bottom: 1px solid var(--border);
+      }
+      tr:hover td {
+        background: var(--surface-raised);
+      }
+
+      /* --- Before/After comparison --- */
+      .compare-header {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+        margin: 1rem 0 0.5rem;
+      }
+      .compare-before,
+      .compare-after {
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        padding: 0.4rem 0.7rem;
+        color: var(--surface);
+      }
+      .compare-before {
+        background: var(--problem);
+      }
+      .compare-after {
+        background: var(--solution);
+      }
+      .compare-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+      }
+      .compare-row pre {
+        margin: 0;
+      }
+
+      /* --- Code blocks + syntax highlighting --- */
+      pre {
+        background: var(--surface-sunken);
+        border: 1px solid var(--border);
+        padding: 1rem 1.2rem;
+        margin: 1rem 0;
+        font-family: var(--font-mono);
+        font-size: 0.82rem;
+        line-height: 1.65;
+        overflow-x: auto;
+      }
+      code {
+        font-family: var(--font-mono);
+      }
+      p code,
+      li code,
+      td code {
+        font-size: 0.88em;
+        background: var(--surface-sunken);
+        padding: 0.1rem 0.35rem;
+      }
+      .tok-keyword {
+        color: var(--accent);
+      } /* func, type, struct, if, return */
+      .tok-type {
+        color: var(--warning);
+      } /* int, string, bool, error */
+      .tok-string {
+        color: var(--solution);
+      } /* "quoted strings" */
+      .tok-comment {
+        color: var(--text-faint);
+        font-style: italic;
+      }
+      .tok-func {
+        color: #74a9ff;
+      } /* function names */
+      .tok-number {
+        color: var(--accent);
+      } /* 42, 3.14 */
+      .tok-generic {
+        color: var(--problem);
+      } /* T, ID in generics */
+      .tok-builtin {
+        color: #4dd9ff;
+      } /* make, len, append */
+      .tok-punct {
+        color: var(--text-muted);
+      } /* { } ( ) ; = : */
+      .tok-attr {
+        color: var(--accent);
+      } /* Nix attribute names */
+
+      /* --- Dependency tree / ASCII diagrams --- */
+      .dep-tree {
+        background: var(--surface-sunken);
+        border: 1px solid var(--border);
+        padding: 1rem 1.2rem;
+        margin: 1rem 0;
+        font-family: var(--font-mono);
+        font-size: 0.82rem;
+        line-height: 1.7;
+        white-space: pre;
+        overflow-x: auto;
+      }
+      .dep-tree .root {
+        color: var(--accent);
+        font-weight: 700;
+      }
+      .dep-tree .ok {
+        color: var(--solution);
+      }
+      .dep-tree .unwanted {
+        color: var(--problem);
+      }
+
+      /* --- Inline node-and-arrow diagrams --- */
+      .diagram {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 1rem;
+        margin: 1rem 0;
+        background: var(--surface-raised);
+        border: 1px solid var(--border);
+      }
+      .node {
+        display: inline-block;
+        padding: 0.35rem 0.7rem;
+        font-family: var(--font-mono);
+        font-size: 0.8rem;
+        font-weight: 600;
+        background: var(--surface-sunken);
+        border: 1px solid var(--border-strong);
+      }
+      .node-core {
+        background: var(--accent);
+        color: var(--surface);
+        border-color: var(--accent);
+      }
+      .node-problem {
+        background: var(--problem);
+        color: var(--surface);
+        border-color: var(--problem);
+      }
+      .node-good {
+        background: var(--solution);
+        color: var(--surface);
+        border-color: var(--solution);
+      }
+      .arrow {
+        color: var(--text-faint);
+        font-family: var(--font-mono);
+      }
+
+      /* --- Grids (responsive) --- */
+      .grid-2 {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        margin: 1rem 0;
+      }
+      .grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        margin: 1rem 0;
+      }
+
+      /* --- Inline TOC (alternative to sidebar) --- */
+      .toc {
+        background: var(--surface-raised);
+        border: 1px solid var(--border);
+        border-left: 3px solid var(--accent);
+        padding: 1rem 1.3rem;
+        margin: 1rem 0 1.5rem;
+      }
+      .toc h3 {
+        margin-bottom: 0.5rem;
+      }
+      .toc ul {
+        list-style: none;
+        padding: 0;
+      }
+      .toc li {
+        margin: 0.25rem 0;
+      }
+      .toc a {
+        color: var(--text-muted);
+        text-decoration: none;
+        font-size: 0.9rem;
+      }
+      .toc a:hover {
+        color: var(--accent);
+      }
+
+      /* --- Migration / numbered steps --- */
+      .migration-step {
+        display: grid;
+        grid-template-columns: 48px 1fr;
+        gap: 1rem;
+        margin: 1rem 0;
+        padding: 1rem;
+        background: var(--surface-raised);
+        border: 1px solid var(--border);
+        border-left: 3px solid var(--accent);
+      }
+      .migration-num {
+        font-family: var(--font-mono);
+        font-weight: 800;
+        font-size: 1.5rem;
+        color: var(--accent);
+        line-height: 1;
+      }
+      .migration-content h4 {
+        margin-bottom: 0.2rem;
+      }
+      .migration-content p {
+        margin-bottom: 0;
+        color: var(--text-muted);
+        font-size: 0.92rem;
+      }
+
+      /* --- Footer --- */
+      .footer {
+        margin-top: 2rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border);
+        font-size: 0.8rem;
+        color: var(--text-faint);
+        font-family: var(--font-mono);
+      }
+
+      /* --- Responsive --- */
+      @media (min-width: 1024px) {
+        .sidebar {
+          display: block;
+        }
+      }
+      @media (max-width: 768px) {
+        .layout {
+          flex-direction: column;
+          padding: 1rem;
+        }
+        .top-bar {
+          padding: 0.6rem 1rem;
+          flex-wrap: wrap;
+          gap: 0.3rem;
+        }
+        .grid-2,
+        .grid-3 {
+          grid-template-columns: 1fr;
+        }
+        .compare-header,
+        .compare-row {
+          grid-template-columns: 1fr;
+        }
+        .stat-grid,
+        .scorecard {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .migration-step {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+
+    </style>
+  </head>
+<body>
+    <div class="top-bar">
+      <span>typespec-asyncapi — Full Code Review</span>
+      <span>2026-08-14</span>
+    </div>
+    <div class="layout">
+      <main class="main">
+        <header class="hero" id="top">
+          <span class="hero-badge">FULL CODE REVIEW</span>
+          <h1>Every File, Both Commits, 34 Open Items</h1>
+          <p class="hero-subtitle">
+            File-by-file review of the entire repository: all 40
+            <code>src/</code> emitter files, <code>lib/main.tsp</code>, all
+            scripts and configs, and all 102 test files (101 reviewed via four
+            parallel architect sub-agents plus personal review of BDD, golden,
+            and utils). Fixes were applied on the spot where safe; everything
+            else is harvested into <code>TODO_LIST.md</code> and ranked in the
+            Pareto plan.
+          </p>
+        </header>
+
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-value">147</div>
+            <div class="stat-label">Files reviewed</div>
+          </div>
+          <div class="stat-card stat-bad">
+            <div class="stat-value">4/4</div>
+            <div class="stat-label">Gates red at HEAD (start)</div>
+          </div>
+          <div class="stat-card stat-good">
+            <div class="stat-value">5/5</div>
+            <div class="stat-label">Gates green at end</div>
+          </div>
+          <div class="stat-card stat-good">
+            <div class="stat-value">18</div>
+            <div class="stat-label">Defects fixed on the spot</div>
+          </div>
+          <div class="stat-card stat-warn">
+            <div class="stat-value">34</div>
+            <div class="stat-label">Items harvested to TODO_LIST</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">1284</div>
+            <div class="stat-label">Tests · 0 fail · 97.3% cov</div>
+          </div>
+        </div>
+
+        <section id="gates">
+          <h2><span class="num">01</span>The Gate Journey</h2>
+          <div class="issue issue-critical">
+            <span class="severity severity-critical">BASELINE</span>
+            <h3>3 of 4 quality gates were red before any editing began</h3>
+            <p>
+              <strong>Lint:</strong> 1,608 warnings from unpinned system
+              oxlint 1.78.0 (<code>eslint/one-var</code> fired because the
+              repo disables that rule's ESLint twin). <strong>Tests:</strong>
+              stale golden file (fixture renamed pnpm→npm upstream six commits
+              ago; the regeneration script the test header referenced never
+              existed). <strong>Duplication:</strong> 8 clones over budget.
+              <strong>Coverage:</strong> passed, but
+              <code>extract-nested-config.ts</code> sat at 63.6% with zero
+              direct tests.
+            </p>
+          </div>
+          <div class="strengths">
+            <div class="strength"><span class="check">✓</span><div class="text"><strong>Lint</strong><span>rule disabled with root-cause note in .oxlintrc.json; oxlint + jscpd pinned as devDependencies (also fixes GitHub CI, which was silently broken — "command not found" on ubuntu-latest)</span></div></div>
+            <div class="strength"><span class="check">✓</span><div class="text"><strong>Tests</strong><span>scripts/regenerate-golden.ts created; golden file regenerated; 1284/1284 green</span></div></div>
+            <div class="strength"><span class="check">✓</span><div class="text"><strong>Duplication</strong><span>0 clones — shared extraction (mapUnionVariants, channelForName, ServerVariable) instead of suppression</span></div></div>
+            <div class="strength"><span class="check">✓</span><div class="text"><strong>Coverage</strong><span>9 unit tests added for extractNestedConfig; gate green at 97.3% avg</span></div></div>
+          </div>
+        </section>
+
+        <section id="emitter">
+          <h2><span class="num">02</span>Emitter Bugs Found and Fixed</h2>
+          <div class="issue issue-critical">
+            <span class="severity severity-critical">FIXED · 7f6c9b1</span>
+            <h3>schema-splitter dropped non-schema components</h3>
+            <p class="where">src/schema-splitter.ts:38-43</p>
+            <p>
+              With <code>split-schemas</code> enabled, the splitter deleted
+              the entire <code>components</code> object whenever schemas were
+              extracted — taking tags, traits, bindings, parameters, and
+              correlationIds with it. Now only <code>components.schemas</code>
+              is deleted, and <code>components</code> is kept while any key
+              remains. Two regression tests added.
+            </p>
+          </div>
+          <div class="issue issue-critical">
+            <span class="severity severity-critical">FIXED · 7f6c9b1</span>
+            <h3>pretty / indent options silently ignored</h3>
+            <p class="where">src/emitter.ts</p>
+            <p>
+              <code>file-type: { format: "json", pretty: true, indent: 2 }</code>
+              produced minified output anyway. New <code>resolveFileFormat()</code>
+              honors both; JSON is now minified when <code>pretty</code> is false.
+            </p>
+          </div>
+          <div class="issue issue-important">
+            <span class="severity severity-important">OPEN · TOP TODO</span>
+            <h3>Kafka @protocol fields stored but never emitted</h3>
+            <p class="where">src/store-protocol-config.ts:32 · src/builders/shared-utils.ts:181</p>
+            <p>
+              partitions / replicationFactor / consumerGroup pass validation,
+              land in state, and never reach the output. First item on the
+              Pareto plan — either emit onto the correct placement or
+              diagnose.
+            </p>
+          </div>
+        </section>
+
+        <section id="tests">
+          <h2><span class="num">03</span>Test-Suite Findings (4 architect agents, ~130 findings)</h2>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Area</th><th>Verdict</th><th>Worst finding</th></tr></thead>
+              <tbody>
+                <tr><td>test/bdd/ + test/utils/</td><td><span class="badge badge-fixed">EXEMPLARY</span></td><td>None — real assertions, AJV-validated, honest negative tests</td></tr>
+                <tr><td>test/golden/ + realworld/</td><td><span class="badge badge-fixed">STRONG</span></td><td>Stale golden (fixed); cross-emitter + canonical spec ports solid</td></tr>
+                <tr><td>test/domain/ (7 files)</td><td><span class="badge badge-critical">WEAKEST</span></td><td>protocol-websocket-mqtt: 50 tests assert only asyncapi === "3.1.0"; security suites: ~60 tests assert only base type</td></tr>
+                <tr><td>test/compliance/ (17 files)</td><td><span class="badge badge-high">MIXED</span></td><td>schema-types 90% duplicate of type-mapping-completeness; ref-chain "all refs valid" never resolves a ref; protocol-bindings hardcodes versions</td></tr>
+                <tr><td>test/integration/ (29 files)</td><td><span class="badge badge-high">MIXED</span></td><td>decorator-validation: 3 of 9 tests could never fail (fixed); protocol-binding-integration never asserts a binding</td></tr>
+                <tr><td>test/e2e/ + external/ (5 files)</td><td><span class="badge badge-high">MIXED</span></td><td>multi-protocol suite promises bindings, checks none; ≤1-error masks; 7 external-specs smoke tests</td></tr>
+                <tr><td>test/validation/ (8 files)</td><td><span class="badge badge-critical">1 DELETED</span></td><td>protocol-bindings.test.ts tested its own helper against values it just built, with factually wrong versions (0.5.0 "standard" on ws) and an invalid websocket binding key</td></tr>
+                <tr><td>test/unit/ + decorators/ + benchmark/</td><td><span class="badge badge-fixed">GOOD</span></td><td>Benchmark had no time budget (fixed); fixture-generator dead option</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>Broken tests repaired on the spot (commit b6da64c)</h3>
+          <div class="strengths">
+            <div class="strength"><span class="check">✓</span><div class="text"><strong>5 tautologies</strong><span>expect(defined) on filter results / length ≥ 0 — could never fail; now assert real diagnostics verified empirically (missing-channel-path ×1, unsupported-protocol, publish-wins action, recursive self-$ref)</span></div></div>
+            <div class="strength"><span class="check">✓</span><div class="text"><strong>1 tautological file deleted</strong><span>test/validation/protocol-bindings.test.ts — self-testing with wrong facts</span></div></div>
+            <div class="strength"><span class="check">✓</span><div class="text"><strong>Benchmark budget</strong><span>"within reasonable time" now actually bounds time (15s / 30s tiers)</span></div></div>
+            <div class="strength"><span class="check">✓</span><div class="text"><strong>Names fixed</strong><span>garbled binding-placement name; overclaiming @encode test renamed; duplicate @example clone removed; dead `count` branch in schema-types</span></div></div>
+          </div>
+        </section>
+
+        <section id="tooling">
+          <h2><span class="num">04</span>Tooling, Config, Docs</h2>
+          <div class="issue issue-critical">
+            <span class="severity severity-critical">FIXED · b6da64c</span>
+            <h3>GitHub CI has been broken since it was written</h3>
+            <p class="where">.github/workflows/ci.yml · package.json</p>
+            <p>
+              CI runs <code>pnpm run verify</code> on ubuntu-latest, which
+              invokes bare <code>oxlint</code> and <code>jscpd</code> —
+              neither was a devDependency, and GitHub runners have neither.
+              Locally they resolved from unpinned NixOS system packages,
+              which is also why the lint gate broke when the host oxlint
+              drifted. Both are now pinned (oxlint 1.78.0, jscpd 4.0.9) in
+              package.json: portable, lockfile-exact, host-drift-immune.
+            </p>
+          </div>
+          <div class="strengths">
+            <div class="strength"><span class="check">✓</span><div class="text"><strong>Split-brain killed</strong><span>tspconfig.json deleted — shadowed by the richer tspconfig.yaml (TypeSpec resolves yaml first)</span></div></div>
+            <div class="strength"><span class="check">✓</span><div class="text"><strong>Dead tsconfig options removed</strong><span>experimentalDecorators / emitDecoratorMetadata / jsx / jsxImportSource(@alloy-js/core) — no TS decorators, no .tsx, no alloy dependency exists</span></div></div>
+            <div class="strength"><span class="check">✓</span><div class="text"><strong>Dead param removed</strong><span>@channel description? declared in lib/main.tsp, ignored by $channel, used nowhere</span></div></div>
+            <div class="strength"><span class="check">✓</span><div class="text"><strong>Stale dirs trashed</strong><span>test/acceptance/, test/core/ — empty, untracked, unreferenced</span></div></div>
+          </div>
+        </section>
+
+        <section id="dismissed">
+          <h2><span class="num">05</span>Claims Investigated and Dismissed</h2>
+          <div class="card card-solution">
+            <h3>"mutualTLS is a valid AsyncAPI 3.1 scheme type — the emitter allowlist is wrong"</h3>
+            <p>
+              Agent finding, plausible (OpenAPI 3.1 has it). Verified against
+              the official AsyncAPI 3.1.0 JSON schema in
+              <code>@asyncapi/specs/schemas/3.1.0.json</code>:
+              <strong>mutualTLS does not appear anywhere in the schema.</strong>
+              The emitter allowlist is correct; the rejection test is correct.
+              Dismissed with evidence.
+            </p>
+          </div>
+          <div class="card card-solution">
+            <h3>"@encode tests assert wrong serialization"</h3>
+            <p>
+              Two of three flagged tests are named "does not break X" —
+              asserting native passthrough is exactly their contract. Only
+              the third name overclaimed; renamed. The emitter's
+              passthrough-vs-encode semantics remain worth a deliberate
+              decision (harvested).
+            </p>
+          </div>
+        </section>
+
+        <section id="decision">
+          <h2><span class="num">06</span>Decision Resolved: Locked In</h2>
+          <div class="issue issue-nice">
+            <span class="severity severity-nice">BEHAVIOR CHANGE · RESOLVED</span>
+            <h3>Named unions now emit @doc / @summary metadata</h3>
+            <p class="where">src/schema-emitter.ts (commit 7f6c9b1, mapUnionVariants dedup)</p>
+            <p>
+              Before: named unions silently dropped <code>@doc</code>/<code>@summary</code>.
+              After: they emit <code>description</code>/<code>title</code> like
+              every other declaration. No test ever pinned the old behavior.
+              The follow-up session locked the new behavior in as public
+              contract: a "named union metadata propagation" suite in
+              <code>test/compliance/polymorphism.test.ts</code> asserts
+              <code>description</code> from <code>@doc</code> and
+              <code>title</code> from <code>@summary</code> alongside
+              <code>oneOf</code>. Consistency with enums and scalars (same
+              <code>declareSchema</code> path) won over byte-compat with an
+              unpinned behavior.
+            </p>
+          </div>
+        </section>
+
+        <section id="verdict">
+          <h2><span class="num">07</span>Verdict</h2>
+          <p>
+            The emitter core is <strong>genuinely well-engineered</strong>:
+            discriminated config unions, factory-driven decorators,
+            table-driven constraints, strict typed state maps, zero-clone
+            budget, AJV-validated compliance suite. The rot was at the edges:
+            a test estate that grew by copy-paste until ~110 tests asserted
+            nothing, gates that depended on unpinned host tools, and dead
+            config accreting around a healthy core. All gates are green,
+            18 defects fixed across two commits, 34 items ranked and queued.
+          </p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Commit</th><th>Scope</th><th>Files</th></tr></thead>
+              <tbody>
+                <tr><td><code>7f6c9b1</code></td><td>Restore green gates, eliminate 8 clones, repair 2 emitter bugs, status report</td><td>20</td></tr>
+                <tr><td><code>b6da64c</code></td><td>Repair 9 broken tests, pin lint tools (CI fix), remove dead config</td><td>14</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>
+            Next steps live in <code>TODO_LIST.md</code>; execution order in
+            <code>docs/planning/2026-08-14_21-20_POST-REVIEW-PARETO-PLAN.html</code>.
+          </p>
+        </section>
+
+        <footer class="footer">
+          <p>Full code review · 2026-08-14 · all 147 files · gates 5/5 green · review skill: file-by-file, fix-on-the-spot</p>
+        </footer>
+      </main>
+    </div>
+  </body>
+</html>
+

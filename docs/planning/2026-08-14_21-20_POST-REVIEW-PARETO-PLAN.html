@@ -1,0 +1,1114 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pareto Plan — Post-Review Execution (2026-08-14)</title>
+    <style>
+    <style>
+      /* =========================================================================
+         BAUHAUS DARK — Dashboard template
+         Design language: form follows function. Primary colors on graphite.
+         Zero external dependencies: system fonts, no CDN, no build step.
+         Token architecture: see references/bauhaus-tokens.md
+         ========================================================================= */
+
+      :root {
+        /* --- Primitive palette (Bauhaus Dark) --- */
+        --color-graphite: #0e0e10;
+        --color-graphite-2: #18181d;
+        --color-graphite-3: #16161a;
+        --color-bone: #f4f4f0;
+        --color-red: #ff6b6b;
+        --color-blue: #6eb5ff;
+        --color-yellow: #f4d35e;
+        --color-amber: #ffb347;
+        --color-hairline: rgba(244, 244, 240, 0.12);
+        --color-hairline-strong: rgba(244, 244, 240, 0.25);
+
+        /* --- Semantic layer (shared vocabulary with editorial template) --- */
+        --surface: var(--color-graphite);
+        --surface-raised: var(--color-graphite-2);
+        --surface-sunken: var(--color-graphite-3);
+        --text: var(--color-bone);
+        --text-muted: rgba(244, 244, 240, 0.72);
+        --text-faint: rgba(244, 244, 240, 0.45);
+        --border: var(--color-hairline);
+        --border-strong: var(--color-hairline-strong);
+        --accent: var(--color-amber);
+        --problem: var(--color-red);
+        --solution: var(--color-blue);
+        --warning: var(--color-yellow);
+
+        /* --- Backward-compatible aliases (do not break consumer skills) --- */
+        --bg: var(--surface);
+        --bg-elevated: var(--surface-raised);
+        --bg-sunken: var(--surface-sunken);
+        --bg-card: var(--surface-raised);
+        --bg-code: var(--surface-sunken);
+        --ink: var(--text);
+        --ink-secondary: var(--text-muted);
+        --ink-muted: var(--text-faint);
+        --rose: var(--problem);
+        --rose-glow: color-mix(in srgb, var(--problem) 15%, transparent);
+        --emerald: var(--solution);
+        --emerald-glow: color-mix(in srgb, var(--solution) 15%, transparent);
+        --amber-glow: color-mix(in srgb, var(--warning) 15%, transparent);
+        --coral: var(--problem);
+        --coral-light: color-mix(in srgb, var(--problem) 15%, transparent);
+        --teal: var(--solution);
+        --teal-light: color-mix(in srgb, var(--solution) 15%, transparent);
+        --amber-light: color-mix(in srgb, var(--warning) 20%, transparent);
+
+        /* --- Shape --- */
+        --radius: 0px; /* Bauhaus default: sharp corners */
+        --radius-sm: 0px;
+
+        /* --- Type stacks (system only — zero external fonts) --- */
+        --font-heading:
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        --font-body:
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        --font-mono:
+          ui-monospace, "Cascadia Code", "Source Code Pro", "JetBrains Mono",
+          Menlo, Consolas, monospace;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      /* Sticky-header offset for anchor jumps */
+      section[id],
+      [id] {
+        scroll-margin-top: 60px;
+      }
+
+      body {
+        background: var(--surface);
+        color: var(--text);
+        font-family: var(--font-body);
+        font-size: 15px;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      /* --- Accessibility: keyboard focus --- */
+      :focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+      a:focus-visible {
+        outline-offset: -1px;
+      }
+
+      /* --- Full-bleed top bar --- */
+      .top-bar {
+        background: var(--text);
+        color: var(--surface);
+        padding: 0.6rem 2rem;
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      /* --- Layout: optional sticky sidebar TOC --- */
+      .layout {
+        display: flex;
+        gap: 2.5rem;
+        padding: 2rem;
+      }
+      .sidebar {
+        width: 220px;
+        flex-shrink: 0;
+        position: sticky;
+        top: 1rem;
+        align-self: flex-start;
+        height: calc(100vh - 2rem);
+        overflow-y: auto;
+        display: none;
+      }
+      .sidebar nav {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+      }
+      .sidebar .label {
+        font-family: var(--font-mono);
+        font-size: 0.68rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--accent);
+        margin-bottom: 0.75rem;
+        padding-bottom: 0.4rem;
+        border-bottom: 2px solid var(--border-strong);
+      }
+      .sidebar a {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        text-decoration: none;
+        padding: 0.45rem 0.75rem;
+        border-left: 2px solid transparent;
+        transition: all 0.15s ease;
+        line-height: 1.4;
+        font-weight: 500;
+      }
+      .sidebar a:hover,
+      .sidebar a.active {
+        color: var(--accent);
+        border-left-color: var(--accent);
+        background: color-mix(in srgb, var(--accent) 8%, transparent);
+      }
+      .main {
+        flex: 1;
+        min-width: 0;
+      }
+
+      /* --- Headings --- */
+      h1,
+      h2,
+      h3,
+      h4 {
+        font-family: var(--font-heading);
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+      h1 {
+        font-size: clamp(1.8rem, 4vw, 2.6rem);
+        line-height: 1.1;
+        margin: 0 0 0.6rem;
+      }
+      h2 {
+        font-size: 1.4rem;
+        margin: 2.5rem 0 1rem;
+        padding-bottom: 0.4rem;
+        border-bottom: 2px solid var(--border-strong);
+        display: flex;
+        align-items: baseline;
+        gap: 0.6rem;
+      }
+      h2 .num {
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+        color: var(--accent);
+        font-weight: 700;
+        letter-spacing: 0.06em;
+      }
+      h3 {
+        font-size: 1.1rem;
+        margin: 0 0 0.4rem;
+        font-weight: 700;
+      }
+      h4 {
+        font-size: 0.98rem;
+        margin: 0 0 0.3rem;
+        font-weight: 700;
+      }
+      p {
+        margin: 0 0 1rem;
+      }
+
+      /* --- Hero --- */
+      .hero {
+        padding: 1.5rem 0 1.5rem;
+        margin-bottom: 1.5rem;
+        border-bottom: 2px solid var(--border-strong);
+      }
+      .hero-badge {
+        display: inline-block;
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--surface);
+        background: var(--accent);
+        padding: 0.3rem 0.7rem;
+        margin-bottom: 0.9rem;
+      }
+      .hero-subtitle {
+        font-size: 1.05rem;
+        color: var(--text-muted);
+        max-width: 70ch;
+        margin: 0;
+      }
+
+      /* Bauhaus signature: geometric shape cluster (optional) */
+      .hero-shapes {
+        position: relative;
+        height: 80px;
+        margin-bottom: 1rem;
+      }
+      .hero-shapes .circle {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 56px;
+        height: 56px;
+        background: var(--problem);
+        border-radius: 50%;
+      }
+      .hero-shapes .square {
+        position: absolute;
+        top: 24px;
+        left: 72px;
+        width: 48px;
+        height: 48px;
+        background: var(--solution);
+      }
+      .hero-shapes .tri {
+        position: absolute;
+        top: 8px;
+        left: 140px;
+        width: 0;
+        height: 0;
+        border-left: 28px solid transparent;
+        border-right: 28px solid transparent;
+        border-bottom: 48px solid var(--warning);
+      }
+
+      /* --- General cards --- */
+      .card {
+        background: var(--surface-raised);
+        border: 1px solid var(--border);
+        padding: 1.1rem 1.3rem;
+        margin-bottom: 1rem;
+        border-left: 4px solid var(--border-strong);
+      }
+      .card-problem {
+        border-left-color: var(--problem);
+        background: color-mix(
+          in srgb,
+          var(--problem) 8%,
+          var(--surface-raised)
+        );
+      }
+      .card-solution {
+        border-left-color: var(--solution);
+        background: color-mix(
+          in srgb,
+          var(--solution) 8%,
+          var(--surface-raised)
+        );
+      }
+      .card-warning {
+        border-left-color: var(--warning);
+        background: color-mix(
+          in srgb,
+          var(--warning) 8%,
+          var(--surface-raised)
+        );
+      }
+
+      /* --- Issue cards --- */
+      .issue {
+        background: var(--surface-raised);
+        border: 1px solid var(--border);
+        padding: 1.1rem 1.3rem;
+        margin-bottom: 1rem;
+        border-left: 4px solid var(--border-strong);
+      }
+      .issue-critical {
+        border-left-color: var(--problem);
+        background: color-mix(
+          in srgb,
+          var(--problem) 8%,
+          var(--surface-raised)
+        );
+      }
+      .issue-important {
+        border-left-color: var(--warning);
+        background: color-mix(
+          in srgb,
+          var(--warning) 8%,
+          var(--surface-raised)
+        );
+      }
+      .issue-nice {
+        border-left-color: var(--solution);
+        background: color-mix(
+          in srgb,
+          var(--solution) 8%,
+          var(--surface-raised)
+        );
+      }
+      .issue h3 {
+        margin-bottom: 0.3rem;
+      }
+      .issue .where {
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+        color: var(--text-faint);
+        margin: 0.2rem 0 0.6rem;
+      }
+      .issue p:last-child {
+        margin-bottom: 0;
+      }
+
+      /* --- Severity badges (used inside issue cards) --- */
+      .severity {
+        display: inline-block;
+        font-family: var(--font-mono);
+        font-size: 0.62rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        padding: 0.2rem 0.55rem;
+        margin-bottom: 0.6rem;
+        color: var(--surface);
+      }
+      .severity-critical {
+        background: var(--problem);
+      }
+      .severity-important {
+        background: var(--warning);
+      }
+      .severity-nice {
+        background: var(--solution);
+      }
+
+      /* --- Inline badges (used in tables) --- */
+      .badge {
+        display: inline-block;
+        font-family: var(--font-mono);
+        font-size: 0.62rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        padding: 0.18rem 0.5rem;
+        border: 1px solid var(--border-strong);
+        color: var(--text-muted);
+      }
+      .badge-critical {
+        color: var(--problem);
+        border-color: var(--problem);
+      }
+      .badge-high {
+        color: var(--warning);
+        border-color: var(--warning);
+      }
+      .badge-medium {
+        color: var(--accent);
+        border-color: var(--accent);
+      }
+      .badge-low {
+        color: var(--text-muted);
+      }
+      .badge-fixed {
+        color: var(--solution);
+        border-color: var(--solution);
+      }
+
+      /* --- Callouts (used inside issues or standalone) --- */
+      .callout {
+        margin: 0.8rem 0 0;
+        padding: 0.7rem 0.9rem;
+        border-left: 3px solid var(--border-strong);
+        background: color-mix(in srgb, var(--text) 5%, transparent);
+        font-size: 0.9rem;
+      }
+      .callout strong {
+        display: inline-block;
+        margin-right: 0.4rem;
+      }
+      .callout-solution {
+        border-left-color: var(--solution);
+        background: color-mix(in srgb, var(--solution) 10%, transparent);
+      }
+      .callout-warning {
+        border-left-color: var(--warning);
+        background: color-mix(in srgb, var(--warning) 10%, transparent);
+      }
+
+      /* --- Stat cards / scorecards (aliased vocabulary) --- */
+      .stat-grid,
+      .scorecard {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 0.75rem;
+        margin: 1rem 0 1.5rem;
+      }
+      .stat-card,
+      .score-card {
+        background: var(--surface-raised);
+        border: 1px solid var(--border);
+        padding: 1.1rem 1rem;
+        position: relative;
+      }
+      .stat-card::before,
+      .score-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: var(--border-strong);
+      }
+      .stat-bad,
+      .score-bad {
+        /* default top bar already set */
+      }
+      .stat-bad::before,
+      .score-bad::before {
+        background: var(--problem);
+      }
+      .stat-good::before,
+      .score-good::before {
+        background: var(--solution);
+      }
+      .stat-warn::before,
+      .score-warn::before {
+        background: var(--warning);
+      }
+      .stat-value,
+      .score {
+        font-family: var(--font-heading);
+        font-size: 2rem;
+        font-weight: 800;
+        line-height: 1;
+        letter-spacing: -0.03em;
+        color: var(--text);
+      }
+      .stat-bad .stat-value,
+      .score-bad .score {
+        color: var(--problem);
+      }
+      .stat-good .stat-value,
+      .score-good .score {
+        color: var(--solution);
+      }
+      .stat-warn .stat-value,
+      .score-warn .score {
+        color: var(--warning);
+      }
+      .stat-label,
+      .score-card .label {
+        font-family: var(--font-mono);
+        font-size: 0.65rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--text-faint);
+        margin-top: 0.5rem;
+      }
+
+      /* --- Strengths list --- */
+      .strengths {
+        display: grid;
+        gap: 0.5rem;
+        margin: 1rem 0 1.5rem;
+      }
+      .strength {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 0.8rem;
+        padding: 0.7rem 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .strength .check {
+        font-family: var(--font-mono);
+        font-weight: 700;
+        color: var(--solution);
+        font-size: 1.1rem;
+        line-height: 1.4;
+      }
+      .strength .text strong {
+        display: block;
+        margin-bottom: 0.15rem;
+      }
+      .strength .text span {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+      }
+
+      /* --- Tables --- */
+      .table-wrap {
+        overflow-x: auto;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1rem 0 1.5rem;
+        font-size: 0.9rem;
+      }
+      th {
+        text-align: left;
+        padding: 0.6rem 0.9rem;
+        background: var(--surface-raised);
+        color: var(--text-faint);
+        font-family: var(--font-mono);
+        font-size: 0.66rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        border-bottom: 1px solid var(--border-strong);
+      }
+      td {
+        padding: 0.6rem 0.9rem;
+        border-bottom: 1px solid var(--border);
+      }
+      tr:hover td {
+        background: var(--surface-raised);
+      }
+
+      /* --- Before/After comparison --- */
+      .compare-header {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+        margin: 1rem 0 0.5rem;
+      }
+      .compare-before,
+      .compare-after {
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        padding: 0.4rem 0.7rem;
+        color: var(--surface);
+      }
+      .compare-before {
+        background: var(--problem);
+      }
+      .compare-after {
+        background: var(--solution);
+      }
+      .compare-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+      }
+      .compare-row pre {
+        margin: 0;
+      }
+
+      /* --- Code blocks + syntax highlighting --- */
+      pre {
+        background: var(--surface-sunken);
+        border: 1px solid var(--border);
+        padding: 1rem 1.2rem;
+        margin: 1rem 0;
+        font-family: var(--font-mono);
+        font-size: 0.82rem;
+        line-height: 1.65;
+        overflow-x: auto;
+      }
+      code {
+        font-family: var(--font-mono);
+      }
+      p code,
+      li code,
+      td code {
+        font-size: 0.88em;
+        background: var(--surface-sunken);
+        padding: 0.1rem 0.35rem;
+      }
+      .tok-keyword {
+        color: var(--accent);
+      } /* func, type, struct, if, return */
+      .tok-type {
+        color: var(--warning);
+      } /* int, string, bool, error */
+      .tok-string {
+        color: var(--solution);
+      } /* "quoted strings" */
+      .tok-comment {
+        color: var(--text-faint);
+        font-style: italic;
+      }
+      .tok-func {
+        color: #74a9ff;
+      } /* function names */
+      .tok-number {
+        color: var(--accent);
+      } /* 42, 3.14 */
+      .tok-generic {
+        color: var(--problem);
+      } /* T, ID in generics */
+      .tok-builtin {
+        color: #4dd9ff;
+      } /* make, len, append */
+      .tok-punct {
+        color: var(--text-muted);
+      } /* { } ( ) ; = : */
+      .tok-attr {
+        color: var(--accent);
+      } /* Nix attribute names */
+
+      /* --- Dependency tree / ASCII diagrams --- */
+      .dep-tree {
+        background: var(--surface-sunken);
+        border: 1px solid var(--border);
+        padding: 1rem 1.2rem;
+        margin: 1rem 0;
+        font-family: var(--font-mono);
+        font-size: 0.82rem;
+        line-height: 1.7;
+        white-space: pre;
+        overflow-x: auto;
+      }
+      .dep-tree .root {
+        color: var(--accent);
+        font-weight: 700;
+      }
+      .dep-tree .ok {
+        color: var(--solution);
+      }
+      .dep-tree .unwanted {
+        color: var(--problem);
+      }
+
+      /* --- Inline node-and-arrow diagrams --- */
+      .diagram {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 1rem;
+        margin: 1rem 0;
+        background: var(--surface-raised);
+        border: 1px solid var(--border);
+      }
+      .node {
+        display: inline-block;
+        padding: 0.35rem 0.7rem;
+        font-family: var(--font-mono);
+        font-size: 0.8rem;
+        font-weight: 600;
+        background: var(--surface-sunken);
+        border: 1px solid var(--border-strong);
+      }
+      .node-core {
+        background: var(--accent);
+        color: var(--surface);
+        border-color: var(--accent);
+      }
+      .node-problem {
+        background: var(--problem);
+        color: var(--surface);
+        border-color: var(--problem);
+      }
+      .node-good {
+        background: var(--solution);
+        color: var(--surface);
+        border-color: var(--solution);
+      }
+      .arrow {
+        color: var(--text-faint);
+        font-family: var(--font-mono);
+      }
+
+      /* --- Grids (responsive) --- */
+      .grid-2 {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        margin: 1rem 0;
+      }
+      .grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        margin: 1rem 0;
+      }
+
+      /* --- Inline TOC (alternative to sidebar) --- */
+      .toc {
+        background: var(--surface-raised);
+        border: 1px solid var(--border);
+        border-left: 3px solid var(--accent);
+        padding: 1rem 1.3rem;
+        margin: 1rem 0 1.5rem;
+      }
+      .toc h3 {
+        margin-bottom: 0.5rem;
+      }
+      .toc ul {
+        list-style: none;
+        padding: 0;
+      }
+      .toc li {
+        margin: 0.25rem 0;
+      }
+      .toc a {
+        color: var(--text-muted);
+        text-decoration: none;
+        font-size: 0.9rem;
+      }
+      .toc a:hover {
+        color: var(--accent);
+      }
+
+      /* --- Migration / numbered steps --- */
+      .migration-step {
+        display: grid;
+        grid-template-columns: 48px 1fr;
+        gap: 1rem;
+        margin: 1rem 0;
+        padding: 1rem;
+        background: var(--surface-raised);
+        border: 1px solid var(--border);
+        border-left: 3px solid var(--accent);
+      }
+      .migration-num {
+        font-family: var(--font-mono);
+        font-weight: 800;
+        font-size: 1.5rem;
+        color: var(--accent);
+        line-height: 1;
+      }
+      .migration-content h4 {
+        margin-bottom: 0.2rem;
+      }
+      .migration-content p {
+        margin-bottom: 0;
+        color: var(--text-muted);
+        font-size: 0.92rem;
+      }
+
+      /* --- Footer --- */
+      .footer {
+        margin-top: 2rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border);
+        font-size: 0.8rem;
+        color: var(--text-faint);
+        font-family: var(--font-mono);
+      }
+
+      /* --- Responsive --- */
+      @media (min-width: 1024px) {
+        .sidebar {
+          display: block;
+        }
+      }
+      @media (max-width: 768px) {
+        .layout {
+          flex-direction: column;
+          padding: 1rem;
+        }
+        .top-bar {
+          padding: 0.6rem 1rem;
+          flex-wrap: wrap;
+          gap: 0.3rem;
+        }
+        .grid-2,
+        .grid-3 {
+          grid-template-columns: 1fr;
+        }
+        .compare-header,
+        .compare-row {
+          grid-template-columns: 1fr;
+        }
+        .stat-grid,
+        .scorecard {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .migration-step {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+
+    </style>
+  </head>
+<body>
+    <div class="top-bar">
+      <span>typespec-asyncapi — Pareto Plan</span>
+      <span>2026-08-14 21:20</span>
+    </div>
+    <div class="layout">
+      <main class="main">
+        <header class="hero" id="top">
+          <span class="hero-badge">PARETO PLAN</span>
+          <h1>Post-Review Execution Plan</h1>
+          <p class="hero-subtitle">
+            Ranked execution order for the 34 open items harvested from the
+            2026-08-14 full code review. The 20% that delivers 80% of the
+            value is concentrated in three correctness problems the review
+            exposed: an emitter that silently drops Kafka binding fields, and
+            two test suites (110 tests) that pass no matter what the emitter
+            does.
+          </p>
+        </header>
+
+        <div class="stat-grid">
+          <div class="stat-card stat-bad">
+            <div class="stat-value">3</div>
+            <div class="stat-label">Tier 1% tasks → 51% value</div>
+          </div>
+          <div class="stat-card stat-warn">
+            <div class="stat-value">7</div>
+            <div class="stat-label">Tier 4% tasks → 64% value</div>
+          </div>
+          <div class="stat-card stat-good">
+            <div class="stat-value">24</div>
+            <div class="stat-label">Tier 20% tasks → 80% value</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">1284</div>
+            <div class="stat-label">Tests green at plan time</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">97.3%</div>
+            <div class="stat-label">Coverage (gate 75%)</div>
+          </div>
+        </div>
+
+        <section id="graph">
+          <h2><span class="num">00</span>Execution Graph</h2>
+          <div class="table-wrap">
+            <?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" data-d2-version="v0.7.1" preserveAspectRatio="xMinYMin meet" viewBox="0 0 2215 722"><svg class="d2-1942522627 d2-svg" width="2215" height="722" viewBox="-35 -85 2215 722"><rect x="-35.000000" y="-85.000000" width="2215.000000" height="722.000000" rx="0.000000" fill="#FFFFFF" class=" fill-N7" stroke-width="0" /><style type="text/css"><![CDATA[
+.d2-1942522627 .text {
+	font-family: "d2-1942522627-font-regular";
+}
+@font-face {
+	font-family: d2-1942522627-font-regular;
+	src: url("data:application/font-woff;base64,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");
+}
+.d2-1942522627 .text-bold {
+	font-family: "d2-1942522627-font-bold";
+}
+@font-face {
+	font-family: d2-1942522627-font-bold;
+	src: url("data:application/font-woff;base64,d09GRgABAAAAABT0AAoAAAAAHyAAAguFAAAAAAAAAAAAAAAAAAAAAAAAAABPUy8yAAAA9AAAAGAAAABgXxHXrmNtYXAAAAFUAAAA5wAAAVAHyikcZ2x5ZgAAAjwAAA2VAAASgOlI6oloZWFkAAAP1AAAADYAAAA2G38e1GhoZWEAABAMAAAAJAAAACQKfwX+aG10eAAAEDAAAADbAAAA/H2ICXVsb2NhAAARDAAAAIAAAACAl5ab+m1heHAAABGMAAAAIAAAACAAVwD3bmFtZQAAEawAAAMoAAAIKgjwVkFwb3N0AAAU1AAAAB0AAAAg/9EAMgADAioCvAAFAAACigJYAAAASwKKAlgAAAFeADIBKQAAAgsHAwMEAwICBGAAAvcAAAADAAAAAAAAAABBREJPACAAIP//Au7/BgAAA9gBESAAAZ8AAAAAAfAClAAAACAAA3iclM/dLpsBHMfxz9M+e++2duveu+3ZS7duVKuqyoEQpAmJiLgBh+IKnLgjLkAjuBPuQUmc/CUl4tTv/JN8f0jkJShIk0U0ZVJFmap//htR19DS0TVj1px5S3pWrNmwZcduVo5gKGp3oql9TyzoWbZq3abtGxFnSp55riAnjcu4iEGcx1UM4iSO4ygOox8HsR970T+tDBsftkTHuJa2KQ0T/qrdPhpVN6ZrUk5e6pHHnng6rHmh4KVXXisqeeOtsnfe++CjTz77ouKrb77L/PDTL79V/TGtyTUAAAD//wEAAP//ruw07QB4nIRXfWwb53l/3pcUz6KoD34cj6T4IfJ0dyQlkSKPx6NISdQHRX2Y1JdtSa4pyRYcR7ZkWY2VSknspFiduk3kOY3cVGnXxHMTdEvdzYE3wOvqDSvQtF6NDliSGRjaNN0Cr222VO3UrkglcniPlPzRAftDfIXDe8/n7/d7noMyGAbAM/gSqKAcqsEANICod+s5URBYShZlmWVUsoD01DA25F9/TfCpfT61v27d9eT0NMpO4Uvb84eyMzO/nU4k8q/8zbfyF9DpbwHgwscAuBuvQjnoAYyUKPC8wGo0KqNoZAWWulvzfHVlbaVaZ/349pu3/8T7PS8aaG0NLYiRk/ln8er20le+AgCAIFDYxM14HWoByjw8L0WiUTFsZiieZz0aDW0yi+GozGjQ5Ohz+w5cGE0edQ9aZbaxv2Gsz5u0DI7qMl88Of/yiOiZYhzhqa6ji/XW3GHAkAXAGbwK2mLGYthspk0aDSuI4WhUivA8y2ZvHH1xZPji4SZ7bF8gsC9mx6upi4uLL/Yue3ODgwc5Jb4sAPolXoUKpW60mxZplnbTWbSe//1776FqvHrmM0+9dGY3lxReB9f/lUspFYmVRL1Gg04e/MKB8RfGe4/VZa0xf+Zw7pCJ181/5PlkKaGIe8rsXJw5uqjVLq7k33EHAEFNYRNdx6tQA8B4eEE2E4uSXtSbNJp/GzjmOWpotnp9a42TukRiwF0X6kRfz2eTs+2lPPA8XgWdUg29aBRVRlZF0dk19XeufPfnf/pqBq/mf4Mq8lv5FWQ8+pc775AaGpV3jIzI85Ik6lmVwJrNNJ390hsdanXVKjnKKvFq/tsvRD4dv7u9hHr+OHom/h8AgJWaPI3XofqhDivdEMKkFcXioLGJZ/fufXai+Ns9ONjdPTioG335xNwXh4ZeOnHi5dFnlmZmFhZmZpag1N9mJR/TA/1lab0YJkbZ7Pt9j6fTSz0jfSsdrSm8KuSGMjPBH6PRWdEPsGNjH16FKmDus0ERABMr0aKZD3seSyWlS6+fHcnE29riGbzKTQz2TTL533/4ITocam7mSa3YwibW4nXwK1nu9CbCC0IA/wEQGKYYLTJ1PBPez455A01iwwF3K584noot+vfWdQh8U4t/fyIdX9A1Bx5x8h6Hy2Gorwqmg9GJSKN/0lrrsjudeo9lf080FwMEVgBsxKtAkUxYyU2z+tvX0cfXcc2ZM9sbxXz9hU30DtoCK7AKgqRIVFZCogQlQFrPEg7LBKYK9/4uNXxuDbM+V0e9FJyLTx9b0apdvXusnHGw1aUbTw5OVLsFC33EUb/wWP4D0c4+xhjHtQ0OC6P46yxsYjO+CaYSIwSWYvUiTT0EANZD0WYz6nF3O9S602tqR8rTOhFsnZ7go2ONPpNX566T8M2rGZuj/ZOZA08kV9KZzzb9wFClcK6+sIluoi2wPcy5e5RjNBpk7TnV2fepVKDX3sPWSclksyVgjHNjurbHR/cttTmZaUemsyNLVx+uqy3WSihsoi18E4xQt1MrxbBACLBbpZ2G/jp3KjEd8cWsmrUVrdqWxhbBYGwwsdGg7vknRh5vt1syf77dHbKxKybrDwxV3b39PYCV2H+KtsDykGIoKHQTBJHYVaJCEeTqfayrez7ROxlU4/wdbTokRUP81JevC42eqK59aXRkKZmcSxm58qjoPmhzorhPChY11gKAlvAtchJsyA/hkUia/hNdXfXD3a5ITW2lTVfrPHgQnT1ZViuNRXSa+bIyN+88nf8MgAo8hSZMoS0IQgIGlMrwUoQUgoBJ2kmBEWm2REiPoPSBwMuk0ajuY7yxxDAPr1z5dXwq1musrbPYfPEpqdH910NUeWRCdrgMHt9w7kjqzIBDEBwOQfCFOwROtLp1tW1v22KNrV51pddVG65RG1INrUNe3VyFx9QyUK+tNhsNiW5xJIBu+X2Cz+v1+fNr9VamRqWyWO2OYm06SbMVjBIFKGGT1rN6JUpK37lG2feGR/rXHHV2rwXfvHrQ2jA3mb+N3FGvlcm/CYUCyADwY/w25iEOABQk4Lld2058c1dzZZFoC0V3XlR/9fJf/O2ri0l8M7/w3dv5H/1D75PkfmETGfBNqC4ijgj7DoC/n0ms6cvLKI1Bx+kO7cXs9h3GgNDJMqroR+VAW+BW/DBisbsPZELtnp2Ew+mQ1Gl0D4SG96456rhm8hNEGx2upgavJ7STXnP+zdKxUye0VapTycf9dVrRquuyu4VCG0ln0wN1KuJdwc7/PwvMyVOp1KlkciGVWkg2BQJNgaamElfblvaNPt62nO3ozBDKFnWmD5vRFhjBCcDci06BHy8wtPGezJA4Hf3CJ2Zbp6N1rbayIT461uA3eW/gPwvZ2M+fPrCSrLUOfQHV74oM0YI+tKXYrwMok2TF7A6JRFnUq+7XAnRcY+3yFAWhnSjaB7ticONLGYtLEQRHXWh7AtXfU4MSXtBFtAWGB/pYZGmxwrUZnrZrLZXWGnubCW2Mh0NlZc+o1b5w/n1AQBc20atoC4QH9oMIzxdn0K4xMoGcmDZp3g49ynd5ki630xGwORPe4wdaxl1dtoitpYWva/PN6nhXzlrLGPVmo1ZX3+LrGRMsEyazYLFWVbAtge7JIof0hU20gJfIFC3z8JLESrIsKovSPQGG3FAqo39yeZl16KxaxijrTozdOqk5d+709/ycRj2n0RVttRY20e/QBsHZAxzQl2T3X0b615x1dt68tlKhcg3o5iZRJP8TyWdzoL58TQ/XCIjwDRXQBlQCiCqRMZtJKWVZVF3/+qUOrVGrLjdqOy9cQRu/4LKCkOV+ka/Z0Um8gTYUHt3/3n0W2NKeS1GXzrzYrNFq1FRlufxMrLyaUlPlVPBzy1ebqEpKTVVQjWjjLtfH8wPsXeXs4+7ma95i015vmn1L8VcFgDbRBpndolG4zw3F3PNTtX7xlUatWaveY9jjWX/h5VeadYxOXW4qFxD+aJhuoOkGerjwq1G6kaYbzKPErq7QjrbRBmHZPRzI8gOlqMIrZne1jTLs4bxa6u8v9VYYtOo9+vLWC1eZ2NB3NOpFVFbvsKF/f9eT5the9t18RfuB0t7EFTbRh/g8VJR4XMQWbSIcLu7WxdXdjPYcO3v2GPmzehnGa7V4LRav7o0rV15//cqVNx7jpsbHcx5Pbnx8iiNxpwHQv+KnFL0kY1aKRmUiyunnliN9nvnlZXTqkNZu2t5aLmLFCYA+wOfBTu6346J8lHYZhf1EzUWaGzmbDvk8smU4OJNKTkmJXMTSav70/uzZ403BkGAbCovhQ23SqVNRVdkZkp8RAP0OPwXlBIVGkUw20gqj5JaMJB6WvvzZMqTW2arC+f/62V/196M9j7pGnLZobX5h/RH0dP7C4jqJjylsovfxU2S6P8BHJUqjm2ap3Uj/Z3Ce73KkvKF4rNHOOboMaPbnFW5ePhTrPKGLcJM2LhxqDlcZ/KjzzHK1fzyVPhpReuErbKL/VHrhBUAeDbXjRPWHX1PUriwio1U0aWNudzDobFvo6X+8O5lzZmtkOxtnVdZ+x+hcfBpxDs/ellA07M//U+fzp5bX+5tcE4Zabnygjp1+pGua+FcpO+XPlB4IENlV9XubgLLL0MUkVQ/Pfl5QcIKo5NF4solrjuQS4yfC7kBH7BG74Kt3+Ft1XLOn1Uvb47rGITE+YFHb+8LRIf/0UKDXrLYOJsPDAfR0UzPXVM8Jjfl3Ba+dc+iNksMfLBSgrbAJv0S/wgK0AqAUaMgJCBrgFnKjEKgAZEmkG357a3a2+PyH+DeosfjcTTfgf/zh1BQg6CtkkRf/hOgJU0yPUeJmbid7epI5ORyWrz/63rlz7z3KH7kzd+LODCBoLmRRTekdQWEF6T9t0qzmYuFwLJfs6bnOz9w5MXfnCK+8CwgqC4dRFL9F/DNGUVV56/Cty6pjW18msfFoEn0Nf59ohlGQBZmRRUZmKIYSLrUl5pmlymzlact8om0YTTbOhvosn1q29oVmGw8SjIQK+1Vj+KvQBYOkQ2QYtOMi8qowmZBsaaIpT8lEozS7n8meKkyoXNJxMunkEr/R1b2fm2vrPfu13Pyr477uEaGhYw+mU65Ev1MeaLDylbjqUIDudsoeeWWm48kjLSPPDgqjrrrAkbYal9FS7XI2MFcDUxcOH//Gk12HLh/vebTH4613cCM9gfG0n6n1/2iscUTueyoTmfn8/pk/6mBqhq0Mipms5x2BLmc3ANm9bIVNVQdeBwHaAJAGBGhHZ5UtrA39FIo64YEp9BGOkm945ftbKg6nf752bf7atakbszduzN4o3ptFH+FmKCf3ZFkSBKmM9lw7f/4auj37RDyoDsafePNY0aYDNtB/o9fADMB5Apj1FHXHiXcG3qQryNXTgjvDZTjlX5qtyXB7NxgnE0/EgoyTcdoTsWBp7sM7aIP0neyJnWtoI18DqPBN3AL78Nskbv19KssFAhwXCOAWP8v6yR+xoWAdvknuMvfdfYkXRZ4XRZ0keCXJK0gED7bCJppGL0IFmdjMg/q9y9Bvp3O5dG8u12tlWauVZXULMzPz8zMzC6OxdDoaTadjpA6FA4VNRL57VQAUEtE30OED+cs6/Np2DgD+FwAA//8BAAD//4zd7NoAAAAAAQAAAAILhXzjzsdfDzz1AAED6AAAAADYXaCEAAAAAN1mLzb+N/7ECG0D8QABAAMAAgAAAAAAAAABAAAD2P7vAAAImP43/jcIbQABAAAAAAAAAAAAAAAAAAAAP3icLMvBKkRhGIfx5/1/JTL4ZDCmTBoHmXM6saLMWbybycJXiqmZnQ3XoBRLO3v3wMbWDbB2N0pHThbP7vfojXM+QFX9rRGl7kjKSLqntB+ibkh6JumFUpckXZNUsK2CDS0xUIXbF5kq9jRDZmM6WqOvE9zaHCnDrYeHKa4hrryx/uftCbd3Vu2BZR0z1DytMEtHYlFztBTZUWSkSE+RFUXWFdlXZGAFlZ2Rhy1ym3BqEw7sggX7ZDc8chimdBXp/7dpbRzq1+a7pctVPf4FAAD//wEAAP//1OkhZAAAAAAsACwAUAB8AKAAtgDmAQQBHgFAAWwBjgG0AfQCBgI+AnACnALOAwIDKAOQA7IDvgPWA/IEJARGBHIEogTWBPYFMgVYBXoFlgXOBfoGKgZWBm4Gmga+BvAHMAd+B4oHlgeiB7wH1gfkCAIIcAiCCJYIrAjSCN4I9AkKCTAJQAABAAAAPwCQAAwAYwAHAAEAAAAAAAAAAAAAAAAABAADeJyclM9uG1UUxn9ObNMKwQJFVbqJ7oJFkejYVEnVNiuH1IpFFAePC0JCSBPP+I8ynhl5Jg7hCVjzFrxFVzwEz4FYo/l87NgF0SaKknx37vnznXO+c4Ed/mabSvUh8Ec9MVxhr35ueIsH9RPD27TrW4arPKn9abhGWJsbrvN5rWf4I95WfzP8gP3qT4YfslttG/6YZ9Udw59sO/4y/Cn7vF3gCrzgV8MVdskMb7HDj4a3eYTFrFR5RNNwjc/YM1xnD+gzoSBmQsIIx5AJI66YEZHjEzFjwpCIEEeHFjGFviYEQo7Rf34N8CmYESjimAJHjE9MQM7YIv4ir5RzZRzqNLO7FgVjAi7kcUlAgiNlREpCxKXiFBRkvKJBg5yB+GYU5HjkTIjxSJkxokGXNqf0GTMhx9FWpJKZT8qQgmsC5XdmUXZmQERCbqyuSAjF04lfJO8Opzi6ZLJdj3y6EeFLHN/Ju+SWyvYrPP26NWabeZdsAubqZ6yuxLq51gTHui3ztvhWuOAV7l792WTy/h6F+l8o8gVXmn+oSSVikuDcLi18Kch3j3Ec6dzBV0e+p0OfE7q8oa9zix49WpzRp8Nr+Xbp4fiaLmccy6MjvLhrSzFn/IDjGzqyKWNH1p/FxCJ+JjN15+I4Ux1TMvW8ZO6p1kgV3n3C5Q6lG+rI5TPQHpWWTvNLtGcBI1NFJoZT9XKpjdz6F5oipqqlnO3tfbkNc9u95RbfkGqHS7UuOJWTWzB631S9dzRzrR+PgJCUC1kMSJnSoOBGvM8JuCLGcazunWhLClornzLPjVQSMRWDDonizMj0NzDd+MZ9sKF7Z29JKP+S6eWqqvtkcerV7YzeqHvLO9+6HK1NoGFTTdfUNBDXxLQfaafW+fvyzfW6pTzliJSY8F8vwDM8muxzwCFjZRjoZm6vQ1MvRJOXHKr6SyJZDaXnyCIc4PGcAw54yfN3+rhk4oyLW3FZz93imCO6HH5QFQv7Lke8Xn37/6y/i2lTtTierk4v7j3FJ3dQ6xfas9v3sqeJlZOYW7TbrTgjYFpycbvrNbnHeP8AAAD//wEAAP//9LdPUXicYmBmAIP/5xiMGLAAAAAAAP//AQAA//8vAQIDAAAA");
+}
+.d2-1942522627 .text-italic {
+	font-family: "d2-1942522627-font-italic";
+}
+@font-face {
+	font-family: d2-1942522627-font-italic;
+	src: url("data:application/font-woff;base64,d09GRgABAAAAABVIAAoAAAAAIEgAARhRAAAAAAAAAAAAAAAAAAAAAAAAAABPUy8yAAAA9AAAAGAAAABgW1SVeGNtYXAAAAFUAAAA5wAAAVAHyikcZ2x5ZgAAAjwAAA3mAAAToMEUgfFoZWFkAAAQJAAAADYAAAA2G7Ur2mhoZWEAABBcAAAAJAAAACQLeAjjaG10eAAAEIAAAADgAAAA/HJsBl5sb2NhAAARYAAAAIAAAACAoKKlYm1heHAAABHgAAAAIAAAACAAVwD2bmFtZQAAEgAAAAMmAAAIMgntVzNwb3N0AAAVKAAAACAAAAAg/8YAMgADAeEBkAAFAAACigJY//EASwKKAlgARAFeADIBIwAAAgsFAwMEAwkCBCAAAHcAAAADAAAAAAAAAABBREJPAAEAIP//Au7/BgAAA9gBESAAAZMAAAAAAeYClAAAACAAA3iclM/dLpsBHMfxz9M+e++2duveu+3ZS7duVKuqyoEQpAmJiLgBh+IKnLgjLkAjuBPuQUmc/CUl4tTv/JN8f0jkJShIk0U0ZVJFmap//htR19DS0TVj1px5S3pWrNmwZcduVo5gKGp3oql9TyzoWbZq3abtGxFnSp55riAnjcu4iEGcx1UM4iSO4ygOox8HsR970T+tDBsftkTHuJa2KQ0T/qrdPhpVN6ZrUk5e6pHHnng6rHmh4KVXXisqeeOtsnfe++CjTz77ouKrb77L/PDTL79V/TGtyTUAAAD//wEAAP//ruw07QB4nHxYeXAb13l/7y2I5QGCxE1AAEFggV2cC3IXwALETYAgSAAUL5CUxFMydVumJNOyI8mH5MqyUqt0Rk0nrlIp8TRNx51aI6czTeo6M3ZaM7aV6aF0kjhRx0foRGrGNofVJB5z0dkFD1DT9p/HHWLf+77v9/2+3/e9BTXABgA6hq4ADNSBJqAEGgBYlQXDWI4jdBhLUQSOc5RKhdvOwaVzL0nSu3/tuP4Hj1nS88xf5/9r5hV0Ze0ofHryqaf4PRfn5sbu3eNd8D/uAQAAKr8LAPwpWgR1QAGACmcpkqQIqRRCVkVQBP5R51v1knqJxMDy78GHdhcGlb85BJ+Yn/cfDoUP8INocW3+1i0AIAiXV5EXXQVmAGqsJBnwxxHLaHU4SRJWOdKotVqWCXI6qRRa8weD7bvPFkKDLUFVkOyc7rJZ+yKOdBthm5SlH+8vXjnVw7mcbVTsocejkclA2w7G7BV8BQQAKCj6qhIQYBmtRi2VEhTLBIMBP0kQxPmvPP9C6dojo6OlM+kD+4Jo8bknTn1vLjny9dnJQ0K8UDyjGS2CBhFD3IKzOIFbcOI8PNzIf+T6XP4pC0k5Wkz9tOt+13pcEXQVWMW4/o+wOIJjMakUeh47277nmcHIoJ5TcY743m4bUUjYwir7xcafhG1Tshcf779yKrsZXOdUsKX575L8x612wbcyX16FS2gRNAGgs5IUVzlcJRx9rXNIw8rDTibeONE/1Twn42i3zZlPwVu8o/TIelxjaBHIRGQwFrK4isBwnDjfn8Jg7/j9Px188nkvWuRfh5kv+aNw74VfbuKxHy2uI6rSsUHRIoEJLMAx4nz/110Sqby+O3++eMUtkTbVZ9EiP/F8x8MsnFibhy+/wB5m+GtifqLlVTSFroJm0FaNllajliOKiSMhRxXUoPnYAj26kO2b89Ojj6YDY3FrX7+w9sr+7Ex+caE7c3o4/+JCdzq6dyE8uxDZu9A589gmB7xi/tTVHCAwFctskOD7Eyf6nhk55E9Nzx0u5ObQYt/owIEO/vewZ2BnmAWb51BoETQC7dY5AmTbTvrexPFjwyeHj57gMvumHsrnZtBidnjPMQX/EdTyd2FpKBv0VXglK69CHl0FrurcBfwkRQnFEAxuskYq1ai1Op1W9PuT9LwjbCpx0UGvveCKBCYikRkzq8/S9oCpw1bw+SP7ZZ2dbjeTCdkYLW3o5Zghxu+gW53m9h2kT+s19nCde/wAgkkAUAAtAlyIhuAsOIF9Z+GNRvhu4w8XUDGdXnutEjdVXoW/hytALSCg22I0y7EYwRFSKSXweZPeryULnr4ploopJKr4bKJWQowryZ02j4Yx2tIBc4dsTyn7xATrsMR4Q87uS9K+n5NWV+8kk4hV7JnLq/AztAQ0gooJyBA4oWJxnBUh2cYMKY5rtXepmAJTJy4XKS2yjXhF8wFbOtDa7rQOErSalTksMbT0xozJvXtUMJ109U6y8ZjL/glpBRDYy6vwJlwBxm3RbSG/rkI/2/mQpzgb8ES1XhVpah8NhjvbglqroSjbP5k5WfJZ9e06TWY+3ZU1KBi1fRM7RFXFsoXd/w9epxJrJouL6+j12x9Ej2qbfmMt9CB8SIzlh3AFGIC92p7IVIt0U1ExVpQ/IcKPRw958xPtXKpVVsP/qK4t7TKFda2mwW+UEaZ0EoEp2eHZ7vkhDz3AGFl5YsCuV7AaM7Q3tDQaO8wlAIEbAPgCug10Io8SqJq5uCCWmLuUaEg1N/XHDC7ljvodCouzVrFXtq8EvxuuGewbbmzg8HrGPRznxwXMYNkGV+AKMAN6m6pxUimxnX1SKbYNvVc6RgmbsdsR75PryRFfbMDdO9FBxhWYKrFfdTJMDFrd2g4jkWJbfb8kTQGdtZA8SHpGS+lHdzECH7Hp/dDidv0LaXVmx9sjkUqdmgGAP0NLQC9W/RYPcYxQCTAKYWLmy8X2ZolzyBMP1MYLUYkkZ8zR3WjpXozwpUJmG/8O9KhbGvMumv9uuSycCb5ANxEJOgEAUhDJbdn6HVra1GSVoMkUjpsvF2fQH8bfXOifnDegJd4E4bv8r3934jSAwFNeBV+gJaAU0Ar4K+qvUa+n+uGU9HTxLIQKTIrDeq0sodCjI2sv4nWYEqKIRLJpF92FK4IWCTYrIerWA5Vui7Q66NkELiGHyc6OGt+4PRaUSOLFmETSo8l5ugUMstqcuxsu99o6OIeHTYUUrepqHLaetnCGK6Cl2ocHYRYsOofobSiLFh4EeUu73ocroAmYquuhIiKVEaBS5Ld3Tnn6ppid0578lMs7yAYZYZEd3NN9skRX1mTXfKarJz2f6cqKc9D9Mgs/gyuV2sarPJYjQlQtXLVNp+ovJaSYvUSLJc6QURVSmv+yWqduodeSZu96gZsPXoNwXajI39gtG/GwohaLNms4QUAeqIntFQEtllZkH6erNfnStWpBuXXtFOnblOS1IoTbBbmSlzNwBTRX5UWHkxv5aJCYCl69ZkezwVYwx+DypCdWl6lNRPhbAJa/LK/Cs3AFUA/2uAdbnNDhKg3u5Y5JfbsuSbpizhAd9vR66D4jrWItZEewLe5vH5L5HaTZQRMGymyIO90pu63VoTZ4za2k0hr1eDN2wedoeRWOo6Obmh7kBGViRTWq0vTvJ/0SGO5pKNhSO07LzoYxo1VuaFA0+2QJb5OhESrDNRcuxPm7SmVra30NhzcJZ4fKq/BTuCzowcbZWxWnWpf1VzarIWfq8XQXhEboGJF1cQqzCgb52yq9QFM4zhv6CLZSgxEA4AdwGTQCIFS+Vrs+WcFzPQWbRCqRKGyqPynya3CZ/4TIE7ZeG9TzhsreLADobbgMLA/s3XrCCKwyp+PYIaLQDCGUNO1ofjqvQAhK5Ibmp3K/mpaL/zU1PQaX+Q+tGas1Y4WtVU8GWE/kbLYcwd8HsHwbAPhvFRwIFcXq1k1xLK4j1u8EOO75xZ5+V60clzS1NZWGl/bt9NQq6iXNVtUURB8f1VIatVNz9L8/P6GltVqP7qQw075Z9sGP4DIwAICLnBHFfxsiciStb5PrlUp7Sq8cLpA1tZhEYVf+cYH/UB/J/SuOh+tiDAE/4T+1FAmiYIWKtc99RU+lhlzlVfgTdAkoBLR0WzeP/2XoXGJ67K7emQCTtTl7pzuotN/kocVVFtoX3/WtMz2d++K7r5/OxjLHL2bSY93HL2a6xgAUfIdPoyfFOwMnTFdBjsVY3ND41Znj9SUu8ug5WRLeYWTWtTeTQsz3AYA/QpeEfQQXx9ZFg9oUFNyC19fOXJ7ysYG2lJXyjLUPjbuGzgxDtYwePL13F+2JWsztpHNXJjA1M5/rEuIUyHoLPQnqhbnXQnAWDgo+EHaWCwYFjuIwnyP439bBqZGBYdkwX/4nUqrEJWqH+oYfvsTPx+P/aEpZjP6WCseAoKXoSWFS36rl4IarKgtO4BsNQ/p6asrEaFMhV86T8Js9bZYB6G78rV/h0uem08dkCa/T4ncV2Xi0WWGA3q7Xa2Wl4cIjMTE/bHkV3kOXQBPwAMCpq61I1bptN0VBvLeMno4wZJRgGf1OGzwUHHB7Bx5OBrrVfmuUGUvILSOWnhI3/U53ydfn4FJWX4Puw9BsYu/Lp7o62pyd6dMjpG28P344CQAGLOVV+At0CZiBG4Q3WBIMcoFN3RL7oqYVCYZVGw5q1Fqs4i1JiW3lDj0WcmcoY6t/jHH20llO7TBGZ032aMjlycZbbUmHM00xXb0yW2+ooy+gkBgjFFd0taWY5KhZ0ugMWTuHvXCupY/x+SMBJsL/wBRy2FmnxpgPcQJc5TLQlVfBEvwVokAUJOFxIAXR9XvaHVgP9QADQChKQvZ+452NmYYAH6A7UFf5zYITDehGwwfBoPhbqjwAx9D74p1yPWydVLy46r7SYuEO9nkPH61Ty28kXx5a+PE/TOov8P/5F/T+GVLg8e3yALi7vpcKKkUguIquQ+/hI3XKJkY44obhArR807d/mlQlvz208M4PhL1/X56B30b/LPiEQxbm4M0QX7yO7f/ypYrPZ+F34DfRj4EcABXFUZyO0+GcDtfh1I227nHlPr2n9gB+gHT44U3TeIfDclhyRO42z+rGAQLe8hxWh54FcZDf9rWhchW0imK12UiFPopLN3hXdW3ndFKMqXRXMbtwZvSrQ7nTV0emn81GZ4JEO47pIha62xzIOXwG1Mgy9VqHJeUOHBvNPHskmX00m4/qBhJer63RpKBiBPXn+ctzB14911v8o9HZ57qdhJHqSXpKGSfr/jndyR0p9J5MJ058Y9euM0k77Ya1sW8ZVKFhyusR8x4rr6LP0HVAgRigoRxQIA53AwBwEIM3QAWzdnAAvoNcgg5xASLABlgNqyE0d/721eirNw68HX7rrfDblfeeg+8hOagT3uO4AEUFajTt75058x68+lzXzg5J+0DqrzorZ3qhBL4FvybM+9BKo02hakUb32sKO2iKVGsJhVufMFeebc1ufQJKDFaDqc3oc1X+0u71+QLcgstC3oWZ1zxb3AuXxcYGQQ/Kg5vopuC/Suy1lVJ/XNVK6NQmAuV1Wr2lRatvA1Csg4vgqPCururdrFZPGbUtdplRa/CYtHqPqI3lVZiEXwNNgvUH58LqDnCpM9Xiy7iFNU0ZPa3NbXZxlY2lfBNFeixFTxZpxh7vtdHRyip+l/GWV2E3ur7B5X+HH/t5owz9zdoIAOB/AAAA//8BAAD//1znFm8AAAABAAAAARhR1KTs+V8PPPUAAQPoAAAAANhdoMwAAAAA3WYvN/69/t0IHQPJAAIAAwACAAAAAAAAAAEAAAPY/u8AAAhA/r39vAgdA+gAwv/RAAAAAAAAAAAAAAA/eJwszrEuBFEYR/Hz/26JrEQxbHMj1+wkxiDR2FiFAo1CsdEpVVqNwkvwHCqNckOziXZLxfUAGsUSkflkRXHKX3LsijXGoNZfrEffTkn6JNkJfY29tS2SXZLsmoH1SFaT9M28Ws5thcqWiXqgtIJKb5TqUtsSsjki70S9EvliI0SiLRAtUFnh05nVGVG3/qNDBrbIrkbs2TNHuveJRv6kzLoyXWWfKtNRBmV2lFnlg0I1KYikxIFKn2joj7rjJmzShIJ9Zbb/a2YvwPGfu6DD0JtfAAAA//8BAAD//1x1OgoAAAAuAC4AUgCEAKYAvgD0ARIBLgFUAYYBqgHSAhICJgJeApYCxAL8AzYDXgOmA9AD3AP2BBgEWgSEBLIE7AUmBUQFgAWuBdoF+AYyBl4GjgbABtgHAgcqB14HoAf2CAIIEAgeCDwIWghqCIgI8gkECRgJLglWCWQJegmQCcAJ0AABAAAAPwCMAAwAZgAHAAEAAAAAAAAAAAAAAAAABAADeJyclNtOG1cUhj8H2216uqhQRG7QvkylZEyjECXhypSgjIpw6nF6kKpKgz0+iPHMyDOYkifodd+ib5GrPkafoup1tX8vgx1FQSAE/Hv2OvxrrX9tYJP/2KBWvwv83ZwbrrHd/NnwHb5oHhneYL/5meE6Dxv/GG4waLw13ORBo2v4E97V/zT8KU/qvxm+y1b90PDnPK5vGv5yw/Gv4a94wrsFrsEz/jBcY4vC8B02+dXwBvewmLU699gx3OBrtg032QZ6TKhImZAxwjFkwogzZiSURCTMmDAkYYAjpE1Kpa8ZsZBj9MGvMREVM2JFHFPhSIlIiSkZW8S38sp5rYxDnWZ216ZiTMyJPE6JyXDkjMjJSDhVnIqKghe0aFHSF9+CipKAkgkpATkzRrTocMgRPcZMKHEcKpJnFpEzpOKcWPmdWfjO9EnIKI3VGRkD8XTil8g75AhHh0K2q5GP1iI8xPGjvD23XLbfEujXrTBbz7tkEzNXP1N1JdXNuSY41q3P2+YH4YoXuFv1Z53J9T0a6H+lyCecaf4DTSoTkwzntmgTSUGRu49jX+eQSB35iZAer+jwhp7Obbp0aXNMj5CX8u3QxfEdHY45kEcovLg7lGKO+QXH94Sy8bET689iYgm/U5i6S3GcqY4phXrumQeqNVGFN5+w36F8TR2lfPraI2/pNL9MexYzMlUUYjhVL5faKK1/A1PEVLX42V7d+22Y2+4tt/iCXDvs1brg5Ce3YHTdVIP3NHOun4CYATknsuiTM6VFxYV4vybmjBTHgbr3SltS0b708XkupJKEqRiEZIozo9Df2HQTGff+mu6dvSUD+Xump5dV3SaLU6+uZvRG3VveRdblZGUCLZtqvqKmvrhmpv1EO7XKP5Jvqdct5xGh4i52+0OvwA7P2WWPsbL0dTO/vPOvhLfYUwdOSWQ1lKZ9DY8J2CXgKbvs8pyn7/VyycYZH7fGZzV/mwP26bB3bTUL2w77vFyL9vHMf4ntjupxPLo8Pbv1NB/cQLXfaN+u3s2uJuenMbdoV9txTMzUc3FbqzW5+wT/AwAA//8BAAD//3KhUUAAAAADAAD/9QAA/84AMgAAAAAAAAAAAAAAAAAAAAAAAAAA");
+}]]></style><style type="text/css"><![CDATA[.shape {
+  shape-rendering: geometricPrecision;
+  stroke-linejoin: round;
+}
+.connection {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.blend {
+  mix-blend-mode: multiply;
+  opacity: 0.5;
+}
+
+		.d2-1942522627 .fill-N1{fill:#0A0F25;}
+		.d2-1942522627 .fill-N2{fill:#676C7E;}
+		.d2-1942522627 .fill-N3{fill:#9499AB;}
+		.d2-1942522627 .fill-N4{fill:#CFD2DD;}
+		.d2-1942522627 .fill-N5{fill:#DEE1EB;}
+		.d2-1942522627 .fill-N6{fill:#EEF1F8;}
+		.d2-1942522627 .fill-N7{fill:#FFFFFF;}
+		.d2-1942522627 .fill-B1{fill:#0D32B2;}
+		.d2-1942522627 .fill-B2{fill:#0D32B2;}
+		.d2-1942522627 .fill-B3{fill:#E3E9FD;}
+		.d2-1942522627 .fill-B4{fill:#E3E9FD;}
+		.d2-1942522627 .fill-B5{fill:#EDF0FD;}
+		.d2-1942522627 .fill-B6{fill:#F7F8FE;}
+		.d2-1942522627 .fill-AA2{fill:#4A6FF3;}
+		.d2-1942522627 .fill-AA4{fill:#EDF0FD;}
+		.d2-1942522627 .fill-AA5{fill:#F7F8FE;}
+		.d2-1942522627 .fill-AB4{fill:#EDF0FD;}
+		.d2-1942522627 .fill-AB5{fill:#F7F8FE;}
+		.d2-1942522627 .stroke-N1{stroke:#0A0F25;}
+		.d2-1942522627 .stroke-N2{stroke:#676C7E;}
+		.d2-1942522627 .stroke-N3{stroke:#9499AB;}
+		.d2-1942522627 .stroke-N4{stroke:#CFD2DD;}
+		.d2-1942522627 .stroke-N5{stroke:#DEE1EB;}
+		.d2-1942522627 .stroke-N6{stroke:#EEF1F8;}
+		.d2-1942522627 .stroke-N7{stroke:#FFFFFF;}
+		.d2-1942522627 .stroke-B1{stroke:#0D32B2;}
+		.d2-1942522627 .stroke-B2{stroke:#0D32B2;}
+		.d2-1942522627 .stroke-B3{stroke:#E3E9FD;}
+		.d2-1942522627 .stroke-B4{stroke:#E3E9FD;}
+		.d2-1942522627 .stroke-B5{stroke:#EDF0FD;}
+		.d2-1942522627 .stroke-B6{stroke:#F7F8FE;}
+		.d2-1942522627 .stroke-AA2{stroke:#4A6FF3;}
+		.d2-1942522627 .stroke-AA4{stroke:#EDF0FD;}
+		.d2-1942522627 .stroke-AA5{stroke:#F7F8FE;}
+		.d2-1942522627 .stroke-AB4{stroke:#EDF0FD;}
+		.d2-1942522627 .stroke-AB5{stroke:#F7F8FE;}
+		.d2-1942522627 .background-color-N1{background-color:#0A0F25;}
+		.d2-1942522627 .background-color-N2{background-color:#676C7E;}
+		.d2-1942522627 .background-color-N3{background-color:#9499AB;}
+		.d2-1942522627 .background-color-N4{background-color:#CFD2DD;}
+		.d2-1942522627 .background-color-N5{background-color:#DEE1EB;}
+		.d2-1942522627 .background-color-N6{background-color:#EEF1F8;}
+		.d2-1942522627 .background-color-N7{background-color:#FFFFFF;}
+		.d2-1942522627 .background-color-B1{background-color:#0D32B2;}
+		.d2-1942522627 .background-color-B2{background-color:#0D32B2;}
+		.d2-1942522627 .background-color-B3{background-color:#E3E9FD;}
+		.d2-1942522627 .background-color-B4{background-color:#E3E9FD;}
+		.d2-1942522627 .background-color-B5{background-color:#EDF0FD;}
+		.d2-1942522627 .background-color-B6{background-color:#F7F8FE;}
+		.d2-1942522627 .background-color-AA2{background-color:#4A6FF3;}
+		.d2-1942522627 .background-color-AA4{background-color:#EDF0FD;}
+		.d2-1942522627 .background-color-AA5{background-color:#F7F8FE;}
+		.d2-1942522627 .background-color-AB4{background-color:#EDF0FD;}
+		.d2-1942522627 .background-color-AB5{background-color:#F7F8FE;}
+		.d2-1942522627 .color-N1{color:#0A0F25;}
+		.d2-1942522627 .color-N2{color:#676C7E;}
+		.d2-1942522627 .color-N3{color:#9499AB;}
+		.d2-1942522627 .color-N4{color:#CFD2DD;}
+		.d2-1942522627 .color-N5{color:#DEE1EB;}
+		.d2-1942522627 .color-N6{color:#EEF1F8;}
+		.d2-1942522627 .color-N7{color:#FFFFFF;}
+		.d2-1942522627 .color-B1{color:#0D32B2;}
+		.d2-1942522627 .color-B2{color:#0D32B2;}
+		.d2-1942522627 .color-B3{color:#E3E9FD;}
+		.d2-1942522627 .color-B4{color:#E3E9FD;}
+		.d2-1942522627 .color-B5{color:#EDF0FD;}
+		.d2-1942522627 .color-B6{color:#F7F8FE;}
+		.d2-1942522627 .color-AA2{color:#4A6FF3;}
+		.d2-1942522627 .color-AA4{color:#EDF0FD;}
+		.d2-1942522627 .color-AA5{color:#F7F8FE;}
+		.d2-1942522627 .color-AB4{color:#EDF0FD;}
+		.d2-1942522627 .color-AB5{color:#F7F8FE;}.appendix text.text{fill:#0A0F25}.md{--color-fg-default:#0A0F25;--color-fg-muted:#676C7E;--color-fg-subtle:#9499AB;--color-canvas-default:#FFFFFF;--color-canvas-subtle:#EEF1F8;--color-border-default:#0D32B2;--color-border-muted:#0D32B2;--color-neutral-muted:#EEF1F8;--color-accent-fg:#0D32B2;--color-accent-emphasis:#0D32B2;--color-attention-subtle:#676C7E;--color-danger-fg:red;}.sketch-overlay-B1{fill:url(#streaks-darker-d2-1942522627);mix-blend-mode:lighten}.sketch-overlay-B2{fill:url(#streaks-darker-d2-1942522627);mix-blend-mode:lighten}.sketch-overlay-B3{fill:url(#streaks-bright-d2-1942522627);mix-blend-mode:darken}.sketch-overlay-B4{fill:url(#streaks-bright-d2-1942522627);mix-blend-mode:darken}.sketch-overlay-B5{fill:url(#streaks-bright-d2-1942522627);mix-blend-mode:darken}.sketch-overlay-B6{fill:url(#streaks-bright-d2-1942522627);mix-blend-mode:darken}.sketch-overlay-AA2{fill:url(#streaks-dark-d2-1942522627);mix-blend-mode:overlay}.sketch-overlay-AA4{fill:url(#streaks-bright-d2-1942522627);mix-blend-mode:darken}.sketch-overlay-AA5{fill:url(#streaks-bright-d2-1942522627);mix-blend-mode:darken}.sketch-overlay-AB4{fill:url(#streaks-bright-d2-1942522627);mix-blend-mode:darken}.sketch-overlay-AB5{fill:url(#streaks-bright-d2-1942522627);mix-blend-mode:darken}.sketch-overlay-N1{fill:url(#streaks-darker-d2-1942522627);mix-blend-mode:lighten}.sketch-overlay-N2{fill:url(#streaks-dark-d2-1942522627);mix-blend-mode:overlay}.sketch-overlay-N3{fill:url(#streaks-normal-d2-1942522627);mix-blend-mode:color-burn}.sketch-overlay-N4{fill:url(#streaks-normal-d2-1942522627);mix-blend-mode:color-burn}.sketch-overlay-N5{fill:url(#streaks-bright-d2-1942522627);mix-blend-mode:darken}.sketch-overlay-N6{fill:url(#streaks-bright-d2-1942522627);mix-blend-mode:darken}.sketch-overlay-N7{fill:url(#streaks-bright-d2-1942522627);mix-blend-mode:darken}.light-code{display: block}.dark-code{display: none}]]></style><g class="dGllcjE="><g class="shape" ><rect x="66.000000" y="110.000000" width="384.000000" height="426.000000" stroke="#0D32B2" fill="#E3E9FD" class=" stroke-B1 fill-B4" style="stroke-width:2;" /></g><text x="258.000000" y="97.000000" fill="#0A0F25" class="text fill-N1" style="text-anchor:middle;font-size:28px">Pareto 1% — 51% of value</text></g><g class="dGllcjQ="><g class="shape" ><rect x="923.000000" y="56.000000" width="405.000000" height="442.000000" stroke="#0D32B2" fill="#E3E9FD" class=" stroke-B1 fill-B4" style="stroke-width:2;" /></g><text x="1125.500000" y="43.000000" fill="#0A0F25" class="text fill-N1" style="text-anchor:middle;font-size:28px">Pareto 4% — 64% of value</text></g><g class="dGllcjIw"><g class="shape" ><rect x="1650.000000" y="64.000000" width="429.000000" height="284.000000" stroke="#0D32B2" fill="#E3E9FD" class=" stroke-B1 fill-B4" style="stroke-width:2;" /></g><text x="1864.500000" y="51.000000" fill="#0A0F25" class="text fill-N1" style="text-anchor:middle;font-size:28px">Pareto 20% — 80% of value</text></g><g class="dGllcjEua2Fma2E="><g class="shape" ><rect x="104.000000" y="140.000000" width="308.000000" height="82.000000" stroke="#0D32B2" fill="#ff6b6b" class=" stroke-B1" style="stroke-width:2;" /></g><text x="258.000000" y="178.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="258.000000" dy="0.000000">Kafka @protocol fields never emitted</tspan><tspan x="258.000000" dy="18.500000">(store but never output)</tspan></text></g><g class="dGllcjEud3M="><g class="shape" ><rect x="96.000000" y="282.000000" width="324.000000" height="82.000000" stroke="#0D32B2" fill="#ff6b6b" class=" stroke-B1" style="stroke-width:2;" /></g><text x="258.000000" y="320.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="258.000000" dy="0.000000">Rewrite protocol-websocket-mqtt suite</tspan><tspan x="258.000000" dy="18.500000">(50 smoke tests -&gt; real binding asserts)</tspan></text></g><g class="dGllcjEuc2Vj"><g class="shape" ><rect x="122.000000" y="424.000000" width="271.000000" height="82.000000" stroke="#0D32B2" fill="#ff6b6b" class=" stroke-B1" style="stroke-width:2;" /></g><text x="257.500000" y="462.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="257.500000" dy="0.000000">Tighten 4 security suites</tspan><tspan x="257.500000" dy="18.500000">(~60 tests assert only base type)</tspan></text></g><g class="dGllcjQudXRpbHM="><g class="shape" ><rect x="953.000000" y="86.000000" width="345.000000" height="82.000000" stroke="#0D32B2" fill="#ffb347" class=" stroke-B1" style="stroke-width:2;" /></g><text x="1125.500000" y="124.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="1125.500000" dy="0.000000">Consolidate test utils</tspan><tspan x="1125.500000" dy="18.500000">resolveRef + compileAndGetDoc + versions</tspan></text></g><g class="dGllcjQuZGVkdXA="><g class="shape" ><rect x="967.000000" y="228.000000" width="317.000000" height="98.000000" stroke="#0D32B2" fill="#ffb347" class=" stroke-B1" style="stroke-width:2;" /></g><text x="1125.500000" y="266.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="1125.500000" dy="0.000000">Delete redundant suites</tspan><tspan x="1125.500000" dy="17.666667">schema-types / real-world-examples /</tspan><tspan x="1125.500000" dy="17.666667">schema-validation / cli-simple-emitter</tspan></text></g><g class="dGllcjQuZGVjaXNpb24="><g class="shape" ><rect x="1013.000000" y="386.000000" width="224.000000" height="82.000000" stroke="#0D32B2" fill="#ffb347" class=" stroke-B1" style="stroke-width:2;" /></g><text x="1125.000000" y="424.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="1125.000000" dy="0.000000">Named-union metadata</tspan><tspan x="1125.000000" dy="18.500000">decision: lock in or revert</tspan></text></g><g class="dGllcjIwLmVtaXR0ZXI="><g class="shape" ><rect x="1690.000000" y="94.000000" width="349.000000" height="82.000000" stroke="#0D32B2" fill="#6eb5ff" class=" stroke-B1" style="stroke-width:2;" /></g><text x="1864.500000" y="132.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="1864.500000" dy="0.000000">Emitter cleanups</tspan><tspan x="1864.500000" dy="18.500000">O(n2) lookup - ref* collapse - as never casts</tspan></text></g><g class="dGllcjIwLmUyZQ=="><g class="shape" ><rect x="1680.000000" y="236.000000" width="369.000000" height="82.000000" stroke="#0D32B2" fill="#6eb5ff" class=" stroke-B1" style="stroke-width:2;" /></g><text x="1864.500000" y="274.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="1864.500000" dy="0.000000">Tighten e2e + integration</tspan><tspan x="1864.500000" dy="18.500000">bindings asserts - order coupling - CJS require</tspan></text></g><g class="KHRpZXIxIC0mZ3Q7IHRpZXI0KVswXQ=="><marker id="mk-d2-1942522627-3488378134" markerWidth="10.000000" markerHeight="12.000000" refX="7.000000" refY="6.000000" viewBox="0.000000 0.000000 10.000000 12.000000" orient="auto" markerUnits="userSpaceOnUse"> <polygon points="0.000000,0.000000 10.000000,6.000000 0.000000,12.000000" fill="#0D32B2" class="connection fill-B1" stroke-width="2" /> </marker><path d="M 452.000000 323.000000 C 638.799988 323.000000 733.400024 323.000000 919.000000 323.000000" stroke="#0D32B2" fill="none" class="connection stroke-B1" style="stroke-width:2;" marker-end="url(#mk-d2-1942522627-3488378134)" mask="url(#d2-1942522627)" /><text x="686.500000" y="329.000000" fill="#676C7E" class="text-italic fill-N2" style="text-anchor:middle;font-size:16px">unlocks shared helpers</text></g><g class="KHRpZXI0IC0mZ3Q7IHRpZXIyMClbMF0="><path d="M 1329.500000 277.000000 C 1456.300049 277.000000 1520.900024 277.000000 1646.500000 277.000000" stroke="#0D32B2" fill="none" class="connection stroke-B1" style="stroke-width:2;" marker-end="url(#mk-d2-1942522627-3488378134)" mask="url(#d2-1942522627)" /></g><mask id="d2-1942522627" maskUnits="userSpaceOnUse" x="-35" y="-85" width="2215" height="722">
+<rect x="-35" y="-85" width="2215" height="722" fill="white"></rect>
+<rect x="609.000000" y="313.000000" width="155" height="21" fill="black"></rect>
+</mask></svg></svg>
+
+          </div>
+        </section>
+
+        <section id="tier-1">
+          <h2><span class="num">01</span>Tier 1% — the 4% delivering 64% (start here)</h2>
+
+          <div class="issue issue-critical">
+            <span class="severity severity-critical">P1 · EMITTER BUG</span>
+            <h3>Kafka @protocol fields are stored but never emitted</h3>
+            <p class="where">src/store-protocol-config.ts:32 · src/builders/shared-utils.ts:181</p>
+            <p>
+              <code>partitions</code>, <code>replicationFactor</code>, and
+              <code>consumerGroup</code> pass validation and land in state,
+              then <code>buildProtocolBinding</code> emits only the nested
+              <code>binding:</code> map and <code>bindingVersion</code>. Users
+              configure Kafka topology and silently lose it. Either emit the
+              fields onto the correct binding placement (channel vs operation)
+              or report a diagnostic telling users where to put them.
+            </p>
+            <div class="callout callout-solution">
+              <strong>Do:</strong> add placement-aware emission + compliance
+              test asserting <code>partitions</code> lands on the channel
+              binding. ~60 min.
+            </div>
+          </div>
+
+          <div class="issue issue-critical">
+            <span class="severity severity-critical">P1 · FALSE CONFIDENCE</span>
+            <h3>Rewrite protocol-websocket-mqtt suite (50 tests, 0 binding assertions)</h3>
+            <p class="where">test/domain/protocol-websocket-mqtt.test.ts (1515 lines)</p>
+            <p>
+              Every test asserts only <code>asyncapi === "3.1.0"</code>. A
+              totally broken binding path passes. The
+              <code>websocket → ws</code> normalization — a documented core
+              behavior — is untested. Rewrite as a fixture table where each
+              scenario asserts its binding key, canonical form, and version.
+            </p>
+            <div class="callout callout-solution">
+              <strong>Do:</strong> table-driven rewrite, ~1,200 lines removed,
+              real assertions added. ~120 min.
+            </div>
+          </div>
+
+          <div class="issue issue-critical">
+            <span class="severity severity-critical">P1 · FALSE CONFIDENCE</span>
+            <h3>Tighten the 4 security suites</h3>
+            <p class="where">test/domain/security-{api-key,http,oauth2,combined}*.test.ts</p>
+            <p>
+              ~60 of 80 tests assert only the base type; the feature named in
+              each title (<code>in</code>/<code>name</code>/<code>scheme</code>
+              /specific flow) is never checked. "AWS SigV4", "MAC", "Hawk"
+              fixtures are bearer clones under false names.
+            </p>
+            <div class="callout callout-solution">
+              <strong>Do:</strong> assert the named field, delete the fake
+              scenarios. ~90 min.
+            </div>
+          </div>
+        </section>
+
+        <section id="tier-4">
+          <h2><span class="num">02</span>Tier 4% — consolidation (multiplier for everything after)</h2>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>#</th><th>Task</th><th>Impact</th><th>Effort</th><th>Priority</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>4</td><td>Promote <code>resolveRef</code>/<code>collectRefs</code> to <code>test/utils/</code> (5 divergent copies; one lacks <code>~1</code>/<code>~0</code> unescape — latent false pass)</td><td>High</td><td>30 min</td><td><span class="badge badge-critical">P2</span></td></tr>
+                <tr><td>5</td><td>Replace 4+ <code>compileAndGetDoc</code> copies with <code>compileAndValidateOrThrow</code></td><td>High</td><td>45 min</td><td><span class="badge badge-critical">P2</span></td></tr>
+                <tr><td>6</td><td>Delete redundant suites: <code>schema-types.test.ts</code> (90% dup), <code>real-world-examples.test.ts</code> (subsumed), <code>schema-validation.test.ts</code> (copy of utils), <code>cli-simple-emitter.test.ts</code> (fake CLI)</td><td>High</td><td>30 min</td><td><span class="badge badge-critical">P2</span></td></tr>
+                <tr><td>7</td><td>Import <code>LATEST_BINDING_VERSIONS</code> instead of ~20 hardcoded version strings</td><td>Medium</td><td>30 min</td><td><span class="badge badge-high">P2</span></td></tr>
+                <tr><td>8</td><td><strong>Decision:</strong> named-union metadata behavior (new since 7f6c9b1) — lock in with compliance test or revert</td><td>High</td><td>20 min</td><td><span class="badge badge-critical">DECISION</span></td></tr>
+                <tr><td>9</td><td>Fix <code>asyncapi-generation.test.ts</code> "spec compliance" stub → real AJV</td><td>Medium</td><td>30 min</td><td><span class="badge badge-high">P2</span></td></tr>
+                <tr><td>10</td><td>Investigate <code>error-handling-edgecases</code> "≤1 error" masks; tighten to 0</td><td>Medium</td><td>45 min</td><td><span class="badge badge-high">P2</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="tier-20">
+          <h2><span class="num">03</span>Tier 20% — the long tail that gets you to 80%</h2>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>#</th><th>Task</th><th>Impact</th><th>Effort</th><th>Priority</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>11</td><td>O(n²) operation-type lookup → precomputed Map (<code>operation-builder.ts:37</code>)</td><td>Medium</td><td>30 min</td><td><span class="badge badge-high">P2</span></td></tr>
+                <tr><td>12</td><td>Unify <code>registerMessage</code> vs <code>mergeExplicitMessages</code></td><td>Medium</td><td>45 min</td><td><span class="badge badge-medium">P3</span></td></tr>
+                <tr><td>13</td><td>Collapse 7 <code>ref*</code> constructors into one helper</td><td>Low</td><td>30 min</td><td><span class="badge badge-low">P3</span></td></tr>
+                <tr><td>14</td><td>Warn on conflicting multi-namespace <code>defaultContentType</code>/<code>apiVersion</code></td><td>Medium</td><td>30 min</td><td><span class="badge badge-medium">P3</span></td></tr>
+                <tr><td>15</td><td>Remove <code>as never</code> casts in <code>resolveOpName</code>/<code>returnModelTypes</code>; type 9 option casts in <code>multi-file-output.test.ts</code></td><td>Low</td><td>45 min</td><td><span class="badge badge-low">P3</span></td></tr>
+                <tr><td>16</td><td>Fix dual export <code>SCHEME_TYPE_LIST</code>/<code>VALID_SCHEME_TYPES</code>; orphan comment at <code>asyncapi-document.ts:268</code></td><td>Low</td><td>15 min</td><td><span class="badge badge-low">P3</span></td></tr>
+                <tr><td>17</td><td><code>round-trip-verification</code> order-coupled <code>doc</code> → <code>beforeAll</code></td><td>Low</td><td>20 min</td><td><span class="badge badge-low">P3</span></td></tr>
+                <tr><td>18</td><td>Compile-once fixtures in <code>all-examples-validation</code> (~90 redundant compiles)</td><td>Medium</td><td>45 min</td><td><span class="badge badge-medium">P3</span></td></tr>
+                <tr><td>19</td><td>ESM imports instead of <code>require("yaml")</code> (7 sites)</td><td>Low</td><td>15 min</td><td><span class="badge badge-low">P3</span></td></tr>
+                <tr><td>20</td><td>Substring protocol-diversity check → inspect <code>servers[*].protocol</code></td><td>Low</td><td>15 min</td><td><span class="badge badge-low">P3</span></td></tr>
+                <tr><td>21</td><td>Unreachable fallbacks in <code>storeServerConfig</code>; dead <code>modelsPerChannel</code> option</td><td>Low</td><td>20 min</td><td><span class="badge badge-low">P3</span></td></tr>
+                <tr><td>22</td><td>external-specs (7 smoke tests) + studio-compatibility (3 under-assertions) tightening</td><td>Medium</td><td>60 min</td><td><span class="badge badge-medium">P3</span></td></tr>
+                <tr><td>23</td><td>Document tag-dedup last-wins semantics</td><td>Low</td><td>10 min</td><td><span class="badge badge-low">P3</span></td></tr>
+                <tr><td>24</td><td>Generalize <code>pickOpt&lt;T, K&gt;</code></td><td>Low</td><td>20 min</td><td><span class="badge badge-low">P3</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout callout-warning">
+            <strong>Sequencing rule:</strong> Tier 4 consolidation BEFORE Tier 20
+            test work — the shared helpers change what the rewrites look like.
+            The Kafka emitter fix (task 1) is independent; start it in
+            parallel with anything.
+          </div>
+        </section>
+
+        <footer class="footer">
+          <p>
+            Snapshot plan from the 2026-08-14 full code review. Living task
+            list: <code>TODO_LIST.md</code>. Review evidence:
+            <code>docs/reviews/2026-08-14_full-code-review.html</code>.
+          </p>
+        </footer>
+      </main>
+    </div>
+  </body>
+</html>
+

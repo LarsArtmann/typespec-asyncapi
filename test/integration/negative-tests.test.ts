@@ -91,8 +91,7 @@ describe("negative: conflicting decorators", () => {
       op conflictingOp(): Event;
     `);
 
-    // The emitter handles this without crashing: no error diagnostics,
-    // and the outermost decorator wins in the state map
+    // The emitter handles the conflict without crashing and the outermost decorator wins
     const errors = result.diagnostics.filter((d) => d.severity === "error");
     expect(errors).toHaveLength(0);
   });

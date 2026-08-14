@@ -250,6 +250,39 @@ describe("oneOf for model-variant unions", () => {
   });
 });
 
+describe("named union metadata propagation", () => {
+  it("named union with @doc emits description alongside oneOf", async () => {
+    const doc = await compileAndValidateOrThrow(`
+      namespace Test;
+      model Dog { breed: string; }
+      model Cat { whiskers: int32; }
+      @doc("Any pet variant")
+      union Pet { dog: Dog; cat: Cat; }
+      model Owner { pet: Pet; }
+      @channel("events") op publish(): Owner;
+    `);
+    const pet = getSchema(doc, "Pet");
+    expect(pet.description).toBe("Any pet variant");
+    expect(pet.oneOf).toHaveLength(2);
+    expect(pet.oneOf![0].$ref).toBe("#/components/schemas/Dog");
+  });
+
+  it("named union with @summary emits title", async () => {
+    const doc = await compileAndValidateOrThrow(`
+      namespace Test;
+      model Dog { breed: string; }
+      model Cat { whiskers: int32; }
+      @summary("Pet variants")
+      union Pet { dog: Dog; cat: Cat; }
+      model Owner { pet: Pet; }
+      @channel("events") op publish(): Owner;
+    `);
+    const pet = getSchema(doc, "Pet");
+    expect(pet.title).toBe("Pet variants");
+    expect(pet.oneOf).toHaveLength(2);
+  });
+});
+
 describe("not keyword type availability", () => {
   it("jsonSchema type accepts not field", () => {
     const schema: JsonSchema = { not: { type: "null" } };
