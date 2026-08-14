@@ -91,7 +91,7 @@
 
 1. ✅ `bun run build` completes without errors
 2. ✅ `lib/main.tsp` exists and is valid TypeSpec
-3. ✅ `npx tsp compile example.tsp --emit @lars-artmann/typespec-asyncapi` works
+3. ✅ `pnpm dlx tsp compile example.tsp --emit @lars-artmann/typespec-asyncapi` works
 4. ✅ Generates valid AsyncAPI 3.0 JSON/YAML
 5. ✅ Basic decorators (@channel, @publish, @subscribe) function
 

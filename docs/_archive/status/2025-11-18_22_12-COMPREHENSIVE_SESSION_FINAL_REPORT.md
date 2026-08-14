@@ -734,7 +734,7 @@ docs: comprehensive session status report - emitFile investigation
 - 100% test pass rate (736/736)
 - Full AsyncAPI 3.0 support
 - Clean, maintainable codebase
-- Ready for npm publish
+- Ready for pnpm publish
 
 ---
 

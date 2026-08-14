@@ -234,7 +234,7 @@ This path **bypasses** the EmissionPipeline but **delivers identical results**.
 bun add @lars-artmann/typespec-asyncapi
 
 # Compilation works
-npx tsp compile getting-started.tsp --emit @lars-artmann/typespec-asyncapi
+pnpm dlx tsp compile getting-started.tsp --emit @lars-artmann/typespec-asyncapi
 
 # Output generated
 ✔ @lars-artmann/typespec-asyncapi 35ms pipeline-test/@lars-artmann/typespec-asyncapi/

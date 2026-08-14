@@ -94,7 +94,7 @@
 - **Broken Systems:**
   - ❌ Integration tests (import errors from deleted domain/infrastructure)
   - ❌ Unit tests (same import issues)
-  - ❌ CLI integration tests (npx not found, emitter registration issues)
+  - ❌ CLI integration tests (pnpm dlx not found, emitter registration issues)
 
 ### ❌ **NOT STARTED SYSTEMS:**
 

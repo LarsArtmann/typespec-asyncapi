@@ -34,7 +34,7 @@ The emitter already produces AsyncAPI 3.0 output, but **the output is spec-inval
 ### 3. Test Infrastructure Hell
 
 - 6+ overlapping test helper files in `test/utils/`
-- Tests that spawn `npx tsp compile` via `child_process` — fails on NixOS
+- Tests that spawn `pnpm dlx tsp compile` via `child_process` — fails on NixOS
 - Virtual FS vs real FS mismatch
 - BDD infrastructure (Ginkgo-style) built but never functional
 - Ghost tests for deleted modules

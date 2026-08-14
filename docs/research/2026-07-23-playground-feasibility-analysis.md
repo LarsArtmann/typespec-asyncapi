@@ -8,7 +8,7 @@
 
 ## TL;DR
 
-**Yes, we should build it — and it's dramatically cheaper than building from scratch.** Microsoft already publishes `@typespec/playground` (v0.16.0) and `@typespec/bundler` (v0.6.0) on npm — a reusable React component library + Vite toolchain designed specifically for creating custom TypeSpec playgrounds with custom emitters. We'd be wrapping our emitter in their proven infrastructure, not reinventing it.
+**Yes, we should build it — and it's dramatically cheaper than building from scratch.** Microsoft already publishes `@typespec/playground` (v0.16.0) and `@typespec/bundler` (v0.6.0) on pnpm — a reusable React component library + Vite toolchain designed specifically for creating custom TypeSpec playgrounds with custom emitters. We'd be wrapping our emitter in their proven infrastructure, not reinventing it.
 
 ---
 
@@ -89,7 +89,7 @@
 - `$onEmit` is pure data transformation → `emitFile()` which delegates to `program.host.writeFile` (works with in-memory host)
 - Only 3 runtime deps: `@typespec/compiler`, `@typespec/asset-emitter`, `yaml` — all browser-safe
 
-### Official Playground Infrastructure (Published on npm)
+### Official Playground Infrastructure (Published on pnpm)
 
 | Package                | Version | Status                     |
 | ---------------------- | ------- | -------------------------- |
@@ -152,8 +152,8 @@ examples/smoke/main.tsp
 
 ### 1. Official Infrastructure Already Exists (Massive De-risking)
 
-- `@typespec/playground` v0.16.0 — **published on npm**, MIT licensed
-- `@typespec/bundler` v0.6.0 — **published on npm**, MIT licensed
+- `@typespec/playground` v0.16.0 — **published on pnpm**, MIT licensed
+- `@typespec/bundler` v0.6.0 — **published on pnpm**, MIT licensed
 - Monaco editor, compiler integration, URL state sharing, debounced compilation — **all built-in**
 - Maintained by Microsoft as part of the official `microsoft/typespec` monorepo
 
@@ -393,8 +393,8 @@ The only real risk is version coupling to `@typespec/playground`, which is mitig
 
 - [D2 Playground](https://play.d2lang.com/)
 - [D2 Playground Source (GitHub)](https://github.com/terrastruct/d2-playground)
-- [`@typespec/playground` on npm](https://www.npmjs.com/package/@typespec/playground) (v0.16.0)
-- [`@typespec/bundler` on npm](https://www.npmjs.com/package/@typespec/bundler) (v0.6.0)
+- [`@typespec/playground` on pnpm](https://www.npmjs.com/package/@typespec/playground) (v0.16.0)
+- [`@typespec/bundler` on pnpm](https://www.npmjs.com/package/@typespec/bundler) (v0.6.0)
 - [`@typespec/playground` README](https://github.com/microsoft/typespec/blob/main/packages/playground/README.md)
 - [`@typespec/bundler` README](https://github.com/microsoft/typespec/tree/main/packages/bundler)
 - [Official TypeSpec Playground](https://typespec.io/playground/)

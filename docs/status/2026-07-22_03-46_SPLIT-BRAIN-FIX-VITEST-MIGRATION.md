@@ -271,7 +271,7 @@ T5 revealed that `@service({})` silently kills output. This is a significant UX 
 47. **Add CHANGELOG entry** for this session's changes
 48. **Update flake.nix** if it references bun test commands
 49. **Add CI workflow** using vitest (matching microsoft/typespec's `vitest run --coverage --reporter=junit`)
-50. **Add `prepublishOnly` script** to run full quality gate before npm publish
+50. **Add `prepublishOnly` script** to run full quality gate before pnpm publish
 
 ---
 

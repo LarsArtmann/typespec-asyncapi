@@ -65,7 +65,7 @@
 | Test `just build` command            | 12 min | CRITICAL | Verify build system restoration                 |
 | Test `just test` command             | 12 min | HIGH     | Verify test execution works                     |
 | Verify `just compile` works          | 12 min | HIGH     | Test TypeSpec to AsyncAPI generation            |
-| Update package.json scripts          | 12 min | LOW      | Ensure all npm scripts work correctly           |
+| Update package.json scripts          | 12 min | LOW      | Ensure all pnpm scripts work correctly           |
 | Test basic AsyncAPI validation       | 12 min | MEDIUM   | Verify output passes AsyncAPI schema validation |
 | Update tspconfig.yaml if needed      | 12 min | MEDIUM   | Configure TypeSpec project properly             |
 | Test decorator parameter handling    | 12 min | MEDIUM   | Verify complex decorator usage                  |

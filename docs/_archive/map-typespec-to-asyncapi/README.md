@@ -172,10 +172,10 @@ model OrderCreated extends DomainEvent {
 
 ```bash
 # Compile TypeSpec to AsyncAPI
-npx tsp compile --emit @typespec/asyncapi
+pnpm dlx tsp compile --emit @typespec/asyncapi
 
 # Validate generated AsyncAPI
-npx @asyncapi/parser validate asyncapi.json
+pnpm dlx @asyncapi/parser validate asyncapi.json
 ```
 
 ### Schema Testing
@@ -236,13 +236,13 @@ const isValid = validateSchema("UserRegistered", message);
 
 ```bash
 # Verbose compilation
-npx tsp compile --emit @typespec/asyncapi --verbose
+pnpm dlx tsp compile --emit @typespec/asyncapi --verbose
 
 # Schema validation
-npx @asyncapi/parser validate --verbose asyncapi.json
+pnpm dlx @asyncapi/parser validate --verbose asyncapi.json
 
 # Type checking
-npx tsc --noEmit --strict
+pnpm dlx tsc --noEmit --strict
 ```
 
 ---

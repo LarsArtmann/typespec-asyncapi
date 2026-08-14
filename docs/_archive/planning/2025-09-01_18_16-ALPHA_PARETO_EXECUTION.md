@@ -89,7 +89,7 @@
 **File:** `package.json`
 **Action:** Change version from "1.0.0-rc.1" to "0.1.0-alpha"
 **Dependencies:** None
-**Success Criteria:** Version updated, npm pack succeeds
+**Success Criteria:** Version updated, pnpm pack succeeds
 
 ### Phase 3: COMPLETION SET (20% → 80% Impact) - 125 minutes
 

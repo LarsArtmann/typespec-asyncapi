@@ -311,7 +311,7 @@ Once core is complete (84% milestone), these can run in parallel:
 - [ ] > 80% test coverage maintained
 - [ ] CI/CD pipeline operational with quality gates
 - [ ] Comprehensive documentation with examples
-- [ ] v1.0.0 release deployed to npm
+- [ ] v1.0.0 release deployed to pnpm
 
 ### **Community Success Metrics:**
 

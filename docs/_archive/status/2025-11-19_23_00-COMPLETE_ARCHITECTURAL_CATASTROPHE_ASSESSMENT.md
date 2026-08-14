@@ -62,7 +62,7 @@
 9. **Generic Programming Absence** - Near-zero generics usage, massive duplication risk 🚨
 10. **Error Handling Chaos** - No centralized error types or recovery strategies 🚨
 11. **Module System Collapse** - Cannot import from own compiled modules 🚨
-12. **CLI Tool Failure** - npx not found, external tools broken 🚨
+12. **CLI Tool Failure** - pnpm dlx not found, external tools broken 🚨
 13. **Integration Testing Failure** - Cannot test any functionality due to import failures 🚨
 14. **Documentation Examples Broken** - All getting started examples will fail 🚨
 15. **Quality Gate Failure** - Pre-commit hooks failing, code cannot be committed 🚨

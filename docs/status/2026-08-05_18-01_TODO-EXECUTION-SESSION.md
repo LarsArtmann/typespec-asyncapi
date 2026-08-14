@@ -162,7 +162,7 @@ I named the file `generator-compatibility.test.ts` but it tests **structural pro
 27. **Extract `parseWithAsyncAPIParser` to a shared test utility** — It's reusable across test files.
 28. **Standardize `compileAndGetDoc` pattern** — `generator-compatibility.test.ts` has its own; others use `compileAndValidateOrThrow`.
 29. **Document the generator compatibility gap** — Add comment to CHANGELOG explaining structural tests ≠ actual generator testing.
-30. **Add `@asyncapi/generator` as optional devDependency** — Try `npm install` instead of `bun add` if Bun fails.
+30. **Add `@asyncapi/generator` as optional devDependency** — Try `pnpm install` instead of `bun add` if Bun fails.
 
 ### Lower Impact (Polish)
 

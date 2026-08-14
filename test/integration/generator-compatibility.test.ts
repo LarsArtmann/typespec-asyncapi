@@ -1,12 +1,12 @@
 /**
  * Tests: AsyncAPI Generator Compatibility
  *
- * The @asyncapi/generator cannot run under Bun (requires npm CLI internals).
+ * The @asyncapi/generator cannot run under Bun (requires pnpm CLI internals).
  * These tests verify that our emitter output is STRUCTURALLY COMPATIBLE
  * with what the generator expects, so users can feed our output to the
  * generator via Node.js:
  *
- *   npx @asyncapi/generator ./output.json @asyncapi/html-template
+ *   pnpm dlx @asyncapi/generator ./output.json @asyncapi/html-template
  */
 
 import { compileAsyncAPI } from "../../test/utils/test-helpers.js";

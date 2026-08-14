@@ -108,7 +108,7 @@ Before creating custom utilities:
 ☐ Check if @typespec/compiler/testing provides it
 ☐ Check if @asyncapi/parser provides it
 ☐ Check if Effect.TS provides it
-☐ Search npm for "[feature] asyncapi" or "[feature] typespec"
+☐ Search pnpm for "[feature] asyncapi" or "[feature] typespec"
 ☐ Document decision if still need custom implementation
 ```
 

@@ -12,7 +12,7 @@ Every byte of output is validated against the official AsyncAPI 3.1.0 JSON Schem
 ## Quick Start
 
 ```bash
-npm install @lars-artmann/typespec-asyncapi
+pnpm add @lars-artmann/typespec-asyncapi
 # or: pnpm add @lars-artmann/typespec-asyncapi
 ```
 
@@ -128,7 +128,7 @@ Every TypeSpec scalar maps to the correct JSON Schema type and format (int8-64, 
 ### Multi-File Output
 
 ```bash
-npx tsp compile api.tsp --emit @lars-artmann/typespec-asyncapi --option @lars-artmann/typespec-asyncapi.split-schemas=true
+pnpm dlx tsp compile api.tsp --emit @lars-artmann/typespec-asyncapi --option @lars-artmann/typespec-asyncapi.split-schemas=true
 ```
 
 Splits schemas into individual files under `schemas/` with all `$ref` pointers rewritten to external paths.

@@ -16,7 +16,7 @@ This directory contains production-ready examples demonstrating the TypeSpec Asy
 **Compilation:**
 
 ```bash
-npx tsp compile examples/real-world/kafka-events.tsp --emit @lars-artmann/typespec-asyncapi
+pnpm dlx tsp compile examples/real-world/kafka-events.tsp --emit @lars-artmann/typespec-asyncapi
 ```
 
 **Generated AsyncAPI:** 4 channels, 4 operations, 4 messages, 8 schemas
@@ -35,7 +35,7 @@ npx tsp compile examples/real-world/kafka-events.tsp --emit @lars-artmann/typesp
 **Compilation:**
 
 ```bash
-npx tsp compile examples/real-world/websocket-events.tsp --emit @lars-artmann/typespec-asyncapi
+pnpm dlx tsp compile examples/real-world/websocket-events.tsp --emit @lars-artmann/typespec-asyncapi
 ```
 
 **Generated AsyncAPI:** 7 channels, 7 operations, 7 messages, 9 schemas
@@ -54,7 +54,7 @@ npx tsp compile examples/real-world/websocket-events.tsp --emit @lars-artmann/ty
 **Compilation:**
 
 ```bash
-npx tsp compile examples/real-world/http-events.tsp --emit @lars-artmann/typespec-asyncapi
+pnpm dlx tsp compile examples/real-world/http-events.tsp --emit @lars-artmann/typespec-asyncapi
 ```
 
 **Generated AsyncAPI:** 8 channels, 8 operations, 8 messages, 12 schemas
@@ -73,7 +73,7 @@ npx tsp compile examples/real-world/http-events.tsp --emit @lars-artmann/typespe
 **Compilation:**
 
 ```bash
-npx tsp compile examples/real-world/multi-protocol-simple.tsp --emit @lars-artmann/typespec-asyncapi
+pnpm dlx tsp compile examples/real-world/multi-protocol-simple.tsp --emit @lars-artmann/typespec-asyncapi
 ```
 
 **Generated AsyncAPI:** 5 channels, 5 operations, 5 messages, 6 schemas
@@ -94,7 +94,7 @@ npx tsp compile examples/real-world/multi-protocol-simple.tsp --emit @lars-artma
 cd typespec-asyncapi
 
 # Compile specific example
-npx tsp compile examples/real-world/kafka-events.tsp --emit @lars-artmann/typespec-asyncapi
+pnpm dlx tsp compile examples/real-world/kafka-events.tsp --emit @lars-artmann/typespec-asyncapi
 
 # View generated AsyncAPI spec
 cat tsp-test/@lars-artmann/typespec-asyncapi/AsyncAPI.yaml
@@ -228,7 +228,7 @@ namespace Microservices;    // Architecture domain
 # Compile each example
 for file in examples/real-world/*.tsp; do
   echo "Testing $file..."
-  npx tsp compile "$file" --emit @lars-artmann/typespec-asyncapi
+  pnpm dlx tsp compile "$file" --emit @lars-artmann/typespec-asyncapi
   echo "✅ Success!"
 done
 

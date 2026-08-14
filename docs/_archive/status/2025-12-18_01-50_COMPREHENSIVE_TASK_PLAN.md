@@ -409,7 +409,7 @@ Tasks:
 - ✅ **Test coverage >80%** - Core functionality tested
 - ✅ **Performance <1s build** - Sub-second compilation
 - ✅ **Zero security vulnerabilities** - Safe dependencies
-- ✅ **Production readiness** - Ready for npm publish
+- ✅ **Production readiness** - Ready for pnpm publish
 
 ---
 

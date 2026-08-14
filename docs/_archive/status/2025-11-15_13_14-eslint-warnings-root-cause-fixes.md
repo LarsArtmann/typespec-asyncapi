@@ -138,7 +138,7 @@
 **What's Needed:**
 
 - Create test .tsp file with invalid security scheme
-- Run `npx tsp compile test.tsp --emit @typespec/asyncapi`
+- Run `pnpm dlx tsp compile test.tsp --emit @typespec/asyncapi`
 - Verify error messages appear correctly
 
 ### 3. Audit for Other Ghost Systems

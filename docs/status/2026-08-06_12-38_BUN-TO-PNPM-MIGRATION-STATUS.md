@@ -17,7 +17,7 @@
 | 5   | `.pre-commit-config.yaml` updated: `bunx` → `pnpm exec`, `bun test` → `pnpm test`, `bun.lockb` → `pnpm-lock.yaml`                                                               | `grep bunx .pre-commit-config.yaml` → 0 results                                             |
 | 6   | `.gitignore` comment updated from `bun install` to `pnpm install`                                                                                                               | Verified                                                                                    |
 | 7   | `AGENTS.md` fully updated: Quick Start, Critical Constraints, coverage explanation                                                                                              | Read-verified                                                                               |
-| 8   | `README.md` updated: install instructions use `npm`/`pnpm`, dev section uses `pnpm`, `bunx tsp` → `npx tsp`                                                                     | Read-verified                                                                               |
+| 8   | `README.md` updated: install instructions use `pnpm`/`pnpm`, dev section uses `pnpm`, `bunx tsp` → `pnpm dlx tsp`                                                                     | Read-verified                                                                               |
 | 9   | Source file regeneration comments updated (`generated-bindings.ts`, `binding-versions.ts`, `binding-field-validator.ts`, `generate-binding-specs.ts`, `coverage-gate.ts`)       | `grep -r "bun run scripts" src/ scripts/` → 0 results                                       |
 | 10  | Coverage investigation: tested vitest V8, c8, vitest `--pool=forks` — all failed to capture `dist/` loaded via TypeSpec virtual FS                                              | Documented in plan doc with root cause analysis                                             |
 | 11  | `bun test --coverage` kept as sole coverage mechanism (97.0% avg, 36 files, 75% min gate)                                                                                       | `pnpm run verify` passes                                                                    |
@@ -43,7 +43,7 @@
 | #   | Item                                 | Impact                                                                                                                          |
 | --- | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
 | 1   | No GitHub Actions CI workflow exists | No CI to update — `flake.nix ci` shell is the only CI definition                                                                |
-| 2   | `pnpm publish` flow not tested       | `prepublishOnly` script calls `pnpm run` commands but actual `npm publish` not tested                                           |
+| 2   | `pnpm publish` flow not tested       | `prepublishOnly` script calls `pnpm run` commands but actual `pnpm publish` not tested                                           |
 | 3   | `.npmrc` file                        | `.gitignore` ignores `.npmrc` but pnpm may need one for registry config or `shamefully-hoist` settings if peer dep issues arise |
 | 4   | Renovate/Dependabot config           | No automated dependency update config to update from `bun` to `pnpm` commands                                                   |
 
@@ -142,7 +142,7 @@
 | 42  | Review `packageManager` field in `package.json` (pnpm supports `packageManager: "pnpm@11.18.0"`)              | Low      | Low                                                  |
 | 43  | Add `bin` field to `package.json` if the emitter should be CLI-callable                                       | Low      | Low                                                  |
 | 44  | Evaluate pnpm catalog feature for centralized version management                                              | Low      | Medium                                               |
-| 45  | Consider adding `overrides` documentation — pnpm supports `overrides` same as npm                             | Low      | Low                                                  |
+| 45  | Consider adding `overrides` documentation — pnpm supports `overrides` same as pnpm                             | Low      | Low                                                  |
 | 46  | Review whether `husky` hooks need updating for pnpm                                                           | Low      | Low                                                  |
 | 47  | Add a `doctor` or `diagnose` script that checks toolchain health                                              | Low      | Low                                                  |
 | 48  | Consider whether the `effect-reports/` gitignore entry is still needed                                        | Low      | Low                                                  |

@@ -821,7 +821,7 @@ After systematic re-examination, I discovered several **CRITICAL** facts that si
 
 ### **Release Artifacts Confirmed**
 
-**Actual npm package releases prepared:**
+**Actual pnpm package releases prepared:**
 
 - `lars-artmann-typespec-asyncapi-0.0.1-alpha.1.tgz`
 - `lars-artmann-typespec-asyncapi-0.0.1-alpha.2.tgz`

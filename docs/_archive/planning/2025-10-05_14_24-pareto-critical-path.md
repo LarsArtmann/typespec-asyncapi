@@ -38,7 +38,7 @@
 
 1. Install the package (`bun add @lars-artmann/typespec-asyncapi`)
 2. Create a TypeSpec file with AsyncAPI decorators
-3. Run `npx tsp compile` and get valid AsyncAPI 3.0 output
+3. Run `pnpm dlx tsp compile` and get valid AsyncAPI 3.0 output
 4. Use the generated AsyncAPI for their event-driven API
 
 **NOT production ready if:**

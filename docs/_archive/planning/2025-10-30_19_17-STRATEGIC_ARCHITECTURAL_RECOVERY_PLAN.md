@@ -146,7 +146,7 @@ src/
 
 ```typescript
 // ❌ BAD: CLI Spawning Anti-Pattern
-spawn('npx', ['tsp', 'compile', 'test.tsp'])
+spawn('pnpm dlx', ['tsp', 'compile', 'test.tsp'])
 
 // ✅ GOOD: Programmatic API
 await compile({...})

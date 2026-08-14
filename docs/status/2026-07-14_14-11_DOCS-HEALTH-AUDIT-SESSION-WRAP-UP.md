@@ -25,7 +25,7 @@
 | --- | ------------------------------------------------------------------------------------------------ | --------- |
 | 1   | Spec-compliant `$ref` chain (operations → channels → components)                                 | `85363e6` |
 | 2   | Message names use model names (OrderCreated, not publishOrderCreated)                            | `85363e6` |
-| 3   | All 8 failing tests fixed (replaced npx spawning with programmatic API)                          | `85363e6` |
+| 3   | All 8 failing tests fixed (replaced pnpm dlx spawning with programmatic API)                          | `85363e6` |
 | 4   | Golden file test with 3 sub-tests (structural, $ref pattern, message naming)                     | `85363e6` |
 | 5   | AsyncAPI 3.0.0 JSON Schema validation (3 scenarios pass against official schema)                 | `85363e6` |
 | 6   | Strongly-typed document model (AsyncAPIDocument, ChannelObject, OperationObject, etc.)           | `f55c3af` |
@@ -187,7 +187,7 @@
 
 43. Ensure `bun run build && bun test && bun run lint` all pass
 44. Update `package.json` version to `0.1.0-alpha`
-45. Verify `npm publish --dry-run` works
+45. Verify `pnpm publish --dry-run` works
 46. Add `.npmignore`
 47. Add GitHub Actions CI workflow
 48. Tag git release

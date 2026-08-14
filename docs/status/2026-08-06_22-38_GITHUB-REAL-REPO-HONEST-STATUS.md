@@ -226,7 +226,7 @@ While not directly my code change, the auto-commit daemon committed debug instru
 
 #### Ecosystem
 
-34. **Search npm for `typespec-asyncapi` packages** — Are there other emitters?
+34. **Search pnpm for `typespec-asyncapi` packages** — Are there other emitters?
 35. **Check TypeSpec community Slack/Discord** for AsyncAPI usage
 36. **Check AsyncAPI community** for TypeSpec adoption
 37. **Monitor milehimikey/typespec-asyncapi for changes** — Set up GitHub watch

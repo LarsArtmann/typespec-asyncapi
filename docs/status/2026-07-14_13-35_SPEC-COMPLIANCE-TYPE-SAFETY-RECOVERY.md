@@ -12,7 +12,7 @@
 | --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ | -------------------------------------------- |
 | 1   | **Spec-compliant `$ref` chain** — operations now reference `#/channels/{id}/messages/{id}` instead of illegally pointing at `#/components/messages/{id}` directly                                                           | `85363e6`                            | Golden file test + schema validation test    |
 | 2   | **Message names use model names** — `OrderCreated` not `publishOrderCreated`, so payload `$ref` resolves to an actual schema                                                                                                | `85363e6`                            | Golden file test assertion                   |
-| 3   | **All 8 previously-failing tests fixed** — replaced `npx tsp compile` child_process spawning with programmatic TypeSpec compiler API                                                                                        | `85363e6`                            | 348 pass, 0 fail                             |
+| 3   | **All 8 previously-failing tests fixed** — replaced `pnpm dlx tsp compile` child_process spawning with programmatic TypeSpec compiler API                                                                                        | `85363e6`                            | 348 pass, 0 fail                             |
 | 4   | **Golden file test** — `test/golden/golden-file.test.ts` locks in verified-correct output with structural + `$ref` pattern + message naming assertions                                                                      | `85363e6`                            | 3 sub-tests pass                             |
 | 5   | **AsyncAPI 3.0.0 JSON Schema validation** — `test/validation/schema-validation.test.ts` validates emitter output against official `@asyncapi/specs` schema via AJV                                                          | `85363e6`                            | 3 scenarios pass (simple, servers, multi-op) |
 | 6   | **Strongly-typed AsyncAPI document model** — `src/domain/models/asyncapi-document.ts` with `AsyncAPIDocument`, `ChannelObject`, `OperationObject`, `MessageObject`, `ServerObject`, `ComponentsObject`, `SchemaObject` etc. | `f55c3af`                            | Build passes, emitter fully type-checked     |
@@ -125,7 +125,7 @@
 17. Fix 3 key examples to compile and produce correct output
 18. Add `tspconfig.yaml` to each example
 19. Commit expected output alongside each example
-20. Add an `npx`-free quickstart (programmatic API or `bunx tsp compile`)
+20. Add an `pnpm dlx`-free quickstart (programmatic API or `bunx tsp compile`)
 
 ### P3 — Code Cleanup
 
@@ -159,7 +159,7 @@
 42. Write CHANGELOG.md
 43. Update `package.json` version to `0.1.0-alpha`
 44. Tag git release
-45. Verify `npm publish --dry-run` works
+45. Verify `pnpm publish --dry-run` works
 46. Add GitHub Actions CI workflow that runs on every PR
 47. Add `.npmignore` to exclude test/docs/scripts from published package
 48. Verify published package size is reasonable

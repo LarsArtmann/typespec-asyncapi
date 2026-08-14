@@ -68,7 +68,7 @@ tsp compile example.tsp --emit @typespec/asyncapi
 ```mermaid
 graph TD
     A[Test Case] --> B[Write .tsp file to disk]
-    B --> C[Run: npx tsp compile]
+    B --> C[Run: pnpm dlx tsp compile]
     C --> D[Read output from disk]
     D --> E[Parse AsyncAPI YAML/JSON]
     E --> F[Run assertions]

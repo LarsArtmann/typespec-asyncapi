@@ -591,7 +591,7 @@ graph TD
 - ✅ Comprehensive test coverage
 - ✅ Clean, maintainable codebase
 - ✅ Excellent developer experience
-- ✅ Ready for npm publish
+- ✅ Ready for pnpm publish
 
 ---
 

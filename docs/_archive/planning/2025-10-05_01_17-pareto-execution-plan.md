@@ -33,7 +33,7 @@ EOF
 
 # Run compilation
 cd examples/smoke
-npx tsp compile main.tsp --emit @lars-artmann/typespec-asyncapi
+pnpm dlx tsp compile main.tsp --emit @lars-artmann/typespec-asyncapi
 
 # Check output
 ls -la tsp-output/@lars-artmann/typespec-asyncapi/

@@ -109,7 +109,7 @@ op sendUserEvent(user: User, event: Event): void;
 op getUserEvents(userId: string): Event[];
 ```
 
-**Command**: `npx tsp compile test-without-decorators.tsp --emit @typespec/asyncapi`
+**Command**: `pnpm dlx tsp compile test-without-decorators.tsp --emit @typespec/asyncapi`
 
 ### Phase 3: AsyncAPI Generation Validation (30 minutes)
 

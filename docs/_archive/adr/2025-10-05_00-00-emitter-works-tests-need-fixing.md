@@ -28,7 +28,7 @@ The TypeSpec AsyncAPI emitter is **working perfectly**. The 146 failing tests ar
 
 ```bash
 cd examples/smoke
-npx tsp compile main.tsp --emit @lars-artmann/typespec-asyncapi
+pnpm dlx tsp compile main.tsp --emit @lars-artmann/typespec-asyncapi
 ```
 
 **Result:** Perfect AsyncAPI 3.0 file generated!
@@ -82,7 +82,7 @@ File: `tsp-test/@lars-artmann/typespec-asyncapi/AsyncAPI.yaml`
 ### Why Accept This
 
 1. **Emitter works end-to-end** - Proven by smoke test
-2. **Users can use it NOW** - `npx tsp compile` works perfectly
+2. **Users can use it NOW** - `pnpm dlx tsp compile` works perfectly
 3. **Test fix is straightforward** - Update helpers to check file system
 4. **Pareto principle validated** - 15 min smoke test > 60 min debugging
 

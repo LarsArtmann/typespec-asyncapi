@@ -572,7 +572,7 @@ graph TB
 
 **Success Metrics:**
 
-- npm downloads > 1000/month
+- pnpm downloads > 1000/month
 - GitHub stars > 100
 - Zero critical issues
 - <24hr issue response time

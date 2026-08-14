@@ -274,7 +274,7 @@ The ROADMAP claims v0.2.0-beta features are "shipped" (protocol bindings, compli
 - (a) A version bump I should do (these features ARE shipped in commits)
 - (b) A ROADMAP wording issue — these should say "Shipped (unreleased)" until a version tag is cut
 
-I don't know your release strategy — do you cut version tags, or is `[Unreleased]` in CHANGELOG the source of truth until npm publish?
+I don't know your release strategy — do you cut version tags, or is `[Unreleased]` in CHANGELOG the source of truth until pnpm publish?
 
 ### Q3: Did you intend for me to also close the 11 Category C GitHub issues from the open-issues review?
 

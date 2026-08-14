@@ -228,7 +228,7 @@ interface TestMetrics {
 
 - ✅ **TypeScript Strict Mode**: Zero compilation errors, maximum type safety
 - ✅ **Effect.TS Architecture**: Advanced functional programming with excellent error handling
-- ✅ **Build System**: Robust justfile + npm + TypeScript integration
+- ✅ **Build System**: Robust justfile + pnpm + TypeScript integration
 - ✅ **Plugin Foundation**: Extensible architecture with community contribution path
 - ✅ **Documentation Structure**: Comprehensive guides and examples
 
@@ -293,7 +293,7 @@ interface TestMetrics {
 - **Codebase Size**: ~15,000 lines TypeScript
 - **Test Suite**: 37 test files, 349 total tests
 - **Documentation**: 10+ guide files, comprehensive examples
-- **Dependencies**: 45 npm packages (well-architected)
+- **Dependencies**: 45 pnpm packages (well-architected)
 - **Build Time**: ~10s full compilation
 
 ### Performance Metrics

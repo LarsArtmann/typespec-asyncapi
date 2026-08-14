@@ -15,7 +15,7 @@ node --version  # Should show v20.x.x or higher
 # Verify package manager
 bun --version   # Recommended: >=1.0.0
 # OR
-npm --version   # Alternative: >=9.0.0
+pnpm --version   # Alternative: >=9.0.0
 ```
 
 ### Install TypeSpec AsyncAPI Emitter
@@ -24,7 +24,7 @@ npm --version   # Alternative: >=9.0.0
 # Using Bun (recommended - faster)
 bun add @larsartmann/typespec-asyncapi
 
-# Using npm
+# Using pnpm
 bun add @larsartmann/typespec-asyncapi
 
 # Install TypeSpec compiler if not already installed
@@ -73,7 +73,7 @@ bunx tsp --version
 
 ```cmd
 REM 1. Install Node.js first (nodejs.org)
-REM 2. Install using npm
+REM 2. Install using pnpm
 bun add -g @typespec/compiler
 bun add @larsartmann/typespec-asyncapi
 
@@ -116,7 +116,7 @@ bun --version
 
 ```bash
 # 1. Install Node.js 20+
-sudo dnf install nodejs npm
+sudo dnf install nodejs pnpm
 
 # OR using Node Version Manager (recommended)
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
@@ -141,8 +141,8 @@ bunx tsp --version
 #### Alpine Linux (Docker)
 
 ```bash
-# 1. Install Node.js and npm
-apk add --no-cache nodejs npm
+# 1. Install Node.js and pnpm
+apk add --no-cache nodejs pnpm
 
 # 2. Install TypeSpec AsyncAPI
 bun add -g @typespec/compiler
@@ -455,7 +455,7 @@ bun add @larsartmann/typespec-asyncapi@0.1.0-alpha
 bun add @larsartmann/typespec-asyncapi@beta
 
 # Check available versions
-npm view @larsartmann/typespec-asyncapi versions --json
+pnpm view @larsartmann/typespec-asyncapi versions --json
 ```
 
 ---
@@ -551,12 +551,12 @@ nvm use 20
 ```bash
 # Problem: EACCES errors during installation
 
-# Solution 1: Use bun instead of npm
+# Solution 1: Use bun instead of pnpm
 bun add @larsartmann/typespec-asyncapi
 
-# Solution 2: Fix npm permissions
+# Solution 2: Fix pnpm permissions
 mkdir ~/.npm-global
-npm config set prefix '~/.npm-global'
+pnpm config set prefix '~/.npm-global'
 echo 'export PATH=~/.npm-global/bin:$PATH' >> ~/.bashrc
 source ~/.bashrc
 ```
@@ -566,7 +566,7 @@ source ~/.bashrc
 ```powershell
 # Problem: 'bunx' or 'tsp' not found
 
-# Solution: Add Node.js and npm to PATH
+# Solution: Add Node.js and pnpm to PATH
 $env:PATH += ";C:\Program Files\nodejs"
 refreshenv
 
@@ -620,15 +620,15 @@ $env:NODE_OPTIONS = "--max-old-space-size=4096"
 ```bash
 # Problem: Cannot download packages
 
-# Solution 1: Configure npm registry
-npm config set registry https://registry.npmjs.org/
+# Solution 1: Configure pnpm registry
+pnpm config set registry https://registry.npmjs.org/
 
 # Solution 2: Configure proxy
-npm config set proxy http://proxy.company.com:8080
-npm config set https-proxy http://proxy.company.com:8080
+pnpm config set proxy http://proxy.company.com:8080
+pnpm config set https-proxy http://proxy.company.com:8080
 
 # Solution 3: Use alternative registry
-npm config set registry https://registry.yarnpkg.com/
+pnpm config set registry https://registry.yarnpkg.com/
 ```
 
 ---

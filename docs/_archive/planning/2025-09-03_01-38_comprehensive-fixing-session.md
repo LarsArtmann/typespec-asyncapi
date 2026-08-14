@@ -8,7 +8,7 @@
 
 ## 🎯 EXECUTIVE SUMMARY
 
-This comprehensive fixing session addresses all 80+ critical issues identified in the TypeSpec AsyncAPI emitter through systematic Pareto analysis and parallel execution. The goal is to transform a partially functional emitter into a production-ready npm package with bulletproof AsyncAPI 3.0 generation.
+This comprehensive fixing session addresses all 80+ critical issues identified in the TypeSpec AsyncAPI emitter through systematic Pareto analysis and parallel execution. The goal is to transform a partially functional emitter into a production-ready pnpm package with bulletproof AsyncAPI 3.0 generation.
 
 ### 📊 PARETO ANALYSIS RESULTS
 
@@ -43,7 +43,7 @@ This comprehensive fixing session addresses all 80+ critical issues identified i
 
 ### Phase 4: Production Readiness
 
-**Target:** Code quality, tests, npm publication  
+**Target:** Code quality, tests, pnpm publication  
 **Duration:** 5 tasks × 315 minutes = 5.25 hours  
 **Success Criteria:** Clean code, passing tests, publishable package
 
@@ -79,7 +79,7 @@ This comprehensive fixing session addresses all 80+ critical issues identified i
 | **COMPLETION PHASE**       |
 | 21                         | Fix ESLint warnings & unsafe type assignments                 | 🔥         | 60min    | 0 ESLint errors, <5 warnings        | Code quality clean                 |
 | 22                         | Update test expectations to match correct behavior            | 🔥🔥       | 80min    | All tests pass                      | Test suite green                   |
-| 23                         | Validate npm publication workflow & integration               | 🔥🔥       | 35min    | npm package publishable             | Publication ready                  |
+| 23                         | Validate pnpm publication workflow & integration               | 🔥🔥       | 35min    | pnpm package publishable             | Publication ready                  |
 | 24                         | Performance optimization & memory management                  | 🔥         | 45min    | No memory leaks                     | Performance optimized              |
 | 25                         | Final integration testing & edge case validation              | 🔥🔥       | 100min   | Complete system validation          | Everything works                   |
 
@@ -119,7 +119,7 @@ This comprehensive fixing session addresses all 80+ critical issues identified i
 
 ### **Phase 4: Production Readiness (28 micro-tasks)**
 
-[Continuing with tasks 21.1-25.7 covering code quality, test updates, npm validation, performance, and final integration...]
+[Continuing with tasks 21.1-25.7 covering code quality, test updates, pnpm validation, performance, and final integration...]
 
 ---
 
@@ -184,7 +184,7 @@ graph TB
     %% Phase 4: Production Readiness
     NN --> OO[21.1 Fix ESLint warnings]
     OO --> PP[22.1 Update test expectations]
-    PP --> QQ[23.1 Validate npm workflow]
+    PP --> QQ[23.1 Validate pnpm workflow]
     QQ --> RR[24.1 Optimize performance]
     RR --> SS[25.1 Final integration test]
 
@@ -256,7 +256,7 @@ graph TB
 
 - [ ] All 80+ original test failures resolved
 - [ ] ESLint warnings reduced to <5
-- [ ] npm package successfully publishable
+- [ ] pnpm package successfully publishable
 - [ ] Integration tests pass completely
 - [ ] Performance benchmarks meet requirements
 
@@ -285,13 +285,13 @@ graph TB
 ### **Pre-Fix State:**
 
 - 80+ critical issues blocking publication
-- 50+ test failures preventing npm package release
+- 50+ test failures preventing pnpm package release
 - Core functionality broken for complex TypeSpec models
 - Advanced decorators completely non-functional
 
 ### **Post-Fix State:**
 
-- Production-ready npm package publishable to community
+- Production-ready pnpm package publishable to community
 - Complete AsyncAPI 3.0 compliance and validation
 - Advanced decorator system fully functional
 - Comprehensive test suite passing with <5 warnings
@@ -305,4 +305,4 @@ graph TB
 
 ---
 
-_This comprehensive fixing session represents the systematic transformation of the TypeSpec AsyncAPI emitter from a partially functional prototype to a production-ready, community-serving npm package with enterprise-grade reliability and complete AsyncAPI 3.0 compliance._
+_This comprehensive fixing session represents the systematic transformation of the TypeSpec AsyncAPI emitter from a partially functional prototype to a production-ready, community-serving pnpm package with enterprise-grade reliability and complete AsyncAPI 3.0 compliance._

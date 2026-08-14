@@ -111,7 +111,7 @@ This session achieved a complete transformation from a broken system with 44 Typ
 
 #### **#214 - Test Infrastructure Crisis (CRITICAL)** 🧪
 
-- **Problem**: Tests fail due to npx/tsp CLI external dependencies
+- **Problem**: Tests fail due to pnpm dlx/tsp CLI external dependencies
 - **Root Cause**: Child process spawning anti-pattern, no programmatic API
 - **Impact**: 0% test reliability, CI/CD broken, development blocked
 - **Solution**: Direct TypeSpec API integration, in-memory compilation

@@ -320,7 +320,7 @@ The official `@typespec/json-schema` emitter handles all constraint decorators, 
 
 ### 2. Is there an official AsyncAPI + TypeSpec integration effort we should align with?
 
-I checked `@asyncapi/typespec-library` on npm (404). But AsyncAPI Initiative and Microsoft may have a planned or in-progress official TypeSpec library. **If one exists or is planned, our project's positioning (independent vs. contributory) changes fundamentally.** I cannot determine this without insider knowledge of the AsyncAPI Initiative's roadmap.
+I checked `@asyncapi/typespec-library` on pnpm (404). But AsyncAPI Initiative and Microsoft may have a planned or in-progress official TypeSpec library. **If one exists or is planned, our project's positioning (independent vs. contributory) changes fundamentally.** I cannot determine this without insider knowledge of the AsyncAPI Initiative's roadmap.
 
 ### 3. What's the target user persona — are they migrating from OpenAPI/TypeSpec HTTP, or greenfield AsyncAPI?
 

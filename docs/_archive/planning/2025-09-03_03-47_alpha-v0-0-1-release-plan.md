@@ -31,7 +31,7 @@
 
 1. 🟡 **Basic Pipeline Validation** (45 min) - Test one complete example
 2. 🟡 **Output Quality Verification** (30 min) - Ensure AsyncAPI spec is valid
-3. 🟡 **NPM Package Testing** (15 min) - Verify `npx tsp compile --emit` works
+3. 🟡 **NPM Package Testing** (15 min) - Verify `pnpm dlx tsp compile --emit` works
 4. 🟡 **Error Handling Validation** (30 min) - Test failure scenarios
 
 ### 20% of Work → 80% of Value 📈 (ESSENTIAL PATH - NEXT 1-2 DAYS)
@@ -183,7 +183,7 @@ graph TD
 ### BLOCKER #2: NPM Package Integration 🔧 (15 minutes)
 
 **Risk**: Medium - Package discovery issues could prevent installation
-**Mitigation**: Test `npx tsp compile --emit @lars-artmann/typespec-asyncapi`
+**Mitigation**: Test `pnpm dlx tsp compile --emit @lars-artmann/typespec-asyncapi`
 
 ### BLOCKER #3: Output Quality ✅ (30 minutes)
 
@@ -225,7 +225,7 @@ echo 'import "@lars-artmann/typespec-asyncapi"; @channel("test") @publish op tes
 
 # Test compilation
 just build
-npx tsp compile example.tsp --emit @lars-artmann/typespec-asyncapi
+pnpm dlx tsp compile example.tsp --emit @lars-artmann/typespec-asyncapi
 
 # Validate output
 ls tsp-output/

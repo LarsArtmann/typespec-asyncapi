@@ -36,7 +36,7 @@
         },
         "type": "object",
         "required": ["tag", "version"],
-        "description": "A named, movable pointer to a version (npm-style). `latest` is auto-managed\n(set to the newest version on register); others (`canary`, `beta`, …) are set\nby hand. A version ref anywhere may be a concrete version OR a dist-tag name."
+        "description": "A named, movable pointer to a version (pnpm-style). `latest` is auto-managed\n(set to the newest version on register); others (`canary`, `beta`, …) are set\nby hand. A version ref anywhere may be a concrete version OR a dist-tag name."
       },
       "RegistryEntryCore": {
         "properties": {
@@ -1441,7 +1441,7 @@
         "type": "string"
       },
       "PackageRegistryKind": {
-        "enum": ["npm", "pypi", "gems", "maven", "nuget", "goproxy"],
+        "enum": ["pnpm", "pypi", "gems", "maven", "nuget", "goproxy"],
         "type": "string",
         "description": "Package registry flavour — the language ecosystem an SDK publishes into."
       },

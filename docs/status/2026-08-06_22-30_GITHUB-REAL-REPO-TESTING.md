@@ -87,7 +87,7 @@ Plus custom Kafka decorators (`@Kafka.key`, `@Kafka.topicConfig`, `@Kafka.schema
 
 No emitter bugs were discovered. Every failure is either:
 
-- Missing npm packages not installed in this project
+- Missing pnpm packages not installed in this project
 - TypeSpec version differences (v1.14.0 changed `@visibility` to require enum members)
 - Decorator API design choices that differ between emitters
 

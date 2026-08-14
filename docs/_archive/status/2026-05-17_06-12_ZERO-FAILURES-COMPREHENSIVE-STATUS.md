@@ -95,7 +95,7 @@ The project has gone from 264/328 tests (80.5%) at session start to 319/342 (93.
 5. **Advanced security test cases** — 19 skipped tests (blockchain, quantum, homomorphic, etc.)
 6. **CI/CD pipeline** — no GitHub Actions, no automated publishing
 7. **Documentation generation** — no API docs, no usage guide beyond AGENTS.md
-8. **npm publishing** — package.json has version 0.0.1, never published
+8. **pnpm publishing** — package.json has version 0.0.1, never published
 9. **Integration with `@typespec/http`** — no cross-library support
 10. **AsyncAPI 2.x backward compatibility** — only 3.0.0 supported
 
@@ -194,7 +194,7 @@ The `validateAsyncAPIObjectComprehensive()` helper only checks `asyncapi` versio
 | 20  | **Add proper diagnostic reporting** in emitter (not silent catch)            | Medium | Medium | Quality        |
 | 21  | **Write usage documentation** (README, getting started guide)                | Medium | Medium | Docs           |
 | 22  | **Add integration test with `@typespec/http`** library                       | Low    | Medium | Integration    |
-| 23  | **npm publish pipeline** (semantic release or manual)                        | Low    | Low    | Infrastructure |
+| 23  | **pnpm publish pipeline** (semantic release or manual)                        | Low    | Low    | Infrastructure |
 | 24  | **Performance benchmarks** — measure emitter time on large specs             | Low    | Low    | Quality        |
 | 25  | **Plugin system re-enablement**                                              | Low    | High   | Feature        |
 

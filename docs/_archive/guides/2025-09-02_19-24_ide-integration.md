@@ -15,7 +15,7 @@ This document provides comprehensive setup instructions for IDE integration with
 #### 1. Install the Emitter
 
 ```bash
-# Using npm
+# Using pnpm
 bun add --save-dev @typespec/asyncapi
 
 # Using bun (recommended)
@@ -271,7 +271,7 @@ jobs:
           node-version: "18"
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Compile TypeSpec
         run: bun run spec:build

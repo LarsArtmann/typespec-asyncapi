@@ -79,7 +79,7 @@ $ ls -la node_modules/@larsartmann/typespec-asyncapi/lib/main.tsp
 
 **FOR USERS**: The emitter will work perfectly in real usage because:
 
-1. Users install via npm/bun normally (not development symlinks)
+1. Users install via pnpm/bun normally (not development symlinks)
 2. All core functionality is proven working
 3. TypeSpec compiler will find the library through normal module resolution
 
@@ -89,7 +89,7 @@ $ ls -la node_modules/@larsartmann/typespec-asyncapi/lib/main.tsp
 
 1. **Option A**: Accept that direct functionality tests prove the emitter works
 2. **Option B**: Investigate TypeSpec test runner module resolution internals
-3. **Option C**: Create integration tests using real npm package installation
+3. **Option C**: Create integration tests using real pnpm package installation
 
 ## 📈 Progress Made
 

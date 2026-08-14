@@ -76,7 +76,7 @@ Git:   clean working tree, pushed to origin
 ### Dead domain models in `src/domain/models/`
 
 - **Problem:** `path-templates.ts` and `serialization-format-option.ts` are in `src/` but only used by `test/` — the emitter does NOT import them.
-- **Impact:** Test-only code shipping in the npm package. Should be in `test/utils/`.
+- **Impact:** Test-only code shipping in the pnpm package. Should be in `test/utils/`.
 
 ---
 
@@ -133,7 +133,7 @@ After committing, ran `git status --short | wc -l` and got 94 — panicked think
 
    New tests use the last two. Old tests (81 security tests) use the first. Should consolidate.
 
-4. **Dead domain models in `src/`.** `path-templates.ts` and `serialization-format-option.ts` are test-only code in the source tree. They ship in the npm package but serve no runtime purpose.
+4. **Dead domain models in `src/`.** `path-templates.ts` and `serialization-format-option.ts` are test-only code in the source tree. They ship in the pnpm package but serve no runtime purpose.
 
 5. **`security-comprehensive.test.ts` tests don't assert output structure.** Every test just checks `expect(spec).toBeDefined()` and `expect(spec?.asyncapi).toBe("3.0.0")`. They compile TypeSpec and check the version string but never verify that the security scheme actually appears in the output. The new `decorator-output.test.ts` tests are much better — they check actual output structure.
 
@@ -195,7 +195,7 @@ After committing, ran `git status --short | wc -l` and got 94 — panicked think
 | 36  | Extract TypeEmitter schema methods from `emitter.ts` into `src/schema-emitter.ts`              | HIGH   | 45 min |
 | 37  | Clean up `lint-staged` config — verify it references correct files                             | LOW    | 5 min  |
 | 38  | Add `.editorconfig` for consistent formatting                                                  | LOW    | 5 min  |
-| 39  | Consider provenance for npm publish (supply chain security)                                    | LOW    | 15 min |
+| 39  | Consider provenance for pnpm publish (supply chain security)                                    | LOW    | 15 min |
 | 40  | Remove `test/templates/` directory if empty                                                    | LOW    | 1 min  |
 | 41  | Update golden file test to cover nested `$ref` output                                          | MEDIUM | 15 min |
 | 42  | Add test for `@bindings` with HTTP protocol                                                    | LOW    | 10 min |

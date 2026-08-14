@@ -165,7 +165,7 @@
 
 - **User Experience:** Installation and basic workflow now functional
 - **Developer Experience:** Core emitter working, test infrastructure partially restored
-- **Community Readiness:** Foundation for npm publication established
+- **Community Readiness:** Foundation for pnpm publication established
 
 ---
 
@@ -240,7 +240,7 @@ The decorator system breakthrough demonstrates **deep TypeSpec integration capab
 ### **Production Readiness Validation**
 
 - [ ] All integration tests passing
-- [ ] npm package publishable without errors
+- [ ] pnpm package publishable without errors
 - [ ] Complete user workflow functional (install → compile → generate)
 - [ ] Documentation updated to match working reality
 
@@ -269,7 +269,7 @@ The decorator system breakthrough demonstrates **deep TypeSpec integration capab
 **STATUS:** 🎉 **MAJOR SUCCESS - 65% COMPLETE**
 
 **ACHIEVED:** Foundation restoration, core engine rebuild, advanced decorator system
-**NEXT:** Complete server architecture, polish code quality, finalize npm publication
+**NEXT:** Complete server architecture, polish code quality, finalize pnpm publication
 
 **CONFIDENCE LEVEL:** 🔥 **HIGH** - Solid foundation established, clear path to completion
 

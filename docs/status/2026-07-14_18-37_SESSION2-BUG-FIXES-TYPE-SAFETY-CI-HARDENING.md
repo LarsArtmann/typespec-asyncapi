@@ -146,7 +146,7 @@ No regressions, no broken commits, no data loss. Everything was committed increm
 
 ### CI/CD
 
-11. **No publish workflow** — No npm publish step in CI. Tags exist but no release automation.
+11. **No publish workflow** — No pnpm publish step in CI. Tags exist but no release automation.
 12. **No dependency audit** — `bun audit` or similar not in CI.
 13. **Coverage gate at 75% is generous** — Should ratchet to 80%+ after schema-emitter tests are added.
 
@@ -186,7 +186,7 @@ No regressions, no broken commits, no data loss. Everything was committed increm
 18. Remove `TestValidationPatterns` if callers can use direct assertions instead
 19. Move `TestSources` to a separate file or inline into tests that use them
 20. Empty `test/acceptance/` directory — either add tests or remove
-21. Add npm publish workflow triggered on tag push
+21. Add pnpm publish workflow triggered on tag push
 22. Add `real-world` examples to CI smoke test (currently only 5 of 8 examples tested)
 23. Add test for `@protocol` decorator output verification
 24. Add test for `@bindings` decorator on channels vs operations vs messages
@@ -248,6 +248,6 @@ type ProtocolConfigData = {
 
 A discriminated union would be type-safer but requires refactoring all consumers (`storeProtocolConfig`, `document-builder.ts` channel bindings section). **Is this worth doing now, or should it wait until we have more protocol-specific tests to guide the split?**
 
-### Q2: Should we publish to npm as `@lars-artmann/typespec-asyncapi` or use a different scope?
+### Q2: Should we publish to pnpm as `@lars-artmann/typespec-asyncapi` or use a different scope?
 
-The package name is hardcoded throughout (`package.json`, `lib/main.tsp`, CI, tests, examples). There's no publish workflow yet. **What's the intended npm package name and scope for public release?** This affects the `tspconfig.yaml` emitter name, the `import` paths in examples, and the decorator namespace in `lib/main.tsp`.
+The package name is hardcoded throughout (`package.json`, `lib/main.tsp`, CI, tests, examples). There's no publish workflow yet. **What's the intended pnpm package name and scope for public release?** This affects the `tspconfig.yaml` emitter name, the `import` paths in examples, and the decorator namespace in `lib/main.tsp`.

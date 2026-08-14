@@ -569,7 +569,7 @@ Using 4 Task agents in parallel to fix test files was efficient.
 
 3. **Add Pre-commit Hooks**
    - **Why:** Prevent broken commits
-   - **How:** `npx husky install`, add pre-commit script
+   - **How:** `pnpm dlx husky install`, add pre-commit script
    - **Time:** 10min
 
 ### SECONDARY (After Immediate)

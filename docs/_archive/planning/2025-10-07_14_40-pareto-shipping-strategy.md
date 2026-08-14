@@ -655,7 +655,7 @@ graph TD
 - TypeSpec 1.4.0+ installed
 - Bun runtime available
 - GitHub Actions access
-- npm registry access
+- pnpm registry access
 
 ### Internal Dependencies
 

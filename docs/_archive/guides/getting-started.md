@@ -93,7 +93,7 @@ op subscribeToUserUpdates(): UserUpdatedPayload;
 
 ```bash
 # Compile TypeSpec to AsyncAPI
-npx tsp compile user-events.tsp --emit @larsartmann/typespec-asyncapi
+pnpm dlx tsp compile user-events.tsp --emit @larsartmann/typespec-asyncapi
 
 # Check output directory
 ls tsp-output/@larsartmann/typespec-asyncapi/
@@ -385,7 +385,7 @@ echo '{"emitters": {"@larsartmann/typespec-asyncapi": {}}}' > tspconfig.yaml
 vim events.tsp
 
 # 2. Generate AsyncAPI specs
-npx tsp compile . --emit @larsartmann/typespec-asyncapi
+pnpm dlx tsp compile . --emit @larsartmann/typespec-asyncapi
 
 # 3. Validate output
 asyncapi validate tsp-output/@larsartmann/typespec-asyncapi/asyncapi.yaml
@@ -438,7 +438,7 @@ Error: Emitter "@larsartmann/typespec-asyncapi" not found
 
 ```bash
 # Verify emitter is properly installed
-npx tsp compile --help | grep asyncapi
+pnpm dlx tsp compile --help | grep asyncapi
 
 # Reinstall if needed
 bun remove @larsartmann/typespec-asyncapi

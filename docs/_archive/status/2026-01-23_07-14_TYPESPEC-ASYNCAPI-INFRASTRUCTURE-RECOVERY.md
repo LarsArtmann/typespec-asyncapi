@@ -139,7 +139,7 @@ expect() Calls: 1,113 assertions
 
 7. **CLI Tests** - 0/12 passing (0%) 🔴
    - Command-line invocation
-   - **Root Cause:** `npx: command not found` - environment not configured
+   - **Root Cause:** `pnpm dlx: command not found` - environment not configured
    - **Fix Status:** ⚠️ Requires env configuration
 
 ---
@@ -221,20 +221,20 @@ at compileAsyncAPI (test/utils/emitter-test-helpers.ts:100:13)
 
 ### P2: CLI Dependency Issues
 
-**Issue:** CLI tests spawn `npx tsp` which fails with "command not found"
+**Issue:** CLI tests spawn `pnpm dlx tsp` which fails with "command not found"
 
 **Evidence:**
 
 ```
-/bin/sh: npx: command not found
-Executable not found in $PATH: "npx"
+/bin/sh: pnpm dlx: command not found
+Executable not found in $PATH: "pnpm dlx"
 at spawn (test/integration/cli-simple-emitter.test.ts:48:25)
 ```
 
 **Root Cause:**
 
 - TypeSpec CLI not installed globally in test environment
-- Tests use child_process.spawn to invoke npx
+- Tests use child_process.spawn to invoke pnpm dlx
 - Alternative: Use programmatic TypeSpec API
 
 **Status:** Expected CLI tests to fail in non-global environment
@@ -431,7 +431,7 @@ const result = createChannelPath("/user/events");
    - Comment out decorator-registration tests (needs work)
    - Remove API_VERSIONS dependency tests
 2. Fix P2: Make CLI tests environment-aware
-   - Detect missing npx/tsp and skip gracefully
+   - Detect missing pnpm dlx/tsp and skip gracefully
    - OR mock child_process.spawn
 3. Run full test suite
 4. Triage remaining failures
@@ -518,7 +518,7 @@ const result = createChannelPath("/user/events");
 **Hour 3-4: Clean Test Infrastructure**
 
 - [ ] Comment out tests for non-existent ErrorFormatters
-- [ ] Skip CLI tests gracefully when npx unavailable
+- [ ] Skip CLI tests gracefully when pnpm dlx unavailable
 - [ ] Run test suite and categorize failures
 - [ ] Fix easy issues immediately
 
@@ -595,7 +595,7 @@ const result = createChannelPath("/user/events");
 
 - Error handling tests (missing ErrorFormatters)
 - Decorator registration tests
-- CLI invocation tests (npx not found)
+- CLI invocation tests (pnpm dlx not found)
 - Path validation tests (missing constants)
 
 **P2 - Minor/Quality: 20 tests**

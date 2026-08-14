@@ -62,7 +62,7 @@ bun run alpha-release
 ```bash
 # Test basic emitter functionality
 cd examples/
-npx tsp compile alpha-basic-example.tsp --emit @lars-artmann/typespec-asyncapi
+pnpm dlx tsp compile alpha-basic-example.tsp --emit @lars-artmann/typespec-asyncapi
 # Verify output files exist and are valid
 ```
 
@@ -74,7 +74,7 @@ npx tsp compile alpha-basic-example.tsp --emit @lars-artmann/typespec-asyncapi
 # Test installation in fresh environment
 mkdir /tmp/typespec-test
 cd /tmp/typespec-test
-npm init -y
+pnpm init -y
 bun add @lars-artmann/typespec-asyncapi@alpha @typespec/compiler
 # Create basic TypeSpec file and compile
 ```
