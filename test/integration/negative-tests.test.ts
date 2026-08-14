@@ -72,9 +72,12 @@ describe("negative: unsupported protocol", () => {
     `);
 
     const { diagnostics } = result;
-    // Should produce some diagnostic about unsupported protocol
-    // (may be warning or error depending on validation level)
-    expect(diagnostics.length).toBeGreaterThanOrEqual(0);
+    // Unsupported server protocols are rejected with an error diagnostic
+    expect(
+      diagnostics.some(
+        (d) => d.code === "@lars-artmann/typespec-asyncapi/unsupported-protocol",
+      ),
+    ).toBe(true);
   });
 });
 
@@ -88,10 +91,10 @@ describe("negative: conflicting decorators", () => {
       op conflictingOp(): Event;
     `);
 
-    // The emitter should handle this without crashing
-    // Last decorator wins in the state map
+    // The emitter handles this without crashing: no error diagnostics,
+    // and the outermost decorator wins in the state map
     const errors = result.diagnostics.filter((d) => d.severity === "error");
-    expect(errors.length).toBeGreaterThanOrEqual(0);
+    expect(errors).toHaveLength(0);
   });
 });
 

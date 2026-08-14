@@ -16,15 +16,11 @@
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
     "incremental": true,
     "tsBuildInfoFile": ".tsbuildinfo",
     "verbatimModuleSyntax": true,
     "allowImportingTsExtensions": false,
-    "noEmitOnError": false,
-    "jsx": "react-jsx",
-    "jsxImportSource": "@alloy-js/core"
+    "noEmitOnError": false
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"],
   "exclude": [

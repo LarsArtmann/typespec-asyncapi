@@ -65,6 +65,8 @@ describe("performance benchmarks", () => {
       } as never);
       const elapsed = performance.now() - start;
 
+      expect(elapsed).toBeLessThan(options.channelCount >= 200 ? 30_000 : 15_000);
+
       const errors = result.diagnostics.filter((d) => d.severity === "error");
       expect(errors).toStrictEqual([]);
 

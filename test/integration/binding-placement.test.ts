@@ -64,7 +64,7 @@ describe("binding Placement: misplaced warnings", () => {
     expect(misplaced.length).toBeGreaterThanOrEqual(1);
   });
 
-  it("warns when mqtt binding is placed on a channel via @protocol is NOT flagged (channel config is separate)", async () => {
+  it("does NOT flag mqtt channel-config binding on @protocol as misplaced", async () => {
     const result = await compileAsyncAPISpecRaw(`
       model Event { id: string; }
       @channel("events")

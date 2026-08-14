@@ -34,7 +34,7 @@ describe("asyncAPI Decorator Validation", () => {
       expect(errors).toHaveLength(0);
     });
 
-    it("should validate channel path format", async () => {
+    it("should report missing-channel-path for an empty channel path", async () => {
       const source = `
         namespace ChannelValidationTest;
         
@@ -42,9 +42,6 @@ describe("asyncAPI Decorator Validation", () => {
         
         @channel("")
         op emptyChannel(): Event;
-        
-        @channel("invalid channel with spaces")
-        op invalidSpaces(): Event;
         
         @channel("valid.channel")
         op validChannel(): Event;
@@ -55,21 +52,19 @@ describe("asyncAPI Decorator Validation", () => {
         "output-file": "channel-validation",
       });
 
-      // Should have diagnostics for invalid channels but not for valid ones
       const channelErrors = diagnostics.filter(
         (d) =>
-          d.code === "@lars-artmann/typespec-asyncapi/invalid-channel-path",
+          d.code === "@lars-artmann/typespec-asyncapi/missing-channel-path",
       );
-      expect(channelErrors).toBeDefined();
+      expect(channelErrors).toHaveLength(1);
     });
 
-    it("should require @channel decorator for operations", async () => {
+    it("should compile operations without @channel without errors", async () => {
       const source = `
         namespace MissingChannelTest;
         
         model Event { id: string; }
         
-        // Operation without @channel should generate diagnostic
         op missingChannelOp(): Event;
         
         @channel("valid.channel")
@@ -81,12 +76,9 @@ describe("asyncAPI Decorator Validation", () => {
         "output-file": "missing-channel",
       });
 
-      // Check for missing channel diagnostic
-      const missingChannelErrors = diagnostics.filter(
-        (d) =>
-          d.code === "@lars-artmann/typespec-asyncapi/missing-channel-path",
-      );
-      expect(missingChannelErrors).toBeDefined();
+      // Channel-less operations are emitted without a channel link, not rejected
+      const errors = diagnostics.filter((d) => d.severity === "error");
+      expect(errors).toHaveLength(0);
     });
   });
 
@@ -122,7 +114,7 @@ describe("asyncAPI Decorator Validation", () => {
       expect(outputFiles.size).toBeGreaterThan(0);
     });
 
-    it("should detect conflicting @publish and @subscribe decorators", async () => {
+    it("should not error when both @publish and @subscribe are applied (outermost wins)", async () => {
       const source = `
         namespace ConflictTest;
         
@@ -138,18 +130,17 @@ describe("asyncAPI Decorator Validation", () => {
         op validOperation(): Event;
       `;
 
-      const { diagnostics } = await compileAsyncAPISpec(source, {
+      const { diagnostics, outputFiles } = await compileAsyncAPISpec(source, {
         "file-type": "json",
         "output-file": "conflict-test",
       });
 
-      // Should detect the conflict
-      const conflictErrors = diagnostics.filter(
-        (d) =>
-          d.code ===
-          "@lars-artmann/typespec-asyncapi/conflicting-operation-type",
-      );
-      expect(conflictErrors).toBeDefined();
+      const errors = diagnostics.filter((d) => d.severity === "error");
+      expect(errors).toHaveLength(0);
+
+      // Decorators run bottom-up, so the outermost @publish executes last and wins
+      const doc = JSON.parse(outputFiles.get("conflict-test.json")!);
+      expect(doc.operations.conflictingOperation.action).toBe("send");
     });
   });
 
@@ -222,20 +213,20 @@ describe("asyncAPI Decorator Validation", () => {
         op publishTreeEvent(): TreeNode;
       `;
 
-      const { diagnostics } = await compileAsyncAPISpec(source, {
+      const { diagnostics, outputFiles } = await compileAsyncAPISpec(source, {
         "file-type": "json",
         "output-file": "recursive-test",
       });
 
-      // Recursive models should not cause infinite loops
+      // Recursive models terminate and emit a self-referencing $ref
       const errors = diagnostics.filter((d) => d.severity === "error");
-      expect(errors).toBeDefined();
-      const circularErrors = diagnostics.filter(
-        (d) =>
-          d.code ===
-          "@lars-artmann/typespec-asyncapi/circular-message-reference",
-      );
-      expect(circularErrors).toBeDefined();
+      expect(errors).toHaveLength(0);
+
+      const doc = JSON.parse(outputFiles.get("recursive-test.json")!);
+      expect(doc.components.schemas.TreeNode.properties.children).toStrictEqual({
+        type: "array",
+        items: { $ref: "#/components/schemas/TreeNode" },
+      });
     });
   });
 

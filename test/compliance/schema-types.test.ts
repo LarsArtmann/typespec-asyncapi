@@ -61,7 +61,7 @@ describe("spec Compliance: Schema Types", () => {
     `);
     const schema = getSchema(doc, "Event");
     const props = schema.properties!;
-    expect(props.count?.type ?? props.timestamp.type).toBe("integer");
+    expect(props.timestamp.type).toBe("integer");
     expect(props.timestamp.format).toBe("int64");
   });
 
