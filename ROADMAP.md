@@ -46,6 +46,39 @@ Raw ideas:
 - Move generic utilities (`applyOverrides`, `collectNamesInto`) to a shared `src/util/` module
 - Property-based and snapshot testing infrastructure — generate random constraint combinations and verify AJV always passes; lock exact JSON Schema per decorator
 
+#### EFv1 (`@typespec/asset-emitter`) containment and eventual removal
+
+Research findings (2026-08-21, from primary sources):
+
+- `@typespec/asset-emitter` package description says "to be replaced by the new
+  emitter framework" — terminal, but slowly.
+- EFv2 (`@typespec/emitter-framework`, merged to typespec main 2025-03, now
+  0.20.0-still-0.x) is built on alloy-js + tree-sitter: its design center is
+  source-code emitters (js/csharp/java/python clients). Only those use it.
+- Microsoft's own data-document emitters (`openapi3`, `json-schema`) still use
+  EFv1 on typespec main TODAY. EFv1 lives as long as openapi3 lives.
+- Our exposure is confined: 5 files, ~490 lines, all in schema generation.
+  `extract-value.ts` exists only to fight EFv1's `EmitEntity`/`Placeholder`.
+  The document pipeline (11 builders) never touches asset-emitter.
+
+Plan:
+
+1. **Contain (v0.3.0):** make `generateSchemas()` the sole asset-emitter seam;
+   nothing else imports from `@typespec/asset-emitter`.
+2. **Monitor:** the trigger is `openapi3`'s package.json gaining
+   `@typespec/emitter-framework` (or asset-emitter being marked deprecated on
+   npm). Check quarterly.
+3. **Rewrite (v0.4.0 headline or when trigger fires):** replace the
+   `TypeEmitter` subclass (~15 overrides, `src/schema-emitter.ts`) with a
+   direct recursive type-to-JsonSchema walker. Kills `extract-value.ts`, the
+   Placeholder gotchas, the deprecation risk, and neutralizes the competing
+   emitter's only architectural differentiator. Our 1286-test suite + golden
+   files + AJV validation de-risk this specifically. Must preserve:
+   declaration dedup/naming (including template instantiation names — check
+   golden files for current naming), circular-ref handling (in-progress set),
+   and the `src/shared/` public API.
+4. **Never adopt EFv2** for this emitter — wrong tool for data documents.
+
 ### 4. Ecosystem Integration
 
 Connect to the broader TypeSpec and AsyncAPI ecosystems.
