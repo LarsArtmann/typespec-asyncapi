@@ -1,0 +1,9 @@
+{
+  "extends": ["html-validate:document"],
+  "rules": {
+    "no-trailing-whitespace": "off",
+    "require-sri": "off",
+    "attr-quotes": "off",
+    "heading-level": "off"
+  }
+}

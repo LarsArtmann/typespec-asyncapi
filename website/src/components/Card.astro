@@ -1,0 +1,53 @@
+---
+export interface Props {
+  variant?: 'default' | 'feature' | 'comparison' | 'usecase';
+  padding?: 'xs' | 'sm' | 'md' | 'lg';
+  dashed?: boolean;
+  href?: string;
+  external?: boolean;
+  class?: string;
+}
+
+const {
+  variant = 'default',
+  padding = 'md',
+  dashed = false,
+  href,
+  external = false,
+  class: className,
+} = Astro.props;
+
+const paddingClasses: Record<string, string> = {
+  xs: 'p-4',
+  sm: 'p-5',
+  md: 'p-6',
+  lg: 'p-8',
+};
+
+const variantClasses: Record<string, string> = {
+  default: 'border-border hover:border-border-hover',
+  feature: 'border-border hover:border-border-hover',
+  comparison: 'border-border text-center',
+  usecase: 'border-border text-center',
+};
+
+const baseClasses = 'rounded-xl border bg-bg-card transition-colors duration-150';
+
+const allClasses = [
+  baseClasses,
+  paddingClasses[padding],
+  variantClasses[variant],
+  dashed && 'border-dashed',
+  href && 'hover:bg-bg-card-solid cursor-pointer',
+].filter(Boolean).join(' ');
+---
+
+{href ? (
+  <a href={href} target={external ? '_blank' : undefined} rel={external ? 'noopener noreferrer' : undefined} class:list={[allClasses, className]}>
+    <slot />
+  </a>
+) : (
+  <div class:list={[allClasses, className]}>
+    <slot />
+  </div>
+)}

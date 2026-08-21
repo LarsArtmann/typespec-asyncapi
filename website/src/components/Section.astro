@@ -1,0 +1,46 @@
+---
+export interface Props {
+  animate?: boolean;
+  padding?: 'none' | 'sm' | 'md' | 'lg';
+  width?: 'narrow' | 'wide';
+  tone?: 'default' | 'raised';
+  class?: string;
+}
+
+const {
+  animate = true,
+  padding = 'md',
+  width,
+  tone = 'default',
+  class: className,
+} = Astro.props;
+
+const paddingClasses: Record<string, string> = {
+  none: '',
+  sm: 'py-12',
+  md: 'py-24',
+  lg: 'py-32',
+};
+
+const widthClasses: Record<string, string> = {
+  narrow: 'max-w-5xl',
+  wide: 'max-w-7xl',
+};
+
+const toneClasses: Record<string, string> = {
+  default: '',
+  raised: 'bg-bg-raised',
+};
+---
+
+<section
+  class:list={[
+    'relative',
+    paddingClasses[padding],
+    toneClasses[tone],
+    className,
+  ]}
+  data-animate={animate ? '' : undefined}
+>
+  {width ? <div class={`${widthClasses[width]} mx-auto px-6`}><slot /></div> : <slot />}
+</section>

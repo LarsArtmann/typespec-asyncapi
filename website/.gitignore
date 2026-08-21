@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Firebase
+.firebase/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Astro
+.astro/
+
+# Bun (CI uses npm)
+bun.lock
+
+# HyperFrames composition deps
+video/node_modules/
+video/.hyperframes/

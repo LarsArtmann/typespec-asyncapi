@@ -1,0 +1,72 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { siteConfig } from '../data/config';
+import { generatorCount } from '../data/generators';
+import { ClientRouter } from 'astro:transitions';
+
+export interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+const ogDesc = siteConfig.ogDescription.replace('{count}', String(generatorCount));
+---
+
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <ClientRouter />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={siteConfig.description} />
+    <title>{title}</title>
+    <meta property="og:title" content={siteConfig.name} />
+    <meta property="og:description" content={ogDesc} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={siteConfig.siteUrl} />
+    <meta property="og:image" content={`${siteConfig.siteUrl}/og/home.png`} />
+    <meta property="og:image:alt" content="gogenfilter — Detect & Filter Auto-Generated Go Code" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={siteConfig.name} />
+    <meta name="twitter:description" content={ogDesc} />
+    <meta name="twitter:image" content={`${siteConfig.siteUrl}/og/home.png`} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="canonical" href={siteConfig.siteUrl} />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#0c0a09" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#fafaf9" media="(prefers-color-scheme: light)" />
+    <script is:inline src="/js/theme-init.js"></script>
+  </head>
+  <body class="font-sans bg-bg-primary text-text-secondary antialiased leading-relaxed">
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:bg-accent focus:text-on-accent focus:px-4 focus:py-2 focus:rounded-lg focus:text-sm focus:font-semibold">Skip to content</a>
+    <script type="application/ld+json" is:inline set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "gogenfilter",
+      "description": siteConfig.description,
+      "url": siteConfig.siteUrl,
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Go",
+      "programmingLanguage": "Go",
+      "license": "https://opensource.org/licenses/MIT",
+      "author": {
+        "@type": "Person",
+        "name": "LarsArtmann",
+        "url": siteConfig.author.url
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    })} />
+    <Header />
+    <main id="main-content">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

@@ -1,11 +1,24 @@
-# TypeSpec AsyncAPI Emitter
+<h1 align="center">TypeSpec AsyncAPI Emitter</h1>
 
-[![CI](https://github.com/LarsArtmann/typespec-asyncapi/actions/workflows/ci.yml/badge.svg)](https://github.com/LarsArtmann/typespec-asyncapi/actions/workflows/ci.yml)
-[![npm](https://img.shields.io/npm/v/@lars-artmann/typespec-asyncapi)](https://www.npmjs.com/package/@lars-artmann/typespec-asyncapi)
-[![npm bundle size](https://img.shields.io/bundlephobia/minzip/@lars-artmann/typespec-asyncapi)](https://www.npmjs.com/package/@lars-artmann/typespec-asyncapi)
+<p align="center"><strong>Define your event-driven API in TypeSpec. Generate validated AsyncAPI 3.1 specifications.</strong></p>
 
-[![AsyncAPI](https://img.shields.io/badge/AsyncAPI-3.1.0-blue)](https://www.asyncapi.com/)
-[![Protocols](https://img.shields.io/badge/Protocols-22-blue)](https://www.asyncapi.com/)
+<p align="center">
+<a href="https://github.com/LarsArtmann/typespec-asyncapi/actions/workflows/ci.yml"><img src="https://github.com/LarsArtmann/typespec-asyncapi/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+<a href="https://www.npmjs.com/package/@lars-artmann/typespec-asyncapi"><img src="https://img.shields.io/npm/v/@lars-artmann/typespec-asyncapi" alt="npm"></a>
+<a href="https://www.npmjs.com/package/@lars-artmann/typespec-asyncapi"><img src="https://img.shields.io/bundlephobia/minzip/@lars-artmann/typespec-asyncapi" alt="npm bundle size"></a>
+<a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT"></a>
+</p>
+
+<p align="center">
+<a href="https://img.shields.io/badge/AsyncAPI-3.1.0-blue"><img src="https://img.shields.io/badge/AsyncAPI-3.1.0-blue" alt="AsyncAPI 3.1"></a>
+<a href="https://img.shields.io/badge/Protocols-22-blue"><img src="https://img.shields.io/badge/Protocols-22-blue" alt="Protocols"></a>
+</p>
+
+<p align="center">
+<a href="https://typespec-asyncapi.lars.software">Documentation</a> · <a href="https://www.npmjs.com/package/@lars-artmann/typespec-asyncapi">npm Package</a>
+</p>
+
+---
 
 A TypeSpec emitter that transforms TypeSpec service definitions into [AsyncAPI 3.1](https://www.asyncapi.com/) specifications. Define your event schemas, channels, and operations in TypeSpec, then generate standards-compliant AsyncAPI YAML or JSON.
 
@@ -23,6 +36,22 @@ For teams building event-driven APIs who want a **typed, validated, protocol-awa
 | Generic models | Stable argument-derived schema names (`Page<User>` → `PageUser`) | — |
 | `x-` spec extensions | `@extension("x-…", value)` on root/operations/messages | Planned |
 | Output validation | 270+ compliance tests against the official AsyncAPI 3.1.0 JSON Schema | 15 property tests |
+
+## Who is this for?
+
+- **Event-driven API architects** who maintain AsyncAPI documents across Kafka, MQTT, and WebSocket fleets and watch hand-written YAML drift from the real schemas within a week.
+- **Platform engineers** who need spec compliance enforced in CI — output validated against the official AsyncAPI 3.1.0 JSON Schema on every build, not eyeballed in review.
+- **Backend teams already using TypeSpec** for OpenAPI/REST who want one modeling language and one `tsp compile` for the async half of their system.
+- **Tech leads fighting documentation rot** — schemas, examples, security schemes, and protocol bindings that regenerate from source instead of aging in a wiki.
+
+## When NOT to use this
+
+Skip this emitter if:
+
+- You need **AsyncAPI 2.x output** — this emitter targets AsyncAPI 3.x only. Tooling locked to 2.6 (older AsyncAPI Studio releases, some code generators) cannot consume 3.1 documents; reach for a 2.6-targeted authoring workflow instead.
+- You want **runtime broker administration** — this generates specification documents; it does not create topics or queues, deploy brokers, or validate live traffic. Use infrastructure-as-code tools for that.
+- Your team will not adopt **TypeSpec as the source of truth** — a generator whose input is maintained separately from the code it describes just adds a second document to drift. Keep a linter (Spectral) on hand-written YAML instead.
+- You need **a stable public API surface today** — the project is 0.x beta; decorator signatures and emitter options can change before 1.0 (see the [roadmap](ROADMAP.md)).
 
 ## Installation
 

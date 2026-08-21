@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "lars-software"
+  },
+  "targets": {
+    "lars-software": {
+      "hosting": {
+        "typespec-asyncapi": [
+          "typespec-asyncapi"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}
