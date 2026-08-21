@@ -4,6 +4,7 @@
  * Tests deep nesting, arrays, recursive types, and complex object structures
  */
 
+import { asJsonSchema } from "../utils/type-guards.js";
 import { createAsyncAPITestHost } from "../utils/test-helpers.js";
 import YAML from "yaml";
 
@@ -192,7 +193,7 @@ describe("e2E: Complex Nested Schemas", () => {
     expect(schemas.Address).toBeDefined();
 
     // Validate arrays
-    expect(schemas.Order.properties.items.type).toBe("array");
+    expect(asJsonSchema(schemas.Order.properties.items, "items").type).toBe("array");
     expect(schemas.Order.properties.items.items.type).toBe("object");
     expect(schemas.ProductVariant.properties.attributes.type).toBe("array");
 

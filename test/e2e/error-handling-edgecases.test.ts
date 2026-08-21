@@ -9,6 +9,7 @@
  * - Edge case data types
  */
 
+import { asJsonSchema } from "../utils/type-guards.js";
 import { createAsyncAPITestHost } from "../utils/test-helpers.js";
 import YAML from "yaml";
 
@@ -35,9 +36,7 @@ describe("e2E: Error Handling and Edge Cases", () => {
     );
 
     await host.compile("./main.tsp");
-    const diagnostics = await host.diagnose("./main.tsp", {
-      emit: ["@lars-artmann/typespec-asyncapi"],
-    });
+    const diagnostics = await host.diagnose("./main.tsp");
 
     // Should compile without errors
     expect(diagnostics.filter((d) => d.severity === "error")).toHaveLength(0);
@@ -82,9 +81,7 @@ describe("e2E: Error Handling and Edge Cases", () => {
     );
 
     await host.compile("./main.tsp");
-    const diagnostics = await host.diagnose("./main.tsp", {
-      emit: ["@lars-artmann/typespec-asyncapi"],
-    });
+    const diagnostics = await host.diagnose("./main.tsp");
 
     // Should compile (might have warnings but not errors)
     expect(
@@ -183,7 +180,7 @@ describe("e2E: Error Handling and Edge Cases", () => {
 
     // Validate arrays
     expect(schema.properties.numbers.type).toBe("array");
-    expect(schema.properties.numbers.items.type).toBe("integer");
+    expect(asJsonSchema(schema.properties.numbers.items, "items").type).toBe("integer");
 
     // Validate unions become enums
     expect(schema.properties.status.enum).toStrictEqual([
@@ -223,9 +220,7 @@ describe("e2E: Error Handling and Edge Cases", () => {
     );
 
     await host.compile("./main.tsp");
-    const diagnostics = await host.diagnose("./main.tsp", {
-      emit: ["@lars-artmann/typespec-asyncapi"],
-    });
+    const diagnostics = await host.diagnose("./main.tsp");
 
     // Should handle recursion without infinite loops
     expect(
@@ -327,9 +322,7 @@ describe("e2E: Error Handling and Edge Cases", () => {
     );
 
     await host.compile("./main.tsp");
-    const diagnostics = await host.diagnose("./main.tsp", {
-      emit: ["@lars-artmann/typespec-asyncapi"],
-    });
+    const diagnostics = await host.diagnose("./main.tsp");
 
     // Should compile successfully
     expect(diagnostics.filter((d) => d.severity === "error")).toHaveLength(0);

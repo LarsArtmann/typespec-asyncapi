@@ -6,6 +6,7 @@
  * unions, Record types, optional/nullable fields.
  */
 
+import { asJsonSchema } from "../utils/type-guards.js";
 import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
 import type {
   CorrelationIdObject,
@@ -220,6 +221,6 @@ describe("spec Compliance: Edge Cases", () => {
 
     const props = doc.components!.schemas!.Sensor.properties!;
     expect(props.readings.type).toBe("array");
-    expect(props.readings.items!.type).toBe("number");
+    expect(asJsonSchema(props.readings.items, "items").type).toBe("number");
   });
 });

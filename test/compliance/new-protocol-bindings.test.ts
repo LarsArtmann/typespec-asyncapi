@@ -60,7 +60,7 @@ describe("spec Compliance: Google Pub/Sub Bindings", () => {
       op publish(): PubSubEvent;
     `);
 
-    const msg = doc.components!.messages!.PubSubEvent;
+    const msg = inlineObject(doc.components!.messages!.PubSubEvent, "message");
     expect(msg).toBeDefined();
     const msgObj = msg as {
       bindings?: Record<string, Record<string, unknown>>;

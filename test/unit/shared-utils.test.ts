@@ -21,7 +21,10 @@ import {
   refMessage,
   refChannel,
 } from "../../src/domain/models/asyncapi-document.js";
-import type { SecurityScheme } from "../../src/domain/models/asyncapi-document.js";
+import type {
+  SecurityScheme,
+  SecuritySchemeInput,
+} from "../../src/domain/models/asyncapi-document.js";
 
 describe("inferActionFromName", () => {
   it("infers send for 'publish' prefix", () => {
@@ -98,7 +101,7 @@ describe("extractChannelParameters", () => {
 
 describe("normalizeOAuth2Scopes", () => {
   it("renames scopes to availableScopes in implicit flow", () => {
-    const scheme: SecurityScheme = {
+    const scheme: SecuritySchemeInput = {
       type: "oauth2",
       flows: {
         implicit: {
@@ -117,7 +120,7 @@ describe("normalizeOAuth2Scopes", () => {
   });
 
   it("renames scopes in all four flow types", () => {
-    const scheme: SecurityScheme = {
+    const scheme: SecuritySchemeInput = {
       type: "oauth2",
       flows: {
         implicit: { authorizationUrl: "https://a.com", scopes: { a: "a" } },
@@ -164,7 +167,7 @@ describe("normalizeOAuth2Scopes", () => {
   });
 
   it("does not modify the original scheme", () => {
-    const scheme: SecurityScheme = {
+    const scheme: SecuritySchemeInput = {
       type: "oauth2",
       flows: {
         implicit: {

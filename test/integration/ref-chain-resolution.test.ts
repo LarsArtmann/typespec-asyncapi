@@ -10,6 +10,7 @@
  * and every $ref resolves to a real target.
  */
 
+import { inlineObject } from "../utils/type-guards.js";
 import { compileAsyncAPIWithoutErrors } from "../utils/test-helpers.js";
 import { resolveRef } from "../utils/ref-utils.js";
 
@@ -53,7 +54,7 @@ describe("$ref Chain Resolution", () => {
     expect(channel).toBeDefined();
     expect(channel.messages).toBeDefined();
 
-    const channelMsgRef = channel.messages!["OrderCreated"];
+    const channelMsgRef = inlineObject(channel.messages!["OrderCreated"], "message");
     expect(channelMsgRef).toBeDefined();
     expect(channelMsgRef.$ref).toBe("#/components/messages/OrderCreated");
   });
@@ -63,7 +64,7 @@ describe("$ref Chain Resolution", () => {
     const spec = result.asyncApiDoc;
 
     expect(spec?.components?.messages).toBeDefined();
-    const msg = spec!.components!.messages!["OrderCreated"];
+    const msg = inlineObject(spec!.components!.messages!["OrderCreated"], "message");
     expect(msg).toBeDefined();
     expect(msg.payload).toBeDefined();
     expect(msg.payload!.$ref).toBe("#/components/schemas/OrderCreated");

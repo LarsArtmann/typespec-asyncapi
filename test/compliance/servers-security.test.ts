@@ -91,7 +91,7 @@ describe("spec Compliance: Security Schemes", () => {
       op publish(): Event;
     `);
 
-    const scheme = doc.components!.securitySchemes!["user-pass"];
+    const scheme = inlineObject(doc.components!.securitySchemes!["user-pass"], "security scheme");
     expect(scheme.type).toBe("userPassword");
   });
 
@@ -104,7 +104,7 @@ describe("spec Compliance: Security Schemes", () => {
       op publish(): Event;
     `);
 
-    const scheme = doc.components!.securitySchemes!["api-key"];
+    const scheme = inlineObject(doc.components!.securitySchemes!["api-key"], "security scheme");
     expect(scheme.type).toBe("httpApiKey");
     expect(scheme.in).toBe("header");
     expect(scheme.name).toBe("X-API-Key");
@@ -119,7 +119,7 @@ describe("spec Compliance: Security Schemes", () => {
       op publish(): Event;
     `);
 
-    const scheme = doc.components!.securitySchemes!.jwt;
+    const scheme = inlineObject(doc.components!.securitySchemes!.jwt, "security scheme");
     expect(scheme.type).toBe("http");
     expect(scheme.scheme).toBe("bearer");
     expect(scheme.bearerFormat).toBe("JWT");
@@ -160,7 +160,7 @@ describe("spec Compliance: Security Schemes", () => {
       op publish(): Event;
     `);
 
-    const scheme = doc.components!.securitySchemes!.oauth;
+    const scheme = inlineObject(doc.components!.securitySchemes!.oauth, "security scheme");
     expect(scheme.type).toBe("oauth2");
     expect(scheme.flows).toBeDefined();
   });

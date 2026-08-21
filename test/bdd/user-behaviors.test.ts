@@ -100,7 +100,7 @@ describe("bdd: user configures protocol bindings", () => {
     `);
     const channel = Object.values(doc.channels!)[0]!;
     expect(channel.bindings).toBeDefined();
-    expect(channel.bindings!.kafka).toBeDefined();
+    expect(inlineObject(channel.bindings, "bindings").kafka).toBeDefined();
     expect(inlineObject(channel.bindings, "bindings").kafka!.bindingVersion).toBe("0.5.0");
   });
 });
@@ -150,7 +150,7 @@ describe("bdd: user defines security schemes", () => {
     `);
     expect(doc.components).toBeDefined();
     expect(doc.components!.securitySchemes).toBeDefined();
-    const scheme = doc.components!.securitySchemes!["api-key"];
+    const scheme = inlineObject(doc.components!.securitySchemes!["api-key"], "security scheme");
     expect(scheme).toBeDefined();
     expect(scheme.type).toBe("httpApiKey");
   });
@@ -270,7 +270,7 @@ describe("bdd: user applies @bindings on Namespace for server bindings", () => {
       op publish(): Event;
     `);
     expect(doc.servers!.broker.bindings).toBeDefined();
-    expect(doc.servers!.broker.bindings!.mqtt).toBeDefined();
+    expect(inlineObject(doc.servers!.broker.bindings, "bindings").mqtt).toBeDefined();
     expect(inlineObject(doc.servers!.broker.bindings, "bindings").mqtt!.clientId).toBe("my-client");
   });
 });

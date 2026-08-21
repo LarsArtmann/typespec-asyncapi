@@ -14,7 +14,7 @@ import type { SecurityScheme } from "../../src/domain/models/asyncapi-document.j
 
 async function schemeOf(source: string, name: string): Promise<SecurityScheme> {
   const doc = await compileAndValidateOrThrow(source);
-  const scheme = doc.components!.securitySchemes![name];
+  const scheme = inlineObject(doc.components!.securitySchemes![name], "security scheme");
   expect(scheme).toBeDefined();
   return scheme;
 }

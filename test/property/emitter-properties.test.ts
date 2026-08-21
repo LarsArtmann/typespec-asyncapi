@@ -102,7 +102,7 @@ function renderField(field: FieldSpec): string {
 interface ModelSpec {
   name: string;
   fields: FieldSpec[];
-  enumValues: string[] | null;
+  withEnum: string[] | null;
 }
 
 const enumNames = fc.uniqueArray(

@@ -8,6 +8,7 @@
  * extended output still validates.
  */
 
+import { inlineObject } from "../utils/type-guards.js";
 import { compileAndValidate, compileAndValidateOrThrow } from "../utils/schema-validator.js";
 
 describe("spec Compliance: @extension", () => {
@@ -49,7 +50,7 @@ describe("spec Compliance: @extension", () => {
       op publish(): User;
     `);
 
-    const message = doc.components!.messages!.User;
+    const message = inlineObject(doc.components!.messages!.User, "message");
     expect(message["x-avro-schema-id"]).toBe("registry://schemas/users/3");
   });
 

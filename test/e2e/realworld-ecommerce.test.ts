@@ -9,6 +9,7 @@
  * - Shipping notifications
  */
 
+import { asJsonSchema } from "../utils/type-guards.js";
 import Ajv from "ajv";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -271,9 +272,7 @@ describe("e2E: Real-World E-Commerce System", () => {
     );
 
     await host.compile("./main.tsp");
-    await host.diagnose("./main.tsp", {
-      emit: ["@lars-artmann/typespec-asyncapi"],
-    });
+    await host.diagnose("./main.tsp");
 
     const outputFiles = [...host.fs.keys()];
     const asyncApiFile = outputFiles.find(
@@ -304,7 +303,7 @@ describe("e2E: Real-World E-Commerce System", () => {
 
     // Orders
     expect(schemas.OrderPlaced).toBeDefined();
-    expect(schemas.OrderPlaced.properties.items.type).toBe("array");
+    expect(asJsonSchema(schemas.OrderPlaced.properties.items, "items").type).toBe("array");
     expect(schemas.OrderPlaced.properties.shippingAddress.type).toBe("object");
 
     // Payments

@@ -10,6 +10,7 @@
  * Spec reference: https://www.asyncapi.com/docs/reference/specification/v3.1.0#operationObject
  */
 
+import { asJsonSchema } from "../utils/type-guards.js";
 import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
 import type { MessageObject } from "../../src/domain/models/asyncapi-document.js";
 
@@ -101,7 +102,7 @@ describe("spec Compliance: $ref Chain", () => {
     `);
 
     const cartProps = doc.components!.schemas!.Cart.properties!;
-    expect(cartProps.items.type).toBe("array");
+    expect(asJsonSchema(cartProps.items, "items").type).toBe("array");
     expect(cartProps.items.items).toStrictEqual({
       $ref: "#/components/schemas/LineItem",
     });

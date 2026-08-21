@@ -6,6 +6,7 @@
  * nested model references, and enum $ref patterns.
  */
 
+import { asJsonSchema } from "../utils/type-guards.js";
 import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
 import type {
   ParsedAsyncAPIDocument,
@@ -228,7 +229,7 @@ describe("complex model patterns", () => {
     `);
     const s = getSchema(doc, "Matrix");
     expect(s.properties!.grid.type).toBe("array");
-    expect(s.properties!.grid.items!.type).toBe("array");
+    expect(asJsonSchema(s.properties!.grid.items, "items").type).toBe("array");
   });
 
   it("handles Record of named models as additionalProperties $ref", async () => {

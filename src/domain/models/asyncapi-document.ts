@@ -78,6 +78,30 @@ export interface OAuth2Flow {
   availableScopes: Record<string, string>;
 }
 
+/**
+ * A flow configuration as accepted as INPUT: the legacy pre-3.1 `scopes` key
+ * is accepted alongside the spec-correct `availableScopes` and normalized by
+ * `normalizeOAuth2Scopes()`.
+ */
+export interface OAuth2FlowInput {
+  authorizationUrl?: string;
+  tokenUrl?: string;
+  refreshUrl?: string;
+  availableScopes?: Record<string, string>;
+  /** Legacy key; renamed to `availableScopes` in the emitted document. */
+  scopes?: Record<string, string>;
+}
+
+/** A security scheme as accepted as INPUT (flows may use the legacy `scopes` key). */
+export type SecuritySchemeInput = Omit<SecurityScheme, "flows"> & {
+  flows?: {
+    implicit?: OAuth2FlowInput;
+    password?: OAuth2FlowInput;
+    clientCredentials?: OAuth2FlowInput;
+    authorizationCode?: OAuth2FlowInput;
+  };
+};
+
 /** OAuth2 flow configurations keyed by flow type. */
 export interface OAuth2Flows {
   implicit?: OAuth2Flow;

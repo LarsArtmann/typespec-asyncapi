@@ -6,6 +6,7 @@
  * Also covers tuple types, literal types, and all-optional models.
  */
 
+import { asJsonSchema } from "../utils/type-guards.js";
 import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
 import type {
   ParsedAsyncAPIDocument,
@@ -315,19 +316,19 @@ describe("comprehensive type mapping through compilation", () => {
     it("maps string[] to array with string items", async () => {
       const s = await compileField("tags", "string[]");
       expect(s.type).toBe("array");
-      expect(s.items!.type).toBe("string");
+      expect(asJsonSchema(s.items, "items").type).toBe("string");
     });
 
     it("maps int32[] to array with integer items", async () => {
       const s = await compileField("nums", "int32[]");
       expect(s.type).toBe("array");
-      expect(s.items!.type).toBe("integer");
+      expect(asJsonSchema(s.items, "items").type).toBe("integer");
     });
 
     it("maps boolean[] to array with boolean items", async () => {
       const s = await compileField("flags", "boolean[]");
       expect(s.type).toBe("array");
-      expect(s.items!.type).toBe("boolean");
+      expect(asJsonSchema(s.items, "items").type).toBe("boolean");
     });
   });
 
@@ -361,7 +362,7 @@ describe("comprehensive type mapping through compilation", () => {
       `);
       const schema = getSchema(doc, "Order");
       const props = schema.properties!;
-      expect(props.items.type).toBe("array");
+      expect(asJsonSchema(props.items, "items").type).toBe("array");
       expect(props.items.items!.$ref).toBe("#/components/schemas/Item");
     });
   });

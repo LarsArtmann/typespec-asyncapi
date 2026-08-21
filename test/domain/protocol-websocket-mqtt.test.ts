@@ -59,9 +59,9 @@ describe("webSocket & MQTT binding normalization", () => {
       op send(): Msg;
     `);
     const { bindings } = doc.channels!["ws.channel"];
-    expect(bindings!.ws).toBeDefined();
-    expect(bindings!.websocket).toBeUndefined();
-    expect(bindings!.ws.method).toBe("GET");
+    expect(inlineObject(bindings, "bindings").ws).toBeDefined();
+    expect(inlineObject(bindings, "bindings").websocket).toBeUndefined();
+    expect(inlineObject(bindings, "bindings").ws.method).toBe("GET");
   });
 
   it("normalizes 'wss' to the 'ws' binding key", async () => {
@@ -76,8 +76,8 @@ describe("webSocket & MQTT binding normalization", () => {
       op send(): Msg;
     `);
     const { bindings } = doc.channels!["wss.channel"];
-    expect(bindings!.ws).toBeDefined();
-    expect(bindings!.wss).toBeUndefined();
+    expect(inlineObject(bindings, "bindings").ws).toBeDefined();
+    expect(inlineObject(bindings, "bindings").wss).toBeUndefined();
   });
 
   it("normalizes 'mqtt5' to the 'mqtt' binding key", async () => {
@@ -88,7 +88,7 @@ describe("webSocket & MQTT binding normalization", () => {
       @bindings(#{ mqtt5: #{ retain: true } })
       op send(): Msg;
     `);
-    const { mqtt } = opOf(doc).bindings!;
+    const { mqtt } = inlineObject(opOf(doc).bindings, "bindings");
     expect(mqtt).toBeDefined();
     expect(mqtt.retain).toBe(true);
   });
@@ -128,7 +128,7 @@ describe("webSocket & MQTT bindingVersion injection", () => {
       })
       op send(): Msg;
     `);
-    const { ws } = doc.channels!.events.bindings!;
+    const { ws } = inlineObject(doc.channels!.events.bindings, "bindings");
     expect(ws.bindingVersion).toBe("0.1.0");
     expect(ws.method).toBe("GET");
   });
@@ -148,7 +148,7 @@ describe("mQTT binding fields", () => {
       })
       op publish(): Reading;
     `);
-    const { mqtt } = opOf(doc).bindings!;
+    const { mqtt } = inlineObject(opOf(doc).bindings, "bindings");
     expect(mqtt.qos).toBe(1);
     expect(mqtt.retain).toBe(true);
   });
@@ -168,7 +168,7 @@ describe("mQTT binding fields", () => {
       @channel("readings")
       op publish(): Reading;
     `);
-    const { mqtt } = doc.servers!.broker.bindings!;
+    const { mqtt } = inlineObject(doc.servers!.broker.bindings, "bindings");
     expect(mqtt.clientId).toBe("telemetry-1");
     expect(mqtt.cleanSession).toBeFalsy();
     expect(mqtt.keepAlive).toBe(30);
@@ -184,7 +184,7 @@ describe("mQTT binding fields", () => {
       op publish(): Reading;
     `);
     const { Reading: message } = doc.components!.messages!;
-    const { mqtt } = message.bindings!;
+    const { mqtt } = inlineObject(message.bindings, "bindings");
     expect(mqtt.contentType).toBe("application/json");
     expect(mqtt.bindingVersion).toBe("0.2.0");
   });
@@ -204,7 +204,7 @@ describe("webSocket & MQTT placement matrix", () => {
       })
       op send(): Msg;
     `);
-    const { ws } = doc.channels!.chat.bindings!;
+    const { ws } = inlineObject(doc.channels!.chat.bindings, "bindings");
     expect(ws.method).toBe("POST");
     expect(ws.query).toStrictEqual({ room: { type: "string" } });
     expect(ws.headers).toStrictEqual({ xTrace: { type: "string" } });

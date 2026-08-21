@@ -145,9 +145,7 @@ describe("e2E: Multi-Protocol Comprehensive Test", () => {
     await host.compile("./main.tsp");
 
     // Emit AsyncAPI
-    const diagnostics = await host.diagnose("./main.tsp", {
-      emit: ["@lars-artmann/typespec-asyncapi"],
-    });
+    const diagnostics = await host.diagnose("./main.tsp");
 
     expect(diagnostics).toHaveLength(0);
 

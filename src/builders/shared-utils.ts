@@ -11,6 +11,7 @@ import {
   type ParameterObject,
   type ProtocolBindings,
   type SecurityScheme,
+  type SecuritySchemeInput,
 } from "../domain/models/asyncapi-document.js";
 import type {
   MessageConfigData,
@@ -94,9 +95,12 @@ export function buildMessageObject(
  * Normalize OAuth2 flows: AsyncAPI 3.1 uses `availableScopes` (not `scopes`).
  * Accept both as input; always output `availableScopes`.
  */
-export function normalizeOAuth2Scopes(scheme: SecurityScheme): SecurityScheme {
+export function normalizeOAuth2Scopes(
+  scheme: SecuritySchemeInput,
+): SecurityScheme {
   if (!scheme.flows) {
-    return scheme;
+    // Cast: the input scheme without flows already satisfies the output shape.
+    return scheme as SecurityScheme;
   }
   const flows = { ...scheme.flows };
   for (const key of OAUTH2_FLOW_KEYS) {
@@ -104,13 +108,14 @@ export function normalizeOAuth2Scopes(scheme: SecurityScheme): SecurityScheme {
     if (!flow) {
       continue;
     }
-    const raw = flow as unknown as Record<string, unknown>;
-    if ("scopes" in raw && !("availableScopes" in raw)) {
-      const { scopes, ...rest } = raw;
-      flows[key] = { ...rest, availableScopes: scopes } as typeof flow;
+    if (flow.scopes && !flow.availableScopes) {
+      const { scopes, ...rest } = flow;
+      flows[key] = { ...rest, availableScopes: scopes };
     }
   }
-  return { ...scheme, flows };
+  // Cast: every flow now carries `availableScopes` (copied from legacy
+  // `scopes` where present), satisfying the output shape.
+  return { ...scheme, flows } as SecurityScheme;
 }
 
 /** Infer the operation action (send/receive) from the operation name. */

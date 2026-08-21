@@ -17,7 +17,7 @@ import { compileAsyncAPISpecRaw } from "../utils/test-helpers";
 const LIB_PREFIX = "@lars-artmann/typespec-asyncapi";
 
 function findWarnings(
-  diagnostics: { severity: string; code: string }[],
+  diagnostics: readonly { severity: string; code: string }[],
   code: string,
 ) {
   return diagnostics.filter(

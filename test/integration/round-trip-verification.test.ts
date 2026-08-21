@@ -14,6 +14,7 @@
  *   5. Servers, security schemes, and bindings are structurally valid
  */
 
+import { asJsonSchema } from "../utils/type-guards.js";
 import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
 import type { ParsedAsyncAPIDocument } from "../../src/domain/models/asyncapi-document.js";
 import { collectRefs, resolveRef } from "../utils/ref-utils.js";
@@ -117,7 +118,7 @@ describe("round-Trip Verification", () => {
   });
 
   it("emits security scheme", () => {
-    const scheme = doc.components!.securitySchemes!["api-key"];
+    const scheme = inlineObject(doc.components!.securitySchemes!["api-key"], "security scheme");
     expect(scheme.type).toBe("httpApiKey");
     expect(scheme.in).toBe("header");
     expect(scheme.name).toBe("X-API-Key");
@@ -183,7 +184,7 @@ describe("round-Trip Verification", () => {
 
   it("emits array of named models with $ref items", () => {
     const orderProps = doc.components!.schemas!.OrderPlaced.properties!;
-    expect(orderProps.items.type).toBe("array");
+    expect(asJsonSchema(orderProps.items, "items").type).toBe("array");
     expect(orderProps.items.items!.$ref).toBe("#/components/schemas/OrderItem");
   });
 
