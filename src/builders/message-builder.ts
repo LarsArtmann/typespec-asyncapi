@@ -10,7 +10,7 @@ import { refSchema } from "../domain/models/asyncapi-document.js";
 import type { Program, Type } from "@typespec/compiler";
 import { getDoc, getExamples, nameOfType, serializeValueAsJson, withMessage } from "./_imports.js";
 import type { AsyncAPIConsolidatedState, BuilderFn } from "./_imports.js";
-import { iterNamedTypes } from "./shared-utils.js";
+import { iterNamedTypes, resolveMessageKey } from "./shared-utils.js";
 
 /** Merge explicit @message decorator data into the messages map. */
 export const mergeExplicitMessages: BuilderFn = (state, ctx) => {
@@ -41,6 +41,20 @@ export const mergeExplicitMessages: BuilderFn = (state, ctx) => {
 
   applyExplicitMessageDocs(state, ctx);
   applyAutoMessageDecorators(state, ctx);
+  applyMessageExtensions(state, ctx);
+};
+
+/** Merge `@extension("x-...", value)` state from Model targets into their message objects. */
+export const applyMessageExtensions: BuilderFn = (state, ctx) => {
+  for (const [type, extensions] of state.objectExtensions) {
+    if ((type as { kind?: string }).kind !== "Model") {
+      continue;
+    }
+    const messageKey = resolveMessageKey(type, state.messages);
+    withMessage(ctx, messageKey, (msg) => {
+      Object.assign(msg, extensions);
+    });
+  }
 };
 
 /** Apply @doc to messages without explicit @message description. */

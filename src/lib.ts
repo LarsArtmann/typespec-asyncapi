@@ -100,6 +100,12 @@ export const $lib = createTypeSpecLibrary({
       },
       severity: "warning",
     },
+    "invalid-extension-key": {
+      messages: {
+        default: paramMessage`Invalid @extension key '${"key"}': AsyncAPI specification extension keys must start with "x-". The extension was skipped.`,
+      },
+      severity: "warning",
+    },
     "server-protocol-required": {
       messages: {
         default: "Server protocol is required.",
@@ -258,4 +264,5 @@ export const stateSymbols = {
   channelServerRefs: Symbol("channelServerRefs"),
   operationSecurityRefs: Symbol("operationSecurityRefs"),
   jsonSchemaExtensions: Symbol("jsonSchemaExtensions"),
+  objectExtensions: Symbol("objectExtensions"),
 } as const;

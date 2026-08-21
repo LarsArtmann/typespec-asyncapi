@@ -166,6 +166,7 @@ export interface OperationObject extends CommonMetadata {
   traits?: Ref[];
   messages?: Ref[];
   reply?: OperationReply;
+  [key: string]: unknown;
 }
 
 export interface OperationReply {
@@ -188,6 +189,7 @@ export interface MessageObject extends CommonMetadata {
     name?: string;
     summary?: string;
   }[];
+  [key: string]: unknown;
 }
 
 /**
@@ -352,6 +354,7 @@ interface DocumentBody {
   defaultContentType?: string;
   operations?: Record<string, OperationObject>;
   components?: ComponentsObject;
+  [key: string]: unknown;
 }
 
 /**

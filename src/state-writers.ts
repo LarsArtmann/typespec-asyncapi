@@ -340,13 +340,19 @@ export const jsonSchemaExtensionMap = (
 ): Map<Type, Record<string, unknown>> =>
   getStateMap(program, stateSymbols.jsonSchemaExtensions);
 
-/** Merge one `@jsonSchemaExtension(key, value)` entry into the target's record. */
-export const storeJsonSchemaExtension = (
-  program: Program,
-  target: Type,
-  key: string,
-  value: unknown,
-): void => {
-  const map = jsonSchemaExtensionMap(program);
-  map.set(target, { ...map.get(target), [key]: value });
-};
+/** Factory for repeatable `@…Extension(key, value)` merge stores. */
+const mergeExtensionStore =
+  (symbol: symbol) =>
+  (program: Program, target: Type, key: string, value: unknown): void => {
+    const map = getStateMap<Record<string, unknown>>(program, symbol);
+    map.set(target, { ...map.get(target), [key]: value });
+  };
+
+export const storeJsonSchemaExtension = mergeExtensionStore(
+  stateSymbols.jsonSchemaExtensions,
+);
+
+/** Merge one `@extension("x-...", value)` entry into the target's record. */
+export const storeObjectExtension = mergeExtensionStore(
+  stateSymbols.objectExtensions,
+);

@@ -21,7 +21,7 @@ For teams building event-driven APIs who want a **typed, validated, protocol-awa
 | Multi-file output | `split-schemas` with `$ref` rewriting | Not supported |
 | `@typespec/versioning` | Integrated (`info.version` from versioned enums) | Deferred |
 | Generic models | Stable argument-derived schema names (`Page<User>` → `PageUser`) | — |
-| `x-` spec extensions | Planned for 0.3.0 | Planned |
+| `x-` spec extensions | `@extension("x-…", value)` on root/operations/messages | Planned |
 | Output validation | 270+ compliance tests against the official AsyncAPI 3.1.0 JSON Schema | 15 property tests |
 
 ## Installation
@@ -108,7 +108,7 @@ components:
 
 ## Features
 
-### 29 Decorators
+### 30 Decorators
 
 **Core messaging**
 
@@ -159,6 +159,7 @@ components:
 | `@defaultContentType(type)` | Namespace | Sets `defaultContentType` on document root |
 | `@operationId(id)` | Operation | Overrides auto-generated operation key |
 | `@jsonSchemaExtension(key, value)` | Model / ModelProperty / Union / Enum / Scalar | Arbitrary JSON Schema keywords, repeatable |
+| `@extension(key, value)` | Namespace / Operation / Model | AsyncAPI `x-` spec extensions (root / operation / message objects) |
 | `@tags(value)` | Model / Operation / Namespace | Tags (strings or rich `#{name, description, externalDocs}` objects) |
 
 **Reusable components** (`components.*` slots — traits, parameters, correlation IDs)
@@ -197,6 +198,8 @@ Every TypeSpec scalar maps to the correct JSON Schema type and format (int8-64, 
 **Constraint decorators** are fully mapped: `@minValue`, `@maxValue`, `@minValueExclusive`, `@maxValueExclusive`, `@minLength`, `@maxLength`, `@pattern`, `@format`, `@minItems`, `@maxItems`, `#deprecated`, `@summary` (→`title`), `@example` (→`examples`), and `@visibility` (→`readOnly`/`writeOnly`) all produce the correct JSON Schema keywords.
 
 **`@jsonSchemaExtension(key, value)`** attaches arbitrary JSON Schema keywords (`x-` extensions, `multipleOf`, vendor keywords) to any Model, ModelProperty, Union, Enum, or Scalar — inline and as `$ref` siblings. Repeatable; the outermost same-key application wins; object/array values use `#{}` / `#[]` literals.
+
+**`@extension("x-...", value)`** attaches AsyncAPI specification extensions: namespace targets extend the document root, operations the operation object, models the message object. Keys must start with `x-`.
 
 **`@encodedName("application/json", "wireName")`** (core TypeSpec decorator) renames properties on the wire: `properties` keys, `required` entries, and `discriminator` values all use the encoded name, with MIME-subtype resolution handled by the compiler.
 

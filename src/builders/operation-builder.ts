@@ -67,6 +67,11 @@ export const buildOperations: BuilderFn = (state, ctx) => {
         operationObj.bindings = bindings;
       }
 
+      const opExtensions = state.objectExtensions.get(opType);
+      if (opExtensions) {
+        Object.assign(operationObj, opExtensions);
+      }
+
       const opSecRefs = state.operationSecurityRefs.get(opType);
       if (opSecRefs && opSecRefs.length > 0) {
         operationObj.security = opSecRefs.map((r) => ({

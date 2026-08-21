@@ -88,12 +88,22 @@ export function buildAsyncAPIDocument(
   const apiVersion = getApiVersion(state);
   const versionedVersion = getVersionedApiVersion(program);
 
-  return assembleDocument(
+  const document = assembleDocument(
     ctx,
     options,
     defaultContentType,
     apiVersion ?? versionedVersion,
   );
+
+  const rootExtensions: Record<string, unknown> = {};
+  for (const [type, extensions] of state.objectExtensions) {
+    if ((type as { kind?: string }).kind === "Namespace") {
+      Object.assign(rootExtensions, extensions);
+    }
+  }
+  return Object.keys(rootExtensions).length > 0
+    ? { ...document, ...rootExtensions }
+    : document;
 }
 
 function getDefaultContentType(

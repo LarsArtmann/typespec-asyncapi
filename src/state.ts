@@ -258,6 +258,7 @@ export interface AsyncAPIConsolidatedState {
   channelBindingRefs: Map<Type, string[]>;
   channelServerRefs: Map<Type, string[]>;
   operationSecurityRefs: Map<Type, OperationSecurityRef[]>;
+  objectExtensions: Map<Type, Record<string, unknown>>;
 }
 
 /** Operation Security Requirement — references an existing scheme by name with optional scopes. */
@@ -318,6 +319,10 @@ export function consolidateAsyncAPIState(
       stateSymbols.serverConfigs,
     ),
     tags: getStateMap<TagData>(program, stateSymbols.tags),
+    objectExtensions: getStateMap<Record<string, unknown>>(
+      program,
+      stateSymbols.objectExtensions,
+    ),
     operationIds: getStateMap<string>(program, stateSymbols.operationIds),
     apiVersion: getStateMap<string>(program, stateSymbols.apiVersion),
     operationTraits: getMultiState<OperationTraitData>(

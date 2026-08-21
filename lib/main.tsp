@@ -147,6 +147,19 @@ extern dec jsonSchemaExtension(
 );
 
 /**
+ * Attach a specification extension to an AsyncAPI object. Namespaces extend
+ * the document root, Operations extend the operation object, Models extend
+ * the message object. Repeatable; the key must start with "x-".
+ * @param key The extension key (must start with "x-", e.g. "x-internal-id")
+ * @param value The extension value (any JSON value)
+ */
+extern dec extension(
+  target: Namespace | Operation | Model,
+  key: valueof string,
+  value: valueof unknown
+);
+
+/**
  * Define a reusable operation trait
  * @param name Trait name (used as key in components.operationTraits)
  * @param config Trait configuration (description, summary, title)
