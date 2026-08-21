@@ -131,7 +131,7 @@ describe("spec Compliance: Kafka Bindings", () => {
     const { kafka } = binding;
     expect(kafka).toBeDefined();
     expect(kafka.schemaIdLocation).toBe("header");
-    expect(kafka.bindingVersion).toBe("0.5.0");
+    expect(kafka.bindingVersion).toBe(LATEST_BINDING_VERSIONS.kafka);
   });
 
   it("preserves explicitly set bindingVersion", async () => {
@@ -201,7 +201,7 @@ describe("spec Compliance: AMQP Bindings", () => {
     const { amqp } = binding;
     expect(amqp).toBeDefined();
     expect(amqp.contentEncoding).toBe("application/octet-stream");
-    expect(amqp.bindingVersion).toBe("0.3.0");
+    expect(amqp.bindingVersion).toBe(LATEST_BINDING_VERSIONS.amqp);
   });
 });
 
@@ -393,7 +393,7 @@ describe("spec Compliance: HTTP Bindings", () => {
     const { http } = binding;
     expect(http).toBeDefined();
     expect(http.headers).toBeDefined();
-    expect(http.bindingVersion).toBe("0.3.0");
+    expect(http.bindingVersion).toBe(LATEST_BINDING_VERSIONS.http);
   });
 });
 
