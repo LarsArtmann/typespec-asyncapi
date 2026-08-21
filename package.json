@@ -126,6 +126,7 @@
     "@typespec/versioning": "^0.85.0",
     "ajv": "^8.20.0",
     "eslint": "^10.8.1",
+    "fast-check": "^4.9.0",
     "husky": "^9.1.7",
     "jscpd": "4.0.9",
     "oxlint": "1.79.0",
