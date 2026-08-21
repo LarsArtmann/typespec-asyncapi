@@ -6,7 +6,7 @@
  */
 
 import type { JsonSchema, MessageObject } from "../domain/models/asyncapi-document.js";
-import type { Program, Type } from "@typespec/compiler";
+import type { Model, Program, Type } from "@typespec/compiler";
 import { getDoc, getExamples, nameOfType, serializeValueAsJson, withMessage } from "./_imports.js";
 import type { AsyncAPIConsolidatedState, BuilderFn } from "./_imports.js";
 import { buildMessageObject, iterNamedTypes, resolveMessageKey } from "./shared-utils.js";
@@ -31,7 +31,7 @@ export const mergeExplicitMessages: BuilderFn = (state, ctx) => {
     applyCorrelationId(state, type, msgObj);
     applyHeaders(state, type, msgObj);
     applyMessageBindings(state, type, msgObj);
-    applyMessageExamples(ctx.program, type, msgObj);
+    applyMessageExamples(ctx.program, type as Model, msgObj);
 
     ctx.messages[msgKey] = msgObj;
   }
@@ -155,7 +155,7 @@ function applyMessageDecorator<K extends keyof MessageObject>(opts: {
 /** Build a `MessageDecoratorFn` from a property name and a read callback. */
 function messageDecorator<K extends keyof MessageObject>(
   prop: K,
-  read: (s: AsyncAPIConsolidatedState, t: unknown) => MessageObject[K] | null,
+  read: (s: AsyncAPIConsolidatedState, t: Type) => MessageObject[K] | null,
 ): MessageDecoratorFn {
   return (state, type, msg, skipExisting = false) => {
     applyMessageDecorator({ state, type, msg, prop, skipExisting, read });
@@ -197,7 +197,7 @@ const applyMessageBindings = messageDecorator("bindings", (s, t) => {
  * Populate `MessageObject.examples` from `@example` on the message model.
  * Each example value is serialized to JSON and wrapped as `{ payload: value }`.
  */
-function applyMessageExamples(program: Program, type: Type, msg: MessageObject): void {
+function applyMessageExamples(program: Program, type: Model, msg: MessageObject): void {
   const examples = getExamples(program, type);
   if (examples.length === 0) {
     return;
