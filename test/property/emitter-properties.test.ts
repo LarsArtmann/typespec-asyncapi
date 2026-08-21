@@ -16,6 +16,7 @@
  */
 
 import fc from "fast-check";
+import { collectRefs } from "../utils/ref-utils.js";
 import { compileAndValidate } from "../utils/schema-validator.js";
 import { compileAsyncAPI } from "../utils/test-helpers.js";
 import type { AsyncAPIEmitterOptions } from "../../src/infrastructure/configuration/asyncAPIEmitterOptions.js";

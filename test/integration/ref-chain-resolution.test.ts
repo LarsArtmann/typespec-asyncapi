@@ -11,10 +11,7 @@
  */
 
 import { compileAsyncAPIWithoutErrors } from "../utils/test-helpers.js";
-
-function unescapeToken(token: string): string {
-  return token.replaceAll("~1", "/").replaceAll("~0", "~");
-}
+import { resolveRef } from "../utils/ref-utils.js";
 
 const source = `
   model OrderCreated {
@@ -124,22 +121,6 @@ describe("$ref Chain Resolution", () => {
     }
     const unresolved: string[] = [];
 
-    function resolveRef(refPath: string): unknown | null {
-      if (!refPath.startsWith("#/")) {
-        return null;
-      }
-      const parts = refPath.slice(2).split("/").map(unescapeToken);
-      let current: unknown = doc;
-      for (const part of parts) {
-        if (current && typeof current === "object") {
-          current = (current as Record<string, unknown>)[part];
-        } else {
-          return null;
-        }
-      }
-      return current;
-    }
-
     const seen = new WeakSet();
     function walk(obj: unknown) {
       if (!obj || typeof obj !== "object") {
@@ -158,7 +139,7 @@ describe("$ref Chain Resolution", () => {
       const record = obj as Record<string, unknown>;
       for (const [key, value] of Object.entries(record)) {
         if (key === "$ref" && typeof value === "string") {
-          const target = resolveRef(value);
+          const target = resolveRef(doc, value);
           if (target === null || target === undefined) {
             unresolved.push(value);
           }
@@ -183,24 +164,8 @@ describe("$ref Chain Resolution", () => {
     const ref = spec!.operations!.publishOrder.channel.$ref;
     expect(ref).toBe("#/channels/orders~1events");
 
-    function resolveByJsonPointer(refPath: string): unknown | null {
-      if (!refPath.startsWith("#/")) {
-        return null;
-      }
-      const parts = refPath.slice(2).split("/").map(unescapeToken);
-      let current: unknown = spec;
-      for (const part of parts) {
-        if (current && typeof current === "object") {
-          current = (current as Record<string, unknown>)[part];
-        } else {
-          return null;
-        }
-      }
-      return current;
-    }
-
     // The escaped ref NOW resolves via standard JSON pointer
-    expect(resolveByJsonPointer(ref)).toBeDefined();
-    expect(resolveByJsonPointer(ref)).toBe(spec!.channels!["orders/events"]);
+    expect(resolveRef(spec, ref)).toBeDefined();
+    expect(resolveRef(spec, ref)).toBe(spec!.channels!["orders/events"]);
   });
 });

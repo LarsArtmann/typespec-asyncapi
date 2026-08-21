@@ -10,7 +10,6 @@
  */
 
 import { compileAsyncAPI } from "../../test/utils/test-helpers.js";
-import type { ParsedAsyncAPIDocument } from "../../src/domain/models/asyncapi-document.js";
 import { collectRefs, resolveRef } from "../utils/ref-utils.js";
 
 describe("generator compatibility", () => {
