@@ -154,26 +154,6 @@ function renderSpec(spec: {
   `;
 }
 
-/** Recursively collect $ref strings from any emitted object. */
-function collectRefs(node: unknown, acc: string[] = []): string[] {
-  if (Array.isArray(node)) {
-    for (const item of node) {
-      collectRefs(item, acc);
-    }
-    return acc;
-  }
-  if (typeof node === "object" && node !== null) {
-    for (const [key, value] of Object.entries(node)) {
-      if (key === "$ref" && typeof value === "string") {
-        acc.push(value);
-      } else {
-        collectRefs(value, acc);
-      }
-    }
-  }
-  return acc;
-}
-
 /** Resolve a JSON pointer (RFC 6901, ~0/~1 aware) inside a document. */
 function pointerExists(document: unknown, ref: string): boolean {
   if (!ref.startsWith("#/")) {
