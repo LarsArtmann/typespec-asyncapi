@@ -331,20 +331,53 @@ describe("comprehensive type mapping through compilation", () => {
     });
   });
 
-  describe("record types", () => {
-    it("maps Record<string> to object with string additionalProperties", async () => {
-      const s = await compileField("meta", "Record<string>");
-      expect(s.type).toBe("object");
-      expect(s.additionalProperties).toStrictEqual({ type: "string" });
+  describe("named model references", () => {
+    it("maps nested model reference as $ref", async () => {
+      const doc = await compileAndValidateOrThrow(`
+        namespace Test;
+        model Address { street: string; city: string; }
+        model User {
+          name: string;
+          address: Address;
+        }
+        @channel("users")
+        op publish(): User;
+      `);
+      const schema = getSchema(doc, "User");
+      const props = schema.properties!;
+      expect(props.address.$ref).toBe("#/components/schemas/Address");
+      expect(getSchema(doc, "Address").type).toBe("object");
     });
 
-    it("maps Record<int32> to object with integer additionalProperties", async () => {
-      const s = await compileField("counts", "Record<int32>");
-      expect(s.type).toBe("object");
-      expect(s.additionalProperties).toStrictEqual({
-        format: "int32",
-        type: "integer",
-      });
+    it("maps array of named models with $ref items", async () => {
+      const doc = await compileAndValidateOrThrow(`
+        namespace Test;
+        model Item { sku: string; }
+        model Order {
+          items: Item[];
+        }
+        @channel("orders")
+        op publish(): Order;
+      `);
+      const schema = getSchema(doc, "Order");
+      const props = schema.properties!;
+      expect(props.items.type).toBe("array");
+      expect(props.items.items!.$ref).toBe("#/components/schemas/Item");
+    });
+  });
+
+  describe("string-literal union", () => {
+    it("maps string literal union to enum", async () => {
+      const doc = await compileAndValidateOrThrow(`
+        namespace Test;
+        model Event {
+          status: "pending" | "active" | "closed";
+        }
+        @channel("events")
+        op publish(): Event;
+      `);
+      const s = getProp(doc, "Event", "status");
+      expect(s.enum).toStrictEqual(["pending", "active", "closed"]);
     });
   });
 });
