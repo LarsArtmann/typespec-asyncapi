@@ -185,6 +185,49 @@ describe("comprehensive type mapping through compilation", () => {
     });
   });
 
+  describe("intrinsic types", () => {
+    it("maps unknown to the unconstrained schema, not string", async () => {
+      const s = await compileField("val", "unknown");
+      expect(s).toStrictEqual({});
+    });
+
+    it("maps null to type null", async () => {
+      const s = await compileField("val", "null");
+      expect(s.type).toBe("null");
+    });
+
+    it("maps nullable unions to anyOf with a null variant", async () => {
+      const s = await compileField("val", "string | null");
+      const variants = s.anyOf as JsonSchema[];
+      expect(variants).toHaveLength(2);
+      expect(variants[0]?.type).toBe("string");
+      expect(variants[1]?.type).toBe("null");
+    });
+
+    it("maps Record<unknown> values to the unconstrained schema", async () => {
+      const s = await compileField("val", "Record<unknown>");
+      expect(s.type).toBe("object");
+      expect(asJsonSchema(s.additionalProperties, "additionalProperties")).toStrictEqual({});
+    });
+
+    it("does not leak doc metadata across usages of unknown", async () => {
+      // Regression: interned unknown schemas were shared by reference, leaking @doc across usages.
+      const doc = await compileAndValidateOrThrow(`
+        namespace Test;
+        model Event {
+          @doc("Documented value")
+          documented: unknown;
+          plain: unknown;
+        }
+        @channel("events")
+        op publish(): Event;
+      `);
+      const props = getSchema(doc, "Event").properties!;
+      expect(props.documented!.description).toBe("Documented value");
+      expect(props.plain!.description).toBeUndefined();
+    });
+  });
+
   describe("tuple types", () => {
     it("maps a tuple of primitives to array with per-position items", async () => {
       const s = await compileField("pair", "[string, int32]");

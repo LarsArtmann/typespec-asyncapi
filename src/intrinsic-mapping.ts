@@ -75,6 +75,14 @@ export function intrinsicToSchema(typeName: string): JsonSchema {
     case "url": {
       return { format: "uri", type: "string" };
     }
+    case "unknown":
+    case "void":
+    case "never": {
+      return {};
+    }
+    case "null": {
+      return { type: "null" };
+    }
     default: {
       return { type: "string" };
     }
