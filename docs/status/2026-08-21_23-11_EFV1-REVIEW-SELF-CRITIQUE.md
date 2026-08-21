@@ -142,3 +142,9 @@
 ---
 
 *Point-in-time snapshot. Annotate, never rewrite, when superseded. Format note: written as Markdown per explicit user request, overriding this report type's HTML default.*
+
+---
+
+## Addendum (23:15, same session — post-commit discovery)
+
+Minutes after this report was committed (`b6e8c8a`), a **second** unexplained working-tree change appeared that did not exist at the earlier `git status`: `test/utils/type-guards.ts` +33 lines adding an `inlineObject<T>()` narrowing guard (well-documented, repo-style-consistent). Together with the `tsconfig.test.json` strict-relaxation, this indicates **active concurrent editing of the working tree** — likely a parallel session working on test type-safety (the tsconfig relaxation would silence exactly the kind of strict errors such test helpers interact with). Neither file touched by this session; neither reverted; left for the author or the auto-commit daemon. Question g.1 now covers both files.
