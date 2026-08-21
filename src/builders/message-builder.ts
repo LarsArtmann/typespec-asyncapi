@@ -124,7 +124,7 @@ function readDecoratorValue<T>(
  */
 type MessageDecoratorFn = (
   state: AsyncAPIConsolidatedState,
-  type: unknown,
+  type: Type,
   msg: MessageObject,
   skipExisting?: boolean,
 ) => void;

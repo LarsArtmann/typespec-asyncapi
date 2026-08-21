@@ -5,7 +5,7 @@
  * all AsyncAPI operations, their channels, and message types.
  */
 
-import { isStdNamespace } from "@typespec/compiler";
+import { isStdNamespace, type Type } from "@typespec/compiler";
 import {
   inferActionFromName,
   iterNamedTypes,
@@ -41,11 +41,11 @@ export const discoverOperations: BuilderFn = (state, ctx) => {
 
 /** Resolve message names and schema names from an operation's return type. */
 function resolveMessageInfo(
-  type: { kind: string },
+  type: Type,
   state: AsyncAPIConsolidatedState,
   fallbackName: string,
 ): { messageNames: string[]; messageSchemaNames: string[] } {
-  const models = returnModelTypes(type as never);
+  const models = returnModelTypes(type);
   if (models.length === 0) {
     return {
       messageNames: [fallbackName],
@@ -114,10 +114,10 @@ function discoverDecoratedOps(
 /** Resolve the operation name from `@operationId` if present, else fall back to the type name. */
 function resolveOpName(
   state: AsyncAPIConsolidatedState,
-  type: unknown,
+  type: Type,
   fallback: string,
 ): string {
-  return state.operationIds.get(type as never) ?? fallback;
+  return state.operationIds.get(type) ?? fallback;
 }
 
 /** 1b. Channels with @channel but no @publish/@subscribe. */

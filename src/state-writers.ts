@@ -117,10 +117,8 @@ export const storeServerConfig = (
     description:
       (config.description as string | undefined) ?? `Server for ${target.name}`,
     name: config.name,
-    protocol: normalizeProtocol(
-      (config.protocol as string | undefined) ?? "http",
-    ),
-    url: (config.url as string | undefined) ?? "http://localhost:3000",
+    protocol: normalizeProtocol(config.protocol as string),
+    url: config.url as string,
   };
   if (typeof config.protocolVersion === "string") {
     newEntry.protocolVersion = config.protocolVersion;

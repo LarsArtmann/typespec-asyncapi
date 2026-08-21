@@ -34,7 +34,7 @@ import {
   storeTags,
 } from "./state-writers.js";
 import {
-  SCHEME_TYPE_LIST,
+  VALID_SCHEME_TYPES,
   isValidSchemeType,
 } from "./domain/models/asyncapi-document.js";
 import type { Tag } from "./domain/models/asyncapi-document.js";
@@ -177,7 +177,7 @@ function applySecurity(args: {
     if (typeof schemeType !== "string" || !isValidSchemeType(schemeType)) {
       reportDiagnostic(context, "invalid-security-scheme-type", target, {
         schemeType: String(schemeType),
-        validTypes: SCHEME_TYPE_LIST.join(", "),
+        validTypes: [...VALID_SCHEME_TYPES].join(", "),
       });
       return;
     }

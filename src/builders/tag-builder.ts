@@ -3,6 +3,9 @@
  *
  * Collects all unique tags from @tags decorator state into the reusable
  * components.tags map. Tags are keyed by name for deduplication.
+ *
+ * Duplicate tag names are overwritten (last decorator wins) because
+ * `ctx.tags[name]` is assigned for every tag occurrence in map iteration order.
  */
 
 import type { BuilderFn } from "./types.js";
