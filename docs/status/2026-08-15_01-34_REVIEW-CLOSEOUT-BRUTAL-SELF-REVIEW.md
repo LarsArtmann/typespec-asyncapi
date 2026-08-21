@@ -135,13 +135,13 @@ every living doc, not just the docs I remember writing.**
 
 **Tier 1 — 1% effort, 51% of value (from the Pareto plan):**
 
-1. Kafka `@protocol` fields never emitted — stored but dropped by
-   `buildProtocolBinding`; emit or stop storing (`TODO_LIST` #1).
-2. Rewrite `test/domain/protocol-websocket-mqtt.test.ts` — 1515 lines, 50
+1. ~~Kafka `@protocol` fields never emitted — stored but dropped by
+   `buildProtocolBinding`; emit or stop storing (`TODO_LIST` #1).~~ done at `9803a09`
+2. ~~Rewrite `test/domain/protocol-websocket-mqtt.test.ts` — 1515 lines, 50
    tests, every assert is `asyncapi === "3.1.0"`; zero binding checks;
-   `websocket → ws` normalization untested.
-3. Tighten 4 `security-*.test.ts` suites — ~60/80 tests assert only base
-   `type`; "AWS SigV4"/"MAC"/"Hawk" fixtures are bearer clones.
+   `websocket → ws` normalization untested.~~ done at `fded21d`
+3. ~~Tighten 4 `security-*.test.ts` suites — ~60/80 tests assert only base
+   `type`; "AWS SigV4"/"MAC"/"Hawk" fixtures are bearer clones.~~ done at `c816637`
 
 **Tier 2 — 4% effort, 64% cumulative (consolidation + deletions):**
 
@@ -168,7 +168,9 @@ every living doc, not just the docs I remember writing.**
 
 13. O(n²) operation-type lookup in `operation-builder.ts:37` → Set/Map.
 14. Unify `registerMessage` vs `mergeExplicitMessages` paths.
-15. Collapse 7 near-identical `ref*` constructors in `shared-utils.ts`.
+15. ~~Collapse 7 near-identical `ref*` constructors in `shared-utils.ts`.~~
+    done (now 8 one-line wrappers over a shared `ref()` in
+    `asyncapi-document.ts`; zero clones)
 16. Warn on conflicting multi-namespace `defaultContentType`/`apiVersion`
     (currently silent last-wins).
 17. Replace `as never` casts in `resolveOpName`/`returnModelTypes`.
@@ -195,10 +197,13 @@ every living doc, not just the docs I remember writing.**
 
 **Born this session (self-review):**
 
-32. **Push + watch GitHub CI go green for the first time** (blocked on
-    your go — see g.1).
-33. Delete or rewrite the bash-dependent pre-commit hook (ghost system;
-    always bypassed).
+32. ~~**Push + watch GitHub CI go green for the first time** (blocked on
+    your go — see g.1).~~ done (pushed 2026-08-21; CI green on master;
+    `0.3.0-beta.1` released to npm)
+33. ~~Delete or rewrite the bash-dependent pre-commit hook (ghost system;
+    always bypassed).~~ done at `f8adc89` (2026-08-06 — already `#!/bin/sh` +
+    `pnpm run verify` when this report was written; commits still use
+    `--no-verify` for speed per AGENTS.md, gate run manually)
 34. Reduce LSP/editor diagnostic noise (restored — dropped in TODO_LIST
     rewrite).
 35. Root-cause transient `bun test` exit-1 (restored — dropped in
@@ -209,8 +214,9 @@ every living doc, not just the docs I remember writing.**
     compliance tests currently cover behavior only).
 38. Re-render or accept the stale "decision" node in the Pareto plan's
     inline SVG (table row already annotated; SVG is a rendered artifact).
-39. Decide fate of `docs/status/2026-08-14_20-47_*.html` (lone HTML in a
-    now-`.md`-canonical folder; leave as snapshot or convert).
+39. ~~Decide fate of `docs/status/2026-08-14_20-47_*.html` (lone HTML in a
+    now-`.md`-canonical folder; leave as snapshot or convert).~~ done
+    (docs-health pass 2026-08-21: left as snapshot, items annotated inline)
 40. Process habit: repo-wide grep + CHANGELOG entry as part of every
     "resolved" change (no code — this report is the enforcement artifact).
 
@@ -220,15 +226,22 @@ every living doc, not just the docs I remember writing.**
    pinned-tools fix means CI should go green for the first time in repo
    history — but that hypothesis is untested until push, and I never push
    without an explicit instruction.
+   **RESOLVED 2026-08-21:** pushed; CI green on master (release workflow
+   also live — `0.3.0-beta.1` published with provenance).
 2. **Start Tier-1 execution next (items 1–3), or do you want to review
    `TODO_LIST.md` / the Pareto plan first?** The 31 harvested items are
    ranked but you may want to promote/demote before I burn hours on the
    websocket-mqtt rewrite (largest single task).
+   **RESOLVED 2026-08-21:** Tier-1 executed in the v0.3.0 push (see items
+   1–3 above — `9803a09`, `fded21d`, `c816637`).
 3. **Pre-commit hook: delete or rewrite?** It requires `/bin/bash`
    (absent on NixOS), so I commit with `--no-verify` every time — the hook
    provides zero protection today. Deleting is honest; rewriting as a
    Bun/Node script that runs the gate slices would restore real
    protection. Repo policy call, not mine.
+   **RESOLVED:** already rewritten at `f8adc89` — `#!/bin/sh` running
+   `pnpm run verify`; no bash dependency. `--no-verify` persists as a
+   speed convention documented in AGENTS.md.
 
 ---
 
