@@ -110,47 +110,62 @@ function getDefaultContentType(
   program: Program,
   state: AsyncAPIConsolidatedState,
 ): string | undefined {
-  let first: { contentType: string } | undefined;
-  for (const [type, data] of state.defaultContentType) {
-    if (first === undefined) {
-      first = data;
-      continue;
-    }
-    if (data.contentType !== first.contentType) {
-      reportProgramDiagnostic(program, {
+  return getFirstWithConflictWarning(
+    program,
+    state.defaultContentType,
+    (data) => data.contentType,
+    (prog, type, first, current) =>
+      reportProgramDiagnostic(prog, {
         code: "conflicting-default-content-type",
         target: type,
-        format: {
-          contentType: first.contentType,
-          ignoredContentType: data.contentType,
-        },
-      });
-      break;
-    }
-  }
-  return first?.contentType;
+        format: { contentType: first, ignoredContentType: current },
+      }),
+  );
 }
 
 function getApiVersion(
   program: Program,
   state: AsyncAPIConsolidatedState,
 ): string | undefined {
-  let first: string | undefined;
-  for (const [type, data] of state.apiVersion) {
-    if (first === undefined) {
-      first = data;
-      continue;
-    }
-    if (data !== first) {
-      reportProgramDiagnostic(program, {
+  return getFirstWithConflictWarning(
+    program,
+    state.apiVersion,
+    (data) => data,
+    (prog, type, first, current) =>
+      reportProgramDiagnostic(prog, {
         code: "conflicting-api-version",
         target: type,
-        format: { version: first, ignoredVersion: data },
-      });
+        format: { version: first, ignoredVersion: current },
+      }),
+  );
+}
+
+function getFirstWithConflictWarning<T, V>(
+  program: Program,
+  map: Map<Type, T>,
+  getValue: (data: T) => V,
+  reportConflict: (
+    program: Program,
+    type: Type,
+    firstValue: V,
+    currentValue: V,
+  ) => void,
+): V | undefined {
+  let firstType: Type | undefined;
+  let firstValue: V | undefined;
+  for (const [type, data] of map) {
+    const value = getValue(data);
+    if (firstType === undefined) {
+      firstType = type;
+      firstValue = value;
+      continue;
+    }
+    if (value !== firstValue) {
+      reportConflict(program, type, firstValue, value);
       break;
     }
   }
-  return first;
+  return firstValue;
 }
 
 function getVersionedApiVersion(program: Program): string | undefined {

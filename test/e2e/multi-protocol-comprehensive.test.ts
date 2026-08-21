@@ -211,6 +211,9 @@ describe("e2E: Multi-Protocol Comprehensive Test", () => {
     expect(channels["user.lifecycle.created"].bindings.kafka.topic).toBe(
       "user-events",
     );
+    expect(channels["user.lifecycle.created"].bindings.kafka.groupId).toBe(
+      "user-service",
+    );
 
     expect(
       channels["notifications.{userId}.live"]?.bindings?.ws,
@@ -228,10 +231,5 @@ describe("e2E: Multi-Protocol Comprehensive Test", () => {
     expect(operations.publishDeviceStatus?.bindings?.mqtt).toBeDefined();
     expect(operations.publishDeviceStatus.bindings.mqtt.qos).toBe(1);
     expect(operations.publishDeviceStatus.bindings.mqtt.retain).toBe(true);
-
-    console.log("OPERATIONS", JSON.stringify(operations, null, 2));
-    console.log("CHANNELS", JSON.stringify(channels, null, 2));
-
-    expect(operations.publishUserCreated?.bindings?.kafka?.groupId).toBeDefined();
   });
 });
