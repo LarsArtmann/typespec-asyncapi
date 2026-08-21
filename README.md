@@ -1,6 +1,8 @@
 # TypeSpec AsyncAPI Emitter
 
-[![Build Status](https://img.shields.io/badge/Build-PASSING-green)](https://github.com/LarsArtmann/typespec-asyncapi)
+[![CI](https://github.com/LarsArtmann/typespec-asyncapi/actions/workflows/ci.yml/badge.svg)](https://github.com/LarsArtmann/typespec-asyncapi/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/@lars-artmann/typespec-asyncapi)](https://www.npmjs.com/package/@lars-artmann/typespec-asyncapi)
+[![npm bundle size](https://img.shields.io/bundlephobia/minzip/@lars-artmann/typespec-asyncapi)](https://www.npmjs.com/package/@lars-artmann/typespec-asyncapi)
 
 [![AsyncAPI](https://img.shields.io/badge/AsyncAPI-3.1.0-blue)](https://www.asyncapi.com/)
 [![Protocols](https://img.shields.io/badge/Protocols-22-blue)](https://www.asyncapi.com/)
@@ -13,7 +15,6 @@ Every byte of output is validated against the official AsyncAPI 3.1.0 JSON Schem
 
 ```bash
 pnpm add @lars-artmann/typespec-asyncapi
-# or: pnpm add @lars-artmann/typespec-asyncapi
 ```
 
 Create a TypeSpec file (`api.tsp`):
@@ -214,6 +215,18 @@ pnpm run lint      # ESLint + oxlint (0 errors, 0 warnings)
 ```
 
 Run all commands inside `nix develop .#default` to get the right toolchain (pnpm + bun + Node.js). Use `pnpm` for package management and scripts. Coverage runs via `bun test --coverage` (only Bun's native coverage captures dynamically-loaded `dist/*.js` files).
+
+### Releasing
+
+Releases are published automatically by [`.github/workflows/release.yml`](.github/workflows/release.yml): pushing a `v*` tag runs the full `pnpm run verify` gate (build, lint, 1300+ tests, coverage ≥ 75%/file, zero code clones) and then publishes to npm with [provenance](https://docs.npmjs.com/generating-provenance-statements) attestation.
+
+```bash
+# bump version in package.json and update CHANGELOG.md first
+git tag -m "v0.3.0" v0.3.0
+git push origin v0.3.0
+```
+
+The workflow also supports `workflow_dispatch` for dry runs (verify + `npm publish --dry-run`, no upload). The `NPM_TOKEN` secret must be a granular access token with publish rights for this package.
 
 ## Status
 

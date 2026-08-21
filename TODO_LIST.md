@@ -15,9 +15,10 @@ Full plan with fine-grained breakdown and execution graph:
 `docs/planning/2026-08-21_09-04_SUPERB-v0.3.0-CLEAR-WINNER.md`.
 Sorted by Pareto tier (P1 = the 1% that delivers 51%).
 
-- [ ] **P1: Release prep + CI + publish 0.3.0-beta.1** — version bump,
-      `pnpm pack` tarball audit, tag-triggered npm publish workflow
-      (SHA-pinned), fresh-install compile smoke
+- [x] **P1: Release prep + CI + publish 0.3.0-beta.1** — DONE (M1+M2+M3a):
+      version bumped, tarball audited, tag-triggered release workflow
+      (SHA-pinned, verify gate, provenance), `0.3.0-beta.1` live on npm
+      (`latest` tag), registry install + compile smoke verified
 - [ ] **P2: README sales page** — quick start, competitor comparison table,
       feature matrix, rigor callouts, EFv1-architecture honesty section
 - [ ] **P2: Five worked examples** (`examples/`) — streetlights MQTT, Kafka +
@@ -31,7 +32,8 @@ Sorted by Pareto tier (P1 = the 1% that delivers 51%).
 - [ ] **P2: `@extension("x-...", value)`** — AsyncAPI object spec extensions
       (server/channel/operation/message); key must start `x-`. Neither emitter
       ships this; we go first
-- [ ] **P2: `asyncapi-id` emitter option** — top-level document `id`
+- [x] **P2: `asyncapi-id` emitter option** — DONE (M9): top-level document
+      `id`; precedence: option > unset. 2 compliance tests + README/AGENTS docs
 - [ ] **P3: Rewrite `test/domain/protocol-websocket-mqtt.test.ts`** — 1515
       lines / 50 tests asserting only `=== "3.1.0"`; replace with fixture
       table asserting real binding keys, normalization, auto-bindingVersion

@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Released
+
+- **`0.3.0-beta.1` is live on npm** (tag `v0.3.0-beta.1`, CI run with provenance attestation). Verified from a clean registry install: `pnpm add @lars-artmann/typespec-asyncapi@0.3.0-beta.1` in a fresh project, spec compiles and emits a valid AsyncAPI 3.1 document. Tarball contains only `dist/`, `lib/main.tsp`, README, LICENSE, CHANGELOG (181 files). `dist-tag: latest` points at `0.3.0-beta.1`; the stale `beta` tag still points at `0.2.1-beta`.
+
 ### Fixed
 
 - **Template instantiations no longer emit dangling `$ref`s** — `Page<User>` in a property, array, union variant, or operation return type previously emitted an unresolvable `$ref: "#/components/schemas/Page"` (the generic template declaration is never a schema). Speakable instantiations are now declared under stable argument-derived names mirroring the asset-emitter's `declarationName`: `Page<User>` → `PageUser`, `Box<int32>` → `BoxInt32`, `Page<Page<User>>` → `PagePageUser`. Unspeakable instantiations (`Box<{ ... }>`, literal/union arguments) are inlined. `Record<K, V>` instantiations inline as `{ type: "object", additionalProperties }` (no junk `RecordStringUser` declarations). `model X extends Base<{ ... }>` with an unspeakable base now composes via an inline `allOf` schema instead of a dangling `$ref` to the template declaration. Operation returns are now emitted, so `op list(): Page<User>` registers message `PageUser` with `payload: { $ref: "#/components/schemas/PageUser" }`. A named model colliding with an instantiation name (e.g. `model PageUser` + `Page<User>`) emits the new `duplicate-schema-name` warning (last declaration wins). Locked by `test/compliance/template-instantiations.test.ts` (8 tests, all validated against the official AsyncAPI 3.1 JSON Schema).
