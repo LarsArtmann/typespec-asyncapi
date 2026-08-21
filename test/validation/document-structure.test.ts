@@ -12,6 +12,7 @@
  */
 
 import { compileAsyncAPI } from "../utils/test-helpers.js";
+import { collectRefs, resolveRef } from "../utils/ref-utils.js";
 
 type AsyncApiDoc = Record<string, unknown> | null;
 
@@ -23,42 +24,6 @@ async function compileAndGetDoc(
     throw new Error("No output document produced");
   }
   return result.asyncApiDoc as NonNullable<AsyncApiDoc>;
-}
-
-function resolveRef(doc: NonNullable<AsyncApiDoc>, ref: string): unknown {
-  if (!ref.startsWith("#/")) {
-    return null;
-  }
-  const parts = ref.slice(2).split("/");
-  let current: unknown = doc;
-  for (const part of parts) {
-    if (current && typeof current === "object") {
-      current = (current as Record<string, unknown>)[part];
-    } else {
-      return null;
-    }
-  }
-  return current;
-}
-
-function collectAllRefs(obj: unknown, refs: string[] = []): string[] {
-  if (!obj || typeof obj !== "object") {
-    return refs;
-  }
-  if (Array.isArray(obj)) {
-    for (const item of obj) {
-      collectAllRefs(item, refs);
-    }
-    return refs;
-  }
-  const record = obj as Record<string, unknown>;
-  if (typeof record.$ref === "string") {
-    refs.push(record.$ref);
-  }
-  for (const value of Object.values(record)) {
-    collectAllRefs(value, refs);
-  }
-  return refs;
 }
 
 describe("document structure constraints", () => {
@@ -86,7 +51,7 @@ describe("document structure constraints", () => {
       @channel("orders")
       op publish(): Order;
     `);
-    const refs = collectAllRefs(doc);
+    const refs = collectRefs(doc);
     expect(refs.length).toBeGreaterThan(0);
 
     for (const ref of refs) {

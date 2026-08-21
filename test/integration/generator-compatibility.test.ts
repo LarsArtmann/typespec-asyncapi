@@ -11,42 +11,7 @@
 
 import { compileAsyncAPI } from "../../test/utils/test-helpers.js";
 import type { ParsedAsyncAPIDocument } from "../../src/domain/models/asyncapi-document.js";
-
-function resolveRef(doc: ParsedAsyncAPIDocument, ref: string): unknown {
-  if (!ref.startsWith("#/")) {
-    return undefined;
-  }
-  const parts = ref.slice(2).split("/");
-  let current: unknown = doc;
-  for (const part of parts) {
-    if (current && typeof current === "object") {
-      current = (current as Record<string, unknown>)[part];
-    } else {
-      return undefined;
-    }
-  }
-  return current;
-}
-
-function collectRefs(obj: unknown, refs: string[] = []): string[] {
-  if (!obj || typeof obj !== "object") {
-    return refs;
-  }
-  if (Array.isArray(obj)) {
-    for (const item of obj) {
-      collectRefs(item, refs);
-    }
-    return refs;
-  }
-  const record = obj as Record<string, unknown>;
-  if (typeof record.$ref === "string") {
-    refs.push(record.$ref);
-  }
-  for (const v of Object.values(record)) {
-    collectRefs(v, refs);
-  }
-  return refs;
-}
+import { collectRefs, resolveRef } from "../utils/ref-utils.js";
 
 describe("generator compatibility", () => {
   it("produces all required top-level fields for the generator", async () => {

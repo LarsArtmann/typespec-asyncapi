@@ -16,6 +16,7 @@
 
 import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
 import type { ParsedAsyncAPIDocument } from "../../src/domain/models/asyncapi-document.js";
+import { collectRefs, resolveRef } from "../utils/ref-utils.js";
 
 const COMPREHENSIVE_SPEC = `
   @service(#{ title: "Round-Trip Verification API" })
@@ -91,44 +92,6 @@ const COMPREHENSIVE_SPEC = `
   @channel("orders.events")
   op publishOrderEvents(): OrderConfirmed | PaymentFailed;
 `;
-
-/** Resolve a JSON Pointer $ref against a document. Returns the target or undefined. */
-function resolveRef(doc: unknown, ref: string): unknown {
-  if (!ref.startsWith("#/")) {
-    return undefined;
-  }
-  const parts = ref.slice(2).split("/");
-  let current: unknown = doc;
-  for (const part of parts) {
-    if (current == null || typeof current !== "object") {
-      return undefined;
-    }
-    const decoded = part.replaceAll("~1", "/").replaceAll("~0", "~");
-    current = (current as Record<string, unknown>)[decoded];
-  }
-  return current;
-}
-
-/** Recursively collect all $ref strings in an object tree. */
-function collectRefs(obj: unknown, refs: string[] = []): string[] {
-  if (obj == null || typeof obj !== "object") {
-    return refs;
-  }
-  if (Array.isArray(obj)) {
-    for (const item of obj) {
-      collectRefs(item, refs);
-    }
-    return refs;
-  }
-  const record = obj as Record<string, unknown>;
-  if (typeof record.$ref === "string") {
-    refs.push(record.$ref);
-  }
-  for (const value of Object.values(record)) {
-    collectRefs(value, refs);
-  }
-  return refs;
-}
 
 describe("round-Trip Verification", () => {
   let doc: ParsedAsyncAPIDocument;
