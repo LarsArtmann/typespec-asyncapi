@@ -1,0 +1,121 @@
+[a] Skip to content
+[span] typespec-asyncapi
+[a] Bindings
+[a] 15 Stars
+[span] AsyncAPI 3.1.0 · AJV-validated
+[h1] Stop hand-writing
+[span] AsyncAPI YAML
+[p] Model your event schemas, channels, and operations in TypeSpec — compile to AsyncAPI 3.1 specifications that validate against the official JSON Schema, for 22 protocols.
+[p] One typed source of truth for Kafka, MQTT, AMQP, WebSocket, and 18 more — with 30 decorators, spec-generated protocol bindings, and a 270+-test compliance suite.
+[a] Get Started →
+[div] pnpm add @lars-artmann/typespec-asyncapi
+[span] api.tsp
+[span] import
+[span] "@lars-artmann/typespec-asyncapi"
+[span] using
+[span] TypeSpec.AsyncAPI
+[span] namespace
+[span] MyAPI
+[span] model
+[span] Event
+[code] {
+  id:
+[span] string
+[code] ;
+  timestamp:
+[span] utcDateTime
+[code] ;
+}
+[span] @channel
+[span] "events"
+[span] publishEvent
+[code] ():
+[span] Event
+[div] See it work
+[h2] From TypeSpec to AsyncAPI in 30 seconds
+[p] One compile: a typed TypeSpec definition becomes a validated AsyncAPI 3.1 document with channels, operations, messages, and schemas.
+[span] demo.mp4 — 30s product tour
+[video] Your browser does not support the video tag.
+[p] See it work end-to-end — 30 seconds, no audio required.
+[div] Why this emitter
+[h2] Typed in. Validated out.
+[p] Everything between your TypeSpec source and a spec-compliant AsyncAPI 3.1 document is table-driven, tested, and deterministic.
+[h3] Validated AsyncAPI 3.1
+[p] Every byte of output is checked against the official AsyncAPI 3.1.0 JSON Schema (AJV) across a 270+-test compliance suite — invalid specs cannot ship.
+[h3] 22 protocols, 19 bindings
+[p] Kafka, MQTT, AMQP, WebSocket, NATS, and more. All bindings auto-generated from @asyncapi/specs with version auto-injection and placement checking.
+[h3] 30 typed decorators
+[p] Channels, messages, servers, security schemes, traits, parameters, and protocol bindings — declared in TypeSpec with compile-time validation, not YAML indentation.
+[h3] Clean $ref architecture
+[p] Named models, enums, and generic instantiations (Page<User> → PageUser) become reusable components.schemas entries with spec-correct reference chains.
+[h3] One compile, many outputs
+[p] Emit single-file YAML or JSON, or split every schema into its own file with rewritten $ref pointers. Version info flows in from @typespec/versioning.
+[h3] 30 compile-time diagnostics
+[p] Unsupported protocols, misplaced bindings, malformed server URLs, and invalid security schemes are caught in your editor before they reach the output.
+[div] How it works
+[h2] Model, compile, validate, ship
+[p] Four deterministic steps from typed source to a spec-compliant AsyncAPI document.
+[h3] Model in TypeSpec
+[p] Define event schemas, channels, operations, servers, and security in one typed language. Decorators carry AsyncAPI semantics; the compiler carries the validation.
+[h3] Compile with tsp
+[p] tsp compile resolves imports, checks 30 diagnostics, and hands the type graph to the emitter — invalid protocols and misplaced bindings never reach the output.
+[h3] Emit the spec
+[p] A table-driven schema pipeline maps every scalar, constraint, union, and generic instantiation to JSON Schema, assembling the $ref chain AsyncAPI 3.1 expects.
+[h3] Validate and ship
+[p] The 270+-test compliance suite proves every emitted document against the official AsyncAPI 3.1.0 JSON Schema — feed it to AsyncAPI Studio, generators, or CI.
+[div] Comparison
+[h2] This emitter vs the alternatives
+[p] Measured against the other TypeSpec AsyncAPI emitter and the hand-written YAML status quo (August 2026).
+[th] Capability
+[th] typespec-asyncapi
+[th] tsp-asyncapi
+[th] Hand-written YAML
+[td] AsyncAPI version
+[td] 3.1.0 (latest)
+[td] 3.0.0
+[td] any
+[td] Output validation
+[td] 270+ AJV compliance tests
+[td] 15 property tests
+[td] Spectral, at best
+[td] Protocols
+[td] 22, bindings spec-generated
+[td] 13, hand-written
+[td] manual per protocol
+[td] Reusable components
+[td] 7 slots, 11 decorators
+[td] not supported
+[td] copy-paste
+[td] Multi-file output
+[td] split-schemas + $ref rewrite
+[td] not supported
+[td] manual
+[td] Compile-time diagnostics
+[td] 30 codes
+[td] deferred
+[td] lint only
+[td] Typed source of truth
+[td] TypeSpec
+[td] TypeSpec
+[td] none
+[p] The real differentiator is the first two rows: no other workflow proves, on every build, that the emitted document passes the official AsyncAPI 3.1.0 JSON Schema.
+[div] Use cases
+[h2] Built for event-driven teams
+[p] Where a typed, validated AsyncAPI source of truth pays for itself.
+[h3] AsyncAPI as code
+[p] Schemas, examples, security schemes, and bindings regenerate from source — the spec can no longer drift from the system it describes.
+[h3] Multi-protocol estates
+[p] One TypeSpec namespace, Kafka + MQTT + WebSocket bindings with auto-injected versions and spec-checked placements across 22 protocols.
+[h3] CI compliance gates
+[p] Every build emits documents that pass the official AsyncAPI 3.1.0 JSON Schema — contract violations fail the pipeline, not production.
+[h3] Docs that stay current
+[p] Descriptions, tags, examples, and external docs live next to the operations they describe, so documentation updates itself on every compile.
+[div] Get started
+[h2] Your first validated spec is one compile away
+[p] Install the emitter, add two decorators to a TypeSpec file, and generate AsyncAPI 3.1 that already passes the official JSON Schema.
+[a] Read the Quick Start →
+[a] View on GitHub
+[span] typespec-asyncapi — MIT License — Built by
+[a] LarsArtmann
+[a] Documentation
+[a] Changelog

@@ -1,0 +1,11 @@
+{
+  "name": "typespec-asyncapi-demo",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "npx --yes hyperframes@0.8.7 preview",
+    "check": "npx --yes hyperframes@0.8.7 check",
+    "render": "npx --yes hyperframes@0.8.7 render",
+    "publish": "npx --yes hyperframes@0.8.7 publish"
+  }
+}

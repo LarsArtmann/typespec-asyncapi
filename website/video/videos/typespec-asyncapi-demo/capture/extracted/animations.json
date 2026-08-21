@@ -1,0 +1,302 @@
+{
+  "summary": {
+    "webAnimations": 7,
+    "cssDeclarations": 32,
+    "scrollTargets": 7,
+    "cdpAnimations": 11,
+    "canvases": 0
+  },
+  "namedAnimations": [
+    "fade-in"
+  ],
+  "scrollTriggeredElements": 7,
+  "representativeAnimations": [
+    {
+      "type": "CSSAnimation",
+      "playState": "finished",
+      "animationName": "fade-in",
+      "targetSelector": "section.relative.py-12.bg-bg-raised",
+      "targetRect": {
+        "x": 0,
+        "y": 1139.921875,
+        "width": 1920,
+        "height": 602,
+        "top": 1139.921875,
+        "right": 1920,
+        "bottom": 1741.921875,
+        "left": 0
+      },
+      "keyframes": [
+        {
+          "offset": 0,
+          "easing": "ease",
+          "composite": "auto",
+          "transform": "translateY(20px)",
+          "opacity": "0",
+          "computedOffset": 0
+        },
+        {
+          "offset": 1,
+          "easing": "ease",
+          "composite": "auto",
+          "transform": "translateY(0px)",
+          "opacity": "1",
+          "computedOffset": 1
+        }
+      ],
+      "timing": {
+        "duration": 600,
+        "delay": 0,
+        "iterations": 1,
+        "easing": "linear",
+        "direction": "normal"
+      }
+    },
+    {
+      "type": "CSSAnimation",
+      "playState": "finished",
+      "animationName": "fade-in",
+      "targetSelector": "section.relative.py-24.animate-fade-in",
+      "targetRect": {
+        "x": 0,
+        "y": 1741.921875,
+        "width": 1920,
+        "height": 902.5,
+        "top": 1741.921875,
+        "right": 1920,
+        "bottom": 2644.421875,
+        "left": 0
+      },
+      "keyframes": [
+        {
+          "offset": 0,
+          "easing": "ease",
+          "composite": "auto",
+          "transform": "translateY(20px)",
+          "opacity": "0",
+          "computedOffset": 0
+        },
+        {
+          "offset": 1,
+          "easing": "ease",
+          "composite": "auto",
+          "transform": "translateY(0px)",
+          "opacity": "1",
+          "computedOffset": 1
+        }
+      ],
+      "timing": {
+        "duration": 600,
+        "delay": 0,
+        "iterations": 1,
+        "easing": "linear",
+        "direction": "normal"
+      }
+    },
+    {
+      "type": "CSSAnimation",
+      "playState": "finished",
+      "animationName": "fade-in",
+      "targetSelector": "section.relative.py-24.bg-bg-raised",
+      "targetRect": {
+        "x": 0,
+        "y": 2644.421875,
+        "width": 1920,
+        "height": 697.75,
+        "top": 2644.421875,
+        "right": 1920,
+        "bottom": 3342.171875,
+        "left": 0
+      },
+      "keyframes": [
+        {
+          "offset": 0,
+          "easing": "ease",
+          "composite": "auto",
+          "transform": "translateY(20px)",
+          "opacity": "0",
+          "computedOffset": 0
+        },
+        {
+          "offset": 1,
+          "easing": "ease",
+          "composite": "auto",
+          "transform": "translateY(0px)",
+          "opacity": "1",
+          "computedOffset": 1
+        }
+      ],
+      "timing": {
+        "duration": 600,
+        "delay": 0,
+        "iterations": 1,
+        "easing": "linear",
+        "direction": "normal"
+      }
+    },
+    {
+      "type": "CSSAnimation",
+      "playState": "finished",
+      "animationName": "fade-in",
+      "targetSelector": "section.relative.py-24.text-center",
+      "targetRect": {
+        "x": 0,
+        "y": 3342.171875,
+        "width": 1920,
+        "height": 837.5,
+        "top": 3342.171875,
+        "right": 1920,
+        "bottom": 4179.671875,
+        "left": 0
+      },
+      "keyframes": [
+        {
+          "offset": 0,
+          "easing": "ease",
+          "composite": "auto",
+          "transform": "translateY(20px)",
+          "opacity": "0",
+          "computedOffset": 0
+        },
+        {
+          "offset": 1,
+          "easing": "ease",
+          "composite": "auto",
+          "transform": "translateY(0px)",
+          "opacity": "1",
+          "computedOffset": 1
+        }
+      ],
+      "timing": {
+        "duration": 600,
+        "delay": 0,
+        "iterations": 1,
+        "easing": "linear",
+        "direction": "normal"
+      }
+    },
+    {
+      "type": "CSSAnimation",
+      "playState": "finished",
+      "animationName": "fade-in",
+      "targetSelector": "section.relative.py-24.bg-bg-raised",
+      "targetRect": {
+        "x": 0,
+        "y": 4179.671875,
+        "width": 1920,
+        "height": 824.5,
+        "top": 4179.671875,
+        "right": 1920,
+        "bottom": 5004.171875,
+        "left": 0
+      },
+      "keyframes": [
+        {
+          "offset": 0,
+          "easing": "ease",
+          "composite": "auto",
+          "transform": "translateY(20px)",
+          "opacity": "0",
+          "computedOffset": 0
+        },
+        {
+          "offset": 1,
+          "easing": "ease",
+          "composite": "auto",
+          "transform": "translateY(0px)",
+          "opacity": "1",
+          "computedOffset": 1
+        }
+      ],
+      "timing": {
+        "duration": 600,
+        "delay": 0,
+        "iterations": 1,
+        "easing": "linear",
+        "direction": "normal"
+      }
+    },
+    {
+      "type": "CSSAnimation",
+      "playState": "finished",
+      "animationName": "fade-in",
+      "targetSelector": "section.relative.py-24.text-center",
+      "targetRect": {
+        "x": 0,
+        "y": 5004.171875,
+        "width": 1920,
+        "height": 478.5,
+        "top": 5004.171875,
+        "right": 1920,
+        "bottom": 5482.671875,
+        "left": 0
+      },
+      "keyframes": [
+        {
+          "offset": 0,
+          "easing": "ease",
+          "composite": "auto",
+          "transform": "translateY(20px)",
+          "opacity": "0",
+          "computedOffset": 0
+        },
+        {
+          "offset": 1,
+          "easing": "ease",
+          "composite": "auto",
+          "transform": "translateY(0px)",
+          "opacity": "1",
+          "computedOffset": 1
+        }
+      ],
+      "timing": {
+        "duration": 600,
+        "delay": 0,
+        "iterations": 1,
+        "easing": "linear",
+        "direction": "normal"
+      }
+    },
+    {
+      "type": "CSSAnimation",
+      "playState": "finished",
+      "animationName": "fade-in",
+      "targetSelector": "footer.border-t.border-border.mt-32",
+      "targetRect": {
+        "x": 0,
+        "y": 5610.671875,
+        "width": 1920,
+        "height": 125,
+        "top": 5610.671875,
+        "right": 1920,
+        "bottom": 5735.671875,
+        "left": 0
+      },
+      "keyframes": [
+        {
+          "offset": 0,
+          "easing": "ease",
+          "composite": "auto",
+          "transform": "translateY(20px)",
+          "opacity": "0",
+          "computedOffset": 0
+        },
+        {
+          "offset": 1,
+          "easing": "ease",
+          "composite": "auto",
+          "transform": "translateY(0px)",
+          "opacity": "1",
+          "computedOffset": 1
+        }
+      ],
+      "timing": {
+        "duration": 600,
+        "delay": 0,
+        "iterations": 1,
+        "easing": "linear",
+        "direction": "normal"
+      }
+    }
+  ]
+}

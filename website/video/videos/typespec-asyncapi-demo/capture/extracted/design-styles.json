@@ -1,0 +1,133 @@
+{
+  "typography": [
+    {
+      "role": "display",
+      "fontFamily": "-apple-system",
+      "fontSize": "72px",
+      "fontWeight": "700",
+      "lineHeight": "75.6px",
+      "letterSpacing": "-3.6px",
+      "color": "#A8A29E",
+      "sampleText": "Stop hand-writing AsyncAPI YAML."
+    },
+    {
+      "role": "heading",
+      "fontFamily": "-apple-system",
+      "fontSize": "44px",
+      "fontWeight": "700",
+      "lineHeight": "71.5px",
+      "letterSpacing": "-1.1px",
+      "color": "#E7E5E4",
+      "sampleText": "From TypeSpec to AsyncAPI in 30 seconds"
+    },
+    {
+      "role": "body",
+      "fontFamily": "-apple-system",
+      "fontSize": "21.6px",
+      "fontWeight": "400",
+      "lineHeight": "35.1px",
+      "letterSpacing": "normal",
+      "color": "#A8A29E",
+      "sampleText": "Model your event schemas, channels, and operations in TypeSp"
+    },
+    {
+      "role": "heading-3",
+      "fontFamily": "-apple-system",
+      "fontSize": "16px",
+      "fontWeight": "600",
+      "lineHeight": "24px",
+      "letterSpacing": "normal",
+      "color": "#E7E5E4",
+      "sampleText": "Validated AsyncAPI 3.1"
+    },
+    {
+      "role": "link",
+      "fontFamily": "-apple-system",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "lineHeight": "26px",
+      "letterSpacing": "normal",
+      "color": "#A8A29E",
+      "sampleText": "Skip to content"
+    },
+    {
+      "role": "code",
+      "fontFamily": "-apple-system",
+      "fontSize": "12px",
+      "fontWeight": "400",
+      "lineHeight": "16px",
+      "letterSpacing": "normal",
+      "color": "#8E8884",
+      "sampleText": "api.tsp"
+    }
+  ],
+  "spacing": {
+    "observed": [
+      4,
+      6,
+      8,
+      10,
+      12,
+      14,
+      16,
+      24,
+      28,
+      48,
+      56,
+      96,
+      152
+    ],
+    "baseUnit": 8
+  },
+  "radius": [
+    "8px",
+    "12px"
+  ],
+  "shadows": [
+    {
+      "value": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.25) 0px 25px 50px -12px",
+      "count": 1
+    }
+  ],
+  "buttons": [],
+  "cards": [
+    {
+      "label": "card",
+      "background": "#1C1917",
+      "backgroundImage": "",
+      "backdropFilter": "",
+      "color": "#A8A29E",
+      "padding": "0px",
+      "borderRadius": "12px",
+      "border": "1px solid rgba(41, 37, 36, 0.6)",
+      "boxShadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.25) 0px 25px 50px -12px",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "height": "193px"
+    }
+  ],
+  "nav": null,
+  "chips": [],
+  "statCells": [],
+  "tabs": [],
+  "backgrounds": [
+    {
+      "value": "linear-gradient(to right, oklab(0.703744 -0.122869 -0.00535977 / 0.1) 0%, oklab(0.703744 -0.122869 -0.00535977 / 0.08) 50%, oklab(0.703744 -0.122869 -0.00535977 / 0.1) 100%)",
+      "area": 238336
+    },
+    {
+      "value": "linear-gradient(to right in oklab, rgb(20, 184, 166) 0%, rgb(94, 234, 212) 50%, rgb(20, 184, 166) 100%)",
+      "area": 95954
+    }
+  ],
+  "glass": [
+    {
+      "backdropFilter": "blur(40px)",
+      "background": "oklab(0.140618 0.0010539 0.00278743 / 0.75)",
+      "border": "",
+      "borderRadius": "0px",
+      "boxShadow": "",
+      "area": 140160
+    }
+  ]
+}

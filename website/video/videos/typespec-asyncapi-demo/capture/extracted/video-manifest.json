@@ -1,0 +1,15 @@
+[
+  {
+    "index": 0,
+    "url": "http://localhost:4321/demo.mp4",
+    "filename": "demo.mp4",
+    "width": 766,
+    "height": 150,
+    "sourceWidth": 0,
+    "sourceHeight": 0,
+    "heading": "From TypeSpec to AsyncAPI in 30 seconds",
+    "caption": "One compile: a typed TypeSpec definition becomes a validated AsyncAPI 3.1 document with channels, operations, messages, and schemas.",
+    "ariaLabel": "",
+    "preview": "assets/videos/previews/video-0-preview.png"
+  }
+]
