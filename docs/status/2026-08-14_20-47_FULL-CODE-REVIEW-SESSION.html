@@ -811,40 +811,46 @@
                 <td>1</td>
                 <td><span class="badge badge-critical">Critical</span></td>
                 <td>
-                  Pin oxlint + jscpd in flake devShell (host drift broke gates)
+                  <s>Pin oxlint + jscpd in flake devShell (host drift broke gates)</s>
+                  done at <code>b6da64c</code> (pinned as devDependencies — also
+                  fixed GitHub CI)
                 </td>
                 <td>30min</td>
-                <td><span class="badge badge-low">Open</span></td>
+                <td><span class="badge badge-fixed">Done</span></td>
               </tr>
               <tr>
                 <td>2</td>
                 <td><span class="badge badge-high">High</span></td>
                 <td>
-                  Finish test/ sweep (130 files) via batched agents with
-                  architect checklist
+                  <s>Finish test/ sweep (130 files) via batched agents with
+                  architect checklist</s>
+                  done (all 101 files reviewed; ~130 findings → TODO_LIST,
+                  9 highest-priority fixes at <code>b6da64c</code>)
                 </td>
                 <td>2h</td>
-                <td><span class="badge badge-low">Open</span></td>
+                <td><span class="badge badge-fixed">Done</span></td>
               </tr>
               <tr>
                 <td>3</td>
                 <td><span class="badge badge-high">High</span></td>
                 <td>
-                  Write HTML review report to docs/reviews/ (full-code-review
-                  skill output)
+                  <s>Write HTML review report to docs/reviews/ (full-code-review
+                  skill output)</s>
+                  done (<code>docs/reviews/archived/2026-08-14_full-code-review.html</code>)
                 </td>
                 <td>45min</td>
-                <td><span class="badge badge-low">Open</span></td>
+                <td><span class="badge badge-fixed">Done</span></td>
               </tr>
               <tr>
                 <td>4</td>
                 <td><span class="badge badge-high">High</span></td>
                 <td>
-                  AGENTS.md freshness pass: 28 decorators, 1284 tests, gate
-                  history, regenerate-golden script
+                  <s>AGENTS.md freshness pass: 28 decorators, 1284 tests, gate
+                  history, regenerate-golden script</s>
+                  done at <code>2e2ef0b</code>
                 </td>
                 <td>30min</td>
-                <td><span class="badge badge-low">Open</span></td>
+                <td><span class="badge badge-fixed">Done</span></td>
               </tr>
               <tr>
                 <td>5</td>
@@ -919,10 +925,12 @@
                 <td>12</td>
                 <td><span class="badge badge-low">Low</span></td>
                 <td>
-                  Collapse 7 near-identical ref* constructors via shared factory
+                  <s>Collapse 7 near-identical ref* constructors via shared factory</s>
+                  done (now 8 one-line wrappers over a shared <code>ref()</code> in
+                  <code>asyncapi-document.ts</code>; zero clones)
                 </td>
                 <td>20min</td>
-                <td><span class="badge badge-low">Open</span></td>
+                <td><span class="badge badge-fixed">Done</span></td>
               </tr>
               <tr>
                 <td>13</td>
@@ -960,7 +968,7 @@
 
         <h2 id="question"><span class="num">07</span>Open Question</h2>
         <div class="card card-warning">
-          <h4>Named-union metadata: fix or silent behavior change?</h4>
+          <h4><s>Named-union metadata: fix or silent behavior change?</s> RESOLVED 2026-08-15</h4>
           <p>
             Deduplicating <code>unionDeclaration()</code> through
             <code>declareSchema()</code> means named unions now receive
@@ -971,6 +979,11 @@
             behavior desired as the public contract (add a compliance test to
             lock it), or should unions stay metadata-less for output-compat
             reasons?
+          </p>
+          <p>
+            <em>Resolution: locked in as public contract at <code>2e2ef0b</code> —
+            "named union metadata propagation" suite (2 compliance tests) in
+            <code>test/compliance/polymorphism.test.ts</code>.</em>
           </p>
         </div>
 

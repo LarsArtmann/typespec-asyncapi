@@ -927,8 +927,8 @@
             </p>
           </div>
           <div class="issue issue-important">
-            <span class="severity severity-important">OPEN · TOP TODO</span>
-            <h3>Kafka @protocol fields stored but never emitted</h3>
+            <span class="severity severity-important"><s>OPEN · TOP TODO</s> · FIXED · 9803a09</span>
+            <h3><s>Kafka @protocol fields stored but never emitted</s></h3>
             <p class="where">src/store-protocol-config.ts:32 · src/builders/shared-utils.ts:181</p>
             <p>
               partitions / replicationFactor / consumerGroup pass validation,
@@ -936,6 +936,13 @@
               Pareto plan — either emit onto the correct placement or
               diagnose.
             </p>
+            <p><em>Resolved 2026-08-21 at <code>9803a09</code>: fields now emit at
+            spec-correct placements (kafka <code>partitions</code>/<code>replicationFactor</code>
+            → channel binding <code>partitions</code>/<code>replicas</code>;
+            <code>consumerGroup</code> → operation binding <code>groupId</code>;
+            mqtt <code>qos</code>/<code>retain</code> → operation binding; ws
+            <code>headers</code>/<code>queryParams</code> → channel binding
+            <code>headers</code>/<code>query</code>).</em></p>
           </div>
         </section>
 
@@ -1072,3 +1079,8 @@
   </body>
 </html>
 
+<!-- ARCHIVED 2026-08-21 (docs-health pass): every item in this review is
+     resolved — emitter bugs fixed (7f6c9b1, b6da64c), Kafka @protocol card
+     fixed at 9803a09, named-union decision locked in (2e2ef0b), Tier-1 test
+     rewrites done (fded21d, c816637). Remaining open findings live in
+     TODO_LIST.md (test-integrity section). -->

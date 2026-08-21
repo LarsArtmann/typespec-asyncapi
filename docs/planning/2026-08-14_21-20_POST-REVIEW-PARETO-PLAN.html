@@ -991,8 +991,8 @@
           <h2><span class="num">01</span>Tier 1% — the 4% delivering 64% (start here)</h2>
 
           <div class="issue issue-critical">
-            <span class="severity severity-critical">P1 · EMITTER BUG</span>
-            <h3>Kafka @protocol fields are stored but never emitted</h3>
+            <span class="severity severity-critical"><s>P1 · EMITTER BUG</s> · DONE · 9803a09</span>
+            <h3><s>Kafka @protocol fields are stored but never emitted</s></h3>
             <p class="where">src/store-protocol-config.ts:32 · src/builders/shared-utils.ts:181</p>
             <p>
               <code>partitions</code>, <code>replicationFactor</code>, and
@@ -1011,8 +1011,8 @@
           </div>
 
           <div class="issue issue-critical">
-            <span class="severity severity-critical">P1 · FALSE CONFIDENCE</span>
-            <h3>Rewrite protocol-websocket-mqtt suite (50 tests, 0 binding assertions)</h3>
+            <span class="severity severity-critical"><s>P1 · FALSE CONFIDENCE</s> · DONE · fded21d</span>
+            <h3><s>Rewrite protocol-websocket-mqtt suite (50 tests, 0 binding assertions)</s></h3>
             <p class="where">test/domain/protocol-websocket-mqtt.test.ts (1515 lines)</p>
             <p>
               Every test asserts only <code>asyncapi === "3.1.0"</code>. A
@@ -1028,8 +1028,8 @@
           </div>
 
           <div class="issue issue-critical">
-            <span class="severity severity-critical">P1 · FALSE CONFIDENCE</span>
-            <h3>Tighten the 4 security suites</h3>
+            <span class="severity severity-critical"><s>P1 · FALSE CONFIDENCE</s> · DONE · c816637</span>
+            <h3><s>Tighten the 4 security suites</s></h3>
             <p class="where">test/domain/security-{api-key,http,oauth2,combined}*.test.ts</p>
             <p>
               ~60 of 80 tests assert only the base type; the feature named in
@@ -1076,7 +1076,7 @@
               <tbody>
                 <tr><td>11</td><td>O(n²) operation-type lookup → precomputed Map (<code>operation-builder.ts:37</code>)</td><td>Medium</td><td>30 min</td><td><span class="badge badge-high">P2</span></td></tr>
                 <tr><td>12</td><td>Unify <code>registerMessage</code> vs <code>mergeExplicitMessages</code></td><td>Medium</td><td>45 min</td><td><span class="badge badge-medium">P3</span></td></tr>
-                <tr><td>13</td><td>Collapse 7 <code>ref*</code> constructors into one helper</td><td>Low</td><td>30 min</td><td><span class="badge badge-low">P3</span></td></tr>
+                <tr><td>13</td><td><s>Collapse 7 <code>ref*</code> constructors into one helper</s> — done: they now live as 8 one-line wrappers over a shared <code>ref()</code> in <code>asyncapi-document.ts</code> (zero clones)</td><td>Low</td><td>30 min</td><td><span class="badge badge-critical">DONE</span></td></tr>
                 <tr><td>14</td><td>Warn on conflicting multi-namespace <code>defaultContentType</code>/<code>apiVersion</code></td><td>Medium</td><td>30 min</td><td><span class="badge badge-medium">P3</span></td></tr>
                 <tr><td>15</td><td>Remove <code>as never</code> casts in <code>resolveOpName</code>/<code>returnModelTypes</code>; type 9 option casts in <code>multi-file-output.test.ts</code></td><td>Low</td><td>45 min</td><td><span class="badge badge-low">P3</span></td></tr>
                 <tr><td>16</td><td>Fix dual export <code>SCHEME_TYPE_LIST</code>/<code>VALID_SCHEME_TYPES</code>; orphan comment at <code>asyncapi-document.ts:268</code></td><td>Low</td><td>15 min</td><td><span class="badge badge-low">P3</span></td></tr>
