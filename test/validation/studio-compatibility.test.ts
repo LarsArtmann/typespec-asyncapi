@@ -12,36 +12,27 @@
  * new Function() calls — see AGENTS.md Gotchas).
  */
 
-import { Parser } from "@asyncapi/parser";
+import { DiagnosticSeverity, Parser } from "@asyncapi/parser";
 import { compileAsyncAPI } from "../utils/test-helpers.js";
 import type { ParsedAsyncAPIDocument } from "../../src/domain/models/asyncapi-document.js";
 
-async function parseWithAsyncAPIParser(source: string): Promise<{
-  document: ReturnType<
-    ReturnType<InstanceType<typeof Parser>["parse"]>["then"]
-  >["document"];
-  diagnostics: ReturnType<
-    ReturnType<InstanceType<typeof Parser>["parse"]>["then"]
-  >["diagnostics"];
-}> {
+/** The awaited result of `Parser#parse` — carries `document` and `diagnostics`. */
+type ParserOutput = Awaited<ReturnType<InstanceType<typeof Parser>["parse"]>>;
+
+async function parseWithAsyncAPIParser(source: string): Promise<ParserOutput> {
   const result = await compileAsyncAPI(source);
   if (!result.asyncApiDoc) {
     throw new Error("Emitter produced no output document");
   }
   const parser = new Parser();
-  const parsed = await parser.parse(JSON.stringify(result.asyncApiDoc));
-  return {
-    document: parsed.document,
-    diagnostics: parsed.diagnostics,
-  };
+  return parser.parse(JSON.stringify(result.asyncApiDoc));
 }
 
 function expectZeroErrors(
-  diagnostics: Awaited<
-    ReturnType<typeof parseWithAsyncAPIParser>
-  >["diagnostics"],
+  diagnostics: ParserOutput["diagnostics"],
 ) {
-  const errors = diagnostics?.filter((d) => d.severity === "error") ?? [];
+  const errors =
+    diagnostics?.filter((d) => d.severity === DiagnosticSeverity.Error) ?? [];
   if (errors.length > 0) {
     const messages = errors.map((e) => `${e.code}: ${e.message}`).join("\n");
     throw new Error(
@@ -183,7 +174,7 @@ describe("asyncAPI Studio compatibility (@asyncapi/parser)", () => {
     `);
     expectZeroErrors(diagnostics);
 
-    const doc = document as { _json?: ParsedAsyncAPIDocument } | null;
+    const doc = document as unknown as { _json?: ParsedAsyncAPIDocument } | null;
     expect(doc).toBeDefined();
   });
 

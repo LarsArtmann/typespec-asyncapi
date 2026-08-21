@@ -126,7 +126,8 @@ describe("spec Compliance: Template Instantiations", () => {
     const inline = schemas.Holder.properties.box as Record<string, unknown>;
     expect(inline.$ref).toBeUndefined();
     expect(inline.type).toBe("object");
-    const inlineValue = inline.properties.value as Record<string, unknown>;
+    const boxProps = inline.properties as Record<string, unknown>;
+    const inlineValue = boxProps.value as Record<string, unknown>;
     expect(inlineValue.properties).toHaveProperty("x");
   });
 

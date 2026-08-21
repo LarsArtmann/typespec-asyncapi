@@ -41,7 +41,7 @@ export async function compileWithCLI(
     .map((d) => `[${d.code}] ${d.message}`);
 
   return {
-    asyncapiDoc: (result.asyncApiDoc as AsyncAPIObject) ?? undefined,
+    asyncapiDoc: (result.asyncApiDoc as unknown as AsyncAPIObject) ?? undefined,
     errors,
     exitCode: errors.length > 0 ? 1 : 0,
     stderr: errors.join("\n"),

@@ -120,8 +120,7 @@ describe("normalizeTagItem: invalid inputs", () => {
   });
 
   it("returns null for undefined", () => {
-    const undef: unknown = {}.missing;
-    expect(normalizeTagItem(undef)).toBeNull();
+    expect(normalizeTagItem(undefined)).toBeNull();
   });
 
   it("returns null for number", () => {

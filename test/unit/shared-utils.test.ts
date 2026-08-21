@@ -115,7 +115,7 @@ describe("normalizeOAuth2Scopes", () => {
       read: "read access",
     });
     expect(
-      (result.flows!.implicit as Record<string, unknown>).scopes,
+      (result.flows!.implicit as unknown as Record<string, unknown>).scopes,
     ).toBeUndefined();
   });
 

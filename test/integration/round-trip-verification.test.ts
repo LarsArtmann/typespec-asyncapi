@@ -14,7 +14,7 @@
  *   5. Servers, security schemes, and bindings are structurally valid
  */
 
-import { asJsonSchema } from "../utils/type-guards.js";
+import { asJsonSchema, inlineObject } from "../utils/type-guards.js";
 import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
 import type { ParsedAsyncAPIDocument } from "../../src/domain/models/asyncapi-document.js";
 import { collectRefs, resolveRef } from "../utils/ref-utils.js";
@@ -185,7 +185,7 @@ describe("round-Trip Verification", () => {
   it("emits array of named models with $ref items", () => {
     const orderProps = doc.components!.schemas!.OrderPlaced.properties!;
     expect(asJsonSchema(orderProps.items, "items").type).toBe("array");
-    expect(orderProps.items.items!.$ref).toBe("#/components/schemas/OrderItem");
+    expect(asJsonSchema(asJsonSchema(orderProps.items, "items").items, "items.items").$ref).toBe("#/components/schemas/OrderItem");
   });
 
   it("emits enum union types", () => {
@@ -246,7 +246,7 @@ describe("round-Trip Verification", () => {
 
     const messagesWithPayloadRef = Object.entries(componentMessages)
       .filter(([, msg]) => "payload" in msg && msg.payload?.$ref)
-      .map(([, msg]) => msg.payload.$ref.replace("#/components/schemas/", ""));
+      .map(([, msg]) => inlineObject(msg, "message").payload.$ref.replace("#/components/schemas/", ""));
 
     expect(messagesWithPayloadRef.length).toBeGreaterThan(0);
     for (const schemaId of messagesWithPayloadRef) {

@@ -54,9 +54,9 @@ describe("integration: namespace @bindings", () => {
     `);
 
     expect(doc.servers!.broker1.bindings).toBeDefined();
-    expect(doc.servers!.broker1.bindings!.mqtt).toBeDefined();
+    expect(inlineObject(doc.servers!.broker1.bindings, "bindings").mqtt).toBeDefined();
     expect(doc.servers!.broker2.bindings).toBeDefined();
-    expect(doc.servers!.broker2.bindings!.mqtt).toBeDefined();
+    expect(inlineObject(doc.servers!.broker2.bindings, "bindings").mqtt).toBeDefined();
   });
 
   it("does not affect operations or messages when on namespace", async () => {

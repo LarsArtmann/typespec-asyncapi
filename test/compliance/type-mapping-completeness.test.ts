@@ -363,7 +363,7 @@ describe("comprehensive type mapping through compilation", () => {
       const schema = getSchema(doc, "Order");
       const props = schema.properties!;
       expect(asJsonSchema(props.items, "items").type).toBe("array");
-      expect(props.items.items!.$ref).toBe("#/components/schemas/Item");
+      expect(asJsonSchema(asJsonSchema(props.items, "items").items, "items.items").$ref).toBe("#/components/schemas/Item");
     });
   });
 

@@ -127,7 +127,7 @@ describe("spec Compliance: SNS Bindings", () => {
     `);
 
     expect(op.bindings).toBeDefined();
-    expect(op.bindings!.sns).toBeDefined();
+    expect(inlineObject(op.bindings, "bindings").sns).toBeDefined();
     expect(inlineObject(op.bindings, "bindings").sns.topic).toBeDefined();
     expect(inlineObject(op.bindings, "bindings").sns.consumers).toBeDefined();
     expect(inlineObject(op.bindings, "bindings").sns.bindingVersion).toBe("0.1.0");

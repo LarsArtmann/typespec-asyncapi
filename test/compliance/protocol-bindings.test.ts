@@ -540,8 +540,8 @@ describe("spec Compliance: Multi-Protocol Bindings", () => {
     expect(doc.servers!["ws-server"].protocol).toBe("ws");
 
     const channels = doc.channels!;
-    expect(channels["kafka-topic"].bindings!.kafka).toBeDefined();
-    expect(channels["ws-channel"].bindings!.ws).toBeDefined();
+    expect(inlineObject(channels["kafka-topic"].bindings, "bindings").kafka).toBeDefined();
+    expect(inlineObject(channels["ws-channel"].bindings, "bindings").ws).toBeDefined();
   });
 
   it("all binding versions auto-injected correctly per protocol", async () => {

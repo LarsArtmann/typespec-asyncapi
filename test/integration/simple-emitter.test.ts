@@ -23,11 +23,12 @@ describe("simple AsyncAPI Emitter (No Decorators)", () => {
 
     const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
 
-    for (const [path, file] of outputFiles.entries()) {
-      if (path.includes("simple-test") || path.includes("asyncapi")) {
-        if (file.content) {
-        }
-      }
+    const matchingOutputs = [...outputFiles.entries()].filter(
+      ([path]) => path.includes("simple-test") || path.includes("asyncapi"),
+    );
+    expect(matchingOutputs.length).toBeGreaterThan(0);
+    for (const [, content] of matchingOutputs) {
+      expect(content.trim().length).toBeGreaterThan(0);
     }
 
     // Should have generated an output file

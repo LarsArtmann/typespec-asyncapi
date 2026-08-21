@@ -27,6 +27,8 @@
  *                            decimal types, complex status enums, multiple domains
  */
 
+import type { JsonSchema } from "../../src/domain/models/asyncapi-document.js";
+import { inlineObject } from "../utils/type-guards.js";
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { compileAsyncAPI } from "../utils/test-helpers.js";
@@ -140,7 +142,7 @@ describe("real-World External Model Patterns", () => {
         const allItemRefs: string[] = [];
         for (const [, schema] of Object.entries(schemas)) {
           for (const [, prop] of Object.entries(schema.properties ?? {})) {
-            const ref = prop.items?.$ref;
+            const ref = (prop.items as JsonSchema | undefined)?.$ref;
             if (typeof ref === "string") {
               allItemRefs.push(ref);
             }
@@ -156,7 +158,7 @@ describe("real-World External Model Patterns", () => {
         const messages = result.asyncApiDoc?.components?.messages ?? {};
         expect(Object.keys(messages).length).toBeGreaterThan(0);
         for (const [, msg] of Object.entries(messages)) {
-          expect(msg.contentType).toBeTypeOf("string");
+          expect(inlineObject(msg, "message").contentType).toBeTypeOf("string");
         }
       });
     });

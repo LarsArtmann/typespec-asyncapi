@@ -12,6 +12,7 @@
  */
 
 import { createTester, findTestPackageRoot } from "@typespec/compiler/testing";
+import type { TestEmitterCompileResult } from "@typespec/compiler/testing";
 import type { AsyncAPIEmitterOptions } from "../../src/infrastructure/configuration/options.js";
 import YAML from "yaml";
 import type { ParsedAsyncAPIDocument } from "../../src/domain/models/asyncapi-document.js";
@@ -67,7 +68,10 @@ async function createTesterInstance(
     tester = tester.using("TypeSpec.AsyncAPI");
   }
 
-  return tester.emit("@lars-artmann/typespec-asyncapi", options);
+  return tester.emit(
+    "@lars-artmann/typespec-asyncapi",
+    options as unknown as Record<string, unknown>,
+  );
 }
 
 function parseContent(content: string): ParsedAsyncAPIDocument | null {
@@ -88,10 +92,15 @@ export async function compileAsyncAPI(
 ) {
   const tester = await createTesterInstance(source, options);
 
-  const [result, diagnostics] = await tester.compileAndDiagnose(
+  const [result, diagnostics] = (await tester.compileAndDiagnose(
     source as never,
-  );
+  )) as [
+    TestEmitterCompileResult & { fs?: { fs?: Map<string, string> } },
+    readonly import("@typespec/compiler").Diagnostic[],
+  ];
 
+  // The runtime compile result exposes the emitter virtual filesystem via
+  // `fs.fs` (not covered by TestEmitterCompileResult's public type).
   const virtualFs: Map<string, string> = result.fs?.fs ?? new Map();
   let outputFile: string | null = null;
   let outputContent: string | null = null;
@@ -204,7 +213,7 @@ export async function compileAsyncAPISpec(
   }
 > {
   const result = await compileRaw(source, options);
-  const doc = result.asyncApiDoc ?? {};
+  const doc = result.asyncApiDoc ?? ({} as AsyncAPIObject);
   return Object.assign(doc, {
     diagnostics: result.diagnostics,
     outputFiles: result.outputFiles,

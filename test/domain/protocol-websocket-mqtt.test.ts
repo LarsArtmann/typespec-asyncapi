@@ -183,7 +183,7 @@ describe("mQTT binding fields", () => {
       @channel("readings")
       op publish(): Reading;
     `);
-    const { Reading: message } = doc.components!.messages!;
+    const message = inlineObject(doc.components!.messages!.Reading, "message");
     const { mqtt } = inlineObject(message.bindings, "bindings");
     expect(mqtt.contentType).toBe("application/json");
     expect(mqtt.bindingVersion).toBe("0.2.0");

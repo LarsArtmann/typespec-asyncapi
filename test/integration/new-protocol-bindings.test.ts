@@ -68,7 +68,7 @@ describe("integration: new protocol bindings end-to-end", () => {
     const server = doc.servers!["solace-broker"];
     expect(server).toBeDefined();
     expect(server.bindings).toBeDefined();
-    expect(server.bindings!.solace).toBeDefined();
+    expect(inlineObject(server.bindings, "bindings").solace).toBeDefined();
     expect(inlineObject(server.bindings, "bindings").solace.bindingVersion).toBe(LATEST_BINDING_VERSIONS.solace);
   });
 

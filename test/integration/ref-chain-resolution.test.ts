@@ -54,7 +54,7 @@ describe("$ref Chain Resolution", () => {
     expect(channel).toBeDefined();
     expect(channel.messages).toBeDefined();
 
-    const channelMsgRef = inlineObject(channel.messages!["OrderCreated"], "message");
+    const channelMsgRef = channel.messages!["OrderCreated"];
     expect(channelMsgRef).toBeDefined();
     expect(channelMsgRef.$ref).toBe("#/components/messages/OrderCreated");
   });

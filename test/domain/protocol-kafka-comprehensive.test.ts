@@ -5,6 +5,7 @@
  * via the @protocol decorator.
  */
 
+import { inlineObject } from "../utils/type-guards.js";
 import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
 
 async function compileAndGetDoc(source: string) {
@@ -29,7 +30,7 @@ describe("kafka Protocol", () => {
     const channel = doc.channels?.["kafka-events"];
     expect(channel).toBeDefined();
     expect(channel.bindings).toBeDefined();
-    expect(channel.bindings.kafka).toBeDefined();
+    expect(inlineObject(channel.bindings, "bindings").kafka).toBeDefined();
   });
 
   it("should emit Kafka bindings with protocol-specific fields", async () => {
@@ -48,7 +49,7 @@ describe("kafka Protocol", () => {
     `);
 
     const channel = doc.channels?.["kafka-topic"];
-    expect(channel.bindings?.kafka).toBeDefined();
+    expect(inlineObject(channel.bindings, "bindings").kafka).toBeDefined();
   });
 
   it("should support multiple operations with different protocols", async () => {
@@ -72,8 +73,8 @@ describe("kafka Protocol", () => {
       model Event { id: string; }
     `);
 
-    expect(doc.channels?.["kafka-stream"]?.bindings?.kafka.partitions).toBe(5);
-    expect(doc.channels?.["ws-stream"]?.bindings?.ws.method).toBe("GET");
+    expect(inlineObject(doc.channels?.["kafka-stream"]?.bindings, "bindings").kafka.partitions).toBe(5);
+    expect(inlineObject(doc.channels?.["ws-stream"]?.bindings, "bindings").ws.method).toBe("GET");
   });
 
   it("should not fabricate bindings when no fields are written", async () => {

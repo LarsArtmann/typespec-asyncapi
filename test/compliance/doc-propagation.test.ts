@@ -6,6 +6,7 @@
  * All output validates against the AsyncAPI 3.1.0 JSON Schema.
  */
 
+import { inlineObject } from "../utils/type-guards.js";
 import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
 
 describe("spec Compliance: @doc propagation", () => {
@@ -107,9 +108,9 @@ describe("spec Compliance: @doc propagation", () => {
       op publishOrder(): OrderCreated;
     `);
 
-    const msg = doc.components?.messages?.OrderCreated;
+    const msg = inlineObject(doc.components?.messages?.OrderCreated, "message");
     expect(msg).toBeDefined();
-    expect(msg?.title).toBe("Order Created");
+    expect(msg.title).toBe("Order Created");
   });
 
   it("sets message title from model name when @message has no explicit title", async () => {
@@ -121,9 +122,9 @@ describe("spec Compliance: @doc propagation", () => {
       op publishSignup(): UserSignup;
     `);
 
-    const msg = doc.components?.messages?.UserSignup;
+    const msg = inlineObject(doc.components?.messages?.UserSignup, "message");
     expect(msg).toBeDefined();
-    expect(msg?.title).toBe("UserSignup");
+    expect(msg.title).toBe("UserSignup");
   });
 
   it("sets message title on auto-registered messages without @message decorator", async () => {
@@ -134,9 +135,9 @@ describe("spec Compliance: @doc propagation", () => {
       op publishEvent(): AutoRegistered;
     `);
 
-    const msg = doc.components?.messages?.AutoRegistered;
+    const msg = inlineObject(doc.components?.messages?.AutoRegistered, "message");
     expect(msg).toBeDefined();
-    expect(msg?.title).toBe("AutoRegistered");
+    expect(msg.title).toBe("AutoRegistered");
   });
 
   it("populates message examples from @example on @message model", async () => {
@@ -149,10 +150,10 @@ describe("spec Compliance: @doc propagation", () => {
       op publishUser(): UserEvent;
     `);
 
-    const msg = doc.components?.messages?.UserEvent;
-    expect(msg?.examples).toBeDefined();
-    expect(msg?.examples).toHaveLength(1);
-    expect(msg?.examples?.[0]?.payload).toStrictEqual({
+    const msg = inlineObject(doc.components?.messages?.UserEvent, "message");
+    expect(msg.examples).toBeDefined();
+    expect(msg.examples).toHaveLength(1);
+    expect(msg.examples?.[0]?.payload).toStrictEqual({
       id: "user-123",
       name: "Alice",
     });

@@ -11,6 +11,7 @@
  * notification delivery.
  */
 
+import { asJsonSchema } from "../utils/type-guards.js";
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { compileAsyncAPI } from "../utils/test-helpers.js";
@@ -160,8 +161,8 @@ describe("canonical AsyncAPI Spec Ports", () => {
       const result = await compileAsyncAPI(loadFixture("chat-websocket"));
       const schemas = result.asyncApiDoc?.components?.schemas ?? {};
       const reactions = schemas.ChatMessage?.properties?.reactions;
-      expect(reactions?.items?.$ref ?? "").toMatch(/^#\/components\/schemas\//);
-      expect(reactions?.items?.$ref ?? "").toContain("MessageReaction");
+      expect(asJsonSchema(reactions?.items, "reactions.items").$ref ?? "").toMatch(/^#\/components\/schemas\//);
+      expect(asJsonSchema(reactions?.items, "reactions.items").$ref ?? "").toContain("MessageReaction");
     });
 
     it("should emit enum for user status field", async () => {
@@ -209,7 +210,7 @@ describe("canonical AsyncAPI Spec Ports", () => {
       const schemas = result.asyncApiDoc?.components?.schemas ?? {};
       const readings = schemas.SensorBatch?.properties?.readings;
       expect(readings?.type).toBe("array");
-      expect(readings?.items?.$ref).toContain("SensorReading");
+      expect(asJsonSchema(readings?.items, "readings.items").$ref ?? "").toContain("SensorReading");
     });
 
     it("should emit string literal union for quality field", async () => {

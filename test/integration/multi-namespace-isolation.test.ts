@@ -41,16 +41,14 @@ describe("integration: multi-namespace isolation", () => {
     expect(doc.servers!["broker-b"]).toBeDefined();
 
     // Namespace A server has its own mqtt binding
-    expect(doc.servers!["broker-a"].bindings?.mqtt).toBeDefined();
-    expect(doc.servers!["broker-a"].bindings?.mqtt.clientId).toBe(
-      "ns-a-client",
-    );
+    const nsABindings = inlineObject(doc.servers!["broker-a"].bindings, "bindings");
+    expect(nsABindings.mqtt).toBeDefined();
+    expect(nsABindings.mqtt.clientId).toBe("ns-a-client");
 
     // Namespace B server has its own mqtt binding
-    expect(doc.servers!["broker-b"].bindings?.mqtt).toBeDefined();
-    expect(doc.servers!["broker-b"].bindings?.mqtt.clientId).toBe(
-      "ns-b-client",
-    );
+    const nsBBindings = inlineObject(doc.servers!["broker-b"].bindings, "bindings");
+    expect(nsBBindings.mqtt).toBeDefined();
+    expect(nsBBindings.mqtt.clientId).toBe("ns-b-client");
   });
 
   it("keeps security schemes isolated per namespace", async () => {

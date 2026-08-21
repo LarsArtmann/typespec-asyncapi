@@ -8,6 +8,7 @@
  * in main.tsp so the tester doesn't prepend them in wrong order.
  */
 
+import { asJsonSchema } from "../utils/type-guards.js";
 import { compileAsyncAPI } from "../../test/utils/test-helpers.js";
 
 const IMPORT = 'import "@lars-artmann/typespec-asyncapi";';
@@ -163,7 +164,7 @@ describe("multi-file imports", () => {
     expect(batchSchema).toBeTruthy();
     const itemsArray = batchSchema?.properties?.items;
     expect(itemsArray?.type).toBe("array");
-    expect(itemsArray?.items?.$ref).toBe("#/components/schemas/Item");
+    expect(asJsonSchema(itemsArray?.items, "batch items").$ref).toBe("#/components/schemas/Item");
   });
 
   it("handles @doc on imported models", async () => {

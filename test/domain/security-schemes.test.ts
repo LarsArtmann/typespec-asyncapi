@@ -51,8 +51,8 @@ describe("apiKey security schemes", () => {
       op send(): Msg;
     `);
     const { queryKey, cookieKey } = doc.components!.securitySchemes!;
-    expect(queryKey.in).toBe("user");
-    expect(cookieKey.in).toBe("password");
+    expect(inlineObject(queryKey, "queryKey scheme").in).toBe("user");
+    expect(inlineObject(cookieKey, "cookieKey scheme").in).toBe("password");
   });
 
   it("httpApiKey requires in and name (not plain apiKey)", async () => {
@@ -89,9 +89,9 @@ describe("http security schemes", () => {
       op send(): Msg;
     `);
     const { basic, jwt } = doc.components!.securitySchemes!;
-    expect(basic.scheme).toBe("basic");
-    expect(jwt.scheme).toBe("bearer");
-    expect(jwt.bearerFormat).toBe("JWT");
+    expect(inlineObject(basic, "basic scheme").scheme).toBe("basic");
+    expect(inlineObject(jwt, "jwt scheme").scheme).toBe("bearer");
+    expect(inlineObject(jwt, "jwt scheme").bearerFormat).toBe("JWT");
   });
 
   it("supports digest and negotiate schemes", async () => {
@@ -241,9 +241,9 @@ describe("openIdConnect and asymmetric schemes", () => {
       op send(): Msg;
     `);
     const schemes = doc.components!.securitySchemes!;
-    expect(schemes.plain.type).toBe("plain");
-    expect(schemes.scram256.type).toBe("scramSha256");
-    expect(schemes.scram512.type).toBe("scramSha512");
+    expect(inlineObject(schemes.plain, "plain scheme").type).toBe("plain");
+    expect(inlineObject(schemes.scram256, "scram256 scheme").type).toBe("scramSha256");
+    expect(inlineObject(schemes.scram512, "scram512 scheme").type).toBe("scramSha512");
   });
 
   it("asserts X509 and gssapi distinguishing type", async () => {
