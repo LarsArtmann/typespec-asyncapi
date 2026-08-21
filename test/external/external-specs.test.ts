@@ -22,6 +22,7 @@ import {
   compileAsyncAPI,
   compileAsyncAPISpecRaw,
 } from "../utils/test-helpers.js";
+import { validateAsyncAPIDocument } from "../utils/schema-validator.js";
 
 describe("external Spec Compilation — Branded Types & Scalar Inheritance", () => {
   it("should handle scalar extends string (Kernovia NanoID pattern)", async () => {
@@ -56,6 +57,14 @@ describe("external Spec Compilation — Branded Types & Scalar Inheritance", () 
     >;
     expect(schemas.Event).not.toBeNull();
     expect(schemas.Event.type).toBe("object");
+    // User-declared scalars are declared and referenced like models
+    expect(schemas.Event.properties.id).toStrictEqual({
+      $ref: "#/components/schemas/NanoID",
+    });
+    expect(schemas.Event.properties.actorId).toStrictEqual({
+      $ref: "#/components/schemas/ActorId",
+    });
+    expect(schemas.Event.required).toStrictEqual(["id", "actorId", "version"]);
   });
 
   it("should handle model spread (eventsourcing BrandedId pattern)", async () => {
@@ -84,6 +93,16 @@ describe("external Spec Compilation — Branded Types & Scalar Inheritance", () 
     });
 
     expect(asyncApiDoc).not.toBeNull();
+    const schemas = (asyncApiDoc?.components?.schemas ?? {}) as Record<
+      string,
+      any
+    >;
+    // Spread members are flattened into the derived model
+    const { EventId: eventId } = schemas;
+    expect(eventId.properties.value).toStrictEqual({ type: "string" });
+    expect(eventId.properties["__brand"]).toStrictEqual({ type: "string" });
+    expect(eventId.properties.timestamp).toStrictEqual({ type: "string" });
+    expect(eventId.required).toStrictEqual(["value", "__brand", "timestamp"]);
   });
 
   it("should handle generic models (eventsourcing BrandedId<Brand> pattern)", async () => {
@@ -112,6 +131,15 @@ describe("external Spec Compilation — Branded Types & Scalar Inheritance", () 
     });
 
     expect(asyncApiDoc).not.toBeNull();
+    const schemas = (asyncApiDoc?.components?.schemas ?? {}) as Record<
+      string,
+      any
+    >;
+    // BrandedId<"event"> inlines with the brand as a const
+    const idProp = schemas.TypedEvent.properties.id;
+    expect(idProp.properties["__brand"]).toStrictEqual({ const: "event" });
+    expect(idProp.required).toStrictEqual(["value", "__brand"]);
+    expect(schemas.TypedEvent.properties.name).toStrictEqual({ type: "string" });
   });
 });
 
@@ -155,12 +183,25 @@ describe("external Spec Compilation — Complex Inheritance & Nesting", () => {
     });
 
     expect(asyncApiDoc).not.toBeNull();
+    validateAsyncAPIDocument(asyncApiDoc!);
     const schemas = (asyncApiDoc?.components?.schemas ?? {}) as Record<
       string,
       any
     >;
-    expect(schemas.CampaignCreatedEvent).not.toBeNull();
-    expect(schemas.CampaignCreatedEvent.type).toBe("object");
+    // Two-level inheritance: each level refs its base via allOf
+    expect(schemas.CampaignCreatedEvent.allOf).toStrictEqual([
+      { $ref: "#/components/schemas/DomainEvent" },
+    ]);
+    expect(schemas.DomainEvent.allOf).toStrictEqual([
+      { $ref: "#/components/schemas/BaseEntity" },
+    ]);
+    // Derived models carry only their own properties
+    expect(
+      Object.keys(schemas.CampaignCreatedEvent.properties).toSorted(),
+    ).toStrictEqual(["data", "eventType"]);
+    expect(schemas.CampaignCreatedEvent.properties.eventType).toStrictEqual({
+      const: "CampaignCreated",
+    });
   });
 
   it("should handle deeply nested anonymous models (ActaFlow pattern)", async () => {
@@ -202,8 +243,30 @@ describe("external Spec Compilation — Complex Inheritance & Nesting", () => {
       string,
       any
     >;
-    expect(schemas.Workflow).not.toBeNull();
-    expect(schemas.Workflow.type).toBe("object");
+    const { Workflow: workflow } = schemas;
+    // Named array property refs the declared schema
+    expect(workflow.properties.steps).toStrictEqual({
+      items: { $ref: "#/components/schemas/Step" },
+      type: "array",
+    });
+    // Nested anonymous models inline to arbitrary depth
+    const { config } = workflow.properties;
+    expect(config.properties.retries).toStrictEqual({
+      format: "int32",
+      type: "integer",
+    });
+    expect(config.properties.metadata.properties.priority).toStrictEqual({
+      type: "string",
+    });
+    expect(config.properties.metadata.properties.tags).toStrictEqual({
+      items: { type: "string" },
+      type: "array",
+    });
+    // Record<string> value type on the nested Step model
+    expect(schemas.Step.properties.inputs).toStrictEqual({
+      additionalProperties: { type: "string" },
+      type: "object",
+    });
   });
 
   it("should handle Record types (eventsourcing Record<unknown> pattern)", async () => {
@@ -229,12 +292,20 @@ describe("external Spec Compilation — Complex Inheritance & Nesting", () => {
     });
 
     expect(asyncApiDoc).not.toBeNull();
+    validateAsyncAPIDocument(asyncApiDoc!);
     const schemas = (asyncApiDoc?.components?.schemas ?? {}) as Record<
       string,
       any
     >;
-    expect(schemas.Command).not.toBeNull();
-    expect(schemas.Command.type).toBe("object");
+    // Record<unknown> accepts any value; Record<string> narrows to strings
+    expect(schemas.Command.properties.payload).toStrictEqual({
+      additionalProperties: {},
+      type: "object",
+    });
+    expect(schemas.Command.properties.metadata).toStrictEqual({
+      additionalProperties: { type: "string" },
+      type: "object",
+    });
   });
 });
 
@@ -278,9 +349,17 @@ describe("external Spec Compilation — Enums & Unions", () => {
       string,
       any
     >;
-    expect(schemas.ActorType).not.toBeNull();
-    expect(schemas.ActorType.enum).not.toBeNull();
-    expect(schemas.ActorType.enum.length).toBeGreaterThan(0);
+    expect(schemas.ActorType.enum).toStrictEqual([
+      "user",
+      "bot",
+      "system",
+      "service",
+    ]);
+    expect(schemas.AIProvider.enum).toStrictEqual([
+      "openai",
+      "anthropic",
+      "google",
+    ]);
   });
 
   it("should handle discriminated unions (eventsourcing result pattern)", async () => {
@@ -315,6 +394,22 @@ describe("external Spec Compilation — Enums & Unions", () => {
     });
 
     expect(asyncApiDoc).not.toBeNull();
+    validateAsyncAPIDocument(asyncApiDoc!);
+    const schemas = (asyncApiDoc?.components?.schemas ?? {}) as Record<
+      string,
+      any
+    >;
+    // All-Model variants compose an exclusive oneOf of refs
+    expect(schemas.ExecutionResult.oneOf).toStrictEqual([
+      { $ref: "#/components/schemas/SuccessResult" },
+      { $ref: "#/components/schemas/ErrorResult" },
+    ]);
+    expect(schemas.SuccessResult.properties.status).toStrictEqual({
+      const: "success",
+    });
+    expect(schemas.ErrorResult.properties.status).toStrictEqual({
+      const: "error",
+    });
   });
 });
 
@@ -368,6 +463,31 @@ describe("external Spec Compilation — Multi-message & Multi-server", () => {
     });
 
     expect(asyncApiDoc).not.toBeNull();
+    const channel = (asyncApiDoc?.channels ?? {}) as Record<string, any>;
+    expect(Object.keys(channel.users.messages).toSorted()).toStrictEqual([
+      "UserCreatedMessage",
+      "UserDeletedMessage",
+      "UserUpdatedMessage",
+    ]);
+    expect(channel.users.messages.UserCreatedMessage).toStrictEqual({
+      $ref: "#/components/messages/UserCreatedMessage",
+    });
+    const messages = (asyncApiDoc?.components?.messages ?? {}) as Record<
+      string,
+      any
+    >;
+    expect(messages.UserCreatedMessage.name).toBe("User Created");
+    expect(messages.UserCreatedMessage.payload).toStrictEqual({
+      $ref: "#/components/schemas/UserCreatedMessage",
+    });
+    // The @message wrapper composes its base via allOf
+    const schemas = (asyncApiDoc?.components?.schemas ?? {}) as Record<
+      string,
+      any
+    >;
+    expect(schemas.UserCreatedMessage.allOf).toStrictEqual([
+      { $ref: "#/components/schemas/UserCreated" },
+    ]);
   });
 
   it("should handle multiple @server decorators on one namespace", async () => {
@@ -393,9 +513,10 @@ describe("external Spec Compilation — Multi-message & Multi-server", () => {
     const servers = (asyncApiDoc?.servers ?? {}) as Record<string, any>;
     const serverNames = Object.keys(servers);
     expect(serverNames).toHaveLength(3);
-    expect(servers["kafka-prod"]).not.toBeNull();
-    expect(servers["mqtt-prod"]).not.toBeNull();
-    expect(servers["ws-prod"]).not.toBeNull();
+    expect(servers["kafka-prod"].protocol).toBe("kafka");
+    expect(servers["mqtt-prod"].protocol).toBe("mqtt");
+    // The wss protocol stays distinct on servers (only binding keys normalize to ws)
+    expect(servers["ws-prod"].protocol).toBe("wss");
   });
 });
 
@@ -423,6 +544,17 @@ describe("external Spec Compilation — Edge Cases from Real Specs", () => {
     });
 
     expect(asyncApiDoc).not.toBeNull();
+    const schemas = (asyncApiDoc?.components?.schemas ?? {}) as Record<
+      string,
+      any
+    >;
+    // Empty model emits an object with no properties and no required list
+    expect(schemas.Empty).toStrictEqual({ properties: {}, type: "object" });
+    // All-optional model keeps its properties but omits required
+    expect(schemas.WithOnlyOptional.properties.name).toStrictEqual({
+      type: "string",
+    });
+    expect(schemas.WithOnlyOptional.required).toBeUndefined();
   });
 
   it("should handle arrays of named models (common pattern)", async () => {
@@ -459,7 +591,12 @@ describe("external Spec Compilation — Edge Cases from Real Specs", () => {
     >;
     expect(schemas.Order?.properties?.items).not.toBeNull();
     const itemsProp = schemas.Order.properties.items;
-    expect(itemsProp.items?.$ref).toContain("Item");
+    expect(itemsProp.items?.$ref).toBe("#/components/schemas/Item");
+    expect(itemsProp.type).toBe("array");
+    expect(schemas.Item.properties.price).toStrictEqual({
+      format: "decimal",
+      type: "string",
+    });
   });
 
   it("should handle models with default values (Kernovia BaseCommand pattern)", async () => {
@@ -486,6 +623,15 @@ describe("external Spec Compilation — Edge Cases from Real Specs", () => {
     });
 
     expect(asyncApiDoc).not.toBeNull();
+    const schemas = (asyncApiDoc?.components?.schemas ?? {}) as Record<
+      string,
+      any
+    >;
+    const props = schemas.BaseCommand.properties;
+    expect(props.commandVersion.default).toBe("1.0.0");
+    expect(props.priority.default).toBe(5);
+    expect(props.active.default).toBe(true);
+    expect(props.commandId.default).toBeUndefined();
   });
 
   it("should handle nullable types and optional properties (ActaFlow pattern)", async () => {
@@ -512,6 +658,23 @@ describe("external Spec Compilation — Edge Cases from Real Specs", () => {
     });
 
     expect(asyncApiDoc).not.toBeNull();
+    validateAsyncAPIDocument(asyncApiDoc!);
+    const schemas = (asyncApiDoc?.components?.schemas ?? {}) as Record<
+      string,
+      any
+    >;
+    const user = schemas.User;
+    // `T | null` composes anyOf with a null variant (not a duplicate string)
+    expect(user.properties.email.anyOf).toStrictEqual([
+      { type: "string" },
+      { type: "null" },
+    ]);
+    // Optional properties are absent from required
+    expect(user.required).toStrictEqual(["id", "email"]);
+    expect(user.properties.metadata).toStrictEqual({
+      additionalProperties: { type: "string" },
+      type: "object",
+    });
   });
 });
 
@@ -568,5 +731,7 @@ describe("external Spec Compilation — Failure Resilience", () => {
 
     expect(diagnostics).not.toBeNull();
     expect(Array.isArray(diagnostics)).toBeTruthy();
+    // A valid spec must compile without error diagnostics
+    expect(diagnostics.filter((d) => d.severity === "error")).toHaveLength(0);
   });
 });

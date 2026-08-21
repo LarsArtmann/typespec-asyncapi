@@ -5,6 +5,7 @@
  * the AsyncAPI 3.1.0 specification.
  */
 
+import { compileAsyncAPI } from "../utils/test-helpers.js";
 import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
 
 describe("spec Compliance: defaultContentType", () => {
@@ -29,5 +30,53 @@ describe("spec Compliance: defaultContentType", () => {
     `);
 
     expect(doc.defaultContentType).toBeUndefined();
+  });
+
+  it("warns and keeps the first value when namespaces conflict", async () => {
+    const { asyncApiDoc, diagnostics } = await compileAsyncAPI(`
+      @defaultContentType("application/json")
+      namespace First;
+      model EventA { id: string; }
+      @channel("events-a")
+      op publishA(): EventA;
+
+      @defaultContentType("application/avro")
+      namespace Second;
+      model EventB { id: string; }
+      @channel("events-b")
+      op publishB(): EventB;
+    `);
+
+    const warning = diagnostics.find(
+      (d) => d.code === "conflicting-default-content-type",
+    );
+    expect(warning).toBeDefined();
+    expect(warning!.severity).toBe("warning");
+    // The document must use exactly the value the warning says is kept
+    const used = /using '([^']+)'/.exec(warning!.message)?.[1];
+    expect(used).toBeDefined();
+    expect(asyncApiDoc!.defaultContentType).toBe(used);
+    expect(["application/json", "application/avro"]).toContain(used);
+  });
+
+  it("emits no warning when namespaces agree on the value", async () => {
+    const { asyncApiDoc, diagnostics } = await compileAsyncAPI(`
+      @defaultContentType("application/json")
+      namespace First;
+      model EventA { id: string; }
+      @channel("events-a")
+      op publishA(): EventA;
+
+      @defaultContentType("application/json")
+      namespace Second;
+      model EventB { id: string; }
+      @channel("events-b")
+      op publishB(): EventB;
+    `);
+
+    expect(
+      diagnostics.some((d) => d.code === "conflicting-default-content-type"),
+    ).toBeFalsy();
+    expect(asyncApiDoc!.defaultContentType).toBe("application/json");
   });
 });
