@@ -1,6 +1,6 @@
 {
   "name": "@lars-artmann/typespec-asyncapi",
-  "version": "0.2.1-beta",
+  "version": "0.3.0-beta.1",
   "private": false,
   "description": "TypeSpec emitter for AsyncAPI 3.1 specifications",
   "keywords": [
@@ -126,10 +126,10 @@
     "ajv": "^8.20.0",
     "eslint": "^10.8.1",
     "husky": "^9.1.7",
-    "jscpd": "5.0.16",
+    "jscpd": "4.0.9",
     "oxlint": "1.79.0",
     "tsx": "^4.23.12",
-    "typescript": "^7.0.2",
+    "typescript": "^6.0.3",
     "typescript-eslint": "^8.67.0",
     "vitest": "^4.1.11"
   },
