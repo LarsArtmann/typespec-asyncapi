@@ -49,6 +49,11 @@ Sorted by Pareto tier (P1 = the 1% that delivers 51%).
       bug fixed. Locked by `test/compliance/template-instantiations.test.ts`
 - [ ] **P3: Publish stable v0.3.0** — CHANGELOG, tag, verify, fresh-install
       smoke (only after all P2/P3 above are green)
+- [ ] **P4: `@protocol` on Model never attaches message bindings** — found
+      during M11 rewrite: `attachChannelBindings` looks up
+      `ctx.channels[modelName]` (misses models); message bindings only work
+      via `@bindings` on the model. Either route model protocolConfigs to
+      the message object or warn on dead config.
 
 Post-release (feed 0.3.1/0.4.0): docs site, v0.4.0 direct-AST spike + memo,
 openapi3 EFv2-migration watch procedure. See plan Phases 4-5.
