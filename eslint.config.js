@@ -25,6 +25,36 @@ export default [
     files: ["src/**/*.ts", "src/**/*.tsx"],
   })),
 
+  // EFv1 containment: @typespec/asset-emitter may only be imported by the
+  // Schema-generation seam. Everything downstream consumes plain compiler
+  // Types so the eventual direct-AST emitter (v0.4.0) swaps one seam.
+  {
+    files: ["src/**/*.ts"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          paths: [
+            {
+              name: "@typespec/asset-emitter",
+              message:
+                "EFv1 containment: import this only in schema-generator.ts, schema-emitter.ts, or extract-value.ts (the schema-generation seam).",
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    files: [
+      "src/schema-generator.ts",
+      "src/schema-emitter.ts",
+      "src/extract-value.ts",
+    ],
+    rules: {
+      "no-restricted-imports": "off",
+    },
+  },
   {
     files: ["src/**/*.ts"],
     languageOptions: {

@@ -63,8 +63,11 @@ Research findings (2026-08-21, from primary sources):
 
 Plan:
 
-1. **Contain (v0.3.0):** make `generateSchemas()` the sole asset-emitter seam;
-   nothing else imports from `@typespec/asset-emitter`.
+1. **Contain (v0.3.0): DONE (M14, 2026-08-21).** ESLint `no-restricted-imports`
+   bans `@typespec/asset-emitter` everywhere under `src/` except the
+   three-file schema seam (`schema-generator.ts`, `schema-emitter.ts`,
+   `extract-value.ts`); the document pipeline (11 builders) never touches
+   asset-emitter. CI enforces it via `pnpm run lint`.
 2. **Monitor:** the trigger is `openapi3`'s package.json gaining
    `@typespec/emitter-framework` (or asset-emitter being marked deprecated on
    npm). Check quarterly.
