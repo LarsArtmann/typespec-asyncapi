@@ -6,7 +6,28 @@
 
 ## Current State
 
-Pre-release (`0.2.1-beta`). The emitter produces spec-compliant AsyncAPI 3.1 output validated against the official JSON Schema. **1000+ tests** pass across 85+ files (0 skip, 0 todo). Oxlint and ESLint both clean (0 errors, 0 warnings). **25 diagnostic codes** (19 error + 6 warning), all compile-time validated. **26 decorators** declared in `lib/main.tsp` (16 emitter + 10 reusable-component), plus **16 TypeSpec stdlib constraint/metadata mappings** in `src/constraint-mapper.ts`. Full protocol binding support for all **22 AsyncAPI protocols** (auto-generated from `@asyncapi/specs`) with auto-versioning, key normalization, field-level validation, and placement validation. Model inheritance emits `allOf`, model-variant unions emit `oneOf`, `@discriminator` enables polymorphic patterns with auto-required enforcement. `@typespec/versioning` integrated for `info.version`. Operation/channel `@summary`, message `title`/`examples`, `info.tags`, channel/server tags, and reusable `components.*` (operationTraits, messageTraits, parameters, correlationIds, operation/message/server/channel bindings, tags) all populated. Operation traits extract `security`/`tags`/`bindings`; message traits extract `headers`/`correlationId`/`summary`/`tags`/`bindings`. `@tags` accepts both string arrays and rich tag objects with `description`/`externalDocs`. `@parameter` validates `location` against the `$message.#` runtime-expression pattern. **Zero code duplication** (jscpd 0% threshold). **~97% coverage** average. Cross-emitter shared module (`src/shared/`) exports `JsonSchema`, `extractValue`, `intrinsicToSchema`, and `AsyncAPISchemaEmitter` for reuse.
+Beta (`0.3.0-beta.1`, live on npm with `latest` dist-tag; stable release
+pending maintainer decisions — see TODO_LIST). The emitter produces
+spec-compliant AsyncAPI 3.1 output validated against the official JSON
+Schema. **1259 tests** pass across 102 files (0 fail) with **98.1% average
+coverage**; oxlint and ESLint both clean (0 errors, 0 warnings); **0 code
+duplication** (jscpd, 0% threshold). **30 diagnostic codes** (20 error + 10
+warning), all compile-time validated. **30 decorators** declared in
+`lib/main.tsp` (19 core + 11 reusable-component), plus **16 TypeSpec stdlib
+constraint/metadata mappings** in `src/constraint-mapper.ts`. Full protocol
+binding support for all **22 AsyncAPI protocols** (auto-generated from
+`@asyncapi/specs`) with auto-versioning, key normalization, field-level
+validation, placement validation, and spec-correct field placement for
+`@protocol` config (kafka/mqtt/ws). Model inheritance emits `allOf`,
+model-variant unions emit `oneOf`, `@discriminator` enables polymorphic
+patterns with auto-required enforcement, template instantiations emit under
+stable argument-derived names (`Page<User>` → `PageUser`). `@encodedName`,
+`@jsonSchemaExtension`, `@extension`, and `asyncapi-id` are supported.
+`@typespec/versioning` is integrated for `info.version`. Thirteen runnable
+examples compile clean in CI (`pnpm run check-examples`), and a fast-check
+property suite locks emitter invariants. Cross-emitter shared module
+(`src/shared/`) exports `JsonSchema`, `extractValue`, `intrinsicToSchema`,
+and `AsyncAPISchemaEmitter` for reuse.
 
 ---
 
@@ -41,10 +62,10 @@ Keep the codebase honest as it grows.
 
 Raw ideas:
 
-- TypeSpec 1.14.0 upgrade (currently on 1.13.0) — includes auto decorators, `.ts` module imports, memory leak fix, entrypoint resolution fix
 - Type safety: tighten `OperationObject.action` to required, add `SecurityScheme.description`
 - Move generic utilities (`applyOverrides`, `collectNamesInto`) to a shared `src/util/` module
-- Property-based and snapshot testing infrastructure — generate random constraint combinations and verify AJV always passes; lock exact JSON Schema per decorator
+- ~~Property-based testing infrastructure~~ — DONE: fast-check suite (`test/property/emitter-properties.test.ts`, 6 invariants, `FC_SEED` reproduction)
+- ~~TypeSpec 1.14.0 upgrade~~ — DONE: repo now pins `@typespec/compiler` ^1.15.0
 
 #### EFv1 (`@typespec/asset-emitter`) containment and eventual removal
 
@@ -63,7 +84,7 @@ Research findings (2026-08-21, from primary sources):
 
 Plan:
 
-1. **Contain (v0.3.0): DONE (M14, 2026-08-21).** ESLint `no-restricted-imports`
+1. **Contain (v0.3.0): DONE.** ESLint `no-restricted-imports`
    bans `@typespec/asset-emitter` everywhere under `src/` except the
    three-file schema seam (`schema-generator.ts`, `schema-emitter.ts`,
    `extract-value.ts`); the document pipeline (11 builders) never touches
@@ -75,7 +96,7 @@ Plan:
    `TypeEmitter` subclass (~15 overrides, `src/schema-emitter.ts`) with a
    direct recursive type-to-JsonSchema walker. Kills `extract-value.ts`, the
    Placeholder gotchas, the deprecation risk, and neutralizes the competing
-   emitter's only architectural differentiator. Our 1286-test suite + golden
+   emitter's only architectural differentiator. The test suite + golden
    files + AJV validation de-risk this specifically. Must preserve:
    declaration dedup/naming (including template instantiation names — check
    golden files for current naming), circular-ref handling (in-progress set),

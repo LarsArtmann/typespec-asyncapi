@@ -231,12 +231,12 @@ The emitter reads the latest version enum value for `info.version`. Precedence: 
 
 ### Validation
 
-The emitter provides 25 compile-time diagnostics (19 error + 6 warning) that catch invalid configurations before they reach your AsyncAPI output — unsupported protocols, invalid binding versions, missing channel paths, malformed server URLs, and more.
+The emitter provides 30 compile-time diagnostics (20 error + 10 warning) that catch invalid configurations before they reach your AsyncAPI output — unsupported protocols, invalid binding versions, missing channel paths, malformed server URLs, and more.
 
 ### Rigor
 
-- **1310 tests** (vitest), including a **270+ test AsyncAPI 3.1.0 compliance suite** that validates every output against the official AsyncAPI 3.1.0 JSON Schema via AJV
-- **~97% line coverage** (gated at 75% minimum per file in CI)
+- **1259 tests** (vitest), including a **270+ test AsyncAPI 3.1.0 compliance suite** that validates every output against the official AsyncAPI 3.1.0 JSON Schema via AJV
+- **98% line coverage** (gated at 75% minimum per file in CI)
 - **Zero code clones** (jscpd, 0% threshold enforced in CI)
 - **Strict TypeScript** — zero `any`, `noUncheckedIndexedAccess`, type-aware ESLint (`strictTypeChecked`) with zero errors and zero warnings
 - Real-world regression guards: canonical AsyncAPI specs (Streetlights MQTT, WebSocket Chat, Sensor IoT, Enterprise Notifications) and adapted model patterns from real GitHub projects compile and validate on every CI run

@@ -1,12 +1,12 @@
 # Feature Inventory
 
-**Verified:** 2026-08-06 against actual code + test run (1000+ pass, 0 fail, 0 skip, 0 todo)
-**Project:** `@lars-artmann/typespec-asyncapi` v0.2.1-beta
+**Verified:** 2026-08-21 against actual code + full verify gate (1259 pass, 0 fail, 102 test files)
+**Project:** `@lars-artmann/typespec-asyncapi` v0.3.0-beta.1 (live on npm, `latest` dist-tag)
 **Lint:** oxlint 0 errors / 0 warnings, ESLint 0 errors / 0 warnings
-**Diagnostics:** 25 codes (19 error + 6 warning), all compile-time validated via `$lib.reportDiagnostic()`
-**Decorators:** 26 declared in `lib/main.tsp` (16 emitter decorators + 10 reusable-component decorators); plus 16 TypeSpec stdlib constraint/metadata mappings in `src/constraint-mapper.ts`
+**Diagnostics:** 30 codes (20 error + 10 warning), all compile-time validated via `$lib.reportDiagnostic()`
+**Decorators:** 30 declared in `lib/main.tsp` (19 core + 11 reusable-component); plus 16 TypeSpec stdlib constraint/metadata mappings in `src/constraint-mapper.ts`
 **Duplication:** 0% threshold enforced via jscpd (source files only), 0 clones
-**Coverage:** ~97% average (39 source files, 75% per-file minimum gate)
+**Coverage:** 98.1% average line coverage (42 source files, 75% per-file minimum gate)
 
 ---
 
@@ -15,40 +15,44 @@
 | Feature                        | Status           | Evidence                                                                                                                          |
 | ------------------------------ | ---------------- | --------------------------------------------------------------------------------------------------------------------------------- |
 | AsyncAPI 3.1 YAML generation   | FULLY_FUNCTIONAL | `src/emitter.ts` — `yamlStringify(document)`                                                                                      |
-| AsyncAPI 3.1 JSON generation   | FULLY_FUNCTIONAL | `src/emitter.ts` — `JSON.stringify(document, null, 2)`                                                                            |
+| AsyncAPI 3.1 JSON generation   | FULLY_FUNCTIONAL | `src/emitter.ts` — `pretty`/`indent` honored via `resolveFileFormat()`                                                             |
 | Spec-compliant `$ref` chain    | FULLY_FUNCTIONAL | Operations → `#/channels/{id}/messages/{id}` → `#/components/messages/{id}` → `#/components/schemas/{name}`                       |
 | Nested model `$ref`            | FULLY_FUNCTIONAL | Named user models/enums/scalars use `$ref: "#/components/schemas/Name"`                                                           |
-| AsyncAPI 3.1 schema validation | FULLY_FUNCTIONAL | `test/validation/schema-validation.test.ts` + `test/compliance/` — validates against official `@asyncapi/specs` 3.1.0 JSON schema |
+| AsyncAPI 3.1 schema validation | FULLY_FUNCTIONAL | `test/compliance/` + `test/utils/schema-validator.ts` — validates against official `@asyncapi/specs` 3.1.0 JSON schema            |
 | TypeSpec `$onEmit` integration | FULLY_FUNCTIONAL | `src/emitter.ts` — single `$onEmit` entry point                                                                                   |
 | `emitFile` output              | FULLY_FUNCTIONAL | Respects `output-file` and `file-type` options                                                                                    |
 | Strongly-typed document model  | FULLY_FUNCTIONAL | `src/domain/models/asyncapi-document.ts` — `AsyncAPIDocument`, `ChannelObject`, etc.                                              |
 | Zero `any` types in emitter    | FULLY_FUNCTIONAL | All TypeEmitter methods use proper TypeSpec types                                                                                 |
+| Root document `id`             | FULLY_FUNCTIONAL | `asyncapi-id` emitter option → AsyncAPI 3.1 root `id` (typically a URN); omitted when unset. 2 compliance tests                    |
 
 ## Schema Generation
 
 | Feature                      | Status           | Evidence                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | ---------------------------- | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Model → JSON Schema          | FULLY_FUNCTIONAL | `modelDeclaration()` handles properties, types, required                                                                                                                                                                                                                                                                                                                                                                                                 |
-| Inheritance via `allOf`      | FULLY_FUNCTIONAL | `modelDeclaration()` emits `allOf: [{ $ref: "..." }]` for base models. Own properties only.                                                                                                                                                                                                                                                                                                                                                              |
-| `@discriminator`             | FULLY_FUNCTIONAL | `getDiscriminator()` → `discriminator` keyword on models. Polymorphic pattern with `allOf` subtypes.                                                                                                                                                                                                                                                                                                                                                     |
-| Union of models → `oneOf`    | FULLY_FUNCTIONAL | Unions with all-Model variants emit `oneOf` with `$ref`s. Mixed types stay `anyOf`, string literals stay `enum`.                                                                                                                                                                                                                                                                                                                                         |
+| Inheritance via `allOf`      | FULLY_FUNCTIONAL | `modelDeclaration()` emits `allOf: [{ $ref: "..." }]` for base models. Own properties only. Multi-level chains link refs.                                                                                                                                                                                                                                                                                                                                |
+| `@discriminator`             | FULLY_FUNCTIONAL | `getDiscriminator()` → `discriminator` keyword on models; discriminator property auto-added to `required`. Polymorphic pattern with `allOf` subtypes.                                                                                                                                                                                                                                                                                                    |
+| Union of models → `oneOf`    | FULLY_FUNCTIONAL | Unions with all-Model variants emit `oneOf` with `$ref`s. Mixed types stay `anyOf`, string literals stay `enum`. Named unions receive `@doc`/`@summary` metadata (public contract, locked by compliance tests).                                                                                                                                                                                                                                           |
+| Template instantiations      | FULLY_FUNCTIONAL | `Page<User>` → `PageUser`, `Box<int32>` → `BoxInt32`, `Page<Page<User>>` → `PagePageUser` (argument-derived names mirroring asset-emitter `declarationName`); unspeakable args inline; `Record<K,V>` inlines as `additionalProperties`; name collisions emit `duplicate-schema-name` warning. Locked by `test/compliance/template-instantiations.test.ts` (8 tests).                                                                                       |
 | `@doc` → `description`       | FULLY_FUNCTIONAL | `getDoc()` on models and properties                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | Optional vs required fields  | FULLY_FUNCTIONAL | `!prop.optional` → `required` array                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| Array types                  | FULLY_FUNCTIONAL | `{ type: "array", items: ... }`                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Array types                  | FULLY_FUNCTIONAL | `{ type: "array", items: ... }` — arrays of named models emit `items: { $ref }`                                                                                                                                                                                                                                                                                                                                                                          |
 | Union/enum types             | FULLY_FUNCTIONAL | String unions → `{ type: "string", enum: [...] }`; Model unions → `{ oneOf: [...] }`                                                                                                                                                                                                                                                                                                                                                                     |
-| Scalar type mapping          | FULLY_FUNCTIONAL | All TypeSpec scalars mapped (int32, float64, utcDateTime, etc.)                                                                                                                                                                                                                                                                                                                                                                                          |
-| Nested model references      | FULLY_FUNCTIONAL | `$ref: "#/components/schemas/ModelName"` for named models                                                                                                                                                                                                                                                                                                                                                                                                |
+| Scalar type mapping          | FULLY_FUNCTIONAL | All TypeSpec scalars mapped (int32, float64, utcDateTime, etc.) via `intrinsicToSchema()` (~30 cases)                                                                                                                                                                                                                                                                                                                                                    |
+| Nested model references      | FULLY_FUNCTIONAL | `$ref: "#/components/schemas/ModelName"` for named models; JSON-pointer token escaping (`~1`/`~0`) per RFC 6901                                                                                                                                                                                                                                                                                                                                           |
 | Tuple types                  | FULLY_FUNCTIONAL | Named model tuples use `$ref`; primitives use per-position `items`                                                                                                                                                                                                                                                                                                                                                                                       |
-| Channel path parameters      | FULLY_FUNCTIONAL | `{var}` in address → `parameters` object on channel                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Channel path parameters      | FULLY_FUNCTIONAL | `{var}` in address → `parameters` object on channel; auto-upgrades to `$ref` when a matching `@parameter` exists                                                                                                                                                                                                                                                                                                                                          |
 | Server variables             | FULLY_FUNCTIONAL | `{var}` in host → `variables` object on server                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Multi-message operations     | FULLY_FUNCTIONAL | Union return types produce multiple message refs in one operation                                                                                                                                                                                                                                                                                                                                                                                        |
 | Operation reply              | FULLY_FUNCTIONAL | `@reply` decorator emits reply with message ref and optional address                                                                                                                                                                                                                                                                                                                                                                                     |
 | `#deprecated` → `deprecated` | FULLY_FUNCTIONAL | `src/constraint-mapper.ts` — `applyDeprecated()` on properties, models, enums via `isDeprecated()`                                                                                                                                                                                                                                                                                                                                                       |
 | Constraint decorators        | FULLY_FUNCTIONAL | `src/constraint-mapper.ts` — 16 TypeSpec stdlib constraint/metadata mappings via table-driven `CONSTRAINT_TABLE`: `@minValue`/`@maxValue` (+ exclusive variants), `@minLength`/`@maxLength`, `@pattern`, `@format`, `@minItems`/`@maxItems`, `#deprecated`, `@summary`→`title`, `@example`→`examples`, `@visibility`→`readOnly`/`writeOnly`, default values (`=` syntax)→`default`, `@doc`→`description`. Validation keywords skipped on `$ref` schemas. |
+| `@encodedName` wire renaming | FULLY_FUNCTIONAL | `resolveEncodedName(program, prop, "application/json")` drives `properties` keys, `required` entries, and `discriminator` values. 5 AJV-validated tests.                                                                                                                                                                                                                                                                                                  |
+| `@jsonSchemaExtension`       | FULLY_FUNCTIONAL | Arbitrary JSON Schema keywords on Model/ModelProperty/Union/Enum/Scalar, inline + `$ref`-sibling policy, repeatable with merge. 7 AJV-validated tests.                                                                                                                                                                                                                                                                                                    |
 
 ## Decorator System
 
-26 decorators declared in `lib/main.tsp` (16 emitter + 10 reusable-component). Plus 16 TypeSpec stdlib constraint/metadata mappings in `src/constraint-mapper.ts`.
+30 decorators declared in `lib/main.tsp` (19 core + 11 reusable-component). Plus 16 TypeSpec stdlib constraint/metadata mappings in `src/constraint-mapper.ts`.
 
 | Decorator             | Status           | Evidence                                                                                                                                                               |
 | --------------------- | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -56,28 +60,31 @@
 | `@publish`            | FULLY_FUNCTIONAL | Marks operation as `action: "send"`                                                                                                                                    |
 | `@subscribe`          | FULLY_FUNCTIONAL | Marks operation as `action: "receive"`                                                                                                                                 |
 | `@server`             | FULLY_FUNCTIONAL | Emitted as server objects with host/protocol/description; URL validation                                                                                               |
-| `@message`            | FULLY_FUNCTIONAL | Stores title/description/contentType; merged into components.messages                                                                                                  |
-| `@protocol`           | FULLY_FUNCTIONAL | Stores protocol config; emitted as channel bindings with auto-versioning                                                                                               |
-| `@security`           | FULLY_FUNCTIONAL | Emitted as `components.securitySchemes`; multiple schemes per namespace                                                                                                |
-| `@tags`               | FULLY_FUNCTIONAL | Emitted as `Tag[]` arrays on operations/messages AND collected into reusable `components.tags` map (`src/builders/tag-builder.ts`)                                     |
+| `@message`            | FULLY_FUNCTIONAL | Stores title/description/contentType/schemaFormat/examples; merged into components.messages; `title` populates both message `name` and `title`                          |
+| `@protocol`           | FULLY_FUNCTIONAL | Placement-aware emission at spec-correct bindings (kafka `partitions`/`replicationFactor` → channel `partitions`/`replicas`; `consumerGroup` → operation `groupId` schema; mqtt `qos`/`retain` → operation; ws `headers`/`queryParams` → channel `headers`/`query`). No fabricated defaults; no version-only shells |
+| `@security`           | FULLY_FUNCTIONAL | Emitted as `components.securitySchemes`; multiple schemes per namespace; spec-exact type allowlist (locked by 13 AJV-validated tests)                                    |
+| `@operationSecurity`  | FULLY_FUNCTIONAL | Emits `security: [{ $ref: "#/components/securitySchemes/<name>" }]` on operations                                                                                        |
+| `@tags`               | FULLY_FUNCTIONAL | String arrays AND rich tag objects (`description`/`externalDocs`); collected into reusable `components.tags` map (`src/builders/tag-builder.ts`)                        |
 | `@correlationId`      | FULLY_FUNCTIONAL | Emitted as `correlationId` objects on all messages                                                                                                                     |
-| `@bindings`           | FULLY_FUNCTIONAL | Emitted as `bindings` on operations/messages/servers; keys normalized, versions auto-injected. Namespace target enables server bindings (`namespace-bindings.test.ts`) |
+| `@bindings`           | FULLY_FUNCTIONAL | Emitted as `bindings` on operations/messages/servers; keys normalized, versions auto-injected. Namespace target enables server bindings                                 |
 | `@header`             | FULLY_FUNCTIONAL | Emitted as JSON Schema `headers` on messages                                                                                                                           |
 | `@reply`              | FULLY_FUNCTIONAL | Operation reply with message reference and optional address (`operation-builder.ts`)                                                                                   |
 | `@defaultContentType` | FULLY_FUNCTIONAL | Sets `defaultContentType` on document root (`namespace-decorators.ts`)                                                                                                 |
 | `@operationId`        | FULLY_FUNCTIONAL | Overrides auto-generated operation key with explicit name (`operation-discovery.ts`)                                                                                   |
 | `@messageId`          | FULLY_FUNCTIONAL | Overrides auto-generated message key with explicit name (`message-builder.ts`, `shared-utils.ts`)                                                                      |
 | `@apiVersion`         | FULLY_FUNCTIONAL | Sets `info.version` on document root from Namespace (`document-builder.ts`)                                                                                            |
-| `@versioned` (ext)    | FULLY_FUNCTIONAL | Reads `@typespec/versioning` `@versioned` enum for `info.version` fallback (`document-builder.ts`). `@apiVersion` takes precedence                                     |
+| `@jsonSchemaExtension`| FULLY_FUNCTIONAL | Arbitrary JSON Schema keywords on Model/ModelProperty/Union/Enum/Scalar; `invalid-json-schema-extension-key` warning on bad keys (`src/extension-decorators.ts`)         |
+| `@extension`          | FULLY_FUNCTIONAL | AsyncAPI spec extensions `x-...` on document root (Namespace), operations, and messages; `invalid-extension-key` warning on non-`x-` keys; repeatable with merge          |
+| `@versioned` (ext)    | FULLY_FUNCTIONAL | Reads `@typespec/versioning` `@versioned` enum for `info.version` fallback (`document-builder.ts`). Precedence: emitter option > `@apiVersion` > `@versioned` > `"1.0.0"` |
 
 ## Reusable Components (`components.*`)
 
-10 decorators for reusable AsyncAPI 3.1 component definitions and references (`src/builders/components-builder.ts`, `src/use-decorators.ts`). Inline approaches continue to work; these add the reusable option.
+11 decorators for reusable AsyncAPI 3.1 component definitions and references (`src/builders/components-builder.ts`, `src/use-decorators.ts`). Inline approaches continue to work; these add the reusable option.
 
 | Decorator                | Status           | Evidence                                                                                                                                                                                                                       |
 | ------------------------ | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `@operationTrait`        | FULLY_FUNCTIONAL | Defines a named trait in `components.operationTraits` (Namespace target). Extracts `security`, `tags`, `bindings`. `@useOperationTrait` references it from an Operation                                                        |
-| `@messageTrait`          | FULLY_FUNCTIONAL | Defines a named trait in `components.messageTraits` (Namespace target). Extracts `headers`, `correlationId`, `summary`, `tags`, `bindings`. `@useMessageTrait` references it from a Model                                      |
+| `@operationTrait`        | FULLY_FUNCTIONAL | Defines a named trait in `components.operationTraits` (Namespace target). Extracts `security`, `tags`, `bindings`, `summary`, `description`. `@useOperationTrait` references it from an Operation                             |
+| `@messageTrait`          | FULLY_FUNCTIONAL | Defines a named trait in `components.messageTraits` (Namespace target). Extracts `headers`, `correlationId`, `summary`, `tags`, `bindings`, `name`, `description`. `@useMessageTrait` references it from a Model                |
 | `@useOperationTrait`     | FULLY_FUNCTIONAL | Applies a `$ref` to a defined operation trait on an Operation                                                                                                                                                                  |
 | `@useMessageTrait`       | FULLY_FUNCTIONAL | Applies a `$ref` to a defined message trait on a Model                                                                                                                                                                         |
 | `@parameter`             | FULLY_FUNCTIONAL | Defines a reusable parameter in `components.parameters`; auto-referenced from `{name}` tokens in channel addresses. Extracts `enum`/`default`/`examples`. Validates `location` against `$message.#` runtime-expression pattern |
@@ -86,20 +93,21 @@
 | `@reusableBinding`       | FULLY_FUNCTIONAL | Defines a named binding in `components.operationBindings`/`messageBindings`/`serverBindings`/`channelBindings` (Namespace target)                                                                                              |
 | `@useBinding`            | FULLY_FUNCTIONAL | Applies a binding `$ref` to an Operation, Model, or Namespace (Namespace → all servers on that namespace)                                                                                                                      |
 | `@useChannelBinding`     | FULLY_FUNCTIONAL | Applies a binding `$ref` to an Operation's channel, populating `components.channelBindings` (Operation target)                                                                                                                 |
+| `@useChannelServer`      | FULLY_FUNCTIONAL | Binds a channel to named servers (`channel.servers`), populated before channel building so refs resolve                                                                                                                        |
 
-**Known gaps:** None — all `components.*` maps now have population paths. `@tags` accepts both string arrays and rich tag objects (with `description` and `externalDocs`).
+**Known gaps:** `@protocol` on a Model does not attach message bindings (use `@bindings` on the model meanwhile) — tracked in TODO_LIST.
 
 ## Protocol Bindings
 
-All 19 AsyncAPI protocols auto-generated from `@asyncapi/specs/bindings/` via `scripts/generate-binding-specs.ts`.
+19 binding protocols auto-generated from `@asyncapi/specs/bindings/` via `scripts/generate-binding-specs.ts`; 22 accepted protocol names in `src/constants/protocols.ts`.
 
 | Protocol          | Status           | Evidence                                                                                                                      |
 | ----------------- | ---------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| Kafka             | FULLY_FUNCTIONAL | Channel (topic, partitions, replicas), Operation (groupId, clientId), Message (key, schemaIdLocation). Binding version 0.5.0. |
+| Kafka             | FULLY_FUNCTIONAL | Channel (topic, partitions, replicas), Operation (groupId, clientId), Message (key, schemaIdLocation). Binding version 0.5.0. Field placement verified by `test/domain/protocol-kafka-comprehensive.test.ts` |
 | AMQP              | FULLY_FUNCTIONAL | Channel (exchange, queue), Operation (priority, deliveryMode), Message (contentEncoding). Binding version 0.3.0.              |
-| MQTT              | FULLY_FUNCTIONAL | Server (clientId, cleanSession, lastWill), Operation (qos, retain), Message. Binding version 0.2.0.                           |
-| WebSocket         | FULLY_FUNCTIONAL | Channel (method, query, headers). Binding version 0.1.0. `ws`/`wss` normalized to `ws` binding key.                           |
-| HTTP              | FULLY_FUNCTIONAL | Operation (method, query), Message (headers). Binding version 0.3.0.                                                          |
+| MQTT              | FULLY_FUNCTIONAL | Server (clientId, cleanSession, lastWill), Operation (qos, retain), Message. Binding version 0.2.0. `mqtt5` normalizes to `mqtt`. |
+| WebSocket         | FULLY_FUNCTIONAL | Channel (method, query, headers). Binding version 0.1.0. `ws`/`wss` normalized to `ws` binding key. Locked by rewritten `test/domain/protocol-websocket-mqtt.test.ts` (14 real tests) |
+| HTTP              | FULLY_FUNCTIONAL | Operation (method, query), Message (headers). Binding version 0.3.0. Raw `binding:` passthrough routes to the operation binding (http has no channel binding). |
 | 14 additional     | FULLY_FUNCTIONAL | AMQP1, AnypointMQ, GooglePubSub, IBMMQ, JMS, Mercure, NATS, Pulsar, Redis, ROS2, SNS, Solace, SQS, STOMP — all auto-generated |
 | Auto-versioning   | FULLY_FUNCTIONAL | `bindingVersion` auto-injected when missing via `processBindings()` and document-builder                                      |
 | Key normalization | FULLY_FUNCTIONAL | `websocket`→`ws`, `wss`→`ws` for binding keys. Server.protocol retains `wss`. `normalizeBindingProtocol()`                    |
@@ -128,40 +136,42 @@ All 19 AsyncAPI protocols auto-generated from `@asyncapi/specs/bindings/` via `s
 | Feature                           | Status           | Evidence                                                                                                                 |
 | --------------------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------ |
 | `output-file` option              | FULLY_FUNCTIONAL | Controls output filename                                                                                                 |
-| `file-type` option (yaml/json)    | FULLY_FUNCTIONAL | Supports `"yaml"` and `"json"` with pretty/indent sub-options                                                            |
+| `file-type` option (yaml/json)    | FULLY_FUNCTIONAL | `"json" \| "yaml" \| "yml"` string or `{ format, pretty, indent }` object; both honored                                                 |
 | `title` option                    | FULLY_FUNCTIONAL | Sets `info.title` on document                                                                                            |
 | `version` option                  | FULLY_FUNCTIONAL | Sets `info.version` on document                                                                                          |
 | `description` option              | FULLY_FUNCTIONAL | Sets `info.description` on document                                                                                      |
+| `info.contact`/`license`/etc.     | FULLY_FUNCTIONAL | `info.contact`, `info.license`, `info.termsOfService`, `info.externalDocs` via emitter options                          |
 | `output-dir` option               | FULLY_FUNCTIONAL | Sets emitter output directory                                                                                            |
 | `split-schemas` option            | FULLY_FUNCTIONAL | Splits schemas into individual files under `schemas/`; rewrites `$ref` pointers to external paths (`schema-splitter.ts`) |
+| `asyncapi-id` option              | FULLY_FUNCTIONAL | Sets root document `id`; omitted when unset                                                                              |
 | `EmitterOptions` IDE autocomplete | FULLY_FUNCTIONAL | `lib/main.tsp` — `EmitterOptions` model for TypeSpec IDE                                                                 |
 
 ## Testing
 
-| Feature                 | Status           | Evidence                                                                                         |
-| ----------------------- | ---------------- | ------------------------------------------------------------------------------------------------ |
-| vitest test runner      | FULLY_FUNCTIONAL | 1000+ tests across 85+ files (0 skip, 0 todo)                                                    |
-| Golden file test        | FULLY_FUNCTIONAL | `test/golden/golden-file.test.ts`                                                                |
-| Schema validation tests | FULLY_FUNCTIONAL | `test/validation/schema-validation.test.ts`                                                      |
-| Spec compliance suite   | FULLY_FUNCTIONAL | `test/compliance/` — 18+ files, ~270++ tests validated against official AsyncAPI 3.1 JSON Schema |
-| Integration tests       | FULLY_FUNCTIONAL | `test/integration/` — decorator output, negative tests, binding placement                        |
-| E2E tests               | FULLY_FUNCTIONAL | `test/e2e/` — complex nested schemas                                                             |
-| BDD tests               | FULLY_FUNCTIONAL | `test/bdd/user-behaviors.test.ts` — end-to-end behavior tests (dead Cucumber infra removed)      |
-| External spec tests     | FULLY_FUNCTIONAL | `test/external/` — 16 patterns from 5 external projects                                          |
-| Studio compatibility    | FULLY_FUNCTIONAL | `test/validation/studio-compatibility.test.ts` — using `@asyncapi/parser`                        |
-| Document structure      | FULLY_FUNCTIONAL | `test/validation/document-structure.test.ts` — structural requirement tests                      |
-| Versioning integration  | FULLY_FUNCTIONAL | `test/integration/versioning.test.ts` — `@typespec/versioning` support                           |
-| Constraint decorators   | FULLY_FUNCTIONAL | `test/compliance/constraint-decorators.test.ts` — AJV-validated                                  |
-| Unit tests              | FULLY_FUNCTIONAL | `test/unit/` — binding placement, emitter tester verification                                    |
-| Performance benchmark   | FULLY_FUNCTIONAL | `test/benchmark/` — measures compilation time + scaling metrics                                  |
-| Deduplication gate      | FULLY_FUNCTIONAL | `jscpd src scripts` — 0% threshold, 0% duplication enforced                                      |
-| Negative tests          | FULLY_FUNCTIONAL | `test/integration/negative-tests.test.ts` — error handling                                       |
+| Feature                    | Status           | Evidence                                                                                          |
+| -------------------------- | ---------------- | -------------------------------------------------------------------------------------------------- |
+| vitest test runner         | FULLY_FUNCTIONAL | 1259 tests across 102 files (0 fail, 0 skip) — verified 2026-08-21                                 |
+| Coverage gate              | FULLY_FUNCTIONAL | `bun test --coverage` + `scripts/coverage-gate.ts` — 98.1% avg, 75% per-file minimum               |
+| Golden file tests          | FULLY_FUNCTIONAL | `test/golden/` — livesession-xyd, channel-bindings, polymorphism, reusable-components, server-security |
+| Spec compliance suite      | FULLY_FUNCTIONAL | `test/compliance/` — 18+ files, ~270 tests validated against official AsyncAPI 3.1 JSON Schema     |
+| Property-based tests       | FULLY_FUNCTIONAL | `test/property/emitter-properties.test.ts` — 6 fast-check invariants (AJV, $ref integrity, determinism, split-schemas graph); `FC_SEED` reproduction |
+| Integration tests          | FULLY_FUNCTIONAL | `test/integration/` — decorator output, negative tests, binding placement                          |
+| E2E tests                  | FULLY_FUNCTIONAL | `test/e2e/` — complex nested schemas, multi-protocol, idempotency                                  |
+| BDD tests                  | FULLY_FUNCTIONAL | `test/bdd/user-behaviors.test.ts` — end-to-end behavior tests                                      |
+| External spec tests        | FULLY_FUNCTIONAL | `test/external/` — 16 patterns from 5 external projects                                            |
+| Real-world fixtures        | FULLY_FUNCTIONAL | `test/realworld/` — 10 `.tsp` fixtures from GitHub repos + canonical AsyncAPI specs (146 tests)     |
+| Studio compatibility       | FULLY_FUNCTIONAL | `test/validation/studio-compatibility.test.ts` — parses via `@asyncapi/parser` (runs under Node/vitest; NOT Bun) |
+| Examples gate              | FULLY_FUNCTIONAL | `pnpm run check-examples` — compiles all 13 `examples/` with 0 diagnostics + AJV-validates each; enforced in CI |
+| Performance benchmark      | FULLY_FUNCTIONAL | `test/benchmark/` — measures compilation time + scaling metrics, 15s/30s time budget               |
+| Deduplication gate         | FULLY_FUNCTIONAL | `jscpd src scripts` — 0% threshold, 0 clones                                                       |
+| Negative tests             | FULLY_FUNCTIONAL | `test/integration/negative-tests.test.ts` — error handling                                         |
 
-## Build
+## Build & Release
 
 | Feature                | Status           | Evidence                                               |
 | ---------------------- | ---------------- | ------------------------------------------------------ |
-| TypeScript compilation | FULLY_FUNCTIONAL | 0 errors, strict mode                                  |
-| ESLint                 | FULLY_FUNCTIONAL | 0 errors, 0 warnings                                   |
-| Oxlint                 | FULLY_FUNCTIONAL | 0 errors, 0 warnings (`oxlint . --deny-warnings`)      |
-| GitHub Actions CI      | FULLY_FUNCTIONAL | `.github/workflows/ci.yml` — build + lint + test on PR |
+| TypeScript compilation | FULLY_FUNCTIONAL | 0 errors, strict mode, `noUncheckedIndexedAccess`      |
+| ESLint                 | FULLY_FUNCTIONAL | 0 errors, 0 warnings (`strict` + `strictTypeChecked`)  |
+| Oxlint                 | FULLY_FUNCTIONAL | 0 errors, 0 warnings (pinned 1.78.0 devDependency)     |
+| GitHub Actions CI      | FULLY_FUNCTIONAL | `.github/workflows/ci.yml` — verify gate on push/PR (SHA-pinned actions); green on master |
+| npm release workflow   | FULLY_FUNCTIONAL | Tag-triggered workflow with verify gate + provenance attestation; `0.3.0-beta.1` published |
