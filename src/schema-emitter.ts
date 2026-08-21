@@ -117,6 +117,7 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
   }
 
   intrinsic(intrinsic: Type, _name: string): EmitterOutput<JsonSchema> {
+    console.error("PROBE intrinsic:", (intrinsic as { name?: string }).name);
     return this.intrinsicSchema((intrinsic as { name?: string }).name);
   }
 
@@ -332,7 +333,9 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
 
   private propertyToSchema(prop: ModelProperty): JsonSchema {
     const schema = this.refOrFallback(prop.type, (t) => this.typeToSchema(t));
-    return applyConstraints(this.emitter.getProgram(), prop, schema);
+    const constrained = applyConstraints(this.emitter.getProgram(), prop, schema);
+    console.error("PROBE property:", prop.name, JSON.stringify(schema), "->", JSON.stringify(constrained));
+    return constrained;
   }
 
   private typeToSchema(t: Type): JsonSchema {
