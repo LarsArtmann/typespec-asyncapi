@@ -9,6 +9,49 @@ that was not fixed on the spot is listed below, most impactful first.
 
 ---
 
+## v0.3.0 Release — Beat tsp-asyncapi
+
+Full plan with fine-grained breakdown and execution graph:
+`docs/planning/2026-08-21_09-04_SUPERB-v0.3.0-CLEAR-WINNER.md`.
+Sorted by Pareto tier (P1 = the 1% that delivers 51%).
+
+- [ ] **P1: Release prep + CI + publish 0.3.0-beta.1** — version bump,
+      `pnpm pack` tarball audit, tag-triggered npm publish workflow
+      (SHA-pinned), fresh-install compile smoke
+- [ ] **P2: README sales page** — quick start, competitor comparison table,
+      feature matrix, rigor callouts, EFv1-architecture honesty section
+- [ ] **P2: Five worked examples** (`examples/`) — streetlights MQTT, Kafka +
+      security, WS chat, reusable components, split-schemas; CI compiles and
+      AJV-validates each
+- [ ] **P2: `@jsonSchemaExtension(key, value)`** — arbitrary JSON Schema
+      keywords on Model/ModelProperty/Union/Enum/Scalar, incl. `$ref`-sibling
+      policy
+- [ ] **P2: `@encodedName` support** — stdlib decorator, wire-format property
+      renaming in schema emitter + required arrays
+- [ ] **P2: `@extension("x-...", value)`** — AsyncAPI object spec extensions
+      (server/channel/operation/message); key must start `x-`. Neither emitter
+      ships this; we go first
+- [ ] **P2: `asyncapi-id` emitter option** — top-level document `id`
+- [ ] **P3: Rewrite `test/domain/protocol-websocket-mqtt.test.ts`** — 1515
+      lines / 50 tests asserting only `=== "3.1.0"`; replace with fixture
+      table asserting real binding keys, normalization, auto-bindingVersion
+- [ ] **P3: Tighten security-\* tests** — assert `in`/`name`/`scheme`/flows,
+      delete AWS SigV4/MAC/Hawk bearer clones
+- [ ] **P3: fast-check property suite** — ~7 properties (AJV always passes,
+      $ref integrity, constraint sanity, determinism, split-schemas graph)
+- [ ] **P3: EFv1 containment** — `generateSchemas()` sole
+      `@typespec/asset-emitter` seam + eslint no-restricted-imports guard
+- [ ] **P3: Stable template-instantiation names** — verify golden for
+      `Page<string>`-style instantiations; lock or implement `PageString`
+      naming with collision diagnostic
+- [ ] **P3: Publish stable v0.3.0** — CHANGELOG, tag, verify, fresh-install
+      smoke (only after all P2/P3 above are green)
+
+Post-release (feed 0.3.1/0.4.0): docs site, v0.4.0 direct-AST spike + memo,
+openapi3 EFv2-migration watch procedure. See plan Phases 4-5.
+
+---
+
 ## Emitter Correctness
 
 - [ ] **Kafka `@protocol` fields never emitted** — `partitions`,
