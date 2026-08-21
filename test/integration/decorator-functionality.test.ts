@@ -14,6 +14,8 @@ import {
   parseAsyncAPIOutput,
 } from "../utils/test-helpers.js";
 import { validateAsyncAPIDocument } from "../utils/schema-validator.js";
+import { LATEST_BINDING_VERSIONS } from "../../src/constants/binding-versions.js";
+import { inlineObject } from "../utils/type-guards.js";
 
 describe("real Decorator Functionality Tests", () => {
   describe("@message Decorator Real Processing", () => {
@@ -96,6 +98,15 @@ describe("real Decorator Functionality Tests", () => {
       const operation = asyncapiDoc.operations?.publishUserRegistered;
       expect(operation?.action).toBe("send");
       expect(operation?.channel?.$ref).toBeDefined();
+
+      // @message config values propagate to the emitted message object
+      const message = inlineObject(
+        asyncapiDoc.components!.messages!.UserRegisteredMessage,
+        "message",
+      );
+      expect(message.title).toBe("User Registration Event");
+      expect(message.contentType).toBe("application/json");
+      expect(message.summary).toBe("Emitted when a new user registers");
     });
 
     it("should validate @message decorator with different content types", async () => {
@@ -148,6 +159,18 @@ describe("real Decorator Functionality Tests", () => {
 
       const protobufSchema = asyncapiDoc.components.schemas.ProtobufMessage;
       expect(protobufSchema.properties?.messageType?.type).toBe("string");
+
+      // per-message contentTypes propagate to the emitted messages
+      const avroMessage = inlineObject(
+        asyncapiDoc.components!.messages!.AvroMessage,
+        "avro message",
+      );
+      expect(avroMessage.contentType).toBe("application/avro");
+      const protobufMessage = inlineObject(
+        asyncapiDoc.components!.messages!.ProtobufMessage,
+        "protobuf message",
+      );
+      expect(protobufMessage.contentType).toBe("application/protobuf");
     });
 
     it("should handle @message decorator with headers and correlation ID", async () => {
@@ -193,7 +216,13 @@ describe("real Decorator Functionality Tests", () => {
     it("should process @protocol decorator with Kafka binding", async () => {
       const source = `
         namespace ProtocolKafkaTest;
-        
+
+        @bindings(#{
+          kafka: #{
+            key: #{ type: "string" },
+            schemaIdLocation: "header"
+          }
+        })
         model KafkaMessage {
           userId: string;
           action: string;
@@ -204,11 +233,13 @@ describe("real Decorator Functionality Tests", () => {
           protocol: "kafka",
           binding: #{
             topic: "user-events",
-            key: "userId",
-            schemaIdLocation: "header",
-            schemaId: 12345,
-            groupId: "user-service",
-            clientId: "user-service-1"
+            partitions: 3
+          }
+        })
+        @bindings(#{
+          kafka: #{
+            groupId: #{ type: "string" },
+            clientId: #{ type: "string" }
           }
         })
         @channel("kafka.user.events")
@@ -240,6 +271,32 @@ describe("real Decorator Functionality Tests", () => {
 
       const operation = asyncapiDoc.operations.publishKafkaUserEvent;
       expect(operation.action).toBe("send");
+
+      // Kafka binding fields land at their spec-correct placements:
+      // topic/partitions on the channel binding, groupId/clientId (schemas)
+      // on the operation binding, key/schemaIdLocation on the message binding.
+      const channelBinding = inlineObject(
+        asyncapiDoc.channels!["kafka.user.events"].bindings,
+        "channel bindings",
+      );
+      expect(channelBinding.kafka.topic).toBe("user-events");
+      expect(channelBinding.kafka.partitions).toBe(3);
+      expect(channelBinding.kafka.bindingVersion).toBe(
+        LATEST_BINDING_VERSIONS.kafka,
+      );
+      expect(
+        inlineObject(operation.bindings, "operation bindings").kafka.groupId,
+      ).toMatchObject({ type: "string" });
+      const message = inlineObject(
+        asyncapiDoc.components!.messages!.KafkaMessage,
+        "message",
+      );
+      expect(
+        inlineObject(message.bindings, "message bindings").kafka
+          .schemaIdLocation,
+      ).toBe("header");
+
+      validateAsyncAPIDocument(asyncapiDoc);
     });
 
     it("should process @protocol decorator with WebSocket binding", async () => {
@@ -257,7 +314,7 @@ describe("real Decorator Functionality Tests", () => {
           protocol: "websocket",
           binding: #{
             method: "GET",
-            subprotocol: "chat.v1"
+            query: #{ room: #{ type: "string" } }
           }
         })
         @channel("websocket.chat")
@@ -285,6 +342,17 @@ describe("real Decorator Functionality Tests", () => {
 
       const operation = asyncapiDoc.operations.subscribeWebSocketChat;
       expect(operation.action).toBe("receive");
+
+      // "websocket" alias normalizes to the ws binding key with config values
+      const wsBinding = inlineObject(
+        asyncapiDoc.channels!["websocket.chat"].bindings,
+        "channel bindings",
+      ).ws;
+      expect(wsBinding.method).toBe("GET");
+      expect(wsBinding.query).toStrictEqual({ room: { type: "string" } });
+      expect(wsBinding.bindingVersion).toBe(LATEST_BINDING_VERSIONS.ws);
+
+      validateAsyncAPIDocument(asyncapiDoc);
     });
 
     it("should process @protocol decorator with multiple protocols", async () => {
@@ -556,10 +624,14 @@ describe("real Decorator Functionality Tests", () => {
           protocol: "kafka",
           binding: #{
             topic: "secure-audit-events",
-            key: "userId",
-            schemaIdLocation: "header",
-            groupId: "audit-service",
-            clientId: "audit-producer-v1"
+            partitions: 6,
+            replicas: 3
+          }
+        })
+        @bindings(#{
+          kafka: #{
+            groupId: #{ type: "string" },
+            clientId: #{ type: "string" }
           }
         })
         @channel("audit.secure.events")
@@ -578,8 +650,13 @@ describe("real Decorator Functionality Tests", () => {
           protocol: "kafka", 
           binding: #{
             topic: "secure-audit-events",
-            groupId: "audit-consumer",
-            clientId: "audit-reader-v1"
+            partitions: 6
+          }
+        })
+        @bindings(#{
+          kafka: #{
+            groupId: #{ type: "string" },
+            clientId: #{ type: "string" }
           }
         })
         @channel("audit.events.{userId}")
@@ -626,6 +703,17 @@ describe("real Decorator Functionality Tests", () => {
 
       expect(publishOp.action).toBe("send");
       expect(subscribeOp.action).toBe("receive");
+
+      // Kafka binding fields land at spec-correct placements
+      const channelBinding = inlineObject(
+        asyncapiDoc.channels!["audit.secure.events"].bindings,
+        "channel bindings",
+      );
+      expect(channelBinding.kafka.topic).toBe("secure-audit-events");
+      expect(channelBinding.kafka.partitions).toBe(6);
+      expect(
+        inlineObject(publishOp.bindings, "operation bindings").kafka.groupId,
+      ).toMatchObject({ type: "string" });
 
       // Full AsyncAPI 3.1.0 schema compliance
       validateAsyncAPIDocument(asyncapiDoc);

@@ -6,6 +6,9 @@
  */
 
 import { compileAsyncAPISpec } from "../utils/test-helpers";
+import { validateAsyncAPIDocument } from "../utils/schema-validator.js";
+import { inlineObject } from "../utils/type-guards.js";
+import { LATEST_BINDING_VERSIONS } from "../../src/constants/binding-versions.js";
 import {
   PROTOCOL_LIST,
   isSupportedProtocol,
