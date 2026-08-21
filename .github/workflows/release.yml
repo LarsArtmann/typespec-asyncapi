@@ -1,0 +1,73 @@
+# Release workflow: tag-triggered npm publish, gated on the full verify suite.
+#
+# Setup (one-time, already done):
+#   Repository Settings > Secrets and variables > Actions > NPM_TOKEN
+#   must contain an npm access token with publish rights to the
+#   @lars-artmann scope (granular token recommended).
+#
+# Provenance: publishing with --provenance requires the `id-token: write`
+# permission below; npm generates a signed provenance attestation from
+# GitHub's OIDC provider, visible on the npm package page.
+#
+# Dry-run: trigger manually via workflow_dispatch with dry_run=true to
+# exercise the whole pipeline (install, verify, publish dry-run) without
+# touching the registry. Real publishes happen only on `v*` tags.
+
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Run publish as a dry-run (no registry write)"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  verify-and-publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - uses: pnpm/action-setup@f40ffcd9367d9f12939873eb1018b921a783ffaa # v4
+        with:
+          version: latest
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "22"
+          cache: pnpm
+
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version: latest
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Verify (build + lint + test + coverage + duplication)
+        run: pnpm run verify
+
+      - name: Publish to npm
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            if [[ "${{ inputs.dry_run }}" == "true" ]]; then
+              echo "Dry-run requested: npm publish --dry-run (no registry write)"
+              npm publish --dry-run --ignore-scripts --access public
+            else
+              echo "Manual dispatch with dry_run=false"
+              npm publish --provenance --ignore-scripts --access public
+            fi
+          else
+            echo "Tag push: publishing with provenance"
+            npm publish --provenance --ignore-scripts --access public
+          fi
